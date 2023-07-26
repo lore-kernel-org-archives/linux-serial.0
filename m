@@ -2,117 +2,122 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67509C04FE1
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Jul 2023 12:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E2DC001DC
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Jul 2023 12:23:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233400AbjGZMNJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Jul 2023 08:13:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
+        id S233298AbjGZMXn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 26 Jul 2023 08:23:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233804AbjGZMNA (ORCPT
+        with ESMTP id S231854AbjGZMXm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Jul 2023 08:13:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B0D1739;
-        Wed, 26 Jul 2023 05:12:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CC1A61ACC;
-        Wed, 26 Jul 2023 12:12:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73356C433C8;
-        Wed, 26 Jul 2023 12:12:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1690373578;
-        bh=Ke8AONnAOWupVgvu9a1rrtccA5xWjVMePJQxM8Ht3Kc=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=gYrqFr8wvj2MJmmwmwf8M6I8rekTV9+bxmW2rqLD55Qm7Z/X+3fqo2oPfopkxdlCi
-         n241AQBCMxM7eFrih3i3Sbv5AKj0bq28ozziIAExFd7E/RXMMNS1aKn+yJARtnBmU4
-         FfN14X79faCpLGre6x+vnvwoxjIsG/L/ooLw+V13rcjVx7tIPmq/1O2zG9aawBpzTf
-         uhcvPI4MEqZ0fNFaHRBAISQWggi8tN88wV4MzFoUqwVN0pOsQ3BgyiTak4/MrtL+0t
-         6GpQd+/9rUTZVGi45edSMIe9j4qSBoulHPW7gK71wysfs2CSJoMHtELswVidt7IBP2
-         x+DypAIC/tqTg==
-Received: (nullmailer pid 1182938 invoked by uid 1000);
-        Wed, 26 Jul 2023 12:12:54 -0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        Wed, 26 Jul 2023 08:23:42 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001C21BF6;
+        Wed, 26 Jul 2023 05:23:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1690374213; x=1721910213;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=J/b6oqoHFRqvTcNW79wrv9kVaPoIxwuRld8Ml1S2Zdc=;
+  b=B7XZw8XaT1mGhj5nZ9Wrk0Xj6veQ8XZIq+h8jgazRRj1+09l8sxAqZlc
+   bFvko/xPEKbuDZKywg/dm7OZJuDbywVvLyY8OE9wwVHMNKUiWBJWykyOL
+   2jPvxFL+FgWmJBVlqWbB+bCo9i6Gnb+w3+OKPlyWfNGmt6Nnt1A4zLEdg
+   mWe2zhSL6dak+dcA/WBDI5v99dJx+H7+7zy7S9d4L4TzxfF8VH18ZfL4+
+   rBuih8e8O1KhUITDrrPBM4wT2D8rcQ/elkpcuJEkSwuM4ncz49j8oZ/9c
+   kcmCep6qVzdpz/VgRrjEt34zFVkrtMs3dNYAqySXBVS9Ssg0WFUFIOW5P
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10783"; a="434265920"
+X-IronPort-AV: E=Sophos;i="6.01,232,1684825200"; 
+   d="scan'208";a="434265920"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2023 05:23:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10783"; a="761629553"
+X-IronPort-AV: E=Sophos;i="6.01,232,1684825200"; 
+   d="scan'208";a="761629553"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga001.jf.intel.com with ESMTP; 26 Jul 2023 05:23:30 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 86CB912B; Wed, 26 Jul 2023 15:23:39 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] serial: core: Simplify uart_get_rs485_mode()
+Date:   Wed, 26 Jul 2023 15:23:35 +0300
+Message-Id: <20230726122335.14187-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.40.0.1.gaa8946217a0b
 MIME-Version: 1.0
-From:   Rob Herring <robh@kernel.org>
-To:     Gatien Chevallier <gatien.chevallier@foss.st.com>
-Cc:     linux-mmc@vger.kernel.org, gregkh@linuxfoundation.org,
-        lee@kernel.org, catalin.marinas@arm.com, jic23@kernel.org,
-        hugues.fruchet@foss.st.com, richardcochran@gmail.com,
-        will@kernel.org, arnd@kernel.org, davem@davemloft.net,
-        Oleksii Moisieiev <oleksii_moisieiev@epam.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Oleksii_Moisieiev@epam.com, linux-phy@lists.infradead.org,
-        linux-crypto@vger.kernel.org, kuba@kernel.org,
-        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
-        vkoul@kernel.org, linux-arm-kernel@lists.infradead.org,
-        edumazet@google.com, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        herbert@gondor.apana.org.au, linux-i2c@vger.kernel.org,
-        alexandre.torgue@foss.st.com, mchehab@kernel.org,
-        robh+dt@kernel.org, linux-kernel@vger.kernel.org,
-        ulf.hansson@linaro.org, netdev@vger.kernel.org,
-        andi.shyti@kernel.org, olivier.moysan@foss.st.com,
-        linux-serial@vger.kernel.org, pabeni@redhat.com,
-        arnaud.pouliquen@foss.st.com, dmaengine@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-media@vger.kernel.org,
-        conor+dt@kernel.org, fabrice.gasnier@foss.st.com
-In-Reply-To: <20230726083810.232100-2-gatien.chevallier@foss.st.com>
-References: <20230726083810.232100-1-gatien.chevallier@foss.st.com>
- <20230726083810.232100-2-gatien.chevallier@foss.st.com>
-Message-Id: <169037357425.1182922.8121576517266921442.robh@kernel.org>
-Subject: Re: [IGNORE][PATCH v3 01/11] dt-bindings: Document common device
- controller bindings
-Date:   Wed, 26 Jul 2023 06:12:54 -0600
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Simplify uart_get_rs485_mode() by using temporary variable for
+the GPIO descriptor. With that, use proper type for the flags
+of the GPIO descriptor.
 
-On Wed, 26 Jul 2023 10:38:00 +0200, Gatien Chevallier wrote:
-> From: Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
-> 
-> Introducing of the common device controller bindings for the controller
-> provider and consumer devices. Those bindings are intended to allow
-> divided system on chip into muliple domains, that can be used to
-> configure hardware permissions.
-> 
-> Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
-> ---
->  .../feature-domain-controller.yaml            | 84 +++++++++++++++++++
->  1 file changed, 84 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml
-> 
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/serial_core.c | 30 ++++++++++++------------------
+ 1 file changed, 12 insertions(+), 18 deletions(-)
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml: title: 'Generic Domain Controller bindings' should not be valid under {'pattern': '([Bb]inding| [Ss]chema)'}
-	hint: Everything is a binding/schema, no need to say it. Describe what hardware the binding is for.
-	from schema $id: http://devicetree.org/meta-schemas/core.yaml#
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230726083810.232100-2-gatien.chevallier@foss.st.com
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 831d033611e6..1eab3abd955a 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -3565,9 +3565,10 @@ int uart_get_rs485_mode(struct uart_port *port)
+ {
+ 	struct serial_rs485 *rs485conf = &port->rs485;
+ 	struct device *dev = port->dev;
++	enum gpiod_flags dflags;
++	struct gpio_desc *desc;
+ 	u32 rs485_delay[2];
+ 	int ret;
+-	int rx_during_tx_gpio_flag;
+ 
+ 	ret = device_property_read_u32_array(dev, "rs485-rts-delay",
+ 					     rs485_delay, 2);
+@@ -3606,26 +3607,19 @@ int uart_get_rs485_mode(struct uart_port *port)
+ 	 * bus participants enable it, no communication is possible at all.
+ 	 * Works fine for short cables and users may enable for longer cables.
+ 	 */
+-	port->rs485_term_gpio = devm_gpiod_get_optional(dev, "rs485-term",
+-							GPIOD_OUT_LOW);
+-	if (IS_ERR(port->rs485_term_gpio)) {
+-		ret = PTR_ERR(port->rs485_term_gpio);
+-		port->rs485_term_gpio = NULL;
+-		return dev_err_probe(dev, ret, "Cannot get rs485-term-gpios\n");
+-	}
++	desc = devm_gpiod_get_optional(dev, "rs485-term", GPIOD_OUT_LOW);
++	if (IS_ERR(desc))
++		return dev_err_probe(dev, PTR_ERR(desc), "Cannot get rs485-term-gpios\n");
++	port->rs485_term_gpio = desc;
+ 	if (port->rs485_term_gpio)
+ 		port->rs485_supported.flags |= SER_RS485_TERMINATE_BUS;
+ 
+-	rx_during_tx_gpio_flag = (rs485conf->flags & SER_RS485_RX_DURING_TX) ?
+-				 GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
+-	port->rs485_rx_during_tx_gpio = devm_gpiod_get_optional(dev,
+-								"rs485-rx-during-tx",
+-								rx_during_tx_gpio_flag);
+-	if (IS_ERR(port->rs485_rx_during_tx_gpio)) {
+-		ret = PTR_ERR(port->rs485_rx_during_tx_gpio);
+-		port->rs485_rx_during_tx_gpio = NULL;
+-		return dev_err_probe(dev, ret, "Cannot get rs485-rx-during-tx-gpios\n");
+-	}
++	dflags = (rs485conf->flags & SER_RS485_RX_DURING_TX) ?
++		 GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
++	desc = devm_gpiod_get_optional(dev, "rs485-rx-during-tx", dflags);
++	if (IS_ERR(desc))
++		return dev_err_probe(dev, PTR_ERR(desc), "Cannot get rs485-rx-during-tx-gpios\n");
++	port->rs485_rx_during_tx_gpio = desc;
+ 
+ 	return 0;
+ }
+-- 
+2.40.0.1.gaa8946217a0b
 
