@@ -2,111 +2,80 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 660CAC001B0
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Jul 2023 14:42:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D28B0C41513
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Jul 2023 20:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232163AbjGZOmH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Jul 2023 10:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32938 "EHLO
+        id S229984AbjGZUjB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 26 Jul 2023 16:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229980AbjGZOmG (ORCPT
+        with ESMTP id S229437AbjGZUi6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Jul 2023 10:42:06 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CE4A10DB;
-        Wed, 26 Jul 2023 07:42:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690382526; x=1721918526;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=ZxC6gwU9yWXdN1PqA4ssVDQ/brLW7zgoTQ9uUdeKKU0=;
-  b=YGTAty6qe2KoxsufowERzMEv90MeNvzx/g0Isz5AwL2k773qtPVWbJkf
-   ltrPfnXVv0gKmLrgyBc+VupmH2z+/P/rrXw8BvDH0R8b2N6G6Ehl9rC4T
-   pbyQTbC5u8o4FDNEd/KiHaSblrpW+Zpl3IOxfJrKJLMOJnsbECuMrwwan
-   27LADtK7QBxbZTHJwbUZw1sTfVLE37w0Afyn18Ax/lno2Dra58vEfDRVf
-   MBpHtPns02M/tw5VypDSWgUBs2CFnAjetcd58yyWIqENdlTetvSAavKhR
-   j/k2l7Z/SmRPnKHRpt32iPT0b9jDYEkYeeDwvGiwFYrQ7+QPgSx2N+Uzz
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10783"; a="371645477"
-X-IronPort-AV: E=Sophos;i="6.01,232,1684825200"; 
-   d="scan'208";a="371645477"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2023 07:42:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10783"; a="756270101"
-X-IronPort-AV: E=Sophos;i="6.01,232,1684825200"; 
-   d="scan'208";a="756270101"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga008.jf.intel.com with ESMTP; 26 Jul 2023 07:42:02 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qOfiD-00BKUL-0p;
-        Wed, 26 Jul 2023 17:42:01 +0300
-Date:   Wed, 26 Jul 2023 17:42:00 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Ruihong Luo <colorsu1922@gmail.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        stable@vger.kernel.org, luoruihong@xiaomi.com,
-        weipengliang@xiaomi.com, wengjinfei@xiaomi.com
-Subject: Re: [PATCH v4] serial: 8250_dw: Preserve original value of DLF
- register
-Message-ID: <ZMEwuMLQlwABZeRo@smile.fi.intel.com>
-References: <20230713004235.35904-1-colorsu1922@gmail.com>
- <5fac4a28-ff70-d6e6-dcee-8cb45916789@linux.intel.com>
- <ZLFAD8lblUA6/cVd@smile.fi.intel.com>
- <2023072546-ladies-landlord-8a6d@gregkh>
+        Wed, 26 Jul 2023 16:38:58 -0400
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B99212F
+        for <linux-serial@vger.kernel.org>; Wed, 26 Jul 2023 13:38:54 -0700 (PDT)
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-565893ef956so357223eaf.0
+        for <linux-serial@vger.kernel.org>; Wed, 26 Jul 2023 13:38:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690403934; x=1691008734;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=A8/T6DJX/3wv1BC8DhRFtQNRzsSzmfoIuUvWC3HeVoI=;
+        b=gVw3IMpi5m/1hZFYxI6KBMEBICo2xWOyQZVgus5Flgz/k1ZuYUVMk0yMROQ7Orl8EM
+         MtXnljyreJjIS+QnTizHo6wUwFB+UxkMmQfhPrILxSs+hX/E6gnE3lmGn75fooUN8oY1
+         Em8jIDG954Ewarv8uXpfx2LFmo+QcTaSqyn23QTKvCNR2okfdKG68m7FMIH1poaS3zwV
+         6t/m0WA2zZ1+W+tEyPWCEAy4EUwJJJ4p6xq1tmjQE7wJQ3huhLl8sjx8dsX4tRVFZK8z
+         bU2VmtxUJeaUr7ZNK+u3M28S6d7T6r5Xi1oCp9doI78PCdh2gJdaqwWii8sqQS2ac4qR
+         PbWA==
+X-Gm-Message-State: ABy/qLbXpDY6UC2+A+flPfB9o7hJLRyo2I9Xhi7B+cIyp+IuM/z4LUPw
+        ZctnhSY9/2vmDqukwMNk3ru8SAVu7Z2OOqra7ZxFlpOMGk1d
+X-Google-Smtp-Source: APBJJlGdJHXoNxgmq9ObjtPT/NLsIT7+Lda0f4Gws9gtz2pu+1cHJ9AjIhw4YlfXSucl86UHvr0WCk1zlcO5XANSCBhBc36Ps9RO
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2023072546-ladies-landlord-8a6d@gregkh>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Received: by 2002:a05:6870:d8b2:b0:1bb:84d0:5b8d with SMTP id
+ dv50-20020a056870d8b200b001bb84d05b8dmr826402oab.6.1690403934002; Wed, 26 Jul
+ 2023 13:38:54 -0700 (PDT)
+Date:   Wed, 26 Jul 2023 13:38:53 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000036333060169d6a8@google.com>
+Subject: [syzbot] Monthly serial report (Jul 2023)
+From:   syzbot <syzbot+list2f20ebac1d924d54d3c4@syzkaller.appspotmail.com>
+To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jul 25, 2023 at 08:31:17PM +0200, Greg Kroah-Hartman wrote:
-> On Fri, Jul 14, 2023 at 03:31:11PM +0300, Andy Shevchenko wrote:
-> > On Fri, Jul 14, 2023 at 03:07:42PM +0300, Ilpo Järvinen wrote:
-> > > On Thu, 13 Jul 2023, Ruihong Luo wrote:
-> > > 
-> > > > Preserve the original value of the Divisor Latch Fraction (DLF) register.
-> > > > When the DLF register is modified without preservation, it can disrupt
-> > > > the baudrate settings established by firmware or bootloader, leading to
-> > > > data corruption and the generation of unreadable or distorted characters.
-> > > > 
-> > > > Fixes: 701c5e73b296 ("serial: 8250_dw: add fractional divisor support")
-> > 
-> > > You forgot to add:
-> > > 
-> > > Cc: stable@vger.kernel.org
-> > 
-> > It's there. Just not in the commit message. It's fine.
-> 
-> No it isn't, that's not how to have a patch added to the stable tree, as
-> my form letter says:
-> 
-> <formletter>
-> 
-> This is not the correct way to submit patches for inclusion in the
-> stable kernel tree.  Please read:
->     https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-> for how to do this properly.
-> 
-> </formletter>
-> 
-> I'll go fix it up by hand...
+Hello serial maintainers/developers,
 
-Good to know, thank you for the clarification!
+This is a 31-day syzbot report for the serial subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/serial
 
+During the period, 0 new issues were detected and 0 were fixed.
+In total, 3 issues are still open and 4 have been fixed so far.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Some of the still happening issues:
 
+Ref Crashes Repro Title
+<1> 591     Yes   KMSAN: uninit-value in n_tty_receive_buf_common (2)
+                  https://syzkaller.appspot.com/bug?extid=b68d24ad0de64bdba684
+<2> 49      Yes   BUG: soft lockup in tx
+                  https://syzkaller.appspot.com/bug?extid=5e87db90e68fbc4707c6
+<3> 15      Yes   general protection fault in serial8250_tx_chars
+                  https://syzkaller.appspot.com/bug?extid=837b8c9032c053262db8
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+To disable reminders for individual bugs, reply with the following command:
+#syz set <Ref> no-reminders
+
+To change bug's subsystems, reply with:
+#syz set <Ref> subsystems: new-subsystem
+
+You may send multiple commands in a single email message.
