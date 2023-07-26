@@ -2,107 +2,105 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 329F5C41513
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Jul 2023 20:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BB52C0015E
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Jul 2023 03:28:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230425AbjGYUvn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Jul 2023 16:51:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46056 "EHLO
+        id S229621AbjGZD2l (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 Jul 2023 23:28:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230009AbjGYUvl (ORCPT
+        with ESMTP id S229535AbjGZD2k (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Jul 2023 16:51:41 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F04B6;
-        Tue, 25 Jul 2023 13:51:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=BI6vld8daiZZqGCYXywTiEB06qS0pOcYQzPLq+kIgpA=; b=kBoM0QDDYWvRihqO9OYZiObhMj
-        GlyRzTCZ7/WdvW06YOS6WhtEsgXu4P1dKW10wb/QbeKXBO9YvNSYtgD9VbSTzkwB612KtZK3+NKZL
-        PUCberLDUcsiNFgFwoVPx1l3HnofLB9hYRk0dGE1wJYC/WBqIRrlZGzJxeCWlpE/oM/6a8jfZLd2g
-        A20JUg5vvH4JUfv17i+QZRPSFeyFT74AQc8YT84WpVzZ3L4JbMNVTsJtZRXTSqPKDs3fi93vJfSuq
-        p0PQYB8/Rg0lTnL28cf9yteCsl9N6+X6L1vjKxXoTcp+pM4nbyjbr8AEp1iNmusW8JYUFcNJaqS+G
-        ryDERQsA==;
-Received: from [2601:1c2:980:9ec0::2764]
-        by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-        id 1qOP0M-008Te2-2y;
-        Tue, 25 Jul 2023 20:51:40 +0000
-Message-ID: <10fbf60c-f7fe-d2ca-3d16-488453a88889@infradead.org>
-Date:   Tue, 25 Jul 2023 13:51:37 -0700
+        Tue, 25 Jul 2023 23:28:40 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E58C213C;
+        Tue, 25 Jul 2023 20:28:39 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 7AFBA80A9;
+        Wed, 26 Jul 2023 03:28:38 +0000 (UTC)
+Date:   Wed, 26 Jul 2023 06:28:37 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v5 3/3] serial: core: Fix serial core controller port
+ name to show controller id
+Message-ID: <20230726032837.GZ5194@atomide.com>
+References: <20230725054216.45696-1-tony@atomide.com>
+ <20230725054216.45696-4-tony@atomide.com>
+ <ZL+QuHE4CztPvBxo@smile.fi.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [PATCH] Documentation: devices.txt: reconcile serial/ucc_uart
- minor numers
-Content-Language: en-US
-To:     Timur Tabi <timur@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Kumar Gala <galak@kernel.crashing.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org
-References: <20230724063341.28198-1-rdunlap@infradead.org>
- <CAOZdJXVuvVNzbyTLSiqRoSNdU0aprHoxozZzBahFUghqLvL2kw@mail.gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <CAOZdJXVuvVNzbyTLSiqRoSNdU0aprHoxozZzBahFUghqLvL2kw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZL+QuHE4CztPvBxo@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On 7/25/23 13:38, Timur Tabi wrote:
-> On Mon, Jul 24, 2023 at 1:33 AM Randy Dunlap <rdunlap@infradead.org> wrote:
->>
->> Reconcile devices.txt with serial/ucc_uart.c regarding device number
->> assignments. ucc_uart.c supports 4 ports and uses minor devnums
->> 46-49, so update devices.txt with that info.
->> Then update ucc_uart.c's reference to the location of the devices.txt
->> list in the kernel source tree.
->>
->> Fixes: d7584ed2b994 ("[POWERPC] qe-uart: add support for Freescale QUICCEngine UART")
->> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
->> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
->> Cc: Timur Tabi <timur@kernel.org>
->> Cc: Kumar Gala <galak@kernel.crashing.org>
->> Cc: linuxppc-dev@lists.ozlabs.org
->> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->> Cc: Jiri Slaby <jirislaby@kernel.org>
->> Cc: linux-serial@vger.kernel.org
->> Cc: Jonathan Corbet <corbet@lwn.net>
->> Cc: linux-doc@vger.kernel.org
+* Andy Shevchenko <andriy.shevchenko@linux.intel.com> [230725 09:07]:
+> On Tue, Jul 25, 2023 at 08:42:12AM +0300, Tony Lindgren wrote:
+> > We are missing the serial core controller id for the serial core port
+> > name. Let's fix the issue for sane sysfs output, and to avoid issues
+> > addressing serial ports later on.
+> > 
+> > And as we're now showing the controller id, the "ctrl" and "port" prefix
+> > for the DEVNAME become useless, we can just drop them. Let's standardize on
+> > DEVNAME:0 for controller name, where 0 is the controller id. And
+> > DEVNAME:0.0 for port name, where 0.0 are the controller id and port id.
+> > 
+> > This makes the sysfs output nicer, on qemu for example:
+> > 
+> > $ ls /sys/bus/serial-base/devices
+> > 00:04:0         serial8250:0    serial8250:0.2
+> > 00:04:0.0       serial8250:0.1  serial8250:0.3
 > 
-> Acked-by: Timur Tabi <timur@kernel.org>
+> Hmm... Why 0.0 is absent for serial8250?
+
+The serial8250:0.0 port was around initially, and then it's preallocated
+slot got taken over by the 00:04:0.0 device. See nr_uarts in 8250_core.c
+for what is going on.
+
+> Btw, what was before this patch there?
+
+# ls /sys/bus/serial-base/devices/
+ctrl.00:04.0       port.00:04.0       port.serial8250.2
+ctrl.serial8250.0  port.serial8250.1  port.serial8250.3
+
+The earlier naming is different format from the DEVNAME:0.0. The sysfs
+output is not usable directly for the users for the port addressing we're
+discussing.
+
+Sorry I did not notice the different format earier, I noticed only when I
+started playing with using the DEVNAME:0.0 style port addressing.
+
+> And maybe ls -l will look more informative?
+
+I've appended qemu output of the ls -l for DEVNAME:0.0 style naming below.
+
+> > Andy, I kept your Reviewed-by although I updated the device naming and
+> > description, does the patch still look OK to you?
 > 
-> One thing does concern me.  The UCC UART driver piggy-backs on the CPM
-> driver's layout (see cpm_uart.h), but apparently CPM UART supports 6
-> devices, not four:
-> 
-> #define UART_NR        fs_uart_nr
-> 
-> where fs_uart_nr is defined in enum fs_uart_id.
-> 
-> Unfortunately, it's been so long since I've touched this code, I'm not
-> sure whether this means anything.
+> Looks okay, but I have a question above.
 
-If CPM UART code ever worked with > 4 ports, it probably just used minor devnums
-that were not allocated to it.
+OK best to get the device names right if we're planning to use them :)
 
-Also, it looks like the CPU UART part of Documentation/admin-guide/devices.txt
-needs to be updated:
+Regards,
 
-		 46 = /dev/cucpm0		Callout device for ttyCPM0
-		    ...
-		 49 = /dev/cucpm5		Callout device for ttyCPM5
-
-The driver must use some tricks to get 6 ports into 4 devnums. :)
+Tony
 
 
--- 
-~Randy
+8< ------
+ ls -l /sys/bus/serial-base/devices/
+total 0
+lrwxrwxrwx    1 root     root             0 Jul 25 05:21 00:04:0 -> ../../../devices/pnp0/00:04/00:04:0
+lrwxrwxrwx    1 root     root             0 Jul 25 05:21 00:04:0.0 -> ../../../devices/pnp0/00:04/00:04:0/00:04:0.0
+lrwxrwxrwx    1 root     root             0 Jul 25 05:21 serial8250:0 -> ../../../devices/platform/serial8250/serial8250:0
+lrwxrwxrwx    1 root     root             0 Jul 25 05:21 serial8250:0.1 -> ../../../devices/platform/serial8250/serial8250:0/serial8250:0.1
+lrwxrwxrwx    1 root     root             0 Jul 25 05:21 serial8250:0.2 -> ../../../devices/platform/serial8250/serial8250:0/serial8250:0.2
+lrwxrwxrwx    1 root     root             0 Jul 25 05:21 serial8250:0.3 -> ../../../devices/platform/serial8250/serial8250:0/serial8250:0.3
