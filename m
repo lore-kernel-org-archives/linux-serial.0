@@ -2,119 +2,95 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E2AC04A6A
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Jul 2023 09:08:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 621E2C001DC
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Jul 2023 10:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232635AbjGZJIS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Jul 2023 05:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33240 "EHLO
+        id S232670AbjGZKNL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 26 Jul 2023 06:13:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232257AbjGZJHL (ORCPT
+        with ESMTP id S233326AbjGZKNA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Jul 2023 05:07:11 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E080188;
-        Wed, 26 Jul 2023 02:04:42 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 36Q8fK2J008196;
-        Wed, 26 Jul 2023 11:04:20 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=mHlSDUHrC46OTsxrd1MgTw0c0UTb8rmL5Uuj7fDW+n0=;
- b=zO3V27RgKExY/q85tnvfYLxhy2slSf7Knw1gPHQf1WoyeM7uiF8GSo1HznFiPyivKlq4
- L6CKD1U051jxT89xFuqjU/17wMDs9euvT7E9nzje/VEkTvWeYLOCZ6cGOXYOCNFYYfFZ
- 5/xEUkV7rFy/XBYdkTEq6JpgOFqOWREZgROdss/Mt2JSe0VWdZSCuM2agejgclldDvuF
- bCBjlpm6D7UbVjE5CUgrTIKrckaEo9oaPGeIbr9rw5b8vbc4Yi80Jy/IuujGL9AEBH4E
- 29bz4VSinulO+vTqLeac2u1LjXFK0Jqfr53vxDsceG483W5WzuNtgT2Co+XpVgDPakkq ww== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3s306u876r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 26 Jul 2023 11:04:20 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 8659710002A;
-        Wed, 26 Jul 2023 11:04:19 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 7C2052115FC;
-        Wed, 26 Jul 2023 11:04:19 +0200 (CEST)
-Received: from [10.201.21.121] (10.201.21.121) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Wed, 26 Jul
- 2023 11:04:17 +0200
-Message-ID: <5458d1d3-6c4c-738c-6dec-8b7ff78a5431@foss.st.com>
-Date:   Wed, 26 Jul 2023 11:04:16 +0200
+        Wed, 26 Jul 2023 06:13:00 -0400
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A14ADB;
+        Wed, 26 Jul 2023 03:12:59 -0700 (PDT)
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-99454855de1so954141666b.2;
+        Wed, 26 Jul 2023 03:12:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690366378; x=1690971178;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=L4nqAJ8cUHFLvOLZP8FB7lH4Ac8aa38fDh1pyMJB4zY=;
+        b=SoXu9Y9JA521rpkpNnlZWCXWP5EO4O0bPsEWmG5q8/5ckc0S2fKwawtTOy1Q0rR6sL
+         xsFmVY5paS7rp42fhRuJCXzqp5/lgnVzsi9dfs/tWk6+8Krqf/ripPEsta8G7Xj5NuAQ
+         21RjNqRYszqNPA96Pq5zb/Z3c8liBBkIw84j9JLr/v7bVO7C6toMo1YLbXIcwnqa71lO
+         SaWv8F0945F5WXAvR7IYMNLFRBGRJPKIEkS3gCucKAxwu4zORFd4ojJkLREEHPwe54zg
+         RtOsfues3LG9HqQP1hOHMhXK7cybYNAPA5tNiDNplLUdpp6hZr/ZaoJP8wUHmwePU8ny
+         I86Q==
+X-Gm-Message-State: ABy/qLZIhKxgcijX4E+KQdP5RHdlAcs+9YXag22SKCCipLzz8td+C+Tg
+        0JKdD7dDlPDw8LDNnEwt6+WQti7F70Q=
+X-Google-Smtp-Source: APBJJlHopNj4dI4y9LMxLRnkack7VfrLPTm+TfJaVBuoFWgi/vd45pDkOKAANLm2WjvpaZ1JZaFGDQ==
+X-Received: by 2002:a17:907:7759:b0:969:f433:9b54 with SMTP id kx25-20020a170907775900b00969f4339b54mr1289722ejc.39.1690366377486;
+        Wed, 26 Jul 2023 03:12:57 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id mh3-20020a170906eb8300b00982b204678fsm9361834ejb.207.2023.07.26.03.12.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Jul 2023 03:12:57 -0700 (PDT)
+Message-ID: <edb0414f-3808-8651-4956-8ec34b056901@kernel.org>
+Date:   Wed, 26 Jul 2023 12:12:56 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.13.0
-Subject: Re: [IGNORE][PATCH v3 01/11] dt-bindings: Document common device
- controller bindings
+Subject: Re: [PATCH] MAINTAINERS: Update TTY layer for lists and recently
+ added files
 Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     <Oleksii_Moisieiev@epam.com>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
-        <alexandre.torgue@foss.st.com>, <vkoul@kernel.org>,
-        <jic23@kernel.org>, <olivier.moysan@foss.st.com>,
-        <arnaud.pouliquen@foss.st.com>, <mchehab@kernel.org>,
-        <fabrice.gasnier@foss.st.com>, <andi.shyti@kernel.org>,
-        <ulf.hansson@linaro.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <hugues.fruchet@foss.st.com>,
-        <lee@kernel.org>, <will@kernel.org>, <catalin.marinas@arm.com>,
-        <arnd@kernel.org>, <richardcochran@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
-        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>
-References: <20230726083810.232100-1-gatien.chevallier@foss.st.com>
- <20230726083810.232100-2-gatien.chevallier@foss.st.com>
- <2023072605-removed-pacemaker-faff@gregkh>
-From:   Gatien CHEVALLIER <gatien.chevallier@foss.st.com>
-In-Reply-To: <2023072605-removed-pacemaker-faff@gregkh>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tony Lindgren <tony@atomide.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20230721072334.59272-1-tony@atomide.com>
+ <ZLpboaXKVOOjeGJ+@smile.fi.intel.com> <20230724045327.GV5194@atomide.com>
+ <2023072517-onward-payment-569d@gregkh> <2023072530-wired-chaps-c1e3@gregkh>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <2023072530-wired-chaps-c1e3@gregkh>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.201.21.121]
-X-ClientProxiedBy: SHFCAS1NODE2.st.com (10.75.129.73) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-07-26_03,2023-07-25_01,2023-05-22_02
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello Greg,
-
-On 7/26/23 10:48, Greg KH wrote:
-> On Wed, Jul 26, 2023 at 10:38:00AM +0200, Gatien Chevallier wrote:
->> From: Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
+On 25. 07. 23, 19:29, Greg Kroah-Hartman wrote:
+> On Tue, Jul 25, 2023 at 07:28:46PM +0200, Greg Kroah-Hartman wrote:
+>> On Mon, Jul 24, 2023 at 07:53:27AM +0300, Tony Lindgren wrote:
+>>> * Andy Shevchenko <andriy.shevchenko@intel.com> [230721 10:19]:
+>>>> On Fri, Jul 21, 2023 at 10:23:32AM +0300, Tony Lindgren wrote:
+>>>>> Add mailing lists for linux-serial and lkml for the TTY layer. And let's
+>>>>> list the recently added files. This makes it easier for get_maintainer.pl
+>>>>> to include linux-serial for patches.
+>>>>
+>>>> Shouldn't serial_* stuff go to the "SERIAL DRIVERS" section?
+>>>
+>>> Not sure if there's some reason we have "TTY LAYER" with serial_core
+>>> files. If not, yeah let's move the serial files.
 >>
->> Introducing of the common device controller bindings for the controller
->> provider and consumer devices. Those bindings are intended to allow
->> divided system on chip into muliple domains, that can be used to
->> configure hardware permissions.
->>
->> Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
->> ---
->>   .../feature-domain-controller.yaml            | 84 +++++++++++++++++++
->>   1 file changed, 84 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml
+>> I'll take this patch, can you send a new one that removes the serial
+>> files from this entry as I don't think they are needed in here anymore.
 > 
-> What is the [IGNORE] prefix for?
-> 
+> Better yet, they should be merged probably.  Although I don't know if
+> Jiri wants to be responsible for serial stuff, that's his call...
 
-I put this prefix to specify that the review for this patch should
-not be done on this thread.
+No problem. I actually didn't realize they are separate. So feel free to 
+submit a patch, so we have a single MAINTAINTERS file entry...
 
-It is still under review on the thread linked in the cover-letter.
+-- 
+js
+suse labs
 
-This series aims to provide a use-case for this binding so its scope
-can be better defined.
-
-Best regards,
-Gatien
