@@ -2,74 +2,83 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F33C41513
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Jul 2023 08:51:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C52C001E0
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Jul 2023 08:56:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232958AbjGZIvE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Jul 2023 04:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
+        id S233456AbjGZI4Y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 26 Jul 2023 04:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229674AbjGZIum (ORCPT
+        with ESMTP id S232670AbjGZIzh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Jul 2023 04:50:42 -0400
-Received: from fgw21-7.mail.saunalahti.fi (fgw21-7.mail.saunalahti.fi [62.142.5.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DFA4C27
-        for <linux-serial@vger.kernel.org>; Wed, 26 Jul 2023 01:44:49 -0700 (PDT)
-Received: from localhost (88-113-24-87.elisa-laajakaista.fi [88.113.24.87])
-        by fgw21.mail.saunalahti.fi (Halon) with ESMTP
-        id acc1db47-2b90-11ee-abf4-005056bdd08f;
-        Wed, 26 Jul 2023 11:44:47 +0300 (EEST)
-From:   andy.shevchenko@gmail.com
-Date:   Wed, 26 Jul 2023 11:44:46 +0300
-To:     =?iso-8859-1?Q?Rodr=EDguez_Barbarin=2C_Jos=E9?= Javier 
-        <JoseJavier.Rodriguez@duagon.com>
-Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "morbidrsa@gmail.com" <morbidrsa@gmail.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jth@kernel.org" <jth@kernel.org>,
-        =?iso-8859-1?B?U2FuanXhbiBHYXJj7WEs?= Jorge 
-        <Jorge.SanjuanGarcia@duagon.com>
-Subject: Re: [PATCH 3/3] 8250_men_mcb: Make UART config auto configurable
-Message-ID: <ZMDc_krXXhoT2jwn@surfacebook>
-References: <20230705131423.30552-1-josejavier.rodriguez@duagon.com>
- <20230705131423.30552-4-josejavier.rodriguez@duagon.com>
+        Wed, 26 Jul 2023 04:55:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B8734689;
+        Wed, 26 Jul 2023 01:49:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E420361874;
+        Wed, 26 Jul 2023 08:48:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA1DEC433C7;
+        Wed, 26 Jul 2023 08:48:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1690361300;
+        bh=TVkm71Dj8e6ZNnwjoIIRsgr0o73kkDOfdDDGNd/kDBU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SyVWd+uTTovinaUIsKyOKRWsGKy/aLlm2Gr/MJvvS4WfCf6sK8/jBKlvkNxs5W7HP
+         WvRM0Wa9pGKgHFSre3z/gWuyTgrF6WknjGkRSfjsy/p3lrwDA6dUdX+nWG/cw1UXx7
+         rzwXalMlJ582UPLADRhbsG/xCLp3uJhZRpjWwLvs=
+Date:   Wed, 26 Jul 2023 10:48:17 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Gatien Chevallier <gatien.chevallier@foss.st.com>
+Cc:     Oleksii_Moisieiev@epam.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        alexandre.torgue@foss.st.com, vkoul@kernel.org, jic23@kernel.org,
+        olivier.moysan@foss.st.com, arnaud.pouliquen@foss.st.com,
+        mchehab@kernel.org, fabrice.gasnier@foss.st.com,
+        andi.shyti@kernel.org, ulf.hansson@linaro.org, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, hugues.fruchet@foss.st.com,
+        lee@kernel.org, will@kernel.org, catalin.marinas@arm.com,
+        arnd@kernel.org, richardcochran@gmail.com,
+        Frank Rowand <frowand.list@gmail.com>,
+        linux-crypto@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [IGNORE][PATCH v3 01/11] dt-bindings: Document common device
+ controller bindings
+Message-ID: <2023072605-removed-pacemaker-faff@gregkh>
+References: <20230726083810.232100-1-gatien.chevallier@foss.st.com>
+ <20230726083810.232100-2-gatien.chevallier@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230705131423.30552-4-josejavier.rodriguez@duagon.com>
+In-Reply-To: <20230726083810.232100-2-gatien.chevallier@foss.st.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Wed, Jul 05, 2023 at 01:15:14PM +0000, Rodríguez Barbarin, José Javier kirjoitti:
-> The UART ports created by this driver were not usable out of
-> the box, so let the configuration be handled by the 8250 UART
-> subsystem. This makes the implementation simpler and the UART
-> port more usable.
+On Wed, Jul 26, 2023 at 10:38:00AM +0200, Gatien Chevallier wrote:
+> From: Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
 > 
-> The 8250 UART subsystem will take care of requesting the memory
-> resources, but the driver needs to first read the register where
-> the num ports is set, so a request of the resource is needed
-> before registering the UART port.
+> Introducing of the common device controller bindings for the controller
+> provider and consumer devices. Those bindings are intended to allow
+> divided system on chip into muliple domains, that can be used to
+> configure hardware permissions.
+> 
+> Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
+> ---
+>  .../feature-domain-controller.yaml            | 84 +++++++++++++++++++
+>  1 file changed, 84 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml
 
-I see this is already pending to the next cylce, but
-formally I would like to NAK this change as explained
-in reply to cover letter why.
-
-...
-
-Side note:
-
->  		uart.port.mapbase = (unsigned long) mem->start
->  					    + data->offset[i];
-
-Weird indentation and strange casting.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+What is the [IGNORE] prefix for?
 
