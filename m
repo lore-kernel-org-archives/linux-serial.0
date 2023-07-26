@@ -2,122 +2,111 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E2DC001DC
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Jul 2023 12:23:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 660CAC001B0
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Jul 2023 14:42:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233298AbjGZMXn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Jul 2023 08:23:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36854 "EHLO
+        id S232163AbjGZOmH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 26 Jul 2023 10:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231854AbjGZMXm (ORCPT
+        with ESMTP id S229980AbjGZOmG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Jul 2023 08:23:42 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001C21BF6;
-        Wed, 26 Jul 2023 05:23:32 -0700 (PDT)
+        Wed, 26 Jul 2023 10:42:06 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CE4A10DB;
+        Wed, 26 Jul 2023 07:42:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690374213; x=1721910213;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=J/b6oqoHFRqvTcNW79wrv9kVaPoIxwuRld8Ml1S2Zdc=;
-  b=B7XZw8XaT1mGhj5nZ9Wrk0Xj6veQ8XZIq+h8jgazRRj1+09l8sxAqZlc
-   bFvko/xPEKbuDZKywg/dm7OZJuDbywVvLyY8OE9wwVHMNKUiWBJWykyOL
-   2jPvxFL+FgWmJBVlqWbB+bCo9i6Gnb+w3+OKPlyWfNGmt6Nnt1A4zLEdg
-   mWe2zhSL6dak+dcA/WBDI5v99dJx+H7+7zy7S9d4L4TzxfF8VH18ZfL4+
-   rBuih8e8O1KhUITDrrPBM4wT2D8rcQ/elkpcuJEkSwuM4ncz49j8oZ/9c
-   kcmCep6qVzdpz/VgRrjEt34zFVkrtMs3dNYAqySXBVS9Ssg0WFUFIOW5P
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10783"; a="434265920"
+  t=1690382526; x=1721918526;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=ZxC6gwU9yWXdN1PqA4ssVDQ/brLW7zgoTQ9uUdeKKU0=;
+  b=YGTAty6qe2KoxsufowERzMEv90MeNvzx/g0Isz5AwL2k773qtPVWbJkf
+   ltrPfnXVv0gKmLrgyBc+VupmH2z+/P/rrXw8BvDH0R8b2N6G6Ehl9rC4T
+   pbyQTbC5u8o4FDNEd/KiHaSblrpW+Zpl3IOxfJrKJLMOJnsbECuMrwwan
+   27LADtK7QBxbZTHJwbUZw1sTfVLE37w0Afyn18Ax/lno2Dra58vEfDRVf
+   MBpHtPns02M/tw5VypDSWgUBs2CFnAjetcd58yyWIqENdlTetvSAavKhR
+   j/k2l7Z/SmRPnKHRpt32iPT0b9jDYEkYeeDwvGiwFYrQ7+QPgSx2N+Uzz
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10783"; a="371645477"
 X-IronPort-AV: E=Sophos;i="6.01,232,1684825200"; 
-   d="scan'208";a="434265920"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2023 05:23:32 -0700
+   d="scan'208";a="371645477"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2023 07:42:05 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10783"; a="761629553"
+X-IronPort-AV: E=McAfee;i="6600,9927,10783"; a="756270101"
 X-IronPort-AV: E=Sophos;i="6.01,232,1684825200"; 
-   d="scan'208";a="761629553"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 26 Jul 2023 05:23:30 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 86CB912B; Wed, 26 Jul 2023 15:23:39 +0300 (EEST)
+   d="scan'208";a="756270101"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga008.jf.intel.com with ESMTP; 26 Jul 2023 07:42:02 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qOfiD-00BKUL-0p;
+        Wed, 26 Jul 2023 17:42:01 +0300
+Date:   Wed, 26 Jul 2023 17:42:00 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] serial: core: Simplify uart_get_rs485_mode()
-Date:   Wed, 26 Jul 2023 15:23:35 +0300
-Message-Id: <20230726122335.14187-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.40.0.1.gaa8946217a0b
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Ruihong Luo <colorsu1922@gmail.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        stable@vger.kernel.org, luoruihong@xiaomi.com,
+        weipengliang@xiaomi.com, wengjinfei@xiaomi.com
+Subject: Re: [PATCH v4] serial: 8250_dw: Preserve original value of DLF
+ register
+Message-ID: <ZMEwuMLQlwABZeRo@smile.fi.intel.com>
+References: <20230713004235.35904-1-colorsu1922@gmail.com>
+ <5fac4a28-ff70-d6e6-dcee-8cb45916789@linux.intel.com>
+ <ZLFAD8lblUA6/cVd@smile.fi.intel.com>
+ <2023072546-ladies-landlord-8a6d@gregkh>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <2023072546-ladies-landlord-8a6d@gregkh>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Simplify uart_get_rs485_mode() by using temporary variable for
-the GPIO descriptor. With that, use proper type for the flags
-of the GPIO descriptor.
+On Tue, Jul 25, 2023 at 08:31:17PM +0200, Greg Kroah-Hartman wrote:
+> On Fri, Jul 14, 2023 at 03:31:11PM +0300, Andy Shevchenko wrote:
+> > On Fri, Jul 14, 2023 at 03:07:42PM +0300, Ilpo Järvinen wrote:
+> > > On Thu, 13 Jul 2023, Ruihong Luo wrote:
+> > > 
+> > > > Preserve the original value of the Divisor Latch Fraction (DLF) register.
+> > > > When the DLF register is modified without preservation, it can disrupt
+> > > > the baudrate settings established by firmware or bootloader, leading to
+> > > > data corruption and the generation of unreadable or distorted characters.
+> > > > 
+> > > > Fixes: 701c5e73b296 ("serial: 8250_dw: add fractional divisor support")
+> > 
+> > > You forgot to add:
+> > > 
+> > > Cc: stable@vger.kernel.org
+> > 
+> > It's there. Just not in the commit message. It's fine.
+> 
+> No it isn't, that's not how to have a patch added to the stable tree, as
+> my form letter says:
+> 
+> <formletter>
+> 
+> This is not the correct way to submit patches for inclusion in the
+> stable kernel tree.  Please read:
+>     https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+> for how to do this properly.
+> 
+> </formletter>
+> 
+> I'll go fix it up by hand...
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/serial_core.c | 30 ++++++++++++------------------
- 1 file changed, 12 insertions(+), 18 deletions(-)
+Good to know, thank you for the clarification!
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 831d033611e6..1eab3abd955a 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3565,9 +3565,10 @@ int uart_get_rs485_mode(struct uart_port *port)
- {
- 	struct serial_rs485 *rs485conf = &port->rs485;
- 	struct device *dev = port->dev;
-+	enum gpiod_flags dflags;
-+	struct gpio_desc *desc;
- 	u32 rs485_delay[2];
- 	int ret;
--	int rx_during_tx_gpio_flag;
- 
- 	ret = device_property_read_u32_array(dev, "rs485-rts-delay",
- 					     rs485_delay, 2);
-@@ -3606,26 +3607,19 @@ int uart_get_rs485_mode(struct uart_port *port)
- 	 * bus participants enable it, no communication is possible at all.
- 	 * Works fine for short cables and users may enable for longer cables.
- 	 */
--	port->rs485_term_gpio = devm_gpiod_get_optional(dev, "rs485-term",
--							GPIOD_OUT_LOW);
--	if (IS_ERR(port->rs485_term_gpio)) {
--		ret = PTR_ERR(port->rs485_term_gpio);
--		port->rs485_term_gpio = NULL;
--		return dev_err_probe(dev, ret, "Cannot get rs485-term-gpios\n");
--	}
-+	desc = devm_gpiod_get_optional(dev, "rs485-term", GPIOD_OUT_LOW);
-+	if (IS_ERR(desc))
-+		return dev_err_probe(dev, PTR_ERR(desc), "Cannot get rs485-term-gpios\n");
-+	port->rs485_term_gpio = desc;
- 	if (port->rs485_term_gpio)
- 		port->rs485_supported.flags |= SER_RS485_TERMINATE_BUS;
- 
--	rx_during_tx_gpio_flag = (rs485conf->flags & SER_RS485_RX_DURING_TX) ?
--				 GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
--	port->rs485_rx_during_tx_gpio = devm_gpiod_get_optional(dev,
--								"rs485-rx-during-tx",
--								rx_during_tx_gpio_flag);
--	if (IS_ERR(port->rs485_rx_during_tx_gpio)) {
--		ret = PTR_ERR(port->rs485_rx_during_tx_gpio);
--		port->rs485_rx_during_tx_gpio = NULL;
--		return dev_err_probe(dev, ret, "Cannot get rs485-rx-during-tx-gpios\n");
--	}
-+	dflags = (rs485conf->flags & SER_RS485_RX_DURING_TX) ?
-+		 GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
-+	desc = devm_gpiod_get_optional(dev, "rs485-rx-during-tx", dflags);
-+	if (IS_ERR(desc))
-+		return dev_err_probe(dev, PTR_ERR(desc), "Cannot get rs485-rx-during-tx-gpios\n");
-+	port->rs485_rx_during_tx_gpio = desc;
- 
- 	return 0;
- }
+
 -- 
-2.40.0.1.gaa8946217a0b
+With Best Regards,
+Andy Shevchenko
+
 
