@@ -2,80 +2,86 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D28B0C41513
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Jul 2023 20:39:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D81C001DC
+	for <linux-serial@archiver.kernel.org>; Thu, 27 Jul 2023 09:14:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229984AbjGZUjB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Jul 2023 16:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59678 "EHLO
+        id S232664AbjG0JOY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 27 Jul 2023 05:14:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjGZUi6 (ORCPT
+        with ESMTP id S234677AbjG0JN0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Jul 2023 16:38:58 -0400
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B99212F
-        for <linux-serial@vger.kernel.org>; Wed, 26 Jul 2023 13:38:54 -0700 (PDT)
-Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-565893ef956so357223eaf.0
-        for <linux-serial@vger.kernel.org>; Wed, 26 Jul 2023 13:38:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690403934; x=1691008734;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=A8/T6DJX/3wv1BC8DhRFtQNRzsSzmfoIuUvWC3HeVoI=;
-        b=gVw3IMpi5m/1hZFYxI6KBMEBICo2xWOyQZVgus5Flgz/k1ZuYUVMk0yMROQ7Orl8EM
-         MtXnljyreJjIS+QnTizHo6wUwFB+UxkMmQfhPrILxSs+hX/E6gnE3lmGn75fooUN8oY1
-         Em8jIDG954Ewarv8uXpfx2LFmo+QcTaSqyn23QTKvCNR2okfdKG68m7FMIH1poaS3zwV
-         6t/m0WA2zZ1+W+tEyPWCEAy4EUwJJJ4p6xq1tmjQE7wJQ3huhLl8sjx8dsX4tRVFZK8z
-         bU2VmtxUJeaUr7ZNK+u3M28S6d7T6r5Xi1oCp9doI78PCdh2gJdaqwWii8sqQS2ac4qR
-         PbWA==
-X-Gm-Message-State: ABy/qLbXpDY6UC2+A+flPfB9o7hJLRyo2I9Xhi7B+cIyp+IuM/z4LUPw
-        ZctnhSY9/2vmDqukwMNk3ru8SAVu7Z2OOqra7ZxFlpOMGk1d
-X-Google-Smtp-Source: APBJJlGdJHXoNxgmq9ObjtPT/NLsIT7+Lda0f4Gws9gtz2pu+1cHJ9AjIhw4YlfXSucl86UHvr0WCk1zlcO5XANSCBhBc36Ps9RO
+        Thu, 27 Jul 2023 05:13:26 -0400
+Received: from mgamail.intel.com (unknown [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D114B449A;
+        Thu, 27 Jul 2023 02:05:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1690448704; x=1721984704;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=T+ltj6/n0zItDURuD6zDq9RQiKC3xwEfEl0V4qLQniA=;
+  b=ip1Ud8RXkfTLVAGOPqQ7Qi4pVLbS09NzArxcaf0r7ZaN6qOOctFr8+Rh
+   RLggmbWIFzWB1Ahly9vth/JcGlOglWf1mfAV9nbTcv1szzM1XuvzOLEjm
+   4z9yMsaY4VsmDh1/OVI2x+TUeBW8+aQhpa/Z3qrcRR3motIwUjbW08unb
+   zrhyvRPsOxR8frR1D/NXb2FCf1nRBAxa9+Lbw1hsztRaULLv01xgykmG/
+   9Mwl0kziqF+g4+nOYPOgkNeKE8ejIkjjJxYQDBNEzhBFr4x818D/PCiOy
+   DDSWvdnIayEjvo/6mcrbpOJz2eHWZ7BgbJzcZA5rSw060JoLg8gGK0Vwz
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10783"; a="365716691"
+X-IronPort-AV: E=Sophos;i="6.01,234,1684825200"; 
+   d="scan'208";a="365716691"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2023 02:05:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10783"; a="1057645029"
+X-IronPort-AV: E=Sophos;i="6.01,234,1684825200"; 
+   d="scan'208";a="1057645029"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga005.fm.intel.com with ESMTP; 27 Jul 2023 02:05:02 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 9195724F; Thu, 27 Jul 2023 12:05:11 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Dan Carpenter <dan.carpenter@linaro.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] serial: core: Replace strncmp()+strlen() with plain strcmp()
+Date:   Thu, 27 Jul 2023 12:05:07 +0300
+Message-Id: <20230727090507.81962-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.40.0.1.gaa8946217a0b
 MIME-Version: 1.0
-X-Received: by 2002:a05:6870:d8b2:b0:1bb:84d0:5b8d with SMTP id
- dv50-20020a056870d8b200b001bb84d05b8dmr826402oab.6.1690403934002; Wed, 26 Jul
- 2023 13:38:54 -0700 (PDT)
-Date:   Wed, 26 Jul 2023 13:38:53 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000036333060169d6a8@google.com>
-Subject: [syzbot] Monthly serial report (Jul 2023)
-From:   syzbot <syzbot+list2f20ebac1d924d54d3c4@syzkaller.appspotmail.com>
-To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello serial maintainers/developers,
+There is no sense to call strlen() ahead of strncmp().
+The same effect can be achieved by calling strcmp() directly.
+Replace strncmp()+strlen() with plain strcmp().
 
-This is a 31-day syzbot report for the serial subsystem.
-All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/serial
-
-During the period, 0 new issues were detected and 0 were fixed.
-In total, 3 issues are still open and 4 have been fixed so far.
-
-Some of the still happening issues:
-
-Ref Crashes Repro Title
-<1> 591     Yes   KMSAN: uninit-value in n_tty_receive_buf_common (2)
-                  https://syzkaller.appspot.com/bug?extid=b68d24ad0de64bdba684
-<2> 49      Yes   BUG: soft lockup in tx
-                  https://syzkaller.appspot.com/bug?extid=5e87db90e68fbc4707c6
-<3> 15      Yes   general protection fault in serial8250_tx_chars
-                  https://syzkaller.appspot.com/bug?extid=837b8c9032c053262db8
-
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/tty/serial/serial_base_bus.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-To disable reminders for individual bugs, reply with the following command:
-#syz set <Ref> no-reminders
+diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
+index 6ff59c89d867..bd056e6dca2f 100644
+--- a/drivers/tty/serial/serial_base_bus.c
++++ b/drivers/tty/serial/serial_base_bus.c
+@@ -21,9 +21,7 @@ static bool serial_base_initialized;
+ 
+ static int serial_base_match(struct device *dev, struct device_driver *drv)
+ {
+-	int len = strlen(drv->name);
+-
+-	return !strncmp(dev_name(dev), drv->name, len);
++	return !strcmp(dev_name(dev), drv->name);
+ }
+ 
+ static struct bus_type serial_base_bus_type = {
+-- 
+2.40.0.1.gaa8946217a0b
 
-To change bug's subsystems, reply with:
-#syz set <Ref> subsystems: new-subsystem
-
-You may send multiple commands in a single email message.
