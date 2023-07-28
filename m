@@ -2,218 +2,213 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6B0CC41513
-	for <linux-serial@archiver.kernel.org>; Thu, 27 Jul 2023 17:03:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98098EB64DD
+	for <linux-serial@archiver.kernel.org>; Fri, 28 Jul 2023 07:15:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232159AbjG0RDZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 Jul 2023 13:03:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37420 "EHLO
+        id S233920AbjG1HPj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 28 Jul 2023 03:15:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231287AbjG0RDT (ORCPT
+        with ESMTP id S233160AbjG1HPg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 Jul 2023 13:03:19 -0400
-Received: from mgamail.intel.com (unknown [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924972701;
-        Thu, 27 Jul 2023 10:03:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690477396; x=1722013396;
-  h=date:from:to:cc:subject:message-id;
-  bh=+Ww5693C/UDK3tNyftzRZzJEBm3+QYIP8agAOrPSnmo=;
-  b=UQC21rs0sA3nUsSLXSnFr3h+Gue4L8qLB/eO/dl8ZCRGfNurFSNWMO/K
-   m80atDWVgi31+k/s4VxHmDHAOys0p0ZETcjnnv5X9Vjp3aKdC9H8bFn8o
-   IF2W/3+5+0noE96ahQk7NcJDIKUYDo/ysN7lwasfvtBItt4w6Mf4Y3q9h
-   yKknzXzULOnzgGU5vTQhzqNO7b8hAc0bUAG7SnjLYwOkybRC/kU/BkjP3
-   5dr0DcB0LmcAJx9sqOSVAGqbmoUQy4+hhpbItmTZUXxpDlkDvlSVQ961E
-   9LmoqGuO/PgFa72qyaU87FfB/leKd606h1J55v9v5DGdZ+6ehcuvhmm30
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10784"; a="353285657"
-X-IronPort-AV: E=Sophos;i="6.01,235,1684825200"; 
-   d="scan'208";a="353285657"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2023 10:01:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10784"; a="900928144"
-X-IronPort-AV: E=Sophos;i="6.01,235,1684825200"; 
-   d="scan'208";a="900928144"
-Received: from lkp-server02.sh.intel.com (HELO 953e8cd98f7d) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 27 Jul 2023 10:01:25 -0700
-Received: from kbuild by 953e8cd98f7d with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1qP4Mf-0002RL-0A;
-        Thu, 27 Jul 2023 17:01:25 +0000
-Date:   Fri, 28 Jul 2023 01:01:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Linux Memory Management List <linux-mm@kvack.org>,
-        linux-s390@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [linux-next:master] BUILD REGRESSION
- 451cc82bd11eb6a374f4dbcfc1cf007eafea91ab
-Message-ID: <202307280106.CXKJsML9-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+        Fri, 28 Jul 2023 03:15:36 -0400
+Received: from mx1.sberdevices.ru (mx1.sberdevices.ru [37.18.73.165])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA7362703;
+        Fri, 28 Jul 2023 00:15:30 -0700 (PDT)
+Received: from p-infra-ksmg-sc-msk01 (localhost [127.0.0.1])
+        by mx1.sberdevices.ru (Postfix) with ESMTP id 2A0A010000B;
+        Fri, 28 Jul 2023 10:15:29 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru 2A0A010000B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1690528529;
+        bh=tjFRdoC0YQTuiVRI/wa1w2TMkVFq1VJlUunzcx1UuUE=;
+        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:From;
+        b=QDe6rbSryTd2Txc2wFEcj9aLUGsgPTiubY//kR4VfN7TcGqUGvHVvQTAVxz7LHI3W
+         Lcn4w09u6SGRW8hpkQNLtaFcGGnHsyiYU0x5FGXQcmhFURAGF8uoppMHuTQSohuEb2
+         ucq96lMC8/9TlByS0NHxD3q9FV5wIfbY4YlZoTWY29Mjepa+HZlOvch+4d2G5eRUgK
+         X7DDpGQ7sJ0KS+lPU1SngcnmlXgaZtAC0ioOjT9DfpiusI3uBqY7jtOjE0+Kkhq9Ru
+         ysjN2a1H0yz3fJlDO4eetMusvFJph19nOA7urB7FvDwoR8x3sOxLtzM1Mv6ttXfli0
+         IoEafzOxtMNsw==
+Received: from p-i-exch-sc-m01.sberdevices.ru (p-i-exch-sc-m01.sberdevices.ru [172.16.192.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1.sberdevices.ru (Postfix) with ESMTPS;
+        Fri, 28 Jul 2023 10:15:29 +0300 (MSK)
+Received: from localhost.localdomain (100.64.160.123) by
+ p-i-exch-sc-m01.sberdevices.ru (172.16.192.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.30; Fri, 28 Jul 2023 10:15:05 +0300
+From:   Dmitry Rokosov <ddrokosov@sberdevices.ru>
+To:     <gregkh@linuxfoundation.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <neil.armstrong@linaro.org>, <jbrunet@baylibre.com>,
+        <jirislaby@kernel.org>, <khilman@baylibre.com>,
+        <martin.blumenstingl@googlemail.com>
+CC:     <kelvin.zhang@amlogic.com>, <xianwei.zhao@amlogic.com>,
+        <kernel@sberdevices.ru>, <rockosov@gmail.com>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Dmitry Rokosov <ddrokosov@sberdevices.ru>
+Subject: [PATCH v1] tty: serial: meson: refactor objects definition for different devnames
+Date:   Fri, 28 Jul 2023 10:15:22 +0300
+Message-ID: <20230728071522.17503-1-ddrokosov@sberdevices.ru>
+X-Mailer: git-send-email 2.36.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [100.64.160.123]
+X-ClientProxiedBy: p-i-exch-sc-m01.sberdevices.ru (172.16.192.107) To
+ p-i-exch-sc-m01.sberdevices.ru (172.16.192.107)
+X-KSMG-Rule-ID: 10
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Lua-Profiles: 178796 [Jul 22 2023]
+X-KSMG-AntiSpam-Version: 5.9.59.0
+X-KSMG-AntiSpam-Envelope-From: DDRokosov@sberdevices.ru
+X-KSMG-AntiSpam-Rate: 0
+X-KSMG-AntiSpam-Status: not_detected
+X-KSMG-AntiSpam-Method: none
+X-KSMG-AntiSpam-Auth: dkim=none
+X-KSMG-AntiSpam-Info: LuaCore: 525 525 723604743bfbdb7e16728748c3fa45e9eba05f7d, {Tracking_uf_ne_domains}, {Tracking_from_domain_doesnt_match_to}, FromAlignment: s, ApMailHostAddress: 100.64.160.123
+X-MS-Exchange-Organization-SCL: -1
+X-KSMG-AntiSpam-Interceptor-Info: scan successful
+X-KSMG-AntiPhishing: Clean, bases: 2023/07/23 10:45:00
+X-KSMG-LinksScanning: Clean, bases: 2023/07/23 10:46:00
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 2.0.1.6960, bases: 2023/07/23 08:49:00 #21663637
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-branch HEAD: 451cc82bd11eb6a374f4dbcfc1cf007eafea91ab  Add linux-next specific files for 20230727
+Macroses for name generation are not useful. They hide the real place
+for object declaration. Instead, use direct names such as
+'meson_uart_driver_*' and 'meson_serial_console_*' for all objects.
 
-Error/Warning reports:
+Additionally, rename 'MESON_SERIAL_CONSOLE_DEFINE()' to
+'MESON_SERIAL_CONSOLE()', and 'MESON_UART_DRIVER_DEFINE()' to
+'MESON_UART_DRIVER()' to simplify the code.
 
-https://lore.kernel.org/oe-kbuild-all/202307181450.sfbuvMf5-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202307251531.p8ZLFTMZ-lkp@intel.com
+Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+Suggested-by: Neil Armstrong <neil.armstrong@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
 
-Error/Warning: (recently discovered and may have been fixed)
+In the patch series located at [1], the standard tty devname 'ttyS0' was
+introduced for the A1 and S4 SoC families. Despite being merged into the
+tty-next branch, a few TODOs flagged by Neil remained unresolved.
 
-../lib/gcc/loongarch64-linux/12.3.0/plugin/include/config/loongarch/loongarch-opts.h:31:10: fatal error: loongarch-def.h: No such file or directory
-arch/s390/kernel/mcount.S:133:2: error: instruction requires: distinct-ops
-drivers/regulator/max77857-regulator.c:312:16: error: initializer element is not a compile-time constant
-drivers/regulator/max77857-regulator.c:56:24: warning: cast to smaller integer type 'enum max77857_id' from 'void *' [-Wvoid-pointer-to-enum-cast]
+As a result, there is follow-up patchset to eliminate all the issues
+mentioned by Neil in one of the previous patchsets [2].
 
-Unverified Error/Warning (likely false positive, please contact us if interested):
+Links:
+    [1] https://lore.kernel.org/lkml/20230705181833.16137-1-ddrokosov@sberdevices.ru
+    [2] https://lore.kernel.org/lkml/606ed182-14b8-4c8f-37d3-21971ec71f38@linaro.org
 
-drivers/tty/serial/8250/8250_men_mcb.c:218 serial_8250_men_mcb_probe() warn: unsigned 'data->line[i]' is never less than zero.
+---
+ drivers/tty/serial/meson_uart.c | 39 ++++++++++++++-------------------
+ 1 file changed, 16 insertions(+), 23 deletions(-)
 
-Error/Warning ids grouped by kconfigs:
-
-gcc_recent_errors
-|-- i386-randconfig-m021-20230727
-|   `-- drivers-tty-serial-8250_men_mcb.c-serial_8250_men_mcb_probe()-warn:unsigned-data-line-i-is-never-less-than-zero.
-|-- loongarch-allmodconfig
-|   `-- lib-gcc-loongarch64-linux-..-plugin-include-config-loongarch-loongarch-opts.h:fatal-error:loongarch-def.h:No-such-file-or-directory
-`-- loongarch-randconfig-r005-20230727
-    `-- lib-gcc-loongarch64-linux-..-plugin-include-config-loongarch-loongarch-opts.h:fatal-error:loongarch-def.h:No-such-file-or-directory
-clang_recent_errors
-|-- arm64-randconfig-r032-20230727
-|   |-- drivers-regulator-max77857-regulator.c:error:initializer-element-is-not-a-compile-time-constant
-|   `-- drivers-regulator-max77857-regulator.c:warning:cast-to-smaller-integer-type-enum-max77857_id-from-void
-|-- i386-randconfig-i006-20230727
-|   `-- drivers-regulator-max77857-regulator.c:error:initializer-element-is-not-a-compile-time-constant
-|-- i386-randconfig-r006-20230727
-|   `-- drivers-regulator-max77857-regulator.c:error:initializer-element-is-not-a-compile-time-constant
-`-- s390-randconfig-r016-20230726
-    `-- arch-s390-kernel-mcount.S:error:instruction-requires:distinct-ops
-
-elapsed time: 722m
-
-configs tested: 113
-configs skipped: 7
-
-tested configs:
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-alpha                randconfig-r012-20230727   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arc                  randconfig-r036-20230727   gcc  
-arc                  randconfig-r043-20230727   gcc  
-arm                              allmodconfig   gcc  
-arm                              allyesconfig   gcc  
-arm                         axm55xx_defconfig   gcc  
-arm                                 defconfig   gcc  
-arm                      footbridge_defconfig   gcc  
-arm                       omap2plus_defconfig   gcc  
-arm                          pxa168_defconfig   clang
-arm                  randconfig-r033-20230727   gcc  
-arm                  randconfig-r046-20230727   clang
-arm                        shmobile_defconfig   gcc  
-arm                       versatile_defconfig   clang
-arm64                            allyesconfig   gcc  
-arm64                               defconfig   gcc  
-arm64                randconfig-r032-20230727   clang
-csky                                defconfig   gcc  
-hexagon              randconfig-r011-20230727   clang
-hexagon              randconfig-r041-20230727   clang
-hexagon              randconfig-r045-20230727   clang
-i386                             allyesconfig   gcc  
-i386                              debian-10.3   gcc  
-i386                                defconfig   gcc  
-i386                 randconfig-i001-20230727   clang
-i386                 randconfig-i002-20230727   clang
-i386                 randconfig-i003-20230727   clang
-i386                 randconfig-i004-20230727   clang
-i386                 randconfig-i005-20230727   clang
-i386                 randconfig-i006-20230727   clang
-i386                 randconfig-i011-20230727   gcc  
-i386                 randconfig-i012-20230727   gcc  
-i386                 randconfig-i013-20230727   gcc  
-i386                 randconfig-i014-20230727   gcc  
-i386                 randconfig-i015-20230727   gcc  
-i386                 randconfig-i016-20230727   gcc  
-i386                 randconfig-r006-20230727   clang
-i386                 randconfig-r013-20230727   gcc  
-i386                 randconfig-r021-20230727   gcc  
-i386                 randconfig-r023-20230727   gcc  
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                           defconfig   gcc  
-loongarch            randconfig-r005-20230727   gcc  
-m68k                             allmodconfig   gcc  
-m68k                             allyesconfig   gcc  
-m68k                                defconfig   gcc  
-microblaze           randconfig-r031-20230727   gcc  
-mips                             allmodconfig   gcc  
-mips                             allyesconfig   gcc  
-mips                     cu1000-neo_defconfig   clang
-nios2                               defconfig   gcc  
-nios2                randconfig-r024-20230727   gcc  
-nios2                randconfig-r033-20230726   gcc  
-parisc                           allyesconfig   gcc  
-parisc                              defconfig   gcc  
-parisc               randconfig-r004-20230727   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-powerpc                    klondike_defconfig   gcc  
-powerpc                      ppc40x_defconfig   gcc  
-powerpc                      ppc44x_defconfig   clang
-powerpc                         wii_defconfig   gcc  
-riscv                            allmodconfig   gcc  
-riscv                             allnoconfig   gcc  
-riscv                            allyesconfig   gcc  
-riscv                               defconfig   gcc  
-riscv                randconfig-r016-20230727   gcc  
-riscv                randconfig-r034-20230727   clang
-riscv                randconfig-r042-20230727   gcc  
-riscv                          rv32_defconfig   gcc  
-s390                             allmodconfig   gcc  
-s390                             allyesconfig   gcc  
-s390                          debug_defconfig   gcc  
-s390                                defconfig   gcc  
-s390                 randconfig-r044-20230727   gcc  
-sh                               allmodconfig   gcc  
-sh                   randconfig-r003-20230727   gcc  
-sh                           se7750_defconfig   gcc  
-sparc                            allyesconfig   gcc  
-sparc                               defconfig   gcc  
-sparc                randconfig-r026-20230727   gcc  
-um                               alldefconfig   gcc  
-um                               allmodconfig   clang
-um                                allnoconfig   clang
-um                               allyesconfig   clang
-um                                  defconfig   gcc  
-um                             i386_defconfig   gcc  
-um                   randconfig-r035-20230727   gcc  
-um                           x86_64_defconfig   gcc  
-x86_64                           allyesconfig   gcc  
-x86_64                              defconfig   gcc  
-x86_64                                  kexec   gcc  
-x86_64               randconfig-r014-20230727   gcc  
-x86_64               randconfig-x001-20230727   gcc  
-x86_64               randconfig-x002-20230727   gcc  
-x86_64               randconfig-x003-20230727   gcc  
-x86_64               randconfig-x004-20230727   gcc  
-x86_64               randconfig-x005-20230727   gcc  
-x86_64               randconfig-x006-20230727   gcc  
-x86_64               randconfig-x011-20230727   clang
-x86_64               randconfig-x012-20230727   clang
-x86_64               randconfig-x013-20230727   clang
-x86_64               randconfig-x014-20230727   clang
-x86_64               randconfig-x015-20230727   clang
-x86_64               randconfig-x016-20230727   clang
-x86_64                          rhel-8.3-rust   clang
-xtensa               randconfig-r002-20230727   gcc  
-
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index 84cf10b0ca5c..790d910dafa5 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -76,13 +76,8 @@
+ #define AML_UART_POLL_USEC		5
+ #define AML_UART_TIMEOUT_USEC		10000
+ 
+-#define MESON_UART_DRIVER(_devname) meson_uart_driver_##_devname
+-
+-#define MESON_UART_DRIVER_DECLARE(_devname) \
+-	static struct uart_driver MESON_UART_DRIVER(_devname)
+-
+-MESON_UART_DRIVER_DECLARE(ttyAML);
+-MESON_UART_DRIVER_DECLARE(ttyS);
++static struct uart_driver meson_uart_driver_ttyAML;
++static struct uart_driver meson_uart_driver_ttyS;
+ 
+ static struct uart_port *meson_ports[AML_UART_PORT_NUM];
+ 
+@@ -617,21 +612,19 @@ static int meson_serial_console_setup(struct console *co, char *options)
+ 	return uart_set_options(port, co, baud, parity, bits, flow);
+ }
+ 
+-#define MESON_SERIAL_CONSOLE(_devname) meson_serial_console_##_devname
+-
+-#define MESON_SERIAL_CONSOLE_DEFINE(_devname)				\
+-	static struct console MESON_SERIAL_CONSOLE(_devname) = {	\
++#define MESON_SERIAL_CONSOLE(_devname)					\
++	static struct console meson_serial_console_##_devname = {	\
+ 		.name		= __stringify(_devname),		\
+ 		.write		= meson_serial_console_write,		\
+ 		.device		= uart_console_device,			\
+ 		.setup		= meson_serial_console_setup,		\
+ 		.flags		= CON_PRINTBUFFER,			\
+ 		.index		= -1,					\
+-		.data		= &MESON_UART_DRIVER(_devname),		\
++		.data		= &meson_uart_driver_##_devname,	\
+ 	}
+ 
+-MESON_SERIAL_CONSOLE_DEFINE(ttyAML);
+-MESON_SERIAL_CONSOLE_DEFINE(ttyS);
++MESON_SERIAL_CONSOLE(ttyAML);
++MESON_SERIAL_CONSOLE(ttyS);
+ 
+ static void meson_serial_early_console_write(struct console *co,
+ 					     const char *s,
+@@ -656,13 +649,13 @@ meson_serial_early_console_setup(struct earlycon_device *device, const char *opt
+ OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
+ 		    meson_serial_early_console_setup);
+ 
+-#define MESON_SERIAL_CONSOLE_PTR(_devname) (&MESON_SERIAL_CONSOLE(_devname))
++#define MESON_SERIAL_CONSOLE_PTR(_devname) (&meson_serial_console_##_devname)
+ #else
+-#define MESON_SERIAL_CONSOLE_PTR(_devname)	(NULL)
++#define MESON_SERIAL_CONSOLE_PTR(_devname) (NULL)
+ #endif
+ 
+-#define MESON_UART_DRIVER_DEFINE(_devname)  \
+-	static struct uart_driver MESON_UART_DRIVER(_devname) = {	\
++#define MESON_UART_DRIVER(_devname)					\
++	static struct uart_driver meson_uart_driver_##_devname = {	\
+ 		.owner		= THIS_MODULE,				\
+ 		.driver_name	= "meson_uart",				\
+ 		.dev_name	= __stringify(_devname),		\
+@@ -670,8 +663,8 @@ OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
+ 		.cons		= MESON_SERIAL_CONSOLE_PTR(_devname),	\
+ 	}
+ 
+-MESON_UART_DRIVER_DEFINE(ttyAML);
+-MESON_UART_DRIVER_DEFINE(ttyS);
++MESON_UART_DRIVER(ttyAML);
++MESON_UART_DRIVER(ttyS);
+ 
+ static int meson_uart_probe_clocks(struct platform_device *pdev,
+ 				   struct uart_port *port)
+@@ -700,7 +693,7 @@ static int meson_uart_probe_clocks(struct platform_device *pdev,
+ static struct uart_driver *meson_uart_current(const struct meson_uart_data *pd)
+ {
+ 	return (pd && pd->uart_driver) ?
+-		pd->uart_driver : &MESON_UART_DRIVER(ttyAML);
++		pd->uart_driver : &meson_uart_driver_ttyAML;
+ }
+ 
+ static int meson_uart_probe(struct platform_device *pdev)
+@@ -819,12 +812,12 @@ static struct meson_uart_data meson_g12a_uart_data = {
+ };
+ 
+ static struct meson_uart_data meson_a1_uart_data = {
+-	.uart_driver = &MESON_UART_DRIVER(ttyS),
++	.uart_driver = &meson_uart_driver_ttyS,
+ 	.has_xtal_div2 = false,
+ };
+ 
+ static struct meson_uart_data meson_s4_uart_data = {
+-	.uart_driver = &MESON_UART_DRIVER(ttyS),
++	.uart_driver = &meson_uart_driver_ttyS,
+ 	.has_xtal_div2 = true,
+ };
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.36.0
+
