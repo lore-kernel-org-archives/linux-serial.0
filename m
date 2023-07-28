@@ -2,99 +2,111 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7482C0015E
-	for <linux-serial@archiver.kernel.org>; Fri, 28 Jul 2023 10:29:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 417ECC04FDF
+	for <linux-serial@archiver.kernel.org>; Fri, 28 Jul 2023 11:32:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235538AbjG1K3O (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 28 Jul 2023 06:29:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52972 "EHLO
+        id S234451AbjG1LcX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 28 Jul 2023 07:32:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235577AbjG1K2x (ORCPT
+        with ESMTP id S229601AbjG1LcV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 28 Jul 2023 06:28:53 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50BB3C3C;
-        Fri, 28 Jul 2023 03:27:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1690540078; x=1722076078;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=p7AIHi1RFTLbAcGhYX039b6uV3j7YsXbjesnlpkDBZM=;
-  b=1+QMwg34GnOl+IiCtHs85/1uF29kZdmA44sQ/hSoOOBKtplI0zEAAO/T
-   nFfJDQTBWRL3jMt807sI40xBD9YFs1IjXncKxl3M8kuiuQnqQ6GKKHWtt
-   hLX13p7n06Dp2aFXQlbgHb6w0wlZyzpgyfTVACVqfH/SwThq7RsRVH1Dd
-   VJzpliN2O0G/MvXEE1JpcnQ/zAwUMnuBvi1U6ys95cliBlafODj0JshC2
-   jFg9nH1/xRLjNirDaEeEVykDNtBPIzfMfTLdDqaIhJSH7rFuShR6TsQa4
-   AOPnRsZhGh40oVAZeT7X4Xc1mqlSbT6e2ll6ggn096j3P3qFcM8GnQEbn
-   A==;
-X-IronPort-AV: E=Sophos;i="6.01,237,1684825200"; 
-   d="scan'208";a="238401551"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Jul 2023 03:27:39 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 28 Jul 2023 03:27:39 -0700
-Received: from che-lt-i67070.amer.actel.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Fri, 28 Jul 2023 03:27:33 -0700
-From:   Varshini Rajendran <varshini.rajendran@microchip.com>
-To:     <richard.genoud@gmail.com>, <radu_nicolae.pirea@upb.ro>,
-        <gregkh@linuxfoundation.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
-        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <claudiu.beznea@microchip.com>, <linux-spi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <varshini.rajendran@microchip.com>
-Subject: [PATCH v3 25/50] dt-bindings: serial: atmel,at91-usart: add compatible for sam9x7
-Date:   Fri, 28 Jul 2023 15:57:30 +0530
-Message-ID: <20230728102730.266557-1-varshini.rajendran@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 28 Jul 2023 07:32:21 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D407E3A97
+        for <linux-serial@vger.kernel.org>; Fri, 28 Jul 2023 04:32:18 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id 5b1f17b1804b1-3fbc59de0e2so20569625e9.3
+        for <linux-serial@vger.kernel.org>; Fri, 28 Jul 2023 04:32:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1690543937; x=1691148737;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+F++azjWGXR/zzwHylDS5zKIIkHfazjhU13uoVBCItI=;
+        b=AMnkE9WuW7Szt2FbkP+Jy7gImGXicajY9/8nwcsWkrUwhvEUvP7ntHlB4esXk3K8U4
+         0i6OvKn+5MRV/VvX72hQyI3+TxZnb6cRN+AlFwW7eoAEroux8iHcBnUojCtWchKA78jl
+         SY5zsDpCGe7jFTiAVJefedCk62+1uRl1DCOGCwjHw3AcI7lBvwuS6yZmpan72Z124GkA
+         HzuwDVmYWrxvejLrwD5DxuP7Te8Jagm+rkOkbxUiWNpEVTWGGoMyhL+3cuwlWbXGDr0B
+         nKgA+tN0Fx8WjnGsZEpQTGxaPoJXDju/pS2BVUhj93heIIMcoWmwxaaXx1t90HNC7HAh
+         LaVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690543937; x=1691148737;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+F++azjWGXR/zzwHylDS5zKIIkHfazjhU13uoVBCItI=;
+        b=gDN8rUIVc6Vtr1TwBKxjwjRjwNJ+KR97IoGPAVPyMCgAqrVvkSU3RHzZ3tRofT+k5B
+         LWpDp1xV//coa5e9FwpS3y9V/Vfe0+mwHyCL6SKDjvdJij0sTwv7+mV1aWmIDwkPUqMX
+         EDzG0Cr+l7xYcJ3UZEGdT6gk4nMfkwfItEUmze6eRg7SynrwyV3PUmn+e2QKuMLVNgot
+         sOjldC83spWbgkbCcYtCkW0IasCkT6oh1nl/FfMH1gTOdlCZ87LwRehM1O2r0SRsKA+P
+         wbQDv1moPjmUzeUDfI8wDvnOY2tS+RbNtmngRM6087Bri1lis7CS1uCFaxxDVh5gebuk
+         acsA==
+X-Gm-Message-State: ABy/qLZnCGdUJCcHbU/m/TQ3hHhB0w1VX/BA5guYgMvzuH1Nt0hHi7Iv
+        3y+qJqeDpgter5SRO07r8EVe8g==
+X-Google-Smtp-Source: APBJJlGEkskLn7KheQI/2hh6B8RIJum6fk3h7Nk91C/s4cct7x2FxIqw26uj1lGmelJK6ucVYjt8Ng==
+X-Received: by 2002:adf:e94f:0:b0:314:3611:3e54 with SMTP id m15-20020adfe94f000000b0031436113e54mr1907446wrn.9.1690543937250;
+        Fri, 28 Jul 2023 04:32:17 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.223.104])
+        by smtp.gmail.com with ESMTPSA id m14-20020adffa0e000000b003177e9b2e64sm4508524wrr.90.2023.07.28.04.32.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Jul 2023 04:32:16 -0700 (PDT)
+Message-ID: <c0792cfd-db4f-7153-0775-824912277908@linaro.org>
+Date:   Fri, 28 Jul 2023 13:32:12 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [PATCH v3 00/50] Add support for sam9x7 SoC family
+Content-Language: en-US
+To:     Varshini Rajendran <varshini.rajendran@microchip.com>,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
+        mturquette@baylibre.com, sboyd@kernel.org,
+        herbert@gondor.apana.org.au, davem@davemloft.net, vkoul@kernel.org,
+        andi.shyti@kernel.org, tglx@linutronix.de, maz@kernel.org,
+        lee@kernel.org, ulf.hansson@linaro.org, tudor.ambarus@linaro.org,
+        miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linus.walleij@linaro.org, sre@kernel.org, p.zabel@pengutronix.de,
+        olivia@selenic.com, a.zummo@towertech.it,
+        radu_nicolae.pirea@upb.ro, richard.genoud@gmail.com,
+        gregkh@linuxfoundation.org, lgirdwood@gmail.com,
+        broonie@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net,
+        linux@armlinux.org.uk, durai.manickamkr@microchip.com,
+        andrew@lunn.ch, jerry.ray@microchip.com, andre.przywara@arm.com,
+        mani@kernel.org, alexandre.torgue@st.com,
+        gregory.clement@bootlin.com, arnd@arndb.de, rientjes@google.com,
+        deller@gmx.de, 42.hyeyoo@gmail.com, vbabka@suse.cz,
+        mripard@kernel.org, mihai.sain@microchip.com,
+        codrin.ciubotariu@microchip.com, eugen.hristev@collabora.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org
+References: <20230728102223.265216-1-varshini.rajendran@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230728102223.265216-1-varshini.rajendran@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add sam9x7 compatible to DT bindings documentation.
+On 28/07/2023 12:22, Varshini Rajendran wrote:
+> This patch series adds support for the new SoC family - sam9x7.
+>  - The device tree, configs and drivers are added
+>  - Clock driver for sam9x7 is added
+>  - Support for basic peripherals is added
+>  - Target board SAM9X75 Curiosity is added
+> 
 
-Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
----
- .../devicetree/bindings/serial/atmel,at91-usart.yaml     | 9 +++++++++
- 1 file changed, 9 insertions(+)
+Your threading is absolutely broken making it difficult to review and apply.
 
-diff --git a/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
-index 30b2131b5860..42644d0f1104 100644
---- a/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
-+++ b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
-@@ -17,6 +17,7 @@ properties:
-           - atmel,at91rm9200-usart
-           - atmel,at91sam9260-usart
-           - microchip,sam9x60-usart
-+          - microchip,sam9x7-usart
-       - items:
-           - const: atmel,at91rm9200-dbgu
-           - const: atmel,at91rm9200-usart
-@@ -28,6 +29,14 @@ properties:
-           - const: microchip,sam9x60-usart
-           - const: atmel,at91sam9260-dbgu
-           - const: atmel,at91sam9260-usart
-+      - items:
-+          - const: microchip,sam9x7-usart
-+          - const: atmel,at91sam9260-usart
-+      - items:
-+          - const: microchip,sam9x7-dbgu
-+          - const: microchip,sam9x7-usart
-+          - const: atmel,at91sam9260-dbgu
-+          - const: atmel,at91sam9260-usart
- 
-   reg:
-     maxItems: 1
--- 
-2.25.1
+Best regards,
+Krzysztof
 
