@@ -2,104 +2,86 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B3EC001DE
-	for <linux-serial@archiver.kernel.org>; Sun, 30 Jul 2023 11:07:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA4E8C001DC
+	for <linux-serial@archiver.kernel.org>; Sun, 30 Jul 2023 11:55:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229956AbjG3LHu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 30 Jul 2023 07:07:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58440 "EHLO
+        id S229600AbjG3LzI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 30 Jul 2023 07:55:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbjG3LHt (ORCPT
+        with ESMTP id S229437AbjG3Lyl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 30 Jul 2023 07:07:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8F710F9;
-        Sun, 30 Jul 2023 04:07:48 -0700 (PDT)
+        Sun, 30 Jul 2023 07:54:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B1C10D3;
+        Sun, 30 Jul 2023 04:54:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 595BC60BF0;
-        Sun, 30 Jul 2023 11:07:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E806C433C7;
-        Sun, 30 Jul 2023 11:07:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2AC060C3B;
+        Sun, 30 Jul 2023 11:54:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE6A4C433C8;
+        Sun, 30 Jul 2023 11:54:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1690715267;
-        bh=z7eCUNy3iX2XjR7jBZ8ZyKqURba5wd64yA/7cw1uRu4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=oQeTHige9Ng+x7/VSMgXlGj43t8WjH1TEmwgST0515wsU7Fui7LCCfIzVKIwt6j5Z
-         7eYzpP5jOscVG1UNbfOJtlgF1UT//sMz46AhJ/gdis3bjnsZBFnmOCbyc/+9boVVpw
-         Jklhh9aMtZ4I/bUcNpWsDSmTt3f9byCOeJIbB4Ew=
-Date:   Sun, 30 Jul 2023 13:07:45 +0200
+        s=korg; t=1690718079;
+        bh=h8Bvd9Q9O5xEzuY+S6AbRK4A8J3G/3ih916psi4y4Mw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aakay1r0mgVUNYwWeOi5r4R712O1sc2xu15UTf1h++oj3ZC+BYFuY+Hsd4IqCWJGR
+         Pxb15jQ+Pio9tesL6UQSleR4PFiPC2Av06upYAcAbsVlnxwOgEQArRW/AipK1uR2Uh
+         280oAuEahqPoj+wjQ2ShAnmj4GgIQ+tcFcvSL7G0=
+Date:   Sun, 30 Jul 2023 13:54:36 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver fixes for 6.5-rc4
-Message-ID: <ZMZEgcrNeJRvKlY-@kroah.com>
+To:     Zhang Shurong <zhang_shurong@foxmail.com>
+Cc:     patrice.chotard@foss.st.com, jirislaby@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: st-asc: Fix to check return value of
+ platform_get_irq() in asc_init_port()
+Message-ID: <2023073028-pantyhose-replace-b960@gregkh>
+References: <tencent_1FBC566A2B186CCC634D4109F54D62F2C605@qq.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <tencent_1FBC566A2B186CCC634D4109F54D62F2C605@qq.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The following changes since commit fdf0eaf11452d72945af31804e2a1048ee1b574c:
+On Sun, Jul 23, 2023 at 12:28:47PM +0800, Zhang Shurong wrote:
+> The platform_get_irq might be failed and return a negative result. So
+> there should have an error handling code.
+> 
+> Fixed this by adding an error handling code.
+> 
+> Fixes: c4b058560762 ("serial:st-asc: Add ST ASC driver.")
+> Signed-off-by: Zhang Shurong <zhang_shurong@foxmail.com>
+> ---
+>  drivers/tty/serial/st-asc.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+> index aa471c9c24d9..2f1807fa9bdb 100644
+> --- a/drivers/tty/serial/st-asc.c
+> +++ b/drivers/tty/serial/st-asc.c
+> @@ -688,9 +688,13 @@ static int asc_init_port(struct asc_port *ascport,
+>  	port->ops	= &asc_uart_ops;
+>  	port->fifosize	= ASC_FIFO_SIZE;
+>  	port->dev	= &pdev->dev;
+> -	port->irq	= platform_get_irq(pdev, 0);
+>  	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_ST_ASC_CONSOLE);
+>  
+> +	ret = platform_get_irq(pdev, 0);
+> +	if (ret < 0)
+> +		return ret;
+> +	port->irq = ret;
+> +
+>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>  	port->membase = devm_ioremap_resource(&pdev->dev, res);
+>  	if (IS_ERR(port->membase))
+> -- 
+> 2.41.0
+> 
 
-  Linux 6.5-rc2 (2023-07-16 15:10:37 -0700)
+Does not apply to my tty-next tree :(
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.5-rc4
-
-for you to fetch changes up to 748c5ea8b8796ae8ee80b8d3a3d940570b588d59:
-
-  serial: 8250_dw: Preserve original value of DLF register (2023-07-25 20:31:31 +0200)
-
-----------------------------------------------------------------
-TTY/Serial fixes for 6.5-rc4
-
-Here are some small TTY and serial driver fixes for 6.5-rc4 for some
-reported problems.  Included in here is:
-  - TIOCSTI fix for braille readers
-  - documentation fix for minor numbers
-  - MAINTAINERS update for new serial files in -rc1
-  - minor serial driver fixes for reported problems
-
-All of these have been in linux-next with no reported problems.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Biju Das (1):
-      tty: serial: sh-sci: Fix sleeping in atomic context
-
-Chaoyuan Peng (1):
-      tty: n_gsm: fix UAF in gsm_cleanup_mux
-
-Randy Dunlap (1):
-      Documentation: devices.txt: reconcile serial/ucc_uart minor numers
-
-Ruihong Luo (1):
-      serial: 8250_dw: Preserve original value of DLF register
-
-Samuel Holland (1):
-      serial: sifive: Fix sifive_serial_console_setup() section
-
-Samuel Thibault (1):
-      TIOCSTI: always enable for CAP_SYS_ADMIN
-
-Tony Lindgren (1):
-      MAINTAINERS: Update TTY layer for lists and recently added files
-
- Documentation/admin-guide/devices.txt | 2 +-
- MAINTAINERS                           | 6 ++++++
- drivers/tty/n_gsm.c                   | 4 +++-
- drivers/tty/serial/8250/8250_dwlib.c  | 6 ++++--
- drivers/tty/serial/sh-sci.c           | 2 +-
- drivers/tty/serial/sifive.c           | 2 +-
- drivers/tty/serial/ucc_uart.c         | 2 +-
- drivers/tty/tty_io.c                  | 2 +-
- 8 files changed, 18 insertions(+), 8 deletions(-)
