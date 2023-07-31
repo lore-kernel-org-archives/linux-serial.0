@@ -2,77 +2,172 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11E1AC04A94
-	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 08:04:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F8E4C001DF
+	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 08:05:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231784AbjGaIEh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 31 Jul 2023 04:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
+        id S231592AbjGaIFS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 31 Jul 2023 04:05:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231700AbjGaIEL (ORCPT
+        with ESMTP id S231768AbjGaIES (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 31 Jul 2023 04:04:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4143212A;
-        Mon, 31 Jul 2023 01:02:49 -0700 (PDT)
+        Mon, 31 Jul 2023 04:04:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6234E1713;
+        Mon, 31 Jul 2023 01:02:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CCFA660F6D;
-        Mon, 31 Jul 2023 08:02:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A87FC433C7;
-        Mon, 31 Jul 2023 08:02:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FC4E60E8B;
+        Mon, 31 Jul 2023 08:02:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DE88C433C9;
+        Mon, 31 Jul 2023 08:02:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1690790567;
-        bh=sz0W8TWwDCZSDXacy5qFJ8iQI502iNXILpE0ymuNVfw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=tHPODxfZybRK3y1v2GMX5qW2Chercg8j0kZLxqtYuf4czbNMsMrljy0T4IY/CZUvo
-         0rwPYkpCnCMzd3HyJtmhzOmqgASIBO2L9YZ/hrJOE+9+vjNOsVXzvL8IQDv6NF+BNw
-         b5VKtXikVdg/M+RXn/15gjCNUfhYrLl1qBL2lDvMHNDm4wYIjCPzAQcmKjlWFw4ECG
-         H9zPdvPT7G+SO038mok1a2ug8jTfMqcAQJN18AYY5OWgR5uXUoTPNcejZNq6ZDvVvA
-         tHOcY7BakONs8OObQyR6OInxJaMfwgdHxDZqNTxZmF/7AB6uPKsJS1hKM1Nsd9dfcZ
-         KjrIb4ILGEH7Q==
+        s=k20201202; t=1690790570;
+        bh=iL+/iMkVyPpitc+31cYvs+uU/ZxRswV5+Wl1H0RRVAc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kk8c18DLN8tYP5izkZrkGSFDhJrb7SeDZ2SJdORAd4uCe9aBlAuCYU4UpsXxCh1q7
+         nOQqzUT+G08qFcjMIIQ/pOIvdg2x0Z+65ju3cD8Z+9D7HHt45CFK7yUbIff/GI+JbK
+         ijOILqb8o3+xF0Hiu5rwe3S86z9WyK1cqGTOMzVsiCFUu9Vm45Zg3OkfMjMOneoNtJ
+         rZx01dTozdMNkVlKNj58/YqEESOGn3K9obS8F6L6epGPzJ9H5vi6fK1AOnbQ1PS/My
+         AW78bF4WFORdBUyYEnCIV1MFh9lCHEl9Nif7xvBcpLJgjF4IG8zEiSJU8vAtd/YTMf
+         7eGVYk0787PsA==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 00/10] tty: minor cleanups
-Date:   Mon, 31 Jul 2023 10:02:34 +0200
-Message-ID: <20230731080244.2698-1-jirislaby@kernel.org>
+        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org
+Subject: [PATCH 02/10] Bluetooth: rfcomm: remove casts from tty->driver_data
+Date:   Mon, 31 Jul 2023 10:02:36 +0200
+Message-ID: <20230731080244.2698-3-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20230731080244.2698-1-jirislaby@kernel.org>
+References: <20230731080244.2698-1-jirislaby@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This is another round of minor cleanups in the tty/serial/related
-drivers.
+tty->driver_data is 'void *', so there is no need to cast from that.
+Therefore remove the casts and assign the pointer directly.
 
-Jiri Slaby (SUSE) (10):
-  serial: move WARN_ON() in uart_write() to the condition
-  Bluetooth: rfcomm: remove casts from tty->driver_data
-  tty: hvsi: remove an extra variable from hvsi_write()
-  input: serport: remove casts from tty->disc_data
-  can: slcan: remove casts from tty->disc_data
-  serial: altera_jtaguart: switch status to u32
-  speakup: switch to unsigned iterator in spk_ttyio_receive_buf2()
-  misc: ti-st: remove forward declarations and make st_int_recv() static
-  misc: ti-st: remove ptr from recv functions
-  misc: ti-st: don't check for tty data == NULL
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Cc: Marcel Holtmann <marcel@holtmann.org>
+Cc: Johan Hedberg <johan.hedberg@gmail.com>
+Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc: linux-bluetooth@vger.kernel.org
+---
+ net/bluetooth/rfcomm/tty.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
- drivers/accessibility/speakup/spk_ttyio.c |  2 +-
- drivers/input/serio/serport.c             | 10 +++++-----
- drivers/misc/ti-st/st_core.c              | 11 +++--------
- drivers/misc/ti-st/st_kim.c               |  9 +--------
- drivers/net/can/slcan/slcan-core.c        |  8 ++++----
- drivers/tty/hvc/hvsi.c                    |  3 +--
- drivers/tty/serial/altera_jtaguart.c      |  2 +-
- drivers/tty/serial/serial_core.c          |  8 ++------
- net/bluetooth/rfcomm/tty.c                | 22 +++++++++++-----------
- 9 files changed, 29 insertions(+), 46 deletions(-)
-
+diff --git a/net/bluetooth/rfcomm/tty.c b/net/bluetooth/rfcomm/tty.c
+index 5697df9d4394..d73eec146529 100644
+--- a/net/bluetooth/rfcomm/tty.c
++++ b/net/bluetooth/rfcomm/tty.c
+@@ -771,7 +771,7 @@ static int rfcomm_tty_open(struct tty_struct *tty, struct file *filp)
+ 
+ static void rfcomm_tty_close(struct tty_struct *tty, struct file *filp)
+ {
+-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
++	struct rfcomm_dev *dev = tty->driver_data;
+ 
+ 	BT_DBG("tty %p dev %p dlc %p opened %d", tty, dev, dev->dlc,
+ 						dev->port.count);
+@@ -781,7 +781,7 @@ static void rfcomm_tty_close(struct tty_struct *tty, struct file *filp)
+ 
+ static int rfcomm_tty_write(struct tty_struct *tty, const unsigned char *buf, int count)
+ {
+-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
++	struct rfcomm_dev *dev = tty->driver_data;
+ 	struct rfcomm_dlc *dlc = dev->dlc;
+ 	struct sk_buff *skb;
+ 	int sent = 0, size;
+@@ -810,7 +810,7 @@ static int rfcomm_tty_write(struct tty_struct *tty, const unsigned char *buf, in
+ 
+ static unsigned int rfcomm_tty_write_room(struct tty_struct *tty)
+ {
+-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
++	struct rfcomm_dev *dev = tty->driver_data;
+ 	int room = 0;
+ 
+ 	if (dev && dev->dlc)
+@@ -864,7 +864,7 @@ static void rfcomm_tty_set_termios(struct tty_struct *tty,
+ 	u8 baud, data_bits, stop_bits, parity, x_on, x_off;
+ 	u16 changes = 0;
+ 
+-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
++	struct rfcomm_dev *dev = tty->driver_data;
+ 
+ 	BT_DBG("tty %p termios %p", tty, old);
+ 
+@@ -996,7 +996,7 @@ static void rfcomm_tty_set_termios(struct tty_struct *tty,
+ 
+ static void rfcomm_tty_throttle(struct tty_struct *tty)
+ {
+-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
++	struct rfcomm_dev *dev = tty->driver_data;
+ 
+ 	BT_DBG("tty %p dev %p", tty, dev);
+ 
+@@ -1005,7 +1005,7 @@ static void rfcomm_tty_throttle(struct tty_struct *tty)
+ 
+ static void rfcomm_tty_unthrottle(struct tty_struct *tty)
+ {
+-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
++	struct rfcomm_dev *dev = tty->driver_data;
+ 
+ 	BT_DBG("tty %p dev %p", tty, dev);
+ 
+@@ -1014,7 +1014,7 @@ static void rfcomm_tty_unthrottle(struct tty_struct *tty)
+ 
+ static unsigned int rfcomm_tty_chars_in_buffer(struct tty_struct *tty)
+ {
+-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
++	struct rfcomm_dev *dev = tty->driver_data;
+ 
+ 	BT_DBG("tty %p dev %p", tty, dev);
+ 
+@@ -1029,7 +1029,7 @@ static unsigned int rfcomm_tty_chars_in_buffer(struct tty_struct *tty)
+ 
+ static void rfcomm_tty_flush_buffer(struct tty_struct *tty)
+ {
+-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
++	struct rfcomm_dev *dev = tty->driver_data;
+ 
+ 	BT_DBG("tty %p dev %p", tty, dev);
+ 
+@@ -1052,7 +1052,7 @@ static void rfcomm_tty_wait_until_sent(struct tty_struct *tty, int timeout)
+ 
+ static void rfcomm_tty_hangup(struct tty_struct *tty)
+ {
+-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
++	struct rfcomm_dev *dev = tty->driver_data;
+ 
+ 	BT_DBG("tty %p dev %p", tty, dev);
+ 
+@@ -1061,7 +1061,7 @@ static void rfcomm_tty_hangup(struct tty_struct *tty)
+ 
+ static int rfcomm_tty_tiocmget(struct tty_struct *tty)
+ {
+-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
++	struct rfcomm_dev *dev = tty->driver_data;
+ 
+ 	BT_DBG("tty %p dev %p", tty, dev);
+ 
+@@ -1070,7 +1070,7 @@ static int rfcomm_tty_tiocmget(struct tty_struct *tty)
+ 
+ static int rfcomm_tty_tiocmset(struct tty_struct *tty, unsigned int set, unsigned int clear)
+ {
+-	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
++	struct rfcomm_dev *dev = tty->driver_data;
+ 	struct rfcomm_dlc *dlc = dev->dlc;
+ 	u8 v24_sig;
+ 
 -- 
 2.41.0
 
