@@ -2,158 +2,97 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA560C001DF
-	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 03:55:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 352C7C001DF
+	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 05:24:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229641AbjGaDzb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 30 Jul 2023 23:55:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58536 "EHLO
+        id S229944AbjGaFX7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 31 Jul 2023 01:23:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229707AbjGaDza (ORCPT
+        with ESMTP id S229815AbjGaFX6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 30 Jul 2023 23:55:30 -0400
-Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B6BE1;
-        Sun, 30 Jul 2023 20:55:28 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VoXjlgy_1690775723;
-Received: from 30.97.48.66(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VoXjlgy_1690775723)
-          by smtp.aliyun-inc.com;
-          Mon, 31 Jul 2023 11:55:24 +0800
-Message-ID: <6f1be046-a415-d592-1174-df99ad764f8e@linux.alibaba.com>
-Date:   Mon, 31 Jul 2023 11:55:51 +0800
+        Mon, 31 Jul 2023 01:23:58 -0400
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 855C4E5C;
+        Sun, 30 Jul 2023 22:23:57 -0700 (PDT)
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-3128fcd58f3so4343655f8f.1;
+        Sun, 30 Jul 2023 22:23:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690781036; x=1691385836;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=2vryNojv3RqjDA3V2jxqovwYCSLoP+ZZsIS+1uL/2TU=;
+        b=D+G/sJssXvdXleqyJBK36Iz11j94E4qG9ogg0YCx2njQ+RtlMhdGdtbXmT7r1CQMp1
+         uBNcLXMSGzRDUIxhy0HVa4b7HxPmfdvcIEQacL9wo5/e8oCB3vGOyMmwgy/x3LSAWpWv
+         wnpROvW2re70lG2GqpAslcX5VyFHQFXeGh6dSD+5Cf+oVhvRsajOl2+nT8PKw2yKThAY
+         PPHoXreo7TqIQ32s5pUMizCWIcfXvTOC2ZyktqFppASNDylmJkZi0r7qQl7EqJDGQMfa
+         38weOmu5k7KwN02/rkmVY2wpDL5h/voO7dmFEy5WUTg6EfEdjwtwzpVFQUtH6JSr+ASe
+         jFwQ==
+X-Gm-Message-State: ABy/qLYS1KFMiZmzEq+eH7AgPZ5f1Uml25yUJx7xwNejqFTBBQ7Qe/R4
+        ykJWp/zqSylsyIW5kwZdw0E=
+X-Google-Smtp-Source: APBJJlGZFto5h5aEn4GUW+22teWY2mjLbDVudBPWDjv23/yptlAKhUCpNS8yPb9HjeH8O6X+1Ml5mQ==
+X-Received: by 2002:a5d:500f:0:b0:317:5747:b955 with SMTP id e15-20020a5d500f000000b003175747b955mr5130068wrt.17.1690781035733;
+        Sun, 30 Jul 2023 22:23:55 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id k8-20020a056000004800b003141a3c4353sm11889813wrx.30.2023.07.30.22.23.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 30 Jul 2023 22:23:55 -0700 (PDT)
+Message-ID: <51a7f260-59f9-2cd4-9d49-484df00fb3b2@kernel.org>
+Date:   Mon, 31 Jul 2023 07:23:54 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.13.0
-Subject: Re: [PATCH V3 1/2] serial: sprd: Assign sprd_port after initialized
- to avoid wrong access
-To:     Chunyan Zhang <chunyan.zhang@unisoc.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-serial@vger.kernel.org, Orson Zhai <orsonzhai@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20230725064053.235448-1-chunyan.zhang@unisoc.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <20230725064053.235448-1-chunyan.zhang@unisoc.com>
+Subject: Re: [PATCH] tty: serial: fsl_lpuart: Clear the error flags by writing
+ 1 for lpuart32 platforms
+Content-Language: en-US
+To:     Sherry Sun <sherry.sun@nxp.com>, gregkh@linuxfoundation.org,
+        tomonori.sakita@sord.co.jp, atsushi.nemoto@sord.co.jp
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+References: <20230731015053.15150-1-sherry.sun@nxp.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20230731015053.15150-1-sherry.sun@nxp.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On 31. 07. 23, 3:50, Sherry Sun wrote:
+> Do not read the data register to clear the error flags for lpuart32
+> platforms, the additional read may cause the receive FIFO underflow
+> since the DMA has already read the data register.
+> Now all lpuart32 platforms support write 1 to clear those error bits,
 
+What does this "Now" mean? Will this change break some older platforms?
 
-On 7/25/2023 2:40 PM, Chunyan Zhang wrote:
-> The global pointer 'sprd_port' may not zero when sprd_probe returns
-> failure, that is a risk for sprd_port to be accessed afterward, and
-> may lead to unexpected errors.
+> let's use this method to better clear the error flags.
 > 
-> For example:
-> 
-> There are two UART ports, UART1 is used for console and configured in
-> kernel command line, i.e. "console=";
-> 
-> The UART1 probe failed and the memory allocated to sprd_port[1] was
-> released, but sprd_port[1] was not set to NULL;
-> 
-> In UART2 probe, the same virtual address was allocated to sprd_port[2],
-> and UART2 probe process finally will go into sprd_console_setup() to
-> register UART1 as console since it is configured as preferred console
-> (filled to console_cmdline[]), but the console parameters (sprd_port[1])
-> belong to UART2.
-> 
-> So move the sprd_port[] assignment to where the port already initialized
-> can avoid the above issue.
-> 
-> Fixes: b7396a38fb28 ("tty/serial: Add Spreadtrum sc9836-uart driver support")
-> Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
-
-LGTM.
-Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-
+> Fixes: 42b68768e51b ("serial: fsl_lpuart: DMA support for 32-bit variant")
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
 > ---
-> V3:
-> - Call uart_unregister_driver() only when the 'sprd_ports_num' decreases to 0;
-> - Add calling sprd_rx_free_buf() instread of sprd_remove() under clean_up lable.
+>   drivers/tty/serial/fsl_lpuart.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> V2:
-> - Leave sprd_remove() to keep the unrelated code logic the same.
-> ---
->   drivers/tty/serial/sprd_serial.c | 25 +++++++++++++++++--------
->   1 file changed, 17 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-> index b58f51296ace..fc1377029021 100644
-> --- a/drivers/tty/serial/sprd_serial.c
-> +++ b/drivers/tty/serial/sprd_serial.c
-> @@ -1106,7 +1106,7 @@ static bool sprd_uart_is_console(struct uart_port *uport)
->   static int sprd_clk_init(struct uart_port *uport)
->   {
->   	struct clk *clk_uart, *clk_parent;
-> -	struct sprd_uart_port *u = sprd_port[uport->line];
-> +	struct sprd_uart_port *u = container_of(uport, struct sprd_uart_port, port);
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> index f6644c5989d3..f72e1340b47d 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -1120,8 +1120,8 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
+>   		unsigned long sr = lpuart32_read(&sport->port, UARTSTAT);
 >   
->   	clk_uart = devm_clk_get(uport->dev, "uart");
->   	if (IS_ERR(clk_uart)) {
-> @@ -1149,22 +1149,22 @@ static int sprd_probe(struct platform_device *pdev)
->   {
->   	struct resource *res;
->   	struct uart_port *up;
-> +	struct sprd_uart_port *sport;
->   	int irq;
->   	int index;
->   	int ret;
+>   		if (sr & (UARTSTAT_PE | UARTSTAT_FE)) {
+> -			/* Read DR to clear the error flags */
+> -			lpuart32_read(&sport->port, UARTDATA);
+> +			/* Clear the error flags */
+> +			lpuart32_write(&sport->port, sr, UARTSTAT);
 >   
->   	index = of_alias_get_id(pdev->dev.of_node, "serial");
-> -	if (index < 0 || index >= ARRAY_SIZE(sprd_port)) {
-> +	if (index < 0 || index >= UART_NR_MAX) {
->   		dev_err(&pdev->dev, "got a wrong serial alias id %d\n", index);
->   		return -EINVAL;
->   	}
->   
-> -	sprd_port[index] = devm_kzalloc(&pdev->dev, sizeof(*sprd_port[index]),
-> -					GFP_KERNEL);
-> -	if (!sprd_port[index])
-> +	sport = devm_kzalloc(&pdev->dev, sizeof(*sport), GFP_KERNEL);
-> +	if (!sport)
->   		return -ENOMEM;
->   
-> -	up = &sprd_port[index]->port;
-> +	up = &sport->port;
->   	up->dev = &pdev->dev;
->   	up->line = index;
->   	up->type = PORT_SPRD;
-> @@ -1195,7 +1195,7 @@ static int sprd_probe(struct platform_device *pdev)
->   	 * Allocate one dma buffer to prepare for receive transfer, in case
->   	 * memory allocation failure at runtime.
->   	 */
-> -	ret = sprd_rx_alloc_buf(sprd_port[index]);
-> +	ret = sprd_rx_alloc_buf(sport);
->   	if (ret)
->   		return ret;
->   
-> @@ -1206,14 +1206,23 @@ static int sprd_probe(struct platform_device *pdev)
->   			return ret;
->   		}
->   	}
-> +
->   	sprd_ports_num++;
-> +	sprd_port[index] = sport;
->   
->   	ret = uart_add_one_port(&sprd_uart_driver, up);
->   	if (ret)
-> -		sprd_remove(pdev);
-> +		goto clean_port;
->   
->   	platform_set_drvdata(pdev, up);
->   
-> +	return 0;
-> +
-> +clean_port:
-> +	sprd_port[index] = NULL;
-> +	if (--sprd_ports_num == 0)
-> +		uart_unregister_driver(&sprd_uart_driver);
-> +	sprd_rx_free_buf(sport);
->   	return ret;
->   }
->   
+>   			if (sr & UARTSTAT_PE)
+>   				sport->port.icount.parity++;
+
+thanks,
+-- 
+js
+suse labs
+
