@@ -2,46 +2,45 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9C08C41513
-	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 08:05:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD0F7C001DC
+	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 08:05:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231773AbjGaIFT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 31 Jul 2023 04:05:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56248 "EHLO
+        id S231831AbjGaIFU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 31 Jul 2023 04:05:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231789AbjGaIET (ORCPT
+        with ESMTP id S231794AbjGaIEU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 31 Jul 2023 04:04:19 -0400
+        Mon, 31 Jul 2023 04:04:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1CD4269D;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2ABD2696;
         Mon, 31 Jul 2023 01:02:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2101060F78;
-        Mon, 31 Jul 2023 08:02:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1509FC433C9;
-        Mon, 31 Jul 2023 08:02:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 312DC60F70;
+        Mon, 31 Jul 2023 08:02:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63489C433C7;
+        Mon, 31 Jul 2023 08:02:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1690790574;
-        bh=w3zM+yrYXpgkmIfhHdq6oR6kOfQGs28UkmPFxSAMjzY=;
+        s=k20201202; t=1690790572;
+        bh=CFCUO1q2jsK74UC2bwVz7miuEtn6Vz1wrsnbjpoYBoE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mlBTAlXEYvnrKw+rnkk64Ny16BNI5CFUXkoWxTIm9o2vopncA27bmBEf3aaf4/NzG
-         fCWedJkUbWt2tBE6EtlDgiEnm18UYa5en7G8C9j27TZOPkl1Q/bHnntBds0RMAwTUk
-         6k2D1EF6SeKGa6xdNJfjXZr7eIfi4Esj9SnsQVthYExQpDdGL98vrSducz/rlXlIKq
-         8GOM2tFaFwokemSZBrHWoJeAVCEQ4Oud77p7XN7QQ/+XOJkEPQ5dSSRkhU5nIi87hN
-         G8vgJQ3u8T4Y3rF/1zJbjaUeiteVdY8RLuKcBgQLR4ua0+2t3lW+uDnL9K83DXg0bc
-         Lrrcs+P6TeRgw==
+        b=Zxkxs5HlsQ22+uk6HxRfSnXVnkXQrgnRL0xYAU9zOhLxxVwnTltHXn3xkW5TIMaVA
+         s2/ZkpjZZrsy8Yg47g2Yf6J1CiFdQWjIc8LClZCxbWSWsIx4BJBwYCTFv++rMjad0T
+         bHa+WlPcEaoyuTPupPQn+KQzuiUUJlUe85LatZEg8/M7dVgtlx5YSXL2fBjUXkCtGR
+         EeZxkxnt3IiL1s2w3nP4JNwjGIP/y34/uWg1PvxyRzGHy6wyoIRPcvYu2IFVYnJvdK
+         Mm7KNXDq6EX4oP1juDpt5FVQYe8qiOOzMV4TeS1zxXzR4gLmFiHzfb0/A9xEBtChFX
+         qmetPBluQldWA==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-input@vger.kernel.org
-Subject: [PATCH 04/10] input: serport: remove casts from tty->disc_data
-Date:   Mon, 31 Jul 2023 10:02:38 +0200
-Message-ID: <20230731080244.2698-5-jirislaby@kernel.org>
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH 03/10] tty: hvsi: remove an extra variable from hvsi_write()
+Date:   Mon, 31 Jul 2023 10:02:37 +0200
+Message-ID: <20230731080244.2698-4-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230731080244.2698-1-jirislaby@kernel.org>
 References: <20230731080244.2698-1-jirislaby@kernel.org>
@@ -51,65 +50,34 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tty->disc_data is 'void *', so there is no need to cast from that.
-Therefore remove the casts and assign the pointer directly.
+'source' is the same as 'buf'. Rename the parameter ('buf') to
+'source' and drop the local variable.
+
+Likely, the two were introduced to have a different type. But 'char' and
+'unsigned char' are the same in the kernel for a long time.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: linux-input@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
 ---
- drivers/input/serio/serport.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/tty/hvc/hvsi.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/input/serio/serport.c b/drivers/input/serio/serport.c
-index 7f7ef0e3a749..a5d8953f5904 100644
---- a/drivers/input/serio/serport.c
-+++ b/drivers/input/serio/serport.c
-@@ -103,7 +103,7 @@ static int serport_ldisc_open(struct tty_struct *tty)
- 
- static void serport_ldisc_close(struct tty_struct *tty)
- {
--	struct serport *serport = (struct serport *) tty->disc_data;
-+	struct serport *serport = tty->disc_data;
- 
- 	kfree(serport);
+diff --git a/drivers/tty/hvc/hvsi.c b/drivers/tty/hvc/hvsi.c
+index a200d01eceed..c1b8a4fd8b1e 100644
+--- a/drivers/tty/hvc/hvsi.c
++++ b/drivers/tty/hvc/hvsi.c
+@@ -905,10 +905,9 @@ static unsigned int hvsi_chars_in_buffer(struct tty_struct *tty)
  }
-@@ -117,7 +117,7 @@ static void serport_ldisc_close(struct tty_struct *tty)
- static void serport_ldisc_receive(struct tty_struct *tty,
- 		const unsigned char *cp, const char *fp, int count)
+ 
+ static int hvsi_write(struct tty_struct *tty,
+-		     const unsigned char *buf, int count)
++		     const unsigned char *source, int count)
  {
--	struct serport *serport = (struct serport*) tty->disc_data;
-+	struct serport *serport = tty->disc_data;
+ 	struct hvsi_struct *hp = tty->driver_data;
+-	const char *source = buf;
  	unsigned long flags;
- 	unsigned int ch_flags = 0;
- 	int i;
-@@ -161,7 +161,7 @@ static ssize_t serport_ldisc_read(struct tty_struct * tty, struct file * file,
- 				  unsigned char *kbuf, size_t nr,
- 				  void **cookie, unsigned long offset)
- {
--	struct serport *serport = (struct serport*) tty->disc_data;
-+	struct serport *serport = tty->disc_data;
- 	struct serio *serio;
- 
- 	if (test_and_set_bit(SERPORT_BUSY, &serport->flags))
-@@ -245,7 +245,7 @@ static int serport_ldisc_compat_ioctl(struct tty_struct *tty,
- 
- static void serport_ldisc_hangup(struct tty_struct *tty)
- {
--	struct serport *serport = (struct serport *) tty->disc_data;
-+	struct serport *serport = tty->disc_data;
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&serport->lock, flags);
-@@ -257,7 +257,7 @@ static void serport_ldisc_hangup(struct tty_struct *tty)
- 
- static void serport_ldisc_write_wakeup(struct tty_struct * tty)
- {
--	struct serport *serport = (struct serport *) tty->disc_data;
-+	struct serport *serport = tty->disc_data;
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&serport->lock, flags);
+ 	int total = 0;
+ 	int origcount = count;
 -- 
 2.41.0
 
