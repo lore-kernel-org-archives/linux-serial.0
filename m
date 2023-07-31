@@ -2,62 +2,137 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B222C001DC
-	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 15:15:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4D40C41513
+	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 15:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbjGaPPH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 31 Jul 2023 11:15:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38246 "EHLO
+        id S231598AbjGaPcK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 31 Jul 2023 11:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbjGaPPF (ORCPT
+        with ESMTP id S229839AbjGaPcK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 31 Jul 2023 11:15:05 -0400
+        Mon, 31 Jul 2023 11:32:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B8DC3;
-        Mon, 31 Jul 2023 08:15:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E206CBF;
+        Mon, 31 Jul 2023 08:32:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BDA56117D;
-        Mon, 31 Jul 2023 15:15:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30823C433C7;
-        Mon, 31 Jul 2023 15:15:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1690816503;
-        bh=5keNSLxbAMBNVUzPnc9yXlnPrWtWTm9LDLEqarPOUGc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WJGpfPsSiMpWXm+oOwcMbYkDidV4+2yH2/iWfgHMS5W4eebVSHfCEpjjnPszMSx6h
-         0/ZkKeFjamuultpyWK8VxX+pod1LKTSZJqunKagN3mexdMIAGSLm/pfmGPn4N/QeC/
-         gadXcWmjfurfS9GHnjjuLcP11vDuHGrHt2/jCYI8=
-Date:   Mon, 31 Jul 2023 17:15:00 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/7] tty: synclink_gt: mark as BROKEN
-Message-ID: <2023073131-service-observing-ad91@gregkh>
-References: <20230731090002.15680-1-jirislaby@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7635C611A9;
+        Mon, 31 Jul 2023 15:32:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7CADC433CA;
+        Mon, 31 Jul 2023 15:32:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1690817527;
+        bh=5E06FUiid6T4vgfkLSlTscvM6X1NVs/YkUOgbv1WjZc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=AZxwYpXcjYbyuWTzscU1pa0c7ZxYX+jUX/gVXYqzo3K9Yox+xyMzJ28WqQkICXG5A
+         M47daMdHhor49bZP/Yxk7qFAeZrPM7C40B7nyUbuQax3iHE42JuidkswWCQ6XnEZr0
+         VQ0httpuVvzcDzoD/pbfsUkAqrpLfVgGrr0ojXvfly/CponzZBi73QjLX8nVNgVLy8
+         WS4LcE7PJG3xO0GjUA/zbH79lf6bX+WGchWSDUVBqA+cwN+ZqDWC8sNIghCs2s2cYY
+         nzoKmpXCiF6S+tFisvfzKQIQInXYiZgf4/qTiaQ5DjPpj8q7yFPO7361/GgAXugawF
+         orO0tNZlGDiSg==
+Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2b9ba3d6157so68619551fa.3;
+        Mon, 31 Jul 2023 08:32:07 -0700 (PDT)
+X-Gm-Message-State: ABy/qLbIt6mdSfZdOnynHk+ljsSEikG/RjRtXniu4o3D/spP2A9v7xcx
+        RH2R0QEWvGnUJWH0/EAQA3ygvtMRY2SAODYqpw==
+X-Google-Smtp-Source: APBJJlF19uImMksgUiSVsL8p6nT4gd4CeDo7zq0USsNsugz1qVA1GktuTbo0TYPWnk7rVJKuWRXVCTCNUHaM7QQCpkM=
+X-Received: by 2002:a2e:8804:0:b0:2b9:ee3e:2407 with SMTP id
+ x4-20020a2e8804000000b002b9ee3e2407mr204494ljh.38.1690817525832; Mon, 31 Jul
+ 2023 08:32:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230731090002.15680-1-jirislaby@kernel.org>
+References: <20230721161840.1393996-1-hugo@hugovil.com> <20230721161840.1393996-7-hugo@hugovil.com>
+ <CAL_JsqJpdhtnZ8FcM7kGWnM+iuDs1fWiCVgf413evbw-o8TZGQ@mail.gmail.com>
+ <20230722104724.ef0c5896c239e721794b9fe9@hugovil.com> <2023072240-supremacy-shallot-a77f@gregkh>
+ <20230724115428.d191186852c0bd0ee0d78398@hugovil.com>
+In-Reply-To: <20230724115428.d191186852c0bd0ee0d78398@hugovil.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 31 Jul 2023 09:31:53 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqL8rjwONd6UAitKik0U44BKSD6m8zbachgfq0R9oHBW8w@mail.gmail.com>
+Message-ID: <CAL_JsqL8rjwONd6UAitKik0U44BKSD6m8zbachgfq0R9oHBW8w@mail.gmail.com>
+Subject: Re: [RESEND PATCH v8 06/10] serial: sc16is7xx: fix regression with
+ GPIO configuration
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        jirislaby@kernel.org, jringle@gridpoint.com,
+        isaac.true@canonical.com, jesse.sung@canonical.com,
+        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Lech Perczak <lech.perczak@camlingroup.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jul 31, 2023 at 10:59:55AM +0200, Jiri Slaby (SUSE) wrote:
-> I did some cleanups in the driver (in this series), but then decided not
-> to go on and mark the driver as BROKEN instead. See the last patch for
-> explanation.
-> 
-> Feel free to take only the last patch. I don't assume anyone appears to
-> take care of the driver, so we will drop it sooner or later anyway. The
-> changes only demonstrate how unmaintained the driver is...
+On Mon, Jul 24, 2023 at 9:54=E2=80=AFAM Hugo Villeneuve <hugo@hugovil.com> =
+wrote:
+>
+> On Sat, 22 Jul 2023 17:15:26 +0200
+> Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> > On Sat, Jul 22, 2023 at 10:47:24AM -0400, Hugo Villeneuve wrote:
+> > > On Fri, 21 Jul 2023 13:24:19 -0600
+> > > Rob Herring <robh+dt@kernel.org> wrote:
+> > >
+> > > > On Fri, Jul 21, 2023 at 10:19=E2=80=AFAM Hugo Villeneuve <hugo@hugo=
+vil.com> wrote:
+> > > > >
+> > > > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > > > >
+> > > > > Commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem contro=
+l lines")
+> > > > > and commit 21144bab4f11 ("sc16is7xx: Handle modem status lines")
+> > > > > changed the function of the GPIOs pins to act as modem control
+> > > > > lines without any possibility of selecting GPIO function.
+> > > >
+> > > > Requiring a new DT property is not fixing a kernel regression. You
+> > > > should be returning the kernel to original behavior and then have a
+> > > > new DT property for new behavior.
+> > >
+> > > Hi Rob,
+> > > please read the entire patch history starting from V1
+> > >  and you will understand why this course of action was
+> > >  not selected.
+> >
+> > That's not going to happen, sorry, you need to explain it here, in this
+> > patch series, why a specific action is being taken over another one, as
+> > no one has time to go dig through past history, sorry.
+>
+> Hi Rob,
+> I initially submitted a patch to revert the kernel to original
+> behavior, but it created more problems because the patch was
+> unfortunately split in two separate patches, and mixed with other non
+> closely-related changes. It was also noted to me that reverting to the
+> old behavior would break things for some users.
+>
+> It was suggested to me by a more experienced kernel developer to
+> "suggest a fix, instead of hurrying a revert":
+>
+>     https://lkml.org/lkml/2023/5/17/758
 
-I'll take them all, thanks for them, as I don't want to waste the work
-you did here.  We can schedule this for deletion in a few releases as I
-doubt anyone will care :(
+Do I have to go read this to decipher the justification and reasoning?
+When Greg says "in this patch series", he means in the commit messages
+of the patches. You send v9 already and it doesn't have that. The
+patchset needs to stand on its own summarizing any relevant prior
+discussions.
 
-thanks,
+I never suggested doing a revert. Obviously, someone still wants the
+new feature. The issue is a new feature was added to the kernel, but
+you are requiring a DT change to platforms NOT using the feature. Make
+the platforms wanting the new feature to need a DT change. That's
+still not great, but it's much better to affect new platforms rather
+than old, stable platforms. The period of time that regresses is much
+smaller (a few kernel releases vs. years potentially). Of course, if
+it's just those 3 platforms and their maintainers are fine with
+needing this DT change, then that works too. But there's no evidence
+here that they are okay with it. You didn't even do the update of the
+dts files and just left them broken.
 
-greg k-h
+Rob
