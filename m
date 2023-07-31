@@ -2,238 +2,228 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4462C001E0
-	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 10:29:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B515C00528
+	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 13:55:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231967AbjGaK3i (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 31 Jul 2023 06:29:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60976 "EHLO
+        id S232828AbjGaNzv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 31 Jul 2023 09:55:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231496AbjGaK3h (ORCPT
+        with ESMTP id S232809AbjGaNzC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 31 Jul 2023 06:29:37 -0400
-Received: from mgamail.intel.com (unknown [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DC90EE;
-        Mon, 31 Jul 2023 03:29:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690799376; x=1722335376;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=qrcUzGPc/mzEUo4ZLeC0gsRlzVMa/7ucsgNmiIe/YQQ=;
-  b=ASn3gYEoYid8C1rUZnVmPZ6Sg+L0LHjpj1KyTTDvLQaz+pjRaFBKTYQm
-   irTyZj2b5b3CiWHIdsAlW+7NYs45QOpufZRuRlOXHuzQJk/ztg8TdURav
-   smKhj9cBBeaTqLmrWfppeqW2FpuJoYTkuVVKZqFJw4tTONGgXuFX3lVBF
-   2t+ZI0sX7PtBRfMH6+EdKlzl40SyZMa64ygkcNqg72OAdOSw9j67HrjPx
-   zie3FN08uC88kT+DUMVfFTEImx4QMzdlX3qQf7LG/kZ97Ay0CxI6qEh8V
-   Vw5aMznR+/ErfEKHa+D2flgfOy1hMSJ23cA1MusI1qpL5l0pRkU0351cA
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10787"; a="455353616"
-X-IronPort-AV: E=Sophos;i="6.01,244,1684825200"; 
-   d="scan'208";a="455353616"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2023 03:29:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10787"; a="818294474"
-X-IronPort-AV: E=Sophos;i="6.01,244,1684825200"; 
-   d="scan'208";a="818294474"
-Received: from naikshri-mobl7.ger.corp.intel.com (HELO localhost) ([10.252.36.230])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2023 03:29:29 -0700
-From:   Jani Nikula <jani.nikula@intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ilpo =?utf-8?Q?J=C3=A4rv?= =?utf-8?Q?inen?= 
-        <ilpo.jarvinen@linux.intel.com>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-fbdev@vger.kernel.org
-Cc:     Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Helge Deller <deller@gmx.de>, Stephen Boyd <sboyd@kernel.org>,
-        Nikita Shubin <nikita.shubin@maquefel.me>,
-        Nikita Shubin via B4 Relay 
-        <devnull+nikita.shubin.maquefel.me@kernel.org>,
-        Andi Shyti <andi.shyti@kernel.org>
-Subject: Re: [PATCH v3 1/1] drm/i915: Move abs_diff() to math.h
-In-Reply-To: <20230724082511.3225-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20230724082511.3225-1-andriy.shevchenko@linux.intel.com>
-Date:   Mon, 31 Jul 2023 13:29:26 +0300
-Message-ID: <87ila0xtkp.fsf@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Mon, 31 Jul 2023 09:55:02 -0400
+X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 31 Jul 2023 06:52:59 PDT
+Received: from mail.thorsis.com (mail.thorsis.com [92.198.35.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E791A19B0;
+        Mon, 31 Jul 2023 06:52:58 -0700 (PDT)
+Date:   Mon, 31 Jul 2023 15:35:54 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=thorsis.com; s=default;
+        t=1690810576;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:content-type:content-type:in-reply-to:in-reply-to:
+         references:references; bh=D0C9W4jLWSTvnH8GOqVr0jR88Cd4UebzZne1ky7oQew=;
+        b=MgCaJUUhtnwJoabwcOv/O2xDIrYyU6e2SrIdTvpRF6hQCBOUwM43hoGiBDHxfeOvLgytKm
+        E/s1em5jauL5/eDip6Z0a0Q4wmHaM0lHd/YUnaNq57TZAb+jQ76miKtoulqJTKefuzPPMh
+        YsK0EKUMHQKC6NxppBGQIvaQoi+KFwz6yBuWKu1lEg/FGUS2KWohgybOvHx031wiEV+pY1
+        w1sU6nGM0DHfDX4/FjJ/MiD69uxnqc+4j2tz8JpfD0MPUCv4NevSDVAmibrOwwJUaqP3p7
+        WL8TbB+VpJoKmCndRZDqIf+PGy3q9LgX0Ql1PsqQuunp4h+33rjJNlAH2JGdyw==
+From:   Alexander Dahl <ada@thorsis.com>
+To:     Durai Manickam KR <durai.manickamkr@microchip.com>
+Cc:     Hari.PrasathGE@microchip.com,
+        balamanikandan.gunasundar@microchip.com,
+        manikandan.m@microchip.com, varshini.rajendran@microchip.com,
+        dharma.b@microchip.com, nayabbasha.sayed@microchip.com,
+        balakrishnan.s@microchip.com, cristian.birsan@microchip.com,
+        nicolas.ferre@microchip.com, krzysztof.kozlowski@linaro.org,
+        alexandre.belloni@bootlin.com, davem@davemloft.net, arnd@arndb.de,
+        olof@lixom.net, soc@kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Kavyasree.Kotagiri@microchip.com, Horatiu.Vultur@microchip.com,
+        robh+dt@kernel.org, andrew@lunn.ch, michael@walle.cc,
+        jerry.ray@microchip.com, conor+dt@kernel.org,
+        jesper.nilsson@axis.com, andre.przywara@arm.com, ada@thorsis.com,
+        radu_nicolae.pirea@upb.ro, richard.genoud@gmail.com,
+        gregkh@linuxfoundation.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCHv3 2/2] ARM: dts: at91: sam9x60: fix the SOC detection
+Message-ID: <20230731-confess-prison-0ce898c937ba@ifak-system.com>
+Mail-Followup-To: Durai Manickam KR <durai.manickamkr@microchip.com>,
+        Hari.PrasathGE@microchip.com,
+        balamanikandan.gunasundar@microchip.com, manikandan.m@microchip.com,
+        varshini.rajendran@microchip.com, dharma.b@microchip.com,
+        nayabbasha.sayed@microchip.com, balakrishnan.s@microchip.com,
+        cristian.birsan@microchip.com, nicolas.ferre@microchip.com,
+        krzysztof.kozlowski@linaro.org, alexandre.belloni@bootlin.com,
+        davem@davemloft.net, arnd@arndb.de, olof@lixom.net, soc@kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Kavyasree.Kotagiri@microchip.com,
+        Horatiu.Vultur@microchip.com, robh+dt@kernel.org, andrew@lunn.ch,
+        michael@walle.cc, jerry.ray@microchip.com, conor+dt@kernel.org,
+        jesper.nilsson@axis.com, andre.przywara@arm.com,
+        radu_nicolae.pirea@upb.ro, richard.genoud@gmail.com,
+        gregkh@linuxfoundation.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org
+References: <20230718065735.10187-1-durai.manickamkr@microchip.com>
+ <20230718065735.10187-3-durai.manickamkr@microchip.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230718065735.10187-3-durai.manickamkr@microchip.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 24 Jul 2023, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> abs_diff() belongs to math.h. Move it there.
-> This will allow others to use it.
->
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Jiri Slaby <jirislaby@kernel.org> # tty/serial
+Hello Durai,
+
+Am Tue, Jul 18, 2023 at 12:27:35PM +0530 schrieb Durai Manickam KR:
+> Defining the dbgu compatible strings in the UART submodule of the
+> flexcom gives the below error log,
+> AT91: Could not find matching SoC description
+> This error arises due to defining the dbgu compatible strings to
+> the flexcom usart which is not valid because there is only one debug unit
+> in the sam9x60 SOC and it has the chipid register. The dbgu compatible
+> strings are valid only for debug usart and not valid for flexcom usart.
+> Thus removing the dbgu compatible strings in the UART submodule of the
+> flexcom for the proper SOC detection.
+> 
+> Fixes: 99c808335877 (ARM: dts: at91: sam9x60: Add missing flexcom definitions)
+> Signed-off-by: Durai Manickam KR <durai.manickamkr@microchip.com>
+
+Acked-by: Alexander Dahl <ada@thorsis.com>
+
+(The diff of the patch is identical to the diff of a quick hacked
+patch I made weeks ago for my BSP which fixed the issue.  SoC variant
+was reported correctly on serial console on boot again.  However I did
+not actually test *your* patch on my hardware (sam9x60 curiosity),
+thus Acked-by and not Tested-by.)
+
+Greets
+Alex
+
 > ---
-> v3: added tag (Jiri), removed space after a cast (fdo CI)
->  drivers/gpu/drm/i915/display/intel_dpll_mgr.c |  1 +
->  drivers/gpu/drm/i915/display/intel_dpll_mgr.h |  7 -------
-
-Acked-by: Jani Nikula <jani.nikula@intel.com>
-
-for merging the i915 parts via whichever tree is most convenient for
-you.
-
->  drivers/gpu/ipu-v3/ipu-image-convert.c        | 15 +++++++--------
->  drivers/tty/serial/omap-serial.c              |  7 +------
->  drivers/video/fbdev/core/svgalib.c            |  7 +------
->  include/linux/math.h                          |  7 +++++++
->  6 files changed, 17 insertions(+), 27 deletions(-)
->
-> diff --git a/drivers/gpu/drm/i915/display/intel_dpll_mgr.c b/drivers/gpu/drm/i915/display/intel_dpll_mgr.c
-> index 6b2d8a1e2aa9..290e856fe9e9 100644
-> --- a/drivers/gpu/drm/i915/display/intel_dpll_mgr.c
-> +++ b/drivers/gpu/drm/i915/display/intel_dpll_mgr.c
-> @@ -21,6 +21,7 @@
->   * DEALINGS IN THE SOFTWARE.
->   */
+>  arch/arm/boot/dts/microchip/sam9x60.dtsi | 26 ++++++++++++------------
+>  1 file changed, 13 insertions(+), 13 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/microchip/sam9x60.dtsi b/arch/arm/boot/dts/microchip/sam9x60.dtsi
+> index 8b53997675e7..73d570a17269 100644
+> --- a/arch/arm/boot/dts/microchip/sam9x60.dtsi
+> +++ b/arch/arm/boot/dts/microchip/sam9x60.dtsi
+> @@ -172,7 +172,7 @@ flx4: flexcom@f0000000 {
+>  				status = "disabled";
 >  
-> +#include <linux/math.h>
->  #include <linux/string_helpers.h>
+>  				uart4: serial@200 {
+> -					compatible = "microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
+> +					compatible = "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
+>  					reg = <0x200 0x200>;
+>  					interrupts = <13 IRQ_TYPE_LEVEL_HIGH 7>;
+>  					dmas = <&dma0
+> @@ -240,7 +240,7 @@ flx5: flexcom@f0004000 {
+>  				status = "disabled";
 >  
->  #include "i915_reg.h"
-> diff --git a/drivers/gpu/drm/i915/display/intel_dpll_mgr.h b/drivers/gpu/drm/i915/display/intel_dpll_mgr.h
-> index ba62eb5d7c51..04e6810954b2 100644
-> --- a/drivers/gpu/drm/i915/display/intel_dpll_mgr.h
-> +++ b/drivers/gpu/drm/i915/display/intel_dpll_mgr.h
-> @@ -29,13 +29,6 @@
+>  				uart5: serial@200 {
+> -					compatible = "microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
+> +					compatible = "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
+>  					reg = <0x200 0x200>;
+>  					atmel,usart-mode = <AT91_USART_MODE_SERIAL>;
+>  					interrupts = <14 IRQ_TYPE_LEVEL_HIGH 7>;
+> @@ -370,7 +370,7 @@ flx11: flexcom@f0020000 {
+>  				status = "disabled";
 >  
->  #include "intel_wakeref.h"
+>  				uart11: serial@200 {
+> -					compatible = "microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
+> +					compatible = "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
+>  					reg = <0x200 0x200>;
+>  					interrupts = <32 IRQ_TYPE_LEVEL_HIGH 7>;
+>  					dmas = <&dma0
+> @@ -419,7 +419,7 @@ flx12: flexcom@f0024000 {
+>  				status = "disabled";
 >  
-> -/*FIXME: Move this to a more appropriate place. */
-> -#define abs_diff(a, b) ({			\
-> -	typeof(a) __a = (a);			\
-> -	typeof(b) __b = (b);			\
-> -	(void) (&__a == &__b);			\
-> -	__a > __b ? (__a - __b) : (__b - __a); })
-> -
->  enum tc_port;
->  struct drm_i915_private;
->  struct intel_atomic_state;
-> diff --git a/drivers/gpu/ipu-v3/ipu-image-convert.c b/drivers/gpu/ipu-v3/ipu-image-convert.c
-> index af1612044eef..841316582ea9 100644
-> --- a/drivers/gpu/ipu-v3/ipu-image-convert.c
-> +++ b/drivers/gpu/ipu-v3/ipu-image-convert.c
-> @@ -7,7 +7,10 @@
+>  				uart12: serial@200 {
+> -					compatible = "microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
+> +					compatible = "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
+>  					reg = <0x200 0x200>;
+>  					interrupts = <33 IRQ_TYPE_LEVEL_HIGH 7>;
+>  					dmas = <&dma0
+> @@ -576,7 +576,7 @@ flx6: flexcom@f8010000 {
+>  				status = "disabled";
 >  
->  #include <linux/interrupt.h>
->  #include <linux/dma-mapping.h>
-> +#include <linux/math.h>
-> +
->  #include <video/imx-ipu-image-convert.h>
-> +
->  #include "ipu-prv.h"
+>  				uart6: serial@200 {
+> -					compatible = "microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
+> +					compatible = "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
+>  					reg = <0x200 0x200>;
+>  					interrupts = <9 IRQ_TYPE_LEVEL_HIGH 7>;
+>  					dmas = <&dma0
+> @@ -625,7 +625,7 @@ flx7: flexcom@f8014000 {
+>  				status = "disabled";
 >  
->  /*
-> @@ -543,7 +546,7 @@ static void find_best_seam(struct ipu_image_convert_ctx *ctx,
->  		unsigned int in_pos;
->  		unsigned int in_pos_aligned;
->  		unsigned int in_pos_rounded;
-> -		unsigned int abs_diff;
-> +		unsigned int diff;
+>  				uart7: serial@200 {
+> -					compatible = "microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
+> +					compatible = "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
+>  					reg = <0x200 0x200>;
+>  					interrupts = <10 IRQ_TYPE_LEVEL_HIGH 7>;
+>  					dmas = <&dma0
+> @@ -674,7 +674,7 @@ flx8: flexcom@f8018000 {
+>  				status = "disabled";
 >  
->  		/*
->  		 * Tiles in the right row / bottom column may not be allowed to
-> @@ -575,15 +578,11 @@ static void find_best_seam(struct ipu_image_convert_ctx *ctx,
->  		    (in_edge - in_pos_rounded) % in_burst)
->  			continue;
+>  				uart8: serial@200 {
+> -					compatible = "microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
+> +					compatible = "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
+>  					reg = <0x200 0x200>;
+>  					interrupts = <11 IRQ_TYPE_LEVEL_HIGH 7>;
+>  					dmas = <&dma0
+> @@ -723,7 +723,7 @@ flx0: flexcom@f801c000 {
+>  				status = "disabled";
 >  
-> -		if (in_pos < in_pos_aligned)
-> -			abs_diff = in_pos_aligned - in_pos;
-> -		else
-> -			abs_diff = in_pos - in_pos_aligned;
-> -
-> -		if (abs_diff < min_diff) {
-> +		diff = abs_diff(in_pos, in_pos_aligned);
-> +		if (diff < min_diff) {
->  			in_seam = in_pos_rounded;
->  			out_seam = out_pos;
-> -			min_diff = abs_diff;
-> +			min_diff = diff;
->  		}
->  	}
+>  				uart0: serial@200 {
+> -					compatible = "microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
+> +					compatible = "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
+>  					reg = <0x200 0x200>;
+>  					interrupts = <5 IRQ_TYPE_LEVEL_HIGH 7>;
+>  					dmas = <&dma0
+> @@ -791,7 +791,7 @@ flx1: flexcom@f8020000 {
+>  				status = "disabled";
 >  
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-> index 82d35dbbfa6c..9be63a1f1f0c 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -222,16 +222,11 @@ static inline int calculate_baud_abs_diff(struct uart_port *port,
->  				unsigned int baud, unsigned int mode)
->  {
->  	unsigned int n = port->uartclk / (mode * baud);
-> -	int abs_diff;
+>  				uart1: serial@200 {
+> -					compatible = "microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
+> +					compatible = "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
+>  					reg = <0x200 0x200>;
+>  					interrupts = <6 IRQ_TYPE_LEVEL_HIGH 7>;
+>  					dmas = <&dma0
+> @@ -859,7 +859,7 @@ flx2: flexcom@f8024000 {
+>  				status = "disabled";
 >  
->  	if (n == 0)
->  		n = 1;
+>  				uart2: serial@200 {
+> -					compatible = "microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
+> +					compatible = "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
+>  					reg = <0x200 0x200>;
+>  					interrupts = <7 IRQ_TYPE_LEVEL_HIGH 7>;
+>  					dmas = <&dma0
+> @@ -927,7 +927,7 @@ flx3: flexcom@f8028000 {
+>  				status = "disabled";
 >  
-> -	abs_diff = baud - (port->uartclk / (mode * n));
-> -	if (abs_diff < 0)
-> -		abs_diff = -abs_diff;
-> -
-> -	return abs_diff;
-> +	return abs_diff(baud, port->uartclk / (mode * n));
->  }
+>  				uart3: serial@200 {
+> -					compatible = "microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
+> +					compatible = "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
+>  					reg = <0x200 0x200>;
+>  					interrupts = <8 IRQ_TYPE_LEVEL_HIGH 7>;
+>  					dmas = <&dma0
+> @@ -1050,7 +1050,7 @@ flx9: flexcom@f8040000 {
+>  				status = "disabled";
 >  
->  /*
-> diff --git a/drivers/video/fbdev/core/svgalib.c b/drivers/video/fbdev/core/svgalib.c
-> index 9e01322fabe3..2cba158888ea 100644
-> --- a/drivers/video/fbdev/core/svgalib.c
-> +++ b/drivers/video/fbdev/core/svgalib.c
-> @@ -14,6 +14,7 @@
->  #include <linux/kernel.h>
->  #include <linux/string.h>
->  #include <linux/fb.h>
-> +#include <linux/math.h>
->  #include <linux/svga.h>
->  #include <asm/types.h>
->  #include <asm/io.h>
-> @@ -372,12 +373,6 @@ EXPORT_SYMBOL(svga_get_caps);
->   *  F_VCO = (F_BASE * M) / N
->   *  F_OUT = F_VCO / (2^R)
->   */
-> -
-> -static inline u32 abs_diff(u32 a, u32 b)
-> -{
-> -	return (a > b) ? (a - b) : (b - a);
-> -}
-> -
->  int svga_compute_pll(const struct svga_pll *pll, u32 f_wanted, u16 *m, u16 *n, u16 *r, int node)
->  {
->  	u16 am, an, ar;
-> diff --git a/include/linux/math.h b/include/linux/math.h
-> index 449a29b73f6d..4459d1786f77 100644
-> --- a/include/linux/math.h
-> +++ b/include/linux/math.h
-> @@ -157,6 +157,13 @@ __STRUCT_FRACT(u32)
->  	__builtin_types_compatible_p(typeof(x), unsigned type),		\
->  	({ signed type __x = (x); __x < 0 ? -__x : __x; }), other)
+>  				uart9: serial@200 {
+> -					compatible = "microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
+> +					compatible = "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
+>  					reg = <0x200 0x200>;
+>  					interrupts = <15 IRQ_TYPE_LEVEL_HIGH 7>;
+>  					dmas = <&dma0
+> @@ -1099,7 +1099,7 @@ flx10: flexcom@f8044000 {
+>  				status = "disabled";
 >  
-> +#define abs_diff(a, b) ({			\
-> +	typeof(a) __a = (a);			\
-> +	typeof(b) __b = (b);			\
-> +	(void)(&__a == &__b);			\
-> +	__a > __b ? (__a - __b) : (__b - __a);	\
-> +})
-> +
->  /**
->   * reciprocal_scale - "scale" a value into range [0, ep_ro)
->   * @val: value
-
--- 
-Jani Nikula, Intel Open Source Graphics Center
+>  				uart10: serial@200 {
+> -					compatible = "microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
+> +					compatible = "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
+>  					reg = <0x200 0x200>;
+>  					interrupts = <16 IRQ_TYPE_LEVEL_HIGH 7>;
+>  					dmas = <&dma0
+> -- 
+> 2.25.1
+> 
