@@ -2,178 +2,136 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 830E4EB64DD
-	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 01:56:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49E46EB64DD
+	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 01:57:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229478AbjGaB4z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 30 Jul 2023 21:56:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53120 "EHLO
+        id S229707AbjGaB5f (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 30 Jul 2023 21:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229670AbjGaB4y (ORCPT
+        with ESMTP id S229670AbjGaB5e (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 30 Jul 2023 21:56:54 -0400
-Received: from mgamail.intel.com (unknown [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7EBE71
-        for <linux-serial@vger.kernel.org>; Sun, 30 Jul 2023 18:56:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690768614; x=1722304614;
-  h=date:from:to:cc:subject:message-id;
-  bh=+JB5Eov3iGcjy5gioeVTN29w0qCeXT5Pzu2s+AhxorA=;
-  b=V35KxJEnpFYn4+mcJxiaSjG27pSbMimacYdR0CfOOOoSOfJkrNqrrv+N
-   GAoPVu7H54jjdNZrULgkfE4AIiodT3qiwUqn8g52xgUtsscGJmQi3Y5gt
-   AYE/bHrMU6J/CZAxG0/FEjnPrZTg9UrX6WZNPAHM7sD2QH3a3qbyft6rE
-   jWO9HW3M3iAx4FmgAhS7Fx0YddO5brxUbWJE65iROsXrD7nCl90HpnvdN
-   86LlGS0oEUFcFL7w5MHHu8FXwQPmo7yKEsBPXinGJGjIWoTxGoqqPKl5M
-   rLxIdDpxTmorpc1nJv3GBh03m4ojMisp7WOpeRgfNzP2MIPvXywCTPVkj
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10787"; a="435197934"
-X-IronPort-AV: E=Sophos;i="6.01,243,1684825200"; 
-   d="scan'208";a="435197934"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2023 18:56:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10787"; a="731410571"
-X-IronPort-AV: E=Sophos;i="6.01,243,1684825200"; 
-   d="scan'208";a="731410571"
-Received: from lkp-server02.sh.intel.com (HELO 953e8cd98f7d) ([10.239.97.151])
-  by fmsmga007.fm.intel.com with ESMTP; 30 Jul 2023 18:56:52 -0700
-Received: from kbuild by 953e8cd98f7d with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1qQI9T-0004re-2F;
-        Mon, 31 Jul 2023 01:56:51 +0000
-Date:   Mon, 31 Jul 2023 09:56:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 16aae4c64600a6319a6f10dbff833fa198bf9599
-Message-ID: <202307310958.JYuBE3QU-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+        Sun, 30 Jul 2023 21:57:34 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2054.outbound.protection.outlook.com [40.107.21.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41888E71;
+        Sun, 30 Jul 2023 18:57:33 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lxFayl2ml60QVKzuk/5roO/FutHwFkCslBtA8IRRTqlCkt83ZqMtvOduDr6l2G+MyvxecNEI6dGbrhN0vGhgJ6gKY8BYHAg/7Wn4LsPI37XMT3/C7ap60/sDEh9+zu5ZFChhHqX0LfA81fChktFuHu5beVGk+Nsah2EOi4CbQTFFPpsa4vacs9IFSuCFIOOfjKp8mZ0xU7Iy/UKfaQ6S0fqn0cGj+Bw0R8AYQEEA9OfjYzAlFuudCIEtHmVOo4IHYvfegmjoWiYjTqORhdlDOiyUDk+VZocHbEDkqc0RNu+wHW3UoK4BXm0eyf+RBvr3Rigp6FnocQpfsoClqyLrQQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=b11rbqzZJGo5I3vuNbcpyeZlU8te3DZlzaEwQA9wgqw=;
+ b=USE7M6C+O1e7lR4/UmV/yxfv+3Xof2afIcyef2hnGB/zClhUqNNUS+VvZgAc8NBFbckjWFhHfKO/jiJM4VeKtgIxc+Zhdw9EWTuK6ystxT5ACZBMyOU3fllQVnOTthaQzdan3TCRCj60c7bPHWyQL+aLxog2kQFZRe5Uig54RZLGuOMyJ2Ek6WzjBk+A7MIJKnSskIcu2MziKJYB1c/zc+InrbTlrk0owkbk6CRunQI3oipx2bCuo177wGw6L95nV1J2r5AlzfGA/isFnUDxyZOvGFdPJO719Bfgvt4HxP3D4B+cBYqEiD6UCiqjet/ud4DpiShvSx8Sr2PCmV1gng==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=b11rbqzZJGo5I3vuNbcpyeZlU8te3DZlzaEwQA9wgqw=;
+ b=q6+EM/e1Ci+oLv8SobLpMo2g1ytPn45ISNLLoAwQGz8eUqZqCJXWRZMehpvzccF5DwMzuDZ4F8d6q5OpYHk/8ACr1amepNKRjfHHsILopVcWQJiGtxl4dq6pegLEQjpnmbvk5uRdNRRbijE0zqoJKQcAWf7igHdMg/TRmHl5HqY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by DB9PR04MB8393.eurprd04.prod.outlook.com (2603:10a6:10:25f::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.43; Mon, 31 Jul
+ 2023 01:57:30 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::c5e2:98f8:b03:2189]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::c5e2:98f8:b03:2189%3]) with mapi id 15.20.6631.043; Mon, 31 Jul 2023
+ 01:57:30 +0000
+From:   Sherry Sun <sherry.sun@nxp.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        tomonori.sakita@sord.co.jp, atsushi.nemoto@sord.co.jp
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+Subject: [PATCH] tty: serial: fsl_lpuart: Clear the error flags by writing 1 for lpuart32 platforms
+Date:   Mon, 31 Jul 2023 09:50:53 +0800
+Message-Id: <20230731015053.15150-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR01CA0190.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:189::11) To AS8PR04MB8404.eurprd04.prod.outlook.com
+ (2603:10a6:20b:3f8::7)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS8PR04MB8404:EE_|DB9PR04MB8393:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5112a0af-a7bd-46c8-921f-08db91697f70
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Fw9ZscR36EsDaowzk5mbi/iqpQwcJX+kzyQmCRx3zCIlIEmIcTVuXaHO6ZYIDDNRV79k9ImmSxP7iYoR1Qv3KfLQDfPIHmhPei4uq3bzMOY4oflE4XD1EDQBvaPLCA17Gaho5XcQh63YGK6SKmxTsC1NziedHWFFc5gRILzlX30n4Q2SJC15CqImk6gWQGwILhcUgHLCFXoHUyMaHQLEgsCGWI9t55jgcUlqP/YV8Q2dJk6gG2aB2rJF6SldZRsf3N3k5EN67VJPmTFDxBUoAv+h86ZPVIltzUV6eGmXKsGCnE0h4VAfiCulJkjRjtMRBhPAuOTd3wNGYWMvaIfU0YQ473u4SJIYbsTspwGeDecxqOlgvhOTHY1JOt9KRowCaF59DHw/K+lyUZlJxjbTy7dSPdCSKWdSzFJcV+BTLCkoXcFUaNPfVpak3/e/D65CrOxJds7BzNaibpScoPodBcxzIFIKvmaT8KbF+EJ8g5LpIq6pQ1hhk8a4xuHBNiJ/puOsLYAvcDEGHHByRqyV8+LegIwc/qHU1ECtuWXNbhpYt43Urv506q24uUnotFhwpgbv5E0wi/EgNP+xgweVejm1li9aXnMGy1VI3nIzvqcp8Ei7kmwQ4t8T4qLpI1Kf
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(366004)(346002)(376002)(396003)(136003)(451199021)(6512007)(6486002)(52116002)(36756003)(2616005)(6506007)(1076003)(26005)(83380400001)(186003)(44832011)(66946007)(66556008)(38350700002)(41300700001)(86362001)(66476007)(316002)(4326008)(5660300002)(8936002)(8676002)(38100700002)(2906002)(6666004)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?IUjNX4rqQlg6MXRJkKEpz61iGDySRbh5uirwpV4VcrGv+nuXureGr2gcLH46?=
+ =?us-ascii?Q?OWR267vmaTv0xUVwkAS4JiO++5vIgIiPrZh8lK/j0V/ffKoY4T7cY7JqsW1V?=
+ =?us-ascii?Q?+og8Tilsp00oYpq6EtXtbsT0FpDwQg1qbUDombmbaq+IsNqGwF7csejaNYto?=
+ =?us-ascii?Q?eJGG0TiRiD+iz8FBfsi4jqHPKVyeNoTtM0eNiRSrvu8qrgzRu9y8sYbegjQ4?=
+ =?us-ascii?Q?ljeu0xDb0NQH9WIfPU/Siym2iW/tsVDBuILh9FnOzutU+GRuxbiBs7vf6BT+?=
+ =?us-ascii?Q?UNUT/FgVG1YEGSIju2Ld6VY24b7TbBcMab1W57UQGO949/c4V8IrRS+l0SCU?=
+ =?us-ascii?Q?0iyLKqcF54sCcbl1KLiKTo2J+uyVEvpf0CEnzsosrRDbV7WGaWSc1DLfu8i9?=
+ =?us-ascii?Q?LXqMDtZBfmF2+MZUcB1KqDa+R8hluHZQPfVxTBrCeVx0LMGM/5LRO7RrKLPD?=
+ =?us-ascii?Q?OZOVk0/TkADaAW7lvMjjtMlBActdTXv9K1IV4RAQBlN/sU4e0ztjgaXsTvzh?=
+ =?us-ascii?Q?1EUEvv37bAJWOz77oywwyoGVtCdt8OxhPQq+VyTZfMBravG/dz43c9CP2d2B?=
+ =?us-ascii?Q?oBgqoU9sAjCu0xSc1hS3NfjDvniuUZUoDETcZBZIQVSCyonJd5ufv1ERp3Bc?=
+ =?us-ascii?Q?pgQUm0rF8Bo5HyLwDv7b+Il0xJuHu+fYQgj6hp6fBGhZuK28J9yzkQB2NNDw?=
+ =?us-ascii?Q?OzCriDir98MmJpvIxg+8OCjjnDZO4YSoFQr06k4i+AV1Xq0tU+iN/77xFKft?=
+ =?us-ascii?Q?fnv9tqWEKzIDJbtnRKINdtYnQUtLNjgxygCZHwbZYNyck3RKgn7+/+GmyA/5?=
+ =?us-ascii?Q?Hb9qmEk1hRgBix5Ij96QixiBKFUaTDdiK2riz0MpK4KeaWEZnCxPulz4cu9a?=
+ =?us-ascii?Q?Lap1OET5e5QnPcBQ+cxHhppvPPr14DOMx/tajpu1Q/tucQmIvRlidCCIE+nQ?=
+ =?us-ascii?Q?aRyjSP/3NfFtKm6Xf2Fcf+wINnPwlKBGGgmLEOe3S2QCzYsVd2mTFvxfkiWh?=
+ =?us-ascii?Q?saAGi8UKO+A07C6DXkWv73nFEDVj/UwmoZmIu8UjtQfp28WkwR5//5p7Bobz?=
+ =?us-ascii?Q?I37X4m3C9gwwNiSmYbX2aM/ZBsGKBQYGwoSXclK/tfgRgpjXSUxQENmM2wUo?=
+ =?us-ascii?Q?XgV48iSr+HZUiJeNAJxhRoDdkdehpOSgacCsZaPkyPqMxjKdlsGAPqYIOaK5?=
+ =?us-ascii?Q?mh42MvpwSiIhjnb0HFapnGJ9X2zIQL4ArA/Hr2WaCXtNwvowHx24cTVyqJQC?=
+ =?us-ascii?Q?Tt8SNosbMDs4wozTAA8/yuWtREfueIsPluoV2l+p+TgTLXtjOXsJb741zlFj?=
+ =?us-ascii?Q?jeVUsjvgJZQCh0u9BOrNhfwGP3IjfO1e4piQkRczn8skOQHh1Msy72HbdqQ3?=
+ =?us-ascii?Q?DsG2mLRSfIQ4nZN0UioKoOFVKcAtckjNvVahWUd1gEQCKqoE9QWl1eawZ7kn?=
+ =?us-ascii?Q?hIycEiPLCGH6cuKqE4w1Bh7VL/IBr9t828yfbZZdrRsxrhywa1ecKzzz17r9?=
+ =?us-ascii?Q?27XiKIAb8Chu0y/giOYvRRTcg9jqqNDoQAvAk/gbpEZZFFwX0A5OZj6ubB8l?=
+ =?us-ascii?Q?J8hFP7cO8Pw4wDVQXMisBOw0z3wOkA5QF/uOt7jp?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5112a0af-a7bd-46c8-921f-08db91697f70
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2023 01:57:30.2332
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: aj5Z+rr2KUC0vThFPGSfkZC30M3qlNK60DY1LSgdcPeCKY1kPSCF+ZUFEPJ2z2it3pDb6BrlitE/vMuX5SwxYA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB8393
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 16aae4c64600a6319a6f10dbff833fa198bf9599  parport_pc: add support for ASIX AX99100
+Do not read the data register to clear the error flags for lpuart32
+platforms, the additional read may cause the receive FIFO underflow
+since the DMA has already read the data register.
+Now all lpuart32 platforms support write 1 to clear those error bits,
+let's use this method to better clear the error flags.
 
-elapsed time: 818m
+Fixes: 42b68768e51b ("serial: fsl_lpuart: DMA support for 32-bit variant")
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+---
+ drivers/tty/serial/fsl_lpuart.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-configs tested: 107
-configs skipped: 4
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-tested configs:
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arc                  randconfig-r004-20230730   gcc  
-arc                  randconfig-r043-20230730   gcc  
-arm                              allmodconfig   gcc  
-arm                              allyesconfig   gcc  
-arm                                 defconfig   gcc  
-arm                  randconfig-r013-20230730   clang
-arm                  randconfig-r024-20230730   clang
-arm                  randconfig-r046-20230730   clang
-arm64                            allyesconfig   gcc  
-arm64                               defconfig   gcc  
-arm64                randconfig-r023-20230730   gcc  
-csky                                defconfig   gcc  
-hexagon              randconfig-r002-20230730   clang
-hexagon              randconfig-r016-20230730   clang
-hexagon              randconfig-r036-20230730   clang
-hexagon              randconfig-r041-20230730   clang
-hexagon              randconfig-r045-20230730   clang
-i386                             allyesconfig   gcc  
-i386         buildonly-randconfig-r004-20230730   clang
-i386         buildonly-randconfig-r005-20230730   clang
-i386         buildonly-randconfig-r006-20230730   clang
-i386                              debian-10.3   gcc  
-i386                                defconfig   gcc  
-i386                 randconfig-i001-20230730   clang
-i386                 randconfig-i002-20230730   clang
-i386                 randconfig-i003-20230730   clang
-i386                 randconfig-i004-20230730   clang
-i386                 randconfig-i005-20230730   clang
-i386                 randconfig-i006-20230730   clang
-i386                 randconfig-i011-20230730   gcc  
-i386                 randconfig-i012-20230730   gcc  
-i386                 randconfig-i013-20230730   gcc  
-i386                 randconfig-i014-20230730   gcc  
-i386                 randconfig-i015-20230730   gcc  
-i386                 randconfig-i016-20230730   gcc  
-i386                 randconfig-r015-20230730   gcc  
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                           defconfig   gcc  
-loongarch            randconfig-r022-20230730   gcc  
-loongarch            randconfig-r034-20230730   gcc  
-m68k                             allmodconfig   gcc  
-m68k                             allyesconfig   gcc  
-m68k                                defconfig   gcc  
-m68k                 randconfig-r021-20230730   gcc  
-mips                             allmodconfig   gcc  
-mips                             allyesconfig   gcc  
-nios2                               defconfig   gcc  
-nios2                randconfig-r006-20230730   gcc  
-parisc                           allyesconfig   gcc  
-parisc                              defconfig   gcc  
-parisc               randconfig-r012-20230730   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-riscv                            allmodconfig   gcc  
-riscv                             allnoconfig   gcc  
-riscv                            allyesconfig   gcc  
-riscv                               defconfig   gcc  
-riscv                randconfig-r014-20230730   gcc  
-riscv                randconfig-r042-20230730   gcc  
-riscv                          rv32_defconfig   gcc  
-s390                             allmodconfig   gcc  
-s390                             allyesconfig   gcc  
-s390                                defconfig   gcc  
-s390                 randconfig-r044-20230730   gcc  
-sh                               allmodconfig   gcc  
-sh                   randconfig-r003-20230730   gcc  
-sh                   randconfig-r005-20230730   gcc  
-sparc                            allyesconfig   gcc  
-sparc                               defconfig   gcc  
-sparc                randconfig-r035-20230730   gcc  
-sparc64              randconfig-r025-20230730   gcc  
-sparc64              randconfig-r032-20230730   gcc  
-um                               allmodconfig   clang
-um                                allnoconfig   clang
-um                               allyesconfig   clang
-um                                  defconfig   gcc  
-um                             i386_defconfig   gcc  
-um                   randconfig-r033-20230730   gcc  
-um                           x86_64_defconfig   gcc  
-x86_64                           allyesconfig   gcc  
-x86_64       buildonly-randconfig-r001-20230730   clang
-x86_64       buildonly-randconfig-r002-20230730   clang
-x86_64       buildonly-randconfig-r003-20230730   clang
-x86_64                              defconfig   gcc  
-x86_64                                  kexec   gcc  
-x86_64               randconfig-r001-20230730   clang
-x86_64               randconfig-x001-20230730   gcc  
-x86_64               randconfig-x002-20230730   gcc  
-x86_64               randconfig-x003-20230730   gcc  
-x86_64               randconfig-x004-20230730   gcc  
-x86_64               randconfig-x005-20230730   gcc  
-x86_64               randconfig-x006-20230730   gcc  
-x86_64               randconfig-x011-20230730   clang
-x86_64               randconfig-x012-20230730   clang
-x86_64               randconfig-x013-20230730   clang
-x86_64               randconfig-x014-20230730   clang
-x86_64               randconfig-x015-20230730   clang
-x86_64               randconfig-x016-20230730   clang
-x86_64                          rhel-8.3-rust   clang
-x86_64                               rhel-8.3   gcc  
-xtensa               randconfig-r011-20230730   gcc  
-
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index f6644c5989d3..f72e1340b47d 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -1120,8 +1120,8 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
+ 		unsigned long sr = lpuart32_read(&sport->port, UARTSTAT);
+ 
+ 		if (sr & (UARTSTAT_PE | UARTSTAT_FE)) {
+-			/* Read DR to clear the error flags */
+-			lpuart32_read(&sport->port, UARTDATA);
++			/* Clear the error flags */
++			lpuart32_write(&sport->port, sr, UARTSTAT);
+ 
+ 			if (sr & UARTSTAT_PE)
+ 				sport->port.icount.parity++;
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.17.1
+
