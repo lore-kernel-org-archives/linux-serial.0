@@ -2,81 +2,115 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32789C41513
-	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 16:18:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E046C001E0
+	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 16:22:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232040AbjGaQSz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 31 Jul 2023 12:18:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52048 "EHLO
+        id S230237AbjGaQWd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 31 Jul 2023 12:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232398AbjGaQSy (ORCPT
+        with ESMTP id S231444AbjGaQWb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 31 Jul 2023 12:18:54 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02797A7;
-        Mon, 31 Jul 2023 09:18:53 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id 98e67ed59e1d1-267ffa55791so2613866a91.1;
-        Mon, 31 Jul 2023 09:18:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1690820332; x=1691425132;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=DGIzVhnJPbm+Nw+mt1LCyglB+QvUWCQ9474FaGPAigo=;
-        b=VdZY+kXtGJwVpHXJD7caV6QNH7Ee/ilU4EvYrzONNg3QKG7DrSu8mcBhDjAet8bBBz
-         CY7QBiD5WBB9WGjh7omoQ79zzTMoz6OIsULB2hy//LBzzdbzvel2hT4VDQcsdgRERrvZ
-         C3wFGpiMPJwVTbalEdKf7GciyVMGRmG+1TJjlC3cQ1FClEhvbpNGfiCDmtLyK4qegy91
-         r7OfFkSq2Mb6IDi3KRMc+05Tfqg4lSfI9EUJvc17EpEqixMDK5N4joaI67Ov+oIZY3Ts
-         zEseng6qeWievYXHaodtEH3wbDYZzhSHThpiCx9G6FdennlVkqG7jaZngSSN4+2VX+f8
-         TWAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690820332; x=1691425132;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=DGIzVhnJPbm+Nw+mt1LCyglB+QvUWCQ9474FaGPAigo=;
-        b=lXQLLrf/81kYyYOhjbs+sjOjblY7ZoZYqjhFRYfzxa4bRGGsDP0qEhb5rpTQiJXIlG
-         DdBn1VWUoXJxg+Eb75odQro1KlCL3PY6uof0rokXuSi+z6/pSOpzvrWtE8uNWNUnh1/s
-         3Gp8grSSrJhQ4aRWr1gXLNTGAEjrpKzKOxYU3farFDEqKH0BbemjQiguQETr2qFMT2Dm
-         baFvBf8cA8nBHSNzfEh3RWfL6R29nuYbeyu/ElxpbvR+Vw2yV2wru5maluVC/YPU+/RK
-         zK/Fy674q5H+IsoDVKnXUnqXg/VD9tpcZUbdlRpCjAWq7/vJS0A7cd3BzBy4ijxFRDSl
-         yJUQ==
-X-Gm-Message-State: ABy/qLYAsKpbqCVeQM5BSA4tQRSz/rb/1dFbMt3b7a6r9WPHgRu3edRp
-        dr6EflfgiYGxVJrDtx73jxQ=
-X-Google-Smtp-Source: APBJJlHqgN+TetC9g6IVIv9YNfULp4eS8gpke4gHB71X+/4e9AUl1WeMZbj1EumDThjJ1RxQGVwGDg==
-X-Received: by 2002:a17:90b:1917:b0:268:1376:d501 with SMTP id mp23-20020a17090b191700b002681376d501mr8597401pjb.5.1690820332278;
-        Mon, 31 Jul 2023 09:18:52 -0700 (PDT)
-Received: from google.com ([2620:15c:9d:2:6d25:c0f1:d8d5:201c])
-        by smtp.gmail.com with ESMTPSA id bu5-20020a17090aee4500b00268dac826d4sm787380pjb.0.2023.07.31.09.18.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Jul 2023 09:18:51 -0700 (PDT)
-Date:   Mon, 31 Jul 2023 09:18:49 -0700
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH 04/10] input: serport: remove casts from tty->disc_data
-Message-ID: <ZMfe6YCPiyjzJBoe@google.com>
-References: <20230731080244.2698-1-jirislaby@kernel.org>
- <20230731080244.2698-5-jirislaby@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230731080244.2698-5-jirislaby@kernel.org>
+        Mon, 31 Jul 2023 12:22:31 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2659A7;
+        Mon, 31 Jul 2023 09:22:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
+        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=RBXOtrD3ZlEhqpLX1FdhLeJavuxWtGfwI1ATytFWQb8=; b=UiIuoVqEYu3NR1hGJVRxRVn3bQ
+        FcamShq7Ai1mI/W3PvHdyZJwpyAvpQc4W5Qac0gyeYVGB9lwiHktKxPNWmdbJ/A+yeeEZ91PkKcbs
+        ZP2Raqh4BqUHratH+wjTBGKT/RyOTxnCNC4FMMF+Sigzz4mtAwbL/mr49f5DDl+nTnNM=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:53968 helo=pettiford)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1qQVev-0006ZN-7g; Mon, 31 Jul 2023 12:22:13 -0400
+Date:   Mon, 31 Jul 2023 12:22:12 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, jirislaby@kernel.org, jringle@gridpoint.com,
+        isaac.true@canonical.com, jesse.sung@canonical.com,
+        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        stable@vger.kernel.org, Lech Perczak <lech.perczak@camlingroup.com>
+Message-Id: <20230731122212.3f64d0dc5adf8d23eee1de62@hugovil.com>
+In-Reply-To: <2023073108-footboard-chooser-d20e@gregkh>
+References: <20230725142343.1724130-1-hugo@hugovil.com>
+        <20230725142343.1724130-3-hugo@hugovil.com>
+        <2023073108-footboard-chooser-d20e@gregkh>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 184.161.19.61
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: Re: [PATCH v9 02/10] serial: sc16is7xx: mark IOCONTROL register as
+ volatile
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jul 31, 2023 at 10:02:38AM +0200, Jiri Slaby (SUSE) wrote:
-> tty->disc_data is 'void *', so there is no need to cast from that.
-> Therefore remove the casts and assign the pointer directly.
+On Mon, 31 Jul 2023 17:50:40 +0200
+Greg KH <gregkh@linuxfoundation.org> wrote:
+
+> On Tue, Jul 25, 2023 at 10:23:34AM -0400, Hugo Villeneuve wrote:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > 
+> > Bit SRESET (3) is cleared when a reset operation is completed. Having
+> > the IOCONTROL register as non-volatile will always read SRESET as 1,
+> > which is incorrect.
+> > 
+> > Also, if IOCONTROL register is not a volatile register, the upcoming
+> > patch "serial: sc16is7xx: fix regression with GPIO configuration"
+> > doesn't work when setting some shared GPIO lines as modem control
+> > lines.
+> > 
+> > Therefore mark IOCONTROL register as a volatile register.
+> > 
+> > Cc: <stable@vger.kernel.org> # 6.1.x
 > 
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> Cc: linux-input@vger.kernel.org
+> Why 6.1.y?  What commit does this fix?
+> 
+> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
+> > Tested-by: Lech Perczak <lech.perczak@camlingroup.com>
+> > ---
+> >  drivers/tty/serial/sc16is7xx.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> > index 8ae2afc76a9b..306ae512b38a 100644
+> > --- a/drivers/tty/serial/sc16is7xx.c
+> > +++ b/drivers/tty/serial/sc16is7xx.c
+> > @@ -488,6 +488,7 @@ static bool sc16is7xx_regmap_volatile(struct device *dev, unsigned int reg)
+> >  	case SC16IS7XX_TXLVL_REG:
+> >  	case SC16IS7XX_RXLVL_REG:
+> >  	case SC16IS7XX_IOSTATE_REG:
+> > +	case SC16IS7XX_IOCONTROL_REG:
+> >  		return true;
+> >  	default:
+> >  		break;
+> 
+> Is this the same as this change:
+> 	https://lore.kernel.org/all/20230724034727.17335-1-hui.wang@canonical.com/
+> 
+> confused,
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Hi Greg,
+yes this is the same.
 
-Thanks.
+You simply accepted an exact equivalent of my patch by someone else in
+your tree, no confusion there.
 
--- 
-Dmitry
+I will remove this patch from my series and rebase it on your tree
+gregkh_tty/tty-next.
+
+Hugo.
