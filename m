@@ -2,177 +2,74 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6188C04A94
-	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 18:41:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB52FC001E0
+	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 19:00:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231925AbjGaSla (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 31 Jul 2023 14:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60552 "EHLO
+        id S229661AbjGaTAG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 31 Jul 2023 15:00:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbjGaSla (ORCPT
+        with ESMTP id S229618AbjGaTAE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 31 Jul 2023 14:41:30 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 672F49E;
-        Mon, 31 Jul 2023 11:41:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=RSMG3G5lemQizcyY9ku47DZub8TbtJeVegjuThtaNU0=; b=acFw54QiVCNtRhBPe+D1xb6LJs
-        1/3W/0sGC3TFLQ9RB+IkBGL8yIbntavyR5bPSB3MEANsWF0DXUEVsnJzwCCwJyIkbIpwOWj8UdpGQ
-        bft/q8++4TB5+tYo2PosXSDblddUkyzaH7ScPbcLrgb2gMoAhH3kMHOFi5IO+hCTnMFU=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:53992 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1qQXpV-0007BN-6l; Mon, 31 Jul 2023 14:41:18 -0400
-Date:   Mon, 31 Jul 2023 14:41:15 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        jirislaby@kernel.org, jringle@gridpoint.com,
-        isaac.true@canonical.com, jesse.sung@canonical.com,
-        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Lech Perczak <lech.perczak@camlingroup.com>
-Message-Id: <20230731144115.14733f0e01f586a7efb91370@hugovil.com>
-In-Reply-To: <CAL_JsqLaF70hNQndXpJfmH1TMGNbA7myQG0GK9fjyKOs63z-3w@mail.gmail.com>
-References: <20230721161840.1393996-1-hugo@hugovil.com>
-        <20230721161840.1393996-7-hugo@hugovil.com>
-        <CAL_JsqJpdhtnZ8FcM7kGWnM+iuDs1fWiCVgf413evbw-o8TZGQ@mail.gmail.com>
-        <20230722104724.ef0c5896c239e721794b9fe9@hugovil.com>
-        <2023072240-supremacy-shallot-a77f@gregkh>
-        <20230724115428.d191186852c0bd0ee0d78398@hugovil.com>
-        <CAL_JsqL8rjwONd6UAitKik0U44BKSD6m8zbachgfq0R9oHBW8w@mail.gmail.com>
-        <20230731124600.39eb8d5c132f9338c2897543@hugovil.com>
-        <CAL_JsqLaF70hNQndXpJfmH1TMGNbA7myQG0GK9fjyKOs63z-3w@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        Mon, 31 Jul 2023 15:00:04 -0400
+Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86F601BD3;
+        Mon, 31 Jul 2023 12:00:01 -0700 (PDT)
+Received: from quatroqueijos.lan (201-43-195-14.dsl.telesp.net.br [201.43.195.14])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 5C0C141E37;
+        Mon, 31 Jul 2023 18:59:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1690829999;
+        bh=SpTi4eXcMBULgHrAPUO/kPqUwuzXKmursJQy7z+Cg9Q=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=AqDCcghbdEu3jCMWuxXQIJ4aHH2y33CotZ3U1v2pOSPOCuz9e3DtVyiVV8C2cVfgB
+         o0xufSifsRPc9R8+bCLc/yNiy0zdvvApWJUtCgCN8Bn/1luT1cjCmYCKhImZU9WpgH
+         jsfiHM3lVLKYwHxjOZnA9qq2/I+wABqg2fbIG2QdIMc6tYFKAYbo7cU8VPDzYHcg/V
+         7TEqKsbQy7bn3lgG5S/4iwKXEhvniFJNIqNVcyCUWmErxykEy61AhqpP8fPdvWVSxP
+         wAPBgQG1yZm8p3dfLDgEi2gaWgPTrpCQYIvqGyPcY7OFMqbpupsFxUIKEk2ZNscgD2
+         UFcBGiZ1z25ww==
+From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+To:     linux-serial@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH] tty: n_gsm: require CAP_NET_ADMIN to attach N_GSM0710 ldisc
+Date:   Mon, 31 Jul 2023 15:59:42 -0300
+Message-Id: <20230731185942.279611-1-cascardo@canonical.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 184.161.19.61
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [RESEND PATCH v8 06/10] serial: sc16is7xx: fix regression with
- GPIO configuration
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 31 Jul 2023 12:04:45 -0600
-Rob Herring <robh+dt@kernel.org> wrote:
+Any unprivileged user can attach N_GSM0710 ldisc, but it requires
+CAP_NET_ADMIN to create a GSM network anyway.
 
-> On Mon, Jul 31, 2023 at 10:46 AM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> >
-> > On Mon, 31 Jul 2023 09:31:53 -0600
-> > Rob Herring <robh+dt@kernel.org> wrote:
-> >
-> > > On Mon, Jul 24, 2023 at 9:54 AM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > >
-> > > > On Sat, 22 Jul 2023 17:15:26 +0200
-> > > > Greg KH <gregkh@linuxfoundation.org> wrote:
-> > > >
-> > > > > On Sat, Jul 22, 2023 at 10:47:24AM -0400, Hugo Villeneuve wrote:
-> > > > > > On Fri, 21 Jul 2023 13:24:19 -0600
-> > > > > > Rob Herring <robh+dt@kernel.org> wrote:
-> > > > > >
-> > > > > > > On Fri, Jul 21, 2023 at 10:19 AM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > > > > > >
-> > > > > > > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > > > > > > >
-> > > > > > > > Commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
-> > > > > > > > and commit 21144bab4f11 ("sc16is7xx: Handle modem status lines")
-> > > > > > > > changed the function of the GPIOs pins to act as modem control
-> > > > > > > > lines without any possibility of selecting GPIO function.
-> > > > > > >
-> > > > > > > Requiring a new DT property is not fixing a kernel regression. You
-> > > > > > > should be returning the kernel to original behavior and then have a
-> > > > > > > new DT property for new behavior.
-> > > > > >
-> > > > > > Hi Rob,
-> > > > > > please read the entire patch history starting from V1
-> > > > > >  and you will understand why this course of action was
-> > > > > >  not selected.
-> > > > >
-> > > > > That's not going to happen, sorry, you need to explain it here, in this
-> > > > > patch series, why a specific action is being taken over another one, as
-> > > > > no one has time to go dig through past history, sorry.
-> > > >
-> > > > Hi Rob,
-> > > > I initially submitted a patch to revert the kernel to original
-> > > > behavior, but it created more problems because the patch was
-> > > > unfortunately split in two separate patches, and mixed with other non
-> > > > closely-related changes. It was also noted to me that reverting to the
-> > > > old behavior would break things for some users.
-> > > >
-> > > > It was suggested to me by a more experienced kernel developer to
-> > > > "suggest a fix, instead of hurrying a revert":
-> > > >
-> > > >     https://lkml.org/lkml/2023/5/17/758
-> > >
-> > > Do I have to go read this to decipher the justification and reasoning?
-> > > When Greg says "in this patch series", he means in the commit messages
-> > > of the patches. You send v9 already and it doesn't have that. The
-> > > patchset needs to stand on its own summarizing any relevant prior
-> > > discussions.
-> > >
-> > > I never suggested doing a revert.
-> >
-> > Hi Rob,
-> > I am sorry, but this is exactly what I "deciphered" from your
-> > original email.
-> >
-> > I am trying very hard to understand exactly what you mean, but it is
-> > not that obvious for me. If something is not clear in my commit message,
-> > I will try to improve it. But before, let's try to focus on making sure
-> > I understand more clearly what you want exactly.
-> >
-> > > Obviously, someone still wants the
-> > > new feature.
-> >
-> > I assume that you refer to the "new feature" as what was added in
-> > the commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control
-> > lines")?
-> 
-> Shrug. It's one of the 2 commits mentioned, I don't know which one
-> exactly. Whichever one changed default behavior from use GPIOs to use
-> modem ctrl lines.
-> 
-> Reading it again, I *think* this patch is correct. Default behavior is
-> restored to use GPIOs. The DT property is needed to enable modem ctrl
-> lines.
+Require initial namespace CAP_NET_ADMIN to do that.
 
-Hi,
-this is correct.
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+---
+ drivers/tty/n_gsm.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 1cdefac4dd1b..c7a787f10a9c 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -3576,6 +3576,9 @@ static int gsmld_open(struct tty_struct *tty)
+ {
+ 	struct gsm_mux *gsm;
+ 
++	if (!capable(CAP_NET_ADMIN))
++		return -EPERM;
++
+ 	if (tty->ops->write == NULL)
+ 		return -EINVAL;
+ 
+-- 
+2.34.1
 
-> What's not okay is just saying, these platforms may or may not need an update:
-> 
->     arm64/boot/dts/freescale/fsl-ls1012a-frdm.dts
->     mips/boot/dts/ingenic/cu1830-neo.dts
->     mips/boot/dts/ingenic/cu1000-neo.dts
-
-Yes, my bad. I initially mentioned them and hoped to get some
-feedback, which I never got, and I kind of forgot about it.
-
-> You need to figure that out. Have you checked with maintainers of
-> these boards? When were they added and by who? At the same time or by
-> the same person would be a good indication the platform uses modem
-> ctrl lines. Or were these platforms in use before adding modem ctrl
-> support? Then they probably use GPIOs or nothing.
-> 
-> If there are platforms which would regress if the modem ctrl feature
-> was just reverted, which ones are those?
-
-Ok, let me do some checks and get back to you on this.
-
-Thank you,
-Hugo.
