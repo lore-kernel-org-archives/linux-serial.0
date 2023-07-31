@@ -2,48 +2,46 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F8E4C001DF
-	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 08:05:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9C08C41513
+	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 08:05:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231592AbjGaIFS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 31 Jul 2023 04:05:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56374 "EHLO
+        id S231773AbjGaIFT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 31 Jul 2023 04:05:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231768AbjGaIES (ORCPT
+        with ESMTP id S231789AbjGaIET (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 31 Jul 2023 04:04:18 -0400
+        Mon, 31 Jul 2023 04:04:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6234E1713;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1CD4269D;
         Mon, 31 Jul 2023 01:02:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FC4E60E8B;
-        Mon, 31 Jul 2023 08:02:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DE88C433C9;
-        Mon, 31 Jul 2023 08:02:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2101060F78;
+        Mon, 31 Jul 2023 08:02:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1509FC433C9;
+        Mon, 31 Jul 2023 08:02:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1690790570;
-        bh=iL+/iMkVyPpitc+31cYvs+uU/ZxRswV5+Wl1H0RRVAc=;
+        s=k20201202; t=1690790574;
+        bh=w3zM+yrYXpgkmIfhHdq6oR6kOfQGs28UkmPFxSAMjzY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kk8c18DLN8tYP5izkZrkGSFDhJrb7SeDZ2SJdORAd4uCe9aBlAuCYU4UpsXxCh1q7
-         nOQqzUT+G08qFcjMIIQ/pOIvdg2x0Z+65ju3cD8Z+9D7HHt45CFK7yUbIff/GI+JbK
-         ijOILqb8o3+xF0Hiu5rwe3S86z9WyK1cqGTOMzVsiCFUu9Vm45Zg3OkfMjMOneoNtJ
-         rZx01dTozdMNkVlKNj58/YqEESOGn3K9obS8F6L6epGPzJ9H5vi6fK1AOnbQ1PS/My
-         AW78bF4WFORdBUyYEnCIV1MFh9lCHEl9Nif7xvBcpLJgjF4IG8zEiSJU8vAtd/YTMf
-         7eGVYk0787PsA==
+        b=mlBTAlXEYvnrKw+rnkk64Ny16BNI5CFUXkoWxTIm9o2vopncA27bmBEf3aaf4/NzG
+         fCWedJkUbWt2tBE6EtlDgiEnm18UYa5en7G8C9j27TZOPkl1Q/bHnntBds0RMAwTUk
+         6k2D1EF6SeKGa6xdNJfjXZr7eIfi4Esj9SnsQVthYExQpDdGL98vrSducz/rlXlIKq
+         8GOM2tFaFwokemSZBrHWoJeAVCEQ4Oud77p7XN7QQ/+XOJkEPQ5dSSRkhU5nIi87hN
+         G8vgJQ3u8T4Y3rF/1zJbjaUeiteVdY8RLuKcBgQLR4ua0+2t3lW+uDnL9K83DXg0bc
+         Lrrcs+P6TeRgw==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth@vger.kernel.org
-Subject: [PATCH 02/10] Bluetooth: rfcomm: remove casts from tty->driver_data
-Date:   Mon, 31 Jul 2023 10:02:36 +0200
-Message-ID: <20230731080244.2698-3-jirislaby@kernel.org>
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-input@vger.kernel.org
+Subject: [PATCH 04/10] input: serport: remove casts from tty->disc_data
+Date:   Mon, 31 Jul 2023 10:02:38 +0200
+Message-ID: <20230731080244.2698-5-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230731080244.2698-1-jirislaby@kernel.org>
 References: <20230731080244.2698-1-jirislaby@kernel.org>
@@ -53,121 +51,65 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tty->driver_data is 'void *', so there is no need to cast from that.
+tty->disc_data is 'void *', so there is no need to cast from that.
 Therefore remove the casts and assign the pointer directly.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Marcel Holtmann <marcel@holtmann.org>
-Cc: Johan Hedberg <johan.hedberg@gmail.com>
-Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc: linux-bluetooth@vger.kernel.org
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: linux-input@vger.kernel.org
 ---
- net/bluetooth/rfcomm/tty.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/input/serio/serport.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/net/bluetooth/rfcomm/tty.c b/net/bluetooth/rfcomm/tty.c
-index 5697df9d4394..d73eec146529 100644
---- a/net/bluetooth/rfcomm/tty.c
-+++ b/net/bluetooth/rfcomm/tty.c
-@@ -771,7 +771,7 @@ static int rfcomm_tty_open(struct tty_struct *tty, struct file *filp)
+diff --git a/drivers/input/serio/serport.c b/drivers/input/serio/serport.c
+index 7f7ef0e3a749..a5d8953f5904 100644
+--- a/drivers/input/serio/serport.c
++++ b/drivers/input/serio/serport.c
+@@ -103,7 +103,7 @@ static int serport_ldisc_open(struct tty_struct *tty)
  
- static void rfcomm_tty_close(struct tty_struct *tty, struct file *filp)
+ static void serport_ldisc_close(struct tty_struct *tty)
  {
--	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-+	struct rfcomm_dev *dev = tty->driver_data;
+-	struct serport *serport = (struct serport *) tty->disc_data;
++	struct serport *serport = tty->disc_data;
  
- 	BT_DBG("tty %p dev %p dlc %p opened %d", tty, dev, dev->dlc,
- 						dev->port.count);
-@@ -781,7 +781,7 @@ static void rfcomm_tty_close(struct tty_struct *tty, struct file *filp)
- 
- static int rfcomm_tty_write(struct tty_struct *tty, const unsigned char *buf, int count)
+ 	kfree(serport);
+ }
+@@ -117,7 +117,7 @@ static void serport_ldisc_close(struct tty_struct *tty)
+ static void serport_ldisc_receive(struct tty_struct *tty,
+ 		const unsigned char *cp, const char *fp, int count)
  {
--	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-+	struct rfcomm_dev *dev = tty->driver_data;
- 	struct rfcomm_dlc *dlc = dev->dlc;
- 	struct sk_buff *skb;
- 	int sent = 0, size;
-@@ -810,7 +810,7 @@ static int rfcomm_tty_write(struct tty_struct *tty, const unsigned char *buf, in
- 
- static unsigned int rfcomm_tty_write_room(struct tty_struct *tty)
+-	struct serport *serport = (struct serport*) tty->disc_data;
++	struct serport *serport = tty->disc_data;
+ 	unsigned long flags;
+ 	unsigned int ch_flags = 0;
+ 	int i;
+@@ -161,7 +161,7 @@ static ssize_t serport_ldisc_read(struct tty_struct * tty, struct file * file,
+ 				  unsigned char *kbuf, size_t nr,
+ 				  void **cookie, unsigned long offset)
  {
--	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-+	struct rfcomm_dev *dev = tty->driver_data;
- 	int room = 0;
+-	struct serport *serport = (struct serport*) tty->disc_data;
++	struct serport *serport = tty->disc_data;
+ 	struct serio *serio;
  
- 	if (dev && dev->dlc)
-@@ -864,7 +864,7 @@ static void rfcomm_tty_set_termios(struct tty_struct *tty,
- 	u8 baud, data_bits, stop_bits, parity, x_on, x_off;
- 	u16 changes = 0;
+ 	if (test_and_set_bit(SERPORT_BUSY, &serport->flags))
+@@ -245,7 +245,7 @@ static int serport_ldisc_compat_ioctl(struct tty_struct *tty,
  
--	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-+	struct rfcomm_dev *dev = tty->driver_data;
- 
- 	BT_DBG("tty %p termios %p", tty, old);
- 
-@@ -996,7 +996,7 @@ static void rfcomm_tty_set_termios(struct tty_struct *tty,
- 
- static void rfcomm_tty_throttle(struct tty_struct *tty)
+ static void serport_ldisc_hangup(struct tty_struct *tty)
  {
--	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-+	struct rfcomm_dev *dev = tty->driver_data;
+-	struct serport *serport = (struct serport *) tty->disc_data;
++	struct serport *serport = tty->disc_data;
+ 	unsigned long flags;
  
- 	BT_DBG("tty %p dev %p", tty, dev);
+ 	spin_lock_irqsave(&serport->lock, flags);
+@@ -257,7 +257,7 @@ static void serport_ldisc_hangup(struct tty_struct *tty)
  
-@@ -1005,7 +1005,7 @@ static void rfcomm_tty_throttle(struct tty_struct *tty)
- 
- static void rfcomm_tty_unthrottle(struct tty_struct *tty)
+ static void serport_ldisc_write_wakeup(struct tty_struct * tty)
  {
--	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-+	struct rfcomm_dev *dev = tty->driver_data;
+-	struct serport *serport = (struct serport *) tty->disc_data;
++	struct serport *serport = tty->disc_data;
+ 	unsigned long flags;
  
- 	BT_DBG("tty %p dev %p", tty, dev);
- 
-@@ -1014,7 +1014,7 @@ static void rfcomm_tty_unthrottle(struct tty_struct *tty)
- 
- static unsigned int rfcomm_tty_chars_in_buffer(struct tty_struct *tty)
- {
--	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-+	struct rfcomm_dev *dev = tty->driver_data;
- 
- 	BT_DBG("tty %p dev %p", tty, dev);
- 
-@@ -1029,7 +1029,7 @@ static unsigned int rfcomm_tty_chars_in_buffer(struct tty_struct *tty)
- 
- static void rfcomm_tty_flush_buffer(struct tty_struct *tty)
- {
--	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-+	struct rfcomm_dev *dev = tty->driver_data;
- 
- 	BT_DBG("tty %p dev %p", tty, dev);
- 
-@@ -1052,7 +1052,7 @@ static void rfcomm_tty_wait_until_sent(struct tty_struct *tty, int timeout)
- 
- static void rfcomm_tty_hangup(struct tty_struct *tty)
- {
--	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-+	struct rfcomm_dev *dev = tty->driver_data;
- 
- 	BT_DBG("tty %p dev %p", tty, dev);
- 
-@@ -1061,7 +1061,7 @@ static void rfcomm_tty_hangup(struct tty_struct *tty)
- 
- static int rfcomm_tty_tiocmget(struct tty_struct *tty)
- {
--	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-+	struct rfcomm_dev *dev = tty->driver_data;
- 
- 	BT_DBG("tty %p dev %p", tty, dev);
- 
-@@ -1070,7 +1070,7 @@ static int rfcomm_tty_tiocmget(struct tty_struct *tty)
- 
- static int rfcomm_tty_tiocmset(struct tty_struct *tty, unsigned int set, unsigned int clear)
- {
--	struct rfcomm_dev *dev = (struct rfcomm_dev *) tty->driver_data;
-+	struct rfcomm_dev *dev = tty->driver_data;
- 	struct rfcomm_dlc *dlc = dev->dlc;
- 	u8 v24_sig;
- 
+ 	spin_lock_irqsave(&serport->lock, flags);
 -- 
 2.41.0
 
