@@ -2,68 +2,81 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80DB4C001DC
-	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 15:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32789C41513
+	for <linux-serial@archiver.kernel.org>; Mon, 31 Jul 2023 16:18:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233232AbjGaP72 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 31 Jul 2023 11:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36580 "EHLO
+        id S232040AbjGaQSz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 31 Jul 2023 12:18:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232944AbjGaP7T (ORCPT
+        with ESMTP id S232398AbjGaQSy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 31 Jul 2023 11:59:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2C8197;
-        Mon, 31 Jul 2023 08:59:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9C62611AE;
-        Mon, 31 Jul 2023 15:59:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0CDDC433C7;
-        Mon, 31 Jul 2023 15:59:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1690819157;
-        bh=bARmeZQNZ2oW/i/ATn/SsjymAS/u/4AFuLf3YB2kxTM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qLnX78qtX4ZGXwo70VXa/VBNBF6PZ5WWYwiygEpUyECVc3c4+qKCd/SxSJHJEut4B
-         fhlQp2l2Du0UyZGJw5sUqfOmJKUXBB2GDztsPIN5/buAxj+OrTtnFam3EladqLNjv3
-         bSig1vbZPHU86g2pAFWZwrsDKs2nTdFC8QxVlFX0=
-Date:   Mon, 31 Jul 2023 17:59:14 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, jirislaby@kernel.org, jringle@gridpoint.com,
-        isaac.true@canonical.com, jesse.sung@canonical.com,
-        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Lech Perczak <lech.perczak@camlingroup.com>
-Subject: Re: [PATCH v9 08/10] serial: sc16is7xx: add call to get rs485 DT
- flags and properties
-Message-ID: <2023073146-gauntlet-lake-0b77@gregkh>
-References: <20230725142343.1724130-1-hugo@hugovil.com>
- <20230725142343.1724130-9-hugo@hugovil.com>
+        Mon, 31 Jul 2023 12:18:54 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02797A7;
+        Mon, 31 Jul 2023 09:18:53 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id 98e67ed59e1d1-267ffa55791so2613866a91.1;
+        Mon, 31 Jul 2023 09:18:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1690820332; x=1691425132;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=DGIzVhnJPbm+Nw+mt1LCyglB+QvUWCQ9474FaGPAigo=;
+        b=VdZY+kXtGJwVpHXJD7caV6QNH7Ee/ilU4EvYrzONNg3QKG7DrSu8mcBhDjAet8bBBz
+         CY7QBiD5WBB9WGjh7omoQ79zzTMoz6OIsULB2hy//LBzzdbzvel2hT4VDQcsdgRERrvZ
+         C3wFGpiMPJwVTbalEdKf7GciyVMGRmG+1TJjlC3cQ1FClEhvbpNGfiCDmtLyK4qegy91
+         r7OfFkSq2Mb6IDi3KRMc+05Tfqg4lSfI9EUJvc17EpEqixMDK5N4joaI67Ov+oIZY3Ts
+         zEseng6qeWievYXHaodtEH3wbDYZzhSHThpiCx9G6FdennlVkqG7jaZngSSN4+2VX+f8
+         TWAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690820332; x=1691425132;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DGIzVhnJPbm+Nw+mt1LCyglB+QvUWCQ9474FaGPAigo=;
+        b=lXQLLrf/81kYyYOhjbs+sjOjblY7ZoZYqjhFRYfzxa4bRGGsDP0qEhb5rpTQiJXIlG
+         DdBn1VWUoXJxg+Eb75odQro1KlCL3PY6uof0rokXuSi+z6/pSOpzvrWtE8uNWNUnh1/s
+         3Gp8grSSrJhQ4aRWr1gXLNTGAEjrpKzKOxYU3farFDEqKH0BbemjQiguQETr2qFMT2Dm
+         baFvBf8cA8nBHSNzfEh3RWfL6R29nuYbeyu/ElxpbvR+Vw2yV2wru5maluVC/YPU+/RK
+         zK/Fy674q5H+IsoDVKnXUnqXg/VD9tpcZUbdlRpCjAWq7/vJS0A7cd3BzBy4ijxFRDSl
+         yJUQ==
+X-Gm-Message-State: ABy/qLYAsKpbqCVeQM5BSA4tQRSz/rb/1dFbMt3b7a6r9WPHgRu3edRp
+        dr6EflfgiYGxVJrDtx73jxQ=
+X-Google-Smtp-Source: APBJJlHqgN+TetC9g6IVIv9YNfULp4eS8gpke4gHB71X+/4e9AUl1WeMZbj1EumDThjJ1RxQGVwGDg==
+X-Received: by 2002:a17:90b:1917:b0:268:1376:d501 with SMTP id mp23-20020a17090b191700b002681376d501mr8597401pjb.5.1690820332278;
+        Mon, 31 Jul 2023 09:18:52 -0700 (PDT)
+Received: from google.com ([2620:15c:9d:2:6d25:c0f1:d8d5:201c])
+        by smtp.gmail.com with ESMTPSA id bu5-20020a17090aee4500b00268dac826d4sm787380pjb.0.2023.07.31.09.18.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Jul 2023 09:18:51 -0700 (PDT)
+Date:   Mon, 31 Jul 2023 09:18:49 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH 04/10] input: serport: remove casts from tty->disc_data
+Message-ID: <ZMfe6YCPiyjzJBoe@google.com>
+References: <20230731080244.2698-1-jirislaby@kernel.org>
+ <20230731080244.2698-5-jirislaby@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230725142343.1724130-9-hugo@hugovil.com>
+In-Reply-To: <20230731080244.2698-5-jirislaby@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jul 25, 2023 at 10:23:40AM -0400, Hugo Villeneuve wrote:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Mon, Jul 31, 2023 at 10:02:38AM +0200, Jiri Slaby (SUSE) wrote:
+> tty->disc_data is 'void *', so there is no need to cast from that.
+> Therefore remove the casts and assign the pointer directly.
 > 
-> Add call to uart_get_rs485_mode() to probe for RS485 flags and
-> properties from device tree.
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> Cc: linux-input@vger.kernel.org
 
-Again, you are saying what you are doing, but not why.  I have no hint
-as to if this is a bugfix, or a new features, or something else?
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-thanks,
+Thanks.
 
-greg k-h
+-- 
+Dmitry
