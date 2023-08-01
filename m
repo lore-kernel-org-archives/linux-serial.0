@@ -2,70 +2,73 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 831A9C0015E
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Aug 2023 13:02:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D337C0015E
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Aug 2023 13:23:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230315AbjHANCZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Aug 2023 09:02:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55426 "EHLO
+        id S234034AbjHANXx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Aug 2023 09:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbjHANCY (ORCPT
+        with ESMTP id S234064AbjHANXw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Aug 2023 09:02:24 -0400
-Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D890D3;
-        Tue,  1 Aug 2023 06:02:23 -0700 (PDT)
-Received: from quatroqueijos.cascardo.eti.br (201-43-195-14.dsl.telesp.net.br [201.43.195.14])
+        Tue, 1 Aug 2023 09:23:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09594198B;
+        Tue,  1 Aug 2023 06:23:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 588853F7B7;
-        Tue,  1 Aug 2023 13:02:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1690894940;
-        bh=B3pJgstQ03Vg9nlPhSI380gWXGG5YWbwHMBFEXxPt0M=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Type:In-Reply-To;
-        b=iW0jeeErAIbkL4qdMiK5n+kc8PzMx5amc0Tss6fnYCg1+cZ1FPGOYJL9vB4upj9nb
-         jMtSAb2bVkaHiqu/AnfXGSeLFDgJs4NaQvqWjsf8x6gYxh+AM0E+EpbY3EJ3dbuwg3
-         +ckFSdv6lzWtGqT1ltNv+7Os9tRP84iSH2vMLg/yRTQwtp6zEYyzWysNt+a1jrGGQ+
-         0ncxcwhfgZLDkFYyKr7A2jAAPNv2PtCzGrDA9kalFlHGr1B1Z+9Z8jdEgyTdgDWWkA
-         lAbtBkNIrAgSlM27wV1Q3ZOF2hPGC2Ir1MD9Gt/u5wkk/Rqt8tTp/LPd9EWWngIgvj
-         Za6ub5QpSHvJg==
-Date:   Tue, 1 Aug 2023 10:02:16 -0300
-From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH] tty: n_gsm: require CAP_NET_ADMIN to attach N_GSM0710
- ldisc
-Message-ID: <ZMkCWL4r9Z35j3hC@quatroqueijos.cascardo.eti.br>
-References: <20230731185942.279611-1-cascardo@canonical.com>
- <2023080111-lucid-stiffness-ccfa@gregkh>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 884BB61592;
+        Tue,  1 Aug 2023 13:23:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6884CC433C7;
+        Tue,  1 Aug 2023 13:23:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1690896229;
+        bh=5q/CMepqEmFV80SLOi54Dgdhh+HQuHJoSqdQhC4cuYI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=v6HzGR7itk/BVX7PNS6dpsRIXsD4RuE8WPspCdvfLqWQM2aXPdujXuO+ApDOuzBGw
+         M5CGNVonoCQlYO8m50FnewczAY9BU6dpL/WF+wY6iFiklSXzh4jW8OL+2kr1dYcUVg
+         Ey26dMf+5tkTd2OFkqCJSiOkXTW1XHFETP85BsR8=
+Date:   Tue, 1 Aug 2023 15:23:46 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     oushixiong <oushixiong@kylinos.cn>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2] tty: vt: Remove some repetitive initialization
+Message-ID: <2023080103-yearling-backfire-4875@gregkh>
+References: <20230801115724.1428952-1-oushixiong@kylinos.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2023080111-lucid-stiffness-ccfa@gregkh>
+In-Reply-To: <20230801115724.1428952-1-oushixiong@kylinos.cn>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 01, 2023 at 06:53:30AM +0200, Greg Kroah-Hartman wrote:
-> On Mon, Jul 31, 2023 at 03:59:42PM -0300, Thadeu Lima de Souza Cascardo wrote:
-> > Any unprivileged user can attach N_GSM0710 ldisc, but it requires
-> > CAP_NET_ADMIN to create a GSM network anyway.
-> > 
-> > Require initial namespace CAP_NET_ADMIN to do that.
-> > 
-> > Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+On Tue, Aug 01, 2023 at 07:57:24PM +0800, oushixiong wrote:
 > 
-> What commit id does this fix?  Or has this always been a problem?
-> 
-> thanks,
-> 
-> greg k-h
+> Members vc_col???vc_rows and vc_size_row of the struct vc_data have been
 
-This has always been like this. It is not really fixing a specific commit, but
-introducing further restriction on access.
+Odd ??? characters?
 
-Cascardo.
+> initialized in visual_init(), so it no longer to initialized them again
+> in vc_init().
+> 
+> v1->v2:
+> 	- Fix the comment.
+
+This needs to be below the --- line, right?
+
+> 
+> Signed-off-by: oushixiong <oushixiong@kylinos.cn>
+> ---
+>  drivers/tty/vt/vt.c | 16 ++++------------
+>  1 file changed, 4 insertions(+), 12 deletions(-)
+
+thanks.
+
+greg k-h
