@@ -2,69 +2,120 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B909EEB64DD
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Aug 2023 05:48:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EA93EB64DD
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Aug 2023 06:23:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbjHAFsu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Aug 2023 01:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53762 "EHLO
+        id S230442AbjHAGXD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Aug 2023 02:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229921AbjHAFst (ORCPT
+        with ESMTP id S231468AbjHAGWs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Aug 2023 01:48:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095AB1FCA;
-        Mon, 31 Jul 2023 22:48:44 -0700 (PDT)
+        Tue, 1 Aug 2023 02:22:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD20E1BF1;
+        Mon, 31 Jul 2023 23:22:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65A1661473;
-        Tue,  1 Aug 2023 05:48:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46A2FC433C7;
-        Tue,  1 Aug 2023 05:48:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1690868923;
-        bh=CSYR83m0hWJjYjIRujwvyFiMN2MH6lGieHS+KpcH5TI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=F+v+oBPjg7WgK2jhl4qBub9O18tXXnx6yR9HpjbyTlMTq9j8VrdTh2kEtcaJVlg7o
-         sy4fvYWyyOeeGWhGez0j+4ln+DJHQxEQOJQALxK2wxNEOlvwQiTgJN1yCJJoVGWFqD
-         ypC6WdR6ijmYOJLItZ5htFUzFNLsgyH0cDPpWG4w=
-Date:   Tue, 1 Aug 2023 07:48:40 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Johan Hovold <johan+linaro@kernel.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Tony Lindgren <tony@atomide.com>, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH 0/3] PM / wakeirq: fix wake irq arming
-Message-ID: <2023080129-district-punk-3da3@gregkh>
-References: <20230713145741.30390-1-johan+linaro@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 354626147D;
+        Tue,  1 Aug 2023 06:22:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94D5CC433C9;
+        Tue,  1 Aug 2023 06:22:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1690870966;
+        bh=b2RgmgrZgvx8gY0C2fKs3oh+azWjdXtoP4cL2Idz4YQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=F7RwOb7oUztbzNAhEda9ikSF6FSSik48MGrDJVno2hY8EGt94fNSgeklPels0sqy/
+         ekGIXqs1rIX+lqgmqiCbMJ4RRQqhD0I5PFZ5U61ItHDTgxTDSnrbo/i5NWHKr672TQ
+         u16Gr0Sz9UP84+M11kkSOn6ZOabbRqBP5eWlBuNewTTrVrc2Kznm1/ABduiVtBx1+U
+         QGPlRY38tDc7yiDbuYiJUFTXVT3J+jbcRG+qRv/iqzg83wIYgsmwXaIvf5Sm9BLS7I
+         QMWbmKg77O4YVa+uWl2K918TxGce9WZNxM7BlhuiKbP8sOnQwTGTZqeVh/WozHA3hI
+         cFS4s7uOkcCyQ==
+From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        Max Staudt <max@enpas.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 1/2] can: can327: remove casts from tty->disc_data
+Date:   Tue,  1 Aug 2023 08:22:36 +0200
+Message-ID: <20230801062237.2687-2-jirislaby@kernel.org>
+X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20230801062237.2687-1-jirislaby@kernel.org>
+References: <20230801062237.2687-1-jirislaby@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230713145741.30390-1-johan+linaro@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jul 13, 2023 at 04:57:38PM +0200, Johan Hovold wrote:
-> When reviewing the Qualcomm serial-driver suspend implementation I
-> noticed the odd runtime PM state update which had snuck in. Turns out it
-> was added to work around a bug in PM core which prevented drivers not
-> implementing runtime PM from using dedicated wake irqs.
-> 
-> This series fixes the wake irq arming and drops the unused wake irq
-> enable helpers before dropping the bogus runtime PM state update in the
-> Qualcomm driver.
-> 
-> I suggest that Rafael takes all of these through his tree.
+tty->disc_data is 'void *', so there is no need to cast from that.
+Therefore remove the casts and assign the pointer directly.
 
-I agree:
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Cc: Max Staudt <max@enpas.org>
+Cc: Wolfgang Grandegger <wg@grandegger.com>
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc: linux-can@vger.kernel.org
+Cc: netdev@vger.kernel.org
+---
+ drivers/net/can/can327.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+diff --git a/drivers/net/can/can327.c b/drivers/net/can/can327.c
+index dc7192ecb001..ee8a977acc8d 100644
+--- a/drivers/net/can/can327.c
++++ b/drivers/net/can/can327.c
+@@ -888,7 +888,7 @@ static bool can327_is_valid_rx_char(u8 c)
+ static void can327_ldisc_rx(struct tty_struct *tty, const unsigned char *cp,
+ 			    const char *fp, int count)
+ {
+-	struct can327 *elm = (struct can327 *)tty->disc_data;
++	struct can327 *elm = tty->disc_data;
+ 	size_t first_new_char_idx;
+ 
+ 	if (elm->uart_side_failure)
+@@ -990,7 +990,7 @@ static void can327_ldisc_tx_worker(struct work_struct *work)
+ /* Called by the driver when there's room for more data. */
+ static void can327_ldisc_tx_wakeup(struct tty_struct *tty)
+ {
+-	struct can327 *elm = (struct can327 *)tty->disc_data;
++	struct can327 *elm = tty->disc_data;
+ 
+ 	schedule_work(&elm->tx_work);
+ }
+@@ -1067,7 +1067,7 @@ static int can327_ldisc_open(struct tty_struct *tty)
+  */
+ static void can327_ldisc_close(struct tty_struct *tty)
+ {
+-	struct can327 *elm = (struct can327 *)tty->disc_data;
++	struct can327 *elm = tty->disc_data;
+ 
+ 	/* unregister_netdev() calls .ndo_stop() so we don't have to. */
+ 	unregister_candev(elm->dev);
+@@ -1092,7 +1092,7 @@ static void can327_ldisc_close(struct tty_struct *tty)
+ static int can327_ldisc_ioctl(struct tty_struct *tty, unsigned int cmd,
+ 			      unsigned long arg)
+ {
+-	struct can327 *elm = (struct can327 *)tty->disc_data;
++	struct can327 *elm = tty->disc_data;
+ 	unsigned int tmp;
+ 
+ 	switch (cmd) {
+-- 
+2.41.0
+
