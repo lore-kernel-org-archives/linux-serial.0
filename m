@@ -2,126 +2,104 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72AFBEB64DD
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Aug 2023 02:21:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99FDCC001DE
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Aug 2023 09:23:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231461AbjHBCVK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Aug 2023 22:21:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33654 "EHLO
+        id S232676AbjHBJX6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 2 Aug 2023 05:23:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229801AbjHBCVJ (ORCPT
+        with ESMTP id S232257AbjHBJX5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Aug 2023 22:21:09 -0400
-Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67ACA268C;
-        Tue,  1 Aug 2023 19:21:04 -0700 (PDT)
-X-UUID: 7367eb9a2e6443f39a12e99cb948003b-20230802
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.28,REQID:8376d2ec-ce1e-435e-a72a-67717cf55e9b,IP:5,U
-        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:-15,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
-        N:release,TS:-10
-X-CID-INFO: VERSION:1.1.28,REQID:8376d2ec-ce1e-435e-a72a-67717cf55e9b,IP:5,URL
-        :0,TC:0,Content:0,EDM:0,RT:0,SF:-15,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-        release,TS:-10
-X-CID-META: VersionHash:176cd25,CLOUDID:564acaa0-0933-4333-8d4f-6c3c53ebd55b,B
-        ulkID:230802102054NQT1HBG8,BulkQuantity:0,Recheck:0,SF:24|17|19|44|102,TC:
-        nil,Content:0,EDM:-3,IP:-2,URL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OS
-        I:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0
-X-CID-BVR: 0
-X-CID-BAS: 0,_,0,_
-X-CID-FACTOR: TF_CID_SPAM_FSI,TF_CID_SPAM_SNR,TF_CID_SPAM_FAS,TF_CID_SPAM_FSD
-X-UUID: 7367eb9a2e6443f39a12e99cb948003b-20230802
-X-User: oushixiong@kylinos.cn
-Received: from localhost.localdomain [(111.48.58.12)] by mailgw
-        (envelope-from <oushixiong@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 153383898; Wed, 02 Aug 2023 10:20:51 +0800
-From:   oushixiong <oushixiong@kylinos.cn>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Wed, 2 Aug 2023 05:23:57 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 46784E7;
+        Wed,  2 Aug 2023 02:23:56 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 7D0B480AE;
+        Wed,  2 Aug 2023 09:23:55 +0000 (UTC)
+Date:   Wed, 2 Aug 2023 12:23:54 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     kernel test robot <oliver.sang@intel.com>
+Cc:     oe-lkp@lists.linux.dev, lkp@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        oushixiong <oushixiong@kylinos.cn>
-Subject: [PATCH v3] tty: vt: Remove some repetitive initialization
-Date:   Wed,  2 Aug 2023 10:20:49 +0800
-Message-Id: <20230802022049.1674070-1-oushixiong@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+Subject: Re: [PATCH v5 3/3] serial: core: Fix serial core controller port
+ name to show controller id
+Message-ID: <20230802092354.GC14799@atomide.com>
+References: <20230725054216.45696-4-tony@atomide.com>
+ <202308021529.35b3ad6c-oliver.sang@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202308021529.35b3ad6c-oliver.sang@intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Members vc_col, vc_rows and vc_size_row of the struct vc_data have been
-initialized in visual_init(), so it no longer to initialized them again
-in vc_init().
+* kernel test robot <oliver.sang@intel.com> [230802 08:16]:
+> from serial, we observed last print out is:
+> 
+> [   15.584772][  T954] EDAC MC0: Giving out device to module skx_edac controller Skylake Socket#0 IMC#0: DEV 0000:3a:0a.0 (INTERRUPT)
+> [   15.597328][  T954] EDAC MC1: Giving out device to module skx_edac controller Skylake Socket#0 IMC#1: DEV 0000:3a:0c.0 (INTERRUPT)
+> [   15.610326][  T954] EDAC MC2: Giving out device to module skx_edac controller Skylake Socket#1 IMC#0: DEV 0000:ae:0a.0 (INTERRUPT)
+> [   15.623375][  T954] EDAC MC3: Giving out device to module skx_edac controller Skylake Socket#1 IMC#1: DEV 0000:ae:0c.0 (INTERRUPT)
+> [   15.640145][   T19] intel_rapl_common: Found RAPL domain package
+> [   15.655890][   T19] intel_rapl_common: Found RAPL domain dram
+> [   15.661983][   T19] intel_rapl_common: package-0:package:long_term locked by BIOS
+> [   15.678564][   T19] intel_rapl_common: package-0:package:short_term locked by BIOS
+> [   15.695259][   T19] intel_rapl_common: package-0:dram:long_term locked by BIOS
+> [   15.713068][  T158] intel_rapl_common: Found RAPL domain package
+> [   15.728719][  T158] intel_rapl_common: Found RAPL domain dram
+> [   15.734743][  T158] intel_rapl_common: package-1:package:long_term locked by BIOS
+> [   15.745244][ T1154] raid6: avx512x4 gen() 18153 MB/s
+> [   15.761297][  T158] intel_rapl_common: package-1:package:short_term locked by BIOS
+> [   15.767244][ T1154] raid6: avx512x2 gen() 18130 MB/s
+> [   15.768866][  T158] intel_rapl_common: package-1:dram:long_term locked by BIOS
+> [   15.790243][ T1154] raid6: avx512x1 gen() 18155 MB/s
+> [   15.812245][ T1154] raid6: avx2x4   gen() 18060 MB/s
+> [   15.834244][ T1154] raid6: avx2x2   gen() 18076 MB/s
+> [   15.856244][ T1154] raid6: avx2x1   gen() 13836 MB/s
+> [   15.861474][ T1154] raid6: using algorithm avx512x1 gen() 18155 MB/s
+> [   15.884243][ T1154] raid6: .... xor() 27974 MB/s, rmw enabled
+> [   15.890254][ T1154] raid6: using avx512x2 recovery algorithm
+> [   15.897891][ T1154] xor: measuring software checksum speed
+> [   15.904013][ T1154]    prefetch64-sse  : 31308 MB/sec
+> [   15.909878][ T1154]    generic_sse     : 22929 MB/sec
+> [   15.915230][ T1154] xor: using function: prefetch64-sse (31308 MB/sec)
+> [   16.042623][ T1154] Btrfs loaded, zoned=no, fsverity=no
+> [   16.054593][  T930] BTRFS: device fsid e422031c-19be-42f5-ab4f-be5f306aa6e1 devid 1 transid 39725 /dev/sda2 scanned by systemd-udevd (930)
+> 
+> 
+> then the machine is just stuck there. (whole dmesg captured from serial is
+> attached), and the issue is 100% reproducible for this commit.
+> 
+> for parent, we never observed the boot failure.
+> 
+> it looks quite strange to us why this commit could cause this behavior on our
+> machine. could you help check dmesg, config and kernel command line which is
+> also captured in dmesg, etc. and guide us if anything need to be updated to be
+> compatible with this change? Thanks!
 
-Signed-off-by: oushixiong <oushixiong@kylinos.cn>
----
-v1->v2:
-    - Fix the comment.
-v2->v3:
-    - Fix the comment again.
+Thanks for the report. With the ctrl and port prefixes dropped, I broke
+serial_base_match() looks like. As we attempt to continue anyways, things
+still mostly work..
 
- drivers/tty/vt/vt.c | 16 ++++------------
- 1 file changed, 4 insertions(+), 12 deletions(-)
+Greg, can you please drop the related commit?
 
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 1e8e57b45688..cf77011a8f4e 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -140,8 +140,7 @@ EXPORT_SYMBOL(vc_cons);
- static const struct consw *con_driver_map[MAX_NR_CONSOLES];
- 
- static int con_open(struct tty_struct *, struct file *);
--static void vc_init(struct vc_data *vc, unsigned int rows,
--		    unsigned int cols, int do_clear);
-+static void vc_init(struct vc_data *vc, int do_clear);
- static void gotoxy(struct vc_data *vc, int new_x, int new_y);
- static void save_cur(struct vc_data *vc);
- static void reset_terminal(struct vc_data *vc, int do_clear);
-@@ -1103,7 +1102,7 @@ int vc_allocate(unsigned int currcons)	/* return 0 on success */
- 	if (global_cursor_default == -1)
- 		global_cursor_default = 1;
- 
--	vc_init(vc, vc->vc_rows, vc->vc_cols, 1);
-+	vc_init(vc, 1);
- 	vcs_make_sysfs(currcons);
- 	atomic_notifier_call_chain(&vt_notifier_list, VT_ALLOCATE, &param);
- 
-@@ -3398,16 +3397,10 @@ module_param_named(color, default_color, int, S_IRUGO | S_IWUSR);
- module_param_named(italic, default_italic_color, int, S_IRUGO | S_IWUSR);
- module_param_named(underline, default_underline_color, int, S_IRUGO | S_IWUSR);
- 
--static void vc_init(struct vc_data *vc, unsigned int rows,
--		    unsigned int cols, int do_clear)
-+static void vc_init(struct vc_data *vc, int do_clear)
- {
- 	int j, k ;
- 
--	vc->vc_cols = cols;
--	vc->vc_rows = rows;
--	vc->vc_size_row = cols << 1;
--	vc->vc_screenbuf_size = vc->vc_rows * vc->vc_size_row;
--
- 	set_origin(vc);
- 	vc->vc_pos = vc->vc_origin;
- 	reset_vc(vc);
-@@ -3475,8 +3468,7 @@ static int __init con_init(void)
- 		visual_init(vc, currcons, 1);
- 		/* Assuming vc->vc_{cols,rows,screenbuf_size} are sane here. */
- 		vc->vc_screenbuf = kzalloc(vc->vc_screenbuf_size, GFP_NOWAIT);
--		vc_init(vc, vc->vc_rows, vc->vc_cols,
--			currcons || !vc->vc_sw->con_save_screen);
-+		vc_init(vc, currcons || !vc->vc_sw->con_save_screen);
- 	}
- 	currcons = fg_console = 0;
- 	master_display_fg = vc = vc_cons[currcons].d;
--- 
-2.25.1
+It's the following commit:
 
+1ef2c2df1199 ("serial: core: Fix serial core controller port name to show controller id")
 
-No virus found
-		Checked by Hillstone Network AntiVirus
+Regards,
+
+Tony
