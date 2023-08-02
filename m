@@ -2,133 +2,72 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC00EC001E0
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Aug 2023 13:49:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0844C001DF
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Aug 2023 15:21:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234372AbjHBNtR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 2 Aug 2023 09:49:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41914 "EHLO
+        id S235155AbjHBPV5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 2 Aug 2023 11:21:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234554AbjHBNtH (ORCPT
+        with ESMTP id S235040AbjHBPVk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 2 Aug 2023 09:49:07 -0400
+        Wed, 2 Aug 2023 11:21:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D9F2D45;
-        Wed,  2 Aug 2023 06:49:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74C516E8E;
+        Wed,  2 Aug 2023 08:18:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FA4B618F1;
-        Wed,  2 Aug 2023 13:49:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45B56C433C8;
-        Wed,  2 Aug 2023 13:49:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1690984142;
-        bh=v4jY1Gnnh7BJLrSBv3CEToi+sTpVMfrijbgTYHUZl5o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VtY7B05Y3BJsPCw9G1Lp0bugaHOHxnhSszQeKSEdsOAYl65UyKkA4YSu4jiDSlg1C
-         YcPCIyD3imXJ2+CA/ek2KQ9lWI8zXJ91yLa/6iVBLqrvGaK40tWGpBlZBojIo5XHOP
-         kNAecNhDPgIt/uLFlRiCM5s5N3zbVsfL/6WqCxas=
-Date:   Wed, 2 Aug 2023 15:49:00 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: Update TTY layer for lists and recently
- added files
-Message-ID: <2023080250-fender-salute-9830@gregkh>
-References: <20230721072334.59272-1-tony@atomide.com>
- <ZLpboaXKVOOjeGJ+@smile.fi.intel.com>
- <20230724045327.GV5194@atomide.com>
- <2023072517-onward-payment-569d@gregkh>
- <2023072530-wired-chaps-c1e3@gregkh>
- <edb0414f-3808-8651-4956-8ec34b056901@kernel.org>
- <20230802120530.GE14799@atomide.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A6DB619F4;
+        Wed,  2 Aug 2023 15:17:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB5F1C433C8;
+        Wed,  2 Aug 2023 15:17:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1690989447;
+        bh=zCG2ZBd2we+fd27UTmu6rhjgwUlTuUjqhSSKE4Jo9tk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=s7SFB7RKYOBIxWmgwOhfXom5MqafkZjArUC6xzXeLX3sHSZzxTk7UfBhdK3zXnbuQ
+         G08WzNpkP44JpVBQ5gAtNY8ESItymYb8yF76eSCFmbPkRbqa0fmV3I6KdH152EScuC
+         eCeBCADPOarvKkijcxa4rRGZD7VZFWntEZv+/gnzvMLbKf+4RFCIaD/iBYJU0sN7yG
+         t0dLfP8SB51iCPmvjg7JxrhRc01NlEiD25F2lSdL75RyHI5hh8oieHtMa2OiMJTf57
+         sBukbpb5rXpKvUiq/ASVYpbZ7+jhja2wqf5hAfe4awmTq6dfioLf9XsigFujOc90L7
+         qegjIB1U2nmKA==
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] serial: 8250_dw: fall back to poll if there's no interrupt
+Date:   Wed,  2 Aug 2023 23:05:43 +0800
+Message-Id: <20230802150545.3742-1-jszhang@kernel.org>
+X-Mailer: git-send-email 2.40.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230802120530.GE14799@atomide.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Aug 02, 2023 at 03:05:30PM +0300, Tony Lindgren wrote:
-> * Jiri Slaby <jirislaby@kernel.org> [230726 10:12]:
-> > On 25. 07. 23, 19:29, Greg Kroah-Hartman wrote:
-> > > On Tue, Jul 25, 2023 at 07:28:46PM +0200, Greg Kroah-Hartman wrote:
-> > > > On Mon, Jul 24, 2023 at 07:53:27AM +0300, Tony Lindgren wrote:
-> > > > > * Andy Shevchenko <andriy.shevchenko@intel.com> [230721 10:19]:
-> > > > > > On Fri, Jul 21, 2023 at 10:23:32AM +0300, Tony Lindgren wrote:
-> > > > > > > Add mailing lists for linux-serial and lkml for the TTY layer. And let's
-> > > > > > > list the recently added files. This makes it easier for get_maintainer.pl
-> > > > > > > to include linux-serial for patches.
-> > > > > > 
-> > > > > > Shouldn't serial_* stuff go to the "SERIAL DRIVERS" section?
-> > > > > 
-> > > > > Not sure if there's some reason we have "TTY LAYER" with serial_core
-> > > > > files. If not, yeah let's move the serial files.
-> > > > 
-> > > > I'll take this patch, can you send a new one that removes the serial
-> > > > files from this entry as I don't think they are needed in here anymore.
-> > > 
-> > > Better yet, they should be merged probably.  Although I don't know if
-> > > Jiri wants to be responsible for serial stuff, that's his call...
-> > 
-> > No problem. I actually didn't realize they are separate. So feel free to
-> > submit a patch, so we have a single MAINTAINTERS file entry...
-> 
-> How about something like this?
-> 
-> Tony
-> 
-> 8< ----------------------
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -19319,13 +19319,6 @@ F:	Documentation/devicetree/bindings/serial/serial.yaml
->  F:	drivers/tty/serdev/
->  F:	include/linux/serdev.h
->  
-> -SERIAL DRIVERS
-> -M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> -L:	linux-serial@vger.kernel.org
-> -S:	Maintained
-> -F:	Documentation/devicetree/bindings/serial/
-> -F:	drivers/tty/serial/
-> -
->  SERIAL IR RECEIVER
->  M:	Sean Young <sean@mess.org>
->  L:	linux-media@vger.kernel.org
-> @@ -21760,20 +21753,16 @@ W:	https://github.com/srcres258/linux-doc
->  T:	git git://github.com/srcres258/linux-doc.git doc-zh-tw
->  F:	Documentation/translations/zh_TW/
->  
-> -TTY LAYER
-> +TTY LAYER AND SERIAL DRIVERS
->  M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->  M:	Jiri Slaby <jirislaby@kernel.org>
->  L:	linux-kernel@vger.kernel.org
->  L:	linux-serial@vger.kernel.org
->  S:	Supported
->  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
-> +F:	Documentation/devicetree/bindings/serial/
->  F:	Documentation/driver-api/serial/
->  F:	drivers/tty/
-> -F:	drivers/tty/serial/serial_base.h
-> -F:	drivers/tty/serial/serial_base_bus.c
-> -F:	drivers/tty/serial/serial_core.c
-> -F:	drivers/tty/serial/serial_ctrl.c
-> -F:	drivers/tty/serial/serial_port.c
->  F:	include/linux/selection.h
->  F:	include/linux/serial.h
->  F:	include/linux/serial_core.h
+When there's no irq(this can be due to various reasons, for example,
+no irq from HW support, or we just want to use poll solution, and so
+on), falling back to poll is still better than no support at all.
 
-Fine with me.
+patch1 makes the interrupt property in dt-binding optional
+patch2 falls back to poll if there's no interrupt
+
+Jisheng Zhang (2):
+  dt-bindings: serial: snps-dw-apb-uart: make interrupt optional
+  serial: 8250_dw: fall back to poll if there's no interrupt
+
+ .../devicetree/bindings/serial/snps-dw-apb-uart.yaml      | 1 -
+ drivers/tty/serial/8250/8250_dw.c                         | 8 ++++++--
+ 2 files changed, 6 insertions(+), 3 deletions(-)
+
+-- 
+2.40.1
+
