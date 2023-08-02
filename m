@@ -2,76 +2,126 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D039BC00528
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Aug 2023 18:44:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72AFBEB64DD
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Aug 2023 02:21:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231543AbjHASor (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Aug 2023 14:44:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55708 "EHLO
+        id S231461AbjHBCVK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Aug 2023 22:21:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231354AbjHASoq (ORCPT
+        with ESMTP id S229801AbjHBCVJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Aug 2023 14:44:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C118BDB;
-        Tue,  1 Aug 2023 11:44:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55A1C61680;
-        Tue,  1 Aug 2023 18:44:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81C59C433CB;
-        Tue,  1 Aug 2023 18:44:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1690915484;
-        bh=/TrmjT4bTyWSiHldWLslv4BlOKRS/OItNzfwUm6hP04=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=sgs6GhUJTWgUlnE0hO3li3xfYaLWmxKtLwsUjUl+cUtVNzR3eJS+xv48j5pAcDCVF
-         byy+OxoPA6vjC/Hil9eDY/8WN5N3WCYFXbX37RJFexm/a1HShf0Rtt6tV5kMPdN9lj
-         RBQh7Du4SGa3zAtdjf9QovoEXMH2EZ4Pqcm35CxAWuY9rus7AjK3JmXRLQkzNNmun2
-         rwt+ghBXOlLb4YSq6iqzzNUwUd6dch6X12fCMptf45Rc75IDPdgeeOhpO55B0E9MwH
-         f5nIfO+LpOPEy/y+PG0AAi23yqy+1gQc3lvxPEdG6OTC3j7kVTBIWViWhkk01hX86b
-         C5LHdn/YWFCoQ==
-From:   Vinod Koul <vkoul@kernel.org>
-To:     linux-serial@vger.kernel.org,
-        Robert Baldyga <r.baldyga@samsung.com>,
-        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Richard Tresidder <rtresidd@electromag.com.au>,
-        stable@vger.kernel.org
-In-Reply-To: <20230526105434.14959-1-ilpo.jarvinen@linux.intel.com>
-References: <20230526105434.14959-1-ilpo.jarvinen@linux.intel.com>
-Subject: Re: [PATCH] dmaengine: pl330: Return DMA_PAUSED when transaction
- is paused
-Message-Id: <169091548212.69326.13915666270056885715.b4-ty@kernel.org>
-Date:   Wed, 02 Aug 2023 00:14:42 +0530
+        Tue, 1 Aug 2023 22:21:09 -0400
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67ACA268C;
+        Tue,  1 Aug 2023 19:21:04 -0700 (PDT)
+X-UUID: 7367eb9a2e6443f39a12e99cb948003b-20230802
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.28,REQID:8376d2ec-ce1e-435e-a72a-67717cf55e9b,IP:5,U
+        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:-15,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
+        N:release,TS:-10
+X-CID-INFO: VERSION:1.1.28,REQID:8376d2ec-ce1e-435e-a72a-67717cf55e9b,IP:5,URL
+        :0,TC:0,Content:0,EDM:0,RT:0,SF:-15,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+        release,TS:-10
+X-CID-META: VersionHash:176cd25,CLOUDID:564acaa0-0933-4333-8d4f-6c3c53ebd55b,B
+        ulkID:230802102054NQT1HBG8,BulkQuantity:0,Recheck:0,SF:24|17|19|44|102,TC:
+        nil,Content:0,EDM:-3,IP:-2,URL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OS
+        I:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-CID-FACTOR: TF_CID_SPAM_FSI,TF_CID_SPAM_SNR,TF_CID_SPAM_FAS,TF_CID_SPAM_FSD
+X-UUID: 7367eb9a2e6443f39a12e99cb948003b-20230802
+X-User: oushixiong@kylinos.cn
+Received: from localhost.localdomain [(111.48.58.12)] by mailgw
+        (envelope-from <oushixiong@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 153383898; Wed, 02 Aug 2023 10:20:51 +0800
+From:   oushixiong <oushixiong@kylinos.cn>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        oushixiong <oushixiong@kylinos.cn>
+Subject: [PATCH v3] tty: vt: Remove some repetitive initialization
+Date:   Wed,  2 Aug 2023 10:20:49 +0800
+Message-Id: <20230802022049.1674070-1-oushixiong@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.12.3
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Members vc_col, vc_rows and vc_size_row of the struct vc_data have been
+initialized in visual_init(), so it no longer to initialized them again
+in vc_init().
 
-On Fri, 26 May 2023 13:54:34 +0300, Ilpo Järvinen wrote:
-> pl330_pause() does not set anything to indicate paused condition which
-> causes pl330_tx_status() to return DMA_IN_PROGRESS. This breaks 8250
-> DMA flush after the fix in commit 57e9af7831dc ("serial: 8250_dma: Fix
-> DMA Rx rearm race"). The function comment for pl330_pause() claims
-> pause is supported but resume is not which is enough for 8250 DMA flush
-> to work as long as DMA status reports DMA_PAUSED when appropriate.
-> 
-> [...]
+Signed-off-by: oushixiong <oushixiong@kylinos.cn>
+---
+v1->v2:
+    - Fix the comment.
+v2->v3:
+    - Fix the comment again.
 
-Applied, thanks!
+ drivers/tty/vt/vt.c | 16 ++++------------
+ 1 file changed, 4 insertions(+), 12 deletions(-)
 
-[1/1] dmaengine: pl330: Return DMA_PAUSED when transaction is paused
-      commit: 85648667b946069b2a3765577c418705c65c2ddf
-
-Best regards,
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index 1e8e57b45688..cf77011a8f4e 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -140,8 +140,7 @@ EXPORT_SYMBOL(vc_cons);
+ static const struct consw *con_driver_map[MAX_NR_CONSOLES];
+ 
+ static int con_open(struct tty_struct *, struct file *);
+-static void vc_init(struct vc_data *vc, unsigned int rows,
+-		    unsigned int cols, int do_clear);
++static void vc_init(struct vc_data *vc, int do_clear);
+ static void gotoxy(struct vc_data *vc, int new_x, int new_y);
+ static void save_cur(struct vc_data *vc);
+ static void reset_terminal(struct vc_data *vc, int do_clear);
+@@ -1103,7 +1102,7 @@ int vc_allocate(unsigned int currcons)	/* return 0 on success */
+ 	if (global_cursor_default == -1)
+ 		global_cursor_default = 1;
+ 
+-	vc_init(vc, vc->vc_rows, vc->vc_cols, 1);
++	vc_init(vc, 1);
+ 	vcs_make_sysfs(currcons);
+ 	atomic_notifier_call_chain(&vt_notifier_list, VT_ALLOCATE, &param);
+ 
+@@ -3398,16 +3397,10 @@ module_param_named(color, default_color, int, S_IRUGO | S_IWUSR);
+ module_param_named(italic, default_italic_color, int, S_IRUGO | S_IWUSR);
+ module_param_named(underline, default_underline_color, int, S_IRUGO | S_IWUSR);
+ 
+-static void vc_init(struct vc_data *vc, unsigned int rows,
+-		    unsigned int cols, int do_clear)
++static void vc_init(struct vc_data *vc, int do_clear)
+ {
+ 	int j, k ;
+ 
+-	vc->vc_cols = cols;
+-	vc->vc_rows = rows;
+-	vc->vc_size_row = cols << 1;
+-	vc->vc_screenbuf_size = vc->vc_rows * vc->vc_size_row;
+-
+ 	set_origin(vc);
+ 	vc->vc_pos = vc->vc_origin;
+ 	reset_vc(vc);
+@@ -3475,8 +3468,7 @@ static int __init con_init(void)
+ 		visual_init(vc, currcons, 1);
+ 		/* Assuming vc->vc_{cols,rows,screenbuf_size} are sane here. */
+ 		vc->vc_screenbuf = kzalloc(vc->vc_screenbuf_size, GFP_NOWAIT);
+-		vc_init(vc, vc->vc_rows, vc->vc_cols,
+-			currcons || !vc->vc_sw->con_save_screen);
++		vc_init(vc, currcons || !vc->vc_sw->con_save_screen);
+ 	}
+ 	currcons = fg_console = 0;
+ 	master_display_fg = vc = vc_cons[currcons].d;
 -- 
-~Vinod
+2.25.1
 
 
+No virus found
+		Checked by Hillstone Network AntiVirus
