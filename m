@@ -2,50 +2,40 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2024BC001DF
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Aug 2023 21:57:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8A0CC001DE
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Aug 2023 22:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbjHBV54 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 2 Aug 2023 17:57:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51402 "EHLO
+        id S231664AbjHBWyH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 2 Aug 2023 18:54:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230223AbjHBV5v (ORCPT
+        with ESMTP id S230461AbjHBWyG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 2 Aug 2023 17:57:51 -0400
-Received: from mgamail.intel.com (unknown [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A832E173A;
-        Wed,  2 Aug 2023 14:57:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691013470; x=1722549470;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=qXkV3RSJ67wGN/RTTtLjS+7GJSXx5qeFXBCzPChuO04=;
-  b=OcsPkVyRGYaIB8Z+YKr4M0zLwcdfPlDlKyQ1hg9gLRSglCvGBR+V719j
-   SV8+yuirBCzHOYGTsnRIfOzkwcE2ylEbpW5F6rxE8K1iFFjUO9oPO+rr+
-   CXz2e+a7b9z1YT/y1d8OpdFhvgFjtGQUvk8b2Yjl+9flWtb0yomAFwdo5
-   harcdTy5CbM7zfv8zKm0xy4aHr1fByXYrYn/IDcy0uJ+EBwSY4RzMvQeD
-   IK6aRV+tORRWhQ5BLvcxzfMuOgLgtRR0DsNQVAUAfkexF3Vz41lM20E8D
-   dSjRFa3/ZSm8rvoDgV+gTSnWS4ZRh27kncRGnZjbDqUBgzUNqXM/8cI6T
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="400647660"
-X-IronPort-AV: E=Sophos;i="6.01,250,1684825200"; 
-   d="scan'208";a="400647660"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 14:57:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="706320847"
-X-IronPort-AV: E=Sophos;i="6.01,250,1684825200"; 
-   d="scan'208";a="706320847"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga006.jf.intel.com with ESMTP; 02 Aug 2023 14:57:46 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qRJqj-000CNh-08;
-        Thu, 03 Aug 2023 00:57:45 +0300
-Date:   Thu, 3 Aug 2023 00:57:44 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Conor Dooley <conor@kernel.org>
+        Wed, 2 Aug 2023 18:54:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C61127;
+        Wed,  2 Aug 2023 15:54:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 408AF61B76;
+        Wed,  2 Aug 2023 22:54:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 579A0C433C7;
+        Wed,  2 Aug 2023 22:54:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1691016843;
+        bh=YiU0aA6053zZBxMpkzJTUPwbuvPZtBeKnaf2p7gJrCU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Yu5QJm5y8zR+pdtBL5JD45JWGYCMTAwCcZDs7Lxa2dB+oLx8+HOEyqkGXNVrtxqbq
+         gM+Jh4P+J/c188mzyOBe85KvyQrq/Ya05rvkkRKVsurPSjzhB1Mt5BglDmGCmujESD
+         01AhZS5AYxCwTVf/aqRcz8+JwCPxDsTw3s5rJ341pd4oFMyKg+uwWX2/yYqav6e2Nc
+         I/KUWCfPHRNoOPB1adF9l4mgdJUPXTRyH0UWSVqW/6P8LN99rTc2+Do5G2STJl4ZYk
+         IsnjxdbWUw14ur8OMgPoP9NAv1NWpyyMlORuJBjahGLJO8sImwM8E12kanDseDloZx
+         2bDEyhpFMUROw==
+Date:   Wed, 2 Aug 2023 23:53:59 +0100
+From:   Conor Dooley <conor@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc:     Jisheng Zhang <jszhang@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -57,32 +47,51 @@ Cc:     Jisheng Zhang <jszhang@kernel.org>,
         linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 1/2] dt-bindings: serial: snps-dw-apb-uart: make
  interrupt optional
-Message-ID: <ZMrRWP5mK+nksn4M@smile.fi.intel.com>
+Message-ID: <20230802-risk-getting-e6005e86be81@spud>
 References: <20230802150545.3742-1-jszhang@kernel.org>
  <20230802150545.3742-2-jszhang@kernel.org>
  <20230802-halogen-bungee-63273b2c456c@spud>
+ <ZMrRWP5mK+nksn4M@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="TyQVymKmfkVhVy64"
 Content-Disposition: inline
-In-Reply-To: <20230802-halogen-bungee-63273b2c456c@spud>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <ZMrRWP5mK+nksn4M@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Aug 02, 2023 at 04:43:48PM +0100, Conor Dooley wrote:
-> On Wed, Aug 02, 2023 at 11:05:44PM +0800, Jisheng Zhang wrote:
-> > The driver fall back to poll style when there's no irq. "poll" still
-> > looks better than no support.
-> 
-> What is the user for this where the interrupt is not actually wired up
-> in the hardware?
 
-FYI: kernel console doesn't use interrupts, so for example it might be
-the debug port. Note, I have no idea of the Zhang's case, just my assumption.
+--TyQVymKmfkVhVy64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
-With Best Regards,
-Andy Shevchenko
+On Thu, Aug 03, 2023 at 12:57:44AM +0300, Andy Shevchenko wrote:
+> On Wed, Aug 02, 2023 at 04:43:48PM +0100, Conor Dooley wrote:
+> > On Wed, Aug 02, 2023 at 11:05:44PM +0800, Jisheng Zhang wrote:
+> > > The driver fall back to poll style when there's no irq. "poll" still
+> > > looks better than no support.
+> >=20
+> > What is the user for this where the interrupt is not actually wired up
+> > in the hardware?
+>=20
+> FYI: kernel console doesn't use interrupts, so for example it might be
+> the debug port. Note, I have no idea of the Zhang's case, just my assumpt=
+ion.
 
+I'm less interested in what the software is doing, it's what the device=20
+that has not connected the interrupt is that I am curious about.
 
+--TyQVymKmfkVhVy64
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZMrehgAKCRB4tDGHoIJi
+0pFVAQCP1wynCbszotBg7z6E5V2mul7jaRGS0Hn3LNZOBaczogD+JXolWFJnyohA
+2deDAf/0fHAyq1Uzh0NT1FfEQYKGAgs=
+=yvLF
+-----END PGP SIGNATURE-----
+
+--TyQVymKmfkVhVy64--
