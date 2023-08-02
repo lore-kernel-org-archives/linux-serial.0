@@ -2,90 +2,101 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58312C001E0
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Aug 2023 21:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 792DDC001E0
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Aug 2023 21:56:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233758AbjHBVqQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 2 Aug 2023 17:46:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44284 "EHLO
+        id S231744AbjHBV4H (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 2 Aug 2023 17:56:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232776AbjHBVqB (ORCPT
+        with ESMTP id S229624AbjHBV4G (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 2 Aug 2023 17:46:01 -0400
-Received: from mgamail.intel.com (unknown [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8521930EF;
-        Wed,  2 Aug 2023 14:45:23 -0700 (PDT)
+        Wed, 2 Aug 2023 17:56:06 -0400
+Received: from mgamail.intel.com (unknown [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE2A1712;
+        Wed,  2 Aug 2023 14:56:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691012723; x=1722548723;
+  t=1691013366; x=1722549366;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=MF0JI6IJD9FJEJNY9LMIWv3VjBsDKGG4DVNWrUEzWtE=;
-  b=AvMbZ/RKyxZB9MwgcGHn0Y+63gfUUnkelEboRU0UMwAvONG4Y3+168su
-   qmKZLJBttUJtrI2W3k8NRoLDmAZxIEJRJmNEGcivGIgDAAwfecH/bbs1G
-   wPC5p2qH6cPz9lWfKnMfPY0DptlDuO334fY/LdKrOxNX4qWcZUuP4txeb
-   2kuwQW9IwyvItdbfTEgXaatnZF8QcT7ZEPY1PfH1iaHEn2SzLj29QNeyh
-   tIpucDcVyP28919SvlU2phHoPbkp+pcWDnX4f3QR5KwMJfC9BbiA0/UxT
-   ZNzr9OFwmxbRl9y5qwJi5XEXm11Gw9GVUFIkkPn1frfMom4VPgClRunnB
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="349304400"
+  bh=UPnjyCol6mSkqe/I6LFj5Fg8Cfw99iZMAfmBzpyn1Jk=;
+  b=G0QgTXAQ7nTn7ZFIpI83wZXWnhnMyzft00d0xQ55rrgJU8U4+SbPyfQz
+   xPUGHX+EQL5gk14fDBTrGMAiXSYNvcSjK11gni2E6jk27qncJ/ooCodlj
+   iAjdRBhdURasO3rkLRqjM/fMG94QMDaGMdZN4zovLFofbXAUqJfnGNtD7
+   MQQ6oH9xWlN90sHg8IKjIuwWcBL/9lx0xqt/+1r4dBMSPRaOEcL7NJSm8
+   5xPl2mRYta4jTiMULLhaBZTZljC/O0lsp6IhKfYxBdjGNXlv80JvrVii9
+   H1NIFWIBh8W6xWv4PJ/H/617stm4TnmU5dfxFyGzSOwA3ytKeul3nCdMx
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="354624661"
 X-IronPort-AV: E=Sophos;i="6.01,250,1684825200"; 
-   d="scan'208";a="349304400"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 14:44:39 -0700
+   d="scan'208";a="354624661"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 14:56:05 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="819388386"
+X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="758890861"
 X-IronPort-AV: E=Sophos;i="6.01,250,1684825200"; 
-   d="scan'208";a="819388386"
+   d="scan'208";a="758890861"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by FMSMGA003.fm.intel.com with ESMTP; 02 Aug 2023 14:44:36 -0700
+  by orsmga008.jf.intel.com with ESMTP; 02 Aug 2023 14:56:02 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qRJdy-00HKzs-1m;
-        Thu, 03 Aug 2023 00:44:34 +0300
-Date:   Thu, 3 Aug 2023 00:44:34 +0300
+        id 1qRJp3-0008cb-0q;
+        Thu, 03 Aug 2023 00:56:01 +0300
+Date:   Thu, 3 Aug 2023 00:56:00 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
+To:     Jisheng Zhang <jszhang@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
         Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        kernel test robot <oliver.sang@intel.com>
-Subject: Re: [PATCH] serial: core: Fix serial_base_match() after fixing
- controller port name
-Message-ID: <ZMrOQifgCZqu3YTh@smile.fi.intel.com>
-References: <20230802114846.21899-1-tony@atomide.com>
- <2023080224-nutrient-regress-c95e@gregkh>
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] serial: 8250_dw: fall back to poll if there's no
+ interrupt
+Message-ID: <ZMrQ8IXyqGqTKR79@smile.fi.intel.com>
+References: <20230802150545.3742-1-jszhang@kernel.org>
+ <20230802150545.3742-3-jszhang@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2023080224-nutrient-regress-c95e@gregkh>
+In-Reply-To: <20230802150545.3742-3-jszhang@kernel.org>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Aug 02, 2023 at 03:48:26PM +0200, Greg Kroah-Hartman wrote:
-> On Wed, Aug 02, 2023 at 02:48:43PM +0300, Tony Lindgren wrote:
-> > While fixing DEVNAME to be more usable, I broke serial_base_match() as
-> > the ctrl and port prefix for device seemed unnecessary.
-> > 
-> > Let's fix the issue by checking against dev->type and drv->name.
+On Wed, Aug 02, 2023 at 11:05:45PM +0800, Jisheng Zhang wrote:
+> When there's no irq(this can be due to various reasons, for example,
+> no irq from HW support, or we just want to use poll solution, and so
+> on), falling back to poll is still better than no support at all.
 
 ...
 
-> > +	    !strncmp(SERIAL_BASE_CTRL_NAME, drv->name, 4))
-> 
-> maybe:
-> 	    !strncmp(SERIAL_BASE_CTRL_NAME, drv->name, strlen(SERIAL_BASE_CTRL_NAME))
-> 
-> as "4" is a magic number :)
+>  	irq = platform_get_irq(pdev, 0);
 
-str_has_prefix() hides that.
+You will still have an error message. Perhaps you need to replace it with
+
+	irq = platform_get_irq_optional(pdev, 0);
+
+> -	if (irq < 0)
+> -		return irq;
+> +	if (irq < 0) {
+> +		if (irq != -ENXIO)
+> +			return irq;
+> +		/* no interrupt -> fall back to polling */
+> +		irq = 0;
+> +	}
+
+This can be slightly modified:
+
+	/* no interrupt -> fall back to polling */
+	if (irq == -ENXIO)
+		irq = 0;
+	if (irq < 0)
+		return irq;
 
 -- 
 With Best Regards,
