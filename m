@@ -2,116 +2,95 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2F28C04A94
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Aug 2023 18:20:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9454C04A94
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Aug 2023 18:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233242AbjHBSUG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 2 Aug 2023 14:20:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34544 "EHLO
+        id S230262AbjHBSca (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 2 Aug 2023 14:32:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230440AbjHBST6 (ORCPT
+        with ESMTP id S230085AbjHBSc3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 2 Aug 2023 14:19:58 -0400
+        Wed, 2 Aug 2023 14:32:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814ED1FC2;
-        Wed,  2 Aug 2023 11:19:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB80A1724;
+        Wed,  2 Aug 2023 11:32:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 172D261A88;
-        Wed,  2 Aug 2023 18:19:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ADBFC433C8;
-        Wed,  2 Aug 2023 18:19:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A53761AA9;
+        Wed,  2 Aug 2023 18:32:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAE1BC433C7;
+        Wed,  2 Aug 2023 18:32:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1691000396;
-        bh=2mY6RWsid4MKxODez7iIsenojC64trTIG4Y5LLPdYRY=;
+        s=k20201202; t=1691001147;
+        bh=835Hv4QBvbzeO4Zgwkya1w0YOfQH/0t6IhAjHwIhDMU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gyRrIVt8EH9ix5L/EA/uYiTRQ/fdg9/fdoYbDvRD2oM4YfuZwhxpUAG6li80w+7pa
-         piQQYRdS4fQPkqlLZB/R619xQZPmwh8xFs0mMD0t3JURPZ0A7J08p13lPmQ2L5/J5G
-         DUV1FgERFKmi5dynVloIcwTiK9Uu9zpO6rMjr3AX/aW4ZwKcrIecJftQ5iMMbuHJx6
-         04uOE2TONKBclmoseHrAqdMEGNHMWKTsw3VRLnZOYEEco6cQT98ZGlHlYvC/3cvNRS
-         N6Gj+50yrrTL02dG8X+ObUWYr0Z+GpFLbb6S7NmJ4PSQag68now7dSo5140Jd5g/sC
-         vsUcY/6slGKZg==
-Date:   Wed, 2 Aug 2023 19:19:50 +0100
+        b=ZVNjGtFaE0zjnFTk9s+HwpDFCo/tpQHAZJ84BNz6ff88tcX10hojL68VkjR+ohlry
+         u96A0/ygy4xIFByKUAL91b2N4ShiMoKsScqhl+PxOUET/g/rbMcI8teRAadrGMCV4g
+         rzmEJi5QW+tU9FtkrzqDcbomYmGrZoxQsfmi5AG5yPQo1o1Ph5XpoK2/tPz+/ap/CK
+         PgAE5xCCXICBgDN2z7nupHjl1natQOsi2YTdCrfA+DN13WbuywRnoLlgXqA3hLN7dc
+         LEGYIo4Z3dx819TRF0fpk3g02H6afmE65wgqYasJv2CPdqRbN30+kJdFB19QYigh0s
+         kT2ajEkWg0Z3g==
+Date:   Wed, 2 Aug 2023 19:32:21 +0100
 From:   Mark Brown <broonie@kernel.org>
-To:     kernel test robot <oliver.sang@intel.com>
-Cc:     Tony Lindgren <tony@atomide.com>, oe-lkp@lists.linux.dev,
-        lkp@intel.com, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Andy Shevchenko <andriy.shevchenko@intel.com>,
         Dhruva Gole <d-gole@ti.com>,
         Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         John Ogness <john.ogness@linutronix.de>,
         Johan Hovold <johan@kernel.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Subject: Re: [PATCH v5 3/3] serial: core: Fix serial core controller port
- name to show controller id
-Message-ID: <ca09d15f-50ab-452c-a3d5-f2b4cde6426f@sirena.org.uk>
-References: <20230725054216.45696-4-tony@atomide.com>
- <202308021529.35b3ad6c-oliver.sang@intel.com>
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        kernel test robot <oliver.sang@intel.com>
+Subject: Re: [PATCH] serial: core: Fix serial_base_match() after fixing
+ controller port name
+Message-ID: <1aac1375-e9f8-4fda-9f07-a4cc7cf23142@sirena.org.uk>
+References: <20230802114846.21899-1-tony@atomide.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="FtSNUiXiugn7UOqY"
+        protocol="application/pgp-signature"; boundary="UO+8QaAxAAuPqQDH"
 Content-Disposition: inline
-In-Reply-To: <202308021529.35b3ad6c-oliver.sang@intel.com>
-X-Cookie: Your present plans will be successful.
+In-Reply-To: <20230802114846.21899-1-tony@atomide.com>
+X-Cookie: if it GLISTENS, gobble it!!
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
---FtSNUiXiugn7UOqY
+--UO+8QaAxAAuPqQDH
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 02, 2023 at 04:15:28PM +0800, kernel test robot wrote:
-
-> kernel test robot noticed machine hang on:
-
-> commit: 4de64f4800a581e7eeba6392b3b2ce2131195145 ("[PATCH v5 3/3] serial:=
- core: Fix serial core controller port name to show controller id")
-> url: https://github.com/intel-lab-lkp/linux/commits/Tony-Lindgren/serial-=
-core-Controller-id-cannot-be-negative/20230725-134452
-> base: https://git.kernel.org/cgit/linux/kernel/git/gregkh/tty.git tty-tes=
-ting
-> patch link: https://lore.kernel.org/all/20230725054216.45696-4-tony@atomi=
-de.com/
-> patch subject: [PATCH v5 3/3] serial: core: Fix serial core controller po=
-rt name to show controller id
+On Wed, Aug 02, 2023 at 02:48:43PM +0300, Tony Lindgren wrote:
+> While fixing DEVNAME to be more usable, I broke serial_base_match() as
+> the ctrl and port prefix for device seemed unnecessary.
 >=20
-> in testcase: boot
->=20
-> compiler: gcc-12
-> test machine: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2.10G=
-Hz (Cascade Lake) with 512G memory
+> Let's fix the issue by checking against dev->type and drv->name.
 
-I've also bisected this commit as causing boot hangs on at least the
-i.MX8MP-EVK, though most of the boards in my lab and a huge swathe of
-those in KernelCI are out:
+This fixes boot on at least i.MX8MP-EVK:
 
-   https://linux.kernelci.org/test/job/next/branch/master/kernel/next-20230=
-802/plan/baseline/
+Tested-by: Mark Brown <broonie@kernel.org>
 
-which is having a pretty devastating effect on -next testing.
-
---FtSNUiXiugn7UOqY
+--UO+8QaAxAAuPqQDH
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmTKnkUACgkQJNaLcl1U
-h9BxCwf/fQzBjT6EzjqGQzPFRwTJ/05CYpVVA9bJWr4oG+ZDO1T9djXWj0tbuvc4
-lx2MWX+kIKF2T2BxSU7WORpy0TRvXZn2x0/wahnAt4dOnt18Y48seKNA8iW9P3Vs
-+S23UT+CTkNjHb19/5frPcYgfZwFcF9KJxmRHrkVjPTq24TGDmF59xWhj6Zm1Dej
-fCltnbwBHSL34KThMXcLcp7/SjJdDc1leDneDqsNpIaTb1Um1uvEsP6KWgot60aD
-XvwHZRaEGGszxsXO+hQp1ieYv+1FcnbuXe/ojdsBSCYwPL3tIqywYuyuCpaq/uOp
-1Ur30i38ymeKThvgXlKUKwyYLDtGoQ==
-=crqL
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmTKoTQACgkQJNaLcl1U
+h9B7gwf/eHZzom2Lp5Q3hgclWUDcKlP8GAmA2ed+mD6j+1niucW8gGqaV3Op/7ck
+KbAD34YqjIKLI8xsPYfJO9mKdtVGvks95BnA9EQwyrv12lgfaNI8r/5NZ/zfbAsl
+fjSjQiiwQLOT/yZXgr74kOfN8lPNCR8fIsDcU7JjStqonh0lTRcMEBbf5C3c0rKg
+P2il1HvODhxdayoBSCJ13W7ugEys4cVK7AGWeM3mjSmmujDsDLXj2otpDhn2bLkL
+AOsWxANuSosxrYdcpI4KIZhokbE4xgOWorIS7q3leDvG/nJuM1iDWZnYMy+FApC1
+UhIYerNTSoHW3DzEbvBS9jBRY3i+Rw==
+=pAuJ
 -----END PGP SIGNATURE-----
 
---FtSNUiXiugn7UOqY--
+--UO+8QaAxAAuPqQDH--
