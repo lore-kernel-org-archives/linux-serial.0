@@ -2,103 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CC07EB64DD
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 14:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 345C3C001DF
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 14:40:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236213AbjHCOXN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 10:23:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36952 "EHLO
+        id S236797AbjHCOkZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 10:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236781AbjHCOW7 (ORCPT
+        with ESMTP id S235011AbjHCOkM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 10:22:59 -0400
-Received: from pegase1.c-s.fr (pegase1.c-s.fr [93.17.236.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7673A81;
-        Thu,  3 Aug 2023 07:22:13 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [192.168.12.233])
-        by localhost (Postfix) with ESMTP id 4RGr4m0f4Vz9t4m;
-        Thu,  3 Aug 2023 15:57:12 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase1.c-s.fr ([192.168.12.234])
-        by localhost (pegase1.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id rsocvGl_6HMr; Thu,  3 Aug 2023 15:57:12 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase1.c-s.fr (Postfix) with ESMTP id 4RGr4l6KdWz9t48;
-        Thu,  3 Aug 2023 15:57:11 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id D47548B77C;
-        Thu,  3 Aug 2023 15:57:11 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id 6U3gfTAN2Ygb; Thu,  3 Aug 2023 15:57:11 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.232.144])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 563A28B775;
-        Thu,  3 Aug 2023 15:57:11 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 373Dv4p1494205
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Thu, 3 Aug 2023 15:57:04 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 373Dv4OL494204;
-        Thu, 3 Aug 2023 15:57:04 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Timur Tabi <timur@kernel.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v1 10/12] serial: cpm_uart: Remove stale prototype in powerpc/fsl_soc.c
-Date:   Thu,  3 Aug 2023 15:56:51 +0200
-Message-ID: <2869659e7faa20b0a506347bc4d1059e22709f19.1691068700.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <cover.1691068700.git.christophe.leroy@csgroup.eu>
-References: <cover.1691068700.git.christophe.leroy@csgroup.eu>
-MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1691071001; l=1082; i=christophe.leroy@csgroup.eu; s=20211009; h=from:subject:message-id; bh=3ogOgS2BB6p6HXhiyFQecdAfWGHf7CVyFxNJSBfAzFk=; b=E8KRktKzY074rZpvLdDVgKe+UrCOCH1VCzuESRgFoOFuVRbNGJv4MVUgFa12R5pv5Tc0zcuTx 63OZEfRg8hkAPdNjSzSl94YNPiuyB4Qwym92XxlUuZRvXIuae+FNZq9
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+        Thu, 3 Aug 2023 10:40:12 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B1D2D5F;
+        Thu,  3 Aug 2023 07:39:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
+        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=RwiPZlt5h+l4EEd8rB/jTQqRs++DtmWkgJ+ASZBIevQ=; b=oKnK7lRHjeM0i+OIw/kOkx+eER
+        pTAxR4L3yLU7FPGjZ/jLO9ju5GtEGxxcFGlty1ZuuJqaSLE6WwgWLquAK5abU/hO2oivzTXO1Gokb
+        CQyAKUd87AIH28B+pA77cfx1sqdu8hsCQjS2UOEKPEoIWusrDSBXJwGR9VGDpk43GqjI=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:59988 helo=pettiford)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1qRZSx-0000hw-9W; Thu, 03 Aug 2023 10:38:15 -0400
+Date:   Thu, 3 Aug 2023 10:38:14 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, jirislaby@kernel.org, jringle@gridpoint.com,
+        isaac.true@canonical.com, jesse.sung@canonical.com,
+        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Lech Perczak <lech.perczak@camlingroup.com>
+Message-Id: <20230803103814.ec35dbddad880a77565ff681@hugovil.com>
+In-Reply-To: <2023073146-gauntlet-lake-0b77@gregkh>
+References: <20230725142343.1724130-1-hugo@hugovil.com>
+        <20230725142343.1724130-9-hugo@hugovil.com>
+        <2023073146-gauntlet-lake-0b77@gregkh>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 184.161.19.61
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: Re: [PATCH v9 08/10] serial: sc16is7xx: add call to get rs485 DT
+ flags and properties
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Commit 0b5cf10691eb ("[POWERPC] 8xx: Convert mpc866ads to the new
-device binding.") removed last definition of init_smc_ioports().
+On Mon, 31 Jul 2023 17:59:14 +0200
+Greg KH <gregkh@linuxfoundation.org> wrote:
 
-Remove it.
+> On Tue, Jul 25, 2023 at 10:23:40AM -0400, Hugo Villeneuve wrote:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > 
+> > Add call to uart_get_rs485_mode() to probe for RS485 flags and
+> > properties from device tree.
+> 
+> Again, you are saying what you are doing, but not why.  I have no hint
+> as to if this is a bugfix, or a new features, or something else?
+> 
+> thanks,
+> 
+> greg k-h
 
-And don't include anymore fs_uart_pd.h which is only included to
-provide fs_uart_platform_info structure.
+Hi Greg,
+I could change the commit message to:
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- arch/powerpc/sysdev/fsl_soc.c | 2 --
- 1 file changed, 2 deletions(-)
+---------
+serial: sc16is7xx: add missing support for rs485 devicetree properties
 
-diff --git a/arch/powerpc/sysdev/fsl_soc.c b/arch/powerpc/sysdev/fsl_soc.c
-index e71b3ede147e..46431c4daaed 100644
---- a/arch/powerpc/sysdev/fsl_soc.c
-+++ b/arch/powerpc/sysdev/fsl_soc.c
-@@ -23,7 +23,6 @@
- #include <linux/spi/spi.h>
- #include <linux/fsl_devices.h>
- #include <linux/fs_enet_pd.h>
--#include <linux/fs_uart_pd.h>
- #include <linux/reboot.h>
- 
- #include <linux/atomic.h>
-@@ -38,7 +37,6 @@
- 
- extern void init_fcc_ioports(struct fs_platform_info*);
- extern void init_fec_ioports(struct fs_platform_info*);
--extern void init_smc_ioports(struct fs_uart_platform_info*);
- static phys_addr_t immrbase = -1;
- 
- phys_addr_t get_immrbase(void)
--- 
-2.41.0
+Retrieve rs485 devicetree properties on registration of sc16is7xx ports
+in case they are attached to an rs485 transceiver.
+---------
 
+I don't think that it should be considered as a bug fix, but maybe as a
+missing feature.
+
+And does it mean that it should also go to older (stable) kernels then?
+If yes, then do I need to add the "Fixes" tag?
+
+Thank you,
+Hugo.
