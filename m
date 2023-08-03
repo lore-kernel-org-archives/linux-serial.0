@@ -2,152 +2,118 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB61AC04A6A
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 14:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55531EB64DD
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 14:18:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235273AbjHCOMc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 10:12:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58942 "EHLO
+        id S235497AbjHCOSZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 10:18:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233919AbjHCOMO (ORCPT
+        with ESMTP id S235191AbjHCOSY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 10:12:14 -0400
-Received: from mgamail.intel.com (unknown [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233E0E69;
-        Thu,  3 Aug 2023 07:11:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691071898; x=1722607898;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=F8f4BApASGNCPhtinYIc3rUiCeFOT3UfB6SVX2g7axo=;
-  b=VufsGXUQQSWExSdAEUVDXfVX0xlGilrCTarxQODqfseYbYO25a69g3Mp
-   6OnWbTDC7Erbc5ZxRNdY6uToE/y0EVKaCe1pWkAdLk949DyoIoLHPtWma
-   +4lwR7QF2dReeFojFwhzos/Kf1oWEv26WfIKUjdR22VjQ3kGqTbngs2Es
-   hAOUsxipYbkyiDFpUOCMM0Tvc/eE7fgB19p8rfhQewmDeV69eQn6L4PWc
-   Cmt131VQRWIK8u2YTelWgComBpvks2fwGNCKhZL1H+ZeCcymPtWUJQ/eB
-   uKs5U/YWNgJmjajbdXi4YGQMLF343+x1DScpef5QtAcbHs7DFwl//8k+b
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="373517225"
-X-IronPort-AV: E=Sophos;i="6.01,252,1684825200"; 
-   d="scan'208";a="373517225"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2023 06:39:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="819656692"
-X-IronPort-AV: E=Sophos;i="6.01,252,1684825200"; 
-   d="scan'208";a="819656692"
-Received: from eozturk-mobl.ger.corp.intel.com ([10.249.38.219])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2023 06:39:11 -0700
-Date:   Thu, 3 Aug 2023 16:39:08 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Tony Lindgren <tony@atomide.com>
-cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH] MAINTAINERS: Update TTY layer for lists and recently
- added files
-In-Reply-To: <20230802120530.GE14799@atomide.com>
-Message-ID: <61e5675-570-9566-34c2-86975c56d961@linux.intel.com>
-References: <20230721072334.59272-1-tony@atomide.com> <ZLpboaXKVOOjeGJ+@smile.fi.intel.com> <20230724045327.GV5194@atomide.com> <2023072517-onward-payment-569d@gregkh> <2023072530-wired-chaps-c1e3@gregkh> <edb0414f-3808-8651-4956-8ec34b056901@kernel.org>
- <20230802120530.GE14799@atomide.com>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-294453060-1691069953=:1954"
+        Thu, 3 Aug 2023 10:18:24 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32E601981;
+        Thu,  3 Aug 2023 07:18:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
+        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=e0cd+bfuuJW5D9Vjs7Kwr/ftMzeFILJUbMoh0kdOipw=; b=EXQn0KHSOEFemcJr9tzvUCuA6X
+        IUdoxJh0x4owZByHKyfE7VOq0bHIkOUQkgxJ1TNN82jm0UB2uXoWdsHBXmx4vmcIytm2Oa8HLbEuS
+        EsVVmHiTkrugW3Bz1LgtWx1HpmRj68prsQk9wMjAIylpRMnLuX8hqpbjhdI0g2qj5Se0=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:43022 helo=pettiford)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1qRZ9b-0000Wk-Jc; Thu, 03 Aug 2023 10:18:16 -0400
+Date:   Thu, 3 Aug 2023 10:18:14 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, jirislaby@kernel.org, jringle@gridpoint.com,
+        isaac.true@canonical.com, jesse.sung@canonical.com,
+        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Lech Perczak <lech.perczak@camlingroup.com>
+Message-Id: <20230803101814.39a61229d81dcd3e96cbe8ee@hugovil.com>
+In-Reply-To: <2023073105-elevation-canister-2777@gregkh>
+References: <20230725142343.1724130-1-hugo@hugovil.com>
+        <20230725142343.1724130-7-hugo@hugovil.com>
+        <2023073105-elevation-canister-2777@gregkh>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 184.161.19.61
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: Re: [PATCH v9 06/10] serial: sc16is7xx: fix regression with GPIO
+ configuration
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Mon, 31 Jul 2023 17:58:41 +0200
+Greg KH <gregkh@linuxfoundation.org> wrote:
 
---8323329-294453060-1691069953=:1954
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-
-On Wed, 2 Aug 2023, Tony Lindgren wrote:
-
-> * Jiri Slaby <jirislaby@kernel.org> [230726 10:12]:
-> > On 25. 07. 23, 19:29, Greg Kroah-Hartman wrote:
-> > > On Tue, Jul 25, 2023 at 07:28:46PM +0200, Greg Kroah-Hartman wrote:
-> > > > On Mon, Jul 24, 2023 at 07:53:27AM +0300, Tony Lindgren wrote:
-> > > > > * Andy Shevchenko <andriy.shevchenko@intel.com> [230721 10:19]:
-> > > > > > On Fri, Jul 21, 2023 at 10:23:32AM +0300, Tony Lindgren wrote:
-> > > > > > > Add mailing lists for linux-serial and lkml for the TTY layer. And let's
-> > > > > > > list the recently added files. This makes it easier for get_maintainer.pl
-> > > > > > > to include linux-serial for patches.
-> > > > > > 
-> > > > > > Shouldn't serial_* stuff go to the "SERIAL DRIVERS" section?
-> > > > > 
-> > > > > Not sure if there's some reason we have "TTY LAYER" with serial_core
-> > > > > files. If not, yeah let's move the serial files.
-> > > > 
-> > > > I'll take this patch, can you send a new one that removes the serial
-> > > > files from this entry as I don't think they are needed in here anymore.
-> > > 
-> > > Better yet, they should be merged probably.  Although I don't know if
-> > > Jiri wants to be responsible for serial stuff, that's his call...
+> On Tue, Jul 25, 2023 at 10:23:38AM -0400, Hugo Villeneuve wrote:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > > 
-> > No problem. I actually didn't realize they are separate. So feel free to
-> > submit a patch, so we have a single MAINTAINTERS file entry...
+> > Commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
+> > and commit 21144bab4f11 ("sc16is7xx: Handle modem status lines")
+> > changed the function of the GPIOs pins to act as modem control
+> > lines without any possibility of selecting GPIO function.
+> > 
+> > As a consequence, applications that depends on GPIO lines configured
+> > by default as GPIO pins no longer work as expected.
+> > 
+> > Also, the change to select modem control lines function was done only
+> > for channel A of dual UART variants (752/762). This was not documented
+> > in the log message.
+> > 
+> > Allow to specify GPIO or modem control line function in the device
+> > tree, and for each of the ports (A or B).
+> > 
+> > Do so by using the new device-tree property named
+> > "nxp,modem-control-line-ports" (property added in separate patch).
+> > 
+> > When registering GPIO chip controller, mask-out GPIO pins declared as
+> > modem control lines according to this new DT property.
+> > 
+> > Fixes: 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
+> > Fixes: 21144bab4f11 ("sc16is7xx: Handle modem status lines")
+> > Cc: <stable@vger.kernel.org> # 6.1.x: 95982fad dt-bindings: sc16is7xx: Add property to change GPIO function
+> > Cc: <stable@vger.kernel.org> # 6.1.x: 1584d572 serial: sc16is7xx: refactor GPIO controller registration
+> > Cc: <stable@vger.kernel.org> # 6.1.x: ac2caa5a serial: sc16is7xx: remove obsolete out_thread label
+> > Cc: <stable@vger.kernel.org> # 6.1.x: d90961ad serial: sc16is7xx: mark IOCONTROL register as volatile
+> > Cc: <stable@vger.kernel.org> # 6.1.x: 6dae3bad serial: sc16is7xx: fix broken port 0 uart init
 > 
-> How about something like this?
+> Where are these git commit ids from?  I don't see them in Linus's tree,
+> how are they supposed to be picked up by the stable developers if they
+> are not valid ones?
 > 
-> Tony
+> confused,
 > 
-> 8< ----------------------
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -19319,13 +19319,6 @@ F:	Documentation/devicetree/bindings/serial/serial.yaml
->  F:	drivers/tty/serdev/
->  F:	include/linux/serdev.h
->  
-> -SERIAL DRIVERS
-> -M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> -L:	linux-serial@vger.kernel.org
-> -S:	Maintained
-> -F:	Documentation/devicetree/bindings/serial/
-> -F:	drivers/tty/serial/
-> -
->  SERIAL IR RECEIVER
->  M:	Sean Young <sean@mess.org>
->  L:	linux-media@vger.kernel.org
-> @@ -21760,20 +21753,16 @@ W:	https://github.com/srcres258/linux-doc
->  T:	git git://github.com/srcres258/linux-doc.git doc-zh-tw
->  F:	Documentation/translations/zh_TW/
->  
-> -TTY LAYER
-> +TTY LAYER AND SERIAL DRIVERS
->  M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->  M:	Jiri Slaby <jirislaby@kernel.org>
->  L:	linux-kernel@vger.kernel.org
->  L:	linux-serial@vger.kernel.org
->  S:	Supported
->  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
-> +F:	Documentation/devicetree/bindings/serial/
->  F:	Documentation/driver-api/serial/
->  F:	drivers/tty/
-> -F:	drivers/tty/serial/serial_base.h
-> -F:	drivers/tty/serial/serial_base_bus.c
-> -F:	drivers/tty/serial/serial_core.c
-> -F:	drivers/tty/serial/serial_ctrl.c
-> -F:	drivers/tty/serial/serial_port.c
->  F:	include/linux/selection.h
->  F:	include/linux/serial.h
->  F:	include/linux/serial_core.h
+> greg k-h
 
-The separation of these two has always felt a bit artificial to me.
+Hi Greg,
+once again, I simply misinterpreted stable-kernel-rules.rst.
 
-Acked-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+I wrongly assumed that, for example, this patch had, as a prerequisite,
+all the patches before it in this series, and that is why I listed
+them.
 
--- 
- i.
+So I will remove them all, since this patch doesn't have any other
+requisites other than the previous patches in this series.
 
---8323329-294453060-1691069953=:1954--
+Maybe it would be good to add some notes about that in
+stable-kernel-rules.rst?
+
+Thank you, Hugo.
