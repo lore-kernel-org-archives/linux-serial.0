@@ -2,261 +2,201 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37F27C04E69
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 17:34:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC66EEB64DD
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 17:54:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233914AbjHCRez (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 13:34:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48416 "EHLO
+        id S234413AbjHCRyL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 13:54:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235099AbjHCRev (ORCPT
+        with ESMTP id S232439AbjHCRyK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 13:34:51 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F97FE72;
-        Thu,  3 Aug 2023 10:34:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691084089; x=1722620089;
-  h=date:from:to:cc:subject:message-id;
-  bh=cpkBoV5sM0Dn+NSFA5wkVQ3j88Jr/EEl0ZyJKbI8VJ4=;
-  b=iJFC5jsIz9Lm7vnBmWy/VbqS4oE/OD/4SEl2xYnq78m+cCPi8jBLLXyk
-   9Y8/XpJANeiL8DCE/+D1TKyY4mE+crYAkxR+pWoX5cn9Ali1/XNSHei0N
-   AJZd+Pk7EXFjjsSI/EtImX0mXBqV0ZCDsA3VDAPRUEJa6JQnWDfAF8M4W
-   cxMQMc9kQEdBZSBZg/BnrvfhrvWZD3DCTxsl1Q9VLq+NqvlnIgOwucj60
-   4Ui36a0tswLOwYJGQfBH5be+Qm5kN+aww474TYF02eikebzZDevs+grox
-   ww03ughZgcGiVokZM3NwpwyIqXwwdHZDQ0zUDXzDrSWSnI0CUJZ0vF7TK
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="433799184"
-X-IronPort-AV: E=Sophos;i="6.01,252,1684825200"; 
-   d="scan'208";a="433799184"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2023 10:34:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="759218574"
-X-IronPort-AV: E=Sophos;i="6.01,252,1684825200"; 
-   d="scan'208";a="759218574"
-Received: from lkp-server01.sh.intel.com (HELO d1ccc7e87e8f) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 03 Aug 2023 10:34:44 -0700
-Received: from kbuild by d1ccc7e87e8f with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1qRcDj-0002G3-2K;
-        Thu, 03 Aug 2023 17:34:43 +0000
-Date:   Fri, 04 Aug 2023 01:34:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Linux Memory Management List <linux-mm@kvack.org>,
-        linux-arm-msm@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [linux-next:master] BUILD REGRESSION
- fb4327106e5250ee360d0d8b056c1eef7eeb9a98
-Message-ID: <202308040141.gUjtZ32J-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+        Thu, 3 Aug 2023 13:54:10 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 855D810B;
+        Thu,  3 Aug 2023 10:54:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
+        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=vLgARTlyjbNGHDyn3Y334/21maDS9pB32/FVqFe4D7c=; b=CeyW8WwrfML0AMayYgmxySJPaP
+        4uaIVuOaRuPbviAOwFGxLPJkLUQ5epOe7TRAos4OLhYy6h3V32akcHBST5/1f6OgTRrBGMaeDthPP
+        QJhHc5ApKOajOCL+ur6+bEUTUK4t0EkXahzY5lpi+SGt8VXTq0LRRspHUeMTmXG6KFVA=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:53090 helo=pettiford)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1qRcWQ-0002nV-1W; Thu, 03 Aug 2023 13:54:02 -0400
+Date:   Thu, 3 Aug 2023 13:54:01 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        jirislaby@kernel.org, jringle@gridpoint.com,
+        isaac.true@canonical.com, jesse.sung@canonical.com,
+        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Lech Perczak <lech.perczak@camlingroup.com>
+Message-Id: <20230803135401.3a11bfb7c2985c1a90a2521b@hugovil.com>
+In-Reply-To: <20230731144115.14733f0e01f586a7efb91370@hugovil.com>
+References: <20230721161840.1393996-1-hugo@hugovil.com>
+        <20230721161840.1393996-7-hugo@hugovil.com>
+        <CAL_JsqJpdhtnZ8FcM7kGWnM+iuDs1fWiCVgf413evbw-o8TZGQ@mail.gmail.com>
+        <20230722104724.ef0c5896c239e721794b9fe9@hugovil.com>
+        <2023072240-supremacy-shallot-a77f@gregkh>
+        <20230724115428.d191186852c0bd0ee0d78398@hugovil.com>
+        <CAL_JsqL8rjwONd6UAitKik0U44BKSD6m8zbachgfq0R9oHBW8w@mail.gmail.com>
+        <20230731124600.39eb8d5c132f9338c2897543@hugovil.com>
+        <CAL_JsqLaF70hNQndXpJfmH1TMGNbA7myQG0GK9fjyKOs63z-3w@mail.gmail.com>
+        <20230731144115.14733f0e01f586a7efb91370@hugovil.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 184.161.19.61
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: Re: [RESEND PATCH v8 06/10] serial: sc16is7xx: fix regression with
+ GPIO configuration
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-branch HEAD: fb4327106e5250ee360d0d8b056c1eef7eeb9a98  Add linux-next specific files for 20230803
+On Mon, 31 Jul 2023 14:41:15 -0400
+Hugo Villeneuve <hugo@hugovil.com> wrote:
 
-Error/Warning reports:
+> On Mon, 31 Jul 2023 12:04:45 -0600
+> Rob Herring <robh+dt@kernel.org> wrote:
+> 
+> > On Mon, Jul 31, 2023 at 10:46 AM Hugo Villeneuve <hugo@hugovil.com> wrote:
+> > >
+> > > On Mon, 31 Jul 2023 09:31:53 -0600
+> > > Rob Herring <robh+dt@kernel.org> wrote:
+> > >
+> > > > On Mon, Jul 24, 2023 at 9:54 AM Hugo Villeneuve <hugo@hugovil.com> wrote:
+> > > > >
+> > > > > On Sat, 22 Jul 2023 17:15:26 +0200
+> > > > > Greg KH <gregkh@linuxfoundation.org> wrote:
+> > > > >
+> > > > > > On Sat, Jul 22, 2023 at 10:47:24AM -0400, Hugo Villeneuve wrote:
+> > > > > > > On Fri, 21 Jul 2023 13:24:19 -0600
+> > > > > > > Rob Herring <robh+dt@kernel.org> wrote:
+> > > > > > >
+> > > > > > > > On Fri, Jul 21, 2023 at 10:19 AM Hugo Villeneuve <hugo@hugovil.com> wrote:
+> > > > > > > > >
+> > > > > > > > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > > > > > > > >
+> > > > > > > > > Commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
+> > > > > > > > > and commit 21144bab4f11 ("sc16is7xx: Handle modem status lines")
+> > > > > > > > > changed the function of the GPIOs pins to act as modem control
+> > > > > > > > > lines without any possibility of selecting GPIO function.
+> > > > > > > >
+> > > > > > > > Requiring a new DT property is not fixing a kernel regression. You
+> > > > > > > > should be returning the kernel to original behavior and then have a
+> > > > > > > > new DT property for new behavior.
+> > > > > > >
+> > > > > > > Hi Rob,
+> > > > > > > please read the entire patch history starting from V1
+> > > > > > >  and you will understand why this course of action was
+> > > > > > >  not selected.
+> > > > > >
+> > > > > > That's not going to happen, sorry, you need to explain it here, in this
+> > > > > > patch series, why a specific action is being taken over another one, as
+> > > > > > no one has time to go dig through past history, sorry.
+> > > > >
+> > > > > Hi Rob,
+> > > > > I initially submitted a patch to revert the kernel to original
+> > > > > behavior, but it created more problems because the patch was
+> > > > > unfortunately split in two separate patches, and mixed with other non
+> > > > > closely-related changes. It was also noted to me that reverting to the
+> > > > > old behavior would break things for some users.
+> > > > >
+> > > > > It was suggested to me by a more experienced kernel developer to
+> > > > > "suggest a fix, instead of hurrying a revert":
+> > > > >
+> > > > >     https://lkml.org/lkml/2023/5/17/758
+> > > >
+> > > > Do I have to go read this to decipher the justification and reasoning?
+> > > > When Greg says "in this patch series", he means in the commit messages
+> > > > of the patches. You send v9 already and it doesn't have that. The
+> > > > patchset needs to stand on its own summarizing any relevant prior
+> > > > discussions.
+> > > >
+> > > > I never suggested doing a revert.
+> > >
+> > > Hi Rob,
+> > > I am sorry, but this is exactly what I "deciphered" from your
+> > > original email.
+> > >
+> > > I am trying very hard to understand exactly what you mean, but it is
+> > > not that obvious for me. If something is not clear in my commit message,
+> > > I will try to improve it. But before, let's try to focus on making sure
+> > > I understand more clearly what you want exactly.
+> > >
+> > > > Obviously, someone still wants the
+> > > > new feature.
+> > >
+> > > I assume that you refer to the "new feature" as what was added in
+> > > the commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control
+> > > lines")?
+> > 
+> > Shrug. It's one of the 2 commits mentioned, I don't know which one
+> > exactly. Whichever one changed default behavior from use GPIOs to use
+> > modem ctrl lines.
+> > 
+> > Reading it again, I *think* this patch is correct. Default behavior is
+> > restored to use GPIOs. The DT property is needed to enable modem ctrl
+> > lines.
+> 
+> Hi,
+> this is correct.
+> 
+> 
+> > What's not okay is just saying, these platforms may or may not need an update:
+> > 
+> >     arm64/boot/dts/freescale/fsl-ls1012a-frdm.dts
+> >     mips/boot/dts/ingenic/cu1830-neo.dts
+> >     mips/boot/dts/ingenic/cu1000-neo.dts
+> 
+> Yes, my bad. I initially mentioned them and hoped to get some
+> feedback, which I never got, and I kind of forgot about it.
+> 
+> > You need to figure that out. Have you checked with maintainers of
+> > these boards? When were they added and by who? At the same time or by
+> > the same person would be a good indication the platform uses modem
+> > ctrl lines. Or were these platforms in use before adding modem ctrl
+> > support? Then they probably use GPIOs or nothing.
+> > 
+> > If there are platforms which would regress if the modem ctrl feature
+> > was just reverted, which ones are those?
+> 
+> Ok, let me do some checks and get back to you on this.
 
-https://lore.kernel.org/oe-kbuild-all/202307251531.p8ZLFTMZ-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202307281049.40t8s0uv-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202307301850.i9xFNWT6-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202308022221.APCRi7vk-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202308031810.pQzGmR1v-lkp@intel.com
+Hi Rob,
+for this board:
+    arm64/boot/dts/freescale/fsl-ls1012a-frdm.dts
 
-Error/Warning: (recently discovered and may have been fixed)
+it uses a SC16IS740, which doesn't have any GPIOs nor modem
+control lines, so no DT changes required.
 
-../lib/gcc/loongarch64-linux/12.3.0/plugin/include/config/loongarch/loongarch-opts.h:31:10: fatal error: loongarch-def.h: No such file or directory
-Documentation/gpu/rfc/i915_scheduler.rst:138: WARNING: Unknown directive type "c:namespace-push".
-Documentation/gpu/rfc/i915_scheduler.rst:143: WARNING: Unknown directive type "c:namespace-pop".
-Documentation/gpu/todo.rst:469: WARNING: Unexpected indentation.
-Warning: kernel/Kconfig.kexec references a file that doesn't exist: file:Documentation/s390/zfcpdump.rst
-arm-linux-gnueabi-ld: storage.c:(.text+0x27c): undefined reference to `__brelse'
-arm-linux-gnueabi-ld: storage.c:(.text+0x9c): undefined reference to `__bread_gfp'
-storage.c:(.text+0x22c): undefined reference to `__bread_gfp'
-storage.c:(.text+0x64): undefined reference to `__brelse'
+For these two Ingenic boards:
+    mips/boot/dts/ingenic/cu1830-neo.dts
+    mips/boot/dts/ingenic/cu1000-neo.dts
 
-Unverified Error/Warning (likely false positive, please contact us if interested):
+They use a SC16IS752, which has shared modem control lines and GPIOs.
+Unfortunately, the maintainers have not (yet) responded to my
+inquiries. Also, I tried to search for schematics or block diagrams on
+the net but couldn't find anything.
 
-drivers/mtd/nand/raw/qcom_nandc.c:2941 qcom_op_cmd_mapping() error: uninitialized symbol 'ret'.
-drivers/mtd/nand/raw/qcom_nandc.c:3369 qcom_check_op() warn: was && intended here instead of ||?
-drivers/rtc/rtc-pcf2127.c:1063 pcf2127_enable_ts() warn: missing error code? 'ret'
-drivers/tty/serial/8250/8250_men_mcb.c:226 serial_8250_men_mcb_probe() warn: unsigned 'data->line[i]' is never less than zero.
-sh4-linux-gcc: internal compiler error: Segmentation fault signal terminated program cc1
-{standard input}: Warning: end of file not at end of a line; newline inserted
-{standard input}:573: Error: pcrel too far
+These platforms were in use before the patch to add the modem control
+lines was added. Then like you said they probably use these shared
+lines as GPIOs or nothing, so no DT changes would be required.
 
-Error/Warning ids grouped by kconfigs:
-
-gcc_recent_errors
-|-- arm-gemini_defconfig
-|   |-- arm-linux-gnueabi-ld:storage.c:(.text):undefined-reference-to-__bread_gfp
-|   |-- arm-linux-gnueabi-ld:storage.c:(.text):undefined-reference-to-__brelse
-|   |-- storage.c:(.text):undefined-reference-to-__bread_gfp
-|   `-- storage.c:(.text):undefined-reference-to-__brelse
-|-- i386-randconfig-m021-20230730
-|   |-- drivers-rtc-rtc-pcf2127.c-pcf2127_enable_ts()-warn:missing-error-code-ret
-|   `-- drivers-tty-serial-8250_men_mcb.c-serial_8250_men_mcb_probe()-warn:unsigned-data-line-i-is-never-less-than-zero.
-|-- loongarch-allmodconfig
-|   `-- lib-gcc-loongarch64-linux-..-plugin-include-config-loongarch-loongarch-opts.h:fatal-error:loongarch-def.h:No-such-file-or-directory
-|-- riscv-randconfig-m031-20230730
-|   |-- drivers-mtd-nand-raw-qcom_nandc.c-qcom_check_op()-warn:was-intended-here-instead-of
-|   `-- drivers-mtd-nand-raw-qcom_nandc.c-qcom_op_cmd_mapping()-error:uninitialized-symbol-ret-.
-|-- sh-allmodconfig
-|   |-- sh4-linux-gcc:internal-compiler-error:Segmentation-fault-signal-terminated-program-cc1
-|   |-- standard-input:Error:pcrel-too-far
-|   `-- standard-input:Warning:end-of-file-not-at-end-of-a-line-newline-inserted
-|-- x86_64-allnoconfig
-|   |-- Documentation-gpu-rfc-i915_scheduler.rst:WARNING:Unknown-directive-type-c:namespace-pop-.
-|   |-- Documentation-gpu-rfc-i915_scheduler.rst:WARNING:Unknown-directive-type-c:namespace-push-.
-|   |-- Documentation-gpu-todo.rst:WARNING:Unexpected-indentation.
-|   `-- Warning:kernel-Kconfig.kexec-references-a-file-that-doesn-t-exist:file:Documentation-s390-zfcpdump.rst
-`-- x86_64-randconfig-m001-20230730
-    `-- drivers-tty-serial-8250_men_mcb.c-serial_8250_men_mcb_probe()-warn:unsigned-data-line-i-is-never-less-than-zero.
-
-elapsed time: 729m
-
-configs tested: 132
-configs skipped: 4
-
-tested configs:
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-alpha                randconfig-r032-20230803   gcc  
-alpha                randconfig-r036-20230803   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arc                  randconfig-r043-20230802   gcc  
-arm                              allmodconfig   gcc  
-arm                              allyesconfig   gcc  
-arm                         assabet_defconfig   gcc  
-arm                                 defconfig   gcc  
-arm                          gemini_defconfig   gcc  
-arm                        mvebu_v5_defconfig   clang
-arm                          pxa3xx_defconfig   gcc  
-arm                  randconfig-r004-20230801   clang
-arm                  randconfig-r023-20230731   gcc  
-arm                  randconfig-r046-20230802   clang
-arm                        realview_defconfig   gcc  
-arm                        spear3xx_defconfig   clang
-arm                           sunxi_defconfig   gcc  
-arm                       versatile_defconfig   clang
-arm64                            allyesconfig   gcc  
-arm64                               defconfig   gcc  
-csky                                defconfig   gcc  
-csky                 randconfig-r012-20230801   gcc  
-hexagon              randconfig-r016-20230801   clang
-hexagon              randconfig-r035-20230803   clang
-hexagon              randconfig-r041-20230802   clang
-hexagon              randconfig-r045-20230802   clang
-i386                             allyesconfig   gcc  
-i386         buildonly-randconfig-r004-20230731   gcc  
-i386         buildonly-randconfig-r005-20230731   gcc  
-i386         buildonly-randconfig-r006-20230731   gcc  
-i386                              debian-10.3   gcc  
-i386                                defconfig   gcc  
-i386                 randconfig-i001-20230731   gcc  
-i386                 randconfig-i002-20230731   gcc  
-i386                 randconfig-i003-20230731   gcc  
-i386                 randconfig-i004-20230731   gcc  
-i386                 randconfig-i005-20230731   gcc  
-i386                 randconfig-i006-20230731   gcc  
-i386                 randconfig-i011-20230802   gcc  
-i386                 randconfig-i012-20230802   gcc  
-i386                 randconfig-i013-20230802   gcc  
-i386                 randconfig-i014-20230802   gcc  
-i386                 randconfig-i015-20230802   gcc  
-i386                 randconfig-i016-20230802   gcc  
-i386                 randconfig-r025-20230731   clang
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                           defconfig   gcc  
-loongarch            randconfig-r024-20230731   gcc  
-loongarch            randconfig-r031-20230803   gcc  
-loongarch            randconfig-r034-20230803   gcc  
-m68k                             allmodconfig   gcc  
-m68k                             allyesconfig   gcc  
-m68k                                defconfig   gcc  
-m68k                        m5272c3_defconfig   gcc  
-m68k                        mvme147_defconfig   gcc  
-microblaze                          defconfig   gcc  
-microblaze           randconfig-r005-20230801   gcc  
-microblaze           randconfig-r013-20230801   gcc  
-mips                             allmodconfig   gcc  
-mips                             allyesconfig   gcc  
-mips                         bigsur_defconfig   gcc  
-mips                      maltaaprp_defconfig   clang
-mips                 randconfig-r011-20230801   gcc  
-mips                          rb532_defconfig   gcc  
-nios2                               defconfig   gcc  
-nios2                randconfig-r001-20230801   gcc  
-openrisc                 simple_smp_defconfig   gcc  
-parisc                           allyesconfig   gcc  
-parisc                              defconfig   gcc  
-parisc               randconfig-r021-20230731   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-powerpc                    ge_imp3a_defconfig   clang
-powerpc                 linkstation_defconfig   gcc  
-powerpc                   microwatt_defconfig   clang
-powerpc                     mpc5200_defconfig   clang
-powerpc                     mpc83xx_defconfig   gcc  
-powerpc                      ppc44x_defconfig   clang
-powerpc              randconfig-r014-20230801   clang
-powerpc              randconfig-r022-20230731   clang
-powerpc              randconfig-r026-20230731   clang
-powerpc                     sequoia_defconfig   gcc  
-riscv                            allmodconfig   gcc  
-riscv                             allnoconfig   clang
-riscv                             allnoconfig   gcc  
-riscv                            allyesconfig   gcc  
-riscv                               defconfig   gcc  
-riscv                randconfig-r042-20230802   gcc  
-riscv                          rv32_defconfig   gcc  
-s390                             allmodconfig   gcc  
-s390                             allyesconfig   gcc  
-s390                                defconfig   gcc  
-s390                 randconfig-r015-20230801   clang
-s390                 randconfig-r044-20230802   gcc  
-sh                               allmodconfig   gcc  
-sh                        apsh4ad0a_defconfig   gcc  
-sh                          lboxre2_defconfig   gcc  
-sh                   randconfig-r006-20230801   gcc  
-sh                           se7724_defconfig   gcc  
-sparc                            allyesconfig   gcc  
-sparc                               defconfig   gcc  
-sparc                randconfig-r003-20230801   gcc  
-um                               allmodconfig   clang
-um                                allnoconfig   clang
-um                               allyesconfig   clang
-um                                  defconfig   gcc  
-um                             i386_defconfig   gcc  
-um                           x86_64_defconfig   gcc  
-x86_64                           allyesconfig   gcc  
-x86_64       buildonly-randconfig-r001-20230731   gcc  
-x86_64       buildonly-randconfig-r002-20230731   gcc  
-x86_64       buildonly-randconfig-r003-20230731   gcc  
-x86_64                              defconfig   gcc  
-x86_64                                  kexec   gcc  
-x86_64               randconfig-x001-20230731   clang
-x86_64               randconfig-x002-20230731   clang
-x86_64               randconfig-x003-20230731   clang
-x86_64               randconfig-x004-20230731   clang
-x86_64               randconfig-x005-20230731   clang
-x86_64               randconfig-x006-20230731   clang
-x86_64               randconfig-x011-20230731   gcc  
-x86_64               randconfig-x012-20230731   gcc  
-x86_64               randconfig-x013-20230731   gcc  
-x86_64               randconfig-x014-20230731   gcc  
-x86_64               randconfig-x015-20230731   gcc  
-x86_64               randconfig-x016-20230731   gcc  
-x86_64                          rhel-8.3-rust   clang
-x86_64                               rhel-8.3   gcc  
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Hugo.
