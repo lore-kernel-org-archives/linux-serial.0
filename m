@@ -2,102 +2,81 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF68C001DF
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 05:04:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF91EB64DD
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 05:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232013AbjHCFEF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 01:04:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45284 "EHLO
+        id S230165AbjHCFIM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 01:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231916AbjHCFED (ORCPT
+        with ESMTP id S229547AbjHCFIL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 01:04:03 -0400
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ABC330F1;
-        Wed,  2 Aug 2023 22:04:00 -0700 (PDT)
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-3128fcd58f3so497577f8f.1;
-        Wed, 02 Aug 2023 22:04:00 -0700 (PDT)
+        Thu, 3 Aug 2023 01:08:11 -0400
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3DB09B;
+        Wed,  2 Aug 2023 22:08:10 -0700 (PDT)
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-31792ac0fefso437636f8f.2;
+        Wed, 02 Aug 2023 22:08:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691039039; x=1691643839;
+        d=1e100.net; s=20221208; t=1691039289; x=1691644089;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=j9ZnReRkIatzrcYgj5JzpsMcAWQyZ8o9F9DDy3PX+rI=;
-        b=CyFMu70sizZQYb+1hHDYCeH62YNcl4ZW+hVT9wYWC2HAUTNG7QOj/g9sBTdKCJPmXI
-         1f1GmUx+n/5xcdinJ4AKQxu/KxDkMO6QOLUnbdjdcfkpe03iTz7cbmI9ZkxQhK+nUCn/
-         S6YUx+BQ0LHFTA+E/FXgDKIbug2YxC3BZnuTxJsOlRVFK526HLY7h7+dU1BiI3QxvEoO
-         denbeVP/2oniuMmvDLY1XKcsxFYfYE0viCY+7yMnE+rTChHAwPIr+SABWEe4jdVIjBTX
-         PXAOT4pTBUbNQRH81DVrfdL8QkPgU6BNCEOBTvyO5iEg60qTd3ZtTQTJ4WdzyrThH9HC
-         DHkw==
-X-Gm-Message-State: ABy/qLbsgph1yESw3n5yhXvg2VR9/h3cbCh7akqB0M5yi+UkexIsX47U
-        hyXxpFmzCbbnUclMIY4GpKk=
-X-Google-Smtp-Source: APBJJlHHZBPvSNoWe46vU35lSlLEH0299lo02WJ9EtQxELEcNQXj1iOlxtND+QC/G5PDc5zpIxVLZQ==
-X-Received: by 2002:adf:ef46:0:b0:313:f704:5450 with SMTP id c6-20020adfef46000000b00313f7045450mr6733850wrp.38.1691039038637;
-        Wed, 02 Aug 2023 22:03:58 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id l18-20020a05600012d200b0031753073abcsm20674727wrx.36.2023.08.02.22.03.57
+        bh=SX9ntrLJV/kdBv0dEu2PYDIqC3ArssiACUgrlWgmu38=;
+        b=j/51yOVEpLFyCPEgIGuismIyO76hfkTWDJm4WuJ8GE+CyxasgBHNwC/ijEdm67ARVY
+         RaBPzaDsU0a0ltZlZ+zp1gLClmzQlc9THVDg7QPHnSvyZN3BG9QpcuK8/sieCblzVJjz
+         lZ3YVbp0D4feCktxrUjljplhdfiJXPZ61PsgcFa6UZNITbEbsSKInU4ala7IgqH3Da3f
+         g92ibT3neEq1dOi8aofT1t+ixG4jnxSaGGjiH/90NfWGd/S376GhxeCafqsAIypNWimr
+         8foQ9UWtrt/OaodA4/Fp6RKwDNgt3wvzVldOXzkd/rsees2J0RagL++pnGjCACyIoCAP
+         mHtw==
+X-Gm-Message-State: ABy/qLbtQUjNmL/LCP2Y2YV8C5eYVakn2y2hDRtOfst4fdfvTeSgzdAQ
+        BVM3N60w7d98SipP/gsqDqw=
+X-Google-Smtp-Source: APBJJlFGK05xKr5kgiQuhfZEeaHfYOC+R2n278bG3Giy5r4TIqwnklypZtNl06OPuv39L0x4dV5Z7w==
+X-Received: by 2002:a5d:4c43:0:b0:317:60ae:2ef5 with SMTP id n3-20020a5d4c43000000b0031760ae2ef5mr6347351wrt.31.1691039289025;
+        Wed, 02 Aug 2023 22:08:09 -0700 (PDT)
+Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id r6-20020adfce86000000b003179b3fd837sm13528311wrn.33.2023.08.02.22.08.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Aug 2023 22:03:58 -0700 (PDT)
-Message-ID: <651e47f9-821f-9947-f453-4288cc4e4d9a@kernel.org>
-Date:   Thu, 3 Aug 2023 07:03:57 +0200
+        Wed, 02 Aug 2023 22:08:08 -0700 (PDT)
+Message-ID: <6808de4a-6002-e8bc-5921-06b5938dc69e@kernel.org>
+Date:   Thu, 3 Aug 2023 07:08:07 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.13.1
-Subject: Re: [PATCH] MAINTAINERS: Update TTY layer for lists and recently
- added files
+Subject: Re: [PATCH 2/2] net: nfc: remove casts from tty->disc_data
 Content-Language: en-US
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20230721072334.59272-1-tony@atomide.com>
- <ZLpboaXKVOOjeGJ+@smile.fi.intel.com> <20230724045327.GV5194@atomide.com>
- <2023072517-onward-payment-569d@gregkh> <2023072530-wired-chaps-c1e3@gregkh>
- <edb0414f-3808-8651-4956-8ec34b056901@kernel.org>
- <20230802120530.GE14799@atomide.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Max Staudt <max@enpas.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+References: <20230801062237.2687-1-jirislaby@kernel.org>
+ <20230801062237.2687-3-jirislaby@kernel.org>
+ <20230802120755.10849c9a@kernel.org>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20230802120530.GE14799@atomide.com>
+In-Reply-To: <20230802120755.10849c9a@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 02. 08. 23, 14:05, Tony Lindgren wrote:
-> * Jiri Slaby <jirislaby@kernel.org> [230726 10:12]:
->> On 25. 07. 23, 19:29, Greg Kroah-Hartman wrote:
->>> On Tue, Jul 25, 2023 at 07:28:46PM +0200, Greg Kroah-Hartman wrote:
->>>> On Mon, Jul 24, 2023 at 07:53:27AM +0300, Tony Lindgren wrote:
->>>>> * Andy Shevchenko <andriy.shevchenko@intel.com> [230721 10:19]:
->>>>>> On Fri, Jul 21, 2023 at 10:23:32AM +0300, Tony Lindgren wrote:
->>>>>>> Add mailing lists for linux-serial and lkml for the TTY layer. And let's
->>>>>>> list the recently added files. This makes it easier for get_maintainer.pl
->>>>>>> to include linux-serial for patches.
->>>>>>
->>>>>> Shouldn't serial_* stuff go to the "SERIAL DRIVERS" section?
->>>>>
->>>>> Not sure if there's some reason we have "TTY LAYER" with serial_core
->>>>> files. If not, yeah let's move the serial files.
->>>>
->>>> I'll take this patch, can you send a new one that removes the serial
->>>> files from this entry as I don't think they are needed in here anymore.
->>>
->>> Better yet, they should be merged probably.  Although I don't know if
->>> Jiri wants to be responsible for serial stuff, that's his call...
->>
->> No problem. I actually didn't realize they are separate. So feel free to
->> submit a patch, so we have a single MAINTAINTERS file entry...
+On 02. 08. 23, 21:07, Jakub Kicinski wrote:
+> On Tue,  1 Aug 2023 08:22:37 +0200 Jiri Slaby (SUSE) wrote:
+>> tty->disc_data is 'void *', so there is no need to cast from that.
+>> Therefore remove the casts and assign the pointer directly.
 > 
-> How about something like this?
+> Which tree are these expected to flow thru?
 
-Acked-by: Jiri Slaby <jirislaby@kernel.org>
+The intention was through the tty tree. But I don't mind either way -- 
+it's up to you Greg.
 
+thanks,
 -- 
 js
 suse labs
