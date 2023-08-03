@@ -2,94 +2,65 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 345C3C001DF
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 14:40:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C35C001DF
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 15:34:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236797AbjHCOkZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 10:40:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50544 "EHLO
+        id S235973AbjHCPeg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 11:34:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235011AbjHCOkM (ORCPT
+        with ESMTP id S237162AbjHCPee (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 10:40:12 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B1D2D5F;
-        Thu,  3 Aug 2023 07:39:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=RwiPZlt5h+l4EEd8rB/jTQqRs++DtmWkgJ+ASZBIevQ=; b=oKnK7lRHjeM0i+OIw/kOkx+eER
-        pTAxR4L3yLU7FPGjZ/jLO9ju5GtEGxxcFGlty1ZuuJqaSLE6WwgWLquAK5abU/hO2oivzTXO1Gokb
-        CQyAKUd87AIH28B+pA77cfx1sqdu8hsCQjS2UOEKPEoIWusrDSBXJwGR9VGDpk43GqjI=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:59988 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1qRZSx-0000hw-9W; Thu, 03 Aug 2023 10:38:15 -0400
-Date:   Thu, 3 Aug 2023 10:38:14 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, jirislaby@kernel.org, jringle@gridpoint.com,
-        isaac.true@canonical.com, jesse.sung@canonical.com,
-        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Lech Perczak <lech.perczak@camlingroup.com>
-Message-Id: <20230803103814.ec35dbddad880a77565ff681@hugovil.com>
-In-Reply-To: <2023073146-gauntlet-lake-0b77@gregkh>
-References: <20230725142343.1724130-1-hugo@hugovil.com>
-        <20230725142343.1724130-9-hugo@hugovil.com>
-        <2023073146-gauntlet-lake-0b77@gregkh>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 184.161.19.61
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH v9 08/10] serial: sc16is7xx: add call to get rs485 DT
- flags and properties
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Thu, 3 Aug 2023 11:34:34 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7575C3582;
+        Thu,  3 Aug 2023 08:34:29 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="6.01,252,1684767600"; 
+   d="scan'208";a="175498302"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 04 Aug 2023 00:34:26 +0900
+Received: from localhost.localdomain (unknown [10.226.93.128])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 6B58E4008496;
+        Fri,  4 Aug 2023 00:34:21 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     tony@atomide.com
+Cc:     andriy.shevchenko@intel.com, andriy.shevchenko@linux.intel.com,
+        bigeasy@linutronix.de, d-gole@ti.com, gregkh@linuxfoundation.org,
+        ilpo.jarvinen@linux.intel.com, jirislaby@kernel.org,
+        johan@kernel.org, john.ogness@linutronix.de,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        oliver.sang@intel.com, vigneshr@ti.com,
+        linux-renesas-soc@vger.kernel.org,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Subject: [PATCH v2 1/1] serial: core: Fix serial_base_match() after fixing controller port name
+Date:   Thu,  3 Aug 2023 16:34:17 +0100
+Message-ID: <20230803071034.25571-1-tony@atomide.com> (raw)
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230803071034.25571-1-tony@atomide.com>
+References: <20230803071034.25571-1-tony@atomide.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
+Message-ID: <20230803153417.bfrD153QdpZS9x_l-zSwILb-jyjHb-MvZh0PK6rvjH0@z>
 
-On Mon, 31 Jul 2023 17:59:14 +0200
-Greg KH <gregkh@linuxfoundation.org> wrote:
+Hi,
 
-> On Tue, Jul 25, 2023 at 10:23:40AM -0400, Hugo Villeneuve wrote:
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > 
-> > Add call to uart_get_rs485_mode() to probe for RS485 flags and
-> > properties from device tree.
-> 
-> Again, you are saying what you are doing, but not why.  I have no hint
-> as to if this is a bugfix, or a new features, or something else?
-> 
-> thanks,
-> 
-> greg k-h
+> While fixing DEVNAME to be more usable, I broke serial_base_match() as the
+> ctrl and port prefix for device names seemed unnecessary.
 
-Hi Greg,
-I could change the commit message to:
+> The prefixes are still needed by serial_base_match() to probe the serial
+> base controller port, and serial tx is now broken.
 
----------
-serial: sc16is7xx: add missing support for rs485 devicetree properties
+> Let's fix the issue by checking against dev->type and drv->name instead
+> of the prefixes that are no longer in the DEVNAME.
 
-Retrieve rs485 devicetree properties on registration of sc16is7xx ports
-in case they are attached to an rs485 transceiver.
----------
+> Fixes: 1ef2c2df1199 ("serial: core: Fix serial core controller port name to show controller id")
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Closes: https://lore.kernel.org/oe-lkp/202308021529.35b3ad6c-oliver.sang@intel.com
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
 
-I don't think that it should be considered as a bug fix, but maybe as a
-missing feature.
+This patch fixes the boot issue on RZ/G2L SMARC EVK since yesterday.
 
-And does it mean that it should also go to older (stable) kernels then?
-If yes, then do I need to add the "Fixes" tag?
-
-Thank you,
-Hugo.
+Tested-by: Biju Das <biju.das.jz@bp.renesas.com>
