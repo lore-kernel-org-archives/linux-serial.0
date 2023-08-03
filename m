@@ -2,71 +2,81 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2898C001E0
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 06:51:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA2BEC0015E
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 06:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232940AbjHCGvM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 02:51:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
+        id S231741AbjHCGxG convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 02:53:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbjHCGvL (ORCPT
+        with ESMTP id S233610AbjHCGw4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 02:51:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52A92D64;
-        Wed,  2 Aug 2023 23:51:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EE5B61BF4;
-        Thu,  3 Aug 2023 06:51:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BBB7C433C8;
-        Thu,  3 Aug 2023 06:51:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1691045469;
-        bh=43k3EvbDnD0qrF1ZOik+dSjCAEk8l1OcVzga1U7RXGk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UM4vpu/5tZk9q+Tqz9Abjqp/f132V1HhBguBhQIQWcQMje3n7qo6FKncCubHURu2m
-         gTtDgRPXw5fQf68bShyxy+PIwVvfithi78umYXwaCyUkz3UD4WPMxMTZ9KnuvoJPhT
-         EMYkx8XAudYc7mWsSyYMNBBB/R+sK8gT/UOK7P1c=
-Date:   Thu, 3 Aug 2023 08:51:06 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Max Staudt <max@enpas.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 2/2] net: nfc: remove casts from tty->disc_data
-Message-ID: <2023080359-senate-expose-46b2@gregkh>
-References: <20230801062237.2687-1-jirislaby@kernel.org>
- <20230801062237.2687-3-jirislaby@kernel.org>
- <20230802120755.10849c9a@kernel.org>
- <6808de4a-6002-e8bc-5921-06b5938dc69e@kernel.org>
+        Thu, 3 Aug 2023 02:52:56 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 83751E72;
+        Wed,  2 Aug 2023 23:52:52 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 1608880FE;
+        Thu,  3 Aug 2023 06:52:51 +0000 (UTC)
+Date:   Thu, 3 Aug 2023 09:52:49 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+        lkp@intel.com, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+Subject: Re: [PATCH v5 3/3] serial: core: Fix serial core controller port
+ name to show controller id
+Message-ID: <20230803065249.GF14799@atomide.com>
+References: <20230725054216.45696-4-tony@atomide.com>
+ <202308021529.35b3ad6c-oliver.sang@intel.com>
+ <ca09d15f-50ab-452c-a3d5-f2b4cde6426f@sirena.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6808de4a-6002-e8bc-5921-06b5938dc69e@kernel.org>
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <ca09d15f-50ab-452c-a3d5-f2b4cde6426f@sirena.org.uk>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 03, 2023 at 07:08:07AM +0200, Jiri Slaby wrote:
-> On 02. 08. 23, 21:07, Jakub Kicinski wrote:
-> > On Tue,  1 Aug 2023 08:22:37 +0200 Jiri Slaby (SUSE) wrote:
-> > > tty->disc_data is 'void *', so there is no need to cast from that.
-> > > Therefore remove the casts and assign the pointer directly.
-> > 
-> > Which tree are these expected to flow thru?
+* Mark Brown <broonie@kernel.org> [230802 18:20]:
+> On Wed, Aug 02, 2023 at 04:15:28PM +0800, kernel test robot wrote:
 > 
-> The intention was through the tty tree. But I don't mind either way -- it's
-> up to you Greg.
+> > kernel test robot noticed machine hang on:
+> 
+> > commit: 4de64f4800a581e7eeba6392b3b2ce2131195145 ("[PATCH v5 3/3] serial: core: Fix serial core controller port name to show controller id")
+> > url: https://github.com/intel-lab-lkp/linux/commits/Tony-Lindgren/serial-core-Controller-id-cannot-be-negative/20230725-134452
+> > base: https://git.kernel.org/cgit/linux/kernel/git/gregkh/tty.git tty-testing
+> > patch link: https://lore.kernel.org/all/20230725054216.45696-4-tony@atomide.com/
+> > patch subject: [PATCH v5 3/3] serial: core: Fix serial core controller port name to show controller id
+> > 
+> > in testcase: boot
+> > 
+> > compiler: gcc-12
+> > test machine: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz (Cascade Lake) with 512G memory
+> 
+> I've also bisected this commit as causing boot hangs on at least the
+> i.MX8MP-EVK, though most of the boards in my lab and a huge swathe of
+> those in KernelCI are out:
+> 
+>    https://linux.kernelci.org/test/job/next/branch/master/kernel/next-20230802/plan/baseline/
+> 
+> which is having a pretty devastating effect on -next testing.
 
-I'll take them, thanks!
+Yes sorry about that, I should have noticed it right away. I thought I
+still had my test machine set to use the console=DEVNAME:0.0 style
+naming and I mostly test over ssh and was just looking at the DEVNAME.
 
-greg k-h
+Regards,
+
+Tony
