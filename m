@@ -2,94 +2,77 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4820C04A6A
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 11:40:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA54C001DF
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 11:58:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233625AbjHCLkO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 07:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39432 "EHLO
+        id S235222AbjHCL6g (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 07:58:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232996AbjHCLkM (ORCPT
+        with ESMTP id S234690AbjHCL6f (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 07:40:12 -0400
-Received: from mgamail.intel.com (unknown [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BBA0272A;
-        Thu,  3 Aug 2023 04:40:10 -0700 (PDT)
+        Thu, 3 Aug 2023 07:58:35 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8845134;
+        Thu,  3 Aug 2023 04:58:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691062810; x=1722598810;
+  t=1691063914; x=1722599914;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Dd/pEIvh1vm5WdGjLrClzQBU3IOusOV95Grmu8xadFg=;
-  b=YpR+dH2OjRfoUz48D3lxNp7qWvxdOK+xQonSIr7PRUFclSQ8fD4uPI7p
-   7vNojSoaNKRU1Fb4xZza94ig+SUOqY9RIng9X2a0yL8KAHKjw3+9gqO/9
-   LtJNVKHaORRdgYjrwp1YlPUM0IUTV87KPd/v2IA2zrsy/ZuwoH0wDi4Bw
-   bzrnXD6+9snfg3IUZJZjPsNvQFx6NqTs8GYo816bFPnjgJTReTg6Q8Yvw
-   mVe7d66XXWtc1/+BSrTjKqFVpbcuDSEGfz4z07bDnzVSEuzL48N9kjkcn
-   kdmtCI4Q64HZkM5spPysSaCBYyfDj6DQ9ixUTG61AffZI9NVazKeKsG9A
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="373479426"
+  bh=pZ4ZPmvSDy8cgfHE33t4fOkzIy0L7uqmxemDhUrl+uc=;
+  b=m8R/q0qYordoirYdlX+qCoHm2g4KqZDjjmwHEQSjPnUo5lGqfPwPljq5
+   G6HVxBk7ArjuxJmfOICRNKqZhEJRPGvmVzC+NON52+10wZFE5yo/dWSkL
+   hCaeCcY1s6sKnoClRJws4BFGw5EYmcCtYf7A6NiJTC3+/LdKzCZx19hiE
+   NGHPbdADK3PraWGdlO6p9vCVQnDV3/weYDe/XKJWmqOOUZ6TxY2rudIW+
+   rhX13fIicRyb11a2K711clQH26XNVmt9IJqiWLaSOmq1q0wLMdV0wqJ6c
+   MITCyu3vXZ7LZLN9v0ssvsX/kwZ0xHFKpVcmeCQCpSNlTBFjk/D3okWv9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="354770096"
 X-IronPort-AV: E=Sophos;i="6.01,252,1684825200"; 
-   d="scan'208";a="373479426"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2023 04:40:09 -0700
+   d="scan'208";a="354770096"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2023 04:58:34 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="723190547"
+X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="843570211"
 X-IronPort-AV: E=Sophos;i="6.01,252,1684825200"; 
-   d="scan'208";a="723190547"
+   d="scan'208";a="843570211"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga007.jf.intel.com with ESMTP; 03 Aug 2023 04:40:06 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 03 Aug 2023 04:58:32 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qRWgX-00AYix-0s;
-        Thu, 03 Aug 2023 14:40:05 +0300
-Date:   Thu, 3 Aug 2023 14:40:05 +0300
+        id 1qRWyN-00BBt3-0B;
+        Thu, 03 Aug 2023 14:58:31 +0300
+Date:   Thu, 3 Aug 2023 14:58:30 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Conor Dooley <conor@kernel.org>
-Cc:     Jisheng Zhang <jszhang@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: serial: snps-dw-apb-uart: make
- interrupt optional
-Message-ID: <ZMuSFYQ4YyIKnI0k@smile.fi.intel.com>
-References: <20230802150545.3742-1-jszhang@kernel.org>
- <20230802150545.3742-2-jszhang@kernel.org>
- <20230802-halogen-bungee-63273b2c456c@spud>
- <ZMrRWP5mK+nksn4M@smile.fi.intel.com>
- <20230802-risk-getting-e6005e86be81@spud>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH] 8250_men_mcb: Fix unsigned comparison with less than zero
+Message-ID: <ZMuWZulcClgyFxR3@smile.fi.intel.com>
+References: <20230803084753.51253-1-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230802-risk-getting-e6005e86be81@spud>
+In-Reply-To: <20230803084753.51253-1-jiapeng.chong@linux.alibaba.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Aug 02, 2023 at 11:53:59PM +0100, Conor Dooley wrote:
-> On Thu, Aug 03, 2023 at 12:57:44AM +0300, Andy Shevchenko wrote:
-> > On Wed, Aug 02, 2023 at 04:43:48PM +0100, Conor Dooley wrote:
-> > > On Wed, Aug 02, 2023 at 11:05:44PM +0800, Jisheng Zhang wrote:
-> > > > The driver fall back to poll style when there's no irq. "poll" still
-> > > > looks better than no support.
-> > > 
-> > > What is the user for this where the interrupt is not actually wired up
-> > > in the hardware?
-> > 
-> > FYI: kernel console doesn't use interrupts, so for example it might be
-> > the debug port. Note, I have no idea of the Zhang's case, just my assumption.
+On Thu, Aug 03, 2023 at 04:47:53PM +0800, Jiapeng Chong wrote:
+> The data->line[i] is defined as unsigned int type, if(data->line[i] < 0)
+> is invalid, so replace data->line[i] with res.
 > 
-> I'm less interested in what the software is doing, it's what the device 
-> that has not connected the interrupt is that I am curious about.
+> ./drivers/tty/serial/8250/8250_men_mcb.c:223:6-19: WARNING: Unsigned expression compared with zero: data->line[i] < 0.
 
-As I said. The hw may be purely for debugging purposes (and yes, I have heard
-about such a hardware).
+Having
+
+ WARNING: Unsigned expression compared with zero: data->line[i] < 0.
+
+is enough.
+
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
 -- 
 With Best Regards,
