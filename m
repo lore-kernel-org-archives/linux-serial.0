@@ -2,46 +2,46 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9374C41513
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 14:21:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46467EB64DD
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 14:21:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236610AbjHCOVd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 10:21:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36660 "EHLO
+        id S236603AbjHCOV4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 10:21:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236677AbjHCOVJ (ORCPT
+        with ESMTP id S236492AbjHCOVb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 10:21:09 -0400
+        Thu, 3 Aug 2023 10:21:31 -0400
 Received: from pegase1.c-s.fr (pegase1.c-s.fr [93.17.236.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F26B2684;
-        Thu,  3 Aug 2023 07:20:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D677B10D4;
+        Thu,  3 Aug 2023 07:21:10 -0700 (PDT)
 Received: from localhost (mailhub3.si.c-s.fr [192.168.12.233])
-        by localhost (Postfix) with ESMTP id 4RGr4t1jffz9t4f;
-        Thu,  3 Aug 2023 15:57:18 +0200 (CEST)
+        by localhost (Postfix) with ESMTP id 4RGr4v4KHDz9t5J;
+        Thu,  3 Aug 2023 15:57:19 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from pegase1.c-s.fr ([192.168.12.234])
         by localhost (pegase1.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id MCduBF0o_i5C; Thu,  3 Aug 2023 15:57:18 +0200 (CEST)
+        with ESMTP id nBQnO2JIAsnV; Thu,  3 Aug 2023 15:57:19 +0200 (CEST)
 Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase1.c-s.fr (Postfix) with ESMTP id 4RGr4m0kFqz9t4n;
+        by pegase1.c-s.fr (Postfix) with ESMTP id 4RGr4m4W8Qz9t48;
         Thu,  3 Aug 2023 15:57:12 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 13F5B8B773;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 964E88B773;
         Thu,  3 Aug 2023 15:57:12 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from messagerie.si.c-s.fr ([127.0.0.1])
         by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id SEOQdp5N5PsN; Thu,  3 Aug 2023 15:57:11 +0200 (CEST)
+        with ESMTP id Kl1IMwn4jdMF; Thu,  3 Aug 2023 15:57:12 +0200 (CEST)
 Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.232.144])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id B5E0E8B77A;
-        Thu,  3 Aug 2023 15:57:11 +0200 (CEST)
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 4DE3C8B763;
+        Thu,  3 Aug 2023 15:57:12 +0200 (CEST)
 Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 373Dv4Yu494213
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 373Dv3sK494201
         (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
         Thu, 3 Aug 2023 15:57:04 +0200
 Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 373Dv4LC494212;
-        Thu, 3 Aug 2023 15:57:04 +0200
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 373Dv3Bu494200;
+        Thu, 3 Aug 2023 15:57:03 +0200
 X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
 From:   Christophe Leroy <christophe.leroy@csgroup.eu>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -52,105 +52,69 @@ To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH v1 12/12] serial: cpm_uart: Remove linux/fs_uart_pd.h
-Date:   Thu,  3 Aug 2023 15:56:53 +0200
-Message-ID: <f2cb444fa2b5776c9c51b5e46ea85edab62d1524.1691068700.git.christophe.leroy@csgroup.eu>
+Subject: [PATCH v1 09/12] serial: cpm_uart: Remove cpm_uart/ subdirectory
+Date:   Thu,  3 Aug 2023 15:56:50 +0200
+Message-ID: <9b8b8f89fc386480030f5339abe307541ae436a6.1691068700.git.christophe.leroy@csgroup.eu>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <cover.1691068700.git.christophe.leroy@csgroup.eu>
 References: <cover.1691068700.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1691071001; l=2154; i=christophe.leroy@csgroup.eu; s=20211009; h=from:subject:message-id; bh=HrW+xy1mV9LzVHBn5BKDV/j8NZ7SIr3YuDt4l5zZYWg=; b=SdK5pHkJWllauesE1RX5dyJy0LrcFgHaRXxxuxOaVzLotCbSaMVmZ0KMHIZFsaBKbAfua+39r hiNo4obrsUEAbvpe/ljhUWlxDBpm5I1eK5Q0ABO5zr++3evq4BLo2wD
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1691071001; l=2136; i=christophe.leroy@csgroup.eu; s=20211009; h=from:subject:message-id; bh=2acxSC4fZPJjOV4LM1mPnEJI/PngyFJEEkHBhlNg2TQ=; b=YgxQ7g01RNqoTvf18homXVUBRxjsg1kJK1TG/t81XtG70hzyS7tP4/HhQj2wTPUREm8mR1+5G 9laqmukkjvLAcDprHTMnYDsSiey4AJOjP5epzhqNSdxFsKkQ6OfYU44
 X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-linux/fs_uart_pd.h is not used anymore. Remove it.
+cpm_uart/ subdirectory only has cpm_uart_core.c and cpm_uart.h now.
+
+Move them up and remove cpm_uart/ directory while renaming
+cpm_uart_core.c as cpm_uart.c
 
 Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- include/linux/fs_uart_pd.h | 71 --------------------------------------
- 1 file changed, 71 deletions(-)
- delete mode 100644 include/linux/fs_uart_pd.h
+ drivers/tty/serial/Makefile                                 | 2 +-
+ drivers/tty/serial/{cpm_uart/cpm_uart_core.c => cpm_uart.c} | 0
+ drivers/tty/serial/{cpm_uart => }/cpm_uart.h                | 0
+ drivers/tty/serial/cpm_uart/Makefile                        | 6 ------
+ 4 files changed, 1 insertion(+), 7 deletions(-)
+ rename drivers/tty/serial/{cpm_uart/cpm_uart_core.c => cpm_uart.c} (100%)
+ rename drivers/tty/serial/{cpm_uart => }/cpm_uart.h (100%)
+ delete mode 100644 drivers/tty/serial/cpm_uart/Makefile
 
-diff --git a/include/linux/fs_uart_pd.h b/include/linux/fs_uart_pd.h
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index d4123469583d..138abbc89738 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -41,7 +41,7 @@ obj-$(CONFIG_SERIAL_HS_LPC32XX) += lpc32xx_hs.o
+ obj-$(CONFIG_SERIAL_DZ) += dz.o
+ obj-$(CONFIG_SERIAL_ZS) += zs.o
+ obj-$(CONFIG_SERIAL_SH_SCI) += sh-sci.o
+-obj-$(CONFIG_SERIAL_CPM) += cpm_uart/
++obj-$(CONFIG_SERIAL_CPM) += cpm_uart.o
+ obj-$(CONFIG_SERIAL_IMX) += imx.o
+ obj-$(CONFIG_SERIAL_IMX_EARLYCON) += imx_earlycon.o
+ obj-$(CONFIG_SERIAL_MPC52xx) += mpc52xx_uart.o
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart.c
+similarity index 100%
+rename from drivers/tty/serial/cpm_uart/cpm_uart_core.c
+rename to drivers/tty/serial/cpm_uart.c
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart.h b/drivers/tty/serial/cpm_uart.h
+similarity index 100%
+rename from drivers/tty/serial/cpm_uart/cpm_uart.h
+rename to drivers/tty/serial/cpm_uart.h
+diff --git a/drivers/tty/serial/cpm_uart/Makefile b/drivers/tty/serial/cpm_uart/Makefile
 deleted file mode 100644
-index 36b61ff39277..000000000000
---- a/include/linux/fs_uart_pd.h
+index 91f202fa5251..000000000000
+--- a/drivers/tty/serial/cpm_uart/Makefile
 +++ /dev/null
-@@ -1,71 +0,0 @@
--/*
-- * Platform information definitions for the CPM Uart driver.
-- *
-- * 2006 (c) MontaVista Software, Inc.
-- * Vitaly Bordug <vbordug@ru.mvista.com>
-- *
-- * This file is licensed under the terms of the GNU General Public License
-- * version 2. This program is licensed "as is" without any warranty of any
-- * kind, whether express or implied.
-- */
+@@ -1,6 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0
+-#
+-# Makefile for the Motorola 8xx FEC ethernet controller
+-#
 -
--#ifndef FS_UART_PD_H
--#define FS_UART_PD_H
--
--#include <asm/types.h>
--
--enum fs_uart_id {
--	fsid_smc1_uart,
--	fsid_smc2_uart,
--	fsid_scc1_uart,
--	fsid_scc2_uart,
--	fsid_scc3_uart,
--	fsid_scc4_uart,
--	fs_uart_nr,
--};
--
--static inline int fs_uart_id_scc2fsid(int id)
--{
--    return fsid_scc1_uart + id - 1;
--}
--
--static inline int fs_uart_id_fsid2scc(int id)
--{
--    return id - fsid_scc1_uart + 1;
--}
--
--static inline int fs_uart_id_smc2fsid(int id)
--{
--    return fsid_smc1_uart + id - 1;
--}
--
--static inline int fs_uart_id_fsid2smc(int id)
--{
--    return id - fsid_smc1_uart + 1;
--}
--
--struct fs_uart_platform_info {
--        void(*init_ioports)(struct fs_uart_platform_info *);
--	/* device specific information */
--	int fs_no;		/* controller index */
--	char fs_type[4];        /* controller type  */
--	u32 uart_clk;
--	u8 tx_num_fifo;
--	u8 tx_buf_size;
--	u8 rx_num_fifo;
--	u8 rx_buf_size;
--	u8 brg;
--	u8 clk_rx;
--	u8 clk_tx;
--};
--
--static inline int fs_uart_get_id(struct fs_uart_platform_info *fpi)
--{
--        if(strstr(fpi->fs_type, "SMC"))
--                return fs_uart_id_smc2fsid(fpi->fs_no);
--        if(strstr(fpi->fs_type, "SCC"))
--                return fs_uart_id_scc2fsid(fpi->fs_no);
--        return fpi->fs_no;
--}
--
--#endif
+-obj-$(CONFIG_SERIAL_CPM) += cpm_uart_core.o
 -- 
 2.41.0
 
