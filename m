@@ -2,80 +2,336 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA54C001DF
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 11:58:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5401BC001DF
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 13:02:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235222AbjHCL6g (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 07:58:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51514 "EHLO
+        id S234113AbjHCNCY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 09:02:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234690AbjHCL6f (ORCPT
+        with ESMTP id S229496AbjHCNCX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 07:58:35 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8845134;
-        Thu,  3 Aug 2023 04:58:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691063914; x=1722599914;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pZ4ZPmvSDy8cgfHE33t4fOkzIy0L7uqmxemDhUrl+uc=;
-  b=m8R/q0qYordoirYdlX+qCoHm2g4KqZDjjmwHEQSjPnUo5lGqfPwPljq5
-   G6HVxBk7ArjuxJmfOICRNKqZhEJRPGvmVzC+NON52+10wZFE5yo/dWSkL
-   hCaeCcY1s6sKnoClRJws4BFGw5EYmcCtYf7A6NiJTC3+/LdKzCZx19hiE
-   NGHPbdADK3PraWGdlO6p9vCVQnDV3/weYDe/XKJWmqOOUZ6TxY2rudIW+
-   rhX13fIicRyb11a2K711clQH26XNVmt9IJqiWLaSOmq1q0wLMdV0wqJ6c
-   MITCyu3vXZ7LZLN9v0ssvsX/kwZ0xHFKpVcmeCQCpSNlTBFjk/D3okWv9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="354770096"
-X-IronPort-AV: E=Sophos;i="6.01,252,1684825200"; 
-   d="scan'208";a="354770096"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2023 04:58:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="843570211"
-X-IronPort-AV: E=Sophos;i="6.01,252,1684825200"; 
-   d="scan'208";a="843570211"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP; 03 Aug 2023 04:58:32 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qRWyN-00BBt3-0B;
-        Thu, 03 Aug 2023 14:58:31 +0300
-Date:   Thu, 3 Aug 2023 14:58:30 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH] 8250_men_mcb: Fix unsigned comparison with less than zero
-Message-ID: <ZMuWZulcClgyFxR3@smile.fi.intel.com>
-References: <20230803084753.51253-1-jiapeng.chong@linux.alibaba.com>
+        Thu, 3 Aug 2023 09:02:23 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9A51712;
+        Thu,  3 Aug 2023 06:02:21 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 373A02BF010199;
+        Thu, 3 Aug 2023 15:02:02 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+        from:to:cc:subject:date:message-id:in-reply-to:references
+        :mime-version:content-transfer-encoding:content-type; s=
+        selector1; bh=7WIfw0irEIV+Oza8xiL4BFzi+kqQJHgoFXmjppWCvUw=; b=OW
+        sBI+3Kd5M8GYseRFWNewGDnQGn/ttvmm31qzFqGcPhzXqvGM2Z6zbhEtLVsKGX5U
+        VtiTpQri/gXCoNdBf4OVJM4n4YRTkofm2yGrPUT6s58aK4PJ17k3G0iSu11i03wX
+        TeoGR+hqtcCZFW0GVlpy1L6Dh1MmzwyC+xFP4p//v9fcxQYXXz7bnAqkhaD8M79S
+        QRHzCt8KT9RwR5sM5gT3xpT/kuYi3JckJu84KgRRMjfBy9I4RE+ocWzmzPzdjkX9
+        RZm3onXg3J4gehNDZwLixY8FLgOSK9EVhtCkSeiXQA6abjxLkCdlsXkSQWXsdyV/
+        X6dPz04VhwlAYbLB/ElA==
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3s8a3qh1h9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 03 Aug 2023 15:02:02 +0200 (MEST)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 9A0C510008F;
+        Thu,  3 Aug 2023 15:02:00 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 91EA42171E3;
+        Thu,  3 Aug 2023 15:02:00 +0200 (CEST)
+Received: from localhost (10.201.20.168) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Thu, 3 Aug
+ 2023 15:02:00 +0200
+From:   Valentin Caron <valentin.caron@foss.st.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Jiri Slaby <jirislaby@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Valentin Caron <valentin.caron@foss.st.com>
+Subject: [PATCH 4/6] serial: stm32: group dma pause/resume error handling into single function
+Date:   Thu, 3 Aug 2023 15:01:32 +0200
+Message-ID: <20230803130134.155355-5-valentin.caron@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230803130134.155355-1-valentin.caron@foss.st.com>
+References: <20230803130134.155355-1-valentin.caron@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230803084753.51253-1-jiapeng.chong@linux.alibaba.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.201.20.168]
+X-ClientProxiedBy: SHFCAS1NODE2.st.com (10.75.129.73) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-08-03_12,2023-08-03_01,2023-05-22_02
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 03, 2023 at 04:47:53PM +0800, Jiapeng Chong wrote:
-> The data->line[i] is defined as unsigned int type, if(data->line[i] < 0)
-> is invalid, so replace data->line[i] with res.
-> 
-> ./drivers/tty/serial/8250/8250_men_mcb.c:223:6-19: WARNING: Unsigned expression compared with zero: data->line[i] < 0.
+Create new function "stm32_usart_dma_pause_resume" that called dmaengine_
+pause/resume and in case of error, terminate dma transaction.
 
-Having
+Two other functions are created to facilitate the use of stm32_usart_dma
+_pause_resume : stm32_usart_tx_dma_pause, stm32_usart_tx_dma_resume.
+Equivalent functions for rx will be added in future patch.
 
- WARNING: Unsigned expression compared with zero: data->line[i] < 0.
+Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
+---
+ drivers/tty/serial/stm32-usart.c | 127 ++++++++++++++++++++-----------
+ drivers/tty/serial/stm32-usart.h |   1 +
+ 2 files changed, 83 insertions(+), 45 deletions(-)
 
-is enough.
-
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index 3471e23bb02f..0dae05a7abe6 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -290,14 +290,40 @@ static int stm32_usart_init_rs485(struct uart_port *port,
+ }
+ 
+ static bool stm32_usart_rx_dma_started(struct stm32_port *stm32_port)
++{
++	return stm32_port->rx_ch ? stm32_port->rx_dma_busy : false;
++}
++
++static void stm32_usart_rx_dma_terminate(struct stm32_port *stm32_port)
++{
++	dmaengine_terminate_async(stm32_port->rx_ch);
++	stm32_port->rx_dma_busy = false;
++}
++
++static int stm32_usart_dma_pause_resume(struct stm32_port *stm32_port,
++					struct dma_chan *chan,
++					enum dma_status expected_status,
++					int dmaengine_pause_or_resume(struct dma_chan *),
++					bool stm32_usart_xx_dma_started(struct stm32_port *),
++					void stm32_usart_xx_dma_terminate(struct stm32_port *))
+ {
+ 	struct uart_port *port = &stm32_port->port;
+-	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	enum dma_status dma_status;
++	int ret;
++
++	if (!stm32_usart_xx_dma_started(stm32_port))
++		return -EPERM;
+ 
+-	if (!stm32_port->rx_ch)
+-		return false;
++	dma_status = dmaengine_tx_status(chan, chan->cookie, NULL);
++	if (dma_status != expected_status)
++		return -EAGAIN;
+ 
+-	return !!(readl_relaxed(port->membase + ofs->cr3) & USART_CR3_DMAR);
++	ret = dmaengine_pause_or_resume(chan);
++	if (ret) {
++		dev_err(port->dev, "DMA failed with error code: %d\n", ret);
++		stm32_usart_xx_dma_terminate(stm32_port);
++	}
++	return ret;
+ }
+ 
+ /* Return true when data is pending (in pio mode), and false when no data is pending. */
+@@ -475,7 +501,7 @@ static unsigned int stm32_usart_receive_chars(struct uart_port *port, bool force
+ 			}
+ 		} else {
+ 			/* Disable RX DMA */
+-			dmaengine_terminate_async(stm32_port->rx_ch);
++			stm32_usart_rx_dma_terminate(stm32_port);
+ 			stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_DMAR);
+ 			/* Fall back to interrupt mode */
+ 			dev_dbg(port->dev, "DMA error, fallback to irq mode\n");
+@@ -506,6 +532,22 @@ static bool stm32_usart_tx_dma_started(struct stm32_port *stm32_port)
+ 	return stm32_port->tx_dma_busy;
+ }
+ 
++static int stm32_usart_tx_dma_pause(struct stm32_port *stm32_port)
++{
++	return stm32_usart_dma_pause_resume(stm32_port, stm32_port->tx_ch,
++					    DMA_IN_PROGRESS, dmaengine_pause,
++					    stm32_usart_tx_dma_started,
++					    stm32_usart_tx_dma_terminate);
++}
++
++static int stm32_usart_tx_dma_resume(struct stm32_port *stm32_port)
++{
++	return stm32_usart_dma_pause_resume(stm32_port, stm32_port->tx_ch,
++					    DMA_PAUSED, dmaengine_resume,
++					    stm32_usart_tx_dma_started,
++					    stm32_usart_tx_dma_terminate);
++}
++
+ static void stm32_usart_tx_dma_complete(void *arg)
+ {
+ 	struct uart_port *port = arg;
+@@ -606,13 +648,9 @@ static void stm32_usart_transmit_chars_dma(struct uart_port *port)
+ 	int ret;
+ 
+ 	if (stm32_usart_tx_dma_started(stm32port)) {
+-		if (dmaengine_tx_status(stm32port->tx_ch,
+-					stm32port->tx_ch->cookie,
+-					NULL) == DMA_PAUSED) {
+-			ret = dmaengine_resume(stm32port->tx_ch);
+-			if (ret < 0)
+-				goto dma_err;
+-		}
++		ret = stm32_usart_tx_dma_resume(stm32port);
++		if (ret < 0 && ret != -EAGAIN)
++			goto fallback_err;
+ 		return;
+ 	}
+ 
+@@ -658,8 +696,12 @@ static void stm32_usart_transmit_chars_dma(struct uart_port *port)
+ 
+ 	/* Push current DMA TX transaction in the pending queue */
+ 	/* DMA no yet started, safe to free resources */
+-	if (dma_submit_error(dmaengine_submit(desc)))
+-		goto dma_err;
++	ret = dma_submit_error(dmaengine_submit(desc));
++	if (ret) {
++		dev_err(port->dev, "DMA failed with error code: %d\n", ret);
++		stm32_usart_tx_dma_terminate(stm32port);
++		goto fallback_err;
++	}
+ 
+ 	/* Issue pending DMA TX requests */
+ 	dma_async_issue_pending(stm32port->tx_ch);
+@@ -668,10 +710,6 @@ static void stm32_usart_transmit_chars_dma(struct uart_port *port)
+ 
+ 	return;
+ 
+-dma_err:
+-	dev_err(port->dev, "DMA failed with error code: %d\n", ret);
+-	stm32_usart_tx_dma_terminate(stm32port);
+-
+ fallback_err:
+ 	stm32_usart_transmit_chars_pio(port);
+ }
+@@ -693,16 +731,9 @@ static void stm32_usart_transmit_chars(struct uart_port *port)
+ 	}
+ 
+ 	if (port->x_char) {
+-		if (stm32_usart_tx_dma_started(stm32_port) &&
+-		    dmaengine_tx_status(stm32_port->tx_ch,
+-					stm32_port->tx_ch->cookie,
+-					NULL) == DMA_IN_PROGRESS) {
+-			ret = dmaengine_pause(stm32_port->tx_ch);
+-			if (ret < 0) {
+-				dev_err(port->dev, "DMA failed with error code: %d\n", ret);
+-				stm32_usart_tx_dma_terminate(stm32_port);
+-			}
+-		}
++		/* dma terminate may have been called in case of dma pause failure */
++		stm32_usart_tx_dma_pause(stm32_port);
++
+ 		/* Check that TDR is empty before filling FIFO */
+ 		ret =
+ 		readl_relaxed_poll_timeout_atomic(port->membase + ofs->isr,
+@@ -716,13 +747,8 @@ static void stm32_usart_transmit_chars(struct uart_port *port)
+ 		port->x_char = 0;
+ 		port->icount.tx++;
+ 
+-		if (stm32_usart_tx_dma_started(stm32_port)) {
+-			ret = dmaengine_resume(stm32_port->tx_ch);
+-			if (ret < 0) {
+-				dev_err(port->dev, "DMA failed with error code: %d\n", ret);
+-				stm32_usart_tx_dma_terminate(stm32_port);
+-			}
+-		}
++		/* dma terminate may have been called in case of dma resume failure */
++		stm32_usart_tx_dma_resume(stm32_port);
+ 		return;
+ 	}
+ 
+@@ -855,16 +881,11 @@ static void stm32_usart_disable_ms(struct uart_port *port)
+ static void stm32_usart_stop_tx(struct uart_port *port)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	int ret;
+ 
+ 	stm32_usart_tx_interrupt_disable(port);
+-	if (stm32_usart_tx_dma_started(stm32_port)) {
+-		ret = dmaengine_pause(stm32_port->tx_ch);
+-		if (ret < 0) {
+-			dev_err(port->dev, "DMA failed with error code: %d\n", ret);
+-			stm32_usart_tx_dma_terminate(stm32_port);
+-		}
+-	}
++
++	/* dma terminate may have been called in case of dma pause failure */
++	stm32_usart_tx_dma_pause(stm32_port);
+ 
+ 	stm32_usart_rs485_rts_disable(port);
+ }
+@@ -965,8 +986,22 @@ static int stm32_usart_start_rx_dma_cyclic(struct uart_port *port)
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+ 	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 	struct dma_async_tx_descriptor *desc;
++	enum dma_status rx_dma_status;
+ 	int ret;
+ 
++	if (stm32_port->rx_dma_busy) {
++		rx_dma_status = dmaengine_tx_status(stm32_port->rx_ch,
++						    stm32_port->rx_ch->cookie,
++						    NULL);
++		if (rx_dma_status == DMA_IN_PROGRESS)
++			return 0;
++
++		dev_err(port->dev, "DMA failed : status error.\n");
++		stm32_usart_rx_dma_terminate(stm32_port);
++	}
++
++	stm32_port->rx_dma_busy = true;
++
+ 	stm32_port->last_res = RX_BUF_L;
+ 	/* Prepare a DMA cyclic transaction */
+ 	desc = dmaengine_prep_dma_cyclic(stm32_port->rx_ch,
+@@ -976,6 +1011,7 @@ static int stm32_usart_start_rx_dma_cyclic(struct uart_port *port)
+ 					 DMA_PREP_INTERRUPT);
+ 	if (!desc) {
+ 		dev_err(port->dev, "rx dma prep cyclic failed\n");
++		stm32_port->rx_dma_busy = false;
+ 		return -ENODEV;
+ 	}
+ 
+@@ -986,6 +1022,7 @@ static int stm32_usart_start_rx_dma_cyclic(struct uart_port *port)
+ 	ret = dma_submit_error(dmaengine_submit(desc));
+ 	if (ret) {
+ 		dmaengine_terminate_sync(stm32_port->rx_ch);
++		stm32_port->rx_dma_busy = false;
+ 		return ret;
+ 	}
+ 
+@@ -1074,7 +1111,7 @@ static void stm32_usart_shutdown(struct uart_port *port)
+ 
+ 	/* Disable RX DMA. */
+ 	if (stm32_port->rx_ch)
+-		dmaengine_terminate_async(stm32_port->rx_ch);
++		stm32_usart_rx_dma_terminate(stm32_port);
+ 
+ 	/* flush RX & TX FIFO */
+ 	if (ofs->rqr != UNDEF_REG)
+@@ -1988,7 +2025,7 @@ static int __maybe_unused stm32_usart_serial_en_wakeup(struct uart_port *port,
+ 			stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_DMAR);
+ 			/* Poll data from DMA RX buffer if any */
+ 			size = stm32_usart_receive_chars(port, true);
+-			dmaengine_terminate_async(stm32_port->rx_ch);
++			stm32_usart_rx_dma_terminate(stm32_port);
+ 			uart_unlock_and_check_sysrq_irqrestore(port, flags);
+ 			if (size)
+ 				tty_flip_buffer_push(tport);
+diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
+index 903285b5aea7..f59f831b2a10 100644
+--- a/drivers/tty/serial/stm32-usart.h
++++ b/drivers/tty/serial/stm32-usart.h
+@@ -199,6 +199,7 @@ struct stm32_port {
+ 	u32 cr3_irq;		 /* USART_CR3_RXFTIE */
+ 	int last_res;
+ 	bool tx_dma_busy;	 /* dma tx transaction in progress */
++	bool rx_dma_busy;	 /* dma rx transaction in progress */
+ 	bool throttled;		 /* port throttled            */
+ 	bool hw_flow_control;
+ 	bool swap;		 /* swap RX & TX pins */
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
