@@ -2,89 +2,177 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22CEFC001DF
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 08:01:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8813BC04A6A
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 08:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234232AbjHCIBh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 04:01:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32870 "EHLO
+        id S229494AbjHCIDZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 04:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234240AbjHCIAa (ORCPT
+        with ESMTP id S234355AbjHCICz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 04:00:30 -0400
+        Thu, 3 Aug 2023 04:02:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35E4546A2;
-        Thu,  3 Aug 2023 00:50:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65754524F;
+        Thu,  3 Aug 2023 00:54:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9519661C28;
-        Thu,  3 Aug 2023 07:50:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76960C433C7;
-        Thu,  3 Aug 2023 07:50:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D11EC617F2;
+        Thu,  3 Aug 2023 07:54:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADC0EC433C8;
+        Thu,  3 Aug 2023 07:54:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1691049006;
-        bh=TwMah1P/QSs3KjgOLUcqE01UhQrbw1JK1xFtsSHEwdI=;
+        s=korg; t=1691049280;
+        bh=m+eJRCyqdgjnVwAMt8/xLp9WklfLtqb5lfJD69P90as=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=X7D8YZ4lBRAxDbDf6B/DGXuio8UfUUfaAKHNKkvO2QPOuOqJykURVFA7GOuTGIN+l
-         uVTZ/efUIYl1UAmim6cBB8Bb10jMmxNPYRx/b+7BJZRvx3cHSfcauu7GZKouOZ0mCc
-         pC+VaT8AnNmNZYFNv0rHAGqRv4qMB/P3by+xi3cc=
-Date:   Thu, 3 Aug 2023 09:50:03 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
+        b=SBaRjhBZi2InmSC1/Sn9RIA2R/5Ad+bfBSJSY1gIdhveK09+5vSbXI5AuVE3EKiQF
+         GK7T/ii+UdX7SIHit2OhuCe1BrdjsVC5TPrNUb+/yo8STqzqvdoylyeBuwf/7f38Fr
+         I6jajHttVaZkd1R3vNMtu2reol0AcqpR3uIo0FVU=
+Date:   Thu, 3 Aug 2023 09:54:37 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, jirislaby@kernel.org, jringle@gridpoint.com,
+        isaac.true@canonical.com, jesse.sung@canonical.com,
+        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        stable@vger.kernel.org,
         Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        kernel test robot <oliver.sang@intel.com>
-Subject: Re: [PATCH v2 1/1] serial: core: Fix serial_base_match() after
- fixing controller port name
-Message-ID: <2023080351-chaplain-headgear-bcbb@gregkh>
-References: <20230803071034.25571-1-tony@atomide.com>
+        Lech Perczak <lech.perczak@camlingroup.com>
+Subject: Re: [PATCH v9 01/10] serial: sc16is7xx: fix broken port 0 uart init
+Message-ID: <2023080336-unsalted-dropout-d8f6@gregkh>
+References: <20230725142343.1724130-1-hugo@hugovil.com>
+ <20230725142343.1724130-2-hugo@hugovil.com>
+ <2023073148-marshy-extenuate-2d45@gregkh>
+ <20230801131655.80bd8f97f018dda6155d65f6@hugovil.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20230803071034.25571-1-tony@atomide.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230801131655.80bd8f97f018dda6155d65f6@hugovil.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 03, 2023 at 10:10:32AM +0300, Tony Lindgren wrote:
-> While fixing DEVNAME to be more usable, I broke serial_base_match() as the
-> ctrl and port prefix for device names seemed unnecessary.
+On Tue, Aug 01, 2023 at 01:16:55PM -0400, Hugo Villeneuve wrote:
+> On Mon, 31 Jul 2023 17:52:26 +0200
+> Greg KH <gregkh@linuxfoundation.org> wrote:
 > 
-> The prefixes are still needed by serial_base_match() to probe the serial
-> base controller port, and serial tx is now broken.
+> > On Tue, Jul 25, 2023 at 10:23:33AM -0400, Hugo Villeneuve wrote:
+> > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > > 
+> > > The sc16is7xx_config_rs485() function is called only for the second
+> > > port (index 1, channel B), causing initialization problems for the
+> > > first port.
+> > > 
+> > > For the sc16is7xx driver, port->membase and port->mapbase are not set,
+> > > and their default values are 0. And we set port->iobase to the device
+> > > index. This means that when the first device is registered using the
+> > > uart_add_one_port() function, the following values will be in the port
+> > > structure:
+> > >     port->membase = 0
+> > >     port->mapbase = 0
+> > >     port->iobase  = 0
+> > > 
+> > > Therefore, the function uart_configure_port() in serial_core.c will
+> > > exit early because of the following check:
+> > > 	/*
+> > > 	 * If there isn't a port here, don't do anything further.
+> > > 	 */
+> > > 	if (!port->iobase && !port->mapbase && !port->membase)
+> > > 		return;
+> > > 
+> > > Typically, I2C and SPI drivers do not set port->membase and
+> > > port->mapbase.
+> > > 
+> > > The max310x driver sets port->membase to ~0 (all ones). By
+> > > implementing the same change in this driver, uart_configure_port() is
+> > > now correctly executed for all ports.
+> > > 
+> > > Fixes: dfeae619d781 ("serial: sc16is7xx")
+> > 
+> > That commit is in a very old 3.x release.
+> > 
+> > > Cc: <stable@vger.kernel.org> # 6.1.x
+> > 
+> > But you say this should only go to 6.1.y?  Why?  What is wrong with the
+> > older kernels?
 > 
-> Let's fix the issue by checking against dev->type and drv->name instead
-> of the prefixes that are no longer in the DEVNAME.
+> Hi Greg,
+> I have read (and reread a couple of times)
+> Documentation/process/stable-kernel-rules.rst to try to understand how
+> to format the tags, but unfortunately it doesn't contain "Everything
+> you ever wanted to know about Linux -stable releases" as the title
+> claims :)
 > 
-> Fixes: 1ef2c2df1199 ("serial: core: Fix serial core controller port name to show controller id")
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Closes: https://lore.kernel.org/oe-lkp/202308021529.35b3ad6c-oliver.sang@intel.com
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
-> 
-> Changes since v1:
-> - Leave out magic numbers and use str_has_prefix() as suggested by Andy
->   and Greg
-> 
-> - Improve patch description and add a link for Closes tag as suggested
->   by Jiri
-> 
-> - Check the name against device_type name since we have it and leave
->   out the changes to try to define names in the header because of the
->   issues noted by Jiri
-> 
-> - Leave out Tested-by from Mark and Anders as the patch changed
+> In particular, it doesn't explain or advise which older version we
+> should target, that is why since I was not sure I specified 6.1.y
+> because I could test it properly, but not v3.x.
 
-Thanks for this, now queued up.
+If you think this fixes an issue back to 3.x, then just leave it at
+that, there's no need to have to test all of these.  If when I apply the
+patch to the stable trees, and it does not go back to all of the
+active versions specified by Fixes: then you will get an email saying
+so and can handle it then if you want to.
+
+> Maybe it would be best to simply drop for now all the "Cc:
+> <stable@vger.kernel.org>" tags for this series, and following Option 2,
+> I send an email to stable@vger.kernel.org once the patches have been
+> merged to Linus' tree?
+
+That will just mean more work for both of us, leave it as is, just drop
+the "# 6.1.x" portion please.
+
+> > > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > > Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> > > Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
+> > > Tested-by: Lech Perczak <lech.perczak@camlingroup.com>
+> > > ---
+> > >  drivers/tty/serial/sc16is7xx.c | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > > 
+> > > diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> > > index 2e7e7c409cf2..8ae2afc76a9b 100644
+> > > --- a/drivers/tty/serial/sc16is7xx.c
+> > > +++ b/drivers/tty/serial/sc16is7xx.c
+> > > @@ -1436,6 +1436,7 @@ static int sc16is7xx_probe(struct device *dev,
+> > >  		s->p[i].port.fifosize	= SC16IS7XX_FIFO_SIZE;
+> > >  		s->p[i].port.flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY;
+> > >  		s->p[i].port.iobase	= i;
+> > > +		s->p[i].port.membase	= (void __iomem *)~0;
+> > 
+> > That's a magic value, some comment should be added here to explain why
+> > setting all bits is ok.  Why does this work exactly?  You only say that
+> > the max310x driver does this, but not why it does this at all.
+> 
+> I do not understand, because my commit log message is quite long
+> and, it seems to me, well documenting why this works the way it
+> does when calling uart_configure_port() in serial_core.c?
+> 
+> I say that the max310x driver also does this, because there is also no
+> comment in the max310x driver for using the (void __iomem *)~0;
+> construct. I also located the original commit message for the max310x
+> driver but no comments were usefull there also.
+> 
+> So, what about adding this comment:
+> 
+> /*
+>  * Use all ones as membase to make sure uart_configure_port() in
+>  * serial_core.c does not abort for SPI/I2C devices where the
+>  * membase address is not applicable.
+>  */
+>  s->p[i].port.membase	= (void __iomem *)~0;
+
+Yes, that would be good, thank you.
+
+> If wou want, I could also add the same comment to the max310 driver?
+
+Yes please.
+
+thanks,
 
 greg k-h
