@@ -2,81 +2,158 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF91EB64DD
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 05:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57FBAEB64DD
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 05:13:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230165AbjHCFIM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 01:08:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47198 "EHLO
+        id S230481AbjHCFNk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 01:13:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbjHCFIL (ORCPT
+        with ESMTP id S231506AbjHCFNj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 01:08:11 -0400
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3DB09B;
-        Wed,  2 Aug 2023 22:08:10 -0700 (PDT)
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-31792ac0fefso437636f8f.2;
-        Wed, 02 Aug 2023 22:08:10 -0700 (PDT)
+        Thu, 3 Aug 2023 01:13:39 -0400
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B381E43;
+        Wed,  2 Aug 2023 22:13:37 -0700 (PDT)
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-3178dd81ac4so481567f8f.3;
+        Wed, 02 Aug 2023 22:13:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691039289; x=1691644089;
+        d=1e100.net; s=20221208; t=1691039616; x=1691644416;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=SX9ntrLJV/kdBv0dEu2PYDIqC3ArssiACUgrlWgmu38=;
-        b=j/51yOVEpLFyCPEgIGuismIyO76hfkTWDJm4WuJ8GE+CyxasgBHNwC/ijEdm67ARVY
-         RaBPzaDsU0a0ltZlZ+zp1gLClmzQlc9THVDg7QPHnSvyZN3BG9QpcuK8/sieCblzVJjz
-         lZ3YVbp0D4feCktxrUjljplhdfiJXPZ61PsgcFa6UZNITbEbsSKInU4ala7IgqH3Da3f
-         g92ibT3neEq1dOi8aofT1t+ixG4jnxSaGGjiH/90NfWGd/S376GhxeCafqsAIypNWimr
-         8foQ9UWtrt/OaodA4/Fp6RKwDNgt3wvzVldOXzkd/rsees2J0RagL++pnGjCACyIoCAP
-         mHtw==
-X-Gm-Message-State: ABy/qLbtQUjNmL/LCP2Y2YV8C5eYVakn2y2hDRtOfst4fdfvTeSgzdAQ
-        BVM3N60w7d98SipP/gsqDqw=
-X-Google-Smtp-Source: APBJJlFGK05xKr5kgiQuhfZEeaHfYOC+R2n278bG3Giy5r4TIqwnklypZtNl06OPuv39L0x4dV5Z7w==
-X-Received: by 2002:a5d:4c43:0:b0:317:60ae:2ef5 with SMTP id n3-20020a5d4c43000000b0031760ae2ef5mr6347351wrt.31.1691039289025;
-        Wed, 02 Aug 2023 22:08:09 -0700 (PDT)
+        bh=t/+wHAm+pSFsxBZxH6R9J1UEW1BsnRshtaSbp6LTgTk=;
+        b=d4ad+ZC+kClI2upxC11+SImqqZyeTqMKTuOLkGgqk7rkYixRfmW3N6EmiZbJQIH+tE
+         jmsZ52ipcB8K/M0Ct1HdDWLdfIJrQGu+lLLxJ2eEdy5Aziidjt5A/M2YbBOKWDXCa1am
+         WJmIqHUzem7xVaCuNbE8i2FkqOtTWbMyyI5ij+ch7OIY0Xdv72JnfIE5nwFErOaJWZ2w
+         Rr0HN/fzgRZCqZNPwO6wRsBNlYwz24bWc2J5dlXn3HPRDJfSXXhoAq/qw0JjylUcNB9U
+         pBIlDOlDaqvgZKgZqPC461fNnrfQ+59jN9Ij0Um7RWUNBxLo5ARUmbAm172L4zDXx9ra
+         h4/Q==
+X-Gm-Message-State: ABy/qLbu5EWV8hYiyroVRNPOdNMgQ8MmsdZZElkZS2iBe/6Wc6svf941
+        ujtH8TZwMOgCLKxoArnvcHA=
+X-Google-Smtp-Source: APBJJlGOTuijVRnR5/YBVOcI0cNMM7JyNVucFPypSjaaX0VaS+h/17bq0LW3VcIIB6IbYB5UoI3lFQ==
+X-Received: by 2002:adf:ee52:0:b0:317:57f0:fae with SMTP id w18-20020adfee52000000b0031757f00faemr6252072wro.63.1691039615638;
+        Wed, 02 Aug 2023 22:13:35 -0700 (PDT)
 Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id r6-20020adfce86000000b003179b3fd837sm13528311wrn.33.2023.08.02.22.08.07
+        by smtp.gmail.com with ESMTPSA id c4-20020a056000104400b003143b14848dsm20683080wrx.102.2023.08.02.22.13.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Aug 2023 22:08:08 -0700 (PDT)
-Message-ID: <6808de4a-6002-e8bc-5921-06b5938dc69e@kernel.org>
-Date:   Thu, 3 Aug 2023 07:08:07 +0200
+        Wed, 02 Aug 2023 22:13:34 -0700 (PDT)
+Message-ID: <496b56e1-1cc3-dfa3-d628-aeab62b9e60f@kernel.org>
+Date:   Thu, 3 Aug 2023 07:13:33 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.13.1
-Subject: Re: [PATCH 2/2] net: nfc: remove casts from tty->disc_data
+Subject: Re: [PATCH] serial: core: Fix serial_base_match() after fixing
+ controller port name
 Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Max Staudt <max@enpas.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-References: <20230801062237.2687-1-jirislaby@kernel.org>
- <20230801062237.2687-3-jirislaby@kernel.org>
- <20230802120755.10849c9a@kernel.org>
+To:     Tony Lindgren <tony@atomide.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        kernel test robot <oliver.sang@intel.com>
+References: <20230802114846.21899-1-tony@atomide.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20230802120755.10849c9a@kernel.org>
+In-Reply-To: <20230802114846.21899-1-tony@atomide.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 02. 08. 23, 21:07, Jakub Kicinski wrote:
-> On Tue,  1 Aug 2023 08:22:37 +0200 Jiri Slaby (SUSE) wrote:
->> tty->disc_data is 'void *', so there is no need to cast from that.
->> Therefore remove the casts and assign the pointer directly.
+On 02. 08. 23, 13:48, Tony Lindgren wrote:
+> While fixing DEVNAME to be more usable, I broke serial_base_match() as
+> the ctrl and port prefix for device seemed unnecessary.
+
+It's not completely clear to me what you are actually fixing. Please 
+elaborate in more detail.
+
+> Let's fix the issue by checking against dev->type and drv->name.
 > 
-> Which tree are these expected to flow thru?
+> Fixes: 1ef2c2df1199 ("serial: core: Fix serial core controller port name to show controller id")
 
-The intention was through the tty tree. But I don't mind either way -- 
-it's up to you Greg.
 
-thanks,
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+
+Then we are missing a Link here.
+
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> ---
+>   drivers/tty/serial/serial_base.h     |  3 +++
+>   drivers/tty/serial/serial_base_bus.c | 10 ++++++++--
+>   drivers/tty/serial/serial_ctrl.c     |  2 +-
+>   drivers/tty/serial/serial_port.c     |  2 +-
+>   4 files changed, 13 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/serial_base.h b/drivers/tty/serial/serial_base.h
+> --- a/drivers/tty/serial/serial_base.h
+> +++ b/drivers/tty/serial/serial_base.h
+> @@ -6,6 +6,9 @@
+>    * Author: Tony Lindgren <tony@atomide.com>
+>    */
+>   
+> +#define SERIAL_BASE_CTRL_NAME	"ctrl"
+> +#define SERIAL_BASE_PORT_NAME	"port"
+
+Could you make those char[] instead? The compiler/linker will hopefully 
+(will it?) de-dup the occurrences, but the arrays would look cleaner and 
+safer from this POV.
+
+>   #define to_serial_base_ctrl_device(d) container_of((d), struct serial_ctrl_device, dev)
+>   #define to_serial_base_port_device(d) container_of((d), struct serial_port_device, dev)
+>   
+> diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
+> --- a/drivers/tty/serial/serial_base_bus.c
+> +++ b/drivers/tty/serial/serial_base_bus.c
+> @@ -29,9 +29,15 @@ static const struct device_type serial_port_type = {
+>   
+>   static int serial_base_match(struct device *dev, struct device_driver *drv)
+>   {
+> -	int len = strlen(drv->name);
+> +	if (dev->type == &serial_ctrl_type &&
+> +	    !strncmp(SERIAL_BASE_CTRL_NAME, drv->name, 4))
+> +		return 1;
+>   
+> -	return !strncmp(dev_name(dev), drv->name, len);
+> +	if (dev->type == &serial_port_type &&
+> +	    !strncmp(SERIAL_BASE_PORT_NAME, drv->name, 4))
+> +		return 1;
+> +
+> +	return 0;
+>   }
+>   
+>   static struct bus_type serial_base_bus_type = {
+> diff --git a/drivers/tty/serial/serial_ctrl.c b/drivers/tty/serial/serial_ctrl.c
+> --- a/drivers/tty/serial/serial_ctrl.c
+> +++ b/drivers/tty/serial/serial_ctrl.c
+> @@ -47,7 +47,7 @@ void serial_ctrl_unregister_port(struct uart_driver *drv, struct uart_port *port
+>   }
+>   
+>   static struct device_driver serial_ctrl_driver = {
+> -	.name = "ctrl",
+> +	.name = SERIAL_BASE_CTRL_NAME,
+>   	.suppress_bind_attrs = true,
+>   	.probe = serial_ctrl_probe,
+>   	.remove = serial_ctrl_remove,
+> diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial_port.c
+> --- a/drivers/tty/serial/serial_port.c
+> +++ b/drivers/tty/serial/serial_port.c
+> @@ -83,7 +83,7 @@ void uart_remove_one_port(struct uart_driver *drv, struct uart_port *port)
+>   EXPORT_SYMBOL(uart_remove_one_port);
+>   
+>   static struct device_driver serial_port_driver = {
+> -	.name = "port",
+> +	.name = SERIAL_BASE_PORT_NAME,
+>   	.suppress_bind_attrs = true,
+>   	.probe = serial_port_probe,
+>   	.remove = serial_port_remove,
+
 -- 
 js
 suse labs
