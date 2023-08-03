@@ -2,220 +2,127 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25974C04A6A
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 21:39:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8BFBC001DB
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 22:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231478AbjHCVjH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 17:39:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44268 "EHLO
+        id S230116AbjHCWTN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 18:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231129AbjHCVjG (ORCPT
+        with ESMTP id S229550AbjHCWTM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 17:39:06 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE1730F6;
-        Thu,  3 Aug 2023 14:39:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=+c3D1I04CXR8c7DhRfh0Z01N29Lf7zWiuh+iDe/1XJI=; b=iOHf37hTskOO8FjsCPPCe2JIXK
-        /vm9ZCMWUKO/eqztrPGsPmN7zpLnfMkojpNL2kck7KCFf5BPXBMZEQ4dX1Gqz9wztCAC0DjmFU0ll
-        7g+Lw5MN6tb2VKiDyVka8bentCG6yPIan1rtvz+iaEO1f73b8I/9Irrgy7Ueb8YncygQ=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:45150 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1qRg23-0005Hc-NM; Thu, 03 Aug 2023 17:38:56 -0400
-Date:   Thu, 3 Aug 2023 17:38:54 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        jirislaby@kernel.org, jringle@gridpoint.com,
-        isaac.true@canonical.com, jesse.sung@canonical.com,
-        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Lech Perczak <lech.perczak@camlingroup.com>
-Message-Id: <20230803173854.efdda6d30d88b85ee101ce6b@hugovil.com>
-In-Reply-To: <CAL_JsqK-qbz=w2a00EXh_e1XmY1gF1nvxih7AOYXw+VuMXhnmw@mail.gmail.com>
-References: <20230721161840.1393996-1-hugo@hugovil.com>
-        <20230721161840.1393996-7-hugo@hugovil.com>
-        <CAL_JsqJpdhtnZ8FcM7kGWnM+iuDs1fWiCVgf413evbw-o8TZGQ@mail.gmail.com>
-        <20230722104724.ef0c5896c239e721794b9fe9@hugovil.com>
-        <2023072240-supremacy-shallot-a77f@gregkh>
-        <20230724115428.d191186852c0bd0ee0d78398@hugovil.com>
-        <CAL_JsqL8rjwONd6UAitKik0U44BKSD6m8zbachgfq0R9oHBW8w@mail.gmail.com>
-        <20230731124600.39eb8d5c132f9338c2897543@hugovil.com>
-        <CAL_JsqLaF70hNQndXpJfmH1TMGNbA7myQG0GK9fjyKOs63z-3w@mail.gmail.com>
-        <20230731144115.14733f0e01f586a7efb91370@hugovil.com>
-        <20230803135401.3a11bfb7c2985c1a90a2521b@hugovil.com>
-        <CAL_JsqK-qbz=w2a00EXh_e1XmY1gF1nvxih7AOYXw+VuMXhnmw@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 184.161.19.61
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [RESEND PATCH v8 06/10] serial: sc16is7xx: fix regression with
- GPIO configuration
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Thu, 3 Aug 2023 18:19:12 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 240F8469C;
+        Thu,  3 Aug 2023 15:18:45 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id ca18e2360f4ac-79094ee23e0so52393739f.0;
+        Thu, 03 Aug 2023 15:18:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1691101124; x=1691705924;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=uxCty9oc1mjAqHTw6+6YKzajdVIrcQkiZDg/YOH9YWE=;
+        b=DkWgmc1Ffdq00Q6fJ8opmNiefTg0FORhoMBkYdD+HnM/rpp7aIDuxsXIxGtdDIQzWH
+         XhgjoGuap2ineFA4lfUvpezem2i2KRiKgwrVMyBGn+3ywyAdrbqjchS24VgU1SszlCML
+         kgdaEr5nVAt+Td1FyJA9DbuR+qywjXoN6wsSFwAelwKiKEr7frNIP/7XnBinyLMykvUU
+         ZDwBpQ6L+LHLs7adQuapsqRuedYBt3W3kPM4RCN7PKePNMkJftPrYKvgPB8HwSTn8Ppi
+         8pN0JCYWbaMMMjtneCYkawQOpFVoZIRw7m8a6NLsz7t9GoNqPF8d38t4QaH5q49HlaN0
+         9Rmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691101124; x=1691705924;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=uxCty9oc1mjAqHTw6+6YKzajdVIrcQkiZDg/YOH9YWE=;
+        b=GSFODsb4qfYAGPPL+Ggmy5ctlX71p9Lcf898vjvy09Ux9suTlQsIIyiwXdhct/VAN3
+         JzHBQqccK6xq8ARDFB2rQu6CmYJpa58xf6JvapSlKK022uTwff8Cw/fGKlL1w6VdyWAo
+         5KBVAajwp8GDWxT1CFi5eQ1sqvLyvZwczE672496WBAop54v8dUk1tdsz7zgnNTMiA9X
+         2QbWATToillnVA0MQqmRNuJ5R4s8Ig0sXyrTTxgu5kyGXZS7K2BCuvr1YE/cV3EeV9/R
+         psY9T7Lm/CrQwF4f+pfIpGYkXcR08SEU8OqyU0Qw9F2J9vJZGUYgj2NFXTBc4ydI32UE
+         FkTg==
+X-Gm-Message-State: ABy/qLbw/vOuyVaodYqzYfxJA5+UYEQ+uSXTEJPwNMdrYWg2jvQNS/oH
+        VMCcVnF2BA2pjNsabCmkKrM=
+X-Google-Smtp-Source: APBJJlGQIttkqsIPxJTp9SwCtcoAgLB6T8BKrJVjKk9rgx0gL+wgB2mGMwoQX5NXUN7H3EYUlngNrg==
+X-Received: by 2002:a5d:9e14:0:b0:790:a073:f122 with SMTP id h20-20020a5d9e14000000b00790a073f122mr16794925ioh.2.1691101124647;
+        Thu, 03 Aug 2023 15:18:44 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id z11-20020a6b0a0b000000b007791e286fdbsm225354ioi.21.2023.08.03.15.18.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Aug 2023 15:18:44 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Thu, 3 Aug 2023 15:18:42 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v5 3/3] serial: core: Fix serial core controller port
+ name to show controller id
+Message-ID: <6423de18-637e-4ee6-858e-b74e701ff3e5@roeck-us.net>
+References: <20230725054216.45696-1-tony@atomide.com>
+ <20230725054216.45696-4-tony@atomide.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230725054216.45696-4-tony@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 3 Aug 2023 14:10:30 -0600
-Rob Herring <robh+dt@kernel.org> wrote:
-
-> On Thu, Aug 3, 2023 at 11:54 AM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> >
-> > On Mon, 31 Jul 2023 14:41:15 -0400
-> > Hugo Villeneuve <hugo@hugovil.com> wrote:
-> >
-> > > On Mon, 31 Jul 2023 12:04:45 -0600
-> > > Rob Herring <robh+dt@kernel.org> wrote:
-> > >
-> > > > On Mon, Jul 31, 2023 at 10:46 AM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > > >
-> > > > > On Mon, 31 Jul 2023 09:31:53 -0600
-> > > > > Rob Herring <robh+dt@kernel.org> wrote:
-> > > > >
-> > > > > > On Mon, Jul 24, 2023 at 9:54 AM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > > > > >
-> > > > > > > On Sat, 22 Jul 2023 17:15:26 +0200
-> > > > > > > Greg KH <gregkh@linuxfoundation.org> wrote:
-> > > > > > >
-> > > > > > > > On Sat, Jul 22, 2023 at 10:47:24AM -0400, Hugo Villeneuve wrote:
-> > > > > > > > > On Fri, 21 Jul 2023 13:24:19 -0600
-> > > > > > > > > Rob Herring <robh+dt@kernel.org> wrote:
-> > > > > > > > >
-> > > > > > > > > > On Fri, Jul 21, 2023 at 10:19 AM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > > > > > > > > >
-> > > > > > > > > > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > > > > > > > > > >
-> > > > > > > > > > > Commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
-> > > > > > > > > > > and commit 21144bab4f11 ("sc16is7xx: Handle modem status lines")
-> > > > > > > > > > > changed the function of the GPIOs pins to act as modem control
-> > > > > > > > > > > lines without any possibility of selecting GPIO function.
-> > > > > > > > > >
-> > > > > > > > > > Requiring a new DT property is not fixing a kernel regression. You
-> > > > > > > > > > should be returning the kernel to original behavior and then have a
-> > > > > > > > > > new DT property for new behavior.
-> > > > > > > > >
-> > > > > > > > > Hi Rob,
-> > > > > > > > > please read the entire patch history starting from V1
-> > > > > > > > >  and you will understand why this course of action was
-> > > > > > > > >  not selected.
-> > > > > > > >
-> > > > > > > > That's not going to happen, sorry, you need to explain it here, in this
-> > > > > > > > patch series, why a specific action is being taken over another one, as
-> > > > > > > > no one has time to go dig through past history, sorry.
-> > > > > > >
-> > > > > > > Hi Rob,
-> > > > > > > I initially submitted a patch to revert the kernel to original
-> > > > > > > behavior, but it created more problems because the patch was
-> > > > > > > unfortunately split in two separate patches, and mixed with other non
-> > > > > > > closely-related changes. It was also noted to me that reverting to the
-> > > > > > > old behavior would break things for some users.
-> > > > > > >
-> > > > > > > It was suggested to me by a more experienced kernel developer to
-> > > > > > > "suggest a fix, instead of hurrying a revert":
-> > > > > > >
-> > > > > > >     https://lkml.org/lkml/2023/5/17/758
-> > > > > >
-> > > > > > Do I have to go read this to decipher the justification and reasoning?
-> > > > > > When Greg says "in this patch series", he means in the commit messages
-> > > > > > of the patches. You send v9 already and it doesn't have that. The
-> > > > > > patchset needs to stand on its own summarizing any relevant prior
-> > > > > > discussions.
-> > > > > >
-> > > > > > I never suggested doing a revert.
-> > > > >
-> > > > > Hi Rob,
-> > > > > I am sorry, but this is exactly what I "deciphered" from your
-> > > > > original email.
-> > > > >
-> > > > > I am trying very hard to understand exactly what you mean, but it is
-> > > > > not that obvious for me. If something is not clear in my commit message,
-> > > > > I will try to improve it. But before, let's try to focus on making sure
-> > > > > I understand more clearly what you want exactly.
-> > > > >
-> > > > > > Obviously, someone still wants the
-> > > > > > new feature.
-> > > > >
-> > > > > I assume that you refer to the "new feature" as what was added in
-> > > > > the commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control
-> > > > > lines")?
-> > > >
-> > > > Shrug. It's one of the 2 commits mentioned, I don't know which one
-> > > > exactly. Whichever one changed default behavior from use GPIOs to use
-> > > > modem ctrl lines.
-> > > >
-> > > > Reading it again, I *think* this patch is correct. Default behavior is
-> > > > restored to use GPIOs. The DT property is needed to enable modem ctrl
-> > > > lines.
-> > >
-> > > Hi,
-> > > this is correct.
-> > >
-> > >
-> > > > What's not okay is just saying, these platforms may or may not need an update:
-> > > >
-> > > >     arm64/boot/dts/freescale/fsl-ls1012a-frdm.dts
-> > > >     mips/boot/dts/ingenic/cu1830-neo.dts
-> > > >     mips/boot/dts/ingenic/cu1000-neo.dts
-> > >
-> > > Yes, my bad. I initially mentioned them and hoped to get some
-> > > feedback, which I never got, and I kind of forgot about it.
-> > >
-> > > > You need to figure that out. Have you checked with maintainers of
-> > > > these boards? When were they added and by who? At the same time or by
-> > > > the same person would be a good indication the platform uses modem
-> > > > ctrl lines. Or were these platforms in use before adding modem ctrl
-> > > > support? Then they probably use GPIOs or nothing.
-> > > >
-> > > > If there are platforms which would regress if the modem ctrl feature
-> > > > was just reverted, which ones are those?
-> > >
-> > > Ok, let me do some checks and get back to you on this.
-> >
-> > Hi Rob,
-> > for this board:
-> >     arm64/boot/dts/freescale/fsl-ls1012a-frdm.dts
-> >
-> > it uses a SC16IS740, which doesn't have any GPIOs nor modem
-> > control lines, so no DT changes required.
-> >
-> > For these two Ingenic boards:
-> >     mips/boot/dts/ingenic/cu1830-neo.dts
-> >     mips/boot/dts/ingenic/cu1000-neo.dts
-> >
-> > They use a SC16IS752, which has shared modem control lines and GPIOs.
-> > Unfortunately, the maintainers have not (yet) responded to my
-> > inquiries. Also, I tried to search for schematics or block diagrams on
-> > the net but couldn't find anything.
-> >
-> > These platforms were in use before the patch to add the modem control
-> > lines was added. Then like you said they probably use these shared
-> > lines as GPIOs or nothing, so no DT changes would be required.
+On Tue, Jul 25, 2023 at 08:42:12AM +0300, Tony Lindgren wrote:
+> We are missing the serial core controller id for the serial core port
+> name. Let's fix the issue for sane sysfs output, and to avoid issues
+> addressing serial ports later on.
 > 
-> Okay, that's useful (please add to the commit msg).
+> And as we're now showing the controller id, the "ctrl" and "port" prefix
+> for the DEVNAME become useless, we can just drop them. Let's standardize on
+> DEVNAME:0 for controller name, where 0 is the controller id. And
+> DEVNAME:0.0 for port name, where 0.0 are the controller id and port id.
+> 
+> This makes the sysfs output nicer, on qemu for example:
+> 
+> $ ls /sys/bus/serial-base/devices
+> 00:04:0         serial8250:0    serial8250:0.2
+> 00:04:0.0       serial8250:0.1  serial8250:0.3
+> 
+> Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
+> Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
 
-I added the information in the cover letter, but I can add it to the
-actual patch commit message if you prefer.
+This patch causes about 50% of my boot tests to fail because the console
+is no longer recognized. Reverting this patch fixes the problem.
+Bisect log attached.
 
-> Still, what platform(s) need the modem control feature? Presumably
-> that's whatever platform Lech and Tomasz work on. I guess given the
-> Reviewed-by they are fine with needing a DT change.
+Guenter
 
-Ok. I have previously also emailed Lech about that, but he has not
-responded yet.
-
-Thank you,
-Hugo.
+---
+# bad: [35245ef82c5b8206d97d0296017df658fd8ea3d2] Merge branch 'for-linux-next-fixes' of git://anongit.freedesktop.org/drm/drm-misc
+# good: [5d0c230f1de8c7515b6567d9afba1f196fb4e2f4] Linux 6.5-rc4
+git bisect start 'HEAD' 'v6.5-rc4'
+# good: [ec0f64d0666ce02114b11efd3df3234f7a3497d8] Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+git bisect good ec0f64d0666ce02114b11efd3df3234f7a3497d8
+# bad: [8eb8b701a263abed01d3fd7e7f1984ef37b02149] Merge branch 'fixes' of git://git.kernel.org/pub/scm/linux/kernel/git/vkoul/dmaengine.git
+git bisect bad 8eb8b701a263abed01d3fd7e7f1984ef37b02149
+# good: [f29c3a80b329fbfbf92278c29fdcaafb736e3d01] Merge branch 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git
+git bisect good f29c3a80b329fbfbf92278c29fdcaafb736e3d01
+# bad: [eddb92c4c656a669c30e17ce934e5eba8c261392] Merge branch 'fixes-togreg' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+git bisect bad eddb92c4c656a669c30e17ce934e5eba8c261392
+# good: [6811694eb2f6b7a4e97be2029edc7dd6a39460f8] iio: imu: lsm6dsx: Fix mount matrix retrieval
+git bisect good 6811694eb2f6b7a4e97be2029edc7dd6a39460f8
+# bad: [1ef2c2df11997b8135f34adcf2c200d3b4aacbe9] serial: core: Fix serial core controller port name to show controller id
+git bisect bad 1ef2c2df11997b8135f34adcf2c200d3b4aacbe9
+# good: [83c35180abfdfb22f3d7703b0c85ad2d442ed2c5] serial: core: Controller id cannot be negative
+git bisect good 83c35180abfdfb22f3d7703b0c85ad2d442ed2c5
+# good: [d962de6ae51f9b76ad736220077cda83084090b1] serial: core: Fix serial core port id to not use port->line
+git bisect good d962de6ae51f9b76ad736220077cda83084090b1
+# first bad commit: [1ef2c2df11997b8135f34adcf2c200d3b4aacbe9] serial: core: Fix serial core controller port name to show controller id
