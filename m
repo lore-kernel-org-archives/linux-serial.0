@@ -2,48 +2,72 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C5FC0015E
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 08:36:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B894C00528
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 08:48:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234692AbjHCIf6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 04:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55686 "EHLO
+        id S234226AbjHCIsK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 04:48:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234122AbjHCIfk (ORCPT
+        with ESMTP id S233982AbjHCIsJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 04:35:40 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 846DC4689;
-        Thu,  3 Aug 2023 01:33:17 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 6202F80FE;
-        Thu,  3 Aug 2023 08:33:16 +0000 (UTC)
-Date:   Thu, 3 Aug 2023 11:33:15 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     syzbot <syzbot+list2f20ebac1d924d54d3c4@syzkaller.appspotmail.com>,
-        Hillf Danton <hdanton@sina.com>
-Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] Monthly serial report (Jul 2023)
-Message-ID: <20230803083315.GH14799@atomide.com>
-References: <000000000000036333060169d6a8@google.com>
+        Thu, 3 Aug 2023 04:48:09 -0400
+Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6773FC;
+        Thu,  3 Aug 2023 01:48:06 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R981e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VoyDIp8_1691052474;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VoyDIp8_1691052474)
+          by smtp.aliyun-inc.com;
+          Thu, 03 Aug 2023 16:48:03 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     gregkh@linuxfoundation.org
+Cc:     andriy.shevchenko@linux.intel.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH] 8250_men_mcb: Fix unsigned comparison with less than zero
+Date:   Thu,  3 Aug 2023 16:47:53 +0800
+Message-Id: <20230803084753.51253-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000000000000036333060169d6a8@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* syzbot <syzbot+list2f20ebac1d924d54d3c4@syzkaller.appspotmail.com> [700101 02:00]:
-> <3> 15      Yes   general protection fault in serial8250_tx_chars
->                   https://syzkaller.appspot.com/bug?extid=837b8c9032c053262db8
+The data->line[i] is defined as unsigned int type, if(data->line[i] < 0)
+is invalid, so replace data->line[i] with res.
 
-Looks like Hillf has a patch coming for this [0], not seeing the mail in lore
-for some reason though.
+./drivers/tty/serial/8250/8250_men_mcb.c:223:6-19: WARNING: Unsigned expression compared with zero: data->line[i] < 0.
 
-Regards,
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Closes: https://bugzilla.openanolis.cn/show_bug.cgi?id=6088
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ drivers/tty/serial/8250/8250_men_mcb.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-Tony
+diff --git a/drivers/tty/serial/8250/8250_men_mcb.c b/drivers/tty/serial/8250/8250_men_mcb.c
+index 5f301195575d..c27c52d18dfa 100644
+--- a/drivers/tty/serial/8250/8250_men_mcb.c
++++ b/drivers/tty/serial/8250/8250_men_mcb.c
+@@ -222,11 +222,13 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
+ 					    + data->offset[i];
+ 
+ 		/* ok, register the port */
+-		data->line[i] = serial8250_register_8250_port(&uart);
+-		if (data->line[i] < 0) {
++		res = serial8250_register_8250_port(&uart);
++		if (res < 0) {
+ 			dev_err(&mdev->dev, "unable to register UART port\n");
+-			return data->line[i];
++			return res;
+ 		}
++
++		data->line[i] = res;
+ 		dev_info(&mdev->dev, "found MCB UART: ttyS%d\n", data->line[i]);
+ 	}
+ 
+-- 
+2.20.1.7.g153144c
 
-[0] https://groups.google.com/g/syzkaller-bugs/c/m3vOaJRjnMs
