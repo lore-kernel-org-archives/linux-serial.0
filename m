@@ -2,118 +2,117 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55531EB64DD
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 14:18:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 053FDC04A6A
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 14:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235497AbjHCOSZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 10:18:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35404 "EHLO
+        id S234278AbjHCOUN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 10:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235191AbjHCOSY (ORCPT
+        with ESMTP id S231874AbjHCOUM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 10:18:24 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32E601981;
-        Thu,  3 Aug 2023 07:18:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=e0cd+bfuuJW5D9Vjs7Kwr/ftMzeFILJUbMoh0kdOipw=; b=EXQn0KHSOEFemcJr9tzvUCuA6X
-        IUdoxJh0x4owZByHKyfE7VOq0bHIkOUQkgxJ1TNN82jm0UB2uXoWdsHBXmx4vmcIytm2Oa8HLbEuS
-        EsVVmHiTkrugW3Bz1LgtWx1HpmRj68prsQk9wMjAIylpRMnLuX8hqpbjhdI0g2qj5Se0=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:43022 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1qRZ9b-0000Wk-Jc; Thu, 03 Aug 2023 10:18:16 -0400
-Date:   Thu, 3 Aug 2023 10:18:14 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, jirislaby@kernel.org, jringle@gridpoint.com,
-        isaac.true@canonical.com, jesse.sung@canonical.com,
-        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Lech Perczak <lech.perczak@camlingroup.com>
-Message-Id: <20230803101814.39a61229d81dcd3e96cbe8ee@hugovil.com>
-In-Reply-To: <2023073105-elevation-canister-2777@gregkh>
-References: <20230725142343.1724130-1-hugo@hugovil.com>
-        <20230725142343.1724130-7-hugo@hugovil.com>
-        <2023073105-elevation-canister-2777@gregkh>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 184.161.19.61
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH v9 06/10] serial: sc16is7xx: fix regression with GPIO
- configuration
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Thu, 3 Aug 2023 10:20:12 -0400
+X-Greylist: delayed 1385 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 03 Aug 2023 07:20:10 PDT
+Received: from pegase1.c-s.fr (pegase1.c-s.fr [93.17.236.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E1A8F7;
+        Thu,  3 Aug 2023 07:20:10 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [192.168.12.233])
+        by localhost (Postfix) with ESMTP id 4RGr4j2Llbz9t3X;
+        Thu,  3 Aug 2023 15:57:09 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+        by localhost (pegase1.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id beVGL-Nghc2H; Thu,  3 Aug 2023 15:57:09 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase1.c-s.fr (Postfix) with ESMTP id 4RGr4d4ktdz9t3r;
+        Thu,  3 Aug 2023 15:57:05 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 9DFD58B773;
+        Thu,  3 Aug 2023 15:57:05 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id lUIReUQR1OXM; Thu,  3 Aug 2023 15:57:05 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.232.144])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id D52448B763;
+        Thu,  3 Aug 2023 15:57:03 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 373Duvd4494154
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Thu, 3 Aug 2023 15:56:57 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 373DuupZ494121;
+        Thu, 3 Aug 2023 15:56:56 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Timur Tabi <timur@kernel.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH v1 00/12] serial: cpm_uart: Cleanup and refactoring
+Date:   Thu,  3 Aug 2023 15:56:41 +0200
+Message-ID: <cover.1691068700.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.41.0
+MIME-Version: 1.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1691071000; l=2546; i=christophe.leroy@csgroup.eu; s=20211009; h=from:subject:message-id; bh=NoHIes4UmbMh0Oj+iKdKyDPU6aye+Gd+j7FfhzwC+rk=; b=FtnkdgyOm6dJ9NlFSzUc3f1zMzVhr+5VxwoZ/EnqjmBY6ncNnyG+0RepY+yLb9QQEuJ1mHBBS tEe2dXaVxGLBUd4lNrfdfDUklUD/x/QFbRA1Pq0TyiE7UNeN8MjMuZO
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 31 Jul 2023 17:58:41 +0200
-Greg KH <gregkh@linuxfoundation.org> wrote:
+This series is a dust removal and cleanup of cpm_uart serial driver.
 
-> On Tue, Jul 25, 2023 at 10:23:38AM -0400, Hugo Villeneuve wrote:
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > 
-> > Commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
-> > and commit 21144bab4f11 ("sc16is7xx: Handle modem status lines")
-> > changed the function of the GPIOs pins to act as modem control
-> > lines without any possibility of selecting GPIO function.
-> > 
-> > As a consequence, applications that depends on GPIO lines configured
-> > by default as GPIO pins no longer work as expected.
-> > 
-> > Also, the change to select modem control lines function was done only
-> > for channel A of dual UART variants (752/762). This was not documented
-> > in the log message.
-> > 
-> > Allow to specify GPIO or modem control line function in the device
-> > tree, and for each of the ports (A or B).
-> > 
-> > Do so by using the new device-tree property named
-> > "nxp,modem-control-line-ports" (property added in separate patch).
-> > 
-> > When registering GPIO chip controller, mask-out GPIO pins declared as
-> > modem control lines according to this new DT property.
-> > 
-> > Fixes: 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
-> > Fixes: 21144bab4f11 ("sc16is7xx: Handle modem status lines")
-> > Cc: <stable@vger.kernel.org> # 6.1.x: 95982fad dt-bindings: sc16is7xx: Add property to change GPIO function
-> > Cc: <stable@vger.kernel.org> # 6.1.x: 1584d572 serial: sc16is7xx: refactor GPIO controller registration
-> > Cc: <stable@vger.kernel.org> # 6.1.x: ac2caa5a serial: sc16is7xx: remove obsolete out_thread label
-> > Cc: <stable@vger.kernel.org> # 6.1.x: d90961ad serial: sc16is7xx: mark IOCONTROL register as volatile
-> > Cc: <stable@vger.kernel.org> # 6.1.x: 6dae3bad serial: sc16is7xx: fix broken port 0 uart init
-> 
-> Where are these git commit ids from?  I don't see them in Linus's tree,
-> how are they supposed to be picked up by the stable developers if they
-> are not valid ones?
-> 
-> confused,
-> 
-> greg k-h
+After cleaning up things we see that CPM1 and CPM2 have so much in
+common that it is not worth keeping separate code.
 
-Hi Greg,
-once again, I simply misinterpreted stable-kernel-rules.rst.
+Once refactoring is done, there is only one .c and one .h in cpm_uart/
+subdirectory so its worth getting rid of cpm_uart/ subdir.
 
-I wrongly assumed that, for example, this patch had, as a prerequisite,
-all the patches before it in this series, and that is why I listed
-them.
+The last part leads to the complete removal of include/linux/fs_uart_pd.h
 
-So I will remove them all, since this patch doesn't have any other
-requisites other than the previous patches in this series.
+Christophe Leroy (12):
+  serial: cpm_uart: Avoid suspicious locking
+  serial: cpm_uart: Remove stale prototypes and table and macros
+  serial: cpm_uart: Stop using fs_uart_id enum
+  serial: cpm_uart: Use get_baudrate() instead of uart_baudrate()
+  serial: cpm_uart: Deduplicate cpm_set_{brg/smc_fcr/scc_fcr}()
+  serial: cpm_uart: Deduplicate cpm_line_cr_cmd()
+  serial: cpm_uart: Refactor cpm_uart_allocbuf()/cpm_uart_freebuf()
+  serial: cpm_uart: Refactor cpm_uart_[un]map_pram()
+  serial: cpm_uart: Remove cpm_uart/ subdirectory
+  serial: cpm_uart: Remove stale prototype in powerpc/fsl_soc.c
+  serial: cpm_uart: Don't include fs_uart_pd.h when not needed
+  serial: cpm_uart: Remove linux/fs_uart_pd.h
 
-Maybe it would be good to add some notes about that in
-stable-kernel-rules.rst?
+ arch/powerpc/include/asm/fs_pd.h              |  10 --
+ arch/powerpc/platforms/8xx/mpc885ads_setup.c  |   1 -
+ arch/powerpc/platforms/8xx/tqm8xx_setup.c     |   1 -
+ arch/powerpc/sysdev/fsl_soc.c                 |   2 -
+ drivers/tty/serial/Makefile                   |   2 +-
+ .../{cpm_uart/cpm_uart_core.c => cpm_uart.c}  | 157 ++++++++++++++++--
+ drivers/tty/serial/{cpm_uart => }/cpm_uart.h  |  38 +----
+ drivers/tty/serial/cpm_uart/Makefile          |  12 --
+ drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c   | 122 --------------
+ drivers/tty/serial/cpm_uart/cpm_uart_cpm1.h   |  33 ----
+ drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c   | 156 -----------------
+ drivers/tty/serial/cpm_uart/cpm_uart_cpm2.h   |  33 ----
+ drivers/tty/serial/ucc_uart.c                 |   1 -
+ include/linux/fs_uart_pd.h                    |  71 --------
+ 14 files changed, 145 insertions(+), 494 deletions(-)
+ rename drivers/tty/serial/{cpm_uart/cpm_uart_core.c => cpm_uart.c} (90%)
+ rename drivers/tty/serial/{cpm_uart => }/cpm_uart.h (64%)
+ delete mode 100644 drivers/tty/serial/cpm_uart/Makefile
+ delete mode 100644 drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
+ delete mode 100644 drivers/tty/serial/cpm_uart/cpm_uart_cpm1.h
+ delete mode 100644 drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+ delete mode 100644 drivers/tty/serial/cpm_uart/cpm_uart_cpm2.h
+ delete mode 100644 include/linux/fs_uart_pd.h
 
-Thank you, Hugo.
+-- 
+2.41.0
+
