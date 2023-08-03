@@ -2,96 +2,73 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8A0CC001DE
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Aug 2023 22:54:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0D18C001DF
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 03:24:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231664AbjHBWyH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 2 Aug 2023 18:54:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48004 "EHLO
+        id S233807AbjHCDY4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 2 Aug 2023 23:24:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230461AbjHBWyG (ORCPT
+        with ESMTP id S233647AbjHCDYd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 2 Aug 2023 18:54:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C61127;
-        Wed,  2 Aug 2023 15:54:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 408AF61B76;
-        Wed,  2 Aug 2023 22:54:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 579A0C433C7;
-        Wed,  2 Aug 2023 22:54:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1691016843;
-        bh=YiU0aA6053zZBxMpkzJTUPwbuvPZtBeKnaf2p7gJrCU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Yu5QJm5y8zR+pdtBL5JD45JWGYCMTAwCcZDs7Lxa2dB+oLx8+HOEyqkGXNVrtxqbq
-         gM+Jh4P+J/c188mzyOBe85KvyQrq/Ya05rvkkRKVsurPSjzhB1Mt5BglDmGCmujESD
-         01AhZS5AYxCwTVf/aqRcz8+JwCPxDsTw3s5rJ341pd4oFMyKg+uwWX2/yYqav6e2Nc
-         I/KUWCfPHRNoOPB1adF9l4mgdJUPXTRyH0UWSVqW/6P8LN99rTc2+Do5G2STJl4ZYk
-         IsnjxdbWUw14ur8OMgPoP9NAv1NWpyyMlORuJBjahGLJO8sImwM8E12kanDseDloZx
-         2bDEyhpFMUROw==
-Date:   Wed, 2 Aug 2023 23:53:59 +0100
-From:   Conor Dooley <conor@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Jisheng Zhang <jszhang@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: serial: snps-dw-apb-uart: make
- interrupt optional
-Message-ID: <20230802-risk-getting-e6005e86be81@spud>
-References: <20230802150545.3742-1-jszhang@kernel.org>
- <20230802150545.3742-2-jszhang@kernel.org>
- <20230802-halogen-bungee-63273b2c456c@spud>
- <ZMrRWP5mK+nksn4M@smile.fi.intel.com>
+        Wed, 2 Aug 2023 23:24:33 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 687DE358D
+        for <linux-serial@vger.kernel.org>; Wed,  2 Aug 2023 20:24:25 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4RGYyh4TTNztRn5;
+        Thu,  3 Aug 2023 11:21:00 +0800 (CST)
+Received: from huawei.com (10.90.53.73) by kwepemi500012.china.huawei.com
+ (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Thu, 3 Aug
+ 2023 11:24:22 +0800
+From:   Li Zetao <lizetao1@huawei.com>
+To:     <ychuang3@nuvoton.com>, <schung@nuvoton.com>,
+        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
+CC:     <lizetao1@huawei.com>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-serial@vger.kernel.org>
+Subject: [PATCH -next] tty: serial: Remove redundant initialization for ma35d1serial_driver
+Date:   Thu, 3 Aug 2023 11:23:53 +0800
+Message-ID: <20230803032353.3045221-1-lizetao1@huawei.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="TyQVymKmfkVhVy64"
-Content-Disposition: inline
-In-Reply-To: <ZMrRWP5mK+nksn4M@smile.fi.intel.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.90.53.73]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+There is a warning reported by coccinelle:
 
---TyQVymKmfkVhVy64
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+./drivers/tty/serial/ma35d1_serial.c:791:3-8:
+	No need to set .owner here. The core will do it.
 
-On Thu, Aug 03, 2023 at 12:57:44AM +0300, Andy Shevchenko wrote:
-> On Wed, Aug 02, 2023 at 04:43:48PM +0100, Conor Dooley wrote:
-> > On Wed, Aug 02, 2023 at 11:05:44PM +0800, Jisheng Zhang wrote:
-> > > The driver fall back to poll style when there's no irq. "poll" still
-> > > looks better than no support.
-> >=20
-> > What is the user for this where the interrupt is not actually wired up
-> > in the hardware?
->=20
-> FYI: kernel console doesn't use interrupts, so for example it might be
-> the debug port. Note, I have no idea of the Zhang's case, just my assumpt=
-ion.
+The module_platform_driver() will set "THIS_MODULE" to driver.owner
+when register a driver for platform-level devices, so it is redundant
+initialization to set driver.owner in ma35d1serial_driver statement.
+Remove it to silence the warning.
 
-I'm less interested in what the software is doing, it's what the device=20
-that has not connected the interrupt is that I am curious about.
+Signed-off-by: Li Zetao <lizetao1@huawei.com>
+---
+ drivers/tty/serial/ma35d1_serial.c | 1 -
+ 1 file changed, 1 deletion(-)
 
---TyQVymKmfkVhVy64
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
+index 789593495a80..465b1def9e11 100644
+--- a/drivers/tty/serial/ma35d1_serial.c
++++ b/drivers/tty/serial/ma35d1_serial.c
+@@ -788,7 +788,6 @@ static struct platform_driver ma35d1serial_driver = {
+ 	.resume     = ma35d1serial_resume,
+ 	.driver     = {
+ 		.name   = "ma35d1-uart",
+-		.owner  = THIS_MODULE,
+ 		.of_match_table = of_match_ptr(ma35d1_serial_of_match),
+ 	},
+ };
+-- 
+2.34.1
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZMrehgAKCRB4tDGHoIJi
-0pFVAQCP1wynCbszotBg7z6E5V2mul7jaRGS0Hn3LNZOBaczogD+JXolWFJnyohA
-2deDAf/0fHAyq1Uzh0NT1FfEQYKGAgs=
-=yvLF
------END PGP SIGNATURE-----
-
---TyQVymKmfkVhVy64--
