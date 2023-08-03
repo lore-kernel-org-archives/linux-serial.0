@@ -2,72 +2,131 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B894C00528
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 08:48:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE819C00528
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 08:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234226AbjHCIsK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 04:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37108 "EHLO
+        id S232051AbjHCIxj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 04:53:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233982AbjHCIsJ (ORCPT
+        with ESMTP id S231331AbjHCIxi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 04:48:09 -0400
-Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6773FC;
-        Thu,  3 Aug 2023 01:48:06 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R981e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VoyDIp8_1691052474;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VoyDIp8_1691052474)
-          by smtp.aliyun-inc.com;
-          Thu, 03 Aug 2023 16:48:03 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     gregkh@linuxfoundation.org
-Cc:     andriy.shevchenko@linux.intel.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] 8250_men_mcb: Fix unsigned comparison with less than zero
-Date:   Thu,  3 Aug 2023 16:47:53 +0800
-Message-Id: <20230803084753.51253-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Thu, 3 Aug 2023 04:53:38 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715AAE43;
+        Thu,  3 Aug 2023 01:53:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1691052817; x=1722588817;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1DUG1YI9NaBIZLAvEQTa5XZeeipNelrYpejz4hwab7Q=;
+  b=GJlqrq8/zVUazAgzGQ9TGMAu6CTZYnKIZfTOu6EhRGjx3wuZRofCwO8o
+   2gBDwPEC/XlV3U0kB33kAlXqpD6FZH0zTEzlVEPDtXjWID11MwS1jh6DA
+   jQrNgWXOK2Qw+g18W4JkwqO1jMAog+LbLviLqSdfuUpl5s08hIIUIU5/M
+   Sz/26UtEM0U1yCP0psQsMN6zJ8musiNaf88Ae7q7MetKRvIWv3HLu49LT
+   4Jq/pNRCCJR6t36E3xBzojcnUM2F4F8r8yTgpPhIi60IFoSGh5AglHH5G
+   60LTJYXwUpp/F9jIZ+K42QFElRnLoal93ziRgH/3dQqXDJKyKNTNw8BqN
+   g==;
+X-IronPort-AV: E=Sophos;i="6.01,251,1684825200"; 
+   d="asc'?scan'208";a="164637452"
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Aug 2023 01:53:35 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Thu, 3 Aug 2023 01:53:35 -0700
+Received: from wendy (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21 via Frontend
+ Transport; Thu, 3 Aug 2023 01:53:32 -0700
+Date:   Thu, 3 Aug 2023 09:52:56 +0100
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Tony Lindgren <tony@atomide.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        kernel test robot <oliver.sang@intel.com>
+Subject: Re: [PATCH v2 1/1] serial: core: Fix serial_base_match() after
+ fixing controller port name
+Message-ID: <20230803-molecule-shelter-aa71b219af26@wendy>
+References: <20230803071034.25571-1-tony@atomide.com>
+ <2023080351-chaplain-headgear-bcbb@gregkh>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="SqrNJ+wWy5BRsFok"
+Content-Disposition: inline
+In-Reply-To: <2023080351-chaplain-headgear-bcbb@gregkh>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The data->line[i] is defined as unsigned int type, if(data->line[i] < 0)
-is invalid, so replace data->line[i] with res.
+--SqrNJ+wWy5BRsFok
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-./drivers/tty/serial/8250/8250_men_mcb.c:223:6-19: WARNING: Unsigned expression compared with zero: data->line[i] < 0.
+On Thu, Aug 03, 2023 at 09:50:03AM +0200, Greg Kroah-Hartman wrote:
+> On Thu, Aug 03, 2023 at 10:10:32AM +0300, Tony Lindgren wrote:
+> > While fixing DEVNAME to be more usable, I broke serial_base_match() as =
+the
+> > ctrl and port prefix for device names seemed unnecessary.
+> >=20
+> > The prefixes are still needed by serial_base_match() to probe the serial
+> > base controller port, and serial tx is now broken.
+> >=20
+> > Let's fix the issue by checking against dev->type and drv->name instead
+> > of the prefixes that are no longer in the DEVNAME.
+> >=20
+> > Fixes: 1ef2c2df1199 ("serial: core: Fix serial core controller port nam=
+e to show controller id")
+> > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > Closes: https://lore.kernel.org/oe-lkp/202308021529.35b3ad6c-oliver.san=
+g@intel.com
+> > Signed-off-by: Tony Lindgren <tony@atomide.com>
+> > ---
+> >=20
+> > Changes since v1:
+> > - Leave out magic numbers and use str_has_prefix() as suggested by Andy
+> >   and Greg
+> >=20
+> > - Improve patch description and add a link for Closes tag as suggested
+> >   by Jiri
+> >=20
+> > - Check the name against device_type name since we have it and leave
+> >   out the changes to try to define names in the header because of the
+> >   issues noted by Jiri
+> >=20
+> > - Leave out Tested-by from Mark and Anders as the patch changed
+>=20
+> Thanks for this, now queued up.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Closes: https://bugzilla.openanolis.cn/show_bug.cgi?id=6088
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- drivers/tty/serial/8250/8250_men_mcb.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+Seems like I am a bit late, but FWIW this does fix my boot failures in
+-next:
+Tested-by: Conor Dooley <conor.dooley@microchip.com>
 
-diff --git a/drivers/tty/serial/8250/8250_men_mcb.c b/drivers/tty/serial/8250/8250_men_mcb.c
-index 5f301195575d..c27c52d18dfa 100644
---- a/drivers/tty/serial/8250/8250_men_mcb.c
-+++ b/drivers/tty/serial/8250/8250_men_mcb.c
-@@ -222,11 +222,13 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
- 					    + data->offset[i];
- 
- 		/* ok, register the port */
--		data->line[i] = serial8250_register_8250_port(&uart);
--		if (data->line[i] < 0) {
-+		res = serial8250_register_8250_port(&uart);
-+		if (res < 0) {
- 			dev_err(&mdev->dev, "unable to register UART port\n");
--			return data->line[i];
-+			return res;
- 		}
-+
-+		data->line[i] = res;
- 		dev_info(&mdev->dev, "found MCB UART: ttyS%d\n", data->line[i]);
- 	}
- 
--- 
-2.20.1.7.g153144c
+Thanks,
+Conor.
 
+--SqrNJ+wWy5BRsFok
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZMtq3QAKCRB4tDGHoIJi
+0hzrAPwNe3Aci1oYSam7q2JubnqG7pAXfKkMra6oE8XJJWnaAgEA+tcvAHd/Uxl6
+hWtkS4rt9R1xmhsUfEj/FVcMrh8ZCAc=
+=VAFL
+-----END PGP SIGNATURE-----
+
+--SqrNJ+wWy5BRsFok--
