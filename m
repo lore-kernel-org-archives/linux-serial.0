@@ -2,103 +2,97 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8C0FC04A6A
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 11:38:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4820C04A6A
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 11:40:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231926AbjHCLiS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 07:38:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38078 "EHLO
+        id S233625AbjHCLkO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 07:40:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234201AbjHCLiR (ORCPT
+        with ESMTP id S232996AbjHCLkM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 07:38:17 -0400
-Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EA3E1FC2;
-        Thu,  3 Aug 2023 04:38:16 -0700 (PDT)
-Received: from quatroqueijos.cascardo.eti.br (1.general.cascardo.us.vpn [10.172.70.58])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id F25AA41E37;
-        Thu,  3 Aug 2023 11:38:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1691062694;
-        bh=xx4Tcbc2ObE5c7kZDfQSL8uT46BntCbhbdol+jV52Ak=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Type:In-Reply-To;
-        b=nLg6gIsIlr2+pfos/c66qyRIdcGwpYvlGpI8gaNykg1zcdHnVu1H0NEQK3b2BbsWy
-         OzG0HCxn5qw0WvdBcHRpu9dDv6HoyOtjnQoKIReDqqfhYoT0FNKlEbsLFu+lcR0chB
-         BLVXnaSVhm1nz1YC/TR2QxcvfQ+vpHOT7gEagrnsQ18XVTO/r9LDP9ztHC9ph5kQnE
-         ZHuqjCSSC9wP5Wzqn4rOqS4HpKZjQ09O2lF1S7nncGlmt9qDTi80SNLsqoyg1bLzf/
-         OkQtJDQrrZcP03VMSvwYOBjty3bxb80q/43LyssvakoBKTgghGApODUbcQbR1kfU4A
-         +xXBmGQW5FDiQ==
-Date:   Thu, 3 Aug 2023 08:38:08 -0300
-From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>, ofono@ofono.org
-Subject: Re: [PATCH] tty: n_gsm: require CAP_NET_ADMIN to attach N_GSM0710
- ldisc
-Message-ID: <ZMuRoDbMcQrsCs3m@quatroqueijos.cascardo.eti.br>
-References: <20230731185942.279611-1-cascardo@canonical.com>
- <2023080111-lucid-stiffness-ccfa@gregkh>
- <ZMkCWL4r9Z35j3hC@quatroqueijos.cascardo.eti.br>
- <2023080344-happiness-duffel-c6ee@gregkh>
+        Thu, 3 Aug 2023 07:40:12 -0400
+Received: from mgamail.intel.com (unknown [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BBA0272A;
+        Thu,  3 Aug 2023 04:40:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691062810; x=1722598810;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Dd/pEIvh1vm5WdGjLrClzQBU3IOusOV95Grmu8xadFg=;
+  b=YpR+dH2OjRfoUz48D3lxNp7qWvxdOK+xQonSIr7PRUFclSQ8fD4uPI7p
+   7vNojSoaNKRU1Fb4xZza94ig+SUOqY9RIng9X2a0yL8KAHKjw3+9gqO/9
+   LtJNVKHaORRdgYjrwp1YlPUM0IUTV87KPd/v2IA2zrsy/ZuwoH0wDi4Bw
+   bzrnXD6+9snfg3IUZJZjPsNvQFx6NqTs8GYo816bFPnjgJTReTg6Q8Yvw
+   mVe7d66XXWtc1/+BSrTjKqFVpbcuDSEGfz4z07bDnzVSEuzL48N9kjkcn
+   kdmtCI4Q64HZkM5spPysSaCBYyfDj6DQ9ixUTG61AffZI9NVazKeKsG9A
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="373479426"
+X-IronPort-AV: E=Sophos;i="6.01,252,1684825200"; 
+   d="scan'208";a="373479426"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2023 04:40:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="723190547"
+X-IronPort-AV: E=Sophos;i="6.01,252,1684825200"; 
+   d="scan'208";a="723190547"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga007.jf.intel.com with ESMTP; 03 Aug 2023 04:40:06 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qRWgX-00AYix-0s;
+        Thu, 03 Aug 2023 14:40:05 +0300
+Date:   Thu, 3 Aug 2023 14:40:05 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Conor Dooley <conor@kernel.org>
+Cc:     Jisheng Zhang <jszhang@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: serial: snps-dw-apb-uart: make
+ interrupt optional
+Message-ID: <ZMuSFYQ4YyIKnI0k@smile.fi.intel.com>
+References: <20230802150545.3742-1-jszhang@kernel.org>
+ <20230802150545.3742-2-jszhang@kernel.org>
+ <20230802-halogen-bungee-63273b2c456c@spud>
+ <ZMrRWP5mK+nksn4M@smile.fi.intel.com>
+ <20230802-risk-getting-e6005e86be81@spud>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2023080344-happiness-duffel-c6ee@gregkh>
+In-Reply-To: <20230802-risk-getting-e6005e86be81@spud>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 03, 2023 at 09:48:24AM +0200, Greg Kroah-Hartman wrote:
-> On Tue, Aug 01, 2023 at 10:02:16AM -0300, Thadeu Lima de Souza Cascardo wrote:
-> > On Tue, Aug 01, 2023 at 06:53:30AM +0200, Greg Kroah-Hartman wrote:
-> > > On Mon, Jul 31, 2023 at 03:59:42PM -0300, Thadeu Lima de Souza Cascardo wrote:
-> > > > Any unprivileged user can attach N_GSM0710 ldisc, but it requires
-> > > > CAP_NET_ADMIN to create a GSM network anyway.
-> > > > 
-> > > > Require initial namespace CAP_NET_ADMIN to do that.
-> > > > 
-> > > > Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+On Wed, Aug 02, 2023 at 11:53:59PM +0100, Conor Dooley wrote:
+> On Thu, Aug 03, 2023 at 12:57:44AM +0300, Andy Shevchenko wrote:
+> > On Wed, Aug 02, 2023 at 04:43:48PM +0100, Conor Dooley wrote:
+> > > On Wed, Aug 02, 2023 at 11:05:44PM +0800, Jisheng Zhang wrote:
+> > > > The driver fall back to poll style when there's no irq. "poll" still
+> > > > looks better than no support.
 > > > 
-> > > What commit id does this fix?  Or has this always been a problem?
-> > > 
-> > > thanks,
-> > > 
-> > > greg k-h
+> > > What is the user for this where the interrupt is not actually wired up
+> > > in the hardware?
 > > 
-> > This has always been like this. It is not really fixing a specific commit, but
-> > introducing further restriction on access.
+> > FYI: kernel console doesn't use interrupts, so for example it might be
+> > the debug port. Note, I have no idea of the Zhang's case, just my assumption.
 > 
-> So by restricting access, will this now break existing userspace tools
-> that do not have this permission?  I'm all for tightening up
-> permissions, but we can't break existing workflows without a good
-> reason.
-> 
-> thanks,
-> 
-> greg k-h
+> I'm less interested in what the software is doing, it's what the device 
+> that has not connected the interrupt is that I am curious about.
 
-Yes, this will break any userspace trying to attach this without those
-permissions.
+As I said. The hw may be purely for debugging purposes (and yes, I have heard
+about such a hardware).
 
-I was under the impression that some operations on the line discipline also
-required those same permissions, but they are actually operations on the
-virtual demux ttys. So, at least we should change that on the commit
-message.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-The good reason to do it is reducing attack surface, given known bugs
-in this code (see
-https://lore.kernel.org/all/CA+UBctCZok5FSQ=LPRA+A-jocW=L8FuMVZ_7MNqhh483P5yN8A@mail.gmail.com/T/#u).
 
-This has been done for N_HCI too
-(https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c05731d0c6bd9a625e27ea5c5157ebf1303229e0).
-
-The only significant user I found looking at codesearch.debian.net was
-ofono, but I am having trouble finding out if the project is still active.
-I am copying their list anyway here, in case it finds anyone who could tell
-us that they are fine requiring such privileges.
-
-Cascardo.
