@@ -2,77 +2,89 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D12C001DF
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 08:00:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22CEFC001DF
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 08:01:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232895AbjHCIA5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 04:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32970 "EHLO
+        id S234232AbjHCIBh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 04:01:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232852AbjHCIAM (ORCPT
+        with ESMTP id S234240AbjHCIAa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 04:00:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9039B448F;
-        Thu,  3 Aug 2023 00:48:28 -0700 (PDT)
+        Thu, 3 Aug 2023 04:00:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35E4546A2;
+        Thu,  3 Aug 2023 00:50:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2453361C47;
-        Thu,  3 Aug 2023 07:48:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFD87C433C7;
-        Thu,  3 Aug 2023 07:48:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9519661C28;
+        Thu,  3 Aug 2023 07:50:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76960C433C7;
+        Thu,  3 Aug 2023 07:50:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1691048907;
-        bh=D5lDMFrgMHcckUZnIrPe3l/ki4cRPsnnJvVEUMdP6kA=;
+        s=korg; t=1691049006;
+        bh=TwMah1P/QSs3KjgOLUcqE01UhQrbw1JK1xFtsSHEwdI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=j7+4zdTM6pzU6rTqz/aW1k5BdJncf1b5k3pvwzXGwV3yqcu/oT7hb/PCAEQVkenfq
-         7UZPoRxt3bZE0P4jxHd9Ak1wGSZkfnmTkE0k2FhBJF68iujGYtOWiF0cSO3CrqXo8o
-         Myb38YGP4Ev5NQF5nNgUS+DyMpvV4ZvcDul4w3nM=
-Date:   Thu, 3 Aug 2023 09:48:24 +0200
+        b=X7D8YZ4lBRAxDbDf6B/DGXuio8UfUUfaAKHNKkvO2QPOuOqJykURVFA7GOuTGIN+l
+         uVTZ/efUIYl1UAmim6cBB8Bb10jMmxNPYRx/b+7BJZRvx3cHSfcauu7GZKouOZ0mCc
+         pC+VaT8AnNmNZYFNv0rHAGqRv4qMB/P3by+xi3cc=
+Date:   Thu, 3 Aug 2023 09:50:03 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH] tty: n_gsm: require CAP_NET_ADMIN to attach N_GSM0710
- ldisc
-Message-ID: <2023080344-happiness-duffel-c6ee@gregkh>
-References: <20230731185942.279611-1-cascardo@canonical.com>
- <2023080111-lucid-stiffness-ccfa@gregkh>
- <ZMkCWL4r9Z35j3hC@quatroqueijos.cascardo.eti.br>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        kernel test robot <oliver.sang@intel.com>
+Subject: Re: [PATCH v2 1/1] serial: core: Fix serial_base_match() after
+ fixing controller port name
+Message-ID: <2023080351-chaplain-headgear-bcbb@gregkh>
+References: <20230803071034.25571-1-tony@atomide.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZMkCWL4r9Z35j3hC@quatroqueijos.cascardo.eti.br>
+In-Reply-To: <20230803071034.25571-1-tony@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 01, 2023 at 10:02:16AM -0300, Thadeu Lima de Souza Cascardo wrote:
-> On Tue, Aug 01, 2023 at 06:53:30AM +0200, Greg Kroah-Hartman wrote:
-> > On Mon, Jul 31, 2023 at 03:59:42PM -0300, Thadeu Lima de Souza Cascardo wrote:
-> > > Any unprivileged user can attach N_GSM0710 ldisc, but it requires
-> > > CAP_NET_ADMIN to create a GSM network anyway.
-> > > 
-> > > Require initial namespace CAP_NET_ADMIN to do that.
-> > > 
-> > > Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-> > 
-> > What commit id does this fix?  Or has this always been a problem?
-> > 
-> > thanks,
-> > 
-> > greg k-h
+On Thu, Aug 03, 2023 at 10:10:32AM +0300, Tony Lindgren wrote:
+> While fixing DEVNAME to be more usable, I broke serial_base_match() as the
+> ctrl and port prefix for device names seemed unnecessary.
 > 
-> This has always been like this. It is not really fixing a specific commit, but
-> introducing further restriction on access.
+> The prefixes are still needed by serial_base_match() to probe the serial
+> base controller port, and serial tx is now broken.
+> 
+> Let's fix the issue by checking against dev->type and drv->name instead
+> of the prefixes that are no longer in the DEVNAME.
+> 
+> Fixes: 1ef2c2df1199 ("serial: core: Fix serial core controller port name to show controller id")
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Closes: https://lore.kernel.org/oe-lkp/202308021529.35b3ad6c-oliver.sang@intel.com
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> ---
+> 
+> Changes since v1:
+> - Leave out magic numbers and use str_has_prefix() as suggested by Andy
+>   and Greg
+> 
+> - Improve patch description and add a link for Closes tag as suggested
+>   by Jiri
+> 
+> - Check the name against device_type name since we have it and leave
+>   out the changes to try to define names in the header because of the
+>   issues noted by Jiri
+> 
+> - Leave out Tested-by from Mark and Anders as the patch changed
 
-So by restricting access, will this now break existing userspace tools
-that do not have this permission?  I'm all for tightening up
-permissions, but we can't break existing workflows without a good
-reason.
-
-thanks,
+Thanks for this, now queued up.
 
 greg k-h
