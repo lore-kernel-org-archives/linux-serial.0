@@ -2,119 +2,76 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46467EB64DD
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 14:21:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14E33C04A94
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Aug 2023 14:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236603AbjHCOV4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 10:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36960 "EHLO
+        id S236278AbjHCOWQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Aug 2023 10:22:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236492AbjHCOVb (ORCPT
+        with ESMTP id S236693AbjHCOVr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 10:21:31 -0400
-Received: from pegase1.c-s.fr (pegase1.c-s.fr [93.17.236.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D677B10D4;
-        Thu,  3 Aug 2023 07:21:10 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [192.168.12.233])
-        by localhost (Postfix) with ESMTP id 4RGr4v4KHDz9t5J;
-        Thu,  3 Aug 2023 15:57:19 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase1.c-s.fr ([192.168.12.234])
-        by localhost (pegase1.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id nBQnO2JIAsnV; Thu,  3 Aug 2023 15:57:19 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase1.c-s.fr (Postfix) with ESMTP id 4RGr4m4W8Qz9t48;
-        Thu,  3 Aug 2023 15:57:12 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 964E88B773;
-        Thu,  3 Aug 2023 15:57:12 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id Kl1IMwn4jdMF; Thu,  3 Aug 2023 15:57:12 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.232.144])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 4DE3C8B763;
-        Thu,  3 Aug 2023 15:57:12 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 373Dv3sK494201
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Thu, 3 Aug 2023 15:57:04 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 373Dv3Bu494200;
-        Thu, 3 Aug 2023 15:57:03 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Timur Tabi <timur@kernel.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v1 09/12] serial: cpm_uart: Remove cpm_uart/ subdirectory
-Date:   Thu,  3 Aug 2023 15:56:50 +0200
-Message-ID: <9b8b8f89fc386480030f5339abe307541ae436a6.1691068700.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <cover.1691068700.git.christophe.leroy@csgroup.eu>
-References: <cover.1691068700.git.christophe.leroy@csgroup.eu>
+        Thu, 3 Aug 2023 10:21:47 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200493A9F
+        for <linux-serial@vger.kernel.org>; Thu,  3 Aug 2023 07:21:25 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4RGrbQ1vV2zrS4q;
+        Thu,  3 Aug 2023 22:20:18 +0800 (CST)
+Received: from huawei.com (10.90.53.73) by kwepemi500012.china.huawei.com
+ (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Thu, 3 Aug
+ 2023 22:21:22 +0800
+From:   Li Zetao <lizetao1@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <jorge.sanjuangarcia@duagon.com>, <JoseJavier.Rodriguez@duagon.com>
+CC:     <lizetao1@huawei.com>, <yangyingliang@huawei.com>,
+        <andriy.shevchenko@linux.intel.com>, <linux-serial@vger.kernel.org>
+Subject: [PATCH -next] 8250_men_mcb: Fix unsigned expression compared with zero
+Date:   Thu, 3 Aug 2023 22:20:53 +0800
+Message-ID: <20230803142053.1308926-1-lizetao1@huawei.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1691071001; l=2136; i=christophe.leroy@csgroup.eu; s=20211009; h=from:subject:message-id; bh=2acxSC4fZPJjOV4LM1mPnEJI/PngyFJEEkHBhlNg2TQ=; b=YgxQ7g01RNqoTvf18homXVUBRxjsg1kJK1TG/t81XtG70hzyS7tP4/HhQj2wTPUREm8mR1+5G 9laqmukkjvLAcDprHTMnYDsSiey4AJOjP5epzhqNSdxFsKkQ6OfYU44
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.90.53.73]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-cpm_uart/ subdirectory only has cpm_uart_core.c and cpm_uart.h now.
+There is a warning reported by coccinelle:
 
-Move them up and remove cpm_uart/ directory while renaming
-cpm_uart_core.c as cpm_uart.c
+./drivers/tty/serial/8250/8250_men_mcb.c:226:6-19: WARNING:
+	Unsigned expression compared with zero: data -> line [ i ]     <     0
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+The array "line" of serial_8250_men_mcb_data is used to record the
+registered serial port. When register a port failed, it will return
+an error code, but the type of "line" is "unsigned int", causing
+the error code to reverse. Modify the type of "data -> line" to solve
+this problem.
+
+Fixes: 2554e6ba28a2 ("8250_men_mcb: Read num ports from register data.")
+Signed-off-by: Li Zetao <lizetao1@huawei.com>
 ---
- drivers/tty/serial/Makefile                                 | 2 +-
- drivers/tty/serial/{cpm_uart/cpm_uart_core.c => cpm_uart.c} | 0
- drivers/tty/serial/{cpm_uart => }/cpm_uart.h                | 0
- drivers/tty/serial/cpm_uart/Makefile                        | 6 ------
- 4 files changed, 1 insertion(+), 7 deletions(-)
- rename drivers/tty/serial/{cpm_uart/cpm_uart_core.c => cpm_uart.c} (100%)
- rename drivers/tty/serial/{cpm_uart => }/cpm_uart.h (100%)
- delete mode 100644 drivers/tty/serial/cpm_uart/Makefile
+ drivers/tty/serial/8250/8250_men_mcb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index d4123469583d..138abbc89738 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -41,7 +41,7 @@ obj-$(CONFIG_SERIAL_HS_LPC32XX) += lpc32xx_hs.o
- obj-$(CONFIG_SERIAL_DZ) += dz.o
- obj-$(CONFIG_SERIAL_ZS) += zs.o
- obj-$(CONFIG_SERIAL_SH_SCI) += sh-sci.o
--obj-$(CONFIG_SERIAL_CPM) += cpm_uart/
-+obj-$(CONFIG_SERIAL_CPM) += cpm_uart.o
- obj-$(CONFIG_SERIAL_IMX) += imx.o
- obj-$(CONFIG_SERIAL_IMX_EARLYCON) += imx_earlycon.o
- obj-$(CONFIG_SERIAL_MPC52xx) += mpc52xx_uart.o
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart.c
-similarity index 100%
-rename from drivers/tty/serial/cpm_uart/cpm_uart_core.c
-rename to drivers/tty/serial/cpm_uart.c
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart.h b/drivers/tty/serial/cpm_uart.h
-similarity index 100%
-rename from drivers/tty/serial/cpm_uart/cpm_uart.h
-rename to drivers/tty/serial/cpm_uart.h
-diff --git a/drivers/tty/serial/cpm_uart/Makefile b/drivers/tty/serial/cpm_uart/Makefile
-deleted file mode 100644
-index 91f202fa5251..000000000000
---- a/drivers/tty/serial/cpm_uart/Makefile
-+++ /dev/null
-@@ -1,6 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--#
--# Makefile for the Motorola 8xx FEC ethernet controller
--#
--
--obj-$(CONFIG_SERIAL_CPM) += cpm_uart_core.o
+diff --git a/drivers/tty/serial/8250/8250_men_mcb.c b/drivers/tty/serial/8250/8250_men_mcb.c
+index 5f301195575d..14cf6011a002 100644
+--- a/drivers/tty/serial/8250/8250_men_mcb.c
++++ b/drivers/tty/serial/8250/8250_men_mcb.c
+@@ -46,7 +46,7 @@
+ 
+ struct serial_8250_men_mcb_data {
+ 	int num_ports;
+-	unsigned int line[MAX_PORTS];
++	int line[MAX_PORTS];
+ 	unsigned int offset[MAX_PORTS];
+ };
+ 
 -- 
-2.41.0
+2.34.1
 
