@@ -2,73 +2,83 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB59C001DF
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 12:36:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C092C04A94
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 12:41:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229636AbjHDMgA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Aug 2023 08:36:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38266 "EHLO
+        id S229944AbjHDMlU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 4 Aug 2023 08:41:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbjHDMgA (ORCPT
+        with ESMTP id S229906AbjHDMlT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Aug 2023 08:36:00 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DB41546B3;
-        Fri,  4 Aug 2023 05:35:55 -0700 (PDT)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id C0E8880F7;
-        Fri,  4 Aug 2023 12:35:52 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH] serial: 8250: Reinit port_id when adding back serial8250_isa_devs
-Date:   Fri,  4 Aug 2023 15:35:44 +0300
-Message-ID: <20230804123546.25293-1-tony@atomide.com>
-X-Mailer: git-send-email 2.41.0
+        Fri, 4 Aug 2023 08:41:19 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F83646A8;
+        Fri,  4 Aug 2023 05:41:17 -0700 (PDT)
+Received: from kwepemi500009.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4RHQGh4tF2zGpnN;
+        Fri,  4 Aug 2023 20:37:48 +0800 (CST)
+Received: from [10.67.110.89] (10.67.110.89) by kwepemi500009.china.huawei.com
+ (7.221.188.199) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Fri, 4 Aug
+ 2023 20:41:14 +0800
+Message-ID: <7ff795d4-fb67-4c5d-04be-4eff7f9b70fa@huawei.com>
+Date:   Fri, 4 Aug 2023 20:41:14 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH] serial: 8250_dw: Fix assignment error of data in
+ dw8250_probe()
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+CC:     <andy.shevchenko@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <heikki.krogerus@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>
+References: <20230804121607.191203-1-xiafukun@huawei.com>
+ <b22177d4-f911-cb8f-18e6-4ca8b2855c73@linux.intel.com>
+From:   Xia Fukun <xiafukun@huawei.com>
+In-Reply-To: <b22177d4-f911-cb8f-18e6-4ca8b2855c73@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.110.89]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemi500009.china.huawei.com (7.221.188.199)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-After fixing the serial core port device to use port->port_id instead of
-port->line, unloading a hardware specific 8250 port driver started
-producing an error for "sysfs: cannot create duplicate filename".
 
-This is happening as we are wrongly initializing port->port_id to zero
-when adding back serial8250_isa_devs instances, and the serial8250:0.0
-sysfs entry may already exist. For serial8250 devices, we typically have
-multiple devices mapped to a single driver instance. For the
-serial8250_isa_devs instances, the port->port_id is the same as port->line.
+On 2023/8/4 20:24, Ilpo Järvinen wrote:
+> On Fri, 4 Aug 2023, Xia Fukun wrote:
+> 
+>> When the "ri-override" property is present in the device,
+>> data->msr_mask_on and UART_MSR_RI should be used for
+>> OR-assignment. Fix the errors in it.
+>>  
+>>  	if (device_property_read_bool(dev, "ri-override")) {
+>>  		/* Always report Ring indicator as inactive */
+>> -		data->msr_mask_off |= UART_MSR_RI;
+>> +		data->msr_mask_on |= UART_MSR_RI;
+>>  		data->msr_mask_off |= UART_MSR_TERI;
+> 
+> The comment and also documentation says RI signal is always kept inactive 
+> when ri-override is present.
+> 
+> In Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml:
+> 
+>   ri-override:
+>     description: Override the RI modem status signal. This signal will always
+>       be reported as inactive instead of being obtained from the modem status
+>       register. Define this if your serial port does not use this pin.
+> 
+> ...So why you think this patch is correct? (Please explain it in the v2
+> changelog clearly if you think your patch is still correct thing to do, 
+> thank you).
+> 
 
-Let's fix the issue by re-initializing port_id when adding back the
-serial8250_isa_devs instances in serial8250_unregister_port().
-
-Fixes: d962de6ae51f ("serial: core: Fix serial core port id to not use port->line")
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/serial/8250/8250_core.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -1204,6 +1204,7 @@ void serial8250_unregister_port(int line)
- 		uart->port.flags &= ~UPF_BOOT_AUTOCONF;
- 		uart->port.type = PORT_UNKNOWN;
- 		uart->port.dev = &serial8250_isa_devs->dev;
-+		uart->port.port_id = line;
- 		uart->capabilities = 0;
- 		serial8250_init_port(uart);
- 		serial8250_apply_quirks(uart);
--- 
-2.41.0
+Thank you very much for your reply. My understanding of this property is
+indeed flawed. That is to say, in the "ri-override" property,
+data->msr_mask_on will not be used, there will be no signal transmission?
+In that case, you are right. My patch may be redundant.
