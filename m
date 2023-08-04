@@ -2,107 +2,117 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B18BC04A6A
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 04:20:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A438BC001DB
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 04:39:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231339AbjHDEUz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Aug 2023 00:20:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60218 "EHLO
+        id S233173AbjHDEjq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 4 Aug 2023 00:39:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231316AbjHDEUy (ORCPT
+        with ESMTP id S233782AbjHDEio (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Aug 2023 00:20:54 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1833F3AB1;
-        Thu,  3 Aug 2023 21:20:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691122851; x=1722658851;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=XfgFdFaPZzAwY62NpMVOgR5DKzyUu6HyS+eVaO3NlDc=;
-  b=LUZobZ3W44DujQ/MtwDg1FRcTHpliiC/LZ1HB9csHNNsSHpLbt/oOdBQ
-   PNqp3TOH8WfHve9HX/mPCPUMVt0nAQPz5pK6hlECo0T0R/rYOU7sgqDZD
-   IpRutsKafUaqNuiosjZZhTORnrzzsAWudRci4Z4zlzj9nYlZbU7/EI7KT
-   XGMC25tdnvMG8KFvjvl7BOepGjrFH3VPgvy1ge5VOSB3sVvGH9pPrxCeq
-   L2GfIr704MlMNxICL4RZxtWcuY3lNc8JDiW54me4nCHQYwmNwKTgBLwJ+
-   snB60pB0OEsPilDSD1Wb4jYnt31lMHILVbyQmpWobOEV1UWYEDAIWNRia
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="456435643"
-X-IronPort-AV: E=Sophos;i="6.01,254,1684825200"; 
-   d="scan'208";a="456435643"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2023 21:20:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="706824176"
-X-IronPort-AV: E=Sophos;i="6.01,254,1684825200"; 
-   d="scan'208";a="706824176"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga006.jf.intel.com with ESMTP; 03 Aug 2023 21:20:47 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qRmIv-009Hs3-1k;
-        Fri, 04 Aug 2023 07:20:45 +0300
-Date:   Fri, 4 Aug 2023 07:20:45 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Guenter Roeck <linux@roeck-us.net>
+        Fri, 4 Aug 2023 00:38:44 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17C54229;
+        Thu,  3 Aug 2023 21:38:05 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id d9443c01a7336-1bbf8cb61aeso12108105ad.2;
+        Thu, 03 Aug 2023 21:38:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1691123885; x=1691728685;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id:sender
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=XocLwPYb77kZUEtEw5j8D7AOWzYHR1969Dzq6RM/Css=;
+        b=lYJVt7iDGitPQ/64J+Y5iSUFeCdkDFoFlWyKga8THRP2pX/3qf0v99MLyZs28DmmWr
+         GC2AHHr3LVi4M0LbGcFYaCO/1iviMRrBzAFHAGE/waD+YYyf/cWHNipO7y45FlMN0qGl
+         x93HTe8P1/q2hdeeogKMsH+fA0QDz4WYfwPvIWUwyRqzrUJt63+XnQMpJml3bUDJ6L2L
+         1YfHmf2ZJby9qKtBV7YcYVuDbbJY6WG4wF3OocbvMpxt66NfpBE0bFLntUccGnnGZoqI
+         7+0nfvXIMRYywC7eLzWRHTrfAnwbiBPFHcbvl74dmBKMcFM0fFlq1SRulrrwQsKj9O1d
+         VArw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691123885; x=1691728685;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id:sender
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XocLwPYb77kZUEtEw5j8D7AOWzYHR1969Dzq6RM/Css=;
+        b=VlN1lKv2gHlpfv/ODTmpnc0WjnS3lA2KcBB2F5/j3zGSOnhmm2/qYTNiHkGrZRbTEm
+         NvnSozOVYBunJgmiWKq2y/BFgmn/gBSzou2y+gOho+o/hTpPc7ShvwVfYpTShtM5Pi/F
+         iB4j8biIVRZR4a95LVy5dHWLFc5Ro7ZhYMGkUAFGFW6oRjY5HXhNZ00ZJM8ilS1f1WJb
+         7gxHHi5a9oleoptia9BYIntBIOC0kfdn/YWWd536F5j/dBfajmIi7yxvpaN9rlSkqcf0
+         mE2QVA3HYBmIHSEYPgZa1dT2fjcWHvQeOZjKO0dkOTx8JAQ24ubrvq3wFW3gXkEyWljI
+         sCvA==
+X-Gm-Message-State: AOJu0YxxQVWnaouAM9gphlMgC3Qv9poRP/9KjYezHQhPfsnd9pyGHRWT
+        OGPmJUFBvWaTwZZMX73dcmw=
+X-Google-Smtp-Source: AGHT+IHWNMIlJ7hXqjquDdAYrwx4EpGF20/XIJhHMPijrPz4xIx2pKqxb2ExMw5OikoP1B1F5Yb/sA==
+X-Received: by 2002:a17:902:ecc8:b0:1bb:32de:95c5 with SMTP id a8-20020a170902ecc800b001bb32de95c5mr757271plh.65.1691123884781;
+        Thu, 03 Aug 2023 21:38:04 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id f12-20020a170902ce8c00b001bb97e51ad5sm679169plg.99.2023.08.03.21.38.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Aug 2023 21:38:04 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <b8123925-9f9a-834a-c08d-49f41c875ee1@roeck-us.net>
+Date:   Thu, 3 Aug 2023 21:38:02 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc:     Tony Lindgren <tony@atomide.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         John Ogness <john.ogness@linutronix.de>,
         Johan Hovold <johan@kernel.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v5 3/3] serial: core: Fix serial core controller port
- name to show controller id
-Message-ID: <ZMx8nQzYB3dBouFE@smile.fi.intel.com>
 References: <20230725054216.45696-1-tony@atomide.com>
  <20230725054216.45696-4-tony@atomide.com>
  <6423de18-637e-4ee6-858e-b74e701ff3e5@roeck-us.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6423de18-637e-4ee6-858e-b74e701ff3e5@roeck-us.net>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+ <ZMx8nQzYB3dBouFE@smile.fi.intel.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v5 3/3] serial: core: Fix serial core controller port name
+ to show controller id
+In-Reply-To: <ZMx8nQzYB3dBouFE@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 03, 2023 at 03:18:42PM -0700, Guenter Roeck wrote:
-> On Tue, Jul 25, 2023 at 08:42:12AM +0300, Tony Lindgren wrote:
-> > We are missing the serial core controller id for the serial core port
-> > name. Let's fix the issue for sane sysfs output, and to avoid issues
-> > addressing serial ports later on.
-> > 
-> > And as we're now showing the controller id, the "ctrl" and "port" prefix
-> > for the DEVNAME become useless, we can just drop them. Let's standardize on
-> > DEVNAME:0 for controller name, where 0 is the controller id. And
-> > DEVNAME:0.0 for port name, where 0.0 are the controller id and port id.
-> > 
-> > This makes the sysfs output nicer, on qemu for example:
-> > 
-> > $ ls /sys/bus/serial-base/devices
-> > 00:04:0         serial8250:0    serial8250:0.2
-> > 00:04:0.0       serial8250:0.1  serial8250:0.3
-> > 
-> > Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
-> > Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Signed-off-by: Tony Lindgren <tony@atomide.com>
+On 8/3/23 21:20, Andy Shevchenko wrote:
+> On Thu, Aug 03, 2023 at 03:18:42PM -0700, Guenter Roeck wrote:
+>> On Tue, Jul 25, 2023 at 08:42:12AM +0300, Tony Lindgren wrote:
+>>> We are missing the serial core controller id for the serial core port
+>>> name. Let's fix the issue for sane sysfs output, and to avoid issues
+>>> addressing serial ports later on.
+>>>
+>>> And as we're now showing the controller id, the "ctrl" and "port" prefix
+>>> for the DEVNAME become useless, we can just drop them. Let's standardize on
+>>> DEVNAME:0 for controller name, where 0 is the controller id. And
+>>> DEVNAME:0.0 for port name, where 0.0 are the controller id and port id.
+>>>
+>>> This makes the sysfs output nicer, on qemu for example:
+>>>
+>>> $ ls /sys/bus/serial-base/devices
+>>> 00:04:0         serial8250:0    serial8250:0.2
+>>> 00:04:0.0       serial8250:0.1  serial8250:0.3
+>>>
+>>> Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
+>>> Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>>> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>>> Signed-off-by: Tony Lindgren <tony@atomide.com>
+>>
+>> This patch causes about 50% of my boot tests to fail because the console
+>> is no longer recognized. Reverting this patch fixes the problem.
+>> Bisect log attached.
 > 
-> This patch causes about 50% of my boot tests to fail because the console
-> is no longer recognized. Reverting this patch fixes the problem.
-> Bisect log attached.
+> Isn't fix already available?
+> 7d695d83767c ("serial: core: Fix serial_base_match() after fixing controller port name")
+> 
 
-Isn't fix already available?
-7d695d83767c ("serial: core: Fix serial_base_match() after fixing controller port name")
+Yes, hopefully that should fix it. We'll see tonight, when my test bed builds it again.
 
-(in tty/tty-linus)
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Guenter
 
