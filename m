@@ -2,103 +2,104 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD738C04A6A
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 04:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B18BC04A6A
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 04:20:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231916AbjHDEH1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Aug 2023 00:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57324 "EHLO
+        id S231339AbjHDEUz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 4 Aug 2023 00:20:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233110AbjHDEHY (ORCPT
+        with ESMTP id S231316AbjHDEUy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Aug 2023 00:07:24 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861AF3C28;
-        Thu,  3 Aug 2023 21:07:22 -0700 (PDT)
+        Fri, 4 Aug 2023 00:20:54 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1833F3AB1;
+        Thu,  3 Aug 2023 21:20:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691122042; x=1722658042;
+  t=1691122851; x=1722658851;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Nct1OPaQWyF0NLQQ6u7Wq7eG9CS3igaS6y0hh8xq7cc=;
-  b=P+mTRk0pXznlqitB1u0k4IgWqFzHW6Q69Y7LD1EgJiZ8s32Wnp8jexBh
-   Q6npLYLmmP8Zcu0bFVOGXi0sO06FlbQ9qliXd2+TXhQ0CA0Jr4qf1QaRC
-   EgHc8X+NyeUeWym7wWggt60pVhftfk+EEQA3d1x1JezGZM60vivSeIlu/
-   CId8NjVOlGe+KCrhctoIsk5z8z5NikS9P+c7dIjCrcxzn7Gms3NCjzjPE
-   fQrBvR3KjCSkL3CO0XxZ7JzWT7pCCc2z60e9Y6DVv4zTKaNiQOxWePeQS
-   Oaxvh5VVxvvBYG6abP4ob7hwKQRoVC30JXaN74Poyk6wZTevn0Kxx3mIb
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="368962279"
+  bh=XfgFdFaPZzAwY62NpMVOgR5DKzyUu6HyS+eVaO3NlDc=;
+  b=LUZobZ3W44DujQ/MtwDg1FRcTHpliiC/LZ1HB9csHNNsSHpLbt/oOdBQ
+   PNqp3TOH8WfHve9HX/mPCPUMVt0nAQPz5pK6hlECo0T0R/rYOU7sgqDZD
+   IpRutsKafUaqNuiosjZZhTORnrzzsAWudRci4Z4zlzj9nYlZbU7/EI7KT
+   XGMC25tdnvMG8KFvjvl7BOepGjrFH3VPgvy1ge5VOSB3sVvGH9pPrxCeq
+   L2GfIr704MlMNxICL4RZxtWcuY3lNc8JDiW54me4nCHQYwmNwKTgBLwJ+
+   snB60pB0OEsPilDSD1Wb4jYnt31lMHILVbyQmpWobOEV1UWYEDAIWNRia
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="456435643"
 X-IronPort-AV: E=Sophos;i="6.01,254,1684825200"; 
-   d="scan'208";a="368962279"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2023 21:07:22 -0700
+   d="scan'208";a="456435643"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2023 21:20:50 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="679758521"
+X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="706824176"
 X-IronPort-AV: E=Sophos;i="6.01,254,1684825200"; 
-   d="scan'208";a="679758521"
+   d="scan'208";a="706824176"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003.jf.intel.com with ESMTP; 03 Aug 2023 21:07:16 -0700
+  by orsmga006.jf.intel.com with ESMTP; 03 Aug 2023 21:20:47 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qRm5q-008pgS-0y;
-        Fri, 04 Aug 2023 07:07:14 +0300
-Date:   Fri, 4 Aug 2023 07:07:14 +0300
+        id 1qRmIv-009Hs3-1k;
+        Fri, 04 Aug 2023 07:20:45 +0300
+Date:   Fri, 4 Aug 2023 07:20:45 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Jani Nikula <jani.nikula@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Andi Shyti <andi.shyti@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Tony Lindgren <tony@atomide.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-fbdev@vger.kernel.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: Re: [PATCH v4 1/1] drm/i915: Move abs_diff() to math.h
-Message-ID: <ZMx5cp1u5noAH0Zg@smile.fi.intel.com>
-References: <20230803131918.53727-1-andriy.shevchenko@linux.intel.com>
- <20230803102446.8edf94acc77e81ab2e09cee3@linux-foundation.org>
+        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v5 3/3] serial: core: Fix serial core controller port
+ name to show controller id
+Message-ID: <ZMx8nQzYB3dBouFE@smile.fi.intel.com>
+References: <20230725054216.45696-1-tony@atomide.com>
+ <20230725054216.45696-4-tony@atomide.com>
+ <6423de18-637e-4ee6-858e-b74e701ff3e5@roeck-us.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230803102446.8edf94acc77e81ab2e09cee3@linux-foundation.org>
+In-Reply-To: <6423de18-637e-4ee6-858e-b74e701ff3e5@roeck-us.net>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 03, 2023 at 10:24:46AM -0700, Andrew Morton wrote:
-> On Thu,  3 Aug 2023 16:19:18 +0300 Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Thu, Aug 03, 2023 at 03:18:42PM -0700, Guenter Roeck wrote:
+> On Tue, Jul 25, 2023 at 08:42:12AM +0300, Tony Lindgren wrote:
+> > We are missing the serial core controller id for the serial core port
+> > name. Let's fix the issue for sane sysfs output, and to avoid issues
+> > addressing serial ports later on.
+> > 
+> > And as we're now showing the controller id, the "ctrl" and "port" prefix
+> > for the DEVNAME become useless, we can just drop them. Let's standardize on
+> > DEVNAME:0 for controller name, where 0 is the controller id. And
+> > DEVNAME:0.0 for port name, where 0.0 are the controller id and port id.
+> > 
+> > This makes the sysfs output nicer, on qemu for example:
+> > 
+> > $ ls /sys/bus/serial-base/devices
+> > 00:04:0         serial8250:0    serial8250:0.2
+> > 00:04:0.0       serial8250:0.1  serial8250:0.3
+> > 
+> > Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
+> > Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > Signed-off-by: Tony Lindgren <tony@atomide.com>
+> 
+> This patch causes about 50% of my boot tests to fail because the console
+> is no longer recognized. Reverting this patch fixes the problem.
+> Bisect log attached.
 
-...
+Isn't fix already available?
+7d695d83767c ("serial: core: Fix serial_base_match() after fixing controller port name")
 
-> > +#define abs_diff(a, b) ({			\
-> > +	typeof(a) __a = (a);			\
-> > +	typeof(b) __b = (b);			\
-> > +	(void)(&__a == &__b);			\
-> > +	__a > __b ? (__a - __b) : (__b - __a);	\
-> > +})
-> 
-> Can we document it please?
-> 
-> Also, the open-coded type comparison could be replaced with __typecheck()?
-> 
-> And why the heck isn't __typecheck() in typecheck.h, to be included by
-> minmax.h.
-> 
-> etcetera.  Sigh.  I'll grab it, but please at least send along some
-> kerneldoc?
-
-Sure and thank you!
+(in tty/tty-linus)
 
 -- 
 With Best Regards,
