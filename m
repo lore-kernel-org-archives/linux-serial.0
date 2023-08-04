@@ -2,117 +2,113 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A438BC001DB
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 04:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77138C001DB
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 04:53:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233173AbjHDEjq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Aug 2023 00:39:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36732 "EHLO
+        id S232991AbjHDExQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 4 Aug 2023 00:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233782AbjHDEio (ORCPT
+        with ESMTP id S232818AbjHDExG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Aug 2023 00:38:44 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17C54229;
-        Thu,  3 Aug 2023 21:38:05 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id d9443c01a7336-1bbf8cb61aeso12108105ad.2;
-        Thu, 03 Aug 2023 21:38:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691123885; x=1691728685;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id:sender
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=XocLwPYb77kZUEtEw5j8D7AOWzYHR1969Dzq6RM/Css=;
-        b=lYJVt7iDGitPQ/64J+Y5iSUFeCdkDFoFlWyKga8THRP2pX/3qf0v99MLyZs28DmmWr
-         GC2AHHr3LVi4M0LbGcFYaCO/1iviMRrBzAFHAGE/waD+YYyf/cWHNipO7y45FlMN0qGl
-         x93HTe8P1/q2hdeeogKMsH+fA0QDz4WYfwPvIWUwyRqzrUJt63+XnQMpJml3bUDJ6L2L
-         1YfHmf2ZJby9qKtBV7YcYVuDbbJY6WG4wF3OocbvMpxt66NfpBE0bFLntUccGnnGZoqI
-         7+0nfvXIMRYywC7eLzWRHTrfAnwbiBPFHcbvl74dmBKMcFM0fFlq1SRulrrwQsKj9O1d
-         VArw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691123885; x=1691728685;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id:sender
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XocLwPYb77kZUEtEw5j8D7AOWzYHR1969Dzq6RM/Css=;
-        b=VlN1lKv2gHlpfv/ODTmpnc0WjnS3lA2KcBB2F5/j3zGSOnhmm2/qYTNiHkGrZRbTEm
-         NvnSozOVYBunJgmiWKq2y/BFgmn/gBSzou2y+gOho+o/hTpPc7ShvwVfYpTShtM5Pi/F
-         iB4j8biIVRZR4a95LVy5dHWLFc5Ro7ZhYMGkUAFGFW6oRjY5HXhNZ00ZJM8ilS1f1WJb
-         7gxHHi5a9oleoptia9BYIntBIOC0kfdn/YWWd536F5j/dBfajmIi7yxvpaN9rlSkqcf0
-         mE2QVA3HYBmIHSEYPgZa1dT2fjcWHvQeOZjKO0dkOTx8JAQ24ubrvq3wFW3gXkEyWljI
-         sCvA==
-X-Gm-Message-State: AOJu0YxxQVWnaouAM9gphlMgC3Qv9poRP/9KjYezHQhPfsnd9pyGHRWT
-        OGPmJUFBvWaTwZZMX73dcmw=
-X-Google-Smtp-Source: AGHT+IHWNMIlJ7hXqjquDdAYrwx4EpGF20/XIJhHMPijrPz4xIx2pKqxb2ExMw5OikoP1B1F5Yb/sA==
-X-Received: by 2002:a17:902:ecc8:b0:1bb:32de:95c5 with SMTP id a8-20020a170902ecc800b001bb32de95c5mr757271plh.65.1691123884781;
-        Thu, 03 Aug 2023 21:38:04 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id f12-20020a170902ce8c00b001bb97e51ad5sm679169plg.99.2023.08.03.21.38.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Aug 2023 21:38:04 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <b8123925-9f9a-834a-c08d-49f41c875ee1@roeck-us.net>
-Date:   Thu, 3 Aug 2023 21:38:02 -0700
+        Fri, 4 Aug 2023 00:53:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485C52D49;
+        Thu,  3 Aug 2023 21:53:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CBF2561F23;
+        Fri,  4 Aug 2023 04:53:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D0AAC433C7;
+        Fri,  4 Aug 2023 04:53:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1691124783;
+        bh=H0r420Rv0jy6sbduYNWFrMk8bU+2FH4efv4MEVBrzMk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=D4cGJjtV8HI447xvYWdb3TtixgaYUV4PkbGZAkQwzpTeDXuW6Jj/iHFtyrvaMEgDg
+         PYe7vOi2o78mzoGYJpOAdiiv0m5N94xeuL4QAZJQJEN1X23SDJBT7L3ncQ6bmQaGRf
+         ZZ/qzezvQvEnP9vVTShhbv9jCz/WuArL/djMoQcQ=
+Date:   Fri, 4 Aug 2023 06:53:00 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Hugo Villeneuve <hugo@hugovil.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        jirislaby@kernel.org, jringle@gridpoint.com,
+        isaac.true@canonical.com, jesse.sung@canonical.com,
+        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        stable@vger.kernel.org, Lech Perczak <lech.perczak@camlingroup.com>
+Subject: Re: [PATCH v9 06/10] serial: sc16is7xx: fix regression with GPIO
+ configuration
+Message-ID: <2023080434-outcast-preheated-29b1@gregkh>
+References: <20230725142343.1724130-1-hugo@hugovil.com>
+ <20230725142343.1724130-7-hugo@hugovil.com>
+ <2023073105-elevation-canister-2777@gregkh>
+ <20230803101814.39a61229d81dcd3e96cbe8ee@hugovil.com>
+ <CAHp75VdCqqZfQXRRWUkbDTf_gd3T60Stp+m59Q34iWxddLiG5g@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20230725054216.45696-1-tony@atomide.com>
- <20230725054216.45696-4-tony@atomide.com>
- <6423de18-637e-4ee6-858e-b74e701ff3e5@roeck-us.net>
- <ZMx8nQzYB3dBouFE@smile.fi.intel.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v5 3/3] serial: core: Fix serial core controller port name
- to show controller id
-In-Reply-To: <ZMx8nQzYB3dBouFE@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHp75VdCqqZfQXRRWUkbDTf_gd3T60Stp+m59Q34iWxddLiG5g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 8/3/23 21:20, Andy Shevchenko wrote:
-> On Thu, Aug 03, 2023 at 03:18:42PM -0700, Guenter Roeck wrote:
->> On Tue, Jul 25, 2023 at 08:42:12AM +0300, Tony Lindgren wrote:
->>> We are missing the serial core controller id for the serial core port
->>> name. Let's fix the issue for sane sysfs output, and to avoid issues
->>> addressing serial ports later on.
->>>
->>> And as we're now showing the controller id, the "ctrl" and "port" prefix
->>> for the DEVNAME become useless, we can just drop them. Let's standardize on
->>> DEVNAME:0 for controller name, where 0 is the controller id. And
->>> DEVNAME:0.0 for port name, where 0.0 are the controller id and port id.
->>>
->>> This makes the sysfs output nicer, on qemu for example:
->>>
->>> $ ls /sys/bus/serial-base/devices
->>> 00:04:0         serial8250:0    serial8250:0.2
->>> 00:04:0.0       serial8250:0.1  serial8250:0.3
->>>
->>> Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
->>> Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->>> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->>> Signed-off-by: Tony Lindgren <tony@atomide.com>
->>
->> This patch causes about 50% of my boot tests to fail because the console
->> is no longer recognized. Reverting this patch fixes the problem.
->> Bisect log attached.
+On Fri, Aug 04, 2023 at 12:04:29AM +0300, Andy Shevchenko wrote:
+> On Thu, Aug 3, 2023 at 5:18 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
+> > On Mon, 31 Jul 2023 17:58:41 +0200
+> > Greg KH <gregkh@linuxfoundation.org> wrote:
+> > > On Tue, Jul 25, 2023 at 10:23:38AM -0400, Hugo Villeneuve wrote:
 > 
-> Isn't fix already available?
-> 7d695d83767c ("serial: core: Fix serial_base_match() after fixing controller port name")
+> ...
 > 
+> > > > Fixes: 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
+> > > > Fixes: 21144bab4f11 ("sc16is7xx: Handle modem status lines")
+> > > > Cc: <stable@vger.kernel.org> # 6.1.x: 95982fad dt-bindings: sc16is7xx: Add property to change GPIO function
+> > > > Cc: <stable@vger.kernel.org> # 6.1.x: 1584d572 serial: sc16is7xx: refactor GPIO controller registration
+> > > > Cc: <stable@vger.kernel.org> # 6.1.x: ac2caa5a serial: sc16is7xx: remove obsolete out_thread label
+> > > > Cc: <stable@vger.kernel.org> # 6.1.x: d90961ad serial: sc16is7xx: mark IOCONTROL register as volatile
+> > > > Cc: <stable@vger.kernel.org> # 6.1.x: 6dae3bad serial: sc16is7xx: fix broken port 0 uart init
+> > >
+> > > Where are these git commit ids from?  I don't see them in Linus's tree,
+> > > how are they supposed to be picked up by the stable developers if they
+> > > are not valid ones?
+> > >
+> > > confused,
+> 
+> ...
+> 
+> > I wrongly assumed that, for example, this patch had, as a prerequisite,
+> > all the patches before it in this series, and that is why I listed
+> > them.
 
-Yes, hopefully that should fix it. We'll see tonight, when my test bed builds it again.
+That's fine, but if you have already marked those patches for stable
+inclusion, no need to list them here too.
 
-Guenter
+> The problem, as I understand it, is not that you listed them (how else
+> will the backporter know that this patch requires something else?) but
+> the format (you used wrong SHA-1 sums).
 
+Exactly, those are invalid sha1 values.
+
+> > So I will remove them all, since this patch doesn't have any other
+> > requisites other than the previous patches in this series.
+> >
+> > Maybe it would be good to add some notes about that in
+> > stable-kernel-rules.rst?
+> 
+> This probably is a good idea. Briefly looking at it I see no examples
+> like yours there.
+
+Because it's not a thing?  Just mark all of these patches in the series
+as cc: stable@ and all will happen automatically for you.  Nothing
+fancy or complex here, happens daily in other subsystems just fine :)
+
+thanks,
+
+greg k-h
