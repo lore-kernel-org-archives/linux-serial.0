@@ -2,67 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0454BC00528
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 10:09:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C8EC001DB
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 10:20:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbjHDKJQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Aug 2023 06:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58668 "EHLO
+        id S230164AbjHDKUt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 4 Aug 2023 06:20:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbjHDKJO (ORCPT
+        with ESMTP id S229461AbjHDKUs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Aug 2023 06:09:14 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3ADC2118
-        for <linux-serial@vger.kernel.org>; Fri,  4 Aug 2023 03:09:13 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4RHLvJ0R66ztRqJ;
-        Fri,  4 Aug 2023 18:05:48 +0800 (CST)
-Received: from huawei.com (10.90.53.73) by kwepemi500012.china.huawei.com
- (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Fri, 4 Aug
- 2023 18:09:11 +0800
-From:   Li Zetao <lizetao1@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <JoseJavier.Rodriguez@duagon.com>, <jorge.sanjuangarcia@duagon.com>
-CC:     <lizetao1@huawei.com>, <andriy.shevchenko@linux.intel.com>,
-        <yangyingliang@huawei.com>, <linux-serial@vger.kernel.org>
-Subject: [PATCH -next] 8250_men_mcb: Remove redundant initialization owner in mcb_driver
-Date:   Fri, 4 Aug 2023 18:08:43 +0800
-Message-ID: <20230804100843.100348-1-lizetao1@huawei.com>
-X-Mailer: git-send-email 2.34.1
+        Fri, 4 Aug 2023 06:20:48 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 85D6D2118;
+        Fri,  4 Aug 2023 03:20:47 -0700 (PDT)
+Received: from hillo.muru.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTP id 1F15E80F7;
+        Fri,  4 Aug 2023 10:20:44 +0000 (UTC)
+From:   Tony Lindgren <tony@atomide.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH] MAINTAINERS: Merge TTY layer and serial drivers
+Date:   Fri,  4 Aug 2023 13:20:40 +0300
+Message-ID: <20230804102042.53576-1-tony@atomide.com>
+X-Mailer: git-send-email 2.41.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.90.53.73]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The module_mcb_driver() will set "THIS_MODULE" to driver.owner when
-register a mcb_driver driver, so it is redundant initialization to set
-driver.owner in mcb_driver statement. Remove it for clean code.
+Greg suggested we merge TTY layer and serial driver entries to
+avoid duplicates.
 
-Signed-off-by: Li Zetao <lizetao1@huawei.com>
+Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Acked-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 ---
- drivers/tty/serial/8250/8250_men_mcb.c | 1 -
- 1 file changed, 1 deletion(-)
+ MAINTAINERS | 15 ++-------------
+ 1 file changed, 2 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_men_mcb.c b/drivers/tty/serial/8250/8250_men_mcb.c
-index 14cf6011a002..55ed82a10e64 100644
---- a/drivers/tty/serial/8250/8250_men_mcb.c
-+++ b/drivers/tty/serial/8250/8250_men_mcb.c
-@@ -256,7 +256,6 @@ MODULE_DEVICE_TABLE(mcb, serial_8250_men_mcb_ids);
- static struct mcb_driver mcb_driver = {
- 	.driver = {
- 		.name = "8250_men_mcb",
--		.owner = THIS_MODULE,
- 	},
- 	.probe = serial_8250_men_mcb_probe,
- 	.remove = serial_8250_men_mcb_remove,
+diff --git a/MAINTAINERS b/MAINTAINERS
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19227,13 +19227,6 @@ F:	Documentation/devicetree/bindings/serial/serial.yaml
+ F:	drivers/tty/serdev/
+ F:	include/linux/serdev.h
+ 
+-SERIAL DRIVERS
+-M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+-L:	linux-serial@vger.kernel.org
+-S:	Maintained
+-F:	Documentation/devicetree/bindings/serial/
+-F:	drivers/tty/serial/
+-
+ SERIAL IR RECEIVER
+ M:	Sean Young <sean@mess.org>
+ L:	linux-media@vger.kernel.org
+@@ -21639,20 +21632,16 @@ W:	https://github.com/srcres258/linux-doc
+ T:	git git://github.com/srcres258/linux-doc.git doc-zh-tw
+ F:	Documentation/translations/zh_TW/
+ 
+-TTY LAYER
++TTY LAYER AND SERIAL DRIVERS
+ M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ M:	Jiri Slaby <jirislaby@kernel.org>
+ L:	linux-kernel@vger.kernel.org
+ L:	linux-serial@vger.kernel.org
+ S:	Supported
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
++F:	Documentation/devicetree/bindings/serial/
+ F:	Documentation/driver-api/serial/
+ F:	drivers/tty/
+-F:	drivers/tty/serial/serial_base.h
+-F:	drivers/tty/serial/serial_base_bus.c
+-F:	drivers/tty/serial/serial_core.c
+-F:	drivers/tty/serial/serial_ctrl.c
+-F:	drivers/tty/serial/serial_port.c
+ F:	include/linux/selection.h
+ F:	include/linux/serial.h
+ F:	include/linux/serial_core.h
 -- 
-2.34.1
-
+2.41.0
