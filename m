@@ -2,98 +2,67 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D637C001DF
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 09:46:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0454BC00528
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 10:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231224AbjHDJqv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Aug 2023 05:46:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50504 "EHLO
+        id S229720AbjHDKJQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 4 Aug 2023 06:09:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231211AbjHDJqp (ORCPT
+        with ESMTP id S229483AbjHDKJO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Aug 2023 05:46:45 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E19D749CC;
-        Fri,  4 Aug 2023 02:46:40 -0700 (PDT)
-Received: from [192.168.88.20] (91-154-35-171.elisa-laajakaista.fi [91.154.35.171])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 14E622E4;
-        Fri,  4 Aug 2023 11:45:33 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1691142333;
-        bh=T9fM136WuCH10eLpbSwvpxJ/SxDOh5z0DDnIQBOK0DU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=wf5/fEPa+Zm9AAhdmsprYX/UBj5jdh7EsHSB00EqtVTORR9NYypJgy7oZtSJrzGGo
-         W/+cP67O9k1fA4V18BZF7L5XYUPz6K7ZSscF8Enn7EpyZ4CmM7M6Q37/DFoOo6Kf1M
-         P9yqx+n7AD4iSuuO1KR2GSNc7NNNmmrTvCW1Koec=
-Message-ID: <9a6397b2-0e57-c73f-f0a5-651e64985e06@ideasonboard.com>
-Date:   Fri, 4 Aug 2023 12:46:34 +0300
+        Fri, 4 Aug 2023 06:09:14 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3ADC2118
+        for <linux-serial@vger.kernel.org>; Fri,  4 Aug 2023 03:09:13 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4RHLvJ0R66ztRqJ;
+        Fri,  4 Aug 2023 18:05:48 +0800 (CST)
+Received: from huawei.com (10.90.53.73) by kwepemi500012.china.huawei.com
+ (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Fri, 4 Aug
+ 2023 18:09:11 +0800
+From:   Li Zetao <lizetao1@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <JoseJavier.Rodriguez@duagon.com>, <jorge.sanjuangarcia@duagon.com>
+CC:     <lizetao1@huawei.com>, <andriy.shevchenko@linux.intel.com>,
+        <yangyingliang@huawei.com>, <linux-serial@vger.kernel.org>
+Subject: [PATCH -next] 8250_men_mcb: Remove redundant initialization owner in mcb_driver
+Date:   Fri, 4 Aug 2023 18:08:43 +0800
+Message-ID: <20230804100843.100348-1-lizetao1@huawei.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [PATCH] serial: core: Fix kmemleak issue for serial core device
- remove
-Content-Language: en-US
-To:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20230804090909.51529-1-tony@atomide.com>
-From:   Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
-In-Reply-To: <20230804090909.51529-1-tony@atomide.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.90.53.73]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 04/08/2023 12:09, Tony Lindgren wrote:
-> Kmemleak reports issues for serial8250 ports after the hardware specific
-> driver takes over on boot as noted by Tomi.
-> 
-> The kerneldoc for device_initialize() says we must call device_put()
-> after calling device_initialize(). We are calling device_put() on the
-> error path, but are missing it from the device remove path. This causes
-> release() to never get called for the devices on remove.
-> 
-> Let's add the missing put_device() calls for both serial ctrl and
-> port devices.
-> 
-> Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
-> Reported-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
->   drivers/tty/serial/serial_base_bus.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
-> --- a/drivers/tty/serial/serial_base_bus.c
-> +++ b/drivers/tty/serial/serial_base_bus.c
-> @@ -99,6 +99,7 @@ void serial_base_ctrl_device_remove(struct serial_ctrl_device *ctrl_dev)
->   		return;
->   
->   	device_del(&ctrl_dev->dev);
-> +	put_device(&ctrl_dev->dev);
->   }
->   
->   struct serial_ctrl_device *serial_base_ctrl_add(struct uart_port *port,
-> @@ -174,6 +175,7 @@ void serial_base_port_device_remove(struct serial_port_device *port_dev)
->   		return;
->   
->   	device_del(&port_dev->dev);
-> +	put_device(&port_dev->dev);
->   }
->   
->   static int serial_base_init(void)
+The module_mcb_driver() will set "THIS_MODULE" to driver.owner when
+register a mcb_driver driver, so it is redundant initialization to set
+driver.owner in mcb_driver statement. Remove it for clean code.
 
-Tested-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+Signed-off-by: Li Zetao <lizetao1@huawei.com>
+---
+ drivers/tty/serial/8250/8250_men_mcb.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-  Tomi
+diff --git a/drivers/tty/serial/8250/8250_men_mcb.c b/drivers/tty/serial/8250/8250_men_mcb.c
+index 14cf6011a002..55ed82a10e64 100644
+--- a/drivers/tty/serial/8250/8250_men_mcb.c
++++ b/drivers/tty/serial/8250/8250_men_mcb.c
+@@ -256,7 +256,6 @@ MODULE_DEVICE_TABLE(mcb, serial_8250_men_mcb_ids);
+ static struct mcb_driver mcb_driver = {
+ 	.driver = {
+ 		.name = "8250_men_mcb",
+-		.owner = THIS_MODULE,
+ 	},
+ 	.probe = serial_8250_men_mcb_probe,
+ 	.remove = serial_8250_men_mcb_remove,
+-- 
+2.34.1
 
