@@ -2,94 +2,58 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C8EC001DB
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 10:20:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC0CC04A94
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 10:22:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230164AbjHDKUt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Aug 2023 06:20:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36274 "EHLO
+        id S230459AbjHDKWY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 4 Aug 2023 06:22:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbjHDKUs (ORCPT
+        with ESMTP id S229925AbjHDKWX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Aug 2023 06:20:48 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 85D6D2118;
-        Fri,  4 Aug 2023 03:20:47 -0700 (PDT)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 1F15E80F7;
-        Fri,  4 Aug 2023 10:20:44 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH] MAINTAINERS: Merge TTY layer and serial drivers
-Date:   Fri,  4 Aug 2023 13:20:40 +0300
-Message-ID: <20230804102042.53576-1-tony@atomide.com>
-X-Mailer: git-send-email 2.41.0
+        Fri, 4 Aug 2023 06:22:23 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530F530F4;
+        Fri,  4 Aug 2023 03:22:22 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id A1F7D68AA6; Fri,  4 Aug 2023 12:22:18 +0200 (CEST)
+Date:   Fri, 4 Aug 2023 12:22:18 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     kernel test robot <lkp@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        linux-arm-msm@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
+Subject: Re: [linux-next:master] BUILD REGRESSION
+ fb4327106e5250ee360d0d8b056c1eef7eeb9a98
+Message-ID: <20230804102218.GD23274@lst.de>
+References: <202308040141.gUjtZ32J-lkp@intel.com> <ZMwH1WuEb1JEtZ4o@casper.infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZMwH1WuEb1JEtZ4o@casper.infradead.org>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Greg suggested we merge TTY layer and serial driver entries to
-avoid duplicates.
+On Thu, Aug 03, 2023 at 09:02:29PM +0100, Matthew Wilcox wrote:
+> I think something like this would fix it.  Jens?  Christoph?
+> 
+> +++ b/fs/romfs/Kconfig
+> @@ -2,6 +2,7 @@
+>  config ROMFS_FS
+>         tristate "ROM file system support"
+>         depends on BLOCK || MTD
+> +       select BUFFER_HEAD
+>         help
+>           This is a very small read-only file system mainly intended for
+>           initial ram disks of installation disks, but it could be used for
+> 
+> romfs has a few options and I spent no time looking at this closely;
+> maybe not every version of romfs needs buffer heads.
 
-Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Acked-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Acked-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- MAINTAINERS | 15 ++-------------
- 1 file changed, 2 insertions(+), 13 deletions(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -19227,13 +19227,6 @@ F:	Documentation/devicetree/bindings/serial/serial.yaml
- F:	drivers/tty/serdev/
- F:	include/linux/serdev.h
- 
--SERIAL DRIVERS
--M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
--L:	linux-serial@vger.kernel.org
--S:	Maintained
--F:	Documentation/devicetree/bindings/serial/
--F:	drivers/tty/serial/
--
- SERIAL IR RECEIVER
- M:	Sean Young <sean@mess.org>
- L:	linux-media@vger.kernel.org
-@@ -21639,20 +21632,16 @@ W:	https://github.com/srcres258/linux-doc
- T:	git git://github.com/srcres258/linux-doc.git doc-zh-tw
- F:	Documentation/translations/zh_TW/
- 
--TTY LAYER
-+TTY LAYER AND SERIAL DRIVERS
- M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
- M:	Jiri Slaby <jirislaby@kernel.org>
- L:	linux-kernel@vger.kernel.org
- L:	linux-serial@vger.kernel.org
- S:	Supported
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
-+F:	Documentation/devicetree/bindings/serial/
- F:	Documentation/driver-api/serial/
- F:	drivers/tty/
--F:	drivers/tty/serial/serial_base.h
--F:	drivers/tty/serial/serial_base_bus.c
--F:	drivers/tty/serial/serial_core.c
--F:	drivers/tty/serial/serial_ctrl.c
--F:	drivers/tty/serial/serial_port.c
- F:	include/linux/selection.h
- F:	include/linux/serial.h
- F:	include/linux/serial_core.h
--- 
-2.41.0
+It only needs buffer_heads for the block based path.  I'll send a patch
+for it.
