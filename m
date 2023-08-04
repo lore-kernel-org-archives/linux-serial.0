@@ -2,91 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BD28C41513
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 02:02:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD738C04A6A
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 04:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232750AbjHDCCZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Aug 2023 22:02:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33374 "EHLO
+        id S231916AbjHDEH1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 4 Aug 2023 00:07:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232433AbjHDCCX (ORCPT
+        with ESMTP id S233110AbjHDEHY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Aug 2023 22:02:23 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8DA5448B
-        for <linux-serial@vger.kernel.org>; Thu,  3 Aug 2023 19:02:22 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id d2e1a72fcca58-686f74a8992so269694b3a.1
-        for <linux-serial@vger.kernel.org>; Thu, 03 Aug 2023 19:02:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20221208.gappssmtp.com; s=20221208; t=1691114542; x=1691719342;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=lLAyHP6q7d4xyqH5BrZ0J2y9ZHEmKn11Ag5iLKGIobk=;
-        b=wP2ZuHLlNuDfTT71uzyzf0CV4FW0+5rHmVIqE6GOMVjwL3ZpUnT2g2DTt/WDPPdjrF
-         2U2HC6n0rUbzNslkkp6Hn7rJWDpqfSmq9b66hXnpWCUj8YqrgFcHUJhG77/tAs47G266
-         ElZhOuyclpDWX2rOoNKzHHzbVTAE54S07RIJ8OKTFKzcSexf0Gz621jhyP7rRN33bbXa
-         tkJbJPIcYWZ4ZpCxxkdHqHPkTvp2YIFjPQGCcymM3t8fqWtXNJ1CJG5w9R5HSfJH6nCk
-         KdkWaHmwZ/oMmmFXNOSYXCV4ARohZ/th4bdIj0Kq+d27AG7CIKhmk7x2SgAnQa4lZa+v
-         ZR3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691114542; x=1691719342;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lLAyHP6q7d4xyqH5BrZ0J2y9ZHEmKn11Ag5iLKGIobk=;
-        b=TunFsH6qANu1R5qU5fJYWMy4xZD/fQv+8H68xPsa+WVZWIi7hLzzTdqDOKRsNKHAnu
-         l4f63cOAB+zQiav3j/pMqI0lxOr5+oMhG5fkbRr+r9r0qJ7Aesu12CvNeJD6B2WWpRUh
-         1w9Y4Yof9r+ghyJ0rmNBnJ1rdELddPxPGds/GxTVpM0YS3b0eWSOCNs0GSJQ9DwyM602
-         i10B4DuTt0Ol9/UFMuqyQ2u6OvX74sQT+9qByRI0HkZTozhcIHbWmutmS8zRjzdwf5q/
-         Vic5yri6VDPiVq6St6r2CjRhBPXtOe2cADhzQSPYR40UfWfgLaV7kN9moZP615bynIKU
-         vf4A==
-X-Gm-Message-State: ABy/qLbPdIl8zVhzyKcFEkkkUzfiIwFRJLy+qnb7UVximu1yQAQFNU0E
-        czqwCPRgdmrBd2xL/dU0FrxPVA==
-X-Google-Smtp-Source: APBJJlHGxvq+YAD+sdIdRb+NwnMfx8vt2DdNH34XqanHP+MVvvdnK8URPIL1n0IT/Nu8x7TU0I+uaA==
-X-Received: by 2002:a05:6a00:8016:b0:675:8627:a291 with SMTP id eg22-20020a056a00801600b006758627a291mr20382970pfb.3.1691114542072;
-        Thu, 03 Aug 2023 19:02:22 -0700 (PDT)
-Received: from [172.20.1.218] (071-095-160-189.biz.spectrum.com. [71.95.160.189])
-        by smtp.gmail.com with ESMTPSA id p18-20020aa78612000000b006871dad3e74sm471163pfn.65.2023.08.03.19.02.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Aug 2023 19:02:21 -0700 (PDT)
-Message-ID: <5dbc41bb-f843-dcd9-37d6-cf1f37cb80d4@kernel.dk>
-Date:   Thu, 3 Aug 2023 20:02:20 -0600
+        Fri, 4 Aug 2023 00:07:24 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861AF3C28;
+        Thu,  3 Aug 2023 21:07:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691122042; x=1722658042;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Nct1OPaQWyF0NLQQ6u7Wq7eG9CS3igaS6y0hh8xq7cc=;
+  b=P+mTRk0pXznlqitB1u0k4IgWqFzHW6Q69Y7LD1EgJiZ8s32Wnp8jexBh
+   Q6npLYLmmP8Zcu0bFVOGXi0sO06FlbQ9qliXd2+TXhQ0CA0Jr4qf1QaRC
+   EgHc8X+NyeUeWym7wWggt60pVhftfk+EEQA3d1x1JezGZM60vivSeIlu/
+   CId8NjVOlGe+KCrhctoIsk5z8z5NikS9P+c7dIjCrcxzn7Gms3NCjzjPE
+   fQrBvR3KjCSkL3CO0XxZ7JzWT7pCCc2z60e9Y6DVv4zTKaNiQOxWePeQS
+   Oaxvh5VVxvvBYG6abP4ob7hwKQRoVC30JXaN74Poyk6wZTevn0Kxx3mIb
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="368962279"
+X-IronPort-AV: E=Sophos;i="6.01,254,1684825200"; 
+   d="scan'208";a="368962279"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2023 21:07:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="679758521"
+X-IronPort-AV: E=Sophos;i="6.01,254,1684825200"; 
+   d="scan'208";a="679758521"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003.jf.intel.com with ESMTP; 03 Aug 2023 21:07:16 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qRm5q-008pgS-0y;
+        Fri, 04 Aug 2023 07:07:14 +0300
+Date:   Fri, 4 Aug 2023 07:07:14 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Jani Nikula <jani.nikula@intel.com>,
+        Imre Deak <imre.deak@intel.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Andi Shyti <andi.shyti@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-fbdev@vger.kernel.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: Re: [PATCH v4 1/1] drm/i915: Move abs_diff() to math.h
+Message-ID: <ZMx5cp1u5noAH0Zg@smile.fi.intel.com>
+References: <20230803131918.53727-1-andriy.shevchenko@linux.intel.com>
+ <20230803102446.8edf94acc77e81ab2e09cee3@linux-foundation.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.1
-Subject: Re: [linux-next:master] BUILD REGRESSION
- fb4327106e5250ee360d0d8b056c1eef7eeb9a98
-Content-Language: en-US
-To:     Matthew Wilcox <willy@infradead.org>,
-        kernel test robot <lkp@intel.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-arm-msm@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>
-References: <202308040141.gUjtZ32J-lkp@intel.com>
- <ZMwH1WuEb1JEtZ4o@casper.infradead.org>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <ZMwH1WuEb1JEtZ4o@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230803102446.8edf94acc77e81ab2e09cee3@linux-foundation.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 8/3/23 2:02?PM, Matthew Wilcox wrote:
-> On Fri, Aug 04, 2023 at 01:34:01AM +0800, kernel test robot wrote:
->> arm-linux-gnueabi-ld: storage.c:(.text+0x27c): undefined reference to `__brelse'
->> arm-linux-gnueabi-ld: storage.c:(.text+0x9c): undefined reference to `__bread_gfp'
->> storage.c:(.text+0x22c): undefined reference to `__bread_gfp'
->> storage.c:(.text+0x64): undefined reference to `__brelse'
-> 
-> I think something like this would fix it.  Jens?  Christoph?
+On Thu, Aug 03, 2023 at 10:24:46AM -0700, Andrew Morton wrote:
+> On Thu,  3 Aug 2023 16:19:18 +0300 Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-Yep, someone else sent one earlier today, but looks like they didn't CC
-the list. In any case, I replied with it CC'ed and got it applied.
+...
+
+> > +#define abs_diff(a, b) ({			\
+> > +	typeof(a) __a = (a);			\
+> > +	typeof(b) __b = (b);			\
+> > +	(void)(&__a == &__b);			\
+> > +	__a > __b ? (__a - __b) : (__b - __a);	\
+> > +})
+> 
+> Can we document it please?
+> 
+> Also, the open-coded type comparison could be replaced with __typecheck()?
+> 
+> And why the heck isn't __typecheck() in typecheck.h, to be included by
+> minmax.h.
+> 
+> etcetera.  Sigh.  I'll grab it, but please at least send along some
+> kerneldoc?
+
+Sure and thank you!
 
 -- 
-Jens Axboe
+With Best Regards,
+Andy Shevchenko
+
 
