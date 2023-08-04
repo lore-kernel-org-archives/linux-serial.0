@@ -2,81 +2,81 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9245DC001DB
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 06:36:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81CC8C001DB
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Aug 2023 09:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232991AbjHDGgn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Aug 2023 02:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37386 "EHLO
+        id S230205AbjHDJMi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 4 Aug 2023 05:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232607AbjHDGgb (ORCPT
+        with ESMTP id S230086AbjHDJMG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Aug 2023 02:36:31 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407A24697
-        for <linux-serial@vger.kernel.org>; Thu,  3 Aug 2023 23:36:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691130984; x=1722666984;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1qVJjEqyJndq014L9hmn66YidHAx2bA+qLb5gcH6R0E=;
-  b=dLPLainJYzYQtfKXDdsTIJutXjtB+e3YbKQeM6AwbApHzPLO61MTjBph
-   dz36QYgRxQyvrVHvdmAL9jP6s6lZZe/d4BtXylf0qgiPfmMdN1b8jioK3
-   Lqw8zDhVrdKsVsrq1SEHGtNP1w/k+AHCIQvYBAzqn7SoUNc3NImIkFFWn
-   gD27aAcHu1VSgiMMCw4x2hP4Q6+ePyI8WeZLs18XNQcoUw2vUArZPkUrT
-   ZYBEhl1cUa8G8RPZx/mph3nP2LLZhjPcTcpC2b3Sev55YaU8wBE7wSC1r
-   RSbvAVI5rewIgcQvfEG2/6hZWGCaiyVyeNfo9iYtwXXOAxF8ndzZJeVWQ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="349674615"
-X-IronPort-AV: E=Sophos;i="6.01,254,1684825200"; 
-   d="scan'208";a="349674615"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2023 23:36:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="1060607594"
-X-IronPort-AV: E=Sophos;i="6.01,254,1684825200"; 
-   d="scan'208";a="1060607594"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga005.fm.intel.com with ESMTP; 03 Aug 2023 23:36:16 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qRoQ2-00DrYQ-0l;
-        Fri, 04 Aug 2023 09:36:14 +0300
-Date:   Fri, 4 Aug 2023 09:36:13 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Li Zetao <lizetao1@huawei.com>, gregkh@linuxfoundation.org,
-        jorge.sanjuangarcia@duagon.com, JoseJavier.Rodriguez@duagon.com,
-        yangyingliang@huawei.com, linux-serial@vger.kernel.org
-Subject: Re: [PATCH -next] 8250_men_mcb: Fix unsigned expression compared
- with zero
-Message-ID: <ZMycXdyHVtTq/QNG@smile.fi.intel.com>
-References: <20230803142053.1308926-1-lizetao1@huawei.com>
- <19b30f4f-c4e4-f186-47ee-943d04219fd7@kernel.org>
+        Fri, 4 Aug 2023 05:12:06 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A74649DA;
+        Fri,  4 Aug 2023 02:09:14 -0700 (PDT)
+Received: from hillo.muru.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTP id 87CC580F7;
+        Fri,  4 Aug 2023 09:09:11 +0000 (UTC)
+From:   Tony Lindgren <tony@atomide.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+Subject: [PATCH] serial: core: Fix kmemleak issue for serial core device remove
+Date:   Fri,  4 Aug 2023 12:09:07 +0300
+Message-ID: <20230804090909.51529-1-tony@atomide.com>
+X-Mailer: git-send-email 2.41.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <19b30f4f-c4e4-f186-47ee-943d04219fd7@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Aug 04, 2023 at 07:07:06AM +0200, Jiri Slaby wrote:
-> On 03. 08. 23, 16:20, Li Zetao wrote:
+Kmemleak reports issues for serial8250 ports after the hardware specific
+driver takes over on boot as noted by Tomi.
 
-...
+The kerneldoc for device_initialize() says we must call device_put()
+after calling device_initialize(). We are calling device_put() on the
+error path, but are missing it from the device remove path. This causes
+release() to never get called for the devices on remove.
 
-> But I wonder why this didn't emit a warning:
->   dev_info(&mdev->dev, "found MCB UART: ttyS%d\n", data->line[i]);
-> 
-> I.e. %d for uint?
+Let's add the missing put_device() calls for both serial ctrl and
+port devices.
 
-Do we have this anywhere enabled -Wformat-signedness?
+Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
+Reported-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+---
+ drivers/tty/serial/serial_base_bus.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
+diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
+--- a/drivers/tty/serial/serial_base_bus.c
++++ b/drivers/tty/serial/serial_base_bus.c
+@@ -99,6 +99,7 @@ void serial_base_ctrl_device_remove(struct serial_ctrl_device *ctrl_dev)
+ 		return;
+ 
+ 	device_del(&ctrl_dev->dev);
++	put_device(&ctrl_dev->dev);
+ }
+ 
+ struct serial_ctrl_device *serial_base_ctrl_add(struct uart_port *port,
+@@ -174,6 +175,7 @@ void serial_base_port_device_remove(struct serial_port_device *port_dev)
+ 		return;
+ 
+ 	device_del(&port_dev->dev);
++	put_device(&port_dev->dev);
+ }
+ 
+ static int serial_base_init(void)
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+2.41.0
