@@ -2,68 +2,75 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A2C7C00528
-	for <linux-serial@archiver.kernel.org>; Sun,  6 Aug 2023 06:23:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 699A4C41513
+	for <linux-serial@archiver.kernel.org>; Sun,  6 Aug 2023 09:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbjHFGXe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 6 Aug 2023 02:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43634 "EHLO
+        id S229727AbjHFJcj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 6 Aug 2023 05:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbjHFGXd (ORCPT
+        with ESMTP id S229639AbjHFJci (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 6 Aug 2023 02:23:33 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 63CC81FD3;
-        Sat,  5 Aug 2023 23:23:32 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id CBCDA80A0;
-        Sun,  6 Aug 2023 06:23:31 +0000 (UTC)
-Date:   Sun, 6 Aug 2023 09:23:30 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        Sun, 6 Aug 2023 05:32:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE389F3;
+        Sun,  6 Aug 2023 02:32:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BFED60FFC;
+        Sun,  6 Aug 2023 09:32:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83E21C433C8;
+        Sun,  6 Aug 2023 09:32:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1691314356;
+        bh=e3eVn3I3csuxUTSWKKbazD8xuiApRe8LHcpfQHQofGk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=leVX9+/a4UYzb787JuPbefONy8LrIEK0Y4HHBTpRJ+k6FGVF+P9dJxWdUtupLM+5y
+         1K14x98xs+yaAQSfm0kjiqW8979VfUz1wSlhrK2eXmF9MvHIfM24+w/xEcuOwQKFxf
+         xywwFT1YvyvDz6vsfPjF7Q9aZIcMlt4v08+qJqaGdqbyiK5/hLpsfZcWIG64RqcU7F
+         iPHuoMWLpGJjbwPH0RcpnXgQhOrEzAyflu3kV+gyqcjz6ZPpGUg/436UzOXKXi9qgH
+         MZv1GWepaSmPN7rrDddTXkP9NnUzuT9fCWfMWTr9MtGyUFGAj2esYMQjRwspXrgM4C
+         pBOkUpN8vMeog==
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        kernel test robot <oliver.sang@intel.com>
-Subject: Re: [PATCH v2 1/1] serial: core: Fix serial_base_match() after
- fixing controller port name
-Message-ID: <20230806062330.GM14799@atomide.com>
-References: <20230803071034.25571-1-tony@atomide.com>
- <0e1bc27d-dc84-473d-bfdf-db0743c5d64a@roeck-us.net>
- <20230805044910.GJ14799@atomide.com>
- <a6973497-f45f-6456-ac2b-d3c0262d892b@roeck-us.net>
- <20230805114846.GK14799@atomide.com>
- <aeca6f69-49df-898c-e70b-afcc5427a29b@roeck-us.net>
- <095e0120-ba81-64e7-e5d0-c042fb64978f@roeck-us.net>
- <20230806043357.GL14799@atomide.com>
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/2] serial: 8250_dw: fall back to poll if there's no interrupt
+Date:   Sun,  6 Aug 2023 17:20:54 +0800
+Message-Id: <20230806092056.2467-1-jszhang@kernel.org>
+X-Mailer: git-send-email 2.40.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230806043357.GL14799@atomide.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Tony Lindgren <tony@atomide.com> [230806 07:34]:
-> To me it seems we can't use port->port_id until multiport drivers
-> initialize it, or set port->port_id automatically with ida_alloc().
-> 
-> Meanwhile, we can just change back to using port->line assuming that
-> fixes the issue for your tests. This means the port names are broken
-> like we had in -rc1 but that's a cosmetic issue for now.
+When there's no irq(this can be due to various reasons, for example,
+no irq from HW support, or we just want to use poll solution, and so
+on), falling back to poll is still better than no support at all.
 
-Sent it with a proper patch description [0].
+patch1 makes the interrupt property in dt-binding optional
+patch2 falls back to poll if there's no interrupt
 
-Regards,
+since v1:
+ - adopt Andy's suggestion to simplified the code
 
-Tony
+Jisheng Zhang (2):
+  dt-bindings: serial: snps-dw-apb-uart: make interrupt optional
+  serial: 8250_dw: fall back to poll if there's no interrupt
 
-[0] https://lore.kernel.org/linux-serial/20230806062052.47737-1-tony@atomide.com/T/#u
+ .../devicetree/bindings/serial/snps-dw-apb-uart.yaml         | 1 -
+ drivers/tty/serial/8250/8250_dw.c                            | 5 ++++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+-- 
+2.40.1
+
