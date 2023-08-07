@@ -2,153 +2,75 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 449CBEB64DD
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Aug 2023 09:27:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF984EB64DD
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Aug 2023 09:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229907AbjHGJ07 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Aug 2023 05:26:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55696 "EHLO
+        id S229964AbjHGJ4z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Aug 2023 05:56:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbjHGJ07 (ORCPT
+        with ESMTP id S229916AbjHGJ4x (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Aug 2023 05:26:59 -0400
-Received: from out30-111.freemail.mail.aliyun.com (out30-111.freemail.mail.aliyun.com [115.124.30.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488A6E70;
-        Mon,  7 Aug 2023 02:26:56 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R911e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VpEBqMJ_1691400412;
-Received: from 30.97.48.53(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VpEBqMJ_1691400412)
-          by smtp.aliyun-inc.com;
-          Mon, 07 Aug 2023 17:26:53 +0800
-Message-ID: <ef866767-b95a-8288-4a09-d29fd2717d0a@linux.alibaba.com>
-Date:   Mon, 7 Aug 2023 17:26:54 +0800
+        Mon, 7 Aug 2023 05:56:53 -0400
+X-Greylist: delayed 518 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Aug 2023 02:56:51 PDT
+Received: from smtp-42a9.mail.infomaniak.ch (smtp-42a9.mail.infomaniak.ch [IPv6:2001:1600:3:17::42a9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3E5EDD
+        for <linux-serial@vger.kernel.org>; Mon,  7 Aug 2023 02:56:51 -0700 (PDT)
+Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4RKBMY4RNRzMpntf;
+        Mon,  7 Aug 2023 09:48:09 +0000 (UTC)
+Received: from unknown by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4RKBMX6qBgztQ;
+        Mon,  7 Aug 2023 11:48:08 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=smartandconnective.com; s=20191114; t=1691401689;
+        bh=0dDAO1bt/2vWPfDekSlH01rl3211+tDoxSvSMKqyrA0=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=V9qiAjkMjTDbr7D9WqO0lKigdfdlzbj+HEe9bSOiA2pHQki2d+2hm5wmdTi1R/8gH
+         IqjrqYTt/3u33aMgG7CFrDQJf4T3C2f3z1Nm4Jfjm3mE27uhw+KNl1oUPBFIN2gSS9
+         05Kk15y2TVHMuUbJfmMGDZ3C7yIGqRmZyjl7Mw0U=
+Message-ID: <6cd83d97f76217e10ebc8ea788e38db671218ab6.camel@smartandconnective.com>
+Subject: Re: [PATCH] tty: serial: imx: fix rs485 rx after tx
+From:   Sebastien Laveze <slaveze@smartandconnective.com>
+To:     Martin Fuzzey <martin.fuzzey@flowbird.group>,
+        linux-serial@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Marek Vasut <marex@denx.de>, linux-kernel@vger.kernel.org,
+        Thibaud Canale <tcanale@smartandconnective.com>
+Date:   Mon, 07 Aug 2023 11:48:08 +0200
+In-Reply-To: <20230616104838.2729694-1-martin.fuzzey@flowbird.group>
+References: <20230616104838.2729694-1-martin.fuzzey@flowbird.group>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4-0ubuntu2 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: [PATCH] gpio: sprd: Two-dimensional arrays maintain pmic eic
-To:     Wenhua Lin <Wenhua.Lin@unisoc.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Andy Shevchenko <andy@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wenhua lin <wenhua.lin1994@gmail.com>,
-        Xiongpeng Wu <xiongpeng.wu@unisoc.com>
-References: <20230807091801.17988-1-Wenhua.Lin@unisoc.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <20230807091801.17988-1-Wenhua.Lin@unisoc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Infomaniak-Routing: alpha
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+> Since commit 79d0224f6bf2 ("tty: serial: imx: Handle RS485 DE signal
+> active high") RS485 reception no longer works after a transmission.
 
+I can confirm on a Modbus/RS485 setup.
 
-On 8/7/2023 5:18 PM, Wenhua Lin wrote:
-> Maintain the registers of each pmic eic through a Two-dimensional
-> array to avoid mutual interference.
-> 
-> Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
+> Fix this by moving the existing loopback disable code to a helper
+> function
+> and calling it from imx_uart_start_rx() too.
+>=20
+> Fixes: 79d0224f6bf2 ("tty: serial: imx: Handle RS485 DE signal active
+> high")
 
-NAK. See below.
+Unfortunately this doesn't fix the regression on my setup and I had to
+fully revert 79d0224f6bf2.=C2=A0
 
-> ---
->   drivers/gpio/gpio-pmic-eic-sprd.c | 23 +++++++++++++----------
->   1 file changed, 13 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/gpio/gpio-pmic-eic-sprd.c b/drivers/gpio/gpio-pmic-eic-sprd.c
-> index c3e4d90f6b18..8d67d130cbcf 100644
-> --- a/drivers/gpio/gpio-pmic-eic-sprd.c
-> +++ b/drivers/gpio/gpio-pmic-eic-sprd.c
-> @@ -57,7 +57,7 @@ struct sprd_pmic_eic {
->   	struct gpio_chip chip;
->   	struct regmap *map;
->   	u32 offset;
-> -	u8 reg[CACHE_NR_REGS];
-> +	u8 reg[SPRD_PMIC_EIC_NR][CACHE_NR_REGS];
+Since there's a Modbus layer on top, it's always TX to remote then RX.
 
-We have recorded the offset, no need two-dimensional array unless you 
-have other strong reasons.
+Note that RS485 communication has never been perfect on my setup. After
+TX the DE line is often held active for too long leading to corrupted
+RX if too close from last TX. This leads to occasional frame loss in
+Modbus but it's not a blocker. Hope to get some time to investigate.
 
->   	struct mutex buslock;
->   	int irq;
->   };
-> @@ -151,8 +151,8 @@ static void sprd_pmic_eic_irq_mask(struct irq_data *data)
->   	struct sprd_pmic_eic *pmic_eic = gpiochip_get_data(chip);
->   	u32 offset = irqd_to_hwirq(data);
->   
-> -	pmic_eic->reg[REG_IE] = 0;
-> -	pmic_eic->reg[REG_TRIG] = 0;
-> +	pmic_eic->reg[offset][REG_IE] = 0;
-> +	pmic_eic->reg[offset][REG_TRIG] = 0;
->   
->   	gpiochip_disable_irq(chip, offset);
->   }
-> @@ -165,8 +165,8 @@ static void sprd_pmic_eic_irq_unmask(struct irq_data *data)
->   
->   	gpiochip_enable_irq(chip, offset);
->   
-> -	pmic_eic->reg[REG_IE] = 1;
-> -	pmic_eic->reg[REG_TRIG] = 1;
-> +	pmic_eic->reg[offset][REG_IE] = 1;
-> +	pmic_eic->reg[offset][REG_TRIG] = 1;
->   }
->   
->   static int sprd_pmic_eic_irq_set_type(struct irq_data *data,
-> @@ -174,13 +174,14 @@ static int sprd_pmic_eic_irq_set_type(struct irq_data *data,
->   {
->   	struct gpio_chip *chip = irq_data_get_irq_chip_data(data);
->   	struct sprd_pmic_eic *pmic_eic = gpiochip_get_data(chip);
-> +	u32 offset = irqd_to_hwirq(data);
->   
->   	switch (flow_type) {
->   	case IRQ_TYPE_LEVEL_HIGH:
-> -		pmic_eic->reg[REG_IEV] = 1;
-> +		pmic_eic->reg[offset][REG_IEV] = 1;
->   		break;
->   	case IRQ_TYPE_LEVEL_LOW:
-> -		pmic_eic->reg[REG_IEV] = 0;
-> +		pmic_eic->reg[offset][REG_IEV] = 0;
->   		break;
->   	case IRQ_TYPE_EDGE_RISING:
->   	case IRQ_TYPE_EDGE_FALLING:
-> @@ -222,15 +223,15 @@ static void sprd_pmic_eic_bus_sync_unlock(struct irq_data *data)
->   			sprd_pmic_eic_update(chip, offset, SPRD_PMIC_EIC_IEV, 1);
->   	} else {
->   		sprd_pmic_eic_update(chip, offset, SPRD_PMIC_EIC_IEV,
-> -				     pmic_eic->reg[REG_IEV]);
-> +				     pmic_eic->reg[offset][REG_IEV]);
->   	}
->   
->   	/* Set irq unmask */
->   	sprd_pmic_eic_update(chip, offset, SPRD_PMIC_EIC_IE,
-> -			     pmic_eic->reg[REG_IE]);
-> +			     pmic_eic->reg[offset][REG_IE]);
->   	/* Generate trigger start pulse for debounce EIC */
->   	sprd_pmic_eic_update(chip, offset, SPRD_PMIC_EIC_TRIG,
-> -			     pmic_eic->reg[REG_TRIG]);
-> +			     pmic_eic->reg[offset][REG_TRIG]);
->   
->   	mutex_unlock(&pmic_eic->buslock);
->   }
-> @@ -335,6 +336,7 @@ static int sprd_pmic_eic_probe(struct platform_device *pdev)
->   
->   	ret = devm_request_threaded_irq(&pdev->dev, pmic_eic->irq, NULL,
->   					sprd_pmic_eic_irq_handler,
-> +					IRQF_TRIGGER_LOW |
+https://bugzilla.kernel.org/show_bug.cgi?id=3D207751
 
-Why? you did not explain this in the commit log.
-
->   					IRQF_ONESHOT | IRQF_NO_SUSPEND,
->   					dev_name(&pdev->dev), pmic_eic);
->   	if (ret) {
-> @@ -352,6 +354,7 @@ static int sprd_pmic_eic_probe(struct platform_device *pdev)
->   	pmic_eic->chip.set_config = sprd_pmic_eic_set_config;
->   	pmic_eic->chip.set = sprd_pmic_eic_set;
->   	pmic_eic->chip.get = sprd_pmic_eic_get;
-> +	pmic_eic->chip.can_sleep = true;
-
-Ditto. Why?
-
-Please DO NOT squash different fixes into one patch.
