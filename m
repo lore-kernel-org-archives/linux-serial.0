@@ -2,154 +2,73 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E7FC04A6A
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Aug 2023 20:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C32D1C001B0
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Aug 2023 20:31:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231296AbjHHU3l (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Aug 2023 16:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58942 "EHLO
+        id S232089AbjHHUbc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Aug 2023 16:31:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232925AbjHHU3c (ORCPT
+        with ESMTP id S232500AbjHHUbU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Aug 2023 16:29:32 -0400
-Received: from SHSQR01.spreadtrum.com (unknown [222.66.158.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D373156F85
-        for <linux-serial@vger.kernel.org>; Tue,  8 Aug 2023 10:06:55 -0700 (PDT)
-Received: from SHSQR01.spreadtrum.com (localhost [127.0.0.2] (may be forged))
-        by SHSQR01.spreadtrum.com with ESMTP id 3787OdNn032682
-        for <linux-serial@vger.kernel.org>; Tue, 8 Aug 2023 15:24:39 +0800 (+08)
-        (envelope-from Wenhua.Lin@unisoc.com)
-Received: from dlp.unisoc.com ([10.29.3.86])
-        by SHSQR01.spreadtrum.com with ESMTP id 3787MuLc026831;
-        Tue, 8 Aug 2023 15:22:56 +0800 (+08)
-        (envelope-from Wenhua.Lin@unisoc.com)
-Received: from SHDLP.spreadtrum.com (shmbx06.spreadtrum.com [10.0.1.11])
-        by dlp.unisoc.com (SkyGuard) with ESMTPS id 4RKl3L3dTlz2NsJlw;
-        Tue,  8 Aug 2023 15:21:02 +0800 (CST)
-Received: from xm9614pcu.spreadtrum.com (10.13.2.29) by shmbx06.spreadtrum.com
- (10.0.1.11) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Tue, 8 Aug 2023
- 15:22:54 +0800
-From:   Wenhua Lin <Wenhua.Lin@unisoc.com>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Samuel Holland <samuel@sholland.org>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
+        Tue, 8 Aug 2023 16:31:20 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E533CD0C;
+        Tue,  8 Aug 2023 09:41:42 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="374494036"
+X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
+   d="scan'208";a="374494036"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 06:22:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="796728549"
+X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
+   d="scan'208";a="796728549"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga008.fm.intel.com with ESMTP; 08 Aug 2023 06:22:56 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andy@kernel.org>)
+        id 1qTMfm-009Zhn-1L;
+        Tue, 08 Aug 2023 16:22:54 +0300
+Date:   Tue, 8 Aug 2023 16:22:54 +0300
+From:   Andy Shevchenko <andy@kernel.org>
+To:     Wenhua Lin <Wenhua.Lin@unisoc.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Orson Zhai <orsonzhai@gmail.com>,
         Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>
-CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         wenhua lin <wenhua.lin1994@gmail.com>,
-        Wenhua Lin <Wenhua.Lin@unisoc.com>,
         Xiongpeng Wu <xiongpeng.wu@unisoc.com>
-Subject: [PATCH 1/2] devicetree: bindings: Add keypad driver ducumentation
-Date:   Tue, 8 Aug 2023 15:22:52 +0800
-Message-ID: <20230808072252.3229-1-Wenhua.Lin@unisoc.com>
-X-Mailer: git-send-email 2.17.1
+Subject: Re: [PATCH 2/3] gpio: sprd: In the sleep state, the eic dbnc clk
+ must be forced open
+Message-ID: <ZNJBrnKGVGXaFAtc@smile.fi.intel.com>
+References: <20230808033130.2226-1-Wenhua.Lin@unisoc.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.13.2.29]
-X-ClientProxiedBy: SHCAS03.spreadtrum.com (10.0.1.207) To
- shmbx06.spreadtrum.com (10.0.1.11)
-X-MAIL: SHSQR01.spreadtrum.com 3787MuLc026831
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230808033130.2226-1-Wenhua.Lin@unisoc.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add keypad driver ducumentation.
+On Tue, Aug 08, 2023 at 11:31:30AM +0800, Wenhua Lin wrote:
+> In the sleep state, Eic dbnc has no clock and the clk enable
 
-Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
----
- .../bindings/input/sprd-keypad.yaml           | 76 +++++++++++++++++++
- 1 file changed, 76 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/input/sprd-keypad.yaml
+Comma is not needed here.
 
-diff --git a/Documentation/devicetree/bindings/input/sprd-keypad.yaml b/Documentation/devicetree/bindings/input/sprd-keypad.yaml
-new file mode 100644
-index 000000000000..51710e1eb389
---- /dev/null
-+++ b/Documentation/devicetree/bindings/input/sprd-keypad.yaml
-@@ -0,0 +1,76 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright 2023 Unisoc Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/input/sprd-keypad.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Device-Tree bindings for GPIO attached keys
-+
-+maintainers:
-+  - Orson Zhai <orsonzhai@gmail.com>
-+  - Baolin Wang <baolin.wang7@gmail.com>
-+  - Chunyan Zhang <zhang.lyra@gmail.com>
-+
-+description: |
-+    Keypad controller is used to interface a SoC with a matrix-keypad device.
-+    The keypad controller supports multiple row and column lines.
-+    A key can be placed at each intersection of a unique row and a unique column.
-+    The keypad controller can sense a key-press and key-release and report the
-+    event using a interrupt to the cpu.
-+
-+properties:
-+    compatible:
-+    const: sprd,sc9860-keypad
-+
-+    reg:
-+        maxItems: 1
-+
-+    interrupts:
-+        maxItems: 1
-+
-+    keypad,num-rows:
-+    description: Number of row lines connected to the keypad controller.
-+
-+    keypad,num-columns:
-+    description: Number of column lines connected to the keypad.
-+
-+    debounce-interval:
-+    description:
-+        Debouncing interval time in milliseconds. If not specified defaults to 5.
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+
-+    default: 5
-+
-+    linux,keymap:
-+    description: An array of packed 1-cell entries containing the equivalent
-+        of row, column and linux key-code. The 32-bit big endian cell is packed.
-+
-+required:
-+        - compatible
-+        - reg
-+        - keypad,num-rows
-+        - keypad,num-columns
-+        - linux,keymap
-+
-+unevaluatedProperties: false
-+
-+
-+examples:
-+  - |
-+	keypad@40250000 {
-+		compatible = "sprd,sc9860-keypad";
-+		reg = 	<0x40250000 0x1000>;
-+		interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>;
-+		clocks = <&aonapb_gate CLK_KPD_EB>,
-+			<&aonapb_gate CLK_KPD_RTC_EB>;
-+		clock-names = "enable", "rtc";
-+		keypad,num-rows= <3>;
-+		keypad,num-columns = <3>;
-+		debounce-interval = <5>;
-+		linux,keymap = < 0x00000001
-+				 0x01000002
-+				 0x00020003>;
-+		status = "okay";
-+	};
-+...
+> of dbnc needs to be forced open, so that eic can wake up normally.
+
+...
+
+> +#define SPRD_EIC_DBNC_FORCE_CLK		0x8000
+
+BIT(15) ?
+
 -- 
-2.17.1
+With Best Regards,
+Andy Shevchenko
+
 
