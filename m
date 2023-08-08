@@ -2,30 +2,30 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C190EC001DB
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Aug 2023 18:23:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C620C001B0
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Aug 2023 18:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233452AbjHHSX6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Aug 2023 14:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46674 "EHLO
+        id S235755AbjHHS33 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Aug 2023 14:29:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235729AbjHHSXi (ORCPT
+        with ESMTP id S235369AbjHHS3L (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Aug 2023 14:23:38 -0400
+        Tue, 8 Aug 2023 14:29:11 -0400
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929B23C33;
-        Tue,  8 Aug 2023 10:35:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89174249B4;
+        Tue,  8 Aug 2023 10:44:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
         ; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
         :Date:subject:date:message-id:reply-to;
-        bh=XkZlvp32aRkJTNbGOKHPFPOVDj8xTKl+lMyseu9ZRpY=; b=hHzTyYqt9hPsBJ21nGtMp8MPJB
-        ycW/EtEnHqTW3Tr9GQH8pLqHCWaIpL9gfw1pFjdbzBJlreCQuHKxCtMTEtf5og5sanwk4odTkt1ni
-        74TAdCwbUC2EsUrbqGQIMlYHMlrQK3FNUNdalZj0rnfqqeiS95IshVMO/RHEL6b4YtMQ=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:37752 helo=pettiford)
+        bh=uRe5DA9n4TN682/6jFN0fFTDiTtPa18+87Bw4kABhag=; b=hs7mTCGFDV/WgN6iXONJ7w//Zs
+        gaSTUd9xKLWA+1GsyzR53kHsFCzcRGYd8tjSaMFKsa3azSRk/5vuIsMKbBUYETOhZdpKnn/Sj2+IU
+        xXkhGewhQ+MQayPwOYCYxf072D7YI6Ke+iJ7Bl2WcPU8XFy/oNEmgkmdpnFsjhrQc0DU=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:52066 helo=pettiford)
         by mail.hugovil.com with esmtpa (Exim 4.92)
         (envelope-from <hugo@hugovil.com>)
-        id 1qTQbZ-0001On-JD; Tue, 08 Aug 2023 13:34:50 -0400
-Date:   Tue, 8 Aug 2023 13:34:48 -0400
+        id 1qTQl9-0001cX-1e; Tue, 08 Aug 2023 13:44:43 -0400
+Date:   Tue, 8 Aug 2023 13:44:42 -0400
 From:   Hugo Villeneuve <hugo@hugovil.com>
 To:     Wenhua Lin <Wenhua.Lin@unisoc.com>
 Cc:     Linus Walleij <linus.walleij@linaro.org>,
@@ -37,7 +37,7 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         wenhua lin <wenhua.lin1994@gmail.com>,
         Xiongpeng Wu <xiongpeng.wu@unisoc.com>
-Message-Id: <20230808133448.96e39db8e86a67ad7e2e5a43@hugovil.com>
+Message-Id: <20230808134442.75bb6f04b5612c07d3b7d731@hugovil.com>
 In-Reply-To: <20230808033106.2174-1-Wenhua.Lin@unisoc.com>
 References: <20230808033106.2174-1-Wenhua.Lin@unisoc.com>
 X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
@@ -79,13 +79,6 @@ Wenhua Lin <Wenhua.Lin@unisoc.com> wrote:
 >   */
 > -#define SPRD_EIC_MAX_BANK		3
 > +#define SPRD_EIC_MAX_BANK		8
-
-Hi,
-it seems as tough the commit title doesn't reflect the fact that you
-not only modify the calculation method, but also the maximum number of
-banks?
-
-
 >  #define SPRD_EIC_PER_BANK_NR		8
 >  #define SPRD_EIC_DATA_MASK		GENMASK(7, 0)
 >  #define SPRD_EIC_BIT(x)			((x) & (SPRD_EIC_PER_BANK_NR - 1))
@@ -170,11 +163,22 @@ banks?
 >  		fallthrough;
 >  	case SPRD_EIC_ASYNC:
 > +		fallthrough;
+
+Hi,
+this probably should go in a separate patch as a fix or an
+improvement with proper comments explaining the reason?
+
 >  	case SPRD_EIC_SYNC:
 >  		sprd_eic->chip.get = sprd_eic_get;
 >  		break;
 >  	case SPRD_EIC_LATCH:
 > +		fallthrough;
+
+ditto.
+
+Hugo Villeneuve
+
+
 >  	default:
 >  		break;
 >  	}
