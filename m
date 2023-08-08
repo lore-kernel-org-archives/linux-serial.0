@@ -2,93 +2,90 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28055C04FDF
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Aug 2023 20:42:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D9CBC41513
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Aug 2023 20:54:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231138AbjHHUm5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Aug 2023 16:42:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58540 "EHLO
+        id S229720AbjHHUyb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Aug 2023 16:54:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235897AbjHHUmh (ORCPT
+        with ESMTP id S230361AbjHHUyM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Aug 2023 16:42:37 -0400
-Received: from sonata.ens-lyon.org (sonata.ens-lyon.org [140.77.166.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 041AE11CF8;
-        Tue,  8 Aug 2023 13:17:15 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by sonata.ens-lyon.org (Postfix) with ESMTP id EF65A20127;
-        Tue,  8 Aug 2023 22:17:13 +0200 (CEST)
-Received: from sonata.ens-lyon.org ([127.0.0.1])
-        by localhost (sonata.ens-lyon.org [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id TP2rFcRwTC_Y; Tue,  8 Aug 2023 22:17:13 +0200 (CEST)
-Received: from begin (lfbn-bor-1-1163-184.w92-158.abo.wanadoo.fr [92.158.138.184])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by sonata.ens-lyon.org (Postfix) with ESMTPSA id 9E9482011A;
-        Tue,  8 Aug 2023 22:17:12 +0200 (CEST)
-Received: from samy by begin with local (Exim 4.96)
-        (envelope-from <samuel.thibault@ens-lyon.org>)
-        id 1qTT8i-0021rK-0T;
-        Tue, 08 Aug 2023 22:17:12 +0200
-Date:   Tue, 8 Aug 2023 22:17:12 +0200
-From:   Samuel Thibault <samuel.thibault@ens-lyon.org>
-To:     =?utf-8?Q?G=C3=BCnther?= Noack <gnoack3000@gmail.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Simon Brand <simon.brand@postadigitale.de>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] TIOCSTI: Document CAP_SYS_ADMIN behaviour in Kconfig
-Message-ID: <20230808201712.efl6vbtsuy57b64d@begin>
-Mail-Followup-To: Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        =?utf-8?Q?G=C3=BCnther?= Noack <gnoack3000@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Simon Brand <simon.brand@postadigitale.de>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20230808201115.23993-1-gnoack3000@gmail.com>
+        Tue, 8 Aug 2023 16:54:12 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD1404496;
+        Tue,  8 Aug 2023 13:40:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=6r7PjrCEgpz4xmTGBp613ajXrb6WdCBsEp8ol8rTeyU=; b=DTeAyRKxjPmMfRmmUDw04MzXeX
+        2hi4FV7iMzb1Fw1Eks+IhfiZE12vobmr2ou/tFYQ7/oY9CBch9Uqg9f4v2sNoly6Oc/CuzPU9lx4S
+        f3oaISx44KKsaaVcAZiW0X/T5Qei04PYDZ4xsDyweXA7E1UcnAcRIbhvV7bHLJ1NcikDiEqzkRN+0
+        YkKzuxTziVuQGAYAETLX+Zx8JQ6MpLuqAtchJOgqgCBcNiRFewiIHuPnrqLLgsyt7NkpuhXpDdCnb
+        MtPdHqEeGUW0PbUm1YlrknAToxir4b37G8t7Gwpny6cTiWYLzxh7Kjl21viTyUTd1F00ZaT856Jf7
+        E8Ci4Ybw==;
+Received: from [2601:1c2:980:9ec0::2764]
+        by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+        id 1qTTVR-003Qxr-2s;
+        Tue, 08 Aug 2023 20:40:41 +0000
+Message-ID: <78b74902-f120-96e6-f1a1-6d424f3338e5@infradead.org>
+Date:   Tue, 8 Aug 2023 13:40:40 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230808201115.23993-1-gnoack3000@gmail.com>
-Organization: I am not organized
-User-Agent: NeoMutt/20170609 (1.8.3)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Subject: Re: [PATCH] input: keyboard: Add sprd-keypad driver
+Content-Language: en-US
+To:     Wenhua Lin <Wenhua.Lin@unisoc.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?Q?Nuno_S=c3=a1?= <nuno.sa@analog.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Samuel Holland <samuel@sholland.org>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wenhua lin <wenhua.lin1994@gmail.com>,
+        Xiongpeng Wu <xiongpeng.wu@unisoc.com>
+References: <20230808072501.3393-1-Wenhua.Lin@unisoc.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20230808072501.3393-1-Wenhua.Lin@unisoc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Günther Noack, le mar. 08 août 2023 22:11:12 +0200, a ecrit:
-> Clarifies that the LEGACY_TIOCSTI setting is safe to turn off even
-> when running BRLTTY, as it was introduced in commit 690c8b804ad2
-> ("TIOCSTI: always enable for CAP_SYS_ADMIN").
-> 
-> Signed-off-by: Günther Noack <gnoack3000@gmail.com>
+Hi--
 
-Reviewed-by: Samuel Thibault <samuel.thibault@ens-lyon.org>
-
-> ---
->  drivers/tty/Kconfig | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
-> index 341abaed4ce..069de553127 100644
-> --- a/drivers/tty/Kconfig
-> +++ b/drivers/tty/Kconfig
-> @@ -164,6 +164,9 @@ config LEGACY_TIOCSTI
->  	  userspace depends on this functionality to continue operating
->  	  normally.
+On 8/8/23 00:25, Wenhua Lin wrote:
+> diff --git a/drivers/input/keyboard/Kconfig b/drivers/input/keyboard/Kconfig
+> index 1d0c5f4c0f99..f35d9bf05f72 100644
+> --- a/drivers/input/keyboard/Kconfig
+> +++ b/drivers/input/keyboard/Kconfig
+> @@ -809,4 +809,14 @@ config KEYBOARD_CYPRESS_SF
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called cypress-sf.
 >  
-> +	  Processes which run with CAP_SYS_ADMIN, such as BRLTTY, can
-> +	  use TIOCSTI even when this is set to N.
+> +config KEYBOARD_SPRD
+> +	tristate "Spreadtrum keyboard support"
+> +	depends on ARCH_SPRD || COMPILE_TEST
+> +	select INPUT_MATRIXKMAP
+> +	help
+> +	  Keypad controller is used to interface a SoC with a matrix-keypad device,
+
+	                                         an SoC                     device.
+
+> +	  The keypad controller supports multiple row and column lines.
+> +	  Say Y if you want to use the SPRD keyboard.
+> +	  Say M if you want to use the SPRD keyboard on SoC as module.
 > +
->  	  This functionality can be changed at runtime with the
->  	  dev.tty.legacy_tiocsti sysctl. This configuration option sets
->  	  the default value of the sysctl.
-> -- 
-> 2.41.0
-> 
+>  endif
+
+-- 
+~Randy
