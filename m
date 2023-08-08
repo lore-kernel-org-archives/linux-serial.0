@@ -2,246 +2,128 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37233C04A6A
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Aug 2023 19:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E86EEC04A94
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Aug 2023 19:23:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233414AbjHHTMc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Aug 2023 15:12:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56384 "EHLO
+        id S233947AbjHHTXW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Aug 2023 15:23:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235675AbjHHTMI (ORCPT
+        with ESMTP id S236065AbjHHTWl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Aug 2023 15:12:08 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E4E33B3B;
-        Tue,  8 Aug 2023 09:34:10 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 378Co66x027258;
-        Tue, 8 Aug 2023 18:19:39 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-        from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding:content-type; s=
-        selector1; bh=dhCwEHX0DJwZiRNK4fFfUdVG5e5HKjrWxTyeEHdpYQ0=; b=tk
-        qcWJqgkcRx9YVxoTUtlxWsUZoJOIZX+PlKop0U4pAaNbPp7qa67js8T8BnqXlP1W
-        Q+Vm2Wgrz4Gm8E/9S9/griN3OikMYbXJ6dT7SB7figxBBXN6Cix7AzE8FBbdcPvc
-        LubWnmHmEC8BJuyXOtS+5VnTZNZa5qHdJNG/ayNrY3WEltJRL0MkwQkeRJrqBiOD
-        8T+k5IEczpa1JULWZ0PeyygadBg+lpw12kYOigE03e7VrK50uO1pokNw0fr+7TQ/
-        /F04/9HRj+FcJn4PVzrZyi32Lvp5F19LoG3EZ6/WJ2vUJEc7/2WjKz1I1fY9Rq1x
-        NauNonA8Dnyou8ZYWJKQ==
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3sbp2d958h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Aug 2023 18:19:39 +0200 (MEST)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 72F77100062;
-        Tue,  8 Aug 2023 18:19:38 +0200 (CEST)
-Received: from Webmail-eu.st.com (eqndag1node4.st.com [10.75.129.133])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 698BB235F32;
-        Tue,  8 Aug 2023 18:19:38 +0200 (CEST)
-Received: from localhost (10.201.20.168) by EQNDAG1NODE4.st.com
- (10.75.129.133) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Tue, 8 Aug
- 2023 18:19:38 +0200
-From:   Valentin Caron <valentin.caron@foss.st.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Jiri Slaby <jirislaby@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Valentin Caron <valentin.caron@foss.st.com>
-Subject: [PATCH v2 1/6] serial: stm32: avoid clearing DMAT bit during transfer
-Date:   Tue, 8 Aug 2023 18:19:01 +0200
-Message-ID: <20230808161906.178996-2-valentin.caron@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230808161906.178996-1-valentin.caron@foss.st.com>
-References: <20230808161906.178996-1-valentin.caron@foss.st.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 8 Aug 2023 15:22:41 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92D4112450;
+        Tue,  8 Aug 2023 09:46:56 -0700 (PDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.nyi.internal (Postfix) with ESMTP id C629A5C00A8;
+        Tue,  8 Aug 2023 04:02:50 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Tue, 08 Aug 2023 04:02:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm3; t=1691481770; x=1691568170; bh=Sp
+        DaR7i7R4jir2nSPb/IHojOH5Ejtlxz8VTxnsIiQQk=; b=u1WnBMVQOTf7j2DlqH
+        /nYYDrjfRUTMffWJ8BIV7YS24zwiW9W0RRF3o3CL4JKi2qGC8rvLgRvMRd9/fHzF
+        uYd2g9YO1XEnHdE2xeCbytYU0FMD6ubMau7/vUPlZZv4Oa1Hja81+lFmfG8a+pfc
+        pOqL4ZBI/0+Uv6M+JyC0OViuEcP8GD1x+S+qm4jZDdE58CUw4FTxl27AtFn1HwxP
+        2jxIDy54npwmdEnmzo6GPH8RwKcRUZKr3dKq+N5vsNP5Ljuw1SY96wjCCqkbIR+B
+        9DtOGa5deMfh1drSGYrFh0//dR+6TSQHpqi3DYH4uupn1ejCZCB6jR9H9PNX5Xne
+        GyYA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:content-type:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; t=1691481770; x=1691568170; bh=SpDaR7i7R4jir
+        2nSPb/IHojOH5Ejtlxz8VTxnsIiQQk=; b=zWLIdpSZsxtisBULh8uXVlRFlu6qp
+        XXrfhIYdOxptbOZWeZ7AyNSw9jHHPqXxaWnRfp69spGesEh1f+VPfyu1Gu+K+e0x
+        bx4dEm6RLNxRxgAMQmnKcXkcilesOhgr2GrTGPXoPE50cacPXjgo2sJ7anCsPO5V
+        qqONvsaKfA6SeFQecwJMY3bO0wJmliqH46TYlVDcxWZyIcI8RJnbSSc5KRPlOqkP
+        jplqfzih/6UAwsWXM2KhnkCVKsVlUJmIL1qAaj1uPlimIxGVE7P/4kn55LI5vIO1
+        tJ/qt8hRtYi3YvhKRKkeGhWpu8P5P9huq/T5aXCnPE5DgrtGvU9DJVpeg==
+X-ME-Sender: <xms:qfbRZAN7Xzc2QVQNe3RR9hkT5kntAlldaYM19biukw0ctjUkGyMH1g>
+    <xme:qfbRZG8u5qSny_ilsAUiJpx_Qura8bPrx7u6_RmSDTG5apIveOjryu6UINn6GBmNM
+    E8u7bmLxqoteOILyFI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedviedrledvucetufdoteggodetrfdotffvucfrrh
+    hofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgenuceurghi
+    lhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurh
+    epofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehrnhguuceu
+    vghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrthhtvghrnh
+    epffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdekteffnecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprghrnhguse
+    grrhhnuggsrdguvg
+X-ME-Proxy: <xmx:qfbRZHTXbQtlGgZHHSSK2s1fBItgMX9sBz9bDdqBFDuuCsvSib8_2w>
+    <xmx:qfbRZItgKgnv6MUZLnvBCMPoRMpbaS_dUvNzUEZhhQiExf1TzmH36g>
+    <xmx:qfbRZIfBL8Ba75mhLTIwVS-UyRe-0yPKfnobdC0-u4TeVp8Rqz1uDQ>
+    <xmx:qvbRZH9CKXpnY4c2xq1_9N_PKt94GE6ipExDqivnjuKReWBxgaHFcA>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 1DCE8B60089; Tue,  8 Aug 2023 04:02:49 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-624-g7714e4406d-fm-20230801.001-g7714e440
+Mime-Version: 1.0
+Message-Id: <487477f3-9708-4a28-a4fa-0c652353467b@app.fastmail.com>
+In-Reply-To: <20230808072501.3393-1-Wenhua.Lin@unisoc.com>
+References: <20230808072501.3393-1-Wenhua.Lin@unisoc.com>
+Date:   Tue, 08 Aug 2023 10:02:28 +0200
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Wenhua Lin" <Wenhua.Lin@unisoc.com>,
+        "Dmitry Torokhov" <dmitry.torokhov@gmail.com>,
+        "Jonathan Cameron" <Jonathan.Cameron@huawei.com>,
+        "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+        "Samuel Holland" <samuel@sholland.org>,
+        "Robert Jarzmik" <robert.jarzmik@free.fr>,
+        "Mattijs Korpershoek" <mkorpershoek@baylibre.com>,
+        "Bartosz Golaszewski" <bartosz.golaszewski@linaro.org>,
+        "Orson Zhai" <orsonzhai@gmail.com>,
+        "Baolin Wang" <baolin.wang@linux.alibaba.com>,
+        "Chunyan Zhang" <zhang.lyra@gmail.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "wenhua lin" <wenhua.lin1994@gmail.com>,
+        "Xiongpeng Wu" <xiongpeng.wu@unisoc.com>
+Subject: Re: [PATCH] input: keyboard: Add sprd-keypad driver
 Content-Type: text/plain
-X-Originating-IP: [10.201.20.168]
-X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To EQNDAG1NODE4.st.com
- (10.75.129.133)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-08-08_15,2023-08-08_01,2023-05-22_02
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-It's rather advised to rely on DMA pause / resume instead of
-clearing/setting DMA request enable bit for the same purpose. Some DMA
-request/acknowledge race may encountered by doing so. We prefer to use
-dmaengine_pause and resume instead to pause a dma transfer when it is
-necessary.
+On Tue, Aug 8, 2023, at 09:25, Wenhua Lin wrote:
+> Add matrix keypad driver, support matrix keypad function.
+>
+> Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
 
-It is also safer to close DMA before reset DMAT in stm32_usart_shutdown.
+Looks fine to me, just one minor thing to remember:
 
-Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
----
- drivers/tty/serial/stm32-usart.c | 76 ++++++++++++++++++--------------
- 1 file changed, 44 insertions(+), 32 deletions(-)
+> +static int __maybe_unused sprd_keypad_resume(struct device *dev)
+> +{
+> +	struct sprd_keypad_data *data = dev_get_drvdata(dev);
+> +	int ret = 0;
+> +
+> +	if (!device_may_wakeup(dev)) {
+> +		ret = sprd_keypad_enable(data);
+> +		if (ret)
+> +			return ret;
+> +		ret = sprd_keypad_hw_init(data);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(sprd_keypad_pm_ops,
+> +			sprd_keypad_suspend, sprd_keypad_resume);
+> +
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index be47cd343cf6..2f9672ba4ed3 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -506,13 +506,6 @@ static bool stm32_usart_tx_dma_started(struct stm32_port *stm32_port)
- 	return stm32_port->tx_dma_busy;
- }
- 
--static bool stm32_usart_tx_dma_enabled(struct stm32_port *stm32_port)
--{
--	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
--
--	return !!(readl_relaxed(stm32_port->port.membase + ofs->cr3) & USART_CR3_DMAT);
--}
--
- static void stm32_usart_tx_dma_complete(void *arg)
- {
- 	struct uart_port *port = arg;
-@@ -591,9 +584,6 @@ static void stm32_usart_transmit_chars_pio(struct uart_port *port)
- 	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
- 	struct circ_buf *xmit = &port->state->xmit;
- 
--	if (stm32_usart_tx_dma_enabled(stm32_port))
--		stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_DMAT);
--
- 	while (!uart_circ_empty(xmit)) {
- 		/* Check that TDR is empty before filling FIFO */
- 		if (!(readl_relaxed(port->membase + ofs->isr) & USART_SR_TXE))
-@@ -616,10 +606,16 @@ static void stm32_usart_transmit_chars_dma(struct uart_port *port)
- 	struct circ_buf *xmit = &port->state->xmit;
- 	struct dma_async_tx_descriptor *desc = NULL;
- 	unsigned int count;
-+	int ret;
- 
- 	if (stm32_usart_tx_dma_started(stm32port)) {
--		if (!stm32_usart_tx_dma_enabled(stm32port))
--			stm32_usart_set_bits(port, ofs->cr3, USART_CR3_DMAT);
-+		if (dmaengine_tx_status(stm32port->tx_ch,
-+					stm32port->tx_ch->cookie,
-+					NULL) == DMA_PAUSED) {
-+			ret = dmaengine_resume(stm32port->tx_ch);
-+			if (ret < 0)
-+				goto dma_err;
-+		}
- 		return;
- 	}
- 
-@@ -664,11 +660,9 @@ static void stm32_usart_transmit_chars_dma(struct uart_port *port)
- 	desc->callback_param = port;
- 
- 	/* Push current DMA TX transaction in the pending queue */
--	if (dma_submit_error(dmaengine_submit(desc))) {
--		/* dma no yet started, safe to free resources */
--		stm32_usart_tx_dma_terminate(stm32port);
--		goto fallback_err;
--	}
-+	/* DMA no yet started, safe to free resources */
-+	if (dma_submit_error(dmaengine_submit(desc)))
-+		goto dma_err;
- 
- 	/* Issue pending DMA TX requests */
- 	dma_async_issue_pending(stm32port->tx_ch);
-@@ -679,6 +673,10 @@ static void stm32_usart_transmit_chars_dma(struct uart_port *port)
- 
- 	return;
- 
-+dma_err:
-+	dev_err(port->dev, "DMA failed with error code: %d\n", ret);
-+	stm32_usart_tx_dma_terminate(stm32port);
-+
- fallback_err:
- 	stm32_usart_transmit_chars_pio(port);
- }
-@@ -701,9 +699,15 @@ static void stm32_usart_transmit_chars(struct uart_port *port)
- 
- 	if (port->x_char) {
- 		if (stm32_usart_tx_dma_started(stm32_port) &&
--		    stm32_usart_tx_dma_enabled(stm32_port))
--			stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_DMAT);
--
-+		    dmaengine_tx_status(stm32_port->tx_ch,
-+					stm32_port->tx_ch->cookie,
-+					NULL) == DMA_IN_PROGRESS) {
-+			ret = dmaengine_pause(stm32_port->tx_ch);
-+			if (ret < 0) {
-+				dev_err(port->dev, "DMA failed with error code: %d\n", ret);
-+				stm32_usart_tx_dma_terminate(stm32_port);
-+			}
-+		}
- 		/* Check that TDR is empty before filling FIFO */
- 		ret =
- 		readl_relaxed_poll_timeout_atomic(port->membase + ofs->isr,
-@@ -716,8 +720,14 @@ static void stm32_usart_transmit_chars(struct uart_port *port)
- 		writel_relaxed(port->x_char, port->membase + ofs->tdr);
- 		port->x_char = 0;
- 		port->icount.tx++;
--		if (stm32_usart_tx_dma_started(stm32_port))
--			stm32_usart_set_bits(port, ofs->cr3, USART_CR3_DMAT);
-+
-+		if (stm32_usart_tx_dma_started(stm32_port)) {
-+			ret = dmaengine_resume(stm32_port->tx_ch);
-+			if (ret < 0) {
-+				dev_err(port->dev, "DMA failed with error code: %d\n", ret);
-+				stm32_usart_tx_dma_terminate(stm32_port);
-+			}
-+		}
- 		return;
- 	}
- 
-@@ -850,11 +860,16 @@ static void stm32_usart_disable_ms(struct uart_port *port)
- static void stm32_usart_stop_tx(struct uart_port *port)
- {
- 	struct stm32_port *stm32_port = to_stm32_port(port);
--	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
-+	int ret;
- 
- 	stm32_usart_tx_interrupt_disable(port);
--	if (stm32_usart_tx_dma_started(stm32_port) && stm32_usart_tx_dma_enabled(stm32_port))
--		stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_DMAT);
-+	if (stm32_usart_tx_dma_started(stm32_port)) {
-+		ret = dmaengine_pause(stm32_port->tx_ch);
-+		if (ret < 0) {
-+			dev_err(port->dev, "DMA failed with error code: %d\n", ret);
-+			stm32_usart_tx_dma_terminate(stm32_port);
-+		}
-+	}
- 
- 	stm32_usart_rs485_rts_disable(port);
- }
-@@ -878,12 +893,9 @@ static void stm32_usart_start_tx(struct uart_port *port)
- static void stm32_usart_flush_buffer(struct uart_port *port)
- {
- 	struct stm32_port *stm32_port = to_stm32_port(port);
--	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
- 
--	if (stm32_port->tx_ch) {
-+	if (stm32_port->tx_ch)
- 		stm32_usart_tx_dma_terminate(stm32_port);
--		stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_DMAT);
--	}
- }
- 
- /* Throttle the remote when input buffer is about to overflow. */
-@@ -1042,12 +1054,12 @@ static void stm32_usart_shutdown(struct uart_port *port)
- 	u32 val, isr;
- 	int ret;
- 
--	if (stm32_usart_tx_dma_enabled(stm32_port))
--		stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_DMAT);
--
- 	if (stm32_usart_tx_dma_started(stm32_port))
- 		stm32_usart_tx_dma_terminate(stm32_port);
- 
-+	if (stm32_port->tx_ch)
-+		stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_DMAT);
-+
- 	/* Disable modem control interrupts */
- 	stm32_usart_disable_ms(port);
- 
--- 
-2.25.1
+SIMPLE_DEV_PM_OPS() is deprecated, please use the new
+DEFINE_SIMPLE_DEV_PM_OPS() for all new drivers, and
+remove the __maybe_unused annotation that is no longer
+needed with that.
 
+With that addressed (for the driver in general, I know nothing
+about the drivers/input specifics)
+
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+
+     Arnd
