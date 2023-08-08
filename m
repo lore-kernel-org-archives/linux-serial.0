@@ -2,73 +2,96 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAE1EC04A6A
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Aug 2023 20:31:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F1CC001DB
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Aug 2023 20:41:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233183AbjHHUbe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Aug 2023 16:31:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58620 "EHLO
+        id S231905AbjHHUlJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Aug 2023 16:41:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231926AbjHHUbV (ORCPT
+        with ESMTP id S231917AbjHHUk4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Aug 2023 16:31:21 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B5A3CD22;
-        Tue,  8 Aug 2023 09:41:46 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="374494183"
-X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
-   d="scan'208";a="374494183"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 06:23:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="796729080"
-X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
-   d="scan'208";a="796729080"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga008.fm.intel.com with ESMTP; 08 Aug 2023 06:23:32 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andy@kernel.org>)
-        id 1qTMgM-009b1H-2i;
-        Tue, 08 Aug 2023 16:23:30 +0300
-Date:   Tue, 8 Aug 2023 16:23:30 +0300
-From:   Andy Shevchenko <andy@kernel.org>
-To:     Chunyan Zhang <zhang.lyra@gmail.com>
-Cc:     Wenhua Lin <Wenhua.Lin@unisoc.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wenhua lin <wenhua.lin1994@gmail.com>,
-        Xiongpeng Wu <xiongpeng.wu@unisoc.com>
-Subject: Re: [PATCH 2/3] gpio: sprd: In the sleep state, the eic dbnc clk
- must be forced open
-Message-ID: <ZNJB0tzHtgwfPfX0@smile.fi.intel.com>
-References: <20230808033130.2226-1-Wenhua.Lin@unisoc.com>
- <CAAfSe-t45FeFzXKUCjOU5qoPF-rq4dzMKo-eRciw6MbLq+rNgA@mail.gmail.com>
+        Tue, 8 Aug 2023 16:40:56 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8CA146B9;
+        Tue,  8 Aug 2023 13:12:06 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id ffacd0b85a97d-307d58b3efbso4665694f8f.0;
+        Tue, 08 Aug 2023 13:12:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1691525525; x=1692130325;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=HTKjeSdXeNLUVbHpZpaI+0otxc5jI/cV2lsa+kaijXI=;
+        b=gGfPMZAyUzn4eRSNEtWO9UXo0D1Aw6jZ+nKryC0dAMuc8u6wBBo0eeOcrADx6fUkll
+         M1sL0Mf9f3CN0+anjB7mumxHL7QT993mviPz/0EC26f0mQu6T4vj7BgtsPDBIbmduA6j
+         K1y2UPFgQ11/+8GfsjTcXyNdorTwhGz1O8DJsvF0iflkXkgwKJlZbpZRRKr9/6+z+ogP
+         gMjF/t3fgtHk1Yterrb6ZDqPVnDy8b+BoIdhKp9G9HSOv0FosvhHRgNAAPavWpU+yq4R
+         eUMBTMCuYqn0CxR95jqLu2UvxAVXaANi9G5+24oO2WeilcTrqgTJi/oMEzblL4kq8iKT
+         EgMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691525525; x=1692130325;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=HTKjeSdXeNLUVbHpZpaI+0otxc5jI/cV2lsa+kaijXI=;
+        b=eIDYv2xWlYjhaZOzvDY0JrE7dDrM9Tr1lNZoNtLCPuGHMcqE1Dro8h0XJBgvpqBL7i
+         pH+kkYPchdtWUop2rmGSqW2/24waVLfe+VAVjX8E8Lwq731pbINFXX9pFk26gq+6L9yM
+         utB/fimqesQ6lmXYkYW16Np4rRYsX5dpW+D7UpdgQS27tnUZlJi+5cIVpPe9YrZpzFbY
+         7YtDXGxtgZCS6liJI+klKjwlmzSezEI5XfzY53601knIfnJ9JrmN0A0IH+VJ8BEAJhyb
+         JijoFCxuB99dU40zdTgS7TpzpOZxA6PICsZxV/BLGbpJHZ05bJCwQID1i7JMg6NxbnD2
+         rBoA==
+X-Gm-Message-State: AOJu0Yz6CC6KXnIU8cnB0ruTVOIgOxeAQ/NYSdD44YNlIxrQi0k3s6F4
+        dX/O9LadycY4OgI80aBzdq8=
+X-Google-Smtp-Source: AGHT+IHSFsB+PJqEIEWPmewue88hEkwpFNUyrLVFd1aweDslbMbifQibxZD79shizKSd2tQQpG0hDg==
+X-Received: by 2002:adf:db4d:0:b0:317:5b99:d3d8 with SMTP id f13-20020adfdb4d000000b003175b99d3d8mr374051wrj.20.1691525524933;
+        Tue, 08 Aug 2023 13:12:04 -0700 (PDT)
+Received: from localhost ([2a02:168:633b:1:9d6a:15a4:c7d1:a0f0])
+        by smtp.gmail.com with ESMTPSA id c17-20020adfe711000000b00317afc7949csm14452247wrm.50.2023.08.08.13.12.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Aug 2023 13:12:04 -0700 (PDT)
+From:   =?UTF-8?q?G=C3=BCnther=20Noack?= <gnoack3000@gmail.com>
+To:     Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        Kees Cook <keescook@chromium.org>
+Cc:     =?UTF-8?q?G=C3=BCnther=20Noack?= <gnoack3000@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Simon Brand <simon.brand@postadigitale.de>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH] TIOCSTI: Document CAP_SYS_ADMIN behaviour in Kconfig
+Date:   Tue,  8 Aug 2023 22:11:12 +0200
+Message-ID: <20230808201115.23993-1-gnoack3000@gmail.com>
+X-Mailer: git-send-email 2.41.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAAfSe-t45FeFzXKUCjOU5qoPF-rq4dzMKo-eRciw6MbLq+rNgA@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 08, 2023 at 05:36:05PM +0800, Chunyan Zhang wrote:
-> On Tue, 8 Aug 2023 at 11:32, Wenhua Lin <Wenhua.Lin@unisoc.com> wrote:
-> >
-> > In the sleep state, Eic dbnc has no clock and the clk enable
-> 
-> Does "dbnc" mean "debounce"? I suggest not using abbreviation here.
+Clarifies that the LEGACY_TIOCSTI setting is safe to turn off even
+when running BRLTTY, as it was introduced in commit 690c8b804ad2
+("TIOCSTI: always enable for CAP_SYS_ADMIN").
 
-Also +1 here.
+Signed-off-by: Günther Noack <gnoack3000@gmail.com>
+---
+ drivers/tty/Kconfig | 3 +++
+ 1 file changed, 3 insertions(+)
 
-> > of dbnc needs to be forced open, so that eic can wake up normally.
-
-
+diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
+index 341abaed4ce..069de553127 100644
+--- a/drivers/tty/Kconfig
++++ b/drivers/tty/Kconfig
+@@ -164,6 +164,9 @@ config LEGACY_TIOCSTI
+ 	  userspace depends on this functionality to continue operating
+ 	  normally.
+ 
++	  Processes which run with CAP_SYS_ADMIN, such as BRLTTY, can
++	  use TIOCSTI even when this is set to N.
++
+ 	  This functionality can be changed at runtime with the
+ 	  dev.tty.legacy_tiocsti sysctl. This configuration option sets
+ 	  the default value of the sysctl.
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.41.0
 
