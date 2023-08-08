@@ -2,115 +2,101 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4D11C001B0
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Aug 2023 17:05:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A122CC001B0
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Aug 2023 17:45:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233859AbjHHRFZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Aug 2023 13:05:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
+        id S234064AbjHHRpt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Aug 2023 13:45:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbjHHREo (ORCPT
+        with ESMTP id S229810AbjHHRpS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Aug 2023 13:04:44 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2EB19BEA;
-        Tue,  8 Aug 2023 09:02:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691510524; x=1723046524;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tMJrfIaDobN4ipiyrDWHuNHNte9Iz5SKbwSXc9SphBo=;
-  b=CXa15VOHxdqZP5y1ceXt4R+I1f7QOD6G1f/xbAFLFN1c6HsYyZ4RCuoR
-   xIwZ5/ihEPpbWhjrfqiFJLUABxTC+gZXShkuf7THec5s3Ef9R+N2QlAnY
-   EtkEI6INjxcfTuLI8FL+zQGQ1FUr+8p5SrUsF3L4ND9jkaEeOKbFbmo6l
-   O1Za/ELQPXoQNFfiPuRfW4FMAduzpf51jD7D+cHNdauzwhR7r18u/14gH
-   wFO7fq5FHtCzqHLOHZWTOeVnGcAJGlopuwx/PH7+1uUk+mMrNDD5GrwqH
-   FvQGKoF9sqXp10V9GzQN2W1gwRYCr5OomdlGk3Z/I5GU7D87utmm2OlrC
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="373575133"
-X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
-   d="scan'208";a="373575133"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 06:53:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="724930236"
-X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
-   d="scan'208";a="724930236"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga007.jf.intel.com with ESMTP; 08 Aug 2023 06:53:53 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qTN9j-00AdSU-01;
-        Tue, 08 Aug 2023 16:53:51 +0300
-Date:   Tue, 8 Aug 2023 16:53:50 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Wenhua Lin <Wenhua.Lin@unisoc.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Samuel Holland <samuel@sholland.org>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wenhua lin <wenhua.lin1994@gmail.com>,
-        Xiongpeng Wu <xiongpeng.wu@unisoc.com>
-Subject: Re: [PATCH] input: keyboard: Add sprd-keypad driver
-Message-ID: <ZNJI7pJKzs5/9KrV@smile.fi.intel.com>
-References: <20230808072501.3393-1-Wenhua.Lin@unisoc.com>
- <20230808100721.00006775@Huawei.com>
+        Tue, 8 Aug 2023 13:45:18 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398EC25B3E;
+        Tue,  8 Aug 2023 09:20:32 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 378DH73K008247;
+        Tue, 8 Aug 2023 18:19:39 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding:content-type; s=selector1; bh=NnwPmcg
+        lrq4+tukAQnH18ZnoSzsFYIrbdbKThdZsRx0=; b=sYd0E9sZMiBeOUEHZQZfNz2
+        32FWwUMNCEGOqKnuonvkwYRPNxZqi41OYZVESk7FIAnpIIdY1Q112aPrMtUeldCb
+        n9lbhEOKA8u2x0ZSP+hpglfpPdtLgQbsSczicLSv7Imc37RXYXPwC+/XI25dcPfV
+        YvQWz7BCHMKYXJxFHF8E77lmAm+OZF0zHJLxTSbusgmRHCfH+K0Wg0a5dZpW3q8n
+        ivrteF26v3exqjxYmbIcfu+RsYisUp+YtxLIrYRDmbVG1c98b6RVSaCSxZru5nQb
+        SVgA+H9cnsMvzZguxTZ16LFzfTAcfhl0JuP7y/MtK8aCGaoGdmx0S5nFpqxOogA=
+        =
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3sbjfn2n45-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Aug 2023 18:19:39 +0200 (MEST)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 67F0F100061;
+        Tue,  8 Aug 2023 18:19:37 +0200 (CEST)
+Received: from Webmail-eu.st.com (eqndag1node4.st.com [10.75.129.133])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 8FA61235F2C;
+        Tue,  8 Aug 2023 18:19:37 +0200 (CEST)
+Received: from localhost (10.201.20.168) by EQNDAG1NODE4.st.com
+ (10.75.129.133) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Tue, 8 Aug
+ 2023 18:19:37 +0200
+From:   Valentin Caron <valentin.caron@foss.st.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Jiri Slaby <jirislaby@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Valentin Caron <valentin.caron@foss.st.com>
+Subject: [PATCH v2 0/6] serial: stm32: improve DMA pause and resume
+Date:   Tue, 8 Aug 2023 18:19:00 +0200
+Message-ID: <20230808161906.178996-1-valentin.caron@foss.st.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230808100721.00006775@Huawei.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.201.20.168]
+X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To EQNDAG1NODE4.st.com
+ (10.75.129.133)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-08-08_15,2023-08-08_01,2023-05-22_02
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 08, 2023 at 10:07:21AM +0100, Jonathan Cameron wrote:
-> On Tue, 8 Aug 2023 15:25:01 +0800
-> Wenhua Lin <Wenhua.Lin@unisoc.com> wrote:
+This series improves DMA management in stm32-usart driver.
 
-...
+It is not recommended to switch DMAT and DMAR bits when a DMA transfer
+is in progress. This is going to be replaced by dmaengine_pause or
+dmaengine_resume.
 
-> > +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > +	data->base = devm_ioremap_resource(&pdev->dev, res);
-> 
-> devm_platform_get_and_ioremap_resource)
+stm32_usart_rx_dma_pause, stm32_usart_rx_dma_resume, stm32_usart_tx_dma_pause
+and stm32_usart_tx_dma_resume functions, are all redirected to a single function,
+called "stm32_usart_dma_pause_resume", that has been created to simplify dma
+pause/resume.
 
-Is res used anywhere else?
+Since v1:
+- Add my Signed-off in Amelie's patch.
 
-> > +	if (IS_ERR(data->base)) {
-> > +		dev_err(&pdev->dev, "ioremap resource failed.\n");
-> > +		ret =  PTR_ERR(data->base);
-> > +		goto err_free;
-> 
-> Read up on what devm calls do - there is no need to manually free
-> things that were allocated with them in the error paths or remove.
-> So this should be a direct return. Also use
-> 		return dev_err_probe(&pdev->dev, PTR_ERR(data->base),
-> 				     "....")
+Amelie Delaunay (1):
+  serial: stm32: synchronize RX DMA channel in shutdown
 
-Btw, with
+Valentin Caron (5):
+  serial: stm32: avoid clearing DMAT bit during transfer
+  serial: stm32: use DMAT as a configuration bit
+  serial: stm32: modify parameter and rename stm32_usart_rx_dma_enabled
+  serial: stm32: group dma pause/resume error handling into single
+    function
+  serial: stm32: replace access to DMAR bit by dmaengine_pause/resume
 
-	struct device *dev = &pdev->dev;
-
-all these become neater.
-
-> It both creates neater code and for cases where deferred probing
-> is possible you will get a nice message on 'why' registered for
-> debug purposes.
-> 
-> > +	}
+ drivers/tty/serial/stm32-usart.c | 307 ++++++++++++++++++-------------
+ drivers/tty/serial/stm32-usart.h |   1 +
+ 2 files changed, 185 insertions(+), 123 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
