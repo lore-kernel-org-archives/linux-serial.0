@@ -2,118 +2,227 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B4E9EB64DD
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Aug 2023 12:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9624BEB64DD
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Aug 2023 13:02:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231824AbjHIMME (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Aug 2023 08:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59382 "EHLO
+        id S230234AbjHINC1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Aug 2023 09:02:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232453AbjHIMMC (ORCPT
+        with ESMTP id S230226AbjHINC0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Aug 2023 08:12:02 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678311999;
-        Wed,  9 Aug 2023 05:12:01 -0700 (PDT)
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 379AqXL7014019;
-        Wed, 9 Aug 2023 12:11:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id; s=qcppdkim1;
- bh=wIwDEsDwmZWTIMj9zAhU0yuFWxfk5UetXJNBCBioavM=;
- b=Awgs9dStOxUkFcy8jbyz5UEai/6hNlm50mfXjUFoIo12xz1pA0DfEmzsWfndMQYEkFuS
- lasU1vyQN3f7PjD3LTHdtTP8dFmeZEt/t+Bymj6qg8aIaCM0WFywLYLznBN7czK/E9di
- BGUDvbmCVKgtUBwiS5nkQ9LX3WHEtaHcPvC623xZVKwphSDUeJTCXOjKABZHmJZR6BMn
- djkbKy/O1aB4ml9pMm38DcWSH48yu1sO52afJ0SXcnbdA3L2an7MaAP/9+5KiXSuiblR
- SZEVyQdo4iAhxhS2q/DN1iQokoMDeMbrUI7zEePBvKzdO2gscRPfYe8Ern8LDgH4CS+1 Eg== 
-Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3sbpqs2gbg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Aug 2023 12:11:51 +0000
-Received: from pps.filterd (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-        by APBLRPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 379CBlF9004603;
-        Wed, 9 Aug 2023 12:11:47 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 3s9fgm2j6f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 09 Aug 2023 12:11:46 +0000
-Received: from APBLRPPMTA01.qualcomm.com (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 379CBkxH004597;
-        Wed, 9 Aug 2023 12:11:46 GMT
-Received: from hu-sgudaval-hyd.qualcomm.com (hu-vnivarth-hyd.qualcomm.com [10.213.111.166])
-        by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 379CBkrQ004596;
-        Wed, 09 Aug 2023 12:11:46 +0000
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
-        id AA7184CFB; Wed,  9 Aug 2023 17:41:45 +0530 (+0530)
-From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-To:     agross@kernel.org, bjorn.andersson@kernel.org,
-        konrad.dybcio@linaro.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, bartosz.golaszewski@linaro.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
-        swboyd@chromium.org, quic_vtanuku@quicinc.com,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: [PATCH RESEND] tty: serial: qcom-geni-serial: Poll primary sequencer irq status after cancel_tx
-Date:   Wed,  9 Aug 2023 17:41:40 +0530
-Message-Id: <1691583100-15689-1-git-send-email-quic_vnivarth@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: gZXX0T9TSdnwxcdjvq5X4_Ko-qhTSAYP
-X-Proofpoint-ORIG-GUID: gZXX0T9TSdnwxcdjvq5X4_Ko-qhTSAYP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-08-09_10,2023-08-09_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- lowpriorityscore=0 suspectscore=0 adultscore=0 impostorscore=0
- priorityscore=1501 mlxscore=0 bulkscore=0 mlxlogscore=951 malwarescore=0
- clxscore=1011 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2306200000 definitions=main-2308090107
+        Wed, 9 Aug 2023 09:02:26 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64BDF1FF5;
+        Wed,  9 Aug 2023 06:02:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+        :Date:subject:date:message-id:reply-to;
+        bh=QC1VVPzSdAsZ5rA5wFmq3mpl9ZpfWlBmZwa270d1LM0=; b=pdKrcUTt0NEvOi4G2Ul6Ic5LUa
+        PNIW/IQNfVjdvKvpqFoS3pxUOt8muhZ2sFPTi64KQ724Cive4VkxN4sVQ4f9aIEY25SScHr8RNB1p
+        m6THSMI+IcY49uGKXLNqW6dd8uvkfUZopp4PVf/AY85N746wk3kSP9iYirZYhxG/EqHE=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:56076 helo=pettiford)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1qTipH-0001Mp-NM; Wed, 09 Aug 2023 09:02:12 -0400
+Date:   Wed, 9 Aug 2023 09:02:11 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     wenhua lin <wenhua.lin1994@gmail.com>
+Cc:     Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Wenhua Lin <Wenhua.Lin@unisoc.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Andy Shevchenko <andy@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiongpeng Wu <xiongpeng.wu@unisoc.com>
+Message-Id: <20230809090211.1820e9dce666485b00e1f170@hugovil.com>
+In-Reply-To: <CAB9BWhfRHSqWrBbeisoGLqeBYXc9Pc_uGH0GxnfedXROpU_0-A@mail.gmail.com>
+References: <20230808033106.2174-1-Wenhua.Lin@unisoc.com>
+        <0ac280ab-08f1-b031-e21b-49390182f090@linux.alibaba.com>
+        <CAB9BWhfRHSqWrBbeisoGLqeBYXc9Pc_uGH0GxnfedXROpU_0-A@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 184.161.19.61
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: Re: [PATCH 1/3] gpio: sprd: Modify the calculation method of eic
+ number
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-TX is handled by primary sequencer. After cancelling primary command, poll
-primary sequencer's irq status instead of that of secondary.
-While at it, also remove a couple of redundant lines that read from IRQ_EN
-register and write back same.
+On Wed, 9 Aug 2023 14:08:47 +0800
+wenhua lin <wenhua.lin1994@gmail.com> wrote:
 
-Fixes: 2aaa43c70778 ("tty: serial: qcom-geni-serial: add support for serial engine DMA")
-Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
----
- drivers/tty/serial/qcom_geni_serial.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+> Hi baolin:
+> 1.Please describe the problem in detail, not only what you did.
+> 
+> We will describe the reason for the modification by supplementing the
+> commit message.
+> 
+> 2.Can you explicit on which controller can support 8 banks in the commit
+> log? And you did not change all the related comments in this file.
+> 
+> The old project EIC controller can support maximum 3 banks,
+> now our new project eic controller can support maximum 8 banks，
+> and each bank contains 8 EICs.
+> We will modify the comment in this file.
+> 
+> 3.If you want to introduce a readable macro, that's fine, but it should be
+> split into a separate patch.
+> 4.This change looks good to me, and this seems a software bug in the
+> original driver. So I think this change should be moved into a separate
+> patch with a suitable Fixes tag.
+> 5.Do not add unreated changes that you did not mentioned in the commit log.
+> 
+> We will re-split the patch submission and explain our reasons for
+> modification in the submission information, thank you very much for
+> your review.
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 3ca5db2..b8aa4c1 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -591,7 +591,6 @@ static void qcom_geni_serial_stop_tx_dma(struct uart_port *uport)
- {
- 	struct qcom_geni_serial_port *port = to_dev_port(uport);
- 	bool done;
--	u32 m_irq_en;
- 
- 	if (!qcom_geni_serial_main_active(uport))
- 		return;
-@@ -603,12 +602,10 @@ static void qcom_geni_serial_stop_tx_dma(struct uart_port *uport)
- 		port->tx_remaining = 0;
- 	}
- 
--	m_irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
--	writel(m_irq_en, uport->membase + SE_GENI_M_IRQ_EN);
- 	geni_se_cancel_m_cmd(&port->se);
- 
--	done = qcom_geni_serial_poll_bit(uport, SE_GENI_S_IRQ_STATUS,
--					 S_CMD_CANCEL_EN, true);
-+	done = qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
-+					 M_CMD_CANCEL_EN, true);
- 	if (!done) {
- 		geni_se_abort_m_cmd(&port->se);
- 		done = qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
--- 
-2.7.4
+Hi,
+please do not top-post and insert your answers in-line to make it
+easier to read. There is good advice here:
 
+https://docs.kernel.org/process/submitting-patches.html#use-trimmed-interleaved-replies-in-email-discussions
+
+Thank you,
+Hugo Villeneuve
+
+
+> Baolin Wang <baolin.wang@linux.alibaba.com> 于2023年8月9日周三 09:24写道：
+> >
+> >
+> >
+> > On 8/8/2023 11:31 AM, Wenhua Lin wrote:
+> > > Automatic calculation through matching nodes,
+> > > subsequent projects can avoid modifying driver files.
+> >
+> > Please describe the problem in detail, not only what you did.
+> >
+> > > Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
+> > > ---
+> > >   drivers/gpio/gpio-eic-sprd.c | 49 +++++++++++++++++++-----------------
+> > >   1 file changed, 26 insertions(+), 23 deletions(-)
+> > >
+> > > diff --git a/drivers/gpio/gpio-eic-sprd.c b/drivers/gpio/gpio-eic-sprd.c
+> > > index 84352a6f4973..0d85d9e80848 100644
+> > > --- a/drivers/gpio/gpio-eic-sprd.c
+> > > +++ b/drivers/gpio/gpio-eic-sprd.c
+> > > @@ -50,10 +50,10 @@
+> > >   #define SPRD_EIC_SYNC_DATA          0x1c
+> > >
+> > >   /*
+> > > - * The digital-chip EIC controller can support maximum 3 banks, and each bank
+> > > + * The digital-chip EIC controller can support maximum 8 banks, and each bank
+> >
+> > Can you explicit on which controller can support 8 banks in the commit
+> > log? And you did not change all the related comments in this file.
+> >
+> > >    * contains 8 EICs.
+> > >    */
+> > > -#define SPRD_EIC_MAX_BANK            3
+> > > +#define SPRD_EIC_MAX_BANK            8
+> > >   #define SPRD_EIC_PER_BANK_NR                8
+> > >   #define SPRD_EIC_DATA_MASK          GENMASK(7, 0)
+> > >   #define SPRD_EIC_BIT(x)                     ((x) & (SPRD_EIC_PER_BANK_NR - 1))
+> > > @@ -99,33 +99,32 @@ struct sprd_eic {
+> > >
+> > >   struct sprd_eic_variant_data {
+> > >       enum sprd_eic_type type;
+> > > -     u32 num_eics;
+> > >   };
+> > >
+> > > +#define SPRD_EIC_VAR_DATA(soc_name)                          \
+> > > +static const struct sprd_eic_variant_data soc_name##_eic_dbnc_data = {       \
+> > > +     .type = SPRD_EIC_DEBOUNCE,                                      \
+> > > +};                                                                   \
+> > > +                                                                     \
+> > > +static const struct sprd_eic_variant_data soc_name##_eic_latch_data = {      \
+> > > +     .type = SPRD_EIC_LATCH,                                         \
+> > > +};                                                                   \
+> > > +                                                                     \
+> > > +static const struct sprd_eic_variant_data soc_name##_eic_async_data = {      \
+> > > +     .type = SPRD_EIC_ASYNC,                                         \
+> > > +};                                                                   \
+> > > +                                                                     \
+> > > +static const struct sprd_eic_variant_data soc_name##_eic_sync_data = {       \
+> > > +     .type = SPRD_EIC_SYNC,                                          \
+> > > +}
+> > > +
+> > > +SPRD_EIC_VAR_DATA(sc9860);
+> > > +
+> > >   static const char *sprd_eic_label_name[SPRD_EIC_MAX] = {
+> > >       "eic-debounce", "eic-latch", "eic-async",
+> > >       "eic-sync",
+> > >   };
+> > >
+> > > -static const struct sprd_eic_variant_data sc9860_eic_dbnc_data = {
+> > > -     .type = SPRD_EIC_DEBOUNCE,
+> > > -     .num_eics = 8,
+> > > -};
+> > > -
+> > > -static const struct sprd_eic_variant_data sc9860_eic_latch_data = {
+> > > -     .type = SPRD_EIC_LATCH,
+> > > -     .num_eics = 8,
+> > > -};
+> > > -
+> > > -static const struct sprd_eic_variant_data sc9860_eic_async_data = {
+> > > -     .type = SPRD_EIC_ASYNC,
+> > > -     .num_eics = 8,
+> > > -};
+> > > -
+> > > -static const struct sprd_eic_variant_data sc9860_eic_sync_data = {
+> > > -     .type = SPRD_EIC_SYNC,
+> > > -     .num_eics = 8,
+> > > -};
+> >
+> > If you want to introduce a readable macro, that's fine, but it should be
+> > split into a separate patch.
+> >
+> > >   static inline void __iomem *sprd_eic_offset_base(struct sprd_eic *sprd_eic,
+> > >                                                unsigned int bank)
+> > > @@ -583,6 +582,7 @@ static int sprd_eic_probe(struct platform_device *pdev)
+> > >       struct sprd_eic *sprd_eic;
+> > >       struct resource *res;
+> > >       int ret, i;
+> > > +     u16 num_banks = 0;
+> > >
+> > >       pdata = of_device_get_match_data(&pdev->dev);
+> > >       if (!pdata) {
+> > > @@ -613,12 +613,13 @@ static int sprd_eic_probe(struct platform_device *pdev)
+> > >                       break;
+> > >
+> > >               sprd_eic->base[i] = devm_ioremap_resource(&pdev->dev, res);
+> > > +             num_banks++;
+> > >               if (IS_ERR(sprd_eic->base[i]))
+> > >                       return PTR_ERR(sprd_eic->base[i]);
+> > >       }
+> > >
+> > >       sprd_eic->chip.label = sprd_eic_label_name[sprd_eic->type];
+> > > -     sprd_eic->chip.ngpio = pdata->num_eics;
+> > > +     sprd_eic->chip.ngpio = num_banks * SPRD_EIC_PER_BANK_NR;
+> >
+> > This change looks good to me, and this seems a software bug in the
+> > original driver. So I think this change should be moved into a separate
+> > patch with a suitable Fixes tag.
+> >
+> > >       sprd_eic->chip.base = -1;
+> > >       sprd_eic->chip.parent = &pdev->dev;
+> > >       sprd_eic->chip.direction_input = sprd_eic_direction_input;
+> > > @@ -630,10 +631,12 @@ static int sprd_eic_probe(struct platform_device *pdev)
+> > >               sprd_eic->chip.set = sprd_eic_set;
+> > >               fallthrough;
+> > >       case SPRD_EIC_ASYNC:
+> > > +             fallthrough;
+> > >       case SPRD_EIC_SYNC:
+> > >               sprd_eic->chip.get = sprd_eic_get;
+> > >               break;
+> > >       case SPRD_EIC_LATCH:
+> > > +             fallthrough;
+> >
+> > Do not add unreated changes that you did not mentioned in the commit log.
