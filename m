@@ -2,30 +2,30 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93244C001DB
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Aug 2023 01:24:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8816BC001B0
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Aug 2023 01:29:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229756AbjHIBYC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Aug 2023 21:24:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32944 "EHLO
+        id S229527AbjHIB3N (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Aug 2023 21:29:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbjHIBYB (ORCPT
+        with ESMTP id S229478AbjHIB3N (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Aug 2023 21:24:01 -0400
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35670173F;
-        Tue,  8 Aug 2023 18:24:00 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R841e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VpMvxPu_1691544235;
-Received: from 30.97.48.62(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VpMvxPu_1691544235)
+        Tue, 8 Aug 2023 21:29:13 -0400
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 535FC19A8;
+        Tue,  8 Aug 2023 18:29:12 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VpMyCmQ_1691544547;
+Received: from 30.97.48.62(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VpMyCmQ_1691544547)
           by smtp.aliyun-inc.com;
-          Wed, 09 Aug 2023 09:23:56 +0800
-Message-ID: <0ac280ab-08f1-b031-e21b-49390182f090@linux.alibaba.com>
-Date:   Wed, 9 Aug 2023 09:23:55 +0800
+          Wed, 09 Aug 2023 09:29:08 +0800
+Message-ID: <4bfc8ac2-f253-ab4d-3d44-2cbd62dce20f@linux.alibaba.com>
+Date:   Wed, 9 Aug 2023 09:29:07 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.14.0
-Subject: Re: [PATCH 1/3] gpio: sprd: Modify the calculation method of eic
- number
+Subject: Re: [PATCH 2/3] gpio: sprd: In the sleep state, the eic dbnc clk must
+ be forced open
 To:     Wenhua Lin <Wenhua.Lin@unisoc.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         Bartosz Golaszewski <brgl@bgdev.pl>,
@@ -35,9 +35,9 @@ To:     Wenhua Lin <Wenhua.Lin@unisoc.com>,
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         wenhua lin <wenhua.lin1994@gmail.com>,
         Xiongpeng Wu <xiongpeng.wu@unisoc.com>
-References: <20230808033106.2174-1-Wenhua.Lin@unisoc.com>
+References: <20230808033130.2226-1-Wenhua.Lin@unisoc.com>
 From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <20230808033106.2174-1-Wenhua.Lin@unisoc.com>
+In-Reply-To: <20230808033130.2226-1-Wenhua.Lin@unisoc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -47,130 +47,34 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 
 On 8/8/2023 11:31 AM, Wenhua Lin wrote:
-> Automatic calculation through matching nodes,
-> subsequent projects can avoid modifying driver files.
+> In the sleep state, Eic dbnc has no clock and the clk enable
+> of dbnc needs to be forced open, so that eic can wake up normally.
 
-Please describe the problem in detail, not only what you did.
+Sounds reasonable to me. Should add a Fixes tag if need to backport for 
+stable kernel?
 
 > Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
 > ---
->   drivers/gpio/gpio-eic-sprd.c | 49 +++++++++++++++++++-----------------
->   1 file changed, 26 insertions(+), 23 deletions(-)
+>   drivers/gpio/gpio-eic-sprd.c | 2 ++
+>   1 file changed, 2 insertions(+)
 > 
 > diff --git a/drivers/gpio/gpio-eic-sprd.c b/drivers/gpio/gpio-eic-sprd.c
-> index 84352a6f4973..0d85d9e80848 100644
+> index 0d85d9e80848..c506cfd6df8e 100644
 > --- a/drivers/gpio/gpio-eic-sprd.c
 > +++ b/drivers/gpio/gpio-eic-sprd.c
-> @@ -50,10 +50,10 @@
->   #define SPRD_EIC_SYNC_DATA		0x1c
+> @@ -23,6 +23,7 @@
+>   #define SPRD_EIC_DBNC_IC		0x24
+>   #define SPRD_EIC_DBNC_TRIG		0x28
+>   #define SPRD_EIC_DBNC_CTRL0		0x40
+> +#define SPRD_EIC_DBNC_FORCE_CLK		0x8000
 >   
->   /*
-> - * The digital-chip EIC controller can support maximum 3 banks, and each bank
-> + * The digital-chip EIC controller can support maximum 8 banks, and each bank
-
-Can you explicit on which controller can support 8 banks in the commit 
-log? And you did not change all the related comments in this file.
-
->    * contains 8 EICs.
->    */
-> -#define SPRD_EIC_MAX_BANK		3
-> +#define SPRD_EIC_MAX_BANK		8
->   #define SPRD_EIC_PER_BANK_NR		8
->   #define SPRD_EIC_DATA_MASK		GENMASK(7, 0)
->   #define SPRD_EIC_BIT(x)			((x) & (SPRD_EIC_PER_BANK_NR - 1))
-> @@ -99,33 +99,32 @@ struct sprd_eic {
+>   #define SPRD_EIC_LATCH_INTEN		0x0
+>   #define SPRD_EIC_LATCH_INTRAW		0x4
+> @@ -213,6 +214,7 @@ static int sprd_eic_set_debounce(struct gpio_chip *chip, unsigned int offset,
+>   	u32 value = readl_relaxed(base + reg) & ~SPRD_EIC_DBNC_MASK;
 >   
->   struct sprd_eic_variant_data {
->   	enum sprd_eic_type type;
-> -	u32 num_eics;
->   };
+>   	value |= (debounce / 1000) & SPRD_EIC_DBNC_MASK;
+> +	value |= SPRD_EIC_DBNC_FORCE_CLK;
+>   	writel_relaxed(value, base + reg);
 >   
-> +#define SPRD_EIC_VAR_DATA(soc_name)				\
-> +static const struct sprd_eic_variant_data soc_name##_eic_dbnc_data = {	\
-> +	.type = SPRD_EIC_DEBOUNCE,					\
-> +};									\
-> +									\
-> +static const struct sprd_eic_variant_data soc_name##_eic_latch_data = {	\
-> +	.type = SPRD_EIC_LATCH,						\
-> +};									\
-> +									\
-> +static const struct sprd_eic_variant_data soc_name##_eic_async_data = {	\
-> +	.type = SPRD_EIC_ASYNC,						\
-> +};									\
-> +									\
-> +static const struct sprd_eic_variant_data soc_name##_eic_sync_data = {	\
-> +	.type = SPRD_EIC_SYNC,						\
-> +}
-> +
-> +SPRD_EIC_VAR_DATA(sc9860);
-> +
->   static const char *sprd_eic_label_name[SPRD_EIC_MAX] = {
->   	"eic-debounce", "eic-latch", "eic-async",
->   	"eic-sync",
->   };
->   
-> -static const struct sprd_eic_variant_data sc9860_eic_dbnc_data = {
-> -	.type = SPRD_EIC_DEBOUNCE,
-> -	.num_eics = 8,
-> -};
-> -
-> -static const struct sprd_eic_variant_data sc9860_eic_latch_data = {
-> -	.type = SPRD_EIC_LATCH,
-> -	.num_eics = 8,
-> -};
-> -
-> -static const struct sprd_eic_variant_data sc9860_eic_async_data = {
-> -	.type = SPRD_EIC_ASYNC,
-> -	.num_eics = 8,
-> -};
-> -
-> -static const struct sprd_eic_variant_data sc9860_eic_sync_data = {
-> -	.type = SPRD_EIC_SYNC,
-> -	.num_eics = 8,
-> -};
-
-If you want to introduce a readable macro, that's fine, but it should be 
-split into a separate patch.
-
->   static inline void __iomem *sprd_eic_offset_base(struct sprd_eic *sprd_eic,
->   						 unsigned int bank)
-> @@ -583,6 +582,7 @@ static int sprd_eic_probe(struct platform_device *pdev)
->   	struct sprd_eic *sprd_eic;
->   	struct resource *res;
->   	int ret, i;
-> +	u16 num_banks = 0;
->   
->   	pdata = of_device_get_match_data(&pdev->dev);
->   	if (!pdata) {
-> @@ -613,12 +613,13 @@ static int sprd_eic_probe(struct platform_device *pdev)
->   			break;
->   
->   		sprd_eic->base[i] = devm_ioremap_resource(&pdev->dev, res);
-> +		num_banks++;
->   		if (IS_ERR(sprd_eic->base[i]))
->   			return PTR_ERR(sprd_eic->base[i]);
->   	}
->   
->   	sprd_eic->chip.label = sprd_eic_label_name[sprd_eic->type];
-> -	sprd_eic->chip.ngpio = pdata->num_eics;
-> +	sprd_eic->chip.ngpio = num_banks * SPRD_EIC_PER_BANK_NR;
-
-This change looks good to me, and this seems a software bug in the 
-original driver. So I think this change should be moved into a separate 
-patch with a suitable Fixes tag.
-
->   	sprd_eic->chip.base = -1;
->   	sprd_eic->chip.parent = &pdev->dev;
->   	sprd_eic->chip.direction_input = sprd_eic_direction_input;
-> @@ -630,10 +631,12 @@ static int sprd_eic_probe(struct platform_device *pdev)
->   		sprd_eic->chip.set = sprd_eic_set;
->   		fallthrough;
->   	case SPRD_EIC_ASYNC:
-> +		fallthrough;
->   	case SPRD_EIC_SYNC:
->   		sprd_eic->chip.get = sprd_eic_get;
->   		break;
->   	case SPRD_EIC_LATCH:
-> +		fallthrough;
-
-Do not add unreated changes that you did not mentioned in the commit log.
+>   	return 0;
