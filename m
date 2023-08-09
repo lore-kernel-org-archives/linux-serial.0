@@ -2,227 +2,153 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9624BEB64DD
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Aug 2023 13:02:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F2E9C04A6A
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Aug 2023 13:19:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230234AbjHINC1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Aug 2023 09:02:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44454 "EHLO
+        id S230045AbjHINTg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Aug 2023 09:19:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230226AbjHINC0 (ORCPT
+        with ESMTP id S229453AbjHINTf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Aug 2023 09:02:26 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64BDF1FF5;
-        Wed,  9 Aug 2023 06:02:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-        :Date:subject:date:message-id:reply-to;
-        bh=QC1VVPzSdAsZ5rA5wFmq3mpl9ZpfWlBmZwa270d1LM0=; b=pdKrcUTt0NEvOi4G2Ul6Ic5LUa
-        PNIW/IQNfVjdvKvpqFoS3pxUOt8muhZ2sFPTi64KQ724Cive4VkxN4sVQ4f9aIEY25SScHr8RNB1p
-        m6THSMI+IcY49uGKXLNqW6dd8uvkfUZopp4PVf/AY85N746wk3kSP9iYirZYhxG/EqHE=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:56076 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1qTipH-0001Mp-NM; Wed, 09 Aug 2023 09:02:12 -0400
-Date:   Wed, 9 Aug 2023 09:02:11 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     wenhua lin <wenhua.lin1994@gmail.com>
-Cc:     Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Wenhua Lin <Wenhua.Lin@unisoc.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Andy Shevchenko <andy@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiongpeng Wu <xiongpeng.wu@unisoc.com>
-Message-Id: <20230809090211.1820e9dce666485b00e1f170@hugovil.com>
-In-Reply-To: <CAB9BWhfRHSqWrBbeisoGLqeBYXc9Pc_uGH0GxnfedXROpU_0-A@mail.gmail.com>
-References: <20230808033106.2174-1-Wenhua.Lin@unisoc.com>
-        <0ac280ab-08f1-b031-e21b-49390182f090@linux.alibaba.com>
-        <CAB9BWhfRHSqWrBbeisoGLqeBYXc9Pc_uGH0GxnfedXROpU_0-A@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 184.161.19.61
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH 1/3] gpio: sprd: Modify the calculation method of eic
- number
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Wed, 9 Aug 2023 09:19:35 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1A2C1;
+        Wed,  9 Aug 2023 06:19:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1691587175;
+  x=1723123175;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=WXFlV4I7SADXiSgWdW2XHqolRiqvSTrR54BxtWYUzJ8=;
+  b=jzj9b3vpD9YVgFWHuY4Pc6npXNUeNkOqYwTg+vSnGBkBoBDdEyI15XVt
+   1bJJ11NMN/66CPa4aBskXUXw0BMX+fAhP4FdlLP+zsbgaVX0kV9mQQCCw
+   3E+lucLw9FmMPdJ9WNNRuxXdkT2h+3RXUfuKCIN61fCa7e753Xb2rGGmm
+   tmM8R+DcQR9GaQrkN4XNrCE+9uFOg/tCbW5SRFEEZm9XITCGWkW3Fh2ZN
+   QOCiYRrbt0PenQhmzRsVLKy4b5wB7dXu9kWzhMvVw2DtWYWgBwu1T79FL
+   YX88YsKxesssyYnVTNNIpNKE8sI7mfFADUmZHj1N36/7ByHF7AFdtaHBQ
+   Q==;
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dfXQBMN3dvoAAOu7pv7cSKTVCO0T0x159iK1r8DKgpDBRHLVhW1K1YukLIIoMx5nSuYyErhx4+tYYIig4CnBdF3eIlLIFvDDSlc3uP2Sta7w0aDiKd/FF168DvLdjTb1CsxYCcfDPGXGLij1NvhHTMIyKeKKM6p5x+khdGcYaK84BZmm7x5rDb36i9/BaNCF/avHnUhWW0q1edmq8XTChofFsIUVrBay9y/ebrrw6ZVbZQ8c/lq2d5urOxWPXN09NyGgk7sLBR50JvW8s22hGGV+DgChe7M2VPiDAvP/77IH3Mkdkq+nnTJPfeSGABmbsUly/Tyka+On1Dk9xwviIw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WXFlV4I7SADXiSgWdW2XHqolRiqvSTrR54BxtWYUzJ8=;
+ b=VhCMcosoEEaznYEIKCEGB9CxFjGGZtZ1XQZa0Jsnrv5qXQaEcWpPEh4NJapRFybnFoTYviGie0tjs4BvXjxOVGb+cijU7tweHQAShvFKiszHQmol9WfwmfZ96ScOwfj4KlSH5pdHXqRktX80abm7+IijpJKFKFETqyvLRf8Ni6bzKs7EZqhFgj6X5lLqvqI3rE46YrIXfo+zvLhSpOw7cqf5fkxUoqSAlC6ltGBSobr4dCjxsJahWJYll1v5oyrQ8BjqGL7F2gbr8oEG5pw7YqlE6G3oxwjE0nrz97gzDiSAbpzi2P7LWBqUJgyj/fI6sgHFqakwIeloIOR83ENOBw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=axis.com; dmarc=pass action=none header.from=axis.com;
+ dkim=pass header.d=axis.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=axis365.onmicrosoft.com; s=selector2-axis365-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WXFlV4I7SADXiSgWdW2XHqolRiqvSTrR54BxtWYUzJ8=;
+ b=V2XIOQO2EtHRbRYoOm0IP8/TialO0bA04X55WbtDmxZL81r/uW0wATuwm1qnOwUZyNypVbqkBgDN7Th4LJsfDGHIFrSRC4LRo/vLulEl2LGQhJ2F31MYAIEtnK9JuI6UOiD9h6nPOUZUp5AwvVQb5XztXpWh8Qpw9tkKeJ3NUT8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=axis.com;
+Message-ID: <01a3c57a-bef4-9a9e-3f8b-0231653232a8@axis.com>
+Date:   Wed, 9 Aug 2023 15:19:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [PATCH] tty: serial: samsung: Set missing PM ops for hibernation
+ support
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-samsung-soc@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel@axis.com>
+References: <20230803-samsung_tty_pm_ops-v1-1-1ea7be72194d@axis.com>
+ <9967fa81-f3f4-04c4-a837-d507a19989cc@linaro.org>
+Content-Language: en-GB
+From:   Anton Eliasson <anton.eliasson@axis.com>
+In-Reply-To: <9967fa81-f3f4-04c4-a837-d507a19989cc@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MM0P280CA0051.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:190:b::35) To AS1PR02MB10348.eurprd02.prod.outlook.com
+ (2603:10a6:20b:473::13)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS1PR02MB10348:EE_|PAVPR02MB10009:EE_
+X-MS-Office365-Filtering-Correlation-Id: 365b516d-c897-458b-b189-08db98db4339
+X-LD-Processed: 78703d3c-b907-432f-b066-88f7af9ca3af,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7YSY0D2gMfox+TdkK8YfxKyIk5MjyaoibMaAVNK1zo0QiaUgKMwspWLRbIno3WX8B2Co6vCpEl4Z8uP9Rr+FnicyNoktk7nLvgQi/XeeZSMh7AKuZ7t/iW2NYI9J5r/Oa+ixbE073xTG3atvxBR4ujHC+5RyQ9pAvK/qgWCDwbbtv3+PdUJQakePA1oz6J2gVWs+kpCgDPXu/s5lJz7Lj0JeTZM9YREoUjGdRjTHzeVG4PMFmU9XM1kW9Rxiacni2IlLQ+mB+PwGRffOVfb9m9eLlKmlQODvDJMnCifZ3i7e9JxcS1eHAyzq2eMCDgmYGuOgN/HHcku7cjuIlFBC5XlCsmCElcgle0VhWMz/d5ft6h0XYeuvR+l7VBl/zwok4YwCZm7g8vtMVuFIFLx24PG6oX8f9WPGuFVvqh0ksI1Px6LzAC9yX09f1s+1ZzJFm2EIVt1QbIiFIoeIh66GiXEAmopCSzomMl6ioN7PzSU6gshda1QYqm0eIJuNmrpRBM4VlDJRzVSEs6TPR+umwj3APu3CFOiIQHJJxFmNUPizbXmXB4QbP4LEoGUKTs1N0y0RJAklx7VFC+Sru03TRwkCb6h08bTUUWo/7ZL+DoSVqbHvKatNeB79j4LWwGB2yJpfGNE7SjMWLYS6aqBslw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS1PR02MB10348.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(39860400002)(136003)(366004)(346002)(376002)(1800799006)(186006)(451199021)(86362001)(31696002)(31686004)(44832011)(5660300002)(2906002)(4744005)(41300700001)(8936002)(66476007)(66556008)(8676002)(316002)(38100700002)(110136005)(83380400001)(36756003)(2616005)(478600001)(4326008)(66946007)(53546011)(6506007)(26005)(6486002)(6512007)(107886003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MENLQzJaYVhabmxYVysxUXF6eTVzT2p5Tzl5WUFvVllwYS9XTkhlSFNtWThT?=
+ =?utf-8?B?OUFWSXBGOHAyZ3QvZElheVo5b1dvbXhFcUw3Y1RpL1ZlNUQ1VDdkUjJNanBh?=
+ =?utf-8?B?YVFaUURRc2YzVGFZQ1hKb0g4Q1RLcG9EYnhWeTdGYzRJSTdQOXpaWndLd3Q3?=
+ =?utf-8?B?bVFUcFpSYXF6c2NLUTd1ZVVIRlVWSFMyaXZpRTdWVVEzNjVWRERNdCtpYTNO?=
+ =?utf-8?B?QU9vcTdSaFp1QWlMMEFZNi9XODZTM3E5RmhMZ0pWVXc4dUZWbnBvZ2hMVDNI?=
+ =?utf-8?B?Z2JEbnlqTFM1RWg3VXBwakZ0NisrVkQ3cTlwUXNDUVZrNnZ0WEVnQXZoaysx?=
+ =?utf-8?B?SHMxUmhPTDJ2ZjdQWE5hVHBZdXFIY2pjeiszczNHVVl3YnFPd2RKL05xM1o5?=
+ =?utf-8?B?dC9URFl4WmM0SnpoZys3R0V6SDBNdGhIOC9Mbyt5L0tIYnJQMEw4WTVBeWZ3?=
+ =?utf-8?B?Vjc3SGt0WHNRQ2hxenZ3TjNkaUR2Rzc2aXlQOU9ocHNEQzR0a2xGeDd4WkRo?=
+ =?utf-8?B?blJkSWN1dXhiK0dTb1lvMzhrNE9Ca2tIVFNiVnBnV3RmUStoSllzQmE1RkxI?=
+ =?utf-8?B?RksrL1BrRVlwa0R4cFNQREtLWXNWc2xhUXp3ZE1ULzliaEJMRGVzbmlpYXBv?=
+ =?utf-8?B?cW1TVGFaRjcyNm0wSFhhYXlCblc5R3UrN3lmNFZXdXFMVVJ5UzRpMVVldjJy?=
+ =?utf-8?B?QXMyRlNPelFUc3JPZUhzNmZqRGk2R0NKbEpabWpQRS9aaEFIR2VuTVhDNTN1?=
+ =?utf-8?B?K0FSZkIwdUh3cWo1bDFCR2RZV1ZDVHdzNUlpOFhJZ0lQYmdLOTQ3bmZFOWJr?=
+ =?utf-8?B?T2VtVytKMG56VkNyZ3ZPb3pucXdkdGdaSnFhallIWkhPSlN5T2gxVlJ4N0gx?=
+ =?utf-8?B?Nmw5WFV3RmJwS0pWYXVOWm8ydnpBWG84WE1CaUZWYjBXeUJ1N1ZlbGRNUTN6?=
+ =?utf-8?B?RUFwcVhTL1F5QlNOR0k4dUN0Z0hEQVE1UEpvelh0MUV1SFgzUFlkcmUrL3lI?=
+ =?utf-8?B?VDJkY1hYTFIrWnc3NDlmcGdUbk4xV2IxL2JRRitzMVo3QUpoVVQwTTZEL1JI?=
+ =?utf-8?B?dzZNbzlnRkZ5am1mUTlVaW5lUEtBSXlkUzZ6ZDM2ZDlNbHh1bWtGSjVta2VV?=
+ =?utf-8?B?SmxCTDZqRlpzaEx6YmxDa0NTNXVpdXNzQ0tsSjl0ZnNCWlYvQkpIbXQvd1JZ?=
+ =?utf-8?B?c1J5SWVELy9LYThXVHpMQmNNdzJUSTJyeFNQaWZadUVwOUNMTVhXaTBYZW5q?=
+ =?utf-8?B?dWUwMlBpN2RBT1hwUG5ONVl5ZWpBQy9NVTFFRlZtcVovaUpGSURKcWoyNktZ?=
+ =?utf-8?B?M3BxeGJNVjJxUGxFK1BZZEVKNFBpNG9seklMenZXcTNsaGVPak8wWThoZ05j?=
+ =?utf-8?B?UWFOcWJFRFA1SFpyRC9HcjFBcjZScGEwdUFINURsREVrdmJuV2tNbGx0VDE4?=
+ =?utf-8?B?dWM5ZHRTc003N3E0anh3UU1UZDN5cEhxQTYvWWE2enF1T0UyN0xSZXdIVEZD?=
+ =?utf-8?B?dGZpZW9BQ1Q5elJiVWFJd2ZhVUduL251anhjbGlIOFdBc0o5MXcvNWwrekd6?=
+ =?utf-8?B?VzJMWW9WajNxdzM4Wm16UTVxS0c3QzBacTZHOGNCMFVVVGIvb2trZVJQbXpV?=
+ =?utf-8?B?UVFiTGs3Z2drQ3RPU1JySEtDczZkWkdjaHpTUElySk5vMW0zTlBBVjJJMDYw?=
+ =?utf-8?B?R0c1eHRhRzN6TUpFUUxscEEvRUtZODg0WVJZQjM5eTFUOS9BcW1jdmJoUmYv?=
+ =?utf-8?B?SkNoTTE0S0RwcWNPaCs5S1hTcHdCaVlVMXNoUFVhS2QyT2Z3YnU4S2I5bHZM?=
+ =?utf-8?B?c1N0YllkeVdhUXhYSWVBM2NmbmJZcVc2ZHhKQkNzQzFHcE1ZdjlCcGJQVGdM?=
+ =?utf-8?B?Wk10ZGJYNjQ5MXJmZk5Xd1V4VnZuNUhIUXNFTWlJNnlsTndveTV4Um9zQWRN?=
+ =?utf-8?B?NjZZcmE2K1lWQVpHVVJxNGFRWStHdUU2cXJVbFhBdUlxem9HK2cvTjZTVCtD?=
+ =?utf-8?B?S0YrdUhyUmsyaG9KQ05BSE1VM3dpTmZmcDNWcXFPbnE4Q3R5UnpTU1grY0pX?=
+ =?utf-8?B?ZnRGQ0FiRldpaEJoTXUrNE11YXFMWGZ1Q3VLN0tIMnB1UEpramwxTTZBK2sy?=
+ =?utf-8?Q?vsTc=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 365b516d-c897-458b-b189-08db98db4339
+X-MS-Exchange-CrossTenant-AuthSource: AS1PR02MB10348.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2023 13:19:29.7367
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lkYY0BYsQDOwbglbbnm6A/YklOmoEPpmnE8tmNcvq8up2JwdkOE7YB5NNZ1FWe6X
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR02MB10009
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 9 Aug 2023 14:08:47 +0800
-wenhua lin <wenhua.lin1994@gmail.com> wrote:
-
-> Hi baolin:
-> 1.Please describe the problem in detail, not only what you did.
-> 
-> We will describe the reason for the modification by supplementing the
-> commit message.
-> 
-> 2.Can you explicit on which controller can support 8 banks in the commit
-> log? And you did not change all the related comments in this file.
-> 
-> The old project EIC controller can support maximum 3 banks,
-> now our new project eic controller can support maximum 8 banks，
-> and each bank contains 8 EICs.
-> We will modify the comment in this file.
-> 
-> 3.If you want to introduce a readable macro, that's fine, but it should be
-> split into a separate patch.
-> 4.This change looks good to me, and this seems a software bug in the
-> original driver. So I think this change should be moved into a separate
-> patch with a suitable Fixes tag.
-> 5.Do not add unreated changes that you did not mentioned in the commit log.
-> 
-> We will re-split the patch submission and explain our reasons for
-> modification in the submission information, thank you very much for
-> your review.
-
-Hi,
-please do not top-post and insert your answers in-line to make it
-easier to read. There is good advice here:
-
-https://docs.kernel.org/process/submitting-patches.html#use-trimmed-interleaved-replies-in-email-discussions
-
-Thank you,
-Hugo Villeneuve
+On 07/08/2023 15.50, Krzysztof Kozlowski wrote:
+> On 03/08/2023 13:26, Anton Eliasson wrote:
+>> At least freeze, restore and thaw need to be set in order for the driver
+>> to support system hibernation. The existing suspend/resume functions can
+>> be reused since those functions don't touch the device's power state or
+>> wakeup capability. Use the helper macros SET_SYSTEM_SLEEP_PM_OPS and
+>> SET_NOIRQ_SYSTEM_SLEEP_PM_OPS for symmetry with similar drivers.
+>>
+> Looks sensible, although you should also test the other sleep methods,
+> e.g. suspend to idle.
+>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>
+> Best regards,
+> Krzysztof
+>
+Yes, s2idle still works. Standby / Power-On Suspend and s2ram we don't 
+have support for so I can't test it. Thanks for the review!
 
 
-> Baolin Wang <baolin.wang@linux.alibaba.com> 于2023年8月9日周三 09:24写道：
-> >
-> >
-> >
-> > On 8/8/2023 11:31 AM, Wenhua Lin wrote:
-> > > Automatic calculation through matching nodes,
-> > > subsequent projects can avoid modifying driver files.
-> >
-> > Please describe the problem in detail, not only what you did.
-> >
-> > > Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
-> > > ---
-> > >   drivers/gpio/gpio-eic-sprd.c | 49 +++++++++++++++++++-----------------
-> > >   1 file changed, 26 insertions(+), 23 deletions(-)
-> > >
-> > > diff --git a/drivers/gpio/gpio-eic-sprd.c b/drivers/gpio/gpio-eic-sprd.c
-> > > index 84352a6f4973..0d85d9e80848 100644
-> > > --- a/drivers/gpio/gpio-eic-sprd.c
-> > > +++ b/drivers/gpio/gpio-eic-sprd.c
-> > > @@ -50,10 +50,10 @@
-> > >   #define SPRD_EIC_SYNC_DATA          0x1c
-> > >
-> > >   /*
-> > > - * The digital-chip EIC controller can support maximum 3 banks, and each bank
-> > > + * The digital-chip EIC controller can support maximum 8 banks, and each bank
-> >
-> > Can you explicit on which controller can support 8 banks in the commit
-> > log? And you did not change all the related comments in this file.
-> >
-> > >    * contains 8 EICs.
-> > >    */
-> > > -#define SPRD_EIC_MAX_BANK            3
-> > > +#define SPRD_EIC_MAX_BANK            8
-> > >   #define SPRD_EIC_PER_BANK_NR                8
-> > >   #define SPRD_EIC_DATA_MASK          GENMASK(7, 0)
-> > >   #define SPRD_EIC_BIT(x)                     ((x) & (SPRD_EIC_PER_BANK_NR - 1))
-> > > @@ -99,33 +99,32 @@ struct sprd_eic {
-> > >
-> > >   struct sprd_eic_variant_data {
-> > >       enum sprd_eic_type type;
-> > > -     u32 num_eics;
-> > >   };
-> > >
-> > > +#define SPRD_EIC_VAR_DATA(soc_name)                          \
-> > > +static const struct sprd_eic_variant_data soc_name##_eic_dbnc_data = {       \
-> > > +     .type = SPRD_EIC_DEBOUNCE,                                      \
-> > > +};                                                                   \
-> > > +                                                                     \
-> > > +static const struct sprd_eic_variant_data soc_name##_eic_latch_data = {      \
-> > > +     .type = SPRD_EIC_LATCH,                                         \
-> > > +};                                                                   \
-> > > +                                                                     \
-> > > +static const struct sprd_eic_variant_data soc_name##_eic_async_data = {      \
-> > > +     .type = SPRD_EIC_ASYNC,                                         \
-> > > +};                                                                   \
-> > > +                                                                     \
-> > > +static const struct sprd_eic_variant_data soc_name##_eic_sync_data = {       \
-> > > +     .type = SPRD_EIC_SYNC,                                          \
-> > > +}
-> > > +
-> > > +SPRD_EIC_VAR_DATA(sc9860);
-> > > +
-> > >   static const char *sprd_eic_label_name[SPRD_EIC_MAX] = {
-> > >       "eic-debounce", "eic-latch", "eic-async",
-> > >       "eic-sync",
-> > >   };
-> > >
-> > > -static const struct sprd_eic_variant_data sc9860_eic_dbnc_data = {
-> > > -     .type = SPRD_EIC_DEBOUNCE,
-> > > -     .num_eics = 8,
-> > > -};
-> > > -
-> > > -static const struct sprd_eic_variant_data sc9860_eic_latch_data = {
-> > > -     .type = SPRD_EIC_LATCH,
-> > > -     .num_eics = 8,
-> > > -};
-> > > -
-> > > -static const struct sprd_eic_variant_data sc9860_eic_async_data = {
-> > > -     .type = SPRD_EIC_ASYNC,
-> > > -     .num_eics = 8,
-> > > -};
-> > > -
-> > > -static const struct sprd_eic_variant_data sc9860_eic_sync_data = {
-> > > -     .type = SPRD_EIC_SYNC,
-> > > -     .num_eics = 8,
-> > > -};
-> >
-> > If you want to introduce a readable macro, that's fine, but it should be
-> > split into a separate patch.
-> >
-> > >   static inline void __iomem *sprd_eic_offset_base(struct sprd_eic *sprd_eic,
-> > >                                                unsigned int bank)
-> > > @@ -583,6 +582,7 @@ static int sprd_eic_probe(struct platform_device *pdev)
-> > >       struct sprd_eic *sprd_eic;
-> > >       struct resource *res;
-> > >       int ret, i;
-> > > +     u16 num_banks = 0;
-> > >
-> > >       pdata = of_device_get_match_data(&pdev->dev);
-> > >       if (!pdata) {
-> > > @@ -613,12 +613,13 @@ static int sprd_eic_probe(struct platform_device *pdev)
-> > >                       break;
-> > >
-> > >               sprd_eic->base[i] = devm_ioremap_resource(&pdev->dev, res);
-> > > +             num_banks++;
-> > >               if (IS_ERR(sprd_eic->base[i]))
-> > >                       return PTR_ERR(sprd_eic->base[i]);
-> > >       }
-> > >
-> > >       sprd_eic->chip.label = sprd_eic_label_name[sprd_eic->type];
-> > > -     sprd_eic->chip.ngpio = pdata->num_eics;
-> > > +     sprd_eic->chip.ngpio = num_banks * SPRD_EIC_PER_BANK_NR;
-> >
-> > This change looks good to me, and this seems a software bug in the
-> > original driver. So I think this change should be moved into a separate
-> > patch with a suitable Fixes tag.
-> >
-> > >       sprd_eic->chip.base = -1;
-> > >       sprd_eic->chip.parent = &pdev->dev;
-> > >       sprd_eic->chip.direction_input = sprd_eic_direction_input;
-> > > @@ -630,10 +631,12 @@ static int sprd_eic_probe(struct platform_device *pdev)
-> > >               sprd_eic->chip.set = sprd_eic_set;
-> > >               fallthrough;
-> > >       case SPRD_EIC_ASYNC:
-> > > +             fallthrough;
-> > >       case SPRD_EIC_SYNC:
-> > >               sprd_eic->chip.get = sprd_eic_get;
-> > >               break;
-> > >       case SPRD_EIC_LATCH:
-> > > +             fallthrough;
-> >
-> > Do not add unreated changes that you did not mentioned in the commit log.
+Anton Eliasson
+
