@@ -2,118 +2,143 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F82CC04A94
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Aug 2023 10:55:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25868C41513
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Aug 2023 11:27:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232655AbjHIKz0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Aug 2023 06:55:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37566 "EHLO
+        id S233745AbjHIL1R (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Aug 2023 07:27:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232647AbjHIKzN (ORCPT
+        with ESMTP id S233746AbjHIL1Q (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Aug 2023 06:55:13 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EABB35A1;
-        Wed,  9 Aug 2023 03:53:51 -0700 (PDT)
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 379Ar4Z0009717;
-        Wed, 9 Aug 2023 10:53:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id; s=qcppdkim1;
- bh=wIwDEsDwmZWTIMj9zAhU0yuFWxfk5UetXJNBCBioavM=;
- b=bJmqsy0aQE+Fhcti5I7u1qrSspmkDd2OfUeAr8QuP88AblS/GYjGL39+iCU6Z8nfHtZO
- L1xVBekeRq2LeA4GevwjUlhbaIOardccX79wa+6ZOQq18TLyeY/ILur3Cbc9ds/VsCHH
- umw81N70p6h2jrU1b4YWLbi18k8gxnuIbDFiWB5J8jwmNOMK/NIB4Z7PKlF2n/2d2iO8
- eqbmN4o3zLHX/u+ZZ6hd+qQNJph0hukpQjVQdb5KVJdXHnWGdTKy389aoU7DMSfSmVfj
- FIITApQmfr0jxBszN/Ls4UrRhRckHsNwTYfpSykMAOOEGsPSOuswBS/ZnKIhAOq85YB4 QA== 
-Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3sc28rrwuc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Aug 2023 10:53:20 +0000
-Received: from pps.filterd (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-        by APBLRPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 379ArHXh023626;
-        Wed, 9 Aug 2023 10:53:17 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 3s9fgm287j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 09 Aug 2023 10:53:17 +0000
-Received: from APBLRPPMTA01.qualcomm.com (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 379ArHr2023621;
-        Wed, 9 Aug 2023 10:53:17 GMT
-Received: from hu-sgudaval-hyd.qualcomm.com (hu-vnivarth-hyd.qualcomm.com [10.213.111.166])
-        by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 379ArGJQ023620;
-        Wed, 09 Aug 2023 10:53:17 +0000
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
-        id 41D3E4CFB; Wed,  9 Aug 2023 16:23:16 +0530 (+0530)
-From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org,
-        konrad.dybcio@linaro.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, bartosz.golaszewski@linaro.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
-        swboyd@chromium.org, quic_vtanuku@quicinc.com,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: [PATCH] tty: serial: qcom-geni-serial: Poll primary sequencer irq status after cancel_tx
-Date:   Wed,  9 Aug 2023 16:23:13 +0530
-Message-Id: <1691578393-9891-1-git-send-email-quic_vnivarth@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 3iext7xVydyX6KQwbH73dUkHwwORUfSE
-X-Proofpoint-GUID: 3iext7xVydyX6KQwbH73dUkHwwORUfSE
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-08-09_09,2023-08-09_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 malwarescore=0 suspectscore=0
- adultscore=0 impostorscore=0 bulkscore=0 mlxscore=0 priorityscore=1501
- mlxlogscore=951 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2306200000 definitions=main-2308090095
+        Wed, 9 Aug 2023 07:27:16 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6692ED;
+        Wed,  9 Aug 2023 04:27:15 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id 4fb4d7f45d1cf-522a9e0e6e9so1875347a12.1;
+        Wed, 09 Aug 2023 04:27:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1691580434; x=1692185234;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=OqBHARz0gmz3J5h20e3FvkE1XWPr6CIGExbvAgbjDhw=;
+        b=QMvBMIJoXoZDSFdMVYCz4Y/73g0nVsWYDNzFfwl5ukY9NYx2lGqHBcO0qxUrfNbHlZ
+         AcBb4Rv69MLGqjY6VWJsnLISVkrVNLnUA4X/mSDz1oXVKx4STZPBNLjzBar96z/KPEd1
+         LQ/vgMX86vsdH7MUK5SXBw8oYUBb2aXE0Sc6a26t8VaEiQHqSpp0s0rc6URQGiPQAq+S
+         LfcIhymIaNuDNcdVi+XUSBCwJQcJAgprCfKGSpIHTlhz49nrtiiBPs/DAADLPQd+SNez
+         zns4MmOBQwA47xskgBR5n7CN4taDzIo0KzgIIcOqAVxMg3PnHiGMN6Sz4leRI6QdwTVa
+         iE0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691580434; x=1692185234;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=OqBHARz0gmz3J5h20e3FvkE1XWPr6CIGExbvAgbjDhw=;
+        b=Li3GEaCxU+9/i5xxn6mDdIyCaNWIlj6Upm+xM77p9HxSXQOMm85MTC3oaKuMN9TJQv
+         kkxlm9ZaoAu4aEs9MrTdUSJG1RpBcOIctZoUMPHuUSTOfjBf0hnR8odEhsztbr4VAvP/
+         +JS/j/eUbGG/NascuedynOQg+dIwx6BvkNoPST3X69LsXLb6gFXG8RySiV2kGKmL8MDh
+         JsqIo2W4Hoo5iZGhbH/hDeiNaPyZlR1Ogov3nLExW1if/8vc/ZV+kVvK0raT2rrqJlHf
+         b58T1CRSUUeZSY1zjLof9umJuuhQkBsboKsUUbcrnojzOs3vy24EZr29xT/4NB5PChQy
+         dGpA==
+X-Gm-Message-State: AOJu0YxJHssg/lTW/QFaTlmhEh12aggjeV2yA2FKluTPmPLqR2em+yDd
+        2+sV1McrH9/VYO7S4HBfwYY0WnSxQNq4wjD+XYc=
+X-Google-Smtp-Source: AGHT+IFNEBxc0vNZCpirXKsSyotmsfBqrsBZzCqE/GSm3JN0+A761UZftrNN5lvKQMVdE+yfqfSiK8lQo3lEi/yunoQ=
+X-Received: by 2002:a17:906:25b:b0:997:d069:a880 with SMTP id
+ 27-20020a170906025b00b00997d069a880mr1797898ejl.1.1691580434108; Wed, 09 Aug
+ 2023 04:27:14 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230807080726.7190-1-Wenhua.Lin@unisoc.com> <3554a99d-339f-39f9-111d-040025096f97@linux.alibaba.com>
+ <CAB9BWhdh8CXuWAQGir=9QqLPdVaN8hgmqii9Da=buSj=9BWJaw@mail.gmail.com> <f808a0c7-013d-9999-8c2d-435609f9fde4@linux.alibaba.com>
+In-Reply-To: <f808a0c7-013d-9999-8c2d-435609f9fde4@linux.alibaba.com>
+From:   wenhua lin <wenhua.lin1994@gmail.com>
+Date:   Wed, 9 Aug 2023 19:27:02 +0800
+Message-ID: <CAB9BWhf9e6cmLn6qHQqeM0-8kWf-mH7kWz2YvKvcpzXVkk2-=Q@mail.gmail.com>
+Subject: Re: [PATCH] serial: sprd: Support 12 uart ports
+To:     Baolin Wang <baolin.wang@linux.alibaba.com>
+Cc:     Wenhua Lin <Wenhua.Lin@unisoc.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiongpeng Wu <xiongpeng.wu@unisoc.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-TX is handled by primary sequencer. After cancelling primary command, poll
-primary sequencer's irq status instead of that of secondary.
-While at it, also remove a couple of redundant lines that read from IRQ_EN
-register and write back same.
+On Wed, Aug 9, 2023 at 2:27=E2=80=AFPM Baolin Wang
+<baolin.wang@linux.alibaba.com> wrote:
+>
+>
+>
+> On 8/9/2023 1:52 PM, wenhua lin wrote:
+> > The change of the max ports is to adapt to an new
+> > SPRD serial hardware,also is backward-compatibility with old hardware.
+>
+> Again, DO NOT top-posting! Thanks.
 
-Fixes: 2aaa43c70778 ("tty: serial: qcom-geni-serial: add support for serial engine DMA")
-Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
----
- drivers/tty/serial/qcom_geni_serial.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+Thank you for your correction.
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 3ca5db2..b8aa4c1 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -591,7 +591,6 @@ static void qcom_geni_serial_stop_tx_dma(struct uart_port *uport)
- {
- 	struct qcom_geni_serial_port *port = to_dev_port(uport);
- 	bool done;
--	u32 m_irq_en;
- 
- 	if (!qcom_geni_serial_main_active(uport))
- 		return;
-@@ -603,12 +602,10 @@ static void qcom_geni_serial_stop_tx_dma(struct uart_port *uport)
- 		port->tx_remaining = 0;
- 	}
- 
--	m_irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
--	writel(m_irq_en, uport->membase + SE_GENI_M_IRQ_EN);
- 	geni_se_cancel_m_cmd(&port->se);
- 
--	done = qcom_geni_serial_poll_bit(uport, SE_GENI_S_IRQ_STATUS,
--					 S_CMD_CANCEL_EN, true);
-+	done = qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
-+					 M_CMD_CANCEL_EN, true);
- 	if (!done) {
- 		geni_se_abort_m_cmd(&port->se);
- 		done = qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
--- 
-2.7.4
 
+>
+> >>
+> >> On 8/7/2023 4:07 PM, Wenhua Lin wrote:
+> >>> From: Wenhua Lin <wenhua.lin@unisoc.com>
+> >>>
+> >>> Support 12 uart ports, which can solve the problem
+> >>> of insufficient uart ports.
+> >>
+> >> This sounds incorrect to me.
+> >> If this is a software bug, please add a Fixes tag to backport for stab=
+le
+> >> kernels. If the change of the max ports is only avaliable on the new
+> >> SPRD serial hardware, you should ensure the change is
+> >> backward-compatibility with old hardware.
+>
+> This is not backward-compatibility. Please see 'sprd_uart_driver'
+> structure as below:
+>
+> static struct uart_driver sprd_uart_driver =3D {
+>         .owner =3D THIS_MODULE,
+>         .driver_name =3D "sprd_serial",
+>         .dev_name =3D SPRD_TTY_NAME,
+>         .major =3D 0,
+>         .minor =3D 0,
+>         .nr =3D UART_NR_MAX,
+>         .cons =3D SPRD_CONSOLE,
+> };
+>
+> That means you will still register 12 UART ports in the tty for old
+> serial hardwares which actually only support 8 UART ports, and if users
+> want to use another 4 ports which are not supported in the hardware,
+> then system crashes.
+>
+> So I think you should add a SoC data in 'serial_ids' to change the
+> number of UART port according to different SoC.
+>
+
+Thank you for your valuable comments, we should probably consider
+how to make changes based on your suggestions.
+
+> >>> Signed-off-by: Wenhua Lin <wenhua.lin@unisoc.com>
+> >>> ---
+> >>>    drivers/tty/serial/sprd_serial.c | 2 +-
+> >>>    1 file changed, 1 insertion(+), 1 deletion(-)
+> >>>
+> >>> diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sp=
+rd_serial.c
+> >>> index b58f51296ace..2774df490899 100644
+> >>> --- a/drivers/tty/serial/sprd_serial.c
+> >>> +++ b/drivers/tty/serial/sprd_serial.c
+> >>> @@ -22,7 +22,7 @@
+> >>>    #include <linux/tty_flip.h>
+> >>>
+> >>>    /* device name */
+> >>> -#define UART_NR_MAX          8
+> >>> +#define UART_NR_MAX          12
+> >>>    #define SPRD_TTY_NAME               "ttyS"
+> >>>    #define SPRD_FIFO_SIZE              128
+> >>>    #define SPRD_DEF_RATE               26000000
