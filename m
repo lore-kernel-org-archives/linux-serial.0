@@ -2,90 +2,175 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D9CBC41513
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Aug 2023 20:54:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93244C001DB
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Aug 2023 01:24:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbjHHUyb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Aug 2023 16:54:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42096 "EHLO
+        id S229756AbjHIBYC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Aug 2023 21:24:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230361AbjHHUyM (ORCPT
+        with ESMTP id S229487AbjHIBYB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Aug 2023 16:54:12 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD1404496;
-        Tue,  8 Aug 2023 13:40:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=6r7PjrCEgpz4xmTGBp613ajXrb6WdCBsEp8ol8rTeyU=; b=DTeAyRKxjPmMfRmmUDw04MzXeX
-        2hi4FV7iMzb1Fw1Eks+IhfiZE12vobmr2ou/tFYQ7/oY9CBch9Uqg9f4v2sNoly6Oc/CuzPU9lx4S
-        f3oaISx44KKsaaVcAZiW0X/T5Qei04PYDZ4xsDyweXA7E1UcnAcRIbhvV7bHLJ1NcikDiEqzkRN+0
-        YkKzuxTziVuQGAYAETLX+Zx8JQ6MpLuqAtchJOgqgCBcNiRFewiIHuPnrqLLgsyt7NkpuhXpDdCnb
-        MtPdHqEeGUW0PbUm1YlrknAToxir4b37G8t7Gwpny6cTiWYLzxh7Kjl21viTyUTd1F00ZaT856Jf7
-        E8Ci4Ybw==;
-Received: from [2601:1c2:980:9ec0::2764]
-        by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-        id 1qTTVR-003Qxr-2s;
-        Tue, 08 Aug 2023 20:40:41 +0000
-Message-ID: <78b74902-f120-96e6-f1a1-6d424f3338e5@infradead.org>
-Date:   Tue, 8 Aug 2023 13:40:40 -0700
+        Tue, 8 Aug 2023 21:24:01 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35670173F;
+        Tue,  8 Aug 2023 18:24:00 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R841e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VpMvxPu_1691544235;
+Received: from 30.97.48.62(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VpMvxPu_1691544235)
+          by smtp.aliyun-inc.com;
+          Wed, 09 Aug 2023 09:23:56 +0800
+Message-ID: <0ac280ab-08f1-b031-e21b-49390182f090@linux.alibaba.com>
+Date:   Wed, 9 Aug 2023 09:23:55 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.14.0
-Subject: Re: [PATCH] input: keyboard: Add sprd-keypad driver
-Content-Language: en-US
+Subject: Re: [PATCH 1/3] gpio: sprd: Modify the calculation method of eic
+ number
 To:     Wenhua Lin <Wenhua.Lin@unisoc.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?Q?Nuno_S=c3=a1?= <nuno.sa@analog.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Samuel Holland <samuel@sholland.org>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Andy Shevchenko <andy@kernel.org>,
         Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
         Chunyan Zhang <zhang.lyra@gmail.com>
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         wenhua lin <wenhua.lin1994@gmail.com>,
         Xiongpeng Wu <xiongpeng.wu@unisoc.com>
-References: <20230808072501.3393-1-Wenhua.Lin@unisoc.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20230808072501.3393-1-Wenhua.Lin@unisoc.com>
-Content-Type: text/plain; charset=UTF-8
+References: <20230808033106.2174-1-Wenhua.Lin@unisoc.com>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <20230808033106.2174-1-Wenhua.Lin@unisoc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi--
 
-On 8/8/23 00:25, Wenhua Lin wrote:
-> diff --git a/drivers/input/keyboard/Kconfig b/drivers/input/keyboard/Kconfig
-> index 1d0c5f4c0f99..f35d9bf05f72 100644
-> --- a/drivers/input/keyboard/Kconfig
-> +++ b/drivers/input/keyboard/Kconfig
-> @@ -809,4 +809,14 @@ config KEYBOARD_CYPRESS_SF
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called cypress-sf.
->  
-> +config KEYBOARD_SPRD
-> +	tristate "Spreadtrum keyboard support"
-> +	depends on ARCH_SPRD || COMPILE_TEST
-> +	select INPUT_MATRIXKMAP
-> +	help
-> +	  Keypad controller is used to interface a SoC with a matrix-keypad device,
 
-	                                         an SoC                     device.
+On 8/8/2023 11:31 AM, Wenhua Lin wrote:
+> Automatic calculation through matching nodes,
+> subsequent projects can avoid modifying driver files.
 
-> +	  The keypad controller supports multiple row and column lines.
-> +	  Say Y if you want to use the SPRD keyboard.
-> +	  Say M if you want to use the SPRD keyboard on SoC as module.
+Please describe the problem in detail, not only what you did.
+
+> Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
+> ---
+>   drivers/gpio/gpio-eic-sprd.c | 49 +++++++++++++++++++-----------------
+>   1 file changed, 26 insertions(+), 23 deletions(-)
+> 
+> diff --git a/drivers/gpio/gpio-eic-sprd.c b/drivers/gpio/gpio-eic-sprd.c
+> index 84352a6f4973..0d85d9e80848 100644
+> --- a/drivers/gpio/gpio-eic-sprd.c
+> +++ b/drivers/gpio/gpio-eic-sprd.c
+> @@ -50,10 +50,10 @@
+>   #define SPRD_EIC_SYNC_DATA		0x1c
+>   
+>   /*
+> - * The digital-chip EIC controller can support maximum 3 banks, and each bank
+> + * The digital-chip EIC controller can support maximum 8 banks, and each bank
+
+Can you explicit on which controller can support 8 banks in the commit 
+log? And you did not change all the related comments in this file.
+
+>    * contains 8 EICs.
+>    */
+> -#define SPRD_EIC_MAX_BANK		3
+> +#define SPRD_EIC_MAX_BANK		8
+>   #define SPRD_EIC_PER_BANK_NR		8
+>   #define SPRD_EIC_DATA_MASK		GENMASK(7, 0)
+>   #define SPRD_EIC_BIT(x)			((x) & (SPRD_EIC_PER_BANK_NR - 1))
+> @@ -99,33 +99,32 @@ struct sprd_eic {
+>   
+>   struct sprd_eic_variant_data {
+>   	enum sprd_eic_type type;
+> -	u32 num_eics;
+>   };
+>   
+> +#define SPRD_EIC_VAR_DATA(soc_name)				\
+> +static const struct sprd_eic_variant_data soc_name##_eic_dbnc_data = {	\
+> +	.type = SPRD_EIC_DEBOUNCE,					\
+> +};									\
+> +									\
+> +static const struct sprd_eic_variant_data soc_name##_eic_latch_data = {	\
+> +	.type = SPRD_EIC_LATCH,						\
+> +};									\
+> +									\
+> +static const struct sprd_eic_variant_data soc_name##_eic_async_data = {	\
+> +	.type = SPRD_EIC_ASYNC,						\
+> +};									\
+> +									\
+> +static const struct sprd_eic_variant_data soc_name##_eic_sync_data = {	\
+> +	.type = SPRD_EIC_SYNC,						\
+> +}
 > +
->  endif
+> +SPRD_EIC_VAR_DATA(sc9860);
+> +
+>   static const char *sprd_eic_label_name[SPRD_EIC_MAX] = {
+>   	"eic-debounce", "eic-latch", "eic-async",
+>   	"eic-sync",
+>   };
+>   
+> -static const struct sprd_eic_variant_data sc9860_eic_dbnc_data = {
+> -	.type = SPRD_EIC_DEBOUNCE,
+> -	.num_eics = 8,
+> -};
+> -
+> -static const struct sprd_eic_variant_data sc9860_eic_latch_data = {
+> -	.type = SPRD_EIC_LATCH,
+> -	.num_eics = 8,
+> -};
+> -
+> -static const struct sprd_eic_variant_data sc9860_eic_async_data = {
+> -	.type = SPRD_EIC_ASYNC,
+> -	.num_eics = 8,
+> -};
+> -
+> -static const struct sprd_eic_variant_data sc9860_eic_sync_data = {
+> -	.type = SPRD_EIC_SYNC,
+> -	.num_eics = 8,
+> -};
 
--- 
-~Randy
+If you want to introduce a readable macro, that's fine, but it should be 
+split into a separate patch.
+
+>   static inline void __iomem *sprd_eic_offset_base(struct sprd_eic *sprd_eic,
+>   						 unsigned int bank)
+> @@ -583,6 +582,7 @@ static int sprd_eic_probe(struct platform_device *pdev)
+>   	struct sprd_eic *sprd_eic;
+>   	struct resource *res;
+>   	int ret, i;
+> +	u16 num_banks = 0;
+>   
+>   	pdata = of_device_get_match_data(&pdev->dev);
+>   	if (!pdata) {
+> @@ -613,12 +613,13 @@ static int sprd_eic_probe(struct platform_device *pdev)
+>   			break;
+>   
+>   		sprd_eic->base[i] = devm_ioremap_resource(&pdev->dev, res);
+> +		num_banks++;
+>   		if (IS_ERR(sprd_eic->base[i]))
+>   			return PTR_ERR(sprd_eic->base[i]);
+>   	}
+>   
+>   	sprd_eic->chip.label = sprd_eic_label_name[sprd_eic->type];
+> -	sprd_eic->chip.ngpio = pdata->num_eics;
+> +	sprd_eic->chip.ngpio = num_banks * SPRD_EIC_PER_BANK_NR;
+
+This change looks good to me, and this seems a software bug in the 
+original driver. So I think this change should be moved into a separate 
+patch with a suitable Fixes tag.
+
+>   	sprd_eic->chip.base = -1;
+>   	sprd_eic->chip.parent = &pdev->dev;
+>   	sprd_eic->chip.direction_input = sprd_eic_direction_input;
+> @@ -630,10 +631,12 @@ static int sprd_eic_probe(struct platform_device *pdev)
+>   		sprd_eic->chip.set = sprd_eic_set;
+>   		fallthrough;
+>   	case SPRD_EIC_ASYNC:
+> +		fallthrough;
+>   	case SPRD_EIC_SYNC:
+>   		sprd_eic->chip.get = sprd_eic_get;
+>   		break;
+>   	case SPRD_EIC_LATCH:
+> +		fallthrough;
+
+Do not add unreated changes that you did not mentioned in the commit log.
