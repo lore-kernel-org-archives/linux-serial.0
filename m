@@ -2,104 +2,88 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8989C001B0
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 12:05:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30C85C001E0
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 12:37:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232686AbjHJMFT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 08:05:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40860 "EHLO
+        id S232238AbjHJMhq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 08:37:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230458AbjHJMFS (ORCPT
+        with ESMTP id S232062AbjHJMhp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 08:05:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC44B1BD;
-        Thu, 10 Aug 2023 05:05:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7269863311;
-        Thu, 10 Aug 2023 12:05:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F8A8C433C9;
-        Thu, 10 Aug 2023 12:05:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1691669116;
-        bh=/Yp0RxfjDZDzPjmWN8BaXr837Qy8tfsgM+K13EUnPEE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LINr0XkPaKjSRqA9E1IGuDPCh64O3YCC4bLVfqFG4ASRfzI9yxUUf3vGlq/AjXx3A
-         hytGNKJ24tgA/rs3LRqW4fJgL90f9orC456alCu7B/gmDoIGtZKkELuNxcBfTdbs89
-         Fxuwp1qWGpmCEGJZY5bfmyA9zP5YEccKQCz3OmSy2UOd5FVy49g0iGPkm6bePKMYDn
-         E0yMtXo4/lUL9Ax4qicJuPU3UTm9+A9vtw+laExOBh91ODrDl79cVk8oTOLebF6Vmc
-         54PqNVbdWlD22u+/HxLnpnDm5RuFRpUWp0kEa+7UEejUTod7Yi056iL21VS4kGwIrM
-         +Uod3oDgZCw7w==
-Date:   Thu, 10 Aug 2023 13:05:08 +0100
-From:   Mark Brown <broonie@kernel.org>
+        Thu, 10 Aug 2023 08:37:45 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D0D1B4;
+        Thu, 10 Aug 2023 05:37:45 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id 46e09a7af769-6b9a2416b1cso838563a34.2;
+        Thu, 10 Aug 2023 05:37:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1691671064; x=1692275864;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=r9vkH0qyALcGdJXi476zLeBAUKcf5jFE0hRhwzDsk6o=;
+        b=EkMnV8P7+dTgYEUW9GmPoATMW5SwYOsAAUEw5gC2SKDsFigdoSRpce0Mmz35fjVHT9
+         0heaokZlsIGqon12YgPz/GPrwSCo3eqssCJThGBs1lfy0GLWI5H+Kl2smfWsgUgB4D1e
+         z7ZjL3hFafN6q3jTcF2uO6GzoVeHIog3P/qXrY5Un/87gJTOfsc2Tqa9ucqDzpMhqSyv
+         61TVwWWa55N99Wf1jr/fjXcBV8SLaC1gJD+v3Y4TrzrtYVZHqHv3QLrexfr/50GNBJvo
+         IU2rq0ndxPWoOVsh6ywtokSPGVwdpeSeW+wVpAwU3tM6pqdexxcjP41KB9m7/2J82pOH
+         6VBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691671064; x=1692275864;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=r9vkH0qyALcGdJXi476zLeBAUKcf5jFE0hRhwzDsk6o=;
+        b=lX5KNAPGdLyz9sxHXepJPnq8l+Oywvb8LaucsPJdiKecr1Cah2lsoQsJjWpQwR4UzE
+         cBxZrJEY1XFKwTMB0VHTTHGs7pcoxATwvd7WekL8c949m4ROYsmnpjaLIqcmm8Qm42LJ
+         aRX+P1PXH/qxQo4ch6Q6/WFPGT1oWd39rRRjUp7husBb45sDqISRHoTRarhRJ+vSurAD
+         emYyjhETPLz/v4QyCmYbYRkSZQU3AK7PfHAhhJNcYxTflAJjZhMdqlkYVm1tUGsz/5H1
+         27VxP3AH7WITHzpoPOZxrQRYQLaYS07gibku32GDT0wDdh/tzJSoa9zVzciPSvpPG4xP
+         r3NA==
+X-Gm-Message-State: AOJu0Yz9wWDMKi8bAD3dRxapmYyvQyT4u6c+67etC7xGxq6sZY/xmDWG
+        0JvpfVqlgBnDjh6OYHUO1ru3GMfdzw57XIjy5aY=
+X-Google-Smtp-Source: AGHT+IHayVyAACF3oRIWlkC9v4KwPLwDb29FR1roLZ8kL+KRpCCiDtziSCko5idF/mEFYYH+z9ay/juk/17NLedao98=
+X-Received: by 2002:a9d:7517:0:b0:6bc:f276:717f with SMTP id
+ r23-20020a9d7517000000b006bcf276717fmr2771951otk.13.1691671064642; Thu, 10
+ Aug 2023 05:37:44 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230810091510.13006-1-jirislaby@kernel.org> <20230810091510.13006-2-jirislaby@kernel.org>
+In-Reply-To: <20230810091510.13006-2-jirislaby@kernel.org>
+From:   Max Filippov <jcmvbkbc@gmail.com>
+Date:   Thu, 10 Aug 2023 05:37:33 -0700
+Message-ID: <CAMo8BfJ5EBausUzk7u6LyNRm+Ybtbyg7LG0_hvYN30kZz8ECTg@mail.gmail.com>
+Subject: Re: [PATCH 01/36] tty: xtensa/iss: drop unneeded tty_operations hooks
 To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, William Hubbs <w.d.hubbs@gmail.com>,
-        Chris Brannon <chris@the-brannons.com>,
-        Kirk Reiser <kirk@reisers.ca>,
-        Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Max Staudt <max@enpas.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        Andreas Koensgen <ajk@comnets.uni-bremen.de>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-Subject: Re: [PATCH 17/36] tty: use u8 for flags
-Message-ID: <59aa7909-3fa8-4ceb-94d7-7727a4c7e904@sirena.org.uk>
-References: <20230810091510.13006-1-jirislaby@kernel.org>
- <20230810091510.13006-18-jirislaby@kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="g88Z0hAJlY8W0zZ1"
-Content-Disposition: inline
-In-Reply-To: <20230810091510.13006-18-jirislaby@kernel.org>
-X-Cookie: Reunite Gondwondaland!
+        linux-kernel@vger.kernel.org, Chris Zankel <chris@zankel.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Thu, Aug 10, 2023 at 2:15=E2=80=AFAM Jiri Slaby (SUSE) <jirislaby@kernel=
+.org> wrote:
+>
+> All ::flush_chars(), ::hangup(), and ::wait_until_sent() from struct
+> tty_operations are optional. There is no need to provide them with
+> empty bodies.
+>
+> tty_operations::put_char() needs not be provided if it is the same as
+> tty_operations::write(tty, &ch, 1).
+>
+> So drop all of them.
+>
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Cc: Chris Zankel <chris@zankel.net>
+> Cc: Max Filippov <jcmvbkbc@gmail.com>
+> ---
+>  arch/xtensa/platforms/iss/console.c | 24 ------------------------
+>  1 file changed, 24 deletions(-)
 
---g88Z0hAJlY8W0zZ1
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Acked-by: Max Filippov <jcmvbkbc@gmail.com>
 
-On Thu, Aug 10, 2023 at 11:14:51AM +0200, Jiri Slaby (SUSE) wrote:
-> This makes all those 'char's an explicit 'u8'. This is part of the
-> continuing unification of chars and flags to be consistent u8.
->=20
-> This approaches tty_port_default_receive_buf().
-
-Acked-by: Mark Brown <broonie@kernel.org>
-
---g88Z0hAJlY8W0zZ1
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmTU0nMACgkQJNaLcl1U
-h9D9egf8DkTW2F5YRiMYN+RgrSLiQ9MxhFvQiSoC1XAsTB0VFy87VO7XbEjJB/7B
-EdH/5O2MMUWXjVRZvMGdUKWGe6CNB3IzlrZIzOH2uY8y6ww8P37fiP3IqU8TXz2D
-ynvppz1bt85Ketg9I43F2GmPn5g4WinKAhpi1TL0L/nfHH9EXACuWiMfEySH+M7l
-k+L+EZnRHTKncqCW07miHHqQNybJKF7+GH4Eyss2NePK9q8Z1zj93rKA1zkbJoH4
-uot9JoyDkweLapR3GrOxdtcQefookp3jAy6DfvizvQpC2D0H8hsV8JZHJjWwGXKB
-dwSTsErcmEjhl4Yh0gQy4/eZ4OqnnQ==
-=8+tC
------END PGP SIGNATURE-----
-
---g88Z0hAJlY8W0zZ1--
+--=20
+Thanks.
+-- Max
