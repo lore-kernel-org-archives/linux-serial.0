@@ -2,118 +2,151 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E7CAC04A6A
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 06:53:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74AF1C001DE
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 06:57:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232115AbjHJGxu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 02:53:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50318 "EHLO
+        id S231624AbjHJG5u (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 02:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232911AbjHJGxu (ORCPT
+        with ESMTP id S230212AbjHJG5t (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 02:53:50 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7198510F5;
-        Wed,  9 Aug 2023 23:53:49 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id 4fb4d7f45d1cf-5230f92b303so145813a12.0;
-        Wed, 09 Aug 2023 23:53:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691650428; x=1692255228;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=A6Eyp278XORcAGAuxYJWGOibB23Q0XmCIa8bqZiRg08=;
-        b=qTLmlJ+amRCsqU9zlCMguKSZ5f+J7MdVYus12ZdpqU399zdVj/W8ZU3QEptmnn03k7
-         ueS0g7TlfPnG0JyjW88aH8PcwdzPrqpgpiMsssw1L0ZrEAjso3Ez2CcwWutxoixQ1G2z
-         xJ95qutvizwhxbQKNAB46YEgH4qgxnI1/xPnX6VK0u+ZwM5uZMjrd65RxVfvbC/vnCTY
-         GO6cQ0inrU684U4h0oYETMZ6SvLqQOUfylYy1wspoRyRCPmHF0hhvgsfk96SDV0XbGPq
-         XCcXoi3MujgzWfjS25/Vc3jCWB+6pFPiDso4Xmn0C7RU8ws5svZMSQq5tUtg+a7xDVDY
-         BPyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691650428; x=1692255228;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=A6Eyp278XORcAGAuxYJWGOibB23Q0XmCIa8bqZiRg08=;
-        b=ZIGZRKid++Rggv69rghPyjBgPQMYGBei/T2XsNChQUFBOaQG9737PtjJXaKFbxC0IH
-         Ioe971kbRWulJiMONbn9r5x6emGfXu9MaRleXafMRTWgbUMNse6Iu/ZUxJx5ZTXZuKI1
-         xXE7aHI+8yrL7jxtO22Nk8mbe1ArfCGcP0bB+oTYo+byHfG0mFHqjPqJZ6L/8nfP3N/i
-         ywM97jgbdVUAw4E553W51azcRxabCEqWH5HO/Y76ZHwELliAR1qKHNQlCrzX5L2o2dlI
-         it9a1VlBOU+ffhDaooBCwOWjanTrqj7oWqqxOCCtuSTBXdA55Mk9XLzgzmgAVo9yef9O
-         7Xsw==
-X-Gm-Message-State: AOJu0YxAZ6AfiZftaPdSsnIyT+1PqktdkHHD94slaDrMJjdm6lJ+3waQ
-        v+qOn26+Kkd3bRucePrRYxXXSRTBxjxSH7Hg845W/NIqKaO2Fw==
-X-Google-Smtp-Source: AGHT+IExOC57m6R4Jj4Yl66pRTNR+Koh9bq/N2CoiFvwMGG0JzTFmK2MaylH+/bQqy4UjnGht/1OgAYCjyKYaGFILTs=
-X-Received: by 2002:a17:906:2cc:b0:99c:ae07:2836 with SMTP id
- 12-20020a17090602cc00b0099cae072836mr998734ejk.3.1691650427767; Wed, 09 Aug
- 2023 23:53:47 -0700 (PDT)
+        Thu, 10 Aug 2023 02:57:49 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7EB1810C0;
+        Wed,  9 Aug 2023 23:57:49 -0700 (PDT)
+Received: from hillo.muru.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTP id 39DB180A9;
+        Thu, 10 Aug 2023 06:57:47 +0000 (UTC)
+From:   Tony Lindgren <tony@atomide.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH] serial: core: Fix serial core port id, including multiport devices
+Date:   Thu, 10 Aug 2023 09:57:34 +0300
+Message-ID: <20230810065737.47294-1-tony@atomide.com>
+X-Mailer: git-send-email 2.41.0
 MIME-Version: 1.0
-References: <20230808033130.2226-1-Wenhua.Lin@unisoc.com> <CAAfSe-t45FeFzXKUCjOU5qoPF-rq4dzMKo-eRciw6MbLq+rNgA@mail.gmail.com>
-In-Reply-To: <CAAfSe-t45FeFzXKUCjOU5qoPF-rq4dzMKo-eRciw6MbLq+rNgA@mail.gmail.com>
-From:   wenhua lin <wenhua.lin1994@gmail.com>
-Date:   Thu, 10 Aug 2023 14:53:35 +0800
-Message-ID: <CAB9BWhdH0o7ASPJE48BvT7UuQCGr4WdnPXC_G3q3UNAEx+=3wg@mail.gmail.com>
-Subject: Re: [PATCH 2/3] gpio: sprd: In the sleep state, the eic dbnc clk must
- be forced open
-To:     Chunyan Zhang <zhang.lyra@gmail.com>
-Cc:     Wenhua Lin <Wenhua.Lin@unisoc.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Andy Shevchenko <andy@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiongpeng Wu <xiongpeng.wu@unisoc.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 8, 2023 at 5:36=E2=80=AFPM Chunyan Zhang <zhang.lyra@gmail.com>=
- wrote:
->
-> On Tue, 8 Aug 2023 at 11:32, Wenhua Lin <Wenhua.Lin@unisoc.com> wrote:
-> >
-> > In the sleep state, Eic dbnc has no clock and the clk enable
->
-> Does "dbnc" mean "debounce"? I suggest not using abbreviation here.
+We want to fix the serial core port DEVNAME to use a port id of the
+hardware specific controller port instance instead of the port->line.
 
-Hi chunyan:
-    dbnc is debounce, We will make changes in patch v2.
+For example, the 8250 driver sets up a number of serial8250 ports
+initially that can be inherited by the hardware specific driver. At that
+the port->line no longer decribes the port's relation to the serial core
+controller instance.
 
-Thanks
+Let's fix the issue by assigning port->port_id for each serial core
+controller port instance.
 
->
-> > of dbnc needs to be forced open, so that eic can wake up normally.
-> >
-> > Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
-> > ---
-> >  drivers/gpio/gpio-eic-sprd.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/drivers/gpio/gpio-eic-sprd.c b/drivers/gpio/gpio-eic-sprd.=
-c
-> > index 0d85d9e80848..c506cfd6df8e 100644
-> > --- a/drivers/gpio/gpio-eic-sprd.c
-> > +++ b/drivers/gpio/gpio-eic-sprd.c
-> > @@ -23,6 +23,7 @@
-> >  #define SPRD_EIC_DBNC_IC               0x24
-> >  #define SPRD_EIC_DBNC_TRIG             0x28
-> >  #define SPRD_EIC_DBNC_CTRL0            0x40
-> > +#define SPRD_EIC_DBNC_FORCE_CLK                0x8000
-> >
-> >  #define SPRD_EIC_LATCH_INTEN           0x0
-> >  #define SPRD_EIC_LATCH_INTRAW          0x4
-> > @@ -213,6 +214,7 @@ static int sprd_eic_set_debounce(struct gpio_chip *=
-chip, unsigned int offset,
-> >         u32 value =3D readl_relaxed(base + reg) & ~SPRD_EIC_DBNC_MASK;
-> >
-> >         value |=3D (debounce / 1000) & SPRD_EIC_DBNC_MASK;
-> > +       value |=3D SPRD_EIC_DBNC_FORCE_CLK;
-> >         writel_relaxed(value, base + reg);
-> >
-> >         return 0;
-> > --
-> > 2.17.1
-> >
+Fixes: 7d695d83767c ("serial: core: Fix serial_base_match() after fixing controller port name")
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+---
+ drivers/tty/serial/serial_base.h     |  1 +
+ drivers/tty/serial/serial_base_bus.c | 28 +++++++++++++++++++++++++++-
+ 2 files changed, 28 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/serial_base.h b/drivers/tty/serial/serial_base.h
+--- a/drivers/tty/serial/serial_base.h
++++ b/drivers/tty/serial/serial_base.h
+@@ -16,6 +16,7 @@ struct device;
+ 
+ struct serial_ctrl_device {
+ 	struct device dev;
++	struct ida port_ida;
+ };
+ 
+ struct serial_port_device {
+diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
+--- a/drivers/tty/serial/serial_base_bus.c
++++ b/drivers/tty/serial/serial_base_bus.c
+@@ -10,6 +10,7 @@
+ 
+ #include <linux/container_of.h>
+ #include <linux/device.h>
++#include <linux/idr.h>
+ #include <linux/module.h>
+ #include <linux/serial_core.h>
+ #include <linux/slab.h>
+@@ -112,6 +113,8 @@ struct serial_ctrl_device *serial_base_ctrl_add(struct uart_port *port,
+ 	if (!ctrl_dev)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	ida_init(&ctrl_dev->port_ida);
++
+ 	err = serial_base_device_init(port, &ctrl_dev->dev,
+ 				      parent, &serial_ctrl_type,
+ 				      serial_base_ctrl_release,
+@@ -142,16 +145,31 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
+ 						struct serial_ctrl_device *ctrl_dev)
+ {
+ 	struct serial_port_device *port_dev;
++	unsigned int min = 0, max = ~0U;
+ 	int err;
+ 
+ 	port_dev = kzalloc(sizeof(*port_dev), GFP_KERNEL);
+ 	if (!port_dev)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	/* Device driver specified port_id vs automatic assignment? */
++	if (port->port_id) {
++		min = port->port_id;
++		max = port->port_id;
++	}
++
++	err = ida_alloc_range(&ctrl_dev->port_ida, min, max, GFP_KERNEL);
++	if (err < 0) {
++		kfree(port_dev);
++		return ERR_PTR(err);
++	}
++
++	port->port_id = err;
++
+ 	err = serial_base_device_init(port, &port_dev->dev,
+ 				      &ctrl_dev->dev, &serial_port_type,
+ 				      serial_base_port_release,
+-				      port->ctrl_id, port->line);
++				      port->ctrl_id, port->port_id);
+ 	if (err)
+ 		goto err_put_device;
+ 
+@@ -165,16 +183,24 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
+ 
+ err_put_device:
+ 	put_device(&port_dev->dev);
++	ida_free(&ctrl_dev->port_ida, port->port_id);
+ 
+ 	return ERR_PTR(err);
+ }
+ 
+ void serial_base_port_device_remove(struct serial_port_device *port_dev)
+ {
++	struct serial_ctrl_device *ctrl_dev;
++	struct device *parent;
++
+ 	if (!port_dev)
+ 		return;
+ 
++	parent = port_dev->dev.parent;
++	ctrl_dev = to_serial_base_ctrl_device(parent);
++
+ 	device_del(&port_dev->dev);
++	ida_free(&ctrl_dev->port_ida, port_dev->port->port_id);
+ 	put_device(&port_dev->dev);
+ }
+ 
+-- 
+2.41.0
