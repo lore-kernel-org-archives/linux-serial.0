@@ -2,44 +2,44 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F9ADC001B0
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 09:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A85BBC001DE
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 09:15:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234700AbjHJJPw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 05:15:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47486 "EHLO
+        id S234721AbjHJJPx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 05:15:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234447AbjHJJPZ (ORCPT
+        with ESMTP id S234460AbjHJJP2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 05:15:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71245268E;
-        Thu, 10 Aug 2023 02:15:24 -0700 (PDT)
+        Thu, 10 Aug 2023 05:15:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 768C52700;
+        Thu, 10 Aug 2023 02:15:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 053CE612F0;
-        Thu, 10 Aug 2023 09:15:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A4DCC433C8;
-        Thu, 10 Aug 2023 09:15:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 14D20612F0;
+        Thu, 10 Aug 2023 09:15:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68C2BC433C8;
+        Thu, 10 Aug 2023 09:15:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1691658923;
-        bh=XHiSm7fyHktEOt8LKQ030hOTo0nKBj8nbSwtdoWaBYM=;
+        s=k20201202; t=1691658926;
+        bh=zHa3PXKIEH54GgY+R1eXwduesS3j83ceqDEy55gq1po=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pGeF9MPjaocz2AU4PwKqcf10Id/Znp6tJtB2pCuf/LQ92ae6s9NUcdTnriBMjwIHf
-         Nzqqz1Mqkqm15AQ2gBAQLeZJXOPYyLP0OrTRUpQ1Os1Kyc6uc4DYw50B8f5oCDZZ7w
-         Z0VNJEDzhi5PqXw1NBRaeC9MTPSyHgeJlCwlLoIOFKervKAGOdeqRgoC/+PIkWsi8h
-         6dQfkdmuO16o5qCnIuWl8DqvDvlCtG3tksjxUvxVMBTG69iXYZHeCLzBnZdagw50uv
-         SweMDOEn+r0JUdAc38i7jiWm6DqdJEyjQQRNyweGMojwp2dPV7r+kZBsT9TQQ4nYg6
-         0DlIPRFkujOnA==
+        b=X4JDTjbZIY8YtcSnD9vNlkljLsDKWJ5A6kwyvYl92XcbxQvPUpsYwXdA/KhnGvU31
+         V9guFzglx2loNINCMRk9Yso+4v1OUUZ6mD8l6p8vn2C3jaeIlhu8GSTUN/4O/Fp4sB
+         9KNmlXfCszfwp7v/h1du1xYEBC9L45Pe5XcZqHjD+JRaGjQdjvMbmN8DdDzhTLCVlL
+         VYM94cYNf2nJLaMW7iHT2c7TrYl3NkJX0iNiXwFRo684B7RhcmX1KGLr+k5P+7jxe+
+         j5ywTTBeuUwR3KXAw4MHYss+JX8gXWyoLIReYR3o1Bppa88jr2kfu4e3KmxLhR/nKH
+         uZr3ElcZlvJ5w==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 05/36] tty: change tty_write_lock()'s ndelay parameter to bool
-Date:   Thu, 10 Aug 2023 11:14:39 +0200
-Message-ID: <20230810091510.13006-6-jirislaby@kernel.org>
+Subject: [PATCH 07/36] tty: drop tty_debug_wait_until_sent()
+Date:   Thu, 10 Aug 2023 11:14:41 +0200
+Message-ID: <20230810091510.13006-8-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230810091510.13006-1-jirislaby@kernel.org>
 References: <20230810091510.13006-1-jirislaby@kernel.org>
@@ -49,72 +49,43 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-It's a yes-no parameter, so convert it to bool to be obvious.
+It's a nop for everyone as TTY_DEBUG_WAIT_UNTIL_SENT is never set.
+Provided, we have better debugging/printout mechanisms nowadays, remove
+this mechanism.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/tty.h       | 2 +-
- drivers/tty/tty_io.c    | 6 +++---
- drivers/tty/tty_ioctl.c | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/tty/tty_ioctl.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
-diff --git a/drivers/tty/tty.h b/drivers/tty/tty.h
-index 89769a1f1f97..2751ac3946e7 100644
---- a/drivers/tty/tty.h
-+++ b/drivers/tty/tty.h
-@@ -63,7 +63,7 @@ int tty_check_change(struct tty_struct *tty);
- void __stop_tty(struct tty_struct *tty);
- void __start_tty(struct tty_struct *tty);
- void tty_write_unlock(struct tty_struct *tty);
--int tty_write_lock(struct tty_struct *tty, int ndelay);
-+int tty_write_lock(struct tty_struct *tty, bool ndelay);
- void tty_vhangup_session(struct tty_struct *tty);
- void tty_open_proc_set_tty(struct file *filp, struct tty_struct *tty);
- int tty_signal_session_leader(struct tty_struct *tty, int exit_session);
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index eb4e2e0e300d..54036a20a102 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -946,7 +946,7 @@ void tty_write_unlock(struct tty_struct *tty)
- 	wake_up_interruptible_poll(&tty->write_wait, EPOLLOUT);
- }
- 
--int tty_write_lock(struct tty_struct *tty, int ndelay)
-+int tty_write_lock(struct tty_struct *tty, bool ndelay)
- {
- 	if (!mutex_trylock(&tty->atomic_write_lock)) {
- 		if (ndelay)
-@@ -1160,7 +1160,7 @@ int tty_send_xchar(struct tty_struct *tty, char ch)
- 		return 0;
- 	}
- 
--	if (tty_write_lock(tty, 0) < 0)
-+	if (tty_write_lock(tty, false) < 0)
- 		return -ERESTARTSYS;
- 
- 	down_read(&tty->termios_rwsem);
-@@ -2486,7 +2486,7 @@ static int send_break(struct tty_struct *tty, unsigned int duration)
- 		retval = tty->ops->break_ctl(tty, duration);
- 	else {
- 		/* Do the work ourselves */
--		if (tty_write_lock(tty, 0) < 0)
-+		if (tty_write_lock(tty, false) < 0)
- 			return -EINTR;
- 		retval = tty->ops->break_ctl(tty, -1);
- 		if (retval)
 diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-index 2e88b414cf95..e3e1318f53fd 100644
+index e3e1318f53fd..f63e8b1b9e40 100644
 --- a/drivers/tty/tty_ioctl.c
 +++ b/drivers/tty/tty_ioctl.c
-@@ -507,7 +507,7 @@ static int set_termios(struct tty_struct *tty, void __user *arg, int opt)
- 		if (retval < 0)
- 			return retval;
+@@ -28,14 +28,6 @@
+ #include <asm/io.h>
+ #include <linux/uaccess.h>
  
--		if (tty_write_lock(tty, 0) < 0)
-+		if (tty_write_lock(tty, false) < 0)
- 			goto retry_write_wait;
+-#undef TTY_DEBUG_WAIT_UNTIL_SENT
+-
+-#ifdef TTY_DEBUG_WAIT_UNTIL_SENT
+-# define tty_debug_wait_until_sent(tty, f, args...)    tty_debug(tty, f, ##args)
+-#else
+-# define tty_debug_wait_until_sent(tty, f, args...)    do {} while (0)
+-#endif
+-
+ #undef	DEBUG
  
- 		/* Racing writer? */
+ /*
+@@ -198,8 +190,6 @@ int tty_unthrottle_safe(struct tty_struct *tty)
+ 
+ void tty_wait_until_sent(struct tty_struct *tty, long timeout)
+ {
+-	tty_debug_wait_until_sent(tty, "wait until sent, timeout=%ld\n", timeout);
+-
+ 	if (!timeout)
+ 		timeout = MAX_SCHEDULE_TIMEOUT;
+ 
 -- 
 2.41.0
 
