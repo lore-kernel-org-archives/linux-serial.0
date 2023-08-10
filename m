@@ -2,62 +2,69 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BC54C04A94
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 07:27:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 408C8C001DB
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 07:38:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229642AbjHJH1e (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 03:27:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48284 "EHLO
+        id S233219AbjHJHi2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 03:38:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229620AbjHJH1d (ORCPT
+        with ESMTP id S229518AbjHJHi1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 03:27:33 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508341702;
-        Thu, 10 Aug 2023 00:27:33 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id a640c23a62f3a-99bded9d93dso15597866b.1;
-        Thu, 10 Aug 2023 00:27:33 -0700 (PDT)
+        Thu, 10 Aug 2023 03:38:27 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFE4B1703;
+        Thu, 10 Aug 2023 00:38:26 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id 4fb4d7f45d1cf-522a9e0e6e9so123172a12.1;
+        Thu, 10 Aug 2023 00:38:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691652452; x=1692257252;
+        d=gmail.com; s=20221208; t=1691653105; x=1692257905;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=LCKORxJsfo4OufW3aw4gMGl7fvrKhigQTJp6xrqqbtM=;
-        b=ZGDvXmGB5zGmyNsBJKHgnDctj9w5YYf07kCPtoUJx6sOWfar6KzeD3A7HUZRGoH3aS
-         94AKQjAy3BSpZ1XSq+w1TEv5zGcNVA91RBhjfkn3H8V68sMkul96jaoidYEG3E58wNoo
-         SvighNbzEUguQZY9dZgSaKLjmOSVw8xARnEKloXjZdCESdkFEgTc4OvlQxSKdVC8c+bm
-         0dcRQqId8Mi/PGfFcsoM2r01t+Hcqr5F1crm1hIVmIHJTjnYAcCV3iLEM/l5CLNleZfN
-         WZn4Z/5kG89eMscAGvaVleqZgjiPvMs/+gTQZlZ2OVpewX5Vmh/zkvCTJ0fo0SqhLqwl
-         +V+A==
+        bh=NdMfMM/SdqNtHwQ1XO5GF4QV/3ikuZOysoKPc/8ygig=;
+        b=bK2Pkjbr+hS5Z9CKmwOeUuA1ugtA4ICZBt4F/DEwBtq4bdZbvU/Mi90oivC8P7vz7i
+         iGQi8SylOF1I3V4ISIPv9VBhlzaxq+HKaFVTWmHE3BwzhsaukKEcAZSuUG1pqxnc8gJY
+         3A1Q0QmS9zLX/pD5hDvl3bQU4oNBrBNoVUzAeLjzwa2HjKvnI9q7KjW1CGByfWXy43iJ
+         FxyfIuwVVZzk/YoMxtg5cWhu9WavHmej+3d5fXFNebte+7q2AJQ3fRccwglW2Y43NX50
+         DZ0poxQ22FonYi6MUjyIJuH4eSc3bN7PlCmV/QXvcA1YOntIt0mAihjmzoabAymOwO4Z
+         /K+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691652452; x=1692257252;
+        d=1e100.net; s=20221208; t=1691653105; x=1692257905;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=LCKORxJsfo4OufW3aw4gMGl7fvrKhigQTJp6xrqqbtM=;
-        b=DdkyKTTutnJlTWQ8zzQpHx+IFA8l2tT5Ud6Q+g+V+E+WZIlmKfFsqA14YdNKRHqCjW
-         ocEXUqByiuKGg/szZEcRMKMCoCXXdkvWrn+fhfF8MSxYGUYgHP1mh5n58/tKEFVmnyyT
-         Vr28mrTRJI22PpgTVeij8B8VElbVG7h/J4RKv4UmT8mGJpsRvJ8aoGQpvNFej5ztg55p
-         cMiUu1ETH3ZxdB+whW2DGcE3Gfx+E9hDLs2QhC0+ScmuLW55oFp9ADT7f9k3K5OvahEf
-         RW9gbMESgERQIlVjv3T/1I54ZwKcBVYfRtEHSkp3jXYKz/TVd81/SjzhjBRducUGBb5x
-         UE+A==
-X-Gm-Message-State: AOJu0YzZdsLw59zpHl0odVx/Yq66Xykve5mmY/L74laKRdTkQ38Nxu6r
-        OMqVQFgsBYTz5RWOlOVTj0ZZMntW7/CZwJx4U78=
-X-Google-Smtp-Source: AGHT+IFh7B+i+e6RR3jWk9LIQtbjKdiFifNOLjH1dLSS5dWr0Y2egA+0guxH+ImUZNQd/5YCukFj2rmgM8ioqQWK3DM=
-X-Received: by 2002:a17:906:51c3:b0:99c:5711:da5 with SMTP id
- v3-20020a17090651c300b0099c57110da5mr1028811ejk.5.1691652451671; Thu, 10 Aug
- 2023 00:27:31 -0700 (PDT)
+        bh=NdMfMM/SdqNtHwQ1XO5GF4QV/3ikuZOysoKPc/8ygig=;
+        b=PvddJG+YAk3nRoluTEvPU4ACMcxePx6p9XIbBZ3bkDR/mlygSUaCONxmmcO+Py2GeC
+         y/GuVzEMKygHBYgO1yPkcCmgmcAsRFBLiFw4l45VCQnFU4FRWmvjSpq9eIheseQQWl3/
+         +bFzOARMA8IfQBjyxufNGcMdFHsmi85irabgkSFsq/s3Tg4T24rGGAAdMT8S479oqMBA
+         iB1ARkGccwXDBdAcXN1bZdW2J/abj8FqoIXxGX2jU1SbzapU9YRUudwpnERLzdrwazdS
+         18ee0LUebf08UByN0OXos9uL9nDcx2MKfAOONPl/U/6u8IJ6PFe1EoXtKvruMVDiy5Mx
+         1dSA==
+X-Gm-Message-State: AOJu0Yw6Fo6wA+pd/JGP6aMqkep9DWPuX1L04c4AxDqfcfU85Q4FVFfm
+        Ymg/KsyBg62InikkmcXuGvgQnBNYDtdd/013pYw=
+X-Google-Smtp-Source: AGHT+IH+G5fT48hn52GpYPJrTghk6ssBz+EOYR3ZtcNPduVnatcJ4JATNjYsXBpPu+xLgJOsGJdu7VNLIXh9fl5sYQU=
+X-Received: by 2002:a17:906:7487:b0:997:d069:a880 with SMTP id
+ e7-20020a170906748700b00997d069a880mr1374549ejl.1.1691653104939; Thu, 10 Aug
+ 2023 00:38:24 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230808033144.2276-1-Wenhua.Lin@unisoc.com> <ZNJCLyWCdihyeC7a@smile.fi.intel.com>
-In-Reply-To: <ZNJCLyWCdihyeC7a@smile.fi.intel.com>
+References: <20230808072252.3229-1-Wenhua.Lin@unisoc.com> <3f17d903-20c4-59ac-f52b-ed108fe9475f@kernel.org>
+In-Reply-To: <3f17d903-20c4-59ac-f52b-ed108fe9475f@kernel.org>
 From:   wenhua lin <wenhua.lin1994@gmail.com>
-Date:   Thu, 10 Aug 2023 15:27:19 +0800
-Message-ID: <CAB9BWhctPWUuL8tLpQSHmn0UWQ2ej4jN87HO89bTEz5__o9rZg@mail.gmail.com>
-Subject: Re: [PATCH 3/3] gpio: sprd: Add clear interrupt
-To:     Andy Shevchenko <andy@kernel.org>
+Date:   Thu, 10 Aug 2023 15:38:13 +0800
+Message-ID: <CAB9BWhcNG4yt_07LmLk8YjFFzbVCqcrDO5e8DYE7e_wSsevWaA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] devicetree: bindings: Add keypad driver ducumentation
+To:     Krzysztof Kozlowski <krzk@kernel.org>
 Cc:     Wenhua Lin <Wenhua.Lin@unisoc.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Samuel Holland <samuel@sholland.org>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
         Orson Zhai <orsonzhai@gmail.com>,
         Baolin Wang <baolin.wang@linux.alibaba.com>,
         Chunyan Zhang <zhang.lyra@gmail.com>,
@@ -69,32 +76,112 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 8, 2023 at 9:25=E2=80=AFPM Andy Shevchenko <andy@kernel.org> wr=
-ote:
+On Thu, Aug 10, 2023 at 2:31=E2=80=AFAM Krzysztof Kozlowski <krzk@kernel.or=
+g> wrote:
 >
-> On Tue, Aug 08, 2023 at 11:31:44AM +0800, Wenhua Lin wrote:
-> > Clear interrupt after set the interrupt type.
+> On 08/08/2023 09:22, Wenhua Lin wrote:
+> > Add keypad driver ducumentation.
 >
-> Why?
+> 1. Please use scripts/get_maintainers.pl to get a list of necessary
+> people and lists to CC. It might happen, that command when run on an
+> older kernel, gives you outdated entries. Therefore please be sure you
+> base your patches on recent Linux kernel.
 >
-> Can't it be done in the ->init_hw() callback of GPIO IRQ chip?
+> You missed at least DT list (maybe more), so this won't be tested by
+> automated tooling. Performing review on untested code might be a waste
+> of time, thus I will skip this patch entirely till you follow the
+> process allowing the patch to be tested.
+>
+> Please kindly resend and include all necessary To/Cc entries.
+>
+>
+> 2. Please use subject prefixes matching the subsystem. You can get them
+> for example with `git log --oneline -- DIRECTORY_OR_FILE` on the
+> directory your patch is touching.
+>
+>
+> Limited review follows:
+>
+> >
+> > Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
+> > ---
+> >  .../bindings/input/sprd-keypad.yaml           | 76 +++++++++++++++++++
+> >  1 file changed, 76 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/input/sprd-keypad=
+.yaml
+>
+> Filename matching compatible, so sprd,block-name-etc.yaml
+>
+> >
+> > diff --git a/Documentation/devicetree/bindings/input/sprd-keypad.yaml b=
+/Documentation/devicetree/bindings/input/sprd-keypad.yaml
+> > new file mode 100644
+> > index 000000000000..51710e1eb389
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/input/sprd-keypad.yaml
+> > @@ -0,0 +1,76 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +# Copyright 2023 Unisoc Inc.
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/input/sprd-keypad.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Device-Tree bindings for GPIO attached keys
+>
+> This should not work and you should see warnings... which means:
+>
+> It does not look like you tested the bindings, at least after quick
+> look. Please run `make dt_binding_check` (see
+> Documentation/devicetree/bindings/writing-schema.rst for instructions).
+> Maybe you need to update your dtschema and yamllint.
+>
+> so drop "Device-tree bindings".
+>
+> Title also says nothing about the hardware - it is entirely unrelated.
+> Describe the hardware.
+>
+>
+> > +
+> > +maintainers:
+> > +  - Orson Zhai <orsonzhai@gmail.com>
+> > +  - Baolin Wang <baolin.wang7@gmail.com>
+> > +  - Chunyan Zhang <zhang.lyra@gmail.com>
+> > +
+> > +description: |
+> > +    Keypad controller is used to interface a SoC with a matrix-keypad =
+device.
+>
+> Mention which SoC.
+>
+> > +    The keypad controller supports multiple row and column lines.
+> > +    A key can be placed at each intersection of a unique row and a uni=
+que column.
+> > +    The keypad controller can sense a key-press and key-release and re=
+port the
+> > +    event using a interrupt to the cpu.
+> > +
+> > +properties:
+> > +    compatible:
+> > +    const: sprd,sc9860-keypad
+> > +
+> > +    reg:
+> > +        maxItems: 1
+>
+> OK, so this was for 100% not tested and won't work. No need to waste our
+> time on this. Test before sending:
+>
+> It does not look like you tested the bindings, at least after quick
+> look. Please run `make dt_binding_check` (see
+> Documentation/devicetree/bindings/writing-schema.rst for instructions).
+> Maybe you need to update your dtschema and yamllint.
+>
+> Best regards,
+> Krzysztof
+>
 
-Hi Andy:
-The initialization state of EIC is high-level trigger. If the external
-level is high and the interrupt condition is met,
-EIC has a latch function. If the module registers the eic interrupt,
-an interrupt will be generated immediately
- as soon as the eic interrupt is enabled. To solve this problem, our
-processing method is to clear the interrupt
- once when setting the interrupt trigger type, in order to avoid that
-this interrupt is the last interrupt.
+Hi Krzysztof:
+   This is a mistake of ours, sorry for wasting your precious time.
 
 Thanks
 Wenhua.Lin
-
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
