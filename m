@@ -2,65 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2343DC001B0
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 07:00:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD3BC001B0
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 07:03:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232062AbjHJHA3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 03:00:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34604 "EHLO
+        id S233627AbjHJHDi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 03:03:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229889AbjHJHA2 (ORCPT
+        with ESMTP id S233647AbjHJHDg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 03:00:28 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EFFC7AC;
-        Thu, 10 Aug 2023 00:00:26 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 663A080A9;
-        Thu, 10 Aug 2023 07:00:26 +0000 (UTC)
-Date:   Thu, 10 Aug 2023 10:00:25 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Guenter Roeck <groeck7@gmail.com>
-Subject: Re: [PATCH] serial: core: Revert port_id use
-Message-ID: <20230810070025.GJ11676@atomide.com>
-References: <20230806062052.47737-1-tony@atomide.com>
- <b8829d4b-d221-49ce-b0cd-e82dc79be719@roeck-us.net>
- <20230809052650.GT14799@atomide.com>
- <d883dd8b-1858-7204-32f6-09f1ef9ec326@roeck-us.net>
+        Thu, 10 Aug 2023 03:03:36 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52EBC1BCF;
+        Thu, 10 Aug 2023 00:03:35 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id a640c23a62f3a-94ea38c90ccso15101666b.1;
+        Thu, 10 Aug 2023 00:03:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1691651014; x=1692255814;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nZOoGUy+M48dRvTuWKMo+NT+ma4Ps8H2dN2+7+Y41ec=;
+        b=jBxiPDUwFzvy3lK1UWszcHDZyf/+fRtuEfekp2QxAOKGOH7UuDNFsb3A1IN7dgLcE8
+         VmJBwAulQVeY6kBgro5SCFZhq8ZPfaOaDQTCTPZk5eVQIehNnqV7H4sxcB22+PXtul78
+         U/ySswk0/V0mQ5K3uIKH69De7tYGlcNAyD/llBExcp0J1a0Z44XgKm2rsKJZnh9UMBd/
+         2nQYEcOke4A+woa6sSQVeX0y7w7IbE6G1+5wa/Lp/gyPIiCi1SD8biEof6p6ILrfkMBD
+         LGNoxeQmV8rKKzRSOGU8mMlKr58Gw4URlsywSH+0h4h0Qfq1Xr2GVhlqdSF7Lm1+yOTK
+         Vxgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691651014; x=1692255814;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=nZOoGUy+M48dRvTuWKMo+NT+ma4Ps8H2dN2+7+Y41ec=;
+        b=Dajl0XzNtuBKSin3fkUtvZRJJ/HX7j69InxVOM/cH6YUE0EHsw+wOb/Iw7T5fwgBGE
+         MptnZpN9uCftX51TH6NXH2dmGcAWKDXssNwMvkqTptFcKjuvN+ccwMqA1NuxQibaSR4h
+         ODk/fipw9ObonD5ShTbM1cLnj60/sXwuANZFkfqddfeh4iRSjBo4f/VxV4StdHo693gf
+         itcUjnnOYihSjIPgLcj2S5yPOeLZItyl5iUvWxW2oV0KgsKt/ybMYrkWUpHV5rhddalK
+         pZy+y0qz5YGNtNXHioItfTSpjghPYLSrRQPX5WE2fWY31ikSzMCkCP7bCvEilZ8okSCE
+         FSrg==
+X-Gm-Message-State: AOJu0YxEWDMhOyLsTx6dYxu/JS13eR1mULUKVlsO3qx1Y7fOxm2m/vLX
+        CQ/UZGEYa+D5S8TFk6bBfb3WnUWaBmWv+7bhqz8=
+X-Google-Smtp-Source: AGHT+IGY44kQ48crfNMp2RcsiBQGyOQwIkuRiZDemi3AexWGTSJDDtIP0LB3xWehL5/bE46BNZswGnA2Bh7Ix/cMzRY=
+X-Received: by 2002:a17:906:209e:b0:993:d90e:3101 with SMTP id
+ 30-20020a170906209e00b00993d90e3101mr1081927ejq.1.1691651013620; Thu, 10 Aug
+ 2023 00:03:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d883dd8b-1858-7204-32f6-09f1ef9ec326@roeck-us.net>
+References: <20230808033130.2226-1-Wenhua.Lin@unisoc.com> <ZNJBrnKGVGXaFAtc@smile.fi.intel.com>
+In-Reply-To: <ZNJBrnKGVGXaFAtc@smile.fi.intel.com>
+From:   wenhua lin <wenhua.lin1994@gmail.com>
+Date:   Thu, 10 Aug 2023 15:03:21 +0800
+Message-ID: <CAB9BWhdYUcnkwqFQz+e8dK-_Vv6on=Poo8QmKrk55c+zrQ4-mw@mail.gmail.com>
+Subject: Re: [PATCH 2/3] gpio: sprd: In the sleep state, the eic dbnc clk must
+ be forced open
+To:     Andy Shevchenko <andy@kernel.org>
+Cc:     Wenhua Lin <Wenhua.Lin@unisoc.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiongpeng Wu <xiongpeng.wu@unisoc.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Guenter Roeck <linux@roeck-us.net> [230809 21:17]:
-> On 8/8/23 22:26, Tony Lindgren wrote:
-> > Guenter, care to also test the patch below on top of this fix and
-> > see if things still behave for you?
-> > 
-> > I'll send a proper patch assuming things test fine.
-> > 
-> 
-> Patch below works for me.
+On Tue, Aug 8, 2023 at 9:23=E2=80=AFPM Andy Shevchenko <andy@kernel.org> wr=
+ote:
+>
+> On Tue, Aug 08, 2023 at 11:31:30AM +0800, Wenhua Lin wrote:
+> > In the sleep state, Eic dbnc has no clock and the clk enable
+>
+> Comma is not needed here.
 
-OK good to hear thanks, patch posted at [0] below.
+Hi Andy:
+We will make changes in patch v2.
 
-Regards,
+Thanks
+Wernhua.Lin
 
-Tony
+>
+> > of dbnc needs to be forced open, so that eic can wake up normally.
+>
+> ...
+>
+> > +#define SPRD_EIC_DBNC_FORCE_CLK              0x8000
+>
+> BIT(15) ?
 
-[0] https://lore.kernel.org/linux-serial/20230810065737.47294-1-tony@atomide.com/T/#u
+Hi Andy:
+Yes, The bit15 is clock of dbnc forced open
+
+Thanks
+Wernhua.Lin
+
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
