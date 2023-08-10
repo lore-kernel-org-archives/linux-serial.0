@@ -2,64 +2,64 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62393C001B0
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 07:08:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BC54C04A94
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 07:27:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233155AbjHJHIr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 03:08:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58930 "EHLO
+        id S229642AbjHJH1e (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 03:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230147AbjHJHIr (ORCPT
+        with ESMTP id S229620AbjHJH1d (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 03:08:47 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48AAFE40;
-        Thu, 10 Aug 2023 00:08:46 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id 4fb4d7f45d1cf-521caf0d7a6so131686a12.1;
-        Thu, 10 Aug 2023 00:08:46 -0700 (PDT)
+        Thu, 10 Aug 2023 03:27:33 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508341702;
+        Thu, 10 Aug 2023 00:27:33 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id a640c23a62f3a-99bded9d93dso15597866b.1;
+        Thu, 10 Aug 2023 00:27:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691651325; x=1692256125;
+        d=gmail.com; s=20221208; t=1691652452; x=1692257252;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=yt8N8ksFf61RNhq6PjyUWs57gbuZvvlQrmRaj4Kn4lY=;
-        b=Jbjs6a+VLqrrsha7Q5HbNJtz0Xk8oOBhXXKgVFPwOmamjZYgffL526l/Eert5ycd8P
-         huqHl8Id/QfBHNIcLwT6JY/qn0gqpxTbGP9+IjpYuoxaxKAF5IlU+6VkzKNOruKQXs1N
-         vAwPmOR/B+eiM+5AKf2w4uQ1pkbgl2ujzv/0Ix2P5KnqMHtQm4WsyoPB01vbrkVGVCHi
-         Z3MyVFhhwblnUIQP7Cw5QmAgnagS/dHaF/VoJskKACFBh8CAVBO3LvPe6zDMd5Ju6J4e
-         e1RWqLI2+6SCE0J/isByk8acDviFzpjmbuXnoqcHjmLtyFrSsNYAnKx1iN/U8fCPHKBl
-         D6Fg==
+        bh=LCKORxJsfo4OufW3aw4gMGl7fvrKhigQTJp6xrqqbtM=;
+        b=ZGDvXmGB5zGmyNsBJKHgnDctj9w5YYf07kCPtoUJx6sOWfar6KzeD3A7HUZRGoH3aS
+         94AKQjAy3BSpZ1XSq+w1TEv5zGcNVA91RBhjfkn3H8V68sMkul96jaoidYEG3E58wNoo
+         SvighNbzEUguQZY9dZgSaKLjmOSVw8xARnEKloXjZdCESdkFEgTc4OvlQxSKdVC8c+bm
+         0dcRQqId8Mi/PGfFcsoM2r01t+Hcqr5F1crm1hIVmIHJTjnYAcCV3iLEM/l5CLNleZfN
+         WZn4Z/5kG89eMscAGvaVleqZgjiPvMs/+gTQZlZ2OVpewX5Vmh/zkvCTJ0fo0SqhLqwl
+         +V+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691651325; x=1692256125;
+        d=1e100.net; s=20221208; t=1691652452; x=1692257252;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=yt8N8ksFf61RNhq6PjyUWs57gbuZvvlQrmRaj4Kn4lY=;
-        b=JJjcWwJzDFR/XPM4kYnZ7342xB1eXfTLdz5k6SQBScjXTh7uzUspGpkwOOm/rHSW+W
-         yN72SEyUEI+0Q7JmiaJjL1uBWSfot9SsgGxpRXyLTVBjxGvzv+iH3kms06TMtTSnnJBx
-         ob2o0YiZt2+FVnr9xALDZJDkCS1OHMyWSnb+F+SJIxcuEB/fsmbIIt+tKyZaat7r/7th
-         rmi9yHJ57x09hjAwAI8ijdZZX4FBlDt8lJ/wqO6XeYaJ92LOrG/HqqmqAbqqvfiOlLhR
-         BRsEbHfEf9yoHpZRBBv9g/xHZRTQIjX3IWzMyjWc7mNKYqRTNS0p8o+jqHLiKlnGf4ld
-         t2Uw==
-X-Gm-Message-State: AOJu0YyXmzcYtiBTCeIeinqXyZ2y6E9WT+rLZnFTVSY+LgsE9gOyIyaA
-        lZrhnODtYUR501uVwBK3TkMbKb6siPqih390y7o=
-X-Google-Smtp-Source: AGHT+IGBrYF3ReMRrKoxEzSnDGZs1GRxob1UCPHqHruX/V/GmF/h5pGc3XBfSSjM73uvCvF9zOhbdkJGdojR6xjCxII=
-X-Received: by 2002:a17:906:2258:b0:99c:ae07:28da with SMTP id
- 24-20020a170906225800b0099cae0728damr1106454ejr.0.1691651324563; Thu, 10 Aug
- 2023 00:08:44 -0700 (PDT)
+        bh=LCKORxJsfo4OufW3aw4gMGl7fvrKhigQTJp6xrqqbtM=;
+        b=DdkyKTTutnJlTWQ8zzQpHx+IFA8l2tT5Ud6Q+g+V+E+WZIlmKfFsqA14YdNKRHqCjW
+         ocEXUqByiuKGg/szZEcRMKMCoCXXdkvWrn+fhfF8MSxYGUYgHP1mh5n58/tKEFVmnyyT
+         Vr28mrTRJI22PpgTVeij8B8VElbVG7h/J4RKv4UmT8mGJpsRvJ8aoGQpvNFej5ztg55p
+         cMiUu1ETH3ZxdB+whW2DGcE3Gfx+E9hDLs2QhC0+ScmuLW55oFp9ADT7f9k3K5OvahEf
+         RW9gbMESgERQIlVjv3T/1I54ZwKcBVYfRtEHSkp3jXYKz/TVd81/SjzhjBRducUGBb5x
+         UE+A==
+X-Gm-Message-State: AOJu0YzZdsLw59zpHl0odVx/Yq66Xykve5mmY/L74laKRdTkQ38Nxu6r
+        OMqVQFgsBYTz5RWOlOVTj0ZZMntW7/CZwJx4U78=
+X-Google-Smtp-Source: AGHT+IFh7B+i+e6RR3jWk9LIQtbjKdiFifNOLjH1dLSS5dWr0Y2egA+0guxH+ImUZNQd/5YCukFj2rmgM8ioqQWK3DM=
+X-Received: by 2002:a17:906:51c3:b0:99c:5711:da5 with SMTP id
+ v3-20020a17090651c300b0099c57110da5mr1028811ejk.5.1691652451671; Thu, 10 Aug
+ 2023 00:27:31 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230808033144.2276-1-Wenhua.Lin@unisoc.com> <e5d5a440-af25-17a7-40a2-8dbbc8c20c69@linux.alibaba.com>
-In-Reply-To: <e5d5a440-af25-17a7-40a2-8dbbc8c20c69@linux.alibaba.com>
+References: <20230808033144.2276-1-Wenhua.Lin@unisoc.com> <ZNJCLyWCdihyeC7a@smile.fi.intel.com>
+In-Reply-To: <ZNJCLyWCdihyeC7a@smile.fi.intel.com>
 From:   wenhua lin <wenhua.lin1994@gmail.com>
-Date:   Thu, 10 Aug 2023 15:08:32 +0800
-Message-ID: <CAB9BWhdseF56JyTC75MLGmo=ZRpTfmLOc=U3XB-zHnAif=fALQ@mail.gmail.com>
+Date:   Thu, 10 Aug 2023 15:27:19 +0800
+Message-ID: <CAB9BWhctPWUuL8tLpQSHmn0UWQ2ej4jN87HO89bTEz5__o9rZg@mail.gmail.com>
 Subject: Re: [PATCH 3/3] gpio: sprd: Add clear interrupt
-To:     Baolin Wang <baolin.wang@linux.alibaba.com>
+To:     Andy Shevchenko <andy@kernel.org>
 Cc:     Wenhua Lin <Wenhua.Lin@unisoc.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         Bartosz Golaszewski <brgl@bgdev.pl>,
-        Andy Shevchenko <andy@kernel.org>,
         Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
         Chunyan Zhang <zhang.lyra@gmail.com>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Xiongpeng Wu <xiongpeng.wu@unisoc.com>
@@ -69,140 +69,32 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Aug 9, 2023 at 9:31=E2=80=AFAM Baolin Wang
-<baolin.wang@linux.alibaba.com> wrote:
+On Tue, Aug 8, 2023 at 9:25=E2=80=AFPM Andy Shevchenko <andy@kernel.org> wr=
+ote:
 >
->
->
-> On 8/8/2023 11:31 AM, Wenhua Lin wrote:
+> On Tue, Aug 08, 2023 at 11:31:44AM +0800, Wenhua Lin wrote:
 > > Clear interrupt after set the interrupt type.
 >
-> Sorry, NAK. The commit message is meaningless.
+> Why?
+>
+> Can't it be done in the ->init_hw() callback of GPIO IRQ chip?
 
-Hi baolin:
-We will re-modify the commit message and submit it in patch v2.
+Hi Andy:
+The initialization state of EIC is high-level trigger. If the external
+level is high and the interrupt condition is met,
+EIC has a latch function. If the module registers the eic interrupt,
+an interrupt will be generated immediately
+ as soon as the eic interrupt is enabled. To solve this problem, our
+processing method is to clear the interrupt
+ once when setting the interrupt trigger type, in order to avoid that
+this interrupt is the last interrupt.
 
 Thanks
 Wenhua.Lin
 
 >
-> > Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
-> > ---
-> >   drivers/gpio/gpio-eic-sprd.c | 10 ++++++++++
-> >   1 file changed, 10 insertions(+)
-> >
-> > diff --git a/drivers/gpio/gpio-eic-sprd.c b/drivers/gpio/gpio-eic-sprd.=
-c
-> > index c506cfd6df8e..31125f53bc97 100644
-> > --- a/drivers/gpio/gpio-eic-sprd.c
-> > +++ b/drivers/gpio/gpio-eic-sprd.c
-> > @@ -374,29 +374,34 @@ static int sprd_eic_irq_set_type(struct irq_data =
-*data, unsigned int flow_type)
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTB=
-OTH, 0);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTM=
-ODE, 0);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTP=
-OL, 1);
-> > +                     sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTC=
-LR, 1);
-> >                       irq_set_handler_locked(data, handle_edge_irq);
-> >                       break;
-> >               case IRQ_TYPE_EDGE_FALLING:
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTB=
-OTH, 0);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTM=
-ODE, 0);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTP=
-OL, 0);
-> > +                     sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTC=
-LR, 1);
-> >                       irq_set_handler_locked(data, handle_edge_irq);
-> >                       break;
-> >               case IRQ_TYPE_EDGE_BOTH:
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTM=
-ODE, 0);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTB=
-OTH, 1);
-> > +                     sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTC=
-LR, 1);
-> >                       irq_set_handler_locked(data, handle_edge_irq);
-> >                       break;
-> >               case IRQ_TYPE_LEVEL_HIGH:
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTB=
-OTH, 0);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTM=
-ODE, 1);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTP=
-OL, 1);
-> > +                     sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTC=
-LR, 1);
-> >                       irq_set_handler_locked(data, handle_level_irq);
-> >                       break;
-> >               case IRQ_TYPE_LEVEL_LOW:
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTB=
-OTH, 0);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTM=
-ODE, 1);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTP=
-OL, 0);
-> > +                     sprd_eic_update(chip, offset, SPRD_EIC_ASYNC_INTC=
-LR, 1);
-> >                       irq_set_handler_locked(data, handle_level_irq);
-> >                       break;
-> >               default:
-> > @@ -409,29 +414,34 @@ static int sprd_eic_irq_set_type(struct irq_data =
-*data, unsigned int flow_type)
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTBO=
-TH, 0);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTMO=
-DE, 0);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTPO=
-L, 1);
-> > +                     sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTCL=
-R, 1);
-> >                       irq_set_handler_locked(data, handle_edge_irq);
-> >                       break;
-> >               case IRQ_TYPE_EDGE_FALLING:
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTBO=
-TH, 0);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTMO=
-DE, 0);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTPO=
-L, 0);
-> > +                     sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTCL=
-R, 1);
-> >                       irq_set_handler_locked(data, handle_edge_irq);
-> >                       break;
-> >               case IRQ_TYPE_EDGE_BOTH:
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTMO=
-DE, 0);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTBO=
-TH, 1);
-> > +                     sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTCL=
-R, 1);
-> >                       irq_set_handler_locked(data, handle_edge_irq);
-> >                       break;
-> >               case IRQ_TYPE_LEVEL_HIGH:
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTBO=
-TH, 0);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTMO=
-DE, 1);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTPO=
-L, 1);
-> > +                     sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTCL=
-R, 1);
-> >                       irq_set_handler_locked(data, handle_level_irq);
-> >                       break;
-> >               case IRQ_TYPE_LEVEL_LOW:
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTBO=
-TH, 0);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTMO=
-DE, 1);
-> >                       sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTPO=
-L, 0);
-> > +                     sprd_eic_update(chip, offset, SPRD_EIC_SYNC_INTCL=
-R, 1);
-> >                       irq_set_handler_locked(data, handle_level_irq);
-> >                       break;
-> >               default:
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
