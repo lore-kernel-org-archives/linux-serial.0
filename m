@@ -2,38 +2,38 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1CE0C001B0
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 12:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8989C001B0
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 12:05:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232921AbjHJMEt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 08:04:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53562 "EHLO
+        id S232686AbjHJMFT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 08:05:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234112AbjHJMEs (ORCPT
+        with ESMTP id S230458AbjHJMFS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 08:04:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DB226AF;
-        Thu, 10 Aug 2023 05:04:47 -0700 (PDT)
+        Thu, 10 Aug 2023 08:05:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC44B1BD;
+        Thu, 10 Aug 2023 05:05:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0C6265A99;
-        Thu, 10 Aug 2023 12:04:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53BA3C433C9;
-        Thu, 10 Aug 2023 12:04:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7269863311;
+        Thu, 10 Aug 2023 12:05:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F8A8C433C9;
+        Thu, 10 Aug 2023 12:05:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1691669086;
-        bh=yX9LvIvDDuUJq2cqD6pHq0+zJxDO0c3crG/Drl1iNl4=;
+        s=k20201202; t=1691669116;
+        bh=/Yp0RxfjDZDzPjmWN8BaXr837Qy8tfsgM+K13EUnPEE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IBz0mDjxrNZvcJf168DBM0DteMNMz6lUattdfiWrPKrqFvFNFPcNQnwaPBGOoCXYl
-         hX47wwW02lZSPqcJFAo83Z4vOePtOOqFt0M8MMp54QgTuqqkxVNrPjhvnsyHz7SEMF
-         EGWdeIUND9btz0Y5/QINWRh88GFXasi7PPqIrKoDD2UtZkVbx+d2g5lFlDPZOm/yqW
-         O8ijRQlH4EakduXbq/xvzpUTSGX9E9Tdj0r1NQc/1xBFMDGVLBICGiyhOtXORrjsNe
-         N36b1L3530faqB8va6NVWepXjSQDZqwfGeuq/Ypf8mCLY7BvLJDNYbpjcxExPb0v3Z
-         9ozJg2MMddg1w==
-Date:   Thu, 10 Aug 2023 13:04:38 +0100
+        b=LINr0XkPaKjSRqA9E1IGuDPCh64O3YCC4bLVfqFG4ASRfzI9yxUUf3vGlq/AjXx3A
+         hytGNKJ24tgA/rs3LRqW4fJgL90f9orC456alCu7B/gmDoIGtZKkELuNxcBfTdbs89
+         Fxuwp1qWGpmCEGJZY5bfmyA9zP5YEccKQCz3OmSy2UOd5FVy49g0iGPkm6bePKMYDn
+         E0yMtXo4/lUL9Ax4qicJuPU3UTm9+A9vtw+laExOBh91ODrDl79cVk8oTOLebF6Vmc
+         54PqNVbdWlD22u+/HxLnpnDm5RuFRpUWp0kEa+7UEejUTod7Yi056iL21VS4kGwIrM
+         +Uod3oDgZCw7w==
+Date:   Thu, 10 Aug 2023 13:05:08 +0100
 From:   Mark Brown <broonie@kernel.org>
 To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
@@ -41,60 +41,65 @@ Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
         Chris Brannon <chris@the-brannons.com>,
         Kirk Reiser <kirk@reisers.ca>,
         Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
         Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, Max Staudt <max@enpas.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>, Max Staudt <max@enpas.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Dario Binacchi <dario.binacchi@amarulasolutions.com>,
         Andreas Koensgen <ajk@comnets.uni-bremen.de>,
         Jeremy Kerr <jk@codeconstruct.com.au>,
         Matt Johnston <matt@codeconstruct.com.au>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>
-Subject: Re: [PATCH 16/36] tty: use u8 for chars
-Message-ID: <6c3155af-987e-4e69-8e20-8e3c89f9ed9f@sirena.org.uk>
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Subject: Re: [PATCH 17/36] tty: use u8 for flags
+Message-ID: <59aa7909-3fa8-4ceb-94d7-7727a4c7e904@sirena.org.uk>
 References: <20230810091510.13006-1-jirislaby@kernel.org>
- <20230810091510.13006-17-jirislaby@kernel.org>
+ <20230810091510.13006-18-jirislaby@kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="2MGU0EMwzskEFRw0"
+        protocol="application/pgp-signature"; boundary="g88Z0hAJlY8W0zZ1"
 Content-Disposition: inline
-In-Reply-To: <20230810091510.13006-17-jirislaby@kernel.org>
+In-Reply-To: <20230810091510.13006-18-jirislaby@kernel.org>
 X-Cookie: Reunite Gondwondaland!
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
---2MGU0EMwzskEFRw0
+--g88Z0hAJlY8W0zZ1
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 10, 2023 at 11:14:50AM +0200, Jiri Slaby (SUSE) wrote:
-> This makes all those 'unsigned char's an explicit 'u8'. This is part of
-> the continuing unification of chars and flags to be consistent u8.
+On Thu, Aug 10, 2023 at 11:14:51AM +0200, Jiri Slaby (SUSE) wrote:
+> This makes all those 'char's an explicit 'u8'. This is part of the
+> continuing unification of chars and flags to be consistent u8.
+>=20
+> This approaches tty_port_default_receive_buf().
 
 Acked-by: Mark Brown <broonie@kernel.org>
 
---2MGU0EMwzskEFRw0
+--g88Z0hAJlY8W0zZ1
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmTU0lUACgkQJNaLcl1U
-h9Dr9Qf9HgUCYAzHtPfLMePhfryUgEukIiJEqj9MayrfaRPFCGt6HByrclOMHWKT
-Qc9SiKjEhrKM9ePm4bQE3ydbp/nxhOvvvz9xGNjNNXDqzlo/1d2gHmVnigdwCYzb
-CbqwZaWtxYV5b5Lsvp3MDOxmcIoR5qHo2AU5QLLlyTqfDMUrRJibQG7lm0D8F8uW
-7d15G9KocFk1fLOD1hDMvi8Ul40IOFxOCZMuQGksX4ItC/T8ZcC5BrzwE5H2KDpa
-hYxr/2C4Ihj6Ssl3m6P2CZxnMTPHTpnGLjNHxpz7XXGCOOWnoYStCOVBCjjsPl3o
-zJRdVLpt2yyAJpiHpj0vE4ppeUpfkg==
-=eINv
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmTU0nMACgkQJNaLcl1U
+h9D9egf8DkTW2F5YRiMYN+RgrSLiQ9MxhFvQiSoC1XAsTB0VFy87VO7XbEjJB/7B
+EdH/5O2MMUWXjVRZvMGdUKWGe6CNB3IzlrZIzOH2uY8y6ww8P37fiP3IqU8TXz2D
+ynvppz1bt85Ketg9I43F2GmPn5g4WinKAhpi1TL0L/nfHH9EXACuWiMfEySH+M7l
+k+L+EZnRHTKncqCW07miHHqQNybJKF7+GH4Eyss2NePK9q8Z1zj93rKA1zkbJoH4
+uot9JoyDkweLapR3GrOxdtcQefookp3jAy6DfvizvQpC2D0H8hsV8JZHJjWwGXKB
+dwSTsErcmEjhl4Yh0gQy4/eZ4OqnnQ==
+=8+tC
 -----END PGP SIGNATURE-----
 
---2MGU0EMwzskEFRw0--
+--g88Z0hAJlY8W0zZ1--
