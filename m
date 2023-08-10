@@ -2,47 +2,45 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8476C001B0
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 09:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C56BEC001DE
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 09:19:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234893AbjHJJS6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 05:18:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54628 "EHLO
+        id S234970AbjHJJTD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 05:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234907AbjHJJSG (ORCPT
+        with ESMTP id S234691AbjHJJSS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 05:18:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2803A30DB;
-        Thu, 10 Aug 2023 02:16:43 -0700 (PDT)
+        Thu, 10 Aug 2023 05:18:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B5147DA;
+        Thu, 10 Aug 2023 02:16:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30A1B654F7;
-        Thu, 10 Aug 2023 09:16:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0130FC433CB;
-        Thu, 10 Aug 2023 09:16:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC61C654D7;
+        Thu, 10 Aug 2023 09:16:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 035AEC433C8;
+        Thu, 10 Aug 2023 09:16:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1691659001;
-        bh=EAzZvqV0DX/6MdQG6V3byUfhXhjqmaV2PFwGoLqDg8Q=;
+        s=k20201202; t=1691658997;
+        bh=zJE0WmFdaYb7Ti2ERniP+fEDjSx1UljWS7VoaTirjiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gkoej6iSFauNlE7dWSTp1xK+Zil0fHVbrGDyfXRIZcijG+8mFqs2KZCGDVZk1BNIg
-         2BrkFE3DAyzqQBjSzwWnPHgT7lHoDPYh93Zvnvb2knmm72I3zNXWyiCbTQz7nRxzyc
-         c1gn51OWjpJvxPhVY+qxUSfMoPktrsWQPxaJeYlQPVdxqw2ByFU7E2Zu2QFOOMsCqm
-         iEJu0oUE+1M0zV7e5YclMNchhoe72pqshhn9Xg0meohMdAK6zy0R8a/OXG7OskOXcy
-         eYLZGtok45f5+lS0LYVZXOCfiiDUzdgwarHg7S+zdd6Dqp+1PbS0iK6E3PkM99+et0
-         G0Qm8ToQVqDGA==
+        b=epDptasYtf71uksmyF3AyJX63Xz++gBvXiLYpnCHLr3ySfJSc4lWoArFMZ5py/yI+
+         IqzOEkIdZ1EyZysLGkHNohXRtxY6+GmvKCUOv15KzxMZok4lb34U+SND0eGyuyVCw6
+         EXR+zxw/u1ayr97tNfHhzIYjkpqryYE6j5cSVk3cho4GGU/LHLF57ukLbUKL3w2kWZ
+         5JwIVKnqfjekzsqRrWA/EAZVj9LUUg+zKCaMd8Te5QbRmzEylq+QtCIundpXjg8W7D
+         Nq1kI5zvMwtVQkxeY2O2hXEK87OLU5GKMP0IO7Bg1t7cSB6UPwdlvkON8qVeql4K87
+         LuGeI+7lS2SYA==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Subject: [PATCH 36/36] tty: rfcomm: convert counts to size_t
-Date:   Thu, 10 Aug 2023 11:15:10 +0200
-Message-ID: <20230810091510.13006-37-jirislaby@kernel.org>
+        linux-staging@lists.linux.dev
+Subject: [PATCH 34/36] tty: gdm724x: convert counts to size_t
+Date:   Thu, 10 Aug 2023 11:15:08 +0200
+Message-ID: <20230810091510.13006-35-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230810091510.13006-1-jirislaby@kernel.org>
 References: <20230810091510.13006-1-jirislaby@kernel.org>
@@ -55,33 +53,51 @@ X-Mailing-List: linux-serial@vger.kernel.org
 Unify the type of tty_operations::write() counters with the 'count'
 parameter. I.e. use size_t for them.
 
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Marcel Holtmann <marcel@holtmann.org>
-Cc: Johan Hedberg <johan.hedberg@gmail.com>
-Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
----
- net/bluetooth/rfcomm/tty.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This includes changing constants to UL to keep min() and avoid min_t().
 
-diff --git a/net/bluetooth/rfcomm/tty.c b/net/bluetooth/rfcomm/tty.c
-index 33b135ed59c4..94ec913dfb76 100644
---- a/net/bluetooth/rfcomm/tty.c
-+++ b/net/bluetooth/rfcomm/tty.c
-@@ -785,12 +785,12 @@ static ssize_t rfcomm_tty_write(struct tty_struct *tty, const u8 *buf,
- 	struct rfcomm_dev *dev = tty->driver_data;
- 	struct rfcomm_dlc *dlc = dev->dlc;
- 	struct sk_buff *skb;
--	int sent = 0, size;
-+	size_t sent = 0, size;
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Cc: linux-staging@lists.linux.dev
+---
+ drivers/staging/gdm724x/gdm_tty.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/staging/gdm724x/gdm_tty.c b/drivers/staging/gdm724x/gdm_tty.c
+index b31f2afb0286..cbaaa8fa7474 100644
+--- a/drivers/staging/gdm724x/gdm_tty.c
++++ b/drivers/staging/gdm724x/gdm_tty.c
+@@ -17,9 +17,9 @@
+ #define GDM_TTY_MAJOR 0
+ #define GDM_TTY_MINOR 32
  
- 	BT_DBG("tty %p count %zu", tty, count);
+-#define WRITE_SIZE 2048
++#define WRITE_SIZE 2048UL
  
- 	while (count) {
--		size = min_t(uint, count, dlc->mtu);
-+		size = min_t(size_t, count, dlc->mtu);
+-#define MUX_TX_MAX_SIZE 2048
++#define MUX_TX_MAX_SIZE 2048UL
  
- 		skb = rfcomm_wmalloc(dev, size + RFCOMM_SKB_RESERVE, GFP_ATOMIC);
- 		if (!skb)
+ static inline bool gdm_tty_ready(struct gdm *gdm)
+ {
+@@ -152,9 +152,8 @@ static void gdm_tty_send_complete(void *arg)
+ static ssize_t gdm_tty_write(struct tty_struct *tty, const u8 *buf, size_t len)
+ {
+ 	struct gdm *gdm = tty->driver_data;
+-	int remain = len;
+-	int sent_len = 0;
+-	int sending_len = 0;
++	size_t remain = len;
++	size_t sent_len = 0;
+ 
+ 	if (!gdm_tty_ready(gdm))
+ 		return -ENODEV;
+@@ -163,7 +162,7 @@ static ssize_t gdm_tty_write(struct tty_struct *tty, const u8 *buf, size_t len)
+ 		return 0;
+ 
+ 	while (1) {
+-		sending_len = min(MUX_TX_MAX_SIZE, remain);
++		size_t sending_len = min(MUX_TX_MAX_SIZE, remain);
+ 		gdm->tty_dev->send_func(gdm->tty_dev->priv_dev,
+ 					(void *)(buf + sent_len),
+ 					sending_len,
 -- 
 2.41.0
 
