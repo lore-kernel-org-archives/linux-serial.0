@@ -2,131 +2,111 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45CFFC001DB
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 09:28:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC95C001DB
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 09:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234067AbjHJJ2a (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 05:28:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58396 "EHLO
+        id S231441AbjHJJmx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 05:42:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234225AbjHJJ2T (ORCPT
+        with ESMTP id S229604AbjHJJmw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 05:28:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF8C30ED;
-        Thu, 10 Aug 2023 02:16:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21FE1654F0;
-        Thu, 10 Aug 2023 09:16:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4906EC433C7;
-        Thu, 10 Aug 2023 09:16:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1691658995;
-        bh=bnrsoGhE7/8YdxUdBJXDpgeuttOq6uFT0CqwRjobkl4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RtluJmJKgw6ivpn9rt46wrl+aWeLC7cBrbo9lS1FHLIj7ZXKX+JsBJPEDoXM66hd8
-         +aH/Aq/r2ipMzOauyx8npaqyRhwxC+XKz1dZdxGUBQCH+7kvTkPSHiTLQZeBLeWqvN
-         G/3zJ06OuHMbnWrEgF2UdeonT9BtgG7iAEUcyoC83cNSbOP14Zqa2PQM/e42Ma7/Z7
-         +SJlqoBNfC5iVyH5lCAAljzGC9C4bcvkVy10U/vPuHVpDIDFO18jgQ9a63o65yYKYg
-         Y6l/2iuNBT6/Tq38EhqLk6VKZriPxaXkCAycv4ETjAfcllKmVwPCxe5C9I6ziUhh1+
-         xOER9mB65lGSw==
-From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 33/36] tty: vcc: convert counts to size_t
-Date:   Thu, 10 Aug 2023 11:15:07 +0200
-Message-ID: <20230810091510.13006-34-jirislaby@kernel.org>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230810091510.13006-1-jirislaby@kernel.org>
+        Thu, 10 Aug 2023 05:42:52 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD7A1AB
+        for <linux-serial@vger.kernel.org>; Thu, 10 Aug 2023 02:42:51 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id 5b1f17b1804b1-3fe4b95c371so3785015e9.1
+        for <linux-serial@vger.kernel.org>; Thu, 10 Aug 2023 02:42:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1691660570; x=1692265370;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=DPLh7fq/Fe4wDkfylhVKPKRu57n0aHzq3eL6f8DTdi8=;
+        b=x3YkisRZJi8cG7KHbh8hFPZOL2XvVpY+i5tuJTpHfBML5g8MXHUHVGDoT+aOQ/10wo
+         Cf1S6u/cejfUg+qEz9OV1dGWGuSRv8drvtd8YPmR3/fgIZP45RGhSKaX1pPSE5/Ztf0G
+         Xre1hPjk8aoIIzhYfbbJaZaAnzkVesaecjxgg4g5X1B1ADI+NOXC4iEkPXFz3M9p86ih
+         B6OZcjAO9gOKsRGGh+Tq/YNPCIjjoz9mU6z3odLraYgpabpn3/L1FEngzZXnOMtwXxuv
+         vit2F8aB7xDAunrLeiM70R+igfVSM7yYi5E0SMwGfcBj986bSfGPz/9yvinnO75ceb+L
+         AIKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691660570; x=1692265370;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DPLh7fq/Fe4wDkfylhVKPKRu57n0aHzq3eL6f8DTdi8=;
+        b=dTs7ukt8DDQZX0QahFTtdQMrgrxQBIS3p0bqH5dwsRvMsAe40cXU5Y6/njnTpwz4fP
+         HqH6VgTnB/3KbqhIBZWTdChN7K6wTsBCDMpzr8IJSh9dtnlyYR/BlIJU8sGZOigzfFPu
+         YO6DXu1dHdnvGRFLu6NtS2I6hy6T9cfjECqAu9SHpc5BX+TJ29niwVBQxCViW94tkyhG
+         otX3iNGHku4xNAxzLi7+fkipkwJXiKX/3eFaiz7IVjIUnMXmKQIVNMfFS9c3ZiVGirdU
+         IygcHX5qrEIT5Qdo7njSxwwZq1vH70RdV97j0uOQwQSkZDxJKefQ7kQMsFpaaHtIEvQY
+         7hRw==
+X-Gm-Message-State: AOJu0YwSA2HtXW1rc4QMc4q8A9wfn5Se2DcTrQFt5clTALY3Rw3Z9CvX
+        vF2kFQ7ovRomrcP4T63Pn2hs9EqCeGnMURDGQHQ=
+X-Google-Smtp-Source: AGHT+IFa9H2lHH95pOGRIga29g+95td9OYyxeM/h02dnxY+xpKy/hZ4gRuWzadHYoTu43p/E6ukmpQ==
+X-Received: by 2002:a05:600c:155:b0:3fe:1166:e33f with SMTP id w21-20020a05600c015500b003fe1166e33fmr1266530wmm.10.1691660570466;
+        Thu, 10 Aug 2023 02:42:50 -0700 (PDT)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id n5-20020a05600c294500b003fbaade0735sm4487947wmd.19.2023.08.10.02.42.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Aug 2023 02:42:49 -0700 (PDT)
+Date:   Thu, 10 Aug 2023 12:42:47 +0300
+From:   Dan Carpenter <dan.carpenter@linaro.org>
+To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+Subject: Re: [PATCH 34/36] tty: gdm724x: convert counts to size_t
+Message-ID: <ba8becf4-786a-4923-92f7-b4ec3038295f@kadam.mountain>
 References: <20230810091510.13006-1-jirislaby@kernel.org>
+ <20230810091510.13006-35-jirislaby@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230810091510.13006-35-jirislaby@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Unify the type of tty_operations::write() counters with the 'count'
-parameter. I.e. use size_t for them.
+On Thu, Aug 10, 2023 at 11:15:08AM +0200, Jiri Slaby (SUSE) wrote:
+> Unify the type of tty_operations::write() counters with the 'count'
+> parameter. I.e. use size_t for them.
+> 
+> This includes changing constants to UL to keep min() and avoid min_t().
+> 
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Cc: linux-staging@lists.linux.dev
+> ---
+>  drivers/staging/gdm724x/gdm_tty.c | 11 +++++------
+>  1 file changed, 5 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/staging/gdm724x/gdm_tty.c b/drivers/staging/gdm724x/gdm_tty.c
+> index b31f2afb0286..cbaaa8fa7474 100644
+> --- a/drivers/staging/gdm724x/gdm_tty.c
+> +++ b/drivers/staging/gdm724x/gdm_tty.c
+> @@ -17,9 +17,9 @@
+>  #define GDM_TTY_MAJOR 0
+>  #define GDM_TTY_MINOR 32
+>  
+> -#define WRITE_SIZE 2048
+> +#define WRITE_SIZE 2048UL
+>  
+> -#define MUX_TX_MAX_SIZE 2048
+> +#define MUX_TX_MAX_SIZE 2048UL
+>  
+>  static inline bool gdm_tty_ready(struct gdm *gdm)
+>  {
+> @@ -152,9 +152,8 @@ static void gdm_tty_send_complete(void *arg)
+>  static ssize_t gdm_tty_write(struct tty_struct *tty, const u8 *buf, size_t len)
+>  {
+>  	struct gdm *gdm = tty->driver_data;
+> -	int remain = len;
+> -	int sent_len = 0;
+> -	int sending_len = 0;
+> +	size_t remain = len;
 
-This includes changing vcc_port::chars_in_buffer to size_t to keep min()
-and avoid min_t().
+We later check if remain <= 0.  It still works because remain could
+never be negative, but now it's even less necessary to check for
+negatives, I guess.
 
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
----
- arch/sparc/include/asm/vio.h |  2 +-
- drivers/tty/vcc.c            | 12 ++++++------
- 2 files changed, 7 insertions(+), 7 deletions(-)
-
-diff --git a/arch/sparc/include/asm/vio.h b/arch/sparc/include/asm/vio.h
-index 8a0c3c11c9ce..587fb7841096 100644
---- a/arch/sparc/include/asm/vio.h
-+++ b/arch/sparc/include/asm/vio.h
-@@ -284,7 +284,7 @@ struct vio_dring_state {
- 	struct ldc_trans_cookie	cookies[VIO_MAX_RING_COOKIES];
- };
- 
--#define VIO_TAG_SIZE		((int)sizeof(struct vio_msg_tag))
-+#define VIO_TAG_SIZE		(sizeof(struct vio_msg_tag))
- #define VIO_VCC_MTU_SIZE	(LDC_PACKET_SIZE - VIO_TAG_SIZE)
- 
- struct vio_vcc {
-diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
-index 9cc569174c83..a39ed981bfd3 100644
---- a/drivers/tty/vcc.c
-+++ b/drivers/tty/vcc.c
-@@ -36,7 +36,7 @@ struct vcc_port {
- 	 * and guarantee that any characters that the driver accepts will
- 	 * be eventually sent, either immediately or later.
- 	 */
--	int chars_in_buffer;
-+	size_t chars_in_buffer;
- 	struct vio_vcc buffer;
- 
- 	struct timer_list rx_timer;
-@@ -385,7 +385,7 @@ static void vcc_tx_timer(struct timer_list *t)
- 	struct vcc_port *port = from_timer(port, t, tx_timer);
- 	struct vio_vcc *pkt;
- 	unsigned long flags;
--	int tosend = 0;
-+	size_t tosend = 0;
- 	int rv;
- 
- 	spin_lock_irqsave(&port->lock, flags);
-@@ -809,8 +809,8 @@ static ssize_t vcc_write(struct tty_struct *tty, const u8 *buf, size_t count)
- 	struct vcc_port *port;
- 	struct vio_vcc *pkt;
- 	unsigned long flags;
--	int total_sent = 0;
--	int tosend = 0;
-+	size_t total_sent = 0;
-+	size_t tosend = 0;
- 	int rv = -EINVAL;
- 
- 	port = vcc_get_ne(tty->index);
-@@ -847,7 +847,7 @@ static ssize_t vcc_write(struct tty_struct *tty, const u8 *buf, size_t count)
- 		 * hypervisor actually took it because we have it buffered.
- 		 */
- 		rv = ldc_write(port->vio.lp, pkt, (VIO_TAG_SIZE + tosend));
--		vccdbg("VCC: write: ldc_write(%d)=%d\n",
-+		vccdbg("VCC: write: ldc_write(%zu)=%d\n",
- 		       (VIO_TAG_SIZE + tosend), rv);
- 
- 		total_sent += tosend;
-@@ -864,7 +864,7 @@ static ssize_t vcc_write(struct tty_struct *tty, const u8 *buf, size_t count)
- 
- 	vcc_put(port, false);
- 
--	vccdbg("VCC: write: total=%d rv=%d", total_sent, rv);
-+	vccdbg("VCC: write: total=%zu rv=%d", total_sent, rv);
- 
- 	return total_sent ? total_sent : rv;
- }
--- 
-2.41.0
+regards,
+dan carpenter
 
