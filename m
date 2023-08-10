@@ -2,125 +2,307 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CDA9C04E69
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 13:13:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4716DC001B0
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 14:01:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233923AbjHJNNj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 09:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56188 "EHLO
+        id S235527AbjHJOBO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 10:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230391AbjHJNNi (ORCPT
+        with ESMTP id S233818AbjHJOBN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 09:13:38 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E610826AC;
-        Thu, 10 Aug 2023 06:13:37 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id 5b1f17b1804b1-3fe167d4a18so8287295e9.0;
-        Thu, 10 Aug 2023 06:13:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691673216; x=1692278016;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=mBhUjYJB57IDpg//HzidEUQPRD9Ij3Hoz+KbD9Efgcg=;
-        b=TcFfpXwkBBPAq0NBcNrHsW1c4sUY58+9ahJLEhkfjGTFzc/3cK5PhxciefozZVoGCN
-         8na+Im8VyJNUDuFMuhvWkb2uI8sPstepuuYnTAMbH5JdvIQKKL/2xppZY/r9weya0Vru
-         ckycSiYtcy7a6oGn8DNutV7PZNLnXAHSvKPR2qiLBu/L51/NZPvDo/tcjWzKQf1wILYS
-         AHs226d6QpPHbJm+qK8m+gYOOdLJ1mhizwn3rROyUf/ip73pNS+eZMciSBSXeJfe7oZV
-         82fAIxmzjYyqg0mN6d2ZQ87sorCGJ6q9NBuMDfwDioBu6EYolGINwVmGit2p0hhGl6qr
-         a6ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691673216; x=1692278016;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mBhUjYJB57IDpg//HzidEUQPRD9Ij3Hoz+KbD9Efgcg=;
-        b=ckCjWTj3+H/FC/bzlKobsHCLjGQXhOPgBjxZJRyRX7+eQpgP/AUQ/dXdl2k5W3u0Mi
-         QXsNKvN2Lxy130X4i/XK+8hpSl7NgFBUEcDG495tnUssk3G/r5sbQsAK8z/vEXFx1a0d
-         GydZcWLT2pz1owUGCR/t0yG5/0GjI1bCMnjKDgBIUZLSzzXsehI3yV5htQ2p4St+CzFE
-         Q6FEZJDKQ+fiEDbC+p0H+MLNg9xjIbnvBEUb92w5wEH4sTxO+qFjEdTpfmTJ1InK3b69
-         K3STvDGFe+sfOpbiTAZdKkir4whpMnb8J2qpuxfk2bQPSRkhTMz9tvmPDpo4jDMyb6lc
-         Z+sw==
-X-Gm-Message-State: AOJu0YwYnnW25eGFNlTjlfGzs3rUnNB0Q5BhAPs+umtxsd5Vp7CteiV4
-        0KCq5ZUB7UIss1oqEOM9B+Y=
-X-Google-Smtp-Source: AGHT+IHklVUeXSY1U4xhUe1yFTSP/55+Ie6PL6bdURE+H3ONkkC3Ip3iEN3BpJCHe2n8zJjS/PMpHw==
-X-Received: by 2002:a5d:5489:0:b0:317:5d1c:9719 with SMTP id h9-20020a5d5489000000b003175d1c9719mr2064130wrv.9.1691673216090;
-        Thu, 10 Aug 2023 06:13:36 -0700 (PDT)
-Received: from [192.168.2.41] ([46.227.18.67])
-        by smtp.gmail.com with ESMTPSA id y14-20020adff6ce000000b00317e9f8f194sm2167545wrp.34.2023.08.10.06.13.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Aug 2023 06:13:35 -0700 (PDT)
-Message-ID: <23d8d0c1-1a67-b641-f09d-f17f9678081e@gmail.com>
-Date:   Thu, 10 Aug 2023 15:13:33 +0200
+        Thu, 10 Aug 2023 10:01:13 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66529EA;
+        Thu, 10 Aug 2023 07:01:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691676068; x=1723212068;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=oU596wIwNxfiivZgh0y8qtS/b66W40APOxJVYClgFfg=;
+  b=QlWLDPmW8KiPW+tymBFWpRSKtAqX007uZp6QIsSNylibpRrrcAjMf9jy
+   RqtmUlSQ760e750HDLEdXXSPt2xt1/djs2IstL8Ru8S3FpNAHY6hYEpK6
+   u9d/rQypRALuTirhbaPjTjkrZLzS669kxCa69O5nno6liuSqMjXVcIN3D
+   xqiPcvEDIkjA1lSetymcaFZQVNSVLliNXDyPItBiODV96mEgYfb6ZXh68
+   mD/EbCuVtut2yVh3YyNjQ1QCvnIUE75zfHJeJrBiJw3T4uX3/oLUDgxh+
+   ugYAXcL/ASSttQ5HXFTEVr3+DGCkDWMoT7EHynGOeuzJk7StrcojLrNpv
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="375121777"
+X-IronPort-AV: E=Sophos;i="6.01,162,1684825200"; 
+   d="scan'208";a="375121777"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2023 07:01:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="822256388"
+X-IronPort-AV: E=Sophos;i="6.01,162,1684825200"; 
+   d="scan'208";a="822256388"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by FMSMGA003.fm.intel.com with ESMTP; 10 Aug 2023 07:00:58 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qU6Dg-003t6S-15;
+        Thu, 10 Aug 2023 17:00:56 +0300
+Date:   Thu, 10 Aug 2023 17:00:55 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     wenhua lin <wenhua.lin1994@gmail.com>
+Cc:     Wenhua Lin <Wenhua.Lin@unisoc.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Samuel Holland <samuel@sholland.org>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiongpeng Wu <xiongpeng.wu@unisoc.com>
+Subject: Re: [PATCH] input: keyboard: Add sprd-keypad driver
+Message-ID: <ZNTtl9MKHWWbqpnq@smile.fi.intel.com>
+References: <20230808072501.3393-1-Wenhua.Lin@unisoc.com>
+ <ZNJIa+CbmvDuKq2L@smile.fi.intel.com>
+ <CAB9BWhcPpZRNPki1j0spCzN0kF=-1P1ZwtOLULmr2Raz6aO-_w@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: [PATCH v2] tty: Explicitly include correct DT includes
-Content-Language: fr
-To:     Rob Herring <robh@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Gabriel Somlo <gsomlo@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Jacky Huang <ychuang3@nuvoton.com>,
-        Shan-Chun Hung <schung@nuvoton.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Timur Tabi <timur@kernel.org>
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-tegra@vger.kernel.org,
-        sparclinux@vger.kernel.org
-References: <20230724205440.767071-1-robh@kernel.org>
-From:   Richard Genoud <richard.genoud@gmail.com>
-In-Reply-To: <20230724205440.767071-1-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAB9BWhcPpZRNPki1j0spCzN0kF=-1P1ZwtOLULmr2Raz6aO-_w@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Le 24/07/2023 à 22:54, Rob Herring a écrit :
-> The DT of_device.h and of_platform.h date back to the separate
-> of_platform_bus_type before it as merged into the regular platform bus.
-> As part of that merge prepping Arm DT support 13 years ago, they
-> "temporarily" include each other. They also include platform_device.h
-> and of.h. As a result, there's a pretty much random mix of those include
-> files used throughout the tree. In order to detangle these headers and
-> replace the implicit includes with struct declarations, users need to
-> explicitly include the correct includes.
+On Thu, Aug 10, 2023 at 08:42:36PM +0800, wenhua lin wrote:
+> On Tue, Aug 8, 2023 at 9:51 PM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> > On Tue, Aug 08, 2023 at 03:25:01PM +0800, Wenhua Lin wrote:
+> > > Add matrix keypad driver, support matrix keypad function.
+> >
+> > Bindings should be prerequisite to this, meaning this has to be a series of
+> > two patches.
 > 
-> Signed-off-by: Rob Herring <robh@kernel.org>
+> I don't quite understand what you mean.
+> Can you describe the problem in detail?
+
+...
+
+> > > +     help
+> > > +       Keypad controller is used to interface a SoC with a matrix-keypad device,
+> > > +       The keypad controller supports multiple row and column lines.
+> > > +       Say Y if you want to use the SPRD keyboard.
+> > > +       Say M if you want to use the SPRD keyboard on SoC as module.
+> >
+> > What will be the module name?
+> 
+> Keypad
+
+With capital letter?
+Are you sure?
+
+Also I'm asking this here to make sure that you will make sure the users of it
+will know without reading source code.
+
+...
+
+> > >  obj-$(CONFIG_KEYBOARD_ST_KEYSCAN)    += st-keyscan.o
+> > >  obj-$(CONFIG_KEYBOARD_SUN4I_LRADC)   += sun4i-lradc-keys.o
+> > >  obj-$(CONFIG_KEYBOARD_SUNKBD)                += sunkbd.o
+> > > +obj-$(CONFIG_KEYBOARD_SPRD)          += sprd_keypad.o
+> >
+> > Are you sure it's ordered correctly?
+> 
+> This configuration is correct, we may not understand what you mean?
+>  Any suggestions for this modification?
+
+Latin alphabet is an ordered set.
+
+> > >  obj-$(CONFIG_KEYBOARD_TC3589X)               += tc3589x-keypad.o
+> > >  obj-$(CONFIG_KEYBOARD_TEGRA)         += tegra-kbc.o
+> > >  obj-$(CONFIG_KEYBOARD_TM2_TOUCHKEY)  += tm2-touchkey.o
+
+...
+
+> > Missing bits.h at least.
+> > Revisit you header inclusion block to add exactly what you are using.
+> 
+> The sprd_keypad.c file will include <linux/interrupt.h>, interrupt.h
+> will include <linux/bitops.h>,
+> and the bitops.h file will include bits.h. Can this operation method be used?
+
+Seems you misunderstand how C language works. The idea is that you need to
+include _explicitly_ all library / etc headers that your code is using.
+The above is a hackish way to achieve that.
+
+...
+
+> > > +#include <linux/of.h>
+> >
+> > Why?
+> 
+> ret = of_property_read_u32(np, "debounce-interval", &data->debounce_ms);
+> if (of_get_property(np, "linux,repeat", NULL))
+> 
+> Two interfaces of_property_read_u32 and of_get_property are used
+> in the sprd_keypad_parse_dt function. If of.h is not included, the
+> compilation will report an error.
+
+Do not use of_*() in a new code for the drivers.
+There are only few exceptions and this driver is not one of them.
+
+...
+
+> > > +#define SPRD_DEF_LONG_KEY_MS         1000
+> >
+> >         (1 * MSEC_PER_SEC)
+> >
+> > ?
+> 
+>     Yes.
+
+It makes more sense to update so easier to get the value and units from
+the value.
+
+...
+
+> > > +     u32 rows_en; /* enabled rows bits */
+> > > +     u32 cols_en; /* enabled cols bits */
+> >
+> > Why not bitmaps?
+> 
+> Bitmap has been used, each bit represents different rows and different columns.
+
+I meant the bitmap type (as of bitmap.h APIs).
+
+...
+
+> > > +static int sprd_keypad_parse_dt(struct device *dev)
+> >
+> > dt -> fw
+> 
+> I don't quite understand what you mean,
+> is it to change the function name to sprd_keypad_parse_fw?
+
+Yes. And make it firmware (which may be ACPI/DT or something else).
+
+...
+
+> > And I'm wondering if input subsystem already does this for you.
+> 
+> I don't quite understand what you mean.
+
+Does input subsystem parse the (some of) device properties already?
+
+...
+
+> > > +     data->enable = devm_clk_get(dev, "enable");
+> > > +     if (IS_ERR(data->enable)) {
+> > > +             if (PTR_ERR(data->enable) != -EPROBE_DEFER)
+> > > +                     dev_err(dev, "get enable clk failed.\n");
+> > > +             return PTR_ERR(data->enable);
+> > > +     }
+> > > +
+> > > +     data->rtc = devm_clk_get(dev, "rtc");
+> > > +     if (IS_ERR(data->rtc)) {
+> > > +             if (PTR_ERR(data->enable) != -EPROBE_DEFER)
+> > > +                     dev_err(dev, "get rtc clk failed.\n");
+> > > +             return PTR_ERR(data->rtc);
+> > > +     }
+> >
+> > Why not bulk?
+> > Why not _enabled() variant?
+> 
+> I don't quite understand what you mean.
+> Can you give me an example?
+
+Hmm... seems there is no existing API like that, but still you have bulk
+operations.
+
+$ git grep -n clk_bulk.*\( -- include/linux/clk.h
+
+...
+
+> > > +     data->base = devm_ioremap_resource(&pdev->dev, res);
+> >
+> > devm_platform_ioremap_resource()
+> >
+> > > +     if (IS_ERR(data->base)) {
+> >
+> > > +             dev_err(&pdev->dev, "ioremap resource failed.\n");
+> >
+> > Dup message.
+> 
+>  Do you mean : dev_err(&pdev->dev, "ioremap resource failed.\n")，
+> I think it is necessary to prompt accurate error message.
+
+Yes, and yours is a duplication of a such.
+
+> > > +             ret =  PTR_ERR(data->base);
+> > > +             goto err_free;
+> > > +     }
+
+...
+
+> > > +             dev_err(&pdev->dev, "alloc input dev failed.\n");
+> > > +             ret =  PTR_ERR(data->input_dev);
+> 
+> > Too many spaces.
+> 
+> We will fix this issue in patch v2.
+> 
+> > Here and elsewhere in ->probe() use return dev_err_probe() approach as Dmitry
+> > nowadays is okay with that.
+> 
+> I don't quite understand what you mean.
+> Can you describe it in detail?
+
+	return dev_err_probe(...);
+
+or
+
+	ret = dev_err_probe(... PTR_ERR(...), ...);
+
+Btw, most of your questions can be answered by looking into the lately added
+drivers in the input subsystem.
+
+...
+
+> > > +clk_free:
+> > > +     sprd_keypad_disable(data);
+> >
+> > See above how this can be avoided.
+> 
+> This is hard to explain.
+
+What do you mean?
+But I guess somebody already mentioned devm_add_action_or_reset().
+
+...
+
+> > > +err_free:
+> > > +     devm_kfree(&pdev->dev, data);
+> >
+> > Huh?!
+
+It's a red flag, and you have no answer to it...
+
+> > > +     return ret;
+
+...
+
+> > > +             .owner = THIS_MODULE,
+> >
+> > ~15 years this is not needed.
+> > Where did you get this code from? Time machine?
+> 
+> Do you mean the keypad driver is no longer in use?
+
+No, I meant specifically emphasized line.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Acked-by: Richard GENOUD <richard.genoud@gmail.com> # for atmel_serial
-
-Thanks !
-
-Regards,
-Richard
