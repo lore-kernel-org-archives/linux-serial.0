@@ -2,92 +2,103 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0414C001DE
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 10:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2FB6C001B0
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 12:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234282AbjHJKjG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 06:39:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53978 "EHLO
+        id S230240AbjHJMCe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 08:02:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234357AbjHJKjF (ORCPT
+        with ESMTP id S229447AbjHJMCd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 06:39:05 -0400
+        Thu, 10 Aug 2023 08:02:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1659C10DA;
-        Thu, 10 Aug 2023 03:39:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E7B9E4B;
+        Thu, 10 Aug 2023 05:02:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EE1D6580F;
-        Thu, 10 Aug 2023 10:39:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9572BC433C7;
-        Thu, 10 Aug 2023 10:39:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22C6C65A36;
+        Thu, 10 Aug 2023 12:02:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12FC5C433C8;
+        Thu, 10 Aug 2023 12:02:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1691663944;
-        bh=dtMhaLdCEBf8LyDEChVuL94sp23JhfU16F+5lzQnbJ0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DjBdC+oZiqPod2lHLaj/kELB0xCrFiTTiBsEm8ho0n4F6TCHb7TyvPjz2ORb8Pdop
-         COsIiqW98YQcnTbKaeEjrtgPMUzTzERTPIgDISWDikITpY8V+vM3Yew03odqPWsu5Y
-         7z3VIdTaWXWzx+XQXZjWsgiMrfzuSkQMn0pu5yMQ/8Ca86xDAOSZV+y1h3kk6YVrPj
-         BOtk49zshQ++ODJ8/ypTvKOS4dc06NIb2hhiSzfF7zoI8yNPacUNxI8z9B4FG2mhuA
-         OYzEEmzxpHpRUWtDpKTK1T8PyLf7FEZY9SUP/ahStoG/sbOqmFclybG3eTgTDoHz7U
-         4nmP5REqdPhog==
-From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        Dan Carpenter <dan.carpenter@linaro.org>,
-        linux-staging@lists.linux.dev
-Subject: [PATCH 34-and-three-quarters/36] tty: gdm724x: simplify gdm_tty_write()
-Date:   Thu, 10 Aug 2023 12:39:00 +0200
-Message-ID: <20230810103900.19353-1-jirislaby@kernel.org>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <ba8becf4-786a-4923-92f7-b4ec3038295f@kadam.mountain>
-References: <ba8becf4-786a-4923-92f7-b4ec3038295f@kadam.mountain>
+        s=k20201202; t=1691668952;
+        bh=Flb314E8+XpMsWMNCL0KF8esyb6pnDbUg3vUW0fim3c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sQuo5oNtx5gCDoVT4B+DHqgnxpzCZVFEUXvlYPEK/8mnc95hPofleyhVYQJcyidfV
+         z710g80hO9qV1esvF039guna7p44V2/op+zkSswPOAzvSE33jNuCPVEZZrMFqxe3/g
+         xH/0yNxTJFVnXH+AS2iwmimbgodnJhr0+DulL/B65B2YtTWB9vBNEKxv75YFoyxTvr
+         f6z+9gI/CPkdcF5AYr/WTfGQ/ImRm8AI/fDAHhZN3sBOsG5bCncmHqujCPyxCddm/x
+         IgcFQLmFUVDXBk2yYmUpfjhwcEvBNsT1YWwfy+CsPiNTuiFf30L1Vf3cF4qL3IzgWc
+         M1iHR+bFosP/A==
+Date:   Thu, 10 Aug 2023 13:02:24 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, William Hubbs <w.d.hubbs@gmail.com>,
+        Chris Brannon <chris@the-brannons.com>,
+        Kirk Reiser <kirk@reisers.ca>,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Max Staudt <max@enpas.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        Andreas Koensgen <ajk@comnets.uni-bremen.de>,
+        Jeremy Kerr <jk@codeconstruct.com.au>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Subject: Re: [PATCH 15/36] tty: make tty_ldisc_ops::*buf*() hooks operate on
+ size_t
+Message-ID: <a0bc988b-b466-45d6-a383-46dd67c9a922@sirena.org.uk>
+References: <20230810091510.13006-1-jirislaby@kernel.org>
+ <20230810091510.13006-16-jirislaby@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="YR7hXufDv/FOrPRU"
+Content-Disposition: inline
+In-Reply-To: <20230810091510.13006-16-jirislaby@kernel.org>
+X-Cookie: Reunite Gondwondaland!
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-len and remain can never be negative in gdm_tty_write(). So remove such
-a check and move the check of remaining bytes to the loop condition.
-This way, the preceding 'if' is now superfluous too. Fix all that and
-make the code cleaner.
 
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
-Cc: linux-staging@lists.linux.dev
----
- drivers/staging/gdm724x/gdm_tty.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+--YR7hXufDv/FOrPRU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/staging/gdm724x/gdm_tty.c b/drivers/staging/gdm724x/gdm_tty.c
-index cbaaa8fa7474..67d9bf41e836 100644
---- a/drivers/staging/gdm724x/gdm_tty.c
-+++ b/drivers/staging/gdm724x/gdm_tty.c
-@@ -158,10 +158,7 @@ static ssize_t gdm_tty_write(struct tty_struct *tty, const u8 *buf, size_t len)
- 	if (!gdm_tty_ready(gdm))
- 		return -ENODEV;
- 
--	if (!len)
--		return 0;
--
--	while (1) {
-+	while (remain) {
- 		size_t sending_len = min(MUX_TX_MAX_SIZE, remain);
- 		gdm->tty_dev->send_func(gdm->tty_dev->priv_dev,
- 					(void *)(buf + sent_len),
-@@ -171,8 +168,6 @@ static ssize_t gdm_tty_write(struct tty_struct *tty, const u8 *buf, size_t len)
- 					gdm);
- 		sent_len += sending_len;
- 		remain -= sending_len;
--		if (remain <= 0)
--			break;
- 	}
- 
- 	return len;
--- 
-2.41.0
+On Thu, Aug 10, 2023 at 11:14:49AM +0200, Jiri Slaby (SUSE) wrote:
+> Count passed to tty_ldisc_ops::receive_buf*(), ::lookahead_buf(), and
+> returned from ::receive_buf2() is expected to be size_t. So set it to
+> size_t to unify with the rest of the code.
 
+Acked-by: Mark Brown <broonie@kernel.org>
+
+--YR7hXufDv/FOrPRU
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmTU0c8ACgkQJNaLcl1U
+h9B//gf/QQsLvV/Zh45033FGzk9nfHoFDvJoH7d8FRPLx6yuxl6LFzYEuYfQPyM2
+eltADh3CpOxMHHaL2wE4gTLpRHiXobRzrDQmD5o07ysG4QpoeujKDkgvAtKd3vn6
+krU69BeXiEPdv8Yp2GlTFDhCKwKOLqVcuE9iIBOjzYnFeG9P+Y2YZGcDla3Tedf8
+bSIAZ3fzDlWdApM4WkmoIuzqY1W+VDD73ROSqXTrKYfO9tyNMpYCBRJ0IYgnN3P6
+9hrI/W5QdIyL5jshqWmmBt4Og2ji2vFL5ZtVE7n5pzQrseW9Hk1cMc35GfcvTXaN
+5cCJ7gibH06DZNeY8sX2jT23h6a+nw==
+=00Rv
+-----END PGP SIGNATURE-----
+
+--YR7hXufDv/FOrPRU--
