@@ -2,151 +2,65 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74AF1C001DE
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 06:57:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2343DC001B0
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 07:00:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231624AbjHJG5u (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 02:57:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36644 "EHLO
+        id S232062AbjHJHA3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 03:00:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230212AbjHJG5t (ORCPT
+        with ESMTP id S229889AbjHJHA2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 02:57:49 -0400
+        Thu, 10 Aug 2023 03:00:28 -0400
 Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7EB1810C0;
-        Wed,  9 Aug 2023 23:57:49 -0700 (PDT)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 39DB180A9;
-        Thu, 10 Aug 2023 06:57:47 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EFFC7AC;
+        Thu, 10 Aug 2023 00:00:26 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 663A080A9;
+        Thu, 10 Aug 2023 07:00:26 +0000 (UTC)
+Date:   Thu, 10 Aug 2023 10:00:25 +0300
 From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
         Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
         John Ogness <john.ogness@linutronix.de>,
         Johan Hovold <johan@kernel.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH] serial: core: Fix serial core port id, including multiport devices
-Date:   Thu, 10 Aug 2023 09:57:34 +0300
-Message-ID: <20230810065737.47294-1-tony@atomide.com>
-X-Mailer: git-send-email 2.41.0
+        Guenter Roeck <groeck7@gmail.com>
+Subject: Re: [PATCH] serial: core: Revert port_id use
+Message-ID: <20230810070025.GJ11676@atomide.com>
+References: <20230806062052.47737-1-tony@atomide.com>
+ <b8829d4b-d221-49ce-b0cd-e82dc79be719@roeck-us.net>
+ <20230809052650.GT14799@atomide.com>
+ <d883dd8b-1858-7204-32f6-09f1ef9ec326@roeck-us.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d883dd8b-1858-7204-32f6-09f1ef9ec326@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We want to fix the serial core port DEVNAME to use a port id of the
-hardware specific controller port instance instead of the port->line.
+* Guenter Roeck <linux@roeck-us.net> [230809 21:17]:
+> On 8/8/23 22:26, Tony Lindgren wrote:
+> > Guenter, care to also test the patch below on top of this fix and
+> > see if things still behave for you?
+> > 
+> > I'll send a proper patch assuming things test fine.
+> > 
+> 
+> Patch below works for me.
 
-For example, the 8250 driver sets up a number of serial8250 ports
-initially that can be inherited by the hardware specific driver. At that
-the port->line no longer decribes the port's relation to the serial core
-controller instance.
+OK good to hear thanks, patch posted at [0] below.
 
-Let's fix the issue by assigning port->port_id for each serial core
-controller port instance.
+Regards,
 
-Fixes: 7d695d83767c ("serial: core: Fix serial_base_match() after fixing controller port name")
-Tested-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/serial/serial_base.h     |  1 +
- drivers/tty/serial/serial_base_bus.c | 28 +++++++++++++++++++++++++++-
- 2 files changed, 28 insertions(+), 1 deletion(-)
+Tony
 
-diff --git a/drivers/tty/serial/serial_base.h b/drivers/tty/serial/serial_base.h
---- a/drivers/tty/serial/serial_base.h
-+++ b/drivers/tty/serial/serial_base.h
-@@ -16,6 +16,7 @@ struct device;
- 
- struct serial_ctrl_device {
- 	struct device dev;
-+	struct ida port_ida;
- };
- 
- struct serial_port_device {
-diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
---- a/drivers/tty/serial/serial_base_bus.c
-+++ b/drivers/tty/serial/serial_base_bus.c
-@@ -10,6 +10,7 @@
- 
- #include <linux/container_of.h>
- #include <linux/device.h>
-+#include <linux/idr.h>
- #include <linux/module.h>
- #include <linux/serial_core.h>
- #include <linux/slab.h>
-@@ -112,6 +113,8 @@ struct serial_ctrl_device *serial_base_ctrl_add(struct uart_port *port,
- 	if (!ctrl_dev)
- 		return ERR_PTR(-ENOMEM);
- 
-+	ida_init(&ctrl_dev->port_ida);
-+
- 	err = serial_base_device_init(port, &ctrl_dev->dev,
- 				      parent, &serial_ctrl_type,
- 				      serial_base_ctrl_release,
-@@ -142,16 +145,31 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
- 						struct serial_ctrl_device *ctrl_dev)
- {
- 	struct serial_port_device *port_dev;
-+	unsigned int min = 0, max = ~0U;
- 	int err;
- 
- 	port_dev = kzalloc(sizeof(*port_dev), GFP_KERNEL);
- 	if (!port_dev)
- 		return ERR_PTR(-ENOMEM);
- 
-+	/* Device driver specified port_id vs automatic assignment? */
-+	if (port->port_id) {
-+		min = port->port_id;
-+		max = port->port_id;
-+	}
-+
-+	err = ida_alloc_range(&ctrl_dev->port_ida, min, max, GFP_KERNEL);
-+	if (err < 0) {
-+		kfree(port_dev);
-+		return ERR_PTR(err);
-+	}
-+
-+	port->port_id = err;
-+
- 	err = serial_base_device_init(port, &port_dev->dev,
- 				      &ctrl_dev->dev, &serial_port_type,
- 				      serial_base_port_release,
--				      port->ctrl_id, port->line);
-+				      port->ctrl_id, port->port_id);
- 	if (err)
- 		goto err_put_device;
- 
-@@ -165,16 +183,24 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
- 
- err_put_device:
- 	put_device(&port_dev->dev);
-+	ida_free(&ctrl_dev->port_ida, port->port_id);
- 
- 	return ERR_PTR(err);
- }
- 
- void serial_base_port_device_remove(struct serial_port_device *port_dev)
- {
-+	struct serial_ctrl_device *ctrl_dev;
-+	struct device *parent;
-+
- 	if (!port_dev)
- 		return;
- 
-+	parent = port_dev->dev.parent;
-+	ctrl_dev = to_serial_base_ctrl_device(parent);
-+
- 	device_del(&port_dev->dev);
-+	ida_free(&ctrl_dev->port_ida, port_dev->port->port_id);
- 	put_device(&port_dev->dev);
- }
- 
--- 
-2.41.0
+[0] https://lore.kernel.org/linux-serial/20230810065737.47294-1-tony@atomide.com/T/#u
