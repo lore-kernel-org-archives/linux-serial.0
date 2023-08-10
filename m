@@ -2,48 +2,45 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06BC2C001B0
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 09:19:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45CFFC001DB
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 09:28:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234718AbjHJJTF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 05:19:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45190 "EHLO
+        id S234067AbjHJJ2a (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 05:28:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234783AbjHJJSW (ORCPT
+        with ESMTP id S234225AbjHJJ2T (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 05:18:22 -0400
+        Thu, 10 Aug 2023 05:28:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F2F47EA;
-        Thu, 10 Aug 2023 02:16:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF8C30ED;
+        Thu, 10 Aug 2023 02:16:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F9BD654DA;
-        Thu, 10 Aug 2023 09:16:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1808C433C9;
-        Thu, 10 Aug 2023 09:16:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 21FE1654F0;
+        Thu, 10 Aug 2023 09:16:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4906EC433C7;
+        Thu, 10 Aug 2023 09:16:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1691658999;
-        bh=7m3JsfPMLiKgFfQV74GNsNXjJ2VCRfWCFVK3pJRiZ3Q=;
+        s=k20201202; t=1691658995;
+        bh=bnrsoGhE7/8YdxUdBJXDpgeuttOq6uFT0CqwRjobkl4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DG6xWzEwT7xF96/U2407avRLJMGIPoz80XMbZrmyx+9d5u3h3o8q4hXBs0ypGm2hn
-         79QEOuzO7vfVgAPlK3/AcLRrjafrRCGnzXgZdw+YnRzG2leCYCwX+KbRCEZRO2xNiC
-         Wr911rl2+YUbqX7LNo5CzdJ0aV4fZiY+jZmTtugVhTV6l8FBoB0uTk7nE0TdGYcM8i
-         zH0pz5WbQ0F+NLwWGYMFrDJDixTxGl1FI3yg15sjv5ye2HF8Sy2I196fgYylcM2IIY
-         x7Z8RqPaRj7awBQZ3UjS7xxdKvxheIOPP3u9n1mO3SNe38RQBhI0jmWwBwSB1mFMfe
-         wEduW9x+IblfA==
+        b=RtluJmJKgw6ivpn9rt46wrl+aWeLC7cBrbo9lS1FHLIj7ZXKX+JsBJPEDoXM66hd8
+         +aH/Aq/r2ipMzOauyx8npaqyRhwxC+XKz1dZdxGUBQCH+7kvTkPSHiTLQZeBLeWqvN
+         G/3zJ06OuHMbnWrEgF2UdeonT9BtgG7iAEUcyoC83cNSbOP14Zqa2PQM/e42Ma7/Z7
+         +SJlqoBNfC5iVyH5lCAAljzGC9C4bcvkVy10U/vPuHVpDIDFO18jgQ9a63o65yYKYg
+         Y6l/2iuNBT6/Tq38EhqLk6VKZriPxaXkCAycv4ETjAfcllKmVwPCxe5C9I6ziUhh1+
+         xOER9mB65lGSw==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 35/36] tty: hso: simplify hso_serial_write()
-Date:   Thu, 10 Aug 2023 11:15:09 +0200
-Message-ID: <20230810091510.13006-36-jirislaby@kernel.org>
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 33/36] tty: vcc: convert counts to size_t
+Date:   Thu, 10 Aug 2023 11:15:07 +0200
+Message-ID: <20230810091510.13006-34-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230810091510.13006-1-jirislaby@kernel.org>
 References: <20230810091510.13006-1-jirislaby@kernel.org>
@@ -53,60 +50,83 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-There is no need for two more variables in hso_serial_write(). Switch to
-min_t() and eliminate those.
+Unify the type of tty_operations::write() counters with the 'count'
+parameter. I.e. use size_t for them.
 
-Furthermore, the 'if-goto' is superfluous as memcpy() of zero count is a
-nop. So is addition of zero. So remove the 'if-goto' completely.
+This includes changing vcc_port::chars_in_buffer to size_t to keep min()
+and avoid min_t().
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
 ---
- drivers/net/usb/hso.c | 16 +++++-----------
- 1 file changed, 5 insertions(+), 11 deletions(-)
+ arch/sparc/include/asm/vio.h |  2 +-
+ drivers/tty/vcc.c            | 12 ++++++------
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
-index 3f424da87bf4..83b8452220ec 100644
---- a/drivers/net/usb/hso.c
-+++ b/drivers/net/usb/hso.c
-@@ -1326,7 +1326,6 @@ static ssize_t hso_serial_write(struct tty_struct *tty, const u8 *buf,
- 				size_t count)
- {
- 	struct hso_serial *serial = tty->driver_data;
--	int space, tx_bytes;
+diff --git a/arch/sparc/include/asm/vio.h b/arch/sparc/include/asm/vio.h
+index 8a0c3c11c9ce..587fb7841096 100644
+--- a/arch/sparc/include/asm/vio.h
++++ b/arch/sparc/include/asm/vio.h
+@@ -284,7 +284,7 @@ struct vio_dring_state {
+ 	struct ldc_trans_cookie	cookies[VIO_MAX_RING_COOKIES];
+ };
+ 
+-#define VIO_TAG_SIZE		((int)sizeof(struct vio_msg_tag))
++#define VIO_TAG_SIZE		(sizeof(struct vio_msg_tag))
+ #define VIO_VCC_MTU_SIZE	(LDC_PACKET_SIZE - VIO_TAG_SIZE)
+ 
+ struct vio_vcc {
+diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
+index 9cc569174c83..a39ed981bfd3 100644
+--- a/drivers/tty/vcc.c
++++ b/drivers/tty/vcc.c
+@@ -36,7 +36,7 @@ struct vcc_port {
+ 	 * and guarantee that any characters that the driver accepts will
+ 	 * be eventually sent, either immediately or later.
+ 	 */
+-	int chars_in_buffer;
++	size_t chars_in_buffer;
+ 	struct vio_vcc buffer;
+ 
+ 	struct timer_list rx_timer;
+@@ -385,7 +385,7 @@ static void vcc_tx_timer(struct timer_list *t)
+ 	struct vcc_port *port = from_timer(port, t, tx_timer);
+ 	struct vio_vcc *pkt;
  	unsigned long flags;
+-	int tosend = 0;
++	size_t tosend = 0;
+ 	int rv;
  
- 	/* sanity check */
-@@ -1337,21 +1336,16 @@ static ssize_t hso_serial_write(struct tty_struct *tty, const u8 *buf,
+ 	spin_lock_irqsave(&port->lock, flags);
+@@ -809,8 +809,8 @@ static ssize_t vcc_write(struct tty_struct *tty, const u8 *buf, size_t count)
+ 	struct vcc_port *port;
+ 	struct vio_vcc *pkt;
+ 	unsigned long flags;
+-	int total_sent = 0;
+-	int tosend = 0;
++	size_t total_sent = 0;
++	size_t tosend = 0;
+ 	int rv = -EINVAL;
  
- 	spin_lock_irqsave(&serial->serial_lock, flags);
+ 	port = vcc_get_ne(tty->index);
+@@ -847,7 +847,7 @@ static ssize_t vcc_write(struct tty_struct *tty, const u8 *buf, size_t count)
+ 		 * hypervisor actually took it because we have it buffered.
+ 		 */
+ 		rv = ldc_write(port->vio.lp, pkt, (VIO_TAG_SIZE + tosend));
+-		vccdbg("VCC: write: ldc_write(%d)=%d\n",
++		vccdbg("VCC: write: ldc_write(%zu)=%d\n",
+ 		       (VIO_TAG_SIZE + tosend), rv);
  
--	space = serial->tx_data_length - serial->tx_buffer_count;
--	tx_bytes = (count < space) ? count : space;
-+	count = min_t(size_t, serial->tx_data_length - serial->tx_buffer_count,
-+		      count);
-+	memcpy(serial->tx_buffer + serial->tx_buffer_count, buf, count);
-+	serial->tx_buffer_count += count;
+ 		total_sent += tosend;
+@@ -864,7 +864,7 @@ static ssize_t vcc_write(struct tty_struct *tty, const u8 *buf, size_t count)
  
--	if (!tx_bytes)
--		goto out;
--
--	memcpy(serial->tx_buffer + serial->tx_buffer_count, buf, tx_bytes);
--	serial->tx_buffer_count += tx_bytes;
--
--out:
- 	spin_unlock_irqrestore(&serial->serial_lock, flags);
+ 	vcc_put(port, false);
  
- 	hso_kick_transmit(serial);
- 	/* done */
--	return tx_bytes;
-+	return count;
+-	vccdbg("VCC: write: total=%d rv=%d", total_sent, rv);
++	vccdbg("VCC: write: total=%zu rv=%d", total_sent, rv);
+ 
+ 	return total_sent ? total_sent : rv;
  }
- 
- /* how much room is there for writing */
 -- 
 2.41.0
 
