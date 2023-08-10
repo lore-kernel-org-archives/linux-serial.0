@@ -2,111 +2,98 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC95C001DB
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 09:42:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF80C001DE
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 09:57:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231441AbjHJJmx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 05:42:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56998 "EHLO
+        id S234753AbjHJJ5H (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 05:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229604AbjHJJmw (ORCPT
+        with ESMTP id S230285AbjHJJ5G (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 05:42:52 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD7A1AB
-        for <linux-serial@vger.kernel.org>; Thu, 10 Aug 2023 02:42:51 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id 5b1f17b1804b1-3fe4b95c371so3785015e9.1
-        for <linux-serial@vger.kernel.org>; Thu, 10 Aug 2023 02:42:51 -0700 (PDT)
+        Thu, 10 Aug 2023 05:57:06 -0400
+Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B9942132;
+        Thu, 10 Aug 2023 02:57:06 -0700 (PDT)
+Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-1bf08ca187cso584350fac.3;
+        Thu, 10 Aug 2023 02:57:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1691660570; x=1692265370;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=DPLh7fq/Fe4wDkfylhVKPKRu57n0aHzq3eL6f8DTdi8=;
-        b=x3YkisRZJi8cG7KHbh8hFPZOL2XvVpY+i5tuJTpHfBML5g8MXHUHVGDoT+aOQ/10wo
-         Cf1S6u/cejfUg+qEz9OV1dGWGuSRv8drvtd8YPmR3/fgIZP45RGhSKaX1pPSE5/Ztf0G
-         Xre1hPjk8aoIIzhYfbbJaZaAnzkVesaecjxgg4g5X1B1ADI+NOXC4iEkPXFz3M9p86ih
-         B6OZcjAO9gOKsRGGh+Tq/YNPCIjjoz9mU6z3odLraYgpabpn3/L1FEngzZXnOMtwXxuv
-         vit2F8aB7xDAunrLeiM70R+igfVSM7yYi5E0SMwGfcBj986bSfGPz/9yvinnO75ceb+L
-         AIKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691660570; x=1692265370;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20221208; t=1691661426; x=1692266226;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DPLh7fq/Fe4wDkfylhVKPKRu57n0aHzq3eL6f8DTdi8=;
-        b=dTs7ukt8DDQZX0QahFTtdQMrgrxQBIS3p0bqH5dwsRvMsAe40cXU5Y6/njnTpwz4fP
-         HqH6VgTnB/3KbqhIBZWTdChN7K6wTsBCDMpzr8IJSh9dtnlyYR/BlIJU8sGZOigzfFPu
-         YO6DXu1dHdnvGRFLu6NtS2I6hy6T9cfjECqAu9SHpc5BX+TJ29niwVBQxCViW94tkyhG
-         otX3iNGHku4xNAxzLi7+fkipkwJXiKX/3eFaiz7IVjIUnMXmKQIVNMfFS9c3ZiVGirdU
-         IygcHX5qrEIT5Qdo7njSxwwZq1vH70RdV97j0uOQwQSkZDxJKefQ7kQMsFpaaHtIEvQY
-         7hRw==
-X-Gm-Message-State: AOJu0YwSA2HtXW1rc4QMc4q8A9wfn5Se2DcTrQFt5clTALY3Rw3Z9CvX
-        vF2kFQ7ovRomrcP4T63Pn2hs9EqCeGnMURDGQHQ=
-X-Google-Smtp-Source: AGHT+IFa9H2lHH95pOGRIga29g+95td9OYyxeM/h02dnxY+xpKy/hZ4gRuWzadHYoTu43p/E6ukmpQ==
-X-Received: by 2002:a05:600c:155:b0:3fe:1166:e33f with SMTP id w21-20020a05600c015500b003fe1166e33fmr1266530wmm.10.1691660570466;
-        Thu, 10 Aug 2023 02:42:50 -0700 (PDT)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id n5-20020a05600c294500b003fbaade0735sm4487947wmd.19.2023.08.10.02.42.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Aug 2023 02:42:49 -0700 (PDT)
-Date:   Thu, 10 Aug 2023 12:42:47 +0300
-From:   Dan Carpenter <dan.carpenter@linaro.org>
-To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-Subject: Re: [PATCH 34/36] tty: gdm724x: convert counts to size_t
-Message-ID: <ba8becf4-786a-4923-92f7-b4ec3038295f@kadam.mountain>
-References: <20230810091510.13006-1-jirislaby@kernel.org>
- <20230810091510.13006-35-jirislaby@kernel.org>
+        bh=qOdxuUErbexQ1SAxVC1t4edKrqJzDSjjOPaGhLnkFeg=;
+        b=WAYjmgS2P48jqVOO1o7+Zu32gnCgQ45qbtxhhaBbvLYUXp7vGXCgCvZT8WQHfyRHVP
+         90bM69MYnXCOR54XNra9P5VMP6gdHIHbFkNCC1pvsu9EybiQvjDYOfsj58B+Lbt0U7/S
+         jkKbucENiEEjE0xV7bko5Gnnm0rZGVNybfjbsqJr2BpESbFYrOEutd17ungH3NietCXi
+         K++ySvWlWBF6NALFsCnn8iGMDrwBp12sIl029brOiOgbaPq00YLa7IunVaahJ2jG7UhM
+         0nwVS/DBE7lDO/sygbKGYpa3FLFgRPVZCGZe366yiMVfEk2L1wTiWotgsvwecK9wdm1b
+         6rGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691661426; x=1692266226;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=qOdxuUErbexQ1SAxVC1t4edKrqJzDSjjOPaGhLnkFeg=;
+        b=IgMRxnrJQLBQgpcZcH/G0fCkk3kq5j5txVDoEn9sjINWZKroa8dYgr9+XDG3/M4Qbv
+         Apdq+LRSD5RgW9my9QjUcJ/8UQ+uriIbgvy9Y6nJM4mki4DWedIKnYg2fkeP7eahFhRL
+         N2Wpg+Q0md/dxupZuoK9QPL5CN1lqCQ+4QrSUc3uDn5eacZwOZ/fW420rZPshUaV8syU
+         oF2Cv86erhcKOKiXVHlwLGh1ecn0Ua4HUlgaXiCpe0FdlxkKUBAQC+q1sbXa3cptjIof
+         WThqBoBuK8nt5waimVloIKBH/Oov9gniYkgnCPceDXIRNyqM1VzYBZzLvi9loVv7yCxb
+         VCdw==
+X-Gm-Message-State: AOJu0YxBpR2qnNdc1jvoPJHSRY2d3AxIP1URbcjuxP9A2NXpj64f4+rS
+        /l9yXEChwF5QheBK2m5Gt/y33l32aQuJGm5RqJ8=
+X-Google-Smtp-Source: AGHT+IG9n9bXZTlrq4iBQUxl3qFhFC1s53IR3nsdT8Hyvvvia69O+ZlHw8qDLAKm1WoNsbxbJcklhtUsq5G1b58GjB0=
+X-Received: by 2002:a05:6870:709d:b0:1bf:5559:4abe with SMTP id
+ v29-20020a056870709d00b001bf55594abemr2194548oae.23.1691661425835; Thu, 10
+ Aug 2023 02:57:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230810091510.13006-35-jirislaby@kernel.org>
+References: <20230808033144.2276-1-Wenhua.Lin@unisoc.com> <ZNJCLyWCdihyeC7a@smile.fi.intel.com>
+ <CAB9BWhctPWUuL8tLpQSHmn0UWQ2ej4jN87HO89bTEz5__o9rZg@mail.gmail.com>
+In-Reply-To: <CAB9BWhctPWUuL8tLpQSHmn0UWQ2ej4jN87HO89bTEz5__o9rZg@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 10 Aug 2023 12:56:29 +0300
+Message-ID: <CAHp75VeVS4MfgpXeeiZygPOqYHR3-LagvWFD9ujOGVTp=J+Buw@mail.gmail.com>
+Subject: Re: [PATCH 3/3] gpio: sprd: Add clear interrupt
+To:     wenhua lin <wenhua.lin1994@gmail.com>
+Cc:     Andy Shevchenko <andy@kernel.org>,
+        Wenhua Lin <Wenhua.Lin@unisoc.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiongpeng Wu <xiongpeng.wu@unisoc.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 10, 2023 at 11:15:08AM +0200, Jiri Slaby (SUSE) wrote:
-> Unify the type of tty_operations::write() counters with the 'count'
-> parameter. I.e. use size_t for them.
-> 
-> This includes changing constants to UL to keep min() and avoid min_t().
-> 
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Cc: linux-staging@lists.linux.dev
-> ---
->  drivers/staging/gdm724x/gdm_tty.c | 11 +++++------
->  1 file changed, 5 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/staging/gdm724x/gdm_tty.c b/drivers/staging/gdm724x/gdm_tty.c
-> index b31f2afb0286..cbaaa8fa7474 100644
-> --- a/drivers/staging/gdm724x/gdm_tty.c
-> +++ b/drivers/staging/gdm724x/gdm_tty.c
-> @@ -17,9 +17,9 @@
->  #define GDM_TTY_MAJOR 0
->  #define GDM_TTY_MINOR 32
->  
-> -#define WRITE_SIZE 2048
-> +#define WRITE_SIZE 2048UL
->  
-> -#define MUX_TX_MAX_SIZE 2048
-> +#define MUX_TX_MAX_SIZE 2048UL
->  
->  static inline bool gdm_tty_ready(struct gdm *gdm)
->  {
-> @@ -152,9 +152,8 @@ static void gdm_tty_send_complete(void *arg)
->  static ssize_t gdm_tty_write(struct tty_struct *tty, const u8 *buf, size_t len)
->  {
->  	struct gdm *gdm = tty->driver_data;
-> -	int remain = len;
-> -	int sent_len = 0;
-> -	int sending_len = 0;
-> +	size_t remain = len;
+On Thu, Aug 10, 2023 at 10:27=E2=80=AFAM wenhua lin <wenhua.lin1994@gmail.c=
+om> wrote:
+> On Tue, Aug 8, 2023 at 9:25=E2=80=AFPM Andy Shevchenko <andy@kernel.org> =
+wrote:
+> > On Tue, Aug 08, 2023 at 11:31:44AM +0800, Wenhua Lin wrote:
+> > > Clear interrupt after set the interrupt type.
+> >
+> > Why?
+> >
+> > Can't it be done in the ->init_hw() callback of GPIO IRQ chip?
+>
+> Hi Andy:
+> The initialization state of EIC is high-level trigger. If the external
+> level is high and the interrupt condition is met,
+> EIC has a latch function. If the module registers the eic interrupt,
+> an interrupt will be generated immediately
+>  as soon as the eic interrupt is enabled. To solve this problem, our
+> processing method is to clear the interrupt
+>  once when setting the interrupt trigger type, in order to avoid that
+> this interrupt is the last interrupt.
 
-We later check if remain <= 0.  It still works because remain could
-never be negative, but now it's even less necessary to check for
-negatives, I guess.
+Obvious question, isn't this needed to be added to ->init_hw() as well?
 
-regards,
-dan carpenter
-
+--=20
+With Best Regards,
+Andy Shevchenko
