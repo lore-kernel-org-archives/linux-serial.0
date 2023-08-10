@@ -2,45 +2,47 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF591C001B0
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 09:18:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8476C001B0
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 09:18:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234860AbjHJJSu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 05:18:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46426 "EHLO
+        id S234893AbjHJJS6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 05:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234857AbjHJJSB (ORCPT
+        with ESMTP id S234907AbjHJJSG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 05:18:01 -0400
+        Thu, 10 Aug 2023 05:18:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2C72D78;
-        Thu, 10 Aug 2023 02:16:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2803A30DB;
+        Thu, 10 Aug 2023 02:16:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 636C0654EB;
-        Thu, 10 Aug 2023 09:16:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DB56C433CA;
-        Thu, 10 Aug 2023 09:16:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30A1B654F7;
+        Thu, 10 Aug 2023 09:16:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0130FC433CB;
+        Thu, 10 Aug 2023 09:16:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1691658993;
-        bh=xfPu/5q4FMx3T2+9l5i48yWip85zm4W4RMAqgP0eBJ8=;
+        s=k20201202; t=1691659001;
+        bh=EAzZvqV0DX/6MdQG6V3byUfhXhjqmaV2PFwGoLqDg8Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b1pVqjVZ22u/45Ud58HE/Kjhd4wjIWPClNGk/jaVo/jnjNTBFAMjANjcuOdqvrvEg
-         SlNCzjhTgcVrkss3g26Bv52/3S92Pj7L7UNmzv3XksGBIf7wNZSu+x9ob0nQokI69S
-         y76GOTACwKOVJsazUaCBjN2Ln/Eg9iWDk9Jk2MYcyTAbPCW2E9B25pE0IrO72E5KeF
-         B1qGHPcF0XO7yh+MrnsIb8NfkILERqvgLnyVxMzgMyUC1Lv5K//PHbZ9Uu46ViuQOX
-         NX8V+10hmFER5vcFjPguOZAgXO/QOZp4fH2Ar+gRndAFpYLf5BNXPJZeYeLfapKEcB
-         1ycEN3Z1WCPDQ==
+        b=Gkoej6iSFauNlE7dWSTp1xK+Zil0fHVbrGDyfXRIZcijG+8mFqs2KZCGDVZk1BNIg
+         2BrkFE3DAyzqQBjSzwWnPHgT7lHoDPYh93Zvnvb2knmm72I3zNXWyiCbTQz7nRxzyc
+         c1gn51OWjpJvxPhVY+qxUSfMoPktrsWQPxaJeYlQPVdxqw2ByFU7E2Zu2QFOOMsCqm
+         iEJu0oUE+1M0zV7e5YclMNchhoe72pqshhn9Xg0meohMdAK6zy0R8a/OXG7OskOXcy
+         eYLZGtok45f5+lS0LYVZXOCfiiDUzdgwarHg7S+zdd6Dqp+1PbS0iK6E3PkM99+et0
+         G0Qm8ToQVqDGA==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH 32/36] tty: hvc: convert counts to size_t
-Date:   Thu, 10 Aug 2023 11:15:06 +0200
-Message-ID: <20230810091510.13006-33-jirislaby@kernel.org>
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Subject: [PATCH 36/36] tty: rfcomm: convert counts to size_t
+Date:   Thu, 10 Aug 2023 11:15:10 +0200
+Message-ID: <20230810091510.13006-37-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230810091510.13006-1-jirislaby@kernel.org>
 References: <20230810091510.13006-1-jirislaby@kernel.org>
@@ -54,85 +56,32 @@ Unify the type of tty_operations::write() counters with the 'count'
 parameter. I.e. use size_t for them.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: linuxppc-dev@lists.ozlabs.org
+Cc: Marcel Holtmann <marcel@holtmann.org>
+Cc: Johan Hedberg <johan.hedberg@gmail.com>
+Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
 ---
- drivers/tty/hvc/hvc_console.c |  2 +-
- drivers/tty/hvc/hvcs.c        |  6 +++---
- drivers/tty/hvc/hvsi.c        | 10 +++++-----
- 3 files changed, 9 insertions(+), 9 deletions(-)
+ net/bluetooth/rfcomm/tty.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/hvc/hvc_console.c b/drivers/tty/hvc/hvc_console.c
-index e93e8072ec86..959fae54ca39 100644
---- a/drivers/tty/hvc/hvc_console.c
-+++ b/drivers/tty/hvc/hvc_console.c
-@@ -500,7 +500,7 @@ static ssize_t hvc_write(struct tty_struct *tty, const u8 *buf, size_t count)
- {
- 	struct hvc_struct *hp = tty->driver_data;
- 	unsigned long flags;
--	int rsize, written = 0;
-+	size_t rsize, written = 0;
+diff --git a/net/bluetooth/rfcomm/tty.c b/net/bluetooth/rfcomm/tty.c
+index 33b135ed59c4..94ec913dfb76 100644
+--- a/net/bluetooth/rfcomm/tty.c
++++ b/net/bluetooth/rfcomm/tty.c
+@@ -785,12 +785,12 @@ static ssize_t rfcomm_tty_write(struct tty_struct *tty, const u8 *buf,
+ 	struct rfcomm_dev *dev = tty->driver_data;
+ 	struct rfcomm_dlc *dlc = dev->dlc;
+ 	struct sk_buff *skb;
+-	int sent = 0, size;
++	size_t sent = 0, size;
  
- 	/* This write was probably executed during a tty close. */
- 	if (!hp)
-diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
-index 1de91fa23b04..d29fdfe9d93d 100644
---- a/drivers/tty/hvc/hvcs.c
-+++ b/drivers/tty/hvc/hvcs.c
-@@ -1263,8 +1263,8 @@ static ssize_t hvcs_write(struct tty_struct *tty, const u8 *buf, size_t count)
- 	unsigned int unit_address;
- 	const unsigned char *charbuf;
- 	unsigned long flags;
--	int total_sent = 0;
--	int tosend = 0;
-+	size_t total_sent = 0;
-+	size_t tosend = 0;
- 	int result = 0;
+ 	BT_DBG("tty %p count %zu", tty, count);
  
- 	/*
-@@ -1299,7 +1299,7 @@ static ssize_t hvcs_write(struct tty_struct *tty, const u8 *buf, size_t count)
- 	unit_address = hvcsd->vdev->unit_address;
+ 	while (count) {
+-		size = min_t(uint, count, dlc->mtu);
++		size = min_t(size_t, count, dlc->mtu);
  
- 	while (count > 0) {
--		tosend = min_t(unsigned, count,
-+		tosend = min_t(size_t, count,
- 			       (HVCS_BUFF_LEN - hvcsd->chars_in_buffer));
- 		/*
- 		 * No more space, this probably means that the last call to
-diff --git a/drivers/tty/hvc/hvsi.c b/drivers/tty/hvc/hvsi.c
-index c57bd85aa488..a94068bce76f 100644
---- a/drivers/tty/hvc/hvsi.c
-+++ b/drivers/tty/hvc/hvsi.c
-@@ -909,8 +909,8 @@ static ssize_t hvsi_write(struct tty_struct *tty, const u8 *source,
- {
- 	struct hvsi_struct *hp = tty->driver_data;
- 	unsigned long flags;
--	int total = 0;
--	int origcount = count;
-+	size_t total = 0;
-+	size_t origcount = count;
- 
- 	spin_lock_irqsave(&hp->lock, flags);
- 
-@@ -928,7 +928,7 @@ static ssize_t hvsi_write(struct tty_struct *tty, const u8 *source,
- 	 * will see there is no room in outbuf and return.
- 	 */
- 	while ((count > 0) && (hvsi_write_room(tty) > 0)) {
--		int chunksize = min_t(int, count, hvsi_write_room(tty));
-+		size_t chunksize = min_t(size_t, count, hvsi_write_room(tty));
- 
- 		BUG_ON(hp->n_outbuf < 0);
- 		memcpy(hp->outbuf + hp->n_outbuf, source, chunksize);
-@@ -952,8 +952,8 @@ static ssize_t hvsi_write(struct tty_struct *tty, const u8 *source,
- 	spin_unlock_irqrestore(&hp->lock, flags);
- 
- 	if (total != origcount)
--		pr_debug("%s: wanted %i, only wrote %i\n", __func__, origcount,
--			total);
-+		pr_debug("%s: wanted %zu, only wrote %zu\n", __func__,
-+			 origcount, total);
- 
- 	return total;
- }
+ 		skb = rfcomm_wmalloc(dev, size + RFCOMM_SKB_RESERVE, GFP_ATOMIC);
+ 		if (!skb)
 -- 
 2.41.0
 
