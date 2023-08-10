@@ -2,98 +2,115 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF80C001DE
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 09:57:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24C64C001B0
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 10:08:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234753AbjHJJ5H (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 05:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34010 "EHLO
+        id S233284AbjHJKIW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 06:08:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230285AbjHJJ5G (ORCPT
+        with ESMTP id S233186AbjHJKIT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 05:57:06 -0400
-Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B9942132;
-        Thu, 10 Aug 2023 02:57:06 -0700 (PDT)
-Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-1bf08ca187cso584350fac.3;
-        Thu, 10 Aug 2023 02:57:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691661426; x=1692266226;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qOdxuUErbexQ1SAxVC1t4edKrqJzDSjjOPaGhLnkFeg=;
-        b=WAYjmgS2P48jqVOO1o7+Zu32gnCgQ45qbtxhhaBbvLYUXp7vGXCgCvZT8WQHfyRHVP
-         90bM69MYnXCOR54XNra9P5VMP6gdHIHbFkNCC1pvsu9EybiQvjDYOfsj58B+Lbt0U7/S
-         jkKbucENiEEjE0xV7bko5Gnnm0rZGVNybfjbsqJr2BpESbFYrOEutd17ungH3NietCXi
-         K++ySvWlWBF6NALFsCnn8iGMDrwBp12sIl029brOiOgbaPq00YLa7IunVaahJ2jG7UhM
-         0nwVS/DBE7lDO/sygbKGYpa3FLFgRPVZCGZe366yiMVfEk2L1wTiWotgsvwecK9wdm1b
-         6rGQ==
+        Thu, 10 Aug 2023 06:08:19 -0400
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C94183;
+        Thu, 10 Aug 2023 03:08:19 -0700 (PDT)
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-99bcc0adab4so106509166b.2;
+        Thu, 10 Aug 2023 03:08:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691661426; x=1692266226;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qOdxuUErbexQ1SAxVC1t4edKrqJzDSjjOPaGhLnkFeg=;
-        b=IgMRxnrJQLBQgpcZcH/G0fCkk3kq5j5txVDoEn9sjINWZKroa8dYgr9+XDG3/M4Qbv
-         Apdq+LRSD5RgW9my9QjUcJ/8UQ+uriIbgvy9Y6nJM4mki4DWedIKnYg2fkeP7eahFhRL
-         N2Wpg+Q0md/dxupZuoK9QPL5CN1lqCQ+4QrSUc3uDn5eacZwOZ/fW420rZPshUaV8syU
-         oF2Cv86erhcKOKiXVHlwLGh1ecn0Ua4HUlgaXiCpe0FdlxkKUBAQC+q1sbXa3cptjIof
-         WThqBoBuK8nt5waimVloIKBH/Oov9gniYkgnCPceDXIRNyqM1VzYBZzLvi9loVv7yCxb
-         VCdw==
-X-Gm-Message-State: AOJu0YxBpR2qnNdc1jvoPJHSRY2d3AxIP1URbcjuxP9A2NXpj64f4+rS
-        /l9yXEChwF5QheBK2m5Gt/y33l32aQuJGm5RqJ8=
-X-Google-Smtp-Source: AGHT+IG9n9bXZTlrq4iBQUxl3qFhFC1s53IR3nsdT8Hyvvvia69O+ZlHw8qDLAKm1WoNsbxbJcklhtUsq5G1b58GjB0=
-X-Received: by 2002:a05:6870:709d:b0:1bf:5559:4abe with SMTP id
- v29-20020a056870709d00b001bf55594abemr2194548oae.23.1691661425835; Thu, 10
- Aug 2023 02:57:05 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1691662098; x=1692266898;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=DCqpkpv99z9fdqK9wNCpZa0APsArJ81t0bxSIKWwtvY=;
+        b=HSE88VqlBSSN6cXxbPmuxVR1BGxTwSOkkw4Lyy0tHidjLWkZEjkR7j8NKV0J8dg3P1
+         GayQ85Lk/snl49G8RYXbmxNBW//ru4G323jUvya2ZowW3FppkW11Vt1Ci2RG9Ii3YNwn
+         TBNgySnv8EFRE1gDac/W4yLbuNg2EXJ9O6wHQ3ZEMo8IPNiaFe0f5yMacxpbrXKT8/rg
+         C/0pD6sHYrMsuUz4vB1kTUTLYVaV9QKqC7s7b7YxAjYc4ZUBLZMRHjhJg1Pe9Xl9/uPP
+         UehKpqAlfDoO0JtnUEEJlFJ1sescDSNAX7RWhfMzHlAPSx5BDfa+wGGwLL/xTgkf9Eem
+         8XNA==
+X-Gm-Message-State: AOJu0YwFV32L9ZG6SDD0TLi7tLEI/a9W4t4h+CVNgxtSoKj08VkrVAcm
+        /v6MAoWBWBY5/rr/PHvGvTAGuWUotoOejQ==
+X-Google-Smtp-Source: AGHT+IFUsVRsTvVXCeOz9Q93PhdXP6MFeYTXkIqaczsm2jx6GCzRGgzs5VCSStlY/FPITjS2dH6jNA==
+X-Received: by 2002:a17:906:1daa:b0:99b:4ed4:5527 with SMTP id u10-20020a1709061daa00b0099b4ed45527mr1682894ejh.25.1691662097578;
+        Thu, 10 Aug 2023 03:08:17 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id gu11-20020a170906f28b00b0099bd86f9248sm717719ejb.63.2023.08.10.03.08.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Aug 2023 03:08:16 -0700 (PDT)
+Message-ID: <f6964a5e-ab1b-6bf3-ef65-5b826e36a8f9@kernel.org>
+Date:   Thu, 10 Aug 2023 12:08:16 +0200
 MIME-Version: 1.0
-References: <20230808033144.2276-1-Wenhua.Lin@unisoc.com> <ZNJCLyWCdihyeC7a@smile.fi.intel.com>
- <CAB9BWhctPWUuL8tLpQSHmn0UWQ2ej4jN87HO89bTEz5__o9rZg@mail.gmail.com>
-In-Reply-To: <CAB9BWhctPWUuL8tLpQSHmn0UWQ2ej4jN87HO89bTEz5__o9rZg@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 10 Aug 2023 12:56:29 +0300
-Message-ID: <CAHp75VeVS4MfgpXeeiZygPOqYHR3-LagvWFD9ujOGVTp=J+Buw@mail.gmail.com>
-Subject: Re: [PATCH 3/3] gpio: sprd: Add clear interrupt
-To:     wenhua lin <wenhua.lin1994@gmail.com>
-Cc:     Andy Shevchenko <andy@kernel.org>,
-        Wenhua Lin <Wenhua.Lin@unisoc.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiongpeng Wu <xiongpeng.wu@unisoc.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Subject: Re: [PATCH 34/36] tty: gdm724x: convert counts to size_t
+To:     Dan Carpenter <dan.carpenter@linaro.org>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+References: <20230810091510.13006-1-jirislaby@kernel.org>
+ <20230810091510.13006-35-jirislaby@kernel.org>
+ <ba8becf4-786a-4923-92f7-b4ec3038295f@kadam.mountain>
+Content-Language: en-US
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <ba8becf4-786a-4923-92f7-b4ec3038295f@kadam.mountain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 10, 2023 at 10:27=E2=80=AFAM wenhua lin <wenhua.lin1994@gmail.c=
-om> wrote:
-> On Tue, Aug 8, 2023 at 9:25=E2=80=AFPM Andy Shevchenko <andy@kernel.org> =
-wrote:
-> > On Tue, Aug 08, 2023 at 11:31:44AM +0800, Wenhua Lin wrote:
-> > > Clear interrupt after set the interrupt type.
-> >
-> > Why?
-> >
-> > Can't it be done in the ->init_hw() callback of GPIO IRQ chip?
->
-> Hi Andy:
-> The initialization state of EIC is high-level trigger. If the external
-> level is high and the interrupt condition is met,
-> EIC has a latch function. If the module registers the eic interrupt,
-> an interrupt will be generated immediately
->  as soon as the eic interrupt is enabled. To solve this problem, our
-> processing method is to clear the interrupt
->  once when setting the interrupt trigger type, in order to avoid that
-> this interrupt is the last interrupt.
+On 10. 08. 23, 11:42, Dan Carpenter wrote:
+> On Thu, Aug 10, 2023 at 11:15:08AM +0200, Jiri Slaby (SUSE) wrote:
+>> Unify the type of tty_operations::write() counters with the 'count'
+>> parameter. I.e. use size_t for them.
+>>
+>> This includes changing constants to UL to keep min() and avoid min_t().
+>>
+>> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+>> Cc: linux-staging@lists.linux.dev
+>> ---
+>>   drivers/staging/gdm724x/gdm_tty.c | 11 +++++------
+>>   1 file changed, 5 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/staging/gdm724x/gdm_tty.c b/drivers/staging/gdm724x/gdm_tty.c
+>> index b31f2afb0286..cbaaa8fa7474 100644
+>> --- a/drivers/staging/gdm724x/gdm_tty.c
+>> +++ b/drivers/staging/gdm724x/gdm_tty.c
+>> @@ -17,9 +17,9 @@
+>>   #define GDM_TTY_MAJOR 0
+>>   #define GDM_TTY_MINOR 32
+>>   
+>> -#define WRITE_SIZE 2048
+>> +#define WRITE_SIZE 2048UL
+>>   
+>> -#define MUX_TX_MAX_SIZE 2048
+>> +#define MUX_TX_MAX_SIZE 2048UL
+>>   
+>>   static inline bool gdm_tty_ready(struct gdm *gdm)
+>>   {
+>> @@ -152,9 +152,8 @@ static void gdm_tty_send_complete(void *arg)
+>>   static ssize_t gdm_tty_write(struct tty_struct *tty, const u8 *buf, size_t len)
+>>   {
+>>   	struct gdm *gdm = tty->driver_data;
+>> -	int remain = len;
+>> -	int sent_len = 0;
+>> -	int sending_len = 0;
+>> +	size_t remain = len;
+> 
+> We later check if remain <= 0.  It still works because remain could
+> never be negative, but now it's even less necessary to check for
+> negatives, I guess.
 
-Obvious question, isn't this needed to be added to ->init_hw() as well?
+You're right. The whole loop should be now:
 
---=20
-With Best Regards,
-Andy Shevchenko
+while (remain) {
+   ...
+}
+
+Even without the preceding 'if'.
+
+thanks,
+-- 
+js
+suse labs
+
