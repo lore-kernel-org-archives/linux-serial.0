@@ -2,64 +2,64 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE66C04A94
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 07:42:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB983C001DE
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 07:49:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231991AbjHJHmZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 03:42:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35702 "EHLO
+        id S234035AbjHJHtC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 03:49:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232819AbjHJHmH (ORCPT
+        with ESMTP id S233936AbjHJHtA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 03:42:07 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DDC211C;
-        Thu, 10 Aug 2023 00:42:06 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id a640c23a62f3a-98273ae42d0so21020766b.0;
-        Thu, 10 Aug 2023 00:42:06 -0700 (PDT)
+        Thu, 10 Aug 2023 03:49:00 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DA5510F6;
+        Thu, 10 Aug 2023 00:49:00 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id a640c23a62f3a-99bcf3c8524so18672466b.0;
+        Thu, 10 Aug 2023 00:48:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691653325; x=1692258125;
+        d=gmail.com; s=20221208; t=1691653738; x=1692258538;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=7Md3LDi6Tw5YUiSHKL8K9CojxtZIkpbSZE+wWDSjDtU=;
-        b=eXZmirF6heWYSgC68dCabH7cY/74cw4Pnc3EEx5J6/Ar7zdNSILzTh+7RSkto67p96
-         KzWmEQtVm0JQuDutoz2P8VPIZAfPYUyPW0CExNHfqUvN/eAH18ZmK9PhQ7i1b25/Hl6C
-         AwSoH//gN1ikAFzalPBpD9/s3sCDMCUbinKR/rxGMUWnszuQmL2iieFmyM/qnmpl/g4g
-         nn8GlE5E4jEeXIeyvm0R25R6cEcGbesVZz1WSmTt+xeuTlshvhjT6jpbq++1cifQZiJf
-         5MKBjtvvKGcpF/TERd4R2yfVeMbLU3mPXd2Z9bjEVhjojV7lipXqx3c7UQtVwf61BT1h
-         xq8w==
+        bh=Uzo+gvu4OHpp2LLjR8l6u7nmwovhc1gQKAx/9iythN8=;
+        b=LYTHDKudHxs88slCuNqToO5Iu9ABsnhqS0YWGE34ApQmG2Y2lG3IxzSNc2Kp7Bw8zb
+         zD7fVbmTl9vN8+nEDsV70UsVltZiKMadSFZPTHPRobnVH14V5rvQJnw0/KP+7vspxb8J
+         6OysgbP2QgawJ+s7J5H0jp1Jd286zo2/3fwXXqPyOBQEvGKf5EUgQ78XibpG4WJ83yrJ
+         qis/JQhTXvyxDA2oSO31G6T31Un0LOzU/6DixISsh+Th6P0z8ZNej0r40dl3hane+hjj
+         jo0YQqaUM5DmHhCKYXhEesPahTKCbbFVwYY24R3yZ9m313qhHF9bwSmEP5eWboU/2rJt
+         bpHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691653325; x=1692258125;
+        d=1e100.net; s=20221208; t=1691653738; x=1692258538;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=7Md3LDi6Tw5YUiSHKL8K9CojxtZIkpbSZE+wWDSjDtU=;
-        b=VlLfPp2eQ4PtSAot4DDOi8qUY1DA4LmXSE6jxqg6yl9q+u0NKuxGUanPH7QZCf1L7R
-         +VKNOTlpvDaEj18YCDX3Gfg2bbx6+rxvy51UdW9Vs+PeGp3XChbFRmjdOzDAsHP74vP/
-         VJsr4fxcdu4dxn4Mk1uQLNH8KdnxxcCa+AeRQIMJMU2+ePnCsUlUQO5S80+60I8FauXu
-         5s4KJ2Ue0zrK2BusEMAwWtB9FD4GHD+2Ljur4GJaNihKrU4Nb6I6xRMuJmFjDhJPAXRH
-         IMzf4bctiwZSpcFkyW7E6xW18+pXIZM2K54dgJJL/gZsRBB9JmloltjYw3VuSmP9TAQX
-         BQzQ==
-X-Gm-Message-State: AOJu0Yz6uCQAKEwWUD8tvdQ+0KDidFtMrG6GpD2M8HrYxP1Y/Qqj3zHa
-        Yt8Dfstw6WalJdDpELVAmvrfGZ1tqKCX3XLpWxU=
-X-Google-Smtp-Source: AGHT+IHegUQ4czVbeszlhFTnvcTn/HUzNata8U9yzItdII52auC2uvKmWAP5rQP0MDr0Z/4p6Excgx2t+/q8Mzrn3Hs=
-X-Received: by 2002:a17:906:dc:b0:993:eed1:8f7 with SMTP id
- 28-20020a17090600dc00b00993eed108f7mr1297820eji.3.1691653325144; Thu, 10 Aug
- 2023 00:42:05 -0700 (PDT)
+        bh=Uzo+gvu4OHpp2LLjR8l6u7nmwovhc1gQKAx/9iythN8=;
+        b=Tlkaifz01GJtflCIKfyyeNVN3oW1GgQyvKQf1hixxMvqgAMYOvwHM43XcuecMawu4W
+         DGzoNU1h2Ywwnsm3RZD61x+sYDjRz+Fm93k3lXkzfEhtSEd+ipPUWs294jnRhfZ2AIdq
+         yfxgI2RH/nfZ0xuftd6I2EFmCNWMIuSnmC7/GINTIdrMEjX7ihyJwcptjeiNlRqMwJJc
+         K6cL1tApfeVsf7SmFsvcTu7gwiAN3Z4HFwvfH2mT2yujYdYzf1TxGg/LYwBC5fXmgS9B
+         6iYFTmcTjRNMsftb1mqiZcFDJB7XSsNqr9zZfAXj+VQ3TF9jMJQPAJfW8mC9XkE96D66
+         47cQ==
+X-Gm-Message-State: AOJu0YxfZ7FSe8n5sPkKAIXGG3JpSrFcFlq2x19k8BPKB2US37WHjuz/
+        m/swUisD74PdJSxk0xNvnBdDSjSzwuFtGj4oe14=
+X-Google-Smtp-Source: AGHT+IFYl1yQAsagnGTUuX4z9nUIwePEpZGLbh9WgrweJ1wlcL2P2xUnbRSX/ORdN/tYGvDEDjJo06bnes3uZ7ndWB4=
+X-Received: by 2002:a17:906:73ce:b0:99c:22e9:fbe4 with SMTP id
+ n14-20020a17090673ce00b0099c22e9fbe4mr1214341ejl.1.1691653738428; Thu, 10 Aug
+ 2023 00:48:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230808072252.3229-1-Wenhua.Lin@unisoc.com> <ZNJC8OVzJEQyQugF@smile.fi.intel.com>
-In-Reply-To: <ZNJC8OVzJEQyQugF@smile.fi.intel.com>
+References: <20230808072501.3393-1-Wenhua.Lin@unisoc.com> <487477f3-9708-4a28-a4fa-0c652353467b@app.fastmail.com>
+In-Reply-To: <487477f3-9708-4a28-a4fa-0c652353467b@app.fastmail.com>
 From:   wenhua lin <wenhua.lin1994@gmail.com>
-Date:   Thu, 10 Aug 2023 15:41:53 +0800
-Message-ID: <CAB9BWhdVGTfXF__mzOycHVpB-TB9Fz26kZTWn5ZdwTG8hxd+dQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] devicetree: bindings: Add keypad driver ducumentation
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Date:   Thu, 10 Aug 2023 15:48:46 +0800
+Message-ID: <CAB9BWhf-VAuutVQ3PtyQDozTfPhLBbNPTPtWYTfa6g_sT4ZgTg@mail.gmail.com>
+Subject: Re: [PATCH] input: keyboard: Add sprd-keypad driver
+To:     Arnd Bergmann <arnd@arndb.de>
 Cc:     Wenhua Lin <Wenhua.Lin@unisoc.com>,
         Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
-        Arnd Bergmann <arnd@arndb.de>,
         Samuel Holland <samuel@sholland.org>,
         Robert Jarzmik <robert.jarzmik@free.fr>,
         Mattijs Korpershoek <mkorpershoek@baylibre.com>,
@@ -75,32 +75,48 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 8, 2023 at 9:28=E2=80=AFPM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
+On Tue, Aug 8, 2023 at 4:02=E2=80=AFPM Arnd Bergmann <arnd@arndb.de> wrote:
 >
-> On Tue, Aug 08, 2023 at 03:22:52PM +0800, Wenhua Lin wrote:
-> > Add keypad driver ducumentation.
+> On Tue, Aug 8, 2023, at 09:25, Wenhua Lin wrote:
+> > Add matrix keypad driver, support matrix keypad function.
+> >
+> > Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
 >
-> Why am I Cc'ed to this? I'm not a DT person to review this...
+> Looks fine to me, just one minor thing to remember:
 >
+> > +static int __maybe_unused sprd_keypad_resume(struct device *dev)
+> > +{
+> > +     struct sprd_keypad_data *data =3D dev_get_drvdata(dev);
+> > +     int ret =3D 0;
+> > +
+> > +     if (!device_may_wakeup(dev)) {
+> > +             ret =3D sprd_keypad_enable(data);
+> > +             if (ret)
+> > +                     return ret;
+> > +             ret =3D sprd_keypad_hw_init(data);
+> > +     }
+> > +
+> > +     return ret;
+> > +}
+> > +
+> > +static SIMPLE_DEV_PM_OPS(sprd_keypad_pm_ops,
+> > +                     sprd_keypad_suspend, sprd_keypad_resume);
+> > +
+>
+> SIMPLE_DEV_PM_OPS() is deprecated, please use the new
+> DEFINE_SIMPLE_DEV_PM_OPS() for all new drivers, and
+> remove the __maybe_unused annotation that is no longer
+> needed with that.
+>
+> With that addressed (for the driver in general, I know nothing
+> about the drivers/input specifics)
+>
+> Acked-by: Arnd Bergmann <arnd@arndb.de>
+>
+>      Arnd
 
-This is one of our mistakes, thank you very much for your review, we
-will correct it in patch v2.
-
-> ...
->
-> > +             reg =3D   <0x40250000 0x1000>;
->
-> TAB and space mix
-
-Hi Andy:
-We will correct it in patch v2.
+Hi Arnd:
+   We will fix the problem of SIMPLE_DEV_PM_OPS in patch v2.
 
 Thanks
 Wenhua.Lin
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
