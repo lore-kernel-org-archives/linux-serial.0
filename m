@@ -2,44 +2,44 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75EFFC001B0
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 09:17:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2804C04A94
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Aug 2023 09:17:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234501AbjHJJRR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Aug 2023 05:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46536 "EHLO
+        id S234574AbjHJJRT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Aug 2023 05:17:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234824AbjHJJQ5 (ORCPT
+        with ESMTP id S234851AbjHJJRA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Aug 2023 05:16:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519383C3F;
-        Thu, 10 Aug 2023 02:16:10 -0700 (PDT)
+        Thu, 10 Aug 2023 05:17:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7B24223;
+        Thu, 10 Aug 2023 02:16:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3351E654D7;
-        Thu, 10 Aug 2023 09:16:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B769C433CB;
-        Thu, 10 Aug 2023 09:16:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E0426550A;
+        Thu, 10 Aug 2023 09:16:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B400C433CA;
+        Thu, 10 Aug 2023 09:16:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1691658969;
-        bh=Vi6KT4QvtAHnTvdxRC1kSrINmrad6wcc2VnvldKgNCM=;
+        s=k20201202; t=1691658972;
+        bh=14gTPQx7XyzDqSWiJUFV6C/aJrHW2+ALhVNcSU3mPbQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HbLcLcbMjKnUNqaPuBZZUMEwHGFvDqs9XGZjASj/LBarP5KVCd12b0Gky97IyA/BW
-         AgTNXQUjFq/1WI39fUT6DH2SIpHrTBkqFD+fnoNCwESmbr0j8tuIrfRkBHmw6mKwKP
-         UX6t3WeeYKv9i2gTxbn3JqffoZu+XRnPL0kro0Ce3Xh8GyPUlkiLt/CK2lJrL+EqrQ
-         LMYeecs1fCEIeOW+BDd4rTw7oIg9Rp27U0ozGPvX5wutI+tUeDKNbuTvYkJRPf7lci
-         OVMzhbQHDbZmlCmk7bijx6RmI6Gl+8Pgi0+ldkdrrIWO40cjCkx6rAhV5+CAl0awj+
-         KPCNih4MJXidw==
+        b=KNFPxPS7MK3Hchuv55BVxmG7yaaf0nj8sRDWsSSkcD6FEOkMBIfHt1qIlMfYbLGTu
+         nfC50KXzI9blYYWmOAxfucPu4FveHK6Wx3hPG7/gFdSlmbh+pSMlUTHt/R7RoYiTWv
+         G8KxrtKZcL49/fGJACFQYkwEZ2xTyL/AwLv1pZ7hhqojM4WWu/3dQlkI1kbidh+GgX
+         MEEjRHCL1Tj7NlxdOS9wvgtH2On+Bvr+HJwHMaKEKrusamCSUSrDeZ6cQ3pjW6xLBR
+         gRFkOaTvN0319wHDb/1d9RpjcsFCWBATzRT8i9cDWcx3OhQpuwCLcIJip+hJEgr5Bf
+         q5EGUQjZOqTfg==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 24/36] tty: use ssize_t for iterate_tty_read() returned type
-Date:   Thu, 10 Aug 2023 11:14:58 +0200
-Message-ID: <20230810091510.13006-25-jirislaby@kernel.org>
+Subject: [PATCH 26/36] tty: use min() for size computation in iterate_tty_read()
+Date:   Thu, 10 Aug 2023 11:15:00 +0200
+Message-ID: <20230810091510.13006-27-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230810091510.13006-1-jirislaby@kernel.org>
 References: <20230810091510.13006-1-jirislaby@kernel.org>
@@ -49,73 +49,28 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tty_read() is supposed to return ssize_t. It takes the return value from
-iterate_tty_read(). That currently returns int. On the top of that,
-iterate_tty_write() already returns ssize_t. So switch
-iterate_tty_read() to ssize_t too, so that all three are consistent.
-
-This means 'i' in tty_read() changes its type too. And while changing
-that, rename this generic 'i' to more dedicated 'ret'.
+The computation is more obvious with min().
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/tty_io.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/tty/tty_io.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 0cf1277e260b..e8248773e3f0 100644
+index 7cfa99fbbb62..4f21a21a1fd5 100644
 --- a/drivers/tty/tty_io.c
 +++ b/drivers/tty/tty_io.c
-@@ -843,13 +843,13 @@ static void tty_update_time(struct tty_struct *tty, bool mtime)
-  * data or clears the cookie. The cookie may be something that the
-  * ldisc maintains state for and needs to free.
-  */
--static int iterate_tty_read(struct tty_ldisc *ld, struct tty_struct *tty,
--		struct file *file, struct iov_iter *to)
-+static ssize_t iterate_tty_read(struct tty_ldisc *ld, struct tty_struct *tty,
-+				struct file *file, struct iov_iter *to)
- {
--	int retval = 0;
- 	void *cookie = NULL;
- 	unsigned long offset = 0;
- 	char kernel_buf[64];
-+	ssize_t retval = 0;
- 	size_t count = iov_iter_count(to);
+@@ -853,9 +853,8 @@ static ssize_t iterate_tty_read(struct tty_ldisc *ld, struct tty_struct *tty,
+ 	size_t copied, count = iov_iter_count(to);
  
  	do {
-@@ -912,11 +912,11 @@ static int iterate_tty_read(struct tty_ldisc *ld, struct tty_struct *tty,
-  */
- static ssize_t tty_read(struct kiocb *iocb, struct iov_iter *to)
- {
--	int i;
- 	struct file *file = iocb->ki_filp;
- 	struct inode *inode = file_inode(file);
- 	struct tty_struct *tty = file_tty(file);
- 	struct tty_ldisc *ld;
-+	ssize_t ret;
+-		ssize_t size;
++		ssize_t size = min(count, sizeof(kernel_buf));
  
- 	if (tty_paranoia_check(tty, inode, "tty_read"))
- 		return -EIO;
-@@ -929,15 +929,15 @@ static ssize_t tty_read(struct kiocb *iocb, struct iov_iter *to)
- 	ld = tty_ldisc_ref_wait(tty);
- 	if (!ld)
- 		return hung_up_tty_read(iocb, to);
--	i = -EIO;
-+	ret = -EIO;
- 	if (ld->ops->read)
--		i = iterate_tty_read(ld, tty, file, to);
-+		ret = iterate_tty_read(ld, tty, file, to);
- 	tty_ldisc_deref(ld);
- 
--	if (i > 0)
-+	if (ret > 0)
- 		tty_update_time(tty, false);
- 
--	return i;
-+	return ret;
- }
- 
- void tty_write_unlock(struct tty_struct *tty)
+-		size = count > sizeof(kernel_buf) ? sizeof(kernel_buf) : count;
+ 		size = ld->ops->read(tty, file, kernel_buf, size, &cookie, offset);
+ 		if (!size)
+ 			break;
 -- 
 2.41.0
 
