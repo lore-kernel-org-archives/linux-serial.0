@@ -2,135 +2,202 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5948C04A94
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Aug 2023 12:01:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7705FC001B0
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Aug 2023 13:34:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234911AbjHKMBH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Aug 2023 08:01:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56980 "EHLO
+        id S234482AbjHKNea (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Aug 2023 09:34:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231285AbjHKMBF (ORCPT
+        with ESMTP id S231279AbjHKNea (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Aug 2023 08:01:05 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C2410F;
-        Fri, 11 Aug 2023 05:01:00 -0700 (PDT)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 37B88G8v008911;
-        Fri, 11 Aug 2023 14:00:30 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-        message-id:date:mime-version:subject:to:cc:references:from
-        :in-reply-to:content-type:content-transfer-encoding; s=
-        selector1; bh=YFHcudHf3KpEu6VK+Oi7sDZa7u7aRH57T4p90BFxYt4=; b=kU
-        O35PwDwyu9KjgW31K5h+6ypqbjSO6SxBadYITZWgPgbjcx7JybnAtEPYUufCNZ1c
-        UmcJYsfb4v5cYrhDkibKKDxm5TpRLh/usyV9eplTbzPk8FWxlpA11SMe+tWFoHtE
-        nXPAN596HtBzcvDnDHR0ekdCH486R0r+TxPzL9tozmYQYoPWnnLGInYl3MRzO4Ve
-        mX/GHIkPAIGcQsdV9V/wrcIE3MhSv5JVpUfvddbdbHMcOV/6LpEQ9KIuJdAz19XH
-        RJctqFi0wSAJ+BRNaqX/iLjVk/ggN6VW/unTU9UDPsJ6xBkOROMcl3YQW+ceqGTb
-        HV30OC1Vqh+PAlrRr7vg==
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3sdh74h9vb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Aug 2023 14:00:29 +0200 (MEST)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 64D9710004F;
-        Fri, 11 Aug 2023 14:00:27 +0200 (CEST)
-Received: from Webmail-eu.st.com (eqndag1node4.st.com [10.75.129.133])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 287D02171E0;
-        Fri, 11 Aug 2023 14:00:27 +0200 (CEST)
-Received: from [10.201.21.121] (10.201.21.121) by EQNDAG1NODE4.st.com
- (10.75.129.133) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Fri, 11 Aug
- 2023 14:00:25 +0200
-Message-ID: <4f0f9d6c-ce4d-73a2-60bf-801c1a1d6cc3@foss.st.com>
-Date:   Fri, 11 Aug 2023 14:00:20 +0200
+        Fri, 11 Aug 2023 09:34:30 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFDB0ED;
+        Fri, 11 Aug 2023 06:34:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691760869; x=1723296869;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=uVCLkN8WdGHGzXLonW5NPFK2ABMF5cEFU1d/gEuTIdg=;
+  b=Iq3RZ1S5gmd0uHMxPMbwZQdrYcslfibXcjig5jQ0CLxKXvK/GPeefdaT
+   F1WdYpohVc84BxiDQLISs8XmkhoZb/SB1sPTGazVeWlvN06a7wrIBOdwm
+   E/qmbEWVOEwUs36Doj+cTyTU+6RUNy0DppDGbutUjFdR+Eaoz9kB+fW0x
+   Ct80awVzYF96GNRAqAx4D3IokqPVXFziwgJxplHPvds9qIsHPlqtW7mMb
+   N/nrTZqgnR344M+Rl4R/IQum71HPFAcXcypUJL9m8FyUluTYr7k/aioSA
+   5+JMflYpxBAKdhgdsFmhH+0kyeoBSnzFWD0V/j+/Chj5rVw8+V90FmNk7
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="369148273"
+X-IronPort-AV: E=Sophos;i="6.01,165,1684825200"; 
+   d="scan'208";a="369148273"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2023 06:34:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="906445162"
+X-IronPort-AV: E=Sophos;i="6.01,165,1684825200"; 
+   d="scan'208";a="906445162"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga005.jf.intel.com with ESMTP; 11 Aug 2023 06:34:26 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qUSHY-00GxAT-0F;
+        Fri, 11 Aug 2023 16:34:24 +0300
+Date:   Fri, 11 Aug 2023 16:34:23 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v2 1/1] serial: core: Fix serial core port id, including
+ multiport devices
+Message-ID: <ZNY431TgMElF35UC@smile.fi.intel.com>
+References: <20230811103648.2826-1-tony@atomide.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [IGNORE][PATCH v4 01/11] dt-bindings: Document common device
- controller bindings
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     <Oleksii_Moisieiev@epam.com>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
-        <alexandre.torgue@foss.st.com>, <vkoul@kernel.org>,
-        <jic23@kernel.org>, <olivier.moysan@foss.st.com>,
-        <arnaud.pouliquen@foss.st.com>, <mchehab@kernel.org>,
-        <fabrice.gasnier@foss.st.com>, <andi.shyti@kernel.org>,
-        <ulf.hansson@linaro.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <hugues.fruchet@foss.st.com>,
-        <lee@kernel.org>, <will@kernel.org>, <catalin.marinas@arm.com>,
-        <arnd@kernel.org>, <richardcochran@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>, <peng.fan@oss.nxp.com>,
-        <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
-        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>
-References: <20230811100731.108145-1-gatien.chevallier@foss.st.com>
- <20230811100731.108145-2-gatien.chevallier@foss.st.com>
- <2023081117-sprout-cruncher-862c@gregkh>
-From:   Gatien CHEVALLIER <gatien.chevallier@foss.st.com>
-In-Reply-To: <2023081117-sprout-cruncher-862c@gregkh>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.201.21.121]
-X-ClientProxiedBy: EQNCAS1NODE4.st.com (10.75.129.82) To EQNDAG1NODE4.st.com
- (10.75.129.133)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-08-11_02,2023-08-10_01,2023-05-22_02
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230811103648.2826-1-tony@atomide.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On 8/11/23 12:16, Greg KH wrote:
-> On Fri, Aug 11, 2023 at 12:07:21PM +0200, Gatien Chevallier wrote:
->> From: Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
->>
->> Introducing of the common device controller bindings for the controller
->> provider and consumer devices. Those bindings are intended to allow
->> divided system on chip into multiple domains, that can be used to
->> configure hardware permissions.
->>
->> Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
->> [Gatien: Fix typos and YAML error]
->> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
->> ---
->>
->> Changes in V4:
->> 	Corrected typos and YAML errors	
+On Fri, Aug 11, 2023 at 01:36:45PM +0300, Tony Lindgren wrote:
+> We want to fix the serial core port DEVNAME to use a port id of the
+> hardware specific controller port instance instead of the port->line.
 > 
-> Why are we supposed to ignore the first patch in this series, but pay
-> attention to the 10 after this that depend on it?
+> For example, the 8250 driver sets up a number of serial8250 ports
+> initially that can be inherited by the hardware specific driver. At that
+> the port->line no longer decribes the port's relation to the serial core
+> controller instance.
 > 
-> totally confused,
+> Let's fix the issue by assigning port->port_id for each serial core
+> controller port instance.
+
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+> Fixes: 7d695d83767c ("serial: core: Fix serial_base_match() after fixing controller port name")
+> Tested-by: Guenter Roeck <linux@roeck-us.net>
+> Reviewed-by: Dhruva Gole <d-gole@ti.com>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> ---
 > 
-> greg k-h
+> Changes since v1:
+> - Generated with --base as suggested by Andy, this is against tty-linus
+> 
+> - Initialized ida_alloc_range() values as suggested by Andy
+> 
+> - Added Reviewed-by from Dhruva
+> 
+> - Kept Guenter's Tested-by
+> 
+> ---
+>  drivers/tty/serial/serial_base.h     |  1 +
+>  drivers/tty/serial/serial_base_bus.c | 28 +++++++++++++++++++++++++++-
+>  2 files changed, 28 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/serial_base.h b/drivers/tty/serial/serial_base.h
+> --- a/drivers/tty/serial/serial_base.h
+> +++ b/drivers/tty/serial/serial_base.h
+> @@ -16,6 +16,7 @@ struct device;
+>  
+>  struct serial_ctrl_device {
+>  	struct device dev;
+> +	struct ida port_ida;
+>  };
+>  
+>  struct serial_port_device {
+> diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
+> --- a/drivers/tty/serial/serial_base_bus.c
+> +++ b/drivers/tty/serial/serial_base_bus.c
+> @@ -10,6 +10,7 @@
+>  
+>  #include <linux/container_of.h>
+>  #include <linux/device.h>
+> +#include <linux/idr.h>
+>  #include <linux/module.h>
+>  #include <linux/serial_core.h>
+>  #include <linux/slab.h>
+> @@ -112,6 +113,8 @@ struct serial_ctrl_device *serial_base_ctrl_add(struct uart_port *port,
+>  	if (!ctrl_dev)
+>  		return ERR_PTR(-ENOMEM);
+>  
+> +	ida_init(&ctrl_dev->port_ida);
+> +
+>  	err = serial_base_device_init(port, &ctrl_dev->dev,
+>  				      parent, &serial_ctrl_type,
+>  				      serial_base_ctrl_release,
+> @@ -142,16 +145,31 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
+>  						struct serial_ctrl_device *ctrl_dev)
+>  {
+>  	struct serial_port_device *port_dev;
+> +	int min = 0, max = -1;	/* Use -1 for max to apply IDA defaults */
+>  	int err;
+>  
+>  	port_dev = kzalloc(sizeof(*port_dev), GFP_KERNEL);
+>  	if (!port_dev)
+>  		return ERR_PTR(-ENOMEM);
+>  
+> +	/* Device driver specified port_id vs automatic assignment? */
+> +	if (port->port_id) {
+> +		min = port->port_id;
+> +		max = port->port_id;
+> +	}
+> +
+> +	err = ida_alloc_range(&ctrl_dev->port_ida, min, max, GFP_KERNEL);
+> +	if (err < 0) {
+> +		kfree(port_dev);
+> +		return ERR_PTR(err);
+> +	}
+> +
+> +	port->port_id = err;
+> +
+>  	err = serial_base_device_init(port, &port_dev->dev,
+>  				      &ctrl_dev->dev, &serial_port_type,
+>  				      serial_base_port_release,
+> -				      port->ctrl_id, port->line);
+> +				      port->ctrl_id, port->port_id);
+>  	if (err)
+>  		goto err_put_device;
+>  
+> @@ -165,16 +183,24 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
+>  
+>  err_put_device:
+>  	put_device(&port_dev->dev);
+> +	ida_free(&ctrl_dev->port_ida, port->port_id);
+>  
+>  	return ERR_PTR(err);
+>  }
+>  
+>  void serial_base_port_device_remove(struct serial_port_device *port_dev)
+>  {
+> +	struct serial_ctrl_device *ctrl_dev;
+> +	struct device *parent;
+> +
+>  	if (!port_dev)
+>  		return;
+>  
+> +	parent = port_dev->dev.parent;
+> +	ctrl_dev = to_serial_base_ctrl_device(parent);
+> +
+>  	device_del(&port_dev->dev);
+> +	ida_free(&ctrl_dev->port_ida, port_dev->port->port_id);
+>  	put_device(&port_dev->dev);
+>  }
+>  
+> 
+> base-commit: a4a79e03bab57729bd8046d22bf3666912e586fb
+> -- 
+> 2.41.0
 
-Hello Greg,
+-- 
+With Best Regards,
+Andy Shevchenko
 
-I'm sorry that this tag troubles your review. It was first suggested
-in [1]. The "IGNORE" means ignore review on this thread, as it is still
-under review in another thread (Link in the cover letter). It does not
-mean that the content should be ignored for the series. I will change
-this to something else as this is obviously confusing the review.
 
-@Oleksii, can we imagine integrating this patch to this series or do
-you prefer to keep it apart?
-
-Should I consider a resend with another tag if Oleksii prefers to keep
-this patch apart?
-
-[1] 
-https://lore.kernel.org/all/1e498b93-d3bd-bd12-e991-e3f4bedf632d@linaro.org/
-
-Best regards,
-Gatien
