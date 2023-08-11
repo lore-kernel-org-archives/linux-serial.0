@@ -2,165 +2,202 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEB88C001B0
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Aug 2023 10:37:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C6FCC001B0
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Aug 2023 11:53:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234001AbjHKKg5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Aug 2023 06:36:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57636 "EHLO
+        id S231681AbjHKLx5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Aug 2023 07:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232383AbjHKKg4 (ORCPT
+        with ESMTP id S230287AbjHKLx4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Aug 2023 06:36:56 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F021C5;
-        Fri, 11 Aug 2023 03:36:55 -0700 (PDT)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 1A84280F1;
-        Fri, 11 Aug 2023 10:36:52 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v2 1/1] serial: core: Fix serial core port id, including multiport devices
-Date:   Fri, 11 Aug 2023 13:36:45 +0300
-Message-ID: <20230811103648.2826-1-tony@atomide.com>
-X-Mailer: git-send-email 2.41.0
+        Fri, 11 Aug 2023 07:53:56 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9337410F;
+        Fri, 11 Aug 2023 04:53:55 -0700 (PDT)
+Received: from pps.filterd (m0353726.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37BBmiT3031797;
+        Fri, 11 Aug 2023 11:52:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=Lr4aL49HTD62v0Y6Z+UFW4DuRGTZ0zL227b/wXWzqkY=;
+ b=g1XlfD1ZSuV13k0fl1GY4TNZW3i3aaHwSuKY7dU82foEG/DZ8fE5UlOiWqzFCO9uugTL
+ JQ3yM1coIXV/rkklvbVYIYqEpj8dEqt40yDxCQUDAS69Ue0aBghRdm9n550K88y3Psth
+ XUhqrEvv1b2792QjdAkyLsCBqYZtB7Fx/ry/7oCxpS0vTcrccO0PF7xJ0CtIhKGLGU0Y
+ 3XXy/Rk40IHff2SckU27uf7nQXPOrzg6KeQLUQzijKAxgvS6nY+ROVC5ayd0G6vGsu89
+ 29xukiQHktFcMT0YyUqbZih4fZlGDLSBuAzzQEaFO/fkBFKqHBrapADK2bdTRoeZYvQ1 lQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3sdmej01re-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Aug 2023 11:52:47 +0000
+Received: from m0353726.ppops.net (m0353726.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 37BBogkE004393;
+        Fri, 11 Aug 2023 11:52:46 GMT
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3sdmej01pa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Aug 2023 11:52:45 +0000
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+        by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 37B9v8VO001801;
+        Fri, 11 Aug 2023 11:52:43 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+        by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 3sa3f2hw3s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Aug 2023 11:52:43 +0000
+Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
+        by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 37BBqeJO39912150
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 11 Aug 2023 11:52:40 GMT
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AC3E120043;
+        Fri, 11 Aug 2023 11:52:40 +0000 (GMT)
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C100C20040;
+        Fri, 11 Aug 2023 11:52:37 +0000 (GMT)
+Received: from li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com (unknown [9.171.86.49])
+        by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+        Fri, 11 Aug 2023 11:52:37 +0000 (GMT)
+Date:   Fri, 11 Aug 2023 13:52:36 +0200
+From:   Alexander Gordeev <agordeev@linux.ibm.com>
+To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Richard Henderson <richard.henderson@linaro.org>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        Jens Taprogge <jens.taprogge@taprogge.org>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Scott Branden <scott.branden@broadcom.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        David Lin <dtwlin@gmail.com>, Johan Hovold <johan@kernel.org>,
+        Alex Elder <elder@kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        David Sterba <dsterba@suse.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Oliver Neukum <oneukum@suse.com>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Subject: Re: [PATCH 27/36] tty: propagate u8 data to tty_operations::write()
+Message-ID: <ZNYhBCKWPdyuBhtz@li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com>
+References: <20230810091510.13006-1-jirislaby@kernel.org>
+ <20230810091510.13006-28-jirislaby@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230810091510.13006-28-jirislaby@kernel.org>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: iXKVCbOoSZIUTvxrw6djE3c_aGrdWVKE
+X-Proofpoint-GUID: xQWyMkRH_K93iqonGwktKsDoq1WEfqzD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-08-11_03,2023-08-10_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ spamscore=0 clxscore=1011 lowpriorityscore=0 mlxlogscore=837
+ priorityscore=1501 bulkscore=0 phishscore=0 impostorscore=0 adultscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2306200000 definitions=main-2308110106
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We want to fix the serial core port DEVNAME to use a port id of the
-hardware specific controller port instance instead of the port->line.
+On Thu, Aug 10, 2023 at 11:15:01AM +0200, Jiri Slaby (SUSE) wrote:
 
-For example, the 8250 driver sets up a number of serial8250 ports
-initially that can be inherited by the hardware specific driver. At that
-the port->line no longer decribes the port's relation to the serial core
-controller instance.
+Hi Jiri,
 
-Let's fix the issue by assigning port->port_id for each serial core
-controller port instance.
+> Data are now typed as u8. Propagate this change to
+> tty_operations::write().
+...
+>  drivers/s390/char/con3215.c            | 3 +--
+>  drivers/s390/char/con3270.c            | 3 +--
+>  drivers/s390/char/sclp_tty.c           | 2 +-
+>  drivers/s390/char/sclp_vt220.c         | 2 +-
+...
+> diff --git a/drivers/s390/char/con3215.c b/drivers/s390/char/con3215.c
+> index a1fef666c9b0..16b6f430dfd3 100644
+> --- a/drivers/s390/char/con3215.c
+> +++ b/drivers/s390/char/con3215.c
+> @@ -1021,8 +1021,7 @@ static unsigned int tty3215_write_room(struct tty_struct *tty)
+>  /*
+>   * String write routine for 3215 ttys
+>   */
+> -static int tty3215_write(struct tty_struct *tty,
+> -			 const unsigned char *buf, int count)
+> +static int tty3215_write(struct tty_struct *tty, const u8 *buf, int count)
+>  {
+>  	handle_write(tty->driver_data, buf, count);
+>  	return count;
+> diff --git a/drivers/s390/char/con3270.c b/drivers/s390/char/con3270.c
+> index d9983550062d..123524bff734 100644
+> --- a/drivers/s390/char/con3270.c
+> +++ b/drivers/s390/char/con3270.c
+> @@ -1803,8 +1803,7 @@ static void tty3270_do_write(struct tty3270 *tp, struct tty_struct *tty,
+>  /*
+>   * String write routine for 3270 ttys
+>   */
+> -static int tty3270_write(struct tty_struct *tty,
+> -			 const unsigned char *buf, int count)
+> +static int tty3270_write(struct tty_struct *tty, const u8 *buf, int count)
+>  {
+>  	struct tty3270 *tp;
+>  
+> diff --git a/drivers/s390/char/sclp_tty.c b/drivers/s390/char/sclp_tty.c
+> index 971fbb52740b..cc0f6a97124e 100644
+> --- a/drivers/s390/char/sclp_tty.c
+> +++ b/drivers/s390/char/sclp_tty.c
+> @@ -230,7 +230,7 @@ static int sclp_tty_write_string(const unsigned char *str, int count, int may_fa
+>   * routine will return the number of characters actually accepted for writing.
+>   */
+>  static int
+> -sclp_tty_write(struct tty_struct *tty, const unsigned char *buf, int count)
+> +sclp_tty_write(struct tty_struct *tty, const u8 *buf, int count)
+>  {
+>  	if (sclp_tty_chars_count > 0) {
+>  		sclp_tty_write_string(sclp_tty_chars, sclp_tty_chars_count, 0);
+> diff --git a/drivers/s390/char/sclp_vt220.c b/drivers/s390/char/sclp_vt220.c
+> index a32f34a1c6d2..44974d801c1e 100644
+> --- a/drivers/s390/char/sclp_vt220.c
+> +++ b/drivers/s390/char/sclp_vt220.c
+> @@ -463,7 +463,7 @@ __sclp_vt220_write(const unsigned char *buf, int count, int do_schedule,
+>   * number of characters actually accepted for writing.
+>   */
+>  static int
+> -sclp_vt220_write(struct tty_struct *tty, const unsigned char *buf, int count)
+> +sclp_vt220_write(struct tty_struct *tty, const u8 *buf, int count)
+>  {
+>  	return __sclp_vt220_write(buf, count, 1, 0, 1);
+>  }
+...
 
-Fixes: 7d695d83767c ("serial: core: Fix serial_base_match() after fixing controller port name")
-Tested-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Dhruva Gole <d-gole@ti.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
+In this and following patch it is only ::write() (and other) callbacks
+switched to u8, while the called internal functions stay with old types.
 
-Changes since v1:
-- Generated with --base as suggested by Andy, this is against tty-linus
+Do you plan to follow with part II etc, or it is archs/drivers that
+are expected to sort it out eventually?
 
-- Initialized ida_alloc_range() values as suggested by Andy
+(I speak for s390, but the other affected archs are in the same boat I guess).
 
-- Added Reviewed-by from Dhruva
-
-- Kept Guenter's Tested-by
-
----
- drivers/tty/serial/serial_base.h     |  1 +
- drivers/tty/serial/serial_base_bus.c | 28 +++++++++++++++++++++++++++-
- 2 files changed, 28 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/serial_base.h b/drivers/tty/serial/serial_base.h
---- a/drivers/tty/serial/serial_base.h
-+++ b/drivers/tty/serial/serial_base.h
-@@ -16,6 +16,7 @@ struct device;
- 
- struct serial_ctrl_device {
- 	struct device dev;
-+	struct ida port_ida;
- };
- 
- struct serial_port_device {
-diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
---- a/drivers/tty/serial/serial_base_bus.c
-+++ b/drivers/tty/serial/serial_base_bus.c
-@@ -10,6 +10,7 @@
- 
- #include <linux/container_of.h>
- #include <linux/device.h>
-+#include <linux/idr.h>
- #include <linux/module.h>
- #include <linux/serial_core.h>
- #include <linux/slab.h>
-@@ -112,6 +113,8 @@ struct serial_ctrl_device *serial_base_ctrl_add(struct uart_port *port,
- 	if (!ctrl_dev)
- 		return ERR_PTR(-ENOMEM);
- 
-+	ida_init(&ctrl_dev->port_ida);
-+
- 	err = serial_base_device_init(port, &ctrl_dev->dev,
- 				      parent, &serial_ctrl_type,
- 				      serial_base_ctrl_release,
-@@ -142,16 +145,31 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
- 						struct serial_ctrl_device *ctrl_dev)
- {
- 	struct serial_port_device *port_dev;
-+	int min = 0, max = -1;	/* Use -1 for max to apply IDA defaults */
- 	int err;
- 
- 	port_dev = kzalloc(sizeof(*port_dev), GFP_KERNEL);
- 	if (!port_dev)
- 		return ERR_PTR(-ENOMEM);
- 
-+	/* Device driver specified port_id vs automatic assignment? */
-+	if (port->port_id) {
-+		min = port->port_id;
-+		max = port->port_id;
-+	}
-+
-+	err = ida_alloc_range(&ctrl_dev->port_ida, min, max, GFP_KERNEL);
-+	if (err < 0) {
-+		kfree(port_dev);
-+		return ERR_PTR(err);
-+	}
-+
-+	port->port_id = err;
-+
- 	err = serial_base_device_init(port, &port_dev->dev,
- 				      &ctrl_dev->dev, &serial_port_type,
- 				      serial_base_port_release,
--				      port->ctrl_id, port->line);
-+				      port->ctrl_id, port->port_id);
- 	if (err)
- 		goto err_put_device;
- 
-@@ -165,16 +183,24 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
- 
- err_put_device:
- 	put_device(&port_dev->dev);
-+	ida_free(&ctrl_dev->port_ida, port->port_id);
- 
- 	return ERR_PTR(err);
- }
- 
- void serial_base_port_device_remove(struct serial_port_device *port_dev)
- {
-+	struct serial_ctrl_device *ctrl_dev;
-+	struct device *parent;
-+
- 	if (!port_dev)
- 		return;
- 
-+	parent = port_dev->dev.parent;
-+	ctrl_dev = to_serial_base_ctrl_device(parent);
-+
- 	device_del(&port_dev->dev);
-+	ida_free(&ctrl_dev->port_ida, port_dev->port->port_id);
- 	put_device(&port_dev->dev);
- }
- 
-
-base-commit: a4a79e03bab57729bd8046d22bf3666912e586fb
--- 
-2.41.0
+Thanks!
