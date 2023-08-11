@@ -2,105 +2,119 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BFDEC001B0
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Aug 2023 07:52:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F9C7C0015E
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Aug 2023 09:11:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229544AbjHKHw2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Aug 2023 03:52:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59918 "EHLO
+        id S233980AbjHKJLr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Aug 2023 05:11:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231643AbjHKHw1 (ORCPT
+        with ESMTP id S233523AbjHKJLq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Aug 2023 03:52:27 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39DDD1FDD;
-        Fri, 11 Aug 2023 00:52:27 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id 4fb4d7f45d1cf-5230963f636so488133a12.0;
-        Fri, 11 Aug 2023 00:52:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691740346; x=1692345146;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Sn2VSLVm1rXKhBd/HGLc1+dDcaZ5Is6O87rlIzwoYiQ=;
-        b=Z/eoO211AWBp6JZ3ds9kXBx+pppcPCq5oYsNs9/g92Mmtu44V5dtNivMvfnJ8pgaWi
-         DO66XAHf/Pf37IFOk9gb5I/bCyFOkW4RAxVOMaPqVsKARpQNMhpLeMU6M582B787cH2W
-         yMc1dad4hVmg6QEkF9F7aHIQBPP7JJxRjNvUaTkciRWUFd8BI3fH1jD473+xF7IJkY06
-         qy+AfDNdkY27Frt/zarf13RuuZ3gDa2mraVfPgZEKOTLfJsx2hL23YGiNxSFnaiuDeBC
-         XKukRJKvQ1twfm5CUNYG0OLsIk4ZQNYHmVKdeFUS3Nxvg3Psy1dx4c9gbAgu+0QBVSo6
-         U02A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691740346; x=1692345146;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Sn2VSLVm1rXKhBd/HGLc1+dDcaZ5Is6O87rlIzwoYiQ=;
-        b=EPjcXD5ApzTDe3g8iBhGEkMvBvlIHYF3HI3Nzs+jDGFln+OCZ9YwOWcuxSa1NE/2Xm
-         FdZZ9js15ipy2ooDgYROG/tMQt1XEsdNNJLD6Uq/EpjYaPzorqcJbc1ff5EQP5Uy2mZK
-         FiEWHymxLwo/Q5bMjn25UZ/xIba+RO5vimvmbkBGkSdgQGVgIViQHmCbLmciEQcvk+ZT
-         3PvT9M0CihCkTNu7BLao2aOZlX+M0IkHFQ0y53tO1lKNuvjW8FGnC3oOZyh5DBP/ZvrT
-         is/jJf1mtB61cxUi8/k56gtKU5qYjPyqAkf54kApGVKNO/cosVh+mGBLZe2rVmYZdIpt
-         Y/tg==
-X-Gm-Message-State: AOJu0Yx+dlMQk2VKaPXPI0dPtvgTHz/VXyWlDRne5WP0eppCSjO1tl+v
-        MoMclxEomZQKMrBcagFLdh8RmaZ+Ogf3tjNzmd2bVIX6eZrG6Q==
-X-Google-Smtp-Source: AGHT+IETnu6yHfWtkTB3S3u3U5Q9U6EdoG0zTQ8euXUG0LZVCM2lFIN4rpC2orNMWNhlM6ISAXUaLclqtR/m+vq5eZs=
-X-Received: by 2002:a05:6402:1e8c:b0:521:f2a7:d57a with SMTP id
- f12-20020a0564021e8c00b00521f2a7d57amr1025620edf.2.1691740345391; Fri, 11 Aug
- 2023 00:52:25 -0700 (PDT)
+        Fri, 11 Aug 2023 05:11:46 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600CC211C;
+        Fri, 11 Aug 2023 02:11:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691745106; x=1723281106;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=PIyYb86jQXoQP2Kws+Hf7GsK88ApYcG7AUxYkztV4RA=;
+  b=Rpvf8T85ErzkkX3r49O9oxwwiy8OPbW9zCxGgKmh9QXuJj8JeEw5zfGw
+   zPfqT3UoeLp1WqSs+60fGTRly+Uwa15Pdxqke9gwAwkdn50IVaJqHruWS
+   TdJ7oHDvANMycUYzv1/etboQonHYHw5QAuhGCILAR18oixdHX/Se+o19S
+   ov74xQ0Gh/uZJvsGyNbabnK/ckP5j7rKJ+O8aDTsktdnqV88liKHJzJe+
+   IvH5rJnWWOevg1y56c64KM+DeISUSSYr2MuyhT6Li3F6ERK7pMoEG5ctQ
+   HdidNwG+J8DdNbRhxFNkzV0vxHLSeMuCuPlHfYb9XZRuLhvVJPBomjYb+
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="369105993"
+X-IronPort-AV: E=Sophos;i="6.01,165,1684825200"; 
+   d="scan'208";a="369105993"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2023 02:11:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="732603755"
+X-IronPort-AV: E=Sophos;i="6.01,165,1684825200"; 
+   d="scan'208";a="732603755"
+Received: from aberko-mobl1.ger.corp.intel.com ([10.252.51.87])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2023 02:11:41 -0700
+Date:   Fri, 11 Aug 2023 12:11:39 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Dan Carpenter <dan.carpenter@linaro.org>,
+        linux-staging@lists.linux.dev
+Subject: Re: [PATCH 34-and-three-quarters/36] tty: gdm724x: simplify
+ gdm_tty_write()
+In-Reply-To: <20230810103900.19353-1-jirislaby@kernel.org>
+Message-ID: <8df438f1-354a-7e2c-53c5-872f32c56a7@linux.intel.com>
+References: <ba8becf4-786a-4923-92f7-b4ec3038295f@kadam.mountain> <20230810103900.19353-1-jirislaby@kernel.org>
 MIME-Version: 1.0
-References: <20230808033144.2276-1-Wenhua.Lin@unisoc.com> <ZNJCLyWCdihyeC7a@smile.fi.intel.com>
- <CAB9BWhctPWUuL8tLpQSHmn0UWQ2ej4jN87HO89bTEz5__o9rZg@mail.gmail.com> <CAHp75VeVS4MfgpXeeiZygPOqYHR3-LagvWFD9ujOGVTp=J+Buw@mail.gmail.com>
-In-Reply-To: <CAHp75VeVS4MfgpXeeiZygPOqYHR3-LagvWFD9ujOGVTp=J+Buw@mail.gmail.com>
-From:   wenhua lin <wenhua.lin1994@gmail.com>
-Date:   Fri, 11 Aug 2023 15:52:13 +0800
-Message-ID: <CAB9BWhcfS8mYYj+iDaT07M6mQdTiZk+hVs5XPwxpiix01_wjeA@mail.gmail.com>
-Subject: Re: [PATCH 3/3] gpio: sprd: Add clear interrupt
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Andy Shevchenko <andy@kernel.org>,
-        Wenhua Lin <Wenhua.Lin@unisoc.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiongpeng Wu <xiongpeng.wu@unisoc.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/mixed; boundary="8323329-213125295-1691745104=:1742"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 10, 2023 at 5:57=E2=80=AFPM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Thu, Aug 10, 2023 at 10:27=E2=80=AFAM wenhua lin <wenhua.lin1994@gmail=
-.com> wrote:
-> > On Tue, Aug 8, 2023 at 9:25=E2=80=AFPM Andy Shevchenko <andy@kernel.org=
-> wrote:
-> > > On Tue, Aug 08, 2023 at 11:31:44AM +0800, Wenhua Lin wrote:
-> > > > Clear interrupt after set the interrupt type.
-> > >
-> > > Why?
-> > >
-> > > Can't it be done in the ->init_hw() callback of GPIO IRQ chip?
-> >
-> > Hi Andy:
-> > The initialization state of EIC is high-level trigger. If the external
-> > level is high and the interrupt condition is met,
-> > EIC has a latch function. If the module registers the eic interrupt,
-> > an interrupt will be generated immediately
-> >  as soon as the eic interrupt is enabled. To solve this problem, our
-> > processing method is to clear the interrupt
-> >  once when setting the interrupt trigger type, in order to avoid that
-> > this interrupt is the last interrupt.
->
-> Obvious question, isn't this needed to be added to ->init_hw() as well?
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-In the ->init_hw() function, the sprd_gpio_irq_ack interface will be called
- to clear the interrupt, and there is no need to add it repeatedly
+--8323329-213125295-1691745104=:1742
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
->
-> --
-> With Best Regards,
-> Andy Shevchenko
+On Thu, 10 Aug 2023, Jiri Slaby (SUSE) wrote:
+
+> len and remain can never be negative in gdm_tty_write(). So remove such
+> a check and move the check of remaining bytes to the loop condition.
+> This way, the preceding 'if' is now superfluous too. Fix all that and
+> make the code cleaner.
+> 
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
+
+I guess Suggested-by would be more appropriate since there's no problem 
+being fixed here.
+
+> Cc: linux-staging@lists.linux.dev
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+-- 
+ i.
+
+
+
+> ---
+>  drivers/staging/gdm724x/gdm_tty.c | 7 +------
+>  1 file changed, 1 insertion(+), 6 deletions(-)
+> 
+> diff --git a/drivers/staging/gdm724x/gdm_tty.c b/drivers/staging/gdm724x/gdm_tty.c
+> index cbaaa8fa7474..67d9bf41e836 100644
+> --- a/drivers/staging/gdm724x/gdm_tty.c
+> +++ b/drivers/staging/gdm724x/gdm_tty.c
+> @@ -158,10 +158,7 @@ static ssize_t gdm_tty_write(struct tty_struct *tty, const u8 *buf, size_t len)
+>  	if (!gdm_tty_ready(gdm))
+>  		return -ENODEV;
+>  
+> -	if (!len)
+> -		return 0;
+> -
+> -	while (1) {
+> +	while (remain) {
+>  		size_t sending_len = min(MUX_TX_MAX_SIZE, remain);
+>  		gdm->tty_dev->send_func(gdm->tty_dev->priv_dev,
+>  					(void *)(buf + sent_len),
+> @@ -171,8 +168,6 @@ static ssize_t gdm_tty_write(struct tty_struct *tty, const u8 *buf, size_t len)
+>  					gdm);
+>  		sent_len += sending_len;
+>  		remain -= sending_len;
+> -		if (remain <= 0)
+> -			break;
+>  	}
+>  
+>  	return len;
+> 
+--8323329-213125295-1691745104=:1742--
