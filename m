@@ -2,119 +2,169 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F9C7C0015E
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Aug 2023 09:11:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C84C001B0
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Aug 2023 09:33:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233980AbjHKJLr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Aug 2023 05:11:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58542 "EHLO
+        id S229657AbjHKJdZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Aug 2023 05:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233523AbjHKJLq (ORCPT
+        with ESMTP id S234413AbjHKJdX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Aug 2023 05:11:46 -0400
+        Fri, 11 Aug 2023 05:33:23 -0400
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600CC211C;
-        Fri, 11 Aug 2023 02:11:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73CE3271E;
+        Fri, 11 Aug 2023 02:33:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691745106; x=1723281106;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=PIyYb86jQXoQP2Kws+Hf7GsK88ApYcG7AUxYkztV4RA=;
-  b=Rpvf8T85ErzkkX3r49O9oxwwiy8OPbW9zCxGgKmh9QXuJj8JeEw5zfGw
-   zPfqT3UoeLp1WqSs+60fGTRly+Uwa15Pdxqke9gwAwkdn50IVaJqHruWS
-   TdJ7oHDvANMycUYzv1/etboQonHYHw5QAuhGCILAR18oixdHX/Se+o19S
-   ov74xQ0Gh/uZJvsGyNbabnK/ckP5j7rKJ+O8aDTsktdnqV88liKHJzJe+
-   IvH5rJnWWOevg1y56c64KM+DeISUSSYr2MuyhT6Li3F6ERK7pMoEG5ctQ
-   HdidNwG+J8DdNbRhxFNkzV0vxHLSeMuCuPlHfYb9XZRuLhvVJPBomjYb+
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="369105993"
+  t=1691746403; x=1723282403;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=d0hT4879fMQpRw9FZEoq0nUoQYAeQnv07LCy31EVohE=;
+  b=QSTqdh4njowGgyCcS9Q099JAGcUQX4Vs8oGg5VjaMBMPk5ZzsODb4J1E
+   pbh+DCYV5pPdepYPiwqz2vLWAfMN4BT6xRXyls+XIgXplj2OrVKxqrHpZ
+   Ad8qYc3RQnClTjv+bo1gji2JWaBZNGCAziYG0TEfdYn1rXJpt63XMAytY
+   7oJdrlq3fo38dqM3VoMZZrU+cPVvng8IDqGriKoEdHqCBz/5CMzikRDj8
+   khIZhSkc8HCbwRew54VRX42j0lfwh2kf3jyx9Xgsq/iUGB1llthaji0i1
+   qUdEWtqyefU+/5zM+ACRdtztBxBf8G0WQnoozYUIKATJhOGmMKWlHF3Vj
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="369109561"
 X-IronPort-AV: E=Sophos;i="6.01,165,1684825200"; 
-   d="scan'208";a="369105993"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2023 02:11:45 -0700
+   d="scan'208";a="369109561"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2023 02:33:23 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="732603755"
+X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="735728561"
 X-IronPort-AV: E=Sophos;i="6.01,165,1684825200"; 
-   d="scan'208";a="732603755"
-Received: from aberko-mobl1.ger.corp.intel.com ([10.252.51.87])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2023 02:11:41 -0700
-Date:   Fri, 11 Aug 2023 12:11:39 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Dan Carpenter <dan.carpenter@linaro.org>,
-        linux-staging@lists.linux.dev
-Subject: Re: [PATCH 34-and-three-quarters/36] tty: gdm724x: simplify
- gdm_tty_write()
-In-Reply-To: <20230810103900.19353-1-jirislaby@kernel.org>
-Message-ID: <8df438f1-354a-7e2c-53c5-872f32c56a7@linux.intel.com>
-References: <ba8becf4-786a-4923-92f7-b4ec3038295f@kadam.mountain> <20230810103900.19353-1-jirislaby@kernel.org>
+   d="scan'208";a="735728561"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga007.fm.intel.com with ESMTP; 11 Aug 2023 02:33:19 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qUOWC-008i8T-2V;
+        Fri, 11 Aug 2023 12:33:16 +0300
+Date:   Fri, 11 Aug 2023 12:33:16 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     wenhua lin <wenhua.lin1994@gmail.com>
+Cc:     Wenhua Lin <Wenhua.Lin@unisoc.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Samuel Holland <samuel@sholland.org>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiongpeng Wu <xiongpeng.wu@unisoc.com>
+Subject: Re: [PATCH] input: keyboard: Add sprd-keypad driver
+Message-ID: <ZNYAXK69CIiBhiRT@smile.fi.intel.com>
+References: <20230808072501.3393-1-Wenhua.Lin@unisoc.com>
+ <ZNJIa+CbmvDuKq2L@smile.fi.intel.com>
+ <CAB9BWhcPpZRNPki1j0spCzN0kF=-1P1ZwtOLULmr2Raz6aO-_w@mail.gmail.com>
+ <ZNTtl9MKHWWbqpnq@smile.fi.intel.com>
+ <CAB9BWhd6cmYSGXF33hKMq6x0USm+tjFCKLZHRvj7aPXuomDzng@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-213125295-1691745104=:1742"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAB9BWhd6cmYSGXF33hKMq6x0USm+tjFCKLZHRvj7aPXuomDzng@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Fri, Aug 11, 2023 at 03:31:01PM +0800, wenhua lin wrote:
+> On Thu, Aug 10, 2023 at 10:01 PM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> > On Thu, Aug 10, 2023 at 08:42:36PM +0800, wenhua lin wrote:
+> > > On Tue, Aug 8, 2023 at 9:51 PM Andy Shevchenko
+> > > <andriy.shevchenko@linux.intel.com> wrote:
+> > > > On Tue, Aug 08, 2023 at 03:25:01PM +0800, Wenhua Lin wrote:
 
---8323329-213125295-1691745104=:1742
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
+...
 
-On Thu, 10 Aug 2023, Jiri Slaby (SUSE) wrote:
-
-> len and remain can never be negative in gdm_tty_write(). So remove such
-> a check and move the check of remaining bytes to the loop condition.
-> This way, the preceding 'if' is now superfluous too. Fix all that and
-> make the code cleaner.
+> > > > > +     u32 rows_en; /* enabled rows bits */
+> > > > > +     u32 cols_en; /* enabled cols bits */
+> > > >
+> > > > Why not bitmaps?
+> > >
+> > > Bitmap has been used, each bit represents different rows and different columns.
+> >
+> > I meant the bitmap type (as of bitmap.h APIs).
 > 
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
+> I understand what you mean, I need to study how this bitmap is used.
 
-I guess Suggested-by would be more appropriate since there's no problem 
-being fixed here.
+Input subsystem already is using them.
 
-> Cc: linux-staging@lists.linux.dev
+...
 
-Reviewed-by: Ilpo J�rvinen <ilpo.jarvinen@linux.intel.com>
+> > > > > +static int sprd_keypad_parse_dt(struct device *dev)
+> > > >
+> > > > dt -> fw
+> > >
+> > > I don't quite understand what you mean,。
+> > > is it to change the function name to sprd_keypad_parse_fw?
+> >
+> > Yes. And make it firmware (which may be ACPI/DT or something else).
+> 
+> We need to think about how to modify it.
+
+As I told already, replace mention of "DT"/"OF" by "firmware" and use device
+property APIs as per property.h.
+
+...
+
+> > > > And I'm wondering if input subsystem already does this for you.
+> > >
+> > > I don't quite understand what you mean.
+> >
+> > Does input subsystem parse the (some of) device properties already?
+> 
+> Yes
+
+Does it cover what you are parsing here? At least partially...
+
+...
+
+> > > > > +err_free:
+> > > > > +     devm_kfree(&pdev->dev, data);
+> > > >
+> > > > Huh?!
+> >
+> > It's a red flag, and you have no answer to it...
+> 
+> I realized the problem, the interface using devm_  does not need to do the free.
+> I will fix this issue in patch v2.
+
+The problem is to understand where you can and where you can't use devm_*()
+in the first place. _Then_ as you said.
+
+> > > > > +     return ret;
+
+...
+
+> > > > > +             .owner = THIS_MODULE,
+> > > >
+> > > > ~15 years this is not needed.
+> > > > Where did you get this code from? Time machine?
+> > >
+> > > Do you mean the keypad driver is no longer in use?
+> >
+> > No, I meant specifically emphasized line.
+> 
+> The keypad driver code is used on the platform
+>  and has not been submitted to the community.
+
+I'm not sure I understand to what you reply here...
+I'm talking about the "owner" member assignment in the respective
+data structure.
 
 -- 
- i.
+With Best Regards,
+Andy Shevchenko
 
 
-
-> ---
->  drivers/staging/gdm724x/gdm_tty.c | 7 +------
->  1 file changed, 1 insertion(+), 6 deletions(-)
-> 
-> diff --git a/drivers/staging/gdm724x/gdm_tty.c b/drivers/staging/gdm724x/gdm_tty.c
-> index cbaaa8fa7474..67d9bf41e836 100644
-> --- a/drivers/staging/gdm724x/gdm_tty.c
-> +++ b/drivers/staging/gdm724x/gdm_tty.c
-> @@ -158,10 +158,7 @@ static ssize_t gdm_tty_write(struct tty_struct *tty, const u8 *buf, size_t len)
->  	if (!gdm_tty_ready(gdm))
->  		return -ENODEV;
->  
-> -	if (!len)
-> -		return 0;
-> -
-> -	while (1) {
-> +	while (remain) {
->  		size_t sending_len = min(MUX_TX_MAX_SIZE, remain);
->  		gdm->tty_dev->send_func(gdm->tty_dev->priv_dev,
->  					(void *)(buf + sent_len),
-> @@ -171,8 +168,6 @@ static ssize_t gdm_tty_write(struct tty_struct *tty, const u8 *buf, size_t len)
->  					gdm);
->  		sent_len += sending_len;
->  		remain -= sending_len;
-> -		if (remain <= 0)
-> -			break;
->  	}
->  
->  	return len;
-> 
---8323329-213125295-1691745104=:1742--
