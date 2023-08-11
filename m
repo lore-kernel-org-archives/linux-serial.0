@@ -2,202 +2,135 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C6FCC001B0
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Aug 2023 11:53:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5948C04A94
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Aug 2023 12:01:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231681AbjHKLx5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Aug 2023 07:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43474 "EHLO
+        id S234911AbjHKMBH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Aug 2023 08:01:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230287AbjHKLx4 (ORCPT
+        with ESMTP id S231285AbjHKMBF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Aug 2023 07:53:56 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9337410F;
-        Fri, 11 Aug 2023 04:53:55 -0700 (PDT)
-Received: from pps.filterd (m0353726.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37BBmiT3031797;
-        Fri, 11 Aug 2023 11:52:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=Lr4aL49HTD62v0Y6Z+UFW4DuRGTZ0zL227b/wXWzqkY=;
- b=g1XlfD1ZSuV13k0fl1GY4TNZW3i3aaHwSuKY7dU82foEG/DZ8fE5UlOiWqzFCO9uugTL
- JQ3yM1coIXV/rkklvbVYIYqEpj8dEqt40yDxCQUDAS69Ue0aBghRdm9n550K88y3Psth
- XUhqrEvv1b2792QjdAkyLsCBqYZtB7Fx/ry/7oCxpS0vTcrccO0PF7xJ0CtIhKGLGU0Y
- 3XXy/Rk40IHff2SckU27uf7nQXPOrzg6KeQLUQzijKAxgvS6nY+ROVC5ayd0G6vGsu89
- 29xukiQHktFcMT0YyUqbZih4fZlGDLSBuAzzQEaFO/fkBFKqHBrapADK2bdTRoeZYvQ1 lQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3sdmej01re-1
+        Fri, 11 Aug 2023 08:01:05 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C2410F;
+        Fri, 11 Aug 2023 05:01:00 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 37B88G8v008911;
+        Fri, 11 Aug 2023 14:00:30 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+        message-id:date:mime-version:subject:to:cc:references:from
+        :in-reply-to:content-type:content-transfer-encoding; s=
+        selector1; bh=YFHcudHf3KpEu6VK+Oi7sDZa7u7aRH57T4p90BFxYt4=; b=kU
+        O35PwDwyu9KjgW31K5h+6ypqbjSO6SxBadYITZWgPgbjcx7JybnAtEPYUufCNZ1c
+        UmcJYsfb4v5cYrhDkibKKDxm5TpRLh/usyV9eplTbzPk8FWxlpA11SMe+tWFoHtE
+        nXPAN596HtBzcvDnDHR0ekdCH486R0r+TxPzL9tozmYQYoPWnnLGInYl3MRzO4Ve
+        mX/GHIkPAIGcQsdV9V/wrcIE3MhSv5JVpUfvddbdbHMcOV/6LpEQ9KIuJdAz19XH
+        RJctqFi0wSAJ+BRNaqX/iLjVk/ggN6VW/unTU9UDPsJ6xBkOROMcl3YQW+ceqGTb
+        HV30OC1Vqh+PAlrRr7vg==
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3sdh74h9vb-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Aug 2023 11:52:47 +0000
-Received: from m0353726.ppops.net (m0353726.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 37BBogkE004393;
-        Fri, 11 Aug 2023 11:52:46 GMT
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3sdmej01pa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Aug 2023 11:52:45 +0000
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-        by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 37B9v8VO001801;
-        Fri, 11 Aug 2023 11:52:43 GMT
-Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
-        by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 3sa3f2hw3s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Aug 2023 11:52:43 +0000
-Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-        by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 37BBqeJO39912150
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 11 Aug 2023 11:52:40 GMT
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AC3E120043;
-        Fri, 11 Aug 2023 11:52:40 +0000 (GMT)
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C100C20040;
-        Fri, 11 Aug 2023 11:52:37 +0000 (GMT)
-Received: from li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com (unknown [9.171.86.49])
-        by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-        Fri, 11 Aug 2023 11:52:37 +0000 (GMT)
-Date:   Fri, 11 Aug 2023 13:52:36 +0200
-From:   Alexander Gordeev <agordeev@linux.ibm.com>
-To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Richard Henderson <richard.henderson@linaro.org>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        Jens Taprogge <jens.taprogge@taprogge.org>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        Scott Branden <scott.branden@broadcom.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        David Lin <dtwlin@gmail.com>, Johan Hovold <johan@kernel.org>,
-        Alex Elder <elder@kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        David Sterba <dsterba@suse.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Oliver Neukum <oneukum@suse.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Subject: Re: [PATCH 27/36] tty: propagate u8 data to tty_operations::write()
-Message-ID: <ZNYhBCKWPdyuBhtz@li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com>
-References: <20230810091510.13006-1-jirislaby@kernel.org>
- <20230810091510.13006-28-jirislaby@kernel.org>
+        Fri, 11 Aug 2023 14:00:29 +0200 (MEST)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 64D9710004F;
+        Fri, 11 Aug 2023 14:00:27 +0200 (CEST)
+Received: from Webmail-eu.st.com (eqndag1node4.st.com [10.75.129.133])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 287D02171E0;
+        Fri, 11 Aug 2023 14:00:27 +0200 (CEST)
+Received: from [10.201.21.121] (10.201.21.121) by EQNDAG1NODE4.st.com
+ (10.75.129.133) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Fri, 11 Aug
+ 2023 14:00:25 +0200
+Message-ID: <4f0f9d6c-ce4d-73a2-60bf-801c1a1d6cc3@foss.st.com>
+Date:   Fri, 11 Aug 2023 14:00:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230810091510.13006-28-jirislaby@kernel.org>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: iXKVCbOoSZIUTvxrw6djE3c_aGrdWVKE
-X-Proofpoint-GUID: xQWyMkRH_K93iqonGwktKsDoq1WEfqzD
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [IGNORE][PATCH v4 01/11] dt-bindings: Document common device
+ controller bindings
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     <Oleksii_Moisieiev@epam.com>, <herbert@gondor.apana.org.au>,
+        <davem@davemloft.net>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <alexandre.torgue@foss.st.com>, <vkoul@kernel.org>,
+        <jic23@kernel.org>, <olivier.moysan@foss.st.com>,
+        <arnaud.pouliquen@foss.st.com>, <mchehab@kernel.org>,
+        <fabrice.gasnier@foss.st.com>, <andi.shyti@kernel.org>,
+        <ulf.hansson@linaro.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <hugues.fruchet@foss.st.com>,
+        <lee@kernel.org>, <will@kernel.org>, <catalin.marinas@arm.com>,
+        <arnd@kernel.org>, <richardcochran@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>, <peng.fan@oss.nxp.com>,
+        <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
+        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>
+References: <20230811100731.108145-1-gatien.chevallier@foss.st.com>
+ <20230811100731.108145-2-gatien.chevallier@foss.st.com>
+ <2023081117-sprout-cruncher-862c@gregkh>
+From:   Gatien CHEVALLIER <gatien.chevallier@foss.st.com>
+In-Reply-To: <2023081117-sprout-cruncher-862c@gregkh>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.201.21.121]
+X-ClientProxiedBy: EQNCAS1NODE4.st.com (10.75.129.82) To EQNDAG1NODE4.st.com
+ (10.75.129.133)
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-08-11_03,2023-08-10_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
- spamscore=0 clxscore=1011 lowpriorityscore=0 mlxlogscore=837
- priorityscore=1501 bulkscore=0 phishscore=0 impostorscore=0 adultscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2306200000 definitions=main-2308110106
+ definitions=2023-08-11_02,2023-08-10_01,2023-05-22_02
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 10, 2023 at 11:15:01AM +0200, Jiri Slaby (SUSE) wrote:
 
-Hi Jiri,
 
-> Data are now typed as u8. Propagate this change to
-> tty_operations::write().
-...
->  drivers/s390/char/con3215.c            | 3 +--
->  drivers/s390/char/con3270.c            | 3 +--
->  drivers/s390/char/sclp_tty.c           | 2 +-
->  drivers/s390/char/sclp_vt220.c         | 2 +-
-...
-> diff --git a/drivers/s390/char/con3215.c b/drivers/s390/char/con3215.c
-> index a1fef666c9b0..16b6f430dfd3 100644
-> --- a/drivers/s390/char/con3215.c
-> +++ b/drivers/s390/char/con3215.c
-> @@ -1021,8 +1021,7 @@ static unsigned int tty3215_write_room(struct tty_struct *tty)
->  /*
->   * String write routine for 3215 ttys
->   */
-> -static int tty3215_write(struct tty_struct *tty,
-> -			 const unsigned char *buf, int count)
-> +static int tty3215_write(struct tty_struct *tty, const u8 *buf, int count)
->  {
->  	handle_write(tty->driver_data, buf, count);
->  	return count;
-> diff --git a/drivers/s390/char/con3270.c b/drivers/s390/char/con3270.c
-> index d9983550062d..123524bff734 100644
-> --- a/drivers/s390/char/con3270.c
-> +++ b/drivers/s390/char/con3270.c
-> @@ -1803,8 +1803,7 @@ static void tty3270_do_write(struct tty3270 *tp, struct tty_struct *tty,
->  /*
->   * String write routine for 3270 ttys
->   */
-> -static int tty3270_write(struct tty_struct *tty,
-> -			 const unsigned char *buf, int count)
-> +static int tty3270_write(struct tty_struct *tty, const u8 *buf, int count)
->  {
->  	struct tty3270 *tp;
->  
-> diff --git a/drivers/s390/char/sclp_tty.c b/drivers/s390/char/sclp_tty.c
-> index 971fbb52740b..cc0f6a97124e 100644
-> --- a/drivers/s390/char/sclp_tty.c
-> +++ b/drivers/s390/char/sclp_tty.c
-> @@ -230,7 +230,7 @@ static int sclp_tty_write_string(const unsigned char *str, int count, int may_fa
->   * routine will return the number of characters actually accepted for writing.
->   */
->  static int
-> -sclp_tty_write(struct tty_struct *tty, const unsigned char *buf, int count)
-> +sclp_tty_write(struct tty_struct *tty, const u8 *buf, int count)
->  {
->  	if (sclp_tty_chars_count > 0) {
->  		sclp_tty_write_string(sclp_tty_chars, sclp_tty_chars_count, 0);
-> diff --git a/drivers/s390/char/sclp_vt220.c b/drivers/s390/char/sclp_vt220.c
-> index a32f34a1c6d2..44974d801c1e 100644
-> --- a/drivers/s390/char/sclp_vt220.c
-> +++ b/drivers/s390/char/sclp_vt220.c
-> @@ -463,7 +463,7 @@ __sclp_vt220_write(const unsigned char *buf, int count, int do_schedule,
->   * number of characters actually accepted for writing.
->   */
->  static int
-> -sclp_vt220_write(struct tty_struct *tty, const unsigned char *buf, int count)
-> +sclp_vt220_write(struct tty_struct *tty, const u8 *buf, int count)
->  {
->  	return __sclp_vt220_write(buf, count, 1, 0, 1);
->  }
-...
+On 8/11/23 12:16, Greg KH wrote:
+> On Fri, Aug 11, 2023 at 12:07:21PM +0200, Gatien Chevallier wrote:
+>> From: Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
+>>
+>> Introducing of the common device controller bindings for the controller
+>> provider and consumer devices. Those bindings are intended to allow
+>> divided system on chip into multiple domains, that can be used to
+>> configure hardware permissions.
+>>
+>> Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
+>> [Gatien: Fix typos and YAML error]
+>> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
+>> ---
+>>
+>> Changes in V4:
+>> 	Corrected typos and YAML errors	
+> 
+> Why are we supposed to ignore the first patch in this series, but pay
+> attention to the 10 after this that depend on it?
+> 
+> totally confused,
+> 
+> greg k-h
 
-In this and following patch it is only ::write() (and other) callbacks
-switched to u8, while the called internal functions stay with old types.
+Hello Greg,
 
-Do you plan to follow with part II etc, or it is archs/drivers that
-are expected to sort it out eventually?
+I'm sorry that this tag troubles your review. It was first suggested
+in [1]. The "IGNORE" means ignore review on this thread, as it is still
+under review in another thread (Link in the cover letter). It does not
+mean that the content should be ignored for the series. I will change
+this to something else as this is obviously confusing the review.
 
-(I speak for s390, but the other affected archs are in the same boat I guess).
+@Oleksii, can we imagine integrating this patch to this series or do
+you prefer to keep it apart?
 
-Thanks!
+Should I consider a resend with another tag if Oleksii prefers to keep
+this patch apart?
+
+[1] 
+https://lore.kernel.org/all/1e498b93-d3bd-bd12-e991-e3f4bedf632d@linaro.org/
+
+Best regards,
+Gatien
