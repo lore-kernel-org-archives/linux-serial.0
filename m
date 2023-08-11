@@ -2,154 +2,105 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E1EAC001DB
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Aug 2023 22:15:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7639C0015E
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Aug 2023 23:40:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233570AbjHKWPE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Aug 2023 18:15:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38994 "EHLO
+        id S236021AbjHKXkw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Aug 2023 19:40:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233777AbjHKWOq (ORCPT
+        with ESMTP id S233769AbjHKXkw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Aug 2023 18:14:46 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E7D1724
-        for <linux-serial@vger.kernel.org>; Fri, 11 Aug 2023 15:14:29 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id d2e1a72fcca58-686f1240a22so2361594b3a.0
-        for <linux-serial@vger.kernel.org>; Fri, 11 Aug 2023 15:14:29 -0700 (PDT)
+        Fri, 11 Aug 2023 19:40:52 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D416210FE
+        for <linux-serial@vger.kernel.org>; Fri, 11 Aug 2023 16:40:51 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id 6a1803df08f44-63fc1574063so12244196d6.3
+        for <linux-serial@vger.kernel.org>; Fri, 11 Aug 2023 16:40:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1691792068; x=1692396868;
-        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=240AxdMMaldk+g7fw53LojwcLK4U9jGObKQxSzF0En0=;
-        b=Fp3GXkAYuhSpSe2YVkZ1bh/BCEztsSg8pwe7AWtSm812xEisuKoggzIiFxxw8nd3/g
-         z3YLOzqGjT1iX9pA5PrWeQdi+i4Gu2q5qSDEnoJ1Z133xATC8e4XySAeQ4UVZFCMRXpv
-         rAumgp7wk0pW1U5NwqRSB2/xYH6D0ThLHxcfY=
+        d=broadcom.com; s=google; t=1691797251; x=1692402051;
+        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=wnLLXizA8St6m1pZRir9Zpiqxa6b+7k78yiS8UCxzD4=;
+        b=NEY1CeVbVwHVAG4Z2v8KHI8DxqZuRDn2XjCQEoxzjlxo6wDJ1x2phAbal66d3B89yi
+         w9SQEV97MD24RNAyAxnOvis4piXMQ7x9qbaPL7jPF0Z1n6wKH9MsByNXmvW+6fFbHGh5
+         D6IVQDBs5IVGeiSk0xGG4jhgieYH+TE9L4jIA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691792068; x=1692396868;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=240AxdMMaldk+g7fw53LojwcLK4U9jGObKQxSzF0En0=;
-        b=WD60yHZvyocjQtbYmaGcfdhf35u4A65/4MqrMt+W3oIHdoCQhLTrvQuZlyoSfb04Dc
-         nDArfauRkCfT3h/X+So03gGGsgjPF1hNsxjJv34B0nWnAlh2ZLgAsj+A7XrgnI4d4F21
-         afZextdGmzNSBs9mq7MB08GK7WMJOuOiEWe/44MpQuiHLEpCVx1zQl+GY6hHihlqFNZY
-         ZRgAa/fTWa3b186qYrYp47W9wRGK8fdkhYyl26geuGvPfCgfdBEf9xQfGlSbQUjDd/9n
-         QTqYNCaSLEpVJF6H91bGGTV67xaZHR59+wQloKIsR0A8mjv2m5bTgYNg01CcYVcXADON
-         3EzA==
-X-Gm-Message-State: AOJu0YwEBHCSzyun30Gs9Wi5vgyBguR6sx9ufabMCrtA+UwTmgiWEhxf
-        IswI6xJbuLNEAHqhWsLZpJ2TMa50u9JzJuKOJp2YG0xwTCO10tVXUGz2YzgwoIt5/IOrcpCOoXH
-        xBvTqIpTPDQrCixO9bdoLiEkNJ0sCwq5B7tS8BUEdGT4Dr96vWdfVw2mOVzA8kwhlrS0d8ebF0l
-        G6HepndDF9s3p9tg==
-X-Google-Smtp-Source: AGHT+IFNCpK+SFo/jVQXxIJUfTMKXpIHOUx8IHsRrZ7r8q3e+NN1cMheBNwukNLak4uwsB8lMcGzFQ==
-X-Received: by 2002:a05:6a20:138b:b0:140:cb66:73c0 with SMTP id hn11-20020a056a20138b00b00140cb6673c0mr3604015pzc.58.1691792067944;
-        Fri, 11 Aug 2023 15:14:27 -0700 (PDT)
-Received: from stbirv-lnx-2.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id n21-20020aa79055000000b006878c00537bsm3778171pfo.120.2023.08.11.15.14.26
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 11 Aug 2023 15:14:27 -0700 (PDT)
-From:   Justin Chen <justin.chen@broadcom.com>
-To:     linux-serial@vger.kernel.org
-Cc:     opendmb@gmail.com, Justin Chen <justin.chen@broadcom.com>,
-        Al Cooper <alcooperx@gmail.com>,
+        d=1e100.net; s=20221208; t=1691797251; x=1692402051;
+        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wnLLXizA8St6m1pZRir9Zpiqxa6b+7k78yiS8UCxzD4=;
+        b=QBaPLGOZqVzhq74mKhYfbvoFSVvIh5/hZi32LUPv/hv8CKZA4upYyABEdgQ0sUO8WC
+         ZRFE9hNAf9lmaKbEaqVO2wespOsj7T1EH57WS8nUfwRgoZUzjShOoIUbFmWH5xMK8zjb
+         zbO/lk+9omNX5gSvrOr/N1YKmQEwH3QzAGW6N6nJGQN5CByGC45EiPKrKD7TxTEF7VZb
+         d3KOuxpyGFIiqhOA3PbRXer0OJDrtTXgV4x+ev+mareK44HKiqhm05Wwugsrs5k7bFu9
+         okTcjIrPgNFdxQX/0o7KynuJP6BIOKqBukQujuZB5JZIntwKMEGJJIZStSkGshDIscSn
+         XCfQ==
+X-Gm-Message-State: AOJu0Yx3jRie5TXEYpaXzSJUtGWS54fd2FDTZCp4KursU4GAeHVg4biF
+        c0NQHF4taPd6fzk0hOVnN/OE7WJ62ifPhSDxFhk=
+X-Google-Smtp-Source: AGHT+IH4DIfyutTYiU39rCXrtWZ3FE9qiUZWGo6q+DYkGx7qBAErd1BhU2SOx1wWN5m7YNNw2rapmw==
+X-Received: by 2002:ad4:588a:0:b0:63d:ffe:2cd2 with SMTP id dz10-20020ad4588a000000b0063d0ffe2cd2mr2789410qvb.44.1691797250967;
+        Fri, 11 Aug 2023 16:40:50 -0700 (PDT)
+Received: from ?IPV6:2607:fb91:ae9:9152:61f0:1e0:65f1:ffd5? ([2607:fb91:ae9:9152:61f0:1e0:65f1:ffd5])
+        by smtp.gmail.com with ESMTPSA id c16-20020a0cf2d0000000b0063d0159e1f6sm1531458qvm.109.2023.08.11.16.40.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Aug 2023 16:40:50 -0700 (PDT)
+Message-ID: <b9446d48-138c-cc7b-7b51-594a2c64bc79@broadcom.com>
+Date:   Fri, 11 Aug 2023 16:40:46 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [PATCH] serial: 8250_bcm7271: improve bcm7271 8250 port
+To:     Justin Chen <justin.chen@broadcom.com>,
+        linux-serial@vger.kernel.org
+Cc:     opendmb@gmail.com, Al Cooper <alcooperx@gmail.com>,
         Broadcom internal kernel review list 
         <bcm-kernel-feedback-list@broadcom.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         John Ogness <john.ogness@linutronix.de>,
         Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
-        linux-kernel@vger.kernel.org (open list:TTY LAYER)
-Subject: [PATCH] serial: 8250_bcm7271: improve bcm7271 8250 port
-Date:   Fri, 11 Aug 2023 15:14:01 -0700
-Message-Id: <1691792050-25042-1-git-send-email-justin.chen@broadcom.com>
-X-Mailer: git-send-email 2.7.4
+        "open list:TTY LAYER" <linux-kernel@vger.kernel.org>
+References: <1691792050-25042-1-git-send-email-justin.chen@broadcom.com>
+From:   Florian Fainelli <florian.fainelli@broadcom.com>
+In-Reply-To: <1691792050-25042-1-git-send-email-justin.chen@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000004662c80602ad0984"
+        boundary="000000000000307a600602ae3e13"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
---0000000000004662c80602ad0984
+--000000000000307a600602ae3e13
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The 8250 bcm7271 UART is not a direct match to PORT_16550A. The
-Fifo is 32 and rxtrig values are {1, 8, 16, 30}. Create a PORT_BCM7271
-to better capture the HW CAPS.
 
-Default the rxtrig level to 8.
 
-Signed-off-by: Justin Chen <justin.chen@broadcom.com>
----
- drivers/tty/serial/8250/8250_bcm7271.c | 4 +---
- drivers/tty/serial/8250/8250_port.c    | 8 ++++++++
- include/uapi/linux/serial_core.h       | 3 +++
- 3 files changed, 12 insertions(+), 3 deletions(-)
+On 8/11/2023 3:14 PM, Justin Chen wrote:
+> The 8250 bcm7271 UART is not a direct match to PORT_16550A. The
+> Fifo is 32 and rxtrig values are {1, 8, 16, 30}. Create a PORT_BCM7271
+> to better capture the HW CAPS.
+> 
+> Default the rxtrig level to 8.
+> 
+> Signed-off-by: Justin Chen <justin.chen@broadcom.com>
 
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index d4b05d7ad9e8..aa5aff046756 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -1042,7 +1042,7 @@ static int brcmuart_probe(struct platform_device *pdev)
- 	dev_dbg(dev, "DMA is %senabled\n", priv->dma_enabled ? "" : "not ");
- 
- 	memset(&up, 0, sizeof(up));
--	up.port.type = PORT_16550A;
-+	up.port.type = PORT_BCM7271;
- 	up.port.uartclk = clk_rate;
- 	up.port.dev = dev;
- 	up.port.mapbase = mapbase;
-@@ -1056,8 +1056,6 @@ static int brcmuart_probe(struct platform_device *pdev)
- 		| UPF_FIXED_PORT | UPF_FIXED_TYPE;
- 	up.port.dev = dev;
- 	up.port.private_data = priv;
--	up.capabilities = UART_CAP_FIFO | UART_CAP_AFE;
--	up.port.fifosize = 32;
- 
- 	/* Check for a fixed line number */
- 	ret = of_alias_get_id(np, "serial");
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 16aeb1420137..a6259a264041 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -322,6 +322,14 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes   = {2, 66, 130, 194},
- 		.flags          = UART_CAP_FIFO,
- 	},
-+	[PORT_BCM7271] = {
-+		.name		= "bcm7271_uart",
-+		.fifo_size	= 32,
-+		.tx_loadsz	= 32,
-+		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01,
-+		.rxtrig_bytes	= {1, 8, 16, 30},
-+		.flags		= UART_CAP_FIFO | UART_CAP_AFE
-+	},
- };
- 
- /* Uart divisor latch read */
-diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-index 281fa286555c..369f845a3d1d 100644
---- a/include/uapi/linux/serial_core.h
-+++ b/include/uapi/linux/serial_core.h
-@@ -279,4 +279,7 @@
- /* Sunplus UART */
- #define PORT_SUNPLUS	123
- 
-+/* Broadcom 7271 UART */
-+#define PORT_BCM7271    124
-+
- #endif /* _UAPILINUX_SERIAL_CORE_H */
+Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
 -- 
-2.7.4
+Florian
 
-
---0000000000004662c80602ad0984
+--000000000000307a600602ae3e13
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Description: S/MIME Cryptographic Signature
 
-MIIQagYJKoZIhvcNAQcCoIIQWzCCEFcCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-gg3BMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+MIIQeQYJKoZIhvcNAQcCoIIQajCCEGYCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+gg3QMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
 VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
 AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
 AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
@@ -187,39 +138,40 @@ M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
 Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
 14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
 a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBUkwggQxoAMCAQICDCPwEotc2kAt96Z1EDANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+XzCCBVgwggRAoAMCAQICDBP8P9hKRVySg3Qv5DANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
 RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAxMjM5NTBaFw0yNTA5MTAxMjM5NTBaMIGM
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAxMjE4MTFaFw0yNTA5MTAxMjE4MTFaMIGW
 MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xFDASBgNVBAMTC0p1c3RpbiBDaGVuMScwJQYJKoZIhvcNAQkB
-FhhqdXN0aW4uY2hlbkBicm9hZGNvbS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
-AQDKX7oyRqaeT81UCy+OTzAUHJeHABD6GDVZu7IJxt8GWSGx+ebFexFz/gnRO/sgwnPzzrC2DwM1
-kaDgYe+pI1lMzUZvAB5DfS1qXKNGoeeNv7FoNFlv3iD4bvOykX/K/voKtjS3QNs0EDnwkvETUWWu
-yiXtMiGENBBJcbGirKuFTT3U/2iPoSL5OeMSEqKLdkNTT9O79KN+Rf7Zi4Duz0LUqqpz9hZl4zGc
-NhTY3E+cXCB11wty89QStajwXdhGJTYEvUgvsq1h8CwJj9w/38ldAQf5WjhPmApYeJR2ewFrBMCM
-4lHkdRJ6TDc9nXoEkypUfjJkJHe7Eal06tosh6JpAgMBAAGjggHZMIIB1TAOBgNVHQ8BAf8EBAMC
-BaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJlLmdsb2JhbHNp
-Z24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYIKwYBBQUHMAGG
-NWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwME0G
-A1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxz
-aWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqGOGh0dHA6Ly9j
-cmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3JsMCMGA1UdEQQc
-MBqBGGp1c3Rpbi5jaGVuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSME
-GDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUIWGeYuaTsnIada5Xx8TR3cheUbgw
-DQYJKoZIhvcNAQELBQADggEBAHNQlMqQOFYPYFO71A+8t+qWMmtOdd2iGswSOvpSZ/pmGlfw8ZvY
-dRTkl27m37la84AxRkiVMes14JyOZJoMh/g7fbgPlU14eBc6WQWkIA6AmNkduFWTr1pRezkjpeo6
-xVmdBLM4VY1TFDYj7S8H2adPuypd62uHMY/MZi+BIUys4uAFA+N3NuUBNjcVZXYPplYxxKEuIFq6
-sDL+OV16G+F9CkNMN3txsym8Nnx5WAYZb6+rBUIhMGz70V05xsHQfzvo2s7f0J1tJ5BoRlPPhL0h
-VOnWA3h71u9TfSsv+PXVm3P21TfOS2uc1hbzEqyENCP4i5XQ0rv0TmPW42GZ0o4xggJtMIICaQIB
-ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
-bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwj8BKLXNpALfemdRAwDQYJ
-YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJ3h9+0V4l02Mjc6TZ2cBHmd4wpvvKviQO9h
-uaGfJIcHMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDgxMTIy
-MTQyOFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
-AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
-BgkqhkiG9w0BAQEFAASCAQA8Qi8FghErYaclO27aUCaBkyUmo9+cyj9/NI+6lhoncUM4Xs+amErV
-EqlMdXKBL0d5aTvTHOJVHgw21H1QOEc9ycDjz618ySSzkbIrcH+wi/7p5kVEPz96koDJRN02Nh+/
-QP7myAICzoWMkVrkatKr1hWIRqZyXd2OQAogYW9foYNl11GhSP9H3WpvnQo/kF2i2AQarHIl0mnH
-kGaCwHhez/1HcfQnsysh+67p13CeSAhBAqE2hO95gQnEMFWkhPnjgR7WpzhsiNsYTrMavuEqid39
-2GwcvVwvdZOumAGWj52FNmCb5t6PFXhmmh7IdWEEbkZwSsfIge1lqj8Ez3fS
---0000000000004662c80602ad0984--
+BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEZsb3JpYW4gRmFpbmVsbGkxLDAqBgkqhkiG
+9w0BCQEWHWZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEA+oi3jMmHltY4LMUy8Up5+1zjd1iSgUBXhwCJLj1GJQF+GwP8InemBbk5rjlC
+UwbQDeIlOfb8xGqHoQFGSW8p9V1XUw+cthISLkycex0AJ09ufePshLZygRLREU0H4ecNPMejxCte
+KdtB4COST4uhBkUCo9BSy1gkl8DJ8j/BQ1KNUx6oYe0CntRag+EnHv9TM9BeXBBLfmMRnWNhvOSk
+nSmRX0J3d9/G2A3FIC6WY2XnLW7eAZCQPa1Tz3n2B5BGOxwqhwKLGLNu2SRCPHwOdD6e0drURF7/
+Vax85/EqkVnFNlfxtZhS0ugx5gn2pta7bTdBm1IG4TX+A3B1G57rVwIDAQABo4IB3jCCAdowDgYD
+VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
+ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
+CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
+MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
+d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
+hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
+bDAoBgNVHREEITAfgR1mbG9yaWFuLmZhaW5lbGxpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
+BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUwwfJ6/F
+KL0fRdVROal/Lp4lAF0wDQYJKoZIhvcNAQELBQADggEBAKBgfteDc1mChZjKBY4xAplC6uXGyBrZ
+kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
+2s1RH00JOkO5SkYdwCHj4DB9B7KEnLatJtD8MBorvt+QxTuSh4ze96Jz3kEIoHMvwGFkgObWblsc
+3/YcLBmCgaWpZ3Ksev1vJPr5n8riG3/N4on8gO5qinmmr9Y7vGeuf5dmZrYMbnb+yCBalkUmZQwY
+NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
+AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
+LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
+/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIAx4zWo3L/OFvAyd
+ckF9GzRnAAZIhTHniSxxAOklMkoZMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTIzMDgxMTIzNDA1MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQC/8JPSdULNwZ0MJFi/n2S6jsnWqs2rY6bz
+YsupnDHIP8ABIc4NHgz928U6VSUVMVYdTdYuCTTbboRify9IEe2tODY56pRYp9B8xlducEUlc+A2
+hPpvc/iX8qGAiIfgRYaQbgRC+4sohn3axwTwyZByyIP01ygNrHcD+pEaTjN5sN4dPKZA+stbEV66
+TtE05GuIkDaGEh0T6lsMeBsVuZaEmmUlkqwhKkxWPMcH7PodFn5YhgbVOR6KfkyUQ1EMFAfrM8DW
+yDreISSo7hcPAJEm66JVGAJ79yIG5K0jouV+zY/NhgZFmBxY9Fzbr09juwukNUzbj/GscRp8Nk0u
++OJL
+--000000000000307a600602ae3e13--
