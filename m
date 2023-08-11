@@ -2,202 +2,66 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7705FC001B0
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Aug 2023 13:34:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13392C0015E
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Aug 2023 19:11:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234482AbjHKNea (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Aug 2023 09:34:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51212 "EHLO
+        id S231659AbjHKTLy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Aug 2023 15:11:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231279AbjHKNea (ORCPT
+        with ESMTP id S229479AbjHKTLx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Aug 2023 09:34:30 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFDB0ED;
-        Fri, 11 Aug 2023 06:34:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691760869; x=1723296869;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=uVCLkN8WdGHGzXLonW5NPFK2ABMF5cEFU1d/gEuTIdg=;
-  b=Iq3RZ1S5gmd0uHMxPMbwZQdrYcslfibXcjig5jQ0CLxKXvK/GPeefdaT
-   F1WdYpohVc84BxiDQLISs8XmkhoZb/SB1sPTGazVeWlvN06a7wrIBOdwm
-   E/qmbEWVOEwUs36Doj+cTyTU+6RUNy0DppDGbutUjFdR+Eaoz9kB+fW0x
-   Ct80awVzYF96GNRAqAx4D3IokqPVXFziwgJxplHPvds9qIsHPlqtW7mMb
-   N/nrTZqgnR344M+Rl4R/IQum71HPFAcXcypUJL9m8FyUluTYr7k/aioSA
-   5+JMflYpxBAKdhgdsFmhH+0kyeoBSnzFWD0V/j+/Chj5rVw8+V90FmNk7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="369148273"
-X-IronPort-AV: E=Sophos;i="6.01,165,1684825200"; 
-   d="scan'208";a="369148273"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2023 06:34:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="906445162"
-X-IronPort-AV: E=Sophos;i="6.01,165,1684825200"; 
-   d="scan'208";a="906445162"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga005.jf.intel.com with ESMTP; 11 Aug 2023 06:34:26 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qUSHY-00GxAT-0F;
-        Fri, 11 Aug 2023 16:34:24 +0300
-Date:   Fri, 11 Aug 2023 16:34:23 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v2 1/1] serial: core: Fix serial core port id, including
- multiport devices
-Message-ID: <ZNY431TgMElF35UC@smile.fi.intel.com>
-References: <20230811103648.2826-1-tony@atomide.com>
+        Fri, 11 Aug 2023 15:11:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4243D2709;
+        Fri, 11 Aug 2023 12:11:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C93B662C2B;
+        Fri, 11 Aug 2023 19:11:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B38F1C433C8;
+        Fri, 11 Aug 2023 19:11:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1691781112;
+        bh=qEv0xjlpZqHRIMwTcKgbAHEP5C2QlnmhQGw49ZFdUD0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wZpr+uOJNOY+Z0Lu+VlxW5+wWTG7S1wMJ48xBu91FfFO3O4ANr1JlGl0VrrU5oj+c
+         ykBvI/XrE7Pc+8JW/C5DAy1k8hF7jFALZQr1KTJu/dD3m4g0l2dnRQu9asVeZvLVvk
+         +LR7CjPh1T3KLXDzgdSrssuEBX/AvwtiD70OtKuk=
+Date:   Fri, 11 Aug 2023 21:11:49 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Nick Hu <nick.hu@sifive.com>
+Cc:     zong.li@sifive.com, jirislaby@kernel.org, palmer@dabbelt.com,
+        paul.walmsley@sifive.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: Re: [PATCH v2 0/1] Add Sifive uart suspend and resume
+Message-ID: <2023081143-flannels-verbally-9d0f@gregkh>
+References: <20230809135042.2443350-1-nick.hu@sifive.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230811103648.2826-1-tony@atomide.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20230809135042.2443350-1-nick.hu@sifive.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Aug 11, 2023 at 01:36:45PM +0300, Tony Lindgren wrote:
-> We want to fix the serial core port DEVNAME to use a port id of the
-> hardware specific controller port instance instead of the port->line.
+On Wed, Aug 09, 2023 at 09:50:41PM +0800, Nick Hu wrote:
+> Add Sifive uart suspend and resume functions for system suspend.
 > 
-> For example, the 8250 driver sets up a number of serial8250 ports
-> initially that can be inherited by the hardware specific driver. At that
-> the port->line no longer decribes the port's relation to the serial core
-> controller instance.
+> Changes in v2:
+> - Change Signed-off-by: Ben Dooks to Reviewed-by: Ben Dooks
+> - Remove the unnecessary check
 > 
-> Let's fix the issue by assigning port->port_id for each serial core
-> controller port instance.
-
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-> Fixes: 7d695d83767c ("serial: core: Fix serial_base_match() after fixing controller port name")
-> Tested-by: Guenter Roeck <linux@roeck-us.net>
-> Reviewed-by: Dhruva Gole <d-gole@ti.com>
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
+> Nick Hu (1):
+>   serial: sifive: Add suspend and resume operations
 > 
-> Changes since v1:
-> - Generated with --base as suggested by Andy, this is against tty-linus
+>  drivers/tty/serial/sifive.c | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
 > 
-> - Initialized ida_alloc_range() values as suggested by Andy
-> 
-> - Added Reviewed-by from Dhruva
-> 
-> - Kept Guenter's Tested-by
-> 
-> ---
->  drivers/tty/serial/serial_base.h     |  1 +
->  drivers/tty/serial/serial_base_bus.c | 28 +++++++++++++++++++++++++++-
->  2 files changed, 28 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/serial_base.h b/drivers/tty/serial/serial_base.h
-> --- a/drivers/tty/serial/serial_base.h
-> +++ b/drivers/tty/serial/serial_base.h
-> @@ -16,6 +16,7 @@ struct device;
->  
->  struct serial_ctrl_device {
->  	struct device dev;
-> +	struct ida port_ida;
->  };
->  
->  struct serial_port_device {
-> diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
-> --- a/drivers/tty/serial/serial_base_bus.c
-> +++ b/drivers/tty/serial/serial_base_bus.c
-> @@ -10,6 +10,7 @@
->  
->  #include <linux/container_of.h>
->  #include <linux/device.h>
-> +#include <linux/idr.h>
->  #include <linux/module.h>
->  #include <linux/serial_core.h>
->  #include <linux/slab.h>
-> @@ -112,6 +113,8 @@ struct serial_ctrl_device *serial_base_ctrl_add(struct uart_port *port,
->  	if (!ctrl_dev)
->  		return ERR_PTR(-ENOMEM);
->  
-> +	ida_init(&ctrl_dev->port_ida);
-> +
->  	err = serial_base_device_init(port, &ctrl_dev->dev,
->  				      parent, &serial_ctrl_type,
->  				      serial_base_ctrl_release,
-> @@ -142,16 +145,31 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
->  						struct serial_ctrl_device *ctrl_dev)
->  {
->  	struct serial_port_device *port_dev;
-> +	int min = 0, max = -1;	/* Use -1 for max to apply IDA defaults */
->  	int err;
->  
->  	port_dev = kzalloc(sizeof(*port_dev), GFP_KERNEL);
->  	if (!port_dev)
->  		return ERR_PTR(-ENOMEM);
->  
-> +	/* Device driver specified port_id vs automatic assignment? */
-> +	if (port->port_id) {
-> +		min = port->port_id;
-> +		max = port->port_id;
-> +	}
-> +
-> +	err = ida_alloc_range(&ctrl_dev->port_ida, min, max, GFP_KERNEL);
-> +	if (err < 0) {
-> +		kfree(port_dev);
-> +		return ERR_PTR(err);
-> +	}
-> +
-> +	port->port_id = err;
-> +
->  	err = serial_base_device_init(port, &port_dev->dev,
->  				      &ctrl_dev->dev, &serial_port_type,
->  				      serial_base_port_release,
-> -				      port->ctrl_id, port->line);
-> +				      port->ctrl_id, port->port_id);
->  	if (err)
->  		goto err_put_device;
->  
-> @@ -165,16 +183,24 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
->  
->  err_put_device:
->  	put_device(&port_dev->dev);
-> +	ida_free(&ctrl_dev->port_ida, port->port_id);
->  
->  	return ERR_PTR(err);
->  }
->  
->  void serial_base_port_device_remove(struct serial_port_device *port_dev)
->  {
-> +	struct serial_ctrl_device *ctrl_dev;
-> +	struct device *parent;
-> +
->  	if (!port_dev)
->  		return;
->  
-> +	parent = port_dev->dev.parent;
-> +	ctrl_dev = to_serial_base_ctrl_device(parent);
-> +
->  	device_del(&port_dev->dev);
-> +	ida_free(&ctrl_dev->port_ida, port_dev->port->port_id);
->  	put_device(&port_dev->dev);
->  }
->  
-> 
-> base-commit: a4a79e03bab57729bd8046d22bf3666912e586fb
 > -- 
-> 2.41.0
+> 2.34.1
+> 
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Does not apply to my tree :(
