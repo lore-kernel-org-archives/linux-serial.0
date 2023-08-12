@@ -2,178 +2,127 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2278C001DB
-	for <linux-serial@archiver.kernel.org>; Sat, 12 Aug 2023 07:34:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E6FC001B0
+	for <linux-serial@archiver.kernel.org>; Sat, 12 Aug 2023 10:52:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231173AbjHLHeF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 12 Aug 2023 03:34:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34348 "EHLO
+        id S237089AbjHLKwG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 12 Aug 2023 06:52:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229959AbjHLHeE (ORCPT
+        with ESMTP id S235522AbjHLKwF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 12 Aug 2023 03:34:04 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7DE1994
-        for <linux-serial@vger.kernel.org>; Sat, 12 Aug 2023 00:34:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691825647; x=1723361647;
-  h=date:from:to:cc:subject:message-id;
-  bh=K8fZ/R+vJFoJOcYWrNPhwhVYUQ73a9FwTkdKJ7gALmE=;
-  b=HVfzZM5GQmkxTHdKhb6aVZRjtgg/7CUMj5ZUb79Nu7TsMkCn619wFFqJ
-   sVa9j9g5q4yHQQZLg65y3h3FvLkVTFdYzUrc5gCb8DQWRk+Yea3FKI7u1
-   Lkmh9VKXOHDqGblcmJmP619pgkS4gEUByEp172AVOb7iRI4b4BKETV0c9
-   DQBu5bisXPnjC9BzbWUd954Mg6AGacqzoacA8CPwLJnKGREYwVuWhVmNs
-   AdRiKk1HyvMc5O01tq8UjJf9LOCl4x88f9kwibTpu403Ph16Dde0vFuqo
-   SWLsEeXo7aUwjT7DNQEsI4X/nzjkfjyKPBKur/I8NrHXfgm4NrwXkSxFI
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10799"; a="361954670"
-X-IronPort-AV: E=Sophos;i="6.01,167,1684825200"; 
-   d="scan'208";a="361954670"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2023 00:34:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10799"; a="709768859"
-X-IronPort-AV: E=Sophos;i="6.01,167,1684825200"; 
-   d="scan'208";a="709768859"
-Received: from lkp-server01.sh.intel.com (HELO d1ccc7e87e8f) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 12 Aug 2023 00:34:06 -0700
-Received: from kbuild by d1ccc7e87e8f with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1qUj8P-0008NA-2m;
-        Sat, 12 Aug 2023 07:34:05 +0000
-Date:   Sat, 12 Aug 2023 15:33:11 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- e67d7f60d2382677c25de10b2e4d8d3717ace91f
-Message-ID: <202308121509.isHKxA0t-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+        Sat, 12 Aug 2023 06:52:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 585E535B1;
+        Sat, 12 Aug 2023 03:51:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B4F9463814;
+        Sat, 12 Aug 2023 10:50:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 957DFC433C8;
+        Sat, 12 Aug 2023 10:50:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1691837448;
+        bh=i5aKrqJF82Za0FYZk+bsOk/F6cJbt1imYmY9lcQzpBk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oKvBiBnddgm9GpVdyr19x3K43EviktrHFzBy4dAC68toXy7SwJdFhpq5RbQPG3Gew
+         RnI2GVIXldtt+I4ANNOQKKXHdNrVxEpHt7vnlOVQ/UHf0JEKeDyiEYpnUTfost9g9+
+         XfYQxsUW8EYYM6TbDVa621XmdwgWrU97vrKnrR7Y=
+Date:   Sat, 12 Aug 2023 12:50:45 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Justin Chen <justin.chen@broadcom.com>
+Cc:     linux-serial@vger.kernel.org, opendmb@gmail.com,
+        Al Cooper <alcooperx@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
+        "open list:TTY LAYER" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] serial: 8250_bcm7271: improve bcm7271 8250 port
+Message-ID: <2023081221-truth-footsie-b5ab@gregkh>
+References: <1691792050-25042-1-git-send-email-justin.chen@broadcom.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1691792050-25042-1-git-send-email-justin.chen@broadcom.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: e67d7f60d2382677c25de10b2e4d8d3717ace91f  tty: gdm724x: simplify gdm_tty_write()
+On Fri, Aug 11, 2023 at 03:14:01PM -0700, Justin Chen wrote:
+> The 8250 bcm7271 UART is not a direct match to PORT_16550A. The
+> Fifo is 32 and rxtrig values are {1, 8, 16, 30}. Create a PORT_BCM7271
+> to better capture the HW CAPS.
+> 
+> Default the rxtrig level to 8.
+> 
+> Signed-off-by: Justin Chen <justin.chen@broadcom.com>
+> ---
+>  drivers/tty/serial/8250/8250_bcm7271.c | 4 +---
+>  drivers/tty/serial/8250/8250_port.c    | 8 ++++++++
+>  include/uapi/linux/serial_core.h       | 3 +++
+>  3 files changed, 12 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+> index d4b05d7ad9e8..aa5aff046756 100644
+> --- a/drivers/tty/serial/8250/8250_bcm7271.c
+> +++ b/drivers/tty/serial/8250/8250_bcm7271.c
+> @@ -1042,7 +1042,7 @@ static int brcmuart_probe(struct platform_device *pdev)
+>  	dev_dbg(dev, "DMA is %senabled\n", priv->dma_enabled ? "" : "not ");
+>  
+>  	memset(&up, 0, sizeof(up));
+> -	up.port.type = PORT_16550A;
+> +	up.port.type = PORT_BCM7271;
+>  	up.port.uartclk = clk_rate;
+>  	up.port.dev = dev;
+>  	up.port.mapbase = mapbase;
+> @@ -1056,8 +1056,6 @@ static int brcmuart_probe(struct platform_device *pdev)
+>  		| UPF_FIXED_PORT | UPF_FIXED_TYPE;
+>  	up.port.dev = dev;
+>  	up.port.private_data = priv;
+> -	up.capabilities = UART_CAP_FIFO | UART_CAP_AFE;
+> -	up.port.fifosize = 32;
+>  
+>  	/* Check for a fixed line number */
+>  	ret = of_alias_get_id(np, "serial");
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 16aeb1420137..a6259a264041 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -322,6 +322,14 @@ static const struct serial8250_config uart_config[] = {
+>  		.rxtrig_bytes   = {2, 66, 130, 194},
+>  		.flags          = UART_CAP_FIFO,
+>  	},
+> +	[PORT_BCM7271] = {
+> +		.name		= "bcm7271_uart",
+> +		.fifo_size	= 32,
+> +		.tx_loadsz	= 32,
+> +		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01,
+> +		.rxtrig_bytes	= {1, 8, 16, 30},
+> +		.flags		= UART_CAP_FIFO | UART_CAP_AFE
+> +	},
+>  };
+>  
+>  /* Uart divisor latch read */
+> diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+> index 281fa286555c..369f845a3d1d 100644
+> --- a/include/uapi/linux/serial_core.h
+> +++ b/include/uapi/linux/serial_core.h
+> @@ -279,4 +279,7 @@
+>  /* Sunplus UART */
+>  #define PORT_SUNPLUS	123
+>  
+> +/* Broadcom 7271 UART */
+> +#define PORT_BCM7271    124
 
-elapsed time: 727m
+Why is this new id required?  What in userspace is going to use it and
+why can't the generic value be used instead?
 
-configs tested: 107
-configs skipped: 4
+thanks,
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-tested configs:
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-alpha                randconfig-r006-20230812   gcc  
-alpha                randconfig-r011-20230812   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arc                  randconfig-r021-20230812   gcc  
-arc                  randconfig-r043-20230812   gcc  
-arm                              allmodconfig   gcc  
-arm                              allyesconfig   gcc  
-arm                                 defconfig   gcc  
-arm                  randconfig-r024-20230812   gcc  
-arm                  randconfig-r035-20230812   clang
-arm                  randconfig-r046-20230812   gcc  
-arm64                            allyesconfig   gcc  
-arm64                               defconfig   gcc  
-csky                                defconfig   gcc  
-csky                 randconfig-r004-20230812   gcc  
-csky                 randconfig-r016-20230812   gcc  
-hexagon              randconfig-r041-20230812   clang
-hexagon              randconfig-r045-20230812   clang
-i386                             allyesconfig   gcc  
-i386         buildonly-randconfig-r004-20230812   gcc  
-i386         buildonly-randconfig-r005-20230812   gcc  
-i386         buildonly-randconfig-r006-20230812   gcc  
-i386                              debian-10.3   gcc  
-i386                                defconfig   gcc  
-i386                 randconfig-i001-20230812   gcc  
-i386                 randconfig-i002-20230812   gcc  
-i386                 randconfig-i003-20230812   gcc  
-i386                 randconfig-i004-20230812   gcc  
-i386                 randconfig-i005-20230812   gcc  
-i386                 randconfig-i006-20230812   gcc  
-i386                 randconfig-i011-20230812   clang
-i386                 randconfig-i012-20230812   clang
-i386                 randconfig-i013-20230812   clang
-i386                 randconfig-i014-20230812   clang
-i386                 randconfig-i015-20230812   clang
-i386                 randconfig-i016-20230812   clang
-i386                 randconfig-r001-20230812   gcc  
-i386                 randconfig-r005-20230812   gcc  
-i386                 randconfig-r015-20230812   clang
-i386                 randconfig-r032-20230812   gcc  
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                           defconfig   gcc  
-m68k                             allmodconfig   gcc  
-m68k                             allyesconfig   gcc  
-m68k                                defconfig   gcc  
-m68k                 randconfig-r013-20230812   gcc  
-mips                             allmodconfig   gcc  
-mips                             allyesconfig   gcc  
-nios2                               defconfig   gcc  
-nios2                randconfig-r022-20230812   gcc  
-openrisc             randconfig-r014-20230812   gcc  
-openrisc             randconfig-r034-20230812   gcc  
-parisc                           allyesconfig   gcc  
-parisc                              defconfig   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-riscv                            allmodconfig   gcc  
-riscv                             allnoconfig   gcc  
-riscv                            allyesconfig   gcc  
-riscv                               defconfig   gcc  
-riscv                randconfig-r042-20230812   clang
-riscv                          rv32_defconfig   gcc  
-s390                             allmodconfig   gcc  
-s390                             allyesconfig   gcc  
-s390                                defconfig   gcc  
-s390                 randconfig-r003-20230812   gcc  
-s390                 randconfig-r023-20230812   clang
-s390                 randconfig-r044-20230812   clang
-sh                               allmodconfig   gcc  
-sh                   randconfig-r002-20230812   gcc  
-sparc                            allyesconfig   gcc  
-sparc                               defconfig   gcc  
-sparc                randconfig-r012-20230812   gcc  
-sparc64              randconfig-r031-20230812   gcc  
-um                               allmodconfig   clang
-um                                allnoconfig   clang
-um                               allyesconfig   clang
-um                                  defconfig   gcc  
-um                             i386_defconfig   gcc  
-um                   randconfig-r025-20230812   gcc  
-um                           x86_64_defconfig   gcc  
-x86_64                           allyesconfig   gcc  
-x86_64       buildonly-randconfig-r001-20230812   gcc  
-x86_64       buildonly-randconfig-r002-20230812   gcc  
-x86_64       buildonly-randconfig-r003-20230812   gcc  
-x86_64                              defconfig   gcc  
-x86_64                                  kexec   gcc  
-x86_64               randconfig-x001-20230812   clang
-x86_64               randconfig-x002-20230812   clang
-x86_64               randconfig-x003-20230812   clang
-x86_64               randconfig-x004-20230812   clang
-x86_64               randconfig-x005-20230812   clang
-x86_64               randconfig-x006-20230812   clang
-x86_64               randconfig-x011-20230812   gcc  
-x86_64               randconfig-x012-20230812   gcc  
-x86_64               randconfig-x013-20230812   gcc  
-x86_64               randconfig-x014-20230812   gcc  
-x86_64               randconfig-x015-20230812   gcc  
-x86_64               randconfig-x016-20230812   gcc  
-x86_64                          rhel-8.3-rust   clang
-x86_64                               rhel-8.3   gcc  
-xtensa               randconfig-r026-20230812   gcc  
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+greg k-h
