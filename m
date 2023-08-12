@@ -2,176 +2,178 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7639C0015E
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Aug 2023 23:40:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2278C001DB
+	for <linux-serial@archiver.kernel.org>; Sat, 12 Aug 2023 07:34:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236021AbjHKXkw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Aug 2023 19:40:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60676 "EHLO
+        id S231173AbjHLHeF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 12 Aug 2023 03:34:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233769AbjHKXkw (ORCPT
+        with ESMTP id S229959AbjHLHeE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Aug 2023 19:40:52 -0400
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D416210FE
-        for <linux-serial@vger.kernel.org>; Fri, 11 Aug 2023 16:40:51 -0700 (PDT)
-Received: by mail-qv1-xf34.google.com with SMTP id 6a1803df08f44-63fc1574063so12244196d6.3
-        for <linux-serial@vger.kernel.org>; Fri, 11 Aug 2023 16:40:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1691797251; x=1692402051;
-        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=wnLLXizA8St6m1pZRir9Zpiqxa6b+7k78yiS8UCxzD4=;
-        b=NEY1CeVbVwHVAG4Z2v8KHI8DxqZuRDn2XjCQEoxzjlxo6wDJ1x2phAbal66d3B89yi
-         w9SQEV97MD24RNAyAxnOvis4piXMQ7x9qbaPL7jPF0Z1n6wKH9MsByNXmvW+6fFbHGh5
-         D6IVQDBs5IVGeiSk0xGG4jhgieYH+TE9L4jIA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691797251; x=1692402051;
-        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wnLLXizA8St6m1pZRir9Zpiqxa6b+7k78yiS8UCxzD4=;
-        b=QBaPLGOZqVzhq74mKhYfbvoFSVvIh5/hZi32LUPv/hv8CKZA4upYyABEdgQ0sUO8WC
-         ZRFE9hNAf9lmaKbEaqVO2wespOsj7T1EH57WS8nUfwRgoZUzjShOoIUbFmWH5xMK8zjb
-         zbO/lk+9omNX5gSvrOr/N1YKmQEwH3QzAGW6N6nJGQN5CByGC45EiPKrKD7TxTEF7VZb
-         d3KOuxpyGFIiqhOA3PbRXer0OJDrtTXgV4x+ev+mareK44HKiqhm05Wwugsrs5k7bFu9
-         okTcjIrPgNFdxQX/0o7KynuJP6BIOKqBukQujuZB5JZIntwKMEGJJIZStSkGshDIscSn
-         XCfQ==
-X-Gm-Message-State: AOJu0Yx3jRie5TXEYpaXzSJUtGWS54fd2FDTZCp4KursU4GAeHVg4biF
-        c0NQHF4taPd6fzk0hOVnN/OE7WJ62ifPhSDxFhk=
-X-Google-Smtp-Source: AGHT+IH4DIfyutTYiU39rCXrtWZ3FE9qiUZWGo6q+DYkGx7qBAErd1BhU2SOx1wWN5m7YNNw2rapmw==
-X-Received: by 2002:ad4:588a:0:b0:63d:ffe:2cd2 with SMTP id dz10-20020ad4588a000000b0063d0ffe2cd2mr2789410qvb.44.1691797250967;
-        Fri, 11 Aug 2023 16:40:50 -0700 (PDT)
-Received: from ?IPV6:2607:fb91:ae9:9152:61f0:1e0:65f1:ffd5? ([2607:fb91:ae9:9152:61f0:1e0:65f1:ffd5])
-        by smtp.gmail.com with ESMTPSA id c16-20020a0cf2d0000000b0063d0159e1f6sm1531458qvm.109.2023.08.11.16.40.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Aug 2023 16:40:50 -0700 (PDT)
-Message-ID: <b9446d48-138c-cc7b-7b51-594a2c64bc79@broadcom.com>
-Date:   Fri, 11 Aug 2023 16:40:46 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [PATCH] serial: 8250_bcm7271: improve bcm7271 8250 port
-To:     Justin Chen <justin.chen@broadcom.com>,
-        linux-serial@vger.kernel.org
-Cc:     opendmb@gmail.com, Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
-        "open list:TTY LAYER" <linux-kernel@vger.kernel.org>
-References: <1691792050-25042-1-git-send-email-justin.chen@broadcom.com>
-From:   Florian Fainelli <florian.fainelli@broadcom.com>
-In-Reply-To: <1691792050-25042-1-git-send-email-justin.chen@broadcom.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000307a600602ae3e13"
+        Sat, 12 Aug 2023 03:34:04 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7DE1994
+        for <linux-serial@vger.kernel.org>; Sat, 12 Aug 2023 00:34:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691825647; x=1723361647;
+  h=date:from:to:cc:subject:message-id;
+  bh=K8fZ/R+vJFoJOcYWrNPhwhVYUQ73a9FwTkdKJ7gALmE=;
+  b=HVfzZM5GQmkxTHdKhb6aVZRjtgg/7CUMj5ZUb79Nu7TsMkCn619wFFqJ
+   sVa9j9g5q4yHQQZLg65y3h3FvLkVTFdYzUrc5gCb8DQWRk+Yea3FKI7u1
+   Lkmh9VKXOHDqGblcmJmP619pgkS4gEUByEp172AVOb7iRI4b4BKETV0c9
+   DQBu5bisXPnjC9BzbWUd954Mg6AGacqzoacA8CPwLJnKGREYwVuWhVmNs
+   AdRiKk1HyvMc5O01tq8UjJf9LOCl4x88f9kwibTpu403Ph16Dde0vFuqo
+   SWLsEeXo7aUwjT7DNQEsI4X/nzjkfjyKPBKur/I8NrHXfgm4NrwXkSxFI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10799"; a="361954670"
+X-IronPort-AV: E=Sophos;i="6.01,167,1684825200"; 
+   d="scan'208";a="361954670"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2023 00:34:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10799"; a="709768859"
+X-IronPort-AV: E=Sophos;i="6.01,167,1684825200"; 
+   d="scan'208";a="709768859"
+Received: from lkp-server01.sh.intel.com (HELO d1ccc7e87e8f) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 12 Aug 2023 00:34:06 -0700
+Received: from kbuild by d1ccc7e87e8f with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1qUj8P-0008NA-2m;
+        Sat, 12 Aug 2023 07:34:05 +0000
+Date:   Sat, 12 Aug 2023 15:33:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ e67d7f60d2382677c25de10b2e4d8d3717ace91f
+Message-ID: <202308121509.isHKxA0t-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
---000000000000307a600602ae3e13
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: e67d7f60d2382677c25de10b2e4d8d3717ace91f  tty: gdm724x: simplify gdm_tty_write()
 
+elapsed time: 727m
 
+configs tested: 107
+configs skipped: 4
 
-On 8/11/2023 3:14 PM, Justin Chen wrote:
-> The 8250 bcm7271 UART is not a direct match to PORT_16550A. The
-> Fifo is 32 and rxtrig values are {1, 8, 16, 30}. Create a PORT_BCM7271
-> to better capture the HW CAPS.
-> 
-> Default the rxtrig level to 8.
-> 
-> Signed-off-by: Justin Chen <justin.chen@broadcom.com>
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
+tested configs:
+alpha                            allyesconfig   gcc  
+alpha                               defconfig   gcc  
+alpha                randconfig-r006-20230812   gcc  
+alpha                randconfig-r011-20230812   gcc  
+arc                              allyesconfig   gcc  
+arc                                 defconfig   gcc  
+arc                  randconfig-r021-20230812   gcc  
+arc                  randconfig-r043-20230812   gcc  
+arm                              allmodconfig   gcc  
+arm                              allyesconfig   gcc  
+arm                                 defconfig   gcc  
+arm                  randconfig-r024-20230812   gcc  
+arm                  randconfig-r035-20230812   clang
+arm                  randconfig-r046-20230812   gcc  
+arm64                            allyesconfig   gcc  
+arm64                               defconfig   gcc  
+csky                                defconfig   gcc  
+csky                 randconfig-r004-20230812   gcc  
+csky                 randconfig-r016-20230812   gcc  
+hexagon              randconfig-r041-20230812   clang
+hexagon              randconfig-r045-20230812   clang
+i386                             allyesconfig   gcc  
+i386         buildonly-randconfig-r004-20230812   gcc  
+i386         buildonly-randconfig-r005-20230812   gcc  
+i386         buildonly-randconfig-r006-20230812   gcc  
+i386                              debian-10.3   gcc  
+i386                                defconfig   gcc  
+i386                 randconfig-i001-20230812   gcc  
+i386                 randconfig-i002-20230812   gcc  
+i386                 randconfig-i003-20230812   gcc  
+i386                 randconfig-i004-20230812   gcc  
+i386                 randconfig-i005-20230812   gcc  
+i386                 randconfig-i006-20230812   gcc  
+i386                 randconfig-i011-20230812   clang
+i386                 randconfig-i012-20230812   clang
+i386                 randconfig-i013-20230812   clang
+i386                 randconfig-i014-20230812   clang
+i386                 randconfig-i015-20230812   clang
+i386                 randconfig-i016-20230812   clang
+i386                 randconfig-r001-20230812   gcc  
+i386                 randconfig-r005-20230812   gcc  
+i386                 randconfig-r015-20230812   clang
+i386                 randconfig-r032-20230812   gcc  
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                           defconfig   gcc  
+m68k                             allmodconfig   gcc  
+m68k                             allyesconfig   gcc  
+m68k                                defconfig   gcc  
+m68k                 randconfig-r013-20230812   gcc  
+mips                             allmodconfig   gcc  
+mips                             allyesconfig   gcc  
+nios2                               defconfig   gcc  
+nios2                randconfig-r022-20230812   gcc  
+openrisc             randconfig-r014-20230812   gcc  
+openrisc             randconfig-r034-20230812   gcc  
+parisc                           allyesconfig   gcc  
+parisc                              defconfig   gcc  
+parisc64                            defconfig   gcc  
+powerpc                          allmodconfig   gcc  
+powerpc                           allnoconfig   gcc  
+riscv                            allmodconfig   gcc  
+riscv                             allnoconfig   gcc  
+riscv                            allyesconfig   gcc  
+riscv                               defconfig   gcc  
+riscv                randconfig-r042-20230812   clang
+riscv                          rv32_defconfig   gcc  
+s390                             allmodconfig   gcc  
+s390                             allyesconfig   gcc  
+s390                                defconfig   gcc  
+s390                 randconfig-r003-20230812   gcc  
+s390                 randconfig-r023-20230812   clang
+s390                 randconfig-r044-20230812   clang
+sh                               allmodconfig   gcc  
+sh                   randconfig-r002-20230812   gcc  
+sparc                            allyesconfig   gcc  
+sparc                               defconfig   gcc  
+sparc                randconfig-r012-20230812   gcc  
+sparc64              randconfig-r031-20230812   gcc  
+um                               allmodconfig   clang
+um                                allnoconfig   clang
+um                               allyesconfig   clang
+um                                  defconfig   gcc  
+um                             i386_defconfig   gcc  
+um                   randconfig-r025-20230812   gcc  
+um                           x86_64_defconfig   gcc  
+x86_64                           allyesconfig   gcc  
+x86_64       buildonly-randconfig-r001-20230812   gcc  
+x86_64       buildonly-randconfig-r002-20230812   gcc  
+x86_64       buildonly-randconfig-r003-20230812   gcc  
+x86_64                              defconfig   gcc  
+x86_64                                  kexec   gcc  
+x86_64               randconfig-x001-20230812   clang
+x86_64               randconfig-x002-20230812   clang
+x86_64               randconfig-x003-20230812   clang
+x86_64               randconfig-x004-20230812   clang
+x86_64               randconfig-x005-20230812   clang
+x86_64               randconfig-x006-20230812   clang
+x86_64               randconfig-x011-20230812   gcc  
+x86_64               randconfig-x012-20230812   gcc  
+x86_64               randconfig-x013-20230812   gcc  
+x86_64               randconfig-x014-20230812   gcc  
+x86_64               randconfig-x015-20230812   gcc  
+x86_64               randconfig-x016-20230812   gcc  
+x86_64                          rhel-8.3-rust   clang
+x86_64                               rhel-8.3   gcc  
+xtensa               randconfig-r026-20230812   gcc  
+
 -- 
-Florian
-
---000000000000307a600602ae3e13
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBVgwggRAoAMCAQICDBP8P9hKRVySg3Qv5DANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAxMjE4MTFaFw0yNTA5MTAxMjE4MTFaMIGW
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEZsb3JpYW4gRmFpbmVsbGkxLDAqBgkqhkiG
-9w0BCQEWHWZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
-AQ8AMIIBCgKCAQEA+oi3jMmHltY4LMUy8Up5+1zjd1iSgUBXhwCJLj1GJQF+GwP8InemBbk5rjlC
-UwbQDeIlOfb8xGqHoQFGSW8p9V1XUw+cthISLkycex0AJ09ufePshLZygRLREU0H4ecNPMejxCte
-KdtB4COST4uhBkUCo9BSy1gkl8DJ8j/BQ1KNUx6oYe0CntRag+EnHv9TM9BeXBBLfmMRnWNhvOSk
-nSmRX0J3d9/G2A3FIC6WY2XnLW7eAZCQPa1Tz3n2B5BGOxwqhwKLGLNu2SRCPHwOdD6e0drURF7/
-Vax85/EqkVnFNlfxtZhS0ugx5gn2pta7bTdBm1IG4TX+A3B1G57rVwIDAQABo4IB3jCCAdowDgYD
-VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
-ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
-CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
-MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
-d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
-hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
-bDAoBgNVHREEITAfgR1mbG9yaWFuLmZhaW5lbGxpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
-BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUwwfJ6/F
-KL0fRdVROal/Lp4lAF0wDQYJKoZIhvcNAQELBQADggEBAKBgfteDc1mChZjKBY4xAplC6uXGyBrZ
-kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
-2s1RH00JOkO5SkYdwCHj4DB9B7KEnLatJtD8MBorvt+QxTuSh4ze96Jz3kEIoHMvwGFkgObWblsc
-3/YcLBmCgaWpZ3Ksev1vJPr5n8riG3/N4on8gO5qinmmr9Y7vGeuf5dmZrYMbnb+yCBalkUmZQwY
-NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
-AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
-LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
-/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIAx4zWo3L/OFvAyd
-ckF9GzRnAAZIhTHniSxxAOklMkoZMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTIzMDgxMTIzNDA1MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
-AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQC/8JPSdULNwZ0MJFi/n2S6jsnWqs2rY6bz
-YsupnDHIP8ABIc4NHgz928U6VSUVMVYdTdYuCTTbboRify9IEe2tODY56pRYp9B8xlducEUlc+A2
-hPpvc/iX8qGAiIfgRYaQbgRC+4sohn3axwTwyZByyIP01ygNrHcD+pEaTjN5sN4dPKZA+stbEV66
-TtE05GuIkDaGEh0T6lsMeBsVuZaEmmUlkqwhKkxWPMcH7PodFn5YhgbVOR6KfkyUQ1EMFAfrM8DW
-yDreISSo7hcPAJEm66JVGAJ79yIG5K0jouV+zY/NhgZFmBxY9Fzbr09juwukNUzbj/GscRp8Nk0u
-+OJL
---000000000000307a600602ae3e13--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
