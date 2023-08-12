@@ -2,259 +2,216 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FAEFC0015E
-	for <linux-serial@archiver.kernel.org>; Sat, 12 Aug 2023 14:09:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36A8AC001B0
+	for <linux-serial@archiver.kernel.org>; Sat, 12 Aug 2023 19:33:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230305AbjHLOJZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 12 Aug 2023 10:09:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53932 "EHLO
+        id S229570AbjHLTdV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 12 Aug 2023 15:33:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233514AbjHLOJU (ORCPT
+        with ESMTP id S229553AbjHLTdU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 12 Aug 2023 10:09:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FA81FEE;
-        Sat, 12 Aug 2023 07:09:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 248D362493;
-        Sat, 12 Aug 2023 14:09:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEB08C433C8;
-        Sat, 12 Aug 2023 14:09:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1691849362;
-        bh=z+m4uxf5uQXSYdBR7XRst5uEUqfj5OU0THhKy2Pgzw0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NRcuuSwRkCingBsl/vsEZbgeFFYLrf1y+jccW0/5Yc5HDj+1VoVAME8JmLoRwatmv
-         cq9vWxL4zAE9ZVUJLta84Dvv5Inw/EfKSi/yAs63VyBxmpmvFYbATcUsu77nljsk2A
-         aA3VJilGgMOpA/ket7dhpg569WOR9pO165Aa92NCsdjCCxPdIgZY5ieRy7nbUuFLnh
-         5IcBP4Gl/p7TKLadf1jSNE+GDBp+0bp0kFtLguMP/b1EWW/an8byu12FnBRohiFL9c
-         uRJrWRUhrLp3tNfyj4R8So0k0XxPic0tJx3E0PAmnu0wkeyaegTrtitZo78/ruaSpI
-         fW6TnxXPQeEnQ==
-Date:   Sat, 12 Aug 2023 16:09:12 +0200
-From:   Simon Horman <horms@kernel.org>
-To:     Gatien Chevallier <gatien.chevallier@foss.st.com>
-Cc:     Oleksii_Moisieiev@epam.com, gregkh@linuxfoundation.org,
-        herbert@gondor.apana.org.au, davem@davemloft.net,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, alexandre.torgue@foss.st.com,
-        vkoul@kernel.org, jic23@kernel.org, olivier.moysan@foss.st.com,
-        arnaud.pouliquen@foss.st.com, mchehab@kernel.org,
-        fabrice.gasnier@foss.st.com, andi.shyti@kernel.org,
-        ulf.hansson@linaro.org, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, hugues.fruchet@foss.st.com, lee@kernel.org,
-        will@kernel.org, catalin.marinas@arm.com, arnd@kernel.org,
-        richardcochran@gmail.com, Frank Rowand <frowand.list@gmail.com>,
-        peng.fan@oss.nxp.com, linux-crypto@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH v4 05/11] firewall: introduce stm32_firewall framework
-Message-ID: <ZNeSiFQGdOXbR+2S@vergenet.net>
-References: <20230811100731.108145-1-gatien.chevallier@foss.st.com>
- <20230811100731.108145-6-gatien.chevallier@foss.st.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230811100731.108145-6-gatien.chevallier@foss.st.com>
+        Sat, 12 Aug 2023 15:33:20 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BBCEA6
+        for <linux-serial@vger.kernel.org>; Sat, 12 Aug 2023 12:33:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691868803; x=1723404803;
+  h=date:from:to:cc:subject:message-id;
+  bh=RAcoRlTqjdwH0WkYVo2Tq6cr8pDzaH0Fd3zlktK/Oyo=;
+  b=TGgDF1c69DDztNcKiTrt0hBgDLjHRzOG2v7iskcnFnL7zi60qmTLXRtJ
+   EeJ1mQmB7Pt2CpEHMirG5m+0lAxl7Q8ksvWKKF9n+hrFUGTF1CuwJR2T2
+   6bpFmOdvYrAhdp6EU81B4fBMs5i8UC+8/lrVRMeu+8KvkR+sPySWJuJCt
+   o4vrlVTtepMJoCBLasS1+wu0Fzg4d7+nqPo9t5H1L6wOxwjX0UZsCC0Oy
+   dRFUPwtz2pWfnpFlmxak2fnia5HRHaaTv1426fxZVLxiN7DslHYHbbCAb
+   L8yjy7I5umXVM3/2/EKeunu4uiQmPy2FPwxvkwmM2Q9BSw5KkH76MHWRj
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10800"; a="435740401"
+X-IronPort-AV: E=Sophos;i="6.01,168,1684825200"; 
+   d="scan'208";a="435740401"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2023 12:33:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10800"; a="856618856"
+X-IronPort-AV: E=Sophos;i="6.01,168,1684825200"; 
+   d="scan'208";a="856618856"
+Received: from lkp-server01.sh.intel.com (HELO d1ccc7e87e8f) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 12 Aug 2023 12:33:22 -0700
+Received: from kbuild by d1ccc7e87e8f with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1qUuMT-0008kU-0Y;
+        Sat, 12 Aug 2023 19:33:21 +0000
+Date:   Sun, 13 Aug 2023 03:33:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-linus] BUILD SUCCESS
+ 04c7f60ca477ffbf7b7910320482335050f0d23a
+Message-ID: <202308130313.LVpTxArX-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Aug 11, 2023 at 12:07:25PM +0200, Gatien Chevallier wrote:
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+branch HEAD: 04c7f60ca477ffbf7b7910320482335050f0d23a  serial: core: Fix serial core port id, including multiport devices
 
-...
+elapsed time: 1448m
 
-> diff --git a/drivers/bus/stm32_firewall.c b/drivers/bus/stm32_firewall.c
-> new file mode 100644
-> index 000000000000..900f3b052a66
-> --- /dev/null
-> +++ b/drivers/bus/stm32_firewall.c
-> @@ -0,0 +1,293 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (C) 2023, STMicroelectronics - All Rights Reserved
-> + */
-> +
-> +#include <linux/bitfield.h>
-> +#include <linux/bits.h>
-> +#include <linux/bus/stm32_firewall_device.h>
-> +#include <linux/device.h>
-> +#include <linux/err.h>
-> +#include <linux/init.h>
-> +#include <linux/io.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_platform.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/types.h>
-> +#include <linux/slab.h>
-> +
-> +#include "stm32_firewall.h"
-> +
-> +/* Corresponds to STM32_FIREWALL_MAX_EXTRA_ARGS + firewall ID */
-> +#define STM32_FIREWALL_MAX_ARGS		(STM32_FIREWALL_MAX_EXTRA_ARGS + 1)
-> +
-> +static LIST_HEAD(firewall_controller_list);
-> +static DEFINE_MUTEX(firewall_controller_list_lock);
-> +
-> +/* Firewall device API */
-> +int stm32_firewall_get_firewall(struct device_node *np, struct stm32_firewall *firewall,
-> +				unsigned int nb_firewall)
-> +{
-> +	struct stm32_firewall_controller *ctrl;
-> +	struct of_phandle_iterator it;
-> +	unsigned int i, j = 0;
-> +	int err;
-> +
-> +	if (!firewall || !nb_firewall)
-> +		return -EINVAL;
-> +
-> +	/* Parse property with phandle parsed out */
-> +	of_for_each_phandle(&it, err, np, "feature-domains", "#feature-domain-cells", 0) {
-> +		struct of_phandle_args provider_args;
-> +		struct device_node *provider = it.node;
-> +		const char *fw_entry;
-> +		bool match = false;
-> +
-> +		if (err) {
-> +			pr_err("Unable to get feature-domains property for node %s\n, err: %d",
-> +			       np->full_name, err);
-> +			of_node_put(provider);
-> +			return err;
-> +		}
-> +
-> +		if (j > nb_firewall) {
-> +			pr_err("Too many firewall controllers");
-> +			of_node_put(provider);
-> +			return -EINVAL;
-> +		}
-> +
-> +		provider_args.args_count = of_phandle_iterator_args(&it, provider_args.args,
-> +								    STM32_FIREWALL_MAX_ARGS);
-> +
-> +		/* Check if the parsed phandle corresponds to a registered firewall controller */
-> +		mutex_lock(&firewall_controller_list_lock);
-> +		list_for_each_entry(ctrl, &firewall_controller_list, entry) {
-> +			if (ctrl->dev->of_node->phandle == it.phandle) {
-> +				match = true;
-> +				firewall[j].firewall_ctrl = ctrl;
-> +				break;
-> +			}
-> +		}
-> +		mutex_unlock(&firewall_controller_list_lock);
-> +
-> +		if (!match) {
-> +			firewall[j].firewall_ctrl = NULL;
-> +			pr_err("No firewall controller registered for %s\n", np->full_name);
-> +			of_node_put(provider);
-> +			return -ENODEV;
-> +		}
-> +
-> +		err = of_property_read_string_index(np, "feature-domain-names", j, &fw_entry);
-> +		if (err == 0)
-> +			firewall[j].entry = fw_entry;
-> +
-> +		/* Handle the case when there are no arguments given along with the phandle */
-> +		if (provider_args.args_count < 0 ||
-> +		    provider_args.args_count > STM32_FIREWALL_MAX_ARGS) {
-> +			of_node_put(provider);
-> +			return -EINVAL;
-> +		} else if (provider_args.args_count == 0) {
-> +			firewall[j].extra_args_size = 0;
-> +			firewall[j].firewall_id = U32_MAX;
-> +			j++;
-> +			continue;
-> +		}
-> +
-> +		/* The firewall ID is always the first argument */
-> +		firewall[j].firewall_id = provider_args.args[0];
-> +
-> +		/* Extra args start at the third argument */
-> +		for (i = 0; i < provider_args.args_count; i++)
-> +			firewall[j].extra_args[i] = provider_args.args[i + 1];
+configs tested: 145
+configs skipped: 4
 
-Hi Gatien,
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Above it is checked that the maximum value of provider_args.args_count is
-STM32_FIREWALL_MAX_ARGS.
-So here the maximum value of i is STM32_FIREWALL_MAX_ARGS - 1.
+tested configs:
+alpha                            allyesconfig   gcc  
+alpha                               defconfig   gcc  
+alpha                randconfig-r004-20230812   gcc  
+alpha                randconfig-r005-20230812   gcc  
+arc                              alldefconfig   gcc  
+arc                              allyesconfig   gcc  
+arc                                 defconfig   gcc  
+arc                     nsimosci_hs_defconfig   gcc  
+arc                  randconfig-r006-20230812   gcc  
+arc                  randconfig-r024-20230812   gcc  
+arc                  randconfig-r043-20230812   gcc  
+arm                              allmodconfig   gcc  
+arm                              allyesconfig   gcc  
+arm                                 defconfig   gcc  
+arm                            mps2_defconfig   gcc  
+arm                        mvebu_v5_defconfig   gcc  
+arm                       netwinder_defconfig   gcc  
+arm                  randconfig-r033-20230812   clang
+arm                  randconfig-r046-20230812   gcc  
+arm                        shmobile_defconfig   gcc  
+arm                         vf610m4_defconfig   gcc  
+arm64                            allyesconfig   gcc  
+arm64                               defconfig   gcc  
+arm64                randconfig-r035-20230812   gcc  
+csky                                defconfig   gcc  
+hexagon              randconfig-r041-20230812   clang
+hexagon              randconfig-r045-20230812   clang
+i386                             allyesconfig   gcc  
+i386         buildonly-randconfig-r004-20230812   gcc  
+i386         buildonly-randconfig-r005-20230812   gcc  
+i386         buildonly-randconfig-r006-20230812   gcc  
+i386                              debian-10.3   gcc  
+i386                                defconfig   gcc  
+i386                 randconfig-i001-20230812   gcc  
+i386                 randconfig-i001-20230813   clang
+i386                 randconfig-i002-20230812   gcc  
+i386                 randconfig-i002-20230813   clang
+i386                 randconfig-i003-20230812   gcc  
+i386                 randconfig-i003-20230813   clang
+i386                 randconfig-i004-20230812   gcc  
+i386                 randconfig-i004-20230813   clang
+i386                 randconfig-i005-20230812   gcc  
+i386                 randconfig-i005-20230813   clang
+i386                 randconfig-i006-20230812   gcc  
+i386                 randconfig-i006-20230813   clang
+i386                 randconfig-i011-20230812   clang
+i386                 randconfig-i011-20230813   gcc  
+i386                 randconfig-i012-20230812   clang
+i386                 randconfig-i012-20230813   gcc  
+i386                 randconfig-i013-20230812   clang
+i386                 randconfig-i013-20230813   gcc  
+i386                 randconfig-i014-20230812   clang
+i386                 randconfig-i014-20230813   gcc  
+i386                 randconfig-i015-20230812   clang
+i386                 randconfig-i015-20230813   gcc  
+i386                 randconfig-i016-20230812   clang
+i386                 randconfig-i016-20230813   gcc  
+i386                 randconfig-r022-20230812   clang
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                           defconfig   gcc  
+m68k                             allmodconfig   gcc  
+m68k                             allyesconfig   gcc  
+m68k                                defconfig   gcc  
+m68k                 randconfig-r002-20230812   gcc  
+m68k                          sun3x_defconfig   gcc  
+microblaze           randconfig-r001-20230812   gcc  
+microblaze           randconfig-r013-20230812   gcc  
+mips                             allmodconfig   gcc  
+mips                             allyesconfig   gcc  
+mips                         bigsur_defconfig   gcc  
+mips                           jazz_defconfig   gcc  
+mips                 randconfig-r034-20230812   clang
+nios2                               defconfig   gcc  
+nios2                randconfig-r015-20230812   gcc  
+nios2                randconfig-r026-20230812   gcc  
+openrisc             randconfig-r011-20230812   gcc  
+parisc                           allyesconfig   gcc  
+parisc                              defconfig   gcc  
+parisc64                            defconfig   gcc  
+powerpc                          allmodconfig   gcc  
+powerpc                           allnoconfig   gcc  
+powerpc                     skiroot_defconfig   gcc  
+powerpc                  storcenter_defconfig   gcc  
+riscv                            allmodconfig   gcc  
+riscv                             allnoconfig   gcc  
+riscv                            allyesconfig   gcc  
+riscv                               defconfig   gcc  
+riscv                randconfig-r014-20230812   clang
+riscv                randconfig-r042-20230812   clang
+riscv                          rv32_defconfig   gcc  
+s390                             allmodconfig   gcc  
+s390                             allyesconfig   gcc  
+s390                                defconfig   gcc  
+s390                 randconfig-r012-20230812   clang
+s390                 randconfig-r025-20230812   clang
+s390                 randconfig-r044-20230812   clang
+sh                               allmodconfig   gcc  
+sh                               j2_defconfig   gcc  
+sparc                            allyesconfig   gcc  
+sparc                               defconfig   gcc  
+sparc                randconfig-r016-20230812   gcc  
+sparc64              randconfig-r021-20230812   gcc  
+um                               allmodconfig   clang
+um                                allnoconfig   clang
+um                               allyesconfig   clang
+um                                  defconfig   gcc  
+um                             i386_defconfig   gcc  
+um                   randconfig-r003-20230812   clang
+um                   randconfig-r036-20230812   clang
+um                           x86_64_defconfig   gcc  
+x86_64                           allyesconfig   gcc  
+x86_64       buildonly-randconfig-r001-20230812   gcc  
+x86_64       buildonly-randconfig-r002-20230812   gcc  
+x86_64       buildonly-randconfig-r003-20230812   gcc  
+x86_64                              defconfig   gcc  
+x86_64                                  kexec   gcc  
+x86_64               randconfig-r031-20230812   gcc  
+x86_64               randconfig-x001-20230812   clang
+x86_64               randconfig-x001-20230813   gcc  
+x86_64               randconfig-x002-20230812   clang
+x86_64               randconfig-x002-20230813   gcc  
+x86_64               randconfig-x003-20230812   clang
+x86_64               randconfig-x003-20230813   gcc  
+x86_64               randconfig-x004-20230812   clang
+x86_64               randconfig-x004-20230813   gcc  
+x86_64               randconfig-x005-20230812   clang
+x86_64               randconfig-x005-20230813   gcc  
+x86_64               randconfig-x006-20230812   clang
+x86_64               randconfig-x006-20230813   gcc  
+x86_64               randconfig-x011-20230812   gcc  
+x86_64               randconfig-x011-20230813   clang
+x86_64               randconfig-x012-20230812   gcc  
+x86_64               randconfig-x012-20230813   clang
+x86_64               randconfig-x013-20230812   gcc  
+x86_64               randconfig-x013-20230813   clang
+x86_64               randconfig-x014-20230812   gcc  
+x86_64               randconfig-x014-20230813   clang
+x86_64               randconfig-x015-20230812   gcc  
+x86_64               randconfig-x015-20230813   clang
+x86_64               randconfig-x016-20230812   gcc  
+x86_64               randconfig-x016-20230813   clang
+x86_64                          rhel-8.3-rust   clang
+x86_64                               rhel-8.3   gcc  
+xtensa                         virt_defconfig   gcc  
 
-STM32_FIREWALL_MAX_ARGS is defined as STM32_FIREWALL_MAX_EXTRA_ARGS + 1
-And STM32_FIREWALL_MAX_EXTRA_ARGS is defined as 5.
-So the maximum value of i is (5 + 1 - 1) = 5.
-
-firewall[j] is of type struct stm32_firewall.
-And its args field has STM32_FIREWALL_MAX_EXTRA_ARGS (5) elements.
-Thus the maximum valid index is (5 - 1) = 4.
-
-But the line above may access index 5.
-
-Flagged by Smatch.
-
-> +
-> +		/* Remove the firewall ID arg that is not an extra argument */
-> +		firewall[j].extra_args_size = provider_args.args_count - 1;
-> +
-> +		j++;
-> +	}
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(stm32_firewall_get_firewall);
-
-...
-
-> diff --git a/include/linux/bus/stm32_firewall_device.h b/include/linux/bus/stm32_firewall_device.h
-> new file mode 100644
-> index 000000000000..7b4450a8ec15
-> --- /dev/null
-> +++ b/include/linux/bus/stm32_firewall_device.h
-> @@ -0,0 +1,141 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Copyright (C) 2023, STMicroelectronics - All Rights Reserved
-> + */
-> +
-> +#ifndef STM32_FIREWALL_DEVICE_H
-> +#define STM32_FIREWALL_DEVICE_H
-> +
-> +#include <linux/of.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/types.h>
-> +
-> +#define STM32_FIREWALL_MAX_EXTRA_ARGS		5
-> +
-> +/* Opaque reference to stm32_firewall_controller */
-> +struct stm32_firewall_controller;
-> +
-> +/**
-> + * struct stm32_firewall - Information on a device's firewall. Each device can have more than one
-> + *			   firewall.
-> + *
-> + * @firewall_ctrl:		Pointer referencing a firewall controller of the device. It is
-> + *				opaque so a device cannot manipulate the controller's ops or access
-> + *				the controller's data
-> + * @extra_args:			Extra arguments that are implementation dependent
-> + * @entry:			Name of the firewall entry
-> + * @extra_args_size:		Number of extra arguments
-> + * @firewall_id:		Firewall ID associated the device for this firewall controller
-> + */
-> +struct stm32_firewall {
-> +	struct stm32_firewall_controller *firewall_ctrl;
-> +	u32 extra_args[STM32_FIREWALL_MAX_EXTRA_ARGS];
-> +	const char *entry;
-> +	size_t extra_args_size;
-> +	u32 firewall_id;
-> +};
-
-...
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
