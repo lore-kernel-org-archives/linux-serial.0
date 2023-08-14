@@ -2,100 +2,114 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D58BCC04FDF
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 15:13:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83ADDC001B0
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 16:05:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232678AbjHNPNN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Aug 2023 11:13:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33560 "EHLO
+        id S229763AbjHNQE5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Aug 2023 12:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232858AbjHNPNG (ORCPT
+        with ESMTP id S229525AbjHNQE0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Aug 2023 11:13:06 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B3BE77;
-        Mon, 14 Aug 2023 08:13:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692025985; x=1723561985;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=vweF0NhHQHmLFNJJCA8R1t0Md8M3C1n1VX4Sto42i5A=;
-  b=Tv8G2rsyreIsQ6xIHWZsmNKQQW4pNRyPRXcKqtY6fcM6Uxy1rKCpxA/4
-   HMKFvibzG8HnAOVPIy80ouM922ooPKXMasOLV3/mcpRePe402IwKc+Krv
-   vVVteeRh492Ax8XI30HQmlSExwIJMN/hFBnrTZxCwCyUyNtUv/9EoWyvx
-   GM+hkzfxEyQTMuU/Pv/hrJuO2IjE8oXjJxb3Hf69egdK2oV5QQLbfquW+
-   znjiNF4Kiirc8vTwJBDFONAkfYv5kZcITtZdlzeOPlq4769E3JzDJlE+p
-   qqnWzIZ9Cd3/C0vjFUGAU+g4X6k4j4+SqtGrSVU8ofrNYPekfwyX19q/T
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="374835076"
-X-IronPort-AV: E=Sophos;i="6.01,172,1684825200"; 
-   d="scan'208";a="374835076"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 08:13:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="847694803"
-X-IronPort-AV: E=Sophos;i="6.01,172,1684825200"; 
-   d="scan'208";a="847694803"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP; 14 Aug 2023 08:13:02 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qVZFc-00AA8u-0Y;
-        Mon, 14 Aug 2023 18:13:00 +0300
-Date:   Mon, 14 Aug 2023 18:12:59 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Justin Chen <justin.chen@broadcom.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, opendmb@gmail.com,
-        Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
+        Mon, 14 Aug 2023 12:04:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE76115;
+        Mon, 14 Aug 2023 09:04:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EC0E63B8C;
+        Mon, 14 Aug 2023 16:04:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDD2FC433C7;
+        Mon, 14 Aug 2023 16:04:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1692029064;
+        bh=pRpAJLUc7dGKoDe04Q0MY/DgnG2HzORkQMrUx8SAsjA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=1E6/EL1QiurAq9zYumlRoJMXAWrk2rLzxtFB8WZ9f8aS5k/5XOl5pfwVt0W/YQgKV
+         +Vb7ZKusuHLXkDPyZ2p1tBfALidALwe23Dji3AWx2DGkHf5LDMbCy/w/FfnVL7wCY4
+         ThgECuSap/+Q56BzT5WqQMBDnbGGaB746qcoz2PU=
+Date:   Mon, 14 Aug 2023 18:04:21 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
-        "open list:TTY LAYER" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] serial: 8250_bcm7271: improve bcm7271 8250 port
-Message-ID: <ZNpEe+nmXGAkEbAb@smile.fi.intel.com>
-References: <1691792050-25042-1-git-send-email-justin.chen@broadcom.com>
- <2023081221-truth-footsie-b5ab@gregkh>
- <CALSSxFZyQCCupuXC7=z3yoO7xhVY3Grw_zFsdWKrE+txk9-S1Q@mail.gmail.com>
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Andi Shyti <andi.shyti@kernel.org>
+Subject: Re: [PATCH] serial: mxs-uart: fix Wvoid-pointer-to-enum-cast warning
+Message-ID: <2023081413-simmering-snap-bb8e@gregkh>
+References: <20230810085042.39252-1-krzysztof.kozlowski@linaro.org>
+ <2023081004-lapped-handbag-0324@gregkh>
+ <66cbafc5-f490-511c-df9b-02c2e5e40811@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CALSSxFZyQCCupuXC7=z3yoO7xhVY3Grw_zFsdWKrE+txk9-S1Q@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <66cbafc5-f490-511c-df9b-02c2e5e40811@linaro.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Aug 12, 2023 at 09:24:21PM -0700, Justin Chen wrote:
-> On Sat, Aug 12, 2023 at 3:50 AM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> > On Fri, Aug 11, 2023 at 03:14:01PM -0700, Justin Chen wrote:
+On Mon, Aug 14, 2023 at 08:58:34AM +0200, Krzysztof Kozlowski wrote:
+> On 10/08/2023 17:44, Greg Kroah-Hartman wrote:
+> > On Thu, Aug 10, 2023 at 10:50:42AM +0200, Krzysztof Kozlowski wrote:
+> >> `devtype` is enum, thus cast of pointer on 64-bit compile test with W=1
+> >> causes:
+> >>
+> >>   mxs-auart.c:1598:15: error: cast to smaller integer type 'enum mxs_auart_type' from 'const void *' [-Werror,-Wvoid-pointer-to-enum-cast]
+> >>
+> >> Cc: Andi Shyti <andi.shyti@kernel.org>
+> >> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> >> ---
+> >>  drivers/tty/serial/mxs-auart.c | 2 +-
+> >>  1 file changed, 1 insertion(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+> >> index 8eeecf8ad359..a9b32722b049 100644
+> >> --- a/drivers/tty/serial/mxs-auart.c
+> >> +++ b/drivers/tty/serial/mxs-auart.c
+> >> @@ -1595,7 +1595,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
+> >>  		return -EINVAL;
+> >>  	}
+> >>  
+> >> -	s->devtype = (enum mxs_auart_type)of_device_get_match_data(&pdev->dev);
+> >> +	s->devtype = (uintptr_t)of_device_get_match_data(&pdev->dev);
+> > 
+> > This feels like a compiler issue as devtype is a enum mxs_auart_type
+> > variable, so the cast shoudl be correct.
+> 
+> While the cast is obviously safe here, the warning in general is
+> reasonable - people were make too many mistakes by assuming pointers are
+> integers...
 
-> > > +     [PORT_BCM7271] = {
-> > > +             .name           = "bcm7271_uart",
+But this isn't a pointer, it's an enumerated type thrown into a void *,
+so cast it properly (void * == unsigned long).
 
-This is badly named port type.
+> Just for the record (not saying that others doing is proof of correctness):
+> 
+> https://lore.kernel.org/lkml/20230809-cbl-1903-v1-1-df9d66a3ba3e@google.com/T/
+> 
+> But maybe Nathan can share his thoughts whether we should just disable
+> this warning for kernel?
 
-> > > +             .fifo_size      = 32,
-> > > +             .tx_loadsz      = 32,
-> > > +             .fcr            = UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01,
-> > > +             .rxtrig_bytes   = {1, 8, 16, 30},
-> > > +             .flags          = UART_CAP_FIFO | UART_CAP_AFE
-> > > +     },
-> > >  };
+I thought that Linus had some objection to the compilers doing something
+foolish here as well, but I can't find it in my archives at the moment
+(am traveling).
 
-This is almost a dup of PORT_ALTR_16550_F32. Use it if you wish.
-You can always rename it if it feels the right thing to do.
+> > And if not, unitptr_t isn't a valid kernel type, so that's not a good
+> 
+> It is in include/linux/types.h, so do you mean that it is not
+> recommended for in-kernel usage? I can go with kernel_ulong_t - which is
+> a kernel type - if the cast is agreed.
 
-But why 8 and not 16 is the default rxtrig?
+not recommended for in-kernel usage.
 
--- 
-With Best Regards,
-Andy Shevchenko
+thanks,
 
-
+greg k-h
