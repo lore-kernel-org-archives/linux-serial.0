@@ -2,94 +2,82 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DEDBC001B0
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 10:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14145C04A94
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 10:22:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234375AbjHNKAk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Aug 2023 06:00:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56594 "EHLO
+        id S233054AbjHNKVi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Aug 2023 06:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232842AbjHNKAN (ORCPT
+        with ESMTP id S235062AbjHNKV2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Aug 2023 06:00:13 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73FEE65;
-        Mon, 14 Aug 2023 03:00:11 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 9AB7C1FD63;
-        Mon, 14 Aug 2023 10:00:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1692007210; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SKHbbatD+xBAeEgFLQCyf9QhUR4G1GhnXboMbCKKiDg=;
-        b=avT5gYoWsU8eHuitTfjgignOFwIVgbU/lTca1r7qjbmC3q1ZGAD0P6yUe8Wb1MaK37T4lM
-        nJRe7+UredyuZCFgKZ8ycoAddQiOP54jaR9ow6aTgR7eYd2XQVwr7IkJH4AjSUAV9AHERn
-        azVXDiIgCkV5tp2bjItw+OwiPo8OKEI=
-Received: from suse.cz (pmladek.udp.ovpn2.prg.suse.de [10.100.201.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id A60E12C143;
-        Mon, 14 Aug 2023 10:00:09 +0000 (UTC)
-Date:   Mon, 14 Aug 2023 12:00:08 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, gregkh@linuxfoundation.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vlastimil Babka <vbabka@suse.cz>,
+        Mon, 14 Aug 2023 06:21:28 -0400
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A073BA;
+        Mon, 14 Aug 2023 03:21:27 -0700 (PDT)
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-9936b3d0286so587293766b.0;
+        Mon, 14 Aug 2023 03:21:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692008485; x=1692613285;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=6+x+N4SGGQ/ymNRHM55jnGBAqGhG9LuHEySZN/nPsAA=;
+        b=k+JEXLPTupKFu4NZ0YMBH9488xTFdnpv873IwP46GnR5G4ZoZrarMaE2YRtw+UntPl
+         cG1KWItkAa26LFT5GCUVeHC9BqmCOdnNZvt36WiP4hatjjnLufV0kFTW9qW5sRl+u4B6
+         EdQZhCKBWGhnKzsnL/gLJn5VHQlTjrRqrMxXY1q3DSa+C7m5V1zoiVnjmShtjrC6x+jG
+         H5BqPW3WHqewuxAX/2HsM40dhCmvdGDJ/bBARgl7Wide9Zn51QD6DP4LWQinfQLp4xbA
+         YGo1lzE+M6KwmUMDx71eZWcONlAcUuxOmq0pyD/2vrhqgTKmelcJ7nM+GjeN5Lys4DUg
+         Ijbw==
+X-Gm-Message-State: AOJu0YwrYDSwC941WWiGbj64vcG4r57z0WcWSRIy+OaLoC4RRoI6ke58
+        2VRR89Nx/NlT8rBHTuTk0Hw=
+X-Google-Smtp-Source: AGHT+IF39Lq1gFcrUWZk1jysSKcaS1v+NZEqDsr9JU/ySnEScMgddYR7P8uvGW6mbwAJ5s/YH1GpPg==
+X-Received: by 2002:a17:906:2252:b0:991:fef4:bb9 with SMTP id 18-20020a170906225200b00991fef40bb9mr7940491ejr.58.1692008485435;
+        Mon, 14 Aug 2023 03:21:25 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id b12-20020a170906660c00b009828e26e519sm5514426ejp.122.2023.08.14.03.21.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Aug 2023 03:21:24 -0700 (PDT)
+Message-ID: <154dfc10-76fa-b054-54a8-faa22ad52158@kernel.org>
+Date:   Mon, 14 Aug 2023 12:21:23 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Content-Language: en-US
+To:     Petr Mladek <pmladek@suse.com>,
+        John Ogness <john.ogness@linutronix.de>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>,
         Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH] serial: 8250: drop lockdep annotation from
- serial8250_clear_IER()
-Message-ID: <ZNn7KHY3iMRarqAZ@alley>
 References: <20230811064340.13400-1-jirislaby@kernel.org>
  <878rae175n.fsf@jogness.linutronix.de>
  <7d8ae4f8-8900-5a06-5b7b-d4a3aea0673e@kernel.org>
- <87bkfa6nvx.fsf@jogness.linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87bkfa6nvx.fsf@jogness.linutronix.de>
+ <87bkfa6nvx.fsf@jogness.linutronix.de> <ZNn7KHY3iMRarqAZ@alley>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH] serial: 8250: drop lockdep annotation from
+ serial8250_clear_IER()
+In-Reply-To: <ZNn7KHY3iMRarqAZ@alley>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon 2023-08-14 10:21:14, John Ogness wrote:
-> Hi Jiri,
-> 
-> Thanks for the follow-up. You responded faster than I could correct
-> myself.
-> 
-> On 2023-08-14, Jiri Slaby <jirislaby@kernel.org> wrote:
-> >>> The port lock is not always held when calling serial8250_clear_IER().
-> >>> When an oops is in progress, the lock is tried to be taken and when it
-> >>> is not, a warning is issued:
-> >> 
-> >>> The other option would be to make the lockdep test conditional on
-> >>> 'oops_in_progress'
-> 
-> Actually I find this suggestion more appropriate. It makes it clear that
-> we are willing to take such risks and do not want to see the warnings in
-> a panic situation. However, I would end up having to revert that change
-> as well, so it really does not matter to me at this point. Either way I
-> will be reverting this patch.
+On 14. 08. 23, 12:00, Petr Mladek wrote:
+> I personally vote to keep it as is unless people see this warning
+> on daily basis. After all, the lockdep splat is correct. The serial
+> console might not work correctly in panic() when there is the race.
 
-A "solution" would be to move debug_locks_off() before bust_spinlocks(1)
-in panic().
+Sorry, but no, the warning is not correct at all. The code path 
+deliberately does NOT take the lock and calls a function which is 
+currently annotated that the lock is _always_ taken. Therefore, the 
+warning is clearly a false positive and I see no reason in keeping it.
 
-debug_locks_off() is currently called before console_flush_on_panic().
-I guess that it is because it ignores the result of console_trylock().
-But the particular console drivers ignore a trylock result on
-the port_lock already after the earlier bust_spinlocks(1).
+Hopefully this is fixed as John described earlier. Until then, I see no 
+point bothering people with false alarms.
 
-My concern is that it would hide any other potential races, for
-example, in __crash_kexec() or panic notifiers. So, I think that
-it might cause more harm then good. Especially because the race
-is quite uncommon. It requires activity on the serial port from
-two processes during panic().
+thanks,
+-- 
+js
+suse labs
 
-I personally vote to keep it as is unless people see this warning
-on daily basis. After all, the lockdep splat is correct. The serial
-console might not work correctly in panic() when there is the race.
-
-Best Regards,
-Petr
