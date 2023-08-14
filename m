@@ -2,133 +2,205 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6C91C001B0
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 16:06:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5047EC001E0
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 16:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231239AbjHNQFa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Aug 2023 12:05:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58876 "EHLO
+        id S229469AbjHNQ2f (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Aug 2023 12:28:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbjHNQFC (ORCPT
+        with ESMTP id S230190AbjHNQ2H (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Aug 2023 12:05:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29831115;
-        Mon, 14 Aug 2023 09:05:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBDA263A95;
-        Mon, 14 Aug 2023 16:05:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BE16C433C7;
-        Mon, 14 Aug 2023 16:04:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1692029100;
-        bh=Ao9BNHmfjKN8nTLb9QaVy1BpS+3zx4V8n3xBXQaUX7I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Hjq7YHIwyf8y2mxUvDI+DdsLX1oA7oh01LgGHT2/UONK5v3+Cdr/76MLwx4nuxm1Z
-         wgkgOfOA0DXIh7jzdMuV55iTjpt0Tv9MdGlVE2yFe0Ks6g1aXoku/fWc5SGFKMzJri
-         IjqUGdtijn4S6dP0CoKxbODtxu7ywTdTKRy2huGKPkKdTcFh1eiLHnGDRsZgdTo7sB
-         12/tsKNvtNoK7eX0vPW4+v3vSs9d2urwbuj2stsx5ksL43vn49nfrn24eTC/m/SSxC
-         7wooSDEoUkNvVfIaq+DFFV73nGzBQ16nAQwF4ec4H4AdBtnYfSFFf5CAfQvLOWZh/m
-         xN8WCGJRCur7w==
-Date:   Mon, 14 Aug 2023 09:04:57 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Andi Shyti <andi.shyti@kernel.org>
-Subject: Re: [PATCH] serial: mxs-uart: fix Wvoid-pointer-to-enum-cast warning
-Message-ID: <20230814160457.GA2836@dev-arch.thelio-3990X>
-References: <20230810085042.39252-1-krzysztof.kozlowski@linaro.org>
- <2023081004-lapped-handbag-0324@gregkh>
- <66cbafc5-f490-511c-df9b-02c2e5e40811@linaro.org>
+        Mon, 14 Aug 2023 12:28:07 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA5CE62
+        for <linux-serial@vger.kernel.org>; Mon, 14 Aug 2023 09:28:06 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id d9443c01a7336-1bdb7b0c8afso16567475ad.3
+        for <linux-serial@vger.kernel.org>; Mon, 14 Aug 2023 09:28:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google; t=1692030486; x=1692635286;
+        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=NAjtRBIFFnbe1Wycmz8TeDdCB4YL1nHAiXJJJTrt7II=;
+        b=XS5kL7PTtDGa4olXopUa5faxWTlRHEPjTKC6WaRCvKpeQ7xywDQCVIZ7zpT/KkGwml
+         2TLL3EyfJWV+SE/gNnbFE5NZUjYsbUxZXUqKtSgMxnEOpgFsJfaqolrj22tlrx1S921y
+         YLmSpOZqiqcsZ3FXZIEnGIO8STHAAfnZZu+lE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692030486; x=1692635286;
+        h=in-reply-to:from:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NAjtRBIFFnbe1Wycmz8TeDdCB4YL1nHAiXJJJTrt7II=;
+        b=eex5DUu+CtDyeaqSRll7thdZoTDCjMp2K/SqYTOTsmIv+nWS6kF5OCBkF2dEvrCNW9
+         I7B2Xhszg7uZhTw4t2iOoZkipJRwBWLLrWrubKUeqCsNKxfmz2LIMroJIq/sZk+d76Ju
+         5DIeK+CSg6Ej9aDXuLd+cbJ/ys4IhOFAN33tZkrOfKWkBV13U3w2ubfipBNeIPMk6Lhc
+         7t/kf5Sfm8vdP4CwXu06NiEyYlKtaS3qyGnymrPqT/kzEC6MyGKQI7f1zFUrMUUyuu7E
+         Ojo4gYAMyBcpBj6dewKFp5RLAdmwmm2Xa0/LOUj/8YLY6atzcT06S4nFIDdM9x10KDuT
+         IGwQ==
+X-Gm-Message-State: AOJu0YzTPJEJe3WhOVxJJbR3fUOjzscwstF1auqT3tCwOS4jSB9L7y27
+        Nx++WgwQ+xwcSSLHIMs0Dovg2lgJC/02hoj34cw=
+X-Google-Smtp-Source: AGHT+IFHG2tThWl5PjR6CL3jwreZl7SBjCtAL4uVIMDAUham6RgbvC7KNCGufPMoOeVYknSpYxgwmQ==
+X-Received: by 2002:a17:902:d352:b0:1b8:a812:7bc2 with SMTP id l18-20020a170902d35200b001b8a8127bc2mr9163527plk.8.1692030486053;
+        Mon, 14 Aug 2023 09:28:06 -0700 (PDT)
+Received: from [192.168.0.198] ([12.215.164.194])
+        by smtp.gmail.com with ESMTPSA id l5-20020a170903120500b001bbc8d65de0sm9697249plh.67.2023.08.14.09.28.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Aug 2023 09:28:05 -0700 (PDT)
+Message-ID: <533b62f7-a6c2-b360-13e0-b873a1a54251@broadcom.com>
+Date:   Mon, 14 Aug 2023 09:28:02 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <66cbafc5-f490-511c-df9b-02c2e5e40811@linaro.org>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.13.0
+Subject: Re: [PATCH] serial: 8250_bcm7271: improve bcm7271 8250 port
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, opendmb@gmail.com,
+        Al Cooper <alcooperx@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
+        "open list:TTY LAYER" <linux-kernel@vger.kernel.org>
+References: <1691792050-25042-1-git-send-email-justin.chen@broadcom.com>
+ <2023081221-truth-footsie-b5ab@gregkh>
+ <CALSSxFZyQCCupuXC7=z3yoO7xhVY3Grw_zFsdWKrE+txk9-S1Q@mail.gmail.com>
+ <ZNpEe+nmXGAkEbAb@smile.fi.intel.com>
+From:   Justin Chen <justin.chen@broadcom.com>
+In-Reply-To: <ZNpEe+nmXGAkEbAb@smile.fi.intel.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000018203b0602e48ccd"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Aug 14, 2023 at 08:58:34AM +0200, Krzysztof Kozlowski wrote:
-> On 10/08/2023 17:44, Greg Kroah-Hartman wrote:
-> > On Thu, Aug 10, 2023 at 10:50:42AM +0200, Krzysztof Kozlowski wrote:
-> >> `devtype` is enum, thus cast of pointer on 64-bit compile test with W=1
-> >> causes:
-> >>
-> >>   mxs-auart.c:1598:15: error: cast to smaller integer type 'enum mxs_auart_type' from 'const void *' [-Werror,-Wvoid-pointer-to-enum-cast]
-> >>
-> >> Cc: Andi Shyti <andi.shyti@kernel.org>
-> >> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> >> ---
-> >>  drivers/tty/serial/mxs-auart.c | 2 +-
-> >>  1 file changed, 1 insertion(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-> >> index 8eeecf8ad359..a9b32722b049 100644
-> >> --- a/drivers/tty/serial/mxs-auart.c
-> >> +++ b/drivers/tty/serial/mxs-auart.c
-> >> @@ -1595,7 +1595,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
-> >>  		return -EINVAL;
-> >>  	}
-> >>  
-> >> -	s->devtype = (enum mxs_auart_type)of_device_get_match_data(&pdev->dev);
-> >> +	s->devtype = (uintptr_t)of_device_get_match_data(&pdev->dev);
-> > 
-> > This feels like a compiler issue as devtype is a enum mxs_auart_type
-> > variable, so the cast shoudl be correct.
+--00000000000018203b0602e48ccd
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+
+
+
+On 8/14/23 8:12 AM, Andy Shevchenko wrote:
+> On Sat, Aug 12, 2023 at 09:24:21PM -0700, Justin Chen wrote:
+>> On Sat, Aug 12, 2023 at 3:50 AM Greg Kroah-Hartman
+>> <gregkh@linuxfoundation.org> wrote:
+>>> On Fri, Aug 11, 2023 at 03:14:01PM -0700, Justin Chen wrote:
 > 
-> While the cast is obviously safe here, the warning in general is
-> reasonable - people were make too many mistakes by assuming pointers are
-> integers...
-
-Yeah, this is just a variant of -Wvoid-pointer-to-int-cast, which itself
-is a variant of -Wpointer-to-int-cast. When clang implemented that
-warning, it chose to warn for both (int) and (enum ...) casts, whereas
-GCC just warns for int casts: https://godbolt.org/z/G8xsYqbzP
-
-I brought up that difference to the clang folks and they justified it
-well I think: https://reviews.llvm.org/D72231#1881784
-
-> Just for the record (not saying that others doing is proof of correctness):
+>>>> +     [PORT_BCM7271] = {
+>>>> +             .name           = "bcm7271_uart",
 > 
-> https://lore.kernel.org/lkml/20230809-cbl-1903-v1-1-df9d66a3ba3e@google.com/T/
+> This is badly named port type.
 > 
-> But maybe Nathan can share his thoughts whether we should just disable
-> this warning for kernel?
 
-Technically, it is disabled for a regular kernel build but it shows up
-with W=1:
+Would "Brcmstb 7271 UART" suffice?
 
-https://git.kernel.org/linus/82f2bc2fcc0160d6f82dd1ac64518ae0a4dd183f
-
-That was not done because the warning was wrong but because we were working
-hard to drive the warning count down to zero and did not want to have to
-solve the 90+ instances that were around at that time. Now, with the
-patches that you have sent and the ones that Justin is working on, we
-are much closer:
-
-https://github.com/ClangBuiltLinux/linux/issues/1910#issuecomment-1675563993
-
-> > And if not, unitptr_t isn't a valid kernel type, so that's not a good
+>>>> +             .fifo_size      = 32,
+>>>> +             .tx_loadsz      = 32,
+>>>> +             .fcr            = UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01,
+>>>> +             .rxtrig_bytes   = {1, 8, 16, 30},
+>>>> +             .flags          = UART_CAP_FIFO | UART_CAP_AFE
+>>>> +     },
+>>>>   };
 > 
-> It is in include/linux/types.h, so do you mean that it is not
-> recommended for in-kernel usage? I can go with kernel_ulong_t - which is
-> a kernel type - if the cast is agreed.
+> This is almost a dup of PORT_ALTR_16550_F32. Use it if you wish.
+> You can always rename it if it feels the right thing to do.
+> 
 
-uintptr_t is used quite a bit in the kernel already, so I don't really
-get the "not a valid kernel type" argument. I have seen other folks
-prefer 'unsigned long' since Linux assumes it has the same size as a
-pointer but that is what uintptr_t is supposed to be...
+There is some other PORT_ALTR logic that I would like to avoid. I would 
+also like to avoid future changes to PORT_ALTR that wouldn't be 
+applicable to us.
 
-Cheers,
-Nathan
+> But why 8 and not 16 is the default rxtrig?
+> 
+
+We were seeing some latency issues on our chips where 16 would cause 
+overflows. Trying to kill 2 birds with one stone. If creating another 
+port type is avoidable then alternatively I can change the default in 
+userspace.
+
+Thanks,
+Justin
+
+--00000000000018203b0602e48ccd
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+NhTY3E+cXCB11wty89QStajwXdhGJTYEvUgvsq1h8CwJj9w/38ldAQf5WjhPmApYeJR2ewFrBMCM
+4lHkdRJ6TDc9nXoEkypUfjJkJHe7Eal06tosh6JpAgMBAAGjggHZMIIB1TAOBgNVHQ8BAf8EBAMC
+BaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJlLmdsb2JhbHNp
+Z24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYIKwYBBQUHMAGG
+NWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwME0G
+A1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxz
+aWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqGOGh0dHA6Ly9j
+cmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3JsMCMGA1UdEQQc
+MBqBGGp1c3Rpbi5jaGVuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSME
+GDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUIWGeYuaTsnIada5Xx8TR3cheUbgw
+DQYJKoZIhvcNAQELBQADggEBAHNQlMqQOFYPYFO71A+8t+qWMmtOdd2iGswSOvpSZ/pmGlfw8ZvY
+dRTkl27m37la84AxRkiVMes14JyOZJoMh/g7fbgPlU14eBc6WQWkIA6AmNkduFWTr1pRezkjpeo6
+xVmdBLM4VY1TFDYj7S8H2adPuypd62uHMY/MZi+BIUys4uAFA+N3NuUBNjcVZXYPplYxxKEuIFq6
+sDL+OV16G+F9CkNMN3txsym8Nnx5WAYZb6+rBUIhMGz70V05xsHQfzvo2s7f0J1tJ5BoRlPPhL0h
+VOnWA3h71u9TfSsv+PXVm3P21TfOS2uc1hbzEqyENCP4i5XQ0rv0TmPW42GZ0o4xggJtMIICaQIB
+ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
+bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwj8BKLXNpALfemdRAwDQYJ
+YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINaRZRKtjjBuMJwHZ7dvF9roiUYyxM6tuNth
+jKG0VZIeMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDgxNDE2
+MjgwNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
+AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
+BgkqhkiG9w0BAQEFAASCAQCaNVWKE0P+NwzfQtFDHvBu14oW3nR7zxfkaylxB2h3LRuBMktLuqlE
+n3S41T6XjU9ue08MUhWEI4w+wrqIpST26dLkZKBvt09OUABoDGkeruX9FGQp1cfEIQKSLKl24x4X
+WyY5mIDym/zex5Lrt513svY6nYw1yNKXH9VuE0P3vJjfYp3IRfRgUdgSWPvou87heGtaEkRgkR/i
+tNpMJFlTMFY7wKNdy3PqM12rygPaiKM4MPO6LhAEjvsAe8pFrd5y8GvXVIw0SfrU5x/BlP0Wd44a
+ZFNOSzpw/ub0MezLdAAvTzQcs+s7sTyAfieEmTLecv5yvAg9Z1MwuRyfl500
+--00000000000018203b0602e48ccd--
