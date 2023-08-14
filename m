@@ -2,118 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B6AAEB64DD
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 09:17:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DEDBC001B0
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 10:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234340AbjHNJQr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Aug 2023 05:16:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35812 "EHLO
+        id S234375AbjHNKAk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Aug 2023 06:00:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235686AbjHNJQa (ORCPT
+        with ESMTP id S232842AbjHNKAN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Aug 2023 05:16:30 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD1012D
-        for <linux-serial@vger.kernel.org>; Mon, 14 Aug 2023 02:16:29 -0700 (PDT)
-Received: from kwepemm600014.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4RPSqV5WrLzNnCh;
-        Mon, 14 Aug 2023 16:53:42 +0800 (CST)
-Received: from [10.67.110.164] (10.67.110.164) by
- kwepemm600014.china.huawei.com (7.193.23.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.31; Mon, 14 Aug 2023 16:57:13 +0800
-From:   "yiyang (D)" <yiyang13@huawei.com>
-To:     Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <alan@llwyncelyn.cymru>
-CC:     linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH] tty: vt: selection: fix soft lockup in paste_selection()
-Message-ID: <4b92bab4-dbc9-0d75-72a5-c2765516a6b6@huawei.com>
-Date:   Mon, 14 Aug 2023 16:57:12 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        Mon, 14 Aug 2023 06:00:13 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73FEE65;
+        Mon, 14 Aug 2023 03:00:11 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 9AB7C1FD63;
+        Mon, 14 Aug 2023 10:00:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1692007210; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SKHbbatD+xBAeEgFLQCyf9QhUR4G1GhnXboMbCKKiDg=;
+        b=avT5gYoWsU8eHuitTfjgignOFwIVgbU/lTca1r7qjbmC3q1ZGAD0P6yUe8Wb1MaK37T4lM
+        nJRe7+UredyuZCFgKZ8ycoAddQiOP54jaR9ow6aTgR7eYd2XQVwr7IkJH4AjSUAV9AHERn
+        azVXDiIgCkV5tp2bjItw+OwiPo8OKEI=
+Received: from suse.cz (pmladek.udp.ovpn2.prg.suse.de [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id A60E12C143;
+        Mon, 14 Aug 2023 10:00:09 +0000 (UTC)
+Date:   Mon, 14 Aug 2023 12:00:08 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, gregkh@linuxfoundation.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH] serial: 8250: drop lockdep annotation from
+ serial8250_clear_IER()
+Message-ID: <ZNn7KHY3iMRarqAZ@alley>
+References: <20230811064340.13400-1-jirislaby@kernel.org>
+ <878rae175n.fsf@jogness.linutronix.de>
+ <7d8ae4f8-8900-5a06-5b7b-d4a3aea0673e@kernel.org>
+ <87bkfa6nvx.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.110.164]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600014.china.huawei.com (7.193.23.54)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87bkfa6nvx.fsf@jogness.linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2023/8/14 16:52, Yi Yang wrote:
-> On 2023/8/14 14:32, Jiri Slaby wrote:
->> On 14. 08. 23, 6:01, Yi Yang wrote:
->>> Soft lockup occurs when vt device used n_null ldisc, n_null_receivebuf()
->>> is not implemented in null_ldisc. So tty_ldisc_receive_buf always return
->>> 0 in paste_selection(), this cause deadloop and cause soft lockup.
->>>
->>> This can be reproduced as follows:
->>>    int ldisc = 0x1b; // 0x1b is n_null
->>>    struct{
->>>        char subcode;
->>>        struct tiocl_selection sel;
->>>    } data;
->>>    date.subcode = TIOCL_SETSEL;
->>>    data.sel.xs = 0;
->>>    data.sel.xe = 1;
->>>    data.sel.ys = 0;
->>>    data.sel.ye = 1;
->>>    data.sel.sel_mode = TIOCL_SELCHAR;
->>>    char bytes[2] = {TIOCL_PASTESEL, 0};
->>>    open("ttyxx", O_RDWR) // open a vt device
->>>    ioctl(fd, TIOCSETD, &ldisc) // set ldisc to n_null
->>>    ioctl(fd, TIOCLINUX, &data.subcode);
->>>    ioctl(fd, TIOCLINUX, bytes); // cause deadloop
->>>
->>> Fix soft lockup by check if ldisc in paste_selection() is n_null.
->> 
->> Ugh, no. What if another ldisc returns with 0 too?
->> 
->> So instead, what about checking for progress instead of checking a 
->> particular ldisc?
->> 
+On Mon 2023-08-14 10:21:14, John Ogness wrote:
+> Hi Jiri,
 > 
-> Sorry, my previous analysis have problem. The real reason why
-> tty_ldisc_receive_buf() returns 0 is that n_null ldisc does not
-> assign a value to receive_room. Therefore, min_t(int, count,
-> ld->tty->receive_room) is always 0 in the tty_ldisc_receive_buf().
-> Maybe i should check the receive_room size instead of checking the
-> specific ldisc, check if receive_room size is 0 can fix this issue
-> passed my test.
+> Thanks for the follow-up. You responded faster than I could correct
+> myself.
 > 
+> On 2023-08-14, Jiri Slaby <jirislaby@kernel.org> wrote:
+> >>> The port lock is not always held when calling serial8250_clear_IER().
+> >>> When an oops is in progress, the lock is tried to be taken and when it
+> >>> is not, a warning is issued:
+> >> 
+> >>> The other option would be to make the lockdep test conditional on
+> >>> 'oops_in_progress'
+> 
+> Actually I find this suggestion more appropriate. It makes it clear that
+> we are willing to take such risks and do not want to see the warnings in
+> a panic situation. However, I would end up having to revert that change
+> as well, so it really does not matter to me at this point. Either way I
+> will be reverting this patch.
 
-Check receive_room size no a good idear, receive_room may also be 0 when
-ldisc is n_tty. Do you have any idear if do not check the particular ldisc?
+A "solution" would be to move debug_locks_off() before bust_spinlocks(1)
+in panic().
 
->>> Link: 
->>> https://lore.kernel.org/all/000000000000fe769905d315a1b7@google.com/
->>> Fixes: 8a8dabf2dd68 ("tty: handle the case where we cannot restore a 
->>> line discipline")
->>> Signed-off-by: Yi Yang <yiyang13@huawei.com>
->>> ---
->>>   drivers/tty/vt/selection.c | 6 ++++++
->>>   1 file changed, 6 insertions(+)
->>>
->>> diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
->>> index 6ef22f01cc51..9ba7f66fcf05 100644
->>> --- a/drivers/tty/vt/selection.c
->>> +++ b/drivers/tty/vt/selection.c
->>> @@ -388,6 +388,12 @@ int paste_selection(struct tty_struct *tty)
->>>       ld = tty_ldisc_ref_wait(tty);
->>>       if (!ld)
->>>           return -EIO;    /* ldisc was hung up */
->>> +
->>> +    /* tty_ldisc_receive_buf() will not do anything when ldisc is 
->>> n_null*/
->>> +    if (ld->ops->num == N_NULL) {
->>> +        tty_ldisc_deref(ld);
->>> +        return -EIO;
->>> +    }
->>>       tty_buffer_lock_exclusive(&vc->port);
->>>       add_wait_queue(&vc->paste_wait, &wait);
->> 
--- 
-Yi Yang
+debug_locks_off() is currently called before console_flush_on_panic().
+I guess that it is because it ignores the result of console_trylock().
+But the particular console drivers ignore a trylock result on
+the port_lock already after the earlier bust_spinlocks(1).
+
+My concern is that it would hide any other potential races, for
+example, in __crash_kexec() or panic notifiers. So, I think that
+it might cause more harm then good. Especially because the race
+is quite uncommon. It requires activity on the serial port from
+two processes during panic().
+
+I personally vote to keep it as is unless people see this warning
+on daily basis. After all, the lockdep splat is correct. The serial
+console might not work correctly in panic() when there is the race.
+
+Best Regards,
+Petr
