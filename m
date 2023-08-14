@@ -2,112 +2,116 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38EE5C001DB
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 08:16:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6655DC001DB
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 08:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232504AbjHNIPb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Aug 2023 04:15:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60954 "EHLO
+        id S231909AbjHNIZJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Aug 2023 04:25:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234463AbjHNIPa (ORCPT
+        with ESMTP id S234942AbjHNIZC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Aug 2023 04:15:30 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FB4DA;
-        Mon, 14 Aug 2023 01:15:29 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1692000926;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zJ1ghy/cC3KbZ4m1L04/UEhcm2VHzkV9OS84G/2DbbA=;
-        b=XD2ZI5lHlw6mjResxVGaffjC/MhskNPKDHHxl7kErYu4/FVhPjW+7D9Z1ZgQKXas6hOW9F
-        wznZGZ+LotiMaHhspkPSGxKg7e8jHgSvkCdFiuLLNKRzWdC0qFzI1BlBZatd7jhQXosyY4
-        rZ3YfShpOy8oInsZk5zqo259yx/romBMvVdNE0jLTitommMG8CS1noPPXH9HAasRF2BrAS
-        eHpcxGNMNkPBAv1CU/zRjOVNn4DSMi8+pB9WgQz8Y2k6upmSgAeOZsQ/m690txBQonhKPV
-        ///RZCBcOKlMES5s82Z2xt91iOUZ75L2csxuQjaFueLPHPZzAzatNeV3531IXw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1692000926;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zJ1ghy/cC3KbZ4m1L04/UEhcm2VHzkV9OS84G/2DbbA=;
-        b=5fzRMev22Q84T6aFtbTjNQ1jLYs7//hWK788gjeaQ06Q7orcsGv3zxihFrnKgneBvqOhvY
-        dTJmviOdcVUqkmDQ==
-To:     Jiri Slaby <jirislaby@kernel.org>, gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH] serial: 8250: drop lockdep annotation from
- serial8250_clear_IER()
-In-Reply-To: <7d8ae4f8-8900-5a06-5b7b-d4a3aea0673e@kernel.org>
-References: <20230811064340.13400-1-jirislaby@kernel.org>
- <878rae175n.fsf@jogness.linutronix.de>
- <7d8ae4f8-8900-5a06-5b7b-d4a3aea0673e@kernel.org>
-Date:   Mon, 14 Aug 2023 10:21:14 +0206
-Message-ID: <87bkfa6nvx.fsf@jogness.linutronix.de>
+        Mon, 14 Aug 2023 04:25:02 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D294FA6
+        for <linux-serial@vger.kernel.org>; Mon, 14 Aug 2023 01:24:42 -0700 (PDT)
+Received: from kwepemm600014.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4RPS5Q2YGVz2BdFZ;
+        Mon, 14 Aug 2023 16:20:42 +0800 (CST)
+Received: from [10.67.110.164] (10.67.110.164) by
+ kwepemm600014.china.huawei.com (7.193.23.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.31; Mon, 14 Aug 2023 16:23:37 +0800
+Subject: Re: [PATCH] tty: vt: selection: fix soft lockup in paste_selection()
+To:     Jiri Slaby <jirislaby@kernel.org>, <gregkh@linuxfoundation.org>,
+        <alan@llwyncelyn.cymru>
+CC:     <linux-serial@vger.kernel.org>
+References: <20230814040131.79439-1-yiyang13@huawei.com>
+ <16025ce7-e0f9-fbcc-a961-9f729cf357c8@kernel.org>
+From:   "yiyang (D)" <yiyang13@huawei.com>
+Message-ID: <4371567f-6876-daee-c6ac-a687eabca845@huawei.com>
+Date:   Mon, 14 Aug 2023 16:23:36 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <16025ce7-e0f9-fbcc-a961-9f729cf357c8@kernel.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.110.164]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600014.china.huawei.com (7.193.23.54)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Jiri,
+On 2023/8/14 14:32, Jiri Slaby wrote:
+> On 14. 08. 23, 6:01, Yi Yang wrote:
+>> Soft lockup occurs when vt device used n_null ldisc, n_null_receivebuf()
+>> is not implemented in null_ldisc. So tty_ldisc_receive_buf always return
+>> 0 in paste_selection(), this cause deadloop and cause soft lockup.
+>>
+>> This can be reproduced as follows:
+>>    int ldisc = 0x1b; // 0x1b is n_null
+>>    struct{
+>>        char subcode;
+>>        struct tiocl_selection sel;
+>>    } data;
+>>    date.subcode = TIOCL_SETSEL;
+>>    data.sel.xs = 0;
+>>    data.sel.xe = 1;
+>>    data.sel.ys = 0;
+>>    data.sel.ye = 1;
+>>    data.sel.sel_mode = TIOCL_SELCHAR;
+>>    char bytes[2] = {TIOCL_PASTESEL, 0};
+>>    open("ttyxx", O_RDWR) // open a vt device
+>>    ioctl(fd, TIOCSETD, &ldisc) // set ldisc to n_null
+>>    ioctl(fd, TIOCLINUX, &data.subcode);
+>>    ioctl(fd, TIOCLINUX, bytes); // cause deadloop
+>>
+>> Fix soft lockup by check if ldisc in paste_selection() is n_null.
+> 
+> Ugh, no. What if another ldisc returns with 0 too?
+> 
+> So instead, what about checking for progress instead of checking a 
+> particular ldisc?
+> 
 
-Thanks for the follow-up. You responded faster than I could correct
-myself.
+Sorry, my previous analysis have problem. The real reason why
+tty_ldisc_receive_buf() returns 0 is that n_null ldisc does not
+assign a value to receive_room. Therefore, min_t(int, count,
+ld->tty->receive_room) is always 0 in the tty_ldisc_receive_buf().
+Maybe i should check the receive_room size instead of checking the
+specific ldisc, check if receive_room size is 0 can fix this issue
+passed my test.
 
-On 2023-08-14, Jiri Slaby <jirislaby@kernel.org> wrote:
->>> The port lock is not always held when calling serial8250_clear_IER().
->>> When an oops is in progress, the lock is tried to be taken and when it
->>> is not, a warning is issued:
->> 
->> Yes, and that is a potential deadlock. The warning is correct.
->
-> Could you elaborate on how can not-taking a lock be a potential
-> deadlock?
+>> Link: 
+>> https://lore.kernel.org/all/000000000000fe769905d315a1b7@google.com/
+>> Fixes: 8a8dabf2dd68 ("tty: handle the case where we cannot restore a 
+>> line discipline")
+>> Signed-off-by: Yi Yang <yiyang13@huawei.com>
+>> ---
+>>   drivers/tty/vt/selection.c | 6 ++++++
+>>   1 file changed, 6 insertions(+)
+>>
+>> diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
+>> index 6ef22f01cc51..9ba7f66fcf05 100644
+>> --- a/drivers/tty/vt/selection.c
+>> +++ b/drivers/tty/vt/selection.c
+>> @@ -388,6 +388,12 @@ int paste_selection(struct tty_struct *tty)
+>>       ld = tty_ldisc_ref_wait(tty);
+>>       if (!ld)
+>>           return -EIO;    /* ldisc was hung up */
+>> +
+>> +    /* tty_ldisc_receive_buf() will not do anything when ldisc is 
+>> n_null*/
+>> +    if (ld->ops->num == N_NULL) {
+>> +        tty_ldisc_deref(ld);
+>> +        return -EIO;
+>> +    }
+>>       tty_buffer_lock_exclusive(&vc->port);
+>>       add_wait_queue(&vc->paste_wait, &wait);
+> 
 
-I was wrong to say deadlock. The lockdep annotation is about interrupts
-being unintentionally left permanently disabled or being enabled while
-another CPU is transmitting.
-
->>> Therefore, remove the annotation as it doesn't hold for all invocations.
->> 
->> ... because those invocations are broken by design.
->
-> Perhaps. But the system is crashing. Better to emit something without 
-> the lock rather than nothing (and wait for the lock infinitely).
-
-I am not suggesting to wait infinitely. I am merely pointing out that
-the lockdep warning is legitimate.
-
->>> The other option would be to make the lockdep test conditional on
->>> 'oops_in_progress'
-
-Actually I find this suggestion more appropriate. It makes it clear that
-we are willing to take such risks and do not want to see the warnings in
-a panic situation. However, I would end up having to revert that change
-as well, so it really does not matter to me at this point. Either way I
-will be reverting this patch.
-
->> The proper thing to do is to fix the invocation. The upcoming atomic
->> console implementation for the 8250 does exactly that.
->
-> So what does it do?
-
-The upcoming atomic consoles use a new type of synchronization to guard
-the IER register (priority-based spinning with timeouts). This allows us
-to make intelligent decisions about how and when to flush in a panic,
-rather than simply ignorning locks and hoping for the best.
-
->> If this patch gets accepted (which it appears it will be), I will revert
->> it in my series implementing the 8250 atomic console.
->
-> That's fine as soon as the warning is not a problem.
-
-Yes, I am also fine with re-introducing the annotation together with the
-8250 series.
-
-John
+-- 
+Yi Yang
