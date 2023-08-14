@@ -2,130 +2,130 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A93CFC001E0
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 06:59:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DCC5C001DB
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 07:00:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233896AbjHNG7G (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Aug 2023 02:59:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39638 "EHLO
+        id S233894AbjHNHAJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Aug 2023 03:00:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231661AbjHNG6j (ORCPT
+        with ESMTP id S233947AbjHNG7q (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Aug 2023 02:58:39 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65AE4E65
-        for <linux-serial@vger.kernel.org>; Sun, 13 Aug 2023 23:58:38 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id 4fb4d7f45d1cf-525597d891fso1404476a12.3
-        for <linux-serial@vger.kernel.org>; Sun, 13 Aug 2023 23:58:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1691996317; x=1692601117;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=fC9uTjaIAJ5FjIaqRIZtFBZkLO2XpgWA4xpYOOTE2qk=;
-        b=cMkdSpxCMvVPajP4PIy88jdv8ncvtVYL4/+ff0B+5ffKoxi3CaejoPppwJ+TrGEoru
-         uUpKWR45EoM4qP251Dwx6DgfdWD4C03lFAB35yKKJgLUsxVxEZchtbzJSeCkAn2aD/Il
-         TP8bis/HXGg/Qqak0Mk7cfmk1AWXXV5nuvtvDLtS9RC+IBYAPd9irNHbNmvXxqFwMVek
-         DHsE/6ecoJwzHAFTxnHHclHayzo3gvlR8MuWHJPP5uduhGW0a9Ejdb6OrCs6PYKxm83A
-         hL51IzmZDT/ekqvYLCEtej/JBOBtjkEbjtp1N7A1bAKBAWs26bHSaoTqG2nal+CNnPIE
-         axvQ==
+        Mon, 14 Aug 2023 02:59:46 -0400
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B485E63;
+        Sun, 13 Aug 2023 23:59:45 -0700 (PDT)
+Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-52564f3faf7so882315a12.1;
+        Sun, 13 Aug 2023 23:59:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691996317; x=1692601117;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20221208; t=1691996383; x=1692601183;
+        h=content-transfer-encoding:in-reply-to:subject:content-language:from
+         :references:cc:to:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=fC9uTjaIAJ5FjIaqRIZtFBZkLO2XpgWA4xpYOOTE2qk=;
-        b=DLMfgvBCHtGp/lx1h85w5+CVLTsVyclFJic0tUZWEDF/ywlApGmwd9l5u58HkLZ9yE
-         O1zz6kq4G3/sJxoOUKO4NtAt8wxHGSRLvg+kw0Y1Q6cJQPYy1DvP1sDTD9px09eR9mLP
-         o5oe7eBqRuxgkJQ+B10sIuhfJZ7va1/GeQHUyruMsuXIW+CQN1ID6UdrDDW8c4DlxYhw
-         d+dTCxmFLBQkXBlEYIa9f7RJSvorRXmg4WtA/L8BhLmvzxVxqAW1cLNJz1W5BcDukzWt
-         P5jI0puL+Qj/tNAZaLrpwSgRdLu43I56zP/XxZBngCa7ThfA7qi3dQZLAMFcGCYcI/ue
-         iPMw==
-X-Gm-Message-State: AOJu0Yz/OBF0Qn9XQuA5j/zkQPdJVCffXgibTYm8jmBrodbUb2aERz6z
-        QQrgRwVzsVeanoK3BZasr2XM0g==
-X-Google-Smtp-Source: AGHT+IFdIjWhw+ZlarVW/WzN/jbxn2nY95E8dloTVuccAnbzjSG1NMzfG42cKrTjSIxJgaiEyeyWUw==
-X-Received: by 2002:a17:906:76d3:b0:99b:4fff:6bb with SMTP id q19-20020a17090676d300b0099b4fff06bbmr7626704ejn.4.1691996316874;
-        Sun, 13 Aug 2023 23:58:36 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.214.188])
-        by smtp.gmail.com with ESMTPSA id z6-20020a17090655c600b0098748422178sm5322389ejp.56.2023.08.13.23.58.35
+        bh=dz6rNrYEZr1o1hy+Da5bIJKDMQSjh+lwDKkiGk9K2V4=;
+        b=PWdMGCUCI32v36c7b3JVGqjjjwtPKVWfcwI3WfwyujAtGKhDMFk0srVyLj3e2ud8h2
+         oLEkvPwTSuXvuPF2GHI9ATv7hXsAUPYaX1n8aCIzjDGww6SNROwniD2z/FwIpX4aYfyq
+         9WR4W6i0wl88prliVw1x0ePhRj/waYI4JZ/yU4CFTUoiAuyIU3y6NEbsV7500kBZMm+O
+         +daKT9QyMwGQ/5/hcnAlP7l2oOf+10akgV9TlLQlpaa/YTJhxAN4wCZ0P2dM0pL+LAWA
+         VplAobWO+QilwOBAEs6bZkQnLtKofG09MhypoUH/hMf6rgbXsbP/3VyePxW1RU46ZiK7
+         e4Qg==
+X-Gm-Message-State: AOJu0Yzci0D7ADLucWm8Bi3mmYQDOJ5XzRxCLxTxwPH6eXu3d3lvsDEf
+        iVgJpq1r5cXJ8iXDc9kw4Y2+X3JXJcK5Vw==
+X-Google-Smtp-Source: AGHT+IElH741V6Bi5Gmlqjb+OuvSWI5oSrQOEULXddo956CvC0pSJPxznY9UNorCmFPx1iNMO1xWKg==
+X-Received: by 2002:a17:907:7604:b0:99d:b9d6:6014 with SMTP id jx4-20020a170907760400b0099db9d66014mr306158ejc.4.1691996383408;
+        Sun, 13 Aug 2023 23:59:43 -0700 (PDT)
+Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id s10-20020a1709064d8a00b0099364d9f0e6sm5270550eju.117.2023.08.13.23.59.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 13 Aug 2023 23:58:36 -0700 (PDT)
-Message-ID: <66cbafc5-f490-511c-df9b-02c2e5e40811@linaro.org>
-Date:   Mon, 14 Aug 2023 08:58:34 +0200
+        Sun, 13 Aug 2023 23:59:43 -0700 (PDT)
+Message-ID: <8a0b6de4-3459-76fb-9117-287e71e315f1@kernel.org>
+Date:   Mon, 14 Aug 2023 08:59:42 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.14.0
-Subject: Re: [PATCH] serial: mxs-uart: fix Wvoid-pointer-to-enum-cast warning
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nathan Chancellor <nathan@kernel.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Andi Shyti <andi.shyti@kernel.org>
-References: <20230810085042.39252-1-krzysztof.kozlowski@linaro.org>
- <2023081004-lapped-handbag-0324@gregkh>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <2023081004-lapped-handbag-0324@gregkh>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20230810091510.13006-1-jirislaby@kernel.org>
+ <728dc060-d38c-b8d4-783-2322115cf4b4@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Content-Language: cs-CZ, en-US
+Subject: Re: [PATCH 00/36] tty: type unifications -- part I.
+In-Reply-To: <728dc060-d38c-b8d4-783-2322115cf4b4@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 10/08/2023 17:44, Greg Kroah-Hartman wrote:
-> On Thu, Aug 10, 2023 at 10:50:42AM +0200, Krzysztof Kozlowski wrote:
->> `devtype` is enum, thus cast of pointer on 64-bit compile test with W=1
->> causes:
->>
->>   mxs-auart.c:1598:15: error: cast to smaller integer type 'enum mxs_auart_type' from 'const void *' [-Werror,-Wvoid-pointer-to-enum-cast]
->>
->> Cc: Andi Shyti <andi.shyti@kernel.org>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> ---
->>  drivers/tty/serial/mxs-auart.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
->> index 8eeecf8ad359..a9b32722b049 100644
->> --- a/drivers/tty/serial/mxs-auart.c
->> +++ b/drivers/tty/serial/mxs-auart.c
->> @@ -1595,7 +1595,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
->>  		return -EINVAL;
->>  	}
->>  
->> -	s->devtype = (enum mxs_auart_type)of_device_get_match_data(&pdev->dev);
->> +	s->devtype = (uintptr_t)of_device_get_match_data(&pdev->dev);
+On 11. 08. 23, 12:26, Ilpo Järvinen wrote:
+> On Thu, 10 Aug 2023, Jiri Slaby (SUSE) wrote:
 > 
-> This feels like a compiler issue as devtype is a enum mxs_auart_type
-> variable, so the cast shoudl be correct.
-
-While the cast is obviously safe here, the warning in general is
-reasonable - people were make too many mistakes by assuming pointers are
-integers...
-
-Just for the record (not saying that others doing is proof of correctness):
-
-https://lore.kernel.org/lkml/20230809-cbl-1903-v1-1-df9d66a3ba3e@google.com/T/
-
-But maybe Nathan can share his thoughts whether we should just disable
-this warning for kernel?
-
+>> Currently, the tty layer ops and functions use various types for same
+>> things:
+>> * characters and flags: unsigned char, char are used on a random basis,
+>> * counts: int, unsigned int, size_t are used, again more-or-less
+>>    randomly.
+>>
+>> This makes it rather hard to remember where each type is required and it
+>> also makes the code harder to follow. Also the code has to do min_t() on
+>> many places simply because the variables hold the same kind of data, but
+>> of different type.
+>>
+>> This is the first part of the series to unify the types:
+>> * make characters and flags 'u8'. This is what the hardware expects and
+>>    what feeds the tty layer with. Since we compile with -funsigned-char,
+>>    char and unsigned char are the same types on all platforms. So there
+>>    is no actual change in type.
+>> * make sizes/counts 'size_t'. This is what comes from the VFS layer and
+>>    some tty functions already operate on this. So instead of using
+>>    "shorter" (in term of bytes on 64bit) unsigned int, stick to size_t
+>>    and promote it to most places.
+>>
+>> More cleanup and spreading will be done in tty_buffer, n_tty, and
+>> likely other places later.
+>>
+>> Patches 1-8 are cleanups only. The rest (the real switch) depends on
+>> those.
 > 
-> And if not, unitptr_t isn't a valid kernel type, so that's not a good
+> Yeah, very much needed change and step into the right direction!
+> 
+> It's a bit tedious to review all this and comment a particular subchange
+> but e.g. n_tty_receive_buf_common() still seems to still have int count
+> which I think fall into the same call chain about size/count (probably
+> most related change is #15). Note though that it also has room which I
+> think can actually become negative so it might not be as straightforward
+> search and replace like some other parts are.
 
-It is in include/linux/types.h, so do you mean that it is not
-recommended for in-kernel usage? I can go with kernel_ulong_t - which is
-a kernel type - if the cast is agreed.
+tl;dr
+https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?h=devel&id=9abb593df5a9b9b72d13438f1862ca67936f6b66
 
-> solution either.  Worst case, it's how big a pointer is, which is not
-> going to be what an enum is if you have a sane compiler :(
+----
 
+Yes, sorry, my bad -- I forgot to elaborate on why this is "part I." and 
+what is going to be part II., III., ...
 
-Best regards,
-Krzysztof
+So yeah, I have more in my queue which is growing a lot. I had to cut it 
+at some point as I was losing myself in all the changes already. So I 
+flushed this "part I.". It is only a minimalistic change in the core and 
+necessary changes in drivers' hooks. Parts II. and on will spread this 
+more, of course. Ideally, to every single loop in every driver ;) (in 
+long-term).
+
+I still have a bunch of changes for tty_buffer and n_tty in my queue. As 
+soon as I rebase on the today's -next which is already supposed to 
+contain this part I., I will send part II. with these changes. I could 
+have merged those II. changes to some earlier I. patches. At first, I 
+actually did try, but the patches were growing with more and more 
+dependencies, so I stopped this approach. Instead, I separated the 
+changes per the core/ldisc/drivers. The parts are self-contained, 
+despite it might look like the changes are incomplete (i.e. not 
+everything is changed everywhere). After all, I wanted to avoid one 
+hundred+ patches series.
+
+thanks,
+-- 
+js
+suse labs
 
