@@ -2,95 +2,137 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56305C04A6A
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 14:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C726BC001DB
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 14:47:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229618AbjHNOpR convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Aug 2023 10:45:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52968 "EHLO
+        id S229715AbjHNOr0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Aug 2023 10:47:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230225AbjHNOo5 (ORCPT
+        with ESMTP id S232470AbjHNOrS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Aug 2023 10:44:57 -0400
-Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B95DAA;
-        Mon, 14 Aug 2023 07:44:56 -0700 (PDT)
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-589addee1c1so37731857b3.3;
-        Mon, 14 Aug 2023 07:44:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692024295; x=1692629095;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=SwU/r/qd94pSxsahlS/bje8+Exn7vF9dOtcbN2fPBKg=;
-        b=JC7HAr1uakP30okvM6VwLmpZkwtD3YKIX2TJpHZxC7dIClpy+h0voJ3sazD9w7gLRg
-         2YlcfyphrtBnxW69hhW97y1fiCcZhMGa5pp9NxaN+qTBT9iVxHPYlZ7g9/rSBrF0DPEE
-         dsOTam4wYFgfkJxtDo4fwLtFe7FtMFq/9Dc0eNDAjq5MnRc7waFwh4TV9tWBHnVk3jP9
-         wdYuHbgdz18zP3s0Buh/eb1GOfWWN8aKiudZpoqJbVKS+rx146uWglKcXObjgBRalIJS
-         7Zt16Wsr7Rk/ETvIWviQgEY2nf8O/Tbb6BwDtg+upaFB/mxEFQ549yUGIkvPO04z7pKF
-         NyxA==
-X-Gm-Message-State: AOJu0YydtNpW1IgqYqjapbaV55/kybh2V/ART8kzwq9VzBxhYGp0uVE0
-        ajmlDK7AuMmCSJT6kh5yspLekghWByitiQ==
-X-Google-Smtp-Source: AGHT+IG/ZlF50OzyxGv412r0W3t4ELYPwt4EELsqQq+Iw/+7mVn7bYPhVzm39mZO2hVlyGw2+dY3+Q==
-X-Received: by 2002:a0d:e945:0:b0:586:a012:c703 with SMTP id s66-20020a0de945000000b00586a012c703mr6914477ywe.30.1692024295553;
-        Mon, 14 Aug 2023 07:44:55 -0700 (PDT)
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com. [209.85.128.173])
-        by smtp.gmail.com with ESMTPSA id s10-20020a81770a000000b005845e6f9b50sm2803908ywc.113.2023.08.14.07.44.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Aug 2023 07:44:53 -0700 (PDT)
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-589e0eef06dso12370887b3.2;
-        Mon, 14 Aug 2023 07:44:53 -0700 (PDT)
-X-Received: by 2002:a25:cc8c:0:b0:d62:5d0f:a692 with SMTP id
- l134-20020a25cc8c000000b00d625d0fa692mr8297513ybf.53.1692024292989; Mon, 14
- Aug 2023 07:44:52 -0700 (PDT)
+        Mon, 14 Aug 2023 10:47:18 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B7A4FB;
+        Mon, 14 Aug 2023 07:47:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692024437; x=1723560437;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=SwxToorH4LgH7jwfHn1hXLYyL2h15SyaEeJMRni0FNM=;
+  b=S/kdzO/ticF5natalJ8S8GEMS8g5etsr/58glyFROSYxrTPvJQk2h1rW
+   WXl7yQv9bkteIxANYQwhxouiDKnhHvSZ2UfT57IwRrnHqmq2Xr4F3D8hw
+   LLWPSvquE33BnwBo07QkkHyqqP9ahd8ZUA73vDo+6Rr8OkF7z4en5ydpe
+   xRm94BdhpkqzUPAWfEYPBpWpnfnO2qKvDRQ5Jr8KVyt5xr7GThk9+Lj2x
+   WFZo6xD8vyhc6HVe74jcnTWGTeJXmPeipkTKMwJL0NbOQ1ejQthaXJj74
+   Wd+WArToaGeVKsbtNsKq/G/hc4D6m/sn7sAN4/kvpBVFWmBrIbhGi9YnI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="438386031"
+X-IronPort-AV: E=Sophos;i="6.01,172,1684825200"; 
+   d="scan'208";a="438386031"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 07:47:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="798838558"
+X-IronPort-AV: E=Sophos;i="6.01,172,1684825200"; 
+   d="scan'208";a="798838558"
+Received: from lgarello-mobl.ger.corp.intel.com ([10.249.40.121])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 07:47:14 -0700
+Date:   Mon, 14 Aug 2023 17:47:12 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 00/36] tty: type unifications -- part I.
+In-Reply-To: <8a0b6de4-3459-76fb-9117-287e71e315f1@kernel.org>
+Message-ID: <88934c8-43f2-1928-e02f-469ca3ed37b@linux.intel.com>
+References: <20230810091510.13006-1-jirislaby@kernel.org> <728dc060-d38c-b8d4-783-2322115cf4b4@linux.intel.com> <8a0b6de4-3459-76fb-9117-287e71e315f1@kernel.org>
 MIME-Version: 1.0
-References: <20230810091510.13006-1-jirislaby@kernel.org> <20230810091510.13006-29-jirislaby@kernel.org>
-In-Reply-To: <20230810091510.13006-29-jirislaby@kernel.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 14 Aug 2023 16:44:40 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdX7JPU3x4eMyFz7eS+xMWVw-uZFgF6H7q1iPPW3eOTV1Q@mail.gmail.com>
-Message-ID: <CAMuHMdX7JPU3x4eMyFz7eS+xMWVw-uZFgF6H7q1iPPW3eOTV1Q@mail.gmail.com>
-Subject: Re: [PATCH 28/36] tty: propagate u8 data to tty_operations::put_char()
-To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Mathias Nyman <mathias.nyman@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: multipart/mixed; boundary="8323329-381600617-1692024436=:8221"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 10, 2023 at 11:16 AM Jiri Slaby (SUSE) <jirislaby@kernel.org> wrote:
-> Data are now typed as u8. Propagate this change to
-> tty_operations::put_char().
->
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
->  arch/m68k/emu/nfcon.c                  | 4 ++--
->  drivers/tty/amiserial.c                | 2 +-
+--8323329-381600617-1692024436=:8221
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org> # m68k
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org> # m68k
+On Mon, 14 Aug 2023, Jiri Slaby wrote:
 
-Gr{oetje,eeting}s,
+> On 11. 08. 23, 12:26, Ilpo Järvinen wrote:
+> > On Thu, 10 Aug 2023, Jiri Slaby (SUSE) wrote:
+> > 
+> > > Currently, the tty layer ops and functions use various types for same
+> > > things:
+> > > * characters and flags: unsigned char, char are used on a random basis,
+> > > * counts: int, unsigned int, size_t are used, again more-or-less
+> > >    randomly.
+> > > 
+> > > This makes it rather hard to remember where each type is required and it
+> > > also makes the code harder to follow. Also the code has to do min_t() on
+> > > many places simply because the variables hold the same kind of data, but
+> > > of different type.
+> > > 
+> > > This is the first part of the series to unify the types:
+> > > * make characters and flags 'u8'. This is what the hardware expects and
+> > >    what feeds the tty layer with. Since we compile with -funsigned-char,
+> > >    char and unsigned char are the same types on all platforms. So there
+> > >    is no actual change in type.
+> > > * make sizes/counts 'size_t'. This is what comes from the VFS layer and
+> > >    some tty functions already operate on this. So instead of using
+> > >    "shorter" (in term of bytes on 64bit) unsigned int, stick to size_t
+> > >    and promote it to most places.
+> > > 
+> > > More cleanup and spreading will be done in tty_buffer, n_tty, and
+> > > likely other places later.
+> > > 
+> > > Patches 1-8 are cleanups only. The rest (the real switch) depends on
+> > > those.
+> > 
+> > Yeah, very much needed change and step into the right direction!
+> > 
+> > It's a bit tedious to review all this and comment a particular subchange
+> > but e.g. n_tty_receive_buf_common() still seems to still have int count
+> > which I think fall into the same call chain about size/count (probably
+> > most related change is #15). Note though that it also has room which I
+> > think can actually become negative so it might not be as straightforward
+> > search and replace like some other parts are.
+> 
+> tl;dr
+> https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?h=devel&id=9abb593df5a9b9b72d13438f1862ca67936f6b66
+> 
+> ----
+> 
+> Yes, sorry, my bad -- I forgot to elaborate on why this is "part I." and what
+> is going to be part II., III., ...
+> 
+> So yeah, I have more in my queue which is growing a lot. I had to cut it at
+> some point as I was losing myself in all the changes already. So I flushed
+> this "part I.". It is only a minimalistic change in the core and necessary
+> changes in drivers' hooks. Parts II. and on will spread this more, of course.
+> Ideally, to every single loop in every driver ;) (in long-term).
+> 
+> I still have a bunch of changes for tty_buffer and n_tty in my queue. As soon
+> as I rebase on the today's -next which is already supposed to contain this
+> part I., I will send part II. with these changes. I could have merged those
+> II. changes to some earlier I. patches. At first, I actually did try, but the
+> patches were growing with more and more dependencies, so I stopped this
+> approach. Instead, I separated the changes per the core/ldisc/drivers. The
+> parts are self-contained, despite it might look like the changes are
+> incomplete (i.e. not everything is changed everywhere). After all, I wanted to
+> avoid one hundred+ patches series.
 
-                        Geert
+Yeah, right. Very much understandable. I realized you probably had more 
+patches somewhere due to "Part I" designation but I couldn't check so I 
+just noted the things that I came up during the review.
+
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+ i.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+--8323329-381600617-1692024436=:8221--
