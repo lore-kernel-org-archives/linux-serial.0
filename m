@@ -2,84 +2,77 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C65C001DB
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 06:03:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F63C001DB
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 06:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232991AbjHNGCh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Aug 2023 02:02:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50578 "EHLO
+        id S230170AbjHNGQP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Aug 2023 02:16:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233294AbjHNGCU (ORCPT
+        with ESMTP id S230072AbjHNGPs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Aug 2023 02:02:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F97B4;
-        Sun, 13 Aug 2023 23:02:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6AF362987;
-        Mon, 14 Aug 2023 06:02:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BDBEC433C7;
-        Mon, 14 Aug 2023 06:02:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1691992938;
-        bh=bWQE+knkPDexsk5CayFor2pwXRX42J9XJ9j+G5K22WQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fLDhfybewPP9yvESjtahMyDlG8PZfkIu0PjSuqnTZD4i8lVnuIthwCoAdcrXExjNc
-         ifbQOR0LYE5+tlb+Ds2kXgnKIeEAQqhnBrLU3Yhe1o1ry9Dw7Lu6vnyhXO94sME2rN
-         dN7W7/A2TqJT4TZLhhqjp9v+1DkbNbRHvmmaW3sg=
-Date:   Mon, 14 Aug 2023 08:02:15 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Nick Hu <nick.hu@sifive.com>
-Cc:     zong.li@sifive.com, jirislaby@kernel.org, palmer@dabbelt.com,
-        paul.walmsley@sifive.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v2 0/1] Add Sifive uart suspend and resume
-Message-ID: <2023081432-level-prelaw-3794@gregkh>
-References: <20230809135042.2443350-1-nick.hu@sifive.com>
- <2023081143-flannels-verbally-9d0f@gregkh>
- <CAKddAkA9TZs2vVCzBWtfgo3gYJsrMMmsDMtA22iEMM3ok9TgPA@mail.gmail.com>
+        Mon, 14 Aug 2023 02:15:48 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62B84F4;
+        Sun, 13 Aug 2023 23:15:47 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1691993744;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QcEI4KZg3VbQwbcZLWUE/uWIoE2bSeS0e6kRTJtHxqg=;
+        b=XS3vPp45TZPoj/MwYV/78QkdPxJR23PbRilQ/Uuyxo8rPH9dzkb2+vgyGPBp5XTZh7i/Eb
+        YZIl0Rmd8CGoTr1PO/TOGBYQCK8Nim8HnWGzY58/SnQ5oc8Q9KqH9/+gV2cMBb8TV/kxUk
+        OnX1+HkS8SU37EVC76XI1z7woxZNgu+vFQPgrohNDU9T3Wc1NFxh/ZOvQkge/Yl1eQ0DGC
+        xAP8682tOT5841Rb5KU5yr5NPvSne5LX2TCVcJkcJLCSoGc/iw8tRp7mnWRsVtbVP5LN35
+        wMc4jly7patSUrGRQJ8u2F5Ae6wrDQH2Z8kR67YQS6zY+ez1jo1Z3BFrkmtpkA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1691993744;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QcEI4KZg3VbQwbcZLWUE/uWIoE2bSeS0e6kRTJtHxqg=;
+        b=i0P8MUiX0s0/aFgy4dgWhHPdVSUKR2iV21BnvYSTKA7C+mWgDk4HMFtIzUkhHaRiOko6ir
+        Yh3bjYbw+9eEtvCQ==
+To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH] serial: 8250: drop lockdep annotation from
+ serial8250_clear_IER()
+In-Reply-To: <20230811064340.13400-1-jirislaby@kernel.org>
+References: <20230811064340.13400-1-jirislaby@kernel.org>
+Date:   Mon, 14 Aug 2023 08:21:32 +0206
+Message-ID: <878rae175n.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKddAkA9TZs2vVCzBWtfgo3gYJsrMMmsDMtA22iEMM3ok9TgPA@mail.gmail.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Aug 14, 2023 at 01:55:58PM +0800, Nick Hu wrote:
-> Hi Greg
-> 
-> On Sat, Aug 12, 2023 at 3:11 AM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Wed, Aug 09, 2023 at 09:50:41PM +0800, Nick Hu wrote:
-> > > Add Sifive uart suspend and resume functions for system suspend.
-> > >
-> > > Changes in v2:
-> > > - Change Signed-off-by: Ben Dooks to Reviewed-by: Ben Dooks
-> > > - Remove the unnecessary check
-> > >
-> > > Nick Hu (1):
-> > >   serial: sifive: Add suspend and resume operations
-> > >
-> > >  drivers/tty/serial/sifive.c | 18 ++++++++++++++++++
-> > >  1 file changed, 18 insertions(+)
-> > >
-> > > --
-> > > 2.34.1
-> > >
-> >
-> > Does not apply to my tree :(
-> Is there any reason that it doesn't apply to your tree?
-> Which tree should I go?
+On 2023-08-11, "Jiri Slaby (SUSE)" <jirislaby@kernel.org> wrote:
+> The port lock is not always held when calling serial8250_clear_IER().
+> When an oops is in progress, the lock is tried to be taken and when it
+> is not, a warning is issued:
 
-Which tree did you make it against?  It doesn't apply due to conflicts.
-Perhaps either regenerate it against the tty-next branch of the tty.git
-tree, or linux-next?
+Yes, and that is a potential deadlock. The warning is correct.
 
-thanks,
+> Therefore, remove the annotation as it doesn't hold for all invocations.
 
-greg k-h
+... because those invocations are broken by design.
+
+> The other option would be to make the lockdep test conditional on
+> 'oops_in_progress' or pass 'locked' from serial8250_console_write(). I
+> don't think, that is worth it.
+
+The proper thing to do is to fix the invocation. The upcoming atomic
+console implementation for the 8250 does exactly that.
+
+If this patch gets accepted (which it appears it will be), I will revert
+it in my series implementing the 8250 atomic console.
+
+John Ogness
