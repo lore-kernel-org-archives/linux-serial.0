@@ -2,84 +2,150 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02EE9EB64DD
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 18:00:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99224EB64DD
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 18:11:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229843AbjHNR7e convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Aug 2023 13:59:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55660 "EHLO
+        id S229780AbjHNSK5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Aug 2023 14:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230408AbjHNR7D (ORCPT
+        with ESMTP id S230379AbjHNSKb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Aug 2023 13:59:03 -0400
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B38E5E;
-        Mon, 14 Aug 2023 10:59:02 -0700 (PDT)
-Received: by mail-yb1-f169.google.com with SMTP id 3f1490d57ef6-d650a22abd7so4256422276.3;
-        Mon, 14 Aug 2023 10:59:02 -0700 (PDT)
+        Mon, 14 Aug 2023 14:10:31 -0400
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B65E65;
+        Mon, 14 Aug 2023 11:10:30 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id 6a1803df08f44-63fc1574063so22616086d6.3;
+        Mon, 14 Aug 2023 11:10:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1692036629; x=1692641429;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ZAwoBn5pifhNx5RgWzrNuRam7cWmCqER/NGLdzLzsLw=;
+        b=J8klID+n4CLFwcwW7OgB0PElSA5nxeeqvAQQc+HJvD0Tjrm2i47cJ9i24g+dKIsshm
+         07cTZKRB8xKQl+uvpQ35d+KfUpB9hX1erP7Fhoa2douEsbQV051UPACsQb4O4ic457d6
+         h8Q7I+MZcXZE/eRdzHaMmL6xlv6FpEXOBIxuO1LmqXfQ0a83ZMNVkMTH3b9Jc4TZ18qs
+         4KzW5Wvp0aVu7E0JOzZBctlnb8UIl9b9c1SQqCRgpEK/rQYP3ACRETE5MUGXmSQeTBY7
+         GiQ++XuDGggREbcxyV90W5lEmmxC8nsqYMQJhExQmyVMRfIqbvVXBehpRw+mm7vsYguu
+         ZB5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692035941; x=1692640741;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rtSyWgoHAPKB/8w09KpfGrIziJ800wsSSLaufIpmVD4=;
-        b=QdIJuFNlrCCrspSCHrWWtp0ttmeCfNdxUsPk0GHruDL0h3InIjQwJbGxJWw3AeSuXn
-         fxoWtFdDvM5rNrytKySi/Enz0WfwBN2JUyla0ktvnvDr/ZNu2N5IhlT2ztPbSEQ/j2aH
-         uCLkcdsqQPjjFYfZbOThdoYHuXwR2zkleWHkurWPPxnw3xtWqu/FjII+LZVWPGtU8ZWu
-         dG/VuLUFn8DyHNr4X55ZpSCQ7/Wzzloaq8GahJy/3H4uLm7IShjCX4qazKqQ6sOCqgCD
-         UONtMuSS0h7j0T+dXi869n/XbmACgy3LCYWDe4cQaH4RR09+i+Nha8bSQNtTIx3Gn6/T
-         3WIQ==
-X-Gm-Message-State: AOJu0YzF1j9vwe/EdudV7NnEAmtbh09DBETIk9WEWY0Wnvw7S95SFZ7t
-        +rrHLbWLQzbFwYMWYAqSAjdpBcL1CW7g7w==
-X-Google-Smtp-Source: AGHT+IEqUFN1xQGZV1K6nMtuyZyIRhlUR9/AM8b2QfUvTcyTlVh0QKSjS9G8Pq4hRSrorovbcRetXg==
-X-Received: by 2002:a25:adc4:0:b0:d1c:5049:687b with SMTP id d4-20020a25adc4000000b00d1c5049687bmr13593046ybe.16.1692035941137;
-        Mon, 14 Aug 2023 10:59:01 -0700 (PDT)
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com. [209.85.219.175])
-        by smtp.gmail.com with ESMTPSA id l124-20020a25cc82000000b00d538f9d0f4dsm2558852ybf.18.2023.08.14.10.58.59
+        d=1e100.net; s=20221208; t=1692036629; x=1692641429;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZAwoBn5pifhNx5RgWzrNuRam7cWmCqER/NGLdzLzsLw=;
+        b=Edc62VXbCZ5xrruTdjJiB+cVWCGUL6ApkvCbPCtMdRY/Jlk4dd3xeKgQ1+teXczD28
+         gJiPHxvkXSdQVIfr04QllWoJMiS71pV7OcMtToMeLIihguZLfdm5cDgkpZFDtquuJKdy
+         q/PQAmpoQMR1xBTc4+L0CM8eBsxoCWY0YGLyT6vWx6K2bh8kVgpDLEMMFdF5o27PaLdr
+         DEfU/z96V6PNRaPOBOCcL392xkANCfop2JPnVWyb8aB9N7CiO+5II0gr5f2AXEeUbbR7
+         b6N2Y0EFtHKFqpOHehoU1kor5joS1v5e1bm5Zi00KJjOWjS54SBdPJLTPgsoCkVu7Czg
+         MqpQ==
+X-Gm-Message-State: AOJu0Yz/iM+jJTkRWNMKwlJv6K+DPnDe7pe0sXAXwBaCwKnh49ZureGM
+        JQE12hiXF0J8j59sI8aQbuI=
+X-Google-Smtp-Source: AGHT+IH7GjmutfFAbrl21ap7cKv8K4QcuaLBnpVCyaQV1DA2i11Zprfu9p7lXElZYb5/kkYVkEQ/dw==
+X-Received: by 2002:a0c:e453:0:b0:647:122f:84ee with SMTP id d19-20020a0ce453000000b00647122f84eemr6434721qvm.56.1692036629523;
+        Mon, 14 Aug 2023 11:10:29 -0700 (PDT)
+Received: from [10.69.49.209] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id l14-20020a0ce08e000000b006300e1db3ecsm2144317qvk.141.2023.08.14.11.10.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Aug 2023 10:59:00 -0700 (PDT)
-Received: by mail-yb1-f175.google.com with SMTP id 3f1490d57ef6-d650a22abd7so4256381276.3;
-        Mon, 14 Aug 2023 10:58:59 -0700 (PDT)
-X-Received: by 2002:a25:ccc4:0:b0:c00:e25d:818f with SMTP id
- l187-20020a25ccc4000000b00c00e25d818fmr12421739ybf.27.1692035939392; Mon, 14
- Aug 2023 10:58:59 -0700 (PDT)
+        Mon, 14 Aug 2023 11:10:28 -0700 (PDT)
+Message-ID: <5d4757d4-6143-8179-9df9-2de56a716773@gmail.com>
+Date:   Mon, 14 Aug 2023 11:09:46 -0700
 MIME-Version: 1.0
-References: <20230810091510.13006-1-jirislaby@kernel.org> <20230810091510.13006-30-jirislaby@kernel.org>
-In-Reply-To: <20230810091510.13006-30-jirislaby@kernel.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 14 Aug 2023 19:58:47 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWcA_d_gfPQy_H70-Jy4kG41xVACrEYwkvWOe-vkoCeFg@mail.gmail.com>
-Message-ID: <CAMuHMdWcA_d_gfPQy_H70-Jy4kG41xVACrEYwkvWOe-vkoCeFg@mail.gmail.com>
-Subject: Re: [PATCH 29/36] tty: make tty_operations::write()'s count size_t
-To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH] serial: 8250_bcm7271: improve bcm7271 8250 port
+To:     Justin Chen <justin.chen@broadcom.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
+        "open list:TTY LAYER" <linux-kernel@vger.kernel.org>
+References: <1691792050-25042-1-git-send-email-justin.chen@broadcom.com>
+ <2023081221-truth-footsie-b5ab@gregkh>
+ <CALSSxFZyQCCupuXC7=z3yoO7xhVY3Grw_zFsdWKrE+txk9-S1Q@mail.gmail.com>
+ <ZNpEe+nmXGAkEbAb@smile.fi.intel.com>
+ <533b62f7-a6c2-b360-13e0-b873a1a54251@broadcom.com>
+Content-Language: en-US
+From:   Doug Berger <opendmb@gmail.com>
+In-Reply-To: <533b62f7-a6c2-b360-13e0-b873a1a54251@broadcom.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 10, 2023 at 11:39 AM Jiri Slaby (SUSE) <jirislaby@kernel.org> wrote:
-> Unify with the rest of the code. Use size_t for counts and ssize_t for
-> retval.
->
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+On 8/14/2023 9:28 AM, Justin Chen wrote:
+> 
+> 
+> On 8/14/23 8:12 AM, Andy Shevchenko wrote:
+>> On Sat, Aug 12, 2023 at 09:24:21PM -0700, Justin Chen wrote:
+>>> On Sat, Aug 12, 2023 at 3:50 AM Greg Kroah-Hartman
+>>> <gregkh@linuxfoundation.org> wrote:
+>>>> On Fri, Aug 11, 2023 at 03:14:01PM -0700, Justin Chen wrote:
+>>
+>>>>> +     [PORT_BCM7271] = {
+>>>>> +             .name           = "bcm7271_uart",
+>>
+>> This is badly named port type.
+>>
+This may be true, but it does mirror the PORT_BCM63XX naming and I do 
+value consistency so it is acceptable to me. However, I will happily 
+yield to a better name if one can be determined by popular consensus.
 
->  arch/m68k/emu/nfcon.c                  | 3 ++-
->  drivers/tty/amiserial.c                | 2 +-
+> 
+> Would "Brcmstb 7271 UART" suffice?
+> 
+Perhaps, "Broadcom BCM7271 UART" but it seems excessively "chatty" to 
+me, so as I said I am OK with the original submission.
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org> # m68k
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org> # m68k
+>>>>> +             .fifo_size      = 32,
+>>>>> +             .tx_loadsz      = 32,
+>>>>> +             .fcr            = UART_FCR_ENABLE_FIFO | 
+>>>>> UART_FCR_R_TRIG_01,
+>>>>> +             .rxtrig_bytes   = {1, 8, 16, 30},
+>>>>> +             .flags          = UART_CAP_FIFO | UART_CAP_AFE
+>>>>> +     },
+>>>>>   };
+>>
+>> This is almost a dup of PORT_ALTR_16550_F32. Use it if you wish.
+>> You can always rename it if it feels the right thing to do.
+>>
+> 
+> There is some other PORT_ALTR logic that I would like to avoid. I would 
+> also like to avoid future changes to PORT_ALTR that wouldn't be 
+> applicable to us.
+I too am reluctant to introduce yet another port type, but Justin is 
+correct in pointing out that the PORT_ALTR_16550_* port types include Tx 
+FIFO threshold programming that is incompatible with the BCM7271 UART 
+hardware. This port type does appear necessary to address fundamental 
+differences in the hardware unless we are willing to scrap the 
+uart_config[] array and have the individual drivers manage these 
+differences (which I would also be OK with, but I am just a tail on this 
+dog).
 
-Gr{oetje,eeting}s,
+The BCM7271 UART IP does support programmable Tx FIFO thresholds in a 
+different way, so if I (or someone else) decided to enable support for 
+that it would appear that this new port type would be necessary at that 
+time as well.
 
-                        Geert
+> 
+>> But why 8 and not 16 is the default rxtrig?
+>>
+> 
+> We were seeing some latency issues on our chips where 16 would cause 
+> overflows. Trying to kill 2 birds with one stone. If creating another 
+> port type is avoidable then alternatively I can change the default in 
+> userspace.
+> 
+> Thanks,
+> Justin
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Regards,
+     Doug
