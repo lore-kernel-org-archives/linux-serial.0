@@ -2,95 +2,112 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 271FDC04A94
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 08:02:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D92DC04A94
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 08:13:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233176AbjHNICL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Aug 2023 04:02:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37128 "EHLO
+        id S232700AbjHNIMx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Aug 2023 04:12:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232656AbjHNIBu (ORCPT
+        with ESMTP id S234739AbjHNIMq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Aug 2023 04:01:50 -0400
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF40AD;
-        Mon, 14 Aug 2023 01:01:49 -0700 (PDT)
-Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-51cff235226so8396109a12.0;
-        Mon, 14 Aug 2023 01:01:49 -0700 (PDT)
+        Mon, 14 Aug 2023 04:12:46 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FBEED2
+        for <linux-serial@vger.kernel.org>; Mon, 14 Aug 2023 01:12:45 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id 6a1803df08f44-64189860374so19642366d6.0
+        for <linux-serial@vger.kernel.org>; Mon, 14 Aug 2023 01:12:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1692000764; x=1692605564;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pfpF5kDm63EBt5ohGs7vmL86MuVrwlglo2VI7V8Vaeo=;
+        b=Rb1hz4RUcSRxa/c30bH0h1m8uWZUyIHQfpuvPoYg7v/f842qrxHfk9hTUbS9AG2pIa
+         e0Z05bnMPdtrkVWwaaUtwMoJP+hNL6nrIVj1te0KsomEkfdYBW2xjYbQrGTnq2E7W2nF
+         tTj0vV1uSbKSBMbeb5EXy7K8xakggtgTYxqGU6Q0TWb+T6Q2SeKOMvXCvDxx3Ylyn96B
+         89gSCsX5NCQixbDkl5gsa5q5XKBYZfstrrSdPEomZ2JqUkJ0t5qAzHkKt0uOWRdWpQMq
+         kAHQqKiov7V++3IkB++9gxGf95f5A5tNVeVWhCj4QglkdYaCMnMaNVXeHAXsoCgP79ZI
+         1YIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692000108; x=1692604908;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20221208; t=1692000764; x=1692605564;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=sMTTRR25R89hKbOO/W0HzP5By9l6RSmOyGZbfso3dPE=;
-        b=HtxnY/lxXgtSB9h7YKP1g192eRQb7iZZCTGCO6tkAVktX5dGjqVo1x/dQ+oKv1WWeC
-         Ct9crY+jdyNfOLQIlOV/kOEcv/Py9is6hmyMyY7WZBYKPFLUsQmXqxdk7kcc/o647X5/
-         GmmJJGJDIuxYVGLRVH0lq3Ka8fnsKWG9ZZUEiYTwig1Z90HOcV1OMajHH5G81uHIF9rr
-         qmKVdqfP/T1ehoFXORkRd6OHPKoik+eExcWYpSPiqEKQcP2JNhNmtitA0Z3xMdQYRhzn
-         4kpiuHWYKn/hOte4uaH7LiL7TI1LowqqHQWLt5pyay6+3N23Ku21pbx2e0oczofwQcyd
-         96nQ==
-X-Gm-Message-State: AOJu0YxUgyDF46586d4GJypp7bfj0iSEWdTWaECRV8E8j+9fGZLlO7HR
-        U8KWXBSjuFqw9WNTGYUE9lE=
-X-Google-Smtp-Source: AGHT+IG9fmf+oLcXRU5lXPTS7InX83yaVfnPLLxfI8jNNzmLI02HPG3m3YGJqjVm0m5XaHVFv0q0lA==
-X-Received: by 2002:a05:6402:40cf:b0:51e:5898:a23d with SMTP id z15-20020a05640240cf00b0051e5898a23dmr12673976edb.5.1692000107737;
-        Mon, 14 Aug 2023 01:01:47 -0700 (PDT)
-Received: from ryzen.lan (cpc87451-finc19-2-0-cust61.4-2.cable.virginm.net. [82.11.51.62])
-        by smtp.gmail.com with ESMTPSA id s25-20020a056402165900b0052568bf9411sm678074edx.68.2023.08.14.01.01.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Aug 2023 01:01:47 -0700 (PDT)
-From:   Lucas Tanure <tanure@linux.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Xianwei Zhao <xianwei.zhao@amlogic.com>
-Cc:     Nick <nick@khadas.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        Lucas Tanure <tanure@linux.com>
-Subject: [PATCH v9 2/2] tty: serial: meson: Add a earlycon for the T7 SoC
-Date:   Mon, 14 Aug 2023 09:01:28 +0100
-Message-ID: <20230814080128.143613-2-tanure@linux.com>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230814080128.143613-1-tanure@linux.com>
-References: <20230814080128.143613-1-tanure@linux.com>
+        bh=pfpF5kDm63EBt5ohGs7vmL86MuVrwlglo2VI7V8Vaeo=;
+        b=RZE0dr8Q5YrZ8bTfCvpFeo9hijvAlidVpSLTM59WzL5tXbdLddcfebEltaDtcLJOLI
+         zcSSV4bOghyfP4hzmykjA1UhKSVjQ/F8uoU37xE3oRWh3xL8FJy66komB0IWAtk7IziB
+         yS7qQAYoIkG7IJUjZ7oELO49ul9slo1Aoc2zUj2D2cG7KPs4nugvjEfI3Ni+8AAmnOoL
+         E5UA+A+eAYFPL1OH6+MiFq1OwrvY2KgluKH9fSPNe/Rre752ZyIaPm1z5Zy/kxcIEocT
+         5Q38vBITpcuPEHge6agDyjgkVx54etfmYHHEuJY016w4r1n46nDE7IwazSFobCwtYF4q
+         +7zw==
+X-Gm-Message-State: AOJu0YwAwgjr5rO7s0PXXxf3rM5xlON7/s3y1BLWucJUEu22yB6l1C+Q
+        N9nve01yYzdU3clfrFJXw4lD60lpyCnsZoL5rIl4uA==
+X-Google-Smtp-Source: AGHT+IFEDDJKw6ZhwBUIBGO4ImSwSFqPJO6+AilymT5ZB0LA6prep/8KRuxI+PIzicRe0EosSX2MBaZZlXfEqu6iNzI=
+X-Received: by 2002:a0c:b2cf:0:b0:641:2c51:7726 with SMTP id
+ d15-20020a0cb2cf000000b006412c517726mr8622313qvf.37.1692000764598; Mon, 14
+ Aug 2023 01:12:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20230809135042.2443350-1-nick.hu@sifive.com> <2023081143-flannels-verbally-9d0f@gregkh>
+ <CAKddAkA9TZs2vVCzBWtfgo3gYJsrMMmsDMtA22iEMM3ok9TgPA@mail.gmail.com> <2023081432-level-prelaw-3794@gregkh>
+In-Reply-To: <2023081432-level-prelaw-3794@gregkh>
+From:   Nick Hu <nick.hu@sifive.com>
+Date:   Mon, 14 Aug 2023 16:12:33 +0800
+Message-ID: <CAKddAkDdr9ymDkyYJBznkPcePmfLN5MpRMYYYArZx+2FoAiX1A@mail.gmail.com>
+Subject: Re: [PATCH v2 0/1] Add Sifive uart suspend and resume
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     zong.li@sifive.com, jirislaby@kernel.org, palmer@dabbelt.com,
+        paul.walmsley@sifive.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The new Amlogic T7 SoC does not have a always-on uart,
-so add OF_EARLYCON_DECLARE for it.
+Hi Greg
 
-Signed-off-by: Lucas Tanure <tanure@linux.com>
-Acked-by: Neil Armstrong <neil.armstrong@linaro.org>
----
-Since v8:
- - Fix issues with git send-mail command line
-Since v7:
- - Send to the correct maintainers
+On Mon, Aug 14, 2023 at 2:02=E2=80=AFPM Greg KH <gregkh@linuxfoundation.org=
+> wrote:
+>
+> On Mon, Aug 14, 2023 at 01:55:58PM +0800, Nick Hu wrote:
+> > Hi Greg
+> >
+> > On Sat, Aug 12, 2023 at 3:11=E2=80=AFAM Greg KH <gregkh@linuxfoundation=
+.org> wrote:
+> > >
+> > > On Wed, Aug 09, 2023 at 09:50:41PM +0800, Nick Hu wrote:
+> > > > Add Sifive uart suspend and resume functions for system suspend.
+> > > >
+> > > > Changes in v2:
+> > > > - Change Signed-off-by: Ben Dooks to Reviewed-by: Ben Dooks
+> > > > - Remove the unnecessary check
+> > > >
+> > > > Nick Hu (1):
+> > > >   serial: sifive: Add suspend and resume operations
+> > > >
+> > > >  drivers/tty/serial/sifive.c | 18 ++++++++++++++++++
+> > > >  1 file changed, 18 insertions(+)
+> > > >
+> > > > --
+> > > > 2.34.1
+> > > >
+> > >
+> > > Does not apply to my tree :(
+> > Is there any reason that it doesn't apply to your tree?
+> > Which tree should I go?
+>
+> Which tree did you make it against?  It doesn't apply due to conflicts.
+> Perhaps either regenerate it against the tty-next branch of the tty.git
+> tree, or linux-next?
+>
+> thanks,
+>
+> greg k-h
+I'm using the mainline linux kernel.
+Thanks for the information.
+I can reproduce it in tty-next branch of the tty.git!
+I'll fix it in v3.
 
- drivers/tty/serial/meson_uart.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-index 790d910dafa5..c4f61d82fb72 100644
---- a/drivers/tty/serial/meson_uart.c
-+++ b/drivers/tty/serial/meson_uart.c
-@@ -648,6 +648,8 @@ meson_serial_early_console_setup(struct earlycon_device *device, const char *opt
- 
- OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
- 		    meson_serial_early_console_setup);
-+OF_EARLYCON_DECLARE(meson, "amlogic,t7-uart",
-+		    meson_serial_early_console_setup);
- 
- #define MESON_SERIAL_CONSOLE_PTR(_devname) (&meson_serial_console_##_devname)
- #else
--- 
-2.41.0
-
+Regards,
+Nick
