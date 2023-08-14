@@ -2,123 +2,100 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42365C001DB
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 14:55:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D58BCC04FDF
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 15:13:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231381AbjHNOy5 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Aug 2023 10:54:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46252 "EHLO
+        id S232678AbjHNPNN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Aug 2023 11:13:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232666AbjHNOyx (ORCPT
+        with ESMTP id S232858AbjHNPNG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Aug 2023 10:54:53 -0400
-Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A7E183;
-        Mon, 14 Aug 2023 07:54:51 -0700 (PDT)
-Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-40fed08b990so32058731cf.2;
-        Mon, 14 Aug 2023 07:54:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692024890; x=1692629690;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=65llYxanKLx52DJWCbr7ztUbeAJjX8X82KgD1o/zWXc=;
-        b=Oz97Yhbkyu4AUkOezQMzeQMM4MU4TFJCKtoJC1YGA3NQ+BWJjzsZ4PGLYg5WEAM/Km
-         O4CSBmB0SGRMOpmWq6yRkfEBhj2/+xl0rVM/SgSmWvRgjPtCcNFvlRMIHkAuD+XGwkE7
-         htDjy8H9MIxBbZsmfqFbfE43QSAI2VFv8dxTx+3kLae0fVx145DGvwEoo6YMa/QDoTyo
-         n8j0T0A+Y1TZnJ+WraiyMwOC8XqOYvrjSQXSscg5rj4oUqPMsRREsCAtnvVr3oBWo7bP
-         wGJtxNbwpPm6AlHqjjDIt+jEVrM3gJeOr82AV21IUo9XjzQP/rRcJpMxM2A7M+aHab7O
-         NFlQ==
-X-Gm-Message-State: AOJu0YyjI3HV5D5ZAYEzYQdY+t5/UqfFQZZH9gTo4NQtf1ZH+iuNAZ09
-        9On0f2IFbvHbWotexPYFfASPo4eFX5gbqA==
-X-Google-Smtp-Source: AGHT+IGzGT73FUmoVB8RwsS7+I4SJLglBNLR1LquEyALc1uTs+A8DH4q++f6Nra6cz8beTPaMqu+9w==
-X-Received: by 2002:a05:622a:5c9:b0:405:5aed:300a with SMTP id d9-20020a05622a05c900b004055aed300amr14264686qtb.19.1692024890354;
-        Mon, 14 Aug 2023 07:54:50 -0700 (PDT)
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com. [209.85.222.170])
-        by smtp.gmail.com with ESMTPSA id z23-20020ac87cb7000000b004054db6da1bsm3161451qtv.53.2023.08.14.07.54.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Aug 2023 07:54:50 -0700 (PDT)
-Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-7679ea01e16so355968785a.2;
-        Mon, 14 Aug 2023 07:54:50 -0700 (PDT)
-X-Received: by 2002:a25:ac89:0:b0:d5d:4bae:6fe0 with SMTP id
- x9-20020a25ac89000000b00d5d4bae6fe0mr10892642ybi.21.1692024459221; Mon, 14
- Aug 2023 07:47:39 -0700 (PDT)
+        Mon, 14 Aug 2023 11:13:06 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B3BE77;
+        Mon, 14 Aug 2023 08:13:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692025985; x=1723561985;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=vweF0NhHQHmLFNJJCA8R1t0Md8M3C1n1VX4Sto42i5A=;
+  b=Tv8G2rsyreIsQ6xIHWZsmNKQQW4pNRyPRXcKqtY6fcM6Uxy1rKCpxA/4
+   HMKFvibzG8HnAOVPIy80ouM922ooPKXMasOLV3/mcpRePe402IwKc+Krv
+   vVVteeRh492Ax8XI30HQmlSExwIJMN/hFBnrTZxCwCyUyNtUv/9EoWyvx
+   GM+hkzfxEyQTMuU/Pv/hrJuO2IjE8oXjJxb3Hf69egdK2oV5QQLbfquW+
+   znjiNF4Kiirc8vTwJBDFONAkfYv5kZcITtZdlzeOPlq4769E3JzDJlE+p
+   qqnWzIZ9Cd3/C0vjFUGAU+g4X6k4j4+SqtGrSVU8ofrNYPekfwyX19q/T
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="374835076"
+X-IronPort-AV: E=Sophos;i="6.01,172,1684825200"; 
+   d="scan'208";a="374835076"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 08:13:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="847694803"
+X-IronPort-AV: E=Sophos;i="6.01,172,1684825200"; 
+   d="scan'208";a="847694803"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP; 14 Aug 2023 08:13:02 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qVZFc-00AA8u-0Y;
+        Mon, 14 Aug 2023 18:13:00 +0300
+Date:   Mon, 14 Aug 2023 18:12:59 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Justin Chen <justin.chen@broadcom.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, opendmb@gmail.com,
+        Al Cooper <alcooperx@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
+        "open list:TTY LAYER" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] serial: 8250_bcm7271: improve bcm7271 8250 port
+Message-ID: <ZNpEe+nmXGAkEbAb@smile.fi.intel.com>
+References: <1691792050-25042-1-git-send-email-justin.chen@broadcom.com>
+ <2023081221-truth-footsie-b5ab@gregkh>
+ <CALSSxFZyQCCupuXC7=z3yoO7xhVY3Grw_zFsdWKrE+txk9-S1Q@mail.gmail.com>
 MIME-Version: 1.0
-References: <20230810091510.13006-1-jirislaby@kernel.org> <20230810091510.13006-28-jirislaby@kernel.org>
-In-Reply-To: <20230810091510.13006-28-jirislaby@kernel.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 14 Aug 2023 16:47:27 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXTw-MqmRur+k49ke_ER5sa==He4G0RFqZPSMVfUTXWvw@mail.gmail.com>
-Message-ID: <CAMuHMdXTw-MqmRur+k49ke_ER5sa==He4G0RFqZPSMVfUTXWvw@mail.gmail.com>
-Subject: Re: [PATCH 27/36] tty: propagate u8 data to tty_operations::write()
-To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Richard Henderson <richard.henderson@linaro.org>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        Jens Taprogge <jens.taprogge@taprogge.org>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        Scott Branden <scott.branden@broadcom.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        David Lin <dtwlin@gmail.com>, Johan Hovold <johan@kernel.org>,
-        Alex Elder <elder@kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        David Sterba <dsterba@suse.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Oliver Neukum <oneukum@suse.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CALSSxFZyQCCupuXC7=z3yoO7xhVY3Grw_zFsdWKrE+txk9-S1Q@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 10, 2023 at 11:16 AM Jiri Slaby (SUSE) <jirislaby@kernel.org> wrote:
-> Data are now typed as u8. Propagate this change to
-> tty_operations::write().
->
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+On Sat, Aug 12, 2023 at 09:24:21PM -0700, Justin Chen wrote:
+> On Sat, Aug 12, 2023 at 3:50 AM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> > On Fri, Aug 11, 2023 at 03:14:01PM -0700, Justin Chen wrote:
 
->  arch/m68k/emu/nfcon.c                  | 3 +--
->  drivers/tty/amiserial.c                | 2 +-
+> > > +     [PORT_BCM7271] = {
+> > > +             .name           = "bcm7271_uart",
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org> # m68k
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org> # m68k
+This is badly named port type.
 
-Gr{oetje,eeting}s,
+> > > +             .fifo_size      = 32,
+> > > +             .tx_loadsz      = 32,
+> > > +             .fcr            = UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01,
+> > > +             .rxtrig_bytes   = {1, 8, 16, 30},
+> > > +             .flags          = UART_CAP_FIFO | UART_CAP_AFE
+> > > +     },
+> > >  };
 
-                        Geert
+This is almost a dup of PORT_ALTR_16550_F32. Use it if you wish.
+You can always rename it if it feels the right thing to do.
+
+But why 8 and not 16 is the default rxtrig?
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+With Best Regards,
+Andy Shevchenko
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+
