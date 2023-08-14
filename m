@@ -2,82 +2,141 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14145C04A94
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 10:22:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46CD5C07E8A
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 13:46:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233054AbjHNKVi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Aug 2023 06:21:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48066 "EHLO
+        id S231609AbjHNNqB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Aug 2023 09:46:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235062AbjHNKV2 (ORCPT
+        with ESMTP id S231637AbjHNNpp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Aug 2023 06:21:28 -0400
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A073BA;
-        Mon, 14 Aug 2023 03:21:27 -0700 (PDT)
-Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-9936b3d0286so587293766b.0;
-        Mon, 14 Aug 2023 03:21:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692008485; x=1692613285;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6+x+N4SGGQ/ymNRHM55jnGBAqGhG9LuHEySZN/nPsAA=;
-        b=k+JEXLPTupKFu4NZ0YMBH9488xTFdnpv873IwP46GnR5G4ZoZrarMaE2YRtw+UntPl
-         cG1KWItkAa26LFT5GCUVeHC9BqmCOdnNZvt36WiP4hatjjnLufV0kFTW9qW5sRl+u4B6
-         EdQZhCKBWGhnKzsnL/gLJn5VHQlTjrRqrMxXY1q3DSa+C7m5V1zoiVnjmShtjrC6x+jG
-         H5BqPW3WHqewuxAX/2HsM40dhCmvdGDJ/bBARgl7Wide9Zn51QD6DP4LWQinfQLp4xbA
-         YGo1lzE+M6KwmUMDx71eZWcONlAcUuxOmq0pyD/2vrhqgTKmelcJ7nM+GjeN5Lys4DUg
-         Ijbw==
-X-Gm-Message-State: AOJu0YwrYDSwC941WWiGbj64vcG4r57z0WcWSRIy+OaLoC4RRoI6ke58
-        2VRR89Nx/NlT8rBHTuTk0Hw=
-X-Google-Smtp-Source: AGHT+IF39Lq1gFcrUWZk1jysSKcaS1v+NZEqDsr9JU/ySnEScMgddYR7P8uvGW6mbwAJ5s/YH1GpPg==
-X-Received: by 2002:a17:906:2252:b0:991:fef4:bb9 with SMTP id 18-20020a170906225200b00991fef40bb9mr7940491ejr.58.1692008485435;
-        Mon, 14 Aug 2023 03:21:25 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id b12-20020a170906660c00b009828e26e519sm5514426ejp.122.2023.08.14.03.21.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Aug 2023 03:21:24 -0700 (PDT)
-Message-ID: <154dfc10-76fa-b054-54a8-faa22ad52158@kernel.org>
-Date:   Mon, 14 Aug 2023 12:21:23 +0200
+        Mon, 14 Aug 2023 09:45:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F374106;
+        Mon, 14 Aug 2023 06:45:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B7E7761FB6;
+        Mon, 14 Aug 2023 13:45:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 918D8C433C8;
+        Mon, 14 Aug 2023 13:45:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1692020744;
+        bh=3GWUGU3sn/mG21fzGuyMqh51zJlW4hGxN9JOTvBoYEc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YqD2U0V2tuxKZqxWonJYrqzUtF4LVqwXLZtE4B/8QCGUXmjMdi5/Vy3RG8+ny68FW
+         9ZLD41a9bVbdV5626Qbkc/m8Uff5zw0x3RRPyGBxZkf5FqceOXnFOniggixG/FtXs6
+         GTb8FSPkQ/TjyNtQqcbkB8/Vs87Sb3YosijuXHfP248tR4OnTyh9h+Rw6iqoHSK2Cq
+         LVLf9nAXZ6pYHSUxJccABK8IUTTPy7LQ2PxZLrKJqjt8lQhVMxPWYnPt5631xOPHoH
+         vnppiFo25hGzBQ89EK/NfqwgiG7yy+nKN3EVUWjBwbz9h4gWtTs1H/GF89huUiwnVw
+         KHfaLNQ7ni+YQ==
+Date:   Mon, 14 Aug 2023 15:45:41 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Gatien Chevallier <gatien.chevallier@foss.st.com>
+Cc:     Oleksii_Moisieiev@epam.com, gregkh@linuxfoundation.org,
+        herbert@gondor.apana.org.au, davem@davemloft.net,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, alexandre.torgue@foss.st.com,
+        vkoul@kernel.org, jic23@kernel.org, olivier.moysan@foss.st.com,
+        arnaud.pouliquen@foss.st.com, mchehab@kernel.org,
+        fabrice.gasnier@foss.st.com, andi.shyti@kernel.org,
+        ulf.hansson@linaro.org, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, hugues.fruchet@foss.st.com, lee@kernel.org,
+        will@kernel.org, catalin.marinas@arm.com, arnd@kernel.org,
+        richardcochran@gmail.com, Frank Rowand <frowand.list@gmail.com>,
+        peng.fan@oss.nxp.com, linux-crypto@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v4 02/11] dt-bindings: treewide: add feature-domains
+ description
+Message-ID: <ZNowBaT2nLj4jEm3@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Gatien Chevallier <gatien.chevallier@foss.st.com>,
+        Oleksii_Moisieiev@epam.com, gregkh@linuxfoundation.org,
+        herbert@gondor.apana.org.au, davem@davemloft.net,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, alexandre.torgue@foss.st.com, vkoul@kernel.org,
+        jic23@kernel.org, olivier.moysan@foss.st.com,
+        arnaud.pouliquen@foss.st.com, mchehab@kernel.org,
+        fabrice.gasnier@foss.st.com, andi.shyti@kernel.org,
+        ulf.hansson@linaro.org, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, hugues.fruchet@foss.st.com, lee@kernel.org,
+        will@kernel.org, catalin.marinas@arm.com, arnd@kernel.org,
+        richardcochran@gmail.com, Frank Rowand <frowand.list@gmail.com>,
+        peng.fan@oss.nxp.com, linux-crypto@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+References: <20230811100731.108145-1-gatien.chevallier@foss.st.com>
+ <20230811100731.108145-3-gatien.chevallier@foss.st.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Content-Language: en-US
-To:     Petr Mladek <pmladek@suse.com>,
-        John Ogness <john.ogness@linutronix.de>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>,
-        Thomas Gleixner <tglx@linutronix.de>
-References: <20230811064340.13400-1-jirislaby@kernel.org>
- <878rae175n.fsf@jogness.linutronix.de>
- <7d8ae4f8-8900-5a06-5b7b-d4a3aea0673e@kernel.org>
- <87bkfa6nvx.fsf@jogness.linutronix.de> <ZNn7KHY3iMRarqAZ@alley>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH] serial: 8250: drop lockdep annotation from
- serial8250_clear_IER()
-In-Reply-To: <ZNn7KHY3iMRarqAZ@alley>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="W69stkuq3CQIl/r9"
+Content-Disposition: inline
+In-Reply-To: <20230811100731.108145-3-gatien.chevallier@foss.st.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 14. 08. 23, 12:00, Petr Mladek wrote:
-> I personally vote to keep it as is unless people see this warning
-> on daily basis. After all, the lockdep splat is correct. The serial
-> console might not work correctly in panic() when there is the race.
 
-Sorry, but no, the warning is not correct at all. The code path 
-deliberately does NOT take the lock and calls a function which is 
-currently annotated that the lock is _always_ taken. Therefore, the 
-warning is clearly a false positive and I see no reason in keeping it.
+--W69stkuq3CQIl/r9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Hopefully this is fixed as John described earlier. Until then, I see no 
-point bothering people with false alarms.
+On Fri, Aug 11, 2023 at 12:07:22PM +0200, Gatien Chevallier wrote:
+> feature-domains is an optional property that allows a peripheral to
+> refer to one or more feature domain controller(s).
+>=20
+> Description of this property is added to all peripheral binding files of
+> the peripheral under the STM32 firewall controllers. It allows an accurate
+> representation of the hardware, where various peripherals are connected
+> to this firewall bus. The firewall can then check the peripheral accesses
+> before allowing it to probe.
+>=20
+> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
+> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-thanks,
--- 
-js
-suse labs
+Acked-by: Wolfram Sang <wsa@kernel.org> # for I2C (once the rest is accepte=
+d)
 
+
+--W69stkuq3CQIl/r9
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmTaMAUACgkQFA3kzBSg
+KbaUdQ//dzd+zVw4+lLQfMm5N9CAHnO3jRuJqiYQmp/rDIgsZY8CClGeuNYuiFGQ
+sJAlf9Vh2aH2qFbq7TJkPelVMPe97mgjxKZDJjrpGUe6CTcLGpK4P5dx0bQmxrDV
+X9wg54/VUPmf92H5LDELCgEQBUpxE2M9kMMYXubSN+gyCYDo+RZFOw+aOfRcqKkT
+jyWMjSPQsNYTIn/u+DiQidjJYYW3Y1NwiUufKoBCbTUDkmUkBsIAkqq5dYf1he96
+cDBjQz4aQzw8q9mITHh1GI3MX5AGpxJc8XmUwD2PwcshkDb57FJkTElHQIhKJW2R
++BPM4dGmzfvtj6G7+/7/E0CWVymbxnEkOVK46qPYw00tD2C7Khm0kRLEbwEcenS3
+SlXgrYoVcGf73cxfYrShbSvV32GuQZ9onZxIbgdFMjtiCO7E2WKqPUkNt1hDecEf
+WoMbKLXvmxdcRjmmkRJRBGeUwKThDjHDvfYtURQ3+31TVkqxLDLoHE8gF78pL3yw
+LW4HQwfekpHvSObQssYoMM2mJrM7yidifx+OCmWywsvmYM3MlJklqapPTI+IVwdm
+CxMb+ZhS+C8HJfNS/5Q7AY4N4Qav0cG8Kdk2xTS2hBurkQ87PGjXdpkKPRIG6/wD
+02vyuQVUcnLNDqAwXkEORXxqaidoTN/suDmNhiHszczHfBZ/X0o=
+=VsN7
+-----END PGP SIGNATURE-----
+
+--W69stkuq3CQIl/r9--
