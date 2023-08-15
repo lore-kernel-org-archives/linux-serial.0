@@ -2,91 +2,148 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 774A0C04A6A
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Aug 2023 22:53:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D5E9C0015E
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Aug 2023 06:44:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233391AbjHNWwv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Aug 2023 18:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42090 "EHLO
+        id S234046AbjHOGoT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Aug 2023 02:44:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233399AbjHNWws (ORCPT
+        with ESMTP id S235253AbjHOGoI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Aug 2023 18:52:48 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B3E12D;
-        Mon, 14 Aug 2023 15:52:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=N+FDtRfvMDT6hVxzXu0XfcRPzq1+yZ03REJLjq8HX4g=; b=R+MiMl2LJBYZulPd4n0uNnZqli
-        8lTwRuKFU2IYuIXXGSNLbGX0/l0x5+0iuJh8w2SCySZqGy+nrrVzIIhQqS05HVp0KXP/k/1m558YZ
-        yXTGLM7Cq6P6FjL2IdmgmAMyxwg3nKy0ODuYOorEv5DXC4bsPKUxBNgVb5eiIPcsY8e6pyASOd+Hm
-        VHyosJARJ1SlyYmWjrScsGZbfUuT9/VLxWLXxvE6w18NgXtVwQ2uYCfLjs4kMd82L/f5QScUMJPU4
-        h4g2sP64xqPOh6SYEXS/hOh/omtyiRg1Zk5sY+LTIF8AgX7pyqAGP+/SFRZUvNHoIFAzk2XOGcrXc
-        POGqiiRQ==;
-Received: from [2601:1c2:980:9ec0::577]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1qVgQS-004h23-MP; Mon, 14 Aug 2023 22:52:41 +0000
-Message-ID: <af8f2613-5a74-3c2e-f076-345f725aaa5a@infradead.org>
-Date:   Mon, 14 Aug 2023 15:52:36 -0700
+        Tue, 15 Aug 2023 02:44:08 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD1C1984;
+        Mon, 14 Aug 2023 23:44:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692081843; x=1723617843;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=SJCFz23iMorp2MSescO5CvL1mFsihA9SKEwVgqbFojM=;
+  b=kc/JTJHUQCEfibuwUIUHxklU48kaYF9wJqmoEktfig52z5llPSvGl/4P
+   h8nj4dGPisT5BPnueMydLmRWJJWCdc01knfCktAB1QZ95Bs3OIvBt7DDp
+   MZi2RqVsRuaf4NBDZOwYiiMwf97so1vda5XltIckq0HmM68Jkiz4b9bka
+   FisPuoL8VaiGA+ggupHUZLyZc7a7xhXgjTcvPGnuh7hI45CuvRiP6H0P2
+   U0YRIZGuynyXEldBVisCh2mZnn9DTi+7xalmNHY1rTGvsjW4mc/Gp2s6q
+   SBSVpRDIW5AcyTa5e0NmHr0KY+9pGzHcelIVLvU7fd/DRWugZQ9ghlBhA
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="372210271"
+X-IronPort-AV: E=Sophos;i="6.01,174,1684825200"; 
+   d="scan'208";a="372210271"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 23:44:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="847948778"
+X-IronPort-AV: E=Sophos;i="6.01,174,1684825200"; 
+   d="scan'208";a="847948778"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP; 14 Aug 2023 23:43:59 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qVnmX-006sLk-2v;
+        Tue, 15 Aug 2023 09:43:57 +0300
+Date:   Tue, 15 Aug 2023 09:43:57 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Doug Berger <opendmb@gmail.com>
+Cc:     Justin Chen <justin.chen@broadcom.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
+        "open list:TTY LAYER" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] serial: 8250_bcm7271: improve bcm7271 8250 port
+Message-ID: <ZNsercXiIhPZ4vyB@smile.fi.intel.com>
+References: <1691792050-25042-1-git-send-email-justin.chen@broadcom.com>
+ <2023081221-truth-footsie-b5ab@gregkh>
+ <CALSSxFZyQCCupuXC7=z3yoO7xhVY3Grw_zFsdWKrE+txk9-S1Q@mail.gmail.com>
+ <ZNpEe+nmXGAkEbAb@smile.fi.intel.com>
+ <533b62f7-a6c2-b360-13e0-b873a1a54251@broadcom.com>
+ <5d4757d4-6143-8179-9df9-2de56a716773@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: [PATCH 3/3] Documentation: devices.txt: Fix minors for ttyCPM*
-Content-Language: en-US
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-References: <b5deb1222eb92017f0efe5b5cae127ac11983b3d.1691992627.git.christophe.leroy@csgroup.eu>
- <27d7124cf86157e2a27c2b039e769041994d3f22.1691992627.git.christophe.leroy@csgroup.eu>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <27d7124cf86157e2a27c2b039e769041994d3f22.1691992627.git.christophe.leroy@csgroup.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5d4757d4-6143-8179-9df9-2de56a716773@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+On Mon, Aug 14, 2023 at 11:09:46AM -0700, Doug Berger wrote:
+> On 8/14/2023 9:28 AM, Justin Chen wrote:
+> > On 8/14/23 8:12 AM, Andy Shevchenko wrote:
+> > > On Sat, Aug 12, 2023 at 09:24:21PM -0700, Justin Chen wrote:
+> > > > On Sat, Aug 12, 2023 at 3:50 AM Greg Kroah-Hartman
+> > > > <gregkh@linuxfoundation.org> wrote:
+> > > > > On Fri, Aug 11, 2023 at 03:14:01PM -0700, Justin Chen wrote:
 
-On 8/13/23 23:02, Christophe Leroy wrote:
-> ttyCPM* devices belong to CPM_UART driver at the first place
-> and that driver provides 6 ports.
+...
+
+> > > > > > +     [PORT_BCM7271] = {
+> > > > > > +             .name           = "bcm7271_uart",
+> > > 
+> > > This is badly named port type.
+> > > 
+> This may be true, but it does mirror the PORT_BCM63XX naming and I do value
+> consistency so it is acceptable to me. However, I will happily yield to a
+> better name if one can be determined by popular consensus.
 > 
-> Fixes: e29c3f81eb89 ("Documentation: devices.txt: reconcile serial/ucc_uart minor numers")
-> Cc: Randy Dunlap <rdunlap@infradead.org>
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+> > 
+> > Would "Brcmstb 7271 UART" suffice?
+> > 
+> Perhaps, "Broadcom BCM7271 UART" but it seems excessively "chatty" to me, so
+> as I said I am OK with the original submission.
 
-Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
+I'm not okay, sorry. But your variant seems the best from all proposed.
 
-I had this on my todo list. Thanks for getting to it before I did.
-
-> ---
->   Documentation/admin-guide/devices.txt | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+> > > > > > +             .fifo_size      = 32,
+> > > > > > +             .tx_loadsz      = 32,
+> > > > > > +             .fcr            = UART_FCR_ENABLE_FIFO |
+> > > > > > UART_FCR_R_TRIG_01,
+> > > > > > +             .rxtrig_bytes   = {1, 8, 16, 30},
+> > > > > > +             .flags          = UART_CAP_FIFO | UART_CAP_AFE
+> > > > > > +     },
+> > > > > >   };
+> > > 
+> > > This is almost a dup of PORT_ALTR_16550_F32. Use it if you wish.
+> > > You can always rename it if it feels the right thing to do.
+> > > 
+> > 
+> > There is some other PORT_ALTR logic that I would like to avoid. I would
+> > also like to avoid future changes to PORT_ALTR that wouldn't be
+> > applicable to us.
+> I too am reluctant to introduce yet another port type, but Justin is correct
+> in pointing out that the PORT_ALTR_16550_* port types include Tx FIFO
+> threshold programming that is incompatible with the BCM7271 UART hardware.
+> This port type does appear necessary to address fundamental differences in
+> the hardware unless we are willing to scrap the uart_config[] array and have
+> the individual drivers manage these differences (which I would also be OK
+> with, but I am just a tail on this dog).
 > 
-> diff --git a/Documentation/admin-guide/devices.txt b/Documentation/admin-guide/devices.txt
-> index 1ba5b7c4973c..839054923530 100644
-> --- a/Documentation/admin-guide/devices.txt
-> +++ b/Documentation/admin-guide/devices.txt
-> @@ -2691,7 +2691,7 @@
->   		 45 = /dev/ttyMM1		Marvell MPSC - port 1 (obsolete unused)
->   		 46 = /dev/ttyCPM0		PPC CPM (SCC or SMC) - port 0
->   		    ...
-> -		 49 = /dev/ttyCPM5		PPC CPM (SCC or SMC) - port 3
-> +		 51 = /dev/ttyCPM5		PPC CPM (SCC or SMC) - port 5
->   		 82 = /dev/ttyVR0		NEC VR4100 series SIU
->   		 83 = /dev/ttyVR1		NEC VR4100 series DSIU
->   		 148 = /dev/ttyPSC0		PPC PSC - port 0
-> @@ -2752,7 +2752,7 @@
->   		 43 = /dev/ttycusmx2		Callout device for ttySMX2
->   		 46 = /dev/cucpm0		Callout device for ttyCPM0
->   		    ...
-> -		 49 = /dev/cucpm5		Callout device for ttyCPM5
-> +		 51 = /dev/cucpm5		Callout device for ttyCPM5
->   		 82 = /dev/cuvr0		Callout device for ttyVR0
->   		 83 = /dev/cuvr1		Callout device for ttyVR1
->   
+> The BCM7271 UART IP does support programmable Tx FIFO thresholds in a
+> different way, so if I (or someone else) decided to enable support for that
+> it would appear that this new port type would be necessary at that time as
+> well.
+
+All these details are missing in the initial submission. How should we know all
+that? Please, amend the commit message accordingly.
+
+> > > But why 8 and not 16 is the default rxtrig?
+> > 
+> > We were seeing some latency issues on our chips where 16 would cause
+> > overflows. Trying to kill 2 birds with one stone. If creating another
+> > port type is avoidable then alternatively I can change the default in
+> > userspace.
+
+Also choose the number less than 124, IIRC we have gaps that may be filled.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
