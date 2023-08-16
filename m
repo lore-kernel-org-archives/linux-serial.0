@@ -2,44 +2,44 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21D51C04E69
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Aug 2023 11:01:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F30DAC001E0
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Aug 2023 11:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244128AbjHPLAy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S244282AbjHPLAy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Wed, 16 Aug 2023 07:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57454 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244397AbjHPLAe (ORCPT
+        with ESMTP id S244369AbjHPLA3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Aug 2023 07:00:34 -0400
+        Wed, 16 Aug 2023 07:00:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B0F3211E;
-        Wed, 16 Aug 2023 04:00:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18692712;
+        Wed, 16 Aug 2023 04:00:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77A6C665DB;
-        Wed, 16 Aug 2023 10:58:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF279C433C7;
-        Wed, 16 Aug 2023 10:58:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 75ECC665D3;
+        Wed, 16 Aug 2023 10:58:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C85E6C433C7;
+        Wed, 16 Aug 2023 10:58:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1692183520;
-        bh=AQezLToqhD9r/UVRfPRanWBqyjKP7YFO2T4TPQp9hao=;
+        s=k20201202; t=1692183517;
+        bh=fNEfGkwMMbfLXMQISVUXDfoX7yFP8+G69JbMFx6WlHg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VDAIkAn654zc8SmFZedhk/DUTO72cPdZu6fJ/zJq7cjegJIBmHVF/NMwTPdQaGbqW
-         k8/QqtDGOQaVJbBZXlMaoaiGnAaHnlsYLN1aagH5o0LZv1YwGUti70tgImw8v2vPNb
-         AIeS+6JX4VJHBV75mrhIo/Vg/P1NXGI1dm1AvllwasdUgcjZv48idxYrGd/wInrDDZ
-         tajo4o7P29kDRbNFZvpiZRiZZcjK6uhIsaM1wllDuqMJCDfWCFO2t/m4Mxs0/m5SIO
-         I6D96InzvrQ6o7920Abm4K8wzGHPlh2qO6/JTs8oeTndkU571OTn7TwYsQ7/PD5tjU
-         KSQThGCQ9b43Q==
+        b=VFgR9U1TOLVZbZC4rdr5k5GiznGwYldRR2j0xT9LA4Kcf8oXPSoIlGGmUmHl0vq6P
+         qBrlxPv4xGNP7fXDYOGuD/J70tz4iz/dpgowv456aoFVGH9SxPnSqmQ3QFgrWp2oHo
+         RYozsyNyMn/lu4dgtbyBJdteB53RWvrB8OijAZ07Uizq9Mdea71ZPDmfO9gl6gXToi
+         i55FuaL4oCnQso4nexq4DZwWcHJnuQcUVKVyaaYNcKxVCHHfKQdpK0kyUlEq2VIxrx
+         /jkk6vH+cxoz84oDGNpf894hrZz7lBiUUQWKp0TswPki9DbZ7sFf7FqmK8zYZWG0WC
+         ocy8ucjs5p5DA==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 06/14] tty: n_tty: use MASK() for masking out size bits
-Date:   Wed, 16 Aug 2023 12:58:14 +0200
-Message-ID: <20230816105822.3685-11-jirislaby@kernel.org>
+Subject: [PATCH 04/14] tty: n_tty: use time_is_before_jiffies() in n_tty_receive_overrun()
+Date:   Wed, 16 Aug 2023 12:58:12 +0200
+Message-ID: <20230816105822.3685-9-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230816105822.3685-1-jirislaby@kernel.org>
 References: <20230816105822.3685-1-jirislaby@kernel.org>
@@ -49,110 +49,36 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In n_tty, there is already a macro to mask out top bits from ring buffer
-counters. It is MASK() added some time ago. So use it more in the code
-to make it more readable.
+The jiffies tests in n_tty_receive_overrun() are simplified ratelimiting
+(without locking). We could use struct ratelimit_state and the helpers,
+but to me, it occurs to be too complex for this use case.
+
+But the code currently tests both if the time passed (the first
+time_after()) and if jiffies wrapped around (the second time_after()).
+time_is_before_jiffies() takes care of both, provided overrun_time is
+initialized at the allocation time.
+
+So switch to time_is_before_jiffies(), the same what ratelimiting does.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/n_tty.c | 23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+ drivers/tty/n_tty.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 0b6eeeb94920..9e0ef5294b52 100644
+index e293d87b5362..996cad23e385 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -138,23 +138,23 @@ static inline size_t read_cnt(struct n_tty_data *ldata)
- 
- static inline unsigned char read_buf(struct n_tty_data *ldata, size_t i)
- {
--	return ldata->read_buf[i & (N_TTY_BUF_SIZE - 1)];
-+	return ldata->read_buf[MASK(i)];
- }
- 
- static inline unsigned char *read_buf_addr(struct n_tty_data *ldata, size_t i)
- {
--	return &ldata->read_buf[i & (N_TTY_BUF_SIZE - 1)];
-+	return &ldata->read_buf[MASK(i)];
- }
- 
- static inline unsigned char echo_buf(struct n_tty_data *ldata, size_t i)
- {
- 	smp_rmb(); /* Matches smp_wmb() in add_echo_byte(). */
--	return ldata->echo_buf[i & (N_TTY_BUF_SIZE - 1)];
-+	return ldata->echo_buf[MASK(i)];
- }
- 
- static inline unsigned char *echo_buf_addr(struct n_tty_data *ldata, size_t i)
- {
--	return &ldata->echo_buf[i & (N_TTY_BUF_SIZE - 1)];
-+	return &ldata->echo_buf[MASK(i)];
- }
- 
- /* If we are not echoing the data, perhaps this is a secret so erase it */
-@@ -1359,7 +1359,7 @@ static void n_tty_receive_char_special(struct tty_struct *tty, unsigned char c,
- 				put_tty_queue(c, ldata);
- 
- handle_newline:
--			set_bit(ldata->read_head & (N_TTY_BUF_SIZE - 1), ldata->read_flags);
-+			set_bit(MASK(ldata->read_head), ldata->read_flags);
- 			put_tty_queue(c, ldata);
- 			smp_store_release(&ldata->canon_head, ldata->read_head);
- 			kill_fasync(&tty->fasync, SIGIO, POLL_IN);
-@@ -1505,14 +1505,14 @@ n_tty_receive_buf_real_raw(const struct tty_struct *tty, const u8 *cp,
+@@ -1173,8 +1173,7 @@ static void n_tty_receive_overrun(const struct tty_struct *tty)
  	struct n_tty_data *ldata = tty->disc_data;
- 	size_t n, head;
  
--	head = ldata->read_head & (N_TTY_BUF_SIZE - 1);
-+	head = MASK(ldata->read_head);
- 	n = min_t(size_t, count, N_TTY_BUF_SIZE - head);
- 	memcpy(read_buf_addr(ldata, head), cp, n);
- 	ldata->read_head += n;
- 	cp += n;
- 	count -= n;
- 
--	head = ldata->read_head & (N_TTY_BUF_SIZE - 1);
-+	head = MASK(ldata->read_head);
- 	n = min_t(size_t, count, N_TTY_BUF_SIZE - head);
- 	memcpy(read_buf_addr(ldata, head), cp, n);
- 	ldata->read_head += n;
-@@ -1779,8 +1779,7 @@ static void n_tty_set_termios(struct tty_struct *tty, const struct ktermios *old
- 			ldata->canon_head = ldata->read_tail;
- 			ldata->push = 0;
- 		} else {
--			set_bit((ldata->read_head - 1) & (N_TTY_BUF_SIZE - 1),
--				ldata->read_flags);
-+			set_bit(MASK(ldata->read_head - 1), ldata->read_flags);
- 			ldata->canon_head = ldata->read_head;
- 			ldata->push = 1;
- 		}
-@@ -1941,7 +1940,7 @@ static bool copy_from_read_buf(const struct tty_struct *tty,
- 	size_t n;
- 	bool is_eof;
- 	size_t head = smp_load_acquire(&ldata->commit_head);
--	size_t tail = ldata->read_tail & (N_TTY_BUF_SIZE - 1);
-+	size_t tail = MASK(ldata->read_tail);
- 
- 	n = min(head - ldata->read_tail, N_TTY_BUF_SIZE - tail);
- 	n = min(*nr, n);
-@@ -2004,7 +2003,7 @@ static bool canon_copy_from_read_buf(const struct tty_struct *tty,
- 	canon_head = smp_load_acquire(&ldata->canon_head);
- 	n = min(*nr, canon_head - ldata->read_tail);
- 
--	tail = ldata->read_tail & (N_TTY_BUF_SIZE - 1);
-+	tail = MASK(ldata->read_tail);
- 	size = min_t(size_t, tail + n, N_TTY_BUF_SIZE);
- 
- 	n_tty_trace("%s: nr:%zu tail:%zu n:%zu size:%zu\n",
-@@ -2465,7 +2464,7 @@ static unsigned long inq_canon(struct n_tty_data *ldata)
- 	nr = head - tail;
- 	/* Skip EOF-chars.. */
- 	while (MASK(head) != MASK(tail)) {
--		if (test_bit(tail & (N_TTY_BUF_SIZE - 1), ldata->read_flags) &&
-+		if (test_bit(MASK(tail), ldata->read_flags) &&
- 		    read_buf(ldata, tail) == __DISABLED_CHAR)
- 			nr--;
- 		tail++;
+ 	ldata->num_overrun++;
+-	if (time_after(jiffies, ldata->overrun_time + HZ) ||
+-	    time_after(ldata->overrun_time, jiffies)) {
++	if (time_is_before_jiffies(ldata->overrun_time + HZ)) {
+ 		tty_warn(tty, "%d input overrun(s)\n", ldata->num_overrun);
+ 		ldata->overrun_time = jiffies;
+ 		ldata->num_overrun = 0;
 -- 
 2.41.0
 
