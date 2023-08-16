@@ -2,44 +2,44 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9817BC07E8C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8885AC0729B
 	for <linux-serial@archiver.kernel.org>; Wed, 16 Aug 2023 10:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244205AbjHPK4K (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Aug 2023 06:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50014 "EHLO
+        id S244166AbjHPK4I (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 16 Aug 2023 06:56:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244125AbjHPKzu (ORCPT
+        with ESMTP id S244019AbjHPKzo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Aug 2023 06:55:50 -0400
+        Wed, 16 Aug 2023 06:55:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF3E13E;
-        Wed, 16 Aug 2023 03:55:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A41C81984;
+        Wed, 16 Aug 2023 03:55:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AFE564C77;
-        Wed, 16 Aug 2023 10:55:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0BDFC433C8;
-        Wed, 16 Aug 2023 10:55:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EF8F64143;
+        Wed, 16 Aug 2023 10:55:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86644C433C9;
+        Wed, 16 Aug 2023 10:55:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1692183348;
-        bh=VEJwLY7hoPdNX4XnvykJ3RU6LGaAEAvuCCAn2+uGWxk=;
+        s=k20201202; t=1692183342;
+        bh=K3LGKa2ZBj92Ono8nsGKS9bVk7dhEAszS/T9RyhEzzI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f2XDJqTl/pi4RpIiL4mEcVSC4RFSFu6dF9VdWLJNMGOyt1fMTbKbHwaOaU15B4Rs8
-         NpLR5QsCB3Szt52ZVkdxT9ju8/sxRQp8yZ7eyZufL0ja6nDcq4IF/mBlbzanRcaoMg
-         3YHR9LyFfb8cmb5tuzWKcb4imdnlivnrntNKaqWX4bmY92Z+BV0ceawAVY78ev2ucL
-         wftcYbM/6RR2wVbf3LiW41SX32BBkut/iNUFfb/mrVmne1G3qmQy6j4jkp5WHdC0m7
-         /w6TFbX/MT5a2mcSHyofaE34a+ryKAjro+N0UFW5/S5FC6/hgv2/WeKERpxLuxnmjW
-         wlVtmqR8WfEIQ==
+        b=Mx/BgIO79cD7ufaBwQj8Hv3NtIscu7Y6hpXUH1fjtmWcrSLr57lIy5Ele1K+Jy9WG
+         RC/772MpwV/7JIli+WSTF9UuGdAFFBfFCdMQ+ynGF9FmpPdwVCNWHMJFU5kBwUTep4
+         GLdPZgRdwVAnq9NEugJ3kbF5sV0+Jafzv8dUpBro8SJnYonKH4OIpFkUgOQDkFqj9W
+         KjPyG97VMQnvj8YaVnWrjX4xVDKuhjxNJoEoAQksm3CwOdWNpXtqfKVux74SWgi93Y
+         O3Q5Q9Ya1ARrY3mxqzgcLOqebIOiBiR3G91NPqrMbCy556JgvyhsEoSNGsvth92eZb
+         JzCmfDcgGRSYA==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 10/10] tty: tty_buffer: invert conditions in __tty_buffer_request_room()
-Date:   Wed, 16 Aug 2023 12:55:30 +0200
-Message-ID: <20230816105530.3335-11-jirislaby@kernel.org>
+Subject: [PATCH 06/10] tty: tty_buffer: let tty_prepare_flip_string() return size_t
+Date:   Wed, 16 Aug 2023 12:55:26 +0200
+Message-ID: <20230816105530.3335-7-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230816105530.3335-1-jirislaby@kernel.org>
 References: <20230816105530.3335-1-jirislaby@kernel.org>
@@ -49,70 +49,56 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We are used to handle "bad" states in the 'if's in the kernel. Refactor
-(invert the two conditions in) __tty_buffer_request_room(), so that the
-code returns from the fast paths immediately instead of postponing to
-the heavy end of the function.
+The same as in the previous patch, tty_prepare_flip_string() accepts
+size_t as an size argument. It returns the same size (or less). It is
+unexpected that it returns a signed value and can confuse users to check
+for negative values.
+
+Instead, return the same size_t as accepted to make clear we return
+values >= 0, where zero in fact means failure.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/tty_buffer.c | 44 ++++++++++++++++++++--------------------
- 1 file changed, 22 insertions(+), 22 deletions(-)
+ drivers/tty/tty_buffer.c | 5 +++--
+ include/linux/tty_flip.h | 2 +-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index 44c0adaec850..5f6d0cf67571 100644
+index 598891e53031..4f84466498f7 100644
 --- a/drivers/tty/tty_buffer.c
 +++ b/drivers/tty/tty_buffer.c
-@@ -266,28 +266,28 @@ static int __tty_buffer_request_room(struct tty_port *port, size_t size,
- 	size_t left = (b->flags ? 1 : 2) * b->size - b->used;
- 	bool change = !b->flags && flags;
+@@ -383,9 +383,9 @@ EXPORT_SYMBOL(__tty_insert_flip_char);
+  * Returns: the length available and buffer pointer (@chars) to the space which
+  * is now allocated and accounted for as ready for normal characters.
+  */
+-int tty_prepare_flip_string(struct tty_port *port, u8 **chars, size_t size)
++size_t tty_prepare_flip_string(struct tty_port *port, u8 **chars, size_t size)
+ {
+-	int space = __tty_buffer_request_room(port, size, false);
++	size_t space = __tty_buffer_request_room(port, size, false);
  
--	if (change || left < size) {
--		/* This is the slow path - looking for new buffers to use */
--		n = tty_buffer_alloc(port, size);
--		if (n != NULL) {
--			n->flags = flags;
--			buf->tail = n;
--			/*
--			 * Paired w/ acquire in flush_to_ldisc() and lookahead_bufs()
--			 * ensures they see all buffer data.
--			 */
--			smp_store_release(&b->commit, b->used);
--			/*
--			 * Paired w/ acquire in flush_to_ldisc() and lookahead_bufs()
--			 * ensures the latest commit value can be read before the head
--			 * is advanced to the next buffer.
--			 */
--			smp_store_release(&b->next, n);
--		} else if (change)
--			size = 0;
--		else
--			size = left;
--	}
-+	if (!change && left >= size)
-+		return size;
+ 	if (likely(space)) {
+ 		struct tty_buffer *tb = port->buf.tail;
+@@ -395,6 +395,7 @@ int tty_prepare_flip_string(struct tty_port *port, u8 **chars, size_t size)
+ 			memset(flag_buf_ptr(tb, tb->used), TTY_NORMAL, space);
+ 		tb->used += space;
+ 	}
 +
-+	/* This is the slow path - looking for new buffers to use */
-+	n = tty_buffer_alloc(port, size);
-+	if (n == NULL)
-+		return change ? 0 : left;
-+
-+	n->flags = flags;
-+	buf->tail = n;
-+	/*
-+	 * Paired w/ acquire in flush_to_ldisc() and lookahead_bufs()
-+	 * ensures they see all buffer data.
-+	 */
-+	smp_store_release(&b->commit, b->used);
-+	/*
-+	 * Paired w/ acquire in flush_to_ldisc() and lookahead_bufs()
-+	 * ensures the latest commit value can be read before the head
-+	 * is advanced to the next buffer.
-+	 */
-+	smp_store_release(&b->next, n);
-+
- 	return size;
+ 	return space;
  }
+ EXPORT_SYMBOL_GPL(tty_prepare_flip_string);
+diff --git a/include/linux/tty_flip.h b/include/linux/tty_flip.h
+index 569747364ae5..efd03d9c11f8 100644
+--- a/include/linux/tty_flip.h
++++ b/include/linux/tty_flip.h
+@@ -13,7 +13,7 @@ int tty_buffer_request_room(struct tty_port *port, size_t size);
+ size_t __tty_insert_flip_string_flags(struct tty_port *port, const u8 *chars,
+ 				      const u8 *flags, bool mutable_flags,
+ 				      size_t size);
+-int tty_prepare_flip_string(struct tty_port *port, u8 **chars, size_t size);
++size_t tty_prepare_flip_string(struct tty_port *port, u8 **chars, size_t size);
+ void tty_flip_buffer_push(struct tty_port *port);
+ int __tty_insert_flip_char(struct tty_port *port, u8 ch, u8 flag);
  
 -- 
 2.41.0
