@@ -2,44 +2,44 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27D6EC04FE2
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3770BC04FE1
 	for <linux-serial@archiver.kernel.org>; Wed, 16 Aug 2023 10:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244135AbjHPK4H (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Aug 2023 06:56:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59502 "EHLO
+        id S244192AbjHPK4J (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 16 Aug 2023 06:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243981AbjHPKzk (ORCPT
+        with ESMTP id S244119AbjHPKzr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Aug 2023 06:55:40 -0400
+        Wed, 16 Aug 2023 06:55:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B801985;
-        Wed, 16 Aug 2023 03:55:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A64261984;
+        Wed, 16 Aug 2023 03:55:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9436B64FFF;
-        Wed, 16 Aug 2023 10:55:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA42CC433CA;
-        Wed, 16 Aug 2023 10:55:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F6EE63FBB;
+        Wed, 16 Aug 2023 10:55:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EC36C433C9;
+        Wed, 16 Aug 2023 10:55:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1692183338;
-        bh=9arzAMjp1tDpddEsEvYS7yWfWPnFC38pD7wPryrXV6U=;
+        s=k20201202; t=1692183345;
+        bh=gDvRR64IFGgEzqSspbkO9kJwr/Hf7Tn7Fvxm8rbBCB0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hT8HrzQeM68z30dQTxo3lwOP5IVFa8Qpw7BkhH9n5VQ1wdhNg7B0l2G5ErRaksiB8
-         dyWdcDZQJ9WwY1+ZPDSlGWvZ+Jby/Grqg4WAiOYsoD4Fg+T1p78qCzRdi7T0W7/wpf
-         qApSVv1AiAfQIHjIigToM5IUug0a7cqSmBKxahdVGUPoak+HYBPEKdzUWCwLj7/Flx
-         f+BA11qP3+D93tK7+EcqR7tL1ND5RcyjMLxSnU4g3BqUJgr8u+30fp8Z0jmRFZkiay
-         nk4f76YgGYE45glBqTujPXb5HWTgAQGmtRUgXwTrYnqwwW7uJlZcG06/20qcBOyuyl
-         f3ij3RvGKbP2A==
+        b=hkGYpNqRHxbM+E6Ovm/uyjkJvUEkiJThsfg74hFdwDsp38j05x0Pwnp5qpZfYoOHL
+         pFmv/EiEMngoI2fYL8OQfvhDa/Fds73rI217YwW3FUR4YDB0s37lvLjh65qmiU3v7s
+         Gwux/QKuVdiFlGLUYfNi9QUX7V114HeU5MJs94kDB7bW4iYdci4yH1hNpbeQ7iZl+W
+         oW/KfxCUv5fc5bgHCQZ8wN590xKlUi8oDnSn9o46Zv75Is9xNAVqrYt0BdGIp7xlBD
+         qTQt0dUWOuz72E9iQ9aIMu/IQReg7cQGI8eY/DmbLH61qSXXnRbbhdnyDXpRj3Sz9n
+         8AXXO0q8g6Iaw==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 03/10] tty: tty_buffer: unify tty_insert_flip_string_{fixed_flag,flags}()
-Date:   Wed, 16 Aug 2023 12:55:23 +0200
-Message-ID: <20230816105530.3335-4-jirislaby@kernel.org>
+Subject: [PATCH 08/10] tty: tty_buffer: better types in __tty_buffer_request_room()
+Date:   Wed, 16 Aug 2023 12:55:28 +0200
+Message-ID: <20230816105530.3335-9-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230816105530.3335-1-jirislaby@kernel.org>
 References: <20230816105530.3335-1-jirislaby@kernel.org>
@@ -49,199 +49,29 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-They both do the same except for flags. One mem-copies the flags from
-the caller, the other mem-sets to one flag given by the caller. This can
-be unified with a simple if in the unified function.
+* use bool for 'change' as it holds a result of a boolean.
+* use size_t for 'left', so it is the same as 'size' which it is
+  compared to. Both are supposed to contain an unsigned value.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- Documentation/driver-api/tty/tty_buffer.rst |  6 +-
- drivers/tty/tty_buffer.c                    | 70 +++++----------------
- include/linux/tty_flip.h                    | 46 ++++++++++++--
- 3 files changed, 61 insertions(+), 61 deletions(-)
+ drivers/tty/tty_buffer.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/driver-api/tty/tty_buffer.rst b/Documentation/driver-api/tty/tty_buffer.rst
-index a39d4781e0d2..774dc119c312 100644
---- a/Documentation/driver-api/tty/tty_buffer.rst
-+++ b/Documentation/driver-api/tty/tty_buffer.rst
-@@ -15,10 +15,12 @@ Flip Buffer Management
- ======================
- 
- .. kernel-doc:: drivers/tty/tty_buffer.c
--   :identifiers: tty_prepare_flip_string tty_insert_flip_string_fixed_flag
--           tty_insert_flip_string_flags __tty_insert_flip_char
-+   :identifiers: tty_prepare_flip_string __tty_insert_flip_char
-            tty_flip_buffer_push tty_ldisc_receive_buf
- 
-+.. kernel-doc:: include/linux/tty_flip.h
-+   :identifiers: tty_insert_flip_string_fixed_flag tty_insert_flip_string_flags
-+
- ----
- 
- Other Functions
 diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index c94df1a2d7f8..94a88dc05a54 100644
+index e162318d6c31..414bb7f9155f 100644
 --- a/drivers/tty/tty_buffer.c
 +++ b/drivers/tty/tty_buffer.c
-@@ -303,82 +303,42 @@ int tty_buffer_request_room(struct tty_port *port, size_t size)
- }
- EXPORT_SYMBOL_GPL(tty_buffer_request_room);
- 
--/**
-- * tty_insert_flip_string_fixed_flag - add characters to the tty buffer
-- * @port: tty port
-- * @chars: characters
-- * @flag: flag value for each character
-- * @size: size
-- *
-- * Queue a series of bytes to the tty buffering. All the characters passed are
-- * marked with the supplied flag.
-- *
-- * Returns: the number added.
-- */
--int tty_insert_flip_string_fixed_flag(struct tty_port *port, const u8 *chars,
--				      u8 flag, size_t size)
-+int __tty_insert_flip_string_flags(struct tty_port *port, const u8 *chars,
-+				   const u8 *flags, bool mutable_flags,
-+				   size_t size)
+@@ -263,7 +263,8 @@ static int __tty_buffer_request_room(struct tty_port *port, size_t size,
  {
-+	bool need_flags = mutable_flags || flags[0] != TTY_NORMAL;
- 	int copied = 0;
--	bool flags = flag != TTY_NORMAL;
+ 	struct tty_bufhead *buf = &port->buf;
+ 	struct tty_buffer *b, *n;
+-	int left, change;
++	size_t left;
++	bool change;
  
- 	do {
- 		int goal = min_t(size_t, size - copied, TTY_BUFFER_PAGE);
--		int space = __tty_buffer_request_room(port, goal, flags);
-+		int space = __tty_buffer_request_room(port, goal, need_flags);
- 		struct tty_buffer *tb = port->buf.tail;
- 
- 		if (unlikely(space == 0))
- 			break;
--		memcpy(char_buf_ptr(tb, tb->used), chars, space);
--		if (tb->flags)
--			memset(flag_buf_ptr(tb, tb->used), flag, space);
--		tb->used += space;
--		copied += space;
--		chars += space;
--		/* There is a small chance that we need to split the data over
--		 * several buffers. If this is the case we must loop.
--		 */
--	} while (unlikely(size > copied));
--	return copied;
--}
--EXPORT_SYMBOL(tty_insert_flip_string_fixed_flag);
- 
--/**
-- * tty_insert_flip_string_flags	-	add characters to the tty buffer
-- * @port: tty port
-- * @chars: characters
-- * @flags: flag bytes
-- * @size: size
-- *
-- * Queue a series of bytes to the tty buffering. For each character the flags
-- * array indicates the status of the character.
-- *
-- * Returns: the number added.
-- */
--int tty_insert_flip_string_flags(struct tty_port *port, const u8 *chars,
--				 const u8 *flags, size_t size)
--{
--	int copied = 0;
-+		memcpy(char_buf_ptr(tb, tb->used), chars, space);
- 
--	do {
--		int goal = min_t(size_t, size - copied, TTY_BUFFER_PAGE);
--		int space = tty_buffer_request_room(port, goal);
--		struct tty_buffer *tb = port->buf.tail;
-+		if (mutable_flags) {
-+			memcpy(flag_buf_ptr(tb, tb->used), flags, space);
-+			flags += space;
-+		} else if (tb->flags) {
-+			memset(flag_buf_ptr(tb, tb->used), flags[0], space);
-+		}
- 
--		if (unlikely(space == 0))
--			break;
--		memcpy(char_buf_ptr(tb, tb->used), chars, space);
--		memcpy(flag_buf_ptr(tb, tb->used), flags, space);
- 		tb->used += space;
- 		copied += space;
- 		chars += space;
--		flags += space;
-+
- 		/* There is a small chance that we need to split the data over
- 		 * several buffers. If this is the case we must loop.
- 		 */
- 	} while (unlikely(size > copied));
-+
- 	return copied;
- }
--EXPORT_SYMBOL(tty_insert_flip_string_flags);
-+EXPORT_SYMBOL(__tty_insert_flip_string_flags);
- 
- /**
-  * __tty_insert_flip_char   -	add one character to the tty buffer
-diff --git a/include/linux/tty_flip.h b/include/linux/tty_flip.h
-index d33aed2172c7..8b781f709605 100644
---- a/include/linux/tty_flip.h
-+++ b/include/linux/tty_flip.h
-@@ -10,14 +10,52 @@ struct tty_ldisc;
- int tty_buffer_set_limit(struct tty_port *port, int limit);
- unsigned int tty_buffer_space_avail(struct tty_port *port);
- int tty_buffer_request_room(struct tty_port *port, size_t size);
--int tty_insert_flip_string_flags(struct tty_port *port, const u8 *chars,
--				 const u8 *flags, size_t size);
--int tty_insert_flip_string_fixed_flag(struct tty_port *port, const u8 *chars,
--				      u8 flag, size_t size);
-+int __tty_insert_flip_string_flags(struct tty_port *port, const u8 *chars,
-+				   const u8 *flags, bool mutable_flags,
-+				   size_t size);
- int tty_prepare_flip_string(struct tty_port *port, u8 **chars, size_t size);
- void tty_flip_buffer_push(struct tty_port *port);
- int __tty_insert_flip_char(struct tty_port *port, u8 ch, u8 flag);
- 
-+/**
-+ * tty_insert_flip_string_fixed_flag - add characters to the tty buffer
-+ * @port: tty port
-+ * @chars: characters
-+ * @flag: flag value for each character
-+ * @size: size
-+ *
-+ * Queue a series of bytes to the tty buffering. All the characters passed are
-+ * marked with the supplied flag.
-+ *
-+ * Returns: the number added.
-+ */
-+static inline int tty_insert_flip_string_fixed_flag(struct tty_port *port,
-+						    const u8 *chars, u8 flag,
-+						    size_t size)
-+{
-+	return __tty_insert_flip_string_flags(port, chars, &flag, false, size);
-+}
-+
-+/**
-+ * tty_insert_flip_string_flags - add characters to the tty buffer
-+ * @port: tty port
-+ * @chars: characters
-+ * @flags: flag bytes
-+ * @size: size
-+ *
-+ * Queue a series of bytes to the tty buffering. For each character the flags
-+ * array indicates the status of the character.
-+ *
-+ * Returns: the number added.
-+ */
-+static inline int tty_insert_flip_string_flags(struct tty_port *port,
-+					       const u8 *chars, const u8 *flags,
-+					       size_t size)
-+{
-+	return __tty_insert_flip_string_flags(port, chars, flags, true, size);
-+}
-+
-+
- static inline int tty_insert_flip_char(struct tty_port *port, u8 ch, u8 flag)
- {
- 	struct tty_buffer *tb = port->buf.tail;
+ 	b = buf->tail;
+ 	if (!b->flags)
 -- 
 2.41.0
 
