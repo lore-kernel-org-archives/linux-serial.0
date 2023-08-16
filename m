@@ -2,108 +2,135 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D55C001B0
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Aug 2023 11:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABF07C04A6A
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Aug 2023 14:22:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244715AbjHPLpp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Aug 2023 07:45:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54772 "EHLO
+        id S1343544AbjHPOV6 (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 16 Aug 2023 10:21:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244748AbjHPLpR (ORCPT
+        with ESMTP id S1343563AbjHPOVb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Aug 2023 07:45:17 -0400
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D9F11FC1
-        for <linux-serial@vger.kernel.org>; Wed, 16 Aug 2023 04:45:15 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:5d0c:f209:12a7:4ce5])
-        by albert.telenet-ops.be with bizsmtp
-        id aBlD2A00D45ualL06BlDpf; Wed, 16 Aug 2023 13:45:13 +0200
-Received: from geert (helo=localhost)
-        by ramsan.of.borg with local-esmtp (Exim 4.95)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1qWExd-000p4r-8K;
-        Wed, 16 Aug 2023 13:45:13 +0200
-Date:   Wed, 16 Aug 2023 13:45:13 +0200 (CEST)
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
+        Wed, 16 Aug 2023 10:21:31 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D0042705;
+        Wed, 16 Aug 2023 07:21:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692195690; x=1723731690;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=uYNnrWNlBgb9NC8j+cpeuVgiEEZ6uB4cvWrMtU2oYm4=;
+  b=Nd8u6XQ7z1RK5bc4WSbzHjkgou8mAcUbJ8CTkn5ur9KuXbBMxhraBXal
+   u9McnvjK89ZCCp8+Md9+hb8Oy5ObwNRitK5qJNAIZ3hMEEzZNn7huZVkR
+   zS5fvC4nbFNCN0QVlFbAJwgy6RQvCoZZtqAZ78yBNP66vJ/arbSiWRhlb
+   72qolizpDw2IKx6qsoQt5ktRKIOYk5endDdtVleBcnt20sXPvJ2/U9Bdo
+   9rKU9++1uvWokWYX/cthcu/MTLG8foONue4+S5HuqH8CrSXXDAj05jdQ9
+   Xvyh6P5cJ5BVn6+Er5rYT5c3uoxsA4AcS28lhLCGlceD1B1Ug6fNxWTfL
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10803"; a="352134018"
+X-IronPort-AV: E=Sophos;i="6.01,177,1684825200"; 
+   d="scan'208";a="352134018"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2023 07:21:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10803"; a="980756995"
+X-IronPort-AV: E=Sophos;i="6.01,177,1684825200"; 
+   d="scan'208";a="980756995"
+Received: from ilivshiz-mobl.ger.corp.intel.com ([10.251.211.105])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2023 07:21:28 -0700
+Date:   Wed, 16 Aug 2023 17:21:26 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Nathan Chancellor <nathan@kernel.org>,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH] tty: gdm724x: use min_t() for size_t varable and a
- constant
-In-Reply-To: <20230816085322.22065-1-jirislaby@kernel.org>
-Message-ID: <e76ddc3-4843-a6bb-6b32-92dc5ca3e178@linux-m68k.org>
-References: <20230816085322.22065-1-jirislaby@kernel.org>
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/14] tty: n_tty: use 'retval' for writes' retvals
+In-Reply-To: <20230816105822.3685-7-jirislaby@kernel.org>
+Message-ID: <b0771d71-dff4-31d-7edb-01056d4c29@linux.intel.com>
+References: <20230816105822.3685-1-jirislaby@kernel.org> <20230816105822.3685-7-jirislaby@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On Wed, 16 Aug 2023, Jiri Slaby (SUSE) wrote:
-> My thinking was that ulong is the same as size_t everywhere. No, size_t
-> is uint on 32bit. So the below commit introduced a build warning on
-> 32bit:
-> .../gdm724x/gdm_tty.c:165:24: warning: comparison of distinct pointer types ('typeof (2048UL) *' (aka 'unsigned long *') and 'typeof (remain) *' (aka 'unsigned int *'))
->
-> To fix this, partially revert the commit (remove constants' suffixes)
-> and switch to min_t() in this case instead.
->
-> /me would hope for Z (or alike) suffix for constants.
->
+
+> We have a separate misnomer 'c' to hold the retuned value from
+> tty->ops->write(). Instead, use already defined and properly typed
+> 'retval'.
+> 
+> We have another variable 'num' to serve the same purpose in the OPOST
+> branch. We can use this 'retval' too. But just clear it in case of
+> EAGAIN.
+> 
 > Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Fixes: c3e5c706aefc (tty: gdm724x: convert counts to size_t)
-> Reported-by: Nathan Chancellor <nathan@kernel.org>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Closes: https://lore.kernel.org/oe-kbuild-all/202308151953.rNNnAR2N-lkp@intel.com/
+> ---
+>  drivers/tty/n_tty.c | 30 ++++++++++++++----------------
+>  1 file changed, 14 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+> index f6fa4dbdf78f..e293d87b5362 100644
+> --- a/drivers/tty/n_tty.c
+> +++ b/drivers/tty/n_tty.c
+> @@ -2335,7 +2335,6 @@ static ssize_t n_tty_write(struct tty_struct *tty, struct file *file,
+>  {
+>  	const u8 *b = buf;
+>  	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+> -	int c;
+>  	ssize_t retval = 0;
+>  
+>  	/* Job control check -- must be done at start (POSIX.1 7.1.1.4). */
+> @@ -2362,15 +2361,16 @@ static ssize_t n_tty_write(struct tty_struct *tty, struct file *file,
+>  		}
+>  		if (O_OPOST(tty)) {
+>  			while (nr > 0) {
+> -				ssize_t num = process_output_block(tty, b, nr);
+> -				if (num < 0) {
+> -					if (num == -EAGAIN)
+> -						break;
+> -					retval = num;
+> -					goto break_out;
+> +				retval = process_output_block(tty, b, nr);
+> +				if (retval == -EAGAIN) {
+> +					retval = 0;
+> +					break;
+>  				}
+> -				b += num;
+> -				nr -= num;
+> +				if (retval < 0)
+> +					goto break_out;
+> +
+> +				b += retval;
+> +				nr -= retval;
+>  				if (nr == 0)
+>  					break;
+>  				if (process_output(*b, tty) < 0)
+> @@ -2384,16 +2384,14 @@ static ssize_t n_tty_write(struct tty_struct *tty, struct file *file,
+>  
+>  			while (nr > 0) {
+>  				mutex_lock(&ldata->output_lock);
+> -				c = tty->ops->write(tty, b, nr);
+> +				retval = tty->ops->write(tty, b, nr);
+>  				mutex_unlock(&ldata->output_lock);
+> -				if (c < 0) {
+> -					retval = c;
+> +				if (retval < 0)
+>  					goto break_out;
+> -				}
+> -				if (!c)
+> +				if (!retval)
+>  					break;
+> -				b += c;
+> -				nr -= c;
+> +				b += retval;
+> +				nr -= retval;
 
-Thanks, this fixes the m68k/allmodconfig build.
+Type might be better but these two don't look like a major improvement... 
+To me it seems obvious there exists some variable name that is better than 
+c or retval for this purpose. ;-)
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+-- 
+ i.
 
-> --- a/drivers/staging/gdm724x/gdm_tty.c
-> +++ b/drivers/staging/gdm724x/gdm_tty.c
-> @@ -17,9 +17,9 @@
-> #define GDM_TTY_MAJOR 0
-> #define GDM_TTY_MINOR 32
->
-> -#define WRITE_SIZE 2048UL
-> +#define WRITE_SIZE 2048
->
-> -#define MUX_TX_MAX_SIZE 2048UL
-> +#define MUX_TX_MAX_SIZE 2048
-
-You probably want to keep the "U" suffix, so at least both parts
-of min() are unsigned.
-
-See also "[PATCH next v3 0/5] minmax: Relax type checks in min() and max().".
-https://lore.kernel.org/all/01e3e09005e9434b8f558a893a47c053@AcuMS.aculab.com,
-
->
-> static inline bool gdm_tty_ready(struct gdm *gdm)
-> {
-> @@ -159,7 +159,7 @@ static ssize_t gdm_tty_write(struct tty_struct *tty, const u8 *buf, size_t len)
-> 		return -ENODEV;
->
-> 	while (remain) {
-> -		size_t sending_len = min(MUX_TX_MAX_SIZE, remain);
-> +		size_t sending_len = min_t(size_t, MUX_TX_MAX_SIZE, remain);
-> 		gdm->tty_dev->send_func(gdm->tty_dev->priv_dev,
-> 					(void *)(buf + sent_len),
-> 					sending_len,
-> -- 
-> 2.41.0
->
->
-
-Gr{oetje,eeting}s,
-
- 						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
- 							    -- Linus Torvalds
