@@ -2,126 +2,146 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1476DC0015E
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Aug 2023 17:25:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED470C04A6A
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Aug 2023 02:58:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235717AbjHORYz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Aug 2023 13:24:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35768 "EHLO
+        id S241416AbjHPC6C (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Aug 2023 22:58:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238872AbjHORYf (ORCPT
+        with ESMTP id S241417AbjHPC5b (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Aug 2023 13:24:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 072701BEA;
-        Tue, 15 Aug 2023 10:24:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D99C165E1A;
-        Tue, 15 Aug 2023 17:22:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1F1EC433C8;
-        Tue, 15 Aug 2023 17:22:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1692120169;
-        bh=7O9FdqMiLm40fpPG8sUMe1FLvmeqL8CETydj3KFafrM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ATni7ZcWLK7LxKF2dqg/BcRGt2/E1l6M1qW78YiYhEygtMnZ8xUpdOngoWuoiBLyz
-         giTI+h7KBgFTnN6wk+pwbkqcR8RaBraeiDH/vW/XOBGv2X+jyf2HzWfP4BixMAmgQG
-         vvx5UTJtNAsNC8G00Y4sNWHJYu8Z5wfLymHFwGLBKdUi0XqXe9JvsvbVVDDgHqIgmW
-         dMZc3ychRFhcIw6TfRBpoIi/KcjP5/tKHYQ5sPDKzsfAqUTj8W4RzgVnM5ybRxXbTb
-         IGC73JEQSvrLS5tySj3z3OlNVm7PKsFCYRcTLfNS/Gf72UgoSz/sE2h/vR8LwwJwX6
-         /PNngo4A8tGIQ==
-Date:   Tue, 15 Aug 2023 10:22:47 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-Subject: Re: [PATCH 34/36] tty: gdm724x: convert counts to size_t
-Message-ID: <20230815172247.GA1690054@dev-arch.thelio-3990X>
-References: <20230810091510.13006-1-jirislaby@kernel.org>
- <20230810091510.13006-35-jirislaby@kernel.org>
+        Tue, 15 Aug 2023 22:57:31 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D352136
+        for <linux-serial@vger.kernel.org>; Tue, 15 Aug 2023 19:57:28 -0700 (PDT)
+Received: from kwepemm600014.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4RQXlQ1pF7zNmph;
+        Wed, 16 Aug 2023 10:53:54 +0800 (CST)
+Received: from ubuntu1804.huawei.com (10.67.175.28) by
+ kwepemm600014.china.huawei.com (7.193.23.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.31; Wed, 16 Aug 2023 10:57:25 +0800
+From:   Yi Yang <yiyang13@huawei.com>
+To:     <jirislaby@kernel.org>, <jannh@google.com>,
+        <gregkh@linuxfoundation.org>
+CC:     <linux-serial@vger.kernel.org>, <guozihua@huawei.com>
+Subject: [PATCH V3 RESEND] tty: tty_jobctrl: fix pid memleak in disassociate_ctty()
+Date:   Wed, 16 Aug 2023 10:57:00 +0800
+Message-ID: <20230816025700.179769-1-yiyang13@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230810091510.13006-35-jirislaby@kernel.org>
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.28]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600014.china.huawei.com (7.193.23.54)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 10, 2023 at 11:15:08AM +0200, Jiri Slaby (SUSE) wrote:
-> Unify the type of tty_operations::write() counters with the 'count'
-> parameter. I.e. use size_t for them.
-> 
-> This includes changing constants to UL to keep min() and avoid min_t().
+There is a pid leakage:
+------------------------------
+unreferenced object 0xffff88810c181940 (size 224):
+  comm "sshd", pid 8191, jiffies 4294946950 (age 524.570s)
+  hex dump (first 32 bytes):
+    01 00 00 00 00 00 00 00 00 00 00 00 ad 4e ad de  .............N..
+    ff ff ff ff 6b 6b 6b 6b ff ff ff ff ff ff ff ff  ....kkkk........
+  backtrace:
+    [<ffffffff814774e6>] kmem_cache_alloc+0x5c6/0x9b0
+    [<ffffffff81177342>] alloc_pid+0x72/0x570
+    [<ffffffff81140ac4>] copy_process+0x1374/0x2470
+    [<ffffffff81141d77>] kernel_clone+0xb7/0x900
+    [<ffffffff81142645>] __se_sys_clone+0x85/0xb0
+    [<ffffffff8114269b>] __x64_sys_clone+0x2b/0x30
+    [<ffffffff83965a72>] do_syscall_64+0x32/0x80
+    [<ffffffff83a00085>] entry_SYSCALL_64_after_hwframe+0x61/0xc6
 
-This patch appears to cause a warning/error on 32-bit architectures now
-due to this part of the change, as size_t is 'unsigned int' there:
+It turns out that there is a race condition between disassociate_ctty() and
+tty_signal_session_leader(), which caused this leakage.
 
-  In file included from include/linux/kernel.h:27,
-                   from drivers/staging/gdm724x/gdm_tty.c:6:
-  drivers/staging/gdm724x/gdm_tty.c: In function 'gdm_tty_write':
-  include/linux/minmax.h:21:35: error: comparison of distinct pointer types lacks a cast [-Werror]
-     21 |         (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-        |                                   ^~
-  include/linux/minmax.h:27:18: note: in expansion of macro '__typecheck'
-     27 |                 (__typecheck(x, y) && __no_side_effects(x, y))
-        |                  ^~~~~~~~~~~
-  include/linux/minmax.h:37:31: note: in expansion of macro '__safe_cmp'
-     37 |         __builtin_choose_expr(__safe_cmp(x, y), \
-        |                               ^~~~~~~~~~
-  include/linux/minmax.h:68:25: note: in expansion of macro '__careful_cmp'
-     68 | #define min(x, y)       __careful_cmp(x, y, <)
-        |                         ^~~~~~~~~~~~~
-  drivers/staging/gdm724x/gdm_tty.c:162:38: note: in expansion of macro 'min'
-    162 |                 size_t sending_len = min(MUX_TX_MAX_SIZE, remain);
-        |                                      ^~~
-  cc1: all warnings being treated as errors
+The pid memleak is triggered by the following race:
+task[sshd]                     task[bash]
+-----------------------        -----------------------
+                               disassociate_ctty();
+                               spin_lock_irq(&current->sighand->siglock);
+                               put_pid(current->signal->tty_old_pgrp);
+                               current->signal->tty_old_pgrp = NULL;
+                               tty = tty_kref_get(current->signal->tty);
+                               spin_unlock_irq(&current->sighand->siglock);
+tty_vhangup();
+tty_lock(tty);
+...
+tty_signal_session_leader();
+spin_lock_irq(&p->sighand->siglock);
+...
+if (tty->ctrl.pgrp) //tty->ctrl.pgrp is not NULL
+p->signal->tty_old_pgrp = get_pid(tty->ctrl.pgrp); //An extra get
+spin_unlock_irq(&p->sighand->siglock);
+...
+tty_unlock(tty);
+                               if (tty) {
+                                   tty_lock(tty);
+                                   ...
+                                   put_pid(tty->ctrl.pgrp);
+                                   tty->ctrl.pgrp = NULL; //It's too late
+                                   ...
+                                   tty_unlock(tty);
+                               }
 
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Cc: linux-staging@lists.linux.dev
-> ---
->  drivers/staging/gdm724x/gdm_tty.c | 11 +++++------
->  1 file changed, 5 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/staging/gdm724x/gdm_tty.c b/drivers/staging/gdm724x/gdm_tty.c
-> index b31f2afb0286..cbaaa8fa7474 100644
-> --- a/drivers/staging/gdm724x/gdm_tty.c
-> +++ b/drivers/staging/gdm724x/gdm_tty.c
-> @@ -17,9 +17,9 @@
->  #define GDM_TTY_MAJOR 0
->  #define GDM_TTY_MINOR 32
->  
-> -#define WRITE_SIZE 2048
-> +#define WRITE_SIZE 2048UL
->  
-> -#define MUX_TX_MAX_SIZE 2048
-> +#define MUX_TX_MAX_SIZE 2048UL
->  
->  static inline bool gdm_tty_ready(struct gdm *gdm)
->  {
-> @@ -152,9 +152,8 @@ static void gdm_tty_send_complete(void *arg)
->  static ssize_t gdm_tty_write(struct tty_struct *tty, const u8 *buf, size_t len)
->  {
->  	struct gdm *gdm = tty->driver_data;
-> -	int remain = len;
-> -	int sent_len = 0;
-> -	int sending_len = 0;
-> +	size_t remain = len;
-> +	size_t sent_len = 0;
->  
->  	if (!gdm_tty_ready(gdm))
->  		return -ENODEV;
-> @@ -163,7 +162,7 @@ static ssize_t gdm_tty_write(struct tty_struct *tty, const u8 *buf, size_t len)
->  		return 0;
->  
->  	while (1) {
-> -		sending_len = min(MUX_TX_MAX_SIZE, remain);
-> +		size_t sending_len = min(MUX_TX_MAX_SIZE, remain);
->  		gdm->tty_dev->send_func(gdm->tty_dev->priv_dev,
->  					(void *)(buf + sent_len),
->  					sending_len,
-> -- 
-> 2.41.0
-> 
+The issue is believed to be introduced by commit c8bcd9c5be24 ("tty:
+Fix ->session locking") who moves the unlock of siglock in
+disassociate_ctty() above "if (tty)", making a small window allowing
+tty_signal_session_leader() to kick in. It can be easily reproduced by
+adding a delay before "if (tty)" and at the entrance of
+tty_signal_session_leader().
+
+To fix this issue, we move "put_pid(current->signal->tty_old_pgrp)" after
+"tty->ctrl.pgrp = NULL".
+
+Fixes: c8bcd9c5be24 ("tty: Fix ->session locking")
+Signed-off-by: Yi Yang <yiyang13@huawei.com>
+Co-developed-by: GUO Zihua <guozihua@huawei.com>
+Signed-off-by: GUO Zihua <guozihua@huawei.com>
+---
+ drivers/tty/tty_jobctrl.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/tty_jobctrl.c b/drivers/tty/tty_jobctrl.c
+index 0d04287da098..ef8741c3e662 100644
+--- a/drivers/tty/tty_jobctrl.c
++++ b/drivers/tty/tty_jobctrl.c
+@@ -300,12 +300,7 @@ void disassociate_ctty(int on_exit)
+ 		return;
+ 	}
+ 
+-	spin_lock_irq(&current->sighand->siglock);
+-	put_pid(current->signal->tty_old_pgrp);
+-	current->signal->tty_old_pgrp = NULL;
+-	tty = tty_kref_get(current->signal->tty);
+-	spin_unlock_irq(&current->sighand->siglock);
+-
++	tty = get_current_tty();
+ 	if (tty) {
+ 		unsigned long flags;
+ 
+@@ -320,6 +315,16 @@ void disassociate_ctty(int on_exit)
+ 		tty_kref_put(tty);
+ 	}
+ 
++	/* If tty->ctrl.pgrp is not NULL, it may be assigned to
++	 * current->signal->tty_old_pgrp in a race condition, and
++	 * cause pid memleak. Release current->signal->tty_old_pgrp
++	 * after tty->ctrl.pgrp set to NULL.
++	 */
++	spin_lock_irq(&current->sighand->siglock);
++	put_pid(current->signal->tty_old_pgrp);
++	current->signal->tty_old_pgrp = NULL;
++	spin_unlock_irq(&current->sighand->siglock);
++
+ 	/* Now clear signal->tty under the lock */
+ 	read_lock(&tasklist_lock);
+ 	session_clear_tty(task_session(current));
+-- 
+2.17.1
+
