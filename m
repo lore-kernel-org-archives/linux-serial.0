@@ -2,44 +2,44 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D1F1C04E69
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Aug 2023 11:00:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E478DC001E0
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Aug 2023 11:00:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237566AbjHPLAW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Aug 2023 07:00:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56674 "EHLO
+        id S244191AbjHPLAX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 16 Aug 2023 07:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244349AbjHPK76 (ORCPT
+        with ESMTP id S244385AbjHPLAG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Aug 2023 06:59:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55CD9212E;
-        Wed, 16 Aug 2023 03:59:33 -0700 (PDT)
+        Wed, 16 Aug 2023 07:00:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7689E2D61;
+        Wed, 16 Aug 2023 03:59:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45F69665B1;
-        Wed, 16 Aug 2023 10:58:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A4ACC433CB;
-        Wed, 16 Aug 2023 10:58:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EBC74665B9;
+        Wed, 16 Aug 2023 10:58:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 524B6C433C9;
+        Wed, 16 Aug 2023 10:58:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1692183508;
-        bh=0GR92p/xHgh+SB0Vh4UXvbMnYubrfRc1ALFS0imA2uM=;
+        s=k20201202; t=1692183519;
+        bh=4VZ2evVSvUAzXqtmvQJZAhVFIJnE/OW4U6dWFy5R8X4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NLkSkS/fhOMC4hGJzXLPaGi3o47W4lyKfMAXYtp6gI8Z9o3uZPmOm/5ZaxWAr+t/P
-         SXqVyjJTXMmbQnfdVsdEY6CIZUtybOno7Mr9WP5Ygjg0vFhXufd1h/6+0YQP3TaQgF
-         9cLkhnNKTXOxP+sxp/VohC/x5k6KpNpwG6b4NqdUDUQ3HZQ+Y9oXnBwA811/jWiFdD
-         mg9NhCfyKj+OCOc9mTzGt/Pxq748aExUIre5P1zT0YCJki9PBFZ0hEQlJCCwdazpYm
-         Eu3VXFD2jgMvWMLvkr+WSX8iQP3qqvQrbf0h2ywcDd9BbWfHmXN3Y06m6IoTabC7J5
-         AZcewPJgkdkGg==
+        b=C7UiGgL4LwqR9DTYlgC5CnjHosHnly96ni4yenkymp3FX1B3glAii+AIveeTJBZw4
+         pxHW/BTixP4b53eC0f/+WjY5+DCwceg4lPFBe58hrjU15knpJChX4o6dIWDUbRN3az
+         9k9bivPInG17tCrRBzjROgYgyW3UK9SIBxeSc6cGMnTMY0/xewagAR90DxS2qXLfLn
+         eMcfkZuwaOz2+qneHYD+njpoafowS+rGOU8NQjbw6xYEEAfqGShH3CIHRzx8CLT49O
+         pcoUH2FjXzqYV1WlWahLOHBnNbEAWwchbKT4t914Xoh31PSdySduePKYKlpuhq6uIJ
+         +VfI6IlMz2cXw==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 01/14] tty: n_tty: make flow of n_tty_receive_buf_common() a bool
-Date:   Wed, 16 Aug 2023 12:58:06 +0200
-Message-ID: <20230816105822.3685-3-jirislaby@kernel.org>
+Subject: [PATCH 05/14] tty: n_tty: make n_tty_data::num_overrun unsigned
+Date:   Wed, 16 Aug 2023 12:58:13 +0200
+Message-ID: <20230816105822.3685-10-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230816105822.3685-1-jirislaby@kernel.org>
 References: <20230816105822.3685-1-jirislaby@kernel.org>
@@ -49,43 +49,36 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The 'flow' parameter of n_tty_receive_buf_common() is meant to be a
-boolean value. So use bool and alter call sites accordingly.
+n_tty_data::num_overrun is unlikely to overflow in a second. But make it
+explicitly unsigned to avoid printing negative values.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/n_tty.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/n_tty.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index f44f38bb412e..8b2bacb3e40d 100644
+index 996cad23e385..0b6eeeb94920 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -1665,7 +1665,7 @@ static void __receive_buf(struct tty_struct *tty, const u8 *cp, const u8 *fp,
-  */
- static size_t
- n_tty_receive_buf_common(struct tty_struct *tty, const u8 *cp, const u8 *fp,
--			 int count, int flow)
-+			 int count, bool flow)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 	size_t rcvd = 0;
-@@ -1748,13 +1748,13 @@ n_tty_receive_buf_common(struct tty_struct *tty, const u8 *cp, const u8 *fp,
- static void n_tty_receive_buf(struct tty_struct *tty, const u8 *cp,
- 			      const u8 *fp, size_t count)
- {
--	n_tty_receive_buf_common(tty, cp, fp, count, 0);
-+	n_tty_receive_buf_common(tty, cp, fp, count, false);
- }
+@@ -99,7 +99,7 @@ struct n_tty_data {
  
- static size_t n_tty_receive_buf2(struct tty_struct *tty, const u8 *cp,
- 				 const u8 *fp, size_t count)
- {
--	return n_tty_receive_buf_common(tty, cp, fp, count, 1);
-+	return n_tty_receive_buf_common(tty, cp, fp, count, true);
- }
+ 	/* private to n_tty_receive_overrun (single-threaded) */
+ 	unsigned long overrun_time;
+-	int num_overrun;
++	unsigned int num_overrun;
  
- /**
+ 	/* non-atomic */
+ 	bool no_room;
+@@ -1174,7 +1174,7 @@ static void n_tty_receive_overrun(const struct tty_struct *tty)
+ 
+ 	ldata->num_overrun++;
+ 	if (time_is_before_jiffies(ldata->overrun_time + HZ)) {
+-		tty_warn(tty, "%d input overrun(s)\n", ldata->num_overrun);
++		tty_warn(tty, "%u input overrun(s)\n", ldata->num_overrun);
+ 		ldata->overrun_time = jiffies;
+ 		ldata->num_overrun = 0;
+ 	}
 -- 
 2.41.0
 
