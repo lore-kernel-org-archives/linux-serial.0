@@ -2,101 +2,62 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82FFFC04A94
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Aug 2023 11:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F116BC001E0
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Aug 2023 11:21:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238379AbjHPLEG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Aug 2023 07:04:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53006 "EHLO
+        id S233030AbjHPLUs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 16 Aug 2023 07:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244382AbjHPLDk (ORCPT
+        with ESMTP id S244507AbjHPLUf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Aug 2023 07:03:40 -0400
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6F742D45;
-        Wed, 16 Aug 2023 04:03:11 -0700 (PDT)
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-9923833737eso847694566b.3;
-        Wed, 16 Aug 2023 04:03:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692183733; x=1692788533;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cJU6KQ3PJKsFFkSrCzSUBY4MjtuY9BbjYXsDhDJBkXg=;
-        b=Wv1ChWiNhjbIBBSZSqlKABdFM9/5ox5WJ/Gnnf0WIM/Z8M0FoIfW4+1373dMmrYAip
-         F5n+f7Szp0J8ShDmfnV/6/jS9c3H9RwMoCkCaABipLperyLVCzbaPk78xeKGq6wR8tbE
-         wAXjmz1xOD69JqVHSciTvrBMFPPCPuc6UhmDqV4Q4U2W6P+TtlR+monNS9QWmIFVpJ9M
-         jOznVXEOHS2qACiL1lYt4xR5EsLrNgPXivygy8iA7RR1ZC9MGI+gVY5luviMmKke6J12
-         kF4KGSurGj+FDEAcv+J23hAjDgGmyFrDS//OhXj+7WeGL9pdS4urq3bZAvmiwRBwm0D3
-         6rCg==
-X-Gm-Message-State: AOJu0Yyg9n09nAOh79msJPOmiLk4M5cUHFgWEbzG/gxqA9Wdq5wEAcMC
-        LAfuQl7ZgvZW6c6IAaRqeKEBXQsRNg7Kpw==
-X-Google-Smtp-Source: AGHT+IFAQGmIJBKVXeFZIjDADVrbgYhoaJ3OX9d1+JK1G4mWPysrluNt+z2cbPv0Qc6lUD2Ph/vUPg==
-X-Received: by 2002:a17:906:b009:b0:99d:101b:8403 with SMTP id v9-20020a170906b00900b0099d101b8403mr1158873ejy.36.1692183732740;
-        Wed, 16 Aug 2023 04:02:12 -0700 (PDT)
-Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id z24-20020a170906241800b009934b1eb577sm8433429eja.77.2023.08.16.04.02.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Aug 2023 04:02:12 -0700 (PDT)
-Message-ID: <1882495c-b16b-10f0-2acf-ee86cf4e031b@kernel.org>
-Date:   Wed, 16 Aug 2023 13:02:11 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: [PATCH 00/14] tty: n_tty: cleanup
-Content-Language: en-US
-To:     gregkh@linuxfoundation.org
+        Wed, 16 Aug 2023 07:20:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8EE42112;
+        Wed, 16 Aug 2023 04:20:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AF6C60C7E;
+        Wed, 16 Aug 2023 11:20:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B80BC433C7;
+        Wed, 16 Aug 2023 11:20:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1692184832;
+        bh=7PKd8VailiTG+UcQPQzzVSV0JwGb9yH8OHJSaPVa+e8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=a2Wi6WJORBB/BYftBKtLHHDNb0y0zBdaV39QWOIaHGy0uqrbKbRhH8vrSQouH9zut
+         ubgkwIaT7VUDWye2z5rz3MPZ7pCSrgCsVqDWY/BaAxPt4mbLnOBe+zYV38EW8q4984
+         xaSkneNxcl8sfMG+m0i3SByD3vFAz2gbAmq71CNk=
+Date:   Wed, 16 Aug 2023 13:20:30 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jiri Slaby <jirislaby@kernel.org>
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/14] tty: n_tty: cleanup
+Message-ID: <2023081610-define-reason-2e99@gregkh>
 References: <20230816105822.3685-1-jirislaby@kernel.org>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20230816105822.3685-1-jirislaby@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ <1882495c-b16b-10f0-2acf-ee86cf4e031b@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1882495c-b16b-10f0-2acf-ee86cf4e031b@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Bah, this series intermixed with old patches in one dir.
-
-Patches 1/4 2/4 3/4 4/4 are to be ignored.
-
-OTOH, 01/14 ... 04/14 are a correct part of this series.
-
-Do you want me to resend?
-
-On 16. 08. 23, 12:58, Jiri Slaby (SUSE) wrote:
-> This is another part (say part III.) of the previous type unification
-> across the tty layer[1]. This time, in n_tty line discipline. Apart from
-> type changes, this series contains a larger set of refactoring of the
-> code. Namely, separating hairy code into single functions for better
-> readability.
+On Wed, Aug 16, 2023 at 01:02:11PM +0200, Jiri Slaby wrote:
+> Bah, this series intermixed with old patches in one dir.
 > 
-> [1] https://lore.kernel.org/all/20230810091510.13006-1-jirislaby@kernel.org/
+> Patches 1/4 2/4 3/4 4/4 are to be ignored.
 > 
-> Note this is completely independent on "part II." (tty_buffer cleanup),
-> so those two can be applied in any order.
+> OTOH, 01/14 ... 04/14 are a correct part of this series.
 > 
-> Jiri Slaby (SUSE) (14):
->    tty: n_tty: make flow of n_tty_receive_buf_common() a bool
->    tty: n_tty: use output character directly
->    tty: n_tty: use 'retval' for writes' retvals
->    tty: n_tty: use time_is_before_jiffies() in n_tty_receive_overrun()
->    tty: n_tty: make n_tty_data::num_overrun unsigned
->    tty: n_tty: use MASK() for masking out size bits
->    tty: n_tty: move canon handling to a separate function
->    tty: n_tty: move newline handling to a separate function
->    tty: n_tty: remove unsigned char casts from character constants
->    tty: n_tty: simplify chars_in_buffer()
->    tty: n_tty: use u8 for chars and flags
->    tty: n_tty: unify counts to size_t
->    tty: n_tty: extract ECHO_OP processing to a separate function
->    tty: n_tty: deduplicate copy code in n_tty_receive_buf_real_raw()
-> 
->   drivers/tty/n_tty.c | 551 +++++++++++++++++++++++---------------------
->   1 file changed, 284 insertions(+), 267 deletions(-)
-> 
+> Do you want me to resend?
 
--- 
-js
-suse labs
+Please resend, b4 will try to pick up all the patches in this series and
+get confused :(
 
+thanks,
+
+greg k-h
