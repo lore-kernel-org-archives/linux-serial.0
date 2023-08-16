@@ -2,79 +2,154 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B858AC41513
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9741C04A94
 	for <linux-serial@archiver.kernel.org>; Wed, 16 Aug 2023 10:56:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234596AbjHPK4G (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Aug 2023 06:56:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55016 "EHLO
+        id S244159AbjHPK4I (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 16 Aug 2023 06:56:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232470AbjHPKzf (ORCPT
+        with ESMTP id S244007AbjHPKzn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Aug 2023 06:55:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7886A1985;
-        Wed, 16 Aug 2023 03:55:34 -0700 (PDT)
+        Wed, 16 Aug 2023 06:55:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1477F1984;
+        Wed, 16 Aug 2023 03:55:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AC5E63FBB;
-        Wed, 16 Aug 2023 10:55:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 552ADC433C7;
-        Wed, 16 Aug 2023 10:55:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A64B064FFF;
+        Wed, 16 Aug 2023 10:55:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08249C433C7;
+        Wed, 16 Aug 2023 10:55:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1692183333;
-        bh=lBmJFR9M91wfxaDPJazty0XSheTV8bspCpNfjNPkkTM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=DquIEfCm4Jd3ngGUqDmln57RQgyDEer1IAtPW0YWFz6L+z/q7g/A9Rm9eq0QAM1Jx
-         gcrqKvUYBo5b6p/C3orCPSbIWkdfDhspXuStx+1HDDAtcNEZv68rX96CPn9IQSY0xi
-         J23E+ypfKrzLU6G1JPUE4A8gJomyQe6ulfnWy8MMPRLs/R1sZF4WUanP+43fFRYO6H
-         /j0zs6A78QAFfu5m5oNh9CFc+FPi7462B7LZnt7dKoo1hncLPEXveAWTbF4+GsahTg
-         sMsf4Nxj9j8c17yR2uRseW3CFiUsbilxw0TJvNmA5IanQ+2cHwHQVYCwqMsvQPkX0U
-         Zp94KIR4BbqHw==
+        s=k20201202; t=1692183341;
+        bh=bQUbntuVjuhv84eUfQ4u1fCZj9wEJvWe7HvkbIm42oc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UbbghvJxgjg9AwRxAtkDuW2q2OsKG4Lt4NHz3/3X0C+UX4aSUTaD3hHyV6Jbi0uYs
+         P2fzsf/jZuWL94dJ6yAcdV32YHPXmkSrpr9rlQbpEUsKOnaX48p68s2aCxiRLs8Ztg
+         IXDM9qZ6uw1z6VIWYvdsFs6Ewd0JKwupS79yZkoFtoSvE9gXaTl0DxS6RFxoE9W8Wh
+         5RvxbKfnfQvd2VFT+rbGecTZe1aDIZAY0o52rfrqrcVjTgDb7S50QeTG7dP8UwkiLB
+         JfnfrjeFeQ13j4PArnwiN5loY6FGB4WQbnh7b4BgqdJmeXSD2fY4qe0/c3fR0dlsb8
+         3WH1OwVcGynTQ==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 00/10] tty: tty_buffer: cleanup
-Date:   Wed, 16 Aug 2023 12:55:20 +0200
-Message-ID: <20230816105530.3335-1-jirislaby@kernel.org>
+Subject: [PATCH 05/10] tty: tty_buffer: switch insert functions to size_t
+Date:   Wed, 16 Aug 2023 12:55:25 +0200
+Message-ID: <20230816105530.3335-6-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20230816105530.3335-1-jirislaby@kernel.org>
+References: <20230816105530.3335-1-jirislaby@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This is another part (say part II.) of the previous type unification
-across the tty layer[1]. This time, in tty_buffer. Apart from type
-changes, this series contains a larger set of refactoring of the code.
-Namely, unification of byte stuffing into the tty buffers into a single
-function.
+All the functions accept size_t as a size argument. They finally return
+the same size (or less). It is quite unexpected that they return a
+signed value and can confuse users to check for negative values.
 
-[1] https://lore.kernel.org/all/20230810091510.13006-1-jirislaby@kernel.org/
+Instead, return the same size_t as accepted to make clear we return
+values >= 0, where zero in fact means failure.
 
-Jiri Slaby (SUSE) (10):
-  tty: tty_buffer: switch data type to u8
-  tty: tty_buffer: use struct_size() in tty_buffer_alloc()
-  tty: tty_buffer: unify tty_insert_flip_string_{fixed_flag,flags}()
-  tty: tty_buffer: warn if losing flags in
-    __tty_insert_flip_string_flags()
-  tty: tty_buffer: switch insert functions to size_t
-  tty: tty_buffer: let tty_prepare_flip_string() return size_t
-  tty: tty_buffer: use __tty_insert_flip_string_flags() in
-    tty_insert_flip_char()
-  tty: tty_buffer: better types in __tty_buffer_request_room()
-  tty: tty_buffer: initialize variables in initializers already
-  tty: tty_buffer: invert conditions in __tty_buffer_request_room()
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+---
+ drivers/tty/tty_buffer.c | 12 ++++++------
+ include/linux/tty_flip.h | 24 ++++++++++++------------
+ 2 files changed, 18 insertions(+), 18 deletions(-)
 
- Documentation/driver-api/tty/tty_buffer.rst |   7 +-
- drivers/tty/tty_buffer.c                    | 169 ++++++--------------
- include/linux/tty_buffer.h                  |   4 +-
- include/linux/tty_flip.h                    |  64 ++++++--
- 4 files changed, 111 insertions(+), 133 deletions(-)
-
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index c101b4ab737e..598891e53031 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -303,16 +303,16 @@ int tty_buffer_request_room(struct tty_port *port, size_t size)
+ }
+ EXPORT_SYMBOL_GPL(tty_buffer_request_room);
+ 
+-int __tty_insert_flip_string_flags(struct tty_port *port, const u8 *chars,
+-				   const u8 *flags, bool mutable_flags,
+-				   size_t size)
++size_t __tty_insert_flip_string_flags(struct tty_port *port, const u8 *chars,
++				      const u8 *flags, bool mutable_flags,
++				      size_t size)
+ {
+ 	bool need_flags = mutable_flags || flags[0] != TTY_NORMAL;
+-	int copied = 0;
++	size_t copied = 0;
+ 
+ 	do {
+-		int goal = min_t(size_t, size - copied, TTY_BUFFER_PAGE);
+-		int space = __tty_buffer_request_room(port, goal, need_flags);
++		size_t goal = min_t(size_t, size - copied, TTY_BUFFER_PAGE);
++		size_t space = __tty_buffer_request_room(port, goal, need_flags);
+ 		struct tty_buffer *tb = port->buf.tail;
+ 
+ 		if (unlikely(space == 0))
+diff --git a/include/linux/tty_flip.h b/include/linux/tty_flip.h
+index 8b781f709605..569747364ae5 100644
+--- a/include/linux/tty_flip.h
++++ b/include/linux/tty_flip.h
+@@ -10,9 +10,9 @@ struct tty_ldisc;
+ int tty_buffer_set_limit(struct tty_port *port, int limit);
+ unsigned int tty_buffer_space_avail(struct tty_port *port);
+ int tty_buffer_request_room(struct tty_port *port, size_t size);
+-int __tty_insert_flip_string_flags(struct tty_port *port, const u8 *chars,
+-				   const u8 *flags, bool mutable_flags,
+-				   size_t size);
++size_t __tty_insert_flip_string_flags(struct tty_port *port, const u8 *chars,
++				      const u8 *flags, bool mutable_flags,
++				      size_t size);
+ int tty_prepare_flip_string(struct tty_port *port, u8 **chars, size_t size);
+ void tty_flip_buffer_push(struct tty_port *port);
+ int __tty_insert_flip_char(struct tty_port *port, u8 ch, u8 flag);
+@@ -29,9 +29,9 @@ int __tty_insert_flip_char(struct tty_port *port, u8 ch, u8 flag);
+  *
+  * Returns: the number added.
+  */
+-static inline int tty_insert_flip_string_fixed_flag(struct tty_port *port,
+-						    const u8 *chars, u8 flag,
+-						    size_t size)
++static inline size_t tty_insert_flip_string_fixed_flag(struct tty_port *port,
++						       const u8 *chars, u8 flag,
++						       size_t size)
+ {
+ 	return __tty_insert_flip_string_flags(port, chars, &flag, false, size);
+ }
+@@ -48,15 +48,15 @@ static inline int tty_insert_flip_string_fixed_flag(struct tty_port *port,
+  *
+  * Returns: the number added.
+  */
+-static inline int tty_insert_flip_string_flags(struct tty_port *port,
+-					       const u8 *chars, const u8 *flags,
+-					       size_t size)
++static inline size_t tty_insert_flip_string_flags(struct tty_port *port,
++						  const u8 *chars,
++						  const u8 *flags, size_t size)
+ {
+ 	return __tty_insert_flip_string_flags(port, chars, flags, true, size);
+ }
+ 
+ 
+-static inline int tty_insert_flip_char(struct tty_port *port, u8 ch, u8 flag)
++static inline size_t tty_insert_flip_char(struct tty_port *port, u8 ch, u8 flag)
+ {
+ 	struct tty_buffer *tb = port->buf.tail;
+ 	int change;
+@@ -71,8 +71,8 @@ static inline int tty_insert_flip_char(struct tty_port *port, u8 ch, u8 flag)
+ 	return __tty_insert_flip_char(port, ch, flag);
+ }
+ 
+-static inline int tty_insert_flip_string(struct tty_port *port,
+-		const u8 *chars, size_t size)
++static inline size_t tty_insert_flip_string(struct tty_port *port,
++					    const u8 *chars, size_t size)
+ {
+ 	return tty_insert_flip_string_fixed_flag(port, chars, TTY_NORMAL, size);
+ }
 -- 
 2.41.0
 
