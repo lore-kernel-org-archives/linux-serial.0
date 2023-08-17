@@ -2,192 +2,182 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C93C2FC0E
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Aug 2023 10:55:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7022EC27C7A
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Aug 2023 10:56:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350052AbjHQKzD (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Aug 2023 06:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40022 "EHLO
+        id S244733AbjHQK4H (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 17 Aug 2023 06:56:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350048AbjHQKyw (ORCPT
+        with ESMTP id S1350069AbjHQKzm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Aug 2023 06:54:52 -0400
+        Thu, 17 Aug 2023 06:55:42 -0400
 Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAB222D4A;
-        Thu, 17 Aug 2023 03:54:50 -0700 (PDT)
-Received: from pps.filterd (m0353722.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37HAiLUm028008;
-        Thu, 17 Aug 2023 10:54:02 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 553AE30D6;
+        Thu, 17 Aug 2023 03:55:27 -0700 (PDT)
+Received: from pps.filterd (m0353723.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37HAho4s027471;
+        Thu, 17 Aug 2023 10:55:14 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
  subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=o4Vz6nMLHF4FUCGa+GaNT/vLxPz45NBeSbAdpcwUbxA=;
- b=k2s3xjnlKC3sdzwAtxIx80dL+L+UbesstseAoZRQOXJ2K5EzEa8w4YA3kZVYAprHZikq
- SNFWaoAiVhzt3eieLUz/2QRZUcKqBdGDbCT72u3dMBFyWf5pOHaWS0xjlfrnFFpI6hpv
- ID/nc4Jg8I0k7S4dJTz8pBzD0QzcLitrMSVZQy5gFI7aBYYZTD0gGpiaPs2lj7UlhK6B
- hoIBKbMnxKSI7YtTrcY8Q6IWBXTIZIr2XAr8BJZKLIccLmLVFRbD0YwmIFKU5dnE0JNL
- L/4BK7vMzEm+Ovi4yzWepDP1kTwVPU6Hn9eFlcJoc4tlPKCu/4dyMcxza7ycG+vhgt3J yQ== 
+ in-reply-to; s=pp1; bh=8xtNiP/WZBOJ72OHI0H/zwkloNQuR5oziHXd/5lUyL0=;
+ b=rshH8bS0oYlx1tFnMZiGtaXBb+le6xdIvYqK2by3liGv3iztE17erCWI2AYdX1B1Cspu
+ UwZqyQbtoWYUEEI3zWc+HRewY8oVux0ZgKqsokLfJ+zs/rvBjRE0xWLFfTEZRlJ7NJ7q
+ ZaN7cum/OovQQrLqcVIk3c/CFWjOB+pAgH1ZObR9qnhbgEdCSM5sdP1iFqxyooyUTyBd
+ 4p3nNRXuHMaJuUUiPEFgODnLpenaG51ncucwVoO/w+N3PWMU25o0qG1fTpFcvHP2ZIyA
+ 11YECTX85j9xC+FcgIXZe6YemL1n5S3o+QSak3L/zX4hUFfaafzMSHnRIDUzFGafYKmj Mg== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3shhm1rqcd-1
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3shhuwrcxq-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Aug 2023 10:54:02 +0000
-Received: from m0353722.ppops.net (m0353722.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 37HAjjFq000667;
-        Thu, 17 Aug 2023 10:54:00 GMT
-Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3shhm1rqbp-1
+        Thu, 17 Aug 2023 10:55:14 +0000
+Received: from m0353723.ppops.net (m0353723.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 37HAhsci027936;
+        Thu, 17 Aug 2023 10:55:13 GMT
+Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3shhuwrcx8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Aug 2023 10:54:00 +0000
-Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
-        by ppma13.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 37HA2AWg013413;
-        Thu, 17 Aug 2023 10:53:59 GMT
-Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
-        by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 3sepmk50k0-1
+        Thu, 17 Aug 2023 10:55:13 +0000
+Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
+        by ppma12.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 37H9xt7k003436;
+        Thu, 17 Aug 2023 10:55:12 GMT
+Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
+        by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 3semdswxae-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Aug 2023 10:53:58 +0000
-Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
-        by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 37HAruOi2491044
+        Thu, 17 Aug 2023 10:55:12 +0000
+Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
+        by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 37HAt90F22872642
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 17 Aug 2023 10:53:56 GMT
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 19B5D20043;
-        Thu, 17 Aug 2023 10:53:56 +0000 (GMT)
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 218E220040;
-        Thu, 17 Aug 2023 10:53:53 +0000 (GMT)
+        Thu, 17 Aug 2023 10:55:09 GMT
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BF01720049;
+        Thu, 17 Aug 2023 10:55:09 +0000 (GMT)
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8E5202004F;
+        Thu, 17 Aug 2023 10:55:08 +0000 (GMT)
 Received: from li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com (unknown [9.171.63.64])
-        by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-        Thu, 17 Aug 2023 10:53:53 +0000 (GMT)
-Date:   Thu, 17 Aug 2023 12:53:51 +0200
+        by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+        Thu, 17 Aug 2023 10:55:08 +0000 (GMT)
+Date:   Thu, 17 Aug 2023 12:55:06 +0200
 From:   Alexander Gordeev <agordeev@linux.ibm.com>
 To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org,
-        Richard Henderson <richard.henderson@linaro.org>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
         Geert Uytterhoeven <geert@linux-m68k.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        Jens Taprogge <jens.taprogge@taprogge.org>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        Scott Branden <scott.branden@broadcom.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
         Heiko Carstens <hca@linux.ibm.com>,
         Vasily Gorbik <gor@linux.ibm.com>,
         Christian Borntraeger <borntraeger@linux.ibm.com>,
         Sven Schnelle <svens@linux.ibm.com>,
-        David Lin <dtwlin@gmail.com>, Johan Hovold <johan@kernel.org>,
-        Alex Elder <elder@kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        David Sterba <dsterba@suse.com>,
+        Karsten Keil <isdn@linux-pingi.de>,
         Shawn Guo <shawnguo@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Fabio Estevam <festevam@gmail.com>,
         NXP Linux Team <linux-imx@nxp.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Oliver Neukum <oneukum@suse.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Subject: Re: [PATCH 27/36] tty: propagate u8 data to tty_operations::write()
-Message-ID: <ZN38P7KlGiok3G9V@li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com>
+        Mathias Nyman <mathias.nyman@intel.com>
+Subject: Re: [PATCH 28/36] tty: propagate u8 data to
+ tty_operations::put_char()
+Message-ID: <ZN38ioKn5kj6Rn/G@li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com>
 References: <20230810091510.13006-1-jirislaby@kernel.org>
- <20230810091510.13006-28-jirislaby@kernel.org>
+ <20230810091510.13006-29-jirislaby@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230810091510.13006-28-jirislaby@kernel.org>
+In-Reply-To: <20230810091510.13006-29-jirislaby@kernel.org>
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: vwpQyD7Qr9i9E4-KvQfNI3-AKq3LWw5_
-X-Proofpoint-GUID: 8FSbL1J8UADAJIbIofz8IzxGbDw-iC0H
+X-Proofpoint-GUID: hl6iP8oKiDPyOqP_bfE07qJbrNeB_Zmk
+X-Proofpoint-ORIG-GUID: rNUJVaCeV7Dh96RNoSFvHXzO-K0g3Kgf
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
  definitions=2023-08-17_03,2023-08-17_02,2023-05-22_02
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- mlxscore=0 priorityscore=1501 impostorscore=0 bulkscore=0 clxscore=1015
- mlxlogscore=967 phishscore=0 malwarescore=0 lowpriorityscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ priorityscore=1501 impostorscore=0 clxscore=1015 mlxlogscore=999
+ bulkscore=0 malwarescore=0 adultscore=0 phishscore=0 mlxscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2306200000 definitions=main-2308170095
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 10, 2023 at 11:15:01AM +0200, Jiri Slaby (SUSE) wrote:
+On Thu, Aug 10, 2023 at 11:15:02AM +0200, Jiri Slaby (SUSE) wrote:
 ...
->  drivers/s390/char/con3215.c            | 3 +--
->  drivers/s390/char/con3270.c            | 3 +--
->  drivers/s390/char/sclp_tty.c           | 2 +-
+>  drivers/s390/char/con3215.c            | 2 +-
+>  drivers/s390/char/con3270.c            | 2 +-
+>  drivers/s390/char/sclp_tty.c           | 6 +++---
 >  drivers/s390/char/sclp_vt220.c         | 2 +-
->  drivers/staging/gdm724x/gdm_tty.c      | 3 +--
 ...
 > diff --git a/drivers/s390/char/con3215.c b/drivers/s390/char/con3215.c
-> index a1fef666c9b0..16b6f430dfd3 100644
+> index 16b6f430dfd3..8bbce6a4d7f5 100644
 > --- a/drivers/s390/char/con3215.c
 > +++ b/drivers/s390/char/con3215.c
-> @@ -1021,8 +1021,7 @@ static unsigned int tty3215_write_room(struct tty_struct *tty)
+> @@ -1030,7 +1030,7 @@ static int tty3215_write(struct tty_struct *tty, const u8 *buf, int count)
 >  /*
->   * String write routine for 3215 ttys
+>   * Put character routine for 3215 ttys
 >   */
-> -static int tty3215_write(struct tty_struct *tty,
-> -			 const unsigned char *buf, int count)
-> +static int tty3215_write(struct tty_struct *tty, const u8 *buf, int count)
+> -static int tty3215_put_char(struct tty_struct *tty, unsigned char ch)
+> +static int tty3215_put_char(struct tty_struct *tty, u8 ch)
 >  {
->  	handle_write(tty->driver_data, buf, count);
->  	return count;
+>  	struct raw3215_info *raw = tty->driver_data;
+>  
 > diff --git a/drivers/s390/char/con3270.c b/drivers/s390/char/con3270.c
-> index d9983550062d..123524bff734 100644
+> index 123524bff734..6374555a0937 100644
 > --- a/drivers/s390/char/con3270.c
 > +++ b/drivers/s390/char/con3270.c
-> @@ -1803,8 +1803,7 @@ static void tty3270_do_write(struct tty3270 *tp, struct tty_struct *tty,
+> @@ -1821,7 +1821,7 @@ static int tty3270_write(struct tty_struct *tty, const u8 *buf, int count)
 >  /*
->   * String write routine for 3270 ttys
+>   * Put single characters to the ttys character buffer
 >   */
-> -static int tty3270_write(struct tty_struct *tty,
-> -			 const unsigned char *buf, int count)
-> +static int tty3270_write(struct tty_struct *tty, const u8 *buf, int count)
+> -static int tty3270_put_char(struct tty_struct *tty, unsigned char ch)
+> +static int tty3270_put_char(struct tty_struct *tty, u8 ch)
 >  {
 >  	struct tty3270 *tp;
 >  
 > diff --git a/drivers/s390/char/sclp_tty.c b/drivers/s390/char/sclp_tty.c
-> index 971fbb52740b..cc0f6a97124e 100644
+> index cc0f6a97124e..831a8c7cacc2 100644
 > --- a/drivers/s390/char/sclp_tty.c
 > +++ b/drivers/s390/char/sclp_tty.c
-> @@ -230,7 +230,7 @@ static int sclp_tty_write_string(const unsigned char *str, int count, int may_fa
->   * routine will return the number of characters actually accepted for writing.
+> @@ -48,7 +48,7 @@ static struct sclp_buffer *sclp_ttybuf;
+>  static struct timer_list sclp_tty_timer;
+>  
+>  static struct tty_port sclp_port;
+> -static unsigned char sclp_tty_chars[SCLP_TTY_BUF_SIZE];
+> +static u8 sclp_tty_chars[SCLP_TTY_BUF_SIZE];
+>  static unsigned short int sclp_tty_chars_count;
+>  
+>  struct tty_driver *sclp_tty_driver;
+> @@ -168,7 +168,7 @@ sclp_tty_timeout(struct timer_list *unused)
+>  /*
+>   * Write a string to the sclp tty.
+>   */
+> -static int sclp_tty_write_string(const unsigned char *str, int count, int may_fail)
+> +static int sclp_tty_write_string(const u8 *str, int count, int may_fail)
+>  {
+>  	unsigned long flags;
+>  	void *page;
+> @@ -250,7 +250,7 @@ sclp_tty_write(struct tty_struct *tty, const u8 *buf, int count)
+>   * sclp_write() without final '\n' - will be written.
 >   */
 >  static int
-> -sclp_tty_write(struct tty_struct *tty, const unsigned char *buf, int count)
-> +sclp_tty_write(struct tty_struct *tty, const u8 *buf, int count)
+> -sclp_tty_put_char(struct tty_struct *tty, unsigned char ch)
+> +sclp_tty_put_char(struct tty_struct *tty, u8 ch)
 >  {
->  	if (sclp_tty_chars_count > 0) {
->  		sclp_tty_write_string(sclp_tty_chars, sclp_tty_chars_count, 0);
+>  	sclp_tty_chars[sclp_tty_chars_count++] = ch;
+>  	if (ch == '\n' || sclp_tty_chars_count >= SCLP_TTY_BUF_SIZE) {
 > diff --git a/drivers/s390/char/sclp_vt220.c b/drivers/s390/char/sclp_vt220.c
-> index a32f34a1c6d2..44974d801c1e 100644
+> index 44974d801c1e..e148350c1e2c 100644
 > --- a/drivers/s390/char/sclp_vt220.c
 > +++ b/drivers/s390/char/sclp_vt220.c
-> @@ -463,7 +463,7 @@ __sclp_vt220_write(const unsigned char *buf, int count, int do_schedule,
->   * number of characters actually accepted for writing.
+> @@ -579,7 +579,7 @@ sclp_vt220_close(struct tty_struct *tty, struct file *filp)
+>   * done stuffing characters into the driver.
 >   */
 >  static int
-> -sclp_vt220_write(struct tty_struct *tty, const unsigned char *buf, int count)
-> +sclp_vt220_write(struct tty_struct *tty, const u8 *buf, int count)
+> -sclp_vt220_put_char(struct tty_struct *tty, unsigned char ch)
+> +sclp_vt220_put_char(struct tty_struct *tty, u8 ch)
 >  {
->  	return __sclp_vt220_write(buf, count, 1, 0, 1);
+>  	return __sclp_vt220_write(&ch, 1, 0, 0, 1);
 >  }
 
 For s390 part:
 
 Acked-by: Alexander Gordeev <agordeev@linux.ibm.com>
+
+Thanks!
