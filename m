@@ -2,38 +2,38 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5F92C2FC20
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Aug 2023 09:33:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 126FFC41513
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Aug 2023 09:35:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349657AbjHQJd0 (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Aug 2023 05:33:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36316 "EHLO
+        id S241153AbjHQJfB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 17 Aug 2023 05:35:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349723AbjHQJdD (ORCPT
+        with ESMTP id S1349786AbjHQJen (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Aug 2023 05:33:03 -0400
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F6D2D69
-        for <linux-serial@vger.kernel.org>; Thu, 17 Aug 2023 02:33:01 -0700 (PDT)
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202308170933001757c64e079f8c69cb
+        Thu, 17 Aug 2023 05:34:43 -0400
+X-Greylist: delayed 72 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Aug 2023 02:34:10 PDT
+Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5252E35B0
+        for <linux-serial@vger.kernel.org>; Thu, 17 Aug 2023 02:34:10 -0700 (PDT)
+Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 20230817093256d3b60245526609b95d
         for <linux-serial@vger.kernel.org>;
-        Thu, 17 Aug 2023 11:33:01 +0200
+        Thu, 17 Aug 2023 11:32:56 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=mpS6vMW8falEVR0dEmK3ruSSJW5x6c4Qp2+AWzGHpC8=;
- b=GYwY4kYCtsixqUVhbQtHFfRxAyF1kf8vhLVbg8ndFv6Wr2cPJ3bVKN9Qs2H8Qy9i6XcK5s
- uIC+Vx6iVcJEKMFZpNs7JgCcr08ElnXV4ptWmh4SCkNubMqZ3/szoMUO0s46cgnwQSvTCsSk
- w7jdMbAchugCxB/tngaSZ0DLuHWpk=;
+ bh=bqMAjODLK3mjjebOSIQBSi40u+kU7athQOobAmxO108=;
+ b=M/zLDqJn2/ZCqVxARIT5/0nDkEOJ0yccjkT3UBiAGxE0B/oifj871q3BHBVTICfREMrVdt
+ dMV7yoHEH5FHPb3p2dWcvqPZTzGMA3w5kV8tcIY1zci5gzcB4gOfpJiPrUp6jkn5LyCdeNh3
+ SFbsvdl9n1n9elLgYRXp1w6GQps+M=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v6 9/9] tty: n_gsm: add restart flag to extended ioctl config
-Date:   Thu, 17 Aug 2023 11:32:31 +0200
-Message-Id: <20230817093231.2317-9-daniel.starke@siemens.com>
+Subject: [PATCH v6 3/9] tty: n_gsm: remove unneeded initialization of ret in gsm_dlci_config
+Date:   Thu, 17 Aug 2023 11:32:25 +0200
+Message-Id: <20230817093231.2317-3-daniel.starke@siemens.com>
 In-Reply-To: <20230817093231.2317-1-daniel.starke@siemens.com>
 References: <20230817093231.2317-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -46,109 +46,45 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-Currently, changing the parameters of the n_gsm mux gives no direct control
-to the user whether this should trigger a mux reset or not. The decision is
-solely made by the driver based on the assumption which parameter changes
-are compatible or not. Therefore, the user has no means to perform an
-automatic mux reset after parameter configuration for non-conflicting
-changes.
+The variable 'ret' is not used before assignment from gsm_activate_mux().
+Still it gets initialized to zero at declaration.
 
-Add the parameter 'flags' to 'gsm_config_ext' to force a mux reset after
-ioctl setting regardless of whether the changes made require this or not
-by setting this to 'GSM_FL_RESTART'. This is done similar to
-'GSM_FL_RESTART' in gsm_dlci_config.flags.
+Fix this as remarked in the link below by moving the declaration to the
+first assignment.
 
-Note that 'GSM_FL_RESTART' is currently the only allowed flag to allow
-additions here.
+Link: https://lore.kernel.org/all/b42bc4d1-cc9d-d115-c981-aaa053bdc59f@kernel.org/
 
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c         | 23 +++++++++++++++++++++++
- include/uapi/linux/gsmmux.h |  5 ++++-
- 2 files changed, 27 insertions(+), 1 deletion(-)
+ drivers/tty/n_gsm.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 v5 -> v6:
-No changes. This was previously patch 10/10. Patch 9/10 has been removed.
+No changes.
 
-Link: https://lore.kernel.org/all/2023081644-stiffness-division-215b@gregkh/
-Link: https://lore.kernel.org/all/20230517155704.5701-10-daniel.starke@siemens.com/
+Link: https://lore.kernel.org/all/20230517155704.5701-3-daniel.starke@siemens.com/
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 47905803f8f9..8ecc7b138c05 100644
+index a4268515920e..f6d3c4766e47 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -3422,6 +3422,7 @@ static void gsm_copy_config_ext_values(struct gsm_mux *gsm,
+@@ -3279,7 +3279,6 @@ static void gsm_copy_config_values(struct gsm_mux *gsm,
  
- static int gsm_config_ext(struct gsm_mux *gsm, struct gsm_config_ext *ce)
+ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
  {
-+	bool need_restart = false;
- 	unsigned int i;
+-	int ret = 0;
+ 	int need_close = 0;
+ 	int need_restart = 0;
  
- 	/*
-@@ -3431,6 +3432,20 @@ static int gsm_config_ext(struct gsm_mux *gsm, struct gsm_config_ext *ce)
- 	for (i = 0; i < ARRAY_SIZE(ce->reserved); i++)
- 		if (ce->reserved[i])
- 			return -EINVAL;
-+	if (ce->flags & ~GSM_FL_RESTART)
-+		return -EINVAL;
-+
-+	/* Requires care */
-+	if (ce->flags & GSM_FL_RESTART)
-+		need_restart = true;
-+
-+	/*
-+	 * Close down what is needed, restart and initiate the new
-+	 * configuration. On the first time there is no DLCI[0]
-+	 * and closing or cleaning up is not necessary.
-+	 */
-+	if (need_restart)
-+		gsm_cleanup_mux(gsm, true);
- 
- 	/*
- 	 * Setup the new configuration values
-@@ -3438,6 +3453,14 @@ static int gsm_config_ext(struct gsm_mux *gsm, struct gsm_config_ext *ce)
- 	gsm->wait_config = ce->wait_config ? true : false;
- 	gsm->keep_alive = ce->keep_alive;
- 
-+	if (gsm->dead) {
+@@ -3358,7 +3357,7 @@ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+ 	 * and removing from the mux array
+ 	 */
+ 	if (gsm->dead) {
+-		ret = gsm_activate_mux(gsm);
 +		int ret = gsm_activate_mux(gsm);
-+		if (ret)
-+			return ret;
-+		if (gsm->initiator)
-+			gsm_dlci_begin_open(gsm->dlci[0]);
-+	}
-+
- 	return 0;
- }
- 
-diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
-index 3bd6f03a8293..4c878d84dbda 100644
---- a/include/uapi/linux/gsmmux.h
-+++ b/include/uapi/linux/gsmmux.h
-@@ -11,6 +11,7 @@
-  * flags definition for n_gsm
-  *
-  * Used by:
-+ * struct gsm_config_ext.flags
-  * struct gsm_dlci_config.flags
-  */
- /* Forces a DLCI reset if set. Otherwise, a DLCI reset is only done if
-@@ -98,12 +99,14 @@ struct gsm_netconfig {
-  *
-  * @keep_alive:  Control channel keep-alive in 1/100th of a second (0 to disable).
-  * @wait_config: Wait for DLCI config before opening virtual link?
-+ * @flags:       Mux specific flags.
-  * @reserved:    For future use, must be initialized to zero.
-  */
- struct gsm_config_ext {
- 	__u32 keep_alive;
- 	__u32 wait_config;
--	__u32 reserved[6];
-+	__u32 flags;
-+	__u32 reserved[5];
- };
- 
- #define GSMIOC_GETCONF_EXT	_IOR('G', 5, struct gsm_config_ext)
+ 		if (ret)
+ 			return ret;
+ 		if (gsm->initiator)
 -- 
 2.34.1
 
