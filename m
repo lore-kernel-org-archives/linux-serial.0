@@ -2,102 +2,211 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 104A6C001E0
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Aug 2023 17:14:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97859C27C7A
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Aug 2023 09:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244223AbjHPROB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Aug 2023 13:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58730 "EHLO
+        id S240716AbjHQJdZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 17 Aug 2023 05:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345160AbjHPRNm (ORCPT
+        with ESMTP id S1349707AbjHQJdB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Aug 2023 13:13:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D98CE52;
-        Wed, 16 Aug 2023 10:13:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0205F62232;
-        Wed, 16 Aug 2023 17:13:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EACAC433C7;
-        Wed, 16 Aug 2023 17:13:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1692206020;
-        bh=p24LV4d/PSjicOA4bNsxeM8KTvX0pE92+j4eepvZU6M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qu2vRBDXS+n1XINFh040FrwUvC+/M1w4Ul37EH8D4Lxl2Gi6UQ1SQiguVYF7Z0r2Z
-         uc+++yqVHTXSQUmB7vSfNX0Bw5mZKxOzqsNGx5em2wZuptyW0No6g8XWYwgUn2TBnD
-         ifY2sqCRNYVkuKEE0rtcZWvhd0tRqKc6biOcQp9Bh63UzO2cjLSLSefAX60lmFMYPo
-         NS8P6oMJc0T2B+qrE5NynW7V1xFB53dKNHxY3TjaTBBsP/O/ceWiOQRjzkjXULC+eT
-         Ku4lMy90FrXDqjwVBPm4Ma+DZwlg04N/G5/ELAxjDQa6OWOazbdqQtrePI4N2AlF6C
-         g4GGEd2gGc4ng==
-Date:   Wed, 16 Aug 2023 10:13:38 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH] tty: gdm724x: use min_t() for size_t varable and a
- constant
-Message-ID: <20230816171338.GA2138570@dev-arch.thelio-3990X>
-References: <20230816085322.22065-1-jirislaby@kernel.org>
+        Thu, 17 Aug 2023 05:33:01 -0400
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E482D4F
+        for <linux-serial@vger.kernel.org>; Thu, 17 Aug 2023 02:32:58 -0700 (PDT)
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202308170932553c6e2dd1085507d4ec
+        for <linux-serial@vger.kernel.org>;
+        Thu, 17 Aug 2023 11:32:55 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=y2NADA2JaCbTWC/UJl5Xtu3c4/+YvFtAr15iH/sM9Nk=;
+ b=iIRHub8/6ZPXwaBc6AiYDxlP/7D4IZd+tIdSgYLnGMnpQ6gOrMvOyTXtikUmrQLSKuh+XV
+ RNbUYriABtqUk+BULxu0IJAGIEi4Baod8BGsS5RRrLwoXZ+qntSj8dE3t3FBJu96kZP4ivBf
+ iT4Rzi07IH5ExNM7WUv7L8/WfOEeA=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH v6 2/9] tty: n_gsm: add missing description to structs in gsmmux.h
+Date:   Thu, 17 Aug 2023 11:32:24 +0200
+Message-Id: <20230817093231.2317-2-daniel.starke@siemens.com>
+In-Reply-To: <20230817093231.2317-1-daniel.starke@siemens.com>
+References: <20230817093231.2317-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230816085322.22065-1-jirislaby@kernel.org>
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Aug 16, 2023 at 10:53:22AM +0200, Jiri Slaby (SUSE) wrote:
-> My thinking was that ulong is the same as size_t everywhere. No, size_t
-> is uint on 32bit. So the below commit introduced a build warning on
-> 32bit:
-> .../gdm724x/gdm_tty.c:165:24: warning: comparison of distinct pointer types ('typeof (2048UL) *' (aka 'unsigned long *') and 'typeof (remain) *' (aka 'unsigned int *'))
-> 
-> To fix this, partially revert the commit (remove constants' suffixes)
-> and switch to min_t() in this case instead.
-> 
-> /me would hope for Z (or alike) suffix for constants.
-> 
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Fixes: c3e5c706aefc (tty: gdm724x: convert counts to size_t)
-> Reported-by: Nathan Chancellor <nathan@kernel.org>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Closes: https://lore.kernel.org/oe-kbuild-all/202308151953.rNNnAR2N-lkp@intel.com/
+From: Daniel Starke <daniel.starke@siemens.com>
 
-Tested-by: Nathan Chancellor <nathan@kernel.org> # build
+Currently, all available structure fields in gsmmux.h except those
+for gsm_config are commented. Furthermore, no kernel doc comments are used.
 
-> ---
->  drivers/staging/gdm724x/gdm_tty.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/staging/gdm724x/gdm_tty.c b/drivers/staging/gdm724x/gdm_tty.c
-> index 67d9bf41e836..32b2e817ff04 100644
-> --- a/drivers/staging/gdm724x/gdm_tty.c
-> +++ b/drivers/staging/gdm724x/gdm_tty.c
-> @@ -17,9 +17,9 @@
->  #define GDM_TTY_MAJOR 0
->  #define GDM_TTY_MINOR 32
->  
-> -#define WRITE_SIZE 2048UL
-> +#define WRITE_SIZE 2048
->  
-> -#define MUX_TX_MAX_SIZE 2048UL
-> +#define MUX_TX_MAX_SIZE 2048
->  
->  static inline bool gdm_tty_ready(struct gdm *gdm)
->  {
-> @@ -159,7 +159,7 @@ static ssize_t gdm_tty_write(struct tty_struct *tty, const u8 *buf, size_t len)
->  		return -ENODEV;
->  
->  	while (remain) {
-> -		size_t sending_len = min(MUX_TX_MAX_SIZE, remain);
-> +		size_t sending_len = min_t(size_t, MUX_TX_MAX_SIZE, remain);
->  		gdm->tty_dev->send_func(gdm->tty_dev->priv_dev,
->  					(void *)(buf + sent_len),
->  					sending_len,
-> -- 
-> 2.41.0
-> 
+Fix this by adding appropriate comments to the not commented fields of
+gsm_config. Convert the comments of the other structs to kernel doc format.
+
+Note that 'mru' and 'mtu' refer to the size without basic/advanced option
+mode header and byte stuffing as defined in the standard in chapter 5.7.2.
+
+Link: https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ include/uapi/linux/gsmmux.h | 104 +++++++++++++++++++++++++++++-------
+ 1 file changed, 84 insertions(+), 20 deletions(-)
+
+v5 -> v6:
+No changes.
+
+Link: https://lore.kernel.org/all/20230517155704.5701-2-daniel.starke@siemens.com/
+
+diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
+index e56e2d7ea6eb..3bd6f03a8293 100644
+--- a/include/uapi/linux/gsmmux.h
++++ b/include/uapi/linux/gsmmux.h
+@@ -18,6 +18,28 @@
+  */
+ #define GSM_FL_RESTART	_BITUL(0)
+ 
++/**
++ * struct gsm_config - n_gsm basic configuration parameters
++ *
++ * This structure is used in combination with GSMIOC_GETCONF and GSMIOC_SETCONF
++ * to retrieve and set the basic parameters of an n_gsm ldisc.
++ * struct gsm_config_ext can be used to configure extended ldisc parameters.
++ *
++ * All timers are in units of 1/100th of a second.
++ *
++ * @adaption:      Convergence layer type
++ * @encapsulation: Framing (0 = basic option, 1 = advanced option)
++ * @initiator:     Initiator or responder
++ * @t1:            Acknowledgment timer
++ * @t2:            Response timer for multiplexer control channel
++ * @t3:            Response timer for wake-up procedure
++ * @n2:            Maximum number of retransmissions
++ * @mru:           Maximum incoming frame payload size
++ * @mtu:           Maximum outgoing frame payload size
++ * @k:             Window size
++ * @i:             Frame type (1 = UIH, 2 = UI)
++ * @unused:        Can not be used
++ */
+ struct gsm_config
+ {
+ 	unsigned int adaption;
+@@ -31,18 +53,32 @@ struct gsm_config
+ 	unsigned int mtu;
+ 	unsigned int k;
+ 	unsigned int i;
+-	unsigned int unused[8];	/* Can not be used */
++	unsigned int unused[8];
+ };
+ 
+ #define GSMIOC_GETCONF		_IOR('G', 0, struct gsm_config)
+ #define GSMIOC_SETCONF		_IOW('G', 1, struct gsm_config)
+ 
++/**
++ * struct gsm_netconfig - n_gsm network configuration parameters
++ *
++ * This structure is used in combination with GSMIOC_ENABLE_NET and
++ * GSMIOC_DISABLE_NET to enable or disable a network data connection
++ * over a mux virtual tty channel. This is for modems that support
++ * data connections with raw IP frames instead of PPP.
++ *
++ * @adaption: Adaption to use in network mode.
++ * @protocol: Protocol to use - only ETH_P_IP supported.
++ * @unused2:  Can not be used.
++ * @if_name:  Interface name format string.
++ * @unused:   Can not be used.
++ */
+ struct gsm_netconfig {
+-	unsigned int adaption;  /* Adaption to use in network mode */
+-	unsigned short protocol;/* Protocol to use - only ETH_P_IP supported */
+-	unsigned short unused2;	/* Can not be used */
+-	char if_name[IFNAMSIZ];	/* interface name format string */
+-	__u8 unused[28];        /* Can not be used */
++	unsigned int adaption;
++	unsigned short protocol;
++	unsigned short unused2;
++	char if_name[IFNAMSIZ];
++	__u8 unused[28];
+ };
+ 
+ #define GSMIOC_ENABLE_NET      _IOW('G', 2, struct gsm_netconfig)
+@@ -51,27 +87,55 @@ struct gsm_netconfig {
+ /* get the base tty number for a configured gsmmux tty */
+ #define GSMIOC_GETFIRST		_IOR('G', 4, __u32)
+ 
++/**
++ * struct gsm_config_ext - n_gsm extended configuration parameters
++ *
++ * This structure is used in combination with GSMIOC_GETCONF_EXT and
++ * GSMIOC_SETCONF_EXT to retrieve and set the extended parameters of an
++ * n_gsm ldisc.
++ *
++ * All timers are in units of 1/100th of a second.
++ *
++ * @keep_alive:  Control channel keep-alive in 1/100th of a second (0 to disable).
++ * @wait_config: Wait for DLCI config before opening virtual link?
++ * @reserved:    For future use, must be initialized to zero.
++ */
+ struct gsm_config_ext {
+-	__u32 keep_alive;	/* Control channel keep-alive in 1/100th of a
+-				 * second (0 to disable)
+-				 */
+-	__u32 wait_config;	/* Wait for DLCI config before opening virtual link? */
+-	__u32 reserved[6];	/* For future use, must be initialized to zero */
++	__u32 keep_alive;
++	__u32 wait_config;
++	__u32 reserved[6];
+ };
+ 
+ #define GSMIOC_GETCONF_EXT	_IOR('G', 5, struct gsm_config_ext)
+ #define GSMIOC_SETCONF_EXT	_IOW('G', 6, struct gsm_config_ext)
+ 
+-/* Set channel accordingly before calling GSMIOC_GETCONF_DLCI. */
++/**
++ * struct gsm_dlci_config - n_gsm channel configuration parameters
++ *
++ * This structure is used in combination with GSMIOC_GETCONF_DLCI and
++ * GSMIOC_SETCONF_DLCI to retrieve and set the channel specific parameters
++ * of an n_gsm ldisc.
++ *
++ * Set the channel accordingly before calling GSMIOC_GETCONF_DLCI.
++ *
++ * @channel:  DLCI (0 for the associated DLCI).
++ * @adaption: Convergence layer type.
++ * @mtu:      Maximum transfer unit.
++ * @priority: Priority (0 for default value).
++ * @i:        Frame type (1 = UIH, 2 = UI).
++ * @k:        Window size (0 for default value).
++ * @flags:    DLCI specific flags.
++ * @reserved: For future use, must be initialized to zero.
++ */
+ struct gsm_dlci_config {
+-	__u32 channel;		/* DLCI (0 for the associated DLCI) */
+-	__u32 adaption;		/* Convergence layer type */
+-	__u32 mtu;		/* Maximum transfer unit */
+-	__u32 priority;		/* Priority (0 for default value) */
+-	__u32 i;		/* Frame type (1 = UIH, 2 = UI) */
+-	__u32 k;		/* Window size (0 for default value) */
+-	__u32 flags;		/* DLCI specific flags. */
+-	__u32 reserved[7];	/* For future use, must be initialized to zero */
++	__u32 channel;
++	__u32 adaption;
++	__u32 mtu;
++	__u32 priority;
++	__u32 i;
++	__u32 k;
++	__u32 flags;
++	__u32 reserved[7];
+ };
+ 
+ #define GSMIOC_GETCONF_DLCI	_IOWR('G', 7, struct gsm_dlci_config)
+-- 
+2.34.1
+
