@@ -2,85 +2,98 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C05C9EB64DD
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Aug 2023 11:38:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E052C3DA58
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Aug 2023 18:02:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350217AbjHQLhk convert rfc822-to-8bit (ORCPT
+        id S1354181AbjHQSB7 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Aug 2023 07:37:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44982 "EHLO
+        Thu, 17 Aug 2023 14:01:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350320AbjHQLhd (ORCPT
+        with ESMTP id S1354179AbjHQSBk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Aug 2023 07:37:33 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF27E4F
-        for <linux-serial@vger.kernel.org>; Thu, 17 Aug 2023 04:37:31 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-208-gwuNGtgYP1ytLiWlQdQCzA-1; Thu, 17 Aug 2023 12:37:29 +0100
-X-MC-Unique: gwuNGtgYP1ytLiWlQdQCzA-1
-Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
- (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Thu, 17 Aug
- 2023 12:37:25 +0100
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.048; Thu, 17 Aug 2023 12:37:25 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "'Jiri Slaby (SUSE)'" <jirislaby@kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Nathan Chancellor" <nathan@kernel.org>,
-        kernel test robot <lkp@intel.com>
-Subject: RE: [PATCH] tty: gdm724x: use min_t() for size_t varable and a
- constant
-Thread-Topic: [PATCH] tty: gdm724x: use min_t() for size_t varable and a
- constant
-Thread-Index: AQHZ0B87nDgSkZkjFECy+iNTKj/JmK/uXXfg
-Date:   Thu, 17 Aug 2023 11:37:25 +0000
-Message-ID: <e082032238ae4d5e9af2c0ccdc79889f@AcuMS.aculab.com>
-References: <20230816085322.22065-1-jirislaby@kernel.org>
-In-Reply-To: <20230816085322.22065-1-jirislaby@kernel.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Thu, 17 Aug 2023 14:01:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6FB1FD;
+        Thu, 17 Aug 2023 11:01:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 785ED65A9C;
+        Thu, 17 Aug 2023 18:01:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91426C433C8;
+        Thu, 17 Aug 2023 18:01:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1692295298;
+        bh=VZruZXx9EU0/YoaC/ouk/5A6xD8c1SyPddqP/6Pz+CY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iV6+Bm2hPeW6amkSFbOlztn/UfFiWJL4Rn7iVGJVj7uI5jQbAJ0TWPzWC3pbPGYD2
+         juPQjmwRYQqKBjCinYc9aFaJFdFc63X5XOdi9mAx23DXdSvMxLqea6MKOOL//KiXUl
+         6NPN71qMBs9/Rxu5F7PXQlobCZPkOS6eG1yLLfpmGn7yJc2PPLFwQCnuU+PfbHSVxS
+         yd0vz7N7GGt9utma2GfIuPpCqtulbiFubtgPf4wis29fbJQfHz9mlCZtP3akRUo1O4
+         6TM1Rp/Qe5tCeTmiz9YNvkuOEKFzAsccXxbSwJ0kKUQQ7RzfFiVUbTn4TVDF8Ki61u
+         oAhRIpP1kYSMg==
+Received: (nullmailer pid 1876770 invoked by uid 1000);
+        Thu, 17 Aug 2023 18:01:35 -0000
+Date:   Thu, 17 Aug 2023 13:01:35 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     gregkh@linuxfoundation.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, jirislaby@kernel.org, jringle@gridpoint.com,
+        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Lech Perczak <lech.perczak@camlingroup.com>
+Subject: Re: [PATCH v10 4/6] serial: sc16is7xx: fix regression with GPIO
+ configuration
+Message-ID: <20230817180135.GA1874231-robh@kernel.org>
+References: <20230807214556.540627-1-hugo@hugovil.com>
+ <20230807214556.540627-5-hugo@hugovil.com>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230807214556.540627-5-hugo@hugovil.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Jiri Slaby (SUSE)
-> Sent: Wednesday, August 16, 2023 9:53 AM
+On Mon, Aug 07, 2023 at 05:45:54PM -0400, Hugo Villeneuve wrote:
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > 
-> My thinking was that ulong is the same as size_t everywhere. No, size_t
-> is uint on 32bit. So the below commit introduced a build warning on
-> 32bit:
-> .../gdm724x/gdm_tty.c:165:24: warning: comparison of distinct pointer types ('typeof (2048UL) *' (aka
-> 'unsigned long *') and 'typeof (remain) *' (aka 'unsigned int *'))
+> Commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
+> and commit 21144bab4f11 ("sc16is7xx: Handle modem status lines")
+> changed the function of the GPIOs pins to act as modem control
+> lines without any possibility of selecting GPIO function.
 > 
-> To fix this, partially revert the commit (remove constants' suffixes)
-> and switch to min_t() in this case instead.
+> As a consequence, applications that depends on GPIO lines configured
+> by default as GPIO pins no longer work as expected.
 > 
-....
-> -		size_t sending_len = min(MUX_TX_MAX_SIZE, remain);
-> +		size_t sending_len = min_t(size_t, MUX_TX_MAX_SIZE, remain);
+> Also, the change to select modem control lines function was done only
+> for channel A of dual UART variants (752/762). This was not documented
+> in the log message.
+> 
+> Allow to specify GPIO or modem control line function in the device
+> tree, and for each of the ports (A or B).
+> 
+> Do so by using the new device-tree property named
+> "nxp,modem-control-line-ports" (property added in separate patch).
+> 
+> When registering GPIO chip controller, mask-out GPIO pins declared as
+> modem control lines according to this new DT property.
+> 
+> Fixes: 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
+> Fixes: 21144bab4f11 ("sc16is7xx: Handle modem status lines")
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
+> Tested-by: Lech Perczak <lech.perczak@camlingroup.com>
+> ---
+>  drivers/tty/serial/sc16is7xx.c | 143 +++++++++++++++++++++++++--------
+>  1 file changed, 108 insertions(+), 35 deletions(-)
 
-It would be slightly safer to use:
-		min(remain, (size_t)MAX_TX_MAX_SIZE);
-since that maintains the type check.
-(It is also nicer to put the constant second.)
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Acked-by: Rob Herring <robh@kernel.org>
