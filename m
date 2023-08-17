@@ -2,38 +2,40 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AB47C2FC18
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6691C2FC22
 	for <linux-serial@archiver.kernel.org>; Thu, 17 Aug 2023 09:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343825AbjHQJdZ (ORCPT
+        id S1349659AbjHQJd0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Aug 2023 05:33:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36230 "EHLO
+        Thu, 17 Aug 2023 05:33:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349706AbjHQJdB (ORCPT
+        with ESMTP id S1349720AbjHQJdC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Aug 2023 05:33:01 -0400
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FCEC30E4
-        for <linux-serial@vger.kernel.org>; Thu, 17 Aug 2023 02:32:58 -0700 (PDT)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202308170932550917058e202fad177c
+        Thu, 17 Aug 2023 05:33:02 -0400
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCCE2D66
+        for <linux-serial@vger.kernel.org>; Thu, 17 Aug 2023 02:33:01 -0700 (PDT)
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20230817093259696534b495718a51aa
         for <linux-serial@vger.kernel.org>;
-        Thu, 17 Aug 2023 11:32:55 +0200
+        Thu, 17 Aug 2023 11:32:59 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=a1286gW/ZcWy5VZLsQ78SHAH1XDGNN4Go7TopmdAXNo=;
- b=Ot1RidT9cWPzqmfRx350eDBn2eY0vohqkXGRSIrL/njo+yOWo2va3FyvkJXupC/zQ1uz7x
- p4QZIFaJq+hZFGX5OeR0aorBepWoF3tszCZSsqlB63GSo9lEVGt7PFoMIxbRo4RCg5ubBkUM
- lmH3rlXwmWNW9w7Qew/vLEFmN0jNM=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=ZqFov9jGDsnfiSsktXFWQg+2PQ3KFal/TX+lSDsD6S4=;
+ b=SI1ueeRJk0/ekXnNJdNOnLi9MHCy5qKetbQIk/IzXtvXokvfamhI/0/ZuHJIk7mZyujcWU
+ FEjhJJ4QAZgQ65Vw5ZTFqwp7hz0zpLuRo0FKSvm2FsoHu4V//WxlZdosoq4in7bSW2GEbG4c
+ APoRR8v78+28jo/CKFHfkaxh95/xE=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v6 1/9] tty: n_gsm: add restart flag to DLC specific ioctl config
-Date:   Thu, 17 Aug 2023 11:32:23 +0200
-Message-Id: <20230817093231.2317-1-daniel.starke@siemens.com>
+Subject: [PATCH v6 7/9] tty: n_gsm: cleanup gsm_control_command and gsm_control_reply
+Date:   Thu, 17 Aug 2023 11:32:29 +0200
+Message-Id: <20230817093231.2317-7-daniel.starke@siemens.com>
+In-Reply-To: <20230817093231.2317-1-daniel.starke@siemens.com>
+References: <20230817093231.2317-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
@@ -44,90 +46,63 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-Currently, changing the parameters of a DLCI gives no direct control to the
-user whether this should trigger a channel reset or not. The decision is
-solely made by the driver based on the assumption which parameter changes
-are compatible or not. Therefore, the user has no means to perform an
-automatic channel reset after parameter configuration for non-conflicting
-changes.
+There are multiple places in gsm_control_command and gsm_control_reply that
+derive the specific DLCI handle directly out of the DLCI table in gsm.
 
-Add the parameter 'flags' to 'gsm_dlci_config' to force a channel reset
-after ioctl setting regardless of whether the changes made require this or
-not by setting this to 'GSM_FL_RESTART'.
-
-Note that 'GSM_FL_RESTART' is currently the only allow flag to allow
-additions here.
+Add a local variable which holds this handle and use it instead to improve
+code readability.
 
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c         |  4 ++++
- include/uapi/linux/gsmmux.h | 15 ++++++++++++++-
- 2 files changed, 18 insertions(+), 1 deletion(-)
+ drivers/tty/n_gsm.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
 v5 -> v6:
 No changes.
 
-Link: https://lore.kernel.org/all/20230517155704.5701-1-daniel.starke@siemens.com/
+Link: https://lore.kernel.org/all/20230517155704.5701-7-daniel.starke@siemens.com/
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 42759500b79e..a4268515920e 100644
+index 8b8f5187c6bb..fbef7977f775 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -2532,6 +2532,8 @@ static int gsm_dlci_config(struct gsm_dlci *dlci, struct gsm_dlci_config *dc, in
- 		return -EINVAL;
- 	if (dc->k > 7)
- 		return -EINVAL;
-+	if (dc->flags & ~GSM_FL_RESTART)   /* allow future extensions */
-+		return -EINVAL;
- 
- 	/*
- 	 * See what is needed for reconfiguration
-@@ -2546,6 +2548,8 @@ static int gsm_dlci_config(struct gsm_dlci *dlci, struct gsm_dlci_config *dc, in
- 	/* Requires care */
- 	if (dc->priority != dlci->prio)
- 		need_restart = true;
-+	if (dc->flags & GSM_FL_RESTART)
-+		need_restart = true;
- 
- 	if ((open && gsm->wait_config) || need_restart)
- 		need_open = true;
-diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
-index eb67884e5f38..e56e2d7ea6eb 100644
---- a/include/uapi/linux/gsmmux.h
-+++ b/include/uapi/linux/gsmmux.h
-@@ -2,10 +2,22 @@
- #ifndef _LINUX_GSMMUX_H
- #define _LINUX_GSMMUX_H
- 
-+#include <linux/const.h>
- #include <linux/if.h>
- #include <linux/ioctl.h>
- #include <linux/types.h>
- 
-+/*
-+ * flags definition for n_gsm
-+ *
-+ * Used by:
-+ * struct gsm_dlci_config.flags
-+ */
-+/* Forces a DLCI reset if set. Otherwise, a DLCI reset is only done if
-+ * incompatible settings were provided. Always cleared on retrieval.
-+ */
-+#define GSM_FL_RESTART	_BITUL(0)
-+
- struct gsm_config
+@@ -1451,15 +1451,16 @@ static int gsm_control_command(struct gsm_mux *gsm, int cmd, const u8 *data,
+ 			       int dlen)
  {
- 	unsigned int adaption;
-@@ -58,7 +70,8 @@ struct gsm_dlci_config {
- 	__u32 priority;		/* Priority (0 for default value) */
- 	__u32 i;		/* Frame type (1 = UIH, 2 = UI) */
- 	__u32 k;		/* Window size (0 for default value) */
--	__u32 reserved[8];	/* For future use, must be initialized to zero */
-+	__u32 flags;		/* DLCI specific flags. */
-+	__u32 reserved[7];	/* For future use, must be initialized to zero */
- };
+ 	struct gsm_msg *msg;
++	struct gsm_dlci *dlci = gsm->dlci[0];
  
- #define GSMIOC_GETCONF_DLCI	_IOWR('G', 7, struct gsm_dlci_config)
+-	msg = gsm_data_alloc(gsm, 0, dlen + 2, gsm->dlci[0]->ftype);
++	msg = gsm_data_alloc(gsm, 0, dlen + 2, dlci->ftype);
+ 	if (msg == NULL)
+ 		return -ENOMEM;
+ 
+ 	msg->data[0] = (cmd << 1) | CR | EA;	/* Set C/R */
+ 	msg->data[1] = (dlen << 1) | EA;
+ 	memcpy(msg->data + 2, data, dlen);
+-	gsm_data_queue(gsm->dlci[0], msg);
++	gsm_data_queue(dlci, msg);
+ 
+ 	return 0;
+ }
+@@ -1478,14 +1479,15 @@ static void gsm_control_reply(struct gsm_mux *gsm, int cmd, const u8 *data,
+ 					int dlen)
+ {
+ 	struct gsm_msg *msg;
++	struct gsm_dlci *dlci = gsm->dlci[0];
+ 
+-	msg = gsm_data_alloc(gsm, 0, dlen + 2, gsm->dlci[0]->ftype);
++	msg = gsm_data_alloc(gsm, 0, dlen + 2, dlci->ftype);
+ 	if (msg == NULL)
+ 		return;
+ 	msg->data[0] = (cmd & 0xFE) << 1 | EA;	/* Clear C/R */
+ 	msg->data[1] = (dlen << 1) | EA;
+ 	memcpy(msg->data + 2, data, dlen);
+-	gsm_data_queue(gsm->dlci[0], msg);
++	gsm_data_queue(dlci, msg);
+ }
+ 
+ /**
 -- 
 2.34.1
 
