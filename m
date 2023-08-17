@@ -2,38 +2,38 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C0CBC2FC0E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BB2AC2FC1A
 	for <linux-serial@archiver.kernel.org>; Thu, 17 Aug 2023 09:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349651AbjHQJd0 (ORCPT
+        id S1349646AbjHQJdZ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Aug 2023 05:33:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36178 "EHLO
+        Thu, 17 Aug 2023 05:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349714AbjHQJdC (ORCPT
+        with ESMTP id S1349716AbjHQJdC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 17 Aug 2023 05:33:02 -0400
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CAEC2D59
-        for <linux-serial@vger.kernel.org>; Thu, 17 Aug 2023 02:32:59 -0700 (PDT)
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2023081709325712b35b4c009980e68e
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7441B2D62
+        for <linux-serial@vger.kernel.org>; Thu, 17 Aug 2023 02:33:00 -0700 (PDT)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20230817093300ab6ddc5f7ca30050f7
         for <linux-serial@vger.kernel.org>;
-        Thu, 17 Aug 2023 11:32:57 +0200
+        Thu, 17 Aug 2023 11:33:00 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=cWnaEzHZB2NjApMzdcxbIVj2X9/vD3Wo52v6lawLu5o=;
- b=BjQhg8yWdxUIZMHZYs7BNroMy2bJ6XpYeu+Qwc40iQ3UFrobiyDqoZkhqIw15h2i1kvoRJ
- hKqM1yyex8MwFfudRdGGmwz7YzBoXWzDUwhl3dX4Sd52fmu0euSD+QvS74kFwmzbRJ8vpcuB
- 8IIOydYpY9f8aLH5cL5glc92zYml0=;
+ bh=i7oqPyKwXlHPCywflYWJCMT+4GZ0e0+uD/yAATpryKs=;
+ b=IIZ5pLb/f5pRoNI8Ii7dVb8qAzQLt9fl5M0OV2jSZAQzBHc4rNNBEycHX8Z7a6Fl7mRuar
+ pCPIQ8L60v7ZfhO55EynQRtXsZornr3Sj/EEtsD1pkcz49FXOT8BGWxLXQOLjz6IgNaCAjsr
+ IfZ8tlyIOHHQ9VNENS/fpU2qFR8vs=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v6 4/9] tty: n_gsm: add open_error counter to gsm_mux
-Date:   Thu, 17 Aug 2023 11:32:26 +0200
-Message-Id: <20230817093231.2317-4-daniel.starke@siemens.com>
+Subject: [PATCH v6 8/9] tty: n_gsm: add DLCI specific rx/tx statistics
+Date:   Thu, 17 Aug 2023 11:32:30 +0200
+Message-Id: <20230817093231.2317-8-daniel.starke@siemens.com>
 In-Reply-To: <20230817093231.2317-1-daniel.starke@siemens.com>
 References: <20230817093231.2317-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -46,113 +46,134 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-Extend the n_gsm link statistics by a failed link open counter in
-preparation for an upcoming patch which will expose these.
-This counter is increased whenever an attempt to open the control channel
-failed. This is true in the following cases:
-- new DLCI allocation failed
-- connection request (SAMB) with invalid CR flag has been received
-- connection response (UA) timed out
-- parameter negotiation timed out or failed
+Add counters for the number of data bytes received/transmitted per DLCI in
+for preparation for an upcoming patch which will expose these values to the
+user.
 
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 25 ++++++++++++++++++++-----
- 1 file changed, 20 insertions(+), 5 deletions(-)
+ drivers/tty/n_gsm.c | 26 +++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
 
 v5 -> v6:
 No changes.
 
-Link: https://lore.kernel.org/all/20230517155704.5701-4-daniel.starke@siemens.com/
+Link: https://lore.kernel.org/all/20230517155704.5701-8-daniel.starke@siemens.com/
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index f6d3c4766e47..d28465f142a8 100644
+index fbef7977f775..47905803f8f9 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -339,6 +339,7 @@ struct gsm_mux {
- 	unsigned long bad_fcs;
- 	unsigned long malformed;
- 	unsigned long io_error;
-+	unsigned long open_error;
- 	unsigned long bad_size;
- 	unsigned long unsupported;
+@@ -186,6 +186,10 @@ struct gsm_dlci {
+ 	void (*data)(struct gsm_dlci *dlci, const u8 *data, int len);
+ 	void (*prev_data)(struct gsm_dlci *dlci, const u8 *data, int len);
+ 	struct net_device *net; /* network interface, if created */
++
++	/* Statistics (not currently exposed) */
++	u64 tx;			/* Data bytes sent on this DLCI */
++	u64 rx;			/* Data bytes received on this DLCI */
  };
-@@ -1730,25 +1731,32 @@ static void gsm_control_negotiation(struct gsm_mux *gsm, unsigned int cr,
- 	struct gsm_dlci *dlci;
- 	struct gsm_dlci_param_bits *params;
  
--	if (dlen < sizeof(struct gsm_dlci_param_bits))
-+	if (dlen < sizeof(struct gsm_dlci_param_bits)) {
-+		gsm->open_error++;
- 		return;
-+	}
+ /*
+@@ -1216,6 +1220,7 @@ static int gsm_dlci_data_output(struct gsm_mux *gsm, struct gsm_dlci *dlci)
+ 	tty_port_tty_wakeup(&dlci->port);
  
- 	/* Invalid DLCI? */
- 	params = (struct gsm_dlci_param_bits *)data;
- 	addr = FIELD_GET(PN_D_FIELD_DLCI, params->d_bits);
--	if (addr == 0 || addr >= NUM_DLCI || !gsm->dlci[addr])
-+	if (addr == 0 || addr >= NUM_DLCI || !gsm->dlci[addr]) {
-+		gsm->open_error++;
- 		return;
-+	}
- 	dlci = gsm->dlci[addr];
+ 	__gsm_data_queue(dlci, msg);
++	dlci->tx += len;
+ 	/* Bytes of data we used up */
+ 	return size;
+ }
+@@ -1283,6 +1288,7 @@ static int gsm_dlci_data_output_framed(struct gsm_mux *gsm,
+ 	memcpy(dp, dlci->skb->data, len);
+ 	skb_pull(dlci->skb, len);
+ 	__gsm_data_queue(dlci, msg);
++	dlci->tx += len;
+ 	if (last) {
+ 		dev_kfree_skb_any(dlci->skb);
+ 		dlci->skb = NULL;
+@@ -1461,6 +1467,7 @@ static int gsm_control_command(struct gsm_mux *gsm, int cmd, const u8 *data,
+ 	msg->data[1] = (dlen << 1) | EA;
+ 	memcpy(msg->data + 2, data, dlen);
+ 	gsm_data_queue(dlci, msg);
++	dlci->tx += dlen;
  
- 	/* Too late for parameter negotiation? */
--	if ((!cr && dlci->state == DLCI_OPENING) || dlci->state == DLCI_OPEN)
-+	if ((!cr && dlci->state == DLCI_OPENING) || dlci->state == DLCI_OPEN) {
-+		gsm->open_error++;
- 		return;
-+	}
- 
- 	/* Process the received parameters */
- 	if (gsm_process_negotiation(gsm, addr, cr, params) != 0) {
- 		/* Negotiation failed. Close the link. */
- 		if (debug & DBG_ERRORS)
- 			pr_info("%s PN failed\n", __func__);
-+		gsm->open_error++;
- 		gsm_dlci_close(dlci);
- 		return;
- 	}
-@@ -1768,6 +1776,7 @@ static void gsm_control_negotiation(struct gsm_mux *gsm, unsigned int cr,
- 	} else {
- 		if (debug & DBG_ERRORS)
- 			pr_info("%s PN in invalid state\n", __func__);
-+		gsm->open_error++;
- 	}
+ 	return 0;
+ }
+@@ -1488,6 +1495,7 @@ static void gsm_control_reply(struct gsm_mux *gsm, int cmd, const u8 *data,
+ 	msg->data[1] = (dlen << 1) | EA;
+ 	memcpy(msg->data + 2, data, dlen);
+ 	gsm_data_queue(dlci, msg);
++	dlci->tx += dlen;
  }
  
-@@ -2221,6 +2230,7 @@ static void gsm_dlci_t1(struct timer_list *t)
- 			dlci->retries--;
- 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
- 		} else {
-+			gsm->open_error++;
- 			gsm_dlci_begin_close(dlci); /* prevent half open link */
- 		}
- 		break;
-@@ -2236,6 +2246,7 @@ static void gsm_dlci_t1(struct timer_list *t)
- 			dlci->mode = DLCI_MODE_ADM;
- 			gsm_dlci_open(dlci);
- 		} else {
-+			gsm->open_error++;
- 			gsm_dlci_begin_close(dlci); /* prevent half open link */
- 		}
+ /**
+@@ -1852,10 +1860,13 @@ static void gsm_control_message(struct gsm_mux *gsm, unsigned int command,
+ 						const u8 *data, int clen)
+ {
+ 	u8 buf[1];
++	struct gsm_dlci *dlci = gsm->dlci[0];
++
++	if (dlci)
++		dlci->rx += clen;
  
-@@ -2757,12 +2768,16 @@ static void gsm_queue(struct gsm_mux *gsm)
+ 	switch (command) {
+ 	case CMD_CLD: {
+-		struct gsm_dlci *dlci = gsm->dlci[0];
+ 		/* Modem wishes to close down */
+ 		if (dlci) {
+ 			dlci->dead = true;
+@@ -1934,6 +1945,8 @@ static void gsm_control_response(struct gsm_mux *gsm, unsigned int command,
  
- 	switch (gsm->control) {
- 	case SABM|PF:
--		if (cr == 1)
-+		if (cr == 1) {
-+			gsm->open_error++;
- 			goto invalid;
-+		}
- 		if (dlci == NULL)
- 			dlci = gsm_dlci_alloc(gsm, address);
--		if (dlci == NULL)
-+		if (dlci == NULL) {
-+			gsm->open_error++;
+ 	ctrl = gsm->pending_cmd;
+ 	dlci = gsm->dlci[0];
++	if (dlci)
++		dlci->rx += clen;
+ 	command |= 1;
+ 	/* Does the reply match our command */
+ 	if (ctrl != NULL && (command == ctrl->cmd || command == CMD_NSC)) {
+@@ -2298,6 +2311,9 @@ static void gsm_dlci_begin_open(struct gsm_dlci *dlci)
+ 			need_pn = true;
+ 	}
+ 
++	dlci->tx = 0;
++	dlci->rx = 0;
++
+ 	switch (dlci->state) {
+ 	case DLCI_CLOSED:
+ 	case DLCI_WAITING_CONFIG:
+@@ -2330,6 +2346,9 @@ static void gsm_dlci_begin_open(struct gsm_dlci *dlci)
+  */
+ static void gsm_dlci_set_opening(struct gsm_dlci *dlci)
+ {
++	dlci->tx = 0;
++	dlci->rx = 0;
++
+ 	switch (dlci->state) {
+ 	case DLCI_CLOSED:
+ 	case DLCI_WAITING_CONFIG:
+@@ -2349,6 +2368,9 @@ static void gsm_dlci_set_opening(struct gsm_dlci *dlci)
+  */
+ static void gsm_dlci_set_wait_config(struct gsm_dlci *dlci)
+ {
++	dlci->tx = 0;
++	dlci->rx = 0;
++
+ 	switch (dlci->state) {
+ 	case DLCI_CLOSED:
+ 	case DLCI_CLOSING:
+@@ -2425,6 +2447,7 @@ static void gsm_dlci_data(struct gsm_dlci *dlci, const u8 *data, int clen)
+ 		fallthrough;
+ 	case 1:		/* Line state will go via DLCI 0 controls only */
+ 	default:
++		dlci->rx += clen;
+ 		tty_insert_flip_string(port, data, clen);
+ 		tty_flip_buffer_push(port);
+ 	}
+@@ -2785,6 +2808,7 @@ static void gsm_queue(struct gsm_mux *gsm)
+ 			gsm->open_error++;
  			return;
-+		}
+ 		}
++		dlci->rx += gsm->len;
  		if (dlci->dead)
  			gsm_response(gsm, address, DM|PF);
  		else {
