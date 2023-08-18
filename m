@@ -2,185 +2,87 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34C74C7112B
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Aug 2023 11:14:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83E65C7113C
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Aug 2023 13:06:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244323AbjHRLNw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Aug 2023 07:13:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55072 "EHLO
+        id S1348317AbjHRNFj (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 18 Aug 2023 09:05:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376592AbjHRLNc (ORCPT
+        with ESMTP id S1377060AbjHRNFe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Aug 2023 07:13:32 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22E94228;
-        Fri, 18 Aug 2023 04:13:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692357181; x=1723893181;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=6lw+bj+V+CmqWk4clg9HEmaroeyMCvWSkT76IKDAsls=;
-  b=CGrpULfWlbH8ohaDkp+SZpC6QT+8JU/T1FF0rh9ErEoc5k+ze1Oi2Y60
-   XytaeXAPvNTF9p+W/wjmY1D/qX3EKTB9mO5uEOHedyS/EBh3PBUxrn2QR
-   SqxiHx1O5fsUXTZYHz75dRlLDmprP8Jrdkyi4ixdNM9qaKTfGGnpUs/+A
-   MXccs0YQsvqGESh6dKEnxDTzBZOvYO79541J8E1bijFIRToUecPqaqE4c
-   h8qjfgXjorlMul43jlp7e8BT90qDZHL2qok1OSD7yRhfp9X483zTygAoI
-   tMYOdK9vxxJvuE4pK2Nfs/tXcPQGsFaSfSEOvRmvzZPinxIRqzhz3HwtJ
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10805"; a="376837682"
-X-IronPort-AV: E=Sophos;i="6.01,182,1684825200"; 
-   d="scan'208";a="376837682"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2023 04:12:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10805"; a="849252807"
-X-IronPort-AV: E=Sophos;i="6.01,182,1684825200"; 
-   d="scan'208";a="849252807"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 18 Aug 2023 04:12:32 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 369D3E2A; Fri, 18 Aug 2023 14:12:31 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v1 1/1] serial: core: Remove unused PORT_* definitions
-Date:   Fri, 18 Aug 2023 14:12:29 +0300
-Message-Id: <20230818111229.764380-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.40.0.1.gaa8946217a0b
+        Fri, 18 Aug 2023 09:05:34 -0400
+X-Greylist: delayed 9464 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 18 Aug 2023 06:05:33 PDT
+Received: from server.dsmega.com (server.dsmega.com [185.186.208.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83C53A9A
+        for <linux-serial@vger.kernel.org>; Fri, 18 Aug 2023 06:05:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=remzavod.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Message-ID:Date:Subject:To:From:Reply-To:Sender:Cc:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=thoNrXbQv25mMK/3RviWbIqjmSGPAZCcCyNvsgRjrpM=; b=UPkXy4PBs7pCObhWBNlgVXmoYt
+        C1+h6WbGotmTRuCTPxoG7ms55B//qp1g8nEu9Qz5I6sNkqU0hx2fHoxS1FYh+K12+Fwaumk4+FVbF
+        yvg6c9XxXvPc5dQk63bDPfpKX5ZYr35yfYp1qrMurY9El1ArVXvddVpXN7L4Aqm3X5XIEr1Dvc0qv
+        Es2rapgiMnWI8RMcLWB4rIbnKGe/NhCDohEnSsa5nw+yJo72DfEM4PPmTzhD+BbE1xm/4kW1ODJsS
+        IXWghfuVx5MExAFBw/wJegupeG/h/RID3IA2NY+QpakMTZXJDnqR9ctJm6+zTnSA5v1MogOSqShR8
+        Vi0IwENQ==;
+Received: from [85.195.105.114] (port=53913 helo=gmail.com)
+        by server.dsmega.com with esmtpa (Exim 4.93)
+        (envelope-from <roberthelmut144@gmail.com>)
+        id 1qWwhn-0002n1-Cu
+        for linux-serial@vger.kernel.org; Fri, 18 Aug 2023 13:27:47 +0300
+Reply-To: robert.helmut@selectlaboratoriesltd.co.uk
+From:   Robert Helmut <roberthelmut144@gmail.com>
+To:     linux-serial@vger.kernel.org
+Subject: Re: Supply
+Date:   18 Aug 2023 03:27:46 -0700
+Message-ID: <20230818032746.D0CFF480DFDA6B51@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - server.dsmega.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - gmail.com
+X-Get-Message-Sender-Via: server.dsmega.com: authenticated_id: info@remzavod.com
+X-Authenticated-Sender: server.dsmega.com: info@remzavod.com
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-For the last couple of years Linux kernel got rid of a few architectures
-and many platforms. Hence some PORT_* definitions in the serial_core.h
-become unused and redundant. Remove them for good.
+Greetings,
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- include/uapi/linux/serial_core.h | 43 ++------------------------------
- 1 file changed, 2 insertions(+), 41 deletions(-)
+I have a business plan that will benefit you from my company
+where i work as the head of research and dev. Contact me through
+my company provided email addresss and i will give you details of
+my intent for your consideration.
 
-diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-index 281fa286555c..c361570a334f 100644
---- a/include/uapi/linux/serial_core.h
-+++ b/include/uapi/linux/serial_core.h
-@@ -28,7 +28,7 @@
-  */
- #define PORT_NS16550A	14
- #define PORT_XSCALE	15
--#define PORT_RM9000	16	/* PMC-Sierra RM9xxx internal UART */
-+
- #define PORT_OCTEON	17	/* Cavium OCTEON internal UART */
- #define PORT_AR7	18	/* Texas Instruments AR7 internal UART */
- #define PORT_U6_16550A	19	/* ST-Ericsson U6xxx internal UART */
-@@ -94,15 +94,9 @@
- #define PORT_SCIF	53
- #define PORT_IRDA	54
- 
--/* Samsung S3C2410 SoC and derivatives thereof */
--#define PORT_S3C2410    55
--
- /* SGI IP22 aka Indy / Challenge S / Indigo 2 */
- #define PORT_IP22ZILOG	56
- 
--/* Sharp LH7a40x -- an ARM9 SoC series */
--#define PORT_LH7A40X	57
--
- /* PPC CPM type number */
- #define PORT_CPM        58
- 
-@@ -112,51 +106,27 @@
- /* IBM icom */
- #define PORT_ICOM	60
- 
--/* Samsung S3C2440 SoC */
--#define PORT_S3C2440	61
--
- /* Motorola i.MX SoC */
- #define PORT_IMX	62
- 
--/* Marvell MPSC (obsolete unused) */
--#define PORT_MPSC	63
--
- /* TXX9 type number */
- #define PORT_TXX9	64
- 
--/* Samsung S3C2400 SoC */
--#define PORT_S3C2400	67
--
--/* M32R SIO */
--#define PORT_M32R_SIO	68
--
- /*Digi jsm */
- #define PORT_JSM        69
- 
- /* SUN4V Hypervisor Console */
- #define PORT_SUNHV	72
- 
--#define PORT_S3C2412	73
--
- /* Xilinx uartlite */
- #define PORT_UARTLITE	74
- 
--/* Blackfin bf5xx */
--#define PORT_BFIN	75
--
- /* Broadcom SB1250, etc. SOC */
- #define PORT_SB1250_DUART	77
- 
- /* Freescale ColdFire */
- #define PORT_MCF	78
- 
--/* Blackfin SPORT */
--#define PORT_BFIN_SPORT		79
--
--/* MN10300 on-chip UART numbers */
--#define PORT_MN10300		80
--#define PORT_MN10300_CTS	81
--
- #define PORT_SC26XX	82
- 
- /* SH-SCI */
-@@ -164,9 +134,6 @@
- 
- #define PORT_S3C6400	84
- 
--/* NWPSERIAL, now removed */
--#define PORT_NWPSERIAL	85
--
- /* MAX3100 */
- #define PORT_MAX3100    86
- 
-@@ -225,13 +192,10 @@
- /* ST ASC type numbers */
- #define PORT_ASC       105
- 
--/* Tilera TILE-Gx UART */
--#define PORT_TILEGX	106
--
- /* MEN 16z135 UART */
- #define PORT_MEN_Z135	107
- 
--/* SC16IS74xx */
-+/* SC16IS7xx */
- #define PORT_SC16IS7XX   108
- 
- /* MESON */
-@@ -243,9 +207,6 @@
- /* SPRD SERIAL  */
- #define PORT_SPRD	111
- 
--/* Cris v10 / v32 SoC */
--#define PORT_CRIS	112
--
- /* STM32 USART */
- #define PORT_STM32	113
- 
--- 
-2.40.0.1.gaa8946217a0b
+Sincerely
+Robert Helmut
+Research & Dev Dept.
+Select Pharma Lab. Ltd .UK
+---------------------------------
+Email: robert.helmut@selectlaboratoriesltd.co.uk
+Select Pharma Lab. Ltd .UK
+First Floor, Quay 2, 139 Fountain bridge, Edinburgh, EH3 9QG,
+United Kingdom
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3DDISCLAIMER NOTICE=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+The content of this message is confidential. If you have received=20
+it by mistake, please inform us by an email reply and then delete=20
+the message. It is forbidden to copy, forward, or in any way=20
+reveal the contents of this message to anyone. The integrity and=20
+security of this email cannot be guaranteed over the Internet.=20
+Therefore, the sender will not be held liable for any damage=20
+caused by the message.
+
+=C2=A9 Copyright 2023 Select Pharma Lab. Ltd. All Right Reserved.
+
 
