@@ -2,86 +2,90 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F35C6EE4993
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Aug 2023 08:24:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A466EE4996
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Aug 2023 08:45:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233942AbjHUIYu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Aug 2023 04:24:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56808 "EHLO
+        id S234157AbjHUIpt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 21 Aug 2023 04:45:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230097AbjHUIYt (ORCPT
+        with ESMTP id S230241AbjHUIpt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Aug 2023 04:24:49 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74AEF98;
-        Mon, 21 Aug 2023 01:24:48 -0700 (PDT)
+        Mon, 21 Aug 2023 04:45:49 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E94A6;
+        Mon, 21 Aug 2023 01:45:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692606288; x=1724142288;
+  t=1692607546; x=1724143546;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=p2Ait7dim8Mm8p4a+uh34/YcLbSXgij1fLB8TjrgqPk=;
-  b=kAWpM9REUnbitS03AiwqIqa37uwvbqQsm+bMMVlSKMPg1vuxIohNnolp
-   GZjC0E+O7FP3Y4JA1qZi6RDJLRMgAE9JTTjIJWBGZ66i81rNTMS05VRNl
-   ZXP8w2AxtMThDrhEf3C+y69q+qCUvEZhnIudp+cWFv8qTY4bPQpMTYVSJ
-   v3ImKPYIhCPpf/HwF2O2slTfqoTz2qyleLL048VdFTMSF+ErQITWpoamU
-   5SHn7hs9RdtcjubFcI3Gy2KIooODvr5okUr6InlgR4Ha05SdKjp5uu+Bd
-   89f1u7I2dWlLj6HM2k1kG7lph/1kkzTay3LVu5uiu1zo1SzXYvrKFQ0vG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10808"; a="376282187"
+  bh=ulwyj8L4iUR1Ogkpvo1Opc9auWIJJoa9ZPlFBjXThPc=;
+  b=Gjd/Me4fKmJDamYX+SQ7MgkQW16dLHMzu8lBDC4S9U3rZV/Ykh7pqO42
+   nAlddVPpZDpbTud5yB99FgS4CSI2bzucLEg+gGqE00miA+5B8YXx63wW2
+   XJgqIIXaN1xYftQCwnbxpymlVcI41gED2ur8qA0cn/bW6VIjgGbGJvxaT
+   w9rhnOexNrI8azmip1DG2pr9di3Hin6SJzWtvQFx2FdaV/qCpKkUhYnVP
+   Jaz+ezGyk45SMhsHlV5OWtTv2zqYn/KI4Pmy+PxCepQMQICvQ1WtKW00f
+   BJ7fKxty3c6xbTvf/XIbjNMCWsPmOU8/YBygPJpC66VPIdHr76QOHcHVk
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10808"; a="439908572"
 X-IronPort-AV: E=Sophos;i="6.01,189,1684825200"; 
-   d="scan'208";a="376282187"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2023 01:24:46 -0700
+   d="scan'208";a="439908572"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2023 01:45:45 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10808"; a="685579168"
+X-IronPort-AV: E=McAfee;i="6600,9927,10808"; a="738819766"
 X-IronPort-AV: E=Sophos;i="6.01,189,1684825200"; 
-   d="scan'208";a="685579168"
+   d="scan'208";a="738819766"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003.jf.intel.com with ESMTP; 21 Aug 2023 01:24:43 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 21 Aug 2023 01:45:43 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qY0DK-005WTI-15;
-        Mon, 21 Aug 2023 11:24:42 +0300
-Date:   Mon, 21 Aug 2023 11:24:42 +0300
+        id 1qY0Xd-006EUT-0F;
+        Mon, 21 Aug 2023 11:45:41 +0300
+Date:   Mon, 21 Aug 2023 11:45:40 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 1/1] serial: core: Remove unused PORT_* definitions
-Message-ID: <ZOMfSorbfxIYMwkJ@smile.fi.intel.com>
-References: <20230818111229.764380-1-andriy.shevchenko@linux.intel.com>
- <ZOMe2NIMp+a8ShsX@smile.fi.intel.com>
+To:     Justin Chen <justin.chen@broadcom.com>
+Cc:     linux-serial@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
+        "open list:TTY LAYER" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] serial: 8250_bcm7271: improve bcm7271 8250 port
+Message-ID: <ZOMkNKwUBtoikb3q@smile.fi.intel.com>
+References: <1692306801-13191-1-git-send-email-justin.chen@broadcom.com>
+ <ZN9PHgS3Ds/Su8Tu@smile.fi.intel.com>
+ <7332fd46-0310-8fdd-81a6-4ac722a6eda4@broadcom.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZOMe2NIMp+a8ShsX@smile.fi.intel.com>
+In-Reply-To: <7332fd46-0310-8fdd-81a6-4ac722a6eda4@broadcom.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Aug 21, 2023 at 11:22:49AM +0300, Andy Shevchenko wrote:
-> On Fri, Aug 18, 2023 at 02:12:29PM +0300, Andy Shevchenko wrote:
-> > For the last couple of years Linux kernel got rid of a few architectures
-> > and many platforms. Hence some PORT_* definitions in the serial_core.h
-> > become unused and redundant. Remove them for good.
-> 
-> Below are results via Debian Code Search.
-> 
-> Note, I excluded Linux kernel itself from the "user" and Hurd, which seems
-> to have Linux kernel v2.6 which is _provider_ of the definition(s).
+On Fri, Aug 18, 2023 at 12:22:25PM -0700, Justin Chen wrote:
+> On 8/18/23 3:59 AM, Andy Shevchenko wrote:
+> > On Thu, Aug 17, 2023 at 02:13:18PM -0700, Justin Chen wrote:
 
 ...
 
-> > -#define PORT_RM9000	16	/* PMC-Sierra RM9xxx internal UART */
+> > > +/* Broadcom BCM7271 UART */
+> > > +#define PORT_BCM7271    76
+> > 
+> > 13 is free why not using it?
 > 
-> ifdeffed, safe to remove.
+> I was looking for a number close to another Broadcom port. I was
+> prioritizing locality. But I have no issues with 13, I will change in v3.
 
-Actually on the second thought, this can bring a collision in case someone adds
-another ID with the same value.
-
-I'll issue the v2 with this line left untouched.
+Please, don't. I realized that they are defined in different file.
+So, the first gap is 43. but I would like to compress the list first.
 
 -- 
 With Best Regards,
