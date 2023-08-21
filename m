@@ -2,93 +2,74 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27122EE4996
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Aug 2023 08:49:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13611EE4996
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Aug 2023 15:51:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234108AbjHUItu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Aug 2023 04:49:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53030 "EHLO
+        id S234963AbjHUPvS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 21 Aug 2023 11:51:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234106AbjHUItt (ORCPT
+        with ESMTP id S232444AbjHUPvS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Aug 2023 04:49:49 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7299BBB;
-        Mon, 21 Aug 2023 01:49:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692607787; x=1724143787;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=4OvhXE9BEH8lho9tHmIhx8J5oxgCxOBcUfxNpjfihmc=;
-  b=BvXwRbVcYp8fJsiDqgWmW4kw4HzgZZ+QExr47DOlFUH1P3MmNJseMNG8
-   iSZsOC9sN/719A7IF5zULUKx0W6HZeEKwIKmMP/s+ZEhZIwioRIeXn9Ed
-   TmJW+2wiOz08TRfGTvWqmqXooMalLPdShO1bdddyFwAwqmGVimxhP+2zd
-   Fx9B9Qej5zyLyBm/BhaR3oX/+A62kiZWMgEYz4BNknlHQjsddkODCHtnb
-   o70CVC6VNKRaU+dPx1eHdqpvt6HBjJJG+98qcHGUm2XJTSEvA83Xe/Cmo
-   IlPO+jZlhgNrXPwvPBfmB1Gq6dZklrCrW1FUPQkXw0LabTPGV5POki3Tc
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10808"; a="377274510"
-X-IronPort-AV: E=Sophos;i="6.01,189,1684825200"; 
-   d="scan'208";a="377274510"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2023 01:49:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10808"; a="859409797"
-X-IronPort-AV: E=Sophos;i="6.01,189,1684825200"; 
-   d="scan'208";a="859409797"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga004.jf.intel.com with ESMTP; 21 Aug 2023 01:49:43 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qY0bV-006Myi-0E;
-        Mon, 21 Aug 2023 11:49:41 +0300
-Date:   Mon, 21 Aug 2023 11:49:40 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Justin Chen <justin.chen@broadcom.com>
-Cc:     linux-serial@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
+        Mon, 21 Aug 2023 11:51:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9329EEE;
+        Mon, 21 Aug 2023 08:51:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 273B16158A;
+        Mon, 21 Aug 2023 15:51:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8469DC433C8;
+        Mon, 21 Aug 2023 15:51:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1692633075;
+        bh=9otT1DHO31j/FkSQJXYWTDcERJPz93WsiClsF2PPdps=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kCLWkFDUIpB6MufmfuoIifz1l5a/qhpbnMWLHoLQ+FTzyQuAMsihbmu2lor1uOepk
+         3ZlhiUr2mAvMr5BLqtoEf7bV4nS8QQtTesykhNRBK2EK6c7kCTp92qEJvH+Msw6a5D
+         XWsq93Qmh4dgZIqhh7xAnVWfjoEdYseMHTjVLWOhyuyHXqSk9iXxDOrwSfmERVZ1BA
+         jG7JbgpSOZfxU/oqQU9Tuq6PhagOj0BZ4+j06x59k1SIB+DZ2lE+fShIkFiM4VqG3U
+         DpqFx9sYEAQdj7Qu7p2pTkNofLB3OtbtpkR214/6qeqV4Qrvejn14+KegAT9QoC9Oo
+         wYB3xY4weGVGQ==
+Received: (nullmailer pid 1727484 invoked by uid 1000);
+        Mon, 21 Aug 2023 15:51:13 -0000
+Date:   Mon, 21 Aug 2023 10:51:13 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Jisheng Zhang <jszhang@kernel.org>
+Cc:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org,
         Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
-        "open list:TTY LAYER" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3] serial: 8250_bcm7271: improve bcm7271 8250 port
-Message-ID: <ZOMlJAKfQC8W6OkE@smile.fi.intel.com>
-References: <1692393971-31361-1-git-send-email-justin.chen@broadcom.com>
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v2 1/2] dt-bindings: serial: snps-dw-apb-uart: make
+ interrupt optional
+Message-ID: <169263307160.1727322.12090577692395034504.robh@kernel.org>
+References: <20230806092056.2467-1-jszhang@kernel.org>
+ <20230806092056.2467-2-jszhang@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1692393971-31361-1-git-send-email-justin.chen@broadcom.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20230806092056.2467-2-jszhang@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Aug 18, 2023 at 02:26:08PM -0700, Justin Chen wrote:
-> The 8250 BCM7271 UART is not a direct match to PORT_16550A and other
-> generic ports do not match its hardware capabilities. PORT_ALTR matches
-> the rx trigger levels, but its vendor configurations are not compatible.
-> Unfortunately this means we need to create another port to fully capture
-> the hardware capabilities of the BCM7271 UART.
+
+On Sun, 06 Aug 2023 17:20:55 +0800, Jisheng Zhang wrote:
+> The driver fall back to poll style when there's no irq. "poll" still
+> looks better than no support.
 > 
-> To alleviate some latency pressures, we default the rx trigger level to 8.
+> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 1 -
+>  1 file changed, 1 deletion(-)
+> 
 
-...
-
-> v3
-> 	- Switch PORT_BCM7271 to 13
-
-This was very bad suggestion, sorry. You need to use another gap.
-
-So, that seventy something was good enough.
-
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Reviewed-by: Rob Herring <robh@kernel.org>
 
