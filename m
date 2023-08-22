@@ -2,108 +2,100 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EE54EE4996
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Aug 2023 11:30:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 835E3EE4996
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Aug 2023 11:38:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232033AbjHVLac (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Aug 2023 07:30:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34020 "EHLO
+        id S235192AbjHVLiH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Aug 2023 07:38:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233766AbjHVLac (ORCPT
+        with ESMTP id S235138AbjHVLh4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Aug 2023 07:30:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB747CD7;
-        Tue, 22 Aug 2023 04:30:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D8A8639AE;
-        Tue, 22 Aug 2023 11:30:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 313EFC433C8;
-        Tue, 22 Aug 2023 11:30:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1692703828;
-        bh=6RYnnMxHVsAhH6PvvqKQGkf38Ka3yLC0O+JsZ9/8zR0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=M7wsRiush/wtx+236v2mUKr3EhqS3t/Pet4KRw0o19pq0M1GSX06v9eruy9K2cYP0
-         3n3us6IgSUmCoLug6Mbfhikg/Vvs/vy3X31v1TaMzombEkY+ueKyW9xamEkdWp4moJ
-         7+z8zECA4mUeD44LgQFjrjyEvsweczlqFW++C5dc=
-Date:   Tue, 22 Aug 2023 13:30:25 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Hari Prasath Gujulan Elango <Hari.PrasathGE@microchip.com>
-Cc:     richard.genoud@gmail.com, jirislaby@kernel.org,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        claudiu.beznea@tuxon.dev, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] serial: atmel: Fix Spectre v1 vulnerability reported by
- smatch
-Message-ID: <2023082220-matchless-stagnate-7dab@gregkh>
-References: <20230822111321.56434-1-Hari.PrasathGE@microchip.com>
+        Tue, 22 Aug 2023 07:37:56 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A251BE;
+        Tue, 22 Aug 2023 04:37:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692704252; x=1724240252;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qTy2dsEMxoSY4LsyRuCSkODsgDqQ6tQo1/+kl7l0kv0=;
+  b=k8jHIvrvcL/XB4HSw2lgKH/RWh/GEI+tiXyOB5EVaRqifrCXp4FWaLyA
+   Cr33tlhUdb/GK3219quTix7gZQ/WHlCNdI2mToDJ+6Fh+JMXWZc+qDXO+
+   rhYQ7KC858MxfzvyaYLghkjrwfz/ExekcEWKiBOVm6SwGmzMW1TgZgywO
+   WKfYgh66DDyXr/cIe+aMIIVEf7p/9tvmD3x3AZUWPRQ//90ct0NALWYFa
+   trLP74mYLqndxCluOAdTiLUWFOMBeyyu6hHF6GXfuP6KD0XQXFp4jd2Qg
+   dBc4OBW/HlLYbwU+CwFp1i6NP7NlYP7EKZqXHuwvNnTThyuiWEU3AY62W
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10809"; a="377612957"
+X-IronPort-AV: E=Sophos;i="6.01,192,1684825200"; 
+   d="scan'208";a="377612957"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2023 04:36:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10809"; a="826302594"
+X-IronPort-AV: E=Sophos;i="6.01,192,1684825200"; 
+   d="scan'208";a="826302594"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by FMSMGA003.fm.intel.com with ESMTP; 22 Aug 2023 04:36:25 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qYPgN-008MbU-0o;
+        Tue, 22 Aug 2023 14:36:23 +0300
+Date:   Tue, 22 Aug 2023 14:36:22 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Justin Chen <justin.chen@broadcom.com>
+Cc:     linux-serial@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
+        "open list:TTY LAYER" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4] serial: 8250_bcm7271: improve bcm7271 8250 port
+Message-ID: <ZOSdthfLS1v4TJlH@smile.fi.intel.com>
+References: <1692643978-16570-1-git-send-email-justin.chen@broadcom.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230822111321.56434-1-Hari.PrasathGE@microchip.com>
+In-Reply-To: <1692643978-16570-1-git-send-email-justin.chen@broadcom.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 22, 2023 at 04:43:21PM +0530, Hari Prasath Gujulan Elango wrote:
-> smatch reports the below spectre variant 1 vulnerability.
+On Mon, Aug 21, 2023 at 11:52:51AM -0700, Justin Chen wrote:
+> The 8250 BCM7271 UART is not a direct match to PORT_16550A and other
+> generic ports do not match its hardware capabilities. PORT_ALTR matches
+> the rx trigger levels, but its vendor configurations are not compatible.
+> Unfortunately this means we need to create another port to fully capture
+> the hardware capabilities of the BCM7271 UART.
 > 
-> drivers/tty/serial/atmel_serial.c:2675 atmel_console_setup() warn: potential spectre issue 'atmel_ports' [r] (local cap)
-> 
-> Fix the same by using the array_index_nospec() to mitigate this
-> potential vulnerability especially because the console index is
-> controlled by user-space.
-> 
-> Signed-off-by: Hari Prasath Gujulan Elango <Hari.PrasathGE@microchip.com>
-> ---
->  drivers/tty/serial/atmel_serial.c | 15 +++++++++++++--
->  1 file changed, 13 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 3467a875641a..25f004dd9efd 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -33,6 +33,7 @@
->  #include <linux/suspend.h>
->  #include <linux/mm.h>
->  #include <linux/io.h>
-> +#include <linux/nospec.h>
->  
->  #include <asm/div64.h>
->  #include <asm/ioctls.h>
-> @@ -2662,13 +2663,23 @@ static void __init atmel_console_get_options(struct uart_port *port, int *baud,
->  
->  static int __init atmel_console_setup(struct console *co, char *options)
->  {
-> -	struct uart_port *port = &atmel_ports[co->index].uart;
-> -	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-> +	struct uart_port *port;
-> +	struct atmel_uart_port *atmel_port;
->  	int baud = 115200;
->  	int bits = 8;
->  	int parity = 'n';
->  	int flow = 'n';
->  
-> +	if (unlikely(co->index < 0 || co->index >= ATMEL_MAX_UART))
+> To alleviate some latency pressures, we default the rx trigger level to 8.
 
-Only ever use likely/unlikely if you can measure the difference with and
-without the marking.  Otherwise do not use it as the compiler and cpu do
-a better job than we do in figuring this out.
+FWIW,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+...
+
+> +	[PORT_BCM7271] = {
+> +		.name		= "Broadcom BCM7271 UART",
+> +		.fifo_size	= 32,
+> +		.tx_loadsz	= 32,
+> +		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01,
+> +		.rxtrig_bytes	= {1, 8, 16, 30},
+> +		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
+> +	},
+
+Strictly speaking it's better to keep this ordered according to the number, but
+it's fine like this anyway.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-> +		return -ENODEV;
-> +
-> +	co->index = array_index_nospec(co->index, ATMEL_MAX_UART);
-
-How exactl is index controlled by userspace such that a spectre gadget
-can be used here?  You have to be able to call this multiple times in a
-row, unsuccessfully and successfully, how does that happen through the
-console api?
-
-thanks,
-
-greg k-h
