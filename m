@@ -2,139 +2,107 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4329EE4996
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Aug 2023 08:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 129E3EE4993
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Aug 2023 08:52:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233692AbjHVIXW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Aug 2023 04:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34546 "EHLO
+        id S233155AbjHVIwn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Aug 2023 04:52:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbjHVIXW (ORCPT
+        with ESMTP id S232330AbjHVIwm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Aug 2023 04:23:22 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C439012C;
-        Tue, 22 Aug 2023 01:23:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692692600; x=1724228600;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=7ZtFOd37UZeljeWUI+hNQjCnZrwIHihIrplW6xrvVMs=;
-  b=Zoq8RjexDkBRjbJG9VK9Iy9Wn/Bm99jV8RUtNGVjRLMQmGaU4LlKc6IK
-   Z947kIhkrfojxrN2XNQy/MwQunPSLOVfx/x3IdTUCOSav3pyDqDI99m4O
-   JZir6CZcDE4xp1bdaO5HgNT9NetL0zuFoKCF3sRsPnDubBLKqLhHfqWQA
-   WAxmRjjUGirMAn+p90f6xDxhFugK0PCGp7MEh7sEFwAvf3WW6j+jH6Z1Z
-   tKC9TKSa2Ycylxkz0LnunFjsV8526fH6CiEK7W0Sj8LqaK6nb/HdnAFRU
-   d5H/bUJIsHb1CokkFDFZLPfOkiCiIEM+A29l1x4GNbxXqEULill80CbwT
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10809"; a="376552101"
-X-IronPort-AV: E=Sophos;i="6.01,192,1684825200"; 
-   d="scan'208";a="376552101"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2023 01:23:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10809"; a="739225314"
-X-IronPort-AV: E=Sophos;i="6.01,192,1684825200"; 
-   d="scan'208";a="739225314"
-Received: from refaase-mobl.ger.corp.intel.com ([10.252.53.244])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2023 01:23:17 -0700
-Date:   Tue, 22 Aug 2023 11:23:14 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Wenhua Lin <Wenhua.Lin@unisoc.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        wenhua lin <wenhua.lin1994@gmail.com>,
-        Xiongpeng Wu <xiongpeng.wu@unisoc.com>,
-        Zhirong Qiu <zhirong.qiu@unisoc.com>,
-        Zhaochen Su <Zhaochen.Su@unisoc.com>
-Subject: Re: [PATCH] tty/serial: Cancel work queue before closing uart
-In-Reply-To: <20230818031532.15591-1-Wenhua.Lin@unisoc.com>
-Message-ID: <5b2cc220-eafc-c34a-c0de-617bd09c9cff@linux.intel.com>
-References: <20230818031532.15591-1-Wenhua.Lin@unisoc.com>
+        Tue, 22 Aug 2023 04:52:42 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC48ECE;
+        Tue, 22 Aug 2023 01:52:40 -0700 (PDT)
+Received: from localhost.localdomain (unknown [39.45.215.81])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: usama.anjum)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id EB99D66071F4;
+        Tue, 22 Aug 2023 09:52:36 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1692694359;
+        bh=NGdGyOxLJtlnYFKmnZVtWI/rXq95i4OikjQx7fOm8Ls=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ImK/YbGqOs3zVZ4bLjzr+ehQ9VcISLRyIUKyI3aYHrysIzK3idPwjhnXTy0EhchmC
+         /qUAIIGLrfxdX3+E2wmfZPNxtBd1SFiiI3opX9X7afDeZl/ehbyVo0aTuzknwtcbdj
+         8rnefvKwV/99Bz3ncGpMWjMnzdqOJVHL0ttjN4FNqX63EgSDsgK5BZ5NXTL58MK172
+         4pWOE7TJgSNUJBDJUm8Zx6FDhIslAWwVt7DYBbvAm8oLv8AlyExsngxG2AHl8JoXyC
+         WDiIl2l6kyvo3Z3X4HHUciLiKQy1i7de34w2OkIYnHOWrYLa3sREQfnW7D8pzjiHZZ
+         L02PLQSjl0s2A==
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Ingo Molnar <mingo@elte.hu>
+Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        kernel@collabora.com, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH v2] tty/sysrq: replace smp_processor_id() with get_cpu()
+Date:   Tue, 22 Aug 2023 13:52:03 +0500
+Message-Id: <20230822085204.2575767-1-usama.anjum@collabora.com>
+X-Mailer: git-send-email 2.40.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 18 Aug 2023, Wenhua Lin wrote:
+The smp_processor_id() shouldn't be called from preemptible code.
+Instead use get_cpu() and put_cpu() which disables preemption in
+addition to getting the processor id. This fixes the following bug:
 
-I've problems following your description below due to grammar errors.
+[  119.143590] sysrq: Show backtrace of all active CPUs
+[  119.143902] BUG: using smp_processor_id() in preemptible [00000000] code: bash/873
+[  119.144586] caller is debug_smp_processor_id+0x20/0x30
+[  119.144827] CPU: 6 PID: 873 Comm: bash Not tainted 5.10.124-dirty #3
+[  119.144861] Hardware name: QEMU QEMU Virtual Machine, BIOS 2023.05-1 07/22/2023
+[  119.145053] Call trace:
+[  119.145093]  dump_backtrace+0x0/0x1a0
+[  119.145122]  show_stack+0x18/0x70
+[  119.145141]  dump_stack+0xc4/0x11c
+[  119.145159]  check_preemption_disabled+0x100/0x110
+[  119.145175]  debug_smp_processor_id+0x20/0x30
+[  119.145195]  sysrq_handle_showallcpus+0x20/0xc0
+[  119.145211]  __handle_sysrq+0x8c/0x1a0
+[  119.145227]  write_sysrq_trigger+0x94/0x12c
+[  119.145247]  proc_reg_write+0xa8/0xe4
+[  119.145266]  vfs_write+0xec/0x280
+[  119.145282]  ksys_write+0x6c/0x100
+[  119.145298]  __arm64_sys_write+0x20/0x30
+[  119.145315]  el0_svc_common.constprop.0+0x78/0x1e4
+[  119.145332]  do_el0_svc+0x24/0x8c
+[  119.145348]  el0_svc+0x10/0x20
+[  119.145364]  el0_sync_handler+0x134/0x140
+[  119.145381]  el0_sync+0x180/0x1c0
 
-> When the system constantly sleeps and wankes up, plugging and unplugging
+Cc: stable@vger.kernel.org
+Fixes: 47cab6a722d4 ("debug lockups: Improve lockup detection, fix generic arch fallback")
+Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+---
+ drivers/tty/sysrq.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-wakes
+diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+index 23198e3f1461a..6b4a28bcf2f5f 100644
+--- a/drivers/tty/sysrq.c
++++ b/drivers/tty/sysrq.c
+@@ -262,13 +262,14 @@ static void sysrq_handle_showallcpus(u8 key)
+ 		if (in_hardirq())
+ 			regs = get_irq_regs();
+ 
+-		pr_info("CPU%d:\n", smp_processor_id());
++		pr_info("CPU%d:\n", get_cpu());
+ 		if (regs)
+ 			show_regs(regs);
+ 		else
+ 			show_stack(NULL, NULL, KERN_INFO);
+ 
+ 		schedule_work(&sysrq_showallcpus);
++		put_cpu();
+ 	}
+ }
+ 
+-- 
+2.40.1
 
-> the USB will probalility trigger a kernel crash problem.
-
-probalility is typoed and I cannot guess which of the words you meant, 
-please fix.
-
-If there's a known crash you're fixing here, please quote the crash 
-message in the changelog (and you should probably add Fixes: tag too in 
-that case).
-
-> The reason is
-> that at this time, the system entered deep and turned off uart, and the
-
-"entered deep" lacks probably some word?
-
-> abnormal behavior of plugging and upplugging the USB triggered the read
-
-unplugging.
-
-Why call that abnormal behavior? Isn't USB expected to removed.
-
-> data process of uart, causing access to uart to hang.
-
-Are you saying a read was triggered while the UART was suspended or what?
-
-> The final solution
-> we came up with is to cancel the work queue before shutting down uart
-> , while ensuring that there is no uart business.
-
-", while ensuring" -> to ensure
-
-"uart business" is too vague, you should replace it with something more 
-concrete.
-
-Thanks.
-
---
- i.
-
-> 
-> Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
-> ---
->  drivers/tty/serial/sprd_serial.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-> index b58f51296ace..eddff4360155 100644
-> --- a/drivers/tty/serial/sprd_serial.c
-> +++ b/drivers/tty/serial/sprd_serial.c
-> @@ -20,6 +20,7 @@
->  #include <linux/slab.h>
->  #include <linux/tty.h>
->  #include <linux/tty_flip.h>
-> +#include "../tty.h"
->  
->  /* device name */
->  #define UART_NR_MAX		8
-> @@ -1221,7 +1222,10 @@ static int sprd_probe(struct platform_device *pdev)
->  static int sprd_suspend(struct device *dev)
->  {
->  	struct sprd_uart_port *sup = dev_get_drvdata(dev);
-> +	struct uart_port *uport = &sup->port;
-> +	struct tty_port *tty = &uport->state->port;
->  
-> +	tty_buffer_cancel_work(tty);
->  	uart_suspend_port(&sprd_uart_driver, &sup->port);
->  
->  	return 0;
-> 
