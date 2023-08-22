@@ -2,119 +2,95 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB231EE49A3
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Aug 2023 13:24:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33BC1EE49A3
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Aug 2023 13:27:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236089AbjHVNYQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Aug 2023 09:24:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51842 "EHLO
+        id S233425AbjHVN1t (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Aug 2023 09:27:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229805AbjHVNYP (ORCPT
+        with ESMTP id S233340AbjHVN1t (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Aug 2023 09:24:15 -0400
+        Tue, 22 Aug 2023 09:27:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC3CFCE2;
-        Tue, 22 Aug 2023 06:24:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C84BE;
+        Tue, 22 Aug 2023 06:27:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CA40656A5;
-        Tue, 22 Aug 2023 13:24:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECBF6C433C7;
-        Tue, 22 Aug 2023 13:24:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED68D62931;
+        Tue, 22 Aug 2023 13:27:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CADE6C433C7;
+        Tue, 22 Aug 2023 13:27:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1692710651;
-        bh=1H6Ce6imURA+wf6y7Aq3H2FeClk2I0iVXg12l/OrwhQ=;
+        s=korg; t=1692710858;
+        bh=jKMOvy9lc4aP5jpn9CLs1Fndc4z1ORTZc5x1QXcYTTk=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JX+8gbkFnBYwtZGPCh3LoDSxBLaem5Wgz5kd6bpIu6Dzqyc/1U05O12CAT8pegC5I
-         Bd/nKbs0sjkCrxOeYvRkcmt1isE28JNmOGcIOuFtnALoNApcC2GrLGS96Lw6kE7e0D
-         CzuEgPyw/xiRkJEdGMTtjTnb4NXK1v5kN4rBOCdU=
-Date:   Tue, 22 Aug 2023 15:24:08 +0200
+        b=YjPvp/A7LjlsdSeaWLFFOXlkAvZCXWNzCKrqKYyl8TqQX6OwVRBp9dI5kd+59nvpr
+         1WlYe5KF2FT0eIwaXBCtYXMinscuWvK3YjiH7TMO0ifdUgOrhMlpstfW9lLdQxkGoJ
+         sMLb4UnGdMTUzYpyFcC+YyTTUNPK+J/Q6AsklPkM=
+Date:   Tue, 22 Aug 2023 15:27:35 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, Ingo Molnar <mingo@elte.hu>,
-        kernel@collabora.com, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3] tty/sysrq: replace smp_processor_id() with get_cpu()
-Message-ID: <2023082258-lethargic-hazily-5c7e@gregkh>
-References: <20230822102606.2821311-1-usama.anjum@collabora.com>
+To:     Wenhua Lin <Wenhua.Lin@unisoc.com>
+Cc:     Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wenhua lin <wenhua.lin1994@gmail.com>,
+        Xiongpeng Wu <xiongpeng.wu@unisoc.com>,
+        Zhirong Qiu <zhirong.qiu@unisoc.com>,
+        Zhaochen Su <Zhaochen.Su@unisoc.com>
+Subject: Re: [PATCH] tty/serial: Cancel work queue before closing uart
+Message-ID: <2023082205-jazz-evade-7f1a@gregkh>
+References: <20230818031532.15591-1-Wenhua.Lin@unisoc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230822102606.2821311-1-usama.anjum@collabora.com>
+In-Reply-To: <20230818031532.15591-1-Wenhua.Lin@unisoc.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 22, 2023 at 03:26:06PM +0500, Muhammad Usama Anjum wrote:
-> The smp_processor_id() shouldn't be called from preemptible code.
-> Instead use get_cpu() and put_cpu() which disables preemption in
-> addition to getting the processor id. This fixes the following bug:
+On Fri, Aug 18, 2023 at 11:15:32AM +0800, Wenhua Lin wrote:
+> When the system constantly sleeps and wankes up, plugging and unplugging
+> the USB will probalility trigger a kernel crash problem. The reason is
+> that at this time, the system entered deep and turned off uart, and the
+> abnormal behavior of plugging and upplugging the USB triggered the read
+> data process of uart, causing access to uart to hang. The final solution
+> we came up with is to cancel the work queue before shutting down uart
+> , while ensuring that there is no uart business.
 > 
-> [  119.143590] sysrq: Show backtrace of all active CPUs
-> [  119.143902] BUG: using smp_processor_id() in preemptible [00000000] code: bash/873
-> [  119.144586] caller is debug_smp_processor_id+0x20/0x30
-> [  119.144827] CPU: 6 PID: 873 Comm: bash Not tainted 5.10.124-dirty #3
-> [  119.144861] Hardware name: QEMU QEMU Virtual Machine, BIOS 2023.05-1 07/22/2023
-> [  119.145053] Call trace:
-> [  119.145093]  dump_backtrace+0x0/0x1a0
-> [  119.145122]  show_stack+0x18/0x70
-> [  119.145141]  dump_stack+0xc4/0x11c
-> [  119.145159]  check_preemption_disabled+0x100/0x110
-> [  119.145175]  debug_smp_processor_id+0x20/0x30
-> [  119.145195]  sysrq_handle_showallcpus+0x20/0xc0
-> [  119.145211]  __handle_sysrq+0x8c/0x1a0
-> [  119.145227]  write_sysrq_trigger+0x94/0x12c
-> [  119.145247]  proc_reg_write+0xa8/0xe4
-> [  119.145266]  vfs_write+0xec/0x280
-> [  119.145282]  ksys_write+0x6c/0x100
-> [  119.145298]  __arm64_sys_write+0x20/0x30
-> [  119.145315]  el0_svc_common.constprop.0+0x78/0x1e4
-> [  119.145332]  do_el0_svc+0x24/0x8c
-> [  119.145348]  el0_svc+0x10/0x20
-> [  119.145364]  el0_sync_handler+0x134/0x140
-> [  119.145381]  el0_sync+0x180/0x1c0
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 47cab6a722d4 ("debug lockups: Improve lockup detection, fix generic arch fallback")
-
-How has this never shown up before now?  What changed to cause this to
-now be triggered?  This feels odd that no one has seen this in the past
-20+ years :(
-
-
-> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+> Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
 > ---
-> Changes since v2:
-> - Add changelog and resend
+>  drivers/tty/serial/sprd_serial.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> Changes since v1:
-> - Add "Cc: stable@vger.kernel.org" tag
-> ---
->  drivers/tty/sysrq.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-> index 23198e3f1461a..6b4a28bcf2f5f 100644
-> --- a/drivers/tty/sysrq.c
-> +++ b/drivers/tty/sysrq.c
-> @@ -262,13 +262,14 @@ static void sysrq_handle_showallcpus(u8 key)
->  		if (in_hardirq())
->  			regs = get_irq_regs();
+> diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
+> index b58f51296ace..eddff4360155 100644
+> --- a/drivers/tty/serial/sprd_serial.c
+> +++ b/drivers/tty/serial/sprd_serial.c
+> @@ -20,6 +20,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/tty.h>
+>  #include <linux/tty_flip.h>
+> +#include "../tty.h"
 >  
-> -		pr_info("CPU%d:\n", smp_processor_id());
-> +		pr_info("CPU%d:\n", get_cpu());
->  		if (regs)
->  			show_regs(regs);
->  		else
->  			show_stack(NULL, NULL, KERN_INFO);
+>  /* device name */
+>  #define UART_NR_MAX		8
+> @@ -1221,7 +1222,10 @@ static int sprd_probe(struct platform_device *pdev)
+>  static int sprd_suspend(struct device *dev)
+>  {
+>  	struct sprd_uart_port *sup = dev_get_drvdata(dev);
+> +	struct uart_port *uport = &sup->port;
+> +	struct tty_port *tty = &uport->state->port;
 >  
->  		schedule_work(&sysrq_showallcpus);
-> +		put_cpu();
+> +	tty_buffer_cancel_work(tty);
 
-Why are you putting the cpu _after_ you schedule the work?
+What does this serial port have to do with the USB subsystem in your
+changelog text?
 
-thanks,
+And as the kernel bot said, this breaks the build, you can't do this
+within a serial driver, sorry.
 
 greg k-h
