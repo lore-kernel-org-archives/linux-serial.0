@@ -2,89 +2,82 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5378EE4993
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Aug 2023 12:56:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32324EE49A3
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Aug 2023 12:58:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235884AbjHVM4e (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Aug 2023 08:56:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59718 "EHLO
+        id S230080AbjHVM6i (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Aug 2023 08:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235395AbjHVM4c (ORCPT
+        with ESMTP id S233849AbjHVM6h (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Aug 2023 08:56:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6755ECD1;
-        Tue, 22 Aug 2023 05:56:31 -0700 (PDT)
+        Tue, 22 Aug 2023 08:58:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5333ACC6;
+        Tue, 22 Aug 2023 05:58:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0061D61A44;
-        Tue, 22 Aug 2023 12:56:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE2D9C433C7;
-        Tue, 22 Aug 2023 12:56:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D830E6562A;
+        Tue, 22 Aug 2023 12:58:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0ED0C433C7;
+        Tue, 22 Aug 2023 12:58:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1692708990;
-        bh=u83VinJfs7MQi4Ly6CqCBrjqNaWBfD36bQjG7fO9JPc=;
+        s=korg; t=1692709115;
+        bh=J+zAD2cb5RM0CTTV8jJjql+PDmHDI1/1EyjfkxinMgY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AqVWJUl4Qn5JOZNqMpR6VRVx0WtUZmiKEUpN/6V9A+opPY/lHktb0qcrxfFMIzI7F
-         fWNfj7k/BScCJx6pZPA9h5f6gTTXZNCs8jvpGkXJ00Ggf0SWYCSLVwQG6R8jk1UmIJ
-         j+K7Ze9XDSsI7s/nt1xGL4J14mHBVvGJixcKHEqs=
-Date:   Tue, 22 Aug 2023 14:56:27 +0200
+        b=yCGm6BTKnf+Gxi1gPnxFgY3Cl37bQ4E3ABMBr94SVuqnVmBoLdAIczkWiJ3JDHCk7
+         Rg0DxefbThSUpf+Lyj0AdW0bYzjCQt2coX0qV5LyXKJVN5Tptdi7hOzt8cxHd6nKZz
+         Kvu21r1j3nQw+lvw1KkWWv9SwSyp34vNO8v2p5WQ=
+Date:   Tue, 22 Aug 2023 14:58:32 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 09/10] tty: tty_buffer: initialize variables in
- initializers already
-Message-ID: <2023082232-runaround-captive-aa7a@gregkh>
+Subject: Re: [PATCH 00/10] tty: tty_buffer: cleanup
+Message-ID: <2023082223-alongside-snuff-b0eb@gregkh>
 References: <20230816105530.3335-1-jirislaby@kernel.org>
- <20230816105530.3335-10-jirislaby@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230816105530.3335-10-jirislaby@kernel.org>
+In-Reply-To: <20230816105530.3335-1-jirislaby@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Aug 16, 2023 at 12:55:29PM +0200, Jiri Slaby (SUSE) wrote:
-> It makes the code both more compact, and more understandable.
+On Wed, Aug 16, 2023 at 12:55:20PM +0200, Jiri Slaby (SUSE) wrote:
+> This is another part (say part II.) of the previous type unification
+> across the tty layer[1]. This time, in tty_buffer. Apart from type
+> changes, this series contains a larger set of refactoring of the code.
+> Namely, unification of byte stuffing into the tty buffers into a single
+> function.
 > 
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> ---
->  drivers/tty/tty_buffer.c | 13 +++----------
->  1 file changed, 3 insertions(+), 10 deletions(-)
+> [1] https://lore.kernel.org/all/20230810091510.13006-1-jirislaby@kernel.org/
 > 
-> diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-> index 414bb7f9155f..44c0adaec850 100644
-> --- a/drivers/tty/tty_buffer.c
-> +++ b/drivers/tty/tty_buffer.c
-> @@ -262,17 +262,10 @@ static int __tty_buffer_request_room(struct tty_port *port, size_t size,
->  				     bool flags)
->  {
->  	struct tty_bufhead *buf = &port->buf;
-> -	struct tty_buffer *b, *n;
-> -	size_t left;
-> -	bool change;
-> +	struct tty_buffer *n, *b = buf->tail;
-> +	size_t left = (b->flags ? 1 : 2) * b->size - b->used;
+> Jiri Slaby (SUSE) (10):
+>   tty: tty_buffer: switch data type to u8
+>   tty: tty_buffer: use struct_size() in tty_buffer_alloc()
+>   tty: tty_buffer: unify tty_insert_flip_string_{fixed_flag,flags}()
+>   tty: tty_buffer: warn if losing flags in
+>     __tty_insert_flip_string_flags()
+>   tty: tty_buffer: switch insert functions to size_t
+>   tty: tty_buffer: let tty_prepare_flip_string() return size_t
+>   tty: tty_buffer: use __tty_insert_flip_string_flags() in
+>     tty_insert_flip_char()
+>   tty: tty_buffer: better types in __tty_buffer_request_room()
+>   tty: tty_buffer: initialize variables in initializers already
+>   tty: tty_buffer: invert conditions in __tty_buffer_request_room()
+> 
+>  Documentation/driver-api/tty/tty_buffer.rst |   7 +-
+>  drivers/tty/tty_buffer.c                    | 169 ++++++--------------
+>  include/linux/tty_buffer.h                  |   4 +-
+>  include/linux/tty_flip.h                    |  64 ++++++--
+>  4 files changed, 111 insertions(+), 133 deletions(-)
+> 
+> -- 
+> 2.41.0
+> 
 
-That's understandable?  Hah!
-
-I'll take it, but ick, the original:
-
-> +	bool change = !b->flags && flags;
->  
-> -	b = buf->tail;
-> -	if (!b->flags)
-> -		left = 2 * b->size - b->used;
-> -	else
-> -		left = b->size - b->used;
-
-Is much more readable.
-
-Well kind of, it's all a mess :)
-
-thanks,
+Nice work, thanks, all now queued up.
 
 greg k-h
