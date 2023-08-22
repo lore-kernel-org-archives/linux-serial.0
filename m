@@ -2,110 +2,92 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E9DEE4996
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Aug 2023 09:01:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB56EE4993
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Aug 2023 09:15:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234141AbjHVJBc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Aug 2023 05:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36348 "EHLO
+        id S234209AbjHVJPk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Aug 2023 05:15:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234140AbjHVJBc (ORCPT
+        with ESMTP id S234202AbjHVJPj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Aug 2023 05:01:32 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC851B2;
-        Tue, 22 Aug 2023 02:01:30 -0700 (PDT)
-Received: from localhost.localdomain (unknown [39.45.215.81])
+        Tue, 22 Aug 2023 05:15:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83DC7113;
+        Tue, 22 Aug 2023 02:15:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        (Authenticated sender: usama.anjum)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 61634660723E;
-        Tue, 22 Aug 2023 10:01:27 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1692694889;
-        bh=G+PYlsLKKNrAJfjnLhUkS/SXCH0SH1cJtUJtNZ50U6Q=;
-        h=From:To:Cc:Subject:Date:From;
-        b=kGi7C/fwaHu5a8ZX9E0xrhwivYmQ9nFQV2i0aRhf5Ag1tBQKCdVCQ8QWyuBfMLDGJ
-         vellhOLG+C48tk8dXJIaNGg72aRZIMQEkcAtPe/aadZFvs5Z8EcyI37HGIfgu0fmq2
-         z4c+q2LjoTk0VX4ATRzVZ7YFGvyXwTMSvN3MRiHE2RKw1688gsYj2xOL7dibahaPJS
-         F+Thb9u6OnMLND1UZWr0mbOB7+DEUu/j7mF4C4r8HOMDhwxj+Ps5STxKK4zM+0UYyX
-         guQUetONQwfdps0WvR0oIwMC4nu2k99uWU1kVjqXknY0odpUoSgp4HUOUAcNfI/kWS
-         VQhWpiTqpYAnQ==
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Ingo Molnar <mingo@elte.hu>
-Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CC0F611BF;
+        Tue, 22 Aug 2023 09:15:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECD36C433C7;
+        Tue, 22 Aug 2023 09:15:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1692695737;
+        bh=NaYhwuuLQL7D2HhPJrC7Hc7Nb5lI7cYzmX+Szyowccg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=zrs701lvRJ/UmAaj/jAYYQzjqsZ6Ms4zD3t2FMKHSbz0sfcg6LOnGQSHWRe9P2Afg
+         aKb1UC/hPXqwjVQOpho8UPGaYJOY0WNKI50NIdd9YUGzb/hsSQSWMfCwqNqw8ELS0i
+         Us4BrSzztpUOpKNSGFXiIj0XekUCawa+QWVNK2k0=
+Date:   Tue, 22 Aug 2023 11:15:34 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, Ingo Molnar <mingo@elte.hu>,
         kernel@collabora.com, stable@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH v2 RESEND] tty/sysrq: replace smp_processor_id() with get_cpu()
-Date:   Tue, 22 Aug 2023 14:01:11 +0500
-Message-Id: <20230822090112.2601273-1-usama.anjum@collabora.com>
-X-Mailer: git-send-email 2.40.1
+Subject: Re: [PATCH v2 RESEND] tty/sysrq: replace smp_processor_id() with
+ get_cpu()
+Message-ID: <2023082259-blazer-charity-b58f@gregkh>
+References: <20230822090112.2601273-1-usama.anjum@collabora.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230822090112.2601273-1-usama.anjum@collabora.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The smp_processor_id() shouldn't be called from preemptible code.
-Instead use get_cpu() and put_cpu() which disables preemption in
-addition to getting the processor id. This fixes the following bug:
+On Tue, Aug 22, 2023 at 02:01:11PM +0500, Muhammad Usama Anjum wrote:
+> The smp_processor_id() shouldn't be called from preemptible code.
+> Instead use get_cpu() and put_cpu() which disables preemption in
+> addition to getting the processor id. This fixes the following bug:
+> 
+> [  119.143590] sysrq: Show backtrace of all active CPUs
+> [  119.143902] BUG: using smp_processor_id() in preemptible [00000000] code: bash/873
+> [  119.144586] caller is debug_smp_processor_id+0x20/0x30
+> [  119.144827] CPU: 6 PID: 873 Comm: bash Not tainted 5.10.124-dirty #3
+> [  119.144861] Hardware name: QEMU QEMU Virtual Machine, BIOS 2023.05-1 07/22/2023
+> [  119.145053] Call trace:
+> [  119.145093]  dump_backtrace+0x0/0x1a0
+> [  119.145122]  show_stack+0x18/0x70
+> [  119.145141]  dump_stack+0xc4/0x11c
+> [  119.145159]  check_preemption_disabled+0x100/0x110
+> [  119.145175]  debug_smp_processor_id+0x20/0x30
+> [  119.145195]  sysrq_handle_showallcpus+0x20/0xc0
+> [  119.145211]  __handle_sysrq+0x8c/0x1a0
+> [  119.145227]  write_sysrq_trigger+0x94/0x12c
+> [  119.145247]  proc_reg_write+0xa8/0xe4
+> [  119.145266]  vfs_write+0xec/0x280
+> [  119.145282]  ksys_write+0x6c/0x100
+> [  119.145298]  __arm64_sys_write+0x20/0x30
+> [  119.145315]  el0_svc_common.constprop.0+0x78/0x1e4
+> [  119.145332]  do_el0_svc+0x24/0x8c
+> [  119.145348]  el0_svc+0x10/0x20
+> [  119.145364]  el0_sync_handler+0x134/0x140
+> [  119.145381]  el0_sync+0x180/0x1c0
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 47cab6a722d4 ("debug lockups: Improve lockup detection, fix generic arch fallback")
+> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+> ---
+> Changes since v1:
+> - Add "Cc: stable@vger.kernel.org" tag
+> ---
 
-[  119.143590] sysrq: Show backtrace of all active CPUs
-[  119.143902] BUG: using smp_processor_id() in preemptible [00000000] code: bash/873
-[  119.144586] caller is debug_smp_processor_id+0x20/0x30
-[  119.144827] CPU: 6 PID: 873 Comm: bash Not tainted 5.10.124-dirty #3
-[  119.144861] Hardware name: QEMU QEMU Virtual Machine, BIOS 2023.05-1 07/22/2023
-[  119.145053] Call trace:
-[  119.145093]  dump_backtrace+0x0/0x1a0
-[  119.145122]  show_stack+0x18/0x70
-[  119.145141]  dump_stack+0xc4/0x11c
-[  119.145159]  check_preemption_disabled+0x100/0x110
-[  119.145175]  debug_smp_processor_id+0x20/0x30
-[  119.145195]  sysrq_handle_showallcpus+0x20/0xc0
-[  119.145211]  __handle_sysrq+0x8c/0x1a0
-[  119.145227]  write_sysrq_trigger+0x94/0x12c
-[  119.145247]  proc_reg_write+0xa8/0xe4
-[  119.145266]  vfs_write+0xec/0x280
-[  119.145282]  ksys_write+0x6c/0x100
-[  119.145298]  __arm64_sys_write+0x20/0x30
-[  119.145315]  el0_svc_common.constprop.0+0x78/0x1e4
-[  119.145332]  do_el0_svc+0x24/0x8c
-[  119.145348]  el0_svc+0x10/0x20
-[  119.145364]  el0_sync_handler+0x134/0x140
-[  119.145381]  el0_sync+0x180/0x1c0
+This is not a resend, it is a new version, v3.  Otherwise I would be
+confused with the original v2 which is different than this one...
 
-Cc: stable@vger.kernel.org
-Fixes: 47cab6a722d4 ("debug lockups: Improve lockup detection, fix generic arch fallback")
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
----
-Changes since v1:
-- Add "Cc: stable@vger.kernel.org" tag
----
- drivers/tty/sysrq.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+thanks,
 
-diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-index 23198e3f1461a..6b4a28bcf2f5f 100644
---- a/drivers/tty/sysrq.c
-+++ b/drivers/tty/sysrq.c
-@@ -262,13 +262,14 @@ static void sysrq_handle_showallcpus(u8 key)
- 		if (in_hardirq())
- 			regs = get_irq_regs();
- 
--		pr_info("CPU%d:\n", smp_processor_id());
-+		pr_info("CPU%d:\n", get_cpu());
- 		if (regs)
- 			show_regs(regs);
- 		else
- 			show_stack(NULL, NULL, KERN_INFO);
- 
- 		schedule_work(&sysrq_showallcpus);
-+		put_cpu();
- 	}
- }
- 
--- 
-2.40.1
-
+greg k-h
