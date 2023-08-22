@@ -2,113 +2,108 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19AD0EE49A3
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Aug 2023 11:13:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EE54EE4996
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Aug 2023 11:30:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232180AbjHVLNh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Aug 2023 07:13:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60048 "EHLO
+        id S232033AbjHVLac (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Aug 2023 07:30:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234590AbjHVLNg (ORCPT
+        with ESMTP id S233766AbjHVLac (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Aug 2023 07:13:36 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07CBCCD4;
-        Tue, 22 Aug 2023 04:13:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1692702812; x=1724238812;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=0BmNgT7Lq4jLEOqmdKssa+DAw9AJFd3Z4vEXWDUvxbs=;
-  b=CEY0iziOi/nm14zIxF71Zvdln0ahXaYdYlWJKhpRKTJOTcqYqjt8Gbjm
-   JiuiscJCVzE324fyq7q9avBcGC4RyCUnnGx25Ny+igjDjaw/wRuZwLfhC
-   aJz95rgV49Y7dAj1NJjC/nJ29pRChviFBLgi7wCDHAJcdwJIrg471G9w0
-   3NlRrgsyqvT9aZD2WiugT4QRWjyZ7/wFfdm3NVYfD0criHgf6tnB6e6Q/
-   I09+Knab7+z3wP/0JGon6Vt1+VxrubOqacUqYTE68blBK+Foa2/+Gel14
-   pKDnqoAO7IIUbu0ui9ZbSWh3UXy7YO99paG6NBztPARG98pZ2MtZfec4u
-   A==;
-X-IronPort-AV: E=Sophos;i="6.01,192,1684825200"; 
-   d="scan'208";a="648107"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Aug 2023 04:13:32 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 22 Aug 2023 04:13:32 -0700
-Received: from che-lt-i63539.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Tue, 22 Aug 2023 04:13:27 -0700
-From:   Hari Prasath Gujulan Elango <Hari.PrasathGE@microchip.com>
-To:     <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
-        <jirislaby@kernel.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <claudiu.beznea@tuxon.dev>
-CC:     <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Hari Prasath Gujulan Elango <Hari.PrasathGE@microchip.com>
-Subject: [PATCH] serial: atmel: Fix Spectre v1 vulnerability reported by smatch
-Date:   Tue, 22 Aug 2023 16:43:21 +0530
-Message-ID: <20230822111321.56434-1-Hari.PrasathGE@microchip.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 22 Aug 2023 07:30:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB747CD7;
+        Tue, 22 Aug 2023 04:30:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D8A8639AE;
+        Tue, 22 Aug 2023 11:30:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 313EFC433C8;
+        Tue, 22 Aug 2023 11:30:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1692703828;
+        bh=6RYnnMxHVsAhH6PvvqKQGkf38Ka3yLC0O+JsZ9/8zR0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=M7wsRiush/wtx+236v2mUKr3EhqS3t/Pet4KRw0o19pq0M1GSX06v9eruy9K2cYP0
+         3n3us6IgSUmCoLug6Mbfhikg/Vvs/vy3X31v1TaMzombEkY+ueKyW9xamEkdWp4moJ
+         7+z8zECA4mUeD44LgQFjrjyEvsweczlqFW++C5dc=
+Date:   Tue, 22 Aug 2023 13:30:25 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Hari Prasath Gujulan Elango <Hari.PrasathGE@microchip.com>
+Cc:     richard.genoud@gmail.com, jirislaby@kernel.org,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        claudiu.beznea@tuxon.dev, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] serial: atmel: Fix Spectre v1 vulnerability reported by
+ smatch
+Message-ID: <2023082220-matchless-stagnate-7dab@gregkh>
+References: <20230822111321.56434-1-Hari.PrasathGE@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230822111321.56434-1-Hari.PrasathGE@microchip.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-smatch reports the below spectre variant 1 vulnerability.
+On Tue, Aug 22, 2023 at 04:43:21PM +0530, Hari Prasath Gujulan Elango wrote:
+> smatch reports the below spectre variant 1 vulnerability.
+> 
+> drivers/tty/serial/atmel_serial.c:2675 atmel_console_setup() warn: potential spectre issue 'atmel_ports' [r] (local cap)
+> 
+> Fix the same by using the array_index_nospec() to mitigate this
+> potential vulnerability especially because the console index is
+> controlled by user-space.
+> 
+> Signed-off-by: Hari Prasath Gujulan Elango <Hari.PrasathGE@microchip.com>
+> ---
+>  drivers/tty/serial/atmel_serial.c | 15 +++++++++++++--
+>  1 file changed, 13 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index 3467a875641a..25f004dd9efd 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -33,6 +33,7 @@
+>  #include <linux/suspend.h>
+>  #include <linux/mm.h>
+>  #include <linux/io.h>
+> +#include <linux/nospec.h>
+>  
+>  #include <asm/div64.h>
+>  #include <asm/ioctls.h>
+> @@ -2662,13 +2663,23 @@ static void __init atmel_console_get_options(struct uart_port *port, int *baud,
+>  
+>  static int __init atmel_console_setup(struct console *co, char *options)
+>  {
+> -	struct uart_port *port = &atmel_ports[co->index].uart;
+> -	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+> +	struct uart_port *port;
+> +	struct atmel_uart_port *atmel_port;
+>  	int baud = 115200;
+>  	int bits = 8;
+>  	int parity = 'n';
+>  	int flow = 'n';
+>  
+> +	if (unlikely(co->index < 0 || co->index >= ATMEL_MAX_UART))
 
-drivers/tty/serial/atmel_serial.c:2675 atmel_console_setup() warn: potential spectre issue 'atmel_ports' [r] (local cap)
+Only ever use likely/unlikely if you can measure the difference with and
+without the marking.  Otherwise do not use it as the compiler and cpu do
+a better job than we do in figuring this out.
 
-Fix the same by using the array_index_nospec() to mitigate this
-potential vulnerability especially because the console index is
-controlled by user-space.
 
-Signed-off-by: Hari Prasath Gujulan Elango <Hari.PrasathGE@microchip.com>
----
- drivers/tty/serial/atmel_serial.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+> +		return -ENODEV;
+> +
+> +	co->index = array_index_nospec(co->index, ATMEL_MAX_UART);
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 3467a875641a..25f004dd9efd 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -33,6 +33,7 @@
- #include <linux/suspend.h>
- #include <linux/mm.h>
- #include <linux/io.h>
-+#include <linux/nospec.h>
- 
- #include <asm/div64.h>
- #include <asm/ioctls.h>
-@@ -2662,13 +2663,23 @@ static void __init atmel_console_get_options(struct uart_port *port, int *baud,
- 
- static int __init atmel_console_setup(struct console *co, char *options)
- {
--	struct uart_port *port = &atmel_ports[co->index].uart;
--	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-+	struct uart_port *port;
-+	struct atmel_uart_port *atmel_port;
- 	int baud = 115200;
- 	int bits = 8;
- 	int parity = 'n';
- 	int flow = 'n';
- 
-+	if (unlikely(co->index < 0 || co->index >= ATMEL_MAX_UART))
-+		return -ENODEV;
-+
-+	co->index = array_index_nospec(co->index, ATMEL_MAX_UART);
-+	port = &atmel_ports[co->index].uart;
-+	if (!port)
-+		return -ENODEV;
-+
-+	atmel_port = to_atmel_uart_port(port);
-+
- 	if (port->membase == NULL) {
- 		/* Port not initialized yet - delay setup */
- 		return -ENODEV;
--- 
-2.34.1
+How exactl is index controlled by userspace such that a spectre gadget
+can be used here?  You have to be able to call this multiple times in a
+row, unsuccessfully and successfully, how does that happen through the
+console api?
 
+thanks,
+
+greg k-h
