@@ -2,321 +2,207 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CA05EE49A0
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Aug 2023 07:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5328CEE49AB
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Aug 2023 07:06:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232848AbjHWHBW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Aug 2023 03:01:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
+        id S229581AbjHWHG4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Aug 2023 03:06:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230323AbjHWHBW (ORCPT
+        with ESMTP id S233134AbjHWHGz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Aug 2023 03:01:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34FECE8
-        for <linux-serial@vger.kernel.org>; Wed, 23 Aug 2023 00:01:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A96164582
-        for <linux-serial@vger.kernel.org>; Wed, 23 Aug 2023 07:01:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAE05C433C7;
-        Wed, 23 Aug 2023 07:01:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1692774078;
-        bh=yI8UvSApzce4G+8RSyXAw6882AmX/21K+UURhiwnKCw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xn0iGOFdBrZZMl1s+5uLHw0U2wO1Si4r85+m27ePl1KPlVM6kL/5zXyZv9K/Xn61g
-         0JNJ9NYy3c37y0EAUVB2q7hUAUIjvC2uwMarIOGatRQj25ECG3enf3rkUVdbluwgsY
-         h3ybk3JYh/i2kgCPkuIrwxXHV7AETXI6cKeicD98=
-Date:   Wed, 23 Aug 2023 09:01:15 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Dan Raymond <draymond@foxvalley.net>
-Cc:     linux-serial@vger.kernel.org
-Subject: Re: [PATCH] tty/serial: create debugfs interface for UART register
- tracing
-Message-ID: <2023082303-cruncher-exporter-ccb1@gregkh>
-References: <68ad2521-f902-b0d3-16d6-4d2a36ac656e@foxvalley.net>
+        Wed, 23 Aug 2023 03:06:55 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB19CE3
+        for <linux-serial@vger.kernel.org>; Wed, 23 Aug 2023 00:06:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692774413; x=1724310413;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=fZ8tLDyRiRIwBFLXGpEbmxb/jpv4CThMvGcQu+4Ez7I=;
+  b=T53xm+JMtTUibG5av4RhwOtPapnZHJBRl98j4ULVYEI8DChBgp+8aBOv
+   t22q7/rdR+gKUEDo4k6U3JPrBzWgsKZwSrwO2GtJvcWIPgUow2vgq+uqW
+   uLba34zittrMaHUQKUOENLeKh9axHnwI41PRWsIWjZz5yWu+pxZnlg/xK
+   CGAeaCoA6Kw6jw1cmh5CqweFN6iVB8o4vse3zl+yuMS244nL3YT+C/4ac
+   FbuDkP61E6JJr4Pk0V7ovJm0E7+j8pkd5PjfXR9X2q2QNizqEuSof49pQ
+   dxyO+Ap8WLl6KSYvBSH1hRkMYj96gilRbY8FeIPNPXRuqL2A/fGGLVgMs
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10810"; a="371502127"
+X-IronPort-AV: E=Sophos;i="6.01,195,1684825200"; 
+   d="scan'208";a="371502127"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2023 00:06:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10810"; a="730108046"
+X-IronPort-AV: E=Sophos;i="6.01,195,1684825200"; 
+   d="scan'208";a="730108046"
+Received: from amangalo-mobl4.ger.corp.intel.com ([10.252.55.236])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2023 00:06:50 -0700
+Date:   Wed, 23 Aug 2023 10:06:43 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Matthew Howell <matthew.howell@sealevel.com>
+cc:     =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        jeff.baldwin@sealevel.com, james.olson@sealevel.com,
+        ryan.wenglarz@sealevel.com, darren.beeson@sealevel.com
+Subject: Re: [PATCH 2/2] serial: exar: Add RS-485 Support for Sealevel XR17V35X
+ based cards
+In-Reply-To: <fa478ca-d6e-859-e68a-374f405f3a58@sealevel.com>
+Message-ID: <40b2ef32-62cd-6022-8eb1-b7c78f42d43c@linux.intel.com>
+References: <766dab31-6982-67d9-ead9-30f61648d7a2@sealevel.com> <bd7f9d51-7cf4-d3f5-d2d7-3c822656f67d@linux.intel.com> <fa478ca-d6e-859-e68a-374f405f3a58@sealevel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <68ad2521-f902-b0d3-16d6-4d2a36ac656e@foxvalley.net>
+Content-Type: multipart/mixed; boundary="8323329-587514827-1692774412=:1805"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 22, 2023 at 02:50:45PM -0600, Dan Raymond wrote:
-> Implement a UART register tracing facility using the debugfs.  This can be
-> used as a "serial port sniffer" to monitor UART traffic and line settings
-> with timestamps at microsecond granularity.  This can be useful for general
-> serial port debugging or to debug the UART driver itself.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Nice!
+--8323329-587514827-1692774412=:1805
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-Some comments on the patch:
+On Tue, 22 Aug 2023, Matthew Howell wrote:
+> On Tue, 22 Aug 2023, Ilpo JÃ¤rvinen wrote:
+> > On Mon, 21 Aug 2023, Matthew Howell wrote:
+> > 
+> > Thanks for the patch.
+> > 
+> > > From: Matthew Howell <matthew.howell@sealevel.com>
+> > >
+> > > Sealevel XR1735X based cards utilize DTR to control RS-485 Enable, but the
+> > > current implementation of 8250_exar uses RTS for the auto-RS485-Enable
+> > > mode of the XR17V35X UARTs.
+> > >
+> > > sealevel_rs485_config(): Configures XR17V35X registers for Auto-RS485
+> > > Enable using DTR.
+> > > pci_sealevel_startup(): Calls pci_xr17v35x_setup(), then sets
+> > > rs485_config to sealevel_rs485_config().
+> > 
+> > The changelog doesn't read well as is. The logical flow breaks when you
+> > jump to describe functions.
+> > 
+> > > signed-off-by: Matthew Howell <matthew.howell@sealevel.com>
+> > 
+> > Start with capital S.
+> > 
+> > > ---
+> > > diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+> > > index 018cbaaf238c..246cfb3cc3f8 100644
+> > > --- a/drivers/tty/serial/8250/8250_exar.c
+> > > +++ b/drivers/tty/serial/8250/8250_exar.c
+> > > @@ -390,6 +390,8 @@ static void __xr17v35x_unregister_gpio(struct platform_device *pdev)
+> > >       platform_device_unregister(pdev);
+> > >  }
+> > >
+> > > +
+> > > +
+> > 
+> > Please remove this extra change.
+> > 
+> > >  static const struct property_entry exar_gpio_properties[] = {
+> > >       PROPERTY_ENTRY_U32("exar,first-pin", 0),
+> > >       PROPERTY_ENTRY_U32("ngpios", 16),
+> > > @@ -439,6 +441,35 @@ static int generic_rs485_config(struct uart_port *port, struct ktermios *termios
+> > >       return 0;
+> > >  }
+> > >
+> > > +static int sealevel_rs485_config(struct uart_port *port, struct ktermios *termios,
+> > > +                             struct serial_rs485 *rs485)
+> > > +{
+> > > +     bool is_rs485 = !!(rs485->flags & SER_RS485_ENABLED);
+> > 
+> > No need for !!() if assigning to bool.
+> > 
+> 
+> I just did it that way because generic_rs485_config() does it the same and
+> I assumed there was a reason for doing it that way. Are you sure !!() 
+> isn't needed here for some reason?
 
-> Signed-off-by: Dan Raymond<draymond@foxvalley.net>
+Implicit conversion to bool handles it just fine without those (and as 
+always, sure there are many examples in the kernel with those but it 
+doesn't mean we should keep adding more).
 
-Nit, you need a ' ' before the '<' character.
+Although now that I look more into the surrounding code, it seems that 
+is_rs485 only used in the if condition so having a local bool for that 
+seems a bit overkill and the if condition could have that check.
 
-> ---
-> diff -uprN -X a/Documentation/dontdiff a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-> --- a/drivers/tty/serial/8250/8250.h	2022-11-16 02:04:15.000000000 -0700
-> +++ b/drivers/tty/serial/8250/8250.h	2023-08-21 16:15:51.429933400 -0600
-> @@ -403,3 +403,6 @@ static inline int serial_index(struct ua
->  {
->  	return port->minor - 64;
->  }
-> +
-> +extern void uart_debug_create(struct uart_port *port);
-> +extern void uart_debug_destroy(struct uart_port *port);
+> > > +     u8 __iomem *p = port->membase;
+> > > +     u8 old_lcr;
+> > > +    generic_rs485_config(port, termios, rs485);
+> > 
+> > Use tab to indent. Leave one empty line after declarations.
+> > 
+> > > +
+> > > +     if (is_rs485) {
+> > > +             // Set EFR[4]=1 to enable enhanced feature registers
+> > > +             writeb(readb(p + UART_XR_EFR) | 0x10, p + 0x09);
+> > > +
+> > > +             // Set MCR to use DTR as Auto-RS485 Enable signal
+> > > +             writeb(0x04, p + UART_MCR);
+> > > +
+> > > +             // Store original LCR and set LCR[7]=1 to enable access to DLD register
+> > > +             old_lcr = readb(p + UART_LCR);
+> > > +             writeb(old_lcr | 0x80, p + UART_LCR);
+> > > +
+> > > +             // Set DLD[7]=1 for inverted RS485 Enable logic
+> > > +             writeb(readb(p + 0x02) | 0x80, p + 0x02);
+> > 
+> > Please don't use numeric literals. You should add defines (or use existing
+> > ones) with proper names in all these cases.
+> > 
+> > If the names for the defines are good enough, the comments become
+> > redundant and can be removed so please check that too after naming things
+> > properly.
+> > 
+> > > +
+> > > +             // Reset LCR to orginal value
+> > 
+> > Unnecessary (very obvious) comment, please drop it.
+> > 
+> > > +             writeb(old_lcr, p + UART_LCR);
+> > > +    }
+> > > +
+> > > +     return 0;
+> > > + }
+> > > +
+> > >  static const struct serial_rs485 generic_rs485_supported = {
+> > >       .flags = SER_RS485_ENABLED,
+> > >  };
+> > > @@ -744,6 +775,19 @@ static int __maybe_unused exar_resume(struct device *dev)
+> > >       return 0;
+> > >  }
+> > >
+> > > +static int pci_sealevel_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+> > > +                                                       struct uart_8250_port *port, int idx)
+> > > +{
+> > > +     int ret = pci_xr17v35x_setup(priv, pcidev, port, idx);
+> > > +
+> > > +     if (ret)
+> > > +             return ret;
+> > > +
+> > > +     port->port.rs485_config = sealevel_rs485_config;
+> > 
+> > Do you need to setup .rs485_supported too? (I'm not sure how the init
+> > works with this driver whether the default one gets used by some logic
+> > or not).
+> > 
+> > --
+> >  i.
+> 
+> I don't believe so since .rs485_supported is assigned in 
+> pci_xr17v35x_setup(). If I assigned .rs485_supported here I would just use 
+> the same code as pci_xr17v35x_setup(), which seems like needless 
+> duplication to me.
 
-This really should be a Kconfig option as some people will not want the
-added size, or feature, in their system as many serial ports have data
-that other users, even root ones, shouldn't be snooping on (i.e.
-cell modems.)
+Okay, thanks for checking.
 
-> diff -uprN -X a/Documentation/dontdiff a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> --- a/drivers/tty/serial/8250/8250_core.c	2022-11-16 02:04:15.000000000 -0700
-> +++ b/drivers/tty/serial/8250/8250_core.c	2023-08-21 16:16:47.502740700 -0600
-> @@ -1094,6 +1094,7 @@ int serial8250_register_8250_port(const
->  			if (ret)
->  				goto err;
-> +			uart_debug_create(&uart->port);
->  			ret = uart->port.line;
->  		} else {
->  			dev_info(uart->port.dev,
-> @@ -1151,6 +1152,7 @@ void serial8250_unregister_port(int line
->  		spin_unlock_irqrestore(&uart->port.lock, flags);
->  	}
-> +	uart_debug_destroy(&uart->port);
->  	uart_remove_one_port(&serial8250_reg, &uart->port);
->  	if (serial8250_isa_devs) {
->  		uart->port.flags &= ~UPF_BOOT_AUTOCONF;
-> diff -uprN -X a/Documentation/dontdiff a/drivers/tty/serial/8250/8250_debug.c b/drivers/tty/serial/8250/8250_debug.c
-> --- a/drivers/tty/serial/8250/8250_debug.c	1969-12-31 17:00:00.000000000 -0700
-> +++ b/drivers/tty/serial/8250/8250_debug.c	2023-08-22 13:19:12.234454600 -0600
-> @@ -0,0 +1,519 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/*
-> + *  This module creates a debugfs interface that can be used to hook the low level serial
-> + *  I/O routines and generate timestamped traces of UART register reads and writes.  This
-> + *  feature provides an accurate and reliable "serial port sniffer" that can be used for
-> + *  debugging problems with the serial port.
+> Will fix the various small issues and resubmit within the next few days.
 
-Can you wrap comments at 80 columns please?  Code is fine to go to 100.
+-- 
+ i.
 
-> + *
-> + *  Each serial port ("ttyS0", "ttyS1", etc.) will have its own directory in the root of
-> + *  the debug filesystem.  Inside each directory will be the following pseudo-files:
-> + *
-> + *  trace_all    - toggles tracing of all registers vs. just the RX/TX registers
-
-So 0 is just rx/tx?
-
-> + *  trace_buffer - for consuming the trace data
-> + *  trace_enable - enables/disables tracing
-> + *  trace_size   - configures the size of the trace buffer
-
-This should be documented somewhere in Documentation/ OR better yet, in
-kernel doc format so that when building the documentation, it sucks it
-in from this file to be included there automatically.
-
-And what are the default values of these files at boot?
-
-> + *
-> + *  When tracing is disabled there will be zero impact to the operation of the UART
-> + *  driver.  When tracing is enabled a small cost will be incurred after every register
-> + *  access to write an entry to the trace buffer in RAM.  The buffer size is limited
-> + *  only by the amount of virtual memory available to the kernel.  This is 128 MiB by
-> + *  default but it can be increased using vmalloc=xxx on the kernel command line.  The
-> + *  memory will be freed after tracing is disabled and all data in the buffer has been
-> + *  consumed.
-> + *
-> + *  Example session:
-> + *
-> + *  > mount -t debugfs debugfs /sys/kernel/debug
-> + *  > echo '1' > /sys/kernel/debug/ttyS1/trace_all
-> + *  > echo '1' > /sys/kernel/debug/ttyS1/trace_enable
-
-Any reason why you didn't just use the existing kernel tracing facility
-for all of this?
-
-> + *
-> + *  (perform UART operation)
-> + *
-> + *  > cat /sys/kernel/debug/ttyS1/trace_buffer
-> + *
-> + *  00:03:04.822166  IER <- 07
-> + *  00:03:04.822175  IIR -> C2
-> + *  00:03:04.822177  LSR -> 60
-> + *  00:03:04.822178  MSR -> 00
-> + *  00:03:04.822180  THR <- C9
-> + *  00:03:04.822184  IER <- 05
-> + *  00:03:04.822185  IIR -> C1
-> + *  00:03:05.062943  IIR -> CC
-> + *  00:03:05.062945  LSR -> 61
-> + *  00:03:05.062948  RBR -> C9
-> + *  00:03:05.062950  LSR -> 61
-> + *  00:03:05.062952  RBR -> ED
-> + *  00:03:05.062953  LSR -> 61
-> + *  00:03:05.062954  RBR -> 00
-> + *  00:03:05.062955  LSR -> 60
-> + *  00:03:05.062965  MSR -> 00
-> + *  00:03:05.062967  IIR -> C1
-> + */
-> +
-> +#include <linux/cpufreq.h>
-> +#include <linux/debugfs.h>
-> +#include <linux/fs.h>
-> +#include <linux/math64.h>
-> +#include <linux/serial_8250.h>
-> +
-> +struct reg_event {
-> +	uint32_t  cycle_lo;  /* CPU cycle count (lower 32-bits) */
-
-This is the big issue I have with this change, sorry, it's an odd one.
-
-The use of "uintX_t" variable types belongs in userspace, these are not
-kernel data types (yes, they are used in places, but no, they do not
-make sense, see the many times Linus and I have talked about this in the
-past, wrong namespace, etc.)
-
-Can you change these all to the normal types of u32, u16, u8 and so on
-please?
-
-
-> +	uint16_t  cycle_hi;  /* CPU cycle count (upper 16-bits) */
-> +	uint8_t   access;    /* write flag + register number */
-> +	uint8_t   data;      /* register data */
-> +};
-> +
-> +struct reg_queue {
-> +	uint32_t          read_idx;   /* first full (written) slot */
-> +	uint32_t          write_idx;  /* first empty (unwritten) slot */
-> +	struct reg_event *buf;        /* array to hold the data */
-> +	uint32_t          size;       /* array size (number of entries - must be power of 2) */
-> +	bool              wrap;       /* true if write_idx wrapped around and reached read_idx */
-
-If you use pahole on this structure, you will see you can get this a bit
-smaller.  Although I don't think you use this a lot, right?
-
-> +};
-> +
-> +struct uart_debug {
-> +	spinlock_t        lock;
-> +	struct mutex      mutex;
-
-Why 2 locks?  Please document these.
-
-> +	bool              trace_enable;
-> +	bool              trace_all;
-> +	uint32_t          trace_size;
-> +	unsigned int      (*original_serial_in)(struct uart_port *p, int offset);
-> +	void              (*original_serial_out)(struct uart_port *p, int offset, int value);
-> +	struct reg_queue  register_queue;
-> +	char              line[64];  /* buffer to hold text of last item removed from queue */
-
-Why 64?
-
-> +	uint32_t          offset;    /* offset of first unread byte in line */
-> +};
-> +
-> +static ssize_t      all_read(struct file *filp, char __user *buf, size_t size, loff_t *ppos);
-> +static ssize_t      all_write(struct file *filp,
-> +			const char __user *buf, size_t size, loff_t *ppos);
-> +static ssize_t      buffer_read(struct file *filp, char __user *buf, size_t size, loff_t *ppos);
-> +static ssize_t      enable_read(struct file *filp, char __user *buf, size_t size, loff_t *ppos);
-> +static ssize_t      enable_write(struct file *filp,
-> +			const char __user *buf, size_t size, loff_t *ppos);
-> +static void         format_cycle(uint64_t cpu_cycles, char *buf, uint32_t size);
-> +static void         queue_add(struct uart_port *port, uint8_t reg, uint8_t data, bool write);
-> +static bool         queue_alloc(struct uart_port *port);
-> +static void         queue_free(struct uart_port *port, bool force);
-> +static void         queue_remove(struct uart_port *port, char *buf, uint32_t size);
-> +static unsigned int serial_in_wrapper(struct uart_port *port, int offset);
-> +static void         serial_out_wrapper(struct uart_port *port, int offset, int value);
-> +static ssize_t      size_read(struct file *filp, char __user *buf, size_t size, loff_t *ppos);
-> +static ssize_t      size_write(struct file *filp,
-> +			const char __user *buf, size_t size, loff_t *ppos);
-
-Any chance to reorginize the code to not need the forward declarations?
-
-> +/*
-> + *  Handle writes to the 'trace_enable' pseudo-file.  When tracing is enabled allocate
-> + *  memory for the register event queue and install our hooks.  When tracing is disabled
-> + *  remove our hooks and free the memory used by the register event queue if it is empty.
-> + */
-> +static ssize_t enable_write(struct file *filp, const char __user *buf, size_t size, loff_t *ppos)
-> +{
-> +	struct uart_port *port = filp->private_data;
-> +	struct uart_debug *uart_debug = port->private_data;
-> +	bool trace_enable;
-> +	int error;
-> +
-> +	error = kstrtobool_from_user(buf, size, &trace_enable);
-> +	if (error)
-> +		return error;
-> +
-> +	if (mutex_lock_interruptible(&uart_debug->mutex))
-> +		return -ERESTARTSYS;
-> +	if (trace_enable == uart_debug->trace_enable)
-> +		goto exit;
-> +
-> +	if (trace_enable) {
-> +		uart_debug->line[0] = '\0';
-> +		uart_debug->offset = 0;
-> +		queue_free(port, true);
-> +		if (!queue_alloc(port))
-> +			goto exit;
-> +
-> +		uart_debug->original_serial_out = port->serial_out;
-> +		uart_debug->original_serial_in  = port->serial_in;
-> +		port->serial_out = serial_out_wrapper;
-> +		port->serial_in  = serial_in_wrapper;
-
-Nice hack to make the overhead "zero" but now you have 2 function jumps
-per character, on some systems that can be a lot of overhead.  Why not
-just use the existing trace functionality for this instead?  If the
-feature is not enabled, it will not have any overhead, and if it is, it
-will only have the one call to your hook, saving you another function
-call jump (which on modern processors is VERY slow thanks to spectre
-issues...)
-
-> +/*
-> + *  Remove an entry from the register event queue.  The entry will be converted to a text
-> + *  string and written to the caller's buffer.  If no entries are available an empty string
-> + *  will be written.
-> + */
-> +static void queue_remove(struct uart_port *port, char *buf, uint32_t size)
-> +{
-> +	struct uart_debug *uart_debug = port->private_data;
-> +	struct reg_queue *queue = &uart_debug->register_queue;
-> +	struct reg_event event;
-> +	const char * const in_regs[]  = { "RBR", "IER", "IIR", "LCR", "MCR", "LSR", "MSR", "SCR" };
-> +	const char * const out_regs[] = { "THR", "IER", "FCR", "LCR", "MCR", "LSR", "MSR", "SCR" };
-> +	uint8_t reg;
-> +	const char *sym, *dir;
-> +	char elapsed[sizeof("hh:mm:ss.mmmuuu")];
-> +	uint32_t num_events, events_lost;
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&uart_debug->lock, flags);
-> +
-> +	num_events = queue->write_idx - queue->read_idx;
-> +	events_lost = num_events > queue->size ? num_events - queue->size : 0;
-> +	events_lost = queue->wrap ? 0xFFFFFFFF : events_lost;
-
-We do have at least 2 different ringbuffer structures in the kernel, why
-create another one?
-
-Anyway, again, cool feature, I like it, but if you can tie it into the
-existing trace framework better (either by using that entirely which
-might be best), or at the least, putting your hook into the data path
-with it, that would be best.
-
-thanks,
-
-greg k-h
+--8323329-587514827-1692774412=:1805--
