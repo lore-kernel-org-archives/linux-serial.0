@@ -2,141 +2,328 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89EB0EE49B2
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Aug 2023 11:07:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36EBFC3DA6F
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Aug 2023 20:44:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234194AbjHWLHB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Aug 2023 07:07:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37830 "EHLO
+        id S236590AbjHWUni (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Aug 2023 16:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234136AbjHWLHA (ORCPT
+        with ESMTP id S236427AbjHWUna (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Aug 2023 07:07:00 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE20FCFE;
-        Wed, 23 Aug 2023 04:06:58 -0700 (PDT)
-Received: from [192.168.244.158] (unknown [116.71.178.151])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: usama.anjum)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id ADBBD6606E9D;
-        Wed, 23 Aug 2023 12:06:53 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1692788817;
-        bh=2ZFtjP1O/M7nfoq2JMfGTRDqLLzYwDLMxZn6zTjwfzE=;
-        h=Date:From:Subject:To:Cc:References:In-Reply-To:From;
-        b=FNq0vmtH1Q+gedSnmHTXX7Avuj8CI4fdYVqkJFlxdhs351BIDGSal2U25JZi93Q/M
-         a27skTSZ7g5yaAjOvINKdcEnFKJGUaD6UQnbqgLzcFIJBynmIla2XBwtIacsFFV5QK
-         s53a//F80MY4SIXdVrLAZt6ix+s0KaiZO7wwJZBjOWX6n9qcI61GVTMLIog3shSpWv
-         e5lPXdkkMgLmqgT+vnmmy68zp+uWUdDy7SfFoAr7kCUHHMeofQPd5H+Q3CE0vVHEmQ
-         sh2WH3n7Rh1l5Wyb6/62vmF53foNitdgHUDbljSg/fb7/nsImw39zOQw4/+xeEzaut
-         LwVNRIT/F5a+A==
-Message-ID: <deab26bd-7db4-422a-8e58-6ea56ed0b200@collabora.com>
-Date:   Wed, 23 Aug 2023 16:06:47 +0500
+        Wed, 23 Aug 2023 16:43:30 -0400
+X-Greylist: delayed 330 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Aug 2023 13:43:26 PDT
+Received: from papylos.uuid.uk (papylos.uuid.uk [209.16.157.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011DD10C8;
+        Wed, 23 Aug 2023 13:43:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=octiron.net
+        ; s=20230424-rsa3072; h=Content-Transfer-Encoding:Content-Type:Subject:From:
+        Cc:To:MIME-Version:Date:Message-ID:From:Sender:Reply-To:Subject:Date:
+        Message-ID:To:Cc:Bcc:MIME-Version:Content-Type:Content-Disposition:
+        Content-Transfer-Encoding:In-Reply-To:References:Organization;
+        bh=g2NzWC9arVAC0sopw+XdtfCHYVWQGwXj1gterxHD360=; t=1692823406; b=ANb9+k7No0tO
+        N4dDT37kZf625ckIdKAIM7YEHO3+RPuBGMBMuZsc++TWuKMx966QJPeDITfRl2f4jasUDcazmqKhS
+        e3G+D6EpB8scJS/JBLI1C6TffrMNiMy+S+F9R9HDMBmIHqzGUnCcO9CxHuJ4+iJst1YQWTLZeE5s2
+        thnNkVTyVGa5bTqoLh/fAmM+FLo7EW6ptnHu9TyZBLNZuvYZzO0q3gN0DLaqBC3ZevZXSMb/NiG8J
+        TPkn+HLaocQn4nUUCI4rUew5+7I5csjk7/Q97tr9jtfF2DG6s94FLRek+72/hjyTavSm4DoLy9x69
+        SyjUTl8rZe1C2K/zsWksGjqktZdKJbQL9wCpN7aMCCFep24KCvlruP5oshjQJdiMpdT7/s0PHog/6
+        xr4K+ejM2UYxbP/dBL79gDuTepEiXu2AteRrT6zNkYAcIQjl+WBisJy0ygsM/viDOe7kOWVmhHYpa
+        8qCUiDAYko2lXCIGDG3EnAJszfCmk5bPVCG7rH;
+DKIM-Signature: v=1; a=ed25519-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=octiron.net; s=20230410-ed25519; h=Content-Transfer-Encoding:Content-Type:
+        Subject:From:Cc:To:MIME-Version:Date:Message-ID:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:Bcc:MIME-Version:Content-Type:Content-Disposition:
+        Content-Transfer-Encoding:In-Reply-To:References:Organization;
+        bh=g2NzWC9arVAC0sopw+XdtfCHYVWQGwXj1gterxHD360=; t=1692823406; b=U9YXv9z08h6x
+        ITC4BYZ2yXUw1hEyon4kPfj3hxA7csdp1zx0T7Z1PQAcTGEwdstwOxUdG2QZaBDF3H8lCgyWCw==;
+Received: by papylos.uuid.uk with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.93)
+        (envelope-from <simon@octiron.net>)
+        id 1qYubt-00AdHe-8H; Wed, 23 Aug 2023 21:37:50 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=octiron.net
+        ; s=20230424-rsa3072; h=Content-Transfer-Encoding:Content-Type:Subject:From:
+        Cc:To:MIME-Version:Date:Message-ID:From:Sender:Reply-To:Subject:Date:
+        Message-ID:To:Cc:Bcc:MIME-Version:Content-Type:Content-Disposition:
+        Content-Transfer-Encoding:In-Reply-To:References:Organization;
+        bh=g2NzWC9arVAC0sopw+XdtfCHYVWQGwXj1gterxHD360=; t=1692823069; b=Kr0Cqr46Y4k0
+        oUAa3l9FnJB3laSB6q2NAeTDnl8uBSMK3sSKQIEnlrrEEqcQqL+Vd1iECEI589KuOH6fNLHZMQ0Ip
+        plrPWzeXKsY/c0275yMeLRg6og5IiORFB9eOE396Mt3OfmDe3Asr9kZep5RxWy7HC9utbE8DV2IPE
+        t4lECa78nPZLufAFEmANpKZHKXgK+UpwukdjQQ12Zd+4BZWWhT3RpSbMQhLhbbuyeNgGkbk2erp9Y
+        hu2p3qibdG2sbtEyNzK5G+QIvnKBhcNS14OuN2fxpkjD3W4gNC0etuiB1n6yFYfohOnPrvicXZbJf
+        tIP0z1S534gRZDZFvw1/L8+CC0301evzaak/+GUzyI51rWXzAqti8cRkw630cJ5nsMKj1mN5Ia986
+        nqOFMebIQU0NpFScPh/Wwj1PFYYwjTWB5yR974UTMXg+/ErxDJCKc6OZPQSNUz0goUOCKMK+Tf08e
+        d4rxiROeLAeaI2gNi5FXZgjsdR34Mko4Gk2UAV;
+DKIM-Signature: v=1; a=ed25519-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=octiron.net; s=20230410-ed25519; h=Content-Transfer-Encoding:Content-Type:
+        Subject:From:Cc:To:MIME-Version:Date:Message-ID:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:Bcc:MIME-Version:Content-Type:Content-Disposition:
+        Content-Transfer-Encoding:In-Reply-To:References:Organization;
+        bh=g2NzWC9arVAC0sopw+XdtfCHYVWQGwXj1gterxHD360=; t=1692823069; b=1C8TxE61mSNn
+        XMxrheslkQOb3eBLgp+CRzuuN6A5iW+18LVZWunzHhVGAT0yb3pVnBeao7e88jiivuEMXKNDBg==;
+Received: by tsort.uuid.uk with esmtps (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128)
+        (Exim 4.93)
+        (envelope-from <simon@octiron.net>)
+        id 1qYubp-004ZvJ-HY; Wed, 23 Aug 2023 21:37:45 +0100
+Message-ID: <ea1a13ad-a1e0-540a-e97a-4c44f6d2d33b@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
+Date:   Wed, 23 Aug 2023 21:37:45 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-Subject: Re: [PATCH v3] tty/sysrq: replace smp_processor_id() with get_cpu()
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Jiri Slaby <jirislaby@kernel.org>, Ingo Molnar <mingo@elte.hu>,
-        kernel@collabora.com, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20230822102606.2821311-1-usama.anjum@collabora.com>
- <2023082258-lethargic-hazily-5c7e@gregkh>
-Content-Language: en-US
-In-Reply-To: <2023082258-lethargic-hazily-5c7e@gregkh>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Content-Language: en-GB
+To:     Oliver Neukum <oneukum@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-serial@vger.kernel.org
+From:   Simon Arlott <simon@octiron.net>
+Subject: [PATCH] USB: cdc-acm: expose serial close_delay and closing_wait in
+ sysfs
+X-Face: -|Y&Xues/.'(7\@`_\lFE/)pw"7..-Ur1^@pRL`Nad5a()6r+Y)18-pi'!`GI/zGn>6a6ik
+ mcW-%sg_wM:4PXDw:(;Uu,n&!8=;A<P|QG`;AMu5ypJkN-Sa<eyt,Ap3q`5Z{D0BN3G`OmX^8x^++R
+ Gr9G'%+PNM/w+w1+vB*a($wYgA%*cm3Hds`a7k)CQ7'"[\C|g2k]FQ-f*DDi{pU]v%5JZm
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 8/22/23 6:24 PM, Greg Kroah-Hartman wrote:
-> On Tue, Aug 22, 2023 at 03:26:06PM +0500, Muhammad Usama Anjum wrote:
->> The smp_processor_id() shouldn't be called from preemptible code.
->> Instead use get_cpu() and put_cpu() which disables preemption in
->> addition to getting the processor id. This fixes the following bug:
->>
->> [  119.143590] sysrq: Show backtrace of all active CPUs
->> [  119.143902] BUG: using smp_processor_id() in preemptible [00000000] code: bash/873
->> [  119.144586] caller is debug_smp_processor_id+0x20/0x30
->> [  119.144827] CPU: 6 PID: 873 Comm: bash Not tainted 5.10.124-dirty #3
->> [  119.144861] Hardware name: QEMU QEMU Virtual Machine, BIOS 2023.05-1 07/22/2023
->> [  119.145053] Call trace:
->> [  119.145093]  dump_backtrace+0x0/0x1a0
->> [  119.145122]  show_stack+0x18/0x70
->> [  119.145141]  dump_stack+0xc4/0x11c
->> [  119.145159]  check_preemption_disabled+0x100/0x110
->> [  119.145175]  debug_smp_processor_id+0x20/0x30
->> [  119.145195]  sysrq_handle_showallcpus+0x20/0xc0
->> [  119.145211]  __handle_sysrq+0x8c/0x1a0
->> [  119.145227]  write_sysrq_trigger+0x94/0x12c
->> [  119.145247]  proc_reg_write+0xa8/0xe4
->> [  119.145266]  vfs_write+0xec/0x280
->> [  119.145282]  ksys_write+0x6c/0x100
->> [  119.145298]  __arm64_sys_write+0x20/0x30
->> [  119.145315]  el0_svc_common.constprop.0+0x78/0x1e4
->> [  119.145332]  do_el0_svc+0x24/0x8c
->> [  119.145348]  el0_svc+0x10/0x20
->> [  119.145364]  el0_sync_handler+0x134/0x140
->> [  119.145381]  el0_sync+0x180/0x1c0
->>
->> Cc: stable@vger.kernel.org
->> Fixes: 47cab6a722d4 ("debug lockups: Improve lockup detection, fix generic arch fallback")This commit had introduced the smp_processor_id() function in
-sysrq_handle_showallcpus().
+If the serial device never reads data written to it (because it is "output
+only") then the write buffers will still be waiting for the URB to complete
+on close(), which will hang for 30s until the closing_wait timeout expires.
 
-> 
-> How has this never shown up before now?  What changed to cause this to
-> now be triggered?  This feels odd that no one has seen this in the past
-> 20+ years :(
-Not sure. Probably the combination of reproduction has happened now. The
-following three conditions are needed for the warning to appear:
-* Enable CONFIG_DEBUG_PREEMPT
-* Arch which doesn't define arch_trigger_all_cpu_backtrace such as arm64
-* Trigger showallcpu's stack sysrq
+This can happen with the ESP32-H2/ESP32-C6 USB serial interface. Instead of
+changing all userspace applications to flush (discard) their output in this
+specific scenario it would be easier to adjust the closing_wait timeout
+with udev rules but the only available interface is the TIOCGSERIAL ioctl.
 
-> 
-> 
->> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
->> ---
->> Changes since v2:
->> - Add changelog and resend
->>
->> Changes since v1:
->> - Add "Cc: stable@vger.kernel.org" tag
->> ---
->>  drivers/tty/sysrq.c | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
->> index 23198e3f1461a..6b4a28bcf2f5f 100644
->> --- a/drivers/tty/sysrq.c
->> +++ b/drivers/tty/sysrq.c
->> @@ -262,13 +262,14 @@ static void sysrq_handle_showallcpus(u8 key)
->>  		if (in_hardirq())
->>  			regs = get_irq_regs();
->>  
->> -		pr_info("CPU%d:\n", smp_processor_id());
->> +		pr_info("CPU%d:\n", get_cpu());
->>  		if (regs)
->>  			show_regs(regs);
->>  		else
->>  			show_stack(NULL, NULL, KERN_INFO);
->>  
->>  		schedule_work(&sysrq_showallcpus);
->> +		put_cpu();
-> 
-> Why are you putting the cpu _after_ you schedule the work?
-The sysrq_showallcpus work prints stack traces on all CPUs other than the
-current CPU. So we are re-enabling preemption after scheduling work from
-current CPU. So that it doesn't get changed.
-> 
-> thanks,
-> 
-> greg k-h
+The serial_core driver (ttySx) exposes its supported ioctl values as
+read-only sysfs attributes. Add read-write sysfs attributes "close_delay"
+and "closing_wait" to cdc-acm (ttyACMx) devices. These are the same as the
+attributes in serial_core except that the "closing_wait" sysfs values are
+modified so that "-1" is used for "infinite wait" (instead of 0) and "0"
+is used for "no wait" (instead of 65535).
+
+Signed-off-by: Simon Arlott <simon@octiron.net>
+---
+ Documentation/ABI/testing/sysfs-tty |  21 +++++
+ drivers/usb/class/cdc-acm.c         | 135 +++++++++++++++++++++++++---
+ 2 files changed, 144 insertions(+), 12 deletions(-)
+
+diff --git a/Documentation/ABI/testing/sysfs-tty b/Documentation/ABI/testing/sysfs-tty
+index 820e412d38a8..e04e322af568 100644
+--- a/Documentation/ABI/testing/sysfs-tty
++++ b/Documentation/ABI/testing/sysfs-tty
+@@ -161,3 +161,24 @@ Contact:	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+ Description:
+ 		 Allows user to detach or attach back the given device as
+ 		 kernel console. It shows and accepts a boolean variable.
++
++What:		/sys/class/tty/ttyACM0/close_delay
++Date:		August 2023
++Contact:	linux-usb@vger.kernel.org
++Description:
++		Set the closing delay time for this port in ms.
++
++		These sysfs values expose the TIOCGSERIAL interface via
++		sysfs rather than via ioctls.
++
++What:		/sys/class/tty/ttyACM0/closing_wait
++Date:		August 2023
++Contact:	linux-usb@vger.kernel.org
++Description:
++		Set the close wait time for this port in ms.
++
++		These sysfs values expose the TIOCGSERIAL interface via
++		sysfs rather than via ioctls.
++
++		Unlike the ioctl interface, waiting forever is represented as
++		-1 and zero is used to disable waiting on close.
+diff --git a/drivers/usb/class/cdc-acm.c b/drivers/usb/class/cdc-acm.c
+index 00db9e1fc7ed..07e805df5113 100644
+--- a/drivers/usb/class/cdc-acm.c
++++ b/drivers/usb/class/cdc-acm.c
+@@ -953,21 +953,18 @@ static int acm_tty_tiocmset(struct tty_struct *tty,
+ 	return acm_set_control(acm, acm->ctrlout = newctrl);
+ }
+ 
+-static int get_serial_info(struct tty_struct *tty, struct serial_struct *ss)
++static void acm_read_serial_info(struct acm *acm, struct serial_struct *ss)
+ {
+-	struct acm *acm = tty->driver_data;
+-
+ 	ss->line = acm->minor;
+ 	ss->close_delay	= jiffies_to_msecs(acm->port.close_delay) / 10;
+ 	ss->closing_wait = acm->port.closing_wait == ASYNC_CLOSING_WAIT_NONE ?
+ 				ASYNC_CLOSING_WAIT_NONE :
+ 				jiffies_to_msecs(acm->port.closing_wait) / 10;
+-	return 0;
+ }
+ 
+-static int set_serial_info(struct tty_struct *tty, struct serial_struct *ss)
++static int acm_write_serial_info(struct acm *acm, struct serial_struct *ss,
++	bool admin)
+ {
+-	struct acm *acm = tty->driver_data;
+ 	unsigned int closing_wait, close_delay;
+ 	int retval = 0;
+ 
+@@ -976,9 +973,7 @@ static int set_serial_info(struct tty_struct *tty, struct serial_struct *ss)
+ 			ASYNC_CLOSING_WAIT_NONE :
+ 			msecs_to_jiffies(ss->closing_wait * 10);
+ 
+-	mutex_lock(&acm->port.mutex);
+-
+-	if (!capable(CAP_SYS_ADMIN)) {
++	if (!admin) {
+ 		if ((close_delay != acm->port.close_delay) ||
+ 		    (closing_wait != acm->port.closing_wait))
+ 			retval = -EPERM;
+@@ -987,8 +982,28 @@ static int set_serial_info(struct tty_struct *tty, struct serial_struct *ss)
+ 		acm->port.closing_wait = closing_wait;
+ 	}
+ 
++	return 0;
++}
++
++static int get_serial_info(struct tty_struct *tty, struct serial_struct *ss)
++{
++	struct acm *acm = tty->driver_data;
++
++	mutex_lock(&acm->port.mutex);
++	acm_read_serial_info(acm, ss);
+ 	mutex_unlock(&acm->port.mutex);
+-	return retval;
++	return 0;
++}
++
++static int set_serial_info(struct tty_struct *tty, struct serial_struct *ss)
++{
++	struct acm *acm = tty->driver_data;
++	int ret = 0;
++
++	mutex_lock(&acm->port.mutex);
++	ret = acm_write_serial_info(acm, ss, capable(CAP_SYS_ADMIN));
++	mutex_unlock(&acm->port.mutex);
++	return ret;
+ }
+ 
+ static int wait_serial_change(struct acm *acm, unsigned long arg)
+@@ -1162,6 +1177,102 @@ static int acm_write_buffers_alloc(struct acm *acm)
+ 	return 0;
+ }
+ 
++static ssize_t close_delay_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct acm *acm = dev_get_drvdata(dev);
++	struct serial_struct ss;
++
++	mutex_lock(&acm->port.mutex);
++	acm_read_serial_info(acm, &ss);
++	mutex_unlock(&acm->port.mutex);
++
++	return snprintf(buf, PAGE_SIZE, "%u\n", ss.close_delay);
++}
++
++static ssize_t close_delay_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t count)
++{
++	struct acm *acm = dev_get_drvdata(dev);
++	struct serial_struct ss;
++	u16 close_delay;
++	int ret;
++
++	ret = kstrtou16(buf, 0, &close_delay);
++	if (ret)
++		return ret;
++
++	mutex_lock(&acm->port.mutex);
++	acm_read_serial_info(acm, &ss);
++	ss.close_delay = close_delay;
++	ret = acm_write_serial_info(acm, &ss, true);
++	mutex_unlock(&acm->port.mutex);
++
++	return ret ? ret : count;
++}
++
++static ssize_t closing_wait_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct acm *acm = dev_get_drvdata(dev);
++	struct serial_struct ss;
++	s32 value;
++
++	mutex_lock(&acm->port.mutex);
++	acm_read_serial_info(acm, &ss);
++	mutex_unlock(&acm->port.mutex);
++
++	if (ss.closing_wait == ASYNC_CLOSING_WAIT_NONE)
++		value = 0;
++	else if (ss.closing_wait == ASYNC_CLOSING_WAIT_INF)
++		value = -1;
++	else
++		value = ss.closing_wait;
++
++	return snprintf(buf, PAGE_SIZE, "%d\n", value);
++}
++
++static ssize_t closing_wait_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t count)
++{
++	struct acm *acm = dev_get_drvdata(dev);
++	struct serial_struct ss;
++	s32 closing_wait;
++	int ret;
++
++	ret = kstrtos32(buf, 0, &closing_wait);
++	if (ret)
++		return ret;
++
++	if (closing_wait == 0) {
++		closing_wait = ASYNC_CLOSING_WAIT_NONE;
++	} else if (closing_wait == -1) {
++		closing_wait = ASYNC_CLOSING_WAIT_INF;
++	} else if (closing_wait == ASYNC_CLOSING_WAIT_NONE
++			|| closing_wait == ASYNC_CLOSING_WAIT_INF /* redundant (0) */
++			|| closing_wait < -1 || closing_wait > U16_MAX) {
++		return -ERANGE;
++	}
++
++	mutex_lock(&acm->port.mutex);
++	acm_read_serial_info(acm, &ss);
++	ss.closing_wait = closing_wait;
++	ret = acm_write_serial_info(acm, &ss, true);
++	mutex_unlock(&acm->port.mutex);
++
++	return ret ? ret : count;
++}
++
++static DEVICE_ATTR_RW(close_delay);
++static DEVICE_ATTR_RW(closing_wait);
++
++static struct attribute *tty_dev_attrs[] = {
++	&dev_attr_close_delay.attr,
++	&dev_attr_closing_wait.attr,
++	NULL,
++};
++ATTRIBUTE_GROUPS(tty_dev);
++
+ static int acm_probe(struct usb_interface *intf,
+ 		     const struct usb_device_id *id)
+ {
+@@ -1503,8 +1614,8 @@ static int acm_probe(struct usb_interface *intf,
+ 			goto err_remove_files;
+ 	}
+ 
+-	tty_dev = tty_port_register_device(&acm->port, acm_tty_driver, minor,
+-			&control_interface->dev);
++	tty_dev = tty_port_register_device_attr(&acm->port, acm_tty_driver,
++			minor, &control_interface->dev, acm, tty_dev_groups);
+ 	if (IS_ERR(tty_dev)) {
+ 		rv = PTR_ERR(tty_dev);
+ 		goto err_release_data_interface;
+-- 
+2.37.0
 
 -- 
-BR,
-Muhammad Usama Anjum
+Simon Arlott
