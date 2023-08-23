@@ -2,133 +2,141 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C807EE49AE
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Aug 2023 08:34:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89EB0EE49B2
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Aug 2023 11:07:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233912AbjHWIe2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Aug 2023 04:34:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43408 "EHLO
+        id S234194AbjHWLHB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Aug 2023 07:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234331AbjHWIch (ORCPT
+        with ESMTP id S234136AbjHWLHA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Aug 2023 04:32:37 -0400
-Received: from mx1.sberdevices.ru (mx2.sberdevices.ru [45.89.224.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3081992;
-        Wed, 23 Aug 2023 01:29:43 -0700 (PDT)
-Received: from p-infra-ksmg-sc-msk02 (localhost [127.0.0.1])
-        by mx1.sberdevices.ru (Postfix) with ESMTP id D0305120006;
-        Wed, 23 Aug 2023 11:29:40 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru D0305120006
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1692779380;
-        bh=QzMjBvzlospPk5KHrhQ+GvuZ1CxBAXmoqO/NqK6Dr6A=;
-        h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:From;
-        b=R/QmyVav+oIHLcxNKn+ZeY7hfNPhpz0kmYG1UGXvMNG9JpSxaCbwQ0EyVWEEuh3x/
-         0Uon3mIXAMg3erIoJHfR2YkgLkSJYZdyZ3bunaslnQad+s6KlWWml4xHM7rENtPM88
-         QiTjD7/m6QvZ2aVRxMuAZ2n405bMAw1gyM8emIXD3vG+8MVcqvjzHuxYqhp61KP5uO
-         0QSH7zxuGSSvTVfyZTbRKycgVufwsAWlGC5Zul8IaUC3bLSy6vQc90miJuU4Xl+R94
-         cTAtTSTVuWhRfYp3pKWpE9DWcMB5sG49z1v7jI8NK8M8A5w4OWsUg6pUJrL7a/3OCK
-         NZDt1if4VvMpQ==
-Received: from p-i-exch-sc-m01.sberdevices.ru (p-i-exch-sc-m01.sberdevices.ru [172.16.192.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 23 Aug 2023 07:07:00 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE20FCFE;
+        Wed, 23 Aug 2023 04:06:58 -0700 (PDT)
+Received: from [192.168.244.158] (unknown [116.71.178.151])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mx1.sberdevices.ru (Postfix) with ESMTPS;
-        Wed, 23 Aug 2023 11:29:40 +0300 (MSK)
-Received: from localhost (100.64.160.123) by p-i-exch-sc-m01.sberdevices.ru
- (172.16.192.107) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.30; Wed, 23 Aug
- 2023 11:29:34 +0300
-Date:   Wed, 23 Aug 2023 11:29:40 +0300
-From:   Dmitry Rokosov <ddrokosov@sberdevices.ru>
-To:     Lucas Tanure <tanure@linux.com>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Xianwei Zhao <xianwei.zhao@amlogic.com>,
-        Nick <nick@khadas.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-amlogic@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v9 2/2] tty: serial: meson: Add a earlycon for the T7 SoC
-Message-ID: <20230823082940.t4xjgfzwpt2hsfst@CAB-WSD-L081021>
-References: <20230814080128.143613-1-tanure@linux.com>
- <20230814080128.143613-2-tanure@linux.com>
+        (Authenticated sender: usama.anjum)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id ADBBD6606E9D;
+        Wed, 23 Aug 2023 12:06:53 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1692788817;
+        bh=2ZFtjP1O/M7nfoq2JMfGTRDqLLzYwDLMxZn6zTjwfzE=;
+        h=Date:From:Subject:To:Cc:References:In-Reply-To:From;
+        b=FNq0vmtH1Q+gedSnmHTXX7Avuj8CI4fdYVqkJFlxdhs351BIDGSal2U25JZi93Q/M
+         a27skTSZ7g5yaAjOvINKdcEnFKJGUaD6UQnbqgLzcFIJBynmIla2XBwtIacsFFV5QK
+         s53a//F80MY4SIXdVrLAZt6ix+s0KaiZO7wwJZBjOWX6n9qcI61GVTMLIog3shSpWv
+         e5lPXdkkMgLmqgT+vnmmy68zp+uWUdDy7SfFoAr7kCUHHMeofQPd5H+Q3CE0vVHEmQ
+         sh2WH3n7Rh1l5Wyb6/62vmF53foNitdgHUDbljSg/fb7/nsImw39zOQw4/+xeEzaut
+         LwVNRIT/F5a+A==
+Message-ID: <deab26bd-7db4-422a-8e58-6ea56ed0b200@collabora.com>
+Date:   Wed, 23 Aug 2023 16:06:47 +0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230814080128.143613-2-tanure@linux.com>
-User-Agent: NeoMutt/20220415
-X-Originating-IP: [100.64.160.123]
-X-ClientProxiedBy: p-i-exch-sc-m02.sberdevices.ru (172.16.192.103) To
- p-i-exch-sc-m01.sberdevices.ru (172.16.192.107)
-X-KSMG-Rule-ID: 10
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Lua-Profiles: 179393 [Aug 23 2023]
-X-KSMG-AntiSpam-Version: 5.9.59.0
-X-KSMG-AntiSpam-Envelope-From: ddrokosov@salutedevices.com
-X-KSMG-AntiSpam-Rate: 0
-X-KSMG-AntiSpam-Status: not_detected
-X-KSMG-AntiSpam-Method: none
-X-KSMG-AntiSpam-Auth: dkim=none
-X-KSMG-AntiSpam-Info: LuaCore: 527 527 5bb611be2ca2baa31d984ccbf4ef4415504fc308, {Tracking_smtp_not_equal_from}, {Tracking_uf_ne_domains}, {Track_E25351}, {Tracking_from_domain_doesnt_match_to}, libera.irclog.whitequark.org:7.1.1;p-i-exch-sc-m01.sberdevices.ru:5.0.1,7.1.1;salutedevices.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;sberdevices.ru:5.0.1,7.1.1;lore.kernel.org:7.1.1;127.0.0.199:7.1.2;100.64.160.123:7.1.2, FromAlignment: n, {Tracking_smtp_domain_mismatch}, {Tracking_smtp_domain_2level_mismatch}, ApMailHostAddress: 100.64.160.123
-X-MS-Exchange-Organization-SCL: -1
-X-KSMG-AntiSpam-Interceptor-Info: scan successful
-X-KSMG-AntiPhishing: Clean, bases: 2023/08/23 05:56:00
-X-KSMG-LinksScanning: Clean, bases: 2023/08/23 05:55:00
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 2.0.1.6960, bases: 2023/08/23 04:58:00 #21681850
-X-KSMG-AntiVirus-Status: Clean, skipped
+User-Agent: Mozilla Thunderbird
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+Subject: Re: [PATCH v3] tty/sysrq: replace smp_processor_id() with get_cpu()
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Jiri Slaby <jirislaby@kernel.org>, Ingo Molnar <mingo@elte.hu>,
+        kernel@collabora.com, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20230822102606.2821311-1-usama.anjum@collabora.com>
+ <2023082258-lethargic-hazily-5c7e@gregkh>
+Content-Language: en-US
+In-Reply-To: <2023082258-lethargic-hazily-5c7e@gregkh>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello Lucas,
+On 8/22/23 6:24 PM, Greg Kroah-Hartman wrote:
+> On Tue, Aug 22, 2023 at 03:26:06PM +0500, Muhammad Usama Anjum wrote:
+>> The smp_processor_id() shouldn't be called from preemptible code.
+>> Instead use get_cpu() and put_cpu() which disables preemption in
+>> addition to getting the processor id. This fixes the following bug:
+>>
+>> [  119.143590] sysrq: Show backtrace of all active CPUs
+>> [  119.143902] BUG: using smp_processor_id() in preemptible [00000000] code: bash/873
+>> [  119.144586] caller is debug_smp_processor_id+0x20/0x30
+>> [  119.144827] CPU: 6 PID: 873 Comm: bash Not tainted 5.10.124-dirty #3
+>> [  119.144861] Hardware name: QEMU QEMU Virtual Machine, BIOS 2023.05-1 07/22/2023
+>> [  119.145053] Call trace:
+>> [  119.145093]  dump_backtrace+0x0/0x1a0
+>> [  119.145122]  show_stack+0x18/0x70
+>> [  119.145141]  dump_stack+0xc4/0x11c
+>> [  119.145159]  check_preemption_disabled+0x100/0x110
+>> [  119.145175]  debug_smp_processor_id+0x20/0x30
+>> [  119.145195]  sysrq_handle_showallcpus+0x20/0xc0
+>> [  119.145211]  __handle_sysrq+0x8c/0x1a0
+>> [  119.145227]  write_sysrq_trigger+0x94/0x12c
+>> [  119.145247]  proc_reg_write+0xa8/0xe4
+>> [  119.145266]  vfs_write+0xec/0x280
+>> [  119.145282]  ksys_write+0x6c/0x100
+>> [  119.145298]  __arm64_sys_write+0x20/0x30
+>> [  119.145315]  el0_svc_common.constprop.0+0x78/0x1e4
+>> [  119.145332]  do_el0_svc+0x24/0x8c
+>> [  119.145348]  el0_svc+0x10/0x20
+>> [  119.145364]  el0_sync_handler+0x134/0x140
+>> [  119.145381]  el0_sync+0x180/0x1c0
+>>
+>> Cc: stable@vger.kernel.org
+>> Fixes: 47cab6a722d4 ("debug lockups: Improve lockup detection, fix generic arch fallback")This commit had introduced the smp_processor_id() function in
+sysrq_handle_showallcpus().
 
-Thank you for the patch! Please find my small comment below.
-
-On Mon, Aug 14, 2023 at 09:01:28AM +0100, Lucas Tanure wrote:
-> The new Amlogic T7 SoC does not have a always-on uart,
-> so add OF_EARLYCON_DECLARE for it.
 > 
-> Signed-off-by: Lucas Tanure <tanure@linux.com>
-> Acked-by: Neil Armstrong <neil.armstrong@linaro.org>
-> ---
-> Since v8:
->  - Fix issues with git send-mail command line
-> Since v7:
->  - Send to the correct maintainers
-> 
->  drivers/tty/serial/meson_uart.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-> index 790d910dafa5..c4f61d82fb72 100644
-> --- a/drivers/tty/serial/meson_uart.c
-> +++ b/drivers/tty/serial/meson_uart.c
-> @@ -648,6 +648,8 @@ meson_serial_early_console_setup(struct earlycon_device *device, const char *opt
->  
->  OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
->  		    meson_serial_early_console_setup);
-> +OF_EARLYCON_DECLARE(meson, "amlogic,t7-uart",
-> +		    meson_serial_early_console_setup);
->  
->  #define MESON_SERIAL_CONSOLE_PTR(_devname) (&meson_serial_console_##_devname)
->  #else
+> How has this never shown up before now?  What changed to cause this to
+> now be triggered?  This feels odd that no one has seen this in the past
+> 20+ years :(
+Not sure. Probably the combination of reproduction has happened now. The
+following three conditions are needed for the warning to appear:
+* Enable CONFIG_DEBUG_PREEMPT
+* Arch which doesn't define arch_trigger_all_cpu_backtrace such as arm64
+* Trigger showallcpu's stack sysrq
 
-I suppose you need to add a separate meson_t7_uart_data to switch the T7
-UART to a regular TTY devname 'ttyS'. For the new Amlogic SoCs, we have
-agreed to use 'ttyS' instead of 'ttyAML'. Please refer to the already
-applied patch series at [1] and the IRC discussion at [2].
-
-Links:
-    [1] https://lore.kernel.org/all/20230705181833.16137-1-ddrokosov@sberdevices.ru/
-    [2] https://libera.irclog.whitequark.org/linux-amlogic/2023-07-03
+> 
+> 
+>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+>> ---
+>> Changes since v2:
+>> - Add changelog and resend
+>>
+>> Changes since v1:
+>> - Add "Cc: stable@vger.kernel.org" tag
+>> ---
+>>  drivers/tty/sysrq.c | 3 ++-
+>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+>> index 23198e3f1461a..6b4a28bcf2f5f 100644
+>> --- a/drivers/tty/sysrq.c
+>> +++ b/drivers/tty/sysrq.c
+>> @@ -262,13 +262,14 @@ static void sysrq_handle_showallcpus(u8 key)
+>>  		if (in_hardirq())
+>>  			regs = get_irq_regs();
+>>  
+>> -		pr_info("CPU%d:\n", smp_processor_id());
+>> +		pr_info("CPU%d:\n", get_cpu());
+>>  		if (regs)
+>>  			show_regs(regs);
+>>  		else
+>>  			show_stack(NULL, NULL, KERN_INFO);
+>>  
+>>  		schedule_work(&sysrq_showallcpus);
+>> +		put_cpu();
+> 
+> Why are you putting the cpu _after_ you schedule the work?
+The sysrq_showallcpus work prints stack traces on all CPUs other than the
+current CPU. So we are re-enabling preemption after scheduling work from
+current CPU. So that it doesn't get changed.
+> 
+> thanks,
+> 
+> greg k-h
 
 -- 
-Thank you,
-Dmitry
+BR,
+Muhammad Usama Anjum
