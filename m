@@ -2,85 +2,89 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36EBFC3DA6F
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Aug 2023 20:44:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D8DBC7113B
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Aug 2023 21:22:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236590AbjHWUni (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Aug 2023 16:43:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56010 "EHLO
+        id S234525AbjHWVVr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Aug 2023 17:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236427AbjHWUna (ORCPT
+        with ESMTP id S237388AbjHWVVT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Aug 2023 16:43:30 -0400
-X-Greylist: delayed 330 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Aug 2023 13:43:26 PDT
-Received: from papylos.uuid.uk (papylos.uuid.uk [209.16.157.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011DD10C8;
-        Wed, 23 Aug 2023 13:43:25 -0700 (PDT)
+        Wed, 23 Aug 2023 17:21:19 -0400
+X-Greylist: delayed 482 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Aug 2023 14:20:53 PDT
+Received: from genua.uuid.uk (genua.uuid.uk [78.47.120.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C1A10FF
+        for <linux-serial@vger.kernel.org>; Wed, 23 Aug 2023 14:20:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=octiron.net
-        ; s=20230424-rsa3072; h=Content-Transfer-Encoding:Content-Type:Subject:From:
-        Cc:To:MIME-Version:Date:Message-ID:From:Sender:Reply-To:Subject:Date:
-        Message-ID:To:Cc:Bcc:MIME-Version:Content-Type:Content-Disposition:
-        Content-Transfer-Encoding:In-Reply-To:References:Organization;
-        bh=g2NzWC9arVAC0sopw+XdtfCHYVWQGwXj1gterxHD360=; t=1692823406; b=ANb9+k7No0tO
-        N4dDT37kZf625ckIdKAIM7YEHO3+RPuBGMBMuZsc++TWuKMx966QJPeDITfRl2f4jasUDcazmqKhS
-        e3G+D6EpB8scJS/JBLI1C6TffrMNiMy+S+F9R9HDMBmIHqzGUnCcO9CxHuJ4+iJst1YQWTLZeE5s2
-        thnNkVTyVGa5bTqoLh/fAmM+FLo7EW6ptnHu9TyZBLNZuvYZzO0q3gN0DLaqBC3ZevZXSMb/NiG8J
-        TPkn+HLaocQn4nUUCI4rUew5+7I5csjk7/Q97tr9jtfF2DG6s94FLRek+72/hjyTavSm4DoLy9x69
-        SyjUTl8rZe1C2K/zsWksGjqktZdKJbQL9wCpN7aMCCFep24KCvlruP5oshjQJdiMpdT7/s0PHog/6
-        xr4K+ejM2UYxbP/dBL79gDuTepEiXu2AteRrT6zNkYAcIQjl+WBisJy0ygsM/viDOe7kOWVmhHYpa
-        8qCUiDAYko2lXCIGDG3EnAJszfCmk5bPVCG7rH;
+        ; s=20230424-rsa3072; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+        References:Cc:To:From:Subject:MIME-Version:Date:Message-ID:From:Sender:
+        Reply-To:Subject:Date:Message-ID:To:Cc:Bcc:MIME-Version:Content-Type:
+        Content-Disposition:Content-Transfer-Encoding:In-Reply-To:References:
+        Organization; bh=gPJ7fUW8ARzgzBmBbKR4BwRFESO2WZO2zZnd0h3g8pU=; t=1692825653; 
+        b=BiSqdwrQxf+61yA2g9Ikl1+FL6DgltgMW6PZiMPA2MqBhIJgH7/aRbScwQILHbPjRTpDUbavklS
+        gWJ/r7iYA8YmDStRbA6xJVVikyAb6D1o9nM9+UsxDtNcMcBo0XcFpbFk0DBP0t/JtYgsPypTjj/TH
+        7l1/mRh5y8he+xXeGhSv1uAvhihd7OTkhRVDePFp6FVJ4tbkxZd/vn/eVpiNFggrAlKxFDBi+2E0T
+        WTkASPlKnqN0ADR9q4+QqEs9AetFsak4pgYFXw+89dHNm+r0MCg+B6nRMLLRNELSQBQBBR6b4UFgY
+        hmdQLdLSxXnePrfQ6zu4+d4sZ/W9yxvPSXDPVxTO9xfUmp1IRmBQHObhsAHtM6Rs1k7B90p90Kz2V
+        V2h42ZGpKCFv19AbawTqz4cZ04QJp2xA4MJQDD2CGATZbO0EcGyRAlQhaPtOBWucqtUePq6dWMtXk
+        wJV+TIV0Ah5KTnuYS6qCOZUAi9JyIrCP8jcUvbjEvn1dCVn/IF6Y;
 DKIM-Signature: v=1; a=ed25519-sha256; q=dns/txt; c=relaxed/relaxed;
         d=octiron.net; s=20230410-ed25519; h=Content-Transfer-Encoding:Content-Type:
-        Subject:From:Cc:To:MIME-Version:Date:Message-ID:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:Bcc:MIME-Version:Content-Type:Content-Disposition:
-        Content-Transfer-Encoding:In-Reply-To:References:Organization;
-        bh=g2NzWC9arVAC0sopw+XdtfCHYVWQGwXj1gterxHD360=; t=1692823406; b=U9YXv9z08h6x
-        ITC4BYZ2yXUw1hEyon4kPfj3hxA7csdp1zx0T7Z1PQAcTGEwdstwOxUdG2QZaBDF3H8lCgyWCw==;
-Received: by papylos.uuid.uk with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        In-Reply-To:References:Cc:To:From:Subject:MIME-Version:Date:Message-ID:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:Bcc:MIME-Version:Content-Type:
+        Content-Disposition:Content-Transfer-Encoding:In-Reply-To:References:
+        Organization; bh=gPJ7fUW8ARzgzBmBbKR4BwRFESO2WZO2zZnd0h3g8pU=; t=1692825653; 
+        b=eYClcV9fCbQksVs7GB932YSgsXAm/Qdm3UkRr4OFqhLz2tEwMBrNZYvRIoCO54Yw0PEQVT/Nba8
+        n/u2AbBIUDg==;
+Received: by genua.uuid.uk with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
         (Exim 4.93)
         (envelope-from <simon@octiron.net>)
-        id 1qYubt-00AdHe-8H; Wed, 23 Aug 2023 21:37:50 +0100
+        id 1qYv9h-00AOsS-HN; Wed, 23 Aug 2023 22:12:46 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=octiron.net
-        ; s=20230424-rsa3072; h=Content-Transfer-Encoding:Content-Type:Subject:From:
-        Cc:To:MIME-Version:Date:Message-ID:From:Sender:Reply-To:Subject:Date:
-        Message-ID:To:Cc:Bcc:MIME-Version:Content-Type:Content-Disposition:
-        Content-Transfer-Encoding:In-Reply-To:References:Organization;
-        bh=g2NzWC9arVAC0sopw+XdtfCHYVWQGwXj1gterxHD360=; t=1692823069; b=Kr0Cqr46Y4k0
-        oUAa3l9FnJB3laSB6q2NAeTDnl8uBSMK3sSKQIEnlrrEEqcQqL+Vd1iECEI589KuOH6fNLHZMQ0Ip
-        plrPWzeXKsY/c0275yMeLRg6og5IiORFB9eOE396Mt3OfmDe3Asr9kZep5RxWy7HC9utbE8DV2IPE
-        t4lECa78nPZLufAFEmANpKZHKXgK+UpwukdjQQ12Zd+4BZWWhT3RpSbMQhLhbbuyeNgGkbk2erp9Y
-        hu2p3qibdG2sbtEyNzK5G+QIvnKBhcNS14OuN2fxpkjD3W4gNC0etuiB1n6yFYfohOnPrvicXZbJf
-        tIP0z1S534gRZDZFvw1/L8+CC0301evzaak/+GUzyI51rWXzAqti8cRkw630cJ5nsMKj1mN5Ia986
-        nqOFMebIQU0NpFScPh/Wwj1PFYYwjTWB5yR974UTMXg+/ErxDJCKc6OZPQSNUz0goUOCKMK+Tf08e
-        d4rxiROeLAeaI2gNi5FXZgjsdR34Mko4Gk2UAV;
+        ; s=20230424-rsa3072; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+        References:Cc:To:From:Subject:MIME-Version:Date:Message-ID:From:Sender:
+        Reply-To:Subject:Date:Message-ID:To:Cc:Bcc:MIME-Version:Content-Type:
+        Content-Disposition:Content-Transfer-Encoding:In-Reply-To:References:
+        Organization; bh=gPJ7fUW8ARzgzBmBbKR4BwRFESO2WZO2zZnd0h3g8pU=; t=1692825165; 
+        b=XOQy3dEmLzbUjtPlogEMFUjYmDofiDU1EjCz1jKjNv5ApC47zaoMpQdMTJJCr0w5l/hjhzGBN8y
+        2+HeoWxxYswNvxkLrEkT5Oiuyhg6XwXxkzV3Yox2SMkc/cukypuMNJkLVgkKU7mGh/qMCQY9FO9ul
+        j/oyv/i4kpTZ+5IghtpNpofPYaBVmc4Hw8RBRQeElbHxZ+TXrJPwpkO/sk5nfcW8wHNXpq5Dpf14V
+        k4F0wj23DTz0BUliDSwbwK8o2aJ33Gtx8tfaY7t8i6Q8QKrYeCw1QueIf4/SjJr36XHSocyEfyFI1
+        ucITgnbU4WkPGOmeGnMuXGHKkzS+9ehn2ajDssd6lW7an4vniHepwnk0z2tkX3WAXHBVOCbEUCerJ
+        X3ugtkZjFCkHreIo8CKKswo7xzeCcgeURmxO7ckqVVwjWaeVVuW1onOjyJpi9ZkGGJ2MZezJbYI/u
+        4s+PCkbA0CC5+Eu0ZEdFzaVuP5EigwA4GBW5s/dqQMudP0PGWAF0;
 DKIM-Signature: v=1; a=ed25519-sha256; q=dns/txt; c=relaxed/relaxed;
         d=octiron.net; s=20230410-ed25519; h=Content-Transfer-Encoding:Content-Type:
-        Subject:From:Cc:To:MIME-Version:Date:Message-ID:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:Bcc:MIME-Version:Content-Type:Content-Disposition:
-        Content-Transfer-Encoding:In-Reply-To:References:Organization;
-        bh=g2NzWC9arVAC0sopw+XdtfCHYVWQGwXj1gterxHD360=; t=1692823069; b=1C8TxE61mSNn
-        XMxrheslkQOb3eBLgp+CRzuuN6A5iW+18LVZWunzHhVGAT0yb3pVnBeao7e88jiivuEMXKNDBg==;
+        In-Reply-To:References:Cc:To:From:Subject:MIME-Version:Date:Message-ID:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:Bcc:MIME-Version:Content-Type:
+        Content-Disposition:Content-Transfer-Encoding:In-Reply-To:References:
+        Organization; bh=gPJ7fUW8ARzgzBmBbKR4BwRFESO2WZO2zZnd0h3g8pU=; t=1692825165; 
+        b=00zfea8O4idFXu8iUZcdX34A/kdyCU2COISZ+h1Xqa1KgeotInGHtNFiheIOt9ykDoCcXhCK693
+        j1eHxmT4KBg==;
 Received: by tsort.uuid.uk with esmtps (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128)
         (Exim 4.93)
         (envelope-from <simon@octiron.net>)
-        id 1qYubp-004ZvJ-HY; Wed, 23 Aug 2023 21:37:45 +0100
-Message-ID: <ea1a13ad-a1e0-540a-e97a-4c44f6d2d33b@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
-Date:   Wed, 23 Aug 2023 21:37:45 +0100
+        id 1qYv9f-004aRo-0T; Wed, 23 Aug 2023 22:12:43 +0100
+Message-ID: <40c5c70f-46ff-c5f3-212b-2badc47e49a3@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
+Date:   Wed, 23 Aug 2023 22:12:42 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.13.0
+Subject: [PATCH (v2)] USB: cdc-acm: expose serial close_delay and closing_wait
+ in sysfs
 Content-Language: en-GB
+From:   Simon Arlott <simon@octiron.net>
 To:     Oliver Neukum <oneukum@suse.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-serial@vger.kernel.org
-From:   Simon Arlott <simon@octiron.net>
-Subject: [PATCH] USB: cdc-acm: expose serial close_delay and closing_wait in
- sysfs
+References: <ea1a13ad-a1e0-540a-e97a-4c44f6d2d33b@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
 X-Face: -|Y&Xues/.'(7\@`_\lFE/)pw"7..-Ur1^@pRL`Nad5a()6r+Y)18-pi'!`GI/zGn>6a6ik
  mcW-%sg_wM:4PXDw:(;Uu,n&!8=;A<P|QG`;AMu5ypJkN-Sa<eyt,Ap3q`5Z{D0BN3G`OmX^8x^++R
  Gr9G'%+PNM/w+w1+vB*a($wYgA%*cm3Hds`a7k)CQ7'"[\C|g2k]FQ-f*DDi{pU]v%5JZm
+In-Reply-To: <ea1a13ad-a1e0-540a-e97a-4c44f6d2d33b@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -105,9 +109,19 @@ is used for "no wait" (instead of 65535).
 
 Signed-off-by: Simon Arlott <simon@octiron.net>
 ---
+> @@ -976,9 +973,7 @@ static int set_serial_info(struct tty_struct *tty, struct serial_struct *ss)
+> -	if (!capable(CAP_SYS_ADMIN)) {
+> +	if (!admin) {
+>  		if ((close_delay != acm->port.close_delay) ||
+>  		    (closing_wait != acm->port.closing_wait))
+>  			retval = -EPERM;
+
+Sorry, I hadn't tested the ioctl and this return value wasn't actually
+getting returned.
+
  Documentation/ABI/testing/sysfs-tty |  21 +++++
- drivers/usb/class/cdc-acm.c         | 135 +++++++++++++++++++++++++---
- 2 files changed, 144 insertions(+), 12 deletions(-)
+ drivers/usb/class/cdc-acm.c         | 139 +++++++++++++++++++++++++---
+ 2 files changed, 146 insertions(+), 14 deletions(-)
 
 diff --git a/Documentation/ABI/testing/sysfs-tty b/Documentation/ABI/testing/sysfs-tty
 index 820e412d38a8..e04e322af568 100644
@@ -139,10 +153,10 @@ index 820e412d38a8..e04e322af568 100644
 +		Unlike the ioctl interface, waiting forever is represented as
 +		-1 and zero is used to disable waiting on close.
 diff --git a/drivers/usb/class/cdc-acm.c b/drivers/usb/class/cdc-acm.c
-index 00db9e1fc7ed..07e805df5113 100644
+index 00db9e1fc7ed..7e0f94e18445 100644
 --- a/drivers/usb/class/cdc-acm.c
 +++ b/drivers/usb/class/cdc-acm.c
-@@ -953,21 +953,18 @@ static int acm_tty_tiocmset(struct tty_struct *tty,
+@@ -953,42 +953,57 @@ static int acm_tty_tiocmset(struct tty_struct *tty,
  	return acm_set_control(acm, acm->ctrlout = newctrl);
  }
  
@@ -165,9 +179,11 @@ index 00db9e1fc7ed..07e805df5113 100644
  {
 -	struct acm *acm = tty->driver_data;
  	unsigned int closing_wait, close_delay;
- 	int retval = 0;
+-	int retval = 0;
++	int ret = 0;
  
-@@ -976,9 +973,7 @@ static int set_serial_info(struct tty_struct *tty, struct serial_struct *ss)
+ 	close_delay = msecs_to_jiffies(ss->close_delay * 10);
+ 	closing_wait = ss->closing_wait == ASYNC_CLOSING_WAIT_NONE ?
  			ASYNC_CLOSING_WAIT_NONE :
  			msecs_to_jiffies(ss->closing_wait * 10);
  
@@ -177,12 +193,14 @@ index 00db9e1fc7ed..07e805df5113 100644
 +	if (!admin) {
  		if ((close_delay != acm->port.close_delay) ||
  		    (closing_wait != acm->port.closing_wait))
- 			retval = -EPERM;
-@@ -987,8 +982,28 @@ static int set_serial_info(struct tty_struct *tty, struct serial_struct *ss)
+-			retval = -EPERM;
++			ret = -EPERM;
+ 	} else {
+ 		acm->port.close_delay  = close_delay;
  		acm->port.closing_wait = closing_wait;
  	}
  
-+	return 0;
++	return ret;
 +}
 +
 +static int get_serial_info(struct tty_struct *tty, struct serial_struct *ss)
@@ -191,8 +209,7 @@ index 00db9e1fc7ed..07e805df5113 100644
 +
 +	mutex_lock(&acm->port.mutex);
 +	acm_read_serial_info(acm, ss);
- 	mutex_unlock(&acm->port.mutex);
--	return retval;
++	mutex_unlock(&acm->port.mutex);
 +	return 0;
 +}
 +
@@ -203,7 +220,8 @@ index 00db9e1fc7ed..07e805df5113 100644
 +
 +	mutex_lock(&acm->port.mutex);
 +	ret = acm_write_serial_info(acm, ss, capable(CAP_SYS_ADMIN));
-+	mutex_unlock(&acm->port.mutex);
+ 	mutex_unlock(&acm->port.mutex);
+-	return retval;
 +	return ret;
  }
  
@@ -327,3 +345,4 @@ index 00db9e1fc7ed..07e805df5113 100644
 
 -- 
 Simon Arlott
+
