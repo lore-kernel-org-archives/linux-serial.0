@@ -2,203 +2,84 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF8C4C6FA8F
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Aug 2023 12:14:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0917C71153
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Aug 2023 14:50:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236089AbjHXMOV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Aug 2023 08:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
+        id S241748AbjHXOtr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 24 Aug 2023 10:49:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236224AbjHXMNy (ORCPT
+        with ESMTP id S241861AbjHXOta (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Aug 2023 08:13:54 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB5C10EF
-        for <linux-serial@vger.kernel.org>; Thu, 24 Aug 2023 05:13:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692879232; x=1724415232;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=2EpBlxc4NiMvGerNOhhl49VSOk2xeEeGO+SoB1+ihmM=;
-  b=bTLIPJyom12Qii17ItItYNK/AF9oRPyrT0TELVsNJHl0WP+zMm3eACX0
-   8Lpt9GWY+pFyX5ap7adnTLamsQZaKzuatjJkj74PFc+d7dR9MeoW2TRqm
-   bcyv3jfp1Xrw9Fwtmk2W8/as58vvFrE/msUSQB/vivkEXlPbd6rouOCIT
-   DNPfpNW61rsOZWvHxijiPsspz4E6S4NHY/26+HZqwnaMVYMLNK23ur+n4
-   cjSg7pK/raQcyTemyXr4QXMoj9GRkl20aPt7HxmtGYtss5pMliwbriXeS
-   8FGLMWW6KLyx4AQlqG7v3XzmS1XBhjud7qlW/91EK1JMBjeT/7dDLKC3m
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10811"; a="374387298"
-X-IronPort-AV: E=Sophos;i="6.02,195,1688454000"; 
-   d="scan'208";a="374387298"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2023 05:13:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10811"; a="851481628"
-X-IronPort-AV: E=Sophos;i="6.02,195,1688454000"; 
-   d="scan'208";a="851481628"
-Received: from abedekar-mobl1.ger.corp.intel.com ([10.251.213.29])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2023 05:13:50 -0700
-Date:   Thu, 24 Aug 2023 15:13:48 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Dan Raymond <draymond@foxvalley.net>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH] tty/serial: create debugfs interface for UART register
- tracing
-In-Reply-To: <9d0ff4b7-2584-6003-a213-6de11f6513fa@foxvalley.net>
-Message-ID: <7d437f22-277-de25-6296-97483fb81792@linux.intel.com>
-References: <68ad2521-f902-b0d3-16d6-4d2a36ac656e@foxvalley.net> <9c63a3a-2720-4e2b-5155-eb6e36aef257@linux.intel.com> <9d0ff4b7-2584-6003-a213-6de11f6513fa@foxvalley.net>
+        Thu, 24 Aug 2023 10:49:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC1C01FF6;
+        Thu, 24 Aug 2023 07:49:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BDBE66218E;
+        Thu, 24 Aug 2023 14:48:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEA2CC433C8;
+        Thu, 24 Aug 2023 14:48:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1692888535;
+        bh=L9fXQr7c4dFKYs8jRg5OKffCpoKZVVSVI9obxkzOZmU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=K+4zOJ9Zl1uA3cjXOIEwMVdtYBVbj8qctsNEknNWV1zZW6MPhsyaDdmkuPE92sZ7y
+         CPf/dRSyiumUiROg5UQ93GxP0N1KFInKCJSU0f9wQliZSPXxylX4QODBMwcVepIq7A
+         W3mMILASDlKKo3MSgA2h4/94rJeLU/Sq0nT8eUcA=
+Date:   Thu, 24 Aug 2023 16:48:52 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Simon Arlott <simon@octiron.net>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH] USB: cdc-acm: expose serial close_delay and closing_wait
+ in sysfs
+Message-ID: <2023082403-masculine-scuttle-f0ad@gregkh>
+References: <ea1a13ad-a1e0-540a-e97a-4c44f6d2d33b@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-924049425-1692879231=:1766"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ea1a13ad-a1e0-540a-e97a-4c44f6d2d33b@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-924049425-1692879231=:1766
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Thu, 24 Aug 2023, Dan Raymond wrote:
-> On 8/23/2023 2:30 AM, Ilpo Järvinen wrote:
+On Wed, Aug 23, 2023 at 09:37:45PM +0100, Simon Arlott wrote:
+> If the serial device never reads data written to it (because it is "output
+> only") then the write buffers will still be waiting for the URB to complete
+> on close(), which will hang for 30s until the closing_wait timeout expires.
 > 
-> > Thanks, looks useful (although it might have challenge in tracing hw
-> > during early init).
-> 
-> I suppose there would need to be a mechanism to enable tracing by default
-> (kernel cmd line?)  Is the UART driver even used very early in the boot
-> process?
+> This can happen with the ESP32-H2/ESP32-C6 USB serial interface. Instead of
+> changing all userspace applications to flush (discard) their output in this
+> specific scenario it would be easier to adjust the closing_wait timeout
+> with udev rules but the only available interface is the TIOCGSERIAL ioctl.
 
-I mainly meant the time when the driver is initialized, when moving from 
-univ8250 -> the actual 8250 driver for the particular HW. It's one of the 
-points of interest.
+Then why not use that?
 
-I don't know if the tracing side has something more "standard" for this 
-already and since you're looking to that already, it's good to take 
-notice if there's something.
+> The serial_core driver (ttySx) exposes its supported ioctl values as
+> read-only sysfs attributes. Add read-write sysfs attributes "close_delay"
+> and "closing_wait" to cdc-acm (ttyACMx) devices. These are the same as the
+> attributes in serial_core except that the "closing_wait" sysfs values are
+> modified so that "-1" is used for "infinite wait" (instead of 0) and "0"
+> is used for "no wait" (instead of 65535).
 
-> > > +struct reg_event {
-> > > +	uint32_t  cycle_lo;  /* CPU cycle count (lower 32-bits) */
-> > > +	uint16_t  cycle_hi;  /* CPU cycle count (upper 16-bits) */
-> > > +	uint8_t   access;    /* write flag + register number */
-> > > +	uint8_t   data;      /* register data */
-> > Some HW-specific registers are larger than 8 bits.
-> 
-> Not for 8250/16550?
+Adding tty-driver-specific sysfs files for tty devices is a big no-no,
+sorry.  We don't want to go down that rabbit hole at all.
 
-Some drivers for 8250 variants have such registers. Not that they're 
-common so it's perhaps not a big deal.
+If any apis are needed, let's make them for all tty devices, through the
+existing ioctl api, so they work for all devices and userspace doesn't
+have to try to figure out just exactly what type of tty/serial device it
+is talking to (as that will not scale and is exactly the opposite of
+what common apis are for.)
 
-> Currently this feature only supports those and it also
-> relies on the TSC which is an x86 thing.
+sorry, we can't take this, and in the end, you don't want us to as it's
+not maintainable.
 
-I wonder why you have to rely on that. Why e.g. ktime_get_boottime() is 
-not enough for this usecase?
+thanks,
 
-> > > +		ptr = uart_debug->line + uart_debug->offset;
-> > > +		len = strlen(ptr);
-> > Why you need to calculate length? Shouldn't queue_remove() be able to return
-> > this information?
-> 
-> Yes, we can return the string length from queue_remove() but we still need to
-> call strlen() to accommodate all code paths.  The user might call read() with
-> a very small buffer and that requires us to advance ptr past the beginning of
-> the string on subsequent calls.
-
-I still find it hard to believe you could not keep track of it all 
-without strlen(), snprintf() returns the number of chars it wrote to 
-uart_debug->line so it should be that length - uart_debug->offset?
-
-> > > +	static uint64_t cpu_freq;  /* cycles per second */
-> > > +	uint32_t h, m, s, us;
-> > > +
-> > > +	if (cpu_freq == 0)
-> > > +		cpu_freq = arch_freq_get_on_cpu(0) * 1000ULL;
-> > > +
-> > > +	s = div64_u64_rem(cpu_cycles, cpu_freq, &cpu_cycles);
-> > > +	us = div64_u64(cpu_cycles * 1000 * 1000 + 500 * 1000, cpu_freq);
-> > > +
-> > > +	m = s / 60; s = s % 60;
-> > > +	h = m / 60; m = m % 60;
-> > > +
-> > > +	snprintf(buf, size, "%02d:%02d:%02d.%06u", h, m, s, us);
-> > seconds.us is enough. If some additional formatting is to happen, it
-> > should be done in userspace.
-> 
-> I can see your point.  If the user does want to reformat this it will be
-> easier to start with the format you suggested.  Is this a general rule for
-> kernel space?
-
-I don't know if there's a rule. But having had to parse those :: inputs 
-way too many times in the past, I have very little love for that format 
-being forced on user ;-).
-
-> > > +static noinline void queue_free(struct uart_port *port, bool force)
-> > > +{
-> > > +	struct uart_debug *uart_debug = port->private_data;
-> > > +	struct reg_queue *queue = &uart_debug->register_queue;
-> > > +
-> > > +	if (force || queue->read_idx == queue->write_idx) {
-> > Why cannot the only place where force=true just reset the indexes before
-> > making the call so no force parameter is required? ...I think there's a
-> > bug anyway with the indexes not getting properly reset in that case.
-> 
-> Only the queue_xxx() functions read or write the queue structure.  The indices
-> are reset below when we memset() the entire structure to 0.
-
-Ah, I see.
-
-> > > +		vfree(queue->buf);
-> > > +		memset(queue, 0, sizeof(*queue));
-> > > +	}
-> > > ...
-> > > +	} else if (num_events) {
-> > > +		reg = event.access & 0x07;
-> > > +		sym = event.access & 0x08 ? out_regs[reg] : in_regs[reg];
-> > Some uarts have registers beyond 0x07 so this doesn't seem enough.
-> > It would be nice if the driver could provide alternative set of names for
-> > the registers.
-> 
-> I'll have to look into how difficult it would be to support other UARTs
-> besides 8250/16550.
->
-> > > +/*
-> > > + *  Create the debugfs interface.  This should be called during port
-> > > registration after
-> > > + *  port->name, port->serial_in, and port->serial_out have been
-> > > initialized.
-> > > We are
-> > > + *  using port->private_data to store a pointer to our data structure.
-> > > That
-> > > field appears
-> > > + *  to be otherwise unused.  If this is wrong we will need to create a
-> > > new
-> > > field.
-> > > + */
-> > > +void uart_debug_create(struct uart_port *port)
-> > > +{
-> > > +	struct uart_debug *uart_debug;
-> > > +	struct dentry *dir;
-> > > +
-> > > +	uart_debug = port->private_data = kzalloc(sizeof(struct uart_debug),
-> > > GFP_KERNEL);
-> > How about the drivers which use port->private_data?
-> 
-> It didn't look like this field was used.  Was I wrong about this?
-
-~/linux/uart/drivers/tty/serial/8250$ git grep 'private_data =' | wc -l
-20
-
-There are multiple 8250 variant drivers using it.
-
-Some also come with additional registers so it's all relevant also in 
-serial/8250/ domain.
-
-
--- 
- i.
-
---8323329-924049425-1692879231=:1766--
+greg k-h
