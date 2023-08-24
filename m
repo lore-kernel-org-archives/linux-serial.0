@@ -2,111 +2,126 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9420AC3DA66
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Aug 2023 05:34:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4014FC7EE2C
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Aug 2023 08:27:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233216AbjHYFeS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Aug 2023 01:34:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36644 "EHLO
+        id S231393AbjHYI0e (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Aug 2023 04:26:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232037AbjHYFds (ORCPT
+        with ESMTP id S242831AbjHYI0W (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Aug 2023 01:33:48 -0400
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8C2198E;
-        Thu, 24 Aug 2023 22:33:45 -0700 (PDT)
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-5230a22cfd1so769289a12.1;
-        Thu, 24 Aug 2023 22:33:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692941624; x=1693546424;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=EinPb1gqc6wVAwHvf5ANWNWV9ybtUjcZw0hI0QOAiKI=;
-        b=EqgNHxZbBLpz86PdKGLgKyKeIxibUmKq5S+UTgmso4ueXbeOQjWcq+VSUbq/mo+qUa
-         HIj30C56/cOl9lWeZftsL0XK9hIxS79V7MF1sDkT92afIIG5Foirm6T0eelIrtZ92/DQ
-         5yzBaZjALUefA4vYUwsS3bEieQWSbwnoyVPcdUe2mifmHRIFjCUszIKxWbIjGskopd63
-         lBmlXjZc+KXSlaxSuIgsjpHC1HfRVg9e0EbKRjPQM2qCImSi/yLxAN/W/b4494M0gWsn
-         l67YdTfhO/GwmLK8jnT1vEiT6SSRHyFFYkMVvpVjHuSVctF7u/q0mfBS5ktqzX/1mT2j
-         R6Cw==
-X-Gm-Message-State: AOJu0YxD8nHFh07YejCXQ453kQTTpeAs9RCO6I+Ecs8OoyOKgU2tYkaP
-        dae3Hw0Fi90XzpwN1FTcQSc=
-X-Google-Smtp-Source: AGHT+IFfeSK/0G8/XxZakxZnT8wHMuaJDVecTFoSrtldfH7WJxUJmjt9Ja+/lOgYH/YTJVSDgF3p7w==
-X-Received: by 2002:a17:906:1444:b0:99b:c845:791d with SMTP id q4-20020a170906144400b0099bc845791dmr12494645ejc.76.1692941623971;
-        Thu, 24 Aug 2023 22:33:43 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id rk17-20020a170907215100b00988c0c175c6sm526549ejb.189.2023.08.24.22.33.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Aug 2023 22:33:41 -0700 (PDT)
-Message-ID: <2a3647bf-91a8-7a5f-9edb-c792a6031f57@kernel.org>
-Date:   Fri, 25 Aug 2023 07:33:40 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: [PATCH] docs: ABI: sysfs-tty: close times are in hundredths of a
- second
-Content-Language: en-US
-To:     Simon Arlott <simon@octiron.net>, Oliver Neukum <oneukum@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        Fri, 25 Aug 2023 04:26:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34FF519AD;
+        Fri, 25 Aug 2023 01:26:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF44B62450;
+        Fri, 25 Aug 2023 08:26:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5F02C433C8;
+        Fri, 25 Aug 2023 08:26:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1692951979;
+        bh=ts5HB3fsEAvz/IHDvRXzAguzRjGtOKEZeGKIr2Jrr1c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ctm6F/jH3AqMWKu0TLsONGa9iQ2O+BSpeT3Z11mO4oibVN5lJU+BJSsMWxjfLO9+y
+         SXvYWgibzLj085+QV9NveefiiipdZ+80gLYhnvt9D03Rj8lUFDCoVCZ0A7XRyBN7U6
+         YpR36vh+tgOB2CCSRSYy7KOWzkP/4eBXmG1xKYfg=
+Date:   Thu, 24 Aug 2023 21:22:18 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Simon Arlott <simon@octiron.net>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-serial@vger.kernel.org
+Subject: Re: [PATCH] USB: cdc-acm: expose serial close_delay and closing_wait
+ in sysfs
+Message-ID: <2023082442-arose-jitters-00bb@gregkh>
 References: <ea1a13ad-a1e0-540a-e97a-4c44f6d2d33b@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
- <40c5c70f-46ff-c5f3-212b-2badc47e49a3@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
- <27304225-c8b0-9cac-94a3-e985e45aa41a@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <27304225-c8b0-9cac-94a3-e985e45aa41a@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ <2023082403-masculine-scuttle-f0ad@gregkh>
+ <d313a1a9-833e-981e-b9d7-920989458d37@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d313a1a9-833e-981e-b9d7-920989458d37@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 24. 08. 23, 9:18, Simon Arlott wrote:
-> The times for close_delay and closing_wait are in hundredths of a
-> second, not milliseconds. Fix the documentation instead of trying
-> to use millisecond values (which would have to be rounded).
+On Thu, Aug 24, 2023 at 07:02:40PM +0100, Simon Arlott wrote:
+> On 24/08/2023 15:48, Greg Kroah-Hartman wrote:
+> > On Wed, Aug 23, 2023 at 09:37:45PM +0100, Simon Arlott wrote:
+> >> This can happen with the ESP32-H2/ESP32-C6 USB serial interface. Instead of
+> >> changing all userspace applications to flush (discard) their output in this
+> >> specific scenario it would be easier to adjust the closing_wait timeout
+> >> with udev rules but the only available interface is the TIOCGSERIAL ioctl.
+> > 
+> > Then why not use that?
 > 
-> Signed-off-by: Simon Arlott <simon@octiron.net>
-> ---
-> If you'd prefer, I can fold the second part of this into my previous
-> patch which shouldn't have documented it as milliseconds in the first
-> place (but I copied it from the other entry).
+> It's not practical to use TIOCGSERIAL from a udev rule. Instead of a
+> sysfs attribute (that udev has built-in support for writing) it would
+> require a separate compiled process or other non-trivial dependencies
+> (e.g. Python) to modify the closing_wait value. There's no shell script
+> support for read-modify-write of a complex ioctl struct.
+
+It's this way for all serial ports, cdc-acm is not "special" here,
+sorry.
+
+> The ioctl can't be used without opening and closing the tty, which has
+> side effects. On open() it'll raise DTR/RTS and activate it. For cdc-acm
+> that will indicate to the device that the serial port has been opened
+> which will be visible to the software running on the USB device. On
+> close() it'll be delayed by the close_delay if any process is currently
+> doing a blocking open() and there's no carrier, then the closing_wait
+> time if there's been any incomplete transmitted data (by any process).
 > 
->   Documentation/ABI/testing/sysfs-tty | 12 ++++++++----
->   1 file changed, 8 insertions(+), 4 deletions(-)
+> I want to be able to automatically set close_delay to 0 and closing_wait
+> to 65535 ("no waiting") on all USB serial devices without these kind of
+> side effects. I'm sure these have a purpose when connected to a real tty
+> but forcing a process to wait 30 seconds before it can close the port
+> (or exit) if the USB device isn't reading data properly is inconvenient.
 > 
-> diff --git a/Documentation/ABI/testing/sysfs-tty b/Documentation/ABI/testing/sysfs-tty
-> index e04e322af568..6ee878771f51 100644
-> --- a/Documentation/ABI/testing/sysfs-tty
-> +++ b/Documentation/ABI/testing/sysfs-tty
-> @@ -87,7 +87,8 @@ What:		/sys/class/tty/ttyS<x>/close_delay
->   Date:		October 2012
->   Contact:	Alan Cox <alan@linux.intel.com>
->   Description:
-> -		 Show the closing delay time for this port in ms.
-> +		 Show the closing delay time for this port in hundredths
-> +		 of a second.
->   
->   		 These sysfs values expose the TIOCGSERIAL interface via
->   		 sysfs rather than via ioctls.
-> @@ -96,7 +97,8 @@ What:		/sys/class/tty/ttyS<x>/closing_wait
->   Date:		October 2012
->   Contact:	Alan Cox <alan@linux.intel.com>
->   Description:
-> -		 Show the close wait time for this port in ms.
-> +		 Show the close wait time for this port in hundredths of
-> +		 a second.
->   
->   		 These sysfs values expose the TIOCGSERIAL interface via
->   		 sysfs rather than via ioctls.
+> Those two values require CAP_SYS_ADMIN to modify (which is separately
+> enforced by many of the tty drivers) so user applications can't change
+> them even if they're aware of them.
 
-Could you send these two hunks as a separate patch? It's correct 
-regardless of your other patch.
+So this looks like you feel there should be a way to modify serial port
+values without the ioctl api.  That's good, maybe we do need to do this,
+but then, if so, it needs to happen for all serial ports, not just one
+single device type.
 
-And I would use "centiseconds" instead, which is used (IMO) in these cases.
+Note that the tty api is really really old, so modifications and
+enhancements need to be done carefully.  And be sure that there isn't
+already another way to do this.  The open/close DTR/RTS issue has been
+brought up many times, and I thought that there was ways to prevent it
+already, are you sure that modern tools don't already take this into
+consideration?
 
-thanks,
--- 
-js
-suse labs
+Or better yet, don't make any change until you actually open the port
+for access.  Why wory about these values until you need to use it?  Why
+insist on doing it from a udev rule when there is no real user of the
+port yet?  Who are you setting the port up for, and why can't they do it
+when they open and set the other values that they want?
 
+> > If any apis are needed, let's make them for all tty devices, through the
+> > existing ioctl api, so they work for all devices and userspace doesn't
+> > have to try to figure out just exactly what type of tty/serial device it
+> > is talking to (as that will not scale and is exactly the opposite of
+> > what common apis are for.)
+> 
+> Are you ok with adding the same two attributes to sysfs for all ttys?
+
+Why just these attributes, why not tty settings?  :)
+
+> I'd use a different name (appending "_centisecs") because serial_core
+> already uses those names on the tty device and I think it's better to
+> define "infinite wait" and "no wait" as -1 and 0 instead of 0 and 65535.
+
+Ah, so this already is an api?  Or is it a different one?
+
+confused,
+
+greg k-h
