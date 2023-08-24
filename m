@@ -2,278 +2,203 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AA4AC6FA8F
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Aug 2023 11:57:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF8C4C6FA8F
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Aug 2023 12:14:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239190AbjHXL47 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Aug 2023 07:56:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48618 "EHLO
+        id S236089AbjHXMOV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 24 Aug 2023 08:14:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241232AbjHXL4b (ORCPT
+        with ESMTP id S236224AbjHXMNy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Aug 2023 07:56:31 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA954198A
-        for <linux-serial@vger.kernel.org>; Thu, 24 Aug 2023 04:56:29 -0700 (PDT)
+        Thu, 24 Aug 2023 08:13:54 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB5C10EF
+        for <linux-serial@vger.kernel.org>; Thu, 24 Aug 2023 05:13:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692878189; x=1724414189;
-  h=date:from:to:cc:subject:message-id;
-  bh=6N9cSPB+GK3T+LNVGa3LkuVHdtlnrazsNObVBTXU19E=;
-  b=RsN5IGtoMw86Hy50SVk6DG7U/gV4cZuqehTUPrjoyoH6RPUzRn82kCGQ
-   0JXv2mQapjCGPkYAFIr3xxEFT8w2qzy1qM4yevi0dbOJ2Tw+ZvI9Sy5Eq
-   2vOks+VgThel9Yhe1Kx1XUPX5qqTPFyxVUM857WMpyGS2R9/oBc7yQdec
-   iQEfXXxhNE3+f4sl5GS6Qo0Vj18TOA1g6qJRzMUYcjs7pypzwU5NH/y2y
-   82z30RdDvouAWn8LigPH4L1bnqIw0nLaAZIjVAHZ6SnRCFslEXM+MDlh7
-   PUI4uuhCb4TpYuw7IZ2CN+Hx4bgaY9ysZaAZmQDeo93q3DAHKL/bO2lL1
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10811"; a="373298682"
+  t=1692879232; x=1724415232;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=2EpBlxc4NiMvGerNOhhl49VSOk2xeEeGO+SoB1+ihmM=;
+  b=bTLIPJyom12Qii17ItItYNK/AF9oRPyrT0TELVsNJHl0WP+zMm3eACX0
+   8Lpt9GWY+pFyX5ap7adnTLamsQZaKzuatjJkj74PFc+d7dR9MeoW2TRqm
+   bcyv3jfp1Xrw9Fwtmk2W8/as58vvFrE/msUSQB/vivkEXlPbd6rouOCIT
+   DNPfpNW61rsOZWvHxijiPsspz4E6S4NHY/26+HZqwnaMVYMLNK23ur+n4
+   cjSg7pK/raQcyTemyXr4QXMoj9GRkl20aPt7HxmtGYtss5pMliwbriXeS
+   8FGLMWW6KLyx4AQlqG7v3XzmS1XBhjud7qlW/91EK1JMBjeT/7dDLKC3m
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10811"; a="374387298"
 X-IronPort-AV: E=Sophos;i="6.02,195,1688454000"; 
-   d="scan'208";a="373298682"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2023 04:56:14 -0700
+   d="scan'208";a="374387298"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2023 05:13:52 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.01,202,1684825200"; 
-   d="scan'208";a="880774305"
-Received: from lkp-server02.sh.intel.com (HELO daf8bb0a381d) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 24 Aug 2023 04:56:18 -0700
-Received: from kbuild by daf8bb0a381d with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1qZ8we-0002F0-25;
-        Thu, 24 Aug 2023 11:56:12 +0000
-Date:   Thu, 24 Aug 2023 19:55:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 4b91dcc2f601cc2098b5fead71344704ddcff8b7
-Message-ID: <202308241936.KBVxULRI-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+X-IronPort-AV: E=McAfee;i="6600,9927,10811"; a="851481628"
+X-IronPort-AV: E=Sophos;i="6.02,195,1688454000"; 
+   d="scan'208";a="851481628"
+Received: from abedekar-mobl1.ger.corp.intel.com ([10.251.213.29])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2023 05:13:50 -0700
+Date:   Thu, 24 Aug 2023 15:13:48 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Dan Raymond <draymond@foxvalley.net>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH] tty/serial: create debugfs interface for UART register
+ tracing
+In-Reply-To: <9d0ff4b7-2584-6003-a213-6de11f6513fa@foxvalley.net>
+Message-ID: <7d437f22-277-de25-6296-97483fb81792@linux.intel.com>
+References: <68ad2521-f902-b0d3-16d6-4d2a36ac656e@foxvalley.net> <9c63a3a-2720-4e2b-5155-eb6e36aef257@linux.intel.com> <9d0ff4b7-2584-6003-a213-6de11f6513fa@foxvalley.net>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323329-924049425-1692879231=:1766"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 4b91dcc2f601cc2098b5fead71344704ddcff8b7  Documentation: devices.txt: Fix minors for ttyCPM*
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-elapsed time: 2756m
+--8323329-924049425-1692879231=:1766
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-configs tested: 208
-configs skipped: 2
+On Thu, 24 Aug 2023, Dan Raymond wrote:
+> On 8/23/2023 2:30 AM, Ilpo Järvinen wrote:
+> 
+> > Thanks, looks useful (although it might have challenge in tracing hw
+> > during early init).
+> 
+> I suppose there would need to be a mechanism to enable tracing by default
+> (kernel cmd line?)  Is the UART driver even used very early in the boot
+> process?
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+I mainly meant the time when the driver is initialized, when moving from 
+univ8250 -> the actual 8250 driver for the particular HW. It's one of the 
+points of interest.
 
-tested configs:
-alpha                             allnoconfig   gcc  
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-alpha                randconfig-r002-20230824   gcc  
-alpha                randconfig-r026-20230824   gcc  
-alpha                randconfig-r034-20230824   gcc  
-arc                              allmodconfig   gcc  
-arc                               allnoconfig   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arc                   randconfig-001-20230823   gcc  
-arc                   randconfig-001-20230824   gcc  
-arc                  randconfig-r011-20230823   gcc  
-arc                  randconfig-r032-20230824   gcc  
-arm                              allmodconfig   gcc  
-arm                               allnoconfig   gcc  
-arm                              allyesconfig   gcc  
-arm                                 defconfig   gcc  
-arm                      integrator_defconfig   gcc  
-arm                   randconfig-001-20230823   clang
-arm                   randconfig-001-20230824   gcc  
-arm                  randconfig-r001-20230823   gcc  
-arm64                            allmodconfig   gcc  
-arm64                             allnoconfig   gcc  
-arm64                            allyesconfig   gcc  
-arm64                               defconfig   gcc  
-arm64                randconfig-r002-20230823   clang
-arm64                randconfig-r004-20230824   gcc  
-arm64                randconfig-r011-20230824   clang
-arm64                randconfig-r013-20230824   clang
-csky                             allmodconfig   gcc  
-csky                              allnoconfig   gcc  
-csky                             allyesconfig   gcc  
-csky                                defconfig   gcc  
-csky                 randconfig-r011-20230824   gcc  
-csky                 randconfig-r025-20230824   gcc  
-hexagon               randconfig-001-20230823   clang
-hexagon               randconfig-001-20230824   clang
-hexagon               randconfig-002-20230823   clang
-hexagon               randconfig-002-20230824   clang
-hexagon              randconfig-r001-20230824   clang
-hexagon              randconfig-r012-20230823   clang
-hexagon              randconfig-r033-20230823   clang
-i386                              allnoconfig   gcc  
-i386                             allyesconfig   gcc  
-i386         buildonly-randconfig-001-20230823   clang
-i386         buildonly-randconfig-002-20230823   clang
-i386         buildonly-randconfig-003-20230823   clang
-i386         buildonly-randconfig-004-20230823   clang
-i386         buildonly-randconfig-005-20230823   clang
-i386         buildonly-randconfig-006-20230823   clang
-i386                              debian-10.3   gcc  
-i386                                defconfig   gcc  
-i386                  randconfig-001-20230823   clang
-i386                  randconfig-002-20230823   clang
-i386                  randconfig-003-20230823   clang
-i386                  randconfig-004-20230823   clang
-i386                  randconfig-005-20230823   clang
-i386                  randconfig-006-20230823   clang
-i386                  randconfig-011-20230823   gcc  
-i386                  randconfig-012-20230823   gcc  
-i386                  randconfig-013-20230823   gcc  
-i386                  randconfig-014-20230823   gcc  
-i386                  randconfig-015-20230823   gcc  
-i386                  randconfig-016-20230823   gcc  
-i386                 randconfig-r013-20230823   gcc  
-i386                 randconfig-r014-20230824   clang
-i386                 randconfig-r022-20230823   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                           defconfig   gcc  
-loongarch             randconfig-001-20230823   gcc  
-loongarch             randconfig-001-20230824   gcc  
-loongarch            randconfig-r013-20230824   gcc  
-m68k                             allmodconfig   gcc  
-m68k                              allnoconfig   gcc  
-m68k                             allyesconfig   gcc  
-m68k                                defconfig   gcc  
-m68k                        mvme16x_defconfig   gcc  
-m68k                 randconfig-r004-20230823   gcc  
-m68k                 randconfig-r006-20230824   gcc  
-m68k                 randconfig-r021-20230824   gcc  
-m68k                 randconfig-r033-20230824   gcc  
-microblaze                       allmodconfig   gcc  
-microblaze                        allnoconfig   gcc  
-microblaze                       allyesconfig   gcc  
-microblaze                          defconfig   gcc  
-microblaze           randconfig-r003-20230823   gcc  
-microblaze           randconfig-r012-20230824   gcc  
-microblaze           randconfig-r031-20230824   gcc  
-mips                             allmodconfig   gcc  
-mips                              allnoconfig   gcc  
-mips                             allyesconfig   gcc  
-mips                     cu1000-neo_defconfig   clang
-mips                           mtx1_defconfig   clang
-mips                 randconfig-r006-20230823   gcc  
-mips                 randconfig-r021-20230823   clang
-nios2                            allmodconfig   gcc  
-nios2                             allnoconfig   gcc  
-nios2                            allyesconfig   gcc  
-nios2                               defconfig   gcc  
-nios2                randconfig-r023-20230824   gcc  
-nios2                randconfig-r032-20230823   gcc  
-nios2                randconfig-r034-20230823   gcc  
-openrisc                          allnoconfig   gcc  
-openrisc                         allyesconfig   gcc  
-openrisc                            defconfig   gcc  
-openrisc             randconfig-r023-20230823   gcc  
-parisc                            allnoconfig   gcc  
-parisc                              defconfig   gcc  
-parisc               randconfig-r012-20230824   gcc  
-parisc64                         alldefconfig   gcc  
-parisc64                            defconfig   gcc  
-powerpc                    adder875_defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-powerpc                          allyesconfig   gcc  
-powerpc                      arches_defconfig   gcc  
-powerpc                      ep88xc_defconfig   gcc  
-powerpc                    gamecube_defconfig   clang
-powerpc              randconfig-r005-20230823   clang
-powerpc              randconfig-r015-20230824   clang
-powerpc              randconfig-r016-20230823   gcc  
-powerpc                     tqm8555_defconfig   gcc  
-powerpc64            randconfig-r035-20230823   clang
-riscv                            allmodconfig   gcc  
-riscv                             allnoconfig   gcc  
-riscv                            allyesconfig   gcc  
-riscv                               defconfig   gcc  
-riscv                 randconfig-001-20230823   clang
-riscv                 randconfig-001-20230824   gcc  
-riscv                randconfig-r036-20230823   clang
-riscv                          rv32_defconfig   gcc  
-s390                             allmodconfig   gcc  
-s390                              allnoconfig   gcc  
-s390                             allyesconfig   gcc  
-s390                                defconfig   gcc  
-s390                  randconfig-001-20230823   gcc  
-s390                  randconfig-001-20230824   clang
-s390                 randconfig-r014-20230824   clang
-sh                               allmodconfig   gcc  
-sh                                allnoconfig   gcc  
-sh                               allyesconfig   gcc  
-sh                                  defconfig   gcc  
-sh                         ecovec24_defconfig   gcc  
-sh                   randconfig-r016-20230824   gcc  
-sh                   randconfig-r026-20230823   gcc  
-sh                          rsk7201_defconfig   gcc  
-sh                          rsk7269_defconfig   gcc  
-sh                           se7750_defconfig   gcc  
-sh                              ul2_defconfig   gcc  
-sparc                            allmodconfig   gcc  
-sparc                             allnoconfig   gcc  
-sparc                            allyesconfig   gcc  
-sparc                               defconfig   gcc  
-sparc                randconfig-r003-20230824   gcc  
-sparc                randconfig-r024-20230824   gcc  
-sparc                randconfig-r025-20230823   gcc  
-sparc                randconfig-r035-20230824   gcc  
-sparc64                          allmodconfig   gcc  
-sparc64                          allyesconfig   gcc  
-sparc64                             defconfig   gcc  
-sparc64              randconfig-r015-20230824   gcc  
-sparc64              randconfig-r024-20230823   gcc  
-um                               allmodconfig   clang
-um                                allnoconfig   clang
-um                               allyesconfig   clang
-um                                  defconfig   gcc  
-um                             i386_defconfig   gcc  
-um                           x86_64_defconfig   gcc  
-x86_64                            allnoconfig   gcc  
-x86_64                           allyesconfig   gcc  
-x86_64       buildonly-randconfig-001-20230823   clang
-x86_64       buildonly-randconfig-002-20230823   clang
-x86_64       buildonly-randconfig-003-20230823   clang
-x86_64       buildonly-randconfig-004-20230823   clang
-x86_64       buildonly-randconfig-005-20230823   clang
-x86_64       buildonly-randconfig-006-20230823   clang
-x86_64                              defconfig   gcc  
-x86_64                randconfig-001-20230823   gcc  
-x86_64                randconfig-002-20230823   gcc  
-x86_64                randconfig-003-20230823   gcc  
-x86_64                randconfig-004-20230823   gcc  
-x86_64                randconfig-005-20230823   gcc  
-x86_64                randconfig-006-20230823   gcc  
-x86_64                randconfig-011-20230823   clang
-x86_64                randconfig-012-20230823   clang
-x86_64                randconfig-013-20230823   clang
-x86_64                randconfig-014-20230823   clang
-x86_64                randconfig-015-20230823   clang
-x86_64                randconfig-016-20230823   clang
-x86_64                randconfig-071-20230823   clang
-x86_64                randconfig-072-20230823   clang
-x86_64                randconfig-073-20230823   clang
-x86_64                randconfig-074-20230823   clang
-x86_64                randconfig-075-20230823   clang
-x86_64                randconfig-076-20230823   clang
-x86_64               randconfig-r016-20230824   clang
-x86_64                          rhel-8.3-rust   clang
-x86_64                               rhel-8.3   gcc  
-xtensa                            allnoconfig   gcc  
-xtensa                           allyesconfig   gcc  
-xtensa                  cadence_csp_defconfig   gcc  
-xtensa               randconfig-r005-20230824   gcc  
-xtensa               randconfig-r014-20230823   gcc  
-xtensa               randconfig-r015-20230823   gcc  
-xtensa               randconfig-r022-20230824   gcc  
-xtensa               randconfig-r031-20230823   gcc  
-xtensa               randconfig-r036-20230824   gcc  
+I don't know if the tracing side has something more "standard" for this 
+already and since you're looking to that already, it's good to take 
+notice if there's something.
+
+> > > +struct reg_event {
+> > > +	uint32_t  cycle_lo;  /* CPU cycle count (lower 32-bits) */
+> > > +	uint16_t  cycle_hi;  /* CPU cycle count (upper 16-bits) */
+> > > +	uint8_t   access;    /* write flag + register number */
+> > > +	uint8_t   data;      /* register data */
+> > Some HW-specific registers are larger than 8 bits.
+> 
+> Not for 8250/16550?
+
+Some drivers for 8250 variants have such registers. Not that they're 
+common so it's perhaps not a big deal.
+
+> Currently this feature only supports those and it also
+> relies on the TSC which is an x86 thing.
+
+I wonder why you have to rely on that. Why e.g. ktime_get_boottime() is 
+not enough for this usecase?
+
+> > > +		ptr = uart_debug->line + uart_debug->offset;
+> > > +		len = strlen(ptr);
+> > Why you need to calculate length? Shouldn't queue_remove() be able to return
+> > this information?
+> 
+> Yes, we can return the string length from queue_remove() but we still need to
+> call strlen() to accommodate all code paths.  The user might call read() with
+> a very small buffer and that requires us to advance ptr past the beginning of
+> the string on subsequent calls.
+
+I still find it hard to believe you could not keep track of it all 
+without strlen(), snprintf() returns the number of chars it wrote to 
+uart_debug->line so it should be that length - uart_debug->offset?
+
+> > > +	static uint64_t cpu_freq;  /* cycles per second */
+> > > +	uint32_t h, m, s, us;
+> > > +
+> > > +	if (cpu_freq == 0)
+> > > +		cpu_freq = arch_freq_get_on_cpu(0) * 1000ULL;
+> > > +
+> > > +	s = div64_u64_rem(cpu_cycles, cpu_freq, &cpu_cycles);
+> > > +	us = div64_u64(cpu_cycles * 1000 * 1000 + 500 * 1000, cpu_freq);
+> > > +
+> > > +	m = s / 60; s = s % 60;
+> > > +	h = m / 60; m = m % 60;
+> > > +
+> > > +	snprintf(buf, size, "%02d:%02d:%02d.%06u", h, m, s, us);
+> > seconds.us is enough. If some additional formatting is to happen, it
+> > should be done in userspace.
+> 
+> I can see your point.  If the user does want to reformat this it will be
+> easier to start with the format you suggested.  Is this a general rule for
+> kernel space?
+
+I don't know if there's a rule. But having had to parse those :: inputs 
+way too many times in the past, I have very little love for that format 
+being forced on user ;-).
+
+> > > +static noinline void queue_free(struct uart_port *port, bool force)
+> > > +{
+> > > +	struct uart_debug *uart_debug = port->private_data;
+> > > +	struct reg_queue *queue = &uart_debug->register_queue;
+> > > +
+> > > +	if (force || queue->read_idx == queue->write_idx) {
+> > Why cannot the only place where force=true just reset the indexes before
+> > making the call so no force parameter is required? ...I think there's a
+> > bug anyway with the indexes not getting properly reset in that case.
+> 
+> Only the queue_xxx() functions read or write the queue structure.  The indices
+> are reset below when we memset() the entire structure to 0.
+
+Ah, I see.
+
+> > > +		vfree(queue->buf);
+> > > +		memset(queue, 0, sizeof(*queue));
+> > > +	}
+> > > ...
+> > > +	} else if (num_events) {
+> > > +		reg = event.access & 0x07;
+> > > +		sym = event.access & 0x08 ? out_regs[reg] : in_regs[reg];
+> > Some uarts have registers beyond 0x07 so this doesn't seem enough.
+> > It would be nice if the driver could provide alternative set of names for
+> > the registers.
+> 
+> I'll have to look into how difficult it would be to support other UARTs
+> besides 8250/16550.
+>
+> > > +/*
+> > > + *  Create the debugfs interface.  This should be called during port
+> > > registration after
+> > > + *  port->name, port->serial_in, and port->serial_out have been
+> > > initialized.
+> > > We are
+> > > + *  using port->private_data to store a pointer to our data structure.
+> > > That
+> > > field appears
+> > > + *  to be otherwise unused.  If this is wrong we will need to create a
+> > > new
+> > > field.
+> > > + */
+> > > +void uart_debug_create(struct uart_port *port)
+> > > +{
+> > > +	struct uart_debug *uart_debug;
+> > > +	struct dentry *dir;
+> > > +
+> > > +	uart_debug = port->private_data = kzalloc(sizeof(struct uart_debug),
+> > > GFP_KERNEL);
+> > How about the drivers which use port->private_data?
+> 
+> It didn't look like this field was used.  Was I wrong about this?
+
+~/linux/uart/drivers/tty/serial/8250$ git grep 'private_data =' | wc -l
+20
+
+There are multiple 8250 variant drivers using it.
+
+Some also come with additional registers so it's all relevant also in 
+serial/8250/ domain.
+
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+ i.
+
+--8323329-924049425-1692879231=:1766--
