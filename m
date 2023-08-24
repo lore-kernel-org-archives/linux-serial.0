@@ -2,148 +2,161 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB710C7113B
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Aug 2023 21:18:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28FDEC88CB9
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Aug 2023 23:47:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229537AbjHXVSM convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Aug 2023 17:18:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50264 "EHLO
+        id S234195AbjHXXq7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 24 Aug 2023 19:46:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229885AbjHXVSF (ORCPT
+        with ESMTP id S232312AbjHXXq2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Aug 2023 17:18:05 -0400
-Received: from zproxy1.foxvalley.net (zimbra.foxvalley.net [212.78.26.134])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id D646BCD2
-        for <linux-serial@vger.kernel.org>; Thu, 24 Aug 2023 14:18:03 -0700 (PDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by zproxy1.foxvalley.net (Postfix) with ESMTP id 74A1B40F09;
-        Thu, 24 Aug 2023 16:18:03 -0500 (CDT)
-Received: from zproxy1.foxvalley.net ([127.0.0.1])
- by localhost (zproxy1.foxvalley.net [127.0.0.1]) (amavis, port 10032)
- with ESMTP id RF5EcL6QEDuE; Thu, 24 Aug 2023 16:18:02 -0500 (CDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by zproxy1.foxvalley.net (Postfix) with ESMTP id CAD3640F7F;
-        Thu, 24 Aug 2023 16:18:02 -0500 (CDT)
-X-Virus-Scanned: amavis at zproxy1.foxvalley.net
-Received: from zproxy1.foxvalley.net ([127.0.0.1])
- by localhost (zproxy1.foxvalley.net [127.0.0.1]) (amavis, port 10026)
- with ESMTP id E-G9b7bFwXtC; Thu, 24 Aug 2023 16:18:02 -0500 (CDT)
-Received: from [192.168.1.3] (unknown [161.97.241.227])
-        by zproxy1.foxvalley.net (Postfix) with ESMTPSA id 6AD4B40F09;
-        Thu, 24 Aug 2023 16:18:02 -0500 (CDT)
-Message-ID: <e6d0def1-4b72-9b30-a0a7-0bbce37f09b7@foxvalley.net>
-Date:   Thu, 24 Aug 2023 15:18:00 -0600
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [PATCH] tty/serial: create debugfs interface for UART register
- tracing
+        Thu, 24 Aug 2023 19:46:28 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2049.outbound.protection.outlook.com [40.107.21.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2B919B0;
+        Thu, 24 Aug 2023 16:46:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Q+21dh+UDBiQTUfZtcHwzVd71ZZhXrDOL2V7zMqMox3OhODL7D1KhHTB96gjLD6mYYsFZwzW9PL9c6LAtjOQFjT6l5/EP5wFMf+tSqhaNQ1W3WK0lI04ESSTiTKuJr2+fl1TX192HeB1qCywBhp+ElxssCEzfAbtgcX/fR2Z9vQ8tpBycHV+86seJ7ubmxRAzGfAg6vxvHNxX5YH4HWpnaqQ+jGaN1Tg7UIquSQLqdo0xUsWDcOxyi3SFhmTX0LSImfBW8wFpdznPl2Z3cQLTT8QvaupJJQhPoB0dv8U5EOUUJrOYfRS3rA1yNLe0o6b21EPDyNIBAYX7RpTPTZV6w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EJU4Xu97GnZmG2a/4OP4XyS9pt+OTZtEmBcd+XAQmJc=;
+ b=ElSRCXGbf4+F7jXfvPRJx0AabpPfZR/UC5AQkxMR9ZdKaG7CIP8LTQF0VdiqQHAlIXNT0A9SdFexC1xyVPYMi7WWYsp4W0U6Yuma6DuXq41vxPTDzFydNQAeblNRpPcruw0fpMrNODCX3i3ofR3qGXZhegeCGB8YfZ+UvI8vY8LgcHuYPrGuAlYtfQHc7RjREa6hyBD7TBLmVFqteJGMJnM1YVAOXXlPaJeLS4iM9bOUkh9W1k9LbE347vh25cnLRwDh66OhbCPNytxMrUStQ+KjX36BsAeYK5AJWSRaDtGqQX+noH6z8USlO2OV6J95gx5xremLXw0IWdAUl4Qr8g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EJU4Xu97GnZmG2a/4OP4XyS9pt+OTZtEmBcd+XAQmJc=;
+ b=AMeI1P2L9oZ6DBLK/Cij/AStUXdbmEGBfxRafDok1Lk34grEQ9rg1V0AbJnc0JMmaw6r4hPd7T94FhhU5yrSDX1m5cK0bH3Ww7Vxvl43SVCsQuhou4rn6V4GhJ/I5A6ZkTayF947E+S26uAVZlIqDRhbpgY1U8y4GiEIjo35McrhZurDluoNJceQ8G2cCuGV7aUQcCRyGKWtBf8oxxmWqC0Z2Ru250glgOkTiUKJ7N73bIaTloP5BBEws9Keckc3eHD2ZKU/aJ1RddZrD584W2irOyjoaSaSyUXJy3UlDY68fGBEAShhp19hdqTSYZK6QIH/hCnkJS90vOLZmdUY0w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from VI1PR04MB7104.eurprd04.prod.outlook.com (2603:10a6:800:126::9)
+ by GV1PR04MB9119.eurprd04.prod.outlook.com (2603:10a6:150:26::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.27; Thu, 24 Aug
+ 2023 23:46:20 +0000
+Received: from VI1PR04MB7104.eurprd04.prod.outlook.com
+ ([fe80::51fc:914:29f5:a420]) by VI1PR04MB7104.eurprd04.prod.outlook.com
+ ([fe80::51fc:914:29f5:a420%6]) with mapi id 15.20.6699.027; Thu, 24 Aug 2023
+ 23:46:20 +0000
+Message-ID: <f1b001d8-4d6c-8c9d-a90c-7d97294b66b4@suse.com>
+Date:   Fri, 25 Aug 2023 01:46:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Subject: Re: [PATCH] USB: cdc-acm: expose serial close_delay and closing_wait
+ in sysfs
+To:     Simon Arlott <simon@octiron.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-serial@vger.kernel.org
+References: <ea1a13ad-a1e0-540a-e97a-4c44f6d2d33b@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
+ <2023082403-masculine-scuttle-f0ad@gregkh>
+ <d313a1a9-833e-981e-b9d7-920989458d37@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
 Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>
-References: <68ad2521-f902-b0d3-16d6-4d2a36ac656e@foxvalley.net>
- <9c63a3a-2720-4e2b-5155-eb6e36aef257@linux.intel.com>
- <9d0ff4b7-2584-6003-a213-6de11f6513fa@foxvalley.net>
- <7d437f22-277-de25-6296-97483fb81792@linux.intel.com>
-From:   Dan Raymond <draymond@foxvalley.net>
-In-Reply-To: <7d437f22-277-de25-6296-97483fb81792@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+From:   Oliver Neukum <oneukum@suse.com>
+In-Reply-To: <d313a1a9-833e-981e-b9d7-920989458d37@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR3P281CA0127.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:94::13) To VI1PR04MB7104.eurprd04.prod.outlook.com
+ (2603:10a6:800:126::9)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB7104:EE_|GV1PR04MB9119:EE_
+X-MS-Office365-Filtering-Correlation-Id: f2cab362-fb79-4ffe-83d7-08dba4fc50e3
+X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WV63z+lZ+dPnwL3Jj0av5vYLVrod7r3w6GhlU7OwmV6doHCgNTmBomdtffBo50nL5eFHjrhypyp6MmOwuzVKpvRde+lXPQWKRXdqyMfYFzGW+X/jbdVIEb5tcVRUrB1CHEURZcCfYtC6sImkApZ5b2eHorJ5EdZhT82XmtIxwz68w5SUdy3gUHQ3nVJSpyTs9raKMPeQPZmb7wsoDdpjaBpyUWgp0t8EXEv8gp+gnTJ5V0mYmV/JIgGcd5LOHX+s0fA2lLbolCdE9IdBWnbjn4n38pQmpKyMvjnCkO+I1jA5oOgbP/tzgY8Fa7FcUbw8Hj3GI/TEXBhR5RU+rLtpBmg+/Cbbzbe5O1wuUQZlMNKhKt3xaOXnk69kCsxxTqzfhiKdzXers+FsyBtGSwOFMW6JdgWT95BeX5qaRYW2pnTvRaQA2JmnZfMBYr+59u2qYVYOUls8eYqkKNfeZRO3qaW6jjLuP81kI36DycZ/pOgVT3LYuhOKFxxqsDuST7FdTu+BWAlMh8LkEq8xiz+pGWPmwL2UVZqielITqFu/Qt1MbyKeTdz4wWCf/C1dqqf+ArmDfzorLAG4L7oHkoqNjdFF0F7YMlXDvjdnZ3R/ipzOq3y/0TitGG7nP8/qVM8s4nEPwW5nuC2BsCIZl1VfPw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB7104.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(376002)(39860400002)(396003)(136003)(346002)(186009)(1800799009)(451199024)(2616005)(5660300002)(4326008)(8676002)(8936002)(36756003)(83380400001)(6666004)(38100700002)(66556008)(66946007)(66476007)(54906003)(316002)(110136005)(478600001)(31686004)(53546011)(41300700001)(6512007)(6506007)(2906002)(86362001)(6486002)(31696002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?a3luRDlMSlRFUitHdFBjRzBnMjdnUFpYWW44T0w0YVEvZFo2UmY2YTFmaDVL?=
+ =?utf-8?B?MHE3K2FZN0UrSnZsTXdGYTJqU2hrckh4VmhYKzNNb1ErMGpQSUMvTEJPUHdT?=
+ =?utf-8?B?S1VtZlFqSE1DUzVabFpwVURrdi9rUVJwY042TG5WbDRabVVRQ3U1T1Z3UlZo?=
+ =?utf-8?B?dTZrMUNVSHQrcG10QXgwTjE4WlN1blQ3RXhBcEN1ajc3SXFkMURaOXNVL0FI?=
+ =?utf-8?B?RU43RUZDcmJoUms3b3diZkpYMUswbktWQzhWMStZVHJVOVZSTHdqeXUwMXhp?=
+ =?utf-8?B?NXh1QnJPNGxlRjd0cWkvWGlrai9hM1FGNjRVcVcrcDF5WjdyaHVYMGR5cVhN?=
+ =?utf-8?B?TmgreEtDRDJKN1B1OFNVS2xaSmg1WHpQNUY1aEs3ekpoTEw3aVFOTW54Wmo1?=
+ =?utf-8?B?Ym1uUjFvdEdDUGpYYkxCQkZVRVVEeER0ZjhQRlQwQW1FbExRdkh4NlBEYmQ1?=
+ =?utf-8?B?eE5mRDBvSi9TZC9kSmwrdGhyQUFDbFQ5Rm9pMkNKRUpUMmVpRXlLa1c4Mm1E?=
+ =?utf-8?B?SXl0VnZPTm5qN2Nzbkg4U2pTZXIrNkFVWUtaRlhkeGhoYURlNGlNTHZwM0ow?=
+ =?utf-8?B?SWEzYmN1YXJ1cTVwdEQ5L2gxYk9ocWFVak5uaUlBcUNjUVplKzZLekNUU2hq?=
+ =?utf-8?B?VG9WbGtIbER1WWR4eFFVWTdwOWs3eHpNYTh2NWdPZkY2TFFDQmNPUG5veGxo?=
+ =?utf-8?B?dndJRWlzM0thZDBmOXRySFRSNkpIVmtYZE55c1pMbWRoeDA1a0hQbkZqNHJ2?=
+ =?utf-8?B?YmhFSGFqYlMyYmJQbEY1ekVHYndQZW1ieWtqVVJ4a2U0TFJ2am16T2p0MGRm?=
+ =?utf-8?B?ZHZ2cFRzZnBTaGlzaW84L08xWXpTZ2FHNXhTWkV5VjAwWGtGRmh3WEtWMnkr?=
+ =?utf-8?B?TDBGbEw5bG4wUjlZMk1UYUROdnlqdTZTZStZU2h2S2J1TmV4TnE2VTV1Z1Q1?=
+ =?utf-8?B?TWtia01HUGpaSXRjMUhJNFQ4eEFmV0lmUlArZDdSRnZ4b3BSOGd3WmhpU0Mx?=
+ =?utf-8?B?cUxGYVN0UjRrQ2JpU2NVUG1lMmErWEo3VGx5S0x0d1hyZ2hya1BJcXhXZ3Ni?=
+ =?utf-8?B?Z1YyV3cvRjMyTWlPck9uRUFndGpUbGVPeWZEdHF3ejBFT1B2ZkY4RUJqT002?=
+ =?utf-8?B?YlJYMlFXbjVCSytPZmh5dEw4Unova1VYaWJHTEZKb1JFUnNYaEVPVzNGbFha?=
+ =?utf-8?B?ZWRCRG10UXcyZGJEUWUxUFNWUXBQRlp5aEQ2L0R0bXNZVFBiTDB1QlB6eXBV?=
+ =?utf-8?B?dzdmeFIzdmQyVi9DNW0vc2N4Y2pPOTVzTWY5WndjZGs0U2d2bklKRnVVRXIv?=
+ =?utf-8?B?cExnR2IxZHpVYlQxc0p1bTF5NWZlejJpQTh5Slk5RkZSWmxpREpRR2pBSEdQ?=
+ =?utf-8?B?K0k3RTdWejhhNlNHNFFkVkx3Zk8rNHQybVAzeXFYa3J3OFhaSXY2UkcvK2Rm?=
+ =?utf-8?B?Nzh6VmlGT2RJL1RmT3hsSHl0N09OWWRXUFh6QU9TaUY0TXlMc2taMCtpNlJU?=
+ =?utf-8?B?V0R1OFVNU0FPOW9PT0Y4WVdScjZNSDhBdHZ6T0ZuTHJYWTF6alBWV2ZtWXZz?=
+ =?utf-8?B?cmFOOE9PU2FOelBDbURsWTZUSVNpREZ3bzRPdjNSTFAvTENuLzhLY2E4aWJZ?=
+ =?utf-8?B?aGZQbFhpaVR0dVVUb3o3SThWNlZtaER4WDhvbk9idURXSDZaRlY4ZThXZUcr?=
+ =?utf-8?B?c0ZZOHRmL1ZodnFoNGNPeEp0S1VtS0prcGswWDRQZE54em9tK2dTNm9QcHpG?=
+ =?utf-8?B?dE5ZZytDU3JKd05MaFp5RENzbFF4VE5uUW9oUytjV2xnVXF6WWQ2MHZONEZY?=
+ =?utf-8?B?R1Jva1dIRGpHbVN1amxKVEdkVXFTZ2kvdGt6UkR4Y1ArUnZNbnN2dmozUVVy?=
+ =?utf-8?B?L3JWSEpTdXgrSTJLMkY3M3o5N1NRTXJlNndNTkoxOVRkQWxnS0tmSkN2ZmhY?=
+ =?utf-8?B?MTE1cmJOR0ZlZTZSYzRJSzJsQnFLdWEyMzJjaHRSazVidGo4T2VUTjc2LzlE?=
+ =?utf-8?B?dmc1Kzk2TU9lMHF1c0xiS1NyRStPWDRIYm1ZVkU3blZndC9xVmJBVWJMaEpD?=
+ =?utf-8?B?Z2x1aDVURVZaSnRoRkxBQ1hsNi9iSnZreThYRmxqQWZ1MU1BN21sVm90RnRX?=
+ =?utf-8?B?TTZzNGtNb0orMVR1My85VjdSUE96N0FSUTVHaTQvWTdkYXBhcW1wK1cwSlBN?=
+ =?utf-8?Q?kthIJvsmXobAZ5n32CuTXQuN/1iw1e65Cxrp+35dwZfp?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f2cab362-fb79-4ffe-83d7-08dba4fc50e3
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB7104.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2023 23:46:20.1998
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fqVajF4QjA9Vtao4ik6W2hiiX4AQ4WnxMn1+b54HnBehdeccJWwSgny4HdBewNF+IVeikICqTLVgVlr8sjOrtg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR04MB9119
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 8/24/2023 6:13 AM, Ilpo Järvinen wrote:
 
->> Currently this feature only supports those and it also
->> relies on the TSC which is an x86 thing.
-> 
-> I wonder why you have to rely on that. Why e.g. ktime_get_boottime() is 
-> not enough for this usecase?
 
-I was motivated to make the tracing as unobtrusive as possible and it seemed
-like the rdtsc instruction would be very fast and very precise.  I'll have to
-profile ktime_get_boottime() to see how much overhead that adds.
+On 24.08.23 20:02, Simon Arlott wrote:
+  
+> It's not practical to use TIOCGSERIAL from a udev rule. Instead of a
+> sysfs attribute (that udev has built-in support for writing) it would
+> require a separate compiled process or other non-trivial dependencies
+> (e.g. Python) to modify the closing_wait value. There's no shell script
+> support for read-modify-write of a complex ioctl struct.
 
->>>> +		ptr = uart_debug->line + uart_debug->offset;
->>>> +		len = strlen(ptr);
->>> Why you need to calculate length? Shouldn't queue_remove() be able to return
->>> this information?
->>
->> Yes, we can return the string length from queue_remove() but we still need to
->> call strlen() to accommodate all code paths.  The user might call read() with
->> a very small buffer and that requires us to advance ptr past the beginning of
->> the string on subsequent calls.
-> 
-> I still find it hard to believe you could not keep track of it all 
-> without strlen(), snprintf() returns the number of chars it wrote to 
-> uart_debug->line so it should be that length - uart_debug->offset?
+That, however, is a deficiency of udev.
 
-True.  I could store the total string length and trade a little more memory and
-a little more complexity for a little less CPU time.  Do you think it's a good
-tradeoff?  The strlen() call should be pretty fast since the string is a maximum
-of 27 characters.  Also, this is in the trace consumer path where performance
-is not as important as the trace producer path.
- 
->>>> +	static uint64_t cpu_freq;  /* cycles per second */
->>>> +	uint32_t h, m, s, us;
->>>> +
->>>> +	if (cpu_freq == 0)
->>>> +		cpu_freq = arch_freq_get_on_cpu(0) * 1000ULL;
->>>> +
->>>> +	s = div64_u64_rem(cpu_cycles, cpu_freq, &cpu_cycles);
->>>> +	us = div64_u64(cpu_cycles * 1000 * 1000 + 500 * 1000, cpu_freq);
->>>> +
->>>> +	m = s / 60; s = s % 60;
->>>> +	h = m / 60; m = m % 60;
->>>> +
->>>> +	snprintf(buf, size, "%02d:%02d:%02d.%06u", h, m, s, us);
->>> seconds.us is enough. If some additional formatting is to happen, it
->>> should be done in userspace.
->>
->> I can see your point.  If the user does want to reformat this it will be
->> easier to start with the format you suggested.  Is this a general rule for
->> kernel space?
-> 
-> I don't know if there's a rule. But having had to parse those :: inputs 
-> way too many times in the past, I have very little love for that format 
-> being forced on user ;-).
+> The ioctl can't be used without opening and closing the tty, which has
+> side effects. On open() it'll raise DTR/RTS and activate it. For cdc-acm
+> that will indicate to the device that the serial port has been opened
+> which will be visible to the software running on the USB device. On
+> close() it'll be delayed by the close_delay if any process is currently
+> doing a blocking open() and there's no carrier, then the closing_wait
+> time if there's been any incomplete transmitted data (by any process).
 
-OK, I've changed the format from "hh:mm:ss:mmmuuu" to "ssssssss:mmmuuu".
+And that is an issue of the generic serial layer.
+  
+> Those two values require CAP_SYS_ADMIN to modify (which is separately
+> enforced by many of the tty drivers) so user applications can't change
+> them even if they're aware of them.
 
->>>> +/*
->>>> + *  Create the debugfs interface.  This should be called during port
->>>> registration after
->>>> + *  port->name, port->serial_in, and port->serial_out have been
->>>> initialized.
->>>> We are
->>>> + *  using port->private_data to store a pointer to our data structure.
->>>> That
->>>> field appears
->>>> + *  to be otherwise unused.  If this is wrong we will need to create a
->>>> new
->>>> field.
->>>> + */
->>>> +void uart_debug_create(struct uart_port *port)
->>>> +{
->>>> +	struct uart_debug *uart_debug;
->>>> +	struct dentry *dir;
->>>> +
->>>> +	uart_debug = port->private_data = kzalloc(sizeof(struct uart_debug),
->>>> GFP_KERNEL);
->>> How about the drivers which use port->private_data?
->>
->> It didn't look like this field was used.  Was I wrong about this?
-> 
-> ~/linux/uart/drivers/tty/serial/8250$ git grep 'private_data =' | wc -l
-> 20
-> 
-> There are multiple 8250 variant drivers using it.
-> 
-> Some also come with additional registers so it's all relevant also in 
-> serial/8250/ domain.
+That is even more damning. Either something is protected by a capability
+or it is not. Such a protection must not be circumvented.
 
-OK, I've added a new field named 'debug_data' and I'll use that instead of
-'private_data'.  My latest changes are in the v3 patch.
+	Regards
+		Oliver
+
+
+  
