@@ -2,63 +2,111 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F7E9C88CB2
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Aug 2023 01:54:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9420AC3DA66
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Aug 2023 05:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232034AbjHYByB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Aug 2023 21:54:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59668 "EHLO
+        id S233216AbjHYFeS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Aug 2023 01:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239227AbjHYBxd (ORCPT
+        with ESMTP id S232037AbjHYFds (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Aug 2023 21:53:33 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id AB0711BD4
-        for <linux-serial@vger.kernel.org>; Thu, 24 Aug 2023 18:53:29 -0700 (PDT)
-Received: (qmail 244637 invoked by uid 1000); 24 Aug 2023 21:53:28 -0400
-Date:   Thu, 24 Aug 2023 21:53:28 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Oliver Neukum <oneukum@suse.com>
-Cc:     Simon Arlott <simon@octiron.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH] USB: cdc-acm: expose serial close_delay and closing_wait
- in sysfs
-Message-ID: <d1658254-b65b-4e2e-8c22-45008374d6eb@rowland.harvard.edu>
-References: <ea1a13ad-a1e0-540a-e97a-4c44f6d2d33b@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
- <2023082403-masculine-scuttle-f0ad@gregkh>
- <d313a1a9-833e-981e-b9d7-920989458d37@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
- <f1b001d8-4d6c-8c9d-a90c-7d97294b66b4@suse.com>
+        Fri, 25 Aug 2023 01:33:48 -0400
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8C2198E;
+        Thu, 24 Aug 2023 22:33:45 -0700 (PDT)
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-5230a22cfd1so769289a12.1;
+        Thu, 24 Aug 2023 22:33:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692941624; x=1693546424;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=EinPb1gqc6wVAwHvf5ANWNWV9ybtUjcZw0hI0QOAiKI=;
+        b=EqgNHxZbBLpz86PdKGLgKyKeIxibUmKq5S+UTgmso4ueXbeOQjWcq+VSUbq/mo+qUa
+         HIj30C56/cOl9lWeZftsL0XK9hIxS79V7MF1sDkT92afIIG5Foirm6T0eelIrtZ92/DQ
+         5yzBaZjALUefA4vYUwsS3bEieQWSbwnoyVPcdUe2mifmHRIFjCUszIKxWbIjGskopd63
+         lBmlXjZc+KXSlaxSuIgsjpHC1HfRVg9e0EbKRjPQM2qCImSi/yLxAN/W/b4494M0gWsn
+         l67YdTfhO/GwmLK8jnT1vEiT6SSRHyFFYkMVvpVjHuSVctF7u/q0mfBS5ktqzX/1mT2j
+         R6Cw==
+X-Gm-Message-State: AOJu0YxD8nHFh07YejCXQ453kQTTpeAs9RCO6I+Ecs8OoyOKgU2tYkaP
+        dae3Hw0Fi90XzpwN1FTcQSc=
+X-Google-Smtp-Source: AGHT+IFfeSK/0G8/XxZakxZnT8wHMuaJDVecTFoSrtldfH7WJxUJmjt9Ja+/lOgYH/YTJVSDgF3p7w==
+X-Received: by 2002:a17:906:1444:b0:99b:c845:791d with SMTP id q4-20020a170906144400b0099bc845791dmr12494645ejc.76.1692941623971;
+        Thu, 24 Aug 2023 22:33:43 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id rk17-20020a170907215100b00988c0c175c6sm526549ejb.189.2023.08.24.22.33.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Aug 2023 22:33:41 -0700 (PDT)
+Message-ID: <2a3647bf-91a8-7a5f-9edb-c792a6031f57@kernel.org>
+Date:   Fri, 25 Aug 2023 07:33:40 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f1b001d8-4d6c-8c9d-a90c-7d97294b66b4@suse.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Subject: Re: [PATCH] docs: ABI: sysfs-tty: close times are in hundredths of a
+ second
+Content-Language: en-US
+To:     Simon Arlott <simon@octiron.net>, Oliver Neukum <oneukum@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-serial@vger.kernel.org
+References: <ea1a13ad-a1e0-540a-e97a-4c44f6d2d33b@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
+ <40c5c70f-46ff-c5f3-212b-2badc47e49a3@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
+ <27304225-c8b0-9cac-94a3-e985e45aa41a@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <27304225-c8b0-9cac-94a3-e985e45aa41a@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Aug 25, 2023 at 01:46:15AM +0200, Oliver Neukum wrote:
+On 24. 08. 23, 9:18, Simon Arlott wrote:
+> The times for close_delay and closing_wait are in hundredths of a
+> second, not milliseconds. Fix the documentation instead of trying
+> to use millisecond values (which would have to be rounded).
 > 
+> Signed-off-by: Simon Arlott <simon@octiron.net>
+> ---
+> If you'd prefer, I can fold the second part of this into my previous
+> patch which shouldn't have documented it as milliseconds in the first
+> place (but I copied it from the other entry).
 > 
-> On 24.08.23 20:02, Simon Arlott wrote:
-> > The ioctl can't be used without opening and closing the tty, which has
-> > side effects. On open() it'll raise DTR/RTS and activate it. For cdc-acm
-> > that will indicate to the device that the serial port has been opened
-> > which will be visible to the software running on the USB device. On
-> > close() it'll be delayed by the close_delay if any process is currently
-> > doing a blocking open() and there's no carrier, then the closing_wait
-> > time if there's been any incomplete transmitted data (by any process).
+>   Documentation/ABI/testing/sysfs-tty | 12 ++++++++----
+>   1 file changed, 8 insertions(+), 4 deletions(-)
 > 
-> And that is an issue of the generic serial layer.
+> diff --git a/Documentation/ABI/testing/sysfs-tty b/Documentation/ABI/testing/sysfs-tty
+> index e04e322af568..6ee878771f51 100644
+> --- a/Documentation/ABI/testing/sysfs-tty
+> +++ b/Documentation/ABI/testing/sysfs-tty
+> @@ -87,7 +87,8 @@ What:		/sys/class/tty/ttyS<x>/close_delay
+>   Date:		October 2012
+>   Contact:	Alan Cox <alan@linux.intel.com>
+>   Description:
+> -		 Show the closing delay time for this port in ms.
+> +		 Show the closing delay time for this port in hundredths
+> +		 of a second.
+>   
+>   		 These sysfs values expose the TIOCGSERIAL interface via
+>   		 sysfs rather than via ioctls.
+> @@ -96,7 +97,8 @@ What:		/sys/class/tty/ttyS<x>/closing_wait
+>   Date:		October 2012
+>   Contact:	Alan Cox <alan@linux.intel.com>
+>   Description:
+> -		 Show the close wait time for this port in ms.
+> +		 Show the close wait time for this port in hundredths of
+> +		 a second.
+>   
+>   		 These sysfs values expose the TIOCGSERIAL interface via
+>   		 sysfs rather than via ioctls.
 
-Is it feasible to add a sysfs attribute for ttys or the serial layer to 
-control the side effect of opening (avoid raising DTR/RTS)?  If that 
-could be done, a program could use the existing ioctl to set close_delay 
-and closing_wait to 0 with no penalties.
+Could you send these two hunks as a separate patch? It's correct 
+regardless of your other patch.
 
-This would be racy, but for the purposes of udev that shouldn't matter 
-much.
+And I would use "centiseconds" instead, which is used (IMO) in these cases.
 
-Alan Stern
+thanks,
+-- 
+js
+suse labs
+
