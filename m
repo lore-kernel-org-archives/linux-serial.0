@@ -2,55 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C48C83F16
-	for <linux-serial@archiver.kernel.org>; Sat, 26 Aug 2023 08:01:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC891C83F01
+	for <linux-serial@archiver.kernel.org>; Sat, 26 Aug 2023 09:33:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229901AbjHZIAj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 26 Aug 2023 04:00:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55428 "EHLO
+        id S232240AbjHZJdG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 26 Aug 2023 05:33:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229746AbjHZIAM (ORCPT
+        with ESMTP id S232252AbjHZJci (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 26 Aug 2023 04:00:12 -0400
-Received: from out203-205-221-209.mail.qq.com (out203-205-221-209.mail.qq.com [203.205.221.209])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8D110EF;
-        Sat, 26 Aug 2023 01:00:07 -0700 (PDT)
+        Sat, 26 Aug 2023 05:32:38 -0400
+Received: from out203-205-221-210.mail.qq.com (out203-205-221-210.mail.qq.com [203.205.221.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAEF81BD9;
+        Sat, 26 Aug 2023 02:32:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1693036505;
-        bh=yLUzFJjhb3rHZwHXuc55nQDUf3m7AuJZLDcqiQ2yCBg=;
+        s=s201512; t=1693042349;
+        bh=ENxAcgMLJj+l/WH28kfC2QbyQgKt+/UZ1l+NFjDswjI=;
         h=From:To:Cc:Subject:Date;
-        b=SFU+xvWJ1V47dFuXlPU2GqPk7ZhK2/Oo3x8qUKGO4BMAGZJSAMxvrZ/kBOfz5gtaP
-         gvx2qWVBny9EOz6AEv137w0jcdhQ8/F6H1fecCd6uhMFVFm2nyH6MsVpwKr674cwMT
-         LS+hj/9wtUfw043MwJxVlSpgrUckemrNcp1Ev5e4=
-Received: from KernelDevBox.byted.org ([180.184.51.134])
-        by newxmesmtplogicsvrszc2-1.qq.com (NewEsmtp) with SMTP
-        id DC294ED4; Sat, 26 Aug 2023 15:55:02 +0800
-X-QQ-mid: xmsmtpt1693036502ts34msnz1
-Message-ID: <tencent_7E9B9A5A97AD3B30550F1A8553D44F09C607@qq.com>
-X-QQ-XMAILINFO: Ma+X2EIxQOjIZcymB7zCRGDdTTnOkkGUf5BGQvsbS7+cfu0SncJvLRqSz2IPI+
-         sv/urg7BBb/heK54IuZm1CP3AcfAn/ADKjrsnzyrHQ7BZ+GadAx6N61rQD2IpvmNZwcYy0af7GJ0
-         6Gc34F/8/wcVeSKcUwqHhwQJeSqw9C/Brq+pvdB+3nzB6W8/zd9fl3NyyeMzwqrOKa3nqlyc3Kf2
-         LDBuOzLsVcsJQ/YUgWf41cFXO25W8Mq8N0ntDlyYUIMvc/al+ticrGfajZtdB+Ao66S98ZV4LZTj
-         JjeFCqIkfzglczHdPTiVXlne7sucLhY+BXHa4j79W1E4hhP8/DJ8VdGDxSj3DsuVOWlZmfYL6OCq
-         t02MaJywZTxrh6BAz8CWyu+yEDpqJZbHzVtrWNNupdSNgO4PSE1VxvLbBh9/KYvGL18hpLrRrl8l
-         /a5NqgSkw6k2zbjh10UOJzJ9ZGcb+jx+H4UFpmpdU/E44Zr/gZQm6E6qcvWYnOmh3Epvn5B+j1Nk
-         IEGQHGwDKO1T9hxDifsbmEKYjbVwkjz9wq8xBxPjEesDXeYs1KOfJtKSRx+AYVt0eVIvlvsMvuwo
-         Tcec/EQU4Mt/h+mjUi6Pe6BfbpOHK6QVTijOO5XMlse5EnTslvxpBO07Qtw1bFcvRN3OUwxMldTE
-         v2KzsTc5dTRlZIRCjRV73irAT9xuRuhYeQHZ/bn+OaoZw8tzqstqfQOYD9kwEQ0tTwH5mZXJxmrx
-         iK4GQynoQkCzVjbjvYrEGDiVBCqv5PlHLMs3CubAKSKxQtM+FoZLyDj3Rx4Y+hLq1AbV5kKboUB4
-         bAWzmdsMt2CZjSogzmC6lu4F/+J7JPLPQkHDlUmWwz7lMhx7B8Q+q8XpWxz1LeSDZnD9D7Ge4z9I
-         Y2TQ7pa0Lz9ujt1BvjCHvYTmk9+pTxEj3IegbZ80NhkG1fpi2DMehd2/ZePgTCJUE7ucJmCNTUL+
-         X/Z8QuAwuCJD4XLG2VHHmCjjTHpYWvvyKZvTMNbID+Qi8PPzR+BojAKmISI0nM
-X-QQ-XMRINFO: Nq+8W0+stu50PRdwbJxPCL0=
+        b=myT+cyeEYni0Nsw3J916Rxr0pk4vXLmLx5wUXUUnca9Mg2CTxWYuMq7vWb73Jc7f0
+         0rtTf/M9KZ+jvgnHL1nGBN/KlT76FJhHYtNlBVtLA8X4G8idBcuPMt/EJnQE7Jn24V
+         7LllCYB8ZcpJK+1AmEBu5UldFrEUNKepmFHh0u9E=
+Received: from KernelDevBox.byted.org ([180.184.51.70])
+        by newxmesmtplogicsvrszb9-0.qq.com (NewEsmtp) with SMTP
+        id 81B0E42E; Sat, 26 Aug 2023 17:32:27 +0800
+X-QQ-mid: xmsmtpt1693042347t4nhuq2rn
+Message-ID: <tencent_234B0AACD06350E10D7548C2E086A9166305@qq.com>
+X-QQ-XMAILINFO: MyIXMys/8kCtM/ppar++8yF/RwEDgZmEuhGYj5JWg0C2pqy18TPCgd1b0cBIul
+         oFA4Ud/FbTb0cozyRdM9Cxf6AVkPKxbwNc5C24ve1mt45J60JmEycewj/5IqqGpnlngPcHPy0B60
+         tzccwB95YsO83zP+hd+5k0HrX2j2ZiM2HdedI5n+8NSIjecDqAiuRnJSefY3FZ1Fp/D8F2Vl4/Gu
+         KNB4pO/ciYLEj1W3e92TxbdpImEQBvKXT1AzJOpH533dvVphz76AG17jaZvvB3IbrVKxdBshHs2d
+         G4Xe+eRyz0XgI/ongwFJKetJCrUd6EcgjHif1c65v1UyBXFo93gsMqNDDhSHVNavInELDNIJ617j
+         Ix5JJrLfIpKygrDcudUSsZqgZ149tAu8lhGtdxaCI86KsEB59t+ZGmajbWPCV3Q79yCecBP1jQkF
+         G8y28HaTglJj6snLRyzhVZ5lql6kBRqAFvjOeBMhCuB5YmZV8hF6DMZHHyksx5rGsG+DbQYavgoA
+         mkdswERKHXUa/O76ilyYQZreQ0V4i+IYGHjGtHX+/hE3cqod+LpmSc+vdhANFib8UpkdjOXfhnFU
+         9TzCZ0qfigSspOCGd20TnuDeh1V3FJZ9Yw+EdAAqFxtaNYBNPM8AWSy8cEBkvC0UiSh55zAUMku/
+         ulOz9DuQZlRdeaUDudDy2n4XT4woonHMS7j1+IYb/km651QzF+X4uJI4myWr2VAlESCX4ig80YT+
+         klcbCzp/13Fzaev/+O9ixWR3nP1G5CP5QqgFp/H232rgqaS9C3Mlzh3yCkwNFjs07I9aK+zoiUI/
+         CCb3oRWLvvLd1h5dXFAUnAAUg7bgR//Pi2SDg1MMTC44M6Obu9KRkxaaHlj3jJtrnauDbWPoM5Z7
+         7SfyXlwBW+44th7LcupmEaLLST1jpBSI6qEjI4DLLoUwRNyXFgmL9xCrmHKPJ72BOevWKFvABPtq
+         TIok0O2MMAihagbDYLtcXGkbSGmt9zB4vQUDJIJKy0c9XQYdfS3BDcxL5W9wtAKahbpmk04xk=
+X-QQ-XMRINFO: NI4Ajvh11aEj8Xl/2s1/T8w=
 From:   Zhang Shurong <zhang_shurong@foxmail.com>
-To:     patrice.chotard@st.com
-Cc:     gregkh@linuxfoundation.org, jslaby@suse.com,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+To:     gregkh@linuxfoundation.org
+Cc:     jslaby@suse.com, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Zhang Shurong <zhang_shurong@foxmail.com>
-Subject: [PATCH v2] serial: st-asc: Fix to check return value of platform_get_irq() in asc_init_port()
-Date:   Sat, 26 Aug 2023 15:54:59 +0800
-X-OQ-MSGID: <20230826075459.2014059-1-zhang_shurong@foxmail.com>
+Subject: [PATCH] tty: serial: linflexuart: Fix to check return value of platform_get_irq() in linflex_probe()
+Date:   Sat, 26 Aug 2023 17:32:24 +0800
+X-OQ-MSGID: <20230826093224.2150838-1-zhang_shurong@foxmail.com>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -63,33 +62,32 @@ there should have an error handling code.
 
 Fixed this by adding an error handling code.
 
-Fixes: c4b058560762 ("serial:st-asc: Add ST ASC driver.")
+Fixes: 09864c1cdf5c ("tty: serial: Add linflexuart driver for S32V234.")
 Signed-off-by: Zhang Shurong <zhang_shurong@foxmail.com>
 ---
-v1->v2: generated patch based on tty-next tree.
-
- drivers/tty/serial/st-asc.c | 6 +++++-
+ drivers/tty/serial/fsl_linflexuart.c | 6 +++++-
  1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index e7048515a79c..3d60ab6e9581 100644
---- a/drivers/tty/serial/st-asc.c
-+++ b/drivers/tty/serial/st-asc.c
-@@ -723,9 +723,13 @@ static int asc_init_port(struct asc_port *ascport,
- 	port->ops	= &asc_uart_ops;
- 	port->fifosize	= ASC_FIFO_SIZE;
- 	port->dev	= &pdev->dev;
--	port->irq	= platform_get_irq(pdev, 0);
- 	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_ST_ASC_CONSOLE);
+diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_linflexuart.c
+index 3e28be402aef..7a7461543bb4 100644
+--- a/drivers/tty/serial/fsl_linflexuart.c
++++ b/drivers/tty/serial/fsl_linflexuart.c
+@@ -850,10 +850,14 @@ static int linflex_probe(struct platform_device *pdev)
+ 	if (IS_ERR(sport->membase))
+ 		return PTR_ERR(sport->membase);
  
 +	ret = platform_get_irq(pdev, 0);
 +	if (ret < 0)
 +		return ret;
-+	port->irq = ret;
 +
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	port->membase = devm_ioremap_resource(&pdev->dev, res);
- 	if (IS_ERR(port->membase))
+ 	sport->dev = &pdev->dev;
+ 	sport->type = PORT_LINFLEXUART;
+ 	sport->iotype = UPIO_MEM;
+-	sport->irq = platform_get_irq(pdev, 0);
++	sport->irq = ret;
+ 	sport->ops = &linflex_pops;
+ 	sport->flags = UPF_BOOT_AUTOCONF;
+ 	sport->has_sysrq = IS_ENABLED(CONFIG_SERIAL_FSL_LINFLEXUART_CONSOLE);
 -- 
 2.30.2
 
