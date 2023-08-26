@@ -2,50 +2,38 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADBB8C83F16
-	for <linux-serial@archiver.kernel.org>; Sat, 26 Aug 2023 18:08:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76BA9C83F16
+	for <linux-serial@archiver.kernel.org>; Sat, 26 Aug 2023 20:00:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230446AbjHZSID (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 26 Aug 2023 14:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46938 "EHLO
+        id S229520AbjHZUAD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 26 Aug 2023 16:00:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231318AbjHZSHm (ORCPT
+        with ESMTP id S229531AbjHZT7v (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 26 Aug 2023 14:07:42 -0400
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B20710FF;
-        Sat, 26 Aug 2023 11:07:22 -0700 (PDT)
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-986d8332f50so247576166b.0;
-        Sat, 26 Aug 2023 11:07:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693073241; x=1693678041;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=h0kZWHSaiCbSZZouMc9Cd5T9avQEho6jFDRRgwT4Ctc=;
-        b=fksoKPrbbNHtCg6oY5lUjbeVhi1nmgTgUXKsBtkKjqrvMcEeQXrJwSqZEF2RzBnWg0
-         eZPDkFqCjs+rha48l23S9upFm/pYClx64NbjnuhpfTAv2BBNgwEjMyExWJ9QtBMr+Sxp
-         LeQkbnYMq0aeOd9O4E9H+Dvl2DH77MfZYgXfcMHlLypTPek+0UihL3/YopOfeVkgEEDy
-         Dri/7ZOZKBM1+4ONptXx/fq2BOz63Fc8N3i+dQTJHIluaOT87I2pqHI4KrIiRi+iRMCf
-         tb4ER2SrtvFnbB+sL4SrhGOe4WYotxaBW1Kr6vhW2X/L489JMHcC2QLS3ir9yJB7weJr
-         d5og==
-X-Gm-Message-State: AOJu0YzWlWFcGr+EYV9Hw8NYotS2h1FSOWEkzv2XUgPdOMLYKVX/T1Ci
-        uvAu1oTvXhBZ825cPQeGfi8=
-X-Google-Smtp-Source: AGHT+IHPhlD8CyM5CErLxdEnnWbiZkLGcsudwktwI2j+HEH/R4+6x8uD+fI/UJcop8wTahGB7oi24w==
-X-Received: by 2002:a17:906:8462:b0:9a5:81cf:57b5 with SMTP id hx2-20020a170906846200b009a581cf57b5mr2937812ejc.2.1693073240411;
-        Sat, 26 Aug 2023 11:07:20 -0700 (PDT)
-Received: from [192.168.86.246] (cpc87451-finc19-2-0-cust61.4-2.cable.virginm.net. [82.11.51.62])
-        by smtp.gmail.com with ESMTPSA id vw7-20020a170907058700b0099b921de301sm2454244ejb.159.2023.08.26.11.07.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 26 Aug 2023 11:07:19 -0700 (PDT)
-Message-ID: <29cfd5ef-16ae-4960-a95e-13b58c090604@linux.com>
-Date:   Sat, 26 Aug 2023 19:07:18 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v9 2/2] tty: serial: meson: Add a earlycon for the T7 SoC
-Content-Language: en-US
-To:     Dmitry Rokosov <ddrokosov@sberdevices.ru>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sat, 26 Aug 2023 15:59:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB95D8;
+        Sat, 26 Aug 2023 12:59:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B7B7A61F2F;
+        Sat, 26 Aug 2023 19:59:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84168C433C8;
+        Sat, 26 Aug 2023 19:59:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1693079988;
+        bh=wk7TTw46I9VQ1vaqjL5oYSR1MWRvL3QqszPe1Ac3vEE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jUceMAv4p78ZNILkEQmopDvcIZ44XkSx8YyqCQzeVhrnFNDWN3wcMc8ZoERhQFETn
+         c8e7ID/zkoi0nwVWXynboBvJsIvtCSXs4S3OcfJ2lr5Ac4GDBo5U/Nx3T1SLQfKXvo
+         VPZa3kfJE565DVd7Jkrtr2glSNkantuwuRdZjw1A=
+Date:   Sat, 26 Aug 2023 21:59:45 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Lucas Tanure <tanure@linux.com>
+Cc:     Dmitry Rokosov <ddrokosov@sberdevices.ru>,
         Jiri Slaby <jirislaby@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -57,59 +45,63 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Nick <nick@khadas.com>, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v9 2/2] tty: serial: meson: Add a earlycon for the T7 SoC
+Message-ID: <2023082636-embolism-submitter-5e8c@gregkh>
 References: <20230814080128.143613-1-tanure@linux.com>
  <20230814080128.143613-2-tanure@linux.com>
  <20230823082940.t4xjgfzwpt2hsfst@CAB-WSD-L081021>
-From:   Lucas Tanure <tanure@linux.com>
-In-Reply-To: <20230823082940.t4xjgfzwpt2hsfst@CAB-WSD-L081021>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ <29cfd5ef-16ae-4960-a95e-13b58c090604@linux.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <29cfd5ef-16ae-4960-a95e-13b58c090604@linux.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 23-08-2023 09:29, Dmitry Rokosov wrote:
-> Hello Lucas,
-> 
-> Thank you for the patch! Please find my small comment below.
-> 
-> On Mon, Aug 14, 2023 at 09:01:28AM +0100, Lucas Tanure wrote:
->> The new Amlogic T7 SoC does not have a always-on uart,
->> so add OF_EARLYCON_DECLARE for it.
->>
->> Signed-off-by: Lucas Tanure <tanure@linux.com>
->> Acked-by: Neil Armstrong <neil.armstrong@linaro.org>
->> ---
->> Since v8:
->>   - Fix issues with git send-mail command line
->> Since v7:
->>   - Send to the correct maintainers
->>
->>   drivers/tty/serial/meson_uart.c | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
->> index 790d910dafa5..c4f61d82fb72 100644
->> --- a/drivers/tty/serial/meson_uart.c
->> +++ b/drivers/tty/serial/meson_uart.c
->> @@ -648,6 +648,8 @@ meson_serial_early_console_setup(struct earlycon_device *device, const char *opt
->>   
->>   OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
->>   		    meson_serial_early_console_setup);
->> +OF_EARLYCON_DECLARE(meson, "amlogic,t7-uart",
->> +		    meson_serial_early_console_setup);
->>   
->>   #define MESON_SERIAL_CONSOLE_PTR(_devname) (&meson_serial_console_##_devname)
->>   #else
-> 
-> I suppose you need to add a separate meson_t7_uart_data to switch the T7
-> UART to a regular TTY devname 'ttyS'. For the new Amlogic SoCs, we have
-> agreed to use 'ttyS' instead of 'ttyAML'. Please refer to the already
-> applied patch series at [1] and the IRC discussion at [2].
-> 
-> Links:
->      [1] https://lore.kernel.org/all/20230705181833.16137-1-ddrokosov@sberdevices.ru/
->      [2] https://libera.irclog.whitequark.org/linux-amlogic/2023-07-03
-> 
-I asked Greg to drop this patch as is not need anymore.
-T7 will use S4 TTY/UART code.
+On Sat, Aug 26, 2023 at 07:07:18PM +0100, Lucas Tanure wrote:
+> On 23-08-2023 09:29, Dmitry Rokosov wrote:
+> > Hello Lucas,
+> > 
+> > Thank you for the patch! Please find my small comment below.
+> > 
+> > On Mon, Aug 14, 2023 at 09:01:28AM +0100, Lucas Tanure wrote:
+> > > The new Amlogic T7 SoC does not have a always-on uart,
+> > > so add OF_EARLYCON_DECLARE for it.
+> > > 
+> > > Signed-off-by: Lucas Tanure <tanure@linux.com>
+> > > Acked-by: Neil Armstrong <neil.armstrong@linaro.org>
+> > > ---
+> > > Since v8:
+> > >   - Fix issues with git send-mail command line
+> > > Since v7:
+> > >   - Send to the correct maintainers
+> > > 
+> > >   drivers/tty/serial/meson_uart.c | 2 ++
+> > >   1 file changed, 2 insertions(+)
+> > > 
+> > > diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+> > > index 790d910dafa5..c4f61d82fb72 100644
+> > > --- a/drivers/tty/serial/meson_uart.c
+> > > +++ b/drivers/tty/serial/meson_uart.c
+> > > @@ -648,6 +648,8 @@ meson_serial_early_console_setup(struct earlycon_device *device, const char *opt
+> > >   OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
+> > >   		    meson_serial_early_console_setup);
+> > > +OF_EARLYCON_DECLARE(meson, "amlogic,t7-uart",
+> > > +		    meson_serial_early_console_setup);
+> > >   #define MESON_SERIAL_CONSOLE_PTR(_devname) (&meson_serial_console_##_devname)
+> > >   #else
+> > 
+> > I suppose you need to add a separate meson_t7_uart_data to switch the T7
+> > UART to a regular TTY devname 'ttyS'. For the new Amlogic SoCs, we have
+> > agreed to use 'ttyS' instead of 'ttyAML'. Please refer to the already
+> > applied patch series at [1] and the IRC discussion at [2].
+> > 
+> > Links:
+> >      [1] https://lore.kernel.org/all/20230705181833.16137-1-ddrokosov@sberdevices.ru/
+> >      [2] https://libera.irclog.whitequark.org/linux-amlogic/2023-07-03
+> > 
+> I asked Greg to drop this patch as is not need anymore.
+> T7 will use S4 TTY/UART code.
+
+I can't drop it, I need a revert :(
