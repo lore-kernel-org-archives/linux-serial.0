@@ -2,61 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05ED5EE49A5
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Aug 2023 15:35:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C48C83F16
+	for <linux-serial@archiver.kernel.org>; Sat, 26 Aug 2023 08:01:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231679AbjHYPeh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Aug 2023 11:34:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38066 "EHLO
+        id S229901AbjHZIAj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 26 Aug 2023 04:00:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237044AbjHYPeg (ORCPT
+        with ESMTP id S229746AbjHZIAM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Aug 2023 11:34:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C472134;
-        Fri, 25 Aug 2023 08:34:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD7D064890;
-        Fri, 25 Aug 2023 15:34:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C25F3C433C8;
-        Fri, 25 Aug 2023 15:34:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1692977674;
-        bh=iRLOoCwRJElGcZjOp6rXISnCKlfpriO8DTj22vK8d9U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=e9FPPQJoLvxgfGjW2R7HSeQ2wlEV+BM1j9M8pOK0xRXIVIp3xRU3p/L5pAKn1irNv
-         dgeo9Bh0pVFwJ98Miag6EF6y+1zG366MPHvGGO4xl3ROqxq5i7kXmRL0P1pCdNv+k3
-         517aoT4/lYz4nj+YkFELwQYKCf9SIYAXVtJjp2zo=
-Date:   Fri, 25 Aug 2023 17:34:31 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-serial@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH] tty: shrink the size of struct tty_struct by 40 bytes
-Message-ID: <2023082531-daylight-vitally-fcb3@gregkh>
-References: <2023082519-cobbler-unholy-8d1f@gregkh>
+        Sat, 26 Aug 2023 04:00:12 -0400
+Received: from out203-205-221-209.mail.qq.com (out203-205-221-209.mail.qq.com [203.205.221.209])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8D110EF;
+        Sat, 26 Aug 2023 01:00:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1693036505;
+        bh=yLUzFJjhb3rHZwHXuc55nQDUf3m7AuJZLDcqiQ2yCBg=;
+        h=From:To:Cc:Subject:Date;
+        b=SFU+xvWJ1V47dFuXlPU2GqPk7ZhK2/Oo3x8qUKGO4BMAGZJSAMxvrZ/kBOfz5gtaP
+         gvx2qWVBny9EOz6AEv137w0jcdhQ8/F6H1fecCd6uhMFVFm2nyH6MsVpwKr674cwMT
+         LS+hj/9wtUfw043MwJxVlSpgrUckemrNcp1Ev5e4=
+Received: from KernelDevBox.byted.org ([180.184.51.134])
+        by newxmesmtplogicsvrszc2-1.qq.com (NewEsmtp) with SMTP
+        id DC294ED4; Sat, 26 Aug 2023 15:55:02 +0800
+X-QQ-mid: xmsmtpt1693036502ts34msnz1
+Message-ID: <tencent_7E9B9A5A97AD3B30550F1A8553D44F09C607@qq.com>
+X-QQ-XMAILINFO: Ma+X2EIxQOjIZcymB7zCRGDdTTnOkkGUf5BGQvsbS7+cfu0SncJvLRqSz2IPI+
+         sv/urg7BBb/heK54IuZm1CP3AcfAn/ADKjrsnzyrHQ7BZ+GadAx6N61rQD2IpvmNZwcYy0af7GJ0
+         6Gc34F/8/wcVeSKcUwqHhwQJeSqw9C/Brq+pvdB+3nzB6W8/zd9fl3NyyeMzwqrOKa3nqlyc3Kf2
+         LDBuOzLsVcsJQ/YUgWf41cFXO25W8Mq8N0ntDlyYUIMvc/al+ticrGfajZtdB+Ao66S98ZV4LZTj
+         JjeFCqIkfzglczHdPTiVXlne7sucLhY+BXHa4j79W1E4hhP8/DJ8VdGDxSj3DsuVOWlZmfYL6OCq
+         t02MaJywZTxrh6BAz8CWyu+yEDpqJZbHzVtrWNNupdSNgO4PSE1VxvLbBh9/KYvGL18hpLrRrl8l
+         /a5NqgSkw6k2zbjh10UOJzJ9ZGcb+jx+H4UFpmpdU/E44Zr/gZQm6E6qcvWYnOmh3Epvn5B+j1Nk
+         IEGQHGwDKO1T9hxDifsbmEKYjbVwkjz9wq8xBxPjEesDXeYs1KOfJtKSRx+AYVt0eVIvlvsMvuwo
+         Tcec/EQU4Mt/h+mjUi6Pe6BfbpOHK6QVTijOO5XMlse5EnTslvxpBO07Qtw1bFcvRN3OUwxMldTE
+         v2KzsTc5dTRlZIRCjRV73irAT9xuRuhYeQHZ/bn+OaoZw8tzqstqfQOYD9kwEQ0tTwH5mZXJxmrx
+         iK4GQynoQkCzVjbjvYrEGDiVBCqv5PlHLMs3CubAKSKxQtM+FoZLyDj3Rx4Y+hLq1AbV5kKboUB4
+         bAWzmdsMt2CZjSogzmC6lu4F/+J7JPLPQkHDlUmWwz7lMhx7B8Q+q8XpWxz1LeSDZnD9D7Ge4z9I
+         Y2TQ7pa0Lz9ujt1BvjCHvYTmk9+pTxEj3IegbZ80NhkG1fpi2DMehd2/ZePgTCJUE7ucJmCNTUL+
+         X/Z8QuAwuCJD4XLG2VHHmCjjTHpYWvvyKZvTMNbID+Qi8PPzR+BojAKmISI0nM
+X-QQ-XMRINFO: Nq+8W0+stu50PRdwbJxPCL0=
+From:   Zhang Shurong <zhang_shurong@foxmail.com>
+To:     patrice.chotard@st.com
+Cc:     gregkh@linuxfoundation.org, jslaby@suse.com,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Zhang Shurong <zhang_shurong@foxmail.com>
+Subject: [PATCH v2] serial: st-asc: Fix to check return value of platform_get_irq() in asc_init_port()
+Date:   Sat, 26 Aug 2023 15:54:59 +0800
+X-OQ-MSGID: <20230826075459.2014059-1-zhang_shurong@foxmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2023082519-cobbler-unholy-8d1f@gregkh>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Aug 25, 2023 at 05:28:20PM +0200, Greg Kroah-Hartman wrote:
->  	bool hw_stopped;
-> -	unsigned int receive_room;
-> +	bool closing;
->  	int flow_change;
+The platform_get_irq might be failed and return a negative result. So
+there should have an error handling code.
 
-Note, "flow_change" really only has 2 values, 1 or 2, so it could be a
-boolean, or a u8 at the worse (both take the same amount of space).  But
-changing that here doesn't affect the overall size of the structure,
-just increases the hole at this location in the structure, so it's not a
-big deal at this point in time.
+Fixed this by adding an error handling code.
 
-thanks,
+Fixes: c4b058560762 ("serial:st-asc: Add ST ASC driver.")
+Signed-off-by: Zhang Shurong <zhang_shurong@foxmail.com>
+---
+v1->v2: generated patch based on tty-next tree.
 
-greg k-h
+ drivers/tty/serial/st-asc.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index e7048515a79c..3d60ab6e9581 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -723,9 +723,13 @@ static int asc_init_port(struct asc_port *ascport,
+ 	port->ops	= &asc_uart_ops;
+ 	port->fifosize	= ASC_FIFO_SIZE;
+ 	port->dev	= &pdev->dev;
+-	port->irq	= platform_get_irq(pdev, 0);
+ 	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_ST_ASC_CONSOLE);
+ 
++	ret = platform_get_irq(pdev, 0);
++	if (ret < 0)
++		return ret;
++	port->irq = ret;
++
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	port->membase = devm_ioremap_resource(&pdev->dev, res);
+ 	if (IS_ERR(port->membase))
+-- 
+2.30.2
+
