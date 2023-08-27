@@ -2,44 +2,44 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34F10C83F18
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E8DC83F19
 	for <linux-serial@archiver.kernel.org>; Sun, 27 Aug 2023 07:44:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230127AbjH0Hni (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S230133AbjH0Hni (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Sun, 27 Aug 2023 03:43:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49390 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230089AbjH0HmM (ORCPT
+        with ESMTP id S229978AbjH0HmE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 27 Aug 2023 03:42:12 -0400
+        Sun, 27 Aug 2023 03:42:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD8BCFA;
-        Sun, 27 Aug 2023 00:42:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA4EF4;
+        Sun, 27 Aug 2023 00:42:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 43C4260FC9;
-        Sun, 27 Aug 2023 07:42:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1764C433C8;
-        Sun, 27 Aug 2023 07:42:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C9A6060FC9;
+        Sun, 27 Aug 2023 07:42:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D9F3C433C7;
+        Sun, 27 Aug 2023 07:42:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1693122128;
-        bh=I7T8JzUTvFtmo5xlDYAkNBZGkmHty16AkdRBOY1GVgU=;
+        s=k20201202; t=1693122121;
+        bh=UPP1F3AsoDhSyC4YTKa+HgIocJf1wBb278Az2y/3Rl4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QSiV2OusxS+1LP/ke2ER4BXxgUfA9AS8ibKGapUCWxc09FyhVdx4pfCkoqNJDbku2
-         vqYrbcyyUWf8O/sL9tmwS5fmaN5SbWaImRWCx/fkRasROyl8kOAAEufcHZpW1c8sp9
-         MfRo2CTjF+m+/JdOmzWjJLdp4jEfLV6X0Wyx3Q6hqhkfwv5X5rCsdc2epDiECmVqFU
-         LrTDO96E6gxHQ/qcKw9Zvw/eTFvH77rCgzc0xWEREjaRe2sGUo482/YAx/zOf/3ng2
-         l8Ek2FOvSkT2YsahiXimvJ652TtU+V4eSo76DHSovrSH/FpLz7JsZEauVMOB3PVp4V
-         cBI789+mx2+FA==
+        b=h6iI0rKksbWmCyHGUbFA8gIm7zM9LDp7wCiA44Bju7JRmZXgJYmd0kjCHIdGfpABh
+         xQ9f+DYAEyddEd+imBFjQ0oonH9bcInc531hou75rL3mnH73zFA5v7nrJ9jwLGBlCn
+         kMIpQ3R8sbBoIhdhkkY88RJUXWNCHPxHWJJAnThk0Adrd4ven2auAY8Q4FkUdNSiLb
+         UF9x25Md2ClnaCo+J+K1rqtUwbIhqDl2TEjao0YzzdZkHpbLey9CdGLRDusnSSBitP
+         07CDpH/fyEQEg33RfW5t4fuQzfcVkm/+6gG2+eOI2AEOpKCUOIA2WCEe9+aLgUmeZL
+         TEuHoELk8l/eA==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH v2 12/14] tty: n_tty: unify counts to size_t
-Date:   Sun, 27 Aug 2023 09:41:45 +0200
-Message-ID: <20230827074147.2287-13-jirislaby@kernel.org>
+Subject: [PATCH v2 07/14] tty: n_tty: move canon handling to a separate function
+Date:   Sun, 27 Aug 2023 09:41:40 +0200
+Message-ID: <20230827074147.2287-8-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <20230827074147.2287-1-jirislaby@kernel.org>
 References: <20230827074147.2287-1-jirislaby@kernel.org>
@@ -49,132 +49,190 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Some count types are already 'size_t' for a long time. Some were
-switched to 'size_t' recently. Unify the rest with those now.
-
-This allows for some min_t()s to become min()s. And make one min()
-an explicit min_t() as we are comparing signed 'room' to unsigned
-'count'.
+n_tty_receive_char_special() is already complicated enough. Split the
+canon handling to a separate function: n_tty_receive_char_canon().
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/n_tty.c | 32 +++++++++++++++-----------------
- 1 file changed, 15 insertions(+), 17 deletions(-)
+ drivers/tty/n_tty.c | 158 ++++++++++++++++++++++++--------------------
+ 1 file changed, 87 insertions(+), 71 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index cf42b8b4ad2e..bd6cd28f734f 100644
+index 07b6a013b5ab..0149dc9dd0b1 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -1523,27 +1523,27 @@ static void n_tty_lookahead_flow_ctrl(struct tty_struct *tty, const u8 *cp,
- 
- static void
- n_tty_receive_buf_real_raw(const struct tty_struct *tty, const u8 *cp,
--			   int count)
-+			   size_t count)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 	size_t n, head;
- 
- 	head = MASK(ldata->read_head);
--	n = min_t(size_t, count, N_TTY_BUF_SIZE - head);
-+	n = min(count, N_TTY_BUF_SIZE - head);
- 	memcpy(read_buf_addr(ldata, head), cp, n);
- 	ldata->read_head += n;
- 	cp += n;
- 	count -= n;
- 
- 	head = MASK(ldata->read_head);
--	n = min_t(size_t, count, N_TTY_BUF_SIZE - head);
-+	n = min(count, N_TTY_BUF_SIZE - head);
- 	memcpy(read_buf_addr(ldata, head), cp, n);
- 	ldata->read_head += n;
+@@ -1262,6 +1262,91 @@ static bool n_tty_receive_char_flow_ctrl(struct tty_struct *tty, unsigned char c
+ 	return true;
  }
  
- static void
- n_tty_receive_buf_raw(struct tty_struct *tty, const u8 *cp, const u8 *fp,
--		      int count)
-+		      size_t count)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 	u8 flag = TTY_NORMAL;
-@@ -1560,7 +1560,7 @@ n_tty_receive_buf_raw(struct tty_struct *tty, const u8 *cp, const u8 *fp,
- 
- static void
- n_tty_receive_buf_closing(struct tty_struct *tty, const u8 *cp, const u8 *fp,
--			  int count, bool lookahead_done)
-+			  size_t count, bool lookahead_done)
- {
- 	u8 flag = TTY_NORMAL;
- 
-@@ -1573,7 +1573,7 @@ n_tty_receive_buf_closing(struct tty_struct *tty, const u8 *cp, const u8 *fp,
- }
- 
- static void n_tty_receive_buf_standard(struct tty_struct *tty, const u8 *cp,
--				       const u8 *fp, int count,
-+				       const u8 *fp, size_t count,
++static bool n_tty_receive_char_canon(struct tty_struct *tty, u8 c)
++{
++	struct n_tty_data *ldata = tty->disc_data;
++
++	if (c == ERASE_CHAR(tty) || c == KILL_CHAR(tty) ||
++	    (c == WERASE_CHAR(tty) && L_IEXTEN(tty))) {
++		eraser(c, tty);
++		commit_echoes(tty);
++
++		return true;
++	}
++
++	if (c == LNEXT_CHAR(tty) && L_IEXTEN(tty)) {
++		ldata->lnext = 1;
++		if (L_ECHO(tty)) {
++			finish_erasing(ldata);
++			if (L_ECHOCTL(tty)) {
++				echo_char_raw('^', ldata);
++				echo_char_raw('\b', ldata);
++				commit_echoes(tty);
++			}
++		}
++
++		return true;
++	}
++
++	if (c == REPRINT_CHAR(tty) && L_ECHO(tty) && L_IEXTEN(tty)) {
++		size_t tail = ldata->canon_head;
++
++		finish_erasing(ldata);
++		echo_char(c, tty);
++		echo_char_raw('\n', ldata);
++		while (MASK(tail) != MASK(ldata->read_head)) {
++			echo_char(read_buf(ldata, tail), tty);
++			tail++;
++		}
++		commit_echoes(tty);
++
++		return true;
++	}
++
++	if (c == '\n') {
++		if (L_ECHO(tty) || L_ECHONL(tty)) {
++			echo_char_raw('\n', ldata);
++			commit_echoes(tty);
++		}
++		goto handle_newline;
++	}
++
++	if (c == EOF_CHAR(tty)) {
++		c = __DISABLED_CHAR;
++		goto handle_newline;
++	}
++
++	if ((c == EOL_CHAR(tty)) ||
++	    (c == EOL2_CHAR(tty) && L_IEXTEN(tty))) {
++		/*
++		 * XXX are EOL_CHAR and EOL2_CHAR echoed?!?
++		 */
++		if (L_ECHO(tty)) {
++			/* Record the column of first canon char. */
++			if (ldata->canon_head == ldata->read_head)
++				echo_set_canon_col(ldata);
++			echo_char(c, tty);
++			commit_echoes(tty);
++		}
++		/*
++		 * XXX does PARMRK doubling happen for
++		 * EOL_CHAR and EOL2_CHAR?
++		 */
++		if (c == (unsigned char) '\377' && I_PARMRK(tty))
++			put_tty_queue(c, ldata);
++
++handle_newline:
++		set_bit(MASK(ldata->read_head), ldata->read_flags);
++		put_tty_queue(c, ldata);
++		smp_store_release(&ldata->canon_head, ldata->read_head);
++		kill_fasync(&tty->fasync, SIGIO, POLL_IN);
++		wake_up_interruptible_poll(&tty->read_wait, EPOLLIN | EPOLLRDNORM);
++		return true;
++	}
++
++	return false;
++}
++
+ static void n_tty_receive_char_special(struct tty_struct *tty, unsigned char c,
  				       bool lookahead_done)
  {
- 	struct n_tty_data *ldata = tty->disc_data;
-@@ -1612,11 +1612,11 @@ static void n_tty_receive_buf_standard(struct tty_struct *tty, const u8 *cp,
- }
+@@ -1296,77 +1381,8 @@ static void n_tty_receive_char_special(struct tty_struct *tty, unsigned char c,
+ 	} else if (c == '\n' && I_INLCR(tty))
+ 		c = '\r';
  
- static void __receive_buf(struct tty_struct *tty, const u8 *cp, const u8 *fp,
--			  int count)
-+			  size_t count)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 	bool preops = I_ISTRIP(tty) || (I_IUCLC(tty) && L_IEXTEN(tty));
--	size_t la_count = min_t(size_t, ldata->lookahead_count, count);
-+	size_t la_count = min(ldata->lookahead_count, count);
+-	if (ldata->icanon) {
+-		if (c == ERASE_CHAR(tty) || c == KILL_CHAR(tty) ||
+-		    (c == WERASE_CHAR(tty) && L_IEXTEN(tty))) {
+-			eraser(c, tty);
+-			commit_echoes(tty);
+-			return;
+-		}
+-		if (c == LNEXT_CHAR(tty) && L_IEXTEN(tty)) {
+-			ldata->lnext = 1;
+-			if (L_ECHO(tty)) {
+-				finish_erasing(ldata);
+-				if (L_ECHOCTL(tty)) {
+-					echo_char_raw('^', ldata);
+-					echo_char_raw('\b', ldata);
+-					commit_echoes(tty);
+-				}
+-			}
+-			return;
+-		}
+-		if (c == REPRINT_CHAR(tty) && L_ECHO(tty) && L_IEXTEN(tty)) {
+-			size_t tail = ldata->canon_head;
+-
+-			finish_erasing(ldata);
+-			echo_char(c, tty);
+-			echo_char_raw('\n', ldata);
+-			while (MASK(tail) != MASK(ldata->read_head)) {
+-				echo_char(read_buf(ldata, tail), tty);
+-				tail++;
+-			}
+-			commit_echoes(tty);
+-			return;
+-		}
+-		if (c == '\n') {
+-			if (L_ECHO(tty) || L_ECHONL(tty)) {
+-				echo_char_raw('\n', ldata);
+-				commit_echoes(tty);
+-			}
+-			goto handle_newline;
+-		}
+-		if (c == EOF_CHAR(tty)) {
+-			c = __DISABLED_CHAR;
+-			goto handle_newline;
+-		}
+-		if ((c == EOL_CHAR(tty)) ||
+-		    (c == EOL2_CHAR(tty) && L_IEXTEN(tty))) {
+-			/*
+-			 * XXX are EOL_CHAR and EOL2_CHAR echoed?!?
+-			 */
+-			if (L_ECHO(tty)) {
+-				/* Record the column of first canon char. */
+-				if (ldata->canon_head == ldata->read_head)
+-					echo_set_canon_col(ldata);
+-				echo_char(c, tty);
+-				commit_echoes(tty);
+-			}
+-			/*
+-			 * XXX does PARMRK doubling happen for
+-			 * EOL_CHAR and EOL2_CHAR?
+-			 */
+-			if (c == (unsigned char) '\377' && I_PARMRK(tty))
+-				put_tty_queue(c, ldata);
+-
+-handle_newline:
+-			set_bit(MASK(ldata->read_head), ldata->read_flags);
+-			put_tty_queue(c, ldata);
+-			smp_store_release(&ldata->canon_head, ldata->read_head);
+-			kill_fasync(&tty->fasync, SIGIO, POLL_IN);
+-			wake_up_interruptible_poll(&tty->read_wait, EPOLLIN | EPOLLRDNORM);
+-			return;
+-		}
+-	}
++	if (ldata->icanon && n_tty_receive_char_canon(tty, c))
++		return;
  
- 	if (ldata->real_raw)
- 		n_tty_receive_buf_real_raw(tty, cp, count);
-@@ -1687,11 +1687,11 @@ static void __receive_buf(struct tty_struct *tty, const u8 *cp, const u8 *fp,
-  */
- static size_t
- n_tty_receive_buf_common(struct tty_struct *tty, const u8 *cp, const u8 *fp,
--			 int count, bool flow)
-+			 size_t count, bool flow)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
--	size_t rcvd = 0;
--	int room, n, overflow;
-+	size_t n, rcvd = 0;
-+	int room, overflow;
- 
- 	down_read(&tty->termios_rwsem);
- 
-@@ -1724,7 +1724,7 @@ n_tty_receive_buf_common(struct tty_struct *tty, const u8 *cp, const u8 *fp,
- 		} else
- 			overflow = 0;
- 
--		n = min(count, room);
-+		n = min_t(size_t, count, room);
- 		if (!n)
- 			break;
- 
-@@ -1954,9 +1954,8 @@ static inline int input_available_p(const struct tty_struct *tty, int poll)
-  *		caller holds non-exclusive %termios_rwsem;
-  *		read_tail published
-  */
--static bool copy_from_read_buf(const struct tty_struct *tty,
--				      u8 **kbp,
--				      size_t *nr)
-+static bool copy_from_read_buf(const struct tty_struct *tty, u8 **kbp,
-+			       size_t *nr)
- 
- {
- 	struct n_tty_data *ldata = tty->disc_data;
-@@ -2009,8 +2008,7 @@ static bool copy_from_read_buf(const struct tty_struct *tty,
-  *	caller holds non-exclusive %termios_rwsem;
-  *	read_tail published
-  */
--static bool canon_copy_from_read_buf(const struct tty_struct *tty,
--				     u8 **kbp,
-+static bool canon_copy_from_read_buf(const struct tty_struct *tty, u8 **kbp,
- 				     size_t *nr)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
+ 	if (L_ECHO(tty)) {
+ 		finish_erasing(ldata);
 -- 
 2.42.0
 
