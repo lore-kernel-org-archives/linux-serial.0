@@ -2,98 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 851ABC83F16
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Aug 2023 10:31:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05406C83F1C
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Aug 2023 10:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231421AbjH1KbS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Aug 2023 06:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55704 "EHLO
+        id S232305AbjH1K5J (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Aug 2023 06:57:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231529AbjH1KbG (ORCPT
+        with ESMTP id S232357AbjH1K4g (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Aug 2023 06:31:06 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2637319A;
-        Mon, 28 Aug 2023 03:30:51 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-98377c5d53eso386036466b.0;
-        Mon, 28 Aug 2023 03:30:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1693218649; x=1693823449;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MiKi/TKlvIbc3sNkJh8jRuCHA25ICsx20PEexiy1mcA=;
-        b=JeECIXoDP+alNRW0eSh7bgGm2v6c43o90r6svTuf+En4ezPQbJMkmNAGtJ50YMW5Eo
-         7sryg29Ie+23VAN+DUYMAE4oIgPUxK4wfZZDji8rN7XkKrOJt0ANppR3Sz1epP+Spvyj
-         Sq5ahqAd5vLnKT5M6cZjsi2Uq81Kq/9bZX4nT46AmHKb1k4tbUugJsn5SLgrOojnzAl4
-         iNqMHPPVcq9KgZICPWgWGj9cAdHQB0FJxM/uH3J3iYR1TCLfI79/kj25DAgQzQB9u+4F
-         jDsQkxRHeyWMMkVd3V+GzE8LXQAQBmRNQHrLaOn9NVpS6wirIaA0QoBYJnoUYDQSuk/d
-         Pywg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693218649; x=1693823449;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=MiKi/TKlvIbc3sNkJh8jRuCHA25ICsx20PEexiy1mcA=;
-        b=jDhA4YbxWKNb+pEYMfAx0AczAZVpHWah4xIdIMQQrckyDGaB6DCzkmTcmZtWNfWrv8
-         MHM9ZjG/BUmJ45yyaM4CUgGYLQaMx/+uPPntfluFe/ZDLbzqLXoXR55OqJnkqfHaIDp1
-         6QETKsip9RMYvLsvktMVXs32IQOwWJcKFhEWx4bgbVDeinETsCDxs4J7lgOVeQosgMNl
-         Xd9pTavIOQFLfVk+sp6+1JbhundH0/Ri66/bBZYY+Cgl3oy1tSBwqX2Xb2uRttuvwPzI
-         gVfF2+gO2Hinem9bKknFozErFkm9xfYyTnftLrYS39r38fPnN9M7Cif5xkKnmksTd7W/
-         NUIw==
-X-Gm-Message-State: AOJu0YxNFK8cpFe5Iqf1QRP1XTii+cSVqh0t5RW4BUvKOIfdsW/frspN
-        nC0uDG3jYEZunNW6vXulkK8D+/n8MDLvbw==
-X-Google-Smtp-Source: AGHT+IFMIaCCcDZoYpunAsRhOgK+O4zynTdJpthd60JRcNlmWJicgI5wy+fP0w6n37NqjiFNaWT6SA==
-X-Received: by 2002:a17:906:5dd9:b0:993:d617:bdc2 with SMTP id p25-20020a1709065dd900b00993d617bdc2mr16824143ejv.75.1693218649168;
-        Mon, 28 Aug 2023 03:30:49 -0700 (PDT)
-Received: from fedora.. (87-97-90-214.pool.digikabel.hu. [87.97.90.214])
-        by smtp.gmail.com with ESMTPSA id w24-20020a17090649d800b009930308425csm4473505ejv.31.2023.08.28.03.30.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Aug 2023 03:30:48 -0700 (PDT)
-From:   Andras Sebok <sebokandris2009@gmail.com>
-To:     linux-serial@vger.kernel.org
-Cc:     andriseseboke@gmail.com, linux-kernel@vger.kernel.org,
-        jirislaby@kernel.org, gregkh@linuxfoundation.org,
-        Andras Sebok <sebokandris2009@gmail.com>
-Subject: [PATCH 2/2] Add disabled text to indicate inactive commands in sysrq help menu
-Date:   Mon, 28 Aug 2023 12:27:56 +0200
-Message-ID: <20230828102753.4811-5-sebokandris2009@gmail.com>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230828102753.4811-2-sebokandris2009@gmail.com>
+        Mon, 28 Aug 2023 06:56:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82E3A2D53;
+        Mon, 28 Aug 2023 03:56:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B10E4643BA;
+        Mon, 28 Aug 2023 10:55:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95E05C43395;
+        Mon, 28 Aug 2023 10:55:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1693220139;
+        bh=Bb5ceWlaWfPfAbTCvodCpwqGEOWqs3DzAgQJiJfYYLI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qR1SoaeXARfJ5B+C7d1LrT8ZNFXqBqyjUjWCQB+bcrZ+F//B5r4j/u0xcjOjgNkYT
+         4i9JwXyCuIBJQvQlEKkhPYGpxgfKdjeBFD0ZpGrcNWbfqqaI3ulRi3VCjloeGnH3jF
+         BteU6FCE4IZropHtFlCbLyH0sG/W4J0IAo5Djh7Q=
+Date:   Mon, 28 Aug 2023 12:51:38 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Andras Sebok <sebokandris2009@gmail.com>
+Cc:     linux-serial@vger.kernel.org, andriseseboke@gmail.com,
+        linux-kernel@vger.kernel.org, jirislaby@kernel.org
+Subject: Re: [PATCH 1/2] Simplify sysrq help
+Message-ID: <2023082831-undefined-hut-11fd@gregkh>
 References: <20230828102753.4811-2-sebokandris2009@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230828102753.4811-2-sebokandris2009@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This patch adds disabled text after disabled commands in sysrq help.
+On Mon, Aug 28, 2023 at 12:27:53PM +0200, Andras Sebok wrote:
+> This patch simplyfies sysrq help menu by moving each command to a 
+> separate line and by moving the key from brackets to after a semicolon.
+> 
+> before:
+> sysrq: HELP : loglevel(0-9) reboot(b) crash(c) terminate-all-tasks(e) memory-full-oom-kill(f) kill-all-tasks(i) thaw-filesystems(j) sak(k) show-backtrace-all-active-cpus(l) show-memory-usage(m) nice-all-RT-tasks(n) poweroff(o) show-registers(p) show-all-timers(q) unraw(r) sync(s) show-task-states(t) unmount(u) force-fb(v) show-blocked-tasks(w) dump-ftrace-buffer(z)
+> 
+> after:
+> sysrq: HELP :
+> loglevel : 0-9
+> reboot : b
+> crash : c
+> terminate-all-tasks : e
+> memory-full-oom-kill : f
+> kill-all-tasks : i
+> thaw-filesystems : j
+> sak : k
+> show-backtrace-all-active-cpus : l
+> show-memory-usage : m
+> nice-all-RT-tasks : n
+> poweroff : o
+> show-registers : p
+> show-all-timers : q
+> unraw : r
+> sync : s
+> show-task-states : t
+> unmount : u
+> force-fb : v
+> show-blocked-tasks : w
+> dump-ftrace-buffer : z
 
-before:
-sak : k
+So now the options all scroll off the screen?  Are you sure this is
+wise?  What problem are you trying to solve here, it just looks like you
+are changing one "help text format for another", and doesn't actually
+change much of anything.
 
-after:
-sak : k (disabled)
+Note the:
+	sysrq: HELP :
 
-Signed-off-by: Andras Sebok <sebokandris2009@gmail.com>
----
- drivers/tty/sysrq.c | 3 +++
- 1 file changed, 3 insertions(+)
+line format being different from all the others makes this not even look
+correct?
 
-diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-index 831cdadf366f..1af78f76232e 100644
---- a/drivers/tty/sysrq.c
-+++ b/drivers/tty/sysrq.c
-@@ -617,6 +617,9 @@ void __handle_sysrq(int key, bool check_mask)
- 				if (j != i)
- 					continue;
- 				pr_cont("%s ", sysrq_key_table[i]->help_msg);
-+				if (!check_mask || (check_mask &&
-+					!sysrq_on_mask(sysrq_key_table[i]->enable_mask)))
-+					pr_cont("(disabled)");
- 				pr_cont("\n");
- 			}
- 		}
--- 
-2.41.0
+So I really do not see the point of this change here, why is it needed?
 
+thanks,
+
+greg k-h
