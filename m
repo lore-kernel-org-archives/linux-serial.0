@@ -2,146 +2,206 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C34C83F11
-	for <linux-serial@archiver.kernel.org>; Sun, 27 Aug 2023 18:25:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83A35C83F11
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Aug 2023 02:47:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229551AbjH0SXy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 27 Aug 2023 14:23:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35476 "EHLO
+        id S229484AbjH1CrI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 27 Aug 2023 22:47:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229834AbjH0SXx (ORCPT
+        with ESMTP id S229633AbjH1Cqu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 27 Aug 2023 14:23:53 -0400
-Received: from genua.uuid.uk (genua.uuid.uk [78.47.120.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98DAB120;
-        Sun, 27 Aug 2023 11:23:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=octiron.net
-        ; s=20230424-rsa3072; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:From:Sender:
-        Reply-To:Subject:Date:Message-ID:To:Cc:Bcc:MIME-Version:Content-Type:
-        Content-Disposition:Content-Transfer-Encoding:In-Reply-To:References:
-        Organization; bh=FtgBnnbL7InHN0jz7NDy+yS0z9cLS5ehECtcuFj7NI8=; t=1693160629; 
-        b=jFXVsHeuWUypCkn+vlI7akwk0isDuZFC9Kul9f2mVBOxmiUCiqqNY7lpbdBP/8vWAHfR7Xz1OOv
-        pRMGsVljjZNde6dirtgeNUM0Ha1ri2oXBLXPCKIrC9X3isgZoWIfWh9iQJpTnNu3ZjvZElZ4UX25U
-        zgvpUVjphPSFMn3O+9O2+Pi2Ur0V3qLbtoKP/c9+v+mJbUGsAct3QYxcjGy6jtJx3yakrid5Fpae/
-        TA66FSiLz25IloP3n28pxYIedicq5f3aekWgDKojlnRGqKR+NlxlX7d/RsOzPnPGX1IPNVAVDXNNz
-        dH5urQ3y6nZpdOZkLrw8MzNPasiMAfN39d41VCHC0QSKa2s0Z/OqwyEyq1I9zLrKGdtVWRk1esoa3
-        TKGbIMPS8yWLYZuQ3KHhB23tH0ZumVzAQhcmHiSfeh/rVjdBQFLyZtLYChnhYYOvo0IK1X90YB+mq
-        IhTcDkl7pjkxsyYvdwXnJPpDJ/JkxD+Jg6SvjvW2puuajL03jdFP;
-DKIM-Signature: v=1; a=ed25519-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=octiron.net; s=20230410-ed25519; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:Bcc:MIME-Version:Content-Type:
-        Content-Disposition:Content-Transfer-Encoding:In-Reply-To:References:
-        Organization; bh=FtgBnnbL7InHN0jz7NDy+yS0z9cLS5ehECtcuFj7NI8=; t=1693160629; 
-        b=+WecUCb4yupXf6AmgzkmpTW/akp/RwiMdDtAkf3dkTGE7E+cVnEuJS+yQ9Khw4Aoap4NZbR/rng
-        P4PF5mDvNDg==;
-Received: by genua.uuid.uk with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.93)
-        (envelope-from <simon@octiron.net>)
-        id 1qaKQI-00DZDH-64; Sun, 27 Aug 2023 19:23:43 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=octiron.net
-        ; s=20230424-rsa3072; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:From:Sender:
-        Reply-To:Subject:Date:Message-ID:To:Cc:Bcc:MIME-Version:Content-Type:
-        Content-Disposition:Content-Transfer-Encoding:In-Reply-To:References:
-        Organization; bh=FtgBnnbL7InHN0jz7NDy+yS0z9cLS5ehECtcuFj7NI8=; t=1693160622; 
-        b=MYH7qwdfcLoebqtX3yvGI+Wiv8BTc3NPMTcaT9hGhFdfxvxpSc7PYSnmcYtebr+DMEIJm0lCJlS
-        YEcghtB5OUzQ57KHGdj4Wm2yyN7xaCUlLbQKa/AZ9xMRZi3gwKRhA1mqP/IhBebJLhgIDw/baYPM3
-        29xzX2FFP/u1LmlzfybPoKncpoGZ10+BsZBwQQ0qSJmcIzupYqjZMRyLWn9CEVQ+dgBwE4zDl4enV
-        ZNm0uZg9pZjRoaj+QMFwtjWvNbXx50I6A0i9eLWrzfu/CoSDiGPGaYGejuH88QIysoqWikE4jjeHr
-        R9BwZpa0FPic7AuzWLH+nZUpIL88sFuNqua9gi4IHLwBgV+AHiDAQ6fP9IALwB7v6k6A3jKjY3Ygn
-        VkeQo7qOjWBQUqJD1j5/LfEjkxB3wbe3YiQ5u0LdpKZvfw9HtyHWY/ZMx37NTYu+oFaC1kHycW+x8
-        IY/l6wsP4UeeMh3fvDuGuSoRDyq4HIHNRKpCvd0cpENHt5/CtwO4;
-DKIM-Signature: v=1; a=ed25519-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=octiron.net; s=20230410-ed25519; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:Bcc:MIME-Version:Content-Type:
-        Content-Disposition:Content-Transfer-Encoding:In-Reply-To:References:
-        Organization; bh=FtgBnnbL7InHN0jz7NDy+yS0z9cLS5ehECtcuFj7NI8=; t=1693160622; 
-        b=WcSQfzUwB3bUzrIds1MFcqXOEr6tGSjvefGBhOwD1Uq5mUEPMKow7fyBRfAVxR0EJo9OgmW5QUk
-        YYwZ9LUkfAg==;
-Received: by tsort.uuid.uk with esmtps (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128)
-        (Exim 4.93)
-        (envelope-from <simon@octiron.net>)
-        id 1qaKQF-005zuY-UE; Sun, 27 Aug 2023 19:23:40 +0100
-Message-ID: <30fa035a-709f-58cd-fc1e-fef1367dc6dd@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
-Date:   Sun, 27 Aug 2023 19:23:39 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: [PATCH (v2)] docs: ABI: sysfs-tty: close times are in centiseconds
-Content-Language: en-GB
-To:     Jiri Slaby <jirislaby@kernel.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-serial@vger.kernel.org
-References: <ea1a13ad-a1e0-540a-e97a-4c44f6d2d33b@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
- <40c5c70f-46ff-c5f3-212b-2badc47e49a3@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
- <27304225-c8b0-9cac-94a3-e985e45aa41a@0882a8b5-c6c3-11e9-b005-00805fc181fe.uuid.home.arpa>
- <2a3647bf-91a8-7a5f-9edb-c792a6031f57@kernel.org>
-From:   Simon Arlott <simon@octiron.net>
-X-Face: -|Y&Xues/.'(7\@`_\lFE/)pw"7..-Ur1^@pRL`Nad5a()6r+Y)18-pi'!`GI/zGn>6a6ik
- mcW-%sg_wM:4PXDw:(;Uu,n&!8=;A<P|QG`;AMu5ypJkN-Sa<eyt,Ap3q`5Z{D0BN3G`OmX^8x^++R
- Gr9G'%+PNM/w+w1+vB*a($wYgA%*cm3Hds`a7k)CQ7'"[\C|g2k]FQ-f*DDi{pU]v%5JZm
-In-Reply-To: <2a3647bf-91a8-7a5f-9edb-c792a6031f57@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Sun, 27 Aug 2023 22:46:50 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814A810A
+        for <linux-serial@vger.kernel.org>; Sun, 27 Aug 2023 19:46:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1693190808; x=1724726808;
+  h=date:from:to:cc:subject:message-id;
+  bh=qPDHdS95qZAOqpveYnroxh/Ov8VzD9Ixsp1BtvgoxSA=;
+  b=W1dlUf1ki8V1mLkl8AbayL1uaQRYTVX0Vz0iYr/VpTt1iXfa6IaHrDw3
+   sdiHstq3eEABgeDE7hGmT8gNSFto/k/Szk4goiWQIVS4jGuRUhB8UGXp/
+   VLsfL3CTwccJ215cYhCyHM5LQAq3gUGkE+X7jjkAzmnqnK/3zE8fxmw3h
+   7A6f2W4F0T2xbz1QpBxoHut6/ATm0DvJP8p0cefaFOPaTgmJUjDy4xnZN
+   uj8v03onHjcYrercojl0c5/lG5D/odsi7Mxh/gpcHMeIE/F3uw4knIpSk
+   BwLkRcYC02J8qNzLT+J7s2PTLVUal07xvQ5yq4p442UBYXdi9N1U5UVbQ
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10815"; a="372397055"
+X-IronPort-AV: E=Sophos;i="6.02,206,1688454000"; 
+   d="scan'208";a="372397055"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2023 19:46:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10815"; a="1068879865"
+X-IronPort-AV: E=Sophos;i="6.02,206,1688454000"; 
+   d="scan'208";a="1068879865"
+Received: from lkp-server02.sh.intel.com (HELO daf8bb0a381d) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 27 Aug 2023 19:46:46 -0700
+Received: from kbuild by daf8bb0a381d with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1qaSH7-0006QV-1t;
+        Mon, 28 Aug 2023 02:46:45 +0000
+Date:   Mon, 28 Aug 2023 10:45:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ ebf05c7dc92c11b0355aaa0e94064beadaa4b05c
+Message-ID: <202308281057.ar2vfH0W-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The times for close_delay and closing_wait are in centiseconds, not
-milliseconds. Fix the documentation and add details of special values.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: ebf05c7dc92c11b0355aaa0e94064beadaa4b05c  tty: shrink the size of struct tty_struct by 40 bytes
 
-Signed-off-by: Simon Arlott <simon@octiron.net>
----
-On 25/08/2023 06:33, Jiri Slaby wrote:
-> And I would use "centiseconds" instead, which is used (IMO) in these cases.
+elapsed time: 990m
 
-It's used in a few places, but the documentation has no "centiseconds"
-and a couple of "hundredths". I've changed it anyway.
+configs tested: 135
+configs skipped: 2
 
- Documentation/ABI/testing/sysfs-tty | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-diff --git a/Documentation/ABI/testing/sysfs-tty b/Documentation/ABI/testing/sysfs-tty
-index 820e412d38a8..895c47f05f6f 100644
---- a/Documentation/ABI/testing/sysfs-tty
-+++ b/Documentation/ABI/testing/sysfs-tty
-@@ -87,19 +87,22 @@ What:		/sys/class/tty/ttyS<x>/close_delay
- Date:		October 2012
- Contact:	Alan Cox <alan@linux.intel.com>
- Description:
--		 Show the closing delay time for this port in ms.
-+		Show the closing delay time for this port in centiseconds.
- 
--		 These sysfs values expose the TIOCGSERIAL interface via
--		 sysfs rather than via ioctls.
-+		These sysfs values expose the TIOCGSERIAL interface via
-+		sysfs rather than via ioctls.
- 
- What:		/sys/class/tty/ttyS<x>/closing_wait
- Date:		October 2012
- Contact:	Alan Cox <alan@linux.intel.com>
- Description:
--		 Show the close wait time for this port in ms.
-+		Show the close wait time for this port in centiseconds.
- 
--		 These sysfs values expose the TIOCGSERIAL interface via
--		 sysfs rather than via ioctls.
-+		Waiting forever is represented as 0. If waiting on close is
-+		disabled then the value is 65535.
-+
-+		These sysfs values expose the TIOCGSERIAL interface via
-+		sysfs rather than via ioctls.
- 
- What:		/sys/class/tty/ttyS<x>/custom_divisor
- Date:		October 2012
+tested configs:
+alpha                             allnoconfig   gcc  
+alpha                            allyesconfig   gcc  
+alpha                               defconfig   gcc  
+arc                              allmodconfig   gcc  
+arc                               allnoconfig   gcc  
+arc                              allyesconfig   gcc  
+arc                                 defconfig   gcc  
+arc                  randconfig-r002-20230827   gcc  
+arc                  randconfig-r012-20230827   gcc  
+arm                              allmodconfig   gcc  
+arm                               allnoconfig   gcc  
+arm                              allyesconfig   gcc  
+arm                                 defconfig   gcc  
+arm                  randconfig-r025-20230827   clang
+arm                  randconfig-r032-20230827   gcc  
+arm                  randconfig-r033-20230827   gcc  
+arm64                            allmodconfig   gcc  
+arm64                             allnoconfig   gcc  
+arm64                            allyesconfig   gcc  
+arm64                               defconfig   gcc  
+arm64                randconfig-r023-20230827   gcc  
+csky                             allmodconfig   gcc  
+csky                              allnoconfig   gcc  
+csky                             allyesconfig   gcc  
+csky                                defconfig   gcc  
+csky                 randconfig-r004-20230827   gcc  
+csky                 randconfig-r014-20230827   gcc  
+hexagon              randconfig-r035-20230827   clang
+i386                             allmodconfig   gcc  
+i386                              allnoconfig   gcc  
+i386                             allyesconfig   gcc  
+i386                              debian-10.3   gcc  
+i386                                defconfig   gcc  
+i386                  randconfig-011-20230827   gcc  
+i386                  randconfig-012-20230827   gcc  
+i386                  randconfig-013-20230827   gcc  
+i386                  randconfig-014-20230827   gcc  
+i386                  randconfig-015-20230827   gcc  
+i386                  randconfig-016-20230827   gcc  
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                        allyesconfig   gcc  
+loongarch                           defconfig   gcc  
+loongarch             randconfig-001-20230827   gcc  
+loongarch            randconfig-r021-20230827   gcc  
+m68k                             allmodconfig   gcc  
+m68k                              allnoconfig   gcc  
+m68k                             allyesconfig   gcc  
+m68k                                defconfig   gcc  
+microblaze                       allmodconfig   gcc  
+microblaze                        allnoconfig   gcc  
+microblaze                       allyesconfig   gcc  
+microblaze                          defconfig   gcc  
+microblaze           randconfig-r016-20230827   gcc  
+microblaze           randconfig-r022-20230827   gcc  
+mips                             allmodconfig   gcc  
+mips                              allnoconfig   gcc  
+mips                             allyesconfig   gcc  
+nios2                            allmodconfig   gcc  
+nios2                             allnoconfig   gcc  
+nios2                            allyesconfig   gcc  
+nios2                               defconfig   gcc  
+nios2                randconfig-r026-20230827   gcc  
+openrisc                         allmodconfig   gcc  
+openrisc                          allnoconfig   gcc  
+openrisc                         allyesconfig   gcc  
+openrisc                            defconfig   gcc  
+parisc                           allmodconfig   gcc  
+parisc                            allnoconfig   gcc  
+parisc                           allyesconfig   gcc  
+parisc                              defconfig   gcc  
+parisc               randconfig-r003-20230827   gcc  
+parisc               randconfig-r031-20230827   gcc  
+parisc64                            defconfig   gcc  
+powerpc                          allmodconfig   gcc  
+powerpc                           allnoconfig   gcc  
+powerpc                          allyesconfig   gcc  
+powerpc              randconfig-r005-20230827   clang
+powerpc              randconfig-r013-20230827   gcc  
+powerpc              randconfig-r015-20230827   gcc  
+powerpc64            randconfig-r006-20230827   clang
+powerpc64            randconfig-r036-20230827   clang
+riscv                            allmodconfig   gcc  
+riscv                             allnoconfig   gcc  
+riscv                            allyesconfig   gcc  
+riscv                               defconfig   gcc  
+riscv                          rv32_defconfig   gcc  
+s390                             allmodconfig   gcc  
+s390                              allnoconfig   gcc  
+s390                             allyesconfig   gcc  
+s390                                defconfig   gcc  
+sh                               allmodconfig   gcc  
+sh                                allnoconfig   gcc  
+sh                               allyesconfig   gcc  
+sh                                  defconfig   gcc  
+sh                   randconfig-r001-20230827   gcc  
+sh                   randconfig-r011-20230827   gcc  
+sh                   randconfig-r034-20230827   gcc  
+sparc                            allmodconfig   gcc  
+sparc                             allnoconfig   gcc  
+sparc                            allyesconfig   gcc  
+sparc                               defconfig   gcc  
+sparc64                          allmodconfig   gcc  
+sparc64                          allyesconfig   gcc  
+sparc64                             defconfig   gcc  
+um                               allmodconfig   clang
+um                                allnoconfig   clang
+um                               allyesconfig   clang
+um                                  defconfig   gcc  
+um                             i386_defconfig   gcc  
+um                   randconfig-r024-20230827   clang
+um                           x86_64_defconfig   gcc  
+x86_64                            allnoconfig   gcc  
+x86_64                           allyesconfig   gcc  
+x86_64       buildonly-randconfig-003-20230827   clang
+x86_64       buildonly-randconfig-004-20230827   clang
+x86_64                              defconfig   gcc  
+x86_64                randconfig-001-20230827   gcc  
+x86_64                randconfig-002-20230827   gcc  
+x86_64                randconfig-003-20230827   gcc  
+x86_64                randconfig-004-20230827   gcc  
+x86_64                randconfig-005-20230827   gcc  
+x86_64                randconfig-006-20230827   gcc  
+x86_64                randconfig-015-20230827   clang
+x86_64                randconfig-016-20230827   clang
+x86_64                randconfig-071-20230827   clang
+x86_64                randconfig-072-20230827   clang
+x86_64                randconfig-073-20230827   clang
+x86_64                randconfig-074-20230827   clang
+x86_64                randconfig-075-20230827   clang
+x86_64                randconfig-076-20230827   clang
+x86_64                          rhel-8.3-rust   clang
+x86_64                               rhel-8.3   gcc  
+xtensa                            allnoconfig   gcc  
+xtensa                           allyesconfig   gcc  
+
 -- 
-2.37.0
-
--- 
-Simon Arlott
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
