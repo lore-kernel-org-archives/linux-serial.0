@@ -2,134 +2,104 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CD4CC71153
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Aug 2023 12:17:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96452C71153
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Aug 2023 12:28:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230107AbjH1MQx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Aug 2023 08:16:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39086 "EHLO
+        id S231159AbjH1M1j convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Aug 2023 08:27:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232660AbjH1MQt (ORCPT
+        with ESMTP id S232649AbjH1M1P (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Aug 2023 08:16:49 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D48E120
-        for <linux-serial@vger.kernel.org>; Mon, 28 Aug 2023 05:16:47 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id ffacd0b85a97d-31c5cac3ae2so2552939f8f.3
-        for <linux-serial@vger.kernel.org>; Mon, 28 Aug 2023 05:16:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1693225006; x=1693829806;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :references:cc:to:content-language:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=sZuizckw45998AR6QtCXfw5DbbirqliA6Qj9SYukWNQ=;
-        b=gr5jBlzwmGC61xdjqkCu/QVUKM7ZVSaWqd6e/NXmUeuuFik5LKbE4RIKoMiGPG7LIk
-         z6Tz2YleQV8fVnPoGSCNEFF2RLQ0BUMcUGDrZiQEDojwA8bBJZ+vI1gYtWl3ZQLJg3gh
-         UpZdWT+N98Yt4Dm/H4NNRa1Xm5R6YyI1zRz3uG3ZQbf5qKlm4uOdjh0P/hjXzXYjKDvA
-         b6b1X+hOc5y38yM74Crp7xRt+B71Xulq5UlixMQNdlOjc3iy+54hsM00H89YVoBEu3vU
-         gtZRJy+rzFTxbMKwNOrXGj3DMxexWd5MLimqFSaRN++dUz786iVjbs1uXQG9/3Wu6KAu
-         Zxxw==
+        Mon, 28 Aug 2023 08:27:15 -0400
+Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 425B9EA;
+        Mon, 28 Aug 2023 05:27:12 -0700 (PDT)
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-579de633419so36896727b3.3;
+        Mon, 28 Aug 2023 05:27:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693225006; x=1693829806;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :references:cc:to:content-language:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=sZuizckw45998AR6QtCXfw5DbbirqliA6Qj9SYukWNQ=;
-        b=YHS6g9TAKLKaRasTCrxWpeROXHDBzlNviclj9RRYL3WB8UjchTtBRhKdmoPAkUbTDO
-         zOhCGEOOCuUZtW9Py9hbVlANqdvytf2zxZj+hmS4notYAfiudiiLVqfrteXwaRO2FbE3
-         Zqg/7x2qaFolAit/v9jQbOrX3Dotyqh1uD05ZWZnNHanlKt+afpbSOBnt9Xb1dd2TTQH
-         Q6ZAt2JGM5+b76VASb0v/aZaznkPSS8mzLuif6EIpT9HNkxKZFpSXIHeczBOP1UvtbhS
-         SJxfnUyvysj+UuoDm+yHnavi8mxTfhiL7cu8Ym0e07+91YfAWNCwJGRGi2bbObDQP6dz
-         NfmQ==
-X-Gm-Message-State: AOJu0Yxl4Xx/cNApzz+m/Av4RD6tdaioqx/hysH2ZOY+BX7yY8wNPNh+
-        esRRIfcxn8G2/WdeONCRvDRgcg==
-X-Google-Smtp-Source: AGHT+IFIf+QuOGUqCwGjbKIFDIcOjlq3Nu/TaeRktQH/Z1Og89+EJ/bldN1jMS69WdKWg+aSp+7aiw==
-X-Received: by 2002:a5d:5242:0:b0:31a:d4e1:ea30 with SMTP id k2-20020a5d5242000000b0031ad4e1ea30mr22248819wrc.17.1693225005693;
-        Mon, 28 Aug 2023 05:16:45 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:982:cbb0:5e59:c27b:747a:3f52? ([2a01:e0a:982:cbb0:5e59:c27b:747a:3f52])
-        by smtp.gmail.com with ESMTPSA id bs19-20020a056000071300b0031c855d52efsm7798804wrb.87.2023.08.28.05.16.44
+        d=1e100.net; s=20221208; t=1693225631; x=1693830431;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :reply-to:in-reply-to:references:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vd2oaz8O6yC6TQP51Ippcp5WPCtEkFpwR0Ae/q8Ui2E=;
+        b=e8u0V2TvO0uHANUl0Rhz/MfCy384V/wqM6SG4UYYm1mqFSR8rHVA8nCAuwC0ig6vk8
+         WfY52LhayCxQF//+DB0/+fgS10rm1yf6ZyEpPZLH//iGv8TUHkjbQHtlzl6i2FA0TBZt
+         /dDX++0A836i+Qy66GJ0iy3SHP7BUybLC8QOR5v8jNjzWATbUySAFW2nm4EplLevSdQj
+         qwITqqARYpgDv7hJdZZNaeUPPjaQ2NQuFlyxCm9xZiGFGoTBMlzESNj60IQDNBEFIrV4
+         lJShDN7p7usqgGbYW1+aVXPicHYdSWM7tIzpQU1XhwKGiUEs/W3YRvcEVdClmmxKISeH
+         r7dA==
+X-Gm-Message-State: AOJu0YykHPyp3+7N3KDUOBwbf/dytdE4gnd7A2vSV1U7gu3lti0kyxXy
+        +KbCLUTWzq/4Q5WGJl9dcPfBt5i/N63zYBQ5
+X-Google-Smtp-Source: AGHT+IGY/qPqe4wmcsLiZQBSQrlUTsYSufUql98rrNPUTxGjDu2BjNZMenr0NspjuMTmlMPUfc+YfA==
+X-Received: by 2002:a0d:d8ca:0:b0:583:e958:39c6 with SMTP id a193-20020a0dd8ca000000b00583e95839c6mr26368950ywe.34.1693225631058;
+        Mon, 28 Aug 2023 05:27:11 -0700 (PDT)
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
+        by smtp.gmail.com with ESMTPSA id o3-20020a817303000000b00583f8f41cb8sm2076182ywc.63.2023.08.28.05.27.10
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Aug 2023 05:16:45 -0700 (PDT)
-Message-ID: <7720b990-c9cf-4c3d-8bb2-928b3b17f089@linaro.org>
-Date:   Mon, 28 Aug 2023 14:16:44 +0200
+        Mon, 28 Aug 2023 05:27:10 -0700 (PDT)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-579de633419so36896447b3.3;
+        Mon, 28 Aug 2023 05:27:10 -0700 (PDT)
+X-Received: by 2002:a0d:ddc8:0:b0:592:7a6c:65a8 with SMTP id
+ g191-20020a0dddc8000000b005927a6c65a8mr13008456ywe.26.1693225630384; Mon, 28
+ Aug 2023 05:27:10 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From:   Neil Armstrong <neil.armstrong@linaro.org>
-Reply-To: neil.armstrong@linaro.org
+References: <20230828121053.60838-1-tanure@linux.com> <7720b990-c9cf-4c3d-8bb2-928b3b17f089@linaro.org>
+In-Reply-To: <7720b990-c9cf-4c3d-8bb2-928b3b17f089@linaro.org>
+Reply-To: tanure@linux.com
+From:   Lucas Tanure <tanure@linux.com>
+Date:   Mon, 28 Aug 2023 13:26:59 +0100
+X-Gmail-Original-Message-ID: <CAJX_Q+0AWcY7SySsdtVn=7xE8H0YtLBfN2XrKSOZMGB-60NRhg@mail.gmail.com>
+Message-ID: <CAJX_Q+0AWcY7SySsdtVn=7xE8H0YtLBfN2XrKSOZMGB-60NRhg@mail.gmail.com>
 Subject: Re: [PATCH] tty: serial: meson: Add a earlycon for the S4 SoC
-Content-Language: en-US, fr
-To:     Lucas Tanure <tanure@linux.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To:     neil.armstrong@linaro.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-amlogic@lists.infradead.org
-References: <20230828121053.60838-1-tanure@linux.com>
-Autocrypt: addr=neil.armstrong@linaro.org; keydata=
- xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
- GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
- BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
- qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
- 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
- AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
- OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
- Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
- YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
- GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
- UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
- GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
- yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
- QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
- SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
- 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
- Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
- oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
- M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
- 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
- KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
- 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
- QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
-Organization: Linaro Developer Services
-In-Reply-To: <20230828121053.60838-1-tanure@linux.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
-
-On 28/08/2023 14:10, Lucas Tanure wrote:
-> The new Amlogic S4 SoC does not have a always-on uart, so add
-> OF_EARLYCON_DECLARE for it.
-> 
-> Signed-off-by: Lucas Tanure <tanure@linux.com>
-> ---
->   drivers/tty/serial/meson_uart.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-> index 790d910dafa5..8dfaa260e545 100644
-> --- a/drivers/tty/serial/meson_uart.c
-> +++ b/drivers/tty/serial/meson_uart.c
-> @@ -646,8 +646,8 @@ meson_serial_early_console_setup(struct earlycon_device *device, const char *opt
->   	return 0;
->   }
->   
-> -OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
-> -		    meson_serial_early_console_setup);
-> +OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart", meson_serial_early_console_setup);
-> +OF_EARLYCON_DECLARE(meson, "amlogic,meson-s4-uart", meson_serial_early_console_setup);
-
-Not sure why you would change both lines, and where's the t7 entry ?
-
-Neil
-
->   
->   #define MESON_SERIAL_CONSOLE_PTR(_devname) (&meson_serial_console_##_devname)
->   #else
-
+On Mon, Aug 28, 2023 at 1:16 PM Neil Armstrong
+<neil.armstrong@linaro.org> wrote:
+>
+> Hi,
+>
+> On 28/08/2023 14:10, Lucas Tanure wrote:
+> > The new Amlogic S4 SoC does not have a always-on uart, so add
+> > OF_EARLYCON_DECLARE for it.
+> >
+> > Signed-off-by: Lucas Tanure <tanure@linux.com>
+> > ---
+> >   drivers/tty/serial/meson_uart.c | 4 ++--
+> >   1 file changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+> > index 790d910dafa5..8dfaa260e545 100644
+> > --- a/drivers/tty/serial/meson_uart.c
+> > +++ b/drivers/tty/serial/meson_uart.c
+> > @@ -646,8 +646,8 @@ meson_serial_early_console_setup(struct earlycon_device *device, const char *opt
+> >       return 0;
+> >   }
+> >
+> > -OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
+> > -                 meson_serial_early_console_setup);
+> > +OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart", meson_serial_early_console_setup);
+> > +OF_EARLYCON_DECLARE(meson, "amlogic,meson-s4-uart", meson_serial_early_console_setup);
+>
+> Not sure why you would change both lines, and where's the t7 entry ?
+ok, but we don't need t7, right? T7 will use S4 compatible line.
+>
+> Neil
+>
+> >
+> >   #define MESON_SERIAL_CONSOLE_PTR(_devname) (&meson_serial_console_##_devname)
+> >   #else
+>
