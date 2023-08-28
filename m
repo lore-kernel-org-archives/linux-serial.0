@@ -2,279 +2,442 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9141EC83F12
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Aug 2023 08:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BE0DC83F16
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Aug 2023 10:30:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229736AbjH1IvL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Aug 2023 04:51:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58568 "EHLO
+        id S231377AbjH1KaR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Aug 2023 06:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229781AbjH1Iuk (ORCPT
+        with ESMTP id S231460AbjH1KaI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Aug 2023 04:50:40 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E86E8
-        for <linux-serial@vger.kernel.org>; Mon, 28 Aug 2023 01:50:36 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-40078c4855fso27660585e9.3
-        for <linux-serial@vger.kernel.org>; Mon, 28 Aug 2023 01:50:36 -0700 (PDT)
+        Mon, 28 Aug 2023 06:30:08 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3021115;
+        Mon, 28 Aug 2023 03:30:04 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id a640c23a62f3a-99c1d03e124so397693966b.2;
+        Mon, 28 Aug 2023 03:30:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1693212635; x=1693817435;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :references:cc:to:content-language:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=WGPoX5APlzIB9ylI10o7qd7oHlAS1PpIgI7APqFVRWM=;
-        b=R8nZQvaGr8ltLMH+5JimkWXJDodtmVdSfxM6UsvA7X53PFEX23tGdCQ8c2CtFYvRie
-         i/VLzausU9IZagdCO4tAlEaanvbx+cXmD9DRytsKqLPBu64DJGteHqdeeTQcTv6orFyF
-         Pd43XUSJbl8dQ4l7uKOt7VhG8Tz8FeuXQQhgNq/m6JpqtZadTRtFAb/LlblBGD0dhOdQ
-         rUOSRtEYX0/phCZ4MAypfdWy32up+hdUgyo9NoDJ3hzvBB8I2OJ8qJyycYF70SyVbILQ
-         E1sUXGQG0d+9CGvpXMo0E5J573QOVegntR+EGCIbN7ZwczsbFURfP43efjiiDV3+Ej4R
-         9DPw==
+        d=gmail.com; s=20221208; t=1693218603; x=1693823403;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=DMA68DXA4Lrt7f99MK3rEcfyfoxbw24D8JMgPoNJMJ0=;
+        b=dDnNOU8KzLJHgOxPgNCv0P5lSg4IhbyGGWcm/11jU/TN/SSqLypoIxia4r5ohssJkC
+         14zH+ajJH/qUqo9xcwJogvqGe+y66+xv+mjxW7FgRTRjqs/+kSwgeCOaBRLd/qCQI+Td
+         Djvn1VU7Mq0IBmtSCZWAU42PWMPvw4qhwif3lVJydnfW7JqdsvTmjv+1afY5xjcPvn40
+         J9AQQFb+VxX2Mb5y71pc7z2L61Vtlc0MCD5vMeZ8n+DI9fw0m4Qx0I9whDuznmSw7k6a
+         zLVbNT3Yqh1LDq9Z1SOAcQeCcjehs4B7t0NryaAY9h887Wh3mN3z3qMh4A18cr8ZXRVl
+         AkjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693212635; x=1693817435;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :references:cc:to:content-language:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=WGPoX5APlzIB9ylI10o7qd7oHlAS1PpIgI7APqFVRWM=;
-        b=JqJJ6za/u2yBDVq0BaIpo3eLZlJ4i2nxDYARr5xpSVOsrQGGe7NrJmjFpJiKSEcgA5
-         AxHjVdoJZ9vBfkiLjxyNIQ87d0XT9X+NsLWtzRNEeI+OJ2wpHMOwJxX4TXsT/JNXBZyX
-         Bcn4NyMYfa8ENCpvh80qDpR/Tp3ZChiBIgSGIkSY8buUAaH6VM9HF0pnAir6LfglmD4Y
-         36QuRULDjOGvKPJyFSq76qlC56M+5qJV9fn5H765hgq0e9luuWMfU+IYBLkIzDaLom6p
-         Ff8nQV+kv7PlD0LpHygHoJFtnolWjWkW2Z12Ib5syGl4aVmTLUqa41swszk5AdeJ9KXI
-         G0PQ==
-X-Gm-Message-State: AOJu0YzQ1jumHM/2mXAtdtzHHtApdI0pKHcL4NKk9/AkFG0HH1m9eIgM
-        zMzTwwV0A10AKGxSu2XrUGo58A==
-X-Google-Smtp-Source: AGHT+IEJwUe/1R7M1K8G0Ek/Vcp84qIH6fHSeKsCRwrJZEWTCru0Ra1VTzcLbEJWVaKkh08Zny6uHQ==
-X-Received: by 2002:a7b:ce91:0:b0:400:6b36:ee2a with SMTP id q17-20020a7bce91000000b004006b36ee2amr9951462wmj.26.1693212634766;
-        Mon, 28 Aug 2023 01:50:34 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:982:cbb0:5e59:c27b:747a:3f52? ([2a01:e0a:982:cbb0:5e59:c27b:747a:3f52])
-        by smtp.gmail.com with ESMTPSA id x16-20020a5d6510000000b003143c9beeaesm9877481wru.44.2023.08.28.01.50.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Aug 2023 01:50:34 -0700 (PDT)
-Message-ID: <23bfd7bc-98ea-42c4-b2d4-6060df5e7080@linaro.org>
-Date:   Mon, 28 Aug 2023 10:50:27 +0200
+        d=1e100.net; s=20221208; t=1693218603; x=1693823403;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=DMA68DXA4Lrt7f99MK3rEcfyfoxbw24D8JMgPoNJMJ0=;
+        b=h5njn4pqF4O9PHTmpxY2yT+7RoEsdisLRVW3Y+3Ir+5DNk1hA5Ig7D6Ijm5BXOtWoR
+         FHPu4URC6rURA6b9LimS/dsVxqNlufTtcNvLiBVM/XzpItivP/RN67ZY8ip4yMSg4Y6I
+         T0II947PIhp3+OV8zwoIF0YK28M4hto1ZcQ37Z9pJQw1f4iskD4lngflS0so7Y2BGuSj
+         IHxQ54DXuqvFmJjJcHVICiTwx2R9poHZYvQlmLJqJ7bKfnro8RFbG8gNiEBB8pMRbKVO
+         86NdrKieLtfzm4yX1u5FG2BpGFq6c5JftIOYie2I+ojyiainB1qks4LqfX56KPbLuYFr
+         yZzA==
+X-Gm-Message-State: AOJu0YxijIE5sYLuscf3IJnk511JRAxj9TuN7MP75S04jydoSEQ3FHSr
+        jF67PYKbr9wnLkY4SStzq61DhxkE7UpYGQ==
+X-Google-Smtp-Source: AGHT+IH8tQZMmpS0DmjinA6b8QnPorvuJRQYcArGd0IwUXqneyQ9bXCiMdhOka3iqaipWGSfXClN/g==
+X-Received: by 2002:a17:907:2ccb:b0:9a2:232f:6f85 with SMTP id hg11-20020a1709072ccb00b009a2232f6f85mr7802671ejc.52.1693218602083;
+        Mon, 28 Aug 2023 03:30:02 -0700 (PDT)
+Received: from fedora.. (87-97-90-214.pool.digikabel.hu. [87.97.90.214])
+        by smtp.gmail.com with ESMTPSA id w24-20020a17090649d800b009930308425csm4473505ejv.31.2023.08.28.03.30.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Aug 2023 03:30:01 -0700 (PDT)
+From:   Andras Sebok <sebokandris2009@gmail.com>
+To:     linux-serial@vger.kernel.org
+Cc:     andriseseboke@gmail.com, linux-kernel@vger.kernel.org,
+        jirislaby@kernel.org, gregkh@linuxfoundation.org,
+        Andras Sebok <sebokandris2009@gmail.com>
+Subject: [PATCH 1/2] Simplify sysrq help
+Date:   Mon, 28 Aug 2023 12:27:53 +0200
+Message-ID: <20230828102753.4811-2-sebokandris2009@gmail.com>
+X-Mailer: git-send-email 2.41.0
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From:   Neil Armstrong <neil.armstrong@linaro.org>
-Reply-To: neil.armstrong@linaro.org
-Subject: Re: [PATCH v2] Revert "tty: serial: meson: Add a earlycon for the T7
- SoC"
-Content-Language: en-US, fr
-To:     tanure@linux.com, Dmitry Rokosov <ddrokosov@sberdevices.ru>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org
-References: <20230827082944.5100-1-tanure@linux.com>
- <7bf9e716-0ff2-56d5-07ab-db027901454e@linaro.org>
- <09735262-1bc0-40cf-b139-22cccf70bcab@linux.com>
- <e73260c9-04f8-eb1e-bb5b-c3bd2219625e@linaro.org>
- <8d2ba0d3-55eb-45cf-b88a-bafef35e96b9@linux.com>
- <20230828082009.kehgwi4fxtj3bfze@CAB-WSD-L081021>
- <e070f432-28bd-465f-ad66-53add8b61907@linaro.org>
- <20230828084632.sp73jppcrfvc7nv3@CAB-WSD-L081021>
- <CAJX_Q+3x0XtARZwf0_Dh-skAF9Qj3S3uUmLv2mFJO3ZWR2+3og@mail.gmail.com>
-Autocrypt: addr=neil.armstrong@linaro.org; keydata=
- xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
- GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
- BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
- qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
- 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
- AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
- OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
- Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
- YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
- GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
- UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
- GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
- yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
- QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
- SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
- 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
- Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
- oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
- M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
- 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
- KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
- 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
- QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
-Organization: Linaro Developer Services
-In-Reply-To: <CAJX_Q+3x0XtARZwf0_Dh-skAF9Qj3S3uUmLv2mFJO3ZWR2+3og@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 28/08/2023 10:47, Lucas Tanure wrote:
-> On Mon, Aug 28, 2023 at 9:46 AM Dmitry Rokosov <ddrokosov@sberdevices.ru> wrote:
->>
->> On Mon, Aug 28, 2023 at 10:23:45AM +0200, Neil Armstrong wrote:
->>> Hi,
->>>
->>> On 28/08/2023 10:20, Dmitry Rokosov wrote:
->>>> On Sun, Aug 27, 2023 at 11:31:35AM +0100, Lucas Tanure wrote:
->>>>> On 27-08-2023 11:23, Neil Armstrong wrote:
->>>>>> Hi Lucas,
->>>>>>
->>>>>> Le 27/08/2023 à 12:04, Lucas Tanure a écrit :
->>>>>>> On 27-08-2023 10:48, Neil Armstrong wrote:
->>>>>>>> Hi Lucas,
->>>>>>>>
->>>>>>>> Le 27/08/2023 à 10:29, Lucas Tanure a écrit :
->>>>>>>>> This reverts commit 6a4197f9763325043abf7690a21124a9facbf52e.
->>>>>>>>> New SoC will use ttyS0 instead of ttyAML, so T7 SoC doesn't
->>>>>>>>> need a OF_EARLYCON_DECLARE.
->>>>>>>>>
->>>>>>>>> Signed-off-by: Lucas Tanure <tanure@linux.com>
->>>>>>>>> ---
->>>>>>>>> Since V1:
->>>>>>>>> - add Signed-off-by:
->>>>>>>>>
->>>>>>>>>     drivers/tty/serial/meson_uart.c | 2 --
->>>>>>>>>     1 file changed, 2 deletions(-)
->>>>>>>>>
->>>>>>>>> diff --git a/drivers/tty/serial/meson_uart.c
->>>>>>>>> b/drivers/tty/serial/meson_uart.c
->>>>>>>>> index c4f61d82fb727..790d910dafa5d 100644
->>>>>>>>> --- a/drivers/tty/serial/meson_uart.c
->>>>>>>>> +++ b/drivers/tty/serial/meson_uart.c
->>>>>>>>> @@ -648,8 +648,6 @@ meson_serial_early_console_setup(struct
->>>>>>>>> earlycon_device *device, const char *opt
->>>>>>>>>     OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
->>>>>>>>>                 meson_serial_early_console_setup);
->>>>>>>>> -OF_EARLYCON_DECLARE(meson, "amlogic,t7-uart",
->>>>>>>>> -            meson_serial_early_console_setup);
->>>>>>>>>     #define MESON_SERIAL_CONSOLE_PTR(_devname)
->>>>>>>>> (&meson_serial_console_##_devname)
->>>>>>>>>     #else
->>>>>>>>
->>>>>>>> How do you use earlycon with this removed ?
->>>>>>>>
->>>>>>>> Neil
->>>>>>> This is my kernel cmdline:
->>>>>>> console=ttyS0,921600 no_console_suspend earlycon=ttyS0,0xfe078000
->>>>>>>
->>>>>>> And I can see my log:
->>>>>>> boot 64bit kernel
->>>>>>> [    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410fd092]
->>>>>>> [    0.000000] Linux version 6.5.0-rc7-next-20230825+
->>>>>>> (tanureal@ryzen) (aarch64-none-linux-gnu-gcc (GNU Toolchain for the
->>>>>>> A-profile Architecture 10.3-2021.07 (arm-10.29)) 10.3.1 20210621,
->>>>>>> GNU ld (GNU Toolchain fo3
->>>>>>> [    0.000000] KASLR disabled due to lack of seed
->>>>>>> [    0.000000] Machine model: Khadas vim4
->>>>>>> [    0.000000] OF: reserved mem:
->>>>>>> 0x0000000005000000..0x00000000052fffff (3072 KiB) nomap non-reusable
->>>>>>> secmon@5000000
->>>>>>> [    0.000000] OF: reserved mem:
->>>>>>> 0x0000000005300000..0x00000000072fffff (32768 KiB) nomap
->>>>>>> non-reusable secmon@5300000
->>>>>>> ...
->>>>>>> [    0.079368] io scheduler mq-deadline registered
->>>>>>> [    0.079374] io scheduler kyber registered
->>>>>>> [    0.079549] io scheduler bfq registered
->>>>>>> [    0.083373] fe078000.serial: ttyS0 at MMIO 0xfe078000 (irq = 14,
->>>>>>> base_baud = 1500000) is a meson_uart
->>>>>>> [    0.083403] printk: console [ttyS0] enabled
->>>>>>>
->>>>>>> As the log is OK, and T7 for now is binding against S4 code we
->>>>>>> should drop this patch and add a S4 one if needed.
->>>>>>>
->>>>>>> But just having this log is not enough for testing earlycon?
->>>>>>> I am assuming that by just having the log since 0.0000 is a good
->>>>>>> sign that earlycon is working.
->>>>>>> Could you give further guidance?
->>>>>>
->>>>>> First the kernel argument is simply "earlycon" with no other options,
->>>>>> the earlycon code will fetch the first uart using the DT
->>>>>> /chosen/stdout-path property.
->>>>>>
->>>>>> Then you should see something like right after "Machine model":
->>>>>> [    0.000000] earlycon: meson0 at MMIO 0x00000000ff803000 (options
->>>>>> '115200n8')
->>>>>>
->>>>>> The boot log you share doesn't use earlycon, it waits until all
->>>>>> depedency of the UART
->>>>>> has been probed before probing the UART driver and prints the whole boot
->>>>>> log.
->>>>>>
->>>>>> Earlycon is a mechanism to use the UART HW as configured by the
->>>>>> bootloader in
->>>>>> a minimal way very early in the boot in order to detect very early lockups.
->>>>>>
->>>>>> Keeping OF_EARLYCON_DECLARE for t7 would enable this.
->>>>>>
->>>>>> Neil
->>>>>>
->>>>>>>
->>>>>>> Lucas Tanure
->>>>>>>
->>>>>>
->>>>> But then we would need to add Earlycon for S4 too.
->>>>> How can we add one Earlycon for all future SoCs, like S4 and T7?
->>>>>
->>>>
->>>> Per my understanding, you just need to declare UART dts node with the
->>>> following compatible string: "amlogic,meson-ao-uart". It will enabled
->>>> earlycon. There is no neccessary to declare separate
->>>> OF_EARLYCON_DECLARE(). It's working okay for A1 dts:
->>>
->>> This works on A1 because uart_AO_B is an Always-On UART, and using amlogic,meson-ao-uart
->>> is corrent.
->>> But for S4 & T7, Amlogic dropped the Always-On power domain, so there's no more AO uarts,
->>> so using amlogic,meson-ao-uart on those is abusing the DT to enable a driver functionality.
->>>
->>> So the solution is to add those OF_EARLYCON_DECLARE and only use the correct
->>> /chosen/stdout-path property.
->>
->> Oh, I didn't know about missing Always-On UART AO power domain. In this
->> situation I'm fully agree with separate OF_EARLYCON_DECLARE(). Thank you
->> for explanation!
->>
->>>>
->>>> meson-a1.dtsi uart declaration:
->>>>      uart_AO_B: serial@2000 {
->>>>              compatible = "amlogic,meson-a1-uart",
->>>>                           "amlogic,meson-ao-uart";
->>>>              reg = <0x0 0x2000 0x0 0x18>;
->>>>              interrupts = <GIC_SPI 26 IRQ_TYPE_EDGE_RISING>;
->>>>              clocks = <&xtal>, <&xtal>, <&xtal>;
->>>>              clock-names = "xtal", "pclk", "baud";
->>>>              status = "disabled";
->>>>      };
->>>>
->>>> earlycon declaration from dts:
->>>>      aliases {
->>>>              serial0 = &uart_AO_B;
->>>>      };
->>>>
->>>>      chosen {
->>>>              stdout-path = "serial0:115200n8";
->>>>      };
->>>>
->>>>>
->>>>> _______________________________________________
->>>>> linux-amlogic mailing list
->>>>> linux-amlogic@lists.infradead.org
->>>>> http://lists.infradead.org/mailman/listinfo/linux-amlogic
->>>>
->>>
->>
->> --
->> Thank you,
->> Dmitry
-> So let's add:
-> 
-> OF_EARLYCON_DECLARE(meson, "amlogic,meson-s4-uart",
-> meson_serial_early_console_setup);
-> 
-> ok?
+This patch simplyfies sysrq help menu by moving each command to a 
+separate line and by moving the key from brackets to after a semicolon.
 
+before:
+sysrq: HELP : loglevel(0-9) reboot(b) crash(c) terminate-all-tasks(e) memory-full-oom-kill(f) kill-all-tasks(i) thaw-filesystems(j) sak(k) show-backtrace-all-active-cpus(l) show-memory-usage(m) nice-all-RT-tasks(n) poweroff(o) show-registers(p) show-all-timers(q) unraw(r) sync(s) show-task-states(t) unmount(u) force-fb(v) show-blocked-tasks(w) dump-ftrace-buffer(z)
 
-Yes
+after:
+sysrq: HELP :
+loglevel : 0-9
+reboot : b
+crash : c
+terminate-all-tasks : e
+memory-full-oom-kill : f
+kill-all-tasks : i
+thaw-filesystems : j
+sak : k
+show-backtrace-all-active-cpus : l
+show-memory-usage : m
+nice-all-RT-tasks : n
+poweroff : o
+show-registers : p
+show-all-timers : q
+unraw : r
+sync : s
+show-task-states : t
+unmount : u
+force-fb : v
+show-blocked-tasks : w
+dump-ftrace-buffer : z
 
-Neil
+Signed-off-by: Andras Sebok <sebokandris2009@gmail.com>
+---
+ arch/alpha/kernel/setup.c       |  2 +-
+ arch/loongarch/kernel/sysrq.c   |  2 +-
+ arch/mips/kernel/sysrq.c        |  2 +-
+ arch/powerpc/xmon/xmon.c        |  2 +-
+ arch/sparc/kernel/process_64.c  |  4 +--
+ drivers/gpu/drm/drm_fb_helper.c |  2 +-
+ drivers/tty/sysrq.c             | 44 ++++++++++++++++-----------------
+ kernel/debug/debug_core.c       |  2 +-
+ kernel/power/poweroff.c         |  2 +-
+ kernel/rcu/tree_stall.h         |  2 +-
+ 10 files changed, 32 insertions(+), 32 deletions(-)
+
+diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
+index 3d7473531ab1..d660a363fab8 100644
+--- a/arch/alpha/kernel/setup.c
++++ b/arch/alpha/kernel/setup.c
+@@ -428,7 +428,7 @@ static void sysrq_reboot_handler(int unused)
+ 
+ static const struct sysrq_key_op srm_sysrq_reboot_op = {
+ 	.handler	= sysrq_reboot_handler,
+-	.help_msg       = "reboot(b)",
++	.help_msg       = "reboot : b",
+ 	.action_msg     = "Resetting",
+ 	.enable_mask    = SYSRQ_ENABLE_BOOT,
+ };
+diff --git a/arch/loongarch/kernel/sysrq.c b/arch/loongarch/kernel/sysrq.c
+index 366baef72d29..470a9017ca84 100644
+--- a/arch/loongarch/kernel/sysrq.c
++++ b/arch/loongarch/kernel/sysrq.c
+@@ -53,7 +53,7 @@ static void sysrq_handle_tlbdump(int key)
+ 
+ static struct sysrq_key_op sysrq_tlbdump_op = {
+ 	.handler        = sysrq_handle_tlbdump,
+-	.help_msg       = "show-tlbs(x)",
++	.help_msg       = "show-tlbs : x",
+ 	.action_msg     = "Show TLB entries",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
+ };
+diff --git a/arch/mips/kernel/sysrq.c b/arch/mips/kernel/sysrq.c
+index 9c1a2019113b..ac0265a96cbe 100644
+--- a/arch/mips/kernel/sysrq.c
++++ b/arch/mips/kernel/sysrq.c
+@@ -54,7 +54,7 @@ static void sysrq_handle_tlbdump(int key)
+ 
+ static const struct sysrq_key_op sysrq_tlbdump_op = {
+ 	.handler        = sysrq_handle_tlbdump,
+-	.help_msg       = "show-tlbs(x)",
++	.help_msg       = "show-tlbs : x",
+ 	.action_msg     = "Show TLB entries",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
+ };
+diff --git a/arch/powerpc/xmon/xmon.c b/arch/powerpc/xmon/xmon.c
+index fae747cc57d2..bcfca6ccd8ae 100644
+--- a/arch/powerpc/xmon/xmon.c
++++ b/arch/powerpc/xmon/xmon.c
+@@ -4007,7 +4007,7 @@ static void sysrq_handle_xmon(int key)
+ 
+ static const struct sysrq_key_op sysrq_xmon_op = {
+ 	.handler =	sysrq_handle_xmon,
+-	.help_msg =	"xmon(x)",
++	.help_msg =	"xmon : x",
+ 	.action_msg =	"Entering xmon",
+ };
+ 
+diff --git a/arch/sparc/kernel/process_64.c b/arch/sparc/kernel/process_64.c
+index b51d8fb0ecdc..11b85c326362 100644
+--- a/arch/sparc/kernel/process_64.c
++++ b/arch/sparc/kernel/process_64.c
+@@ -302,7 +302,7 @@ static void sysrq_handle_globreg(int key)
+ 
+ static const struct sysrq_key_op sparc_globalreg_op = {
+ 	.handler	= sysrq_handle_globreg,
+-	.help_msg	= "global-regs(y)",
++	.help_msg	= "global-regs : y",
+ 	.action_msg	= "Show Global CPU Regs",
+ };
+ 
+@@ -377,7 +377,7 @@ static void sysrq_handle_globpmu(int key)
+ 
+ static const struct sysrq_key_op sparc_globalpmu_op = {
+ 	.handler	= sysrq_handle_globpmu,
+-	.help_msg	= "global-pmu(x)",
++	.help_msg	= "global-pmu : x",
+ 	.action_msg	= "Show Global PMU Regs",
+ };
+ 
+diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_fb_helper.c
+index 61a5d450cc20..105b296b17db 100644
+--- a/drivers/gpu/drm/drm_fb_helper.c
++++ b/drivers/gpu/drm/drm_fb_helper.c
+@@ -308,7 +308,7 @@ static void drm_fb_helper_sysrq(int dummy1)
+ 
+ static const struct sysrq_key_op sysrq_drm_fb_helper_restore_op = {
+ 	.handler = drm_fb_helper_sysrq,
+-	.help_msg = "force-fb(v)",
++	.help_msg = "force-fb : v",
+ 	.action_msg = "Restore framebuffer console",
+ };
+ #else
+diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+index b6e70c5cfa17..831cdadf366f 100644
+--- a/drivers/tty/sysrq.c
++++ b/drivers/tty/sysrq.c
+@@ -109,7 +109,7 @@ static void sysrq_handle_loglevel(int key)
+ }
+ static const struct sysrq_key_op sysrq_loglevel_op = {
+ 	.handler	= sysrq_handle_loglevel,
+-	.help_msg	= "loglevel(0-9)",
++	.help_msg	= "loglevel : 0-9",
+ 	.action_msg	= "Changing Loglevel",
+ 	.enable_mask	= SYSRQ_ENABLE_LOG,
+ };
+@@ -123,7 +123,7 @@ static void sysrq_handle_SAK(int key)
+ }
+ static const struct sysrq_key_op sysrq_SAK_op = {
+ 	.handler	= sysrq_handle_SAK,
+-	.help_msg	= "sak(k)",
++	.help_msg	= "sak : k",
+ 	.action_msg	= "SAK",
+ 	.enable_mask	= SYSRQ_ENABLE_KEYBOARD,
+ };
+@@ -139,7 +139,7 @@ static void sysrq_handle_unraw(int key)
+ 
+ static const struct sysrq_key_op sysrq_unraw_op = {
+ 	.handler	= sysrq_handle_unraw,
+-	.help_msg	= "unraw(r)",
++	.help_msg	= "unraw : r",
+ 	.action_msg	= "Keyboard mode set to system default",
+ 	.enable_mask	= SYSRQ_ENABLE_KEYBOARD,
+ };
+@@ -156,7 +156,7 @@ static void sysrq_handle_crash(int key)
+ }
+ static const struct sysrq_key_op sysrq_crash_op = {
+ 	.handler	= sysrq_handle_crash,
+-	.help_msg	= "crash(c)",
++	.help_msg	= "crash : c",
+ 	.action_msg	= "Trigger a crash",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
+ };
+@@ -169,7 +169,7 @@ static void sysrq_handle_reboot(int key)
+ }
+ static const struct sysrq_key_op sysrq_reboot_op = {
+ 	.handler	= sysrq_handle_reboot,
+-	.help_msg	= "reboot(b)",
++	.help_msg	= "reboot : b",
+ 	.action_msg	= "Resetting",
+ 	.enable_mask	= SYSRQ_ENABLE_BOOT,
+ };
+@@ -182,7 +182,7 @@ static void sysrq_handle_sync(int key)
+ }
+ static const struct sysrq_key_op sysrq_sync_op = {
+ 	.handler	= sysrq_handle_sync,
+-	.help_msg	= "sync(s)",
++	.help_msg	= "sync : s",
+ 	.action_msg	= "Emergency Sync",
+ 	.enable_mask	= SYSRQ_ENABLE_SYNC,
+ };
+@@ -194,7 +194,7 @@ static void sysrq_handle_show_timers(int key)
+ 
+ static const struct sysrq_key_op sysrq_show_timers_op = {
+ 	.handler	= sysrq_handle_show_timers,
+-	.help_msg	= "show-all-timers(q)",
++	.help_msg	= "show-all-timers : q",
+ 	.action_msg	= "Show clockevent devices & pending hrtimers (no others)",
+ };
+ 
+@@ -204,7 +204,7 @@ static void sysrq_handle_mountro(int key)
+ }
+ static const struct sysrq_key_op sysrq_mountro_op = {
+ 	.handler	= sysrq_handle_mountro,
+-	.help_msg	= "unmount(u)",
++	.help_msg	= "unmount : u",
+ 	.action_msg	= "Emergency Remount R/O",
+ 	.enable_mask	= SYSRQ_ENABLE_REMOUNT,
+ };
+@@ -217,7 +217,7 @@ static void sysrq_handle_showlocks(int key)
+ 
+ static const struct sysrq_key_op sysrq_showlocks_op = {
+ 	.handler	= sysrq_handle_showlocks,
+-	.help_msg	= "show-all-locks(d)",
++	.help_msg	= "show-all-locks : d",
+ 	.action_msg	= "Show Locks Held",
+ };
+ #else
+@@ -275,7 +275,7 @@ static void sysrq_handle_showallcpus(int key)
+ 
+ static const struct sysrq_key_op sysrq_showallcpus_op = {
+ 	.handler	= sysrq_handle_showallcpus,
+-	.help_msg	= "show-backtrace-all-active-cpus(l)",
++	.help_msg	= "show-backtrace-all-active-cpus : l",
+ 	.action_msg	= "Show backtrace of all active CPUs",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
+ };
+@@ -295,7 +295,7 @@ static void sysrq_handle_showregs(int key)
+ }
+ static const struct sysrq_key_op sysrq_showregs_op = {
+ 	.handler	= sysrq_handle_showregs,
+-	.help_msg	= "show-registers(p)",
++	.help_msg	= "show-registers : p",
+ 	.action_msg	= "Show Regs",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
+ };
+@@ -307,7 +307,7 @@ static void sysrq_handle_showstate(int key)
+ }
+ static const struct sysrq_key_op sysrq_showstate_op = {
+ 	.handler	= sysrq_handle_showstate,
+-	.help_msg	= "show-task-states(t)",
++	.help_msg	= "show-task-states : t",
+ 	.action_msg	= "Show State",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
+ };
+@@ -318,7 +318,7 @@ static void sysrq_handle_showstate_blocked(int key)
+ }
+ static const struct sysrq_key_op sysrq_showstate_blocked_op = {
+ 	.handler	= sysrq_handle_showstate_blocked,
+-	.help_msg	= "show-blocked-tasks(w)",
++	.help_msg	= "show-blocked-tasks : w",
+ 	.action_msg	= "Show Blocked State",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
+ };
+@@ -332,7 +332,7 @@ static void sysrq_ftrace_dump(int key)
+ }
+ static const struct sysrq_key_op sysrq_ftrace_dump_op = {
+ 	.handler	= sysrq_ftrace_dump,
+-	.help_msg	= "dump-ftrace-buffer(z)",
++	.help_msg	= "dump-ftrace-buffer : z",
+ 	.action_msg	= "Dump ftrace buffer",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
+ };
+@@ -346,7 +346,7 @@ static void sysrq_handle_showmem(int key)
+ }
+ static const struct sysrq_key_op sysrq_showmem_op = {
+ 	.handler	= sysrq_handle_showmem,
+-	.help_msg	= "show-memory-usage(m)",
++	.help_msg	= "show-memory-usage : m",
+ 	.action_msg	= "Show Memory",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
+ };
+@@ -377,7 +377,7 @@ static void sysrq_handle_term(int key)
+ }
+ static const struct sysrq_key_op sysrq_term_op = {
+ 	.handler	= sysrq_handle_term,
+-	.help_msg	= "terminate-all-tasks(e)",
++	.help_msg	= "terminate-all-tasks : e",
+ 	.action_msg	= "Terminate All Tasks",
+ 	.enable_mask	= SYSRQ_ENABLE_SIGNAL,
+ };
+@@ -407,7 +407,7 @@ static void sysrq_handle_moom(int key)
+ }
+ static const struct sysrq_key_op sysrq_moom_op = {
+ 	.handler	= sysrq_handle_moom,
+-	.help_msg	= "memory-full-oom-kill(f)",
++	.help_msg	= "memory-full-oom-kill : f",
+ 	.action_msg	= "Manual OOM execution",
+ 	.enable_mask	= SYSRQ_ENABLE_SIGNAL,
+ };
+@@ -419,7 +419,7 @@ static void sysrq_handle_thaw(int key)
+ }
+ static const struct sysrq_key_op sysrq_thaw_op = {
+ 	.handler	= sysrq_handle_thaw,
+-	.help_msg	= "thaw-filesystems(j)",
++	.help_msg	= "thaw-filesystems : j",
+ 	.action_msg	= "Emergency Thaw of all frozen filesystems",
+ 	.enable_mask	= SYSRQ_ENABLE_SIGNAL,
+ };
+@@ -434,7 +434,7 @@ static void sysrq_handle_kill(int key)
+ }
+ static const struct sysrq_key_op sysrq_kill_op = {
+ 	.handler	= sysrq_handle_kill,
+-	.help_msg	= "kill-all-tasks(i)",
++	.help_msg	= "kill-all-tasks : i",
+ 	.action_msg	= "Kill All Tasks",
+ 	.enable_mask	= SYSRQ_ENABLE_SIGNAL,
+ };
+@@ -445,7 +445,7 @@ static void sysrq_handle_unrt(int key)
+ }
+ static const struct sysrq_key_op sysrq_unrt_op = {
+ 	.handler	= sysrq_handle_unrt,
+-	.help_msg	= "nice-all-RT-tasks(n)",
++	.help_msg	= "nice-all-RT-tasks : n",
+ 	.action_msg	= "Nice All RT Tasks",
+ 	.enable_mask	= SYSRQ_ENABLE_RTNICE,
+ };
+@@ -605,7 +605,7 @@ void __handle_sysrq(int key, bool check_mask)
+ 			console_loglevel = orig_log_level;
+ 		}
+ 	} else {
+-		pr_info("HELP : ");
++		pr_info("HELP : \n");
+ 		/* Only print the help msg once per handler */
+ 		for (i = 0; i < ARRAY_SIZE(sysrq_key_table); i++) {
+ 			if (sysrq_key_table[i]) {
+@@ -617,9 +617,9 @@ void __handle_sysrq(int key, bool check_mask)
+ 				if (j != i)
+ 					continue;
+ 				pr_cont("%s ", sysrq_key_table[i]->help_msg);
++				pr_cont("\n");
+ 			}
+ 		}
+-		pr_cont("\n");
+ 		console_loglevel = orig_log_level;
+ 	}
+ 	rcu_read_unlock();
+diff --git a/kernel/debug/debug_core.c b/kernel/debug/debug_core.c
+index d5e9ccde3ab8..561721e124cd 100644
+--- a/kernel/debug/debug_core.c
++++ b/kernel/debug/debug_core.c
+@@ -988,7 +988,7 @@ static void sysrq_handle_dbg(int key)
+ 
+ static const struct sysrq_key_op sysrq_dbg_op = {
+ 	.handler	= sysrq_handle_dbg,
+-	.help_msg	= "debug(g)",
++	.help_msg	= "debug : g",
+ 	.action_msg	= "DEBUG",
+ };
+ #endif
+diff --git a/kernel/power/poweroff.c b/kernel/power/poweroff.c
+index 562aa0e450ed..d9c0e6ea079a 100644
+--- a/kernel/power/poweroff.c
++++ b/kernel/power/poweroff.c
+@@ -31,7 +31,7 @@ static void handle_poweroff(int key)
+ 
+ static const struct sysrq_key_op	sysrq_poweroff_op = {
+ 	.handler        = handle_poweroff,
+-	.help_msg       = "poweroff(o)",
++	.help_msg       = "poweroff : o",
+ 	.action_msg     = "Power Off",
+ 	.enable_mask	= SYSRQ_ENABLE_BOOT,
+ };
+diff --git a/kernel/rcu/tree_stall.h b/kernel/rcu/tree_stall.h
+index b10b8349bb2a..17a7bf7b0a2b 100644
+--- a/kernel/rcu/tree_stall.h
++++ b/kernel/rcu/tree_stall.h
+@@ -1042,7 +1042,7 @@ static void sysrq_show_rcu(int key)
+ 
+ static const struct sysrq_key_op sysrq_rcudump_op = {
+ 	.handler = sysrq_show_rcu,
+-	.help_msg = "show-rcu(y)",
++	.help_msg = "show-rcu : y",
+ 	.action_msg = "Show RCU tree",
+ 	.enable_mask = SYSRQ_ENABLE_DUMP,
+ };
+-- 
+2.41.0
+
