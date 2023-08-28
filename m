@@ -2,63 +2,84 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28127C83F1F
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Aug 2023 10:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A039C83F12
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Aug 2023 12:12:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232345AbjH1K5M (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Aug 2023 06:57:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57998 "EHLO
+        id S230099AbjH1MLb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Aug 2023 08:11:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232566AbjH1K4b (ORCPT
+        with ESMTP id S230347AbjH1MLA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Aug 2023 06:56:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74EC2723;
-        Mon, 28 Aug 2023 03:56:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A59A661BFA;
-        Mon, 28 Aug 2023 10:55:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5A6EC433C8;
-        Mon, 28 Aug 2023 10:55:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1693220142;
-        bh=oDzwoDE9xRqhbl1GhBeNUokhC//efLDV52EdLY/Fx90=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uLwV11v3sjKCXzsBvLOXv2TsXAvVvY/fAl71fbUVfuYY4yhZ64mCNfWleBcDXBpmS
-         bucZeZjBVvpw3mKxsHMwOkVWyu/Eiz4RZGZaw3eEWoDH5TgPqCwPTBvh66OyqJIfLs
-         SXuYOVW7D9dtXO9keFSGdl4dGMZyoaBZIZw7asuo=
-Date:   Mon, 28 Aug 2023 12:52:11 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Andras Sebok <sebokandris2009@gmail.com>
-Cc:     linux-serial@vger.kernel.org, andriseseboke@gmail.com,
-        linux-kernel@vger.kernel.org, jirislaby@kernel.org
-Subject: Re: [PATCH 2/2] Add disabled text to indicate inactive commands in
- sysrq help menu
-Message-ID: <2023082854-cylinder-putdown-6a54@gregkh>
-References: <20230828102753.4811-2-sebokandris2009@gmail.com>
- <20230828102753.4811-5-sebokandris2009@gmail.com>
+        Mon, 28 Aug 2023 08:11:00 -0400
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A40E6D8;
+        Mon, 28 Aug 2023 05:10:57 -0700 (PDT)
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-99c136ee106so401781466b.1;
+        Mon, 28 Aug 2023 05:10:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1693224656; x=1693829456;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=aRKpAHPZEPVk+Fg369igBwYVlHrrvSUCvtuNi+MYNXo=;
+        b=HXIAcbpFkaqUUPPCC+O2Ecy/xHmAoYiqKPu/ThiN2SHLCWwVpDBlB+IWKxjcV3K7Sw
+         IZXLngJcmrfkR/7i2jU391ked2t9AxrMm41YuCeJY5SHGzTjdSzJSU+F/QNfNglvDo7w
+         tjlZnmIvRVmLARGmVPk1hJh7sQY9vGvrP4HDY3o9MzuXnpuhw2Sib+Akt22RAR6fHtlb
+         Myv2pNRTQEXdCwBFrCmq9YiKMRf0K+oEIgT3JBBn1bqAhMvQCvcdIniux6B0WMDMBg+K
+         R8MAS97av9MgDmB6sWBOc9Gdjz4F3/p/utyqi8oe0ABSm0jeQR4Y/4oX1FgFj5lsOW1J
+         9ovQ==
+X-Gm-Message-State: AOJu0YzBIWXBmU0xIyEZgx2ZMfBN4uH2V0TymDZ3dp3bQvKb1TNmNvXk
+        bcMbWqcySzBLwbGKtogcr5s=
+X-Google-Smtp-Source: AGHT+IHh+jPAccLUybH0bG/hIhhcuZ570OrmJ9A7mqLj9tE8GeUWkUzWVRIvU1zeaQzCA2PXS+/2oA==
+X-Received: by 2002:a17:907:6087:b0:9a2:96d2:b1e8 with SMTP id ht7-20020a170907608700b009a296d2b1e8mr7132102ejc.54.1693224655865;
+        Mon, 28 Aug 2023 05:10:55 -0700 (PDT)
+Received: from ryzen.lan (cpc87451-finc19-2-0-cust61.4-2.cable.virginm.net. [82.11.51.62])
+        by smtp.gmail.com with ESMTPSA id e25-20020a170906081900b00992ea405a79sm4567898ejd.166.2023.08.28.05.10.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Aug 2023 05:10:55 -0700 (PDT)
+From:   Lucas Tanure <tanure@linux.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, Lucas Tanure <tanure@linux.com>
+Subject: [PATCH] tty: serial: meson: Add a earlycon for the S4 SoC
+Date:   Mon, 28 Aug 2023 13:10:53 +0100
+Message-ID: <20230828121053.60838-1-tanure@linux.com>
+X-Mailer: git-send-email 2.42.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230828102753.4811-5-sebokandris2009@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Aug 28, 2023 at 12:27:56PM +0200, Andras Sebok wrote:
-> This patch adds disabled text after disabled commands in sysrq help.
-> 
-> before:
-> sak : k
-> 
-> after:
-> sak : k (disabled)
+The new Amlogic S4 SoC does not have a always-on uart, so add
+OF_EARLYCON_DECLARE for it.
 
-No need to tease people about options they can not use :(
+Signed-off-by: Lucas Tanure <tanure@linux.com>
+---
+ drivers/tty/serial/meson_uart.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-sorry,
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index 790d910dafa5..8dfaa260e545 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -646,8 +646,8 @@ meson_serial_early_console_setup(struct earlycon_device *device, const char *opt
+ 	return 0;
+ }
+ 
+-OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
+-		    meson_serial_early_console_setup);
++OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart", meson_serial_early_console_setup);
++OF_EARLYCON_DECLARE(meson, "amlogic,meson-s4-uart", meson_serial_early_console_setup);
+ 
+ #define MESON_SERIAL_CONSOLE_PTR(_devname) (&meson_serial_console_##_devname)
+ #else
+-- 
+2.42.0
 
-greg k-h
