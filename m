@@ -2,94 +2,63 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05406C83F1C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28127C83F1F
 	for <linux-serial@archiver.kernel.org>; Mon, 28 Aug 2023 10:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232305AbjH1K5J (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Aug 2023 06:57:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58160 "EHLO
+        id S232345AbjH1K5M (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Aug 2023 06:57:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232357AbjH1K4g (ORCPT
+        with ESMTP id S232566AbjH1K4b (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Aug 2023 06:56:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82E3A2D53;
-        Mon, 28 Aug 2023 03:56:14 -0700 (PDT)
+        Mon, 28 Aug 2023 06:56:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74EC2723;
+        Mon, 28 Aug 2023 03:56:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B10E4643BA;
-        Mon, 28 Aug 2023 10:55:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95E05C43395;
-        Mon, 28 Aug 2023 10:55:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A59A661BFA;
+        Mon, 28 Aug 2023 10:55:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5A6EC433C8;
+        Mon, 28 Aug 2023 10:55:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1693220139;
-        bh=Bb5ceWlaWfPfAbTCvodCpwqGEOWqs3DzAgQJiJfYYLI=;
+        s=korg; t=1693220142;
+        bh=oDzwoDE9xRqhbl1GhBeNUokhC//efLDV52EdLY/Fx90=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qR1SoaeXARfJ5B+C7d1LrT8ZNFXqBqyjUjWCQB+bcrZ+F//B5r4j/u0xcjOjgNkYT
-         4i9JwXyCuIBJQvQlEKkhPYGpxgfKdjeBFD0ZpGrcNWbfqqaI3ulRi3VCjloeGnH3jF
-         BteU6FCE4IZropHtFlCbLyH0sG/W4J0IAo5Djh7Q=
-Date:   Mon, 28 Aug 2023 12:51:38 +0200
+        b=uLwV11v3sjKCXzsBvLOXv2TsXAvVvY/fAl71fbUVfuYY4yhZ64mCNfWleBcDXBpmS
+         bucZeZjBVvpw3mKxsHMwOkVWyu/Eiz4RZGZaw3eEWoDH5TgPqCwPTBvh66OyqJIfLs
+         SXuYOVW7D9dtXO9keFSGdl4dGMZyoaBZIZw7asuo=
+Date:   Mon, 28 Aug 2023 12:52:11 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Andras Sebok <sebokandris2009@gmail.com>
 Cc:     linux-serial@vger.kernel.org, andriseseboke@gmail.com,
         linux-kernel@vger.kernel.org, jirislaby@kernel.org
-Subject: Re: [PATCH 1/2] Simplify sysrq help
-Message-ID: <2023082831-undefined-hut-11fd@gregkh>
+Subject: Re: [PATCH 2/2] Add disabled text to indicate inactive commands in
+ sysrq help menu
+Message-ID: <2023082854-cylinder-putdown-6a54@gregkh>
 References: <20230828102753.4811-2-sebokandris2009@gmail.com>
+ <20230828102753.4811-5-sebokandris2009@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230828102753.4811-2-sebokandris2009@gmail.com>
+In-Reply-To: <20230828102753.4811-5-sebokandris2009@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Aug 28, 2023 at 12:27:53PM +0200, Andras Sebok wrote:
-> This patch simplyfies sysrq help menu by moving each command to a 
-> separate line and by moving the key from brackets to after a semicolon.
+On Mon, Aug 28, 2023 at 12:27:56PM +0200, Andras Sebok wrote:
+> This patch adds disabled text after disabled commands in sysrq help.
 > 
 > before:
-> sysrq: HELP : loglevel(0-9) reboot(b) crash(c) terminate-all-tasks(e) memory-full-oom-kill(f) kill-all-tasks(i) thaw-filesystems(j) sak(k) show-backtrace-all-active-cpus(l) show-memory-usage(m) nice-all-RT-tasks(n) poweroff(o) show-registers(p) show-all-timers(q) unraw(r) sync(s) show-task-states(t) unmount(u) force-fb(v) show-blocked-tasks(w) dump-ftrace-buffer(z)
+> sak : k
 > 
 > after:
-> sysrq: HELP :
-> loglevel : 0-9
-> reboot : b
-> crash : c
-> terminate-all-tasks : e
-> memory-full-oom-kill : f
-> kill-all-tasks : i
-> thaw-filesystems : j
-> sak : k
-> show-backtrace-all-active-cpus : l
-> show-memory-usage : m
-> nice-all-RT-tasks : n
-> poweroff : o
-> show-registers : p
-> show-all-timers : q
-> unraw : r
-> sync : s
-> show-task-states : t
-> unmount : u
-> force-fb : v
-> show-blocked-tasks : w
-> dump-ftrace-buffer : z
+> sak : k (disabled)
 
-So now the options all scroll off the screen?  Are you sure this is
-wise?  What problem are you trying to solve here, it just looks like you
-are changing one "help text format for another", and doesn't actually
-change much of anything.
+No need to tease people about options they can not use :(
 
-Note the:
-	sysrq: HELP :
-
-line format being different from all the others makes this not even look
-correct?
-
-So I really do not see the point of this change here, why is it needed?
-
-thanks,
+sorry,
 
 greg k-h
