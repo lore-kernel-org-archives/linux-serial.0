@@ -2,64 +2,88 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DBE4C83F12
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Aug 2023 14:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D74F5C83F12
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Aug 2023 14:48:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229872AbjH1OET (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Aug 2023 10:04:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56192 "EHLO
+        id S231504AbjH1Orz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Aug 2023 10:47:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231429AbjH1ODv (ORCPT
+        with ESMTP id S231868AbjH1OrZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Aug 2023 10:03:51 -0400
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06AEDC7
-        for <linux-serial@vger.kernel.org>; Mon, 28 Aug 2023 07:03:46 -0700 (PDT)
-Received: from letrec.thunk.org (pool-173-48-116-73.bstnma.fios.verizon.net [173.48.116.73])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 37SE3EFX027429
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 28 Aug 2023 10:03:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1693231396; bh=GiV+PLZ4PXJ5RNYN7YJy4Ypfs0e09vXf4xSw2J026BM=;
-        h=Date:From:Subject:Message-ID:MIME-Version:Content-Type;
-        b=O4vevDump4c7g9IVOLwGQsDmK4z1oR4JMD8OMVwNPQ4NdsAiQqvaBAj+fqj1ANlFb
-         S19kAnVRSPLaooDsMZ1YNAFv0jDXCq/tpiIazt9byap5mUErTlukDu4iifzyt6Idz4
-         ctfhjY7sht4CO+DEUfiSO1hrAQrg4iVQcj7n/MsX/MqVkNwZrAup6aaINSjZZFAaOZ
-         jeMgXYjEHol1SKJeDJ2v5+ahCiMq5j9g09kzC74/fevaaKyc633iTGIJMsL90JZF8I
-         EKGBNnyhtLEpTjNwMN58bu87Wn+hbMmj0GudzD67E6Zrl263IPSSuSKdQx06M8bVpp
-         N21MuyVygCDVw==
-Received: by letrec.thunk.org (Postfix, from userid 15806)
-        id 5A3788C0281; Mon, 28 Aug 2023 10:03:14 -0400 (EDT)
-Date:   Mon, 28 Aug 2023 10:03:14 -0400
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Andras Sebok <sebokandris2009@gmail.com>,
-        linux-serial@vger.kernel.org, andriseseboke@gmail.com,
-        linux-kernel@vger.kernel.org, jirislaby@kernel.org
-Subject: Re: [PATCH 1/2] Simplify sysrq help
-Message-ID: <ZOypIovdqGnV6opC@mit.edu>
-References: <20230828102753.4811-2-sebokandris2009@gmail.com>
- <2023082831-undefined-hut-11fd@gregkh>
+        Mon, 28 Aug 2023 10:47:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8F9211A;
+        Mon, 28 Aug 2023 07:47:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D38F649E5;
+        Mon, 28 Aug 2023 14:47:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CF44C433C7;
+        Mon, 28 Aug 2023 14:47:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1693234032;
+        bh=t4UYsFixGBWU+iQLBjiupWXXolJDGFOG986A39rhGqo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fcyb3VRkhGoZGw9T/045gq6wy3bRR/5rGAtlNrFRlm8hbkAWx9gmdoEAx7ASCmlpt
+         XkzxG3rFG69tUteuUSj6/sB0X4YJCo1ydUt/pisYfLSzX0TFFGAEbMkcGXVg9HJb1m
+         BAeva63G3b5bXBQll6h1h030wIJ9mEv8DAuzYra8=
+Date:   Mon, 28 Aug 2023 16:47:09 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Neil Armstrong <neil.armstrong@linaro.org>
+Cc:     Lucas Tanure <tanure@linux.com>, Jiri Slaby <jirislaby@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org
+Subject: Re: [PATCH v2] Revert "tty: serial: meson: Add a earlycon for the T7
+ SoC"
+Message-ID: <2023082803-alone-tingle-b639@gregkh>
+References: <20230827082944.5100-1-tanure@linux.com>
+ <944f1370-c092-484e-a13d-b7f8211c4835@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2023082831-undefined-hut-11fd@gregkh>
+In-Reply-To: <944f1370-c092-484e-a13d-b7f8211c4835@linaro.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Aug 28, 2023 at 12:51:38PM +0200, Greg KH wrote:
-> So now the options all scroll off the screen?  Are you sure this is
-> wise?  What problem are you trying to solve here, it just looks like you
-> are changing one "help text format for another", and doesn't actually
-> change much of anything.
+On Mon, Aug 28, 2023 at 02:31:06PM +0200, Neil Armstrong wrote:
+> Hi Greg,
+> 
+> On 27/08/2023 10:29, Lucas Tanure wrote:
+> > This reverts commit 6a4197f9763325043abf7690a21124a9facbf52e.
+> > New SoC will use ttyS0 instead of ttyAML, so T7 SoC doesn't need a OF_EARLYCON_DECLARE.
+> > 
+> > Signed-off-by: Lucas Tanure <tanure@linux.com>
+> > ---
+> > Since V1:
+> > - add Signed-off-by:
+> > 
+> >   drivers/tty/serial/meson_uart.c | 2 --
+> >   1 file changed, 2 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+> > index c4f61d82fb727..790d910dafa5d 100644
+> > --- a/drivers/tty/serial/meson_uart.c
+> > +++ b/drivers/tty/serial/meson_uart.c
+> > @@ -648,8 +648,6 @@ meson_serial_early_console_setup(struct earlycon_device *device, const char *opt
+> >   OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
+> >   		    meson_serial_early_console_setup);
+> > -OF_EARLYCON_DECLARE(meson, "amlogic,t7-uart",
+> > -		    meson_serial_early_console_setup);
+> >   #define MESON_SERIAL_CONSOLE_PTR(_devname) (&meson_serial_console_##_devname)
+> >   #else
+> 
+> After some clarifications, it's ok to merge the revert:
+> 
+> Acked-by: Neil Armstrong <neil.armstrong@linaro.org>
 
-Indeed, if you are using a VT console, this is a bad, Bad, BAD idea,
-since there is very limited console scrollback, and this would blow
-away a huge amount of useful information.  Maybe it might be useful
-for novices who are using a serial console, but magic sysrq is
-primarily used by experts, not by novices....
+Already merged :)
 
-				- Ted
+thanks,
+
+greg k-h
