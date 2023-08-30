@@ -2,102 +2,145 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99589C71153
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Aug 2023 20:16:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB3B4C83F1E
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Aug 2023 18:38:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239337AbjH2UQR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 29 Aug 2023 16:16:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36974 "EHLO
+        id S236765AbjH3Sic (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 30 Aug 2023 14:38:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240488AbjH2UQD (ORCPT
+        with ESMTP id S242239AbjH3Hev (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 29 Aug 2023 16:16:03 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CFB30DB
-        for <linux-serial@vger.kernel.org>; Tue, 29 Aug 2023 13:15:59 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id E0A6C809F;
-        Tue, 29 Aug 2023 20:15:58 +0000 (UTC)
-Date:   Tue, 29 Aug 2023 23:15:57 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Matthew Howell <matthew.howell@sealevel.com>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        ryan.wenglarz@sealevel.com, james.olson@sealevel.com
-Subject: Re: [PATCH] serial: Revert serial: core: Fix serial core port id to
- not use port->line
-Message-ID: <20230829201557.GK11662@atomide.com>
-References: <98a891fd-5a1f-6568-a12c-28577126a42@sealevel.com>
- <20230829035245.GF11662@atomide.com>
- <511f2dcf-f637-695-8e81-8eaa3735ba88@sealevel.com>
+        Wed, 30 Aug 2023 03:34:51 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F845CC9;
+        Wed, 30 Aug 2023 00:34:48 -0700 (PDT)
+Received: from [192.168.100.7] (unknown [39.34.186.40])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: usama.anjum)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id EE30866071DF;
+        Wed, 30 Aug 2023 08:34:44 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1693380887;
+        bh=FAqKMrDY1sgnEDen564Uz0JqloJwW0ZuxAgPpMdqgus=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=Qf2duL2p2Hicri0va/ik8ADYHPGFylNPxgGYRWTu8yc/Zo5SoYVrbSgjDerAoCDmc
+         9x0fbsqbD878DXxsTuaO9hDWCOozhx52nu+24C9dRmxGF6VVSOHx0vHcCCDL6U5kvQ
+         UduiMAMHgQ4/9ECJWkPcMIP57EdIs0IoGbdvROxzsB9qylzYJFMk+APngqouGeref0
+         Y15ecksvXyNGrQq04GPDk1XarcKT2hgsONwXloHlCEfyrrHWqAoULqLW9THdzHT92Q
+         RqHwn5ohgMmxR5mNBTy9cMgMRC5blzL5c4tRzW00EB2qg9rTJ0ygHQ1m65q87IWlmA
+         pYxjXZF4Gms/A==
+Message-ID: <b4451119-9ab8-455f-b964-e54a1be21ea2@collabora.com>
+Date:   Wed, 30 Aug 2023 12:34:38 +0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <511f2dcf-f637-695-8e81-8eaa3735ba88@sealevel.com>
+User-Agent: Mozilla Thunderbird
+Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        kernel@collabora.com, stable@vger.kernel.org
+Subject: Re: [PATCH v3] tty/sysrq: replace smp_processor_id() with get_cpu()
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Ingo Molnar <mingo@elte.hu>, Jiri Slaby <jirislaby@kernel.org>
+References: <20230822102606.2821311-1-usama.anjum@collabora.com>
+ <2023082258-lethargic-hazily-5c7e@gregkh>
+ <deab26bd-7db4-422a-8e58-6ea56ed0b200@collabora.com>
+Content-Language: en-US
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <deab26bd-7db4-422a-8e58-6ea56ed0b200@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Matthew Howell <matthew.howell@sealevel.com> [230829 13:42]:
-> On Tue, 29 Aug 2023, Tony Lindgren wrote:
+On 8/23/23 4:06 PM, Muhammad Usama Anjum wrote:
+> On 8/22/23 6:24 PM, Greg Kroah-Hartman wrote:
+>> On Tue, Aug 22, 2023 at 03:26:06PM +0500, Muhammad Usama Anjum wrote:
+>>> The smp_processor_id() shouldn't be called from preemptible code.
+>>> Instead use get_cpu() and put_cpu() which disables preemption in
+>>> addition to getting the processor id. This fixes the following bug:
+>>>
+>>> [  119.143590] sysrq: Show backtrace of all active CPUs
+>>> [  119.143902] BUG: using smp_processor_id() in preemptible [00000000] code: bash/873
+>>> [  119.144586] caller is debug_smp_processor_id+0x20/0x30
+>>> [  119.144827] CPU: 6 PID: 873 Comm: bash Not tainted 5.10.124-dirty #3
+>>> [  119.144861] Hardware name: QEMU QEMU Virtual Machine, BIOS 2023.05-1 07/22/2023
+>>> [  119.145053] Call trace:
+>>> [  119.145093]  dump_backtrace+0x0/0x1a0
+>>> [  119.145122]  show_stack+0x18/0x70
+>>> [  119.145141]  dump_stack+0xc4/0x11c
+>>> [  119.145159]  check_preemption_disabled+0x100/0x110
+>>> [  119.145175]  debug_smp_processor_id+0x20/0x30
+>>> [  119.145195]  sysrq_handle_showallcpus+0x20/0xc0
+>>> [  119.145211]  __handle_sysrq+0x8c/0x1a0
+>>> [  119.145227]  write_sysrq_trigger+0x94/0x12c
+>>> [  119.145247]  proc_reg_write+0xa8/0xe4
+>>> [  119.145266]  vfs_write+0xec/0x280
+>>> [  119.145282]  ksys_write+0x6c/0x100
+>>> [  119.145298]  __arm64_sys_write+0x20/0x30
+>>> [  119.145315]  el0_svc_common.constprop.0+0x78/0x1e4
+>>> [  119.145332]  do_el0_svc+0x24/0x8c
+>>> [  119.145348]  el0_svc+0x10/0x20
+>>> [  119.145364]  el0_sync_handler+0x134/0x140
+>>> [  119.145381]  el0_sync+0x180/0x1c0
+>>>
+>>> Cc: stable@vger.kernel.org
+>>> Fixes: 47cab6a722d4 ("debug lockups: Improve lockup detection, fix generic arch fallback")This commit had introduced the smp_processor_id() function in
+> sysrq_handle_showallcpus().
 > 
-> > Hi,
-> > 
-> > * Matthew Howell <matthew.howell@sealevel.com> [230828 20:41]:
-> > > From: Matthew Howell <matthew.howell@sealevel.com>
-> > > XR17V35X cards seemingly unable to register serial port. Confirmed on
-> > > Sealevel 7202C, 7204EC, and Exar XR17V352 reference board.
-> > > dmesg states: "Couldn't register serial port 0, irq 24, type 2, error -22"
-> > >
-> > > I first identified the problem when I pulled down 6.6-rc1 and I was able
-> > > to trace it to d962de6ae51f9b76ad736220077cda83084090b1. I understand that this
-> > > commit is noted as being reverted in 1ef2c2df1199, but I was only able to
-> > > resolve the issue by reverting d962de6ae51f myself using this patch.
-> > 
-> > Thanks for the report. Do you maybe mean 6.5-rc1 instead of 6.6-rc1 above?
+>>
+>> How has this never shown up before now?  What changed to cause this to
+>> now be triggered?  This feels odd that no one has seen this in the past
+>> 20+ years :(
+> Not sure. Probably the combination of reproduction has happened now. The
+> following three conditions are needed for the warning to appear:
+> * Enable CONFIG_DEBUG_PREEMPT
+> * Arch which doesn't define arch_trigger_all_cpu_backtrace such as arm64
+> * Trigger showallcpu's stack sysrqAny thoughts?
+
 > 
-> Apologies, I meant 6.5, no RC. Specifically, I first found this issue on 
-> the v6.5 tag (2dde18cd1d8f). I then rolled back until I traced the issue 
-> down to the patch in question (d962de6ae51f). Even more specifically, 
-> according to my test notes I tested the following commits, with results as 
-> indicated:
+>>
+>>
+>>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+>>> ---
+>>> Changes since v2:
+>>> - Add changelog and resend
+>>>
+>>> Changes since v1:
+>>> - Add "Cc: stable@vger.kernel.org" tag
+>>> ---
+>>>  drivers/tty/sysrq.c | 3 ++-
+>>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+>>> index 23198e3f1461a..6b4a28bcf2f5f 100644
+>>> --- a/drivers/tty/sysrq.c
+>>> +++ b/drivers/tty/sysrq.c
+>>> @@ -262,13 +262,14 @@ static void sysrq_handle_showallcpus(u8 key)
+>>>  		if (in_hardirq())
+>>>  			regs = get_irq_regs();
+>>>  
+>>> -		pr_info("CPU%d:\n", smp_processor_id());
+>>> +		pr_info("CPU%d:\n", get_cpu());
+>>>  		if (regs)
+>>>  			show_regs(regs);
+>>>  		else
+>>>  			show_stack(NULL, NULL, KERN_INFO);
+>>>  
+>>>  		schedule_work(&sysrq_showallcpus);
+>>> +		put_cpu();
+>>
+>> Why are you putting the cpu _after_ you schedule the work?
+> The sysrq_showallcpus work prints stack traces on all CPUs other than the
+> current CPU. So we are re-enabling preemption after scheduling work from
+> current CPU. So that it doesn't get changed.
+>>
+>> thanks,
+>>
+>> greg k-h
 > 
-> 04c7f60ca477ffbf7b7910320482335050f0d23a -> Not working
-> 3d9e6f556e235ddcdc9f73600fdd46fe1736b090 -> Not working
-> 3c4f8333b582487a2d1e02171f1465531cde53e3 -> Not working
-> a4a79e03bab57729bd8046d22bf3666912e586fb -> Not working
-> 1ef2c2df11997b8135f34adcf2c200d3b4aacbe9 -> Not working
-> d962de6ae51f9b76ad736220077cda83084090b1 -> Not working
-> 282069845af388b08d622ad192b831dcd0549c62 -> Working
-> e6d34ced01bc3aaad616b9446bbaa96cd04617c4 -> Working
-> 748c5ea8b8796ae8ee80b8d3a3d940570b588d59 -> Working
-> 868a9fd9480785952336e5f119e1f75877c423a8 -> Working
 
-OK
-
-> What I can say for certain is that of the commits I have tested: 
-> 
-> 1) Commits before d962de6ae51f work on the hardware I have tested 
-> 2) Commits after d962de6ae51f don't work on the hardware I have tested
-> 3) Pulling v6.5 and reverting d962de6ae51f with git revert resolves the 
-> issue
-
-OK. To me it seems uart.port.port_id should be always 0 in exar_pci_probe()
-and get automatically allocated in serial_base_port_add(). Sounds like this
-is not a duplicate port_id issue though but something else as it sounds
-like you're not getting duplicate sysfs entry related errors.
-
-If it is a port_id conflict I'm not sure why commit 3d9e6f556e23 is not
-working for your as it has commit a4a79e03bab5 ("serial: core: Revert
-port_id use"). Care to check that again, or maybe try with v6.5 with just
-the commit below reverted?
-
-04c7f60ca477 ("serial: core: Fix serial core port id, including multiport devices")
-
-Dmesg output might help also to figure out if this happens on the first
-port or the second port.
-
-Not sure yet where the -22 error here comes from.
-
-Regards,
-
-Tony
+-- 
+BR,
+Muhammad Usama Anjum
