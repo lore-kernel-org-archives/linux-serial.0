@@ -2,89 +2,113 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20194C83F37
-	for <linux-serial@archiver.kernel.org>; Thu, 31 Aug 2023 18:30:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8684BC83F2F
+	for <linux-serial@archiver.kernel.org>; Thu, 31 Aug 2023 18:33:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244263AbjHaSaT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 31 Aug 2023 14:30:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59776 "EHLO
+        id S230395AbjHaSde (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 31 Aug 2023 14:33:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244624AbjHaSaR (ORCPT
+        with ESMTP id S233343AbjHaSdc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 31 Aug 2023 14:30:17 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B2CE79
-        for <linux-serial@vger.kernel.org>; Thu, 31 Aug 2023 11:30:14 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id d9443c01a7336-1bdbf10333bso9311185ad.1
-        for <linux-serial@vger.kernel.org>; Thu, 31 Aug 2023 11:30:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1693506614; x=1694111414; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=FB1kVMWEU7nPrAJJXjUVrfR6NLc1vMmftYUNizeZ0Cc=;
-        b=fMOJ32E4VIbYy5JzVF6rihdyKHh/QFE0hu6aKeDbCUHEXv5hnUP70iF+9/AFoDlSWt
-         g2fRzeHTX3Eko5JeQxqDEOqXH9WFQiEIgM7gpgUizKBQYSt8mi+12PSRInVokrAzli9k
-         r3lGu3VNCWchmm78WWRBQ9Z1sIaRH4A5T6f9Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693506614; x=1694111414;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FB1kVMWEU7nPrAJJXjUVrfR6NLc1vMmftYUNizeZ0Cc=;
-        b=GkoqKv4vvs3Qml0Iu7NyuG4i+0Xe8fQu4QqIlLYaOxU6uOWc9DgVosqlwHjYhl2BVm
-         YUGcBgSFEddnTaL6fcBS0JOVCXy3Dcm9RRAvanhNB+YNOuCvOusTMfxKcE/5Hd17870B
-         F56Z7uKnfPJV7gPUXkbjeqxV8onrE1nEIYmJy+T0jUmBFj1igOfBDoH/TzHoec6IgBq3
-         Qpn3HHRtPWEFl+3nnUF4PY0VmGA2AtHxGoq3BU3DjEBXqiVYNMsZdIjv0+qUF0ggSdfI
-         CMYUgKEBCP9EnaU6isCTfHpXVORxJJqmuPgvIkgp7fiTzNIRLcgJWYT03Na9kfacxaM6
-         7Uew==
-X-Gm-Message-State: AOJu0YxHo46dVGDOcyAnDTr93OBMGEX3+97rnI7+VIKffyRLH0d62BF6
-        rI8a6dXrK6H0wZBpZayTTGFa8/s63X11rfW/uXw=
-X-Google-Smtp-Source: AGHT+IEjQ6KvhqRgqekfwUfVHPDa4H9zY0UwUrk4seishin21Jizv61gXheblqWlJAuPqaS3NuEs8A==
-X-Received: by 2002:a17:902:a5c9:b0:1bc:667b:63c6 with SMTP id t9-20020a170902a5c900b001bc667b63c6mr426242plq.41.1693506613996;
-        Thu, 31 Aug 2023 11:30:13 -0700 (PDT)
-Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
-        by smtp.gmail.com with ESMTPSA id w1-20020a170902e88100b001bafd5cf769sm1548229plg.2.2023.08.31.11.30.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Aug 2023 11:30:13 -0700 (PDT)
-Date:   Thu, 31 Aug 2023 11:30:12 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Azeem Shaikh <azeemshaikh38@gmail.com>,
+        Thu, 31 Aug 2023 14:33:32 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1B7E65;
+        Thu, 31 Aug 2023 11:33:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1693506805; x=1725042805;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=px3FvT2RH7DAb7h5X2rn9hNLxQJQvAASvN2jtIrqh9o=;
+  b=AASgif7GedMH45eJW5YI5lYhSf+bVlvKGTOR1avgmDoWx6eQbu40itm8
+   +PsirLsTy1GjYGcvDyMveHMOGhp1e5x1fab0ZQ0BioKFBG0Y3zH3RFzT5
+   toYEIWW8IG0gYV0SHrx/n7/okGAe04UrH2djXDF1/k3JXZh6SgW6cfeyU
+   uVnH0EvIGYxILj8nNzFME2e/7wqDi8Xrh4EOUYtiCHhiy9UwMRLPGzoLs
+   vXP7HSin5KprmsW8+Z1KVZRR6xRS9evG3vyafCEF8ohSwrfsOGpfDfkin
+   5SojNl/Jt0Dq1WMuEgjycO5H+qJ4VlXRCwf4yzGohlc0iIC/CJBv8gW/T
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10819"; a="375969039"
+X-IronPort-AV: E=Sophos;i="6.02,217,1688454000"; 
+   d="scan'208";a="375969039"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2023 11:33:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10819"; a="863234151"
+X-IronPort-AV: E=Sophos;i="6.02,217,1688454000"; 
+   d="scan'208";a="863234151"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga004.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2023 11:33:17 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1qbmTh-005Tcq-0j;
+        Thu, 31 Aug 2023 21:33:13 +0300
+Date:   Thu, 31 Aug 2023 21:33:12 +0300
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] vt: Fix potential read overflow of kernel memory
-Message-ID: <202308311123.EF07499@keescook>
-References: <20230830160410.3820390-1-azeemshaikh38@gmail.com>
- <2023083035-unpadded-amulet-8c7e@gregkh>
- <CADmuW3Wbgb7s+jRm8F0hcjzreWysVdzNvv778yUbGCOxAJHwjQ@mail.gmail.com>
- <202308301421.997C4034B5@keescook>
- <c44d1f9f-90e0-3e83-8394-854feb449539@kernel.org>
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        William Hubbs <w.d.hubbs@gmail.com>,
+        Chris Brannon <chris@the-brannons.com>,
+        Kirk Reiser <kirk@reisers.ca>,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, Max Staudt <max@enpas.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        Andreas Koensgen <ajk@comnets.uni-bremen.de>,
+        Jeremy Kerr <jk@codeconstruct.com.au>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>
+Subject: Re: [PATCH 16/36] tty: use u8 for chars
+Message-ID: <ZPDc6P2tp4lQzrKA@smile.fi.intel.com>
+References: <20230810091510.13006-1-jirislaby@kernel.org>
+ <20230810091510.13006-17-jirislaby@kernel.org>
+ <27366cad-30b2-e326-8d8f-c6fe17cf4899@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <c44d1f9f-90e0-3e83-8394-854feb449539@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <27366cad-30b2-e326-8d8f-c6fe17cf4899@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 31, 2023 at 07:32:18AM +0200, Jiri Slaby wrote:
-> On 30. 08. 23, 23:28, Kees Cook wrote:
-> >                  len = strlcpy(kbs, func_table[kb_func] ? : "", len);
-> > 
-> > This is the anti-pattern (take the length of the _source_) we need to
-> > remove.
+On Fri, Aug 11, 2023 at 01:28:56PM +0300, Ilpo Järvinen wrote:
+> On Thu, 10 Aug 2023, Jiri Slaby (SUSE) wrote:
+
+...
+
+> > @@ -22,9 +22,9 @@ struct tty_buffer {
+> >  	unsigned long data[];
+> >  };
+> >  
+> > -static inline unsigned char *char_buf_ptr(struct tty_buffer *b, int ofs)
+> > +static inline u8 *char_buf_ptr(struct tty_buffer *b, int ofs)
+> >  {
+> > -	return ((unsigned char *)b->data) + ofs;
+> > +	return ((u8 *)b->data) + ofs;
+> >  }
 > 
-> But len is the length of kbs, i.e. the destination. Or what am I missing?
+> Any particular reason why b->data is left unsigned long?
 
-strlcpy() returns the length of the _source_ string (i.e. it could be
-greater than the input argument len). But there is no current flaw here
-(since all sources are very short). We're just trying to remove strlcpy()
-since it leads to unexpected results.
-
--Kees
+It might be the performance issue due to unaligned accesses on some
+architectures. But I'm just speculating...
 
 -- 
-Kees Cook
+With Best Regards,
+Andy Shevchenko
+
+
