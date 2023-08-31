@@ -2,161 +2,237 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01B09C83F37
-	for <linux-serial@archiver.kernel.org>; Thu, 31 Aug 2023 19:43:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE1A9C83F2F
+	for <linux-serial@archiver.kernel.org>; Thu, 31 Aug 2023 19:48:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233655AbjHaTno (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 31 Aug 2023 15:43:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59884 "EHLO
+        id S241820AbjHaTs1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 31 Aug 2023 15:48:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232442AbjHaTnn (ORCPT
+        with ESMTP id S231970AbjHaTs0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 31 Aug 2023 15:43:43 -0400
-Received: from CY4PR02CU007.outbound.protection.outlook.com (mail-westcentralusazon11011011.outbound.protection.outlook.com [40.93.199.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B901BF
-        for <linux-serial@vger.kernel.org>; Thu, 31 Aug 2023 12:43:40 -0700 (PDT)
+        Thu, 31 Aug 2023 15:48:26 -0400
+Received: from CY4PR02CU007.outbound.protection.outlook.com (mail-westcentralusazon11011009.outbound.protection.outlook.com [40.93.199.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80581E6B
+        for <linux-serial@vger.kernel.org>; Thu, 31 Aug 2023 12:48:16 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gM6ia8EYo2VKr94eZoen6AznJMS+02ql8B3J7KoZD2qw09mppRQv5zyx5NZQQRPg28TVzqdTCNPqA1d4+LHvpZ64k1WtYGLC9BxfPHtUkXaeYpgowqTTGWMRWTA52L8/u2lozLlSioQdXGsFdAyPgtdzJFssA2xDLMhtxcmO2Ey0jr8AeSzBz/jeN6C5N6YvxPsgmGIclv1P8W9RmzM7M9vq0qrMl75h+/pyaLeX/0v8X11rSQRTJ2m68hFk59jkH5VdS+VpFlZdGv+IwBKSZmI+1oCM6VRU+iut+VGnjSQqxD9iwF8djHGWurggsOqhN1fF59GzVZya82xtLq/gcA==
+ b=BnjR2PjJijwRiv3Uv1LTg6AB7nyCeU9R0c1eWrbK/yfpNw4t01qMdLs0+IHIKuWeNZpU1zajP69grpRH5ppf8bb2MfcIMupJ0C3QiLdbQRYS3x+qC22q4DywPYn7r+GldFgVby99jpq93YnL3a4jrQSeJ8F/7ClRf8Mk0T8Pv8xer3s7loOgFqMePDAMGpL5exKkgFETzVgN1BDWdIHVShzIBFSDJL23ak90ns8JjfaNypbVLtr5LbTD0wA+PgT0IAK61i0FqBz/N2+GiiJwWAjKlUM5Vb3x4lzLOAt9pPNGe4STf+l5EEqHTIc06k2ikLNWEglE4Jloj8eL3iYEug==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VJ+y504u0u7eMilq3DFwRbDCpNLqYJ0xasrldmQWI0w=;
- b=VTXdi1dxWJjFxypzAtnYbH9QYCtG+Hjmx05yxsu+EdkIGNqiad+zeHHaNN6XFYcnFqabAsK4q67BLgYr0yTYrINfxFbpmlRV3xaDnpASYwakShPlchrnQtpISeKGYaE2yd0UMwmOFlX/BpcUpxuxc33bXf++zITbOc1l0FSu3m/OvN9j5ebROeXRGH297Wyr+qo/3XlmbpCvN+Jz/BzultBMkWiCQtlbb6qNJjahjjLa2KtUf/1EEaeUt7qwpjNRy/xTp98nrMFy/abNuesaH4L4QTxQK9IxG1loXatldAYV0b1sAuhEbKQob+bjWtgcIQo5vPM0YGwRSJ4XC9pd0g==
+ bh=X8Q5qz06IrSifDkh0vJ9FNy0S5H7Xhv2dJ2UVfTDCYI=;
+ b=fb2e9E03r1C8vTp5/4b7dAiMdHSIVr/tW2eg/K6WD9k7gThaAYILoX84901FGsLBfqHnRL2i+hIZfcou5LqwoarRjMeL53I7sDu6uCF59O8BsXHDfWfuFw+Fsvz0ZvQY4L8KX5zgjYTV79pbZXbupWWAsywvzeCZ/N2iKVxxksbH2GBFYCd0MasBfELLOBN0CWZuu8oQJKil6ZaWNO64T9/cdtWm3fYW5eqHNH1Xn8i84oCGEnmwam8rXpbdp2Vu/VW9QAW6JT3L3v2LV6zae1wzcoBydwwBnWNWwUu2xjFzrLsaJ2ymi+FTaR0INz90fAPjBo7CXNncFFGcvJajMw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=sealevel.com; dmarc=pass action=none header.from=sealevel.com;
  dkim=pass header.d=sealevel.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sealevel.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VJ+y504u0u7eMilq3DFwRbDCpNLqYJ0xasrldmQWI0w=;
- b=ZGxsbGX3Vwr69e2CZAkao/3kT4mt4Jb9VBtla+ab8nZtuERUDwdU0l8aH2G3RM8fOQjZzkxl8/vuf0g198zyZLhiLmpTkge3JKXfKOaqMi01cu71kD91WgYFe2UEKNNy8QOytkY4l8u+TBHPA0WtXjHZo0rvK6qgpMl2lQJWPR/XraDBGbe5TlwaKngHit5DTB6fEVh144hFpsmbdCqTuDLsEp3uWo6k6yx56ycJhAGnMPReVLQeRu8vVLijSy3+ydV7JKQ4FgZ4Qn7G9lpKkrH5GktkUx8PXfn+13mqkl9f2LfMEshfeyxhddqZBDBSy7yy2TM3B4NCQTHlrJWo5w==
+ bh=X8Q5qz06IrSifDkh0vJ9FNy0S5H7Xhv2dJ2UVfTDCYI=;
+ b=nJaP17Mufce8IHxUWQSMQyoCi1SZPWLQa96+V93Q/X2QeEgSO/XsuAhF0G55Rt0CVQ6f/kQjiqIlEjKftVqrXDnGgr5uxEvxXxRZJ6cOScKJrplTd7a08tNV/0yaL8Fw1X8kEphYbBr3RtdfQxI19PYVSPtjJdsWMjHtgsxdUNlzmvWI2iX4jcyo+XsjDk/7kY3Z3UCOGCs4FxvurCB6ChY0jM87AAeGJhyTTXUaMdBkM0VytWiNtOJxPjVgc15rxAsdNN5W7BNJUYs99/lRYknM8l5Fx6PzEgv7+xdzBITtfI+byt1z5pcjAlM8cirRsR7FUm4uOCeEOTBRhEdc/w==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=sealevel.com;
 Received: from CO1PR05MB8426.namprd05.prod.outlook.com (2603:10b6:303:e5::11)
- by CO1PR05MB7957.namprd05.prod.outlook.com (2603:10b6:303:f9::6) with
+ by LV3PR05MB10336.namprd05.prod.outlook.com (2603:10b6:408:198::6) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.22; Thu, 31 Aug
- 2023 19:43:36 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.35; Thu, 31 Aug
+ 2023 19:48:11 +0000
 Received: from CO1PR05MB8426.namprd05.prod.outlook.com
  ([fe80::2d74:e628:e394:6669]) by CO1PR05MB8426.namprd05.prod.outlook.com
  ([fe80::2d74:e628:e394:6669%4]) with mapi id 15.20.6745.021; Thu, 31 Aug 2023
- 19:43:36 +0000
-Date:   Thu, 31 Aug 2023 15:43:33 -0400 (EDT)
+ 19:48:11 +0000
+Date:   Thu, 31 Aug 2023 15:48:08 -0400 (EDT)
 From:   Matthew Howell <matthew.howell@sealevel.com>
-To:     linux-serial@vger.kernel.org, jeff.baldwin@sealevel.com,
+To:     Matthew Howell <matthew.howell@sealevel.com>
+cc:     linux-serial@vger.kernel.org, jeff.baldwin@sealevel.com,
         james.olson@sealevel.com, ryan.wenglarz@sealevel.com,
-        darren.beeson@sealevel.com, matthew.howell@sealevel.com
-Subject: [PATCH V3 1/2] serial: exar: Revert "serial: exar: Add support for
- Sealevel 7xxxC serial cards"
-Message-ID: <9b22e58e-182e-fc43-2a08-c01847ff427c@sealevel.com>
+        darren.beeson@sealevel.com, ilpo.jarvinen@linux.intel.com,
+        andriy.shevchenko@intel.com
+Subject: [PATCH V3 2/2] serial: exar: Add RS-485 support for Sealevel XR17V35X
+ based cards
+Message-ID: <b0b1863f-40f4-d78e-7bb7-dc4312449d9e@sealevel.com>
 Content-Type: text/plain; charset=US-ASCII
-X-ClientProxiedBy: BN9PR03CA0865.namprd03.prod.outlook.com
- (2603:10b6:408:13d::30) To CO1PR05MB8426.namprd05.prod.outlook.com
+X-ClientProxiedBy: BN1PR10CA0006.namprd10.prod.outlook.com
+ (2603:10b6:408:e0::11) To CO1PR05MB8426.namprd05.prod.outlook.com
  (2603:10b6:303:e5::11)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PR05MB8426:EE_|CO1PR05MB7957:EE_
-X-MS-Office365-Filtering-Correlation-Id: ded15cf4-f7b0-487a-f8f6-08dbaa5a9127
+X-MS-TrafficTypeDiagnostic: CO1PR05MB8426:EE_|LV3PR05MB10336:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4d30baa1-572a-47f3-5c21-08dbaa5b3526
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pEW3U4iqNt3nQplC8SySZlbathaFod1A1Hj/OEqTItt/v0SnLXTWuu2p+zKhvcmibzqH3zJuT3gCkq1hnwkFv1O1ZWpCVkzaYxjrlb03AI7dYxG2tGuWFZFkqE4+q2WFn35iajzNgjOMsmoidMIh9KORN/3w/+Jb1jNBkg8SLJcwQpPKr50ao/ncin6Rsa+OVF5tlgqaSP8sygmDDo4JwKkjyzsge2kdTfcPjiP1o2ogwZb2tMvuX111HSxtRi7JygyhlAgPlf7DlPmCyVlvJNJROwGwq7TbKh17fivgfzXnwfLF36vO+cpIF6NMMzwGeXB5xI/3zoWiW3bpHwSj1Aehw/3GzHZHBTyxxyklizt6nwYEvgZ9e9ke1qF9XJigCSg3E6KPFw+TzeGi8pA0x5YvnUF6+XtkNj2X9Ofh0kHJYhI/NAYXTLtsFshqN+pkTWhqzQsT9XDW0Ejt0jJDG+f1Pcdi+xI2P7l7CPN3G1+91uW/1mh5RfuxfIGiRA7dr05e6uoTLcUCH5bByXdUKURvOclNGj3O+FWHCEhqyx5aOD1YYs11BUClEIUQe3+WWXvgPBYZ5ruGvMk7BQokYgrwKw+O4otlFmfdno/MVFtTmu6UJ+97bsnrHBJpi0thQs+fVq6IalLnQXlTIYUQXQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR05MB8426.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39850400004)(136003)(396003)(346002)(376002)(366004)(1800799009)(186009)(451199024)(6512007)(66556008)(66476007)(41300700001)(86362001)(66946007)(31696002)(2906002)(316002)(8936002)(8676002)(2616005)(26005)(44832011)(36756003)(5660300002)(38100700002)(6666004)(966005)(478600001)(31686004)(6506007)(6486002)(45980500001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: jC7jDKelSkZvYtNkSf2TO3NYSDk6VQg5lOPcIdVwlHXbvEUczPNOgZTsqlvF99KIMbyQakYPmHUxEjPjw1K8tavbDSSPFtgyYhQEjzpJW+LLVbtlUVXZ5rUqEEW903a3DHWaxOFjZjz+amcmpxe9/dJDOOwXEprx8uQmsEcxeZGWqIg9BTJxaUYvfOzJ+eUQhnjYMrg57QA+cjzDFRGumXNe8B0uRuYbhWT3KcVUwg/0Nya993uvN93lBdOtWCuLZMHUotKY+bo+EJzx2oxN7y3CJ3mv2o8ZnwI0JSsdSNy2qEOgGOx8yxT2CwMbE2YHFBuL/s9ReZIBnWAII4nPZv5+PCCGP+xx554IKim24DuBtD3nQZLG50TMfrHEAhr9sbazp6vfyyhh1hlvPdzFUYbZdstq/KZPu600qrT9/YoQzpPi2TeSawTC4fX8B95mTUGcF3yHfhzrmJJpeeI5tOBrZQTXMjFM650iVKT9ovk8oUCZ1hGwV3znjsUWIi+cSaLJbMgkReVfTR2+OBBClLyDW06snWLttwjaHNuymqyeoBZGLm8pVJprfqYE24rRxOm8C8JywUTDfounn0z52aUBbPayxNed7TKBhaDnRt42fKA78n2GM3OdWpyv5vJa+4XwSd7l+65pzPyBihIsbQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR05MB8426.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(136003)(39850400004)(346002)(376002)(396003)(451199024)(1800799009)(186009)(6512007)(37006003)(6200100001)(316002)(36756003)(41300700001)(38100700002)(6862004)(4326008)(83380400001)(31696002)(2616005)(2906002)(8676002)(44832011)(5660300002)(86362001)(26005)(8936002)(6666004)(66476007)(966005)(6506007)(6486002)(66946007)(66556008)(478600001)(31686004)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8jvk5Croc8c0xRczjcv9szEKT6C2nApIIxwPrmv45nOU49lyHdoGOZZPJ/gF?=
- =?us-ascii?Q?N60gAXefFiXd7+K0aMrqCXUaCSVmSZnW6gM3W/JdEzuJgH1/5mpgUwLWNJTY?=
- =?us-ascii?Q?IstpNXYVUYL+p76mkQQ+DMfrqzMjhBkyflHnuCOIK63PxSc5rVtL733eOwJn?=
- =?us-ascii?Q?jlt0jvBWYMogi2g3VF7QvvruhW/JLu+8ppoSYxeqmvjc8UZqMowjxQKdYT5/?=
- =?us-ascii?Q?PWMHJMbMumJK8hwihB9q4+c0YUDN32Kx9gocg+Lp4Jdl1Ugnir0mQN5ghhP6?=
- =?us-ascii?Q?xVl1p7Zo5C5aTOKNccSLBPs01bQxORR+v8XjT6f9CysNBpiJho7bDp4xFC5R?=
- =?us-ascii?Q?sZ3o8w9wyJR81RMBf66mKMBuO/8O1+RI79ZBX+L5c88P/0XCSSyqZ5G29Sy5?=
- =?us-ascii?Q?2Fzn36OGwAnXpHpW9KLFObjowVQaN6d4dMl2DhzT4JS/mlDm2mAQSrU7FhD5?=
- =?us-ascii?Q?r6nZEXUr1IskcaLwjTAEZYlV1KqhiUm+y4TzU8IjFtXK2/N/Ez5JRkGSWXwK?=
- =?us-ascii?Q?twd4SIIlN5+mwAW7BL1diefjY4krL7RDe9jfiFhc7OZk/1346vcQaBTMcHH3?=
- =?us-ascii?Q?54LZV5Qa6dDV+UbmNQV5453thkaFnWMSFp5dZAFMceZXC+8wka1uqnxq1P/V?=
- =?us-ascii?Q?PeyqJ6nuwJ/jbH1KjfsuvQxj+WQxrddMTVkjNyUZL+XNyIxRriHxU4thPRSa?=
- =?us-ascii?Q?dgHwveTgx8gsPRpD4ufD3xcnKBqu/fYrthOwJsknSLGf6r3JpKm8s3J8MyZo?=
- =?us-ascii?Q?gJrRumkX0VhwU4e4xDaplk5auSdi95Q4o9ryRLgMqrLUcRmcZ+UNu5zyuZtw?=
- =?us-ascii?Q?/md9ubj5vxU9/V28cQt4fO4ivVIzucgOY3M0TkoTLNsRJtmtFle8zQ/DkTEl?=
- =?us-ascii?Q?rP4TvsvI3Z2NDSEAZ5S4KCS04+q2w/OiIVl4qEWhizxf42L1Ycw/BRGZh0XQ?=
- =?us-ascii?Q?QwsSbMYy5LacprdFOtDSuTKm51GtHlSWGq/l/gYmgh8h+MJ7vg9+OLkpHnkS?=
- =?us-ascii?Q?68PsaSaio8GyQGd+0T9tiqnjLUsRYqLnv0FRQBAXN4eVWy6GqOQPMlRh5YFn?=
- =?us-ascii?Q?ddptketsj3VZlPoHWm6WLy+SnO/07eJdJgxR/iJ4JnkEy3iZrvBGOIfZMZsM?=
- =?us-ascii?Q?fgVcGIay1NTtPkVIKffVfhr3q8JBtOzTnVsbdPVCI2dht720Fh/m2QTgpZBR?=
- =?us-ascii?Q?QzPkrndVYaoZgCXYU5Qm8gzOQaCwpOXxVIpXpUOeNFnlwMbnvVoEbFVv03UG?=
- =?us-ascii?Q?IdZJa8/mJSYo2lNh3nmTbtRzzx8SRpUdVBk+FElztzdsBM8S3CXKrdTOhHLR?=
- =?us-ascii?Q?LoeD9AzQ19WFXTQQTSy0k//CIfKfE/aBvXKAy8QCf9JRctGWOZlvv3Dq7joL?=
- =?us-ascii?Q?JB486+qhuMziB+SnoVDExdDyHVS8cgi8brSPYY/fJJnNs5FgL/bCUAn0PqPb?=
- =?us-ascii?Q?8CWZJhgJLEhe1eGoMelrhosxIo69JqULxL+4Cal8bAlgOUYr2olzkss58YhZ?=
- =?us-ascii?Q?QG/SkuuFKEO+8SUs+DIBRSfTmmfrZJuiTJ+E43lGXqmDJgN+zFuUDzyCD1Ku?=
- =?us-ascii?Q?Ir1g7LUFK78/U+q90NsSi1xP4DCK0qT9t/4wdCzyE2Z3NmNqhB32tJaJWDv7?=
- =?us-ascii?Q?MA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?w69rvNs0qRukOp1saV050+Lm6rRlDIH9yAx6V4kzJSFbcoLT4Nvq/AkhoZBC?=
+ =?us-ascii?Q?B73UI5qeUCzElKZZ9ERZeaHH2TH0rur3u5ufgbUIBrJ+ECVAjdCcY21RE+F6?=
+ =?us-ascii?Q?CLwK0vHzZgQmwqAR0kCjaEGF7q+E0oK1WxCRYu0vH4StiMZBfwmZBrlu/D9H?=
+ =?us-ascii?Q?cnzUuuRB5/P/aG3Mv7lAtwJbbKbqAHLPGy37g33+YSZtTotQ6WPV+7Q5DL8U?=
+ =?us-ascii?Q?uUJbfiNhpsg20HDWnJ/kwlkqMn5uIfTqb0dq4KEMp9ik3/a6uqwQ94rzpN3d?=
+ =?us-ascii?Q?0LNaHiBICKDmzIoovZ3mI2Jd4sumV92OqP7j327tTlKPoXWB/6Qyi5dMGuQy?=
+ =?us-ascii?Q?P3SH66FG/GUrxEvU1yDRGBR87eT+KzpUZwTp4DKlg6fkijjdbuvpcWeOYW0G?=
+ =?us-ascii?Q?UecH4HuF6f0hs67+h41ipCfLHAfOpIpj04wM5jxoioGsZQc+4SU8+22HKRn4?=
+ =?us-ascii?Q?mpzzaPWFlRn7TS0V2Qhu8Kr9zxN8/Y+v4RYOTyqhPnEOYVtkREaT6bLp47xX?=
+ =?us-ascii?Q?G+ectSoQE2CvANt8G3/ZVJ+Dj8bm6aBfbvToxw0ZyaxTYc5l9r7Um6HsK8aN?=
+ =?us-ascii?Q?5DdMn7jVyNuJaJEk3DmbiAczF3c/NEwghmY6UBY1+boDaHYAlpiz5ss3fyOg?=
+ =?us-ascii?Q?OwjIOSBtAZNoa+vW6v2Zhj8KKHwPDwybyLDVE6fXKdMHJDpWCBAOsn4mEGVr?=
+ =?us-ascii?Q?L8Lnn0QGH92VU25zLfJxnLxSGb19Pw+cmG/spz1Ye8GDZRWKsn+g9AkMpyPA?=
+ =?us-ascii?Q?DaYFdy9wqFPXPZ+XsG/RCOETH2foXJATTCjIyDdRaOKDGNoRoPfeTtsTjwNW?=
+ =?us-ascii?Q?36AsCjp7uPATZb9CK2Ulm60AaEP3K62cJ/VDwdiHCaDlH3X0V7nzHu5rInBs?=
+ =?us-ascii?Q?PAV92gAcdu4lws0jaAZK3B92dVFUe9Rz7x8DOfX1/lW1YX22rkow4fl5zzq3?=
+ =?us-ascii?Q?MsvcvKYPolNQ0n6n1NPMCQpY1RoUOED4ojh3//jtFFz402BX2k67bN02l6ns?=
+ =?us-ascii?Q?0QEbyZ3lT3eDHesirBt6BoEZ+MzX9wC0vk3BZPZTZUESxMDctWJWNJfgfbFX?=
+ =?us-ascii?Q?cu0ZjGIjxvdSv66Snh057OOptSKS5FX6fEhu4zEpWuSCic28xm5oEvR3Lc2r?=
+ =?us-ascii?Q?wgarqghvZPeD2FxOKIRANUJT6xEyvdVQqj4L+CGQqi3LL1TFGryNk0Texe9K?=
+ =?us-ascii?Q?vl25p/LUBfZMUcErWuSGmc8UFlCAlhjtUc0b6uDynwNcF1BP1i3tPdPHqae3?=
+ =?us-ascii?Q?TFUQVdtd2F+211+RqJhjr1bDG6DYqWX2edF8y/br/L01g4phdWpyfYDSyP8+?=
+ =?us-ascii?Q?+X29GyhwcqzryjHyx+UJmvirCxjKfQlI1FvfWRHxNu7+4mWF8ZJUWA8oDONA?=
+ =?us-ascii?Q?1UmaHm2kKd9lTjHoPT2eYTW0OLqv8znI1L6c2QgBPt85GkJgHYwq8WuMHdDV?=
+ =?us-ascii?Q?JQgTp2M04t+GpDwtgeQs2ts5VVtmGlrvfFMBhnvKls4ul/DGsGHAyIb5/9V1?=
+ =?us-ascii?Q?uo1waWLWRrka3x37jCue/YQQEi/LPLnXrvOIMG1wqVoKUJuAngHZ2bU/cJL8?=
+ =?us-ascii?Q?lXlMeuAZtw8Ki+/iPt5nyBxvroIAwzbcvB8vQskz4gxl+aBI9r5Jrow6Fa/W?=
+ =?us-ascii?Q?+g=3D=3D?=
 X-OriginatorOrg: sealevel.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ded15cf4-f7b0-487a-f8f6-08dbaa5a9127
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4d30baa1-572a-47f3-5c21-08dbaa5b3526
 X-MS-Exchange-CrossTenant-AuthSource: CO1PR05MB8426.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2023 19:43:36.3979
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2023 19:48:11.4424
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: e34c5615-b4e3-481c-abc8-602581f2e735
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BOmfqbFIpThFyqK0C9Xn2SdCvP4dNSwYrOYSXqIgDDMPic/3aFul3boG99tjmOPuvuSCVOVR1s1tUsoBPwBaQ/EPPm4hXrIoafj3fiThu/w=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR05MB7957
+X-MS-Exchange-CrossTenant-UserPrincipalName: DX45uu4IXXzv7EXDlLzOdLNhM0Zm8rAGFcKzLemz5FBwUIkeyU9/6q7PkpONHyUjI7m0F5cV2pyG8Xokx0bMmYp7UJZsHYi5uLBHvC8M16k=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR05MB10336
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Matthew Howell <matthew.howell@sealevel.com>
+From: Matthew Howell <matthew.howell@sealevel.com
 
-Hardware ID of Sealevel 7xxxC cards changed prior to release which 
-has rendered the previous commit redundant.
+Sealevel XR17V35X based cards utilize DTR to control RS-485 Enable, but 
+the current implementation in 8250_exar uses RTS for the auto-RS485-Enable 
+mode of the XR17V35X UARTs. This patch implements sealevel_rs485_config to 
+configure the XR17V35X for DTR control of RS485 Enable and assigns it to 
+Sealevel cards in pci_sealevel_setup.
 
-Revert "serial: exar: Add support for Sealevel 7xxxC serial cards"
-
-This reverts commit 14ee78d5932afeb710c8305196a676a715bfdea8.
+Fixed defines and various format issues from previous submissions.
 
 Link: 
-https://lore.kernel.org/linux-serial/687157c-3d18-e18b-1936-f3f5b98ae760@sealevel.com/
+https://lore.kernel.org/linux-serial/b2a721-227-14ef-75eb-36244ba2942@sealevel.com
 
-Fixes: 14ee78d5932a ("Add support for Sealevel 7xxxC serial cards")
 Signed-off-by: Matthew Howell <matthew.howell@sealevel.com>
 ---
 diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index 077c3ba3539e..3886f78ecbbf 100644
+index 3886f78ecbbf..6b28f5a3df17 100644
 --- a/drivers/tty/serial/8250/8250_exar.c
 +++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -47,12 +47,6 @@
- #define PCI_SUBDEVICE_ID_USR_2980		0x0128
- #define PCI_SUBDEVICE_ID_USR_2981		0x0129
+@@ -78,6 +78,9 @@
  
--#define PCI_DEVICE_ID_SEALEVEL_710xC		0x1001
--#define PCI_DEVICE_ID_SEALEVEL_720xC		0x1002
--#define PCI_DEVICE_ID_SEALEVEL_740xC		0x1004
--#define PCI_DEVICE_ID_SEALEVEL_780xC		0x1008
--#define PCI_DEVICE_ID_SEALEVEL_716xC		0x1010
--
- #define UART_EXAR_INT0		0x80
- #define UART_EXAR_8XMODE	0x88	/* 8X sampling rate select */
- #define UART_EXAR_SLEEP		0x8b	/* Sleep mode */
-@@ -652,8 +646,6 @@ exar_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
- 		nr_ports = BIT(((pcidev->device & 0x38) >> 3) - 1);
- 	else if (board->num_ports)
- 		nr_ports = board->num_ports;
--	else if (pcidev->vendor == PCI_VENDOR_ID_SEALEVEL)
--		nr_ports = pcidev->device & 0xff;
- 	else
- 		nr_ports = pcidev->device & 0x0f;
+ #define UART_EXAR_RS485_DLY(x)	((x) << 4)
  
-@@ -893,12 +885,6 @@ static const struct pci_device_id exar_pci_tbl[] = {
- 	EXAR_DEVICE(COMMTECH, 4224PCI335, pbn_fastcom335_4),
- 	EXAR_DEVICE(COMMTECH, 2324PCI335, pbn_fastcom335_4),
- 	EXAR_DEVICE(COMMTECH, 2328PCI335, pbn_fastcom335_8),
--
--	EXAR_DEVICE(SEALEVEL, 710xC, pbn_exar_XR17V35x),
--	EXAR_DEVICE(SEALEVEL, 720xC, pbn_exar_XR17V35x),
--	EXAR_DEVICE(SEALEVEL, 740xC, pbn_exar_XR17V35x),
--	EXAR_DEVICE(SEALEVEL, 780xC, pbn_exar_XR17V35x),
--	EXAR_DEVICE(SEALEVEL, 716xC, pbn_exar_XR17V35x),
- 	{ 0, }
++#define UART_EXAR_DLD				0x02 /* Divisor Fractional */
++#define UART_EXAR_DLD_485_POLARITY 	0x80 /* RS-485 Enable Signal Polarity */
++
+ /*
+  * IOT2040 MPIO wiring semantics:
+  *
+@@ -439,6 +442,34 @@ static int generic_rs485_config(struct uart_port *port, struct ktermios *termios
+ 	return 0;
+ }
+ 
++static int sealevel_rs485_config(struct uart_port *port, struct ktermios *termios,
++				struct serial_rs485 *rs485)
++{
++	u8 __iomem *p = port->membase;
++	u8 old_lcr;
++
++	generic_rs485_config(port, termios, rs485);
++
++	if (rs485->flags & SER_RS485_ENABLED) {
++		/* Set EFR[4]=1 to enable enhanced feature registers */
++		writeb(readb(p + UART_XR_EFR) | UART_EFR_ECB, p + UART_XR_EFR);
++
++		/* Set MCR to use DTR as Auto-RS485 Enable signal */
++		writeb(UART_MCR_OUT1, p + UART_MCR);
++
++		/* Store original LCR and set LCR[7]=1 to enable access to DLD register */
++		old_lcr = readb(p + UART_LCR);
++		writeb(old_lcr | UART_LCR_DLAB, p + UART_LCR);
++
++		/* Set DLD[7]=1 for inverted RS485 Enable logic */
++		writeb(readb(p + UART_EXAR_DLD) | UART_EXAR_DLD_485_POLARITY, p + UART_EXAR_DLD);
++
++		writeb(old_lcr, p + UART_LCR);
++    }
++
++	return 0;
++ }
++
+ static const struct serial_rs485 generic_rs485_supported = {
+ 	.flags = SER_RS485_ENABLED,
  };
- MODULE_DEVICE_TABLE(pci, exar_pci_tbl);
+@@ -744,6 +775,16 @@ static int __maybe_unused exar_resume(struct device *dev)
+ 	return 0;
+ }
+ 
++static int pci_sealevel_setup(struct exar8250 *priv, struct pci_dev *pcidev,
++		   struct uart_8250_port *port, int idx)
++{
++	int ret = pci_xr17v35x_setup(priv, pcidev, port, idx);
++
++	port->port.rs485_config = sealevel_rs485_config;
++
++	return ret;
++}
++
+ static SIMPLE_DEV_PM_OPS(exar_pci_pm, exar_suspend, exar_resume);
+ 
+ static const struct exar8250_board pbn_fastcom335_2 = {
+@@ -809,6 +850,17 @@ static const struct exar8250_board pbn_exar_XR17V8358 = {
+ 	.exit		= pci_xr17v35x_exit,
+ };
+ 
++static const struct exar8250_board pbn_sealevel = {
++	.setup		= pci_sealevel_setup,
++	.exit		= pci_xr17v35x_exit,
++};
++
++static const struct exar8250_board pbn_sealevel_16 = {
++	.num_ports	= 16,
++    .setup		= pci_sealevel_setup,
++	.exit		= pci_xr17v35x_exit,
++};
++
+ #define CONNECT_DEVICE(devid, sdevid, bd) {				\
+ 	PCI_DEVICE_SUB(							\
+ 		PCI_VENDOR_ID_EXAR,					\
+@@ -838,6 +890,15 @@ static const struct exar8250_board pbn_exar_XR17V8358 = {
+ 		(kernel_ulong_t)&bd			\
+ 	}
+ 
++#define SEALEVEL_DEVICE(devid, bd) {			\
++	PCI_DEVICE_SUB(					\
++		PCI_VENDOR_ID_EXAR,			\
++		PCI_DEVICE_ID_EXAR_##devid,		\
++		PCI_VENDOR_ID_SEALEVEL,			\
++		PCI_ANY_ID), 0, 0,	\
++		(kernel_ulong_t)&bd			\
++	}
++
+ static const struct pci_device_id exar_pci_tbl[] = {
+ 	EXAR_DEVICE(ACCESSIO, COM_2S, pbn_exar_XR17C15x),
+ 	EXAR_DEVICE(ACCESSIO, COM_4S, pbn_exar_XR17C15x),
+@@ -860,6 +921,12 @@ static const struct pci_device_id exar_pci_tbl[] = {
+ 	CONNECT_DEVICE(XR17C154, UART_4_485, pbn_connect),
+ 	CONNECT_DEVICE(XR17C158, UART_8_485, pbn_connect),
+ 
++	SEALEVEL_DEVICE(XR17V352, pbn_sealevel),
++	SEALEVEL_DEVICE(XR17V354, pbn_sealevel),
++	SEALEVEL_DEVICE(XR17V358, pbn_sealevel),
++	SEALEVEL_DEVICE(XR17V4358, pbn_sealevel_16),
++	SEALEVEL_DEVICE(XR17V8358, pbn_sealevel_16),
++
+ 	IBM_DEVICE(XR17C152, SATURN_SERIAL_ONE_PORT, pbn_exar_ibm_saturn),
+ 
+ 	/* USRobotics USR298x-OEM PCI Modems */
