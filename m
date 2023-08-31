@@ -2,113 +2,70 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8684BC83F2F
-	for <linux-serial@archiver.kernel.org>; Thu, 31 Aug 2023 18:33:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AF19C83F37
+	for <linux-serial@archiver.kernel.org>; Thu, 31 Aug 2023 18:33:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230395AbjHaSde (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 31 Aug 2023 14:33:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54430 "EHLO
+        id S233343AbjHaSdn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 31 Aug 2023 14:33:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233343AbjHaSdc (ORCPT
+        with ESMTP id S1347088AbjHaSdm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 31 Aug 2023 14:33:32 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1B7E65;
-        Thu, 31 Aug 2023 11:33:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1693506805; x=1725042805;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=px3FvT2RH7DAb7h5X2rn9hNLxQJQvAASvN2jtIrqh9o=;
-  b=AASgif7GedMH45eJW5YI5lYhSf+bVlvKGTOR1avgmDoWx6eQbu40itm8
-   +PsirLsTy1GjYGcvDyMveHMOGhp1e5x1fab0ZQ0BioKFBG0Y3zH3RFzT5
-   toYEIWW8IG0gYV0SHrx/n7/okGAe04UrH2djXDF1/k3JXZh6SgW6cfeyU
-   uVnH0EvIGYxILj8nNzFME2e/7wqDi8Xrh4EOUYtiCHhiy9UwMRLPGzoLs
-   vXP7HSin5KprmsW8+Z1KVZRR6xRS9evG3vyafCEF8ohSwrfsOGpfDfkin
-   5SojNl/Jt0Dq1WMuEgjycO5H+qJ4VlXRCwf4yzGohlc0iIC/CJBv8gW/T
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10819"; a="375969039"
-X-IronPort-AV: E=Sophos;i="6.02,217,1688454000"; 
-   d="scan'208";a="375969039"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2023 11:33:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10819"; a="863234151"
-X-IronPort-AV: E=Sophos;i="6.02,217,1688454000"; 
-   d="scan'208";a="863234151"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga004.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2023 11:33:17 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1qbmTh-005Tcq-0j;
-        Thu, 31 Aug 2023 21:33:13 +0300
-Date:   Thu, 31 Aug 2023 21:33:12 +0300
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        William Hubbs <w.d.hubbs@gmail.com>,
-        Chris Brannon <chris@the-brannons.com>,
-        Kirk Reiser <kirk@reisers.ca>,
-        Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, Max Staudt <max@enpas.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        Andreas Koensgen <ajk@comnets.uni-bremen.de>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>
-Subject: Re: [PATCH 16/36] tty: use u8 for chars
-Message-ID: <ZPDc6P2tp4lQzrKA@smile.fi.intel.com>
-References: <20230810091510.13006-1-jirislaby@kernel.org>
- <20230810091510.13006-17-jirislaby@kernel.org>
- <27366cad-30b2-e326-8d8f-c6fe17cf4899@linux.intel.com>
+        Thu, 31 Aug 2023 14:33:42 -0400
+Received: from zproxy1.foxvalley.net (zimbra.foxvalley.net [212.78.26.134])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id E5976E72
+        for <linux-serial@vger.kernel.org>; Thu, 31 Aug 2023 11:33:36 -0700 (PDT)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by zproxy1.foxvalley.net (Postfix) with ESMTP id 3CFB440EFB;
+        Thu, 31 Aug 2023 13:33:36 -0500 (CDT)
+Received: from zproxy1.foxvalley.net ([127.0.0.1])
+ by localhost (zproxy1.foxvalley.net [127.0.0.1]) (amavis, port 10032)
+ with ESMTP id cNXTA1Emtog0; Thu, 31 Aug 2023 13:33:34 -0500 (CDT)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by zproxy1.foxvalley.net (Postfix) with ESMTP id CD28240FBC;
+        Thu, 31 Aug 2023 13:33:34 -0500 (CDT)
+X-Virus-Scanned: amavis at zproxy1.foxvalley.net
+Received: from zproxy1.foxvalley.net ([127.0.0.1])
+ by localhost (zproxy1.foxvalley.net [127.0.0.1]) (amavis, port 10026)
+ with ESMTP id DHFq47AltzQd; Thu, 31 Aug 2023 13:33:34 -0500 (CDT)
+Received: from [192.168.1.3] (unknown [161.97.241.227])
+        by zproxy1.foxvalley.net (Postfix) with ESMTPSA id 9080E40EFB;
+        Thu, 31 Aug 2023 13:33:34 -0500 (CDT)
+Message-ID: <af06008a-f4d4-1c30-294a-b7af2d4cbc86@foxvalley.net>
+Date:   Thu, 31 Aug 2023 12:33:33 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <27366cad-30b2-e326-8d8f-c6fe17cf4899@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Subject: Re: [PATCH v3] tty/serial: create debugfs interface for UART register
+ tracing
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        ilpo.jarvinen@linux.intel.com
+References: <eb8a598c-414e-aecf-e903-e2c01db1979a@foxvalley.net>
+ <ZPDXHy6L7nTRx63l@smile.fi.intel.com>
+From:   Dan Raymond <draymond@foxvalley.net>
+In-Reply-To: <ZPDXHy6L7nTRx63l@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Aug 11, 2023 at 01:28:56PM +0300, Ilpo Järvinen wrote:
-> On Thu, 10 Aug 2023, Jiri Slaby (SUSE) wrote:
-
-...
-
-> > @@ -22,9 +22,9 @@ struct tty_buffer {
-> >  	unsigned long data[];
-> >  };
-> >  
-> > -static inline unsigned char *char_buf_ptr(struct tty_buffer *b, int ofs)
-> > +static inline u8 *char_buf_ptr(struct tty_buffer *b, int ofs)
-> >  {
-> > -	return ((unsigned char *)b->data) + ofs;
-> > +	return ((u8 *)b->data) + ofs;
-> >  }
+On 8/31/2023 12:08 PM, Andy Shevchenko wrote:
+> Warning: This email is from an unusual correspondent.
+> Warning: Make sure this is someone you trust.
 > 
-> Any particular reason why b->data is left unsigned long?
+> On Thu, Aug 24, 2023 at 02:59:01PM -0600, Dan Raymond wrote:
+>> Implement a UART register tracing facility using the debugfs.  This can be
+>> used as a "serial port sniffer" to monitor UART traffic and line settings
+>> with timestamps at microsecond granularity.  This can be useful for general
+>> serial port debugging or to debug the UART driver itself.
+> 
+>>  drivers/tty/serial/8250/8250_debug.c | 530 +++++++++++++++++++++++++++
+> 
+> My gosh. Why trace points and trace events can't be used for that?
+> 
 
-It might be the performance issue due to unaligned accesses on some
-architectures. But I'm just speculating...
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+I don't understand your post.  Are you saying there is already a way to
+trace UART register reads/writes without this patch?  Can you elaborate?
