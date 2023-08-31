@@ -2,100 +2,152 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 976D4C83F01
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Aug 2023 23:48:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 934A0C83F14
+	for <linux-serial@archiver.kernel.org>; Thu, 31 Aug 2023 02:33:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344384AbjH3XsH (ORCPT
+        id S1344079AbjHaCdw (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 30 Aug 2023 19:48:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54000 "EHLO
+        Wed, 30 Aug 2023 22:33:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344376AbjH3XsF (ORCPT
+        with ESMTP id S242302AbjHaCdu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 30 Aug 2023 19:48:05 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F7DAD2
-        for <linux-serial@vger.kernel.org>; Wed, 30 Aug 2023 16:48:02 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id d2e1a72fcca58-68becf931d0so169035b3a.3
-        for <linux-serial@vger.kernel.org>; Wed, 30 Aug 2023 16:48:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1693439282; x=1694044082; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=v6RCq4RR6/qHE9tOsGvlTBAcbhlgpYNipf9zLQX8qUM=;
-        b=INcI6ruN12bwO6BAu59eDJJxeneDqAcGayS6zLWJygScQSa63uK1InzPG1WAtR6v2F
-         WmygXpRGQyz8BkSPt47ClYb/53c+JwBB5NG1cieSUoa+LHIk1dyZL5MejcbdVjc7wA8e
-         PviuRlMaDjBk0OGFHAVRs6sZyamkRJO/22Qec=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693439282; x=1694044082;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=v6RCq4RR6/qHE9tOsGvlTBAcbhlgpYNipf9zLQX8qUM=;
-        b=QqeXLDaNg6NZQKWlaT8btMIPRn0jneq0PoIyQ2Er2KhPQbX71OznDszYul5wI5JMZb
-         4SUEtjvFLsJvmNAMJZcqOf7wLbccA/3VhuzeGMwB7+ogQ8pI9rqnvP0Lq8IWfYlmitys
-         hlSpHRXqGR2m3/D1rKs0npiyctvSbst54ca3evtxxcVnLO8NtFpQLJs9gtmbKrwjEBmc
-         Ubgf6Q/NrKcxZRzdEh7K5GWH8+b4XTXC7WjeH8FlqftaD6fPHA7XuNr34DgFuveIHdRQ
-         2dbySmmn7ZG4PJkI2jaCn2HflSMVC4KMEpO/bU+rXurdOrO2iNgxCe8PisCwTypJk3Zy
-         q/9Q==
-X-Gm-Message-State: AOJu0YyU//edTTvmHQt5MM8AWOP/EUhnxc+ihwX6hmonb6Be60IO/7fh
-        0zOJzua1baY0qs1/rPND5dbIKyMUac48eyGgAjE=
-X-Google-Smtp-Source: AGHT+IFanA60iEvBGRDslSUvyeX7/DTo8Q3p/34Deh3Ag4hejUKcEDO69EVdfLaKJXqfQAS0Xc7/xg==
-X-Received: by 2002:aa7:88c6:0:b0:68b:a137:3730 with SMTP id k6-20020aa788c6000000b0068ba1373730mr3705724pff.26.1693439282060;
-        Wed, 30 Aug 2023 16:48:02 -0700 (PDT)
-Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
-        by smtp.gmail.com with ESMTPSA id q13-20020a62e10d000000b006825003a276sm128202pfh.42.2023.08.30.16.48.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Aug 2023 16:48:01 -0700 (PDT)
-Date:   Wed, 30 Aug 2023 16:48:00 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Dan Raymond <draymond@foxvalley.net>
-Cc:     Azeem Shaikh <azeemshaikh38@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] vt: Fix potential read overflow of kernel memory
-Message-ID: <202308301646.8397A6A11@keescook>
-References: <20230830160410.3820390-1-azeemshaikh38@gmail.com>
- <2023083035-unpadded-amulet-8c7e@gregkh>
- <CADmuW3Wbgb7s+jRm8F0hcjzreWysVdzNvv778yUbGCOxAJHwjQ@mail.gmail.com>
- <202308301421.997C4034B5@keescook>
- <aa488b1d-51b2-7b55-7a8d-552306ca16dd@foxvalley.net>
+        Wed, 30 Aug 2023 22:33:50 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6031BCD6
+        for <linux-serial@vger.kernel.org>; Wed, 30 Aug 2023 19:33:47 -0700 (PDT)
+Received: from kwepemm600014.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4RblVm4K2SztS4H;
+        Thu, 31 Aug 2023 10:29:52 +0800 (CST)
+Received: from ubuntu1804.huawei.com (10.67.175.28) by
+ kwepemm600014.china.huawei.com (7.193.23.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.31; Thu, 31 Aug 2023 10:33:44 +0800
+From:   Yi Yang <yiyang13@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <jannh@google.com>
+CC:     <linux-serial@vger.kernel.org>, <guozihua@huawei.com>
+Subject: [PATCH V3 RESEND] tty: tty_jobctrl: fix pid memleak in disassociate_ctty()
+Date:   Thu, 31 Aug 2023 10:33:29 +0800
+Message-ID: <20230831023329.165737-1-yiyang13@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aa488b1d-51b2-7b55-7a8d-552306ca16dd@foxvalley.net>
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.28]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600014.china.huawei.com (7.193.23.54)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Aug 30, 2023 at 05:17:12PM -0600, Dan Raymond wrote:
-> In my opinion strlcpy() is being used correctly here as a defensive
-> precaution.  If the source string is larger than the destination buffer
-> it will truncate rather than corrupt kernel memory.  However the
-> return value of strlcpy() is being misused.  If truncation occurred
-> the copy_to_user() call will corrupt user memory instead.
-> 
-> I also agree that this is not currently a bug.  It is fragile and it
-> could break if someone added a very large string to the table.
-> 
-> Why not fix this by avoiding the redundant string copy?  How about
-> something like this:
-> 
-> ptr = func_table[kb_func] ? : "";
-> len = strlen(ptr);
-> 
-> if (len >= sizeof(user_kdgkb->kb_string))
-> 	return -ENOSPC;
-> 
-> if (copy_to_user(user_kdgkb->kb_string, ptr, len + 1))
-> 	return -EFAULT;
+There is a pid leakage:
+------------------------------
+unreferenced object 0xffff88810c181940 (size 224):
+  comm "sshd", pid 8191, jiffies 4294946950 (age 524.570s)
+  hex dump (first 32 bytes):
+    01 00 00 00 00 00 00 00 00 00 00 00 ad 4e ad de  .............N..
+    ff ff ff ff 6b 6b 6b 6b ff ff ff ff ff ff ff ff  ....kkkk........
+  backtrace:
+    [<ffffffff814774e6>] kmem_cache_alloc+0x5c6/0x9b0
+    [<ffffffff81177342>] alloc_pid+0x72/0x570
+    [<ffffffff81140ac4>] copy_process+0x1374/0x2470
+    [<ffffffff81141d77>] kernel_clone+0xb7/0x900
+    [<ffffffff81142645>] __se_sys_clone+0x85/0xb0
+    [<ffffffff8114269b>] __x64_sys_clone+0x2b/0x30
+    [<ffffffff83965a72>] do_syscall_64+0x32/0x80
+    [<ffffffff83a00085>] entry_SYSCALL_64_after_hwframe+0x61/0xc6
 
-This would work if not for func_buf_lock. The bounce buffer is used to
-avoid needing to hold the spin lock across copy_to_user.
+It turns out that there is a race condition between disassociate_ctty() and
+tty_signal_session_leader(), which caused this leakage.
 
+The pid memleak is triggered by the following race:
+task[sshd]                     task[bash]
+-----------------------        -----------------------
+                               disassociate_ctty();
+                               spin_lock_irq(&current->sighand->siglock);
+                               put_pid(current->signal->tty_old_pgrp);
+                               current->signal->tty_old_pgrp = NULL;
+                               tty = tty_kref_get(current->signal->tty);
+                               spin_unlock_irq(&current->sighand->siglock);
+tty_vhangup();
+tty_lock(tty);
+...
+tty_signal_session_leader();
+spin_lock_irq(&p->sighand->siglock);
+...
+if (tty->ctrl.pgrp) //tty->ctrl.pgrp is not NULL
+p->signal->tty_old_pgrp = get_pid(tty->ctrl.pgrp); //An extra get
+spin_unlock_irq(&p->sighand->siglock);
+...
+tty_unlock(tty);
+                               if (tty) {
+                                   tty_lock(tty);
+                                   ...
+                                   put_pid(tty->ctrl.pgrp);
+                                   tty->ctrl.pgrp = NULL; //It's too late
+                                   ...
+                                   tty_unlock(tty);
+                               }
+
+The issue is believed to be introduced by commit c8bcd9c5be24 ("tty:
+Fix ->session locking") who moves the unlock of siglock in
+disassociate_ctty() above "if (tty)", making a small window allowing
+tty_signal_session_leader() to kick in. It can be easily reproduced by
+adding a delay before "if (tty)" and at the entrance of
+tty_signal_session_leader().
+
+To fix this issue, we move "put_pid(current->signal->tty_old_pgrp)" after
+"tty->ctrl.pgrp = NULL".
+
+Fixes: c8bcd9c5be24 ("tty: Fix ->session locking")
+Signed-off-by: Yi Yang <yiyang13@huawei.com>
+Co-developed-by: GUO Zihua <guozihua@huawei.com>
+Signed-off-by: GUO Zihua <guozihua@huawei.com>
+---
+v3:Make the description of the commit message more correct and add comments
+   to the code.
+v2:Completely refactor the solution, avoid the use of PF_EXITING flag and
+   do put_pid() in disassociate_ctty() again instead.
+---
+ drivers/tty/tty_jobctrl.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/tty_jobctrl.c b/drivers/tty/tty_jobctrl.c
+index 0d04287da098..ef8741c3e662 100644
+--- a/drivers/tty/tty_jobctrl.c
++++ b/drivers/tty/tty_jobctrl.c
+@@ -300,12 +300,7 @@ void disassociate_ctty(int on_exit)
+ 		return;
+ 	}
+ 
+-	spin_lock_irq(&current->sighand->siglock);
+-	put_pid(current->signal->tty_old_pgrp);
+-	current->signal->tty_old_pgrp = NULL;
+-	tty = tty_kref_get(current->signal->tty);
+-	spin_unlock_irq(&current->sighand->siglock);
+-
++	tty = get_current_tty();
+ 	if (tty) {
+ 		unsigned long flags;
+ 
+@@ -320,6 +315,16 @@ void disassociate_ctty(int on_exit)
+ 		tty_kref_put(tty);
+ 	}
+ 
++	/* If tty->ctrl.pgrp is not NULL, it may be assigned to
++	 * current->signal->tty_old_pgrp in a race condition, and
++	 * cause pid memleak. Release current->signal->tty_old_pgrp
++	 * after tty->ctrl.pgrp set to NULL.
++	 */
++	spin_lock_irq(&current->sighand->siglock);
++	put_pid(current->signal->tty_old_pgrp);
++	current->signal->tty_old_pgrp = NULL;
++	spin_unlock_irq(&current->sighand->siglock);
++
+ 	/* Now clear signal->tty under the lock */
+ 	read_lock(&tasklist_lock);
+ 	session_clear_tty(task_session(current));
 -- 
-Kees Cook
+2.17.1
+
