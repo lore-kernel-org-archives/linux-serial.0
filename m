@@ -2,101 +2,152 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F77ACA0FE2
-	for <linux-serial@archiver.kernel.org>; Thu, 31 Aug 2023 23:08:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F678CA0FE2
+	for <linux-serial@archiver.kernel.org>; Thu, 31 Aug 2023 23:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232621AbjHaXId (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 31 Aug 2023 19:08:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60978 "EHLO
+        id S243929AbjHaXRs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 31 Aug 2023 19:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233548AbjHaXId (ORCPT
+        with ESMTP id S230143AbjHaXRs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 31 Aug 2023 19:08:33 -0400
-Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22426FD;
-        Thu, 31 Aug 2023 16:08:30 -0700 (PDT)
-Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-1c4c5375329so879411fac.2;
-        Thu, 31 Aug 2023 16:08:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1693523309; x=1694128109; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=hAkL29w30IBhvvJdHJX9nCTc0zMhLdBZUZnVSQ/ZN/4=;
-        b=O4VegZeV/fwj/XtGWWvqZSOoMCF2Wwx77aV5ZjNmQQM7U5p1occ2pJ9nNpAXmames/
-         O0KycrPiK9RpRsl6ZHm9uq6aJTkuaRG+46eMYVp9L1f5TIbTeKyPDd1jDIcALfZOuIGx
-         EK8lPSx1m+fi0Wa1V6ubnB5ePbjdR4sMSfING2T3iKD9wvSv37dMpOhLuaCLqn7HZIPD
-         O/4dZmY7UB8JHyGpmQIUN8llKzbqlg5NAeyHyQOc+ZU9rAEsoz7ljadj4bzGS3HQejLa
-         5cBEjPAEtMtwgOILpVSHqy2pK5hw6ndWuUhhcIfm2V6UFeHbnkxY6nN3YKbnDdxH36OM
-         4/Iw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693523309; x=1694128109;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=hAkL29w30IBhvvJdHJX9nCTc0zMhLdBZUZnVSQ/ZN/4=;
-        b=UNjt+1eIgqfS8BXuOUJPfzqMm+aKJ6dYBOAv7YhwM6aYcDRw9aAxFN2armlbbVA+Dv
-         ++mt7mh9w2hwyYHrSqAB4Xi+2Zo6/Qz8O5LatyI+Gq8NxidgNtWq5sRB2yH1I3VElz8+
-         SCW79AeFSrNOqNXNUMt57/53cKeCYLLIxqCPx/OazJwAW/Yn8b+87C9SbHXcYiW1kh7N
-         kgPsmSvDEP+F1i3wyVWNkHqHaxFree5IMfEoS4vi9LQvedUNy2ms567/9so+p2sjFz6S
-         y84rN5ilciVnENxQsqtc4fd0RIvVOl9n0DF5cW1K9IbIhFy3bBWkKG4/ZBe3IysohHGT
-         wcUQ==
-X-Gm-Message-State: AOJu0Yy/0VtyjllWgYPsbb/AaIhZ1OWH+jfoC8Wvuu2qcot/KgruLDHy
-        SJ1Mdc3Gd6LbAFfhn0Q9q9Y=
-X-Google-Smtp-Source: AGHT+IH9UFscX0xilqqMkKi9iMSnO4T6uBbGhY42CzpADPjsgKOguQZm/EO+fSGK/CCUfJCr0mruGQ==
-X-Received: by 2002:a05:6870:b687:b0:1bf:8a8:dfa with SMTP id cy7-20020a056870b68700b001bf08a80dfamr1004284oab.11.1693523309257;
-        Thu, 31 Aug 2023 16:08:29 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id d4-20020a0cdb04000000b0064f378f89a7sm977651qvk.73.2023.08.31.16.08.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Aug 2023 16:08:28 -0700 (PDT)
-Message-ID: <48812e7c-1bbf-0084-41be-f62d2cc60231@gmail.com>
-Date:   Thu, 31 Aug 2023 16:08:17 -0700
+        Thu, 31 Aug 2023 19:17:48 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B267CE8
+        for <linux-serial@vger.kernel.org>; Thu, 31 Aug 2023 16:17:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1693523865; x=1725059865;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ufaSvDzWcx1IqFT9gJQn85A4B5g669lQwFUZiLgcl/4=;
+  b=gKqHlkIkzpiBz0nNxTeHra6GApbW970eFhyI/G4zEpnpGQa3sswY1y2V
+   /D2JH7YoHBnRgYh/nZzwH6Ebp+QCE2weYnlp4LlxMj9ckuIHBRM3M5jns
+   fpfthiNakgNwFEIu54qRy1Mgq0vI+hB1eQtjxC/Xb90M4vqu9p9uKwnt8
+   UHMpAmihMyRe3oH/DQlJYzoXxuhlApL9quO8Zt5Mz+ft6WoTry8Lysi6p
+   tFMB0DnzFz45vDu27qArxPY0P/BJ4XXTDGGKUUr8gDARkQf4x46loRbbV
+   Pb8lL3OmR9LRkxqc/nlV85fZ8pWnwagNoloL/uwpKAHN+AVr4TvnL4XCy
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10819"; a="374993787"
+X-IronPort-AV: E=Sophos;i="6.02,218,1688454000"; 
+   d="scan'208";a="374993787"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2023 16:17:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10819"; a="1070505374"
+X-IronPort-AV: E=Sophos;i="6.02,218,1688454000"; 
+   d="scan'208";a="1070505374"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2023 16:17:43 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1qbquy-005WiA-1K;
+        Fri, 01 Sep 2023 02:17:40 +0300
+Date:   Fri, 1 Sep 2023 02:17:40 +0300
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     Matthew Howell <matthew.howell@sealevel.com>
+Cc:     linux-serial@vger.kernel.org, jeff.baldwin@sealevel.com,
+        james.olson@sealevel.com, ryan.wenglarz@sealevel.com,
+        darren.beeson@sealevel.com, ilpo.jarvinen@linux.intel.com
+Subject: Re: [PATCH V3 2/2] serial: exar: Add RS-485 support for Sealevel
+ XR17V35X based cards
+Message-ID: <ZPEflBvmd5R/kImw@smile.fi.intel.com>
+References: <b0b1863f-40f4-d78e-7bb7-dc4312449d9e@sealevel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [PATCH v1 1/1] serial: 8250_port: Check IRQ data before use
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc:     Jiri Slaby <jirislaby@kernel.org>
-References: <20230831222555.614426-1-andriy.shevchenko@linux.intel.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230831222555.614426-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b0b1863f-40f4-d78e-7bb7-dc4312449d9e@sealevel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 8/31/23 15:25, Andy Shevchenko wrote:
-> In case the leaf driver wants to use IRQ polling (irq = 0) and
-> IIR register shows that an interrupt happened in the 8250 hardware
-> the IRQ data can be NULL. In such a case we need to skip the wake
-> event as we came to this path from the timer interrupt and quite
-> likely system is already awake.
+On Thu, Aug 31, 2023 at 03:48:08PM -0400, Matthew Howell wrote:
+> From: Matthew Howell <matthew.howell@sealevel.com
+> 
+> Sealevel XR17V35X based cards utilize DTR to control RS-485 Enable, but 
+> the current implementation in 8250_exar uses RTS for the auto-RS485-Enable 
+> mode of the XR17V35X UARTs. This patch implements sealevel_rs485_config to 
 
-I suppose that is fair to say.
+Please, read Submitting Patches documentation, in particular find there
+the paragraph that matches to "This patch". With that, amend commit message
+accordingly.
+
+We refer to the functions as func() (note the parentheses).
+
+> configure the XR17V35X for DTR control of RS485 Enable and assigns it to 
+
+Your lines have trailing whitespaces, please get rid of them.
+
+> Sealevel cards in pci_sealevel_setup.
+
+> Fixed defines and various format issues from previous submissions.
+
+What does this mean? If it's a changelog, use the correct place for it
+(see below).
 
 > 
-> Without this fix we have got an Oops:
-> 
->      serial8250: ttyS0 at I/O 0x3f8 (irq = 0, base_baud = 115200) is a 16550A
->      ...
->      BUG: kernel NULL pointer dereference, address: 0000000000000010
->      RIP: 0010:serial8250_handle_irq+0x7c/0x240
->      Call Trace:
->       ? serial8250_handle_irq+0x7c/0x240
->       ? __pfx_serial8250_timeout+0x10/0x10
-> 
-> Fixes: 0ba9e3a13c6a ("serial: 8250: Add missing wakeup event reporting")
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Link: 
+> https://lore.kernel.org/linux-serial/b2a721-227-14ef-75eb-36244ba2942@sealevel.com
 
-Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
+Tags must occupy a single line: a single line per each tag.
 
-Thanks Andy!
+> 
+
+Tag block must have no blank lines.
+
+Most of these is described in the above mentioned documentation.
+
+> Signed-off-by: Matthew Howell <matthew.howell@sealevel.com>
+> ---
+
+Here you add comments and/or changelog.
+
+> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+> index 3886f78ecbbf..6b28f5a3df17 100644
+
+...
+
+> +#define UART_EXAR_DLD				0x02 /* Divisor Fractional */
+> +#define UART_EXAR_DLD_485_POLARITY 	0x80 /* RS-485 Enable Signal Polarity */
+
+Mixed TABs and spaces in a wrong order, usually we use only TABs in such cases.
+
+...
+
+> +static int sealevel_rs485_config(struct uart_port *port, struct ktermios *termios,
+> +				struct serial_rs485 *rs485)
+> +{
+> +	u8 __iomem *p = port->membase;
+> +	u8 old_lcr;
+> +
+> +	generic_rs485_config(port, termios, rs485);
+
+> +	if (rs485->flags & SER_RS485_ENABLED) {
+
+Seems you haven't seen / ignored my comments. Please, read my previous reply.
+
+> +		/* Set EFR[4]=1 to enable enhanced feature registers */
+> +		writeb(readb(p + UART_XR_EFR) | UART_EFR_ECB, p + UART_XR_EFR);
+> +
+> +		/* Set MCR to use DTR as Auto-RS485 Enable signal */
+> +		writeb(UART_MCR_OUT1, p + UART_MCR);
+> +
+> +		/* Store original LCR and set LCR[7]=1 to enable access to DLD register */
+> +		old_lcr = readb(p + UART_LCR);
+> +		writeb(old_lcr | UART_LCR_DLAB, p + UART_LCR);
+> +
+> +		/* Set DLD[7]=1 for inverted RS485 Enable logic */
+> +		writeb(readb(p + UART_EXAR_DLD) | UART_EXAR_DLD_485_POLARITY, p + UART_EXAR_DLD);
+> +
+> +		writeb(old_lcr, p + UART_LCR);
+> +    }
+> +
+> +	return 0;
+> + }
+
 -- 
-Florian
+With Best Regards,
+Andy Shevchenko
+
 
