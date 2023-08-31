@@ -2,51 +2,46 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 953C5C83F30
-	for <linux-serial@archiver.kernel.org>; Thu, 31 Aug 2023 05:32:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA0DCC83F2E
+	for <linux-serial@archiver.kernel.org>; Thu, 31 Aug 2023 05:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343815AbjHaFcv (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 31 Aug 2023 01:32:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59378 "EHLO
+        id S238634AbjHaFpN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 31 Aug 2023 01:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346067AbjHaFc3 (ORCPT
+        with ESMTP id S229898AbjHaFpN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 31 Aug 2023 01:32:29 -0400
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C76DEE43;
-        Wed, 30 Aug 2023 22:32:21 -0700 (PDT)
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-52a250aa012so436105a12.3;
-        Wed, 30 Aug 2023 22:32:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693459940; x=1694064740;
-        h=content-transfer-encoding:in-reply-to:subject:from:content-language
-         :references:cc:to:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=pWVU2emzKXoGwZDt9vJyrPNkV5rPwoUzokQnAVFFcdk=;
-        b=j/bxe/J/h8og76bfu49y9jrnVxfMLzgjdmby1m6K+Jzv9QZK0FPvIvkOKK7f18FLjM
-         t9N7ax0mHh9SNEKie23PBH66iRP2aW7VFokvt/3p5Qp+gsIFwVW0GbGCS4safwqQ6OP5
-         T1yDwiw3I4yVvjE7Ct51r7GOAHp6u8wAMOH5XMv/Gd1ECMXwlDyVT0H82oeSzaj5Erci
-         4plkq9+6FggccJZOzSr5rjYbkRxmFTq8/x5JIXQmSDcWSmJSiCSu3bhvQWpeRFCu178J
-         ymltEeeSz+Q+OiNIdv5Swz9AqaRWegmi22AzAzhwcYyjB6kenXSaLMfnptwd6Pa9EnMr
-         bKHA==
-X-Gm-Message-State: AOJu0Yw2Ww5UDh5RKba6SA4K8S0sCjFBVohgvoIcMZ5VCH/mP7nWRPz+
-        LA38xudAN8+r2eVGl/OcTtwG7Q1wNn4o7g==
-X-Google-Smtp-Source: AGHT+IEerIrNC2i8KrayM6DoN13BvZp7dqB6SxVq5E6w4q5Lp4zn5tDbHt5z7LIRVBCL0epVyoHTGw==
-X-Received: by 2002:a17:906:310d:b0:9a5:b875:d76 with SMTP id 13-20020a170906310d00b009a5b8750d76mr3157954ejx.28.1693459939968;
-        Wed, 30 Aug 2023 22:32:19 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id l18-20020a1709066b9200b009930308425csm339562ejr.31.2023.08.30.22.32.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Aug 2023 22:32:19 -0700 (PDT)
-Message-ID: <c44d1f9f-90e0-3e83-8394-854feb449539@kernel.org>
-Date:   Thu, 31 Aug 2023 07:32:18 +0200
+        Thu, 31 Aug 2023 01:45:13 -0400
+Received: from zproxy1.foxvalley.net (zimbra.foxvalley.net [212.78.26.134])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id A9A11E0;
+        Wed, 30 Aug 2023 22:45:10 -0700 (PDT)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by zproxy1.foxvalley.net (Postfix) with ESMTP id 15E3440042;
+        Thu, 31 Aug 2023 00:45:10 -0500 (CDT)
+Received: from zproxy1.foxvalley.net ([127.0.0.1])
+ by localhost (zproxy1.foxvalley.net [127.0.0.1]) (amavis, port 10032)
+ with ESMTP id 6M-gKkwQniDA; Thu, 31 Aug 2023 00:45:09 -0500 (CDT)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by zproxy1.foxvalley.net (Postfix) with ESMTP id B73E040F9F;
+        Thu, 31 Aug 2023 00:45:09 -0500 (CDT)
+X-Virus-Scanned: amavis at zproxy1.foxvalley.net
+Received: from zproxy1.foxvalley.net ([127.0.0.1])
+ by localhost (zproxy1.foxvalley.net [127.0.0.1]) (amavis, port 10026)
+ with ESMTP id pwh8NBh1opZu; Thu, 31 Aug 2023 00:45:09 -0500 (CDT)
+Received: from [192.168.1.3] (unknown [161.97.241.227])
+        by zproxy1.foxvalley.net (Postfix) with ESMTPSA id 54CA740042;
+        Thu, 31 Aug 2023 00:45:09 -0500 (CDT)
+Message-ID: <82b80554-2042-7dcb-83c5-6a6b640c71be@foxvalley.net>
+Date:   Wed, 30 Aug 2023 23:45:07 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.14.0
-To:     Kees Cook <keescook@chromium.org>,
-        Azeem Shaikh <azeemshaikh38@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Subject: Re: [PATCH] vt: Fix potential read overflow of kernel memory
+Content-Language: en-US
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Azeem Shaikh <azeemshaikh38@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-serial@vger.kernel.org,
         Kefeng Wang <wangkefeng.wang@huawei.com>,
@@ -55,97 +50,54 @@ References: <20230830160410.3820390-1-azeemshaikh38@gmail.com>
  <2023083035-unpadded-amulet-8c7e@gregkh>
  <CADmuW3Wbgb7s+jRm8F0hcjzreWysVdzNvv778yUbGCOxAJHwjQ@mail.gmail.com>
  <202308301421.997C4034B5@keescook>
-Content-Language: en-US
-From:   Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH] vt: Fix potential read overflow of kernel memory
-In-Reply-To: <202308301421.997C4034B5@keescook>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+ <aa488b1d-51b2-7b55-7a8d-552306ca16dd@foxvalley.net>
+ <202308301646.8397A6A11@keescook>
+From:   Dan Raymond <draymond@foxvalley.net>
+In-Reply-To: <202308301646.8397A6A11@keescook>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 30. 08. 23, 23:28, Kees Cook wrote:
-> On Wed, Aug 30, 2023 at 03:25:54PM -0400, Azeem Shaikh wrote:
->> On Wed, Aug 30, 2023 at 1:57 PM Greg Kroah-Hartman
->> <gregkh@linuxfoundation.org> wrote:
->>>
->>> On Wed, Aug 30, 2023 at 04:04:10PM +0000, Azeem Shaikh wrote:
->>>> strlcpy() reads the entire source buffer first.
->>>> This read may exceed the destination size limit if
->>>> a source string is not NUL-terminated [1].
->>>
->>> But that's not the case here, right?  So your "potential read overflow"
->>> isn't relevant here.
->>>
->>>> The copy_to_user() call uses @len returned from strlcpy() directly
->>>> without checking its value. This could potentially lead to read
->>>> overflow.
->>>
->>> But can it?  How?
->>>
+On 8/30/2023 5:48 PM, Kees Cook wrote:
+> Warning: This email is from an unusual correspondent.
+> Warning: Make sure this is someone you trust.
+> 
+> On Wed, Aug 30, 2023 at 05:17:12PM -0600, Dan Raymond wrote:
+>> In my opinion strlcpy() is being used correctly here as a defensive
+>> precaution.  If the source string is larger than the destination buffer
+>> it will truncate rather than corrupt kernel memory.  However the
+>> return value of strlcpy() is being misused.  If truncation occurred
+>> the copy_to_user() call will corrupt user memory instead.
 >>
->> The case I was considering is when the null-terminated hardcoded
->> string @func_table[kb_func] has length @new_len > @len. In this case,
->> strlcpy() will assign @len = @new_len and copy_to_user() would read
->> @new_len from the kmalloc-ed memory of @len. This is the potential
->> read overflow I was referring to. Let me know if I'm mistaken.
+>> I also agree that this is not currently a bug.  It is fragile and it
+>> could break if someone added a very large string to the table.
+>>
+>> Why not fix this by avoiding the redundant string copy?  How about
+>> something like this:
+>>
+>> ptr = func_table[kb_func] ? : "";
+>> len = strlen(ptr);
+>>
+>> if (len >= sizeof(user_kdgkb->kb_string))
+>> 	return -ENOSPC;
+>>
+>> if (copy_to_user(user_kdgkb->kb_string, ptr, len + 1))
+>> 	return -EFAULT;
 > 
-> First there is:
+> This would work if not for func_buf_lock. The bounce buffer is used to
+> avoid needing to hold the spin lock across copy_to_user.
 > 
-> ssize_t len = sizeof(user_kdgkb->kb_string);
-> 
-> "struct user_kdgkb" is UAPI (therefore unlikely to change), and kb_string
-> is 512:
-> 
-> struct kbsentry {
->          unsigned char kb_func;
->          unsigned char kb_string[512];
-> };
-> 
-> Then we do:
-> 
->                  len = strlcpy(kbs, func_table[kb_func] ? : "", len);
-> 
-> This is the anti-pattern (take the length of the _source_) we need to
-> remove.
 
-But len is the length of kbs, i.e. the destination. Or what am I missing?
+Ah you're right.  Thanks for setting me straight.  Now I realize that my
+entire assessment was wrong.  The original author was not using strlcpy()
+as a defensive measure to prevent a buffer overflow.  He was using it so
+that he could create a copy of the string and measure its length using
+only one pass.  This minimizes the time spent holding the spinlock.
 
-                 kbs = kmalloc(len, GFP_KERNEL);
-                 len = strlcpy(kbs, func_table[kb_func] ? : "", len);
-
-> However, func_table[] is made up of either %NUL-terminated
-> strings:
-> 
-> char func_buf[] = {
->          '\033', '[', '[', 'A', 0,
->          '\033', '[', '[', 'B', 0,
-> ...
-> char *func_table[MAX_NR_FUNC] = {
->          func_buf + 0,
->          func_buf + 5,
-> ...
-> 
-> Or a NULL address itself. The ?: operator handles the NULL case, so
-> "len" can only ever be 0 through the longest string in func_buf. So it's
-> what I'd call "accidentally correct". i.e. it's using a fragile
-> anti-pattern, but in this case everything is hard-coded and less than
-> 512.
-> 
-> Regardless, we need to swap for a sane pattern, which you've done. But
-> the commit log is misleading, so it needs some more detail. :)
-
-I am still missing what is wrong in the above code with strlcpy(). The 
-dest is deliberately made as long as the source, so the returned len is 
-never less then the passed len. No checking needed IMO. Perhaps, we 
-might switch to strcpy()?
-
-FWIW I introduced this in commit 82e61c3909db5. So if it needs fixing, 
-the patch deserves a Fixes: 82e61c3909db5 tag.
-
-thanks,
--- 
-js
-suse labs
-
+The surrounding code was written such that a buffer overflow is
+impossible.  No additional checks are needed.  The proposed patch is
+unnecessary.  But at least it preserves the spirit of the original
+author's code by performing only one pass of the source string
+while holding the spinlock.
