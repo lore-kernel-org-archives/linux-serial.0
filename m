@@ -2,152 +2,87 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F678CA0FE2
-	for <linux-serial@archiver.kernel.org>; Thu, 31 Aug 2023 23:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DE81CA0FE1
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Sep 2023 04:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243929AbjHaXRs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 31 Aug 2023 19:17:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37224 "EHLO
+        id S232185AbjIAErg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 1 Sep 2023 00:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbjHaXRs (ORCPT
+        with ESMTP id S232098AbjIAErg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 31 Aug 2023 19:17:48 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B267CE8
-        for <linux-serial@vger.kernel.org>; Thu, 31 Aug 2023 16:17:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1693523865; x=1725059865;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ufaSvDzWcx1IqFT9gJQn85A4B5g669lQwFUZiLgcl/4=;
-  b=gKqHlkIkzpiBz0nNxTeHra6GApbW970eFhyI/G4zEpnpGQa3sswY1y2V
-   /D2JH7YoHBnRgYh/nZzwH6Ebp+QCE2weYnlp4LlxMj9ckuIHBRM3M5jns
-   fpfthiNakgNwFEIu54qRy1Mgq0vI+hB1eQtjxC/Xb90M4vqu9p9uKwnt8
-   UHMpAmihMyRe3oH/DQlJYzoXxuhlApL9quO8Zt5Mz+ft6WoTry8Lysi6p
-   tFMB0DnzFz45vDu27qArxPY0P/BJ4XXTDGGKUUr8gDARkQf4x46loRbbV
-   Pb8lL3OmR9LRkxqc/nlV85fZ8pWnwagNoloL/uwpKAHN+AVr4TvnL4XCy
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10819"; a="374993787"
-X-IronPort-AV: E=Sophos;i="6.02,218,1688454000"; 
-   d="scan'208";a="374993787"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2023 16:17:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10819"; a="1070505374"
-X-IronPort-AV: E=Sophos;i="6.02,218,1688454000"; 
-   d="scan'208";a="1070505374"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2023 16:17:43 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1qbquy-005WiA-1K;
-        Fri, 01 Sep 2023 02:17:40 +0300
-Date:   Fri, 1 Sep 2023 02:17:40 +0300
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+        Fri, 1 Sep 2023 00:47:36 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4E75EA
+        for <linux-serial@vger.kernel.org>; Thu, 31 Aug 2023 21:47:32 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 9C75C80BB;
+        Fri,  1 Sep 2023 04:47:31 +0000 (UTC)
+Date:   Fri, 1 Sep 2023 07:47:30 +0300
+From:   Tony Lindgren <tony@atomide.com>
 To:     Matthew Howell <matthew.howell@sealevel.com>
-Cc:     linux-serial@vger.kernel.org, jeff.baldwin@sealevel.com,
-        james.olson@sealevel.com, ryan.wenglarz@sealevel.com,
-        darren.beeson@sealevel.com, ilpo.jarvinen@linux.intel.com
-Subject: Re: [PATCH V3 2/2] serial: exar: Add RS-485 support for Sealevel
- XR17V35X based cards
-Message-ID: <ZPEflBvmd5R/kImw@smile.fi.intel.com>
-References: <b0b1863f-40f4-d78e-7bb7-dc4312449d9e@sealevel.com>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        ryan.wenglarz@sealevel.com, james.olson@sealevel.com
+Subject: Re: [PATCH] serial: Revert serial: core: Fix serial core port id to
+ not use port->line
+Message-ID: <20230901044730.GL11662@atomide.com>
+References: <98a891fd-5a1f-6568-a12c-28577126a42@sealevel.com>
+ <20230829035245.GF11662@atomide.com>
+ <511f2dcf-f637-695-8e81-8eaa3735ba88@sealevel.com>
+ <20230829201557.GK11662@atomide.com>
+ <472581f-e7f6-6cc-c749-5be16e4fe9af@sealevel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b0b1863f-40f4-d78e-7bb7-dc4312449d9e@sealevel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <472581f-e7f6-6cc-c749-5be16e4fe9af@sealevel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 31, 2023 at 03:48:08PM -0400, Matthew Howell wrote:
-> From: Matthew Howell <matthew.howell@sealevel.com
+* Matthew Howell <matthew.howell@sealevel.com> [230831 14:58]:
+> On Tue, 29 Aug 2023, Tony Lindgren wrote:
+> > If it is a port_id conflict I'm not sure why commit 3d9e6f556e23 is not
+> > working for your as it has commit a4a79e03bab5 ("serial: core: Revert
+> > port_id use"). Care to check that again, or maybe try with v6.5 with just
+> > the commit below reverted?
+> > 
+> > 04c7f60ca477 ("serial: core: Fix serial core port id, including multiport devices")
 > 
-> Sealevel XR17V35X based cards utilize DTR to control RS-485 Enable, but 
-> the current implementation in 8250_exar uses RTS for the auto-RS485-Enable 
-> mode of the XR17V35X UARTs. This patch implements sealevel_rs485_config to 
+> Just tried that, but no difference. Same error.
 
-Please, read Submitting Patches documentation, in particular find there
-the paragraph that matches to "This patch". With that, amend commit message
-accordingly.
+OK thanks to testing it. So it's starting to look like the issue is
+somehow related to the serial8250_setup_port() change in commit d962de6ae51f
+("serial: core: Fix serial core port id to not use port->line").
 
-We refer to the functions as func() (note the parentheses).
+The experimental patch below should confirm if the issue is related to the
+port_id usage or serial8250_setup_port(). Care to give this a try against
+v6.5 without other patches?
 
-> configure the XR17V35X for DTR control of RS485 Enable and assigns it to 
-
-Your lines have trailing whitespaces, please get rid of them.
-
-> Sealevel cards in pci_sealevel_setup.
-
-> Fixed defines and various format issues from previous submissions.
-
-What does this mean? If it's a changelog, use the correct place for it
-(see below).
-
+> > Dmesg output might help also to figure out if this happens on the first
+> > port or the second port.
 > 
-> Link: 
-> https://lore.kernel.org/linux-serial/b2a721-227-14ef-75eb-36244ba2942@sealevel.com
-
-Tags must occupy a single line: a single line per each tag.
-
+> The full error in dmesg is:
+> [Aug30 15:48] exar_serial 0000:04:00.0: Couldn't register serial port 0, irq 24, type 2, error -22
 > 
+> This is on a 2-port adapter. I don't see any indication in dmesg that it 
+> attempted to register the other port.
 
-Tag block must have no blank lines.
+OK. Are there other 8520 related uarts probing before that?
 
-Most of these is described in the above mentioned documentation.
+Regards,
 
-> Signed-off-by: Matthew Howell <matthew.howell@sealevel.com>
-> ---
+Tony
 
-Here you add comments and/or changelog.
-
-> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-> index 3886f78ecbbf..6b28f5a3df17 100644
-
-...
-
-> +#define UART_EXAR_DLD				0x02 /* Divisor Fractional */
-> +#define UART_EXAR_DLD_485_POLARITY 	0x80 /* RS-485 Enable Signal Polarity */
-
-Mixed TABs and spaces in a wrong order, usually we use only TABs in such cases.
-
-...
-
-> +static int sealevel_rs485_config(struct uart_port *port, struct ktermios *termios,
-> +				struct serial_rs485 *rs485)
-> +{
-> +	u8 __iomem *p = port->membase;
-> +	u8 old_lcr;
-> +
-> +	generic_rs485_config(port, termios, rs485);
-
-> +	if (rs485->flags & SER_RS485_ENABLED) {
-
-Seems you haven't seen / ignored my comments. Please, read my previous reply.
-
-> +		/* Set EFR[4]=1 to enable enhanced feature registers */
-> +		writeb(readb(p + UART_XR_EFR) | UART_EFR_ECB, p + UART_XR_EFR);
-> +
-> +		/* Set MCR to use DTR as Auto-RS485 Enable signal */
-> +		writeb(UART_MCR_OUT1, p + UART_MCR);
-> +
-> +		/* Store original LCR and set LCR[7]=1 to enable access to DLD register */
-> +		old_lcr = readb(p + UART_LCR);
-> +		writeb(old_lcr | UART_LCR_DLAB, p + UART_LCR);
-> +
-> +		/* Set DLD[7]=1 for inverted RS485 Enable logic */
-> +		writeb(readb(p + UART_EXAR_DLD) | UART_EXAR_DLD_485_POLARITY, p + UART_EXAR_DLD);
-> +
-> +		writeb(old_lcr, p + UART_LCR);
-> +    }
-> +
-> +	return 0;
-> + }
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+8< --------------------
+diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
+--- a/drivers/tty/serial/serial_base_bus.c
++++ b/drivers/tty/serial/serial_base_bus.c
+@@ -169,7 +169,7 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
+ 	err = serial_base_device_init(port, &port_dev->dev,
+ 				      &ctrl_dev->dev, &serial_port_type,
+ 				      serial_base_port_release,
+-				      port->ctrl_id, port->port_id);
++				      port->ctrl_id, port->line);
+ 	if (err)
+ 		goto err_put_device;
+ 
