@@ -2,226 +2,556 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A2BBCA0FE1
-	for <linux-serial@archiver.kernel.org>; Fri,  1 Sep 2023 14:26:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D83CA0FE4
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Sep 2023 15:20:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232488AbjIAO0R (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 1 Sep 2023 10:26:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35176 "EHLO
+        id S233114AbjIAPUc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 1 Sep 2023 11:20:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231247AbjIAO0Q (ORCPT
+        with ESMTP id S242639AbjIAPUa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 1 Sep 2023 10:26:16 -0400
-Received: from CO1PR02CU002.outbound.protection.outlook.com (mail-westus2azon11010005.outbound.protection.outlook.com [52.101.46.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79059CC5
-        for <linux-serial@vger.kernel.org>; Fri,  1 Sep 2023 07:26:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MDX31MGf1Jh7Hmkqw9WSaAquta5fyYbXPacYgoqn0PTAHiSFbcZy5eLopahbMUawSVrLCTBncpFm8GVypY7DGq4qNxrATsosG9OJSZfYJ36WK0YAAAd3MsetARarZ2cEM0BaNKnrKzl8V/2l9Tv6kBFbi3qXAmmcgcr2u3voTHtD5HFzcePXriLsFxAYdWTtu7QgCxH7xLv8D3X5uDiRXZBIIC9/CZfonHdpdLbMqg1CCiwD5NaDXycaK/bDYGVTYIQe6OiPMdAbCGZDCoxFeOxj5gsgVwTj3l0w7q9pvl4dwu63uiFYVtuuX/herwqQ4AxQTurX1mMZmyjFa03KDw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GRgzpZinQBnSOWNIu6jJw+lZJDPDtuiRlNEJrTCl8LA=;
- b=Vqqm/+AVw3SgDpj2GFYdVzFs5tRdR1QmcnsmdKdYsN82hQqBuQsAG9BEAAh5nYnmCL9YuExshvNID2XzUO0kfLLieAGA8yuJJkqDTfU/VoQ3qvervB1/Bs9QWHC8mfsQHmb/E9I/s4pZb+FQbqJ/5OorSrmc7ruvs/fb6tcbEBUA+uH6aAkyYvveJlIgo2XNDjU4TN9SGHZrX9ZOr2IRenWqNWaUsXzgKS/yaEZwZvOJW046xm1bJ/q18yEyrS82qPEy7PjBW6wNTvp9D1bzPTn//BXw3l3gAG5XJzwysGSd/i08pceEQG3ecJe/K+QzgLJycL5dde/aEPTZqYoP7Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=sealevel.com; dmarc=pass action=none header.from=sealevel.com;
- dkim=pass header.d=sealevel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sealevel.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GRgzpZinQBnSOWNIu6jJw+lZJDPDtuiRlNEJrTCl8LA=;
- b=DbEtqcjj2vPMtIeyh+TblgeNmf53ASq18fLS3Ne28z5TM/Uj8YyJLbB33fiPMD0ErFjyhU8pApXo1qud1vjcKMwdzI9KZMhjHhtYKjJgSV0S9FJ35pAZNmoUg0yNzyzFVmno/WN0ARoG2k/u51nMpaCu5f1TFgBtsm+RZv84HKloBzOFA+lriiurfTMeZqvU63pGrxMyUfQo2DErPu/5a0MbotKa0EqQJDezfPgLk2+dAWyU82D73Vv7jCOZEHJcwrl3kSHxlnA6Yn80ae0UBfMAUX7ardMQBuH7Omf4/WLIC9tCG5yqv//UdKY/HilHEXTQdfXsAQ5IsT/Qd92a+w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=sealevel.com;
-Received: from CO1PR05MB8426.namprd05.prod.outlook.com (2603:10b6:303:e5::11)
- by MW4PR05MB8601.namprd05.prod.outlook.com (2603:10b6:303:120::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.27; Fri, 1 Sep
- 2023 14:26:05 +0000
-Received: from CO1PR05MB8426.namprd05.prod.outlook.com
- ([fe80::2d74:e628:e394:6669]) by CO1PR05MB8426.namprd05.prod.outlook.com
- ([fe80::2d74:e628:e394:6669%4]) with mapi id 15.20.6745.026; Fri, 1 Sep 2023
- 14:26:05 +0000
-Date:   Fri, 1 Sep 2023 10:26:01 -0400 (EDT)
-From:   Matthew Howell <matthew.howell@sealevel.com>
-To:     Andy Shevchenko <andriy.shevchenko@intel.com>
-cc:     Matthew Howell <matthew.howell@sealevel.com>,
-        linux-serial@vger.kernel.org, jeff.baldwin@sealevel.com,
-        james.olson@sealevel.com, ryan.wenglarz@sealevel.com,
-        darren.beeson@sealevel.com, ilpo.jarvinen@linux.intel.com
-Subject: Re: [PATCH V3 2/2] serial: exar: Add RS-485 support for Sealevel
- XR17V35X based cards
-In-Reply-To: <ZPEflBvmd5R/kImw@smile.fi.intel.com>
-Message-ID: <a4d66170-82f3-5021-2991-3b67e6eb86d4@sealevel.com>
-References: <b0b1863f-40f4-d78e-7bb7-dc4312449d9e@sealevel.com> <ZPEflBvmd5R/kImw@smile.fi.intel.com>
-Content-Type: text/plain; charset=US-ASCII
-X-ClientProxiedBy: BN7PR02CA0002.namprd02.prod.outlook.com
- (2603:10b6:408:20::15) To CO1PR05MB8426.namprd05.prod.outlook.com
- (2603:10b6:303:e5::11)
+        Fri, 1 Sep 2023 11:20:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDB6E65;
+        Fri,  1 Sep 2023 08:20:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D76D463072;
+        Fri,  1 Sep 2023 15:20:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7E3BC433C8;
+        Fri,  1 Sep 2023 15:20:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1693581622;
+        bh=TtfeJdvrs8lsD8tKiVlOFiSI0YNVb58TFRZJuus9JB8=;
+        h=Date:From:To:Cc:Subject:From;
+        b=SADyyjSqGb0TpQaR1ExjJmUBg0YGYnaL9GyH0x+ZkaPTddgaoyU0NGSzwzwsU9AWQ
+         gw9Hzm61xk9JgThwSl0uEWfZd8RPPCLrsZfGfdtPNvtd9YLhzB0LZ/5RFIl0AnV9It
+         HepqpvZ4t+G4imi1k7X5gWTgKQbbdlHIMKzZG+Uc=
+Date:   Fri, 1 Sep 2023 17:20:19 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver changes for 6.6-rc1
+Message-ID: <ZPIBMzDL-iw24DFI@kroah.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PR05MB8426:EE_|MW4PR05MB8601:EE_
-X-MS-Office365-Filtering-Correlation-Id: 629088cc-da37-40c5-a2a8-08dbaaf76065
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: G7C4Klu3ufG8A4y2q7Wu7TWbL30jDsW5fBtgejqlozf3Ftwy+sFKj14CB6AMm98yctq5Wo7cel9xIUJQBiDJnpohyCSBE6UMJrbPk1ymZB94+IdmToVo9Kfv1Yvy/wHmSXByCJYZMqliMznmzt4XJCtg0HBv8H/hQ0Ri55zNw+7e4ozoSwKqphaowG+/lz7sojtJp7kejwEUudhO7GooW/CzuiTyEQGcsXjeREDG/9KcAg/xsr6UhLvN2/z5M7SA2ngpDqxh/DvrpMqxB0uMmdimNsShkEesFkywxU3VFGWgM5ryYLGbs3v16Kt0V+Laj0S5nVGeSU3e2i2zvHGatCzzi4RYN/w3oKYj8utkXBR5LMsxr2vRtQOzv7lTlOi/ENFv1fVL4XIHI9IfTYf38dMTWxOmDGfMekMjxHbbpx1YOYG9bhz04920nfBJhYxdvr0QdDYKr8BZWckJNagrKelxrKFjvxYOMs3VDGHxKGQh7yASJigtatft6ZaRbRgRHDe+HInR96LgJtUIWNoZXkyrs74c8EwUzr2QSEEQen4oqVA/hXY1JbJ3t2hjneABI9Obum/UWqHUz0ACwWXdxO+WPXDN5LA3gztXhAh4+ora/AfaUBjcyoM4JLWJV8WzLW7MpjG6uDKlwiR19S1ZVg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR05MB8426.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(396003)(346002)(39850400004)(376002)(366004)(186009)(1800799009)(451199024)(83380400001)(41300700001)(36756003)(316002)(2906002)(2616005)(26005)(38100700002)(5660300002)(4326008)(8936002)(8676002)(44832011)(6916009)(6512007)(966005)(478600001)(6666004)(6506007)(6486002)(31696002)(86362001)(31686004)(66476007)(66556008)(66946007)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Y2Py27Rr04HQLzVaA5G2MvJXjVxg080yWKMlGDDzCD5+4SguHFEKPz4OQ+vW?=
- =?us-ascii?Q?WwUvrfCQ5fjs8ACUBZ4CdCb2+8mNgHjS6zsoNwSJS1ywkTDWDfkOVlaIiT3S?=
- =?us-ascii?Q?AqoZ8BDi+lgl8aXXlBi/sshNFCYntCb9Nr5fai0iHW7F7WAqZzysysSqCSXp?=
- =?us-ascii?Q?tPRy/hq87n/3w9wcdQESRKHFEqn8fMPRhds+M5i+hUM5P4ro9i3btsUkCoyS?=
- =?us-ascii?Q?dQPf3OczzXlmWpuQBPrjRIkTrzuVOJF0ma9GHtFKEcZxQvxGd+MobfaOyyPx?=
- =?us-ascii?Q?CxwGPSkQ75oG6ASPogJzs+jfsoCSV0miS2odtAbW9fbg7vwnr/RFW5cpGA34?=
- =?us-ascii?Q?LnAIqEoevXB4OuxtcrY5vtTDexGUn4L0U3DIj4DQAy9LaIDYLRb13ArzvpZe?=
- =?us-ascii?Q?b/AxTBxPlJbYDzOikQZ2Cgaf7U/i4p2Ujf1jcfcLUfFddwBDlq4sVuVnl9uM?=
- =?us-ascii?Q?Jv5SxIDIGVGeIj+u/YBT2b52Vi/f/yyBMqefGXpWlo5/yimYDHkvZnJoetlj?=
- =?us-ascii?Q?SMkXWHwHFTRZoFQtSKB6MbvaKGMP5kXDkCHdyAxxDODpFS3C6OSW1uGznEmC?=
- =?us-ascii?Q?FdAnYO8CC7HUaxF150YEJszowei0UUgLyXOzOB9KRZ+s3ft6M4QEMx/C7B5+?=
- =?us-ascii?Q?lWJYcPa/ptkf3RHe/+o30KS6qqCpyFDNRZnTvlQon6PGthtgrPrS9S05+pxG?=
- =?us-ascii?Q?rQ00nhsTuu84E8hSGMKMi9aMOw9P4Vz7zLYGgBGy7Wxt8AooaoVZwonuLslA?=
- =?us-ascii?Q?XlxthEgT9apGa8ds39rCMPYhve6V5Y7uRkniQa/kwPwVfO/5Auz2M12RHQke?=
- =?us-ascii?Q?AGzz7GDYynO4n3JrSU2iHPtXvpzGaCscHfeVi6BAEF+IwiqtwgdydrTqIJSe?=
- =?us-ascii?Q?aYHO1DD0C36QyKDCoGK4ci1/Cn7K4LDtIUSusvLBjFIr7Mc5HFaFdFQox6nT?=
- =?us-ascii?Q?fyiXpIYxgdorHtPzrIESYvq3bxvLCaDQEKAgEX8tb0Ob9fSr47JlLIrsHyY7?=
- =?us-ascii?Q?qaX4yr/meRHa4b21xJHHFed1yn1y5ov8U++9ui7MZ1qXoptbkmIDcTuosZaC?=
- =?us-ascii?Q?4asGc78I5LBAyy0e2Ra+L0EwGZq6Ys+p3oR00YS0oGXu5gPIEbcTaiaNCpP6?=
- =?us-ascii?Q?MlH5UcsJ7jUhx6ZJwwUc/16RG1Nd/byAu7u3tpYyjTiQ5Hfk0O705gCIiCYQ?=
- =?us-ascii?Q?Lf4LoJlMB8FwcKveSk9Ye7QZag8XmXu5/SAQAVXDrD/3x0mVWwGjAH+sSHU4?=
- =?us-ascii?Q?1KzBsWgdmMnRIRub+dMhc7J3VCOAzfTW5rVkNs75CZwJky4s1BXZMZTgVipS?=
- =?us-ascii?Q?kip7nZkl9QDILtFPw0lyLkkuPdzmjRYp2JVW1+BYRUcbz7Nakm9Gh6t7YzUI?=
- =?us-ascii?Q?ibXHGJaweRsnEq6IFsHa3aEmKhH9C5oOiIlnYKBxWd03gba6JtDLUhC+L6Gj?=
- =?us-ascii?Q?H3wmo+h85XmTmTx9a1CwXeiL/IsSTPF3xrr3NWzyQGNzCfgMVlaq00uJ8+RH?=
- =?us-ascii?Q?aqxqB+Ka4L9OszMrf6U3xSaoALKhqpjJlOiZ80pV+0H9B6lSZ74yyIZUnMl/?=
- =?us-ascii?Q?gdKgekDMhpsTyoRO6Ko9X6PwZ7eRxgHqBfcvOsprMahcA9yNN+wcI2p/Nhkn?=
- =?us-ascii?Q?Mw=3D=3D?=
-X-OriginatorOrg: sealevel.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 629088cc-da37-40c5-a2a8-08dbaaf76065
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR05MB8426.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2023 14:26:05.5503
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: e34c5615-b4e3-481c-abc8-602581f2e735
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MwjCUdBeGFQbYiOW7C+QgDXBcjErrS3j7NojaKOrncyfVWE+fp9CTeL6ZDZxbQIafD+eH8UPqws2CySQhqTAg2MLSvDkK3XPZViV/Ds5umE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR05MB8601
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 31 Aug 2023, Andy Shevchenko wrote:
-> On Thu, Aug 31, 2023 at 03:48:08PM -0400, Matthew Howell wrote:
-> > From: Matthew Howell <matthew.howell@sealevel.com
-> >
-> > Sealevel XR17V35X based cards utilize DTR to control RS-485 Enable, but
-> > the current implementation in 8250_exar uses RTS for the auto-RS485-Enable
-> > mode of the XR17V35X UARTs. This patch implements sealevel_rs485_config to
-> 
-> Please, read Submitting Patches documentation, in particular find there
-> the paragraph that matches to "This patch". With that, amend commit message
-> accordingly.
-> 
-> We refer to the functions as func() (note the parentheses).
+The following changes since commit b320441c04c9bea76cbee1196ae55c20288fd7a6:
 
-I did read it but it was not clear that the parentheses are part of the 
-'rules'.
- 
-> > configure the XR17V35X for DTR control of RS485 Enable and assigns it to
-> 
-> Your lines have trailing whitespaces, please get rid of them.
-> 
-> > Sealevel cards in pci_sealevel_setup.
-> 
-> > Fixed defines and various format issues from previous submissions.
-> 
-> What does this mean? If it's a changelog, use the correct place for it
-> (see below).
+  Merge tag 'tty-6.5-rc7' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty (2023-08-20 08:26:51 +0200)
 
-Sorry, I did not realize. I found that section of the document unclear on 
-first pass.
+are available in the Git repository at:
 
-> >
-> > Link:
-> > https://lore.kernel.org/linux-serial/b2a721-227-14ef-75eb-36244ba2942@sealevel.com
-> 
-> Tags must occupy a single line: a single line per each tag.
-> 
-> >
-> 
-> Tag block must have no blank lines.
-> 
-> Most of these is described in the above mentioned documentation.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.6-rc1
 
-Sorry, I had missed that tags are exempt from the normal character per 
-line limit.
+for you to fetch changes up to ebf05c7dc92c11b0355aaa0e94064beadaa4b05c:
 
-> > Signed-off-by: Matthew Howell <matthew.howell@sealevel.com>
-> > ---
-> 
-> Here you add comments and/or changelog.
-> 
-> > diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-> > index 3886f78ecbbf..6b28f5a3df17 100644
-> 
-> ...
-> 
-> > +#define UART_EXAR_DLD                                0x02 /* Divisor Fractional */
-> > +#define UART_EXAR_DLD_485_POLARITY   0x80 /* RS-485 Enable Signal Polarity */
-> 
-> Mixed TABs and spaces in a wrong order, usually we use only TABs in such cases.
-> 
-> ...
-> 
-> > +static int sealevel_rs485_config(struct uart_port *port, struct ktermios *termios,
-> > +                             struct serial_rs485 *rs485)
-> > +{
-> > +     u8 __iomem *p = port->membase;
-> > +     u8 old_lcr;
-> > +
-> > +     generic_rs485_config(port, termios, rs485);
-> 
-> > +     if (rs485->flags & SER_RS485_ENABLED) {
-> 
-> Seems you haven't seen / ignored my comments. Please, read my previous reply.
+  tty: shrink the size of struct tty_struct by 40 bytes (2023-08-27 11:47:44 +0200)
 
-You said !!() is redundant and I have removed !!(). Previous feedback also
-suggested that is_rs485 is not needed, but I had reverted both changes as 
-I initially thought it was the cause of a breakage. However, further testing 
-found the breakage was unrelated to this patch series. Therefore, I 
-attempted to address both suggestions by removing is_rs485 and !!() in 
-this submission.
+----------------------------------------------------------------
+TTY/Serial driver changes for 6.6-rc1
 
-I did not ignore your comments and I do not appreciate these insenuations. 
-I have made changes based on every one of your comments in the previous 
-submission, I just did not always address the comment in exactly you 
-suggested.
+Here is the big set of tty and serial driver changes for 6.6-rc1.
 
-Please, clarify how this fails to address your comments and I will be 
-happy to correct it in the next submission.
+Lots of cleanups in here this cycle, and some driver updates.  Short
+summary is:
+  - Jiri's continued work to make the tty code and apis be a bit more
+    sane with regards to modern kernel coding style and types
+  - cpm_uart driver updates
+  - n_gsm updates and fixes
+  - meson driver updates
+  - sc16is7xx driver updates
+  - 8250 driver updates for different hardware types
+  - qcom-geni driver fixes
+  - tegra serial driver change
+  - stm32 driver updates
+  - synclink_gt driver cleanups
+  - tty structure size reduction
 
-> > +             /* Set EFR[4]=1 to enable enhanced feature registers */
-> > +             writeb(readb(p + UART_XR_EFR) | UART_EFR_ECB, p + UART_XR_EFR);
-> > +
-> > +             /* Set MCR to use DTR as Auto-RS485 Enable signal */
-> > +             writeb(UART_MCR_OUT1, p + UART_MCR);
-> > +
-> > +             /* Store original LCR and set LCR[7]=1 to enable access to DLD register */
-> > +             old_lcr = readb(p + UART_LCR);
-> > +             writeb(old_lcr | UART_LCR_DLAB, p + UART_LCR);
-> > +
-> > +             /* Set DLD[7]=1 for inverted RS485 Enable logic */
-> > +             writeb(readb(p + UART_EXAR_DLD) | UART_EXAR_DLD_485_POLARITY, p + UART_EXAR_DLD);
-> > +
-> > +             writeb(old_lcr, p + UART_LCR);
-> > +    }
-> > +
-> > +     return 0;
-> > + }
-> 
-> --
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
-> 
+All of these have been in linux-next this week with no reported issues.
+The last bit of cleanups from Jiri and the tty structure size reduction
+came in last week, a bit late but as they were just style changes and
+size reductions, I figured they should get into this merge cycle so that
+others can work on top of them with no merge conflicts.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Amelie Delaunay (1):
+      serial: stm32: synchronize RX DMA channel in shutdown
+
+Andy Shevchenko (1):
+      serial: core: Remove unused PORT_* definitions
+
+Anton Eliasson (1):
+      tty: serial: samsung: Set missing PM ops for hibernation support
+
+Chengfeng Ye (1):
+      tty: synclink_gt: Fix potential deadlock on &info->lock
+
+Christophe Leroy (15):
+      serial: cpm_uart: Avoid suspicious locking
+      serial: cpm_uart: Remove stale prototypes and table and macros
+      serial: cpm_uart: Stop using fs_uart_id enum
+      serial: cpm_uart: Use get_baudrate() instead of uart_baudrate()
+      serial: cpm_uart: Deduplicate cpm_set_{brg/smc_fcr/scc_fcr}()
+      serial: cpm_uart: Deduplicate cpm_line_cr_cmd()
+      serial: cpm_uart: Refactor cpm_uart_allocbuf()/cpm_uart_freebuf()
+      serial: cpm_uart: Refactor cpm_uart_[un]map_pram()
+      serial: cpm_uart: Remove cpm_uart/ subdirectory
+      serial: cpm_uart: Remove stale prototype in powerpc/fsl_soc.c
+      serial: cpm_uart: Don't include fs_uart_pd.h when not needed
+      serial: cpm_uart: Remove linux/fs_uart_pd.h
+      Documentation: devices.txt: Remove ttyIOC*
+      Documentation: devices.txt: Remove ttySIOC*
+      Documentation: devices.txt: Fix minors for ttyCPM*
+
+Chunyan Zhang (2):
+      serial: sprd: Assign sprd_port after initialized to avoid wrong access
+      serial: sprd: Fix DMA buffer leak issue
+
+Daniel Starke (8):
+      tty: n_gsm: add restart flag to DLC specific ioctl config
+      tty: n_gsm: add missing description to structs in gsmmux.h
+      tty: n_gsm: remove unneeded initialization of ret in gsm_dlci_config
+      tty: n_gsm: add open_error counter to gsm_mux
+      tty: n_gsm: increase malformed counter for malformed control frames
+      tty: n_gsm: increase gsm_mux unsupported counted where appropriate
+      tty: n_gsm: cleanup gsm_control_command and gsm_control_reply
+      tty: n_gsm: add restart flag to extended ioctl config
+
+Dmitry Rokosov (8):
+      tty: serial: meson: use dev_err_probe
+      tty: serial: meson: redesign the module to platform_driver
+      tty: serial: meson: apply ttyS devname instead of ttyAML for new SoCs
+      tty: serial: meson: introduce separate uart_data for S4 SoC family
+      tty: serial: meson: add independent uart_data for A1 SoC family
+      dt-bindings: serial: amlogic,meson-uart: support Amlogic A1
+      arm64: dts: meson: a1: change uart compatible string
+      tty: serial: meson: refactor objects definition for different devnames
+
+Duje Mihanović (1):
+      tty: serial: 8250: Define earlycon for mrvl,mmp-uart
+
+Greg Kroah-Hartman (3):
+      Merge 6.5-rc4 into tty-next
+      Merge commit b320441c04c9 ("Merge tag 'tty-6.5-rc7' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty") into tty-next
+      tty: shrink the size of struct tty_struct by 40 bytes
+
+Hugo Villeneuve (8):
+      serial: max310x: add comments for membase address workaround
+      serial: max310x: fix typos in comments
+      serial: sc16is7xx: fix broken port 0 uart init
+      serial: sc16is7xx: remove obsolete out_thread label
+      dt-bindings: sc16is7xx: Add property to change GPIO function
+      serial: sc16is7xx: fix regression with GPIO configuration
+      serial: sc16is7xx: fix bug when first setting GPIO direction
+      serial: sc16is7xx: add missing support for rs485 devicetree properties
+
+Hui Wang (1):
+      serial: sc16is7xx: Put IOControl register into regmap_volatile
+
+Jiapeng Chong (1):
+      8250_men_mcb: Fix unsigned comparison with less than zero
+
+Jiaqing Zhao (4):
+      can: ems_pci: remove PCI_SUBVENDOR_ID_ASIX definition
+      can: ems_pci: move ASIX AX99100 ids to pci_ids.h
+      serial: 8250_pci: add support for ASIX AX99100
+      parport_pc: add support for ASIX AX99100
+
+Jiri Slaby (34):
+      tty: make check_tty_count() void
+      n_tty: drop fp from n_tty_receive_buf_real_raw()
+      n_tty: simplify and sanitize zero_buffer()
+      n_tty: pass ldata to canon_skip_eof() directly
+      n_tty: make many tty parameters const
+      tty: sysrq: rename and re-type i in sysrq_handle_loglevel()
+      tty: sysrq: switch sysrq handlers from int to u8
+      tty: sysrq: switch the rest of keys to u8
+      tty: sysrq: use switch in sysrq_key_table_key2index()
+      serial: convert uart sysrq handling to u8
+      serial: make uart_insert_char() accept u8s
+      serial: pass state to __uart_start() directly
+      serial: arc_uart: simplify flags handling in arc_serial_rx_chars()
+      serial: omap-serial: remove flag from serial_omap_rdi()
+      serial: drivers: switch ch and flag to u8
+      serial: move WARN_ON() in uart_write() to the condition
+      Bluetooth: rfcomm: remove casts from tty->driver_data
+      tty: hvsi: remove an extra variable from hvsi_write()
+      input: serport: remove casts from tty->disc_data
+      can: slcan: remove casts from tty->disc_data
+      serial: altera_jtaguart: switch status to u32
+      speakup: switch to unsigned iterator in spk_ttyio_receive_buf2()
+      misc: ti-st: remove forward declarations and make st_int_recv() static
+      misc: ti-st: remove ptr from recv functions
+      misc: ti-st: don't check for tty data == NULL
+      tty: synclink_gt: convert CALC_REGADDR() macro to an inline
+      tty: synclink_gt: drop global slgt_driver_name array
+      tty: synclink_gt: define global strings as const strings
+      tty: synclink_gt: drop info messages from init/exit functions
+      tty: synclink_gt: use PCI_VDEVICE
+      tty: synclink_gt: make default_params const
+      tty: synclink_gt: mark as BROKEN
+      can: can327: remove casts from tty->disc_data
+      net: nfc: remove casts from tty->disc_data
+
+Jiri Slaby (SUSE) (62):
+      tty: xtensa/iss: drop unneeded tty_operations hooks
+      tty: ldisc: document that ldops are optional
+      tty: remove dummy tty_ldisc_ops::poll() implementations
+      tty: n_null: remove optional ldops
+      tty: change tty_write_lock()'s ndelay parameter to bool
+      tty: tty_port: rename 'disc' to 'ld'
+      tty: drop tty_debug_wait_until_sent()
+      tty: make tty_change_softcar() more understandable
+      tty: make tty_port_client_operations operate with u8
+      tty: make counts in tty_port_client_operations hooks size_t
+      tty: switch receive_buf() counts to size_t
+      tty: switch count in tty_ldisc_receive_buf() to size_t
+      tty: can327: unify error paths in can327_ldisc_rx()
+      tty: can327, move overflow test inside can327_ldisc_rx()'s loop
+      tty: make tty_ldisc_ops::*buf*() hooks operate on size_t
+      tty: use u8 for chars
+      tty: use u8 for flags
+      misc: ti-st: make st_recv() conforming to tty_ldisc_ops::receive_buf()
+      tty: make char_buf_ptr()/flag_buf_ptr()'s offset unsigned
+      tty: tty_buffer: make all offsets unsigned
+      tty: don't pass write() to do_tty_write()
+      tty: rename and de-inline do_tty_write()
+      tty: use min() in iterate_tty_write()
+      tty: use ssize_t for iterate_tty_read() returned type
+      tty: switch size and count types in iterate_tty_read() to size_t
+      tty: use min() for size computation in iterate_tty_read()
+      tty: propagate u8 data to tty_operations::write()
+      tty: propagate u8 data to tty_operations::put_char()
+      tty: make tty_operations::write()'s count size_t
+      tty: audit: unify to u8
+      tty: ldops: unify to u8
+      tty: hvc: convert counts to size_t
+      tty: vcc: convert counts to size_t
+      tty: gdm724x: convert counts to size_t
+      tty: hso: simplify hso_serial_write()
+      tty: rfcomm: convert counts to size_t
+      tty: gdm724x: simplify gdm_tty_write()
+      tty: gdm724x: use min_t() for size_t varable and a constant
+      tty: tty_buffer: switch data type to u8
+      tty: tty_buffer: use struct_size() in tty_buffer_alloc()
+      tty: tty_buffer: unify tty_insert_flip_string_{fixed_flag,flags}()
+      tty: tty_buffer: warn if losing flags in __tty_insert_flip_string_flags()
+      tty: tty_buffer: switch insert functions to size_t
+      tty: tty_buffer: let tty_prepare_flip_string() return size_t
+      tty: tty_buffer: use __tty_insert_flip_string_flags() in tty_insert_flip_char()
+      tty: tty_buffer: better types in __tty_buffer_request_room()
+      tty: tty_buffer: initialize variables in initializers already
+      tty: tty_buffer: invert conditions in __tty_buffer_request_room()
+      tty: n_tty: make flow of n_tty_receive_buf_common() a bool
+      tty: n_tty: use output character directly
+      tty: n_tty: use 'num' for writes' counts
+      tty: n_tty: use time_is_before_jiffies() in n_tty_receive_overrun()
+      tty: n_tty: make n_tty_data::num_overrun unsigned
+      tty: n_tty: use MASK() for masking out size bits
+      tty: n_tty: move canon handling to a separate function
+      tty: n_tty: move newline handling to a separate function
+      tty: n_tty: remove unsigned char casts from character constants
+      tty: n_tty: simplify chars_in_buffer()
+      tty: n_tty: use u8 for chars and flags
+      tty: n_tty: unify counts to size_t
+      tty: n_tty: extract ECHO_OP processing to a separate function
+      tty: n_tty: deduplicate copy code in n_tty_receive_buf_real_raw()
+
+Jisheng Zhang (2):
+      dt-bindings: serial: snps-dw-apb-uart: make interrupt optional
+      serial: 8250_dw: fall back to poll if there's no interrupt
+
+Johan Hovold (3):
+      serial: qcom-geni: use icc tag defines
+      serial: qcom-geni: fix opp vote on shutdown
+      serial: qcom-geni: clean up clock-rate debug printk
+
+Jon Hunter (1):
+      serial: tegra: Don't print error on probe deferral
+
+Justin Chen (1):
+      serial: 8250_bcm7271: improve bcm7271 8250 port
+
+Li Zetao (3):
+      tty: serial: Remove redundant initialization for ma35d1serial_driver
+      8250_men_mcb: Fix unsigned expression compared with zero
+      8250_men_mcb: Remove redundant initialization owner in mcb_driver
+
+Lucas Tanure (3):
+      dt-bindings: serial: amlogic,meson-uart: Add compatible string for T7
+      tty: serial: meson: Add a earlycon for the T7 SoC
+      Revert "tty: serial: meson: Add a earlycon for the T7 SoC"
+
+Nick Hu (1):
+      serial: sifive: Add suspend and resume operations
+
+Rob Herring (1):
+      tty: Explicitly include correct DT includes
+
+Rodríguez Barbarin, José Javier (3):
+      8250_men_mcb: Add clockrate speed for G215/F215 boards
+      8250_men_mcb: Read num ports from register data.
+      8250_men_mcb: Make UART config auto configurable
+
+Ruan Jinjie (2):
+      tty: serial: xilinx_uartps: Do not check for 0 return after calling platform_get_irq()
+      serial: sifive: Remove redundant of_match_ptr()
+
+Sanjuán García, Jorge (1):
+      8250_men_mcb: remove unnecessary cast when reading register
+
+Sherry Sun (3):
+      dt-bindings: serial: fsl-lpuart: correct imx93-lpuart dt-binding item
+      tty: serial: fsl_lpuart: move the lpuart32_int() below
+      tty: serial: fsl_lpuart: add IDLE interrupt support for rx_dma on imx7ulp/imx8ulp/imx8qxp
+
+Thadeu Lima de Souza Cascardo (1):
+      tty: n_gsm: require CAP_NET_ADMIN to attach N_GSM0710 ldisc
+
+Valentin Caron (5):
+      serial: stm32: avoid clearing DMAT bit during transfer
+      serial: stm32: use DMAT as a configuration bit
+      serial: stm32: modify parameter and rename stm32_usart_rx_dma_enabled
+      serial: stm32: group dma pause/resume error handling into single function
+      serial: stm32: replace access to DMAR bit by dmaengine_pause/resume
+
+Vijaya Krishna Nivarthi (1):
+      tty: serial: qcom-geni-serial: Poll primary sequencer irq status after cancel_tx
+
+Yang Yingliang (1):
+      8250_men_mcb: fix error handling in read_uarts_available_from_reg()
+
+Yangtao Li (15):
+      serial: ar933x: Use devm_platform_get_and_ioremap_resource()
+      serial: bcm63xx-uart: Use devm_platform_get_and_ioremap_resource()
+      serial: clps711x: Use devm_platform_get_and_ioremap_resource()
+      serial: linflexuart: Use devm_platform_get_and_ioremap_resource()
+      serial: tegra: Use devm_platform_get_and_ioremap_resource()
+      serial: omap: Use devm_platform_get_and_ioremap_resource()
+      serial: fsl_lpuart: Use devm_platform_get_and_ioremap_resource()
+      serial: vt8500: Use devm_platform_get_and_ioremap_resource()
+      serial: mps2-uart: Use devm_platform_get_and_ioremap_resource()
+      serial: sprd: Use devm_platform_get_and_ioremap_resource()
+      serial: sccnxp: Use devm_platform_get_and_ioremap_resource()
+      serial: mvebu-uart: Use devm_platform_get_and_ioremap_resource()
+      serial: sifive: Use devm_platform_get_and_ioremap_resource()
+      serial: imx: Use devm_platform_get_and_ioremap_resource()
+      serial: st-asc: Use devm_platform_get_and_ioremap_resource()
+
+Yi Yang (1):
+      serial: tegra: handle clk prepare error in tegra_uart_hw_init()
+
+Yuanjun Gong (1):
+      drivers:tty: fix return value check in asc_init_port
+
+oushixiong (1):
+      tty: vt: Remove some repetitive initialization
+
+ Documentation/admin-guide/devices.txt              |  16 +-
+ .../bindings/serial/amlogic,meson-uart.yaml        |   6 +
+ .../devicetree/bindings/serial/fsl-lpuart.yaml     |   6 +-
+ .../devicetree/bindings/serial/nxp,sc16is7xx.txt   |  46 ++
+ .../bindings/serial/snps-dw-apb-uart.yaml          |   1 -
+ Documentation/driver-api/tty/tty_buffer.rst        |   7 +-
+ arch/alpha/kernel/setup.c                          |   2 +-
+ arch/alpha/kernel/srmcons.c                        |   5 +-
+ arch/arm64/boot/dts/amlogic/meson-a1.dtsi          |   4 +-
+ arch/loongarch/kernel/sysrq.c                      |   2 +-
+ arch/m68k/emu/nfcon.c                              |   8 +-
+ arch/mips/kernel/sysrq.c                           |   2 +-
+ arch/powerpc/include/asm/fs_pd.h                   |  10 -
+ arch/powerpc/platforms/8xx/mpc885ads_setup.c       |   1 -
+ arch/powerpc/platforms/8xx/tqm8xx_setup.c          |   1 -
+ arch/powerpc/sysdev/fsl_soc.c                      |   2 -
+ arch/powerpc/xmon/xmon.c                           |   2 +-
+ arch/sparc/include/asm/vio.h                       |   2 +-
+ arch/sparc/kernel/process_64.c                     |   4 +-
+ arch/um/drivers/line.c                             |   2 +-
+ arch/um/drivers/line.h                             |   3 +-
+ arch/xtensa/platforms/iss/console.c                |  27 +-
+ drivers/accessibility/speakup/spk_ttyio.c          |   7 +-
+ drivers/bluetooth/hci_ldisc.c                      |  15 +-
+ drivers/char/ttyprintk.c                           |   5 +-
+ drivers/gpu/drm/drm_fb_helper.c                    |   2 +-
+ drivers/input/serio/serport.c                      |  18 +-
+ drivers/ipack/devices/ipoctal.c                    |   7 +-
+ drivers/isdn/capi/capi.c                           |   8 +-
+ drivers/misc/bcm-vk/bcm_vk_tty.c                   |   5 +-
+ drivers/misc/ti-st/st_core.c                       |  18 +-
+ drivers/misc/ti-st/st_kim.c                        |  13 +-
+ drivers/mmc/core/sdio_uart.c                       |   4 +-
+ drivers/net/caif/caif_serial.c                     |   2 +-
+ drivers/net/can/can327.c                           |  47 +-
+ drivers/net/can/sja1000/ems_pci.c                  |   7 +-
+ drivers/net/can/slcan/slcan-core.c                 |  13 +-
+ drivers/net/hamradio/6pack.c                       |   4 +-
+ drivers/net/hamradio/mkiss.c                       |   4 +-
+ drivers/net/mctp/mctp-serial.c                     |   5 +-
+ drivers/net/ppp/ppp_async.c                        |  26 +-
+ drivers/net/ppp/ppp_synctty.c                      |  26 +-
+ drivers/net/slip/slip.c                            |   4 +-
+ drivers/net/usb/hso.c                              |  20 +-
+ drivers/parport/parport_pc.c                       |   5 +
+ drivers/s390/char/con3215.c                        |   6 +-
+ drivers/s390/char/con3270.c                        |   6 +-
+ drivers/s390/char/sclp_tty.c                       |  10 +-
+ drivers/s390/char/sclp_vt220.c                     |   6 +-
+ drivers/staging/gdm724x/gdm_tty.c                  |  17 +-
+ drivers/staging/greybus/uart.c                     |   3 +-
+ drivers/tty/Kconfig                                |   1 +
+ drivers/tty/amiserial.c                            |   4 +-
+ drivers/tty/ehv_bytechan.c                         |   4 +-
+ drivers/tty/goldfish.c                             |   7 +-
+ drivers/tty/hvc/hvc_console.c                      |   4 +-
+ drivers/tty/hvc/hvc_opal.c                         |   2 +-
+ drivers/tty/hvc/hvcs.c                             |  10 +-
+ drivers/tty/hvc/hvsi.c                             |  15 +-
+ drivers/tty/ipwireless/hardware.c                  |   2 +-
+ drivers/tty/ipwireless/tty.c                       |   4 +-
+ drivers/tty/mips_ejtag_fdc.c                       |   6 +-
+ drivers/tty/moxa.c                                 |   8 +-
+ drivers/tty/mxser.c                                |   4 +-
+ drivers/tty/n_gsm.c                                |  89 ++-
+ drivers/tty/n_hdlc.c                               |  12 +-
+ drivers/tty/n_null.c                               |  25 +-
+ drivers/tty/n_tty.c                                | 613 +++++++++++----------
+ drivers/tty/nozomi.c                               |   6 +-
+ drivers/tty/pty.c                                  |   2 +-
+ drivers/tty/rpmsg_tty.c                            |   5 +-
+ drivers/tty/serdev/serdev-ttyport.c                |   4 +-
+ drivers/tty/serial/21285.c                         |   3 +-
+ drivers/tty/serial/8250/8250_bcm7271.c             |   4 +-
+ drivers/tty/serial/8250/8250_dw.c                  |   5 +-
+ drivers/tty/serial/8250/8250_early.c               |   1 -
+ drivers/tty/serial/8250/8250_ingenic.c             |   1 -
+ drivers/tty/serial/8250/8250_men_mcb.c             | 210 +++++--
+ drivers/tty/serial/8250/8250_omap.c                |   1 -
+ drivers/tty/serial/8250/8250_pci.c                 |  10 +
+ drivers/tty/serial/8250/8250_port.c                |  11 +-
+ drivers/tty/serial/8250/8250_pxa.c                 |   1 +
+ drivers/tty/serial/Makefile                        |   2 +-
+ drivers/tty/serial/altera_jtaguart.c               |   4 +-
+ drivers/tty/serial/altera_uart.c                   |   2 +-
+ drivers/tty/serial/amba-pl010.c                    |   3 +-
+ drivers/tty/serial/amba-pl011.c                    |   5 +-
+ drivers/tty/serial/apbuart.c                       |   6 +-
+ drivers/tty/serial/ar933x_uart.c                   |   3 +-
+ drivers/tty/serial/arc_uart.c                      |  27 +-
+ drivers/tty/serial/atmel_serial.c                  |   3 +-
+ drivers/tty/serial/bcm63xx_uart.c                  |   8 +-
+ drivers/tty/serial/clps711x.c                      |   6 +-
+ .../{cpm_uart/cpm_uart_core.c => cpm_uart.c}       | 157 +++++-
+ drivers/tty/serial/{cpm_uart => }/cpm_uart.h       |  38 +-
+ drivers/tty/serial/cpm_uart/Makefile               |  12 -
+ drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c        | 122 ----
+ drivers/tty/serial/cpm_uart/cpm_uart_cpm1.h        |  33 --
+ drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c        | 156 ------
+ drivers/tty/serial/cpm_uart/cpm_uart_cpm2.h        |  33 --
+ drivers/tty/serial/digicolor-usart.c               |   3 +-
+ drivers/tty/serial/dz.c                            |   2 +-
+ drivers/tty/serial/fsl_linflexuart.c               |  10 +-
+ drivers/tty/serial/fsl_lpuart.c                    |  88 ++-
+ drivers/tty/serial/imx.c                           |   4 +-
+ drivers/tty/serial/ip22zilog.c                     |   2 +-
+ drivers/tty/serial/kgdb_nmi.c                      |   3 +-
+ drivers/tty/serial/lantiq.c                        |   3 +-
+ drivers/tty/serial/liteuart.c                      |   3 +-
+ drivers/tty/serial/ma35d1_serial.c                 |   3 +-
+ drivers/tty/serial/max3100.c                       |   3 +-
+ drivers/tty/serial/max310x.c                       |  10 +-
+ drivers/tty/serial/mcf.c                           |   2 +-
+ drivers/tty/serial/meson_uart.c                    | 138 +++--
+ drivers/tty/serial/milbeaut_usio.c                 |   3 +-
+ drivers/tty/serial/mpc52xx_uart.c                  |   2 +-
+ drivers/tty/serial/mps2-uart.c                     |   4 +-
+ drivers/tty/serial/mvebu-uart.c                    |  11 +-
+ drivers/tty/serial/mxs-auart.c                     |   5 +-
+ drivers/tty/serial/omap-serial.c                   |  11 +-
+ drivers/tty/serial/pic32_uart.c                    |   1 -
+ drivers/tty/serial/pxa.c                           |   2 +-
+ drivers/tty/serial/qcom_geni_serial.c              |  17 +-
+ drivers/tty/serial/rp2.c                           |   4 +-
+ drivers/tty/serial/sa1100.c                        |   3 +-
+ drivers/tty/serial/samsung_tty.c                   |   8 +-
+ drivers/tty/serial/sb1250-duart.c                  |   3 +-
+ drivers/tty/serial/sc16is7xx.c                     | 170 ++++--
+ drivers/tty/serial/sccnxp.c                        |   7 +-
+ drivers/tty/serial/serial-tegra.c                  |  29 +-
+ drivers/tty/serial/serial_core.c                   |  28 +-
+ drivers/tty/serial/serial_txx9.c                   |   3 +-
+ drivers/tty/serial/sh-sci.c                        |   1 -
+ drivers/tty/serial/sifive.c                        |  29 +-
+ drivers/tty/serial/sprd_serial.c                   |  38 +-
+ drivers/tty/serial/st-asc.c                        |   9 +-
+ drivers/tty/serial/stm32-usart.c                   | 312 ++++++-----
+ drivers/tty/serial/stm32-usart.h                   |   1 +
+ drivers/tty/serial/sunhv.c                         |   4 +-
+ drivers/tty/serial/sunplus-uart.c                  |   2 +-
+ drivers/tty/serial/sunsab.c                        |   3 +-
+ drivers/tty/serial/sunsu.c                         |   4 +-
+ drivers/tty/serial/sunzilog.c                      |   4 +-
+ drivers/tty/serial/tegra-tcu.c                     |   1 -
+ drivers/tty/serial/uartlite.c                      |   3 -
+ drivers/tty/serial/ucc_uart.c                      |   4 +-
+ drivers/tty/serial/vt8500_serial.c                 |   8 +-
+ drivers/tty/serial/xilinx_uartps.c                 |   4 +-
+ drivers/tty/serial/zs.c                            |   3 +-
+ drivers/tty/synclink_gt.c                          |  83 ++-
+ drivers/tty/sysrq.c                                |  84 ++-
+ drivers/tty/tty.h                                  |   8 +-
+ drivers/tty/tty_audit.c                            |   6 +-
+ drivers/tty/tty_buffer.c                           | 192 ++-----
+ drivers/tty/tty_io.c                               |  50 +-
+ drivers/tty/tty_ioctl.c                            |  18 +-
+ drivers/tty/tty_port.c                             |  34 +-
+ drivers/tty/ttynull.c                              |   4 +-
+ drivers/tty/vcc.c                                  |  18 +-
+ drivers/tty/vt/selection.c                         |   2 +-
+ drivers/tty/vt/vt.c                                |  22 +-
+ drivers/usb/class/cdc-acm.c                        |   8 +-
+ drivers/usb/gadget/function/u_serial.c             |   6 +-
+ drivers/usb/host/xhci-dbgtty.c                     |   7 +-
+ drivers/usb/serial/usb-serial.c                    |   5 +-
+ include/linux/fs_uart_pd.h                         |  71 ---
+ include/linux/pci_ids.h                            |   4 +
+ include/linux/serial_core.h                        |  18 +-
+ include/linux/sysrq.h                              |  18 +-
+ include/linux/ti_wilink_st.h                       |   2 +-
+ include/linux/tty.h                                |  18 +-
+ include/linux/tty_buffer.h                         |  20 +-
+ include/linux/tty_driver.h                         |   9 +-
+ include/linux/tty_flip.h                           |  70 ++-
+ include/linux/tty_ldisc.h                          |  67 ++-
+ include/linux/tty_port.h                           |   7 +-
+ include/uapi/linux/gsmmux.h                        | 118 +++-
+ include/uapi/linux/serial_core.h                   |  44 +-
+ kernel/debug/debug_core.c                          |   2 +-
+ kernel/power/poweroff.c                            |   2 +-
+ kernel/rcu/tree_stall.h                            |   2 +-
+ net/bluetooth/rfcomm/tty.c                         |  31 +-
+ net/nfc/nci/uart.c                                 |  23 +-
+ sound/soc/codecs/cx20442.c                         |   4 +-
+ sound/soc/ti/ams-delta.c                           |   2 +-
+ 185 files changed, 2104 insertions(+), 2156 deletions(-)
+ rename drivers/tty/serial/{cpm_uart/cpm_uart_core.c => cpm_uart.c} (90%)
+ rename drivers/tty/serial/{cpm_uart => }/cpm_uart.h (64%)
+ delete mode 100644 drivers/tty/serial/cpm_uart/Makefile
+ delete mode 100644 drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
+ delete mode 100644 drivers/tty/serial/cpm_uart/cpm_uart_cpm1.h
+ delete mode 100644 drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+ delete mode 100644 drivers/tty/serial/cpm_uart/cpm_uart_cpm2.h
+ delete mode 100644 include/linux/fs_uart_pd.h
