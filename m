@@ -2,64 +2,96 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46858CA0FFC
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D26CA0FFB
 	for <linux-serial@archiver.kernel.org>; Tue,  5 Sep 2023 16:34:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239003AbjIEQe3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Sep 2023 12:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44924 "EHLO
+        id S238577AbjIEQeZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Sep 2023 12:34:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354048AbjIEJ2T (ORCPT
+        with ESMTP id S1354868AbjIEPNQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Sep 2023 05:28:19 -0400
-X-Greylist: delayed 4049 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Sep 2023 02:28:16 PDT
-Received: from mail.equinoxrise.pl (mail.equinoxrise.pl [217.61.112.157])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC001A7
-        for <linux-serial@vger.kernel.org>; Tue,  5 Sep 2023 02:28:16 -0700 (PDT)
-Received: by mail.equinoxrise.pl (Postfix, from userid 1002)
-        id D709C83731; Mon,  4 Sep 2023 09:41:22 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=equinoxrise.pl;
-        s=mail; t=1693813353;
-        bh=v6OgBfK5dN7P5dQ0wCu59rOfZaiqziJeLNblJ8dOcGI=;
-        h=Date:From:To:Subject:From;
-        b=HutOVfGvN+t8NgGkeKUGg4pCj68pqkliAKIjd09IHEndfZzKMZNUYdY7RyaOE/S2a
-         bni2RGMf9DWzK2BF6x60d9sQuP8KAtgFaTwuZy2oOlms7dFz7B0YaTEeWVqDysa0s/
-         nwwjjKvygY9DkEWL1Ag/hCh5XT6MeSZANq03w4KCnCwzT4hDwO+rWw7HvzOLRnUgFo
-         Y66d3IztUcrgBLvQPzAr9J3K2t6hJ3JBpZNzSe8VaXR+JqJzH3Q/BzXeydLxrN5mWm
-         phaxD557SKb6q1x3AyxWPcuolJifz8HAThe3nGS30fQMFInjXroMNqT1EE+zBnMhNe
-         m12MMUbTq7UGQ==
-Received: by mail.equinoxrise.pl for <linux-serial@vger.kernel.org>; Mon,  4 Sep 2023 07:40:34 GMT
-Message-ID: <20230904084500-0.1.7.r7t.0.3kjj6vgtjv@equinoxrise.pl>
-Date:   Mon,  4 Sep 2023 07:40:34 GMT
-From:   "Mateusz Talaga" <mateusz.talaga@equinoxrise.pl>
-To:     <linux-serial@vger.kernel.org>
-Subject: Prezentacja
-X-Mailer: mail.equinoxrise.pl
+        Tue, 5 Sep 2023 11:13:16 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2EB518D;
+        Tue,  5 Sep 2023 08:13:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
+        :From:subject:date:message-id:reply-to;
+        bh=5XhwL8Vr3H2MzLqLvHtq0Ny1lCroiMgQQZwfX3heG5g=; b=jqvLwFVXA8lkTQnSYM1D+CXOX7
+        ZeQMdZ8TyC1fE9vWofE1eDTjLcJU89+lKytHKENXjIgJlimqvZBKxq25A+EvE39vHa6q9ddCyWfoW
+        MzaRUvOhapn9AitOoeqrNSRWCvj+5Z/rU4KAk4F2/zvCLQoWv0VnEICTPgW+rJzkFX74=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:55420 helo=localhost.localdomain)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1qdXjo-0001SD-1E; Tue, 05 Sep 2023 11:13:08 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     hugo@hugovil.com, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        Lech Perczak <lech.perczak@camlingroup.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Date:   Tue,  5 Sep 2023 11:13:00 -0400
+Message-Id: <20230905151300.15365-1-hugo@hugovil.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 184.161.19.61
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: [PATCH] serial: sc16is7xx: improve comments about variants
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dzie=C5=84 dobry!
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Czy m=C3=B3g=C5=82bym przedstawi=C4=87 rozwi=C4=85zanie, kt=C3=B3re umo=C5=
-=BCliwia monitoring ka=C5=BCdego auta w czasie rzeczywistym w tym jego po=
-zycj=C4=99, zu=C5=BCycie paliwa i przebieg?
+Replace 740/750/760 with generic terms like 74x/75x/76x to account for
+variants like 741, 752 and 762.
 
-Dodatkowo nasze narz=C4=99dzie minimalizuje koszty utrzymania samochod=C3=
-=B3w, skraca czas przejazd=C3=B3w, a tak=C5=BCe tworzenie planu tras czy =
-dostaw.
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
+---
+ drivers/tty/serial/sc16is7xx.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Z naszej wiedzy i do=C5=9Bwiadczenia korzysta ju=C5=BC ponad 49 tys. Klie=
-nt=C3=B3w. Monitorujemy 809 000 pojazd=C3=B3w na ca=C5=82ym =C5=9Bwiecie,=
- co jest nasz=C4=85 najlepsz=C4=85 wizyt=C3=B3wk=C4=85.
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index f61d98e09dc3..f89eba15ddcd 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -223,7 +223,7 @@
+  * trigger levels. Trigger levels from 4 characters to 60 characters are
+  * available with a granularity of four.
+  *
+- * When the trigger level setting in TLR is zero, the SC16IS740/750/760 uses the
++ * When the trigger level setting in TLR is zero, the SC16IS74x/75x/76x uses the
+  * trigger level setting defined in FCR. If TLR has non-zero trigger level value
+  * the trigger level defined in FCR is discarded. This applies to both transmit
+  * FIFO and receive FIFO trigger level setting.
+@@ -234,7 +234,7 @@
+ #define SC16IS7XX_TLR_TX_TRIGGER(words)	((((words) / 4) & 0x0f) << 0)
+ #define SC16IS7XX_TLR_RX_TRIGGER(words)	((((words) / 4) & 0x0f) << 4)
+ 
+-/* IOControl register bits (Only 750/760) */
++/* IOControl register bits (Only 75x/76x) */
+ #define SC16IS7XX_IOCONTROL_LATCH_BIT	(1 << 0) /* Enable input latching */
+ #define SC16IS7XX_IOCONTROL_MODEM_A_BIT	(1 << 1) /* Enable GPIO[7:4] as modem A pins */
+ #define SC16IS7XX_IOCONTROL_MODEM_B_BIT	(1 << 2) /* Enable GPIO[3:0] as modem B pins */
+@@ -249,9 +249,9 @@
+ #define SC16IS7XX_EFCR_RTS_INVERT_BIT	(1 << 5) /* RTS output inversion */
+ #define SC16IS7XX_EFCR_IRDA_MODE_BIT	(1 << 7) /* IrDA mode
+ 						  * 0 = rate upto 115.2 kbit/s
+-						  *   - Only 750/760
++						  *   - Only 75x/76x
+ 						  * 1 = rate upto 1.152 Mbit/s
+-						  *   - Only 760
++						  *   - Only 76x
+ 						  */
+ 
+ /* EFR register bits */
 
-Bardzo prosz=C4=99 o e-maila zwrotnego, je=C5=9Bli mogliby=C5=9Bmy wsp=C3=
-=B3lnie om=C3=B3wi=C4=87 potencja=C5=82 wykorzystania takiego rozwi=C4=85=
-zania w Pa=C5=84stwa firmie.
+base-commit: 3f86ed6ec0b390c033eae7f9c487a3fea268e027
+-- 
+2.30.2
 
-
-Pozdrawiam
-Mateusz Talaga
