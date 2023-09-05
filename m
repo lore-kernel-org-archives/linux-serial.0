@@ -2,89 +2,134 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13340C71153
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Sep 2023 06:40:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F674CA0FE2
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Sep 2023 16:34:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230056AbjIDGkL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Sep 2023 02:40:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46976 "EHLO
+        id S239258AbjIEQeP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Sep 2023 12:34:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbjIDGkK (ORCPT
+        with ESMTP id S1354781AbjIEOUB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Sep 2023 02:40:10 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57578BB
-        for <linux-serial@vger.kernel.org>; Sun,  3 Sep 2023 23:40:07 -0700 (PDT)
-Received: from kwepemm600014.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4RfJqZ3Mr7zrRrZ;
-        Mon,  4 Sep 2023 14:38:18 +0800 (CST)
-Received: from [10.67.110.164] (10.67.110.164) by
- kwepemm600014.china.huawei.com (7.193.23.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.31; Mon, 4 Sep 2023 14:40:03 +0800
-Subject: Re: [PATCH] tty: vcc: Add check for kstrdup() in vcc_probe()
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     <davem@davemloft.net>, <jirislaby@kernel.org>,
-        <jag.raman@oracle.com>, <linux-serial@vger.kernel.org>
-References: <20230903101322.205537-1-yiyang13@huawei.com>
- <2023090321-conch-stopper-51c7@gregkh>
- <b73d22ba-8f19-286e-9441-ac456bf37be5@huawei.com>
- <2023090400-sweat-algebra-1f34@gregkh>
-From:   "yiyang (D)" <yiyang13@huawei.com>
-Message-ID: <af31eba9-ad34-76f4-51fc-e20813a1607d@huawei.com>
-Date:   Mon, 4 Sep 2023 14:40:03 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
-MIME-Version: 1.0
-In-Reply-To: <2023090400-sweat-algebra-1f34@gregkh>
-Content-Type: text/plain; charset="gbk"; format=flowed
+        Tue, 5 Sep 2023 10:20:01 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C468197;
+        Tue,  5 Sep 2023 07:19:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+        :Date:subject:date:message-id:reply-to;
+        bh=tXlyPfpn4kN+DQURxdfJQDcnAt2vpqV+AwaY6wnwJEA=; b=Ug9IKVCSbpqEU2aPbdoNFLVXZ+
+        4o/kN99/Msj21mLQlGdi2Fl+C3jSpNYiqu54FcADH9Vw+lCaIpHBXrF7De8jIKWy3LVteBjNeW3qF
+        ONgU0j5zAYd0AxDSdhcDkAwxaikMbBbXsMZiGS3JhImZOxo9+xdcQ1X1p1EpVERdHuk4=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:43660 helo=pettiford)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1qdWu3-0000tG-91; Tue, 05 Sep 2023 10:19:39 -0400
+Date:   Tue, 5 Sep 2023 10:19:38 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     Yi Yang <yiyang13@huawei.com>
+Cc:     <davem@davemloft.net>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <jag.raman@oracle.com>,
+        <sparclinux@vger.kernel.org>, <linux-serial@vger.kernel.org>
+Message-Id: <20230905101938.7cf68e477b946e1a066de17f@hugovil.com>
+In-Reply-To: <20230904035220.48164-1-yiyang13@huawei.com>
+References: <20230904035220.48164-1-yiyang13@huawei.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.110.164]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600014.china.huawei.com (7.193.23.54)
-X-CFilter-Loop: Reflected
+X-SA-Exim-Connect-IP: 184.161.19.61
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: Re: [PATCH V2] tty: vcc: Add check for kstrdup() in vcc_probe()
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2023/9/4 14:17, Greg KH wrote:
-> On Mon, Sep 04, 2023 at 11:45:11AM +0800, yiyang (D) wrote:
->> On 2023/9/3 18:49, Greg KH wrote:
->>> On Sun, Sep 03, 2023 at 06:13:22PM +0800, Yi Yang wrote:
->>>> Add check for the return value of kstrdup() and return the error, if it
->>>> fails in order to avoid NULL pointer dereference.
->>>>
->>>> Fixes: 5d171050e28f ("sparc64: vcc: Enable VCC port probe and removal")
->>>> Signed-off-by: Yi Yang <yiyang13@huawei.com>
->>>> ---
->>>>    drivers/tty/vcc.c | 9 +++++++++
->>>>    1 file changed, 9 insertions(+)
->>>>
->>>> diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
->>>> index a39ed981bfd3..420d334f6077 100644
->>>> --- a/drivers/tty/vcc.c
->>>> +++ b/drivers/tty/vcc.c
->>>> @@ -579,6 +579,10 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
->>>>    		return -ENOMEM;
->>>>    	name = kstrdup(dev_name(&vdev->dev), GFP_KERNEL);
->>>> +	if (!name) {
->>>> +		kfree(port);
->>>> +		return -ENOMEM;
->>>
->>> Please just add another goto target later in the function like the rest
->>> of the error paths follow.
->> Ok, i will send v2 patch for this issue.
->>>
->>> And how did you test this patch?
->>>
->> I use crosstool-ng build sparc arch for open CONFIG_VCC.
-> 
-> That is build-testing, how did you functionally test that this works
-> properly?
-> 
-Sorry, I only passed the build test, and did not perform the works test 
-because there was no corresponding hardware.
+On Mon, 4 Sep 2023 11:52:20 +0800
+Yi Yang <yiyang13@huawei.com> wrote:
 
-thanks,
+> Add check for the return value of kstrdup() and return the error, if it
+> fails in order to avoid NULL pointer dereference.
+> 
+> Fixes: 5d171050e28f ("sparc64: vcc: Enable VCC port probe and removal")
+> Signed-off-by: Yi Yang <yiyang13@huawei.com>
+> ---
+> V2: Add goto target for error paths.
+> ---
+>  drivers/tty/vcc.c | 16 +++++++++++++---
+>  1 file changed, 13 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
+> index a39ed981bfd3..5b625f20233b 100644
+> --- a/drivers/tty/vcc.c
+> +++ b/drivers/tty/vcc.c
+> @@ -579,18 +579,22 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+>  		return -ENOMEM;
+>  
+>  	name = kstrdup(dev_name(&vdev->dev), GFP_KERNEL);
+> +	if (!name) {
+> +		rv = -ENOMEM;
+> +		goto free_port;
 
-Yi Yang
+Hi,
+at this point, the port is not yet allocated, so you should not jump to
+free_port. You should simply return with -ENOMEM.
+
+
+> +	}
+>  
+>  	rv = vio_driver_init(&port->vio, vdev, VDEV_CONSOLE_CON, vcc_versions,
+>  			     ARRAY_SIZE(vcc_versions), NULL, name);
+>  	if (rv)
+> -		goto free_port;
+> +		goto free_name;
+>  
+>  	port->vio.debug = vcc_dbg_vio;
+>  	vcc_ldc_cfg.debug = vcc_dbg_ldc;
+>  
+>  	rv = vio_ldc_alloc(&port->vio, &vcc_ldc_cfg, port);
+>  	if (rv)
+> -		goto free_port;
+> +		goto free_name;
+
+You should still jump to free_port, not free_name, after seeing my
+comments below
+
+
+>  
+>  	spin_lock_init(&port->lock);
+>  
+> @@ -624,6 +628,11 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+>  		goto unreg_tty;
+>  	}
+>  	port->domain = kstrdup(domain, GFP_KERNEL);
+> +	if (!port->domain) {
+> +		rv = -ENOMEM;
+> +		goto unreg_tty;
+> +	}
+> +
+>  
+>  	mdesc_release(hp);
+>  
+> @@ -653,8 +662,9 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+>  	vcc_table_remove(port->index);
+>  free_ldc:
+>  	vio_ldc_free(&port->vio);
+> -free_port:
+> +free_name:
+>  	kfree(name);
+> +free_port:
+>  	kfree(port);
+
+free_name should come after free_port...
+
+Hugo.
+
+
+>  
+>  	return rv;
+> -- 
+> 2.17.1
+> 
