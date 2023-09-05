@@ -2,96 +2,154 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D26CA0FFB
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Sep 2023 16:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A99DCA0FE2
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Sep 2023 16:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238577AbjIEQeZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Sep 2023 12:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59556 "EHLO
+        id S240935AbjIEQec (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Sep 2023 12:34:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354868AbjIEPNQ (ORCPT
+        with ESMTP id S1354922AbjIEPzb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Sep 2023 11:13:16 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2EB518D;
-        Tue,  5 Sep 2023 08:13:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
-        :From:subject:date:message-id:reply-to;
-        bh=5XhwL8Vr3H2MzLqLvHtq0Ny1lCroiMgQQZwfX3heG5g=; b=jqvLwFVXA8lkTQnSYM1D+CXOX7
-        ZeQMdZ8TyC1fE9vWofE1eDTjLcJU89+lKytHKENXjIgJlimqvZBKxq25A+EvE39vHa6q9ddCyWfoW
-        MzaRUvOhapn9AitOoeqrNSRWCvj+5Z/rU4KAk4F2/zvCLQoWv0VnEICTPgW+rJzkFX74=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:55420 helo=localhost.localdomain)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1qdXjo-0001SD-1E; Tue, 05 Sep 2023 11:13:08 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     hugo@hugovil.com, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        Lech Perczak <lech.perczak@camlingroup.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Date:   Tue,  5 Sep 2023 11:13:00 -0400
-Message-Id: <20230905151300.15365-1-hugo@hugovil.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 5 Sep 2023 11:55:31 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C4D512A
+        for <linux-serial@vger.kernel.org>; Tue,  5 Sep 2023 08:55:27 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 2917F809E;
+        Tue,  5 Sep 2023 15:55:26 +0000 (UTC)
+Date:   Tue, 5 Sep 2023 18:55:24 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Matthew Howell <matthew.howell@sealevel.com>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        ryan.wenglarz@sealevel.com, james.olson@sealevel.com
+Subject: Re: [PATCH] serial: Revert serial: core: Fix serial core port id to
+ not use port->line
+Message-ID: <20230905155524.GR11662@atomide.com>
+References: <98a891fd-5a1f-6568-a12c-28577126a42@sealevel.com>
+ <20230829035245.GF11662@atomide.com>
+ <511f2dcf-f637-695-8e81-8eaa3735ba88@sealevel.com>
+ <20230829201557.GK11662@atomide.com>
+ <472581f-e7f6-6cc-c749-5be16e4fe9af@sealevel.com>
+ <20230901044730.GL11662@atomide.com>
+ <e8579280-2f44-a585-a3b8-98fad29e6a2d@sealevel.com>
+ <20230902043424.GM11662@atomide.com>
+ <c4b1db31-7814-0d22-36de-a7e6f117d89c@sealevel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 184.161.19.61
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: [PATCH] serial: sc16is7xx: improve comments about variants
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c4b1db31-7814-0d22-36de-a7e6f117d89c@sealevel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+* Matthew Howell <matthew.howell@sealevel.com> [230905 15:05]:
+> On Sat, 2 Sep 2023, Tony Lindgren wrote:
+> > OK. If the patch did not apply against v6.5, can you please verify you don't
+> > have other patches applied like your revert? I don't think the patch I sent
+> > is white space damanged or anything. Doing git diff v6.5.. should show you
+> > what might be different :)
+> 
+> It shouldn't have had any patches applied to. Just verified again by 
+> running git diff after pulling the v6.5 branch, but git diff shows no 
+> differences. 
+> 
+> I suspect alpine may be mangling the text on my end in some way. If I 
+> apply the changes manually and then run git diff v6.5 the patch looks the 
+> same as what you provided, but tab/spaces are different.
 
-Replace 740/750/760 with generic terms like 74x/75x/76x to account for
-variants like 741, 752 and 762.
+OK thanks for checking.
 
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
----
- drivers/tty/serial/sc16is7xx.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+> > Not sure what you mean with the 8250 entries from before loading the
+> > patched driver..
+> > 
+> > Maybe things go wrong already somewhere earlier if the integrated 8250
+> > port(s) don't show up either? If so, maybe this issue is somehow machine
+> > specific rather than 8250_exar specific.
+> 
+> I should have been more specific there. I was actually referring to 
+> 8250_exar entries, not 8250 entries. I have not had any issues with the 
+> base 8250 driver loading.
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index f61d98e09dc3..f89eba15ddcd 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -223,7 +223,7 @@
-  * trigger levels. Trigger levels from 4 characters to 60 characters are
-  * available with a granularity of four.
-  *
-- * When the trigger level setting in TLR is zero, the SC16IS740/750/760 uses the
-+ * When the trigger level setting in TLR is zero, the SC16IS74x/75x/76x uses the
-  * trigger level setting defined in FCR. If TLR has non-zero trigger level value
-  * the trigger level defined in FCR is discarded. This applies to both transmit
-  * FIFO and receive FIFO trigger level setting.
-@@ -234,7 +234,7 @@
- #define SC16IS7XX_TLR_TX_TRIGGER(words)	((((words) / 4) & 0x0f) << 0)
- #define SC16IS7XX_TLR_RX_TRIGGER(words)	((((words) / 4) & 0x0f) << 4)
- 
--/* IOControl register bits (Only 750/760) */
-+/* IOControl register bits (Only 75x/76x) */
- #define SC16IS7XX_IOCONTROL_LATCH_BIT	(1 << 0) /* Enable input latching */
- #define SC16IS7XX_IOCONTROL_MODEM_A_BIT	(1 << 1) /* Enable GPIO[7:4] as modem A pins */
- #define SC16IS7XX_IOCONTROL_MODEM_B_BIT	(1 << 2) /* Enable GPIO[3:0] as modem B pins */
-@@ -249,9 +249,9 @@
- #define SC16IS7XX_EFCR_RTS_INVERT_BIT	(1 << 5) /* RTS output inversion */
- #define SC16IS7XX_EFCR_IRDA_MODE_BIT	(1 << 7) /* IrDA mode
- 						  * 0 = rate upto 115.2 kbit/s
--						  *   - Only 750/760
-+						  *   - Only 75x/76x
- 						  * 1 = rate upto 1.152 Mbit/s
--						  *   - Only 760
-+						  *   - Only 76x
- 						  */
- 
- /* EFR register bits */
+Ah OK sorry I misunderstood.
 
-base-commit: 3f86ed6ec0b390c033eae7f9c487a3fea268e027
--- 
-2.30.2
+> HOWEVER, I did just find something very interesting. When I first found 
+> the issue my running kernel was still an RC version (6.5-RC4, I 
+> believe). The issue did NOT occur in the running kernel, or when building 
+> 8250_exar from the 6.5-RC4 source. I expected the issue to exist in the 
+> running kernel after I updated to 6.5, but this is NOT the the case. 
+> XR17V35X devices still work in my running kernel. It is only when I build 
+> from source AND the source contains the port_id changes that the issue 
+> occurs. My current kernel is 6.5.0-1-MANJARO. 
+> 
+> Could I be doing something wrong here that for some reason only
+> manifests itself in combination with the port_id change? 
+> 
+> The only things I can think of are:
+> 1) insmod does not account for dependencies, so in theory I could be 
+> failing to build and load some other required module. However, modprobe 
+> indicates 8250_exar has no dependencies, so I didn't think this should be 
+> an issue.
 
+If you are not using modprobe, and have CONFIG_SERIAL_CORE=m, you
+need to load serial_base.ko. I don't think we can build the core stuff as
+as serial_core.ko without renaming serial_core.c to something else. Looks
+like your config has SERIAL_CORFE built-in though, and without the serial
+core stuff you'd likely get "Unknown symbol in module" error loading
+8250_exar.
+
+> 2) The Arch/Manjaro Kernel I am running does not actually have the port_id 
+> change, even though it should. Do you know of an a wy to determine this?
+
+Well I guess you could check the patches applied to that kernel, but
+presumably it's v6.5 for that part.
+
+> The general build procedure I have been using is:
+> 
+> ## Clone v6.5 tagged kernel source
+> git clone --depth=1 https://github.com/torvalds/linux.git --branch v6.5
+> 
+> ## Link symvers
+> ln -s /usr/lib/modules/$(uname -r)/build/Module.symvers . 
+> 
+> ## Copy existing config
+> zcat /proc/config.gz > .config
+> 
+> ## Make sure 8250_exar is built as a module. Disable auto-version.
+> sed -i '/CONFIG_SERIAL_8250_EXAR=/c\CONFIG_SERIAL_8250_EXAR=m' .config
+> sed -i '/CONFIG_LOCALVERSION_AUTO=/c\CONFIG_LOCALVERSION_AUTO=n' .config
+> sed -i '/CONFIG_LOCALVERSION=/c\CONFIG_LOCALVERSION=""' .config
+> make modules_prepare LOCALVERSION=-MANJARO EXTRAVERSION=-1
+> 
+> ## Apply patch, if applicable
+> patch -p1 < patch.diff
+> 
+> ## Build and load module
+> make M=drivers/tty/serial/8250/
+> sudo rmmod 8250_exar
+
+Maybe check if rmmod 8250_exar now somehow causes the following insmod
+8250_exar attempts to fail?
+
+> sudo insmod drivers/tty/serial/8250/8250_exar.ko
+> 
+> > Can you please post or email me your full working dmesg output, failing
+> > dmesg output, the kernel .config used, and kernel command line?
+> 
+> ---
+> Kernel Command Line:
+> quiet splash resume=UUID=46a37dda-0d60-4ed1-94ea-9219fbe85dde udev.log_priority=3 iomem=relaxed
+> ---
+> 
+> ---
+> dmesg start
+> Note: Everything before [ 1149.943049] is prior to loading the module 
+> built from source. The successful version looks the same, except instead 
+> of the error message I see the same ttyS4 and ttyS5 at MMIO... messages 
+> that appeared before. 
+
+OK yeah thanks, not seeing anything wrong early in the dmesg.
+
+Regards,
+
+Tony
