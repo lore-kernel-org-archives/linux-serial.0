@@ -2,101 +2,84 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30BE5EB8FAF
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Sep 2023 10:47:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC91EB8FAF
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Sep 2023 10:58:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231314AbjIFKrY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 Sep 2023 06:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58948 "EHLO
+        id S231171AbjIFK6K (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 6 Sep 2023 06:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231267AbjIFKrW (ORCPT
+        with ESMTP id S229794AbjIFK6K (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 Sep 2023 06:47:22 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 273691730;
-        Wed,  6 Sep 2023 03:47:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1693997236; x=1725533236;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=ymyiI8n2WES/QdaORSDqpei3Mu93ry3qBVlK6F6utw8=;
-  b=lyWm1MvGzdb9NOFVY/4ux5G+gxNjLjfIPuzX7MUA7Gx/tKAYYiEnUBfa
-   gjjxeWODjY2OVQ47OmXaOeWWrTGbLxIadHkN0suyRu/lmOo4Dq8yuevOC
-   wjS8JS8AdwJwqlG/kjXIHbCVPE3Nrqc2oHUNRZjQZcmz13abXqGmz/AdL
-   B2TJC6U0EdFAfy0R79BQ8u19aACr4RyGIr4+iC3jBm8xxYzhDVTX0Ur1H
-   1nztbmw1c0P8jt9R5Vgq/2vHX32Dr6buKkXhifOaRTGAYsSZ8diGAX3ws
-   zDoJYlSVr+R18RHAWBAWQ200eqHugQQa3uMvH9O2BNXREBJ+n3d02D/+A
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10824"; a="375932777"
-X-IronPort-AV: E=Sophos;i="6.02,231,1688454000"; 
-   d="scan'208";a="375932777"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2023 03:47:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10824"; a="988190501"
-X-IronPort-AV: E=Sophos;i="6.02,231,1688454000"; 
-   d="scan'208";a="988190501"
-Received: from swegrzyn-mobl.ger.corp.intel.com ([10.252.60.192])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2023 03:47:12 -0700
-Date:   Wed, 6 Sep 2023 13:47:10 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Hugo Villeneuve <hugo@hugovil.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 6 Sep 2023 06:58:10 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C82FF10C8;
+        Wed,  6 Sep 2023 03:58:06 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBF4DC433C8;
+        Wed,  6 Sep 2023 10:58:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1693997886;
+        bh=7NWBFFeaDc5kT8Y4tg+pWiWspbiauLGDwmhKsxAfZMI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=U/XlV/6UuVF4Qt76H9wMzbr4sojsNCHBX/lHJnRKS+ELy0BXI5uNyJ6i6mglloVx0
+         51pOvIHBe3Krn9iPW0Zxic92UplOJVWBIi6DWQHtRWIzkaQl0Mx3GXiWmvGiOf06VY
+         C2mEw2Ewa5hNqikob57UuYhUuVxtcOw1Ve3RJQH8=
+Date:   Wed, 6 Sep 2023 11:58:02 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Hugo Villeneuve <hugo@hugovil.com>,
         Jiri Slaby <jirislaby@kernel.org>,
         Hugo Villeneuve <hvilleneuve@dimonoff.com>,
         LKML <linux-kernel@vger.kernel.org>,
         linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH] serial: sc16is7xx: remove unused to_sc16is7xx_port
- macro
-In-Reply-To: <20230905181649.134720-1-hugo@hugovil.com>
-Message-ID: <f8912f92-dda9-9f56-99fa-f3f79d95c86@linux.intel.com>
+Subject: Re: [PATCH] serial: sc16is7xx: remove unused to_sc16is7xx_port macro
+Message-ID: <2023090642-density-durably-c3ef@gregkh>
 References: <20230905181649.134720-1-hugo@hugovil.com>
+ <f8912f92-dda9-9f56-99fa-f3f79d95c86@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1916176287-1693997234=:1906"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <f8912f92-dda9-9f56-99fa-f3f79d95c86@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1916176287-1693997234=:1906
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-
-On Tue, 5 Sep 2023, Hugo Villeneuve wrote:
-
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Wed, Sep 06, 2023 at 01:47:10PM +0300, Ilpo Järvinen wrote:
+> On Tue, 5 Sep 2023, Hugo Villeneuve wrote:
 > 
-> This macro is not used anywhere.
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > 
+> > This macro is not used anywhere.
+> > 
+> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > ---
+> >  drivers/tty/serial/sc16is7xx.c | 1 -
+> >  1 file changed, 1 deletion(-)
+> > 
+> > diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> > index f61d98e09dc3..d8534580c6d5 100644
+> > --- a/drivers/tty/serial/sc16is7xx.c
+> > +++ b/drivers/tty/serial/sc16is7xx.c
+> > @@ -358,7 +358,6 @@ static struct uart_driver sc16is7xx_uart = {
+> >  static void sc16is7xx_ier_set(struct uart_port *port, u8 bit);
+> >  static void sc16is7xx_stop_tx(struct uart_port *port);
+> >  
+> > -#define to_sc16is7xx_port(p,e)	((container_of((p), struct sc16is7xx_port, e)))
+> >  #define to_sc16is7xx_one(p,e)	((container_of((p), struct sc16is7xx_one, e)))
+> >  
+> >  static int sc16is7xx_line(struct uart_port *port)
+> > 
+> > base-commit: 3f86ed6ec0b390c033eae7f9c487a3fea268e027
 > 
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> ---
->  drivers/tty/serial/sc16is7xx.c | 1 -
->  1 file changed, 1 deletion(-)
+> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 > 
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> index f61d98e09dc3..d8534580c6d5 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -358,7 +358,6 @@ static struct uart_driver sc16is7xx_uart = {
->  static void sc16is7xx_ier_set(struct uart_port *port, u8 bit);
->  static void sc16is7xx_stop_tx(struct uart_port *port);
->  
-> -#define to_sc16is7xx_port(p,e)	((container_of((p), struct sc16is7xx_port, e)))
->  #define to_sc16is7xx_one(p,e)	((container_of((p), struct sc16is7xx_one, e)))
->  
->  static int sc16is7xx_line(struct uart_port *port)
-> 
-> base-commit: 3f86ed6ec0b390c033eae7f9c487a3fea268e027
+> Note that Greg might be happier if you wait next time until after the 
+> merge window is closed before sending non-fixes patch like this.
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+I just ignore them and add them to my review queue until after -rc1 is
+out, not a problem at all.
 
-Note that Greg might be happier if you wait next time until after the 
-merge window is closed before sending non-fixes patch like this.
+thanks,
 
--- 
- i.
-
---8323329-1916176287-1693997234=:1906--
+greg k-h
