@@ -2,126 +2,108 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FE16EE14A5
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Sep 2023 15:13:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB883EE14A5
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Sep 2023 15:16:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242180AbjIFPN7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 Sep 2023 11:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38746 "EHLO
+        id S232143AbjIFPQa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 6 Sep 2023 11:16:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230239AbjIFPN7 (ORCPT
+        with ESMTP id S229903AbjIFPQa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 Sep 2023 11:13:59 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E392FE64
-        for <linux-serial@vger.kernel.org>; Wed,  6 Sep 2023 08:13:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694013235; x=1725549235;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rSEj+Pmvhe26xfdoZB07Xcv0LB53AdwXbkTfJa0/Amw=;
-  b=bCgcZfKx8HT2HFZmYbJwN2ZpHTytSshX5LNmaUSToQl45/ohSxAaFwbU
-   pCX/RVuZO9E01xVNFa/zl59En8FlJ8vNOTk1xUfYOwW/sLXqHgV/fKsuZ
-   V34Zzbjs9PMLluFvL0pLLg7fA4prWhWfXafbb9Xzlj3GBOPoiEn1HTB+v
-   dR+sk3Q3MnytkqsjZ8tYHjWPqvP7yZlg6RaoPLCsIRxO+z2wfSwsaJIZu
-   99wy+PFCvW4MqDGnP8iMzS51PwUQNWbW7TYWgbSp/fPPexktZXwj5F6GA
-   SEe9mO9eS/0iEhsKh0T8NN4E5TSfEWOcOaR0f0OKMinI6IoJHyOuO6j43
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10825"; a="463468580"
-X-IronPort-AV: E=Sophos;i="6.02,232,1688454000"; 
-   d="scan'208";a="463468580"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2023 08:13:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10825"; a="776648322"
-X-IronPort-AV: E=Sophos;i="6.02,232,1688454000"; 
-   d="scan'208";a="776648322"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2023 08:13:52 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1qduE2-006yVb-0Z;
-        Wed, 06 Sep 2023 18:13:50 +0300
-Date:   Wed, 6 Sep 2023 18:13:49 +0300
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Matthew Howell <matthew.howell@sealevel.com>
-Cc:     gregkh@linuxfoundation.org, jeff.baldwin@sealevel.com,
-        james.olson@sealevel.com, ryan.wenglarz@sealevel.com,
-        darren.beeson@sealevel.com, linux-serial@vger.kernel.org,
-        ilpo.jarvinen@linux.intel.com
-Subject: Re: [PATCH V4 2/2] serial: exar: Add RS-485 support for Sealevel
- XR17V35X based cards
-Message-ID: <ZPiXLdATKs2pD20d@smile.fi.intel.com>
-References: <e2564a57-128e-cd9c-9bae-23b155fd8ee9@sealevel.com>
- <ZPiCPJYfiR9ZfVJC@smile.fi.intel.com>
- <375eb5e0-27db-cadf-721e-2d5c0cd150f4@sealevel.com>
+        Wed, 6 Sep 2023 11:16:30 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2AC1717;
+        Wed,  6 Sep 2023 08:16:24 -0700 (PDT)
+Received: from pps.filterd (m0369458.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 386CgI3w026357;
+        Wed, 6 Sep 2023 17:16:08 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding:content-type; s=selector1; bh=Z0CZeNx
+        wjeI025UreE1uBB8uYQm45Th0i5a1aX/7Erw=; b=jd1j/DRUNovYZ5BnqeP8J55
+        JfcveR1/GOMgPgPdJOdaHw8GOn7xE1FV6e8OFrv29+WPmaGCkb1F1DKih1FbXOlh
+        6Xrfyn242h+9c9H+HgVOXQWIGS3ILsl9MWscubGXwzj0hNXrv5MhL6rCLX6zkcee
+        PcnmEa7WqVmMwh69uNdMnKVzKBktTTzVr72eWWxBflPqlRzn6oFj5dLbjkpOFTrg
+        iOYql+gE4NTcHC7Wk8T2SKMVIJoZHwwDtVLijSRTq6k5EWXZs3uLDMtn1mUyP2T+
+        9rNqG6c5jSSMFyZQpIertu47Yav/npqmvrsXgNV9OrghKlc6cQz7kIubH/s9aRg=
+        =
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3svem0qr76-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 06 Sep 2023 17:16:08 +0200 (MEST)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 86571100057;
+        Wed,  6 Sep 2023 17:16:07 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 7012225E50D;
+        Wed,  6 Sep 2023 17:16:07 +0200 (CEST)
+Received: from localhost (10.201.20.136) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Wed, 6 Sep
+ 2023 17:16:07 +0200
+From:   Valentin Caron <valentin.caron@foss.st.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+CC:     Erwan Le Ray <erwan.leray@foss.st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Valentin Caron <valentin.caron@foss.st.com>
+Subject: [PATCH] serial: stm32: add support for break control
+Date:   Wed, 6 Sep 2023 17:15:47 +0200
+Message-ID: <20230906151547.840302-1-valentin.caron@foss.st.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <375eb5e0-27db-cadf-721e-2d5c0cd150f4@sealevel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.201.20.136]
+X-ClientProxiedBy: EQNCAS1NODE4.st.com (10.75.129.82) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
+ definitions=2023-09-06_06,2023-09-05_01,2023-05-22_02
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Sep 06, 2023 at 11:05:20AM -0400, Matthew Howell wrote:
-> On Wed, 6 Sep 2023, Andy Shevchenko wrote:
-> > On Tue, Sep 05, 2023 at 12:06:20PM -0400, Matthew Howell wrote:
+From: Erwan Le Ray <erwan.leray@foss.st.com>
 
-...
+Add support for break control to the stm32 serial driver.
 
-> > > +     generic_rs485_config(port, termios, rs485);
-> > 
-> > > +     if (rs485->flags & SER_RS485_ENABLED) {
-> > 
-> > What I meant is to have
-> > 
-> >         if (!)rs485->flags & SER_RS485_ENABLED))
-> >                 return 0;
-> > 
-> > here, which allows you to reduce indentation level in the below block.
-> > 
-> > > +             /* Set EFR[4]=1 to enable enhanced feature registers */
-> > > +             writeb(readb(p + UART_XR_EFR) | UART_EFR_ECB, p + UART_XR_EFR);
-> > > +
-> > > +             /* Set MCR to use DTR as Auto-RS485 Enable signal */
-> > > +             writeb(UART_MCR_OUT1, p + UART_MCR);
-> > > +
-> > > +             /* Store original LCR and set LCR[7]=1 to enable access to DLD register */
-> > > +             old_lcr = readb(p + UART_LCR);
-> > > +             writeb(old_lcr | UART_LCR_DLAB, p + UART_LCR);
-> > > +
-> > > +             /* Set DLD[7]=1 for inverted RS485 Enable logic */
-> > > +             writeb(readb(p + UART_EXAR_DLD) | UART_EXAR_DLD_485_POLARITY, p + UART_EXAR_DLD);
-> > > +
-> > > +             writeb(old_lcr, p + UART_LCR);
-> > > +    }
-> > > +
-> > > +     return 0;
-> 
-> I see where you are coming from now, but I find that slightly less clear 
-> than having the 'main action' within the conditional statement. And since 
-> the code is not heavily indented I don't see much benefit of removing the 
-> indent.
+Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
+Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
+---
+ drivers/tty/serial/stm32-usart.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-In that case it might make sense to split to two functions:
-
-func1()
-{
-	...
-}
-
-func2()
-{
-	if (...)
-		return func1()
-
-	return 0;
-}
-
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index 5e9cf0c48813..d03ec69d79fc 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -1047,9 +1047,20 @@ static void stm32_usart_stop_rx(struct uart_port *port)
+ 		stm32_usart_clr_bits(port, ofs->cr3, stm32_port->cr3_irq);
+ }
+ 
+-/* Handle breaks - ignored by us */
+ static void stm32_usart_break_ctl(struct uart_port *port, int break_state)
+ {
++	struct stm32_port *stm32_port = to_stm32_port(port);
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	if (break_state)
++		stm32_usart_set_bits(port, ofs->rqr, USART_RQR_SBKRQ);
++	else
++		stm32_usart_clr_bits(port, ofs->rqr, USART_RQR_SBKRQ);
++
++	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
+ static int stm32_usart_startup(struct uart_port *port)
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
