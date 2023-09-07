@@ -2,108 +2,143 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB883EE14A5
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Sep 2023 15:16:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C0CBEE14D3
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Sep 2023 01:25:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232143AbjIFPQa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 Sep 2023 11:16:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57124 "EHLO
+        id S231847AbjIGBZU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 6 Sep 2023 21:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229903AbjIFPQa (ORCPT
+        with ESMTP id S230010AbjIGBZU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 Sep 2023 11:16:30 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2AC1717;
-        Wed,  6 Sep 2023 08:16:24 -0700 (PDT)
-Received: from pps.filterd (m0369458.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 386CgI3w026357;
-        Wed, 6 Sep 2023 17:16:08 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding:content-type; s=selector1; bh=Z0CZeNx
-        wjeI025UreE1uBB8uYQm45Th0i5a1aX/7Erw=; b=jd1j/DRUNovYZ5BnqeP8J55
-        JfcveR1/GOMgPgPdJOdaHw8GOn7xE1FV6e8OFrv29+WPmaGCkb1F1DKih1FbXOlh
-        6Xrfyn242h+9c9H+HgVOXQWIGS3ILsl9MWscubGXwzj0hNXrv5MhL6rCLX6zkcee
-        PcnmEa7WqVmMwh69uNdMnKVzKBktTTzVr72eWWxBflPqlRzn6oFj5dLbjkpOFTrg
-        iOYql+gE4NTcHC7Wk8T2SKMVIJoZHwwDtVLijSRTq6k5EWXZs3uLDMtn1mUyP2T+
-        9rNqG6c5jSSMFyZQpIertu47Yav/npqmvrsXgNV9OrghKlc6cQz7kIubH/s9aRg=
-        =
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3svem0qr76-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Sep 2023 17:16:08 +0200 (MEST)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 86571100057;
-        Wed,  6 Sep 2023 17:16:07 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 7012225E50D;
-        Wed,  6 Sep 2023 17:16:07 +0200 (CEST)
-Received: from localhost (10.201.20.136) by SHFDAG1NODE1.st.com (10.75.129.69)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Wed, 6 Sep
- 2023 17:16:07 +0200
-From:   Valentin Caron <valentin.caron@foss.st.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-CC:     Erwan Le Ray <erwan.leray@foss.st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Valentin Caron <valentin.caron@foss.st.com>
-Subject: [PATCH] serial: stm32: add support for break control
-Date:   Wed, 6 Sep 2023 17:15:47 +0200
-Message-ID: <20230906151547.840302-1-valentin.caron@foss.st.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 6 Sep 2023 21:25:20 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA20172C;
+        Wed,  6 Sep 2023 18:25:15 -0700 (PDT)
+Received: from kwepemm600014.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Rh1g50wJDzMlCC;
+        Thu,  7 Sep 2023 09:21:53 +0800 (CST)
+Received: from [10.67.110.164] (10.67.110.164) by
+ kwepemm600014.china.huawei.com (7.193.23.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.31; Thu, 7 Sep 2023 09:25:13 +0800
+Subject: Re: [PATCH V2] tty: vcc: Add check for kstrdup() in vcc_probe()
+To:     Hugo Villeneuve <hugo@hugovil.com>
+CC:     <davem@davemloft.net>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <jag.raman@oracle.com>,
+        <sparclinux@vger.kernel.org>, <linux-serial@vger.kernel.org>
+References: <20230904035220.48164-1-yiyang13@huawei.com>
+ <20230905101938.7cf68e477b946e1a066de17f@hugovil.com>
+From:   "yiyang (D)" <yiyang13@huawei.com>
+Message-ID: <03cb09e9-5435-b464-b067-cf2c3f97660c@huawei.com>
+Date:   Thu, 7 Sep 2023 09:25:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.201.20.136]
-X-ClientProxiedBy: EQNCAS1NODE4.st.com (10.75.129.82) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
- definitions=2023-09-06_06,2023-09-05_01,2023-05-22_02
+In-Reply-To: <20230905101938.7cf68e477b946e1a066de17f@hugovil.com>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.110.164]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600014.china.huawei.com (7.193.23.54)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Erwan Le Ray <erwan.leray@foss.st.com>
+On 2023/9/5 22:19, Hugo Villeneuve wrote:
+> On Mon, 4 Sep 2023 11:52:20 +0800
+> Yi Yang <yiyang13@huawei.com> wrote:
+> 
+>> Add check for the return value of kstrdup() and return the error, if it
+>> fails in order to avoid NULL pointer dereference.
+>>
+>> Fixes: 5d171050e28f ("sparc64: vcc: Enable VCC port probe and removal")
+>> Signed-off-by: Yi Yang <yiyang13@huawei.com>
+>> ---
+>> V2: Add goto target for error paths.
+>> ---
+>>   drivers/tty/vcc.c | 16 +++++++++++++---
+>>   1 file changed, 13 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
+>> index a39ed981bfd3..5b625f20233b 100644
+>> --- a/drivers/tty/vcc.c
+>> +++ b/drivers/tty/vcc.c
+>> @@ -579,18 +579,22 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+>>   		return -ENOMEM;
+>>   
+>>   	name = kstrdup(dev_name(&vdev->dev), GFP_KERNEL);
+>> +	if (!name) {
+>> +		rv = -ENOMEM;
+>> +		goto free_port;
+> 
+> Hi,
+> at this point, the port is not yet allocated, so you should not jump to
+> free_port. You should simply return with -ENOMEM.
+> 
+The port was already allocated by kzalloc(), and should be free before 
+return -ENOMEM.
+> 
+>> +	}
+>>   
+>>   	rv = vio_driver_init(&port->vio, vdev, VDEV_CONSOLE_CON, vcc_versions,
+>>   			     ARRAY_SIZE(vcc_versions), NULL, name);
+>>   	if (rv)
+>> -		goto free_port;
+>> +		goto free_name;
+>>   
+>>   	port->vio.debug = vcc_dbg_vio;
+>>   	vcc_ldc_cfg.debug = vcc_dbg_ldc;
+>>   
+>>   	rv = vio_ldc_alloc(&port->vio, &vcc_ldc_cfg, port);
+>>   	if (rv)
+>> -		goto free_port;
+>> +		goto free_name;
+> 
+> You should still jump to free_port, not free_name, after seeing my
+> comments below
+> 
+> 
+>>   
+>>   	spin_lock_init(&port->lock);
+>>   
+>> @@ -624,6 +628,11 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+>>   		goto unreg_tty;
+>>   	}
+>>   	port->domain = kstrdup(domain, GFP_KERNEL);
+>> +	if (!port->domain) {
+>> +		rv = -ENOMEM;
+>> +		goto unreg_tty;
+>> +	}
+>> +
+>>   and should be free before return -ENOMEM.
+>>   	mdesc_release(hp);
+>>   
+>> @@ -653,8 +662,9 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+>>   	vcc_table_remove(port->index);
+>>   free_ldc:
+>>   	vio_ldc_free(&port->vio);
+>> -free_port:
+>> +free_name:
+>>   	kfree(name);
+>> +free_port:
+>>   	kfree(port);
+> 
+> free_name should come after free_port...
+> 
+> Hugo.
+The release process should be in reverse order.
 
-Add support for break control to the stm32 serial driver.
-
-Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
-Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
----
- drivers/tty/serial/stm32-usart.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 5e9cf0c48813..d03ec69d79fc 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -1047,9 +1047,20 @@ static void stm32_usart_stop_rx(struct uart_port *port)
- 		stm32_usart_clr_bits(port, ofs->cr3, stm32_port->cr3_irq);
- }
- 
--/* Handle breaks - ignored by us */
- static void stm32_usart_break_ctl(struct uart_port *port, int break_state)
- {
-+	struct stm32_port *stm32_port = to_stm32_port(port);
-+	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	if (break_state)
-+		stm32_usart_set_bits(port, ofs->rqr, USART_RQR_SBKRQ);
-+	else
-+		stm32_usart_clr_bits(port, ofs->rqr, USART_RQR_SBKRQ);
-+
-+	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
- static int stm32_usart_startup(struct uart_port *port)
--- 
-2.25.1
-
+--
+Yi Yang
+> 
+> 
+>>   
+>>   	return rv;
+>> -- 
+>> 2.17.1
+>>
+> 
+> .
+> 
