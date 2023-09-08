@@ -2,160 +2,77 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 056A5EC8742
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Sep 2023 17:20:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FF9AEE57CA
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Sep 2023 06:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242822AbjIGRUv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 Sep 2023 13:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58516 "EHLO
+        id S234919AbjIHGSm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 8 Sep 2023 02:18:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232619AbjIGRUo (ORCPT
+        with ESMTP id S231524AbjIHGSm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 Sep 2023 13:20:44 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7AD3B2;
-        Thu,  7 Sep 2023 10:20:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-        :Date:subject:date:message-id:reply-to;
-        bh=tCMvBL3/HLEl/hDYIS/50Mz/xVJ11wiyoDOxpmEOOTE=; b=MHOsHcq7iCZBeagaOt/9p6KbOa
-        YKkA2BhrzTW+y4ej51qW/gq5s6MlIb/FlZ+kKseG7M64ezsmXG07vO2+wn5ClfMeBo+ABYa/ErcfG
-        L/SaJG2Bl+iD754JDs2ADc2YHDzpa/VX9XbQa6mKXT8j62o+NmP/kJ8OCoWf4fCI/FsM=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:51382 helo=asus64.hugovil.com)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1qeF6i-0004I6-Nr; Thu, 07 Sep 2023 09:31:42 -0400
-Date:   Thu, 7 Sep 2023 09:31:40 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     "yiyang (D)" <yiyang13@huawei.com>
-Cc:     <davem@davemloft.net>, <gregkh@linuxfoundation.org>,
-        <jirislaby@kernel.org>, <jag.raman@oracle.com>,
-        <sparclinux@vger.kernel.org>, <linux-serial@vger.kernel.org>
-Message-Id: <20230907093140.99e03b927705dabe6def7e00@hugovil.com>
-In-Reply-To: <03cb09e9-5435-b464-b067-cf2c3f97660c@huawei.com>
-References: <20230904035220.48164-1-yiyang13@huawei.com>
-        <20230905101938.7cf68e477b946e1a066de17f@hugovil.com>
-        <03cb09e9-5435-b464-b067-cf2c3f97660c@huawei.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH V2] tty: vcc: Add check for kstrdup() in vcc_probe()
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Fri, 8 Sep 2023 02:18:42 -0400
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 07 Sep 2023 23:18:37 PDT
+Received: from ssh247.corpemail.net (ssh247.corpemail.net [210.51.61.247])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B3491990;
+        Thu,  7 Sep 2023 23:18:36 -0700 (PDT)
+Received: from ssh247.corpemail.net
+        by ssh247.corpemail.net ((D)) with ASMTP (SSL) id DFZ00129;
+        Fri, 08 Sep 2023 14:17:29 +0800
+Received: from localhost.localdomain (10.94.3.99) by
+ jtjnmail201621.home.langchao.com (10.100.2.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32; Fri, 8 Sep 2023 14:17:28 +0800
+From:   Bo Liu <liubo03@inspur.com>
+To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
+CC:     <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, Bo Liu <liubo03@inspur.com>
+Subject: [PATCH] tty: hvc: remove set but unused variable
+Date:   Fri, 8 Sep 2023 02:17:26 -0400
+Message-ID: <20230908061726.2641-1-liubo03@inspur.com>
+X-Mailer: git-send-email 2.18.2
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.94.3.99]
+X-ClientProxiedBy: Jtjnmail201614.home.langchao.com (10.100.2.14) To
+ jtjnmail201621.home.langchao.com (10.100.2.21)
+tUid:   202390814172939ff660740f7c538239454b4c8871133
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 7 Sep 2023 09:25:12 +0800
-"yiyang (D)" <yiyang13@huawei.com> wrote:
+The local variable vdev in hvcs_destruct_port() is set
+but not used. Remove the variable and related code.
 
-> On 2023/9/5 22:19, Hugo Villeneuve wrote:
-> > On Mon, 4 Sep 2023 11:52:20 +0800
-> > Yi Yang <yiyang13@huawei.com> wrote:
-> > 
-> >> Add check for the return value of kstrdup() and return the error, if it
-> >> fails in order to avoid NULL pointer dereference.
-> >>
-> >> Fixes: 5d171050e28f ("sparc64: vcc: Enable VCC port probe and removal")
-> >> Signed-off-by: Yi Yang <yiyang13@huawei.com>
-> >> ---
-> >> V2: Add goto target for error paths.
-> >> ---
-> >>   drivers/tty/vcc.c | 16 +++++++++++++---
-> >>   1 file changed, 13 insertions(+), 3 deletions(-)
-> >>
-> >> diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
-> >> index a39ed981bfd3..5b625f20233b 100644
-> >> --- a/drivers/tty/vcc.c
-> >> +++ b/drivers/tty/vcc.c
-> >> @@ -579,18 +579,22 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
-> >>   		return -ENOMEM;
-> >>   
-> >>   	name = kstrdup(dev_name(&vdev->dev), GFP_KERNEL);
-> >> +	if (!name) {
-> >> +		rv = -ENOMEM;
-> >> +		goto free_port;
-> > 
-> > Hi,
-> > at this point, the port is not yet allocated, so you should not jump to
-> > free_port. You should simply return with -ENOMEM.
-> > 
-> The port was already allocated by kzalloc(), and should be free before 
-> return -ENOMEM.
+Signed-off-by: Bo Liu <liubo03@inspur.com>
+---
+ drivers/tty/hvc/hvcs.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-You are right, dismiss all my comments.
-
-Hugo.
-
-
-> > 
-> >> +	}
-> >>   
-> >>   	rv = vio_driver_init(&port->vio, vdev, VDEV_CONSOLE_CON, vcc_versions,
-> >>   			     ARRAY_SIZE(vcc_versions), NULL, name);
-> >>   	if (rv)
-> >> -		goto free_port;
-> >> +		goto free_name;
-> >>   
-> >>   	port->vio.debug = vcc_dbg_vio;
-> >>   	vcc_ldc_cfg.debug = vcc_dbg_ldc;
-> >>   
-> >>   	rv = vio_ldc_alloc(&port->vio, &vcc_ldc_cfg, port);
-> >>   	if (rv)
-> >> -		goto free_port;
-> >> +		goto free_name;
-> > 
-> > You should still jump to free_port, not free_name, after seeing my
-> > comments below
-> > 
-> > 
-> >>   
-> >>   	spin_lock_init(&port->lock);
-> >>   
-> >> @@ -624,6 +628,11 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
-> >>   		goto unreg_tty;
-> >>   	}
-> >>   	port->domain = kstrdup(domain, GFP_KERNEL);
-> >> +	if (!port->domain) {
-> >> +		rv = -ENOMEM;
-> >> +		goto unreg_tty;
-> >> +	}
-> >> +
-> >>   and should be free before return -ENOMEM.
-> >>   	mdesc_release(hp);
-> >>   
-> >> @@ -653,8 +662,9 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
-> >>   	vcc_table_remove(port->index);
-> >>   free_ldc:
-> >>   	vio_ldc_free(&port->vio);
-> >> -free_port:
-> >> +free_name:
-> >>   	kfree(name);
-> >> +free_port:
-> >>   	kfree(port);
-> > 
-> > free_name should come after free_port...
-> > 
-> > Hugo.
-> The release process should be in reverse order.
-> 
-> --
-> Yi Yang
-> > 
-> > 
-> >>   
-> >>   	return rv;
-> >> -- 
-> >> 2.17.1
-> >>
-> > 
-> > .
-> > 
-> 
-
-
+diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
+index d29fdfe9d93d..b537d1fb67d4 100644
+--- a/drivers/tty/hvc/hvcs.c
++++ b/drivers/tty/hvc/hvcs.c
+@@ -664,7 +664,6 @@ static void hvcs_return_index(int index)
+ static void hvcs_destruct_port(struct tty_port *p)
+ {
+ 	struct hvcs_struct *hvcsd = container_of(p, struct hvcs_struct, port);
+-	struct vio_dev *vdev;
+ 	struct completion *comp;
+ 	unsigned long flags;
+ 
+@@ -686,7 +685,6 @@ static void hvcs_destruct_port(struct tty_port *p)
+ 	printk(KERN_INFO "HVCS: Destroyed hvcs_struct for vty-server@%X.\n",
+ 			hvcsd->vdev->unit_address);
+ 
+-	vdev = hvcsd->vdev;
+ 	hvcsd->vdev = NULL;
+ 
+ 	hvcsd->p_unit_address = 0;
 -- 
-Hugo Villeneuve <hugo@hugovil.com>
+2.27.0
+
