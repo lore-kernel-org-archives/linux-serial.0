@@ -2,32 +2,31 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B4CEEEB57E
-	for <linux-serial@archiver.kernel.org>; Sat,  9 Sep 2023 00:43:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3169EEB57A
+	for <linux-serial@archiver.kernel.org>; Sat,  9 Sep 2023 00:43:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346220AbjIIAnm (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 Sep 2023 20:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33170 "EHLO
+        id S241332AbjIIAnt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 8 Sep 2023 20:43:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346078AbjIIAnW (ORCPT
+        with ESMTP id S1346169AbjIIAn2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 Sep 2023 20:43:22 -0400
+        Fri, 8 Sep 2023 20:43:28 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4718D273D;
-        Fri,  8 Sep 2023 17:40:44 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E761DC113C9;
-        Sat,  9 Sep 2023 00:40:39 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA2D2D5F;
+        Fri,  8 Sep 2023 17:40:52 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD06AC433C7;
+        Sat,  9 Sep 2023 00:40:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1694220040;
-        bh=0sOm6lIP2wXjVkePKRYIhBw8lIidJxM8I2I6MMcG9lE=;
+        s=k20201202; t=1694220008;
+        bh=pyFlXhNsP6oJdFNG8UBViGxjPbCXacH4sXHvH2t8HYI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rCoQEyQ/s/WUdUk4wyxVmVr4B17sPp/xCokDFywfaqyt53wkU1DsVp6srQk0mOSk6
-         yJPvFia/eKaKO5F2MBvsI+wIRv2CUn01AXU2Jqwxe0sIpW/VedPOOrE1Uv6RZAeD+/
-         mSSfXpVuzxTZ7Z31J4ywTS5Pb+nEdvnp3M9+V9pYDQq3zm1n59imreUnegEVwIYEiS
-         IaFAm9jZ76JDKTXJf2F2HREbuWGizDMvfqmu+a+y2oN8KQd3GyoB2jSh2XniV+GWbz
-         3KJwOa6wQU8B1XegK1zEpfIAmRzp6JZnkxLQCnb5yeODevRzIDJgg/ie4rugMqqaEK
-         KtRsf659rHI3Q==
+        b=EKO5cZyQNEw007CU8Ngdw0IRzaK8Vq4KoCnU+UJo/YkA78AHGq5xfTgLhTxi4Lxr4
+         4m8zlv7gxQtJTfDgzUUL8cnOBCetXmAud+j/93BrxaOA7IrWzEIlHwmykm0khw4jcl
+         uwWqX/+ynHznZSLgFQIJK4M17H34fGwGBP9kzhqK6CLK3qZgHLoKUKM3GaoIl9Mz81
+         ZHopEjMsthNDHH2KU6lb1WE5hoKtPASr3sITMrwa1m75QJoqOlg7rxIwKTS7KKhtuw
+         x6uNIlH8QGVSB50Nr23/6POq3NsEKXET4a05AmmNg3GKcbr6PoRJOpZ74w352vkLWk
+         /2sDjCOA5cruw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
@@ -35,16 +34,16 @@ Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
         ilpo.jarvinen@linux.intel.com, u.kleine-koenig@pengutronix.de,
         linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 11/14] serial: cpm_uart: Avoid suspicious locking
-Date:   Fri,  8 Sep 2023 20:40:11 -0400
-Message-Id: <20230909004015.3580832-11-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 12/16] serial: cpm_uart: Avoid suspicious locking
+Date:   Fri,  8 Sep 2023 20:39:37 -0400
+Message-Id: <20230909003941.3580631-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230909004015.3580832-1-sashal@kernel.org>
-References: <20230909004015.3580832-1-sashal@kernel.org>
+In-Reply-To: <20230909003941.3580631-1-sashal@kernel.org>
+References: <20230909003941.3580631-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 5.4.256
+X-stable-base: Linux 5.10.194
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
@@ -95,10 +94,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 4 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-index de6d02f7abe2b..c37036fee231d 100644
+index 4df47d02b34b4..f727222469b60 100644
 --- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
 +++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-@@ -1267,19 +1267,14 @@ static void cpm_uart_console_write(struct console *co, const char *s,
+@@ -1263,19 +1263,14 @@ static void cpm_uart_console_write(struct console *co, const char *s,
  {
  	struct uart_cpm_port *pinfo = &cpm_uart_ports[co->index];
  	unsigned long flags;
