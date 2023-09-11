@@ -2,78 +2,66 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31A23EE57DF
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Sep 2023 07:36:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3D4CCA0EED
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Sep 2023 21:37:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233572AbjIKHgX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Sep 2023 03:36:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37528 "EHLO
+        id S1348716AbjIKVaP (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 11 Sep 2023 17:30:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbjIKHgW (ORCPT
+        with ESMTP id S237860AbjIKNPv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Sep 2023 03:36:22 -0400
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222D1118;
-        Mon, 11 Sep 2023 00:36:18 -0700 (PDT)
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-52eed139ec2so3653755a12.2;
-        Mon, 11 Sep 2023 00:36:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694417776; x=1695022576;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=E++QcmaSCqRTogZf0py8lxCDiY1aiEIVkjD7gfQ6xAc=;
-        b=Vix8Uty22l3e5DfXDB+cTLX9hkZ1niPg5oW8q1M+wea03bw3cjlZECMMz5BewQVYRQ
-         X4xaiqfYfL78Wdvt3l53n8p6JvDB53VT7d9bTUzEa7+eMVm2khVU8RB0S6Z3Wx5CHqt0
-         S9916vnEvFLY814yP6MR/+oB78mOxwrUrcA0iAS3ogr5xuJMClNfDtuhyHGbhoSdG8fN
-         CkF69HINce36Pcg8GkISqpWYVZIGY+jVG6C8UrY5tIcpn+Kgo5ixTHqh6nPEHqkYjXCH
-         2q4fNEwTB2KAP6kd0h7wM/dmFDiZRu9RflxzXzPFjepCfkLxhG4cLyNH795evp1Jf4+T
-         hWxg==
-X-Gm-Message-State: AOJu0Yy0ct5vZS/MVClzt+cvJvO1chXUojjK9281iYaQxqq6W60le4EH
-        AuT2sIjrEAly+2Cl9ACJ1zg=
-X-Google-Smtp-Source: AGHT+IFjbgI2p7VIOt+A7f05oIS5iZ+7BHD5jL8GSbm3gtDeDn6DEJ4gzH5WlS5acf6oV4/HaPfRgQ==
-X-Received: by 2002:a17:906:530c:b0:99d:f056:5d6b with SMTP id h12-20020a170906530c00b0099df0565d6bmr8124022ejo.20.1694417776464;
-        Mon, 11 Sep 2023 00:36:16 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id ga17-20020a170906b85100b009a1e0349c4csm4892779ejb.23.2023.09.11.00.36.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Sep 2023 00:36:15 -0700 (PDT)
-Message-ID: <d3a92651-d427-af84-70c2-bc6004e79c80@kernel.org>
-Date:   Mon, 11 Sep 2023 09:36:15 +0200
+        Mon, 11 Sep 2023 09:15:51 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C25E9
+        for <linux-serial@vger.kernel.org>; Mon, 11 Sep 2023 06:15:47 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73DDCC433C7;
+        Mon, 11 Sep 2023 13:15:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1694438146;
+        bh=ZSPV7kLm8MLAk6zQ4JStK9Ot08WWA+yDCunO4FP/51Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=okXcOGwXBkCXE2N0Ytl018Bx5wodCkw84vBV+Cjr20O2YBv+IrQnHp0M926g88/9u
+         NvCUCB3Jfh7VaqGGMhDMiRDtp51K2s1F9benSfhub2/ZMQJmCPAZ2VAnEuNGeVsBOT
+         R25XChd3z0GpT/3Tz+8jg0Pdl0o6W0VvyXsC5GCk=
+Date:   Mon, 11 Sep 2023 15:15:42 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Matthew Howell <matthew.howell@sealevel.com>
+Cc:     Tony Lindgren <tony@atomide.com>, linux-serial@vger.kernel.org,
+        ryan.wenglarz@sealevel.com, james.olson@sealevel.com
+Subject: Re: [PATCH] serial: Revert serial: core: Fix serial core port id to
+ not use port->line
+Message-ID: <2023091154-gallery-janitor-6ae3@gregkh>
+References: <20230829201557.GK11662@atomide.com>
+ <472581f-e7f6-6cc-c749-5be16e4fe9af@sealevel.com>
+ <20230901044730.GL11662@atomide.com>
+ <e8579280-2f44-a585-a3b8-98fad29e6a2d@sealevel.com>
+ <20230902043424.GM11662@atomide.com>
+ <c4b1db31-7814-0d22-36de-a7e6f117d89c@sealevel.com>
+ <20230905155524.GR11662@atomide.com>
+ <79e44ee3-f4a0-6f3e-cb5d-dc2b7bd048fb@sealevel.com>
+ <20230905165147.GS11662@atomide.com>
+ <73817d5-cab-341-be76-ee9d565df57@sealevel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: [PATCH] serial: stm32: add support for break control
-Content-Language: en-US
-To:     Valentin Caron <valentin.caron@foss.st.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Erwan Le Ray <erwan.leray@foss.st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-References: <20230906151547.840302-1-valentin.caron@foss.st.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20230906151547.840302-1-valentin.caron@foss.st.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <73817d5-cab-341-be76-ee9d565df57@sealevel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 06. 09. 23, 17:15, Valentin Caron wrote:
-> From: Erwan Le Ray <erwan.leray@foss.st.com>
-> 
-> Add support for break control to the stm32 serial driver.
-> 
-> Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
-> Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
+On Mon, Sep 11, 2023 at 09:04:14AM -0400, Matthew Howell wrote:
+> So it seems like this might not be an issue for typical 'users' of the 
+> kernel, but may impact people who need to build and load 8250_exar 
+> manually for whatever reason, unless I am just building the module 
+> incorrectly somehow. 
 
-LGTM
+Yes, Linux does not support building a module against one source
+tree/configuration and attempting to load it into a different kernel at
+all.  You are lucky that this was the only thing that broke :)
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Thanks for the testing and letting us know that all is good with the
+tree as-is.
 
--- 
-js
-suse labs
-
+greg k-h
