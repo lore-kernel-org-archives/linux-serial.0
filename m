@@ -2,70 +2,76 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD21EE801F
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Sep 2023 07:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31A23EE57DF
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Sep 2023 07:36:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233453AbjIKHTp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Sep 2023 03:19:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53994 "EHLO
+        id S233572AbjIKHgX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 11 Sep 2023 03:36:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230187AbjIKHTo (ORCPT
+        with ESMTP id S229761AbjIKHgW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Sep 2023 03:19:44 -0400
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47EC1CCD;
-        Mon, 11 Sep 2023 00:19:40 -0700 (PDT)
-Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-2bd0bc8b429so70713981fa.2;
-        Mon, 11 Sep 2023 00:19:40 -0700 (PDT)
+        Mon, 11 Sep 2023 03:36:22 -0400
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222D1118;
+        Mon, 11 Sep 2023 00:36:18 -0700 (PDT)
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-52eed139ec2so3653755a12.2;
+        Mon, 11 Sep 2023 00:36:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694416778; x=1695021578;
+        d=1e100.net; s=20230601; t=1694417776; x=1695022576;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1w0gJ8VucCHkHZWoua7Qc/5PiCQ3+s3Mo+G7A+1yBko=;
-        b=XqaMtMxFfpP77efcgIONMekJdeBTx30O7YbJCVf2+o1B9Ebyjj0FxGGlHifuBwdxsf
-         5ddYtxB/0nKkBnu6VL923Q21T4DdcQlJWfjRzo30sSHGk2f6/0IE+O6GhZFyb/PkpOMy
-         yNAQtqt0mgyu+jMPM+PcU/w3LKKzcbk6URmK+Ax92UdHNtM0uvKj617GdlHEnJIiIxey
-         aTEDB1GNT8hYTvuO4B8PxeWMRAwV9U088y2Hj2HznpYDuoxCCZtStnmQ/Tcfn7YGx5HT
-         PzYSMe9kksw3Tszez8rIizP/WHjnBYz9xtz0K4cmR9vwrwKKeOCdslp+/Gujit2AgJ9w
-         eiIQ==
-X-Gm-Message-State: AOJu0Yx4kkrWIBnusxmtKVwyla74C/oRSk1MyXK8yvK3udFBC8bgLjLx
-        iM7jlc6GG+lShOVt52jW0CA=
-X-Google-Smtp-Source: AGHT+IG9P0MTaC4ckPPaRL6/2+85VnbCZDw/Zz3yf1mUw+I6J+WVFbgybwigAXq6J3GZM1U9eX1xSg==
-X-Received: by 2002:a2e:8510:0:b0:2b6:da1e:d063 with SMTP id j16-20020a2e8510000000b002b6da1ed063mr6928027lji.45.1694416778392;
-        Mon, 11 Sep 2023 00:19:38 -0700 (PDT)
-Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id r20-20020a170906c29400b0099d798a6bb5sm4833970ejz.67.2023.09.11.00.19.37
+        bh=E++QcmaSCqRTogZf0py8lxCDiY1aiEIVkjD7gfQ6xAc=;
+        b=Vix8Uty22l3e5DfXDB+cTLX9hkZ1niPg5oW8q1M+wea03bw3cjlZECMMz5BewQVYRQ
+         X4xaiqfYfL78Wdvt3l53n8p6JvDB53VT7d9bTUzEa7+eMVm2khVU8RB0S6Z3Wx5CHqt0
+         S9916vnEvFLY814yP6MR/+oB78mOxwrUrcA0iAS3ogr5xuJMClNfDtuhyHGbhoSdG8fN
+         CkF69HINce36Pcg8GkISqpWYVZIGY+jVG6C8UrY5tIcpn+Kgo5ixTHqh6nPEHqkYjXCH
+         2q4fNEwTB2KAP6kd0h7wM/dmFDiZRu9RflxzXzPFjepCfkLxhG4cLyNH795evp1Jf4+T
+         hWxg==
+X-Gm-Message-State: AOJu0Yy0ct5vZS/MVClzt+cvJvO1chXUojjK9281iYaQxqq6W60le4EH
+        AuT2sIjrEAly+2Cl9ACJ1zg=
+X-Google-Smtp-Source: AGHT+IFjbgI2p7VIOt+A7f05oIS5iZ+7BHD5jL8GSbm3gtDeDn6DEJ4gzH5WlS5acf6oV4/HaPfRgQ==
+X-Received: by 2002:a17:906:530c:b0:99d:f056:5d6b with SMTP id h12-20020a170906530c00b0099df0565d6bmr8124022ejo.20.1694417776464;
+        Mon, 11 Sep 2023 00:36:16 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id ga17-20020a170906b85100b009a1e0349c4csm4892779ejb.23.2023.09.11.00.36.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Sep 2023 00:19:37 -0700 (PDT)
-Message-ID: <e7730b24-a38b-22ff-12cb-6d08fdb07955@kernel.org>
-Date:   Mon, 11 Sep 2023 09:19:37 +0200
+        Mon, 11 Sep 2023 00:36:15 -0700 (PDT)
+Message-ID: <d3a92651-d427-af84-70c2-bc6004e79c80@kernel.org>
+Date:   Mon, 11 Sep 2023 09:36:15 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.14.0
-Subject: Re: [PATCH V2] tty: vcc: Add check for kstrdup() in vcc_probe()
+Subject: Re: [PATCH] serial: stm32: add support for break control
 Content-Language: en-US
-To:     Yi Yang <yiyang13@huawei.com>, davem@davemloft.net,
-        gregkh@linuxfoundation.org, jag.raman@oracle.com
-Cc:     sparclinux@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20230904035220.48164-1-yiyang13@huawei.com>
+To:     Valentin Caron <valentin.caron@foss.st.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Erwan Le Ray <erwan.leray@foss.st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+References: <20230906151547.840302-1-valentin.caron@foss.st.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20230904035220.48164-1-yiyang13@huawei.com>
+In-Reply-To: <20230906151547.840302-1-valentin.caron@foss.st.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 04. 09. 23, 5:52, Yi Yang wrote:
-> Add check for the return value of kstrdup() and return the error, if it
-> fails in order to avoid NULL pointer dereference.
+On 06. 09. 23, 17:15, Valentin Caron wrote:
+> From: Erwan Le Ray <erwan.leray@foss.st.com>
 > 
-> Fixes: 5d171050e28f ("sparc64: vcc: Enable VCC port probe and removal")
-> Signed-off-by: Yi Yang <yiyang13@huawei.com>
+> Add support for break control to the stm32 serial driver.
+> 
+> Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
+> Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
+
+LGTM
 
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-
 
 -- 
 js
