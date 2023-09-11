@@ -2,150 +2,125 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CD89CA0EE2
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Sep 2023 21:37:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 923D5CA0EC7
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Sep 2023 00:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348731AbjIKVaZ (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Sep 2023 17:30:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39240 "EHLO
+        id S232536AbjILA6y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 11 Sep 2023 20:58:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235548AbjIKIzB (ORCPT
+        with ESMTP id S232274AbjILA6u (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Sep 2023 04:55:01 -0400
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8F41A2
-        for <linux-serial@vger.kernel.org>; Mon, 11 Sep 2023 01:54:56 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qfch4-00050h-5s; Mon, 11 Sep 2023 10:54:54 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qfch3-005VP3-Dv; Mon, 11 Sep 2023 10:54:53 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qfch2-000cay-Iq; Mon, 11 Sep 2023 10:54:52 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Shawn Guo <shawnguo@kernel.org>
-Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        linux-serial@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] serial: imx: Simplify compatibility handling
-Date:   Mon, 11 Sep 2023 10:54:51 +0200
-Message-Id: <20230911085451.628798-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.40.1
+        Mon, 11 Sep 2023 20:58:50 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B31F4C9C
+        for <linux-serial@vger.kernel.org>; Mon, 11 Sep 2023 16:20:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1694474457; x=1726010457;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8uYbImBu2ebl3N9iziigCi/avdQEHta2la3g104smQw=;
+  b=inmOCzQLaNC9B/HPn4Z9FWTBLZef9Qij43kGO33uUDZibuu170/VQaea
+   kEYdGIqXwdsRKsrsz6XzV41lrEmYynPAJE0MA8SfWcRLZ2OJ1l2KxgiCx
+   D9w3ChOWn+TBwJ+d7M/MD7bwp36vjo6t5WpwYkzI4rsaR7DoJDskzKl/2
+   JXjECRj+7CkdIUwh8sCr6dfLYkzf/y+Kr0Z8pTWyEKUDGWLUajW2Zg7Vz
+   H4nzi8Pv4OceD1zHrDPq5cS/BWu27FNFynAqyZapxx3rbH7TMwazpsiEP
+   MMYPF8B96g9uH7EhhQsCSD3IjLmWXW1KzIKeovgREv2XNnk1vDzmBryu2
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10830"; a="444660098"
+X-IronPort-AV: E=Sophos;i="6.02,244,1688454000"; 
+   d="scan'208";a="444660098"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2023 15:53:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10830"; a="778564151"
+X-IronPort-AV: E=Sophos;i="6.02,244,1688454000"; 
+   d="scan'208";a="778564151"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2023 15:53:47 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1qfpmq-008RRZ-2u;
+        Tue, 12 Sep 2023 01:53:44 +0300
+Date:   Tue, 12 Sep 2023 01:53:44 +0300
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     Dan Raymond <draymond@foxvalley.net>
+Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        ilpo.jarvinen@linux.intel.com
+Subject: Re: [PATCH v3] tty/serial: create debugfs interface for UART
+ register tracing
+Message-ID: <ZP+aeNyQ5N9q8Z3L@smile.fi.intel.com>
+References: <eb8a598c-414e-aecf-e903-e2c01db1979a@foxvalley.net>
+ <ZPDXHy6L7nTRx63l@smile.fi.intel.com>
+ <af06008a-f4d4-1c30-294a-b7af2d4cbc86@foxvalley.net>
+ <ZPEbacIuZv+116AE@smile.fi.intel.com>
+ <e0b46e9e-30ee-1ca7-b39c-89480de60009@foxvalley.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3198; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=kHSzMbdejvOtgW85iIxcMRjSOopIkDykzeNq4pyMxqk=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBk/tXafJkAEFw7jAb/+mrTTmvTfhKx4tkOlsSaK 43IrfmMBEOJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZP7V2gAKCRCPgPtYfRL+ ToBUB/9M6OTjK2kzL/F5mraWt7sgIFsC0+WPzXj163f0jJWdqnDZeBqZH1ElsRs+AU5BREkUAyu TUJ8X9sAsWqiHPZ6FmE7h8SXKHsWqTjhzaNIgjnAvf+bPaNU4WeM+BCSB3ov77nMOY6H0xYOtd7 Garc5P1oB8oSCBBcR9GbLQ6lZ8EpnJYuIIgquEZPrQt2ak2qdlFtCBswACwI6aV3XhLOOFteJh3 YQ1Detx0WcXjrvyW7S7zgfhH7FFf9+ly/DfAOTLo4H7hDTaVRnmYyru6kTrKm5f2m5KnmU/C94R BCcvDAVDGHz/RAq7tvvvc/6BANGhbgH+kyRDEOO2WVXgoS9c
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e0b46e9e-30ee-1ca7-b39c-89480de60009@foxvalley.net>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Three of the four entries of imx_uart_devdata[] use .uts_reg =
-IMX21_UTS. The difference in the .devtype member isn't relevant, the
-only thing that matters is if is equal to IMX1_UART.
+On Mon, Sep 11, 2023 at 04:14:48PM -0600, Dan Raymond wrote:
+> >>>> Implement a UART register tracing facility using the debugfs.  This can be
+> >>>> used as a "serial port sniffer" to monitor UART traffic and line settings
+> >>>> with timestamps at microsecond granularity.  This can be useful for general
+> >>>> serial port debugging or to debug the UART driver itself.
+> >>>
+> >>>>  drivers/tty/serial/8250/8250_debug.c | 530 +++++++++++++++++++++++++++
+> >>>
+> >>> My gosh. Why trace points and trace events can't be used for that?
+> >>
+> >> I don't understand your post.  Are you saying there is already a way to
+> >> trace UART register reads/writes without this patch? Can you elaborate?
+> > 
+> > Besides what Greg an I were telling you (another type of infrastructure),
+> > as a matter of fact you may trace any IO on some architectures (at least x86),
+> > it's called mmiotracer (I have used it like 5 years ago or so to trace UART).
+> > 
+> > Below is the excerpt from my old shell script
+> > 
+> > rebind() {
+> > 	local drvdir="/sys/bus/$1/drivers/$2"
+> > 	local devdir="/sys/bus/$1/devices/$3"
+> > 	[ -d "$drvdir" -a -d "$devdir" ] || return
+> > 	echo "$3" > "$drvdir/unbind"
+> > 	echo "$3" > "$drvdir/bind"
+> > }
+> > 
+> > mmiotrace() {
+> > 	echo mmiotrace > /sys/kernel/tracing/current_tracer
+> > 	echo 1 > /sys/kernel/tracing/tracing_on
+> > 
+> > 	rebind platform 'dw-apb-uart'   '80860F0A:00'   # BYT ttyS1 (ACPI)
+> > 	rebind platform 'dw-apb-uart'   '8086228A:00'   # BSW ttyS1 (ACPI)
+> > 	rebind pci      '8250_mid'      '0000:00:04.2'  # Edison ttyS1
+> > 	rebind pci      'intel-lpss'    '0000:00:18.1'  # BXT LH ttyS1
+> > 	rebind pci      'intel-lpss'    '0000:00:1e.0'  # SKL ttyS1
+> > 	rebind pci      '8250_lpss'     '0000:00:1e.3'  # BSW ttyS1 (PCI)
+> > }
+> 
+> Correct me if I'm wrong but I don't think mmiotrace will work for me.  My
+> environment comprises an Intel Celeron M connected to an 852GM north bridge,
+> an ICH4 south bridge, and a SCH3114 Super I/O controller.  My UART device
+> is ttyS1 and it uses port I/O not memory-mapped I/O.
 
-So use an entry with .devtype = IMX21_UART on all platforms but i.MX1.
-There is no need to have the dev types in an array, so split them up in
-two separate variables.
+Correct, mmiotrace (as suggested by its name) works only on MMIO.
+For IO there is no such mechanism as there are no exceptions when
+you access IO ports.
 
-The fsl,imx53-uart devinfo can go away because in the binding and also
-the dts files all fsl,imx53-uart devices also are compatible to
-fsl,imx21-uart. That's not the case for fsl,imx6q-uart (which is a bit
-strange IMHO), so the fsl,imx6q-uart must stay around.
+So, in such case the only instrumentation can help, but I suggest
+to do it generally as you may miss the writes or reads that are
+not going via serial_*() APIs.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
-Hello,
+Look how lib/trace_readwrite.c is done.
 
-this diff's idea appeared already in reply to a patch by Tom Rix that
-became commit 7553574900f37847a25c4d572b13c512811604ed. I just found the
-discussion[1] while cleaning up my inbox. This is a slightly improved
-version.
-
-Best regards
-Uwe
-
-[1] https://lore.kernel.org/linux-serial/20230318143041.n6rymackf6p776rq@pengutronix.de
-
- drivers/tty/serial/imx.c | 40 +++++++++++++++++-----------------------
- 1 file changed, 17 insertions(+), 23 deletions(-)
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 13cb78340709..3d429f6fa048 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -177,8 +177,6 @@
- enum imx_uart_type {
- 	IMX1_UART,
- 	IMX21_UART,
--	IMX53_UART,
--	IMX6Q_UART,
- };
- 
- /* device type dependent stuff */
-@@ -240,30 +238,26 @@ struct imx_port_ucrs {
- 	unsigned int	ucr3;
- };
- 
--static struct imx_uart_data imx_uart_devdata[] = {
--	[IMX1_UART] = {
--		.uts_reg = IMX1_UTS,
--		.devtype = IMX1_UART,
--	},
--	[IMX21_UART] = {
--		.uts_reg = IMX21_UTS,
--		.devtype = IMX21_UART,
--	},
--	[IMX53_UART] = {
--		.uts_reg = IMX21_UTS,
--		.devtype = IMX53_UART,
--	},
--	[IMX6Q_UART] = {
--		.uts_reg = IMX21_UTS,
--		.devtype = IMX6Q_UART,
--	},
-+static const struct imx_uart_data imx_uart_imx1_devdata = {
-+	.uts_reg = IMX1_UTS,
-+	.devtype = IMX1_UART,
-+};
-+
-+static const struct imx_uart_data imx_uart_imx21_devdata = {
-+	.uts_reg = IMX21_UTS,
-+	.devtype = IMX21_UART,
- };
- 
- static const struct of_device_id imx_uart_dt_ids[] = {
--	{ .compatible = "fsl,imx6q-uart", .data = &imx_uart_devdata[IMX6Q_UART], },
--	{ .compatible = "fsl,imx53-uart", .data = &imx_uart_devdata[IMX53_UART], },
--	{ .compatible = "fsl,imx1-uart", .data = &imx_uart_devdata[IMX1_UART], },
--	{ .compatible = "fsl,imx21-uart", .data = &imx_uart_devdata[IMX21_UART], },
-+	/*
-+	 * For reasons unknown to me, some UART devices (e.g. imx6ul's) are
-+	 * compatible to fsl,imx6q-uart, but not fsl,imx21-uart, while the
-+	 * original imx6q's UART is compatible to fsl,imx21-uart. This driver
-+	 * doesn't make any distinction between these two variants.
-+	 */
-+	{ .compatible = "fsl,imx6q-uart", .data = &imx_uart_imx21_devdata, },
-+	{ .compatible = "fsl,imx1-uart", .data = &imx_uart_imx1_devdata, },
-+	{ .compatible = "fsl,imx21-uart", .data = &imx_uart_imx21_devdata, },
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, imx_uart_dt_ids);
-
-base-commit: 57c2dab5596a2bd0cda64fcc208efdefe296788f
 -- 
-2.40.1
+With Best Regards,
+Andy Shevchenko
+
 
