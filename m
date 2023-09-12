@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDE4ACA0EDC
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Sep 2023 04:55:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AF90CA0EDD
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Sep 2023 04:55:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230031AbjILEzX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 Sep 2023 00:55:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41100 "EHLO
+        id S230019AbjILEzZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 12 Sep 2023 00:55:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230033AbjILEy1 (ORCPT
+        with ESMTP id S229791AbjILEy0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 Sep 2023 00:54:27 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E8752105
-        for <linux-serial@vger.kernel.org>; Mon, 11 Sep 2023 21:53:01 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id 4fb4d7f45d1cf-52e828ad46bso6726890a12.1
-        for <linux-serial@vger.kernel.org>; Mon, 11 Sep 2023 21:53:01 -0700 (PDT)
+        Tue, 12 Sep 2023 00:54:26 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 317D61FEB
+        for <linux-serial@vger.kernel.org>; Mon, 11 Sep 2023 21:52:57 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-52713d2c606so6717894a12.2
+        for <linux-serial@vger.kernel.org>; Mon, 11 Sep 2023 21:52:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1694494379; x=1695099179; darn=vger.kernel.org;
+        d=tuxon.dev; s=google; t=1694494375; x=1695099175; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=S9n1uPO0iEaDmTJgL+Fv5kOk2NI9TkneRr5jOWzqknc=;
-        b=faGmerJ0+SO7DxPOuIbRgvm3hJnQ75lV5FxlXXMSqfN/G/H9uJ6b6J6JWmgAS66NQz
-         Fp8T7/lAtpW1GKH8YStnP7ew1tuZuHQSwZjJM35olmWzSWfmlUenuyNZr8TYNYzozkmL
-         oG0Ayrh2TRr+KO2pwz5xLo7nVM6WMl1ylTy5TPz7Fqss9ADFYLSZ5+jWNCwXpMrl2C8/
-         3NwS59VSyZsRkY7HsfFyHjvU/RoDZXTYWCbyWbqvkW+UCtc4ZVAqUon/wF0TfuUk1bn5
-         Y+CBB6bSsLj4TynY31f+cTUZhu3IGRhnI8Rnpwy/LRj8WApGbU+kPcwIpagRXKfwcZTH
-         PfUg==
+        bh=RTRTr+Y9jw349w76qtHWB73iP6xAmLB1by7bT2E70UE=;
+        b=PWLkg63Lh4n+vPlpcXH4AV/2ns5gUH+l/cjtbPbbKZJevusLJ9VyPgr2k+xrIg7DSv
+         AZKUvJz+aOErj4zTTYvRXvHdDAOm6MMgCaN4NhL9cxxdIml7hxbT41UgevoqGIjI9kxy
+         MoJ3xbgPR0snurp51GkRdQqIGzMTIv/2RNAdkH/mWwrK4EnUkyXj+hYoAJtSpiFrdD8R
+         CoiISwHu1lOnqEDO3T3B4nGEfxuf6t1EvG+fxcy8POjnvG3JlZhmD99hF6O0yY6OsoTG
+         VyDVxmJTi4ceOqMJVQfkQD78pXX71t8/y3vLwKQexbeBLdbDsM6LHyxvKXUytiYAijwt
+         05jQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694494379; x=1695099179;
+        d=1e100.net; s=20230601; t=1694494375; x=1695099175;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=S9n1uPO0iEaDmTJgL+Fv5kOk2NI9TkneRr5jOWzqknc=;
-        b=MRF/miOzLnKSOJE+b5Rkva4fP7kFeId3LOKOEkYrqJAaX2HsgY7AxJGvJY8ra3VLPX
-         dykcNwqgqybdcWm2TCedGE12h2F67d/AKWG+3mSKA6juOPtgSUZI4+Bi3o+7knVvRtbf
-         KxtlOUAbTSU6Goxk6PH9WfpbeNOlmtZ0pCyGZEpW1myJbb9Yz0kkR56NW3NQir95rPva
-         LUcyYREz9lAiNOjP0qI8pCMaKtkO1fvGQuHmfWgld+xEcL5DU52/2wXcetAvC/ZNUoa/
-         vd/ULOVjeRjPvlmzoItx6MabifKdO8bMc2Ogbu6ULkaIeYRsc3mpbr3qhVKHSuyh2Rzi
-         mB4g==
-X-Gm-Message-State: AOJu0YwDMapkcfPglAXjNfIkm+3CTt3BMBDW2wQjMnr20BRvko6ffbVR
-        /DrqANIvjoKlrsJoEDowOsvkKA==
-X-Google-Smtp-Source: AGHT+IEBgcfgy0k8inEXJhI3KCA5vsU0kdxrAnVr9AVjLlFLmbf0kwETr6+KCzr73H0SKKTON3togA==
-X-Received: by 2002:a50:baad:0:b0:52f:9d4c:1d28 with SMTP id x42-20020a50baad000000b0052f9d4c1d28mr834823ede.12.1694494379708;
-        Mon, 11 Sep 2023 21:52:59 -0700 (PDT)
+        bh=RTRTr+Y9jw349w76qtHWB73iP6xAmLB1by7bT2E70UE=;
+        b=KxLSmIED0wa5CiEo+bCzTqaUAhEfH6DhjetjMHuGIiXboPS2oSaA7K3LHqai1KoYTC
+         0xK1yKY1j5sYPgdCr8cW/oHT/8Iu30rjojTWsG8+fgdbXI+gi7ydL5+SkPH8YjY02BUu
+         mmr/uUjjfD+tQqtAjb7akjIFzv+QVqhY1+hmYK6YhaZqrAvFLqic6bZqjMZ2MM/f8Zoq
+         oC7j/is7fH+ro4DF/JRcOC5ocb4LHYuBdg0CzKRyULtCbKu2sX+gmMYs7g+lkwhOm6WZ
+         8kq80uyb54W3t/adYKjH09akNtN72PsFFwKxcaMRfbBJxzYIPvRFtCWHwi1E1AHEEvcw
+         /hjw==
+X-Gm-Message-State: AOJu0YxTJJSj95K+Q82St6OW+Rh66CzD9Rwh7RmPBKXtXPip1WuJx+Is
+        xAiC6G5WB2nw1WJ7+xHp0WVFIQ==
+X-Google-Smtp-Source: AGHT+IEsLs3SkRgJGWnId8GQnsQLmsRxNX2j2ThM/rdGJPDWCd2Tfz2ZbhHh2W6HJqHBcw2I4Zp57w==
+X-Received: by 2002:a05:6402:882:b0:52e:1a29:98a with SMTP id e2-20020a056402088200b0052e1a29098amr7952533edy.40.1694494375718;
+        Mon, 11 Sep 2023 21:52:55 -0700 (PDT)
 Received: from claudiu-X670E-Pro-RS.. ([82.78.167.145])
-        by smtp.gmail.com with ESMTPSA id f21-20020a05640214d500b0051e22660835sm5422415edx.46.2023.09.11.21.52.57
+        by smtp.gmail.com with ESMTPSA id f21-20020a05640214d500b0051e22660835sm5422415edx.46.2023.09.11.21.52.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Sep 2023 21:52:59 -0700 (PDT)
+        Mon, 11 Sep 2023 21:52:55 -0700 (PDT)
 From:   Claudiu <claudiu.beznea@tuxon.dev>
 X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
 To:     geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
@@ -68,9 +68,9 @@ Cc:     linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Subject: [PATCH 21/37] dt-bindings: clock: add r9a08g045 CPG clocks and resets definitions
-Date:   Tue, 12 Sep 2023 07:51:41 +0300
-Message-Id: <20230912045157.177966-22-claudiu.beznea.uj@bp.renesas.com>
+Subject: [PATCH 19/37] clk: renesas: rzg2l: add a divider clock for RZ/G3S
+Date:   Tue, 12 Sep 2023 07:51:39 +0300
+Message-Id: <20230912045157.177966-20-claudiu.beznea.uj@bp.renesas.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
 References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
@@ -82,264 +82,304 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-Add RZ/G3S (R9A08G045) Clock Pulse Generator (CPG) core clocks, module
-clocks and resets.
+Add a divider clock driver for RZ/G3S. This will be used in RZ/G3S
+by SDHI, SPI, OCTA, I, I2, I3, P0, P1, P2, P3 core clocks.
+The divider has some limitation for SDHI and OCTA clocks:
+- SD div cannot be 1 if parent rate is 800MHz
+- OCTA div cannot be 1 if parent rate is 400MHz
+For these clocks a notifier could be registered from platform specific
+clock driver and proper actions are taken before clock rate is changed,
+if needed.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 ---
- include/dt-bindings/clock/r9a08g045-cpg.h | 243 ++++++++++++++++++++++
- 1 file changed, 243 insertions(+)
- create mode 100644 include/dt-bindings/clock/r9a08g045-cpg.h
+ drivers/clk/renesas/rzg2l-cpg.c | 207 ++++++++++++++++++++++++++++++++
+ drivers/clk/renesas/rzg2l-cpg.h |  10 ++
+ 2 files changed, 217 insertions(+)
 
-diff --git a/include/dt-bindings/clock/r9a08g045-cpg.h b/include/dt-bindings/clock/r9a08g045-cpg.h
-new file mode 100644
-index 000000000000..08668715d790
---- /dev/null
-+++ b/include/dt-bindings/clock/r9a08g045-cpg.h
-@@ -0,0 +1,243 @@
-+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+ *
-+ * Copyright (C) 2023 Renesas Electronics Corp.
+diff --git a/drivers/clk/renesas/rzg2l-cpg.c b/drivers/clk/renesas/rzg2l-cpg.c
+index dd9229f0be7d..c8a8833650ee 100644
+--- a/drivers/clk/renesas/rzg2l-cpg.c
++++ b/drivers/clk/renesas/rzg2l-cpg.c
+@@ -86,6 +86,22 @@ struct sd_mux_hw_data {
+ 
+ #define to_sd_mux_hw_data(_hw)	container_of(_hw, struct sd_mux_hw_data, hw_data)
+ 
++/**
++ * struct div_hw_data - divider clock hardware data
++ * @hw_data: clock hw data
++ * @dtable: pointer to divider table
++ * @invalid_rate: invalid rate for divider
++ * @width: divider width
 + */
-+#ifndef __DT_BINDINGS_CLOCK_R9A08G045_CPG_H__
-+#define __DT_BINDINGS_CLOCK_R9A08G045_CPG_H__
++struct div_hw_data {
++	struct clk_hw_data hw_data;
++	const struct clk_div_table *dtable;
++	unsigned long invalid_rate;
++	u32 width;
++};
 +
-+#include <dt-bindings/clock/renesas-cpg-mssr.h>
++#define to_div_hw_data(_hw)	container_of(_hw, struct div_hw_data, hw_data)
 +
-+/* R9A08G045 CPG Core Clocks */
-+#define R9A08G045_CLK_I			0
-+#define R9A08G045_CLK_I2		1
-+#define R9A08G045_CLK_I3		2
-+#define R9A08G045_CLK_S0		3
-+#define R9A08G045_CLK_SPI0		4
-+#define R9A08G045_CLK_SPI1		5
-+#define R9A08G045_CLK_SD0		6
-+#define R9A08G045_CLK_SD1		7
-+#define R9A08G045_CLK_SD2		8
-+#define R9A08G045_CLK_M0		9
-+#define R9A08G045_CLK_HP		10
-+#define R9A08G045_CLK_TSU		11
-+#define R9A08G045_CLK_ZT		12
-+#define R9A08G045_CLK_P0		13
-+#define R9A08G045_CLK_P1		14
-+#define R9A08G045_CLK_P2		15
-+#define R9A08G045_CLK_P3		16
-+#define R9A08G045_CLK_P4		17
-+#define R9A08G045_CLK_P5		18
-+#define R9A08G045_CLK_AT		19
-+#define R9A08G045_CLK_OC0		20
-+#define R9A08G045_CLK_OC1		21
-+#define R9A08G045_OSCCLK		22
-+#define R9A08G045_OSCCLK2		23
-+#define R9A08G045_SWD			24
+ struct rzg2l_pll5_param {
+ 	u32 pl5_fracin;
+ 	u8 pl5_refdiv;
+@@ -195,6 +211,54 @@ int rzg2l_cpg_sd_mux_clk_notifier(struct notifier_block *nb, unsigned long event
+ 	return ret;
+ }
+ 
++int rzg3s_cpg_div_clk_notifier(struct notifier_block *nb, unsigned long event,
++			       void *data)
++{
++	struct clk_notifier_data *cnd = data;
++	struct clk_hw *hw = __clk_get_hw(cnd->clk);
++	struct clk_hw_data *clk_hw_data = to_clk_hw_data(hw);
++	struct div_hw_data *div_hw_data = to_div_hw_data(clk_hw_data);
++	struct rzg2l_cpg_priv *priv = clk_hw_data->priv;
++	u32 off = GET_REG_OFFSET(clk_hw_data->conf);
++	u32 shift = GET_SHIFT(clk_hw_data->conf);
++	u32 bitmask = GENMASK(GET_WIDTH(clk_hw_data->conf) - 1, 0);
++	unsigned long flags;
++	int ret = 0;
++	u32 val;
 +
-+/* R9A08G045 Module Clocks */
-+#define R9A08G045_OCTA_ACLK		0
-+#define R9A08G045_OCTA_MCLK		1
-+#define R9A08G045_CA55_SCLK		2
-+#define R9A08G045_CA55_PCLK		3
-+#define R9A08G045_CA55_ATCLK		4
-+#define R9A08G045_CA55_GICCLK		5
-+#define R9A08G045_CA55_PERICLK		6
-+#define R9A08G045_CA55_ACLK		7
-+#define R9A08G045_CA55_TSCLK		8
-+#define R9A08G045_SRAM_ACPU_ACLK0	9
-+#define R9A08G045_SRAM_ACPU_ACLK1	10
-+#define R9A08G045_SRAM_ACPU_ACLK2	11
-+#define R9A08G045_GIC600_GICCLK		12
-+#define R9A08G045_IA55_CLK		13
-+#define R9A08G045_IA55_PCLK		14
-+#define R9A08G045_MHU_PCLK		15
-+#define R9A08G045_SYC_CNT_CLK		16
-+#define R9A08G045_DMAC_ACLK		17
-+#define R9A08G045_DMAC_PCLK		18
-+#define R9A08G045_OSTM0_PCLK		19
-+#define R9A08G045_OSTM1_PCLK		20
-+#define R9A08G045_OSTM2_PCLK		21
-+#define R9A08G045_OSTM3_PCLK		22
-+#define R9A08G045_OSTM4_PCLK		23
-+#define R9A08G045_OSTM5_PCLK		24
-+#define R9A08G045_OSTM6_PCLK		25
-+#define R9A08G045_OSTM7_PCLK		26
-+#define R9A08G045_MTU_X_MCK_MTU3	27
-+#define R9A08G045_POE3_CLKM_POE		28
-+#define R9A08G045_GPT_PCLK		29
-+#define R9A08G045_POEG_A_CLKP		30
-+#define R9A08G045_POEG_B_CLKP		31
-+#define R9A08G045_POEG_C_CLKP		32
-+#define R9A08G045_POEG_D_CLKP		33
-+#define R9A08G045_WDT0_PCLK		34
-+#define R9A08G045_WDT0_CLK		35
-+#define R9A08G045_WDT1_PCLK		36
-+#define R9A08G045_WDT1_CLK		37
-+#define R9A08G045_WDT2_PCLK		38
-+#define R9A08G045_WDT2_CLK		39
-+#define R9A08G045_SPI_HCLK		40
-+#define R9A08G045_SPI_ACLK		41
-+#define R9A08G045_SPI_CLK		42
-+#define R9A08G045_SPI_CLKX2		43
-+#define R9A08G045_SDHI0_IMCLK		44
-+#define R9A08G045_SDHI0_IMCLK2		45
-+#define R9A08G045_SDHI0_CLK_HS		46
-+#define R9A08G045_SDHI0_ACLK		47
-+#define R9A08G045_SDHI1_IMCLK		48
-+#define R9A08G045_SDHI1_IMCLK2		49
-+#define R9A08G045_SDHI1_CLK_HS		50
-+#define R9A08G045_SDHI1_ACLK		51
-+#define R9A08G045_SDHI2_IMCLK		52
-+#define R9A08G045_SDHI2_IMCLK2		53
-+#define R9A08G045_SDHI2_CLK_HS		54
-+#define R9A08G045_SDHI2_ACLK		55
-+#define R9A08G045_SSI0_PCLK2		56
-+#define R9A08G045_SSI0_PCLK_SFR		57
-+#define R9A08G045_SSI1_PCLK2		58
-+#define R9A08G045_SSI1_PCLK_SFR		59
-+#define R9A08G045_SSI2_PCLK2		60
-+#define R9A08G045_SSI2_PCLK_SFR		61
-+#define R9A08G045_SSI3_PCLK2		62
-+#define R9A08G045_SSI3_PCLK_SFR		63
-+#define R9A08G045_SRC_CLKP		64
-+#define R9A08G045_USB_U2H0_HCLK		65
-+#define R9A08G045_USB_U2H1_HCLK		66
-+#define R9A08G045_USB_U2P_EXR_CPUCLK	67
-+#define R9A08G045_USB_PCLK		68
-+#define R9A08G045_USB_SCLK		69
-+#define R9A08G045_ETH0_CLK_AXI		70
-+#define R9A08G045_ETH0_CLK_CHI		71
-+#define R9A08G045_ETH0_REFCLK		72
-+#define R9A08G045_ETH1_CLK_AXI		73
-+#define R9A08G045_ETH1_CLK_CHI		74
-+#define R9A08G045_ETH1_REFCLK		75
-+#define R9A08G045_I2C0_PCLK		76
-+#define R9A08G045_I2C1_PCLK		77
-+#define R9A08G045_I2C2_PCLK		78
-+#define R9A08G045_I2C3_PCLK		79
-+#define R9A08G045_SCIF0_CLK_PCK		80
-+#define R9A08G045_SCIF1_CLK_PCK		81
-+#define R9A08G045_SCIF2_CLK_PCK		82
-+#define R9A08G045_SCIF3_CLK_PCK		83
-+#define R9A08G045_SCIF4_CLK_PCK		84
-+#define R9A08G045_SCIF5_CLK_PCK		85
-+#define R9A08G045_SCI0_CLKP		86
-+#define R9A08G045_SCI1_CLKP		87
-+#define R9A08G045_IRDA_CLKP		88
-+#define R9A08G045_RSPI0_CLKB		89
-+#define R9A08G045_RSPI1_CLKB		90
-+#define R9A08G045_RSPI2_CLKB		91
-+#define R9A08G045_RSPI3_CLKB		92
-+#define R9A08G045_RSPI4_CLKB		93
-+#define R9A08G045_CANFD_PCLK		94
-+#define R9A08G045_CANFD_CLK_RAM		95
-+#define R9A08G045_GPIO_HCLK		96
-+#define R9A08G045_ADC_ADCLK		97
-+#define R9A08G045_ADC_PCLK		98
-+#define R9A08G045_TSU_PCLK		99
-+#define R9A08G045_PDM_PCLK		100
-+#define R9A08G045_PDM_CCLK		101
-+#define R9A08G045_PCI_ACLK		102
-+#define R9A08G045_PCI_CLKL1PM		103
-+#define R9A08G045_SPDIF_PCLK		104
-+#define R9A08G045_I3C_PCLK		105
-+#define R9A08G045_I3C_TCLK		106
-+#define R9A08G045_VBAT_BCLK		107
++	if (event != PRE_RATE_CHANGE || !div_hw_data->invalid_rate ||
++	    div_hw_data->invalid_rate % cnd->new_rate)
++		return 0;
 +
-+/* R9A08G045 Resets */
-+#define R9A08G045_CA55_RST_1_0		0
-+#define R9A08G045_CA55_RST_3_0		1
-+#define R9A08G045_CA55_RST_4		2
-+#define R9A08G045_CA55_RST_5		3
-+#define R9A08G045_CA55_RST_6		4
-+#define R9A08G045_CA55_RST_7		5
-+#define R9A08G045_CA55_RST_8		6
-+#define R9A08G045_CA55_RST_9		7
-+#define R9A08G045_CA55_RST_10		8
-+#define R9A08G045_CA55_RST_11		9
-+#define R9A08G045_CA55_RST_12		10
-+#define R9A08G045_SRAM_ACPU_ARESETN0	11
-+#define R9A08G045_SRAM_ACPU_ARESETN1	12
-+#define R9A08G045_SRAM_ACPU_ARESETN2	13
-+#define R9A08G045_GIC600_GICRESET_N	14
-+#define R9A08G045_GIC600_DBG_GICRESET_N	15
-+#define R9A08G045_IA55_RESETN		16
-+#define R9A08G045_MHU_RESETN		17
-+#define R9A08G045_DMAC_ARESETN		18
-+#define R9A08G045_DMAC_RST_ASYNC	19
-+#define R9A08G045_SYC_RESETN		20
-+#define R9A08G045_OSTM0_PRESETZ		21
-+#define R9A08G045_OSTM1_PRESETZ		22
-+#define R9A08G045_OSTM2_PRESETZ		23
-+#define R9A08G045_OSTM3_PRESETZ		24
-+#define R9A08G045_OSTM4_PRESETZ		25
-+#define R9A08G045_OSTM5_PRESETZ		26
-+#define R9A08G045_OSTM6_PRESETZ		27
-+#define R9A08G045_OSTM7_PRESETZ		28
-+#define R9A08G045_MTU_X_PRESET_MTU3	29
-+#define R9A08G045_POE3_RST_M_REG	30
-+#define R9A08G045_GPT_RST_C		31
-+#define R9A08G045_POEG_A_RST		32
-+#define R9A08G045_POEG_B_RST		33
-+#define R9A08G045_POEG_C_RST		34
-+#define R9A08G045_POEG_D_RST		35
-+#define R9A08G045_WDT0_PRESETN		36
-+#define R9A08G045_WDT1_PRESETN		37
-+#define R9A08G045_WDT2_PRESETN		38
-+#define R9A08G045_SPI_HRESETN		39
-+#define R9A08G045_SPI_ARESETN		40
-+#define R9A08G045_SDHI0_IXRST		41
-+#define R9A08G045_SDHI1_IXRST		42
-+#define R9A08G045_SDHI2_IXRST		43
-+#define R9A08G045_SSI0_RST_M2_REG	44
-+#define R9A08G045_SSI1_RST_M2_REG	45
-+#define R9A08G045_SSI2_RST_M2_REG	46
-+#define R9A08G045_SSI3_RST_M2_REG	47
-+#define R9A08G045_SRC_RST		48
-+#define R9A08G045_USB_U2H0_HRESETN	49
-+#define R9A08G045_USB_U2H1_HRESETN	50
-+#define R9A08G045_USB_U2P_EXL_SYSRST	51
-+#define R9A08G045_USB_PRESETN		52
-+#define R9A08G045_ETH0_RST_HW_N		53
-+#define R9A08G045_ETH1_RST_HW_N		54
-+#define R9A08G045_I2C0_MRST		55
-+#define R9A08G045_I2C1_MRST		56
-+#define R9A08G045_I2C2_MRST		57
-+#define R9A08G045_I2C3_MRST		58
-+#define R9A08G045_SCIF0_RST_SYSTEM_N	59
-+#define R9A08G045_SCIF1_RST_SYSTEM_N	60
-+#define R9A08G045_SCIF2_RST_SYSTEM_N	61
-+#define R9A08G045_SCIF3_RST_SYSTEM_N	62
-+#define R9A08G045_SCIF4_RST_SYSTEM_N	63
-+#define R9A08G045_SCIF5_RST_SYSTEM_N	64
-+#define R9A08G045_SCI0_RST		65
-+#define R9A08G045_SCI1_RST		66
-+#define R9A08G045_IRDA_RST		67
-+#define R9A08G045_RSPI0_RST		68
-+#define R9A08G045_RSPI1_RST		69
-+#define R9A08G045_RSPI2_RST		70
-+#define R9A08G045_RSPI3_RST		71
-+#define R9A08G045_RSPI4_RST		72
-+#define R9A08G045_CANFD_RSTP_N		73
-+#define R9A08G045_CANFD_RSTC_N		74
-+#define R9A08G045_GPIO_RSTN		75
-+#define R9A08G045_GPIO_PORT_RESETN	76
-+#define R9A08G045_GPIO_SPARE_RESETN	77
-+#define R9A08G045_ADC_PRESETN		78
-+#define R9A08G045_ADC_ADRST_N		79
-+#define R9A08G045_TSU_PRESETN		80
-+#define R9A08G045_OCTA_ARESETN		81
-+#define R9A08G045_PDM0_PRESETNT		82
-+#define R9A08G045_PCI_ARESETN		83
-+#define R9A08G045_PCI_RST_B		84
-+#define R9A08G045_PCI_RST_GP_B		85
-+#define R9A08G045_PCI_RST_PS_B		86
-+#define R9A08G045_PCI_RST_RSM_B		87
-+#define R9A08G045_PCI_RST_CFG_B		88
-+#define R9A08G045_PCI_RST_LOAD_B	89
-+#define R9A08G045_SPDIF_RST		90
-+#define R9A08G045_I3C_TRESETN		91
-+#define R9A08G045_I3C_PRESETN		92
-+#define R9A08G045_VBAT_BRESETN		93
++	spin_lock_irqsave(&priv->rmw_lock, flags);
 +
-+#endif /* __DT_BINDINGS_CLOCK_R9A08G045_CPG_H__ */
++	val = readl(priv->base + off);
++	val >>= shift;
++	val &= bitmask;
++
++	/*
++	 * There are different constraints for the user of this notifiers as follows:
++	 * 1/ SD div cannot be 1 (val == 0) if parent rate is 800MHz
++	 * 2/ OCTA div cannot be 1 (val == 0) if parent rate is 400MHz
++	 * As SD can have only one parent having 800MHz and OCTA div can have
++	 * only one parent having 400MHz we took into account the parent rate
++	 * at the beginning of function (by checking invalid_rate % new_rate).
++	 * Now it is time to check the hardware divider and update it accordingly.
++	 */
++	if (!val) {
++		writel(((bitmask << shift) << 16) | BIT(shift), priv->base + off);
++		/* Wait for the update done. */
++		ret = rzg2l_cpg_wait_clk_update_done(priv->base, clk_hw_data->sconf);
++	}
++
++	spin_unlock_irqrestore(&priv->rmw_lock, flags);
++
++	if (ret)
++		dev_err(priv->dev, "Failed to downgrade the div\n");
++
++	return ret;
++}
++
+ static int rzg2l_register_notifier(struct clk_hw *hw, const struct cpg_core_clk *core,
+ 				   struct rzg2l_cpg_priv *priv)
+ {
+@@ -212,6 +276,146 @@ static int rzg2l_register_notifier(struct clk_hw *hw, const struct cpg_core_clk
+ 	return clk_notifier_register(hw->clk, nb);
+ }
+ 
++static unsigned long rzg3s_div_clk_recalc_rate(struct clk_hw *hw,
++					       unsigned long parent_rate)
++{
++	struct clk_hw_data *clk_hw_data = to_clk_hw_data(hw);
++	struct div_hw_data *div_hw_data = to_div_hw_data(clk_hw_data);
++	struct rzg2l_cpg_priv *priv = clk_hw_data->priv;
++	u32 val;
++
++	val = readl(priv->base + GET_REG_OFFSET(clk_hw_data->conf));
++	val >>= GET_SHIFT(clk_hw_data->conf);
++	val &= GENMASK(GET_WIDTH(clk_hw_data->conf) - 1, 0);
++
++	return divider_recalc_rate(hw, parent_rate, val, div_hw_data->dtable,
++				   CLK_DIVIDER_ROUND_CLOSEST, div_hw_data->width);
++}
++
++static bool rzg3s_div_clk_is_rate_valid(const unsigned long invalid_rate, unsigned long rate)
++{
++	if (invalid_rate && rate >= invalid_rate)
++		return false;
++
++	return true;
++}
++
++static long rzg3s_div_clk_round_rate(struct clk_hw *hw, unsigned long rate,
++				     unsigned long *parent_rate)
++{
++	struct clk_hw_data *clk_hw_data = to_clk_hw_data(hw);
++	struct div_hw_data *div_hw_data = to_div_hw_data(clk_hw_data);
++	long round_rate;
++
++	round_rate = divider_round_rate(hw, rate, parent_rate, div_hw_data->dtable,
++					div_hw_data->width, CLK_DIVIDER_ROUND_CLOSEST);
++
++	if (!rzg3s_div_clk_is_rate_valid(div_hw_data->invalid_rate, round_rate))
++		return -EINVAL;
++
++	return round_rate;
++}
++
++static int rzg3s_div_clk_set_rate(struct clk_hw *hw, unsigned long rate,
++				  unsigned long parent_rate)
++{
++	struct clk_hw_data *clk_hw_data = to_clk_hw_data(hw);
++	struct div_hw_data *div_hw_data = to_div_hw_data(clk_hw_data);
++	struct rzg2l_cpg_priv *priv = clk_hw_data->priv;
++	u32 off = GET_REG_OFFSET(clk_hw_data->conf);
++	u32 shift = GET_SHIFT(clk_hw_data->conf);
++	unsigned long flags;
++	u32 bitmask, val;
++	int ret;
++
++	/*
++	 * Some dividers cannot support some rates:
++	 * - SD div cannot support 800 MHz when parent is @800MHz and div = 1
++	 * - OCTA div cannot support 400 MHz when parent is @400MHz and div = 1
++	 * Check these scenarios.
++	 */
++	if (!rzg3s_div_clk_is_rate_valid(div_hw_data->invalid_rate, rate))
++		return -EINVAL;
++
++	val = divider_get_val(rate, parent_rate, div_hw_data->dtable, div_hw_data->width,
++			      CLK_DIVIDER_ROUND_CLOSEST);
++
++	bitmask = (GENMASK(GET_WIDTH(clk_hw_data->conf) - 1, 0) << shift) << 16;
++
++	spin_lock_irqsave(&priv->rmw_lock, flags);
++	writel(bitmask | (val << shift), priv->base + off);
++	/* Wait for the update done. */
++	ret = rzg2l_cpg_wait_clk_update_done(priv->base, clk_hw_data->sconf);
++	spin_unlock_irqrestore(&priv->rmw_lock, flags);
++
++	return ret;
++}
++
++static const struct clk_ops rzg3s_div_clk_ops = {
++	.recalc_rate = rzg3s_div_clk_recalc_rate,
++	.round_rate = rzg3s_div_clk_round_rate,
++	.set_rate = rzg3s_div_clk_set_rate,
++};
++
++static struct clk * __init
++rzg3s_cpg_div_clk_register(const struct cpg_core_clk *core, struct clk **clks,
++			   void __iomem *base, struct rzg2l_cpg_priv *priv)
++{
++	struct div_hw_data *div_hw_data;
++	struct clk_init_data init = {};
++	const struct clk_div_table *clkt;
++	struct clk_hw *clk_hw;
++	const struct clk *parent;
++	const char *parent_name;
++	u32 max;
++	int ret;
++
++	parent = clks[core->parent & 0xffff];
++	if (IS_ERR(parent))
++		return ERR_CAST(parent);
++
++	parent_name = __clk_get_name(parent);
++
++	div_hw_data = devm_kzalloc(priv->dev, sizeof(*div_hw_data), GFP_KERNEL);
++	if (!div_hw_data)
++		return ERR_PTR(-ENOMEM);
++
++	init.name = core->name;
++	init.flags = core->flag;
++	init.ops = &rzg3s_div_clk_ops;
++	init.parent_names = &parent_name;
++	init.num_parents = 1;
++
++	/* Get the maximum divider to retrieve div width. */
++	for (clkt = core->dtable; clkt->div; clkt++) {
++		if (max < clkt->div)
++			max = clkt->div;
++	}
++
++	div_hw_data->hw_data.priv = priv;
++	div_hw_data->hw_data.conf = core->conf;
++	div_hw_data->hw_data.sconf = core->sconf;
++	div_hw_data->dtable = core->dtable;
++	div_hw_data->invalid_rate = core->invalid_rate;
++	div_hw_data->width = fls(max) - 1;
++
++	clk_hw = &div_hw_data->hw_data.hw;
++	clk_hw->init = &init;
++
++	ret = devm_clk_hw_register(priv->dev, clk_hw);
++	if (ret)
++		return ERR_PTR(ret);
++
++	ret = rzg2l_register_notifier(clk_hw, core, priv);
++	if (ret) {
++		dev_err(priv->dev, "Failed to register notifier for %s\n",
++			core->name);
++		return ERR_PTR(ret);
++	}
++
++	return clk_hw->clk;
++}
++
+ static struct clk * __init
+ rzg2l_cpg_div_clk_register(const struct cpg_core_clk *core,
+ 			   struct clk **clks,
+@@ -963,6 +1167,9 @@ rzg2l_cpg_register_core_clk(const struct cpg_core_clk *core,
+ 		clk = rzg2l_cpg_div_clk_register(core, priv->clks,
+ 						 priv->base, priv);
+ 		break;
++	case CLK_TYPE_G3S_DIV:
++		clk = rzg3s_cpg_div_clk_register(core, priv->clks, priv->base, priv);
++		break;
+ 	case CLK_TYPE_MUX:
+ 		clk = rzg2l_cpg_mux_clk_register(core, priv->base, priv);
+ 		break;
+diff --git a/drivers/clk/renesas/rzg2l-cpg.h b/drivers/clk/renesas/rzg2l-cpg.h
+index 140b6b04a091..164da1dd7212 100644
+--- a/drivers/clk/renesas/rzg2l-cpg.h
++++ b/drivers/clk/renesas/rzg2l-cpg.h
+@@ -91,6 +91,7 @@ struct cpg_core_clk {
+ 	unsigned int sconf;
+ 	const struct clk_div_table *dtable;
+ 	const u32 *mtable;
++	const unsigned long invalid_rate;
+ 	const char * const *parent_names;
+ 	notifier_fn_t notifier;
+ 	u32 flag;
+@@ -107,6 +108,7 @@ enum clk_types {
+ 
+ 	/* Clock with divider */
+ 	CLK_TYPE_DIV,
++	CLK_TYPE_G3S_DIV,
+ 
+ 	/* Clock with clock source selector */
+ 	CLK_TYPE_MUX,
+@@ -145,6 +147,12 @@ enum clk_types {
+ 	DEF_TYPE(_name, _id, CLK_TYPE_DIV, .conf = _conf, \
+ 		 .parent = _parent, .dtable = _dtable, \
+ 		 .flag = CLK_DIVIDER_READ_ONLY)
++#define DEF_G3S_DIV(_name, _id, _parent, _conf, _sconf, _dtable, _invalid_rate, \
++		    _clk_flags, _notif) \
++	DEF_TYPE(_name, _id, CLK_TYPE_G3S_DIV, .conf = _conf, .sconf = _sconf, \
++		 .parent = _parent, .dtable = _dtable, \
++		 .invalid_rate = _invalid_rate, .flag = (_clk_flags), \
++		 .notifier = _notif)
+ #define DEF_MUX(_name, _id, _conf, _parent_names) \
+ 	DEF_TYPE(_name, _id, CLK_TYPE_MUX, .conf = _conf, \
+ 		 .parent_names = _parent_names, \
+@@ -279,8 +287,10 @@ extern const struct rzg2l_cpg_info r9a07g054_cpg_info;
+ extern const struct rzg2l_cpg_info r9a09g011_cpg_info;
+ 
+ int rzg2l_cpg_sd_mux_clk_notifier(struct notifier_block *nb, unsigned long event, void *data);
++int rzg3s_cpg_div_clk_notifier(struct notifier_block *nb, unsigned long event, void *data);
+ 
+ /* Macros to be used in platform specific initialization code. */
+ #define SD_MUX_NOTIF		(&rzg2l_cpg_sd_mux_clk_notifier)
++#define DIV_NOTIF		(&rzg3s_cpg_div_clk_notifier)
+ 
+ #endif
 -- 
 2.39.2
 
