@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91FAFCA0EC9
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Sep 2023 04:54:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6807CA0EC9
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Sep 2023 04:54:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230017AbjILEy0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 Sep 2023 00:54:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40654 "EHLO
+        id S229898AbjILEyf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 12 Sep 2023 00:54:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229875AbjILExa (ORCPT
+        with ESMTP id S229913AbjILExd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 Sep 2023 00:53:30 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EEEE1732
-        for <linux-serial@vger.kernel.org>; Mon, 11 Sep 2023 21:52:43 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id 2adb3069b0e04-500b66f8b27so8926637e87.3
-        for <linux-serial@vger.kernel.org>; Mon, 11 Sep 2023 21:52:43 -0700 (PDT)
+        Tue, 12 Sep 2023 00:53:33 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5ED810C7
+        for <linux-serial@vger.kernel.org>; Mon, 11 Sep 2023 21:52:44 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id 4fb4d7f45d1cf-51a52a7d859so13479680a12.0
+        for <linux-serial@vger.kernel.org>; Mon, 11 Sep 2023 21:52:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1694494361; x=1695099161; darn=vger.kernel.org;
+        d=tuxon.dev; s=google; t=1694494363; x=1695099163; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SoBHke4urpozyZDHr5ucE6zOtD1XFhakU9jA2sy8fAs=;
-        b=LcRpHldFUeTT2alLv3t90dqC+PKSe8sWlaiN3S68IMeQCDAB9fp/5GfpH9Xi6BUX+M
-         e/i51vklWFGYGZ/zrkS0PKGKgokt2hu8PGyiaIE5r16VUV3EwQ6vq2kDSimiOzeBGgTb
-         t4tGGZZBdmvxw38zDYPuyrf9/ttIO/e7tWhgzw2TVIxTSn2gA8kt1wwolodAq7K2Vo4g
-         PO18+jfk6Cyh5luemVwy3qBQTVw6BxPvKYLEma8aSBVyXJ5ZE5V5PzsNtPfeqMAbp5Y/
-         sFBOmB6Ag8VSpkHxtU4DcumtxVH28YGpAafc05Cpl1OOM1xG8Pv++ViD9YFJjPftWIYO
-         wnkQ==
+        bh=0TiFKFK+XRL8Y2Qq5YanADGgX/99HgRFoLldxYf1nF8=;
+        b=YtZyX6fee1IO+aOnbTokMR4XX16aVgMWzCsyarqP2QKtOW1lWjQ2UdwETjELmUllF/
+         Y16oLHPajwBTC08nDH6U0tq1QTpsnt7DDQLImNt+acxjND+nm0Iv4gEVdMbtn3JRQaW+
+         JwaYk019jwzZYOD4Y7qulXIZrrOO5mGBxdvBCnkTGBO3U71mYQ5dvAh6GQeudwkKk/Ej
+         DDa3dN2Amsbaql4s0iXjxVxtnvY4nt5LY9h9rh8674tIzzdti0NUkjzk/teZnabmZAXQ
+         xq4oZadhmfNaMfIdEd5g1952N+HlUibOk9YL4vBa0CjCy1G0vLOs19uVhAD3JczMVpjE
+         7p/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694494361; x=1695099161;
+        d=1e100.net; s=20230601; t=1694494363; x=1695099163;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=SoBHke4urpozyZDHr5ucE6zOtD1XFhakU9jA2sy8fAs=;
-        b=G/MMHkWXHLjivoz8CPIKbpf92J5TlZX/4X38ylYCPPxPpc/Xv7Kjlj61b4FJPHHlun
-         JEKKzGCsHqHt8fnbch0iJTBMQNvCINb7S1falylag15/95TQQw7LIVeWOGe3Dwya5ncF
-         TQTttgr57vNVmjKeSACnmoBSEJfycp+IgPuJCtzCQfNqgGwbj52+xmreiJ1hGgrbs0eh
-         Ku6f3NY6PexU+vRtyROAbo43OFiRwg7TmL1sQd8Vz1V6HLxxwirr8cce6QdA5LNIxffl
-         pThdG1oBy5G+gfV8nnsvgovJm7Umx4+qr02FPWiwhPvHfqr1JUK4u6JFKftsVx3lWOoZ
-         +uJA==
-X-Gm-Message-State: AOJu0YxnRUfId8m2Nt6FrwT5DhMhKkMX9FQJ4hGj6GiuDVNxP3v9nHUM
-        3/SjsjQ/WBurSqJrYYuWuNzU/Q==
-X-Google-Smtp-Source: AGHT+IFBjLYuyqtfvAjQ/GMEhL7UmycvXELpCVQziRGEXwb15gSWM7vl3v1Q/q/qmVWFzr8rmtSkTA==
-X-Received: by 2002:a19:4f02:0:b0:500:bbd4:970f with SMTP id d2-20020a194f02000000b00500bbd4970fmr8992708lfb.5.1694494361475;
-        Mon, 11 Sep 2023 21:52:41 -0700 (PDT)
+        bh=0TiFKFK+XRL8Y2Qq5YanADGgX/99HgRFoLldxYf1nF8=;
+        b=Sm15FkQJR3NdcWOPUtQBdVh9vyTuxgzJQxXNmB8t5Niq8MSUlroUw5mERhw0GyYLjB
+         r/92iY4OBOyT6Bwlw8K9ANnjAGbi0JXlgXfh+XucXC59OZDdRXpM4BfImm9MIy9Vk65r
+         QLZRJtfohvST7NSJEY21D3IcUYkUHx6AfquN0wT7pIX2nhyNMRJVrO2MEwQrr8tSTaHy
+         10FVAX2RvGGvodBdVCsQeUSDUVxzZm7yfsHUwGOT+92DgQIFfBQmwAXh7pCZQ1oP/oJV
+         2xD50d3hlPieYJ5PYoboPOXjRAD/TE9I2gTHu3GvbOAqK/7HJADD9iMP24VYEOPmCpZV
+         myaQ==
+X-Gm-Message-State: AOJu0YwAlltJtwXBg6SWzXME/378mJliJRW2SwVv9YgnOA7pA3of+pWC
+        SxTXf30riHDUOdR30nH9kQgrvg==
+X-Google-Smtp-Source: AGHT+IFx0wElgq/g5yJUbGwsVL7pK9O7R7ug3dBEnT+lubye7E7aMZMoI9sOzNhpCz2dZGVSV2hpdw==
+X-Received: by 2002:a05:6402:2899:b0:52a:586a:b19a with SMTP id eg25-20020a056402289900b0052a586ab19amr1381363edb.21.1694494363502;
+        Mon, 11 Sep 2023 21:52:43 -0700 (PDT)
 Received: from claudiu-X670E-Pro-RS.. ([82.78.167.145])
-        by smtp.gmail.com with ESMTPSA id f21-20020a05640214d500b0051e22660835sm5422415edx.46.2023.09.11.21.52.39
+        by smtp.gmail.com with ESMTPSA id f21-20020a05640214d500b0051e22660835sm5422415edx.46.2023.09.11.21.52.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Sep 2023 21:52:41 -0700 (PDT)
+        Mon, 11 Sep 2023 21:52:43 -0700 (PDT)
 From:   Claudiu <claudiu.beznea@tuxon.dev>
 X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
 To:     geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
@@ -68,9 +68,9 @@ Cc:     linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Subject: [PATCH 12/37] clk: renesas: rzg2l: reduce the critical area
-Date:   Tue, 12 Sep 2023 07:51:32 +0300
-Message-Id: <20230912045157.177966-13-claudiu.beznea.uj@bp.renesas.com>
+Subject: [PATCH 13/37] clk: renesas: rzg2l: use FIELD_GET() for PLL register fields
+Date:   Tue, 12 Sep 2023 07:51:33 +0300
+Message-Id: <20230912045157.177966-14-claudiu.beznea.uj@bp.renesas.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
 References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
@@ -82,36 +82,44 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-spinlock in rzg2l_mod_clock_endisable() is intended to protect the accesses
-to hardware register. There is no need to protect the instructions that set
-temporary variable which will be then written to register. Thus limit the
-spinlock only to the hardware register access.
+Use FIELD_GET() for PLL register fields. This is its purpose.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 ---
- drivers/clk/renesas/rzg2l-cpg.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/clk/renesas/rzg2l-cpg.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/clk/renesas/rzg2l-cpg.c b/drivers/clk/renesas/rzg2l-cpg.c
-index 6c289223a4e2..d8801f88df8e 100644
+index d8801f88df8e..50f69bbe1a6e 100644
 --- a/drivers/clk/renesas/rzg2l-cpg.c
 +++ b/drivers/clk/renesas/rzg2l-cpg.c
-@@ -912,13 +912,13 @@ static int rzg2l_mod_clock_endisable(struct clk_hw *hw, bool enable)
+@@ -11,6 +11,7 @@
+  * Copyright (C) 2015 Renesas Electronics Corp.
+  */
  
- 	dev_dbg(dev, "CLK_ON %u/%pC %s\n", CLK_ON_R(reg), hw->clk,
- 		enable ? "ON" : "OFF");
--	spin_lock_irqsave(&priv->rmw_lock, flags);
++#include <linux/bitfield.h>
+ #include <linux/clk.h>
+ #include <linux/clk-provider.h>
+ #include <linux/clk/renesas.h>
+@@ -38,14 +39,13 @@
+ #define WARN_DEBUG(x)	do { } while (0)
+ #endif
  
- 	value = bitmask << 16;
- 	if (enable)
- 		value |= bitmask;
--	writel(value, priv->base + CLK_ON_R(reg));
+-#define DIV_RSMASK(v, s, m)	((v >> s) & m)
+ #define GET_SHIFT(val)		((val >> 12) & 0xff)
+ #define GET_WIDTH(val)		((val >> 8) & 0xf)
  
-+	spin_lock_irqsave(&priv->rmw_lock, flags);
-+	writel(value, priv->base + CLK_ON_R(reg));
- 	spin_unlock_irqrestore(&priv->rmw_lock, flags);
+-#define KDIV(val)		DIV_RSMASK(val, 16, 0xffff)
+-#define MDIV(val)		DIV_RSMASK(val, 6, 0x3ff)
+-#define PDIV(val)		DIV_RSMASK(val, 0, 0x3f)
+-#define SDIV(val)		DIV_RSMASK(val, 0, 0x7)
++#define KDIV(val)		FIELD_GET(GENMASK(31, 16), val)
++#define MDIV(val)		FIELD_GET(GENMASK(15, 6), val)
++#define PDIV(val)		FIELD_GET(GENMASK(5, 0), val)
++#define SDIV(val)		FIELD_GET(GENMASK(2, 0), val)
  
- 	if (!enable)
+ #define CLK_ON_R(reg)		(reg)
+ #define CLK_MON_R(reg)		(0x180 + (reg))
 -- 
 2.39.2
 
