@@ -2,144 +2,79 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE611CA0EEB
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Sep 2023 15:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C33D3CA0EF5
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Sep 2023 16:00:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236178AbjILPRc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 Sep 2023 11:17:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33254 "EHLO
+        id S229938AbjILQAz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 12 Sep 2023 12:00:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236294AbjILPRc (ORCPT
+        with ESMTP id S230292AbjILQAy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 Sep 2023 11:17:32 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5727D12E;
-        Tue, 12 Sep 2023 08:17:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694531848; x=1726067848;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9ek7zeRveSjW1HyewGP99m9eXHqbmJXZueDnRe0MSmc=;
-  b=N/2DfbdYstgODafxxGrnpDTc8uEac9MoZ0/DMKA4aIy1+5cYbn8dkFLQ
-   sKBAQhtZ5E3jgZ0V+k0Rmk/xaQpA4Lm69TNm1gW/daFo8xDfegm7qiScq
-   LdltDlcfE5kghl/XJxYsOUHjO3g39+2ozlklJjCdN0e+Fy93ydBIMl+oA
-   aplriftZ+8sBVRzB/Catznky1504OvoW4HQxZc/KxKb9Y/CSsObaO/x9m
-   JDol4ZSWYotIZHNG4unaa7vEZeixOXjN24Cq8IHYLXEXaY8nDRYvpQsk9
-   S2PTHQpRMnyQ4AnyLW2nF9fyUGECoBPMWygiHLueVlFmmozox19U2B+TV
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="377322543"
-X-IronPort-AV: E=Sophos;i="6.02,139,1688454000"; 
-   d="scan'208";a="377322543"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2023 08:17:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="858839099"
-X-IronPort-AV: E=Sophos;i="6.02,139,1688454000"; 
-   d="scan'208";a="858839099"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2023 08:17:24 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1qg58j-008cFf-2z;
-        Tue, 12 Sep 2023 18:17:21 +0300
-Date:   Tue, 12 Sep 2023 18:17:21 +0300
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] serial: core: Add sysfs links for serial core
- port instances for ttys
-Message-ID: <ZQCBAXcFwDqZyBZP@smile.fi.intel.com>
-References: <20230912110350.14482-1-tony@atomide.com>
- <20230912110350.14482-4-tony@atomide.com>
+        Tue, 12 Sep 2023 12:00:54 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A3610EA;
+        Tue, 12 Sep 2023 09:00:50 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35662C433C8;
+        Tue, 12 Sep 2023 16:00:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1694534450;
+        bh=bxv0fBANA2mqdoQ6AccAVVP77okB+6dX9LpeEKV17mw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=W7ylpWLwmuGHO5sqkzLEIUJ+5Mv4uZPzfayVn70exPBnqgG3SJTsQIr35EKUmF2iP
+         J4xgwcHl2JlJ2kUkclfL8yrkZWq6hjWpr2FeVxTwW+LQaEz5eQLkCFbrvkk9mMdxT0
+         nwnKDhHMn/XcpyWp9KeKQm2B20QEs6gh38q8T1jHIugt+Q5PtfHJWZ6tjBL5bp4xap
+         eoY8pMwE32rJIJpM7a9RuSvfu1UcWxsvfunmPnGugx8T24PXwBrQ+VYoaFuXPJ7YjR
+         QlalUI5H5nbkGecgJ95+Fe5omjkKxIJHFkq+7VLn3O9XjYy4RCae5j0nXfnil9ylE8
+         rjkTLiSs75pDA==
+Received: (nullmailer pid 862469 invoked by uid 1000);
+        Tue, 12 Sep 2023 16:00:46 -0000
+Date:   Tue, 12 Sep 2023 11:00:46 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Claudiu <claudiu.beznea@tuxon.dev>
+Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, mturquette@baylibre.com,
+        nfraprado@collabora.com, linux-clk@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linus.walleij@linaro.org,
+        neil.armstrong@linaro.org, rafal@milecki.pl, sboyd@kernel.org,
+        linux-mmc@vger.kernel.org, ulf.hansson@linaro.org,
+        devicetree@vger.kernel.org, arnd@arndb.de,
+        wsa+renesas@sang-engineering.com, konrad.dybcio@linaro.org,
+        geert+renesas@glider.be, magnus.damm@gmail.com,
+        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
+        linux-gpio@vger.kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        linux-serial@vger.kernel.org, catalin.marinas@arm.com,
+        conor+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+        will@kernel.org, Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
+        jirislaby@kernel.org
+Subject: Re: [PATCH 01/37] dt-bindings: serial: renesas,scif: document
+ r9a08g045 support
+Message-ID: <169453444566.862414.5516209615917856191.robh@kernel.org>
+References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
+ <20230912045157.177966-2-claudiu.beznea.uj@bp.renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230912110350.14482-4-tony@atomide.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20230912045157.177966-2-claudiu.beznea.uj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Sep 12, 2023 at 02:03:45PM +0300, Tony Lindgren wrote:
-> Let's allow the userspace to find out the ttyS style name for a serial
-> core port device if a tty exists. This can be done with:
+
+On Tue, 12 Sep 2023 07:51:21 +0300, Claudiu wrote:
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 > 
-> $ grep DEVNAME /sys/bus/serial-base/devices/*/tty/uevent
-> /sys/bus/serial-base/devices/00:04:0.0/tty/uevent:DEVNAME=ttyS0
-> /sys/bus/serial-base/devices/serial8250:0.1/tty/uevent:DEVNAME=ttyS1
-> /sys/bus/serial-base/devices/serial8250:0.2/tty/uevent:DEVNAME=ttyS2
-> /sys/bus/serial-base/devices/serial8250:0.3/tty/uevent:DEVNAME=ttyS3
+> Document support for the Serial Communication Interface with FIFO (SCIF)
+> available in the Renesas RZ/G3S (R9A08G045) SoC. SCIF interface in
+> Renesas RZ/G3S is similar to the one available in RZ/G2L.
 > 
-> With this change, we can add /dev/serial/by-id symlinks for the serial
-> core port device instances. This allows using hardware based port
-> addressing in addition to the legacy ttyS style naming.
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> ---
+>  Documentation/devicetree/bindings/serial/renesas,scif.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> The serial core port naming is DEVNAME:0.0, such as the 00:04:0.0 above.
-> The 0.0 above are serial core controller id and port id. The port id and
-> controller id are typically both zero unless the serial port hardware
-> controller has multiple controllers or ports.
 
-...
-
-> +	struct uart_match match = {port, drv};
-
-A nit:
-
-	struct uart_match match = { .port = port, .driver = drv };
-
-...
-
-> +	tty_dev = device_find_child(port->dev, &match, serial_match_port);
-> +	if (tty_dev) {
-
-> +		ret = sysfs_create_link(&port->port_dev->dev.kobj, &tty_dev->kobj,
-> +					"tty");
-
-I would do it on a single line (you already over 80 anyway).
-
-> +		put_device(tty_dev);
-> +		if (ret)
-> +			goto err_remove_port;
-> +	}
-
-...
-
-> +	struct uart_match match = {port, drv};
-
-As per above.
-
-...
-
-> +	tty_dev = device_find_child(port->dev, &match, serial_match_port);
-
-Can be written as
-
-	tty_dev = device_find_child(phys_dev, &match, serial_match_port);
-
-?
-
-> +	if (tty_dev) {
-> +		sysfs_remove_link(&port->port_dev->dev.kobj, "tty");
-
-Can be written as
-
-		sysfs_remove_link(&port_dev->dev.kobj, "tty");
-
-can't be?
-
-> +		put_device(tty_dev);
-> +	}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Acked-by: Rob Herring <robh@kernel.org>
 
