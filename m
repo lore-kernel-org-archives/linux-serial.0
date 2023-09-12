@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 573C3CA0ECA
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Sep 2023 04:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE13DCA0ECA
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Sep 2023 04:57:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230490AbjILE5D (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 Sep 2023 00:57:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33932 "EHLO
+        id S230502AbjILE5K (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 12 Sep 2023 00:57:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230167AbjILE4M (ORCPT
+        with ESMTP id S230325AbjILE4Y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 Sep 2023 00:56:12 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2222D5E
-        for <linux-serial@vger.kernel.org>; Mon, 11 Sep 2023 21:53:27 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id 4fb4d7f45d1cf-52f9a45b4bdso583579a12.3
-        for <linux-serial@vger.kernel.org>; Mon, 11 Sep 2023 21:53:27 -0700 (PDT)
+        Tue, 12 Sep 2023 00:56:24 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E760D2D6B
+        for <linux-serial@vger.kernel.org>; Mon, 11 Sep 2023 21:53:29 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id 4fb4d7f45d1cf-52f33659d09so3133614a12.1
+        for <linux-serial@vger.kernel.org>; Mon, 11 Sep 2023 21:53:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1694494406; x=1695099206; darn=vger.kernel.org;
+        d=tuxon.dev; s=google; t=1694494408; x=1695099208; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ZUQbJ6nAB1Wv5oCt6JAhLhQb5E1vP38vN7EkwHGoctg=;
-        b=d+OFxBRVrvm5v7o31TI+T0+wHCCzqpvGFosY0rI8TgGE9QQGjtPRNvtHAS0GsFxXCb
-         BqKVoDMg2O5LDryYNi1iF6v0bhyiW4QUw/LJdCKNTkpo8NYeRDZwA9Do84peSvFFKfuc
-         Ucl5GK9fOM4+tj3GK4wrx09zF7/chmIWtzNPYiAAJep2SdOYFIV/9ukFW4vQEDXOd17y
-         dZhWu7IJBoRRWqnG0p7my5rhrkwQ+wKXwb54BruO5eX3F5DErdyjMEfeX+O1ugVyEhvt
-         Q02IFFVZ0THs6GQsQ5U/mDQgZtGCkAx+m4HwZTyIlamkebIBiskso9a2IGoGPG1acAwp
-         FvyA==
+        bh=/HrAWyXhc5UGvYEw5qJFkd5OTzrOQsZQW/aP2QXdEbI=;
+        b=oqFbiMph+6Jz6LwNzix3kouJN/OsYu60xIYcFQ39FGPrX8geom7BfXVSJBi4w3n+G6
+         ct/bJGPORX7q8UL9+PxQmcBh8sjcSRzL/r8JHcM+5Uz3/Kko1KKMfduBdpTxG9nCOWVb
+         pICtwEasm94F31QZ6Smw9psN5LulQFsNLTaWk1eICJ5O0K/3vE9qBh3Qa6ENyw5aRXjs
+         n5N5IZ/VBpiTU4SkO6iFaI3WgFL1RXu3EgB0pLnagNGtNwD++yRNu/o3s2AVs7KTUnVs
+         A9Ip0hRmYOZXzvAeUzcY2bmidrXOdHT5R9mlIT1sadMa+RTluyD2wSPGJzclyLTKBKcF
+         iHJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694494406; x=1695099206;
+        d=1e100.net; s=20230601; t=1694494408; x=1695099208;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ZUQbJ6nAB1Wv5oCt6JAhLhQb5E1vP38vN7EkwHGoctg=;
-        b=TgiJ3d+vMvkK8MbMSmNRiUEKys+zPY192dStZp2iV7m9njVk28GqaU8R/c/DQ2gO7L
-         fUYpES6HIAWpPIOaCbRsUPpCNN/0K9wA8bma0c8nqpS96xvUMGQdebRuARMTgDTSTS5N
-         SDWFYxiidrKRvtYaHojvgrf4wjLQfB2m8n3afS/91DuJdb6b8EhFE95Ax6KYHDIjgQcW
-         Chu1bCq09Zesyj+gYVNGD0qzi40yNnc+HV5E9MjQ2XlAONaIqdRjJuMqTw2sbOnCc3uq
-         cb+0ulOTW1t2cv7BQZD1RgbozY7PxErXGis20IseUueqx4kfDFSYBF2yBgQ36fqihD5m
-         bgvw==
-X-Gm-Message-State: AOJu0YzWJoUxWbiR1Em4ebARrjIm/WhJQYSn5R19Gc8ZLLwkgV62aZ7a
-        wbK1v2HCV33caY3HXTNkBbvfiQ==
-X-Google-Smtp-Source: AGHT+IGoyhGX1pK6AQrRSJwoD63ZLQ/1BdSJFJ71PrnQe8JE7joZ6FlnJ2tetWytt7x5m0vFiBIa3g==
-X-Received: by 2002:aa7:cb52:0:b0:52a:46a7:4597 with SMTP id w18-20020aa7cb52000000b0052a46a74597mr10037585edt.33.1694494406203;
-        Mon, 11 Sep 2023 21:53:26 -0700 (PDT)
+        bh=/HrAWyXhc5UGvYEw5qJFkd5OTzrOQsZQW/aP2QXdEbI=;
+        b=j5b8Kn4E3G3R0C2TQWqiHmtsCwgwltFFmnNiBaV4m9oGLrXXTRqhpZyDw90HKFG4yY
+         ql5P3t/Oaoh5CyW+baCzKTZQX+WR+54HZhVrypYas205ZFCd5BqFVG9Ylo53rkhfRSMi
+         N9mff6DRFHDEwwKFRRKvDjL58O58wIJbIY5Qz04HCgIrgIT1jPVx94q5TCT0y6hN56vF
+         gxS7JONOCXvZrRHfj8uB1Z73dDN2O8mrfNF6JDYRabnUw2MJYNTqixv6hBNoYwtzi6/J
+         uUhcN8w03LF5Q/9Et3ggZH2GRcECnO5F0wwqkeTzzl0lz5adby1GSkixxfC09lc2nGUN
+         V+zw==
+X-Gm-Message-State: AOJu0YxLgc1JG3sfnzT6xgjV+8Xp/PT/DoPSUKRPpLiHWWYNQwUOsHyn
+        rR+BEKhlu9RBEWwK2uvsLDwirw==
+X-Google-Smtp-Source: AGHT+IH22ThlXZ066/WgQ1RS8s0YoZtqWi+0Y9CXjLCSgIoSVA//0jNCDN0arlPG3DiSxDc98oDDqw==
+X-Received: by 2002:a05:6402:b30:b0:525:73dd:4f71 with SMTP id bo16-20020a0564020b3000b0052573dd4f71mr9067069edb.14.1694494408526;
+        Mon, 11 Sep 2023 21:53:28 -0700 (PDT)
 Received: from claudiu-X670E-Pro-RS.. ([82.78.167.145])
-        by smtp.gmail.com with ESMTPSA id f21-20020a05640214d500b0051e22660835sm5422415edx.46.2023.09.11.21.53.24
+        by smtp.gmail.com with ESMTPSA id f21-20020a05640214d500b0051e22660835sm5422415edx.46.2023.09.11.21.53.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Sep 2023 21:53:25 -0700 (PDT)
+        Mon, 11 Sep 2023 21:53:28 -0700 (PDT)
 From:   Claudiu <claudiu.beznea@tuxon.dev>
 X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
 To:     geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
@@ -68,9 +68,9 @@ Cc:     linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Subject: [PATCH 34/37] arm64: dts: renesas: rzg3s-smarc: add initial device tree for RZ SMARC Carrier-II board
-Date:   Tue, 12 Sep 2023 07:51:54 +0300
-Message-Id: <20230912045157.177966-35-claudiu.beznea.uj@bp.renesas.com>
+Subject: [PATCH 35/37] dt-bindings: arm: renesas: document SMARC Carrier-II EVK
+Date:   Tue, 12 Sep 2023 07:51:55 +0300
+Message-Id: <20230912045157.177966-36-claudiu.beznea.uj@bp.renesas.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
 References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
@@ -82,49 +82,29 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-Add initial device tree for RZ SMARC Carrier-II. At the moment it
-contains only serial interface (and its pins definition).
+Document Renesas SMARC Carrier-II EVK board which is based on RZ/G3S
+(R9A08G045) SoC. The SMARC Carrier-II EVK consists of RZ/G3S SoM module and
+SMARC Carrier-II carrier board, the SoM module sits on top of carrier
+board.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 ---
- arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi | 28 ++++++++++++++++++++
- 1 file changed, 28 insertions(+)
- create mode 100644 arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi
+ Documentation/devicetree/bindings/soc/renesas/renesas.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi b/arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi
-new file mode 100644
-index 000000000000..197b529d4334
---- /dev/null
-+++ b/arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi
-@@ -0,0 +1,28 @@
-+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+/*
-+ * Device Tree Source for the RZ SMARC Carrier-II Board.
-+ *
-+ * Copyright (C) 2023 Renesas Electronics Corp.
-+ */
-+
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/pinctrl/rzg2l-pinctrl.h>
-+
-+/ {
-+	aliases {
-+		serial0 = &scif0;
-+	};
-+};
-+
-+&pinctrl {
-+	scif0_pins: scif0 {
-+		pinmux = <RZG2L_PORT_PINMUX(6, 3, 1)>, /* TXD */
-+			 <RZG2L_PORT_PINMUX(6, 4, 1)>; /* RXD */
-+	};
-+};
-+
-+&scif0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&scif0_pins>;
-+	status = "okay";
-+};
+diff --git a/Documentation/devicetree/bindings/soc/renesas/renesas.yaml b/Documentation/devicetree/bindings/soc/renesas/renesas.yaml
+index 822faf081e84..f4964445e5ab 100644
+--- a/Documentation/devicetree/bindings/soc/renesas/renesas.yaml
++++ b/Documentation/devicetree/bindings/soc/renesas/renesas.yaml
+@@ -476,6 +476,8 @@ properties:
+ 
+       - description: RZ/G3S (R9A08G045)
+         items:
++          - enum:
++              - renesas,smarc2-evk # SMARC Carrier-II EVK
+           - enum:
+               - renesas,r9a08g045s33 # PCIe support
+           - const: renesas,r9a08g045
 -- 
 2.39.2
 
