@@ -2,95 +2,89 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A4ECA5534
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Sep 2023 10:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E823EDEC41
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Sep 2023 11:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239612AbjIMKgk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Sep 2023 06:36:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43664 "EHLO
+        id S240140AbjIMLOV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 13 Sep 2023 07:14:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238013AbjIMKgj (ORCPT
+        with ESMTP id S240154AbjIMLOD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Sep 2023 06:36:39 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EEBEC3;
-        Wed, 13 Sep 2023 03:36:35 -0700 (PDT)
+        Wed, 13 Sep 2023 07:14:03 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49892D4C;
+        Wed, 13 Sep 2023 04:12:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694601395; x=1726137395;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=4WUEy9IajOAQvb6MTevfkqkS+hTFZ1eehulh/xUwM8E=;
-  b=nUbsOuHDMP54/3QfY2NPL28s1sNzxY3YFb60cV9zeRJgKBnUuGwbF/fV
-   3wltt9S8B/XQbyHWmMfEYodZoz0nE+Xg54CvfwSQovMjNWI5HK9iPUcXF
-   qSaTj76AS/SnCFsqfqgT+4py+snDWTtxVv/ZATXu/qEEtbi0Izu9FQ3qF
-   UkmgRQBZupfTH/10g5mxKd0IyrBRwiCRbhNug4MHmFOa+A/gNDfdz7iZf
-   xzWUwM+KT4imqqoVmc61q5O8hwauXbQVkE7QRkCno/XJv3J/vkr8vMoTR
-   ZtvqEQw4dN0DZMOFoYRxzUqyssY4PF9kLZTPSHktGAQ2fE6SvG+UWeBXW
+  t=1694603561; x=1726139561;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=tGJ4M6q95QKK9r+I8xoFUhp9gNf1DYxmXMPssTAzTm0=;
+  b=cSm2JPzVuP61ry5vjVpGqgiFCvbi4DQAL/IIjZR14Eamj+FagrM7u8xg
+   Gb0AZbEaVAY+unuhInFCb5W3TK7PihJHo9OPtwpy2y22I5tq4XVVKwwh6
+   LGOQWLbVOH3MABvF/ZiM2+chf0kJpcL8CJW6c8Q3jS+IL/7a9E/ITX7Xp
+   XiIKF1iE2jGMa/IUF+38RYRZwBNyLSky4Vg+mKT4oXS6c4SkrtPU0+uSw
+   Lz0Jdw5N2nDk5Ikb/CV6Ycf8DPNAyqMsnKhOuEpYyvO9Fkra2dy22mBwz
+   TjJCdXH8aYkBjfpNSfq6cPD+4rnymlF9Nt0f/IQ5aVo17/0ZQkSFBiSwM
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="377535210"
-X-IronPort-AV: E=Sophos;i="6.02,142,1688454000"; 
-   d="scan'208";a="377535210"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2023 03:36:34 -0700
+X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="358899934"
+X-IronPort-AV: E=Sophos;i="6.02,143,1688454000"; 
+   d="scan'208";a="358899934"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2023 04:12:40 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="834261637"
-X-IronPort-AV: E=Sophos;i="6.02,142,1688454000"; 
-   d="scan'208";a="834261637"
-Received: from pakurapo-mobl3.ger.corp.intel.com ([10.249.45.213])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2023 03:36:33 -0700
-Date:   Wed, 13 Sep 2023 13:36:30 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] tty/serial: Sort drivers in makefile
-In-Reply-To: <e74982c0-4942-1c46-1c53-6dd6e7677373@kernel.org>
-Message-ID: <e25ef4f-48bb-eeff-f181-794afe716a81@linux.intel.com>
-References: <20230912103558.20123-1-ilpo.jarvinen@linux.intel.com> <e74982c0-4942-1c46-1c53-6dd6e7677373@kernel.org>
+X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="990879528"
+X-IronPort-AV: E=Sophos;i="6.02,143,1688454000"; 
+   d="scan'208";a="990879528"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga006.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2023 04:12:37 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qgNnO-008qa5-20;
+        Wed, 13 Sep 2023 14:12:34 +0300
+Date:   Wed, 13 Sep 2023 14:12:34 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Al Cooper <alcooperx@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v1 1/1] serial: 8250_bcm7271: Use dev_err_probe() instead
+ of dev_err()
+Message-ID: <ZQGZItGcauus7l9F@smile.fi.intel.com>
+References: <20230912165550.402540-1-andriy.shevchenko@linux.intel.com>
+ <412c5225-e9c0-6a8d-1b39-2ce60cbf8074@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-11916867-1694601394=:1849"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <412c5225-e9c0-6a8d-1b39-2ce60cbf8074@wanadoo.fr>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Tue, Sep 12, 2023 at 08:20:49PM +0200, Christophe JAILLET wrote:
+> Le 12/09/2023 à 18:55, Andy Shevchenko a écrit :
 
---8323329-11916867-1694601394=:1849
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+...
 
-On Wed, 13 Sep 2023, Jiri Slaby wrote:
-
-> On 12. 09. 23, 12:35, Ilpo JÃ¤rvinen wrote:
-> > Sort drivers in alphabetic order in Makefile to make it easier to find
-> > the correct line. In case the CONFIG and filenames disagree, sort using
-> > the filename (but ignoring "serial" prefixes).
+> > -			ret = dma_irq;
+> > -			dev_err(dev, "no IRQ resource info\n");
+> > +			dev_err_probe(dev, dma_irq, "no IRQ resource info\n");
 > 
-> Overall looks good.
-> 
-> I just want to make sure you considered the below, as you don't say explicitly
-> in the commit log.
-> 
-> The order in the makefile defines the link order. So built-in drivers are
-> loaded in that order. So are you sure your patch doesn't change order of some
-> drivers which need to be in a specific order?
+> ret = dev_err_probe(dev, dma_irq, "no IRQ resource info\n");
 
-Thanks for taking a look.
+Good catch, thanks!
 
-I limited the ordering to non-library like "leaf" driver files so it 
-should be safe. Except for 8250_early that was in middle of drivers so
-I moved it before the driver section but that doesn't alter anything 
-important AFAICT.
-
-In any case, I double-checked this again and only thing I found out is 
-that for some reason SERIAL_8250_EXAR depends on 8250_PCI but nothing uses 
-the 4 functions 8250_pci.c EXPORTs (which I'll address shortly).
-
+> >   			goto err1;
+> >   		}
 
 -- 
- i.
+With Best Regards,
+Andy Shevchenko
 
---8323329-11916867-1694601394=:1849--
+
