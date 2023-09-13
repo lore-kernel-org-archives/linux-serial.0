@@ -2,89 +2,58 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E823EDEC41
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Sep 2023 11:14:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 624A4EDEC43
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Sep 2023 12:06:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240140AbjIMLOV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Sep 2023 07:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33926 "EHLO
+        id S240078AbjIMMGz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 13 Sep 2023 08:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240154AbjIMLOD (ORCPT
+        with ESMTP id S235205AbjIMMGz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Sep 2023 07:14:03 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49892D4C;
-        Wed, 13 Sep 2023 04:12:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694603561; x=1726139561;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=tGJ4M6q95QKK9r+I8xoFUhp9gNf1DYxmXMPssTAzTm0=;
-  b=cSm2JPzVuP61ry5vjVpGqgiFCvbi4DQAL/IIjZR14Eamj+FagrM7u8xg
-   Gb0AZbEaVAY+unuhInFCb5W3TK7PihJHo9OPtwpy2y22I5tq4XVVKwwh6
-   LGOQWLbVOH3MABvF/ZiM2+chf0kJpcL8CJW6c8Q3jS+IL/7a9E/ITX7Xp
-   XiIKF1iE2jGMa/IUF+38RYRZwBNyLSky4Vg+mKT4oXS6c4SkrtPU0+uSw
-   Lz0Jdw5N2nDk5Ikb/CV6Ycf8DPNAyqMsnKhOuEpYyvO9Fkra2dy22mBwz
-   TjJCdXH8aYkBjfpNSfq6cPD+4rnymlF9Nt0f/IQ5aVo17/0ZQkSFBiSwM
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="358899934"
-X-IronPort-AV: E=Sophos;i="6.02,143,1688454000"; 
-   d="scan'208";a="358899934"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2023 04:12:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="990879528"
-X-IronPort-AV: E=Sophos;i="6.02,143,1688454000"; 
-   d="scan'208";a="990879528"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga006.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2023 04:12:37 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qgNnO-008qa5-20;
-        Wed, 13 Sep 2023 14:12:34 +0300
-Date:   Wed, 13 Sep 2023 14:12:34 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+        Wed, 13 Sep 2023 08:06:55 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E25019A7;
+        Wed, 13 Sep 2023 05:06:51 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 5340C8088;
+        Wed, 13 Sep 2023 12:06:50 +0000 (UTC)
+Date:   Wed, 13 Sep 2023 15:06:49 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 1/1] serial: 8250_bcm7271: Use dev_err_probe() instead
- of dev_err()
-Message-ID: <ZQGZItGcauus7l9F@smile.fi.intel.com>
-References: <20230912165550.402540-1-andriy.shevchenko@linux.intel.com>
- <412c5225-e9c0-6a8d-1b39-2ce60cbf8074@wanadoo.fr>
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH v2 2/3] serial: core: Add support for DEVNAME:0.0 style
+ naming for kernel console
+Message-ID: <20230913120649.GI5285@atomide.com>
+References: <20230912110350.14482-1-tony@atomide.com>
+ <20230912110350.14482-3-tony@atomide.com>
+ <c7688d45-4b63-20-b1c6-2dc1e83e875@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <412c5225-e9c0-6a8d-1b39-2ce60cbf8074@wanadoo.fr>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <c7688d45-4b63-20-b1c6-2dc1e83e875@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Sep 12, 2023 at 08:20:49PM +0200, Christophe JAILLET wrote:
-> Le 12/09/2023 à 18:55, Andy Shevchenko a écrit :
-
-...
-
-> > -			ret = dma_irq;
-> > -			dev_err(dev, "no IRQ resource info\n");
-> > +			dev_err_probe(dev, dma_irq, "no IRQ resource info\n");
+* Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com> [230912 12:24]:
+> On Tue, 12 Sep 2023, Tony Lindgren wrote:
+> > +struct serial_base_console {
+> > +	struct list_head node;
+> > +	char *name;
 > 
-> ret = dev_err_probe(dev, dma_irq, "no IRQ resource info\n");
+> Can't this be const char as too?
 
-Good catch, thanks!
+Yes thanks,
 
-> >   			goto err1;
-> >   		}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Tony
