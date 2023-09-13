@@ -2,104 +2,95 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D54DBEEB595
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Sep 2023 05:59:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A4ECA5534
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Sep 2023 10:36:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232102AbjIMF7i (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Sep 2023 01:59:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34372 "EHLO
+        id S239612AbjIMKgk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 13 Sep 2023 06:36:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237743AbjIMF7h (ORCPT
+        with ESMTP id S238013AbjIMKgj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Sep 2023 01:59:37 -0400
-Received: from zproxy1.foxvalley.net (zimbra.foxvalley.net [212.78.26.134])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 32E31F2
-        for <linux-serial@vger.kernel.org>; Tue, 12 Sep 2023 22:59:31 -0700 (PDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by zproxy1.foxvalley.net (Postfix) with ESMTP id 25CE440FC8;
-        Wed, 13 Sep 2023 00:59:30 -0500 (CDT)
-Received: from zproxy1.foxvalley.net ([127.0.0.1])
- by localhost (zproxy1.foxvalley.net [127.0.0.1]) (amavis, port 10032)
- with ESMTP id j2ziCQ0S_mE7; Wed, 13 Sep 2023 00:59:29 -0500 (CDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by zproxy1.foxvalley.net (Postfix) with ESMTP id 8D9D440FCC;
-        Wed, 13 Sep 2023 00:59:29 -0500 (CDT)
-X-Virus-Scanned: amavis at zproxy1.foxvalley.net
-Received: from zproxy1.foxvalley.net ([127.0.0.1])
- by localhost (zproxy1.foxvalley.net [127.0.0.1]) (amavis, port 10026)
- with ESMTP id 0vnUpMJ4h0NQ; Wed, 13 Sep 2023 00:59:29 -0500 (CDT)
-Received: from [192.168.1.3] (unknown [161.97.241.227])
-        by zproxy1.foxvalley.net (Postfix) with ESMTPSA id 5146E40FC8;
-        Wed, 13 Sep 2023 00:59:29 -0500 (CDT)
-Message-ID: <865e96d7-c8ff-1fa2-0fa2-634587e83ae2@foxvalley.net>
-Date:   Tue, 12 Sep 2023 23:59:28 -0600
+        Wed, 13 Sep 2023 06:36:39 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EEBEC3;
+        Wed, 13 Sep 2023 03:36:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1694601395; x=1726137395;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=4WUEy9IajOAQvb6MTevfkqkS+hTFZ1eehulh/xUwM8E=;
+  b=nUbsOuHDMP54/3QfY2NPL28s1sNzxY3YFb60cV9zeRJgKBnUuGwbF/fV
+   3wltt9S8B/XQbyHWmMfEYodZoz0nE+Xg54CvfwSQovMjNWI5HK9iPUcXF
+   qSaTj76AS/SnCFsqfqgT+4py+snDWTtxVv/ZATXu/qEEtbi0Izu9FQ3qF
+   UkmgRQBZupfTH/10g5mxKd0IyrBRwiCRbhNug4MHmFOa+A/gNDfdz7iZf
+   xzWUwM+KT4imqqoVmc61q5O8hwauXbQVkE7QRkCno/XJv3J/vkr8vMoTR
+   ZtvqEQw4dN0DZMOFoYRxzUqyssY4PF9kLZTPSHktGAQ2fE6SvG+UWeBXW
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="377535210"
+X-IronPort-AV: E=Sophos;i="6.02,142,1688454000"; 
+   d="scan'208";a="377535210"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2023 03:36:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="834261637"
+X-IronPort-AV: E=Sophos;i="6.02,142,1688454000"; 
+   d="scan'208";a="834261637"
+Received: from pakurapo-mobl3.ger.corp.intel.com ([10.249.45.213])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2023 03:36:33 -0700
+Date:   Wed, 13 Sep 2023 13:36:30 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/2] tty/serial: Sort drivers in makefile
+In-Reply-To: <e74982c0-4942-1c46-1c53-6dd6e7677373@kernel.org>
+Message-ID: <e25ef4f-48bb-eeff-f181-794afe716a81@linux.intel.com>
+References: <20230912103558.20123-1-ilpo.jarvinen@linux.intel.com> <e74982c0-4942-1c46-1c53-6dd6e7677373@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: [PATCH v3] tty/serial: create debugfs interface for UART register
- tracing
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org, ilpo.jarvinen@linux.intel.com
-References: <eb8a598c-414e-aecf-e903-e2c01db1979a@foxvalley.net>
- <2023082515-scored-rage-50a3@gregkh>
-From:   Dan Raymond <draymond@foxvalley.net>
-In-Reply-To: <2023082515-scored-rage-50a3@gregkh>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="8323329-11916867-1694601394=:1849"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 8/25/2023 2:06 AM, Greg KH wrote:
-> Better!  But please, look into using the tracing infrastructure and
-> functionality first.  Only if that is somehow not workable at all should
-> we regress into using stuff like debugfs for this.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-11916867-1694601394=:1849
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+
+On Wed, 13 Sep 2023, Jiri Slaby wrote:
+
+> On 12. 09. 23, 12:35, Ilpo Järvinen wrote:
+> > Sort drivers in alphabetic order in Makefile to make it easier to find
+> > the correct line. In case the CONFIG and filenames disagree, sort using
+> > the filename (but ignoring "serial" prefixes).
 > 
-> thanks,
+> Overall looks good.
 > 
-> greg k-h
+> I just want to make sure you considered the below, as you don't say explicitly
+> in the commit log.
+> 
+> The order in the makefile defines the link order. So built-in drivers are
+> loaded in that order. So are you sure your patch doesn't change order of some
+> drivers which need to be in a specific order?
+
+Thanks for taking a look.
+
+I limited the ordering to non-library like "leaf" driver files so it 
+should be safe. Except for 8250_early that was in middle of drivers so
+I moved it before the driver section but that doesn't alter anything 
+important AFAICT.
+
+In any case, I double-checked this again and only thing I found out is 
+that for some reason SERIAL_8250_EXAR depends on 8250_PCI but nothing uses 
+the 4 functions 8250_pci.c EXPORTs (which I'll address shortly).
 
 
-I took some timing measurements to compare the overhead using
-different tracing techniques.  The measurements were taken by
-executing the rdtsc instruction at the entry and exit of the
-serial_in() and serial_out() functions in 'struct uart_port'.
-My test environment is a Celeron M clocked at 1GHz so each clock cycle
-is 1 nanosecond.  Also note that the rdtsc instruction takes 43
-clock cycles so that should be subtracted from each measurement to get
-the actual time.  For each of the numbers below 100 measurements were
-taken and averaged.
+-- 
+ i.
 
-1183 cycles using io_serial_in (no tracing)
-1192 cycles using io_serial_out (no tracing)
-1382 cycles using serial_in_wrapper and rdtsc (this patch)
-1564 cycles using serial_out_wrapper and rdtsc (this patch)
-1484 cycles using serial_in_wrapper and ktime_get_boottime
-1980 cycles using serial_out_wrapper and ktime_get_boottime
-2484 cycles using serial_in_wrapper and trace_portio_read
-4411 cycles using serial_out_wrapper and trace_portio_write
-
-The last two measurements used the existing kernel tracing
-infrastructure.  TRACE_EVENT() macros were created and tracepoints
-were used to generate trace events that could be collected from
-/sys/kernel/tracing/trace.
-
-My first observation is that the I/O instructions themselves
-(inb/outb) are fairly slow on this architecture so even with no
-tracing each operation takes around 1200 nanoseconds.
-
-The tracing technique used in this patch adds between 200 and 350
-nanoseconds of overhead to that.  Swapping ktime_get_boottime() for
-rdtsc() adds another 100 to 200 nanoseconds.  Using the existing
-kernel trace infrastructure incurs 1300 to 3200 nanoseconds of
-overhead.
-
-Memory usage was difficult to determine exactly.  The technique in
-this patch uses fixed length records that are 8 bytes each (6 bytes
-for the timestamp, 1 byte for the register offset, and 1 byte for the
-register data).  But the memory used by the kernel trace
-infrastructure varied depending on how many records were collected.
-When I set the buffer size to 64 kilobytes (by writing 64 to
-/sys/kernel/tracing/buffer_size_kb) I was able to collect 4062
-records.  That averages to a little over 16 bytes per record.
+--8323329-11916867-1694601394=:1849--
