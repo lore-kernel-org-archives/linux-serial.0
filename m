@@ -2,136 +2,96 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 573C2EDEC77
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Sep 2023 15:22:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F54EE0204
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Sep 2023 21:15:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231736AbjIMPW3 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Sep 2023 11:22:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49060 "EHLO
+        id S232512AbjIMVPP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 13 Sep 2023 17:15:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230188AbjIMPW1 (ORCPT
+        with ESMTP id S232740AbjIMVPO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Sep 2023 11:22:27 -0400
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDED7CE;
-        Wed, 13 Sep 2023 08:22:23 -0700 (PDT)
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-770ef353b8fso326351585a.0;
-        Wed, 13 Sep 2023 08:22:23 -0700 (PDT)
+        Wed, 13 Sep 2023 17:15:14 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D8D1724;
+        Wed, 13 Sep 2023 14:15:10 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id d9443c01a7336-1c328b53aeaso1848075ad.2;
+        Wed, 13 Sep 2023 14:15:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1694639710; x=1695244510; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=gsH9bk643G8YxEeFoePkpJ9hzS+Ib/AEJLLU+UFoGDw=;
+        b=K1LxRNZjIQ01N0iwkNGyXJeoGw5bvBiNEnhjGzNrA83q5THrZFeml2+BkiFN2O7WdJ
+         HS6gZ9P/ySr7nremXIpRZm/4ekJbTohXYCVVawXNe2HiOco43kFp6ERuLoMaG5DBe7XG
+         U35aydFsMgOfvEP+A8qqufBHW38NxuhVl3CkRFRoT7BO6OuMTU5aDV+wcFkncOcmSF6t
+         Vv3fQfkLYM1LVXaiVtjm4Ct4sfURtR+W4dNWZzosXTDXeSFO283ABu/kRyq4+8AXIrgJ
+         jps9EYH9bfcAh8tJltWzTaHLqvCMJaS4nYpMtYSiI+fRvhZP32t0p6TcvtheE6P4N2SM
+         2JsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694618543; x=1695223343;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=7YO1tPkDOEwQyc/Dv+HaOfcjogh4Es5EpVUGisTZOW4=;
-        b=sHTB26XNZ8teze6yZ9Ixw9kqdAyYVWnLlDSTGSBflM3o/T8d/XnR0ltTMjN15mwhMe
-         vAch7EnHtODeg9nb4fnZvSlCSxj0nMzfH0NA6iQn2K/AKhZHCUpd1uu4/cBDRMt4/Hx2
-         zw4Rp7dEaHm5T8mKrygsErZOCXUBcHeq0m/IHBMUuapBhjadQoptgQYqi3Se4dpyxn1D
-         ZkN7TiLaUjfZCH9dJUpSCuT0K33qCgrcPNjE1suEoU2X6PpWnp0VAUfraAy9RcfsQL/h
-         5eHFyugAlBv5blCIvJp9geqtNvPX5Usbjh8YdTWKlDqYvTqCfqS6Yc0aP3DE74SNi0u1
-         JIpQ==
-X-Gm-Message-State: AOJu0YwYWS6hYq5QxE0zM8N8KayeOi75z2kpba2NetgULvXQ8O36SDxe
-        QUiFn5RQiBCW5EYYAhW9sPfNcX2Pe5D5KQ==
-X-Google-Smtp-Source: AGHT+IEWLMHZWuUElViNkfPsqVJNkVnRs/obn/xLwb7A1rORq0QfqkXdEdSkStvIeU9CQexjOYe1kg==
-X-Received: by 2002:a0c:e147:0:b0:64a:131f:b214 with SMTP id c7-20020a0ce147000000b0064a131fb214mr2907571qvl.12.1694618542767;
-        Wed, 13 Sep 2023 08:22:22 -0700 (PDT)
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com. [209.85.222.171])
-        by smtp.gmail.com with ESMTPSA id a17-20020a05620a125100b0076f039d87c6sm3966650qkl.82.2023.09.13.08.22.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Sep 2023 08:22:22 -0700 (PDT)
-Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-76dc77fd01fso436119885a.3;
-        Wed, 13 Sep 2023 08:22:22 -0700 (PDT)
-X-Received: by 2002:a25:ad08:0:b0:d7f:8e1e:a95f with SMTP id
- y8-20020a25ad08000000b00d7f8e1ea95fmr2686664ybi.6.1694618224901; Wed, 13 Sep
- 2023 08:17:04 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1694639710; x=1695244510;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gsH9bk643G8YxEeFoePkpJ9hzS+Ib/AEJLLU+UFoGDw=;
+        b=ipAWHJiK3eBzns8+gAORJKmMCB7S2zOA6uCwVhXFBQI3pxGNsWqpGs1slgXC9QE4jl
+         BQbhCBlDElaJwLJhJhi/r37bMcR13h3EncY7sYXyLXINdZOEtzTJerI14/Vm4Tbvde0k
+         DzxrxLbQF6wQQDrCACOJM1DK+As6e/gz92zex06HAw08XvlNMNrqwM9O+8+iYv/KtnfL
+         QJGJow2n7kPbb6FenQm1EpUc1HBDSJtPG73EeCXMZH3vNaqMQy6ot01gfn0C6MzmYyA1
+         zXeaGXn+Ca/SOIeL47GT3N2tvEXr64+FqYB7qNz8k67UwcsHIpAWututflF4IsC4RSah
+         ekIA==
+X-Gm-Message-State: AOJu0Ywvu5kbjfx3nzKZn2XDfIIVSOJYqnNYjyN9j2otccPoOc+byTw4
+        m1w9pUZnYanomVPgAVolAq/Bfeopln4=
+X-Google-Smtp-Source: AGHT+IEIupr6NAa7G30GxOa8cO59axP5WsOD+kiUhzFjXiNF2v+iCkBxfqLYApAwXFJoDlyUJ+LrwA==
+X-Received: by 2002:a17:902:ecc5:b0:1c3:7628:fcbb with SMTP id a5-20020a170902ecc500b001c37628fcbbmr4876872plh.43.1694639709665;
+        Wed, 13 Sep 2023 14:15:09 -0700 (PDT)
+Received: from octofox.hsd1.ca.comcast.net ([2601:646:a201:19d0:82b1:d7c2:2eaf:61e7])
+        by smtp.gmail.com with ESMTPSA id e18-20020a17090301d200b001b8c689060dsm73707plh.28.2023.09.13.14.15.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Sep 2023 14:15:09 -0700 (PDT)
+From:   Max Filippov <jcmvbkbc@gmail.com>
+To:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH 0/4] serial: add drivers for the ESP32xx serial devices
+Date:   Wed, 13 Sep 2023 14:14:45 -0700
+Message-Id: <20230913211449.668796-1-jcmvbkbc@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
- <20230912045157.177966-36-claudiu.beznea.uj@bp.renesas.com>
- <20230912161635.GA877089-robh@kernel.org> <56cf08f2-5d8e-6098-6218-081d8f620abe@tuxon.dev>
-In-Reply-To: <56cf08f2-5d8e-6098-6218-081d8f620abe@tuxon.dev>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 13 Sep 2023 17:16:52 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWntLTk9ZmAF1voE-tdB+4vVzE804h=qsfaoN-8_6RN_Q@mail.gmail.com>
-Message-ID: <CAMuHMdWntLTk9ZmAF1voE-tdB+4vVzE804h=qsfaoN-8_6RN_Q@mail.gmail.com>
-Subject: Re: [PATCH 35/37] dt-bindings: arm: renesas: document SMARC
- Carrier-II EVK
-To:     claudiu beznea <claudiu.beznea@tuxon.dev>
-Cc:     Rob Herring <robh@kernel.org>, mturquette@baylibre.com,
-        sboyd@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, ulf.hansson@linaro.org,
-        linus.walleij@linaro.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, magnus.damm@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
-        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
-        nfraprado@collabora.com, rafal@milecki.pl,
-        wsa+renesas@sang-engineering.com,
-        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Claudiu,
+Hello,
 
-On Wed, Sep 13, 2023 at 7:32 AM claudiu beznea <claudiu.beznea@tuxon.dev> wrote:
-> On 12.09.2023 19:16, Rob Herring wrote:
-> > On Tue, Sep 12, 2023 at 07:51:55AM +0300, Claudiu wrote:
-> >> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> >>
-> >> Document Renesas SMARC Carrier-II EVK board which is based on RZ/G3S
-> >> (R9A08G045) SoC. The SMARC Carrier-II EVK consists of RZ/G3S SoM module and
-> >> SMARC Carrier-II carrier board, the SoM module sits on top of carrier
-> >> board.
-> >>
-> >> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+this series adds drivers for the UART and ACM controllers found in the
+Espressif ESP32 and ESP32S3 SoCs.
 
-Thanks for your patch!
+Max Filippov (4):
+  dt-bindings: serial: document esp32-uart bindings
+  drivers/tty/serial: add driver for the ESP32 UART
+  dt-bindings: serial: document esp32s3-acm bindings
+  drivers/tty/serial: add ESP32S3 ACM device driver
 
-> >> --- a/Documentation/devicetree/bindings/soc/renesas/renesas.yaml
-> >> +++ b/Documentation/devicetree/bindings/soc/renesas/renesas.yaml
-> >> @@ -476,6 +476,8 @@ properties:
-> >>
-> >>        - description: RZ/G3S (R9A08G045)
-> >>          items:
-> >> +          - enum:
-> >> +              - renesas,smarc2-evk # SMARC Carrier-II EVK
-> >
-> > You just changed the existing binding...
-> >
-> >>            - enum:
-> >>                - renesas,r9a08g045s33 # PCIe support
-> >
-> > This is the SoM module?
->
-> No, this is a SoC variant which supports PCIe.
-
-Ideally, we need a compatible value for the SoM as well, as the SoM
-can be used stand-alone, or plugged in a different carrier board.
-
-For iWave Systems RZ/G1E SODIMM, we have that.
-For the existing RZ/G2L variants, we forgot, but it can still be added...
-
->
-> > You either need to squash this change or add
-> > another case with 3 entries and maintain the 2 entry case. (there's no
-> > way to express any entry at the beginning or middle can be optional)
-> >
-> >>            - const: renesas,r9a08g045
-
-Gr{oetje,eeting}s,
-
-                        Geert
+ .../bindings/serial/esp,esp32-acm.yaml        |  40 +
+ .../bindings/serial/esp,esp32-uart.yaml       |  48 ++
+ drivers/tty/serial/Kconfig                    |  27 +
+ drivers/tty/serial/Makefile                   |   2 +
+ drivers/tty/serial/esp32_acm.c                | 473 +++++++++++
+ drivers/tty/serial/esp32_uart.c               | 766 ++++++++++++++++++
+ include/uapi/linux/serial_core.h              |   6 +
+ 7 files changed, 1362 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
+ create mode 100644 Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml
+ create mode 100644 drivers/tty/serial/esp32_acm.c
+ create mode 100644 drivers/tty/serial/esp32_uart.c
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.30.2
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
