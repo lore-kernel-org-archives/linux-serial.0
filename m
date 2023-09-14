@@ -2,53 +2,53 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64AE3EEAA5D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96624EEAA64
 	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 18:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231243AbjINSjD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Sep 2023 14:39:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37468 "EHLO
+        id S241656AbjINSjE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Sep 2023 14:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241748AbjINSi6 (ORCPT
+        with ESMTP id S241739AbjINSi6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 14 Sep 2023 14:38:58 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C049F1FFF;
-        Thu, 14 Sep 2023 11:38:50 -0700 (PDT)
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1BFB1FFB;
+        Thu, 14 Sep 2023 11:38:49 -0700 (PDT)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1694716729;
+        s=2020; t=1694716728;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=LnvnRSzrP5woiUHdOlb0Xg3fIJh3UJCjsy6M4up7fns=;
-        b=q3Pkc5q153R9B4lAEoaA19W6MCMs6e7mCMtjnfPCoSu5uskZO70YiNFkdi4cc2AiIdF44X
-        xMN/yA0YBtf1rAThdjz4/pj0TN952tVmeDh4LfVuzsehKXBkDYjOjivfsFWjHiND1aoCDR
-        vOZihjkxvwaVoFclY/TK4PPQec6xJixb03Sgeu8bZAxp2rNnEF/LwPJfUSJMiKC6sekAar
-        DMNKKY5hA3CkE8EqATl34e8U6c3UqqVj7GF22fSwM5KGL8t90o0+uh92rOgF6yoH2pv3OJ
-        JyFF3Qy8mEpw8dfdii/p/yOitx+q9v/ismffS6J7mEVMch28sWMu9yb7W2uvAw==
+        bh=lSEvjVL+BxuTqhoV6y++5iFzUZwHV0OnCUueADVyxEA=;
+        b=IVquxk0Z+ro6LFHKJw51lwIPigfWCMfmclUU2+JcehI3LOaX5BkNwJRLblrY0cbagILQic
+        RqiElXu91Wnj1AhvgvDxpBl8H4wZs16fjHk6JDxf7RHlZytj1RGhivPhRjLqRbQGhMxpEy
+        vg/kQ1k3mVm1xZnPUIn7+mrqPqddMnw5g3lnvkbYeAfM5GK9kjiAKhJJO1cRKYHo3CMe2D
+        bbcknb4FzDKQZjdNHh8XHtx01Lip0J/J3MtvXpgDJScQb8lF5ZDAXULO+IUJr1FN+XgeG5
+        WasYgGIMC0IPIVLI1Q5P/xd2hLixAvMXU+m/Fa8R6mu0GRkyln7ivVnmHKqBqA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1694716729;
+        s=2020e; t=1694716728;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=LnvnRSzrP5woiUHdOlb0Xg3fIJh3UJCjsy6M4up7fns=;
-        b=5doHq489JrJleGSPjVe5kdeivGhy0qLN1gSxtjdAKVkc4V0xuC8emnUqbt0JJUzhj7NGUS
-        pfM2wQcP0bLD79Bw==
+        bh=lSEvjVL+BxuTqhoV6y++5iFzUZwHV0OnCUueADVyxEA=;
+        b=r6+fh09oHfENkWCN4lF8MffdwEGUKNIjvSkxoPrQxnv1rhnu/nekiAEHappQ9NFpa+bmJT
+        nA9poxy/eDhflsDg==
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
         Petr Mladek <pmladek@suse.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
+        linux-kernel@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Richard GENOUD <richard.genoud@gmail.com>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Yangtao Li <frank.li@vivo.com>, Rob Herring <robh@kernel.org>
-Subject: [PATCH tty v1 26/74] serial: linflexuart: Use port lock wrappers
-Date:   Thu, 14 Sep 2023 20:43:43 +0206
-Message-Id: <20230914183831.587273-27-john.ogness@linutronix.de>
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH tty v1 24/74] serial: digicolor: Use port lock wrappers
+Date:   Thu, 14 Sep 2023 20:43:41 +0206
+Message-Id: <20230914183831.587273-25-john.ogness@linutronix.de>
 In-Reply-To: <20230914183831.587273-1-john.ogness@linutronix.de>
 References: <20230914183831.587273-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -85,116 +85,85 @@ Converted with coccinelle. No functional change.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- drivers/tty/serial/fsl_linflexuart.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ drivers/tty/serial/digicolor-usart.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_linflexuart.c
-index 249cb380c3c6..7fa809a405e8 100644
---- a/drivers/tty/serial/fsl_linflexuart.c
-+++ b/drivers/tty/serial/fsl_linflexuart.c
-@@ -203,7 +203,7 @@ static irqreturn_t linflex_txint(int irq, void *dev_id)
- 	struct circ_buf *xmit = &sport->state->xmit;
+diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
+index 128b5479e813..5004125f3045 100644
+--- a/drivers/tty/serial/digicolor-usart.c
++++ b/drivers/tty/serial/digicolor-usart.c
+@@ -133,7 +133,7 @@ static void digicolor_uart_rx(struct uart_port *port)
+ {
  	unsigned long flags;
  
--	spin_lock_irqsave(&sport->lock, flags);
-+	uart_port_lock_irqsave(sport, &flags);
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
  
- 	if (sport->x_char) {
- 		linflex_put_char(sport, sport->x_char);
-@@ -217,7 +217,7 @@ static irqreturn_t linflex_txint(int irq, void *dev_id)
+ 	while (1) {
+ 		u8 status, ch, ch_flag;
+@@ -172,7 +172,7 @@ static void digicolor_uart_rx(struct uart_port *port)
+ 				 ch_flag);
+ 	}
  
- 	linflex_transmit_buffer(sport);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ 
+ 	tty_flip_buffer_push(&port->state->port);
+ }
+@@ -185,7 +185,7 @@ static void digicolor_uart_tx(struct uart_port *port)
+ 	if (digicolor_uart_tx_full(port))
+ 		return;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 
+ 	if (port->x_char) {
+ 		writeb_relaxed(port->x_char, port->membase + UA_EMI_REC);
+@@ -211,7 +211,7 @@ static void digicolor_uart_tx(struct uart_port *port)
+ 		uart_write_wakeup(port);
+ 
  out:
--	spin_unlock_irqrestore(&sport->lock, flags);
-+	uart_port_unlock_irqrestore(sport, flags);
- 	return IRQ_HANDLED;
- }
- 
-@@ -230,7 +230,7 @@ static irqreturn_t linflex_rxint(int irq, void *dev_id)
- 	unsigned char rx;
- 	bool brk;
- 
--	spin_lock_irqsave(&sport->lock, flags);
-+	uart_port_lock_irqsave(sport, &flags);
- 
- 	status = readl(sport->membase + UARTSR);
- 	while (status & LINFLEXD_UARTSR_RMB) {
-@@ -266,7 +266,7 @@ static irqreturn_t linflex_rxint(int irq, void *dev_id)
- 		}
- 	}
- 
--	spin_unlock_irqrestore(&sport->lock, flags);
-+	uart_port_unlock_irqrestore(sport, flags);
- 
- 	tty_flip_buffer_push(port);
- 
-@@ -369,11 +369,11 @@ static int linflex_startup(struct uart_port *port)
- 	int ret = 0;
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 
- 	linflex_setup_watermark(port);
- 
 -	spin_unlock_irqrestore(&port->lock, flags);
 +	uart_port_unlock_irqrestore(port, flags);
- 
- 	ret = devm_request_irq(port->dev, port->irq, linflex_int, 0,
- 			       DRIVER_NAME, port);
-@@ -386,14 +386,14 @@ static void linflex_shutdown(struct uart_port *port)
- 	unsigned long ier;
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 
- 	/* disable interrupts */
- 	ier = readl(port->membase + LINIER);
- 	ier &= ~(LINFLEXD_LINIER_DRIE | LINFLEXD_LINIER_DTIE);
- 	writel(ier, port->membase + LINIER);
- 
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(port, flags);
- 
- 	devm_free_irq(port->dev, port->irq, port);
  }
-@@ -474,7 +474,7 @@ linflex_set_termios(struct uart_port *port, struct ktermios *termios,
- 		cr &= ~LINFLEXD_UARTCR_PCE;
- 	}
+ 
+ static irqreturn_t digicolor_uart_int(int irq, void *dev_id)
+@@ -333,7 +333,7 @@ static void digicolor_uart_set_termios(struct uart_port *port,
+ 		port->ignore_status_mask |= UA_STATUS_OVERRUN_ERR
+ 			| UA_STATUS_PARITY_ERR | UA_STATUS_FRAME_ERR;
  
 -	spin_lock_irqsave(&port->lock, flags);
 +	uart_port_lock_irqsave(port, &flags);
  
- 	port->read_status_mask = 0;
+ 	uart_update_timeout(port, termios->c_cflag, baud);
  
-@@ -507,7 +507,7 @@ linflex_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	writel(cr1, port->membase + LINCR1);
+@@ -341,7 +341,7 @@ static void digicolor_uart_set_termios(struct uart_port *port,
+ 	writeb_relaxed(divisor & 0xff, port->membase + UA_HBAUD_LO);
+ 	writeb_relaxed(divisor >> 8, port->membase + UA_HBAUD_HI);
  
 -	spin_unlock_irqrestore(&port->lock, flags);
 +	uart_port_unlock_irqrestore(port, flags);
  }
  
- static const char *linflex_type(struct uart_port *port)
-@@ -646,14 +646,14 @@ linflex_console_write(struct console *co, const char *s, unsigned int count)
- 	if (sport->sysrq)
- 		locked = 0;
- 	else if (oops_in_progress)
--		locked = spin_trylock_irqsave(&sport->lock, flags);
-+		locked = uart_port_trylock_irqsave(sport, &flags);
+ static const char *digicolor_uart_type(struct uart_port *port)
+@@ -398,14 +398,14 @@ static void digicolor_uart_console_write(struct console *co, const char *c,
+ 	int locked = 1;
+ 
+ 	if (oops_in_progress)
+-		locked = spin_trylock_irqsave(&port->lock, flags);
++		locked = uart_port_trylock_irqsave(port, &flags);
  	else
--		spin_lock_irqsave(&sport->lock, flags);
-+		uart_port_lock_irqsave(sport, &flags);
+-		spin_lock_irqsave(&port->lock, flags);
++		uart_port_lock_irqsave(port, &flags);
  
- 	linflex_string_write(sport, s, count);
+ 	uart_console_write(port, c, n, digicolor_uart_console_putchar);
  
  	if (locked)
--		spin_unlock_irqrestore(&sport->lock, flags);
-+		uart_port_unlock_irqrestore(sport, flags);
- }
+-		spin_unlock_irqrestore(&port->lock, flags);
++		uart_port_unlock_irqrestore(port, flags);
  
- /*
+ 	/* Wait for transmitter to become empty */
+ 	do {
 -- 
 2.39.2
 
