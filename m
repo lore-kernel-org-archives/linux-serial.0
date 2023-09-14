@@ -2,52 +2,51 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3AD4EEAA64
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02FCDEEAA65
 	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 18:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241872AbjINSjI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Sep 2023 14:39:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37268 "EHLO
+        id S241877AbjINSjJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Sep 2023 14:39:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241712AbjINSi5 (ORCPT
+        with ESMTP id S241778AbjINSi7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Sep 2023 14:38:57 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31F101FFC;
-        Thu, 14 Sep 2023 11:38:49 -0700 (PDT)
+        Thu, 14 Sep 2023 14:38:59 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148E8213A;
+        Thu, 14 Sep 2023 11:38:53 -0700 (PDT)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1694716727;
+        s=2020; t=1694716731;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=W6B6UlYTFshG6RUwUjgz7+c8nYTltsRlBFw4dXdDaIc=;
-        b=Ulo9afi/9JwAEtpEl3ZUs1+lGIMenRJFVgszhjNu6L2spjSDEOPQF8zwCH+5xN/11PJVc9
-        5xLX2VcVEITFFRc+mDSGZlyFSgGLSqRK2aZLwxuasSiRx8Fx7tefLvk2Ni6p9Kore8cTEL
-        xPDiSOmddfwYTuU5a6p70NG6MdamMY3t4Ij4lcaEL7SRV8ANbX1qlixeyx3hB1MVZflFKl
-        5Mh/WiwwX41im6JXk6zVQQDS7rsDtZudzrbNkAwlMvUOM2xKdOowv1Hvp9z5AlXZX5FGXq
-        cu43KLeiEpRDwU4gIYXRgOTKGKf4GZ9CkfByUJpYb3ECvOrZoY9CmEW8jCCFEA==
+        bh=UlpF/H9lKMDrxmXTuNUKsAvkYnpqtMAZIidKoYfk2m8=;
+        b=OvnQvp6FrSEUwDayVfCSyaTaDBzuc0qDHdbES+H9OAPO6Ha87bRKvDnKy+aUS4pdZFLLmB
+        jDxwD/L3qDChRCkKs0q+jzzmJmJZiwqpSy8A1vQM9uRhSkNw2idhoRuvvgsJxrK+wZx4QG
+        XqxrNYbAK6u7sE1Tzcyz/LRQvnyD2tzuxG6rvJL6EQObHJpanuV55slsCsY84hl6Zyio/3
+        pQD3+PfXQ3qkNC9MvbiF4uH2PApwczoZNDT9+YaqQDJfAN6RMTd8Q0wfobK08utaA6SImc
+        QzGgZlJy1nebH8t5hloy88cBPuR+IEjxhUWo45LfVr3WtSj7eG3UDcwTb/G12w==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1694716727;
+        s=2020e; t=1694716731;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=W6B6UlYTFshG6RUwUjgz7+c8nYTltsRlBFw4dXdDaIc=;
-        b=47jTyQrFEv1pP3sGvbZ8+7jaCouF0JKrnaWNtL6wtqAU1mfLoyiSVAJB5t6TTsdox9Y3VB
-        G02+bnfuCsTBI3CQ==
+        bh=UlpF/H9lKMDrxmXTuNUKsAvkYnpqtMAZIidKoYfk2m8=;
+        b=NkoS64+YSQlVmh/kcYnHAvKRouOJW5bYLm3LDjq5+uZbRS0+LZRledqxXPhj4J2guP/ZOw
+        dmliYWM9jDfA5hBA==
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
         Petr Mladek <pmladek@suse.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Yangtao Li <frank.li@vivo.com>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>
-Subject: [PATCH tty v1 22/74] serial: bcm63xx-uart: Use port lock wrappers
-Date:   Thu, 14 Sep 2023 20:43:39 +0206
-Message-Id: <20230914183831.587273-23-john.ogness@linutronix.de>
+        linux-kernel@vger.kernel.org, Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Gabriel Somlo <gsomlo@gmail.com>, Joel Stanley <joel@jms.id.au>
+Subject: [PATCH tty v1 32/74] serial: liteuart: Use port lock wrappers
+Date:   Thu, 14 Sep 2023 20:43:49 +0206
+Message-Id: <20230914183831.587273-33-john.ogness@linutronix.de>
 In-Reply-To: <20230914183831.587273-1-john.ogness@linutronix.de>
 References: <20230914183831.587273-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -84,100 +83,82 @@ Converted with coccinelle. No functional change.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- drivers/tty/serial/bcm63xx_uart.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/tty/serial/liteuart.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
-index 0dd8cceb837c..4a08fd5ee61b 100644
---- a/drivers/tty/serial/bcm63xx_uart.c
-+++ b/drivers/tty/serial/bcm63xx_uart.c
-@@ -201,7 +201,7 @@ static void bcm_uart_break_ctl(struct uart_port *port, int ctl)
- 	unsigned long flags;
- 	unsigned int val;
- 
+diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+index d881cdd2a58f..a25ab1efe38f 100644
+--- a/drivers/tty/serial/liteuart.c
++++ b/drivers/tty/serial/liteuart.c
+@@ -139,13 +139,13 @@ static irqreturn_t liteuart_interrupt(int irq, void *data)
+ 	 * if polling, the context would be "in_serving_softirq", so use
+ 	 * irq[save|restore] spin_lock variants to cover all possibilities
+ 	 */
 -	spin_lock_irqsave(&port->lock, flags);
 +	uart_port_lock_irqsave(port, &flags);
- 
- 	val = bcm_uart_readl(port, UART_CTL_REG);
- 	if (ctl)
-@@ -210,7 +210,7 @@ static void bcm_uart_break_ctl(struct uart_port *port, int ctl)
- 		val &= ~UART_CTL_XMITBRK_MASK;
- 	bcm_uart_writel(port, val, UART_CTL_REG);
- 
+ 	isr = litex_read8(port->membase + OFF_EV_PENDING) & uart->irq_reg;
+ 	if (isr & EV_RX)
+ 		liteuart_rx_chars(port);
+ 	if (isr & EV_TX)
+ 		liteuart_tx_chars(port);
 -	spin_unlock_irqrestore(&port->lock, flags);
 +	uart_port_unlock_irqrestore(port, flags);
+ 
+ 	return IRQ_RETVAL(isr);
  }
- 
- /*
-@@ -332,7 +332,7 @@ static irqreturn_t bcm_uart_interrupt(int irq, void *dev_id)
- 	unsigned int irqstat;
- 
- 	port = dev_id;
--	spin_lock(&port->lock);
-+	uart_port_lock(port);
- 
- 	irqstat = bcm_uart_readl(port, UART_IR_REG);
- 	if (irqstat & UART_RX_INT_STAT)
-@@ -353,7 +353,7 @@ static irqreturn_t bcm_uart_interrupt(int irq, void *dev_id)
- 					       estat & UART_EXTINP_DCD_MASK);
+@@ -195,10 +195,10 @@ static int liteuart_startup(struct uart_port *port)
+ 		}
  	}
  
--	spin_unlock(&port->lock);
-+	uart_port_unlock(port);
- 	return IRQ_HANDLED;
- }
- 
-@@ -451,9 +451,9 @@ static void bcm_uart_shutdown(struct uart_port *port)
- {
- 	unsigned long flags;
- 
 -	spin_lock_irqsave(&port->lock, flags);
 +	uart_port_lock_irqsave(port, &flags);
- 	bcm_uart_writel(port, 0, UART_IR_REG);
+ 	/* only enabling rx irqs during startup */
+ 	liteuart_update_irq_reg(port, true, EV_RX);
 -	spin_unlock_irqrestore(&port->lock, flags);
 +	uart_port_unlock_irqrestore(port, flags);
  
- 	bcm_uart_disable(port);
- 	bcm_uart_flush(port);
-@@ -470,7 +470,7 @@ static void bcm_uart_set_termios(struct uart_port *port, struct ktermios *new,
+ 	if (!port->irq) {
+ 		timer_setup(&uart->timer, liteuart_timer, 0);
+@@ -213,9 +213,9 @@ static void liteuart_shutdown(struct uart_port *port)
+ 	struct liteuart_port *uart = to_liteuart_port(port);
  	unsigned long flags;
- 	int tries;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 	liteuart_update_irq_reg(port, false, EV_RX | EV_TX);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ 
+ 	if (port->irq)
+ 		free_irq(port->irq, port);
+@@ -229,13 +229,13 @@ static void liteuart_set_termios(struct uart_port *port, struct ktermios *new,
+ 	unsigned int baud;
+ 	unsigned long flags;
  
 -	spin_lock_irqsave(&port->lock, flags);
 +	uart_port_lock_irqsave(port, &flags);
  
- 	/* Drain the hot tub fully before we power it off for the winter. */
- 	for (tries = 3; !bcm_uart_tx_empty(port) && tries; tries--)
-@@ -546,7 +546,7 @@ static void bcm_uart_set_termios(struct uart_port *port, struct ktermios *new,
- 
+ 	/* update baudrate */
+ 	baud = uart_get_baud_rate(port, new, old, 0, 460800);
  	uart_update_timeout(port, new->c_cflag, baud);
- 	bcm_uart_enable(port);
+ 
 -	spin_unlock_irqrestore(&port->lock, flags);
 +	uart_port_unlock_irqrestore(port, flags);
  }
  
- /*
-@@ -712,9 +712,9 @@ static void bcm_console_write(struct console *co, const char *s,
- 		/* bcm_uart_interrupt() already took the lock */
- 		locked = 0;
- 	} else if (oops_in_progress) {
--		locked = spin_trylock(&port->lock);
-+		locked = uart_port_trylock(port);
- 	} else {
--		spin_lock(&port->lock);
-+		uart_port_lock(port);
- 		locked = 1;
- 	}
+ static const char *liteuart_type(struct uart_port *port)
+@@ -382,9 +382,9 @@ static void liteuart_console_write(struct console *co, const char *s,
+ 	uart = (struct liteuart_port *)xa_load(&liteuart_array, co->index);
+ 	port = &uart->port;
  
-@@ -725,7 +725,7 @@ static void bcm_console_write(struct console *co, const char *s,
- 	wait_for_xmitr(port);
- 
- 	if (locked)
--		spin_unlock(&port->lock);
-+		uart_port_unlock(port);
- 	local_irq_restore(flags);
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 	uart_console_write(port, s, count, liteuart_putchar);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
  }
  
+ static int liteuart_console_setup(struct console *co, char *options)
 -- 
 2.39.2
 
