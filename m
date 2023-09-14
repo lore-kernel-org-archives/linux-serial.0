@@ -2,121 +2,117 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A7CDEEAA56
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 14:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58F54EEAA4E
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 14:48:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240347AbjINOsU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Sep 2023 10:48:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56352 "EHLO
+        id S240733AbjINOsp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Sep 2023 10:48:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240415AbjINOsR (ORCPT
+        with ESMTP id S240569AbjINOs2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Sep 2023 10:48:17 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B3B1BFC;
-        Thu, 14 Sep 2023 07:48:13 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4E03C433C7;
-        Thu, 14 Sep 2023 14:48:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1694702892;
-        bh=XlH2++cozlMCXeR9EvUckhmVWrwhR2yKc6Vvzh31WCE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mvSBW9JAqDrz6UWIPcFcklUoKB8kHwI/5dWtybKDRXOdLDJTCLwouG0s902rAirPm
-         Wql9iXKt+kKfwbKSvsWsT2yx0tKQNVDOKVtR1MFjky+IXIxinawVoF3GIi+Ol6rWPF
-         Yp2TGaF2YE9xDE0fUr8Hnt64md6qHOgygQYzXMiqWapAy2ihvhl9mDDx6NZkz3ZDIL
-         HzvYiU+HoZpxlVH+y8lUy7Lh6wTOXCAUVTGSsvSY5GQTU+MqB8p8zb2acxI7QJLhdp
-         w7dBT5RHBaM3h2FBncEux2uO7SofWur4Gcwtqbpnj4NECdQhA1qTrWXKpy20Wavooz
-         sMBoitRfxuizQ==
-Date:   Thu, 14 Sep 2023 15:48:08 +0100
-From:   Conor Dooley <conor@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Max Filippov <jcmvbkbc@gmail.com>, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>
-Subject: Re: [PATCH 1/4] dt-bindings: serial: document esp32-uart bindings
-Message-ID: <20230914-stumbling-smother-2b048381952c@spud>
-References: <20230913211449.668796-1-jcmvbkbc@gmail.com>
- <20230913211449.668796-2-jcmvbkbc@gmail.com>
- <d7bf0ae3-d263-4231-9656-2b7af4b372a3@linaro.org>
+        Thu, 14 Sep 2023 10:48:28 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A05FF2119
+        for <linux-serial@vger.kernel.org>; Thu, 14 Sep 2023 07:48:24 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id 3f1490d57ef6-d776e1f181bso1067816276.3
+        for <linux-serial@vger.kernel.org>; Thu, 14 Sep 2023 07:48:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1694702904; x=1695307704; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=HuHnnCCpKec3KupkEaXCUwSfceD3r5v9lcKHYT+1ctU=;
+        b=uwOzEaRMlvkrX6eBWpjTmYYq/BIp35aWULXxX2pVTtglET3jtjxkAVOfYdwt22wd7J
+         pSGO7CeMaYRPidkO4KLxPl2tkhCI+pAFOs3tq+i4l4eSCJUnXbwD/zJNwoAxdBcVNsT1
+         yLPx5eGtt5WLnq4uOXEZiF5JAyCWPgrH3ns8qg4llIB6S4qSBK4HfSVVSn0k0614reaS
+         7XFG6H7hlO/rwk1Itq+cm7NhauRK5bfd1r0Ed03QLTNs9b9CYic0vQ4ZxHutkLnFF7YR
+         JX55qt8AGcP1IZLlKKbAK22Nq2SI9U8J1Cz7yOyD61xKh3qDgJyhueuNzA9SC44kuQcf
+         T4eQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1694702904; x=1695307704;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=HuHnnCCpKec3KupkEaXCUwSfceD3r5v9lcKHYT+1ctU=;
+        b=MYSA4dWhAeLNepLzrUBcvYPcwl05PGJJQusKjRAuQDyGwzAROxG5OqzzPpN4D5AWCh
+         Rr2Y0JtUkiCxgB2cuMRTN9wjc6oFU5K/RlrpD2BTb9hXMUw1zTg7u+raQGJ3BqM6bEr8
+         bL3Pt47hxS0rGxZhvt3HEUkvHTXbtfIwtCE9RnD47LLCtPzXAp2Kj4PP9z6dy9k0wFZB
+         Ky5hvzL5FpMpA02HClrOZtMB55QNNF+Y9dfV6I57D3pWPiGdYAlETRc9nGSKd+3s2UMI
+         hMNzl6dopqktUeQL8mCWmQxNYwdEvIZJEnfd+l6qvb3Fu3ysd5iioBRM4v96qcsgKll0
+         cNNQ==
+X-Gm-Message-State: AOJu0YxcVwWTe0Zkv6a3KL8TGLO34Isw35RgpcbMsuTbEq7ddxGuDIXv
+        v+kUbwdKleRudyax+3n+AtTIhpOPpS479+vJyS43LQ==
+X-Google-Smtp-Source: AGHT+IGBWbsPXdVUyVGh6IoeKWogXMpeV+NV1QYCzoeda8qrpQjFBedRitaOXAtVUrf1hzUWZSmx3vAdawl5AXo2Qt4=
+X-Received: by 2002:a25:858b:0:b0:d4c:cbd2:f6f3 with SMTP id
+ x11-20020a25858b000000b00d4ccbd2f6f3mr5416147ybk.53.1694702903830; Thu, 14
+ Sep 2023 07:48:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="w5dGWB6bqtjegC91"
-Content-Disposition: inline
-In-Reply-To: <d7bf0ae3-d263-4231-9656-2b7af4b372a3@linaro.org>
+References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com> <20230912045157.177966-32-claudiu.beznea.uj@bp.renesas.com>
+In-Reply-To: <20230912045157.177966-32-claudiu.beznea.uj@bp.renesas.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Thu, 14 Sep 2023 16:47:48 +0200
+Message-ID: <CAPDyKFq1n=QOt9WSnzH4juPZ-B7xWdwGnDcAYUo7_D=2PRj-WQ@mail.gmail.com>
+Subject: Re: [PATCH 31/37] dt-bindings: mmc: renesas,sdhi: Document RZ/G3S support
+To:     Claudiu <claudiu.beznea@tuxon.dev>
+Cc:     geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
+        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
+        nfraprado@collabora.com, rafal@milecki.pl,
+        wsa+renesas@sang-engineering.com,
+        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Tue, 12 Sept 2023 at 06:53, Claudiu <claudiu.beznea@tuxon.dev> wrote:
+>
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>
+> Document support for the SD Card/MMC interface on the Renesas
+> RZ/G3S (R9A08G045) SoC.
+>
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
---w5dGWB6bqtjegC91
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Applied for next, thanks!
 
-On Thu, Sep 14, 2023 at 07:55:35AM +0200, Krzysztof Kozlowski wrote:
-> On 13/09/2023 23:14, Max Filippov wrote:
-> > Add documentation for the ESP32xx UART controllers.
-> >=20
-> > Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-> > ---
-> >  .../bindings/serial/esp,esp32-uart.yaml       | 48 +++++++++++++++++++
-> >  1 file changed, 48 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/serial/esp,esp32-=
-uart.yaml
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/serial/esp,esp32-uart.ya=
-ml b/Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml
-> > new file mode 100644
-> > index 000000000000..8b45ef808107
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml
-> > @@ -0,0 +1,48 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> > +
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/serial/esp,esp32-uart.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: ESP32 UART controller
-> > +
-> > +maintainers:
-> > +  - Max Filippov <jcmvbkbc@gmail.com>
-> > +
-> > +description: |
-> > +  ESP32 UART controller is a part of ESP32 SoC series.
->=20
-> 1. Company name?
-> 2. ESP32 SoC series suggests esp32 is a series.
->=20
-> > +
-> > +properties:
-> > +  compatible:
-> > +    oneOf:
-> > +      - description: UART controller for the ESP32 SoC
-> > +        const: esp,esp32-uart
->=20
-> Also, the vendor prefix looks incorrect, so again - what is the company
-> name?
-
-esp32 is made by expressif, which would match with "esp" as a vendor
-prefix.
+Kind regards
+Uffe
 
 
-
---w5dGWB6bqtjegC91
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZQMdKAAKCRB4tDGHoIJi
-0jdGAP4sUKNXkMwoIScWfBLsAsvhasgz8yvWr3ZT714K8R9RTgD+K5NqOOlcTqGa
-7guFL9U09dCkKLI+vEoOgY4PtJ3gCwQ=
-=ENOh
------END PGP SIGNATURE-----
-
---w5dGWB6bqtjegC91--
+> ---
+>  Documentation/devicetree/bindings/mmc/renesas,sdhi.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/mmc/renesas,sdhi.yaml b/Documentation/devicetree/bindings/mmc/renesas,sdhi.yaml
+> index 7756a8687eaf..94e228787630 100644
+> --- a/Documentation/devicetree/bindings/mmc/renesas,sdhi.yaml
+> +++ b/Documentation/devicetree/bindings/mmc/renesas,sdhi.yaml
+> @@ -59,6 +59,7 @@ properties:
+>                - renesas,sdhi-r9a07g043 # RZ/G2UL
+>                - renesas,sdhi-r9a07g044 # RZ/G2{L,LC}
+>                - renesas,sdhi-r9a07g054 # RZ/V2L
+> +              - renesas,sdhi-r9a08g045 # RZ/G3S
+>                - renesas,sdhi-r9a09g011 # RZ/V2M
+>            - const: renesas,rcar-gen3-sdhi # R-Car Gen3 or RZ/G2
+>        - items:
+> @@ -122,6 +123,7 @@ allOf:
+>                - renesas,sdhi-r9a07g043
+>                - renesas,sdhi-r9a07g044
+>                - renesas,sdhi-r9a07g054
+> +              - renesas,sdhi-r9a08g045
+>                - renesas,sdhi-r9a09g011
+>      then:
+>        properties:
+> --
+> 2.39.2
+>
