@@ -2,51 +2,51 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B348CEEAA63
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 18:38:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23EF3EEAA5D
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 18:38:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241589AbjINSix (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S241582AbjINSix (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Thu, 14 Sep 2023 14:38:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55452 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241396AbjINSis (ORCPT
+        with ESMTP id S241423AbjINSis (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 14 Sep 2023 14:38:48 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 951AF1FEB;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED74C1FFC;
         Thu, 14 Sep 2023 11:38:43 -0700 (PDT)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1694716721;
+        s=2020; t=1694716722;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Lt5U7bhcPdg54ZjyRgBGpBHomTbVhANlcjrKnJ+8kPw=;
-        b=EjjUZZFHZ6JEVqxq3P4LuSHl7TGqgTOROKasaPekDARF8A49stqUSFmsqni7LyXpfAdYK7
-        CoqFh/m07XeKuCogjjsrSKzMDMa3snkU3tYDlm6BmNA45xZftvuf8O7GdAeNdLHnAaMyNC
-        V9xtj2T6cQeDpuVnLeJbj+CYAOKwAxm526w1yemc7zGSgHftG8j4v2NuhwIBAdhjqXu+uM
-        CgE+auOclmQkeboCagqSRFMlYyGQHm46H8sVsqHqWUshGt7HEpGNqRJIbFSEbEScEdjXpG
-        A/htA9D3DQtniUYGBpEkCaKVP+IunLMmmA4wQMQzA1BVjwdYi1OZ7wyVrBA3bw==
+        bh=VwAuYpYc3fWXqol8AKchJjd2gF2BZfWOXYVLA/beRQc=;
+        b=vSKwIdxZS0Wy8y0+/xBxwuLThTEsw4FHoB6EHTIG1aUZ/vnNzHzcVNEuoBNexfguoPfsUG
+        AuuyuU3K3dRpSywuVrx6WMcLVtPGSQeGW9r86rAxNTjYZ9IVPS27lt77osMrXyqSC1bvRm
+        o4Ea6eBOgx0An5Xfej5rhguuAlR6FU3QURdKKa3w/qSU1NgHZ4hpp5ouzAH1P2Fjy8qS2v
+        GvlBKyD32A4oDfzVMtEbAeSmNv6nrMJn/xfUL/8+6B9N6cUdThGb44P9DyJL96z3lvV1jh
+        zOgajJ2htEmcYmbcCqvWAYjS13lgL7oWQG0+gr/0zGI25LwYeN0J4QzjWCjO8A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1694716721;
+        s=2020e; t=1694716722;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Lt5U7bhcPdg54ZjyRgBGpBHomTbVhANlcjrKnJ+8kPw=;
-        b=EPAqhJ+RFWjFNq1J0uytEfmWnzRpERI45y4ct0hHAnM0cAa51LiN2tTTwocLooVVKkTvuu
-        +nWAe6xeREHBzkBw==
+        bh=VwAuYpYc3fWXqol8AKchJjd2gF2BZfWOXYVLA/beRQc=;
+        b=i5GRywZjHj1wrVT3sjOj3uMBjzzxZVwAf9xbXgkUxQ5dZtMNghRLuxeKwuRpV4hrBVCmwr
+        meSdgbwTEVR38SAQ==
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
         Petr Mladek <pmladek@suse.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>
-Subject: [PATCH tty v1 05/74] serial: 8250_bcm7271: Use port lock wrappers
-Date:   Thu, 14 Sep 2023 20:43:22 +0206
-Message-Id: <20230914183831.587273-6-john.ogness@linutronix.de>
+        linux-kernel@vger.kernel.org, Andrew Davis <afd@ti.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Matthew Howell <matthew.howell@sealevel.com>
+Subject: [PATCH tty v1 09/74] serial: 8250_exar: Use port lock wrappers
+Date:   Thu, 14 Sep 2023 20:43:26 +0206
+Message-Id: <20230914183831.587273-10-john.ogness@linutronix.de>
 In-Reply-To: <20230914183831.587273-1-john.ogness@linutronix.de>
 References: <20230914183831.587273-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -83,124 +83,25 @@ Converted with coccinelle. No functional change.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- drivers/tty/serial/8250/8250_bcm7271.c | 28 +++++++++++++-------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ drivers/tty/serial/8250/8250_exar.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index aa5aff046756..ff0662c68725 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -567,7 +567,7 @@ static irqreturn_t brcmuart_isr(int irq, void *dev_id)
- 	if (interrupts == 0)
- 		return IRQ_NONE;
- 
--	spin_lock_irqsave(&up->lock, flags);
-+	uart_port_lock_irqsave(up, &flags);
- 
- 	/* Clear all interrupts */
- 	udma_writel(priv, REGS_DMA_ISR, UDMA_INTR_CLEAR, interrupts);
-@@ -581,7 +581,7 @@ static irqreturn_t brcmuart_isr(int irq, void *dev_id)
- 	if ((rval | tval) == 0)
- 		dev_warn(dev, "Spurious interrupt: 0x%x\n", interrupts);
- 
--	spin_unlock_irqrestore(&up->lock, flags);
-+	uart_port_unlock_irqrestore(up, flags);
- 	return IRQ_HANDLED;
- }
- 
-@@ -608,10 +608,10 @@ static int brcmuart_startup(struct uart_port *port)
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index 077c3ba3539e..07ad21336301 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -201,9 +201,9 @@ static int xr17v35x_startup(struct uart_port *port)
  	 *
  	 * Synchronize UART_IER access against the console.
  	 */
 -	spin_lock_irq(&port->lock);
 +	uart_port_lock_irq(port);
- 	up->ier &= ~UART_IER_RDI;
- 	serial_port_out(port, UART_IER, up->ier);
+ 	serial_port_out(port, UART_IER, 0);
 -	spin_unlock_irq(&port->lock);
 +	uart_port_unlock_irq(port);
  
- 	priv->tx_running = false;
- 	priv->dma.rx_dma = NULL;
-@@ -629,7 +629,7 @@ static void brcmuart_shutdown(struct uart_port *port)
- 	struct brcmuart_priv *priv = up->port.private_data;
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 	priv->shutdown = true;
- 	if (priv->dma_enabled) {
- 		stop_rx_dma(up);
-@@ -645,7 +645,7 @@ static void brcmuart_shutdown(struct uart_port *port)
- 	 */
- 	up->dma = NULL;
- 
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(port, flags);
- 	serial8250_do_shutdown(port);
+ 	return serial8250_do_startup(port);
  }
- 
-@@ -788,7 +788,7 @@ static int brcmuart_handle_irq(struct uart_port *p)
- 	 * interrupt but there is no data ready.
- 	 */
- 	if (((iir & UART_IIR_ID) == UART_IIR_RX_TIMEOUT) && !(priv->shutdown)) {
--		spin_lock_irqsave(&p->lock, flags);
-+		uart_port_lock_irqsave(p, &flags);
- 		status = serial_port_in(p, UART_LSR);
- 		if ((status & UART_LSR_DR) == 0) {
- 
-@@ -813,7 +813,7 @@ static int brcmuart_handle_irq(struct uart_port *p)
- 
- 			handled = 1;
- 		}
--		spin_unlock_irqrestore(&p->lock, flags);
-+		uart_port_unlock_irqrestore(p, flags);
- 		if (handled)
- 			return 1;
- 	}
-@@ -831,7 +831,7 @@ static enum hrtimer_restart brcmuart_hrtimer_func(struct hrtimer *t)
- 	if (priv->shutdown)
- 		return HRTIMER_NORESTART;
- 
--	spin_lock_irqsave(&p->lock, flags);
-+	uart_port_lock_irqsave(p, &flags);
- 	status = serial_port_in(p, UART_LSR);
- 
- 	/*
-@@ -855,7 +855,7 @@ static enum hrtimer_restart brcmuart_hrtimer_func(struct hrtimer *t)
- 		status |= UART_MCR_RTS;
- 		serial_port_out(p, UART_MCR, status);
- 	}
--	spin_unlock_irqrestore(&p->lock, flags);
-+	uart_port_unlock_irqrestore(p, flags);
- 	return HRTIMER_NORESTART;
- }
- 
-@@ -1154,10 +1154,10 @@ static int __maybe_unused brcmuart_suspend(struct device *dev)
- 	 * This will prevent resume from enabling RTS before the
- 	 *  baud rate has been restored.
- 	 */
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 	priv->saved_mctrl = port->mctrl;
- 	port->mctrl &= ~TIOCM_RTS;
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(port, flags);
- 
- 	serial8250_suspend_port(priv->line);
- 	clk_disable_unprepare(priv->baud_mux_clk);
-@@ -1196,10 +1196,10 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
- 
- 	if (priv->saved_mctrl & TIOCM_RTS) {
- 		/* Restore RTS */
--		spin_lock_irqsave(&port->lock, flags);
-+		uart_port_lock_irqsave(port, &flags);
- 		port->mctrl |= TIOCM_RTS;
- 		port->ops->set_mctrl(port, port->mctrl);
--		spin_unlock_irqrestore(&port->lock, flags);
-+		uart_port_unlock_irqrestore(port, flags);
- 	}
- 
- 	return 0;
 -- 
 2.39.2
 
