@@ -2,207 +2,162 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41BADEDE981
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 05:43:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38B5CEDE980
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 05:54:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234703AbjINFnk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Sep 2023 01:43:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52960 "EHLO
+        id S234961AbjINFy3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Sep 2023 01:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233128AbjINFnj (ORCPT
+        with ESMTP id S234832AbjINFy3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Sep 2023 01:43:39 -0400
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BE42AC;
-        Wed, 13 Sep 2023 22:43:35 -0700 (PDT)
-Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-52f9a45b4bdso562608a12.3;
-        Wed, 13 Sep 2023 22:43:35 -0700 (PDT)
+        Thu, 14 Sep 2023 01:54:29 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C57CE
+        for <linux-serial@vger.kernel.org>; Wed, 13 Sep 2023 22:54:24 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id ffacd0b85a97d-31aec0a1a8bso351022f8f.0
+        for <linux-serial@vger.kernel.org>; Wed, 13 Sep 2023 22:54:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1694670863; x=1695275663; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Vont974mPR+vR1R39yYi+/MSVKxLVG/yjvIZF0kTQRc=;
+        b=yl2CJ87hp4cn8MtdgQLfoCHnHcykGpuXop7iShtXDX7LhcLlqybZO98Kx/IjGSQAni
+         +nC+k0jCfvsFkYLyNAvoMputiAr0cHhLfcE5jyAt56FkSYiSnNONx5RTk0WTbcyxLGHn
+         ++axWqnoT2npLOC1EN+nF0XfGI2kUEDd/tdPUxfhD7nYsBBTGYotVeixUUn0B9TDNq7u
+         eQyrN08COo63Dobzuqpc981PobbI7/xHNxADPu9DGHKi5qetJrgfiPkadOtkTNkmBDv3
+         S8FG36YEjzW8W6PFvP8yMUYb1DCcv9/e7IYGdDkoIV6PEZu+Er9T1u7NOTxWyQ2OlksC
+         8bqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694670213; x=1695275013;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1694670863; x=1695275663;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=OlZDiGz8e/osauYT4zKDfZbr/tlfGTh4cki0WmddMNs=;
-        b=qe1cl+VPfi5PBKpHTvaBMsKwZj0tLrnHGLTu6FHLoLoMfO+3pBlDF+Z0bSOP09K8Lt
-         stE/PfWRdEv0n8t2XJMWR6+XQw8iLGjCCOWNkgWOh5Lx4pCzq5UYEFjBuMS/HqCOdIt1
-         L9cKSuSfVRbWxkSotIKlpq/28C1Buepp86d5cDsZK60dHYZe7EelecS8QnWf6QF5XteE
-         i8BFtDQkdd3ycJSE6RmfgjE8YPmFTrDQ8NFQAEouhjM3lNeZZjeZhcsa/amW0bBt935g
-         pvw28T/pfYr/IOVTHCCRS0wuFSxtghxJP2LhQ91uX1f/uwZjM7yMuqa+dqoxbo1DtvkD
-         HYZg==
-X-Gm-Message-State: AOJu0YyFUlBxpfHzFyzBMm9vJSlLsr19GuLdpYwwdPteoGJlI0hyJjWP
-        utKGVikgFMrxZdFQbLO9lZcjrlsyQfQ=
-X-Google-Smtp-Source: AGHT+IEkjOcxno+IHNzOB3L7DtrgSRd5jy7s+LBqGQqb8gqM+yUB6Ll4FnjZMsG54diT+Fo2+WOJ0Q==
-X-Received: by 2002:a17:906:224a:b0:9a1:f871:8a5f with SMTP id 10-20020a170906224a00b009a1f8718a5fmr3474544ejr.32.1694670213373;
-        Wed, 13 Sep 2023 22:43:33 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id j26-20020a170906255a00b009adad3f9034sm478965ejb.21.2023.09.13.22.43.32
+        bh=Vont974mPR+vR1R39yYi+/MSVKxLVG/yjvIZF0kTQRc=;
+        b=pgbv5P2xbDdu5CFRFX/PfU3st1AUs9BYA/ProDfrOxIH7jGfM6SVuPgvIY1q+r1Fa4
+         TURSm8DgTdkzj3skGb5AXKWnZHNCuTXOnlso17jv3S1zBaKQyXEsnzaAk4aAnf7NVC/C
+         OM4H+xJUsw8XB6+5YkptXvYeox0n3kiTGFi8dZqUc4BMpnX1icBVhlLL3iPYycSBTDkX
+         ecVdeQknK7XFzDs/R1sdr/8qry/csAU+h1nkLbupLBr7KFnd3VGW3v6Leru2iTJikiHj
+         iheHezYORpptLxsFObnk4BdEzvD3TLsoTY37zWJ1O57pcLvanxOOb0vjgpDsRjDkfoff
+         LoMQ==
+X-Gm-Message-State: AOJu0YzT8FJkLKjzHOxVrIt/D2haYBdlfJHjqU+xfo1oDarxHBpREgCY
+        G6RetGar1YQhRIiffxoEI+lK6g==
+X-Google-Smtp-Source: AGHT+IFCo+0UH+egV7WEJxmQZmqKJAcM2k6gd0KiChB1i4jHeNdtLdZ6CD4BZ9jTtvogt60rDLTlgg==
+X-Received: by 2002:a5d:4c49:0:b0:31f:c9a4:667b with SMTP id n9-20020a5d4c49000000b0031fc9a4667bmr538888wrt.31.1694670863060;
+        Wed, 13 Sep 2023 22:54:23 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.214.188])
+        by smtp.gmail.com with ESMTPSA id l10-20020a5d560a000000b003142e438e8csm747480wrv.26.2023.09.13.22.54.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Sep 2023 22:43:32 -0700 (PDT)
-Message-ID: <4c9c637a-9117-4f43-a64f-892fa33958c1@kernel.org>
-Date:   Thu, 14 Sep 2023 07:43:31 +0200
+        Wed, 13 Sep 2023 22:54:22 -0700 (PDT)
+Message-ID: <465dc390-a5ff-547a-2bd3-54b29e1b6c43@linaro.org>
+Date:   Thu, 14 Sep 2023 07:54:20 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/3] serial: core: Add support for DEVNAME:0.0 style
- naming for kernel console
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+Subject: Re: [PATCH 1/4] dt-bindings: serial: document esp32-uart bindings
 Content-Language: en-US
-To:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20230912110350.14482-1-tony@atomide.com>
- <20230912110350.14482-3-tony@atomide.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20230912110350.14482-3-tony@atomide.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Max Filippov <jcmvbkbc@gmail.com>, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>
+References: <20230913211449.668796-1-jcmvbkbc@gmail.com>
+ <20230913211449.668796-2-jcmvbkbc@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230913211449.668796-2-jcmvbkbc@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 12. 09. 23, 13:03, Tony Lindgren wrote:
+On 13/09/2023 23:14, Max Filippov wrote:
+> Add documentation for the ESP32xx UART controllers.
+> 
+> Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+> ---
+>  .../bindings/serial/esp,esp32-uart.yaml       | 48 +++++++++++++++++++
+>  1 file changed, 48 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml b/Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml
+> new file mode 100644
+> index 000000000000..8b45ef808107
 > --- /dev/null
-> +++ b/drivers/tty/serial/serial_base_con.c
-...
-> +/* Adds a command line console to the list of consoles for driver probe time */
-> +static int __init serial_base_add_con(char *name, char *opt)
-> +{
-> +	struct serial_base_console *con;
+> +++ b/Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml
+> @@ -0,0 +1,48 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
 > +
-> +	con = kzalloc(sizeof(*con), GFP_KERNEL);
-> +	if (!con)
-> +		return -ENOMEM;
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/serial/esp,esp32-uart.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +	con->name = kstrdup(name, GFP_KERNEL);
-> +	if (!con->name)
-> +		goto free_con;
+> +title: ESP32 UART controller
 > +
-> +	if (opt) {
-> +		con->opt = kstrdup(opt, GFP_KERNEL);
-> +		if (!con->name)
+> +maintainers:
+> +  - Max Filippov <jcmvbkbc@gmail.com>
+> +
+> +description: |
 
-con->opt
+Do not need '|' unless you need to preserve formatting.
 
-> +			goto free_name;
-> +	}
+> +  ESP32 UART controller is a part of ESP32 SoC series.
 > +
-> +	list_add_tail(&con->node, &serial_base_consoles);
-> +
-> +	return 0;
-> +
-> +free_name:
-> +	kfree(con->name);
-> +
-> +free_con:
-> +	kfree(con);
-> +
-> +	return -ENOMEM;
-> +}
-> +
-> +/* Parse console name and options */
-> +static int __init serial_base_parse_one(char *param, char *val,
-> +					const char *unused, void *arg)
-> +{
-> +	char *opt;
-> +
-> +	if (strcmp(param, "console"))
-> +		return 0;
-> +
-> +	if (!val)
-> +		return 0;
-> +
-> +	opt = strchr(val, ',');
-> +	if (opt) {
-> +		opt[0] = '\0';
-> +		opt++;
-> +	}
+> +properties:
+> +  compatible:
+> +    oneOf:
 
-Can this be done without mangling val, i.e. without kstrdup below?
+That's just enum. Your descriptions are useless - tell nothing - so drop
+them.
 
-> +	if (!strlen(val))
+> +      - description: UART controller for the ESP32 SoC
+> +        const: esp,esp32-uart
 
-IOW, can this check be "val - opt > 0" or alike?
+Looks quite generic, so just to be sure? This is not a family name,
+right? Neither family names nor wildcards are allowed.
 
-> +		return 0;
+> +      - description: UART controller for the ESP32S3 SoC
+> +        const: esp,esp32s3-uart
 > +
-> +	return serial_base_add_con(val, opt);
-> +}
+> +  reg:
+> +    maxItems: 1
 > +
-> +/*
-> + * The "console=" option is handled by console_setup() in printk. We can't use
-> + * early_param() as do_early_param() checks for "console" and "earlycon" options
-> + * so console_setup() potentially handles console also early. Use parse_args().
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    serial0: serial@60000000 {
 
-So why not concentrate console= handling on one place, ie. in 
-console_setup()? The below (second time console= handling) occurs quite 
-illogical to me.
+Drop unused label.
 
-> + */
-> +static int __init serial_base_opts_init(void)
-> +{
-> +	char *command_line;
-> +
-> +	command_line = kstrdup(boot_command_line, GFP_KERNEL);
-> +	if (!command_line)
-> +		return -ENOMEM;
-> +
-> +	parse_args("Setting serial core console", command_line,
-> +		   NULL, 0, -1, -1, NULL, serial_base_parse_one);
-> +
-> +	kfree(command_line);
-> +
-> +	return 0;
-> +}
+> +            compatible = "esp,esp32s3-uart";
 
-thanks,
--- 
-js
-suse labs
+Use 4 spaces for example indentation.
+
+> +            reg = <0x60000000 0x80>;
+> +            interrupts = <27 1 0>;
+
+Use proper define for IRQ flags.
+
+> +            clocks = <&serial_clk>;
+> +    };
+
+Best regards,
+Krzysztof
 
