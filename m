@@ -2,73 +2,130 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9562AEDE983
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 06:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F29AEDE983
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 07:03:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233468AbjINGHd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Sep 2023 02:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58966 "EHLO
+        id S234381AbjINHDO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Sep 2023 03:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232171AbjINGHd (ORCPT
+        with ESMTP id S234722AbjINHDO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Sep 2023 02:07:33 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B663DF;
-        Wed, 13 Sep 2023 23:07:29 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id F063B8088;
-        Thu, 14 Sep 2023 06:07:27 +0000 (UTC)
-Date:   Thu, 14 Sep 2023 09:07:26 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] serial: core: Add support for DEVNAME:0.0 style
- naming for kernel console
-Message-ID: <20230914060726.GN5285@atomide.com>
-References: <20230912110350.14482-1-tony@atomide.com>
- <20230912110350.14482-3-tony@atomide.com>
- <4c9c637a-9117-4f43-a64f-892fa33958c1@kernel.org>
+        Thu, 14 Sep 2023 03:03:14 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2468EE4D;
+        Thu, 14 Sep 2023 00:03:10 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id d9443c01a7336-1bf6ea270b2so4597315ad.0;
+        Thu, 14 Sep 2023 00:03:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1694674989; x=1695279789; darn=vger.kernel.org;
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=e25qQ9p0C2P5SWU0KD60Ifyzn1bMFGxGkmDRK1NWFGg=;
+        b=KKNVBA8J48n2ViTOcprnlEkjhrx7cdlc1HpbPN2E3h1rCqtnwlV6wwtwQLzoj+NW5c
+         04JQK5xxFBxqhVUQAUJCky/iN/nD6y8bMFr8vklZIzPO1Ve6tNxtXDv3nQmPJmPoNyen
+         EY8dpv28EJDDkplVXPHtuOnIrrGI58r/7xfP6PnPJlIHt6kceSmxe6SjHA/dT0QuI23f
+         UFB2TxiqIHCWF6DHVABrPE2SMfALwCX47lLkdaTmXpLFk8r67/+ivk0xs61mtezJCnb3
+         Irbfe9hoSuKuHTo2oQlmrbUpH4O1YJ915eOzFqoTJJRtLKUCQtwc9tzE+t8jursKB3u7
+         Wbyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1694674989; x=1695279789;
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=e25qQ9p0C2P5SWU0KD60Ifyzn1bMFGxGkmDRK1NWFGg=;
+        b=wHank93O9CgEXSG01Gppnn7LohPk6yDZ/igzvGIJndx+danOSsyVUQDkuBrWHB92ZN
+         1K/ZXT5qcFpyAdsOWzLhi9YWi2RhMqQAydQKIinTKUMmUsEE2kyIGlGsdDtl+UiJYwda
+         dmIii1baoOEv6vvioFA/k4wd4grAL5rMS7an0usSOPv8A5hwlS1XAHLqWd3sEit0Ke4U
+         8R4J+XEo7Ctrd6MESnkrzPStmcIqlbGUdVlZX7FSYSCnoZW5Gh7rctu3qazCpBHUBVU7
+         a/MUQleICvKiAuZXj055MCbV34dsA0YshYDVZysMy+rqiVRsDh7a49bp54w76NSdnUzl
+         6vaA==
+X-Gm-Message-State: AOJu0Yz5NzL4iShEfrCcpReY9dZ5X18xCe5xekcWlyDUPSFWhOTzLkWN
+        w/RDj4SlSJyvZNgLeMs5oDY=
+X-Google-Smtp-Source: AGHT+IE0akRhGk0UGa1FvuBd3BoNxwOFbDloyRSrs4PXKBf116lOnoKRNJaEkHoGyQTfVQgFFg8VSw==
+X-Received: by 2002:a17:903:11c4:b0:1c0:b17a:754f with SMTP id q4-20020a17090311c400b001c0b17a754fmr4779020plh.63.1694674989443;
+        Thu, 14 Sep 2023 00:03:09 -0700 (PDT)
+Received: from [192.168.0.106] ([103.124.138.83])
+        by smtp.gmail.com with ESMTPSA id a11-20020a170903100b00b001bdc664ecd3sm780083plb.307.2023.09.14.00.03.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Sep 2023 00:03:08 -0700 (PDT)
+Message-ID: <2bc62c07-2195-e378-c057-f28e8d4a6034@gmail.com>
+Date:   Thu, 14 Sep 2023 14:03:00 +0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4c9c637a-9117-4f43-a64f-892fa33958c1@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>, Tester47 <e598@gmx.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Regressions <regressions@lists.linux.dev>,
+        Linux TTY & Serial <linux-serial@vger.kernel.org>,
+        Linux AMDGPU <amd-gfx@lists.freedesktop.org>,
+        Linux DRI Development <dri-devel@lists.freedesktop.org>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+Subject: Fwd: Kernel 6.6-rc1 fails to reboot or shutdown Ryzen 5825U
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Jiri Slaby <jirislaby@kernel.org> [230914 05:43]:
-> On 12. 09. 23, 13:03, Tony Lindgren wrote:
-> > +/*
-> > + * The "console=" option is handled by console_setup() in printk. We can't use
-> > + * early_param() as do_early_param() checks for "console" and "earlycon" options
-> > + * so console_setup() potentially handles console also early. Use parse_args().
+Hi,
+
+I notice a regression report on Bugzilla [1]. Quoting from it:
+
+> The Kernel stalls at boot very long with a drm-amdgpu message, but fails to restart or shutdown with secure boot enabled or not. Magic key works to exit. Nothing wrong in the Kernel 6.5 cycle.
+
+Later, the reporter (Cc'ed) described the regression:
+
+> Let me be clearer, it does not shutdown at all: magic key for shut down has no effect (o or b). The keyboard is dead. Plus, $ shutdown -r now hangs too. Restart works when using Alt+PrtSc+b. Same when booting stalls for long.
 > 
-> So why not concentrate console= handling on one place, ie. in
-> console_setup()? The below (second time console= handling) occurs quite
-> illogical to me.
+> We started bisecting with 20230903 daily kernel, the bug was there. 6.6-rc1 has been removed. Take good note that next boot log after shutdown may or may not be the same log. Plus, booting requires now and then magic key to restart, because the Kernel hangs.  In this case, we must click enter twice + Esc to boot in desktop. 
+> 
+> It booted ok after a cold shutdown with enter twice and ESC ounce + backspace. 
+> ...
+> In all cases, tpm and secure boot are enabled. If secure boot is disabled, when we shut down, magic key works to restart.
 
-Well console_setup() knows nothing about the probing serial port controller
-device, tries to call __add_preferred_console() based on a few hardcoded
-device names and some attempted guessing, and is stuffed into printk.c :)
+He then pasted journalctl excerpt at the point where the hang occured:
 
-I don't think we should pile on more stuff into printk.c for this.
+> This where it stalls for restart. Shut down hangs at the Lenovo image:
+> 
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: SE 1, SH per SE 1, CU per SH 8, active_cu_number 8
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring gfx uses VM inv eng 0 on hub 0
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring gfx_low uses VM inv eng 1 on hub 0
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring gfx_high uses VM inv eng 4 on hub 0
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring comp_1.0.0 uses VM inv eng 5 on hub 0
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring comp_1.1.0 uses VM inv eng 6 on hub 0
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring comp_1.2.0 uses VM inv eng 7 on hub 0
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring comp_1.3.0 uses VM inv eng 8 on hub 0
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring comp_1.0.1 uses VM inv eng 9 on hub 0
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring comp_1.1.1 uses VM inv eng 10 on hub 0
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring comp_1.2.1 uses VM inv eng 11 on hub 0
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring comp_1.3.1 uses VM inv eng 12 on hub 0
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring kiq_0.2.1.0 uses VM inv eng 13 on hub 0
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring sdma0 uses VM inv eng 0 on hub 8
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring vcn_dec uses VM inv eng 1 on hub 8
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring vcn_enc0 uses VM inv eng 4 on hub 8
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring vcn_enc1 uses VM inv eng 5 on hub 8
+> Sep 13 21:43:08 mm kernel: amdgpu 0000:04:00.0: amdgpu: ring jpeg_dec uses VM inv eng 6 on hub 8
+> Sep 13 21:43:08 mm kernel: [drm] Initialized amdgpu 3.54.0 20150101 for 0000:04:00.0 on minor 0
+> Sep 13 21:43:08 mm kernel: fbcon: amdgpudrmfb (fb0) is primary device
+> Sep 13 21:43:08 mm kernel: [drm] DSC precompute is not needed.
 
-If we wanted to do something, let's set up the console list somewhere else,
-and then just have console_setup() add every console option to that list
-and leave the rest of console_setup in place to avoid breaking things all
-over the place.
+See Bugzilla for the full thread and links to complete journalctl log.
 
-Then we can export some find_named_console() type function for serial core
-to use. Or do you have some better ideas in mind?
+Anyway, I'm adding this regression to regzbot:
 
-Regards,
+#regzbot introduced: v6.5..v6.6 https://bugzilla.kernel.org/show_bug.cgi?id=217905
+#regzbot title: shutdown/reboot hang on Ryzen 5825U (stuck on amdgpu initialization)
 
-Tony
+Thanks.
+
+[1]: https://bugzilla.kernel.org/show_bug.cgi?id=217905
+
+-- 
+An old man doll... just what I always wanted! - Clara
