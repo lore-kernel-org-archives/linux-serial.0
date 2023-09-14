@@ -2,62 +2,61 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1057AEEAA6E
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 20:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5495EEAA71
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 20:47:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229603AbjINUCv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Sep 2023 16:02:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38330 "EHLO
+        id S229891AbjINUr3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Sep 2023 16:47:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229592AbjINUCu (ORCPT
+        with ESMTP id S229515AbjINUr3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Sep 2023 16:02:50 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6E226BC;
-        Thu, 14 Sep 2023 13:02:46 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id 41be03b00d2f7-573c62b3cd2so1032634a12.3;
-        Thu, 14 Sep 2023 13:02:46 -0700 (PDT)
+        Thu, 14 Sep 2023 16:47:29 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5FC2120;
+        Thu, 14 Sep 2023 13:47:25 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id 41be03b00d2f7-53482b44007so1047080a12.2;
+        Thu, 14 Sep 2023 13:47:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1694721765; x=1695326565; darn=vger.kernel.org;
+        d=gmail.com; s=20221208; t=1694724445; x=1695329245; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=A9kaqIbiQMAt0qlEWTpOzlY6l1PPJ/Q7QNkCIjKHZSY=;
-        b=PTsQQNcnexJIgMspZAd+C0u2Vi+ewaw5pteVbmX2uRMMpI6W7xWf8PVF78Y93G+awb
-         Gi14Y7jczypsYnkl4zERvE+cBWKHFSdfe0tQCOJLad8z6XkRpfFT0sz2Vv9H+rXsJ60q
-         6OoMB0cjq3PLqM6luTtIRIyzCLrChhg/jZgTXf3l+vTyrFAVJp5kALCS0aEJ0yIPTQMG
-         d0nCUE86zOULR8YC8PSbIhxh5JEv6sNcNeQF1YRePJtB/yPHDmsxnR0WeHK4DKwVIkcv
-         hoMEEINee+FU2fZiMwD/V6UYk1YYcgD+k2WRNG4irgRpYipa+9NA28zRf8DcfHJTI7LG
-         lUZw==
+        bh=V+vcKKBW7m4dimFQCqOQ/FSEh/1OFmvKpug97OFECsw=;
+        b=NBs3c42Uj7z2Bln8/oHxtFGfuzfj6PFjetfkYnywUw4Arf5a7DjULPuTbkMJMUbcmG
+         EOJhssZR9XpoiFimYT+rCrG82hgsXjU/ZrVuR55PGQLiV9Voa/QsyJROp3BaYg2lOtMj
+         tqTX/gnv4kKoD0nJ9zHLiGbNAhWSnZUB4TpUDUKx+zspcfw4KgvygvKKsD57snJ40rVw
+         2X7xaeIy7nnxH/9n/1NXQ4tUgGlRTtJ4IgNv9OLINlq1TD73d3AdtYe9KF1OT/csKIT1
+         Bzsk63FWdZYgjrTCkmL6aK69vA9vFj46Ep2nyD084hw8hOfpZnu5kuEBsv6HAIJUmVHu
+         6vpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694721765; x=1695326565;
+        d=1e100.net; s=20230601; t=1694724445; x=1695329245;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=A9kaqIbiQMAt0qlEWTpOzlY6l1PPJ/Q7QNkCIjKHZSY=;
-        b=K9pK2jWpjOcWaUTu50b51OlMRNle1q9PbS7Lo4XYLd0P2hzkfkNJN8fukYePxnAe+l
-         jR92NH/8EUw2zUrz+qzmNF2m7dMvYnkxdNxYZKnejrwY6UMXoL2iXUjssko8P4c3ORrn
-         WfNMrRLdqJQ7j5N+aka+tCTac0y0Z3MVOT9/3Ib696RqFnav0tgGywHYAG/NIj+9/9qA
-         6Wwmgd1qHZ3t6FWPJtzduXvG084xJa9pgxkHOv/+yaV8PyKgTgLR/U71j83edTyauffK
-         6Ft61Nlfmx0oi6qx3qwhl5rs3KlsfPFoA5NRNWjtxRUNFVct9G1Mixw4TW6ulCHuWnm/
-         X+Nw==
-X-Gm-Message-State: AOJu0Yxklwoxe1B8U95NGd03i9cuQpV0PUBuJZn15SkOrn0ntJJiWcm3
-        vYNDAmOeZEKxx2gWrlwwEn/8rigHLIaBYSNYt0nG9Pfmzqk=
-X-Google-Smtp-Source: AGHT+IF0AonOjgLve5XE/1tDMMKqZ4Phey7WW/x6Zy6mHY7woUjaH+9Urd+32q7KgKeFme4YyXkDWu1Gt6tz2NfKmV0=
-X-Received: by 2002:a05:6a20:7d85:b0:13a:12c2:359e with SMTP id
- v5-20020a056a207d8500b0013a12c2359emr7914124pzj.2.1694721765383; Thu, 14 Sep
- 2023 13:02:45 -0700 (PDT)
+        bh=V+vcKKBW7m4dimFQCqOQ/FSEh/1OFmvKpug97OFECsw=;
+        b=c7cuHRAWUHjKnkHup8iiyPdDPSwPEpw2NhkbZT6wkqiBfqRJ2gk7ze10Diqk0WN/4p
+         zscuyzU4MYFqOTNxuDU6Rw2tGOHcV7A15o2GCffFA5Yiggo3UL8+L6NG4pFoawcx7CWR
+         7HvB5jWzRra+RJzB4j2sshpXHJYpQjp0FP9h8R0PyQfj8EMYxivGop3OoZ/MecUJ0UPb
+         9p5IUm03B+4ZuB4cr60mO/tZmiizvpnPl0reuszN4yBU8BXeETgNU/Llh/WvJYCWtiXo
+         0d4CR/mjHixDrCQ9J0VfgAlYBiBg/jjyu63RzG9XNXjM7/CEceuq+990AtjTfOLsUi8B
+         C8wQ==
+X-Gm-Message-State: AOJu0YzUJbHOF2V+lp9jWm2ckDa8xfzup5xh6p2PlwiAM6H9aKVXKf9d
+        sF4Bjzc/nbJqEQZ9xN+1ZYoKMQQxFDXuwdetulf4gMui+e0=
+X-Google-Smtp-Source: AGHT+IEYq3Ge99GvmTYyrwRhMv5Siqo9GkcGQyZgtksJ6lYipoYwXo09EZ4kCTqZIkp1e/A/33VpAXMFKiv3xnGL9tY=
+X-Received: by 2002:a17:90b:709:b0:274:6135:8363 with SMTP id
+ s9-20020a17090b070900b0027461358363mr3424523pjz.33.1694724444919; Thu, 14 Sep
+ 2023 13:47:24 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230913211449.668796-1-jcmvbkbc@gmail.com> <20230913211449.668796-2-jcmvbkbc@gmail.com>
- <d7bf0ae3-d263-4231-9656-2b7af4b372a3@linaro.org> <20230914-stumbling-smother-2b048381952c@spud>
-In-Reply-To: <20230914-stumbling-smother-2b048381952c@spud>
+References: <20230913211449.668796-1-jcmvbkbc@gmail.com> <20230913211449.668796-4-jcmvbkbc@gmail.com>
+ <196fb9ac-53b7-51a6-6ce4-9f980215fde4@linaro.org>
+In-Reply-To: <196fb9ac-53b7-51a6-6ce4-9f980215fde4@linaro.org>
 From:   Max Filippov <jcmvbkbc@gmail.com>
-Date:   Thu, 14 Sep 2023 13:02:34 -0700
-Message-ID: <CAMo8BfJTr2q5+8jmUsDPsWY795udvO3vb-fEMUrsLuiFuV-eFw@mail.gmail.com>
-Subject: Re: [PATCH 1/4] dt-bindings: serial: document esp32-uart bindings
-To:     Conor Dooley <conor@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+Date:   Thu, 14 Sep 2023 13:47:13 -0700
+Message-ID: <CAMo8Bf+u3hkk8zW6EQUtQcAC5t-hUJ5+HoE8JDskBj4KyFK7xA@mail.gmail.com>
+Subject: Re: [PATCH 3/4] dt-bindings: serial: document esp32s3-acm bindings
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         devicetree@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -70,33 +69,113 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Sep 14, 2023 at 7:48=E2=80=AFAM Conor Dooley <conor@kernel.org> wro=
-te:
-> On Thu, Sep 14, 2023 at 07:55:35AM +0200, Krzysztof Kozlowski wrote:
-> > On 13/09/2023 23:14, Max Filippov wrote:
-> > > +description: |
-> > > +  ESP32 UART controller is a part of ESP32 SoC series.
-> >
-> > 1. Company name?
-> > 2. ESP32 SoC series suggests esp32 is a series.
-> >
-> > > +
-> > > +properties:
-> > > +  compatible:
-> > > +    oneOf:
-> > > +      - description: UART controller for the ESP32 SoC
-> > > +        const: esp,esp32-uart
-> >
-> > Also, the vendor prefix looks incorrect, so again - what is the company
-> > name?
+On Wed, Sep 13, 2023 at 10:57=E2=80=AFPM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
 >
-> esp32 is made by expressif, which would match with "esp" as a vendor
-> prefix.
+> On 13/09/2023 23:14, Max Filippov wrote:
+> > Add documentation for the ESP32S3 ACM controller.
+>
+> A nit, subject: drop second/last, redundant "bindings". The
+> "dt-bindings" prefix is already stating that these are bindings.
 
-It's 'Espressif', but otherwise yes, this is a registered vendor prefix. Se=
-e
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Doc=
-umentation/devicetree/bindings/vendor-prefixes.yaml?h=3Dv6.6-rc1#n443
+Ok.
+
+> > Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+> > ---
+> >  .../bindings/serial/esp,esp32-acm.yaml        | 40 +++++++++++++++++++
+> >  1 file changed, 40 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/serial/esp,esp32-=
+acm.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/serial/esp,esp32-acm.yam=
+l b/Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
+> > new file mode 100644
+> > index 000000000000..dafbae38aa64
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
+> > @@ -0,0 +1,40 @@
+> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> > +
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/serial/esp,esp32-acm.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: ESP32S3 ACM controller
+> > +
+> > +maintainers:
+> > +  - Max Filippov <jcmvbkbc@gmail.com>
+> > +
+> > +description: |
+>
+> Do not need '|' unless you need to preserve formatting.
+
+Ok.
+
+> > +  ESP32S3 ACM controller is a communication device found in the ESP32S=
+3
+>
+> What is "ACM"?
+
+It's an 'Abstract Control Model' as in USB CDC-ACM: 'Communication Device C=
+lass
+- Abstract Control Model'.
+
+> Why is this in serial? Only serial controllers are in serial.
+
+Because it's a serial communication device. The SoC TRM calls this peripher=
+al
+'USB Serial', but the USB part is fixed and is not controllable on the SoC =
+side.
+When you plug it into a host USB socket you get a serial port called ttyACM=
+ on
+the host.
+
+> The description is very vague, way too vague.
+
+Is the following better?
+
+  Fixed function USB CDC-ACM device controller of the Espressif ESP32S3 SoC=
+.
+
+> > +  SoC that is connected to one of its USB controllers.
+>
+> Same comments as previous patch.
+>
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: esp,esp32s3-acm
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - interrupts
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    acm@60038000 {
+> > +            compatible =3D "esp,esp32s3-acm";
+>
+> Use 4 spaces for example indentation.
+
+Ok.
+
+> > +            reg =3D <0x60038000 0x1000>;
+> > +            interrupts =3D <96 3 0>;
+>
+> Same comments as previous patch.
+
+These are not IRQ flags. In any case the contents of the IRQ
+specification cells is not relevant here, right?
 
 --=20
 Thanks.
