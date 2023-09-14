@@ -2,56 +2,53 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BD45EEAA62
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 18:41:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B1E5EEAA62
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 18:41:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241813AbjINSlp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Sep 2023 14:41:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37752 "EHLO
+        id S242060AbjINSl6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Sep 2023 14:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241993AbjINSj5 (ORCPT
+        with ESMTP id S242002AbjINSj6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Sep 2023 14:39:57 -0400
+        Thu, 14 Sep 2023 14:39:58 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D03EE2713;
-        Thu, 14 Sep 2023 11:39:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB585271F;
+        Thu, 14 Sep 2023 11:39:04 -0700 (PDT)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1694716742;
+        s=2020; t=1694716743;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Zy6q0L16Kf/KS6E7GOqWz6KYdIr63xhUHPEN74PlZEE=;
-        b=O92aHgkVbGKPJl2oWelrZRGt1hi4ABLEooGQ4nQ9fCBmHNvENAraqDtpqPzxFMlxHv2SYg
-        vs16YS6VAZvUSjTum3CqnCHtjaiEHzehqMRfoTA8QZ8++r/yGaNP6Xb4+h+8T9WDfggheH
-        10H0J/LPuz9H4l1GiMulPxSc+OfDZycHKF+O10GVr9ypv2MGkwGIMmPn0GdBRRoGNpqDrT
-        MVKX86GnRPFOPvsNuCxNN0KyYuuBiy8f/fxQHcRsFMI3GCUp+faWu11v4RJJ8MibW5K9+s
-        ypVwnSHBmyq5LmbgpSg/l/Ek0mCkFRnVTV9T3t2z/cB7BbWlvkf8//sARgINeA==
+        bh=+c8y3mlqvYbhVAUPi/vCATaSfboaR23i1Jls/9e1aPg=;
+        b=Q681URTXCotnINxNsfU6XBYt6o0sruv6ZRxfFKZDlOJZUE1kstHevpliVOdpphOxGJ2uOs
+        W0eLSK+EM61uowY9acpG0ezSua0bWlyO8jHgFicVk5SsB/7dAIr32VUcHuA9Lb/7pDB8oA
+        fwaorOtNBNY1XJl8K3WaOP1+q4exjIMphMggX7wlKIRHYbb+fzK2K8FAVIKO/CxFxXL7+R
+        jtx5jU7tH12Vl6jHU0eiAMIBjtfYn/3fGvXf76dPr7hBRx5CXWEkeQHM7qP4jcunb00L5I
+        m53H5XyoUco7+6cUPFriXnBt+y/JjNZOA4O4i85FX5u2U8HSHgxBeJDt4hHLzw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1694716742;
+        s=2020e; t=1694716743;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Zy6q0L16Kf/KS6E7GOqWz6KYdIr63xhUHPEN74PlZEE=;
-        b=xq0a3lU7Ye8KLD0iDn7GDbg27VseXJ6HbyT3vmZtU5JRykbFWRlis6URvJgMHHS34BCNDL
-        YMeQ8ccCDr68/WDg==
+        bh=+c8y3mlqvYbhVAUPi/vCATaSfboaR23i1Jls/9e1aPg=;
+        b=oBmFRAFo6f9CalCedMFjJJUCCnHj86cDkknErjH64gqJGpKTameG0KfjSs+fpostkVlTPA
+        jwr2NDsLNTzbd8Dg==
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
         Petr Mladek <pmladek@suse.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org,
-        Lech Perczak <lech.perczak@camlingroup.com>,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Isaac True <isaac.true@canonical.com>
-Subject: [PATCH tty v1 55/74] serial: sc16is7xx: Use port lock wrappers
-Date:   Thu, 14 Sep 2023 20:44:12 +0206
-Message-Id: <20230914183831.587273-56-john.ogness@linutronix.de>
+        Tony Lindgren <tony@atomide.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH tty v1 57/74] serial: core: Use port lock wrappers
+Date:   Thu, 14 Sep 2023 20:44:14 +0206
+Message-Id: <20230914183831.587273-58-john.ogness@linutronix.de>
 In-Reply-To: <20230914183831.587273-1-john.ogness@linutronix.de>
 References: <20230914183831.587273-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -88,154 +85,332 @@ Converted with coccinelle. No functional change.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- drivers/tty/serial/sc16is7xx.c | 40 +++++++++++++++++-----------------
- 1 file changed, 20 insertions(+), 20 deletions(-)
+ drivers/tty/serial/serial_core.c | 88 ++++++++++++++++----------------
+ drivers/tty/serial/serial_port.c |  4 +-
+ 2 files changed, 46 insertions(+), 46 deletions(-)
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index f61d98e09dc3..9d8307f5fc36 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -667,9 +667,9 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
- 	}
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 7bdc21d5e13b..b32bbd7aa3d3 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -79,7 +79,7 @@ static inline void uart_port_deref(struct uart_port *uport)
+ 	({								\
+ 		struct uart_port *__uport = uart_port_ref(state);	\
+ 		if (__uport)						\
+-			spin_lock_irqsave(&__uport->lock, flags);	\
++			uart_port_lock_irqsave(__uport, &flags);	\
+ 		__uport;						\
+ 	})
  
- 	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
+@@ -87,7 +87,7 @@ static inline void uart_port_deref(struct uart_port *uport)
+ 	({								\
+ 		struct uart_port *__uport = uport;			\
+ 		if (__uport) {						\
+-			spin_unlock_irqrestore(&__uport->lock, flags);	\
++			uart_port_unlock_irqrestore(__uport, flags);	\
+ 			uart_port_deref(__uport);			\
+ 		}							\
+ 	})
+@@ -179,12 +179,12 @@ uart_update_mctrl(struct uart_port *port, unsigned int set, unsigned int clear)
+ 	unsigned long flags;
+ 	unsigned int old;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 	old = port->mctrl;
+ 	port->mctrl = (old & ~clear) | set;
+ 	if (old != port->mctrl && !(port->rs485.flags & SER_RS485_ENABLED))
+ 		port->ops->set_mctrl(port, port->mctrl);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ #define uart_set_mctrl(port, set)	uart_update_mctrl(port, set, 0)
+@@ -219,7 +219,7 @@ static void uart_change_line_settings(struct tty_struct *tty, struct uart_state
+ 	/*
+ 	 * Set modem status enables based on termios cflag
+ 	 */
+-	spin_lock_irq(&uport->lock);
++	uart_port_lock_irq(uport);
+ 	if (termios->c_cflag & CRTSCTS)
+ 		uport->status |= UPSTAT_CTS_ENABLE;
+ 	else
+@@ -240,7 +240,7 @@ static void uart_change_line_settings(struct tty_struct *tty, struct uart_state
+ 		else
+ 			__uart_start(state);
+ 	}
+-	spin_unlock_irq(&uport->lock);
++	uart_port_unlock_irq(uport);
+ }
+ 
+ /*
+@@ -702,11 +702,11 @@ static void uart_send_xchar(struct tty_struct *tty, char ch)
+ 	if (port->ops->send_xchar)
+ 		port->ops->send_xchar(port, ch);
+ 	else {
 -		spin_lock_irqsave(&port->lock, flags);
 +		uart_port_lock_irqsave(port, &flags);
- 		sc16is7xx_stop_tx(port);
+ 		port->x_char = ch;
+ 		if (ch)
+ 			port->ops->start_tx(port);
 -		spin_unlock_irqrestore(&port->lock, flags);
 +		uart_port_unlock_irqrestore(port, flags);
- 		return;
  	}
+ 	uart_port_deref(port);
+ }
+@@ -1085,9 +1085,9 @@ static int uart_tiocmget(struct tty_struct *tty)
  
-@@ -695,13 +695,13 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
- 		sc16is7xx_fifo_write(port, to_send);
+ 	if (!tty_io_error(tty)) {
+ 		result = uport->mctrl;
+-		spin_lock_irq(&uport->lock);
++		uart_port_lock_irq(uport);
+ 		result |= uport->ops->get_mctrl(uport);
+-		spin_unlock_irq(&uport->lock);
++		uart_port_unlock_irq(uport);
  	}
+ out:
+ 	mutex_unlock(&port->mutex);
+@@ -1223,16 +1223,16 @@ static int uart_wait_modem_status(struct uart_state *state, unsigned long arg)
+ 	uport = uart_port_ref(state);
+ 	if (!uport)
+ 		return -EIO;
+-	spin_lock_irq(&uport->lock);
++	uart_port_lock_irq(uport);
+ 	memcpy(&cprev, &uport->icount, sizeof(struct uart_icount));
+ 	uart_enable_ms(uport);
+-	spin_unlock_irq(&uport->lock);
++	uart_port_unlock_irq(uport);
  
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
+ 	add_wait_queue(&port->delta_msr_wait, &wait);
+ 	for (;;) {
+-		spin_lock_irq(&uport->lock);
++		uart_port_lock_irq(uport);
+ 		memcpy(&cnow, &uport->icount, sizeof(struct uart_icount));
+-		spin_unlock_irq(&uport->lock);
++		uart_port_unlock_irq(uport);
  
- 	if (uart_circ_empty(xmit))
- 		sc16is7xx_stop_tx(port);
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(port, flags);
- }
+ 		set_current_state(TASK_INTERRUPTIBLE);
  
- static unsigned int sc16is7xx_get_hwmctrl(struct uart_port *port)
-@@ -733,7 +733,7 @@ static void sc16is7xx_update_mlines(struct sc16is7xx_one *one)
+@@ -1277,9 +1277,9 @@ static int uart_get_icount(struct tty_struct *tty,
+ 	uport = uart_port_ref(state);
+ 	if (!uport)
+ 		return -EIO;
+-	spin_lock_irq(&uport->lock);
++	uart_port_lock_irq(uport);
+ 	memcpy(&cnow, &uport->icount, sizeof(struct uart_icount));
+-	spin_unlock_irq(&uport->lock);
++	uart_port_unlock_irq(uport);
+ 	uart_port_deref(uport);
  
- 	one->old_mctrl = status;
- 
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 	if ((changed & TIOCM_RNG) && (status & TIOCM_RNG))
- 		port->icount.rng++;
- 	if (changed & TIOCM_DSR)
-@@ -744,7 +744,7 @@ static void sc16is7xx_update_mlines(struct sc16is7xx_one *one)
- 		uart_handle_cts_change(port, status & TIOCM_CTS);
- 
- 	wake_up_interruptible(&port->state->port.delta_msr_wait);
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(port, flags);
- }
- 
- static bool sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
-@@ -823,9 +823,9 @@ static void sc16is7xx_tx_proc(struct kthread_work *ws)
- 	sc16is7xx_handle_tx(port);
- 	mutex_unlock(&s->efr_lock);
- 
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 	sc16is7xx_ier_set(port, SC16IS7XX_IER_THRI_BIT);
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(port, flags);
- }
- 
- static void sc16is7xx_reconf_rs485(struct uart_port *port)
-@@ -836,14 +836,14 @@ static void sc16is7xx_reconf_rs485(struct uart_port *port)
- 	struct serial_rs485 *rs485 = &port->rs485;
- 	unsigned long irqflags;
- 
--	spin_lock_irqsave(&port->lock, irqflags);
-+	uart_port_lock_irqsave(port, &irqflags);
- 	if (rs485->flags & SER_RS485_ENABLED) {
- 		efcr |=	SC16IS7XX_EFCR_AUTO_RS485_BIT;
- 
- 		if (rs485->flags & SER_RS485_RTS_AFTER_SEND)
- 			efcr |= SC16IS7XX_EFCR_RTS_INVERT_BIT;
- 	}
--	spin_unlock_irqrestore(&port->lock, irqflags);
-+	uart_port_unlock_irqrestore(port, irqflags);
- 
- 	sc16is7xx_port_update(port, SC16IS7XX_EFCR_REG, mask, efcr);
- }
-@@ -854,10 +854,10 @@ static void sc16is7xx_reg_proc(struct kthread_work *ws)
- 	struct sc16is7xx_one_config config;
- 	unsigned long irqflags;
- 
--	spin_lock_irqsave(&one->port.lock, irqflags);
-+	uart_port_lock_irqsave(&one->port, &irqflags);
- 	config = one->config;
- 	memset(&one->config, 0, sizeof(one->config));
--	spin_unlock_irqrestore(&one->port.lock, irqflags);
-+	uart_port_unlock_irqrestore(&one->port, irqflags);
- 
- 	if (config.flags & SC16IS7XX_RECONF_MD) {
- 		u8 mcr = 0;
-@@ -963,18 +963,18 @@ static void sc16is7xx_throttle(struct uart_port *port)
- 	 * value set in MCR register. Stop reading data from RX FIFO so the
- 	 * AutoRTS feature will de-activate RTS output.
- 	 */
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 	sc16is7xx_ier_clear(port, SC16IS7XX_IER_RDI_BIT);
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(port, flags);
- }
- 
- static void sc16is7xx_unthrottle(struct uart_port *port)
- {
+ 	icount->cts         = cnow.cts;
+@@ -1422,9 +1422,9 @@ static int uart_get_rs485_config(struct uart_port *port,
  	unsigned long flags;
+ 	struct serial_rs485 aux;
  
 -	spin_lock_irqsave(&port->lock, flags);
 +	uart_port_lock_irqsave(port, &flags);
- 	sc16is7xx_ier_set(port, SC16IS7XX_IER_RDI_BIT);
+ 	aux = port->rs485;
 -	spin_unlock_irqrestore(&port->lock, flags);
 +	uart_port_unlock_irqrestore(port, flags);
- }
  
- static unsigned int sc16is7xx_tx_empty(struct uart_port *port)
-@@ -1113,7 +1113,7 @@ static void sc16is7xx_set_termios(struct uart_port *port,
- 	/* Setup baudrate generator */
- 	baud = sc16is7xx_set_baud(port, baud);
+ 	if (copy_to_user(rs485, &aux, sizeof(aux)))
+ 		return -EFAULT;
+@@ -1451,7 +1451,7 @@ static int uart_set_rs485_config(struct tty_struct *tty, struct uart_port *port,
+ 	uart_sanitize_serial_rs485(port, &rs485);
+ 	uart_set_rs485_termination(port, &rs485);
  
 -	spin_lock_irqsave(&port->lock, flags);
 +	uart_port_lock_irqsave(port, &flags);
- 
- 	/* Update timeout according to new baud rate */
- 	uart_update_timeout(port, termios->c_cflag, baud);
-@@ -1121,7 +1121,7 @@ static void sc16is7xx_set_termios(struct uart_port *port,
- 	if (UART_ENABLE_MS(port, termios->c_cflag))
- 		sc16is7xx_enable_ms(port);
- 
+ 	ret = port->rs485_config(port, &tty->termios, &rs485);
+ 	if (!ret) {
+ 		port->rs485 = rs485;
+@@ -1460,7 +1460,7 @@ static int uart_set_rs485_config(struct tty_struct *tty, struct uart_port *port,
+ 		if (!(rs485.flags & SER_RS485_ENABLED))
+ 			port->ops->set_mctrl(port, port->mctrl);
+ 	}
 -	spin_unlock_irqrestore(&port->lock, flags);
 +	uart_port_unlock_irqrestore(port, flags);
- }
+ 	if (ret)
+ 		return ret;
  
- static int sc16is7xx_config_rs485(struct uart_port *port, struct ktermios *termios,
-@@ -1208,9 +1208,9 @@ static int sc16is7xx_startup(struct uart_port *port)
- 	sc16is7xx_port_write(port, SC16IS7XX_IER_REG, val);
+@@ -1479,9 +1479,9 @@ static int uart_get_iso7816_config(struct uart_port *port,
+ 	if (!port->iso7816_config)
+ 		return -ENOTTY;
  
- 	/* Enable modem status polling */
 -	spin_lock_irqsave(&port->lock, flags);
 +	uart_port_lock_irqsave(port, &flags);
- 	sc16is7xx_enable_ms(port);
+ 	aux = port->iso7816;
 -	spin_unlock_irqrestore(&port->lock, flags);
 +	uart_port_unlock_irqrestore(port, flags);
  
- 	return 0;
- }
+ 	if (copy_to_user(iso7816, &aux, sizeof(aux)))
+ 		return -EFAULT;
+@@ -1510,9 +1510,9 @@ static int uart_set_iso7816_config(struct uart_port *port,
+ 		if (iso7816.reserved[i])
+ 			return -EINVAL;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 	ret = port->iso7816_config(port, &iso7816);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1729,9 +1729,9 @@ static void uart_tty_port_shutdown(struct tty_port *port)
+ 	if (WARN(!uport, "detached port still initialized!\n"))
+ 		return;
+ 
+-	spin_lock_irq(&uport->lock);
++	uart_port_lock_irq(uport);
+ 	uport->ops->stop_rx(uport);
+-	spin_unlock_irq(&uport->lock);
++	uart_port_unlock_irq(uport);
+ 
+ 	uart_port_shutdown(port);
+ 
+@@ -1745,10 +1745,10 @@ static void uart_tty_port_shutdown(struct tty_port *port)
+ 	/*
+ 	 * Free the transmit buffer.
+ 	 */
+-	spin_lock_irq(&uport->lock);
++	uart_port_lock_irq(uport);
+ 	buf = state->xmit.buf;
+ 	state->xmit.buf = NULL;
+-	spin_unlock_irq(&uport->lock);
++	uart_port_unlock_irq(uport);
+ 
+ 	free_page((unsigned long)buf);
+ 
+@@ -1891,10 +1891,10 @@ static bool uart_carrier_raised(struct tty_port *port)
+ 	 */
+ 	if (WARN_ON(!uport))
+ 		return true;
+-	spin_lock_irq(&uport->lock);
++	uart_port_lock_irq(uport);
+ 	uart_enable_ms(uport);
+ 	mctrl = uport->ops->get_mctrl(uport);
+-	spin_unlock_irq(&uport->lock);
++	uart_port_unlock_irq(uport);
+ 	uart_port_deref(uport);
+ 
+ 	return mctrl & TIOCM_CAR;
+@@ -2011,9 +2011,9 @@ static void uart_line_info(struct seq_file *m, struct uart_driver *drv, int i)
+ 		pm_state = state->pm_state;
+ 		if (pm_state != UART_PM_STATE_ON)
+ 			uart_change_pm(state, UART_PM_STATE_ON);
+-		spin_lock_irq(&uport->lock);
++		uart_port_lock_irq(uport);
+ 		status = uport->ops->get_mctrl(uport);
+-		spin_unlock_irq(&uport->lock);
++		uart_port_unlock_irq(uport);
+ 		if (pm_state != UART_PM_STATE_ON)
+ 			uart_change_pm(state, pm_state);
+ 
+@@ -2352,9 +2352,9 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 	 */
+ 	if (!console_suspend_enabled && uart_console(uport)) {
+ 		if (uport->ops->start_rx) {
+-			spin_lock_irq(&uport->lock);
++			uart_port_lock_irq(uport);
+ 			uport->ops->stop_rx(uport);
+-			spin_unlock_irq(&uport->lock);
++			uart_port_unlock_irq(uport);
+ 		}
+ 		goto unlock;
+ 	}
+@@ -2369,7 +2369,7 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 		tty_port_set_suspended(port, true);
+ 		tty_port_set_initialized(port, false);
+ 
+-		spin_lock_irq(&uport->lock);
++		uart_port_lock_irq(uport);
+ 		ops->stop_tx(uport);
+ 		if (!(uport->rs485.flags & SER_RS485_ENABLED))
+ 			ops->set_mctrl(uport, 0);
+@@ -2377,7 +2377,7 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 		mctrl = uport->mctrl;
+ 		uport->mctrl = 0;
+ 		ops->stop_rx(uport);
+-		spin_unlock_irq(&uport->lock);
++		uart_port_unlock_irq(uport);
+ 
+ 		/*
+ 		 * Wait for the transmitter to empty.
+@@ -2449,9 +2449,9 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+ 			uart_change_pm(state, UART_PM_STATE_ON);
+ 		uport->ops->set_termios(uport, &termios, NULL);
+ 		if (!console_suspend_enabled && uport->ops->start_rx) {
+-			spin_lock_irq(&uport->lock);
++			uart_port_lock_irq(uport);
+ 			uport->ops->start_rx(uport);
+-			spin_unlock_irq(&uport->lock);
++			uart_port_unlock_irq(uport);
+ 		}
+ 		if (console_suspend_enabled)
+ 			console_start(uport->cons);
+@@ -2462,10 +2462,10 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+ 		int ret;
+ 
+ 		uart_change_pm(state, UART_PM_STATE_ON);
+-		spin_lock_irq(&uport->lock);
++		uart_port_lock_irq(uport);
+ 		if (!(uport->rs485.flags & SER_RS485_ENABLED))
+ 			ops->set_mctrl(uport, 0);
+-		spin_unlock_irq(&uport->lock);
++		uart_port_unlock_irq(uport);
+ 		if (console_suspend_enabled || !uart_console(uport)) {
+ 			/* Protected by port mutex for now */
+ 			struct tty_struct *tty = port->tty;
+@@ -2474,13 +2474,13 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+ 			if (ret == 0) {
+ 				if (tty)
+ 					uart_change_line_settings(tty, state, NULL);
+-				spin_lock_irq(&uport->lock);
++				uart_port_lock_irq(uport);
+ 				if (!(uport->rs485.flags & SER_RS485_ENABLED))
+ 					ops->set_mctrl(uport, uport->mctrl);
+ 				else
+ 					uart_rs485_config(uport);
+ 				ops->start_tx(uport);
+-				spin_unlock_irq(&uport->lock);
++				uart_port_unlock_irq(uport);
+ 				tty_port_set_initialized(port, true);
+ 			} else {
+ 				/*
+@@ -2583,13 +2583,13 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 		 * keep the DTR setting that is set in uart_set_options()
+ 		 * We probably don't need a spinlock around this, but
+ 		 */
+-		spin_lock_irqsave(&port->lock, flags);
++		uart_port_lock_irqsave(port, &flags);
+ 		port->mctrl &= TIOCM_DTR;
+ 		if (!(port->rs485.flags & SER_RS485_ENABLED))
+ 			port->ops->set_mctrl(port, port->mctrl);
+ 		else
+ 			uart_rs485_config(port);
+-		spin_unlock_irqrestore(&port->lock, flags);
++		uart_port_unlock_irqrestore(port, flags);
+ 
+ 		/*
+ 		 * If this driver supports console, and it hasn't been
+diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial_port.c
+index 862423237007..88975a4df306 100644
+--- a/drivers/tty/serial/serial_port.c
++++ b/drivers/tty/serial/serial_port.c
+@@ -35,10 +35,10 @@ static int serial_port_runtime_resume(struct device *dev)
+ 		goto out;
+ 
+ 	/* Flush any pending TX for the port */
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 	if (__serial_port_busy(port))
+ 		port->ops->start_tx(port);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ 
+ out:
+ 	pm_runtime_mark_last_busy(dev);
 -- 
 2.39.2
 
