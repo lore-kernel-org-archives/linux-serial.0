@@ -2,172 +2,121 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDED8EEAA49
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 13:58:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A7CDEEAA56
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 14:48:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239489AbjINN60 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Sep 2023 09:58:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39632 "EHLO
+        id S240347AbjINOsU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Sep 2023 10:48:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239472AbjINN6Y (ORCPT
+        with ESMTP id S240415AbjINOsR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Sep 2023 09:58:24 -0400
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF411FD5;
-        Thu, 14 Sep 2023 06:58:20 -0700 (PDT)
-Received: by mail-yb1-f175.google.com with SMTP id 3f1490d57ef6-d8162698f0dso1054130276.0;
-        Thu, 14 Sep 2023 06:58:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694699899; x=1695304699;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=89wnnpn5qWRvVKp5fLbV+KH4FRgXN/OCspIecwMYI/I=;
-        b=jbmpWgb3dtD3ty4tskGVo7/WjuwqKJqVri3v42osYvuew8OkBloDf3Qr/dMA1kNeHb
-         MKxrmL4wkzeeluRdc90m7Y/wt/6I7nnHJVY3L/TvlQPpcTqFg9Tsph+E86wEbCOctR3p
-         +6nthQyLSJPRbVb+CsOvdWwgHcbBrGvDx3oWpuKUWVeHivnOJcfmgwbOUAbcte+U5ML5
-         v4cDRl++O4XMN3IDycyC3dZJeozz7YjJ2NsqADrmHhshUFDO3jHpc533N9bTv76Vh2cj
-         JJvijX9gnyO/U3L0eT40+VPP0p/83UsQP34u0WC2WuXt+DyRGuPahX+Y7xkYsbs+Rqbw
-         rGEQ==
-X-Gm-Message-State: AOJu0YzbHxbC0B+bEVGfR/1klciZjJBTcmJyIFVY9PdD/DTI4lEbtpSR
-        cv/hVuE7wBc7l4iA3e4AzouBSVD8sIU2HA==
-X-Google-Smtp-Source: AGHT+IFu83r7/LnH/QO9nc6pxfEozxawaMj+9NYuVcUrCUwHggHW4VZOMjiUH7ef9a5iNkdv+krHGw==
-X-Received: by 2002:a25:603:0:b0:d62:b8f5:d745 with SMTP id 3-20020a250603000000b00d62b8f5d745mr4653761ybg.52.1694699899511;
-        Thu, 14 Sep 2023 06:58:19 -0700 (PDT)
-Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com. [209.85.219.182])
-        by smtp.gmail.com with ESMTPSA id v20-20020a25ab94000000b00d7360e0b240sm343654ybi.31.2023.09.14.06.58.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Sep 2023 06:58:18 -0700 (PDT)
-Received: by mail-yb1-f182.google.com with SMTP id 3f1490d57ef6-d7f0048b042so1036218276.2;
-        Thu, 14 Sep 2023 06:58:18 -0700 (PDT)
-X-Received: by 2002:a25:ff0a:0:b0:d36:58a6:3281 with SMTP id
- c10-20020a25ff0a000000b00d3658a63281mr4967250ybe.39.1694699897744; Thu, 14
- Sep 2023 06:58:17 -0700 (PDT)
+        Thu, 14 Sep 2023 10:48:17 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B3B1BFC;
+        Thu, 14 Sep 2023 07:48:13 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4E03C433C7;
+        Thu, 14 Sep 2023 14:48:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1694702892;
+        bh=XlH2++cozlMCXeR9EvUckhmVWrwhR2yKc6Vvzh31WCE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mvSBW9JAqDrz6UWIPcFcklUoKB8kHwI/5dWtybKDRXOdLDJTCLwouG0s902rAirPm
+         Wql9iXKt+kKfwbKSvsWsT2yx0tKQNVDOKVtR1MFjky+IXIxinawVoF3GIi+Ol6rWPF
+         Yp2TGaF2YE9xDE0fUr8Hnt64md6qHOgygQYzXMiqWapAy2ihvhl9mDDx6NZkz3ZDIL
+         HzvYiU+HoZpxlVH+y8lUy7Lh6wTOXCAUVTGSsvSY5GQTU+MqB8p8zb2acxI7QJLhdp
+         w7dBT5RHBaM3h2FBncEux2uO7SofWur4Gcwtqbpnj4NECdQhA1qTrWXKpy20Wavooz
+         sMBoitRfxuizQ==
+Date:   Thu, 14 Sep 2023 15:48:08 +0100
+From:   Conor Dooley <conor@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Max Filippov <jcmvbkbc@gmail.com>, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>
+Subject: Re: [PATCH 1/4] dt-bindings: serial: document esp32-uart bindings
+Message-ID: <20230914-stumbling-smother-2b048381952c@spud>
+References: <20230913211449.668796-1-jcmvbkbc@gmail.com>
+ <20230913211449.668796-2-jcmvbkbc@gmail.com>
+ <d7bf0ae3-d263-4231-9656-2b7af4b372a3@linaro.org>
 MIME-Version: 1.0
-References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com> <20230912045157.177966-16-claudiu.beznea.uj@bp.renesas.com>
-In-Reply-To: <20230912045157.177966-16-claudiu.beznea.uj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 14 Sep 2023 15:58:05 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdU5S6noFjkdYeyQjVSfa4oM780e0mMCAiScDoBjF=Rpqw@mail.gmail.com>
-Message-ID: <CAMuHMdU5S6noFjkdYeyQjVSfa4oM780e0mMCAiScDoBjF=Rpqw@mail.gmail.com>
-Subject: Re: [PATCH 15/37] clk: renesas: rzg2l: add support for RZ/G3S PLL
-To:     Claudiu <claudiu.beznea@tuxon.dev>
-Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        ulf.hansson@linaro.org, linus.walleij@linaro.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
-        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
-        nfraprado@collabora.com, rafal@milecki.pl,
-        wsa+renesas@sang-engineering.com,
-        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="w5dGWB6bqtjegC91"
+Content-Disposition: inline
+In-Reply-To: <d7bf0ae3-d263-4231-9656-2b7af4b372a3@linaro.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Claudiu,
 
-On Tue, Sep 12, 2023 at 6:52 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
-> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->
-> Add support for reading the frequency of PLL1/4/6 available on RZ/G3S.
-> The computation formula for PLL frequency is as follows:
-> Fout = (nir + nfr / 4096) * Fin / (mr * pr)
->
-> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+--w5dGWB6bqtjegC91
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for your patch!
+On Thu, Sep 14, 2023 at 07:55:35AM +0200, Krzysztof Kozlowski wrote:
+> On 13/09/2023 23:14, Max Filippov wrote:
+> > Add documentation for the ESP32xx UART controllers.
+> >=20
+> > Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+> > ---
+> >  .../bindings/serial/esp,esp32-uart.yaml       | 48 +++++++++++++++++++
+> >  1 file changed, 48 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/serial/esp,esp32-=
+uart.yaml
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/serial/esp,esp32-uart.ya=
+ml b/Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml
+> > new file mode 100644
+> > index 000000000000..8b45ef808107
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml
+> > @@ -0,0 +1,48 @@
+> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> > +
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/serial/esp,esp32-uart.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: ESP32 UART controller
+> > +
+> > +maintainers:
+> > +  - Max Filippov <jcmvbkbc@gmail.com>
+> > +
+> > +description: |
+> > +  ESP32 UART controller is a part of ESP32 SoC series.
+>=20
+> 1. Company name?
+> 2. ESP32 SoC series suggests esp32 is a series.
+>=20
+> > +
+> > +properties:
+> > +  compatible:
+> > +    oneOf:
+> > +      - description: UART controller for the ESP32 SoC
+> > +        const: esp,esp32-uart
+>=20
+> Also, the vendor prefix looks incorrect, so again - what is the company
+> name?
 
-> --- a/drivers/clk/renesas/rzg2l-cpg.c
-> +++ b/drivers/clk/renesas/rzg2l-cpg.c
-> @@ -718,11 +718,43 @@ static const struct clk_ops rzg2l_cpg_pll_ops = {
->         .recalc_rate = rzg2l_cpg_pll_clk_recalc_rate,
->  };
->
-> +static unsigned long rzg3s_cpg_pll_clk_recalc_rate(struct clk_hw *hw,
-> +                                                  unsigned long parent_rate)
-> +{
-> +       struct pll_clk *pll_clk = to_pll(hw);
-> +       struct rzg2l_cpg_priv *priv = pll_clk->priv;
-> +       u32 nir, nfr, mr, pr, val;
-> +       u64 rate;
-> +
-> +       if (pll_clk->type != CLK_TYPE_G3S_SAM_PLL)
-> +               return parent_rate;
-> +
-> +       val = readl(priv->base + GET_REG_SAMPLL_CLK1(pll_clk->conf));
-> +
-> +       pr = 1 << FIELD_GET(GENMASK(28, 26), val);
+esp32 is made by expressif, which would match with "esp" as a vendor
+prefix.
 
-Please add defines for the various GENMASK(...) fields.
 
-> +       /* Hardware interprets values higher than 8 as p = 16. */
-> +       if (pr > 8)
-> +               pr = 16;
-> +
-> +       mr  = FIELD_GET(GENMASK(25, 22), val) + 1;
-> +       nir = FIELD_GET(GENMASK(21, 13), val) + 1;
-> +       nfr = FIELD_GET(GENMASK(12, 1), val);
-> +
-> +       rate = DIV_ROUND_CLOSEST_ULL((u64)parent_rate * nfr, 4096);
-> +       rate += (u64)parent_rate * nir;
 
-When rewriting the formula as:
+--w5dGWB6bqtjegC91
+Content-Type: application/pgp-signature; name="signature.asc"
 
-    Fout = (4096 * nir + nfr) * Fin / (4096 * mr * pr)
+-----BEGIN PGP SIGNATURE-----
 
-you can simplify to:
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZQMdKAAKCRB4tDGHoIJi
+0jdGAP4sUKNXkMwoIScWfBLsAsvhasgz8yvWr3ZT714K8R9RTgD+K5NqOOlcTqGa
+7guFL9U09dCkKLI+vEoOgY4PtJ3gCwQ=
+=ENOh
+-----END PGP SIGNATURE-----
 
-    rate = mul_u64_u32_shr(parent_rate, 4096 * nir + nfr, 12);
-
-> +       return DIV_ROUND_CLOSEST_ULL(rate, (mr + pr));
-
-mr * pr
-
-> +}
-
-> --- a/drivers/clk/renesas/rzg2l-cpg.h
-> +++ b/drivers/clk/renesas/rzg2l-cpg.h
-> @@ -102,6 +102,7 @@ enum clk_types {
->         CLK_TYPE_IN,            /* External Clock Input */
->         CLK_TYPE_FF,            /* Fixed Factor Clock */
->         CLK_TYPE_SAM_PLL,
-> +       CLK_TYPE_G3S_SAM_PLL,
-
-CLK_TYPE_G3S_PLL, as the documentation doesn't use SAM?
-
->
->         /* Clock with divider */
->         CLK_TYPE_DIV,
-> @@ -129,6 +130,8 @@ enum clk_types {
->         DEF_TYPE(_name, _id, _type, .parent = _parent)
->  #define DEF_SAMPLL(_name, _id, _parent, _conf) \
->         DEF_TYPE(_name, _id, CLK_TYPE_SAM_PLL, .parent = _parent, .conf = _conf)
-> +#define DEF_G3S_SAMPLL(_name, _id, _parent, _conf) \
-
-DEF_G3S_PLL
-
-> +       DEF_TYPE(_name, _id, CLK_TYPE_G3S_SAM_PLL, .parent = _parent, .conf = _conf)
->  #define DEF_INPUT(_name, _id) \
->         DEF_TYPE(_name, _id, CLK_TYPE_IN)
->  #define DEF_FIXED(_name, _id, _parent, _mult, _div) \
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+--w5dGWB6bqtjegC91--
