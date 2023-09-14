@@ -2,155 +2,73 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D9BAEDE983
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 05:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9562AEDE983
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 06:07:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234962AbjINF5l (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Sep 2023 01:57:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49144 "EHLO
+        id S233468AbjINGHd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Sep 2023 02:07:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234907AbjINF5l (ORCPT
+        with ESMTP id S232171AbjINGHd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Sep 2023 01:57:41 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE05CCA
-        for <linux-serial@vger.kernel.org>; Wed, 13 Sep 2023 22:57:36 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id 5b1f17b1804b1-401187f8071so3687285e9.0
-        for <linux-serial@vger.kernel.org>; Wed, 13 Sep 2023 22:57:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1694671055; x=1695275855; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Sd+yNH3HCnvohWB8kKSot+DWu8r82XF/02XSPDy4hjI=;
-        b=UvDXbsFrxyjkT18fjOC3Nxj0bIkmoBXqgIdESy4mNm/znxKs+DqDC3Yp2+KQqaD5K4
-         nC1aZ0dgNV4kmitZlNestAqaU23OkyaHjBngBW/zSLxyGORmHJ1aVhAuheUxFJNve/Ts
-         N9KhGmtOGsywG7izkjUmiB0vLeMLxsV3r14pjLlqkdgepgcKZWxXfgvZzlfj7Rq7sOvk
-         0GrQ7+gjLVEiB5BFj2omrvXDmsCNpVwgHOMJ0Fktn3uZtnMtnIOR7HOkbgRUdsL0LKrH
-         IXeDD690qy0lWemaSUOVQnzo6lXtwW3SQUNOBEXfdRg+FsADgt/AHTdaZ/Rc3jDCKXMq
-         sk/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694671055; x=1695275855;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Sd+yNH3HCnvohWB8kKSot+DWu8r82XF/02XSPDy4hjI=;
-        b=MAUq7tRYjq0NufwgfPgrzM0AtFNDAzoDKz4jISkpuBOW+0lbz/k6ksOvYkc33z2cgh
-         YO2zklnTuSLPkaovAX3CtAkh2SR+Rmiz/QNsgNYy8lc3pxhbkwWikwVn8MU+fvAFcOpJ
-         fwKDCQbd73q8sWVKf0bcY2c6JEmSmM1/bb9jihSyTMSt6gKNATktDlMlw8TvlSOww4zA
-         YRLIC0vKEn8SnyciIb1QM6UnJ5pjQ3/BlfUW0gYixo4ev50bkqHCmiiL3O/dtFUhzhlw
-         FlC133QhnL32nQN9GTrm2VBkb/xdHcZCVpY5QvfSt5J2Kx6YH92pN1Eg2oySAH2g0gOY
-         eWSg==
-X-Gm-Message-State: AOJu0YywCYgm3EqaMl5D+2Zte/b+INJe3klLXkIINbX2lhKTfP9QHjh6
-        jR2FpeQEJFnbIHVW3j2z1rkXhQ==
-X-Google-Smtp-Source: AGHT+IHQ3ToshXAt0xNl0LOHLgftxsrHEuc1Dba4IRwvwAmsrwulg2mrlsMfDvVYxxeB3xwA76gJBw==
-X-Received: by 2002:a05:600c:8607:b0:402:ea5c:1845 with SMTP id ha7-20020a05600c860700b00402ea5c1845mr574855wmb.5.1694671054983;
-        Wed, 13 Sep 2023 22:57:34 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.214.188])
-        by smtp.gmail.com with ESMTPSA id a22-20020a05600c225600b00402d7105035sm3871567wmm.26.2023.09.13.22.57.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Sep 2023 22:57:34 -0700 (PDT)
-Message-ID: <196fb9ac-53b7-51a6-6ce4-9f980215fde4@linaro.org>
-Date:   Thu, 14 Sep 2023 07:57:32 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
-Subject: Re: [PATCH 3/4] dt-bindings: serial: document esp32s3-acm bindings
-Content-Language: en-US
-To:     Max Filippov <jcmvbkbc@gmail.com>, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+        Thu, 14 Sep 2023 02:07:33 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B663DF;
+        Wed, 13 Sep 2023 23:07:29 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id F063B8088;
+        Thu, 14 Sep 2023 06:07:27 +0000 (UTC)
+Date:   Thu, 14 Sep 2023 09:07:26 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>
-References: <20230913211449.668796-1-jcmvbkbc@gmail.com>
- <20230913211449.668796-4-jcmvbkbc@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230913211449.668796-4-jcmvbkbc@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] serial: core: Add support for DEVNAME:0.0 style
+ naming for kernel console
+Message-ID: <20230914060726.GN5285@atomide.com>
+References: <20230912110350.14482-1-tony@atomide.com>
+ <20230912110350.14482-3-tony@atomide.com>
+ <4c9c637a-9117-4f43-a64f-892fa33958c1@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4c9c637a-9117-4f43-a64f-892fa33958c1@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 13/09/2023 23:14, Max Filippov wrote:
-> Add documentation for the ESP32S3 ACM controller.
-
-A nit, subject: drop second/last, redundant "bindings". The
-"dt-bindings" prefix is already stating that these are bindings.
-
+* Jiri Slaby <jirislaby@kernel.org> [230914 05:43]:
+> On 12. 09. 23, 13:03, Tony Lindgren wrote:
+> > +/*
+> > + * The "console=" option is handled by console_setup() in printk. We can't use
+> > + * early_param() as do_early_param() checks for "console" and "earlycon" options
+> > + * so console_setup() potentially handles console also early. Use parse_args().
 > 
-> Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-> ---
->  .../bindings/serial/esp,esp32-acm.yaml        | 40 +++++++++++++++++++
->  1 file changed, 40 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml b/Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
-> new file mode 100644
-> index 000000000000..dafbae38aa64
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
-> @@ -0,0 +1,40 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/esp,esp32-acm.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: ESP32S3 ACM controller
-> +
-> +maintainers:
-> +  - Max Filippov <jcmvbkbc@gmail.com>
-> +
-> +description: |
+> So why not concentrate console= handling on one place, ie. in
+> console_setup()? The below (second time console= handling) occurs quite
+> illogical to me.
 
-Do not need '|' unless you need to preserve formatting.
+Well console_setup() knows nothing about the probing serial port controller
+device, tries to call __add_preferred_console() based on a few hardcoded
+device names and some attempted guessing, and is stuffed into printk.c :)
 
+I don't think we should pile on more stuff into printk.c for this.
 
-> +  ESP32S3 ACM controller is a communication device found in the ESP32S3
+If we wanted to do something, let's set up the console list somewhere else,
+and then just have console_setup() add every console option to that list
+and leave the rest of console_setup in place to avoid breaking things all
+over the place.
 
-What is "ACM"? Why is this in serial? Only serial controllers are in
-serial. The description is very vague, way too vague.
+Then we can export some find_named_console() type function for serial core
+to use. Or do you have some better ideas in mind?
 
-> +  SoC that is connected to one of its USB controllers.
+Regards,
 
-Same comments as previous patch.
-
-> +
-> +properties:
-> +  compatible:
-> +    const: esp,esp32s3-acm
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    acm@60038000 {
-> +            compatible = "esp,esp32s3-acm";
-
-Use 4 spaces for example indentation.
-
-> +            reg = <0x60038000 0x1000>;
-> +            interrupts = <96 3 0>;
-
-Same comments as previous patch.
-
-> +    };
-
-Best regards,
-Krzysztof
-
+Tony
