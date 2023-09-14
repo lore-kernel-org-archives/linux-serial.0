@@ -2,51 +2,50 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DF5DEEAA69
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 18:38:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE77EEAA63
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 18:38:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241815AbjINSjB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Sep 2023 14:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37332 "EHLO
+        id S241760AbjINSjC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Sep 2023 14:39:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241653AbjINSix (ORCPT
+        with ESMTP id S241655AbjINSix (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 14 Sep 2023 14:38:53 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83451210A;
-        Thu, 14 Sep 2023 11:38:47 -0700 (PDT)
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F11E2107;
+        Thu, 14 Sep 2023 11:38:48 -0700 (PDT)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1694716726;
+        s=2020; t=1694716727;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=SN1m+sQgeewvT16dEWJcKSrjCp4ddLkdrzOmS932/1c=;
-        b=T2+nJtqFHK05/tM4MSOXTG0QEMWzm7dci51Lnw0aYytoCX/b+7AuMkFiu1PbFgG9imA4uk
-        B2kOwsnzIg07yBXTnAtEye+O1CWkfLiDiP4wioM6jGNZ3sXID24JoP3waGuQwzgiFaVSqo
-        5QVF6oI1wtFfzxrvHKA8vi9aU+u2T1eupWzb0RTs6XHvIJnrCz6J1TeJratDX4HI7KQKHU
-        jr9bmor/75Bb4cnokJXTPSjpwtG5gBuZWs7Ue4KUkQutBWO/7cFMJo25ZWpH5ugDtjYINj
-        fbduXBudQtprxvZRd/MIhyr4IZIww66j0DnbzrZn4I93U+828kcVZTn09qE5YQ==
+        bh=vzsn2wLYsWS44Gbs24avQ4nqhzEXcoHpcp6KNR2u0GE=;
+        b=PiJR5jMN7CVVZo8siH35FwnJFoSDfXaB7ytFHSQkwHRaQ+jVGAS45QDRTXT05uk0ubuWUR
+        ypRaqKU5MiNEmIar0/k6pnSjYR7UZoP3tLOl1SWRLlPtvMAvuA2EWhBaxYg2PPa7frbNrq
+        iW0FlJ1UVo03/8eHUfNsbc5INW1VgtLIFpmHtgZ5vzGMJSZfkGO+MrxULFEJ34hYUJqKPP
+        IWsAFHssQ38VQeZn6VIF6MBsLqdxCWEQdJe5UHPrRiZtnI9mkk0TMLw7XyDWxJNc8IVj9X
+        wTdog0tqfcGozCm07toBOvFNKPAaLuWTD75SD+cXvZr7wlaBeU/4eQMmdGpITA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1694716726;
+        s=2020e; t=1694716727;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=SN1m+sQgeewvT16dEWJcKSrjCp4ddLkdrzOmS932/1c=;
-        b=GQ4AT7dpwj6KdWTSvLHa6Iv58kWfyk7q6vILB5b0vKY5MPYKmqRhTOU1r+F/DfpZzSfmwk
-        0VrqhxSNFO63RJCA==
+        bh=vzsn2wLYsWS44Gbs24avQ4nqhzEXcoHpcp6KNR2u0GE=;
+        b=MiF9n5qv0YK7IdQjzTI3Kbo1xwtqPynXg98RvBsu+Hr3Twlm6rN65Op6DLiw2hKFzDWYz1
+        gBCFTmnSTbNPWfAw==
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
         Petr Mladek <pmladek@suse.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, Tobias Klauser <tklauser@distanz.ch>,
-        Rob Herring <robh@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>
-Subject: [PATCH tty v1 18/74] serial: apb: Use port lock wrappers
-Date:   Thu, 14 Sep 2023 20:43:35 +0206
-Message-Id: <20230914183831.587273-19-john.ogness@linutronix.de>
+        linux-kernel@vger.kernel.org, Vineet Gupta <vgupta@kernel.org>,
+        linux-snps-arc@lists.infradead.org
+Subject: [PATCH tty v1 20/74] serial: arc_uart: Use port lock wrappers
+Date:   Thu, 14 Sep 2023 20:43:37 +0206
+Message-Id: <20230914183831.587273-21-john.ogness@linutronix.de>
 In-Reply-To: <20230914183831.587273-1-john.ogness@linutronix.de>
 References: <20230914183831.587273-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -83,49 +82,70 @@ Converted with coccinelle. No functional change.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- drivers/tty/serial/apbuart.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/serial/arc_uart.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/tty/serial/apbuart.c b/drivers/tty/serial/apbuart.c
-index d7658f380838..716cb014c028 100644
---- a/drivers/tty/serial/apbuart.c
-+++ b/drivers/tty/serial/apbuart.c
-@@ -133,7 +133,7 @@ static irqreturn_t apbuart_int(int irq, void *dev_id)
- 	struct uart_port *port = dev_id;
- 	unsigned int status;
+diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
+index ad4ae19b6ce3..1aa5b2b49c26 100644
+--- a/drivers/tty/serial/arc_uart.c
++++ b/drivers/tty/serial/arc_uart.c
+@@ -279,9 +279,9 @@ static irqreturn_t arc_serial_isr(int irq, void *dev_id)
+ 	if (status & RXIENB) {
  
--	spin_lock(&port->lock);
-+	uart_port_lock(port);
+ 		/* already in ISR, no need of xx_irqsave */
+-		spin_lock(&port->lock);
++		uart_port_lock(port);
+ 		arc_serial_rx_chars(port, status);
+-		spin_unlock(&port->lock);
++		uart_port_unlock(port);
+ 	}
  
- 	status = UART_GET_STATUS(port);
- 	if (status & UART_STATUS_DR)
-@@ -141,7 +141,7 @@ static irqreturn_t apbuart_int(int irq, void *dev_id)
- 	if (status & UART_STATUS_THE)
- 		apbuart_tx_chars(port);
+ 	if ((status & TXIENB) && (status & TXEMPTY)) {
+@@ -291,12 +291,12 @@ static irqreturn_t arc_serial_isr(int irq, void *dev_id)
+ 		 */
+ 		UART_TX_IRQ_DISABLE(port);
  
--	spin_unlock(&port->lock);
-+	uart_port_unlock(port);
+-		spin_lock(&port->lock);
++		uart_port_lock(port);
+ 
+ 		if (!uart_tx_stopped(port))
+ 			arc_serial_tx_chars(port);
+ 
+-		spin_unlock(&port->lock);
++		uart_port_unlock(port);
+ 	}
  
  	return IRQ_HANDLED;
- }
-@@ -228,7 +228,7 @@ static void apbuart_set_termios(struct uart_port *port,
- 	if (termios->c_cflag & CRTSCTS)
- 		cr |= UART_CTRL_FL;
+@@ -366,7 +366,7 @@ arc_serial_set_termios(struct uart_port *port, struct ktermios *new,
+ 	uartl = hw_val & 0xFF;
+ 	uarth = (hw_val >> 8) & 0xFF;
  
 -	spin_lock_irqsave(&port->lock, flags);
 +	uart_port_lock_irqsave(port, &flags);
  
- 	/* Update the per-port timeout. */
- 	uart_update_timeout(port, termios->c_cflag, baud);
-@@ -251,7 +251,7 @@ static void apbuart_set_termios(struct uart_port *port,
- 	UART_PUT_SCAL(port, quot);
- 	UART_PUT_CTRL(port, cr);
+ 	UART_ALL_IRQ_DISABLE(port);
+ 
+@@ -391,7 +391,7 @@ arc_serial_set_termios(struct uart_port *port, struct ktermios *new,
+ 
+ 	uart_update_timeout(port, new->c_cflag, baud);
  
 -	spin_unlock_irqrestore(&port->lock, flags);
 +	uart_port_unlock_irqrestore(port, flags);
  }
  
- static const char *apbuart_type(struct uart_port *port)
+ static const char *arc_serial_type(struct uart_port *port)
+@@ -521,9 +521,9 @@ static void arc_serial_console_write(struct console *co, const char *s,
+ 	struct uart_port *port = &arc_uart_ports[co->index].port;
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 	uart_console_write(port, s, count, arc_serial_console_putchar);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ static struct console arc_console = {
 -- 
 2.39.2
 
