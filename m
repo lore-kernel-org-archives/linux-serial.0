@@ -2,61 +2,62 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF309EEAA6E
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 20:00:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1057AEEAA6E
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 20:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229662AbjINUAW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Sep 2023 16:00:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56338 "EHLO
+        id S229603AbjINUCv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Sep 2023 16:02:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229603AbjINUAW (ORCPT
+        with ESMTP id S229592AbjINUCu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Sep 2023 16:00:22 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FBBC26B8;
-        Thu, 14 Sep 2023 13:00:18 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id d2e1a72fcca58-69042d398b1so80494b3a.0;
-        Thu, 14 Sep 2023 13:00:18 -0700 (PDT)
+        Thu, 14 Sep 2023 16:02:50 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6E226BC;
+        Thu, 14 Sep 2023 13:02:46 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id 41be03b00d2f7-573c62b3cd2so1032634a12.3;
+        Thu, 14 Sep 2023 13:02:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1694721617; x=1695326417; darn=vger.kernel.org;
+        d=gmail.com; s=20221208; t=1694721765; x=1695326565; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=B23YuAv6dhYvSN5C36lVW/kvrfHC6KB7exZefOVxwtg=;
-        b=o0dQYoQeVLZFjIDy3B8RMR6rtTIW6AbN60YpA1T+ChDCVh7+NkbuC6PSa10Km+u/L0
-         Eks8uuUxiKO5hJBiwZHDuePukkSEjHDxn+OGg/9F7Wr1uY4SdTPsDmZwGQVyMiwfbdE8
-         2PPpoPjvvJQME2umWSakEZjDbnsy2tWHpiTQW+BPcK1Y3FlZHgKk6ypH4l86L68q42Tb
-         W1laKe35QVTnON3AJU5gG0HpQCBGndxKXo3lvRd/UHuz+8tGI1i5Buhjwaq6aKh2v6FC
-         YmmuhL0WUV+fRvfIwcyKfA28E3k70XEDOvT0VgfsOrYemUPSaqsMQ6I+5Egzd3wnG1di
-         aozw==
+        bh=A9kaqIbiQMAt0qlEWTpOzlY6l1PPJ/Q7QNkCIjKHZSY=;
+        b=PTsQQNcnexJIgMspZAd+C0u2Vi+ewaw5pteVbmX2uRMMpI6W7xWf8PVF78Y93G+awb
+         Gi14Y7jczypsYnkl4zERvE+cBWKHFSdfe0tQCOJLad8z6XkRpfFT0sz2Vv9H+rXsJ60q
+         6OoMB0cjq3PLqM6luTtIRIyzCLrChhg/jZgTXf3l+vTyrFAVJp5kALCS0aEJ0yIPTQMG
+         d0nCUE86zOULR8YC8PSbIhxh5JEv6sNcNeQF1YRePJtB/yPHDmsxnR0WeHK4DKwVIkcv
+         hoMEEINee+FU2fZiMwD/V6UYk1YYcgD+k2WRNG4irgRpYipa+9NA28zRf8DcfHJTI7LG
+         lUZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694721617; x=1695326417;
+        d=1e100.net; s=20230601; t=1694721765; x=1695326565;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=B23YuAv6dhYvSN5C36lVW/kvrfHC6KB7exZefOVxwtg=;
-        b=s2Iv0is6xSf/aC34sug9mWGPKHFi2OwOkJrPS/Zps8epkR75slJ3Ryeqi/5XArfUbg
-         GXmBDIJS3g7qV9uTlC76FMb0zeXq6rlQV39cMP7EOsF1BJ9f+HrD3kw7hd1foOBve68d
-         tWxD2phwphisGK3oHDVFKtF/zL6Cs4AtAMfXhG9nqKrTPGtYYZgXPrOXpM7ip9lf54+o
-         a3v8D8HqRDVdHPXhDqZ4y7tuI4+ESyk+g6syPCGgh+YFCcco1gV/Usz0stLS5u3yy3qO
-         1QEl/jOLdOoLFJkGS017FkiojqGRZWOvKmLcer3LULVTFV+CHRJgk2tGz+FhPd54Z/IX
-         2wyQ==
-X-Gm-Message-State: AOJu0Yzpu/Wl4sghbXhzNqIIYA/AliXEc4LwnkMabnQbuDpoNweQ5N6b
-        bkLuZiDB7iuygv4otmRz9gyt+6tW6bAh7kCHyBc=
-X-Google-Smtp-Source: AGHT+IEGZcYWfFuWw2dQfPhJ0OBpPROolNoIo/obh/jVO4iBsP9rJYT+1Flp4m7jWHC+Q8uaRg2HlWmd1gmt2gpXj3A=
-X-Received: by 2002:a05:6a00:1d10:b0:690:15c7:60bf with SMTP id
- a16-20020a056a001d1000b0069015c760bfmr5463233pfx.20.1694721617453; Thu, 14
- Sep 2023 13:00:17 -0700 (PDT)
+        bh=A9kaqIbiQMAt0qlEWTpOzlY6l1PPJ/Q7QNkCIjKHZSY=;
+        b=K9pK2jWpjOcWaUTu50b51OlMRNle1q9PbS7Lo4XYLd0P2hzkfkNJN8fukYePxnAe+l
+         jR92NH/8EUw2zUrz+qzmNF2m7dMvYnkxdNxYZKnejrwY6UMXoL2iXUjssko8P4c3ORrn
+         WfNMrRLdqJQ7j5N+aka+tCTac0y0Z3MVOT9/3Ib696RqFnav0tgGywHYAG/NIj+9/9qA
+         6Wwmgd1qHZ3t6FWPJtzduXvG084xJa9pgxkHOv/+yaV8PyKgTgLR/U71j83edTyauffK
+         6Ft61Nlfmx0oi6qx3qwhl5rs3KlsfPFoA5NRNWjtxRUNFVct9G1Mixw4TW6ulCHuWnm/
+         X+Nw==
+X-Gm-Message-State: AOJu0Yxklwoxe1B8U95NGd03i9cuQpV0PUBuJZn15SkOrn0ntJJiWcm3
+        vYNDAmOeZEKxx2gWrlwwEn/8rigHLIaBYSNYt0nG9Pfmzqk=
+X-Google-Smtp-Source: AGHT+IF0AonOjgLve5XE/1tDMMKqZ4Phey7WW/x6Zy6mHY7woUjaH+9Urd+32q7KgKeFme4YyXkDWu1Gt6tz2NfKmV0=
+X-Received: by 2002:a05:6a20:7d85:b0:13a:12c2:359e with SMTP id
+ v5-20020a056a207d8500b0013a12c2359emr7914124pzj.2.1694721765383; Thu, 14 Sep
+ 2023 13:02:45 -0700 (PDT)
 MIME-Version: 1.0
 References: <20230913211449.668796-1-jcmvbkbc@gmail.com> <20230913211449.668796-2-jcmvbkbc@gmail.com>
- <465dc390-a5ff-547a-2bd3-54b29e1b6c43@linaro.org>
-In-Reply-To: <465dc390-a5ff-547a-2bd3-54b29e1b6c43@linaro.org>
+ <d7bf0ae3-d263-4231-9656-2b7af4b372a3@linaro.org> <20230914-stumbling-smother-2b048381952c@spud>
+In-Reply-To: <20230914-stumbling-smother-2b048381952c@spud>
 From:   Max Filippov <jcmvbkbc@gmail.com>
-Date:   Thu, 14 Sep 2023 13:00:06 -0700
-Message-ID: <CAMo8Bf+5EOjOrusD7bHanxcrQm445b=wOq4xDGXVeij0tYY3XA@mail.gmail.com>
+Date:   Thu, 14 Sep 2023 13:02:34 -0700
+Message-ID: <CAMo8BfJTr2q5+8jmUsDPsWY795udvO3vb-fEMUrsLuiFuV-eFw@mail.gmail.com>
 Subject: Re: [PATCH 1/4] dt-bindings: serial: document esp32-uart bindings
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+To:     Conor Dooley <conor@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         devicetree@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -69,108 +70,33 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Sep 13, 2023 at 10:54=E2=80=AFPM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 13/09/2023 23:14, Max Filippov wrote:
-> > Add documentation for the ESP32xx UART controllers.
+On Thu, Sep 14, 2023 at 7:48=E2=80=AFAM Conor Dooley <conor@kernel.org> wro=
+te:
+> On Thu, Sep 14, 2023 at 07:55:35AM +0200, Krzysztof Kozlowski wrote:
+> > On 13/09/2023 23:14, Max Filippov wrote:
+> > > +description: |
+> > > +  ESP32 UART controller is a part of ESP32 SoC series.
 > >
-> > Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-> > ---
-> >  .../bindings/serial/esp,esp32-uart.yaml       | 48 +++++++++++++++++++
-> >  1 file changed, 48 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/serial/esp,esp32-=
-uart.yaml
+> > 1. Company name?
+> > 2. ESP32 SoC series suggests esp32 is a series.
 > >
-> > diff --git a/Documentation/devicetree/bindings/serial/esp,esp32-uart.ya=
-ml b/Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml
-> > new file mode 100644
-> > index 000000000000..8b45ef808107
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml
-> > @@ -0,0 +1,48 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> > +
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/serial/esp,esp32-uart.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: ESP32 UART controller
-> > +
-> > +maintainers:
-> > +  - Max Filippov <jcmvbkbc@gmail.com>
-> > +
-> > +description: |
+> > > +
+> > > +properties:
+> > > +  compatible:
+> > > +    oneOf:
+> > > +      - description: UART controller for the ESP32 SoC
+> > > +        const: esp,esp32-uart
+> >
+> > Also, the vendor prefix looks incorrect, so again - what is the company
+> > name?
 >
-> Do not need '|' unless you need to preserve formatting.
+> esp32 is made by expressif, which would match with "esp" as a vendor
+> prefix.
 
-Ok.
-
-> > +  ESP32 UART controller is a part of ESP32 SoC series.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    oneOf:
->
-> That's just enum. Your descriptions are useless - tell nothing - so drop
-> them.
-
-Ok.
-
-> > +      - description: UART controller for the ESP32 SoC
-> > +        const: esp,esp32-uart
->
-> Looks quite generic, so just to be sure? This is not a family name,
-> right? Neither family names nor wildcards are allowed.
-
-ESP32 is the official name of a specific SoC. More recent SoC models of
-that family are named ESP32-S2 and ESP32-S3, sometimes they are
-collectively referred to as the 'ESP32 series'. In this binding 'esp32' is =
-used
-for the ESP32 SoC and 'esp32s3' is used for the ESP32-S3.
-
-> > +      - description: UART controller for the ESP32S3 SoC
-> > +        const: esp,esp32s3-uart
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +  clocks:
-> > +    maxItems: 1
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - interrupts
-> > +  - clocks
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    serial0: serial@60000000 {
->
-> Drop unused label.
-
-Ok.
-
-> > +            compatible =3D "esp,esp32s3-uart";
->
-> Use 4 spaces for example indentation.
-
-Ok.
-
-> > +            reg =3D <0x60000000 0x80>;
-> > +            interrupts =3D <27 1 0>;
->
-> Use proper define for IRQ flags.
-
-These are not IRQ flags. 1 and 0 are the routing parts
-of the IRQ specification.
+It's 'Espressif', but otherwise yes, this is a registered vendor prefix. Se=
+e
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Doc=
+umentation/devicetree/bindings/vendor-prefixes.yaml?h=3Dv6.6-rc1#n443
 
 --=20
 Thanks.
