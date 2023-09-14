@@ -2,95 +2,126 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96C2BEEAA53
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 15:35:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0350CEEAA53
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 16:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241107AbjINPfe convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Sep 2023 11:35:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36032 "EHLO
+        id S234922AbjINQ0v (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Sep 2023 12:26:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241105AbjINPfd (ORCPT
+        with ESMTP id S234706AbjINQ0u (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Sep 2023 11:35:33 -0400
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F481FD0;
-        Thu, 14 Sep 2023 08:35:29 -0700 (PDT)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-59b5484fbe6so13317807b3.1;
-        Thu, 14 Sep 2023 08:35:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694705728; x=1695310528;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=IGn0RiHyZw2DSAr2CB814hl7hb457z9EUqLLi0M5sq4=;
-        b=D0i5QRQF4F5/JAruezsRJtPSF1Z8GxakPn0a9+MofSxgBrbe7aVduxE4u0FJB/k9F5
-         4rEIt2ICgYvxfcAA21SRuy67Jc3wdrCQFb0xWmE4dp/wMAmZg0WR1e+PvHrLea7MLFRc
-         2JsSmjmEwp6ZSh1E5LR35lf8SyGe5yrzuJYpUuT0Df/dQjYgLHkWaEidMsUPxDu2H9vn
-         qCcX1Dld9voDkR7L38/JX5XK6rBL+4pAeEyzh0qQEYhSNUd5dLzBJx3uvvDWYXv5vLMB
-         CNp2V8mGUHh3c1XZxYLjnhA9wh4kngJOeWhTJlw9rk6t3mCOYpXqHUkKJOT4UyJkaeUa
-         0eKA==
-X-Gm-Message-State: AOJu0YzSTGlc42QfBGjbozq960yKwcF8h/6hRCQlSeuOBueYTiLdBxJL
-        Xd4TeUHiJZrzokrTVnXE4g8QV2cfI5FyjQ==
-X-Google-Smtp-Source: AGHT+IH9URVAm+Kzolb63Se6nxQZFZvGSr3JDIiEG+FuOnIdxeJmgpGQh80V+nC8dF2Cz80HwINKWw==
-X-Received: by 2002:a0d:df07:0:b0:59b:fda7:9d7f with SMTP id i7-20020a0ddf07000000b0059bfda79d7fmr1146235ywe.49.1694705728220;
-        Thu, 14 Sep 2023 08:35:28 -0700 (PDT)
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com. [209.85.219.172])
-        by smtp.gmail.com with ESMTPSA id n124-20020a0dfd82000000b005925c896bc3sm377732ywf.53.2023.09.14.08.35.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Sep 2023 08:35:27 -0700 (PDT)
-Received: by mail-yb1-f172.google.com with SMTP id 3f1490d57ef6-d81b803b09aso237127276.2;
-        Thu, 14 Sep 2023 08:35:27 -0700 (PDT)
-X-Received: by 2002:a5b:ac2:0:b0:d0a:353b:b939 with SMTP id
- a2-20020a5b0ac2000000b00d0a353bb939mr5402450ybr.52.1694705727063; Thu, 14 Sep
- 2023 08:35:27 -0700 (PDT)
+        Thu, 14 Sep 2023 12:26:50 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 333631BE3
+        for <linux-serial@vger.kernel.org>; Thu, 14 Sep 2023 09:26:46 -0700 (PDT)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 828EB240004;
+        Thu, 14 Sep 2023 16:26:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1694708804;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=sGDxbo174giYxouY9sm9ZZi3efAvH8B+jOz7AvHVrWA=;
+        b=icQ8mmmTw1NV+l40uLCvmo89IvTPWGFGY+LZeAbyO+Ly0/pNiLgE5vTqMdbAQrZBSDGI4+
+        /ub/yH2seDCz0rmIieOf65jWlDB9+A9Pq2lOOOnw/Cq44r/HNavz4TqP3JCqIb4BFr18q4
+        O+pQFX4/xg/txirPHclNKIU2yuIx8QUmslQ9CruowtiMt0Q5qvtijt5RWlk+mLDAY14j3s
+        7lo34OrVDZP5rp3dvHVhmrixnxiIgOQMWELK0IfG5yqKYnwXi0euyXvuW5nt2QqJSRR83L
+        nm/VCe2QDOxdsEPyhsxBBPjgfNxKmuPft5G2UFaPmg5GGUsQAf7bp576HK2cZw==
+Message-ID: <8a856171-e743-737e-eb9d-42852e4e4f19@bootlin.com>
+Date:   Thu, 14 Sep 2023 18:26:44 +0200
 MIME-Version: 1.0
-References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com> <20230912045157.177966-32-claudiu.beznea.uj@bp.renesas.com>
-In-Reply-To: <20230912045157.177966-32-claudiu.beznea.uj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 14 Sep 2023 17:35:14 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXMXfqG9whhgTwS9Ut8ZBAoEYsGBx_WX-BPE02kGbiR_Q@mail.gmail.com>
-Message-ID: <CAMuHMdXMXfqG9whhgTwS9Ut8ZBAoEYsGBx_WX-BPE02kGbiR_Q@mail.gmail.com>
-Subject: Re: [PATCH 31/37] dt-bindings: mmc: renesas,sdhi: Document RZ/G3S support
-To:     Claudiu <claudiu.beznea@tuxon.dev>
-Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        ulf.hansson@linaro.org, linus.walleij@linaro.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
-        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
-        nfraprado@collabora.com, rafal@milecki.pl,
-        wsa+renesas@sang-engineering.com,
-        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+From:   Thomas Richard <thomas.richard@bootlin.com>
+Subject: Regression: serial: 8250_omap: error during suspend if
+ no_console_suspend is set
+To:     linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-GND-Sasl: thomas.richard@bootlin.com
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Sep 12, 2023 at 6:53 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
-> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->
-> Document support for the SD Card/MMC interface on the Renesas
-> RZ/G3S (R9A08G045) SoC.
->
-> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Hi
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+After switching to Linux 6.6-rc1, i met an issue during suspend to idle
+with 8250_omap driver (no_console_suspend is set).
+The driver fails to suspend the uart port used for the serial console so
+the suspend sequence is stopped.
 
-Gr{oetje,eeting}s,
+[  114.629197] port 2800000.serial:0.0: PM: calling
+pm_runtime_force_suspend+0x0/0x134 @ 114, parent: 2800000.serial:0
+[  114.639617] port 2800000.serial:0.0: PM:
+pm_runtime_force_suspend+0x0/0x134 returned 0 after 2 usecs
+[  114.648739] omap8250 2800000.serial: PM: calling
+omap8250_suspend+0x0/0xf4 @ 114, parent: bus@100000
+[  114.657861] omap8250 2800000.serial: PM: dpm_run_callback():
+omap8250_suspend+0x0/0xf4 returns -16
+[  114.666808] omap8250 2800000.serial: PM: omap8250_suspend+0x0/0xf4
+returned -16 after 8951 usecs
+[  114.675580] omap8250 2800000.serial: PM: failed to suspend: error -16
+[  114.682011] PM: suspend of devices aborted after 675.644 msecs
+[  114.687833] PM: start suspend of devices aborted after 681.777 msecs
+[  114.694175] PM: Some devices failed to suspend, or early wake event
+detected
 
-                        Geert
+The following sequence is used to suspend to idle:
+$ echo 1 > /sys/power/pm_debug_messages
+$ echo 1 > /sys/power/pm_print_times
+$ echo 8 > /proc/sys/kernel/printk
+$ echo 0 > /sys/module/printk/parameters/console_suspend
+$ echo enabled >
+/sys/devices/platform/bus@100000/2800000.serial/tty/ttyS2/power/wakeup
+$ echo s2idle > /sys/power/mem_sleep
+$ echo mem > /sys/power/state
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+The regression was introduced in commit 20a41a62618d "serial: 8250_omap:
+Use force_suspend and resume for system suspend"
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Before commit 20a41a62618d, omap8250_suspend returned 0.
+Now pm_runtime_force_suspend is called and its return code is used by
+omap8250_suspend.
+
+static int omap8250_suspend(struct device *dev)
+{
+	struct omap8250_priv *priv = dev_get_drvdata(dev);
+	struct uart_8250_port *up = serial8250_get_port(priv->line);
+	int err;
+
+	serial8250_suspend_port(priv->line);
+
+	err = pm_runtime_resume_and_get(dev);
+	if (err)
+		return err;
+	if (!device_may_wakeup(dev))
+		priv->wer = 0;
+	serial_out(up, UART_OMAP_WER, priv->wer);
+	err = pm_runtime_force_suspend(dev);
+	flush_work(&priv->qos_work);
+
+	return err;
+}
+
+The pm_runtime_force_suspend function calls omap8250_runtime_suspend
+which returns -EBUSY because console suspend was disabled (which is my
+case), as explained in the code.
+
+/*
+ * When using 'no_console_suspend', the console UART must not be
+ * suspended. Since driver suspend is managed by runtime suspend,
+ * preventing runtime suspend (by returning error) will keep device
+ * active during suspend.
+ */
+if (priv->is_suspending && !console_suspend_enabled) {
+	if (up && uart_console(&up->port))
+		return -EBUSY;
+}
+
+The port is used by the console, so we don't want to suspend it (console
+suspend was disabled).
+Of course, if console_suspend is enabled and messages are disabled there
+is no issue.
+
+Best Regards,
