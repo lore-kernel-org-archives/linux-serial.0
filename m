@@ -2,19 +2,19 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB799EEAA62
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 18:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D007AEEAA64
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 18:39:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241902AbjINSjU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Sep 2023 14:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37458 "EHLO
+        id S241722AbjINSjc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Sep 2023 14:39:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241785AbjINSi7 (ORCPT
+        with ESMTP id S241724AbjINSi7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 14 Sep 2023 14:38:59 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78948213D;
-        Thu, 14 Sep 2023 11:38:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E8532682;
+        Thu, 14 Sep 2023 11:38:54 -0700 (PDT)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020; t=1694716732;
@@ -22,31 +22,32 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=6sKB+PLTgb55D62jcsgEwGhi+y+KWY1sggt5DCPfvKw=;
-        b=CAomZRAW4ioAoHdhdXE1bVpyrGKaTnvn8Cq29md8PRBiDOnSBUbDSiMq137oB3HKlxwNEf
-        R8HRvdEP5f14bu6O2Rr5/iz88OJF6VlrhJOlwQLCKLxm86UMAktCYEZ7bMUdHclHpVcZRs
-        2Qnrpu4EipFdUOiXbQdiJazGtYSUbNtN5CSQwHRnnFwq+0v1r5Uzl1fkRNB9eQzve1ZQmf
-        0tt4KFBW2Cj6a+XeqF+AQvrQWlwjnwqsjvlq4BRWMB//MDfRrDUYKiQlfW9Xb9IFwQkyVb
-        qJZaZ3tQBAkXdIf3q2qdS75F933SGK3oPvdZexLcDwbHhA6yE8pDCVXMQAZIkg==
+        bh=9ljKUwev2UkcA8WCxS5wHB4jucft9QaueReQAnJLBgA=;
+        b=4LBDpTPLhp3Mhhl4pVyJop8/w8YO125vIGMHFDGAc829iCRLFSl6X0mnCu86Xp0DKlykZQ
+        MXfUoGbOklo8kZ7vno2kF6WSkEIFFIvGBTcq82frPQ1vcXYDd6OP7vg6a7cB6OoKGCAkfw
+        fKDP6Ajv8OLwdQ319atwJb34QtjDpof9v9S7t56NLpZyAZyZJnQuNrxE05l8/g1GJoesLm
+        lwGEKRQpPcSrqp5lU/Qczo2PqcPpFrhhih2JjfhMpnvo2acScgXq2FMPoFFKDsSCyfuCZw
+        ocpglMKMTGaf/tHVHULGAUC4UImI8D22JCJD7t3sASdeP7gHPu23CWH7OKLk0g==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020e; t=1694716732;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=6sKB+PLTgb55D62jcsgEwGhi+y+KWY1sggt5DCPfvKw=;
-        b=omvzL+BfuAFX72SI72UqLTsm+PZORhrEQrnn9HysvZwhKfsA5pjsOE1v/su7/IqFmFA67i
-        mfMeFlZPH2SMzoCA==
+        bh=9ljKUwev2UkcA8WCxS5wHB4jucft9QaueReQAnJLBgA=;
+        b=DU48W/75T7f5tMYhQEpupILmuQfJztsBNWC4FVQumidZDa1Kg7GZ2XZ8GARLh976Uuhd0Q
+        AFsq08hjfv2Li5Cg==
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
         Petr Mladek <pmladek@suse.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, Vladimir Zapolskiy <vz@mleia.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH tty v1 33/74] serial: lpc32xx_hs: Use port lock wrappers
-Date:   Thu, 14 Sep 2023 20:43:50 +0206
-Message-Id: <20230914183831.587273-34-john.ogness@linutronix.de>
+        linux-kernel@vger.kernel.org,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Richard GENOUD <richard.genoud@gmail.com>,
+        Thierry Reding <treding@nvidia.com>
+Subject: [PATCH tty v1 35/74] serial: mcf: Use port lock wrappers
+Date:   Thu, 14 Sep 2023 20:43:52 +0206
+Message-Id: <20230914183831.587273-36-john.ogness@linutronix.de>
 In-Reply-To: <20230914183831.587273-1-john.ogness@linutronix.de>
 References: <20230914183831.587273-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -83,121 +84,100 @@ Converted with coccinelle. No functional change.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- drivers/tty/serial/lpc32xx_hs.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ drivers/tty/serial/mcf.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_hs.c
-index b38fe4728c26..5149a947b7fe 100644
---- a/drivers/tty/serial/lpc32xx_hs.c
-+++ b/drivers/tty/serial/lpc32xx_hs.c
-@@ -140,15 +140,15 @@ static void lpc32xx_hsuart_console_write(struct console *co, const char *s,
- 	if (up->port.sysrq)
- 		locked = 0;
- 	else if (oops_in_progress)
--		locked = spin_trylock(&up->port.lock);
-+		locked = uart_port_trylock(&up->port);
+diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
+index 1666ce012e5e..91b15243f6c6 100644
+--- a/drivers/tty/serial/mcf.c
++++ b/drivers/tty/serial/mcf.c
+@@ -135,12 +135,12 @@ static void mcf_break_ctl(struct uart_port *port, int break_state)
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 	if (break_state == -1)
+ 		writeb(MCFUART_UCR_CMDBREAKSTART, port->membase + MCFUART_UCR);
  	else
--		spin_lock(&up->port.lock);
-+		uart_port_lock(&up->port);
- 
- 	uart_console_write(&up->port, s, count, lpc32xx_hsuart_console_putchar);
- 	wait_for_xmit_empty(&up->port);
- 
- 	if (locked)
--		spin_unlock(&up->port.lock);
-+		uart_port_unlock(&up->port);
- 	local_irq_restore(flags);
+ 		writeb(MCFUART_UCR_CMDBREAKSTOP, port->membase + MCFUART_UCR);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
  }
  
-@@ -298,7 +298,7 @@ static irqreturn_t serial_lpc32xx_interrupt(int irq, void *dev_id)
- 	struct tty_port *tport = &port->state->port;
- 	u32 status;
+ /****************************************************************************/
+@@ -150,7 +150,7 @@ static int mcf_startup(struct uart_port *port)
+ 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 
+ 	/* Reset UART, get it into known state... */
+ 	writeb(MCFUART_UCR_CMDRESETRX, port->membase + MCFUART_UCR);
+@@ -164,7 +164,7 @@ static int mcf_startup(struct uart_port *port)
+ 	pp->imr = MCFUART_UIR_RXREADY;
+ 	writeb(pp->imr, port->membase + MCFUART_UIMR);
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ 
+ 	return 0;
+ }
+@@ -176,7 +176,7 @@ static void mcf_shutdown(struct uart_port *port)
+ 	struct mcf_uart *pp = container_of(port, struct mcf_uart, port);
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 
+ 	/* Disable all interrupts now */
+ 	pp->imr = 0;
+@@ -186,7 +186,7 @@ static void mcf_shutdown(struct uart_port *port)
+ 	writeb(MCFUART_UCR_CMDRESETRX, port->membase + MCFUART_UCR);
+ 	writeb(MCFUART_UCR_CMDRESETTX, port->membase + MCFUART_UCR);
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ /****************************************************************************/
+@@ -252,7 +252,7 @@ static void mcf_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		mr2 |= MCFUART_MR2_TXCTS;
+ 	}
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 	if (port->rs485.flags & SER_RS485_ENABLED) {
+ 		dev_dbg(port->dev, "Setting UART to RS485\n");
+ 		mr2 |= MCFUART_MR2_TXRTS;
+@@ -273,7 +273,7 @@ static void mcf_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		port->membase + MCFUART_UCSR);
+ 	writeb(MCFUART_UCR_RXENABLE | MCFUART_UCR_TXENABLE,
+ 		port->membase + MCFUART_UCR);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ /****************************************************************************/
+@@ -350,7 +350,7 @@ static irqreturn_t mcf_interrupt(int irq, void *data)
+ 
+ 	isr = readb(port->membase + MCFUART_UISR) & pp->imr;
  
 -	spin_lock(&port->lock);
 +	uart_port_lock(port);
- 
- 	/* Read UART status and clear latched interrupts */
- 	status = readl(LPC32XX_HSUART_IIR(port->membase));
-@@ -333,7 +333,7 @@ static irqreturn_t serial_lpc32xx_interrupt(int irq, void *dev_id)
- 		__serial_lpc32xx_tx(port);
+ 	if (isr & MCFUART_UIR_RXREADY) {
+ 		mcf_rx_chars(pp);
+ 		ret = IRQ_HANDLED;
+@@ -359,7 +359,7 @@ static irqreturn_t mcf_interrupt(int irq, void *data)
+ 		mcf_tx_chars(pp);
+ 		ret = IRQ_HANDLED;
  	}
- 
 -	spin_unlock(&port->lock);
 +	uart_port_unlock(port);
  
- 	return IRQ_HANDLED;
+ 	return ret;
  }
-@@ -404,14 +404,14 @@ static void serial_lpc32xx_break_ctl(struct uart_port *port,
- 	unsigned long flags;
- 	u32 tmp;
- 
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 	tmp = readl(LPC32XX_HSUART_CTRL(port->membase));
- 	if (break_state != 0)
- 		tmp |= LPC32XX_HSU_BREAK;
- 	else
- 		tmp &= ~LPC32XX_HSU_BREAK;
- 	writel(tmp, LPC32XX_HSUART_CTRL(port->membase));
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(port, flags);
- }
- 
- /* port->lock is not held.  */
-@@ -421,7 +421,7 @@ static int serial_lpc32xx_startup(struct uart_port *port)
- 	unsigned long flags;
- 	u32 tmp;
- 
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 
- 	__serial_uart_flush(port);
- 
-@@ -441,7 +441,7 @@ static int serial_lpc32xx_startup(struct uart_port *port)
- 
- 	lpc32xx_loopback_set(port->mapbase, 0); /* get out of loopback mode */
- 
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(port, flags);
- 
- 	retval = request_irq(port->irq, serial_lpc32xx_interrupt,
- 			     0, MODNAME, port);
-@@ -458,7 +458,7 @@ static void serial_lpc32xx_shutdown(struct uart_port *port)
- 	u32 tmp;
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 
- 	tmp = LPC32XX_HSU_TX_TL8B | LPC32XX_HSU_RX_TL32B |
- 		LPC32XX_HSU_OFFSET(20) | LPC32XX_HSU_TMO_INACT_4B;
-@@ -466,7 +466,7 @@ static void serial_lpc32xx_shutdown(struct uart_port *port)
- 
- 	lpc32xx_loopback_set(port->mapbase, 1); /* go to loopback mode */
- 
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(port, flags);
- 
- 	free_irq(port->irq, port);
- }
-@@ -491,7 +491,7 @@ static void serial_lpc32xx_set_termios(struct uart_port *port,
- 
- 	quot = __serial_get_clock_div(port->uartclk, baud);
- 
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 
- 	/* Ignore characters? */
- 	tmp = readl(LPC32XX_HSUART_CTRL(port->membase));
-@@ -505,7 +505,7 @@ static void serial_lpc32xx_set_termios(struct uart_port *port,
- 
- 	uart_update_timeout(port, termios->c_cflag, baud);
- 
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(port, flags);
- 
- 	/* Don't rewrite B0 */
- 	if (tty_termios_baud_rate(termios))
 -- 
 2.39.2
 
