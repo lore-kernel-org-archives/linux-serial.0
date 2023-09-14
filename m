@@ -2,51 +2,51 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02FCDEEAA65
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 18:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0285FEEAA62
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Sep 2023 18:39:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241877AbjINSjJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Sep 2023 14:39:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37348 "EHLO
+        id S241891AbjINSjS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Sep 2023 14:39:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241778AbjINSi7 (ORCPT
+        with ESMTP id S241789AbjINSi7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 14 Sep 2023 14:38:59 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148E8213A;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D780D2109;
         Thu, 14 Sep 2023 11:38:53 -0700 (PDT)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1694716731;
+        s=2020; t=1694716732;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UlpF/H9lKMDrxmXTuNUKsAvkYnpqtMAZIidKoYfk2m8=;
-        b=OvnQvp6FrSEUwDayVfCSyaTaDBzuc0qDHdbES+H9OAPO6Ha87bRKvDnKy+aUS4pdZFLLmB
-        jDxwD/L3qDChRCkKs0q+jzzmJmJZiwqpSy8A1vQM9uRhSkNw2idhoRuvvgsJxrK+wZx4QG
-        XqxrNYbAK6u7sE1Tzcyz/LRQvnyD2tzuxG6rvJL6EQObHJpanuV55slsCsY84hl6Zyio/3
-        pQD3+PfXQ3qkNC9MvbiF4uH2PApwczoZNDT9+YaqQDJfAN6RMTd8Q0wfobK08utaA6SImc
-        QzGgZlJy1nebH8t5hloy88cBPuR+IEjxhUWo45LfVr3WtSj7eG3UDcwTb/G12w==
+        bh=B/YEVP6mWwFo6/xhfhUTWYtdghju7JIkgzq7NY/TOjo=;
+        b=0HDJH4mxjCm5HX8gWyLjpF6KeeBvYaaN9tDWvnW/Td7Yvq3ytL5x42DJcRx0Y3de7ueaod
+        87Eeu/kJ8jzEzJRQ8D3fpXGIz1xPrQr15ZVGFZxSgw/G/abw68XswubNUM/aSoimMwisDQ
+        HbCWUM9OSAFllmMopxC5SzBqN0E6R57WC0fmxKib3z76SMx1H/xp2r8P/HgmrI3aSsXyxe
+        Z1HCcW9uGLSaTMjd2ByXAb927zjGJDJFf4wrxXH6bTJ1l0+pJzrgKMw2aGVMqCJOOMqrfs
+        Y/oUqNG7RbkeE+tnFDQkunt8PJjYDAXBmGZTgEa+WKxrTnYRF84EmJLDGU26PA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1694716731;
+        s=2020e; t=1694716732;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UlpF/H9lKMDrxmXTuNUKsAvkYnpqtMAZIidKoYfk2m8=;
-        b=NkoS64+YSQlVmh/kcYnHAvKRouOJW5bYLm3LDjq5+uZbRS0+LZRledqxXPhj4J2guP/ZOw
-        dmliYWM9jDfA5hBA==
+        bh=B/YEVP6mWwFo6/xhfhUTWYtdghju7JIkgzq7NY/TOjo=;
+        b=THdCdqmkDOMQ6RV/8UcNabNFfW7AqzyKAXtxCI78QFQRSlvdfobIL3mXavhPEkaw7SKFQQ
+        Q0MfUPqE9lVT2wCg==
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
         Petr Mladek <pmladek@suse.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Gabriel Somlo <gsomlo@gmail.com>, Joel Stanley <joel@jms.id.au>
-Subject: [PATCH tty v1 32/74] serial: liteuart: Use port lock wrappers
-Date:   Thu, 14 Sep 2023 20:43:49 +0206
-Message-Id: <20230914183831.587273-33-john.ogness@linutronix.de>
+        linux-kernel@vger.kernel.org, Jacky Huang <ychuang3@nuvoton.com>,
+        Shan-Chun Hung <schung@nuvoton.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH tty v1 34/74] serial: ma35d1: Use port lock wrappers
+Date:   Thu, 14 Sep 2023 20:43:51 +0206
+Message-Id: <20230914183831.587273-35-john.ogness@linutronix.de>
 In-Reply-To: <20230914183831.587273-1-john.ogness@linutronix.de>
 References: <20230914183831.587273-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -83,82 +83,90 @@ Converted with coccinelle. No functional change.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- drivers/tty/serial/liteuart.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/tty/serial/ma35d1_serial.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-index d881cdd2a58f..a25ab1efe38f 100644
---- a/drivers/tty/serial/liteuart.c
-+++ b/drivers/tty/serial/liteuart.c
-@@ -139,13 +139,13 @@ static irqreturn_t liteuart_interrupt(int irq, void *data)
- 	 * if polling, the context would be "in_serving_softirq", so use
- 	 * irq[save|restore] spin_lock variants to cover all possibilities
+diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
+index 465b1def9e11..6fac924f7c12 100644
+--- a/drivers/tty/serial/ma35d1_serial.c
++++ b/drivers/tty/serial/ma35d1_serial.c
+@@ -269,16 +269,16 @@ static void receive_chars(struct uart_ma35d1_port *up)
+ 		if (uart_handle_sysrq_char(&up->port, ch))
+ 			continue;
+ 
+-		spin_lock(&up->port.lock);
++		uart_port_lock(&up->port);
+ 		uart_insert_char(&up->port, fsr, MA35_FSR_RX_OVER_IF, ch, flag);
+-		spin_unlock(&up->port.lock);
++		uart_port_unlock(&up->port);
+ 
+ 		fsr = serial_in(up, MA35_FSR_REG);
+ 	} while (!(fsr & MA35_FSR_RX_EMPTY) && (max_count-- > 0));
+ 
+-	spin_lock(&up->port.lock);
++	uart_port_lock(&up->port);
+ 	tty_flip_buffer_push(&up->port.state->port);
+-	spin_unlock(&up->port.lock);
++	uart_port_unlock(&up->port);
+ }
+ 
+ static irqreturn_t ma35d1serial_interrupt(int irq, void *dev_id)
+@@ -364,14 +364,14 @@ static void ma35d1serial_break_ctl(struct uart_port *port, int break_state)
+ 	unsigned long flags;
+ 	u32 lcr;
+ 
+-	spin_lock_irqsave(&up->port.lock, flags);
++	uart_port_lock_irqsave(&up->port, &flags);
+ 	lcr = serial_in(up, MA35_LCR_REG);
+ 	if (break_state != 0)
+ 		lcr |= MA35_LCR_BREAK;
+ 	else
+ 		lcr &= ~MA35_LCR_BREAK;
+ 	serial_out(up, MA35_LCR_REG, lcr);
+-	spin_unlock_irqrestore(&up->port.lock, flags);
++	uart_port_unlock_irqrestore(&up->port, flags);
+ }
+ 
+ static int ma35d1serial_startup(struct uart_port *port)
+@@ -441,7 +441,7 @@ static void ma35d1serial_set_termios(struct uart_port *port,
+ 	 * Ok, we're now changing the port state.  Do it with
+ 	 * interrupts disabled.
  	 */
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 	isr = litex_read8(port->membase + OFF_EV_PENDING) & uart->irq_reg;
- 	if (isr & EV_RX)
- 		liteuart_rx_chars(port);
- 	if (isr & EV_TX)
- 		liteuart_tx_chars(port);
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(port, flags);
+-	spin_lock_irqsave(&up->port.lock, flags);
++	uart_port_lock_irqsave(&up->port, &flags);
  
- 	return IRQ_RETVAL(isr);
- }
-@@ -195,10 +195,10 @@ static int liteuart_startup(struct uart_port *port)
- 		}
- 	}
+ 	up->port.read_status_mask = MA35_FSR_RX_OVER_IF;
+ 	if (termios->c_iflag & INPCK)
+@@ -475,7 +475,7 @@ static void ma35d1serial_set_termios(struct uart_port *port,
  
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 	/* only enabling rx irqs during startup */
- 	liteuart_update_irq_reg(port, true, EV_RX);
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(port, flags);
+ 	serial_out(up, MA35_LCR_REG, lcr);
  
- 	if (!port->irq) {
- 		timer_setup(&uart->timer, liteuart_timer, 0);
-@@ -213,9 +213,9 @@ static void liteuart_shutdown(struct uart_port *port)
- 	struct liteuart_port *uart = to_liteuart_port(port);
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 	liteuart_update_irq_reg(port, false, EV_RX | EV_TX);
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(port, flags);
- 
- 	if (port->irq)
- 		free_irq(port->irq, port);
-@@ -229,13 +229,13 @@ static void liteuart_set_termios(struct uart_port *port, struct ktermios *new,
- 	unsigned int baud;
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 
- 	/* update baudrate */
- 	baud = uart_get_baud_rate(port, new, old, 0, 460800);
- 	uart_update_timeout(port, new->c_cflag, baud);
- 
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(port, flags);
+-	spin_unlock_irqrestore(&up->port.lock, flags);
++	uart_port_unlock_irqrestore(&up->port, flags);
  }
  
- static const char *liteuart_type(struct uart_port *port)
-@@ -382,9 +382,9 @@ static void liteuart_console_write(struct console *co, const char *s,
- 	uart = (struct liteuart_port *)xa_load(&liteuart_array, co->index);
- 	port = &uart->port;
+ static const char *ma35d1serial_type(struct uart_port *port)
+@@ -560,9 +560,9 @@ static void ma35d1serial_console_write(struct console *co, const char *s, u32 co
+ 	if (up->port.sysrq)
+ 		locked = 0;
+ 	else if (oops_in_progress)
+-		locked = spin_trylock_irqsave(&up->port.lock, flags);
++		locked = uart_port_trylock_irqsave(&up->port, &flags);
+ 	else
+-		spin_lock_irqsave(&up->port.lock, flags);
++		uart_port_lock_irqsave(&up->port, &flags);
  
--	spin_lock_irqsave(&port->lock, flags);
-+	uart_port_lock_irqsave(port, &flags);
- 	uart_console_write(port, s, count, liteuart_putchar);
--	spin_unlock_irqrestore(&port->lock, flags);
-+	uart_port_unlock_irqrestore(port, flags);
+ 	/*
+ 	 *  First save the IER then disable the interrupts
+@@ -576,7 +576,7 @@ static void ma35d1serial_console_write(struct console *co, const char *s, u32 co
+ 	serial_out(up, MA35_IER_REG, ier);
+ 
+ 	if (locked)
+-		spin_unlock_irqrestore(&up->port.lock, flags);
++		uart_port_unlock_irqrestore(&up->port, flags);
  }
  
- static int liteuart_console_setup(struct console *co, char *options)
+ static int __init ma35d1serial_console_setup(struct console *co, char *options)
 -- 
 2.39.2
 
