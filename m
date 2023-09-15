@@ -2,113 +2,195 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D70EE644B
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 09:50:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F34EE644B
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 09:57:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232405AbjIOJug (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Sep 2023 05:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34576 "EHLO
+        id S233921AbjIOJ50 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 15 Sep 2023 05:57:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231307AbjIOJue (ORCPT
+        with ESMTP id S233892AbjIOJ5Z (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Sep 2023 05:50:34 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D5B03AB7;
-        Fri, 15 Sep 2023 02:49:05 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id d9443c01a7336-1c3d6d88231so16519175ad.0;
-        Fri, 15 Sep 2023 02:49:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1694771343; x=1695376143; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/TVQJoENhu00vx5rI/GikJKd4kuvFkeP8vi3vVfEcfo=;
-        b=aym6NrPvVQ8Sm+0tt8v2wWjHOuxq34mWO/MH9zvIWrBmb43xTjfjMe+DriZsj2t1Eo
-         5e93AmlnOQu5OAWuWDAYS/TQvKJmMp6U5+fc57LUgWk+uV8xILolSnPg6Zkt0CFfGFCa
-         VnIRe1G3xEiniJueRFvXZq4XZ90dWbQNjeGfRLEt13EPTtzaVEmnr41gzj3sIyIDiQgU
-         mfLDJzFUMvKOjzaHzdQMQhItpRo4w035ajIE0Rn5UCrVZfB+8LcnXbgfDBBVJOYFyeZt
-         3XFcDZNKTCC4H5fFR3O/szUhBeiGWY/zBcqvd3PeTVgQ6Ks64+XpFWNfkbK/N7FSMZag
-         ObCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694771343; x=1695376143;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/TVQJoENhu00vx5rI/GikJKd4kuvFkeP8vi3vVfEcfo=;
-        b=C8R1VSEJVAzKEWwk50aw8F0gGxmGkpg94JEgYK24GEOFrOriRnTXBHtEQVvqmZ3Nox
-         pb5eCWj8fTL3Ek595KlPzxGx5hAzxowtf3tWtMQjgG0VhpVPBVPOmtRfWBy9QRw8J7DI
-         d4Jq+nRvoF8o8nNOQK/W5909w2Lp1Tzc4D6TsGQghFY/U7bFvq0OASCkwAyGxMSZYGFr
-         ULSlPc+qwtUa610A58R0SL87UPAtH0unkm3EkBakl/GcHOojxqf4EAm4qWeFFZkwSRuY
-         RDM+uKBGkY3Ae5jbZpnkCkJQsLFxXlMp3XcWsrF5mVXWvoxRgY6H/Gzh1XqBNG9XqtUf
-         tlAw==
-X-Gm-Message-State: AOJu0Yyw8oYmSjjY4FjBe4kCnXDyUvWPtXis66ep6I7lA0BYE+e5RAGt
-        JjBlhV3f+ckMqnW7rWRkddE=
-X-Google-Smtp-Source: AGHT+IFKZZ7G1kbjDLssD1PYTqUJNDMyGB0g5aLVlwvvAL1wsMt77xEH5dArwfKSWKapUwbINpHEvg==
-X-Received: by 2002:a17:902:e9d5:b0:1c1:f1db:e86d with SMTP id 21-20020a170902e9d500b001c1f1dbe86dmr880494plk.7.1694771343330;
-        Fri, 15 Sep 2023 02:49:03 -0700 (PDT)
-Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id 12-20020a170902c20c00b001b8c6662094sm3062686pll.188.2023.09.15.02.49.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Sep 2023 02:49:02 -0700 (PDT)
-Message-ID: <d4e74e31-246c-1f8c-1465-b0bb6ce8454c@gmail.com>
-Date:   Fri, 15 Sep 2023 17:49:00 +0800
+        Fri, 15 Sep 2023 05:57:25 -0400
+Received: from relay3-d.mail.gandi.net (unknown [217.70.183.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79363423A;
+        Fri, 15 Sep 2023 02:57:14 -0700 (PDT)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id EDC9160004;
+        Fri, 15 Sep 2023 09:56:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1694771818;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=x/c0tr3y404HpIQ/faRgXc639mkiuFGrv3IpU9W/CSE=;
+        b=iRV3V4CvBR3mxz9HD0D7p6CSm42QI2ruaLqCBKhjLiWPnu42740I6OM0oEhCIfs6q2N4ji
+        u4prMkgY3R8XsmboEBO+w1y7zm25xfN0NSfkaPDpcb/8Z11hjc88cCtBUanKM0NFrvNBN/
+        NhnOaIyR53itexnJ6xpxBjjIe+L7C16IdOfMUFFrTVPilCZh+auhOL6kvwVC7TTkQxynfr
+        JIj2EyzOcfrIaCKDaEdV+eDlM8MS412j2SaVxba+0GEOPvMaZdI945SxOh8Ky0841viUYh
+        lddn/nYs05kWuBfENb+ExN6IrhiKvtNDhhg3Lz8TA71fXmwAtFFL2F+6XwP5Yg==
+Message-ID: <59b13c93-6637-3050-c145-31be0d6c12c9@bootlin.com>
+Date:   Fri, 15 Sep 2023 11:56:57 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH] tty: serial: ma35d1_serial: Add missing check for ioremap
-To:     Chen Ni <nichen@iscas.ac.cn>, ychuang3@nuvoton.com,
-        schung@nuvoton.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-References: <20230915071106.3347-1-nichen@iscas.ac.cn>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
 Content-Language: en-US
-From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <20230915071106.3347-1-nichen@iscas.ac.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+From:   Thomas Richard <thomas.richard@bootlin.com>
+Subject: serial: 8250_omap: suspend issue with console_suspend disabled
+To:     linux-pm@vger.kernel.org, linux-serial@vger.kernel.org,
+        tony@atomide.com
+Cc:     Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Kumar Udit <u-kumar1@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-GND-Sasl: thomas.richard@bootlin.com
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi,
 
+I already sent a mail related to this topic to the linux-serial mailing
+list
+(https://lore.kernel.org/linux-serial/8a856171-e743-737e-eb9d-42852e4e4f19@bootlin.com)
+But as I also noticed a power management issue, i create a new thread
+including more people and more details.
 
-On 2023/9/15 下午 03:11, Chen Ni wrote:
-> CAUTION - External Email: Do not click links or open attachments unless you acknowledge the sender and content.
->
->
-> Add check for ioremap() and return the error if it fails in order to
-> guarantee the success of ioremap().
->
-> Fixes: 930cbf92db01 ("tty: serial: Add Nuvoton ma35d1 serial driver support")
-> Signed-off-by: Chen Ni <nichen@iscas.ac.cn>
-> ---
->   drivers/tty/serial/ma35d1_serial.c | 3 +++
->   1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
-> index 465b1def9e11..4a9d1252de35 100644
-> --- a/drivers/tty/serial/ma35d1_serial.c
-> +++ b/drivers/tty/serial/ma35d1_serial.c
-> @@ -695,6 +695,9 @@ static int ma35d1serial_probe(struct platform_device *pdev)
->
->          up->port.iobase = res_mem->start;
->          up->port.membase = ioremap(up->port.iobase, MA35_UART_REG_SIZE);
-> +       if (!up->port.membase)
-> +               return -ENOMEM;
-> +
->          up->port.ops = &ma35d1serial_ops;
->
->          spin_lock_init(&up->port.lock);
-> --
-> 2.25.1
->
+After switching to Linux 6.6-rc1, I met an issue during suspend to idle
+with 8250_omap driver (no_console_suspend is set).
+It is also valid for suspend to ram.
+The driver fails to suspend the uart port used for the serial console so
+the suspend sequence is stopped.
 
-Thank you for this update.
+My target is the K3 J7200 SoC.
 
-Acked-by: Jacky Huang <ychuang3@nuvoton.com>
+[  114.629197] port 2800000.serial:0.0: PM: calling
+pm_runtime_force_suspend+0x0/0x134 @ 114, parent: 2800000.serial:0
+[  114.639617] port 2800000.serial:0.0: PM:
+pm_runtime_force_suspend+0x0/0x134 returned 0 after 2 usecs
+[  114.648739] omap8250 2800000.serial: PM: calling
+omap8250_suspend+0x0/0xf4 @ 114, parent: bus@100000
+[  114.657861] omap8250 2800000.serial: PM: dpm_run_callback():
+omap8250_suspend+0x0/0xf4 returns -16
+[  114.666808] omap8250 2800000.serial: PM: omap8250_suspend+0x0/0xf4
+returned -16 after 8951 usecs
+[  114.675580] omap8250 2800000.serial: PM: failed to suspend: error -16
+[  114.682011] PM: suspend of devices aborted after 675.644 msecs
+[  114.687833] PM: start suspend of devices aborted after 681.777 msecs
+[  114.694175] PM: Some devices failed to suspend, or early wake event
+detected
 
+The following sequence is used to suspend to idle:
+$ echo 1 > /sys/power/pm_debug_messages
+$ echo 1 > /sys/power/pm_print_times
+$ echo 8 > /proc/sys/kernel/printk
+$ echo 0 > /sys/module/printk/parameters/console_suspend
+$ echo enabled >
+/sys/devices/platform/bus@100000/2800000.serial/tty/ttyS2/power/wakeup
+$ echo s2idle > /sys/power/mem_sleep
+$ echo mem > /sys/power/state
+
+The regression was introduced in commit 20a41a62618d "serial: 8250_omap:
+Use force_suspend and resume for system suspend"
+
+Before commit 20a41a62618d, omap8250_suspend returned 0.
+Now pm_runtime_force_suspend is called and its return code is used by
+omap8250_suspend.
+
+static int omap8250_suspend(struct device *dev)
+{
+	struct omap8250_priv *priv = dev_get_drvdata(dev);
+	struct uart_8250_port *up = serial8250_get_port(priv->line);
+	int err;
+
+	serial8250_suspend_port(priv->line);
+
+	err = pm_runtime_resume_and_get(dev);
+	if (err)
+		return err;
+	if (!device_may_wakeup(dev))
+		priv->wer = 0;
+	serial_out(up, UART_OMAP_WER, priv->wer);
+	err = pm_runtime_force_suspend(dev);
+	flush_work(&priv->qos_work);
+
+	return err;
+}
+
+The pm_runtime_force_suspend function calls omap8250_runtime_suspend
+which returns -EBUSY because console suspend was disabled (which is my
+case), as explained in the code.
+
+/*
+ * When using 'no_console_suspend', the console UART must not be
+ * suspended. Since driver suspend is managed by runtime suspend,
+ * preventing runtime suspend (by returning error) will keep device
+ * active during suspend.
+ */
+if (priv->is_suspending && !console_suspend_enabled) {
+	if (up && uart_console(&up->port))
+		return -EBUSY;
+}
+
+The port is used by the console, so we don't want to suspend it (console
+suspend was disabled).
+Of course, if console_suspend is enabled and messages are disabled there
+is no issue.
+For now my workaround is to always return 0 in omap8250_suspend.
+
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1630,7 +1630,7 @@ static int omap8250_suspend(struct device *dev)
+        err = pm_runtime_force_suspend(dev);
+        flush_work(&priv->qos_work);
+
+-       return err;
++       return 0;
+ }
+
+Once the omap8250_suspend doesn't return an error, the suspend sequence
+can continue, but I get an other issue.
+This issue is not related to commit 20a41a62618d, it has already been
+present.
+The power domain of the console is powered-off, so no more messages are
+printed, and the SoC is stucked.
+As the uart port is used as console, we don't want to power-off it.
+My workaround is to set the corresponding power domain to
+GENPD_FLAG_ALWAYS_ON, so the uart port is not powered-off.
+
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -27,6 +27,7 @@
+ #include <linux/pm_wakeirq.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/sys_soc.h>
++#include <linux/pm_domain.h>
+
+ #include "8250.h"
+
+@@ -1714,6 +1715,7 @@ static int omap8250_runtime_suspend(struct device
+*dev)
+ {
+        struct omap8250_priv *priv = dev_get_drvdata(dev);
+        struct uart_8250_port *up = NULL;
++       struct generic_pm_domain *pd = pd_to_genpd(dev->pm_domain);
+
+        if (priv->line >= 0)
+                up = serial8250_get_port(priv->line);
+@@ -1724,8 +1726,10 @@ static int omap8250_runtime_suspend(struct device
+*dev)
+         * active during suspend.
+         */
+        if (priv->is_suspending && !console_suspend_enabled) {
+-               if (up && uart_console(&up->port))
++               if (up && uart_console(&up->port)) {
++                       pd->flags |= GENPD_FLAG_ALWAYS_ON;
+                        return -EBUSY;
++               }
+        }
+
+        if (priv->habit & UART_ERRATA_CLOCK_DISABLE) {
+
+For these two issues, I have workarounds but I don't know how to fix
+them correctly.
 
 Best Regards,
-Jacky
-
