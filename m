@@ -2,398 +2,386 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD3F8EE6447
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 09:07:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8979EE6447
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 09:13:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232929AbjIOJHH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Sep 2023 05:07:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50776 "EHLO
+        id S233365AbjIOJNo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 15 Sep 2023 05:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233106AbjIOJHG (ORCPT
+        with ESMTP id S232435AbjIOJNn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Sep 2023 05:07:06 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 707573A9E;
-        Fri, 15 Sep 2023 02:04:26 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id d2e1a72fcca58-68fe2470d81so1716312b3a.1;
-        Fri, 15 Sep 2023 02:04:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1694768664; x=1695373464; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=J5/obQmqPFY2GGzKy7p4n7Yxa+vweWi94m1kGN29mNs=;
-        b=dMCbyBrQd+7EH6JgSspG2c0V4c2hq36iJKhNoCkIz6RaMuoevrl1WKaPzVjdD78+n+
-         V57faPiFi1uOnI3m4aZSId7t6+kRVL6X6YIDY8TrYTLdwrdX4dLrJb/4PhOnc+dUSlXj
-         HQrTtWFemdxZ6seC96bzVYVuyRj/4LQtlVU9hlgFzpjD2sYQ34pknq5smmWG211MsecX
-         YYTSQpyv/D5NjQWRsyLCshCxwqWoGYQyaoC9lycsKpBVm87SHCK59cHwtlUXe1K306do
-         3jNkXGpQDa2OldYrjv6+1rr4TGMPta3l4XYzDS7WR+WcWjW9YERt/Hnay5ryyWdu6NFc
-         c+BQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694768664; x=1695373464;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=J5/obQmqPFY2GGzKy7p4n7Yxa+vweWi94m1kGN29mNs=;
-        b=S8lT6k/yEeO3sp6CcnQAlYyaQJA6dICM44uIp8wclzuFT0zd2C8S7NSG96hXgjg1Cl
-         7P5immuA9zeVwjppjl3q0salINJh/pB1r8gqpYxrNnfdmePuABc5GRSSKy223VoepnQR
-         dKufhJcNGCCigQ1HRy3Erf3nzkkJbbasjo0Qk6LO/7PNpo0PV4eypoP3LfhkSZTw2gKh
-         E/q7HEOastiuBdg3Xr2DKPxvvLzPMGj29a9ue4xvqtS7kv79fOr0DwVzhy9iexK9+HQ4
-         pWHQ+ppMQEwV04lZFOi1fOGgr0afpdtqj8oxsn2OSQtpNlKAB7ma/GMvgYuU2t4/x4fm
-         9xrA==
-X-Gm-Message-State: AOJu0YwlWGEd1d2vOMB30NunbUDKCymJWiorD1yXFY3qo+NKPdUgPCe0
-        0SPKTDEACvdW85YIQ15dSjEfxr937vmsvLOL1aHZ89qB
-X-Google-Smtp-Source: AGHT+IFzdDan/HyRuTkkiAkrgQftMNbg8JnxqytfRFcnDFy/1wDVyAYO4m97OSYaZ5icf8WQYZ9Rx/ove49q9Si4xLM=
-X-Received: by 2002:a05:6300:8088:b0:152:238a:f05b with SMTP id
- ap8-20020a056300808800b00152238af05bmr1159793pzc.53.1694768664011; Fri, 15
- Sep 2023 02:04:24 -0700 (PDT)
+        Fri, 15 Sep 2023 05:13:43 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB2C9B;
+        Fri, 15 Sep 2023 02:13:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1694769217; x=1726305217;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=mry5V7nr5xa9zDtsfeoNxabJToApg0Wq8K46aPBD860=;
+  b=V2pjMmUmlYkPNIfWaZ7P7Xgpcf1/la4MerFUNF4m67OJJd5wf/zRaq6J
+   p3W0BGWKYvQyx2M/D/q85HYtMM9UZuNdxIoBH673M3UKPMSQsLj9wUTd6
+   gZainNOVcnlWBAkoOjiiBUvno2OQvoVufeIpd+AsyVIUKXLcZn2q4yEl/
+   0A0USDrbxJ0Sd6c/OBQ9gzmZ2R9JUK/8GQc6Qel6qhICkNyUFuLVWyzp1
+   GKUmALuF2/q7avrDLEOm8Iz3tbqcbiqAzheOc/NFG3JSooP1yZiVnc51u
+   9QyeqFa8GvcLZRNRgAcbAdqx1npEDkg1LRHSYeBEZ1SHANoC8PbRUpZQc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10833"; a="378120590"
+X-IronPort-AV: E=Sophos;i="6.02,148,1688454000"; 
+   d="scan'208";a="378120590"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2023 02:13:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10833"; a="918589081"
+X-IronPort-AV: E=Sophos;i="6.02,148,1688454000"; 
+   d="scan'208";a="918589081"
+Received: from srdoo-mobl1.ger.corp.intel.com ([10.252.38.99])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2023 02:13:03 -0700
+Date:   Fri, 15 Sep 2023 12:12:58 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     John Ogness <john.ogness@linutronix.de>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Thierry Reding <treding@nvidia.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, Al Cooper <alcooperx@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Davis <afd@ti.com>,
+        Matthew Howell <matthew.howell@sealevel.com>,
+        =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Johan Hovold <johan@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        linux-mediatek@lists.infradead.org, Lukas Wunner <lukas@wunner.de>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Hongyu Xie <xiehongyu1@kylinos.cn>,
+        Jiamei Xie <jiamei.xie@arm.com>, Rob Herring <robh@kernel.org>,
+        delisun <delisun@pateo.com.cn>,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+        Yangtao Li <frank.li@vivo.com>,
+        Vineet Gupta <vgupta@kernel.org>,
+        linux-snps-arc@lists.infradead.org,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Sherry Sun <sherry.sun@nxp.com>,
+        Shenwei Wang <shenwei.wang@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Sergey Organov <sorganov@gmail.com>, Tom Rix <trix@redhat.com>,
+        Marek Vasut <marex@denx.de>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Jacky Huang <ychuang3@nuvoton.com>,
+        Shan-Chun Hung <schung@nuvoton.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Dmitry Rokosov <ddrokosov@sberdevices.ru>,
+        Lucas Tanure <tanure@linux.com>,
+        linux-amlogic@lists.infradead.org,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Takao Orito <orito.takao@socionext.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        linux-arm-msm@vger.kernel.org,
+        =?ISO-8859-15?Q?Pali_Roh=E1r?= <pali@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?ISO-8859-15?Q?Andreas_F=E4rber?= <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        linux-actions@lists.infradead.org,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        Yuan Can <yuancan@huawei.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-unisoc@lists.infradead.org,
+        Kevin Cernekee <cernekee@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-samsung-soc@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Lech Perczak <lech.perczak@camlingroup.com>,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Isaac True <isaac.true@canonical.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        linux-tegra@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Nick Hu <nick.hu@sifive.com>,
+        Ruan Jinjie <ruanjinjie@huawei.com>,
+        Samuel Holland <samuel.holland@sifive.com>,
+        linux-riscv@lists.infradead.org, Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        "David S. Miller" <davem@davemloft.net>,
+        sparclinux@vger.kernel.org, Hammer Hsieh <hammerh0314@gmail.com>,
+        Peter Korsgaard <jacmet@sunsite.dk>,
+        Timur Tabi <timur@kernel.org>,
+        Mukesh Ojha <quic_mojha@quicinc.com>,
+        =?ISO-8859-15?Q?Jonathan_Neusch=E4fer?= <j.neuschaefer@gmx.net>,
+        Michal Simek <michal.simek@amd.com>
+Subject: Re: [PATCH tty v1 00/74] serial: wrappers for uart port lock
+In-Reply-To: <20230914183831.587273-1-john.ogness@linutronix.de>
+Message-ID: <1446dc6-5ab0-629-45c8-3b7d8c76367d@linux.intel.com>
+References: <20230914183831.587273-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
-References: <20230913211449.668796-1-jcmvbkbc@gmail.com> <20230913211449.668796-3-jcmvbkbc@gmail.com>
- <ac6d6641-7de3-423e-9164-fcd249d782fc@kernel.org>
-In-Reply-To: <ac6d6641-7de3-423e-9164-fcd249d782fc@kernel.org>
-From:   Max Filippov <jcmvbkbc@gmail.com>
-Date:   Fri, 15 Sep 2023 02:04:12 -0700
-Message-ID: <CAMo8Bf+0VPh5puXT7JAOtXNZntb2Ty4m7g=KLaQDEeH9pcA8Hg@mail.gmail.com>
-Subject: Re: [PATCH 2/4] drivers/tty/serial: add driver for the ESP32 UART
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Sep 14, 2023 at 12:06=E2=80=AFAM Jiri Slaby <jirislaby@kernel.org> =
-wrote:
->
-> On 13. 09. 23, 23:14, Max Filippov wrote:
-> > Add driver for the UART controllers of the Espressif ESP32 and ESP32S3
-> > SoCs. Hardware specification is available at the following URLs:
-> >
-> >    https://www.espressif.com/sites/default/files/documentation/esp32_te=
-chnical_reference_manual_en.pdf
-> >    (Chapter 13 UART Controller)
-> >    https://www.espressif.com/sites/default/files/documentation/esp32-s3=
-_technical_reference_manual_en.pdf
-> >    (Chapter 26 UART Controller)
-> >
-> > Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-> > ---
-> ...
-> > +#define UART_FIFO_REG                        0x00
-> > +#define UART_INT_RAW_REG             0x04
-> > +#define UART_INT_ST_REG                      0x08
-> > +#define UART_INT_ENA_REG             0x0c
-> > +#define UART_INT_CLR_REG             0x10
-> > +#define UART_RXFIFO_FULL_INT_MASK            0x00000001
-> > +#define UART_TXFIFO_EMPTY_INT_MASK           0x00000002
-> > +#define UART_BRK_DET_INT_MASK                        0x00000080
-> > +#define UART_CLKDIV_REG                      0x14
-> > +#define ESP32_UART_CLKDIV_MASK                       0x000fffff
-> > +#define ESP32S3_UART_CLKDIV_MASK             0x00000fff
-> > +#define UART_CLKDIV_SHIFT                    0
-> > +#define UART_CLKDIV_FRAG_MASK                        0x00f00000
-> > +#define UART_CLKDIV_FRAG_SHIFT                       20
-> > +#define UART_STATUS_REG                      0x1c
-> > +#define ESP32_UART_RXFIFO_CNT_MASK           0x000000ff
-> > +#define ESP32S3_UART_RXFIFO_CNT_MASK         0x000003ff
->
-> Can you use GENMASK() for all these?
+On Thu, 14 Sep 2023, John Ogness wrote:
 
-Ok.
+> When a serial port is used for kernel console output, then all
+> modifications to the UART registers which are done from other contexts,
+> e.g. getty, termios, are interference points for the kernel console.
+> 
+> So far this has been ignored and the printk output is based on the
+> principle of hope. The rework of the console infrastructure which aims to
+> support threaded and atomic consoles, requires to mark sections which
+> modify the UART registers as unsafe. This allows the atomic write function
+> to make informed decisions and eventually to restore operational state. It
+> also allows to prevent the regular UART code from modifying UART registers
+> while printk output is in progress.
 
-> > +#define UART_RXFIFO_CNT_SHIFT                        0
-> > +#define UART_DSRN_MASK                               0x00002000
-> > +#define UART_CTSN_MASK                               0x00004000
-> > +#define ESP32_UART_TXFIFO_CNT_MASK           0x00ff0000
-> > +#define ESP32S3_UART_TXFIFO_CNT_MASK         0x03ff0000
-> > +#define UART_TXFIFO_CNT_SHIFT                        16
-> > +#define UART_ST_UTX_OUT_MASK                 0x0f000000
-> > +#define UART_ST_UTX_OUT_IDLE                 0x00000000
-> > +#define UART_ST_UTX_OUT_SHIFT                        24
-> > +#define UART_CONF0_REG                       0x20
-> > +#define UART_PARITY_MASK                     0x00000001
-> > +#define UART_PARITY_EN_MASK                  0x00000002
-> > +#define UART_BIT_NUM_MASK                    0x0000000c
-> > +#define UART_BIT_NUM_5                               0x00000000
-> > +#define UART_BIT_NUM_6                               0x00000004
-> > +#define UART_BIT_NUM_7                               0x00000008
-> > +#define UART_BIT_NUM_8                               0x0000000c
-> > +#define UART_STOP_BIT_NUM_MASK                       0x00000030
-> > +#define UART_STOP_BIT_NUM_1                  0x00000010
-> > +#define UART_STOP_BIT_NUM_2                  0x00000030
-> > +#define UART_SW_RTS_MASK                     0x00000040
-> > +#define UART_SW_DTR_MASK                     0x00000080
-> > +#define UART_LOOPBACK_MASK                   0x00004000
-> > +#define UART_TX_FLOW_EN_MASK                 0x00008000
-> > +#define UART_RTS_INV_MASK                    0x00800000
-> > +#define UART_DTR_INV_MASK                    0x01000000
-> > +#define ESP32_UART_TICK_REF_ALWAYS_ON_MASK   0x08000000
-> > +#define ESP32S3_UART_TICK_REF_ALWAYS_ON_MASK 0x00000000
-> > +#define UART_CONF1_REG                       0x24
-> > +#define ESP32_UART_RXFIFO_FULL_THRHD_MASK    0x0000007f
-> > +#define ESP32S3_UART_RXFIFO_FULL_THRHD_MASK  0x000003ff
-> > +#define UART_RXFIFO_FULL_THRHD_SHIFT         0
-> > +#define ESP32_UART_TXFIFO_EMPTY_THRHD_MASK   0x00007f00
-> > +#define ESP32S3_UART_TXFIFO_EMPTY_THRHD_MASK 0x000ffc00
-> > +#define ESP32_UART_TXFIFO_EMPTY_THRHD_SHIFT  8
-> > +#define ESP32S3_UART_TXFIFO_EMPTY_THRHD_SHIFT        10
-> > +#define ESP32_UART_RX_FLOW_EN_MASK           0x00800000
-> > +#define ESP32S3_UART_RX_FLOW_EN_MASK         0x00400000
-> ...
->
-> > +static void esp32_uart_put_char_sync(struct uart_port *port, unsigned =
-char c)
->
-> u8 for characters everywhere, please.
+Hi John,
 
-Ok, but I guess not everywhere? E.g. uart_ops::poll_put_char has
-'unsigned char' in the definition, it seems better to keep implementation
-in sync.
+Would this also be useful to enable printing to console while under port's 
+lock (by postponing the output until the lock is released)?
 
-> > +{
-> > +     while (esp32_uart_tx_fifo_cnt(port) >=3D ESP32_UART_TX_FIFO_SIZE)
-> > +             cpu_relax();
->
-> No timeout? There should be one.
+E.g., 8250_dw.c has had this commented out since the dawn on time:
+        /*
+         * FIXME: this deadlocks if port->lock is already held
+         * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
+         */
 
-Ok.
+-- 
+ i.
 
-> > +     esp32_uart_put_char(port, c);
-> > +}
-> > +
-> > +static void esp32_uart_transmit_buffer(struct uart_port *port)
-> > +{
-> > +     struct circ_buf *xmit =3D &port->state->xmit;
-> > +     u32 tx_fifo_used =3D esp32_uart_tx_fifo_cnt(port);
-> > +
-> > +     while (!uart_circ_empty(xmit) && tx_fifo_used < ESP32_UART_TX_FIF=
-O_SIZE) {
-> > +             esp32_uart_put_char(port, xmit->buf[xmit->tail]);
-> > +             xmit->tail =3D (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-> > +             port->icount.tx++;
-> > +             ++tx_fifo_used;
-> > +     }
->
-> Why not using uart_port_tx_limited()?
 
-Ok.
-
-> > +     if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-> > +             uart_write_wakeup(port);
-> > +
-> > +     if (uart_circ_empty(xmit)) {
-> > +             esp32_uart_stop_tx(port);
-> > +     } else {
-> > +             u32 int_ena;
-> > +
-> > +             int_ena =3D esp32_uart_read(port, UART_INT_ENA_REG);
-> > +             esp32_uart_write(port, UART_INT_ENA_REG,
-> > +                              int_ena | UART_TXFIFO_EMPTY_INT_MASK);
-> > +     }
-> > +}
-> > +
-> > +static void esp32_uart_txint(struct uart_port *port)
-> > +{
-> > +     esp32_uart_transmit_buffer(port);
-> > +}
-> > +
-> > +static irqreturn_t esp32_uart_int(int irq, void *dev_id)
-> > +{
-> > +     struct uart_port *port =3D dev_id;
-> > +     u32 status;
-> > +
-> > +     status =3D esp32_uart_read(port, UART_INT_ST_REG);
-> > +
-> > +     if (status & (UART_RXFIFO_FULL_INT_MASK | UART_BRK_DET_INT_MASK))
-> > +             esp32_uart_rxint(port);
-> > +     if (status & UART_TXFIFO_EMPTY_INT_MASK)
-> > +             esp32_uart_txint(port);
-> > +
-> > +     esp32_uart_write(port, UART_INT_CLR_REG, status);
-> > +     return IRQ_HANDLED;
->
-> This should be IRQ_RETVAL(status) or similar. To let the system disable
-> the irq in case the HW gets crazy.
-
-Ok.
-
-> > +static void esp32_uart_start_tx(struct uart_port *port)
-> > +{
-> > +     esp32_uart_transmit_buffer(port);
-> > +}
-> > +
-> > +static void esp32_uart_stop_rx(struct uart_port *port)
-> > +{
-> > +     u32 int_ena;
-> > +
-> > +     int_ena =3D esp32_uart_read(port, UART_INT_ENA_REG);
-> > +     esp32_uart_write(port, UART_INT_ENA_REG,
-> > +                      int_ena & ~UART_RXFIFO_FULL_INT_MASK);
-> > +}
-> > +
-> > +static int esp32_uart_startup(struct uart_port *port)
-> > +{
-> > +     int ret =3D 0;
-> > +     unsigned long flags;
-> > +     struct esp32_port *sport =3D container_of(port, struct esp32_port=
-, port);
-> > +
-> > +     ret =3D clk_prepare_enable(sport->clk);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> > +     spin_lock_irqsave(&port->lock, flags);
-> > +     esp32_uart_write(port, UART_CONF1_REG,
-> > +                      (1 << UART_RXFIFO_FULL_THRHD_SHIFT) |
-> > +                      (1 << port_variant(port)->txfifo_empty_thrhd_shi=
-ft));
-> > +     esp32_uart_write(port, UART_INT_CLR_REG,
-> > +                      UART_RXFIFO_FULL_INT_MASK |
-> > +                      UART_BRK_DET_INT_MASK);
-> > +     esp32_uart_write(port, UART_INT_ENA_REG,
-> > +                      UART_RXFIFO_FULL_INT_MASK |
-> > +                      UART_BRK_DET_INT_MASK);
-> > +     spin_unlock_irqrestore(&port->lock, flags);
->
-> So interrupts can be coming now, but you don't handle them yet?
-
-Reordered it with the irq handler installation.
-
-> > +     ret =3D devm_request_irq(port->dev, port->irq, esp32_uart_int, 0,
-> > +                            DRIVER_NAME, port);
->
-> You don't disable clk and interrupts in case of failure?
-
-Fixed.
-
-> > +     pr_debug("%s, request_irq: %d, conf1 =3D %08x, int_st =3D %08x, s=
-tatus =3D %08x\n",
-> > +              __func__, ret,
-> > +              esp32_uart_read(port, UART_CONF1_REG),
-> > +              esp32_uart_read(port, UART_INT_ST_REG),
-> > +              esp32_uart_read(port, UART_STATUS_REG));
-> > +     return ret;
-> > +}
-> ...
-> > +static void esp32_uart_set_termios(struct uart_port *port,
-> > +                                struct ktermios *termios,
-> > +                                const struct ktermios *old)
-> > +{
-> > +     unsigned long flags;
-> > +     u32 conf0, conf1;
-> > +     u32 baud;
-> > +     const u32 rx_flow_en =3D port_variant(port)->rx_flow_en;
-> > +
-> > +     spin_lock_irqsave(&port->lock, flags);
-> > +     conf0 =3D esp32_uart_read(port, UART_CONF0_REG) &
-> > +             ~(UART_PARITY_EN_MASK | UART_PARITY_MASK |
-> > +               UART_BIT_NUM_MASK | UART_STOP_BIT_NUM_MASK);
->
-> Perhaps it would be more readable as:
-> conf0 =3D esp32_uart_read(port, UART_CONF0_REG);
-> conf0 &=3D ~(UART_PARITY_EN_MASK | ...);
-> ?
-
-Ok.
-
-> > +     conf1 =3D esp32_uart_read(port, UART_CONF1_REG) &
-> > +             ~rx_flow_en;
-> > +
-> > +     if (termios->c_cflag & PARENB) {
-> > +             conf0 |=3D UART_PARITY_EN_MASK;
-> > +             if (termios->c_cflag & PARODD)
-> > +                     conf0 |=3D UART_PARITY_MASK;
-> > +     }
->
->
-> > +static void esp32_uart_release_port(struct uart_port *port)
-> > +{
-> > +}
-> > +
-> > +static int esp32_uart_request_port(struct uart_port *port)
-> > +{
-> > +     return 0;
-> > +}
->
-> Drop these two.
-
-Ok
-
-> > +static int esp32_uart_probe(struct platform_device *pdev)
-> > +{
-> > +     struct device_node *np =3D pdev->dev.of_node;
-> > +     static const struct of_device_id *match;
-> > +     struct uart_port *port;
-> > +     struct esp32_port *sport;
-> > +     struct resource *res;
-> > +     int ret;
-> > +
-> > +     match =3D of_match_device(esp32_uart_dt_ids, &pdev->dev);
-> > +     if (!match)
-> > +             return -ENODEV;
-> > +
-> > +     sport =3D devm_kzalloc(&pdev->dev, sizeof(*sport), GFP_KERNEL);
-> > +     if (!sport)
-> > +             return -ENOMEM;
-> > +
-> > +     port =3D &sport->port;
-> > +
-> > +     ret =3D of_alias_get_id(np, "serial");
-> > +     if (ret < 0) {
-> > +             dev_err(&pdev->dev, "failed to get alias id, errno %d\n",=
- ret);
-> > +             return ret;
-> > +     }
-> > +     if (ret >=3D UART_NR) {
-> > +             dev_err(&pdev->dev, "driver limited to %d serial ports\n"=
-,
-> > +                     UART_NR);
-> > +             return -ENOMEM;
-> > +     }
-> > +
-> > +     port->line =3D ret;
-> > +
-> > +     res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > +     if (!res)
-> > +             return -ENODEV;
-> > +
-> > +     port->mapbase =3D res->start;
-> > +     port->membase =3D devm_ioremap_resource(&pdev->dev, res);
-> > +     if (IS_ERR(port->membase))
-> > +             return PTR_ERR(port->membase);
-> > +
-> > +     sport->clk =3D devm_clk_get(&pdev->dev, NULL);
-> > +     if (IS_ERR(sport->clk))
-> > +             return PTR_ERR(sport->clk);
-> > +
-> > +     port->uartclk =3D clk_get_rate(sport->clk);
-> > +     port->dev =3D &pdev->dev;
-> > +     port->type =3D PORT_ESP32UART;
-> > +     port->iotype =3D UPIO_MEM;
-> > +     port->irq =3D platform_get_irq(pdev, 0);
-> > +     port->ops =3D &esp32_uart_pops;
-> > +     port->flags =3D UPF_BOOT_AUTOCONF;
-> > +     port->has_sysrq =3D 1;
-> > +     port->fifosize =3D ESP32_UART_TX_FIFO_SIZE;
-> > +     port->private_data =3D (void *)match->data;
-> > +
-> > +     esp32_uart_ports[port->line] =3D sport;
-> > +
-> > +     platform_set_drvdata(pdev, port);
-> > +
-> > +     ret =3D uart_add_one_port(&esp32_uart_reg, port);
-> > +     return ret;
->
-> You can skip ret here and return directly.
-
-Ok
-
---=20
-Thanks.
--- Max
+> All modifications of UART registers are guarded by the UART port lock,
+> which provides an obvious synchronization point with the console
+> infrastructure.
+> 
+> Provide and use wrapper functions for spin_[un]lock*(port->lock)
+> invocations so that the console mechanics can be applied later on at a
+> single place and does not require to copy the same logic all over the
+> drivers.
+> 
+> Patch 1 adds the wrapper functions.
+> 
+> Patches 2-74 switch all uart port locking call sites to use the new
+> wrappers. These patches were automatically generated using coccinelle.
+> The 2 used coccinelle scripts are included below and executed as
+> follows:
+> 
+> $ spatch --sp-file uartlock-1.cocci $FILE
+> $ spatch --sp-file uartlock-2.cocci --recursive-includes $FILE
+> 
+> This series brings no functional change.
+> 
+> Patches 2-74 contain identical commit message bodies. Feel free to
+> fold them into a single commit if that seems more reasonable.
+> 
+> Thomas Gleixner (74):
+>   serial: core: Provide port lock wrappers
+>   serial: core: Use lock wrappers
+>   serial: 21285: Use port lock wrappers
+>   serial: 8250_aspeed_vuart: Use port lock wrappers
+>   serial: 8250_bcm7271: Use port lock wrappers
+>   serial: 8250: Use port lock wrappers
+>   serial: 8250_dma: Use port lock wrappers
+>   serial: 8250_dw: Use port lock wrappers
+>   serial: 8250_exar: Use port lock wrappers
+>   serial: 8250_fsl: Use port lock wrappers
+>   serial: 8250_mtk: Use port lock wrappers
+>   serial: 8250_omap: Use port lock wrappers
+>   serial: 8250_pci1xxxx: Use port lock wrappers
+>   serial: altera_jtaguart: Use port lock wrappers
+>   serial: altera_uart: Use port lock wrappers
+>   serial: amba-pl010: Use port lock wrappers
+>   serial: amba-pl011: Use port lock wrappers
+>   serial: apb: Use port lock wrappers
+>   serial: ar933x: Use port lock wrappers
+>   serial: arc_uart: Use port lock wrappers
+>   serial: atmel: Use port lock wrappers
+>   serial: bcm63xx-uart: Use port lock wrappers
+>   serial: cpm_uart: Use port lock wrappers
+>   serial: digicolor: Use port lock wrappers
+>   serial: dz: Use port lock wrappers
+>   serial: linflexuart: Use port lock wrappers
+>   serial: fsl_lpuart: Use port lock wrappers
+>   serial: icom: Use port lock wrappers
+>   serial: imx: Use port lock wrappers
+>   serial: ip22zilog: Use port lock wrappers
+>   serial: jsm: Use port lock wrappers
+>   serial: liteuart: Use port lock wrappers
+>   serial: lpc32xx_hs: Use port lock wrappers
+>   serial: ma35d1: Use port lock wrappers
+>   serial: mcf: Use port lock wrappers
+>   serial: men_z135_uart: Use port lock wrappers
+>   serial: meson: Use port lock wrappers
+>   serial: milbeaut_usio: Use port lock wrappers
+>   serial: mpc52xx: Use port lock wrappers
+>   serial: mps2-uart: Use port lock wrappers
+>   serial: msm: Use port lock wrappers
+>   serial: mvebu-uart: Use port lock wrappers
+>   serial: omap: Use port lock wrappers
+>   serial: owl: Use port lock wrappers
+>   serial: pch: Use port lock wrappers
+>   serial: pic32: Use port lock wrappers
+>   serial: pmac_zilog: Use port lock wrappers
+>   serial: pxa: Use port lock wrappers
+>   serial: qcom-geni: Use port lock wrappers
+>   serial: rda: Use port lock wrappers
+>   serial: rp2: Use port lock wrappers
+>   serial: sa1100: Use port lock wrappers
+>   serial: samsung_tty: Use port lock wrappers
+>   serial: sb1250-duart: Use port lock wrappers
+>   serial: sc16is7xx: Use port lock wrappers
+>   serial: tegra: Use port lock wrappers
+>   serial: core: Use port lock wrappers
+>   serial: mctrl_gpio: Use port lock wrappers
+>   serial: txx9: Use port lock wrappers
+>   serial: sh-sci: Use port lock wrappers
+>   serial: sifive: Use port lock wrappers
+>   serial: sprd: Use port lock wrappers
+>   serial: st-asc: Use port lock wrappers
+>   serial: stm32: Use port lock wrappers
+>   serial: sunhv: Use port lock wrappers
+>   serial: sunplus-uart: Use port lock wrappers
+>   serial: sunsab: Use port lock wrappers
+>   serial: sunsu: Use port lock wrappers
+>   serial: sunzilog: Use port lock wrappers
+>   serial: timbuart: Use port lock wrappers
+>   serial: uartlite: Use port lock wrappers
+>   serial: ucc_uart: Use port lock wrappers
+>   serial: vt8500: Use port lock wrappers
+>   serial: xilinx_uartps: Use port lock wrappers
+> 
+>  drivers/tty/serial/21285.c                  |   8 +-
+>  drivers/tty/serial/8250/8250_aspeed_vuart.c |   6 +-
+>  drivers/tty/serial/8250/8250_bcm7271.c      |  28 +++---
+>  drivers/tty/serial/8250/8250_core.c         |  12 +--
+>  drivers/tty/serial/8250/8250_dma.c          |   8 +-
+>  drivers/tty/serial/8250/8250_dw.c           |   8 +-
+>  drivers/tty/serial/8250/8250_exar.c         |   4 +-
+>  drivers/tty/serial/8250/8250_fsl.c          |   6 +-
+>  drivers/tty/serial/8250/8250_mtk.c          |   8 +-
+>  drivers/tty/serial/8250/8250_omap.c         |  52 +++++-----
+>  drivers/tty/serial/8250/8250_pci1xxxx.c     |   8 +-
+>  drivers/tty/serial/8250/8250_port.c         | 100 ++++++++++----------
+>  drivers/tty/serial/altera_jtaguart.c        |  28 +++---
+>  drivers/tty/serial/altera_uart.c            |  20 ++--
+>  drivers/tty/serial/amba-pl010.c             |  20 ++--
+>  drivers/tty/serial/amba-pl011.c             |  72 +++++++-------
+>  drivers/tty/serial/apbuart.c                |   8 +-
+>  drivers/tty/serial/ar933x_uart.c            |  26 ++---
+>  drivers/tty/serial/arc_uart.c               |  16 ++--
+>  drivers/tty/serial/atmel_serial.c           |  24 ++---
+>  drivers/tty/serial/bcm63xx_uart.c           |  22 ++---
+>  drivers/tty/serial/cpm_uart.c               |   8 +-
+>  drivers/tty/serial/digicolor-usart.c        |  18 ++--
+>  drivers/tty/serial/dz.c                     |  32 +++----
+>  drivers/tty/serial/fsl_linflexuart.c        |  26 ++---
+>  drivers/tty/serial/fsl_lpuart.c             |  88 ++++++++---------
+>  drivers/tty/serial/icom.c                   |  26 ++---
+>  drivers/tty/serial/imx.c                    |  84 ++++++++--------
+>  drivers/tty/serial/ip22zilog.c              |  36 +++----
+>  drivers/tty/serial/jsm/jsm_neo.c            |   4 +-
+>  drivers/tty/serial/jsm/jsm_tty.c            |  16 ++--
+>  drivers/tty/serial/liteuart.c               |  20 ++--
+>  drivers/tty/serial/lpc32xx_hs.c             |  26 ++---
+>  drivers/tty/serial/ma35d1_serial.c          |  22 ++---
+>  drivers/tty/serial/mcf.c                    |  20 ++--
+>  drivers/tty/serial/men_z135_uart.c          |   8 +-
+>  drivers/tty/serial/meson_uart.c             |  30 +++---
+>  drivers/tty/serial/milbeaut_usio.c          |  16 ++--
+>  drivers/tty/serial/mpc52xx_uart.c           |  12 +--
+>  drivers/tty/serial/mps2-uart.c              |  16 ++--
+>  drivers/tty/serial/msm_serial.c             |  38 ++++----
+>  drivers/tty/serial/mvebu-uart.c             |  18 ++--
+>  drivers/tty/serial/omap-serial.c            |  38 ++++----
+>  drivers/tty/serial/owl-uart.c               |  26 ++---
+>  drivers/tty/serial/pch_uart.c               |  10 +-
+>  drivers/tty/serial/pic32_uart.c             |  20 ++--
+>  drivers/tty/serial/pmac_zilog.c             |  52 +++++-----
+>  drivers/tty/serial/pxa.c                    |  30 +++---
+>  drivers/tty/serial/qcom_geni_serial.c       |   8 +-
+>  drivers/tty/serial/rda-uart.c               |  34 +++----
+>  drivers/tty/serial/rp2.c                    |  20 ++--
+>  drivers/tty/serial/sa1100.c                 |  20 ++--
+>  drivers/tty/serial/samsung_tty.c            |  50 +++++-----
+>  drivers/tty/serial/sb1250-duart.c           |  12 +--
+>  drivers/tty/serial/sc16is7xx.c              |  40 ++++----
+>  drivers/tty/serial/serial-tegra.c           |  32 +++----
+>  drivers/tty/serial/serial_core.c            |  88 ++++++++---------
+>  drivers/tty/serial/serial_mctrl_gpio.c      |   4 +-
+>  drivers/tty/serial/serial_port.c            |   4 +-
+>  drivers/tty/serial/serial_txx9.c            |  26 ++---
+>  drivers/tty/serial/sh-sci.c                 |  68 ++++++-------
+>  drivers/tty/serial/sifive.c                 |  16 ++--
+>  drivers/tty/serial/sprd_serial.c            |  30 +++---
+>  drivers/tty/serial/st-asc.c                 |  18 ++--
+>  drivers/tty/serial/stm32-usart.c            |  38 ++++----
+>  drivers/tty/serial/sunhv.c                  |  28 +++---
+>  drivers/tty/serial/sunplus-uart.c           |  26 ++---
+>  drivers/tty/serial/sunsab.c                 |  34 +++----
+>  drivers/tty/serial/sunsu.c                  |  46 ++++-----
+>  drivers/tty/serial/sunzilog.c               |  42 ++++----
+>  drivers/tty/serial/timbuart.c               |   8 +-
+>  drivers/tty/serial/uartlite.c               |  18 ++--
+>  drivers/tty/serial/ucc_uart.c               |   4 +-
+>  drivers/tty/serial/vt8500_serial.c          |   8 +-
+>  drivers/tty/serial/xilinx_uartps.c          |  56 +++++------
+>  include/linux/serial_core.h                 |  91 ++++++++++++++++--
+>  76 files changed, 1086 insertions(+), 1007 deletions(-)
+> 
+> 
+> base-commit: 0bb80ecc33a8fb5a682236443c1e740d5c917d1d
+> 
