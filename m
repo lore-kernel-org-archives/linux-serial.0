@@ -2,79 +2,129 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97261EE6428
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 07:12:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98836EE6430
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 07:13:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232470AbjIOHMo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Sep 2023 03:12:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59356 "EHLO
+        id S232676AbjIOHNz convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 15 Sep 2023 03:13:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232570AbjIOHMn (ORCPT
+        with ESMTP id S232400AbjIOHNy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Sep 2023 03:12:43 -0400
-Received: from cstnet.cn (smtp84.cstnet.cn [159.226.251.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10AA5A1;
-        Fri, 15 Sep 2023 00:12:34 -0700 (PDT)
-Received: from localhost (unknown [124.16.138.129])
-        by APP-05 (Coremail) with SMTP id zQCowABnb1fBAwRlf4YUDQ--.60186S2;
-        Fri, 15 Sep 2023 15:12:01 +0800 (CST)
-From:   Chen Ni <nichen@iscas.ac.cn>
-To:     ychuang3@nuvoton.com, schung@nuvoton.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, Chen Ni <nichen@iscas.ac.cn>
-Subject: [PATCH] tty: serial: ma35d1_serial: Add missing check for ioremap
-Date:   Fri, 15 Sep 2023 07:11:06 +0000
-Message-Id: <20230915071106.3347-1-nichen@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Fri, 15 Sep 2023 03:13:54 -0400
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905B3A1;
+        Fri, 15 Sep 2023 00:13:49 -0700 (PDT)
+Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-76ef27a8e4dso118967585a.1;
+        Fri, 15 Sep 2023 00:13:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1694762028; x=1695366828;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yQu7qZKWAlj7tq/NRi+dvudr3FOrz54dbR3YSeAAyEY=;
+        b=RP1lHN/FauF8Ist99fWh0eWftrHtK0TgT7ovzTda13TCuP9SSPj92fouOiwsEQMRKR
+         53KoW3TCBSo+h0nBGtInYmq1u5wx4HkOLhz/PPRbE0SzuleToFBtuzaDeu0/htmUiWcU
+         YxB9vgMc81i+DPo63vAoFh4L4xWDxgZq9WjoBRqPJxO4kA1MsSmzRGDEIAZ0OhBcmSZJ
+         RHRIc9v1pMcqpMUssPhx1/ICaMocQz7W+NNuiwCs0XHvLdBD5Jyu5ily8QyQs39DdOuh
+         IbLFtx2M+Ory/VwpFWOQyTM/I9ErZbPTwhgYDsAfCD4zn334FDl9jrngTHatmRAGmRrl
+         Ecxg==
+X-Gm-Message-State: AOJu0YwH4M0dAeV9sPzd5jLYhbzT+cJY6jGjbFOprFm+kiZgCaWkQy6b
+        bHsgZDWe1Tu5ub8lTXoTrS3FB5hsWz8V8Q==
+X-Google-Smtp-Source: AGHT+IH1/6PBbk4Q7gFNBPTK6HVASIXvb5iO6zHfYc+f6n+2n1PTxciETzo/itOiu2r2xv1tzwjDIw==
+X-Received: by 2002:a05:620a:e98:b0:770:fc5d:c191 with SMTP id w24-20020a05620a0e9800b00770fc5dc191mr728429qkm.44.1694762028483;
+        Fri, 15 Sep 2023 00:13:48 -0700 (PDT)
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com. [209.85.222.170])
+        by smtp.gmail.com with ESMTPSA id a27-20020a05620a125b00b0076f16a00693sm1038854qkl.47.2023.09.15.00.13.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Sep 2023 00:13:48 -0700 (PDT)
+Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-773a0f36b4bso90739485a.0;
+        Fri, 15 Sep 2023 00:13:48 -0700 (PDT)
+X-Received: by 2002:a25:dcc3:0:b0:d62:6514:45b7 with SMTP id
+ y186-20020a25dcc3000000b00d62651445b7mr319109ybe.37.1694761562659; Fri, 15
+ Sep 2023 00:06:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowABnb1fBAwRlf4YUDQ--.60186S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Xw4Utr48Aw13uw4UXryrWFg_yoWfWrb_CF
-        95W3yIqr409rs0kw1Sqry5uryftryqvF4kXF10v3sIkr98AaykWFWjvr1vyr47uw43WFy5
-        tr47KryfAw1qqjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbcxFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-        Cr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
-        0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4x
-        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
-        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0E
-        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
-        W8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAI
-        cVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VU10tC7UUUUU==
-X-Originating-IP: [124.16.138.129]
-X-CM-SenderInfo: xqlfxv3q6l2u1dvotugofq/
+References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
+ <20230912045157.177966-13-claudiu.beznea.uj@bp.renesas.com>
+ <CAMuHMdVLx1d-6=5xx_GLAb7LxxRR9FwhAU56fxNc3b=9wj286g@mail.gmail.com> <f0aa7983-0300-ce21-8726-41d033f6afbe@tuxon.dev>
+In-Reply-To: <f0aa7983-0300-ce21-8726-41d033f6afbe@tuxon.dev>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 15 Sep 2023 09:05:48 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVtBoTRB7dMvxjwwhOXVUDS8LtZQsVcMctaxBU_J7HWwA@mail.gmail.com>
+Message-ID: <CAMuHMdVtBoTRB7dMvxjwwhOXVUDS8LtZQsVcMctaxBU_J7HWwA@mail.gmail.com>
+Subject: Re: [PATCH 12/37] clk: renesas: rzg2l: reduce the critical area
+To:     claudiu beznea <claudiu.beznea@tuxon.dev>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        ulf.hansson@linaro.org, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
+        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
+        nfraprado@collabora.com, rafal@milecki.pl,
+        wsa+renesas@sang-engineering.com,
+        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add check for ioremap() and return the error if it fails in order to
-guarantee the success of ioremap().
+Hi Claudiu,
 
-Fixes: 930cbf92db01 ("tty: serial: Add Nuvoton ma35d1 serial driver support")
-Signed-off-by: Chen Ni <nichen@iscas.ac.cn>
----
- drivers/tty/serial/ma35d1_serial.c | 3 +++
- 1 file changed, 3 insertions(+)
+On Fri, Sep 15, 2023 at 7:51 AM claudiu beznea <claudiu.beznea@tuxon.dev> wrote:
+> On 14.09.2023 16:12, Geert Uytterhoeven wrote:
+> > On Tue, Sep 12, 2023 at 6:52 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> >> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> >>
+> >> spinlock in rzg2l_mod_clock_endisable() is intended to protect the accesses
+> >> to hardware register. There is no need to protect the instructions that set
+> >> temporary variable which will be then written to register. Thus limit the
+> >> spinlock only to the hardware register access.
+> >>
+> >> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> >
+> > Thanks for your patch!
+> >
+> >> --- a/drivers/clk/renesas/rzg2l-cpg.c
+> >> +++ b/drivers/clk/renesas/rzg2l-cpg.c
+> >> @@ -912,13 +912,13 @@ static int rzg2l_mod_clock_endisable(struct clk_hw *hw, bool enable)
+> >>
+> >>         dev_dbg(dev, "CLK_ON %u/%pC %s\n", CLK_ON_R(reg), hw->clk,
+> >>                 enable ? "ON" : "OFF");
+> >> -       spin_lock_irqsave(&priv->rmw_lock, flags);
+> >>
+> >>         value = bitmask << 16;
+> >>         if (enable)
+> >>                 value |= bitmask;
+> >> -       writel(value, priv->base + CLK_ON_R(reg));
+> >>
+> >> +       spin_lock_irqsave(&priv->rmw_lock, flags);
+> >> +       writel(value, priv->base + CLK_ON_R(reg));
+> >>         spin_unlock_irqrestore(&priv->rmw_lock, flags);
+> >
+> > After this, it becomes obvious there is nothing to protect at all,
+> > so the locking can just be removed from this function?
+>
+> I tend to be paranoid when writing to hardware resources thus I kept it.
+> Would you prefer to remove it at all?
 
-diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
-index 465b1def9e11..4a9d1252de35 100644
---- a/drivers/tty/serial/ma35d1_serial.c
-+++ b/drivers/tty/serial/ma35d1_serial.c
-@@ -695,6 +695,9 @@ static int ma35d1serial_probe(struct platform_device *pdev)
- 
- 	up->port.iobase = res_mem->start;
- 	up->port.membase = ioremap(up->port.iobase, MA35_UART_REG_SIZE);
-+	if (!up->port.membase)
-+		return -ENOMEM;
-+
- 	up->port.ops = &ma35d1serial_ops;
- 
- 	spin_lock_init(&up->port.lock);
+Yes please. I guess this was copied from R-Car and friends, where
+there is a RMW operation on an MSTPCR register.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.25.1
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
