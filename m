@@ -2,273 +2,79 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5E13EE6421
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 06:57:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97261EE6428
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 07:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232424AbjIOG5Z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Sep 2023 02:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40588 "EHLO
+        id S232470AbjIOHMo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 15 Sep 2023 03:12:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232476AbjIOG5Y (ORCPT
+        with ESMTP id S232570AbjIOHMn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Sep 2023 02:57:24 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE8D2D58
-        for <linux-serial@vger.kernel.org>; Thu, 14 Sep 2023 23:56:53 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id ffacd0b85a97d-31adc5c899fso1601846f8f.2
-        for <linux-serial@vger.kernel.org>; Thu, 14 Sep 2023 23:56:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1694761011; x=1695365811; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :references:cc:to:content-language:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=j12oxEv4oQ9vPyiNgmw9xBXkHftj9B6rlt22/B5nTIU=;
-        b=AilPSJDpSxRz1hj/ovhvXCrMPqXfkK+9WBGE73PznxEVPLGEA9Dq/CHFxvvMnK2hQO
-         FQlRR+VVlCgLaga6rgYQE67O4Pkfj1wH1Dx3lYuO35nOIauYROcXqPgVmIctws6sEpOY
-         iOFp9PzzXPkuTf9iNnJ0kcLXdJNV2QLke7gHr6qHCBL28ZBht/tLxhHkqUn58SfcixiU
-         3JhL3EHPbO0GcvOLiQ6ZQeNUSSYbqhUuz9ymyQ5pQ++oz2EU0oPWPFJc+m1cGe6ab/AY
-         Hh8q9FiMNoBD29VWcq4WsOWH9ysLn1m1DdPXtZmSM9SdQ24gxu4LqTxWuxT0ScDGPcWq
-         hkUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694761011; x=1695365811;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :references:cc:to:content-language:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=j12oxEv4oQ9vPyiNgmw9xBXkHftj9B6rlt22/B5nTIU=;
-        b=puT91rB7vQoLULzY90RJoz5un7jTtvXJc5ghLeqkMkOUDI3FRg0K5FZ2HDyEpm6BdY
-         RyMdjhrNxF8dsV8yiWshhzm1N29UT77II2cgUj3Pu0MtZwvwX+z3SEsbn2bZCWSvMVV+
-         emELMxH8Rs/CGlTtUQFv1is4HvOYV9aBYxGHuSPy0lmec+GG/1i1q8xm/SRCcgk2NenT
-         wgxjsa92q0LUWR38PXRT+wCi3pYZjCa+cNMHGZY9dt9vRRCgDdPdzt+mcOhCiZM5HJ45
-         Ou/vKhKNCNck4omR2oQkxOLGpn+zTx51WsTeg++C2W9+MmciIy+uSKCpj2mRHe+3skEc
-         n91w==
-X-Gm-Message-State: AOJu0Yy6ewXjEwBROQ6P9Idhrz2Nq9Ea8RMWeSLt3AkZUxKaescD+kdE
-        q0mwWDvmOK0uoPG+XLjay5EB/w==
-X-Google-Smtp-Source: AGHT+IF5bZDW17upZUyQuCXfWlfLN6eyzQLEiOGPo8/YwnqmLsw5emBhRDtJwlH6pFksTMU3pE88Yw==
-X-Received: by 2002:a05:6000:118d:b0:316:efb9:101d with SMTP id g13-20020a056000118d00b00316efb9101dmr712786wrx.25.1694761011484;
-        Thu, 14 Sep 2023 23:56:51 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:982:cbb0:990a:74e6:266e:2294? ([2a01:e0a:982:cbb0:990a:74e6:266e:2294])
-        by smtp.gmail.com with ESMTPSA id t18-20020a5d5352000000b0031c3ee933b5sm3598140wrv.108.2023.09.14.23.56.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Sep 2023 23:56:51 -0700 (PDT)
-Message-ID: <5cd2ed15-949d-40b4-93fd-b1480f557b14@linaro.org>
-Date:   Fri, 15 Sep 2023 08:56:49 +0200
+        Fri, 15 Sep 2023 03:12:43 -0400
+Received: from cstnet.cn (smtp84.cstnet.cn [159.226.251.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10AA5A1;
+        Fri, 15 Sep 2023 00:12:34 -0700 (PDT)
+Received: from localhost (unknown [124.16.138.129])
+        by APP-05 (Coremail) with SMTP id zQCowABnb1fBAwRlf4YUDQ--.60186S2;
+        Fri, 15 Sep 2023 15:12:01 +0800 (CST)
+From:   Chen Ni <nichen@iscas.ac.cn>
+To:     ychuang3@nuvoton.com, schung@nuvoton.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, Chen Ni <nichen@iscas.ac.cn>
+Subject: [PATCH] tty: serial: ma35d1_serial: Add missing check for ioremap
+Date:   Fri, 15 Sep 2023 07:11:06 +0000
+Message-Id: <20230915071106.3347-1-nichen@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From:   Neil Armstrong <neil.armstrong@linaro.org>
-Reply-To: neil.armstrong@linaro.org
-Subject: Re: [PATCH tty v1 37/74] serial: meson: Use port lock wrappers
-Content-Language: en-US, fr
-To:     John Ogness <john.ogness@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-        Petr Mladek <pmladek@suse.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Dmitry Rokosov <ddrokosov@sberdevices.ru>,
-        Lucas Tanure <tanure@linux.com>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org
-References: <20230914183831.587273-1-john.ogness@linutronix.de>
- <20230914183831.587273-38-john.ogness@linutronix.de>
-Autocrypt: addr=neil.armstrong@linaro.org; keydata=
- xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
- GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
- BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
- qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
- 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
- AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
- OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
- Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
- YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
- GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
- UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
- GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
- yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
- QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
- SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
- 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
- Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
- oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
- M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
- 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
- KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
- 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
- QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
-Organization: Linaro Developer Services
-In-Reply-To: <20230914183831.587273-38-john.ogness@linutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: zQCowABnb1fBAwRlf4YUDQ--.60186S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7Xw4Utr48Aw13uw4UXryrWFg_yoWfWrb_CF
+        95W3yIqr409rs0kw1Sqry5uryftryqvF4kXF10v3sIkr98AaykWFWjvr1vyr47uw43WFy5
+        tr47KryfAw1qqjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbcxFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+        Cr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
+        0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4x
+        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
+        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0E
+        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
+        W8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAI
+        cVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VU10tC7UUUUU==
+X-Originating-IP: [124.16.138.129]
+X-CM-SenderInfo: xqlfxv3q6l2u1dvotugofq/
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 14/09/2023 20:37, John Ogness wrote:
-> From: Thomas Gleixner <tglx@linutronix.de>
-> 
-> When a serial port is used for kernel console output, then all
-> modifications to the UART registers which are done from other contexts,
-> e.g. getty, termios, are interference points for the kernel console.
-> 
-> So far this has been ignored and the printk output is based on the
-> principle of hope. The rework of the console infrastructure which aims to
-> support threaded and atomic consoles, requires to mark sections which
-> modify the UART registers as unsafe. This allows the atomic write function
-> to make informed decisions and eventually to restore operational state. It
-> also allows to prevent the regular UART code from modifying UART registers
-> while printk output is in progress.
-> 
-> All modifications of UART registers are guarded by the UART port lock,
-> which provides an obvious synchronization point with the console
-> infrastructure.
-> 
-> To avoid adding this functionality to all UART drivers, wrap the
-> spin_[un]lock*() invocations for uart_port::lock into helper functions
-> which just contain the spin_[un]lock*() invocations for now. In a
-> subsequent step these helpers will gain the console synchronization
-> mechanisms.
-> 
-> Converted with coccinelle. No functional change.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> ---
->   drivers/tty/serial/meson_uart.c | 30 +++++++++++++++---------------
->   1 file changed, 15 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-> index 790d910dafa5..45cc23e9e399 100644
-> --- a/drivers/tty/serial/meson_uart.c
-> +++ b/drivers/tty/serial/meson_uart.c
-> @@ -129,14 +129,14 @@ static void meson_uart_shutdown(struct uart_port *port)
->   
->   	free_irq(port->irq, port);
->   
-> -	spin_lock_irqsave(&port->lock, flags);
-> +	uart_port_lock_irqsave(port, &flags);
->   
->   	val = readl(port->membase + AML_UART_CONTROL);
->   	val &= ~AML_UART_RX_EN;
->   	val &= ~(AML_UART_RX_INT_EN | AML_UART_TX_INT_EN);
->   	writel(val, port->membase + AML_UART_CONTROL);
->   
-> -	spin_unlock_irqrestore(&port->lock, flags);
-> +	uart_port_unlock_irqrestore(port, flags);
->   }
->   
->   static void meson_uart_start_tx(struct uart_port *port)
-> @@ -238,7 +238,7 @@ static irqreturn_t meson_uart_interrupt(int irq, void *dev_id)
->   {
->   	struct uart_port *port = (struct uart_port *)dev_id;
->   
-> -	spin_lock(&port->lock);
-> +	uart_port_lock(port);
->   
->   	if (!(readl(port->membase + AML_UART_STATUS) & AML_UART_RX_EMPTY))
->   		meson_receive_chars(port);
-> @@ -248,7 +248,7 @@ static irqreturn_t meson_uart_interrupt(int irq, void *dev_id)
->   			meson_uart_start_tx(port);
->   	}
->   
-> -	spin_unlock(&port->lock);
-> +	uart_port_unlock(port);
->   
->   	return IRQ_HANDLED;
->   }
-> @@ -284,7 +284,7 @@ static int meson_uart_startup(struct uart_port *port)
->   	u32 val;
->   	int ret = 0;
->   
-> -	spin_lock_irqsave(&port->lock, flags);
-> +	uart_port_lock_irqsave(port, &flags);
->   
->   	val = readl(port->membase + AML_UART_CONTROL);
->   	val |= AML_UART_CLEAR_ERR;
-> @@ -301,7 +301,7 @@ static int meson_uart_startup(struct uart_port *port)
->   	val = (AML_UART_RECV_IRQ(1) | AML_UART_XMIT_IRQ(port->fifosize / 2));
->   	writel(val, port->membase + AML_UART_MISC);
->   
-> -	spin_unlock_irqrestore(&port->lock, flags);
-> +	uart_port_unlock_irqrestore(port, flags);
->   
->   	ret = request_irq(port->irq, meson_uart_interrupt, 0,
->   			  port->name, port);
-> @@ -341,7 +341,7 @@ static void meson_uart_set_termios(struct uart_port *port,
->   	unsigned long flags;
->   	u32 val;
->   
-> -	spin_lock_irqsave(&port->lock, flags);
-> +	uart_port_lock_irqsave(port, &flags);
->   
->   	cflags = termios->c_cflag;
->   	iflags = termios->c_iflag;
-> @@ -401,7 +401,7 @@ static void meson_uart_set_termios(struct uart_port *port,
->   					    AML_UART_FRAME_ERR;
->   
->   	uart_update_timeout(port, termios->c_cflag, baud);
-> -	spin_unlock_irqrestore(&port->lock, flags);
-> +	uart_port_unlock_irqrestore(port, flags);
->   }
->   
->   static int meson_uart_verify_port(struct uart_port *port,
-> @@ -460,14 +460,14 @@ static int meson_uart_poll_get_char(struct uart_port *port)
->   	u32 c;
->   	unsigned long flags;
->   
-> -	spin_lock_irqsave(&port->lock, flags);
-> +	uart_port_lock_irqsave(port, &flags);
->   
->   	if (readl(port->membase + AML_UART_STATUS) & AML_UART_RX_EMPTY)
->   		c = NO_POLL_CHAR;
->   	else
->   		c = readl(port->membase + AML_UART_RFIFO);
->   
-> -	spin_unlock_irqrestore(&port->lock, flags);
-> +	uart_port_unlock_irqrestore(port, flags);
->   
->   	return c;
->   }
-> @@ -478,7 +478,7 @@ static void meson_uart_poll_put_char(struct uart_port *port, unsigned char c)
->   	u32 reg;
->   	int ret;
->   
-> -	spin_lock_irqsave(&port->lock, flags);
-> +	uart_port_lock_irqsave(port, &flags);
->   
->   	/* Wait until FIFO is empty or timeout */
->   	ret = readl_poll_timeout_atomic(port->membase + AML_UART_STATUS, reg,
-> @@ -502,7 +502,7 @@ static void meson_uart_poll_put_char(struct uart_port *port, unsigned char c)
->   		dev_err(port->dev, "Timeout waiting for UART TX EMPTY\n");
->   
->   out:
-> -	spin_unlock_irqrestore(&port->lock, flags);
-> +	uart_port_unlock_irqrestore(port, flags);
->   }
->   
->   #endif /* CONFIG_CONSOLE_POLL */
-> @@ -559,9 +559,9 @@ static void meson_serial_port_write(struct uart_port *port, const char *s,
->   	if (port->sysrq) {
->   		locked = 0;
->   	} else if (oops_in_progress) {
-> -		locked = spin_trylock(&port->lock);
-> +		locked = uart_port_trylock(port);
->   	} else {
-> -		spin_lock(&port->lock);
-> +		uart_port_lock(port);
->   		locked = 1;
->   	}
->   
-> @@ -573,7 +573,7 @@ static void meson_serial_port_write(struct uart_port *port, const char *s,
->   	writel(val, port->membase + AML_UART_CONTROL);
->   
->   	if (locked)
-> -		spin_unlock(&port->lock);
-> +		uart_port_unlock(port);
->   	local_irq_restore(flags);
->   }
->   
+Add check for ioremap() and return the error if it fails in order to
+guarantee the success of ioremap().
 
-Acked-by: Neil Armstrong <neil.armstrong@linaro.org>
+Fixes: 930cbf92db01 ("tty: serial: Add Nuvoton ma35d1 serial driver support")
+Signed-off-by: Chen Ni <nichen@iscas.ac.cn>
+---
+ drivers/tty/serial/ma35d1_serial.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
+index 465b1def9e11..4a9d1252de35 100644
+--- a/drivers/tty/serial/ma35d1_serial.c
++++ b/drivers/tty/serial/ma35d1_serial.c
+@@ -695,6 +695,9 @@ static int ma35d1serial_probe(struct platform_device *pdev)
+ 
+ 	up->port.iobase = res_mem->start;
+ 	up->port.membase = ioremap(up->port.iobase, MA35_UART_REG_SIZE);
++	if (!up->port.membase)
++		return -ENOMEM;
++
+ 	up->port.ops = &ma35d1serial_ops;
+ 
+ 	spin_lock_init(&up->port.lock);
+-- 
+2.25.1
+
