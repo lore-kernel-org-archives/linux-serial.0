@@ -2,99 +2,113 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 774BBEE644B
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 09:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D70EE644B
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 09:50:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233471AbjIOJr6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Sep 2023 05:47:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56798 "EHLO
+        id S232405AbjIOJug (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 15 Sep 2023 05:50:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233837AbjIOJr5 (ORCPT
+        with ESMTP id S231307AbjIOJue (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Sep 2023 05:47:57 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAD23ABD;
-        Fri, 15 Sep 2023 02:45:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694771100; x=1726307100;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=28Q6FS8KH3B7iBp/MzaF66/guYlDU+uUua9Jud0/lCE=;
-  b=d+SiNYew3NOfxT6auHt4JFVaFjAyaHhhAOTtFX+HMz+wI5f2GmRdC9rK
-   rZ005imGoUYnKJp65OEBgydLVYoj+ET+bpyYRiASMlmcmJSg2Ecz+IWNa
-   NNSVzaMbG1WyU0fynpDgpAo/BXm+L2P4ZvEhZjWil497ZcxHwDdEamm5i
-   kuwZYqfr5JnsF5WZCx4nKrnoB/gU2fR9l+tU/gdGd7v1Dn7G+VJJUNLoJ
-   oJMXFaWmT9C4x5kd5W0v30fZQYsTMoB5cdGdxDtXbeM+V1cu9q7gPE7Ni
-   4xnv99DKDGil3rqNfLRzBN3+2cl5yYVqEEVbjrYGG4HUj7WHKnA40yRTt
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10833"; a="379128092"
-X-IronPort-AV: E=Sophos;i="6.02,148,1688454000"; 
-   d="scan'208";a="379128092"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2023 02:43:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10833"; a="774245921"
-X-IronPort-AV: E=Sophos;i="6.02,148,1688454000"; 
-   d="scan'208";a="774245921"
-Received: from srdoo-mobl1.ger.corp.intel.com (HELO ijarvine-mobl2.ger.corp.intel.com) ([10.252.38.99])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2023 02:43:46 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Matthew Howell <matthew.howell@sealevel.com>
-Subject: [PATCH 2/2] tty: serial: 8250_exar: Does not use anything from 8250_pci
-Date:   Fri, 15 Sep 2023 12:43:36 +0300
-Message-Id: <20230915094336.13278-2-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230915094336.13278-1-ilpo.jarvinen@linux.intel.com>
-References: <20230915094336.13278-1-ilpo.jarvinen@linux.intel.com>
+        Fri, 15 Sep 2023 05:50:34 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D5B03AB7;
+        Fri, 15 Sep 2023 02:49:05 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id d9443c01a7336-1c3d6d88231so16519175ad.0;
+        Fri, 15 Sep 2023 02:49:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1694771343; x=1695376143; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=/TVQJoENhu00vx5rI/GikJKd4kuvFkeP8vi3vVfEcfo=;
+        b=aym6NrPvVQ8Sm+0tt8v2wWjHOuxq34mWO/MH9zvIWrBmb43xTjfjMe+DriZsj2t1Eo
+         5e93AmlnOQu5OAWuWDAYS/TQvKJmMp6U5+fc57LUgWk+uV8xILolSnPg6Zkt0CFfGFCa
+         VnIRe1G3xEiniJueRFvXZq4XZ90dWbQNjeGfRLEt13EPTtzaVEmnr41gzj3sIyIDiQgU
+         mfLDJzFUMvKOjzaHzdQMQhItpRo4w035ajIE0Rn5UCrVZfB+8LcnXbgfDBBVJOYFyeZt
+         3XFcDZNKTCC4H5fFR3O/szUhBeiGWY/zBcqvd3PeTVgQ6Ks64+XpFWNfkbK/N7FSMZag
+         ObCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1694771343; x=1695376143;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=/TVQJoENhu00vx5rI/GikJKd4kuvFkeP8vi3vVfEcfo=;
+        b=C8R1VSEJVAzKEWwk50aw8F0gGxmGkpg94JEgYK24GEOFrOriRnTXBHtEQVvqmZ3Nox
+         pb5eCWj8fTL3Ek595KlPzxGx5hAzxowtf3tWtMQjgG0VhpVPBVPOmtRfWBy9QRw8J7DI
+         d4Jq+nRvoF8o8nNOQK/W5909w2Lp1Tzc4D6TsGQghFY/U7bFvq0OASCkwAyGxMSZYGFr
+         ULSlPc+qwtUa610A58R0SL87UPAtH0unkm3EkBakl/GcHOojxqf4EAm4qWeFFZkwSRuY
+         RDM+uKBGkY3Ae5jbZpnkCkJQsLFxXlMp3XcWsrF5mVXWvoxRgY6H/Gzh1XqBNG9XqtUf
+         tlAw==
+X-Gm-Message-State: AOJu0Yyw8oYmSjjY4FjBe4kCnXDyUvWPtXis66ep6I7lA0BYE+e5RAGt
+        JjBlhV3f+ckMqnW7rWRkddE=
+X-Google-Smtp-Source: AGHT+IFKZZ7G1kbjDLssD1PYTqUJNDMyGB0g5aLVlwvvAL1wsMt77xEH5dArwfKSWKapUwbINpHEvg==
+X-Received: by 2002:a17:902:e9d5:b0:1c1:f1db:e86d with SMTP id 21-20020a170902e9d500b001c1f1dbe86dmr880494plk.7.1694771343330;
+        Fri, 15 Sep 2023 02:49:03 -0700 (PDT)
+Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
+        by smtp.gmail.com with ESMTPSA id 12-20020a170902c20c00b001b8c6662094sm3062686pll.188.2023.09.15.02.49.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Sep 2023 02:49:02 -0700 (PDT)
+Message-ID: <d4e74e31-246c-1f8c-1465-b0bb6ce8454c@gmail.com>
+Date:   Fri, 15 Sep 2023 17:49:00 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH] tty: serial: ma35d1_serial: Add missing check for ioremap
+To:     Chen Ni <nichen@iscas.ac.cn>, ychuang3@nuvoton.com,
+        schung@nuvoton.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+References: <20230915071106.3347-1-nichen@iscas.ac.cn>
+Content-Language: en-US
+From:   Jacky Huang <ychuang570808@gmail.com>
+In-Reply-To: <20230915071106.3347-1-nichen@iscas.ac.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-8250_exar includes linux/8250_pci.h and depends on SERIAL_8250_PCI.
-Neither is necessary so this patch removes the include and changes
-the depends on to SERIAL_8250 && PCI (taken from SERIAL_8250_PCI).
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
-Cc: Matthew Howell <matthew.howell@sealevel.com>
 
- drivers/tty/serial/8250/8250_exar.c | 1 -
- drivers/tty/serial/8250/Kconfig     | 2 +-
- 2 files changed, 1 insertion(+), 2 deletions(-)
+On 2023/9/15 下午 03:11, Chen Ni wrote:
+> CAUTION - External Email: Do not click links or open attachments unless you acknowledge the sender and content.
+>
+>
+> Add check for ioremap() and return the error if it fails in order to
+> guarantee the success of ioremap().
+>
+> Fixes: 930cbf92db01 ("tty: serial: Add Nuvoton ma35d1 serial driver support")
+> Signed-off-by: Chen Ni <nichen@iscas.ac.cn>
+> ---
+>   drivers/tty/serial/ma35d1_serial.c | 3 +++
+>   1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
+> index 465b1def9e11..4a9d1252de35 100644
+> --- a/drivers/tty/serial/ma35d1_serial.c
+> +++ b/drivers/tty/serial/ma35d1_serial.c
+> @@ -695,6 +695,9 @@ static int ma35d1serial_probe(struct platform_device *pdev)
+>
+>          up->port.iobase = res_mem->start;
+>          up->port.membase = ioremap(up->port.iobase, MA35_UART_REG_SIZE);
+> +       if (!up->port.membase)
+> +               return -ENOMEM;
+> +
+>          up->port.ops = &ma35d1serial_ops;
+>
+>          spin_lock_init(&up->port.lock);
+> --
+> 2.25.1
+>
 
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index 077c3ba3539e..2f9813429278 100644
---- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -18,7 +18,6 @@
- #include <linux/slab.h>
- #include <linux/string.h>
- #include <linux/tty.h>
--#include <linux/8250_pci.h>
- #include <linux/delay.h>
- 
- #include <asm/byteorder.h>
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index ee17cf5c44c6..d91924cb9b21 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -148,7 +148,7 @@ config SERIAL_8250_PCI
- 
- config SERIAL_8250_EXAR
- 	tristate "8250/16550 Exar/Commtech PCI/PCIe device support"
--	depends on SERIAL_8250_PCI
-+	depends on SERIAL_8250 && PCI
- 	default SERIAL_8250
- 	help
- 	  This builds support for XR17C1xx, XR17V3xx and some Commtech
--- 
-2.30.2
+Thank you for this update.
+
+Acked-by: Jacky Huang <ychuang3@nuvoton.com>
+
+
+Best Regards,
+Jacky
 
