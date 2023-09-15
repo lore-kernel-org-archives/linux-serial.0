@@ -2,104 +2,104 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5118EE6457
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 11:21:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DCECEE645B
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 11:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231745AbjIOLVS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Sep 2023 07:21:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57328 "EHLO
+        id S234441AbjIOL6j convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 15 Sep 2023 07:58:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231221AbjIOLVR (ORCPT
+        with ESMTP id S232836AbjIOL6i (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Sep 2023 07:21:17 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6877101;
-        Fri, 15 Sep 2023 04:21:11 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1694776870;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TsnkGbttQgVvHiV9M03Q+LlQoOR8o5QNvoHNuHa+6nY=;
-        b=kUVLHiYJMpOIKyckOH3EGEThs0EpvU+s0q8h8ytzvinMvOtAfd5B7odHXAHSsKB6ibsXQK
-        PnVg39zA19vvSxKixPQ+lABJT51nPvqCctMMvlpaSLwmUt0ComnPBAbfOeDqJkm22KVl5U
-        69v1YPuRztdswpOaGK+V1mXP6/RYTyNTYTIpwcwlIW6bdb4dXpkVV+7oGssiK5q2PP4b7N
-        S4ApnDPDAMrpld//Dw0tCaKyFut5XTSw4/B2YXE/SrDtZgEkRgbbAd9XRRdohfU850iP1Y
-        sbsq1DHisj/HMJsjV4h+/F/DlveahLIkHgxgeYBSTU+NxAqze0LLubPKBH6ffA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1694776870;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TsnkGbttQgVvHiV9M03Q+LlQoOR8o5QNvoHNuHa+6nY=;
-        b=W6ioBJ1+Iw5AzubKd6BZK7wo1pNLk50251horbdq/DP+xQJ60XUc0+8TacyLFi3g3eztn+
-        M8sSTyUWXVfOOHCQ==
-To:     Ilpo =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH tty v1 06/74] serial: 8250: Use port lock wrappers
-In-Reply-To: <2045de5e-b7f8-18fe-dc92-e1d88a62f810@linux.intel.com>
-References: <20230914183831.587273-1-john.ogness@linutronix.de>
- <20230914183831.587273-7-john.ogness@linutronix.de>
- <2045de5e-b7f8-18fe-dc92-e1d88a62f810@linux.intel.com>
-Date:   Fri, 15 Sep 2023 13:27:05 +0206
-Message-ID: <87y1h7vg0u.fsf@jogness.linutronix.de>
+        Fri, 15 Sep 2023 07:58:38 -0400
+Received: from mail-yw1-f193.google.com (mail-yw1-f193.google.com [209.85.128.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB671FE5;
+        Fri, 15 Sep 2023 04:58:31 -0700 (PDT)
+Received: by mail-yw1-f193.google.com with SMTP id 00721157ae682-58dce1f42d6so43345167b3.0;
+        Fri, 15 Sep 2023 04:58:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1694779111; x=1695383911;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=IhoLa0IXdX3TaWf8YmV+AYUsXgMaohKowkvp3aA0P+I=;
+        b=nlw9XbPDsFV/RqCjMx20OpBo9VNByN/YeoLg0bO0HA4HZCg0pnxrhrnC3k3R8ek3o3
+         fAg8pk0KMQIyfi3f1bJuJ5CKd1+Y00aZP4vyozUvuSwQ6t/EyE8h1oHd1tRtHTSAzXTS
+         DUcCajOBUijf1RyE1tkCxScQ/5QUYJZaJtOF/Wx+ir9DD5Jy7in03p+NhCfHYkwJ8QRa
+         2ojlFYBm6xDg2/DT/cwdr0HYb469NgShFuNscklpyoUpdAbzkZ+oS1SpsvQv0GyoLiUT
+         GQsGqhi8dd57L1rPPrMPSUFN4k16zRAt07rz8rRG5n+6je9i/nDRwTJwkCq3S0/XjgQo
+         syIw==
+X-Gm-Message-State: AOJu0Yw0M1GKB7wZcMi8hmdnFxv2PkeYaY105aiInVRJEV3exG8rahE5
+        E6XKCa1vUYImHO8eBTML6kadyycFYF6BLL/O
+X-Google-Smtp-Source: AGHT+IH49B71wpV06DDzaQrTvbIXqVRze07xbxbfDuEd47ROOpIoLqNZyXllMtZVtNOsiiBkWAxxUw==
+X-Received: by 2002:a81:a04b:0:b0:56f:fd0a:588d with SMTP id x72-20020a81a04b000000b0056ffd0a588dmr4525175ywg.8.1694779111162;
+        Fri, 15 Sep 2023 04:58:31 -0700 (PDT)
+Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com. [209.85.219.181])
+        by smtp.gmail.com with ESMTPSA id m128-20020a0de386000000b00595394ba941sm828551ywe.81.2023.09.15.04.58.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Sep 2023 04:58:31 -0700 (PDT)
+Received: by mail-yb1-f181.google.com with SMTP id 3f1490d57ef6-d819b185e74so2150221276.0;
+        Fri, 15 Sep 2023 04:58:31 -0700 (PDT)
+X-Received: by 2002:a25:d252:0:b0:d81:987f:989c with SMTP id
+ j79-20020a25d252000000b00d81987f989cmr1869824ybg.3.1694779110814; Fri, 15 Sep
+ 2023 04:58:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com> <20230912045157.177966-21-claudiu.beznea.uj@bp.renesas.com>
+In-Reply-To: <20230912045157.177966-21-claudiu.beznea.uj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 15 Sep 2023 13:58:18 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVzX6fM5OSEONngii13uzbG0tUgM-ZVYstKw6JoV=g1OQ@mail.gmail.com>
+Message-ID: <CAMuHMdVzX6fM5OSEONngii13uzbG0tUgM-ZVYstKw6JoV=g1OQ@mail.gmail.com>
+Subject: Re: [PATCH 20/37] dt-bindings: clock: renesas,rzg2l-cpg: document
+ RZ/G3S SoC
+To:     Claudiu <claudiu.beznea@tuxon.dev>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        ulf.hansson@linaro.org, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
+        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
+        nfraprado@collabora.com, rafal@milecki.pl,
+        wsa+renesas@sang-engineering.com,
+        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2023-09-15, Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com> wrote:
->> @@ -3403,9 +3403,9 @@ void serial8250_console_write(struct uart_8250_por=
-t *up, const char *s,
->>  	touch_nmi_watchdog();
->>=20=20
->>  	if (oops_in_progress)
->> -		locked =3D spin_trylock_irqsave(&port->lock, flags);
->> +		locked =3D uart_port_trylock_irqsave(port, &flags);
->>  	else
->> -		spin_lock_irqsave(&port->lock, flags);
->> +		uart_port_lock_irqsave(port, &flags);
+On Tue, Sep 12, 2023 at 6:52 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 >
-> Not related to any problem (with this patch) but I'm a bit curious is
-> this construct going to remain there after the follow-up work?
-
-Yes. The uart port lock already provides excellent coverage of unsafe
-regions in uart drivers. We want to take advantage of that.
-
-> And there's the similar one in some other drivers (with some
-> variations related to local_irq_save()):
+> Add documentation for RZ/G3S CPG. RZ/G3S CPG module is almost identical
+> with the one available in RZ/G2{L, UL} the exception being some core
+> clocks as follows:
+> - SD clock is composed by a mux and a divider and the divider
+>   has some limitation (div = 1 cannot be set if mux rate is 800MHz).
+> - there are 3 SD clocks
+> - OCTA and TSU clocks are specific to RZ/G3S
+> - PLL1/4/6 are specific to RZ/G3S with its own computation formula
+> Even with this RZ/G3S could use the same bindings as RZ/G2L.
 >
->         if (port->sysrq) {
->                 locked =3D 0;
->         } else if (oops_in_progress) {
->                 locked =3D spin_trylock(&port->lock);
->         } else {
->                 spin_lock(&port->lock);
->                 locked =3D 1;
->         }
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-With the follow-up work we are introducing a new type of console
-(CON_NBCON) that supports atomic and threaded printing. Current console
-drivers must be converted if they want these features. When converting a
-driver to NBCON, such variations as above will need to be addressed. The
-follow-up work provides new functions and semantics to allow drivers to
-implement more reliable code than just: "trylock and keep going no
-matter what".
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-For console drivers that are _not_ converted to NBCON, the uart port
-lock wrappers will not provide any changed functionality.
+Gr{oetje,eeting}s,
 
-John Ogness
+                        Geert
+
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
