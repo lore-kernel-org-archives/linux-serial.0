@@ -2,52 +2,55 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 450CCEE644B
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 09:46:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 774BBEE644B
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 09:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233929AbjIOJqJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Sep 2023 05:46:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60362 "EHLO
+        id S233471AbjIOJr6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 15 Sep 2023 05:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233825AbjIOJqD (ORCPT
+        with ESMTP id S233837AbjIOJr5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Sep 2023 05:46:03 -0400
+        Fri, 15 Sep 2023 05:47:57 -0400
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB09270A;
-        Fri, 15 Sep 2023 02:44:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAD23ABD;
+        Fri, 15 Sep 2023 02:45:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694771095; x=1726307095;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=/AlIt0LhwQnYsaDqrP7kQEj98W3VwaOUUdLbofv2N8w=;
-  b=PbQtS8O2xuSGYhYktmFIxrkQ0sbVJ7ptm8hdS6pWGwI9VF6EtOugrl5D
-   9XlJ6xV1A610KExEolZ8F7/4rfgDcOtJC8MyuvsmDqQFYr3yXu9V8Wqux
-   PVd2UjCitkBRbFNJOOaDIGzollXzDn013P/8rjrnbLGuhGKSheMfZHqIV
-   HSTm2bx2dUK75VFmvSnm4APC0UnE9UKutd1yHwMu4LciAU0AVkM4r+dwW
-   SIIQ06gp48WlJc7tKjvKQpOncnBp2aBBzsbzVUy7g9f85yTKwP7QqNnmK
-   LdaQXTR/H5qvtLkXT8kacoHVfE7zJHoIUb0H2UTRE3mq5/+7J31gs7+x+
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10833"; a="379128055"
+  t=1694771100; x=1726307100;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=28Q6FS8KH3B7iBp/MzaF66/guYlDU+uUua9Jud0/lCE=;
+  b=d+SiNYew3NOfxT6auHt4JFVaFjAyaHhhAOTtFX+HMz+wI5f2GmRdC9rK
+   rZ005imGoUYnKJp65OEBgydLVYoj+ET+bpyYRiASMlmcmJSg2Ecz+IWNa
+   NNSVzaMbG1WyU0fynpDgpAo/BXm+L2P4ZvEhZjWil497ZcxHwDdEamm5i
+   kuwZYqfr5JnsF5WZCx4nKrnoB/gU2fR9l+tU/gdGd7v1Dn7G+VJJUNLoJ
+   oJMXFaWmT9C4x5kd5W0v30fZQYsTMoB5cdGdxDtXbeM+V1cu9q7gPE7Ni
+   4xnv99DKDGil3rqNfLRzBN3+2cl5yYVqEEVbjrYGG4HUj7WHKnA40yRTt
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10833"; a="379128092"
 X-IronPort-AV: E=Sophos;i="6.02,148,1688454000"; 
-   d="scan'208";a="379128055"
+   d="scan'208";a="379128092"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2023 02:43:45 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2023 02:43:48 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10833"; a="774245912"
+X-IronPort-AV: E=McAfee;i="6600,9927,10833"; a="774245921"
 X-IronPort-AV: E=Sophos;i="6.02,148,1688454000"; 
-   d="scan'208";a="774245912"
+   d="scan'208";a="774245921"
 Received: from srdoo-mobl1.ger.corp.intel.com (HELO ijarvine-mobl2.ger.corp.intel.com) ([10.252.38.99])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2023 02:43:43 -0700
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2023 02:43:46 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 1/2] serial: 8250_mid: Remove 8250_pci usage
-Date:   Fri, 15 Sep 2023 12:43:35 +0300
-Message-Id: <20230915094336.13278-1-ilpo.jarvinen@linux.intel.com>
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Matthew Howell <matthew.howell@sealevel.com>
+Subject: [PATCH 2/2] tty: serial: 8250_exar: Does not use anything from 8250_pci
+Date:   Fri, 15 Sep 2023 12:43:36 +0300
+Message-Id: <20230915094336.13278-2-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230915094336.13278-1-ilpo.jarvinen@linux.intel.com>
+References: <20230915094336.13278-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -55,111 +58,43 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-8250_mid uses FL_*BASE* from linux/8250_pci.h and nothing else. The
-code can be simplified by directly defining BARs within the driver
-instead.
+8250_exar includes linux/8250_pci.h and depends on SERIAL_8250_PCI.
+Neither is necessary so this patch removes the include and changes
+the depends on to SERIAL_8250 && PCI (taken from SERIAL_8250_PCI).
 
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_mid.c | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+Cc: Matthew Howell <matthew.howell@sealevel.com>
 
-diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
-index 2cc78a4bf7a1..8ec03863606e 100644
---- a/drivers/tty/serial/8250/8250_mid.c
-+++ b/drivers/tty/serial/8250/8250_mid.c
-@@ -12,7 +12,6 @@
- #include <linux/rational.h>
- 
- #include <linux/dma/hsu.h>
+ drivers/tty/serial/8250/8250_exar.c | 1 -
+ drivers/tty/serial/8250/Kconfig     | 2 +-
+ 2 files changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index 077c3ba3539e..2f9813429278 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -18,7 +18,6 @@
+ #include <linux/slab.h>
+ #include <linux/string.h>
+ #include <linux/tty.h>
 -#include <linux/8250_pci.h>
+ #include <linux/delay.h>
  
- #include "8250.h"
+ #include <asm/byteorder.h>
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index ee17cf5c44c6..d91924cb9b21 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -148,7 +148,7 @@ config SERIAL_8250_PCI
  
-@@ -32,9 +31,9 @@
- struct mid8250;
- 
- struct mid8250_board {
--	unsigned int flags;
- 	unsigned long freq;
- 	unsigned int base_baud;
-+	unsigned int bar;
- 	int (*setup)(struct mid8250 *, struct uart_port *p);
- 	void (*exit)(struct mid8250 *);
- };
-@@ -169,7 +168,6 @@ static int dnv_setup(struct mid8250 *mid, struct uart_port *p)
- {
- 	struct hsu_dma_chip *chip = &mid->dma_chip;
- 	struct pci_dev *pdev = to_pci_dev(p->dev);
--	unsigned int bar = FL_GET_BASE(mid->board->flags);
- 	int ret;
- 
- 	pci_set_master(pdev);
-@@ -183,7 +181,7 @@ static int dnv_setup(struct mid8250 *mid, struct uart_port *p)
- 	chip->dev = &pdev->dev;
- 	chip->irq = pci_irq_vector(pdev, 0);
- 	chip->regs = p->membase;
--	chip->length = pci_resource_len(pdev, bar);
-+	chip->length = pci_resource_len(pdev, mid->board->bar);
- 	chip->offset = DNV_DMA_CHAN_OFFSET;
- 
- 	/* Falling back to PIO mode if DMA probing fails */
-@@ -291,7 +289,6 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- {
- 	struct uart_8250_port uart;
- 	struct mid8250 *mid;
--	unsigned int bar;
- 	int ret;
- 
- 	ret = pcim_enable_device(pdev);
-@@ -303,7 +300,6 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		return -ENOMEM;
- 
- 	mid->board = (struct mid8250_board *)id->driver_data;
--	bar = FL_GET_BASE(mid->board->flags);
- 
- 	memset(&uart, 0, sizeof(struct uart_8250_port));
- 
-@@ -316,8 +312,8 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	uart.port.flags = UPF_SHARE_IRQ | UPF_FIXED_PORT | UPF_FIXED_TYPE;
- 	uart.port.set_termios = mid8250_set_termios;
- 
--	uart.port.mapbase = pci_resource_start(pdev, bar);
--	uart.port.membase = pcim_iomap(pdev, bar, 0);
-+	uart.port.mapbase = pci_resource_start(pdev, mid->board->bar);
-+	uart.port.membase = pcim_iomap(pdev, mid->board->bar, 0);
- 	if (!uart.port.membase)
- 		return -ENOMEM;
- 
-@@ -353,25 +349,25 @@ static void mid8250_remove(struct pci_dev *pdev)
- }
- 
- static const struct mid8250_board pnw_board = {
--	.flags = FL_BASE0,
- 	.freq = 50000000,
- 	.base_baud = 115200,
-+	.bar = 0,
- 	.setup = pnw_setup,
- 	.exit = pnw_exit,
- };
- 
- static const struct mid8250_board tng_board = {
--	.flags = FL_BASE0,
- 	.freq = 38400000,
- 	.base_baud = 1843200,
-+	.bar = 0,
- 	.setup = tng_setup,
- 	.exit = tng_exit,
- };
- 
- static const struct mid8250_board dnv_board = {
--	.flags = FL_BASE1,
- 	.freq = 133333333,
- 	.base_baud = 115200,
-+	.bar = 1,
- 	.setup = dnv_setup,
- 	.exit = dnv_exit,
- };
+ config SERIAL_8250_EXAR
+ 	tristate "8250/16550 Exar/Commtech PCI/PCIe device support"
+-	depends on SERIAL_8250_PCI
++	depends on SERIAL_8250 && PCI
+ 	default SERIAL_8250
+ 	help
+ 	  This builds support for XR17C1xx, XR17V3xx and some Commtech
 -- 
 2.30.2
 
