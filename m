@@ -2,185 +2,302 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55792EE645D
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 12:07:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C27E6EE645E
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 12:53:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234444AbjIOMHa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Sep 2023 08:07:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34152 "EHLO
+        id S235116AbjIOMxV convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 15 Sep 2023 08:53:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232836AbjIOMH3 (ORCPT
+        with ESMTP id S234651AbjIOMxU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Sep 2023 08:07:29 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2779CCD8;
-        Fri, 15 Sep 2023 05:05:46 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1694779455;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=q3Ibg3p9cDagivhDktxq8eP8BYordpmk7hum3Axk04g=;
-        b=hfofoNUXRajtM0GjlTDL3S8uCPrZulnUAl3sDOuUPa5oy4jGgAgNbuoN9zq30CvsIMo6cQ
-        76S8YLIyYmUWLWqXq+B6LailcKKqcikZGHOc4Erpeot3J8LvMzg2R6WVBIi3xzRwnUY395
-        pS/yCtuKAjRQXT0+x4oEIpQyUhpbeGdMECufG8cXCZoM+44lexmwXf4O2LHWyQ5xwYsTtI
-        hG+jNq5wP5koi7uiKsR8aQVs4cDip7FcG5dlrN7qOoLDiEan+8YKeUcutQq6RBBnllQ/za
-        F8F1a6fTyU+1T0L+VnAkTGdL1QBpNnEZDKqVeyezp0ZEm/31ANRktL+QyqAdKA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1694779455;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=q3Ibg3p9cDagivhDktxq8eP8BYordpmk7hum3Axk04g=;
-        b=XoGHAuaQljzpxY7rNPRk66q5CkUTImgsUWadAIDMEofDY3WaI6vm1ZUxH4Wc2bfKw2zqPJ
-        9SjBirKXUrFTwlAA==
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        John Ogness <john.ogness@linutronix.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
-        linux-kernel@vger.kernel.org, Tobias Klauser <tklauser@distanz.ch>,
-        Thierry Reding <treding@nvidia.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ilpo =?utf-8?Q?J?= =?utf-8?Q?=C3=A4rvinen?= 
-        <ilpo.jarvinen@linux.intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Davis <afd@ti.com>,
-        Matthew Howell <matthew.howell@sealevel.com>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Johan Hovold <johan@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        linux-mediatek@lists.infradead.org, Lukas Wunner <lukas@wunner.de>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
-        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Hongyu Xie <xiehongyu1@kylinos.cn>,
-        Jiamei Xie <jiamei.xie@arm.com>, Rob Herring <robh@kernel.org>,
-        delisun <delisun@pateo.com.cn>,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-        Yangtao Li <frank.li@vivo.com>,
-        Vineet Gupta <vgupta@kernel.org>,
-        linux-snps-arc@lists.infradead.org,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@tuxon.dev>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Sherry Sun <sherry.sun@nxp.com>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Sergey Organov <sorganov@gmail.com>, Tom Rix <trix@redhat.com>,
-        Marek Vasut <marex@denx.de>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Gabriel Somlo <gsomlo@gmail.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Jacky Huang <ychuang3@nuvoton.com>,
-        Shan-Chun Hung <schung@nuvoton.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Dmitry Rokosov <ddrokosov@sberdevices.ru>,
-        Lucas Tanure <tanure@linux.com>,
-        linux-amlogic@lists.infradead.org,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Takao Orito <orito.takao@socionext.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        linux-arm-msm@vger.kernel.org,
-        Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andreas =?utf-8?Q?F=C3=A4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        linux-actions@lists.infradead.org,
-        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Yuan Can <yuancan@huawei.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-unisoc@lists.infradead.org,
-        Kevin Cernekee <cernekee@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-samsung-soc@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Lech Perczak <lech.perczak@camlingroup.com>,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Isaac True <isaac.true@canonical.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        linux-tegra@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Nick Hu <nick.hu@sifive.com>,
-        Ruan Jinjie <ruanjinjie@huawei.com>,
-        Samuel Holland <samuel.holland@sifive.com>,
-        linux-riscv@lists.infradead.org, Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        "David S. Miller" <davem@davemloft.net>,
-        sparclinux@vger.kernel.org, Hammer Hsieh <hammerh0314@gmail.com>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Timur Tabi <timur@kernel.org>,
-        Mukesh Ojha <quic_mojha@quicinc.com>,
-        Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Michal Simek <michal.simek@amd.com>
-Subject: Re: [PATCH tty v1 00/74] serial: wrappers for uart port lock
-In-Reply-To: <alpine.DEB.2.21.2309141959100.57368@angie.orcam.me.uk>
-References: <20230914183831.587273-1-john.ogness@linutronix.de>
- <alpine.DEB.2.21.2309141959100.57368@angie.orcam.me.uk>
-Date:   Fri, 15 Sep 2023 14:04:14 +0200
-Message-ID: <87il8b1w3l.ffs@tglx>
+        Fri, 15 Sep 2023 08:53:20 -0400
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB319173A;
+        Fri, 15 Sep 2023 05:53:15 -0700 (PDT)
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-59c26aa19b7so1523647b3.2;
+        Fri, 15 Sep 2023 05:53:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1694782395; x=1695387195;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=q9UOXsTHLtyILmXxjRADy8o2iP5tGoLsuD7drO9aP90=;
+        b=ImHuMK3vTld0WGRs09iR99nYrPlxaJDZiygs6osOeCU7AulSkqVpekt36AeYrswe4b
+         VF1Q1JvSWY32WnHJfOP5/KkYGcqmvDCkYgLmE+F8BXe69usWok0/VXriDrEATcNDx1wb
+         Vp7fAnrC6o7AUB9T2IPMb26s3kj/+ZN+6M6e1aNzcniN+2w2oj9cfA8JuQGUHKhAuXAJ
+         8FaK+QK/IZZXuNDtsdZhbfVpNv/HnHlNkloQMfab+kjXUqpFZvqHQCrDIZAXT7zjymsH
+         KhuFV6Jp/UerQ5GAM1ese5LC9nY7mGELbY1UGkEUBm9ocNxXhsTCwVVfhJcjeJkS4Bbo
+         xZPA==
+X-Gm-Message-State: AOJu0YwyUepJ8K16yxP5qgLvk8sdNqcNcFoIRVoQx3LgJFrU8vVvxRyP
+        Igk9aXLHhqW/jlxmM+zqdtKniwlbpG682A==
+X-Google-Smtp-Source: AGHT+IEiG+J/MtyiASFsbJojo/dOvWuNx/+PiFaaXKi5X4GHvaWkd+lh+nc5KJsxGZWrf6hpsbLd6g==
+X-Received: by 2002:a81:83d2:0:b0:586:9f6c:4215 with SMTP id t201-20020a8183d2000000b005869f6c4215mr1618500ywf.33.1694782394654;
+        Fri, 15 Sep 2023 05:53:14 -0700 (PDT)
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
+        by smtp.gmail.com with ESMTPSA id m5-20020a817105000000b0058038e6609csm840043ywc.74.2023.09.15.05.53.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Sep 2023 05:53:14 -0700 (PDT)
+Received: by mail-yb1-f174.google.com with SMTP id 3f1490d57ef6-d81afd5273eso1360503276.3;
+        Fri, 15 Sep 2023 05:53:13 -0700 (PDT)
+X-Received: by 2002:a25:cf06:0:b0:d74:6c9f:e734 with SMTP id
+ f6-20020a25cf06000000b00d746c9fe734mr1318086ybg.47.1694782393719; Fri, 15 Sep
+ 2023 05:53:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com> <20230912045157.177966-23-claudiu.beznea.uj@bp.renesas.com>
+In-Reply-To: <20230912045157.177966-23-claudiu.beznea.uj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 15 Sep 2023 14:52:59 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUCpbPA3cDjNAq1irvr6z4Jux-5-tVDBuyr6nx_qOQGpg@mail.gmail.com>
+Message-ID: <CAMuHMdUCpbPA3cDjNAq1irvr6z4Jux-5-tVDBuyr6nx_qOQGpg@mail.gmail.com>
+Subject: Re: [PATCH 22/37] clk: renesas: add minimal boot support for RZ/G3S SoC
+To:     Claudiu <claudiu.beznea@tuxon.dev>
+Cc:     geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, ulf.hansson@linaro.org,
+        linus.walleij@linaro.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, magnus.damm@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
+        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
+        nfraprado@collabora.com, rafal@milecki.pl,
+        wsa+renesas@sang-engineering.com,
+        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Sep 14 2023 at 20:01, Maciej W. Rozycki wrote:
+Hi Claudiu,
 
-> On Thu, 14 Sep 2023, John Ogness wrote:
+On Tue, Sep 12, 2023 at 6:53 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 >
->> Patches 2-74 switch all uart port locking call sites to use the new
->> wrappers. These patches were automatically generated using coccinelle.
+> Add minimal clock and reset support for RZ/G3S SoC to be able to boot
+> Linux from SD Card/eMMC. This includes necessary core clocks for booting
+> and GIC, SCIF, GPIO, SD0 mod clocks and resets.
 >
->  Hmm, no need to do this for drivers/tty/serial/zs.c?
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-zs.c does not use port lock at all. It has like a couple of other
-drivers a local homebrewn spinlock.
+Thanks for your patch!
 
-Thanks,
+> --- /dev/null
+> +++ b/drivers/clk/renesas/r9a08g045-cpg.c
+> @@ -0,0 +1,217 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * RZ/G3S CPG driver
+> + *
+> + * Copyright (C) 2023 Renesas Electronics Corp.
+> + */
+> +
+> +#include <linux/clk-provider.h>
+> +#include <linux/device.h>
+> +#include <linux/init.h>
+> +#include <linux/kernel.h>
+> +
+> +#include <dt-bindings/clock/r9a08g045-cpg.h>
+> +
+> +#include "rzg2l-cpg.h"
+> +
+> +/* RZ/G3S Specific registers. */
+> +#define G3S_CPG_PL2_DDIV               (0x204)
+> +#define G3S_CPG_SDHI_DDIV              (0x218)
+> +#define G3S_CPG_PLL_DSEL               (0x240)
+> +#define G3S_CPG_SDHI_DSEL              (0x244)
+> +#define G3S_CLKSELSTATUS               (0x284)
+> +
+> +/* RZ/G3S Specific division configuration.  */
+> +#define G3S_DIVPL2B            DDIV_PACK(G3S_CPG_PL2_DDIV, 4, 3)
+> +#define G3S_DIV_SDHI0          DDIV_PACK(G3S_CPG_SDHI_DDIV, 0, 1)
+> +
+> +/* RZ/G3S Clock status configuration. */
+> +#define G3S_DIVPL1A_STS                DDIV_PACK(CPG_CLKSTATUS, 0, 1)
+> +#define G3S_DIVPL2B_STS                DDIV_PACK(CPG_CLKSTATUS, 5, 1)
+> +#define G3S_DIVPL3A_STS                DDIV_PACK(CPG_CLKSTATUS, 8, 1)
+> +#define G3S_DIVPL3B_STS                DDIV_PACK(CPG_CLKSTATUS, 9, 1)
+> +#define G3S_DIVPL3C_STS                DDIV_PACK(CPG_CLKSTATUS, 10, 1)
+> +#define G3S_DIV_SDHI0_STS      DDIV_PACK(CPG_CLKSTATUS, 24, 1)
 
-        tglx
+The register at offset 0x280 is called CPG_CLKDIVSTATUS, so
+you probably want to add and use a G3S-specific definition.
+
+> +#define G3S_SEL_PLL4_STS       SEL_PLL_PACK(G3S_CLKSELSTATUS, 6, 1)
+> +#define G3S_SEL_SDHI0_STS      SEL_PLL_PACK(G3S_CLKSELSTATUS, 16, 1)
+> +
+> +/* RZ/G3S Specific clocks select. */
+> +#define G3S_SEL_PLL4           SEL_PLL_PACK(G3S_CPG_PLL_DSEL, 6, 1)
+> +#define G3S_SEL_SDHI0          SEL_PLL_PACK(G3S_CPG_SDHI_DSEL, 0, 2)
+> +
+> +/* PLL 1/4/6 configuration registers macro. */
+> +#define G3S_PLL146_CONF(clk1, clk2)    ((clk1) << 22 | (clk2) << 12)
+> +
+> +#define DEF_G3S_MUX(_name, _id, _conf, _parent_names, _mux_flags, _clk_flags) \
+> +       DEF_TYPE(_name, _id, CLK_TYPE_MUX, .conf = (_conf), \
+> +                .parent_names = (_parent_names), \
+> +                .num_parents = ARRAY_SIZE((_parent_names)), \
+> +                .mux_flags = CLK_MUX_HIWORD_MASK | (_mux_flags), \
+> +                .flag = (_clk_flags))
+> +
+> +enum clk_ids {
+> +       /* Core Clock Outputs exported to DT */
+> +       LAST_DT_CORE_CLK = R9A08G045_SWD,
+> +
+> +       /* External Input Clocks */
+> +       CLK_EXTAL,
+> +
+> +       /* Internal Core Clocks */
+> +       CLK_OSC_DIV1000,
+> +       CLK_PLL1,
+> +       CLK_PLL2,
+> +       CLK_PLL2_DIV2,
+> +       CLK_PLL2_DIV2_8,
+> +       CLK_PLL2_DIV6,
+> +       CLK_PLL3,
+> +       CLK_PLL3_DIV2,
+> +       CLK_PLL3_DIV2_2,
+
+Do you need CLK_PLL3_DIV2_2?
+When adding support for R9A07G043_CLK_AT later, you can define it
+as CLK_PLL3_DIV2 / 2.
+
+> +       CLK_PLL3_DIV2_4,
+> +       CLK_PLL3_DIV2_8,
+> +       CLK_PLL3_DIV6,
+> +       CLK_PLL4,
+> +       CLK_PLL6,
+> +       CLK_PLL6_DIV2,
+> +       CLK_SEL_SDHI0,
+> +       CLK_SEL_PLL4,
+> +       CLK_P1_DIV2,
+> +       CLK_P3_DIV2,
+
+Do you need CLK_P1_DIV2 and CLK_P3_DIV2?
+I don't see them in Figure 7.3 ("Clock System Diagram (2)").
+
+> +       CLK_SD0_DIV,
+
+CLK_SD0_DIV is unused.
+
+> +       CLK_SD0_DIV4,
+> +       CLK_S0_DIV2,
+
+CLK_S0_DIV2 is unused.
+
+> +
+> +       /* Module Clocks */
+> +       MOD_CLK_BASE,
+> +};
+> +
+> +/* Divider tables */
+> +static const struct clk_div_table dtable_1_2[] = {
+> +       {0, 1},
+
+"{ 0, 1 }," etc...
+
+> +       {1, 2},
+> +       {0, 0},
+> +};
+> +
+> +static const struct clk_div_table dtable_1_8[] = {
+> +       {0, 1},
+> +       {1, 2},
+> +       {2, 4},
+> +       {3, 8},
+> +       {0, 0},
+> +};
+> +
+> +static const struct clk_div_table dtable_1_32[] = {
+> +       {0, 1},
+> +       {1, 2},
+> +       {2, 4},
+> +       {3, 8},
+> +       {4, 32},
+> +       {0, 0},
+> +};
+> +
+> +/* Mux clock names tables. */
+> +static const char * const sel_sdhi[] = { ".pll2_div2", ".pll6", ".pll2_div6" };
+> +static const char * const sel_pll4[] = { ".osc_div1000", ".pll4" };
+> +
+> +/* Mux clock indexes tables. */
+
+indices
+
+> +static const u32 mtable_sd[] = { 0, 2, 3 };
+> +static const u32 mtable_pll4[] = { 0, 1 };
+> +
+> +static const struct cpg_core_clk r9a08g045_core_clks[] __initconst = {
+> +       /* External Clock Inputs */
+> +       DEF_INPUT("extal", CLK_EXTAL),
+> +
+> +       /* Internal Core Clocks */
+> +       DEF_FIXED(".osc", R9A08G045_OSCCLK, CLK_EXTAL, 1, 1),
+
+"OSC", as this is not an internal core clock.
+
+> +       DEF_FIXED(".osc2", R9A08G045_OSCCLK2, CLK_EXTAL, 1, 3),
+
+"OSC2"
+
+> +       DEF_FIXED(".osc_div1000", CLK_OSC_DIV1000, CLK_EXTAL, 1, 1000),
+> +       DEF_G3S_SAMPLL(".pll1", CLK_PLL1, CLK_EXTAL, G3S_PLL146_CONF(0x4, 0x8)),
+> +       DEF_FIXED(".pll2", CLK_PLL2, CLK_EXTAL, 200, 3),
+> +       DEF_FIXED(".pll3", CLK_PLL3, CLK_EXTAL, 200, 3),
+> +       DEF_FIXED(".pll4", CLK_PLL4, CLK_EXTAL, 100, 3),
+> +       DEF_FIXED(".pll6", CLK_PLL6, CLK_EXTAL, 125, 6),
+> +       DEF_FIXED(".pll2_div2", CLK_PLL2_DIV2, CLK_PLL2, 1, 2),
+> +       DEF_FIXED(".pll2_div2_8", CLK_PLL2_DIV2_8, CLK_PLL2_DIV2, 1, 8),
+> +       DEF_FIXED(".pll2_div6", CLK_PLL2_DIV6, CLK_PLL2, 1, 6),
+> +       DEF_FIXED(".pll3_div2", CLK_PLL3_DIV2, CLK_PLL3, 1, 2),
+> +       DEF_FIXED(".pll3_div2_2", CLK_PLL3_DIV2_2, CLK_PLL3_DIV2, 1, 2),
+> +       DEF_FIXED(".pll3_div2_4", CLK_PLL3_DIV2_4, CLK_PLL3_DIV2, 1, 4),
+> +       DEF_FIXED(".pll3_div2_8", CLK_PLL3_DIV2_8, CLK_PLL3_DIV2, 1, 8),
+> +       DEF_FIXED(".pll3_div6", CLK_PLL3_DIV6, CLK_PLL3, 1, 6),
+> +       DEF_FIXED(".pll6_div2", CLK_PLL6_DIV2, CLK_PLL6, 1, 2),
+> +       DEF_SD_MUX(".sel_sd0", CLK_SEL_SDHI0, G3S_SEL_SDHI0, G3S_SEL_SDHI0_STS, sel_sdhi,
+> +                  mtable_sd, 0, NULL),
+> +       DEF_SD_MUX(".sel_pll4", CLK_SEL_PLL4, G3S_SEL_PLL4, G3S_SEL_PLL4_STS, sel_pll4,
+> +                  mtable_pll4, CLK_SET_PARENT_GATE, NULL),
+> +
+> +       /* Core output clk */
+> +       DEF_G3S_DIV("I", R9A08G045_CLK_I, CLK_PLL1, DIVPL1A, G3S_DIVPL1A_STS, dtable_1_8,
+> +                   0, 0, NULL),
+> +       DEF_G3S_DIV("P0", R9A08G045_CLK_P0, CLK_PLL2_DIV2_8, G3S_DIVPL2B, G3S_DIVPL2B_STS,
+> +                   dtable_1_32, 0, 0, NULL),
+> +       DEF_G3S_DIV("SD0", R9A08G045_CLK_SD0, CLK_SEL_SDHI0, G3S_DIV_SDHI0, G3S_DIV_SDHI0_STS,
+> +                   dtable_1_2, 800000000UL, CLK_SET_RATE_PARENT, DIV_NOTIF),
+> +       DEF_FIXED("SD0_DIV4", CLK_SD0_DIV4, R9A08G045_CLK_SD0, 1, 4),
+
+".sd0_div4", as this is not a public core clock.
+
+> +       DEF_FIXED("M0", R9A08G045_CLK_M0, CLK_PLL3_DIV2_4, 1, 1),
+> +       DEF_G3S_DIV("P1", R9A08G045_CLK_P1, CLK_PLL3_DIV2_4, DIVPL3A, G3S_DIVPL3A_STS,
+> +                   dtable_1_32, 0, 0, NULL),
+> +       DEF_FIXED("P1_DIV2", CLK_P1_DIV2, R9A08G045_CLK_P1, 1, 2),
+> +       DEF_G3S_DIV("P2", R9A08G045_CLK_P2, CLK_PLL3_DIV2_8, DIVPL3B, G3S_DIVPL3B_STS,
+> +                   dtable_1_32, 0, 0, NULL),
+> +       DEF_G3S_DIV("P3", R9A08G045_CLK_P3, CLK_PLL3_DIV2_4, DIVPL3C, G3S_DIVPL3C_STS,
+> +                   dtable_1_32, 0, 0, NULL),
+> +       DEF_FIXED("P3_DIV2", CLK_P3_DIV2, R9A08G045_CLK_P3, 1, 2),
+> +       DEF_FIXED("S0", R9A08G045_CLK_S0, CLK_SEL_PLL4, 1, 2),
+> +       DEF_FIXED("S0_DIV2", CLK_S0_DIV2, R9A08G045_CLK_S0, 1, 2),
+> +};
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
