@@ -2,256 +2,398 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21A2AEE6436
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 08:06:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD3F8EE6447
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 09:07:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232839AbjIOIGs convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Sep 2023 04:06:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49358 "EHLO
+        id S232929AbjIOJHH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 15 Sep 2023 05:07:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232810AbjIOIGr (ORCPT
+        with ESMTP id S233106AbjIOJHG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Sep 2023 04:06:47 -0400
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CD9B1BC9;
-        Fri, 15 Sep 2023 01:06:42 -0700 (PDT)
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-59be6605e1dso21129647b3.3;
-        Fri, 15 Sep 2023 01:06:42 -0700 (PDT)
+        Fri, 15 Sep 2023 05:07:06 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 707573A9E;
+        Fri, 15 Sep 2023 02:04:26 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id d2e1a72fcca58-68fe2470d81so1716312b3a.1;
+        Fri, 15 Sep 2023 02:04:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1694768664; x=1695373464; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=J5/obQmqPFY2GGzKy7p4n7Yxa+vweWi94m1kGN29mNs=;
+        b=dMCbyBrQd+7EH6JgSspG2c0V4c2hq36iJKhNoCkIz6RaMuoevrl1WKaPzVjdD78+n+
+         V57faPiFi1uOnI3m4aZSId7t6+kRVL6X6YIDY8TrYTLdwrdX4dLrJb/4PhOnc+dUSlXj
+         HQrTtWFemdxZ6seC96bzVYVuyRj/4LQtlVU9hlgFzpjD2sYQ34pknq5smmWG211MsecX
+         YYTSQpyv/D5NjQWRsyLCshCxwqWoGYQyaoC9lycsKpBVm87SHCK59cHwtlUXe1K306do
+         3jNkXGpQDa2OldYrjv6+1rr4TGMPta3l4XYzDS7WR+WcWjW9YERt/Hnay5ryyWdu6NFc
+         c+BQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694765201; x=1695370001;
+        d=1e100.net; s=20230601; t=1694768664; x=1695373464;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=IDdF9uQczjRdjh5DltQ3Kf3WBzjSgTe8Pnr+O7KM1YE=;
-        b=wQByhZ9yaQmqn90fcbDfgmU6H9PY1niAWJb4O7fZLw3dawmdBvV04ULbvSPkyrofrI
-         8zGdLBFTyEj7GMp7uygIV87S2/wdjfGFk5wlQNf85RSL7YXtMJGxJKTP/QmpMyAdu8ER
-         ma8AC0JoQS6iwqFAp44pLo19wdDkc7CMbuSUCQPGQvoxC9ywSM4QnxD/RMEft0R+oD1i
-         K+VRQ+Pgk5UOgTUbAlQgqqeik4kHqAtWX2YSfFxWutmPzDKrBcT4cb9k6aBew6WQN7ee
-         M8HTfS2BEJEm+uyDajR4bC7v6LDjWD0GAUg2J7E5QSQd13TDKErj/l/zipO+E4q4bYaL
-         wJAw==
-X-Gm-Message-State: AOJu0YxpBLTueQgNQnCIb/H28w5K7gRqw8bZ5vbKGDgptolLvmgzUsoK
-        K7lyTUzfPL9RLnlGf4ANf/89BMN3WHUTVQ==
-X-Google-Smtp-Source: AGHT+IHfyHf84k81DafigIWjZ9cGVm1JY4apXsJzccQ9orBMQ+oG5wy+32Au3wIOh231/9ddGKBwnA==
-X-Received: by 2002:a0d:ebc6:0:b0:58f:a190:f6b with SMTP id u189-20020a0debc6000000b0058fa1900f6bmr1100118ywe.26.1694765201151;
-        Fri, 15 Sep 2023 01:06:41 -0700 (PDT)
-Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
-        by smtp.gmail.com with ESMTPSA id p125-20020a0de683000000b0059b50f126fbsm747987ywe.114.2023.09.15.01.06.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Sep 2023 01:06:40 -0700 (PDT)
-Received: by mail-yb1-f173.google.com with SMTP id 3f1490d57ef6-d81b803b09aso831568276.2;
-        Fri, 15 Sep 2023 01:06:40 -0700 (PDT)
-X-Received: by 2002:a25:e64d:0:b0:d80:1161:5ec1 with SMTP id
- d74-20020a25e64d000000b00d8011615ec1mr867800ybh.20.1694765200505; Fri, 15 Sep
- 2023 01:06:40 -0700 (PDT)
+        bh=J5/obQmqPFY2GGzKy7p4n7Yxa+vweWi94m1kGN29mNs=;
+        b=S8lT6k/yEeO3sp6CcnQAlYyaQJA6dICM44uIp8wclzuFT0zd2C8S7NSG96hXgjg1Cl
+         7P5immuA9zeVwjppjl3q0salINJh/pB1r8gqpYxrNnfdmePuABc5GRSSKy223VoepnQR
+         dKufhJcNGCCigQ1HRy3Erf3nzkkJbbasjo0Qk6LO/7PNpo0PV4eypoP3LfhkSZTw2gKh
+         E/q7HEOastiuBdg3Xr2DKPxvvLzPMGj29a9ue4xvqtS7kv79fOr0DwVzhy9iexK9+HQ4
+         pWHQ+ppMQEwV04lZFOi1fOGgr0afpdtqj8oxsn2OSQtpNlKAB7ma/GMvgYuU2t4/x4fm
+         9xrA==
+X-Gm-Message-State: AOJu0YwlWGEd1d2vOMB30NunbUDKCymJWiorD1yXFY3qo+NKPdUgPCe0
+        0SPKTDEACvdW85YIQ15dSjEfxr937vmsvLOL1aHZ89qB
+X-Google-Smtp-Source: AGHT+IFzdDan/HyRuTkkiAkrgQftMNbg8JnxqytfRFcnDFy/1wDVyAYO4m97OSYaZ5icf8WQYZ9Rx/ove49q9Si4xLM=
+X-Received: by 2002:a05:6300:8088:b0:152:238a:f05b with SMTP id
+ ap8-20020a056300808800b00152238af05bmr1159793pzc.53.1694768664011; Fri, 15
+ Sep 2023 02:04:24 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
- <20230912045157.177966-19-claudiu.beznea.uj@bp.renesas.com>
- <CAMuHMdX9PYdESi6OAFSUS1NsFs9oPPV7Cd+uMHTtFRhkaq3Xzw@mail.gmail.com> <1ef2d7d4-93d4-969d-6618-3b81926418d5@tuxon.dev>
-In-Reply-To: <1ef2d7d4-93d4-969d-6618-3b81926418d5@tuxon.dev>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 15 Sep 2023 10:06:27 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWvuP1M2vu9+Kptj-5AkxbtPVeymm5r_02JQbyXdA7F=g@mail.gmail.com>
-Message-ID: <CAMuHMdWvuP1M2vu9+Kptj-5AkxbtPVeymm5r_02JQbyXdA7F=g@mail.gmail.com>
-Subject: Re: [PATCH 18/37] clk: renesas: rzg2l: refactor sd mux driver
-To:     claudiu beznea <claudiu.beznea@tuxon.dev>, mturquette@baylibre.com,
-        sboyd@kernel.org
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, ulf.hansson@linaro.org,
-        linus.walleij@linaro.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, magnus.damm@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
-        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
-        nfraprado@collabora.com, rafal@milecki.pl,
-        wsa+renesas@sang-engineering.com,
-        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+References: <20230913211449.668796-1-jcmvbkbc@gmail.com> <20230913211449.668796-3-jcmvbkbc@gmail.com>
+ <ac6d6641-7de3-423e-9164-fcd249d782fc@kernel.org>
+In-Reply-To: <ac6d6641-7de3-423e-9164-fcd249d782fc@kernel.org>
+From:   Max Filippov <jcmvbkbc@gmail.com>
+Date:   Fri, 15 Sep 2023 02:04:12 -0700
+Message-ID: <CAMo8Bf+0VPh5puXT7JAOtXNZntb2Ty4m7g=KLaQDEeH9pcA8Hg@mail.gmail.com>
+Subject: Re: [PATCH 2/4] drivers/tty/serial: add driver for the ESP32 UART
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Claudiu,
-
-On Fri, Sep 15, 2023 at 9:30 AM claudiu beznea <claudiu.beznea@tuxon.dev> wrote:
-> On 14.09.2023 18:18, Geert Uytterhoeven wrote:
-> > On Tue, Sep 12, 2023 at 6:52 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
-> >> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> >>
-> >> Refactor SD MUX driver to be able to reuse the same code on RZ/G3S.
-> >> RZ/G2{L, UL} has a limitation with regards to switching the clock source
-> >> for SD MUX (MUX clock source has to be switched to 266MHz before switching
-> >> b/w 533MHz and 400MHz). This limitation has been introduced as a clock
-> >> notifier that is registered on platform based initialization data thus the
-> >> SD MUX code could be reused on RZ/G3S.
-> >>
-> >> As both RZ/G2{L, UL} and RZ/G3S has specific bits in specific registers
-> >> to check if the clock switching has been done, this configuration (register
-> >> offset, register bits and bits width) is now passed though
-> >> struct cpg_core_clk::sconf (status configuration) from platform specific
-> >> initialization code.
-> >>
-> >> Along with struct cpg_core_clk::sconf the mux table indexes is also
+On Thu, Sep 14, 2023 at 12:06=E2=80=AFAM Jiri Slaby <jirislaby@kernel.org> =
+wrote:
+>
+> On 13. 09. 23, 23:14, Max Filippov wrote:
+> > Add driver for the UART controllers of the Espressif ESP32 and ESP32S3
+> > SoCs. Hardware specification is available at the following URLs:
 > >
-> > indices are
+> >    https://www.espressif.com/sites/default/files/documentation/esp32_te=
+chnical_reference_manual_en.pdf
+> >    (Chapter 13 UART Controller)
+> >    https://www.espressif.com/sites/default/files/documentation/esp32-s3=
+_technical_reference_manual_en.pdf
+> >    (Chapter 26 UART Controller)
 > >
-> >> passed from platform specific initialization code.
-> >
-> > Please also mention the passing of the mux flags, which is added so
-> > you can pass CLK_SET_PARENT_GATE for G3S_SEL_PLL4 later.
+> > Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+> > ---
+> ...
+> > +#define UART_FIFO_REG                        0x00
+> > +#define UART_INT_RAW_REG             0x04
+> > +#define UART_INT_ST_REG                      0x08
+> > +#define UART_INT_ENA_REG             0x0c
+> > +#define UART_INT_CLR_REG             0x10
+> > +#define UART_RXFIFO_FULL_INT_MASK            0x00000001
+> > +#define UART_TXFIFO_EMPTY_INT_MASK           0x00000002
+> > +#define UART_BRK_DET_INT_MASK                        0x00000080
+> > +#define UART_CLKDIV_REG                      0x14
+> > +#define ESP32_UART_CLKDIV_MASK                       0x000fffff
+> > +#define ESP32S3_UART_CLKDIV_MASK             0x00000fff
+> > +#define UART_CLKDIV_SHIFT                    0
+> > +#define UART_CLKDIV_FRAG_MASK                        0x00f00000
+> > +#define UART_CLKDIV_FRAG_SHIFT                       20
+> > +#define UART_STATUS_REG                      0x1c
+> > +#define ESP32_UART_RXFIFO_CNT_MASK           0x000000ff
+> > +#define ESP32S3_UART_RXFIFO_CNT_MASK         0x000003ff
 >
-> Ok.
+> Can you use GENMASK() for all these?
+
+Ok.
+
+> > +#define UART_RXFIFO_CNT_SHIFT                        0
+> > +#define UART_DSRN_MASK                               0x00002000
+> > +#define UART_CTSN_MASK                               0x00004000
+> > +#define ESP32_UART_TXFIFO_CNT_MASK           0x00ff0000
+> > +#define ESP32S3_UART_TXFIFO_CNT_MASK         0x03ff0000
+> > +#define UART_TXFIFO_CNT_SHIFT                        16
+> > +#define UART_ST_UTX_OUT_MASK                 0x0f000000
+> > +#define UART_ST_UTX_OUT_IDLE                 0x00000000
+> > +#define UART_ST_UTX_OUT_SHIFT                        24
+> > +#define UART_CONF0_REG                       0x20
+> > +#define UART_PARITY_MASK                     0x00000001
+> > +#define UART_PARITY_EN_MASK                  0x00000002
+> > +#define UART_BIT_NUM_MASK                    0x0000000c
+> > +#define UART_BIT_NUM_5                               0x00000000
+> > +#define UART_BIT_NUM_6                               0x00000004
+> > +#define UART_BIT_NUM_7                               0x00000008
+> > +#define UART_BIT_NUM_8                               0x0000000c
+> > +#define UART_STOP_BIT_NUM_MASK                       0x00000030
+> > +#define UART_STOP_BIT_NUM_1                  0x00000010
+> > +#define UART_STOP_BIT_NUM_2                  0x00000030
+> > +#define UART_SW_RTS_MASK                     0x00000040
+> > +#define UART_SW_DTR_MASK                     0x00000080
+> > +#define UART_LOOPBACK_MASK                   0x00004000
+> > +#define UART_TX_FLOW_EN_MASK                 0x00008000
+> > +#define UART_RTS_INV_MASK                    0x00800000
+> > +#define UART_DTR_INV_MASK                    0x01000000
+> > +#define ESP32_UART_TICK_REF_ALWAYS_ON_MASK   0x08000000
+> > +#define ESP32S3_UART_TICK_REF_ALWAYS_ON_MASK 0x00000000
+> > +#define UART_CONF1_REG                       0x24
+> > +#define ESP32_UART_RXFIFO_FULL_THRHD_MASK    0x0000007f
+> > +#define ESP32S3_UART_RXFIFO_FULL_THRHD_MASK  0x000003ff
+> > +#define UART_RXFIFO_FULL_THRHD_SHIFT         0
+> > +#define ESP32_UART_TXFIFO_EMPTY_THRHD_MASK   0x00007f00
+> > +#define ESP32S3_UART_TXFIFO_EMPTY_THRHD_MASK 0x000ffc00
+> > +#define ESP32_UART_TXFIFO_EMPTY_THRHD_SHIFT  8
+> > +#define ESP32S3_UART_TXFIFO_EMPTY_THRHD_SHIFT        10
+> > +#define ESP32_UART_RX_FLOW_EN_MASK           0x00800000
+> > +#define ESP32S3_UART_RX_FLOW_EN_MASK         0x00400000
+> ...
 >
-> >
-> >> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> >
-> >> --- a/drivers/clk/renesas/r9a07g043-cpg.c
-> >> +++ b/drivers/clk/renesas/r9a07g043-cpg.c
-> >> @@ -21,6 +21,10 @@
-> >>  #define G2UL_SEL_SDHI0         SEL_PLL_PACK(G2UL_CPG_PL2SDHI_DSEL, 0, 2)
-> >>  #define G2UL_SEL_SDHI1         SEL_PLL_PACK(G2UL_CPG_PL2SDHI_DSEL, 4, 2)
-> >>
-> >> +/* Clock status configuration. */
-> >> +#define G2UL_SEL_SDHI0_STS     SEL_PLL_PACK(CPG_CLKSTATUS, 28, 1)
-> >> +#define G2UL_SEL_SDHI1_STS     SEL_PLL_PACK(CPG_CLKSTATUS, 29, 1)
-> >
-> > Just like in [PATCH 17/37], there is no real need for the "G2UL_"-prefix.
+> > +static void esp32_uart_put_char_sync(struct uart_port *port, unsigned =
+char c)
 >
-> Ok, I ususlly tend to guard everything with a proper namespace.
+> u8 for characters everywhere, please.
 
-Sure, in many cases, that makes good sense.
-In this case, not having the prefix makes it easier to compare clock tables:
+Ok, but I guess not everywhere? E.g. uart_ops::poll_put_char has
+'unsigned char' in the definition, it seems better to keep implementation
+in sync.
 
-    soc-dts-diff -b drivers/clk/renesas/r9a07g04[34]-cpg.c
-
-(soc-dts-diff ignores the SoC part number, and can be found at
- https://github.com/geertu/linux-scripts)
-
-> >> +int rzg2l_cpg_sd_mux_clk_notifier(struct notifier_block *nb, unsigned long event,
-> >> +                                 void *data)
-> >> +{
-> >> +       struct clk_notifier_data *cnd = data;
-> >> +       struct clk_hw *hw = __clk_get_hw(cnd->clk);
-> >> +       struct clk_hw_data *clk_hw_data = to_clk_hw_data(hw);
-> >> +       struct rzg2l_cpg_priv *priv = clk_hw_data->priv;
-> >> +       u32 off = GET_REG_OFFSET(clk_hw_data->conf);
-> >> +       u32 shift = GET_SHIFT(clk_hw_data->conf);
-> >> +       const u32 clk_src_266 = 3;
-> >> +       unsigned long flags;
-> >> +       u32 bitmask;
-> >> +       int ret;
-> >> +
-> >> +       if (event != PRE_RATE_CHANGE || (cnd->new_rate / MEGA == 266))
-> >> +               return 0;
-> >> +
-> >> +       spin_lock_irqsave(&priv->rmw_lock, flags);
-> >> +
-> >> +       /*
-> >> +        * As per the HW manual, we should not directly switch from 533 MHz to
-> >> +        * 400 MHz and vice versa. To change the setting from 2’b01 (533 MHz)
-> >> +        * to 2’b10 (400 MHz) or vice versa, Switch to 2’b11 (266 MHz) first,
-> >> +        * and then switch to the target setting (2’b01 (533 MHz) or 2’b10
-> >> +        * (400 MHz)).
-> >> +        * Setting a value of '0' to the SEL_SDHI0_SET or SEL_SDHI1_SET clock
-> >> +        * switching register is prohibited.
-> >> +        * The clock mux has 3 input clocks(533 MHz, 400 MHz, and 266 MHz), and
-> >> +        * the index to value mapping is done by adding 1 to the index.
-> >> +        */
-> >> +       bitmask = (GENMASK(GET_WIDTH(clk_hw_data->conf) - 1, 0) << shift) << 16;
-> >> +       writel(bitmask | (clk_src_266 << shift), priv->base + off);
-> >> +
-> >> +       /* Wait for the update done. */
-> >> +       ret = rzg2l_cpg_wait_clk_update_done(priv->base, clk_hw_data->sconf);
-> >> +
-> >> +       spin_unlock_irqrestore(&priv->rmw_lock, flags);
-> >> +
-> >> +       if (ret)
-> >> +               dev_err(priv->dev, "failed to switch to safe clk source\n");
-> >> +
-> >> +       return ret;
-> >> +}
-> >> +
-> >> +static int rzg2l_register_notifier(struct clk_hw *hw, const struct cpg_core_clk *core,
-> >> +                                  struct rzg2l_cpg_priv *priv)
-> >> +{
-> >> +       struct notifier_block *nb;
-> >> +
-> >> +       if (!core->notifier)
-> >> +               return 0;
-> >> +
-> >> +       nb = devm_kzalloc(priv->dev, sizeof(*nb), GFP_KERNEL);
-> >> +       if (!nb)
-> >> +               return -ENOMEM;
-> >> +
-> >> +       nb->notifier_call = core->notifier;
-> >> +
-> >> +       return clk_notifier_register(hw->clk, nb);
-> >> +}
-> >
-> > I am not sure a notifier is the best solution.  Basically on RZ/G2L,
-> > when changing the parent clock, you need to switch to a fixed
-> > intermediate parent first.
-> > What about just replacing the fixed clk_src_266 in the old
-> > rzg2l_cpg_sd_mux_clk_set_parent() by a (signed) integer in
-> > sd_mux_hw_data (specified in DEF_SD_MUX()), representing the index
-> > of the intermediate clock?
-> > -1 would mean an intermediate parent is not needed.
+> > +{
+> > +     while (esp32_uart_tx_fifo_cnt(port) >=3D ESP32_UART_TX_FIFO_SIZE)
+> > +             cpu_relax();
 >
-> That should work too but .set_rate() will be bulky for both mux and div.
+> No timeout? There should be one.
+
+Ok.
+
+> > +     esp32_uart_put_char(port, c);
+> > +}
+> > +
+> > +static void esp32_uart_transmit_buffer(struct uart_port *port)
+> > +{
+> > +     struct circ_buf *xmit =3D &port->state->xmit;
+> > +     u32 tx_fifo_used =3D esp32_uart_tx_fifo_cnt(port);
+> > +
+> > +     while (!uart_circ_empty(xmit) && tx_fifo_used < ESP32_UART_TX_FIF=
+O_SIZE) {
+> > +             esp32_uart_put_char(port, xmit->buf[xmit->tail]);
+> > +             xmit->tail =3D (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+> > +             port->icount.tx++;
+> > +             ++tx_fifo_used;
+> > +     }
 >
-> The idea was to have the .set_rate() common to the mux and the platform
-> specificities implemented as notifiers and only the needed platforms to
-> instantiate the notifier. And the same approach to be used by the divider
-> (patch "[PATCH 19/37] clk: renesas: rzg2l: add a divider clock for RZ/G3S")
+> Why not using uart_port_tx_limited()?
+
+Ok.
+
+> > +     if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+> > +             uart_write_wakeup(port);
+> > +
+> > +     if (uart_circ_empty(xmit)) {
+> > +             esp32_uart_stop_tx(port);
+> > +     } else {
+> > +             u32 int_ena;
+> > +
+> > +             int_ena =3D esp32_uart_read(port, UART_INT_ENA_REG);
+> > +             esp32_uart_write(port, UART_INT_ENA_REG,
+> > +                              int_ena | UART_TXFIFO_EMPTY_INT_MASK);
+> > +     }
+> > +}
+> > +
+> > +static void esp32_uart_txint(struct uart_port *port)
+> > +{
+> > +     esp32_uart_transmit_buffer(port);
+> > +}
+> > +
+> > +static irqreturn_t esp32_uart_int(int irq, void *dev_id)
+> > +{
+> > +     struct uart_port *port =3D dev_id;
+> > +     u32 status;
+> > +
+> > +     status =3D esp32_uart_read(port, UART_INT_ST_REG);
+> > +
+> > +     if (status & (UART_RXFIFO_FULL_INT_MASK | UART_BRK_DET_INT_MASK))
+> > +             esp32_uart_rxint(port);
+> > +     if (status & UART_TXFIFO_EMPTY_INT_MASK)
+> > +             esp32_uart_txint(port);
+> > +
+> > +     esp32_uart_write(port, UART_INT_CLR_REG, status);
+> > +     return IRQ_HANDLED;
 >
-> With this it looked to me that the final code is more compact .set_rate
-> being simple and platform specificities being implemented in notifier
-> (valid for both MUX and DIV). The infrastructure is already there for
-> notifier to be called before .set_rate().
+> This should be IRQ_RETVAL(status) or similar. To let the system disable
+> the irq in case the HW gets crazy.
 
-TBH, I am not that familiar with clock notifiers, so I could use some
-guidance from the clock maintainers.
+Ok.
 
-Mike/Stephen: Are clock notifiers the right approach, here and in
-              [PATCH 19.37]?
-
-> >> --- a/drivers/clk/renesas/rzg2l-cpg.h
-> >> +++ b/drivers/clk/renesas/rzg2l-cpg.h
-> >> @@ -272,4 +278,9 @@ extern const struct rzg2l_cpg_info r9a07g044_cpg_info;
-> >>  extern const struct rzg2l_cpg_info r9a07g054_cpg_info;
-> >>  extern const struct rzg2l_cpg_info r9a09g011_cpg_info;
-> >>
-> >> +int rzg2l_cpg_sd_mux_clk_notifier(struct notifier_block *nb, unsigned long event, void *data);
-> >> +
-> >> +/* Macros to be used in platform specific initialization code. */
-> >> +#define SD_MUX_NOTIF           (&rzg2l_cpg_sd_mux_clk_notifier)
-> >
-> > Any specific reason you are adding this macro?
+> > +static void esp32_uart_start_tx(struct uart_port *port)
+> > +{
+> > +     esp32_uart_transmit_buffer(port);
+> > +}
+> > +
+> > +static void esp32_uart_stop_rx(struct uart_port *port)
+> > +{
+> > +     u32 int_ena;
+> > +
+> > +     int_ena =3D esp32_uart_read(port, UART_INT_ENA_REG);
+> > +     esp32_uart_write(port, UART_INT_ENA_REG,
+> > +                      int_ena & ~UART_RXFIFO_FULL_INT_MASK);
+> > +}
+> > +
+> > +static int esp32_uart_startup(struct uart_port *port)
+> > +{
+> > +     int ret =3D 0;
+> > +     unsigned long flags;
+> > +     struct esp32_port *sport =3D container_of(port, struct esp32_port=
+, port);
+> > +
+> > +     ret =3D clk_prepare_enable(sport->clk);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     spin_lock_irqsave(&port->lock, flags);
+> > +     esp32_uart_write(port, UART_CONF1_REG,
+> > +                      (1 << UART_RXFIFO_FULL_THRHD_SHIFT) |
+> > +                      (1 << port_variant(port)->txfifo_empty_thrhd_shi=
+ft));
+> > +     esp32_uart_write(port, UART_INT_CLR_REG,
+> > +                      UART_RXFIFO_FULL_INT_MASK |
+> > +                      UART_BRK_DET_INT_MASK);
+> > +     esp32_uart_write(port, UART_INT_ENA_REG,
+> > +                      UART_RXFIFO_FULL_INT_MASK |
+> > +                      UART_BRK_DET_INT_MASK);
+> > +     spin_unlock_irqrestore(&port->lock, flags);
 >
-> It looked to me like a better name to be used in platform specific drivers.
+> So interrupts can be coming now, but you don't handle them yet?
+
+Reordered it with the irq handler installation.
+
+> > +     ret =3D devm_request_irq(port->dev, port->irq, esp32_uart_int, 0,
+> > +                            DRIVER_NAME, port);
 >
-> > What is wrong with using &rzg2l_cpg_sd_mux_clk_notifier directly?
+> You don't disable clk and interrupts in case of failure?
+
+Fixed.
+
+> > +     pr_debug("%s, request_irq: %d, conf1 =3D %08x, int_st =3D %08x, s=
+tatus =3D %08x\n",
+> > +              __func__, ret,
+> > +              esp32_uart_read(port, UART_CONF1_REG),
+> > +              esp32_uart_read(port, UART_INT_ST_REG),
+> > +              esp32_uart_read(port, UART_STATUS_REG));
+> > +     return ret;
+> > +}
+> ...
+> > +static void esp32_uart_set_termios(struct uart_port *port,
+> > +                                struct ktermios *termios,
+> > +                                const struct ktermios *old)
+> > +{
+> > +     unsigned long flags;
+> > +     u32 conf0, conf1;
+> > +     u32 baud;
+> > +     const u32 rx_flow_en =3D port_variant(port)->rx_flow_en;
+> > +
+> > +     spin_lock_irqsave(&port->lock, flags);
+> > +     conf0 =3D esp32_uart_read(port, UART_CONF0_REG) &
+> > +             ~(UART_PARITY_EN_MASK | UART_PARITY_MASK |
+> > +               UART_BIT_NUM_MASK | UART_STOP_BIT_NUM_MASK);
 >
-> Nothing, just that it is a longer than SD_MUX_NOTIF.
+> Perhaps it would be more readable as:
+> conf0 =3D esp32_uart_read(port, UART_CONF0_REG);
+> conf0 &=3D ~(UART_PARITY_EN_MASK | ...);
+> ?
 
-It adds another level of indirection for the casual reviewer, and needs
-replacement when an SoC arrives that needs a different SD mux notifier.
+Ok.
 
-Thanks!
+> > +     conf1 =3D esp32_uart_read(port, UART_CONF1_REG) &
+> > +             ~rx_flow_en;
+> > +
+> > +     if (termios->c_cflag & PARENB) {
+> > +             conf0 |=3D UART_PARITY_EN_MASK;
+> > +             if (termios->c_cflag & PARODD)
+> > +                     conf0 |=3D UART_PARITY_MASK;
+> > +     }
+>
+>
+> > +static void esp32_uart_release_port(struct uart_port *port)
+> > +{
+> > +}
+> > +
+> > +static int esp32_uart_request_port(struct uart_port *port)
+> > +{
+> > +     return 0;
+> > +}
+>
+> Drop these two.
 
-Gr{oetje,eeting}s,
+Ok
 
-                        Geert
+> > +static int esp32_uart_probe(struct platform_device *pdev)
+> > +{
+> > +     struct device_node *np =3D pdev->dev.of_node;
+> > +     static const struct of_device_id *match;
+> > +     struct uart_port *port;
+> > +     struct esp32_port *sport;
+> > +     struct resource *res;
+> > +     int ret;
+> > +
+> > +     match =3D of_match_device(esp32_uart_dt_ids, &pdev->dev);
+> > +     if (!match)
+> > +             return -ENODEV;
+> > +
+> > +     sport =3D devm_kzalloc(&pdev->dev, sizeof(*sport), GFP_KERNEL);
+> > +     if (!sport)
+> > +             return -ENOMEM;
+> > +
+> > +     port =3D &sport->port;
+> > +
+> > +     ret =3D of_alias_get_id(np, "serial");
+> > +     if (ret < 0) {
+> > +             dev_err(&pdev->dev, "failed to get alias id, errno %d\n",=
+ ret);
+> > +             return ret;
+> > +     }
+> > +     if (ret >=3D UART_NR) {
+> > +             dev_err(&pdev->dev, "driver limited to %d serial ports\n"=
+,
+> > +                     UART_NR);
+> > +             return -ENOMEM;
+> > +     }
+> > +
+> > +     port->line =3D ret;
+> > +
+> > +     res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > +     if (!res)
+> > +             return -ENODEV;
+> > +
+> > +     port->mapbase =3D res->start;
+> > +     port->membase =3D devm_ioremap_resource(&pdev->dev, res);
+> > +     if (IS_ERR(port->membase))
+> > +             return PTR_ERR(port->membase);
+> > +
+> > +     sport->clk =3D devm_clk_get(&pdev->dev, NULL);
+> > +     if (IS_ERR(sport->clk))
+> > +             return PTR_ERR(sport->clk);
+> > +
+> > +     port->uartclk =3D clk_get_rate(sport->clk);
+> > +     port->dev =3D &pdev->dev;
+> > +     port->type =3D PORT_ESP32UART;
+> > +     port->iotype =3D UPIO_MEM;
+> > +     port->irq =3D platform_get_irq(pdev, 0);
+> > +     port->ops =3D &esp32_uart_pops;
+> > +     port->flags =3D UPF_BOOT_AUTOCONF;
+> > +     port->has_sysrq =3D 1;
+> > +     port->fifosize =3D ESP32_UART_TX_FIFO_SIZE;
+> > +     port->private_data =3D (void *)match->data;
+> > +
+> > +     esp32_uart_ports[port->line] =3D sport;
+> > +
+> > +     platform_set_drvdata(pdev, port);
+> > +
+> > +     ret =3D uart_add_one_port(&esp32_uart_reg, port);
+> > +     return ret;
+>
+> You can skip ret here and return directly.
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Ok
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+--=20
+Thanks.
+-- Max
