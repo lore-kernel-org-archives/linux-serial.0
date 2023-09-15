@@ -2,194 +2,273 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F9EFEE6421
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 06:51:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5E13EE6421
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 06:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232242AbjIOGvI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Sep 2023 02:51:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40198 "EHLO
+        id S232424AbjIOG5Z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 15 Sep 2023 02:57:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232195AbjIOGvH (ORCPT
+        with ESMTP id S232476AbjIOG5Y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Sep 2023 02:51:07 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B54882708
-        for <linux-serial@vger.kernel.org>; Thu, 14 Sep 2023 23:51:01 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id 5b1f17b1804b1-401b393ddd2so20542615e9.0
-        for <linux-serial@vger.kernel.org>; Thu, 14 Sep 2023 23:51:01 -0700 (PDT)
+        Fri, 15 Sep 2023 02:57:24 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE8D2D58
+        for <linux-serial@vger.kernel.org>; Thu, 14 Sep 2023 23:56:53 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id ffacd0b85a97d-31adc5c899fso1601846f8f.2
+        for <linux-serial@vger.kernel.org>; Thu, 14 Sep 2023 23:56:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1694760660; x=1695365460; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=E+yPchd1OF14YEx7hFDIQf6gB7Zd0Tpalu5rQeIxJmg=;
-        b=p1W+rftkN7pyqeh6UUjd26aMZUgtFNHsxZemI8zQkJq+1heReN9LHUbhAXooHRyNfO
-         yy9ndz0Nv2kJdKOxOyepZkXu6RA08LIFNba7eeCUyNitDJVdkj7en/49ufdAR8ooF2hP
-         G9qGyUwl1wtXc6yi4cmdKTUwZZLuHGa9YK865q06eP2AaiFf4sumNDchDZsywatfjeIH
-         P1V9bM9lF8rUQifoVuX83vpPnyX0Q/8wmUsKHDxAv/7W5Nqxp2RTbzhc+kDW6wM9SOga
-         flEzW/VES0aah+9b2JVc6Cv/hx+JrlY5rd0vV8K48OvCmoy3KacQxM0wzwv8qTs24vob
-         dg/A==
+        d=linaro.org; s=google; t=1694761011; x=1695365811; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :references:cc:to:content-language:subject:reply-to:from:user-agent
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=j12oxEv4oQ9vPyiNgmw9xBXkHftj9B6rlt22/B5nTIU=;
+        b=AilPSJDpSxRz1hj/ovhvXCrMPqXfkK+9WBGE73PznxEVPLGEA9Dq/CHFxvvMnK2hQO
+         FQlRR+VVlCgLaga6rgYQE67O4Pkfj1wH1Dx3lYuO35nOIauYROcXqPgVmIctws6sEpOY
+         iOFp9PzzXPkuTf9iNnJ0kcLXdJNV2QLke7gHr6qHCBL28ZBht/tLxhHkqUn58SfcixiU
+         3JhL3EHPbO0GcvOLiQ6ZQeNUSSYbqhUuz9ymyQ5pQ++oz2EU0oPWPFJc+m1cGe6ab/AY
+         Hh8q9FiMNoBD29VWcq4WsOWH9ysLn1m1DdPXtZmSM9SdQ24gxu4LqTxWuxT0ScDGPcWq
+         hkUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694760660; x=1695365460;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=E+yPchd1OF14YEx7hFDIQf6gB7Zd0Tpalu5rQeIxJmg=;
-        b=ryJMc/IuhPPONS16yUP/XkTBur9m/lFLj3MJhquHLDuRagssq3vwMta4zMIhOdIyaV
-         md6Gc1BZWp6WKKUXi2p3Q5r1ST+EyFHFn2AU0JTNRA1qr6thwZkreDlVwFBqQDrG2gAo
-         +xuHGZQommikJM4ij4PqMpN8FoIuwpRX1MHRXRMXfMZU0z84H8tFrx3RuhBlI69ak1K/
-         whl3Ncan2rlL0n/pjc4gvbS0o/af5BpwoP3maVmhOq/oPHieDXijOEXdXfmNDIsX5w4L
-         UsEnq5YJ7QLTuniL4p0m1faV/BYDOJe3vydqRm62Ovs0+/B5kTSamm4Fp9OD7QciGKPE
-         Z3MQ==
-X-Gm-Message-State: AOJu0Ywwsjrkhz4PURBn/ybSuskabLIjHVG2wmwjCaV4Nq4/6v+vWqE9
-        BWKE7Jt7V+5DZFR4l5KDcibTNA==
-X-Google-Smtp-Source: AGHT+IH/8g+avoYqVMdv6S+pJjql4rz2e+Urfb+s7H/AE/YkelrHE8ZK2/YVDITmpvOiEWInE9tw1Q==
-X-Received: by 2002:a05:600c:ac8:b0:402:f54d:745 with SMTP id c8-20020a05600c0ac800b00402f54d0745mr778159wmr.17.1694760660045;
-        Thu, 14 Sep 2023 23:51:00 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.214.188])
-        by smtp.gmail.com with ESMTPSA id h16-20020a5d5490000000b0031773a8e5c4sm3559298wrv.37.2023.09.14.23.50.58
+        d=1e100.net; s=20230601; t=1694761011; x=1695365811;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :references:cc:to:content-language:subject:reply-to:from:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=j12oxEv4oQ9vPyiNgmw9xBXkHftj9B6rlt22/B5nTIU=;
+        b=puT91rB7vQoLULzY90RJoz5un7jTtvXJc5ghLeqkMkOUDI3FRg0K5FZ2HDyEpm6BdY
+         RyMdjhrNxF8dsV8yiWshhzm1N29UT77II2cgUj3Pu0MtZwvwX+z3SEsbn2bZCWSvMVV+
+         emELMxH8Rs/CGlTtUQFv1is4HvOYV9aBYxGHuSPy0lmec+GG/1i1q8xm/SRCcgk2NenT
+         wgxjsa92q0LUWR38PXRT+wCi3pYZjCa+cNMHGZY9dt9vRRCgDdPdzt+mcOhCiZM5HJ45
+         Ou/vKhKNCNck4omR2oQkxOLGpn+zTx51WsTeg++C2W9+MmciIy+uSKCpj2mRHe+3skEc
+         n91w==
+X-Gm-Message-State: AOJu0Yy6ewXjEwBROQ6P9Idhrz2Nq9Ea8RMWeSLt3AkZUxKaescD+kdE
+        q0mwWDvmOK0uoPG+XLjay5EB/w==
+X-Google-Smtp-Source: AGHT+IF5bZDW17upZUyQuCXfWlfLN6eyzQLEiOGPo8/YwnqmLsw5emBhRDtJwlH6pFksTMU3pE88Yw==
+X-Received: by 2002:a05:6000:118d:b0:316:efb9:101d with SMTP id g13-20020a056000118d00b00316efb9101dmr712786wrx.25.1694761011484;
+        Thu, 14 Sep 2023 23:56:51 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:982:cbb0:990a:74e6:266e:2294? ([2a01:e0a:982:cbb0:990a:74e6:266e:2294])
+        by smtp.gmail.com with ESMTPSA id t18-20020a5d5352000000b0031c3ee933b5sm3598140wrv.108.2023.09.14.23.56.50
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Sep 2023 23:50:59 -0700 (PDT)
-Message-ID: <6438f3ad-23ff-0392-e549-d64ef499d739@linaro.org>
-Date:   Fri, 15 Sep 2023 08:50:57 +0200
+        Thu, 14 Sep 2023 23:56:51 -0700 (PDT)
+Message-ID: <5cd2ed15-949d-40b4-93fd-b1480f557b14@linaro.org>
+Date:   Fri, 15 Sep 2023 08:56:49 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
-Subject: Re: [PATCH 3/4] dt-bindings: serial: document esp32s3-acm bindings
-To:     Max Filippov <jcmvbkbc@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>
-References: <20230913211449.668796-1-jcmvbkbc@gmail.com>
- <20230913211449.668796-4-jcmvbkbc@gmail.com>
- <196fb9ac-53b7-51a6-6ce4-9f980215fde4@linaro.org>
- <CAMo8Bf+u3hkk8zW6EQUtQcAC5t-hUJ5+HoE8JDskBj4KyFK7xA@mail.gmail.com>
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAMo8Bf+u3hkk8zW6EQUtQcAC5t-hUJ5+HoE8JDskBj4KyFK7xA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+From:   Neil Armstrong <neil.armstrong@linaro.org>
+Reply-To: neil.armstrong@linaro.org
+Subject: Re: [PATCH tty v1 37/74] serial: meson: Use port lock wrappers
+Content-Language: en-US, fr
+To:     John Ogness <john.ogness@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        Petr Mladek <pmladek@suse.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Dmitry Rokosov <ddrokosov@sberdevices.ru>,
+        Lucas Tanure <tanure@linux.com>,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org
+References: <20230914183831.587273-1-john.ogness@linutronix.de>
+ <20230914183831.587273-38-john.ogness@linutronix.de>
+Autocrypt: addr=neil.armstrong@linaro.org; keydata=
+ xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
+ GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
+ BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
+ qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
+ 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
+ AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
+ OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
+ Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
+ YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
+ GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
+ UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
+ GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
+ yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
+ QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
+ SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
+ 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
+ Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
+ oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
+ M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
+ 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
+ KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
+ 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
+ QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
+Organization: Linaro Developer Services
+In-Reply-To: <20230914183831.587273-38-john.ogness@linutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 14/09/2023 22:47, Max Filippov wrote:
-> On Wed, Sep 13, 2023 at 10:57 PM Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
->>
->> On 13/09/2023 23:14, Max Filippov wrote:
->>> Add documentation for the ESP32S3 ACM controller.
->>
->> A nit, subject: drop second/last, redundant "bindings". The
->> "dt-bindings" prefix is already stating that these are bindings.
+On 14/09/2023 20:37, John Ogness wrote:
+> From: Thomas Gleixner <tglx@linutronix.de>
 > 
-> Ok.
+> When a serial port is used for kernel console output, then all
+> modifications to the UART registers which are done from other contexts,
+> e.g. getty, termios, are interference points for the kernel console.
 > 
->>> Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
->>> ---
->>>  .../bindings/serial/esp,esp32-acm.yaml        | 40 +++++++++++++++++++
->>>  1 file changed, 40 insertions(+)
->>>  create mode 100644 Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
->>>
->>> diff --git a/Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml b/Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
->>> new file mode 100644
->>> index 000000000000..dafbae38aa64
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
->>> @@ -0,0 +1,40 @@
->>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
->>> +
->>> +%YAML 1.2
->>> +---
->>> +$id: http://devicetree.org/schemas/serial/esp,esp32-acm.yaml#
->>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>> +
->>> +title: ESP32S3 ACM controller
->>> +
->>> +maintainers:
->>> +  - Max Filippov <jcmvbkbc@gmail.com>
->>> +
->>> +description: |
->>
->> Do not need '|' unless you need to preserve formatting.
+> So far this has been ignored and the printk output is based on the
+> principle of hope. The rework of the console infrastructure which aims to
+> support threaded and atomic consoles, requires to mark sections which
+> modify the UART registers as unsafe. This allows the atomic write function
+> to make informed decisions and eventually to restore operational state. It
+> also allows to prevent the regular UART code from modifying UART registers
+> while printk output is in progress.
 > 
-> Ok.
+> All modifications of UART registers are guarded by the UART port lock,
+> which provides an obvious synchronization point with the console
+> infrastructure.
 > 
->>> +  ESP32S3 ACM controller is a communication device found in the ESP32S3
->>
->> What is "ACM"?
+> To avoid adding this functionality to all UART drivers, wrap the
+> spin_[un]lock*() invocations for uart_port::lock into helper functions
+> which just contain the spin_[un]lock*() invocations for now. In a
+> subsequent step these helpers will gain the console synchronization
+> mechanisms.
 > 
-> It's an 'Abstract Control Model' as in USB CDC-ACM: 'Communication Device Class
-> - Abstract Control Model'.
+> Converted with coccinelle. No functional change.
 > 
->> Why is this in serial? Only serial controllers are in serial.
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> ---
+>   drivers/tty/serial/meson_uart.c | 30 +++++++++++++++---------------
+>   1 file changed, 15 insertions(+), 15 deletions(-)
 > 
-> Because it's a serial communication device. The SoC TRM calls this peripheral
-> 'USB Serial', but the USB part is fixed and is not controllable on the SoC side.
-> When you plug it into a host USB socket you get a serial port called ttyACM on
-> the host.
-> 
->> The description is very vague, way too vague.
-> 
-> Is the following better?
-> 
->   Fixed function USB CDC-ACM device controller of the Espressif ESP32S3 SoC.
+> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+> index 790d910dafa5..45cc23e9e399 100644
+> --- a/drivers/tty/serial/meson_uart.c
+> +++ b/drivers/tty/serial/meson_uart.c
+> @@ -129,14 +129,14 @@ static void meson_uart_shutdown(struct uart_port *port)
+>   
+>   	free_irq(port->irq, port);
+>   
+> -	spin_lock_irqsave(&port->lock, flags);
+> +	uart_port_lock_irqsave(port, &flags);
+>   
+>   	val = readl(port->membase + AML_UART_CONTROL);
+>   	val &= ~AML_UART_RX_EN;
+>   	val &= ~(AML_UART_RX_INT_EN | AML_UART_TX_INT_EN);
+>   	writel(val, port->membase + AML_UART_CONTROL);
+>   
+> -	spin_unlock_irqrestore(&port->lock, flags);
+> +	uart_port_unlock_irqrestore(port, flags);
+>   }
+>   
+>   static void meson_uart_start_tx(struct uart_port *port)
+> @@ -238,7 +238,7 @@ static irqreturn_t meson_uart_interrupt(int irq, void *dev_id)
+>   {
+>   	struct uart_port *port = (struct uart_port *)dev_id;
+>   
+> -	spin_lock(&port->lock);
+> +	uart_port_lock(port);
+>   
+>   	if (!(readl(port->membase + AML_UART_STATUS) & AML_UART_RX_EMPTY))
+>   		meson_receive_chars(port);
+> @@ -248,7 +248,7 @@ static irqreturn_t meson_uart_interrupt(int irq, void *dev_id)
+>   			meson_uart_start_tx(port);
+>   	}
+>   
+> -	spin_unlock(&port->lock);
+> +	uart_port_unlock(port);
+>   
+>   	return IRQ_HANDLED;
+>   }
+> @@ -284,7 +284,7 @@ static int meson_uart_startup(struct uart_port *port)
+>   	u32 val;
+>   	int ret = 0;
+>   
+> -	spin_lock_irqsave(&port->lock, flags);
+> +	uart_port_lock_irqsave(port, &flags);
+>   
+>   	val = readl(port->membase + AML_UART_CONTROL);
+>   	val |= AML_UART_CLEAR_ERR;
+> @@ -301,7 +301,7 @@ static int meson_uart_startup(struct uart_port *port)
+>   	val = (AML_UART_RECV_IRQ(1) | AML_UART_XMIT_IRQ(port->fifosize / 2));
+>   	writel(val, port->membase + AML_UART_MISC);
+>   
+> -	spin_unlock_irqrestore(&port->lock, flags);
+> +	uart_port_unlock_irqrestore(port, flags);
+>   
+>   	ret = request_irq(port->irq, meson_uart_interrupt, 0,
+>   			  port->name, port);
+> @@ -341,7 +341,7 @@ static void meson_uart_set_termios(struct uart_port *port,
+>   	unsigned long flags;
+>   	u32 val;
+>   
+> -	spin_lock_irqsave(&port->lock, flags);
+> +	uart_port_lock_irqsave(port, &flags);
+>   
+>   	cflags = termios->c_cflag;
+>   	iflags = termios->c_iflag;
+> @@ -401,7 +401,7 @@ static void meson_uart_set_termios(struct uart_port *port,
+>   					    AML_UART_FRAME_ERR;
+>   
+>   	uart_update_timeout(port, termios->c_cflag, baud);
+> -	spin_unlock_irqrestore(&port->lock, flags);
+> +	uart_port_unlock_irqrestore(port, flags);
+>   }
+>   
+>   static int meson_uart_verify_port(struct uart_port *port,
+> @@ -460,14 +460,14 @@ static int meson_uart_poll_get_char(struct uart_port *port)
+>   	u32 c;
+>   	unsigned long flags;
+>   
+> -	spin_lock_irqsave(&port->lock, flags);
+> +	uart_port_lock_irqsave(port, &flags);
+>   
+>   	if (readl(port->membase + AML_UART_STATUS) & AML_UART_RX_EMPTY)
+>   		c = NO_POLL_CHAR;
+>   	else
+>   		c = readl(port->membase + AML_UART_RFIFO);
+>   
+> -	spin_unlock_irqrestore(&port->lock, flags);
+> +	uart_port_unlock_irqrestore(port, flags);
+>   
+>   	return c;
+>   }
+> @@ -478,7 +478,7 @@ static void meson_uart_poll_put_char(struct uart_port *port, unsigned char c)
+>   	u32 reg;
+>   	int ret;
+>   
+> -	spin_lock_irqsave(&port->lock, flags);
+> +	uart_port_lock_irqsave(port, &flags);
+>   
+>   	/* Wait until FIFO is empty or timeout */
+>   	ret = readl_poll_timeout_atomic(port->membase + AML_UART_STATUS, reg,
+> @@ -502,7 +502,7 @@ static void meson_uart_poll_put_char(struct uart_port *port, unsigned char c)
+>   		dev_err(port->dev, "Timeout waiting for UART TX EMPTY\n");
+>   
+>   out:
+> -	spin_unlock_irqrestore(&port->lock, flags);
+> +	uart_port_unlock_irqrestore(port, flags);
+>   }
+>   
+>   #endif /* CONFIG_CONSOLE_POLL */
+> @@ -559,9 +559,9 @@ static void meson_serial_port_write(struct uart_port *port, const char *s,
+>   	if (port->sysrq) {
+>   		locked = 0;
+>   	} else if (oops_in_progress) {
+> -		locked = spin_trylock(&port->lock);
+> +		locked = uart_port_trylock(port);
+>   	} else {
+> -		spin_lock(&port->lock);
+> +		uart_port_lock(port);
+>   		locked = 1;
+>   	}
+>   
+> @@ -573,7 +573,7 @@ static void meson_serial_port_write(struct uart_port *port, const char *s,
+>   	writel(val, port->membase + AML_UART_CONTROL);
+>   
+>   	if (locked)
+> -		spin_unlock(&port->lock);
+> +		uart_port_unlock(port);
+>   	local_irq_restore(flags);
+>   }
+>   
 
-Yes.
-
-> 
->>> +  SoC that is connected to one of its USB controllers.
->>
->> Same comments as previous patch.
->>
->>> +
->>> +properties:
->>> +  compatible:
->>> +    const: esp,esp32s3-acm
->>> +
->>> +  reg:
->>> +    maxItems: 1
->>> +
->>> +  interrupts:
->>> +    maxItems: 1
->>> +
->>> +required:
->>> +  - compatible
->>> +  - reg
->>> +  - interrupts
->>> +
->>> +additionalProperties: false
->>> +
->>> +examples:
->>> +  - |
->>> +    acm@60038000 {
-
-So this must be named "serial" now. ACM describes how this is interfaces
-to the SoC, right? Otherwise it would not be in "serial" directory and
-you would not be able to put serial devices as children.
-
-
->>> +            compatible = "esp,esp32s3-acm";
->>
->> Use 4 spaces for example indentation.
-> 
-> Ok.
-> 
->>> +            reg = <0x60038000 0x1000>;
->>> +            interrupts = <96 3 0>;
->>
->> Same comments as previous patch.
-> 
-> These are not IRQ flags. In any case the contents of the IRQ
-> specification cells is not relevant here, right?
-
-Yes, if 0 is not an IRQ flag :)
-> 
-
-Best regards,
-Krzysztof
-
+Acked-by: Neil Armstrong <neil.armstrong@linaro.org>
