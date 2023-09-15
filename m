@@ -2,144 +2,194 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D19EBEE3F2F
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 06:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F9EFEE6421
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Sep 2023 06:51:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232268AbjIOGaF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Sep 2023 02:30:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38132 "EHLO
+        id S232242AbjIOGvI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 15 Sep 2023 02:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230101AbjIOGaE (ORCPT
+        with ESMTP id S232195AbjIOGvH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Sep 2023 02:30:04 -0400
-Received: from mail-oa1-f80.google.com (mail-oa1-f80.google.com [209.85.160.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25E1273D
-        for <linux-serial@vger.kernel.org>; Thu, 14 Sep 2023 23:29:53 -0700 (PDT)
-Received: by mail-oa1-f80.google.com with SMTP id 586e51a60fabf-1d5d3735b87so2646167fac.3
-        for <linux-serial@vger.kernel.org>; Thu, 14 Sep 2023 23:29:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694759393; x=1695364193;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+        Fri, 15 Sep 2023 02:51:07 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B54882708
+        for <linux-serial@vger.kernel.org>; Thu, 14 Sep 2023 23:51:01 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id 5b1f17b1804b1-401b393ddd2so20542615e9.0
+        for <linux-serial@vger.kernel.org>; Thu, 14 Sep 2023 23:51:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1694760660; x=1695365460; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=J/dhNCOa2uUHoRVvRlugiXn30K4c1kP4ooQHJs85hMs=;
-        b=SBLmexOl6faRXR4UZBdkWxjGbH6hcE2fdS6q7nL5pxNvLmR6apgbZUWgiM1L/JuLi0
-         EiBROeSe1GOkd63iGPZmz02EfHuJq3KJ0qY4hOsRaVLsZRlI3Lg+cXceAnCqjvz2Dr3w
-         GRFiRP5JWP2dDC6daT89RNi84s+3zKx4qSRm5jvBE4RlpBK1RPro+8nbFkHJsmIza3mQ
-         cNozG4ZkdKF1j51YCVhGkh6lxI5jRRcgu3tZSyATLg12bPuchaKY8jtuNITUxnAoDICt
-         rW7/oaFw16YoU7s3E4zJBJUkQNHURZO/zSgpfVqtdsizfbm4VB/a9HsQ+OSo3Ynjtvdv
-         rCDA==
-X-Gm-Message-State: AOJu0YzEq982HPauQdGpXAtR5RPy0xOEkxlacxZd9/XF6YgpSyV9qQNo
-        kzkcezxGW2lU6SdFtJabWsDEtkvDDatJa5e/8bGLm9X4fmS7
-X-Google-Smtp-Source: AGHT+IGUAR1x0L5isvY9gORqZtpTYZVC0Fi/Ern5ryAg5URX/rh2wJk4hefFicSD2npvpdP+QiWAVR0rbIC/C3N+zLVCOAlsDwld
+        bh=E+yPchd1OF14YEx7hFDIQf6gB7Zd0Tpalu5rQeIxJmg=;
+        b=p1W+rftkN7pyqeh6UUjd26aMZUgtFNHsxZemI8zQkJq+1heReN9LHUbhAXooHRyNfO
+         yy9ndz0Nv2kJdKOxOyepZkXu6RA08LIFNba7eeCUyNitDJVdkj7en/49ufdAR8ooF2hP
+         G9qGyUwl1wtXc6yi4cmdKTUwZZLuHGa9YK865q06eP2AaiFf4sumNDchDZsywatfjeIH
+         P1V9bM9lF8rUQifoVuX83vpPnyX0Q/8wmUsKHDxAv/7W5Nqxp2RTbzhc+kDW6wM9SOga
+         flEzW/VES0aah+9b2JVc6Cv/hx+JrlY5rd0vV8K48OvCmoy3KacQxM0wzwv8qTs24vob
+         dg/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1694760660; x=1695365460;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=E+yPchd1OF14YEx7hFDIQf6gB7Zd0Tpalu5rQeIxJmg=;
+        b=ryJMc/IuhPPONS16yUP/XkTBur9m/lFLj3MJhquHLDuRagssq3vwMta4zMIhOdIyaV
+         md6Gc1BZWp6WKKUXi2p3Q5r1ST+EyFHFn2AU0JTNRA1qr6thwZkreDlVwFBqQDrG2gAo
+         +xuHGZQommikJM4ij4PqMpN8FoIuwpRX1MHRXRMXfMZU0z84H8tFrx3RuhBlI69ak1K/
+         whl3Ncan2rlL0n/pjc4gvbS0o/af5BpwoP3maVmhOq/oPHieDXijOEXdXfmNDIsX5w4L
+         UsEnq5YJ7QLTuniL4p0m1faV/BYDOJe3vydqRm62Ovs0+/B5kTSamm4Fp9OD7QciGKPE
+         Z3MQ==
+X-Gm-Message-State: AOJu0Ywwsjrkhz4PURBn/ybSuskabLIjHVG2wmwjCaV4Nq4/6v+vWqE9
+        BWKE7Jt7V+5DZFR4l5KDcibTNA==
+X-Google-Smtp-Source: AGHT+IH/8g+avoYqVMdv6S+pJjql4rz2e+Urfb+s7H/AE/YkelrHE8ZK2/YVDITmpvOiEWInE9tw1Q==
+X-Received: by 2002:a05:600c:ac8:b0:402:f54d:745 with SMTP id c8-20020a05600c0ac800b00402f54d0745mr778159wmr.17.1694760660045;
+        Thu, 14 Sep 2023 23:51:00 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.214.188])
+        by smtp.gmail.com with ESMTPSA id h16-20020a5d5490000000b0031773a8e5c4sm3559298wrv.37.2023.09.14.23.50.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Sep 2023 23:50:59 -0700 (PDT)
+Message-ID: <6438f3ad-23ff-0392-e549-d64ef499d739@linaro.org>
+Date:   Fri, 15 Sep 2023 08:50:57 +0200
 MIME-Version: 1.0
-X-Received: by 2002:a05:6870:5a97:b0:1c5:e4a5:6990 with SMTP id
- dt23-20020a0568705a9700b001c5e4a56990mr271000oab.5.1694759393144; Thu, 14 Sep
- 2023 23:29:53 -0700 (PDT)
-Date:   Thu, 14 Sep 2023 23:29:53 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009bb78206055feb7c@google.com>
-Subject: [syzbot] [serial?] memory leak in gsm_activate_mux
-From:   syzbot <syzbot+b5d1f455d385b2c7da3c@syzkaller.appspotmail.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+Subject: Re: [PATCH 3/4] dt-bindings: serial: document esp32s3-acm bindings
+To:     Max Filippov <jcmvbkbc@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>
+References: <20230913211449.668796-1-jcmvbkbc@gmail.com>
+ <20230913211449.668796-4-jcmvbkbc@gmail.com>
+ <196fb9ac-53b7-51a6-6ce4-9f980215fde4@linaro.org>
+ <CAMo8Bf+u3hkk8zW6EQUtQcAC5t-hUJ5+HoE8JDskBj4KyFK7xA@mail.gmail.com>
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAMo8Bf+u3hkk8zW6EQUtQcAC5t-hUJ5+HoE8JDskBj4KyFK7xA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+On 14/09/2023 22:47, Max Filippov wrote:
+> On Wed, Sep 13, 2023 at 10:57 PM Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org> wrote:
+>>
+>> On 13/09/2023 23:14, Max Filippov wrote:
+>>> Add documentation for the ESP32S3 ACM controller.
+>>
+>> A nit, subject: drop second/last, redundant "bindings". The
+>> "dt-bindings" prefix is already stating that these are bindings.
+> 
+> Ok.
+> 
+>>> Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+>>> ---
+>>>  .../bindings/serial/esp,esp32-acm.yaml        | 40 +++++++++++++++++++
+>>>  1 file changed, 40 insertions(+)
+>>>  create mode 100644 Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml b/Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
+>>> new file mode 100644
+>>> index 000000000000..dafbae38aa64
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
+>>> @@ -0,0 +1,40 @@
+>>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+>>> +
+>>> +%YAML 1.2
+>>> +---
+>>> +$id: http://devicetree.org/schemas/serial/esp,esp32-acm.yaml#
+>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>>> +
+>>> +title: ESP32S3 ACM controller
+>>> +
+>>> +maintainers:
+>>> +  - Max Filippov <jcmvbkbc@gmail.com>
+>>> +
+>>> +description: |
+>>
+>> Do not need '|' unless you need to preserve formatting.
+> 
+> Ok.
+> 
+>>> +  ESP32S3 ACM controller is a communication device found in the ESP32S3
+>>
+>> What is "ACM"?
+> 
+> It's an 'Abstract Control Model' as in USB CDC-ACM: 'Communication Device Class
+> - Abstract Control Model'.
+> 
+>> Why is this in serial? Only serial controllers are in serial.
+> 
+> Because it's a serial communication device. The SoC TRM calls this peripheral
+> 'USB Serial', but the USB part is fixed and is not controllable on the SoC side.
+> When you plug it into a host USB socket you get a serial port called ttyACM on
+> the host.
+> 
+>> The description is very vague, way too vague.
+> 
+> Is the following better?
+> 
+>   Fixed function USB CDC-ACM device controller of the Espressif ESP32S3 SoC.
 
-syzbot found the following issue on:
+Yes.
 
-HEAD commit:    0bb80ecc33a8 Linux 6.6-rc1
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=10a8aad8680000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=99ce3535087fc27
-dashboard link: https://syzkaller.appspot.com/bug?extid=b5d1f455d385b2c7da3c
-compiler:       gcc (Debian 12.2.0-14) 12.2.0, GNU ld (GNU Binutils for Debian) 2.40
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=163a9e30680000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14fcd4a0680000
+> 
+>>> +  SoC that is connected to one of its USB controllers.
+>>
+>> Same comments as previous patch.
+>>
+>>> +
+>>> +properties:
+>>> +  compatible:
+>>> +    const: esp,esp32s3-acm
+>>> +
+>>> +  reg:
+>>> +    maxItems: 1
+>>> +
+>>> +  interrupts:
+>>> +    maxItems: 1
+>>> +
+>>> +required:
+>>> +  - compatible
+>>> +  - reg
+>>> +  - interrupts
+>>> +
+>>> +additionalProperties: false
+>>> +
+>>> +examples:
+>>> +  - |
+>>> +    acm@60038000 {
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/ce21ae500663/disk-0bb80ecc.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/1d2f34908198/vmlinux-0bb80ecc.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/9c6f5eecda20/bzImage-0bb80ecc.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+b5d1f455d385b2c7da3c@syzkaller.appspotmail.com
-
-BUG: memory leak
-unreferenced object 0xffff888101230c00 (size 1024):
-  comm "syz-executor201", pid 5036, jiffies 4294942174 (age 8.190s)
-  hex dump (first 32 bytes):
-    00 78 0f 11 81 88 ff ff 00 00 00 00 00 00 00 00  .x..............
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff81573b75>] kmalloc_trace+0x25/0x90 mm/slab_common.c:1114
-    [<ffffffff827ec407>] kmalloc include/linux/slab.h:599 [inline]
-    [<ffffffff827ec407>] kzalloc include/linux/slab.h:720 [inline]
-    [<ffffffff827ec407>] gsm_dlci_alloc+0x27/0x1f0 drivers/tty/n_gsm.c:2640
-    [<ffffffff827ec5ec>] gsm_activate_mux+0x1c/0x1c0 drivers/tty/n_gsm.c:3129
-    [<ffffffff827f310f>] gsm_config_ext drivers/tty/n_gsm.c:3434 [inline]
-    [<ffffffff827f310f>] gsmld_ioctl+0x6cf/0x9f0 drivers/tty/n_gsm.c:3798
-    [<ffffffff827d7bbb>] tty_ioctl+0x3eb/0xc70 drivers/tty/tty_io.c:2785
-    [<ffffffff816b25f2>] vfs_ioctl fs/ioctl.c:51 [inline]
-    [<ffffffff816b25f2>] __do_sys_ioctl fs/ioctl.c:871 [inline]
-    [<ffffffff816b25f2>] __se_sys_ioctl fs/ioctl.c:857 [inline]
-    [<ffffffff816b25f2>] __x64_sys_ioctl+0xf2/0x140 fs/ioctl.c:857
-    [<ffffffff84b30008>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff84b30008>] do_syscall_64+0x38/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84c0008b>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-BUG: memory leak
-unreferenced object 0xffff888104f38000 (size 4096):
-  comm "syz-executor201", pid 5036, jiffies 4294942174 (age 8.190s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff815742ab>] __do_kmalloc_node mm/slab_common.c:1022 [inline]
-    [<ffffffff815742ab>] __kmalloc+0x4b/0x150 mm/slab_common.c:1036
-    [<ffffffff824f9f89>] kmalloc_array include/linux/slab.h:636 [inline]
-    [<ffffffff824f9f89>] __kfifo_alloc+0x89/0xe0 lib/kfifo.c:43
-    [<ffffffff827ec451>] gsm_dlci_alloc+0x71/0x1f0 drivers/tty/n_gsm.c:2645
-    [<ffffffff827ec5ec>] gsm_activate_mux+0x1c/0x1c0 drivers/tty/n_gsm.c:3129
-    [<ffffffff827f310f>] gsm_config_ext drivers/tty/n_gsm.c:3434 [inline]
-    [<ffffffff827f310f>] gsmld_ioctl+0x6cf/0x9f0 drivers/tty/n_gsm.c:3798
-    [<ffffffff827d7bbb>] tty_ioctl+0x3eb/0xc70 drivers/tty/tty_io.c:2785
-    [<ffffffff816b25f2>] vfs_ioctl fs/ioctl.c:51 [inline]
-    [<ffffffff816b25f2>] __do_sys_ioctl fs/ioctl.c:871 [inline]
-    [<ffffffff816b25f2>] __se_sys_ioctl fs/ioctl.c:857 [inline]
-    [<ffffffff816b25f2>] __x64_sys_ioctl+0xf2/0x140 fs/ioctl.c:857
-    [<ffffffff84b30008>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff84b30008>] do_syscall_64+0x38/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84c0008b>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+So this must be named "serial" now. ACM describes how this is interfaces
+to the SoC, right? Otherwise it would not be in "serial" directory and
+you would not be able to put serial devices as children.
 
 
+>>> +            compatible = "esp,esp32s3-acm";
+>>
+>> Use 4 spaces for example indentation.
+> 
+> Ok.
+> 
+>>> +            reg = <0x60038000 0x1000>;
+>>> +            interrupts = <96 3 0>;
+>>
+>> Same comments as previous patch.
+> 
+> These are not IRQ flags. In any case the contents of the IRQ
+> specification cells is not relevant here, right?
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Yes, if 0 is not an IRQ flag :)
+> 
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Best regards,
+Krzysztof
 
-If the bug is already fixed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
-
-If you want to overwrite bug's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the bug is a duplicate of another bug, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
