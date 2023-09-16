@@ -2,195 +2,185 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B75C1CD37B2
-	for <linux-serial@archiver.kernel.org>; Sat, 16 Sep 2023 01:17:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE2AC2BA18
+	for <linux-serial@archiver.kernel.org>; Sat, 16 Sep 2023 19:26:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231600AbjIPBQy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Sep 2023 21:16:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58856 "EHLO
+        id S236528AbjIPTZg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 16 Sep 2023 15:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238632AbjIPBQv (ORCPT
+        with ESMTP id S236096AbjIPTZM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Sep 2023 21:16:51 -0400
-Received: from zproxy1.foxvalley.net (zimbra.foxvalley.net [212.78.26.134])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 152FEE3
-        for <linux-serial@vger.kernel.org>; Fri, 15 Sep 2023 18:16:45 -0700 (PDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by zproxy1.foxvalley.net (Postfix) with ESMTP id 9206840FBD;
-        Fri, 15 Sep 2023 20:16:45 -0500 (CDT)
-Received: from zproxy1.foxvalley.net ([127.0.0.1])
- by localhost (zproxy1.foxvalley.net [127.0.0.1]) (amavis, port 10032)
- with ESMTP id ZqD2sSj6qYKV; Fri, 15 Sep 2023 20:16:45 -0500 (CDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by zproxy1.foxvalley.net (Postfix) with ESMTP id 4364E40FD3;
-        Fri, 15 Sep 2023 20:16:45 -0500 (CDT)
-X-Virus-Scanned: amavis at zproxy1.foxvalley.net
-Received: from zproxy1.foxvalley.net ([127.0.0.1])
- by localhost (zproxy1.foxvalley.net [127.0.0.1]) (amavis, port 10026)
- with ESMTP id gDZyrVq0tElg; Fri, 15 Sep 2023 20:16:45 -0500 (CDT)
-Received: from [192.168.1.3] (unknown [161.97.241.227])
-        by zproxy1.foxvalley.net (Postfix) with ESMTPSA id 1DC4C40FBD;
-        Fri, 15 Sep 2023 20:16:45 -0500 (CDT)
-Message-ID: <ec734abb-6d3c-69ec-c3e5-cb21b8829264@foxvalley.net>
-Date:   Fri, 15 Sep 2023 19:16:44 -0600
+        Sat, 16 Sep 2023 15:25:12 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1337139;
+        Sat, 16 Sep 2023 12:25:05 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1694892303;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=a8n0XjUZ6thKLzBg4zGbfNoI7edHQdzShat04z4KQ9g=;
+        b=1595OreDibrVkdt7HvKfIXGBRdDhpkYF4va8Y5P7THyGu6IKEtBOpeRp+5ix70xySRzy43
+        asMvQZecCOmGMWRYcu080G+L9CWyUXq6Ici0UHMCmWNOFiA6J0kEtVZfLTLrvZ/B2J0Oc+
+        wDGYuaobj/tfH9xqGfogbuUFtjeQGmKtjsJ1qU43qxM7Pjppc2jZQ32ZjMFlthF2SQaBJj
+        O2JwVy7ARL8HzUSjoago9x/w5z5h6ZhUSr40SKlB14BW6OAMzGEzY18YoDWTdX6sLf2nUI
+        TP8oLq2rZdl72SNz3pZDP6UC9LErJsogIkFN6HkmJFqBPd5i6OONJrz7mxpLzw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1694892303;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=a8n0XjUZ6thKLzBg4zGbfNoI7edHQdzShat04z4KQ9g=;
+        b=UAIBu/8YLJZNb8MQTJRU7mPKHsPbGztf8IDiPVKNv8oW2oQvlyr/pxxvzQH6JIayVVmAHv
+        JW7Glm3VPddLt6AA==
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+        linux-kernel@vger.kernel.org, Tobias Klauser <tklauser@distanz.ch>,
+        Thierry Reding <treding@nvidia.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, Al Cooper <alcooperx@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ilpo =?utf-8?Q?J?= =?utf-8?Q?=C3=A4rvinen?= 
+        <ilpo.jarvinen@linux.intel.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Davis <afd@ti.com>,
+        Matthew Howell <matthew.howell@sealevel.com>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Johan Hovold <johan@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        linux-mediatek@lists.infradead.org, Lukas Wunner <lukas@wunner.de>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Hongyu Xie <xiehongyu1@kylinos.cn>,
+        Jiamei Xie <jiamei.xie@arm.com>, Rob Herring <robh@kernel.org>,
+        delisun <delisun@pateo.com.cn>,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+        Yangtao Li <frank.li@vivo.com>,
+        Vineet Gupta <vgupta@kernel.org>,
+        linux-snps-arc@lists.infradead.org,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Sherry Sun <sherry.sun@nxp.com>,
+        Shenwei Wang <shenwei.wang@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Sergey Organov <sorganov@gmail.com>, Tom Rix <trix@redhat.com>,
+        Marek Vasut <marex@denx.de>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Jacky Huang <ychuang3@nuvoton.com>,
+        Shan-Chun Hung <schung@nuvoton.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Dmitry Rokosov <ddrokosov@sberdevices.ru>,
+        Lucas Tanure <tanure@linux.com>,
+        linux-amlogic@lists.infradead.org,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Takao Orito <orito.takao@socionext.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        linux-arm-msm@vger.kernel.org,
+        Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andreas =?utf-8?Q?F=C3=A4rber?= <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        linux-actions@lists.infradead.org,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        Yuan Can <yuancan@huawei.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-unisoc@lists.infradead.org,
+        Kevin Cernekee <cernekee@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-samsung-soc@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Lech Perczak <lech.perczak@camlingroup.com>,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Isaac True <isaac.true@canonical.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        linux-tegra@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Nick Hu <nick.hu@sifive.com>,
+        Ruan Jinjie <ruanjinjie@huawei.com>,
+        Samuel Holland <samuel.holland@sifive.com>,
+        linux-riscv@lists.infradead.org, Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        "David S. Miller" <davem@davemloft.net>,
+        sparclinux@vger.kernel.org, Hammer Hsieh <hammerh0314@gmail.com>,
+        Timur Tabi <timur@kernel.org>,
+        Mukesh Ojha <quic_mojha@quicinc.com>,
+        Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Michal Simek <michal.simek@amd.com>
+Subject: Re: [PATCH tty v1 00/74] serial: wrappers for uart port lock
+In-Reply-To: <alpine.DEB.2.21.2309151739290.57368@angie.orcam.me.uk>
+References: <20230914183831.587273-1-john.ogness@linutronix.de>
+ <alpine.DEB.2.21.2309141959100.57368@angie.orcam.me.uk>
+ <87il8b1w3l.ffs@tglx>
+ <alpine.DEB.2.21.2309151739290.57368@angie.orcam.me.uk>
+Date:   Sat, 16 Sep 2023 21:30:54 +0206
+Message-ID: <87edixncop.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
-Content-Language: en-US
-To:     linux-serial <linux-serial@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>
-From:   Dan Raymond <draymond@foxvalley.net>
-Subject: [PATCH v1] tty/serial: port I/O tracing on x86
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add support for port I/O tracing on x86.  Memory mapped I/O tracing is
-available on x86 via CONFIG_MMIOTRACE but that relies on page faults
-so it doesn't work with port I/O.  This feature uses tracepoints in a
-similar manner as CONFIG_TRACE_MMIO_ACCESS.
+On 2023-09-15, "Maciej W. Rozycki" <macro@orcam.me.uk> wrote:
+> Maybe dz.c shouldn't be touched by this series then?
 
-Signed-off-by: Dan Raymond <draymond@foxvalley.net>
----
- arch/x86/include/asm/shared/io.h | 11 +++++++
- arch/x86/lib/Makefile            |  1 +
- arch/x86/lib/trace_portio.c      | 18 ++++++++++++
- include/trace/events/portio.h    | 49 ++++++++++++++++++++++++++++++++
- 4 files changed, 79 insertions(+)
- create mode 100644 arch/x86/lib/trace_portio.c
- create mode 100644 include/trace/events/portio.h
+Correct. This series is only wrapping the uart port lock, which dz.c is
+not using.
 
-diff --git a/arch/x86/include/asm/shared/io.h b/arch/x86/include/asm/shared/io.h
-index c0ef921c0586..e7ef4212e00b 100644
---- a/arch/x86/include/asm/shared/io.h
-+++ b/arch/x86/include/asm/shared/io.h
-@@ -2,13 +2,23 @@
- #ifndef _ASM_X86_SHARED_IO_H
- #define _ASM_X86_SHARED_IO_H
- 
-+#include <linux/instruction_pointer.h>
- #include <linux/types.h>
- 
-+#if defined(CONFIG_TRACEPOINTS) && !defined(BOOT_COMPRESSED_MISC_H) && !defined(BOOT_BOOT_H)
-+extern void do_trace_portio_read(u32 value, u16 port, char width, long ip_addr);
-+extern void do_trace_portio_write(u32 value, u16 port, char width, long ip_addr);
-+#else
-+static inline void do_trace_portio_read(u32 value, u16 port, char width, long ip_addr) {}
-+static inline void do_trace_portio_write(u32 value, u16 port, char width, long ip_addr) {}
-+#endif
-+
- #define BUILDIO(bwl, bw, type)						\
- static inline void __out##bwl(type value, u16 port)			\
- {									\
- 	asm volatile("out" #bwl " %" #bw "0, %w1"			\
- 		     : : "a"(value), "Nd"(port));			\
-+	do_trace_portio_write(value, port, #bwl[0], _THIS_IP_);		\
- }									\
- 									\
- static inline type __in##bwl(u16 port)					\
-@@ -16,6 +26,7 @@ static inline type __in##bwl(u16 port)					\
- 	type value;							\
- 	asm volatile("in" #bwl " %w1, %" #bw "0"			\
- 		     : "=a"(value) : "Nd"(port));			\
-+	do_trace_portio_read(value, port, #bwl[0], _THIS_IP_);		\
- 	return value;							\
- }
- 
-diff --git a/arch/x86/lib/Makefile b/arch/x86/lib/Makefile
-index f76747862bd2..254f223c025d 100644
---- a/arch/x86/lib/Makefile
-+++ b/arch/x86/lib/Makefile
-@@ -40,6 +40,7 @@ $(obj)/inat.o: $(obj)/inat-tables.c
- clean-files := inat-tables.c
- 
- obj-$(CONFIG_SMP) += msr-smp.o cache-smp.o
-+obj-$(CONFIG_TRACEPOINTS) += trace_portio.o
- 
- lib-y := delay.o misc.o cmdline.o cpu.o
- lib-y += usercopy_$(BITS).o usercopy.o getuser.o putuser.o
-diff --git a/arch/x86/lib/trace_portio.c b/arch/x86/lib/trace_portio.c
-new file mode 100644
-index 000000000000..443361b460a5
---- /dev/null
-+++ b/arch/x86/lib/trace_portio.c
-@@ -0,0 +1,18 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+
-+#define CREATE_TRACE_POINTS
-+#include <trace/events/portio.h>
-+
-+void do_trace_portio_read(u32 value, u16 port, char width, long ip_addr)
-+{
-+	trace_portio_read(value, port, width, ip_addr);
-+}
-+EXPORT_SYMBOL_GPL(do_trace_portio_read);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(portio_read);
-+
-+void do_trace_portio_write(u32 value, u16 port, char width, long ip_addr)
-+{
-+	trace_portio_write(value, port, width, ip_addr);
-+}
-+EXPORT_SYMBOL_GPL(do_trace_portio_write);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(portio_write);
-diff --git a/include/trace/events/portio.h b/include/trace/events/portio.h
-new file mode 100644
-index 000000000000..3591a75a475e
---- /dev/null
-+++ b/include/trace/events/portio.h
-@@ -0,0 +1,49 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM portio
-+
-+#if !defined(_TRACE_PORTIO_H) || defined(TRACE_HEADER_MULTI_READ)
-+#define _TRACE_PORTIO_H
-+
-+#include <linux/tracepoint.h>
-+
-+DECLARE_EVENT_CLASS(portio_class,
-+	TP_PROTO(u32 value, u16 port, char width, long ip_addr),
-+
-+	TP_ARGS(value, port, width, ip_addr),
-+
-+	TP_STRUCT__entry(
-+		__field(u32, value)
-+		__field(u16, port)
-+		__field(char, width)
-+		__field(long, ip_addr)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->value = value;
-+		__entry->port = port;
-+		__entry->width = width;
-+		__entry->ip_addr = ip_addr;
-+	),
-+
-+	TP_printk("port=0x%04x value=0x%0*x %pS",
-+		__entry->port,
-+		__entry->width == 'b' ? 2 :
-+		__entry->width == 'w' ? 4 : 8,
-+		__entry->value, (void *)__entry->ip_addr)
-+);
-+
-+DEFINE_EVENT(portio_class, portio_read,
-+	TP_PROTO(u32 value, u16 port, char width, long ip_addr),
-+	TP_ARGS(value, port, width, ip_addr)
-+);
-+
-+DEFINE_EVENT(portio_class, portio_write,
-+	TP_PROTO(u32 value, u16 port, char width, long ip_addr),
-+	TP_ARGS(value, port, width, ip_addr)
-+);
-+
-+#endif /* _TRACE_PORTIO_H */
-+
-+/* This part must be outside protection */
-+#include <trace/define_trace.h>
+> Though obviously both drivers will have to be eventually adapted for
+> the ultimate console rework.
 
-base-commit: be8b93b5cc7d533eb8c9b0590cdac055ecafe13a
--- 
-2.25.1
+Correct.
+
+Thanks for clarifying how the hardware works.
+
+John
