@@ -2,89 +2,108 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E77CD37AF
-	for <linux-serial@archiver.kernel.org>; Sat, 16 Sep 2023 00:05:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FEC9CD37B3
+	for <linux-serial@archiver.kernel.org>; Sat, 16 Sep 2023 00:06:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230318AbjIPAEc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Sep 2023 20:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33674 "EHLO
+        id S234023AbjIPAFl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 15 Sep 2023 20:05:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234023AbjIPAEX (ORCPT
+        with ESMTP id S232867AbjIPAFS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Sep 2023 20:04:23 -0400
-Received: from zproxy1.foxvalley.net (zimbra.foxvalley.net [212.78.26.134])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 717C22102
-        for <linux-serial@vger.kernel.org>; Fri, 15 Sep 2023 17:04:18 -0700 (PDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by zproxy1.foxvalley.net (Postfix) with ESMTP id 0A97D40EE2;
-        Fri, 15 Sep 2023 19:04:18 -0500 (CDT)
-Received: from zproxy1.foxvalley.net ([127.0.0.1])
- by localhost (zproxy1.foxvalley.net [127.0.0.1]) (amavis, port 10032)
- with ESMTP id jkb_dfx-cqyP; Fri, 15 Sep 2023 19:04:17 -0500 (CDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by zproxy1.foxvalley.net (Postfix) with ESMTP id C1DFA40F0B;
-        Fri, 15 Sep 2023 19:04:17 -0500 (CDT)
-X-Virus-Scanned: amavis at zproxy1.foxvalley.net
-Received: from zproxy1.foxvalley.net ([127.0.0.1])
- by localhost (zproxy1.foxvalley.net [127.0.0.1]) (amavis, port 10026)
- with ESMTP id lxKlFKQE-kKk; Fri, 15 Sep 2023 19:04:17 -0500 (CDT)
-Received: from [192.168.1.3] (unknown [161.97.241.227])
-        by zproxy1.foxvalley.net (Postfix) with ESMTPSA id 926D840EE2;
-        Fri, 15 Sep 2023 19:04:17 -0500 (CDT)
-Message-ID: <80762c3a-2192-5384-8960-6b1cb54cab94@foxvalley.net>
-Date:   Fri, 15 Sep 2023 18:04:17 -0600
+        Fri, 15 Sep 2023 20:05:18 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9339B2102;
+        Fri, 15 Sep 2023 17:05:13 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id d2e1a72fcca58-68fb2e9ebbfso2263879b3a.2;
+        Fri, 15 Sep 2023 17:05:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1694822713; x=1695427513; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=uBFU91Ab8Ty50yBCscF+Su8H4xiggY1DMOJHupjwHzg=;
+        b=iR0jblj6A4F3WEwG0SY1rSNR3HzQymwwpzmcST0dKpzLP4Dboq9QmxzPyrebEPxS3n
+         QJvKCzw2b6gLni10oXASC6oenaRPcJKSUNEmVz/L3wDnYVSFXkqaO4IaTfeKUHtmNIbg
+         J0WH1YwAbxRQrJPAJGm/hpUiAFwR05DL+8w4iefR8txGUug7Jd0+SG1r91PYY8DnPid7
+         w3NiOV2jAZzETh6GMX/M15XRYhFrBj/YfwUB8wMYxQu6ejo7AqS9Vn+y4AgDot2OrxBc
+         IfJvTNDngVFnLIRhY1f0DH4VA9v6xXsw+HHG5Bfaoxqol3CeA0awWRTUF3Km4+4Eruh+
+         XJcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1694822713; x=1695427513;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uBFU91Ab8Ty50yBCscF+Su8H4xiggY1DMOJHupjwHzg=;
+        b=Dw4At7CEPRITC/Wm33K0D3wNod1Y3IRbz3gUHUQdbs2feq13z6y9xinpugFF3YoDdM
+         Ee8pUxHbR9De2LWjjAXoAAlRxaBWBZ1SByV4M8NIxiCg9EL1Jyu4X4UhAFMTP0uUlhAC
+         p1CkziOuk221bnX8TvrldyQINtEB8W2PozB0A4N15/geR8ZPRG8/GBXYK8CLkz88eWmW
+         0Rac5gfEkQS8gUF+6fiWrhQzxHQ2RdZumj4kcWC585xofd8Dcqw5MtGar1aaUfGwb7UH
+         PtopU71PtccAMGKip8bgZv7d6hdmemfNQqK43MmutJCDI1RG36sOl+UGZDe2udBpZlS9
+         WCyg==
+X-Gm-Message-State: AOJu0YyeVTYRHS+KV7MesUFXObrEe4kc5G0JwUqGbh71G3nHSl3Uu7pj
+        0Yhvl0K8+EphHZ5vcL723wI=
+X-Google-Smtp-Source: AGHT+IF0Gziwgjs8IBkPNW32gp0eqmvsqmMuvS0x7PTIdUhgCFb6Vt3ZXEPLS8yJVzATlvoLr0H0cw==
+X-Received: by 2002:a05:6a00:1588:b0:68c:4e22:8f78 with SMTP id u8-20020a056a00158800b0068c4e228f78mr3528463pfk.25.1694822712935;
+        Fri, 15 Sep 2023 17:05:12 -0700 (PDT)
+Received: from debian.me ([103.124.138.83])
+        by smtp.gmail.com with ESMTPSA id c5-20020aa78805000000b0068ff6d21563sm3569946pfo.148.2023.09.15.17.05.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Sep 2023 17:05:11 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 33456811F023; Sat, 16 Sep 2023 07:05:07 +0700 (WIB)
+Date:   Sat, 16 Sep 2023 07:05:07 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>, Tester47 <e598@gmx.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Regressions <regressions@lists.linux.dev>,
+        Linux TTY & Serial <linux-serial@vger.kernel.org>,
+        Linux AMDGPU <amd-gfx@lists.freedesktop.org>,
+        Linux DRI Development <dri-devel@lists.freedesktop.org>
+Subject: Re: Fwd: Kernel 6.6-rc1 fails to reboot or shutdown Ryzen 5825U
+Message-ID: <ZQTxM0JdyV8mpxbt@debian.me>
+References: <2bc62c07-2195-e378-c057-f28e8d4a6034@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
-Subject: Re: [PATCH v4] tty/serial: create debugfs interface for UART register
- tracing
-Content-Language: en-US
-From:   Dan Raymond <draymond@foxvalley.net>
-To:     linux-serial <linux-serial@vger.kernel.org>,
-        gregkh@linuxfoundation.org, ilpo.jarvinen@linux.intel.com,
-        andriy.shevchenko@intel.com
-References: <515ad583-5692-d4e0-6fee-cd242dd422b1@foxvalley.net>
-In-Reply-To: <515ad583-5692-d4e0-6fee-cd242dd422b1@foxvalley.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Xh9/EH8MO3HbfOrP"
+Content-Disposition: inline
+In-Reply-To: <2bc62c07-2195-e378-c057-f28e8d4a6034@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-I took Andy Shevchenko's suggestion and added port I/O tracing in
-a similar manner as the memory-mapped I/O tracing enabled with
-CONFIG_TRACE_MMIO_ACCESS.  I'll be submitting another patch for
-that shortly.  It works well and it provides another way to trace
-UART register accesses.  For most purposes it is probably superior to
-the method used in this patch because it leverages the existing kernel
-tracing framework.
 
-However, this patch might still be useful for debugging issues that
-are sensitive to timing because it uses less CPU resources.  It also
-uses less memory so a larger trace can be collected.  I did some more
-timing analysis and tried to minimize the impact of cache misses by
-reading the MSR register 100 times in a loop.  I added this test to
-serial8250_do_get_mctrl() and ran 'cat /proc/tty/driver/serial' to
-exercise the test.  Here are the results (trace overhead is measured
-in CPU cycles at 1GHz):
+--Xh9/EH8MO3HbfOrP
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-overhead   method
---------   ------------------------------------------
-       0   serial_debugfs disabled
-     158   serial_debugfs enabled without pipe reader
-     367   serial_debugfs enabled with pipe reader
+On Thu, Sep 14, 2023 at 02:03:00PM +0700, Bagas Sanjaya wrote:
+> #regzbot introduced: v6.5..v6.6 https://bugzilla.kernel.org/show_bug.cgi?=
+id=3D217905
+> #regzbot title: shutdown/reboot hang on Ryzen 5825U (stuck on amdgpu init=
+ialization)
+>=20
 
-       2   portio_tracefs disabled
-     461   portio_tracefs enabled but filtered
-     713   portio_tracefs enabled and collected
+Fixing up commit range:
 
-I made a few changes to v4 of this patch to support pipe semantics
-similar to how /sys/kernel/tracing/trace_pipe works.  You can now get
-unlimited trace depth by piping the trace buffer to disk as follows:
+#regzbot introduced: v6.5..v6.6-rc1
 
-cat /sys/kernel/debug/ttyS1/trace_pipe > trace.txt &
+--=20
+An old man doll... just what I always wanted! - Clara
 
-The 'cat' process will run in the background and it will terminate
-when tracing is disabled.  This doesn't come for free, however.  The
-wake_up() call adds a fair amount of overhead when a pipe reader is
-present as you can see in the measurements above.
+--Xh9/EH8MO3HbfOrP
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZQTxLQAKCRD2uYlJVVFO
+o8rgAPwIzBXYXKeK6pcEOYV2weLfbQUqgqPF2jOk3Ec5KM6KWQD/bUH8Sr/mt0Fy
+cMDw3XSd1I3kgWf0GonS0cLKCV7tpQ0=
+=kMdp
+-----END PGP SIGNATURE-----
+
+--Xh9/EH8MO3HbfOrP--
