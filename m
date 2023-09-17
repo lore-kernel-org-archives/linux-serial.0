@@ -2,80 +2,113 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36019C2BA12
-	for <linux-serial@archiver.kernel.org>; Sat, 16 Sep 2023 19:46:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8074FCD37B4
+	for <linux-serial@archiver.kernel.org>; Sun, 17 Sep 2023 12:12:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237149AbjIPTp4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 16 Sep 2023 15:45:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56076 "EHLO
+        id S229447AbjIQMM0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 17 Sep 2023 08:12:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237290AbjIPTpx (ORCPT
+        with ESMTP id S233681AbjIQMMM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 16 Sep 2023 15:45:53 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A19CDE;
-        Sat, 16 Sep 2023 12:45:48 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1694893546;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vsAZGo1LDmsx0eNheZ1sbFob+5+H0uD3ImSzoDM1eN0=;
-        b=Ds+V0jJykQ9snU22NpFxo4ZFJ7k6QcNANTNtwoXeut9StqCciy2CKhzSJ3IF4HQUID+lGH
-        Npouo7RRf3HCBpPhF7S86AO/gMAEKMwZ+P5Pi1pOELgXqldozfDcIs/BxLSGl1R6wAZvmh
-        QXSkFA5v17ArxaYo3yyyBzMSHb5wB4sE+Xp4R+eK5Y13lpDJhCvQcelHtPztue1qOtxwKA
-        hA5Rpniha4fVQndLxQQUrXosqCqJ/AbGytSyQ07aXdlqf0yV8zJUI1I76tUXP3DVUrOLVM
-        XFhDzpNQotd6d5uBrUhoJIE/77qhYo8uUk6yGehFiReFZLHZxzwFvNWqZaou+A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1694893546;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vsAZGo1LDmsx0eNheZ1sbFob+5+H0uD3ImSzoDM1eN0=;
-        b=SH3zc15x8zH5+UDgFth70vyyKqbSCkeqT0GSWAOnqct6ifOj0QlJgiGmOBEHOygxLdgWWg
-        PgDcBlGRjeb4VsCg==
-To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Marek Vasut <marex@denx.de>, Petr Mladek <pmladek@suse.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        Sun, 17 Sep 2023 08:12:12 -0400
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90543133
+        for <linux-serial@vger.kernel.org>; Sun, 17 Sep 2023 05:12:05 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qhqd8-0006Pi-8o; Sun, 17 Sep 2023 14:12:02 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qhqd2-006ywg-UO; Sun, 17 Sep 2023 14:11:56 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qhqd2-002K98-KK; Sun, 17 Sep 2023 14:11:56 +0200
+Date:   Sun, 17 Sep 2023 14:11:54 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Marek Vasut <marex@denx.de>, Rob Herring <robh@kernel.org>,
+        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
-        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
         Sergey Organov <sorganov@gmail.com>,
         NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org,
-        Ilpo =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Tom Rix <trix@redhat.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
         linux-arm-kernel@lists.infradead.org
 Subject: Re: [PATCH tty v1 29/74] serial: imx: Use port lock wrappers
-In-Reply-To: <20230915202122.ulgy4fdxpsxmecbo@pengutronix.de>
+Message-ID: <20230917121154.q3qopymscpodaago@pengutronix.de>
 References: <20230914183831.587273-1-john.ogness@linutronix.de>
  <20230914183831.587273-30-john.ogness@linutronix.de>
  <20230915202122.ulgy4fdxpsxmecbo@pengutronix.de>
-Date:   Sat, 16 Sep 2023 21:51:40 +0206
-Message-ID: <875y49nbq3.fsf@jogness.linutronix.de>
+ <875y49nbq3.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="l7zqlu23qfo3bmuk"
+Content-Disposition: inline
+In-Reply-To: <875y49nbq3.fsf@jogness.linutronix.de>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2023-09-15, Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> wrote:
->> Converted with coccinelle. No functional change.
->>=20
->> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
->
-> This lacks a Signed-off line by John.
 
-I really didn't have anything to do with the development of this
-series. (I just did basic testing and the posting to LKML.) But I have
-no problems adding my SoB if that is more appropriate.
+--l7zqlu23qfo3bmuk
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-John
+On Sat, Sep 16, 2023 at 09:51:40PM +0206, John Ogness wrote:
+> On 2023-09-15, Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> wrote:
+> >> Converted with coccinelle. No functional change.
+> >>=20
+> >> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> >
+> > This lacks a Signed-off line by John.
+>=20
+> I really didn't have anything to do with the development of this
+> series. (I just did basic testing and the posting to LKML.) But I have
+> no problems adding my SoB if that is more appropriate.
+
+If you sent it, you have enough to do with it, that your S-o-b is
+required. See Documentation/process/submitting-patches.rst for the
+details, which has for example:
+
+	Notably, the last Signed-off-by: must always be that of the
+	developer submitting the patch.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--l7zqlu23qfo3bmuk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmUG7QkACgkQj4D7WH0S
+/k4l1wgAhPgVKOI/Ns+ehxDqtdNDTj7YzMZ4kngFH8ul/aEkAfoOeLTPFDY085UN
+d3D25kBr5qYQnBhyjbnMep3KF8LnTJtSSLukAL6G9J2MF3QWkbnP/LQbWTdFSnwL
+kDfLxBDjyHckVT0KSG9WxAxbNEqvUBiyjPcYRp2Zu1ycfluNHc7B0NR31DGT6XX0
+J7cp8aiPXlDHZ+pYXcd7w/epJIXbp8wZzjI5ajbt/vhFLDfGQKJjPkiBqugw7vPE
+f8xYYbcFU2TifQUpvCCKX3wOfzmfyyL2lV2PvKViitXeOqm22cMIgAqSnqvkmVTL
+kRtzlb4y8xqH9AZvnsqGIvxQXuw11A==
+=OIHx
+-----END PGP SIGNATURE-----
+
+--l7zqlu23qfo3bmuk--
