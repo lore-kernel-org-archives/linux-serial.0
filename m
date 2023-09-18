@@ -2,111 +2,58 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C4F4C46CA1
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Sep 2023 08:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28DF9CD13D3
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Sep 2023 08:19:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236816AbjIRIKs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Sep 2023 04:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45234 "EHLO
+        id S240745AbjIRITA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 18 Sep 2023 04:19:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240500AbjIRIK0 (ORCPT
+        with ESMTP id S240805AbjIRISD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Sep 2023 04:10:26 -0400
+        Mon, 18 Sep 2023 04:18:03 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D87394;
-        Mon, 18 Sep 2023 01:10:20 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 738C4C433C7;
-        Mon, 18 Sep 2023 08:10:19 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E4510FE
+        for <linux-serial@vger.kernel.org>; Mon, 18 Sep 2023 01:15:34 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EBF5C433C9;
+        Mon, 18 Sep 2023 08:15:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1695024620;
-        bh=CRIeDeVdhZmvgG8ZW1WaCGgmchWzoCZjUdxtSTLJV/A=;
+        s=korg; t=1695024934;
+        bh=GrPLUcqSbqg173H9fEBQ9RcATliteOW6aotyWZrQMM4=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=x4BlyBJDiBWr1kd1Ig5VTJA/mMN3WIZiY996QmmespWNm9IV8PFWp3yInsK68FA9X
-         pAu+exvk7+koqJmeI5LwNpb+dUoceo1O/C6DB6/ykYfPdnYwTvI53vdUXWg81qQogQ
-         l0viG6PRuoPEA5xzSfKbu9QpAHlcpPq/YPeeX2KU=
-Date:   Mon, 18 Sep 2023 10:10:16 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, Ingo Molnar <mingo@elte.hu>,
-        kernel@collabora.com, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3] tty/sysrq: replace smp_processor_id() with get_cpu()
-Message-ID: <2023091835-quill-congress-b691@gregkh>
-References: <20230822102606.2821311-1-usama.anjum@collabora.com>
+        b=JblOenLCb/5YRonUbTEhWcmkzLW8MlIItxmrX9pqliJOKSh16i14VGeSbzwHzlBer
+         Dgd0gQI/2x2pdki5jcDRKi55PnL7f4YoA0I0LConQsUDgqK4IpuF05rjY5D434KmlC
+         CcVQaDzn624951Zi+yzOxixuRaCMrJXbezmMtMZw=
+Date:   Mon, 18 Sep 2023 10:15:31 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Dan Raymond <draymond@foxvalley.net>
+Cc:     linux-serial <linux-serial@vger.kernel.org>,
+        ilpo.jarvinen@linux.intel.com, andriy.shevchenko@intel.com
+Subject: Re: [PATCH v4] tty/serial: create debugfs interface for UART
+ register tracing
+Message-ID: <2023091828-cornball-mouse-6b87@gregkh>
+References: <515ad583-5692-d4e0-6fee-cd242dd422b1@foxvalley.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230822102606.2821311-1-usama.anjum@collabora.com>
+In-Reply-To: <515ad583-5692-d4e0-6fee-cd242dd422b1@foxvalley.net>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 22, 2023 at 03:26:06PM +0500, Muhammad Usama Anjum wrote:
-> The smp_processor_id() shouldn't be called from preemptible code.
-> Instead use get_cpu() and put_cpu() which disables preemption in
-> addition to getting the processor id. This fixes the following bug:
+On Fri, Sep 15, 2023 at 06:01:35PM -0600, Dan Raymond wrote:
+> Implement a UART register tracing facility using the debugfs.  This can be
+> used as a "serial port sniffer" to monitor UART traffic and line settings
+> with timestamps at microsecond granularity.  This can be useful for general
+> serial port debugging or to debug the UART driver itself.
 > 
-> [  119.143590] sysrq: Show backtrace of all active CPUs
-> [  119.143902] BUG: using smp_processor_id() in preemptible [00000000] code: bash/873
-> [  119.144586] caller is debug_smp_processor_id+0x20/0x30
-> [  119.144827] CPU: 6 PID: 873 Comm: bash Not tainted 5.10.124-dirty #3
-> [  119.144861] Hardware name: QEMU QEMU Virtual Machine, BIOS 2023.05-1 07/22/2023
-> [  119.145053] Call trace:
-> [  119.145093]  dump_backtrace+0x0/0x1a0
-> [  119.145122]  show_stack+0x18/0x70
-> [  119.145141]  dump_stack+0xc4/0x11c
-> [  119.145159]  check_preemption_disabled+0x100/0x110
-> [  119.145175]  debug_smp_processor_id+0x20/0x30
-> [  119.145195]  sysrq_handle_showallcpus+0x20/0xc0
-> [  119.145211]  __handle_sysrq+0x8c/0x1a0
-> [  119.145227]  write_sysrq_trigger+0x94/0x12c
-> [  119.145247]  proc_reg_write+0xa8/0xe4
-> [  119.145266]  vfs_write+0xec/0x280
-> [  119.145282]  ksys_write+0x6c/0x100
-> [  119.145298]  __arm64_sys_write+0x20/0x30
-> [  119.145315]  el0_svc_common.constprop.0+0x78/0x1e4
-> [  119.145332]  do_el0_svc+0x24/0x8c
-> [  119.145348]  el0_svc+0x10/0x20
-> [  119.145364]  el0_sync_handler+0x134/0x140
-> [  119.145381]  el0_sync+0x180/0x1c0
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 47cab6a722d4 ("debug lockups: Improve lockup detection, fix generic arch fallback")
-> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-> ---
-> Changes since v2:
-> - Add changelog and resend
-> 
-> Changes since v1:
-> - Add "Cc: stable@vger.kernel.org" tag
-> ---
->  drivers/tty/sysrq.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-> index 23198e3f1461a..6b4a28bcf2f5f 100644
-> --- a/drivers/tty/sysrq.c
-> +++ b/drivers/tty/sysrq.c
-> @@ -262,13 +262,14 @@ static void sysrq_handle_showallcpus(u8 key)
->  		if (in_hardirq())
->  			regs = get_irq_regs();
->  
-> -		pr_info("CPU%d:\n", smp_processor_id());
-> +		pr_info("CPU%d:\n", get_cpu());
+> Signed-off-by: Dan Raymond <draymond@foxvalley.net>
 
-Why not call put_cpu() right here?
-
->  		if (regs)
->  			show_regs(regs);
->  		else
->  			show_stack(NULL, NULL, KERN_INFO);
->  
->  		schedule_work(&sysrq_showallcpus);
-> +		put_cpu();
-
-Why wait so long here after you have scheduled work?  Please drop the
-cpu reference right away, you don't need to hold it for this length of
-time, right?
+Again, please stick with the tracing infrastructure and use that, like
+all other kernel subsystems do.  If each driver/subsystem were to create
+a tracing interface like this, it would be unmanageable.  So unless
+there is some really really good reason to not use the trace
+infrastructure, this patch can not be accepted.
 
 thanks,
 
