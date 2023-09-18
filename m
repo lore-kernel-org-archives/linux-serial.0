@@ -2,134 +2,81 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88474CD13D2
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Sep 2023 07:55:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44665CD13D2
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Sep 2023 08:00:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238554AbjIRHye (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Sep 2023 03:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42850 "EHLO
+        id S235603AbjIRH7x (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 18 Sep 2023 03:59:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240557AbjIRHyM (ORCPT
+        with ESMTP id S240643AbjIRH7r (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Sep 2023 03:54:12 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88ACD3AAE
-        for <linux-serial@vger.kernel.org>; Mon, 18 Sep 2023 00:50:49 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id 38308e7fff4ca-2c00b37ad84so10732661fa.0
-        for <linux-serial@vger.kernel.org>; Mon, 18 Sep 2023 00:50:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1695023432; x=1695628232; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=3y431fp7zImpDWkvcmWfe4LAHrYOVE+zuYJQGH6Vve8=;
-        b=SISV0CS8M5bxkkPkub1VMfMVIDBOE2nLvyt9OK5Yc8nrVfgdWuhLYOV0FuDEVzVBuA
-         3y83V5Fj2s7lqszoHZ/V5ULI7nGf5pqU9hCRz6mXzxrub0WXLerP9+QVWPGbUhCvKq+h
-         XXElYbaAKLNGJ260n5qM3flrj6P7SelcmSCBMAAy5TSpI5YnphYLFqBA790hDM9n0KQG
-         CTgkQvZFbspQuu8HgG2bObtmiCLwn52G9O3D+c13cWV0dYQS4RUaBAnnhBQJeMuC8jAh
-         j972D6N2rUmqCRyNSrUMYSNAQvkfsUT2QIyCl/EhbJSfRsSSB9MKqstiExrEqWgo+6Ps
-         9j7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695023432; x=1695628232;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3y431fp7zImpDWkvcmWfe4LAHrYOVE+zuYJQGH6Vve8=;
-        b=bk8b0FE78q4gKnnOZsV49jx2OfzBy1eHkeR6fAFLTwN3F1rTVvRoxMk89VyrkaFAWJ
-         amEUYRCj3gvn7bYDMNbfV7U+fYlEL1iDAhviWxlZ+AOa2f7BYsc+wS+GvgVqdeI+RW0t
-         7d+C04iTXJA7/NzubiEq53cueLgI7hTwMJPrWzgKQRyGBb+hnAzXp48FhFIn2H19DQcr
-         mPsIbsXugw/UuJmZX7hmy9/5ZxT/6xZ/6bYRyZ/6wIQvM+5/PQwRFAkyg/HQS7n6k9Zr
-         VTU5HeUSLfX82XoqtFw/h1Es6WN317NLVjficpxA869ghtztQFmy2I5rISdzRZIWShLq
-         Djww==
-X-Gm-Message-State: AOJu0Yz/yhsCtx192q2wdiM6jGqlpJdHmy0y6lXltPFOJdYZRwKrlDpb
-        rhynf4yROatue0skr6CuMdRlWQ==
-X-Google-Smtp-Source: AGHT+IGDwTGCqvI7ErFSwd5+9EaU2bhKoinXXuDhfENDvQM6ygOX7ZuQ/7Sf1mEAGjlycsO7Ct0+tg==
-X-Received: by 2002:a2e:9b87:0:b0:2bd:d4d:7fb6 with SMTP id z7-20020a2e9b87000000b002bd0d4d7fb6mr6798737lji.2.1695023431915;
-        Mon, 18 Sep 2023 00:50:31 -0700 (PDT)
-Received: from [192.168.32.2] ([82.78.167.145])
-        by smtp.gmail.com with ESMTPSA id r11-20020a170906350b00b009a5f1d1564dsm5993808eja.126.2023.09.18.00.50.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Sep 2023 00:50:31 -0700 (PDT)
-Message-ID: <701ee3bd-5d16-6b5f-2d34-4a4919c4c532@tuxon.dev>
-Date:   Mon, 18 Sep 2023 10:50:28 +0300
+        Mon, 18 Sep 2023 03:59:47 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE0610D5;
+        Mon, 18 Sep 2023 00:56:58 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 434C0C433C9;
+        Mon, 18 Sep 2023 07:56:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1695023761;
+        bh=LxrT4DjTJ8KTCe3CTiQGS6Js7PzesfHyt4s8YnU5JSE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XQqPCAFzllF9KAuDQlKVMnSIGX1iWq6y/clSyozwFbqVn7Sif/WSt35flcSi0T+4F
+         koMrnvyuYZvcW2BXBuY63/CMKEpDZuHaATfFytKlG4GnxklGIK9b0wRzzzqOSODKCH
+         pmhWhbf3mXx1dK5+wf1gRZVeOd20eAIu4vDTM9gM=
+Date:   Mon, 18 Sep 2023 09:55:56 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Zhang Shurong <zhang_shurong@foxmail.com>
+Cc:     patrice.chotard@st.com, jslaby@suse.com,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] serial: st-asc: Fix to check return value of
+ platform_get_irq() in asc_init_port()
+Message-ID: <2023091849-chill-haziness-1a35@gregkh>
+References: <tencent_7E9B9A5A97AD3B30550F1A8553D44F09C607@qq.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH 22/37] clk: renesas: add minimal boot support for RZ/G3S
- SoC
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, ulf.hansson@linaro.org,
-        linus.walleij@linaro.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, magnus.damm@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
-        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
-        nfraprado@collabora.com, rafal@milecki.pl,
-        wsa+renesas@sang-engineering.com,
-        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
- <20230912045157.177966-23-claudiu.beznea.uj@bp.renesas.com>
- <CAMuHMdUCpbPA3cDjNAq1irvr6z4Jux-5-tVDBuyr6nx_qOQGpg@mail.gmail.com>
-From:   claudiu beznea <claudiu.beznea@tuxon.dev>
-In-Reply-To: <CAMuHMdUCpbPA3cDjNAq1irvr6z4Jux-5-tVDBuyr6nx_qOQGpg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <tencent_7E9B9A5A97AD3B30550F1A8553D44F09C607@qq.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi, Geert,
-
-On 15.09.2023 15:52, Geert Uytterhoeven wrote:
-> Hi Claudiu,
+On Sat, Aug 26, 2023 at 03:54:59PM +0800, Zhang Shurong wrote:
+> The platform_get_irq might be failed and return a negative result. So
+> there should have an error handling code.
 > 
-> On Tue, Sep 12, 2023 at 6:53 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
->> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->>
->> Add minimal clock and reset support for RZ/G3S SoC to be able to boot
->> Linux from SD Card/eMMC. This includes necessary core clocks for booting
->> and GIC, SCIF, GPIO, SD0 mod clocks and resets.
->>
->> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> Fixed this by adding an error handling code.
 > 
-> Thanks for your patch!
+> Fixes: c4b058560762 ("serial:st-asc: Add ST ASC driver.")
+> Signed-off-by: Zhang Shurong <zhang_shurong@foxmail.com>
+> ---
+> v1->v2: generated patch based on tty-next tree.
+> 
+>  drivers/tty/serial/st-asc.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+> index e7048515a79c..3d60ab6e9581 100644
+> --- a/drivers/tty/serial/st-asc.c
+> +++ b/drivers/tty/serial/st-asc.c
+> @@ -723,9 +723,13 @@ static int asc_init_port(struct asc_port *ascport,
+>  	port->ops	= &asc_uart_ops;
+>  	port->fifosize	= ASC_FIFO_SIZE;
+>  	port->dev	= &pdev->dev;
+> -	port->irq	= platform_get_irq(pdev, 0);
+>  	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_ST_ASC_CONSOLE);
+>  
+> +	ret = platform_get_irq(pdev, 0);
+> +	if (ret < 0)
+> +		return ret;
+> +	port->irq = ret;
+> +
+>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>  	port->membase = devm_ioremap_resource(&pdev->dev, res);
+>  	if (IS_ERR(port->membase))
+> -- 
+> 2.30.2
 > 
 
-[ ... ]
-
->> +       CLK_PLL3_DIV2_4,
->> +       CLK_PLL3_DIV2_8,
->> +       CLK_PLL3_DIV6,
->> +       CLK_PLL4,
->> +       CLK_PLL6,
->> +       CLK_PLL6_DIV2,
->> +       CLK_SEL_SDHI0,
->> +       CLK_SEL_PLL4,
->> +       CLK_P1_DIV2,
->> +       CLK_P3_DIV2,
-> 
-> Do you need CLK_P1_DIV2 and CLK_P3_DIV2?
-> I don't see them in Figure 7.3 ("Clock System Diagram (2)").
-> 
-
-P1_DIV2 is clock source for MHU_PCLK or OTFDE_DDR_PCLK.
-P3_DIV2 is clock source for DMAC_PCLK, OTFDE_SPI_PCLK.
-These are expressed in clock list document
-(RZG3S_clock_list_r1.00_20230602.xlsx).
-
-It is true the functionality could be preserved even w/o these 2 clocks but
-I kept them here as I saw them as core clocks even though they are not
-present in the Clock System Diagram from HW manual.
-
-With these, would you prefer to keep these clocks or just remove them?
-
-Thank you,
-Claudiu Beznea
+Does not apply to 6.6-rc2 :(
