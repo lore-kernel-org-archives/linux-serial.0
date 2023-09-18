@@ -2,136 +2,228 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86967CD13D3
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Sep 2023 09:07:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1955DCD37B0
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Sep 2023 09:10:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239058AbjIRJGn convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Sep 2023 05:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44552 "EHLO
+        id S233174AbjIRJJy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 18 Sep 2023 05:09:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239007AbjIRJGQ (ORCPT
+        with ESMTP id S240950AbjIRJJo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Sep 2023 05:06:16 -0400
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0064E4;
-        Mon, 18 Sep 2023 02:06:10 -0700 (PDT)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-5925e580f12so44811767b3.3;
-        Mon, 18 Sep 2023 02:06:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695027970; x=1695632770;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qs7t8EoP8pSAMvY7e5Wa3knWe5J4fpmFbkl13nOAw0w=;
-        b=ASangAAReqz49pGrqOLafaQ+idBC5ru4rG4pgZ4zrZUaLZxpw1HH9XWu9G+6GD8o2M
-         CGBjDlGh+HZE3+mjABpREpn3t5H9oUcsGOAXRtmm5bQpWU+ZofmPCXN+tVogt+1ssbR6
-         k5Y3pkmOFhi+P86Bt5D0KL2WNilUkG6DFxa7yx0sOIRgD9ekQ0fknjcmUSekXnKJ7e9h
-         UYZHEo3XgmQvRTzS82NBVa3gPkuqNrjgKiYBIfClGV4I53WxmofdC+EU3J6P+zN5aGPD
-         ouRvU2FfBfqfiOw9vENCa3zVfaW+zTZQcG50Gul5R/DqUfwrKdiigx5xDhkzOoeTMzwL
-         U+qg==
-X-Gm-Message-State: AOJu0YwIZWW+Ncov1ytfciomsbcN122aNQ8zOQKtMAQalJMZ6EHDNfVF
-        1rtXr/ffIFgfqESie4FO5zFzoR0ZE51jWg==
-X-Google-Smtp-Source: AGHT+IHxEsyCSZcp0FIYgpyJsnDdOPWWLqZL/uowIeYryzrawSO/p1JRaqP1PdmNwfX05tOnKgO/AA==
-X-Received: by 2002:a81:6256:0:b0:58c:6121:48e8 with SMTP id w83-20020a816256000000b0058c612148e8mr9483173ywb.33.1695027969928;
-        Mon, 18 Sep 2023 02:06:09 -0700 (PDT)
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com. [209.85.128.171])
-        by smtp.gmail.com with ESMTPSA id m131-20020a817189000000b00589dbcf16cbsm2430341ywc.35.2023.09.18.02.06.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Sep 2023 02:06:09 -0700 (PDT)
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-59bcd927b45so44819007b3.1;
-        Mon, 18 Sep 2023 02:06:09 -0700 (PDT)
-X-Received: by 2002:a81:5e84:0:b0:589:c065:b419 with SMTP id
- s126-20020a815e84000000b00589c065b419mr10493285ywb.34.1695027969581; Mon, 18
- Sep 2023 02:06:09 -0700 (PDT)
+        Mon, 18 Sep 2023 05:09:44 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 865BD1B4;
+        Mon, 18 Sep 2023 02:08:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1695028115; x=1726564115;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=0uQHwVJQ/72M+fo4Gun6LQuu5CNMkqH8cPrlkJ03Qgg=;
+  b=Hku4CK9yyd1SiCf20NRTz0DN1jjI3SS7uCySHGx0ztfKcYcK8qicGF6e
+   H4UqrMZStPFLgfF9ZVdYxcmsWT1Jx20STEWkI8V5LUy499wmBRD1FbGas
+   KlkiuKjaUlqJIe/m5+HcH0oCl/IZYjs1U6eKGBcyGe8NxbHY7S8QkvVlT
+   UZhNhmS22ygnyHmxJ6CMwI99WkeUBs8s8qWPrAEocsgM6FGBxIeun8Wpi
+   2mGwnnlYjmJXT73sG/IyNju53x3xgb1h0I12/T3Y14hWY9yd6p0m4/TVW
+   nhGIqXE5KVyc+kTk8SdwfAyHCwVnmqK8b1W/7MU29gGD32hGqlfV7IhGI
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10836"; a="364647107"
+X-IronPort-AV: E=Sophos;i="6.02,156,1688454000"; 
+   d="scan'208";a="364647107"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2023 02:07:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10836"; a="745742708"
+X-IronPort-AV: E=Sophos;i="6.02,156,1688454000"; 
+   d="scan'208";a="745742708"
+Received: from nprotaso-mobl1.ccr.corp.intel.com ([10.252.49.156])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2023 02:07:48 -0700
+Date:   Mon, 18 Sep 2023 12:07:46 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Max Filippov <jcmvbkbc@gmail.com>
+cc:     LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>
+Subject: Re: [PATCH 2/4] drivers/tty/serial: add driver for the ESP32 UART
+In-Reply-To: <CAMo8BfJs+ToGNUCtMamU10EqpMR4PNDmJ8+4ya0jZtqTFwCEOQ@mail.gmail.com>
+Message-ID: <8c524546-a6ae-ac68-bac3-f1fcc2e2f732@linux.intel.com>
+References: <20230913211449.668796-1-jcmvbkbc@gmail.com> <20230913211449.668796-3-jcmvbkbc@gmail.com> <13c43e44-aaee-c44-a32-87febd81379c@linux.intel.com> <CAMo8BfJs+ToGNUCtMamU10EqpMR4PNDmJ8+4ya0jZtqTFwCEOQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
- <20230912045157.177966-23-claudiu.beznea.uj@bp.renesas.com>
- <CAMuHMdUCpbPA3cDjNAq1irvr6z4Jux-5-tVDBuyr6nx_qOQGpg@mail.gmail.com> <701ee3bd-5d16-6b5f-2d34-4a4919c4c532@tuxon.dev>
-In-Reply-To: <701ee3bd-5d16-6b5f-2d34-4a4919c4c532@tuxon.dev>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 18 Sep 2023 11:05:57 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdW1ikV_AZXM24_a1YT_mUV_Qyvi+rpzGJxVSAwBMPyE+w@mail.gmail.com>
-Message-ID: <CAMuHMdW1ikV_AZXM24_a1YT_mUV_Qyvi+rpzGJxVSAwBMPyE+w@mail.gmail.com>
-Subject: Re: [PATCH 22/37] clk: renesas: add minimal boot support for RZ/G3S SoC
-To:     claudiu beznea <claudiu.beznea@tuxon.dev>
-Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        ulf.hansson@linaro.org, linus.walleij@linaro.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
-        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
-        nfraprado@collabora.com, rafal@milecki.pl,
-        wsa+renesas@sang-engineering.com,
-        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: multipart/mixed; BOUNDARY="8323329-1672321599-1695027504=:1832"
+Content-ID: <e7c73a6f-538d-b59a-3363-469b1d98c1a@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Claudiu,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-On Mon, Sep 18, 2023 at 9:50 AM claudiu beznea <claudiu.beznea@tuxon.dev> wrote:
-> On 15.09.2023 15:52, Geert Uytterhoeven wrote:
-> > On Tue, Sep 12, 2023 at 6:53 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
-> >> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> >>
-> >> Add minimal clock and reset support for RZ/G3S SoC to be able to boot
-> >> Linux from SD Card/eMMC. This includes necessary core clocks for booting
-> >> and GIC, SCIF, GPIO, SD0 mod clocks and resets.
-> >>
-> >> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+--8323329-1672321599-1695027504=:1832
+Content-Type: text/plain; CHARSET=UTF-8
+Content-Transfer-Encoding: 8BIT
+Content-ID: <cb6f11fd-cc9f-822b-e14b-6a647c04a2f@linux.intel.com>
+
+On Fri, 15 Sep 2023, Max Filippov wrote:
+
+> On Thu, Sep 14, 2023 at 6:07 AM Ilpo Järvinen
+> <ilpo.jarvinen@linux.intel.com> wrote:
 > >
-> > Thanks for your patch!
+> > On Wed, 13 Sep 2023, Max Filippov wrote:
 > >
->
-> [ ... ]
->
-> >> +       CLK_PLL3_DIV2_4,
-> >> +       CLK_PLL3_DIV2_8,
-> >> +       CLK_PLL3_DIV6,
-> >> +       CLK_PLL4,
-> >> +       CLK_PLL6,
-> >> +       CLK_PLL6_DIV2,
-> >> +       CLK_SEL_SDHI0,
-> >> +       CLK_SEL_PLL4,
-> >> +       CLK_P1_DIV2,
-> >> +       CLK_P3_DIV2,
+> > > Add driver for the UART controllers of the Espressif ESP32 and ESP32S3
+> > > SoCs. Hardware specification is available at the following URLs:
+> > >
+> > >   https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf
+> > >   (Chapter 13 UART Controller)
+> > >   https://www.espressif.com/sites/default/files/documentation/esp32-s3_technical_reference_manual_en.pdf
+> > >   (Chapter 26 UART Controller)
+> > >
+> > > Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+> > > ---
+> > >  drivers/tty/serial/Kconfig       |  13 +
+> > >  drivers/tty/serial/Makefile      |   1 +
+> > >  drivers/tty/serial/esp32_uart.c  | 766 +++++++++++++++++++++++++++++++
+> > >  include/uapi/linux/serial_core.h |   3 +
+> > >  4 files changed, 783 insertions(+)
+> > >  create mode 100644 drivers/tty/serial/esp32_uart.c
+> > >
+> > > diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> > > index bdc568a4ab66..d9ca6b268f01 100644
+> > > --- a/drivers/tty/serial/Kconfig
+> > > +++ b/drivers/tty/serial/Kconfig
+> > > @@ -1578,6 +1578,19 @@ config SERIAL_NUVOTON_MA35D1_CONSOLE
+> > >         but you can alter that using a kernel command line option such as
+> > >         "console=ttyNVTx".
+> > >
+> > > +config SERIAL_ESP32
+> > > +     tristate "Espressif ESP32 UART support"
+> > > +     depends on XTENSA_PLATFORM_ESP32 || (COMPILE_TEST && OF)
+> > > +     select SERIAL_CORE
+> > > +     select SERIAL_CORE_CONSOLE
+> > > +     select SERIAL_EARLYCON
+> > > +     help
+> > > +       Driver for the UART controllers of the Espressif ESP32xx SoCs.
+> > > +       When earlycon option is enabled the following kernel command line
+> > > +       snippets may be used:
+> > > +         earlycon=esp32s3uart,mmio32,0x60000000,115200n8,40000000
+> > > +         earlycon=esp32uart,mmio32,0x3ff40000,115200n8
+> > > +
+> > >  endmenu
+> > >
+> > >  config SERIAL_MCTRL_GPIO
+> > > diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+> > > index 138abbc89738..7b73137df7f3 100644
+> > > --- a/drivers/tty/serial/Makefile
+> > > +++ b/drivers/tty/serial/Makefile
+> > > @@ -88,6 +88,7 @@ obj-$(CONFIG_SERIAL_MILBEAUT_USIO) += milbeaut_usio.o
+> > >  obj-$(CONFIG_SERIAL_SIFIVE)  += sifive.o
+> > >  obj-$(CONFIG_SERIAL_LITEUART) += liteuart.o
+> > >  obj-$(CONFIG_SERIAL_SUNPLUS) += sunplus-uart.o
+> > > +obj-$(CONFIG_SERIAL_ESP32)   += esp32_uart.o
+> > >
+> > >  # GPIOLIB helpers for modem control lines
+> > >  obj-$(CONFIG_SERIAL_MCTRL_GPIO)      += serial_mctrl_gpio.o
+> > > diff --git a/drivers/tty/serial/esp32_uart.c b/drivers/tty/serial/esp32_uart.c
+> > > new file mode 100644
+> > > index 000000000000..05ec0fce3a62
+> > > --- /dev/null
+> > > +++ b/drivers/tty/serial/esp32_uart.c
+
+> > > +static u32 esp32_uart_tx_fifo_cnt(struct uart_port *port)
+> > > +{
+> > > +     return (esp32_uart_read(port, UART_STATUS_REG) &
+> > > +             port_variant(port)->txfifo_cnt_mask) >> UART_TXFIFO_CNT_SHIFT;
+> > > +}
+> > > +
+> > > +static u32 esp32_uart_rx_fifo_cnt(struct uart_port *port)
+> > > +{
+> > > +     return (esp32_uart_read(port, UART_STATUS_REG) &
+> > > +             port_variant(port)->rxfifo_cnt_mask) >> UART_RXFIFO_CNT_SHIFT;
 > >
-> > Do you need CLK_P1_DIV2 and CLK_P3_DIV2?
-> > I don't see them in Figure 7.3 ("Clock System Diagram (2)").
+> > FIELD_GET().
+> 
+> I see how FIELD_GET can be used in other places, but here
+> port_variant(port)->rxfifo_cnt_mask is not a runtime constant and
+> FIELD_GET does not work with non-constant field definitions. Any
+> suggestions?
+
+Ah, I sorry. I probably moved around while composing the reply and it 
+seems I returned to add the comment to a wrong line.
+
+I don't have a good suggestion for this one besides breking it into 
+multiple lines for better readability.
+
+> > Use more lines (and a local variable) instead of splitting one line. It
+> > will be more readable that way.
+> 
+> Ok.
+
+> > > +     u32 frag = (port->uartclk * 16) / baud - div * 16;
+> > > +
+> > > +     if (div <= port_variant(port)->clkdiv_mask) {
+> > > +             esp32_uart_write(port, UART_CLKDIV_REG,
+> > > +                              div | (frag << UART_CLKDIV_FRAG_SHIFT));
+> >
+> > FIELD_PREP().
+> 
+> Ok.
+> 
+> > Also div be encapsulated into FIELD_PREP here even if it's
+> > shift is 0.
+> 
+> This field's mask, port_variant(port)->clkdiv_mask, is, again, not a runtime
+> constant. Any suggestion for this?
+
+So you're saying there are two different sized fields. I suppose it can be
+left as is then.
+
+> > > +                     port->uartclk / port_variant(port)->clkdiv_mask);
+> > > +             esp32_uart_write(port, UART_CLKDIV_REG,
+> > > +                              port_variant(port)->clkdiv_mask |
+> > > +                              UART_CLKDIV_FRAG_MASK);
+> >
+> > I think you want to make the meaning more obvious here by using
+> > FIELD_MAX(UART_CLKDIV_FRAG_MASK);
+> 
+> No. I think FIELD_MAX makes it less obvious, because to work properly
+> it must be not just
+>   FIELD_MAX(UART_CLKDIV_FRAG),
+> but
+>   FIELD_PREP(UART_CLKDIV_FRAG, FIELD_MAX(UART_CLKDIV_FRAG)).
+
+Maybe add FIELD_PREP_MAX() in a preparatory patch to bitfield.h as this 
+looks something that could be of use beyond this driver.
+
+> > > +     esp32_uart_write(port, UART_CONF0_REG, conf0);
+> > > +     esp32_uart_write(port, UART_CONF1_REG, conf1);
+> > > +     spin_unlock_irqrestore(&port->lock, flags);
+> > > +
+> > > +     /*
+> > > +      * esp32s3 may not support 9600, passing its minimal baud rate
+> > > +      * as the min argument would trigger a WARN inside uart_get_baud_rate
+> > > +      */
+> > > +     baud = uart_get_baud_rate(port, termios, old,
+> > > +                               0, port->uartclk / 16);
+> >
+> > This looks questionable solution to the problem mentioned in the comment.
+> > What happens when user asks for baudrates below the minimum supported one?
+> 
+> I'll change it to refuse to change to unsupported baud rate and set default
+> to 115200.
 >
-> P1_DIV2 is clock source for MHU_PCLK or OTFDE_DDR_PCLK.
-> P3_DIV2 is clock source for DMAC_PCLK, OTFDE_SPI_PCLK.
-> These are expressed in clock list document
-> (RZG3S_clock_list_r1.00_20230602.xlsx).
->
-> It is true the functionality could be preserved even w/o these 2 clocks but
-> I kept them here as I saw them as core clocks even though they are not
-> present in the Clock System Diagram from HW manual.
+> > You might need to do something touching the core code to handle the case
+> > where 9600 is not possible fallback.
+> 
+> I'd rather make a fallback to 115200, as it's a much more reasonable default.
 
-I don't think you can, as the module clock abstraction does not support
-specifying a divider.  Hence you do need an internal core clock between
-P1 and the module clock, to take care of the divider.
-
-> With these, would you prefer to keep these clocks or just remove them?
-
-Yes, as I expect that at least the DMAC_PCLK will be added, eventually.
-
-Gr{oetje,eeting}s,
-
-                        Geert
+I'll have to see the code before commenting on these.
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+ i.
+--8323329-1672321599-1695027504=:1832--
