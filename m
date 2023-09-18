@@ -2,177 +2,154 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB948C46CA1
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Sep 2023 06:24:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA9F1CD13D8
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Sep 2023 07:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230157AbjIRGXq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Sep 2023 02:23:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42176 "EHLO
+        id S239928AbjIRHA7 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 18 Sep 2023 03:00:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239784AbjIRGXl (ORCPT
+        with ESMTP id S239937AbjIRHAh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Sep 2023 02:23:41 -0400
-X-Greylist: delayed 577 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 17 Sep 2023 23:23:33 PDT
-Received: from mail.tkos.co.il (guitar.tkos.co.il [84.110.109.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93FC7E6;
-        Sun, 17 Sep 2023 23:23:33 -0700 (PDT)
-Received: from tarshish (unknown [10.0.8.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.tkos.co.il (Postfix) with ESMTPS id AD2884403F6;
-        Mon, 18 Sep 2023 09:13:45 +0300 (IDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
-        s=default; t=1695017625;
-        bh=Jkjkzg9+FWNM+WB3mmUntEF1fe6JQVYGAp+gupXTDJY=;
-        h=References:From:To:Cc:Subject:Date:In-reply-to:From;
-        b=Y3oGG3qHY8fQsIe5PHgjs3LNVmtf7Ri83TiHiCRWIUnD55zq3AVrYr6RtXoz5c2Xy
-         B5JDQNHaZV4oV3+87w8djkFun8KovoESmz74DTYTT+aFyiCY/taf0q59kox7iLR5NC
-         BLuYrPTPp+AzIzWJF6NE0ZQJX4CSz98/GNZg6KSOtstfXqhxFGlhypRp6QWyc1NB9g
-         rAzPGE3e7/JVOIOoTNKPlfyYnT3ZhLnZ7/v3DDYl2nP9DfOEAArsIXedIkknnvnfRk
-         ltEzYLDpgtf0a2+nnWIXhWDdccrGh7W23J4pmljZHdipS0Yz5aLlhWJGhEvDHDoVBl
-         O+jajhadsu9Xg==
-References: <20230914183831.587273-1-john.ogness@linutronix.de>
- <20230914183831.587273-25-john.ogness@linutronix.de>
-User-agent: mu4e 1.9.21; emacs 29.1
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, Tobias Klauser <tklauser@distanz.ch>,
-        Richard GENOUD <richard.genoud@gmail.com>,
-        Ilpo =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH tty v1 24/74] serial: digicolor: Use port lock wrappers
-Date:   Mon, 18 Sep 2023 09:13:03 +0300
-In-reply-to: <20230914183831.587273-25-john.ogness@linutronix.de>
-Message-ID: <87il88m2jk.fsf@tarshish>
+        Mon, 18 Sep 2023 03:00:37 -0400
+Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABAC9F1;
+        Mon, 18 Sep 2023 00:00:30 -0700 (PDT)
+Received: by mail-vk1-f181.google.com with SMTP id 71dfb90a1353d-493639d616eso1354153e0c.0;
+        Mon, 18 Sep 2023 00:00:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695020429; x=1695625229;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=37fpoq0Mdhc+DRKUSXeLkG6CRGdl6l+61BM4V42y2OQ=;
+        b=wg0X65Wp1LoBixsuQjWPsXOcpcHIT5OF1kZGNfxBj0IWz0xjIp9Odqr22pgoXE4HWs
+         W/fatH3ajRi8RhyA8XFifPrVlBO/DM48EJrO4+21gFVurFy4PQTnbv9LptOacQUHXO3+
+         jD1Py4Bpcv6fAPlzF/+daHnmBMaPUyFIuqI6gIhdbNfVe+gpBOqfPmgy/AKThx4rzn/v
+         4B7ZOHfEWQsQ2VvFUNYSIEtDsuZkv1K3fLJ3xhdYfFTdUSn+/3GStNWG+f0R0cveAzoR
+         5gLqVHt/ZeUt99zKXU9ONeuNRoNYvA6Pkmmi3R7mi+d0MSkedTM0ja0q4WNfeaENF5EQ
+         FFhA==
+X-Gm-Message-State: AOJu0YwI1ybc6GkWNXe1KXSkAsN3iY8x+ukNGMzDoCkR6h55vqa7Ah1k
+        BqUQiv+cDMpXjTgl/mTd4bnwc70o7vli+Q==
+X-Google-Smtp-Source: AGHT+IHMVvCmkRdoxk5z09MmDyIlMYkNVzcAoWPhbFuOQ8oW8zqpPKAPXZkAgHXpWGs3V4o7GDG/qg==
+X-Received: by 2002:a1f:48c3:0:b0:486:de54:b11 with SMTP id v186-20020a1f48c3000000b00486de540b11mr3185969vka.16.1695020429257;
+        Mon, 18 Sep 2023 00:00:29 -0700 (PDT)
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
+        by smtp.gmail.com with ESMTPSA id dt9-20020a05690c250900b0058ddb62f99bsm1685821ywb.38.2023.09.18.00.00.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Sep 2023 00:00:28 -0700 (PDT)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-59bc956b029so39683977b3.2;
+        Mon, 18 Sep 2023 00:00:28 -0700 (PDT)
+X-Received: by 2002:a0d:d808:0:b0:59b:cff1:a8eb with SMTP id
+ a8-20020a0dd808000000b0059bcff1a8ebmr7661269ywe.34.1695020428210; Mon, 18 Sep
+ 2023 00:00:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
+ <20230912045157.177966-23-claudiu.beznea.uj@bp.renesas.com>
+ <CAMuHMdUCpbPA3cDjNAq1irvr6z4Jux-5-tVDBuyr6nx_qOQGpg@mail.gmail.com> <e8d3f59a-fa1d-9993-6e84-99d976eb05fa@tuxon.dev>
+In-Reply-To: <e8d3f59a-fa1d-9993-6e84-99d976eb05fa@tuxon.dev>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 18 Sep 2023 09:00:16 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWcfK0GjKsho5+SOQT0mk9pRXTfPgu2rc-peAM2yeiV-Q@mail.gmail.com>
+Message-ID: <CAMuHMdWcfK0GjKsho5+SOQT0mk9pRXTfPgu2rc-peAM2yeiV-Q@mail.gmail.com>
+Subject: Re: [PATCH 22/37] clk: renesas: add minimal boot support for RZ/G3S SoC
+To:     claudiu beznea <claudiu.beznea@tuxon.dev>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        ulf.hansson@linaro.org, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
+        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
+        nfraprado@collabora.com, rafal@milecki.pl,
+        wsa+renesas@sang-engineering.com,
+        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi John,
+Hi Claudiu,
 
-On Thu, Sep 14 2023, John Ogness wrote:
-> From: Thomas Gleixner <tglx@linutronix.de>
+On Mon, Sep 18, 2023 at 8:20 AM claudiu beznea <claudiu.beznea@tuxon.dev> wrote:
+> On 15.09.2023 15:52, Geert Uytterhoeven wrote:
+> > On Tue, Sep 12, 2023 at 6:53 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> >> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> >>
+> >> Add minimal clock and reset support for RZ/G3S SoC to be able to boot
+> >> Linux from SD Card/eMMC. This includes necessary core clocks for booting
+> >> and GIC, SCIF, GPIO, SD0 mod clocks and resets.
+> >>
+> >> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> >
+> > Thanks for your patch!
+> >
+> >> --- /dev/null
+> >> +++ b/drivers/clk/renesas/r9a08g045-cpg.c
+> >> @@ -0,0 +1,217 @@
+> >> +// SPDX-License-Identifier: GPL-2.0
+> >> +/*
+> >> + * RZ/G3S CPG driver
+> >> + *
+> >> + * Copyright (C) 2023 Renesas Electronics Corp.
+> >> + */
+> >> +
+> >> +#include <linux/clk-provider.h>
+> >> +#include <linux/device.h>
+> >> +#include <linux/init.h>
+> >> +#include <linux/kernel.h>
+> >> +
+> >> +#include <dt-bindings/clock/r9a08g045-cpg.h>
+> >> +
+> >> +#include "rzg2l-cpg.h"
+> >> +
+> >> +/* RZ/G3S Specific registers. */
+> >> +#define G3S_CPG_PL2_DDIV               (0x204)
+> >> +#define G3S_CPG_SDHI_DDIV              (0x218)
+> >> +#define G3S_CPG_PLL_DSEL               (0x240)
+> >> +#define G3S_CPG_SDHI_DSEL              (0x244)
+> >> +#define G3S_CLKSELSTATUS               (0x284)
+> >> +
+> >> +/* RZ/G3S Specific division configuration.  */
+> >> +#define G3S_DIVPL2B            DDIV_PACK(G3S_CPG_PL2_DDIV, 4, 3)
+> >> +#define G3S_DIV_SDHI0          DDIV_PACK(G3S_CPG_SDHI_DDIV, 0, 1)
+> >> +
+> >> +/* RZ/G3S Clock status configuration. */
+> >> +#define G3S_DIVPL1A_STS                DDIV_PACK(CPG_CLKSTATUS, 0, 1)
+> >> +#define G3S_DIVPL2B_STS                DDIV_PACK(CPG_CLKSTATUS, 5, 1)
+> >> +#define G3S_DIVPL3A_STS                DDIV_PACK(CPG_CLKSTATUS, 8, 1)
+> >> +#define G3S_DIVPL3B_STS                DDIV_PACK(CPG_CLKSTATUS, 9, 1)
+> >> +#define G3S_DIVPL3C_STS                DDIV_PACK(CPG_CLKSTATUS, 10, 1)
+> >> +#define G3S_DIV_SDHI0_STS      DDIV_PACK(CPG_CLKSTATUS, 24, 1)
+> >
+> > The register at offset 0x280 is called CPG_CLKDIVSTATUS, so
+> > you probably want to add and use a G3S-specific definition.
 >
-> When a serial port is used for kernel console output, then all
-> modifications to the UART registers which are done from other contexts,
-> e.g. getty, termios, are interference points for the kernel console.
->
-> So far this has been ignored and the printk output is based on the
-> principle of hope. The rework of the console infrastructure which aims to
-> support threaded and atomic consoles, requires to mark sections which
-> modify the UART registers as unsafe. This allows the atomic write function
-> to make informed decisions and eventually to restore operational state. It
-> also allows to prevent the regular UART code from modifying UART registers
-> while printk output is in progress.
->
-> All modifications of UART registers are guarded by the UART port lock,
-> which provides an obvious synchronization point with the console
-> infrastructure.
->
-> To avoid adding this functionality to all UART drivers, wrap the
-> spin_[un]lock*() invocations for uart_port::lock into helper functions
-> which just contain the spin_[un]lock*() invocations for now. In a
-> subsequent step these helpers will gain the console synchronization
-> mechanisms.
->
-> Converted with coccinelle. No functional change.
->
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> I just used the already definition as there is no conflict at the moment,
+> it points to the same offset and is almost identical in name. With this
+> would you still prefer to have it separately ?
 
-Acked-by: Baruch Siach <baruch@tkos.co.il>
+I think that would be clearer for the casual reader.
+On RZ/G2L, there is a single CPG_CLKSTATUS register to monitor frequency
+dividers and selectors.
+On RZ/G3S, this register was split into separate registers to monitor
+frequency dividers (CPG_CLKDIVSTATUS) and selectors (CPG_CLKSELSTATUS).
+You had to add a new definition for the latter anyway.
 
-Thanks,
-baruch
+Gr{oetje,eeting}s,
 
-> ---
->  drivers/tty/serial/digicolor-usart.c | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
-> index 128b5479e813..5004125f3045 100644
-> --- a/drivers/tty/serial/digicolor-usart.c
-> +++ b/drivers/tty/serial/digicolor-usart.c
-> @@ -133,7 +133,7 @@ static void digicolor_uart_rx(struct uart_port *port)
->  {
->  	unsigned long flags;
->  
-> -	spin_lock_irqsave(&port->lock, flags);
-> +	uart_port_lock_irqsave(port, &flags);
->  
->  	while (1) {
->  		u8 status, ch, ch_flag;
-> @@ -172,7 +172,7 @@ static void digicolor_uart_rx(struct uart_port *port)
->  				 ch_flag);
->  	}
->  
-> -	spin_unlock_irqrestore(&port->lock, flags);
-> +	uart_port_unlock_irqrestore(port, flags);
->  
->  	tty_flip_buffer_push(&port->state->port);
->  }
-> @@ -185,7 +185,7 @@ static void digicolor_uart_tx(struct uart_port *port)
->  	if (digicolor_uart_tx_full(port))
->  		return;
->  
-> -	spin_lock_irqsave(&port->lock, flags);
-> +	uart_port_lock_irqsave(port, &flags);
->  
->  	if (port->x_char) {
->  		writeb_relaxed(port->x_char, port->membase + UA_EMI_REC);
-> @@ -211,7 +211,7 @@ static void digicolor_uart_tx(struct uart_port *port)
->  		uart_write_wakeup(port);
->  
->  out:
-> -	spin_unlock_irqrestore(&port->lock, flags);
-> +	uart_port_unlock_irqrestore(port, flags);
->  }
->  
->  static irqreturn_t digicolor_uart_int(int irq, void *dev_id)
-> @@ -333,7 +333,7 @@ static void digicolor_uart_set_termios(struct uart_port *port,
->  		port->ignore_status_mask |= UA_STATUS_OVERRUN_ERR
->  			| UA_STATUS_PARITY_ERR | UA_STATUS_FRAME_ERR;
->  
-> -	spin_lock_irqsave(&port->lock, flags);
-> +	uart_port_lock_irqsave(port, &flags);
->  
->  	uart_update_timeout(port, termios->c_cflag, baud);
->  
-> @@ -341,7 +341,7 @@ static void digicolor_uart_set_termios(struct uart_port *port,
->  	writeb_relaxed(divisor & 0xff, port->membase + UA_HBAUD_LO);
->  	writeb_relaxed(divisor >> 8, port->membase + UA_HBAUD_HI);
->  
-> -	spin_unlock_irqrestore(&port->lock, flags);
-> +	uart_port_unlock_irqrestore(port, flags);
->  }
->  
->  static const char *digicolor_uart_type(struct uart_port *port)
-> @@ -398,14 +398,14 @@ static void digicolor_uart_console_write(struct console *co, const char *c,
->  	int locked = 1;
->  
->  	if (oops_in_progress)
-> -		locked = spin_trylock_irqsave(&port->lock, flags);
-> +		locked = uart_port_trylock_irqsave(port, &flags);
->  	else
-> -		spin_lock_irqsave(&port->lock, flags);
-> +		uart_port_lock_irqsave(port, &flags);
->  
->  	uart_console_write(port, c, n, digicolor_uart_console_putchar);
->  
->  	if (locked)
-> -		spin_unlock_irqrestore(&port->lock, flags);
-> +		uart_port_unlock_irqrestore(port, flags);
->  
->  	/* Wait for transmitter to become empty */
->  	do {
-
+                        Geert
 
 -- 
-                                                     ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
