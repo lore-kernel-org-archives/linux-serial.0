@@ -2,95 +2,131 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7223DCE79A9
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Sep 2023 19:51:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D513CE79A9
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Sep 2023 19:55:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232883AbjISTvU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Sep 2023 15:51:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60824 "EHLO
+        id S232959AbjISTzE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 19 Sep 2023 15:55:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232036AbjISTvU (ORCPT
+        with ESMTP id S232088AbjISTzD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Sep 2023 15:51:20 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3DC8F;
-        Tue, 19 Sep 2023 12:51:14 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1695153073;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oaZuXVH/yWX2HfqC1wT9oG9U7tC9Fe66Kju6+PemjNE=;
-        b=hxH2gWis1h/G6X0KO8PF1cKbP5Ze7IroBs9DlpFMtSTvzIYmZjfGN7d9zGW1rW5aVG5yui
-        nH28E1NuEVBsVNK/+KKe/0gXSEYzFyjvqC8pz+ruKv9q2uqUfIvqG6ItSvoUeFbMkwogfc
-        nnIavRTX8yo7aflQ9wBxDuv6XOnHTSURJQOAh2mDP6Fn5lmlIs22t2YJynb2cl4jLYtoeD
-        i3WzP36kzThI2KBbQDbIcjVYqmMrURmG2r0rZznxyUbTgSlVGGzAKchPM9pgILz6KAUs+j
-        e0Wu9ccdMXdpgT2DJXifCQTEJ//D9t6q/1VRN6lmWIPVI3yKNH8CSMejDAPOuA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1695153073;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oaZuXVH/yWX2HfqC1wT9oG9U7tC9Fe66Kju6+PemjNE=;
-        b=v7iZwIgVAXht5h0chh0hokvJsE5IDEj70BLcZ5t7baL2FwOEj3NfsQicLMFBYOO48Nv2Hp
-        Lzfn7jTNZtHxDfCA==
-To:     Petr Mladek <pmladek@suse.com>,
-        John Ogness <john.ogness@linutronix.de>
+        Tue, 19 Sep 2023 15:55:03 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C078F;
+        Tue, 19 Sep 2023 12:54:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1695153298; x=1726689298;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Bepkwmn/REb0biKQxCPTgmoT59eVotqTB0kTZUaw9lM=;
+  b=d3fUji3fHZsSwfN9lc7Kftc3oSBGNvPjH69U615F31lzjvpF+pjfU56e
+   ZQFrJbpeSLh5pNu45pDsTq5Gt8eV2ihDz86rjJAY9gwn8uLsf+/jOOx/T
+   7HQiPFHJR1NDeixqK1xPjYTc6agw31na7DcRwhkNz8aQY2oEHTb7fRPmT
+   DydXjzO+HV2f9t4sL+QuIrjrQ9ZiAzX3ByVhlcdneQJKH8yXqx+QMTvdk
+   hOE5rRphHGLt4MuMaJ1wYuWQm2qti7OvU2HVwyaqNjWB4+Nx3f93DZboK
+   JUWAe55+ZSmyUmtTatLNZWaAFCPiAwsxlBZ0cJnsu5y6vEB/4UVVW+mBb
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10838"; a="383874532"
+X-IronPort-AV: E=Sophos;i="6.02,160,1688454000"; 
+   d="scan'208";a="383874532"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2023 12:54:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10838"; a="746354996"
+X-IronPort-AV: E=Sophos;i="6.02,160,1688454000"; 
+   d="scan'208";a="746354996"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga002.jf.intel.com with ESMTP; 19 Sep 2023 12:54:54 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 9473545B; Tue, 19 Sep 2023 22:54:53 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH tty v1 01/74] serial: core: Provide port lock wrappers
-In-Reply-To: <ZQmvMMRvnUxh1NJn@alley>
-References: <20230914183831.587273-1-john.ogness@linutronix.de>
- <20230914183831.587273-2-john.ogness@linutronix.de>
- <ZQmvMMRvnUxh1NJn@alley>
-Date:   Tue, 19 Sep 2023 21:51:12 +0200
-Message-ID: <87msxiuekv.ffs@tglx>
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Andi Shyti <andi.shyti@linux.intel.com>
+Subject: [PATCH v1 1/1] serial: 8250_aspeed_vuart: Use devm_clk_get_enabled()
+Date:   Tue, 19 Sep 2023 22:54:50 +0300
+Message-Id: <20230919195450.3197881-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.40.0.1.gaa8946217a0b
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Sep 19 2023 at 16:24, Petr Mladek wrote:
-> On Thu 2023-09-14 20:43:18, John Ogness wrote:
-> IMHO, it would have been better to pass the flags variable directly
-> via a macro as it is done in most *_lock_*_irqsafe() APIs. I mean
-> something like:
->
-> /**
->  * uart_port_trylock_irqsave - Try to lock the UART port, save and disable interrupts
->  * @up:		Pointer to UART port structure
->  * @flags:	Interrupt flags storage
->  *
->  * Returns: True if lock was acquired, false otherwise
->  */
-> #define uart_port_lock_irqsave(up, flags)		\
-> ({							\
-> 	local_irq_save(flags);				\
-> 	uart_port_lock(lock)				\
-> })
+Use devm_clk_get_enabled() to simplify the code.
 
-It's worse.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_aspeed_vuart.c | 17 +++++------------
+ 1 file changed, 5 insertions(+), 12 deletions(-)
 
-     1) Macros are not type safe by themself and rely on type safety
-        of the inner workings.
+diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+index 7a4537a1d66c..270b3a710eb6 100644
+--- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
++++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+@@ -34,7 +34,6 @@
+ 
+ struct aspeed_vuart {
+ 	struct device		*dev;
+-	struct clk		*clk;
+ 	int			line;
+ 	struct timer_list	unthrottle_timer;
+ 	struct uart_8250_port	*port;
+@@ -422,6 +421,7 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
+ 	struct resource *res;
+ 	u32 clk, prop, sirq[2];
+ 	int rc, sirq_polarity;
++	struct clk *vclk;
+ 
+ 	np = pdev->dev.of_node;
+ 
+@@ -454,18 +454,13 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
+ 		return rc;
+ 
+ 	if (of_property_read_u32(np, "clock-frequency", &clk)) {
+-		vuart->clk = devm_clk_get(&pdev->dev, NULL);
+-		if (IS_ERR(vuart->clk)) {
+-			rc = dev_err_probe(dev, PTR_ERR(vuart->clk),
+-					   "clk or clock-frequency not defined\n");
++		vclk = devm_clk_get_enabled(dev, NULL);
++		if (IS_ERR(vclk)) {
++			rc = dev_err_probe(dev, PTR_ERR(vclk), "clk or clock-frequency not defined\n");
+ 			goto err_sysfs_remove;
+ 		}
+ 
+-		rc = clk_prepare_enable(vuart->clk);
+-		if (rc < 0)
+-			goto err_sysfs_remove;
+-
+-		clk = clk_get_rate(vuart->clk);
++		clk = clk_get_rate(vclk);
+ 	}
+ 
+ 	/* If current-speed was set, then try not to change it. */
+@@ -565,7 +560,6 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ err_clk_disable:
+-	clk_disable_unprepare(vuart->clk);
+ 	irq_dispose_mapping(port.port.irq);
+ err_sysfs_remove:
+ 	sysfs_remove_group(&vuart->dev->kobj, &aspeed_vuart_attr_group);
+@@ -580,7 +574,6 @@ static int aspeed_vuart_remove(struct platform_device *pdev)
+ 	aspeed_vuart_set_enabled(vuart, false);
+ 	serial8250_unregister_port(vuart->line);
+ 	sysfs_remove_group(&vuart->dev->kobj, &aspeed_vuart_attr_group);
+-	clk_disable_unprepare(vuart->clk);
+ 
+ 	return 0;
+ }
+-- 
+2.40.0.1.gaa8946217a0b
 
-     2) Macros are bad for grep as you can't search for a 'struct foo *'
-        argument. Even semantic parsers have their problems with macro
-        constructs. I just learned that again when doing this.
-
-     3) Macros are just horrible to read
-
-     4) If you want to out of line the wrapper later, then you still
-        have to keep the macro around because the 'flags' argument is by
-        value and not a pointer.
-
-From a code generation point of view it's completely irrelevant whether
-you have a macro or an inline. That was different 25 years ago, but who
-cares about museum compilers today.
-
-Thanks,
-
-        tglx
