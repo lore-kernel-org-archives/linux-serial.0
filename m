@@ -2,89 +2,69 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B231CD54A9
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Sep 2023 09:22:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C601CD54AB
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Sep 2023 09:32:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229497AbjISJWk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Sep 2023 05:22:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49390 "EHLO
+        id S231320AbjISJcI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 19 Sep 2023 05:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229811AbjISJWj (ORCPT
+        with ESMTP id S230262AbjISJcG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Sep 2023 05:22:39 -0400
-Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C867F2;
-        Tue, 19 Sep 2023 02:22:33 -0700 (PDT)
-Received: by mail-oo1-xc30.google.com with SMTP id 006d021491bc7-5733aa10291so3510201eaf.3;
-        Tue, 19 Sep 2023 02:22:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1695115352; x=1695720152; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=K7cl88MG2Y1v5NFU8r78g+h9zXI7wnsANxaBl2bLSTs=;
-        b=jlw7oTsZ6qBDh4lEUeYrARy8ODBYLi1nFAAqfDAVHkBTeOMV8+g4cYJU5AXIsiEBx2
-         Zlhk7leVulBydC21U39MXfWhaWIzOk1FZx8vxPAWMWqpQJzlKj7hnfwY7cG2Xo4t0+qd
-         aJv9nFED/dPoSbrtMyMzlTSRKFzy62UjrzQVANeXIpJhS1/QskwjHWdCAqaKAnK0IyYI
-         c4d/yOlA9BTZunZxQBe0lsSrcZHiJzgS+YUl8XhSDC9Tw68D5/qk48L74ohB9wfUWGBi
-         dHEKJN162sMot2jZzKOiSeNoFWJr6dt8uAFWNW+QEhOU0yizpO1V0/pbw9AquuYjMwHR
-         hDlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695115352; x=1695720152;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=K7cl88MG2Y1v5NFU8r78g+h9zXI7wnsANxaBl2bLSTs=;
-        b=CSt1x/losjBrrJKZaO5K/ygTcJWKuDmKe/ZDoaXGhUzFJpqygGr2oi4AL7Ztbssnzd
-         5Q3gDEtiUpnxzhjezHJZ5AknID0/vUFpMjGBpOEuwzd937nojBOB8CrkgRKyV0oItKae
-         MKgE/du3IR+yezyUUaoduhRNMqCyfYPhcYTYm+bPkqEckUMqGP4mMJQKk805CBKFSX91
-         dauZhcty20orooYPq0Vxoxy9IEob4OA6EA+d8NGS6kvCIGLb4QUOFUGYCyTazKxxSq8W
-         uZJHLGEw6OIyR+EOGNuR2E4LtX4F8MIPTbYuwEFXcMoimpYRvlCIq/tzbCoIxe4ESgOb
-         R72A==
-X-Gm-Message-State: AOJu0Yyyli7ZR6GY1Guv/IGMUhP0fUbUZOxHoU0JIzY51eHYc3ciTx3z
-        7UtJcsc7ODz7BbRYIAGM5WQ=
-X-Google-Smtp-Source: AGHT+IFWUBZvig2UdoO1fZW/LtSJGwCN7ZDrclibi3mQki3DRLhLXKovo7OY99nt2G7Bbuq/ce46vw==
-X-Received: by 2002:a05:6358:2806:b0:13a:c28f:3cd7 with SMTP id k6-20020a056358280600b0013ac28f3cd7mr13733452rwb.14.1695115352210;
-        Tue, 19 Sep 2023 02:22:32 -0700 (PDT)
-Received: from pek-lxu-l1.wrs.com ([111.198.228.56])
-        by smtp.gmail.com with ESMTPSA id q12-20020a638c4c000000b005637030d00csm7829270pgn.30.2023.09.19.02.22.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Sep 2023 02:22:31 -0700 (PDT)
-From:   Edward AD <twuufnxlz@gmail.com>
-To:     gregkh@linuxfoundation.org
+        Tue, 19 Sep 2023 05:32:06 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16572EC;
+        Tue, 19 Sep 2023 02:32:01 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 200F1C433B9;
+        Tue, 19 Sep 2023 09:31:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1695115920;
+        bh=XoKfY+2bobKh/T78yDrtW3xvz2h+QyrN4E4QTW95BE4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mVsJ0b6euwIwWufSA/LmyTOQF4AIwvp6znQq4JDF0eufBxQPs9o/DkMoTz4rmizr6
+         FCj2YNCSk5Z/v/uAk6JqJKXTpyMc1umm9Nx+iIRbLj1OSFgnUBR3SpQRMEZ31Lf+1y
+         TxoAhKSu9Eck8DWjb8o1lS5/Zwb/ezjTk+rq5FMQ=
+Date:   Tue, 19 Sep 2023 11:31:57 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Edward AD <twuufnxlz@gmail.com>
 Cc:     eadavis@sina.com, jirislaby@kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         syzbot+b5d1f455d385b2c7da3c@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, twuufnxlz@gmail.com
+        syzkaller-bugs@googlegroups.com
 Subject: Re: [PATCH] tty: fix memory leak in gsm_activate_mux
-Date:   Tue, 19 Sep 2023 17:22:26 +0800
-Message-ID: <20230919092225.3732786-2-twuufnxlz@gmail.com>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <2023091922-unplug-flask-f2e5@gregkh>
+Message-ID: <2023091921-duke-gory-866e@gregkh>
 References: <2023091922-unplug-flask-f2e5@gregkh>
+ <20230919092225.3732786-2-twuufnxlz@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230919092225.3732786-2-twuufnxlz@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 19 Sep 2023 10:29:08 +0200 Greg KH wrote:
-> > When the call to gsm_register_devices() fails, we need to reclaim the memory
-> > requested in gsm_dlci_alloc().
-> >
-> > Fixes: 01aecd917114 ("tty: n_gsm: fix tty registration before control channel open")
-> > Reported-and-tested-by: syzbot+b5d1f455d385b2c7da3c@syzkaller.appspotmail.com
-> > Signed-off-by: Edward AD <twuufnxlz@gmail.com>
-> 
-> Please use your company name/email address, and then just set a manual
-> "From:" line as the first line in the changelog as the documentation
-> asks.  That's how developers work around their broken corporate email
-> systems (but really, you should go and poke your IT group to fix it.)
-This repair was completed in my personal time. Additionally, there may be a 
-possibility of the company's email being thrown away by 'lore.kernel.org'. 
-If you are not very strict with this, I will continue to use my private email.
+On Tue, Sep 19, 2023 at 05:22:26PM +0800, Edward AD wrote:
+> On Tue, 19 Sep 2023 10:29:08 +0200 Greg KH wrote:
+> > > When the call to gsm_register_devices() fails, we need to reclaim the memory
+> > > requested in gsm_dlci_alloc().
+> > >
+> > > Fixes: 01aecd917114 ("tty: n_gsm: fix tty registration before control channel open")
+> > > Reported-and-tested-by: syzbot+b5d1f455d385b2c7da3c@syzkaller.appspotmail.com
+> > > Signed-off-by: Edward AD <twuufnxlz@gmail.com>
+> > 
+> > Please use your company name/email address, and then just set a manual
+> > "From:" line as the first line in the changelog as the documentation
+> > asks.  That's how developers work around their broken corporate email
+> > systems (but really, you should go and poke your IT group to fix it.)
+> This repair was completed in my personal time. Additionally, there may be a 
+> possibility of the company's email being thrown away by 'lore.kernel.org'. 
+> If you are not very strict with this, I will continue to use my private email.
 
-I will only keep one line starting with 'From:' in the patch.
+As you previously submitted this under your company name/address, we
+have to be strict for obvious reasons, sorry.
 
-Thanks,
-edward
+> I will only keep one line starting with 'From:' in the patch.
+
+I don't understand what you mean by this.
+
+greg k-h
