@@ -2,38 +2,38 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A58CD54AB
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Sep 2023 08:52:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C685CD54AC
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Sep 2023 08:52:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230364AbjISIwM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Sep 2023 04:52:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40456 "EHLO
+        id S230351AbjISIwN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 19 Sep 2023 04:52:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbjISIwI (ORCPT
+        with ESMTP id S230369AbjISIwL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Sep 2023 04:52:08 -0400
+        Tue, 19 Sep 2023 04:52:11 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B11115;
-        Tue, 19 Sep 2023 01:52:02 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 871DCC433C9;
-        Tue, 19 Sep 2023 08:52:01 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B97E6;
+        Tue, 19 Sep 2023 01:52:05 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89483C433CA;
+        Tue, 19 Sep 2023 08:52:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1695113522;
-        bh=G9M97eO3CGXGTSXO+0/2OlKFcuUp/E1ELuqJbqNhEGc=;
+        s=k20201202; t=1695113525;
+        bh=BIErATDceY6ExeUaCulU3mr2Dddd6kPOEIhHuMduq7w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uJQll1ZmauxeJU4pKgcDlD9rkOF/GzfxVwwWk5QHvDrGkRFAPLBvRh0ztgj8f6wRO
-         5r3+MJWp4UI1M5bXxrptPZMDsdAGuA/40twKpUGHiWJJeLrjQQlpZcjcm4/dBFPLHQ
-         cfF2jDWFortZ7UC+wfaYvFya8RTu2hh8SLj1+m9GA0HPzoLjt7/wkBqBIvQjgeXGM0
-         wOhBp3ePQlLHOaCv5mihegcPO2GkEugER1OmTU9rN46CKUNZGrLPhFRRD9+nI7I02W
-         bAEHMYKhaEzcyqbW2NViQaM1cjYQMSiIHxachukp7oemNS2q4IceBxQ2iiA0pi6BvP
-         IgBZOKvU9dAbg==
+        b=k0QlOdvLfDUG8c/J1j+tD/EWzkI7Z/KLetbEN00n/upp8pJ9V8mrpZrpEaydJ6nzB
+         yUYBQNmSOqcvAtzYd4LpOkisNbPe/M+B99MV/l7TCUnxWBV9AixJb8xI2g7CTk8glu
+         WDMlZGcBMnPDzxcZi14FVknzyfyP/l1IXJtUrBIRtJkJH57XzJYOURyOOD3IhwPFT8
+         qGjpXnEsGGDWeP1qAuQZNWLZckWmEF6OIJyWBryteWHtnwX6h1jzoPQSPFf5QGyZJq
+         lqEZJe2FBvUfap+golpuqzH3MiA4UXxkAuhZm0qnYIRagieNDBXJTwAYnWKnpOntD6
+         xwaOmK06NhrAQ==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 02/15] tty: n_tty: rename and retype 'retval' in n_tty_ioctl()
-Date:   Tue, 19 Sep 2023 10:51:43 +0200
-Message-ID: <20230919085156.1578-3-jirislaby@kernel.org>
+Subject: [PATCH 04/15] tty: n_tty: invert the condition in copy_from_read_buf()
+Date:   Tue, 19 Sep 2023 10:51:45 +0200
+Message-ID: <20230919085156.1578-5-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <20230919085156.1578-1-jirislaby@kernel.org>
 References: <20230919085156.1578-1-jirislaby@kernel.org>
@@ -43,43 +43,64 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The value stored to the current 'retval' is number of characters. It is
-both obtained and put to user as unsigned. So make its type unsigned.
-And provided it's not a "return value" per se, rename it to 'num'.
+Make "no numbers available" a fast quit from the function. And do the
+heavy work outside the 'if'. This makes the code more understandable and
+conforming to the common kernel coding style.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/n_tty.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/n_tty.c | 38 ++++++++++++++++++++------------------
+ 1 file changed, 20 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 71aa898b077a..e917faa0b84c 100644
+index 6a112910c058..922fb61b587a 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -2498,7 +2498,7 @@ static int n_tty_ioctl(struct tty_struct *tty, unsigned int cmd,
- 		       unsigned long arg)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
--	int retval;
-+	unsigned int num;
+@@ -1966,24 +1966,26 @@ static bool copy_from_read_buf(const struct tty_struct *tty, u8 **kbp,
+ 	size_t tail = MASK(ldata->read_tail);
  
- 	switch (cmd) {
- 	case TIOCOUTQ:
-@@ -2506,11 +2506,11 @@ static int n_tty_ioctl(struct tty_struct *tty, unsigned int cmd,
- 	case TIOCINQ:
- 		down_write(&tty->termios_rwsem);
- 		if (L_ICANON(tty) && !L_EXTPROC(tty))
--			retval = inq_canon(ldata);
-+			num = inq_canon(ldata);
- 		else
--			retval = read_cnt(ldata);
-+			num = read_cnt(ldata);
- 		up_write(&tty->termios_rwsem);
--		return put_user(retval, (unsigned int __user *) arg);
-+		return put_user(num, (unsigned int __user *) arg);
- 	default:
- 		return n_tty_ioctl_helper(tty, cmd, arg);
- 	}
+ 	n = min3(head - ldata->read_tail, N_TTY_BUF_SIZE - tail, *nr);
+-	if (n) {
+-		u8 *from = read_buf_addr(ldata, tail);
+-		memcpy(*kbp, from, n);
+-		is_eof = n == 1 && *from == EOF_CHAR(tty);
+-		tty_audit_add_data(tty, from, n);
+-		zero_buffer(tty, from, n);
+-		smp_store_release(&ldata->read_tail, ldata->read_tail + n);
+-		/* Turn single EOF into zero-length read */
+-		if (L_EXTPROC(tty) && ldata->icanon && is_eof &&
+-		    (head == ldata->read_tail))
+-			return false;
+-		*kbp += n;
+-		*nr -= n;
+-
+-		/* If we have more to copy, let the caller know */
+-		return head != ldata->read_tail;
+-	}
+-	return false;
++	if (!n)
++		return false;
++
++	u8 *from = read_buf_addr(ldata, tail);
++	memcpy(*kbp, from, n);
++	is_eof = n == 1 && *from == EOF_CHAR(tty);
++	tty_audit_add_data(tty, from, n);
++	zero_buffer(tty, from, n);
++	smp_store_release(&ldata->read_tail, ldata->read_tail + n);
++
++	/* Turn single EOF into zero-length read */
++	if (L_EXTPROC(tty) && ldata->icanon && is_eof &&
++	    head == ldata->read_tail)
++		return false;
++
++	*kbp += n;
++	*nr -= n;
++
++	/* If we have more to copy, let the caller know */
++	return head != ldata->read_tail;
+ }
+ 
+ /**
 -- 
 2.42.0
 
