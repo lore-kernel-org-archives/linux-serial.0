@@ -2,114 +2,95 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61ED1CD54A9
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Sep 2023 10:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0788ACD54B0
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Sep 2023 10:21:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229674AbjISKR7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Sep 2023 06:17:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32938 "EHLO
+        id S230467AbjISKVX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 19 Sep 2023 06:21:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229641AbjISKR6 (ORCPT
+        with ESMTP id S230504AbjISKVW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Sep 2023 06:17:58 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE824E8;
-        Tue, 19 Sep 2023 03:17:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695118672; x=1726654672;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=05/TtXTbpaSK6G3uOTBzMjq0JajybnUaFTuIy2/oKgI=;
-  b=cGi6L46yQmTyolfhP9gUW+NdTLhtSbrDmY4Rujxzda0YlCgcN4E26pbI
-   koqO+37AS/9HoSKd9BB5MqLi6emG09AiyRmwZr9jW/oxgKg20qcdG9hwn
-   GJRj1btAjwgtie+ob7IsnXUQ1w6hd9oK8p8GydMx29S6kSwSaIJsEMp+4
-   y60PwzvGSrepuyL1+IGr4imVMpSlQHhJX2UC/aqg6gRKC1JWZbpQlvE9J
-   Pnl+Czwpu8pDXw7goIqkOVWwXcz/41lwjiHZRwaQIomuTfP/WTdSxW0Yy
-   49WRiyV1jatjqOA4nIjI6LY4R6BB6ywMgPdluAaNsZCYLgkwHFscDizcX
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10837"; a="410832470"
-X-IronPort-AV: E=Sophos;i="6.02,159,1688454000"; 
-   d="scan'208";a="410832470"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2023 03:17:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10837"; a="781256036"
-X-IronPort-AV: E=Sophos;i="6.02,159,1688454000"; 
-   d="scan'208";a="781256036"
-Received: from laichele-mobl1.ger.corp.intel.com ([10.252.38.7])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2023 03:17:50 -0700
-Date:   Tue, 19 Sep 2023 13:17:49 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tue, 19 Sep 2023 06:21:22 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F40FF1;
+        Tue, 19 Sep 2023 03:21:16 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5B08C433C8;
+        Tue, 19 Sep 2023 10:21:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1695118876;
+        bh=00igDQJ3RS0HIHvI61wYlaTY0xMEuzE9VvRZGwxN9C4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wvvth7PuYkG2zqbUuKTwTQeHLYgkMLvVNANfOf736jDLc3XqujVzTKDZRMhMzGOks
+         w8oGLW7cE/1vQoxoBIM3WP5sJp8oJOiET1EsnNCDL3rRaKQSAA3rFFUSAqDqzBbtV/
+         94DXhR82m76Gao7hTkhrp215Vmp38OaR5+y7X/d8=
+Date:   Tue, 19 Sep 2023 12:21:13 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
         linux-serial <linux-serial@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH 00/15] random tty fixes
-In-Reply-To: <20230919085156.1578-1-jirislaby@kernel.org>
-Message-ID: <6f7b65a8-bc9c-83d2-13c9-a56d85616b53@linux.intel.com>
+Message-ID: <2023091952-civic-balancing-5c50@gregkh>
 References: <20230919085156.1578-1-jirislaby@kernel.org>
+ <6f7b65a8-bc9c-83d2-13c9-a56d85616b53@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-85316023-1695118627=:1920"
-Content-ID: <8751c2-6ac4-be6-4791-191036869597@linux.intel.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <6f7b65a8-bc9c-83d2-13c9-a56d85616b53@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-85316023-1695118627=:1920
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <f1e8e3ff-69ed-b7aa-f0ac-aff5809ca27@linux.intel.com>
-
-On Tue, 19 Sep 2023, Jiri Slaby (SUSE) wrote:
-
-> This is a collection of random fixes for tty I did while crawling
-> through the code. Mostly done for readability and understandability. No
-> behavior change intended (except for Documentation fixes).
+On Tue, Sep 19, 2023 at 01:17:49PM +0300, Ilpo Järvinen wrote:
+> On Tue, 19 Sep 2023, Jiri Slaby (SUSE) wrote:
 > 
-> Jiri Slaby (SUSE) (15):
->   tty: n_tty: use 'retval' instead of 'c'
->   tty: n_tty: rename and retype 'retval' in n_tty_ioctl()
->   tty: n_tty: use min3() in copy_from_read_buf()
->   tty: n_tty: invert the condition in copy_from_read_buf()
->   tty: n_tty: use do-while in n_tty_check_{,un}throttle()
->   tty: switch tty_{,un}throttle_safe() to return a bool
->   tty: invert return values of tty_{,un}throttle_safe()
->   tty: fix up and plug in tty_ioctl kernel-doc
->   tty: fix kernel-doc for functions in tty.h
->   tty: stop using ndash in kernel-doc
->   tty: tty_buffer: use bool for 'restart' in
->     tty_buffer_unlock_exclusive()
->   tty: convert THROTTLE constants into enum
->   tty: early return from send_break() on TTY_DRIVER_HARDWARE_BREAK
->   tty: don't check for signal_pending() in send_break()
->   tty: use 'if' in send_break() instead of 'goto'
+> > This is a collection of random fixes for tty I did while crawling
+> > through the code. Mostly done for readability and understandability. No
+> > behavior change intended (except for Documentation fixes).
+> > 
+> > Jiri Slaby (SUSE) (15):
+> >   tty: n_tty: use 'retval' instead of 'c'
+> >   tty: n_tty: rename and retype 'retval' in n_tty_ioctl()
+> >   tty: n_tty: use min3() in copy_from_read_buf()
+> >   tty: n_tty: invert the condition in copy_from_read_buf()
+> >   tty: n_tty: use do-while in n_tty_check_{,un}throttle()
+> >   tty: switch tty_{,un}throttle_safe() to return a bool
+> >   tty: invert return values of tty_{,un}throttle_safe()
+> >   tty: fix up and plug in tty_ioctl kernel-doc
+> >   tty: fix kernel-doc for functions in tty.h
+> >   tty: stop using ndash in kernel-doc
+> >   tty: tty_buffer: use bool for 'restart' in
+> >     tty_buffer_unlock_exclusive()
+> >   tty: convert THROTTLE constants into enum
+> >   tty: early return from send_break() on TTY_DRIVER_HARDWARE_BREAK
+> >   tty: don't check for signal_pending() in send_break()
+> >   tty: use 'if' in send_break() instead of 'goto'
+> > 
+> >  Documentation/driver-api/tty/index.rst     |   1 +
+> >  Documentation/driver-api/tty/tty_ioctl.rst |  10 +
+> >  drivers/tty/n_tty.c                        |  77 ++++---
+> >  drivers/tty/tty.h                          |  13 +-
+> >  drivers/tty/tty_buffer.c                   |   5 +-
+> >  drivers/tty/tty_io.c                       |  36 ++--
+> >  drivers/tty/tty_ioctl.c                    | 234 ++++++++++-----------
+> >  drivers/tty/tty_port.c                     |   6 +-
+> >  drivers/tty/vt/consolemap.c                |   2 +-
+> >  drivers/tty/vt/vc_screen.c                 |   4 +-
+> >  drivers/tty/vt/vt.c                        |   4 +-
+> >  include/linux/tty.h                        |  25 +--
+> >  12 files changed, 209 insertions(+), 208 deletions(-)
+> >  create mode 100644 Documentation/driver-api/tty/tty_ioctl.rst
 > 
->  Documentation/driver-api/tty/index.rst     |   1 +
->  Documentation/driver-api/tty/tty_ioctl.rst |  10 +
->  drivers/tty/n_tty.c                        |  77 ++++---
->  drivers/tty/tty.h                          |  13 +-
->  drivers/tty/tty_buffer.c                   |   5 +-
->  drivers/tty/tty_io.c                       |  36 ++--
->  drivers/tty/tty_ioctl.c                    | 234 ++++++++++-----------
->  drivers/tty/tty_port.c                     |   6 +-
->  drivers/tty/vt/consolemap.c                |   2 +-
->  drivers/tty/vt/vc_screen.c                 |   4 +-
->  drivers/tty/vt/vt.c                        |   4 +-
->  include/linux/tty.h                        |  25 +--
->  12 files changed, 209 insertions(+), 208 deletions(-)
->  create mode 100644 Documentation/driver-api/tty/tty_ioctl.rst
+> For this whole series except the patches I commented on:
+> 
+> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> 
+> ...If you make the amendments I requested, please add the tag also to the 
+> patches I commented on.
 
-For this whole series except the patches I commented on:
+That's horrible, b4 will now just add this reviewed-by to all of them
+when I run it :(
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
-...If you make the amendments I requested, please add the tag also to the 
-patches I commented on.
-
--- 
- i.
---8323329-85316023-1695118627=:1920--
+greg k-h
