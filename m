@@ -2,165 +2,157 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F34CD5BC9
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Sep 2023 14:24:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF85CE79A8
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Sep 2023 19:16:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232707AbjISOY6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Sep 2023 10:24:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53822 "EHLO
+        id S231921AbjISTQR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 19 Sep 2023 15:16:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232705AbjISOY4 (ORCPT
+        with ESMTP id S229853AbjISTQQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Sep 2023 10:24:56 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24D97AD;
-        Tue, 19 Sep 2023 07:24:50 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id BB82E1FF1D;
-        Tue, 19 Sep 2023 14:24:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1695133488; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=EN9onM0BUTlMJdHe2/ryT6BwqQBjIKXe4LSsDr/eSBk=;
-        b=IaYCWTc+MRDbYLygYZIG7kfgsuGWDVzUI3QHpVxRvEE77gdyJcWAa5M0W9jP5dARUxbRi7
-        uallohGNriE2pG9cYu5AWTOoTf1SPJIgu5jT9G76LNIBtFxjpvyuVsjJxnDK/Bf6LzsKYt
-        Jf2YjvloxZPbnlW7gdE2y8T43LJgxjc=
-Received: from suse.cz (dhcp219.suse.cz [10.100.51.219])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 93CCC2C142;
-        Tue, 19 Sep 2023 14:24:48 +0000 (UTC)
-Date:   Tue, 19 Sep 2023 16:24:48 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tue, 19 Sep 2023 15:16:16 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 146759D;
+        Tue, 19 Sep 2023 12:16:11 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D2F1C433C8;
+        Tue, 19 Sep 2023 19:16:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1695150970;
+        bh=jf+VEtEVDip16BygVcd1gg6eYv9qfsttIJH+Gqr6U3Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=reHoaaC0L+T06Lbrc+bcdJAKJM4JMHS9YsU9sfplgt3Sw9jHEa1m5o3/J9G1/JL88
+         qaf2fDgQI31zADN7roR0GDMWqKeXyjx/WYldlsCaGDkSesVgV7TqTKOgR+cqKqSb87
+         kzMc7k4UR84aAGB0/4nRnB+d2k2TgBxxfHkuaKB0=
+Date:   Tue, 19 Sep 2023 21:16:04 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     John Ogness <john.ogness@linutronix.de>,
         Jiri Slaby <jirislaby@kernel.org>,
         linux-serial@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org
 Subject: Re: [PATCH tty v1 01/74] serial: core: Provide port lock wrappers
-Message-ID: <ZQmvMMRvnUxh1NJn@alley>
+Message-ID: <2023091933-dollar-unwell-3ffd@gregkh>
 References: <20230914183831.587273-1-john.ogness@linutronix.de>
  <20230914183831.587273-2-john.ogness@linutronix.de>
+ <ZQmvMMRvnUxh1NJn@alley>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230914183831.587273-2-john.ogness@linutronix.de>
+In-Reply-To: <ZQmvMMRvnUxh1NJn@alley>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu 2023-09-14 20:43:18, John Ogness wrote:
-> From: Thomas Gleixner <tglx@linutronix.de>
+On Tue, Sep 19, 2023 at 04:24:48PM +0200, Petr Mladek wrote:
+> On Thu 2023-09-14 20:43:18, John Ogness wrote:
+> > From: Thomas Gleixner <tglx@linutronix.de>
+> > 
+> > When a serial port is used for kernel console output, then all
+> > modifications to the UART registers which are done from other contexts,
+> > e.g. getty, termios, are interference points for the kernel console.
+> > 
+> > So far this has been ignored and the printk output is based on the
+> > principle of hope. The rework of the console infrastructure which aims to
+> > support threaded and atomic consoles, requires to mark sections which
+> > modify the UART registers as unsafe. This allows the atomic write function
+> > to make informed decisions and eventually to restore operational state. It
+> > also allows to prevent the regular UART code from modifying UART registers
+> > while printk output is in progress.
+> > 
+> > All modifications of UART registers are guarded by the UART port lock,
+> > which provides an obvious synchronization point with the console
+> > infrastructure.
+> > 
+> > Provide wrapper functions for spin_[un]lock*(port->lock) invocations so
+> > that the console mechanics can be applied later on at a single place and
+> > does not require to copy the same logic all over the drivers.
+> > 
+> > Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> > ---
+> >  include/linux/serial_core.h | 79 +++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 79 insertions(+)
+> > 
+> > diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> > index bb6f073bc159..f1d5c0d1568c 100644
+> > --- a/include/linux/serial_core.h
+> > +++ b/include/linux/serial_core.h
+> > +/**
+> > + * uart_port_lock_irqsave - Lock the UART port, save and disable interrupts
+> > + * @up:		Pointer to UART port structure
+> > + * @flags:	Pointer to interrupt flags storage
+> > + */
+> > +static inline void uart_port_lock_irqsave(struct uart_port *up, unsigned long *flags)
+> > +{
+> > +	spin_lock_irqsave(&up->lock, *flags);
+> > +}
 > 
-> When a serial port is used for kernel console output, then all
-> modifications to the UART registers which are done from other contexts,
-> e.g. getty, termios, are interference points for the kernel console.
+> IMHO, it would have been better to pass the flags variable directly
+> via a macro as it is done in most *_lock_*_irqsafe() APIs. I mean
+> something like:
 > 
-> So far this has been ignored and the printk output is based on the
-> principle of hope. The rework of the console infrastructure which aims to
-> support threaded and atomic consoles, requires to mark sections which
-> modify the UART registers as unsafe. This allows the atomic write function
-> to make informed decisions and eventually to restore operational state. It
-> also allows to prevent the regular UART code from modifying UART registers
-> while printk output is in progress.
+> /**
+>  * uart_port_trylock_irqsave - Try to lock the UART port, save and disable interrupts
+>  * @up:		Pointer to UART port structure
+>  * @flags:	Interrupt flags storage
+>  *
+>  * Returns: True if lock was acquired, false otherwise
+>  */
+> #define uart_port_lock_irqsave(up, flags)		\
+> ({							\
+> 	local_irq_save(flags);				\
+> 	uart_port_lock(lock)				\
+> })
 > 
-> All modifications of UART registers are guarded by the UART port lock,
-> which provides an obvious synchronization point with the console
-> infrastructure.
+> > +
+> > +/**
+> > + * uart_port_trylock - Try to lock the UART port
+> > + * @up:		Pointer to UART port structure
+> > + *
+> > + * Returns: True if lock was acquired, false otherwise
+> > + */
+> > +static inline bool uart_port_trylock(struct uart_port *up)
+> > +{
+> > +	return spin_trylock(&up->lock);
+> > +}
+> > +
+> > +/**
+> > + * uart_port_trylock_irqsave - Try to lock the UART port, save and disable interrupts
+> > + * @up:		Pointer to UART port structure
+> > + * @flags:	Pointer to interrupt flags storage
+> > + *
+> > + * Returns: True if lock was acquired, false otherwise
+> > + */
+> > +static inline bool uart_port_trylock_irqsave(struct uart_port *up, unsigned long *flags)
+> > +{
+> > +	return spin_trylock_irqsave(&up->lock, *flags);
+> > +}
 > 
-> Provide wrapper functions for spin_[un]lock*(port->lock) invocations so
-> that the console mechanics can be applied later on at a single place and
-> does not require to copy the same logic all over the drivers.
+> Similar here:
 > 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> ---
->  include/linux/serial_core.h | 79 +++++++++++++++++++++++++++++++++++++
->  1 file changed, 79 insertions(+)
-> 
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index bb6f073bc159..f1d5c0d1568c 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> +/**
-> + * uart_port_lock_irqsave - Lock the UART port, save and disable interrupts
-> + * @up:		Pointer to UART port structure
-> + * @flags:	Pointer to interrupt flags storage
-> + */
-> +static inline void uart_port_lock_irqsave(struct uart_port *up, unsigned long *flags)
-> +{
-> +	spin_lock_irqsave(&up->lock, *flags);
-> +}
+> /**
+>  * uart_port_trylock_irqsave - Try to lock the UART port, save and disable interrupts
+>  * @up:		Pointer to UART port structure
+>  * @flags:	Interrupt flags storage
+>  *
+>  * Returns: True if lock was acquired, false otherwise
+>  */
+> #define uart_port_trylock_irqsave(up, flags)			\
+> ({								\
+> 	bool __ret;						\
+> 								\
+> 	local_irq_save(flags);					\
+> 	__ret = uart_port_trylock(lock)				\
+> 	if (!__ret)						\
+> 		local_irq_restore(flags);			\
+> 	__ret;							\
+> })
 
-IMHO, it would have been better to pass the flags variable directly
-via a macro as it is done in most *_lock_*_irqsafe() APIs. I mean
-something like:
+What is the difference here of a macro vs. an inline function going to
+do for the resulting binary?  The important thing is now we have wrapper
+functions, people can tweak them all they want to see if we can get
+better results :)
 
-/**
- * uart_port_trylock_irqsave - Try to lock the UART port, save and disable interrupts
- * @up:		Pointer to UART port structure
- * @flags:	Interrupt flags storage
- *
- * Returns: True if lock was acquired, false otherwise
- */
-#define uart_port_lock_irqsave(up, flags)		\
-({							\
-	local_irq_save(flags);				\
-	uart_port_lock(lock)				\
-})
+thanks for the review!
 
-> +
-> +/**
-> + * uart_port_trylock - Try to lock the UART port
-> + * @up:		Pointer to UART port structure
-> + *
-> + * Returns: True if lock was acquired, false otherwise
-> + */
-> +static inline bool uart_port_trylock(struct uart_port *up)
-> +{
-> +	return spin_trylock(&up->lock);
-> +}
-> +
-> +/**
-> + * uart_port_trylock_irqsave - Try to lock the UART port, save and disable interrupts
-> + * @up:		Pointer to UART port structure
-> + * @flags:	Pointer to interrupt flags storage
-> + *
-> + * Returns: True if lock was acquired, false otherwise
-> + */
-> +static inline bool uart_port_trylock_irqsave(struct uart_port *up, unsigned long *flags)
-> +{
-> +	return spin_trylock_irqsave(&up->lock, *flags);
-> +}
-
-Similar here:
-
-/**
- * uart_port_trylock_irqsave - Try to lock the UART port, save and disable interrupts
- * @up:		Pointer to UART port structure
- * @flags:	Interrupt flags storage
- *
- * Returns: True if lock was acquired, false otherwise
- */
-#define uart_port_trylock_irqsave(up, flags)			\
-({								\
-	bool __ret;						\
-								\
-	local_irq_save(flags);					\
-	__ret = uart_port_trylock(lock)				\
-	if (!__ret)						\
-		local_irq_restore(flags);			\
-	__ret;							\
-})
-
-I do not resist on this rather cosmetic change. The current code seems
-to be doing what is expected. Feel free to keep it and use:
-
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-
-Best Regards,
-Petr
-
-PS: I am sorry for the late review. I have made a quick look on Monday
-    and it looked straightforward. I have got this idea today when
-    having a closer look.
+greg k-h
