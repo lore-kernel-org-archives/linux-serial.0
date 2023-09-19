@@ -2,38 +2,38 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0481ACD54A9
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0E49CD54AC
 	for <linux-serial@archiver.kernel.org>; Tue, 19 Sep 2023 08:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230338AbjISIwK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Sep 2023 04:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40454 "EHLO
+        id S230395AbjISIwL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 19 Sep 2023 04:52:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230262AbjISIwG (ORCPT
+        with ESMTP id S230071AbjISIwK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Sep 2023 04:52:06 -0400
+        Tue, 19 Sep 2023 04:52:10 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7222FE6;
-        Tue, 19 Sep 2023 01:52:01 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CCF4C433C8;
-        Tue, 19 Sep 2023 08:51:59 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78249118;
+        Tue, 19 Sep 2023 01:52:04 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ED2DC433CB;
+        Tue, 19 Sep 2023 08:52:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1695113521;
-        bh=Z65rlSSe5rxg0BM+imKZAtq/SW24Xm/16B5wVK3QGRk=;
+        s=k20201202; t=1695113524;
+        bh=BvdjwcpcPhLEnEHfR1fGi9mX6MBPU/nHlNd6nWbNp7o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iZvTGqZVgla0MW6UhsfsySiRrFuiu4Mbwnf3wxBPTfnp+q3FXf9JlMKIHZXQTnWpt
-         VMPosdBg1rs3JK0E5oxJ8TuMHEneVuRKLDtje+eMrJvHHtQYjVm4IL3us53HXcJi1R
-         9HafvmhlytUSZemqIupHGaXuBOD6kcUacpKwvmSZPdh4g8dTz1MMxBGNYUwuWT3NP2
-         eDlma0PXYbFz2ublkuFs9zBo6oNiL1tmgeDCLXub89n6YZQgC/HtrwEakJ/TCl82d3
-         kkwMQGqXch0gkSPFkay9bzwjLphzzCCVvnAFayBvFC6lc0wfby3mjHbr40Bt2aghQe
-         TjJejPSf7Qj5w==
+        b=W/hWaIW57gq1bHreJEwVa8u+zQ1JfU3Cgx4sMFEtbKs7jbQGpUzY3HKV30OFnXa7j
+         QQJUokrMPlxFEbAMHErWkHuvb+l3LgEU5/FOJPPCgD1NJlClqgVa4R3OzS2wGJSgb4
+         G6Ccq6lylKyuJXUPZaiuOYfC/nCIHmJgTkAMkr4NDUoVO8v6uMz1tuxGUcLyoHFp/a
+         ftJ/uJV7clfFlALb9Rla4OHKENtVp2lM8zcCjMKrpTxxeju32SkqeBadRLCKzJr+I2
+         XDlMmeFb0Lg5WKP4mCiv+sNdhGdq5wOVzO2R0L1w5nzBiHO+T5n7L1UO9OezMT2HKE
+         I0CkKIyFeyyug==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 01/15] tty: n_tty: use 'retval' instead of 'c'
-Date:   Tue, 19 Sep 2023 10:51:42 +0200
-Message-ID: <20230919085156.1578-2-jirislaby@kernel.org>
+Subject: [PATCH 03/15] tty: n_tty: use min3() in copy_from_read_buf()
+Date:   Tue, 19 Sep 2023 10:51:44 +0200
+Message-ID: <20230919085156.1578-4-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.42.0
 In-Reply-To: <20230919085156.1578-1-jirislaby@kernel.org>
 References: <20230919085156.1578-1-jirislaby@kernel.org>
@@ -43,47 +43,32 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In n_tty_read(), there is a separate int variable 'c' and is used only
-to hold an int value returned from job_control(). There is also a
-'retval' variable typed ssize_t. So drop this single occurrence of 'c'
-and reuse 'retval' which is used on all other places to hold the value
-returned from n_tty_read().
+n is a minimum of:
+* available chars in the ring buffer
+* available chars in the ring buffer till the end of the ring buffer
+* requested number (*nr)
 
-Note that 'retval' needs not be initialized now. Drop that.
+We can use min3() for that instead of two min()s.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/n_tty.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/tty/n_tty.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 6c9a408d67cd..71aa898b077a 100644
+index e917faa0b84c..6a112910c058 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -2154,9 +2154,8 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file, u8 *kbuf,
- 	struct n_tty_data *ldata = tty->disc_data;
- 	u8 *kb = kbuf;
- 	DEFINE_WAIT_FUNC(wait, woken_wake_function);
--	int c;
- 	int minimum, time;
--	ssize_t retval = 0;
-+	ssize_t retval;
- 	long timeout;
- 	bool packet;
- 	size_t old_tail;
-@@ -2192,9 +2191,9 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file, u8 *kbuf,
- 		return kb - kbuf;
- 	}
+@@ -1965,8 +1965,7 @@ static bool copy_from_read_buf(const struct tty_struct *tty, u8 **kbp,
+ 	size_t head = smp_load_acquire(&ldata->commit_head);
+ 	size_t tail = MASK(ldata->read_tail);
  
--	c = job_control(tty, file);
--	if (c < 0)
--		return c;
-+	retval = job_control(tty, file);
-+	if (retval < 0)
-+		return retval;
- 
- 	/*
- 	 *	Internal serialization of reads.
+-	n = min(head - ldata->read_tail, N_TTY_BUF_SIZE - tail);
+-	n = min(*nr, n);
++	n = min3(head - ldata->read_tail, N_TTY_BUF_SIZE - tail, *nr);
+ 	if (n) {
+ 		u8 *from = read_buf_addr(ldata, tail);
+ 		memcpy(*kbp, from, n);
 -- 
 2.42.0
 
