@@ -2,98 +2,136 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E25A2CD54A9
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Sep 2023 09:57:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EAF3CD54AC
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Sep 2023 10:07:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231876AbjISJ5i (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Sep 2023 05:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40802 "EHLO
+        id S230262AbjISKHX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 19 Sep 2023 06:07:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231877AbjISJ5Z (ORCPT
+        with ESMTP id S229641AbjISKHW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Sep 2023 05:57:25 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86601AC;
-        Tue, 19 Sep 2023 02:56:00 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id d9443c01a7336-1c59c40b840so4643305ad.3;
-        Tue, 19 Sep 2023 02:56:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1695117360; x=1695722160; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ypIZfd7vxnYRjRxyZcN55Sr1pe+QcTMQMhjwJoWQL0g=;
-        b=bJ7bShgiFQf/+tk1gGyLZ24v6wjaZzsCqT444EC9SENby+GLtjaZ+QcAxqM35KhRy4
-         Rwf8402/1fEuVd17mDId7Vlv13KrXpz6sXFwOtf70wd8F5Ej4Imwjz6mfYxqfLgVWR7v
-         z0g0D8g7LvRi3zFYayHtjeVabByyYy1bLzvGWFEmHrDRpAzt/CKFgqeSobCwn+33LBVC
-         7ZllfwiDNnhEfe6ikznlrctlsHs03yAq5CbjKPqfVomfC/9Rfp8TMwXbat5Ua0biX2OI
-         tox6HokB3P/R+PNzhxPYjfxZHbGcdaCj6X6JyTYt0H1O3skgB6KQmBm8CWzqmvY35P8Y
-         vpgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695117360; x=1695722160;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ypIZfd7vxnYRjRxyZcN55Sr1pe+QcTMQMhjwJoWQL0g=;
-        b=O/PtnZEf8wGhxMwrPO5MDEswaXG0u4Z0JVm0H57Uh+MJb0OfsfYhJCXhTmGQIW6HXn
-         k8MYHZQxAgmUdEo+KxQd5meUvPUYRP1v8Tbx4OrZ8NrgL8QefQ1p81qFNYACY0sSYi5x
-         D/Qi9hIV3bJcGlPt5lDuM94WFbosGW2jlLz6j4Jms6W4glvvOHFZn1Ol4eW7RougK6rL
-         YW2iWB63qYWGTqSeWO2UCLVZh2+CJLKFKWGhmJOLlgv7gwJ4l9i87Ug23IT7aEOVdeaR
-         7c9CgavilIZylmnr3wU7q731+Iz+JDumhXTy5U9ypI5311k73qUM2S/RhEfrdIsqiglo
-         eJ4A==
-X-Gm-Message-State: AOJu0YyZJZqEyp75r/TaseQGzAucFnfG//Xtx/6woMEqBSt8jtgvWW9n
-        dAZcT6lvUUlwSn/+cz3unUY=
-X-Google-Smtp-Source: AGHT+IHtGxgvyuVZfPp27mXYAOqk9SfkFvkfN4+KmTHmuIqpZ6yBLK+zMBBbUZpRvezSIh/KNtzUsQ==
-X-Received: by 2002:a17:903:278d:b0:1c5:7aac:6e5d with SMTP id jw13-20020a170903278d00b001c57aac6e5dmr3751484plb.66.1695117360058;
-        Tue, 19 Sep 2023 02:56:00 -0700 (PDT)
-Received: from pek-lxu-l1.wrs.com ([111.198.228.56])
-        by smtp.gmail.com with ESMTPSA id 2-20020a170902c14200b001b672af624esm4097077plj.164.2023.09.19.02.55.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Sep 2023 02:55:59 -0700 (PDT)
-From:   Edward AD <twuufnxlz@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     eadavis@sina.com, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        syzbot+b5d1f455d385b2c7da3c@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, twuufnxlz@gmail.com
-Subject: Re: [PATCH] tty: fix memory leak in gsm_activate_mux
-Date:   Tue, 19 Sep 2023 17:55:55 +0800
-Message-ID: <20230919095554.3764551-2-twuufnxlz@gmail.com>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <2023091921-duke-gory-866e@gregkh>
-References: <2023091921-duke-gory-866e@gregkh>
+        Tue, 19 Sep 2023 06:07:22 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CAD9E;
+        Tue, 19 Sep 2023 03:07:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1695118037; x=1726654037;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=AQcW/KWKtoR/JMee+ZhoHaBD4GeCe/e3QgG2nFX/3y4=;
+  b=ZCuK3xRzq3sd0qIsEhTnPi4wcBnynWE4TPtFIcJ2EaVkZqBKEsgjrlOV
+   /CF9VKLdcfqUorhKseBqmSwCfbffzZrPbuuS0rMgBqKHaMq2ZP1A7/5B9
+   +YoGAAHc7jq3aq9xKl7I2M0s6Wflry93cQEOSVRlueSIk4rNpCUZvcLYV
+   scTg11nVYAWvWYLTBuQQzRBzP41UNNGHRnl9L+usCRpPuKCwOUYlYZ6sY
+   CTY+ID6VIsp+MOUObMwtigjFOI/bltq0H2Gi+aCs3M45NQQCCMqsasDS2
+   f1FED6aVy7hPbWNcinNocyL4TN8Wshb4GQY8So7pR3xcHAOeckTeEQlPy
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10837"; a="382654096"
+X-IronPort-AV: E=Sophos;i="6.02,159,1688454000"; 
+   d="scan'208";a="382654096"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2023 03:07:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10837"; a="836383570"
+X-IronPort-AV: E=Sophos;i="6.02,159,1688454000"; 
+   d="scan'208";a="836383570"
+Received: from laichele-mobl1.ger.corp.intel.com ([10.252.38.7])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2023 03:07:14 -0700
+Date:   Tue, 19 Sep 2023 13:07:13 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 09/15] tty: fix kernel-doc for functions in tty.h
+In-Reply-To: <20230919085156.1578-10-jirislaby@kernel.org>
+Message-ID: <6033668f-71cc-b21-a034-a1ff31d7279@linux.intel.com>
+References: <20230919085156.1578-1-jirislaby@kernel.org> <20230919085156.1578-10-jirislaby@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 19 Sep 2023 11:31:57 +0200 Greg KH wrote:
-> > On Tue, 19 Sep 2023 10:29:08 +0200 Greg KH wrote:
-> > > > When the call to gsm_register_devices() fails, we need to reclaim the memory
-> > > > requested in gsm_dlci_alloc().
-> > > >
-> > > > Fixes: 01aecd917114 ("tty: n_gsm: fix tty registration before control channel open")
-> > > > Reported-and-tested-by: syzbot+b5d1f455d385b2c7da3c@syzkaller.appspotmail.com
-> > > > Signed-off-by: Edward AD <twuufnxlz@gmail.com>
-> > >
-> > > Please use your company name/email address, and then just set a manual
-> > > "From:" line as the first line in the changelog as the documentation
-> > > asks.  That's how developers work around their broken corporate email
-> > > systems (but really, you should go and poke your IT group to fix it.)
-> > This repair was completed in my personal time. Additionally, there may be a
-> > possibility of the company's email being thrown away by 'lore.kernel.org'.
-> > If you are not very strict with this, I will continue to use my private email.
-> 
-> As you previously submitted this under your company name/address, we
-> have to be strict for obvious reasons, sorry.
-The two email addresses I used before these are all my personal emails.
-> 
-> > I will only keep one line starting with 'From:' in the patch.
-> 
-> I don't understand what you mean by this.
-Just set a manual "From:" line as the first line in the changelog as the 
-documentation asks.
+On Tue, 19 Sep 2023, Jiri Slaby (SUSE) wrote:
 
-Thanks,
-edward
+> tty_kref_get() is already included in Documentation, but is not properly
+> formatted. Fix this.
+> 
+> tty_get_baud_rate() is neither properly formatted, nor is included. Fix
+> both.
+> 
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> ---
+>  Documentation/driver-api/tty/tty_ioctl.rst |  3 +++
+>  include/linux/tty.h                        | 21 +++++++++------------
+>  2 files changed, 12 insertions(+), 12 deletions(-)
+> 
+> diff --git a/Documentation/driver-api/tty/tty_ioctl.rst b/Documentation/driver-api/tty/tty_ioctl.rst
+> index 9b0be79fc15e..3ff1ac5e07f1 100644
+> --- a/Documentation/driver-api/tty/tty_ioctl.rst
+> +++ b/Documentation/driver-api/tty/tty_ioctl.rst
+> @@ -5,3 +5,6 @@ TTY IOCTL Helpers
+>  =================
+>  
+>  .. kernel-doc:: drivers/tty/tty_ioctl.c
+> +
+> +.. kernel-doc:: include/linux/tty.h
+> +   :identifiers: tty_get_baud_rate
+> diff --git a/include/linux/tty.h b/include/linux/tty.h
+> index 59d675f345e9..4b6340ac2af2 100644
+> --- a/include/linux/tty.h
+> +++ b/include/linux/tty.h
+> @@ -390,14 +390,12 @@ int vcs_init(void);
+>  extern const struct class tty_class;
+>  
+>  /**
+> - *	tty_kref_get		-	get a tty reference
+> - *	@tty: tty device
+> + * tty_kref_get - get a tty reference
+> + * @tty: tty device
+>   *
+> - *	Return a new reference to a tty object. The caller must hold
+> - *	sufficient locks/counts to ensure that their existing reference cannot
+> - *	go away
+> + * Returns: a new reference to a tty object. The caller must hold sufficient
+> + * locks/counts to ensure that their existing reference cannot go away
+
+Shouldn't this have also Locking: entry instead of hiding the details into 
+Return?
+
+>   */
+> -
+>  static inline struct tty_struct *tty_kref_get(struct tty_struct *tty)
+>  {
+>  	if (tty)
+> @@ -435,14 +433,13 @@ void tty_encode_baud_rate(struct tty_struct *tty, speed_t ibaud,
+>  		speed_t obaud);
+>  
+>  /**
+> - *	tty_get_baud_rate	-	get tty bit rates
+> - *	@tty: tty to query
+> + * tty_get_baud_rate - get tty bit rates
+> + * @tty: tty to query
+>   *
+> - *	Returns the baud rate as an integer for this terminal. The
+> - *	termios lock must be held by the caller and the terminal bit
+> - *	flags may be updated.
+> + * Returns: the baud rate as an integer for this terminal. The termios lock
+> + * must be held by the caller and the terminal bit flags may be updated.
+>   *
+> - *	Locking: none
+> + * Locking: none
+
+Eh, the paragraph above says, "The termios lock must be held by the 
+caller" so this "Locking: none" seems pretty bogus.
+
+>   */
+>  static inline speed_t tty_get_baud_rate(struct tty_struct *tty)
+>  {
+> 
+
+-- 
+ i.
+
