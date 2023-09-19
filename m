@@ -2,52 +2,53 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EAB9CD54A9
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Sep 2023 10:10:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7F1CD54A9
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Sep 2023 10:15:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229674AbjISKKN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Sep 2023 06:10:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34104 "EHLO
+        id S230480AbjISKPK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 19 Sep 2023 06:15:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229641AbjISKKM (ORCPT
+        with ESMTP id S229641AbjISKO7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Sep 2023 06:10:12 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D21E8;
-        Tue, 19 Sep 2023 03:10:05 -0700 (PDT)
+        Tue, 19 Sep 2023 06:14:59 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE4B013A;
+        Tue, 19 Sep 2023 03:14:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695118206; x=1726654206;
+  t=1695118492; x=1726654492;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=akKe1so1N51A7hIrM9z2QWs2dwiLL2naA5vljgaXcmk=;
-  b=K+tT3TSNBnYdJ+MJ3NBk8azwe6A9a63RneLvk8BRhB91odyM5QDh8FBi
-   YXtFvepc66auzrXZ+gjXUoa+NpEbWhx6bhb1t9s3CXXf3KsDt235j81gC
-   jFskbgfC8H7qM/2T7Ats3bOS76grXp0Ry1xnoX84bKCmRAH/E3rzardrO
-   SbSmDF33v9DuVL8vwDDwi21mgVRaLizalDgK9hUFyfHC+m3RPQgLPdlEb
-   SGUbSK5kdbcqwAd9EIgYZiDxydii5nYInhDyuwBxSTXrYDapjVnTSC3DJ
-   C6FpNQES5coRcZPkmQg5y3+JzUsp+s4XJ4GVmdbCUtC5CFQielkSaKaZ4
+  bh=aFy4gttMLp+ZVD7LS7GAnQ4aq6k3jPbVH88NEZMjFK0=;
+  b=L+OFlSnK6qh48aEtdB1xBbcXFF/1ewhQ5UdOGer84T8EAnzucU50YNRt
+   Y8+9PYm4LZ1XHSazjTpIC5FLeRqQKGP6MjDYyp8K3FpIv52t/jX4XYUq4
+   riaZSu+VlClQs/BBCl4l/WoimQ2RpeTjPICq34crLMc+JKhEJ6fP2AN8+
+   Ay8fx2WnCvmOesbBqFSfRWSkwMiP7gC4+t3L4PIpPFRmbMgfNv2UPLxT0
+   gjA+57tVMebsfdmllzbXTAYQhQWFkR/gPb5oEBmJinwq1T/0U7/lTHVq6
+   qFs7mMSmgNTD8XbeowyR89tP7JpdTcfBj0QFuEV4SmmnSclecV477FBdf
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10837"; a="378797599"
+X-IronPort-AV: E=McAfee;i="6600,9927,10837"; a="359301635"
 X-IronPort-AV: E=Sophos;i="6.02,159,1688454000"; 
-   d="scan'208";a="378797599"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2023 03:10:04 -0700
+   d="scan'208";a="359301635"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2023 03:14:52 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10837"; a="695855012"
+X-IronPort-AV: E=McAfee;i="6600,9927,10837"; a="869926779"
 X-IronPort-AV: E=Sophos;i="6.02,159,1688454000"; 
-   d="scan'208";a="695855012"
+   d="scan'208";a="869926779"
 Received: from laichele-mobl1.ger.corp.intel.com ([10.252.38.7])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2023 03:10:02 -0700
-Date:   Tue, 19 Sep 2023 13:10:00 +0300 (EEST)
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2023 03:14:50 -0700
+Date:   Tue, 19 Sep 2023 13:14:49 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 12/15] tty: convert THROTTLE constants into enum
-In-Reply-To: <20230919085156.1578-13-jirislaby@kernel.org>
-Message-ID: <122da55f-d45-923b-953-7a025a7d42f@linux.intel.com>
-References: <20230919085156.1578-1-jirislaby@kernel.org> <20230919085156.1578-13-jirislaby@kernel.org>
+Subject: Re: [PATCH 14/15] tty: don't check for signal_pending() in
+ send_break()
+In-Reply-To: <20230919085156.1578-15-jirislaby@kernel.org>
+Message-ID: <7746d25a-bcbc-fece-eaa3-2dbea9c0f93e@linux.intel.com>
+References: <20230919085156.1578-1-jirislaby@kernel.org> <20230919085156.1578-15-jirislaby@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
@@ -56,64 +57,35 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 On Tue, 19 Sep 2023, Jiri Slaby (SUSE) wrote:
 
-> And make an explicit constant for zero too. This allows for easier type
-> checking of the parameter.
-> 
-> Note: tty_struct::flow_change is kept as int because include/tty.h
-> (tty_struct) doesn't see tty/tty.h (this enum).
+> msleep_interruptible() will check on its own. So no need to do the check
 
-And it cannot moved there because of what?
+For clarity:
+
+... will check !signal_pending() on its own.
+
+> in send_break() before calling the above.
+> 
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> ---
+>  drivers/tty/tty_io.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+> index 87bb5094e0bb..24833b31b81c 100644
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+> @@ -2484,8 +2484,7 @@ static int send_break(struct tty_struct *tty, unsigned int duration)
+>  	retval = tty->ops->break_ctl(tty, -1);
+>  	if (retval)
+>  		goto out;
+> -	if (!signal_pending(current))
+> -		msleep_interruptible(duration);
+> +	msleep_interruptible(duration);
+>  	retval = tty->ops->break_ctl(tty, 0);
+>  out:
+>  	tty_write_unlock(tty);
+> 
 
 -- 
  i.
 
-
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> ---
->  drivers/tty/tty.h       | 13 +++++++++----
->  drivers/tty/tty_ioctl.c |  2 +-
->  2 files changed, 10 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/tty/tty.h b/drivers/tty/tty.h
-> index 50862f98273e..93cf5ef1e857 100644
-> --- a/drivers/tty/tty.h
-> +++ b/drivers/tty/tty.h
-> @@ -41,15 +41,20 @@ enum {
->  };
->  
->  /* Values for tty->flow_change */
-> -#define TTY_THROTTLE_SAFE	1
-> -#define TTY_UNTHROTTLE_SAFE	2
-> +enum tty_flow_change {
-> +	TTY_FLOW_NO_CHANGE,
-> +	TTY_THROTTLE_SAFE,
-> +	TTY_UNTHROTTLE_SAFE,
-> +};
->  
-> -static inline void __tty_set_flow_change(struct tty_struct *tty, int val)
-> +static inline void __tty_set_flow_change(struct tty_struct *tty,
-> +					 enum tty_flow_change val)
->  {
->  	tty->flow_change = val;
->  }
->  
-> -static inline void tty_set_flow_change(struct tty_struct *tty, int val)
-> +static inline void tty_set_flow_change(struct tty_struct *tty,
-> +				       enum tty_flow_change val)
->  {
->  	tty->flow_change = val;
->  	smp_mb();
-> diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-> index 42c793e9d131..4b499301a3db 100644
-> --- a/drivers/tty/tty_ioctl.c
-> +++ b/drivers/tty/tty_ioctl.c
-> @@ -104,7 +104,7 @@ void tty_unthrottle(struct tty_struct *tty)
->  	if (test_and_clear_bit(TTY_THROTTLED, &tty->flags) &&
->  	    tty->ops->unthrottle)
->  		tty->ops->unthrottle(tty);
-> -	tty->flow_change = 0;
-> +	tty->flow_change = TTY_FLOW_NO_CHANGE;
->  	up_write(&tty->termios_rwsem);
->  }
->  EXPORT_SYMBOL(tty_unthrottle);
-> 
