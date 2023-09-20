@@ -2,59 +2,117 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B447ACE79B0
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Sep 2023 07:42:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F83ECE79AB
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Sep 2023 07:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233830AbjITHmu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Sep 2023 03:42:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49248 "EHLO
+        id S233668AbjITH6X (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 20 Sep 2023 03:58:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233793AbjITHmu (ORCPT
+        with ESMTP id S233781AbjITH6U (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Sep 2023 03:42:50 -0400
-X-Greylist: delayed 377 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Sep 2023 00:42:43 PDT
-Received: from mail.venturelinkage.com (mail.venturelinkage.com [80.211.143.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC06DCA
-        for <linux-serial@vger.kernel.org>; Wed, 20 Sep 2023 00:42:43 -0700 (PDT)
-Received: by mail.venturelinkage.com (Postfix, from userid 1002)
-        id 395E5826D0; Wed, 20 Sep 2023 09:36:15 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=venturelinkage.com;
-        s=mail; t=1695195385;
-        bh=7iowqdzve/IIiUUjcEwx8j3uMrVqqiE7R9zbOCKRV9Q=;
-        h=Date:From:To:Subject:From;
-        b=egE3XCkbgYh0fWVabaSeI9B019KYqs5th2oVZ/pxhmKhSz7c9K1orQvTts/DTuXk7
-         joR/JmEik0S8akV7/Vd4WxHDVZbFd5rogiq1WRLEIu0WTmRm0iTLLDzluFrJb7Vmol
-         X0O06O5U5xu4wRezO2ewQ0NLi8OlbksIea2mo6bLCo62k1MTTfkiShbzovVzMajDXN
-         fd7RAu4q3vNrDx4xQ/RVb4GQCmtMQE+y/eMKNDuOO/32pU6TnpVflrGCxY10yJpV/3
-         KfQ5ghrUmHaZ/SiWrdhlL/qLkWAnqTDs/bvSHBdpCQqGEx+NvzTQc7jG7oJh4VxZBK
-         qnNKghb9ht2Xg==
-Received: by mail.venturelinkage.com for <linux-serial@vger.kernel.org>; Wed, 20 Sep 2023 07:36:09 GMT
-Message-ID: <20230920084500-0.1.l.11ia.0.8by7dn1qg2@venturelinkage.com>
-Date:   Wed, 20 Sep 2023 07:36:09 GMT
-From:   "Lukas Varga" <lukas.varga@venturelinkage.com>
-To:     <linux-serial@vger.kernel.org>
-Subject: =?UTF-8?Q?Popt=C3=A1vka?=
-X-Mailer: mail.venturelinkage.com
+        Wed, 20 Sep 2023 03:58:20 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1CDCE4;
+        Wed, 20 Sep 2023 00:58:11 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 7540622696;
+        Wed, 20 Sep 2023 07:58:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1695196690; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HhvtpludUjIr++HnR2WYgKkCmY0kr0ew9GoO5GG10A0=;
+        b=B1245b9ttuxgIdWWprtAfA6rU3+OR02SOASLM7wuOEHHj8rhAtO8CoZ56Als8UKJBM+TWR
+        MO6hVGOSCz7bvFS/nq55lAth6ketQI/xF3e3pNfUEssmMNKyIe2N/pVy1PDBoCJqKbFBY4
+        xR3O3LKETqdt52j5zmEq1faOygbg3K8=
+Received: from suse.cz (pmladek.tcp.ovpn2.prg.suse.de [10.100.208.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 3800D2C142;
+        Wed, 20 Sep 2023 07:58:10 +0000 (UTC)
+Date:   Wed, 20 Sep 2023 09:58:09 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH tty v1 01/74] serial: core: Provide port lock wrappers
+Message-ID: <ZQqmEaYeWrurNmGr@alley>
+References: <20230914183831.587273-1-john.ogness@linutronix.de>
+ <20230914183831.587273-2-john.ogness@linutronix.de>
+ <ZQmvMMRvnUxh1NJn@alley>
+ <87msxiuekv.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87msxiuekv.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dobr=C3=A9 r=C3=A1no,
+Adding Peter into Cc who also has a big experience with locking APIs.
+Well, I think that he would not care ;-)
 
-Dovolil jsem si V=C3=A1s kontaktovat, proto=C5=BEe m=C3=A1m z=C3=A1jem ov=
-=C4=9B=C5=99it mo=C5=BEnost nav=C3=A1z=C3=A1n=C3=AD spolupr=C3=A1ce.
+On Tue 2023-09-19 21:51:12, Thomas Gleixner wrote:
+> On Tue, Sep 19 2023 at 16:24, Petr Mladek wrote:
+> > On Thu 2023-09-14 20:43:18, John Ogness wrote:
+> > IMHO, it would have been better to pass the flags variable directly
+> > via a macro as it is done in most *_lock_*_irqsafe() APIs. I mean
+> > something like:
+> >
+> > /**
+> >  * uart_port_trylock_irqsave - Try to lock the UART port, save and disable interrupts
+> >  * @up:		Pointer to UART port structure
+> >  * @flags:	Interrupt flags storage
+> >  *
+> >  * Returns: True if lock was acquired, false otherwise
+> >  */
+> > #define uart_port_lock_irqsave(up, flags)		\
+> > ({							\
+> > 	local_irq_save(flags);				\
+> > 	uart_port_lock(lock)				\
+> > })
+> 
+> It's worse.
+> 
+>      1) Macros are not type safe by themself and rely on type safety
+>         of the inner workings.
+> 
+>      2) Macros are bad for grep as you can't search for a 'struct foo *'
+>         argument. Even semantic parsers have their problems with macro
+>         constructs. I just learned that again when doing this.
+> 
+>      3) Macros are just horrible to read
+> 
+>      4) If you want to out of line the wrapper later, then you still
+>         have to keep the macro around because the 'flags' argument is by
+>         value and not a pointer.
+> 
+> >From a code generation point of view it's completely irrelevant whether
+> you have a macro or an inline. That was different 25 years ago, but who
+> cares about museum compilers today.
 
-Podporujeme firmy p=C5=99i z=C3=ADsk=C3=A1v=C3=A1n=C3=AD nov=C3=BDch obch=
-odn=C3=ADch z=C3=A1kazn=C3=ADk=C5=AF.
+I probably was not clear enough. The difference and the motivation
+is to pass the "flags" variable instead of pointer "*flags".
 
-M=C5=AF=C5=BEeme si promluvit a poskytnout podrobnosti?
+Both most common APIs, local_irq_save(flags) and
+spin_lock_irqsave(lock, flags) pass the variable. Also most
+subsystem specific wrappers do so.
 
-V p=C5=99=C3=ADpad=C4=9B z=C3=A1jmu V=C3=A1s bude kontaktovat n=C3=A1=C5=A1=
- anglicky mluv=C3=ADc=C3=AD z=C3=A1stupce.
+IMHO, some consistency makes the life easier for developers,
+especially for frequently used API. And the patchset seems to be
+adding >350 users of the uart_port_lock_*irqsave() API.
 
+I do not know. Maybe using macros was bad decision for local_irq*()
+and spin_lock*() API. Anyway, we are going to live with
+the uart_port_lock*() API for a looong time. And I want to be sure
+that we do not create (small) headaches for future generations.
 
-Pozdravy
-Lukas Varga
+OK, maybe this particular difference is not important enough.
+As I said, I do not resist on the change.
+
+Best Regards,
+Petr
