@@ -2,70 +2,135 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CFFDCE79AC
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Sep 2023 04:59:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB29BCE79AD
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Sep 2023 05:38:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229648AbjITE7W (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Sep 2023 00:59:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38038 "EHLO
+        id S232837AbjITFip (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 20 Sep 2023 01:38:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231191AbjITE7U (ORCPT
+        with ESMTP id S232946AbjITFil (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Sep 2023 00:59:20 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95FE95;
-        Tue, 19 Sep 2023 21:59:14 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 38K4x9Ma008130;
-        Tue, 19 Sep 2023 23:59:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1695185949;
-        bh=2kJofejqX+wEU3P71Kyp7udwgyl2XVx4ZyJcE8GYz0Q=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To;
-        b=vyN0FDN+jqwDo36LB1QWJPoHqjLa/YoAv4zBWOtPiWSTbw4ot7VjbTPR31MoAdftv
-         pghbGUbTAGONibvI7dFn7Cy73y7XtNaQ1i8I3k0VOJ5jpsIgwY8ixsMFqtzK67/7ns
-         PNfLj1oNr+evq7xKJ1NgJVVkuctboxkC1E8AEFuo=
-Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 38K4x9bp026927
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 19 Sep 2023 23:59:09 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Tue, 19
- Sep 2023 23:59:09 -0500
-Received: from DLEE107.ent.ti.com ([fe80::1c91:43d:d71:d7b6]) by
- DLEE107.ent.ti.com ([fe80::1c91:43d:d71:d7b6%17]) with mapi id
- 15.01.2507.023; Tue, 19 Sep 2023 23:59:09 -0500
-From:   "Kumar, Udit" <u-kumar1@ti.com>
-To:     Thomas Richard <thomas.richard@bootlin.com>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "tony@atomide.com" <tony@atomide.com>,
-        "Gole, Dhruva" <d-gole@ti.com>
-CC:     Gregory CLEMENT <gregory.clement@bootlin.com>
-Subject: RE: serial: 8250_omap: suspend issue with console_suspend disabled
-Thread-Topic: serial: 8250_omap: suspend issue with console_suspend disabled
-Thread-Index: AQHZ57r5ax0kW7Fl7kOc4/fWjO8F8LAjLSyg
-Date:   Wed, 20 Sep 2023 04:59:09 +0000
-Message-ID: <4b82483e0b024ce9a914e5e65f72ea5b@ti.com>
+        Wed, 20 Sep 2023 01:38:41 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F0B11F3;
+        Tue, 19 Sep 2023 22:38:31 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id DCA9B80A0;
+        Wed, 20 Sep 2023 05:38:29 +0000 (UTC)
+Date:   Wed, 20 Sep 2023 08:38:28 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Thomas Richard <thomas.richard@bootlin.com>
+Cc:     linux-pm@vger.kernel.org, linux-serial@vger.kernel.org,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Kumar Udit <u-kumar1@ti.com>, Dhruva Gole <d-gole@ti.com>
+Subject: Re: serial: 8250_omap: suspend issue with console_suspend disabled
+Message-ID: <20230920053828.GD5282@atomide.com>
 References: <59b13c93-6637-3050-c145-31be0d6c12c9@bootlin.com>
-In-Reply-To: <59b13c93-6637-3050-c145-31be0d6c12c9@bootlin.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.249.141.75]
-x-exclaimer-md-config: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <59b13c93-6637-3050-c145-31be0d6c12c9@bootlin.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SGkgVGhvbWFzLCANCkFkZGluZyBEaHVydmEgaXMgbG9vcCwgDQpMb29raW5nIGF0IGNvbW1lbnRz
-IGluIGZ1bmN0aW9uLCB3aGF0IHlvdSBhcmUgc2VlaW5nIGlzIGV4cGVjdGVkICwgDQoNCllvdXIg
-d29yayBhcm91bmQgMSBzZWVtcyByZWFzb25hYmxlIHRvICBtZSwgYnV0IGluc3RlYWQgb2YgcmV0
-dXJuaW5nIDAgYWx3YXlzDQpwdXQgYSBjaGVjayBhcm91bmQgbm9fY29uc29sZV9zdXNwZW5kIGFz
-IHdlbGwuDQoNClJlZ2FyZHMNClVkaXQgDQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0K
-PkZyb206IFRob21hcyBSaWNoYXJkIDw=
+Hi,
+
+* Thomas Richard <thomas.richard@bootlin.com> [230915 09:57]:
+> The regression was introduced in commit 20a41a62618d "serial: 8250_omap:
+> Use force_suspend and resume for system suspend"
+...
+
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -1630,7 +1630,7 @@ static int omap8250_suspend(struct device *dev)
+>         err = pm_runtime_force_suspend(dev);
+>         flush_work(&priv->qos_work);
+> 
+> -       return err;
+> +       return 0;
+>  }
+
+Maybe we can now just simplify things a bit here with the patch below.
+Care to give it a try, it's compile tested only so far.
+
+> Once the omap8250_suspend doesn't return an error, the suspend sequence
+> can continue, but I get an other issue.
+> This issue is not related to commit 20a41a62618d, it has already been
+> present.
+> The power domain of the console is powered-off, so no more messages are
+> printed, and the SoC is stucked.
+> As the uart port is used as console, we don't want to power-off it.
+> My workaround is to set the corresponding power domain to
+> GENPD_FLAG_ALWAYS_ON, so the uart port is not powered-off.
+
+The runtime PM usage count should keep the related power domain on though,
+sounds like this issue somewhere else if the power domains get force
+suspended with runtime PM usage count?
+
+Regards,
+
+Tony
+
+8< ------------------------------
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1617,7 +1617,7 @@ static int omap8250_suspend(struct device *dev)
+ {
+ 	struct omap8250_priv *priv = dev_get_drvdata(dev);
+ 	struct uart_8250_port *up = serial8250_get_port(priv->line);
+-	int err;
++	int err = 0;
+ 
+ 	serial8250_suspend_port(priv->line);
+ 
+@@ -1627,7 +1627,8 @@ static int omap8250_suspend(struct device *dev)
+ 	if (!device_may_wakeup(dev))
+ 		priv->wer = 0;
+ 	serial_out(up, UART_OMAP_WER, priv->wer);
+-	err = pm_runtime_force_suspend(dev);
++	if (uart_console(&up->port) && console_suspend_enabled)
++		err = pm_runtime_force_suspend(dev);
+ 	flush_work(&priv->qos_work);
+ 
+ 	return err;
+@@ -1636,11 +1637,15 @@ static int omap8250_suspend(struct device *dev)
+ static int omap8250_resume(struct device *dev)
+ {
+ 	struct omap8250_priv *priv = dev_get_drvdata(dev);
++	struct uart_8250_port *up = serial8250_get_port(priv->line);
+ 	int err;
+ 
+-	err = pm_runtime_force_resume(dev);
+-	if (err)
+-		return err;
++	if (uart_console(&up->port) && console_suspend_enabled) {
++		err = pm_runtime_force_resume(dev);
++		if (err)
++			return err;
++	}
++
+ 	serial8250_resume_port(priv->line);
+ 	/* Paired with pm_runtime_resume_and_get() in omap8250_suspend() */
+ 	pm_runtime_mark_last_busy(dev);
+@@ -1717,16 +1722,6 @@ static int omap8250_runtime_suspend(struct device *dev)
+ 
+ 	if (priv->line >= 0)
+ 		up = serial8250_get_port(priv->line);
+-	/*
+-	 * When using 'no_console_suspend', the console UART must not be
+-	 * suspended. Since driver suspend is managed by runtime suspend,
+-	 * preventing runtime suspend (by returning error) will keep device
+-	 * active during suspend.
+-	 */
+-	if (priv->is_suspending && !console_suspend_enabled) {
+-		if (up && uart_console(&up->port))
+-			return -EBUSY;
+-	}
+ 
+ 	if (priv->habit & UART_ERRATA_CLOCK_DISABLE) {
+ 		int ret;
+-- 
+2.42.0
