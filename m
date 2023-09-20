@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C79AFCE79AE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5797CE79AC
 	for <linux-serial@archiver.kernel.org>; Wed, 20 Sep 2023 02:27:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232038AbjITC1O (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Sep 2023 22:27:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53676 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231835AbjITC1N (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
+        id S232009AbjITC1N (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Tue, 19 Sep 2023 22:27:13 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB40D3;
-        Tue, 19 Sep 2023 19:27:06 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id d2e1a72fcca58-690b7cb71aeso321888b3a.0;
-        Tue, 19 Sep 2023 19:27:06 -0700 (PDT)
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53662 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231948AbjITC1K (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 19 Sep 2023 22:27:10 -0400
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 291EFC5;
+        Tue, 19 Sep 2023 19:27:03 -0700 (PDT)
+Received: by mail-oi1-x233.google.com with SMTP id 5614622812f47-3aca5c85a34so4381539b6e.3;
+        Tue, 19 Sep 2023 19:27:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1695176825; x=1695781625; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1695176822; x=1695781622; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=0ctG9h68bN1LpqNi5sowsdHW8jUAN0KhQ159GSSbtDo=;
-        b=RUnJ++75ICIE2dssgzv1QFEJIn6P1h94Z7b6l1vDZTcyOEBQBg2xYtzEM5ul9RntWS
-         nEmtHWu/rs3i7Ve/Kjg/ANeZaj4haVCbAiTArwGLY4K6kG2k7SZvjshiEQLGHzCrkq9U
-         bArjYAismmkHGUY9bcinJc5yRO2I+wyL5MYBdxkomDpXpGXWnTS6pqENJmU4nLOUKc6U
-         U/qVDyUOwYJlOY7gi/PpBgFVu1iXvw+S1iqhLez+NvjbUHI3zwmKzWvGCtHWHmkHDneF
-         WEdDlMos+cto7JOhDIUZGgHR2v54IDg06WR5DEKxLU4hvPREgOaLWlmJrGtm9GrZpCD3
-         nbFQ==
+        bh=EFp5dcr86642Gm0jWlFS8dlTBzQtD+VYPc/5vpg94e8=;
+        b=brbDSTHasaJIlDMaJyyUCsWcO0DJ6a68I6RebxUc2rcMZQSnVJ0CkDqm8sIQVx5nes
+         i0l4NR2b6SG2SciBAk2tCJxIXSYBKYGTsuMESCOjKXmzBGvIs3/W2mznRcA0ctuRbRfc
+         2iMT/lV7CGYaSA1o+5lGhDPkCGAKfC8PtaA+e6JTlUNoSgeyjvks/NARYnOS6IISKZnf
+         B/pq2b/XMvfRmzNnq4NmHo189nUnkA8jySHA9vnIx7jCiAL3LToCV5FGaSumq3q7nCPB
+         LuD39/WiSKChJRH8Fs85hXP6RJR+xmTROndT4Z3R0eshpBI9K7qj9ckiJugNC3SZfn/t
+         dlpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695176825; x=1695781625;
+        d=1e100.net; s=20230601; t=1695176822; x=1695781622;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=0ctG9h68bN1LpqNi5sowsdHW8jUAN0KhQ159GSSbtDo=;
-        b=Cn/nufUkElUQlDCELGUgpWV0t0Pc5J6Md3ghaOUcvv0K6mwzHN5HGmoDQmO3HRbmyj
-         I033dhKz9JCCnMbbGRwWH3hK53btbJi0QJFyuOY+YYp86mmYm6tB5C5bXa7XayoH89AG
-         bENLjOtAdJDi28qO5+AwGKsVuZsI5f/KCJu2S2WxcjdLsNFbCGkbvDfQKhjtQmzVCdfY
-         02jz7vLLRP/GtLf/5iAvWsJ8X9+dnNSbOC6HH1BvE/aunq7rGbBvPw7PRyAo0tF6929a
-         KuiI9cwNtbh9D9DzqiVp7zaBorhO3KkyRZYAUlOnyaIfPMi3K1qpElVOUGfQlkHBVCZm
-         Ge/Q==
-X-Gm-Message-State: AOJu0YzjT9ppv7ANpcYM43DY5r67o3SPm+wPIzYLiEjCec5o699cma9C
-        IdQBrSOapzlUO8sX79ReiUwVQRwSIdc=
-X-Google-Smtp-Source: AGHT+IH8lDYXXk+wnakZWmbQS7+dUVqPwbYitARw1OdarcbJDpJ7ns/R2XBL1mHfaFEUetxB3afvyQ==
-X-Received: by 2002:a05:6a00:b44:b0:68a:6d34:474b with SMTP id p4-20020a056a000b4400b0068a6d34474bmr6440975pfo.15.1695176825287;
-        Tue, 19 Sep 2023 19:27:05 -0700 (PDT)
+        bh=EFp5dcr86642Gm0jWlFS8dlTBzQtD+VYPc/5vpg94e8=;
+        b=boRUqUewtr2GKAoP1gGbHZpp7kRtg4GT3ZnYXaNPyZP/Fbv/LZtdnTYXM8m4KeewGa
+         sf0DAG804jTj5a17Bq7/Y8mwrrAFrSG25QIbhO5MeVlcDsfPdcOpMyZ5iZlInhh8ZZ0i
+         xM+5gbJf3KSctOe8gFdlw4OQ82hSyZHKdecxPTVFL6EZnZGjjoT/s4kDy5RIBl6yDrZe
+         w2AX8s5SRLxkgNBVU1Nrr85CEY2Sr1BN9sOm70r2eZkuHrv1c7MxvSj8PTzCqGKN0lJv
+         Nn3WAaz0287cUdxcIOpYd89SARswwDviwhWuIp8nE+WuKj7vMjF3xdT7qgBda0qoX05f
+         3o1w==
+X-Gm-Message-State: AOJu0YzZY32ViIF/g/fnUerizXTdVVuN7CDsC5acemC5nS8h6eXSr+RG
+        EOoVYIguCBDmLs4fs7xnL++zQi5mLUo=
+X-Google-Smtp-Source: AGHT+IEb3kx6scx+qBGioyQ9JNEYrxApeHbBklPcWL4W0AB5nV0SxX81IfXLHlxNyB460gdPUKTeUQ==
+X-Received: by 2002:a05:6808:1484:b0:3ab:84f0:b49d with SMTP id e4-20020a056808148400b003ab84f0b49dmr1361354oiw.3.1695176822033;
+        Tue, 19 Sep 2023 19:27:02 -0700 (PDT)
 Received: from octofox.hsd1.ca.comcast.net ([2601:646:a201:19d0:9ca3:318f:421e:68cb])
-        by smtp.gmail.com with ESMTPSA id p15-20020a62ab0f000000b0067aea93af40sm9224757pff.2.2023.09.19.19.27.03
+        by smtp.gmail.com with ESMTPSA id p15-20020a62ab0f000000b0067aea93af40sm9224757pff.2.2023.09.19.19.27.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Sep 2023 19:27:04 -0700 (PDT)
+        Tue, 19 Sep 2023 19:27:01 -0700 (PDT)
 From:   Max Filippov <jcmvbkbc@gmail.com>
 To:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         devicetree@vger.kernel.org
@@ -60,9 +60,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Conor Dooley <conor+dt@kernel.org>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH v2 4/5] dt-bindings: serial: document esp32s3-acm
-Date:   Tue, 19 Sep 2023 19:26:43 -0700
-Message-Id: <20230920022644.2712651-5-jcmvbkbc@gmail.com>
+Subject: [PATCH v2 2/5] dt-bindings: serial: document esp32-uart
+Date:   Tue, 19 Sep 2023 19:26:41 -0700
+Message-Id: <20230920022644.2712651-3-jcmvbkbc@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230920022644.2712651-1-jcmvbkbc@gmail.com>
 References: <20230920022644.2712651-1-jcmvbkbc@gmail.com>
@@ -72,44 +72,49 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add documentation for the ESP32S3 USB CDC-ACM controller.
+Add documentation for the ESP32xx UART controllers.
 
 Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 
 ---
 Changes v1->v2:
-- fix description
-- rename node in the example
+- drop '|' from description
+- change 'compatible' property type to enum
+- drop label from the example node
 - fix example indentation
 
- .../bindings/serial/esp,esp32-acm.yaml        | 39 +++++++++++++++++++
- 1 file changed, 39 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
+ .../bindings/serial/esp,esp32-uart.yaml       | 48 +++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml
 
-diff --git a/Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml b/Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
+diff --git a/Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml b/Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml
 new file mode 100644
-index 000000000000..6ec836db694a
+index 000000000000..707c10eb093c
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
-@@ -0,0 +1,39 @@
++++ b/Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml
+@@ -0,0 +1,48 @@
 +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
 +
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/serial/esp,esp32-acm.yaml#
++$id: http://devicetree.org/schemas/serial/esp,esp32-uart.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: ESP32S3 ACM controller
++title: ESP32xx UART controllers
 +
 +maintainers:
 +  - Max Filippov <jcmvbkbc@gmail.com>
 +
 +description:
-+  Fixed function USB CDC-ACM device controller of the Espressif ESP32S3 SoC.
++  ESP32 UART controller is a part of the ESP32 SoC.
++  ESP32S3 UART controller is a part of the ESP32S3 SoC.
++  Both SoCs are produced by Espressif Systems Co. Ltd.
 +
 +properties:
 +  compatible:
-+    const: esp,esp32s3-acm
++    enum:
++      - esp,esp32-uart
++      - esp,esp32s3-uart
 +
 +  reg:
 +    maxItems: 1
@@ -117,19 +122,24 @@ index 000000000000..6ec836db694a
 +  interrupts:
 +    maxItems: 1
 +
++  clocks:
++    maxItems: 1
++
 +required:
 +  - compatible
 +  - reg
 +  - interrupts
++  - clocks
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    serial@60038000 {
-+      compatible = "esp,esp32s3-acm";
-+      reg = <0x60038000 0x1000>;
-+      interrupts = <96 3 0>;
++    serial@60000000 {
++      compatible = "esp,esp32s3-uart";
++      reg = <0x60000000 0x80>;
++      interrupts = <27 1 0>;
++      clocks = <&serial_clk>;
 +    };
 -- 
 2.30.2
