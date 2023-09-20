@@ -2,135 +2,99 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB29BCE79AD
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Sep 2023 05:38:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD912CE79AD
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Sep 2023 06:38:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232837AbjITFip (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Sep 2023 01:38:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47102 "EHLO
+        id S233244AbjITGie (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 20 Sep 2023 02:38:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232946AbjITFil (ORCPT
+        with ESMTP id S233245AbjITGic (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Sep 2023 01:38:41 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F0B11F3;
-        Tue, 19 Sep 2023 22:38:31 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id DCA9B80A0;
-        Wed, 20 Sep 2023 05:38:29 +0000 (UTC)
-Date:   Wed, 20 Sep 2023 08:38:28 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Thomas Richard <thomas.richard@bootlin.com>
-Cc:     linux-pm@vger.kernel.org, linux-serial@vger.kernel.org,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Kumar Udit <u-kumar1@ti.com>, Dhruva Gole <d-gole@ti.com>
-Subject: Re: serial: 8250_omap: suspend issue with console_suspend disabled
-Message-ID: <20230920053828.GD5282@atomide.com>
-References: <59b13c93-6637-3050-c145-31be0d6c12c9@bootlin.com>
+        Wed, 20 Sep 2023 02:38:32 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7AEF1;
+        Tue, 19 Sep 2023 23:38:21 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id d9443c01a7336-1c44a25bd0bso4047155ad.0;
+        Tue, 19 Sep 2023 23:38:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1695191901; x=1695796701; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=RJ58+idyugsX9uMTOlAMwq7qziULzVNhZk7UwhCb5C0=;
+        b=EsJsP/tLvyd/50JJiK0StGvHHqFEhIfiolXZGYCvd8TGc2jDIFve9+XUbOYn8SB9ok
+         aFsU7H8kqnzJLxCnjvns5/m3VmeVTrplYyzNugz3vOZg8Y8nXPv/rogE0Rg6pU5m2qmt
+         G79dfs/6dfY35tcbTaTW5GP8HMZMeClW4sBTOcY66tD3b8HzIKPxs6nihryiJq7Kqmz9
+         8ls31pt94p21CvdkAa0mBW/gEJ2e3nq+JiJRUrGuZm2SUuH5pnGCM0rAdZrE9tkIRO3Y
+         ph3NSQK+uNrOnb0ymnXkN2Qq9WIIXuVExohE4qm9fgxg3/4ADY/dSjOl9AFBPY6uhCYs
+         zk3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695191901; x=1695796701;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=RJ58+idyugsX9uMTOlAMwq7qziULzVNhZk7UwhCb5C0=;
+        b=cepsFRD7m3pm3qZgGqleS+9ji4I7xZOsJCKhnxEj9ESMgct8VYh8C8TkSyJpV7EFAH
+         IfITdqO4lIRzOvHIOQPz9ix2hl4N3gy89g9ZEVKXKKaueAQo1LI7i+c0X9YKdH33tAiV
+         r3Xf0brtOHhuoPOjoIiiiAIEiqPf0kJUX3fM5nut2pgdEieXZ+PrWT8uIwpHDyikUEVG
+         qPE1cjg8NBsmoJWV4gk27srI1vz2nxHreDqaRq9DwC18QMxC9c0khTzlziWq+WVcUVNY
+         YR7nyx7SXFGGga1DIDCn3g6umbbddMgGJB5m5AM9kejPLE9tP13hPtFfHL0YjVdqHMQG
+         dneA==
+X-Gm-Message-State: AOJu0Ywp00cXTJtrp4aFkX2DlPQXcfO0KQVwHzAjYn7koZMxiBlV2QwM
+        RKU+sXamTp3RLJsz1GCIJ7E=
+X-Google-Smtp-Source: AGHT+IG6gy9m1cKXvKlZF82i9zbmIvvbKo3CfvV1KJgXkk+Ud/7hM166Wq8fhqhG26/3OTvF73AWVQ==
+X-Received: by 2002:a17:902:da88:b0:1c4:1195:6de4 with SMTP id j8-20020a170902da8800b001c411956de4mr6347009plx.9.1695191900820;
+        Tue, 19 Sep 2023 23:38:20 -0700 (PDT)
+Received: from pek-lxu-l1.wrs.com ([111.198.228.56])
+        by smtp.gmail.com with ESMTPSA id l3-20020a170903244300b001b80d399730sm6843689pls.242.2023.09.19.23.38.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Sep 2023 23:38:20 -0700 (PDT)
+From:   Edward AD <twuufnxlz@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     eadavis@sina.com, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        syzbot+b5d1f455d385b2c7da3c@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com, twuufnxlz@gmail.com
+Subject: Re: [PATCH] tty: fix memory leak in gsm_activate_mux
+Date:   Wed, 20 Sep 2023 14:38:13 +0800
+Message-ID: <20230920063812.577917-2-twuufnxlz@gmail.com>
+X-Mailer: git-send-email 2.41.0
+In-Reply-To: <2023091921-duke-gory-866e@gregkh>
+References: <2023091921-duke-gory-866e@gregkh>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <59b13c93-6637-3050-c145-31be0d6c12c9@bootlin.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
-
-* Thomas Richard <thomas.richard@bootlin.com> [230915 09:57]:
-> The regression was introduced in commit 20a41a62618d "serial: 8250_omap:
-> Use force_suspend and resume for system suspend"
-...
-
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -1630,7 +1630,7 @@ static int omap8250_suspend(struct device *dev)
->         err = pm_runtime_force_suspend(dev);
->         flush_work(&priv->qos_work);
+On Tue, 19 Sep 2023 11:31:57 +0200 Greg KH wrote:
+> > On Tue, 19 Sep 2023 10:29:08 +0200 Greg KH wrote:
+> > > > When the call to gsm_register_devices() fails, we need to reclaim the memory
+> > > > requested in gsm_dlci_alloc().
+> > > >
+> > > > Fixes: 01aecd917114 ("tty: n_gsm: fix tty registration before control channel open")
+> > > > Reported-and-tested-by: syzbot+b5d1f455d385b2c7da3c@syzkaller.appspotmail.com
+> > > > Signed-off-by: Edward AD <twuufnxlz@gmail.com>
+> > >
+> > > Please use your company name/email address, and then just set a manual
+> > > "From:" line as the first line in the changelog as the documentation
+> > > asks.  That's how developers work around their broken corporate email
+> > > systems (but really, you should go and poke your IT group to fix it.)
+> > This repair was completed in my personal time. Additionally, there may be a
+> > possibility of the company's email being thrown away by 'lore.kernel.org'.
+> > If you are not very strict with this, I will continue to use my private email.
 > 
-> -       return err;
-> +       return 0;
->  }
+> As you previously submitted this under your company name/address, we
+> have to be strict for obvious reasons, sorry.
+Before sending this email, according to your reply, I sent a new patch via email eadavis@sina.com.
+But we can't see that email in lore.kernel.org
+> 
+> > I will only keep one line starting with 'From:' in the patch.
+> 
+> I don't understand what you mean by this.
+Just set a manual "From:" line as the first line in the changelog as the 
+documentation asks.
 
-Maybe we can now just simplify things a bit here with the patch below.
-Care to give it a try, it's compile tested only so far.
-
-> Once the omap8250_suspend doesn't return an error, the suspend sequence
-> can continue, but I get an other issue.
-> This issue is not related to commit 20a41a62618d, it has already been
-> present.
-> The power domain of the console is powered-off, so no more messages are
-> printed, and the SoC is stucked.
-> As the uart port is used as console, we don't want to power-off it.
-> My workaround is to set the corresponding power domain to
-> GENPD_FLAG_ALWAYS_ON, so the uart port is not powered-off.
-
-The runtime PM usage count should keep the related power domain on though,
-sounds like this issue somewhere else if the power domains get force
-suspended with runtime PM usage count?
-
-Regards,
-
-Tony
-
-8< ------------------------------
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -1617,7 +1617,7 @@ static int omap8250_suspend(struct device *dev)
- {
- 	struct omap8250_priv *priv = dev_get_drvdata(dev);
- 	struct uart_8250_port *up = serial8250_get_port(priv->line);
--	int err;
-+	int err = 0;
- 
- 	serial8250_suspend_port(priv->line);
- 
-@@ -1627,7 +1627,8 @@ static int omap8250_suspend(struct device *dev)
- 	if (!device_may_wakeup(dev))
- 		priv->wer = 0;
- 	serial_out(up, UART_OMAP_WER, priv->wer);
--	err = pm_runtime_force_suspend(dev);
-+	if (uart_console(&up->port) && console_suspend_enabled)
-+		err = pm_runtime_force_suspend(dev);
- 	flush_work(&priv->qos_work);
- 
- 	return err;
-@@ -1636,11 +1637,15 @@ static int omap8250_suspend(struct device *dev)
- static int omap8250_resume(struct device *dev)
- {
- 	struct omap8250_priv *priv = dev_get_drvdata(dev);
-+	struct uart_8250_port *up = serial8250_get_port(priv->line);
- 	int err;
- 
--	err = pm_runtime_force_resume(dev);
--	if (err)
--		return err;
-+	if (uart_console(&up->port) && console_suspend_enabled) {
-+		err = pm_runtime_force_resume(dev);
-+		if (err)
-+			return err;
-+	}
-+
- 	serial8250_resume_port(priv->line);
- 	/* Paired with pm_runtime_resume_and_get() in omap8250_suspend() */
- 	pm_runtime_mark_last_busy(dev);
-@@ -1717,16 +1722,6 @@ static int omap8250_runtime_suspend(struct device *dev)
- 
- 	if (priv->line >= 0)
- 		up = serial8250_get_port(priv->line);
--	/*
--	 * When using 'no_console_suspend', the console UART must not be
--	 * suspended. Since driver suspend is managed by runtime suspend,
--	 * preventing runtime suspend (by returning error) will keep device
--	 * active during suspend.
--	 */
--	if (priv->is_suspending && !console_suspend_enabled) {
--		if (up && uart_console(&up->port))
--			return -EBUSY;
--	}
- 
- 	if (priv->habit & UART_ERRATA_CLOCK_DISABLE) {
- 		int ret;
--- 
-2.42.0
+Thanks,
+edward
