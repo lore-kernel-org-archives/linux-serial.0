@@ -2,83 +2,200 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDE54CE79CE
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Sep 2023 13:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31AB6CE79D2
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Sep 2023 13:21:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234895AbjITNTC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Sep 2023 09:19:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40934 "EHLO
+        id S234856AbjITNVH convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 20 Sep 2023 09:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234856AbjITNTB (ORCPT
+        with ESMTP id S234531AbjITNVG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Sep 2023 09:19:01 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00165F1;
-        Wed, 20 Sep 2023 06:18:53 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A9BBC433C8;
-        Wed, 20 Sep 2023 13:18:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1695215933;
-        bh=nnli8MSSDfrHelQBb1r0L2vDbqp6oxZF8KrvopPllR8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rT39YSNSJy9ytpnr+AgC5ujreaHYT2PClmB4Pgp4Sf0W5RLeVqpM7KXRJZgOeLhHd
-         mn4nJmrl4//blN3GDaQaP7gXVo9vZlAPFU4bvbFXUHq8ZDuyqbCGHE1krFxZ/Zxauy
-         0UEj3vJ+7CsEO/6WGGTzrr+NjsnSO69o+puz2yso=
-Date:   Wed, 20 Sep 2023 15:18:51 +0200
-From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To:     =?iso-8859-1?Q?Rodr=EDguez_Barbarin=2C_Jos=E9?= Javier 
-        <JoseJavier.Rodriguez@duagon.com>
-Cc:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "morbidrsa@gmail.com" <morbidrsa@gmail.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jth@kernel.org" <jth@kernel.org>,
-        =?iso-8859-1?B?U2FuanXhbiBHYXJj7WEs?= Jorge 
-        <Jorge.SanjuanGarcia@duagon.com>
-Subject: Re: [PATCH v3 2/2] mcb: use short version for function pointer for
- mcb_free_bus
-Message-ID: <2023092000-overprice-guileless-e1a3@gregkh>
-References: <20230906114901.63174-1-JoseJavier.Rodriguez@duagon.com>
- <20230906114901.63174-3-JoseJavier.Rodriguez@duagon.com>
+        Wed, 20 Sep 2023 09:21:06 -0400
+Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E29791;
+        Wed, 20 Sep 2023 06:21:00 -0700 (PDT)
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-59be9a09c23so69922107b3.1;
+        Wed, 20 Sep 2023 06:21:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695216059; x=1695820859;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ka/OcyoPMxG4j7LyFSyUdeXyO8W0OSLZSbeuJkMK0nM=;
+        b=P+NTtcFyaBc/nzxDx5U0Z7Sax4b1GfAZ37TUpwB8TAwRoc4GIf5k6/ZYwdaeLVtxHp
+         IlzV9XeQvHkY4unwoKaKm5zTAh4TxwfK2EvpDi+ZxycB43I37Sf4sbQenEODKfXZvR1C
+         E/CdLPL/3vcnZ1bA45SsWuaOBCvBKpQXmA6L+vcauRaLg69ztyeiySByvktptCTXUFgn
+         dIz/8CEAAt5jcD2kglFDawzHCkpbFfFTqWXR9qJfVopN1IxAlapI4iYNqUtyuwZVdlqT
+         X11GOPrAOVmBd+r/QenW5pbXIRGGg8RH5JBEaPNkNXwB6N/kiNGKtMhfiYFsL+v5OCwB
+         v0IA==
+X-Gm-Message-State: AOJu0YyJuNndb1cYfUFf7ak6bGXdk9Tmjpcrz3Sk7quBqPBkAWelf5Hd
+        KNKy/doTWKCQK9Pdi0dd3mu+Eg+f8bMJjA==
+X-Google-Smtp-Source: AGHT+IEtU7n0U/31lgYZvjj9wyWugYzGwgKQ95rbX2RbVhVOgffG2ZyBxOqIEddPMNw98a9QR76BQA==
+X-Received: by 2002:a0d:d68d:0:b0:56d:3b91:7e78 with SMTP id y135-20020a0dd68d000000b0056d3b917e78mr2284775ywd.20.1695216057584;
+        Wed, 20 Sep 2023 06:20:57 -0700 (PDT)
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
+        by smtp.gmail.com with ESMTPSA id d145-20020a814f97000000b0059bcadded9dsm3770319ywb.116.2023.09.20.06.20.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Sep 2023 06:20:56 -0700 (PDT)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-59e8d963adbso39015297b3.0;
+        Wed, 20 Sep 2023 06:20:56 -0700 (PDT)
+X-Received: by 2002:a0d:d9c8:0:b0:59b:fe73:debc with SMTP id
+ b191-20020a0dd9c8000000b0059bfe73debcmr2567469ywe.0.1695216056182; Wed, 20
+ Sep 2023 06:20:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230906114901.63174-3-JoseJavier.Rodriguez@duagon.com>
+References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com> <20230912045157.177966-24-claudiu.beznea.uj@bp.renesas.com>
+In-Reply-To: <20230912045157.177966-24-claudiu.beznea.uj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 20 Sep 2023 15:20:44 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUwnsJ0uKeLtFcwB6a2nQtaSUPu0ZR7kYwQeEhKMhfXFQ@mail.gmail.com>
+Message-ID: <CAMuHMdUwnsJ0uKeLtFcwB6a2nQtaSUPu0ZR7kYwQeEhKMhfXFQ@mail.gmail.com>
+Subject: Re: [PATCH 23/37] pinctrl: renesas: rzg2l: index all registers based
+ on port offset
+To:     Claudiu <claudiu.beznea@tuxon.dev>,
+        prabhakar.mahadev-lad.rj@bp.renesas.com
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        ulf.hansson@linaro.org, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
+        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
+        nfraprado@collabora.com, rafal@milecki.pl,
+        wsa+renesas@sang-engineering.com,
+        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Sep 06, 2023 at 11:49:28AM +0000, Rodríguez Barbarin, José Javier wrote:
-> From: Jorge Sanjuan Garcia <jorge.sanjuangarcia@duagon.com>
-> 
-> Just a style change so that the device release callbacks are defined
-> in the same way for devices in mcb_bus and mcb_device.
-> 
-> Signed-off-by: Jorge Sanjuan Garcia <jorge.sanjuangarcia@duagon.com>
-> Co-developed-by: Jose Javier Rodriguez Barbarin <JoseJavier.Rodriguez@duagon.com>
-> Signed-off-by: Jose Javier Rodriguez Barbarin <JoseJavier.Rodriguez@duagon.com>
-> ---
->  drivers/mcb/mcb-core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/mcb/mcb-core.c b/drivers/mcb/mcb-core.c
-> index 0cac5bead84f..5c6157b0db75 100644
-> --- a/drivers/mcb/mcb-core.c
-> +++ b/drivers/mcb/mcb-core.c
-> @@ -288,7 +288,7 @@ struct mcb_bus *mcb_alloc_bus(struct device *carrier)
->  	bus->dev.parent = carrier;
->  	bus->dev.bus = &mcb_bus_type;
->  	bus->dev.type = &mcb_carrier_device_type;
-> -	bus->dev.release = &mcb_free_bus;
-> +	bus->dev.release = mcb_free_bus;
+Hi Claudiu,
 
-But you aren't fixing the root cause here of an incorrect pointer being
-passed to this function, right?
+Thanks for your patch!
 
-Yes, removing the single variable is nicer, so the crash doesn't happen,
-but you are still passing the wrong pointer around, so why not fix that?
+On Tue, Sep 12, 2023 at 6:53â€¯AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>
+> To get address that needs to be read/write for specific port
+> functionalities the P(), PM(), PMC(), PFC(), PIN(), IOLH() IEN(), ISEL()
+> macros are used. Some of these macros received as argument the hardware
+> port identifier, some hardware port offset address (e.g. ISEL() received
+> port identifier, IOLH() received port offset address). This makes hard to
+> extend the current driver for SoCs were port identifiers are not continuous
+> in memory map of pin controller. This is the case for RZ/G3S pin controller
+> were ports are mapped as follows:
+>
+> port offset    port identifier
+> -----------    ---------------
+> 0x20           P0
+> 0x21           P5
+> 0x22           P6
+> 0x23           P11
+> 0x24           P12
+> 0x25           P13
+> 0x26           P14
+> 0x27           P15
+> 0x28           P16
+> 0x29           P17
+> 0x2a           P18
+> 0x30           P1
+> 0x31           P2
+> 0x32           P3
+> 0x33           P4
+> 0x34           P7
+> 0x35           P8
+> 0x36           P8
+> 0x37           P10
+>
+> To make this achievable change all the above macros used to get the address
+> of a port register for specific port functionality based on port hardware
+> address. Shortly, all the above macros will get as argument the port
+> offset address listed in the above table.
+>
+> With this RZG2L_SINGLE_PIN_GET_PORT_OFFSET() and
+> RZG2L_PIN_ID_TO_PORT_OFFSET() were replaced by
 
-thanks,
+and RZG2L_GPIO_PORT_GET_INDEX()?
 
-greg k-h
+> RZG2L_PIN_CFG_TO_PORT_OFFSET(), RZG2L_SINGLE_PIN_GET_CFGS() and
+> RZG2L_GPIO_PORT_GET_CFGS() were replaced by RZG2L_PIN_CFG_TO_CAPS().
+>
+> Also rzg2l_pinctrl_set_pfc_mode() don't need port argument anymore.
+> Also rzg2l_gpio_direction_input() and rzg2l_gpio_direction_output() don't
+> need to translate port and bit locally as this can be done by
+> rzg2l_gpio_set_direction().
+>
+> To use the same naming for port, bit/pin and register offset the
+> port_offset variable names in different places was replaced by variable
+> named off and there is no need to initialize anymore cfg and bit in
+> different code places.
+>
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+
+This looks like a nice cleanup, thanks a lot!
+Prabhakar: do you like it, too?
+
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+You can find a few suggestions for improvement below...
+
+> --- a/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+> +++ b/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+> @@ -202,9 +202,11 @@ static int rzg2l_pinctrl_set_mux(struct pinctrl_dev *pctldev,
+>                                  unsigned int group_selector)
+>  {
+>         struct rzg2l_pinctrl *pctrl = pinctrl_dev_get_drvdata(pctldev);
+> +       const struct pinctrl_pin_desc *pin_desc;
+> +       unsigned int i, *psel_val, *pin_data;
+>         struct function_desc *func;
+> -       unsigned int i, *psel_val;
+>         struct group_desc *group;
+> +       u32 port, pin, off;
+
+Please move the new variable declarations inside the for(), and
+combine them with their initialization.
+
+>         int *pins;
+>
+>         func = pinmux_generic_get_function(pctldev, func_selector);
+> @@ -218,11 +220,17 @@ static int rzg2l_pinctrl_set_mux(struct pinctrl_dev *pctldev,
+>         pins = group->pins;
+>
+>         for (i = 0; i < group->num_pins; i++) {
+> -               dev_dbg(pctrl->dev, "port:%u pin: %u PSEL:%u\n",
+> -                       RZG2L_PIN_ID_TO_PORT(pins[i]), RZG2L_PIN_ID_TO_PIN(pins[i]),
+> -                       psel_val[i]);
+> -               rzg2l_pinctrl_set_pfc_mode(pctrl, RZG2L_PIN_ID_TO_PORT(pins[i]),
+> -                                          RZG2L_PIN_ID_TO_PIN(pins[i]), psel_val[i]);
+> +               pin_desc = &pctrl->desc.pins[pins[i]];
+> +               pin_data = pin_desc->drv_data;
+> +
+> +               port = RZG2L_PIN_ID_TO_PORT(pins[i]);
+
+As port is unused but in the debug print, please drop the variable,
+and use RZG2L_PIN_ID_TO_PORT() in the debug print below.
+
+> +               pin = RZG2L_PIN_ID_TO_PIN(pins[i]);
+> +               off = RZG2L_PIN_CFG_TO_PORT_OFFSET(*pin_data);
+> +
+> +               dev_dbg(pctrl->dev, "port:%u pin: %u off:%x PSEL:%u\n", port,
+> +                       pin, off, psel_val[i]);
+> +
+> +               rzg2l_pinctrl_set_pfc_mode(pctrl, pin, off, psel_val[i]);
+>         }
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
