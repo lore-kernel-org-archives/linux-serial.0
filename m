@@ -2,98 +2,85 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83ABDC00523
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Sep 2023 15:13:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC556C00523
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Sep 2023 15:20:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235264AbjITPNg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Sep 2023 11:13:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36372 "EHLO
+        id S234065AbjITPUc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 20 Sep 2023 11:20:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234864AbjITPNf (ORCPT
+        with ESMTP id S234602AbjITPUa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Sep 2023 11:13:35 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F2DFCE
-        for <linux-serial@vger.kernel.org>; Wed, 20 Sep 2023 08:13:30 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id d9443c01a7336-1c47309a8ccso7027765ad.1
-        for <linux-serial@vger.kernel.org>; Wed, 20 Sep 2023 08:13:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1695222809; x=1695827609; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=/hyiPJzwLyvz53eOPwWn5KTS3ATXYJRveFNMbAiYRwk=;
-        b=P3YvM4YLE5mdSNDQP8M83pygwFAlb3uI5G0LrtEMOn+sJK3er3zTqU/QyIncSs7RoK
-         JTMEpFCaTV+ADa9cf4nqwf4nXcWkg8LOHtpidLsiri2q4GtYqUjSghXbS5d5y9lvRvBh
-         FJJHr/rKVG9xIiHK/lVpHNeOzMRRTPPAWtpVE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695222809; x=1695827609;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/hyiPJzwLyvz53eOPwWn5KTS3ATXYJRveFNMbAiYRwk=;
-        b=hyHLGdE+6ZCG6S2sREeR0sevKVWVGDSrQrlWZqDvq2GkQC0z+/sKDMOP7Tl80QCOxB
-         Z3kXqs4YFKGXxIIm2oAn9QtxEGEnZZst6AOMbRufT8HOvO6UYK0W+2e/RLW1p/+OzoRI
-         2+vLFHV2tkFJg8IF3034m6UvCIx6KuCCTDYwCax/iiPHiz6fd/Xk5rlOqHTG5KMiWJJo
-         l2uHFNcwph/KeRrd8HEZIkfGaqlSrxyO6/6Qjhtmf120oNnvEleWZKi86OYeEH/61fUo
-         9bE7CSyKjLxNAU+6Ij4tnNR+DrZWqA4pm25lPOJFobrQYh4zjGu8Y1+l8FO6gyLC7RBb
-         7NIw==
-X-Gm-Message-State: AOJu0Yw6BRYjiBhbTZwMMzKxIqb6UXvrkGpxPd8qzieVs20QA/wU0Yn6
-        bllUWAc37hU4DNOYVu0azcIVbw==
-X-Google-Smtp-Source: AGHT+IHjY/EA4Uaz2uN8Hf+rV5YjM1d2ccJFzhZB2yI5nZQzuRgpHsCOPdzZTHTUX2L8rGpX2Z27SA==
-X-Received: by 2002:a17:902:d2cd:b0:1c5:6f43:9502 with SMTP id n13-20020a170902d2cd00b001c56f439502mr4352961plc.14.1695222809493;
-        Wed, 20 Sep 2023 08:13:29 -0700 (PDT)
-Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
-        by smtp.gmail.com with ESMTPSA id u7-20020a170903124700b001bb0eebd90asm11948601plh.245.2023.09.20.08.13.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Sep 2023 08:13:28 -0700 (PDT)
-Date:   Wed, 20 Sep 2023 08:13:28 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Azeem Shaikh <azeems@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: Re: [PATCH v2] vt: Replace strlcpy with strscpy
-Message-ID: <202309200813.1B0C125@keescook>
-References: <20230919192156.121503-1-azeems@google.com>
+        Wed, 20 Sep 2023 11:20:30 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5775DCE;
+        Wed, 20 Sep 2023 08:20:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
+        :From:subject:date:message-id:reply-to;
+        bh=rkPvlf3H1P9ACxQK+FGe3o7kq/gw7tnfk6uZjZgiHwQ=; b=w23Jc7vJrj8ES1UxKOLvc2DyYu
+        FFzyWbYr0w6Iq8z+LLkAe6/SaXIpzd2E7ABJkzlg9NPXLocnxTvdbD/cc5KvMA3KKJjHGZKE1QevG
+        /OS3YVFgoIlfT1bBYZ6JazmSCpZT0z/mn0fPNCYXi5hqb8LqPTUTN3a4Yuna72wOgyuY=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:43190 helo=pettiford.lan)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1qiyzx-0008Co-4O; Wed, 20 Sep 2023 11:20:17 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, hvilleneuve@dimonoff.com
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, hugo@hugovil.com
+Date:   Wed, 20 Sep 2023 11:20:11 -0400
+Message-Id: <20230920152015.1376838-1-hugo@hugovil.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230919192156.121503-1-azeems@google.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: [PATCH 0/4] serial: sc16is7xx: device tree improvements
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Sep 19, 2023 at 07:21:56PM +0000, Azeem Shaikh wrote:
-> strlcpy() reads the entire source buffer first and returns the size of
-> the source string, not the destination string, which can be accidentally
-> misused [1].
-> 
-> The copy_to_user() call uses @len returned from strlcpy() directly
-> without checking its value. This could potentially lead to read
-> overflow. There is no existing bug since @len is always guaranteed to be
-> greater than hardcoded strings in @func_table[kb_func]. But as written
-> it is very fragile and specifically uses a strlcpy() result without sanity
-> checking and using it to copy to userspace.
-> 
-> In an effort to remove strlcpy() completely [2], replace
-> strlcpy() here with strscpy().
-> 
-> [1] https://www.kernel.org/doc/html/latest/process/deprecated.html#strlcpy
-> [2] https://github.com/KSPP/linux/issues/89
-> 
-> Signed-off-by: Azeem Shaikh <azeems@google.com>
-> ---
-> v2:
->  * Return -ENOSPC instead of -EFAULT in case of truncation.
->  * Update commit log to clarify that there is no exploitable bug but instead the code uses a fragile anti-pattern.
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Changes look good. Thanks!
+Hello,
+this patch series improves DT properties naming and handling, and converts
+sc16is7xx bindings from text to YAML.
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+Patch 1 make sure we use the device_property APIs when configuring irda mode.
 
+Patch 2 is in preparation for patch 3, to make sure we recognize
+"nxp,irda-mode-ports" DT property as well as the (soon to be) legacy property
+"irda-mode-ports".
+
+Patch 3 adds a vendor prefix to irda-mode-ports property.
+
+Patch 4 is the actual conversion of bindings to YAML.
+Conversion to YAML has been suggested by Andy Shevchenko during review for
+another patch series for the sc16is7xx:
+Link: https://lkml.org/lkml/2023/5/25/743
+
+Thank you.
+
+Hugo Villeneuve (4):
+  serial: sc16is7xx: use device_property APIs when configuring irda mode
+  serial: sc16is7xx: recognize "nxp,irda-mode-ports" DT property
+  dt-bindings: sc16is7xx: add vendor prefix to irda-mode-ports property
+  dt-bindings: sc16is7xx: convert to YAML
+
+ .../bindings/serial/nxp,sc16is7xx.txt         | 118 ----------------
+ .../bindings/serial/nxp,sc16is7xx.yaml        | 126 ++++++++++++++++++
+ drivers/tty/serial/sc16is7xx.c                |  40 ++++--
+ 3 files changed, 156 insertions(+), 128 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+
+
+base-commit: c980248179d655d33af47f0b0bec1ce8660994c6
 -- 
-Kees Cook
+2.30.2
+
