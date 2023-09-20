@@ -2,147 +2,111 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 352DDCE79CB
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Sep 2023 10:59:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23BFCCE79CF
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Sep 2023 12:35:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233974AbjITK7d (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Sep 2023 06:59:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48792 "EHLO
+        id S234647AbjITMfK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 20 Sep 2023 08:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233125AbjITK7c (ORCPT
+        with ESMTP id S235912AbjITMen (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Sep 2023 06:59:32 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E5ECA;
-        Wed, 20 Sep 2023 03:59:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695207567; x=1726743567;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=1hyw2ZvhoVedT7i2zlNBzAL3I0rK4jx4XG0J+0d5o0Q=;
-  b=X3sPjkTXpV43V+a8zeCfQy5rnRrVI1eFKwgffmsg6ZCYVKLbcQpCh9Ht
-   ioRWppCUWJy53iKFV9cicaMKBtMfXmPVSF2lFEhjawHOUylNw1dXQd5fN
-   ToNM3vSJ58ix6K+BBWdwUQiN2K83TjszHS7Oo/POaIwUD1pLN5qaTgVwg
-   VNQrtpjiF7rm61maKu0ZwISGh2pSX4sUblXI3uWCRbdwaBBfXdDs0uI4g
-   teXFT07l33VO+xlJSUvpt9jsVd6heH24ZoR/ESRw8p8Oi8HV97BLqgi/O
-   IqWwj3N29wWQM1vHyoZ1DFrXbX3I8Tl7z16jogt5wnEX8yeZ2FunG7iu3
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10838"; a="411134545"
-X-IronPort-AV: E=Sophos;i="6.02,161,1688454000"; 
-   d="scan'208";a="411134545"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2023 03:59:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10838"; a="920241733"
-X-IronPort-AV: E=Sophos;i="6.02,161,1688454000"; 
-   d="scan'208";a="920241733"
-Received: from swegrzyn-mobl.ger.corp.intel.com ([10.252.52.91])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2023 03:59:24 -0700
-Date:   Wed, 20 Sep 2023 13:59:21 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc:     LKML <linux-kernel@vger.kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andi Shyti <andi.shyti@linux.intel.com>
-Subject: Re: [PATCH v1 1/1] serial: 8250_dw: Use
- devm_clk_get_optional_enabled()
-In-Reply-To: <20230919195513.3197930-1-andriy.shevchenko@linux.intel.com>
-Message-ID: <1b8e8791-688a-59b4-db5b-d7b0b47dbf2e@linux.intel.com>
-References: <20230919195513.3197930-1-andriy.shevchenko@linux.intel.com>
+        Wed, 20 Sep 2023 08:34:43 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9734693
+        for <linux-serial@vger.kernel.org>; Wed, 20 Sep 2023 05:34:37 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-99c3d3c3db9so936072166b.3
+        for <linux-serial@vger.kernel.org>; Wed, 20 Sep 2023 05:34:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1695213276; x=1695818076; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=CcKt0aKuzO6PEDvEIej9OBMWn8uC5jf8/QtokW/b9d4=;
+        b=vfhGsMdXakUGxuC6oR7wRjFlQCBcFp1s+mB7sUvAcQa4+xtqWaJ8PtG4mtwKmZ6psZ
+         jcIS0Qhs5M0qEUEIRfcvLOE2877aE9u8ul3EwqSElE+9hwnopCrqVdsGXJtEJBoP5ThP
+         evkJVp4hByZ137/9rTfP7zbyRIFqV8gyVwlGvtyXVWSscrrxLElumpGVmfK0UTvXNEuw
+         QPqsaV3GvjPk+A46BgYVyiHHEPmBCNLF+pgVAoA1YE44ZQBlHYwovXYL0P18ZDKB05S/
+         3WCfM+Zah5wqZ2x+4nQYmEeCyPa3MR/S8jKjL0PlULtkFSu7Y58MccOTx7yysuyiI7Kk
+         q88A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695213276; x=1695818076;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=CcKt0aKuzO6PEDvEIej9OBMWn8uC5jf8/QtokW/b9d4=;
+        b=IQ7krOHFtYbsnScwu1LB78YjR27P/Ze+9MWkCSR23EVzvIwOGZXNz1/ru4OHapCx5u
+         0Ga7aFXhPbr+uKOsMmZhr1NyaVAmIaqVCkM02FXW4/uR8CxkDKmxG6vNIsgf27IlGOK+
+         xH+pZf6jI13QZuoBCHwUoKdOqp+WYJfWnLY9R/n84KSLu0F/LNjzhbHocNpf+f2wq3Rw
+         OQYUQQoXyGKGFQsAJmmv0APdDVF1qg2IF4z2pbEvnk8OMCnKLdweAE5zC7fb0w4Sj93L
+         +Gk6VwhHze8qyqcw0T1umoPBXwaj/94PHHZzybC8fCLfH1aAAFGXlRyxvr0lafT1v3Wq
+         2/ZQ==
+X-Gm-Message-State: AOJu0YyUmKm1/yG/v3PxsT6jro9GBdKnWcVdlKp7H6wfN3sGiu6eqKbZ
+        MBIJXWWX1NcGPmWJ/KJBQ4dxSQ==
+X-Google-Smtp-Source: AGHT+IF+C0tu/LMzg7FJEiDDItq7m86WiFfb0jw8K0fAigJwSNSCXcjwdv5jloc9gLXWX3O8GQFK7A==
+X-Received: by 2002:a17:906:3091:b0:99c:c50f:7fb4 with SMTP id 17-20020a170906309100b0099cc50f7fb4mr1929062ejv.1.1695213276007;
+        Wed, 20 Sep 2023 05:34:36 -0700 (PDT)
+Received: from [172.20.24.238] (static-212-193-78-212.thenetworkfactory.nl. [212.78.193.212])
+        by smtp.gmail.com with ESMTPSA id x6-20020a170906710600b00992e14af9c3sm9373040ejj.143.2023.09.20.05.34.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Sep 2023 05:34:35 -0700 (PDT)
+Message-ID: <8e8c479e-3f72-ebcf-dbcc-162b193c2e24@linaro.org>
+Date:   Wed, 20 Sep 2023 14:34:34 +0200
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1467541756-1695207565=:1961"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH v2 2/5] dt-bindings: serial: document esp32-uart
+Content-Language: en-US
+To:     Max Filippov <jcmvbkbc@gmail.com>, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+References: <20230920022644.2712651-1-jcmvbkbc@gmail.com>
+ <20230920022644.2712651-3-jcmvbkbc@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230920022644.2712651-3-jcmvbkbc@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1467541756-1695207565=:1961
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-
-On Tue, 19 Sep 2023, Andy Shevchenko wrote:
-
-> Use devm_clk_get_optional_enabled() to simplify the code.
+On 20/09/2023 04:26, Max Filippov wrote:
+> Add documentation for the ESP32xx UART controllers.
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
-> ---
->  drivers/tty/serial/8250/8250_dw.c | 27 +++------------------------
->  1 file changed, 3 insertions(+), 24 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index f4cafca1a7da..bdd7ed282061 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -498,11 +498,6 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
->  	}
->  }
->  
-> -static void dw8250_clk_disable_unprepare(void *data)
-> -{
-> -	clk_disable_unprepare(data);
-> -}
-> -
->  static void dw8250_reset_control_assert(void *data)
->  {
->  	reset_control_assert(data);
-> @@ -598,23 +593,15 @@ static int dw8250_probe(struct platform_device *pdev)
->  	device_property_read_u32(dev, "clock-frequency", &p->uartclk);
->  
->  	/* If there is separate baudclk, get the rate from it. */
-> -	data->clk = devm_clk_get_optional(dev, "baudclk");
-> +	data->clk = devm_clk_get_optional_enabled(dev, "baudclk");
->  	if (data->clk == NULL)
-> -		data->clk = devm_clk_get_optional(dev, NULL);
-> +		data->clk = devm_clk_get_optional_enabled(dev, NULL);
->  	if (IS_ERR(data->clk))
->  		return PTR_ERR(data->clk);
->  
->  	INIT_WORK(&data->clk_work, dw8250_clk_work_cb);
->  	data->clk_notifier.notifier_call = dw8250_clk_notifier_cb;
->  
-> -	err = clk_prepare_enable(data->clk);
-> -	if (err)
-> -		return dev_err_probe(dev, err, "could not enable optional baudclk\n");
-> -
-> -	err = devm_add_action_or_reset(dev, dw8250_clk_disable_unprepare, data->clk);
-> -	if (err)
-> -		return err;
-> -
->  	if (data->clk)
->  		p->uartclk = clk_get_rate(data->clk);
->  
-> @@ -622,18 +609,10 @@ static int dw8250_probe(struct platform_device *pdev)
->  	if (!p->uartclk)
->  		return dev_err_probe(dev, -EINVAL, "clock rate not defined\n");
->  
-> -	data->pclk = devm_clk_get_optional(dev, "apb_pclk");
-> +	data->pclk = devm_clk_get_optional_enabled(dev, "apb_pclk");
->  	if (IS_ERR(data->pclk))
->  		return PTR_ERR(data->pclk);
->  
-> -	err = clk_prepare_enable(data->pclk);
-> -	if (err)
-> -		return dev_err_probe(dev, err, "could not enable apb_pclk\n");
-> -
-> -	err = devm_add_action_or_reset(dev, dw8250_clk_disable_unprepare, data->pclk);
-> -	if (err)
-> -		return err;
-> -
->  	data->rst = devm_reset_control_get_optional_exclusive(dev, NULL);
->  	if (IS_ERR(data->rst))
->  		return PTR_ERR(data->rst);
+> Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 > 
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Thanks for the changes.
 
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - esp,esp32-uart
+> +      - esp,esp32s3-uart
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
 
--- 
- i.
+You need allOf with $ref to serial.yaml# (local serial, not absolute
+path). I apologize, I missed this in my previous review.
 
---8323329-1467541756-1695207565=:1961--
+Best regards,
+Krzysztof
+
