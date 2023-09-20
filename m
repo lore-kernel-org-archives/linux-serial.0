@@ -2,92 +2,85 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C901C05021
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Sep 2023 20:10:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D3E4C27C7B
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Sep 2023 21:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229705AbjITUKy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Sep 2023 16:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44466 "EHLO
+        id S229473AbjITVZ7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 20 Sep 2023 17:25:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229790AbjITUKx (ORCPT
+        with ESMTP id S229436AbjITVZ6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Sep 2023 16:10:53 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B068FCC
-        for <linux-serial@vger.kernel.org>; Wed, 20 Sep 2023 13:10:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        sang-engineering.com; h=from:to:cc:subject:date:message-id
-        :in-reply-to:references:mime-version:content-transfer-encoding;
-         s=k1; bh=ZNeKrg5sAP30QqDQrIU7hgAIKaGsVVJXPQC5z91sR2k=; b=erc3tI
-        F7QNEs3H3KRFvKBZcKcsmkR/ynJaaOGiCM4v/yRCukMAo4aTctihbTYFrXERq9tl
-        fe/H9vzD3XoQYrYWsp46CXnRurhSklfF0+55brjjxwQDb6IMT00XHCo3+I9bOPuA
-        7gt7yqwwjvsta4WJTxLuJecZdAGK5rPmW71gEo6FHkjJvsXYgc26oiaRnl5wkxR3
-        7uVtmfW49ezMuky5H9KEqD6X8+B47318Sk4TMw540AyZdZlnafPU2XHUjxp2D7Ff
-        qY90Jum3jeoFSZI2R7KzIHOAcWG/YJM3MNbfJgOtH/y1KekCzZDujyRVRqroJrcv
-        aL7ZFqUGUhCkYbUA==
-Received: (qmail 720181 invoked from network); 20 Sep 2023 22:10:41 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 20 Sep 2023 22:10:41 +0200
-X-UD-Smtp-Session: l3s3148p1@dPg7+M8FztgujntX
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     linux-mips@vger.kernel.org
+        Wed, 20 Sep 2023 17:25:58 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15383C2;
+        Wed, 20 Sep 2023 14:25:53 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id d9443c01a7336-1c3bd829b86so2197665ad.0;
+        Wed, 20 Sep 2023 14:25:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1695245152; x=1695849952; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=PMbPNeYy+UGMgyZDyxPbuxTcd7HPf3Y3TrYovIXSs50=;
+        b=VtIWFE8FnbXo/Q774ZoU87GqsvfliKaWbI/wCg4iLT4Ir/e3yD4qdq40sb83Qv3VKL
+         K0m2h43RY7YtJmK8B6vxBd4mcS51st8K9JNPrdiE9o35Kj5eIw1dhif5ncWa/S4/E0Oy
+         p/MV/FPsdFXWd5STDc7WhlSaXiHQBT3HCaHQ9Vv6dhsxI7QTay5I9lEl85ZgAV6nBU1s
+         4G7NvsbAGDn5kwqVdWKn/zZz5mxXESvJIVCfcTIULFqBYxvNtPB038jIPpZ56hnHqf91
+         RmncYxa0sDmlnAwSixVINp+3azZysoxg8tgV6IpKFm98g4eNm3pdi1NuKqoV5KRSFLHI
+         YBow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695245152; x=1695849952;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=PMbPNeYy+UGMgyZDyxPbuxTcd7HPf3Y3TrYovIXSs50=;
+        b=cZPF9m0bckB9/a3JhxQc4Itwx1CW+TGyCYbmJYjKZa28Z026K8KNcv12rZZ19+Q0nd
+         HcL0L0/OVRhqNV9W0JHL8i12uSVlLNkJxhPgJiuSw+eDifDIBOIyjV7N9q6ksAB1xqKP
+         MnOQ4DGlVfm9mjDYZgHd3kfCp0kRBa02hQwByj2Su5A0xzISXc6SNAsb9maZUd0X6+Vq
+         Ux6ykjKcoPPuWPybZCCBRU1nizpLFd5vM7OpH1FRIIKG2SFbNzJWK3oeW75XU5mT0akJ
+         wZ/lv8w7FWuqs7YiXxYYbJY799xAp+ip+9LdNb+6o0gVXPhhYROJYMygiNgc1G8BALYg
+         RmxA==
+X-Gm-Message-State: AOJu0Yzop82YHooqGXSor+OlILUqiUr9JE4X9PWHN/nYYp08Hd/2Mzk1
+        JWAeboSWrOgOiPyFhBC87w5QmvXIV4r86w==
+X-Google-Smtp-Source: AGHT+IGzqX77C1WpExcjByUyYVEVr2I38LrIA4s3nXcrHk/SqCMeB6QNSE8/IB5ycHUd/IjSg1YsTg==
+X-Received: by 2002:a17:903:32c5:b0:1c3:411c:9b7d with SMTP id i5-20020a17090332c500b001c3411c9b7dmr4053435plr.57.1695245152274;
+        Wed, 20 Sep 2023 14:25:52 -0700 (PDT)
+Received: from [10.67.49.139] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id o10-20020a170902d4ca00b001bf3bdbceb5sm12286208plg.134.2023.09.20.14.25.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Sep 2023 14:25:51 -0700 (PDT)
+Message-ID: <f814cce5-9721-f64a-e8f6-cf390d1c43e6@gmail.com>
+Date:   Wed, 20 Sep 2023 14:25:49 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH 1/6] serial: 8250: remove AR7 support
+Content-Language: en-US
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-mips@vger.kernel.org
 Cc:     Jonas Gorski <jonas.gorski@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH 1/6] serial: 8250: remove AR7 support
-Date:   Wed, 20 Sep 2023 22:10:27 +0200
-Message-Id: <20230920201035.3445-2-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20230920201035.3445-1-wsa+renesas@sang-engineering.com>
 References: <20230920201035.3445-1-wsa+renesas@sang-engineering.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+ <20230920201035.3445-2-wsa+renesas@sang-engineering.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230920201035.3445-2-wsa+renesas@sang-engineering.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-AR7 is going to be removed from the Kernel, so remove its type
-definition from 8250 code. As with previous removals, I checked with
-Debian Code Search that 'PORT_AR7' is not used in userspace.
+On 9/20/23 13:10, Wolfram Sang wrote:
+> AR7 is going to be removed from the Kernel, so remove its type
+> definition from 8250 code. As with previous removals, I checked with
+> Debian Code Search that 'PORT_AR7' is not used in userspace.
+> 
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
- drivers/tty/serial/8250/8250_port.c | 7 -------
- include/uapi/linux/serial_core.h    | 1 -
- 2 files changed, 8 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index fb891b67968f..a4f5d792679a 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -170,13 +170,6 @@ static const struct serial8250_config uart_config[] = {
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
- 		.flags		= UART_CAP_FIFO,
- 	},
--	[PORT_AR7] = {
--		.name		= "AR7",
--		.fifo_size	= 16,
--		.tx_loadsz	= 16,
--		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
--		.flags		= UART_CAP_FIFO /* | UART_CAP_AFE */,
--	},
- 	[PORT_U6_16550A] = {
- 		.name		= "U6_16550A",
- 		.fifo_size	= 64,
-diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-index add349889d0a..3b51901926f9 100644
---- a/include/uapi/linux/serial_core.h
-+++ b/include/uapi/linux/serial_core.h
-@@ -32,7 +32,6 @@
- #define PORT_XSCALE	15
- #define PORT_RM9000	16	/* PMC-Sierra RM9xxx internal UART */
- #define PORT_OCTEON	17	/* Cavium OCTEON internal UART */
--#define PORT_AR7	18	/* Texas Instruments AR7 internal UART */
- #define PORT_U6_16550A	19	/* ST-Ericsson U6xxx internal UART */
- #define PORT_TEGRA	20	/* NVIDIA Tegra internal UART */
- #define PORT_XR17D15X	21	/* Exar XR17D15x UART */
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.35.1
+Florian
 
