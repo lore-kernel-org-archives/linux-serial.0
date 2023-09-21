@@ -2,95 +2,85 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60557E7D0A2
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 19:31:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08DD1E7D0A7
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 19:46:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229456AbjIUTbr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Sep 2023 15:31:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43410 "EHLO
+        id S231202AbjIUTqI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Sep 2023 15:46:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbjIUTbb (ORCPT
+        with ESMTP id S230001AbjIUTpy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Sep 2023 15:31:31 -0400
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9A1905ED;
-        Thu, 21 Sep 2023 12:27:43 -0700 (PDT)
-Received: from tr.lan (ip-86-49-120-218.bb.vodafone.cz [86.49.120.218])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 53273805CD;
-        Thu, 21 Sep 2023 21:27:41 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1695324461;
-        bh=w4s+MYqnZ2xQI1Rv17N0ZTQU2qMqwYRQ1GkDMHi0qgo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=v3WDDc4gsmyKWj6VTFziFLz2pdPGt8N0vSXCQWY0zmtZfUtxP7r66L9zAU7T7nbwN
-         bGya2QCYn3BdxihQd/O0bbVVoz7f0cYdRTt8vg0Y2TcRsTQ4DdBe0C/tvGR1NwPAWD
-         McmNjm/DBisTD1mm6PkuxOXYDvprXJz3uZlVI/1DnfA7C3+OzEqK+bA+kV7VlWi4HV
-         I9WtU6BycS0bYchNQ5EA+BoCJtoNVwxfPcRJdukQZkR3B6I9MC5ipG80yznv6Mug/Y
-         6GmETS3zUAPx+KgMxC806m6L2lRozP3Lo55XUKWWwTgf7TOvpeFkKfA4kkGiBEkItU
-         dtcPyp98r8MCg==
-From:   Marek Vasut <marex@denx.de>
-To:     devicetree@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>, Conor Dooley <conor+dt@kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
+        Thu, 21 Sep 2023 15:45:54 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1607E7C4;
+        Thu, 21 Sep 2023 10:50:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1695318646; x=1726854646;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=r8uWye6WnlR2en4C/jodsgGrDCSliU+HdwgBWRHbfks=;
+  b=XlrK9eth3wRizRMoIGRwGN2pvTQhYfJaOoeRKdtjT7bUiWjh50yt3lw+
+   cGnLdlKJxc7rOpTVS+u477zRkxIyrJAQ9oDDwllJoCRfczgbdJUW16tbK
+   um4MEH/mhtnjnm3Uq7wa/+jbC6MiXvIZ0IIxJacHvBoolH8jwGyAo6ahS
+   SA8GUP/8zdO1h4V7Cd0ljizyftNqLG3/s9+QOXUscv0nmed82aJ/aqQ5t
+   SX4K4qMrg7jrTHZAl+o2e0h6pCJR0ruFQGMLSQ8YoQp+0cLMosPloY4nx
+   0ycYCW1Wb8/tj241HVJj8gbsfG+eu0wfS3FEw+Zvv3u2bmKUC5Pbtrx+L
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="384331410"
+X-IronPort-AV: E=Sophos;i="6.03,165,1694761200"; 
+   d="scan'208";a="384331410"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 04:18:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="812598581"
+X-IronPort-AV: E=Sophos;i="6.03,165,1694761200"; 
+   d="scan'208";a="812598581"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 04:18:47 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97-RC0)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qjHhl-0000000GsJe-0Egs;
+        Thu, 21 Sep 2023 14:18:45 +0300
+Date:   Thu, 21 Sep 2023 14:18:44 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Philippe =?iso-8859-1?Q?Mathieu-Daud=E9?= <philmd@linaro.org>
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-mips@vger.kernel.org, Jonas Gorski <jonas.gorski@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
-Subject: [PATCH] dt-bindings: serial: imx: Document wakeup-source property
-Date:   Thu, 21 Sep 2023 21:27:29 +0200
-Message-Id: <20230921192729.71259-1-marex@denx.de>
-X-Mailer: git-send-email 2.40.1
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH 1/6] serial: 8250: remove AR7 support
+Message-ID: <ZQwmlJS2QBZFLYt4@smile.fi.intel.com>
+References: <20230920201035.3445-1-wsa+renesas@sang-engineering.com>
+ <20230920201035.3445-2-wsa+renesas@sang-engineering.com>
+ <a86483c4-9ec2-3435-198b-9773379c67be@linaro.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
-X-Virus-Status: Clean
+In-Reply-To: <a86483c4-9ec2-3435-198b-9773379c67be@linaro.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The i.MX UART can be used as a wake-up source, document the 'wakeup-source'
-property as allowed property.
+On Thu, Sep 21, 2023 at 12:36:05PM +0200, Philippe Mathieu-Daudé wrote:
+> On 20/9/23 22:10, Wolfram Sang wrote:
 
-Signed-off-by: Marek Vasut <marex@denx.de>
----
-Cc: Conor Dooley <conor+dt@kernel.org>
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc: NXP Linux Team <linux-imx@nxp.com>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: devicetree@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-serial@vger.kernel.org
----
- Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+> I'm a bit surprised definitions are removed from the uAPI, isn't
+> it expected to be very stable?
 
-diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
-index 40414247d61a3..83035553044a2 100644
---- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
-@@ -70,6 +70,8 @@ properties:
-   interrupts:
-     maxItems: 1
- 
-+  wakeup-source: true
-+
-   fsl,dte-mode:
-     $ref: /schemas/types.yaml#/definitions/flag
-     description: |
+They were added to uAPI by mistake to begin with. I don't know why people
+still continue adding more there...
+
+Basically we should stop to publish those numbers and move them into
+internal header (except those 20 or so, that must stay).
+
 -- 
-2.40.1
+With Best Regards,
+Andy Shevchenko
+
 
