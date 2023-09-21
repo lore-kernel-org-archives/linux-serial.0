@@ -2,127 +2,100 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A104E7D0AA
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 20:27:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94319E7D0AC
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 20:33:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230246AbjIUU1o (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Sep 2023 16:27:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37966 "EHLO
+        id S231549AbjIUUdM convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Sep 2023 16:33:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231942AbjIUU1T (ORCPT
+        with ESMTP id S232010AbjIUUcv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Sep 2023 16:27:19 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC9E79F3B
-        for <linux-serial@vger.kernel.org>; Thu, 21 Sep 2023 10:36:50 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 351ECC32775;
-        Thu, 21 Sep 2023 09:14:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1695287693;
-        bh=V/cgN3RT7XkFMIs1Ymp5jlRW/nHPyxxJMaOW3fL0f0U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qKYBetaKVrim8OhS0EPi4ZuEUv4Sfjh+u/lyZ0eJdLVOs5zcq/jTJ5vjJQjg6xlCP
-         IVNJIMlCs0TF1oW8JmUDMrPTFuLRMO7pmm1RI5XnuVuwcwUYg9L4skG+17+F8Zg587
-         YHfk3fPOduYIyea9LJqhmZqcGGH984kZH7OV3Jpmirg3O0zPjUh6JQi2wUjcggKagT
-         Xpo8kr+iwRIFJp+Vz8CNprz6WIvp2gVQunDjc6HuCyxG3gqSZix8j/MzabD/pPRN7x
-         QhsAmffAnDvQGPsJoB58HQUOoG/rsAgNpnaPYRjJXjjsoIyU2Zpkig/hFElEmWKZdY
-         DrDfFRyDsPWyw==
-Date:   Thu, 21 Sep 2023 10:14:49 +0100
-From:   Conor Dooley <conor@kernel.org>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: serial: mxs: Fix compatible list
-Message-ID: <20230921-75ba68806e21c96531ea2d70@fedora>
-References: <20230921005258.184705-1-festevam@gmail.com>
+        Thu, 21 Sep 2023 16:32:51 -0400
+Received: from mail-ot1-f65.google.com (mail-ot1-f65.google.com [209.85.210.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906E78922E;
+        Thu, 21 Sep 2023 10:39:46 -0700 (PDT)
+Received: by mail-ot1-f65.google.com with SMTP id 46e09a7af769-6c0b8f42409so743807a34.0;
+        Thu, 21 Sep 2023 10:39:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695317986; x=1695922786;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+FnksNosVt+Hax24mR+RoN0eh3COVsIdIWx2BS+xejg=;
+        b=rEkx3pMMnIU7MUJ9vcnx/DCHNMC/mOb17XNiDHTnHAIovYhOvhE/8768ey7Fg50mWi
+         a2sDCOSJrJDSp+eWKsYJ5NQ49buCM5LBWumFy7qeSfPz8m4IsMHFmt3saylMWva5OgXd
+         MPpfmb7HSMg9XHCNDPBXvyxfKy/IUud0pMwOwAk5sySBHiN0nOSEOK2hJV1YmTU0DIJn
+         z/Jn7fjglrRBkWa8ZxUsPHae7XaTzGML++/2yKa8LKlTcjK3bAOfu4Flptr5wNE9EgEI
+         HClm3bJbT1aWwetKW4CoKK2jPTvCLldfSb6vgAw4oUC7eYOg1rJS7+yx2IhuUFGhYMpl
+         p0UA==
+X-Gm-Message-State: AOJu0YxAOJnUnrAX9ZKwf9iDhnavooLEUzzrZqejmwa8GLOU/h4eim+A
+        J8SqKKXgzvjdm/b0Nx9TamI2QQfinX0TFqO0qac=
+X-Google-Smtp-Source: AGHT+IEkfGDj8wYGohG9vtgfxj2bFMU98AQDYeQGae+2uTcjv+ZyzSZBMyN3zQhcBm3QftLUqtmlQQ==
+X-Received: by 2002:a81:83c1:0:b0:58d:7ec3:16c4 with SMTP id t184-20020a8183c1000000b0058d7ec316c4mr6054718ywf.34.1695308457056;
+        Thu, 21 Sep 2023 08:00:57 -0700 (PDT)
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
+        by smtp.gmail.com with ESMTPSA id e1-20020a0dc201000000b0057a8de72338sm364072ywd.68.2023.09.21.08.00.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Sep 2023 08:00:57 -0700 (PDT)
+Received: by mail-yb1-f170.google.com with SMTP id 3f1490d57ef6-d81afd5273eso1309619276.3;
+        Thu, 21 Sep 2023 08:00:56 -0700 (PDT)
+X-Received: by 2002:a5b:78d:0:b0:d81:bfbf:dd3 with SMTP id b13-20020a5b078d000000b00d81bfbf0dd3mr5437539ybq.51.1695308456709;
+ Thu, 21 Sep 2023 08:00:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="Y+pvPdlgTf4xkWu3"
-Content-Disposition: inline
-In-Reply-To: <20230921005258.184705-1-festevam@gmail.com>
+References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com> <20230912045157.177966-30-claudiu.beznea.uj@bp.renesas.com>
+In-Reply-To: <20230912045157.177966-30-claudiu.beznea.uj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 21 Sep 2023 17:00:44 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWC8W9+a+8mewin5irujsEeVnSQfaoaNpD1GLHES54rCQ@mail.gmail.com>
+Message-ID: <CAMuHMdWC8W9+a+8mewin5irujsEeVnSQfaoaNpD1GLHES54rCQ@mail.gmail.com>
+Subject: Re: [PATCH 29/37] dt-bindings: pinctrl: renesas: document RZ/G3S SoC
+To:     Claudiu <claudiu.beznea@tuxon.dev>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        ulf.hansson@linaro.org, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
+        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
+        nfraprado@collabora.com, rafal@milecki.pl,
+        wsa+renesas@sang-engineering.com,
+        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Claudiu,
 
---Y+pvPdlgTf4xkWu3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Tue, Sep 12, 2023 at 6:53 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>
+> Add documentation for pin controller found on RZ/G3S (R9A08G045) SoC.
+> Compared with RZ/G2{L,UL} RZ/G3S has 82 general-purpose IOs, no slew
+> rate and output impedance support and more values for drive strength
+> which needs to be expressed in microamp.
+>
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-Yo,
+Thanks for your patch!
 
-On Wed, Sep 20, 2023 at 09:52:58PM -0300, Fabio Estevam wrote:
-> imx28.dtsi uses the following description:
->=20
-> compatible =3D "fsl,imx28-auart", "fsl,imx23-auart";
->=20
-> Make it valid so that the following schema warning could be avoided:
+LGTM, once you have taken Rob's comments into account.
 
-Dumb question maybe, but it is not mentioned here - they are actually
-compatible devices, right? I see that they have some different match
-data in the driver (relating to some DMA erratum on the 23 seemingly),
-so it's not immediately obvious to me.
+Gr{oetje,eeting}s,
 
-Thanks,
-Conor.
+                        Geert
 
->=20
-> imx28-apx4devkit.dtb: serial@8006a000: compatible: ['fsl,imx28-auart', 'f=
-sl,imx23-auart'] is too long
-> 	from schema $id: http://devicetree.org/schemas/serial/fsl-mxs-auart.yaml#
->=20
-> Signed-off-by: Fabio Estevam <festevam@gmail.com>
-> ---
->  .../devicetree/bindings/serial/fsl-mxs-auart.yaml   | 13 ++++++++-----
->  1 file changed, 8 insertions(+), 5 deletions(-)
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/fsl-mxs-auart.yaml =
-b/Documentation/devicetree/bindings/serial/fsl-mxs-auart.yaml
-> index 6a400a5e6fc7..da032effffe6 100644
-> --- a/Documentation/devicetree/bindings/serial/fsl-mxs-auart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/fsl-mxs-auart.yaml
-> @@ -14,10 +14,13 @@ allOf:
-> =20
->  properties:
->    compatible:
-> -    enum:
-> -      - fsl,imx23-auart
-> -      - fsl,imx28-auart
-> -      - alphascale,asm9260-auart
-> +    oneOf:
-> +      - const: fsl,imx23-auart
-> +      - const: alphascale,asm9260-auart
-> +      - items:
-> +          - enum:
-> +              - fsl,imx28-auart
-> +          - const: fsl,imx23-auart
-> =20
->    reg:
->      maxItems: 1
-> @@ -82,7 +85,7 @@ examples:
->      };
-> =20
->      auart0: serial@8006a000 {
-> -        compatible =3D "fsl,imx28-auart";
-> +        compatible =3D "fsl,imx28-auart", "fsl,imx23-auart";
->          reg =3D <0x8006a000 0x2000>;
->          interrupts =3D <112>;
->          dmas =3D <&dma_apbx 8>, <&dma_apbx 9>;
-> --=20
-> 2.34.1
->=20
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
---Y+pvPdlgTf4xkWu3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEARYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZQwJgQAKCRB4tDGHoIJi
-0qZUAQC7Brocu9TpVVd2JRe0wEe8C1p//0FVrMLbGA8l2KKCiAD/QafzhWc7oS82
-H4+WOu2tbpQsJlOpTbkK9HN/oEx+9gs=
-=9C3G
------END PGP SIGNATURE-----
-
---Y+pvPdlgTf4xkWu3--
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
