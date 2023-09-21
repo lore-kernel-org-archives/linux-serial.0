@@ -2,152 +2,267 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 357A0E7D0A2
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 18:50:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16C8BE7D0AA
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 18:51:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229709AbjIUSux (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Sep 2023 14:50:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46632 "EHLO
+        id S229512AbjIUSvo convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Sep 2023 14:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230170AbjIUSuk (ORCPT
+        with ESMTP id S229847AbjIUSvW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Sep 2023 14:50:40 -0400
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1172E897D3
-        for <linux-serial@vger.kernel.org>; Thu, 21 Sep 2023 10:39:58 -0700 (PDT)
-Received: from relay9-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::229])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id A7ADCC0965
-        for <linux-serial@vger.kernel.org>; Thu, 21 Sep 2023 07:37:38 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 179A9FF809;
-        Thu, 21 Sep 2023 07:37:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1695281837;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=w6wiNUq4y1c7GcYfvqCyFG3rx0f4bZS9HUg1L/6SJKM=;
-        b=cYi7j1FrUtlGdt5e7SvdV4Nl7Indl339Kb3cTCyj3aYE9SIkqHdlipfAx9eaXXo+IqG5HH
-        lpTxWRsc761QtIjb10SsgbmNEPOXDuvYZNJ+f4xfGTThvCoBnsxJsVtvd2uugNk14oKLA5
-        pfF5aIl66vbX8kVubCvAV3Sl+uAfmOPUVOUnqgXcWQOYdKLLalH37lPHVv0KATCzoJQ6Ra
-        PxBunLYaj7WTrSZPaUwFvcDL9QBLSBh4EXiYE2TAyIqgrOiMDs2CNMphrVU2Xou5Q90acz
-        nuf52s1SxGZgsDMMFnzeo2WSCAQWNGFKd+B+vrFbZiVKTdyNk8yHCdLnKj4+Wg==
-Message-ID: <43ba41e3-a04d-049c-068f-a99a653aac0a@bootlin.com>
-Date:   Thu, 21 Sep 2023 09:37:16 +0200
+        Thu, 21 Sep 2023 14:51:22 -0400
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B27891B86;
+        Thu, 21 Sep 2023 10:55:20 -0700 (PDT)
+Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-76f2843260bso75619885a.3;
+        Thu, 21 Sep 2023 10:55:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695318845; x=1695923645;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vtqRvZvxNnSb6xtGb81vBMV2QFz9nIlyazexCBBcUTo=;
+        b=tXvCTDz13iRSzFZKKw3uop/JyfI8R2QvZ8EQKPbCAQmdUdvJ/pNSXBKFhlqmlma8s8
+         pMceazvahh0cnp2eJVpMB3RyMAp46l8mivAAFeNmrhCNGuXKndbG4VeeRImUgrOMka95
+         6c+Dq7eJQP4dZ7T/1CadsSX/BFOGzx2yz371S0hyEdx1WfqNZkQYTt45h30ykJt4t3x1
+         fX6LHDAhBBWhFl9zI+DT65Z7Qz/Fu0GNI3bkSGqwKLJebg2hoO/Z3iLmFd1WtjXRmIFJ
+         MU/DWzaBjSHyZyyXSMyOt9SpZyfaXA2pTQYAiOFuancm54TyDpVvr+nbfkgVVrQM8fE5
+         GHUA==
+X-Gm-Message-State: AOJu0YxDBoFvTegV6J78Qhum+SIhBvQpOypfoUEZZ5I+Eaz585N32fgb
+        5/gia2ulsgJ34P48W4u2FwsZpkf5dWF+4zew
+X-Google-Smtp-Source: AGHT+IF4TdCX1VWZvDAS3qu+8Aa1EAcRT/2KCviM23hJxgL00ZM/LbBrmo9g1vn+iHjvWg3+zphjvQ==
+X-Received: by 2002:a25:8d0d:0:b0:d81:58d3:cc70 with SMTP id n13-20020a258d0d000000b00d8158d3cc70mr5826363ybl.52.1695308334094;
+        Thu, 21 Sep 2023 07:58:54 -0700 (PDT)
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
+        by smtp.gmail.com with ESMTPSA id w8-20020a25ac08000000b00d7b957d8ed9sm376899ybi.17.2023.09.21.07.58.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Sep 2023 07:58:53 -0700 (PDT)
+Received: by mail-yb1-f171.google.com with SMTP id 3f1490d57ef6-d81adf0d57fso1311975276.1;
+        Thu, 21 Sep 2023 07:58:52 -0700 (PDT)
+X-Received: by 2002:a25:9e0f:0:b0:d78:35cd:7f5c with SMTP id
+ m15-20020a259e0f000000b00d7835cd7f5cmr4976733ybq.46.1695308332470; Thu, 21
+ Sep 2023 07:58:52 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
-Subject: Re: Regression: serial: 8250_omap: error during suspend if
- no_console_suspend is set
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-References: <8a856171-e743-737e-eb9d-42852e4e4f19@bootlin.com>
- <2023091839-basil-maybe-46b7@gregkh>
-From:   Thomas Richard <thomas.richard@bootlin.com>
-In-Reply-To: <2023091839-basil-maybe-46b7@gregkh>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-GND-Sasl: thomas.richard@bootlin.com
+References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com> <20230912045157.177966-31-claudiu.beznea.uj@bp.renesas.com>
+In-Reply-To: <20230912045157.177966-31-claudiu.beznea.uj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 21 Sep 2023 16:58:40 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdV2GEKF0QjKudz529_tmUksTNMJtZu9NwC18KX-AXwaeg@mail.gmail.com>
+Message-ID: <CAMuHMdV2GEKF0QjKudz529_tmUksTNMJtZu9NwC18KX-AXwaeg@mail.gmail.com>
+Subject: Re: [PATCH 30/37] pinctrl: renesas: rzg2l: add support for RZ/G3S SoC
+To:     Claudiu <claudiu.beznea@tuxon.dev>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        ulf.hansson@linaro.org, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
+        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
+        nfraprado@collabora.com, rafal@milecki.pl,
+        wsa+renesas@sang-engineering.com,
+        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 9/18/23 09:35, Greg KH wrote:
-> On Thu, Sep 14, 2023 at 06:26:44PM +0200, Thomas Richard wrote:
->> Hi
->>
->> After switching to Linux 6.6-rc1, i met an issue during suspend to idle
->> with 8250_omap driver (no_console_suspend is set).
->> The driver fails to suspend the uart port used for the serial console so
->> the suspend sequence is stopped.
->>
->> [  114.629197] port 2800000.serial:0.0: PM: calling
->> pm_runtime_force_suspend+0x0/0x134 @ 114, parent: 2800000.serial:0
->> [  114.639617] port 2800000.serial:0.0: PM:
->> pm_runtime_force_suspend+0x0/0x134 returned 0 after 2 usecs
->> [  114.648739] omap8250 2800000.serial: PM: calling
->> omap8250_suspend+0x0/0xf4 @ 114, parent: bus@100000
->> [  114.657861] omap8250 2800000.serial: PM: dpm_run_callback():
->> omap8250_suspend+0x0/0xf4 returns -16
->> [  114.666808] omap8250 2800000.serial: PM: omap8250_suspend+0x0/0xf4
->> returned -16 after 8951 usecs
->> [  114.675580] omap8250 2800000.serial: PM: failed to suspend: error -16
->> [  114.682011] PM: suspend of devices aborted after 675.644 msecs
->> [  114.687833] PM: start suspend of devices aborted after 681.777 msecs
->> [  114.694175] PM: Some devices failed to suspend, or early wake event
->> detected
->>
->> The following sequence is used to suspend to idle:
->> $ echo 1 > /sys/power/pm_debug_messages
->> $ echo 1 > /sys/power/pm_print_times
->> $ echo 8 > /proc/sys/kernel/printk
->> $ echo 0 > /sys/module/printk/parameters/console_suspend
->> $ echo enabled >
->> /sys/devices/platform/bus@100000/2800000.serial/tty/ttyS2/power/wakeup
->> $ echo s2idle > /sys/power/mem_sleep
->> $ echo mem > /sys/power/state
->>
->> The regression was introduced in commit 20a41a62618d "serial: 8250_omap:
->> Use force_suspend and resume for system suspend"
->>
->> Before commit 20a41a62618d, omap8250_suspend returned 0.
->> Now pm_runtime_force_suspend is called and its return code is used by
->> omap8250_suspend.
->>
->> static int omap8250_suspend(struct device *dev)
->> {
->> 	struct omap8250_priv *priv = dev_get_drvdata(dev);
->> 	struct uart_8250_port *up = serial8250_get_port(priv->line);
->> 	int err;
->>
->> 	serial8250_suspend_port(priv->line);
->>
->> 	err = pm_runtime_resume_and_get(dev);
->> 	if (err)
->> 		return err;
->> 	if (!device_may_wakeup(dev))
->> 		priv->wer = 0;
->> 	serial_out(up, UART_OMAP_WER, priv->wer);
->> 	err = pm_runtime_force_suspend(dev);
->> 	flush_work(&priv->qos_work);
->>
->> 	return err;
->> }
->>
->> The pm_runtime_force_suspend function calls omap8250_runtime_suspend
->> which returns -EBUSY because console suspend was disabled (which is my
->> case), as explained in the code.
->>
->> /*
->>  * When using 'no_console_suspend', the console UART must not be
->>  * suspended. Since driver suspend is managed by runtime suspend,
->>  * preventing runtime suspend (by returning error) will keep device
->>  * active during suspend.
->>  */
->> if (priv->is_suspending && !console_suspend_enabled) {
->> 	if (up && uart_console(&up->port))
->> 		return -EBUSY;
->> }
->>
->> The port is used by the console, so we don't want to suspend it (console
->> suspend was disabled).
->> Of course, if console_suspend is enabled and messages are disabled there
->> is no issue.
-> 
-> Do you have a proposed patch to fix this?  Or should the original be
-> reverted?
+Hi Claudiu,
 
-I created a new thread including this issue and a PM issue
-(https://lore.kernel.org/all/59b13c93-6637-3050-c145-31be0d6c12c9@bootlin.com/).
+On Tue, Sep 12, 2023 at 6:53 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>
+> Add basic support for RZ/G3S to be able to boot from SD card, have a
+> running console port and use GPIOs. RZ/G3S has 82 general-purpose IO
+> ports. Support for the remaining pin functions (e.g. Ethernet, XSPI)
+> will be added along with controller specific support.
+>
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-Regards,
+Thanks for your patch!
 
-Thomas Richard
+> --- a/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+> +++ b/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+> @@ -1330,6 +1336,36 @@ static const u32 r9a07g043_gpio_configs[] = {
+>         RZG2L_GPIO_PORT_PACK(6, 0x22, RZG2L_MPXED_PIN_FUNCS),
+>  };
+>
+> +static const u32 r9a08g045_gpio_configs[] = {
+> +       RZG2L_GPIO_PORT_PACK(4, 0x20, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P0  */
+> +       RZG2L_GPIO_PORT_PACK(5, 0x30, RZG2L_MPXED_ETH_PIN_FUNCS(PIN_CFG_IOLH_C |
+> +                                                               PIN_CFG_IO_VMC_ETH0)),  /* P1 */
 
-> 
-> thanks,
-> 
-> greg k-h
+P1_0 and P7_0 have IEN functionality.
+I don't know how to represent that...
 
+> +       RZG2L_GPIO_PORT_PACK(4, 0x31, RZG2L_MPXED_ETH_PIN_FUNCS(PIN_CFG_IOLH_C |
+> +                                                               PIN_CFG_IO_VMC_ETH0)),  /* P2 */
+> +       RZG2L_GPIO_PORT_PACK(4, 0x32, RZG2L_MPXED_ETH_PIN_FUNCS(PIN_CFG_IOLH_C |
+> +                                                               PIN_CFG_IO_VMC_ETH0)),  /* P3 */
+> +       RZG2L_GPIO_PORT_PACK(6, 0x33, RZG2L_MPXED_ETH_PIN_FUNCS(PIN_CFG_IOLH_C |
+> +                                                               PIN_CFG_IO_VMC_ETH0)),  /* P4 */
+> +       RZG2L_GPIO_PORT_PACK(5, 0x21, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P5  */
+> +       RZG2L_GPIO_PORT_PACK(5, 0x22, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P6  */
+> +       RZG2L_GPIO_PORT_PACK(5, 0x34, RZG2L_MPXED_ETH_PIN_FUNCS(PIN_CFG_IOLH_C |
+> +                                                               PIN_CFG_IO_VMC_ETH1)),  /* P7 */
+> +       RZG2L_GPIO_PORT_PACK(5, 0x35, RZG2L_MPXED_ETH_PIN_FUNCS(PIN_CFG_IOLH_C |
+> +                                                               PIN_CFG_IO_VMC_ETH1)),  /* P8 */
+> +       RZG2L_GPIO_PORT_PACK(4, 0x36, RZG2L_MPXED_ETH_PIN_FUNCS(PIN_CFG_IOLH_C |
+> +                                                               PIN_CFG_IO_VMC_ETH1)),  /* P9 */
+> +       RZG2L_GPIO_PORT_PACK(5, 0x37, RZG2L_MPXED_ETH_PIN_FUNCS(PIN_CFG_IOLH_C |
+> +                                                               PIN_CFG_IO_VMC_ETH1)),  /* P10 */
+> +       RZG2L_GPIO_PORT_PACK(4, 0x23, RZG3S_MPXED_PIN_FUNCS(B) | PIN_CFG_IEN),          /* P11  */
 
+P11_0 does not have IEN functionality.
+I don't know how to represent that...
+
+> +       RZG2L_GPIO_PORT_PACK(2, 0x24, RZG3S_MPXED_PIN_FUNCS(B) | PIN_CFG_IEN),          /* P12  */
+> +       RZG2L_GPIO_PORT_PACK(5, 0x25, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P13  */
+> +       RZG2L_GPIO_PORT_PACK(3, 0x26, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P14  */
+> +       RZG2L_GPIO_PORT_PACK(4, 0x27, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P15  */
+> +       RZG2L_GPIO_PORT_PACK(2, 0x28, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P16  */
+> +       RZG2L_GPIO_PORT_PACK(4, 0x29, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P17  */
+> +       RZG2L_GPIO_PORT_PACK(6, 0x2a, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P18 */
+> +};
+> +
+>  static const struct {
+>         struct rzg2l_dedicated_configs common[35];
+>         struct rzg2l_dedicated_configs rzg2l_pins[7];
+> @@ -1416,6 +1452,46 @@ static const struct {
+>         }
+>  };
+>
+> +static const struct rzg2l_dedicated_configs rzg3s_dedicated_pins[] = {
+> +       { "NMI", RZG2L_SINGLE_PIN_PACK(0x0, 0, (PIN_CFG_FILONOFF | PIN_CFG_FILNUM |
+> +                                               PIN_CFG_FILCLKSEL)) },
+> +       { "TMS/SWDIO", RZG2L_SINGLE_PIN_PACK(0x1, 0, (PIN_CFG_IOLH_A | PIN_CFG_IEN |
+> +                                                     PIN_CFG_SOFT_PS)) },
+> +       { "TDO", RZG2L_SINGLE_PIN_PACK(0x1, 1, (PIN_CFG_IOLH_A | PIN_CFG_SOFT_PS)) },
+> +       { "WDTOVF_PERROUT#", RZG2L_SINGLE_PIN_PACK(0x6, 0, PIN_CFG_IOLH_A | PIN_CFG_SOFT_PS) },
+> +       { "SD0_CLK", RZG2L_SINGLE_PIN_PACK(0x10, 0, (PIN_CFG_IOLH_B | PIN_CFG_IO_VMC_SD0)) },
+> +       { "SD0_CMD", RZG2L_SINGLE_PIN_PACK(0x10, 1, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+> +                                                    PIN_CFG_IO_VMC_SD0)) },
+> +       { "SD0_RST#", RZG2L_SINGLE_PIN_PACK(0x10, 2, (PIN_CFG_IOLH_B | PIN_CFG_IO_VMC_SD0)) },
+> +       { "SD0_DATA0", RZG2L_SINGLE_PIN_PACK(0x11, 0, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+> +                                                      PIN_CFG_IO_VMC_SD0)) },
+> +       { "SD0_DATA1", RZG2L_SINGLE_PIN_PACK(0x11, 1, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+> +                                                      PIN_CFG_IO_VMC_SD0)) },
+> +       { "SD0_DATA2", RZG2L_SINGLE_PIN_PACK(0x11, 2, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+> +                                                      PIN_CFG_IO_VMC_SD0)) },
+> +       { "SD0_DATA3", RZG2L_SINGLE_PIN_PACK(0x11, 3, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+> +                                                      PIN_CFG_IO_VMC_SD0)) },
+> +       { "SD0_DATA4", RZG2L_SINGLE_PIN_PACK(0x11, 4, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+> +                                                      PIN_CFG_IO_VMC_SD0)) },
+> +       { "SD0_DATA5", RZG2L_SINGLE_PIN_PACK(0x11, 5, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+> +                                                      PIN_CFG_IO_VMC_SD0)) },
+> +       { "SD0_DATA6", RZG2L_SINGLE_PIN_PACK(0x11, 6, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+> +                                                      PIN_CFG_IO_VMC_SD0)) },
+> +       { "SD0_DATA7", RZG2L_SINGLE_PIN_PACK(0x11, 7, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+> +                                                      PIN_CFG_IO_VMC_SD0)) },
+> +       { "SD1_CLK", RZG2L_SINGLE_PIN_PACK(0x12, 0, (PIN_CFG_IOLH_B | PIN_CFG_IO_VMC_SD1)) },
+> +       { "SD1_CMD", RZG2L_SINGLE_PIN_PACK(0x12, 1, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+> +                                                    PIN_CFG_IO_VMC_SD1)) },
+> +       { "SD1_DATA0", RZG2L_SINGLE_PIN_PACK(0x13, 0, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+> +                                                      PIN_CFG_IO_VMC_SD1)) },
+> +       { "SD1_DATA1", RZG2L_SINGLE_PIN_PACK(0x13, 1, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+> +                                                      PIN_CFG_IO_VMC_SD1)) },
+> +       { "SD1_DATA2", RZG2L_SINGLE_PIN_PACK(0x13, 2, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+> +                                                      PIN_CFG_IO_VMC_SD1)) },
+> +       { "SD1_DATA3", RZG2L_SINGLE_PIN_PACK(0x13, 3, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+> +                                                      PIN_CFG_IO_VMC_SD1)) },
+
+Is there any specific reason you left out the XSPI, Audio clock, and I3C pins?
+
+> +};
+> +
+>  static int rzg2l_gpio_get_gpioint(unsigned int virq, const struct rzg2l_pinctrl_data *data)
+>  {
+>         unsigned int gpioint;
+> @@ -1823,6 +1899,40 @@ static const struct rzg2l_hwcfg rzg2l_hwcfg = {
+>         .iolh_groupb_oi = { 100, 66, 50, 33, },
+>  };
+>
+> +static const struct rzg2l_hwcfg rzg3s_hwcfg = {
+> +       .regs = {
+> +               .pwpr = 0x3000,
+> +               .sd_ch = 0x3004,
+> +       },
+> +       .iolh_groupa_ua = {
+> +               /* 1v8 power source */
+> +               [RZG2L_IOLH_IDX_1V8] = 2200, 4400, 9000, 10000,
+> +               /* 2v5 power source */
+> +               [RZG2L_IOLH_IDX_2V5 ... RZG2L_IOLH_IDX_3V3 - 1] = RZG2L_INVALID_IOLH_VAL,
+
+Can be dropped once zero means invalid.
+
+> +               /* 3v3 power source */
+> +               [RZG2L_IOLH_IDX_3V3] = 1900, 4000, 8000, 9000,
+> +       },
+> +       .iolh_groupb_ua = {
+> +               /* 1v8 power source */
+> +               [RZG2L_IOLH_IDX_1V8] = 7000, 8000, 9000, 10000,
+> +               /* 2v5 power source */
+> +               [RZG2L_IOLH_IDX_2V5 ... RZG2L_IOLH_IDX_3V3 - 1] = RZG2L_INVALID_IOLH_VAL,
+
+Can be dropped once zero means invalid.
+
+> +               /* 3v3 power source */
+> +               [RZG2L_IOLH_IDX_3V3] = 4000, 6000, 8000, 9000,
+> +       },
+> +       .iolh_groupc_ua = {
+> +               /* 1v8 power source */
+> +               [RZG2L_IOLH_IDX_1V8] = 5200, 6000, 6550, 6800,
+> +               /* 2v5 source */
+> +               [RZG2L_IOLH_IDX_2V5] = 4700, 5300, 5800, 6100,
+> +               /* 3v3 power source */
+> +               [RZG2L_IOLH_IDX_3V3] = 4500, 5200, 5700, 6050,
+> +       },
+> +       .drive_strength_ua = true,
+> +       .iolh_groupb_oi = { [0 ... 3] = RZG2L_INVALID_IOLH_VAL, },
+> +       .func_base = 1,
+> +};
+> +
+>  static struct rzg2l_pinctrl_data r9a07g043_data = {
+>         .port_pins = rzg2l_gpio_names,
+>         .port_pin_configs = r9a07g043_gpio_configs,
+> @@ -1844,6 +1954,16 @@ static struct rzg2l_pinctrl_data r9a07g044_data = {
+>         .hwcfg = &rzg2l_hwcfg,
+>  };
+>
+> +static struct rzg2l_pinctrl_data r9a08g045_data = {
+> +       .port_pins = rzg2l_gpio_names,
+> +       .port_pin_configs = r9a08g045_gpio_configs,
+> +       .n_ports = ARRAY_SIZE(r9a08g045_gpio_configs),
+> +       .dedicated_pins = rzg3s_dedicated_pins,
+> +       .n_port_pins = ARRAY_SIZE(r9a08g045_gpio_configs) * RZG2L_PINS_PER_PORT,
+> +       .n_dedicated_pins = ARRAY_SIZE(rzg3s_dedicated_pins),
+> +       .hwcfg = &rzg3s_hwcfg,
+> +};
+> +
+>  static const struct of_device_id rzg2l_pinctrl_of_table[] = {
+>         {
+>                 .compatible = "renesas,r9a07g043-pinctrl",
+
+Please add a BUILD_BUG_ON() check for RZ/G3S to the
+rzg2l_pinctrl_probe() function, as is done for the other SoCs in
+the family.
+
+The rest LGTM.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
