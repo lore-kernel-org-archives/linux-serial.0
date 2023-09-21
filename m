@@ -2,115 +2,119 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B6AE7D0AD
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 20:36:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A12E7D0AB
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 21:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232049AbjIUUgD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Sep 2023 16:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53944 "EHLO
+        id S232272AbjIUVEW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Sep 2023 17:04:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232696AbjIUUfg (ORCPT
+        with ESMTP id S232470AbjIUVDp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Sep 2023 16:35:36 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FFBA8E68A
-        for <linux-serial@vger.kernel.org>; Thu, 21 Sep 2023 10:44:37 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id 5b1f17b1804b1-401da71b83cso12988175e9.2
-        for <linux-serial@vger.kernel.org>; Thu, 21 Sep 2023 10:44:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1695318276; x=1695923076; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=IHB7MokjFazEBVZHVWPQWx+ouAjuzlds+fkP2tznoWg=;
-        b=Z8I4Afu8x8Tgquf3WxTWqjYEKZtsP0sBDmTYZ5sA35sOBt+xhZDaAx6CQ7HmWe8zMg
-         2HPd0vl3iUnFUOKq6h/uTPqVtJr95h8vZzRary/2RjDrj2LBSWjvGivBG0xG1t+RpY1b
-         du7EnvWARe8i0EEWUbX0cgu18UxAJStCSTqo1XBxbtNaZ30HEFYhgKN0rszfjmwTEch6
-         uDq/Mx/l5nuRYSfD4BtGhnnojwu8XfLdtgptB3Gme951/aKGFQNbn5mIfS3gBe5lU85Z
-         r/CWtM/aQ7zVPJhDCThBAaMWILmk9qOpg+3K31Q0Sdso6RnUhiLZAsnYIxXkXTWgZBsc
-         coXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695318276; x=1695923076;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=IHB7MokjFazEBVZHVWPQWx+ouAjuzlds+fkP2tznoWg=;
-        b=MWC3Xe47XYqX+CoQgX8KCvAbF5tFahu8Acv91ICb1g+63jMJ3TXtuhB27xhxkcw9bn
-         Y67Z9ogly22HBs56DXuOMclewxwCRjJ4vj6BDPUO8knH6vm9/jDaznMyQXYnFgPiE7Nv
-         +WoAdThD6fBM9RtGwkNYdffp8RhHbb61wJ9ZzRv7PsQFy66YQPgO/5FAQfP6pNie3Ln1
-         DgMHo6IEz+3lOT6V9dpDM/TRXFGW6RB+mFtS68aTL5Gskz9StGG5jLwCrLLJv+8CuOqU
-         5PiZAPW2W7sxs5VBopjMd/jU9XZAPzhqIiQXW3R3x1LEEe68APmftr6PeRxBxiLWyL78
-         uymw==
-X-Gm-Message-State: AOJu0Yx7ukqbeusdIcoUt01osf/Qj5xcHgdT9od8qdr6Xc0hMpESnW7a
-        uFWCeft6YNIBT9ziHvk4Hr54FckHiz8T8Mo4Kns=
-X-Google-Smtp-Source: AGHT+IGcpjHnDw8LA8Dyh0T2ryjOdihtn8w38po8JoSvFO1h83wyuE62Gs1r8YrosYCllwS5Zi78ew==
-X-Received: by 2002:a17:906:109e:b0:9a9:ef41:e5a6 with SMTP id u30-20020a170906109e00b009a9ef41e5a6mr4612465eju.1.1695292568673;
-        Thu, 21 Sep 2023 03:36:08 -0700 (PDT)
-Received: from [172.20.41.70] (static-212-193-78-212.thenetworkfactory.nl. [212.78.193.212])
-        by smtp.gmail.com with ESMTPSA id gv10-20020a170906f10a00b0099cd008c1a4sm825012ejb.136.2023.09.21.03.36.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Sep 2023 03:36:08 -0700 (PDT)
-Message-ID: <a86483c4-9ec2-3435-198b-9773379c67be@linaro.org>
-Date:   Thu, 21 Sep 2023 12:36:05 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.15.1
-Subject: Re: [PATCH 1/6] serial: 8250: remove AR7 support
-Content-Language: en-US
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-mips@vger.kernel.org
-Cc:     Jonas Gorski <jonas.gorski@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        Thu, 21 Sep 2023 17:03:45 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDDF885D3A;
+        Thu, 21 Sep 2023 10:37:52 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8547CC4E687;
+        Thu, 21 Sep 2023 13:47:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1695304054;
+        bh=Oo9AjLmvT40iXA2aHlcvjH+u91I2XspBDwHA99rab5U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=B/nzU1poVexwNkd1uy8NYKF7nqNzSxBZguu99fbkUbbpOGB0M5SIkbkOKFB0tLFHK
+         4u4LRILb6bb/hPssO9FbQR6ITa+eINX7rERGA+6Cm+/Gj80MA+4Exh1CEGWqwfVHIw
+         TF8e19PDWWeOZsXJPl4Be7LrH+8OQstaf+zWw17Icr8pueLiaA+2Ej3awqB6c7juJ6
+         dOZmyoJP7YtQKWwVuQFnrxB4DFhB5Uk7lIMntm6OTJc+PVGtrJD0x4Bde1AVh2BU28
+         UrlntiPzMnfdfLtkDt2FL5PD5hbJIDFLdSf7nrXjg4A7Vg349CbDEHDgKKnuWPNq93
+         j0lnhWD/kOxbQ==
+Date:   Thu, 21 Sep 2023 14:47:30 +0100
+From:   Conor Dooley <conor@kernel.org>
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, hvilleneuve@dimonoff.com,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-References: <20230920201035.3445-1-wsa+renesas@sang-engineering.com>
- <20230920201035.3445-2-wsa+renesas@sang-engineering.com>
-From:   =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <philmd@linaro.org>
-In-Reply-To: <20230920201035.3445-2-wsa+renesas@sang-engineering.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH 3/4] dt-bindings: sc16is7xx: add vendor prefix to
+ irda-mode-ports property
+Message-ID: <20230921-epidermis-labrador-3e51bb0b2cb9@spud>
+References: <20230920152015.1376838-1-hugo@hugovil.com>
+ <20230920152015.1376838-4-hugo@hugovil.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="dITO17on8mP4IvAa"
+Content-Disposition: inline
+In-Reply-To: <20230920152015.1376838-4-hugo@hugovil.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Wolfram,
 
-(Adding Andy for commit 54b45ee8bd42 "serial: core: Remove
-unused PORT_* definitions").
+--dITO17on8mP4IvAa
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 20/9/23 22:10, Wolfram Sang wrote:
-> AR7 is going to be removed from the Kernel, so remove its type
-> definition from 8250 code. As with previous removals, I checked with
-> Debian Code Search that 'PORT_AR7' is not used in userspace.
-> 
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+On Wed, Sep 20, 2023 at 11:20:14AM -0400, Hugo Villeneuve wrote:
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+>=20
+> The NXP-specific "irda-mode-ports" property lacks a proper vendor
+> prefix. Add "nxp," prefix to comply with DT best practises.
+
+Looks like you've made changes to the driver in a way both will work,
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+
+Cheers,
+Conor.
+
+>=20
+> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > ---
->   drivers/tty/serial/8250/8250_port.c | 7 -------
->   include/uapi/linux/serial_core.h    | 1 -
->   2 files changed, 8 deletions(-)
+>  .../devicetree/bindings/serial/nxp,sc16is7xx.txt          | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt b=
+/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+> index 1a7e4bff0456..d89815c5c562 100644
+> --- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+> +++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+> @@ -21,8 +21,8 @@ Optional properties:
+>    the second cell is used to specify the GPIO polarity:
+>      0 =3D active high,
+>      1 =3D active low.
+> -- irda-mode-ports: An array that lists the indices of the port that
+> -		   should operate in IrDA mode.
+> +- nxp,irda-mode-ports: An array that lists the indices of the port that
+> +		       should operate in IrDA mode.
+>  - nxp,modem-control-line-ports: An array that lists the indices of the p=
+ort that
+>  				should have shared GPIO lines configured as
+>  				modem control lines.
+> @@ -80,8 +80,8 @@ Optional properties:
+>    the second cell is used to specify the GPIO polarity:
+>      0 =3D active high,
+>      1 =3D active low.
+> -- irda-mode-ports: An array that lists the indices of the port that
+> -		   should operate in IrDA mode.
+> +- nxp,irda-mode-ports: An array that lists the indices of the port that
+> +		       should operate in IrDA mode.
+>  - nxp,modem-control-line-ports: An array that lists the indices of the p=
+ort that
+>  				should have shared GPIO lines configured as
+>  				modem control lines.
+> --=20
+> 2.30.2
+>=20
 
+--dITO17on8mP4IvAa
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-> index add349889d0a..3b51901926f9 100644
-> --- a/include/uapi/linux/serial_core.h
-> +++ b/include/uapi/linux/serial_core.h
-> @@ -32,7 +32,6 @@
->   #define PORT_XSCALE	15
->   #define PORT_RM9000	16	/* PMC-Sierra RM9xxx internal UART */
->   #define PORT_OCTEON	17	/* Cavium OCTEON internal UART */
-> -#define PORT_AR7	18	/* Texas Instruments AR7 internal UART */
+-----BEGIN PGP SIGNATURE-----
 
-I'm a bit surprised definitions are removed from the uAPI, isn't
-it expected to be very stable? Shouldn't it be better to keep it
-defined but modify the comment, mentioning "obsolete" or "deprecated"?
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZQxJcgAKCRB4tDGHoIJi
+0i60AQDkv6NAQfFJKu9ceTROjQsUq5KvzHpILZ/l5wPEFqql6wEA16WdTQeQYNUJ
+S1/xZghGAvjC+nLpApgENKAvRXOFJg4=
+=eS7q
+-----END PGP SIGNATURE-----
 
-Regards,
-
-Phil.
-
->   #define PORT_U6_16550A	19	/* ST-Ericsson U6xxx internal UART */
->   #define PORT_TEGRA	20	/* NVIDIA Tegra internal UART */
->   #define PORT_XR17D15X	21	/* Exar XR17D15x UART */
-
+--dITO17on8mP4IvAa--
