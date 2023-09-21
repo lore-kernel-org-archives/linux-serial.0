@@ -2,70 +2,98 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB7AE7D0A2
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 20:18:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B79E7D0A8
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 20:20:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230250AbjIUUS1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Sep 2023 16:18:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39884 "EHLO
+        id S230249AbjIUUTh convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Sep 2023 16:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230424AbjIUUSG (ORCPT
+        with ESMTP id S231621AbjIUUTP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Sep 2023 16:18:06 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A8B358C17;
-        Thu, 21 Sep 2023 10:19:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-        :Date:subject:date:message-id:reply-to;
-        bh=hZzmjiPkjoKwhwTOfPzJiXq9Wl0FH1yszqaV+rmX80I=; b=gX8hIuAbTho75SiIiwYcncRz4a
-        cf3Y54Xck0I4KLMTUmgwld9ikK+Hp0v/f89qjXDNwFSHXiERB9NDFRApJjYECpTtPztClR2E2klT1
-        ADSvz1VvELePeyHhQNvbGVXEATXAwy4AeBV/fUaVlStIo6kz0YZ6jy3J6mO3rg0MeUD4=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:49420 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1qjMbW-000117-8c; Thu, 21 Sep 2023 12:32:38 -0400
-Date:   Thu, 21 Sep 2023 12:32:37 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        Thu, 21 Sep 2023 16:19:15 -0400
+Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5A7B2AC41;
+        Thu, 21 Sep 2023 10:11:44 -0700 (PDT)
+Received: by mail-pg1-f181.google.com with SMTP id 41be03b00d2f7-578a44dfa88so808716a12.0;
+        Thu, 21 Sep 2023 10:11:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695316304; x=1695921104;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+RPRgMtQ7qCU/brC+NvfIv29WXY/7wD47KIHBnDqHGA=;
+        b=XW7Y/gyKkn3zry2MWC7GN9TNgLSt5dHxfZcLXb+szocF0kbYiYcDr3k5xn8E8otmxe
+         i8fYRF1J0SVrzGsAoLft8EGRTOZzpAFin84604MiR93XGfUIz9KcCxBmZ+da4kspcQgC
+         x+NeHoOuctMgJoYhlE+gd8++nbCc9Puj0lF2waEwcWPb48yMtOMPkwlkURV3MdeiRLmv
+         +6asZqJKhKkjRK9pVhJ+y2TAfAOZeaxMP92rrZ5sMz0AwH6u3yoRmXlFN3f81h9wEPfU
+         30Q7PlfFsvDZVmFNm7bubFsL9H5sT2VZ+go+1QluKg2pKhdnLqReWzpHTi9GwqlCRLCQ
+         rPgg==
+X-Gm-Message-State: AOJu0Yza9dRcTuHhjh/BgTEnkIM9KmOIRXW+YpDuvyZLwr70E+R+E/Rf
+        tNhRSJRHLco34QiJg7x1P2f/hXsd6XzHQulg
+X-Google-Smtp-Source: AGHT+IERK5CYoZHbPlYt3rNggsKsuNjahQunWcbVai6KndOpdvCGz4YrSvq0luFY8urPBXDa2JHl9g==
+X-Received: by 2002:a0d:d8c2:0:b0:579:16e0:b1bf with SMTP id a185-20020a0dd8c2000000b0057916e0b1bfmr5944356ywe.12.1695298056358;
+        Thu, 21 Sep 2023 05:07:36 -0700 (PDT)
+Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com. [209.85.128.169])
+        by smtp.gmail.com with ESMTPSA id e62-20020a0df541000000b005844ae2bfa3sm291931ywf.95.2023.09.21.05.07.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Sep 2023 05:07:36 -0700 (PDT)
+Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-59c26aa19b7so10370997b3.2;
+        Thu, 21 Sep 2023 05:07:36 -0700 (PDT)
+X-Received: by 2002:a0d:eb93:0:b0:57a:9b2c:51f1 with SMTP id
+ u141-20020a0deb93000000b0057a9b2c51f1mr4883712ywe.1.1695298055833; Thu, 21
+ Sep 2023 05:07:35 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com> <20230912045157.177966-25-claudiu.beznea.uj@bp.renesas.com>
+In-Reply-To: <20230912045157.177966-25-claudiu.beznea.uj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 21 Sep 2023 14:07:23 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUWUMMQ9dp5mf5wQ2X6CtpdAKH=FU-3xvNHcVknAsv+=w@mail.gmail.com>
+Message-ID: <CAMuHMdUWUMMQ9dp5mf5wQ2X6CtpdAKH=FU-3xvNHcVknAsv+=w@mail.gmail.com>
+Subject: Re: [PATCH 24/37] pinctrl: renesas: rzg2l: adapt for different SD,
+ PWPR register offsets
+To:     Claudiu <claudiu.beznea@tuxon.dev>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        hvilleneuve@dimonoff.com, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Message-Id: <20230921123237.b3c50eb12746724a4fd62237@hugovil.com>
-In-Reply-To: <20230921162424.GA435508-robh@kernel.org>
-References: <20230920152015.1376838-1-hugo@hugovil.com>
-        <20230920152015.1376838-4-hugo@hugovil.com>
-        <20230921162424.GA435508-robh@kernel.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH 3/4] dt-bindings: sc16is7xx: add vendor prefix to
- irda-mode-ports property
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        ulf.hansson@linaro.org, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
+        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
+        nfraprado@collabora.com, rafal@milecki.pl,
+        wsa+renesas@sang-engineering.com,
+        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 21 Sep 2023 11:24:24 -0500
-Rob Herring <robh@kernel.org> wrote:
+On Tue, Sep 12, 2023 at 6:53 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>
+> SD, PWPR power registers have different offsets b/w RZ/G2L and RZ/G3S.
+> Commit adds a per SoC configuration data structure that is initialized with
+> proper register offset for individual SoCs. The struct rzg2l_hwcfg will be
+> further extended in next commits.
+>
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-> On Wed, Sep 20, 2023 at 11:20:14AM -0400, Hugo Villeneuve wrote:
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > 
-> > The NXP-specific "irda-mode-ports" property lacks a proper vendor
-> > prefix. Add "nxp," prefix to comply with DT best practises.
-> 
-> The opposite direction would be worth carrying in the driver, but I 
-> don't think adding a vendor prefix is. I would just leave this as-is.
-> 
-> Rob
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Hi Rob,
-I am not following you, can you clarify?
+Gr{oetje,eeting}s,
 
-Hugo.
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
