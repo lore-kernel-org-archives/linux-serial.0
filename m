@@ -2,102 +2,123 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89E06E71094
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 17:07:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD484E7D0A4
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 17:24:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbjIURHq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Sep 2023 13:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38760 "EHLO
+        id S229692AbjIURYx convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Sep 2023 13:24:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229862AbjIURHU (ORCPT
+        with ESMTP id S229628AbjIURY2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Sep 2023 13:07:20 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 820EC1A3
-        for <linux-serial@vger.kernel.org>; Thu, 21 Sep 2023 10:03:24 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28234C4E688;
-        Thu, 21 Sep 2023 13:26:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1695302818;
-        bh=tNaMqXlX6gWQEtFXsOSS3Bt8DqFxrB36y2GWLAlRgU0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Low1o3cxRNpJ+kr+RcB2p0+vtcRmOjeEZ5P2bevbRwsunSHaR5pZWYq4IcLCu67qx
-         L5yUgJ6BOQe+qMaRmOrojjr5ejjpeu6hbCfA+8KhjV6DM+TAqwZHlf+FR96W4No555
-         bUnhPQdgRsSsO3z/2lTdLtQ762ENXxcTzxEcxNjuCAbaFXvQai6TeNXh31fMv8e65G
-         +pv/5xKBSLUhWWu+zHAr41etwjNMvAGYgEvucYu3XhnmcDoyKhyQAjfV/NGINDG8CM
-         hoUakUFn53O7Elu03wt+RqCncdqW46+CyGoD6oKd4IYQKWW1iev+Zb24ldSjikADNv
-         oztVuagd8RLBQ==
-Date:   Thu, 21 Sep 2023 14:26:54 +0100
-From:   Conor Dooley <conor@kernel.org>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: serial: mxs: Fix compatible list
-Message-ID: <20230921-abide-humped-e1bc12732e1c@spud>
-References: <20230921005258.184705-1-festevam@gmail.com>
- <20230921-75ba68806e21c96531ea2d70@fedora>
- <CAOMZO5AYTe1mJTvR=2zWCVrYqVVdmP7A9fCCrCPqgisXYQpeYw@mail.gmail.com>
+        Thu, 21 Sep 2023 13:24:28 -0400
+Received: from mail-il1-f170.google.com (mail-il1-f170.google.com [209.85.166.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D2819B4;
+        Thu, 21 Sep 2023 10:09:37 -0700 (PDT)
+Received: by mail-il1-f170.google.com with SMTP id e9e14a558f8ab-34f6ce577a4so3741275ab.3;
+        Thu, 21 Sep 2023 10:09:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695316176; x=1695920976;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5HYwGTI/K3y+X5a5etQVgBzGES/Yd2WtGgSCOPcsNEI=;
+        b=r5S/Qy7SeynG1xjJWEDKgYT+o6dWRZnER3SylCxk27tm9MiiZ1qSMHqqKdHljrkTqH
+         d2PgkM7OrEy5s+npMGLRxuvV3h/QGxFpjxTpL/7h2V5uV1L7jbkF8spIa1CdJAACVs1d
+         h6+enlNC8Ivbr7kGJyxHrc+GAkzK/RlKVk2mQpmdNXNrFhFeGB26xOl/lsqRbQl4F3Vy
+         opAMJe0xuxdKtxMVfk0DkmkQhZuZ84+VLIBDjK959MDt0MEEU0ss/L7YpXKUEbfeArDK
+         K8mAA7GSsPTmONIERe+VFno87mD/a0Hb8yrD60buVJEm9Bjnce3RFRpcPfhSlUUIKsTd
+         ITVQ==
+X-Gm-Message-State: AOJu0Ywz1rkIVYyTQeKxdtJ9sfaD+vnfGV5C+ga6h8UmfYLxi2sTMpA+
+        Q2VE+Ojm53Qpl4phXlR9vKRFET73CnbmsJB3
+X-Google-Smtp-Source: AGHT+IG1SAsdr7OPjWMbeexcN/QMSjtdBRnDhBKSkhmAy69v8Y8E4xym73cC+3y98NwzomUw442ElQ==
+X-Received: by 2002:a81:b40d:0:b0:59b:54b5:7d66 with SMTP id h13-20020a81b40d000000b0059b54b57d66mr6233999ywi.34.1695308591131;
+        Thu, 21 Sep 2023 08:03:11 -0700 (PDT)
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com. [209.85.128.182])
+        by smtp.gmail.com with ESMTPSA id h144-20020a816c96000000b00583d44b4b30sm368103ywc.99.2023.09.21.08.03.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Sep 2023 08:03:11 -0700 (PDT)
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-59c2ca01f27so12899837b3.2;
+        Thu, 21 Sep 2023 08:03:10 -0700 (PDT)
+X-Received: by 2002:a81:8385:0:b0:57a:2f01:31d7 with SMTP id
+ t127-20020a818385000000b0057a2f0131d7mr6057323ywf.1.1695308590791; Thu, 21
+ Sep 2023 08:03:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="IcqB6TI9/rs/79Pq"
-Content-Disposition: inline
-In-Reply-To: <CAOMZO5AYTe1mJTvR=2zWCVrYqVVdmP7A9fCCrCPqgisXYQpeYw@mail.gmail.com>
+References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com> <20230912045157.177966-37-claudiu.beznea.uj@bp.renesas.com>
+In-Reply-To: <20230912045157.177966-37-claudiu.beznea.uj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 21 Sep 2023 17:02:58 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdW9Aj+sjka0n2fN4ME5YcqHSzsRrwEgSaBt-20SfGWr2Q@mail.gmail.com>
+Message-ID: <CAMuHMdW9Aj+sjka0n2fN4ME5YcqHSzsRrwEgSaBt-20SfGWr2Q@mail.gmail.com>
+Subject: Re: [PATCH 36/37] arm64: dts: renesas: r9a08g045s33-smarc: add
+ initial device tree for RZ/G3S SMARC EVK board
+To:     Claudiu <claudiu.beznea@tuxon.dev>
+Cc:     geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, ulf.hansson@linaro.org,
+        linus.walleij@linaro.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, magnus.damm@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
+        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
+        nfraprado@collabora.com, rafal@milecki.pl,
+        wsa+renesas@sang-engineering.com,
+        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Claudiu,
 
---IcqB6TI9/rs/79Pq
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Tue, Sep 12, 2023 at 6:53 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>
+> Add initial device tree for RZ/G3S SMARC EVK board.
+>
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-On Thu, Sep 21, 2023 at 09:53:44AM -0300, Fabio Estevam wrote:
-> Hi Conor,
->=20
-> On Thu, Sep 21, 2023 at 6:14=E2=80=AFAM Conor Dooley <conor@kernel.org> w=
-rote:
->=20
-> > Dumb question maybe, but it is not mentioned here - they are actually
-> > compatible devices, right? I see that they have some different match
-> > data in the driver (relating to some DMA erratum on the 23 seemingly),
-> > so it's not immediately obvious to me.
->=20
-> That's correct.
->=20
-> imx23 and imx28 are SoCs from the same family (mxs) and they share the
-> same AUART block, so the same programming model.
+Thanks for your patch!
 
-Right. I wasn't sure if the erratum workaround would also work on the
-28, but sounds like it does.
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/renesas/r9a08g045s33-smarc.dts
+> @@ -0,0 +1,17 @@
+> +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +/*
+> + * Device Tree Source for the RZ/G3S SMARC EVK board
+> + *
+> + * Copyright (C) 2023 Renesas Electronics Corp.
+> + */
+> +
+> +/dts-v1/;
+> +
+> +#include "r9a08g045s33.dtsi"
+> +#include "rzg3s-smarc-som.dtsi"
+> +#include "rzg3s-smarc.dtsi"
+> +
+> +/ {
+> +       model = "Renesas SMARC EVK version 2 based on r9a08g045s33";
+> +       compatible = "renesas,smarc2-evk", "renesas,r9a08g045s33", "renesas,r9a08g045";
+> +};
 
-> imx23 is the first member of this family. It had an AUART erratum.
-> imx28 is the second member of this family and had this erratum fixed.
->=20
-> This means that using:
->=20
-> compatible =3D "fsl,imx28-auart", "fsl,imx23-auart";
->=20
-> is valid.
->=20
-> Would you like me to improve the commit log with the information above?
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Your call.
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Of course any updates to the DT bindings should be reflected here.
 
-Thanks,
-Conor.
+Gr{oetje,eeting}s,
 
---IcqB6TI9/rs/79Pq
-Content-Type: application/pgp-signature; name="signature.asc"
+                        Geert
 
------BEGIN PGP SIGNATURE-----
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZQxEngAKCRB4tDGHoIJi
-0nuMAP937mO9VNRWDf1l/gDGbqmC05x4T5SZgkaxd+5Z/QYBXwD/RqFy5rSwNJ4n
-iHPI5CivOvZwyHkf4Rxv8ZNcmMGy7QM=
-=+hsj
------END PGP SIGNATURE-----
-
---IcqB6TI9/rs/79Pq--
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
