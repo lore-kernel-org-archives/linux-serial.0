@@ -2,60 +2,102 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9744CCD494F
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 17:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89E06E71094
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 17:07:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229874AbjIURFU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Sep 2023 13:05:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39374 "EHLO
+        id S229796AbjIURHq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Sep 2023 13:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbjIURFA (ORCPT
+        with ESMTP id S229862AbjIURHU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Sep 2023 13:05:00 -0400
+        Thu, 21 Sep 2023 13:07:20 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD803594;
-        Thu, 21 Sep 2023 10:03:14 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09295C611A1;
-        Thu, 21 Sep 2023 16:24:25 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 820EC1A3
+        for <linux-serial@vger.kernel.org>; Thu, 21 Sep 2023 10:03:24 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28234C4E688;
+        Thu, 21 Sep 2023 13:26:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1695313466;
-        bh=hpue0sB74rS4F/criJlPgC2g4ffost9T7IkqkvG5o7M=;
+        s=k20201202; t=1695302818;
+        bh=tNaMqXlX6gWQEtFXsOSS3Bt8DqFxrB36y2GWLAlRgU0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MW1t3p6kmhqAnz3ktOUjYfePzkbrS8bYgELu1FgpNLdcvPH0EXT7frDVB+0wLM8Ar
-         TgU4d09o+oc5yn9Hem87L8fDUGdeZ+ffDr8ou91ViZlt8MuU599+KordOEBkonrN00
-         agkAaYF1ivB68+Dw+3HoMcZAXNoFTKovfovaQupnjKesckbwHO2foL12N61Ar3SSC6
-         LfSaoJWRPYE0elOWIWzsn30yFPdI7l90uuls0e0zNi/p6nONq/Whs+u63LlPNaIB6m
-         aqiGcs1Rkg5UpuUWi9rPDGEbihWrdLQpmy6hIlPtsKfVPZOIa1rGCCcI6Sa5PrBDmY
-         Takmdaw9N1Zlg==
-Received: (nullmailer pid 441560 invoked by uid 1000);
-        Thu, 21 Sep 2023 16:24:24 -0000
-Date:   Thu, 21 Sep 2023 11:24:24 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        b=Low1o3cxRNpJ+kr+RcB2p0+vtcRmOjeEZ5P2bevbRwsunSHaR5pZWYq4IcLCu67qx
+         L5yUgJ6BOQe+qMaRmOrojjr5ejjpeu6hbCfA+8KhjV6DM+TAqwZHlf+FR96W4No555
+         bUnhPQdgRsSsO3z/2lTdLtQ762ENXxcTzxEcxNjuCAbaFXvQai6TeNXh31fMv8e65G
+         +pv/5xKBSLUhWWu+zHAr41etwjNMvAGYgEvucYu3XhnmcDoyKhyQAjfV/NGINDG8CM
+         hoUakUFn53O7Elu03wt+RqCncdqW46+CyGoD6oKd4IYQKWW1iev+Zb24ldSjikADNv
+         oztVuagd8RLBQ==
+Date:   Thu, 21 Sep 2023 14:26:54 +0100
+From:   Conor Dooley <conor@kernel.org>
+To:     Fabio Estevam <festevam@gmail.com>
+Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        hvilleneuve@dimonoff.com, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 3/4] dt-bindings: sc16is7xx: add vendor prefix to
- irda-mode-ports property
-Message-ID: <20230921162424.GA435508-robh@kernel.org>
-References: <20230920152015.1376838-1-hugo@hugovil.com>
- <20230920152015.1376838-4-hugo@hugovil.com>
+        devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: serial: mxs: Fix compatible list
+Message-ID: <20230921-abide-humped-e1bc12732e1c@spud>
+References: <20230921005258.184705-1-festevam@gmail.com>
+ <20230921-75ba68806e21c96531ea2d70@fedora>
+ <CAOMZO5AYTe1mJTvR=2zWCVrYqVVdmP7A9fCCrCPqgisXYQpeYw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="IcqB6TI9/rs/79Pq"
 Content-Disposition: inline
-In-Reply-To: <20230920152015.1376838-4-hugo@hugovil.com>
+In-Reply-To: <CAOMZO5AYTe1mJTvR=2zWCVrYqVVdmP7A9fCCrCPqgisXYQpeYw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Sep 20, 2023 at 11:20:14AM -0400, Hugo Villeneuve wrote:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> 
-> The NXP-specific "irda-mode-ports" property lacks a proper vendor
-> prefix. Add "nxp," prefix to comply with DT best practises.
 
-The opposite direction would be worth carrying in the driver, but I 
-don't think adding a vendor prefix is. I would just leave this as-is.
+--IcqB6TI9/rs/79Pq
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Rob
+On Thu, Sep 21, 2023 at 09:53:44AM -0300, Fabio Estevam wrote:
+> Hi Conor,
+>=20
+> On Thu, Sep 21, 2023 at 6:14=E2=80=AFAM Conor Dooley <conor@kernel.org> w=
+rote:
+>=20
+> > Dumb question maybe, but it is not mentioned here - they are actually
+> > compatible devices, right? I see that they have some different match
+> > data in the driver (relating to some DMA erratum on the 23 seemingly),
+> > so it's not immediately obvious to me.
+>=20
+> That's correct.
+>=20
+> imx23 and imx28 are SoCs from the same family (mxs) and they share the
+> same AUART block, so the same programming model.
+
+Right. I wasn't sure if the erratum workaround would also work on the
+28, but sounds like it does.
+
+> imx23 is the first member of this family. It had an AUART erratum.
+> imx28 is the second member of this family and had this erratum fixed.
+>=20
+> This means that using:
+>=20
+> compatible =3D "fsl,imx28-auart", "fsl,imx23-auart";
+>=20
+> is valid.
+>=20
+> Would you like me to improve the commit log with the information above?
+
+Your call.
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+
+Thanks,
+Conor.
+
+--IcqB6TI9/rs/79Pq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZQxEngAKCRB4tDGHoIJi
+0nuMAP937mO9VNRWDf1l/gDGbqmC05x4T5SZgkaxd+5Z/QYBXwD/RqFy5rSwNJ4n
+iHPI5CivOvZwyHkf4Rxv8ZNcmMGy7QM=
+=+hsj
+-----END PGP SIGNATURE-----
+
+--IcqB6TI9/rs/79Pq--
