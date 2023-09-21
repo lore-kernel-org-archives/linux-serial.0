@@ -2,119 +2,158 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A12E7D0AB
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 21:04:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A671BE7D0AB
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 21:17:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232272AbjIUVEW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Sep 2023 17:04:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50644 "EHLO
+        id S232720AbjIUVRR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Sep 2023 17:17:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232470AbjIUVDp (ORCPT
+        with ESMTP id S232453AbjIUVQO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Sep 2023 17:03:45 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDDF885D3A;
-        Thu, 21 Sep 2023 10:37:52 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8547CC4E687;
-        Thu, 21 Sep 2023 13:47:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1695304054;
-        bh=Oo9AjLmvT40iXA2aHlcvjH+u91I2XspBDwHA99rab5U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=B/nzU1poVexwNkd1uy8NYKF7nqNzSxBZguu99fbkUbbpOGB0M5SIkbkOKFB0tLFHK
-         4u4LRILb6bb/hPssO9FbQR6ITa+eINX7rERGA+6Cm+/Gj80MA+4Exh1CEGWqwfVHIw
-         TF8e19PDWWeOZsXJPl4Be7LrH+8OQstaf+zWw17Icr8pueLiaA+2Ej3awqB6c7juJ6
-         dOZmyoJP7YtQKWwVuQFnrxB4DFhB5Uk7lIMntm6OTJc+PVGtrJD0x4Bde1AVh2BU28
-         UrlntiPzMnfdfLtkDt2FL5PD5hbJIDFLdSf7nrXjg4A7Vg349CbDEHDgKKnuWPNq93
-         j0lnhWD/kOxbQ==
-Date:   Thu, 21 Sep 2023 14:47:30 +0100
-From:   Conor Dooley <conor@kernel.org>
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, hvilleneuve@dimonoff.com,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 3/4] dt-bindings: sc16is7xx: add vendor prefix to
- irda-mode-ports property
-Message-ID: <20230921-epidermis-labrador-3e51bb0b2cb9@spud>
-References: <20230920152015.1376838-1-hugo@hugovil.com>
- <20230920152015.1376838-4-hugo@hugovil.com>
+        Thu, 21 Sep 2023 17:16:14 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7955A9C7;
+        Thu, 21 Sep 2023 10:07:11 -0700 (PDT)
+Received: from relay3-d.mail.gandi.net (unknown [217.70.183.195])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 55B3DCF277;
+        Thu, 21 Sep 2023 07:59:00 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 29C1560006;
+        Thu, 21 Sep 2023 07:58:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1695283116;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yLvHllXACN1zA5CMjFMhPYxtctKNWOEMglwvg9CAAd4=;
+        b=MCoTOXubAjcszgcr8Z1eKA3CjCCAjns8nCwCZRMm87VzMzY9OIneKFRDQZm+OuQ7Mz/sOg
+        gkQAu/cYR4cKx6KEXeUuPw+1qXHyUxKzkRu01LcWujXOJ9K4hN49u04K+NQd5fRs8iet01
+        lx5fbZwDi0ELe5u6knJySARn/hSM3aNy1ANYdnOumj66kkdxrRrzi65GNOdxlRX/3+sku4
+        A/d0Sjta67pqepvC/gAxOp9ip1miqMG5k41mtUjYAEO/1tVTJ2uALgrtDYxEndHnfQPxDe
+        DYTrhDTxuOtMRllc9Iff74S12+nlUEEAF+pbZDXYCEzfwMfvCDhUlrmaoWXu6w==
+Message-ID: <332111c2-f3f5-3d7f-09ef-f3ebb3f48eb0@bootlin.com>
+Date:   Thu, 21 Sep 2023 09:58:35 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="dITO17on8mP4IvAa"
-Content-Disposition: inline
-In-Reply-To: <20230920152015.1376838-4-hugo@hugovil.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+Subject: Re: serial: 8250_omap: suspend issue with console_suspend disabled
+Content-Language: en-US
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     linux-pm@vger.kernel.org, linux-serial@vger.kernel.org,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Kumar Udit <u-kumar1@ti.com>, Dhruva Gole <d-gole@ti.com>
+References: <59b13c93-6637-3050-c145-31be0d6c12c9@bootlin.com>
+ <20230920053828.GD5282@atomide.com>
+From:   Thomas Richard <thomas.richard@bootlin.com>
+In-Reply-To: <20230920053828.GD5282@atomide.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-GND-Sasl: thomas.richard@bootlin.com
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On 9/20/23 07:38, Tony Lindgren wrote:
+> Hi,
+> 
+> * Thomas Richard <thomas.richard@bootlin.com> [230915 09:57]:
+>> The regression was introduced in commit 20a41a62618d "serial: 8250_omap:
+>> Use force_suspend and resume for system suspend"
+> ...
+> 
+>> --- a/drivers/tty/serial/8250/8250_omap.c
+>> +++ b/drivers/tty/serial/8250/8250_omap.c
+>> @@ -1630,7 +1630,7 @@ static int omap8250_suspend(struct device *dev)
+>>         err = pm_runtime_force_suspend(dev);
+>>         flush_work(&priv->qos_work);
+>>
+>> -       return err;
+>> +       return 0;
+>>  }
+> 
+> Maybe we can now just simplify things a bit here with the patch below.
+> Care to give it a try, it's compile tested only so far.
+> 
 
---dITO17on8mP4IvAa
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I tested it, it works for me.
 
-On Wed, Sep 20, 2023 at 11:20:14AM -0400, Hugo Villeneuve wrote:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
->=20
-> The NXP-specific "irda-mode-ports" property lacks a proper vendor
-> prefix. Add "nxp," prefix to comply with DT best practises.
+>> Once the omap8250_suspend doesn't return an error, the suspend sequence
+>> can continue, but I get an other issue.
+>> This issue is not related to commit 20a41a62618d, it has already been
+>> present.
+>> The power domain of the console is powered-off, so no more messages are
+>> printed, and the SoC is stucked.
+>> As the uart port is used as console, we don't want to power-off it.
+>> My workaround is to set the corresponding power domain to
+>> GENPD_FLAG_ALWAYS_ON, so the uart port is not powered-off.
+> 
+> The runtime PM usage count should keep the related power domain on though,
+> sounds like this issue somewhere else if the power domains get force
+> suspended with runtime PM usage count?
+> 
+> Regards,
+> 
+> Tony
+> 
+> 8< ------------------------------
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -1617,7 +1617,7 @@ static int omap8250_suspend(struct device *dev)
+>  {
+>  	struct omap8250_priv *priv = dev_get_drvdata(dev);
+>  	struct uart_8250_port *up = serial8250_get_port(priv->line);
+> -	int err;
+> +	int err = 0;
+>  
+>  	serial8250_suspend_port(priv->line);
+>  
+> @@ -1627,7 +1627,8 @@ static int omap8250_suspend(struct device *dev)
+>  	if (!device_may_wakeup(dev))
+>  		priv->wer = 0;
+>  	serial_out(up, UART_OMAP_WER, priv->wer);
+> -	err = pm_runtime_force_suspend(dev);
+> +	if (uart_console(&up->port) && console_suspend_enabled)
+> +		err = pm_runtime_force_suspend(dev);
+>  	flush_work(&priv->qos_work);
+>  
+>  	return err;
+> @@ -1636,11 +1637,15 @@ static int omap8250_suspend(struct device *dev)
+>  static int omap8250_resume(struct device *dev)
+>  {
+>  	struct omap8250_priv *priv = dev_get_drvdata(dev);
+> +	struct uart_8250_port *up = serial8250_get_port(priv->line);
+>  	int err;
+>  
+> -	err = pm_runtime_force_resume(dev);
+> -	if (err)
+> -		return err;
+> +	if (uart_console(&up->port) && console_suspend_enabled) {
+> +		err = pm_runtime_force_resume(dev);
+> +		if (err)
+> +			return err;
+> +	}
+> +
+>  	serial8250_resume_port(priv->line);
+>  	/* Paired with pm_runtime_resume_and_get() in omap8250_suspend() */
+>  	pm_runtime_mark_last_busy(dev);
+> @@ -1717,16 +1722,6 @@ static int omap8250_runtime_suspend(struct device *dev)
+>  
+>  	if (priv->line >= 0)
+>  		up = serial8250_get_port(priv->line);
+> -	/*
+> -	 * When using 'no_console_suspend', the console UART must not be
+> -	 * suspended. Since driver suspend is managed by runtime suspend,
+> -	 * preventing runtime suspend (by returning error) will keep device
+> -	 * active during suspend.
+> -	 */
+> -	if (priv->is_suspending && !console_suspend_enabled) {
+> -		if (up && uart_console(&up->port))
+> -			return -EBUSY;
+> -	}
+>  
+>  	if (priv->habit & UART_ERRATA_CLOCK_DISABLE) {
+>  		int ret;
 
-Looks like you've made changes to the driver in a way both will work,
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
 
-Cheers,
-Conor.
-
->=20
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> ---
->  .../devicetree/bindings/serial/nxp,sc16is7xx.txt          | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt b=
-/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-> index 1a7e4bff0456..d89815c5c562 100644
-> --- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-> +++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-> @@ -21,8 +21,8 @@ Optional properties:
->    the second cell is used to specify the GPIO polarity:
->      0 =3D active high,
->      1 =3D active low.
-> -- irda-mode-ports: An array that lists the indices of the port that
-> -		   should operate in IrDA mode.
-> +- nxp,irda-mode-ports: An array that lists the indices of the port that
-> +		       should operate in IrDA mode.
->  - nxp,modem-control-line-ports: An array that lists the indices of the p=
-ort that
->  				should have shared GPIO lines configured as
->  				modem control lines.
-> @@ -80,8 +80,8 @@ Optional properties:
->    the second cell is used to specify the GPIO polarity:
->      0 =3D active high,
->      1 =3D active low.
-> -- irda-mode-ports: An array that lists the indices of the port that
-> -		   should operate in IrDA mode.
-> +- nxp,irda-mode-ports: An array that lists the indices of the port that
-> +		       should operate in IrDA mode.
->  - nxp,modem-control-line-ports: An array that lists the indices of the p=
-ort that
->  				should have shared GPIO lines configured as
->  				modem control lines.
-> --=20
-> 2.30.2
->=20
-
---dITO17on8mP4IvAa
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZQxJcgAKCRB4tDGHoIJi
-0i60AQDkv6NAQfFJKu9ceTROjQsUq5KvzHpILZ/l5wPEFqql6wEA16WdTQeQYNUJ
-S1/xZghGAvjC+nLpApgENKAvRXOFJg4=
-=eS7q
------END PGP SIGNATURE-----
-
---dITO17on8mP4IvAa--
