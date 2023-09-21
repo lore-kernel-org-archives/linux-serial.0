@@ -2,249 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB8C4E7D0A5
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 17:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BBE4E7D0A3
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 17:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230254AbjIURvs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Sep 2023 13:51:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37996 "EHLO
+        id S229791AbjIURxR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Sep 2023 13:53:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230103AbjIURv2 (ORCPT
+        with ESMTP id S230122AbjIURwu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Sep 2023 13:51:28 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1901C585FC;
-        Thu, 21 Sep 2023 10:19:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-        :Date:subject:date:message-id:reply-to;
-        bh=+1FtBudE1t2AIFo9XZGtwN+rqnrYV1AoU/UkJZpAeEg=; b=lEEA3teq+EzGXLB9n74autwhf/
-        TH3GpF4VYY476EPxPcGKfvLptpOe8+97XsqtOuXkIpfRnuKdde56P/y1XSfq2ZGHxFpecCBAiKgm1
-        rOmoLGAIvpmsytgLCyPcagB4IQc7+2TL0B7STBPV/LV7OQTEWa7muWfCL7lU3vzVQlvQ=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:37928 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1qjLdZ-0008R2-7p; Thu, 21 Sep 2023 11:30:42 -0400
-Date:   Thu, 21 Sep 2023 11:30:40 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Conor Dooley <conor@kernel.org>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, hvilleneuve@dimonoff.com,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org
-Message-Id: <20230921113040.2dafb3d50cfdd8727de42356@hugovil.com>
-In-Reply-To: <20230921-decorated-patronize-45285045adbf@spud>
-References: <20230920152015.1376838-1-hugo@hugovil.com>
-        <20230920152015.1376838-5-hugo@hugovil.com>
-        <20230921-decorated-patronize-45285045adbf@spud>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH 4/4] dt-bindings: sc16is7xx: convert to YAML
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Thu, 21 Sep 2023 13:52:50 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2059C43CAA;
+        Thu, 21 Sep 2023 10:16:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1695316575; x=1726852575;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=j/e5kx3KtW0oiBzzN4+AezEayhJ5LGFpaU3KZp4ujsg=;
+  b=k8SjMrjB4B/bqNJ8gPQQKiI3lu8QdSVRZVS0d8/V8UXu4dxNLwhuuUG3
+   B4wsFLFbbnhMPu3WO1SDvyGtEivor+vZMJyj6EbrNNDCpL1JMSKE4x9tY
+   jYqM8pmWjPRfZZmj622qVfBtPjMHH65iIYXyGihbDVrG2yN3+QkHivZ8M
+   SWmCFvqSDB3fLZG0cr9y0dOdrqVXFTYsa5w4XGkpCETXQd7GUlDcVFLRb
+   VS44T68Fj0cbz2hKOs5jq4tLTgAanDsSdBOm0XuNc4vB/811B4+xLvF6O
+   uYpQcIhX5sOpuI/I33xV3/Ek++Qb3AfJbq+mxdBFsuTc57SiARBWCmJGG
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="444598202"
+X-IronPort-AV: E=Sophos;i="6.03,165,1694761200"; 
+   d="scan'208";a="444598202"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 04:30:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="837284511"
+X-IronPort-AV: E=Sophos;i="6.03,165,1694761200"; 
+   d="scan'208";a="837284511"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by FMSMGA003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 04:30:38 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97-RC0)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qjHtD-0000000GsSk-2QdX;
+        Thu, 21 Sep 2023 14:30:35 +0300
+Date:   Thu, 21 Sep 2023 14:30:35 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Philippe =?iso-8859-1?Q?Mathieu-Daud=E9?= <philmd@linaro.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-mips@vger.kernel.org, Jonas Gorski <jonas.gorski@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH 1/6] serial: 8250: remove AR7 support
+Message-ID: <ZQwpWyWo3Pur7TEJ@smile.fi.intel.com>
+References: <20230920201035.3445-1-wsa+renesas@sang-engineering.com>
+ <20230920201035.3445-2-wsa+renesas@sang-engineering.com>
+ <a86483c4-9ec2-3435-198b-9773379c67be@linaro.org>
+ <ZQwl+OXvhA6/x6f1@smile.fi.intel.com>
+ <1165e159-62d1-4abd-88d7-b8eaeaf797df@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1165e159-62d1-4abd-88d7-b8eaeaf797df@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 21 Sep 2023 14:45:06 +0100
-Conor Dooley <conor@kernel.org> wrote:
+On Thu, Sep 21, 2023 at 01:21:46PM +0200, Jiri Slaby wrote:
+> On 21. 09. 23, 13:16, Andy Shevchenko wrote:
+> > On Thu, Sep 21, 2023 at 12:36:05PM +0200, Philippe Mathieu-Daudé wrote:
+> > > On 20/9/23 22:10, Wolfram Sang wrote:
 
-> Hey,
-> 
-> On Wed, Sep 20, 2023 at 11:20:15AM -0400, Hugo Villeneuve wrote:
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+...
+
+> > > > -#define PORT_AR7	18	/* Texas Instruments AR7 internal UART */
+> > > 
+> > > I'm a bit surprised definitions are removed from the uAPI, isn't
+> > > it expected to be very stable? Shouldn't it be better to keep it
+> > > defined but modify the comment, mentioning "obsolete" or "deprecated"?
 > > 
-> > Convert binding from text format to YAML.
-> > 
-> > Additions to original text binding:
-> >   - add rs485 reference.
-> > 
-> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > ---
-> >  .../bindings/serial/nxp,sc16is7xx.txt         | 118 ----------------
-> >  .../bindings/serial/nxp,sc16is7xx.yaml        | 126 ++++++++++++++++++
-> >  2 files changed, 126 insertions(+), 118 deletions(-)
-> >  delete mode 100644 Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-> >  create mode 100644 Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+> > The numbers up to 20 must stay, they are being used somewhere, setserial
+> > implementation in busybox (IIRC).
 > 
-> > diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
-> > new file mode 100644
-> > index 000000000000..508639e09e06
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
-> > @@ -0,0 +1,126 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/serial/nxp,sc16is7xx.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: NXP SC16IS7xx advanced Universal Asynchronous Receiver-Transmitter (UART)
-> 
-> nit, but my OCD was triggered - capitalise the a in "advanced"?
+> But they define it if we don't:
+> #ifndef PORT_AR7
+> # define PORT_AR7               18
+> #endif
 
-Hi Conor,
-no problem, I like that :)
-Will fix it for V2.
+Yep, but the problem is that we may not use that number anyway, because two
+different versions of kernel can clash on the same version of tool that will
+think about AR7 while it's something different. That's why instead of having
+reserved space, better to leave with names assigned.
 
- 
-> > +
-> > +maintainers:
-> > +  - Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - nxp,sc16is740
-> > +      - nxp,sc16is741
-> > +      - nxp,sc16is750
-> > +      - nxp,sc16is752
-> > +      - nxp,sc16is760
-> > +      - nxp,sc16is762
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +  clocks:
-> > +    maxItems: 1
-> > +    description: Reference to the IC source clock.
-> 
-> You could probably drop this, if it only has one clock it's a bit
-> redundant.
+> > NAK.
+> I don't mind either way. But likely we should reserve the field if we go and
+> remove it (setserial has a number->string mapping in busybox). Hm, then
+> reserving it or keep it? Perhaps keep it is better... So ack the NACK :).
 
-I don't understand, because there is already a 'clocks' property in
-the examples (and also in my real board DTS file) and if I remove it
-here it will cause a warning:
-
-serial@51: Unevaluated properties are not allowed ('clocks' was
-unexpected)
-
- 
-> > +  clock-frequency:
-> > +    description: |
-> 
-> This | should not be needed here, there's no formatting to preserve.
-
-Done.
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-> 
-> > +      When there is no clock provider visible to the platform, this
-> > +      is the source crystal or external clock frequency for the IC in Hz.
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> > +    minimum: 1
-> > +    maximum: 80000000
-> > +
-> > +  gpio-controller:
-> > +    description: Marks the device node as a GPIO controller.
-> > +    type: boolean
-> > +
-> > +  "#gpio-cells":
-> > +    const: 2
-> > +
-> > +  gpio-line-names:
-> > +    minItems: 1
-> > +    maxItems: 8
-> > +
-> > +  nxp,irda-mode-ports:
-> > +    description: |
-> > +      An array that lists the indices of the port that should operate in IrDA
-> > +      mode:
-> > +      0: port A
-> > +      1: port B
-> > +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> > +    minItems: 1
-> > +    maxItems: 2
-> > +    items:
-> > +      minimum: 0
-> > +      maximum: 1
-> > +
-> > +  nxp,modem-control-line-ports:
-> > +    description: |
-> > +      An array that lists the indices of the port that should have shared GPIO
-> > +      lines configured as modem control lines:
-> > +      0: port A
-> > +      1: port B
-> > +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> > +    minItems: 1
-> > +    maxItems: 2
-> > +    items:
-> > +      minimum: 0
-> > +      maximum: 1
-> > +
-> > +allOf:
-> > +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> > +  - $ref: /schemas/serial/serial.yaml#
-> > +  - $ref: /schemas/serial/rs485.yaml#
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - interrupts
-> > +
-> > +oneOf:
-> > +  - required:
-> > +      - clocks
-> > +  - required:
-> > +      - clock-frequency
-> > +
-> > +unevaluatedProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/interrupt-controller/irq.h>
-> > +    serial0: serial@51 {
-> 
-> These labels are not used and should be removed.
-
-Done.
-
-Thank you,
-Hugo.
-
-
-
-> Otherwise, conversion looks aight to me.
-> 
-> Thanks,
-> Conor.
-> 
-> > +        compatible = "nxp,sc16is750";
-> > +        reg = <0x51>;
-> > +        clocks = <&clk20m>;
-> > +        interrupt-parent = <&gpio3>;
-> > +        interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
-> > +        gpio-controller;
-> > +        #gpio-cells = <2>;
-> > +    };
-> > +
-> > +    serial1: serial@53 {
-> > +        compatible = "nxp,sc16is752";
-> > +        reg = <0x53>;
-> > +        clocks = <&clk20m>;
-> > +        interrupt-parent = <&gpio3>;
-> > +        interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
-> > +        nxp,modem-control-line-ports = <1>; /* Port 1 as modem control lines */
-> > +        gpio-controller; /* Port 0 as GPIOs */
-> > +        #gpio-cells = <2>;
-> > +    };
-> > +
-> > +    serial2: serial@54 {
-> > +        compatible = "nxp,sc16is752";
-> > +        reg = <0x54>;
-> > +        clocks = <&clk20m>;
-> > +        interrupt-parent = <&gpio3>;
-> > +        interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
-> > +        nxp,modem-control-line-ports = <0 1>; /* Ports 0 and 1 as modem control lines */
-> > +    };
-> > -- 
-> > 2.30.2
-> > 
