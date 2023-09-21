@@ -2,97 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4B31E7D0A2
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 18:16:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9920E7D0A4
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 18:17:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230400AbjIUSQm convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Sep 2023 14:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52672 "EHLO
+        id S230442AbjIUSRT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Sep 2023 14:17:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230301AbjIUSQ1 (ORCPT
+        with ESMTP id S229599AbjIUSQt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Sep 2023 14:16:27 -0400
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17CE5AE2E;
-        Thu, 21 Sep 2023 10:21:40 -0700 (PDT)
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-52f9a45b4bdso1423259a12.3;
-        Thu, 21 Sep 2023 10:21:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695316899; x=1695921699;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=78TMJJFlsLVACVaST0yD4fr1cOAvW144T6j75QycuXg=;
-        b=BAV30hJkYC7gDJg8tJ5MgmwgAeTItbBEzWUcixCeM/pAGaCgaQ8iMiyn0XLG6VH9AG
-         ATLhbdtVyCC4KBdQdSsCTH0JJXuR7XVOSpV3URxP7TbirqHqYFRHRbBWD7+I3DjzCUZ0
-         iu65ni8UHH5hJfVmugdCvjEeqTP4zFi4RxIie6MPXhe9eTmsLORXD/5wosNIUBMifG9j
-         lSBCLxcxr0nbNY41dJQU3tqmp4sKBbaCaM27tuidbCQzJUwFo7JleTbtt8kmem84QoDV
-         zKqJa3Leqv9IUbhA64LQUI3GFTuCZ4samvzOPMyY2jFjLR5XbI/opUALhieLgtJd7xXY
-         YUKA==
-X-Gm-Message-State: AOJu0Yy11+ifoLtQMj0zsVqtcJIIdGl/qpKcTULNtlXmQqyT9qQ/0DL6
-        JbaLbcnQYqAHQbj57DOkw4bWirx05e9jlYr9
-X-Google-Smtp-Source: AGHT+IH+uBVw292r+sxaKfU8NLmvm5e2Jkc2m0Sb1GJILXn42+85/1qKFwBKoGAB4t0PUKVC9cnpbw==
-X-Received: by 2002:a2e:8098:0:b0:2c0:c6a:eb2f with SMTP id i24-20020a2e8098000000b002c00c6aeb2fmr5027753ljg.1.1695302182923;
-        Thu, 21 Sep 2023 06:16:22 -0700 (PDT)
-Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com. [209.85.208.180])
-        by smtp.gmail.com with ESMTPSA id p2-20020a2e9a82000000b002c001e57e1asm337469lji.73.2023.09.21.06.16.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Sep 2023 06:16:22 -0700 (PDT)
-Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-2c007d6159aso15303351fa.3;
-        Thu, 21 Sep 2023 06:16:22 -0700 (PDT)
-X-Received: by 2002:a05:6512:3987:b0:500:bb99:69a7 with SMTP id
- j7-20020a056512398700b00500bb9969a7mr6201266lfu.14.1695301737311; Thu, 21 Sep
- 2023 06:08:57 -0700 (PDT)
+        Thu, 21 Sep 2023 14:16:49 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34E8C102
+        for <linux-serial@vger.kernel.org>; Thu, 21 Sep 2023 10:50:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1695318603; x=1726854603;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=r+R56exwD+ChUXqBW102V0/QDHpIBqGnuk1g9wosJXk=;
+  b=jK+kFC7tSd26BSrvoiaU6/MLvff2UvegU4HgEWkhr5TNakUwttEeN/dg
+   E5VQBtRs8lFWPgNN0o1123ioIHooz0eYjcgLKDeMQX5fKAaHQR3nSvqlw
+   2b+BErs7GyHFAsl/zYMyEetgV9rHCegtMh96dSLkQREK7TXvG/bnKw57k
+   4t/eQ6PIvF+xjBbH6TROWOuPMrUffSbkAhDiTcIEiMzaWKqRATDT7dcFF
+   fPXIP6A4EGAb9FGfMCFdHFR+JGlXntxVqESzuvz/nZsuS1E1E0KpYyoS3
+   sjj/u+Q6SXhI2Gj15ibie2drdzxkVcsJ9cWNVgMvs2/briECU6baRO/k+
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="359871972"
+X-IronPort-AV: E=Sophos;i="6.03,165,1694761200"; 
+   d="scan'208";a="359871972"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 04:10:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="812597209"
+X-IronPort-AV: E=Sophos;i="6.03,165,1694761200"; 
+   d="scan'208";a="812597209"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 04:10:56 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97-RC0)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qjHa9-0000000GsDR-3r4x;
+        Thu, 21 Sep 2023 14:10:53 +0300
+Date:   Thu, 21 Sep 2023 14:10:53 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Matthew Howell <matthew.howell@sealevel.com>
+Cc:     gregkh@linuxfoundation.org, jeff.baldwin@sealevel.com,
+        james.olson@sealevel.com, ryan.wenglarz@sealevel.com,
+        darren.beeson@sealevel.com, linux-serial@vger.kernel.org,
+        ilpo.jarvinen@linux.intel.com
+Subject: Re: [PATCH V7 2/2] serial: exar: Add RS-485 support for Sealevel
+ XR17V35X based cards
+Message-ID: <ZQwkvSUM9ojfmuj3@smile.fi.intel.com>
+References: <d44f91c4-4599-1911-5cfb-bfc3cde95a9b@sealevel.com>
 MIME-Version: 1.0
-References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com> <20230912045157.177966-29-claudiu.beznea.uj@bp.renesas.com>
-In-Reply-To: <20230912045157.177966-29-claudiu.beznea.uj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 21 Sep 2023 15:08:39 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdV5BuPPLkZUDfhjXzq_aQ+LFfEM=eXGT-XjmpxSjSqeJg@mail.gmail.com>
-Message-ID: <CAMuHMdV5BuPPLkZUDfhjXzq_aQ+LFfEM=eXGT-XjmpxSjSqeJg@mail.gmail.com>
-Subject: Re: [PATCH 28/37] pinctrl: renesas: rzg2l: make struct
- rzg2l_pinctrl_data::dedicated_pins constant
-To:     Claudiu <claudiu.beznea@tuxon.dev>
-Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        ulf.hansson@linaro.org, linus.walleij@linaro.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
-        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
-        nfraprado@collabora.com, rafal@milecki.pl,
-        wsa+renesas@sang-engineering.com,
-        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d44f91c4-4599-1911-5cfb-bfc3cde95a9b@sealevel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Sep 12, 2023 at 6:53 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
-> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->
-> struct rzg2l_pinctrl_data::dedicated_pins is constant thus mark it so.
->
-> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+On Wed, Sep 20, 2023 at 03:03:02PM -0400, Matthew Howell wrote:
+> 
+> From: Matthew Howell <matthew.howell@sealevel.com>
+> 
+> Sealevel XR17V35X based cards utilize DTR to control RS-485 Enable, but
+> the current implementation of 8250_exar uses RTS for the auto-RS485-Enable
+> mode of the XR17V35X UARTs. This patch implements DTR Auto-RS485 on
+> Sealevel cards.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue in renesas-pinctrl-for-v6.7.
+If you address the following couple of things, feel free to add
 
-Gr{oetje,eeting}s,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-                        Geert
+...
+
+> Hopefully Alpine threads correctly this time
+
+Nope.
+
+...
+
+> +static int sealevel_rs485_config(struct uart_port *port, struct ktermios *termios,
+> +				struct serial_rs485 *rs485)
+
+Misindented second line (missing one space?).
+
+...
+
+> +	ret = generic_rs485_config(port, termios, rs485);
+
+> +
+
+Unneeded blank line.
+
+> +	if (ret)
+> +		return ret;
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
