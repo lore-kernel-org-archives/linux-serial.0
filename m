@@ -2,98 +2,97 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87143E7D0A6
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 18:14:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4B31E7D0A2
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Sep 2023 18:16:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbjIUSOx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Sep 2023 14:14:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33266 "EHLO
+        id S230400AbjIUSQm convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Sep 2023 14:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230013AbjIUSOt (ORCPT
+        with ESMTP id S230301AbjIUSQ1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Sep 2023 14:14:49 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA93720FC
-        for <linux-serial@vger.kernel.org>; Thu, 21 Sep 2023 10:33:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        sang-engineering.com; h=date:from:to:cc:subject:message-id
-        :references:mime-version:content-type:in-reply-to; s=k1; bh=+7fr
-        VW/EA2FucdgctrPyCcxInO39RMXQVCUCGqYahyw=; b=fi6wRJyXpfSTopRjlN8A
-        /re6PvcuVA8q5slJ8xEOuW+YEvbHgkJXAbybT2PfvMzRrUPeE68ytSc9JKTCi2Bg
-        fpnBTp3sEUQezwyze9kkDvaCoyuUVvt0glbAwn4B5wR19D+QwbUq8JAuQdcxI6FO
-        yyzpUz3iJ+EdFZlathsKPNCaxfkVfxa64cFMDLkERetxdUXJwpkiw7sie4Fq74fh
-        cy1aCDS5BWHMso1VNIgeszYNOjO5ismyXLzNxzsfQ++DBvoqRu8BmRv1iRehO7AQ
-        lmMCenyhDylpiqOEWnOV+lTeDtham3+SQxfEZ80Ef9/Z6cQDwfcaRrad8Kgs1jhW
-        tQ==
-Received: (qmail 940443 invoked from network); 21 Sep 2023 14:04:51 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 21 Sep 2023 14:04:51 +0200
-X-UD-Smtp-Session: l3s3148p1@Y6CTTN0FzVEuciJ+
-Date:   Thu, 21 Sep 2023 14:04:50 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Philippe =?utf-8?Q?Mathieu-Daud=C3=A9?= <philmd@linaro.org>,
-        linux-mips@vger.kernel.org, Jonas Gorski <jonas.gorski@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 1/6] serial: 8250: remove AR7 support
-Message-ID: <ZQwxYgMmiSB4snWV@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Philippe =?utf-8?Q?Mathieu-Daud=C3=A9?= <philmd@linaro.org>,
-        linux-mips@vger.kernel.org, Jonas Gorski <jonas.gorski@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20230920201035.3445-1-wsa+renesas@sang-engineering.com>
- <20230920201035.3445-2-wsa+renesas@sang-engineering.com>
- <a86483c4-9ec2-3435-198b-9773379c67be@linaro.org>
- <ZQwl+OXvhA6/x6f1@smile.fi.intel.com>
- <1165e159-62d1-4abd-88d7-b8eaeaf797df@kernel.org>
+        Thu, 21 Sep 2023 14:16:27 -0400
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17CE5AE2E;
+        Thu, 21 Sep 2023 10:21:40 -0700 (PDT)
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-52f9a45b4bdso1423259a12.3;
+        Thu, 21 Sep 2023 10:21:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695316899; x=1695921699;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=78TMJJFlsLVACVaST0yD4fr1cOAvW144T6j75QycuXg=;
+        b=BAV30hJkYC7gDJg8tJ5MgmwgAeTItbBEzWUcixCeM/pAGaCgaQ8iMiyn0XLG6VH9AG
+         ATLhbdtVyCC4KBdQdSsCTH0JJXuR7XVOSpV3URxP7TbirqHqYFRHRbBWD7+I3DjzCUZ0
+         iu65ni8UHH5hJfVmugdCvjEeqTP4zFi4RxIie6MPXhe9eTmsLORXD/5wosNIUBMifG9j
+         lSBCLxcxr0nbNY41dJQU3tqmp4sKBbaCaM27tuidbCQzJUwFo7JleTbtt8kmem84QoDV
+         zKqJa3Leqv9IUbhA64LQUI3GFTuCZ4samvzOPMyY2jFjLR5XbI/opUALhieLgtJd7xXY
+         YUKA==
+X-Gm-Message-State: AOJu0Yy11+ifoLtQMj0zsVqtcJIIdGl/qpKcTULNtlXmQqyT9qQ/0DL6
+        JbaLbcnQYqAHQbj57DOkw4bWirx05e9jlYr9
+X-Google-Smtp-Source: AGHT+IH+uBVw292r+sxaKfU8NLmvm5e2Jkc2m0Sb1GJILXn42+85/1qKFwBKoGAB4t0PUKVC9cnpbw==
+X-Received: by 2002:a2e:8098:0:b0:2c0:c6a:eb2f with SMTP id i24-20020a2e8098000000b002c00c6aeb2fmr5027753ljg.1.1695302182923;
+        Thu, 21 Sep 2023 06:16:22 -0700 (PDT)
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com. [209.85.208.180])
+        by smtp.gmail.com with ESMTPSA id p2-20020a2e9a82000000b002c001e57e1asm337469lji.73.2023.09.21.06.16.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Sep 2023 06:16:22 -0700 (PDT)
+Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-2c007d6159aso15303351fa.3;
+        Thu, 21 Sep 2023 06:16:22 -0700 (PDT)
+X-Received: by 2002:a05:6512:3987:b0:500:bb99:69a7 with SMTP id
+ j7-20020a056512398700b00500bb9969a7mr6201266lfu.14.1695301737311; Thu, 21 Sep
+ 2023 06:08:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zJod+rvIGEhws/tS"
-Content-Disposition: inline
-In-Reply-To: <1165e159-62d1-4abd-88d7-b8eaeaf797df@kernel.org>
+References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com> <20230912045157.177966-29-claudiu.beznea.uj@bp.renesas.com>
+In-Reply-To: <20230912045157.177966-29-claudiu.beznea.uj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 21 Sep 2023 15:08:39 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdV5BuPPLkZUDfhjXzq_aQ+LFfEM=eXGT-XjmpxSjSqeJg@mail.gmail.com>
+Message-ID: <CAMuHMdV5BuPPLkZUDfhjXzq_aQ+LFfEM=eXGT-XjmpxSjSqeJg@mail.gmail.com>
+Subject: Re: [PATCH 28/37] pinctrl: renesas: rzg2l: make struct
+ rzg2l_pinctrl_data::dedicated_pins constant
+To:     Claudiu <claudiu.beznea@tuxon.dev>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        ulf.hansson@linaro.org, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
+        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
+        nfraprado@collabora.com, rafal@milecki.pl,
+        wsa+renesas@sang-engineering.com,
+        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Tue, Sep 12, 2023 at 6:53 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>
+> struct rzg2l_pinctrl_data::dedicated_pins is constant thus mark it so.
+>
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
---zJod+rvIGEhws/tS
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-pinctrl-for-v6.7.
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 
-> I don't mind either way. But likely we should reserve the field if we go and
-> remove it (setserial has a number->string mapping in busybox). Hm, then
-> reserving it or keep it? Perhaps keep it is better... So ack the NACK :).
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Okay. I will resend with this number kept.
-
-Thanks everyone for the input!
-
-
---zJod+rvIGEhws/tS
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmUMMV4ACgkQFA3kzBSg
-Kba6vA/+PbZ12dycNI4z16sTpu+RYeA2+TirlxorwkHZSMps0Bii5DcNNgVFsObd
-WwtzMeOPw3pcKOPil8DdFTnetXqVwfrELQkyX4CI/v6ncCcG1uCjL5ap2IqaJuYu
-CVEHCDaeJdWvsHrpbXDYkCmLoOdJAl2IfQNXwso55jR8K3GwN+jmQsUprZRC+An1
-OxE4Bghyz3izoKPNL1xCxgL4LTTImXVkrrN86Yac0yRCdeJTMwoAJ5N8oRnaK6Z3
-D41ndagstgt6FSQEB3VmeQ6KcpUKU7flZ4fWER7PPND2sM8kskArfdpQ+q+jKAg8
-4vuuCSxb6XrO/hZV1pDKw61fKTlhvJxF58V4Hm9OZTDX7kOA/t25zMqXW44SfMeK
-gU8KnFkIjTIu7mf6ieS14+fwzFL6gA8vsveUleT1/1f6CY4VlpwKEPA0q3zE1ATV
-r6XoV+AaHUm5usMj+yo8KLaoEnRfWJ3AoDegsYVRVnYjT0mxTfB8Ma8NzD9nZUuI
-I55JmrZUiMMYLIH7VEvuh3CIk2KPBm4qpkA+izVANdjeDE2Ho6PzJ3FvdhksB2X9
-eNHtiChGu87DkfhpC8j1GCOQb8QN2hMDAGtyxhanqUIxxBVJk0blO7jnqUqkvaMe
-G6/EPEMOuJpxYDwVj01hCS4kmLQ7reDzR98YwmkQDBSJm1L+d7Q=
-=Vav2
------END PGP SIGNATURE-----
-
---zJod+rvIGEhws/tS--
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
