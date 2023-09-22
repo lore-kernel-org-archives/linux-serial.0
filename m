@@ -2,86 +2,90 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 047E8CD4F49
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Sep 2023 11:26:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EA9ACD4F49
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Sep 2023 11:35:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233678AbjIVL06 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Sep 2023 07:26:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44534 "EHLO
+        id S233869AbjIVLfk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 22 Sep 2023 07:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233542AbjIVL06 (ORCPT
+        with ESMTP id S233871AbjIVLf0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Sep 2023 07:26:58 -0400
+        Fri, 22 Sep 2023 07:35:26 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B459AC
-        for <linux-serial@vger.kernel.org>; Fri, 22 Sep 2023 04:26:52 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C1ABC433C8;
-        Fri, 22 Sep 2023 11:26:48 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEA1BCFA;
+        Fri, 22 Sep 2023 04:35:11 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F494C433C7;
+        Fri, 22 Sep 2023 11:35:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1695382011;
-        bh=JKkVlDGe2xzrtW6oP175LdtoOcF9c3kpHbkWebqNpKo=;
+        s=k20201202; t=1695382511;
+        bh=aNpDnFYDj2j2Hkh8J6UIChSAo3HYbob/MUwFfBA0fyI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=guPGqyWUR+z3fClMQo2sgfwbEeI+yMRaACIBWJhVmy+xnNHZrRRT5UxKjEZOgltzb
-         fU/n6pSjjVNwXuNAAfg86Zgc5ysboRVvgRSV49DpNSwm9+BrxQP6EV3f/rtvDsa2ZH
-         AsOU1tHww+KPg254heu5eAejT9PlyS32BXwkqOx8BR8IMUKrbFL+k57T7rZBm5wvBa
-         ndj6wWKWIy4/GMCOjNYWL+ztjjSLjlK4J+MrS03jyu0qdocpu3+ycNlYzKKfzEx8Ev
-         YTvy6TEMrGxabRi6rgp02NpmsQ3PRgAXPtL4Lm9Aj7SRS6+Nw6PMSXI2mhBmX2vJWx
-         mCSuQ0EnAeMjg==
-Date:   Fri, 22 Sep 2023 12:26:46 +0100
+        b=lh3bOW0FZO7LnVKBGV83pftFw64EJVKA01kN5ZM3Mtr+Vcp3TV8YJcevHLXNkgp37
+         49+G7ptnrP0NW5ZEAB6Mb/xcaaiWWN7oJGHyiVzxO5CvaW6yVmPIZKsx24LraXooVq
+         +VTxbSmaHKyOdqJZsP4QuSTOoXe/LtMGlGXpfCoME7abBiLGPBAM+B8pUO9m9760qE
+         3lOpDD4pt6iNq+Hw2nREAF78Kd7ASYsVEKekCSNNB2QwK4OlCp3fB97l3+Zq7XeoN5
+         +ml9q+LhOS8JT7K8fcZiXyKqT+9cm+oZpIOzEpfJwZYi4JNwFosnn6DqbmMlJG3eTI
+         etz69+co19rUQ==
+Date:   Fri, 22 Sep 2023 12:35:07 +0100
 From:   Conor Dooley <conor@kernel.org>
-To:     Marek Vasut <marex@denx.de>
-Cc:     devicetree@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: serial: imx: Document wakeup-source property
-Message-ID: <20230922-exhume-rejoicing-f5a36f5dd573@spud>
-References: <20230921192729.71259-1-marex@denx.de>
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, hvilleneuve@dimonoff.com,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH 4/4] dt-bindings: sc16is7xx: convert to YAML
+Message-ID: <20230922-awning-repayment-e9f4ec55787d@spud>
+References: <20230920152015.1376838-1-hugo@hugovil.com>
+ <20230920152015.1376838-5-hugo@hugovil.com>
+ <20230921-decorated-patronize-45285045adbf@spud>
+ <20230921113040.2dafb3d50cfdd8727de42356@hugovil.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="2cFYWGC3ZJlQYktI"
+        protocol="application/pgp-signature"; boundary="FaLvclHYZD+k9FzY"
 Content-Disposition: inline
-In-Reply-To: <20230921192729.71259-1-marex@denx.de>
+In-Reply-To: <20230921113040.2dafb3d50cfdd8727de42356@hugovil.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
---2cFYWGC3ZJlQYktI
+--FaLvclHYZD+k9FzY
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Sep 21, 2023 at 09:27:29PM +0200, Marek Vasut wrote:
-> The i.MX UART can be used as a wake-up source, document the 'wakeup-sourc=
-e'
-> property as allowed property.
+On Thu, Sep 21, 2023 at 11:30:40AM -0400, Hugo Villeneuve wrote:
+> On Thu, 21 Sep 2023 14:45:06 +0100
+> Conor Dooley <conor@kernel.org> wrote:
+> > On Wed, Sep 20, 2023 at 11:20:15AM -0400, Hugo Villeneuve wrote:
+
+> > > +  clocks:
+> > > +    maxItems: 1
+> > > +    description: Reference to the IC source clock.
+> >=20
+> > You could probably drop this, if it only has one clock it's a bit
+> > redundant.
 >=20
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> ---
-> Cc: Conor Dooley <conor+dt@kernel.org>
+> I don't understand, because there is already a 'clocks' property in
+> the examples (and also in my real board DTS file) and if I remove it
+> here it will cause a warning:
+>=20
+> serial@51: Unevaluated properties are not allowed ('clocks' was
+> unexpected)
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Sorry, I was talking about the description.
 
-Thanks,
-Conor.
-
---2cFYWGC3ZJlQYktI
+--FaLvclHYZD+k9FzY
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZQ154QAKCRB4tDGHoIJi
-0uJ8AQDn/wmFfFruJ8HWzho1PC4AXsfVkovygm5ypQcF2c7RpwD+NkjnK0wRguO3
-SJuTBm2GU9DH0uXTuRRgsw028yz/4wU=
-=vVBi
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZQ176gAKCRB4tDGHoIJi
+0twcAP9vBpC+1tj/zupf5iw1FA60BwrOpAZP14ulMEaI7vlVhQEAtnM5KniPS4Uh
+bn1iiPZW8oKjgRIGM/LkbpHqmkPs9Qc=
+=YeHj
 -----END PGP SIGNATURE-----
 
---2cFYWGC3ZJlQYktI--
+--FaLvclHYZD+k9FzY--
