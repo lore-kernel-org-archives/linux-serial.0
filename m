@@ -2,105 +2,133 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2508E7D0C9
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Sep 2023 04:23:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 114EAE7D0C9
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Sep 2023 05:53:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbjIVEYD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Sep 2023 00:24:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
+        id S231124AbjIVFxm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 22 Sep 2023 01:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbjIVEYC (ORCPT
+        with ESMTP id S229837AbjIVFxl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Sep 2023 00:24:02 -0400
-X-Greylist: delayed 1159 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Sep 2023 21:23:56 PDT
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [176.9.242.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51D8218F
-        for <linux-serial@vger.kernel.org>; Thu, 21 Sep 2023 21:23:56 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL Global TLS RSA4096 SHA256 2022 CA1" (verified OK))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id DBFF7100DCEFB;
-        Fri, 22 Sep 2023 06:23:54 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id A1FA11087A; Fri, 22 Sep 2023 06:23:54 +0200 (CEST)
-Date:   Fri, 22 Sep 2023 06:23:54 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH tty-linus] serial: Reduce spinlocked portion of
- uart_rs485_config()
-Message-ID: <20230922042354.GC9800@wunner.de>
-References: <f3a35967c28b32f3c6432d0aa5936e6a9908282d.1695307688.git.lukas@wunner.de>
- <87zg1fees3.fsf@jogness.linutronix.de>
-MIME-Version: 1.0
+        Fri, 22 Sep 2023 01:53:41 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05olkn2084.outbound.protection.outlook.com [40.92.89.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0DA5C2;
+        Thu, 21 Sep 2023 22:53:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=koVbMwDUETqOWE74+cCM7hhqdxska5+ReiOcmRSCItp4eapLS0H5ebro0XNq4fctIAScs/qmcGBf1P4TmX4kiY0Vl+XBUm/heYBy8FuYQQD3+N+AlLJ1kTvQpmxHa5CJnlZ0NerkrQ+5j7yV4J9BBoh0eEu6lyGTQFb0qIEfzPePr4YzM7ea5OFtQP09j6/+8ohyUjuFGn+WcacWzEdyilRAAfR59VIJdCXkfltlEEZKADNrM/lo/mPmJO3wYCzzLTVYiQKrPBxE4SOnAKtqpR08YnBBRpalbkaPsx19zlEJX94Nz1pPLwyUHcB2OH1jPkavo401SZQDRBf6ZbnTJA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2Vq+iCL4fRwjPpgBYU+M+oSnf2X9iA6HGH+etITbNlw=;
+ b=UVUZUTvv81rOQ5kH9JaDqpxbip5MorJhGN0mRpgB6mu+Z8TRQ1Y1k95tfn696KXEMB3WcOg1XyaJ6aKet4qcY5chnqRpctM4KubmVZthBtb98W7xYlelGstIC3jE2jjY/ppDWzx/iaDo4bZie2UaziFczrTA6+fTBvLOWFMomzCYq+aAQR8ZY+kqBG3o0rLsJcqLuLKapZiezNY/vcyE7Ay43N0g7n61dr+dRi2YOOleWxoEbov64L4dnBVmyxMKZeRebxBBtoTdusMRzeBsrojM/7NfRdTZEkARBAtMOWNHu544NpeC1L7C8osHUwFCKeILIXb0pF48hlWv0lhyOg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from DU0PR02MB7899.eurprd02.prod.outlook.com (2603:10a6:10:347::11)
+ by AM9PR02MB6897.eurprd02.prod.outlook.com (2603:10a6:20b:267::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.20; Fri, 22 Sep
+ 2023 05:53:33 +0000
+Received: from DU0PR02MB7899.eurprd02.prod.outlook.com
+ ([fe80::b753:178a:394e:af8e]) by DU0PR02MB7899.eurprd02.prod.outlook.com
+ ([fe80::b753:178a:394e:af8e%6]) with mapi id 15.20.6792.026; Fri, 22 Sep 2023
+ 05:53:32 +0000
+Date:   Fri, 22 Sep 2023 06:53:30 +0100
+From:   Cameron Williams <cang1@live.co.uk>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     bhelgaas@google.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        sudipm.mukherjee@gmail.com, gregkh@linuxfoundation.org
+Subject: Re: [PATCH 1/4] PCI: Add device IDs for Brainboxes/Intashield
+ PX/UC/UP cards
+Message-ID: <DU0PR02MB78996ED81C85C7FE7E722128C4FFA@DU0PR02MB7899.eurprd02.prod.outlook.com>
+References: <DU0PR02MB789950E64D808DB57E9D7312C4F8A@DU0PR02MB7899.eurprd02.prod.outlook.com>
+ <20230921215822.GA347672@bhelgaas>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87zg1fees3.fsf@jogness.linutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20230921215822.GA347672@bhelgaas>
+X-TMN:  [Doo0mZk9ZsRK5GjYpaHwEEJxBjpQBcv+]
+X-ClientProxiedBy: DUZPR01CA0144.eurprd01.prod.exchangelabs.com
+ (2603:10a6:10:4bd::26) To DU0PR02MB7899.eurprd02.prod.outlook.com
+ (2603:10a6:10:347::11)
+X-Microsoft-Original-Message-ID: <ZQ0r2qrPdc2iJAjI@CHIHIRO>
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DU0PR02MB7899:EE_|AM9PR02MB6897:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8bc889c5-ec2e-4cf3-6b6e-08dbbb3040e3
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YMdGxvAZFoHbke5oK253CTyb5tHwZouIuRFOpzBa9yXCXJ+J2YJrHCkLqjfybd+ROixyRguHBAxcr3noOBiNM0Tf6I1QCicWUyp8M2CpyuzpriQ9ey0K9s5mRx26Yu7DGLphhjcsQmaPQvFVJ6dto5iFL0S2Z6SlbZWZ0/GR/4610ZOGth0bxkwyDUiSyEtLSKlxRhkU5/xlkEKJw27rfMkjU73WOTGP+Ts7sSmqKwEa7dNP+TZWQy3swvAc3bjAbMVoPF+6eo/HC2VyA0XdfgTSw9MEt37+GGqkPSMU6DXblqfxYcoP9YttmHeKlLNg4zu9SMlEdwH1K8t1mgjaNnxEBk/l3uTLIQC8B4l7tTO+3pKRyb8DrCbjvZWGwD8lq9ehjN4lZMx4lYSG28OYVMDbdelk/e/gntwmIqMkQ1u2u/YnLJaKhHRUHXVnNiQfoMi27hiW40Lqv7mYJc3eZYMoG8elqO5tR1KuyZ4C1ZYZXgZurqo/ZGN98NdOWvOba+hbUMRoP+WSw5ZykOOhMd8TOQZlmN+HNMZwwQdv5RImF4JC7KDQieCrJTNnLdcB
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WJenwNAoYqfu8R7oZkvjsthzzahwiGGtyVYRQoY3zTbNlatk8TypAa1AMWt8?=
+ =?us-ascii?Q?Oz1MOtumW7TN9/uqhh55OTkut1GqPuDwSXg/e0qlbXqxz3Ni5OauiV8g9aKX?=
+ =?us-ascii?Q?U8n8oTLDC3UwRESdsLVKROx5VD2mGPzhf9yQ0KQ5MpSQnQE2bjJdqfm7+sNG?=
+ =?us-ascii?Q?7pVHfrhkKiao0gNJtTiqiUZh03E/R/BeDDgsklETVtUCiQzkhdNkqo42yS4r?=
+ =?us-ascii?Q?aXM52im8Z/Xsy+BsxuiP7QxboM1zKelpMJoEpQJiQmYddJZzILIse8d2FhFE?=
+ =?us-ascii?Q?qXNKUqy8//NCjS7B+FCH1m9lEbFWKSQyLjNGPwzua2OnK8JDhp0H7n8SCPrQ?=
+ =?us-ascii?Q?q0zT3/i6lCxN5YpxwMnNgaKiM6sIoW8zT6lgX5V7q5nn9SeHTIJfWzJpZasj?=
+ =?us-ascii?Q?wFgR3y3cMhVPq0FsciWTAyr06Qg2J3Kc6geUv/GTt+7M9PedbDwjEMgDhPmk?=
+ =?us-ascii?Q?jBjxxsC9JVggD/lo/Bh53fVv61IgS5lasyeLixrluHpZy/hS8PZ3m794u8Er?=
+ =?us-ascii?Q?OIy7l4CrkcejAP/TvJJ/FU15MZdjFvXv8isz34jzi0eRQ3hj3qApZWurS7KN?=
+ =?us-ascii?Q?P+ZbMglqt986NNhEFFrKn/McXH32YMas5R1sUclS7OOz8deG7K10ydLNLXtm?=
+ =?us-ascii?Q?+8AfQwqNx8RqULr2kdIQbozefvAU2HeD1TQG3ejNaw7XD0/XozUEkI7qvXgI?=
+ =?us-ascii?Q?XhGuOsXlFiMV129F1K5rkPNn36MhRNfNn+N08ncmUafVR3tvVcukP4lxkxUp?=
+ =?us-ascii?Q?5F6l31XOxmhi0vkmaHaTPJ8fkuPmLJ/AX8ojBVZMsyMNBG/ik0OF0ugcbfbU?=
+ =?us-ascii?Q?GOc1+2TEGo25/WBJh3y6ULIoRvGiBJdlxpzf11PdicU6sB9qRv4lnUQS9Bf4?=
+ =?us-ascii?Q?4rS32HIZ/dQhwHhYS+ZrAsYO1ay3pIwD4XrOFSCWxDIus8J02THA/GCPQsiw?=
+ =?us-ascii?Q?PsVGdr6Fh8Oc1D5G20WAGwVlEPM2kUxgvmeec44VbS8L0R9+ABBSWDXaQmex?=
+ =?us-ascii?Q?T83CExt2yUDSRpmHSR3ar8pNyk/IcMXL/NdUvvP5h39Oxeo3orKlroK0Vvjt?=
+ =?us-ascii?Q?y+0G9ywhKFiiwAGq0/tdbGks+2aBliwOBVO1/jj8paFVwo1+zpWvV9fD0zzX?=
+ =?us-ascii?Q?BTo14MFXaoQMf101d2TO7zW9LESiXSHPowZzztoVOtSygT2NpAhIfL/U4D3M?=
+ =?us-ascii?Q?cTYHns4eTkRo5z9wWGmniU+b2f7h/FbqjPxVBw=3D=3D?=
+X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-ab7de.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8bc889c5-ec2e-4cf3-6b6e-08dbbb3040e3
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR02MB7899.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2023 05:53:32.8978
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR02MB6897
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Sep 21, 2023 at 05:24:04PM +0206, John Ogness wrote:
-> On 2023-09-21, Lukas Wunner <lukas@wunner.de> wrote:
-> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> > index 7bdc21d5e13b..ca26a8aef2cb 100644
-> > --- a/drivers/tty/serial/serial_core.c
-> > +++ b/drivers/tty/serial/serial_core.c
-> > @@ -1404,12 +1404,18 @@ static void uart_set_rs485_termination(struct uart_port *port,
-> >  static int uart_rs485_config(struct uart_port *port)
-> >  {
-> >  	struct serial_rs485 *rs485 = &port->rs485;
-> > +	unsigned long flags;
-> >  	int ret;
-> >  
-> > +	if (!(rs485->flags & SER_RS485_ENABLED))
-> > +		return 0;
-> > +
-> >  	uart_sanitize_serial_rs485(port, rs485);
-> >  	uart_set_rs485_termination(port, rs485);
-> >  
-> > +	spin_lock_irqsave(&port->lock, flags);
-> >  	ret = port->rs485_config(port, NULL, rs485);
-> > +	spin_unlock_irqrestore(&port->lock, flags);
-> >  	if (ret)
-> >  		memset(rs485, 0, sizeof(*rs485));
+On Thu, Sep 21, 2023 at 04:58:22PM -0500, Bjorn Helgaas wrote:
+> On Thu, Sep 21, 2023 at 10:09:16PM +0100, Cameron Williams wrote:
+> > Add device IDs for PCI/PCIe serial cards manufactured by
+> > Brainboxes (IS/IX/UC/UP/PX).
+> > Apologies if this file isn't strictly for your tree. All trees
+> > I am sending this patch series to use these PCI IDs, I was unsure
+> > if this was the correct way to go about it, and better safe than
+> > sorry. Thank you for understanding and please disregard if
+> > its not required.
 > 
-> Is there some kind of guarantee that 2 CPUs cannot go into
-> uart_rs485_config() simultaneously? Otherwise it seems dangerous to be
-> using and clearing @port->rs485 outside of the spin_lock.
-
-uart_rs485_config() is only called on probe and resume.
-I don't quite see how 2 CPUs can probe or resume the same UART
-simultaneously?
-
-Granted, it *is* possible to access or modify port->rs485 from
-user space through uart_{get,set}_rs485_config() in parallel to
-uart_resume_port(), but as Ilpo has correctly stated, that's
-serialized using port->mutex.
-
-To provide some background information:
-
-The majority of products *hardwire* the UART port to the RS485
-transceiver and thus the UART should be switched to RS485 mode
-on probe (through a "linux,rs485-enabled-at-boot-time" devicetree
-property).  User space generally has no business fiddling with
-RS485 properties in those cases, save for enabling/disabling
-termination etc.
-
-A minority of products has serial ports which can be switched
-between RS232 and RS485 mode.  For those products, user space
-may indeed have the need to enable/disable RS485 at runtime.
-The Siemens IOT2040 is a case in point:
-
-https://assets.new.siemens.com/siemens/assets/api/uuid:7b2c5580-7436-4081-9ae6-7c4eba29ddd1/version:1562856379/simaticiot2040.pdf
-
-Thanks,
-
-Lukas
+> From the top of the file:
+> 
+>  *      Do not add new entries to this file unless the definitions
+>  *      are shared between multiple drivers.
+> 
+> I can't tell whether that applies here since I haven't seen the other
+> patches.  If they're only used in one file, you can add the #define to
+> that file or use the bare hex values.  This reduces merge conflicts in
+> pci_ids.h when backporting things.
+>
+In that case, please disregard this patch series. The IDs are used in
+different drivers but exclusively, not shared. I will resubmit this patch
+with raw IDs.
+> Also it looks like there's a mix of tab vs space indentation below.
+> They should all be tabs before the device ID and it looks like a
+> single space before the comment.
+> 
+> > +#define PCI_DEVICE_ID_INTASHIELD_UC246	0x0aa1 /* Revision 2*/
+> > +#define PCI_DEVICE_ID_INTASHIELD_UC246R3	0x0aa2	/* Revision 3 */
+> 
+> Comment indentation error.
+> 
+> > +#define PCI_DEVICE_ID_INTASHIELD_PX803R3	0x401e /* Revision 3 */
+> > +#define PCI_DEVICE_ID_INTASHIELD_PX475LPT   0x401f /* LPT port */
+> 
+> Indentation error.
+> 
