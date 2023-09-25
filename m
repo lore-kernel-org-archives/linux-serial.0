@@ -2,83 +2,74 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C29CE7A95
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Sep 2023 11:51:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CDECE7A81
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Sep 2023 11:55:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230379AbjIYLv7 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 25 Sep 2023 07:51:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49058 "EHLO
+        id S229747AbjIYLze (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 25 Sep 2023 07:55:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230435AbjIYLv7 (ORCPT
+        with ESMTP id S229559AbjIYLze (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 25 Sep 2023 07:51:59 -0400
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com [209.85.219.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3252E8;
-        Mon, 25 Sep 2023 04:51:51 -0700 (PDT)
-Received: by mail-yb1-f172.google.com with SMTP id 3f1490d57ef6-d849df4f1ffso7244514276.0;
-        Mon, 25 Sep 2023 04:51:51 -0700 (PDT)
+        Mon, 25 Sep 2023 07:55:34 -0400
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1267CCF
+        for <linux-serial@vger.kernel.org>; Mon, 25 Sep 2023 04:55:27 -0700 (PDT)
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-3adbcfd059aso14684758b6e.0
+        for <linux-serial@vger.kernel.org>; Mon, 25 Sep 2023 04:55:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695642711; x=1696247511;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=fbGjQ4X7/uITZ81FT1dF6rZOUZ4OOwjhyRuCcUqlCUY=;
-        b=dbpnGAGrhQJfFnsuKhraMDrmWFvUdybhLLsvnhFmrvh2lhdl5pQ03pDWnEgNwjuMsS
-         eLjlMvxRcJDFmpn0OZAmz0nF1Miw2E5gRo7hcr/IC9q5uJ1yjMe9fL70j4VgzpV864dH
-         zFOteab3i5rHPnMbu8hfD2BjwwvUsG2dVGmmbnwRkb2l7/JakE0wouE9/i1UCGlPuLDb
-         99eP1hyGwuZiqdM3gzAGBNDQHh5VHobo944YZqjxPTjtIRDI90oWhY+ByS9CpnCi5zRv
-         z1fzJBOtEkHbcBvLCPhShiDv6Slekp0b4fdDpH+Dl7IN8u54C4de31mZXuAlpGIUL2Dw
-         f2ng==
-X-Gm-Message-State: AOJu0Yx1G8srQ7iTWKvDdZ0dnIVwjTV4pV9ZUqwlyA/cCy+nGLNnio2f
-        gd2uiMlx1tZQcQw4hD2SXXevmpmFkqhjrA==
-X-Google-Smtp-Source: AGHT+IEMUEbQTuY6uLEArgpqWzlZtHJUaIxWqsBqfse7wuOX/YSdsWcbb9APNLHDsOUekiJEoEq6hw==
-X-Received: by 2002:a25:ac97:0:b0:d89:47d6:b4f9 with SMTP id x23-20020a25ac97000000b00d8947d6b4f9mr333157ybi.23.1695642710942;
-        Mon, 25 Sep 2023 04:51:50 -0700 (PDT)
-Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com. [209.85.128.182])
-        by smtp.gmail.com with ESMTPSA id p10-20020a259e8a000000b00d677aec54ffsm2048499ybq.60.2023.09.25.04.51.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Sep 2023 04:51:50 -0700 (PDT)
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-59f6441215dso30304137b3.2;
-        Mon, 25 Sep 2023 04:51:50 -0700 (PDT)
-X-Received: by 2002:a81:6d04:0:b0:576:7dfc:e73e with SMTP id
- i4-20020a816d04000000b005767dfce73emr6627907ywc.32.1695642709821; Mon, 25 Sep
- 2023 04:51:49 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1695642926; x=1696247726;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=TJysYUBTudzCJaC5ycCUZJm2e0YF/I5kcWtF15e4Fdc=;
+        b=Kkx1BcXaDA+03PupinCNZ4KZA+IKOYl1ZP45b8K+pQTeyw74eCoR1AaE7anTF2h4F7
+         k3ayMDMT2X1maR9L/MEH55f7UMKKvARegDY14iC8Ji5ewi0t2LGjHytMXv3NMr3dpLW2
+         83sy/S2EvEyNzMGKxGvpXwx3jjNrWfQtC3xWKa001uOax4leeE02oD0YC8FZBwLmllSI
+         uX6MmXNiecakqjT6mODzvw5h3FVihOVSG8rAo75mYfKFFzcegYCw6hRAElS/WWaM4n8p
+         kL1QoQc4zubmuS3zw2YAF5t5f0MN7pA108D+KToY2V9f4BZ8OU+1M0ypcY7KBcWLhWP0
+         10gg==
+X-Gm-Message-State: AOJu0YzLqxlrouVCP2NQDoa+Bq1GRjfqh30QAPXuIOGS5iJAN8nMDIc5
+        tQklMfXgj8XQzkFZ3StN2ddyB5o+wXomnzw7iHQb5PpbjdpI
+X-Google-Smtp-Source: AGHT+IFAcAn45kItchAUgSWnxHagzXzt3p5LJ66zKO8Mh4B2rhrC/tnR+O9EXoGAIhW/7FdiZUGHPECMYUufV71m7IQn1sjj2jDB
 MIME-Version: 1.0
-References: <20230922063642.4120-1-wsa+renesas@sang-engineering.com> <20230922063642.4120-2-wsa+renesas@sang-engineering.com>
-In-Reply-To: <20230922063642.4120-2-wsa+renesas@sang-engineering.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 25 Sep 2023 13:51:37 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUErS2DB+50YRRHGRv1a_LFnA1Ar6Y8bJogUqCxC16n8w@mail.gmail.com>
-Message-ID: <CAMuHMdUErS2DB+50YRRHGRv1a_LFnA1Ar6Y8bJogUqCxC16n8w@mail.gmail.com>
-Subject: Re: [PATCH 1/2] serial: core: remove cruft from uapi header
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     linux-renesas-soc@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+X-Received: by 2002:a05:6808:2199:b0:3ae:c95:ad2c with SMTP id
+ be25-20020a056808219900b003ae0c95ad2cmr3860207oib.0.1695642926434; Mon, 25
+ Sep 2023 04:55:26 -0700 (PDT)
+Date:   Mon, 25 Sep 2023 04:55:26 -0700
+In-Reply-To: <00000000000035aab005ec690a00@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004bd00c06062da279@google.com>
+Subject: Re: [syzbot] [serial?] KASAN: use-after-free Read in gsm_cleanup_mux
+From:   syzbot <syzbot+893c55305230e719a203@syzkaller.appspotmail.com>
+To:     daniel.starke@siemens.com, gregkh@linuxfoundation.org,
+        hdanton@sina.com, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Sep 22, 2023 at 10:48 AM Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
-> Remove the GPL boilerplate since we have a valid SPDX entry. Also,
-> remove the outdated filename from the comment.
->
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+syzbot has bisected this issue to:
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+commit 01aecd917114577c423f07cec0d186ad007d76fc
+Author: Daniel Starke <daniel.starke@siemens.com>
+Date:   Fri Jul 1 06:16:45 2022 +0000
 
-Gr{oetje,eeting}s,
+    tty: n_gsm: fix tty registration before control channel open
 
-                        Geert
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10d431ea680000
+start commit:   a4412fdd49dc error-injection: Add prompt for function erro..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=12d431ea680000
+console output: https://syzkaller.appspot.com/x/log.txt?x=14d431ea680000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cc4b2e0a8e8a8366
+dashboard link: https://syzkaller.appspot.com/bug?extid=893c55305230e719a203
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12b1ca83880000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1023c5e3880000
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Reported-by: syzbot+893c55305230e719a203@syzkaller.appspotmail.com
+Fixes: 01aecd917114 ("tty: n_gsm: fix tty registration before control channel open")
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
