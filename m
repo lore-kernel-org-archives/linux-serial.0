@@ -2,74 +2,172 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CDECE7A81
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Sep 2023 11:55:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC6A8CE7A94
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Sep 2023 13:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229747AbjIYLze (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 25 Sep 2023 07:55:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54274 "EHLO
+        id S229595AbjIYNDc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 25 Sep 2023 09:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbjIYLze (ORCPT
+        with ESMTP id S229450AbjIYNDb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 25 Sep 2023 07:55:34 -0400
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1267CCF
-        for <linux-serial@vger.kernel.org>; Mon, 25 Sep 2023 04:55:27 -0700 (PDT)
-Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-3adbcfd059aso14684758b6e.0
-        for <linux-serial@vger.kernel.org>; Mon, 25 Sep 2023 04:55:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695642926; x=1696247726;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=TJysYUBTudzCJaC5ycCUZJm2e0YF/I5kcWtF15e4Fdc=;
-        b=Kkx1BcXaDA+03PupinCNZ4KZA+IKOYl1ZP45b8K+pQTeyw74eCoR1AaE7anTF2h4F7
-         k3ayMDMT2X1maR9L/MEH55f7UMKKvARegDY14iC8Ji5ewi0t2LGjHytMXv3NMr3dpLW2
-         83sy/S2EvEyNzMGKxGvpXwx3jjNrWfQtC3xWKa001uOax4leeE02oD0YC8FZBwLmllSI
-         uX6MmXNiecakqjT6mODzvw5h3FVihOVSG8rAo75mYfKFFzcegYCw6hRAElS/WWaM4n8p
-         kL1QoQc4zubmuS3zw2YAF5t5f0MN7pA108D+KToY2V9f4BZ8OU+1M0ypcY7KBcWLhWP0
-         10gg==
-X-Gm-Message-State: AOJu0YzLqxlrouVCP2NQDoa+Bq1GRjfqh30QAPXuIOGS5iJAN8nMDIc5
-        tQklMfXgj8XQzkFZ3StN2ddyB5o+wXomnzw7iHQb5PpbjdpI
-X-Google-Smtp-Source: AGHT+IFAcAn45kItchAUgSWnxHagzXzt3p5LJ66zKO8Mh4B2rhrC/tnR+O9EXoGAIhW/7FdiZUGHPECMYUufV71m7IQn1sjj2jDB
+        Mon, 25 Sep 2023 09:03:31 -0400
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB239F;
+        Mon, 25 Sep 2023 06:03:23 -0700 (PDT)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 7E11CE000E;
+        Mon, 25 Sep 2023 13:03:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1695647002;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rTHQHG6X4jp4I4sSqhlYQOZSd9VR60SbfX/6KiSXcQc=;
+        b=cPr5PgddZAU3NimVKrbpIxS5r043+LHtbKBOUFuwWiyIhUNqpA/D/cIcuGXgViv1bqG5aw
+        NsqN9iSF7Uvoq68FncBaq253bY6S+1MMYPKZcV1BrImfxgfJVa/LJ/tuoWJha4XB3E75Sc
+        aKjHf6aL4qqM7B3vPhDDvy7UpsHmoRgk/VGkJ1n/lcvcJmfWr9WVAdBl1iKT2yWEtA1bsK
+        Ek9knigV3HVJ9shULTpL3/y8G4ZyNLNuEFuUIF7PE65IXSHd2GwzQPujrQf9PvMcGr3EoN
+        UwWtahEw2IurMq2PLC27r4CavaTmH3OTTuLQpFF/3JDi8l78KdLpf9Uo1LeZ6g==
+Message-ID: <0ab0dc61-aa9b-1f3f-f889-9c6e10dc62f7@bootlin.com>
+Date:   Mon, 25 Sep 2023 15:03:20 +0200
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:2199:b0:3ae:c95:ad2c with SMTP id
- be25-20020a056808219900b003ae0c95ad2cmr3860207oib.0.1695642926434; Mon, 25
- Sep 2023 04:55:26 -0700 (PDT)
-Date:   Mon, 25 Sep 2023 04:55:26 -0700
-In-Reply-To: <00000000000035aab005ec690a00@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004bd00c06062da279@google.com>
-Subject: Re: [syzbot] [serial?] KASAN: use-after-free Read in gsm_cleanup_mux
-From:   syzbot <syzbot+893c55305230e719a203@syzkaller.appspotmail.com>
-To:     daniel.starke@siemens.com, gregkh@linuxfoundation.org,
-        hdanton@sina.com, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+Subject: Re: serial: 8250_omap: suspend issue with console_suspend disabled
+Content-Language: en-US
+From:   Thomas Richard <thomas.richard@bootlin.com>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     linux-pm@vger.kernel.org, linux-serial@vger.kernel.org,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Kumar Udit <u-kumar1@ti.com>, Dhruva Gole <d-gole@ti.com>
+References: <59b13c93-6637-3050-c145-31be0d6c12c9@bootlin.com>
+ <20230920053828.GD5282@atomide.com>
+ <332111c2-f3f5-3d7f-09ef-f3ebb3f48eb0@bootlin.com>
+In-Reply-To: <332111c2-f3f5-3d7f-09ef-f3ebb3f48eb0@bootlin.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-GND-Sasl: thomas.richard@bootlin.com
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-syzbot has bisected this issue to:
+On 9/21/23 09:58, Thomas Richard wrote:
+> On 9/20/23 07:38, Tony Lindgren wrote:
+>> Hi,
+>>
+>> * Thomas Richard <thomas.richard@bootlin.com> [230915 09:57]:
+>>> The regression was introduced in commit 20a41a62618d "serial: 8250_omap:
+>>> Use force_suspend and resume for system suspend"
+>> ...
+>>
+>>> --- a/drivers/tty/serial/8250/8250_omap.c
+>>> +++ b/drivers/tty/serial/8250/8250_omap.c
+>>> @@ -1630,7 +1630,7 @@ static int omap8250_suspend(struct device *dev)
+>>>         err = pm_runtime_force_suspend(dev);
+>>>         flush_work(&priv->qos_work);
+>>>
+>>> -       return err;
+>>> +       return 0;
+>>>  }
+>>
+>> Maybe we can now just simplify things a bit here with the patch below.
+>> Care to give it a try, it's compile tested only so far.
+>>
+> 
+> I tested it, it works for me.
 
-commit 01aecd917114577c423f07cec0d186ad007d76fc
-Author: Daniel Starke <daniel.starke@siemens.com>
-Date:   Fri Jul 1 06:16:45 2022 +0000
+Tony,
 
-    tty: n_gsm: fix tty registration before control channel open
+As your proposal works well, do you plan to send a patch ?
+Or would you prefer me to send it ?
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10d431ea680000
-start commit:   a4412fdd49dc error-injection: Add prompt for function erro..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=12d431ea680000
-console output: https://syzkaller.appspot.com/x/log.txt?x=14d431ea680000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=cc4b2e0a8e8a8366
-dashboard link: https://syzkaller.appspot.com/bug?extid=893c55305230e719a203
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12b1ca83880000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1023c5e3880000
+Regards,
 
-Reported-by: syzbot+893c55305230e719a203@syzkaller.appspotmail.com
-Fixes: 01aecd917114 ("tty: n_gsm: fix tty registration before control channel open")
+Thomas
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> 
+>>> Once the omap8250_suspend doesn't return an error, the suspend sequence
+>>> can continue, but I get an other issue.
+>>> This issue is not related to commit 20a41a62618d, it has already been
+>>> present.
+>>> The power domain of the console is powered-off, so no more messages are
+>>> printed, and the SoC is stucked.
+>>> As the uart port is used as console, we don't want to power-off it.
+>>> My workaround is to set the corresponding power domain to
+>>> GENPD_FLAG_ALWAYS_ON, so the uart port is not powered-off.
+>>
+>> The runtime PM usage count should keep the related power domain on though,
+>> sounds like this issue somewhere else if the power domains get force
+>> suspended with runtime PM usage count?
+>>
+>> Regards,
+>>
+>> Tony
+>>
+>> 8< ------------------------------
+>> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+>> --- a/drivers/tty/serial/8250/8250_omap.c
+>> +++ b/drivers/tty/serial/8250/8250_omap.c
+>> @@ -1617,7 +1617,7 @@ static int omap8250_suspend(struct device *dev)
+>>  {
+>>  	struct omap8250_priv *priv = dev_get_drvdata(dev);
+>>  	struct uart_8250_port *up = serial8250_get_port(priv->line);
+>> -	int err;
+>> +	int err = 0;
+>>  
+>>  	serial8250_suspend_port(priv->line);
+>>  
+>> @@ -1627,7 +1627,8 @@ static int omap8250_suspend(struct device *dev)
+>>  	if (!device_may_wakeup(dev))
+>>  		priv->wer = 0;
+>>  	serial_out(up, UART_OMAP_WER, priv->wer);
+>> -	err = pm_runtime_force_suspend(dev);
+>> +	if (uart_console(&up->port) && console_suspend_enabled)
+>> +		err = pm_runtime_force_suspend(dev);
+>>  	flush_work(&priv->qos_work);
+>>  
+>>  	return err;
+>> @@ -1636,11 +1637,15 @@ static int omap8250_suspend(struct device *dev)
+>>  static int omap8250_resume(struct device *dev)
+>>  {
+>>  	struct omap8250_priv *priv = dev_get_drvdata(dev);
+>> +	struct uart_8250_port *up = serial8250_get_port(priv->line);
+>>  	int err;
+>>  
+>> -	err = pm_runtime_force_resume(dev);
+>> -	if (err)
+>> -		return err;
+>> +	if (uart_console(&up->port) && console_suspend_enabled) {
+>> +		err = pm_runtime_force_resume(dev);
+>> +		if (err)
+>> +			return err;
+>> +	}
+>> +
+>>  	serial8250_resume_port(priv->line);
+>>  	/* Paired with pm_runtime_resume_and_get() in omap8250_suspend() */
+>>  	pm_runtime_mark_last_busy(dev);
+>> @@ -1717,16 +1722,6 @@ static int omap8250_runtime_suspend(struct device *dev)
+>>  
+>>  	if (priv->line >= 0)
+>>  		up = serial8250_get_port(priv->line);
+>> -	/*
+>> -	 * When using 'no_console_suspend', the console UART must not be
+>> -	 * suspended. Since driver suspend is managed by runtime suspend,
+>> -	 * preventing runtime suspend (by returning error) will keep device
+>> -	 * active during suspend.
+>> -	 */
+>> -	if (priv->is_suspending && !console_suspend_enabled) {
+>> -		if (up && uart_console(&up->port))
+>> -			return -EBUSY;
+>> -	}
+>>  
+>>  	if (priv->habit & UART_ERRATA_CLOCK_DISABLE) {
+>>  		int ret;
+> 
+> 
+-- 
+Thomas Richard, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
