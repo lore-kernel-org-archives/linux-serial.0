@@ -2,59 +2,59 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B1ECCE7AA4
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Sep 2023 16:48:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A4AACE7AB3
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Sep 2023 17:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231343AbjIYQsL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 25 Sep 2023 12:48:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43058 "EHLO
+        id S231996AbjIYR5R (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 25 Sep 2023 13:57:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjIYQsL (ORCPT
+        with ESMTP id S232130AbjIYR5Q (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 25 Sep 2023 12:48:11 -0400
+        Mon, 25 Sep 2023 13:57:16 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077199F;
-        Mon, 25 Sep 2023 09:48:05 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56A93C433C7;
-        Mon, 25 Sep 2023 16:48:03 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6979127;
+        Mon, 25 Sep 2023 10:57:09 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 530BDC433C7;
+        Mon, 25 Sep 2023 17:57:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1695660484;
-        bh=wBWKMKBUI+Tl4EZBh+b126NH8pUhWxb26K1nSRFw1oE=;
+        s=k20201202; t=1695664629;
+        bh=gu84MV14kgINMupwSI+2Lf8n14Xc8CuSlYzvB+lIaAE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WQfuy/a9Wj3IAzwDSQphRJXNp/8LoT0aM+9+2BvxMeDI3VFeJVXb9caEp9yT5mGzW
-         ZfY3HDy02lWkqJ1YEvXK9q43eQEWe/kQUhdZayjNZ/tzKfjEfL8c2wGd4CEtykXmFF
-         d+JveidUWQwTRA0Sz/dKNCDHD9xyuTzjJd0X5SpR5J2Gxxot7BnRGitzuvcJINMnu4
-         sabH2oL7xQI560riOvpF2NyarmhevHczCu9SgyyJWfoAHDw2PY8ACnb6TGJt73NMUZ
-         kt7RRDeehS7g7EYmXIzt9APpUdcGWth4CU/hR0BdnSSmyay9pzS0h75wYrLhsuOFD4
-         I3VI14zla3IkA==
-Received: (nullmailer pid 1494825 invoked by uid 1000);
-        Mon, 25 Sep 2023 16:48:01 -0000
-Date:   Mon, 25 Sep 2023 11:48:01 -0500
+        b=jVAvGwCM5r7G+NXm8onSVszBufuhcKD8cs8bfswFndPYecBF24lr/gTcgW+2Z6PNV
+         r6LtkbA3mOh9Ef01ms8jTM17ZqeZYegZlvbS4xeJf8NDjP3JEXzLWTh1B1EfedUMij
+         T2/aGCpuZdQN5x5LMDfFNoCImF+o/gBE3BuFvdTpCGv2wGgrGgD5oVHImq+kOr1QsQ
+         OQiguAbHlmWisIkMXr7DOoii/ysXJq6bxTpKy3fTXX7pX1tb2++LDakF8M9Qr0OkxG
+         +V4hGcOIEkB4kqCE7MZ18iTcF9mkc3bgIg+JIflFnznrvPvTyzTKyG9tI4xtxMfcqf
+         wG1JAIH8o43vQ==
+Received: (nullmailer pid 1642965 invoked by uid 1000);
+        Mon, 25 Sep 2023 17:57:06 -0000
+Date:   Mon, 25 Sep 2023 12:57:06 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     Max Filippov <jcmvbkbc@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Conor Dooley <conor+dt@kernel.org>,
+Cc:     devicetree@vger.kernel.org,
         Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-kernel@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v3 2/5] dt-bindings: serial: document esp32-uart
-Message-ID: <169566048115.1494738.1252654770235463635.robh@kernel.org>
+Subject: Re: [PATCH v3 4/5] dt-bindings: serial: document esp32s3-acm
+Message-ID: <169566462582.1642906.11148927426124876101.robh@kernel.org>
 References: <20230925084825.4160708-1-jcmvbkbc@gmail.com>
- <20230925084825.4160708-3-jcmvbkbc@gmail.com>
+ <20230925084825.4160708-5-jcmvbkbc@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230925084825.4160708-3-jcmvbkbc@gmail.com>
+In-Reply-To: <20230925084825.4160708-5-jcmvbkbc@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
-On Mon, 25 Sep 2023 01:48:22 -0700, Max Filippov wrote:
-> Add documentation for the ESP32xx UART controllers.
+On Mon, 25 Sep 2023 01:48:24 -0700, Max Filippov wrote:
+> Add documentation for the ESP32S3 USB CDC-ACM controller.
 > 
 > Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 > 
@@ -63,14 +63,13 @@ On Mon, 25 Sep 2023 01:48:22 -0700, Max Filippov wrote:
 > - add a reference to serial.yaml
 > 
 > Changes v1->v2:
-> - drop '|' from description
-> - change 'compatible' property type to enum
-> - drop label from the example node
+> - fix description
+> - rename node in the example
 > - fix example indentation
 > 
->  .../bindings/serial/esp,esp32-uart.yaml       | 51 +++++++++++++++++++
->  1 file changed, 51 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml
+>  .../bindings/serial/esp,esp32-acm.yaml        | 42 +++++++++++++++++++
+>  1 file changed, 42 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
 > 
 
 Reviewed-by: Rob Herring <robh@kernel.org>
