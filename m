@@ -2,160 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6913E7E62A
-	for <linux-serial@archiver.kernel.org>; Tue, 26 Sep 2023 11:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5FAAE7E629
+	for <linux-serial@archiver.kernel.org>; Tue, 26 Sep 2023 11:49:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232070AbjIZLrV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 26 Sep 2023 07:47:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50114 "EHLO
+        id S234094AbjIZLto (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 26 Sep 2023 07:49:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233303AbjIZLrU (ORCPT
+        with ESMTP id S231289AbjIZLti (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 26 Sep 2023 07:47:20 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50BD10C
-        for <linux-serial@vger.kernel.org>; Tue, 26 Sep 2023 04:47:11 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id 2adb3069b0e04-5033918c09eso13712166e87.2
-        for <linux-serial@vger.kernel.org>; Tue, 26 Sep 2023 04:47:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1695728830; x=1696333630; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=LCp3DXpfVKfH2Y0o0M8mCid7ujeQPXx6UqfFbszv1i8=;
-        b=GFkmqM9lLJYapN4xBN0c7JH0ecC/aSpNEUDIAgH0wVZE/sOz9fL5dSc8mVtIEcOmUd
-         KF/3fQt921CGdVlWaw8FyZhfGdQzBNYlNjG/uvesG4Ewzg9I1AMKGE5u/XBrdjw8dlOw
-         NU9mK/8GxX5GZfK6E+K3Lk/odhHG9ZhG64kZCC3D4q7tqtaPxmJrxlRtwdEem6N0Nxfd
-         AWtevtsOlJlmU43ZXEy6KwYK86a9iYIGSF3/+/bd+9oTr8RLDOjoyJvxnJL1Zx1ufehH
-         xwcnQx5JGm0qOUBidz6Lg/yKqdwDMkolGZy0sd/DUfIVuhS14R+FVyL+bt+WFjIN7Q5C
-         IvAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695728830; x=1696333630;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=LCp3DXpfVKfH2Y0o0M8mCid7ujeQPXx6UqfFbszv1i8=;
-        b=BZGD221+g86h4Jfy4zYG4bHw+9z1p91AZpoIKeUC16M5CucAIC5X4ozmpA2Hu+vhoM
-         74C9opa0K1wMCTccqaUSBPtKAJmaiFAHQSNK1RJH+4ERfDzqOlEyXacX6o3Y+MILHjbd
-         48UwPlNRFb2fb/MpeP0ocAuu8iz1EFAtpFRI36AHA2Z7SMKtgHiEMWrK/rrZbt5tLzcO
-         wo/U/BTNxyRGifERFBW5MrE+x2nuAvTgXZbjqN4mJYXE6gWXK+emoes9HYBHKwgI7w1w
-         oHhJJ+rY+BvPnV7nUY1MvYHlqhmoqcwbib++xXOd+nlBcgECQhpycqOw86fyUNY3kbEb
-         ugjg==
-X-Gm-Message-State: AOJu0YwFWSiKV+qBvl2huUaRDgxvoCwNiyIdkoD1ngayGdPJq856tMNA
-        aLwbqaXPOTP0X11PVc4uau2vRw==
-X-Google-Smtp-Source: AGHT+IF+jbH7FWr6+cFqAnCyk/CUAIFVAZ8LgGPN4rOxnI4j0tUbuQS0WA4s9y3m/r3g5552xfmfnQ==
-X-Received: by 2002:a05:6512:110e:b0:4fd:d64f:c0a6 with SMTP id l14-20020a056512110e00b004fdd64fc0a6mr9175819lfg.48.1695728829802;
-        Tue, 26 Sep 2023 04:47:09 -0700 (PDT)
-Received: from [192.168.32.2] ([82.78.167.177])
-        by smtp.gmail.com with ESMTPSA id lo18-20020a170906fa1200b0099bd1a78ef5sm7641095ejb.74.2023.09.26.04.47.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Sep 2023 04:47:09 -0700 (PDT)
-Message-ID: <dfe64c7c-2f90-65a2-05fc-e96ec5113a60@tuxon.dev>
-Date:   Tue, 26 Sep 2023 14:47:06 +0300
+        Tue, 26 Sep 2023 07:49:38 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BCC9DE;
+        Tue, 26 Sep 2023 04:49:32 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EDFEC433C9;
+        Tue, 26 Sep 2023 11:49:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1695728971;
+        bh=BDIUttsZQQFkLvxRNL0OyVkQfC2FmRbuUcsXNdRp1pY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kW0wi9LEkIMVJnvXmXp+torrf3YvFpAzeV7qP8iLknnUYyG3mXazThOmML5lS+zg5
+         deyni9oM3UNTFP71+6qqIheiTpN2SKneXqjLO6TQ2vvn+eyLvzkEI953nC2qXEQt+I
+         dR+tZnHfXMfwDhD4DJ92hqFzCS7BoixKb8h7RHeQ=
+Date:   Tue, 26 Sep 2023 13:49:27 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Edward AD <twuufnxlz@gmail.com>
+Cc:     conor@kernel.org,
+        syzbot+8d2757d62d403b2d9275@syzkaller.appspotmail.com,
+        jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, guoren@kernel.org, alexghiti@rivosinc.com,
+        liushixin2@huawei.com, linux-riscv@lists.infradead.org
+Subject: Re: [PATCH] riscv: fix out of bounds in walk_stackframe
+Message-ID: <2023092617-polish-modify-3acb@gregkh>
+References: <0000000000000170df0605ccf91a@google.com>
+ <20230926114343.1061739-2-twuufnxlz@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH 09/37] clk: renesas: rzg2l: fix computation formula
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        ulf.hansson@linaro.org, linus.walleij@linaro.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
-        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
-        nfraprado@collabora.com, rafal@milecki.pl,
-        wsa+renesas@sang-engineering.com,
-        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
- <20230912045157.177966-10-claudiu.beznea.uj@bp.renesas.com>
- <CAMuHMdVNzgHqURohOgpFEaGn+6+rQTqsDomoS1u_-jn=GgmHXw@mail.gmail.com>
-From:   claudiu beznea <claudiu.beznea@tuxon.dev>
-In-Reply-To: <CAMuHMdVNzgHqURohOgpFEaGn+6+rQTqsDomoS1u_-jn=GgmHXw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230926114343.1061739-2-twuufnxlz@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi, Geert,
+On Tue, Sep 26, 2023 at 07:43:44PM +0800, Edward AD wrote:
+> Increase the check on the frame after assigning its value. This is to prevent 
+> frame access from crossing boundaries.
+> 
+> Closes: https://lore.kernel.org/all/20230926105949.1025995-2-twuufnxlz@gmail.com/
+> Fixes: 5d8544e2d007 ("RISC-V: Generic library routines and assembly")
+> Reported-and-tested-by: syzbot+8d2757d62d403b2d9275@syzkaller.appspotmail.com
+> Link: https://lore.kernel.org/all/0000000000000170df0605ccf91a@google.com/T/
+> Signed-off-by: Edward AD <twuufnxlz@gmail.com>
+> ---
+>  arch/riscv/kernel/stacktrace.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/arch/riscv/kernel/stacktrace.c b/arch/riscv/kernel/stacktrace.c
+> index 64a9c093aef9..53bd18672329 100644
+> --- a/arch/riscv/kernel/stacktrace.c
+> +++ b/arch/riscv/kernel/stacktrace.c
+> @@ -54,6 +54,8 @@ void notrace walk_stackframe(struct task_struct *task, struct pt_regs *regs,
+>  			break;
+>  		/* Unwind stack frame */
+>  		frame = (struct stackframe *)fp - 1;
+> +		if (!virt_addr_valid(frame))
+> +			break;
+>  		sp = fp;
+>  		if (regs && (regs->epc == pc) && (frame->fp & 0x7)) {
+>  			fp = frame->ra;
+> -- 
+> 2.25.1
+> 
 
-On 14.09.2023 15:55, Geert Uytterhoeven wrote:
-> Hi Claudiu,
-> 
-> On Tue, Sep 12, 2023 at 6:52 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
->> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->>
->> According to hardware manual of RZ/G2L (r01uh0914ej0130-rzg2l-rzg2lc.pdf)
->> the computation formula for PLL rate is as follows:
->>
->> Fout = ((m + k/65536) * Fin) / (p * 2^s)
->>
->> and k has values in range [-32768, 32767]. Dividing k by 65536 with
->> integer variables leads all the time to zero. Thus we may have slight
->> differences b/w what has been set vs. what is displayed. Thus,
->> get rid of this and decompose the formula before dividing k by 65536.
->>
->> Fixes: ef3c613ccd68a ("clk: renesas: Add CPG core wrapper for RZ/G2L SoC")
->> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> 
-> Thanks for your patch!
-> 
->> --- a/drivers/clk/renesas/rzg2l-cpg.c
->> +++ b/drivers/clk/renesas/rzg2l-cpg.c
->> @@ -696,18 +696,22 @@ static unsigned long rzg2l_cpg_pll_clk_recalc_rate(struct clk_hw *hw,
->>         struct pll_clk *pll_clk = to_pll(hw);
->>         struct rzg2l_cpg_priv *priv = pll_clk->priv;
->>         unsigned int val1, val2;
->> -       unsigned int mult = 1;
->> -       unsigned int div = 1;
->> +       unsigned int div;
->> +       u64 rate;
->> +       s16 kdiv;
->>
->>         if (pll_clk->type != CLK_TYPE_SAM_PLL)
->>                 return parent_rate;
->>
->>         val1 = readl(priv->base + GET_REG_SAMPLL_CLK1(pll_clk->conf));
->>         val2 = readl(priv->base + GET_REG_SAMPLL_CLK2(pll_clk->conf));
->> -       mult = MDIV(val1) + KDIV(val1) / 65536;
->> +       kdiv = KDIV(val1);
->>         div = PDIV(val1) << SDIV(val2);
->>
->> -       return DIV_ROUND_CLOSEST_ULL((u64)parent_rate * mult, div);
->> +       rate = (u64)MDIV(val1) * parent_rate;
->> +       rate += ((long long)parent_rate * kdiv) / 65536;
-> 
-> As the division is a binary shift, you can use the mul_u64_u32_shr() helper,
-> and incorporate the sdiv shift at the same time:
-> 
->     rate += mul_u64_u32_shr(parent_rate, KDIV(val1), 16 + SDIV(val2));
-> 
-> You can save a multiplication by premultiplying mdiv by 65536:
-> 
->     rate = mul_u64_u32_shr(parent_rate, (MDIV(val1) << 16)) + KDIV(val1),
->                            16 + SDIV(val2));
+Hi,
 
-Looking again at this: KDIV (aka DIV_K) could have negative values thus
-mul_u64_u32_shr() cannot be used here.
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-> 
->> +
->> +       return DIV_ROUND_CLOSEST_ULL(rate, div);
-> 
-> return DIV_ROUND_CLOSEST_ULL(rate, PDIV(val1));
-> 
->>  }
->>
->>  static const struct clk_ops rzg2l_cpg_pll_ops = {
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- You have marked a patch with a "Fixes:" tag for a commit that is in an
+  older released kernel, yet you do not have a cc: stable line in the
+  signed-off-by area at all, which means that the patch will not be
+  applied to any older kernel releases.  To properly fix this, please
+  follow the documented rules in the
+  Documetnation/process/stable-kernel-rules.rst file for how to resolve
+  this.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
