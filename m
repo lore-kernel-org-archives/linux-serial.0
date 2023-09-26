@@ -2,148 +2,167 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC16E7D24D
-	for <linux-serial@archiver.kernel.org>; Tue, 26 Sep 2023 07:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F8DE7D270
+	for <linux-serial@archiver.kernel.org>; Tue, 26 Sep 2023 09:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229556AbjIZHvn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 26 Sep 2023 03:51:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38980 "EHLO
+        id S234294AbjIZJs7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 26 Sep 2023 05:48:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233816AbjIZHvm (ORCPT
+        with ESMTP id S234304AbjIZJs6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 26 Sep 2023 03:51:42 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21C0DC;
-        Tue, 26 Sep 2023 00:51:34 -0700 (PDT)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 2842A240008;
-        Tue, 26 Sep 2023 07:51:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1695714693;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7a5K1aAKuIj2iEvxprQZUE+LucC50eyHmU2MT85uylA=;
-        b=CLGB9apBwexIdVNECBBS9V0PnB4y8ocCvgQ4qFRIbu8UcFc7sir6TV0M3ws76qKGl/siSa
-        psuC7TAJwEoNrX55Q5evdslyP+wSjOssom4UVXPNEbANZQotVuc33ajteUO925Yfx9VIVk
-        LML9KPYSLVrKntr/wk5Vd0GHBbRMgz1RNiBb6ISY48qpuiNHLYRQf4W++QB/JsiT9r4w/8
-        9HNz95+c1GMD7CnFgYYsekmY/YKRbOSUqjrrOf5jcxY0vwSqvBn3rL3ofJBslsM4UZ8dYe
-        hP2B62LTdH+WfPXlXUDJ7xEB4BO/0NxdOBJucRQxpWkaTdNvehw022yAq0f5MQ==
-Message-ID: <652eb018-8e67-5f4b-8329-0f52159a27b1@bootlin.com>
-Date:   Tue, 26 Sep 2023 09:51:30 +0200
+        Tue, 26 Sep 2023 05:48:58 -0400
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035DBFC;
+        Tue, 26 Sep 2023 02:48:49 -0700 (PDT)
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-9b281a2aa94so462152666b.2;
+        Tue, 26 Sep 2023 02:48:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695721727; x=1696326527;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=n96H8BEZHqJircVrfwEM99T3b49LOKirf10WQBBYnrM=;
+        b=F8Z9OjlIUf9vqSk54w3yVovlTnKXJ/Ko1AWfNIx5O/t0REBvpVlDrAQ6GU7vzMOlKc
+         d6He7d2sOohrkvpuovZS+Kh8QQAGlUu5ChCNr4SHOqTu4Tp4XCs3JvpZ9ntqoCZs7ZIf
+         1X2mfN/yzYlE0V3/udC2MJAEkNO6iYD34qAlVV4d6VpIOOC+Q+kMqVTYKF7lXO2PzXcj
+         hPKOauPm6EvtZ0wK9t40av7lHSr5SIJJlMcKtzQm8ywW0YkC4LF8NbbJzGHe/sXA8HrO
+         FNFHMcCUqCi4ZA40SritB2ynksf02gRluStq3ovBcggqrpGAa1MRI6i9SxJgtef2O1Od
+         1dhA==
+X-Gm-Message-State: AOJu0YzMffiAE37VMFbsMc/J+pl6TrgMhL1P6KGoBxxp9WlxfhzUo0Dv
+        eo2HA8492FlgA4MuEEaEkIs=
+X-Google-Smtp-Source: AGHT+IHczDswiH3QvTch+yZ6TeZ45H2fRh8Rat7pFzVGVXNk0bO3uBoV9bUOd6eZnLySrgtQGaWN5g==
+X-Received: by 2002:a17:907:7789:b0:9a3:faf:7aaa with SMTP id ky9-20020a170907778900b009a30faf7aaamr7887313ejc.15.1695721727156;
+        Tue, 26 Sep 2023 02:48:47 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id o16-20020a17090608d000b009a16975ee5asm7487692eje.169.2023.09.26.02.48.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Sep 2023 02:48:46 -0700 (PDT)
+Message-ID: <dc5ac2cb-71b3-4946-a58b-2ec353bc40a4@kernel.org>
+Date:   Tue, 26 Sep 2023 11:48:45 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
-Subject: Re: [PATCH] serial: 8250_omap: Fix errors with no_console_suspend
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] tty: add new helper function tty_get_mget
 Content-Language: en-US
-To:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Udit Kumar <u-kumar1@ti.com>
-References: <20230926061319.15140-1-tony@atomide.com>
-From:   Thomas Richard <thomas.richard@bootlin.com>
-In-Reply-To: <20230926061319.15140-1-tony@atomide.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Florian Eckert <fe@dev.tdt.de>, Eckert.Florian@googlemail.com,
+        gregkh@linuxfoundation.org, pavel@ucw.cz, lee@kernel.org,
+        kabel@kernel.org, u.kleine-koenig@pengutronix.de
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-leds@vger.kernel.org
+References: <20230926093607.59536-1-fe@dev.tdt.de>
+ <20230926093607.59536-2-fe@dev.tdt.de>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20230926093607.59536-2-fe@dev.tdt.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-GND-Sasl: thomas.richard@bootlin.com
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Tony,
-
-Thanks for the fix.
-
-On 9/26/23 08:13, Tony Lindgren wrote:
-> We now get errors on system suspend if no_console_suspend is set as
-> reported by Thomas. The errors started with commit 20a41a62618d ("serial:
-> 8250_omap: Use force_suspend and resume for system suspend").
+On 26. 09. 23, 11:36, Florian Eckert wrote:
+> The struct 'tty_struct' has a callback to read the status flags of the tty
+> if the tty driver provides them. So fare, the data is transferred directly
+> to userspace with the function 'tty_tiocmget'. This function cannot be
+> used to evaluate the status line of the tty interface in the ledtrig-tty
+> trigger. To make this possible, a new function must be added that does
+> not immediately pass the data on to userspace.
 > 
-> Let's fix the issue by checking for console_suspend_enabled in the system
-> suspend and resume path.
+> The new function 'tty_get_mget' only returns the status register.
+> This information can then be processed further in the ledtrig-tty
+> trigger.
 > 
-> Note that with this fix the checks for console_suspend_enabled in
-> omap8250_runtime_suspend() become useless. We now keep runtime PM usage
-> count for an attached kernel console starting with commit bedb404e91bb
-> ("serial: 8250_port: Don't use power management for kernel console").
-> 
-> Fixes: 20a41a62618d ("serial: 8250_omap: Use force_suspend and resume for system suspend")
-> Cc: Udit Kumar <u-kumar1@ti.com>
-> Reported-by: Thomas Richard <thomas.richard@bootlin.com>
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-
-Tested-by: Thomas Richard <thomas.richard@bootlin.com>
-
+> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
 > ---
->  drivers/tty/serial/8250/8250_omap.c | 25 ++++++++++---------------
->  1 file changed, 10 insertions(+), 15 deletions(-)
+>   drivers/tty/tty_io.c | 29 +++++++++++++++++++++++------
+>   include/linux/tty.h  |  1 +
+>   2 files changed, 24 insertions(+), 6 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -1617,7 +1617,7 @@ static int omap8250_suspend(struct device *dev)
->  {
->  	struct omap8250_priv *priv = dev_get_drvdata(dev);
->  	struct uart_8250_port *up = serial8250_get_port(priv->line);
-> -	int err;
-> +	int err = 0;
->  
->  	serial8250_suspend_port(priv->line);
->  
-> @@ -1627,7 +1627,8 @@ static int omap8250_suspend(struct device *dev)
->  	if (!device_may_wakeup(dev))
->  		priv->wer = 0;
->  	serial_out(up, UART_OMAP_WER, priv->wer);
-> -	err = pm_runtime_force_suspend(dev);
-> +	if (uart_console(&up->port) && console_suspend_enabled)
-> +		err = pm_runtime_force_suspend(dev);
->  	flush_work(&priv->qos_work);
->  
->  	return err;
-> @@ -1636,11 +1637,15 @@ static int omap8250_suspend(struct device *dev)
->  static int omap8250_resume(struct device *dev)
->  {
->  	struct omap8250_priv *priv = dev_get_drvdata(dev);
-> +	struct uart_8250_port *up = serial8250_get_port(priv->line);
->  	int err;
->  
-> -	err = pm_runtime_force_resume(dev);
-> -	if (err)
-> -		return err;
-> +	if (uart_console(&up->port) && console_suspend_enabled) {
-> +		err = pm_runtime_force_resume(dev);
-> +		if (err)
-> +			return err;
-> +	}
+> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+> index 8a94e5a43c6d..8070ed0ce41f 100644
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+> @@ -2494,6 +2494,25 @@ static int send_break(struct tty_struct *tty, unsigned int duration)
+>   	return retval;
+>   }
+>   
+> +/**
+> + * tty_get_mget		-	get modem status
+
+Heh, the naming is funny. It apparently comes from tiocmget. But that 
+comes from:
+tty ioctl modem get (TIOCMGET)
+tty ioctl modem set (TIOCMSET)
+
+So you should name it like tty_get_modem() not get_mget().
+
+Also those extra spaces around "-" caused some issues in the generated 
+output and should be removed (everywhere).
+
+> + * @tty: tty device
+> + *
+> + * Obtain the modem status bits from the tty driver if the feature
+> + * is supported.
+> + *
+
+Superfluous empty line here.
+
+> + */
+> +int tty_get_mget(struct tty_struct *tty)
+> +{
+> +	int retval = -ENOTTY;
 > +
->  	serial8250_resume_port(priv->line);
->  	/* Paired with pm_runtime_resume_and_get() in omap8250_suspend() */
->  	pm_runtime_mark_last_busy(dev);
-> @@ -1717,16 +1722,6 @@ static int omap8250_runtime_suspend(struct device *dev)
->  
->  	if (priv->line >= 0)
->  		up = serial8250_get_port(priv->line);
-> -	/*
-> -	 * When using 'no_console_suspend', the console UART must not be
-> -	 * suspended. Since driver suspend is managed by runtime suspend,
-> -	 * preventing runtime suspend (by returning error) will keep device
-> -	 * active during suspend.
-> -	 */
-> -	if (priv->is_suspending && !console_suspend_enabled) {
-> -		if (up && uart_console(&up->port))
-> -			return -EBUSY;
-> -	}
->  
->  	if (priv->habit & UART_ERRATA_CLOCK_DISABLE) {
->  		int ret;
+> +	if (tty->ops->tiocmget)
+> +		retval = tty->ops->tiocmget(tty);
+> +
+> +	return retval;
+> +}
+> +EXPORT_SYMBOL_GPL(tty_get_mget);
+
+
+thanks,
 -- 
-Thomas Richard
+js
+suse labs
 
