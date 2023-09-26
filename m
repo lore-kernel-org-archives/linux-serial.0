@@ -2,507 +2,178 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69A18E7D271
-	for <linux-serial@archiver.kernel.org>; Tue, 26 Sep 2023 09:55:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CBCFE7D270
+	for <linux-serial@archiver.kernel.org>; Tue, 26 Sep 2023 09:56:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231199AbjIZJzN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 26 Sep 2023 05:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41572 "EHLO
+        id S232465AbjIZJ4R (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 26 Sep 2023 05:56:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbjIZJzM (ORCPT
+        with ESMTP id S232671AbjIZJ4K (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 26 Sep 2023 05:55:12 -0400
-X-Greylist: delayed 1123 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 26 Sep 2023 02:55:04 PDT
-Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566F497;
-        Tue, 26 Sep 2023 02:55:04 -0700 (PDT)
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <prvs=8647860101=fe@dev.tdt.de>)
-        id 1ql4UK-00A6Nq-0Z; Tue, 26 Sep 2023 11:36:16 +0200
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <fe@dev.tdt.de>)
-        id 1ql4UI-006Pcu-U4; Tue, 26 Sep 2023 11:36:14 +0200
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 86706240049;
-        Tue, 26 Sep 2023 11:36:14 +0200 (CEST)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id DB831240040;
-        Tue, 26 Sep 2023 11:36:13 +0200 (CEST)
-Received: from localhost.localdomain (unknown [10.2.3.40])
-        by mail.dev.tdt.de (Postfix) with ESMTPSA id 43AB832747;
-        Tue, 26 Sep 2023 11:36:13 +0200 (CEST)
-From:   Florian Eckert <fe@dev.tdt.de>
-To:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
-        kabel@kernel.org, u.kleine-koenig@pengutronix.de
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-leds@vger.kernel.org
-Subject: [PATCH 2/2] trigger: ledtrig-tty: add new line mode to triggers
-Date:   Tue, 26 Sep 2023 11:36:07 +0200
-Message-ID: <20230926093607.59536-3-fe@dev.tdt.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230926093607.59536-1-fe@dev.tdt.de>
-References: <20230926093607.59536-1-fe@dev.tdt.de>
+        Tue, 26 Sep 2023 05:56:10 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70461CCC
+        for <linux-serial@vger.kernel.org>; Tue, 26 Sep 2023 02:55:58 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id a640c23a62f3a-9ad8bf9bfabso1053418066b.3
+        for <linux-serial@vger.kernel.org>; Tue, 26 Sep 2023 02:55:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tuxon.dev; s=google; t=1695722156; x=1696326956; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=oCGAB9bjd2rRkobql917EBDyBbo8Xf1tmOkuieid9Qw=;
+        b=HFmsZ4RrW76dmgghgjnLmy/if7RGsBsH4gCiOAm04mIl6nM43bU4nQtLpo9Mipeio4
+         JUhdNIn4w3HgA3gLB+81owUI+uiPg/4oyDitaKB+k6BzOwxh8C6RoMsHT6RFdWJ/t5fa
+         kZkn3eT+bQKDuIZbyX+KdFGTZlx/r1PFcgLzEr1Wa9Gxr4hkCtQiDoaruQAnT9TdaoLw
+         Lk8iZytyVRi3Hc982kBcXwdfyLV5KKQ7qefdk6LDk/U0aXwxhIAfzfZc7PFdV29YdBRj
+         k6fRmlWHQ+eJ/xaWFtECSUf0Xd7QCXN5TOpRM4YTq/E0wPiTnPiEcvndPYLYKtNKLhqs
+         A6tg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695722156; x=1696326956;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=oCGAB9bjd2rRkobql917EBDyBbo8Xf1tmOkuieid9Qw=;
+        b=YA2kHMoA+712ZvJEN7S75RWUCyowq5a5rncoj49hH0Q+U7iy9HL7406ZhdxpkXEgkd
+         J4Cbf1VhrcK0+PlvrtI8fQIx4L4nV121/JEQkn9M1jCVtkh2Z2O1VG3b8lpaWkgQNnRL
+         VOMDhcMUUvU/OIMbm2a8RMjmZXpchZkBlvpPCt6hzGpyEpNEet9Ti19Pg+8U3ju/QErh
+         YwdvLaX6J9pNvKSzRt9Vf/a8SYFlRmGgNIzwkCJoWYMB+dDWv069pN4KsQRYRa1yHtSk
+         My4rhSNXMmuTnyFwMrqtuuXkgHo/Jx6DDca/i+tAd/gQChZJsV7tsfXSolAHShmKMn83
+         iSRw==
+X-Gm-Message-State: AOJu0YzVbNN74O3GaNS6eiA4yC5iEVFb9pPj/JymIQ5ZscenVKSm4+M8
+        5jlU4+kGnYX0wsNUKd9heiItRw==
+X-Google-Smtp-Source: AGHT+IEiQ8iJO3tEsrKT6DurQH2FvKo0uS+xJFcGLGiCr6SvtCfNXfJUyT6nkOwQSaE5M72oHauuhA==
+X-Received: by 2002:a17:906:3188:b0:9ae:5fdc:aee8 with SMTP id 8-20020a170906318800b009ae5fdcaee8mr8441103ejy.53.1695722156458;
+        Tue, 26 Sep 2023 02:55:56 -0700 (PDT)
+Received: from [192.168.32.2] ([82.78.167.177])
+        by smtp.gmail.com with ESMTPSA id j26-20020a170906831a00b00997d7aa59fasm7698269ejx.14.2023.09.26.02.55.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Sep 2023 02:55:55 -0700 (PDT)
+Message-ID: <1f1b5174-cfd4-4393-3a86-9adfc8c2cce1@tuxon.dev>
+Date:   Tue, 26 Sep 2023 12:55:53 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-purgate-type: clean
-X-purgate: clean
-X-purgate-ID: 151534::1695720975-35266C1B-7408C2EB/0/0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH 25/37] pinctrl: renesas: rzg2l: adapt function number for
+ RZ/G3S
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        ulf.hansson@linaro.org, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
+        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
+        nfraprado@collabora.com, rafal@milecki.pl,
+        wsa+renesas@sang-engineering.com,
+        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
+ <20230912045157.177966-26-claudiu.beznea.uj@bp.renesas.com>
+ <CAMuHMdVkttQpA-s0MrKbTVxJ6K+xXmhV3sNNLTAPSbDa0f8XYA@mail.gmail.com>
+Content-Language: en-US
+From:   claudiu beznea <claudiu.beznea@tuxon.dev>
+In-Reply-To: <CAMuHMdVkttQpA-s0MrKbTVxJ6K+xXmhV3sNNLTAPSbDa0f8XYA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Until now, the LED blinks when data is sent via the tty (rx/tx).
-The serial tty interface also supports additional input signals, that can
-also be evaluated within this trigger. This change is adding the followin=
-g
-additional input sources, which could be controlled
-via the '/sys/class/<leds>/' sysfs interface.
+Hi, Geert,
 
-- line_cts:
-  DCE is ready to accept data from the DTE (Clear To  Send). If the line
-  state is detected, the LED is switched on.
-  If set to 0 (default), the LED will not evaluate CTS.
-  If set to 1, the LED will evaluate CTS.
+On 21.09.2023 15:51, Geert Uytterhoeven wrote:
+> Hi Claudiu,
+> 
+> Thanks for your patch!
+> 
+> On Tue, Sep 12, 2023 at 6:53 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+>> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>>
+>> On RZ/G3S PFC register allow setting 8 functions for individual ports
+>> (function1 to function8). For function1 register need to be configured
+>> with 0, for function8 register need to be configured with 7.
+>> We cannot use zero based addressing when requesting functions from
+>> different code places as documentation (RZG3S_pinfunction_List_r1.0.xlsx)
+>> states explicitly that function0 has different meaning.
+> 
+> According to that table, function0 is GPIO.
 
-- line_dsr:
-  DCE is ready to receive and send data (Data Set Ready). If the line sta=
-te
-  is detected, the LED is switched on.
-  If set to 0 (default), the LED will not evaluate DSR.
-  If set to 1, the LED will evaluate DSR.
+Yes, I'll mention it like this in the next version.
 
-- line_car:
-  DTE is receiving a carrier from the DCE (Data Carrier Detect). If the
-  line state is detected, the LED is switched on.
-  If set to 0 (default), the LED will not evaluate CAR (DCD).
-  If set to 1, the LED will evaluate CAR (DCD).
+> 
+>> For this add a new member to struct rzg2l_hwcfg that will keep the
+>> offset that need to be substracted before applying a value to PFC register.
+>>
+>> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> 
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> 
+> But one question below...
+> 
+>> --- a/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+>> +++ b/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+>> @@ -136,9 +136,11 @@ struct rzg2l_register_offsets {
+>>  /**
+>>   * struct rzg2l_hwcfg - hardware configuration data structure
+>>   * @regs: hardware specific register offsets
+>> + * @func_base: base number for port function (see register PFC)
+>>   */
+>>  struct rzg2l_hwcfg {
+>>         const struct rzg2l_register_offsets regs;
+>> +       u8 func_base;
+>>  };
+>>
+>>  struct rzg2l_dedicated_configs {
+>> @@ -221,6 +223,7 @@ static int rzg2l_pinctrl_set_mux(struct pinctrl_dev *pctldev,
+>>                                  unsigned int group_selector)
+>>  {
+>>         struct rzg2l_pinctrl *pctrl = pinctrl_dev_get_drvdata(pctldev);
+>> +       const struct rzg2l_hwcfg *hwcfg = pctrl->data->hwcfg;
+>>         const struct pinctrl_pin_desc *pin_desc;
+>>         unsigned int i, *psel_val, *pin_data;
+>>         struct function_desc *func;
+>> @@ -247,9 +250,9 @@ static int rzg2l_pinctrl_set_mux(struct pinctrl_dev *pctldev,
+>>                 off = RZG2L_PIN_CFG_TO_PORT_OFFSET(*pin_data);
+>>
+>>                 dev_dbg(pctrl->dev, "port:%u pin: %u off:%x PSEL:%u\n", port,
+>> -                       pin, off, psel_val[i]);
+>> +                       pin, off, psel_val[i] - hwcfg->func_base);
+>>
+>> -               rzg2l_pinctrl_set_pfc_mode(pctrl, pin, off, psel_val[i]);
+>> +               rzg2l_pinctrl_set_pfc_mode(pctrl, pin, off, psel_val[i] - hwcfg->func_base);
+>>         }
+>>
+>>         return 0;
+> 
+> Perhaps the adjustment should be done in rzg2l_dt_subnode_to_map()
+> instead, when obtaining MUX_FUNC() from DT? That would allow you to do
+> some basic validation on it too, which is currently completely missing
+> (reject out-of-range values overflowing into adjacent PFC fields,
+> reject zero on RZ/G3S).
 
-- line_rng:
-  DCE has detected an incoming ring signal on the telephone line
-  (Ring Indicator). If the line state is detected, the LED is switched on=
-.
-  If set to 0 (default), the LED will not evaluate RNG (RI).
-  If set to 1, the LED will evaluate RNG (RI).
+I'll have a look on this. I see .set_mux() can also be called from sysfs
+though pinmux-select exported file thus, I don't know at the moment if
+validating it on rzg2l_dt_subnode_to_map() will be enough.
 
-In addition to the new line_* entries in sysfs, the indication for the
-direction of the transmitted data is independently controllable via the
-new rx and tx sysfs entrie now too. These are on by default. Thus the
-trigger behaves as before this change.
+Would it be OK to have this outside of this series or you would prefer it now?
 
-- rx:
-  Signal reception (rx) of data on the named tty device.
-  If set to 0, the LED will not blink on reception.
-  If set to 1 (default), the LED will blink on reception.
+Thank you,
+Claudiu Beznea
 
-- tx:
-  Signal transmission (tx) of data on the named tty device.
-  If set to 0, the LED will not blink on transmission.
-  If set to 1 (default), the LED will blink on transmission.
-
-Signed-off-by: Florian Eckert <fe@dev.tdt.de>
----
- .../ABI/testing/sysfs-class-led-trigger-tty   |  54 ++++
- drivers/leds/trigger/ledtrig-tty.c            | 272 +++++++++++++++++-
- 2 files changed, 315 insertions(+), 11 deletions(-)
-
-diff --git a/Documentation/ABI/testing/sysfs-class-led-trigger-tty b/Docu=
-mentation/ABI/testing/sysfs-class-led-trigger-tty
-index 2bf6b24e781b..14c38a2370ea 100644
---- a/Documentation/ABI/testing/sysfs-class-led-trigger-tty
-+++ b/Documentation/ABI/testing/sysfs-class-led-trigger-tty
-@@ -4,3 +4,57 @@ KernelVersion:	5.10
- Contact:	linux-leds@vger.kernel.org
- Description:
- 		Specifies the tty device name of the triggering tty
-+
-+What:		/sys/class/leds/<led>/rx
-+Date:		September 2023
-+KernelVersion:	6.7
-+Description:
-+		Signal reception (rx) of data on the named tty device.
-+		If set to 0, the LED will not blink on reception.
-+		If set to 1 (default), the LED will blink on reception.
-+
-+What:		/sys/class/leds/<led>/tx
-+Date:		September 2023
-+KernelVersion:	6.7
-+Description:
-+		Signal transmission (tx) of data on the named tty device.
-+		If set to 0, the LED will not blink on transmission.
-+		If set to 1 (default), the LED will blink on transmission.
-+
-+car rng
-+What:		/sys/class/leds/<led>/line_cts
-+Date:		September 2023
-+KernelVersion:	6.7
-+Description:
-+		DCE is ready to accept data from the DTE (Clear To Send). If
-+		the line state is detected, the LED is switched on.
-+		If set to 0 (default), the LED will not evaluate CTS.
-+		If set to 1, the LED will evaluate CTS.
-+
-+What:		/sys/class/leds/<led>/line_dsr
-+Date:		September 2023
-+KernelVersion:	6.7
-+Description:
-+		DCE is ready to receive and send data (Data Set Ready). If
-+		the line state is detected, the LED is switched on.
-+		If set to 0 (default), the LED will not evaluate DSR.
-+		If set to 1, the LED will evaluate DSR.
-+
-+What:		/sys/class/leds/<led>/line_car
-+Date:		September 2023
-+KernelVersion:	6.7
-+Description:
-+		DTE is receiving a carrier from the DCE (Data Carrier Detect).
-+		If the line state is detected, the LED is switched on.
-+		If set to 0 (default), the LED will not evaluate CAR (DCD).
-+		If set to 1, the LED will evaluate CAR (DCD).
-+
-+What:		/sys/class/leds/<led>/line_cts
-+Date:		September 2023
-+KernelVersion:	6.7
-+Description:
-+		DCE has detected an incoming ring signal on the telephone
-+		line (Ring Indicator). If the line state is detected, the
-+		LED is switched on.
-+		If set to 0 (default), the LED will not evaluate RNG (RI).
-+		If set to 1, the LED will evaluate RNG (RI).
-diff --git a/drivers/leds/trigger/ledtrig-tty.c b/drivers/leds/trigger/le=
-dtrig-tty.c
-index 8ae0d2d284af..0ea6d2a2599d 100644
---- a/drivers/leds/trigger/ledtrig-tty.c
-+++ b/drivers/leds/trigger/ledtrig-tty.c
-@@ -16,6 +16,28 @@ struct ledtrig_tty_data {
- 	const char *ttyname;
- 	struct tty_struct *tty;
- 	int rx, tx;
-+	unsigned long mode;
-+#define LEDTRIG_TTY_MODE_TX	0
-+#define LEDTRIG_TTY_MODE_RX	1
-+#define LEDTRIG_TTY_MODE_CTS	2
-+#define LEDTRIG_TTY_MODE_DSR	3
-+#define LEDTRIG_TTY_MODE_CAR	4
-+#define LEDTRIG_TTY_MODE_RNG	5
-+};
-+
-+enum tty_led_state {
-+	TTY_LED_BLINK,
-+	TTY_LED_ENABLE,
-+	TTY_LED_DISABLE,
-+};
-+
-+enum ledtrig_tty_attr {
-+	LEDTRIG_TTY_ATTR_TX,
-+	LEDTRIG_TTY_ATTR_RX,
-+	LEDTRIG_TTY_ATTR_CTS,
-+	LEDTRIG_TTY_ATTR_DSR,
-+	LEDTRIG_TTY_ATTR_CAR,
-+	LEDTRIG_TTY_ATTR_RNG,
- };
-=20
- static void ledtrig_tty_restart(struct ledtrig_tty_data *trigger_data)
-@@ -78,13 +100,184 @@ static ssize_t ttyname_store(struct device *dev,
- }
- static DEVICE_ATTR_RW(ttyname);
-=20
-+static ssize_t ledtrig_tty_attr_show(struct device *dev, char *buf,
-+	enum ledtrig_tty_attr attr)
-+{
-+	struct ledtrig_tty_data *trigger_data =3D led_trigger_get_drvdata(dev);
-+	int bit;
-+
-+	switch (attr) {
-+	case LEDTRIG_TTY_ATTR_TX:
-+		bit =3D LEDTRIG_TTY_MODE_TX;
-+		break;
-+	case LEDTRIG_TTY_ATTR_RX:
-+		bit =3D LEDTRIG_TTY_MODE_RX;
-+		break;
-+	case LEDTRIG_TTY_ATTR_CTS:
-+		bit =3D LEDTRIG_TTY_MODE_CTS;
-+		break;
-+	case LEDTRIG_TTY_ATTR_DSR:
-+		bit =3D LEDTRIG_TTY_MODE_DSR;
-+		break;
-+	case LEDTRIG_TTY_ATTR_CAR:
-+		bit =3D LEDTRIG_TTY_MODE_CAR;
-+		break;
-+	case LEDTRIG_TTY_ATTR_RNG:
-+		bit =3D LEDTRIG_TTY_MODE_RNG;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return sprintf(buf, "%u\n", test_bit(bit, &trigger_data->mode));
-+}
-+
-+static ssize_t ledtrig_tty_attr_store(struct device *dev, const char *bu=
-f,
-+	size_t size, enum ledtrig_tty_attr attr)
-+{
-+	struct ledtrig_tty_data *trigger_data =3D led_trigger_get_drvdata(dev);
-+	unsigned long state;
-+	int ret;
-+	int bit;
-+
-+	ret =3D kstrtoul(buf, 0, &state);
-+	if (ret)
-+		return ret;
-+
-+	switch (attr) {
-+	case LEDTRIG_TTY_ATTR_TX:
-+		bit =3D LEDTRIG_TTY_MODE_TX;
-+		break;
-+	case LEDTRIG_TTY_ATTR_RX:
-+		bit =3D LEDTRIG_TTY_MODE_RX;
-+		break;
-+	case LEDTRIG_TTY_ATTR_CTS:
-+		bit =3D LEDTRIG_TTY_MODE_CTS;
-+		break;
-+	case LEDTRIG_TTY_ATTR_DSR:
-+		bit =3D LEDTRIG_TTY_MODE_DSR;
-+		break;
-+	case LEDTRIG_TTY_ATTR_CAR:
-+		bit =3D LEDTRIG_TTY_MODE_CAR;
-+		break;
-+	case LEDTRIG_TTY_ATTR_RNG:
-+		bit =3D LEDTRIG_TTY_MODE_RNG;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	if (state)
-+		set_bit(bit, &trigger_data->mode);
-+	else
-+		clear_bit(bit, &trigger_data->mode);
-+
-+	return size;
-+}
-+
-+static ssize_t tx_show(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	return ledtrig_tty_attr_show(dev, buf, LEDTRIG_TTY_ATTR_TX);
-+}
-+
-+static ssize_t tx_store(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t size)
-+{
-+	return ledtrig_tty_attr_store(dev, buf, size, LEDTRIG_TTY_ATTR_TX);
-+}
-+static DEVICE_ATTR_RW(tx);
-+
-+static ssize_t rx_show(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	return ledtrig_tty_attr_show(dev, buf, LEDTRIG_TTY_ATTR_RX);
-+}
-+
-+static ssize_t rx_store(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t size)
-+{
-+	return ledtrig_tty_attr_store(dev, buf, size, LEDTRIG_TTY_ATTR_RX);
-+}
-+static DEVICE_ATTR_RW(rx);
-+
-+static ssize_t line_cts_show(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	return ledtrig_tty_attr_show(dev, buf, LEDTRIG_TTY_ATTR_CTS);
-+}
-+
-+static ssize_t line_cts_store(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t size)
-+{
-+	return ledtrig_tty_attr_store(dev, buf, size, LEDTRIG_TTY_ATTR_CTS);
-+}
-+static DEVICE_ATTR_RW(line_cts);
-+
-+static ssize_t line_dsr_show(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	return ledtrig_tty_attr_show(dev, buf, LEDTRIG_TTY_ATTR_DSR);
-+}
-+
-+static ssize_t line_dsr_store(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t size)
-+{
-+	return ledtrig_tty_attr_store(dev, buf, size, LEDTRIG_TTY_ATTR_DSR);
-+}
-+static DEVICE_ATTR_RW(line_dsr);
-+
-+static ssize_t line_car_show(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	return ledtrig_tty_attr_show(dev, buf, LEDTRIG_TTY_ATTR_CAR);
-+}
-+
-+static ssize_t line_car_store(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t size)
-+{
-+	return ledtrig_tty_attr_store(dev, buf, size, LEDTRIG_TTY_ATTR_CAR);
-+}
-+static DEVICE_ATTR_RW(line_car);
-+
-+static ssize_t line_rng_show(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	return ledtrig_tty_attr_show(dev, buf, LEDTRIG_TTY_ATTR_RNG);
-+}
-+
-+static ssize_t line_rng_store(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t size)
-+{
-+	return ledtrig_tty_attr_store(dev, buf, size, LEDTRIG_TTY_ATTR_RNG);
-+}
-+static DEVICE_ATTR_RW(line_rng);
-+
-+
-+static int ledtrig_tty_flag(struct ledtrig_tty_data *trigger_data, unsig=
-ned int flag)
-+{
-+	unsigned int status;
-+	int ret;
-+
-+	status =3D tty_get_mget(trigger_data->tty);
-+	if (status & flag)
-+		ret =3D 1;
-+	else
-+		ret =3D 0;
-+
-+	return ret;
-+}
-+
- static void ledtrig_tty_work(struct work_struct *work)
- {
- 	struct ledtrig_tty_data *trigger_data =3D
- 		container_of(work, struct ledtrig_tty_data, dwork.work);
-+	struct led_classdev *led_cdev =3D trigger_data->led_cdev;
- 	struct serial_icounter_struct icount;
-+	enum tty_led_state state;
- 	int ret;
-=20
-+	state =3D TTY_LED_DISABLE;
- 	mutex_lock(&trigger_data->mutex);
-=20
- 	if (!trigger_data->ttyname) {
-@@ -115,22 +308,69 @@ static void ledtrig_tty_work(struct work_struct *wo=
-rk)
- 		trigger_data->tty =3D tty;
- 	}
-=20
--	ret =3D tty_get_icount(trigger_data->tty, &icount);
--	if (ret) {
--		dev_info(trigger_data->tty->dev, "Failed to get icount, stopped pollin=
-g\n");
--		mutex_unlock(&trigger_data->mutex);
--		return;
-+	if (test_bit(LEDTRIG_TTY_MODE_CTS, &trigger_data->mode)) {
-+		ret =3D ledtrig_tty_flag(trigger_data, TIOCM_CTS);
-+		if (ret)
-+			state =3D TTY_LED_ENABLE;
- 	}
-=20
--	if (icount.rx !=3D trigger_data->rx ||
--	    icount.tx !=3D trigger_data->tx) {
--		unsigned long interval =3D LEDTRIG_TTY_INTERVAL;
-+	if (test_bit(LEDTRIG_TTY_MODE_DSR, &trigger_data->mode)) {
-+		ret =3D ledtrig_tty_flag(trigger_data, TIOCM_DSR);
-+		if (ret)
-+			state =3D TTY_LED_ENABLE;
-+	}
-=20
-+	if (test_bit(LEDTRIG_TTY_MODE_CAR, &trigger_data->mode)) {
-+		ret =3D ledtrig_tty_flag(trigger_data, TIOCM_CAR);
-+		if (ret)
-+			state =3D TTY_LED_ENABLE;
-+	}
-+
-+	if (test_bit(LEDTRIG_TTY_MODE_RNG, &trigger_data->mode)) {
-+		ret =3D ledtrig_tty_flag(trigger_data, TIOCM_RNG);
-+		if (ret)
-+			state =3D TTY_LED_ENABLE;
-+	}
-+
-+	/* The rx/tx handling must come after the evaluation of TIOCM_*,
-+	 * since the display for rx/tx has priority
-+	 */
-+	if (test_bit(LEDTRIG_TTY_MODE_TX, &trigger_data->mode) ||
-+	    test_bit(LEDTRIG_TTY_MODE_RX, &trigger_data->mode)) {
-+		ret =3D tty_get_icount(trigger_data->tty, &icount);
-+		if (ret) {
-+			dev_info(trigger_data->tty->dev, "Failed to get icount, stopped polli=
-ng\n");
-+			mutex_unlock(&trigger_data->mutex);
-+			return;
-+		}
-+
-+		if (test_bit(LEDTRIG_TTY_MODE_TX, &trigger_data->mode) &&
-+		    (icount.tx !=3D trigger_data->tx)) {
-+			trigger_data->tx =3D icount.tx;
-+			state =3D TTY_LED_BLINK;
-+		}
-+
-+		if (test_bit(LEDTRIG_TTY_MODE_RX, &trigger_data->mode) &&
-+		    (icount.rx !=3D trigger_data->rx)) {
-+			trigger_data->rx =3D icount.rx;
-+			state =3D TTY_LED_BLINK;
-+		}
-+	}
-+
-+	switch (state) {
-+	case TTY_LED_BLINK:
-+		unsigned long interval =3D LEDTRIG_TTY_INTERVAL;
- 		led_blink_set_oneshot(trigger_data->led_cdev, &interval,
- 				      &interval, 0);
--
--		trigger_data->rx =3D icount.rx;
--		trigger_data->tx =3D icount.tx;
-+		break;
-+	case TTY_LED_ENABLE:
-+		led_set_brightness(led_cdev, led_cdev->blink_brightness);
-+		break;
-+	case TTY_LED_DISABLE:
-+		fallthrough;
-+	default:
-+		led_set_brightness(led_cdev, 0);
-+		break;
- 	}
-=20
- out:
-@@ -141,6 +381,12 @@ static void ledtrig_tty_work(struct work_struct *wor=
-k)
-=20
- static struct attribute *ledtrig_tty_attrs[] =3D {
- 	&dev_attr_ttyname.attr,
-+	&dev_attr_rx.attr,
-+	&dev_attr_tx.attr,
-+	&dev_attr_line_cts.attr,
-+	&dev_attr_line_dsr.attr,
-+	&dev_attr_line_car.attr,
-+	&dev_attr_line_rng.attr,
- 	NULL
- };
- ATTRIBUTE_GROUPS(ledtrig_tty);
-@@ -153,6 +399,10 @@ static int ledtrig_tty_activate(struct led_classdev =
-*led_cdev)
- 	if (!trigger_data)
- 		return -ENOMEM;
-=20
-+	/* Enable default rx/tx LED blink */
-+	set_bit(LEDTRIG_TTY_MODE_TX, &trigger_data->mode);
-+	set_bit(LEDTRIG_TTY_MODE_RX, &trigger_data->mode);
-+
- 	led_set_trigger_data(led_cdev, trigger_data);
-=20
- 	INIT_DELAYED_WORK(&trigger_data->dwork, ledtrig_tty_work);
---=20
-2.30.2
-
+> 
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+> 
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
