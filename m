@@ -2,141 +2,293 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C8FE7D273
-	for <linux-serial@archiver.kernel.org>; Tue, 26 Sep 2023 09:59:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C70D3EEB563
+	for <linux-serial@archiver.kernel.org>; Tue, 26 Sep 2023 10:58:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231233AbjIZJ74 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 26 Sep 2023 05:59:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40134 "EHLO
+        id S234503AbjIZK67 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 26 Sep 2023 06:58:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231182AbjIZJ7z (ORCPT
+        with ESMTP id S234498AbjIZK66 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 26 Sep 2023 05:59:55 -0400
-X-Greylist: delayed 1406 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 26 Sep 2023 02:59:48 PDT
-Received: from mxout70.expurgate.net (mxout70.expurgate.net [91.198.224.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE0C97;
-        Tue, 26 Sep 2023 02:59:48 -0700 (PDT)
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <prvs=8647860101=fe@dev.tdt.de>)
-        id 1ql4UJ-008coS-6B; Tue, 26 Sep 2023 11:36:15 +0200
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <fe@dev.tdt.de>)
-        id 1ql4UI-00EaJX-CA; Tue, 26 Sep 2023 11:36:14 +0200
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id E860E24004D;
-        Tue, 26 Sep 2023 11:36:13 +0200 (CEST)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 44600240049;
-        Tue, 26 Sep 2023 11:36:13 +0200 (CEST)
-Received: from localhost.localdomain (unknown [10.2.3.40])
-        by mail.dev.tdt.de (Postfix) with ESMTPSA id E599732D8A;
-        Tue, 26 Sep 2023 11:36:12 +0200 (CEST)
-From:   Florian Eckert <fe@dev.tdt.de>
-To:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
-        kabel@kernel.org, u.kleine-koenig@pengutronix.de
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-leds@vger.kernel.org
-Subject: [PATCH 1/2] tty: add new helper function tty_get_mget
-Date:   Tue, 26 Sep 2023 11:36:06 +0200
-Message-ID: <20230926093607.59536-2-fe@dev.tdt.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230926093607.59536-1-fe@dev.tdt.de>
-References: <20230926093607.59536-1-fe@dev.tdt.de>
+        Tue, 26 Sep 2023 06:58:58 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A18F192
+        for <linux-serial@vger.kernel.org>; Tue, 26 Sep 2023 03:58:50 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id 38308e7fff4ca-2c131ddfc95so131983651fa.0
+        for <linux-serial@vger.kernel.org>; Tue, 26 Sep 2023 03:58:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tuxon.dev; s=google; t=1695725928; x=1696330728; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=uw1cUsiT57O3RUVdq5mZiqTz08pOHH5WJzsYWq/LW4w=;
+        b=LDs36G73REglQOX9D/Nya1bWJXhVrk7ORjYwC6a3KKQdd8ycOnerhIDZ8PA8098Tb5
+         yj01CRMSd8x57BhfdqYEurmSNlDe85jiwc3wy1IBJre9ue4kUG1kvgDB+Phvi25kl6f7
+         OKP/mimaxCloGoKbLoMm80RW4QEdcwDWyze26yyz9PUeNFSZ8KwDK4g5OgwUOOC6c5MW
+         CilxLhNnKGoUWgtl2PKeGNSXYXXX/8zYxMj+MNNaNOWk9EpaHy5TNZKecKCbX46JBerS
+         5T0OXAx9gMR8AxKLTYxOZyRPhw6GfS6ghLN3taeqSxVKzem4O4iSlkuxG4YRLYw90A1q
+         XUoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695725928; x=1696330728;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=uw1cUsiT57O3RUVdq5mZiqTz08pOHH5WJzsYWq/LW4w=;
+        b=ob0n52AP/7quU3sOMOxhG9XbAL2V/n1c5QWr1rFGUg1iN7vDZvoEekhtIcidH6DXr9
+         AgZKz8Dp4Rd0P/xWPEEBBcg1ANg5XS+2rzHZnAW7uh2YOSsmO+byRvAfbO5OPmn5K6+y
+         v3ZTSqHANPL0PrruSLD2UtnvqQvteWHDVd+4DWvLh8sicpNU0aOBTXJnzQRhWvlfG0FK
+         abdE4wXlKBiV0fTRR4lH7AyMu3nZKqZZuzYfpTVy1ZzrJQPApgwAx8V4876e/rgTS9x5
+         VO7TZgKnVHUa0SMRFMWjDVqOd41IybwMC32wPxnv2M5rxEAckZGcmgSaCt2NQyCPAkQF
+         qHag==
+X-Gm-Message-State: AOJu0YykhzDvYvbWpnTBhPeq80myin1PC0c1UFTM+CaaMlAt/EBeo/28
+        V3wDL9PiFl42dI/FDRUFNVR2dQ==
+X-Google-Smtp-Source: AGHT+IG6q6rzMJI50tbGhCpzLWa59Dfr/8oOlsuBHFVc+7zzzxAnHqZNID2Eo94dRB44wFNMHKElWw==
+X-Received: by 2002:a2e:2e0f:0:b0:2b6:a3a0:5f7 with SMTP id u15-20020a2e2e0f000000b002b6a3a005f7mr7763488lju.9.1695725928289;
+        Tue, 26 Sep 2023 03:58:48 -0700 (PDT)
+Received: from [192.168.32.2] ([82.78.167.177])
+        by smtp.gmail.com with ESMTPSA id k22-20020a170906129600b009aa292a2df2sm7548486ejb.217.2023.09.26.03.58.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Sep 2023 03:58:47 -0700 (PDT)
+Message-ID: <64e91f8d-a94e-c835-75ef-ce9ab557dc54@tuxon.dev>
+Date:   Tue, 26 Sep 2023 13:58:44 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-purgate-type: clean
-X-purgate: clean
-X-purgate-ID: 151534::1695720975-B296CB19-1805BCDD/0/0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH 30/37] pinctrl: renesas: rzg2l: add support for RZ/G3S SoC
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        ulf.hansson@linaro.org, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
+        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
+        nfraprado@collabora.com, rafal@milecki.pl,
+        wsa+renesas@sang-engineering.com,
+        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
+ <20230912045157.177966-31-claudiu.beznea.uj@bp.renesas.com>
+ <CAMuHMdV2GEKF0QjKudz529_tmUksTNMJtZu9NwC18KX-AXwaeg@mail.gmail.com>
+From:   claudiu beznea <claudiu.beznea@tuxon.dev>
+In-Reply-To: <CAMuHMdV2GEKF0QjKudz529_tmUksTNMJtZu9NwC18KX-AXwaeg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The struct 'tty_struct' has a callback to read the status flags of the tt=
-y
-if the tty driver provides them. So fare, the data is transferred directl=
-y
-to userspace with the function 'tty_tiocmget'. This function cannot be
-used to evaluate the status line of the tty interface in the ledtrig-tty
-trigger. To make this possible, a new function must be added that does
-not immediately pass the data on to userspace.
+Hi, Geert,
 
-The new function 'tty_get_mget' only returns the status register.
-This information can then be processed further in the ledtrig-tty
-trigger.
+On 21.09.2023 17:58, Geert Uytterhoeven wrote:
+> Hi Claudiu,
+> 
+> On Tue, Sep 12, 2023 at 6:53 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+>> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>>
+>> Add basic support for RZ/G3S to be able to boot from SD card, have a
+>> running console port and use GPIOs. RZ/G3S has 82 general-purpose IO
+>> ports. Support for the remaining pin functions (e.g. Ethernet, XSPI)
+>> will be added along with controller specific support.
+>>
+>> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> 
+> Thanks for your patch!
+> 
+>> --- a/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+>> +++ b/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+>> @@ -1330,6 +1336,36 @@ static const u32 r9a07g043_gpio_configs[] = {
+>>         RZG2L_GPIO_PORT_PACK(6, 0x22, RZG2L_MPXED_PIN_FUNCS),
+>>  };
+>>
+>> +static const u32 r9a08g045_gpio_configs[] = {
+>> +       RZG2L_GPIO_PORT_PACK(4, 0x20, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P0  */
+>> +       RZG2L_GPIO_PORT_PACK(5, 0x30, RZG2L_MPXED_ETH_PIN_FUNCS(PIN_CFG_IOLH_C |
+>> +                                                               PIN_CFG_IO_VMC_ETH0)),  /* P1 */
+> 
+> P1_0 and P7_0 have IEN functionality.
+> I don't know how to represent that...
 
-Signed-off-by: Florian Eckert <fe@dev.tdt.de>
----
- drivers/tty/tty_io.c | 29 +++++++++++++++++++++++------
- include/linux/tty.h  |  1 +
- 2 files changed, 24 insertions(+), 6 deletions(-)
+I think Prabhakar's series at [1] may help (or make a step forward) in
+supporting this. I have in mind to wait for it and adapt RZ/G3S afterwards.
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 8a94e5a43c6d..8070ed0ce41f 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -2494,6 +2494,25 @@ static int send_break(struct tty_struct *tty, unsi=
-gned int duration)
- 	return retval;
- }
-=20
-+/**
-+ * tty_get_mget		-	get modem status
-+ * @tty: tty device
-+ *
-+ * Obtain the modem status bits from the tty driver if the feature
-+ * is supported.
-+ *
-+ */
-+int tty_get_mget(struct tty_struct *tty)
-+{
-+	int retval =3D -ENOTTY;
-+
-+	if (tty->ops->tiocmget)
-+		retval =3D tty->ops->tiocmget(tty);
-+
-+	return retval;
-+}
-+EXPORT_SYMBOL_GPL(tty_get_mget);
-+
- /**
-  * tty_tiocmget		-	get modem status
-  * @tty: tty device
-@@ -2506,14 +2525,12 @@ static int send_break(struct tty_struct *tty, uns=
-igned int duration)
-  */
- static int tty_tiocmget(struct tty_struct *tty, int __user *p)
- {
--	int retval =3D -ENOTTY;
-+	int retval;
-=20
--	if (tty->ops->tiocmget) {
--		retval =3D tty->ops->tiocmget(tty);
-+	retval =3D tty_get_mget(tty);
-+	if (retval >=3D 0)
-+		retval =3D put_user(retval, p);
-=20
--		if (retval >=3D 0)
--			retval =3D put_user(retval, p);
--	}
- 	return retval;
- }
-=20
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index f002d0f25db7..7b9edd4a7007 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -421,6 +421,7 @@ int tty_unthrottle_safe(struct tty_struct *tty);
- int tty_do_resize(struct tty_struct *tty, struct winsize *ws);
- int tty_get_icount(struct tty_struct *tty,
- 		struct serial_icounter_struct *icount);
-+int tty_get_mget(struct tty_struct *tty);
- int is_current_pgrp_orphaned(void);
- void tty_hangup(struct tty_struct *tty);
- void tty_vhangup(struct tty_struct *tty);
---=20
-2.30.2
+[1]
+https://lore.kernel.org/all/20230630120433.49529-2-prabhakar.mahadev-lad.rj@bp.renesas.com/
 
+> 
+>> +       RZG2L_GPIO_PORT_PACK(4, 0x31, RZG2L_MPXED_ETH_PIN_FUNCS(PIN_CFG_IOLH_C |
+>> +                                                               PIN_CFG_IO_VMC_ETH0)),  /* P2 */
+>> +       RZG2L_GPIO_PORT_PACK(4, 0x32, RZG2L_MPXED_ETH_PIN_FUNCS(PIN_CFG_IOLH_C |
+>> +                                                               PIN_CFG_IO_VMC_ETH0)),  /* P3 */
+>> +       RZG2L_GPIO_PORT_PACK(6, 0x33, RZG2L_MPXED_ETH_PIN_FUNCS(PIN_CFG_IOLH_C |
+>> +                                                               PIN_CFG_IO_VMC_ETH0)),  /* P4 */
+>> +       RZG2L_GPIO_PORT_PACK(5, 0x21, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P5  */
+>> +       RZG2L_GPIO_PORT_PACK(5, 0x22, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P6  */
+>> +       RZG2L_GPIO_PORT_PACK(5, 0x34, RZG2L_MPXED_ETH_PIN_FUNCS(PIN_CFG_IOLH_C |
+>> +                                                               PIN_CFG_IO_VMC_ETH1)),  /* P7 */
+>> +       RZG2L_GPIO_PORT_PACK(5, 0x35, RZG2L_MPXED_ETH_PIN_FUNCS(PIN_CFG_IOLH_C |
+>> +                                                               PIN_CFG_IO_VMC_ETH1)),  /* P8 */
+>> +       RZG2L_GPIO_PORT_PACK(4, 0x36, RZG2L_MPXED_ETH_PIN_FUNCS(PIN_CFG_IOLH_C |
+>> +                                                               PIN_CFG_IO_VMC_ETH1)),  /* P9 */
+>> +       RZG2L_GPIO_PORT_PACK(5, 0x37, RZG2L_MPXED_ETH_PIN_FUNCS(PIN_CFG_IOLH_C |
+>> +                                                               PIN_CFG_IO_VMC_ETH1)),  /* P10 */
+>> +       RZG2L_GPIO_PORT_PACK(4, 0x23, RZG3S_MPXED_PIN_FUNCS(B) | PIN_CFG_IEN),          /* P11  */
+> 
+> P11_0 does not have IEN functionality.
+> I don't know how to represent that...
+
+Same here.
+
+> 
+>> +       RZG2L_GPIO_PORT_PACK(2, 0x24, RZG3S_MPXED_PIN_FUNCS(B) | PIN_CFG_IEN),          /* P12  */
+>> +       RZG2L_GPIO_PORT_PACK(5, 0x25, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P13  */
+>> +       RZG2L_GPIO_PORT_PACK(3, 0x26, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P14  */
+>> +       RZG2L_GPIO_PORT_PACK(4, 0x27, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P15  */
+>> +       RZG2L_GPIO_PORT_PACK(2, 0x28, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P16  */
+>> +       RZG2L_GPIO_PORT_PACK(4, 0x29, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P17  */
+>> +       RZG2L_GPIO_PORT_PACK(6, 0x2a, RZG3S_MPXED_PIN_FUNCS(A)),                        /* P18 */
+>> +};
+>> +
+>>  static const struct {
+>>         struct rzg2l_dedicated_configs common[35];
+>>         struct rzg2l_dedicated_configs rzg2l_pins[7];
+>> @@ -1416,6 +1452,46 @@ static const struct {
+>>         }
+>>  };
+>>
+>> +static const struct rzg2l_dedicated_configs rzg3s_dedicated_pins[] = {
+>> +       { "NMI", RZG2L_SINGLE_PIN_PACK(0x0, 0, (PIN_CFG_FILONOFF | PIN_CFG_FILNUM |
+>> +                                               PIN_CFG_FILCLKSEL)) },
+>> +       { "TMS/SWDIO", RZG2L_SINGLE_PIN_PACK(0x1, 0, (PIN_CFG_IOLH_A | PIN_CFG_IEN |
+>> +                                                     PIN_CFG_SOFT_PS)) },
+>> +       { "TDO", RZG2L_SINGLE_PIN_PACK(0x1, 1, (PIN_CFG_IOLH_A | PIN_CFG_SOFT_PS)) },
+>> +       { "WDTOVF_PERROUT#", RZG2L_SINGLE_PIN_PACK(0x6, 0, PIN_CFG_IOLH_A | PIN_CFG_SOFT_PS) },
+>> +       { "SD0_CLK", RZG2L_SINGLE_PIN_PACK(0x10, 0, (PIN_CFG_IOLH_B | PIN_CFG_IO_VMC_SD0)) },
+>> +       { "SD0_CMD", RZG2L_SINGLE_PIN_PACK(0x10, 1, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+>> +                                                    PIN_CFG_IO_VMC_SD0)) },
+>> +       { "SD0_RST#", RZG2L_SINGLE_PIN_PACK(0x10, 2, (PIN_CFG_IOLH_B | PIN_CFG_IO_VMC_SD0)) },
+>> +       { "SD0_DATA0", RZG2L_SINGLE_PIN_PACK(0x11, 0, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+>> +                                                      PIN_CFG_IO_VMC_SD0)) },
+>> +       { "SD0_DATA1", RZG2L_SINGLE_PIN_PACK(0x11, 1, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+>> +                                                      PIN_CFG_IO_VMC_SD0)) },
+>> +       { "SD0_DATA2", RZG2L_SINGLE_PIN_PACK(0x11, 2, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+>> +                                                      PIN_CFG_IO_VMC_SD0)) },
+>> +       { "SD0_DATA3", RZG2L_SINGLE_PIN_PACK(0x11, 3, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+>> +                                                      PIN_CFG_IO_VMC_SD0)) },
+>> +       { "SD0_DATA4", RZG2L_SINGLE_PIN_PACK(0x11, 4, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+>> +                                                      PIN_CFG_IO_VMC_SD0)) },
+>> +       { "SD0_DATA5", RZG2L_SINGLE_PIN_PACK(0x11, 5, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+>> +                                                      PIN_CFG_IO_VMC_SD0)) },
+>> +       { "SD0_DATA6", RZG2L_SINGLE_PIN_PACK(0x11, 6, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+>> +                                                      PIN_CFG_IO_VMC_SD0)) },
+>> +       { "SD0_DATA7", RZG2L_SINGLE_PIN_PACK(0x11, 7, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+>> +                                                      PIN_CFG_IO_VMC_SD0)) },
+>> +       { "SD1_CLK", RZG2L_SINGLE_PIN_PACK(0x12, 0, (PIN_CFG_IOLH_B | PIN_CFG_IO_VMC_SD1)) },
+>> +       { "SD1_CMD", RZG2L_SINGLE_PIN_PACK(0x12, 1, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+>> +                                                    PIN_CFG_IO_VMC_SD1)) },
+>> +       { "SD1_DATA0", RZG2L_SINGLE_PIN_PACK(0x13, 0, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+>> +                                                      PIN_CFG_IO_VMC_SD1)) },
+>> +       { "SD1_DATA1", RZG2L_SINGLE_PIN_PACK(0x13, 1, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+>> +                                                      PIN_CFG_IO_VMC_SD1)) },
+>> +       { "SD1_DATA2", RZG2L_SINGLE_PIN_PACK(0x13, 2, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+>> +                                                      PIN_CFG_IO_VMC_SD1)) },
+>> +       { "SD1_DATA3", RZG2L_SINGLE_PIN_PACK(0x13, 3, (PIN_CFG_IOLH_B | PIN_CFG_IEN |
+>> +                                                      PIN_CFG_IO_VMC_SD1)) },
+> 
+> Is there any specific reason you left out the XSPI, Audio clock, and I3C pins?
+
+I kept only the necessary support for booting and having SDs, GPIO
+functional as a way of proving that all that has been added has been tested
+(similar to clock support). Thus, with e.g. XSPI support I will add at the
+same time clocks and pinctrl.
+
+> 
+>> +};
+>> +
+>>  static int rzg2l_gpio_get_gpioint(unsigned int virq, const struct rzg2l_pinctrl_data *data)
+>>  {
+>>         unsigned int gpioint;
+>> @@ -1823,6 +1899,40 @@ static const struct rzg2l_hwcfg rzg2l_hwcfg = {
+>>         .iolh_groupb_oi = { 100, 66, 50, 33, },
+>>  };
+>>
+>> +static const struct rzg2l_hwcfg rzg3s_hwcfg = {
+>> +       .regs = {
+>> +               .pwpr = 0x3000,
+>> +               .sd_ch = 0x3004,
+>> +       },
+>> +       .iolh_groupa_ua = {
+>> +               /* 1v8 power source */
+>> +               [RZG2L_IOLH_IDX_1V8] = 2200, 4400, 9000, 10000,
+>> +               /* 2v5 power source */
+>> +               [RZG2L_IOLH_IDX_2V5 ... RZG2L_IOLH_IDX_3V3 - 1] = RZG2L_INVALID_IOLH_VAL,
+> 
+> Can be dropped once zero means invalid.
+> 
+>> +               /* 3v3 power source */
+>> +               [RZG2L_IOLH_IDX_3V3] = 1900, 4000, 8000, 9000,
+>> +       },
+>> +       .iolh_groupb_ua = {
+>> +               /* 1v8 power source */
+>> +               [RZG2L_IOLH_IDX_1V8] = 7000, 8000, 9000, 10000,
+>> +               /* 2v5 power source */
+>> +               [RZG2L_IOLH_IDX_2V5 ... RZG2L_IOLH_IDX_3V3 - 1] = RZG2L_INVALID_IOLH_VAL,
+> 
+> Can be dropped once zero means invalid.
+> 
+>> +               /* 3v3 power source */
+>> +               [RZG2L_IOLH_IDX_3V3] = 4000, 6000, 8000, 9000,
+>> +       },
+>> +       .iolh_groupc_ua = {
+>> +               /* 1v8 power source */
+>> +               [RZG2L_IOLH_IDX_1V8] = 5200, 6000, 6550, 6800,
+>> +               /* 2v5 source */
+>> +               [RZG2L_IOLH_IDX_2V5] = 4700, 5300, 5800, 6100,
+>> +               /* 3v3 power source */
+>> +               [RZG2L_IOLH_IDX_3V3] = 4500, 5200, 5700, 6050,
+>> +       },
+>> +       .drive_strength_ua = true,
+>> +       .iolh_groupb_oi = { [0 ... 3] = RZG2L_INVALID_IOLH_VAL, },
+>> +       .func_base = 1,
+>> +};
+>> +
+>>  static struct rzg2l_pinctrl_data r9a07g043_data = {
+>>         .port_pins = rzg2l_gpio_names,
+>>         .port_pin_configs = r9a07g043_gpio_configs,
+>> @@ -1844,6 +1954,16 @@ static struct rzg2l_pinctrl_data r9a07g044_data = {
+>>         .hwcfg = &rzg2l_hwcfg,
+>>  };
+>>
+>> +static struct rzg2l_pinctrl_data r9a08g045_data = {
+>> +       .port_pins = rzg2l_gpio_names,
+>> +       .port_pin_configs = r9a08g045_gpio_configs,
+>> +       .n_ports = ARRAY_SIZE(r9a08g045_gpio_configs),
+>> +       .dedicated_pins = rzg3s_dedicated_pins,
+>> +       .n_port_pins = ARRAY_SIZE(r9a08g045_gpio_configs) * RZG2L_PINS_PER_PORT,
+>> +       .n_dedicated_pins = ARRAY_SIZE(rzg3s_dedicated_pins),
+>> +       .hwcfg = &rzg3s_hwcfg,
+>> +};
+>> +
+>>  static const struct of_device_id rzg2l_pinctrl_of_table[] = {
+>>         {
+>>                 .compatible = "renesas,r9a07g043-pinctrl",
+> 
+> Please add a BUILD_BUG_ON() check for RZ/G3S to the
+> rzg2l_pinctrl_probe() function, as is done for the other SoCs in
+> the family.
+
+Ok.
+
+> 
+> The rest LGTM.
+> 
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+> 
