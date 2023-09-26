@@ -2,98 +2,168 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0462E7E62E
-	for <linux-serial@archiver.kernel.org>; Tue, 26 Sep 2023 12:04:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1E1BE7E643
+	for <linux-serial@archiver.kernel.org>; Tue, 26 Sep 2023 14:24:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234324AbjIZMEU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 26 Sep 2023 08:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51716 "EHLO
+        id S233734AbjIZOYF convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 26 Sep 2023 10:24:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233899AbjIZMEU (ORCPT
+        with ESMTP id S230330AbjIZOYE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 26 Sep 2023 08:04:20 -0400
-Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2BE5E6;
-        Tue, 26 Sep 2023 05:04:08 -0700 (PDT)
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <prvs=8647860101=fe@dev.tdt.de>)
-        id 1ql6nJ-00DGsF-TT; Tue, 26 Sep 2023 14:04:01 +0200
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <fe@dev.tdt.de>)
-        id 1ql6nJ-00FZfF-0r; Tue, 26 Sep 2023 14:04:01 +0200
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 90A63240049;
-        Tue, 26 Sep 2023 14:04:00 +0200 (CEST)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id E4C63240040;
-        Tue, 26 Sep 2023 14:03:59 +0200 (CEST)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id 83F0E2EFEB;
-        Tue, 26 Sep 2023 14:03:59 +0200 (CEST)
+        Tue, 26 Sep 2023 10:24:04 -0400
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 803AD101;
+        Tue, 26 Sep 2023 07:23:56 -0700 (PDT)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-59f6492b415so68293317b3.0;
+        Tue, 26 Sep 2023 07:23:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695738235; x=1696343035;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=b6GInBInFecR+uHBKFfmOCInwlwyJcLVJtZLCIykOZs=;
+        b=ZUZMHEsZto/UkzaDFCGwHe9Z/OJ5naLg3jyeu+5PKrKkJSTvrWPJzxUNX5tw3bGisU
+         TqP3lzoxrMpjtgL1APQU4o9ctAlwYR/70SVoaX83LRFLuurHGVh9LUDMf7olbILQ7zgG
+         i4wIKBfi0vbpEDA5Y4TUFrBmysrBd3YCpyPFMddSR9noX+zxaNu8cN5QImJO35TVIQTV
+         oI14Ghj9yTpnufcI9zsYBw6kd1KxJEixxBz98/9g6Xc5FtXsbKA3awYAFBbgdawc7ZVu
+         RvZ/qBBCxynG7EaZ80s7RGWqwEbsQuLtGMtzg8RgUsXmMMMYD1Pjny/WQiVaIAXDAd4i
+         w6WQ==
+X-Gm-Message-State: AOJu0YzbQ0pihNRBZRM3PzDwe84+K9QIGDI0kH2M3Zh17pa/BQUt3au6
+        +WBS/22K58jB2I2fEEof5FlGVS0XWGJ7Sg==
+X-Google-Smtp-Source: AGHT+IHoy5K5uGXt4Am/NdtVvpfIGtR5dl61OjDvtiyjuLMl/jpu53XB8kamVMkIdz8McXQ2X06j5Q==
+X-Received: by 2002:a05:690c:4808:b0:59f:6440:7eff with SMTP id hc8-20020a05690c480800b0059f64407effmr2242894ywb.15.1695738235335;
+        Tue, 26 Sep 2023 07:23:55 -0700 (PDT)
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com. [209.85.128.172])
+        by smtp.gmail.com with ESMTPSA id x184-20020a0deec1000000b005463e45458bsm3041260ywe.123.2023.09.26.07.23.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Sep 2023 07:23:54 -0700 (PDT)
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-59e88a28b98so126177077b3.1;
+        Tue, 26 Sep 2023 07:23:54 -0700 (PDT)
+X-Received: by 2002:a0d:e8c5:0:b0:59f:6489:75ac with SMTP id
+ r188-20020a0de8c5000000b0059f648975acmr1898989ywe.19.1695738234682; Tue, 26
+ Sep 2023 07:23:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 26 Sep 2023 14:03:59 +0200
-From:   Florian Eckert <fe@dev.tdt.de>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
-        pavel@ucw.cz, lee@kernel.org, kabel@kernel.org,
-        u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: Re: [PATCH 1/2] tty: add new helper function tty_get_mget
-In-Reply-To: <dc5ac2cb-71b3-4946-a58b-2ec353bc40a4@kernel.org>
-References: <20230926093607.59536-1-fe@dev.tdt.de>
- <20230926093607.59536-2-fe@dev.tdt.de>
- <dc5ac2cb-71b3-4946-a58b-2ec353bc40a4@kernel.org>
-Message-ID: <2c36a83654942416cfdcb2e40ecb539d@dev.tdt.de>
-X-Sender: fe@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.17
-X-purgate-ID: 151534::1695729841-26600C1B-B82AB986/0/0
-X-purgate: clean
-X-purgate-type: clean
+References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
+ <20230912045157.177966-26-claudiu.beznea.uj@bp.renesas.com>
+ <CAMuHMdVkttQpA-s0MrKbTVxJ6K+xXmhV3sNNLTAPSbDa0f8XYA@mail.gmail.com> <1f1b5174-cfd4-4393-3a86-9adfc8c2cce1@tuxon.dev>
+In-Reply-To: <1f1b5174-cfd4-4393-3a86-9adfc8c2cce1@tuxon.dev>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 26 Sep 2023 16:23:41 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXL=MpBin208aXe95Mp+NunGLGugtDG0MSs1XtYxyZ71Q@mail.gmail.com>
+Message-ID: <CAMuHMdXL=MpBin208aXe95Mp+NunGLGugtDG0MSs1XtYxyZ71Q@mail.gmail.com>
+Subject: Re: [PATCH 25/37] pinctrl: renesas: rzg2l: adapt function number for RZ/G3S
+To:     claudiu beznea <claudiu.beznea@tuxon.dev>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        ulf.hansson@linaro.org, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
+        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
+        nfraprado@collabora.com, rafal@milecki.pl,
+        wsa+renesas@sang-engineering.com,
+        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Thanks for your fast respond!
+Hi Claudiu,
 
->> @@ -2494,6 +2494,25 @@ static int send_break(struct tty_struct *tty, 
->> unsigned int duration)
->>   	return retval;
->>   }
->>   +/**
->> + * tty_get_mget		-	get modem status
-> 
-> Heh, the naming is funny. It apparently comes from tiocmget. But that
-> comes from:
-> tty ioctl modem get (TIOCMGET)
-> tty ioctl modem set (TIOCMSET)
-> 
-> So you should name it like tty_get_modem() not get_mget().
+On Tue, Sep 26, 2023 at 11:55 AM claudiu beznea
+<claudiu.beznea@tuxon.dev> wrote:
+> On 21.09.2023 15:51, Geert Uytterhoeven wrote:
+> > On Tue, Sep 12, 2023 at 6:53 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> >> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> >>
+> >> On RZ/G3S PFC register allow setting 8 functions for individual ports
+> >> (function1 to function8). For function1 register need to be configured
+> >> with 0, for function8 register need to be configured with 7.
+> >> We cannot use zero based addressing when requesting functions from
+> >> different code places as documentation (RZG3S_pinfunction_List_r1.0.xlsx)
+> >> states explicitly that function0 has different meaning.
+> >
+> > According to that table, function0 is GPIO.
+>
+> Yes, I'll mention it like this in the next version.
+>
+> >> For this add a new member to struct rzg2l_hwcfg that will keep the
+> >> offset that need to be substracted before applying a value to PFC register.
+> >>
+> >> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> >
+> > Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> >
+> > But one question below...
+> >
+> >> --- a/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+> >> +++ b/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+> >> @@ -136,9 +136,11 @@ struct rzg2l_register_offsets {
+> >>  /**
+> >>   * struct rzg2l_hwcfg - hardware configuration data structure
+> >>   * @regs: hardware specific register offsets
+> >> + * @func_base: base number for port function (see register PFC)
+> >>   */
+> >>  struct rzg2l_hwcfg {
+> >>         const struct rzg2l_register_offsets regs;
+> >> +       u8 func_base;
+> >>  };
+> >>
+> >>  struct rzg2l_dedicated_configs {
+> >> @@ -221,6 +223,7 @@ static int rzg2l_pinctrl_set_mux(struct pinctrl_dev *pctldev,
+> >>                                  unsigned int group_selector)
+> >>  {
+> >>         struct rzg2l_pinctrl *pctrl = pinctrl_dev_get_drvdata(pctldev);
+> >> +       const struct rzg2l_hwcfg *hwcfg = pctrl->data->hwcfg;
+> >>         const struct pinctrl_pin_desc *pin_desc;
+> >>         unsigned int i, *psel_val, *pin_data;
+> >>         struct function_desc *func;
+> >> @@ -247,9 +250,9 @@ static int rzg2l_pinctrl_set_mux(struct pinctrl_dev *pctldev,
+> >>                 off = RZG2L_PIN_CFG_TO_PORT_OFFSET(*pin_data);
+> >>
+> >>                 dev_dbg(pctrl->dev, "port:%u pin: %u off:%x PSEL:%u\n", port,
+> >> -                       pin, off, psel_val[i]);
+> >> +                       pin, off, psel_val[i] - hwcfg->func_base);
+> >>
+> >> -               rzg2l_pinctrl_set_pfc_mode(pctrl, pin, off, psel_val[i]);
+> >> +               rzg2l_pinctrl_set_pfc_mode(pctrl, pin, off, psel_val[i] - hwcfg->func_base);
+> >>         }
+> >>
+> >>         return 0;
+> >
+> > Perhaps the adjustment should be done in rzg2l_dt_subnode_to_map()
+> > instead, when obtaining MUX_FUNC() from DT? That would allow you to do
+> > some basic validation on it too, which is currently completely missing
+> > (reject out-of-range values overflowing into adjacent PFC fields,
+> > reject zero on RZ/G3S).
+>
+> I'll have a look on this. I see .set_mux() can also be called from sysfs
+> though pinmux-select exported file thus, I don't know at the moment if
+> validating it on rzg2l_dt_subnode_to_map() will be enough.
 
-I didn't like the name too, but I couldn't think of another.
-The function is returning the state of serial control and status 
-signals.
+OK, that's a good reason to keep it as-is.
 
- From your suggestion for the name, however, you can not deduce that at 
-all.
-How would it be then with the following name?
+> Would it be OK to have this outside of this series or you would prefer it now?
 
-tty_tioctl_state() ?
+That can be done later. I believe currently there is no validation against
+the register field size limit anyway.
+Thanks!
 
-> 
-> Also those extra spaces around "-" caused some issues in the generated
-> output and should be removed (everywhere).
+Gr{oetje,eeting}s,
 
-Ok, I will change this in an own commit throughout the file.
+                        Geert
 
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Thanks
-
-Florian
-
-@jirislaby: Forgot to send this message to the mailing list as well!
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
