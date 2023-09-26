@@ -2,173 +2,100 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1266E7E625
-	for <linux-serial@archiver.kernel.org>; Tue, 26 Sep 2023 11:33:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B9E4E7E626
+	for <linux-serial@archiver.kernel.org>; Tue, 26 Sep 2023 11:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230121AbjIZLdQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 26 Sep 2023 07:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35920 "EHLO
+        id S233386AbjIZLn6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 26 Sep 2023 07:43:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229726AbjIZLdP (ORCPT
+        with ESMTP id S233303AbjIZLn5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 26 Sep 2023 07:33:15 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E69CEE9;
-        Tue, 26 Sep 2023 04:33:07 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 38QBWhw9043460;
-        Tue, 26 Sep 2023 06:32:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1695727963;
-        bh=KlSQQh3u11EgpSDDbXEWrJRLshXYW6EsKo55WM7AJz8=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=tSj+Hw5BATfgv84LpCnwE79TwBXvS4NbAKFfPstIsKcPTWNfhRAYo3KGXUdoQhNBC
-         NSmtIv99ONltmsl0rPA7IJUjNtodgMj0HyAzlciWRIM/+yp3OkVLYbvlbgDJe6cRWV
-         Bu1uSOXLlJgYGhSad1RLg4XBZnS/xGODUSdnGgSQ=
-Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 38QBWh5C064580
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 26 Sep 2023 06:32:43 -0500
-Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Tue, 26
- Sep 2023 06:32:43 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Tue, 26 Sep 2023 06:32:43 -0500
-Received: from localhost (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 38QBWfp9080419;
-        Tue, 26 Sep 2023 06:32:42 -0500
-Date:   Tue, 26 Sep 2023 17:02:41 +0530
-From:   Dhruva Gole <d-gole@ti.com>
-To:     Thomas Richard <thomas.richard@bootlin.com>
-CC:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        Udit Kumar <u-kumar1@ti.com>
-Subject: Re: [PATCH] serial: 8250_omap: Fix errors with no_console_suspend
-Message-ID: <20230926113241.ws2tco3poeixhupi@dhruva>
-References: <20230926061319.15140-1-tony@atomide.com>
- <652eb018-8e67-5f4b-8329-0f52159a27b1@bootlin.com>
+        Tue, 26 Sep 2023 07:43:57 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1E9CE;
+        Tue, 26 Sep 2023 04:43:51 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id 98e67ed59e1d1-2776d882214so2359440a91.2;
+        Tue, 26 Sep 2023 04:43:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1695728630; x=1696333430; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dkwcmvcDx9Ry059cwK4qWkjs1uRcxEVpsz5bX/95ZV4=;
+        b=THs0IF4I87Qxou6FCfqyXbpiyufhwQTq1Zvo2JzQQU7RTEiUfCd/3sJ3J+XkaHXmCp
+         I7NyFBCIi77bXBFprLQWWyXnBLdhj5Z3m0bTNmj3eSWTsB4MVEgGKKw2wu1p6rGl4KAP
+         WrTimqRBDsFxaPtvbphAQKFeAfR8QQIHBIpMKHMJ4lG0jx6PAyflO/JXbCv6pJOJQwNr
+         w0lcVtJp6t45YLDKKI7udzxAnhgGqFzsgWi5w22cmt2fGuU5VXnW4NXAnYpHPxy4XKiK
+         OSYLDUZjCCm5DfGKqxjwaP0B1CPHseGAGTgVIklJHV62NmO2Dc9K+QqwnbkX2tUVRbZG
+         5gLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695728630; x=1696333430;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dkwcmvcDx9Ry059cwK4qWkjs1uRcxEVpsz5bX/95ZV4=;
+        b=o5HIoMPYQ6ynGlK2NAUEPzj6hq/ikFZiNZg8H+xfOKOrwbesA/hDa7JpHIQT4gljgL
+         0/em+akqQr2uaOSdQeXdHrARO32fL1tB81TJXLICc+AyuneZgKtlTq+v5fTPv4b7v+kj
+         qaa5uVlpHXTGHXkVqlf3L80D87G+xnV9C5RKYrNs6VG0xWtTfqT5VjzZDUgK3kUi/rxB
+         Hr9fgDdiQbmTmlZIufkO0/VcPJ/89QLWLwdQKbFnsgjIHM0L08axXqSZp8eXfOFukNqK
+         iKjltWpuYRcdRszkFBLpCkvwig5C+emKtspRvINrKZXzLhM8pT1ElK2qkYrLBt55KTaM
+         bkNQ==
+X-Gm-Message-State: AOJu0YyCQAi1EFT9Kc7Xj8DNlLPYWxV4V6g6y/mr3zZfVg9V+YIwGcuj
+        cqIxO7wELs4gBhysKGFWn24=
+X-Google-Smtp-Source: AGHT+IGBetiia33KIgJTB+2g0zG108wbsJDTIr+rmVK8b2s3SIkW1+K9Jp1b0rKSdhJnYDjRtvVp3w==
+X-Received: by 2002:a17:90a:ec08:b0:274:8e3b:27cd with SMTP id l8-20020a17090aec0800b002748e3b27cdmr6874049pjy.14.1695728630616;
+        Tue, 26 Sep 2023 04:43:50 -0700 (PDT)
+Received: from pek-lxu-l1.wrs.com ([111.198.228.56])
+        by smtp.gmail.com with ESMTPSA id m6-20020a17090a414600b00274a9f8e82asm93692pjg.51.2023.09.26.04.43.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Sep 2023 04:43:50 -0700 (PDT)
+From:   Edward AD <twuufnxlz@gmail.com>
+To:     conor@kernel.org
+Cc:     syzbot+8d2757d62d403b2d9275@syzkaller.appspotmail.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, paul.walmsley@sifive.com,
+        palmer@dabbelt.com, aou@eecs.berkeley.edu, guoren@kernel.org,
+        alexghiti@rivosinc.com, liushixin2@huawei.com,
+        linux-riscv@lists.infradead.org
+Subject: [PATCH] riscv: fix out of bounds in walk_stackframe
+Date:   Tue, 26 Sep 2023 19:43:44 +0800
+Message-ID: <20230926114343.1061739-2-twuufnxlz@gmail.com>
+X-Mailer: git-send-email 2.42.0
+In-Reply-To: <0000000000000170df0605ccf91a@google.com>
+References: <0000000000000170df0605ccf91a@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <652eb018-8e67-5f4b-8329-0f52159a27b1@bootlin.com>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sep 26, 2023 at 09:51:30 +0200, Thomas Richard wrote:
-> Hi Tony,
-> 
-> Thanks for the fix.
-> 
-> On 9/26/23 08:13, Tony Lindgren wrote:
-> > We now get errors on system suspend if no_console_suspend is set as
-> > reported by Thomas. The errors started with commit 20a41a62618d ("serial:
-> > 8250_omap: Use force_suspend and resume for system suspend").
-> > 
-> > Let's fix the issue by checking for console_suspend_enabled in the system
-> > suspend and resume path.
-> > 
-> > Note that with this fix the checks for console_suspend_enabled in
-> > omap8250_runtime_suspend() become useless. We now keep runtime PM usage
-> > count for an attached kernel console starting with commit bedb404e91bb
-> > ("serial: 8250_port: Don't use power management for kernel console").
-> > 
-> > Fixes: 20a41a62618d ("serial: 8250_omap: Use force_suspend and resume for system suspend")
-> > Cc: Udit Kumar <u-kumar1@ti.com>
-> > Reported-by: Thomas Richard <thomas.richard@bootlin.com>
+Increase the check on the frame after assigning its value. This is to prevent 
+frame access from crossing boundaries.
 
-Don't we want a closes: tag?
+Closes: https://lore.kernel.org/all/20230926105949.1025995-2-twuufnxlz@gmail.com/
+Fixes: 5d8544e2d007 ("RISC-V: Generic library routines and assembly")
+Reported-and-tested-by: syzbot+8d2757d62d403b2d9275@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/all/0000000000000170df0605ccf91a@google.com/T/
+Signed-off-by: Edward AD <twuufnxlz@gmail.com>
+---
+ arch/riscv/kernel/stacktrace.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> > Signed-off-by: Tony Lindgren <tony@atomide.com>
-> 
-> Tested-by: Thomas Richard <thomas.richard@bootlin.com>
-
-Thanks for testing Thomas
-
-> 
-> > ---
-> >  drivers/tty/serial/8250/8250_omap.c | 25 ++++++++++---------------
-> >  1 file changed, 10 insertions(+), 15 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> > --- a/drivers/tty/serial/8250/8250_omap.c
-> > +++ b/drivers/tty/serial/8250/8250_omap.c
-> > @@ -1617,7 +1617,7 @@ static int omap8250_suspend(struct device *dev)
-> >  {
-> >  	struct omap8250_priv *priv = dev_get_drvdata(dev);
-> >  	struct uart_8250_port *up = serial8250_get_port(priv->line);
-> > -	int err;
-> > +	int err = 0;
-> >  
-> >  	serial8250_suspend_port(priv->line);
-> >  
-> > @@ -1627,7 +1627,8 @@ static int omap8250_suspend(struct device *dev)
-> >  	if (!device_may_wakeup(dev))
-> >  		priv->wer = 0;
-> >  	serial_out(up, UART_OMAP_WER, priv->wer);
-> > -	err = pm_runtime_force_suspend(dev);
-> > +	if (uart_console(&up->port) && console_suspend_enabled)
-> > +		err = pm_runtime_force_suspend(dev);
-> >  	flush_work(&priv->qos_work);
-> >  
-> >  	return err;
-> > @@ -1636,11 +1637,15 @@ static int omap8250_suspend(struct device *dev)
-> >  static int omap8250_resume(struct device *dev)
-> >  {
-> >  	struct omap8250_priv *priv = dev_get_drvdata(dev);
-> > +	struct uart_8250_port *up = serial8250_get_port(priv->line);
-> >  	int err;
-> >  
-> > -	err = pm_runtime_force_resume(dev);
-> > -	if (err)
-> > -		return err;
-> > +	if (uart_console(&up->port) && console_suspend_enabled) {
-> > +		err = pm_runtime_force_resume(dev);
-> > +		if (err)
-> > +			return err;
-> > +	}
-
-LGTM, thanks for the fix Tony.
-
-Reviewed-by: Dhruva Gole <d-gole@ti.com>
-
-> > +
-> >  	serial8250_resume_port(priv->line);
-> >  	/* Paired with pm_runtime_resume_and_get() in omap8250_suspend() */
-> >  	pm_runtime_mark_last_busy(dev);
-> > @@ -1717,16 +1722,6 @@ static int omap8250_runtime_suspend(struct device *dev)
-> >  
-> >  	if (priv->line >= 0)
-> >  		up = serial8250_get_port(priv->line);
-> > -	/*
-> > -	 * When using 'no_console_suspend', the console UART must not be
-> > -	 * suspended. Since driver suspend is managed by runtime suspend,
-> > -	 * preventing runtime suspend (by returning error) will keep device
-> > -	 * active during suspend.
-> > -	 */
-> > -	if (priv->is_suspending && !console_suspend_enabled) {
-> > -		if (up && uart_console(&up->port))
-> > -			return -EBUSY;
-> > -	}
-> >  
-> >  	if (priv->habit & UART_ERRATA_CLOCK_DISABLE) {
-> >  		int ret;
-> -- 
-> Thomas Richard
-> 
-
+diff --git a/arch/riscv/kernel/stacktrace.c b/arch/riscv/kernel/stacktrace.c
+index 64a9c093aef9..53bd18672329 100644
+--- a/arch/riscv/kernel/stacktrace.c
++++ b/arch/riscv/kernel/stacktrace.c
+@@ -54,6 +54,8 @@ void notrace walk_stackframe(struct task_struct *task, struct pt_regs *regs,
+ 			break;
+ 		/* Unwind stack frame */
+ 		frame = (struct stackframe *)fp - 1;
++		if (!virt_addr_valid(frame))
++			break;
+ 		sp = fp;
+ 		if (regs && (regs->epc == pc) && (frame->fp & 0x7)) {
+ 			fp = frame->ra;
 -- 
-Best regards,
-Dhruva Gole <d-gole@ti.com>
+2.25.1
+
