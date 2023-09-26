@@ -2,59 +2,148 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C466E8181F
-	for <linux-serial@archiver.kernel.org>; Tue, 26 Sep 2023 06:15:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC16E7D24D
+	for <linux-serial@archiver.kernel.org>; Tue, 26 Sep 2023 07:51:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233709AbjIZGPG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 26 Sep 2023 02:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50766 "EHLO
+        id S229556AbjIZHvn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 26 Sep 2023 03:51:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231994AbjIZGPF (ORCPT
+        with ESMTP id S233816AbjIZHvm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 26 Sep 2023 02:15:05 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74FADB8;
-        Mon, 25 Sep 2023 23:14:59 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id D059F8168;
-        Tue, 26 Sep 2023 06:14:58 +0000 (UTC)
-Date:   Tue, 26 Sep 2023 09:14:57 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Thomas Richard <thomas.richard@bootlin.com>
-Cc:     linux-pm@vger.kernel.org, linux-serial@vger.kernel.org,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Kumar Udit <u-kumar1@ti.com>, Dhruva Gole <d-gole@ti.com>
-Subject: Re: serial: 8250_omap: suspend issue with console_suspend disabled
-Message-ID: <20230926061457.GU5285@atomide.com>
-References: <59b13c93-6637-3050-c145-31be0d6c12c9@bootlin.com>
- <20230920053828.GD5282@atomide.com>
- <332111c2-f3f5-3d7f-09ef-f3ebb3f48eb0@bootlin.com>
- <0ab0dc61-aa9b-1f3f-f889-9c6e10dc62f7@bootlin.com>
- <20230925152630.GT5282@atomide.com>
+        Tue, 26 Sep 2023 03:51:42 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21C0DC;
+        Tue, 26 Sep 2023 00:51:34 -0700 (PDT)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 2842A240008;
+        Tue, 26 Sep 2023 07:51:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1695714693;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7a5K1aAKuIj2iEvxprQZUE+LucC50eyHmU2MT85uylA=;
+        b=CLGB9apBwexIdVNECBBS9V0PnB4y8ocCvgQ4qFRIbu8UcFc7sir6TV0M3ws76qKGl/siSa
+        psuC7TAJwEoNrX55Q5evdslyP+wSjOssom4UVXPNEbANZQotVuc33ajteUO925Yfx9VIVk
+        LML9KPYSLVrKntr/wk5Vd0GHBbRMgz1RNiBb6ISY48qpuiNHLYRQf4W++QB/JsiT9r4w/8
+        9HNz95+c1GMD7CnFgYYsekmY/YKRbOSUqjrrOf5jcxY0vwSqvBn3rL3ofJBslsM4UZ8dYe
+        hP2B62LTdH+WfPXlXUDJ7xEB4BO/0NxdOBJucRQxpWkaTdNvehw022yAq0f5MQ==
+Message-ID: <652eb018-8e67-5f4b-8329-0f52159a27b1@bootlin.com>
+Date:   Tue, 26 Sep 2023 09:51:30 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230925152630.GT5282@atomide.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+Subject: Re: [PATCH] serial: 8250_omap: Fix errors with no_console_suspend
+Content-Language: en-US
+To:     Tony Lindgren <tony@atomide.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Udit Kumar <u-kumar1@ti.com>
+References: <20230926061319.15140-1-tony@atomide.com>
+From:   Thomas Richard <thomas.richard@bootlin.com>
+In-Reply-To: <20230926061319.15140-1-tony@atomide.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-GND-Sasl: thomas.richard@bootlin.com
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Tony Lindgren <tony@atomide.com> [700101 02:00]:
-> * Thomas Richard <thomas.richard@bootlin.com> [230925 13:03]:
-> > On 9/21/23 09:58, Thomas Richard wrote:
-> > > I tested it, it works for me.
-> > 
-> > Tony,
-> > 
-> > As your proposal works well, do you plan to send a patch ?
-> > Or would you prefer me to send it ?
+Hi Tony,
+
+Thanks for the fix.
+
+On 9/26/23 08:13, Tony Lindgren wrote:
+> We now get errors on system suspend if no_console_suspend is set as
+> reported by Thomas. The errors started with commit 20a41a62618d ("serial:
+> 8250_omap: Use force_suspend and resume for system suspend").
 > 
-> Thanks I'll type up the description and send it.
+> Let's fix the issue by checking for console_suspend_enabled in the system
+> suspend and resume path.
+> 
+> Note that with this fix the checks for console_suspend_enabled in
+> omap8250_runtime_suspend() become useless. We now keep runtime PM usage
+> count for an attached kernel console starting with commit bedb404e91bb
+> ("serial: 8250_port: Don't use power management for kernel console").
+> 
+> Fixes: 20a41a62618d ("serial: 8250_omap: Use force_suspend and resume for system suspend")
+> Cc: Udit Kumar <u-kumar1@ti.com>
+> Reported-by: Thomas Richard <thomas.richard@bootlin.com>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
 
-Sent now as:
+Tested-by: Thomas Richard <thomas.richard@bootlin.com>
 
-[PATCH] serial: 8250_omap: Fix errors with no_console_suspend
+> ---
+>  drivers/tty/serial/8250/8250_omap.c | 25 ++++++++++---------------
+>  1 file changed, 10 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -1617,7 +1617,7 @@ static int omap8250_suspend(struct device *dev)
+>  {
+>  	struct omap8250_priv *priv = dev_get_drvdata(dev);
+>  	struct uart_8250_port *up = serial8250_get_port(priv->line);
+> -	int err;
+> +	int err = 0;
+>  
+>  	serial8250_suspend_port(priv->line);
+>  
+> @@ -1627,7 +1627,8 @@ static int omap8250_suspend(struct device *dev)
+>  	if (!device_may_wakeup(dev))
+>  		priv->wer = 0;
+>  	serial_out(up, UART_OMAP_WER, priv->wer);
+> -	err = pm_runtime_force_suspend(dev);
+> +	if (uart_console(&up->port) && console_suspend_enabled)
+> +		err = pm_runtime_force_suspend(dev);
+>  	flush_work(&priv->qos_work);
+>  
+>  	return err;
+> @@ -1636,11 +1637,15 @@ static int omap8250_suspend(struct device *dev)
+>  static int omap8250_resume(struct device *dev)
+>  {
+>  	struct omap8250_priv *priv = dev_get_drvdata(dev);
+> +	struct uart_8250_port *up = serial8250_get_port(priv->line);
+>  	int err;
+>  
+> -	err = pm_runtime_force_resume(dev);
+> -	if (err)
+> -		return err;
+> +	if (uart_console(&up->port) && console_suspend_enabled) {
+> +		err = pm_runtime_force_resume(dev);
+> +		if (err)
+> +			return err;
+> +	}
+> +
+>  	serial8250_resume_port(priv->line);
+>  	/* Paired with pm_runtime_resume_and_get() in omap8250_suspend() */
+>  	pm_runtime_mark_last_busy(dev);
+> @@ -1717,16 +1722,6 @@ static int omap8250_runtime_suspend(struct device *dev)
+>  
+>  	if (priv->line >= 0)
+>  		up = serial8250_get_port(priv->line);
+> -	/*
+> -	 * When using 'no_console_suspend', the console UART must not be
+> -	 * suspended. Since driver suspend is managed by runtime suspend,
+> -	 * preventing runtime suspend (by returning error) will keep device
+> -	 * active during suspend.
+> -	 */
+> -	if (priv->is_suspending && !console_suspend_enabled) {
+> -		if (up && uart_console(&up->port))
+> -			return -EBUSY;
+> -	}
+>  
+>  	if (priv->habit & UART_ERRATA_CLOCK_DISABLE) {
+>  		int ret;
+-- 
+Thomas Richard
 
-Regards,
-
-Tony
