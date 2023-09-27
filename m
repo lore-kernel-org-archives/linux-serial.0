@@ -2,171 +2,75 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13208E80A85
-	for <linux-serial@archiver.kernel.org>; Wed, 27 Sep 2023 05:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EB5EE80A86
+	for <linux-serial@archiver.kernel.org>; Wed, 27 Sep 2023 05:12:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229798AbjI0FCI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 27 Sep 2023 01:02:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36670 "EHLO
+        id S229804AbjI0FL7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 27 Sep 2023 01:11:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229827AbjI0FBX (ORCPT
+        with ESMTP id S229543AbjI0FLZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 27 Sep 2023 01:01:23 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9234D1D28A;
-        Tue, 26 Sep 2023 21:29:55 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id C86C680A3;
-        Wed, 27 Sep 2023 04:29:51 +0000 (UTC)
-Date:   Wed, 27 Sep 2023 07:29:50 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        Wed, 27 Sep 2023 01:11:25 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F35237A81;
+        Tue, 26 Sep 2023 21:41:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=o2C3IMNn5E8olqASjx2/ZYFEnSXvq023rbPKyXfiuOE=; b=KaXxIKBMPN4ABhM72wnGNNhU52
+        hI70FbrVB2UTn/yOyXmB2Ots396y8XUoYtwzsJe0vCEXLhxQSjFgoJyBZp9SNt5/puDpOqx7Nrf51
+        x6aiBs9CcLp4vCXb/7XgrIDBbb1H+RwFaNTPuR7MyGylNEKb+TbBb2f/RsV5RpHrTe2omMIB7Reeu
+        f8F4XOQdFU2Ts//kdC3YA9gtigbnfrGC70thb0uG43eofwMkJXCJ3t0XMF509BS+3Luo8xEdYobLb
+        z6Lvfc+Gb7zafT4EqmYailKBzbDX8CMj14Vtnp7q5TKLwuSWGxE266ZZl7Zte0eBt4e3l6y0NgjSm
+        esiSnEwg==;
+Received: from [50.53.46.231] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+        id 1qlMMa-00HXig-2t;
+        Wed, 27 Sep 2023 04:41:28 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
         John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Udit Kumar <u-kumar1@ti.com>,
-        Thomas Richard <thomas.richard@bootlin.com>
-Subject: Re: [PATCH] serial: 8250_omap: Fix errors with no_console_suspend
-Message-ID: <20230927042950.GB5285@atomide.com>
-References: <20230926061319.15140-1-tony@atomide.com>
- <ZRLBWrjUadvGCs/y@smile.fi.intel.com>
+        linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH -next] serial: core: fix kernel-doc for uart_port_unlock_irqrestore()
+Date:   Tue, 26 Sep 2023 21:41:28 -0700
+Message-ID: <20230927044128.4748-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.42.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZRLBWrjUadvGCs/y@smile.fi.intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Andy Shevchenko <andriy.shevchenko@intel.com> [230926 11:59]:
-> Btw, how close are we to getting rid the pm_runtime_irq_safe() call?
+Fix the function name to avoid a kernel-doc warning:
 
-Very close, I think still doable for v6.7 merge window.. Below is what I'm
-testing with, there's one error that I've seen that may or may not be
-related.
+include/linux/serial_core.h:666: warning: expecting prototype for uart_port_lock_irqrestore(). Prototype was for uart_port_unlock_irqrestore() instead
 
-Regards,
+Fixes: b0af4bcb4946 ("serial: core: Provide port lock wrappers")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: John Ogness <john.ogness@linutronix.de>
+Cc: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+---
+ include/linux/serial_core.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Tony
-
-8< ---------------------------
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -8,6 +8,7 @@
-  *
+diff -- a/include/linux/serial_core.h b/include/linux/serial_core.h
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -658,7 +658,7 @@ static inline void uart_port_unlock_irq(
+ }
+ 
+ /**
+- * uart_port_lock_irqrestore - Unlock the UART port, restore interrupts
++ * uart_port_unlock_irqrestore - Unlock the UART port, restore interrupts
+  * @up:		Pointer to UART port structure
+  * @flags:	The saved interrupt flags for restore
   */
- 
-+#include <linux/atomic.h>
- #include <linux/clk.h>
- #include <linux/device.h>
- #include <linux/io.h>
-@@ -130,6 +131,7 @@ struct omap8250_priv {
- 
- 	u8 tx_trigger;
- 	u8 rx_trigger;
-+	atomic_t active;
- 	bool is_suspending;
- 	int wakeirq;
- 	int wakeups_enabled;
-@@ -632,14 +634,21 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
- 	unsigned int iir, lsr;
- 	int ret;
- 
-+	pm_runtime_get_noresume(port->dev);
-+
-+	/* Shallow idle state wake-up to an IO interrupt? */
-+	if (atomic_add_unless(&priv->active, 1, 1)) {
-+		priv->latency = priv->calc_latency;
-+		schedule_work(&priv->qos_work);
-+	}
-+
- #ifdef CONFIG_SERIAL_8250_DMA
- 	if (up->dma) {
- 		ret = omap_8250_dma_handle_irq(port);
--		return IRQ_RETVAL(ret);
-+		goto out_runtime_put;
- 	}
- #endif
- 
--	serial8250_rpm_get(up);
- 	lsr = serial_port_in(port, UART_LSR);
- 	iir = serial_port_in(port, UART_IIR);
- 	ret = serial8250_handle_irq(port, iir);
-@@ -676,7 +685,9 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
- 		schedule_delayed_work(&up->overrun_backoff, delay);
- 	}
- 
--	serial8250_rpm_put(up);
-+out_runtime_put:
-+	pm_runtime_mark_last_busy(port->dev);
-+	pm_runtime_put(port->dev);
- 
- 	return IRQ_RETVAL(ret);
- }
-@@ -1270,11 +1281,8 @@ static int omap_8250_dma_handle_irq(struct uart_port *port)
- 	u16 status;
- 	u8 iir;
- 
--	serial8250_rpm_get(up);
--
- 	iir = serial_port_in(port, UART_IIR);
- 	if (iir & UART_IIR_NO_INT) {
--		serial8250_rpm_put(up);
- 		return IRQ_HANDLED;
- 	}
- 
-@@ -1305,7 +1313,6 @@ static int omap_8250_dma_handle_irq(struct uart_port *port)
- 
- 	uart_unlock_and_check_sysrq(port);
- 
--	serial8250_rpm_put(up);
- 	return 1;
- }
- 
-@@ -1500,8 +1507,6 @@ static int omap8250_probe(struct platform_device *pdev)
- 	if (!of_get_available_child_count(pdev->dev.of_node))
- 		pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
- 
--	pm_runtime_irq_safe(&pdev->dev);
--
- 	pm_runtime_get_sync(&pdev->dev);
- 
- 	omap_serial_fill_features_erratas(&up, priv);
-@@ -1740,6 +1745,7 @@ static int omap8250_runtime_suspend(struct device *dev)
- 
- 	priv->latency = PM_QOS_CPU_LATENCY_DEFAULT_VALUE;
- 	schedule_work(&priv->qos_work);
-+	atomic_set(&priv->active, 0);
- 
- 	return 0;
- }
-@@ -1749,6 +1755,10 @@ static int omap8250_runtime_resume(struct device *dev)
- 	struct omap8250_priv *priv = dev_get_drvdata(dev);
- 	struct uart_8250_port *up = NULL;
- 
-+	/* Did the hardware wake to a device IO interrupt before a wakeirq? */
-+	if (atomic_read(&priv->active))
-+		return 0;
-+
- 	if (priv->line >= 0)
- 		up = serial8250_get_port(priv->line);
- 
-@@ -1764,8 +1774,10 @@ static int omap8250_runtime_resume(struct device *dev)
- 		spin_unlock_irq(&up->port.lock);
- 	}
- 
-+	atomic_set(&priv->active, 1);
- 	priv->latency = priv->calc_latency;
- 	schedule_work(&priv->qos_work);
-+
- 	return 0;
- }
- 
--- 
-2.42.0
