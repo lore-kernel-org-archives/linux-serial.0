@@ -2,212 +2,171 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C80CDE7F126
-	for <linux-serial@archiver.kernel.org>; Tue, 26 Sep 2023 20:34:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13208E80A85
+	for <linux-serial@archiver.kernel.org>; Wed, 27 Sep 2023 05:02:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235843AbjIZUeq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 26 Sep 2023 16:34:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39022 "EHLO
+        id S229798AbjI0FCI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 27 Sep 2023 01:02:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235880AbjIZUeo (ORCPT
+        with ESMTP id S229827AbjI0FBX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 26 Sep 2023 16:34:44 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D0F13A;
-        Tue, 26 Sep 2023 13:34:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695760476; x=1727296476;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=PJ0vHy+VWElc+eQ+Z+ltBYNwE2I0BJC0iW+pGuyscyY=;
-  b=KGckI7BEjaM8qMYEunh/3b/FXZCdxtUTX1FXwDVU0hDEY3Me6h6xqgOg
-   mCNYYLsM+q3y4PAsHO7GVAuYfv2qtf/nbACL3U5Pmx42DUFj2woLpa8a4
-   cNVD/Jar8/eKIHAzGK4sEcyqvijg8KwdzkoiAmd8H8zidNHi0XkTNyy2Z
-   nlQrW9/9GFl7+4flNbe1BNAo/hrm7Y+jwevasMoLyoHrPhuHousBsqg9g
-   SwZ/FZQ6353U1s050eK171FJiHbRT+lPUeRfSzRl0m6xnv3WPnDbHC+Yz
-   f16B3jSBMRpqsF9AIU9mFg79iRdI29m490/LQ0ca8f63KxQwr7zZFOKCS
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10845"; a="412580983"
-X-IronPort-AV: E=Sophos;i="6.03,178,1694761200"; 
-   d="scan'208";a="412580983"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2023 13:34:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10845"; a="814611539"
-X-IronPort-AV: E=Sophos;i="6.03,178,1694761200"; 
-   d="scan'208";a="814611539"
-Received: from lkp-server02.sh.intel.com (HELO 32c80313467c) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 26 Sep 2023 13:34:33 -0700
-Received: from kbuild by 32c80313467c with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1qlElK-0003LJ-35;
-        Tue, 26 Sep 2023 20:34:30 +0000
-Date:   Wed, 27 Sep 2023 04:33:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Florian Eckert <fe@dev.tdt.de>, Eckert.Florian@googlemail.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org, pavel@ucw.cz,
-        lee@kernel.org, kabel@kernel.org, u.kleine-koenig@pengutronix.de
-Cc:     oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: Re: [PATCH 2/2] trigger: ledtrig-tty: add new line mode to triggers
-Message-ID: <202309270440.IJB24Xap-lkp@intel.com>
-References: <20230926093607.59536-3-fe@dev.tdt.de>
+        Wed, 27 Sep 2023 01:01:23 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9234D1D28A;
+        Tue, 26 Sep 2023 21:29:55 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id C86C680A3;
+        Wed, 27 Sep 2023 04:29:51 +0000 (UTC)
+Date:   Wed, 27 Sep 2023 07:29:50 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Udit Kumar <u-kumar1@ti.com>,
+        Thomas Richard <thomas.richard@bootlin.com>
+Subject: Re: [PATCH] serial: 8250_omap: Fix errors with no_console_suspend
+Message-ID: <20230927042950.GB5285@atomide.com>
+References: <20230926061319.15140-1-tony@atomide.com>
+ <ZRLBWrjUadvGCs/y@smile.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230926093607.59536-3-fe@dev.tdt.de>
+In-Reply-To: <ZRLBWrjUadvGCs/y@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Florian,
+* Andy Shevchenko <andriy.shevchenko@intel.com> [230926 11:59]:
+> Btw, how close are we to getting rid the pm_runtime_irq_safe() call?
 
-kernel test robot noticed the following build errors:
+Very close, I think still doable for v6.7 merge window.. Below is what I'm
+testing with, there's one error that I've seen that may or may not be
+related.
 
-[auto build test ERROR on tty/tty-testing]
-[also build test ERROR on tty/tty-next tty/tty-linus staging/staging-testing staging/staging-next staging/staging-linus linus/master v6.6-rc3 next-20230926]
-[cannot apply to pavel-leds/for-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Regards,
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Florian-Eckert/tty-add-new-helper-function-tty_get_mget/20230926-180154
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20230926093607.59536-3-fe%40dev.tdt.de
-patch subject: [PATCH 2/2] trigger: ledtrig-tty: add new line mode to triggers
-config: x86_64-randconfig-161-20230927 (https://download.01.org/0day-ci/archive/20230927/202309270440.IJB24Xap-lkp@intel.com/config)
-compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20230927/202309270440.IJB24Xap-lkp@intel.com/reproduce)
+Tony
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202309270440.IJB24Xap-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   drivers/leds/trigger/ledtrig-tty.c: In function 'ledtrig_tty_work':
->> drivers/leds/trigger/ledtrig-tty.c:362:3: error: a label can only be part of a statement and a declaration is not a statement
-      unsigned long interval = LEDTRIG_TTY_INTERVAL;
-      ^~~~~~~~
-
-
-vim +362 drivers/leds/trigger/ledtrig-tty.c
-
-   270	
-   271	static void ledtrig_tty_work(struct work_struct *work)
-   272	{
-   273		struct ledtrig_tty_data *trigger_data =
-   274			container_of(work, struct ledtrig_tty_data, dwork.work);
-   275		struct led_classdev *led_cdev = trigger_data->led_cdev;
-   276		struct serial_icounter_struct icount;
-   277		enum tty_led_state state;
-   278		int ret;
-   279	
-   280		state = TTY_LED_DISABLE;
-   281		mutex_lock(&trigger_data->mutex);
-   282	
-   283		if (!trigger_data->ttyname) {
-   284			/* exit without rescheduling */
-   285			mutex_unlock(&trigger_data->mutex);
-   286			return;
-   287		}
-   288	
-   289		/* try to get the tty corresponding to $ttyname */
-   290		if (!trigger_data->tty) {
-   291			dev_t devno;
-   292			struct tty_struct *tty;
-   293			int ret;
-   294	
-   295			ret = tty_dev_name_to_number(trigger_data->ttyname, &devno);
-   296			if (ret < 0)
-   297				/*
-   298				 * A device with this name might appear later, so keep
-   299				 * retrying.
-   300				 */
-   301				goto out;
-   302	
-   303			tty = tty_kopen_shared(devno);
-   304			if (IS_ERR(tty) || !tty)
-   305				/* What to do? retry or abort */
-   306				goto out;
-   307	
-   308			trigger_data->tty = tty;
-   309		}
-   310	
-   311		if (test_bit(LEDTRIG_TTY_MODE_CTS, &trigger_data->mode)) {
-   312			ret = ledtrig_tty_flag(trigger_data, TIOCM_CTS);
-   313			if (ret)
-   314				state = TTY_LED_ENABLE;
-   315		}
-   316	
-   317		if (test_bit(LEDTRIG_TTY_MODE_DSR, &trigger_data->mode)) {
-   318			ret = ledtrig_tty_flag(trigger_data, TIOCM_DSR);
-   319			if (ret)
-   320				state = TTY_LED_ENABLE;
-   321		}
-   322	
-   323		if (test_bit(LEDTRIG_TTY_MODE_CAR, &trigger_data->mode)) {
-   324			ret = ledtrig_tty_flag(trigger_data, TIOCM_CAR);
-   325			if (ret)
-   326				state = TTY_LED_ENABLE;
-   327		}
-   328	
-   329		if (test_bit(LEDTRIG_TTY_MODE_RNG, &trigger_data->mode)) {
-   330			ret = ledtrig_tty_flag(trigger_data, TIOCM_RNG);
-   331			if (ret)
-   332				state = TTY_LED_ENABLE;
-   333		}
-   334	
-   335		/* The rx/tx handling must come after the evaluation of TIOCM_*,
-   336		 * since the display for rx/tx has priority
-   337		 */
-   338		if (test_bit(LEDTRIG_TTY_MODE_TX, &trigger_data->mode) ||
-   339		    test_bit(LEDTRIG_TTY_MODE_RX, &trigger_data->mode)) {
-   340			ret = tty_get_icount(trigger_data->tty, &icount);
-   341			if (ret) {
-   342				dev_info(trigger_data->tty->dev, "Failed to get icount, stopped polling\n");
-   343				mutex_unlock(&trigger_data->mutex);
-   344				return;
-   345			}
-   346	
-   347			if (test_bit(LEDTRIG_TTY_MODE_TX, &trigger_data->mode) &&
-   348			    (icount.tx != trigger_data->tx)) {
-   349				trigger_data->tx = icount.tx;
-   350				state = TTY_LED_BLINK;
-   351			}
-   352	
-   353			if (test_bit(LEDTRIG_TTY_MODE_RX, &trigger_data->mode) &&
-   354			    (icount.rx != trigger_data->rx)) {
-   355				trigger_data->rx = icount.rx;
-   356				state = TTY_LED_BLINK;
-   357			}
-   358		}
-   359	
-   360		switch (state) {
-   361		case TTY_LED_BLINK:
- > 362			unsigned long interval = LEDTRIG_TTY_INTERVAL;
-   363			led_blink_set_oneshot(trigger_data->led_cdev, &interval,
-   364					      &interval, 0);
-   365			break;
-   366		case TTY_LED_ENABLE:
-   367			led_set_brightness(led_cdev, led_cdev->blink_brightness);
-   368			break;
-   369		case TTY_LED_DISABLE:
-   370			fallthrough;
-   371		default:
-   372			led_set_brightness(led_cdev, 0);
-   373			break;
-   374		}
-   375	
-   376	out:
-   377		mutex_unlock(&trigger_data->mutex);
-   378		schedule_delayed_work(&trigger_data->dwork,
-   379				      msecs_to_jiffies(LEDTRIG_TTY_INTERVAL * 2));
-   380	}
-   381	
-
+8< ---------------------------
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -8,6 +8,7 @@
+  *
+  */
+ 
++#include <linux/atomic.h>
+ #include <linux/clk.h>
+ #include <linux/device.h>
+ #include <linux/io.h>
+@@ -130,6 +131,7 @@ struct omap8250_priv {
+ 
+ 	u8 tx_trigger;
+ 	u8 rx_trigger;
++	atomic_t active;
+ 	bool is_suspending;
+ 	int wakeirq;
+ 	int wakeups_enabled;
+@@ -632,14 +634,21 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
+ 	unsigned int iir, lsr;
+ 	int ret;
+ 
++	pm_runtime_get_noresume(port->dev);
++
++	/* Shallow idle state wake-up to an IO interrupt? */
++	if (atomic_add_unless(&priv->active, 1, 1)) {
++		priv->latency = priv->calc_latency;
++		schedule_work(&priv->qos_work);
++	}
++
+ #ifdef CONFIG_SERIAL_8250_DMA
+ 	if (up->dma) {
+ 		ret = omap_8250_dma_handle_irq(port);
+-		return IRQ_RETVAL(ret);
++		goto out_runtime_put;
+ 	}
+ #endif
+ 
+-	serial8250_rpm_get(up);
+ 	lsr = serial_port_in(port, UART_LSR);
+ 	iir = serial_port_in(port, UART_IIR);
+ 	ret = serial8250_handle_irq(port, iir);
+@@ -676,7 +685,9 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
+ 		schedule_delayed_work(&up->overrun_backoff, delay);
+ 	}
+ 
+-	serial8250_rpm_put(up);
++out_runtime_put:
++	pm_runtime_mark_last_busy(port->dev);
++	pm_runtime_put(port->dev);
+ 
+ 	return IRQ_RETVAL(ret);
+ }
+@@ -1270,11 +1281,8 @@ static int omap_8250_dma_handle_irq(struct uart_port *port)
+ 	u16 status;
+ 	u8 iir;
+ 
+-	serial8250_rpm_get(up);
+-
+ 	iir = serial_port_in(port, UART_IIR);
+ 	if (iir & UART_IIR_NO_INT) {
+-		serial8250_rpm_put(up);
+ 		return IRQ_HANDLED;
+ 	}
+ 
+@@ -1305,7 +1313,6 @@ static int omap_8250_dma_handle_irq(struct uart_port *port)
+ 
+ 	uart_unlock_and_check_sysrq(port);
+ 
+-	serial8250_rpm_put(up);
+ 	return 1;
+ }
+ 
+@@ -1500,8 +1507,6 @@ static int omap8250_probe(struct platform_device *pdev)
+ 	if (!of_get_available_child_count(pdev->dev.of_node))
+ 		pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
+ 
+-	pm_runtime_irq_safe(&pdev->dev);
+-
+ 	pm_runtime_get_sync(&pdev->dev);
+ 
+ 	omap_serial_fill_features_erratas(&up, priv);
+@@ -1740,6 +1745,7 @@ static int omap8250_runtime_suspend(struct device *dev)
+ 
+ 	priv->latency = PM_QOS_CPU_LATENCY_DEFAULT_VALUE;
+ 	schedule_work(&priv->qos_work);
++	atomic_set(&priv->active, 0);
+ 
+ 	return 0;
+ }
+@@ -1749,6 +1755,10 @@ static int omap8250_runtime_resume(struct device *dev)
+ 	struct omap8250_priv *priv = dev_get_drvdata(dev);
+ 	struct uart_8250_port *up = NULL;
+ 
++	/* Did the hardware wake to a device IO interrupt before a wakeirq? */
++	if (atomic_read(&priv->active))
++		return 0;
++
+ 	if (priv->line >= 0)
+ 		up = serial8250_get_port(priv->line);
+ 
+@@ -1764,8 +1774,10 @@ static int omap8250_runtime_resume(struct device *dev)
+ 		spin_unlock_irq(&up->port.lock);
+ 	}
+ 
++	atomic_set(&priv->active, 1);
+ 	priv->latency = priv->calc_latency;
+ 	schedule_work(&priv->qos_work);
++
+ 	return 0;
+ }
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.42.0
