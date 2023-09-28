@@ -2,571 +2,512 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCBB0E732D8
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 13:26:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C15E732DA
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 13:26:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231806AbjI1N0z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S232021AbjI1N0z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Thu, 28 Sep 2023 09:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39466 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231904AbjI1N0x (ORCPT
+        with ESMTP id S231956AbjI1N0x (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 28 Sep 2023 09:26:53 -0400
 Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88180198;
-        Thu, 28 Sep 2023 06:26:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED641A4;
+        Thu, 28 Sep 2023 06:26:50 -0700 (PDT)
 Received: from [127.0.0.1] (helo=localhost)
         by relay.expurgate.net with smtp (Exim 4.92)
         (envelope-from <prvs=8649084492=fe@dev.tdt.de>)
-        id 1qlr2N-00BS4k-4Y; Thu, 28 Sep 2023 15:26:39 +0200
+        id 1qlr2S-009JNv-OK; Thu, 28 Sep 2023 15:26:44 +0200
 Received: from [195.243.126.94] (helo=securemail.tdt.de)
         by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <fe@dev.tdt.de>)
-        id 1qlr2M-00B9TD-AH; Thu, 28 Sep 2023 15:26:38 +0200
+        id 1qlr2R-007WgR-O6; Thu, 28 Sep 2023 15:26:43 +0200
 Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id E3DAD240049;
-        Thu, 28 Sep 2023 15:26:37 +0200 (CEST)
+        by securemail.tdt.de (Postfix) with ESMTP id 507DF240049;
+        Thu, 28 Sep 2023 15:26:43 +0200 (CEST)
 Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 43A8B240040;
-        Thu, 28 Sep 2023 15:26:37 +0200 (CEST)
+        by securemail.tdt.de (Postfix) with ESMTP id A4903240040;
+        Thu, 28 Sep 2023 15:26:42 +0200 (CEST)
 Received: from localhost.localdomain (unknown [10.2.3.40])
-        by mail.dev.tdt.de (Postfix) with ESMTPSA id 5E86732F15;
-        Thu, 28 Sep 2023 15:26:36 +0200 (CEST)
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 0048332071;
+        Thu, 28 Sep 2023 15:26:37 +0200 (CEST)
 From:   Florian Eckert <fe@dev.tdt.de>
 To:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
         kabel@kernel.org, u.kleine-koenig@pengutronix.de
 Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-leds@vger.kernel.org
-Subject: [PATCH v2 1/4] tty: whitespaces in descriptions corrected by replacing tabs with spaces.
-Date:   Thu, 28 Sep 2023 15:26:29 +0200
-Message-ID: <20230928132632.200263-2-fe@dev.tdt.de>
+Subject: [PATCH v2 4/4] trigger: ledtrig-tty: add new line mode to triggers
+Date:   Thu, 28 Sep 2023 15:26:32 +0200
+Message-ID: <20230928132632.200263-5-fe@dev.tdt.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230928132632.200263-1-fe@dev.tdt.de>
 References: <20230928132632.200263-1-fe@dev.tdt.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-purgate-type: clean
-X-purgate-ID: 151534::1695907599-7F7D77FE-CE39FDE3/0/0
+X-purgate-ID: 151534::1695907604-5308285C-C4FC74F0/0/0
 X-purgate: clean
+X-purgate-type: clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Tabs were used in the function description, to make this look more
-uniform, the tabs were replaced by spaces where necessary.
+Until now, the LED blinks when data is sent via the tty (rx/tx).
+The serial tty interface also supports additional input signals, that can
+also be evaluated within this trigger. This change is adding the followin=
+g
+additional input sources, which could be controlled
+via the '/sys/class/<leds>/' sysfs interface.
+
+- line_cts:
+  DCE is ready to accept data from the DTE (Clear To  Send). If the line
+  state is detected, the LED is switched on.
+  If set to 0 (default), the LED will not evaluate CTS.
+  If set to 1, the LED will evaluate CTS.
+
+- line_dsr:
+  DCE is ready to receive and send data (Data Set Ready). If the line sta=
+te
+  is detected, the LED is switched on.
+  If set to 0 (default), the LED will not evaluate DSR.
+  If set to 1, the LED will evaluate DSR.
+
+- line_car:
+  DTE is receiving a carrier from the DCE (Data Carrier Detect). If the
+  line state is detected, the LED is switched on.
+  If set to 0 (default), the LED will not evaluate CAR (DCD).
+  If set to 1, the LED will evaluate CAR (DCD).
+
+- line_rng:
+  DCE has detected an incoming ring signal on the telephone line
+  (Ring Indicator). If the line state is detected, the LED is switched on=
+.
+  If set to 0 (default), the LED will not evaluate RNG (RI).
+  If set to 1, the LED will evaluate RNG (RI).
+
+In addition to the new line_* entries in sysfs, the indication for the
+direction of the transmitted data is independently controllable via the
+new rx and tx sysfs entrie now too. These are on by default. Thus the
+trigger behaves as before this change.
+
+- rx:
+  Signal reception (rx) of data on the named tty device.
+  If set to 0, the LED will not blink on reception.
+  If set to 1 (default), the LED will blink on reception.
+
+- tx:
+  Signal transmission (tx) of data on the named tty device.
+  If set to 0, the LED will not blink on transmission.
+  If set to 1 (default), the LED will blink on transmission.
 
 Signed-off-by: Florian Eckert <fe@dev.tdt.de>
 ---
- drivers/tty/tty_io.c | 102 +++++++++++++++++++++----------------------
- 1 file changed, 51 insertions(+), 51 deletions(-)
+ .../ABI/testing/sysfs-class-led-trigger-tty   |  53 ++++
+ drivers/leds/trigger/ledtrig-tty.c            | 279 +++++++++++++++++-
+ 2 files changed, 322 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 8a94e5a43c6d..3299a5d50727 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -159,7 +159,7 @@ static int tty_fasync(int fd, struct file *filp, int =
-on);
- static void release_tty(struct tty_struct *tty, int idx);
+diff --git a/Documentation/ABI/testing/sysfs-class-led-trigger-tty b/Docu=
+mentation/ABI/testing/sysfs-class-led-trigger-tty
+index 2bf6b24e781b..e1f578ac8656 100644
+--- a/Documentation/ABI/testing/sysfs-class-led-trigger-tty
++++ b/Documentation/ABI/testing/sysfs-class-led-trigger-tty
+@@ -4,3 +4,56 @@ KernelVersion:	5.10
+ Contact:	linux-leds@vger.kernel.org
+ Description:
+ 		Specifies the tty device name of the triggering tty
++
++What:		/sys/class/leds/<led>/rx
++Date:		September 2023
++KernelVersion:	6.7
++Description:
++		Signal reception (rx) of data on the named tty device.
++		If set to 0, the LED will not blink on reception.
++		If set to 1 (default), the LED will blink on reception.
++
++What:		/sys/class/leds/<led>/tx
++Date:		September 2023
++KernelVersion:	6.7
++Description:
++		Signal transmission (tx) of data on the named tty device.
++		If set to 0, the LED will not blink on transmission.
++		If set to 1 (default), the LED will blink on transmission.
++
++What:		/sys/class/leds/<led>/line_cts
++Date:		September 2023
++KernelVersion:	6.7
++Description:
++		DCE is ready to accept data from the DTE (Clear To Send). If
++		the line state is detected, the LED is switched on.
++		If set to 0 (default), the LED will not evaluate CTS.
++		If set to 1, the LED will evaluate CTS.
++
++What:		/sys/class/leds/<led>/line_dsr
++Date:		September 2023
++KernelVersion:	6.7
++Description:
++		DCE is ready to receive and send data (Data Set Ready). If
++		the line state is detected, the LED is switched on.
++		If set to 0 (default), the LED will not evaluate DSR.
++		If set to 1, the LED will evaluate DSR.
++
++What:		/sys/class/leds/<led>/line_car
++Date:		September 2023
++KernelVersion:	6.7
++Description:
++		DTE is receiving a carrier from the DCE (Data Carrier Detect).
++		If the line state is detected, the LED is switched on.
++		If set to 0 (default), the LED will not evaluate CAR (DCD).
++		If set to 1, the LED will evaluate CAR (DCD).
++
++What:		/sys/class/leds/<led>/line_rng
++Date:		September 2023
++KernelVersion:	6.7
++Description:
++		DCE has detected an incoming ring signal on the telephone
++		line (Ring Indicator). If the line state is detected, the
++		LED is switched on.
++		If set to 0 (default), the LED will not evaluate RNG (RI).
++		If set to 1, the LED will evaluate RNG (RI).
+diff --git a/drivers/leds/trigger/ledtrig-tty.c b/drivers/leds/trigger/le=
+dtrig-tty.c
+index 1c6fadf0b856..50bef4c8f321 100644
+--- a/drivers/leds/trigger/ledtrig-tty.c
++++ b/drivers/leds/trigger/ledtrig-tty.c
+@@ -16,6 +16,28 @@ struct ledtrig_tty_data {
+ 	const char *ttyname;
+ 	struct tty_struct *tty;
+ 	int rx, tx;
++	unsigned long mode;
++#define LEDTRIG_TTY_MODE_TX	0
++#define LEDTRIG_TTY_MODE_RX	1
++#define LEDTRIG_TTY_MODE_CTS	2
++#define LEDTRIG_TTY_MODE_DSR	3
++#define LEDTRIG_TTY_MODE_CAR	4
++#define LEDTRIG_TTY_MODE_RNG	5
++};
++
++enum tty_led_state {
++	TTY_LED_BLINK,
++	TTY_LED_ENABLE,
++	TTY_LED_DISABLE,
++};
++
++enum ledtrig_tty_attr {
++	LEDTRIG_TTY_ATTR_TX,
++	LEDTRIG_TTY_ATTR_RX,
++	LEDTRIG_TTY_ATTR_CTS,
++	LEDTRIG_TTY_ATTR_DSR,
++	LEDTRIG_TTY_ATTR_CAR,
++	LEDTRIG_TTY_ATTR_RNG,
+ };
 =20
- /**
-- * free_tty_struct	-	free a disused tty
-+ * free_tty_struct - free a disused tty
-  * @tty: tty struct to free
-  *
-  * Free the write buffers, tty queue and tty memory itself.
-@@ -233,7 +233,7 @@ static void tty_del_file(struct file *file)
+ static void ledtrig_tty_restart(struct ledtrig_tty_data *trigger_data)
+@@ -78,14 +100,186 @@ static ssize_t ttyname_store(struct device *dev,
  }
+ static DEVICE_ATTR_RW(ttyname);
 =20
- /**
-- * tty_name	-	return tty naming
-+ * tty_name - return tty naming
-  * @tty: tty structure
-  *
-  * Convert a tty structure into a name. The name reflects the kernel nam=
-ing
-@@ -295,7 +295,7 @@ static void check_tty_count(struct tty_struct *tty, c=
-onst char *routine)
- }
++static ssize_t ledtrig_tty_attr_show(struct device *dev, char *buf,
++	enum ledtrig_tty_attr attr)
++{
++	struct ledtrig_tty_data *trigger_data =3D led_trigger_get_drvdata(dev);
++	int bit;
++
++	switch (attr) {
++	case LEDTRIG_TTY_ATTR_TX:
++		bit =3D LEDTRIG_TTY_MODE_TX;
++		break;
++	case LEDTRIG_TTY_ATTR_RX:
++		bit =3D LEDTRIG_TTY_MODE_RX;
++		break;
++	case LEDTRIG_TTY_ATTR_CTS:
++		bit =3D LEDTRIG_TTY_MODE_CTS;
++		break;
++	case LEDTRIG_TTY_ATTR_DSR:
++		bit =3D LEDTRIG_TTY_MODE_DSR;
++		break;
++	case LEDTRIG_TTY_ATTR_CAR:
++		bit =3D LEDTRIG_TTY_MODE_CAR;
++		break;
++	case LEDTRIG_TTY_ATTR_RNG:
++		bit =3D LEDTRIG_TTY_MODE_RNG;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return sprintf(buf, "%u\n", test_bit(bit, &trigger_data->mode));
++}
++
++static ssize_t ledtrig_tty_attr_store(struct device *dev, const char *bu=
+f,
++	size_t size, enum ledtrig_tty_attr attr)
++{
++	struct ledtrig_tty_data *trigger_data =3D led_trigger_get_drvdata(dev);
++	unsigned long state;
++	int ret;
++	int bit;
++
++	ret =3D kstrtoul(buf, 0, &state);
++	if (ret)
++		return ret;
++
++	switch (attr) {
++	case LEDTRIG_TTY_ATTR_TX:
++		bit =3D LEDTRIG_TTY_MODE_TX;
++		break;
++	case LEDTRIG_TTY_ATTR_RX:
++		bit =3D LEDTRIG_TTY_MODE_RX;
++		break;
++	case LEDTRIG_TTY_ATTR_CTS:
++		bit =3D LEDTRIG_TTY_MODE_CTS;
++		break;
++	case LEDTRIG_TTY_ATTR_DSR:
++		bit =3D LEDTRIG_TTY_MODE_DSR;
++		break;
++	case LEDTRIG_TTY_ATTR_CAR:
++		bit =3D LEDTRIG_TTY_MODE_CAR;
++		break;
++	case LEDTRIG_TTY_ATTR_RNG:
++		bit =3D LEDTRIG_TTY_MODE_RNG;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	if (state)
++		set_bit(bit, &trigger_data->mode);
++	else
++		clear_bit(bit, &trigger_data->mode);
++
++	return size;
++}
++
++static ssize_t tx_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	return ledtrig_tty_attr_show(dev, buf, LEDTRIG_TTY_ATTR_TX);
++}
++
++static ssize_t tx_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t size)
++{
++	return ledtrig_tty_attr_store(dev, buf, size, LEDTRIG_TTY_ATTR_TX);
++}
++static DEVICE_ATTR_RW(tx);
++
++static ssize_t rx_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	return ledtrig_tty_attr_show(dev, buf, LEDTRIG_TTY_ATTR_RX);
++}
++
++static ssize_t rx_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t size)
++{
++	return ledtrig_tty_attr_store(dev, buf, size, LEDTRIG_TTY_ATTR_RX);
++}
++static DEVICE_ATTR_RW(rx);
++
++static ssize_t line_cts_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	return ledtrig_tty_attr_show(dev, buf, LEDTRIG_TTY_ATTR_CTS);
++}
++
++static ssize_t line_cts_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t size)
++{
++	return ledtrig_tty_attr_store(dev, buf, size, LEDTRIG_TTY_ATTR_CTS);
++}
++static DEVICE_ATTR_RW(line_cts);
++
++static ssize_t line_dsr_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	return ledtrig_tty_attr_show(dev, buf, LEDTRIG_TTY_ATTR_DSR);
++}
++
++static ssize_t line_dsr_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t size)
++{
++	return ledtrig_tty_attr_store(dev, buf, size, LEDTRIG_TTY_ATTR_DSR);
++}
++static DEVICE_ATTR_RW(line_dsr);
++
++static ssize_t line_car_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	return ledtrig_tty_attr_show(dev, buf, LEDTRIG_TTY_ATTR_CAR);
++}
++
++static ssize_t line_car_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t size)
++{
++	return ledtrig_tty_attr_store(dev, buf, size, LEDTRIG_TTY_ATTR_CAR);
++}
++static DEVICE_ATTR_RW(line_car);
++
++static ssize_t line_rng_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	return ledtrig_tty_attr_show(dev, buf, LEDTRIG_TTY_ATTR_RNG);
++}
++
++static ssize_t line_rng_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t size)
++{
++	return ledtrig_tty_attr_store(dev, buf, size, LEDTRIG_TTY_ATTR_RNG);
++}
++static DEVICE_ATTR_RW(line_rng);
++
++
++static int ledtrig_tty_flag(struct ledtrig_tty_data *trigger_data, unsig=
+ned int flag)
++{
++	unsigned int status;
++	int ret;
++
++	status =3D tty_get_tiocm(trigger_data->tty);
++	if (status & flag)
++		ret =3D 1;
++	else
++		ret =3D 0;
++
++	return ret;
++}
++
+ static void ledtrig_tty_work(struct work_struct *work)
+ {
+ 	struct ledtrig_tty_data *trigger_data =3D
+ 		container_of(work, struct ledtrig_tty_data, dwork.work);
++	struct led_classdev *led_cdev =3D trigger_data->led_cdev;
+ 	unsigned long interval =3D LEDTRIG_TTY_INTERVAL;
+ 	struct serial_icounter_struct icount;
++	enum tty_led_state state;
++	int current_brightness;
+ 	int ret;
 =20
- /**
-- * get_tty_driver		-	find device of a tty
-+ * get_tty_driver - find device of a tty
-  * @device: device identifier
-  * @index: returns the index of the tty
-  *
-@@ -320,7 +320,7 @@ static struct tty_driver *get_tty_driver(dev_t device=
-, int *index)
- }
++	state =3D TTY_LED_DISABLE;
+ 	mutex_lock(&trigger_data->mutex);
 =20
- /**
-- * tty_dev_name_to_number	-	return dev_t for device name
-+ * tty_dev_name_to_number - return dev_t for device name
-  * @name: user space name of device under /dev
-  * @number: pointer to dev_t that this function will populate
-  *
-@@ -372,7 +372,7 @@ EXPORT_SYMBOL_GPL(tty_dev_name_to_number);
- #ifdef CONFIG_CONSOLE_POLL
+ 	if (!trigger_data->ttyname) {
+@@ -116,20 +310,75 @@ static void ledtrig_tty_work(struct work_struct *wo=
+rk)
+ 		trigger_data->tty =3D tty;
+ 	}
 =20
- /**
-- * tty_find_polling_driver	-	find device of a polled tty
-+ * tty_find_polling_driver - find device of a polled tty
-  * @name: name string to match
-  * @line: pointer to resulting tty line nr
-  *
-@@ -505,7 +505,7 @@ static DEFINE_SPINLOCK(redirect_lock);
- static struct file *redirect;
+-	ret =3D tty_get_icount(trigger_data->tty, &icount);
+-	if (ret) {
+-		dev_info(trigger_data->tty->dev, "Failed to get icount, stopped pollin=
+g\n");
+-		mutex_unlock(&trigger_data->mutex);
+-		return;
++	if (test_bit(LEDTRIG_TTY_MODE_CTS, &trigger_data->mode)) {
++		ret =3D ledtrig_tty_flag(trigger_data, TIOCM_CTS);
++		if (ret)
++			state =3D TTY_LED_ENABLE;
+ 	}
 =20
- /**
-- * tty_wakeup	-	request more data
-+ * tty_wakeup - request more data
-  * @tty: terminal
-  *
-  * Internal and external helper for wakeups of tty. This function inform=
-s the
-@@ -529,7 +529,7 @@ void tty_wakeup(struct tty_struct *tty)
- EXPORT_SYMBOL_GPL(tty_wakeup);
+-	if (icount.rx !=3D trigger_data->rx ||
+-	    icount.tx !=3D trigger_data->tx) {
++	if (test_bit(LEDTRIG_TTY_MODE_DSR, &trigger_data->mode)) {
++		ret =3D ledtrig_tty_flag(trigger_data, TIOCM_DSR);
++		if (ret)
++			state =3D TTY_LED_ENABLE;
++	}
++
++	if (test_bit(LEDTRIG_TTY_MODE_CAR, &trigger_data->mode)) {
++		ret =3D ledtrig_tty_flag(trigger_data, TIOCM_CAR);
++		if (ret)
++			state =3D TTY_LED_ENABLE;
++	}
++
++	if (test_bit(LEDTRIG_TTY_MODE_RNG, &trigger_data->mode)) {
++		ret =3D ledtrig_tty_flag(trigger_data, TIOCM_RNG);
++		if (ret)
++			state =3D TTY_LED_ENABLE;
++	}
++
++	/* The rx/tx handling must come after the evaluation of TIOCM_*,
++	 * since the display for rx/tx has priority
++	 */
++	if (test_bit(LEDTRIG_TTY_MODE_TX, &trigger_data->mode) ||
++	    test_bit(LEDTRIG_TTY_MODE_RX, &trigger_data->mode)) {
++		ret =3D tty_get_icount(trigger_data->tty, &icount);
++		if (ret) {
++			dev_info(trigger_data->tty->dev, "Failed to get icount, stopped polli=
+ng\n");
++			mutex_unlock(&trigger_data->mutex);
++			return;
++		}
++
++		if (test_bit(LEDTRIG_TTY_MODE_TX, &trigger_data->mode) &&
++		    (icount.tx !=3D trigger_data->tx)) {
++			trigger_data->tx =3D icount.tx;
++			state =3D TTY_LED_BLINK;
++		}
++
++		if (test_bit(LEDTRIG_TTY_MODE_RX, &trigger_data->mode) &&
++		    (icount.rx !=3D trigger_data->rx)) {
++			trigger_data->rx =3D icount.rx;
++			state =3D TTY_LED_BLINK;
++		}
++	}
++
++	current_brightness =3D led_cdev->brightness;
++	if (current_brightness)
++		led_cdev->blink_brightness =3D current_brightness;
++
++	if (!led_cdev->blink_brightness)
++		led_cdev->blink_brightness =3D led_cdev->max_brightness;
++
++	switch (state) {
++	case TTY_LED_BLINK:
+ 		led_blink_set_oneshot(trigger_data->led_cdev, &interval,
+ 				      &interval, 0);
+-
+-		trigger_data->rx =3D icount.rx;
+-		trigger_data->tx =3D icount.tx;
++		break;
++	case TTY_LED_ENABLE:
++		led_set_brightness(led_cdev, led_cdev->blink_brightness);
++		break;
++	case TTY_LED_DISABLE:
++		fallthrough;
++	default:
++		led_set_brightness(led_cdev, LED_OFF);
++		break;
+ 	}
 =20
- /**
-- * tty_release_redirect	-	Release a redirect on a pty if present
-+ * tty_release_redirect - Release a redirect on a pty if present
-  * @tty: tty device
-  *
-  * This is available to the pty code so if the master closes, if the sla=
-ve is a
-@@ -550,7 +550,7 @@ static struct file *tty_release_redirect(struct tty_s=
-truct *tty)
- }
+ out:
+@@ -140,6 +389,12 @@ static void ledtrig_tty_work(struct work_struct *wor=
+k)
 =20
- /**
-- * __tty_hangup		-	actual handler for hangup events
-+ * __tty_hangup - actual handler for hangup events
-  * @tty: tty device
-  * @exit_session: if non-zero, signal all foreground group processes
-  *
-@@ -673,7 +673,7 @@ static void do_tty_hangup(struct work_struct *work)
- }
+ static struct attribute *ledtrig_tty_attrs[] =3D {
+ 	&dev_attr_ttyname.attr,
++	&dev_attr_rx.attr,
++	&dev_attr_tx.attr,
++	&dev_attr_line_cts.attr,
++	&dev_attr_line_dsr.attr,
++	&dev_attr_line_car.attr,
++	&dev_attr_line_rng.attr,
+ 	NULL
+ };
+ ATTRIBUTE_GROUPS(ledtrig_tty);
+@@ -152,6 +407,10 @@ static int ledtrig_tty_activate(struct led_classdev =
+*led_cdev)
+ 	if (!trigger_data)
+ 		return -ENOMEM;
 =20
- /**
-- * tty_hangup		-	trigger a hangup event
-+ * tty_hangup - trigger a hangup event
-  * @tty: tty to hangup
-  *
-  * A carrier loss (virtual or otherwise) has occurred on @tty. Schedule =
-a
-@@ -687,7 +687,7 @@ void tty_hangup(struct tty_struct *tty)
- EXPORT_SYMBOL(tty_hangup);
++	/* Enable default rx/tx LED blink */
++	set_bit(LEDTRIG_TTY_MODE_TX, &trigger_data->mode);
++	set_bit(LEDTRIG_TTY_MODE_RX, &trigger_data->mode);
++
+ 	led_set_trigger_data(led_cdev, trigger_data);
 =20
- /**
-- * tty_vhangup		-	process vhangup
-+ * tty_vhangup - process vhangup
-  * @tty: tty to hangup
-  *
-  * The user has asked via system call for the terminal to be hung up. We=
- do
-@@ -703,7 +703,7 @@ EXPORT_SYMBOL(tty_vhangup);
-=20
-=20
- /**
-- * tty_vhangup_self	-	process vhangup for own ctty
-+ * tty_vhangup_self - process vhangup for own ctty
-  *
-  * Perform a vhangup on the current controlling tty
-  */
-@@ -719,7 +719,7 @@ void tty_vhangup_self(void)
- }
-=20
- /**
-- * tty_vhangup_session	-	hangup session leader exit
-+ * tty_vhangup_session - hangup session leader exit
-  * @tty: tty to hangup
-  *
-  * The session leader is exiting and hanging up its controlling terminal=
-.
-@@ -735,7 +735,7 @@ void tty_vhangup_session(struct tty_struct *tty)
- }
-=20
- /**
-- * tty_hung_up_p	-	was tty hung up
-+ * tty_hung_up_p - was tty hung up
-  * @filp: file pointer of tty
-  *
-  * Return: true if the tty has been subject to a vhangup or a carrier lo=
-ss
-@@ -756,7 +756,7 @@ void __stop_tty(struct tty_struct *tty)
- }
-=20
- /**
-- * stop_tty	-	propagate flow control
-+ * stop_tty - propagate flow control
-  * @tty: tty to stop
-  *
-  * Perform flow control to the driver. May be called on an already stopp=
-ed
-@@ -790,7 +790,7 @@ void __start_tty(struct tty_struct *tty)
- }
-=20
- /**
-- * start_tty	-	propagate flow control
-+ * start_tty - propagate flow control
-  * @tty: tty to start
-  *
-  * Start a tty that has been stopped if at all possible. If @tty was pre=
-viously
-@@ -898,7 +898,7 @@ static ssize_t iterate_tty_read(struct tty_ldisc *ld,=
- struct tty_struct *tty,
-=20
-=20
- /**
-- * tty_read	-	read method for tty device files
-+ * tty_read - read method for tty device files
-  * @iocb: kernel I/O control block
-  * @to: destination for the data read
-  *
-@@ -1091,7 +1091,7 @@ static ssize_t file_tty_write(struct file *file, st=
-ruct kiocb *iocb, struct iov_
- }
-=20
- /**
-- * tty_write		-	write method for tty device file
-+ * tty_write - write method for tty device file
-  * @iocb: kernel I/O control block
-  * @from: iov_iter with data to write
-  *
-@@ -1133,7 +1133,7 @@ ssize_t redirected_tty_write(struct kiocb *iocb, st=
-ruct iov_iter *iter)
- }
-=20
- /**
-- * tty_send_xchar	-	send priority character
-+ * tty_send_xchar - send priority character
-  * @tty: the tty to send to
-  * @ch: xchar to send
-  *
-@@ -1167,7 +1167,7 @@ int tty_send_xchar(struct tty_struct *tty, char ch)
- }
-=20
- /**
-- * pty_line_name	-	generate name for a pty
-+ * pty_line_name - generate name for a pty
-  * @driver: the tty driver in use
-  * @index: the minor number
-  * @p: output buffer of at least 6 bytes
-@@ -1188,7 +1188,7 @@ static void pty_line_name(struct tty_driver *driver=
-, int index, char *p)
- }
-=20
- /**
-- * tty_line_name	-	generate name for a tty
-+ * tty_line_name - generate name for a tty
-  * @driver: the tty driver in use
-  * @index: the minor number
-  * @p: output buffer of at least 7 bytes
-@@ -1239,7 +1239,7 @@ static struct tty_struct *tty_driver_lookup_tty(str=
-uct tty_driver *driver,
- }
-=20
- /**
-- * tty_init_termios	-  helper for termios setup
-+ * tty_init_termios - helper for termios setup
-  * @tty: the tty to set up
-  *
-  * Initialise the termios structure for this tty. This runs under the
-@@ -1322,7 +1322,7 @@ static void tty_driver_remove_tty(struct tty_driver=
- *driver, struct tty_struct *
- }
-=20
- /**
-- * tty_reopen()	- fast re-open of an open tty
-+ * tty_reopen() - fast re-open of an open tty
-  * @tty: the tty to open
-  *
-  * Re-opens on master ptys are not allowed and return -%EIO.
-@@ -1366,7 +1366,7 @@ static int tty_reopen(struct tty_struct *tty)
- }
-=20
- /**
-- * tty_init_dev		-	initialise a tty device
-+ * tty_init_dev - initialise a tty device
-  * @driver: tty driver we are opening a device on
-  * @idx: device index
-  *
-@@ -1488,7 +1488,7 @@ void tty_save_termios(struct tty_struct *tty)
- EXPORT_SYMBOL_GPL(tty_save_termios);
-=20
- /**
-- * tty_flush_works	-	flush all works of a tty/pty pair
-+ * tty_flush_works - flush all works of a tty/pty pair
-  * @tty: tty device to flush works for (or either end of a pty pair)
-  *
-  * Sync flush all works belonging to @tty (and the 'other' tty).
-@@ -1504,7 +1504,7 @@ static void tty_flush_works(struct tty_struct *tty)
- }
-=20
- /**
-- * release_one_tty	-	release tty structure memory
-+ * release_one_tty - release tty structure memory
-  * @work: work of tty we are obliterating
-  *
-  * Releases memory associated with a tty structure, and clears out the
-@@ -1552,7 +1552,7 @@ static void queue_release_one_tty(struct kref *kref=
-)
- }
-=20
- /**
-- * tty_kref_put		-	release a tty kref
-+ * tty_kref_put - release a tty kref
-  * @tty: tty device
-  *
-  * Release a reference to the @tty device and if need be let the kref la=
-yer
-@@ -1566,7 +1566,7 @@ void tty_kref_put(struct tty_struct *tty)
- EXPORT_SYMBOL(tty_kref_put);
-=20
- /**
-- * release_tty		-	release tty structure memory
-+ * release_tty - release tty structure memory
-  * @tty: tty device release
-  * @idx: index of the tty device release
-  *
-@@ -1643,7 +1643,7 @@ static int tty_release_checks(struct tty_struct *tt=
-y, int idx)
- }
-=20
- /**
-- * tty_kclose      -       closes tty opened by tty_kopen
-+ * tty_kclose - closes tty opened by tty_kopen
-  * @tty: tty device
-  *
-  * Performs the final steps to release and free a tty device. It is the =
-same as
-@@ -1673,7 +1673,7 @@ void tty_kclose(struct tty_struct *tty)
- EXPORT_SYMBOL_GPL(tty_kclose);
-=20
- /**
-- * tty_release_struct	-	release a tty struct
-+ * tty_release_struct - release a tty struct
-  * @tty: tty device
-  * @idx: index of the tty
-  *
-@@ -1702,7 +1702,7 @@ void tty_release_struct(struct tty_struct *tty, int=
- idx)
- EXPORT_SYMBOL_GPL(tty_release_struct);
-=20
- /**
-- * tty_release		-	vfs callback for close
-+ * tty_release - vfs callback for close
-  * @inode: inode of tty
-  * @filp: file pointer for handle to tty
-  *
-@@ -1983,7 +1983,7 @@ static struct tty_struct *tty_kopen(dev_t device, i=
-nt shared)
- }
-=20
- /**
-- * tty_kopen_exclusive	-	open a tty device for kernel
-+ * tty_kopen_exclusive - open a tty device for kernel
-  * @device: dev_t of device to open
-  *
-  * Opens tty exclusively for kernel. Performs the driver lookup, makes s=
-ure
-@@ -2003,7 +2003,7 @@ struct tty_struct *tty_kopen_exclusive(dev_t device=
-)
- EXPORT_SYMBOL_GPL(tty_kopen_exclusive);
-=20
- /**
-- * tty_kopen_shared	-	open a tty device for shared in-kernel use
-+ * tty_kopen_shared - open a tty device for shared in-kernel use
-  * @device: dev_t of device to open
-  *
-  * Opens an already existing tty for in-kernel use. Compared to
-@@ -2018,7 +2018,7 @@ struct tty_struct *tty_kopen_shared(dev_t device)
- EXPORT_SYMBOL_GPL(tty_kopen_shared);
-=20
- /**
-- * tty_open_by_driver	-	open a tty device
-+ * tty_open_by_driver - open a tty device
-  * @device: dev_t of device to open
-  * @filp: file pointer to tty
-  *
-@@ -2086,7 +2086,7 @@ static struct tty_struct *tty_open_by_driver(dev_t =
-device,
- }
-=20
- /**
-- * tty_open	-	open a tty device
-+ * tty_open - open a tty device
-  * @inode: inode of device file
-  * @filp: file pointer to tty
-  *
-@@ -2180,7 +2180,7 @@ static int tty_open(struct inode *inode, struct fil=
-e *filp)
-=20
-=20
- /**
-- * tty_poll	-	check tty status
-+ * tty_poll - check tty status
-  * @filp: file being polled
-  * @wait: poll wait structures to update
-  *
-@@ -2258,7 +2258,7 @@ static int tty_fasync(int fd, struct file *filp, in=
-t on)
-=20
- static bool tty_legacy_tiocsti __read_mostly =3D IS_ENABLED(CONFIG_LEGAC=
-Y_TIOCSTI);
- /**
-- * tiocsti		-	fake input character
-+ * tiocsti - fake input character
-  * @tty: tty to fake input into
-  * @p: pointer to character
-  *
-@@ -2295,7 +2295,7 @@ static int tiocsti(struct tty_struct *tty, char __u=
-ser *p)
- }
-=20
- /**
-- * tiocgwinsz		-	implement window query ioctl
-+ * tiocgwinsz - implement window query ioctl
-  * @tty: tty
-  * @arg: user buffer for result
-  *
-@@ -2316,7 +2316,7 @@ static int tiocgwinsz(struct tty_struct *tty, struc=
-t winsize __user *arg)
- }
-=20
- /**
-- * tty_do_resize	-	resize event
-+ * tty_do_resize - resize event
-  * @tty: tty being resized
-  * @ws: new dimensions
-  *
-@@ -2346,7 +2346,7 @@ int tty_do_resize(struct tty_struct *tty, struct wi=
-nsize *ws)
- EXPORT_SYMBOL(tty_do_resize);
-=20
- /**
-- * tiocswinsz		-	implement window size set ioctl
-+ * tiocswinsz - implement window size set ioctl
-  * @tty: tty side of tty
-  * @arg: user buffer for result
-  *
-@@ -2373,7 +2373,7 @@ static int tiocswinsz(struct tty_struct *tty, struc=
-t winsize __user *arg)
- }
-=20
- /**
-- * tioccons	-	allow admin to move logical console
-+ * tioccons - allow admin to move logical console
-  * @file: the file to become console
-  *
-  * Allow the administrator to move the redirected console device.
-@@ -2412,7 +2412,7 @@ static int tioccons(struct file *file)
- }
-=20
- /**
-- * tiocsetd	-	set line discipline
-+ * tiocsetd - set line discipline
-  * @tty: tty device
-  * @p: pointer to user data
-  *
-@@ -2434,7 +2434,7 @@ static int tiocsetd(struct tty_struct *tty, int __u=
-ser *p)
- }
-=20
- /**
-- * tiocgetd	-	get line discipline
-+ * tiocgetd - get line discipline
-  * @tty: tty device
-  * @p: pointer to user data
-  *
-@@ -2457,7 +2457,7 @@ static int tiocgetd(struct tty_struct *tty, int __u=
-ser *p)
- }
-=20
- /**
-- * send_break	-	performed time break
-+ * send_break - performed time break
-  * @tty: device to break on
-  * @duration: timeout in mS
-  *
-@@ -2495,7 +2495,7 @@ static int send_break(struct tty_struct *tty, unsig=
-ned int duration)
- }
-=20
- /**
-- * tty_tiocmget		-	get modem status
-+ * tty_tiocmget - get modem status
-  * @tty: tty device
-  * @p: pointer to result
-  *
-@@ -2518,7 +2518,7 @@ static int tty_tiocmget(struct tty_struct *tty, int=
- __user *p)
- }
-=20
- /**
-- * tty_tiocmset		-	set modem status
-+ * tty_tiocmset - set modem status
-  * @tty: tty device
-  * @cmd: command - clear bits, set bits or set all
-  * @p: pointer to desired bits
-@@ -2559,7 +2559,7 @@ static int tty_tiocmset(struct tty_struct *tty, uns=
-igned int cmd,
- }
-=20
- /**
-- * tty_get_icount	-	get tty statistics
-+ * tty_get_icount - get tty statistics
-  * @tty: tty device
-  * @icount: output parameter
-  *
-@@ -3122,7 +3122,7 @@ struct tty_struct *alloc_tty_struct(struct tty_driv=
-er *driver, int idx)
- }
-=20
- /**
-- * tty_put_char	- write one character to a tty
-+ * tty_put_char - write one character to a tty
-  * @tty: tty
-  * @ch: character to write
-  *
-@@ -3300,7 +3300,7 @@ void tty_unregister_device(struct tty_driver *drive=
-r, unsigned index)
- EXPORT_SYMBOL(tty_unregister_device);
-=20
- /**
-- * __tty_alloc_driver -- allocate tty driver
-+ * __tty_alloc_driver - allocate tty driver
-  * @lines: count of lines this driver can handle at most
-  * @owner: module which is responsible for this driver
-  * @flags: some of %TTY_DRIVER_ flags, will be set in driver->flags
-@@ -3393,7 +3393,7 @@ static void destruct_tty_driver(struct kref *kref)
- }
-=20
- /**
-- * tty_driver_kref_put -- drop a reference to a tty driver
-+ * tty_driver_kref_put - drop a reference to a tty driver
-  * @driver: driver of which to drop the reference
-  *
-  * The final put will destroy and free up the driver.
-@@ -3405,7 +3405,7 @@ void tty_driver_kref_put(struct tty_driver *driver)
- EXPORT_SYMBOL(tty_driver_kref_put);
-=20
- /**
-- * tty_register_driver -- register a tty driver
-+ * tty_register_driver - register a tty driver
-  * @driver: driver to register
-  *
-  * Called by a tty driver to register itself.
-@@ -3470,7 +3470,7 @@ int tty_register_driver(struct tty_driver *driver)
- EXPORT_SYMBOL(tty_register_driver);
-=20
- /**
-- * tty_unregister_driver -- unregister a tty driver
-+ * tty_unregister_driver - unregister a tty driver
-  * @driver: driver to unregister
-  *
-  * Called by a tty driver to unregister itself.
+ 	INIT_DELAYED_WORK(&trigger_data->dwork, ledtrig_tty_work);
 --=20
 2.30.2
 
