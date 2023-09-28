@@ -2,130 +2,111 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D40CE7B08
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 07:25:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EAA6CE7B09
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 07:38:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231161AbjI1HZt convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Sep 2023 03:25:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46604 "EHLO
+        id S230257AbjI1HiX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Sep 2023 03:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbjI1HZr (ORCPT
+        with ESMTP id S230044AbjI1HiW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Sep 2023 03:25:47 -0400
-Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2976191;
-        Thu, 28 Sep 2023 00:25:46 -0700 (PDT)
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-5a1d0fee86aso85654267b3.2;
-        Thu, 28 Sep 2023 00:25:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695885945; x=1696490745;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=KNbZ0GOeHkYYiVV5+YvtOG1e74ZHGZHYw1MLYvYebes=;
-        b=gNpKxKBda7Qg5s0g1UTxpJA50ha26PQkLEj3MPqfYXzmGa8DRgRTrryBO20Qo3OSzv
-         MAhKp/mmbZXGhmtsN1FfIpBLdeNq/XIA4fOd6E0CGTtptdQTCYhA3P6YF/9VjM3Sh8ep
-         ZxV9m8pmDv3MmhBOJbN1sDt67x03J1OfhoCQTBSdEeZuENvoFHPqnTlMAJPuSOLZKAJt
-         qhcgMi3Pec4k7dXP33g1E/6pODFKu1Q8a2+y246RvrBngJhm6LxgslrSysvXtkwlpft1
-         mIjkWa3jJ/6Bin2JK2BSSJt4/n6SVePYUdsyoM3my8c4vAt+A8UOoqy5Np7PunfZimP+
-         47AA==
-X-Gm-Message-State: AOJu0YwCOvPHWtcs3eUmejUEO/1kUWyiDf9aP7L4yMrxeSV9iTF1mdJQ
-        1RkdXcJCG5BzVI+abOz1Uxu8BYcXFS0lDQ==
-X-Google-Smtp-Source: AGHT+IGrmBU+7AoECLKdMIYd73ANdOaOLfv9+EjNr3nmhqkwKhIk/37u7sruVa6WtrIK2K7CG2savw==
-X-Received: by 2002:a0d:e841:0:b0:59e:afab:d5a5 with SMTP id r62-20020a0de841000000b0059eafabd5a5mr468421ywe.23.1695885945241;
-        Thu, 28 Sep 2023 00:25:45 -0700 (PDT)
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com. [209.85.128.170])
-        by smtp.gmail.com with ESMTPSA id n66-20020a817245000000b005704c4d3579sm4375612ywc.40.2023.09.28.00.25.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Sep 2023 00:25:43 -0700 (PDT)
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-59f7f2b1036so100479637b3.3;
-        Thu, 28 Sep 2023 00:25:42 -0700 (PDT)
-X-Received: by 2002:a0d:d041:0:b0:595:80e4:907d with SMTP id
- s62-20020a0dd041000000b0059580e4907dmr367488ywd.32.1695885942137; Thu, 28 Sep
- 2023 00:25:42 -0700 (PDT)
+        Thu, 28 Sep 2023 03:38:22 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC8392;
+        Thu, 28 Sep 2023 00:38:21 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE061C433C8;
+        Thu, 28 Sep 2023 07:38:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1695886700;
+        bh=UhY6cOElhzlwnHpIfwIH6wNFErVALugCIYKMSXrO0/A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uuibvGvND9tKZ81BkY98N7O4z1zCNQv6dU+vJh1VbcTuQ5wBh5PEzyAVy436X0Wki
+         alF66Xe+im1N9jdkv85eRv55IxRzrPQ62uqCgdUqZvpOgNItpyH3JDkYVeknYoh8eB
+         MZXCv52p5qwk2D6CBopufN+ctKHtNk6LP4YIuI6r8IYGr0xjbXbpD4/xrmuxfXZxV4
+         UKR5c3VWYVowrJeTJaGHDONT5FVVNuxYyztWLT6AA0ejYs8n0rlPTrvhYcO7fE0JH8
+         X4eM6kaDCPqKHDSaCcPPBrNtx20FNqhE3xyRzgnjoDSmPM5npWIZsTJStt5WXdKTPA
+         AjZ8PhBnZ5wFw==
+Date:   Thu, 28 Sep 2023 13:08:15 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Chengfeng Ye <dg573847474@gmail.com>, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, sorganov@gmail.com, festevam@gmail.com,
+        ilpo.jarvinen@linux.intel.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, dmaengine@vger.kernel.org
+Subject: Re: [PATCH RESEND] serial: imx: Fix potential deadlock on
+ sport->port.lock
+Message-ID: <ZRUtZ/M3Ml6ltc2m@matsya>
+References: <20230927181939.60554-1-dg573847474@gmail.com>
+ <20230928060749.qzs6qgcesstclqqk@pengutronix.de>
 MIME-Version: 1.0
-References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
- <20230912045157.177966-22-claudiu.beznea.uj@bp.renesas.com>
- <CAMuHMdWc6yy=oJDo4zMdvB-t8pjCuE1oJ_Y6Ck0aX_hPkfhPug@mail.gmail.com> <154b823e-d532-ede7-5ada-08436ec86804@tuxon.dev>
-In-Reply-To: <154b823e-d532-ede7-5ada-08436ec86804@tuxon.dev>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 28 Sep 2023 09:25:28 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVGWNHxjh6o9bWiuLfbCTd41n232Q5p+onHrM5Urm-d2w@mail.gmail.com>
-Message-ID: <CAMuHMdVGWNHxjh6o9bWiuLfbCTd41n232Q5p+onHrM5Urm-d2w@mail.gmail.com>
-Subject: Re: [PATCH 21/37] dt-bindings: clock: add r9a08g045 CPG clocks and
- resets definitions
-To:     claudiu beznea <claudiu.beznea@tuxon.dev>
-Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        ulf.hansson@linaro.org, linus.walleij@linaro.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
-        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
-        nfraprado@collabora.com, rafal@milecki.pl,
-        wsa+renesas@sang-engineering.com,
-        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230928060749.qzs6qgcesstclqqk@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Claudiu,
+On 28-09-23, 08:07, Uwe Kleine-König wrote:
+> [Cc += Vinod Koul, dmaengine@vger.kernel.org]
+> 
+> Hello,
+> 
+> On Wed, Sep 27, 2023 at 06:19:39PM +0000, Chengfeng Ye wrote:
+> > As &sport->port.lock is acquired under irq context along the following
+> > call chain from imx_uart_rtsint(), other acquisition of the same lock
+> > inside process context or softirq context should disable irq avoid double
+> > lock.
+> > 
+> > <deadlock #1>
+> > 
+> > imx_uart_dma_rx_callback()
+> > --> spin_lock(&sport->port.lock)
+> > <interrupt>
+> >    --> imx_uart_rtsint()
+> >    --> spin_lock(&sport->port.lock)
+> > 
+> > This flaw was found by an experimental static analysis tool I am
+> > developing for irq-related deadlock.
+> 
+> Ah, I understood before that you really experienced that deadlock (or a
+> lockdep splat). I didn't test anything, but I think the
+> imx_uart_dma_rx_callback() is called indirectly by
+> sdma_update_channel_loop() which is called in irq context. I don't know
+> if this is the case for all dma drivers?!
+> 
+> @Vinod: Maybe you can chime in here: Is a dma callback always called in
+> irq context?
 
-On Thu, Sep 28, 2023 at 6:54â€¯AM claudiu beznea <claudiu.beznea@tuxon.dev> wrote:
-> On 15.09.2023 14:59, Geert Uytterhoeven wrote:
-> > On Tue, Sep 12, 2023 at 6:53â€¯AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
-> >> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> >>
-> >> Add RZ/G3S (R9A08G045) Clock Pulse Generator (CPG) core clocks, module
-> >> clocks and resets.
-> >>
-> >> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> >
-> > Thanks for your patch!
-> >
-> >> --- /dev/null
-> >> +++ b/include/dt-bindings/clock/r9a08g045-cpg.h
-> >
-> >> +/* R9A08G045 Module Clocks */
-> >
-> >> +#define R9A08G045_USB_U2H0_HCLK                65
-> >> +#define R9A08G045_USB_U2H1_HCLK                66
-> >> +#define R9A08G045_USB_U2P_EXR_CPUCLK   67
-> >> +#define R9A08G045_USB_PCLK             68
-> >> +#define R9A08G045_USB_SCLK             69
-> >
-> > There is no USB_SCLK bit in CPG_CLKON_USB, so please drop
-> > R9A08G045_USB_SCLK.
-> >
-> >> +/* R9A08G045 Resets */
-> >
-> >> +#define R9A08G045_SRAM_ACPU_ARESETN0   11
-> >> +#define R9A08G045_SRAM_ACPU_ARESETN1   12
-> >> +#define R9A08G045_SRAM_ACPU_ARESETN2   13
-> >
-> > There is no SRAM_ACPU_ARESETN2 bit in CPG_RST_SRAM_MCPU,
-> > so please drop R9A08G045_SRAM_ACPU_ARESETN2.
->
-> I see there is SRAM_ACPU_ARESETN2 in CPG_RST_SRAM_*A*CPU register. You are
-> actually saying that the documentation might be wrong?
+Not in callback but a tasklet context. The DMA irq handler is supposed
+to use a tasklet for invoking the callback
 
-My mistake, I looked at the wrong register.
+> If yes, this patch isn't needed. Otherwise it might be a good idea to
+> not use the special knowledge and switch to spin_lock_irqsave() as
+> suggested.
+> 
+> > To prevent the potential deadlock, the patch uses spin_lock_irqsave()
+> > on the &sport->port.lock inside imx_uart_dma_rx_callback() to prevent
+> > the possible deadlock scenario.
+> > 
+> > Signed-off-by: Chengfeng Ye <dg573847474@gmail.com>
+> 
+> If we agree this patch is a good idea, we can add:
+> 
+> Fixes: 496a4471b7c3 ("serial: imx: work-around for hardware RX flood")
+> 
+> Thanks
+> Uwe
+> 
+> -- 
+> Pengutronix e.K.                           | Uwe Kleine-König            |
+> Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
-Gr{oetje,eeting}s,
 
-                        Geert
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+~Vinod
