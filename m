@@ -2,129 +2,185 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F598CE7AFB
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 06:08:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4864CE7AFF
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 06:43:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229758AbjI1GIQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Sep 2023 02:08:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42040 "EHLO
+        id S230415AbjI1Gn2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Sep 2023 02:43:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbjI1GIP (ORCPT
+        with ESMTP id S229445AbjI1Gn1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Sep 2023 02:08:15 -0400
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C8D9C
-        for <linux-serial@vger.kernel.org>; Wed, 27 Sep 2023 23:08:11 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qlkBi-0004RI-IP; Thu, 28 Sep 2023 08:07:50 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qlkBh-009VzQ-G9; Thu, 28 Sep 2023 08:07:49 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qlkBh-005YUC-6U; Thu, 28 Sep 2023 08:07:49 +0200
-Date:   Thu, 28 Sep 2023 08:07:49 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Chengfeng Ye <dg573847474@gmail.com>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        sorganov@gmail.com, festevam@gmail.com,
-        ilpo.jarvinen@linux.intel.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
-        dmaengine@vger.kernel.org
-Subject: Re: [PATCH RESEND] serial: imx: Fix potential deadlock on
- sport->port.lock
-Message-ID: <20230928060749.qzs6qgcesstclqqk@pengutronix.de>
-References: <20230927181939.60554-1-dg573847474@gmail.com>
+        Thu, 28 Sep 2023 02:43:27 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A57D9C;
+        Wed, 27 Sep 2023 23:43:25 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55545C433C8;
+        Thu, 28 Sep 2023 06:43:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1695883404;
+        bh=DSvDae1aDnAGK6cZ1bq0OV0fku1272PZ2tdvrFmrup4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xm1YqDrbd47/RaAXYtFbyDPcMfa81W/h3Bqbh5qK1av3hDzGKhVxeBgQbahJzJt3p
+         Lc5jIl5zrlw64Ebf55Aez44e13cTU1VioTZXZXPpDq+IoHPMiaYb5/R06abeYxxGFf
+         3xopreGCGy0F88x4Lu3Bv4vxn4QlBBdcunhiZ3Xs=
+Date:   Thu, 28 Sep 2023 08:43:22 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Yuanhe Shu <xiangzao@linux.alibaba.com>
+Cc:     jirislaby@kernel.org, keescook@chromium.org, tony.luck@intel.com,
+        gpiccoli@igalia.com, shuah@kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-hardening@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Xingrui Yi <yixingrui@linux.alibaba.com>
+Subject: Re: [PATCH 1/5] pstore: add tty frontend
+Message-ID: <2023092804-backslid-ninth-3afe@gregkh>
+References: <20230928024244.257687-1-xiangzao@linux.alibaba.com>
+ <20230928024244.257687-2-xiangzao@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="f7bog4b3txnbhuoj"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230927181939.60554-1-dg573847474@gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+In-Reply-To: <20230928024244.257687-2-xiangzao@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Thu, Sep 28, 2023 at 10:42:40AM +0800, Yuanhe Shu wrote:
+> Provide a pstore frontend which can log all messages that are send
+> to tty drivers when there are some problems with drivers or there
+> is no access to serial ports.
+> 
+> Using pmsg requires us to redirect the output of the user state.
+> When we need to globally view the serial output of various processes,
+> it is tedious to redirect the output of each process. We think pmsg is
+> more suitable for targeted viewing of certain processes' output, and
+> we also need a tool that can quickly do a global view so that we can
+> get user-state printed data if the tty driver is working abnormally or
+> if we don't have serial access.
+> 
+> Furthermore, by enabling tty frontend and console/dmesg frontend in
+> dump capture kernel, one can collect kernel and user messages to
+> discover why kdump service works abnormal.
+> 
+> Signed-off-by: Yuanhe Shu <xiangzao@linux.alibaba.com>
+> Signed-off-by: Xingrui Yi <yixingrui@linux.alibaba.com>
+> ---
+>  drivers/tty/n_tty.c         |  1 +
+>  fs/pstore/Kconfig           | 23 +++++++++++++++++
+>  fs/pstore/Makefile          |  2 ++
+>  fs/pstore/blk.c             | 10 ++++++++
+>  fs/pstore/internal.h        |  8 ++++++
+>  fs/pstore/platform.c        |  5 ++++
+>  fs/pstore/ram.c             | 40 +++++++++++++++++++++++++++--
+>  fs/pstore/tty.c             | 50 +++++++++++++++++++++++++++++++++++++
+>  fs/pstore/zone.c            | 42 ++++++++++++++++++++++++++++++-
+>  include/linux/pstore.h      |  2 ++
+>  include/linux/pstore_blk.h  |  3 +++
+>  include/linux/pstore_ram.h  |  1 +
+>  include/linux/pstore_zone.h |  2 ++
+>  include/linux/tty.h         | 14 +++++++++++
+>  14 files changed, 200 insertions(+), 3 deletions(-)
+>  create mode 100644 fs/pstore/tty.c
+> 
+> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+> index 552e8a741562..55ca40605e4c 100644
+> --- a/drivers/tty/n_tty.c
+> +++ b/drivers/tty/n_tty.c
+> @@ -582,6 +582,7 @@ static ssize_t process_output_block(struct tty_struct *tty,
+>  		}
+>  	}
+>  break_out:
+> +	tty_pstore_hook(buf, i);
 
---f7bog4b3txnbhuoj
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+"hook"?  That does not help explain what this is doing here at all.  A
+better name would be best, but why is this part of n_tty at all?  Why
+isn't it a console driver just for this, you are sitting in the middle
+of the fast-path of the tty layer sucking in data all the time, what is
+the performance impact of this extra jump?
 
-[Cc +=3D Vinod Koul, dmaengine@vger.kernel.org]
+> --- a/fs/pstore/blk.c
+> +++ b/fs/pstore/blk.c
+> @@ -52,6 +52,14 @@ static long ftrace_size = -1;
+>  module_param(ftrace_size, long, 0400);
+>  MODULE_PARM_DESC(ftrace_size, "ftrace size in kbytes");
+>  
+> +#if IS_ENABLED(CONFIG_PSTORE_TTY)
+> +static long tty_size = CONFIG_PSTORE_BLK_TTY_SIZE;
+> +#else
+> +static long tty_size = -1;
+> +#endif
+> +module_param(tty_size, long, 0400);
+> +MODULE_PARM_DESC(tty_size, "tty_size size in kbytes");
 
-Hello,
+Do we really need more module parameters that are undocumented?
 
-On Wed, Sep 27, 2023 at 06:19:39PM +0000, Chengfeng Ye wrote:
-> As &sport->port.lock is acquired under irq context along the following
-> call chain from imx_uart_rtsint(), other acquisition of the same lock
-> inside process context or softirq context should disable irq avoid double
-> lock.
->=20
-> <deadlock #1>
->=20
-> imx_uart_dma_rx_callback()
-> --> spin_lock(&sport->port.lock)
-> <interrupt>
->    --> imx_uart_rtsint()
->    --> spin_lock(&sport->port.lock)
->=20
-> This flaw was found by an experimental static analysis tool I am
-> developing for irq-related deadlock.
+> diff --git a/fs/pstore/ram.c b/fs/pstore/ram.c
+> index 2f625e1fa8d8..f59712bc51d3 100644
+> --- a/fs/pstore/ram.c
+> +++ b/fs/pstore/ram.c
+> @@ -44,6 +44,10 @@ static ulong ramoops_pmsg_size = MIN_MEM_SIZE;
+>  module_param_named(pmsg_size, ramoops_pmsg_size, ulong, 0400);
+>  MODULE_PARM_DESC(pmsg_size, "size of user space message log");
+>  
+> +static ulong ramoops_tty_size = MIN_MEM_SIZE;
+> +module_param_named(tty_size, ramoops_tty_size, ulong, 0400);
+> +MODULE_PARM_DESC(tty_size, "size of tty message log");
 
-Ah, I understood before that you really experienced that deadlock (or a
-lockdep splat). I didn't test anything, but I think the
-imx_uart_dma_rx_callback() is called indirectly by
-sdma_update_channel_loop() which is called in irq context. I don't know
-if this is the case for all dma drivers?!
+Again, why a module parameter?
 
-@Vinod: Maybe you can chime in here: Is a dma callback always called in
-irq context?
+> --- /dev/null
+> +++ b/fs/pstore/tty.c
+> @@ -0,0 +1,50 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Provide a pstore frontend which can log all messages that are send
+> + * to tty drivers when there are some problems with drivers or there
+> + * is no access to serial ports.
+> + */
 
-If yes, this patch isn't needed. Otherwise it might be a good idea to
-not use the special knowledge and switch to spin_lock_irqsave() as
-suggested.
+No copyright line?  Are you sure your company is ok with that?
 
-> To prevent the potential deadlock, the patch uses spin_lock_irqsave()
-> on the &sport->port.lock inside imx_uart_dma_rx_callback() to prevent
-> the possible deadlock scenario.
->=20
-> Signed-off-by: Chengfeng Ye <dg573847474@gmail.com>
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/tty.h>
+> +#include <linux/tty_driver.h>
+> +#include "internal.h"
+> +
+> +DEFINE_STATIC_KEY_FALSE(tty_key);
+> +
+> +#define TTY_NAME "tty"
+> +#undef pr_fmt
+> +#define pr_fmt(fmt) TTY_NAME ": " fmt
+> +
+> +static void do_write_ttymsg(const unsigned char *buf, int count,
+> +							struct pstore_info *psinfo)
 
-If we agree this patch is a good idea, we can add:
+Odd formatting :(
 
-Fixes: 496a4471b7c3 ("serial: imx: work-around for hardware RX flood")
 
-Thanks
-Uwe
+> +{
+> +	struct pstore_record record, newline;
+> +
+> +	pstore_record_init(&record, psinfo);
+> +	record.type = PSTORE_TYPE_TTY;
+> +	record.size = count;
+> +	record.buf = (char *)buf;
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Why the casting?  Why isn't the buffer a u8 * here?
 
---f7bog4b3txnbhuoj
-Content-Type: application/pgp-signature; name="signature.asc"
+> +	psinfo->write(&record);
+> +
+> +	pstore_record_init(&newline, psinfo);
+> +	newline.type = PSTORE_TYPE_TTY;
+> +	newline.size = strlen("\n");
+> +	newline.buf = "\n";
+> +	psinfo->write(&newline);
 
------BEGIN PGP SIGNATURE-----
+Why have 2 structures and not just one?  And why the new line all the
+time, you are not guaranteed that your buffer must have a new line here,
+it could be in the middle of a hunk of data that is longer than the
+normal buffer size.  Why not rely on the tty data to handle the new line
+stuff for you in the proper location?
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmUVGDQACgkQj4D7WH0S
-/k6Msgf+Nch+utVGLzdo/mRgW9Bdxbi16a03vlH2nAu50axg2kKLy3gztudaYrlj
-QarLJ7u8TsOWzkU+EP6ye3ubFGhApV/7ne+/QUeEdQmkuz8LHf35pk3+dCKenhkC
-NN2+l08DUIM/+uwjD2ESMQM2M/Td9fW+9PsMKgLNiiIlE/ZA5tOOGbSU6UUoS5uv
-R9BdzUY2c5/a3ANnyf/c9A2Df+yqoLcMBUXrhnoAXJSflSf3Z2GYTv7FyHotLJb5
-c4D6cClkyrMeGJ1VmgTTVOcz35ZDIhkprc4Q/SmqPj9IiuejavBjPmjJHNG1rcV3
-6zS7jDlI0tgIqSoz8PnJLK3AJzluTQ==
-=CCkc
------END PGP SIGNATURE-----
+thanks,
 
---f7bog4b3txnbhuoj--
+greg k-h
