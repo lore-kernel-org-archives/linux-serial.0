@@ -2,291 +2,246 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3510CE732E9
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 15:44:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 831B7E732E5
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 15:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231941AbjI1Pol (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Sep 2023 11:44:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60846 "EHLO
+        id S232176AbjI1Psq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Sep 2023 11:48:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231669AbjI1Poj (ORCPT
+        with ESMTP id S231821AbjI1Psm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Sep 2023 11:44:39 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22916AC;
-        Thu, 28 Sep 2023 08:44:36 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 38SE466G015807;
-        Thu, 28 Sep 2023 17:43:53 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-        message-id:date:mime-version:subject:to:cc:references:from
-        :in-reply-to:content-type:content-transfer-encoding; s=
-        selector1; bh=6T7vbZG0OatVCzrOUmocqe0etbqi1byTjrfN1YkQoYE=; b=fL
-        9+e7J6OIfXQpnq6WHBL/m56cPdxye7XORHa4e/GNn4iRdwCB0xFD6o9ZYQAKjon0
-        f5HUbpw4Ix0frpU2kvNOCKVFEwvWJkKOW73YVT5JyV0zLHgtzzUoWl3F6cNmAKyb
-        UMJPEsjoC/guC48wUILQSbN7Si/bPAqspVm4Q3K3XGjySUlhB1Ii3rkoxn0sLfEZ
-        QTCJA/iLyCDE7Z3wF+OtyrjFecFf1Iv05IMiVA3on6mQuM8jXNiIL8GzxWIOG19k
-        bvhuhV8dKqjrhD3PqRPht1jClNa+HxVU65W9phEQjlLo203IyNwiok9UQGizuRnh
-        T6hK4Mp3G6d5dheHFACg==
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3t9qbx76ha-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 28 Sep 2023 17:43:53 +0200 (MEST)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id F3259100057;
-        Thu, 28 Sep 2023 17:43:48 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 8F6EC24B8AC;
-        Thu, 28 Sep 2023 17:43:48 +0200 (CEST)
-Received: from [10.201.20.32] (10.201.20.32) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Thu, 28 Sep
- 2023 17:43:46 +0200
-Message-ID: <3c232c26-e03c-31ec-8ec8-f99c86a3ab83@foss.st.com>
-Date:   Thu, 28 Sep 2023 17:43:35 +0200
+        Thu, 28 Sep 2023 11:48:42 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9BD0EB;
+        Thu, 28 Sep 2023 08:48:39 -0700 (PDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.nyi.internal (Postfix) with ESMTP id 4F0615C0DBB;
+        Thu, 28 Sep 2023 11:48:39 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Thu, 28 Sep 2023 11:48:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm1; t=1695916119; x=1696002519; bh=AE
+        M/fDbI9O0BImAELzI+hfXsnObtdXB3nh8ZZCXXqn0=; b=rYRrfUWcGURzZi2Kx3
+        x77+TyShR9Sib8UhEkjRsEvF3DnYBPdVY6rzWwYeuhr4tdntul3oHtfVUF/z6EV2
+        heYFaG3+Ohoslr/oEpgzvbQj8Ap/BO0Uo8fukRIGEYSG2EFeIuADh6kTnG/e/ZnK
+        WKoyOI7jTOa1WvXs1EnNIde2dL42+ityLyFsYeIVnenJ8nJu5KRjOGJhaF2H5eLA
+        4Rc3nmIeAUGsRgwN8l/vUa6uyPahwW8/lYYQtjTd1GdPmcRjEc4yki4fcm3o+0bg
+        CM1ceI9x2XAIhPoWvIWcG7Pse0IJVI89HVvLU8Sx5WjoReHRv+R8kwtcD43rgTqO
+        1Txg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:content-type:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; t=1695916119; x=1696002519; bh=AEM/fDbI9O0BI
+        mAELzI+hfXsnObtdXB3nh8ZZCXXqn0=; b=SVhvpMNNu2832r96OQM+NAupTyZUu
+        9ApC30lDjAFYMGWGRYhGk9Ktw4UV75/4wX1D/NFDsHe0J/F4WGv8mVpKtbEtvn7p
+        Rmjsr58zIcRx0QQa/XsGbKIRMC4kmp2y+lV4iGP4YPyx6mdJFfcRgxpTGWbUkYul
+        fg2q9Uk1M3TSIwSOpuuTWD6z9oXV7akZjN8oooViePicLGd71ehHsuxX95jowg+t
+        sIH70F+Njj7J5uzvO8LCP4IepniwS53HFBN7DFlHjczusBIIb6hJ6o+OFnMH7yBO
+        ef+exyTTPsXWvxZc+NE+84UqAYqQq2LcMfq4tomSwJikU7iHJ9es8eYXA==
+X-ME-Sender: <xms:VqAVZTp80fxHAbyOrOLozy8oSIIHqQ8-uQi65BHGMCHFY2uP19KKDw>
+    <xme:VqAVZdocPPRCkDqLMsDAsTzMnCL_hi_3AeWHiaLGnH49qHHA2EbULHHp32fE-IqJO
+    LKNp0MKQfoi5rOEkGs>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrtddtgdeifecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdetrhhn
+    ugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtth
+    gvrhhnpeevhfffledtgeehfeffhfdtgedvheejtdfgkeeuvefgudffteettdekkeeufeeh
+    udenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:VqAVZQN93Juw9XiE898XRfbgEHqEl2cwevHPLOiPOvmsMuT6V2Wjwg>
+    <xmx:VqAVZW5Y2ZL47jAZLy1P_hatPiBd5qOL0KmpEAGxRBZoBCe3-Rqhfw>
+    <xmx:VqAVZS4_qfE88pGkCU7hjxlJPieMhGBt0fgKWeWdE9tfpBrYfI6xdw>
+    <xmx:V6AVZa6XYaRu-pt9bUmgxdeIF3j6xxqNhfjqV2pVTPKFlHygW6TLhA>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id BE4B9B60089; Thu, 28 Sep 2023 11:48:38 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-958-g1b1b911df8-fm-20230927.002-g1b1b911d
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH v4 05/11] firewall: introduce stm32_firewall framework
-To:     Simon Horman <horms@kernel.org>
-CC:     <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
-        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <conor+dt@kernel.org>, <alexandre.torgue@foss.st.com>,
-        <vkoul@kernel.org>, <jic23@kernel.org>,
-        <olivier.moysan@foss.st.com>, <arnaud.pouliquen@foss.st.com>,
-        <mchehab@kernel.org>, <fabrice.gasnier@foss.st.com>,
-        <andi.shyti@kernel.org>, <ulf.hansson@linaro.org>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <hugues.fruchet@foss.st.com>, <lee@kernel.org>, <will@kernel.org>,
-        <catalin.marinas@arm.com>, <arnd@kernel.org>,
-        <richardcochran@gmail.com>, Frank Rowand <frowand.list@gmail.com>,
-        <peng.fan@oss.nxp.com>, <linux-crypto@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
-        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>
-References: <20230811100731.108145-1-gatien.chevallier@foss.st.com>
- <20230811100731.108145-6-gatien.chevallier@foss.st.com>
- <ZNeSiFQGdOXbR+2S@vergenet.net>
-Content-Language: en-US
-From:   Gatien CHEVALLIER <gatien.chevallier@foss.st.com>
-In-Reply-To: <ZNeSiFQGdOXbR+2S@vergenet.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.201.20.32]
-X-ClientProxiedBy: SHFCAS1NODE2.st.com (10.75.129.73) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-09-28_15,2023-09-28_02,2023-05-22_02
+Message-Id: <6020d6e7-b187-4abb-bf38-dc09d8bd0f6d@app.fastmail.com>
+In-Reply-To: <20230928110554.34758-2-jlayton@kernel.org>
+References: <20230928110554.34758-1-jlayton@kernel.org>
+ <20230928110554.34758-2-jlayton@kernel.org>
+Date:   Thu, 28 Sep 2023 11:48:16 -0400
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Jeff Layton" <jlayton@kernel.org>,
+        "Alexander Viro" <viro@zeniv.linux.org.uk>,
+        "Christian Brauner" <brauner@kernel.org>,
+        "Linus Torvalds" <torvalds@linux-foundation.org>,
+        "David Sterba" <dsterba@suse.cz>,
+        "Amir Goldstein" <amir73il@gmail.com>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        "Kees Cook" <keescook@chromium.org>, "Jeremy Kerr" <jk@ozlabs.org>,
+        "Michael Ellerman" <mpe@ellerman.id.au>,
+        "Nicholas Piggin" <npiggin@gmail.com>,
+        "Christophe Leroy" <christophe.leroy@csgroup.eu>,
+        "Heiko Carstens" <hca@linux.ibm.com>,
+        "Vasily Gorbik" <gor@linux.ibm.com>,
+        "Alexander Gordeev" <agordeev@linux.ibm.com>,
+        "Christian Borntraeger" <borntraeger@linux.ibm.com>,
+        "Sven Schnelle" <svens@linux.ibm.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        =?UTF-8?Q?Arve_Hj=C3=B8nnev=C3=A5g?= <arve@android.com>,
+        "Todd Kjos" <tkjos@android.com>,
+        "Martijn Coenen" <maco@android.com>,
+        "Joel Fernandes" <joel@joelfernandes.org>,
+        "Carlos Llamas" <cmllamas@google.com>,
+        "Suren Baghdasaryan" <surenb@google.com>,
+        "Mattia Dongili" <malattia@linux.it>,
+        "Dennis Dalessandro" <dennis.dalessandro@cornelisnetworks.com>,
+        "Jason Gunthorpe" <jgg@ziepe.ca>,
+        "Leon Romanovsky" <leon@kernel.org>,
+        "Brad Warrum" <bwarrum@linux.ibm.com>,
+        "Ritu Agarwal" <rituagar@linux.ibm.com>,
+        "Hans de Goede" <hdegoede@redhat.com>,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        "Mark Gross" <markgross@kernel.org>,
+        "Jiri Slaby" <jirislaby@kernel.org>,
+        "Eric Van Hensbergen" <ericvh@kernel.org>,
+        "Latchesar Ionkov" <lucho@ionkov.net>,
+        "Dominique Martinet" <asmadeus@codewreck.org>,
+        "Christian Schoenebeck" <linux_oss@crudebyte.com>,
+        "David Sterba" <dsterba@suse.com>,
+        "David Howells" <dhowells@redhat.com>,
+        "Marc Dionne" <marc.dionne@auristor.com>,
+        "Ian Kent" <raven@themaw.net>,
+        "Luis de Bethencourt" <luisbg@kernel.org>,
+        "Salah Triki" <salah.triki@gmail.com>,
+        "Tigran A. Aivazian" <aivazian.tigran@gmail.com>,
+        "Chris Mason" <clm@fb.com>, "Josef Bacik" <josef@toxicpanda.com>,
+        "Xiubo Li" <xiubli@redhat.com>,
+        "Ilya Dryomov" <idryomov@gmail.com>,
+        "Jan Harkes" <jaharkes@cs.cmu.edu>, coda@cs.cmu.edu,
+        "Joel Becker" <jlbec@evilplan.org>,
+        "Christoph Hellwig" <hch@lst.de>,
+        "Nicolas Pitre" <nico@fluxnic.net>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        "Ard Biesheuvel" <ardb@kernel.org>, "Gao Xiang" <xiang@kernel.org>,
+        "Chao Yu" <chao@kernel.org>, "Yue Hu" <huyue2@coolpad.com>,
+        "Jeffle Xu" <jefflexu@linux.alibaba.com>,
+        "Namjae Jeon" <linkinjeon@kernel.org>,
+        "Sungjong Seo" <sj1557.seo@samsung.com>,
+        "Jan Kara" <jack@suse.com>,
+        "Andreas Dilger" <adilger.kernel@dilger.ca>,
+        "Jaegeuk Kim" <jaegeuk@kernel.org>,
+        "OGAWA Hirofumi" <hirofumi@mail.parknet.co.jp>,
+        "Christoph Hellwig" <hch@infradead.org>,
+        "Miklos Szeredi" <miklos@szeredi.hu>,
+        "Bob Peterson" <rpeterso@redhat.com>,
+        "Andreas Gruenbacher" <agruenba@redhat.com>,
+        "Richard Weinberger" <richard@nod.at>,
+        "Anton Ivanov" <anton.ivanov@cambridgegreys.com>,
+        "Johannes Berg" <johannes@sipsolutions.net>,
+        "Mikulas Patocka" <mikulas@artax.karlin.mff.cuni.cz>,
+        "Mike Kravetz" <mike.kravetz@oracle.com>,
+        "Muchun Song" <muchun.song@linux.dev>, "Jan Kara" <jack@suse.cz>,
+        "David Woodhouse" <dwmw2@infradead.org>,
+        "Dave Kleikamp" <shaggy@kernel.org>, "Tejun Heo" <tj@kernel.org>,
+        "Trond Myklebust" <trond.myklebust@hammerspace.com>,
+        "Anna Schumaker" <anna@kernel.org>,
+        "Chuck Lever" <chuck.lever@oracle.com>,
+        "Neil Brown" <neilb@suse.de>,
+        "Olga Kornievskaia" <kolga@netapp.com>,
+        "Dai Ngo" <Dai.Ngo@oracle.com>, "Tom Talpey" <tom@talpey.com>,
+        "Ryusuke Konishi" <konishi.ryusuke@gmail.com>,
+        "Anton Altaparmakov" <anton@tuxera.com>,
+        "Konstantin Komarov" <almaz.alexandrovich@paragon-software.com>,
+        "Mark Fasheh" <mark@fasheh.com>,
+        "Joseph Qi" <joseph.qi@linux.alibaba.com>,
+        "Bob Copeland" <me@bobcopeland.com>,
+        "Mike Marshall" <hubcap@omnibond.com>,
+        "Martin Brandenburg" <martin@omnibond.com>,
+        "Luis Chamberlain" <mcgrof@kernel.org>,
+        "Iurii Zaikin" <yzaikin@google.com>,
+        "Tony Luck" <tony.luck@intel.com>,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        "Anders Larsen" <al@alarsen.net>,
+        "Steve French" <sfrench@samba.org>,
+        "Paulo Alcantara" <pc@manguebit.com>,
+        "Ronnie Sahlberg" <lsahlber@redhat.com>,
+        "Shyam Prasad N" <sprasad@microsoft.com>,
+        "Sergey Senozhatsky" <senozhatsky@chromium.org>,
+        "Phillip Lougher" <phillip@squashfs.org.uk>,
+        "Steven Rostedt" <rostedt@goodmis.org>,
+        "Masami Hiramatsu" <mhiramat@kernel.org>,
+        "Evgeniy Dushistov" <dushistov@mail.ru>,
+        "Chandan Babu R" <chandan.babu@oracle.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        "Damien Le Moal" <dlemoal@kernel.org>,
+        "Naohiro Aota" <naohiro.aota@wdc.com>,
+        "Johannes Thumshirn" <jth@kernel.org>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        "Andrii Nakryiko" <andrii@kernel.org>,
+        "Martin KaFai Lau" <martin.lau@linux.dev>,
+        "Song Liu" <song@kernel.org>,
+        "Yonghong Song" <yonghong.song@linux.dev>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        "KP Singh" <kpsingh@kernel.org>,
+        "Stanislav Fomichev" <sdf@google.com>,
+        "Hao Luo" <haoluo@google.com>, "Jiri Olsa" <jolsa@kernel.org>,
+        "Hugh Dickins" <hughd@google.com>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        "John Johansen" <john.johansen@canonical.com>,
+        "Paul Moore" <paul@paul-moore.com>,
+        "James Morris" <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        "Stephen Smalley" <stephen.smalley.work@gmail.com>,
+        "Eric Paris" <eparis@parisplace.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linuxppc-dev@lists.ozlabs.org,
+        linux-s390@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, v9fs@lists.linux.dev,
+        linux-afs@lists.infradead.org, autofs@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, ceph-devel@vger.kernel.org,
+        codalist@coda.cs.cmu.edu, linux-efi@vger.kernel.org,
+        linux-erofs@lists.ozlabs.org, linux-ext4@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, gfs2@lists.linux.dev,
+        linux-um@lists.infradead.org, linux-mtd@lists.infradead.org,
+        jfs-discussion@lists.sourceforge.net, linux-nfs@vger.kernel.org,
+        linux-nilfs@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
+        ntfs3@lists.linux.dev, ocfs2-devel@lists.linux.dev,
+        linux-karma-devel@lists.sourceforge.net, devel@lists.orangefs.org,
+        linux-unionfs@vger.kernel.org, linux-hardening@vger.kernel.org,
+        reiserfs-devel@vger.kernel.org, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org,
+        linux-trace-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        bpf@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        apparmor@lists.ubuntu.com, linux-security-module@vger.kernel.org,
+        selinux@vger.kernel.org
+Subject: Re: [PATCH 86/87] fs: switch timespec64 fields in inode to discrete integers
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Thu, Sep 28, 2023, at 07:05, Jeff Layton wrote:
+> This shaves 8 bytes off struct inode, according to pahole.
+>
+> Signed-off-by: Jeff Layton <jlayton@kernel.org>
 
+FWIW, this is similar to the approach that Deepa suggested
+back in 2016:
 
-On 8/12/23 16:09, Simon Horman wrote:
-> On Fri, Aug 11, 2023 at 12:07:25PM +0200, Gatien Chevallier wrote:
-> 
-> ...
-> 
->> diff --git a/drivers/bus/stm32_firewall.c b/drivers/bus/stm32_firewall.c
->> new file mode 100644
->> index 000000000000..900f3b052a66
->> --- /dev/null
->> +++ b/drivers/bus/stm32_firewall.c
->> @@ -0,0 +1,293 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +/*
->> + * Copyright (C) 2023, STMicroelectronics - All Rights Reserved
->> + */
->> +
->> +#include <linux/bitfield.h>
->> +#include <linux/bits.h>
->> +#include <linux/bus/stm32_firewall_device.h>
->> +#include <linux/device.h>
->> +#include <linux/err.h>
->> +#include <linux/init.h>
->> +#include <linux/io.h>
->> +#include <linux/kernel.h>
->> +#include <linux/module.h>
->> +#include <linux/of.h>
->> +#include <linux/of_platform.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/types.h>
->> +#include <linux/slab.h>
->> +
->> +#include "stm32_firewall.h"
->> +
->> +/* Corresponds to STM32_FIREWALL_MAX_EXTRA_ARGS + firewall ID */
->> +#define STM32_FIREWALL_MAX_ARGS		(STM32_FIREWALL_MAX_EXTRA_ARGS + 1)
->> +
->> +static LIST_HEAD(firewall_controller_list);
->> +static DEFINE_MUTEX(firewall_controller_list_lock);
->> +
->> +/* Firewall device API */
->> +int stm32_firewall_get_firewall(struct device_node *np, struct stm32_firewall *firewall,
->> +				unsigned int nb_firewall)
->> +{
->> +	struct stm32_firewall_controller *ctrl;
->> +	struct of_phandle_iterator it;
->> +	unsigned int i, j = 0;
->> +	int err;
->> +
->> +	if (!firewall || !nb_firewall)
->> +		return -EINVAL;
->> +
->> +	/* Parse property with phandle parsed out */
->> +	of_for_each_phandle(&it, err, np, "feature-domains", "#feature-domain-cells", 0) {
->> +		struct of_phandle_args provider_args;
->> +		struct device_node *provider = it.node;
->> +		const char *fw_entry;
->> +		bool match = false;
->> +
->> +		if (err) {
->> +			pr_err("Unable to get feature-domains property for node %s\n, err: %d",
->> +			       np->full_name, err);
->> +			of_node_put(provider);
->> +			return err;
->> +		}
->> +
->> +		if (j > nb_firewall) {
->> +			pr_err("Too many firewall controllers");
->> +			of_node_put(provider);
->> +			return -EINVAL;
->> +		}
->> +
->> +		provider_args.args_count = of_phandle_iterator_args(&it, provider_args.args,
->> +								    STM32_FIREWALL_MAX_ARGS);
->> +
->> +		/* Check if the parsed phandle corresponds to a registered firewall controller */
->> +		mutex_lock(&firewall_controller_list_lock);
->> +		list_for_each_entry(ctrl, &firewall_controller_list, entry) {
->> +			if (ctrl->dev->of_node->phandle == it.phandle) {
->> +				match = true;
->> +				firewall[j].firewall_ctrl = ctrl;
->> +				break;
->> +			}
->> +		}
->> +		mutex_unlock(&firewall_controller_list_lock);
->> +
->> +		if (!match) {
->> +			firewall[j].firewall_ctrl = NULL;
->> +			pr_err("No firewall controller registered for %s\n", np->full_name);
->> +			of_node_put(provider);
->> +			return -ENODEV;
->> +		}
->> +
->> +		err = of_property_read_string_index(np, "feature-domain-names", j, &fw_entry);
->> +		if (err == 0)
->> +			firewall[j].entry = fw_entry;
->> +
->> +		/* Handle the case when there are no arguments given along with the phandle */
->> +		if (provider_args.args_count < 0 ||
->> +		    provider_args.args_count > STM32_FIREWALL_MAX_ARGS) {
->> +			of_node_put(provider);
->> +			return -EINVAL;
->> +		} else if (provider_args.args_count == 0) {
->> +			firewall[j].extra_args_size = 0;
->> +			firewall[j].firewall_id = U32_MAX;
->> +			j++;
->> +			continue;
->> +		}
->> +
->> +		/* The firewall ID is always the first argument */
->> +		firewall[j].firewall_id = provider_args.args[0];
->> +
->> +		/* Extra args start at the third argument */
->> +		for (i = 0; i < provider_args.args_count; i++)
->> +			firewall[j].extra_args[i] = provider_args.args[i + 1];
-> 
-> Hi Gatien,
-> 
-> Above it is checked that the maximum value of provider_args.args_count is
-> STM32_FIREWALL_MAX_ARGS.
-> So here the maximum value of i is STM32_FIREWALL_MAX_ARGS - 1.
-> 
-> STM32_FIREWALL_MAX_ARGS is defined as STM32_FIREWALL_MAX_EXTRA_ARGS + 1
-> And STM32_FIREWALL_MAX_EXTRA_ARGS is defined as 5.
-> So the maximum value of i is (5 + 1 - 1) = 5.
-> 
-> firewall[j] is of type struct stm32_firewall.
-> And its args field has STM32_FIREWALL_MAX_EXTRA_ARGS (5) elements.
-> Thus the maximum valid index is (5 - 1) = 4.
-> 
-> But the line above may access index 5.
-> 
-> Flagged by Smatch.
-> 
+https://lore.kernel.org/lkml/1452144972-15802-3-git-send-email-deepa.kernel@gmail.com/
 
-Hi Simon,
+It was NaKed at the time because of the added complexity,
+though it would have been much easier to do it then,
+as we had to touch all the timespec references anyway.
 
-Thank you for pointing this out.
+The approach still seems ok to me, but I'm not sure it's worth
+doing it now if we didn't do it then.
 
-I'll correct it for V5.
-
-Best regards,
-Gatien
->> +
->> +		/* Remove the firewall ID arg that is not an extra argument */
->> +		firewall[j].extra_args_size = provider_args.args_count - 1;
->> +
->> +		j++;
->> +	}
->> +
->> +	return 0;
->> +}
->> +EXPORT_SYMBOL_GPL(stm32_firewall_get_firewall);
-> 
-> ...
-> 
->> diff --git a/include/linux/bus/stm32_firewall_device.h b/include/linux/bus/stm32_firewall_device.h
->> new file mode 100644
->> index 000000000000..7b4450a8ec15
->> --- /dev/null
->> +++ b/include/linux/bus/stm32_firewall_device.h
->> @@ -0,0 +1,141 @@
->> +/* SPDX-License-Identifier: GPL-2.0-only */
->> +/*
->> + * Copyright (C) 2023, STMicroelectronics - All Rights Reserved
->> + */
->> +
->> +#ifndef STM32_FIREWALL_DEVICE_H
->> +#define STM32_FIREWALL_DEVICE_H
->> +
->> +#include <linux/of.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/types.h>
->> +
->> +#define STM32_FIREWALL_MAX_EXTRA_ARGS		5
->> +
->> +/* Opaque reference to stm32_firewall_controller */
->> +struct stm32_firewall_controller;
->> +
->> +/**
->> + * struct stm32_firewall - Information on a device's firewall. Each device can have more than one
->> + *			   firewall.
->> + *
->> + * @firewall_ctrl:		Pointer referencing a firewall controller of the device. It is
->> + *				opaque so a device cannot manipulate the controller's ops or access
->> + *				the controller's data
->> + * @extra_args:			Extra arguments that are implementation dependent
->> + * @entry:			Name of the firewall entry
->> + * @extra_args_size:		Number of extra arguments
->> + * @firewall_id:		Firewall ID associated the device for this firewall controller
->> + */
->> +struct stm32_firewall {
->> +	struct stm32_firewall_controller *firewall_ctrl;
->> +	u32 extra_args[STM32_FIREWALL_MAX_EXTRA_ARGS];
->> +	const char *entry;
->> +	size_t extra_args_size;
->> +	u32 firewall_id;
->> +};
-> 
-> ...
+     Arnd
