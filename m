@@ -2,103 +2,143 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA95FCE7B0B
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 08:17:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2ECDCE7B0E
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 08:44:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230338AbjI1IRs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Sep 2023 04:17:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54500 "EHLO
+        id S231307AbjI1Iou (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Sep 2023 04:44:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbjI1IRr (ORCPT
+        with ESMTP id S231303AbjI1Ioq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Sep 2023 04:17:47 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE6BAC;
-        Thu, 28 Sep 2023 01:17:45 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06C89C433C9;
-        Thu, 28 Sep 2023 08:17:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1695889065;
-        bh=f0Py5KsQnV1kllOtBgaMRjOqXMqsVEKHE9P7jkmTxLc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mdKT26sKpwvKyVxjrAM3SwSFoLqZQ3Ap9kIl3LPvUuGJri7B/UskSlNUv3pTUlydj
-         +cKEq+FCaDatZOay9enVHnlVG0SmJU+tjbwN50C51rL/jz5Bn9ZRZiqPTS+5QBN0F+
-         U5KdvwyZuPYLoyKpkGLGxI7c0lpnWRHDl84zjW4w=
-Date:   Thu, 28 Sep 2023 10:17:40 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Max Filippov <jcmvbkbc@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: Re: [PATCH v2 1/5] serial: core: tidy invalid baudrate handling in
- uart_get_baud_rate
-Message-ID: <2023092835-applied-shakable-f5dc@gregkh>
-References: <20230920022644.2712651-1-jcmvbkbc@gmail.com>
- <20230920022644.2712651-2-jcmvbkbc@gmail.com>
+        Thu, 28 Sep 2023 04:44:46 -0400
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2D7193
+        for <linux-serial@vger.kernel.org>; Thu, 28 Sep 2023 01:44:43 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qlmdS-0008UJ-69; Thu, 28 Sep 2023 10:44:38 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qlmdR-009XKe-5K; Thu, 28 Sep 2023 10:44:37 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qlmdQ-005ah3-S5; Thu, 28 Sep 2023 10:44:36 +0200
+Date:   Thu, 28 Sep 2023 10:44:36 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     festevam@gmail.com, linux-serial@vger.kernel.org,
+        gregkh@linuxfoundation.org, s.hauer@pengutronix.de,
+        linux-kernel@vger.kernel.org, Chengfeng Ye <dg573847474@gmail.com>,
+        sorganov@gmail.com, kernel@pengutronix.de,
+        ilpo.jarvinen@linux.intel.com, dmaengine@vger.kernel.org,
+        shawnguo@kernel.org, jirislaby@kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH RESEND] serial: imx: Fix potential deadlock on
+ sport->port.lock
+Message-ID: <20230928084436.fftw5sk4sixaedck@pengutronix.de>
+References: <20230927181939.60554-1-dg573847474@gmail.com>
+ <20230928060749.qzs6qgcesstclqqk@pengutronix.de>
+ <ZRUtZ/M3Ml6ltc2m@matsya>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="r6y5twzpb32i5htn"
 Content-Disposition: inline
-In-Reply-To: <20230920022644.2712651-2-jcmvbkbc@gmail.com>
+In-Reply-To: <ZRUtZ/M3Ml6ltc2m@matsya>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Sep 19, 2023 at 07:26:40PM -0700, Max Filippov wrote:
-> uart_get_baud_rate has input parameters 'min' and 'max' limiting the
-> range of acceptable baud rates from the caller's perspective. If neither
-> current or old termios structures have acceptable baud rate setting and
-> 9600 is not in the min/max range either the function returns 0 and
-> issues a warning.
-> However for a UART that does not support speed of 9600 baud this is
-> expected behavior.
-> Clarify that 0 can be (and always could be) returned from the
-> uart_get_baud_rate. Don't issue a warning in that case.
-> Move the warinng to the uart_get_divisor instead, which is often called
-> with the uart_get_baud_rate return value.
-> 
-> Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-> ---
->  drivers/tty/serial/serial_core.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 7bdc21d5e13b..a8e2915832e8 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -431,7 +431,7 @@ EXPORT_SYMBOL(uart_update_timeout);
->   * baud.
->   *
->   * If the new baud rate is invalid, try the @old termios setting. If it's still
-> - * invalid, we try 9600 baud.
-> + * invalid, we try 9600 baud. If that is also invalid 0 is returned.
->   *
->   * The @termios structure is updated to reflect the baud rate we're actually
->   * going to be using. Don't do this for the case where B0 is requested ("hang
-> @@ -515,8 +515,6 @@ uart_get_baud_rate(struct uart_port *port, struct ktermios *termios,
->  							max - 1, max - 1);
->  		}
->  	}
-> -	/* Should never happen */
-> -	WARN_ON(1);
 
-I'm ok with this removal, but:
+--r6y5twzpb32i5htn
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->  	return 0;
->  }
->  EXPORT_SYMBOL(uart_get_baud_rate);
-> @@ -539,6 +537,7 @@ uart_get_divisor(struct uart_port *port, unsigned int baud)
->  {
->  	unsigned int quot;
->  
-> +	WARN_ON(baud == 0);
+Hello Vinod,
 
-Why is this needed?  If this isn't happening today, then there's no need
-to check for this here.  Or if it can happen, we should return an error,
-not cause a possible reboot of the system if panic-on-warn is enabled.
+thanks for your quick answer!
 
-thanks,
+On Thu, Sep 28, 2023 at 01:08:15PM +0530, Vinod Koul wrote:
+> On 28-09-23, 08:07, Uwe Kleine-K=F6nig wrote:
+> > [Cc +=3D Vinod Koul, dmaengine@vger.kernel.org]
+> >=20
+> > Hello,
+> >=20
+> > On Wed, Sep 27, 2023 at 06:19:39PM +0000, Chengfeng Ye wrote:
+> > > As &sport->port.lock is acquired under irq context along the following
+> > > call chain from imx_uart_rtsint(), other acquisition of the same lock
+> > > inside process context or softirq context should disable irq avoid do=
+uble
+> > > lock.
+> > >=20
+> > > <deadlock #1>
+> > >=20
+> > > imx_uart_dma_rx_callback()
+> > > --> spin_lock(&sport->port.lock)
+> > > <interrupt>
+> > >    --> imx_uart_rtsint()
+> > >    --> spin_lock(&sport->port.lock)
+> > >=20
+> > > This flaw was found by an experimental static analysis tool I am
+> > > developing for irq-related deadlock.
+> >=20
+> > Ah, I understood before that you really experienced that deadlock (or a
+> > lockdep splat). I didn't test anything, but I think the
+> > imx_uart_dma_rx_callback() is called indirectly by
+> > sdma_update_channel_loop() which is called in irq context. I don't know
+> > if this is the case for all dma drivers?!
+> >=20
+> > @Vinod: Maybe you can chime in here: Is a dma callback always called in
+> > irq context?
+>=20
+> Not in callback but a tasklet context. The DMA irq handler is supposed
+> to use a tasklet for invoking the callback
 
-greg k-h
+So drivers/dma/imx-sdma.c is bogous as it calls
+
+	-> sdma_int_handler()
+	  -> sdma_update_channel_loop()
+	    -> dmaengine_desc_get_callback_invoke()
+
+resulting in imx_uart_dma_rx_callback() (and others) being called in irq
+context, right?
+
+In that case:
+
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+(for the imx-UART patch that stops assuming imx_uart_dma_rx_callback()
+is called with irqs off).
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--r6y5twzpb32i5htn
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmUVPPIACgkQj4D7WH0S
+/k7vNwgAhb4pKXKJbH9aBhcqanU4xb1tK0/f8VK6sZW0aeeWi7M4Ix1HQFdLg9va
+AS2/DwTdV7PHtMX5NJhPkqyUupi2SIJ7fXQo5pkN4p0sHBCzNIYrgpCtvXi/azSC
+qKXuOOTw8A9HvoeTKNbKQm6n2Va/AaPORzE/uzZq/m7ni4JHuCSqZMEIzRtJ05/O
+m6c2cs6FDkGfPE3B8WRWK4ClF5hFZ7mhdQr118Y8tb/cAQ6eG8BzGNMQJt555Rrn
+plV5TSK5mnbmW/B2psEEVmQcBrwZz+vfbsoAvd45B8Lnstey+e9DX+Fmvs8I3Pse
+rJmz4QDc2grxnjlCvVSBHtj4jEBOKQ==
+=p5nE
+-----END PGP SIGNATURE-----
+
+--r6y5twzpb32i5htn--
