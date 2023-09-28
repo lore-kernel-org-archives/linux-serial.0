@@ -2,138 +2,110 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B810E732E7
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 15:26:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E7FE732E5
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 15:30:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231981AbjI1P0l (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Sep 2023 11:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34804 "EHLO
+        id S231704AbjI1PaR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Sep 2023 11:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231784AbjI1P0X (ORCPT
+        with ESMTP id S231167AbjI1PaR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Sep 2023 11:26:23 -0400
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40564B7;
-        Thu, 28 Sep 2023 08:26:21 -0700 (PDT)
-Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-6c4a25f6390so7178653a34.2;
-        Thu, 28 Sep 2023 08:26:21 -0700 (PDT)
+        Thu, 28 Sep 2023 11:30:17 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6E119E;
+        Thu, 28 Sep 2023 08:30:15 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id 98e67ed59e1d1-277336b8717so6546505a91.2;
+        Thu, 28 Sep 2023 08:30:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1695915015; x=1696519815; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=COLaeJR0N/VndVEqlx4mmHkfHE/lub9s/T3neKJii30=;
+        b=WEy9sbbmYqHLwBkkVshBTNKwpvUqLVswn4FwBk7Ho8INOxqmeON5fKrzgC7HWx1EX1
+         BUm/ddGdpspSL1fGIXAYKgOKHZpypox/5HD4PAK5DndylM29SIZ+ZGFyIA5M/QtA0dT6
+         BqX5idoQYP5uFabzCssqh5LA4wjxsp9dP/sq31AsiAw025DJ7eFJwmJRL8R94ExjKvi/
+         YY+jcxrOBgQrRcUUxVIKFiEmPVnfTaOz5lo32rs8L5CyWS4c+2jvE4WaaVolcRust0mb
+         RQTOmTnpEp7SsM/eLA0DTi9j7XBpWuUrWm2NQY4GeujlEetsRqiEL8g7o+FQ11AFgE81
+         BjQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695914779; x=1696519579;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PYPUiAEm0lZNQbU6hKmoJKqPGRAnrTCwSSHfRdZ7LfA=;
-        b=D35ZnhvzMmw2WuYdeCJawE0603JXMboMFtqOwpQGEMiwgpDNmYh3h2L20CfGNw2pyr
-         nHtgHCu/RHLLu3IJt3mm2gkMQlgppdFTDbaLpSWjNy6EUk8+ZUWJM43q3HZXewZCvgEl
-         HJYiGyO3GdUW9SVMOjYhyOWQQprWBtY/0O3Ef0qfJtDVdMtQ3/Yd5wA/oDyXrKtM0tOi
-         HNmiJislJpx8eOAVRIr3ALu5F6W1zdr9isBJ+vlP8uXVuMoR9T5nWmh08tFybtgz/i3O
-         TKTKZebWmr87iSZUSTqA+IeHSuZCU4VofXJE1lWPTRhaySQy5tl/U+JGRg6v1y11agpE
-         FKtQ==
-X-Gm-Message-State: AOJu0Yw/INZPUbsTGC2B9p5kmnNHMMqkX4MszrP840JVtv1KlTSvxYOY
-        9LJoCF/wQjqo00jQjZSQry0=
-X-Google-Smtp-Source: AGHT+IEkFDTusLpYox11EoA1Tl2MJIdC5Ad7Ua286wH6ql8JYqDg2cQ1Wc6Zlzvv071aY+VufA88gQ==
-X-Received: by 2002:a9d:73d5:0:b0:6c4:b339:2528 with SMTP id m21-20020a9d73d5000000b006c4b3392528mr1632381otk.16.1695914778722;
-        Thu, 28 Sep 2023 08:26:18 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([20.69.120.36])
-        by smtp.gmail.com with ESMTPSA id j14-20020aa78dce000000b006906aaf1e4dsm13514673pfr.150.2023.09.28.08.26.17
+        d=1e100.net; s=20230601; t=1695915015; x=1696519815;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=COLaeJR0N/VndVEqlx4mmHkfHE/lub9s/T3neKJii30=;
+        b=SkymPHZR5FKggtNPyEnVR4wkWtiwisPTd/f+5kqNvu4DfUgf2oEl2s9h02YePZO+oH
+         plgZwYI4drvRWP4LlI6D9+f8JZONOkViZvoyLoZXG+IkM2ybomQoYIrHmLA7rp5+ZW0m
+         ftj7dPT+nUBocn8mI9tL8RiBQBlRkI9bHiKtjzXxx9c5Lbe77AmT1HMo/6EwWoXItmuI
+         ud+pa450/WFxXzvcDuRcMrgZHtS7Wt6YHO0F6pXXHc8iwiTlvfN8Gak05jQASNLg6Osm
+         mJM46n/dQmcvKW6LWHB+NK4UxAPmlLNTCGXkImd9Sn0DpQsYDqPnvuEzzaWBYh0tXfhz
+         isgw==
+X-Gm-Message-State: AOJu0Yw6JsBVPamemm6b4UVBfg+wSAihBgZ0gBpb+jJwLaxXsI6VATWO
+        LEPCzYZLvv/K6zqhLyN3qmvWM/nheMU=
+X-Google-Smtp-Source: AGHT+IG1d7y0Oh6C22OVDR3sOVdua6syt1xoVhcD71Rp44XforFFBZC9+AWsrBqDHV4D+zD21KCAjg==
+X-Received: by 2002:a17:90a:8b8d:b0:274:96a:5007 with SMTP id z13-20020a17090a8b8d00b00274096a5007mr1393951pjn.1.1695915014854;
+        Thu, 28 Sep 2023 08:30:14 -0700 (PDT)
+Received: from octofox.hsd1.ca.comcast.net ([2601:646:a201:19d0:a19c:f3d0:698d:f7a])
+        by smtp.gmail.com with ESMTPSA id m6-20020a17090a414600b00274a9f8e82asm3892318pjg.51.2023.09.28.08.30.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Sep 2023 08:26:18 -0700 (PDT)
-Date:   Thu, 28 Sep 2023 15:26:16 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     j.granados@samsung.com
-Cc:     Luis Chamberlain <mcgrof@kernel.org>, willy@infradead.org,
-        josh@joshtriplett.org, Kees Cook <keescook@chromium.org>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Clemens Ladisch <clemens@ladisch.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Thu, 28 Sep 2023 08:30:14 -0700 (PDT)
+From:   Max Filippov <jcmvbkbc@gmail.com>
+To:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Doug Gilbert <dgilbert@interlog.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        Corey Minyard <minyard@acm.org>, Theodore Ts'o <tytso@mit.edu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Robin Holt <robinmholt@gmail.com>,
-        Steve Wahl <steve.wahl@hpe.com>,
-        Russ Weight <russell.h.weight@intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Song Liu <song@kernel.org>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-kernel@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-serial@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-rdma@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-raid@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH 14/15] hyper-v/azure: Remove now superfluous sentinel
- element from ctl_table array
-Message-ID: <ZRWbGDlXCS4t8tMf@liuwe-devbox-debian-v2>
-References: <20230928-jag-sysctl_remove_empty_elem_drivers-v1-0-e59120fca9f9@samsung.com>
- <65157da8.050a0220.fb263.fdb1SMTPIN_ADDED_BROKEN@mx.google.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH v4 0/5] serial: add drivers for the ESP32xx serial devices
+Date:   Thu, 28 Sep 2023 08:16:26 -0700
+Message-Id: <20230928151631.149333-1-jcmvbkbc@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <65157da8.050a0220.fb263.fdb1SMTPIN_ADDED_BROKEN@mx.google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Please change the prefix to "Drivers: hv:" in the subject line in the
-two patches.
+Hello,
 
-On Thu, Sep 28, 2023 at 03:21:39PM +0200, Joel Granados via B4 Relay wrote:
-> From: Joel Granados <j.granados@samsung.com>
-> 
-> This commit comes at the tail end of a greater effort to remove the
-> empty elements at the end of the ctl_table arrays (sentinels) which
-> will reduce the overall build time size of the kernel and run time
-> memory bloat by ~64 bytes per sentinel (further information Link :
-> https://lore.kernel.org/all/ZO5Yx5JFogGi%2FcBo@bombadil.infradead.org/)
-> 
-> Remove sentinel from hv_ctl_table
-> 
-> Signed-off-by: Joel Granados <j.granados@samsung.com>
-> ---
->  drivers/hv/hv_common.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
-> index ccad7bca3fd3..bc7d678030aa 100644
-> --- a/drivers/hv/hv_common.c
-> +++ b/drivers/hv/hv_common.c
-> @@ -147,8 +147,7 @@ static struct ctl_table hv_ctl_table[] = {
->  		.proc_handler	= proc_dointvec_minmax,
->  		.extra1		= SYSCTL_ZERO,
->  		.extra2		= SYSCTL_ONE
-> -	},
-> -	{}
-> +	}
+this series adds drivers for the UART and ACM controllers found in the
+Espressif ESP32 and ESP32S3 SoCs.
 
-Please keep the comma at the end.
+Changes v3->v4:
+- address review comments, listed in each patch
+- add reviewed-by tags
 
->  };
->  
->  static int hv_die_panic_notify_crash(struct notifier_block *self,
-> 
-> -- 
-> 2.30.2
-> 
+Changes v2->v3:
+- address review comments, listed in each patch
+
+Changes v1->v2:
+- address review comments, listed in each patch
+- add cleanup for the uart_get_baud_rate function
+
+Max Filippov (5):
+  serial: core: tidy invalid baudrate handling in uart_get_baud_rate
+  dt-bindings: serial: document esp32-uart
+  drivers/tty/serial: add driver for the ESP32 UART
+  dt-bindings: serial: document esp32s3-acm
+  drivers/tty/serial: add ESP32S3 ACM device driver
+
+ .../bindings/serial/esp,esp32-acm.yaml        |  42 +
+ .../bindings/serial/esp,esp32-uart.yaml       |  51 ++
+ drivers/tty/serial/Kconfig                    |  27 +
+ drivers/tty/serial/Makefile                   |   2 +
+ drivers/tty/serial/esp32_acm.c                | 459 +++++++++++
+ drivers/tty/serial/esp32_uart.c               | 741 ++++++++++++++++++
+ drivers/tty/serial/serial_core.c              |   4 +-
+ include/uapi/linux/serial_core.h              |   6 +
+ 8 files changed, 1329 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/esp,esp32-acm.yaml
+ create mode 100644 Documentation/devicetree/bindings/serial/esp,esp32-uart.yaml
+ create mode 100644 drivers/tty/serial/esp32_acm.c
+ create mode 100644 drivers/tty/serial/esp32_uart.c
+
+-- 
+2.30.2
+
