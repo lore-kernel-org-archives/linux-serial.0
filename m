@@ -2,126 +2,110 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE67E82CBB
-	for <linux-serial@archiver.kernel.org>; Wed, 27 Sep 2023 18:20:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF601E81810
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 02:43:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229450AbjI0SUI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 27 Sep 2023 14:20:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55914 "EHLO
+        id S229472AbjI1Cnu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 27 Sep 2023 22:43:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjI0SUH (ORCPT
+        with ESMTP id S229437AbjI1Cnt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 27 Sep 2023 14:20:07 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A70DD;
-        Wed, 27 Sep 2023 11:20:06 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id d2e1a72fcca58-690d8fb3b7eso10583675b3a.1;
-        Wed, 27 Sep 2023 11:20:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1695838806; x=1696443606; darn=vger.kernel.org;
-        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=u5B3VoFkvJ3Kkt4BU0WJl0+BQwyfXbEUUwHbI2QcpnY=;
-        b=VZx/EnM4LZvLKx4s3I8N1dV8XMMsHCwpvk7hiLNLj2c2LAbuc+t+PlAKrr4nNQUl5x
-         9yqczm7PA/7/ahTliaV6GL4zEkBpqg+fGJOEE1euAzYff+CQwCtKDOyUHneiiJmUVNj9
-         BWj2f2WoCAOJIrb9N7hLaJH+szfnRTmGmWgdIe5qLYH928eTz5j88QbmLE/3MF2OS1HT
-         UuJpsOL5cVAJW3rEHWvj/N4+TBN2esVI6hWszVdtn6R5ZATjB3T35/Rhqe6nKqYul00C
-         tLX9ROMzWAu3qmqAXe1e1YhmrLLdmuVaktNyEVfPhjZ8s8qeqhrjVs5yYexjzqvzMC/6
-         2FMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695838806; x=1696443606;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=u5B3VoFkvJ3Kkt4BU0WJl0+BQwyfXbEUUwHbI2QcpnY=;
-        b=alsD4ckMwW4RbcVLFJS0XEfw6GGhYmRL3A+GToAOQm8tGNbjYIFI+YoBYzn05sNqPS
-         QQwCai3DCh9MlyGpM5vDjWemdeO7y0ZIhmbF1qy4bLzYGovHgbohcX91grKdIHbkRHcH
-         7Wf6kKXWCSBe0XIixocJiJgU0cCKf6i3ts/t19Gsf3Tsevxr09Hb1qs0WJja1igfsrq5
-         62mvE0L57ec9cHYPl0ZfpzEQNREzWwublpqpdzE8tpCAHsaZUEFOGx75IdgeYsWHnFZl
-         ql3qMZruKYof8uO6oiBo/+pKTR7XV33ID6kEQbEAZ6fh/eRqFLi1Tj2PvV13rekOtWPG
-         uW9Q==
-X-Gm-Message-State: AOJu0YyOPeMTMjR5UgjwTk6WeyAe0IaAqXDAhpVZ92LNAXOAHu2uIy+/
-        UHQUZyx/ZZf4oGD1GYm2CZc=
-X-Google-Smtp-Source: AGHT+IGwuIFY5ERDx4cHwOm/e+K0VXyYRtVSOWopBVjwpR89TArQj9id/SpVD4k2iqu8pe/g4IRmpQ==
-X-Received: by 2002:a05:6a21:2728:b0:15e:96d3:a31b with SMTP id rm40-20020a056a21272800b0015e96d3a31bmr2432976pzb.39.1695838805878;
-        Wed, 27 Sep 2023 11:20:05 -0700 (PDT)
-Received: from 377044c6c369.cse.ust.hk (191host097.mobilenet.cse.ust.hk. [143.89.191.97])
-        by smtp.gmail.com with ESMTPSA id x6-20020aa793a6000000b0068c006dd5c1sm475047pff.115.2023.09.27.11.20.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Sep 2023 11:20:05 -0700 (PDT)
-From:   Chengfeng Ye <dg573847474@gmail.com>
+        Wed, 27 Sep 2023 22:43:49 -0400
+Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5757794;
+        Wed, 27 Sep 2023 19:43:47 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=xiangzao@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0Vt.rlBx_1695869003;
+Received: from localhost.localdomain(mailfrom:xiangzao@linux.alibaba.com fp:SMTPD_---0Vt.rlBx_1695869003)
+          by smtp.aliyun-inc.com;
+          Thu, 28 Sep 2023 10:43:45 +0800
+From:   Yuanhe Shu <xiangzao@linux.alibaba.com>
 To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        sorganov@gmail.com, festevam@gmail.com,
-        ilpo.jarvinen@linux.intel.com
+        keescook@chromium.org, tony.luck@intel.com, gpiccoli@igalia.com,
+        shuah@kernel.org
 Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Chengfeng Ye <dg573847474@gmail.com>
-Subject: [PATCH RESEND] serial: imx: Fix potential deadlock on sport->port.lock
-Date:   Wed, 27 Sep 2023 18:19:39 +0000
-Message-Id: <20230927181939.60554-1-dg573847474@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        linux-hardening@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Yuanhe Shu <xiangzao@linux.alibaba.com>
+Subject: [PATCH 0/5] pstore: add tty frontend and multi-backend
+Date:   Thu, 28 Sep 2023 10:42:39 +0800
+Message-Id: <20230928024244.257687-1-xiangzao@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-As &sport->port.lock is acquired under irq context along the following
-call chain from imx_uart_rtsint(), other acquisition of the same lock
-inside process context or softirq context should disable irq avoid double
-lock.
+In public cloud scenario, if kdump service works abnormally,
+users cannot get vmcore. Without vmcore, user has no idea why the
+kernel crashed. Meanwhile, there is no additional information
+to find the reason why the kdump service is abnormal.
 
-<deadlock #1>
+One way is to obtain console messages through VNC. The drawback 
+is that VNC is real-time, if user missed the timing to get the VNC
+output, the crash needs to be retriggered.
 
-imx_uart_dma_rx_callback()
---> spin_lock(&sport->port.lock)
-<interrupt>
-   --> imx_uart_rtsint()
-   --> spin_lock(&sport->port.lock)
+Another way is to enable the console frontend of pstore and record the
+console messages to the pstore backend. On the one hand, the console
+logs only contain kernel printk logs and does not cover
+user-mode print logs. Although we can redirect user-mode logs to the
+pmsg frontend provided by pstore, user-mode information related to
+booting and kdump service vary from systemd, kdump.sh, and so on which
+makes redirection troublesome. So we added a tty frontend and save all
+logs of tty driver to the pstore backend.
 
-This flaw was found by an experimental static analysis tool I am
-developing for irq-related deadlock.
+Another problem is that currently pstore only supports a single backend.
+For debugging kdump problems, we hope to save the console logs and tty
+logs to the ramoops backend of pstore, as it will not be lost after
+rebooting. If the user has enabled another backend, the ramoops backend
+will not be registered. To this end, we add the multi-backend function
+to support simultaneous registration of multiple backends.
 
-To prevent the potential deadlock, the patch uses spin_lock_irqsave()
-on the &sport->port.lock inside imx_uart_dma_rx_callback() to prevent
-the possible deadlock scenario.
+Based on the above changes, we can enable pstore in the crashdump kernel
+and save the console logs and tty logs to the ramoops backend of pstore.
+After rebooting, we can view the relevant logs by mounting the pstore
+file system.
 
-Signed-off-by: Chengfeng Ye <dg573847474@gmail.com>
----
- drivers/tty/serial/imx.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+Furthermore, we also modified kexec-tools referring to crash-utils for
+reading memory, so that pstore ramoops information can be read without
+enabling pstore in first kernel. As we set the address and size of ramoops,
+as well as the sizes of console and tty, we can infer the physical address
+of console logs and tty logs in memory. Referring to the read method of
+crash-utils, the console logs and tty logs are read from the memory,
+user can get pstore debug information without affecting the first kernel
+at all.
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 13cb78340709..7bb3aa19d51c 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1165,13 +1165,14 @@ static void imx_uart_dma_rx_callback(void *data)
- 	unsigned int w_bytes = 0;
- 	unsigned int r_bytes;
- 	unsigned int bd_size;
-+	unsigned long flags;
- 
- 	status = dmaengine_tx_status(chan, sport->rx_cookie, &state);
- 
- 	if (status == DMA_ERROR) {
--		spin_lock(&sport->port.lock);
-+		spin_lock_irqsave(&sport->port.lock, flags);
- 		imx_uart_clear_rx_errors(sport);
--		spin_unlock(&sport->port.lock);
-+		spin_unlock_irqrestore(&sport->port.lock, flags);
- 		return;
- 	}
- 
-@@ -1200,9 +1201,9 @@ static void imx_uart_dma_rx_callback(void *data)
- 		r_bytes = rx_ring->head - rx_ring->tail;
- 
- 		/* If we received something, check for 0xff flood */
--		spin_lock(&sport->port.lock);
-+		spin_lock_irqsave(&sport->port.lock, flags);
- 		imx_uart_check_flood(sport, imx_uart_readl(sport, USR2));
--		spin_unlock(&sport->port.lock);
-+		spin_unlock_irqrestore(&sport->port.lock, flags);
- 
- 		if (!(sport->port.ignore_status_mask & URXD_DUMMY_READ)) {
- 
+kexec-tools modification can be seen at
+https://github.com/shuyuanmen/kexec-tools/blob/main/Add-pstore-segment.patch
+
+Yuanhe Shu (5):
+  pstore: add tty frontend
+  pstore: add multi-backends support
+  pstore: add subdirs for multi-backends
+  pstore: remove the module parameter "backend"
+  tools/pstore: update pstore selftests
+
+ drivers/tty/n_tty.c                         |   1 +
+ fs/pstore/Kconfig                           |  23 ++
+ fs/pstore/Makefile                          |   2 +
+ fs/pstore/blk.c                             |  10 +
+ fs/pstore/ftrace.c                          |  22 +-
+ fs/pstore/inode.c                           |  86 ++++++-
+ fs/pstore/internal.h                        |  16 +-
+ fs/pstore/platform.c                        | 238 ++++++++++++--------
+ fs/pstore/pmsg.c                            |  23 +-
+ fs/pstore/ram.c                             |  40 +++-
+ fs/pstore/tty.c                             |  56 +++++
+ fs/pstore/zone.c                            |  42 +++-
+ include/linux/pstore.h                      |  33 +++
+ include/linux/pstore_blk.h                  |   3 +
+ include/linux/pstore_ram.h                  |   1 +
+ include/linux/pstore_zone.h                 |   2 +
+ include/linux/tty.h                         |  14 ++
+ tools/testing/selftests/pstore/common_tests |   4 -
+ 18 files changed, 500 insertions(+), 116 deletions(-)
+ create mode 100644 fs/pstore/tty.c
+
 -- 
-2.17.1
+2.39.3
 
