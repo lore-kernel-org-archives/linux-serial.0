@@ -2,111 +2,90 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EAA6CE7B09
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 07:38:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EA28CE7B0B
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 08:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230257AbjI1HiX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Sep 2023 03:38:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58044 "EHLO
+        id S230379AbjI1ICd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Sep 2023 04:02:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230044AbjI1HiW (ORCPT
+        with ESMTP id S231134AbjI1ICc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Sep 2023 03:38:22 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC8392;
-        Thu, 28 Sep 2023 00:38:21 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE061C433C8;
-        Thu, 28 Sep 2023 07:38:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1695886700;
-        bh=UhY6cOElhzlwnHpIfwIH6wNFErVALugCIYKMSXrO0/A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uuibvGvND9tKZ81BkY98N7O4z1zCNQv6dU+vJh1VbcTuQ5wBh5PEzyAVy436X0Wki
-         alF66Xe+im1N9jdkv85eRv55IxRzrPQ62uqCgdUqZvpOgNItpyH3JDkYVeknYoh8eB
-         MZXCv52p5qwk2D6CBopufN+ctKHtNk6LP4YIuI6r8IYGr0xjbXbpD4/xrmuxfXZxV4
-         UKR5c3VWYVowrJeTJaGHDONT5FVVNuxYyztWLT6AA0ejYs8n0rlPTrvhYcO7fE0JH8
-         X4eM6kaDCPqKHDSaCcPPBrNtx20FNqhE3xyRzgnjoDSmPM5npWIZsTJStt5WXdKTPA
-         AjZ8PhBnZ5wFw==
-Date:   Thu, 28 Sep 2023 13:08:15 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Chengfeng Ye <dg573847474@gmail.com>, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, sorganov@gmail.com, festevam@gmail.com,
-        ilpo.jarvinen@linux.intel.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, dmaengine@vger.kernel.org
-Subject: Re: [PATCH RESEND] serial: imx: Fix potential deadlock on
- sport->port.lock
-Message-ID: <ZRUtZ/M3Ml6ltc2m@matsya>
-References: <20230927181939.60554-1-dg573847474@gmail.com>
- <20230928060749.qzs6qgcesstclqqk@pengutronix.de>
+        Thu, 28 Sep 2023 04:02:32 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886B2BE;
+        Thu, 28 Sep 2023 01:02:30 -0700 (PDT)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 47DE240004;
+        Thu, 28 Sep 2023 08:02:23 +0000 (UTC)
+Message-ID: <d0f12692-f0df-9535-922a-f0578c713547@ghiti.fr>
+Date:   Thu, 28 Sep 2023 10:02:22 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH] riscv: fix out of bounds in walk_stackframe
+To:     Edward AD <twuufnxlz@gmail.com>, conor@kernel.org
+Cc:     syzbot+8d2757d62d403b2d9275@syzkaller.appspotmail.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, paul.walmsley@sifive.com,
+        palmer@dabbelt.com, aou@eecs.berkeley.edu, guoren@kernel.org,
+        alexghiti@rivosinc.com, liushixin2@huawei.com,
+        linux-riscv@lists.infradead.org
+References: <0000000000000170df0605ccf91a@google.com>
+ <20230926114343.1061739-2-twuufnxlz@gmail.com>
+Content-Language: en-US
+From:   Alexandre Ghiti <alex@ghiti.fr>
+In-Reply-To: <20230926114343.1061739-2-twuufnxlz@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230928060749.qzs6qgcesstclqqk@pengutronix.de>
+X-GND-Sasl: alex@ghiti.fr
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 28-09-23, 08:07, Uwe Kleine-König wrote:
-> [Cc += Vinod Koul, dmaengine@vger.kernel.org]
-> 
-> Hello,
-> 
-> On Wed, Sep 27, 2023 at 06:19:39PM +0000, Chengfeng Ye wrote:
-> > As &sport->port.lock is acquired under irq context along the following
-> > call chain from imx_uart_rtsint(), other acquisition of the same lock
-> > inside process context or softirq context should disable irq avoid double
-> > lock.
-> > 
-> > <deadlock #1>
-> > 
-> > imx_uart_dma_rx_callback()
-> > --> spin_lock(&sport->port.lock)
-> > <interrupt>
-> >    --> imx_uart_rtsint()
-> >    --> spin_lock(&sport->port.lock)
-> > 
-> > This flaw was found by an experimental static analysis tool I am
-> > developing for irq-related deadlock.
-> 
-> Ah, I understood before that you really experienced that deadlock (or a
-> lockdep splat). I didn't test anything, but I think the
-> imx_uart_dma_rx_callback() is called indirectly by
-> sdma_update_channel_loop() which is called in irq context. I don't know
-> if this is the case for all dma drivers?!
-> 
-> @Vinod: Maybe you can chime in here: Is a dma callback always called in
-> irq context?
+Hi Edward,
 
-Not in callback but a tasklet context. The DMA irq handler is supposed
-to use a tasklet for invoking the callback
-
-> If yes, this patch isn't needed. Otherwise it might be a good idea to
-> not use the special knowledge and switch to spin_lock_irqsave() as
-> suggested.
-> 
-> > To prevent the potential deadlock, the patch uses spin_lock_irqsave()
-> > on the &sport->port.lock inside imx_uart_dma_rx_callback() to prevent
-> > the possible deadlock scenario.
-> > 
-> > Signed-off-by: Chengfeng Ye <dg573847474@gmail.com>
-> 
-> If we agree this patch is a good idea, we can add:
-> 
-> Fixes: 496a4471b7c3 ("serial: imx: work-around for hardware RX flood")
-> 
-> Thanks
-> Uwe
-> 
-> -- 
-> Pengutronix e.K.                           | Uwe Kleine-König            |
-> Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+On 26/09/2023 13:43, Edward AD wrote:
+> Increase the check on the frame after assigning its value. This is to prevent
+> frame access from crossing boundaries.
+>
+> Closes: https://lore.kernel.org/all/20230926105949.1025995-2-twuufnxlz@gmail.com/
+> Fixes: 5d8544e2d007 ("RISC-V: Generic library routines and assembly")
+> Reported-and-tested-by: syzbot+8d2757d62d403b2d9275@syzkaller.appspotmail.com
+> Link: https://lore.kernel.org/all/0000000000000170df0605ccf91a@google.com/T/
+> Signed-off-by: Edward AD <twuufnxlz@gmail.com>
+> ---
+>   arch/riscv/kernel/stacktrace.c | 2 ++
+>   1 file changed, 2 insertions(+)
+>
+> diff --git a/arch/riscv/kernel/stacktrace.c b/arch/riscv/kernel/stacktrace.c
+> index 64a9c093aef9..53bd18672329 100644
+> --- a/arch/riscv/kernel/stacktrace.c
+> +++ b/arch/riscv/kernel/stacktrace.c
+> @@ -54,6 +54,8 @@ void notrace walk_stackframe(struct task_struct *task, struct pt_regs *regs,
+>   			break;
+>   		/* Unwind stack frame */
+>   		frame = (struct stackframe *)fp - 1;
+> +		if (!virt_addr_valid(frame))
+> +			break;
+>   		sp = fp;
+>   		if (regs && (regs->epc == pc) && (frame->fp & 0x7)) {
+>   			fp = frame->ra;
 
 
+virt_addr_valid() works on kernel linear addresses, not on vmalloc 
+addresses, which is the case hereÂ  (0xff20000006d37c38 belongs to the 
+vmalloc region: see 
+https://elixir.bootlin.com/linux/latest/source/Documentation/riscv/vm-layout.rst#L125). 
+So this fix can't work.
 
--- 
-~Vinod
+I'm a bit surprised though of this out-of-bounds access since 
+CONFIG_FRAME_POINTER is enabled, so there may be a real issue here (the 
+console output is horrible, lots of backtraces, which is weird), so it 
+may be worth digging into that.
+
+Thanks,
+
+Alex
+
+
