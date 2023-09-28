@@ -2,105 +2,103 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B89B2CE7B0B
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 08:16:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA95FCE7B0B
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 08:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230251AbjI1IQI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Sep 2023 04:16:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53086 "EHLO
+        id S230338AbjI1IRs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Sep 2023 04:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbjI1IQH (ORCPT
+        with ESMTP id S229539AbjI1IRr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Sep 2023 04:16:07 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CEB95;
-        Thu, 28 Sep 2023 01:16:05 -0700 (PDT)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id B68FBC0007;
-        Thu, 28 Sep 2023 08:15:56 +0000 (UTC)
-Message-ID: <f74665d1-4d28-01a2-5694-b06fde202d39@ghiti.fr>
-Date:   Thu, 28 Sep 2023 10:15:56 +0200
+        Thu, 28 Sep 2023 04:17:47 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE6BAC;
+        Thu, 28 Sep 2023 01:17:45 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06C89C433C9;
+        Thu, 28 Sep 2023 08:17:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1695889065;
+        bh=f0Py5KsQnV1kllOtBgaMRjOqXMqsVEKHE9P7jkmTxLc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mdKT26sKpwvKyVxjrAM3SwSFoLqZQ3Ap9kIl3LPvUuGJri7B/UskSlNUv3pTUlydj
+         +cKEq+FCaDatZOay9enVHnlVG0SmJU+tjbwN50C51rL/jz5Bn9ZRZiqPTS+5QBN0F+
+         U5KdvwyZuPYLoyKpkGLGxI7c0lpnWRHDl84zjW4w=
+Date:   Thu, 28 Sep 2023 10:17:40 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Max Filippov <jcmvbkbc@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: Re: [PATCH v2 1/5] serial: core: tidy invalid baudrate handling in
+ uart_get_baud_rate
+Message-ID: <2023092835-applied-shakable-f5dc@gregkh>
+References: <20230920022644.2712651-1-jcmvbkbc@gmail.com>
+ <20230920022644.2712651-2-jcmvbkbc@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH] riscv: fix out of bounds in walk_stackframe
-Content-Language: en-US
-From:   Alexandre Ghiti <alex@ghiti.fr>
-To:     Edward AD <twuufnxlz@gmail.com>, conor@kernel.org
-Cc:     syzbot+8d2757d62d403b2d9275@syzkaller.appspotmail.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, paul.walmsley@sifive.com,
-        palmer@dabbelt.com, aou@eecs.berkeley.edu, guoren@kernel.org,
-        alexghiti@rivosinc.com, liushixin2@huawei.com,
-        linux-riscv@lists.infradead.org
-References: <0000000000000170df0605ccf91a@google.com>
- <20230926114343.1061739-2-twuufnxlz@gmail.com>
- <d0f12692-f0df-9535-922a-f0578c713547@ghiti.fr>
-In-Reply-To: <d0f12692-f0df-9535-922a-f0578c713547@ghiti.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-GND-Sasl: alex@ghiti.fr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230920022644.2712651-2-jcmvbkbc@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Oh and BTW, any idea why linux-riscv was not in CC for the initial report?
+On Tue, Sep 19, 2023 at 07:26:40PM -0700, Max Filippov wrote:
+> uart_get_baud_rate has input parameters 'min' and 'max' limiting the
+> range of acceptable baud rates from the caller's perspective. If neither
+> current or old termios structures have acceptable baud rate setting and
+> 9600 is not in the min/max range either the function returns 0 and
+> issues a warning.
+> However for a UART that does not support speed of 9600 baud this is
+> expected behavior.
+> Clarify that 0 can be (and always could be) returned from the
+> uart_get_baud_rate. Don't issue a warning in that case.
+> Move the warinng to the uart_get_divisor instead, which is often called
+> with the uart_get_baud_rate return value.
+> 
+> Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+> ---
+>  drivers/tty/serial/serial_core.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 7bdc21d5e13b..a8e2915832e8 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -431,7 +431,7 @@ EXPORT_SYMBOL(uart_update_timeout);
+>   * baud.
+>   *
+>   * If the new baud rate is invalid, try the @old termios setting. If it's still
+> - * invalid, we try 9600 baud.
+> + * invalid, we try 9600 baud. If that is also invalid 0 is returned.
+>   *
+>   * The @termios structure is updated to reflect the baud rate we're actually
+>   * going to be using. Don't do this for the case where B0 is requested ("hang
+> @@ -515,8 +515,6 @@ uart_get_baud_rate(struct uart_port *port, struct ktermios *termios,
+>  							max - 1, max - 1);
+>  		}
+>  	}
+> -	/* Should never happen */
+> -	WARN_ON(1);
 
-On 28/09/2023 10:02, Alexandre Ghiti wrote:
-> Hi Edward,
->
-> On 26/09/2023 13:43, Edward AD wrote:
->> Increase the check on the frame after assigning its value. This is to 
->> prevent
->> frame access from crossing boundaries.
->>
->> Closes: 
->> https://lore.kernel.org/all/20230926105949.1025995-2-twuufnxlz@gmail.com/
->> Fixes: 5d8544e2d007 ("RISC-V: Generic library routines and assembly")
->> Reported-and-tested-by: 
->> syzbot+8d2757d62d403b2d9275@syzkaller.appspotmail.com
->> Link: 
->> https://lore.kernel.org/all/0000000000000170df0605ccf91a@google.com/T/
->> Signed-off-by: Edward AD <twuufnxlz@gmail.com>
->> ---
->>   arch/riscv/kernel/stacktrace.c | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/arch/riscv/kernel/stacktrace.c 
->> b/arch/riscv/kernel/stacktrace.c
->> index 64a9c093aef9..53bd18672329 100644
->> --- a/arch/riscv/kernel/stacktrace.c
->> +++ b/arch/riscv/kernel/stacktrace.c
->> @@ -54,6 +54,8 @@ void notrace walk_stackframe(struct task_struct 
->> *task, struct pt_regs *regs,
->>               break;
->>           /* Unwind stack frame */
->>           frame = (struct stackframe *)fp - 1;
->> +        if (!virt_addr_valid(frame))
->> +            break;
->>           sp = fp;
->>           if (regs && (regs->epc == pc) && (frame->fp & 0x7)) {
->>               fp = frame->ra;
->
->
-> virt_addr_valid() works on kernel linear addresses, not on vmalloc 
-> addresses, which is the case here  (0xff20000006d37c38 belongs to the 
-> vmalloc region: see 
-> https://elixir.bootlin.com/linux/latest/source/Documentation/riscv/vm-layout.rst#L125). 
-> So this fix can't work.
->
-> I'm a bit surprised though of this out-of-bounds access since 
-> CONFIG_FRAME_POINTER is enabled, so there may be a real issue here 
-> (the console output is horrible, lots of backtraces, which is weird), 
-> so it may be worth digging into that.
->
-> Thanks,
->
-> Alex
->
->
->
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
+I'm ok with this removal, but:
+
+>  	return 0;
+>  }
+>  EXPORT_SYMBOL(uart_get_baud_rate);
+> @@ -539,6 +537,7 @@ uart_get_divisor(struct uart_port *port, unsigned int baud)
+>  {
+>  	unsigned int quot;
+>  
+> +	WARN_ON(baud == 0);
+
+Why is this needed?  If this isn't happening today, then there's no need
+to check for this here.  Or if it can happen, we should return an error,
+not cause a possible reboot of the system if panic-on-warn is enabled.
+
+thanks,
+
+greg k-h
