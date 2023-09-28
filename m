@@ -2,174 +2,129 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEECECE7AFA
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 04:55:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F598CE7AFB
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 06:08:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229920AbjI1Ezx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Sep 2023 00:55:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60754 "EHLO
+        id S229758AbjI1GIQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Sep 2023 02:08:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230179AbjI1Ezv (ORCPT
+        with ESMTP id S229445AbjI1GIP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Sep 2023 00:55:51 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F5B8F
-        for <linux-serial@vger.kernel.org>; Wed, 27 Sep 2023 21:55:49 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id a640c23a62f3a-9b0168a9e05so1320478966b.3
-        for <linux-serial@vger.kernel.org>; Wed, 27 Sep 2023 21:55:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1695876948; x=1696481748; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=GRoZ9U8WPN+Qr3fM7UT4CjFDZZqBDxWZDvc7yR6K5h0=;
-        b=d0oyf8m3qm5rklWiT/R30kvt4WfzwTKMe6jjY5/Iwv/Y8XlJpH8MjUFNrn3+zwNpvY
-         Bya/r3q8L0EvaBav+sxt0WaBF1HjhRuSbmrMO/gub6qLNV3WqAZyRbRaDb051QluCaji
-         c8/4niu+xDJABda20M8xnCOeerIZuV5lECuP/zcXDkrc3XLdQVpCAZi2UPi5SrfVYHu6
-         2+TPUCGktlSDTL1pZUPfFPu0oMB3ePVnGfS3koNuv5X2exSS5DNlItwO+8iaxjRtxqJV
-         Lziyr3kNdaVx31nzizJfYdIhMiSd5mS0ywNlvFl2k2uBHim28zuFOBp/x7EoGQ2OZ7yr
-         hEeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695876948; x=1696481748;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GRoZ9U8WPN+Qr3fM7UT4CjFDZZqBDxWZDvc7yR6K5h0=;
-        b=ffiHI63U9Kp750m93fEXwZq+KYhPkuGbAQGmdcRXbxcXoVHu9lNrTFdHgj8HHAdTHh
-         AZhGzQL4Zf/jY1vC9PdRwPRtq5yrK5YaD+N78CArx/aCj6tIql5cAUXePXys/iLArxmF
-         EpjlybL1e3aY0fH00MRNUc+g+y4Y0+W3QY8HB0JsujVHZsFxU0F+4wyE/SvgVdO4aoMW
-         04ccQeuu7GdocvE3XA6w4xVgomCB90McDAcDSWTcfmqvNLWQKRirXNh+7d8bLmq9MWhR
-         htBwiVwRtEUTOk8oYBk6TEn2A62LQNo72D/Gsl3qBrzwwboVG/q8AqT93a5lYaCXichz
-         apmg==
-X-Gm-Message-State: AOJu0YwVctMSUc0ydYhOxQEtlYcgoA8uS4NOdEPKdyYK6mDxEIqXgOU5
-        AeZBgEi6pUCYnYdY09gNA/6rOg==
-X-Google-Smtp-Source: AGHT+IE3pAEjLgDO8zlyhmBRQp2g+CFl8YUn7EwT8APbyBoysQf9t3e6/pskUqprJEO69PoIDitB5w==
-X-Received: by 2002:a17:907:78d5:b0:9ae:6ab9:af90 with SMTP id kv21-20020a17090778d500b009ae6ab9af90mr142567ejc.47.1695876947632;
-        Wed, 27 Sep 2023 21:55:47 -0700 (PDT)
-Received: from [192.168.32.2] ([82.78.167.177])
-        by smtp.gmail.com with ESMTPSA id jt24-20020a170906ca1800b009929d998abcsm10195585ejb.209.2023.09.27.21.55.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Sep 2023 21:55:47 -0700 (PDT)
-Message-ID: <25ba20db-6dca-7179-a892-9d9f87442313@tuxon.dev>
-Date:   Thu, 28 Sep 2023 07:55:43 +0300
+        Thu, 28 Sep 2023 02:08:15 -0400
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C8D9C
+        for <linux-serial@vger.kernel.org>; Wed, 27 Sep 2023 23:08:11 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qlkBi-0004RI-IP; Thu, 28 Sep 2023 08:07:50 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qlkBh-009VzQ-G9; Thu, 28 Sep 2023 08:07:49 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qlkBh-005YUC-6U; Thu, 28 Sep 2023 08:07:49 +0200
+Date:   Thu, 28 Sep 2023 08:07:49 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Chengfeng Ye <dg573847474@gmail.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        sorganov@gmail.com, festevam@gmail.com,
+        ilpo.jarvinen@linux.intel.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+        dmaengine@vger.kernel.org
+Subject: Re: [PATCH RESEND] serial: imx: Fix potential deadlock on
+ sport->port.lock
+Message-ID: <20230928060749.qzs6qgcesstclqqk@pengutronix.de>
+References: <20230927181939.60554-1-dg573847474@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH 09/37] clk: renesas: rzg2l: fix computation formula
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        ulf.hansson@linaro.org, linus.walleij@linaro.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, quic_bjorande@quicinc.com,
-        arnd@arndb.de, konrad.dybcio@linaro.org, neil.armstrong@linaro.org,
-        nfraprado@collabora.com, rafal@milecki.pl,
-        wsa+renesas@sang-engineering.com,
-        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-References: <20230912045157.177966-1-claudiu.beznea.uj@bp.renesas.com>
- <20230912045157.177966-10-claudiu.beznea.uj@bp.renesas.com>
- <CAMuHMdVNzgHqURohOgpFEaGn+6+rQTqsDomoS1u_-jn=GgmHXw@mail.gmail.com>
- <dfe64c7c-2f90-65a2-05fc-e96ec5113a60@tuxon.dev>
- <CAMuHMdXJ_gp5cdGpcK-kGk16YGDX8d9MEjQQkSobOGLphbJ5dQ@mail.gmail.com>
- <CAMuHMdV=r9704bNemDHWvjMJKbsBQJKqTxkKCeGUNp4iBNBoew@mail.gmail.com>
-From:   claudiu beznea <claudiu.beznea@tuxon.dev>
-In-Reply-To: <CAMuHMdV=r9704bNemDHWvjMJKbsBQJKqTxkKCeGUNp4iBNBoew@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="f7bog4b3txnbhuoj"
+Content-Disposition: inline
+In-Reply-To: <20230927181939.60554-1-dg573847474@gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi, Geert,
 
-On 27.09.2023 11:00, Geert Uytterhoeven wrote:
-> Hi Claudiu,
-> 
-> On Tue, Sep 26, 2023 at 4:44 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->> On Tue, Sep 26, 2023 at 1:47 PM claudiu beznea <claudiu.beznea@tuxon.dev> wrote:
->>> On 14.09.2023 15:55, Geert Uytterhoeven wrote:
->>>> On Tue, Sep 12, 2023 at 6:52 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
->>>>> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->>>>>
->>>>> According to hardware manual of RZ/G2L (r01uh0914ej0130-rzg2l-rzg2lc.pdf)
->>>>> the computation formula for PLL rate is as follows:
->>>>>
->>>>> Fout = ((m + k/65536) * Fin) / (p * 2^s)
->>>>>
->>>>> and k has values in range [-32768, 32767]. Dividing k by 65536 with
->>>>> integer variables leads all the time to zero. Thus we may have slight
->>>>> differences b/w what has been set vs. what is displayed. Thus,
->>>>> get rid of this and decompose the formula before dividing k by 65536.
->>>>>
->>>>> Fixes: ef3c613ccd68a ("clk: renesas: Add CPG core wrapper for RZ/G2L SoC")
->>>>> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->>>>
->>>> Thanks for your patch!
->>>>
->>>>> --- a/drivers/clk/renesas/rzg2l-cpg.c
->>>>> +++ b/drivers/clk/renesas/rzg2l-cpg.c
->>>>> @@ -696,18 +696,22 @@ static unsigned long rzg2l_cpg_pll_clk_recalc_rate(struct clk_hw *hw,
->>>>>         struct pll_clk *pll_clk = to_pll(hw);
->>>>>         struct rzg2l_cpg_priv *priv = pll_clk->priv;
->>>>>         unsigned int val1, val2;
->>>>> -       unsigned int mult = 1;
->>>>> -       unsigned int div = 1;
->>>>> +       unsigned int div;
->>>>> +       u64 rate;
->>>>> +       s16 kdiv;
->>>>>
->>>>>         if (pll_clk->type != CLK_TYPE_SAM_PLL)
->>>>>                 return parent_rate;
->>>>>
->>>>>         val1 = readl(priv->base + GET_REG_SAMPLL_CLK1(pll_clk->conf));
->>>>>         val2 = readl(priv->base + GET_REG_SAMPLL_CLK2(pll_clk->conf));
->>>>> -       mult = MDIV(val1) + KDIV(val1) / 65536;
->>>>> +       kdiv = KDIV(val1);
->>>>>         div = PDIV(val1) << SDIV(val2);
->>>>>
->>>>> -       return DIV_ROUND_CLOSEST_ULL((u64)parent_rate * mult, div);
->>>>> +       rate = (u64)MDIV(val1) * parent_rate;
->>>>> +       rate += ((long long)parent_rate * kdiv) / 65536;
->>>>
->>>> As the division is a binary shift, you can use the mul_u64_u32_shr() helper,
->>>> and incorporate the sdiv shift at the same time:
->>>>
->>>>     rate += mul_u64_u32_shr(parent_rate, KDIV(val1), 16 + SDIV(val2));
->>
->>  [1]^
->>
->>>>
->>>> You can save a multiplication by premultiplying mdiv by 65536:
->>>>
->>>>     rate = mul_u64_u32_shr(parent_rate, (MDIV(val1) << 16)) + KDIV(val1),
->>>>                            16 + SDIV(val2));
->>
->> [2]^
->>
->>>
->>> Looking again at this: KDIV (aka DIV_K) could have negative values thus
->>> mul_u64_u32_shr() cannot be used here.
->>
->> That means you can indeed not use [1].
+--f7bog4b3txnbhuoj
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-You're right. Thanks for the input!
+[Cc +=3D Vinod Koul, dmaengine@vger.kernel.org]
 
->>
->> But you can still use [2], as MDIV() must be in the range 64..533[3],
->> so "(MDIV(val1) << 16)) + (s16)KDIV(val1)" is always positive.
->> Note that you do need the cast to s16 (which I had missed before), or
->> the intermediate variable kdiv of type s16 (like in your patch).
-> 
-> Or include the cast to a signed type in the definition of KDIV().
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
+Hello,
+
+On Wed, Sep 27, 2023 at 06:19:39PM +0000, Chengfeng Ye wrote:
+> As &sport->port.lock is acquired under irq context along the following
+> call chain from imx_uart_rtsint(), other acquisition of the same lock
+> inside process context or softirq context should disable irq avoid double
+> lock.
+>=20
+> <deadlock #1>
+>=20
+> imx_uart_dma_rx_callback()
+> --> spin_lock(&sport->port.lock)
+> <interrupt>
+>    --> imx_uart_rtsint()
+>    --> spin_lock(&sport->port.lock)
+>=20
+> This flaw was found by an experimental static analysis tool I am
+> developing for irq-related deadlock.
+
+Ah, I understood before that you really experienced that deadlock (or a
+lockdep splat). I didn't test anything, but I think the
+imx_uart_dma_rx_callback() is called indirectly by
+sdma_update_channel_loop() which is called in irq context. I don't know
+if this is the case for all dma drivers?!
+
+@Vinod: Maybe you can chime in here: Is a dma callback always called in
+irq context?
+
+If yes, this patch isn't needed. Otherwise it might be a good idea to
+not use the special knowledge and switch to spin_lock_irqsave() as
+suggested.
+
+> To prevent the potential deadlock, the patch uses spin_lock_irqsave()
+> on the &sport->port.lock inside imx_uart_dma_rx_callback() to prevent
+> the possible deadlock scenario.
+>=20
+> Signed-off-by: Chengfeng Ye <dg573847474@gmail.com>
+
+If we agree this patch is a good idea, we can add:
+
+Fixes: 496a4471b7c3 ("serial: imx: work-around for hardware RX flood")
+
+Thanks
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--f7bog4b3txnbhuoj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmUVGDQACgkQj4D7WH0S
+/k6Msgf+Nch+utVGLzdo/mRgW9Bdxbi16a03vlH2nAu50axg2kKLy3gztudaYrlj
+QarLJ7u8TsOWzkU+EP6ye3ubFGhApV/7ne+/QUeEdQmkuz8LHf35pk3+dCKenhkC
+NN2+l08DUIM/+uwjD2ESMQM2M/Td9fW+9PsMKgLNiiIlE/ZA5tOOGbSU6UUoS5uv
+R9BdzUY2c5/a3ANnyf/c9A2Df+yqoLcMBUXrhnoAXJSflSf3Z2GYTv7FyHotLJb5
+c4D6cClkyrMeGJ1VmgTTVOcz35ZDIhkprc4Q/SmqPj9IiuejavBjPmjJHNG1rcV3
+6zS7jDlI0tgIqSoz8PnJLK3AJzluTQ==
+=CCkc
+-----END PGP SIGNATURE-----
+
+--f7bog4b3txnbhuoj--
