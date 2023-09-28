@@ -2,239 +2,150 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55B6FCE7AFC
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 18:08:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE25CCE7AFC
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Sep 2023 18:13:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230501AbjI1SIp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Sep 2023 14:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47006 "EHLO
+        id S231451AbjI1SNe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Sep 2023 14:13:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231716AbjI1SIn (ORCPT
+        with ESMTP id S230293AbjI1SNe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Sep 2023 14:08:43 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EE011A1
-        for <linux-serial@vger.kernel.org>; Thu, 28 Sep 2023 11:08:41 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id a640c23a62f3a-9b2a3fd5764so783567866b.3
-        for <linux-serial@vger.kernel.org>; Thu, 28 Sep 2023 11:08:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1695924520; x=1696529320; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=UoV8bp+GLn88RdeFyi+3G/jZGwWmlguHsi2KfbyyFTc=;
-        b=F4rgoPATW/uPaBt0B1ZHJZk/wd45xgX20/qBCa3rUvitAFbpitujTgrkItudaLCVkO
-         7MMxPpOMwB4SUDJmk/W83FsI1wDow237Qx9lWH2glRgtdJF8plilNG+FoRvTI6UvgIl4
-         lekX3vFNws/Zq2al6O5Xj9N8S7WJQpnvVf7VI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695924520; x=1696529320;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=UoV8bp+GLn88RdeFyi+3G/jZGwWmlguHsi2KfbyyFTc=;
-        b=ID+LwSek8djFgHAr4hUSE2x3yqPsPLzvVrOu+qOR790Muz7QVx2hPvU+HhlYyN4Vpt
-         V9pf6bj9YaGRQCpOHSFT7mRRlquqIbfUCsE9GYP0m10QLf3HsyMmCECdt6JVLII/Lx1Z
-         o/XD9/0hdLqTGnmvA+c4JKqAL5WKaUJMAsdmSNp5KIyF5bgH3RpyDynBv5W95dtm9v8x
-         XsRiHa6XfPs1PGJKDjy1ORUnTelV/0v3zRip5TX3JMLn5bvf+SyXikUPbEvjiKdfgcR8
-         FJE0MzJR/wKDaAY5YHELsu7sa2+0KI6b4+KufURM8BiZ2ylFUl7lBtRunv+7Uu6HIoSZ
-         tc5A==
-X-Gm-Message-State: AOJu0Yzage6V1hLq71ssAXvBROD1yiIHKpYkDUaUqaX8DCalXw7VXH0Y
-        6ugjGqTLngAgiuKb5kqGaBmGPHb/nN6IBi5RGNBQ56uTExQ=
-X-Google-Smtp-Source: AGHT+IGaJ2UZ7ou3QVOxR8+lumNklCwMA0WqQTBYh/O5eIJXDGXNwucz4RFrUMG66tt+iCN0VthiQA==
-X-Received: by 2002:a17:906:10a:b0:9ae:420e:73a0 with SMTP id 10-20020a170906010a00b009ae420e73a0mr1946218eje.69.1695924519901;
-        Thu, 28 Sep 2023 11:08:39 -0700 (PDT)
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com. [209.85.128.49])
-        by smtp.gmail.com with ESMTPSA id y4-20020a17090614c400b00992b510089asm11188031ejc.84.2023.09.28.11.08.39
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Sep 2023 11:08:39 -0700 (PDT)
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-405361bb9f7so136701805e9.2
-        for <linux-serial@vger.kernel.org>; Thu, 28 Sep 2023 11:08:39 -0700 (PDT)
-X-Received: by 2002:aa7:d899:0:b0:52f:c073:9c77 with SMTP id
- u25-20020aa7d899000000b0052fc0739c77mr1748627edq.35.1695922912868; Thu, 28
- Sep 2023 10:41:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230928110554.34758-1-jlayton@kernel.org> <20230928110554.34758-3-jlayton@kernel.org>
-In-Reply-To: <20230928110554.34758-3-jlayton@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 28 Sep 2023 10:41:34 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wij_42Q9WHY898r-gugmT5c-1JJKRh3C+nTUd1hc1aeqQ@mail.gmail.com>
-Message-ID: <CAHk-=wij_42Q9WHY898r-gugmT5c-1JJKRh3C+nTUd1hc1aeqQ@mail.gmail.com>
-Subject: Re: [PATCH 87/87] fs: move i_blocks up a few places in struct inode
-To:     Jeff Layton <jlayton@kernel.org>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <brauner@kernel.org>,
-        David Sterba <dsterba@suse.cz>,
-        Amir Goldstein <amir73il@gmail.com>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>, Jeremy Kerr <jk@ozlabs.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
+        Thu, 28 Sep 2023 14:13:34 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2F019E;
+        Thu, 28 Sep 2023 11:13:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1695924812; x=1727460812;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=oWG7lOLK2ncHmaeq7gB1uceRdN0w6sIbgk+5a3Wz1lk=;
+  b=KRb4v11da51cbBB1CPfUkNTmo2fFJkA3o86jYJ9Q9c/tbpHdMztlsOs+
+   Bd/Rvwm2wHwB1TtiYkvm7cjrxulLuOhPxrDw9FRZevoGpDHqxw4ff8XLw
+   w5Dv0ZGzsyaz8E9JyanljZyDvNG3xfbcO6DaUMqHADK3405PZWE1HVuqd
+   8jiMGsuRWK7QCY64KNu6W31Fjeei8B98nqUCtm8hQcTJzdKxfTNc6fd28
+   fZbFANBj8Ii9LBVl09nrSbii8NjsMTWqw+tZtncZys/19RZ8eJ4O6HRty
+   D3hjF9aR03cEiNXQ/LJu/MvXFsIhnxVHP6+hzJLa2Xstk0PCb2kZsXQuD
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10847"; a="362378478"
+X-IronPort-AV: E=Sophos;i="6.03,184,1694761200"; 
+   d="scan'208";a="362378478"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2023 11:12:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10847"; a="753094219"
+X-IronPort-AV: E=Sophos;i="6.03,184,1694761200"; 
+   d="scan'208";a="753094219"
+Received: from lkp-server02.sh.intel.com (HELO c3b01524d57c) ([10.239.97.151])
+  by fmsmga007.fm.intel.com with ESMTP; 28 Sep 2023 11:12:20 -0700
+Received: from kbuild by c3b01524d57c with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1qlvUo-0001n3-0x;
+        Thu, 28 Sep 2023 18:12:18 +0000
+Date:   Fri, 29 Sep 2023 02:11:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tony Lindgren <tony@atomide.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Carlos Llamas <cmllamas@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Mattia Dongili <malattia@linux.it>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        Brad Warrum <bwarrum@linux.ibm.com>,
-        Ritu Agarwal <rituagar@linux.ibm.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Mark Gross <markgross@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Eric Van Hensbergen <ericvh@kernel.org>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Christian Schoenebeck <linux_oss@crudebyte.com>,
-        David Sterba <dsterba@suse.com>,
-        David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        Ian Kent <raven@themaw.net>,
-        Luis de Bethencourt <luisbg@kernel.org>,
-        Salah Triki <salah.triki@gmail.com>,
-        "Tigran A. Aivazian" <aivazian.tigran@gmail.com>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Jan Harkes <jaharkes@cs.cmu.edu>, coda@cs.cmu.edu,
-        Joel Becker <jlbec@evilplan.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>, Gao Xiang <xiang@kernel.org>,
-        Chao Yu <chao@kernel.org>, Yue Hu <huyue2@coolpad.com>,
-        Jeffle Xu <jefflexu@linux.alibaba.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Sungjong Seo <sj1557.seo@samsung.com>,
-        Jan Kara <jack@suse.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
-        Christoph Hellwig <hch@infradead.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Bob Peterson <rpeterso@redhat.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Mikulas Patocka <mikulas@artax.karlin.mff.cuni.cz>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <muchun.song@linux.dev>, Jan Kara <jack@suse.cz>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Dave Kleikamp <shaggy@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Neil Brown <neilb@suse.de>,
-        Olga Kornievskaia <kolga@netapp.com>,
-        Dai Ngo <Dai.Ngo@oracle.com>, Tom Talpey <tom@talpey.com>,
-        Ryusuke Konishi <konishi.ryusuke@gmail.com>,
-        Anton Altaparmakov <anton@tuxera.com>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Bob Copeland <me@bobcopeland.com>,
-        Mike Marshall <hubcap@omnibond.com>,
-        Martin Brandenburg <martin@omnibond.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Tony Luck <tony.luck@intel.com>,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Anders Larsen <al@alarsen.net>,
-        Steve French <sfrench@samba.org>,
-        Paulo Alcantara <pc@manguebit.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Shyam Prasad N <sprasad@microsoft.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Phillip Lougher <phillip@squashfs.org.uk>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Evgeniy Dushistov <dushistov@mail.ru>,
-        Chandan Babu R <chandan.babu@oracle.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Damien Le Moal <dlemoal@kernel.org>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        Johannes Thumshirn <jth@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>,
-        Yonghong Song <yonghong.song@linux.dev>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        John Johansen <john.johansen@canonical.com>,
-        Paul Moore <paul@paul-moore.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, v9fs@lists.linux.dev,
-        linux-afs@lists.infradead.org, autofs@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        codalist@coda.cs.cmu.edu, linux-efi@vger.kernel.org,
-        linux-erofs@lists.ozlabs.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, gfs2@lists.linux.dev,
-        linux-um@lists.infradead.org, linux-mtd@lists.infradead.org,
-        jfs-discussion@lists.sourceforge.net, linux-nfs@vger.kernel.org,
-        linux-nilfs@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
-        ntfs3@lists.linux.dev, ocfs2-devel@lists.linux.dev,
-        linux-karma-devel@lists.sourceforge.net, devel@lists.orangefs.org,
-        linux-unionfs@vger.kernel.org, linux-hardening@vger.kernel.org,
-        reiserfs-devel@vger.kernel.org, linux-cifs@vger.kernel.org,
-        samba-technical@lists.samba.org,
-        linux-trace-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        apparmor@lists.ubuntu.com, linux-security-module@vger.kernel.org,
-        selinux@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     oe-kbuild-all@lists.linux.dev,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250_omap: Drop pm_runtime_irq_safe()
+Message-ID: <202309290255.uEGVqQAE-lkp@intel.com>
+References: <20230928080358.2693-1-tony@atomide.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230928080358.2693-1-tony@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 28 Sept 2023 at 04:06, Jeff Layton <jlayton@kernel.org> wrote:
->
-> Move i_blocks up above the i_lock, which moves the new 4 byte hole to
-> just after the timestamps, without changing the size of the structure.
+Hi Tony,
 
-I'm sure others have mentioned this, but 'struct inode' is marked with
-__randomize_layout, so the actual layout may end up being very
-different.
+kernel test robot noticed the following build warnings:
 
-I'm personally not convinced the whole structure randomization is
-worth it - it's easy enough to figure out for any distro kernel since
-the seed has to be the same across machines for modules to work, so
-even if the seed isn't "public", any layout is bound to be fairly
-easily discoverable.
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.6-rc3 next-20230928]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-So the whole randomization only really works for private kernel
-builds, and it adds this kind of pain where "optimizing" the structure
-layout is kind of pointless depending on various options.
+url:    https://github.com/intel-lab-lkp/linux/commits/Tony-Lindgren/serial-8250_omap-Drop-pm_runtime_irq_safe/20230928-160501
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20230928080358.2693-1-tony%40atomide.com
+patch subject: [PATCH] serial: 8250_omap: Drop pm_runtime_irq_safe()
+config: sh-allyesconfig (https://download.01.org/0day-ci/archive/20230929/202309290255.uEGVqQAE-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 13.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20230929/202309290255.uEGVqQAE-lkp@intel.com/reproduce)
 
-I certainly *hope* no distro enables that pointless thing, but it's a worry.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202309290255.uEGVqQAE-lkp@intel.com/
 
-               Linus
+All warnings (new ones prefixed by >>):
+
+   drivers/tty/serial/8250/8250_omap.c: In function 'omap8250_irq':
+>> drivers/tty/serial/8250/8250_omap.c:688:1: warning: label 'out_runtime_put' defined but not used [-Wunused-label]
+     688 | out_runtime_put:
+         | ^~~~~~~~~~~~~~~
+
+
+vim +/out_runtime_put +688 drivers/tty/serial/8250/8250_omap.c
+
+   651	
+   652		lsr = serial_port_in(port, UART_LSR);
+   653		iir = serial_port_in(port, UART_IIR);
+   654		ret = serial8250_handle_irq(port, iir);
+   655	
+   656		/*
+   657		 * On K3 SoCs, it is observed that RX TIMEOUT is signalled after
+   658		 * FIFO has been drained, in which case a dummy read of RX FIFO
+   659		 * is required to clear RX TIMEOUT condition.
+   660		 */
+   661		if (priv->habit & UART_RX_TIMEOUT_QUIRK &&
+   662		    (iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT &&
+   663		    serial_port_in(port, UART_OMAP_RX_LVL) == 0) {
+   664			serial_port_in(port, UART_RX);
+   665		}
+   666	
+   667		/* Stop processing interrupts on input overrun */
+   668		if ((lsr & UART_LSR_OE) && up->overrun_backoff_time_ms > 0) {
+   669			unsigned long delay;
+   670	
+   671			/* Synchronize UART_IER access against the console. */
+   672			uart_port_lock(port);
+   673			up->ier = port->serial_in(port, UART_IER);
+   674			if (up->ier & (UART_IER_RLSI | UART_IER_RDI)) {
+   675				port->ops->stop_rx(port);
+   676			} else {
+   677				/* Keep restarting the timer until
+   678				 * the input overrun subsides.
+   679				 */
+   680				cancel_delayed_work(&up->overrun_backoff);
+   681			}
+   682			uart_port_unlock(port);
+   683	
+   684			delay = msecs_to_jiffies(up->overrun_backoff_time_ms);
+   685			schedule_delayed_work(&up->overrun_backoff, delay);
+   686		}
+   687	
+ > 688	out_runtime_put:
+   689		pm_runtime_mark_last_busy(port->dev);
+   690		pm_runtime_put(port->dev);
+   691	
+   692		return IRQ_RETVAL(ret);
+   693	}
+   694	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
