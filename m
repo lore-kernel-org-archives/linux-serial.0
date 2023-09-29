@@ -2,176 +2,257 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD3C8E728CC
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 17:41:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 330C4E728CF
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 19:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233179AbjI2RlE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Sep 2023 13:41:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58916 "EHLO
+        id S233741AbjI2TPs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 29 Sep 2023 15:15:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233353AbjI2RlD (ORCPT
+        with ESMTP id S233681AbjI2TPr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Sep 2023 13:41:03 -0400
-Received: from MW2PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012006.outbound.protection.outlook.com [52.101.48.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AE891B5
-        for <linux-serial@vger.kernel.org>; Fri, 29 Sep 2023 10:40:58 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XAFeuCg1OBT9rj+1CmuPu8RvICqwzC1JWe8rFSOXitmUkUusTT3Jj5VSQlMsm8L4lxtKLePvX8/oL6PdWFu1xr9ZmIyA0KXIDEsSqVLwel1NMmLPmwUbEw937N+B+Qfw19k6Fht5KjzXDCRuOUuexe8mB1bdx9U6ABicIoS/cEibI6c92gmoQjvNucPSlwyK9SA81Y4JBeLY6WzFnJgnnfAlevT/wKfnpyAuef6MKzTwLPhxaHYV5aC7w7JnwrxmFi6XaB50A6OEE/glrHbPcg7ETvs+d1LP94Xuce6Q89+1oMRLjP/Q4KkpRJjYHqTvLn1G+1GhAAbLAEyXeCuXgg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uxATSpJtBHR3YciDsuMJu9i5tZBhWHUb74hec/3OVaU=;
- b=UyYPYIv1i09nkFWasTLImdM18AkSjxy6BO6gfdHrD323y6Tybsb4Bbxww96KPwT2JW8/kiC5NbASiUXKd0JwIpSMA1y2QM8+fnrB0a6hiowKLh2qa7mGpnAjyYhVj9FSG+5HT5hL+et8B3+nFUKmWx+W/C8/GjLAlqvlVEmEFZoA1wTMLzX5uATi130+7Iv75Te8vNlDmcmP6oq5JrYiBTavmxta3FydT4Zox9SuoOwRyIr/tsvxn1u01dIaaW0ZI6QRnUVYlAmSNV6eYzfqtd3WgYmyiFxiqMYkpY8d4wWe7uBB5OCUIBcS3T1EqNwXdXH/uCQplYb12hmOkC7k6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=sealevel.com; dmarc=pass action=none header.from=sealevel.com;
- dkim=pass header.d=sealevel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sealevel.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uxATSpJtBHR3YciDsuMJu9i5tZBhWHUb74hec/3OVaU=;
- b=iJiI7lH1WGVEx7nIGgmbeWeV68w79Z6fW6dln/8xmI3soTmsxhKPsgoan6+W1ZVEKMPYzwQjGCr5/ysteLFePg029wsiUq1FVYOfsUHESgBkOOU1qQBfE16HXjXSQdf4JNmtltapGNIzXc9OLHH/DBsK2FZ9DQOauNGHsB9NyuSKa64aql89GOxLGJdimjSamVT9E728ZDmLKR3DCz4Ju/cTWSnvc3i5Y4f+K1u6BcAiBXDAdckY3X/QznvsJ2yyiaTaYAvhD5VBGDAaq8PH3DaKJzVNxRb4+NFyW8WBw8w26S3FRnywI8cPBZCU/8W3mEuJhN6KN4oI70qS/uShuw==
-Received: from BY3PR05MB8419.namprd05.prod.outlook.com (2603:10b6:a03:3c6::10)
- by PH8PR05MB9362.namprd05.prod.outlook.com (2603:10b6:510:1c1::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.24; Fri, 29 Sep
- 2023 17:40:55 +0000
-Received: from BY3PR05MB8419.namprd05.prod.outlook.com
- ([fe80::f4e4:1bc5:23f6:c9d4]) by BY3PR05MB8419.namprd05.prod.outlook.com
- ([fe80::f4e4:1bc5:23f6:c9d4%3]) with mapi id 15.20.6838.024; Fri, 29 Sep 2023
- 17:40:55 +0000
-From:   Matthew Howell <matthew.howell@sealevel.com>
-To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Darren Beeson <darren.beeson@sealevel.com>,
-        "andriy.shevchenko@intel.com" <andriy.shevchenko@intel.com>,
-        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
-        "eff.baldwin@sealevel.com" <eff.baldwin@sealevel.com>,
-        James Olson <james.olson@sealevel.com>,
-        Ryan Wenglarz <ryan.wenglarz@sealevel.com>
-Subject: [PATCH V9 2/2] serial: exar: Add RS-485 support for Sealevel XR17V35X
- based cards
-Thread-Topic: [PATCH V9 2/2] serial: exar: Add RS-485 support for Sealevel
- XR17V35X based cards
-Thread-Index: AQHZ8vwZPu3UINjLFE+mWTp0CWmRiw==
-Date:   Fri, 29 Sep 2023 17:40:55 +0000
-Message-ID: <4b8ad8ab6728742464c4e048fdeecb2b40522aef.camel@sealevel.com>
-References: <8ffa2f583ff142c3b0eb6cf51a7c9cef5dbfd320.camel@sealevel.com>
-In-Reply-To: <8ffa2f583ff142c3b0eb6cf51a7c9cef5dbfd320.camel@sealevel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.44.4-0ubuntu2 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=sealevel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BY3PR05MB8419:EE_|PH8PR05MB9362:EE_
-x-ms-office365-filtering-correlation-id: bb07e7d6-c13e-4606-e70e-08dbc1133c0d
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 9nw04dBTMsnjsKSsaTnuz+H9sSF2lLEkHQwpADp75zPK47otU+foyUAa9w1MzZep198fEm7UHymFYQqaNIZq4aeEEHoxATJtVnVLSaenXeBRtnEurtr3cWezpS2YMhY3AgEXk4AXbSTgSbqJCdJRuDTNViX+0r6oMqEhSQOXE2h8WilAO7I7coJ2B+M7YV80JVeroSFmOZfDMo+v+idgriBvJtzEFiHTqr7vr3O8UgFWMyP0Xd00XfxLh/g5zYdIRxPR5UDfJ/30mt4tP55w4mb/8u/G5OXU+yuHN+/QGwWOWm4WTbzaT7evx7i8WfTzyVEKyBfknkfRqCgFL2ABjWcnE8WWWTqchh2kmzi86FN05vf7he/AJ5IE28Pf0hcY2wrL7Te69+ggTat+/UmfbSbdFquASfSJQKfDCBklmgAMMp6dNBhmc14vorYbGjYbI50mOl+9QygvJatxQGwiEu1AjpWsij/eWthnh7bDrOCtjai7HQd7pYFnoV9Oe2ouD+wTRpfuNbkWY2r/KXgj0G7Mz7dnsLC6S2ranGT4OHoyI+GSdNScm8aR5y3WAw5jqgYhpvNz+yR6kIXwFKm4kgyC/4BXLlQWViR+4YMOooBWu57MEGHiSdmJcGqp8pbvVcK5bxKZJY1p3IOGfySaT0w7/KHNXyGJzaCM3t1VcJw=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR05MB8419.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(366004)(136003)(376002)(396003)(39840400004)(230922051799003)(1800799009)(186009)(64100799003)(451199024)(478600001)(71200400001)(38100700002)(38070700005)(2616005)(107886003)(6512007)(6486002)(36756003)(122000001)(6506007)(26005)(64756008)(66946007)(66556008)(66476007)(91956017)(76116006)(41300700001)(316002)(6916009)(54906003)(66446008)(83380400001)(8676002)(4326008)(5660300002)(44832011)(8936002)(86362001)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?NE1LKy9vdkNtbm9pUURpMGZydjh4dmp3dUJiTmdmbHlwczhLeWNLcXhKOS9S?=
- =?utf-8?B?dlV3QlJVYm9IYWQ1anAyQjYweXJXc3hXdnZMbytoMDVTd0cyTENCRU5MVXJW?=
- =?utf-8?B?UE1DMHdQNXNickZrbW5JUUFkM1RWOG50Z21xOFQ2T0Nwc2V2M01rN2ZMdy9t?=
- =?utf-8?B?eFRCaUpxZkQ5TmRyeC9Dd2NPT213ZmVsWnpyNkpVOXlDUENCdjBpamxuL0hj?=
- =?utf-8?B?bWw4ZlpiVzUwNGVPU21tb2F0Sys5U0E0WlZoV2NZTXRiWG9BVjhVa2wybVky?=
- =?utf-8?B?Y01QcytwREJsc1R6eU1CY1NnVGdLZ3VzMGZQWmtraHJYNWFTaW9lRnRtOUhn?=
- =?utf-8?B?bkVKYktZZEQ5L1U2M2ZidWxMYlI3bzlWaElhVU5PWHpTMEVUSUV3cCtNQUpi?=
- =?utf-8?B?dkc0Rzlta2plNzZUcnozNS92cVJUaXllb0hkOS9TczZzQmZUa0kxSlZ0WmNr?=
- =?utf-8?B?MVNxUmJBVkVxOGhZL3A0WUFmQytrVGMyNEhQazUvTFlCSTRaS0ZicTlBUE00?=
- =?utf-8?B?REdkTTF5b0FhZkJERUdtM1ZNbENYMkFkeVp5ZUxuaURkb05nV3Z1MWhVajFm?=
- =?utf-8?B?anVST3lCaGdjSUd0bFJmUFRxU09uRTBYSWhXMFJEWVhTbXpTK0Q3bE9xOVV4?=
- =?utf-8?B?aFBhNEM3VFprYkNZK2EvMkQ1d2dhNzlocmordTZ4SDNsSTVvVUdubVJDbXov?=
- =?utf-8?B?VEp6dlF1d1hzQjF1RjZKdHN6d3ZONmVYWERWTDM3UGgzdjkyNHY2RmE5VXBZ?=
- =?utf-8?B?eFYzbldkeGdMTlBSc0EwS0hBWllITnFKdWJzdlBST2FOaXk3WDR4UE1ad3VM?=
- =?utf-8?B?cVJlMmdiWktrVEdscGRQNXRXbUpvT2c4Z04vUnZkTjBGSGN5NFd6UE5nb0Za?=
- =?utf-8?B?ZE0wbUI1bVd3bkhFa2lEM0I1QjNNVU1qTWtSUWVmVEVZU0RsUjlFWHZtMFJH?=
- =?utf-8?B?YTFJVzloNmJ1bVFnNGFMRUdScmpuQ0dlaFNOSkJJMENMWlc3dkJrTEJ6aGJn?=
- =?utf-8?B?TzR1dTlhWlpiL2pJMkMvVEZkb0w4WE1Cc2xxN2lvSnhRYWVOYTF5S2w0MjVv?=
- =?utf-8?B?TWlXcEpOQ1lJYTR0UGUydHNiMW1KYzVFZXV3Nk1zdkcwemx3Y3A4YU4xWWZa?=
- =?utf-8?B?QkdKVXZTZnFxdk44YTdqNHpDQmUydG85Uy84em1OWHZrU1M4SlE4Y0xLSjFD?=
- =?utf-8?B?ZGdmbUtpR01GNWN5NGFybjFiMVIxdGQxTDBFSnY1V2lWdUJyV1VwSGJUN3hH?=
- =?utf-8?B?YjdzQ3ZldFQxanZXM1FDMW8wWnFkbnBEb29BbXpmYURhUEtkRkJNUHJLUXRC?=
- =?utf-8?B?UnRGNUNJcnZCWDA2eVVFVGsvN1p0VFNrdElYRkJvTVg2VDQ5VjM5RVk1cHA0?=
- =?utf-8?B?NUZqcHMrRSttSnpNT08ybjZRM01RWXVpWWcrU21MVHFMSXBkTUJXTm1TMldx?=
- =?utf-8?B?aUNoUU9ONzR0cDA3ZlEzZGRQSStjelliSVJUM2hjcXg5dGxvWWRvT0MzcTM2?=
- =?utf-8?B?NU5QcjRWRnFPWFFPQUpLSU9iY2dyWGc0ZEpJbU1ZdU52R0VORUEySW83WUZJ?=
- =?utf-8?B?UUNFbGNHcWJxVk1LVUIyb1lBcXhwNXBzT0VUTXRVZFJXWmNWN1RWaCtOWjJX?=
- =?utf-8?B?ZkJndWZZMzM1S3FNc05OWjV2QVkrdEtMMnByVzJpcnU2eTI2Q0hBRDdqU1Jy?=
- =?utf-8?B?eWJVN3lGeUE3VjVSOFQ3MHUwQkk1bExZaTFwZXZNaXRzS2Y0N3M3ditsKyts?=
- =?utf-8?B?YUpCR29OemNPbzVaUGthdUppdTRVRCtTeEk0dGFpK2o5RGVxZEFyZlhVZWpa?=
- =?utf-8?B?MXlJMm9VU0x6czdrTGJBQkdmbzA3b2twbVJIS0F4TEN3NUJZQmZ6bHBTaGNH?=
- =?utf-8?B?NXFlYTR1eVFFd3d4dEZwYW85VHBHdnI3dFNBWStFK1pzd1kxekZvWkdpZHRu?=
- =?utf-8?B?T3dobW1jeEtsQVJjSFVMN0M0SkhXaFRVd0tWSkw1a2d0Wkt0emF1YndBdExa?=
- =?utf-8?B?SVdXeldJVjEyUitmWnpSTDg0RllpWncwMnVTQnpCNFJrQWkxSkIxUkx4TE15?=
- =?utf-8?B?WU5VU3Zadk9HRkhJNzVnK0R6KzRaM2J3cHBnOTlTME9mYlhpN1c3NXFTU0Y5?=
- =?utf-8?B?Wk1yQkF1b3pKeUh1c2Y5ZVMvUmtiUTFZL3luOTNwRDN1a0Y3NHIvZjR3OHJ4?=
- =?utf-8?B?dXc9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <753679BB444BC247B866A6429F61CF76@namprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Fri, 29 Sep 2023 15:15:47 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1608B1A4;
+        Fri, 29 Sep 2023 12:15:46 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id e9e14a558f8ab-3515694c6d0so21918105ab.3;
+        Fri, 29 Sep 2023 12:15:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1696014945; x=1696619745; darn=vger.kernel.org;
+        h=content-transfer-encoding:subject:from:to:content-language
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7OpH82fkJb1r8H6PlyZZgPkFgJZH8W/NgIZwFg6SwnA=;
+        b=ks+0weUA3KKzcwhXoAZAcjWbwd48zDbW11ZpW9yhH52mPSaM7Q/tCWL8/HzhvFw3A4
+         suoH3U7wR/SKQwkb+UDmjBQdny9SW203CWoOxRlK4NFizZPCCsIviAi3O3Jj1iM/XW7X
+         lntDEzXR50LI23XvIvNH0UldTpxeMQf2LSx0zxDuDnJ7mLVnFCqryTtKE9P1dGjR/wPp
+         jiwaqYGz7I8Mh+HOfPvdqIgTv6DCv9ktu4aIceNpZtnY5Fe7fg181FVj3pik+8vobLoN
+         58bprFoOhgQUJmHSiMqDnfJ9dMkvjdD82PS4+pHQpzS9qNEANnZSSrSI71FSdbzfzY2d
+         nKiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696014945; x=1696619745;
+        h=content-transfer-encoding:subject:from:to:content-language
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=7OpH82fkJb1r8H6PlyZZgPkFgJZH8W/NgIZwFg6SwnA=;
+        b=nBfqeXrMMvEOYGSFSUdcDa4A9G0IUsSWPj2HSwO6gnFpSVSwW8rzUckURD6pZX1g6N
+         yOPx0bQMwqb62E2z3LLG16xCseWKitewJjmVu8DkMf3gpcbK4eFZtV8M1WOMHa2PtSpq
+         HNd4p9f9K4B9gmm0qstvjmXAbNrEqTjzbnXV+tqKW6SEGoH/uodwljwPZ7mbIc0j5hvg
+         gfLRdx7+9ZLz5aHCxvmDhuRAcn9FbmfcIvrWxVCoXK4FA/7wppSmYhbAM9rJIKd9KBaP
+         sDREBLI5+AurT77USfs5im5v8LbN85O63yfRvYBtuxZLvg1jeVO/1eMkS3GqbP8ZYSLm
+         BLWg==
+X-Gm-Message-State: AOJu0YyehOd7neAGWxnXK65DPS+lBzFjai2+ekg0QReqcTFZPnoxRG9E
+        YFo19e5JN0lkv2xKg9Soemd2Vnbd6nJy
+X-Google-Smtp-Source: AGHT+IFm3t6NoH0pp/F+gSs5SeeH0HDBHBe1tPQhBq65tEyy3rnTwTGDVTsX90Snj482upIAIt+JuA==
+X-Received: by 2002:a05:6e02:168a:b0:351:5137:e885 with SMTP id f10-20020a056e02168a00b003515137e885mr6043740ila.24.1696014944814;
+        Fri, 29 Sep 2023 12:15:44 -0700 (PDT)
+Received: from [192.168.1.3] ([161.97.241.227])
+        by smtp.googlemail.com with ESMTPSA id g6-20020a02c546000000b004290f6c15bfsm5357202jaj.145.2023.09.29.12.15.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Sep 2023 12:15:44 -0700 (PDT)
+Message-ID: <b8eae358-a3b3-fd68-82f1-b2c53534b922@gmail.com>
+Date:   Fri, 29 Sep 2023 13:15:41 -0600
 MIME-Version: 1.0
-X-OriginatorOrg: sealevel.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY3PR05MB8419.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bb07e7d6-c13e-4606-e70e-08dbc1133c0d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Sep 2023 17:40:55.8650
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: e34c5615-b4e3-481c-abc8-602581f2e735
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: XYO9CRPWqbQo2JtrH4Eu+XgEu5zvOF3pPIpfljEObC/buNgpal8N/ZduHJJtm6JKC2j89iUUYhJCivzwUsM/wCzTbnGvQTC9RDFWLTHwOqo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR05MB9362
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Content-Language: en-US
+To:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        linux-serial <linux-serial@vger.kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, peterz@infradead.org, gregkh@linuxfoundation.org,
+        andriy.shevchenko@linux.intel.com
+From:   Dan Raymond <raymod2@gmail.com>
+Subject: [PATCH v3] arch/x86: port I/O tracing on x86
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-RnJvbTogTWF0dGhldyBIb3dlbGwgPG1hdHRoZXcuaG93ZWxsQHNlYWxldmVsLmNvbT4NCg0KU2Vh
-bGV2ZWwgWFIxN1YzNVggYmFzZWQgY2FyZHMgdXRpbGl6ZSBEVFIgdG8gY29udHJvbCBSUy00ODUg
-RW5hYmxlLCBidXQNCnRoZSBjdXJyZW50IGltcGxlbWVudGF0aW9uIG9mIDgyNTBfZXhhciB1c2Vz
-IFJUUyBmb3IgdGhlIGF1dG8tUlM0ODUtRW5hYmxlDQptb2RlIG9mIHRoZSBYUjE3VjM1WCBVQVJU
-cy4gVGhpcyBwYXRjaCBpbXBsZW1lbnRzIERUUiBBdXRvLVJTNDg1IG9uDQpTZWFsZXZlbCBjYXJk
-cy4NCg0KU2lnbmVkLW9mZi1ieTogTWF0dGhldyBIb3dlbGwgPG1hdHRoZXcuaG93ZWxsQHNlYWxl
-dmVsLmNvbT4NCi0tLQ0KVjgtPlY5DQpDaGFuZ2VkIGltcGxlbWVudGF0aW9uIHRvIHVzZSBwY2lf
-eHIxN3YzNXhfc2V0dXAoKSBpbnN0ZWFkIG9mIGNyZWF0aW5nDQpzZXBhcmF0ZSBzdGFydHVwIGZ1
-bmN0aW9ucy4NCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfZXhh
-ci5jIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9leGFyLmMNCmluZGV4IDM4ODZmNzhl
-Y2JiZi4uZjRhNDY3ZDViNmFhIDEwMDY0NA0KLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAv
-ODI1MF9leGFyLmMNCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfZXhhci5jDQpA
-QCAtNzgsNiArNzgsOSBAQA0KIA0KICNkZWZpbmUgVUFSVF9FWEFSX1JTNDg1X0RMWSh4KQkoKHgp
-IDw8IDQpDQogDQorI2RlZmluZSBVQVJUX0VYQVJfRExECQkJMHgwMiAvKiBEaXZpc29yIEZyYWN0
-aW9uYWwgKi8NCisjZGVmaW5lIFVBUlRfRVhBUl9ETERfNDg1X1BPTEFSSVRZCTB4ODAgLyogUlMt
-NDg1IEVuYWJsZSBTaWduYWwgUG9sYXJpdHkgKi8NCisNCiAvKg0KICAqIElPVDIwNDAgTVBJTyB3
-aXJpbmcgc2VtYW50aWNzOg0KICAqDQpAQCAtNDM5LDYgKzQ0Miw0NCBAQCBzdGF0aWMgaW50IGdl
-bmVyaWNfcnM0ODVfY29uZmlnKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIHN0cnVjdCBrdGVybWlv
-cyAqdGVybWlvcw0KIAlyZXR1cm4gMDsNCiB9DQogDQorc3RhdGljIGludCBzZWFsZXZlbF9yczQ4
-NV9jb25maWcoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwgc3RydWN0IGt0ZXJtaW9zICp0ZXJtaW9z
-LA0KKwkJCQkgIHN0cnVjdCBzZXJpYWxfcnM0ODUgKnJzNDg1KQ0KK3sNCisJdTggX19pb21lbSAq
-cCA9IHBvcnQtPm1lbWJhc2U7DQorCXU4IG9sZF9sY3I7DQorCXU4IGVmcjsNCisJdTggZGxkOw0K
-KwlpbnQgcmV0Ow0KKw0KKwlyZXQgPSBnZW5lcmljX3JzNDg1X2NvbmZpZyhwb3J0LCB0ZXJtaW9z
-LCByczQ4NSk7DQorCWlmIChyZXQpDQorCQlyZXR1cm4gcmV0Ow0KKw0KKwlpZiAocnM0ODUtPmZs
-YWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpIHsNCisJCW9sZF9sY3IgPSByZWFkYihwICsgVUFSVF9M
-Q1IpOw0KKw0KKwkJLyogU2V0IEVGUls0XT0xIHRvIGVuYWJsZSBlbmhhbmNlZCBmZWF0dXJlIHJl
-Z2lzdGVycyAqLw0KKwkJZWZyID0gcmVhZGIocCArIFVBUlRfWFJfRUZSKTsNCisJCWVmciB8PSBV
-QVJUX0VGUl9FQ0I7DQorCQl3cml0ZWIoZWZyLCBwICsgVUFSVF9YUl9FRlIpOw0KKw0KKwkJLyog
-U2V0IE1DUiB0byB1c2UgRFRSIGFzIEF1dG8tUlM0ODUgRW5hYmxlIHNpZ25hbCAqLw0KKwkJd3Jp
-dGViKFVBUlRfTUNSX09VVDEsIHAgKyBVQVJUX01DUik7DQorDQorCQkvKiBTZXQgTENSWzddPTEg
-dG8gZW5hYmxlIGFjY2VzcyB0byBETEQgcmVnaXN0ZXIgKi8NCisJCXdyaXRlYihvbGRfbGNyIHwg
-VUFSVF9MQ1JfRExBQiwgcCArIFVBUlRfTENSKTsNCisNCisJCS8qIFNldCBETERbN109MSBmb3Ig
-aW52ZXJ0ZWQgUlM0ODUgRW5hYmxlIGxvZ2ljICovDQorCQlkbGQgPSByZWFkYihwICsgVUFSVF9F
-WEFSX0RMRCk7DQorCQlkbGQgfD0gVUFSVF9FWEFSX0RMRF80ODVfUE9MQVJJVFk7DQorCQl3cml0
-ZWIoZGxkLCBwICsgVUFSVF9FWEFSX0RMRCk7DQorDQorCQl3cml0ZWIob2xkX2xjciwgcCArIFVB
-UlRfTENSKTsNCisJfQ0KKw0KKwlyZXR1cm4gMDsNCit9DQorDQogc3RhdGljIGNvbnN0IHN0cnVj
-dCBzZXJpYWxfcnM0ODUgZ2VuZXJpY19yczQ4NV9zdXBwb3J0ZWQgPSB7DQogCS5mbGFncyA9IFNF
-Ul9SUzQ4NV9FTkFCTEVELA0KIH07DQpAQCAtNTYwLDYgKzYwMSw5IEBAIHBjaV94cjE3djM1eF9z
-ZXR1cChzdHJ1Y3QgZXhhcjgyNTAgKnByaXYsIHN0cnVjdCBwY2lfZGV2ICpwY2lkZXYsDQogCXBv
-cnQtPnBvcnQucnM0ODVfY29uZmlnID0gcGxhdGZvcm0tPnJzNDg1X2NvbmZpZzsNCiAJcG9ydC0+
-cG9ydC5yczQ4NV9zdXBwb3J0ZWQgPSAqKHBsYXRmb3JtLT5yczQ4NV9zdXBwb3J0ZWQpOw0KIA0K
-KwlpZiAocGNpZGV2LT5zdWJzeXN0ZW1fdmVuZG9yID09IFBDSV9WRU5ET1JfSURfU0VBTEVWRUwp
-DQorCQlwb3J0LT5wb3J0LnJzNDg1X2NvbmZpZyA9IHNlYWxldmVsX3JzNDg1X2NvbmZpZzsNCisN
-CiAJLyoNCiAJICogU2V0dXAgdGhlIFVBUlQgY2xvY2sgZm9yIHRoZSBkZXZpY2VzIG9uIGV4cGFu
-c2lvbiBzbG90IHRvDQogCSAqIGhhbGYgdGhlIGNsb2NrIHNwZWVkIG9mIHRoZSBtYWluIGNoaXAg
-KHdoaWNoIGlzIDEyNU1IeikNCg0K
+Add support for port I/O tracing on x86.  Memory mapped I/O tracing is
+available on x86 via CONFIG_MMIOTRACE but that relies on page faults
+so it doesn't work with port I/O.  This feature uses tracepoints in a
+similar manner as CONFIG_TRACE_MMIO_ACCESS.
+
+Signed-off-by: Dan Raymond <raymod2@gmail.com>
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+V1 -> V2:
+  - create header file for prototypes to silence new compiler warning
+  - reduce CPU overhead to 2 instructions (no branching) when tracing disabled
+  - fix imprecise IP logging by retrieving the IP off the stack instead of using
+    compile time labels
+
+V2 -> V3:
+  - restore missing semicolon
+
+ arch/x86/include/asm/shared/io.h | 25 ++++++++++++++++
+ arch/x86/lib/Makefile            |  1 +
+ arch/x86/lib/trace_portio.c      | 21 ++++++++++++++
+ include/linux/trace_portio.h     |  6 ++++
+ include/trace/events/portio.h    | 49 ++++++++++++++++++++++++++++++++
+ 5 files changed, 102 insertions(+)
+ create mode 100644 arch/x86/lib/trace_portio.c
+ create mode 100644 include/linux/trace_portio.h
+ create mode 100644 include/trace/events/portio.h
+
+diff --git a/arch/x86/include/asm/shared/io.h b/arch/x86/include/asm/shared/io.h
+index c0ef921c0586..9e5dce1cb62d 100644
+--- a/arch/x86/include/asm/shared/io.h
++++ b/arch/x86/include/asm/shared/io.h
+@@ -2,13 +2,36 @@
+ #ifndef _ASM_X86_SHARED_IO_H
+ #define _ASM_X86_SHARED_IO_H
+ 
++#include <linux/trace_portio.h>
+ #include <linux/types.h>
+ 
++/*
++ * We don't want the tracing logic included in the early boot modules (under
++ * arch/x86/boot) so we check for their include guards here.  If we don't do
++ * this we will get compiler errors.  These checks are not present in
++ * arch/x86/include/asm/msr.h which contains similar tracing logic.  That is
++ * possible only because none of the msr inline functions are instantiated in
++ * the early boot modules.  If that changes this issue will need to be addressed
++ * there as well.  Therefore it might be better to handle this centrally in
++ * tracepoint-defs.h.
++ */
++
++#if defined(CONFIG_TRACEPOINTS) && !defined(BOOT_COMPRESSED_MISC_H) && !defined(BOOT_BOOT_H)
++#include <linux/tracepoint-defs.h>
++DECLARE_TRACEPOINT(portio_write);
++DECLARE_TRACEPOINT(portio_read);
++#define _tracepoint_enabled(tracepoint) tracepoint_enabled(tracepoint)
++#else
++#define _tracepoint_enabled(tracepoint) false
++#endif
++
+ #define BUILDIO(bwl, bw, type)						\
+ static inline void __out##bwl(type value, u16 port)			\
+ {									\
+ 	asm volatile("out" #bwl " %" #bw "0, %w1"			\
+ 		     : : "a"(value), "Nd"(port));			\
++	if (_tracepoint_enabled(portio_write))				\
++		do_trace_portio_write(value, port, #bwl[0]);		\
+ }									\
+ 									\
+ static inline type __in##bwl(u16 port)					\
+@@ -16,6 +39,8 @@ static inline type __in##bwl(u16 port)					\
+ 	type value;							\
+ 	asm volatile("in" #bwl " %w1, %" #bw "0"			\
+ 		     : "=a"(value) : "Nd"(port));			\
++	if (_tracepoint_enabled(portio_read))				\
++		do_trace_portio_read(value, port, #bwl[0]);		\
+ 	return value;							\
+ }
+ 
+diff --git a/arch/x86/lib/Makefile b/arch/x86/lib/Makefile
+index f76747862bd2..254f223c025d 100644
+--- a/arch/x86/lib/Makefile
++++ b/arch/x86/lib/Makefile
+@@ -40,6 +40,7 @@ $(obj)/inat.o: $(obj)/inat-tables.c
+ clean-files := inat-tables.c
+ 
+ obj-$(CONFIG_SMP) += msr-smp.o cache-smp.o
++obj-$(CONFIG_TRACEPOINTS) += trace_portio.o
+ 
+ lib-y := delay.o misc.o cmdline.o cpu.o
+ lib-y += usercopy_$(BITS).o usercopy.o getuser.o putuser.o
+diff --git a/arch/x86/lib/trace_portio.c b/arch/x86/lib/trace_portio.c
+new file mode 100644
+index 000000000000..c048dffcfe05
+--- /dev/null
++++ b/arch/x86/lib/trace_portio.c
+@@ -0,0 +1,21 @@
++// SPDX-License-Identifier: GPL-2.0+
++
++#include <linux/instruction_pointer.h>
++#include <linux/trace_portio.h>
++
++#define CREATE_TRACE_POINTS
++#include <trace/events/portio.h>
++
++void do_trace_portio_read(u32 value, u16 port, char width)
++{
++	trace_portio_read(value, port, width, _RET_IP_);
++}
++EXPORT_SYMBOL_GPL(do_trace_portio_read);
++EXPORT_TRACEPOINT_SYMBOL_GPL(portio_read);
++
++void do_trace_portio_write(u32 value, u16 port, char width)
++{
++	trace_portio_write(value, port, width, _RET_IP_);
++}
++EXPORT_SYMBOL_GPL(do_trace_portio_write);
++EXPORT_TRACEPOINT_SYMBOL_GPL(portio_write);
+diff --git a/include/linux/trace_portio.h b/include/linux/trace_portio.h
+new file mode 100644
+index 000000000000..013418d3d2ae
+--- /dev/null
++++ b/include/linux/trace_portio.h
+@@ -0,0 +1,6 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++
++#include <linux/types.h>
++
++extern void do_trace_portio_read(u32 value, u16 port, char width);
++extern void do_trace_portio_write(u32 value, u16 port, char width);
+diff --git a/include/trace/events/portio.h b/include/trace/events/portio.h
+new file mode 100644
+index 000000000000..3591a75a475e
+--- /dev/null
++++ b/include/trace/events/portio.h
+@@ -0,0 +1,49 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM portio
++
++#if !defined(_TRACE_PORTIO_H) || defined(TRACE_HEADER_MULTI_READ)
++#define _TRACE_PORTIO_H
++
++#include <linux/tracepoint.h>
++
++DECLARE_EVENT_CLASS(portio_class,
++	TP_PROTO(u32 value, u16 port, char width, long ip_addr),
++
++	TP_ARGS(value, port, width, ip_addr),
++
++	TP_STRUCT__entry(
++		__field(u32, value)
++		__field(u16, port)
++		__field(char, width)
++		__field(long, ip_addr)
++	),
++
++	TP_fast_assign(
++		__entry->value = value;
++		__entry->port = port;
++		__entry->width = width;
++		__entry->ip_addr = ip_addr;
++	),
++
++	TP_printk("port=0x%04x value=0x%0*x %pS",
++		__entry->port,
++		__entry->width == 'b' ? 2 :
++		__entry->width == 'w' ? 4 : 8,
++		__entry->value, (void *)__entry->ip_addr)
++);
++
++DEFINE_EVENT(portio_class, portio_read,
++	TP_PROTO(u32 value, u16 port, char width, long ip_addr),
++	TP_ARGS(value, port, width, ip_addr)
++);
++
++DEFINE_EVENT(portio_class, portio_write,
++	TP_PROTO(u32 value, u16 port, char width, long ip_addr),
++	TP_ARGS(value, port, width, ip_addr)
++);
++
++#endif /* _TRACE_PORTIO_H */
++
++/* This part must be outside protection */
++#include <trace/define_trace.h>
+
+base-commit: be8b93b5cc7d533eb8c9b0590cdac055ecafe13a
+-- 
+2.25.1
