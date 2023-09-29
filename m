@@ -2,116 +2,103 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BFD3E71D21
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 12:21:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC600E71D20
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 12:22:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233099AbjI2MVx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Sep 2023 08:21:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56416 "EHLO
+        id S233207AbjI2MWu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 29 Sep 2023 08:22:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232490AbjI2MVx (ORCPT
+        with ESMTP id S233227AbjI2MWm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Sep 2023 08:21:53 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74247DB;
-        Fri, 29 Sep 2023 05:21:50 -0700 (PDT)
+        Fri, 29 Sep 2023 08:22:42 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5210510CC;
+        Fri, 29 Sep 2023 05:22:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
- t=1695990078; x=1696594878; i=linosanfilippo@gmx.de;
- bh=6tA43t+0McW2N+YumW2QFVQxDcUMGT+JFpeDldo/TWU=;
+ t=1695990137; x=1696594937; i=linosanfilippo@gmx.de;
+ bh=xXPMCQlQMHAN7z2B8m8BZwNfXtx90kosemQzOpKXnko=;
  h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
- b=Sz/VIzyGecB4r1WZcdaaq3iWtCgH05hqHwAKbs1Y0PvJS4G4M8BkjK2GLAhhsT5iyzCM+tCPhw+
- nIZ1NQIjj0hPsB3KrrSEzb53lIweH1j9QGkECiFTEQnF4MbM9hVPklSRfHKJVLHQ9ITu/mUV3LNEG
- vxlk9RZgwXlPs7FxcksCAjtm2z0bpAwOpifX2Em4/PQz/509hXvPht2GD21+hFKrhqXSVsn6IBrap
- uzyxX+uoSoRpAOrXAw0YxG6ZH3zC208Eq7YL/Is7wkwLiY7DddEHcsSqLezlmmZFg/xDgdshdgNSP
- r3w02wYF+w83GirMRyASzLs6LmcOD9QPCocg==
+ b=cs4A75BpuZ7QCe11ccx/6XRbwZTfmxs/E/86ivB+7O6fvWndwZwZHI5vPiPQxTinH+eMQv3rtEA
+ sItE21wioFA6iKLGYRF/FNNcPeNs6nKr7h+eiZYKbn6N74mPTFmrOEF54UXCCm8sNnQ73QvUTypao
+ Kch4mJg18QavUotfhbzb0QJDMqLm4U7JoCIIfllHZt0GYWmtVLFAXTxrA8G13NSBvQLb4yuVZGFpw
+ hOIV7L4bCywApJwVZkf5xcHUjTG+zaGEwnvSqTBYezKmAjFyer/E/vD9qXBmHj0r7P60SUT3+cxZU
+ LVQxURb6SsUlV0SGYpn24IVSqaAoZDc/l1yQ==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.2.42] ([84.162.21.41]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MRCOE-1qyFj80fe0-00NDWK; Fri, 29
- Sep 2023 14:21:18 +0200
-Message-ID: <a3ff9fad-4939-bf94-4f92-c2072bc3955b@gmx.de>
-Date:   Fri, 29 Sep 2023 14:21:16 +0200
+Received: from [192.168.2.42] ([84.162.21.41]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MaJ7v-1r7MNg0biv-00WEdQ; Fri, 29
+ Sep 2023 14:22:17 +0200
+Message-ID: <7ba24ee0-8e86-e8ed-3d54-0bc627b3d0f1@gmx.de>
+Date:   Fri, 29 Sep 2023 14:22:16 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.15.1
-Subject: Re: [PATCH 1/6] serial: Do not hold the port lock when setting
- rx-during-tx GPIO
+Subject: Re: [PATCH 6/6] serial: imx: do not set RS485 enabled if it is not
+ supported
+Content-Language: en-US
 To:     Greg KH <gregkh@linuxfoundation.org>
 Cc:     jirislaby@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
         ilpo.jarvinen@linux.intel.com, mcoquelin.stm32@gmail.com,
         alexandre.torgue@foss.st.com, linux-kernel@vger.kernel.org,
         linux-serial@vger.kernel.org, l.sanfilippo@kunbus.com,
-        lukas@wunner.de, p.rosenberger@kunbus.com, stable@vger.kernel.org
+        lukas@wunner.de, p.rosenberger@kunbus.com
 References: <20230928221246.13689-1-LinoSanfilippo@gmx.de>
- <20230928221246.13689-2-LinoSanfilippo@gmx.de>
- <2023092906-untainted-entangled-4d17@gregkh>
-Content-Language: en-US
+ <20230928221246.13689-7-LinoSanfilippo@gmx.de>
+ <2023092948-canteen-pushy-7f54@gregkh>
 From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <2023092906-untainted-entangled-4d17@gregkh>
+In-Reply-To: <2023092948-canteen-pushy-7f54@gregkh>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:6NnLCV4rQAXsipSpGiNlG5Iy3kiV5k1mK5GvR/Lt8U4qzsviCmC
- wciUdaP979o62SspPQThVJe0sNDG1bLHMEXDRTe7A9MVGYYZAMsd7AZhqoN1eNY/tyNIHer
- AkmgOFzkD/sDcnCD5Djvx10cmnxarHtY3kTjzWOK2P/liLlfKl6lNtV3KudQhQO64r8sw/0
- DrgnaJg8oad2CUpDVly2w==
-UI-OutboundReport: notjunk:1;M01:P0:7qz8JAbq7I4=;ZTl02IzFRSn26NlMNPUe2SD2M8l
- D3CLrHge81T0pi08lBI2JIijTrR9mIt1LRwpwnNTx2ySfzuRyB5vWPV1PFjdKOoDb5VSXAo99
- +pqm7cMdRQeSnAJR6v4M7FHc3gVaxnI3bIzBCrXFe+d5gHcYFoLmcZluZrvCA75Xts57ry71q
- na5kh9luUqOlDBm6LzB0c1+dvSVkWyS/njlBtZ30tPJA9lPv6RFF4+LSuSzEcRRgGGR28Sd+y
- GpRkwDakJJIsQ4eDsMXX0vLdhtW5BVOSY1xHXb4dxuZkKCBbWJ5ZM+GZrBpZQcbjtHwJs/b+c
- 9sfbx352OczoNp5zo9DaRgcV8zFCfvCCtbmXBisO4HFskGO+BYrljFc9czUt0iZIpJCdvTxUd
- XlN9qxxknMzmLMr0ENyOmThQk8Qu+snb7CSCLAE8uQbmRlyuvjijPRe7Naruc6/RxGY/VH4fb
- CPCQfL7x7WxBGt7FlIQxsDFklJ1ONw96s5mmirBArySusMPDfQMSNKKyCZ9rp/hvpr/OfNZZw
- BlK2Vke6gQX0NHbvsNmI7Nc/hvQRwxqbiEIYsTGa6dExwPNzS284Y27Xha2+L9/Ae9jeRcDS/
- scxnkdUoOzDNylsXyd7KMh8tYSjRYb/L2gcUq7QDOKKIxsEA+VZxy2m+F2D+TIJaVnaqCFvcj
- 9NxJbfHb/cgDxMjzQ8ZZtMev772sZSkpO6zbSxv9S1X3aFC452LPo0wvVmDoNLwRSeIgde2Fn
- rcnYGyIvCxO+k7d/v1hR7F1Je1xBBZl/7zsGAsSt6ALmm0j2fcXquECATOlqaEX2qrNcPr7+M
- 8K7h/J+m5AaUiEsdV4BvDq3A3zIBWDflvWJ/LR+wUYd4gxyYp71WZtiv9SsRV+rf9kY7+b0Ou
- t0DpX/0roRV6sNSyrecEFwlnlbS1AThRtl/A4XBycHfLkQEdfsDGyJcyG+WQUQzVKYGPFM7vc
- LNZpy+Cbh5tT1+X38Z+mWCE3dQo=
+X-Provags-ID: V03:K1:CqKy0l2F8rtf/u9MwFRpOZI8ZeFpKu7wuqN0TsJffBcSurCL6kb
+ e1SRVIDNzV5uN8ZsP5cOcxlpq3o3ylmxYOf4F2agJtv+0vrO1PFGl1DWRTs1LwV3CHrxOLU
+ AXwDsdPLtT1SF6UlKGok+XFSE/KmIRkDQ8kx2UITSbU6EVdC9G2IH05Jw78ewql9ngJGfXE
+ r8FgCZ5TN+/S/thS/uXWQ==
+UI-OutboundReport: notjunk:1;M01:P0:8ynMcPUexjA=;y22yA5M1G9ntv/LRJ7G5piXoPsz
+ LGpTaWrpD0VT/BBO2wYIAhjDxQmWccB6yNBztwMsNk+F3bvA7waUMNAMPRHhd7Z6q1L2u09la
+ fW/Fj6QnJszld4QdKwnA5k1p03Zjd5WsUauYvOCBfnVeJ2JIOnUfxuBSPTYPzhtZDrpfPF6Jd
+ uRT+PtSOeHWM3tTebnww9QOEXnqcnF/qLzpU1bs7QdR4bvcyQlVKdxyMk0KwjunB6kScC4aog
+ RmMv3bxD25i1GRw3LwjU3M/Fx086UmkHJ0cd6rpOWwKAEfZS10zH/52+teXOjHumKmnJAKmg+
+ q/vx3yLVSlvDBex0rUFaN7hqIVceoIEgL5xLlDNYjIcfrGoEIaKfTrWQDfAbzC2s7uAFx9y2Z
+ 6PchrPMZ2Gscp00cb4nJ7BxIA83KiMGD1lq1Ry7dThEyNeDr5zzEbU8JBHzkXn3PYjWyGw5FT
+ APSLvuWNvsVyLdIvzKhGodfG5gHg0GJ5xxAJHCbmGoyp+WhU0zYFid9pVaTpL2gLYfsx3VbtL
+ WRvt3/yw/E4KMVGryBS+tajmS2gzwrYbsog7G00Mqo5Rd3iRBUIEbFWoItz5iGIEpYKGx3u9/
+ pct47YSu2fe5eQHxTj5l45Pdjb+w6RK+3gSFlb+PoIG61609ey3QNbiyLhqeB5ZO6lAe9TVft
+ x5iRqJ1QJrP7ykFhle36UaVkAXPge7VF8/NQoxPRbOPBxzdrGjS1ogaSH03QE0CdO7sWJj2Gj
+ aH5ZlWX4/dt0AAl5jgi1bK69yhPiSYQA+llyQmI+Qnso+5W4wiuz9frTj8IBV678lPA2MX0dF
+ YJ8K0wWzEBc6Ak3FdsmACt9UIXtpq5DxUqOn4oOWATNjxMlENhi5bZMITnvi44Fm/VE+Kzz72
+ uMwtbDqhcvFNseuzdJgJJa8uwPESknIVoZ8jdKjuQ3WGjwHOADNwicNLYmjukvtLcnfN2dEee
+ bbzqeX+IUd7f4IqltUHCdFoZil8=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
 
-On 29.09.23 07:50, Greg KH wrote:
-> On Fri, Sep 29, 2023 at 12:12:41AM +0200, Lino Sanfilippo wrote:
+
+On 29.09.23 07:51, Greg KH wrote:
+> On Fri, Sep 29, 2023 at 12:12:46AM +0200, Lino Sanfilippo wrote:
 >> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 >>
->> Both the imx and stm32 driver set the rx-during-tx GPIO in the
->> rs485_config() function by means of gpiod_set_value(). Since rs485_conf=
-ig()
->> is called with the port lock held, this can be an problem in case that
->> setting the GPIO line can sleep (e.g. if a GPIO expander is used which =
-is
->> connected via SPI or I2C).
+>> If the imx driver cannot support RS485 it sets the UARTS rs485_supporte=
+d
+>> structure to NULL. But it still calls uart_get_rs485_mode() which may s=
+et
+>> the RS485_ENABLED flag.
+>> The flag however is evaluated by the serial core in uart_configure_port=
+()
+>> at port startup and thus may lead to an attempt to configure RS485 even=
+ if
+>> it is not supported.
 >>
->> Avoid this issue by setting the GPIO outside of the port lock in the se=
-rial
->> core and by using gpiod_set_value_cansleep() instead of gpiod_set_value=
-().
+>> Avoid this by calling uart_get_rs485_mode() only if RS485 is actually
+>> supported by the driver. Remove also a check for an error condition
+>> that is not possible any more now.
 >>
->> Since now both the term and the rx-during-tx GPIO are set within the se=
-rial
->> core use a common function uart_set_rs485_gpios() to set both.
->>
->> With moving it into the serial core setting the rx-during-tx GPIO is no=
-w
->> automatically done for all drivers that support such a GPIO.
->>
->> Cc: stable@vger.kernel.org
 >> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+>> ---
+>>  drivers/tty/serial/imx.c | 14 ++++++--------
+>>  1 file changed, 6 insertions(+), 8 deletions(-)
 >
-> You cc: stable on many of these, but do not provide a "Fixes:" tag
-> showing just how far back they should go.  Can you do that so that we
-> have a hint as to what to do here?
+> Why is this patch not marked for stable?
 >
 
-Yes, will do so in the next version.
-
-BR,
-Lino
-
-> thanks,
->
-> greg k-h
+Right, it should be, I will correct this, thanks!
