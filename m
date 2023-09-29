@@ -2,276 +2,165 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B931E728C5
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 16:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C65BE728CC
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 17:39:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233362AbjI2QXB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Sep 2023 12:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43960 "EHLO
+        id S233149AbjI2Rj4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 29 Sep 2023 13:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233260AbjI2QXA (ORCPT
+        with ESMTP id S232923AbjI2Rjz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Sep 2023 12:23:00 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB111A7
-        for <linux-serial@vger.kernel.org>; Fri, 29 Sep 2023 09:22:57 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id 2adb3069b0e04-5041d6d8b10so23165478e87.2
-        for <linux-serial@vger.kernel.org>; Fri, 29 Sep 2023 09:22:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1696004575; x=1696609375; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=1jnYTA/sVS+Z8Orhdi2AQdhdCY0rlD66I6Sde9ZBPos=;
-        b=HhLEqN95NAj/aHhk98zfBSe79SqWhJrM2BTXZ8fI71Zoek3/LCzKETu8KEGT1b6Sze
-         bHwmuyr/bI2HOAG+tutmb/+CMNNsUeya2v0Yy0LChQvCi3Zrq8k47or5r9fvSdLObzz2
-         XEFQ8jZ0DY1sHiFSszHoK3yhSRdemkTpILEWs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696004575; x=1696609375;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1jnYTA/sVS+Z8Orhdi2AQdhdCY0rlD66I6Sde9ZBPos=;
-        b=dfRIr9Bd6GRGMSFVznKUcvedyNCWhJsfqFK+gx1qxKowv2I7lZCSIEPP+NmyX58FR1
-         KXuPyeNy/DZdlpzE6SC+gEtOzkkcEgvgCBTQsgx+WbgQdx3yqtYAT3Ilna+H4ctocTZw
-         63RAofYrOiM5QjTW3WSyVnNs+XTZCFkNP/Q1vxy3jiLIfWhIFXdgrr6WrNGcNfjDxsoa
-         ZWMG4UK7VnpPbmSWUxEiUac3VQx3JcXhAzRrBR3NF70LfhhjWBcup6Bbyd8JKlkLXIAq
-         0J1r0jYu5c5aipbIlUgxLHjnGCArWT0go9+MUMsrVOp8rNuehjjIS/WM7mZE6PiLXbja
-         zxaQ==
-X-Gm-Message-State: AOJu0YykcLVnEujdnevc8J7KmlmKbovAda7h4f/xiVe3NQHZuqC3klu3
-        fH1pcZsmziy5dnnb4L0CP0tytG/trgWoii6KGGI4H7k301Q=
-X-Google-Smtp-Source: AGHT+IG4jXT+fUD75ZFikS88uXnYr8povB+y3p8kxmquZt75Xwf5Z/NodR8/tPi535mVZalbiouEOw==
-X-Received: by 2002:a19:644c:0:b0:500:b74b:e53 with SMTP id b12-20020a19644c000000b00500b74b0e53mr3688183lfj.46.1696004575335;
-        Fri, 29 Sep 2023 09:22:55 -0700 (PDT)
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com. [209.85.208.176])
-        by smtp.gmail.com with ESMTPSA id x3-20020a19f603000000b00501c12fe522sm3513746lfe.73.2023.09.29.09.22.53
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Sep 2023 09:22:54 -0700 (PDT)
-Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2c022ce8114so224829131fa.1
-        for <linux-serial@vger.kernel.org>; Fri, 29 Sep 2023 09:22:53 -0700 (PDT)
-X-Received: by 2002:a17:907:2722:b0:9a1:cdf1:ba3 with SMTP id
- d2-20020a170907272200b009a1cdf10ba3mr4628345ejl.27.1696004552316; Fri, 29 Sep
- 2023 09:22:32 -0700 (PDT)
+        Fri, 29 Sep 2023 13:39:55 -0400
+Received: from MW2PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012006.outbound.protection.outlook.com [52.101.48.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7FF1195
+        for <linux-serial@vger.kernel.org>; Fri, 29 Sep 2023 10:39:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VNmqWMu4xhk+FWmArMmF3oBuR1qRsexD60A9adOJLvixfla3gOwye+u6uF3fpIKLifoOwZ7dnnTdRHPgD1Zii5KSXvFM/A79KchaIyUkrsnUz6e8z14pks7VA3iP6f9S5QK2qfc9aNGcXRDWmpT2LJOP46nNHA0DRpzKZDHn9QYVuXmEupQcHqXdvNPnD3tw/FKTYckDC9D8GvIzob/9wi7VZFEZHa3dyAn8E96cRafWpeFA9xgwiGbUQ7sjtZRxjFdkKVesjQwCCBkN4glyidRmDHoKAX9ceTrY7fJWWkiAAm1o7A2vlfvCz7tIiTpRZogyHUPKAmofk9b/KYOVNQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vhUKqvU+rLaFcahzUbCVTm/p0D9+6Is9WjzR4yVEmuE=;
+ b=ULwLLKhYU7mN0maAPdHhDo4AdMWGcf4fPwCxyhQEkDujdHr6UG0rGPfg1g9xYfG5pVu/p4BYmd1hhxDNwWjDXS1I38MRxZmoUrQIHqtA3zUXTzMuK4f5/qWS6OUxTfoXFizzJtZ0JdkClS0IAKC0cIn4ptDNOXYy6JB3OE1byJPtfil5YWwP/X5JSVTBz6mZBHIxh/rETJXRhmJ81bayUEkq720JeTtu6v4IIBi3h9n/frepckUNSxnjXbYb7KDyN/S6OYxjuSME1J8DEikdls+5PNQV3OHcc0YUcu7Pw6t7xj/0fg1Iit+1Mlu8yUCT1SKIT7b78x3IA8wlR+GHeA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=sealevel.com; dmarc=pass action=none header.from=sealevel.com;
+ dkim=pass header.d=sealevel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sealevel.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vhUKqvU+rLaFcahzUbCVTm/p0D9+6Is9WjzR4yVEmuE=;
+ b=jYpog43XE4WWIhrsJWnoH0AiYIIebpZuiZSy7sOra4wdZzAt1xiIDwd1MATsFO6Dxy8Q/G12n20AC+bQZbrM3FzUCaJntJODYHOnbPPRX6e9r7fP1VPRDcM9F5L79Kx7HjxcCRcpiAEP6NaASbR6N3BpNPZmAfELcHZDWgGYBN9Vye86Q9QUc1MRrjhUZx7DDqBWlBkTjbuoJwdo51frpf6qrNW/eo0GJA5CTVB6bo4vOegZBKj858HgQJQ9ndGHO3wNlWdToPExHx8j/72rHZKNUvixCoN094iPfBzxGNS9Avij8XaohPgNld4ZTXNZIUZglEcT68pvaET/Q8l20Q==
+Received: from BY3PR05MB8419.namprd05.prod.outlook.com (2603:10b6:a03:3c6::10)
+ by PH8PR05MB9362.namprd05.prod.outlook.com (2603:10b6:510:1c1::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.24; Fri, 29 Sep
+ 2023 17:39:49 +0000
+Received: from BY3PR05MB8419.namprd05.prod.outlook.com
+ ([fe80::f4e4:1bc5:23f6:c9d4]) by BY3PR05MB8419.namprd05.prod.outlook.com
+ ([fe80::f4e4:1bc5:23f6:c9d4%3]) with mapi id 15.20.6838.024; Fri, 29 Sep 2023
+ 17:39:49 +0000
+From:   Matthew Howell <matthew.howell@sealevel.com>
+To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     Darren Beeson <darren.beeson@sealevel.com>,
+        "andriy.shevchenko@intel.com" <andriy.shevchenko@intel.com>,
+        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
+        "eff.baldwin@sealevel.com" <eff.baldwin@sealevel.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Ryan Wenglarz <ryan.wenglarz@sealevel.com>,
+        Matthew Howell <matthew.howell@sealevel.com>,
+        James Olson <james.olson@sealevel.com>
+Subject: [PATCH V9 1/2] serial: exar: Revert "serial: exar: Add support for
+ Sealevel 7xxxC serial cards"
+Thread-Topic: [PATCH V9 1/2] serial: exar: Revert "serial: exar: Add support
+ for Sealevel 7xxxC serial cards"
+Thread-Index: AQHZ8vvyagtiwAEjxEmBxrU0jY0e3A==
+Date:   Fri, 29 Sep 2023 17:39:49 +0000
+Message-ID: <8ffa2f583ff142c3b0eb6cf51a7c9cef5dbfd320.camel@sealevel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.44.4-0ubuntu2 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=sealevel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BY3PR05MB8419:EE_|PH8PR05MB9362:EE_
+x-ms-office365-filtering-correlation-id: 5b9501d8-2eec-460b-7009-08dbc11314a3
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: fR0oCUvMGxep4af0yRK/wf32emtg8nP9fsRf4ZQvOiNe3QDb820wv/TQKJuKn7Rda8dhE7xI0gng4Y9p6E7OO0cymPgKrXNDh09Buivn57naQaAQThPktH87tZ1JjOagRIcgTuvQzztzNC4G1+Xx8EIF1wsfQVSFY4XbZcxw5np1Chjd+VUX6pbBM+Ujlm39LvUbqojYfojNTvZY2VQy/J0qOEkjJLELN2bTJE9q3GL/nLcUM0cmLCm8dywlwy4XyI9zhbqj5mIOzFL9KRtzBJNoLm2KABrB2QoY6C2TniSaaBSObW9R1WuzgMG4nqO0ZH1FGqGCxzV3UZeB+4cICvvjzLMP8GHIsRxBSh9JXw3O6IOecuuWf3SqxGphs/sEq+a1HIA7o194a7oJYFZ3w4HSOowfjqKNwKwBFuEPvijLppRgx2u1C6VZU4DHSmUrKOhamvU/HeAtE0yLulhVv6VIWM4sPRaBXAKRG/P4EYlYY8hI+Y8wOaZcetQhA6+yqfmezJloD2NYJt0Hmf3X4AqaCb3dJULgOA8m1rVQX6aq5HwmpbI52FRi1CHgz8OnZcTD2RwsKjzvxWaednzCjQmqlGRa8b8ZN6DWObRYZj5IhgpVWpkereEn9eVdP9Op0zA8nBlut7zi7T30ryAsLWz84YzkJ1yEypL+fuQB248=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR05MB8419.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(366004)(136003)(376002)(396003)(39840400004)(230922051799003)(1800799009)(186009)(64100799003)(451199024)(478600001)(71200400001)(38100700002)(38070700005)(2616005)(107886003)(6512007)(6486002)(36756003)(122000001)(6506007)(26005)(64756008)(66946007)(66556008)(66476007)(91956017)(76116006)(41300700001)(316002)(6916009)(54906003)(66446008)(8676002)(4326008)(5660300002)(44832011)(8936002)(86362001)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?UElwZnozRVZEbGU3NUg2R3lYTTR3azE4aWcxVm02bVphMlY5RzJ3a0dnUDh5?=
+ =?utf-8?B?R1NMY0U5dlJhc0ZrYWpuak4vSGlVK2dKWi9YTklnQTVia1hDMG1CK1NyelBZ?=
+ =?utf-8?B?aWtRUmROUUxyeEJQa2UxZUNhU1lFZkRYTENGYU1Ha1NUMTlubld5NHc3SWgv?=
+ =?utf-8?B?Zk9WdTN2MDVoLy9YTWU1UENaR2huTjZxd2JDWE9vejc2a3lva0hxMkJ2UWsy?=
+ =?utf-8?B?Q1B2aEFQb2FxaThnYi81cGYwSENEeVpsSEpTRDFvWHpHQnBCWEJ0clgycUth?=
+ =?utf-8?B?VnBKTHVvNjVoZ0h3UFVyY0w1R3Z5dWtYUkVqT2pmQ2hteTdzbHZZOXBJYzVm?=
+ =?utf-8?B?K3QzN2EyK2taOFArZlY2aEI0MVc4WEZYWm1Gdmw1aU5PSzRSbjVBK3lva2Zo?=
+ =?utf-8?B?eWEremFLQmV0bFZISnFZKzJNN3BFc1h2dG1kZStJd2ltUHdBRndpUncra0l0?=
+ =?utf-8?B?SE9TUUJhcVBzT2VRMUpyTkZKcXpvMUJOZVgxWWRLZHUzSGRiSUJqSlNIZG1x?=
+ =?utf-8?B?cTdyNWF2c21Xbzc3WnVJMFZGVHZYaWNkTG9HNUxBQ0laV0svdlR4THVOQ1ZS?=
+ =?utf-8?B?RDVSTWVJTEJUUXZ2UTlHN01PSVFSOGlQTi9MQWpWbVkrOFRxeVV6azkrVmIv?=
+ =?utf-8?B?QjhKVjRGMFNhOXBsYUZZN1ZzM2dtTkNiWXR3VDJuVnh0bW5PVjZzTVJ2a2tV?=
+ =?utf-8?B?UnhnM1pINk5EeWRzR2RoSTgrbW9qN3FkN3M5NEFYaUpCQVVSQkhFVHQ3SWZs?=
+ =?utf-8?B?N3Z3V3JIa2tWRld2ZHh6N0YxSmhBQisyZCtsQXhoeGY2aWUvNkQ1b0c1dXRo?=
+ =?utf-8?B?MmUvOCtybSt3c3JYdDAyL0kvdUw0d0lvdjYxa1IxZ0s3Q202NksvMkY2aDNa?=
+ =?utf-8?B?WkNxOXV2dDVJQkxTUFMxQm04YW1qaE5HRFMxS2lSeGpiU2cydkVGZEd3S0Zh?=
+ =?utf-8?B?TGU2VE9wWjl3YmVyQTVwdW1HcDlQS0JHT0xhUDZvRUM4blRlSFppLzhKRmhG?=
+ =?utf-8?B?RjYwNitCMWJDdXYwb2pmaWQ2bVdtR0k0Nk9STUNzOFNvYXpmcm5FUWN5V215?=
+ =?utf-8?B?TzBIcWFqSnNkeUdEcHpZd1YrdGRCS3piUUk0WFI1czI0RmJaMmpRTUo4dlhi?=
+ =?utf-8?B?ZU43RDBhNnY4bGxET3NjeXJ1NWxXQ0hGQ2NUaTA2L2pCTk40OWpxcEs4M3VY?=
+ =?utf-8?B?OUQwYlBaV1czUXZsTHhQaEk3bEFuNEtoeDFMd0UvVmhYQko5cXRxTmtkM0lW?=
+ =?utf-8?B?dERUMk5UM29lU0ljWU45aDcyUnNCeUV2cSs3bUcyL3NPektIZE80bzEvQ0la?=
+ =?utf-8?B?aXduT0ZKZXJQbGV0alVoSmE2M2lVSHNHT21wVXR6MlZqaHhOSnJWbDhsZkRu?=
+ =?utf-8?B?b21XUzJrSW54WDdlY3NoaEcwcU1KWjlsSDZlQzJUUzRYa1hkOUlvMmdYdCtI?=
+ =?utf-8?B?dnF2QzgxeXlHNXBuL1ZUTnNBRDJ4clR0YjR4NXRzaUhIc0ZLYlFTYnJOcFBM?=
+ =?utf-8?B?akUyazdwRnZiellqTS8zZ2VKMm1vZEJXeisvUzN2d242RHZVWHpibm9UdEhT?=
+ =?utf-8?B?ckRoM202WUJRbzEwZGJ6VXp5ZGtlVjFPL05obFZZSEtzMUlyT0dERE12NlAx?=
+ =?utf-8?B?R2FQY3RqSUhqUjZ5MzJUYUp0QWdsUTdpMTZMUlRTWENNMjQ1ZmdHeFRoeWZR?=
+ =?utf-8?B?MTBZeWxMVGlYS3krRC9Qb3NHV2NXL0ZVUTlCVXZZeWRuVDRtVUpZSGJTVWtD?=
+ =?utf-8?B?SVdXM2pyZzFWUm1VWVJDQWtSdnNqNFFURGRPem53dkNKN2hBNWhmSW9SK1pY?=
+ =?utf-8?B?ZHBuaXlDRTlaNkJPRklSejA2bm9abjkzVGhoLy9iNXNTZ1dVUk1VUnFpRWJF?=
+ =?utf-8?B?Qk5ldllKdUdlT2lERyt4NHd6Q0l1SEc1RlhFcTRKRnNMbVlBb3FIU3ViQlIw?=
+ =?utf-8?B?VUR0QkJDRFhaVE1GVkZKSWRsQWQ2OWl5Y3dyS09CUWVvMHZzcDZOMTZWUXF0?=
+ =?utf-8?B?RXJDOG4vQXllMXFzK2I5dlBFL01ZNE9tS2loQWZGN1Vhek5TemprTGtNU0po?=
+ =?utf-8?B?dnRZWnB4bmQyY2NjZDZaRlRJMEgzM0hxK0JaQ1RtUFFzaDh2QmlGQUpEZWhN?=
+ =?utf-8?B?STBjUDZlRi9mS2wxR0ZwUnBNdVFkT3d4eUFuNnRlYXZMVy80RUVLamJwRVcz?=
+ =?utf-8?B?MWc9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <7ABB2C330DB32544B8466C96F24577CA@namprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20230928110554.34758-1-jlayton@kernel.org> <20230928110554.34758-2-jlayton@kernel.org>
- <6020d6e7-b187-4abb-bf38-dc09d8bd0f6d@app.fastmail.com> <af047e4a1c6947c59d4a13d4ae221c784a5386b4.camel@kernel.org>
- <20230928171943.GK11439@frogsfrogsfrogs> <6a6f37d16b55a3003af3f3dbb7778a367f68cd8d.camel@kernel.org>
- <20230928212656.GC189345@mit.edu> <CAHk-=wjTynK9BdGbi+8eShU77nkPvipFwRxEd1TSBrw2+LiuDg@mail.gmail.com>
- <CAOQ4uxg5ctY9yCjLOjN1nETAcEuNb2UERnYuDv7PoErdxX=WUw@mail.gmail.com>
-In-Reply-To: <CAOQ4uxg5ctY9yCjLOjN1nETAcEuNb2UERnYuDv7PoErdxX=WUw@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 29 Sep 2023 09:22:14 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjTZ=6QkE_eksL+kzywj2cA_kiY-ydZKoz-+kBQwtNWwQ@mail.gmail.com>
-Message-ID: <CAHk-=wjTZ=6QkE_eksL+kzywj2cA_kiY-ydZKoz-+kBQwtNWwQ@mail.gmail.com>
-Subject: Re: [PATCH 86/87] fs: switch timespec64 fields in inode to discrete integers
-To:     Amir Goldstein <amir73il@gmail.com>
-Cc:     "Theodore Ts'o" <tytso@mit.edu>, Jeff Layton <jlayton@kernel.org>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <brauner@kernel.org>,
-        David Sterba <dsterba@suse.cz>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>, Jeremy Kerr <jk@ozlabs.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Carlos Llamas <cmllamas@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Mattia Dongili <malattia@linux.it>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        Brad Warrum <bwarrum@linux.ibm.com>,
-        Ritu Agarwal <rituagar@linux.ibm.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Mark Gross <markgross@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Eric Van Hensbergen <ericvh@kernel.org>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Christian Schoenebeck <linux_oss@crudebyte.com>,
-        David Sterba <dsterba@suse.com>,
-        David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        Ian Kent <raven@themaw.net>,
-        Luis de Bethencourt <luisbg@kernel.org>,
-        Salah Triki <salah.triki@gmail.com>,
-        "Tigran A. Aivazian" <aivazian.tigran@gmail.com>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Jan Harkes <jaharkes@cs.cmu.edu>, coda@cs.cmu.edu,
-        Joel Becker <jlbec@evilplan.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>, Gao Xiang <xiang@kernel.org>,
-        Chao Yu <chao@kernel.org>,
-        Yue Hu <huyue2@gl0jj8bn.sched.sma.tdnsstic1.cn>,
-        Jeffle Xu <jefflexu@linux.alibaba.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Sungjong Seo <sj1557.seo@samsung.com>,
-        Jan Kara <jack@suse.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
-        Christoph Hellwig <hch@infradead.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Bob Peterson <rpeterso@redhat.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Mikulas Patocka <mikulas@artax.karlin.mff.cuni.cz>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <muchun.song@linux.dev>, Jan Kara <jack@suse.cz>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Dave Kleikamp <shaggy@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Neil Brown <neilb@suse.de>,
-        Olga Kornievskaia <kolga@netapp.com>,
-        Dai Ngo <Dai.Ngo@oracle.com>, Tom Talpey <tom@talpey.com>,
-        Ryusuke Konishi <konishi.ryusuke@gmail.com>,
-        Anton Altaparmakov <anton@tuxera.com>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Bob Copeland <me@bobcopeland.com>,
-        Mike Marshall <hubcap@omnibond.com>,
-        Martin Brandenburg <martin@omnibond.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Tony Luck <tony.luck@intel.com>,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Anders Larsen <al@alarsen.net>,
-        Steve French <sfrench@samba.org>,
-        Paulo Alcantara <pc@manguebit.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Shyam Prasad N <sprasad@microsoft.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Phillip Lougher <phillip@squashfs.org.uk>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Evgeniy Dushistov <dushistov@mail.ru>,
-        Chandan Babu R <chandan.babu@oracle.com>,
-        Damien Le Moal <dlemoal@kernel.org>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        Johannes Thumshirn <jth@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>,
-        Yonghong Song <yonghong.song@linux.dev>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        John Johansen <john.johansen@canonical.com>,
-        Paul Moore <paul@paul-moore.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, v9fs@lists.linux.dev,
-        linux-afs@lists.infradead.org, autofs@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        codalist@telemann.coda.cs.cmu.edu, linux-efi@vger.kernel.org,
-        linux-erofs@lists.ozlabs.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, gfs2@lists.linux.dev,
-        linux-um@lists.infradead.org, linux-mtd@lists.infradead.org,
-        jfs-discussion@lists.sourceforge.net, linux-nfs@vger.kernel.org,
-        linux-nilfs@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
-        ntfs3@lists.linux.dev, ocfs2-devel@lists.linux.dev,
-        linux-karma-devel@lists.sourceforge.net, devel@lists.orangefs.org,
-        linux-unionfs@vger.kernel.org, linux-hardening@vger.kernel.org,
-        reiserfs-devel@vger.kernel.org, linux-cifs@vger.kernel.org,
-        samba-technical@lists.samba.org,
-        linux-trace-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
-        bpf@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        apparmor@lists.ubuntu.com, linux-security-module@vger.kernel.org,
-        selinux@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: sealevel.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY3PR05MB8419.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5b9501d8-2eec-460b-7009-08dbc11314a3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Sep 2023 17:39:49.7610
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: e34c5615-b4e3-481c-abc8-602581f2e735
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mnM6X2L0cQF9+LL9Cd2DkKnJuedzcdYVd+nPhc5OM7QQJ24/jJE9rYp/fXglErqtvWY/YUzg/QLeRhZuugpPmMOxAVpOUReVY4So7PYGuOI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR05MB9362
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 28 Sept 2023 at 20:50, Amir Goldstein <amir73il@gmail.com> wrote:
->
-> OTOH, it is perfectly fine if the vfs wants to stop providing sub 100ns
-> services to filesystems. It's just going to be the fs problem and the
-> preserved pre-historic/fine-grained time on existing files would only
-> need to be provided in getattr(). It does not need to be in __i_mtime.
-
-Hmm. That sounds technically sane, but for one thing: if the aim is to try to do
-
- (a) atomic timestamp access
-
- (b) shrink the inode
-
-then having the filesystem maintain its own timestamp for fine-grained
-data will break both of those goals.
-
-Yes, we'd make 'struct inode' smaller if we pack the times into one
-64-bit entity, but if btrfs responds by adding mtime fields to "struct
-btrfs_inode", we lost the size advantage and only made things worse.
-
-And if ->getattr() then reads those fields without locking (and we
-definitely don't want locking in that path), then we lost the
-atomicity thing too.
-
-So no. A "but the filesystem can maintain finer granularity" model is
-not acceptable, I think.
-
-If we do require nanoseconds for compatibility, what we could possibly
-do is say "we guarantee nanosecond values for *legacy* dates", and say
-that future dates use 100ns resolution. We'd define "legacy dates" to
-be the traditional 32-bit signed time_t.
-
-So with a 64-bit fstime_t, we'd have the "legacy format":
-
- - top 32 bits are seconds, bottom 32 bits are ns
-
-which gives us that ns format.
-
-Then, because only 30 bits are needed for nanosecond resolution, we
-use the top two bits of that ns field as flags. '00' means that legacy
-format, and '01' would mean "we're not doing nanosecond resolution,
-we're doing 64ns resolution, and the low 6 bits of the ns field are
-actually bits 32-37 of the seconds field".
-
-That still gives us some extensibility (unless the multi-grain code
-still wants to use the other top bit), and it gives us 40 bits of
-seconds, which is quite a lot.
-
-And all the conversion functions will be simple bit field
-manipulations, so there are no expensive ops here.
-
-Anyway, I agree with the "let's introduce the accessor functions
-first, we can do the 'pack into one word' decisions later".
-
-                Linus
+RnJvbTogTWF0dGhldyBIb3dlbGwgPG1hdHRoZXcuaG93ZWxsQHNlYWxldmVsLmNvbT4NCg0KSGFy
+ZHdhcmUgSUQgb2YgU2VhbGV2ZWwgN3h4eEMgY2FyZHMgY2hhbmdlZCBwcmlvciB0byByZWxlYXNl
+Lg0KVGhpcyBoYXMgcmVuZGVyZWQgMTRlZTc4ZDU5MzJhIHJlZHVuZGFudC4NCg0KVGhpcyByZXZl
+cnRzIGNvbW1pdCAxNGVlNzhkNTkzMmFmZWI3MTBjODMwNTE5NmE2NzZhNzE1YmZkZWE4Lg0KDQpG
+aXhlczogMTRlZTc4ZDU5MzJhICgiQWRkIHN1cHBvcnQgZm9yIFNlYWxldmVsIDd4eHhDIHNlcmlh
+bCBjYXJkcyIpDQpTaWduZWQtb2ZmLWJ5OiBNYXR0aGV3IEhvd2VsbCA8bWF0dGhldy5ob3dlbGxA
+c2VhbGV2ZWwuY29tPg0KUmV2aWV3ZWQtYnk6IEFuZHkgU2hldmNoZW5rbyA8YW5kcml5LnNoZXZj
+aGVua29AbGludXguaW50ZWwuY29tPg0KLS0tDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2Vy
+aWFsLzgyNTAvODI1MF9leGFyLmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2V4YXIu
+Yw0KaW5kZXggMDc3YzNiYTM1MzllLi4zODg2Zjc4ZWNiYmYgMTAwNjQ0DQotLS0gYS9kcml2ZXJz
+L3R0eS9zZXJpYWwvODI1MC84MjUwX2V4YXIuYw0KKysrIGIvZHJpdmVycy90dHkvc2VyaWFsLzgy
+NTAvODI1MF9leGFyLmMNCkBAIC00NywxMiArNDcsNiBAQA0KICNkZWZpbmUgUENJX1NVQkRFVklD
+RV9JRF9VU1JfMjk4MAkJMHgwMTI4DQogI2RlZmluZSBQQ0lfU1VCREVWSUNFX0lEX1VTUl8yOTgx
+CQkweDAxMjkNCg0KLSNkZWZpbmUgUENJX0RFVklDRV9JRF9TRUFMRVZFTF83MTB4QwkJMHgxMDAx
+DQotI2RlZmluZSBQQ0lfREVWSUNFX0lEX1NFQUxFVkVMXzcyMHhDCQkweDEwMDINCi0jZGVmaW5l
+IFBDSV9ERVZJQ0VfSURfU0VBTEVWRUxfNzQweEMJCTB4MTAwNA0KLSNkZWZpbmUgUENJX0RFVklD
+RV9JRF9TRUFMRVZFTF83ODB4QwkJMHgxMDA4DQotI2RlZmluZSBQQ0lfREVWSUNFX0lEX1NFQUxF
+VkVMXzcxNnhDCQkweDEwMTANCi0NCiAjZGVmaW5lIFVBUlRfRVhBUl9JTlQwCQkweDgwDQogI2Rl
+ZmluZSBVQVJUX0VYQVJfOFhNT0RFCTB4ODgJLyogOFggc2FtcGxpbmcgcmF0ZSBzZWxlY3QgKi8N
+CiAjZGVmaW5lIFVBUlRfRVhBUl9TTEVFUAkJMHg4YgkvKiBTbGVlcCBtb2RlICovDQpAQCAtNjUy
+LDggKzY0Niw2IEBAIGV4YXJfcGNpX3Byb2JlKHN0cnVjdCBwY2lfZGV2ICpwY2lkZXYsIGNvbnN0
+IHN0cnVjdCBwY2lfZGV2aWNlX2lkICplbnQpDQogCQlucl9wb3J0cyA9IEJJVCgoKHBjaWRldi0+
+ZGV2aWNlICYgMHgzOCkgPj4gMykgLSAxKTsNCiAJZWxzZSBpZiAoYm9hcmQtPm51bV9wb3J0cykN
+CiAJCW5yX3BvcnRzID0gYm9hcmQtPm51bV9wb3J0czsNCi0JZWxzZSBpZiAocGNpZGV2LT52ZW5k
+b3IgPT0gUENJX1ZFTkRPUl9JRF9TRUFMRVZFTCkNCi0JCW5yX3BvcnRzID0gcGNpZGV2LT5kZXZp
+Y2UgJiAweGZmOw0KIAllbHNlDQogCQlucl9wb3J0cyA9IHBjaWRldi0+ZGV2aWNlICYgMHgwZjsN
+Cg0KQEAgLTg5MywxMiArODg1LDYgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBwY2lfZGV2aWNlX2lk
+IGV4YXJfcGNpX3RibFtdID0gew0KIAlFWEFSX0RFVklDRShDT01NVEVDSCwgNDIyNFBDSTMzNSwg
+cGJuX2Zhc3Rjb20zMzVfNCksDQogCUVYQVJfREVWSUNFKENPTU1URUNILCAyMzI0UENJMzM1LCBw
+Ym5fZmFzdGNvbTMzNV80KSwNCiAJRVhBUl9ERVZJQ0UoQ09NTVRFQ0gsIDIzMjhQQ0kzMzUsIHBi
+bl9mYXN0Y29tMzM1XzgpLA0KLQ0KLQlFWEFSX0RFVklDRShTRUFMRVZFTCwgNzEweEMsIHBibl9l
+eGFyX1hSMTdWMzV4KSwNCi0JRVhBUl9ERVZJQ0UoU0VBTEVWRUwsIDcyMHhDLCBwYm5fZXhhcl9Y
+UjE3VjM1eCksDQotCUVYQVJfREVWSUNFKFNFQUxFVkVMLCA3NDB4QywgcGJuX2V4YXJfWFIxN1Yz
+NXgpLA0KLQlFWEFSX0RFVklDRShTRUFMRVZFTCwgNzgweEMsIHBibl9leGFyX1hSMTdWMzV4KSwN
+Ci0JRVhBUl9ERVZJQ0UoU0VBTEVWRUwsIDcxNnhDLCBwYm5fZXhhcl9YUjE3VjM1eCksDQogCXsg
+MCwgfQ0KIH07DQogTU9EVUxFX0RFVklDRV9UQUJMRShwY2ksIGV4YXJfcGNpX3RibCk7DQoNCg==
