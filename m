@@ -2,70 +2,62 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4ADBE743EC
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 05:51:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15D0AE743ED
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 06:05:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232650AbjI2FvG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Sep 2023 01:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60090 "EHLO
+        id S232683AbjI2GFD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 29 Sep 2023 02:05:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232732AbjI2FvF (ORCPT
+        with ESMTP id S229577AbjI2GFC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Sep 2023 01:51:05 -0400
+        Fri, 29 Sep 2023 02:05:02 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED85CC2;
-        Thu, 28 Sep 2023 22:51:04 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C15FC433C8;
-        Fri, 29 Sep 2023 05:51:03 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D0CF92;
+        Thu, 28 Sep 2023 23:05:01 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EAA8C433C7;
+        Fri, 29 Sep 2023 06:05:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1695966664;
-        bh=DhKPPMUpCS//A0/t/Y9gRLs3GysurWRA+G0kaM1iwKw=;
+        s=korg; t=1695967500;
+        bh=Nhavc+nkl/WrTYLi4RrwAIVN6PbgwJffcR2eWRUl1xQ=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JMdxx+UBN8fGfNf1VRuQsoJMa8VSpOwjSLLRLREtbA/xi7Fh7tnxjEGZ9TIiKXzx8
-         T44sy/7Xpp+TpHBW7Ae2s4N/Gc/cDIPOJDhBXNkoj7EmY3sqp1PE349V27i+IbELQ8
-         iXnhYdKvo6YoFzPNxNINl70y92W5o22kIaeLLV2Q=
-Date:   Fri, 29 Sep 2023 07:51:00 +0200
+        b=Dsyv8DcgjMd9U5QAhkwMHPBCXoPGytz0tKjFa98+Li9uDz/PaeCWGons8jBVOhC27
+         +g73GLX3gX65/XN3GcoOco7fjfs4xw1j1TPwXbIptOhPAi/jAf0JlTg/+g0r2U/wXl
+         rLpgsbC5WSGmDhfikJ6Vz4OMzPh3Pu5art0sgYas=
+Date:   Fri, 29 Sep 2023 08:04:57 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     jirislaby@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        ilpo.jarvinen@linux.intel.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, l.sanfilippo@kunbus.com,
-        lukas@wunner.de, p.rosenberger@kunbus.com
-Subject: Re: [PATCH 6/6] serial: imx: do not set RS485 enabled if it is not
- supported
-Message-ID: <2023092948-canteen-pushy-7f54@gregkh>
-References: <20230928221246.13689-1-LinoSanfilippo@gmx.de>
- <20230928221246.13689-7-LinoSanfilippo@gmx.de>
+To:     Edward AD <twuufnxlz@gmail.com>
+Cc:     alex@ghiti.fr, alexghiti@rivosinc.com, aou@eecs.berkeley.edu,
+        conor@kernel.org, guoren@kernel.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-serial@vger.kernel.org, liushixin2@huawei.com,
+        palmer@dabbelt.com, paul.walmsley@sifive.com,
+        syzbot+8d2757d62d403b2d9275@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [PATCH] riscv: fix out of bounds in walk_stackframe
+Message-ID: <2023092939-lagoon-punctual-e312@gregkh>
+References: <f74665d1-4d28-01a2-5694-b06fde202d39@ghiti.fr>
+ <20230928231239.2144579-2-twuufnxlz@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230928221246.13689-7-LinoSanfilippo@gmx.de>
+In-Reply-To: <20230928231239.2144579-2-twuufnxlz@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Sep 29, 2023 at 12:12:46AM +0200, Lino Sanfilippo wrote:
-> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+On Fri, Sep 29, 2023 at 07:12:40AM +0800, Edward AD wrote:
+> Add vmalloc and kernel addresses check to prevent invalid access.
 > 
-> If the imx driver cannot support RS485 it sets the UARTS rs485_supported
-> structure to NULL. But it still calls uart_get_rs485_mode() which may set
-> the RS485_ENABLED flag.
-> The flag however is evaluated by the serial core in uart_configure_port()
-> at port startup and thus may lead to an attempt to configure RS485 even if
-> it is not supported.
-> 
-> Avoid this by calling uart_get_rs485_mode() only if RS485 is actually
-> supported by the driver. Remove also a check for an error condition
-> that is not possible any more now.
-> 
-> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> Closes: https://lore.kernel.org/all/20230926105949.1025995-2-twuufnxlz@gmail.com/
+> Fixes: 5d8544e2d007 ("RISC-V: Generic library routines and assembly")
+> Reported-and-test-by: syzbot+8d2757d62d403b2d9275@syzkaller.appspotmail.com
+> Link: https://lore.kernel.org/all/0000000000000170df0605ccf91a@google.com/T/
+> Signed-off-by: Edward AD <twuufnxlz@gmail.com>
 > ---
->  drivers/tty/serial/imx.c | 14 ++++++--------
->  1 file changed, 6 insertions(+), 8 deletions(-)
+>  arch/riscv/kernel/stacktrace.c | 3 +++
 
-Why is this patch not marked for stable?
-
-thanks,
+Where are you getting your odd cc: list from?  This has nothing to do
+with serial drivers...
 
 greg k-h
