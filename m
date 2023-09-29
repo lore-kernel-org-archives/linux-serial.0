@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77F5FE743F5
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 05:40:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA921E743ED
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 05:40:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232838AbjI2Fkv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Sep 2023 01:40:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46002 "EHLO
+        id S232738AbjI2Fkx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 29 Sep 2023 01:40:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232836AbjI2Fkd (ORCPT
+        with ESMTP id S232706AbjI2FkI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Sep 2023 01:40:33 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9ACA1726
-        for <linux-serial@vger.kernel.org>; Thu, 28 Sep 2023 22:39:45 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id a640c23a62f3a-9ada2e6e75fso1884689866b.2
-        for <linux-serial@vger.kernel.org>; Thu, 28 Sep 2023 22:39:45 -0700 (PDT)
+        Fri, 29 Sep 2023 01:40:08 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E4B10EF
+        for <linux-serial@vger.kernel.org>; Thu, 28 Sep 2023 22:39:41 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id a640c23a62f3a-9a58dbd5daeso1822975666b.2
+        for <linux-serial@vger.kernel.org>; Thu, 28 Sep 2023 22:39:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1695965984; x=1696570784; darn=vger.kernel.org;
+        d=tuxon.dev; s=google; t=1695965980; x=1696570780; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=QDE3Z11Bc4Ko9MN0Dz/rqvAbCPNE/uT40LRumZ5cKOg=;
-        b=VXJTvgxOKTl29TbXrZgOzbUDzDD5Eb75Gj9ejOtti3o08SO15I/5K3gigW7S+yipi5
-         s1gAxX/zOdiQDC/o3B5sPnfOtf8S4hJ38JuQ7uDyaFbsf4Nm0UB1bLnxIJwXemTy1bJw
-         d4vQh3bzD+u2dWnmYLRcc2g9XzOtARfYxIBT8tsNPl1ZbefXmuBSyxgpWS3liZTIfDIJ
-         MBWW9ESwWhbUHQt6PKETGqIZ0DxvpUIMjh5TQRmYVrWAAJAxx3CnNQvwadZuLlOnjFuo
-         ODKM5jancdaLGx86P4uhQLKVt8fDThEcqRLNmrLE1I8Zg/19pvi4bkvJlXeZ1o1zN95J
-         Oaaw==
+        bh=iP36Gb1g/ebUq8kUZsf0ipGRph9RmurvEOswTZsHLL4=;
+        b=PwURqorYLuMLMHKu0hyXLbMaGc6pWvCAfmq7ox9DzfFXW8Nha6So654+USc7I4TtUm
+         j63OuM53PwBDHI6Q1MA6SLUq7v7p2yKX3e+H2hqqUxQeBozKndT+w2nK/gx9xLvXXZxr
+         r8suvVHBUdZIlYt2HuSWDsWjdZeljIMQ9WvAQWCvKlNsJNTh0Zox0E1ueaR00Kk3lHcA
+         Sw5ZDw1OMgBhX572fPWiptPPqIRbIcS3TmHsAf3DhB3umtfdZbGO9D8qSeqZrKPYEsE5
+         d3gDS06M7bP6cpko6uADhidDg4S/h7qve+FFkZJxEDzo35Z6LCcT1YsnmhZjLRgioiM3
+         fhYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695965984; x=1696570784;
+        d=1e100.net; s=20230601; t=1695965980; x=1696570780;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=QDE3Z11Bc4Ko9MN0Dz/rqvAbCPNE/uT40LRumZ5cKOg=;
-        b=uzQmkM1tMIwIQHA2jqw8sx8HakLUs27eBtB0yi/RmkAJU90YwXXZUk1yK/idEEfJwT
-         dSy9hNE5gmCnzu0iTwzj1S77Higl1/UATwmpJIkodll7y8IMOSS8Hde7Bck7/Zn/SZnu
-         c35uScFMC9Wfhq/Py6hEFNKmK47Ep5YRpmHq3oocnNIHWub2IPKveGivF+aWa6yclim0
-         L+Mty0u/dPZtjoMg7xkuGJdEEmfY/znku5/cu6ZmfqHaJ++LVbowL3n6ixi5WUD4Urug
-         e+iNhnW0N0zbkIaftU8hVF9awRXLieQoPBOepc/UpqYrNHNXm6/+e3ZfXRRh/n+SkhU7
-         7mYQ==
-X-Gm-Message-State: AOJu0Yxc/Mi1J0yoX6ZOz9Z5AQlj/tFpM0aRjOzfNgD7LaNoXHManwY8
-        L0saIpegFHhzk+1tXUO0Pd2zGw==
-X-Google-Smtp-Source: AGHT+IHlPgOO+fafHjcV4F4RdNlWK5NkW9E2QNeFn7r3z9eshJO74kjxX2ZiLI5ny/HFQLCKv1gWlg==
-X-Received: by 2002:a17:907:d13:b0:9ae:6388:e09b with SMTP id gn19-20020a1709070d1300b009ae6388e09bmr3265874ejc.40.1695965984058;
-        Thu, 28 Sep 2023 22:39:44 -0700 (PDT)
+        bh=iP36Gb1g/ebUq8kUZsf0ipGRph9RmurvEOswTZsHLL4=;
+        b=O8+fpQdh8FNyxB9VcJl8bIqaEvAfwTLgn8LCfqK52/iDtL7hFWJ/VWEUESG5Newe94
+         AjvfZYrG2JC9H3Q2KObuEFvZGhzGhm99JjF/L8v0CRxtabAmVi62k3Q/UiffkFfZsuyB
+         K7Rgefd5yv8WTVhJznMfZ1rTWSjWLlUzFHnrJnnu+Xe8yTuBR5E1rLNt8P916OfYNzVr
+         JGipBL4+ha97IAcOPoSPYkv97vAj/8cfi8tkLLsyTa1bsDcmCiKb4P9bXtWdnLkImmjY
+         +0RyZWrVG3rksou8iRnvKB9D16vYTp6UA6B5IcUCQchZVcJwTH0QZzKUZ1KGt+4fg/B4
+         oGrQ==
+X-Gm-Message-State: AOJu0Yxkh4BM5DFm2B5zFhjJsj6/M34ao5/iOg5nB/m1XJp5CblMhyov
+        7M8fqcdv+BVR6YdzV6dhqXWvSw==
+X-Google-Smtp-Source: AGHT+IEi0Q3ne3Lulo7Uqq/dalPjcUdxVGgDo8UwW+A3G1ZwxvKsxcJ52ONasNKcCG3aICgeZms7pg==
+X-Received: by 2002:a17:907:770e:b0:9ae:738b:86d0 with SMTP id kw14-20020a170907770e00b009ae738b86d0mr2909714ejc.66.1695965979855;
+        Thu, 28 Sep 2023 22:39:39 -0700 (PDT)
 Received: from claudiu-X670E-Pro-RS.. ([82.78.167.177])
-        by smtp.gmail.com with ESMTPSA id z19-20020a1709063ad300b009a1a653770bsm11971992ejd.87.2023.09.28.22.39.41
+        by smtp.gmail.com with ESMTPSA id z19-20020a1709063ad300b009a1a653770bsm11971992ejd.87.2023.09.28.22.39.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Sep 2023 22:39:43 -0700 (PDT)
+        Thu, 28 Sep 2023 22:39:39 -0700 (PDT)
 From:   Claudiu <claudiu.beznea@tuxon.dev>
 X-Google-Original-From: Claudiu <claudiu.beznea@bp.renesas.com>
 To:     geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
@@ -64,13 +64,14 @@ Cc:     linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 12/28] dt-bindings: clock: renesas,rzg2l-cpg: document RZ/G3S SoC
-Date:   Fri, 29 Sep 2023 08:38:59 +0300
-Message-Id: <20230929053915.1530607-13-claudiu.beznea@bp.renesas.com>
+Subject: [PATCH v2 10/28] clk: renesas: rzg2l: refactor sd mux driver
+Date:   Fri, 29 Sep 2023 08:38:57 +0300
+Message-Id: <20230929053915.1530607-11-claudiu.beznea@bp.renesas.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230929053915.1530607-1-claudiu.beznea@bp.renesas.com>
 References: <20230929053915.1530607-1-claudiu.beznea@bp.renesas.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
@@ -78,298 +79,427 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-Add documentation for RZ/G3S CPG. RZ/G3S CPG module is almost identical
-with the one available in RZ/G2{L, UL} the exception being some core
-clocks as follows:
-- SD clock is composed by a mux and a divider and the divider
-  has some limitation (div = 1 cannot be set if mux rate is 800MHz).
-- there are 3 SD clocks
-- OCTA and TSU clocks are specific to RZ/G3S
-- PLL1/4/6 are specific to RZ/G3S with its own computation formula
-Even with this RZ/G3S could use the same bindings as RZ/G2L.
+Refactor SD MUX driver to be able to reuse the same code on RZ/G3S.
+RZ/G2{L, UL} has a limitation with regards to switching the clock source
+for SD MUX (MUX clock source has to be switched to 266MHz before switching
+b/w 533MHz and 400MHz). This limitation has been introduced as a clock
+notifier that is registered on platform based initialization data thus the
+SD MUX code could be reused on RZ/G3S.
 
-Along with documentation bindings for the RZ/G3S (R9A08G045) Clock Pulse
-Generator (CPG) core clocks, module clocks and resets were added.
+As both RZ/G2{L, UL} and RZ/G3S has specific bits in specific registers
+to check if the clock switching has been done, this configuration (register
+offset, register bits and bits width) is now passed though
+struct cpg_core_clk::sconf (status configuration) from platform specific
+initialization code.
+
+Along with struct cpg_core_clk::sconf the mux table indices are also
+passed from platform specific initialization code.
+
+Also, mux flags are now passed to DEF_SD_MUX() as they will be later
+used by RZ/G3S.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Acked-by: Rob Herring <robh@kernel.org>
 ---
 
 Changes in v2:
-- collected Rob's tag
-- squashed with
-  [PATCH 21/37] dt-bindings: clock: add r9a08g045 CPG clocks and resets
-  from v1
-- updated commit message to reflect that bindings were also added to
-  this patch
-- removed R9A08G045_USB_SCLK
-- @Geert: please note I haven't collected your Rb tag as I did the squash
+- s/indexes/indices in commit description
+- mentioned in commit description that mux flags can now be passed to
+  driver though DEF_SD_MUX() macro
+- removed SoC specific names from macros' names
+- added spaces after { and before } when initializing arrays
+- preserved the order of .[gs]set_parent() API definitions for simpler
+  diff b/w versions
+- removed SD_MUX_NOTIF macro
 
- .../bindings/clock/renesas,rzg2l-cpg.yaml     |   1 +
- include/dt-bindings/clock/r9a08g045-cpg.h     | 242 ++++++++++++++++++
- 2 files changed, 243 insertions(+)
- create mode 100644 include/dt-bindings/clock/r9a08g045-cpg.h
+ drivers/clk/renesas/r9a07g043-cpg.c |  12 ++-
+ drivers/clk/renesas/r9a07g044-cpg.c |  12 ++-
+ drivers/clk/renesas/rzg2l-cpg.c     | 157 ++++++++++++++++++++--------
+ drivers/clk/renesas/rzg2l-cpg.h     |  16 ++-
+ 4 files changed, 143 insertions(+), 54 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/clock/renesas,rzg2l-cpg.yaml b/Documentation/devicetree/bindings/clock/renesas,rzg2l-cpg.yaml
-index fe2fba18ae84..80a8c7114c31 100644
---- a/Documentation/devicetree/bindings/clock/renesas,rzg2l-cpg.yaml
-+++ b/Documentation/devicetree/bindings/clock/renesas,rzg2l-cpg.yaml
-@@ -27,6 +27,7 @@ properties:
-       - renesas,r9a07g043-cpg # RZ/G2UL{Type-1,Type-2} and RZ/Five
-       - renesas,r9a07g044-cpg # RZ/G2{L,LC}
-       - renesas,r9a07g054-cpg # RZ/V2L
-+      - renesas,r9a08g045-cpg # RZ/G3S
-       - renesas,r9a09g011-cpg # RZ/V2M
+diff --git a/drivers/clk/renesas/r9a07g043-cpg.c b/drivers/clk/renesas/r9a07g043-cpg.c
+index e0ae25644e1a..d831ac8eb4ce 100644
+--- a/drivers/clk/renesas/r9a07g043-cpg.c
++++ b/drivers/clk/renesas/r9a07g043-cpg.c
+@@ -21,6 +21,10 @@
+ #define SEL_SDHI0		SEL_PLL_PACK(CPG_PL2SDHI_DSEL, 0, 2)
+ #define SEL_SDHI1		SEL_PLL_PACK(CPG_PL2SDHI_DSEL, 4, 2)
  
-   reg:
-diff --git a/include/dt-bindings/clock/r9a08g045-cpg.h b/include/dt-bindings/clock/r9a08g045-cpg.h
-new file mode 100644
-index 000000000000..410725b778a8
---- /dev/null
-+++ b/include/dt-bindings/clock/r9a08g045-cpg.h
-@@ -0,0 +1,242 @@
-+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+ *
-+ * Copyright (C) 2023 Renesas Electronics Corp.
-+ */
-+#ifndef __DT_BINDINGS_CLOCK_R9A08G045_CPG_H__
-+#define __DT_BINDINGS_CLOCK_R9A08G045_CPG_H__
++/* Clock status configuration. */
++#define SEL_SDHI0_STS		SEL_PLL_PACK(CPG_CLKSTATUS, 28, 1)
++#define SEL_SDHI1_STS		SEL_PLL_PACK(CPG_CLKSTATUS, 29, 1)
 +
-+#include <dt-bindings/clock/renesas-cpg-mssr.h>
+ enum clk_ids {
+ 	/* Core Clock Outputs exported to DT */
+ 	LAST_DT_CORE_CLK = R9A07G043_CLK_P0_DIV2,
+@@ -85,6 +89,8 @@ static const char * const sel_pll3_3[] = { ".pll3_533", ".pll3_400" };
+ static const char * const sel_pll6_2[]	= { ".pll6_250", ".pll5_250" };
+ static const char * const sel_shdi[] = { ".clk_533", ".clk_400", ".clk_266" };
+ 
++static const u32 mtable_sdhi[] = { 1, 2, 3 };
 +
-+/* R9A08G045 CPG Core Clocks */
-+#define R9A08G045_CLK_I			0
-+#define R9A08G045_CLK_I2		1
-+#define R9A08G045_CLK_I3		2
-+#define R9A08G045_CLK_S0		3
-+#define R9A08G045_CLK_SPI0		4
-+#define R9A08G045_CLK_SPI1		5
-+#define R9A08G045_CLK_SD0		6
-+#define R9A08G045_CLK_SD1		7
-+#define R9A08G045_CLK_SD2		8
-+#define R9A08G045_CLK_M0		9
-+#define R9A08G045_CLK_HP		10
-+#define R9A08G045_CLK_TSU		11
-+#define R9A08G045_CLK_ZT		12
-+#define R9A08G045_CLK_P0		13
-+#define R9A08G045_CLK_P1		14
-+#define R9A08G045_CLK_P2		15
-+#define R9A08G045_CLK_P3		16
-+#define R9A08G045_CLK_P4		17
-+#define R9A08G045_CLK_P5		18
-+#define R9A08G045_CLK_AT		19
-+#define R9A08G045_CLK_OC0		20
-+#define R9A08G045_CLK_OC1		21
-+#define R9A08G045_OSCCLK		22
-+#define R9A08G045_OSCCLK2		23
-+#define R9A08G045_SWD			24
+ static const struct cpg_core_clk r9a07g043_core_clks[] __initconst = {
+ 	/* External Clock Inputs */
+ 	DEF_INPUT("extal", CLK_EXTAL),
+@@ -130,8 +136,10 @@ static const struct cpg_core_clk r9a07g043_core_clks[] __initconst = {
+ 	DEF_MUX("HP", R9A07G043_CLK_HP, SEL_PLL6_2, sel_pll6_2),
+ 	DEF_FIXED("SPI0", R9A07G043_CLK_SPI0, CLK_DIV_PLL3_C, 1, 2),
+ 	DEF_FIXED("SPI1", R9A07G043_CLK_SPI1, CLK_DIV_PLL3_C, 1, 4),
+-	DEF_SD_MUX("SD0", R9A07G043_CLK_SD0, SEL_SDHI0, sel_shdi),
+-	DEF_SD_MUX("SD1", R9A07G043_CLK_SD1, SEL_SDHI1, sel_shdi),
++	DEF_SD_MUX("SD0", R9A07G043_CLK_SD0, SEL_SDHI0, SEL_SDHI0_STS, sel_shdi,
++		   mtable_sdhi, 0, rzg2l_cpg_sd_mux_clk_notifier),
++	DEF_SD_MUX("SD1", R9A07G043_CLK_SD1, SEL_SDHI1, SEL_SDHI0_STS, sel_shdi,
++		   mtable_sdhi, 0, rzg2l_cpg_sd_mux_clk_notifier),
+ 	DEF_FIXED("SD0_DIV4", CLK_SD0_DIV4, R9A07G043_CLK_SD0, 1, 4),
+ 	DEF_FIXED("SD1_DIV4", CLK_SD1_DIV4, R9A07G043_CLK_SD1, 1, 4),
+ };
+diff --git a/drivers/clk/renesas/r9a07g044-cpg.c b/drivers/clk/renesas/r9a07g044-cpg.c
+index d4dcf5d896d4..a335f6eb1f80 100644
+--- a/drivers/clk/renesas/r9a07g044-cpg.c
++++ b/drivers/clk/renesas/r9a07g044-cpg.c
+@@ -22,6 +22,10 @@
+ #define SEL_SDHI0		SEL_PLL_PACK(CPG_PL2SDHI_DSEL, 0, 2)
+ #define SEL_SDHI1		SEL_PLL_PACK(CPG_PL2SDHI_DSEL, 4, 2)
+ 
++/* Clock status configuration. */
++#define SEL_SDHI0_STS		SEL_PLL_PACK(CPG_CLKSTATUS, 28, 1)
++#define SEL_SDHI1_STS		SEL_PLL_PACK(CPG_CLKSTATUS, 29, 1)
 +
-+/* R9A08G045 Module Clocks */
-+#define R9A08G045_OCTA_ACLK		0
-+#define R9A08G045_OCTA_MCLK		1
-+#define R9A08G045_CA55_SCLK		2
-+#define R9A08G045_CA55_PCLK		3
-+#define R9A08G045_CA55_ATCLK		4
-+#define R9A08G045_CA55_GICCLK		5
-+#define R9A08G045_CA55_PERICLK		6
-+#define R9A08G045_CA55_ACLK		7
-+#define R9A08G045_CA55_TSCLK		8
-+#define R9A08G045_SRAM_ACPU_ACLK0	9
-+#define R9A08G045_SRAM_ACPU_ACLK1	10
-+#define R9A08G045_SRAM_ACPU_ACLK2	11
-+#define R9A08G045_GIC600_GICCLK		12
-+#define R9A08G045_IA55_CLK		13
-+#define R9A08G045_IA55_PCLK		14
-+#define R9A08G045_MHU_PCLK		15
-+#define R9A08G045_SYC_CNT_CLK		16
-+#define R9A08G045_DMAC_ACLK		17
-+#define R9A08G045_DMAC_PCLK		18
-+#define R9A08G045_OSTM0_PCLK		19
-+#define R9A08G045_OSTM1_PCLK		20
-+#define R9A08G045_OSTM2_PCLK		21
-+#define R9A08G045_OSTM3_PCLK		22
-+#define R9A08G045_OSTM4_PCLK		23
-+#define R9A08G045_OSTM5_PCLK		24
-+#define R9A08G045_OSTM6_PCLK		25
-+#define R9A08G045_OSTM7_PCLK		26
-+#define R9A08G045_MTU_X_MCK_MTU3	27
-+#define R9A08G045_POE3_CLKM_POE		28
-+#define R9A08G045_GPT_PCLK		29
-+#define R9A08G045_POEG_A_CLKP		30
-+#define R9A08G045_POEG_B_CLKP		31
-+#define R9A08G045_POEG_C_CLKP		32
-+#define R9A08G045_POEG_D_CLKP		33
-+#define R9A08G045_WDT0_PCLK		34
-+#define R9A08G045_WDT0_CLK		35
-+#define R9A08G045_WDT1_PCLK		36
-+#define R9A08G045_WDT1_CLK		37
-+#define R9A08G045_WDT2_PCLK		38
-+#define R9A08G045_WDT2_CLK		39
-+#define R9A08G045_SPI_HCLK		40
-+#define R9A08G045_SPI_ACLK		41
-+#define R9A08G045_SPI_CLK		42
-+#define R9A08G045_SPI_CLKX2		43
-+#define R9A08G045_SDHI0_IMCLK		44
-+#define R9A08G045_SDHI0_IMCLK2		45
-+#define R9A08G045_SDHI0_CLK_HS		46
-+#define R9A08G045_SDHI0_ACLK		47
-+#define R9A08G045_SDHI1_IMCLK		48
-+#define R9A08G045_SDHI1_IMCLK2		49
-+#define R9A08G045_SDHI1_CLK_HS		50
-+#define R9A08G045_SDHI1_ACLK		51
-+#define R9A08G045_SDHI2_IMCLK		52
-+#define R9A08G045_SDHI2_IMCLK2		53
-+#define R9A08G045_SDHI2_CLK_HS		54
-+#define R9A08G045_SDHI2_ACLK		55
-+#define R9A08G045_SSI0_PCLK2		56
-+#define R9A08G045_SSI0_PCLK_SFR		57
-+#define R9A08G045_SSI1_PCLK2		58
-+#define R9A08G045_SSI1_PCLK_SFR		59
-+#define R9A08G045_SSI2_PCLK2		60
-+#define R9A08G045_SSI2_PCLK_SFR		61
-+#define R9A08G045_SSI3_PCLK2		62
-+#define R9A08G045_SSI3_PCLK_SFR		63
-+#define R9A08G045_SRC_CLKP		64
-+#define R9A08G045_USB_U2H0_HCLK		65
-+#define R9A08G045_USB_U2H1_HCLK		66
-+#define R9A08G045_USB_U2P_EXR_CPUCLK	67
-+#define R9A08G045_USB_PCLK		68
-+#define R9A08G045_ETH0_CLK_AXI		69
-+#define R9A08G045_ETH0_CLK_CHI		70
-+#define R9A08G045_ETH0_REFCLK		71
-+#define R9A08G045_ETH1_CLK_AXI		72
-+#define R9A08G045_ETH1_CLK_CHI		73
-+#define R9A08G045_ETH1_REFCLK		74
-+#define R9A08G045_I2C0_PCLK		75
-+#define R9A08G045_I2C1_PCLK		76
-+#define R9A08G045_I2C2_PCLK		77
-+#define R9A08G045_I2C3_PCLK		78
-+#define R9A08G045_SCIF0_CLK_PCK		79
-+#define R9A08G045_SCIF1_CLK_PCK		80
-+#define R9A08G045_SCIF2_CLK_PCK		81
-+#define R9A08G045_SCIF3_CLK_PCK		82
-+#define R9A08G045_SCIF4_CLK_PCK		83
-+#define R9A08G045_SCIF5_CLK_PCK		84
-+#define R9A08G045_SCI0_CLKP		85
-+#define R9A08G045_SCI1_CLKP		86
-+#define R9A08G045_IRDA_CLKP		87
-+#define R9A08G045_RSPI0_CLKB		88
-+#define R9A08G045_RSPI1_CLKB		89
-+#define R9A08G045_RSPI2_CLKB		90
-+#define R9A08G045_RSPI3_CLKB		91
-+#define R9A08G045_RSPI4_CLKB		92
-+#define R9A08G045_CANFD_PCLK		93
-+#define R9A08G045_CANFD_CLK_RAM		94
-+#define R9A08G045_GPIO_HCLK		95
-+#define R9A08G045_ADC_ADCLK		96
-+#define R9A08G045_ADC_PCLK		97
-+#define R9A08G045_TSU_PCLK		98
-+#define R9A08G045_PDM_PCLK		99
-+#define R9A08G045_PDM_CCLK		100
-+#define R9A08G045_PCI_ACLK		101
-+#define R9A08G045_PCI_CLKL1PM		102
-+#define R9A08G045_SPDIF_PCLK		103
-+#define R9A08G045_I3C_PCLK		104
-+#define R9A08G045_I3C_TCLK		105
-+#define R9A08G045_VBAT_BCLK		106
+ enum clk_ids {
+ 	/* Core Clock Outputs exported to DT */
+ 	LAST_DT_CORE_CLK = R9A07G054_CLK_DRP_A,
+@@ -105,6 +109,8 @@ static const char * const sel_pll6_2[]	= { ".pll6_250", ".pll5_250" };
+ static const char * const sel_shdi[] = { ".clk_533", ".clk_400", ".clk_266" };
+ static const char * const sel_gpu2[] = { ".pll6", ".pll3_div2_2" };
+ 
++static const u32 mtable_sdhi[] = { 1, 2, 3 };
 +
-+/* R9A08G045 Resets */
-+#define R9A08G045_CA55_RST_1_0		0
-+#define R9A08G045_CA55_RST_3_0		1
-+#define R9A08G045_CA55_RST_4		2
-+#define R9A08G045_CA55_RST_5		3
-+#define R9A08G045_CA55_RST_6		4
-+#define R9A08G045_CA55_RST_7		5
-+#define R9A08G045_CA55_RST_8		6
-+#define R9A08G045_CA55_RST_9		7
-+#define R9A08G045_CA55_RST_10		8
-+#define R9A08G045_CA55_RST_11		9
-+#define R9A08G045_CA55_RST_12		10
-+#define R9A08G045_SRAM_ACPU_ARESETN0	11
-+#define R9A08G045_SRAM_ACPU_ARESETN1	12
-+#define R9A08G045_SRAM_ACPU_ARESETN2	13
-+#define R9A08G045_GIC600_GICRESET_N	14
-+#define R9A08G045_GIC600_DBG_GICRESET_N	15
-+#define R9A08G045_IA55_RESETN		16
-+#define R9A08G045_MHU_RESETN		17
-+#define R9A08G045_DMAC_ARESETN		18
-+#define R9A08G045_DMAC_RST_ASYNC	19
-+#define R9A08G045_SYC_RESETN		20
-+#define R9A08G045_OSTM0_PRESETZ		21
-+#define R9A08G045_OSTM1_PRESETZ		22
-+#define R9A08G045_OSTM2_PRESETZ		23
-+#define R9A08G045_OSTM3_PRESETZ		24
-+#define R9A08G045_OSTM4_PRESETZ		25
-+#define R9A08G045_OSTM5_PRESETZ		26
-+#define R9A08G045_OSTM6_PRESETZ		27
-+#define R9A08G045_OSTM7_PRESETZ		28
-+#define R9A08G045_MTU_X_PRESET_MTU3	29
-+#define R9A08G045_POE3_RST_M_REG	30
-+#define R9A08G045_GPT_RST_C		31
-+#define R9A08G045_POEG_A_RST		32
-+#define R9A08G045_POEG_B_RST		33
-+#define R9A08G045_POEG_C_RST		34
-+#define R9A08G045_POEG_D_RST		35
-+#define R9A08G045_WDT0_PRESETN		36
-+#define R9A08G045_WDT1_PRESETN		37
-+#define R9A08G045_WDT2_PRESETN		38
-+#define R9A08G045_SPI_HRESETN		39
-+#define R9A08G045_SPI_ARESETN		40
-+#define R9A08G045_SDHI0_IXRST		41
-+#define R9A08G045_SDHI1_IXRST		42
-+#define R9A08G045_SDHI2_IXRST		43
-+#define R9A08G045_SSI0_RST_M2_REG	44
-+#define R9A08G045_SSI1_RST_M2_REG	45
-+#define R9A08G045_SSI2_RST_M2_REG	46
-+#define R9A08G045_SSI3_RST_M2_REG	47
-+#define R9A08G045_SRC_RST		48
-+#define R9A08G045_USB_U2H0_HRESETN	49
-+#define R9A08G045_USB_U2H1_HRESETN	50
-+#define R9A08G045_USB_U2P_EXL_SYSRST	51
-+#define R9A08G045_USB_PRESETN		52
-+#define R9A08G045_ETH0_RST_HW_N		53
-+#define R9A08G045_ETH1_RST_HW_N		54
-+#define R9A08G045_I2C0_MRST		55
-+#define R9A08G045_I2C1_MRST		56
-+#define R9A08G045_I2C2_MRST		57
-+#define R9A08G045_I2C3_MRST		58
-+#define R9A08G045_SCIF0_RST_SYSTEM_N	59
-+#define R9A08G045_SCIF1_RST_SYSTEM_N	60
-+#define R9A08G045_SCIF2_RST_SYSTEM_N	61
-+#define R9A08G045_SCIF3_RST_SYSTEM_N	62
-+#define R9A08G045_SCIF4_RST_SYSTEM_N	63
-+#define R9A08G045_SCIF5_RST_SYSTEM_N	64
-+#define R9A08G045_SCI0_RST		65
-+#define R9A08G045_SCI1_RST		66
-+#define R9A08G045_IRDA_RST		67
-+#define R9A08G045_RSPI0_RST		68
-+#define R9A08G045_RSPI1_RST		69
-+#define R9A08G045_RSPI2_RST		70
-+#define R9A08G045_RSPI3_RST		71
-+#define R9A08G045_RSPI4_RST		72
-+#define R9A08G045_CANFD_RSTP_N		73
-+#define R9A08G045_CANFD_RSTC_N		74
-+#define R9A08G045_GPIO_RSTN		75
-+#define R9A08G045_GPIO_PORT_RESETN	76
-+#define R9A08G045_GPIO_SPARE_RESETN	77
-+#define R9A08G045_ADC_PRESETN		78
-+#define R9A08G045_ADC_ADRST_N		79
-+#define R9A08G045_TSU_PRESETN		80
-+#define R9A08G045_OCTA_ARESETN		81
-+#define R9A08G045_PDM0_PRESETNT		82
-+#define R9A08G045_PCI_ARESETN		83
-+#define R9A08G045_PCI_RST_B		84
-+#define R9A08G045_PCI_RST_GP_B		85
-+#define R9A08G045_PCI_RST_PS_B		86
-+#define R9A08G045_PCI_RST_RSM_B		87
-+#define R9A08G045_PCI_RST_CFG_B		88
-+#define R9A08G045_PCI_RST_LOAD_B	89
-+#define R9A08G045_SPDIF_RST		90
-+#define R9A08G045_I3C_TRESETN		91
-+#define R9A08G045_I3C_PRESETN		92
-+#define R9A08G045_VBAT_BRESETN		93
+ static const struct {
+ 	struct cpg_core_clk common[56];
+ #ifdef CONFIG_CLK_R9A07G054
+@@ -170,8 +176,10 @@ static const struct {
+ 		DEF_MUX("HP", R9A07G044_CLK_HP, SEL_PLL6_2, sel_pll6_2),
+ 		DEF_FIXED("SPI0", R9A07G044_CLK_SPI0, CLK_DIV_PLL3_C, 1, 2),
+ 		DEF_FIXED("SPI1", R9A07G044_CLK_SPI1, CLK_DIV_PLL3_C, 1, 4),
+-		DEF_SD_MUX("SD0", R9A07G044_CLK_SD0, SEL_SDHI0, sel_shdi),
+-		DEF_SD_MUX("SD1", R9A07G044_CLK_SD1, SEL_SDHI1, sel_shdi),
++		DEF_SD_MUX("SD0", R9A07G044_CLK_SD0, SEL_SDHI0, SEL_SDHI0_STS, sel_shdi,
++			   mtable_sdhi, 0, rzg2l_cpg_sd_mux_clk_notifier),
++		DEF_SD_MUX("SD1", R9A07G044_CLK_SD1, SEL_SDHI1, SEL_SDHI0_STS, sel_shdi,
++			   mtable_sdhi, 0, rzg2l_cpg_sd_mux_clk_notifier),
+ 		DEF_FIXED("SD0_DIV4", CLK_SD0_DIV4, R9A07G044_CLK_SD0, 1, 4),
+ 		DEF_FIXED("SD1_DIV4", CLK_SD1_DIV4, R9A07G044_CLK_SD1, 1, 4),
+ 		DEF_DIV("G", R9A07G044_CLK_G, CLK_SEL_GPU2, DIVGPU, dtable_1_8),
+diff --git a/drivers/clk/renesas/rzg2l-cpg.c b/drivers/clk/renesas/rzg2l-cpg.c
+index ac05463d1d98..f4b70e07b9c6 100644
+--- a/drivers/clk/renesas/rzg2l-cpg.c
++++ b/drivers/clk/renesas/rzg2l-cpg.c
+@@ -67,25 +67,29 @@
+  * struct clk_hw_data - clock hardware data
+  * @hw: clock hw
+  * @conf: clock configuration (register offset, shift, width)
++ * @sconf: clock status configuration (register offset, shift, width)
+  * @priv: CPG private data structure
+  */
+ struct clk_hw_data {
+ 	struct clk_hw hw;
+ 	u32 conf;
++	u32 sconf;
+ 	struct rzg2l_cpg_priv *priv;
+ };
+ 
+ #define to_clk_hw_data(_hw)	container_of(_hw, struct clk_hw_data, hw)
+ 
+ /**
+- * struct sd_hw_data - SD clock hardware data
++ * struct sd_mux_hw_data - SD MUX clock hardware data
+  * @hw_data: clock hw data
++ * @mtable: clock mux table
+  */
+-struct sd_hw_data {
++struct sd_mux_hw_data {
+ 	struct clk_hw_data hw_data;
++	const u32 *mtable;
+ };
+ 
+-#define to_sd_hw_data(_hw)	container_of(_hw, struct sd_hw_data, hw_data)
++#define to_sd_mux_hw_data(_hw)	container_of(_hw, struct sd_mux_hw_data, hw_data)
+ 
+ struct rzg2l_pll5_param {
+ 	u32 pl5_fracin;
+@@ -142,6 +146,77 @@ static void rzg2l_cpg_del_clk_provider(void *data)
+ 	of_clk_del_provider(data);
+ }
+ 
++/* Must be called in atomic context. */
++static int rzg2l_cpg_wait_clk_update_done(void __iomem *base, u32 conf)
++{
++	u32 bitmask = GENMASK(GET_WIDTH(conf) - 1, 0) << GET_SHIFT(conf);
++	u32 off = GET_REG_OFFSET(conf);
++	u32 val;
 +
-+#endif /* __DT_BINDINGS_CLOCK_R9A08G045_CPG_H__ */
++	return readl_poll_timeout_atomic(base + off, val, !(val & bitmask), 10, 200);
++}
++
++int rzg2l_cpg_sd_mux_clk_notifier(struct notifier_block *nb, unsigned long event,
++				  void *data)
++{
++	struct clk_notifier_data *cnd = data;
++	struct clk_hw *hw = __clk_get_hw(cnd->clk);
++	struct clk_hw_data *clk_hw_data = to_clk_hw_data(hw);
++	struct rzg2l_cpg_priv *priv = clk_hw_data->priv;
++	u32 off = GET_REG_OFFSET(clk_hw_data->conf);
++	u32 shift = GET_SHIFT(clk_hw_data->conf);
++	const u32 clk_src_266 = 3;
++	unsigned long flags;
++	u32 bitmask;
++	int ret;
++
++	if (event != PRE_RATE_CHANGE || (cnd->new_rate / MEGA == 266))
++		return 0;
++
++	spin_lock_irqsave(&priv->rmw_lock, flags);
++
++	/*
++	 * As per the HW manual, we should not directly switch from 533 MHz to
++	 * 400 MHz and vice versa. To change the setting from 2’b01 (533 MHz)
++	 * to 2’b10 (400 MHz) or vice versa, Switch to 2’b11 (266 MHz) first,
++	 * and then switch to the target setting (2’b01 (533 MHz) or 2’b10
++	 * (400 MHz)).
++	 * Setting a value of '0' to the SEL_SDHI0_SET or SEL_SDHI1_SET clock
++	 * switching register is prohibited.
++	 * The clock mux has 3 input clocks(533 MHz, 400 MHz, and 266 MHz), and
++	 * the index to value mapping is done by adding 1 to the index.
++	 */
++	bitmask = (GENMASK(GET_WIDTH(clk_hw_data->conf) - 1, 0) << shift) << 16;
++	writel(bitmask | (clk_src_266 << shift), priv->base + off);
++
++	/* Wait for the update done. */
++	ret = rzg2l_cpg_wait_clk_update_done(priv->base, clk_hw_data->sconf);
++
++	spin_unlock_irqrestore(&priv->rmw_lock, flags);
++
++	if (ret)
++		dev_err(priv->dev, "failed to switch to safe clk source\n");
++
++	return ret;
++}
++
++static int rzg2l_register_notifier(struct clk_hw *hw, const struct cpg_core_clk *core,
++				   struct rzg2l_cpg_priv *priv)
++{
++	struct notifier_block *nb;
++
++	if (!core->notifier)
++		return 0;
++
++	nb = devm_kzalloc(priv->dev, sizeof(*nb), GFP_KERNEL);
++	if (!nb)
++		return -ENOMEM;
++
++	nb->notifier_call = core->notifier;
++
++	return clk_notifier_register(hw->clk, nb);
++}
++
+ static struct clk * __init
+ rzg2l_cpg_div_clk_register(const struct cpg_core_clk *core,
+ 			   struct clk **clks,
+@@ -202,71 +277,54 @@ rzg2l_cpg_mux_clk_register(const struct cpg_core_clk *core,
+ 	return clk_hw->clk;
+ }
+ 
+-static int rzg2l_cpg_sd_clk_mux_set_parent(struct clk_hw *hw, u8 index)
++static int rzg2l_cpg_sd_mux_clk_set_parent(struct clk_hw *hw, u8 index)
+ {
+ 	struct clk_hw_data *clk_hw_data = to_clk_hw_data(hw);
++	struct sd_mux_hw_data *sd_mux_hw_data = to_sd_mux_hw_data(clk_hw_data);
+ 	struct rzg2l_cpg_priv *priv = clk_hw_data->priv;
+ 	u32 off = GET_REG_OFFSET(clk_hw_data->conf);
+ 	u32 shift = GET_SHIFT(clk_hw_data->conf);
+-	const u32 clk_src_266 = 2;
+-	u32 msk, val, bitmask;
+ 	unsigned long flags;
++	u32 bitmask, val;
+ 	int ret;
+ 
+-	/*
+-	 * As per the HW manual, we should not directly switch from 533 MHz to
+-	 * 400 MHz and vice versa. To change the setting from 2’b01 (533 MHz)
+-	 * to 2’b10 (400 MHz) or vice versa, Switch to 2’b11 (266 MHz) first,
+-	 * and then switch to the target setting (2’b01 (533 MHz) or 2’b10
+-	 * (400 MHz)).
+-	 * Setting a value of '0' to the SEL_SDHI0_SET or SEL_SDHI1_SET clock
+-	 * switching register is prohibited.
+-	 * The clock mux has 3 input clocks(533 MHz, 400 MHz, and 266 MHz), and
+-	 * the index to value mapping is done by adding 1 to the index.
+-	 */
++	val = clk_mux_index_to_val(sd_mux_hw_data->mtable, CLK_MUX_ROUND_CLOSEST, index);
++
+ 	bitmask = (GENMASK(GET_WIDTH(clk_hw_data->conf) - 1, 0) << shift) << 16;
+-	msk = off ? CPG_CLKSTATUS_SELSDHI1_STS : CPG_CLKSTATUS_SELSDHI0_STS;
++
+ 	spin_lock_irqsave(&priv->rmw_lock, flags);
+-	if (index != clk_src_266) {
+-		writel(bitmask | ((clk_src_266 + 1) << shift), priv->base + off);
+-
+-		ret = readl_poll_timeout_atomic(priv->base + CPG_CLKSTATUS, val,
+-						!(val & msk), 10,
+-						CPG_SDHI_CLK_SWITCH_STATUS_TIMEOUT_US);
+-		if (ret)
+-			goto unlock;
+-	}
+ 
+-	writel(bitmask | ((index + 1) << shift), priv->base + off);
++	writel(bitmask | (val << shift), priv->base + off);
++
++	/* Wait for the update done. */
++	ret = rzg2l_cpg_wait_clk_update_done(priv->base, clk_hw_data->sconf);
+ 
+-	ret = readl_poll_timeout_atomic(priv->base + CPG_CLKSTATUS, val,
+-					!(val & msk), 10,
+-					CPG_SDHI_CLK_SWITCH_STATUS_TIMEOUT_US);
+-unlock:
+ 	spin_unlock_irqrestore(&priv->rmw_lock, flags);
+ 
+ 	if (ret)
+-		dev_err(priv->dev, "failed to switch clk source\n");
++		dev_err(priv->dev, "Failed to switch parent\n");
+ 
+ 	return ret;
+ }
+ 
+-static u8 rzg2l_cpg_sd_clk_mux_get_parent(struct clk_hw *hw)
++static u8 rzg2l_cpg_sd_mux_clk_get_parent(struct clk_hw *hw)
+ {
+ 	struct clk_hw_data *clk_hw_data = to_clk_hw_data(hw);
++	struct sd_mux_hw_data *sd_mux_hw_data = to_sd_mux_hw_data(clk_hw_data);
+ 	struct rzg2l_cpg_priv *priv = clk_hw_data->priv;
+-	u32 val = readl(priv->base + GET_REG_OFFSET(clk_hw_data->conf));
++	u32 val;
+ 
++	val = readl(priv->base + GET_REG_OFFSET(clk_hw_data->conf));
+ 	val >>= GET_SHIFT(clk_hw_data->conf);
+ 	val &= GENMASK(GET_WIDTH(clk_hw_data->conf) - 1, 0);
+ 
+-	return val ? val - 1 : 0;
++	return clk_mux_val_to_index(hw, sd_mux_hw_data->mtable, CLK_MUX_ROUND_CLOSEST, val);
+ }
+ 
+ static const struct clk_ops rzg2l_cpg_sd_clk_mux_ops = {
+ 	.determine_rate = __clk_mux_determine_rate_closest,
+-	.set_parent	= rzg2l_cpg_sd_clk_mux_set_parent,
+-	.get_parent	= rzg2l_cpg_sd_clk_mux_get_parent,
++	.set_parent	= rzg2l_cpg_sd_mux_clk_set_parent,
++	.get_parent	= rzg2l_cpg_sd_mux_clk_get_parent,
+ };
+ 
+ static struct clk * __init
+@@ -274,31 +332,40 @@ rzg2l_cpg_sd_mux_clk_register(const struct cpg_core_clk *core,
+ 			      void __iomem *base,
+ 			      struct rzg2l_cpg_priv *priv)
+ {
+-	struct sd_hw_data *sd_hw_data;
++	struct sd_mux_hw_data *sd_mux_hw_data;
+ 	struct clk_init_data init;
+ 	struct clk_hw *clk_hw;
+ 	int ret;
+ 
+-	sd_hw_data = devm_kzalloc(priv->dev, sizeof(*sd_hw_data), GFP_KERNEL);
+-	if (!sd_hw_data)
++	sd_mux_hw_data = devm_kzalloc(priv->dev, sizeof(*sd_mux_hw_data), GFP_KERNEL);
++	if (!sd_mux_hw_data)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	sd_hw_data->hw_data.priv = priv;
+-	sd_hw_data->hw_data.conf = core->conf;
++	sd_mux_hw_data->hw_data.priv = priv;
++	sd_mux_hw_data->hw_data.conf = core->conf;
++	sd_mux_hw_data->hw_data.sconf = core->sconf;
++	sd_mux_hw_data->mtable = core->mtable;
+ 
+ 	init.name = core->name;
+ 	init.ops = &rzg2l_cpg_sd_clk_mux_ops;
+-	init.flags = 0;
++	init.flags = core->flag;
+ 	init.num_parents = core->num_parents;
+ 	init.parent_names = core->parent_names;
+ 
+-	clk_hw = &sd_hw_data->hw_data.hw;
++	clk_hw = &sd_mux_hw_data->hw_data.hw;
+ 	clk_hw->init = &init;
+ 
+ 	ret = devm_clk_hw_register(priv->dev, clk_hw);
+ 	if (ret)
+ 		return ERR_PTR(ret);
+ 
++	ret = rzg2l_register_notifier(clk_hw, core, priv);
++	if (ret) {
++		dev_err(priv->dev, "Failed to register notifier for %s\n",
++			core->name);
++		return ERR_PTR(ret);
++	}
++
+ 	return clk_hw->clk;
+ }
+ 
+diff --git a/drivers/clk/renesas/rzg2l-cpg.h b/drivers/clk/renesas/rzg2l-cpg.h
+index f5382333d327..edac34037cf0 100644
+--- a/drivers/clk/renesas/rzg2l-cpg.h
++++ b/drivers/clk/renesas/rzg2l-cpg.h
+@@ -9,6 +9,8 @@
+ #ifndef __RENESAS_RZG2L_CPG_H__
+ #define __RENESAS_RZG2L_CPG_H__
+ 
++#include <linux/notifier.h>
++
+ #define CPG_SIPLL5_STBY		(0x140)
+ #define CPG_SIPLL5_CLK1		(0x144)
+ #define CPG_SIPLL5_CLK3		(0x14C)
+@@ -42,8 +44,6 @@
+ #define CPG_CLKSTATUS_SELSDHI0_STS	BIT(28)
+ #define CPG_CLKSTATUS_SELSDHI1_STS	BIT(29)
+ 
+-#define CPG_SDHI_CLK_SWITCH_STATUS_TIMEOUT_US	200
+-
+ /* n = 0/1/2 for PLL1/4/6 */
+ #define CPG_SAMPLL_CLK1(n)	(0x04 + (16 * n))
+ #define CPG_SAMPLL_CLK2(n)	(0x08 + (16 * n))
+@@ -86,8 +86,11 @@ struct cpg_core_clk {
+ 	unsigned int mult;
+ 	unsigned int type;
+ 	unsigned int conf;
++	unsigned int sconf;
+ 	const struct clk_div_table *dtable;
++	const u32 *mtable;
+ 	const char * const *parent_names;
++	notifier_fn_t notifier;
+ 	u32 flag;
+ 	u32 mux_flags;
+ 	int num_parents;
+@@ -150,10 +153,11 @@ enum clk_types {
+ 		 .parent_names = _parent_names, \
+ 		 .num_parents = ARRAY_SIZE(_parent_names), \
+ 		 .mux_flags = CLK_MUX_READ_ONLY)
+-#define DEF_SD_MUX(_name, _id, _conf, _parent_names) \
+-	DEF_TYPE(_name, _id, CLK_TYPE_SD_MUX, .conf = _conf, \
++#define DEF_SD_MUX(_name, _id, _conf, _sconf, _parent_names, _mtable, _clk_flags, _notifier) \
++	DEF_TYPE(_name, _id, CLK_TYPE_SD_MUX, .conf = _conf, .sconf = _sconf, \
+ 		 .parent_names = _parent_names, \
+-		 .num_parents = ARRAY_SIZE(_parent_names))
++		 .num_parents = ARRAY_SIZE(_parent_names), \
++		 .mtable = _mtable, .flag = _clk_flags, .notifier = _notifier)
+ #define DEF_PLL5_FOUTPOSTDIV(_name, _id, _parent) \
+ 	DEF_TYPE(_name, _id, CLK_TYPE_SIPLL5, .parent = _parent)
+ #define DEF_PLL5_4_MUX(_name, _id, _conf, _parent_names) \
+@@ -272,4 +276,6 @@ extern const struct rzg2l_cpg_info r9a07g044_cpg_info;
+ extern const struct rzg2l_cpg_info r9a07g054_cpg_info;
+ extern const struct rzg2l_cpg_info r9a09g011_cpg_info;
+ 
++int rzg2l_cpg_sd_mux_clk_notifier(struct notifier_block *nb, unsigned long event, void *data);
++
+ #endif
 -- 
 2.39.2
 
