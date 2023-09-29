@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7067E743F2
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 05:42:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99AFDE743ED
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 05:42:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232613AbjI2FmP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Sep 2023 01:42:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36452 "EHLO
+        id S232916AbjI2FmZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 29 Sep 2023 01:42:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232884AbjI2Flc (ORCPT
+        with ESMTP id S232893AbjI2Flq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Sep 2023 01:41:32 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22FF3CC8
-        for <linux-serial@vger.kernel.org>; Thu, 28 Sep 2023 22:40:01 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id a640c23a62f3a-9ae7383b7ecso64322366b.0
-        for <linux-serial@vger.kernel.org>; Thu, 28 Sep 2023 22:40:01 -0700 (PDT)
+        Fri, 29 Sep 2023 01:41:46 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AEA4CD8
+        for <linux-serial@vger.kernel.org>; Thu, 28 Sep 2023 22:40:07 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-9ae7383b7ecso64334466b.0
+        for <linux-serial@vger.kernel.org>; Thu, 28 Sep 2023 22:40:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1695965999; x=1696570799; darn=vger.kernel.org;
+        d=tuxon.dev; s=google; t=1695966005; x=1696570805; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=wor+2ysYovWwz79wDHgf6lw48XDzirr+UHoMWUaKK0I=;
-        b=hv11lyyqdIZllhGvop+tiXsvBx+tCxEzKcTeHASCgpgZ9P2/FvzCwN43vmBXmgW9lU
-         WT5FouJdYvDCClB9VU8nBoiBZb5IbUKYe2aHIZmaGrBOeqt4xX/1SiDuj4zEQF83xA6+
-         XPqTN8YFTydiGU2wCnBNzQDIkhWp6pm6D5htLXIX+W4tzaxfm6A6BkQe2tPyFeyDhDK2
-         qV1AcaIYCZlwbLFSMgIxEdEgpIzgUij3uquB0kjLpJ3FrfUB4hIJD5MZ1mvvdZn+6JQX
-         l3IAv6QWf/bAzaRyzleVx0O5xlLqVd8BCDO6ZDyenLshiMqa12ghthwRxc3vqXZ+egsT
-         wPUQ==
+        bh=8xXiyKyVdmulgskvngsG0f4x+X8ooUvk8Z7/M7XiExk=;
+        b=Eh0BMORPMv6+dxmW4W4x7kbsmtI5Ug63fZ4Uc3ntgapa0nXoKp/FXcTWvgVJa8x2mM
+         oG4hEdVXqoLSrrarBROBQUjwV9653V94/sw3Z6hJL5WZlA/ApJD0UhEqq0aPxa9Zyl5a
+         Bopyn2jocnZuBMBSF68+noJPp8FTgkLxEJF72mPpDBlPJpWLH0bLoZaYoD7+5FOSt0sf
+         vBqOY2f/DYhrtC9OELIehG4hUyJLfW38X0iMhoVMO61rgkm4093XZ3aUymiUQjvs9b5r
+         1uo9y2MZLD2jF1mMaP/rJoyuckHjyM2p3NUoc6dvZqds7W4/4JB+I3v0YxEyRkqCiS8t
+         WK8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695965999; x=1696570799;
+        d=1e100.net; s=20230601; t=1695966005; x=1696570805;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=wor+2ysYovWwz79wDHgf6lw48XDzirr+UHoMWUaKK0I=;
-        b=kHmDBvcKgT1If2WTFSLFVLstEzZxzn7uujENWecDHt0LVPt5rm/5H8c+fp8HxwIc+H
-         MfI2n9KUTQ/bepzWi/YbcwMLb/C12M08+k/4MdPqdv+M65epHDOZHAS30aGH7xZxWDUc
-         iyeh8nBfXr2aPIqmY2eKu+D4taKOdiT0UAwgPXLfLTwwFgOD2ltF9GJm0yu+4WAjHL1A
-         2sZNsSouAX9WzAc8weejmMUm0lp96XA3tLihHG85Ux02PF5or7c0YYXnPtoNDZ+jOfgg
-         DyirYdaN4/inJLI+fzOf15cD2hYS2maPtisJfEVl7OZVfUV3OSpJuACudUwLwiFqLGTM
-         wO9w==
-X-Gm-Message-State: AOJu0YxjwKzBd34SqcwF0Af1NV80nbE0CFMsAOkkZVNNDYP2dfKkkkIN
-        69aICVbWIgwOW0TImJ0W8Rntog==
-X-Google-Smtp-Source: AGHT+IGuHtC57n+o1bpWpASywaDobhLzZbsZm4sa2GVeKsCcbnMjDU8gtdTIYb+NLm0dPD1iTjOvRQ==
-X-Received: by 2002:a17:907:948b:b0:9a5:aa43:1c7c with SMTP id dm11-20020a170907948b00b009a5aa431c7cmr3069995ejc.26.1695965999656;
-        Thu, 28 Sep 2023 22:39:59 -0700 (PDT)
+        bh=8xXiyKyVdmulgskvngsG0f4x+X8ooUvk8Z7/M7XiExk=;
+        b=KRZCV03oSjQAIr21arS1BDK1k0bsOnvbmZAWnvUPNx7BCyMIBdDJhaVnvPvN9Uggga
+         dtYn0qZ5zZtXF+5UrS2hpfBuQUBAmCsFXxPtn/E7nufC83c1Uc98nO/rsaWwAecJYS5C
+         AZzOXuhp4hmSy4WySVHpbXgw+Lj1kbKlgjgZ+hggBFXovBSKX7xsNAzqCm9Cb62QmtlT
+         EBzV5X69AiV9iiEiMyLKp8CTfncuN1jAXtvFmLzDGs68iPS82gqkEmt4x2ECo3bXzY0E
+         nLZ3VF7cVAO9lVDL2B6Uaw+0uL0alF8PPuivOv/mMnOFG98wMTMviSNKd3IHyl37pZOc
+         jAQw==
+X-Gm-Message-State: AOJu0YzggwiJjYBxwWUDTEUR/vDqjZzWNjcb/uQ5faGZNJD/PZrz/Nzr
+        bEHmW5FxITX9IolhGYdMu5CVsQ==
+X-Google-Smtp-Source: AGHT+IHv5+jFxKBL09urolkWpi8BIIK1xJDAniaPk6CdWJwEYb4I49/rTk0G06L8rsb9HDHO7NWXPA==
+X-Received: by 2002:a17:906:9e:b0:9a5:d710:dea5 with SMTP id 30-20020a170906009e00b009a5d710dea5mr2713502ejc.17.1695966005473;
+        Thu, 28 Sep 2023 22:40:05 -0700 (PDT)
 Received: from claudiu-X670E-Pro-RS.. ([82.78.167.177])
-        by smtp.gmail.com with ESMTPSA id z19-20020a1709063ad300b009a1a653770bsm11971992ejd.87.2023.09.28.22.39.57
+        by smtp.gmail.com with ESMTPSA id z19-20020a1709063ad300b009a1a653770bsm11971992ejd.87.2023.09.28.22.40.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Sep 2023 22:39:59 -0700 (PDT)
+        Thu, 28 Sep 2023 22:40:05 -0700 (PDT)
 From:   Claudiu <claudiu.beznea@tuxon.dev>
 X-Google-Original-From: Claudiu <claudiu.beznea@bp.renesas.com>
 To:     geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
@@ -64,9 +64,9 @@ Cc:     linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 20/28] dt-bindings: pinctrl: renesas: document RZ/G3S SoC
-Date:   Fri, 29 Sep 2023 08:39:07 +0300
-Message-Id: <20230929053915.1530607-21-claudiu.beznea@bp.renesas.com>
+Subject: [PATCH v2 23/28] dt-bindings: arm: renesas: document RZ/G3S SMARC SoM
+Date:   Fri, 29 Sep 2023 08:39:10 +0300
+Message-Id: <20230929053915.1530607-24-claudiu.beznea@bp.renesas.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230929053915.1530607-1-claudiu.beznea@bp.renesas.com>
 References: <20230929053915.1530607-1-claudiu.beznea@bp.renesas.com>
@@ -78,66 +78,36 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-Add documentation for pin controller found on RZ/G3S (R9A08G045) SoC.
-Compared with RZ/G2{L,UL} RZ/G3S has 82 general-purpose IOs, no slew
-rate and output impedance support and more values for drive strength
-which needs to be expressed in microamp.
+Document Renesas RZ/G3S SMARC SoM board which is based on RZ/G3S
+(R9A08G045S33) SoC.
 
+Suggested-by: Geert Uytterhoeven <geert@linux-m68k.org>
 Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 ---
 
 Changes in v2:
-- defined drive-strength-microamp as general and make if/then schema to
-  not allow specific properties depending on compatible
+- this patch is new in v2 and added as suggested by Geert
 
- .../pinctrl/renesas,rzg2l-pinctrl.yaml        | 20 +++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ Documentation/devicetree/bindings/soc/renesas/renesas.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml
-index eb726770f571..86228ba69aab 100644
---- a/Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml
-@@ -25,6 +25,7 @@ properties:
-           - enum:
-               - renesas,r9a07g043-pinctrl # RZ/G2UL{Type-1,Type-2} and RZ/Five
-               - renesas,r9a07g044-pinctrl # RZ/G2{L,LC}
-+              - renesas,r9a08g045-pinctrl # RZ/G3S
+diff --git a/Documentation/devicetree/bindings/soc/renesas/renesas.yaml b/Documentation/devicetree/bindings/soc/renesas/renesas.yaml
+index 822faf081e84..31d0539bb168 100644
+--- a/Documentation/devicetree/bindings/soc/renesas/renesas.yaml
++++ b/Documentation/devicetree/bindings/soc/renesas/renesas.yaml
+@@ -480,6 +480,12 @@ properties:
+               - renesas,r9a08g045s33 # PCIe support
+           - const: renesas,r9a08g045
  
-       - items:
-           - enum:
-@@ -78,6 +79,21 @@ additionalProperties:
-         - $ref: pincfg-node.yaml#
-         - $ref: pinmux-node.yaml#
- 
-+        - if:
-+            properties:
-+              compatible:
-+                contains:
-+                  enum:
-+                    - renesas,r9a08g045-pinctrl
-+          then:
-+            properties:
-+              drive-strength: false
-+              output-impedance-ohms: false
-+              slew-rate: false
-+          else:
-+            properties:
-+              drive-strength-microamp: false
++      - description: RZ/G3S SMARC Module (SoM)
++        items:
++          - const: renesas,rzg3s-smarcm # RZ/G3S SMARC Module (SoM)
++          - const: renesas,r9a08g045s33 # PCIe support
++          - const: renesas,r9a08g045
 +
-       description:
-         Pin controller client devices use pin configuration subnodes (children
-         and grandchildren) for desired pin configuration.
-@@ -92,6 +108,10 @@ additionalProperties:
-         pins: true
-         drive-strength:
-           enum: [ 2, 4, 8, 12 ]
-+        drive-strength-microamp:
-+          enum: [ 1900, 2200, 4000, 4400, 4500, 4700, 5200, 5300, 5700,
-+                  5800, 6000, 6050, 6100, 6550, 6800, 7000, 8000, 9000,
-+                  10000 ]
-         output-impedance-ohms:
-           enum: [ 33, 50, 66, 100 ]
-         power-source:
+ additionalProperties: true
+ 
+ ...
 -- 
 2.39.2
 
