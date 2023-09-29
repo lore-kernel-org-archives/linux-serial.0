@@ -2,115 +2,194 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FAEBE743F4
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 08:26:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F89CE7B1F
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 09:24:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232663AbjI2I0P (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Sep 2023 04:26:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51602 "EHLO
+        id S232919AbjI2JY6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 29 Sep 2023 05:24:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232606AbjI2I0O (ORCPT
+        with ESMTP id S231774AbjI2JY4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Sep 2023 04:26:14 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA13B1AA
-        for <linux-serial@vger.kernel.org>; Fri, 29 Sep 2023 01:26:11 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id 5b1f17b1804b1-40652e570d9so14670835e9.1
-        for <linux-serial@vger.kernel.org>; Fri, 29 Sep 2023 01:26:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1695975970; x=1696580770; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WX41g5Ex2mgCQT3kQj51PYJPgefWmJ9XFZpouAvDF2A=;
-        b=FxW3KCsQo8txXpMWzi3zSezrX+Y8aSco5Gz1q5587lukO7eseyKJii5o8m7YwM5FTl
-         45ACBfxVNuovoQU3VTG+upg6xDZ7/s8I/dPHNBSaS/vitqLH/Q6zy8OHVBWunpeFbWe5
-         614xehgH9A+34nyBLiQzxV/1sG4GkayPtNSksBHvMRXZf5WpHhU+qcD/iv3pNpwqqbDo
-         OSaS3G8dXCgzcbzf3ij6yj2obTnJri3LIDsZl2oQYNUX4BAuX8P8WaZr9AuZIEt3KLbn
-         TNqTdbQjCKQxK/FZ4TVUDf/BKiOThm6wF81lDgckR8ObCvp3xqtFSKm/5PUVGqeTvEnb
-         QZDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695975970; x=1696580770;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WX41g5Ex2mgCQT3kQj51PYJPgefWmJ9XFZpouAvDF2A=;
-        b=UgQvsN5PGs8+vz6+FWcy07eFKtJoTvuFwdtRTXMuiP/SpWucN06i1tPYaoqCyPgENj
-         oTOYEzOXi0ul2k3Pt5M3pIeK0zMmHykbmuMhRE+MFZXR59cIgmIznqO/nRWqc4LVuk9L
-         ymrSGD4a/idpp5fvGRXoQKGHSqjc42OhZZqRTyTv92UdK/XHxVCoWwBNg1ulpDJnK33r
-         gxSBhzd6+4fUXnZj6wvYosAtSN7EHuWWqhESdf8IPuh1f7L6lsobTl/dYEz4bdwSCQe0
-         79Jf8JGC2WOEZpcqwfhbFMeALV9tPS8NnsmVLb7h7Z4L5YXUVj6roYd3rMOuOzaAWv0h
-         iN4A==
-X-Gm-Message-State: AOJu0Yy+rUzadOSwNYey650GGzZhp0KHVIxzhp06U3mOJnujeEFda+AO
-        s5XIP0f7TyEtE5ThifDVclHkGTFo0F0WFG0IrxhGbg==
-X-Google-Smtp-Source: AGHT+IFotf6XO1lJDjNVA9fLU3PZ+wvlEqKsBa8iaRjpXi7p8SNYxOKrZWD/2txCrOvhDZQYnkNiaXxU6mEtgFRW1Ho=
-X-Received: by 2002:a05:600c:3785:b0:401:b204:3b98 with SMTP id
- o5-20020a05600c378500b00401b2043b98mr3941830wmr.19.1695975970106; Fri, 29 Sep
- 2023 01:26:10 -0700 (PDT)
+        Fri, 29 Sep 2023 05:24:56 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 268CB193;
+        Fri, 29 Sep 2023 02:24:54 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="6.03,186,1694703600"; 
+   d="asc'?scan'208";a="177672704"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 29 Sep 2023 18:24:53 +0900
+Received: from [10.226.92.167] (unknown [10.226.92.167])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 830F94002627;
+        Fri, 29 Sep 2023 18:24:45 +0900 (JST)
+Message-ID: <718a2683-d7a3-ce91-2686-c077d0c48685@bp.renesas.com>
+Date:   Fri, 29 Sep 2023 10:24:44 +0100
 MIME-Version: 1.0
-References: <f74665d1-4d28-01a2-5694-b06fde202d39@ghiti.fr> <20230928231239.2144579-2-twuufnxlz@gmail.com>
-In-Reply-To: <20230928231239.2144579-2-twuufnxlz@gmail.com>
-From:   Alexandre Ghiti <alexghiti@rivosinc.com>
-Date:   Fri, 29 Sep 2023 10:25:59 +0200
-Message-ID: <CAHVXubhG2c=ShFHF4hMMFm8=BYDTyDUduOizujbUWQBW+55wTw@mail.gmail.com>
-Subject: Re: [PATCH] riscv: fix out of bounds in walk_stackframe
-To:     Edward AD <twuufnxlz@gmail.com>
-Cc:     alex@ghiti.fr, aou@eecs.berkeley.edu, conor@kernel.org,
-        gregkh@linuxfoundation.org, guoren@kernel.org,
-        jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
-        liushixin2@huawei.com, palmer@dabbelt.com,
-        paul.walmsley@sifive.com,
-        syzbot+8d2757d62d403b2d9275@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH v2 18/28] pinctrl: renesas: rzg2l: add support for
+ different ds values on different groups
+To:     Claudiu <claudiu.beznea@tuxon.dev>, geert+renesas@glider.be,
+        mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        linus.walleij@linaro.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, magnus.damm@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org,
+        quic_bjorande@quicinc.com, konrad.dybcio@linaro.org, arnd@arndb.de,
+        neil.armstrong@linaro.org, prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com
+Cc:     linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20230929053915.1530607-1-claudiu.beznea@bp.renesas.com>
+ <20230929053915.1530607-19-claudiu.beznea@bp.renesas.com>
+From:   Paul Barker <paul.barker.ct@bp.renesas.com>
+In-Reply-To: <20230929053915.1530607-19-claudiu.beznea@bp.renesas.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------O6zwnXp9OinQvEkI9DGuOLGa"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Edward,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------O6zwnXp9OinQvEkI9DGuOLGa
+Content-Type: multipart/mixed; boundary="------------UcQ0D7F82ZDjBYx4thPEnCUx";
+ protected-headers="v1"
+From: Paul Barker <paul.barker.ct@bp.renesas.com>
+To: Claudiu <claudiu.beznea@tuxon.dev>, geert+renesas@glider.be,
+ mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+ linus.walleij@linaro.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+ quic_bjorande@quicinc.com, konrad.dybcio@linaro.org, arnd@arndb.de,
+ neil.armstrong@linaro.org, prabhakar.mahadev-lad.rj@bp.renesas.com,
+ biju.das.jz@bp.renesas.com
+Cc: linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org
+Message-ID: <718a2683-d7a3-ce91-2686-c077d0c48685@bp.renesas.com>
+Subject: Re: [PATCH v2 18/28] pinctrl: renesas: rzg2l: add support for
+ different ds values on different groups
+References: <20230929053915.1530607-1-claudiu.beznea@bp.renesas.com>
+ <20230929053915.1530607-19-claudiu.beznea@bp.renesas.com>
+In-Reply-To: <20230929053915.1530607-19-claudiu.beznea@bp.renesas.com>
 
-On Fri, Sep 29, 2023 at 1:12=E2=80=AFAM Edward AD <twuufnxlz@gmail.com> wro=
-te:
->
-> Add vmalloc and kernel addresses check to prevent invalid access.
->
-> Closes: https://lore.kernel.org/all/20230926105949.1025995-2-twuufnxlz@gm=
-ail.com/
-> Fixes: 5d8544e2d007 ("RISC-V: Generic library routines and assembly")
-> Reported-and-test-by: syzbot+8d2757d62d403b2d9275@syzkaller.appspotmail.c=
-om
-> Link: https://lore.kernel.org/all/0000000000000170df0605ccf91a@google.com=
-/T/
-> Signed-off-by: Edward AD <twuufnxlz@gmail.com>
-> ---
->  arch/riscv/kernel/stacktrace.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/arch/riscv/kernel/stacktrace.c b/arch/riscv/kernel/stacktrac=
-e.c
-> index 64a9c093aef9..031a4a35c1d0 100644
-> --- a/arch/riscv/kernel/stacktrace.c
-> +++ b/arch/riscv/kernel/stacktrace.c
-> @@ -54,6 +54,9 @@ void notrace walk_stackframe(struct task_struct *task, =
-struct pt_regs *regs,
->                         break;
->                 /* Unwind stack frame */
->                 frame =3D (struct stackframe *)fp - 1;
-> +               if ((is_vmalloc_addr(frame) && !pfn_valid(page_to_pfn(vma=
-lloc_to_page(frame)))) ||
-> +                    !virt_addr_valid(frame))
-> +                       break;
->                 sp =3D fp;
->                 if (regs && (regs->epc =3D=3D pc) && (frame->fp & 0x7)) {
->                         fp =3D frame->ra;
-> --
-> 2.25.1
->
+--------------UcQ0D7F82ZDjBYx4thPEnCUx
+Content-Type: multipart/mixed; boundary="------------CKPeGwEVGUuHLHO0kaoGvMTJ"
 
-I'm still not convinced this will fix the kasan out-of-bounds
-accesses, the page can be valid but the read can happen at an offset
-not initialized and trigger such errors right? I still think there is
-something weird about the stack frame, as to me this should not happen
-(but admittedly I don't know much about that).
+--------------CKPeGwEVGUuHLHO0kaoGvMTJ
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+On 29/09/2023 06:39, Claudiu wrote:
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>=20
+> RZ/G3S supports different drive strength values for different power sou=
+rces
+> and pin groups (A, B, C). On each group there could be up to 4 drive
+> strength values per power source. Available power sources are 1v8, 2v5,=
+
+> 3v3. Drive strength values are fine tuned than what was previously
+
+Should this be "are more fine tuned" or "are less fine tuned"?
+
+> available on the driver thus the necessity of having micro-amp support.=
+
+> As drive strength and power source values are linked together the
+> hardware setup for these was moved at the end of
+> rzg2l_pinctrl_pinconf_set() to ensure proper validation of the new
+> values.
+>=20
+> The drive strength values are expected to be initialized though SoC
+> specific hardware configuration data structure.
+>=20
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+
+Thanks,
+Paul
+
+--------------CKPeGwEVGUuHLHO0kaoGvMTJ
+Content-Type: application/pgp-keys; name="OpenPGP_0x27F4B3459F002257.asc"
+Content-Disposition: attachment; filename="OpenPGP_0x27F4B3459F002257.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+xsFNBGS4BNsBEADEc28TO+aryCgRIuhxWAviuJl+f2TcZ1JeeaMzRLgSXKuXzkiI
+g6JIVfNvThjwJaBmb7+/5+D7kDLJuutu9MFfOzTS0QOQWppwIPgbfktvMvwwsq3m
+7e9Qb+S1LVeV0/ldZfuzgzAzHFDwmzryfIyt2JEbsBsGTq/QE+7hvLAe8R9xofIn
+z6/IndiiTYhNCNf06nFPR4Y5ZDZPGb9aw5Jisqh+OSxtc0BFHDSV8/35yWM/JLQ1
+Ja8AOHw1kP9KO+iE9rHMt0+7lH3mN1GBabxH26EdgFfPShsi14qmziLOuUlGLuwO
+ApIYqvdtCs+zlMA8PsiJIMuxizZ6qCLur3r2b+/YXoJjuFDcax9M+Pr0D7rZX0Hk
+6PW3dtvDQHfspwLY0FIlXbbtCfCqGLe47VaS7lvG0XeMlo3dUEsf707Q2h0+G1tm
+wyeuWSPEzZQq/KI7JIFlxr3N/3VCdGa9qVf/40QF0BXPfJdcwTEzmPlYetRgA11W
+bglw8DxWBv24a2gWeUkwBWFScR3QV4FAwVjmlCqrkw9dy/JtrFf4pwDoqSFUcofB
+95u6qlz/PC+ho9uvUo5uIwJyz3J5BIgfkMAPYcHNZZ5QrpI3mdwf66im1TOKKTuf
+3Sz/GKc14qAIQhxuUWrgAKTexBJYJmzDT0Mj4ISjlr9K6VXrQwTuj2zC4QARAQAB
+zStQYXVsIEJhcmtlciA8cGF1bC5iYXJrZXIuY3RAYnAucmVuZXNhcy5jb20+wsGU
+BBMBCgA+FiEE9KKf333+FIzPGaxOJ/SzRZ8AIlcFAmS4BNsCGwEFCQPCZwAFCwkI
+BwIGFQoJCAsCBBYCAwECHgECF4AACgkQJ/SzRZ8AIlfxaQ/8CM36qjfad7eBfwja
+cI1LlH1NwbSJ239rE0X7hU/5yra72egr3T5AUuYTt9ECNQ8Ld03BYhbC6hPki5rb
+OlFM2hEPUQYeohcJ4Na5iIFpTxoIuC49Hp2ce6ikvt9Hc4O2FAntabg+9hE8WA4f
+QWW+Qo5ve5OJ0sGylzu0mRZ2I3mTaDsxuDkXOICF5ggSdjT+rcd/pRVOugImjpZv
+/jzSgUfKV2wcZ8vVK0616K21tyPiRjYtDQjJAKff8gBY6ZvP5REPl+fYNvZm1y4l
+hsVupGHL3aV+BKooMsKRZIMTiKJCIy6YFKHOcgWFG62cuRrFDf4r54MJuUGzyeoF
+1XNFzbe1ySoRfU/HrEuBNqC+1CEBiduumh89BitfDNh6ecWVLw24fjsF1Ke6vYpU
+lK9/yGLV26lXYEN4uEJ9i6PjgJ+Q8fubizCVXVDPxmWSZIoJg8EspZ+Max03Lk3e
+flWQ0E3l6/VHmsFgkvqhjNlzFRrj/k86IKdOi0FOd0xtKh1p34rQ8S/4uUN9XCVj
+KtmyLfQgqPVEC6MKv7yFbextPoDUrFAzEgi4OBdqDJjPbdU9wUjONxuWJRrzRFcr
+nTIG7oC4dae0p1rs5uTlaSIKpB2yulaJLKjnNstAj9G9Evf4SE2PKH4l4Jlo/Hu1
+wOUqmCLRo3vFbn7xvfr1u0Z+oMTOOARkuAhwEgorBgEEAZdVAQUBAQdAcuNbK3VT
+WrRYypisnnzLAguqvKX3Vc1OpNE4f8pOcgMDAQgHwsF2BBgBCgAgFiEE9KKf333+
+FIzPGaxOJ/SzRZ8AIlcFAmS4CHACGwwACgkQJ/SzRZ8AIlc90BAAr0hmx8XU9KCj
+g4nJqfavlmKUZetoX5RB9g3hkpDlvjdQZX6lenw3yUzPj53eoiDKzsM03Tak/KFU
+FXGeq7UtPOfXMyIh5UZVdHQRxC4sIBMLKumBfC7LM6XeSegtaGEX8vSzjQICIbaI
+roF2qVUOTMGal2mvcYEvmObC08bUZuMd4nxLnHGiej2t85+9F3Y7GAKsA25EXbbm
+ziUg8IVXw3TojPNrNoQ3if2Z9NfKBhv0/s7x/3WhhIzOht+rAyZaaW+31btDrX4+
+Y1XLAzg9DAfuqkL6knHDMd9tEuK6m2xCOAeZazXaNeOTjQ/XqCHmZ+691VhmAHCI
+7Z7EBPh++TjEqn4ZH+4KPn6XD52+ruWXGbJP29zc+3bwQ+ZADfUaL3ADj69ySxzm
+bO24USHBAg+BhZAZMBkbkygbTen/umT6tBxG91krqbKlDdc8mhGonBN6i+nz8qv1
+6MdC5P1rDbo834rxNLvoFMSLCcpjoafiprl9qk0wQLq48WGphs9DX7V75ZAU5Lt6
+yA+je8i799EZJsVlB933Gpj688H4csaZqEMBjq7vMvI+a5MnLCGcjwRhsUfogpRb
+AWTx9ddVau4MJgEHzB7UU/VFyP2vku7XPj6mgSfSHyNVf2hqxwISQ8eZLoyxauOD
+Y61QMX6YFL170ylToSFjH627h6TzlUDOMwRkuAiAFgkrBgEEAdpHDwEBB0Bibkmu
+Sf7yECzrkBmjD6VGWNVxTdiqb2RuAfGFY9RjRsLB7QQYAQoAIBYhBPSin999/hSM
+zxmsTif0s0WfACJXBQJkuAiAAhsCAIEJECf0s0WfACJXdiAEGRYIAB0WIQSiu8gv
+1Xr0fIw/aoLbaV4Vf/JGvQUCZLgIgAAKCRDbaV4Vf/JGvZP9AQCwV06n3DZvuce3
+/BtzG5zqUuf6Kp2Esgr2FrD4fKVbogD/ZHpXfi9ELdH/JTSVyujaTqhuxQ5B7UzV
+CUIb1qbg1APIEA/+IaLJIBySehy8dHDZQXit/XQYeROQLTT9PvyM35rZVMGH6VG8
+Zb23BPCJ3N0ISOtVdG402lSP0ilP/zSyQAbJN6F0o2tiPd558lPerFd/KpbCIp8N
+kYaLlHWIDiN2AE3c6sfCiCPMtXOR7HCeQapGQBS/IMh1qYHffuzuEy7tbrMvjdra
+VN9Rqtp7PSuRTbO3jAhm0Oe4lDCAK4zyZfjwiZGxnj9s1dyEbxYB2GhTOgkiX/96
+Nw+m/ShaKqTM7o3pNUEs9J3oHeGZFCCaZBv97ctqrYhnNB4kzCxAaZ6K9HAAmcKe
+WT2q4JdYzwB6vEeHnvxl7M0Dj9pUTMujW77Qh5IkUQLYZ2XQYnKAV2WI90B0R1p9
+bXP+jqqkaNCrxKHV1tYOB6037CziGcZmiDneiTlM765MTLJLlHNqlXxDCzRwEazU
+y9dNzITjVT0qhc6th8/vqN9dqvQaAGa13u86Gbv4XPYdE+5MXPM/fTgkKaPBYcIV
+QMvLfoZxyaTk4nzNbBxwwEEHrvTcWDdWxGNtkWRZw0+U5JpXCOi9kBCtFrJ701UG
+UFs56zWndQUS/2xDyGk8GObGBSRLCwsXsKsF6hSX5aKXHyrAAxEUEscRaAmzd6O3
+ZyZGVsEsOuGCLkekUMF/5dwOhEDXrY42VR/ZxdDTY99dznQkwTt4o7FOmkY=3D
+=3DsIIN
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------CKPeGwEVGUuHLHO0kaoGvMTJ--
+
+--------------UcQ0D7F82ZDjBYx4thPEnCUx--
+
+--------------O6zwnXp9OinQvEkI9DGuOLGa
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wnsEABYIACMWIQSiu8gv1Xr0fIw/aoLbaV4Vf/JGvQUCZRaX3AUDAAAAAAAKCRDbaV4Vf/JGvYSv
+AQDbYGITbR97jsapOUv2wMwpwoQOOqb0TkSdqMkD1NE5egD/cTolbVXIhOczfmm+jux7+KfUaTg7
+B3iypkOqofYcUQI=
+=dWXy
+-----END PGP SIGNATURE-----
+
+--------------O6zwnXp9OinQvEkI9DGuOLGa--
