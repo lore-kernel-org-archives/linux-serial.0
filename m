@@ -2,261 +2,179 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D36D0E743E5
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 03:50:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B502E743F1
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 05:39:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232704AbjI2Duc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Sep 2023 23:50:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60612 "EHLO
+        id S232662AbjI2Fj1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 29 Sep 2023 01:39:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232490AbjI2Du2 (ORCPT
+        with ESMTP id S232519AbjI2FjY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Sep 2023 23:50:28 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA77F19F;
-        Thu, 28 Sep 2023 20:50:25 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id af79cd13be357-7741c5bac51so767066085a.1;
-        Thu, 28 Sep 2023 20:50:25 -0700 (PDT)
+        Fri, 29 Sep 2023 01:39:24 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D7F1A5
+        for <linux-serial@vger.kernel.org>; Thu, 28 Sep 2023 22:39:20 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id a640c23a62f3a-9936b3d0286so1824136266b.0
+        for <linux-serial@vger.kernel.org>; Thu, 28 Sep 2023 22:39:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1695959425; x=1696564225; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LYYbHmRBUQu7YjfKhJdocL7dPfjriCkGg2JwzJsWdwM=;
-        b=OgS0+rHVheAoiR5EnChiZq2pVgkTwoqklKOc2O2TXqKHvKq8kU2A7Wz5bYw1kGtFqI
-         aqXIefdua592BhK8tIohJ8bNNn5WQlaegSE0cLv9wCLeW1C5R2pivJS8Z81dN5avSQK9
-         yKR0a7PRt86/Rm3KerAawe/6QQQGfdflrGMJa7sjwn7MHNR5TJUAtSZZ/g9f6fkQMvgW
-         vD/sMK5JqyNJXDSKWVkoZpNdpzIHMdlCjB7daouB4b+BgkZry7wqQ+lKghcMaG5hqDFI
-         7VZcrZAQA4w2SNB7X9tmCU5+W0cs6a5SecHwc4O1krlgRjWDQkpk++JkqMD3Fah7hKTL
-         W1Ww==
+        d=tuxon.dev; s=google; t=1695965959; x=1696570759; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=hZ5ltUZdRq/zpSgjEvQ5Nn9MPK9gRZTRXdEHWtkmrGY=;
+        b=FlFMJ64xCehFzCSX78nGo8c8zhIAyECyEsK+CQA8965wUEKi5yHWKa2OTdmisnfLZH
+         w6JVJPBixeL28znQM3iMeVKRSWpEGHcki24G2ri0KYooFMUr7Gpl20V3Q2cJdtQ+Bmtl
+         GiOzU4hxzb2lB5ONZTg1j9zGYkhdVn5nPjxbkz0EAKE9ZEjOmHnmLTNvmwv7p6jei93e
+         D/RDu3YcaNny6nsXOU0S9lIW+tz8oEClFNYXLbPCaK+bqCKRhowsG+u+tO29FlfY3YHa
+         AUaNg9WgyAWwrXAzHlIb3EtUcH7xBFZCLF4p4ZQW1LAeJ/bSX3Mroehu6Wmh8gr8IZOt
+         zIUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695959425; x=1696564225;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=LYYbHmRBUQu7YjfKhJdocL7dPfjriCkGg2JwzJsWdwM=;
-        b=T/FAfVimpzOuH5xiQtMx4XdmakF5pDE6yXnUyQ5Jzni/wtsv1x+UhZWlwOFAwakRZA
-         gNG75ASI6PPOjKGEyk0dcol2k+bzLJvUy8Bmpu1ZQfukvyCiPWGEsG8Kf3vgHiNGUae6
-         YRN3vzgTqOUokJq40iL1dEDV9X5E0d76D0iUg04oCTHie6jaVRRqWSVB2Edw7i+/ZCS3
-         NiNdFZy/fXEbbvbhBJiHXpXQtwXAWGQJb1Ji2BTsW46kDFQOacaGIZtWWlbWPQcDEimw
-         w9IaZQNlNSGNaJ5T6nKUvz84rmpV7LpH8k6Kt9UyhaHIwYdf3InILodtmBjGVWFC45NG
-         zLAg==
-X-Gm-Message-State: AOJu0YwgZdCc08cn6CTm/xt2RQjLn1ZWBcDhorLXBB4gj5Jh+KOJlUiC
-        uNBYVSW9EubLAuCBTFJndFdf9lkdahI85C13mFk=
-X-Google-Smtp-Source: AGHT+IGZ9FbyCI7u8iOe4evpIjYBqumu0LCfPbLB14Vob7h48kUS/cZM9tDSVc21MSgdNbX4O2KSgM/HSLf/cSOdPJI=
-X-Received: by 2002:a05:620a:45a8:b0:774:1875:edb1 with SMTP id
- bp40-20020a05620a45a800b007741875edb1mr3147718qkb.20.1695959424913; Thu, 28
- Sep 2023 20:50:24 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1695965959; x=1696570759;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hZ5ltUZdRq/zpSgjEvQ5Nn9MPK9gRZTRXdEHWtkmrGY=;
+        b=WNSg/dpL7wSgwll8Cb2LpWhJZ8BfYdfGetDCqeggFcw6zWEJUWRXwmQt/N/a87CSTN
+         wbg4nZPRx2l9TlYYe3Ao92clGonr+9bnqMXwY/xMHapvyHzNHtuJUdWDGNKgjAZWWi8S
+         ZL92hMp5c8Rt0yyb3+01OOihRbDE7Yf2gxFdyUJ9+Xgi5mA+VviEyIq/G6zsv+60QOHf
+         GVlUM6rHXYPwBrj6LbJV1O57PM/C5O7gO+hco7//tMFUlGvuL2Yvauk1LHp012G7IBFL
+         KCGAe24Y+Sa7iHIAO82Ao+tbgcTU2KroE2f56r6Oi3AEsHgFagTsGFsd7wfVWKXuxtAY
+         9Ngw==
+X-Gm-Message-State: AOJu0Yx+1qNRuQIg59JTrGGlSp2LzqE2W37+gh+qadPggHGLaI48uuEn
+        HjyJi8ooakt4Tu1gKrv+Y39phQ==
+X-Google-Smtp-Source: AGHT+IFs1wtp/YcwJb7GfOCLwGjYtFOwNujKRuwlhMXrwiRQ2KA6NJFyO2UtmJ1jRYeZXgWwQfejdQ==
+X-Received: by 2002:a17:906:57c7:b0:9ad:e2c8:1741 with SMTP id u7-20020a17090657c700b009ade2c81741mr3186997ejr.58.1695965959245;
+        Thu, 28 Sep 2023 22:39:19 -0700 (PDT)
+Received: from claudiu-X670E-Pro-RS.. ([82.78.167.177])
+        by smtp.gmail.com with ESMTPSA id z19-20020a1709063ad300b009a1a653770bsm11971992ejd.87.2023.09.28.22.39.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Sep 2023 22:39:18 -0700 (PDT)
+From:   Claudiu <claudiu.beznea@tuxon.dev>
+X-Google-Original-From: Claudiu <claudiu.beznea@bp.renesas.com>
+To:     geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        quic_bjorande@quicinc.com, konrad.dybcio@linaro.org, arnd@arndb.de,
+        neil.armstrong@linaro.org, prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com
+Cc:     linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2 00/28] Add new Renesas RZ/G3S SoC and RZ/G3S SMARC EVK
+Date:   Fri, 29 Sep 2023 08:38:47 +0300
+Message-Id: <20230929053915.1530607-1-claudiu.beznea@bp.renesas.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-References: <20230928110554.34758-1-jlayton@kernel.org> <20230928110554.34758-2-jlayton@kernel.org>
- <6020d6e7-b187-4abb-bf38-dc09d8bd0f6d@app.fastmail.com> <af047e4a1c6947c59d4a13d4ae221c784a5386b4.camel@kernel.org>
- <20230928171943.GK11439@frogsfrogsfrogs> <6a6f37d16b55a3003af3f3dbb7778a367f68cd8d.camel@kernel.org>
- <20230928212656.GC189345@mit.edu> <CAHk-=wjTynK9BdGbi+8eShU77nkPvipFwRxEd1TSBrw2+LiuDg@mail.gmail.com>
-In-Reply-To: <CAHk-=wjTynK9BdGbi+8eShU77nkPvipFwRxEd1TSBrw2+LiuDg@mail.gmail.com>
-From:   Amir Goldstein <amir73il@gmail.com>
-Date:   Fri, 29 Sep 2023 06:50:13 +0300
-Message-ID: <CAOQ4uxg5ctY9yCjLOjN1nETAcEuNb2UERnYuDv7PoErdxX=WUw@mail.gmail.com>
-Subject: Re: [PATCH 86/87] fs: switch timespec64 fields in inode to discrete integers
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     "Theodore Ts'o" <tytso@mit.edu>, Jeff Layton <jlayton@kernel.org>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <brauner@kernel.org>,
-        David Sterba <dsterba@suse.cz>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>, Jeremy Kerr <jk@ozlabs.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Carlos Llamas <cmllamas@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Mattia Dongili <malattia@linux.it>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        Brad Warrum <bwarrum@linux.ibm.com>,
-        Ritu Agarwal <rituagar@linux.ibm.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Mark Gross <markgross@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Eric Van Hensbergen <ericvh@kernel.org>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Christian Schoenebeck <linux_oss@crudebyte.com>,
-        David Sterba <dsterba@suse.com>,
-        David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        Ian Kent <raven@themaw.net>,
-        Luis de Bethencourt <luisbg@kernel.org>,
-        Salah Triki <salah.triki@gmail.com>,
-        "Tigran A. Aivazian" <aivazian.tigran@gmail.com>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Jan Harkes <jaharkes@cs.cmu.edu>, coda@cs.cmu.edu,
-        Joel Becker <jlbec@evilplan.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>, Gao Xiang <xiang@kernel.org>,
-        Chao Yu <chao@kernel.org>,
-        Yue Hu <huyue2@gl0jj8bn.sched.sma.tdnsstic1.cn>,
-        Jeffle Xu <jefflexu@linux.alibaba.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Sungjong Seo <sj1557.seo@samsung.com>,
-        Jan Kara <jack@suse.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
-        Christoph Hellwig <hch@infradead.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Bob Peterson <rpeterso@redhat.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Mikulas Patocka <mikulas@artax.karlin.mff.cuni.cz>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <muchun.song@linux.dev>, Jan Kara <jack@suse.cz>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Dave Kleikamp <shaggy@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Neil Brown <neilb@suse.de>,
-        Olga Kornievskaia <kolga@netapp.com>,
-        Dai Ngo <Dai.Ngo@oracle.com>, Tom Talpey <tom@talpey.com>,
-        Ryusuke Konishi <konishi.ryusuke@gmail.com>,
-        Anton Altaparmakov <anton@tuxera.com>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Bob Copeland <me@bobcopeland.com>,
-        Mike Marshall <hubcap@omnibond.com>,
-        Martin Brandenburg <martin@omnibond.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Tony Luck <tony.luck@intel.com>,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Anders Larsen <al@alarsen.net>,
-        Steve French <sfrench@samba.org>,
-        Paulo Alcantara <pc@manguebit.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Shyam Prasad N <sprasad@microsoft.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Phillip Lougher <phillip@squashfs.org.uk>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Evgeniy Dushistov <dushistov@mail.ru>,
-        Chandan Babu R <chandan.babu@oracle.com>,
-        Damien Le Moal <dlemoal@kernel.org>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        Johannes Thumshirn <jth@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>,
-        Yonghong Song <yonghong.song@linux.dev>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        John Johansen <john.johansen@canonical.com>,
-        Paul Moore <paul@paul-moore.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, v9fs@lists.linux.dev,
-        linux-afs@lists.infradead.org, autofs@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        codalist@telemann.coda.cs.cmu.edu, linux-efi@vger.kernel.org,
-        linux-erofs@lists.ozlabs.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, gfs2@lists.linux.dev,
-        linux-um@lists.infradead.org, linux-mtd@lists.infradead.org,
-        jfs-discussion@lists.sourceforge.net, linux-nfs@vger.kernel.org,
-        linux-nilfs@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
-        ntfs3@lists.linux.dev, ocfs2-devel@lists.linux.dev,
-        linux-karma-devel@lists.sourceforge.net, devel@lists.orangefs.org,
-        linux-unionfs@vger.kernel.org, linux-hardening@vger.kernel.org,
-        reiserfs-devel@vger.kernel.org, linux-cifs@vger.kernel.org,
-        samba-technical@lists.samba.org,
-        linux-trace-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
-        bpf@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        apparmor@lists.ubuntu.com, linux-security-module@vger.kernel.org,
-        selinux@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Sep 29, 2023 at 3:19=E2=80=AFAM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
-...
-> So yes, real programs to cache stat information, and it matters for perfo=
-rmance.
->
-> But I don't think any actual reasonable program will have
-> *correctness* issues, though -
+From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-I beg to disagree.
+Hi,
 
-> because there are certainly filesystems
-> out there that don't do nanosecond resolution (and other operations
-> like copying trees around will obviously also change times).
->
-> Anybody doing steganography in the timestamps is already not going to
-> have a great time, really.
->
+This patch series adds initial support for The Renesas RZ/G3S (R9A08G045{S33})
+SoC. The RZ/G3S device is a general-purpose microprocessor with a
+single-core Arm® Cortex®-A55 (1.1GHz) and a dual-core Arm® Cortex®-M33 (250MHz),
+perfect for an IOT gateway controller.
 
-Your thesis implies that all applications are portable across different
-filesystems and all applications are expected to cope with copying
-trees around.
+This includes:
+- SoC identification;
+- clocks (core clocks, pin controller clock, serial interface, SD ch0
+  clock) and corresponding resets;
+- minimal device tree for SoM and carrier boards.
 
-There are applications that work on specific filesystems and those
-applications are very much within sanity if they expect that past
-observed values of nsec will not to change if the file was not changed.
+With this series Linux can boot from eMMC or SD card. The eMMC and uSD
+interface are multiplexed on the SoM; selection is made using a hardware
+switch.
 
-But even if we agree that will "only" hurt performance, your example of
-performance hit (10s of git diff) is nowhere close to the performance
-hit of invalidating the mtime cache of billions of files at once (i.e. afte=
-r
-kernel upgrade), which means that rsync-like programs need to
-re-read all the data from remote locations.
+Patches are gouped as follows:
+- 01    documents scif support;
+- 02-05	contain fixes on clock drivers identified while adding RZ/G3S
+	support
+- 06	clock cleanups identifies while adding support for RZ/G3S
+- 07-13	clock changes needed by RZ/G3S
+- 14-21	pinctrl changes needed by RZ/G3S
+- 22-28 device tree support for RZ/G3S
 
-I am not saying that filesystems cannot decide to *stop storing nsec
-granularity* from this day forth, but like btrfs pre-historic timestamps,
-those fs have an obligation to preserve existing metadata, unless
-users opted to throw it away.
+Changes in v2:
+- addressed review comments
+- collected tags
+- removed from series patches that were already integrated
+- added patches:
+	- [PATCH v2 19/28] dt-bindings: pinctrl: renesas: set additionalProperties: false
+	- [PATCH v2 23/28] dt-bindings: arm: renesas: document RZ/G3S SMARC SoM
+	- [PATCH v2 26/28] dt-bindings: arm: renesas: document SMARC Carrier-II EVK
+- please see individual patches for detailed changes
 
-OTOH, it is perfectly fine if the vfs wants to stop providing sub 100ns
-services to filesystems. It's just going to be the fs problem and the
-preserved pre-historic/fine-grained time on existing files would only
-need to be provided in getattr(). It does not need to be in __i_mtime.
+Claudiu Beznea (28):
+  dt-bindings: serial: renesas,scif: document r9a08g045 support
+  clk: renesas: rzg2l: wait for status bit of SD mux before continuing
+  clk: renesas: rzg2l: lock around writes to mux register
+  clk: renesas: rzg2l: trust value returned by hardware
+  clk: renesas: rzg2l: fix computation formula
+  clk: renesas: rzg2l: remove critical area
+  clk: renesas: rzg2l: add support for RZ/G3S PLL
+  clk: renesas: rzg2l: add struct clk_hw_data
+  clk: renesas: rzg2l: remove CPG_SDHI_DSEL from generic header
+  clk: renesas: rzg2l: refactor sd mux driver
+  clk: renesas: rzg2l: add a divider clock for RZ/G3S
+  dt-bindings: clock: renesas,rzg2l-cpg: document RZ/G3S SoC
+  clk: renesas: add minimal boot support for RZ/G3S SoC
+  pinctrl: renesas: rzg2l: index all registers based on port offset
+  pinctrl: renesas: rzg2l: adapt for different SD/PWPR register offsets
+  pinctrl: renesas: rzg2l: adapt function number for RZ/G3S
+  pinctrl: renesas: rzg2l: move ds and oi to SoC specific configuration
+  pinctrl: renesas: rzg2l: add support for different ds values on
+    different groups
+  dt-bindings: pinctrl: renesas: set additionalProperties: false
+  dt-bindings: pinctrl: renesas: document RZ/G3S SoC
+  pinctrl: renesas: rzg2l: add support for RZ/G3S SoC
+  arm64: dts: renesas: add initial DTSI for RZ/G3S SoC
+  dt-bindings: arm: renesas: document RZ/G3S SMARC SoM
+  arm64: dts: renesas: rzg3l-smarc-som: add initial support for RZ/G3S
+    SMARC SoM
+  arm64: dts: renesas: rzg3s-smarc: add initial device tree for RZ SMARC
+    Carrier-II Board
+  dt-bindings: arm: renesas: document SMARC Carrier-II EVK
+  arm64: dts: renesas: r9a08g045s33-smarc: add initial device tree for
+    RZ/G3S SMARC EVK board
+  arm64: defconfig: enable RZ/G3S (R9A08G045) SoC
 
-Thanks,
-Amir.
+ .../bindings/clock/renesas,rzg2l-cpg.yaml     |   1 +
+ .../pinctrl/renesas,rzg2l-pinctrl.yaml        |  23 +-
+ .../bindings/serial/renesas,scif.yaml         |   1 +
+ .../bindings/soc/renesas/renesas.yaml         |  13 +
+ arch/arm64/boot/dts/renesas/Makefile          |   2 +
+ arch/arm64/boot/dts/renesas/r9a08g045.dtsi    | 139 ++++
+ .../boot/dts/renesas/r9a08g045s33-smarc.dts   |  17 +
+ arch/arm64/boot/dts/renesas/r9a08g045s33.dtsi |  14 +
+ .../boot/dts/renesas/rzg3s-smarc-som.dtsi     | 142 ++++
+ arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi  |  28 +
+ arch/arm64/configs/defconfig                  |   1 +
+ drivers/clk/renesas/Kconfig                   |   7 +-
+ drivers/clk/renesas/Makefile                  |   1 +
+ drivers/clk/renesas/r9a07g043-cpg.c           |  19 +-
+ drivers/clk/renesas/r9a07g044-cpg.c           |  19 +-
+ drivers/clk/renesas/r9a08g045-cpg.c           | 213 ++++++
+ drivers/clk/renesas/rzg2l-cpg.c               | 478 ++++++++++--
+ drivers/clk/renesas/rzg2l-cpg.h               |  33 +-
+ drivers/pinctrl/renesas/pinctrl-rzg2l.c       | 705 ++++++++++++++----
+ include/dt-bindings/clock/r9a08g045-cpg.h     | 242 ++++++
+ 20 files changed, 1860 insertions(+), 238 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/renesas/r9a08g045.dtsi
+ create mode 100644 arch/arm64/boot/dts/renesas/r9a08g045s33-smarc.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/r9a08g045s33.dtsi
+ create mode 100644 arch/arm64/boot/dts/renesas/rzg3s-smarc-som.dtsi
+ create mode 100644 arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi
+ create mode 100644 drivers/clk/renesas/r9a08g045-cpg.c
+ create mode 100644 include/dt-bindings/clock/r9a08g045-cpg.h
+
+-- 
+2.39.2
+
