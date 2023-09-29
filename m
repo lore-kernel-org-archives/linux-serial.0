@@ -2,137 +2,261 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A68E743DF
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 03:49:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D36D0E743E5
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 03:50:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232507AbjI2DtM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Sep 2023 23:49:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50786 "EHLO
+        id S232704AbjI2Duc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Sep 2023 23:50:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232624AbjI2DtJ (ORCPT
+        with ESMTP id S232490AbjI2Du2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Sep 2023 23:49:09 -0400
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB341B0
-        for <linux-serial@vger.kernel.org>; Thu, 28 Sep 2023 20:49:05 -0700 (PDT)
-Received: by mail-qk1-x736.google.com with SMTP id af79cd13be357-77574c076e4so259712485a.1
-        for <linux-serial@vger.kernel.org>; Thu, 28 Sep 2023 20:49:05 -0700 (PDT)
+        Thu, 28 Sep 2023 23:50:28 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA77F19F;
+        Thu, 28 Sep 2023 20:50:25 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id af79cd13be357-7741c5bac51so767066085a.1;
+        Thu, 28 Sep 2023 20:50:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1695959344; x=1696564144; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rNSXAAGAWzfjZ8B3Y6lB+Lau8VDFKMg7uOankBJ5jh4=;
-        b=eMxxIvxPl6uH0l2l1PuCY71Kpxo+7eZOgbGmVcl/vLk4upVmAdTmMocgMENFRCO3d2
-         LJxV21UaVHaHo+/RpvwPsOiiegxxd7I3nNykDQbCfQzEBu/pEKyRr350hIiiVl8AlLLW
-         qHotkpPRFBLJ9zYeyGnyAbSMFCw0IkRooy0YQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695959344; x=1696564144;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1695959425; x=1696564225; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=rNSXAAGAWzfjZ8B3Y6lB+Lau8VDFKMg7uOankBJ5jh4=;
-        b=FhHPpEBwCwWN8erSrvGsnLlaGDbGsKCbp357DjjWfq3R9qjBaQnoj2zLfbEV5xacYW
-         SG2SjbqgkcEktUr9GzL72p/235SpBeJnH8dcUJBpkBCWpWJqTk4IbPnGpT1+DmzTY8FE
-         XtjuEZKi0WvLF4NRxJd7r4iSREA+8lVbopGbXgo6PLQkK0tSoHMYxbSIA2NIHS5Wm8Dg
-         y/G3x/wut55VhKYhu/OfDFnJFUexzaD4laDCgftHFT2VfnLZl8jl9ffKf2hzxZ5ynhtP
-         ehOhO9eEfPTLwC1RQ8c7IwY8CJ8Uwy+W6THFoIRLLQXYz7ici2nKwQKf00QjtP9u3SX6
-         DktQ==
-X-Gm-Message-State: AOJu0Yxwjy2WA8CPQLNDjGeyaMSeV5cAGevvl4dZOPRnMJmxm4tK5m3G
-        8YCPBLI94oxAP2MZj8Gj88YQ/g==
-X-Google-Smtp-Source: AGHT+IFe6RVd12uwV33Kq35S412L+c1W/V78fMpX9SCcxHSRycyjSn9RNdW6/qwMtOYovhyI14rnQA==
-X-Received: by 2002:a05:620a:12f1:b0:774:13e:71cd with SMTP id f17-20020a05620a12f100b00774013e71cdmr2766118qkl.56.1695959344459;
-        Thu, 28 Sep 2023 20:49:04 -0700 (PDT)
-Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
-        by smtp.gmail.com with ESMTPSA id b20-20020aa78114000000b006930db1e6d1sm5622071pfi.203.2023.09.28.20.49.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Sep 2023 20:49:03 -0700 (PDT)
-Date:   Thu, 28 Sep 2023 20:49:02 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Yuanhe Shu <xiangzao@linux.alibaba.com>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        tony.luck@intel.com, gpiccoli@igalia.com, shuah@kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-hardening@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH 0/5] pstore: add tty frontend and multi-backend
-Message-ID: <202309282030.8CE179EBB@keescook>
-References: <20230928024244.257687-1-xiangzao@linux.alibaba.com>
+        bh=LYYbHmRBUQu7YjfKhJdocL7dPfjriCkGg2JwzJsWdwM=;
+        b=OgS0+rHVheAoiR5EnChiZq2pVgkTwoqklKOc2O2TXqKHvKq8kU2A7Wz5bYw1kGtFqI
+         aqXIefdua592BhK8tIohJ8bNNn5WQlaegSE0cLv9wCLeW1C5R2pivJS8Z81dN5avSQK9
+         yKR0a7PRt86/Rm3KerAawe/6QQQGfdflrGMJa7sjwn7MHNR5TJUAtSZZ/g9f6fkQMvgW
+         vD/sMK5JqyNJXDSKWVkoZpNdpzIHMdlCjB7daouB4b+BgkZry7wqQ+lKghcMaG5hqDFI
+         7VZcrZAQA4w2SNB7X9tmCU5+W0cs6a5SecHwc4O1krlgRjWDQkpk++JkqMD3Fah7hKTL
+         W1Ww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695959425; x=1696564225;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=LYYbHmRBUQu7YjfKhJdocL7dPfjriCkGg2JwzJsWdwM=;
+        b=T/FAfVimpzOuH5xiQtMx4XdmakF5pDE6yXnUyQ5Jzni/wtsv1x+UhZWlwOFAwakRZA
+         gNG75ASI6PPOjKGEyk0dcol2k+bzLJvUy8Bmpu1ZQfukvyCiPWGEsG8Kf3vgHiNGUae6
+         YRN3vzgTqOUokJq40iL1dEDV9X5E0d76D0iUg04oCTHie6jaVRRqWSVB2Edw7i+/ZCS3
+         NiNdFZy/fXEbbvbhBJiHXpXQtwXAWGQJb1Ji2BTsW46kDFQOacaGIZtWWlbWPQcDEimw
+         w9IaZQNlNSGNaJ5T6nKUvz84rmpV7LpH8k6Kt9UyhaHIwYdf3InILodtmBjGVWFC45NG
+         zLAg==
+X-Gm-Message-State: AOJu0YwgZdCc08cn6CTm/xt2RQjLn1ZWBcDhorLXBB4gj5Jh+KOJlUiC
+        uNBYVSW9EubLAuCBTFJndFdf9lkdahI85C13mFk=
+X-Google-Smtp-Source: AGHT+IGZ9FbyCI7u8iOe4evpIjYBqumu0LCfPbLB14Vob7h48kUS/cZM9tDSVc21MSgdNbX4O2KSgM/HSLf/cSOdPJI=
+X-Received: by 2002:a05:620a:45a8:b0:774:1875:edb1 with SMTP id
+ bp40-20020a05620a45a800b007741875edb1mr3147718qkb.20.1695959424913; Thu, 28
+ Sep 2023 20:50:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230928024244.257687-1-xiangzao@linux.alibaba.com>
+References: <20230928110554.34758-1-jlayton@kernel.org> <20230928110554.34758-2-jlayton@kernel.org>
+ <6020d6e7-b187-4abb-bf38-dc09d8bd0f6d@app.fastmail.com> <af047e4a1c6947c59d4a13d4ae221c784a5386b4.camel@kernel.org>
+ <20230928171943.GK11439@frogsfrogsfrogs> <6a6f37d16b55a3003af3f3dbb7778a367f68cd8d.camel@kernel.org>
+ <20230928212656.GC189345@mit.edu> <CAHk-=wjTynK9BdGbi+8eShU77nkPvipFwRxEd1TSBrw2+LiuDg@mail.gmail.com>
+In-Reply-To: <CAHk-=wjTynK9BdGbi+8eShU77nkPvipFwRxEd1TSBrw2+LiuDg@mail.gmail.com>
+From:   Amir Goldstein <amir73il@gmail.com>
+Date:   Fri, 29 Sep 2023 06:50:13 +0300
+Message-ID: <CAOQ4uxg5ctY9yCjLOjN1nETAcEuNb2UERnYuDv7PoErdxX=WUw@mail.gmail.com>
+Subject: Re: [PATCH 86/87] fs: switch timespec64 fields in inode to discrete integers
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     "Theodore Ts'o" <tytso@mit.edu>, Jeff Layton <jlayton@kernel.org>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Christian Brauner <brauner@kernel.org>,
+        David Sterba <dsterba@suse.cz>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Kees Cook <keescook@chromium.org>, Jeremy Kerr <jk@ozlabs.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Carlos Llamas <cmllamas@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Mattia Dongili <malattia@linux.it>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        Brad Warrum <bwarrum@linux.ibm.com>,
+        Ritu Agarwal <rituagar@linux.ibm.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Mark Gross <markgross@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Eric Van Hensbergen <ericvh@kernel.org>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
+        David Sterba <dsterba@suse.com>,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Ian Kent <raven@themaw.net>,
+        Luis de Bethencourt <luisbg@kernel.org>,
+        Salah Triki <salah.triki@gmail.com>,
+        "Tigran A. Aivazian" <aivazian.tigran@gmail.com>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Jan Harkes <jaharkes@cs.cmu.edu>, coda@cs.cmu.edu,
+        Joel Becker <jlbec@evilplan.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>, Gao Xiang <xiang@kernel.org>,
+        Chao Yu <chao@kernel.org>,
+        Yue Hu <huyue2@gl0jj8bn.sched.sma.tdnsstic1.cn>,
+        Jeffle Xu <jefflexu@linux.alibaba.com>,
+        Namjae Jeon <linkinjeon@kernel.org>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        Jan Kara <jack@suse.com>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
+        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
+        Christoph Hellwig <hch@infradead.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Bob Peterson <rpeterso@redhat.com>,
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Mikulas Patocka <mikulas@artax.karlin.mff.cuni.cz>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Muchun Song <muchun.song@linux.dev>, Jan Kara <jack@suse.cz>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Dave Kleikamp <shaggy@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Neil Brown <neilb@suse.de>,
+        Olga Kornievskaia <kolga@netapp.com>,
+        Dai Ngo <Dai.Ngo@oracle.com>, Tom Talpey <tom@talpey.com>,
+        Ryusuke Konishi <konishi.ryusuke@gmail.com>,
+        Anton Altaparmakov <anton@tuxera.com>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
+        Mark Fasheh <mark@fasheh.com>,
+        Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Bob Copeland <me@bobcopeland.com>,
+        Mike Marshall <hubcap@omnibond.com>,
+        Martin Brandenburg <martin@omnibond.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        Tony Luck <tony.luck@intel.com>,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Anders Larsen <al@alarsen.net>,
+        Steve French <sfrench@samba.org>,
+        Paulo Alcantara <pc@manguebit.com>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Shyam Prasad N <sprasad@microsoft.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Phillip Lougher <phillip@squashfs.org.uk>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Evgeniy Dushistov <dushistov@mail.ru>,
+        Chandan Babu R <chandan.babu@oracle.com>,
+        Damien Le Moal <dlemoal@kernel.org>,
+        Naohiro Aota <naohiro.aota@wdc.com>,
+        Johannes Thumshirn <jth@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>,
+        Yonghong Song <yonghong.song@linux.dev>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Hugh Dickins <hughd@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        John Johansen <john.johansen@canonical.com>,
+        Paul Moore <paul@paul-moore.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linuxppc-dev@lists.ozlabs.org,
+        linux-s390@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, v9fs@lists.linux.dev,
+        linux-afs@lists.infradead.org, autofs@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, ceph-devel@vger.kernel.org,
+        codalist@telemann.coda.cs.cmu.edu, linux-efi@vger.kernel.org,
+        linux-erofs@lists.ozlabs.org, linux-ext4@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, gfs2@lists.linux.dev,
+        linux-um@lists.infradead.org, linux-mtd@lists.infradead.org,
+        jfs-discussion@lists.sourceforge.net, linux-nfs@vger.kernel.org,
+        linux-nilfs@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
+        ntfs3@lists.linux.dev, ocfs2-devel@lists.linux.dev,
+        linux-karma-devel@lists.sourceforge.net, devel@lists.orangefs.org,
+        linux-unionfs@vger.kernel.org, linux-hardening@vger.kernel.org,
+        reiserfs-devel@vger.kernel.org, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org,
+        linux-trace-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        bpf@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        apparmor@lists.ubuntu.com, linux-security-module@vger.kernel.org,
+        selinux@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Sep 28, 2023 at 10:42:39AM +0800, Yuanhe Shu wrote:
-> In public cloud scenario, if kdump service works abnormally,
-> users cannot get vmcore. Without vmcore, user has no idea why the
-> kernel crashed. Meanwhile, there is no additional information
-> to find the reason why the kdump service is abnormal.
-> 
-> One way is to obtain console messages through VNC. The drawback 
-> is that VNC is real-time, if user missed the timing to get the VNC
-> output, the crash needs to be retriggered.
-> 
-> Another way is to enable the console frontend of pstore and record the
-> console messages to the pstore backend. On the one hand, the console
-> logs only contain kernel printk logs and does not cover
-> user-mode print logs. Although we can redirect user-mode logs to the
-> pmsg frontend provided by pstore, user-mode information related to
-> booting and kdump service vary from systemd, kdump.sh, and so on which
-> makes redirection troublesome. So we added a tty frontend and save all
-> logs of tty driver to the pstore backend.
+On Fri, Sep 29, 2023 at 3:19=E2=80=AFAM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+...
+> So yes, real programs to cache stat information, and it matters for perfo=
+rmance.
+>
+> But I don't think any actual reasonable program will have
+> *correctness* issues, though -
 
-This is a clever solution!
+I beg to disagree.
 
-> Another problem is that currently pstore only supports a single backend.
-> For debugging kdump problems, we hope to save the console logs and tty
-> logs to the ramoops backend of pstore, as it will not be lost after
-> rebooting. If the user has enabled another backend, the ramoops backend
-> will not be registered. To this end, we add the multi-backend function
-> to support simultaneous registration of multiple backends.
+> because there are certainly filesystems
+> out there that don't do nanosecond resolution (and other operations
+> like copying trees around will obviously also change times).
+>
+> Anybody doing steganography in the timestamps is already not going to
+> have a great time, really.
+>
 
-Ah very cool; I really like this idea. I'd wanted to do it for a while
-just to make testing easier, but I hadn't had time to attempt it.
+Your thesis implies that all applications are portable across different
+filesystems and all applications are expected to cope with copying
+trees around.
 
-> Based on the above changes, we can enable pstore in the crashdump kernel
-> and save the console logs and tty logs to the ramoops backend of pstore.
-> After rebooting, we can view the relevant logs by mounting the pstore
-> file system.
+There are applications that work on specific filesystems and those
+applications are very much within sanity if they expect that past
+observed values of nsec will not to change if the file was not changed.
 
-So, before I do a line-at-a-time review of this code, I'd like to
-address some design issues first.
+But even if we agree that will "only" hurt performance, your example of
+performance hit (10s of git diff) is nowhere close to the performance
+hit of invalidating the mtime cache of billions of files at once (i.e. afte=
+r
+kernel upgrade), which means that rsync-like programs need to
+re-read all the data from remote locations.
 
-I really don't want to make behavioral differences when we don't have
-to:
+I am not saying that filesystems cannot decide to *stop storing nsec
+granularity* from this day forth, but like btrfs pre-historic timestamps,
+those fs have an obligation to preserve existing metadata, unless
+users opted to throw it away.
 
-- The multi-backend will enable _all possible_ backends, and that's a
-  big change that will do weird things for some pstore users. I would
-  prefer a pstore option to opt-in to enabling all backends. Perhaps
-  have "pstore.backend=" be parsed with commas, so a list of backends
-  can be provided, or "all" for the "all backends" behavior.
+OTOH, it is perfectly fine if the vfs wants to stop providing sub 100ns
+services to filesystems. It's just going to be the fs problem and the
+preserved pre-historic/fine-grained time on existing files would only
+need to be provided in getattr(). It does not need to be in __i_mtime.
 
-- Moving the pstorefs files into a subdirectory will break userspace
-  immediately (e.g. systemd-pstore expects very specifically named
-  files). Using subdirectories seems like a good idea, but perhaps
-  we need hardlinks into the root pstorefs for the "first" backend,
-  or some other creative solution here.
-
-Then some technical thoughts about the TTY frontend's behavior:
-
-- That 2 pstore records are created for every line of TTY output
-  feels kind of inefficient, though I don't have a better idea.
-  This is really only doable as you have it because the ramoops
-  and zone backends treat the single prz as a circular buffer.
-  I wonder about supporting this on other backends like EFI, but
-  perhaps it's just not going to happen.
-
-- I'd like to check with the TTY folks to see if this is the "right"
-  place to hook to get a copy of what's being written.
-
-Thanks and let me know what you think!
-
--Kees
-
--- 
-Kees Cook
+Thanks,
+Amir.
