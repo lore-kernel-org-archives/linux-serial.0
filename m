@@ -2,152 +2,125 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F56E71D2D
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 13:19:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 755D5E71D38
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Sep 2023 13:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233313AbjI2NTe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Sep 2023 09:19:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50788 "EHLO
+        id S233411AbjI2NrP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 29 Sep 2023 09:47:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233156AbjI2NTd (ORCPT
+        with ESMTP id S233379AbjI2NrO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Sep 2023 09:19:33 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B74EE7;
-        Fri, 29 Sep 2023 06:19:31 -0700 (PDT)
-Received: from pps.filterd (m0369458.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 38TABSom007571;
-        Fri, 29 Sep 2023 15:18:50 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-        message-id:date:mime-version:subject:from:to:cc:references
-        :in-reply-to:content-type:content-transfer-encoding; s=
-        selector1; bh=KMM5HFfGi3/V+NX/zIj16MtndrNJ3wjO6VBqQEWwOzE=; b=ga
-        rM6WT7soC9Qg5lgEynlNIDEz19ICFxdBxx8K4WKaa81yBoo69ZoqQgPtPJrk+yqH
-        6Ke+T4tgb/wvQ7+D6b8/REeHXj+x3qhuVXstjmlbfDXVsD7fnq1otz0IBlMfWVfL
-        E4pait5J8DRp751sajaRVoUu+IBQuOKISwGGaDU+w8jkYTr9fXxKlpYDQovtoe8f
-        gElrQ2fdRogxsh24zwaguSO+d3txrH3Ag2t7373pPcvxthqul803q1iHU52Zkj5N
-        HDkK8wgJgLFXVxL19kvPUsq9yAyQ76DfuoiJhXjgKUsphyNPOIYM5JXL5gCdij8s
-        EmQ/SdD52jWC2koKfFGg==
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3ta9k0s0fb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Sep 2023 15:18:50 +0200 (MEST)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id AE29710002A;
-        Fri, 29 Sep 2023 15:18:48 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 4AB3A2865FC;
-        Fri, 29 Sep 2023 15:18:48 +0200 (CEST)
-Received: from [10.201.20.32] (10.201.20.32) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Fri, 29 Sep
- 2023 15:18:46 +0200
-Message-ID: <6e419e89-10f1-e448-10fe-64f1ea9ff862@foss.st.com>
-Date:   Fri, 29 Sep 2023 15:18:18 +0200
+        Fri, 29 Sep 2023 09:47:14 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 040841AB;
+        Fri, 29 Sep 2023 06:47:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
+ t=1695995214; x=1696600014; i=linosanfilippo@gmx.de;
+ bh=J9h1C7mMFFEVucuVuABa2VPJxriIZ+QMbDLSt604QAg=;
+ h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+ b=LuVwkCVxShKxpuVmfK2vh1MpnI1xEN19lVRaYia7LPuKiQQGvQO95BSukEVdStfW6744og1rgIt
+ B0X6pbqEDkT9XUop8DUy8a9UxUha+Cwgt0HhCne6ibLiDH37N9Pc3+9B1Q0AHSSOgr1yiJGGlq6pB
+ +iFQvGPAIDdW9QNlCyNQpR2etxO0d3omIyFb6JF3JhrhIfnOr9GIT09UAdfhrVbJV1AR9mBlXTGkj
+ xtNbME8tHXpdSV2B/iOGn/KeI2kBMK7F2WQD5iVLlvCfPBqVVwciROgGVN9nCd8/UPUUDQGXY6TIh
+ tJi3i5auLGJGLBqK3dU6YN4TdopHFpKPYYhw==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.2.42] ([84.162.21.41]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1Mi2Jn-1rH8jn2bw1-00e3S7; Fri, 29
+ Sep 2023 15:46:54 +0200
+Message-ID: <8fac0a79-cf0b-f35b-4e5e-e8f502bb5367@gmx.de>
+Date:   Fri, 29 Sep 2023 15:46:52 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.15.1
-Subject: Re: [IGNORE][PATCH v4 01/11] dt-bindings: Document common device
- controller bindings
-From:   Gatien CHEVALLIER <gatien.chevallier@foss.st.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     <Oleksii_Moisieiev@epam.com>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
-        <alexandre.torgue@foss.st.com>, <vkoul@kernel.org>,
-        <jic23@kernel.org>, <olivier.moysan@foss.st.com>,
-        <arnaud.pouliquen@foss.st.com>, <mchehab@kernel.org>,
-        <fabrice.gasnier@foss.st.com>, <andi.shyti@kernel.org>,
-        <ulf.hansson@linaro.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <hugues.fruchet@foss.st.com>,
-        <lee@kernel.org>, <will@kernel.org>, <catalin.marinas@arm.com>,
-        <arnd@kernel.org>, <richardcochran@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>, <peng.fan@oss.nxp.com>,
-        <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
-        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>
-References: <20230811100731.108145-1-gatien.chevallier@foss.st.com>
- <20230811100731.108145-2-gatien.chevallier@foss.st.com>
- <2023081117-sprout-cruncher-862c@gregkh>
- <4f0f9d6c-ce4d-73a2-60bf-801c1a1d6cc3@foss.st.com>
+Subject: Re: [PATCH 6/6] serial: imx: do not set RS485 enabled if it is not
+ supported
 Content-Language: en-US
-In-Reply-To: <4f0f9d6c-ce4d-73a2-60bf-801c1a1d6cc3@foss.st.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.201.20.32]
-X-ClientProxiedBy: SHFCAS1NODE2.st.com (10.75.129.73) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-09-29_11,2023-09-28_03,2023-05-22_02
+To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de,
+        ilpo.jarvinen@linux.intel.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, lukas@wunner.de,
+        p.rosenberger@kunbus.com
+References: <20230928221246.13689-1-LinoSanfilippo@gmx.de>
+ <20230928221246.13689-7-LinoSanfilippo@gmx.de>
+ <20230929063942.qukemr4o7l5vdmud@pengutronix.de>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+In-Reply-To: <20230929063942.qukemr4o7l5vdmud@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:VwXiyU2/W3O+MjSrCdfcHxCMWlRBcReFiYSjXHVBs3fR1SpPLUA
+ xgSQy2vr5a5a4wFI0AGsENjTxU7xo3lu5oMEH1X4mtWssGCL9d2LCJ/o3MB8ghZcZeJaSEs
+ 2qxxyfCuc+EIebFakAoRHr6bU1YiStSlagDhHh3VOHqeh+edoaSzXNIwyAUfDJWwzLs3wCx
+ 06Ajeu48JzN6aSrZwOjAw==
+UI-OutboundReport: notjunk:1;M01:P0:HXJNl3SCBe8=;pARrZ1ytb8liKtVw9iNoI01cxPG
+ I91ucI+TF92KhiXUVhQanCVdSVGK182fzBDki6OP5hJibVztMGuiSNITuig/ouJmp6K0L2B8R
+ 3GLUvAutC7TrcZRptEkRuAjTyjfJCX2814f4iMcVLO3beUnaHpTmdkWmk44dc16FxzyxFKCnM
+ Bqvo6y6i41IEhTDajfaR6broL/g9Pp7fXIxiMJUGm7/SC8U87HKXMtO8I8HGpALRuEQpDO+I1
+ cbj24ZI6HieWxoZr08CJIQlt6Cnun5E6oHRkBICUr/giLtW57BLzoT63su33CT6Hb1feBuZ+5
+ wG74m2ocKdNcHHNuexC3zmtkeuQHaS2iu3XRxx1CxHUGK3HnChifBb2P2Pusk/0K0A2UUPUqf
+ n/I2xKeX2jCizF3tEM8johM4cSFV10/oPLXG6kcglMNVkqEYBBCKY/RzMuRqfU88HdqkUUx5u
+ I2dyJeegDk7tG5/P5EGuo/x7+Q/00e1N+LiKywwXe789fH0RippyZpS2gymGY7qxYtUVfL+LS
+ gNX5AUOA96xozg155Px9ahwZIjsGt2VR4qUay0Q8BphlRtL1lQEj/GOwqtrIs4RSapOX9L5c7
+ hfhzhEs2kxc3HsYachhxJDpfVbtcLfkqpeoS8iGObLzeT0VNlpDhdXzpKv6ZR3YDcJaGQXpcy
+ X598g87P2KgXnA9j7m9lbMxt37VGbILtcS6ghGpCXG/SI9wXoDj0QryEnT2KwDNhi0wbCGXh0
+ A1LT7Nr7rHCcb8gjC0M2sF4azwkEYFp7ds4ft925SRIEwZhI0vswLkFbGzwV7jFEn3+xj+woL
+ m46qsy6vuHs8u5gyWeLCvoOaLX4SQWSvR08lrbC42zVlsSpK4rIH0fzoWqnohiAYCCZ5EK4cG
+ ZkccQe7ey2s9omyGCLBHrPDWehb6/XuweUGsCa2rEsSGVo6+a0QST/HYUvxlV9maxaodmCrsU
+ 8YHg0A==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On 8/11/23 14:00, Gatien CHEVALLIER wrote:
-> 
-> 
-> On 8/11/23 12:16, Greg KH wrote:
->> On Fri, Aug 11, 2023 at 12:07:21PM +0200, Gatien Chevallier wrote:
->>> From: Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
->>>
->>> Introducing of the common device controller bindings for the controller
->>> provider and consumer devices. Those bindings are intended to allow
->>> divided system on chip into multiple domains, that can be used to
->>> configure hardware permissions.
->>>
->>> Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
->>> [Gatien: Fix typos and YAML error]
->>> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
->>> ---
->>>
->>> Changes in V4:
->>>     Corrected typos and YAML errors
->>
->> Why are we supposed to ignore the first patch in this series, but pay
->> attention to the 10 after this that depend on it?
->>
->> totally confused,
->>
->> greg k-h
-> 
-> Hello Greg,
-> 
-> I'm sorry that this tag troubles your review. It was first suggested
-> in [1]. The "IGNORE" means ignore review on this thread, as it is still
-> under review in another thread (Link in the cover letter). It does not
-> mean that the content should be ignored for the series. I will change
-> this to something else as this is obviously confusing the review.
-> 
-> @Oleksii, can we imagine integrating this patch to this series or do
-> you prefer to keep it apart?
-> 
-
 Hi,
 
-after a discussion with Oleksii: I'll rename the binding to narrow
-down its scope and integrate the patch in my series. This way, I'll drop
-the [IGNORE] tag.
+On 29.09.23 08:39, Uwe Kleine-K=C3=B6nig wrote:
+> On Fri, Sep 29, 2023 at 12:12:46AM +0200, Lino Sanfilippo wrote:
+>> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+>>
+>> If the imx driver cannot support RS485 it sets the UARTS rs485_supporte=
+d
+>> structure to NULL. But it still calls uart_get_rs485_mode() which may s=
+et
+>> the RS485_ENABLED flag.
+>> The flag however is evaluated by the serial core in uart_configure_port=
+()
+>
+> I wonder if this is the code location where this problem should be
+> addressed. Or alternatively don't let uart_get_rs485_mode() set
+> RS485_ENABLED (and other flags) if rs485_supported doesn't suggest that
+> this works?
+>
 
-=> I'll stick with the generic binding for V5 (Sorry for the misleading
-    information in the previous mail)
+This is indeed the better solution. Especially since the check is then in =
+the serial
+core and all RS485 supporting drivers benefit from it. I will change this =
+for v2, thanks!
 
-Best regards,
-Gatien
 
-> Should I consider a resend with another tag if Oleksii prefers to keep
-> this patch apart?
-> 
-> [1] 
-> https://lore.kernel.org/all/1e498b93-d3bd-bd12-e991-e3f4bedf632d@linaro.org/
-> 
-> Best regards,
-> Gatien
+>> [...]
+>>
+>> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+>
+> I don't know how picky Greg is here, but formally you missed to add an
+> S-o-b line for the sender of this patch (i.e. you with your gmx
+> address).
+>
+
+Hm, until now there have never been complaints about this. Is this really =
+an issue? Of
+course I can also S-o-b with my gmx address but adding two S-o-b's for the=
+ same person seems
+a bit odd to me...
+
+BR,
+Lino
+
+> Best regards
+> Uwe
+>
+
+
+
