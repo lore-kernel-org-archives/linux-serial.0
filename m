@@ -2,84 +2,75 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF723E748E9
-	for <linux-serial@archiver.kernel.org>; Sun,  1 Oct 2023 08:56:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A1E1E748E9
+	for <linux-serial@archiver.kernel.org>; Sun,  1 Oct 2023 12:25:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234543AbjJAI4a (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 1 Oct 2023 04:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41468 "EHLO
+        id S234931AbjJAMZX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 1 Oct 2023 08:25:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234530AbjJAI43 (ORCPT
+        with ESMTP id S234937AbjJAMZX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 1 Oct 2023 04:56:29 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119BCC6
-        for <linux-serial@vger.kernel.org>; Sun,  1 Oct 2023 01:56:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1696150587; x=1727686587;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=eAdgoFlTSxhaxMus9TGJFKyzmG3dEdE5WDVlSPfsrXM=;
-  b=mE4XVVeQZ+8fctbMj4r2fl/VUcZbjyPKEaXoh8oPbn9dnrkk7zbI0nl0
-   PrHHMDFDkK59Ih6K1Ygs0MIDuFbXoCUPvVJXY14fKdPLej0KG5FFApNpN
-   HbyLaHt8BCND8AwT7/RbldtXUFYOGhrv+7T2rm4lvdFwq7I6JK7maT/rb
-   JNikeQjRwPgv2FwGoXxC3uPaodpiD9hWZIYQtUePzX9XgQL2jaUXkZ2e5
-   uZ85/+cjhizDBu1HCHA9M3Xq4NqbhMCXov3tnGSEa2VSHqlrVlSBZ+qZ0
-   MFIct57OZNofdqTXhDMbIH18+5IzNszWI8Lblg2B1998yvoH6gbjvcRCt
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10849"; a="4081169"
-X-IronPort-AV: E=Sophos;i="6.03,191,1694761200"; 
-   d="scan'208";a="4081169"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2023 01:56:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10849"; a="924000599"
-X-IronPort-AV: E=Sophos;i="6.03,191,1694761200"; 
-   d="scan'208";a="924000599"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga005.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2023 01:56:11 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97-RC0)
-        (envelope-from <andriy.shevchenkoa@linux.intel.com>)
-        id 1qmsFE-00000001rHa-2vGO;
-        Sun, 01 Oct 2023 11:56:08 +0300
-Date:   Sun, 1 Oct 2023 11:56:08 +0300
-From:   Andy Shevchenko <andriy.shevchenkoa@linux.intel.com>
-To:     Matthew Howell <matthew.howell@sealevel.com>
-Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Darren Beeson <darren.beeson@sealevel.com>,
-        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
-        "eff.baldwin@sealevel.com" <eff.baldwin@sealevel.com>,
-        James Olson <james.olson@sealevel.com>,
-        Ryan Wenglarz <ryan.wenglarz@sealevel.com>
-Subject: Re: [PATCH V9 2/2] serial: exar: Add RS-485 support for Sealevel
- XR17V35X based cards
-Message-ID: <ZRk0KL8XGOBIwg2F@smile.fi.intel.com>
-References: <8ffa2f583ff142c3b0eb6cf51a7c9cef5dbfd320.camel@sealevel.com>
- <4b8ad8ab6728742464c4e048fdeecb2b40522aef.camel@sealevel.com>
+        Sun, 1 Oct 2023 08:25:23 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCAB99;
+        Sun,  1 Oct 2023 05:25:21 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87A16C433C7;
+        Sun,  1 Oct 2023 12:25:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1696163120;
+        bh=x4nfW4rGufhSP0OLtY1Dc8A+janGFVIJNE7+pWDRktI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=SYf4b1nD48L3IwXnQQ/EjTcVA9Ifv7LhCjNB6PiKKu6/e8mhd4/N5uKuLlOXPbcD1
+         CMiJ9vkjN/n6+eqqKMfi9Pro4+fjRLfXG3l5ywV1IAt+/gPv5e7Q+Jw6VW3dgjqhae
+         zUZIEXv8ByOv8AJbHPKRPqF0RLgQ+/7SLbtRfEbk=
+Date:   Sun, 1 Oct 2023 14:25:18 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 6.6-rc4
+Message-ID: <ZRllLjvypvT34qFa@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4b8ad8ab6728742464c4e048fdeecb2b40522aef.camel@sealevel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Sep 29, 2023 at 05:40:55PM +0000, Matthew Howell wrote:
-> From: Matthew Howell <matthew.howell@sealevel.com>
-> 
-> Sealevel XR17V35X based cards utilize DTR to control RS-485 Enable, but
-> the current implementation of 8250_exar uses RTS for the auto-RS485-Enable
-> mode of the XR17V35X UARTs. This patch implements DTR Auto-RS485 on
-> Sealevel cards.
+The following changes since commit ce9ecca0238b140b88f43859b211c9fdfd8e5b70:
 
-Looks good, thank you!
-Reviewed-by: Andy Shevchenko <andriy.shevchenkoa@linux.intel.com>
+  Linux 6.6-rc2 (2023-09-17 14:40:24 -0700)
 
--- 
-With Best Regards,
-Andy Shevchenko
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.6-rc4
 
+for you to fetch changes up to 29346e217b8ab8a52889b88f00b268278d6b7668:
+
+  Revert "tty: n_gsm: fix UAF in gsm_cleanup_mux" (2023-09-18 10:12:11 +0200)
+
+----------------------------------------------------------------
+TTY / Serial driver fixes for 6.6-rc4
+
+Here are 2 tty/serial driver fixes for 6.6-rc4 that resolve some
+reported regressions:
+  - revert a n_gsm change that ended up causing problems
+  - 8250_port fix for irq data
+
+both have been in linux-next for over a week with no reported problems.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Andy Shevchenko (1):
+      serial: 8250_port: Check IRQ data before use
+
+Daniel Starke (1):
+      Revert "tty: n_gsm: fix UAF in gsm_cleanup_mux"
+
+ drivers/tty/n_gsm.c                 | 4 +---
+ drivers/tty/serial/8250/8250_port.c | 5 ++++-
+ 2 files changed, 5 insertions(+), 4 deletions(-)
