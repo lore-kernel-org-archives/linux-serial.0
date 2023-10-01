@@ -2,75 +2,66 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A1E1E748E9
-	for <linux-serial@archiver.kernel.org>; Sun,  1 Oct 2023 12:25:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E42E7848A
+	for <linux-serial@archiver.kernel.org>; Sun,  1 Oct 2023 19:53:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234931AbjJAMZX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 1 Oct 2023 08:25:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53702 "EHLO
+        id S235309AbjJATxX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 1 Oct 2023 15:53:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234937AbjJAMZX (ORCPT
+        with ESMTP id S235365AbjJATxW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 1 Oct 2023 08:25:23 -0400
+        Sun, 1 Oct 2023 15:53:22 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCAB99;
-        Sun,  1 Oct 2023 05:25:21 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87A16C433C7;
-        Sun,  1 Oct 2023 12:25:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1696163120;
-        bh=x4nfW4rGufhSP0OLtY1Dc8A+janGFVIJNE7+pWDRktI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=SYf4b1nD48L3IwXnQQ/EjTcVA9Ifv7LhCjNB6PiKKu6/e8mhd4/N5uKuLlOXPbcD1
-         CMiJ9vkjN/n6+eqqKMfi9Pro4+fjRLfXG3l5ywV1IAt+/gPv5e7Q+Jw6VW3dgjqhae
-         zUZIEXv8ByOv8AJbHPKRPqF0RLgQ+/7SLbtRfEbk=
-Date:   Sun, 1 Oct 2023 14:25:18 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E8BD9;
+        Sun,  1 Oct 2023 12:53:20 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2FA4BC433C8;
+        Sun,  1 Oct 2023 19:53:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1696190000;
+        bh=RiPuoSqcoQm2ztW8jjvjCxTXY+lfp3+ZLb2gFKslP3Q=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=gJRLtfP2pvxR6H7BsjdAfVqiL5av0SSJkBG9DIL1kCOZ13m4PR2TbEINfSQQ/urmT
+         n7uXsahByqcMvAVUE0uHebhk/Pr6ujkSQSQzy/o772ZPTZS5d8g0S3RqB9PnLlPmtK
+         yjEcFGNLtoDr6885CXWW95AH5f+7CV02mhywe7zlzZIMsCE4MFzcsYZuZDy+UM/5Bw
+         jvejEn5tYzbzoTlQn2YN0ibkTZ/gkCA7w1fa1bJWXLFED/25IzEfY9+H8OyRGE+SeC
+         GRIwjPmXCclAb/f6qLfd4Slk9Z0iohlSYYtX211Cjg3up+Q4blx2Tce9QXD0auzTLK
+         B8QGvlpcPGPyA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 195BFE29AFE;
+        Sun,  1 Oct 2023 19:53:20 +0000 (UTC)
+Subject: Re: [GIT PULL] TTY/Serial driver fixes for 6.6-rc4
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <ZRllLjvypvT34qFa@kroah.com>
+References: <ZRllLjvypvT34qFa@kroah.com>
+X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
+X-PR-Tracked-Message-Id: <ZRllLjvypvT34qFa@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.6-rc4
+X-PR-Tracked-Commit-Id: 29346e217b8ab8a52889b88f00b268278d6b7668
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 3abd15e25f4d089f7c557685f067ab024b38d641
+Message-Id: <169619000009.19173.7293397559349184349.pr-tracker-bot@kernel.org>
+Date:   Sun, 01 Oct 2023 19:53:20 +0000
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Jiri Slaby <jslaby@suse.cz>,
         Stephen Rothwell <sfr@canb.auug.org.au>,
         Andrew Morton <akpm@linux-foundation.org>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver fixes for 6.6-rc4
-Message-ID: <ZRllLjvypvT34qFa@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The following changes since commit ce9ecca0238b140b88f43859b211c9fdfd8e5b70:
+The pull request you sent on Sun, 1 Oct 2023 14:25:18 +0200:
 
-  Linux 6.6-rc2 (2023-09-17 14:40:24 -0700)
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.6-rc4
 
-are available in the Git repository at:
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/3abd15e25f4d089f7c557685f067ab024b38d641
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.6-rc4
+Thank you!
 
-for you to fetch changes up to 29346e217b8ab8a52889b88f00b268278d6b7668:
-
-  Revert "tty: n_gsm: fix UAF in gsm_cleanup_mux" (2023-09-18 10:12:11 +0200)
-
-----------------------------------------------------------------
-TTY / Serial driver fixes for 6.6-rc4
-
-Here are 2 tty/serial driver fixes for 6.6-rc4 that resolve some
-reported regressions:
-  - revert a n_gsm change that ended up causing problems
-  - 8250_port fix for irq data
-
-both have been in linux-next for over a week with no reported problems.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Andy Shevchenko (1):
-      serial: 8250_port: Check IRQ data before use
-
-Daniel Starke (1):
-      Revert "tty: n_gsm: fix UAF in gsm_cleanup_mux"
-
- drivers/tty/n_gsm.c                 | 4 +---
- drivers/tty/serial/8250/8250_port.c | 5 ++++-
- 2 files changed, 5 insertions(+), 4 deletions(-)
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
