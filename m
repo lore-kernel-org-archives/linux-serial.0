@@ -2,90 +2,109 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8B81E784AD
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Oct 2023 14:06:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B25AE784B3
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Oct 2023 14:17:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237639AbjJBOGI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 Oct 2023 10:06:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43402 "EHLO
+        id S237687AbjJBORm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 2 Oct 2023 10:17:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237630AbjJBOGH (ORCPT
+        with ESMTP id S237575AbjJBORl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 Oct 2023 10:06:07 -0400
+        Mon, 2 Oct 2023 10:17:41 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8681AD;
-        Mon,  2 Oct 2023 07:06:04 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 558D4C433C7;
-        Mon,  2 Oct 2023 14:06:02 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC50EA4;
+        Mon,  2 Oct 2023 07:17:38 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53217C433C8;
+        Mon,  2 Oct 2023 14:17:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1696255564;
-        bh=oewcKLq9leZeLUNbvL3ga7nSrHdL0EKdi+eyXGMLtGM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LNby3amfuHQMnQB9J2b8Ap7V4xMsYjdQ+XX8Ne1yQwFKEIv84i754KEVLeJUg8gjk
-         eZTKvwinC7merJ7qh3W+Ryukjgt+Ym0L/vorD2BQb5irTxbdLjpDtXAHCd6QjBG+ei
-         dy3qg4A5giv1IyOZdkFSdZB0DqgYAVyfuB/rZgF9WspTUP/kgYYQiWx8pGDeDCPUsV
-         88TQek2wbfOllqc1CJUhTmDeKwr1V3nYM0Dx5pgKq7WA9HXKbc79/fwueApOG25YO2
-         XY2NIwNXL/Nh56LmRlwLJVInrde4+cGRsTvcZU56epMHub7GBj0vwBexSCyF3poPFl
-         fuCV5QO5Z3uIQ==
-Date:   Mon, 2 Oct 2023 15:05:59 +0100
-From:   Lee Jones <lee@kernel.org>
-To:     Florian Eckert <fe@dev.tdt.de>
-Cc:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, pavel@ucw.cz, kabel@kernel.org,
-        u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-leds@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v2 3/4] trigger: ledtrig-tty: move variable definition to
- the top
-Message-ID: <20231002140559.GB8453@google.com>
-References: <20230928132632.200263-1-fe@dev.tdt.de>
- <20230928132632.200263-4-fe@dev.tdt.de>
+        s=k20201202; t=1696256258;
+        bh=vkYSu3CMdUku1DYMLSbi1CqSIx/Y+w371ZyBOHbOWQU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=exLEpilJBAgz5ZnsirATe9JxW+UqjlphdsbHWsfr4jfuvvcdvfFqCOOPADpHoegLG
+         QT1ZRviNOCQSFKPR+2ncqqKUmVN5OgF6Y3H/MOzAcM/iVe2Rhws0drvVplI+2eIc8B
+         vEtl9FK4HkZ3OOjR4RCkE9u+Gvi4K1kPyS1jOYkSvxJSQs2ZBIu74ouWye+qLIE93j
+         akqIqYVLy6LU2/F78IRxLEwEfXTSJG6/bFwFcDmsl1IBSzB7eh4B9D9E143cSdty4X
+         r2p6zx5xCX9grOdpP+GalyJ8YI4rJQvVL0i4iN5OQXuy6/X9d744gUtflnDsfOCo5Y
+         8pia5lOvzI0rg==
+Message-ID: <e493d101-348a-949d-5160-3d633817adf2@kernel.org>
+Date:   Mon, 2 Oct 2023 08:17:35 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230928132632.200263-4-fe@dev.tdt.de>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.15.1
+Subject: Re: [PATCH v2 10/15] vrf: Remove the now superfluous sentinel element
+ from ctl_table array
+Content-Language: en-US
+To:     j.granados@samsung.com, Luis Chamberlain <mcgrof@kernel.org>,
+        willy@infradead.org, josh@joshtriplett.org,
+        Kees Cook <keescook@chromium.org>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Clemens Ladisch <clemens@ladisch.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Doug Gilbert <dgilbert@interlog.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        Corey Minyard <minyard@acm.org>, Theodore Ts'o <tytso@mit.edu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Robin Holt <robinmholt@gmail.com>,
+        Steve Wahl <steve.wahl@hpe.com>,
+        Russ Weight <russell.h.weight@intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Song Liu <song@kernel.org>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org,
+        linux-serial@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-rdma@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-raid@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+References: <20231002-jag-sysctl_remove_empty_elem_drivers-v2-0-02dd0d46f71e@samsung.com>
+ <651a84ff.050a0220.51ca9.2e91SMTPIN_ADDED_BROKEN@mx.google.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <651a84ff.050a0220.51ca9.2e91SMTPIN_ADDED_BROKEN@mx.google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 28 Sep 2023, Florian Eckert wrote:
-
-> The Intel build robot has complained about this. Hence move the commit
-> of the variable definition to the beginning of the function.
-
-Please copy the robot's error message into the commit message.
-
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
+On 10/2/23 2:55 AM, Joel Granados via B4 Relay wrote:
+> From: Joel Granados <j.granados@samsung.com>
+> 
+> This commit comes at the tail end of a greater effort to remove the
+> empty elements at the end of the ctl_table arrays (sentinels) which
+> will reduce the overall build time size of the kernel and run time
+> memory bloat by ~64 bytes per sentinel (further information Link :
+> https://lore.kernel.org/all/ZO5Yx5JFogGi%2FcBo@bombadil.infradead.org/)
+> 
+> Remove sentinel from vrf_table
+> 
+> Signed-off-by: Joel Granados <j.granados@samsung.com>
 > ---
->  drivers/leds/trigger/ledtrig-tty.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/leds/trigger/ledtrig-tty.c b/drivers/leds/trigger/ledtrig-tty.c
-> index 8ae0d2d284af..1c6fadf0b856 100644
-> --- a/drivers/leds/trigger/ledtrig-tty.c
-> +++ b/drivers/leds/trigger/ledtrig-tty.c
-> @@ -82,6 +82,7 @@ static void ledtrig_tty_work(struct work_struct *work)
->  {
->  	struct ledtrig_tty_data *trigger_data =
->  		container_of(work, struct ledtrig_tty_data, dwork.work);
-> +	unsigned long interval = LEDTRIG_TTY_INTERVAL;
->  	struct serial_icounter_struct icount;
->  	int ret;
->  
-> @@ -124,8 +125,6 @@ static void ledtrig_tty_work(struct work_struct *work)
->  
->  	if (icount.rx != trigger_data->rx ||
->  	    icount.tx != trigger_data->tx) {
-> -		unsigned long interval = LEDTRIG_TTY_INTERVAL;
-> -
->  		led_blink_set_oneshot(trigger_data->led_cdev, &interval,
->  				      &interval, 0);
->  
-> -- 
-> 2.30.2
+>  drivers/net/vrf.c | 1 -
+>  1 file changed, 1 deletion(-)
 > 
 
--- 
-Lee Jones [李琼斯]
+Reviewed-by: David Ahern <dsahern@kernel.org>
+
+
