@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B0A6E784A4
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Oct 2023 06:51:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EDB3E7849A
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Oct 2023 07:05:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235321AbjJBGvN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 Oct 2023 02:51:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37422 "EHLO
+        id S235630AbjJBHFi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 2 Oct 2023 03:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235457AbjJBGvM (ORCPT
+        with ESMTP id S235601AbjJBHFi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 Oct 2023 02:51:12 -0400
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CCE6B0;
-        Sun,  1 Oct 2023 23:51:07 -0700 (PDT)
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-3231df68584so11961668f8f.1;
-        Sun, 01 Oct 2023 23:51:07 -0700 (PDT)
+        Mon, 2 Oct 2023 03:05:38 -0400
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA49A9F;
+        Mon,  2 Oct 2023 00:05:34 -0700 (PDT)
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-313e742a787so1586169f8f.1;
+        Mon, 02 Oct 2023 00:05:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696229465; x=1696834265;
+        d=1e100.net; s=20230601; t=1696230333; x=1696835133;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/nFZqfI+jWcS8cIk/mrBHo5IV/zNF8lxEsZdaUKQ5us=;
-        b=IEGQRxHMew4dpBcP9N4rQxp5YQrjB202Du1lSjkXFUDSuUYYjJsYS8CB+yftQ0M5M8
-         sBgXgXRjy8HqkCz3/o6gcnWEXnkKCT3O0tvV3jglXvNH+85cKkQNUXzqqFR8nYnNdVKm
-         cpXM7oVLjADWo6wP4B5AYPyojkyjk/z5eLLKl3TP8mYPbt4js3NvCOQD0rE0sOaREe6E
-         ucO8+qE3Sowa4LOaKZfEmxw1x+fE0CzOG6vWW0BFto/CZTfbAXngdWRTx0G8aqtnp8Gb
-         P/WsRju22ng52GDTIy9XKH/1IlBjc40ActQOyesCVx7G7SUwHtWtv+dE0Y2zK++KfvN5
-         Kv1w==
-X-Gm-Message-State: AOJu0YxKoqX7KTsXTEtThL7KI5JYW9JuVc0h2GzHClAtuVfGkldQY1u+
-        xv2xjNYOnDjCxW1lmK9oS1I=
-X-Google-Smtp-Source: AGHT+IG11VJpKH5mFxtCie9vQEshUDrxu/+4DOaLLMSzOcZ4jXSOTxkmewQCZ1Sssa3iaByTZvkomA==
-X-Received: by 2002:a5d:628a:0:b0:323:1d8a:3d87 with SMTP id k10-20020a5d628a000000b003231d8a3d87mr10471013wru.4.1696229465165;
-        Sun, 01 Oct 2023 23:51:05 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id d4-20020adffd84000000b0031f34a395e7sm27066285wrr.45.2023.10.01.23.51.04
+        bh=DJm2q62qrX+iVKV047NAIq/AT9zmpWfhQyKoz3ijfZc=;
+        b=HmP8blnRrSqfCvWJPwwERtj6zLg1wLuMFwkbbXOdwpS9XXGOsbAPEgx5aHrx7hIUFL
+         VfXimrELvSmN96AJ55nZ6aciwGNrkr+03/+MtuB9Z1uQNZD0BmbiVLsFdpMa3FElXgAE
+         sxk6s3Kq2MxnIl83PrTVeo2G1R8trYrx4t0lP/o7ziKPk4sELG5l286nr+betWneRhLW
+         d7zO64CffamQkdLfTjn1yWxWdzT8p1P6l5p5E1eQaPHop15ocduLKabwOVGWd83NlD9y
+         wi8JpnnHTkw9BISpJx4h7r/SwaUVo+xFyCb16Ypt4KrbxRMhMbq5zUIUY3Ip56lxr/M4
+         eRUQ==
+X-Gm-Message-State: AOJu0Yxp1zjvrqfej5rbD/3otD5I9naJFMol5IjKgZ9Wl29cDiRJv7+A
+        usOpTcmKVA5gegvH8jo9r9Y=
+X-Google-Smtp-Source: AGHT+IEGiYyCaiN05UrOJ84WRbR1OgpnTt7aoiVG41JK/MPzsnTIYmknQOjgw0Fe+3SeUzPlAlJMYA==
+X-Received: by 2002:a5d:6a11:0:b0:324:84bc:d5ab with SMTP id m17-20020a5d6a11000000b0032484bcd5abmr9068418wru.1.1696230332822;
+        Mon, 02 Oct 2023 00:05:32 -0700 (PDT)
+Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id f21-20020a1c6a15000000b0040641a9d49bsm6550512wmc.17.2023.10.02.00.05.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 Oct 2023 23:51:04 -0700 (PDT)
-Message-ID: <68d533d5-dbc8-4be3-a1fc-b3dd28b8f9df@kernel.org>
-Date:   Mon, 2 Oct 2023 08:51:03 +0200
+        Mon, 02 Oct 2023 00:05:32 -0700 (PDT)
+Message-ID: <1e99f3c4-e0b8-4951-80c3-f3c5a1eb5277@kernel.org>
+Date:   Mon, 2 Oct 2023 09:05:31 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/4] tty: serial: 8250: Cleanup MOXA configurations in
- 8250_pci.c
+Subject: Re: [PATCH 2/4] tty: serial: 8250: Add support for MOXA Mini PCIe
+ boards
 Content-Language: en-US
 To:     Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
         gregkh@linuxfoundation.org
 Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 References: <20231002015702.30509-1-crescentcy.hsieh@moxa.com>
- <20231002015702.30509-2-crescentcy.hsieh@moxa.com>
+ <20231002015702.30509-3-crescentcy.hsieh@moxa.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -93,156 +93,138 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20231002015702.30509-2-crescentcy.hsieh@moxa.com>
+In-Reply-To: <20231002015702.30509-3-crescentcy.hsieh@moxa.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
-
-On 02. 10. 23, 3:56, Crescent CY Hsieh wrote:
-> To enhance the maintainability of MOXA configurations in 8250_pci.c,
-> clean up the code to achieve simplicity, clarity and consistency.
+On 02. 10. 23, 3:57, Crescent CY Hsieh wrote:
+> Add support for MOXA Mini PCIe serial boards:
+> 
+> - CP102N: 2 ports | RS232
+> - CP104N: 4 ports | RS232
+> - CP112N: 2 ports | RS232/RS422/RS485
+> - CP114N: 4 ports | RS232/RS422/RS485
+> - CP132N: 2 ports | RS422/RS485
+> - CP134N: 4 ports | RS422/RS485
 > 
 > Signed-off-by: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
 > ---
->   drivers/tty/serial/8250/8250_pci.c | 73 +++++++++++-------------------
->   1 file changed, 26 insertions(+), 47 deletions(-)
+>   drivers/tty/serial/8250/8250_pci.c | 54 ++++++++++++++++++++++++++++++
+>   1 file changed, 54 insertions(+)
 > 
 > diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index 62a9bd30b4db..a010790ccfcd 100644
+> index a010790ccfcd..a70546ac361e 100644
 > --- a/drivers/tty/serial/8250/8250_pci.c
 > +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -1887,10 +1887,10 @@ pci_sunix_setup(struct serial_private *priv,
+> @@ -1887,6 +1887,42 @@ pci_sunix_setup(struct serial_private *priv,
 >   	return setup_port(priv, port, bar, offset, 0);
 >   }
 >   
-> -static int
-> -pci_moxa_setup(struct serial_private *priv,
-> -		const struct pciserial_board *board,
-> -		struct uart_8250_port *port, int idx)
-> +static int pci_moxa_setup(struct serial_private *priv,
-> +			  const struct pciserial_board *board,
-> +			  struct uart_8250_port *port,
-> +			  int idx)
+> +#define MOXA_PUART_GPIO_EN	0x09
+> +#define MOXA_PUART_GPIO_OUT	0x0A
+> +
+> +#define MOXA_GPIO_SET_ALL_OUTPUT	0x0F
+> +
+> +static int pci_moxa_init(struct pci_dev *dev)
+> +{
+> +	unsigned short device = dev->device;
+> +	unsigned long iobar_addr = pci_resource_start(dev, 2);
 
-You should either change all or none.
+resource_size_t
 
->   {
->   	unsigned int bar = FL_GET_BASE(board->flags);
->   	int offset;
-> @@ -1958,6 +1958,9 @@ pci_moxa_setup(struct serial_private *priv,
->   #define PCIE_DEVICE_ID_WCH_CH384_8S	0x3853
->   #define PCIE_DEVICE_ID_WCH_CH382_2S	0x3253
+> +	int num_ports = (device & 0x00F0) >> 4;
+> +	unsigned char val;
+
+u8
+
+> +
+> +	outb(MOXA_GPIO_SET_ALL_OUTPUT, iobar_addr + MOXA_PUART_GPIO_EN);
+
+You need to comment in the commit log why this doesn't matter for other 
+moxa cards.
+
+> +	/*
+> +	 * Enable hardware buffer to prevent break signal output when system boot up.
+
+boots up.
+
+> +	 * This hardware buffer is only supported on Mini PCIe series.
+> +	 */
+> +	if (device == 0x1027 ||	/* MOXA_CP102N */
+> +	    device == 0x1046 ||	/* MOXA_CP104N */
+> +	    device == 0x1121 ||	/* MOXA_CP112N */
+> +	    device == 0x1145 ||	/* MOXA_CP114N */
+> +	    device == 0x1323 ||	/* MOXA_CP132N */
+> +	    device == 0x1343) {	/* MOXA_CP134N */
+
+Why not use the definitions below? You should define a function for this 
+anyway.
+
+> +		/* Set GPIO direction */
+> +		val = inb(iobar_addr + MOXA_PUART_GPIO_EN);
+> +		val |= (1 << 2);
+
+Too magic constant. Use BIT() and define that 2 as some constant.
+
+> +		outb(val, iobar_addr + MOXA_PUART_GPIO_EN);
+> +		/* Enable low GPIO */
+> +		val = inb(iobar_addr + MOXA_PUART_GPIO_OUT);
+> +		val &= ~(1 << 2);
+> +		outb(val, iobar_addr + MOXA_PUART_GPIO_OUT);
+> +	}
+
+One more \n here.
+
+> +	return num_ports;
+> +}
+> +
+>   static int pci_moxa_setup(struct serial_private *priv,
+>   			  const struct pciserial_board *board,
+>   			  struct uart_8250_port *port,
+> @@ -1973,6 +2009,13 @@ static int pci_moxa_setup(struct serial_private *priv,
+>   #define	PCI_DEVICE_ID_MOXA_CP134EL_A	0x1342
+>   #define	PCI_DEVICE_ID_MOXA_CP138E_A	0x1381
+>   #define	PCI_DEVICE_ID_MOXA_CP168EL_A	0x1683
+> +/* MOXA Mini PCIe */
+> +#define PCI_DEVICE_ID_MOXA_CP102N	0x1027
+> +#define PCI_DEVICE_ID_MOXA_CP104N	0x1046
+> +#define PCI_DEVICE_ID_MOXA_CP112N	0x1121
+> +#define PCI_DEVICE_ID_MOXA_CP114N	0x1145
+> +#define PCI_DEVICE_ID_MOXA_CP132N	0x1323
+> +#define PCI_DEVICE_ID_MOXA_CP134N	0x1343
+
+I am not sure it matters they are mini PCIe. I would sort them into the 
+above preexisting list instead.
+
 >   
-> +/* MOXA */
-> +#define PCI_VENDOR_ID_MOXA	0x1393
-
-Isn't this a redefinition of the pci-ids.h one?
-
-> +/* MOXA PCIe */
->   #define	PCI_DEVICE_ID_MOXA_CP102E	0x1024
->   #define	PCI_DEVICE_ID_MOXA_CP102EL	0x1025
->   #define	PCI_DEVICE_ID_MOXA_CP104EL_A	0x1045
-> @@ -2854,9 +2857,9 @@ enum pci_board_num_t {
->   	pbn_titan_2_4000000,
->   	pbn_titan_4_4000000,
->   	pbn_titan_8_4000000,
-> -	pbn_moxa8250_2p,
-> -	pbn_moxa8250_4p,
-> -	pbn_moxa8250_8p,
-> +	pbn_moxa_2,
-> +	pbn_moxa_4,
-> +	pbn_moxa_8,
-
-This should be in a separate patch.
-
->   };
+>   /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
+>   #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
+> @@ -2638,6 +2681,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+>   		.device		= PCI_ANY_ID,
+>   		.subvendor	= PCI_ANY_ID,
+>   		.subdevice	= PCI_ANY_ID,
+> +		.init		= pci_moxa_init,
+>   		.setup		= pci_moxa_setup,
+>   	},
+>   	{
+> @@ -5365,6 +5409,16 @@ static const struct pci_device_id serial_pci_tbl[] = {
+>   	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP138E_A),	 0, 0, pbn_moxa_8 },
+>   	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP168EL_A),	 0, 0, pbn_moxa_8 },
 >   
->   /*
-> @@ -3628,19 +3631,19 @@ static struct pciserial_board pci_boards[] = {
->   		.uart_offset	= 0x200,
->   		.first_offset	= 0x1000,
->   	},
-> -	[pbn_moxa8250_2p] = {
-> +	[pbn_moxa_2] = {
->   		.flags		= FL_BASE1,
->   		.num_ports      = 2,
->   		.base_baud      = 921600,
->   		.uart_offset	= 0x200,
->   	},
-> -	[pbn_moxa8250_4p] = {
-> +	[pbn_moxa_4] = {
->   		.flags		= FL_BASE1,
->   		.num_ports      = 4,
->   		.base_baud      = 921600,
->   		.uart_offset	= 0x200,
->   	},
-> -	[pbn_moxa8250_8p] = {
-> +	[pbn_moxa_8] = {
->   		.flags		= FL_BASE1,
->   		.num_ports      = 8,
->   		.base_baud      = 921600,
-> @@ -5347,44 +5350,20 @@ static const struct pci_device_id serial_pci_tbl[] = {
->   		pbn_ni8430_4 },
->   
->   	/*
-> -	 * MOXA
-> +	 * MOXA PCIe
->   	 */
-> -	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP102E,
-> -		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-> -		pbn_moxa8250_2p },
-> -	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP102EL,
-> -		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-> -		pbn_moxa8250_2p },
-> -	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP104EL_A,
-> -		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-> -		pbn_moxa8250_4p },
-> -	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP114EL,
-> -		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-> -		pbn_moxa8250_4p },
-> -	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP116E_A_A,
-> -		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-> -		pbn_moxa8250_8p },
-> -	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP116E_A_B,
-> -		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-> -		pbn_moxa8250_8p },
-> -	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP118EL_A,
-> -		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-> -		pbn_moxa8250_8p },
-> -	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP118E_A_I,
-> -		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-> -		pbn_moxa8250_8p },
-> -	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP132EL,
-> -		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-> -		pbn_moxa8250_2p },
-> -	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP134EL_A,
-> -		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-> -		pbn_moxa8250_4p },
-> -	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP138E_A,
-> -		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-> -		pbn_moxa8250_8p },
-> -	{	PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP168EL_A,
-> -		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
-> -		pbn_moxa8250_8p },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP102E),	 0, 0, pbn_moxa_2 },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP102EL),	 0, 0, pbn_moxa_2 },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP104EL_A),	 0, 0, pbn_moxa_4 },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP114EL),	 0, 0, pbn_moxa_4 },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP116E_A_A), 0, 0, pbn_moxa_8 },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP116E_A_B), 0, 0, pbn_moxa_8 },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP118EL_A),	 0, 0, pbn_moxa_8 },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP118E_A_I), 0, 0, pbn_moxa_8 },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP132EL),	 0, 0, pbn_moxa_2 },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP134EL_A),	 0, 0, pbn_moxa_4 },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP138E_A),	 0, 0, pbn_moxa_8 },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP168EL_A),	 0, 0, pbn_moxa_8 },
+> +	/*
+> +	 * MOXA Mini PCIe
+> +	 */
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP102N), 0, 0, pbn_moxa_2 },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP104N), 0, 0, pbn_moxa_4 },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP112N), 0, 0, pbn_moxa_2 },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP114N), 0, 0, pbn_moxa_4 },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP132N), 0, 0, pbn_moxa_2 },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP134N), 0, 0, pbn_moxa_4 },
 
-Use PCI_VDEVICE()?
-
+PCI_VDEVICE() again?
 
 thanks,
 -- 
