@@ -2,203 +2,116 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E5CE784B3
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Oct 2023 09:11:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A0DE784B0
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Oct 2023 09:21:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235986AbjJBJLF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 Oct 2023 05:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49798 "EHLO
+        id S236014AbjJBJVp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 2 Oct 2023 05:21:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235965AbjJBJLE (ORCPT
+        with ESMTP id S235974AbjJBJVp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 Oct 2023 05:11:04 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7192C83;
-        Mon,  2 Oct 2023 02:11:00 -0700 (PDT)
-Received: from pps.filterd (m0369458.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 3928E3qR022118;
-        Mon, 2 Oct 2023 11:10:14 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-        message-id:date:mime-version:subject:to:cc:references:from
-        :in-reply-to:content-type:content-transfer-encoding; s=
-        selector1; bh=E01OcOCHWhP/6+N5KY2PJxe8Vqf5B2GZBRHXsK7b/ZI=; b=aA
-        egtRg/HZV5z61BlbQRmw/xhKB5/NOvXNbEABAWfThJ4zPTHndz302pa5QVjGM+sM
-        3J8B5ueo8i4iRhw3Pi7HwaWlrkqWsy58TBUitGYwlxhFctZH+p7nxHxKyjmiDHP0
-        gunyUnqWwhUVh8dpDShiYuX54yeB8rEzvnWdNJYWKBCqzgkrTC+zGteyX1b5Pb5j
-        Rf6xRjDsxe+C3FBAdS36hxq9MRrXNisC3EZbZEbT4TzCJ6MY1lbLR6cryXr1bkaw
-        d59gty15vIlgDcfiUoAb0YziosPbln43LGmK99GlHY0DfgQb6OF9EUVre9tgoPIq
-        Z+Sxdr7e5cMYwyIcmVVA==
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3tew80bymt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 Oct 2023 11:10:14 +0200 (MEST)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id B9C5F100059;
-        Mon,  2 Oct 2023 11:10:12 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 6252F211F22;
-        Mon,  2 Oct 2023 11:10:12 +0200 (CEST)
-Received: from [10.201.20.32] (10.201.20.32) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Mon, 2 Oct
- 2023 11:10:10 +0200
-Message-ID: <f3dbcd84-1320-9efb-f715-71b6bb4c7bdb@foss.st.com>
-Date:   Mon, 2 Oct 2023 11:10:05 +0200
+        Mon, 2 Oct 2023 05:21:45 -0400
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA56683;
+        Mon,  2 Oct 2023 02:21:42 -0700 (PDT)
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-40651a726acso40159725e9.1;
+        Mon, 02 Oct 2023 02:21:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696238501; x=1696843301;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=rTDea75BbAesYn6+R83gyiA1oIuQKnXiPmrYJHdwQzw=;
+        b=rqXeWnYTed4l4XlocXZpnWc+LQhpxA84l3XYiAxtUnUfJ1me1gZDlmI4z+FHwZQ4J1
+         qi3+uLB8Pp/+iUKkaMqkMz7r3QMx/DwFEh76HAIGStXCo42zyI+WGLg4nwKRFbXvIlya
+         MDhZmra8aCJp36Y8Vf0CY2Fh2TIeJm2Jpfzk7e/hpMRommeo3xa6s7YYrqJ8RzxU+djc
+         9T+cT/BTFjP3ghqZx/GWxpvXLLFLz9P5pbJVTS5/7ZaJpmIhO51ODlyutn9syZaKIWm2
+         dQcFRwBcbor9Kkyako0sxwoSZNQ3Y5nTjzrbbNhypoc85SgXzhKQEyBEFOJUqh5sTPlO
+         27jw==
+X-Gm-Message-State: AOJu0YxML76lXByug88FgkCk74LqGYdwASKgnzpShVyKVKmiSdHpqxrw
+        nD2f7PFau2OG3WLVJiga0rP7JP2s84YDEA==
+X-Google-Smtp-Source: AGHT+IFkg7nRcOtE/8GM4HqjHzhn7572ctmoFxID1aG0FR1BXBeDFDV6WtVuQAZpSFPEY5t7q+2pCg==
+X-Received: by 2002:a05:600c:b49:b0:3fe:ba7:f200 with SMTP id k9-20020a05600c0b4900b003fe0ba7f200mr10153185wmr.20.1696238500817;
+        Mon, 02 Oct 2023 02:21:40 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id o30-20020a05600c511e00b004065e235417sm6687868wms.21.2023.10.02.02.21.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 Oct 2023 02:21:40 -0700 (PDT)
+Message-ID: <f41dc1e1-6d34-48b2-97dd-ba67df6003c6@kernel.org>
+Date:   Mon, 2 Oct 2023 11:21:39 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH v5 01/11] dt-bindings: document generic access controller
-To:     Rob Herring <robh@kernel.org>
-CC:     <arnd@kernel.org>, <linux-phy@lists.infradead.org>,
-        <linux-mmc@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <robh+dt@kernel.org>, <jic23@kernel.org>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux-spi@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
-        <olivier.moysan@foss.st.com>, <linux-media@vger.kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        Oleksii Moisieiev <oleksii_moisieiev@epam.com>,
-        <edumazet@google.com>, <linux-stm32@st-md-mailman.stormreply.com>,
-        <ulf.hansson@linaro.org>, <richardcochran@gmail.com>,
-        <will@kernel.org>, <linux-crypto@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <arnaud.pouliquen@foss.st.com>, <linux-serial@vger.kernel.org>,
-        <alexandre.torgue@foss.st.com>,
-        Frank Rowand <frowand.list@gmail.com>, <andi.shyti@kernel.org>,
-        <linux-usb@vger.kernel.org>, <peng.fan@oss.nxp.com>,
-        <lee@kernel.org>, <fabrice.gasnier@foss.st.com>,
-        <conor+dt@kernel.org>, <herbert@gondor.apana.org.au>,
-        <linux-arm-kernel@lists.infradead.org>, <catalin.marinas@arm.com>,
-        <al.sa-devel@alsa-project.org>, <hugues.fruchet@foss.st.com>,
-        <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <mchehab@kernel.org>, <vkoul@kernel.org>,
-        <gregkh@linuxfoundation.org>
-References: <20230929142852.578394-1-gatien.chevallier@foss.st.com>
- <20230929142852.578394-2-gatien.chevallier@foss.st.com>
- <169600172184.3601218.2121908606358610119.robh@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/4] tty: whitespaces in descriptions corrected by
+ replacing tabs with spaces.
 Content-Language: en-US
-From:   Gatien CHEVALLIER <gatien.chevallier@foss.st.com>
-In-Reply-To: <169600172184.3601218.2121908606358610119.robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Florian Eckert <fe@dev.tdt.de>, Eckert.Florian@googlemail.com,
+        gregkh@linuxfoundation.org, pavel@ucw.cz, lee@kernel.org,
+        kabel@kernel.org, u.kleine-koenig@pengutronix.de
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-leds@vger.kernel.org
+References: <20230928132632.200263-1-fe@dev.tdt.de>
+ <20230928132632.200263-2-fe@dev.tdt.de>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20230928132632.200263-2-fe@dev.tdt.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.201.20.32]
-X-ClientProxiedBy: SHFCAS1NODE2.st.com (10.75.129.73) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-10-02_03,2023-09-28_03,2023-05-22_02
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On 9/29/23 17:35, Rob Herring wrote:
+On 28. 09. 23, 15:26, Florian Eckert wrote:
+> Tabs were used in the function description, to make this look more
+> uniform, the tabs were replaced by spaces where necessary.
 > 
-> On Fri, 29 Sep 2023 16:28:42 +0200, Gatien Chevallier wrote:
->> From: Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
->>
->> Introducing of the generic access controller bindings for the
->> access controller provider and consumer devices. Those bindings are
->> intended to allow a better handling of accesses to resources in a
->> hardware architecture supporting several compartments.
->>
->> This patch is based on [1]. It is integrated in this patchset as it
->> provides a use-case for it.
->>
->> Diffs with [1]:
->> 	- Rename feature-domain* properties to access-control* to narrow
->> 	  down the scope of the binding
->> 	- YAML errors and typos corrected.
->> 	- Example updated
->> 	- Some rephrasing in the binding description
->>
->> [1]: https://lore.kernel.org/lkml/0c0a82bb-18ae-d057-562b
->>
->> Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
->> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
->>
->> ---
->> Changes in V5:
->> 	- Diffs with [1]
->> 	- Discarded the [IGNORE] tag as the patch is now part of the
->> 	  patchset
->>
->>   .../access-controllers/access-controller.yaml | 90 +++++++++++++++++++
->>   1 file changed, 90 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/access-controllers/access-controller.yaml
->>
-> 
-> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> on your patch (DT_CHECKER_FLAGS is new in v5.13):
-> 
-> yamllint warnings/errors:
-> 
-> dtschema/dtc warnings/errors:
-> /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/access-controllers/access-controller.yaml: access-control-provider: missing type definition
-> 
-> doc reference errors (make refcheckdocs):
-> 
-> See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230929142852.578394-2-gatien.chevallier@foss.st.com
-> 
-> The base for the series is generally the latest rc1. A different dependency
-> should be noted in *this* patch.
-> 
-> If you already ran 'make dt_binding_check' and didn't see the above
-> error(s), then make sure 'yamllint' is installed and dt-schema is up to
-> date:
-> 
-> pip3 install dtschema --upgrade
-> 
-> Please check and re-submit after running the above command yourself. Note
-> that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-> your schema. However, it must be unset to test all examples with your schema.
-> 
+> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
 
-Hi Rob,
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-Running:
-1- make dt_binding_check | grep access-control
-2- make dt_binding_check 
-DT_SCHEMA_FILES=Documentation/devicetree/bindings/access-controllers/access-controller.yaml
-from Krzysztof's slideset
+thanks,
+-- 
+js
+suse labs
 
-with
-
-pip3 show dtschema
-Name: dtschema
-Version: 2023.9
-
-and
-
-pip3 show yamllint
-Name: yamllint
-Version: 1.32.0
-
-I don't see any of the errors reported by the robot. I have to clone
-your repository to reproduce it.
-
-Should I resubmit with a clean dt-check using the latest dtschema?
-
-***********
-However, I get:
-warning: ignoring duplicate '$id' value 
-'http://devicetree.org/schemas/reserved-memory/framebuffer.yaml#
-warning: ignoring duplicate '$id' value 
-'http://devicetree.org/schemas/reserved-memory/memory-region.yaml#
-warning: ignoring duplicate '$id' value 
-'http://devicetree.org/schemas/reserved-memory/shared-dma-pool.yaml#
-warning: ignoring duplicate '$id' value 
-'http://devicetree.org/schemas/reserved-memory/reserved-memory.yaml
-
-Above warnings disappears when switching to:
-pip3 show dtschema
-Name: dtschema
-Version: 2023.7
-
-The above YAMLs seem to be duplicated in dtschema's latest version.
-I guess it's a synchro that needs to be done since:
-https://lore.kernel.org/all/20230830231758.2561402-2-sjg@chromium.org/
-***********
-
-Best regards,
-Gatien
