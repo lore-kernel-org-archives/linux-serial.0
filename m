@@ -2,299 +2,261 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B5CE784A4
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Oct 2023 07:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04256E784A4
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Oct 2023 07:37:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235708AbjJBHTd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 Oct 2023 03:19:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38358 "EHLO
+        id S235767AbjJBHh1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 2 Oct 2023 03:37:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235739AbjJBHTc (ORCPT
+        with ESMTP id S235750AbjJBHh0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 Oct 2023 03:19:32 -0400
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8858E;
-        Mon,  2 Oct 2023 00:19:29 -0700 (PDT)
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-31fa15f4cc6so15548961f8f.2;
-        Mon, 02 Oct 2023 00:19:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696231168; x=1696835968;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=t1U6U3KNDGs0XZSoJYImrlwF6CkKUoqhpnW6EhLbj0A=;
-        b=mNb/Kp5ms+QzZhPfH4pbDlxqIIyeqw9Yy18vHyXQjXYxoOcFjepfbXrrRQtmYr7SNs
-         OprYkBO/Fqa8vxMt0rf7ETA9SptranaX4UuG3mkTd0SO5lnh5JndF7Z+MdpxyvKywIbJ
-         3E4WLYnxgWbVGb7FvH81FN6Vlo8krmpummAIgnEnAK5FNZXVNmfieqoJy0GwRVMQHM8T
-         upaCerieLBToP8wda7i0xhgkrxP8npRuw7rKxFkyCXD+GFTpGM32CfnLgL19ND13C/Qs
-         wSh9hFvnqRiRKW4d/LZo1qlAFeZrggyZp2EGI29XCXiKjfnRuk3qFXJofsYf3YLF3RbO
-         myJg==
-X-Gm-Message-State: AOJu0YzgdkDrXFxkVvW6NzmmlIOxN+68iQyIIx7khg0lQZbFNHWfm18q
-        Da0OW9XMlTCrja8wM7F0hqBR+K62ncA=
-X-Google-Smtp-Source: AGHT+IE8++zQ+yGGlGuFHi36qFmuNS83KeIfcn8yhgDE3hehF+HWw+JfmaMonZGj2cclKvne1FcAMg==
-X-Received: by 2002:a5d:500b:0:b0:31f:f1f4:ca8e with SMTP id e11-20020a5d500b000000b0031ff1f4ca8emr9458720wrt.36.1696231167547;
-        Mon, 02 Oct 2023 00:19:27 -0700 (PDT)
-Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id c5-20020adfef45000000b00326dd5486dcsm5184647wrp.107.2023.10.02.00.19.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Oct 2023 00:19:27 -0700 (PDT)
-Message-ID: <92aed0d9-791f-4708-8a73-4c78457a710e@kernel.org>
-Date:   Mon, 2 Oct 2023 09:19:26 +0200
+        Mon, 2 Oct 2023 03:37:26 -0400
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60059A7;
+        Mon,  2 Oct 2023 00:37:23 -0700 (PDT)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20231002073720euoutp016fe876eca16495d8528d299c4c7ee324~KOjxvoWoO2433024330euoutp01V;
+        Mon,  2 Oct 2023 07:37:20 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20231002073720euoutp016fe876eca16495d8528d299c4c7ee324~KOjxvoWoO2433024330euoutp01V
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1696232240;
+        bh=GpVEgYMUf4T/XwZ7+6B8FXnwmrWJ6CC+FEbg1ZXjwco=;
+        h=Date:From:To:CC:Subject:In-Reply-To:References:From;
+        b=JM5sjoqxx/czuPvDtr6u6fxp8xSrPIviov2zbGPSp0LDJiiG1I74OwklyDec1Metn
+         JK2ySWc7cGMV2W67P9g/7ad97JAe2EBmR9Eyyf+onObuwLvINkT9HUNoRE67yIs40m
+         t0+muUw20JcsUQkOaroHhZQO4xt+SQ1GO4Zc/y+E=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20231002073720eucas1p1f12614d17a256c78b37fa5d7de8f75c3~KOjxiX4bF3033930339eucas1p1E;
+        Mon,  2 Oct 2023 07:37:20 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges2new.samsung.com (EUCPMTA) with SMTP id 9E.D4.11320.0337A156; Mon,  2
+        Oct 2023 08:37:20 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20231002073720eucas1p20d4ccb4caf9670a1d718bfbbbdcef951~KOjw9Admk1616816168eucas1p2l;
+        Mon,  2 Oct 2023 07:37:20 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20231002073720eusmtrp24b41570e0cc30e17e0bd40d2480fe1cf~KOjw6I0VU0549305493eusmtrp29;
+        Mon,  2 Oct 2023 07:37:20 +0000 (GMT)
+X-AuditID: cbfec7f4-97dff70000022c38-9b-651a7330d32d
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 18.CC.25043.F237A156; Mon,  2
+        Oct 2023 08:37:19 +0100 (BST)
+Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
+        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20231002073719eusmtip246e1b150785e2296b5a160aff9b9a4f6~KOjwlh3jv1418614186eusmtip2W;
+        Mon,  2 Oct 2023 07:37:19 +0000 (GMT)
+Received: from localhost (106.110.32.133) by CAMSVWEXC02.scsc.local
+        (2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+        Mon, 2 Oct 2023 08:37:19 +0100
+Date:   Mon, 2 Oct 2023 09:39:32 +0200
+From:   Joel Granados <j.granados@samsung.com>
+To:     Phillip Potter <phil@philpotter.co.uk>
+CC:     Luis Chamberlain <mcgrof@kernel.org>, <willy@infradead.org>,
+        <josh@joshtriplett.org>, Kees Cook <keescook@chromium.org>,
+        Clemens Ladisch <clemens@ladisch.de>,
+        Arnd Bergmann <arnd@arndb.de>, Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Doug Gilbert <dgilbert@interlog.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        Corey Minyard <minyard@acm.org>, Theodore Ts'o <tytso@mit.edu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Robin Holt <robinmholt@gmail.com>,
+        Steve Wahl <steve.wahl@hpe.com>,
+        Russ Weight <russell.h.weight@intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Song Liu <song@kernel.org>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        <linux-kernel@vger.kernel.org>, <xen-devel@lists.xenproject.org>,
+        <linux-serial@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <linux-rdma@vger.kernel.org>,
+        <openipmi-developer@lists.sourceforge.net>,
+        <netdev@vger.kernel.org>, <linux-raid@vger.kernel.org>,
+        <linux-hyperv@vger.kernel.org>, <intel-gfx@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 01/15] cdrom: Remove now superfluous sentinel element
+ from ctl_table array
+Message-ID: <20231002073932.72i2ey4zvvaqioqm@localhost>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/4] tty: serial: 8250: Add support for MOXA PCIe boards
- to switch interface between RS422/RS485
-Content-Language: en-US
-To:     Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
-        gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20231002015702.30509-1-crescentcy.hsieh@moxa.com>
- <20231002015702.30509-5-crescentcy.hsieh@moxa.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20231002015702.30509-5-crescentcy.hsieh@moxa.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg="pgp-sha512";
+        protocol="application/pgp-signature"; boundary="iym4gjoiy6yoe7oi"
+Content-Disposition: inline
+In-Reply-To: <ZRhSQaNDJih5xABq@equinox>
+X-Originating-IP: [106.110.32.133]
+X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
+        CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
+X-Brightmail-Tracker: H4sIAAAAAAAAA2WTe1ATVxjFvbub3UAbXYOjl8j4AEY7iKjU4leLHVsfs31M67T/aF9KYQWr
+        BIcYS5nBBlDkoYgIIwQogQhEwUADIqSgTlCCqIA85DHSiqK1EApW5RUNTVhaO9P/fufbc+53
+        z51ZMSntZmTiPfIDfLg8YJ877UxV1k80r1ytkPGro+MXQUNnPgEvU+sZONPQR8BU5UkSspsP
+        U3DpsAHBpYzzNLQ/H6ZBbzxCwMP6+wzEaktpuHORg6yUcgKK2koR3OuQQX5XJQGZGQ0Isrt9
+        4c8cN6jNs5+nCYObSaHQUpksgv7iCwykTRaQkH5yhIY2YzYNR3ONCB6ZjlOQ1FlFw03tcQas
+        YzYRFJltBHSlPESQeOIognrNfBi3WkVQc68fwegNC4L0Qh/IeZZOgs6SQ8Jl9R0GCjJ1JJiL
+        XtJQrN8Jl9NKSLhyI80+skXCkWMTDNQZegiwjtsXj1WcIja+xbW1f8RZJ1MRl6W6TXEVZ7sJ
+        7m5BNeJqRzUUV63uZTiNQckZjdEMV67z4rQ1fxDcywQ/rmdwA2c4l0Bz47oTJJeSfwVtW/yF
+        s38Qv2/PQT581bu7nEMyrg2I9mfhiLzeUZEKdbgkIicxZtfi05fi6ETkLJayOoR/etouEsQz
+        hAubOklBPEVYE9NnF+LpyMlbbo60lC1COLp2978eQ46JEUQ5wh3dI8jholhP/PB8GeFgmvXG
+        zZa7pIPnsV74as/j6d0ke2YOfnLm5+mAC7sLTw2niBwsYddh1ZE6SuC5+HpmP+W4BclGYFWn
+        QsCFuMgmdjic2OXYOthKCdXc8XPLcZHAUbixoodwrMJs4uv41osEkVBmMy5VbRU8LnjAXMEI
+        7IanqnNn/KcQvmwbYQRRbH+W6OeE4HoHH27vn0m8hxtL42deaDbuGprrGJN2TK08PTOW4Pg4
+        qeBehot/tVApyEP9n2LqV8XUr4qpp8/xxppf/qL/N16BC/MGSYE3YL1+mNIg5hxawCsVocG8
+        wlfOf++jCAhVKOXBPoFhoQZk/+Nu2MzPqlDRwBMfEyLEyIQ87eH7ZcUtSEbJw+S8+zxJXMt8
+        XioJCvghkg8P2xmu3McrTGihmHJfIFmx4XqglA0OOMDv5fn9fPg/Xwmxk0xF7F3cpG+p/XL3
+        j8l+Q/zBhKqe4RCR6/LYbL1TulIVUd3ELoxQbprnsWPywuyz2vrWQ7lb3KJ8l0iCpvb/tii/
+        1bmxZk/WSlkeXvzaNkXw73Ma7vguIywF8Cbjquhbk+Hi6p0zfC0uV5xuDHVJZqxtzKwHhaak
+        kAelTtra95F5fVTgh9o4/81fZ8QOHMK9sqUl9CcfPGpepf74IoyNXiW/+zQFjaTtmNjyTdO2
+        jmMxGxnj596bKmQLHmd7tFaZDyjjh0L6unBS75KQXI/xvN2fRTbfHtseSUhcvrJ4rlz/ZNaL
+        RbpvadJvbUxJjf9TY92q8XURUYFb1LK2+Vlvby+LeSN+qcGdUoQErPEiwxUBfwOF13L87AQA
+        AA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA2VTe0xTVxz23Hu5t4BoRzt2VlFnIVnGXHkI+MOJWebcLjNLlo0t2RzDRi/g
+        Bi1pwWyiBCfILA+L0gHlYQF5CArykEEDgoCVlwoiyEvnCJA5YMwHyLOsUJeZ7L/vfL/f98jJ
+        OTzSdo4W8Q7JwjiFTBospq2oduONB+84K0Wcy/htN2i5l0PA0hkDA+dbfidguSqJhIzb0RRc
+        jS5HcDX1Eg13p6doKNHHEDBqGGbgRG4pDb2/spCuriCgoLsUwcMeEeT0VRGQltqCIKPfDf7K
+        tIe6bJOfTg4dcSHQWZVoASPFVxhIns8jQZP0Nw3d+gwaYs/pEYw1JlAQd6+aho7cBAYWnhst
+        oOCGkYA+9SgC1elYBAadHcwuLFhA7cMRBDPtEwg0+RLIfKYhoXAik4R6bS8DeWmFJNwoWKKh
+        uMQf6pMvktDQnmyijEcgJn6OgabyAQIWZk3BzyvPEu95sN1397IL82cQmx7VRbGVF/oJdiiv
+        BrF1MzqKrdHeZ1hdeTir1x9n2IpCJza39hHBLp3yZAfGvdnyolM0O1t4mmTVOQ3o081fS3Yq
+        5OFh3BtBcmWYt3ifK7hJXL1A4ubuJXHdtt1vh5uH2HnXzoNc8KHDnMJ5135JkCH+EhWahn+4
+        16yno1C3QIV4PMx3x0k37VXIimfLz0O4abAPqZClibfHZc96LMxYgBd7VbR56THC8zUdLw4V
+        CM/2VFMrWxTfEY9eukysYJq/Fd+eGCJXsJDvhJsH/lgVkPzz63HJyeXVCAF/P16eUq9G2PC3
+        46iYJsrs+ozALYlaxjx4BbemjawmkPzDeKqgBq30JvkbcIGRt0Jb8t/EC+N3KHNVMZ6eSHhR
+        +xh+ujSG1EigfclJ+5KT9j8nM+2E+4yPiP/Rb+P87HHSjL1xSckUpUNMERJy4cqQwBClm0Qp
+        DVGGywIlB+Qh5cj07qsMc5XV6MKfjyWNiOChRuRoUg5fLu5EIkoml3Fioc3JTjvO1uag9Mcj
+        nELurwgP5pSNyMN0jUmk6NUDctMnkoX5u3q6eLi6e3q5eHh5bhO/ZuMT+rPUlh8oDeO+57hQ
+        TvGvjuBZiqKIYw7Kaj+nfXuuf0sMps4EWIvW7DUo4rhNdZOlAhf7yIZ1xmprm4923KQMwcRw
+        hDBldDL1S2MExopp1Vs7hIuft16M7qr6ZMvFn7LUnqVbMjcyv2xyYWYiac3ZD9p6NVmGTOpB
+        /x39h9eFS9neTz4rU4Snp3+Vp1F9lz7sd1/gcNQ6SzxtMbRxaq1fdOzRslvCAJ/FrWuLNnnm
+        v56y8/3jVxLVJ9rXtLXrfosobNe/G3DNhRsck/Y7t37hONlTm5gS0qeMFzDd9SNWvk8eNjts
+        2Oyr6HJctztmt+xaJF02sP4uk9bccUzztI3KkZ6LdJJ/o9Pu0Qt8faSdKrD7OGXulnBRTCmD
+        pK5OpEIp/Qd2Xc43jAQAAA==
+X-CMS-MailID: 20231002073720eucas1p20d4ccb4caf9670a1d718bfbbbdcef951
+X-Msg-Generator: CA
+X-RootMTR: 20230928133705eucas1p182bd81a8e6aff530e43f9b0746a24eaa
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20230928133705eucas1p182bd81a8e6aff530e43f9b0746a24eaa
+References: <20230928-jag-sysctl_remove_empty_elem_drivers-v1-0-e59120fca9f9@samsung.com>
+        <20230928-jag-sysctl_remove_empty_elem_drivers-v1-1-e59120fca9f9@samsung.com>
+        <CGME20230928133705eucas1p182bd81a8e6aff530e43f9b0746a24eaa@eucas1p1.samsung.com>
+        <2023092855-cultivate-earthy-4d25@gregkh>
+        <20230929121730.bwzhrpaptf45smfy@localhost> <ZRhSQaNDJih5xABq@equinox>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 02. 10. 23, 3:57, Crescent CY Hsieh wrote:
-> MOXA PCIe boards have 4 serial interfaces and don't require additional
-> stuff to switch between interfaces:
-> 
-> - RS232
-> - RS422
-> - RS485_2W (half-duplex)
-> - RS485_4W (full-duplex)
-> 
-> By using ioctl command "TIOCRS485", it can switch between default
-> interface and RS485 if supported.
-> 
-> That means, for RS422/RS485 board, it can switch between RS422 and
-> RS485 by setting the flags within struct serial_rs485.
-> 
-> However, for the RS232/RS422/RS485 board, it can only switch between
-> RS232 and RS485, there's no flag for switching interface into RS422.
-> 
-> This patch adds a flag call "SER_RS422_ENALBED" in serial.h and modifies
+--iym4gjoiy6yoe7oi
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Hopefully not SER_RS422_ENALBED.
+On Sat, Sep 30, 2023 at 05:52:17PM +0100, Phillip Potter wrote:
+> On Fri, Sep 29, 2023 at 02:17:30PM +0200, Joel Granados wrote:
+> > On Thu, Sep 28, 2023 at 03:36:55PM +0200, Greg Kroah-Hartman wrote:
+> > > On Thu, Sep 28, 2023 at 03:21:26PM +0200, Joel Granados via B4 Relay =
+wrote:
+> > > > From: Joel Granados <j.granados@samsung.com>
+> > > >=20
+> > > > This commit comes at the tail end of a greater effort to remove the
+> > > > empty elements at the end of the ctl_table arrays (sentinels) which
+> > > > will reduce the overall build time size of the kernel and run time
+> > > > memory bloat by ~64 bytes per sentinel (further information Link :
+> > > > https://lore.kernel.org/all/ZO5Yx5JFogGi%2FcBo@bombadil.infradead.o=
+rg/)
+> > > >=20
+> > > > Remove sentinel element from cdrom_table
+> > > >=20
+> > > > Signed-off-by: Joel Granados <j.granados@samsung.com>
+> > > > ---
+> > > >  drivers/cdrom/cdrom.c | 3 +--
+> > > >  1 file changed, 1 insertion(+), 2 deletions(-)
+> > > >=20
+> > > > diff --git a/drivers/cdrom/cdrom.c b/drivers/cdrom/cdrom.c
+> > > > index cc2839805983..451907ade389 100644
+> > > > --- a/drivers/cdrom/cdrom.c
+> > > > +++ b/drivers/cdrom/cdrom.c
+> > > > @@ -3654,8 +3654,7 @@ static struct ctl_table cdrom_table[] =3D {
+> > > >  		.maxlen		=3D sizeof(int),
+> > > >  		.mode		=3D 0644,
+> > > >  		.proc_handler	=3D cdrom_sysctl_handler
+> > > > -	},
+> > > > -	{ }
+> > > > +	}
+> > >=20
+> > > You should have the final entry as "}," so as to make any future
+> > > additions to the list to only contain that entry, that's long been the
+> > > kernel style for lists like this.
+> > Will send a V2 with this included. Thx.
+> >=20
+> > >=20
+> > > So your patches will just remove one line, not 2 and add 1, making it=
+ a
+> > > smaller diff.
+> > indeed.
+> >=20
+> > >=20
+> > > thanks,
+> > >=20
+> > > greg k-h
+> >=20
+> > --=20
+> >=20
+> > Joel Granados
+>=20
+> Hi Joel,
+>=20
+> Thank you for your patch. I look forward to seeing V2, and will be happy
+> to review it.
+Am following a reported oops. Once I straighten that out, I'll send out
+a V2
 
-> serial_core.c to make it possible to switch interface between RS232,
-> RS422 and RS485.
-> 
-> Signed-off-by: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-> ---
->   drivers/tty/serial/8250/8250_pci.c | 41 ++++++++++++++++++++++++++++++
->   drivers/tty/serial/serial_core.c   | 20 ++++++++++++---
->   include/uapi/linux/serial.h        |  4 +++
->   3 files changed, 61 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index 31bfe5381000..86dce37f08c0 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -1898,6 +1898,10 @@ pci_sunix_setup(struct serial_private *priv,
->   
->   #define MOXA_GPIO_SET_ALL_OUTPUT	0x0F
->   
-> +static const struct serial_rs485 pci_moxa_rs485_supported = {
-> +	.flags = SER_RS485_ENABLED | SER_RS485_RX_DURING_TX | SER_RS422_ENABLED,
-> +};
-> +
->   static int pci_moxa_set_interface(struct pci_dev *dev,
->   				  unsigned int port_idx,
->   				  unsigned char mode)
-> @@ -1921,6 +1925,30 @@ static int pci_moxa_set_interface(struct pci_dev *dev,
->   	return 0;
->   }
->   
-> +static int pci_moxa_rs485_config(struct uart_port *port,
-> +				 struct ktermios *termios,
-> +				 struct serial_rs485 *rs485)
-> +{
-> +	struct pci_dev *dev = to_pci_dev(port->dev);
-> +	unsigned short device = dev->device;
-> +	unsigned char mode = MOXA_RS232;
+Bet
 
-u8
+>=20
+> Regards,
+> Phil
 
-> +
-> +	if (rs485->flags & SER_RS485_ENABLED) {
-> +		if (rs485->flags & SER_RS485_RX_DURING_TX)
-> +			mode = MOXA_RS485_4W;
-> +		else
-> +			mode = MOXA_RS485_2W;
-> +	} else if (rs485->flags & SER_RS422_ENABLED) {
-> +		mode = MOXA_RS422;
-> +	} else {
-> +		if ((device & 0x0F00) == 0x0300) {
+--=20
 
-This is the second time you test this. Introduce a function.
+Joel Granados
 
-> +			pci_warn(dev, "RS232 interface is not supported.");
+--iym4gjoiy6yoe7oi
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Don't spam the logs.
+-----BEGIN PGP SIGNATURE-----
 
-> +			return -EINVAL;
-> +		}
-> +	}
+iQGzBAABCgAdFiEErkcJVyXmMSXOyyeQupfNUreWQU8FAmUac7QACgkQupfNUreW
+QU/yCwv+ODTBSbi0ueMQdEZxBPJP69SZ4LKBMRpZjtDGBiifZrGt584PygiL6kff
+CdRuYLsAGk56gt/+3JZPjEH6tCnTFH6yZzFU3luYhw759BXEHpy79DyEpzv4cBme
+ZY3ghhzfhc9cilEW6/mwP4fPxj5/3QavA1Re8mqkCDHhMbGSSx60qJ7KeALt4kje
+liPm3oN8g9Rspq958o3ANDvWJsBHsuQinjUc9UdUU/T8DCQ886Rig7yQNnleUbcZ
+MvRchNw012YUtmPGk+0wYsu/30GiQ5hg1iodQjsFj05PCTrWIG0svFnZ3CQDKfcy
+27vtkqiWYMUCX/gXf373wwxVWsIEuLyJqCz0usoSC0bzgN0yu1NXyTWL6KWivWS3
+v1DBHUZV8lAGgUL95xlBfgMNgVInzu19ml5+DfvroOxkUYis2fEVGO+yaGIk6zWO
+LU8IcfGU8a2NMba60gnFqizl/uNhX4g9z0D9IC1HykgQ4WJMhxdJSeLSKEclwoXK
+6ILmm1E1
+=6JBa
+-----END PGP SIGNATURE-----
 
-add \n here
-
-> +	return pci_moxa_set_interface(dev, port->line, mode);
-> +}
-> +
->   static int pci_moxa_init(struct pci_dev *dev)
->   {
->   	unsigned short device = dev->device;
-> @@ -1965,9 +1993,22 @@ static int pci_moxa_setup(struct serial_private *priv,
->   			  struct uart_8250_port *port,
->   			  int idx)
->   {
-> +	struct pci_dev *dev = priv->dev;
-> +	unsigned short device = dev->device;
->   	unsigned int bar = FL_GET_BASE(board->flags);
->   	int offset;
->   
-> +	/*
-> +	 * For the device IDs of MOXA PCIe boards match the pattern 0x*3** and 0x*1**,
-> +	 * these boards support switching interface between RS422/RS485 using TIOCSRS485.
-> +	 */
-> +	if ((device & 0x0F00) == 0x0100 || (device & 0x0F00) == 0x0300) {
-
-Use helpers.
-
-> +		port->port.rs485_config = pci_moxa_rs485_config;
-> +		port->port.rs485_supported = pci_moxa_rs485_supported;
-> +
-> +		if ((device & 0x0F00) == 0x0300)
-> +			port->port.rs485.flags = SER_RE422_ENABLED;
-> +	}
->   	if (board->num_ports == 4 && idx == 3)
->   		offset = 7 * board->uart_offset;
->   	else
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 7bdc21d5e13b..f316d9705809 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1299,7 +1299,7 @@ static int uart_get_icount(struct tty_struct *tty,
->   
->   #define SER_RS485_LEGACY_FLAGS	(SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | \
->   				 SER_RS485_RTS_AFTER_SEND | SER_RS485_RX_DURING_TX | \
-> -				 SER_RS485_TERMINATE_BUS)
-> +				 SER_RS485_TERMINATE_BUS | SER_RS422_ENALBED)
-
-So have you tested this at all?
-
-> @@ -1365,11 +1365,23 @@ static void uart_sanitize_serial_rs485(struct uart_port *port, struct serial_rs4
->   {
->   	u32 supported_flags = port->rs485_supported.flags;
->   
-> -	if (!(rs485->flags & SER_RS485_ENABLED)) {
-> +	if (!(rs485->flags & SER_RS485_ENABLED) && !(rs485->flags & SER_RS422_ENABLED)) {
->   		memset(rs485, 0, sizeof(*rs485));
->   		return;
->   	}
-> -
-> +	/* Pick sane setting if the user enables both interfaces */
-> +	if (rs485->flags & SER_RS485_ENABLED && rs485->flags & SER_RS422_ENABLED) {
-> +		dev_warn_ratelimited(port->dev,
-> +			"%s (%d): Invalid serial interface setting, using RS485 instead\n",
-> +			port->name, port->line);
-> +		rs485->flags &= ~(SER_RS422_ENABLED);
-
-No need for parens.
-
-> +	}
-> +	/* Clear other bits and return if enalbe RS422 */
-
-enable
-
-> +	if (rs485->flags & SER_RS422_ENABLED) {
-> +		memset(rs485, 0, sizeof(*rs485));
-> +		rs485->flags |= SER_RS422_ENABLED;
-> +		return;
-> +	}
->   	/* Pick sane settings if the user hasn't */
->   	if ((supported_flags & (SER_RS485_RTS_ON_SEND|SER_RS485_RTS_AFTER_SEND)) &&
->   	    !(rs485->flags & SER_RS485_RTS_ON_SEND) ==
-> @@ -1394,7 +1406,7 @@ static void uart_sanitize_serial_rs485(struct uart_port *port, struct serial_rs4
->   static void uart_set_rs485_termination(struct uart_port *port,
->   				       const struct serial_rs485 *rs485)
->   {
-> -	if (!(rs485->flags & SER_RS485_ENABLED))
-> +	if (!(rs485->flags & SER_RS485_ENABLED) && !(rs485->flags & SER_RS422_ENABLED))
->   		return;
->   
->   	gpiod_set_value_cansleep(port->rs485_term_gpio,
-> diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
-> index 53bc1af67a41..427609fd52cb 100644
-> --- a/include/uapi/linux/serial.h
-> +++ b/include/uapi/linux/serial.h
-> @@ -137,6 +137,8 @@ struct serial_icounter_struct {
->    * * %SER_RS485_ADDRB		- Enable RS485 addressing mode.
->    * * %SER_RS485_ADDR_RECV - Receive address filter (enables @addr_recv). Requires %SER_RS485_ADDRB.
->    * * %SER_RS485_ADDR_DEST - Destination address (enables @addr_dest). Requires %SER_RS485_ADDRB.
-> + *
-> + * * %SER_RS422_ENABLED		- RS422 enabled.
->    */
->   struct serial_rs485 {
->   	__u32	flags;
-> @@ -149,6 +151,8 @@ struct serial_rs485 {
->   #define SER_RS485_ADDR_RECV		(1 << 7)
->   #define SER_RS485_ADDR_DEST		(1 << 8)
->   
-> +#define SER_RS422_ENABLED		(1 << 9)
-> +
->   	__u32	delay_rts_before_send;
->   	__u32	delay_rts_after_send;
->   
-
-thanks,
--- 
-js
-suse labs
-
+--iym4gjoiy6yoe7oi--
