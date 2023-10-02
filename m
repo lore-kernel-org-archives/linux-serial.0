@@ -2,232 +2,123 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EDB3E7849A
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Oct 2023 07:05:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A271AE784A4
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Oct 2023 07:14:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235630AbjJBHFi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 Oct 2023 03:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52194 "EHLO
+        id S235692AbjJBHOK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 2 Oct 2023 03:14:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235601AbjJBHFi (ORCPT
+        with ESMTP id S235696AbjJBHOJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 Oct 2023 03:05:38 -0400
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA49A9F;
-        Mon,  2 Oct 2023 00:05:34 -0700 (PDT)
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-313e742a787so1586169f8f.1;
-        Mon, 02 Oct 2023 00:05:34 -0700 (PDT)
+        Mon, 2 Oct 2023 03:14:09 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 580FC9F
+        for <linux-serial@vger.kernel.org>; Mon,  2 Oct 2023 00:14:05 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id ffacd0b85a97d-3215f19a13aso16082201f8f.3
+        for <linux-serial@vger.kernel.org>; Mon, 02 Oct 2023 00:14:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1696230844; x=1696835644; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vyEJm0Vs8HzMk1ARIArOtOc0lGgfBnw3jKoPIGWI2IU=;
+        b=ncQqFiFYJTEqjNv9P80BLA3l77PdKx+KpWNHKabUiEP2S56Le9YynoIv3vJ6U/I35a
+         g0htVy2V0Rhc4c/4dJYziE8SO5e0gpxdEaRCNF2ON4VwPPblijzGNadh+C8KGZ/lEcB6
+         5pJ4/M2Li3MmyzyP0LYUJ9ZlVwcWjMx1RWE2/XGxltgUvgq718AmqeQmAdCanPbraSTU
+         OP35OQJT+ItmomTMLbBUuj3/Rwwkm1RY97gHbcZdOqa9mpOBq4JnNkFMP6jK2MVixfxQ
+         igViPAVDbON2q1Bw4eYGZHpLp4SqAy5TdmkT86sn/CgSca7zb+FB228Ff6SoRcVLG6LX
+         W6yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696230333; x=1696835133;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DJm2q62qrX+iVKV047NAIq/AT9zmpWfhQyKoz3ijfZc=;
-        b=HmP8blnRrSqfCvWJPwwERtj6zLg1wLuMFwkbbXOdwpS9XXGOsbAPEgx5aHrx7hIUFL
-         VfXimrELvSmN96AJ55nZ6aciwGNrkr+03/+MtuB9Z1uQNZD0BmbiVLsFdpMa3FElXgAE
-         sxk6s3Kq2MxnIl83PrTVeo2G1R8trYrx4t0lP/o7ziKPk4sELG5l286nr+betWneRhLW
-         d7zO64CffamQkdLfTjn1yWxWdzT8p1P6l5p5E1eQaPHop15ocduLKabwOVGWd83NlD9y
-         wi8JpnnHTkw9BISpJx4h7r/SwaUVo+xFyCb16Ypt4KrbxRMhMbq5zUIUY3Ip56lxr/M4
-         eRUQ==
-X-Gm-Message-State: AOJu0Yxp1zjvrqfej5rbD/3otD5I9naJFMol5IjKgZ9Wl29cDiRJv7+A
-        usOpTcmKVA5gegvH8jo9r9Y=
-X-Google-Smtp-Source: AGHT+IEGiYyCaiN05UrOJ84WRbR1OgpnTt7aoiVG41JK/MPzsnTIYmknQOjgw0Fe+3SeUzPlAlJMYA==
-X-Received: by 2002:a5d:6a11:0:b0:324:84bc:d5ab with SMTP id m17-20020a5d6a11000000b0032484bcd5abmr9068418wru.1.1696230332822;
-        Mon, 02 Oct 2023 00:05:32 -0700 (PDT)
-Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id f21-20020a1c6a15000000b0040641a9d49bsm6550512wmc.17.2023.10.02.00.05.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Oct 2023 00:05:32 -0700 (PDT)
-Message-ID: <1e99f3c4-e0b8-4951-80c3-f3c5a1eb5277@kernel.org>
-Date:   Mon, 2 Oct 2023 09:05:31 +0200
+        d=1e100.net; s=20230601; t=1696230844; x=1696835644;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vyEJm0Vs8HzMk1ARIArOtOc0lGgfBnw3jKoPIGWI2IU=;
+        b=FZJHxEEAAV95cEgmhmZTm+OMkAMpHLubOtBkvX2b+ZzoooOmc+eC4h5DzkFenuFg+7
+         GCSf6BKN2+YKQvSlvunxQitx3cJkgWD/AtZmw0xQEEPEfW+Awev65Gn3ypJ1JEC9QzfM
+         LcdCbptdKfoolx4CIIjHaYNT1kU33nwLRhZkKWqgXr5o2ZkXjFU/GijplOkUXAh+z6oE
+         tMZC+MtfOy2zZ5DcDHa8ca+NsAoiA67oB7pJ2HXb/zrvnCwosoO7bG32G/3DN6cl5kum
+         wcQRKiXu1neXW+lft5B4SFiZlO9NqxpgT8zt64ipSSoGtr48vefiDkVkvo33MvjfIFEj
+         gqAA==
+X-Gm-Message-State: AOJu0YzHPWigwm8YS5HietSUdnCHaPqwyYkAv8lqdHkIEd5Y2NzAiKnb
+        OAhkXemsIW0FYEn5urkR7TrNtkba15Vb7lndCzxHyQ==
+X-Google-Smtp-Source: AGHT+IE1VZdXGHpgzUv4UDd0KzzvuoCETZFBpMqTRickj71vAcjHjYrXq5/yuyrtgxCez/B9xnBlD/+UaNE0EyqoKzE=
+X-Received: by 2002:a5d:674a:0:b0:324:7a6b:d4fe with SMTP id
+ l10-20020a5d674a000000b003247a6bd4femr9856489wrw.9.1696230843723; Mon, 02 Oct
+ 2023 00:14:03 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/4] tty: serial: 8250: Add support for MOXA Mini PCIe
- boards
-Content-Language: en-US
-To:     Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
-        gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20231002015702.30509-1-crescentcy.hsieh@moxa.com>
- <20231002015702.30509-3-crescentcy.hsieh@moxa.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20231002015702.30509-3-crescentcy.hsieh@moxa.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <CAHVXubhG2c=ShFHF4hMMFm8=BYDTyDUduOizujbUWQBW+55wTw@mail.gmail.com>
+ <20230929230549.45206-2-twuufnxlz@gmail.com>
+In-Reply-To: <20230929230549.45206-2-twuufnxlz@gmail.com>
+From:   Alexandre Ghiti <alexghiti@rivosinc.com>
+Date:   Mon, 2 Oct 2023 09:13:52 +0200
+Message-ID: <CAHVXubiBVKJ89fBtV1fvEpoOyLvdvjkWfeDmw2yZsod5ao9hPw@mail.gmail.com>
+Subject: Re: [PATCH] Test for riscv fixes
+To:     Edward AD <twuufnxlz@gmail.com>
+Cc:     alex@ghiti.fr, aou@eecs.berkeley.edu, conor@kernel.org,
+        gregkh@linuxfoundation.org, guoren@kernel.org,
+        jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
+        liushixin2@huawei.com, palmer@dabbelt.com,
+        paul.walmsley@sifive.com,
+        syzbot+8d2757d62d403b2d9275@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 02. 10. 23, 3:57, Crescent CY Hsieh wrote:
-> Add support for MOXA Mini PCIe serial boards:
-> 
-> - CP102N: 2 ports | RS232
-> - CP104N: 4 ports | RS232
-> - CP112N: 2 ports | RS232/RS422/RS485
-> - CP114N: 4 ports | RS232/RS422/RS485
-> - CP132N: 2 ports | RS422/RS485
-> - CP134N: 4 ports | RS422/RS485
-> 
-> Signed-off-by: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-> ---
->   drivers/tty/serial/8250/8250_pci.c | 54 ++++++++++++++++++++++++++++++
->   1 file changed, 54 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index a010790ccfcd..a70546ac361e 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -1887,6 +1887,42 @@ pci_sunix_setup(struct serial_private *priv,
->   	return setup_port(priv, port, bar, offset, 0);
->   }
->   
-> +#define MOXA_PUART_GPIO_EN	0x09
-> +#define MOXA_PUART_GPIO_OUT	0x0A
-> +
-> +#define MOXA_GPIO_SET_ALL_OUTPUT	0x0F
-> +
-> +static int pci_moxa_init(struct pci_dev *dev)
-> +{
-> +	unsigned short device = dev->device;
-> +	unsigned long iobar_addr = pci_resource_start(dev, 2);
+Hi Edward,
 
-resource_size_t
+On Sat, Sep 30, 2023 at 1:06=E2=80=AFAM Edward AD <twuufnxlz@gmail.com> wro=
+te:
+>
+> Hi Alexandre,
+>
+> On Fri, 29 Sep 2023 10:25:59 +0200 Alexandre Ghiti <alexghiti@rivosinc.co=
+m> wrote:
+> > I'm still not convinced this will fix the kasan out-of-bounds
+> > accesses, the page can be valid but the read can happen at an offset
+> > not initialized and trigger such errors right? I still think there is
+> > something weird about the stack frame, as to me this should not happen
+> > (but admittedly I don't know much about that).
+> The added check can confirm that the physical page is invalid (whether it=
+ is a
+> vmalloc allocated page or a slab allocated page), and exit the for loop w=
+hen it is invalid.
 
-> +	int num_ports = (device & 0x00F0) >> 4;
-> +	unsigned char val;
+Yes, but to me this is not what happens in the bug report you link:
 
-u8
+| BUG: KASAN: out-of-bounds in walk_stackframe+0x130/0x2f2
+arch/riscv/kernel/stacktrace.c:59
+| Read of size 8 at addr ff20000006d37c38 by task swapper/1/0
 
-> +
-> +	outb(MOXA_GPIO_SET_ALL_OUTPUT, iobar_addr + MOXA_PUART_GPIO_EN);
+So the read at address ff20000006d37c38 is not "normal" according to
+KASAN (you can see there is no trap, meaning the physical mapping
+exists).
 
-You need to comment in the commit log why this doesn't matter for other 
-moxa cards.
+| The buggy address belongs to the virtual mapping at
+|  [ff20000006d30000, ff20000006d39000) created by:
+| kernel_clone+0x118/0x896 kernel/fork.c:2909
 
-> +	/*
-> +	 * Enable hardware buffer to prevent break signal output when system boot up.
+The virtual address is legitimate since the vma exists ^
 
-boots up.
+| The buggy address belongs to the physical page:
+| page:ff1c00000250dbc0 refcount:1 mapcount:0 mapping:0000000000000000
+index:0x0 pfn:0x9436f
 
-> +	 * This hardware buffer is only supported on Mini PCIe series.
-> +	 */
-> +	if (device == 0x1027 ||	/* MOXA_CP102N */
-> +	    device == 0x1046 ||	/* MOXA_CP104N */
-> +	    device == 0x1121 ||	/* MOXA_CP112N */
-> +	    device == 0x1145 ||	/* MOXA_CP114N */
-> +	    device == 0x1323 ||	/* MOXA_CP132N */
-> +	    device == 0x1343) {	/* MOXA_CP134N */
+And the physical page also exists ^
 
-Why not use the definitions below? You should define a function for this 
-anyway.
+So I insist, checking that a physical mapping exists to exit the loop
+is not enough, to me, the error here is that the backtrace goes "too
+far" at an address where nothing was written before and then KASAN
+complains about that, again, we don't take any page fault here so it's
+not a problem of existing physical mapping.
 
-> +		/* Set GPIO direction */
-> +		val = inb(iobar_addr + MOXA_PUART_GPIO_EN);
-> +		val |= (1 << 2);
-
-Too magic constant. Use BIT() and define that 2 as some constant.
-
-> +		outb(val, iobar_addr + MOXA_PUART_GPIO_EN);
-> +		/* Enable low GPIO */
-> +		val = inb(iobar_addr + MOXA_PUART_GPIO_OUT);
-> +		val &= ~(1 << 2);
-> +		outb(val, iobar_addr + MOXA_PUART_GPIO_OUT);
-> +	}
-
-One more \n here.
-
-> +	return num_ports;
-> +}
-> +
->   static int pci_moxa_setup(struct serial_private *priv,
->   			  const struct pciserial_board *board,
->   			  struct uart_8250_port *port,
-> @@ -1973,6 +2009,13 @@ static int pci_moxa_setup(struct serial_private *priv,
->   #define	PCI_DEVICE_ID_MOXA_CP134EL_A	0x1342
->   #define	PCI_DEVICE_ID_MOXA_CP138E_A	0x1381
->   #define	PCI_DEVICE_ID_MOXA_CP168EL_A	0x1683
-> +/* MOXA Mini PCIe */
-> +#define PCI_DEVICE_ID_MOXA_CP102N	0x1027
-> +#define PCI_DEVICE_ID_MOXA_CP104N	0x1046
-> +#define PCI_DEVICE_ID_MOXA_CP112N	0x1121
-> +#define PCI_DEVICE_ID_MOXA_CP114N	0x1145
-> +#define PCI_DEVICE_ID_MOXA_CP132N	0x1323
-> +#define PCI_DEVICE_ID_MOXA_CP134N	0x1343
-
-I am not sure it matters they are mini PCIe. I would sort them into the 
-above preexisting list instead.
-
->   
->   /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
->   #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
-> @@ -2638,6 +2681,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
->   		.device		= PCI_ANY_ID,
->   		.subvendor	= PCI_ANY_ID,
->   		.subdevice	= PCI_ANY_ID,
-> +		.init		= pci_moxa_init,
->   		.setup		= pci_moxa_setup,
->   	},
->   	{
-> @@ -5365,6 +5409,16 @@ static const struct pci_device_id serial_pci_tbl[] = {
->   	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP138E_A),	 0, 0, pbn_moxa_8 },
->   	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP168EL_A),	 0, 0, pbn_moxa_8 },
->   
-> +	/*
-> +	 * MOXA Mini PCIe
-> +	 */
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP102N), 0, 0, pbn_moxa_2 },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP104N), 0, 0, pbn_moxa_4 },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP112N), 0, 0, pbn_moxa_2 },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP114N), 0, 0, pbn_moxa_4 },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP132N), 0, 0, pbn_moxa_2 },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_CP134N), 0, 0, pbn_moxa_4 },
-
-PCI_VDEVICE() again?
-
-thanks,
--- 
-js
-suse labs
-
+>
+> Perhaps we can trust the test results of syzbot.
+>
+> Thanks,
+> edward
