@@ -2,148 +2,129 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8057CE75434
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 08:18:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53781E75434
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 08:22:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239398AbjJCISN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Oct 2023 04:18:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46674 "EHLO
+        id S231302AbjJCIWu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Oct 2023 04:22:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239206AbjJCISL (ORCPT
+        with ESMTP id S230494AbjJCIWt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Oct 2023 04:18:11 -0400
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2041.outbound.protection.outlook.com [40.107.215.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0B6BF;
-        Tue,  3 Oct 2023 01:18:06 -0700 (PDT)
+        Tue, 3 Oct 2023 04:22:49 -0400
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2051.outbound.protection.outlook.com [40.107.215.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4728CA9;
+        Tue,  3 Oct 2023 01:22:45 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TZiLpgmhHOn8J1PcRqBIoJ1ZagOvxCVz6JQy9bnKKX1wg2ID7tYdgR44aSXyJGgJNWrDgdGUpf0xszWE4ecPnGnNPXp7DGhAyvu4Kf65OvV86B6Jeiwwme1LmUcsfxVM9tQCgutBcrlJUkSZAqRWS8StIlRn8+uMMU9OZgPttJnPSFUaQC3f+KQN3GmxCB9lO35QtnJa9tVN53cJx4/XB4M5dhy0YHYP08cg/Imc7lZzN4ANEgKbpTFA+Wg/yXc82kvN+2oBp/XfO7aSshPjdlQMNMBtm8W0ZE159umoKYO2Q0Fx4x1APn6St2hugzqARaTfxDu8p3y7EGWMLFDjUw==
+ b=EZP9XISeARgXMG4o20r77FbPn/CQjOOdzHS8dK03ZbRt/C8DKUzWdyi82K1G2heHGUJB3+B4Lk1QxRKDNT/8kKGakGu+roO7rh5EIaIMtI8JnQRI3e5ChdkLQpWV+Yy4pMp77Pei5jS9lM9WF1kpxiGfSv2iZr2Jy0TnCi1jG8Zuj3xqhEXEvPND4q4D992Ue4L3vvVVy4RvkhC5IeNHzWxbf9k2s+Vt1b5MU9T01ww7g+TGtrm4L3aY8w86ye+XshcWkTV67zM79sGyVq8JnWlYQx39gRCaTq4DGfHsSZfxcUL+eWvb2YBRHYRBnV4JftSCOHrY6tl88Bmyz6CXow==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ivZ5q6JwarvWhjaIgwAiu6FE1eLpFM4ATkGD2a73X+k=;
- b=LHTqXxGNBXQ+5mrQe62F5EWB/nVnYzuRxn0C+vGUWVSoF/dWY6SvnXGtezP2ESFuZIFR3GXNEaxkGz0PsuKp5mBdP5DvwFEZqbs9L091dPAdk4Ly0J2udvKRhpNaNN9comlqYFOoFXVmZROe0Pof5PLzunNAuq7FyjG4oqMfT3jek3cbmkbTrdYobJjU7ZP7PUabwKmV9iqzBgWGFI666991gLlkA1HTTzlkalGKUPI776Fpqs4KGvSS76VH7cFtC+G0bI09FZ8vWS7Ci62ypBsGrB0vIwypfMuKZa7dh+5xrz95JZUEM8W0wioL+nluNty8IMW8Ilroq6A6958Amw==
+ bh=oWmZxeBHAt848IHd078G0wC6T1vcwDdPQin2K3Jb44c=;
+ b=iXV7clsE/FJ1UMVuyDGHb2/ZKL9/qlB6nsTEY6c4PFOsCh0vPqSbvrIZcXKxYxTY4LCBaR4FFB1aZm1gekZCs9McXsH43q6/7braXa5XFV6O5B8BJFdI61/8atFalcgyESB+NdEsgi20wCN1EUCFHocHLxxXXJfJ5W6k7OlShtc1TZxusKLcaAd1zCwmCfc4mkD6S6aq5Xq2DVb9GGb+rGvlfRmAgmp2yB4Q+M//FXbzmV8J4R9FIok2+7nXCn4BXA9lHrtoEMrjcjhhTUTM1/36rMS8l/ip4e+QiicH/yHdtcx2AJN7maS2wKKVoLg45pFirTCBA1qgu6eAAkRATg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
  dkim=pass header.d=moxa.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ivZ5q6JwarvWhjaIgwAiu6FE1eLpFM4ATkGD2a73X+k=;
- b=QNGF1uwFQKv+La4u5qpK64aPpjND67blH1svASAS1G+cY9h8eMSb5bpVUEepHfstHj9BYg/OeQgoDtuZK9YRv9eNftay3vvsuI3DO3QRDXtvv32M7pzcdwb6pz3Fc+h9pCTyNqi3HIwuM5lHS6bwbXarX0sC83x5dARdYlPol5o=
+ bh=oWmZxeBHAt848IHd078G0wC6T1vcwDdPQin2K3Jb44c=;
+ b=LD4fibQ2r0B9hpXVE33iOQ6SkH6BDoCQZjsVJTM2kc0ZlW5kuO4XOvgMrw0Dqs3fv92MWgYGBfJSvny35dBe8R87nWqv1yvgQU85E0s+YQC5dQDGX4gATFXRJp6fDa6Fi9pE4rVAw01EE8/b7MlHHyywTj5oxzeasatFjiN+DoY=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=moxa.com;
 Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- (2603:1096:301:115::14) by SI2PR01MB4276.apcprd01.prod.exchangelabs.com
- (2603:1096:4:1af::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.31; Tue, 3 Oct
- 2023 08:18:02 +0000
+ (2603:1096:301:115::14) by KL1PR01MB4863.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:9c::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.30; Tue, 3 Oct
+ 2023 08:22:41 +0000
 Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
  ([fe80::3f1:6c0e:dec3:714b]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
  ([fe80::3f1:6c0e:dec3:714b%5]) with mapi id 15.20.6838.024; Tue, 3 Oct 2023
- 08:18:01 +0000
-Date:   Tue, 3 Oct 2023 16:17:57 +0800
+ 08:22:41 +0000
+Date:   Tue, 3 Oct 2023 16:22:37 +0800
 From:   Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
 To:     Jiri Slaby <jirislaby@kernel.org>
 Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
         linux-serial@vger.kernel.org
-Subject: Re: [PATCH 2/4] tty: serial: 8250: Add support for MOXA Mini PCIe
- boards
-Message-ID: <ZRvONVIbgytC+ysT@moxa-ThinkCentre-M90t>
+Subject: Re: [PATCH 3/4] tty: serial: 8250: Fix MOXA RS422/RS485 PCIe boards
+ not work by default
+Message-ID: <ZRvPTa5L35ui9/q1@moxa-ThinkCentre-M90t>
 References: <20231002015702.30509-1-crescentcy.hsieh@moxa.com>
- <20231002015702.30509-3-crescentcy.hsieh@moxa.com>
- <1e99f3c4-e0b8-4951-80c3-f3c5a1eb5277@kernel.org>
+ <20231002015702.30509-4-crescentcy.hsieh@moxa.com>
+ <73a6b0ae-d94e-4a9e-9964-0484c95c8226@kernel.org>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1e99f3c4-e0b8-4951-80c3-f3c5a1eb5277@kernel.org>
-X-ClientProxiedBy: PS2PR04CA0021.apcprd04.prod.outlook.com
- (2603:1096:300:55::33) To PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+In-Reply-To: <73a6b0ae-d94e-4a9e-9964-0484c95c8226@kernel.org>
+X-ClientProxiedBy: TY2PR0101CA0003.apcprd01.prod.exchangelabs.com
+ (2603:1096:404:92::15) To PUZPR01MB5405.apcprd01.prod.exchangelabs.com
  (2603:1096:301:115::14)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|SI2PR01MB4276:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7fc77956-4dd2-473b-b43c-08dbc3e942a9
+X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|KL1PR01MB4863:EE_
+X-MS-Office365-Filtering-Correlation-Id: bb6340c7-16db-4b83-8787-08dbc3e9e982
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YwDlpKWRxyiFj5cusk/E9miDp2o2ZKZcMyZ86Zw8MTsR4Rvm6dD8jWgfWvDxNEJPXo43geAHq07MyIKdAT5Uceyo61wd/H6MCISsJtk9epp7StrWLj/ViDjU6jdpOfommPNUNYjhI/UFfJRMbW/mqIQgL7NixSasdoG6WbnLwhEcyMbuL+J0tCk9vA1b+inH6x1FgZyPL0NFeNZaQv9dl86jzKfcQruhYNvgKsyLbM5VeBnaBoRwYCUjfO068N9GlIbcppSxdbcdEEswsF0BeCcVJNAe+BEq2qDAs7ZGq51831r/vSaoQoZMGg70iakAoovrPu3Nnunv3TUcYxgEc98aXk5W4ytIuEguDkU8CQXerSbxNDTz3Hw93Ux+t9oHmuoRjnlPVCePEARRMOTWB0c45tqFlAQMvOYfo3ZlMJbX/dHn4YeV3ucflQz4ObUv1yilzUXy/0vP2zvW45rVixTYC4lX8Az57Yf6KhHI4JyJ/0+zR5rXN8iE2JMzH+DYlm7awB6j7otbbHtTaYBTClf4M12DkP9ItwOS93fCa1+TlHp/libGEePd1/F2Ht1MI+e3N27MJ9smDfUWDas+6wjHIEtYSOZmZAoPj7rJqqKzvQrUhMQkVDEMoSxTHeq4o2UYHwXHtaaFmMzPLSFJ1A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(376002)(136003)(346002)(366004)(396003)(39860400002)(230922051799003)(1800799009)(451199024)(186009)(64100799003)(478600001)(6506007)(6486002)(38350700002)(66946007)(8936002)(41300700001)(66556008)(66476007)(38100700002)(316002)(6666004)(26005)(6916009)(52116002)(6512007)(9686003)(5660300002)(33716001)(8676002)(4326008)(86362001)(2906002)(67856001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: v2dTbGP+RHj6toyCYhVo6WkLJyLTHC8sqoQOrve7eH3VffkKDg0XyBw29YrKtN8NWqf+tPVc9lvQJ5r7gFqUbACxicYQpQQ/RD1897Ef1VzUhFbqDoETVTN8kaw7AQpfrbzwh6VWHekJ+89xns48a2nEwM0W6zO+f9EpkSNQDJPdfHKXCIHUb7VGc6995Tb6YCLc8kWiXXq9TI3vf73XxQV30Qi1iGyweS3DXqvc+OqJU48Vsxzgc3a6l+5QDB0EqenI+BP1W2LUbxOlCqrvMq8sMNB90Zl2dlxtYIfHisgM5ylPI6lAMnhtHBl+KrOv8nXrFRv5z89q9s4p6YvShwxPpDY14dCZQf6otptvMYz0DPH8kjGgB/7aiDZ8Zvy54xDiqatx53GMx9IWygz2or2xkIrIWqfm3m69fzqOr/p/N3by13CWHvOLkVM+2bNx8FjAVLqyV2kfI3V8/orS+DNUlwRWbAbKDE1oZBhME4Bc23AB5QQ2OTLGscBmqCAEJWZOPXK5436XTLbACDpz79PLChMGZzvRpKWbZ9CL84le6v0jQaLMrSpRcMXWtqKBgsPFsBaJ+4sjQ01Sakil5+uYVPIN6zRyx0Rk4zDknrUhpGu27pcCM89J2/QG++OJ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(376002)(346002)(396003)(366004)(136003)(39860400002)(230922051799003)(451199024)(64100799003)(186009)(1800799009)(52116002)(6666004)(6486002)(478600001)(6506007)(38100700002)(86362001)(38350700002)(33716001)(41300700001)(6512007)(9686003)(26005)(2906002)(4744005)(66946007)(5660300002)(6916009)(66556008)(316002)(66476007)(8936002)(4326008)(8676002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?O4U1EmZf0cKXuz/LF0mgb0V2lQMP6axWVyRWWVh9hILq9ud6Q9rLdFTJXEU0?=
- =?us-ascii?Q?RBsM/dgrTUz+rboqdKlcEJxSqeF9eNPM9iQ0UPubLQ+DLPU1zRzCM19gsbLM?=
- =?us-ascii?Q?GarvZH2fHfRKTWBi5jJyuUTu/aiKeqKRYBfJhKgr56leDDpuqqP2unmma/zM?=
- =?us-ascii?Q?tmcvVRN8U1Wix+tKySYhUocP2d0ITRDGrIHnFWSgPOkmzU/Y/jm/DJY7Vm24?=
- =?us-ascii?Q?wI53jK/6JRZOsj9h/1aYAk7D6X+Kua9Fw7S9tXxlbq9dbWxvZ0TSdvgHadvM?=
- =?us-ascii?Q?83hQhgosiZ8RSyVcNxOq4Kz/WrYR4jDHvFNNcTXgWpBSXXgyjSS2OPDIzYM1?=
- =?us-ascii?Q?13FmooRAZr+yF1boI13f8NYwB2mEROZiUwc/f6J16g5ETK+pmoWO/4+Hq33E?=
- =?us-ascii?Q?U/tEuMhmKeSddobdL+7nJnGThtggrLDW7dlIRm1POO9Z51cRsQSzD0Djxh9D?=
- =?us-ascii?Q?J5BqJ8njq2leSHBazKeDmOryYIryk4tyLWeM6jW+p0X8jTmFrbD7lsODDYHZ?=
- =?us-ascii?Q?qys7MrDO0dBGIASJVNW814iuwZvO/VTTOvSJgK55TYdInKx28aQ7jg0YBZMD?=
- =?us-ascii?Q?xERp/pVuK+RDVpoo5pNpXSSQ/8J4mhwIumlv+I4qBJ79c4xVahF6E95XjL4O?=
- =?us-ascii?Q?zy6BOEGrEY5cBzHUxVClMNr4MvsJUeu87mzHz9NJJSa+ioHXz+H2g05dDWXx?=
- =?us-ascii?Q?+Itzf4MH6XqRwPFqXCazbXWH7h2tlXSP0//EO0+FIB3gxNOiUF8SE1vDzwMu?=
- =?us-ascii?Q?c4f/kjZef5o5p2J9dgNSIe2N7tuiSD83XEUBJ6G4miL0clrtKuRGPRjmNzj4?=
- =?us-ascii?Q?Kg+dASPq3plGcKDuCic0/yeyMNUd3o7hl+XZcWNCBmKgGro7HGRVwDtY/vU8?=
- =?us-ascii?Q?kbEJJBqRV84/rkhn+whH772D8QyEZehapQleksBr1WDvaeCmdRtNjjk7RkcJ?=
- =?us-ascii?Q?PeyL2emEmJwnDGp+NhYNJGj0HWVf8eTycgid/Pu6YY9wT+oZFepGX9ayLmqS?=
- =?us-ascii?Q?4FOOYJkTI5YCE0fwA7QdRGizN9xCiW27IOa8H9gypjqJVvsAif1cfiy7LUAu?=
- =?us-ascii?Q?Oqa7jPJa6Ly6tfFN5oBqFIKS3xOoi2+kuiWv5nMr6SqqiaAUuYN/t7V0TCxB?=
- =?us-ascii?Q?jp+o6RT4CTM8/Sp1GZntoBG9jnx9tiDJawIy1Ocy/Rmy+KxREsJ1FTh9rzkK?=
- =?us-ascii?Q?ib3xWBTvrGpp6ZG+9qa/9WNfq1XVaeegA/Xtn4kQLdzxC2zTD6jjXh/pxk8j?=
- =?us-ascii?Q?kew5VQ8RImW4qCWg05cOGu+T5KMvWlO1ANnqs28Eue5TlYmwGIhwa9tqx+d5?=
- =?us-ascii?Q?uyTgeOgSkh5Tbo9DIjsC62ChQt5Hcd+87mVk6AMUWEqy55zBtM6Ml+GU0/w2?=
- =?us-ascii?Q?+NVR0VOvOVi5fUabWxRk+NJ+d7/Fz3vuNbB4oQkmxzdR+NuhM3TvkKFBtx/w?=
- =?us-ascii?Q?XTTERPWhgb94AarimtAG/2bdLJoQrnPpaTechiDkHZJ+/I6OmU5/nzSVDh7J?=
- =?us-ascii?Q?Vx3gLu0Ljrrz8A4Uw4FvwQzOoVC85oRsW4CmQevjZmydFBHBOnekKUgIbw3Q?=
- =?us-ascii?Q?cKZVsCveYzsTyPuscGrBa3EJz1y1eOCifPoEaeb3TygNz+7aam9Guhtks8JP?=
- =?us-ascii?Q?Ng=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KhFMKpDaO3iGMdDbRs6KVWflWHZDZkcuKSQu2Wfnqf8hsG1Ca/7vNZ4khqy7?=
+ =?us-ascii?Q?FFRwpiIg9o4M9I/dimtlT9nOJWL76Po0ITHZjSOCXsah+tSTUJ9ZmqGG4wVV?=
+ =?us-ascii?Q?rFcmOWypWCQdFUM5BpPZTSDUXxlF2PFC3fBXHfwmQfWRwx9diwzp+geEkQdg?=
+ =?us-ascii?Q?JAnwrznkVHK8kDfu1fXtrLLTmXyXNg7RPF8FFJdIvxz102VtJ9RoRBBLVLCm?=
+ =?us-ascii?Q?Hl5sSVwXik8lD4s96wWtEnIc8ceEQvhLqEdKAfgM7H9mAxzYRfe8npochjsI?=
+ =?us-ascii?Q?A1+DWtiVrSoch1/4fMEXfNP8yP1repdyn+gvpxUcHHNBD2Li3Db4v+hqxVd+?=
+ =?us-ascii?Q?CTKpOxDdnBwOSkP07ofx4Ur0KUi5R81wt62zSxfUMaNPiVErBaZhRkZ+oCvl?=
+ =?us-ascii?Q?RarBUMDiOa0u1zqyt2HmVwrZfM/i2+35WCRiKLtrfD5uuE601aPGVb/32J/y?=
+ =?us-ascii?Q?qYciAhcFHaT8nK5E7xiSbeGb6m9r/XLhmlovKl8TvsG9i6nYUics5OQW5pcB?=
+ =?us-ascii?Q?AIOzQAMcefcnSDG6ADY7e65zSE7VncPhTpRxZiwcdvVOEa1vt9InNds/wrpY?=
+ =?us-ascii?Q?UPRFNr21GEE9ATk9nmBPqXU2O22EtFvmAJywBahkJJEsB27QMN+HYGYFBTkT?=
+ =?us-ascii?Q?wYW5X2S3a/krSUx5AcYYqD7evCaKv9Enu5KgXKR7kwwkx+K/vReUGlt8e6dC?=
+ =?us-ascii?Q?WtaaxnihKrfK/srheC77HMn8hKl8Q53zaQzxOjgmm51WcyMkFv6fMy88IAqf?=
+ =?us-ascii?Q?zHeLgF4vJu5imT83NEKOqNMAZyj0pJ1PD9fqwRtVE1d5dFNzFr2hHohX5JCW?=
+ =?us-ascii?Q?/aca+h5CP0JCI2XECpTOHLeEOxvv+n9vp/2rWxVurxqfkgQ4qtIu1s1HT3T/?=
+ =?us-ascii?Q?qSN65NxtezrJzKERHRm7Rc5FSq+MlY39r5Le6A/x5OdhEHgEWzjaQomj352Y?=
+ =?us-ascii?Q?WWAJ0xbl7QiHKORvAHyFLihBYuz+5GPl0iDzRVCrO/niERFHxL+3BLZcLXrY?=
+ =?us-ascii?Q?xyHu08G9HzSNra7Y52xSEBKGHRhdMTeyv8N5hCPh9Bhbj0CdRlsEFPDic0dj?=
+ =?us-ascii?Q?JjTI0VHXU85WXZtjGJeKSO2F0zlPbwYmoLwVcZn3u8JQ9ru2Aky97UUDniKR?=
+ =?us-ascii?Q?9u6uGkP11WeAyOMJ5Jjj71T1eAonuhlvj8SxtBjaRK26HE5omTDzRS4SWQl7?=
+ =?us-ascii?Q?1EXbVo341dzuB+ioihij0ENTB9ccnMml+UocOS2gRFtzv0CRDzSohdI7mgVj?=
+ =?us-ascii?Q?CHC2KY6RMxg79BBAZYwh4M+q4RqmImvt+fsyV7BJvzJmIJcS6TjdxYp8+nc/?=
+ =?us-ascii?Q?gFmjnUgxAUCRRyUk2JDXDwAT1wqkPoOI53+N1JQhPYB4ikq/rqxTAKOSF+g1?=
+ =?us-ascii?Q?N8dNVKKfC1TItUmxvpn7Uxj19BvEx4LipO/OjeYBTqdBZAMH9Kj9KsHUYaKG?=
+ =?us-ascii?Q?yk59cpx/mA228xXkhzmxJlXTX5hVQxvoGXpX6GScTLPlB1mh1RAcM1KiH+wC?=
+ =?us-ascii?Q?SA2sKB7YR7tBMgtNeBLjJCgBDH4blQ41lQkwYWZK9CB5gmHfr4LQ7LiI64b9?=
+ =?us-ascii?Q?v0I/gAScHFczZjDyNFlVtL0Qtud1b2g50s3gf9uL1JfVrzubM4V34zbeWvXw?=
+ =?us-ascii?Q?lw=3D=3D?=
 X-OriginatorOrg: moxa.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7fc77956-4dd2-473b-b43c-08dbc3e942a9
+X-MS-Exchange-CrossTenant-Network-Message-Id: bb6340c7-16db-4b83-8787-08dbc3e9e982
 X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Oct 2023 08:18:01.7931
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Oct 2023 08:22:41.6801
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pSxbROgQ6XOR8hnkGL4d0y22mFuYdkT/twsaKvgoiPiEs4afp4j8leL24ZwcgtBlGHqCHYrmoF+kIjb4mpBGey7tsdK0rJfs3ZlBBFn/+JM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SI2PR01MB4276
+X-MS-Exchange-CrossTenant-UserPrincipalName: akBpujpakxNBrXTfW4/qV88i0yT/VAqEbpsQnCRNTQTsmDk0IngiJ07sukTBCgW/Fs6tGyzzoxNnSMNR7nHaW3OtbQ0A3Izdh28wcF2ngtE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: KL1PR01MB4863
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Oct 02, 2023 at 09:05:31AM +0200, Jiri Slaby wrote:
+On Mon, Oct 02, 2023 at 09:14:32AM +0200, Jiri Slaby wrote:
 > On 02. 10. 23, 3:57, Crescent CY Hsieh wrote:
-> > +	 * This hardware buffer is only supported on Mini PCIe series.
-> > +	 */
-> > +	if (device == 0x1027 ||	/* MOXA_CP102N */
-> > +	    device == 0x1046 ||	/* MOXA_CP104N */
-> > +	    device == 0x1121 ||	/* MOXA_CP112N */
-> > +	    device == 0x1145 ||	/* MOXA_CP114N */
-> > +	    device == 0x1323 ||	/* MOXA_CP132N */
-> > +	    device == 0x1343) {	/* MOXA_CP134N */
+> >   static int pci_moxa_init(struct pci_dev *dev)
+> >   {
+> >   	unsigned short device = dev->device;
+> >   	unsigned long iobar_addr = pci_resource_start(dev, 2);
+> > +	int i;
 > 
-> Why not use the definitions below? You should define a function for this
-> anyway.
-
-I cannot use macros here, unless I put the definitions before this
-function or into pci_ids.h.
-
-> > @@ -1973,6 +2009,13 @@ static int pci_moxa_setup(struct serial_private *priv,
-> >   #define	PCI_DEVICE_ID_MOXA_CP134EL_A	0x1342
-> >   #define	PCI_DEVICE_ID_MOXA_CP138E_A	0x1381
-> >   #define	PCI_DEVICE_ID_MOXA_CP168EL_A	0x1683
-> > +/* MOXA Mini PCIe */
-> > +#define PCI_DEVICE_ID_MOXA_CP102N	0x1027
-> > +#define PCI_DEVICE_ID_MOXA_CP104N	0x1046
-> > +#define PCI_DEVICE_ID_MOXA_CP112N	0x1121
-> > +#define PCI_DEVICE_ID_MOXA_CP114N	0x1145
-> > +#define PCI_DEVICE_ID_MOXA_CP132N	0x1323
-> > +#define PCI_DEVICE_ID_MOXA_CP134N	0x1343
+> unsigned
 > 
-> I am not sure it matters they are mini PCIe. I would sort them into the
-> above preexisting list instead.
+> >   	int num_ports = (device & 0x00F0) >> 4;
+> 
+> And this one too (in the previous patch).
 
-For these lines, classify the type of boards is just for clarity, but
-sort them into preexisting list is also feasible.
+Sorry, I am not sure I get your meaning, could you explain to me?
 
 ---
 Sincerely,
