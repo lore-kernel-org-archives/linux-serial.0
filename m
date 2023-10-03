@@ -2,263 +2,149 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCD3AE75438
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 07:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8057CE75434
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 08:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231421AbjJCH6L (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Oct 2023 03:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56368 "EHLO
+        id S239398AbjJCISN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Oct 2023 04:18:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231264AbjJCH6K (ORCPT
+        with ESMTP id S239206AbjJCISL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Oct 2023 03:58:10 -0400
-Received: from mx08-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF7890;
-        Tue,  3 Oct 2023 00:58:06 -0700 (PDT)
-Received: from pps.filterd (m0369457.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 39354RYX021850;
-        Tue, 3 Oct 2023 09:57:28 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-        message-id:date:mime-version:subject:to:cc:references:from
-        :in-reply-to:content-type:content-transfer-encoding; s=
-        selector1; bh=2y5VWljP34AhFxfwuXFEGUJY8eirMnibqQLHOoorPbE=; b=fa
-        R320QQYh6hKcFinrg870rQe7h0GoXbzAPslv70ug5D/eA+R8ih3Xs94oiISEkK6B
-        +lVN0Nk0RWDanLNzOlVYVNXoVC3ylH/TR6SkGucS1gcPw7FozvY41TLJnEVq1maw
-        Jl6Eziv6CXtKt7MA3JP2LjxAGGwZhycpeAquJPFY02PW+RyneA8UuzdwjLuc2TLb
-        C9VlpRVVgHLOWIyRNtcpjQgKBqCrRy6rnZcMMhIH05RrLAiA3z+B1mGpbD7TMDLg
-        lm/a6IQSsoxIMoQfUPRokZlwPSqQ1ylCSIFMXzh4BEOWLA7H9P1siSHgVyaetmgZ
-        OCu6sQeMWTJ6KW6XuqMg==
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3texmj0e7j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 03 Oct 2023 09:57:28 +0200 (MEST)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 9D9B9100057;
-        Tue,  3 Oct 2023 09:57:27 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 88D7222D164;
-        Tue,  3 Oct 2023 09:57:27 +0200 (CEST)
-Received: from [10.201.20.32] (10.201.20.32) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Tue, 3 Oct
- 2023 09:57:25 +0200
-Message-ID: <1d33a7ee-3966-5c2e-5a6c-08a6e56d0f75@foss.st.com>
-Date:   Tue, 3 Oct 2023 09:57:24 +0200
+        Tue, 3 Oct 2023 04:18:11 -0400
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2041.outbound.protection.outlook.com [40.107.215.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0B6BF;
+        Tue,  3 Oct 2023 01:18:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TZiLpgmhHOn8J1PcRqBIoJ1ZagOvxCVz6JQy9bnKKX1wg2ID7tYdgR44aSXyJGgJNWrDgdGUpf0xszWE4ecPnGnNPXp7DGhAyvu4Kf65OvV86B6Jeiwwme1LmUcsfxVM9tQCgutBcrlJUkSZAqRWS8StIlRn8+uMMU9OZgPttJnPSFUaQC3f+KQN3GmxCB9lO35QtnJa9tVN53cJx4/XB4M5dhy0YHYP08cg/Imc7lZzN4ANEgKbpTFA+Wg/yXc82kvN+2oBp/XfO7aSshPjdlQMNMBtm8W0ZE159umoKYO2Q0Fx4x1APn6St2hugzqARaTfxDu8p3y7EGWMLFDjUw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ivZ5q6JwarvWhjaIgwAiu6FE1eLpFM4ATkGD2a73X+k=;
+ b=LHTqXxGNBXQ+5mrQe62F5EWB/nVnYzuRxn0C+vGUWVSoF/dWY6SvnXGtezP2ESFuZIFR3GXNEaxkGz0PsuKp5mBdP5DvwFEZqbs9L091dPAdk4Ly0J2udvKRhpNaNN9comlqYFOoFXVmZROe0Pof5PLzunNAuq7FyjG4oqMfT3jek3cbmkbTrdYobJjU7ZP7PUabwKmV9iqzBgWGFI666991gLlkA1HTTzlkalGKUPI776Fpqs4KGvSS76VH7cFtC+G0bI09FZ8vWS7Ci62ypBsGrB0vIwypfMuKZa7dh+5xrz95JZUEM8W0wioL+nluNty8IMW8Ilroq6A6958Amw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
+ dkim=pass header.d=moxa.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ivZ5q6JwarvWhjaIgwAiu6FE1eLpFM4ATkGD2a73X+k=;
+ b=QNGF1uwFQKv+La4u5qpK64aPpjND67blH1svASAS1G+cY9h8eMSb5bpVUEepHfstHj9BYg/OeQgoDtuZK9YRv9eNftay3vvsuI3DO3QRDXtvv32M7pzcdwb6pz3Fc+h9pCTyNqi3HIwuM5lHS6bwbXarX0sC83x5dARdYlPol5o=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=moxa.com;
+Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:115::14) by SI2PR01MB4276.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:1af::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.31; Tue, 3 Oct
+ 2023 08:18:02 +0000
+Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ ([fe80::3f1:6c0e:dec3:714b]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ ([fe80::3f1:6c0e:dec3:714b%5]) with mapi id 15.20.6838.024; Tue, 3 Oct 2023
+ 08:18:01 +0000
+Date:   Tue, 3 Oct 2023 16:17:57 +0800
+From:   Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH 2/4] tty: serial: 8250: Add support for MOXA Mini PCIe
+ boards
+Message-ID: <ZRvONVIbgytC+ysT@moxa-ThinkCentre-M90t>
+References: <20231002015702.30509-1-crescentcy.hsieh@moxa.com>
+ <20231002015702.30509-3-crescentcy.hsieh@moxa.com>
+ <1e99f3c4-e0b8-4951-80c3-f3c5a1eb5277@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1e99f3c4-e0b8-4951-80c3-f3c5a1eb5277@kernel.org>
+X-ClientProxiedBy: PS2PR04CA0021.apcprd04.prod.outlook.com
+ (2603:1096:300:55::33) To PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:115::14)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH v5 03/11] dt-bindings: bus: document RIFSC
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-CC:     <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
-        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
-        <alexandre.torgue@foss.st.com>, <vkoul@kernel.org>,
-        <jic23@kernel.org>, <olivier.moysan@foss.st.com>,
-        <arnaud.pouliquen@foss.st.com>, <mchehab@kernel.org>,
-        <fabrice.gasnier@foss.st.com>, <andi.shyti@kernel.org>,
-        <ulf.hansson@linaro.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <hugues.fruchet@foss.st.com>,
-        <lee@kernel.org>, <will@kernel.org>, <catalin.marinas@arm.com>,
-        <arnd@kernel.org>, <richardcochran@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>, <peng.fan@oss.nxp.com>,
-        <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
-        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-p.hy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>
-References: <20230929142852.578394-1-gatien.chevallier@foss.st.com>
- <20230929142852.578394-4-gatien.chevallier@foss.st.com>
- <20231002183041.GA2062984-robh@kernel.org>
-From:   Gatien CHEVALLIER <gatien.chevallier@foss.st.com>
-In-Reply-To: <20231002183041.GA2062984-robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.201.20.32]
-X-ClientProxiedBy: SHFCAS1NODE2.st.com (10.75.129.73) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-10-03_05,2023-10-02_01,2023-05-22_02
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|SI2PR01MB4276:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7fc77956-4dd2-473b-b43c-08dbc3e942a9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YwDlpKWRxyiFj5cusk/E9miDp2o2ZKZcMyZ86Zw8MTsR4Rvm6dD8jWgfWvDxNEJPXo43geAHq07MyIKdAT5Uceyo61wd/H6MCISsJtk9epp7StrWLj/ViDjU6jdpOfommPNUNYjhI/UFfJRMbW/mqIQgL7NixSasdoG6WbnLwhEcyMbuL+J0tCk9vA1b+inH6x1FgZyPL0NFeNZaQv9dl86jzKfcQruhYNvgKsyLbM5VeBnaBoRwYCUjfO068N9GlIbcppSxdbcdEEswsF0BeCcVJNAe+BEq2qDAs7ZGq51831r/vSaoQoZMGg70iakAoovrPu3Nnunv3TUcYxgEc98aXk5W4ytIuEguDkU8CQXerSbxNDTz3Hw93Ux+t9oHmuoRjnlPVCePEARRMOTWB0c45tqFlAQMvOYfo3ZlMJbX/dHn4YeV3ucflQz4ObUv1yilzUXy/0vP2zvW45rVixTYC4lX8Az57Yf6KhHI4JyJ/0+zR5rXN8iE2JMzH+DYlm7awB6j7otbbHtTaYBTClf4M12DkP9ItwOS93fCa1+TlHp/libGEePd1/F2Ht1MI+e3N27MJ9smDfUWDas+6wjHIEtYSOZmZAoPj7rJqqKzvQrUhMQkVDEMoSxTHeq4o2UYHwXHtaaFmMzPLSFJ1A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(376002)(136003)(346002)(366004)(396003)(39860400002)(230922051799003)(1800799009)(451199024)(186009)(64100799003)(478600001)(6506007)(6486002)(38350700002)(66946007)(8936002)(41300700001)(66556008)(66476007)(38100700002)(316002)(6666004)(26005)(6916009)(52116002)(6512007)(9686003)(5660300002)(33716001)(8676002)(4326008)(86362001)(2906002)(67856001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?O4U1EmZf0cKXuz/LF0mgb0V2lQMP6axWVyRWWVh9hILq9ud6Q9rLdFTJXEU0?=
+ =?us-ascii?Q?RBsM/dgrTUz+rboqdKlcEJxSqeF9eNPM9iQ0UPubLQ+DLPU1zRzCM19gsbLM?=
+ =?us-ascii?Q?GarvZH2fHfRKTWBi5jJyuUTu/aiKeqKRYBfJhKgr56leDDpuqqP2unmma/zM?=
+ =?us-ascii?Q?tmcvVRN8U1Wix+tKySYhUocP2d0ITRDGrIHnFWSgPOkmzU/Y/jm/DJY7Vm24?=
+ =?us-ascii?Q?wI53jK/6JRZOsj9h/1aYAk7D6X+Kua9Fw7S9tXxlbq9dbWxvZ0TSdvgHadvM?=
+ =?us-ascii?Q?83hQhgosiZ8RSyVcNxOq4Kz/WrYR4jDHvFNNcTXgWpBSXXgyjSS2OPDIzYM1?=
+ =?us-ascii?Q?13FmooRAZr+yF1boI13f8NYwB2mEROZiUwc/f6J16g5ETK+pmoWO/4+Hq33E?=
+ =?us-ascii?Q?U/tEuMhmKeSddobdL+7nJnGThtggrLDW7dlIRm1POO9Z51cRsQSzD0Djxh9D?=
+ =?us-ascii?Q?J5BqJ8njq2leSHBazKeDmOryYIryk4tyLWeM6jW+p0X8jTmFrbD7lsODDYHZ?=
+ =?us-ascii?Q?qys7MrDO0dBGIASJVNW814iuwZvO/VTTOvSJgK55TYdInKx28aQ7jg0YBZMD?=
+ =?us-ascii?Q?xERp/pVuK+RDVpoo5pNpXSSQ/8J4mhwIumlv+I4qBJ79c4xVahF6E95XjL4O?=
+ =?us-ascii?Q?zy6BOEGrEY5cBzHUxVClMNr4MvsJUeu87mzHz9NJJSa+ioHXz+H2g05dDWXx?=
+ =?us-ascii?Q?+Itzf4MH6XqRwPFqXCazbXWH7h2tlXSP0//EO0+FIB3gxNOiUF8SE1vDzwMu?=
+ =?us-ascii?Q?c4f/kjZef5o5p2J9dgNSIe2N7tuiSD83XEUBJ6G4miL0clrtKuRGPRjmNzj4?=
+ =?us-ascii?Q?Kg+dASPq3plGcKDuCic0/yeyMNUd3o7hl+XZcWNCBmKgGro7HGRVwDtY/vU8?=
+ =?us-ascii?Q?kbEJJBqRV84/rkhn+whH772D8QyEZehapQleksBr1WDvaeCmdRtNjjk7RkcJ?=
+ =?us-ascii?Q?PeyL2emEmJwnDGp+NhYNJGj0HWVf8eTycgid/Pu6YY9wT+oZFepGX9ayLmqS?=
+ =?us-ascii?Q?4FOOYJkTI5YCE0fwA7QdRGizN9xCiW27IOa8H9gypjqJVvsAif1cfiy7LUAu?=
+ =?us-ascii?Q?Oqa7jPJa6Ly6tfFN5oBqFIKS3xOoi2+kuiWv5nMr6SqqiaAUuYN/t7V0TCxB?=
+ =?us-ascii?Q?jp+o6RT4CTM8/Sp1GZntoBG9jnx9tiDJawIy1Ocy/Rmy+KxREsJ1FTh9rzkK?=
+ =?us-ascii?Q?ib3xWBTvrGpp6ZG+9qa/9WNfq1XVaeegA/Xtn4kQLdzxC2zTD6jjXh/pxk8j?=
+ =?us-ascii?Q?kew5VQ8RImW4qCWg05cOGu+T5KMvWlO1ANnqs28Eue5TlYmwGIhwa9tqx+d5?=
+ =?us-ascii?Q?uyTgeOgSkh5Tbo9DIjsC62ChQt5Hcd+87mVk6AMUWEqy55zBtM6Ml+GU0/w2?=
+ =?us-ascii?Q?+NVR0VOvOVi5fUabWxRk+NJ+d7/Fz3vuNbB4oQkmxzdR+NuhM3TvkKFBtx/w?=
+ =?us-ascii?Q?XTTERPWhgb94AarimtAG/2bdLJoQrnPpaTechiDkHZJ+/I6OmU5/nzSVDh7J?=
+ =?us-ascii?Q?Vx3gLu0Ljrrz8A4Uw4FvwQzOoVC85oRsW4CmQevjZmydFBHBOnekKUgIbw3Q?=
+ =?us-ascii?Q?cKZVsCveYzsTyPuscGrBa3EJz1y1eOCifPoEaeb3TygNz+7aam9Guhtks8JP?=
+ =?us-ascii?Q?Ng=3D=3D?=
+X-OriginatorOrg: moxa.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7fc77956-4dd2-473b-b43c-08dbc3e942a9
+X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Oct 2023 08:18:01.7931
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pSxbROgQ6XOR8hnkGL4d0y22mFuYdkT/twsaKvgoiPiEs4afp4j8leL24ZwcgtBlGHqCHYrmoF+kIjb4mpBGey7tsdK0rJfs3ZlBBFn/+JM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SI2PR01MB4276
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On 10/2/23 20:30, Rob Herring wrote:
-> On Fri, Sep 29, 2023 at 04:28:44PM +0200, Gatien Chevallier wrote:
->> Document RIFSC (RIF security controller). RIFSC is a firewall controller
->> composed of different kinds of hardware resources.
->>
->> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
->> ---
->>
->> Changes in V5:
->> 	- Renamed feature-domain* to access-control*
->>
->> Changes in V2:
->> 	- Corrected errors highlighted by Rob's robot
->> 	- No longer define the maxItems for the "feature-domains"
->> 	  property
->> 	- Fix example (node name, status)
->> 	- Declare "feature-domain-names" as an optional
->> 	  property for child nodes
->> 	- Fix description of "feature-domains" property
->>
->>   .../bindings/bus/st,stm32mp25-rifsc.yaml      | 105 ++++++++++++++++++
->>   1 file changed, 105 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/bus/st,stm32mp25-rifsc.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/bus/st,stm32mp25-rifsc.yaml b/Documentation/devicetree/bindings/bus/st,stm32mp25-rifsc.yaml
->> new file mode 100644
->> index 000000000000..c28fceff3036
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/bus/st,stm32mp25-rifsc.yaml
->> @@ -0,0 +1,105 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/bus/st,stm32mp25-rifsc.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: STM32 Resource isolation framework security controller
->> +
->> +maintainers:
->> +  - Gatien Chevallier <gatien.chevallier@foss.st.com>
->> +
->> +description: |
->> +  Resource isolation framework (RIF) is a comprehensive set of hardware blocks
->> +  designed to enforce and manage isolation of STM32 hardware resources like
->> +  memory and peripherals.
->> +
->> +  The RIFSC (RIF security controller) is composed of three sets of registers,
->> +  each managing a specific set of hardware resources:
->> +    - RISC registers associated with RISUP logic (resource isolation device unit
->> +      for peripherals), assign all non-RIF aware peripherals to zero, one or
->> +      any security domains (secure, privilege, compartment).
->> +    - RIMC registers: associated with RIMU logic (resource isolation master
->> +      unit), assign all non RIF-aware bus master to one security domain by
->> +      setting secure, privileged and compartment information on the system bus.
->> +      Alternatively, the RISUP logic controlling the device port access to a
->> +      peripheral can assign target bus attributes to this peripheral master port
->> +      (supported attribute: CID).
->> +    - RISC registers associated with RISAL logic (resource isolation device unit
->> +      for address space - Lite version), assign address space subregions to one
->> +      security domains (secure, privilege, compartment).
->> +
->> +properties:
->> +  compatible:
->> +    contains:
->> +      const: st,stm32mp25-rifsc
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  "#address-cells":
->> +    const: 1
->> +
->> +  "#size-cells":
->> +    const: 1
->> +
->> +  ranges: true
->> +
->> +  "#access-controller-cells":
->> +    const: 1
+On Mon, Oct 02, 2023 at 09:05:31AM +0200, Jiri Slaby wrote:
+> On 02. 10. 23, 3:57, Crescent CY Hsieh wrote:
+> > +	 * This hardware buffer is only supported on Mini PCIe series.
+> > +	 */
+> > +	if (device == 0x1027 ||	/* MOXA_CP102N */
+> > +	    device == 0x1046 ||	/* MOXA_CP104N */
+> > +	    device == 0x1121 ||	/* MOXA_CP112N */
+> > +	    device == 0x1145 ||	/* MOXA_CP114N */
+> > +	    device == 0x1323 ||	/* MOXA_CP132N */
+> > +	    device == 0x1343) {	/* MOXA_CP134N */
 > 
-> You should define what the cells contain here.
+> Why not use the definitions below? You should define a function for this
+> anyway.
+
+I cannot use macros here, unless I put the definitions before this
+function or into pci_ids.h.
+
+> > @@ -1973,6 +2009,13 @@ static int pci_moxa_setup(struct serial_private *priv,
+> >   #define	PCI_DEVICE_ID_MOXA_CP134EL_A	0x1342
+> >   #define	PCI_DEVICE_ID_MOXA_CP138E_A	0x1381
+> >   #define	PCI_DEVICE_ID_MOXA_CP168EL_A	0x1683
+> > +/* MOXA Mini PCIe */
+> > +#define PCI_DEVICE_ID_MOXA_CP102N	0x1027
+> > +#define PCI_DEVICE_ID_MOXA_CP104N	0x1046
+> > +#define PCI_DEVICE_ID_MOXA_CP112N	0x1121
+> > +#define PCI_DEVICE_ID_MOXA_CP114N	0x1145
+> > +#define PCI_DEVICE_ID_MOXA_CP132N	0x1323
+> > +#define PCI_DEVICE_ID_MOXA_CP134N	0x1343
 > 
+> I am not sure it matters they are mini PCIe. I would sort them into the
+> above preexisting list instead.
 
-Ok, I'll do this as well for the ETZPC binding
+For these lines, classify the type of boards is just for clarity, but
+sort them into preexisting list is also feasible.
 
->> +
->> +  access-control-provider: true
->> +
-
-Will be dropped, ditto for ETZPC.
-
->> +patternProperties:
->> +  "^.*@[0-9a-f]+$":
->> +    description: Peripherals
->> +    type: object
-> 
->         additionalProperties: true
-> 
->> +    properties:
->> +      access-controller:
->> +        minItems: 1
->> +        description:
->> +          The phandle of the firewall controller of the peripheral and the
->> +          platform-specific firewall ID of the peripheral.
->> +
->> +      access-controller-names:
->> +        minItems: 1
-> 
-> Drop all this. You have to define these in the specific device schemas
-> anyways.
-> 
-
-I guess that:
-
-patternProperties:
-   "^.*@[0-9a-f]+$":
-     description: Peripherals
-     type: object
-
-     required:
-       - access-controller
-
-is sufficient if I describe what the content of the cells will be in the
-"#access-controller-cells" above. It avoids redundant information. I'll
-make the change for V6, thank you.
-
-Best regards,
-Gatien
-
->> +
->> +    required:
->> +      - access-controller
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - "#address-cells"
->> +  - "#size-cells"
->> +  - access-control-provider
->> +  - "#access-controller-cells"
->> +  - ranges
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    // In this example, the usart2 device refers to rifsc as its domain
->> +    // controller.
->> +    // Access rights are verified before creating devices.
->> +
->> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
->> +
->> +    rifsc: bus@42080000 {
->> +        compatible = "st,stm32mp25-rifsc";
->> +        reg = <0x42080000 0x1000>;
->> +        #address-cells = <1>;
->> +        #size-cells = <1>;
->> +        access-control-provider;
->> +        #access-controller-cells = <1>;
->> +        ranges;
->> +
->> +        usart2: serial@400e0000 {
->> +              compatible = "st,stm32h7-uart";
->> +              reg = <0x400e0000 0x400>;
->> +              interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>;
->> +              clocks = <&ck_flexgen_08>;
->> +              access-controller = <&rifsc 32>;
->> +        };
->> +    };
->> -- 
->> 2.25.1
->>
+---
+Sincerely,
+Crescent CY Hsieh
