@@ -2,152 +2,150 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CE16E7543F
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 09:57:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02EDEE7544F
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 11:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231713AbjJCJ5x (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Oct 2023 05:57:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57618 "EHLO
+        id S240523AbjJCL5l (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Oct 2023 07:57:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231706AbjJCJ5w (ORCPT
+        with ESMTP id S232058AbjJCL5k (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Oct 2023 05:57:52 -0400
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2060.outbound.protection.outlook.com [40.107.215.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D17291;
-        Tue,  3 Oct 2023 02:57:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hzKHhnOCCgDRCxePCiUbbAywgXAO5oxRZeW57rDffMubhmPEbVdz00+/etDJTqXGmV7tB1ZFECgpLlyTlGF0c1SlDhQonCl7iLwmhcl3kajWem/bMilAmiGCFbeTH07nuoiDY/DPzirDhQyLlp7qdo7nMhZVElMmrvlW+PO/+1HyvqDbSePK8TpayGnLsppyJzhGcpu6evgQb3CjpxlQ0HS+mKbIio6CDpPWW2Jg5mcbD040RlSrx6BwFutvYenwYVB1Jx5p24iHWJJE1a2fxCQUtDEfNjynHmWmCOWkMO+6HpjUwXHCYNno7ErxMo5CSGSlUZzYfGhem/1rBlUWJA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=beMPptTS38oOm3/K2oivq24ZKbBZrRcEqCqyS691/w4=;
- b=Yvj7b5xxa1LCh2oJoUq0WskzsxIGgjz+FnHYWE2YyI/ymSdIIGx8xixXGArblpmx1VfD5eE3Ivlzx3phJFYh021DGgIVw/Ers7hg6KICzrYZ53XaahHH6z8k5mcfJSZ6ixQF/dN7Fw37IW7BKvXltTHkI1qmYgEAsmN6gs+DGPbQNK7wPHOGTkx7rA4EIPK7pVt6CNuVk+s0fLtZ7mVvVdrtEFmH6SVba7ZdJhe7c7u4+32GTigBvTZC2BWl4p8mInM7ZOjPKfYIvEELcfLdnAQui6Hl+btTxZ6S7r6weGd8ER6BF65SF5X+L8rFMToiPV42MsRUEThkZJ977fnwGg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
- dkim=pass header.d=moxa.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=beMPptTS38oOm3/K2oivq24ZKbBZrRcEqCqyS691/w4=;
- b=ID476V1nRe9MktTE1ySkOfNungMEJZdGUCBqyA7h4uxAcC+YJrO6sVgpAKwsW+n9xX5d6X1mElJNr/TTJvPyLuVFwdsHZC0JmnRsuTs8x2KuP/t4wpobJolgCGM89AtUF0Lqw0e2Qos7E8d2RrmwLdglLxoyfWVXQr+B8dj4Agg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=moxa.com;
-Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- (2603:1096:301:115::14) by KL1PR01MB3810.apcprd01.prod.exchangelabs.com
- (2603:1096:820:40::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.30; Tue, 3 Oct
- 2023 09:57:44 +0000
-Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- ([fe80::3f1:6c0e:dec3:714b]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- ([fe80::3f1:6c0e:dec3:714b%5]) with mapi id 15.20.6838.024; Tue, 3 Oct 2023
- 09:57:44 +0000
-Date:   Tue, 3 Oct 2023 17:57:41 +0800
-From:   Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH 4/4] tty: serial: 8250: Add support for MOXA PCIe boards
- to switch interface between RS422/RS485
-Message-ID: <ZRvllYZS3ks+dOYc@moxa-ThinkCentre-M90t>
-References: <20231002015702.30509-1-crescentcy.hsieh@moxa.com>
- <20231002015702.30509-5-crescentcy.hsieh@moxa.com>
- <92aed0d9-791f-4708-8a73-4c78457a710e@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <92aed0d9-791f-4708-8a73-4c78457a710e@kernel.org>
-X-ClientProxiedBy: PS2PR01CA0056.apcprd01.prod.exchangelabs.com
- (2603:1096:300:57::20) To PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- (2603:1096:301:115::14)
+        Tue, 3 Oct 2023 07:57:40 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A447A3;
+        Tue,  3 Oct 2023 04:57:37 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id ffacd0b85a97d-32325534cfaso817001f8f.3;
+        Tue, 03 Oct 2023 04:57:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1696334256; x=1696939056; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=VANSwdMtKQG22oVUynGC+nLSUv43BbxBHTaM2yqQ5MY=;
+        b=nH7HD3qA0sSuOAc77mAqVP+Ij9L1p3KHUQ+V6Gxl0aLpoQC8v2KlfNbipFsJs+0H56
+         cuDl7QtozqwVvajK3QV/aSmp+c1j/uIzXpB0Uy2DbbkYUpBqSO9Z85Bhhs6L223pl0U9
+         DVHLPPaDJN7g2+ksq7jzZ0t1kwoIcAiky6qHZPSXTPd+4zRJXOfDMq32zAyNLwIRUV9t
+         mHvth+GX6X4QOsaFlQOAw86IpzeaZqdOQsJ40VGyhzPgPPKaffxknlamHc077ksug5l+
+         7tTuScLwMzy1qGpvo9DccNRMCT7qDZtLjGfH9tPp9+HvslhDnlKCt36x+CPqqsOcyoRR
+         GGIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696334256; x=1696939056;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VANSwdMtKQG22oVUynGC+nLSUv43BbxBHTaM2yqQ5MY=;
+        b=bCTHVBn+VJ/IQ05z7JUIPLfBtxcEniihevBe2gX60Tzk1HiYjVcDZcGpkZeFwXRkhS
+         ogBNkbuyt8fQGB1IP4LqhxVSWi+WlbkkVkwCpbHC4P7nS9Qvdg1r3qxAgwmyWlfXxD7Y
+         ecqWp2QHcOvHgbm1bBA2wlQswMnAiLoWXeYvEQWZSYpuD+CK2KeJmPPEmHW0DQyia911
+         4ffbuWaIJoVBB8blk7BgX5OT8sxrlkGibIjt1t1BDO81IXj/JrAelXLIkKWZLwJyqzpZ
+         eTl5dQTlDjStA/KG6gPBQz2pbPsAPJzEvIpUhtrdHjNybX/4uZxo2x/Fpe9SkrVgU5NX
+         4hSg==
+X-Gm-Message-State: AOJu0YyyZtWPd/NgdHpk0qbZhXfYnV6/c1s6sDZyJqKxPvKptIHyz+rC
+        7UHdo51cFBcXGbGq/rpFzZQ=
+X-Google-Smtp-Source: AGHT+IHwU9MkpQUrxS9gP8cSDIFn9YMWzv+pZGgz/jIthHTNFSKYtbYBY0OX9S2z4qaS6LNmYqIYNA==
+X-Received: by 2002:a5d:5b17:0:b0:31f:a4fa:130a with SMTP id bx23-20020a5d5b17000000b0031fa4fa130amr14501035wrb.14.1696334255710;
+        Tue, 03 Oct 2023 04:57:35 -0700 (PDT)
+Received: from ?IPV6:2a02:8071:b783:140:927c:82ba:d32d:99c1? ([2a02:8071:b783:140:927c:82ba:d32d:99c1])
+        by smtp.gmail.com with ESMTPSA id o4-20020adfcf04000000b00326f0ca3566sm1401367wrj.50.2023.10.03.04.57.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Oct 2023 04:57:35 -0700 (PDT)
+Message-ID: <62d3678a-a23d-4619-95de-145026629ba8@gmail.com>
+Date:   Tue, 3 Oct 2023 13:57:33 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|KL1PR01MB3810:EE_
-X-MS-Office365-Filtering-Correlation-Id: 662543b1-7342-4a31-1d51-08dbc3f7308f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tvz5edIMviohXxToNeRKkhGe/CTmyMd/Ox3UdRd5mHSMZw+ZRCtgrbST1tq3+tHTH44bV8KWJzOBGa8F5HW7SkhhkKJZDDaCti5MTBWsQPDs+KyU08vo4+9s75hTBoYvFtj4TVRN/ZgiBuDCNX/axXA8ANa9eNOfEmwiwol76J+NCjE5rKQgdk0ItFSOvnoSd0IpjPuu/K9xrQfNPP0ZON007uaCml4tP4M1amfdBwGXnqgMAaCmvupv16iOX3Auaaqeli7GOblH+m20MqNfDdA+nX048yZan8fmCEbkP8wSEEh2tvn3gwBytT6C3VQHd8Geu7lpR/sxAy/hBRTgE2pZmNRFuPFEgP/7ZJFFKJ21rsGf5UNI9UQSj2rkXM5vFTFUnmrM65uho+YzJdagR8HtZik6SDn+L6qgqPvZB6MLXGLUIv+s1OjcvGUKJa6psMWbFc8rBAUTIxeAgnFPgM2oLWQ6HBdJYsZbdboGm6LbxnB+qzEZQOakJAaNbfvrO7EigZPCpTbbh9Lko7vU2PGWTw0o+eqr05X5aJqyW8hbi925bUs1IuiRr2BkTFte9scQx4oVRVX6LXTgJODJzuvEkk9xUN2tA7GtRiFREKwnTLD1k2OO77A/H9ErcQMlGRUiBSm3pOW+M75incbFxQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(346002)(366004)(376002)(396003)(136003)(39860400002)(230922051799003)(64100799003)(186009)(451199024)(1800799009)(2906002)(6916009)(9686003)(6512007)(66476007)(52116002)(6506007)(38350700002)(38100700002)(33716001)(478600001)(66946007)(86362001)(6486002)(26005)(66556008)(316002)(4326008)(5660300002)(41300700001)(8676002)(8936002)(6666004)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NxuYp3/G8kPHdtoDE/IlXUMWAXYNPUAlnKGzM5FqlXFoFY5l81Ct9/j8rcn5?=
- =?us-ascii?Q?xgifl6V+NC87kL0mCjSMpwXWw0oUzGlMnUR7FShyc31OrS1LXvEQqC49mKT1?=
- =?us-ascii?Q?WTrlyiT20hCiR5sR2O85Sy++3X+2Fnt/A+YdKNIS0bfxYeQhAh4o0lfJaj/P?=
- =?us-ascii?Q?zL2pm2amnGNH5x52ekjzXmrwE4ljW4n2b4upMZJLN8+7+u/elTglWnd9DKm/?=
- =?us-ascii?Q?JR9W3XtXGuE8C7dr5zSL70EfuR/psFcecvqVILbX+koSZTAYs/iRyLusp0Yu?=
- =?us-ascii?Q?RFweRF1NrpCpxVV+gL9bqkwndj8ioLg830YYWANODHOGkm4/Kf7A73dWcFt7?=
- =?us-ascii?Q?5OwpuwCjA96WhWM3pA1ncvaz/7KLrJEOaA91n5EjvL6FNF2sjgZcIE18pmI/?=
- =?us-ascii?Q?rPsbAMxLhxX6eROjQv2vDDDUL3f9rJPupqZrvH4IU6Bz8NWzbmzyFxD+hUzR?=
- =?us-ascii?Q?Ds3J7yyrBWevS36MDBNq4Ze+0CUa2+CLyU5sW+VvRG+FdV4+8taRtd2vAIBL?=
- =?us-ascii?Q?WNugi8Je54hMlyEmHP3cuV45RABK2nFBwcQ0CJRvoJG1aZBQg2gid2s3uQk4?=
- =?us-ascii?Q?TqpmCIDFgUlm3aRg7MUithbwDsfXt2Lm7w1E5orAm3TG/FKMTDp/GB5ZkObe?=
- =?us-ascii?Q?Xx3v7N7JXqkWHA48X8DUf2bq0Pl4X3MLgpJcrCYT+tnDyzt4DI9ATYOCM9BF?=
- =?us-ascii?Q?BTeNKVJo59S9npHmMzXWtuaXgKdwTkGnJmSy065T123CteXHu/rTTw8to51G?=
- =?us-ascii?Q?No5m9rPXKKmhL38vv0YnD9hfk0CmnMkD5kcLhKz3gENZvreukx5hHX4NsJID?=
- =?us-ascii?Q?l2VHKH0GcG/LkKOKDOEL92aj1q/3zbC4fTukMnwQtHBtdbS2xRU0fnt54kAg?=
- =?us-ascii?Q?UE7L+By8HMsuDcz5aVLXRk5XW/q0MOwzvqTMoJrgMPYD5KZKV7uiOrWhOJAY?=
- =?us-ascii?Q?eHpbqBYYPlUUp0BvmI5VSq70VGLQoaRa5fVRbZvep7uL4fWNc041rv2q4Y4R?=
- =?us-ascii?Q?UncGXss3RsI2WHP13fsf946USJvjzD0HYBXsoYlBlqlUo4zkmVM+3ycxBLHQ?=
- =?us-ascii?Q?lS/hakbu/yaLNqs/nSkf0jfGnv6HgnkBacnNje525mH1pBrh45FXmCldQkpB?=
- =?us-ascii?Q?Bs5GhgiTIzeQfLElQx6MISrBfbjdjPBEO/zN1yefch8sL2hp2gm8tL/6QisY?=
- =?us-ascii?Q?hmK4z1rWu5YAaRAQO3JeJ0Ijng32dc+f2DGHbiWfbcJT1/qznW9aBxZjvysy?=
- =?us-ascii?Q?GQILwLE7Q4WAibfqlzWv3Mf2xYYoSHZrZlQOxSRPcLMfk8dWt7gshz9gvj1V?=
- =?us-ascii?Q?VibycsmfxItIFMGm/msdTlc17BAE15JjJyDo+1ofhFelCGVM7vA+Vzaue+sh?=
- =?us-ascii?Q?K4yEJbPeqsudNEWegVf7hVUtU1LEx3GCDjl4XJa8unHxAVk4iqiH3mJX/uCr?=
- =?us-ascii?Q?a5eQ9DSDSLJixgfVJukmw+HzHKIK+iKuqkhBRBMyS/yJlhjxplh0NTXmRR7U?=
- =?us-ascii?Q?lFo12rBvroQEA1C8WufOlu1MMJU1wUsq1RNxreTzTUiFYOxNX1SAQvSd+Olb?=
- =?us-ascii?Q?l3WE3tMdwBMFNs7AVmLWhlDRBw9Csf7UsmaZ0w8pE6iwl1xCa2uVY96gSRp4?=
- =?us-ascii?Q?9g=3D=3D?=
-X-OriginatorOrg: moxa.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 662543b1-7342-4a31-1d51-08dbc3f7308f
-X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Oct 2023 09:57:44.3603
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: t5rpATJnBX8uYzbYkuzPVAf8KQeA83u2ztJVS46C5XmGQ4RTJdCywG/s3twt38KqR4qjxl5xnaaVwq9Fa4PXgvSJiBVWNQHebhKfYhTUncQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: KL1PR01MB3810
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v12 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+To:     Tony Lindgren <tony@atomide.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20230525113034.46880-1-tony@atomide.com>
+Content-Language: en-US
+From:   Maximilian Luz <luzmaximilian@gmail.com>
+In-Reply-To: <20230525113034.46880-1-tony@atomide.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Oct 02, 2023 at 09:19:26AM +0200, Jiri Slaby wrote:
-> On 02. 10. 23, 3:57, Crescent CY Hsieh wrote:
-> > MOXA PCIe boards have 4 serial interfaces and don't require additional
-> > stuff to switch between interfaces:
-> > 
-> > - RS232
-> > - RS422
-> > - RS485_2W (half-duplex)
-> > - RS485_4W (full-duplex)
-> > 
-> > By using ioctl command "TIOCRS485", it can switch between default
-> > interface and RS485 if supported.
-> > 
-> > That means, for RS422/RS485 board, it can switch between RS422 and
-> > RS485 by setting the flags within struct serial_rs485.
-> > 
-> > However, for the RS232/RS422/RS485 board, it can only switch between
-> > RS232 and RS485, there's no flag for switching interface into RS422.
-> > 
-> > This patch adds a flag call "SER_RS422_ENALBED" in serial.h and modifies
+On 5/25/23 13:30, Tony Lindgren wrote:
+> We want to enable runtime PM for serial port device drivers in a generic
+> way. To do this, we want to have the serial core layer manage the
+> registered physical serial controller devices.
 > 
-> Hopefully not SER_RS422_ENALBED.
-
-What if I use an existing flag within struct serial_rs485 to represent
-RS422 as a workaround solution?
-
-> > @@ -1299,7 +1299,7 @@ static int uart_get_icount(struct tty_struct *tty,
-> >   #define SER_RS485_LEGACY_FLAGS	(SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | \
-> >   				 SER_RS485_RTS_AFTER_SEND | SER_RS485_RX_DURING_TX | \
-> > -				 SER_RS485_TERMINATE_BUS)
-> > +				 SER_RS485_TERMINATE_BUS | SER_RS422_ENALBED)
+> To manage serial controllers, let's set up a struct bus and struct device
+> for the serial core controller as suggested by Greg and Jiri. The serial
+> core controller devices are children of the physical serial port device.
+> The serial core controller device is needed to support multiple different
+> kind of ports connected to single physical serial port device.
 > 
-> So have you tested this at all?
+> Let's also set up a struct device for the serial core port. The serial
+> core port instances are children of the serial core controller device.
+> 
+> With the serial core port device we can now flush pending TX on the
+> runtime PM resume as suggested by Johan.
 
-I have tested it by switching the serial interface using TIOCSRS485
-ioctl command, but it seems that I send the wrong patch which mistyping
-SER_RS422_ENABLED.
+Hi,
+
+Unfortunately, this patch (now commit 84a9582fd203 with v6.5) breaks suspend on
+a bunch of Microsoft Surface devices (confirmed via git bisect).
+
+The root cause is that when we enter system suspend with the serial port in
+runtime suspend, all transfers will be paused until the serial port is
+runtime-resumed, which will only happen after complete() is called, so
+basically after we are done resuming the system. In short: This patch
+essentially blocks all serial communication in system suspend transitions.
+
+The affected devices have an EC (the Surface Aggregator Module) which needs
+some communication when entering system suspend. In particular, we need to tell
+it to stop sending us events, turn off the keyboard backlight, and transition
+it to a lower power mode. With this patch, all of these operations now time
+out, preventing us from entering suspend.
+
+A bad workaround is to disable runtime PM, e.g. via
+
+   echo on > /sys/bus/serial-base/devices/dw-apb-uart.4:0/dw-apb-uart.4:0.0/power/control
+
+or the diff attached below, but obviously that's not a great solution and can
+be broken quite easily from userspace in the same way (and without users really
+actively doing so through tools like TLP).
+
+Any ideas on how this can be fixed without reverting?
+
+See also https://github.com/linux-surface/linux-surface/issues/1258.
+
+Regards,
+Max
 
 ---
-Sincerely,
-Crescent CY Hsieh
+  drivers/tty/serial/serial_port.c | 2 ++
+  1 file changed, 2 insertions(+)
+
+diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial_port.c
+index 862423237007..6ceacea5e790 100644
+--- a/drivers/tty/serial/serial_port.c
++++ b/drivers/tty/serial/serial_port.c
+@@ -55,6 +55,8 @@ static int serial_port_probe(struct device *dev)
+  	pm_runtime_set_autosuspend_delay(dev, SERIAL_PORT_AUTOSUSPEND_DELAY_MS);
+  	pm_runtime_use_autosuspend(dev);
+  
++	pm_runtime_forbid(dev);
++
+  	return 0;
+  }
+  
+-- 
+2.42.0
+
+
