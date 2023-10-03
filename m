@@ -2,145 +2,122 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70052E75455
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 12:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15340E7AD60
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 14:23:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231127AbjJCM4K (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Oct 2023 08:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53924 "EHLO
+        id S239762AbjJCOXz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Oct 2023 10:23:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229803AbjJCM4K (ORCPT
+        with ESMTP id S239596AbjJCOXy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Oct 2023 08:56:10 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4032DB8;
-        Tue,  3 Oct 2023 05:56:07 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82E43C433C7;
-        Tue,  3 Oct 2023 12:56:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1696337766;
-        bh=P59DIcTo4FzG58FgS8nftjaP4bwHuF5VoRmUVEhZMPk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=0eREALR8VLdselMS61TC2lTtnDrh36evlgLQL8Iawi3p1KRu7WY/ivxtWvsIZQzuS
-         78twgbM3ck7Nn97GeX3k8BiHm4Mlop3yiEE/l3mpEqCFVLrwOvbHb+wCfk3C37oyFq
-         z5lIRsM/Dox4yZ7nSSjY8CRkwkjMqh83vfAPEwS8=
-Date:   Tue, 3 Oct 2023 14:56:04 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Max Filippov <jcmvbkbc@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: Re: [PATCH v4 3/5] drivers/tty/serial: add driver for the ESP32 UART
-Message-ID: <2023100348-visitor-browse-3142@gregkh>
-References: <20230928151631.149333-1-jcmvbkbc@gmail.com>
- <20230928151631.149333-4-jcmvbkbc@gmail.com>
+        Tue, 3 Oct 2023 10:23:54 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE181B0;
+        Tue,  3 Oct 2023 07:23:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1696343031; x=1727879031;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=/BaRwNkxcnjqUjZLYpeWw1A1HPoRDJh3QoyajTVpBcE=;
+  b=ZXwtyiU5/jWt5ntqVlSdia39xJSl9Xabs2Usj0GJEZjXMg1IPQ2CwPWa
+   Dv/1N29hGsND5BP/T0SySdvM10ebahECLAXtlboxroQYiD255Ph/O0rT7
+   FvFTXhWhrnP8kiNNH5ZvyETuKrte7+V+kHOVF5dgO5yCLqdLqIwH8zzl9
+   8ynhCxVW2YFB9L8cDKoXox56dxhmvF4gennPdXvyTn3LQa3nabS6A0cov
+   8zA+CWZDZWXuxvAiXIDWAX/VHmaDsbw+0mCgok63f94YbiZF18rUGr9+R
+   syGiWUE1rpGsWQiRgyRJ+lXViNe7WDZJUaE1PfiK1pEIpo+XXGTYDtB0j
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10852"; a="382794534"
+X-IronPort-AV: E=Sophos;i="6.03,197,1694761200"; 
+   d="scan'208";a="382794534"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Oct 2023 07:23:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10852"; a="894497807"
+X-IronPort-AV: E=Sophos;i="6.03,197,1694761200"; 
+   d="scan'208";a="894497807"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 03 Oct 2023 07:22:26 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id A495818AE; Tue,  3 Oct 2023 17:23:48 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] serial: core: Simplify uart_get_rs485_mode()
+Date:   Tue,  3 Oct 2023 17:23:46 +0300
+Message-Id: <20231003142346.3072929-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.40.0.1.gaa8946217a0b
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230928151631.149333-4-jcmvbkbc@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Sep 28, 2023 at 08:16:29AM -0700, Max Filippov wrote:
-> Add driver for the UART controllers of the Espressif ESP32 and ESP32S3
-> SoCs. Hardware specification is available at the following URLs:
-> 
->   https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf
->   (Chapter 13 UART Controller)
->   https://www.espressif.com/sites/default/files/documentation/esp32-s3_technical_reference_manual_en.pdf
->   (Chapter 26 UART Controller)
-> 
-> Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-> ---
-> Changes v2->v3:
-> - rework brk handling in esp32_uart_rxint
-> - only increment port->icount.rx in case insert_flip_char() is called
-> - use HZ instead of msecs_to_jiffies(1000) in esp32_uart_put_char_sync
-> - add early return to esp32_uart_transmit_buffer
-> - use request_irq/free_irq instead of devm_* versions
-> - add blank lines before certain return statements
-> 
-> Changes v1->v2:
-> - redefine register fields using BIT and GENMASK
-> - drop _MASK suffix from register field definitions
-> - drop *_SHIFT definitions where possible
-> - drop unused rxfifo_full_thrhd_mask and txfifo_empty_thrhd_mask
-> - split register reads/writes and bitwise operations into multiple lines
-> - use u8 instead of unsigned char in internal functions
-> - add timeout to esp32_uart_put_char_sync
-> - use uart_port_tx_limited in esp32_uart_transmit_buffer
-> - use IRQ_RETVAL in esp32_uart_int
-> - disable clock in esp32_uart_startup in case devm_request_irq fails
-> - rearrange devm_request_irq with enabling IRQs in the UART registers
-> - drop empty esp32_uart_release_port and esp32_uart_request_port
-> - simplify esp32_uart_tx_empty
-> - mask out unsupported CMSPAR flag in termios->c_cflag in
->   esp32_uart_set_termios
-> - invoke uart_update_timeout in esp32_uart_set_termios
-> - drop MODULE_DESCRIPTION
-> - rearrange esp32_uart_set_baud: return bool indicating whether baud
->   rate was set or not, use it in the esp32_uart_set_termios to set the
->   default 115200
-> - turn 'locked' into bool in esp32_uart_console_write
-> - turn num_read into unsigned int in esp32_uart_earlycon_read
-> 
->  drivers/tty/serial/Kconfig       |  13 +
->  drivers/tty/serial/Makefile      |   1 +
->  drivers/tty/serial/esp32_uart.c  | 741 +++++++++++++++++++++++++++++++
->  include/uapi/linux/serial_core.h |   3 +
->  4 files changed, 758 insertions(+)
->  create mode 100644 drivers/tty/serial/esp32_uart.c
-> 
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index bdc568a4ab66..d9ca6b268f01 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1578,6 +1578,19 @@ config SERIAL_NUVOTON_MA35D1_CONSOLE
->  	  but you can alter that using a kernel command line option such as
->  	  "console=ttyNVTx".
->  
-> +config SERIAL_ESP32
-> +	tristate "Espressif ESP32 UART support"
-> +	depends on XTENSA_PLATFORM_ESP32 || (COMPILE_TEST && OF)
-> +	select SERIAL_CORE
-> +	select SERIAL_CORE_CONSOLE
-> +	select SERIAL_EARLYCON
-> +	help
-> +	  Driver for the UART controllers of the Espressif ESP32xx SoCs.
-> +	  When earlycon option is enabled the following kernel command line
-> +	  snippets may be used:
-> +	    earlycon=esp32s3uart,mmio32,0x60000000,115200n8,40000000
-> +	    earlycon=esp32uart,mmio32,0x3ff40000,115200n8
-> +
->  endmenu
->  
->  config SERIAL_MCTRL_GPIO
-> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-> index 138abbc89738..7b73137df7f3 100644
-> --- a/drivers/tty/serial/Makefile
-> +++ b/drivers/tty/serial/Makefile
-> @@ -88,6 +88,7 @@ obj-$(CONFIG_SERIAL_MILBEAUT_USIO) += milbeaut_usio.o
->  obj-$(CONFIG_SERIAL_SIFIVE)	+= sifive.o
->  obj-$(CONFIG_SERIAL_LITEUART) += liteuart.o
->  obj-$(CONFIG_SERIAL_SUNPLUS)	+= sunplus-uart.o
-> +obj-$(CONFIG_SERIAL_ESP32)	+= esp32_uart.o
->  
->  # GPIOLIB helpers for modem control lines
->  obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+= serial_mctrl_gpio.o
-> diff --git a/drivers/tty/serial/esp32_uart.c b/drivers/tty/serial/esp32_uart.c
-> new file mode 100644
-> index 000000000000..bb5471e8b6b6
-> --- /dev/null
-> +++ b/drivers/tty/serial/esp32_uart.c
-> @@ -0,0 +1,741 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
+Simplify uart_get_rs485_mode() by using temporary variable for
+the GPIO descriptor. With that, use proper type for the flags
+of the GPIO descriptor.
 
-Same license and copyright question as I had on the ACM patch.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/serial_core.c | 30 ++++++++++++------------------
+ 1 file changed, 12 insertions(+), 18 deletions(-)
 
-thanks,
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index b32bbd7aa3d3..70bf2bec875c 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -3559,9 +3559,10 @@ int uart_get_rs485_mode(struct uart_port *port)
+ {
+ 	struct serial_rs485 *rs485conf = &port->rs485;
+ 	struct device *dev = port->dev;
++	enum gpiod_flags dflags;
++	struct gpio_desc *desc;
+ 	u32 rs485_delay[2];
+ 	int ret;
+-	int rx_during_tx_gpio_flag;
+ 
+ 	ret = device_property_read_u32_array(dev, "rs485-rts-delay",
+ 					     rs485_delay, 2);
+@@ -3600,26 +3601,19 @@ int uart_get_rs485_mode(struct uart_port *port)
+ 	 * bus participants enable it, no communication is possible at all.
+ 	 * Works fine for short cables and users may enable for longer cables.
+ 	 */
+-	port->rs485_term_gpio = devm_gpiod_get_optional(dev, "rs485-term",
+-							GPIOD_OUT_LOW);
+-	if (IS_ERR(port->rs485_term_gpio)) {
+-		ret = PTR_ERR(port->rs485_term_gpio);
+-		port->rs485_term_gpio = NULL;
+-		return dev_err_probe(dev, ret, "Cannot get rs485-term-gpios\n");
+-	}
++	desc = devm_gpiod_get_optional(dev, "rs485-term", GPIOD_OUT_LOW);
++	if (IS_ERR(desc))
++		return dev_err_probe(dev, PTR_ERR(desc), "Cannot get rs485-term-gpios\n");
++	port->rs485_term_gpio = desc;
+ 	if (port->rs485_term_gpio)
+ 		port->rs485_supported.flags |= SER_RS485_TERMINATE_BUS;
+ 
+-	rx_during_tx_gpio_flag = (rs485conf->flags & SER_RS485_RX_DURING_TX) ?
+-				 GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
+-	port->rs485_rx_during_tx_gpio = devm_gpiod_get_optional(dev,
+-								"rs485-rx-during-tx",
+-								rx_during_tx_gpio_flag);
+-	if (IS_ERR(port->rs485_rx_during_tx_gpio)) {
+-		ret = PTR_ERR(port->rs485_rx_during_tx_gpio);
+-		port->rs485_rx_during_tx_gpio = NULL;
+-		return dev_err_probe(dev, ret, "Cannot get rs485-rx-during-tx-gpios\n");
+-	}
++	dflags = (rs485conf->flags & SER_RS485_RX_DURING_TX) ?
++		 GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
++	desc = devm_gpiod_get_optional(dev, "rs485-rx-during-tx", dflags);
++	if (IS_ERR(desc))
++		return dev_err_probe(dev, PTR_ERR(desc), "Cannot get rs485-rx-during-tx-gpios\n");
++	port->rs485_rx_during_tx_gpio = desc;
+ 
+ 	return 0;
+ }
+-- 
+2.40.0.1.gaa8946217a0b
 
-greg k-h
