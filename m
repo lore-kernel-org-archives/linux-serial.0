@@ -2,149 +2,137 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 951A2E75424
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 05:01:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B9C0E7542F
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 07:17:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230169AbjJCFBG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Oct 2023 01:01:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
+        id S230473AbjJCHR6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Oct 2023 03:17:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230049AbjJCFBE (ORCPT
+        with ESMTP id S230235AbjJCHR5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Oct 2023 01:01:04 -0400
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94581A6;
-        Mon,  2 Oct 2023 22:01:01 -0700 (PDT)
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-32483535e51so554020f8f.0;
-        Mon, 02 Oct 2023 22:01:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696309260; x=1696914060;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/4UXmhpiqh7iZ4g5MCkKGXK5u5GuDBNQm7k6OkRgMn8=;
-        b=YqkrGrbDoMuX4E9U7aM61OBlEmORGhDX5eJ+dXyB9ujJnQGClhgRu9Sd+nIQBzL33C
-         Qlc8xyOEBErULgreRTbGpg6q4wtnVY4oYNNHOwFGfLsI8UO5y3fzO4QOT7NO6NJT+3N7
-         KQcZV5u1qVKj+ANocTey3S0ExsIK6IrphBnUW3/p9Tc6TW7MkZiHjkMiPNDMIqB5qRa4
-         0XY67oJwylwxo1tGqKfy3WsosO2lO9DsGJtLZkMccddFKTWB4zV+XZL3wFkL9H8rUApj
-         +OIQYfWgWW0seh+EWFVKFq6tWMacDk9c1dHIPWerCQFc8VGsn3v73jelNreiHOP0Y2k3
-         ojxg==
-X-Gm-Message-State: AOJu0YxqrnHYwu3NLGTCpjC14MOGul5dk7fdxD7byMki/ohNKTgiwOir
-        3W64oadqvavTRS/qV5dZ324=
-X-Google-Smtp-Source: AGHT+IGocQEcbapFYT90P3+RqaZs4AaOOGe480YgHpzunTwfYG7+fvNBDhxNEiq98ZuS+ULvN+Gk1g==
-X-Received: by 2002:a5d:574f:0:b0:31f:97e2:a924 with SMTP id q15-20020a5d574f000000b0031f97e2a924mr11484669wrw.14.1696309259752;
-        Mon, 02 Oct 2023 22:00:59 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id f17-20020a056000129100b003247f732c07sm587799wrx.12.2023.10.02.22.00.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Oct 2023 22:00:58 -0700 (PDT)
-Message-ID: <acda5dc4-e6d3-4870-929f-fb91636b5649@kernel.org>
-Date:   Tue, 3 Oct 2023 07:00:57 +0200
+        Tue, 3 Oct 2023 03:17:57 -0400
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2049.outbound.protection.outlook.com [40.107.215.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724F7A4;
+        Tue,  3 Oct 2023 00:17:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Pjw1GBNIYeg35gbbgzrP4j+m9njVwnbGJB0G7IzJu4QOy3Vl3gwQQcDY7gHnFxxSG3V3v1Z7bSbNdvnb3rQ+1fp8sK/TTNHzlbEETwjAQ8sH1FY2EnKDkCjrR4iEGPg4Ihct8k+5HEZIifA7cqRQ6cKVgDATK9vq8rmYKajjU4GDjQQp8N0Y65bob6a5e93N4KeADWqiS7necEYZmLQUYleQWap1efMnZELbYgvPlHm62dK3wbiSBPa81h0cosUFy01i957Sg6yteYnOftp06K/n6L/n70/Ed2V1gT4dv8MVI6MgR+mgC+E1/qMylmAxOxJTN+iQlvLDsCGoOWSDvg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0Imku/5zekNnyYTt4iyoG25CKKMU1i4LmrFScT0c+0Q=;
+ b=lNIFyRla4A7Ny0p1RtLO4L9A0hQsi3GiYIwvHCmfiZLDj+KSEG+H2QaR1X0nrdDIqaz4D97F4Vc51FHOH1z+uFaNgL5f1y3iJ+Al/SdyM+1+k3rMNbOhq+M1pRMZaAlq3E19Wji4Kno5hrrwGp7xh3aEWcHMnQ91RXdjpsyca9kh5wGZnInE/EWSOIJPVzj2nqfz4Me1hfWeBPrVkEapOSNMtsJwSrG+DxkcdNnWHSXabvXumJL+Z5rlhSHWiB5aE304cZ9xP6Or0GjuIRnF2My0vWbsxDCkn/C3kcfCz6pytZCtfCGMFc9VG3OQD9Wr9B++w1z2pFv0K9FOeEyPWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
+ dkim=pass header.d=moxa.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0Imku/5zekNnyYTt4iyoG25CKKMU1i4LmrFScT0c+0Q=;
+ b=Nj0TYj//fH1wMOzskBefbwyuspMNtEmmcxhX/RGLj/hP5x71UMB2l+FheWDnPuBTa2SaTAIzgJu8vR9f4EFUct7lnIoBjUVvIjhnx6/JXs4RUTr1poJiENpfNMNIQmgTY1dCyfROxayyX8ggDAeek5n27TH6gEsj3B8+5KB2qBo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=moxa.com;
+Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:115::14) by TYSPR01MB5906.apcprd01.prod.exchangelabs.com
+ (2603:1096:400:46b::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.32; Tue, 3 Oct
+ 2023 07:17:51 +0000
+Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ ([fe80::3f1:6c0e:dec3:714b]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ ([fe80::3f1:6c0e:dec3:714b%5]) with mapi id 15.20.6838.024; Tue, 3 Oct 2023
+ 07:17:50 +0000
+Date:   Tue, 3 Oct 2023 15:17:47 +0800
+From:   Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH 1/4] tty: serial: 8250: Cleanup MOXA configurations in
+ 8250_pci.c
+Message-ID: <ZRvAG5336KxuugVd@moxa-ThinkCentre-M90t>
+References: <20231002015702.30509-1-crescentcy.hsieh@moxa.com>
+ <20231002015702.30509-2-crescentcy.hsieh@moxa.com>
+ <68d533d5-dbc8-4be3-a1fc-b3dd28b8f9df@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <68d533d5-dbc8-4be3-a1fc-b3dd28b8f9df@kernel.org>
+X-ClientProxiedBy: PS2PR03CA0015.apcprd03.prod.outlook.com
+ (2603:1096:300:5b::27) To PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:115::14)
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/4] trigger: ledtrig-tty: move variable definition to
- the top
-Content-Language: en-US
-To:     Lee Jones <lee@kernel.org>, Florian Eckert <fe@dev.tdt.de>
-Cc:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
-        pavel@ucw.cz, kabel@kernel.org, u.kleine-koenig@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-leds@vger.kernel.org, kernel test robot <lkp@intel.com>
-References: <20230928132632.200263-1-fe@dev.tdt.de>
- <20230928132632.200263-4-fe@dev.tdt.de> <20231002140559.GB8453@google.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20231002140559.GB8453@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|TYSPR01MB5906:EE_
+X-MS-Office365-Filtering-Correlation-Id: 18faab63-9cbd-4aca-564d-08dbc3e0da42
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tw/3PVIF01IyyGX1zCn5/0bLgTjc5cPJ71VZs3pTVEujCw+HVpXHmthq5vEEAR5xcQ3poi3uKRXeIV9kUzafg1XKkYOSRn62m2qskE8JDm9vfPnj+95Hdf3sNmYD2WuFwjMJmtLoQb0mdZ7tT48HaYJX76dIQrEHdJDGaAIHdjFPlyYsO5QNh3OVdXFE/Nfv4aQg95LY0aAWznjPWtOOu8ztq06WhzwpVVrV9cSFByR4VHErm/DXsjbYhgcHNqPqhc8CDlGP7iW7d02pg7uGJyiaTmR9BNUX3SVnGKbnp+3sYItHTj9fXx3PCstdfVK1q6vY4eYJxMebcYIWOa2CB/Gu9kw2eQCb+c5xOO3d2ZqeC0GnHVSnqgKT4AavrWQKynrlidfAY0eQpeMjItL/K6wgzt2WdX/iCs3fV7k5dJLGfMPfipLq0Cti2x6OL4Bu6N39oKgJz0p4/75yalX9ls2R81V264FI2ZNeL7J1Je3m21XHY61Has7GWCpFdSQGzQWaz+UfYhbXJRL5Yx1QxvVCTAXCPH51ZsQLxcEBji/O1JQfktqG1wcJu1ROaP8klztkQ1coCrDtRtYPRjJKDaY3l6+pwnq/TVLgxEyLWqL8P6BVvDTbqBcyBY04slNW
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(376002)(346002)(136003)(396003)(366004)(39860400002)(230922051799003)(64100799003)(451199024)(186009)(1800799009)(6512007)(6666004)(6506007)(478600001)(52116002)(6486002)(38350700002)(38100700002)(2906002)(86362001)(4744005)(33716001)(26005)(9686003)(83380400001)(66556008)(5660300002)(316002)(41300700001)(66476007)(6916009)(66946007)(4326008)(8676002)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9zMdY0lVf+M9g2De+2ckoDKEY8mqFX5gaB3zyXqItPJEy8oi0Duykx/eoHVj?=
+ =?us-ascii?Q?4JjKKrfn+l7AoHcimNTSrB/139vRMSG57p/EMcwsUBz68yQETEWYtCRLMJgF?=
+ =?us-ascii?Q?6ZnXJdpxTfh1d4xtK649gxffZBFHWYh7K8uREr2SRd6huFMYH0WyVLgluY5M?=
+ =?us-ascii?Q?5Fn9gbYJ0zFoUg3NdB5Cgy0MU22FXbj0A2K4hUTjcBf8CWpkEC85Ahs7LkXl?=
+ =?us-ascii?Q?nI1hHC4pxZoXmsX5arKVPjUa4yMP9ar1H+FEss/jqumfrGWNZ/rZeUW/XtM9?=
+ =?us-ascii?Q?SXXqRB6X5fEMWzNhNu93N0xUPIuz8g5OxbC3jz1ArBtotdiAVJfdClHAud1C?=
+ =?us-ascii?Q?Bbi9+fFFsew8VdtqAuMVzL74XaAgykMLnFBEw4HIBmlcaWKCFQshF8HYl0RX?=
+ =?us-ascii?Q?zThrUEQs80H/jCqDFtVxnWoUga16W67auTIRkoxR++eAffHAwpB6ZEndWb6L?=
+ =?us-ascii?Q?EqNkryNpEA8RIF6w6ANKoBaxykOFuPUnUGamIYVKP1FGmM5Rg3SZ7+Lc+kRV?=
+ =?us-ascii?Q?zKT2vcCu0YoCzCQyVJGNfCWMV4pzk3/OLzpIvQ7tN5fJw/iYTcLvzFzcGBU+?=
+ =?us-ascii?Q?zexTs8SQYnKN92OURML1LWv1ZCoh/PzPN72DrTVK1+uDFtpT/qNMhHpeGSZQ?=
+ =?us-ascii?Q?2TvuQ3mmIzxUHVVwYA6rkALKjflOvf8M9/KT4UronHhal7MS3eLHsIgoAQJM?=
+ =?us-ascii?Q?7i33k4Vb2uAZWrubt/1cAqi/3w8mb9C5PNC3gLqzaZrjrQNs4ll6t5w7yqry?=
+ =?us-ascii?Q?8nkjJevm3zD+9FDVInjbJHdMqc9Q6eDSTJ0q5X9RRMOWJ0ugHakzGDDnxTAt?=
+ =?us-ascii?Q?PdGnVyHoMrfoh8693f1MCE6rt9EBc1RrfUPn7vkGPqWsdVsq+Z0wbOzDevVL?=
+ =?us-ascii?Q?OhHuapl9wI3iZtU4G6wEmLdqyiEFrewO5tRYWqpL1JV5znP6SMJFIKmwq+d7?=
+ =?us-ascii?Q?RmRJ/83GTBUU24fDstykNXSnBjy2pQ2PW+3+Lm8PeRW2sAAmhkhiCQm+hB5E?=
+ =?us-ascii?Q?jkEcy7cCDREtui/oaGbaJKMfyPZDlB/wbBxCJg1OGdwnkjEkki88VjHotwcZ?=
+ =?us-ascii?Q?ASn2NOioP/IQraG2TAqktJG7JOjiiHvM3vtLurv21qro4QqXnDYIru1jdLuL?=
+ =?us-ascii?Q?8mrz3lSgR2LYLni1VezUYtJTZpQuphbf/sP1Vk25JFjrd6WE8bcvlfwuIbhs?=
+ =?us-ascii?Q?qHp1mp1D5q1RwU9rQ/5oXS9UCWDI88sE/A+fmr70pOic4Q5QqpoKBDr8Ajpl?=
+ =?us-ascii?Q?QAMiv1ryprc4SwXnyzytqzodeSgrTwtgrNNq7P77VCK0ouSS9RQYOkVhsCdw?=
+ =?us-ascii?Q?uE2Dlb6F/ViklDSY9QFNhm2ELmzL6WsO++4PKNw6PIwDyTZKEB+4337VVNfx?=
+ =?us-ascii?Q?Z/nttgtxyK1T+mt4fuhAqTgMzdd3eUzZEF/1tV+zmQTL/krTaeuRRDvlwGdy?=
+ =?us-ascii?Q?KSZC7V4w3KnF5/dPZfNN4dK+ut4x4M/uI3S96xNf0jvgvxmT3jyE/A262d/3?=
+ =?us-ascii?Q?/MvDB6WedyWw9CJCCrWc5Js+sam3mZvvoNsoRgrY3p9oPYRf/acDG3U1lshW?=
+ =?us-ascii?Q?gXUofZ0Cd9XXeSDI9dkdvDPdYM/NA1Mz0dKQQ2N0qdpXkQcti9q6SzsS1Crv?=
+ =?us-ascii?Q?Xw=3D=3D?=
+X-OriginatorOrg: moxa.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 18faab63-9cbd-4aca-564d-08dbc3e0da42
+X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Oct 2023 07:17:50.6904
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8geCx7C0kceCJdTcXk0syyhE3F5eZfy2ioC+w2dKCKEc3X67ExiQ0BPqgA0r+FQ/GFcNPs6qeBckQWBwSNATaJaUTQRy7aPO4BuppFFi8w8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYSPR01MB5906
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 02. 10. 23, 16:05, Lee Jones wrote:
-> On Thu, 28 Sep 2023, Florian Eckert wrote:
+On Mon, Oct 02, 2023 at 08:51:03AM +0200, Jiri Slaby wrote:
+> On 02. 10. 23, 3:56, Crescent CY Hsieh wrote:
+> > @@ -1958,6 +1958,9 @@ pci_moxa_setup(struct serial_private *priv,
+> >   #define PCIE_DEVICE_ID_WCH_CH384_8S	0x3853
+> >   #define PCIE_DEVICE_ID_WCH_CH382_2S	0x3253
+> > +/* MOXA */
+> > +#define PCI_VENDOR_ID_MOXA	0x1393
 > 
->> The Intel build robot has complained about this. Hence move the commit
->> of the variable definition to the beginning of the function.
-> 
-> Please copy the robot's error message into the commit message.
+> Isn't this a redefinition of the pci-ids.h one?
 
-Ah, lkp, then also the Closes: line as it suggests.
+At first, I attempt to place DEVICE_ID macros into pci_ids.h to enable
+their usage throughout 8250_pci.c and to establish centralized
+management. However, I notice the comment in pci_ids.h which is:
 
->> Reported-by: kernel test robot <lkp@intel.com>
->> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
->> ---
->>   drivers/leds/trigger/ledtrig-tty.c | 3 +--
->>   1 file changed, 1 insertion(+), 2 deletions(-)
->>
->> diff --git a/drivers/leds/trigger/ledtrig-tty.c b/drivers/leds/trigger/ledtrig-tty.c
->> index 8ae0d2d284af..1c6fadf0b856 100644
->> --- a/drivers/leds/trigger/ledtrig-tty.c
->> +++ b/drivers/leds/trigger/ledtrig-tty.c
->> @@ -82,6 +82,7 @@ static void ledtrig_tty_work(struct work_struct *work)
->>   {
->>   	struct ledtrig_tty_data *trigger_data =
->>   		container_of(work, struct ledtrig_tty_data, dwork.work);
->> +	unsigned long interval = LEDTRIG_TTY_INTERVAL;
->>   	struct serial_icounter_struct icount;
->>   	int ret;
->>   
->> @@ -124,8 +125,6 @@ static void ledtrig_tty_work(struct work_struct *work)
->>   
->>   	if (icount.rx != trigger_data->rx ||
->>   	    icount.tx != trigger_data->tx) {
->> -		unsigned long interval = LEDTRIG_TTY_INTERVAL;
->> -
->>   		led_blink_set_oneshot(trigger_data->led_cdev, &interval,
->>   				      &interval, 0);
->>   
->> -- 
->> 2.30.2
->>
-> 
+'Do not add new entries to this file unless the definitions are shared
+between multiple drivers'
 
--- 
-js
-suse labs
+So I add this VENDOR_ID just for the clarity, even though it results in
+duplication.
 
+Should I put these macros into pci_ids.h? If so, I am willing to help
+relocate all other macros.
+
+---
+Sincerely,
+Crescent CY Hsieh
