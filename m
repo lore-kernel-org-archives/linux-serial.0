@@ -2,254 +2,245 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A6FE75457
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 12:50:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95BB6E75457
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 12:55:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229803AbjJCMur (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Oct 2023 08:50:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53440 "EHLO
+        id S230461AbjJCMzs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Oct 2023 08:55:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229689AbjJCMur (ORCPT
+        with ESMTP id S231501AbjJCMzs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Oct 2023 08:50:47 -0400
+        Tue, 3 Oct 2023 08:55:48 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0172BB8;
-        Tue,  3 Oct 2023 05:50:42 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08C5CC433C8;
-        Tue,  3 Oct 2023 12:50:41 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1D69BB;
+        Tue,  3 Oct 2023 05:55:44 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4032C433C7;
+        Tue,  3 Oct 2023 12:55:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1696337442;
-        bh=j+yGGSzRCSvGI/VJZ5tDD+R9hNuauFXWos6gg7ksK9g=;
+        s=korg; t=1696337744;
+        bh=P5HAuBgxGI7bLQdS/saddx7K+nwsRkflpdceF8t9ZAU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MJ/oN8aJ2bpGvvD6dW8Tl/VepfemAorPEeTPmXgk+EErVwRslYPEqRtn2CFCG+9bC
-         Kdham49WtkR5Afs9wCaVRtcEPN52xWOxV74AR2FqZFbtQV1GB1QabIZuJF076ivub1
-         KcGbEYaDsOVuqk9rEUlR8EwP7tSHh4zrGN0UySKk=
-Date:   Tue, 3 Oct 2023 14:50:39 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Dan Raymond <raymod2@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, peterz@infradead.org,
-        andriy.shevchenko@linux.intel.com
-Subject: Re: [PATCH v3] arch/x86: port I/O tracing on x86
-Message-ID: <2023100344-dart-jailbreak-c371@gregkh>
-References: <b8eae358-a3b3-fd68-82f1-b2c53534b922@gmail.com>
+        b=wH/Iwdc7gbCmfe4iekNoygjRVVzdsJCWkZ4QMi4rKni7WKMwRAMBCtajMm3EfcLsG
+         J8drX2Y+/V+oRW6+l/ODC3B9sPYJy6weVIB6SXNIvSDj6hhBP679wJTHUOwOC41iGS
+         TI2IypZGfZwVK7AO8skVqcqUd9UtIV3qIHTX6XOI=
+Date:   Tue, 3 Oct 2023 14:55:41 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Max Filippov <jcmvbkbc@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: Re: [PATCH v4 5/5] drivers/tty/serial: add ESP32S3 ACM device driver
+Message-ID: <2023100326-crushing-septic-4856@gregkh>
+References: <20230928151631.149333-1-jcmvbkbc@gmail.com>
+ <20230928151631.149333-6-jcmvbkbc@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b8eae358-a3b3-fd68-82f1-b2c53534b922@gmail.com>
+In-Reply-To: <20230928151631.149333-6-jcmvbkbc@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Sep 29, 2023 at 01:15:41PM -0600, Dan Raymond wrote:
-> Add support for port I/O tracing on x86.  Memory mapped I/O tracing is
-> available on x86 via CONFIG_MMIOTRACE but that relies on page faults
-> so it doesn't work with port I/O.  This feature uses tracepoints in a
-> similar manner as CONFIG_TRACE_MMIO_ACCESS.
+On Thu, Sep 28, 2023 at 08:16:31AM -0700, Max Filippov wrote:
+> Add driver for the ACM  controller of the Espressif ESP32S3 Soc.
+
+Odd extra space :(
+
+> Hardware specification is available at the following URL:
 > 
-> Signed-off-by: Dan Raymond <raymod2@gmail.com>
-> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>   https://www.espressif.com/sites/default/files/documentation/esp32-s3_technical_reference_manual_en.pdf
+>   (Chapter 33 USB Serial/JTAG Controller)
+
+I don't understand this driver, "ACM" is a USB host <-> gadget protocol,
+why do you need a platform serial driver for this?
+
+> 
+> Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 > ---
-> V1 -> V2:
->   - create header file for prototypes to silence new compiler warning
->   - reduce CPU overhead to 2 instructions (no branching) when tracing disabled
->   - fix imprecise IP logging by retrieving the IP off the stack instead of using
->     compile time labels
+> Changes v2->v3:
+> - use HZ instead of msecs_to_jiffies(1000) in esp32_acm_put_char_sync
+> - add early return to esp32_acm_transmit_buffer
+> - use request_irq/free_irq instead of devm_* versions
 > 
-> V2 -> V3:
->   - restore missing semicolon
+> Changes v1->v2:
+> - redefine register fields using BIT and GENMASK
+> - drop _MASK suffix from register field definitions
+> - drop *_SHIFT definitions where possible
+> - split register reads/writes and bitwise operations into multiple lines
+> - use u8 instead of unsigned char in internal functions
+> - add timeout to esp32_acm_put_char_sync
+> - use uart_port_tx_limited in esp32_acm_transmit_buffer
+> - use IRQ_RETVAL in esp32_acm_int
+> - drop esp32s3_acm_console_putchar and esp32s3_acm_earlycon_putchar
+> - turn num_read into unsigned int in esp32_acm_earlycon_read
+> - drop MODULE_DESCRIPTION
 > 
->  arch/x86/include/asm/shared/io.h | 25 ++++++++++++++++
->  arch/x86/lib/Makefile            |  1 +
->  arch/x86/lib/trace_portio.c      | 21 ++++++++++++++
->  include/linux/trace_portio.h     |  6 ++++
->  include/trace/events/portio.h    | 49 ++++++++++++++++++++++++++++++++
->  5 files changed, 102 insertions(+)
->  create mode 100644 arch/x86/lib/trace_portio.c
->  create mode 100644 include/linux/trace_portio.h
->  create mode 100644 include/trace/events/portio.h
+>  drivers/tty/serial/Kconfig       |  14 +
+>  drivers/tty/serial/Makefile      |   1 +
+>  drivers/tty/serial/esp32_acm.c   | 459 +++++++++++++++++++++++++++++++
+>  include/uapi/linux/serial_core.h |   3 +
+>  4 files changed, 477 insertions(+)
+>  create mode 100644 drivers/tty/serial/esp32_acm.c
 > 
-> diff --git a/arch/x86/include/asm/shared/io.h b/arch/x86/include/asm/shared/io.h
-> index c0ef921c0586..9e5dce1cb62d 100644
-> --- a/arch/x86/include/asm/shared/io.h
-> +++ b/arch/x86/include/asm/shared/io.h
-> @@ -2,13 +2,36 @@
->  #ifndef _ASM_X86_SHARED_IO_H
->  #define _ASM_X86_SHARED_IO_H
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index d9ca6b268f01..85807db8f7ce 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -1591,6 +1591,20 @@ config SERIAL_ESP32
+>  	    earlycon=esp32s3uart,mmio32,0x60000000,115200n8,40000000
+>  	    earlycon=esp32uart,mmio32,0x3ff40000,115200n8
 >  
-> +#include <linux/trace_portio.h>
->  #include <linux/types.h>
->  
-> +/*
-> + * We don't want the tracing logic included in the early boot modules (under
-> + * arch/x86/boot) so we check for their include guards here.  If we don't do
-> + * this we will get compiler errors.  These checks are not present in
-> + * arch/x86/include/asm/msr.h which contains similar tracing logic.  That is
-> + * possible only because none of the msr inline functions are instantiated in
-> + * the early boot modules.  If that changes this issue will need to be addressed
-> + * there as well.  Therefore it might be better to handle this centrally in
-> + * tracepoint-defs.h.
-> + */
+> +config SERIAL_ESP32_ACM
+> +	tristate "Espressif ESP32 USB ACM support"
+> +	depends on XTENSA_PLATFORM_ESP32 || (COMPILE_TEST && OF)
+> +	select SERIAL_CORE
+> +	select SERIAL_CORE_CONSOLE
+> +	select SERIAL_EARLYCON
+> +	help
+> +	  Driver for the CDC ACM controllers of the Espressif ESP32S3 SoCs
+> +	  that share separate USB controller with the JTAG adapter.
+> +	  The device name used for this controller is ttyACM.
+> +	  When earlycon option is enabled the following kernel command line
+> +	  snippet may be used:
+> +	    earlycon=esp32s3acm,mmio32,0x60038000
 > +
-> +#if defined(CONFIG_TRACEPOINTS) && !defined(BOOT_COMPRESSED_MISC_H) && !defined(BOOT_BOOT_H)
-
-I see what you are doing here in trying to see if a .h file has been
-included already, but now you are making an assumption on both the .h
-file ordering, and the #ifdef guard for those .h files, which are
-something that we almost never remember or even consider when dealing
-with .h files files.
-
-
-> +#include <linux/tracepoint-defs.h>
-> +DECLARE_TRACEPOINT(portio_write);
-> +DECLARE_TRACEPOINT(portio_read);
-> +#define _tracepoint_enabled(tracepoint) tracepoint_enabled(tracepoint)
-> +#else
-> +#define _tracepoint_enabled(tracepoint) false
-> +#endif
-> +
->  #define BUILDIO(bwl, bw, type)						\
->  static inline void __out##bwl(type value, u16 port)			\
->  {									\
->  	asm volatile("out" #bwl " %" #bw "0, %w1"			\
->  		     : : "a"(value), "Nd"(port));			\
-> +	if (_tracepoint_enabled(portio_write))				\
-> +		do_trace_portio_write(value, port, #bwl[0]);		\
->  }									\
-
-Who wants/needs port tracing these days?  What types of systems still
-rely on that for their primary form of I/O other than some old-school
-serial ports?
-
-The MMIO tracing was added because there are crazy out-of-tree SoC
-devices out there that "insisted" that they need to hook into the mmio
-access path, so they added traceing there under the auspicious of trying
-to log all mmio accesses so that they could then override the access
-path in the tracehook to do who-knows-what other things.  Hopefully you
-are not wanting to do the same thing here as well?
-
-And have you addressed all of Peter's previous review comments?
-
-
-
->  									\
->  static inline type __in##bwl(u16 port)					\
-> @@ -16,6 +39,8 @@ static inline type __in##bwl(u16 port)					\
->  	type value;							\
->  	asm volatile("in" #bwl " %w1, %" #bw "0"			\
->  		     : "=a"(value) : "Nd"(port));			\
-> +	if (_tracepoint_enabled(portio_read))				\
-> +		do_trace_portio_read(value, port, #bwl[0]);		\
->  	return value;							\
->  }
+>  endmenu
 >  
-> diff --git a/arch/x86/lib/Makefile b/arch/x86/lib/Makefile
-> index f76747862bd2..254f223c025d 100644
-> --- a/arch/x86/lib/Makefile
-> +++ b/arch/x86/lib/Makefile
-> @@ -40,6 +40,7 @@ $(obj)/inat.o: $(obj)/inat-tables.c
->  clean-files := inat-tables.c
+>  config SERIAL_MCTRL_GPIO
+> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+> index 7b73137df7f3..970a292ca418 100644
+> --- a/drivers/tty/serial/Makefile
+> +++ b/drivers/tty/serial/Makefile
+> @@ -89,6 +89,7 @@ obj-$(CONFIG_SERIAL_SIFIVE)	+= sifive.o
+>  obj-$(CONFIG_SERIAL_LITEUART) += liteuart.o
+>  obj-$(CONFIG_SERIAL_SUNPLUS)	+= sunplus-uart.o
+>  obj-$(CONFIG_SERIAL_ESP32)	+= esp32_uart.o
+> +obj-$(CONFIG_SERIAL_ESP32_ACM)	+= esp32_acm.o
 >  
->  obj-$(CONFIG_SMP) += msr-smp.o cache-smp.o
-> +obj-$(CONFIG_TRACEPOINTS) += trace_portio.o
-
-So this is always enabled?  No separate config option?  Why not?
-
->  lib-y := delay.o misc.o cmdline.o cpu.o
->  lib-y += usercopy_$(BITS).o usercopy.o getuser.o putuser.o
-> diff --git a/arch/x86/lib/trace_portio.c b/arch/x86/lib/trace_portio.c
+>  # GPIOLIB helpers for modem control lines
+>  obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+= serial_mctrl_gpio.o
+> diff --git a/drivers/tty/serial/esp32_acm.c b/drivers/tty/serial/esp32_acm.c
 > new file mode 100644
-> index 000000000000..c048dffcfe05
+> index 000000000000..f02abd2ac65e
 > --- /dev/null
-> +++ b/arch/x86/lib/trace_portio.c
-> @@ -0,0 +1,21 @@
-> +// SPDX-License-Identifier: GPL-2.0+
+> +++ b/drivers/tty/serial/esp32_acm.c
+> @@ -0,0 +1,459 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+
+Why "or later"?  I have to ask, sorry.
+
+And no copyright information?  That's fine, but be sure your company's
+lawyers are ok with it...
+
 > +
-> +#include <linux/instruction_pointer.h>
-> +#include <linux/trace_portio.h>
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+> +#include <linux/console.h>
+> +#include <linux/delay.h>
+> +#include <linux/io.h>
+> +#include <linux/irq.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/serial_core.h>
+> +#include <linux/slab.h>
+> +#include <linux/tty_flip.h>
+> +#include <asm/serial.h>
 > +
-> +#define CREATE_TRACE_POINTS
-> +#include <trace/events/portio.h>
+> +#define DRIVER_NAME	"esp32s3-acm"
+> +#define DEV_NAME	"ttyACM"
+
+There is already a ttyACM driver in the kernel, will this conflict with
+that one?  And are you using the same major/minor numbers for it as
+well?  If so, how is this going to work?
+
+> +#define UART_NR		4
 > +
-> +void do_trace_portio_read(u32 value, u16 port, char width)
+> +#define ESP32S3_ACM_TX_FIFO_SIZE	64
+> +
+> +#define USB_SERIAL_JTAG_EP1_REG		0x00
+> +#define USB_SERIAL_JTAG_EP1_CONF_REG	0x04
+> +#define USB_SERIAL_JTAG_WR_DONE				BIT(0)
+> +#define USB_SERIAL_JTAG_SERIAL_IN_EP_DATA_FREE		BIT(1)
+> +#define USB_SERIAL_JTAG_INT_ST_REG	0x0c
+> +#define USB_SERIAL_JTAG_SERIAL_OUT_RECV_PKT_INT_ST	BIT(2)
+> +#define USB_SERIAL_JTAG_SERIAL_IN_EMPTY_INT_ST		BIT(3)
+> +#define USB_SERIAL_JTAG_INT_ENA_REG	0x10
+> +#define USB_SERIAL_JTAG_SERIAL_OUT_RECV_PKT_INT_ENA	BIT(2)
+> +#define USB_SERIAL_JTAG_SERIAL_IN_EMPTY_INT_ENA		BIT(3)
+> +#define USB_SERIAL_JTAG_INT_CLR_REG	0x14
+> +#define USB_SERIAL_JTAG_IN_EP1_ST_REG	0x2c
+> +#define USB_SERIAL_JTAG_IN_EP1_WR_ADDR			GENMASK(8, 2)
+> +#define USB_SERIAL_JTAG_OUT_EP1_ST_REG	0x3c
+> +#define USB_SERIAL_JTAG_OUT_EP1_REC_DATA_CNT		GENMASK(22, 16)
+> +
+> +static const struct of_device_id esp32s3_acm_dt_ids[] = {
+> +	{
+> +		.compatible = "esp,esp32s3-acm",
+> +	}, { /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(of, esp32s3_acm_dt_ids);
+> +
+> +static struct uart_port *esp32s3_acm_ports[UART_NR];
+> +
+> +static void esp32s3_acm_write(struct uart_port *port, unsigned long reg, u32 v)
 > +{
-> +	trace_portio_read(value, port, width, _RET_IP_);
+> +	writel(v, port->membase + reg);
 > +}
-> +EXPORT_SYMBOL_GPL(do_trace_portio_read);
-> +EXPORT_TRACEPOINT_SYMBOL_GPL(portio_read);
 > +
-> +void do_trace_portio_write(u32 value, u16 port, char width)
+> +static u32 esp32s3_acm_read(struct uart_port *port, unsigned long reg)
 > +{
-> +	trace_portio_write(value, port, width, _RET_IP_);
+> +	return readl(port->membase + reg);
 > +}
-> +EXPORT_SYMBOL_GPL(do_trace_portio_write);
-> +EXPORT_TRACEPOINT_SYMBOL_GPL(portio_write);
-> diff --git a/include/linux/trace_portio.h b/include/linux/trace_portio.h
-> new file mode 100644
-> index 000000000000..013418d3d2ae
-> --- /dev/null
-> +++ b/include/linux/trace_portio.h
-> @@ -0,0 +1,6 @@
-> +/* SPDX-License-Identifier: GPL-2.0+ */
+> +
+> +static u32 esp32s3_acm_tx_fifo_free(struct uart_port *port)
+> +{
+> +	u32 status = esp32s3_acm_read(port, USB_SERIAL_JTAG_EP1_CONF_REG);
+> +
+> +	return status & USB_SERIAL_JTAG_SERIAL_IN_EP_DATA_FREE;
+> +}
+> +
+> +static u32 esp32s3_acm_tx_fifo_cnt(struct uart_port *port)
+> +{
+> +	u32 status = esp32s3_acm_read(port, USB_SERIAL_JTAG_IN_EP1_ST_REG);
+> +
+> +	return FIELD_GET(USB_SERIAL_JTAG_IN_EP1_WR_ADDR, status);
+> +}
+> +
+> +static u32 esp32s3_acm_rx_fifo_cnt(struct uart_port *port)
+> +{
+> +	u32 status = esp32s3_acm_read(port, USB_SERIAL_JTAG_OUT_EP1_ST_REG);
+> +
+> +	return FIELD_GET(USB_SERIAL_JTAG_OUT_EP1_REC_DATA_CNT, status);
+> +}
+> +
+> +/* return TIOCSER_TEMT when transmitter is not busy */
+> +static unsigned int esp32s3_acm_tx_empty(struct uart_port *port)
+> +{
+> +	return esp32s3_acm_tx_fifo_cnt(port) == 0 ? TIOCSER_TEMT : 0;
+> +}
+> +
+> +static void esp32s3_acm_set_mctrl(struct uart_port *port, unsigned int mctrl)
+> +{
+> +}
 
-Why "+"?  (I have to ask).
+Do you have to have empty functions for callbacks that do nothing?
 
-> +
-> +#include <linux/types.h>
-> +
-> +extern void do_trace_portio_read(u32 value, u16 port, char width);
-> +extern void do_trace_portio_write(u32 value, u16 port, char width);
-> diff --git a/include/trace/events/portio.h b/include/trace/events/portio.h
-> new file mode 100644
-> index 000000000000..3591a75a475e
-> --- /dev/null
-> +++ b/include/trace/events/portio.h
-> @@ -0,0 +1,49 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
+> --- a/include/uapi/linux/serial_core.h
+> +++ b/include/uapi/linux/serial_core.h
+> @@ -248,4 +248,7 @@
+>  /* Espressif ESP32 UART */
+>  #define PORT_ESP32UART	124
+>  
+> +/* Espressif ESP32 ACM */
+> +#define PORT_ESP32ACM	125
 
-This is -only, which is fine, but your patch doesn't seem to be uniform
-here for new files being added in the same patch, right?  So documenting
-this somewhere (i.e. in the changelog), is essential.
-
-> +#undef TRACE_SYSTEM
-> +#define TRACE_SYSTEM portio
-> +
-> +#if !defined(_TRACE_PORTIO_H) || defined(TRACE_HEADER_MULTI_READ)
-> +#define _TRACE_PORTIO_H
-> +
-> +#include <linux/tracepoint.h>
-> +
-> +DECLARE_EVENT_CLASS(portio_class,
-> +	TP_PROTO(u32 value, u16 port, char width, long ip_addr),
-
-Memory locations are stored in "unsigned long" not "long", right?
-
-> +
-> +	TP_ARGS(value, port, width, ip_addr),
-> +
-> +	TP_STRUCT__entry(
-> +		__field(u32, value)
-> +		__field(u16, port)
-> +		__field(char, width)
-> +		__field(long, ip_addr)
-> +	),
-> +
-> +	TP_fast_assign(
-> +		__entry->value = value;
-> +		__entry->port = port;
-> +		__entry->width = width;
-> +		__entry->ip_addr = ip_addr;
-> +	),
-> +
-> +	TP_printk("port=0x%04x value=0x%0*x %pS",
-> +		__entry->port,
-> +		__entry->width == 'b' ? 2 :
-> +		__entry->width == 'w' ? 4 : 8,
-> +		__entry->value, (void *)__entry->ip_addr)
-
-Logging kernel memory locations, why?  Where is this format documented?
+Why are these defines needed?  What in userspace is going to require
+them?  If nothing, please do not add them.
 
 thanks,
 
