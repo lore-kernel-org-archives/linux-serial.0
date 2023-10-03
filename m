@@ -2,67 +2,62 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C89DE75453
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 12:21:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50A7AE75455
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 12:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231547AbjJCMVo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Oct 2023 08:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58658 "EHLO
+        id S231127AbjJCMjk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Oct 2023 08:39:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230404AbjJCMVn (ORCPT
+        with ESMTP id S229850AbjJCMjk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Oct 2023 08:21:43 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A774CAC;
-        Tue,  3 Oct 2023 05:21:39 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 1C32680A7;
-        Tue,  3 Oct 2023 12:21:39 +0000 (UTC)
-Date:   Tue, 3 Oct 2023 15:21:37 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Maximilian Luz <luzmaximilian@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v12 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-Message-ID: <20231003122137.GC34982@atomide.com>
-References: <20230525113034.46880-1-tony@atomide.com>
- <62d3678a-a23d-4619-95de-145026629ba8@gmail.com>
- <20231003121455.GB34982@atomide.com>
+        Tue, 3 Oct 2023 08:39:40 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D039B83;
+        Tue,  3 Oct 2023 05:39:37 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20EE1C433C7;
+        Tue,  3 Oct 2023 12:39:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1696336777;
+        bh=ECR/7x6lqKutCE21tMiDm+DwzncvCbKErAMvXLYb+2M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YHaZUXRoRH9Vl0HrtucLND8/yKXBcIxTpnk4vjfktbwkrc03Or7eFVhPieeWFLOIA
+         hxA8FTCYrtRVQT6wt9EOEbOAOw55YRujZrJT9MfX8Yg3wIRdBkiAt/F59kNfUtCmr6
+         75tR7xCcakG65rDs8mBITWb1WWktuIVgWfpRlbYs=
+Date:   Tue, 3 Oct 2023 14:39:34 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Max Filippov <jcmvbkbc@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: Re: [PATCH v4 1/5] serial: core: tidy invalid baudrate handling in
+ uart_get_baud_rate
+Message-ID: <2023100322-roamer-dab-b96a@gregkh>
+References: <20230928151631.149333-1-jcmvbkbc@gmail.com>
+ <20230928151631.149333-2-jcmvbkbc@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231003121455.GB34982@atomide.com>
+In-Reply-To: <20230928151631.149333-2-jcmvbkbc@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Tony Lindgren <tony@atomide.com> [231003 12:15]:
-> Hi,
-> 
-> * Maximilian Luz <luzmaximilian@gmail.com> [231003 11:57]:
-> > A bad workaround is to disable runtime PM, e.g. via
-> > 
-> >   echo on > /sys/bus/serial-base/devices/dw-apb-uart.4:0/dw-apb-uart.4:0.0/power/control
-> 
-> If the touchscreen controller driver(s) are using serdev they are
-> children of the dw-apb-uart.4:0.0 and can use runtime PM calls to
-> block the parent device from idling as necessary. The hierarchy
-> unless changed using ignore_children.
+On Thu, Sep 28, 2023 at 08:16:27AM -0700, Max Filippov wrote:
+> uart_get_baud_rate has input parameters 'min' and 'max' limiting the
+> range of acceptable baud rates from the caller's perspective. If neither
+> current or old termios structures have acceptable baud rate setting and
+> 9600 is not in the min/max range either the function returns 0 and
+> issues a warning.
+> However for a UART that does not support speed of 9600 baud this is
+> expected behavior.
+> Clarify that 0 can be (and always could be) returned from the
+> uart_get_baud_rate. Don't issue a warning in that case.
+> Move the warinng to the uart_get_divisor instead, which is often called
+> with the uart_get_baud_rate return value.
 
-Sorry about all the typos, I meant "the hierarchy works unless changed"
-above. The rest of the typos are easier to decipher probably :)
+This doesn't match up with the patch contents anymore :(
 
-Regards,
-
-Tony
