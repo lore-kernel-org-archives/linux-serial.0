@@ -2,139 +2,166 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBF4CE776C4
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 18:55:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A040E8FDAF
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 19:47:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232106AbjJCSzJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Oct 2023 14:55:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37112 "EHLO
+        id S232069AbjJCTrB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Oct 2023 15:47:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232086AbjJCSzI (ORCPT
+        with ESMTP id S240895AbjJCTrB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Oct 2023 14:55:08 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DAD99B;
-        Tue,  3 Oct 2023 11:55:05 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55796C433C8;
-        Tue,  3 Oct 2023 18:55:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1696359304;
-        bh=NFKhnj+jEO3QAJ7YWzF+twV7T5lsxhFLQX1vu6FAjtA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iydG4IaZiHYTjC/gHXlx8VgRUoLtUy5Kbv+c3Fx7JfLbmZW6haKxTAdJ52IuCyg0e
-         wZrzZ/9lV9QazYC7ziaD7V6pzDR83XLmaNmwss3DQpZvQZ/JxX7FqGC5YcPTOaWvHH
-         7cHac1r0n7yhaLbj6yFU0QCTixxPEGQxxpjM28+tIcejCA7QjXFyS2vKKHwdySN2hS
-         570FzNYpumwRrNHBuLCfKcjflq0IBy5nBvCRs5WXkmwlErla96FmETEwGnGQA0KCwB
-         hEpB+RkJ/fE7pKX5+Ikas5G5/PGaYJ3uZyAQjVrfUZV0AWta4uEFAY/FFhxUUEiBAv
-         uWiL8afRccabA==
-Date:   Tue, 3 Oct 2023 19:55:00 +0100
-From:   Lee Jones <lee@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>,
-        Fedor Pchelkin <pchelkin@ispras.ru>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org,
-        syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com
-Subject: Re: [PATCH 1/1] tty: n_gsm: Avoid sleeping during .write() whilst
- atomic
-Message-ID: <20231003185500.GD8453@google.com>
-References: <20231003170020.830242-1-lee@kernel.org>
- <2023100320-immorally-outboard-573a@gregkh>
+        Tue, 3 Oct 2023 15:47:01 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62ED693;
+        Tue,  3 Oct 2023 12:46:58 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id 5614622812f47-3aec067556dso816926b6e.2;
+        Tue, 03 Oct 2023 12:46:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1696362417; x=1696967217; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pY2LDZHNDqV7zpWUtoTSx1wThf0F8639D8i3IHWrzhs=;
+        b=IpiZbxeXw6R5bvJxkjN9CdFb2Z0SMyXpb3ZyfgtiYQhFdqjVRkyJ0NF4lHtwLebXMu
+         nbTIxbLA5HJHcDjDtXqdlrXz93j3my+YzJWRr8y/PYGj7kWHjJXCQEleGjLtdCNJPCre
+         aVTCFgNwRwi8fDJ+LJcm9cWyxRBLVFa+qwVd0lPswVcSd/yXTZa4YOvwGx5ugwjdIOQd
+         wiNzoOxJwB+JZ/LKB0CgGcrXm19Xf3bXXTY3hHSwzVjqUn/0BSWYhmAIkKCNZi12dI8t
+         tRkt1r9/9KaqiAjHj7zBPm52+/DvfT6/wFdBeBwDZBvBjdHopv8U+DC/AuibgJN2kvP2
+         lDKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696362417; x=1696967217;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=pY2LDZHNDqV7zpWUtoTSx1wThf0F8639D8i3IHWrzhs=;
+        b=iiEwF03j2QgFvFf10PMW1FjOrRQGLPDS9sfVkj7+w7PY+1JWXdiZGCPIb6jjM0VVS3
+         hVRzgNZZVKQAcw1fDrMnTAUElKXvdKh9ZuBSj9QlbxkVGC6qMygTA/focABdhRdtmoOR
+         fgUp29Wm0YMcLmFOdc/umJEcHrDVydKXKk9CILXuNZ1tQ4c8bk3ExBR5UYZz82KwCmeJ
+         WTaREV2fKVcntqTjgZoKGD2OBKiQrrE/YVQ9/Yn+Uymi7/p+ia7MNax/9ilfFYE0V5na
+         sQaZwbN5m+2ZQjqSjeOx/Fe/GMuECdZVe8UJ+8gB7ZWTz1RcTa9Sk8CO0NCVSNg9Wmkq
+         9Xog==
+X-Gm-Message-State: AOJu0YxVG1/LY0lOReOlbB03r6A1KQzY+CTC6gSPiAWcpMdgOPjHW13X
+        l4ipDD5lHF1FNA8qiCJjYxqMNBVoIcbOh4YLXc4=
+X-Google-Smtp-Source: AGHT+IFPbj9xPn7d7oWYbjF2MkTvfQjOn7EaNQAKqYjhsPrdfO2VPAp2ZoEYA2CjApca+d14W6rDVw4WitfCqcHXAq8=
+X-Received: by 2002:aca:170a:0:b0:3a8:29a9:e4d0 with SMTP id
+ j10-20020aca170a000000b003a829a9e4d0mr500620oii.34.1696362417592; Tue, 03 Oct
+ 2023 12:46:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2023100320-immorally-outboard-573a@gregkh>
+References: <20230928151631.149333-1-jcmvbkbc@gmail.com> <20230928151631.149333-6-jcmvbkbc@gmail.com>
+ <2023100326-crushing-septic-4856@gregkh>
+In-Reply-To: <2023100326-crushing-septic-4856@gregkh>
+From:   Max Filippov <jcmvbkbc@gmail.com>
+Date:   Tue, 3 Oct 2023 12:46:46 -0700
+Message-ID: <CAMo8BfJgpP-=tNEChcyR3z6i_QeJ9Ywq7EOjjC5i7Uq4OrgXNA@mail.gmail.com>
+Subject: Re: [PATCH v4 5/5] drivers/tty/serial: add ESP32S3 ACM device driver
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 03 Oct 2023, Greg Kroah-Hartman wrote:
+On Tue, Oct 3, 2023 at 5:55=E2=80=AFAM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Thu, Sep 28, 2023 at 08:16:31AM -0700, Max Filippov wrote:
+> > Add driver for the ACM  controller of the Espressif ESP32S3 Soc.
+>
+> Odd extra space :(
 
-> On Tue, Oct 03, 2023 at 06:00:20PM +0100, Lee Jones wrote:
-> > The important part of the call stack being:
-> > 
-> >   gsmld_write()             # Takes a lock and disables IRQs
-> >     con_write()
-> >       console_lock()
-> 
-> Wait, why is the n_gsm line discipline being used for a console?
-> 
-> What hardware/protocol wants this to happen?
-> 
-> gsm I thought was for a very specific type of device, not a console.
-> 
-> As per:
-> 	https://www.kernel.org/doc/html/v5.9/driver-api/serial/n_gsm.html
-> this is a specific modem protocol, why is con_write() being called?
+Ok.
 
-What it's meant for and what random users can make it do are likely to
-be quite separate questions.  This scenario is user driven and can be
-replicated simply by issuing a few syscalls (open, ioctl, write).
+> > Hardware specification is available at the following URL:
+> >
+> >   https://www.espressif.com/sites/default/files/documentation/esp32-s3_=
+technical_reference_manual_en.pdf
+> >   (Chapter 33 USB Serial/JTAG Controller)
+>
+> I don't understand this driver, "ACM" is a USB host <-> gadget protocol,
+> why do you need a platform serial driver for this?
 
-> >         __might_sleep()
-> >           __might_resched() # Complains that IRQs are disabled
-> > 
-> > To fix this, let's ensure mutual exclusion by using a protected shared
-> > variable (busy) instead.  We'll use the current locking mechanism to
-> > protect it, but ensure that the locks are released and IRQs re-enabled
-> > by the time we transit further down the call chain which may sleep.
-> > 
-> > Cc: Daniel Starke <daniel.starke@siemens.com>
-> > Cc: Fedor Pchelkin <pchelkin@ispras.ru>
-> > Cc: Jiri Slaby <jirislaby@kernel.org>
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: linux-serial@vger.kernel.org
-> > Reported-by: syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com
-> > Signed-off-by: Lee Jones <lee@kernel.org>
-> > ---
-> >  drivers/tty/n_gsm.c | 12 ++++++++++++
-> >  1 file changed, 12 insertions(+)
-> > 
-> > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> > index 1f3aba607cd51..b83a97d58381f 100644
-> > --- a/drivers/tty/n_gsm.c
-> > +++ b/drivers/tty/n_gsm.c
-> > @@ -270,6 +270,7 @@ struct gsm_mux {
-> >  	struct tty_struct *tty;		/* The tty our ldisc is bound to */
-> >  	spinlock_t lock;
-> >  	struct mutex mutex;
-> > +	bool busy;
-> >  	unsigned int num;
-> >  	struct kref ref;
-> >  
-> > @@ -3253,6 +3254,7 @@ static struct gsm_mux *gsm_alloc_mux(void)
-> >  	gsm->dead = true;	/* Avoid early tty opens */
-> >  	gsm->wait_config = false; /* Disabled */
-> >  	gsm->keep_alive = 0;	/* Disabled */
-> > +	gsm->busy = false;
-> >  
-> >  	/* Store the instance to the mux array or abort if no space is
-> >  	 * available.
-> > @@ -3718,11 +3720,21 @@ static ssize_t gsmld_write(struct tty_struct *tty, struct file *file,
-> >  
-> >  	ret = -ENOBUFS;
-> >  	spin_lock_irqsave(&gsm->tx_lock, flags);
-> > +	if (gsm->busy) {
-> > +		spin_unlock_irqrestore(&gsm->tx_lock, flags);
-> > +		return -EBUSY;
-> 
-> So you just "busted" the re-entrant call chain here, are you sure this
-> is ok for this protocl?  Can it handle -EBUSY?
+The USB part of this piece of hardware is fixed and not controllable, so
+all we have is a very limited UART interface. But to the outside world
+it's a USB device with the CDC-ACM interface.
 
-I should have marked this submission as RFC.  Mea culpa.  Please
-consider it as such going forward.  Feedback like this is highly
-valuable.
+> > diff --git a/drivers/tty/serial/esp32_acm.c b/drivers/tty/serial/esp32_=
+acm.c
+> > new file mode 100644
+> > index 000000000000..f02abd2ac65e
+> > --- /dev/null
+> > +++ b/drivers/tty/serial/esp32_acm.c
+> > @@ -0,0 +1,459 @@
+> > +// SPDX-License-Identifier: GPL-2.0-or-later
+>
+> Why "or later"?  I have to ask, sorry.
 
-> Daniel, any thoughts?
-> 
-> And Lee, you really don't have this hardware, right?  So why are you
-> dealing with bug reports for it?  :)
+I don't really have a preference here. Is there a reason to choose
+GPL-2.0 only for a new code?
 
-'cos Syzkaller.
+> And no copyright information?  That's fine, but be sure your company's
+> lawyers are ok with it...
 
-And no, as per the splat above, this was reproduced in qemu.
+There's no company behind this, just myself.
 
--- 
-Lee Jones [李琼斯]
+> > +
+> > +#include <linux/bitfield.h>
+> > +#include <linux/bits.h>
+> > +#include <linux/console.h>
+> > +#include <linux/delay.h>
+> > +#include <linux/io.h>
+> > +#include <linux/irq.h>
+> > +#include <linux/module.h>
+> > +#include <linux/of.h>
+> > +#include <linux/of_device.h>
+> > +#include <linux/serial_core.h>
+> > +#include <linux/slab.h>
+> > +#include <linux/tty_flip.h>
+> > +#include <asm/serial.h>
+> > +
+> > +#define DRIVER_NAME  "esp32s3-acm"
+> > +#define DEV_NAME     "ttyACM"
+>
+> There is already a ttyACM driver in the kernel, will this conflict with
+> that one?  And are you using the same major/minor numbers for it as
+> well?  If so, how is this going to work?
+
+I'll rename it to ttyS. I see that it coexists with the other driver that c=
+alls
+its devices ttyS just fine.
+
+> > +static void esp32s3_acm_set_mctrl(struct uart_port *port, unsigned int=
+ mctrl)
+> > +{
+> > +}
+>
+> Do you have to have empty functions for callbacks that do nothing?
+
+The serial core has unconditional calls to these callbacks.
+
+> > --- a/include/uapi/linux/serial_core.h
+> > +++ b/include/uapi/linux/serial_core.h
+> > @@ -248,4 +248,7 @@
+> >  /* Espressif ESP32 UART */
+> >  #define PORT_ESP32UART       124
+> >
+> > +/* Espressif ESP32 ACM */
+> > +#define PORT_ESP32ACM        125
+>
+> Why are these defines needed?  What in userspace is going to require
+> them?  If nothing, please do not add them.
+
+I don't understand what the alternatives are. The comment for the
+uart_ops::config_port() callback says that port->type should be set
+to the type of the port found, and I see that almost every serial driver
+defines a unique PORT_* for that.
+
+--=20
+Thanks.
+-- Max
