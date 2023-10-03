@@ -2,126 +2,91 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 040D9E7AD57
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 14:32:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FEC4E7AD57
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 14:48:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240167AbjJCOcE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Oct 2023 10:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46374 "EHLO
+        id S240082AbjJCOsh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Oct 2023 10:48:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240153AbjJCOcC (ORCPT
+        with ESMTP id S229539AbjJCOsg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Oct 2023 10:32:02 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E5F5D8;
-        Tue,  3 Oct 2023 07:31:58 -0700 (PDT)
+        Tue, 3 Oct 2023 10:48:36 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E15A1;
+        Tue,  3 Oct 2023 07:48:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1696343517; x=1727879517;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=MrutWpDigz5A/IURa0udL0kvZh91MzC6na2F+b9d5E8=;
-  b=Y/raqYmaQlaaMAArtlRzh9m3U9v3Th8/w9Tqd9MFycVi8/0p+OUSHKNb
-   hUYfXaJXrd8Hh6LMFDB8KKZ4Rw4c3QBGuvzPgw6TcaJ3vfsSA0QsLtCDs
-   bOVFGQqsMG6jSVik6RhBHvGDhtyl7a+a34jb+kwd05NQbjVGOtCpR9pgB
-   cfwvlywA+6UV3svVVldEaRTSYkEv92QvlvaJ+gSlwcwDxl6GoDiDzSH3y
-   SxTMifu1D3WTGD2KLnRmPWyC87NyG4TdqEjBAkzuD21zpcLRH/7Z/W95E
-   V7SK4xQuqtlZ55/IOHJOyuMaVOLo2TrhNd4CZYExHryBRfcNtSPP1axmW
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10852"; a="447051990"
+  t=1696344514; x=1727880514;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xOPb2YJyo9DElC9cdF/qeqFy+J/BPVzboCD+C8033Ew=;
+  b=NSLJGu4t1WYTjPlkdiY6X/HD37BTeM5NXeZAyvdKuPqSuSgsomLqtpCj
+   vmk/S1sasq3E7404CuoYgp1ERKlBGr07Lt9tEDOPmcu0RsHWj4EoSV1rI
+   AevcCsUQsnQm78FHhh7JY/m/LElFsOc9077WlULZzmvgYRTB8piqQ6cHH
+   Yr6aq4JzIDWpdyuiTzJhX5R6cGTdIXKVoRtsESzLtGWgPhtvlFtd+KrHm
+   Aja+bJloboy2xB6AyfBWiCKVSYZLLGEFnPOfvtO3xrzIQA5w8zfXWf1S0
+   I0pkTH+2JvZgsmfXXqklMrOwDjgiWPiv/kxIrD9NMnZBuz9eo93pGPzs5
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10852"; a="385718306"
 X-IronPort-AV: E=Sophos;i="6.03,197,1694761200"; 
-   d="scan'208";a="447051990"
+   d="scan'208";a="385718306"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Oct 2023 07:12:48 -0700
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Oct 2023 07:48:33 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10852"; a="821269137"
+X-IronPort-AV: E=McAfee;i="6600,9927,10852"; a="821277035"
 X-IronPort-AV: E=Sophos;i="6.03,197,1694761200"; 
-   d="scan'208";a="821269137"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 03 Oct 2023 07:12:45 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 7882D18A0; Tue,  3 Oct 2023 17:12:44 +0300 (EEST)
+   d="scan'208";a="821277035"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Oct 2023 07:48:30 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97-RC1)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qnghJ-00000002VwI-1pU0;
+        Tue, 03 Oct 2023 17:48:29 +0300
+Date:   Tue, 3 Oct 2023 17:48:29 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Al Cooper <alcooperx@gmail.com>,
         Broadcom internal kernel review list 
         <bcm-kernel-feedback-list@broadcom.com>,
         Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v1 1/1] serial: 8250_bcm7271: Use devm_clk_get_optional_enabled()
-Date:   Tue,  3 Oct 2023 17:12:41 +0300
-Message-Id: <20231003141241.3071687-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.40.0.1.gaa8946217a0b
+Subject: Re: [PATCH v1 1/1] serial: 8250_bcm7271: Use
+ devm_clk_get_optional_enabled()
+Message-ID: <ZRwpvYn9xSm3+F/T@smile.fi.intel.com>
+References: <20231003141241.3071687-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231003141241.3071687-1-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use devm_clk_get_optional_enabled() to simplify the code.
+On Tue, Oct 03, 2023 at 05:12:41PM +0300, Andy Shevchenko wrote:
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_bcm7271.c | 23 ++++++++---------------
- 1 file changed, 8 insertions(+), 15 deletions(-)
+Seems the old version had been sent...
 
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index 1a853a08654a..e6d1688feeb4 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -1015,26 +1015,22 @@ static int brcmuart_probe(struct platform_device *pdev)
- 	of_property_read_u32(np, "clock-frequency", &clk_rate);
- 
- 	/* See if a Baud clock has been specified */
--	baud_mux_clk = devm_clk_get(dev, "sw_baud");
--	if (IS_ERR(baud_mux_clk)) {
--		if (PTR_ERR(baud_mux_clk) == -EPROBE_DEFER) {
--			ret = -EPROBE_DEFER;
--			goto release_dma;
--		}
--		dev_dbg(dev, "BAUD MUX clock not specified\n");
--	} else {
-+	baud_mux_clk = devm_clk_get_optional_enabled(dev, "sw_baud");
-+	if (IS_ERR(baud_mux_clk))
-+		goto release_dma;
-+	if (baud_mux_clk) {
- 		dev_dbg(dev, "BAUD MUX clock found\n");
--		ret = clk_prepare_enable(baud_mux_clk);
--		if (ret)
--			goto release_dma;
-+
- 		priv->baud_mux_clk = baud_mux_clk;
- 		init_real_clk_rates(dev, priv);
- 		clk_rate = priv->default_mux_rate;
-+	} else {
-+		dev_dbg(dev, "BAUD MUX clock not specified\n");
- 	}
- 
- 	if (clk_rate == 0) {
- 		ret = dev_err_probe(dev, -EINVAL, "clock-frequency or clk not defined\n");
--		goto err_clk_disable;
-+		goto release_dma;
- 	}
- 
- 	dev_dbg(dev, "DMA is %senabled\n", priv->dma_enabled ? "" : "not ");
-@@ -1118,8 +1114,6 @@ static int brcmuart_probe(struct platform_device *pdev)
- 	serial8250_unregister_port(priv->line);
- err:
- 	brcmuart_free_bufs(dev, priv);
--err_clk_disable:
--	clk_disable_unprepare(baud_mux_clk);
- release_dma:
- 	if (priv->dma_enabled)
- 		brcmuart_arbitration(priv, 0);
-@@ -1134,7 +1128,6 @@ static int brcmuart_remove(struct platform_device *pdev)
- 	hrtimer_cancel(&priv->hrt);
- 	serial8250_unregister_port(priv->line);
- 	brcmuart_free_bufs(&pdev->dev, priv);
--	clk_disable_unprepare(priv->baud_mux_clk);
- 	if (priv->dma_enabled)
- 		brcmuart_arbitration(priv, 0);
- 	return 0;
+...
+
+> +	baud_mux_clk = devm_clk_get_optional_enabled(dev, "sw_baud");
+
+Here should be
+
+	ret = PTR_ERR_OR_ZERO(baud_mux_clk);
+
+> +	if (IS_ERR(baud_mux_clk))
+
+	if (ret)
+
+> +		goto release_dma;
+
+
+...I'll send a v2 later on. Sorry for the noise.
+
 -- 
-2.40.0.1.gaa8946217a0b
+With Best Regards,
+Andy Shevchenko
+
 
