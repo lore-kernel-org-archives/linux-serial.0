@@ -2,128 +2,149 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDD03E776FD
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 03:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 951A2E75424
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 05:01:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229738AbjJCD5v (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 Oct 2023 23:57:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48478 "EHLO
+        id S230169AbjJCFBG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Oct 2023 01:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230061AbjJCD5u (ORCPT
+        with ESMTP id S230049AbjJCFBE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 Oct 2023 23:57:50 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB085C9
-        for <linux-serial@vger.kernel.org>; Mon,  2 Oct 2023 20:57:46 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id 4fb4d7f45d1cf-533e7d127d4so644525a12.3
-        for <linux-serial@vger.kernel.org>; Mon, 02 Oct 2023 20:57:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1696305465; x=1696910265; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Vcj38yNtA7k/3hr4qGHtjbsEU4GTIRzNMyspAkCjhCA=;
-        b=p3zo2HGEr+2OvrXEoU/Zye/b9aSgFuQ/6Cn7dI+WhkfiRd4RZIr6GEHOBeC2BSX8tJ
-         uqp1SHn/SvcqCMew2MjGS+ooNVKU9t0g2/tR/kjh2uTBXWKX5c9kuhjNxkCoM5fiH/dm
-         +i9aD/Yc3nv9V05xzEh+j3rMzWC8sHi52iIoWvEC0+kFo2H+PHr8znb9Z2q1CPzrXFvu
-         KF4yBL/6uBN3w5zJM4YKXyeLB+qyDxbIs6nDjrXMqT9WJzT7d7/J/hDtdrWmftrVpq3z
-         UIKnj5ci5Dfk0R0ch9bS7xcZDJLMEjvfLGYlxLJZKh59FgBr0qW/sm0j96/LBJOSTnmn
-         /RAA==
+        Tue, 3 Oct 2023 01:01:04 -0400
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94581A6;
+        Mon,  2 Oct 2023 22:01:01 -0700 (PDT)
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-32483535e51so554020f8f.0;
+        Mon, 02 Oct 2023 22:01:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696305465; x=1696910265;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1696309260; x=1696914060;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Vcj38yNtA7k/3hr4qGHtjbsEU4GTIRzNMyspAkCjhCA=;
-        b=X05NNdDpfPS8Pr0ORL/Jdwe8ar5S9eQAfug51yBjvs3qG5449dwEBy/qG7NGu2BztH
-         nlV6sv4OY7lGGluqKuK/VvEgdA+wncbDdl4pk0HuBlDbxoLxQeEsdg7EO8exnL3CpLqv
-         zaYv18Bo/hr9BTqgTex0agszETn7XeVoUq+ipSP88IVLgkeVF0r351sVeDddi5POV/sP
-         fpgWfWvVrnbF7soKlWHHtv+dIKBFixYWvPWTjH01skrT28SCsBYKjbG/JLkTG4dvan8r
-         bUAPpMRbv5JvuWUSOLov32G6dEY/Tk2ReKu7A2B95CZUZv4g5feOdDIf5YDhf3uZ9Ty/
-         ht+A==
-X-Gm-Message-State: AOJu0YzWacWiVg9r5MjUZtO0SZvONBt3b1iz6PeAFiLOG0rA2Kf5lv27
-        i1ug8vYmkj0Fj+iQ3l8CrSGBdQ==
-X-Google-Smtp-Source: AGHT+IEifMyPHsZPopKOT2VslyFdEw8uEukP8H3uRKxwv6r121ZBGIoVbrBHyNp4qTycGECLs+Yl3A==
-X-Received: by 2002:a50:fa85:0:b0:534:63e:d0b7 with SMTP id w5-20020a50fa85000000b00534063ed0b7mr11688359edr.23.1696305465098;
-        Mon, 02 Oct 2023 20:57:45 -0700 (PDT)
-Received: from [192.168.32.2] ([82.78.167.190])
-        by smtp.gmail.com with ESMTPSA id q17-20020aa7da91000000b00537f44827a8sm160947eds.64.2023.10.02.20.57.43
+        bh=/4UXmhpiqh7iZ4g5MCkKGXK5u5GuDBNQm7k6OkRgMn8=;
+        b=YqkrGrbDoMuX4E9U7aM61OBlEmORGhDX5eJ+dXyB9ujJnQGClhgRu9Sd+nIQBzL33C
+         Qlc8xyOEBErULgreRTbGpg6q4wtnVY4oYNNHOwFGfLsI8UO5y3fzO4QOT7NO6NJT+3N7
+         KQcZV5u1qVKj+ANocTey3S0ExsIK6IrphBnUW3/p9Tc6TW7MkZiHjkMiPNDMIqB5qRa4
+         0XY67oJwylwxo1tGqKfy3WsosO2lO9DsGJtLZkMccddFKTWB4zV+XZL3wFkL9H8rUApj
+         +OIQYfWgWW0seh+EWFVKFq6tWMacDk9c1dHIPWerCQFc8VGsn3v73jelNreiHOP0Y2k3
+         ojxg==
+X-Gm-Message-State: AOJu0YxqrnHYwu3NLGTCpjC14MOGul5dk7fdxD7byMki/ohNKTgiwOir
+        3W64oadqvavTRS/qV5dZ324=
+X-Google-Smtp-Source: AGHT+IGocQEcbapFYT90P3+RqaZs4AaOOGe480YgHpzunTwfYG7+fvNBDhxNEiq98ZuS+ULvN+Gk1g==
+X-Received: by 2002:a5d:574f:0:b0:31f:97e2:a924 with SMTP id q15-20020a5d574f000000b0031f97e2a924mr11484669wrw.14.1696309259752;
+        Mon, 02 Oct 2023 22:00:59 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id f17-20020a056000129100b003247f732c07sm587799wrx.12.2023.10.02.22.00.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Oct 2023 20:57:44 -0700 (PDT)
-Message-ID: <ae156c07-955a-1257-2b1a-19ee938c1bcd@tuxon.dev>
-Date:   Tue, 3 Oct 2023 06:57:41 +0300
+        Mon, 02 Oct 2023 22:00:58 -0700 (PDT)
+Message-ID: <acda5dc4-e6d3-4870-929f-fb91636b5649@kernel.org>
+Date:   Tue, 3 Oct 2023 07:00:57 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH v2 19/28] dt-bindings: pinctrl: renesas: set
- additionalProperties: false
-To:     Rob Herring <robh@kernel.org>
-Cc:     geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        linus.walleij@linaro.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, magnus.damm@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org,
-        quic_bjorande@quicinc.com, konrad.dybcio@linaro.org, arnd@arndb.de,
-        neil.armstrong@linaro.org, prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, linux-renesas-soc@vger.kernel.org,
-        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20230929053915.1530607-1-claudiu.beznea@bp.renesas.com>
- <20230929053915.1530607-20-claudiu.beznea@bp.renesas.com>
- <20231002145052.GA1690001-robh@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 3/4] trigger: ledtrig-tty: move variable definition to
+ the top
 Content-Language: en-US
-From:   claudiu beznea <claudiu.beznea@tuxon.dev>
-In-Reply-To: <20231002145052.GA1690001-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+To:     Lee Jones <lee@kernel.org>, Florian Eckert <fe@dev.tdt.de>
+Cc:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
+        pavel@ucw.cz, kabel@kernel.org, u.kleine-koenig@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-leds@vger.kernel.org, kernel test robot <lkp@intel.com>
+References: <20230928132632.200263-1-fe@dev.tdt.de>
+ <20230928132632.200263-4-fe@dev.tdt.de> <20231002140559.GB8453@google.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20231002140559.GB8453@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On 02.10.2023 17:50, Rob Herring wrote:
-> On Fri, Sep 29, 2023 at 08:39:06AM +0300, Claudiu wrote:
->> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->>
->> Set additionalProperties: false.
->>
->> Suggested-by: Rob Herring <robh@kernel.org>
+On 02. 10. 23, 16:05, Lee Jones wrote:
+> On Thu, 28 Sep 2023, Florian Eckert wrote:
 > 
-> I did?
-
-It is what I've understood from this:
-
-https://patchwork.kernel.org/project/linux-renesas-soc/patch/20230912045157.177966-30-claudiu.beznea.uj@bp.renesas.com/
-
+>> The Intel build robot has complained about this. Hence move the commit
+>> of the variable definition to the beginning of the function.
 > 
->> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> Please copy the robot's error message into the commit message.
+
+Ah, lkp, then also the Closes: line as it suggests.
+
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
 >> ---
+>>   drivers/leds/trigger/ledtrig-tty.c | 3 +--
+>>   1 file changed, 1 insertion(+), 2 deletions(-)
 >>
->> Changes in v2:
->> - this patch is new in v2 and added as suggested by Rob
+>> diff --git a/drivers/leds/trigger/ledtrig-tty.c b/drivers/leds/trigger/ledtrig-tty.c
+>> index 8ae0d2d284af..1c6fadf0b856 100644
+>> --- a/drivers/leds/trigger/ledtrig-tty.c
+>> +++ b/drivers/leds/trigger/ledtrig-tty.c
+>> @@ -82,6 +82,7 @@ static void ledtrig_tty_work(struct work_struct *work)
+>>   {
+>>   	struct ledtrig_tty_data *trigger_data =
+>>   		container_of(work, struct ledtrig_tty_data, dwork.work);
+>> +	unsigned long interval = LEDTRIG_TTY_INTERVAL;
+>>   	struct serial_icounter_struct icount;
+>>   	int ret;
+>>   
+>> @@ -124,8 +125,6 @@ static void ledtrig_tty_work(struct work_struct *work)
+>>   
+>>   	if (icount.rx != trigger_data->rx ||
+>>   	    icount.tx != trigger_data->tx) {
+>> -		unsigned long interval = LEDTRIG_TTY_INTERVAL;
+>> -
+>>   		led_blink_set_oneshot(trigger_data->led_cdev, &interval,
+>>   				      &interval, 0);
+>>   
+>> -- 
+>> 2.30.2
 >>
->>  .../devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml     | 3 +--
->>  1 file changed, 1 insertion(+), 2 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml
->> index 4782f96feb7e..eb726770f571 100644
->> --- a/Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml
->> +++ b/Documentation/devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml
->> @@ -106,8 +106,7 @@ additionalProperties:
->>          line-name: true
->>  
->>      - type: object
->> -      additionalProperties:
->> -        $ref: "#/additionalProperties/anyOf/0"
->> +      additionalProperties: false
 > 
-> With no properties defined, this only allows an empty node which is 
-> probably not what you want. It's the other anyOf entry that needed it, 
-> but I already sent a fix which Linus applied.
 
-Thanks!
+-- 
+js
+suse labs
 
-> 
-> Rob
