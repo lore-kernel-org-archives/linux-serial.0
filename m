@@ -2,100 +2,100 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E276E7AD73
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 15:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AAD3E7AD78
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Oct 2023 16:05:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231462AbjJCPTd convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Oct 2023 11:19:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48112 "EHLO
+        id S240267AbjJCQFz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Oct 2023 12:05:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231294AbjJCPTc (ORCPT
+        with ESMTP id S232066AbjJCQFx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Oct 2023 11:19:32 -0400
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CA3AD;
-        Tue,  3 Oct 2023 08:19:29 -0700 (PDT)
-Received: by mail-yb1-f169.google.com with SMTP id 3f1490d57ef6-d8162698f0dso1132636276.0;
-        Tue, 03 Oct 2023 08:19:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696346368; x=1696951168;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=BBKViIdg/9cDLzuM95X5V6V6ZzYcdpIf1IK/GDtHoe0=;
-        b=XQEdsdt8nFLPyUMPfeTEYr4ILJbJo8SxtdDg6re9zcrsrH49no2NKFsJzltloln0mN
-         n/vXwsTSon1terKNTQRRuI8nyjrNyZf93V/O0jn7UvV5u0sIn0cfCsFYD3b6MNZ6gFJ4
-         v2A4oMZnzmvnFg7CrGsBeXcSQzdtzfqvQYZ+0hXvhsnY5faNOhBR9oTRYMcXFQhVw18u
-         FL9o4zBHseUUBvu83no6N+UPS+xVfYA2fGOQ6uQ/1LZ53m3vz6ns9CIZ1qXgkG+8is7R
-         sYeqObLy6FCa7g5/6E7dug8cYPa8KrvwEQWIPrcoiMq/Hx/qtUQvpnX9zv7LeQTg9Nh1
-         Lk0g==
-X-Gm-Message-State: AOJu0Ywvo/Sn59aZsUhZPW7Suy+lrwb7aQFla3LY7XUNjoMbZcE696Az
-        dDKAVNlszl6v39fdWU7KCYHEI3gzEoGwSQ==
-X-Google-Smtp-Source: AGHT+IHFnV1zRGLHP66GQTrNH644jljVi4HcTMCI/GaAXQTCckrj7rGC2KB68Ym7wD6dC6pVbLn7Xw==
-X-Received: by 2002:a25:ae21:0:b0:d7f:c4ed:d6af with SMTP id a33-20020a25ae21000000b00d7fc4edd6afmr14373219ybj.40.1696346368281;
-        Tue, 03 Oct 2023 08:19:28 -0700 (PDT)
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com. [209.85.128.169])
-        by smtp.gmail.com with ESMTPSA id t1-20020a252d01000000b00d7e339ada01sm460433ybt.20.2023.10.03.08.19.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Oct 2023 08:19:27 -0700 (PDT)
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-59c268676a9so12899207b3.0;
-        Tue, 03 Oct 2023 08:19:27 -0700 (PDT)
-X-Received: by 2002:a25:553:0:b0:d36:58a6:3281 with SMTP id
- 80-20020a250553000000b00d3658a63281mr11873855ybf.39.1696346367086; Tue, 03
- Oct 2023 08:19:27 -0700 (PDT)
+        Tue, 3 Oct 2023 12:05:53 -0400
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B817A9;
+        Tue,  3 Oct 2023 09:05:50 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:73::646])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 922B1381;
+        Tue,  3 Oct 2023 16:05:49 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 922B1381
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1696349149; bh=FJ0ABpqZ404qDATR9ZjzfiRpFdQTFHY4H48kFkpDdqE=;
+        h=From:To:Subject:In-Reply-To:References:Date:From;
+        b=ByBmQehZ9ZDltSjH06Xz6yT1qgZkCx/jKFQq5vGQMNYnUNAsWw5VRiHo0PzccGksa
+         gqlixKWWEgNhp6Y5PHM0QnX8YDksC0utj3gRWXz7g24l5PqHLfDgZqX1bgpuQjlTd/
+         0eAlHSE25aHwkynWubyn7prY+ca8QdG0XmJEXgCE5hVajN3um9Jk3zfan25A4Svpqm
+         e6bckqM5chLcb6+taKdlZEhJgBgiFn1No0MF6iM38yUXkNKfuKtdbd4GWNnuTS/+dC
+         hPSI6U9PcqlFTty4GZa5eG+hfY0iUEGivaGcfpmBY2ezucGrZ5aDp10a6JQXeFMVL0
+         pgpGyDfqQB/2g==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Costa Shulyupin <costa.shul@redhat.com>,
+        Mahesh J Salgaonkar <mahesh@linux.ibm.com>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        Linas Vepstas <linasvepstas@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        "Manoj N. Kumar" <manoj@linux.ibm.com>,
+        "Matthew R. Ochs" <mrochs@linux.ibm.com>,
+        Uma Krishnan <ukrishn@linux.ibm.com>,
+        Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Costa Shulyupin <costa.shul@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Philippe =?utf-8?Q?Mathieu-Daud=C3=A9?= <philmd@linaro.org>,
+        Nicholas Miehlbradt <nicholas@linux.ibm.com>,
+        Benjamin Gray <bgray@linux.ibm.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        Rohan McLure <rmclure@linux.ibm.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Sathvika Vasireddy <sv@linux.ibm.com>,
+        Laurent Dufour <laurent.dufour@fr.ibm.com>,
+        Nathan Lynch <nathanl@linux.ibm.com>,
+        Brian King <brking@linux.vnet.ibm.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-pci@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-scsi@vger.kernel.org, kvm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] docs: move powerpc under arch
+In-Reply-To: <20230826165737.2101199-1-costa.shul@redhat.com>
+References: <169052340516.4355.10339828466636149348@legolas.ozlabs.org>
+ <20230826165737.2101199-1-costa.shul@redhat.com>
+Date:   Tue, 03 Oct 2023 10:05:48 -0600
+Message-ID: <87cyxvelnn.fsf@meer.lwn.net>
 MIME-Version: 1.0
-References: <20230929053915.1530607-1-claudiu.beznea@bp.renesas.com> <20230929053915.1530607-5-claudiu.beznea@bp.renesas.com>
-In-Reply-To: <20230929053915.1530607-5-claudiu.beznea@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 3 Oct 2023 17:19:15 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXM7=sMgLJVXpa7maa0ybc=KsOt7-RpdPL6OpMeW6aULw@mail.gmail.com>
-Message-ID: <CAMuHMdXM7=sMgLJVXpa7maa0ybc=KsOt7-RpdPL6OpMeW6aULw@mail.gmail.com>
-Subject: Re: [PATCH v2 04/28] clk: renesas: rzg2l: trust value returned by hardware
-To:     Claudiu <claudiu.beznea@tuxon.dev>
-Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        linus.walleij@linaro.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, magnus.damm@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org,
-        quic_bjorande@quicinc.com, konrad.dybcio@linaro.org, arnd@arndb.de,
-        neil.armstrong@linaro.org, prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, linux-renesas-soc@vger.kernel.org,
-        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Sep 29, 2023 at 7:39 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
-> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Costa Shulyupin <costa.shul@redhat.com> writes:
+
+> and fix all in-tree references.
 >
-> Initial value of CPG_PL2SDHI_DSEL bits 0..1 or 4..6 is 01b. Hardware user's
-> manual (r01uh0914ej0130-rzg2l-rzg2lc.pdf) specifies that setting 0 is
-> prohibited. The rzg2l_cpg_sd_clk_mux_get_parent() should just read
-> CPG_PL2SDHI_DSEL, trust the value and return the proper clock parent index
-> based on the read value. Do this.
+> Architecture-specific documentation is being moved into Documentation/arch/
+> as a way of cleaning up the top-level documentation directory and making
+> the docs hierarchy more closely match the source hierarchy.
 >
-> Fixes: eaff33646f4cb ("clk: renesas: rzg2l: Add SDHI clk mux support")
-> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> ---
->
-> Changes in v2:
-> - Used "return val ? val - 1 : 0;"
+> Signed-off-by: Costa Shulyupin <costa.shul@redhat.com>
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue in renesas-clk-for-v6.7.
+So this patch appears to have not been picked up, and to have received
+no comments.  I'll happily carry it in docs-next, but it would be nice
+to have an ack from the powerpc folks...?
 
-Gr{oetje,eeting}s,
+Thanks,
 
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+jon
