@@ -2,68 +2,98 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69736E7B5FB
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 12:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0EC8E7B5F9
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 12:19:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242295AbjJDMNJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Oct 2023 08:13:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36656 "EHLO
+        id S233228AbjJDMTh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Oct 2023 08:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232919AbjJDMNI (ORCPT
+        with ESMTP id S233074AbjJDMTg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Oct 2023 08:13:08 -0400
+        Wed, 4 Oct 2023 08:19:36 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5694AA9;
-        Wed,  4 Oct 2023 05:13:05 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65BF9C433C7;
-        Wed,  4 Oct 2023 12:13:04 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B963BA7;
+        Wed,  4 Oct 2023 05:19:32 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D94F7C433C8;
+        Wed,  4 Oct 2023 12:19:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1696421585;
-        bh=Kk4cv0xkH9oZilc86UHlE6Zvb/RSMcav/ebFcJBFk0Y=;
+        s=korg; t=1696421972;
+        bh=KLRTs2CZCg32IlalRFBy6OiqPXaohmKRPJmhxuyEPVg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Tr1fAs69JCHQL+EO6CQj06Lxavr7lTS0rTnd5CrdNMxnstw/2jnUO8E4o2urG0052
-         YO/OUciFJ1Hz6GRoJ+3P3uK2nWjKI13mGUoVC03DxYT/wON7ik+yBSUy4FJm3UZn11
-         ALolc2AWyGyrJSF8RZoTQfG8LcN6MEH8NLTPCBJk=
-Date:   Wed, 4 Oct 2023 14:13:01 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Paul Geurts <paul_geurts@live.nl>
-Cc:     jirislaby@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] serial: imx: fix tx statemachine deadlock
-Message-ID: <2023100450-charger-disregard-9683@gregkh>
-References: <AM0PR09MB26750E782F81CD447058FE7D95CBA@AM0PR09MB2675.eurprd09.prod.outlook.com>
+        b=dKexWRpV7KykyOK4YIqKRk1146kFmwxDxXDeNTWhe9HV3T/EA9B84Pj5YJqGXKZMq
+         lS3qW+n4vY8q5Q+J7aSvlnj5jt1twjmgaL1JCxsfHF1M4HFIIy5eOtayiUK4qVHOTk
+         2UcMWYvJvwacYHOXlV2ASpNB7Gamh+vqomd1f0Os=
+Date:   Wed, 4 Oct 2023 14:19:29 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Lee Jones <lee@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>,
+        Fedor Pchelkin <pchelkin@ispras.ru>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org,
+        syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] tty: n_gsm: Avoid sleeping during .write() whilst
+ atomic
+Message-ID: <2023100425-unwieldy-reaffirm-2a1b@gregkh>
+References: <20231003170020.830242-1-lee@kernel.org>
+ <2023100320-immorally-outboard-573a@gregkh>
+ <20231003185500.GD8453@google.com>
+ <2023100457-entail-freefall-06fd@gregkh>
+ <20231004090918.GB9374@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <AM0PR09MB26750E782F81CD447058FE7D95CBA@AM0PR09MB2675.eurprd09.prod.outlook.com>
+In-Reply-To: <20231004090918.GB9374@google.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 04, 2023 at 11:57:22AM +0200, Paul Geurts wrote:
-> When using the serial port as RS485 port, the tx statemachine is used to
-> control the RTS pin to drive the RS485 transceiver TX_EN pin. When the
-> TTY port is closed in the middle of a transmission (for instance during
-> userland application crash), imx_uart_shutdown disables the interface
-> and disables the Transmission Complete interrupt. afer that,
-> imx_uart_stop_tx bails on an incomplete transmission, to be retriggered
-> by the TC interrupt. This interrupt is disabled and therefore the tx
-> statemachine never transitions out of SEND. The statemachine is in
-> deadlock now, and the TX_EN remains low, making the interface useless.
+On Wed, Oct 04, 2023 at 10:09:18AM +0100, Lee Jones wrote:
+> On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
 > 
-> imx_uart_stop_tx now checks for incomplete transmission AND whether TC
-> interrupts are enabled before bailing to be retriggered. This makes sure
-> the state machine handling is reached, and is properly set to
-> WAIT_AFTER_SEND.
+> > On Tue, Oct 03, 2023 at 07:55:00PM +0100, Lee Jones wrote:
+> > > On Tue, 03 Oct 2023, Greg Kroah-Hartman wrote:
+> > > 
+> > > > On Tue, Oct 03, 2023 at 06:00:20PM +0100, Lee Jones wrote:
+> > > > > The important part of the call stack being:
+> > > > > 
+> > > > >   gsmld_write()             # Takes a lock and disables IRQs
+> > > > >     con_write()
+> > > > >       console_lock()
+> > > > 
+> > > > Wait, why is the n_gsm line discipline being used for a console?
+> > > > 
+> > > > What hardware/protocol wants this to happen?
+> > > > 
+> > > > gsm I thought was for a very specific type of device, not a console.
+> > > > 
+> > > > As per:
+> > > > 	https://www.kernel.org/doc/html/v5.9/driver-api/serial/n_gsm.html
+> > > > this is a specific modem protocol, why is con_write() being called?
+> > > 
+> > > What it's meant for and what random users can make it do are likely to
+> > > be quite separate questions.  This scenario is user driven and can be
+> > > replicated simply by issuing a few syscalls (open, ioctl, write).
+> > 
+> > I would recommend that any distro/system that does not want to support
+> > this specific hardware protocol, just disable it for now (it's marked as
+> > experimental too), if they don't want to deal with the potential
+> > sleep-while-atomic issue.
 > 
-> Signed-off-by: Paul Geurts <paul_geurts@live.nl>
-> ---
->  drivers/tty/serial/imx.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> n_gsm is available on all the systems I have available.  The mention of
+> 'EXPERIMENTAL' in the module description appears to have zero effect on
+> whether distros choose to make it available or not.  If you're saying
+> that we know this module is BROKEN however, then perhaps we should mark
+> it as such.
 
-What commit id does this fix?
+Also, I think this requires root to set this line discipline to the
+console, right?  A normal user can't do that, or am I missing a code
+path here?
+
+Is there a reproducer somewhere for this issue that runs as a normal
+user?  I couldn't find one in the syzbot listings but I might have been
+not looking deep enough.
 
 thanks,
 
