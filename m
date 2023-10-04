@@ -2,188 +2,117 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4064CE8FDCA
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 06:26:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B27CE8FDCF
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 06:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241364AbjJDG1A (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Oct 2023 02:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37868 "EHLO
+        id S241389AbjJDGhg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Oct 2023 02:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241384AbjJDG1A (ORCPT
+        with ESMTP id S232755AbjJDGhf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Oct 2023 02:27:00 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 41B5EAF;
-        Tue,  3 Oct 2023 23:26:57 -0700 (PDT)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 1480F80BD;
-        Wed,  4 Oct 2023 06:26:54 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH v2 1/1] serial: 8250_omap: Drop pm_runtime_irq_safe()
-Date:   Wed,  4 Oct 2023 09:26:48 +0300
-Message-ID: <20231004062650.64487-1-tony@atomide.com>
-X-Mailer: git-send-email 2.42.0
+        Wed, 4 Oct 2023 02:37:35 -0400
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 260A5B7
+        for <linux-serial@vger.kernel.org>; Tue,  3 Oct 2023 23:37:32 -0700 (PDT)
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <prvs=8655c94f36=fe@dev.tdt.de>)
+        id 1qnvVi-006jSG-7h
+        for linux-serial@vger.kernel.org; Wed, 04 Oct 2023 08:37:30 +0200
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <fe@dev.tdt.de>)
+        id 1qnvVh-006jS2-Q3
+        for linux-serial@vger.kernel.org; Wed, 04 Oct 2023 08:37:29 +0200
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 76F42240049
+        for <linux-serial@vger.kernel.org>; Wed,  4 Oct 2023 08:37:29 +0200 (CEST)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 39A7E240040;
+        Wed,  4 Oct 2023 08:37:29 +0200 (CEST)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id A38DB32F62;
+        Wed,  4 Oct 2023 08:37:28 +0200 (CEST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 04 Oct 2023 08:37:28 +0200
+From:   Florian Eckert <fe@dev.tdt.de>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Lee Jones <lee@kernel.org>, Eckert.Florian@googlemail.com,
+        gregkh@linuxfoundation.org, pavel@ucw.cz, kabel@kernel.org,
+        u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-leds@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v2 3/4] trigger: ledtrig-tty: move variable definition to
+ the top
+In-Reply-To: <acda5dc4-e6d3-4870-929f-fb91636b5649@kernel.org>
+References: <20230928132632.200263-1-fe@dev.tdt.de>
+ <20230928132632.200263-4-fe@dev.tdt.de> <20231002140559.GB8453@google.com>
+ <acda5dc4-e6d3-4870-929f-fb91636b5649@kernel.org>
+Message-ID: <59cc4073a94edbdec5d77f8457ed4f73@dev.tdt.de>
+X-Sender: fe@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.17
+X-purgate: clean
+X-purgate-ID: 151534::1696401450-E09F5653-72DB69FD/0/0
+X-purgate-type: clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Let's drop the use of pm_runtime_irq_safe() for 8250_omap. The use of
-pm_runtime_irq_safe() is not nice as it takes a permanent usage count on
-the parent device.
+On 2023-10-03 07:00, Jiri Slaby wrote:
+> On 02. 10. 23, 16:05, Lee Jones wrote:
+>> On Thu, 28 Sep 2023, Florian Eckert wrote:
+>> 
+>>> The Intel build robot has complained about this. Hence move the 
+>>> commit
+>>> of the variable definition to the beginning of the function.
 
-We can finally drop pm_runtime_irq_safe() safely as the kernel now knows
-when the uart port tx is active. This changed with commit 84a9582fd203
-("serial: core: Start managing serial controllers to enable runtime PM").
+>> Please copy the robot's error message into the commit message.
 
-For serial port rx, we already use Linux generic wakeirqs for 8250_omap.
+For a v3 patch-set I will add the error message from build robot.
 
-To drop pm_runtime_irq_safe(), we need to add handling for shallow idle
-state where the port hardware may already be awake and an IO interrupt
-happens. We also need to replace the serial8250_rpm sync calls in the
-interrupt handlers with async runtime PM calls.
+Build robot output of my v1 change:
+https://lore.kernel.org/linux-leds/20230926093607.59536-1-fe@dev.tdt.de/T/#m777371c5de8fadc505a833139b8ae69ac7fa8dab
 
-Note that omap8250_irq() calls omap_8250_dma_handle_irq(), so we don't
-need separate runtime PM calls in omap_8250_dma_handle_irq().
+I decided to move the variable definition with a separate commit
+to the top of the function, to make the build robot happy. After that
+I made my changes for v2 to the ledtrig-tty to add the feature.
 
-While at it, let's also add the missing line break to the end of
-omap8250_runtime_resume() to group the calls.
+> Ah, lkp, then also the Closes: line as it suggests.
 
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
+Sorry I do not understand your statement
 
-Changes since v1:
-
-- Fix build warning if CONFIG_SERIAL_8250_DMA is not set as reported by
-  kernel test robot
-
----
- drivers/tty/serial/8250/8250_omap.c | 29 +++++++++++++++++++++--------
- 1 file changed, 21 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -8,6 +8,7 @@
-  *
-  */
- 
-+#include <linux/atomic.h>
- #include <linux/clk.h>
- #include <linux/device.h>
- #include <linux/io.h>
-@@ -130,6 +131,7 @@ struct omap8250_priv {
- 
- 	u8 tx_trigger;
- 	u8 rx_trigger;
-+	atomic_t active;
- 	bool is_suspending;
- 	int wakeirq;
- 	int wakeups_enabled;
-@@ -632,14 +634,23 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
- 	unsigned int iir, lsr;
- 	int ret;
- 
-+	pm_runtime_get_noresume(port->dev);
-+
-+	/* Shallow idle state wake-up to an IO interrupt? */
-+	if (atomic_add_unless(&priv->active, 1, 1)) {
-+		priv->latency = priv->calc_latency;
-+		schedule_work(&priv->qos_work);
-+	}
-+
- #ifdef CONFIG_SERIAL_8250_DMA
- 	if (up->dma) {
- 		ret = omap_8250_dma_handle_irq(port);
-+		pm_runtime_mark_last_busy(port->dev);
-+		pm_runtime_put(port->dev);
- 		return IRQ_RETVAL(ret);
- 	}
- #endif
- 
--	serial8250_rpm_get(up);
- 	lsr = serial_port_in(port, UART_LSR);
- 	iir = serial_port_in(port, UART_IIR);
- 	ret = serial8250_handle_irq(port, iir);
-@@ -676,7 +687,8 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
- 		schedule_delayed_work(&up->overrun_backoff, delay);
- 	}
- 
--	serial8250_rpm_put(up);
-+	pm_runtime_mark_last_busy(port->dev);
-+	pm_runtime_put(port->dev);
- 
- 	return IRQ_RETVAL(ret);
- }
-@@ -1270,11 +1282,8 @@ static int omap_8250_dma_handle_irq(struct uart_port *port)
- 	u16 status;
- 	u8 iir;
- 
--	serial8250_rpm_get(up);
--
- 	iir = serial_port_in(port, UART_IIR);
- 	if (iir & UART_IIR_NO_INT) {
--		serial8250_rpm_put(up);
- 		return IRQ_HANDLED;
- 	}
- 
-@@ -1305,7 +1314,6 @@ static int omap_8250_dma_handle_irq(struct uart_port *port)
- 
- 	uart_unlock_and_check_sysrq(port);
- 
--	serial8250_rpm_put(up);
- 	return 1;
- }
- 
-@@ -1503,8 +1511,6 @@ static int omap8250_probe(struct platform_device *pdev)
- 	if (!of_get_available_child_count(pdev->dev.of_node))
- 		pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
- 
--	pm_runtime_irq_safe(&pdev->dev);
--
- 	pm_runtime_get_sync(&pdev->dev);
- 
- 	omap_serial_fill_features_erratas(&up, priv);
-@@ -1743,6 +1749,7 @@ static int omap8250_runtime_suspend(struct device *dev)
- 
- 	priv->latency = PM_QOS_CPU_LATENCY_DEFAULT_VALUE;
- 	schedule_work(&priv->qos_work);
-+	atomic_set(&priv->active, 0);
- 
- 	return 0;
- }
-@@ -1752,6 +1759,10 @@ static int omap8250_runtime_resume(struct device *dev)
- 	struct omap8250_priv *priv = dev_get_drvdata(dev);
- 	struct uart_8250_port *up = NULL;
- 
-+	/* Did the hardware wake to a device IO interrupt before a wakeirq? */
-+	if (atomic_read(&priv->active))
-+		return 0;
-+
- 	if (priv->line >= 0)
- 		up = serial8250_get_port(priv->line);
- 
-@@ -1767,8 +1778,10 @@ static int omap8250_runtime_resume(struct device *dev)
- 		uart_port_unlock_irq(&up->port);
- 	}
- 
-+	atomic_set(&priv->active, 1);
- 	priv->latency = priv->calc_latency;
- 	schedule_work(&priv->qos_work);
-+
- 	return 0;
- }
- 
--- 
-2.42.0
+>>> Reported-by: kernel test robot <lkp@intel.com>
+>>> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
+>>> ---
+>>>   drivers/leds/trigger/ledtrig-tty.c | 3 +--
+>>>   1 file changed, 1 insertion(+), 2 deletions(-)
+>>> 
+>>> diff --git a/drivers/leds/trigger/ledtrig-tty.c 
+>>> b/drivers/leds/trigger/ledtrig-tty.c
+>>> index 8ae0d2d284af..1c6fadf0b856 100644
+>>> --- a/drivers/leds/trigger/ledtrig-tty.c
+>>> +++ b/drivers/leds/trigger/ledtrig-tty.c
+>>> @@ -82,6 +82,7 @@ static void ledtrig_tty_work(struct work_struct 
+>>> *work)
+>>>   {
+>>>   	struct ledtrig_tty_data *trigger_data =
+>>>   		container_of(work, struct ledtrig_tty_data, dwork.work);
+>>> +	unsigned long interval = LEDTRIG_TTY_INTERVAL;
+>>>   	struct serial_icounter_struct icount;
+>>>   	int ret;
+>>>   @@ -124,8 +125,6 @@ static void ledtrig_tty_work(struct work_struct 
+>>> *work)
+>>>     	if (icount.rx != trigger_data->rx ||
+>>>   	    icount.tx != trigger_data->tx) {
+>>> -		unsigned long interval = LEDTRIG_TTY_INTERVAL;
+>>> -
+>>>   		led_blink_set_oneshot(trigger_data->led_cdev, &interval,
+>>>   				      &interval, 0);
+>>>   -- 2.30.2
+>>> 
+>> 
