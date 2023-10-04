@@ -2,108 +2,120 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB1CE7B60F
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 13:14:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 360CFE7B614
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 13:17:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242599AbjJDNOM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Oct 2023 09:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40656 "EHLO
+        id S242578AbjJDNRZ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Oct 2023 09:17:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242603AbjJDNOL (ORCPT
+        with ESMTP id S233183AbjJDNRY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Oct 2023 09:14:11 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38875D8;
-        Wed,  4 Oct 2023 06:14:08 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71130C433C7;
-        Wed,  4 Oct 2023 13:14:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1696425247;
-        bh=KcAoOcXrCySTDo2pwJ14tM1LxCs9TqonwzLxAT7mYQ8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Wo7YI5voIsgcHyd1dDgO6qDYsZlKelvwQgEJEAXzgl9Px0vQ16t1Ju0p8N+nwttPv
-         MJKN08Th53vNf9fz+WxwEKRyxn9cjaAFARtyOqQ5/Zj5w1RgskGuaIWD3FSgqaY6FN
-         njLsB7/QFF6WiWoHJpB2uxb7UAlqoMDugx3qwF6g=
-Date:   Wed, 4 Oct 2023 15:14:04 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Lee Jones <lee@kernel.org>
-Cc:     "Starke, Daniel" <daniel.starke@siemens.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Fedor Pchelkin <pchelkin@ispras.ru>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com" 
-        <syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com>
-Subject: Re: [PATCH 1/1] tty: n_gsm: Avoid sleeping during .write() whilst
- atomic
-Message-ID: <2023100435-xerox-idiocy-5cf0@gregkh>
-References: <20231003170020.830242-1-lee@kernel.org>
- <2023100320-immorally-outboard-573a@gregkh>
- <DB9PR10MB588170E923A6ED8B3D6D9613E0CBA@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
- <2023100421-negotiate-stammer-1b35@gregkh>
- <20231004085720.GA9374@google.com>
- <2023100448-cotton-safehouse-aca2@gregkh>
- <20231004125704.GA83257@google.com>
+        Wed, 4 Oct 2023 09:17:24 -0400
+Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD4F6A1;
+        Wed,  4 Oct 2023 06:17:16 -0700 (PDT)
+Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-59f6e6b7600so23836977b3.3;
+        Wed, 04 Oct 2023 06:17:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696425436; x=1697030236;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=uGCiimfEoMn7BwF0dkBNPoxRRWXYUsk5xphqS0fx1Zs=;
+        b=pmftTRs9yg13wYfqEi3xHf6r+HxRpGy4O5YVagFhg1i96J5qhh/6JcRtvn2LbxbIwN
+         F+0P0hM0MTLXfIdhh+dLODJTc5FE0TO0NfhN9j+7ol1PsnoMOi++vK7DzkwnfGp8mXIJ
+         RpJ4NKufDpKyncZnyBpRtyuEzoh3pxpD0gF46iFPRT5GeAtqbyscx9oXr5DcElRAanmI
+         TiqXVohf/mYwKbzJc8TQOJhNjS1j3hPuD1xZhI3eX/GP+1MvKrZPQw/2hEai5QEiLyDg
+         h+swYN2rYHjV+C2aC4wz9fZMzSSe8FR4JylJKsdP7jwe+EYI7XzqkoLVpfPNlENWb924
+         tr7Q==
+X-Gm-Message-State: AOJu0YwrVtryNR8U85OhsGlJvBW4kSghXUZL5xeOmrXb/eu/+0eNe+mJ
+        yoXSQS+vhTqn4AfOaGP4BO+t3dI88w3y9Q==
+X-Google-Smtp-Source: AGHT+IF1p/Zbf6Wq9uQaPabygz0Yf0ZM6sayx2JMhwEmXMGeuNjvphiSnLO+qJMk924f1uFnZcJpWA==
+X-Received: by 2002:a0d:d482:0:b0:59b:5231:50d7 with SMTP id w124-20020a0dd482000000b0059b523150d7mr2442405ywd.10.1696425435724;
+        Wed, 04 Oct 2023 06:17:15 -0700 (PDT)
+Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com. [209.85.128.169])
+        by smtp.gmail.com with ESMTPSA id y128-20020a0dd686000000b0057087e7691bsm1150942ywd.56.2023.10.04.06.17.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Oct 2023 06:17:15 -0700 (PDT)
+Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-59f7f46b326so24075247b3.0;
+        Wed, 04 Oct 2023 06:17:15 -0700 (PDT)
+X-Received: by 2002:a0d:e8c5:0:b0:56d:3b91:7e78 with SMTP id
+ r188-20020a0de8c5000000b0056d3b917e78mr2377307ywe.20.1696425435071; Wed, 04
+ Oct 2023 06:17:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231004125704.GA83257@google.com>
+References: <20230929053915.1530607-1-claudiu.beznea@bp.renesas.com> <20230929053915.1530607-19-claudiu.beznea@bp.renesas.com>
+In-Reply-To: <20230929053915.1530607-19-claudiu.beznea@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 4 Oct 2023 15:17:02 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWQVtroKntVamANrWiheDYa6+=L8K53__1WUZg3bF8EFQ@mail.gmail.com>
+Message-ID: <CAMuHMdWQVtroKntVamANrWiheDYa6+=L8K53__1WUZg3bF8EFQ@mail.gmail.com>
+Subject: Re: [PATCH v2 18/28] pinctrl: renesas: rzg2l: add support for
+ different ds values on different groups
+To:     Claudiu <claudiu.beznea@tuxon.dev>
+Cc:     geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        quic_bjorande@quicinc.com, konrad.dybcio@linaro.org, arnd@arndb.de,
+        neil.armstrong@linaro.org, prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, linux-renesas-soc@vger.kernel.org,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 04, 2023 at 01:57:04PM +0100, Lee Jones wrote:
-> On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
-> 
-> > On Wed, Oct 04, 2023 at 09:57:20AM +0100, Lee Jones wrote:
-> > > On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
-> > > 
-> > > > On Wed, Oct 04, 2023 at 05:59:09AM +0000, Starke, Daniel wrote:
-> > > > > > Daniel, any thoughts?
-> > > > > 
-> > > > > Our application of this protocol is only with specific modems to enable
-> > > > > circuit switched operation (handling calls, selecting/querying networks,
-> > > > > etc.) while doing packet switched communication (i.e. IP traffic over PPP).
-> > > > > The protocol was developed for such use cases.
-> > > > > 
-> > > > > Regarding the issue itself:
-> > > > > There was already an attempt to fix all this by switching from spinlocks to
-> > > > > mutexes resulting in ~20% performance loss. However, the patch was reverted
-> > > > > as it did not handle the T1 timer leading into sleep during atomic within
-> > > > > gsm_dlci_t1() on every mutex lock there.
-> > > 
-> > > That's correct.  When I initially saw this report, my initial thought
-> > > was to replace the spinlocks with mutexts, but having read the previous
-> > > accepted attempt and it's subsequent reversion I started to think of
-> > > other ways to solve this issue.  This solution, unlike the last, does
-> > > not involve adding sleep inducing locks into atomic contexts, nor
-> > > should it negatively affect performance.
-> > > 
-> > > > > There was also a suggestion to fix this in do_con_write() as
-> > > > > tty_operations::write() appears to be documented as "not allowed to sleep".
-> > > > > The patch for this was rejected. It did not fix the issue within n_gsm.
-> > > > > 
-> > > > > Link: https://lore.kernel.org/all/20221203215518.8150-1-pchelkin@ispras.ru/
-> > > > > Link: https://lore.kernel.org/all/20221212023530.2498025-1-zengheng4@huawei.com/
-> > > > > Link: https://lore.kernel.org/all/5a994a13-d1f2-87a8-09e4-a877e65ed166@kernel.org/
-> > > > 
-> > > > Ok, I thought I remembered this, I'll just drop this patch from my
-> > > > review queue and wait for a better solution if it ever comes up as this
-> > > > isn't a real issue that people are seeing on actual systems, but just a
-> > > > syzbot report.
-> > > 
-> > > What does the "better solution" look like?
-> > 
-> > One that actually fixes the root problem here (i.e. does not break the
-> > recursion loop, or cause a performance decrease for normal users, or
-> > prevent this from being bound to the console).
-> 
-> Does this solution break the recursion loop or affect performance?
+On Fri, Sep 29, 2023 at 7:39 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>
+> RZ/G3S supports different drive strength values for different power sources
+> and pin groups (A, B, C). On each group there could be up to 4 drive
+> strength values per power source. Available power sources are 1v8, 2v5,
+> 3v3. Drive strength values are fine tuned than what was previously
+> available on the driver thus the necessity of having micro-amp support.
+> As drive strength and power source values are linked together the
+> hardware setup for these was moved at the end of
+> rzg2l_pinctrl_pinconf_set() to ensure proper validation of the new
+> values.
+>
+> The drive strength values are expected to be initialized though SoC
+> specific hardware configuration data structure.
+>
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> ---
+>
+> Changes in v2:
+> - s/strenght/strength, s/togheter/together in commit description
+> - got rid of RZG2L_INVALID_IOLH_VAL macro and consider zero as invalid
+>   value for entries in struct rzg2l_hwcfg::iolh_group[abc]_ua[] arrays
+> - removed spinlock in rzg2l_[sg]et_power_source()
+> - introduced caps_to_pwr_reg() and simplified the code in
+>   rzg2l_[sg]et_power_source()
+> - changed return type of rzg2l_iolh_ua_to_val() to int and return
+>   -EINVAL on failure cases
+> - s/rzg2l_ds_supported/rzg2l_ds_is_supported
+> - inverted the logic in rzg2l_pinctrl_pinconf_set() when applying drive
+>   strength and power source to hardware registers and thus simplified the
+>   code
+> - used devm_kcalloc() instead of devm_kzalloc()
+> - adderessed the rest of the review comments
 
-This solution broke the recursion by returning an error, right?
+Thanks, will queue in renesas-pinctrl-for-v6.7, with Paul's comment
+addresses.
 
-The performance one was by using mutexes as in previous attempts.
+Gr{oetje,eeting}s,
 
-thanks,
+                        Geert
 
-greg k-h
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
