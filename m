@@ -2,198 +2,107 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 386F3E7B60C
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 12:52:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2691E7B60C
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 12:57:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233146AbjJDMws convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Oct 2023 08:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45704 "EHLO
+        id S242426AbjJDM5N (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Oct 2023 08:57:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233003AbjJDMwr (ORCPT
+        with ESMTP id S233146AbjJDM5N (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Oct 2023 08:52:47 -0400
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com [209.85.219.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 278B1B0;
-        Wed,  4 Oct 2023 05:52:43 -0700 (PDT)
-Received: by mail-yb1-f172.google.com with SMTP id 3f1490d57ef6-d89ba259964so2146260276.2;
-        Wed, 04 Oct 2023 05:52:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696423962; x=1697028762;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mBL5QUqe0Kh8uzoko40pp2HXZhfkObRutzBhYjUaXf4=;
-        b=VS8uP8eNRTFrwI/2q5U/IlzvKlsuMhhuxIFfuamDJ34N/rZLyVNpeBnRiVZgf9YDmS
-         r9pbyprHon6u2BNlXdtbhaJn6UOtfSKOSIZu+N1lddAHs8U6d5MGn3f3qjN+oFUzuKMJ
-         RAshjDec72BOlIQ4eZOVHNpp06kox01Dg1nbgDJ09OUpmS2mJ1tssS3ASiWR2x8iJF9i
-         sdNiIHs8J8YR+WKg8zxhajWo7GsdK4+gtdQfZiCPvUZckt/aK7s4QZt9mj8vZsk72uD5
-         jmBoG3O2lc/DH/mcZuWPSRi3lBGch78OYc6Pc9Mm54dI/8yWgTMqC/Kh1YHtDpiljnVO
-         Ib6g==
-X-Gm-Message-State: AOJu0Yw3/DkuIU06PKhKpa5/MqssnhGVq/0cEZL5yWnI/ayd78T+J7Jb
-        ZvZ2HtQ1doj6zUJX4mSrVvoO1xmmMnEbZA==
-X-Google-Smtp-Source: AGHT+IGR9YC3TA37FUPT0izo16noKpGS8cKa7IAZZs3Z6jE1noCuRwJznhQx3Q+N+dSfBAc0K9g5Yg==
-X-Received: by 2002:a5b:70d:0:b0:d8b:d12:87a5 with SMTP id g13-20020a5b070d000000b00d8b0d1287a5mr1857047ybq.34.1696423961971;
-        Wed, 04 Oct 2023 05:52:41 -0700 (PDT)
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
-        by smtp.gmail.com with ESMTPSA id c11-20020a25880b000000b00c62e0df7ca8sm1003969ybl.24.2023.10.04.05.52.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Oct 2023 05:52:41 -0700 (PDT)
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-59f6e6b206fso25029897b3.3;
-        Wed, 04 Oct 2023 05:52:41 -0700 (PDT)
-X-Received: by 2002:a81:d54e:0:b0:577:189b:ad4 with SMTP id
- l14-20020a81d54e000000b00577189b0ad4mr2280819ywj.48.1696423961482; Wed, 04
- Oct 2023 05:52:41 -0700 (PDT)
+        Wed, 4 Oct 2023 08:57:13 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB993A6;
+        Wed,  4 Oct 2023 05:57:09 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C002DC433C8;
+        Wed,  4 Oct 2023 12:57:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1696424229;
+        bh=c0B8rcdyLaJqRDe54RZrNhWFmOTGkuIhTF5iHLVhyvU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Uzbko4RDR2v6YIAOqSeaq0KR6qZ+8S52iFfEwWok3OTjWQ6uNBwZxbj5/LvRZXkxy
+         ORPrlcdE0BM2K19AVebvVu0xifaGhdaNChJ7Zi0dhUT+y7vVdUFpDa5jMBmtocYDIO
+         SA3UvjmZO0dvrD2TIlJp1p138HHvsGMaaCsoWHe06BnEW0aOZEGbbNZ5TpV3Ts1omv
+         I9zYQUrS6lvLl2DI0TQz/1kp3NyMolbNq7eFObh+HV0UpTjD09Y4MSQai4JC8WwkNE
+         fdBwsShVLgJMj/SnjxkPd9OR9HqNtxhlTWJqkglfJAfhGjPdWajLu7GkPpRQ4Kr2Mm
+         IMNR3MCYQj2mQ==
+Date:   Wed, 4 Oct 2023 13:57:04 +0100
+From:   Lee Jones <lee@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     "Starke, Daniel" <daniel.starke@siemens.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Fedor Pchelkin <pchelkin@ispras.ru>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com" 
+        <syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com>
+Subject: Re: [PATCH 1/1] tty: n_gsm: Avoid sleeping during .write() whilst
+ atomic
+Message-ID: <20231004125704.GA83257@google.com>
+References: <20231003170020.830242-1-lee@kernel.org>
+ <2023100320-immorally-outboard-573a@gregkh>
+ <DB9PR10MB588170E923A6ED8B3D6D9613E0CBA@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+ <2023100421-negotiate-stammer-1b35@gregkh>
+ <20231004085720.GA9374@google.com>
+ <2023100448-cotton-safehouse-aca2@gregkh>
 MIME-Version: 1.0
-References: <20230929053915.1530607-1-claudiu.beznea@bp.renesas.com> <20230929053915.1530607-15-claudiu.beznea@bp.renesas.com>
-In-Reply-To: <20230929053915.1530607-15-claudiu.beznea@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 4 Oct 2023 14:52:28 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdX17ZwHpCC75Xr4BxK69+1bumbDFYrYqLWLaybRkoRtXg@mail.gmail.com>
-Message-ID: <CAMuHMdX17ZwHpCC75Xr4BxK69+1bumbDFYrYqLWLaybRkoRtXg@mail.gmail.com>
-Subject: Re: [PATCH v2 14/28] pinctrl: renesas: rzg2l: index all registers
- based on port offset
-To:     Claudiu <claudiu.beznea@tuxon.dev>
-Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        linus.walleij@linaro.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, magnus.damm@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org,
-        quic_bjorande@quicinc.com, konrad.dybcio@linaro.org, arnd@arndb.de,
-        neil.armstrong@linaro.org, prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, linux-renesas-soc@vger.kernel.org,
-        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2023100448-cotton-safehouse-aca2@gregkh>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Claudiu,
+On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
 
-On Fri, Sep 29, 2023 at 7:39 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
-> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->
-> To get address that needs to be read/write for specific port
-> functionalities the P(), PM(), PMC(), PFC(), PIN(), IOLH() IEN(), ISEL()
-> macros are used. Some of these macros received as argument the hardware
-> port identifier, some hardware port offset address (e.g. ISEL() received
-> port identifier, IOLH() received port offset address). This makes hard to
-> extend the current driver for SoCs were port identifiers are not continuous
-> in memory map of pin controller. This is the case for RZ/G3S pin controller
-> were ports are mapped as follows:
->
-> port offset    port identifier
-> -----------    ---------------
-> 0x20           P0
-> 0x21           P5
-> 0x22           P6
-> 0x23           P11
-> 0x24           P12
-> 0x25           P13
-> 0x26           P14
-> 0x27           P15
-> 0x28           P16
-> 0x29           P17
-> 0x2a           P18
-> 0x30           P1
-> 0x31           P2
-> 0x32           P3
-> 0x33           P4
-> 0x34           P7
-> 0x35           P8
-> 0x36           P8
-> 0x37           P10
->
-> To make this achievable change all the above macros used to get the address
-> of a port register for specific port functionality based on port hardware
-> address. Shortly, all the above macros will get as argument the port
-> offset address listed in the above table.
->
-> With this RZG2L_SINGLE_PIN_GET_PORT_OFFSET(), RZG2L_PIN_ID_TO_PORT_OFFSET()
-> and RZG2L_GPIO_PORT_GET_INDEX() were replaced by
-> RZG2L_PIN_CFG_TO_PORT_OFFSET(), RZG2L_SINGLE_PIN_GET_CFGS() and
-> RZG2L_GPIO_PORT_GET_CFGS() were replaced by RZG2L_PIN_CFG_TO_CAPS().
->
-> Also rzg2l_pinctrl_set_pfc_mode() don't need port argument anymore.
-> Also rzg2l_gpio_direction_input() and rzg2l_gpio_direction_output() don't
-> need to translate port and bit locally as this can be done by
-> rzg2l_gpio_set_direction().
->
-> To use the same naming for port, bit/pin and register offset the
-> port_offset variable names in different places was replaced by variable
-> named off and there is no need to initialize anymore cfg and bit in
-> different code places.
->
-> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Tested-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
->
-> Changes in v2:
-> - mentioned in commit description about the replacement of
->   RZG2L_GPIO_PORT_GET_INDEX() with RZG2L_PIN_CFG_TO_PORT_OFFSET()
-> - moved variable declaration inside for()
-> - got rid of local variable and used directly RZG2L_PIN_ID_TO_PORT() in
->   debug message from rzg2l_pinctrl_set_mux() function
-> - collected tags
+> On Wed, Oct 04, 2023 at 09:57:20AM +0100, Lee Jones wrote:
+> > On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
+> > 
+> > > On Wed, Oct 04, 2023 at 05:59:09AM +0000, Starke, Daniel wrote:
+> > > > > Daniel, any thoughts?
+> > > > 
+> > > > Our application of this protocol is only with specific modems to enable
+> > > > circuit switched operation (handling calls, selecting/querying networks,
+> > > > etc.) while doing packet switched communication (i.e. IP traffic over PPP).
+> > > > The protocol was developed for such use cases.
+> > > > 
+> > > > Regarding the issue itself:
+> > > > There was already an attempt to fix all this by switching from spinlocks to
+> > > > mutexes resulting in ~20% performance loss. However, the patch was reverted
+> > > > as it did not handle the T1 timer leading into sleep during atomic within
+> > > > gsm_dlci_t1() on every mutex lock there.
+> > 
+> > That's correct.  When I initially saw this report, my initial thought
+> > was to replace the spinlocks with mutexts, but having read the previous
+> > accepted attempt and it's subsequent reversion I started to think of
+> > other ways to solve this issue.  This solution, unlike the last, does
+> > not involve adding sleep inducing locks into atomic contexts, nor
+> > should it negatively affect performance.
+> > 
+> > > > There was also a suggestion to fix this in do_con_write() as
+> > > > tty_operations::write() appears to be documented as "not allowed to sleep".
+> > > > The patch for this was rejected. It did not fix the issue within n_gsm.
+> > > > 
+> > > > Link: https://lore.kernel.org/all/20221203215518.8150-1-pchelkin@ispras.ru/
+> > > > Link: https://lore.kernel.org/all/20221212023530.2498025-1-zengheng4@huawei.com/
+> > > > Link: https://lore.kernel.org/all/5a994a13-d1f2-87a8-09e4-a877e65ed166@kernel.org/
+> > > 
+> > > Ok, I thought I remembered this, I'll just drop this patch from my
+> > > review queue and wait for a better solution if it ever comes up as this
+> > > isn't a real issue that people are seeing on actual systems, but just a
+> > > syzbot report.
+> > 
+> > What does the "better solution" look like?
+> 
+> One that actually fixes the root problem here (i.e. does not break the
+> recursion loop, or cause a performance decrease for normal users, or
+> prevent this from being bound to the console).
 
-Thanks for the update! Sill queue in renesas-pinctrl-for-v6.7.
+Does this solution break the recursion loop or affect performance?
 
-> --- a/drivers/pinctrl/renesas/pinctrl-rzg2l.c
-> +++ b/drivers/pinctrl/renesas/pinctrl-rzg2l.c
-> @@ -202,9 +202,11 @@ static int rzg2l_pinctrl_set_mux(struct pinctrl_dev *pctldev,
->                                  unsigned int group_selector)
->  {
->         struct rzg2l_pinctrl *pctrl = pinctrl_dev_get_drvdata(pctldev);
-> +       const struct pinctrl_pin_desc *pin_desc;
-> +       unsigned int *psel_val, *pin_data;
->         struct function_desc *func;
-> -       unsigned int i, *psel_val;
->         struct group_desc *group;
-> +       u32 pin, off;
->         int *pins;
->
->         func = pinmux_generic_get_function(pctldev, func_selector);
-> @@ -217,12 +219,17 @@ static int rzg2l_pinctrl_set_mux(struct pinctrl_dev *pctldev,
->         psel_val = func->data;
->         pins = group->pins;
->
-> -       for (i = 0; i < group->num_pins; i++) {
-> -               dev_dbg(pctrl->dev, "port:%u pin: %u PSEL:%u\n",
-> -                       RZG2L_PIN_ID_TO_PORT(pins[i]), RZG2L_PIN_ID_TO_PIN(pins[i]),
-> -                       psel_val[i]);
-> -               rzg2l_pinctrl_set_pfc_mode(pctrl, RZG2L_PIN_ID_TO_PORT(pins[i]),
-> -                                          RZG2L_PIN_ID_TO_PIN(pins[i]), psel_val[i]);
-> +       for (unsigned int i = 0; i < group->num_pins; i++) {
-> +               pin_desc = &pctrl->desc.pins[pins[i]];
-> +               pin_data = pin_desc->drv_data;
-> +
-> +               pin = RZG2L_PIN_ID_TO_PIN(pins[i]);
-> +               off = RZG2L_PIN_CFG_TO_PORT_OFFSET(*pin_data);
-
-In my comments on v1, I actually meant to combine these assignments
-to variables with the variable declarations.  I will handle that while applying.
-
-> +
-> +               dev_dbg(pctrl->dev, "port:%u pin: %u off:%x PSEL:%u\n",
-> +                       RZG2L_PIN_ID_TO_PORT(pins[i]), pin, off, psel_val[i]);
-> +
-> +               rzg2l_pinctrl_set_pfc_mode(pctrl, pin, off, psel_val[i]);
->         }
->
->         return 0;
-
-Gr{oetje,eeting}s,
-
-                        Geert
+The last suggestion was recently made (after mine was posted).
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Lee Jones [李琼斯]
