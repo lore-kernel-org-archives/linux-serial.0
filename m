@@ -2,99 +2,61 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92581E8FDDD
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 08:50:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C27A5E8FDDD
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 08:55:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241767AbjJDIui convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Oct 2023 04:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54886 "EHLO
+        id S232621AbjJDIzj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Oct 2023 04:55:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232988AbjJDIuh (ORCPT
+        with ESMTP id S232554AbjJDIzi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Oct 2023 04:50:37 -0400
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D41098;
-        Wed,  4 Oct 2023 01:50:33 -0700 (PDT)
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-59f1dff5298so22558247b3.3;
-        Wed, 04 Oct 2023 01:50:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696409432; x=1697014232;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=PFuSqJ9+W4ZgbXfB+tqrUVzIf0qDtWz3bUcjRAbmN+0=;
-        b=qehOtHxS5w04ZJhzQooxV3EFHeTuycIWCQAiiA3WEuNpNWj+ty8l2m1Vv0o2UxaC4Y
-         wx0amcBISS30OzHdQLbl3A2TkxoDwrzfRYwhX/624ns261U8kpel0d29z0WbaO+aL4DM
-         Q1+Z98EtA8VA+20DPSqVV+w9wjqMSVEnWvObUc+M5pho0z8VNQvor+Uvn1mRlcdm+6V4
-         SHqGZTHTJlciFiDpY3IxTUWqgmNS2i+zwJZNJI2zy+1zY2p5XihyXK3TjZ3r4eAy8aWF
-         hg2GPATE0+ZSMxBp2ajb8RKYdOagQfyZuxOX3PYOzM8qwi+oJ5iq2iObpltuRMknpRMQ
-         ojzg==
-X-Gm-Message-State: AOJu0YzF8p1kOUCHN83GETWyKew6RcPdAofTe00CPmKPQi3dkxUniW4Q
-        dfzq1l9RCz0g9dsFDpJkaIdH9rPBEEMQ3g==
-X-Google-Smtp-Source: AGHT+IH09ObB6fueO6GOHufTRFzHS7YLBPYlXCOcao4kkF11gPWDm7KFBadpF+cOqmnlDmWV3G9sZA==
-X-Received: by 2002:a81:6289:0:b0:59b:eb8:c38a with SMTP id w131-20020a816289000000b0059b0eb8c38amr2006607ywb.30.1696409432367;
-        Wed, 04 Oct 2023 01:50:32 -0700 (PDT)
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
-        by smtp.gmail.com with ESMTPSA id m12-20020a819e0c000000b0058c4e33b2d6sm991571ywj.90.2023.10.04.01.50.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Oct 2023 01:50:31 -0700 (PDT)
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-5a2536adaf3so22645547b3.2;
-        Wed, 04 Oct 2023 01:50:31 -0700 (PDT)
-X-Received: by 2002:a81:5c86:0:b0:59f:4f56:59bc with SMTP id
- q128-20020a815c86000000b0059f4f5659bcmr1915893ywb.42.1696409431412; Wed, 04
- Oct 2023 01:50:31 -0700 (PDT)
+        Wed, 4 Oct 2023 04:55:38 -0400
+Received: from muru.com (unknown [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90EF3A6;
+        Wed,  4 Oct 2023 01:55:32 -0700 (PDT)
+Received: from hillo.muru.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTP id 7C273810D;
+        Wed,  4 Oct 2023 08:55:15 +0000 (UTC)
+From:   Tony Lindgren <tony@atomide.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH] serial: 8250: Check for valid console index
+Date:   Wed,  4 Oct 2023 11:55:10 +0300
+Message-ID: <20231004085511.42645-1-tony@atomide.com>
+X-Mailer: git-send-email 2.42.0
 MIME-Version: 1.0
-References: <20230929053915.1530607-1-claudiu.beznea@bp.renesas.com> <20230929053915.1530607-10-claudiu.beznea@bp.renesas.com>
-In-Reply-To: <20230929053915.1530607-10-claudiu.beznea@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 4 Oct 2023 10:50:19 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVJw8t9QyhFaE38cfP=joLjkQn=jRqYWw-98i9VhCWpdQ@mail.gmail.com>
-Message-ID: <CAMuHMdVJw8t9QyhFaE38cfP=joLjkQn=jRqYWw-98i9VhCWpdQ@mail.gmail.com>
-Subject: Re: [PATCH v2 09/28] clk: renesas: rzg2l: remove CPG_SDHI_DSEL from
- generic header
-To:     Claudiu <claudiu.beznea@tuxon.dev>
-Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        linus.walleij@linaro.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, magnus.damm@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org,
-        quic_bjorande@quicinc.com, konrad.dybcio@linaro.org, arnd@arndb.de,
-        neil.armstrong@linaro.org, prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, linux-renesas-soc@vger.kernel.org,
-        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Sep 29, 2023 at 7:39 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
-> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->
-> Remove CPG_SDHI_DSEL and its bits from generic header as RZ/G3S has
-> different offset register and bits for this, thus avoid mixing them.
->
-> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->
-> Changes in v2:
-> - s/form/from in commit description
-> - removed "G2UL_" prefix from macros' names
-> - collected tags
+Let's not allow negative numbers for console index.
 
-Thanks, will queue in renesas-clk-for-v6.7.
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+---
+ drivers/tty/serial/8250/8250_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -611,7 +611,7 @@ static int univ8250_console_setup(struct console *co, char *options)
+ 	 * if so, search for the first available port that does have
+ 	 * console support.
+ 	 */
+-	if (co->index >= UART_NR)
++	if (co->index < 0 || co->index >= UART_NR)
+ 		co->index = 0;
+ 
+ 	/*
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+2.42.0
