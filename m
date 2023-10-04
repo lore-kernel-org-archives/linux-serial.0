@@ -2,117 +2,164 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B27CE8FDCF
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 06:37:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46EA2E8FDD1
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 07:14:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241389AbjJDGhg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Oct 2023 02:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52964 "EHLO
+        id S232624AbjJDHOp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Oct 2023 03:14:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232755AbjJDGhf (ORCPT
+        with ESMTP id S229912AbjJDHOp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Oct 2023 02:37:35 -0400
-Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 260A5B7
-        for <linux-serial@vger.kernel.org>; Tue,  3 Oct 2023 23:37:32 -0700 (PDT)
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <prvs=8655c94f36=fe@dev.tdt.de>)
-        id 1qnvVi-006jSG-7h
-        for linux-serial@vger.kernel.org; Wed, 04 Oct 2023 08:37:30 +0200
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <fe@dev.tdt.de>)
-        id 1qnvVh-006jS2-Q3
-        for linux-serial@vger.kernel.org; Wed, 04 Oct 2023 08:37:29 +0200
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 76F42240049
-        for <linux-serial@vger.kernel.org>; Wed,  4 Oct 2023 08:37:29 +0200 (CEST)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 39A7E240040;
-        Wed,  4 Oct 2023 08:37:29 +0200 (CEST)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id A38DB32F62;
-        Wed,  4 Oct 2023 08:37:28 +0200 (CEST)
+        Wed, 4 Oct 2023 03:14:45 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 284F2AC;
+        Wed,  4 Oct 2023 00:14:42 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B85A1C433C8;
+        Wed,  4 Oct 2023 07:14:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1696403681;
+        bh=m/p7K2IFOIG74E7oqwH/WUHUmY/+kpgIUGYxIeReDzg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bmzeidEz6oct6O0sOTET90kRCSuaFqJwEDgllPvzjDUGhuboeanV/feQg0Q/iWJCv
+         bypM0eZECkZcEGFL9wENMgyrMUkfXE/sVAKGlxcnClDsmHiFTIeHpVmMwPGZdZfeaG
+         CuefXGfLSNmuT0lAiuE4k9e+P/Lq2sYWD1Wc0KZDqqZzhHP82E8PstP2Fl4x4dfnWi
+         ipYhYTaI32aAUNDuyeFdbj6JbzQeUsuIv8v85iDbcfyEv8rvgUfRfLMFdsapGiHuGF
+         8bviCT1Kn0qJ7xRcY2myuK8CTPxxkjmCloZwl8HGkZwAuexigzk4mPeTlDT6wmoNBD
+         s5Uwoua4DFeoA==
+Received: from johan by xi.lan with local (Exim 4.96)
+        (envelope-from <johan@kernel.org>)
+        id 1qnw5t-0000QG-22;
+        Wed, 04 Oct 2023 09:14:53 +0200
+Date:   Wed, 4 Oct 2023 09:14:53 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v12 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+Message-ID: <ZR0Q7YUwgQV5TLhQ@hovoldconsulting.com>
+References: <20230525113034.46880-1-tony@atomide.com>
+ <62d3678a-a23d-4619-95de-145026629ba8@gmail.com>
+ <20231003121455.GB34982@atomide.com>
+ <20231003122137.GC34982@atomide.com>
+ <dc7af79d-bca8-4967-80fe-e90907204932@gmail.com>
+ <20231004061708.GD34982@atomide.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 04 Oct 2023 08:37:28 +0200
-From:   Florian Eckert <fe@dev.tdt.de>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Lee Jones <lee@kernel.org>, Eckert.Florian@googlemail.com,
-        gregkh@linuxfoundation.org, pavel@ucw.cz, kabel@kernel.org,
-        u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-leds@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v2 3/4] trigger: ledtrig-tty: move variable definition to
- the top
-In-Reply-To: <acda5dc4-e6d3-4870-929f-fb91636b5649@kernel.org>
-References: <20230928132632.200263-1-fe@dev.tdt.de>
- <20230928132632.200263-4-fe@dev.tdt.de> <20231002140559.GB8453@google.com>
- <acda5dc4-e6d3-4870-929f-fb91636b5649@kernel.org>
-Message-ID: <59cc4073a94edbdec5d77f8457ed4f73@dev.tdt.de>
-X-Sender: fe@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.17
-X-purgate: clean
-X-purgate-ID: 151534::1696401450-E09F5653-72DB69FD/0/0
-X-purgate-type: clean
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20231004061708.GD34982@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2023-10-03 07:00, Jiri Slaby wrote:
-> On 02. 10. 23, 16:05, Lee Jones wrote:
->> On Thu, 28 Sep 2023, Florian Eckert wrote:
->> 
->>> The Intel build robot has complained about this. Hence move the 
->>> commit
->>> of the variable definition to the beginning of the function.
+On Wed, Oct 04, 2023 at 09:17:08AM +0300, Tony Lindgren wrote:
+> * Maximilian Luz <luzmaximilian@gmail.com> [231003 22:09]:
 
->> Please copy the robot's error message into the commit message.
+> > Unfortunately that doesn't quite line up with what I can see on v6.5.5. The
+> > serdev controller seems to be a child of dw-apb-uart.4, a platform device. The
+> > serial-base and serdev devices are siblings. According to sysfs:
+> > 
+> >     /sys/bus/platform/devices/dw-apb-uart.4
+> >     ├── driver -> ../../../../bus/platform/drivers/dw-apb-uart
+> >     ├── subsystem -> ../../../../bus/platform
+> >     │
+> >     ├── dw-apb-uart.4:0
+> >     │  ├── driver -> ../../../../../bus/serial-base/drivers/ctrl
+> >     │  ├── subsystem -> ../../../../../bus/serial-base
+> >     │  │
+> >     │  └── dw-apb-uart.4:0.0
+> >     │     ├── driver -> ../../../../../../bus/serial-base/drivers/port
+> >     │     └── subsystem -> ../../../../../../bus/serial-base
+> >     │
+> >     └── serial0
+> >        ├── subsystem -> ../../../../../bus/serial
+> >        │
+> >        └── serial0-0
+> >           ├── driver -> ../../../../../../bus/serial/drivers/surface_serial_hub
+> >           └── subsystem -> ../../../../../../bus/serial
+> 
+> The hierachy above is correct. Looks like I pasted the wrong device above,
+> I meant dw-apb-uart.4, sorry about the extra confusion added. Eventually
+> the serdev device could be a child of dw-apb-uart.4:0.0 at some point as
+> it's specific to a serial port instance, but for now that should not be
+> needed.
+> 
+> If serial0-0 is runtime PM active, then dw-apb-uart.4 is runtime PM active
+> also unless ingore_children is set.
+> 
+> > Runtime suspend on serial0-0 is disabled/not set up at all. So I assume that if
+> > it were a descendent of dw-apb-uart.4:0.0, things should have worked
+> > out-of-the-box.
+> 
+> Hmm yes so maybe the issue is not with surface_serial_hub, but with serial
+> port device being nable to resume after __device_suspend_late() has
+> disabled runtime PM like you've been saying.
+> 
+> If the issue is with the serial port not being able to runtime resume, then
+> the patch below should help. Care to give it a try?
 
-For a v3 patch-set I will add the error message from build robot.
+> 8< ------------------
+> diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial_port.c
+> --- a/drivers/tty/serial/serial_port.c
+> +++ b/drivers/tty/serial/serial_port.c
+> @@ -46,8 +46,27 @@ static int serial_port_runtime_resume(struct device *dev)
+>  	return 0;
+>  }
+>  
+> -static DEFINE_RUNTIME_DEV_PM_OPS(serial_port_pm,
+> -				 NULL, serial_port_runtime_resume, NULL);
+> +/*
+> + * Allow serdev devices to talk to hardware during system suspend.
+> + * Assumes the serial port hardware controller device driver calls
+> + * pm_runtime_force_suspend() and pm_runtime_force_resume() for
+> + * system suspend as needed.
+> + */
+> +static int serial_port_prepare(struct device *dev)
+> +{
+> +	return pm_runtime_resume_and_get(dev);
+> +}
+> +
+> +static void serial_port_complete(struct device *dev)
+> +{
+> +	pm_runtime_put_sync(dev);
+> +}
+> +
+> +static const struct dev_pm_ops __maybe_unused serial_port_pm = {
+> +	SET_RUNTIME_PM_OPS(NULL, serial_port_runtime_resume, NULL)
+> +	.prepare = serial_port_prepare,
+> +	.complete = serial_port_complete,
+> +};
+>  
+>  static int serial_port_probe(struct device *dev)
+>  {
 
-Build robot output of my v1 change:
-https://lore.kernel.org/linux-leds/20230926093607.59536-1-fe@dev.tdt.de/T/#m777371c5de8fadc505a833139b8ae69ac7fa8dab
+Just a drive-by comment: The above looks like a too big of a hammer and
+the wrong place to fix this.
 
-I decided to move the variable definition with a separate commit
-to the top of the function, to make the build robot happy. After that
-I made my changes for v2 to the ledtrig-tty to add the feature.
+The serdev runtime PM implementation is supposed to just work for serdev
+drivers that do not want to use it, and otherwise those drivers manage
+the runtime PM state of the serdev (serial) controller directly (e.g.
+see c3bf40ce2c20 ("serdev: add controller runtime PM support")).
 
-> Ah, lkp, then also the Closes: line as it suggests.
+Without having time to look at this regression (or the rework) in
+detail, it seems like the serial core rework has broken the serdev
+runtime PM implementation if the serial controller is now suspended
+without the serdev driver having asked for it.
 
-Sorry I do not understand your statement
+The pm_runtime_get_sync() in serdev_device_open() is supposed to prevent
+that from happening by default and if that now longer works, then that
+needs to be fixed.
 
->>> Reported-by: kernel test robot <lkp@intel.com>
->>> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
->>> ---
->>>   drivers/leds/trigger/ledtrig-tty.c | 3 +--
->>>   1 file changed, 1 insertion(+), 2 deletions(-)
->>> 
->>> diff --git a/drivers/leds/trigger/ledtrig-tty.c 
->>> b/drivers/leds/trigger/ledtrig-tty.c
->>> index 8ae0d2d284af..1c6fadf0b856 100644
->>> --- a/drivers/leds/trigger/ledtrig-tty.c
->>> +++ b/drivers/leds/trigger/ledtrig-tty.c
->>> @@ -82,6 +82,7 @@ static void ledtrig_tty_work(struct work_struct 
->>> *work)
->>>   {
->>>   	struct ledtrig_tty_data *trigger_data =
->>>   		container_of(work, struct ledtrig_tty_data, dwork.work);
->>> +	unsigned long interval = LEDTRIG_TTY_INTERVAL;
->>>   	struct serial_icounter_struct icount;
->>>   	int ret;
->>>   @@ -124,8 +125,6 @@ static void ledtrig_tty_work(struct work_struct 
->>> *work)
->>>     	if (icount.rx != trigger_data->rx ||
->>>   	    icount.tx != trigger_data->tx) {
->>> -		unsigned long interval = LEDTRIG_TTY_INTERVAL;
->>> -
->>>   		led_blink_set_oneshot(trigger_data->led_cdev, &interval,
->>>   				      &interval, 0);
->>>   -- 2.30.2
->>> 
->> 
+Johan
