@@ -2,61 +2,61 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AEEDE8FDDC
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 08:40:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C796CE8FDDD
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 08:43:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241722AbjJDIku (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Oct 2023 04:40:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48228 "EHLO
+        id S241744AbjJDInk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Oct 2023 04:43:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241691AbjJDIkt (ORCPT
+        with ESMTP id S241715AbjJDInj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Oct 2023 04:40:49 -0400
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29F74BD;
-        Wed,  4 Oct 2023 01:40:46 -0700 (PDT)
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-40566f89f6eso18861075e9.3;
-        Wed, 04 Oct 2023 01:40:46 -0700 (PDT)
+        Wed, 4 Oct 2023 04:43:39 -0400
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7854FA7;
+        Wed,  4 Oct 2023 01:43:36 -0700 (PDT)
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4065f29e933so18689155e9.1;
+        Wed, 04 Oct 2023 01:43:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696408844; x=1697013644;
+        d=1e100.net; s=20230601; t=1696409015; x=1697013815;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=JwS6r/k20TxWUixpI6BWekpE6wEIncfWTUeXYGGnevg=;
-        b=L0LQ+G6aZQszQBKwUcLSxXPvX38S1SliohB91E/e/U6s/twN2xKnOy6+I3xb39i1Hf
-         RY6SruohkJxuAxvJ/RGGHrK0RtV8SSY8Zya/fI5T9p7ckpGOP82qlHbwnFeaNbjDO/6k
-         GoWYsSaXzwtBdq52IVF6Qa7uZKusFUCnze1v9dQy12jnIz/Cy4kWc9UeT8jgR/H9AlDA
-         W9xF8byGbSFbyFEaCQ4dKavQJmMKSIYumpWzfpAYzL+Jt+JzXTMx9SsnldExYeN6Dmeg
-         JHvU48XCI4DNWGJdh/l9vlkrPzC3X9hAFihLymAsw8x0kiU+xq44nvnb0mU5ia99Wb0g
-         Zk0w==
-X-Gm-Message-State: AOJu0YxCpvDwraomHkx2Q2mCMyF5TqEkyKAVKdG9vGv8RuTklaQEIhRt
-        BNj7pdnZdq3m9x9yzYyBqjM=
-X-Google-Smtp-Source: AGHT+IFyQKKf26INcAW8zen5ZReovOz4Gjjl014TQsNTtZsHZOPCfFQpJ5sBGTxq5q20GUx6y0cEVg==
-X-Received: by 2002:a7b:cd11:0:b0:405:40ec:415d with SMTP id f17-20020a7bcd11000000b0040540ec415dmr1583850wmj.39.1696408844151;
-        Wed, 04 Oct 2023 01:40:44 -0700 (PDT)
+        bh=RjEbNZZvqURLtoZLmZggHj8RR+o0tQKQnDIYNhN0CCo=;
+        b=uH4+SRwIfwqoQ0h0qdVirKtNg30Hp0MhT/VvdoI29NAxnqmaU7kPmGp+TOvgybRhkd
+         4V+c/D41Xmd1VcRl/1mvOnigB2ZbEwHKLeJL5Si8kPovEUkE/syi6KR+NDiT6Y2KJHHe
+         5IvzBMUmtgzzacEGMatVcKf+VHgq8kfyO/OE7OVdhSyHSxyoyWQVGFrotfN+51v5xW8D
+         UenRSTyY9YGzLQS4PC0qcobonTkVbr75VPnZ5ACMVSnUqF7jkbop8P2NIQ9Es2E+8Dsc
+         SUjs5/Cy1Sec9t1ZzyNQHoMBuTfJ0BAwPQp8KYgFkW/WPRjN5CvJbZa1HyWHR5JhaRze
+         0sQg==
+X-Gm-Message-State: AOJu0YwF5ODOeJI8dB/vKQ+LvIj23ZoWRPLTUdSOJkHiZbsF48MwrjQf
+        Hq7lwT4BVGwng2H3nskDyMw=
+X-Google-Smtp-Source: AGHT+IEqKGip/ThB25GHsNk/fDLEz9lM7Z+BJZV314JOimbcoXoMUrN8mnxvH9SCgmZbZ/A1a+AkXg==
+X-Received: by 2002:a1c:7c0b:0:b0:401:daf2:2737 with SMTP id x11-20020a1c7c0b000000b00401daf22737mr1522043wmc.30.1696409014850;
+        Wed, 04 Oct 2023 01:43:34 -0700 (PDT)
 Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id 17-20020a05600c229100b00405959469afsm946544wmf.3.2023.10.04.01.40.43
+        by smtp.gmail.com with ESMTPSA id r2-20020a05600c320200b0040641ce36a8sm1305150wmp.1.2023.10.04.01.43.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Oct 2023 01:40:43 -0700 (PDT)
-Message-ID: <49453ebd-b321-4f34-a1a5-d828d8881010@kernel.org>
-Date:   Wed, 4 Oct 2023 10:40:43 +0200
+        Wed, 04 Oct 2023 01:43:34 -0700 (PDT)
+Message-ID: <2d5ccb43-a32c-46c6-b479-677f578fd152@kernel.org>
+Date:   Wed, 4 Oct 2023 10:43:33 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/1] tty: n_gsm: Avoid sleeping during .write() whilst
- atomic
+Subject: Re: [PATCH v2 3/4] trigger: ledtrig-tty: move variable definition to
+ the top
 Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Starke, Daniel" <daniel.starke@siemens.com>
-Cc:     Lee Jones <lee@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Fedor Pchelkin <pchelkin@ispras.ru>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com" 
-        <syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com>
-References: <20231003170020.830242-1-lee@kernel.org>
- <2023100320-immorally-outboard-573a@gregkh>
- <DB9PR10MB588170E923A6ED8B3D6D9613E0CBA@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
- <2023100421-negotiate-stammer-1b35@gregkh>
+To:     Florian Eckert <fe@dev.tdt.de>
+Cc:     Lee Jones <lee@kernel.org>, Eckert.Florian@googlemail.com,
+        gregkh@linuxfoundation.org, pavel@ucw.cz, kabel@kernel.org,
+        u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-leds@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+References: <20230928132632.200263-1-fe@dev.tdt.de>
+ <20230928132632.200263-4-fe@dev.tdt.de> <20231002140559.GB8453@google.com>
+ <acda5dc4-e6d3-4870-929f-fb91636b5649@kernel.org>
+ <59cc4073a94edbdec5d77f8457ed4f73@dev.tdt.de>
+ <05b03f3e-5863-4d33-8c70-03be7d7e972f@kernel.org>
+ <d59855493baa936485a2b00aa29d0449@dev.tdt.de>
 From:   Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -100,47 +100,23 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <2023100421-negotiate-stammer-1b35@gregkh>
+In-Reply-To: <d59855493baa936485a2b00aa29d0449@dev.tdt.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 04. 10. 23, 8:05, Greg Kroah-Hartman wrote:
-> On Wed, Oct 04, 2023 at 05:59:09AM +0000, Starke, Daniel wrote:
->>> Daniel, any thoughts?
->>
->> Our application of this protocol is only with specific modems to enable
->> circuit switched operation (handling calls, selecting/querying networks,
->> etc.) while doing packet switched communication (i.e. IP traffic over PPP).
->> The protocol was developed for such use cases.
->>
->> Regarding the issue itself:
->> There was already an attempt to fix all this by switching from spinlocks to
->> mutexes resulting in ~20% performance loss. However, the patch was reverted
->> as it did not handle the T1 timer leading into sleep during atomic within
->> gsm_dlci_t1() on every mutex lock there.
->> There was also a suggestion to fix this in do_con_write() as
->> tty_operations::write() appears to be documented as "not allowed to sleep".
->> The patch for this was rejected. It did not fix the issue within n_gsm.
->>
->> Link: https://lore.kernel.org/all/20221203215518.8150-1-pchelkin@ispras.ru/
->> Link: https://lore.kernel.org/all/20221212023530.2498025-1-zengheng4@huawei.com/
->> Link: https://lore.kernel.org/all/5a994a13-d1f2-87a8-09e4-a877e65ed166@kernel.org/
-> 
-> Ok, I thought I remembered this, I'll just drop this patch from my
-> review queue and wait for a better solution if it ever comes up as this
-> isn't a real issue that people are seeing on actual systems, but just a
-> syzbot report.
+On 04. 10. 23, 10:36, Florian Eckert wrote:
+> Sorry for the silly question. But do I have to send this patch again for 
+> a v3?
+> https://lore.kernel.org/linux-leds/f41dc1e1-6d34-48b2-97dd-ba67df6003c6@kernel.org/T/#u
+> It was already marked by you with a `Reviewed-by:` from you?
 
-I remember too and it is not easy.
+If it is not picked up by Greg by then, I would send it with my rev-b 
+already.
 
-So without actually looking into the code, can we just somehow disallow 
-attaching this line discipline to a console (ban such a TIOCSETD) and be 
-done with this issue? IOW disallow root to shoot their foot.
-
-regards,
+thanks,
 -- 
 js
 suse labs
