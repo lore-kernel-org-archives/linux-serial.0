@@ -2,88 +2,132 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21974E7B5E1
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 10:01:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5941E7B5E5
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 10:20:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241906AbjJDKBa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Oct 2023 06:01:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53832 "EHLO
+        id S242069AbjJDKUV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Oct 2023 06:20:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241950AbjJDKB3 (ORCPT
+        with ESMTP id S232905AbjJDKUU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Oct 2023 06:01:29 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 11C929E;
-        Wed,  4 Oct 2023 03:01:26 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 4819E80BD;
-        Wed,  4 Oct 2023 10:01:25 +0000 (UTC)
-Date:   Wed, 4 Oct 2023 13:01:23 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v12 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-Message-ID: <20231004100123.GH34982@atomide.com>
-References: <20230525113034.46880-1-tony@atomide.com>
- <62d3678a-a23d-4619-95de-145026629ba8@gmail.com>
- <20231003121455.GB34982@atomide.com>
- <20231003122137.GC34982@atomide.com>
- <dc7af79d-bca8-4967-80fe-e90907204932@gmail.com>
- <20231004061708.GD34982@atomide.com>
- <ZR0Q7YUwgQV5TLhQ@hovoldconsulting.com>
- <20231004090320.GE34982@atomide.com>
- <ZR0s7dEh19lTid6-@hovoldconsulting.com>
+        Wed, 4 Oct 2023 06:20:20 -0400
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914FCA1
+        for <linux-serial@vger.kernel.org>; Wed,  4 Oct 2023 03:20:16 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qnyzB-0006b4-Ij; Wed, 04 Oct 2023 12:20:09 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qnyzA-00B0Ww-JG; Wed, 04 Oct 2023 12:20:08 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qnyzA-008v3I-9q; Wed, 04 Oct 2023 12:20:08 +0200
+Date:   Wed, 4 Oct 2023 12:20:08 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Paul Geurts <paul_geurts@live.nl>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] serial: imx: fix tx statemachine deadlock
+Message-ID: <20231004102008.giyogvnsc26ucx4k@pengutronix.de>
+References: <AM0PR09MB26750E782F81CD447058FE7D95CBA@AM0PR09MB2675.eurprd09.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="7bn7gd7f23wh6bot"
 Content-Disposition: inline
-In-Reply-To: <ZR0s7dEh19lTid6-@hovoldconsulting.com>
+In-Reply-To: <AM0PR09MB26750E782F81CD447058FE7D95CBA@AM0PR09MB2675.eurprd09.prod.outlook.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Johan Hovold <johan@kernel.org> [231004 09:14]:
-> On Wed, Oct 04, 2023 at 12:03:20PM +0300, Tony Lindgren wrote:
-> > The serial port device and serdev device are siblings of the physical
-> > serial port controller device as seen in the hierarcy printed out by
-> > Maximilian.
-> 
-> Yeah, and that's precisely the broken part. Keeping the serdev
-> controller active is supposed to keep the serial controller active. Your
-> serial core rework appears to have broken just that.
 
-Hmm OK good point, tx can currently have an extra delay if a serdev
-device is active, and the serial port controller device is not active.
+--7bn7gd7f23wh6bot
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-So we can check for active port->dev instead of &port_dev->dev though
-to know when when start_tx() is safe to do as below.
+Hello Paul,
 
-Thanks.
+On Wed, Oct 04, 2023 at 11:57:22AM +0200, Paul Geurts wrote:
+> When using the serial port as RS485 port, the tx statemachine is used to
+> control the RTS pin to drive the RS485 transceiver TX_EN pin. When the
+> TTY port is closed in the middle of a transmission (for instance during
+> userland application crash), imx_uart_shutdown disables the interface
+> and disables the Transmission Complete interrupt. afer that,
+> imx_uart_stop_tx bails on an incomplete transmission, to be retriggered
+> by the TC interrupt. This interrupt is disabled and therefore the tx
+> statemachine never transitions out of SEND. The statemachine is in
+> deadlock now, and the TX_EN remains low, making the interface useless.
+>=20
+> imx_uart_stop_tx now checks for incomplete transmission AND whether TC
+> interrupts are enabled before bailing to be retriggered. This makes sure
+> the state machine handling is reached, and is properly set to
+> WAIT_AFTER_SEND.
 
-Tony
+Sounds reasonable.
 
-8< -----------------
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 6207f0051f23d..defecc5b04422 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -156,7 +156,7 @@ static void __uart_start(struct uart_state *state)
- 	 * enabled, serial_port_runtime_resume() calls start_tx() again
- 	 * after enabling the device.
- 	 */
--	if (pm_runtime_active(&port_dev->dev))
-+	if (!pm_runtime_enabled(port->dev) || pm_runtime_active(port->dev))
- 		port->ops->start_tx(port);
- 	pm_runtime_mark_last_busy(&port_dev->dev);
- 	pm_runtime_put_autosuspend(&port_dev->dev);
+A Fixes: line would be nice.
+
+> Signed-off-by: Paul Geurts <paul_geurts@live.nl>
+> ---
+>  drivers/tty/serial/imx.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 13cb78340709..90a4b7841030 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -421,13 +421,13 @@ static void imx_uart_stop_tx(struct uart_port *port)
+>  	ucr1 =3D imx_uart_readl(sport, UCR1);
+>  	imx_uart_writel(sport, ucr1 & ~UCR1_TRDYEN, UCR1);
+> =20
+> +	ucr4 =3D imx_uart_readl(sport, UCR4);
+>  	usr2 =3D imx_uart_readl(sport, USR2);
+> -	if (!(usr2 & USR2_TXDC)) {
+> +	if ((!(usr2 & USR2_TXDC)) && (ucr4 & UCR4_TCEN)) {
+>  		/* The shifter is still busy, so retry once TC triggers */
+>  		return;
+>  	}
+
+So the new thing is: If the hardware is still busy sending stuff but
+/dev/ttymxcX isn't open any more (i.e. .shutdown was called), the
+transmitter gets disabled. I wonder if in this case disabling the
+transmitter should be delayed until the shifter is empty? Or maybe this
+should be handled in .shutdown, that is only disable TCEN once the
+shifter is empty?
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--7bn7gd7f23wh6bot
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmUdPFcACgkQj4D7WH0S
+/k6pIAgAhtQzFddfFAsyp+llHfHprz6jXLIyZ7bFBtvlyvmF9gW4YrfowVrrhW5j
+ITqbAMZ09+vg4YQn81euMB34qwkQJYv1oeQrdEb1aj/q991UySdETRiv9hujpxPo
+VShKNb3ktSOqqwbZSjlw+2+H1s5Vx4YGlVnNOz6J5pVMoZ6NEodp1iI9kiycs7Pf
+laxMn6XUXP4k1y/FO0D1fHXh4ZDvVbZA8wtchT0H8PNwC8SCTDHjWDa0qMlwl6ce
+yOY4kNo41VHZIMJ1z3nDRj9QOzwOk2Thloq4SU0vJPBXCcn6A9fZLrgjNqUYTJnC
+jUXlYXJmfBN6U9QnfewxKudVIxGgLA==
+=Y1On
+-----END PGP SIGNATURE-----
+
+--7bn7gd7f23wh6bot--
