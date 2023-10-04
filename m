@@ -2,61 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C27A5E8FDDD
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 08:55:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00E4CE8FDDD
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 08:57:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232621AbjJDIzj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Oct 2023 04:55:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36440 "EHLO
+        id S232554AbjJDI53 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Oct 2023 04:57:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232554AbjJDIzi (ORCPT
+        with ESMTP id S232988AbjJDI52 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Oct 2023 04:55:38 -0400
-Received: from muru.com (unknown [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90EF3A6;
-        Wed,  4 Oct 2023 01:55:32 -0700 (PDT)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 7C273810D;
-        Wed,  4 Oct 2023 08:55:15 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH] serial: 8250: Check for valid console index
-Date:   Wed,  4 Oct 2023 11:55:10 +0300
-Message-ID: <20231004085511.42645-1-tony@atomide.com>
-X-Mailer: git-send-email 2.42.0
+        Wed, 4 Oct 2023 04:57:28 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4812CA6;
+        Wed,  4 Oct 2023 01:57:25 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54C92C433C7;
+        Wed,  4 Oct 2023 08:57:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1696409844;
+        bh=BUYn8XMqETWuuaHh01k51vhdon890wXkIfEvwsg2BH4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pr5Pc+naWhUqZXmlIz1r1nfmWqQPCj0a7Q3tN1kGa2Vc2Myr8dkEDMun5Balt6WtF
+         QpvYizD67r7D5Weaayf+cUw0B3o1j0W8ApEmYGiFNUHhDEmhejFb89wJ0TRzc/DH7S
+         CJ48QLMuIgXtCz6omIFShVKO5TybYlxJZf0rS3VSrC++MZdTjfWSg4f7gm5fd5h1/I
+         aGMAMR8EOL5rax1zVnFHhsWceXeJoRFf9ZhiAM8umyXOIurEYq0JtIhJr2frpjdnzO
+         FZgJZQeI8Ckp2lcK00sKqJDxe/jE+pwPntrzb7rq6imcrjucfyLFmgPshYBPHbgL/u
+         bNGsFvSXlPodg==
+Date:   Wed, 4 Oct 2023 09:57:20 +0100
+From:   Lee Jones <lee@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     "Starke, Daniel" <daniel.starke@siemens.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Fedor Pchelkin <pchelkin@ispras.ru>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com" 
+        <syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com>
+Subject: Re: [PATCH 1/1] tty: n_gsm: Avoid sleeping during .write() whilst
+ atomic
+Message-ID: <20231004085720.GA9374@google.com>
+References: <20231003170020.830242-1-lee@kernel.org>
+ <2023100320-immorally-outboard-573a@gregkh>
+ <DB9PR10MB588170E923A6ED8B3D6D9613E0CBA@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+ <2023100421-negotiate-stammer-1b35@gregkh>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <2023100421-negotiate-stammer-1b35@gregkh>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Let's not allow negative numbers for console index.
+On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
 
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/serial/8250/8250_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> On Wed, Oct 04, 2023 at 05:59:09AM +0000, Starke, Daniel wrote:
+> > > Daniel, any thoughts?
+> > 
+> > Our application of this protocol is only with specific modems to enable
+> > circuit switched operation (handling calls, selecting/querying networks,
+> > etc.) while doing packet switched communication (i.e. IP traffic over PPP).
+> > The protocol was developed for such use cases.
+> > 
+> > Regarding the issue itself:
+> > There was already an attempt to fix all this by switching from spinlocks to
+> > mutexes resulting in ~20% performance loss. However, the patch was reverted
+> > as it did not handle the T1 timer leading into sleep during atomic within
+> > gsm_dlci_t1() on every mutex lock there.
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -611,7 +611,7 @@ static int univ8250_console_setup(struct console *co, char *options)
- 	 * if so, search for the first available port that does have
- 	 * console support.
- 	 */
--	if (co->index >= UART_NR)
-+	if (co->index < 0 || co->index >= UART_NR)
- 		co->index = 0;
- 
- 	/*
+That's correct.  When I initially saw this report, my initial thought
+was to replace the spinlocks with mutexts, but having read the previous
+accepted attempt and it's subsequent reversion I started to think of
+other ways to solve this issue.  This solution, unlike the last, does
+not involve adding sleep inducing locks into atomic contexts, nor
+should it negatively affect performance.
+
+> > There was also a suggestion to fix this in do_con_write() as
+> > tty_operations::write() appears to be documented as "not allowed to sleep".
+> > The patch for this was rejected. It did not fix the issue within n_gsm.
+> > 
+> > Link: https://lore.kernel.org/all/20221203215518.8150-1-pchelkin@ispras.ru/
+> > Link: https://lore.kernel.org/all/20221212023530.2498025-1-zengheng4@huawei.com/
+> > Link: https://lore.kernel.org/all/5a994a13-d1f2-87a8-09e4-a877e65ed166@kernel.org/
+> 
+> Ok, I thought I remembered this, I'll just drop this patch from my
+> review queue and wait for a better solution if it ever comes up as this
+> isn't a real issue that people are seeing on actual systems, but just a
+> syzbot report.
+
+What does the "better solution" look like?
+
 -- 
-2.42.0
+Lee Jones [李琼斯]
