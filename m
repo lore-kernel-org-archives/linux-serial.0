@@ -2,58 +2,135 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFBF7E8FDD1
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 07:58:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B74E8FDDD
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 08:08:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232759AbjJDH6p (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Oct 2023 03:58:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55484 "EHLO
+        id S241573AbjJDIIv convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Oct 2023 04:08:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232694AbjJDH6p (ORCPT
+        with ESMTP id S241550AbjJDIIt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Oct 2023 03:58:45 -0400
-X-Greylist: delayed 483 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 Oct 2023 00:58:41 PDT
-Received: from mail.citycodes.pl (mail.citycodes.pl [158.255.215.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D45A1
-        for <linux-serial@vger.kernel.org>; Wed,  4 Oct 2023 00:58:41 -0700 (PDT)
-Received: by mail.citycodes.pl (Postfix, from userid 1001)
-        id 3ED521F62D; Wed,  4 Oct 2023 09:50:34 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=citycodes.pl; s=mail;
-        t=1696405837; bh=mMhfBvhM53FtUQl1P3lyeSY5aDBQYiR8qQBy6YFQHi0=;
-        h=Date:From:To:Subject:From;
-        b=fNe9ur9X3lUC3n82H9l8K1X5mHXNgp/OzotN1GjIgV8uOPYFeWCLuVzyIrsYVS84h
-         b0age9z0b6iWXToQ34tBXZsIM1hzbxzE5kM2M1EIJnsIhVTZJb7UO6HMKbPs62VYTc
-         QRVgrdCJPAHSBGgoTT0zhP9NY341OjwBRa6Tix8bl3tnn6JWUuPW142B/HMeIwWxBD
-         Pvle0o14isCZTKbCruoua4QxYtX8JBq+EtGwo38KjGbvfBUD2xOs1MWmLYYUmXUuBw
-         /vuoDm9pa8YNAxSPsj6kGtlmrTvMed++pBtxIEBdn9HOT5ta+TTApQSLJPP8V4GClS
-         Mf0+TgW7qxWyQ==
-Received: by mail.citycodes.pl for <linux-serial@vger.kernel.org>; Wed,  4 Oct 2023 07:50:33 GMT
-Message-ID: <20231004084500-0.1.7v.j1d1.0.9hyha3pp75@citycodes.pl>
-Date:   Wed,  4 Oct 2023 07:50:33 GMT
-From:   "Kamil Lasek" <kamil.lasek@citycodes.pl>
-To:     <linux-serial@vger.kernel.org>
-Subject: =?UTF-8?Q?Rozszerzenie_Programu_M=C3=B3j_Pr=C4=85d_5.0?=
-X-Mailer: mail.citycodes.pl
+        Wed, 4 Oct 2023 04:08:49 -0400
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C36A7B0;
+        Wed,  4 Oct 2023 01:08:44 -0700 (PDT)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-59f6492b415so6031637b3.0;
+        Wed, 04 Oct 2023 01:08:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696406924; x=1697011724;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=xIMX/goBKsJ6mOf5H2EKYwhiWIkamgm6iDCmUzQIUQI=;
+        b=TuVUvtgG9edVcAwjhRFRsfZ+0fhDQ6wZ+tTL8TauT8BziIMLSAi78NyjBn++0LM4Tr
+         Ug5s//qppeelH68HPw5YgzuS/NcBqMNXMH3B0z0Sqmo/gnAcFI8qiwkIsM9xSvcRnG5x
+         FxbsGm/ibDcpb/i8Vl7DO9FHskJJHTC1NgD7x8lnrdEVhdxlCyjboiFm7DTanF8jfVCY
+         v1QzMQPRB29y70ZNpGReTl/4/we4c4NWyLOkm7pVZ44QJ1gV7kXm5MdL033SmR9gjwCR
+         P/3j4rm8kZzwSCpX0aSz6qiPyf0cDm1xTF3SyTQXdiyK9I2F3NS+N0Oz57MH+1zyZssy
+         a3NQ==
+X-Gm-Message-State: AOJu0YzouHeY+0LwrI+3002Cbx3hAGyVydinjZdOM42a/zHMrN224hCF
+        TfGzJEt8THfcVLJBYhvUJ9g2UkjiCNE5WA==
+X-Google-Smtp-Source: AGHT+IEtGJgpYMghz9MQkBMhWaz4yX0Z56JMbOYumP9Io/DgFVy+EgMyZY78tOpaOgSgjsaS5vhoEw==
+X-Received: by 2002:a0d:cb87:0:b0:583:8c61:de8 with SMTP id n129-20020a0dcb87000000b005838c610de8mr1164494ywd.16.1696406923673;
+        Wed, 04 Oct 2023 01:08:43 -0700 (PDT)
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com. [209.85.128.179])
+        by smtp.gmail.com with ESMTPSA id p141-20020a0de693000000b0059bc0d766f8sm994048ywe.34.2023.10.04.01.08.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Oct 2023 01:08:42 -0700 (PDT)
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-59e88a28b98so5923097b3.1;
+        Wed, 04 Oct 2023 01:08:42 -0700 (PDT)
+X-Received: by 2002:a0d:ebce:0:b0:59f:6e90:badd with SMTP id
+ u197-20020a0debce000000b0059f6e90baddmr4177863ywe.23.1696406922325; Wed, 04
+ Oct 2023 01:08:42 -0700 (PDT)
 MIME-Version: 1.0
+References: <20230929053915.1530607-1-claudiu.beznea@bp.renesas.com> <20230929053915.1530607-6-claudiu.beznea@bp.renesas.com>
+In-Reply-To: <20230929053915.1530607-6-claudiu.beznea@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 4 Oct 2023 10:08:29 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUdRgM0E0QNU5k=u2kHdX1B26+C2N3paqb+EqeGcQayBA@mail.gmail.com>
+Message-ID: <CAMuHMdUdRgM0E0QNU5k=u2kHdX1B26+C2N3paqb+EqeGcQayBA@mail.gmail.com>
+Subject: Re: [PATCH v2 05/28] clk: renesas: rzg2l: fix computation formula
+To:     Claudiu <claudiu.beznea@tuxon.dev>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        linus.walleij@linaro.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, magnus.damm@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org,
+        quic_bjorande@quicinc.com, konrad.dybcio@linaro.org, arnd@arndb.de,
+        neil.armstrong@linaro.org, prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, linux-renesas-soc@vger.kernel.org,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Szanowni Pa=C5=84stwo!
+On Fri, Sep 29, 2023 at 7:39 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>
+> According to hardware manual of RZ/G2L (r01uh0914ej0130-rzg2l-rzg2lc.pdf)
+> the computation formula for PLL rate is as follows:
+>
+> Fout = ((m + k/65536) * Fin) / (p * 2^s)
+>
+> and k has values in range [-32768, 32767]. Dividing k by 65536 with
+> integer variables leads all the time to zero. Thus we may have slight
+> differences b/w what has been set vs. what is displayed. Thus,
+> get rid of this and decompose the formula before dividing k by 65536.
+>
+> Fixes: ef3c613ccd68a ("clk: renesas: Add CPG core wrapper for RZ/G2L SoC")
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> ---
+>
+> Changes in v2:
+> - used mul_u64_u32_shr()
 
-W ramach nowej edycji programu M=C3=B3j Pr=C4=85d mog=C4=85 otrzyma=C4=87=
- Pa=C5=84stwo dofinansowanie na zakup i monta=C5=BC fotowoltaiki i/lub ma=
-gazynu energii. Maksymalna kwota dofinansowania wynosi 58 tys. z=C5=82.=20
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-clk-for-v6.7.
 
-Jako firma wyspecjalizowana w tym zakresie zajmiemy si=C4=99 Pa=C5=84stwa=
- wnioskiem o dofinansowanie oraz instalacj=C4=85 i serwisem dopasowanych =
-do Pa=C5=84stwa budynku paneli s=C5=82onecznych.
+> --- a/drivers/clk/renesas/rzg2l-cpg.c
+> +++ b/drivers/clk/renesas/rzg2l-cpg.c
+> @@ -695,18 +695,18 @@ static unsigned long rzg2l_cpg_pll_clk_recalc_rate(struct clk_hw *hw,
+>         struct pll_clk *pll_clk = to_pll(hw);
+>         struct rzg2l_cpg_priv *priv = pll_clk->priv;
+>         unsigned int val1, val2;
+> -       unsigned int mult = 1;
+> -       unsigned int div = 1;
+> +       u64 rate;
+>
+>         if (pll_clk->type != CLK_TYPE_SAM_PLL)
+>                 return parent_rate;
+>
+>         val1 = readl(priv->base + GET_REG_SAMPLL_CLK1(pll_clk->conf));
+>         val2 = readl(priv->base + GET_REG_SAMPLL_CLK2(pll_clk->conf));
+> -       mult = MDIV(val1) + KDIV(val1) / 65536;
+> -       div = PDIV(val1) << SDIV(val2);
+>
+> -       return DIV_ROUND_CLOSEST_ULL((u64)parent_rate * mult, div);
+> +       rate = mul_u64_u32_shr(parent_rate, (MDIV(val1) << 16) + (s16)KDIV(val1),
 
-B=C4=99d=C4=99 wdzi=C4=99czny za informacj=C4=99 czy s=C4=85 Pa=C5=84stwo=
- zainteresowani.
+As KDIV() is always a signed number, I will move the cast to s16 to
+the definition of KDIV() while applying.
 
+> +                              16 + SDIV(val2));
+> +
+> +       return DIV_ROUND_CLOSEST_ULL(rate, PDIV(val1));
+>  }
+>
+>  static const struct clk_ops rzg2l_cpg_pll_ops = {
 
-Pozdrawiam,
-Kamil Lasek
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
