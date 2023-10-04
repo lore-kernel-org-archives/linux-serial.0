@@ -2,111 +2,117 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F4048E7B611
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 13:31:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D718E7B618
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 13:31:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242621AbjJDNbB convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Oct 2023 09:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41360 "EHLO
+        id S242681AbjJDNbx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Oct 2023 09:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242618AbjJDNbB (ORCPT
+        with ESMTP id S242594AbjJDNbw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Oct 2023 09:31:01 -0400
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A71A1;
-        Wed,  4 Oct 2023 06:30:57 -0700 (PDT)
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-59f57ad6126so24384717b3.3;
-        Wed, 04 Oct 2023 06:30:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696426256; x=1697031056;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Y7Wkcd61aZ3jx46S8NbMXaS0P3NM67mT91+N7Httj6U=;
-        b=LcEWNdvY0o3uLzl7oQrMxsqzN+SMqmLSJE4yGFGlLDxxnnHdp5Qbrf+ZbsOZSVyX0q
-         Xgi/vi1/Jc06+SCwX2ACMzbhK285Hpwniwez2LVn1j0PdgNzcqg79ncN+cMo+75tFn/1
-         eO28TrtyoLKeT7vpV+onipqGlZAUNxm6SMnz+cAnS8QTp2hW85kXLgLvfdj02emMs9bw
-         F0XlGvNGycrv0Lmt7/Rsbdj78j2aRDWoyXfyscsEKYR+7w8D6yeJlCuW2FNfI5RBRLeJ
-         +tQKWq0tPMTOm+D3tHWqEabgRqvKLPoQXXxWZnEHB+9ZEgVweTZJK8fdL6ia38cIz4U7
-         07gg==
-X-Gm-Message-State: AOJu0YwTAP3ToWAkaWvpOKPQ3S4nPtI4Xj46LvhB/fpPNCX2y3nDcqGT
-        w2S4FLfDIkOuQIjn1Tk/sHxM6+SEX7skpA==
-X-Google-Smtp-Source: AGHT+IGqd5/WCAgdgySwo808CKYbEaXFHFhB0XNnubuw2hyQTkVCJsWOeht2BYUyJ3ZOn71ylngK6g==
-X-Received: by 2002:a81:8742:0:b0:59f:6675:7771 with SMTP id x63-20020a818742000000b0059f66757771mr2200602ywf.35.1696426256252;
-        Wed, 04 Oct 2023 06:30:56 -0700 (PDT)
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com. [209.85.128.173])
-        by smtp.gmail.com with ESMTPSA id d5-20020a81ab45000000b005a1f7231cf5sm1115151ywk.142.2023.10.04.06.30.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Oct 2023 06:30:55 -0700 (PDT)
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-5a22f9e2f40so24506887b3.1;
-        Wed, 04 Oct 2023 06:30:55 -0700 (PDT)
-X-Received: by 2002:a81:a24a:0:b0:59f:7f8e:dc4a with SMTP id
- z10-20020a81a24a000000b0059f7f8edc4amr2987098ywg.22.1696426255356; Wed, 04
- Oct 2023 06:30:55 -0700 (PDT)
+        Wed, 4 Oct 2023 09:31:52 -0400
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B111A1;
+        Wed,  4 Oct 2023 06:31:48 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:73::646])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 1252D381;
+        Wed,  4 Oct 2023 13:31:47 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 1252D381
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1696426307; bh=sC0LHUI2i/VOkBSihVVbnuIN3LRhiyHfuQI+/ge6LnQ=;
+        h=From:To:Subject:In-Reply-To:References:Date:From;
+        b=gPerOzCb2TxaxqtLNVmpTmHrfVXfZPgs4plx0KBo4VM5iu9HsCU/GD+XeDa1ZwifI
+         cMK/+tF5afJWcVsp30wR/qQ4S+xX4JUdwBZEHXTX+bTSAmZndhyaEYGuqTt6NKd1u/
+         gLDhgdTdcUToRJLrwQipPLu3/zmDx3FwRYpbVhA4/LGnAM45fkjbmJTTope5LetHfj
+         EbBIU+VJMyITt9JR9pw5Fl+JgY1D8p31zWpzocL4TyyHK1REr2cb6yKKRsOXkWq1AH
+         u3P4l6AiXH4xZpcFcyMArEqQP4U6aHLkUPXrWfAetx/VQ4AAcuQt0hzDfyFsAUlS+w
+         bgsKJhbxbWONQ==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Michael Ellerman <michael@ellerman.id.au>,
+        Costa Shulyupin <costa.shul@redhat.com>,
+        Mahesh J Salgaonkar <mahesh@linux.ibm.com>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        Linas Vepstas <linasvepstas@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        "Manoj N. Kumar" <manoj@linux.ibm.com>,
+        "Matthew R. Ochs" <mrochs@linux.ibm.com>,
+        Uma Krishnan <ukrishn@linux.ibm.com>,
+        Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Philippe =?utf-8?Q?Mathieu-Daud=C3=A9?= <philmd@linaro.org>,
+        Nicholas Miehlbradt <nicholas@linux.ibm.com>,
+        Benjamin Gray <bgray@linux.ibm.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        Rohan McLure <rmclure@linux.ibm.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Sathvika Vasireddy <sv@linux.ibm.com>,
+        Laurent Dufour <laurent.dufour@fr.ibm.com>,
+        Nathan Lynch <nathanl@linux.ibm.com>,
+        Brian King <brking@linux.vnet.ibm.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-pci@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-scsi@vger.kernel.org, kvm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] docs: move powerpc under arch
+In-Reply-To: <46705070-17B2-4BDA-9524-1BB2F7BDBACA@ellerman.id.au>
+References: <169052340516.4355.10339828466636149348@legolas.ozlabs.org>
+ <20230826165737.2101199-1-costa.shul@redhat.com>
+ <87cyxvelnn.fsf@meer.lwn.net>
+ <46705070-17B2-4BDA-9524-1BB2F7BDBACA@ellerman.id.au>
+Date:   Wed, 04 Oct 2023 07:31:46 -0600
+Message-ID: <878r8i4ipp.fsf@meer.lwn.net>
 MIME-Version: 1.0
-References: <20230929053915.1530607-1-claudiu.beznea@bp.renesas.com> <20230929053915.1530607-25-claudiu.beznea@bp.renesas.com>
-In-Reply-To: <20230929053915.1530607-25-claudiu.beznea@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 4 Oct 2023 15:30:44 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVcGxFCiw9dTkpMHzz2rBZ0Lc7RZrsKtYys=QksMYVgWg@mail.gmail.com>
-Message-ID: <CAMuHMdVcGxFCiw9dTkpMHzz2rBZ0Lc7RZrsKtYys=QksMYVgWg@mail.gmail.com>
-Subject: Re: [PATCH v2 24/28] arm64: dts: renesas: rzg3l-smarc-som: add
- initial support for RZ/G3S SMARC SoM
-To:     Claudiu <claudiu.beznea@tuxon.dev>
-Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        linus.walleij@linaro.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, magnus.damm@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org,
-        quic_bjorande@quicinc.com, konrad.dybcio@linaro.org, arnd@arndb.de,
-        neil.armstrong@linaro.org, prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, linux-renesas-soc@vger.kernel.org,
-        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Sep 29, 2023 at 7:40 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
-> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->
-> Add initial support for RZ/G3S SMARC SoM. The following devices available
-> on SoM were added to this initial device tree:
->
-> - RZ/G3S SoC: Renesas R9A08G045S33GBG
-> - Clock Generator (only 24MHz output): Renesas 5L35023B
-> - 1GiB LPDDR4 SDRAM: Micron MT53D512M16D1DS-046
-> - 64GB eMMC Flash (though SD ch0): Micron MTFC64GBCAQTC
->
-> SD channel 0 of RZ/G3S is connected to an uSD card interface
-> and an eMMC. The selection b/w them is done though a hardware switch.
-> The DT will select b/w uSD and eMMC though SW_SD0_DEV_SEL build flag.
->
-> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> ---
->
-> Changes in v2:
-> - s/Carrier-II SoM/SoM in patch title
-> - listed in commit description only devices addressed by this initial dtsi
-> - s/8G LPDDR4/1GiB LPDDR4 in commit description
-> - removed sd0-pwr-en-hog node and use specific GPIO in vcc_sdhi0 regulator
-> - added SoM compatible:
->   compatible = "renesas,rzg3s-smarcm", "renesas,r9a08g045s33", "renesas,r9a08g045";
+Michael Ellerman <michael@ellerman.id.au> writes:
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue in renesas-devel for v6.7.
+> On October 4, 2023 3:05:48 AM GMT+11:00, Jonathan Corbet <corbet@lwn.net> wrote:
+>>Costa Shulyupin <costa.shul@redhat.com> writes:
+>>
+>>> and fix all in-tree references.
+>>>
+>>> Architecture-specific documentation is being moved into Documentation/arch/
+>>> as a way of cleaning up the top-level documentation directory and making
+>>> the docs hierarchy more closely match the source hierarchy.
+>>>
+>>> Signed-off-by: Costa Shulyupin <costa.shul@redhat.com>
+>>
+>>So this patch appears to have not been picked up, and to have received
+>>no comments.  I'll happily carry it in docs-next, but it would be nice
+>>to have an ack from the powerpc folks...?
+>
+> I acked it a few months back, and said I assumed you were merging it:
+>
+> https://lore.kernel.org/linuxppc-dev/87bkfwem93.fsf@mail.lhotse/
+>
+> I don't mind who merges it, I figured you merging it would generate fewer conflicts, but I'm happy to take it if you think that would be better.
+>
+> Anyway here's another:
+>
+> Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
 
-Gr{oetje,eeting}s,
+OK, sorry, somehow I missed that.  I'll apply it shortly.
 
-                        Geert
+Thanks,
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+jon
