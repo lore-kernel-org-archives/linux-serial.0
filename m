@@ -2,96 +2,86 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CD0DE8FDDD
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 09:14:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FF99E8FDDB
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 09:21:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241971AbjJDJOR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Oct 2023 05:14:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52046 "EHLO
+        id S233005AbjJDJVh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Oct 2023 05:21:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241997AbjJDJOQ (ORCPT
+        with ESMTP id S232810AbjJDJVg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Oct 2023 05:14:16 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A28DDC;
-        Wed,  4 Oct 2023 02:14:10 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A553BC433C8;
-        Wed,  4 Oct 2023 09:14:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1696410849;
-        bh=P2JFyIm0Ru5QudOr5TqNTdeNy8UEQDyF/LCxvxSZOCk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jN0Qg8i6kmwTvjglbFGkRUz4+gkl/w0GqYoCv/CQYeebzokODLnpHbZBrZY72jEU1
-         qkMDT88LgiorOOh1SOV/RUWUTtKlxKlSeS9mFTGmmzPfX2FOjnn4CSluJglCTrYm5w
-         YZKTKo0XwBTskdZEIHlaEvb0omHJ3jq5gdurTNT5Q0YwHChiTon6bGQ/TEFCeW+fk7
-         wlA9TA1tqJ8UX6f6GK1BVeBqh79MVc4V4dDSKr3zVxyL48BkEKn9yHtYXvRg9z3ye1
-         a46jrp6FQUzm5L5MkVzPxJkg+AxQRHPbqzjIpM413swoEi5+KOIkIuyTgMYRtvHYNG
-         Qfy0XgSVtBodQ==
-Received: from johan by xi.lan with local (Exim 4.96)
-        (envelope-from <johan@kernel.org>)
-        id 1qnxxV-00025S-2O;
-        Wed, 04 Oct 2023 11:14:21 +0200
-Date:   Wed, 4 Oct 2023 11:14:21 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 4 Oct 2023 05:21:36 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DED7C9E;
+        Wed,  4 Oct 2023 02:21:33 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 2FD4780BD;
+        Wed,  4 Oct 2023 09:21:33 +0000 (UTC)
+Date:   Wed, 4 Oct 2023 12:21:31 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@intel.com>,
         Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
         John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v12 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-Message-ID: <ZR0s7dEh19lTid6-@hovoldconsulting.com>
-References: <20230525113034.46880-1-tony@atomide.com>
- <62d3678a-a23d-4619-95de-145026629ba8@gmail.com>
- <20231003121455.GB34982@atomide.com>
- <20231003122137.GC34982@atomide.com>
- <dc7af79d-bca8-4967-80fe-e90907204932@gmail.com>
- <20231004061708.GD34982@atomide.com>
- <ZR0Q7YUwgQV5TLhQ@hovoldconsulting.com>
- <20231004090320.GE34982@atomide.com>
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH] serial: 8250: Check for valid console index
+Message-ID: <20231004092131.GG34982@atomide.com>
+References: <20231004085511.42645-1-tony@atomide.com>
+ <1fc2dc1d-33f2-6d65-6bdb-d4c7421cbc57@linux.intel.com>
+ <20231004090859.GF34982@atomide.com>
+ <375d54d0-f874-92d5-91c5-c7ff2b33daff@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20231004090320.GE34982@atomide.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <375d54d0-f874-92d5-91c5-c7ff2b33daff@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 04, 2023 at 12:03:20PM +0300, Tony Lindgren wrote:
-> * Johan Hovold <johan@kernel.org> [231004 07:14]:
-> > The pm_runtime_get_sync() in serdev_device_open() is supposed to prevent
-> > that from happening by default and if that now longer works, then that
-> > needs to be fixed.
+* Ilpo Järvinen <ilpo.jarvinen@linux.intel.com> [231004 09:13]:
+> On Wed, 4 Oct 2023, Tony Lindgren wrote:
 > 
-> No changes there, that all should work just as before.
-
-Well, it clearly does not work as before.
- 
-> What is broken is that the new serial port device can autosuspend while
-> the serdev device is active. This prevents serial tx in the suspend
-> path.
+> > * Ilpo Järvinen <ilpo.jarvinen@linux.intel.com> [231004 09:05]:
+> > > On Wed, 4 Oct 2023, Tony Lindgren wrote:
+> > > 
+> > > > Let's not allow negative numbers for console index.
+> > > > 
+> > > > Signed-off-by: Tony Lindgren <tony@atomide.com>
+> > > > ---
+> > > >  drivers/tty/serial/8250/8250_core.c | 2 +-
+> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> > > > --- a/drivers/tty/serial/8250/8250_core.c
+> > > > +++ b/drivers/tty/serial/8250/8250_core.c
+> > > > @@ -611,7 +611,7 @@ static int univ8250_console_setup(struct console *co, char *options)
+> > > >  	 * if so, search for the first available port that does have
+> > > >  	 * console support.
+> > > >  	 */
+> > > > -	if (co->index >= UART_NR)
+> > > > +	if (co->index < 0 || co->index >= UART_NR)
+> > > >  		co->index = 0;
+> > > 
+> > > The inconsistencies how different serial drivers handle this situation 
+> > > seem staggering. Perhaps there should be some effort to make the behavior
+> > > uniform across them?
+> > 
+> > Hmm yeah we should just have them all check for co->index < 0.
 > 
-> The serial port device and serdev device are siblings of the physical
-> serial port controller device as seen in the hierarcy printed out by
-> Maximilian.
+> Right but it's only about that, some return -Exx codes (more than one -Exx 
+> variant) and some do assign just 0 like here.
 
-Yeah, and that's precisely the broken part. Keeping the serdev
-controller active is supposed to keep the serial controller active. Your
-serial core rework appears to have broken just that.
+What do you have in mind then? They should all assume co->index < 0 is an
+invalid console index still, right :)
 
-The new "devices" that you've added (I have still not tried to
-understand why that was even needed, it looks overly complicated) must
-not change that. 
+Regards,
 
-If the serdev controller is active, tx should just work (as it did
-before).
-
-Johan
+Tony
