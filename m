@@ -2,105 +2,107 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F38CFE7B614
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 13:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB1CE7B60F
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 13:14:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242584AbjJDNNj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Oct 2023 09:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42814 "EHLO
+        id S242599AbjJDNOM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Oct 2023 09:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242591AbjJDNNj (ORCPT
+        with ESMTP id S242603AbjJDNOL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Oct 2023 09:13:39 -0400
+        Wed, 4 Oct 2023 09:14:11 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96286B0;
-        Wed,  4 Oct 2023 06:13:35 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD4D5C433CA;
-        Wed,  4 Oct 2023 13:13:34 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38875D8;
+        Wed,  4 Oct 2023 06:14:08 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71130C433C7;
+        Wed,  4 Oct 2023 13:14:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1696425215;
-        bh=AtR3jS8UHoPaRMGlNzzPwqxBetaAOpzmhjBTKMuRs1A=;
+        s=korg; t=1696425247;
+        bh=KcAoOcXrCySTDo2pwJ14tM1LxCs9TqonwzLxAT7mYQ8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=z5dGZ5FqhPN0NLS42MlP7ZTzAfg1JqRm6d9pexc8zXOyVcw1I5JhLqTO2ghKqeeT9
-         sXXkZqKXnQLqubrYK3rcsRnW9dlKJCjgCt4akVNqDu7kSpfKOe1mCMCJ+LMjvP5DPL
-         iNrS1nqTKtwimiGSQ1+bDS9ufwpPwEgoRu06XGKU=
-Date:   Wed, 4 Oct 2023 15:13:32 +0200
+        b=Wo7YI5voIsgcHyd1dDgO6qDYsZlKelvwQgEJEAXzgl9Px0vQ16t1Ju0p8N+nwttPv
+         MJKN08Th53vNf9fz+WxwEKRyxn9cjaAFARtyOqQ5/Zj5w1RgskGuaIWD3FSgqaY6FN
+         njLsB7/QFF6WiWoHJpB2uxb7UAlqoMDugx3qwF6g=
+Date:   Wed, 4 Oct 2023 15:14:04 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     Lee Jones <lee@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>,
+Cc:     "Starke, Daniel" <daniel.starke@siemens.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Fedor Pchelkin <pchelkin@ispras.ru>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org,
-        syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com" 
+        <syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com>
 Subject: Re: [PATCH 1/1] tty: n_gsm: Avoid sleeping during .write() whilst
  atomic
-Message-ID: <2023100409-brethren-gauntlet-965e@gregkh>
+Message-ID: <2023100435-xerox-idiocy-5cf0@gregkh>
 References: <20231003170020.830242-1-lee@kernel.org>
  <2023100320-immorally-outboard-573a@gregkh>
- <20231003185500.GD8453@google.com>
- <2023100457-entail-freefall-06fd@gregkh>
- <20231004090918.GB9374@google.com>
- <2023100425-unwieldy-reaffirm-2a1b@gregkh>
- <20231004125758.GB83257@google.com>
+ <DB9PR10MB588170E923A6ED8B3D6D9613E0CBA@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+ <2023100421-negotiate-stammer-1b35@gregkh>
+ <20231004085720.GA9374@google.com>
+ <2023100448-cotton-safehouse-aca2@gregkh>
+ <20231004125704.GA83257@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231004125758.GB83257@google.com>
+In-Reply-To: <20231004125704.GA83257@google.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 04, 2023 at 01:57:58PM +0100, Lee Jones wrote:
+On Wed, Oct 04, 2023 at 01:57:04PM +0100, Lee Jones wrote:
 > On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
 > 
-> > On Wed, Oct 04, 2023 at 10:09:18AM +0100, Lee Jones wrote:
+> > On Wed, Oct 04, 2023 at 09:57:20AM +0100, Lee Jones wrote:
 > > > On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
 > > > 
-> > > > On Tue, Oct 03, 2023 at 07:55:00PM +0100, Lee Jones wrote:
-> > > > > On Tue, 03 Oct 2023, Greg Kroah-Hartman wrote:
+> > > > On Wed, Oct 04, 2023 at 05:59:09AM +0000, Starke, Daniel wrote:
+> > > > > > Daniel, any thoughts?
 > > > > > 
-> > > > > > On Tue, Oct 03, 2023 at 06:00:20PM +0100, Lee Jones wrote:
-> > > > > > > The important part of the call stack being:
-> > > > > > > 
-> > > > > > >   gsmld_write()             # Takes a lock and disables IRQs
-> > > > > > >     con_write()
-> > > > > > >       console_lock()
-> > > > > > 
-> > > > > > Wait, why is the n_gsm line discipline being used for a console?
-> > > > > > 
-> > > > > > What hardware/protocol wants this to happen?
-> > > > > > 
-> > > > > > gsm I thought was for a very specific type of device, not a console.
-> > > > > > 
-> > > > > > As per:
-> > > > > > 	https://www.kernel.org/doc/html/v5.9/driver-api/serial/n_gsm.html
-> > > > > > this is a specific modem protocol, why is con_write() being called?
+> > > > > Our application of this protocol is only with specific modems to enable
+> > > > > circuit switched operation (handling calls, selecting/querying networks,
+> > > > > etc.) while doing packet switched communication (i.e. IP traffic over PPP).
+> > > > > The protocol was developed for such use cases.
 > > > > > 
-> > > > > What it's meant for and what random users can make it do are likely to
-> > > > > be quite separate questions.  This scenario is user driven and can be
-> > > > > replicated simply by issuing a few syscalls (open, ioctl, write).
-> > > > 
-> > > > I would recommend that any distro/system that does not want to support
-> > > > this specific hardware protocol, just disable it for now (it's marked as
-> > > > experimental too), if they don't want to deal with the potential
-> > > > sleep-while-atomic issue.
+> > > > > Regarding the issue itself:
+> > > > > There was already an attempt to fix all this by switching from spinlocks to
+> > > > > mutexes resulting in ~20% performance loss. However, the patch was reverted
+> > > > > as it did not handle the T1 timer leading into sleep during atomic within
+> > > > > gsm_dlci_t1() on every mutex lock there.
 > > > 
-> > > n_gsm is available on all the systems I have available.  The mention of
-> > > 'EXPERIMENTAL' in the module description appears to have zero effect on
-> > > whether distros choose to make it available or not.  If you're saying
-> > > that we know this module is BROKEN however, then perhaps we should mark
-> > > it as such.
+> > > That's correct.  When I initially saw this report, my initial thought
+> > > was to replace the spinlocks with mutexts, but having read the previous
+> > > accepted attempt and it's subsequent reversion I started to think of
+> > > other ways to solve this issue.  This solution, unlike the last, does
+> > > not involve adding sleep inducing locks into atomic contexts, nor
+> > > should it negatively affect performance.
+> > > 
+> > > > > There was also a suggestion to fix this in do_con_write() as
+> > > > > tty_operations::write() appears to be documented as "not allowed to sleep".
+> > > > > The patch for this was rejected. It did not fix the issue within n_gsm.
+> > > > > 
+> > > > > Link: https://lore.kernel.org/all/20221203215518.8150-1-pchelkin@ispras.ru/
+> > > > > Link: https://lore.kernel.org/all/20221212023530.2498025-1-zengheng4@huawei.com/
+> > > > > Link: https://lore.kernel.org/all/5a994a13-d1f2-87a8-09e4-a877e65ed166@kernel.org/
+> > > > 
+> > > > Ok, I thought I remembered this, I'll just drop this patch from my
+> > > > review queue and wait for a better solution if it ever comes up as this
+> > > > isn't a real issue that people are seeing on actual systems, but just a
+> > > > syzbot report.
+> > > 
+> > > What does the "better solution" look like?
 > > 
-> > Also, I think this requires root to set this line discipline to the
-> > console, right?  A normal user can't do that, or am I missing a code
-> > path here?
+> > One that actually fixes the root problem here (i.e. does not break the
+> > recursion loop, or cause a performance decrease for normal users, or
+> > prevent this from being bound to the console).
 > 
-> I haven't been testing long, but yes, early indications show that root
-> is required.
+> Does this solution break the recursion loop or affect performance?
 
-Oh good, then this really isn't that high of a priority to get fixed as
-root can do much worse things :)
+This solution broke the recursion by returning an error, right?
+
+The performance one was by using mutexes as in previous attempts.
 
 thanks,
 
