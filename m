@@ -2,139 +2,88 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36839E7B5E1
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 09:57:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21974E7B5E1
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Oct 2023 10:01:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232978AbjJDJ5x (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Oct 2023 05:57:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46242 "EHLO
+        id S241906AbjJDKBa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Oct 2023 06:01:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232909AbjJDJ5x (ORCPT
+        with ESMTP id S241950AbjJDKB3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Oct 2023 05:57:53 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05olkn2075.outbound.protection.outlook.com [40.92.90.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B00783;
-        Wed,  4 Oct 2023 02:57:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GkRD33xr94kopdDrEF1lLbyj70A9Qgfwkxif+EGLVVm4KqP1Fu4VxDJK8+cMxyFbAuWKsdt/lSlbcb/VfmOz0Ry2G33rIElP77Liq9mdcH/WhS3DkGLe2LOig7WC+7NJVn9FR4Ttpr4qxFrDTwHi2YdXmswCLLCC7sjav2/boOV20uNHVTpjmMbGB4rO1n6qARoAcY0EK/y70ZLF3pEBlyB4phCLqtFwFZT8xyODUYojnjsOL44XAB2Q7WzvBZ4GH2/3ymHzbDQsVGbusc26ElWy7JzM3b9HxZcCPEmMF4yGxLdlMoT2Hexr4Y85PU241QcsA6iX7jdIH9c9KA0l2g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uNk6NQUIbYPXsu0dxUDujzTk9E+ePG5ojRdm0r6gIuQ=;
- b=d3EnaXpElcW3ZfpDnNny6rotsJvIWPEtAdEewm9QtsILHhzYHy/YieS5pKoJ8jFhj58zpmy1/rtx+tcXwxjefKBMC8tDR33kx0AbCPc+D0UdSSbdw/ME1X/CJ165tp2E9DfLXfEpsnCOBuPvcJYHtJnx8NJUd+m6O8PVNsu/Hv88rZSWr2X+9pY83HHsUeS+0nahmtmVoMJbl6uCDDZ76WoZ7DDEnrmvi2MraTCGhIWh97hAh1mDh7QKqIaeJBwzxGTTcMzZeA9F9w452vzfBL9E1KaDu0oxWJvDXXOz2872PqQQT1C9N0ojFQ8rJcyU9cDBhPRZs14KdkbK80xKpA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from AM0PR09MB2675.eurprd09.prod.outlook.com (2603:10a6:208:d3::24)
- by AM0PR09MB3585.eurprd09.prod.outlook.com (2603:10a6:208:18b::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.35; Wed, 4 Oct
- 2023 09:57:46 +0000
-Received: from AM0PR09MB2675.eurprd09.prod.outlook.com
- ([fe80::b4c3:964f:93ac:4b0]) by AM0PR09MB2675.eurprd09.prod.outlook.com
- ([fe80::b4c3:964f:93ac:4b0%7]) with mapi id 15.20.6813.027; Wed, 4 Oct 2023
- 09:57:46 +0000
-From:   Paul Geurts <paul_geurts@live.nl>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Paul Geurts <paul_geurts@live.nl>
-Subject: [PATCH] serial: imx: fix tx statemachine deadlock
-Date:   Wed,  4 Oct 2023 11:57:22 +0200
-Message-ID: <AM0PR09MB26750E782F81CD447058FE7D95CBA@AM0PR09MB2675.eurprd09.prod.outlook.com>
-X-Mailer: git-send-email 2.20.1
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-TMN:  [Gwl1f/sRzpQIlRyZ4usHrZvt0oPKC1kAJspCMATHSs3pR9v85oDzABVsyub8L4c4]
-X-ClientProxiedBy: AS4P191CA0039.EURP191.PROD.OUTLOOK.COM
- (2603:10a6:20b:657::24) To AM0PR09MB2675.eurprd09.prod.outlook.com
- (2603:10a6:208:d3::24)
-X-Microsoft-Original-Message-ID: <20231004095722.3083-1-paul_geurts@live.nl>
+        Wed, 4 Oct 2023 06:01:29 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 11C929E;
+        Wed,  4 Oct 2023 03:01:26 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 4819E80BD;
+        Wed,  4 Oct 2023 10:01:25 +0000 (UTC)
+Date:   Wed, 4 Oct 2023 13:01:23 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v12 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+Message-ID: <20231004100123.GH34982@atomide.com>
+References: <20230525113034.46880-1-tony@atomide.com>
+ <62d3678a-a23d-4619-95de-145026629ba8@gmail.com>
+ <20231003121455.GB34982@atomide.com>
+ <20231003122137.GC34982@atomide.com>
+ <dc7af79d-bca8-4967-80fe-e90907204932@gmail.com>
+ <20231004061708.GD34982@atomide.com>
+ <ZR0Q7YUwgQV5TLhQ@hovoldconsulting.com>
+ <20231004090320.GE34982@atomide.com>
+ <ZR0s7dEh19lTid6-@hovoldconsulting.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR09MB2675:EE_|AM0PR09MB3585:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4360296e-620b-4187-1c46-08dbc4c05c2f
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eJnSjbvZLyvd2L69cQII9KTPBZu5jkZ+QAorh5cByU29CiaGvgM4vJQXo0WCRmwa8vWS5VjTBH8sH5mvSgb8XCAXC5weoYCZZ+bcKsLJGO4LJQ5x1YxIb7X2rJ2piX/HxKapG96MHB2LUQ9lBJczCGZI1vpYk0ase+QqcdqkzibCZSBoqELMYWG0C8Bckrph6hoE2QLu99InMliqfOCPNZwfaYR/X56SavM51zIRBo8yQ6wzUw2l71WkgWIcM05L5Cd2m2ODRT17J+o1Lo7h/Al7aklvzzfTxNVTLTSAABS/Njes2+yQw2lwkSnqoaeVuajLyTJRSE9Gq27u3WejiPAKhpWGVY1rHymtfjbyAikmOqQ6po86i8JpLwgkKA/qRH1K537fmWi/5E1DFa+4sf0S3zftY9LbVKV+VNiYO+/BV45x3J2CW/WSAZMJOKuDJhzxRkM8Vcv9OA47bjf8kx8YimiVNQky4e5KiOOTQnC5H7CCoxAeG3sM/qhIGhv7ARS0h492EkX/y42rP7rQAz63o4aWt1gqQvyc8rOVAOBdgOJsIN/gWUkVVEi+j9SMr7I+OCJHWsXs6hsn7ZIh1Apwbq85KaPzD74FcZGxXTRjPfzkCw8nvVTcp3LKnZna
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?OSF591OI80e5QgUDtvqQo1SqW08WQWE4rWx47b9UmIakqiPunTpfEbEGYSPR?=
- =?us-ascii?Q?0swFoYvEA6ClTHqtV64e0oNk5DOUu+iQxK8PWPx5EsRQhmnnKW8loC3WWvgM?=
- =?us-ascii?Q?GcL9MG3GJfeYo5md+R+1WNK/8oNP6SqoP9LResw4cSy9MIwkO9GatZuRgOK4?=
- =?us-ascii?Q?BAT6ejOkKa7QIT3FQ81ftnOK4/IkdzwEX4fPJY2FcB7bOAA9Sez0KhPFqv6p?=
- =?us-ascii?Q?yGFqgjNT8qaQu4OfZMQBW7fKUhR1Vy2qklhKcd7AysyAkZg+TVtGUi5xA2+W?=
- =?us-ascii?Q?AXbJlpuEmHW35bHDjFVfjqUITNHDSNxRg14ZCqUmperGLLhWYqXOEo6bOjfn?=
- =?us-ascii?Q?cCSRWZXTy0JglzxQ8+mEr4V66R9FBTm5XdKvS8k+4UnmGNcUxkxcVo1eHBlW?=
- =?us-ascii?Q?yCqajkzvPx2bo+xkU1MVN51N8N8iTX6Jk773aASg3DxyUWvbHaGp4IzKlGOB?=
- =?us-ascii?Q?+zSc5mbZ1LjrsBWeYMiYiqAB3EBqQiidtxp79EanHvwqASKNRp6donRkrLk3?=
- =?us-ascii?Q?ISc7T9PNsikTHfVCTnpSk3LdFKX++PnnVOw88t/wWwTSOKVIj96UPU0gFuDj?=
- =?us-ascii?Q?MFLYbg7R5938yF1Qh1jNWn14TOHBSZxgxFfNFyw/SczJ/VXYdVNUVTyNwaOu?=
- =?us-ascii?Q?94OpknzJNw91hYPn7KbdfVq/4tX9mFXMcyArb8bwMjRgncJMCW2pio+5wOZq?=
- =?us-ascii?Q?Ba1+z6uHzGWlCdcF3BzmVb37c1ZMjhPcLB6ESsMYGfizvCwKdpWlTvCsFO1c?=
- =?us-ascii?Q?r31+jBnfjH1FSkHFpcWOGCzjMvYWDo2f3xbSjbC8shDbySo6QB9jWGXn+bxp?=
- =?us-ascii?Q?Suj7xJoIzDOqvBVKWEVEczDIZHPjoqUsOGOrIobpmO0RytiA/RBK1ENgeXbi?=
- =?us-ascii?Q?PWigzPX9TvRxuneSzuGSBX9JTiRzhESFpmwJGiiX63k4CcHCwTHCNEafI5k7?=
- =?us-ascii?Q?KdcRgLmNsmDHYOmv9qPOSXxex40iZ/0v5jj7jmKSi/4DsIzYHro49aFrnRWG?=
- =?us-ascii?Q?X7mN/yg2b3IIxb4HLsjxRF82PWdFzY1nLTy444O00c2aDQSVSUJ1HQWY3gCz?=
- =?us-ascii?Q?ncRzmbhg+jBl5wFFAIBrgjpJ96zdR82Ydj2YvQsgOP5o404uNColUoRwtK/W?=
- =?us-ascii?Q?rMVhjbr3EYwn3E6+qyZUsmWPaJAzN6COJIjvVWa3JdrpTGy0gb5wvDAHBQyi?=
- =?us-ascii?Q?7jtFeB0r3WkYY+PwYlSM6L5zPdgT8KA/hRNVATvNXae3kvln10svlls8ipwY?=
- =?us-ascii?Q?9eWkVb1QMdBf6FBPBYHChkBjdf+VTxsTlQgWrin/oQ=3D=3D?=
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-64da6.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4360296e-620b-4187-1c46-08dbc4c05c2f
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR09MB2675.eurprd09.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2023 09:57:46.7393
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR09MB3585
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZR0s7dEh19lTid6-@hovoldconsulting.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When using the serial port as RS485 port, the tx statemachine is used to
-control the RTS pin to drive the RS485 transceiver TX_EN pin. When the
-TTY port is closed in the middle of a transmission (for instance during
-userland application crash), imx_uart_shutdown disables the interface
-and disables the Transmission Complete interrupt. afer that,
-imx_uart_stop_tx bails on an incomplete transmission, to be retriggered
-by the TC interrupt. This interrupt is disabled and therefore the tx
-statemachine never transitions out of SEND. The statemachine is in
-deadlock now, and the TX_EN remains low, making the interface useless.
+* Johan Hovold <johan@kernel.org> [231004 09:14]:
+> On Wed, Oct 04, 2023 at 12:03:20PM +0300, Tony Lindgren wrote:
+> > The serial port device and serdev device are siblings of the physical
+> > serial port controller device as seen in the hierarcy printed out by
+> > Maximilian.
+> 
+> Yeah, and that's precisely the broken part. Keeping the serdev
+> controller active is supposed to keep the serial controller active. Your
+> serial core rework appears to have broken just that.
 
-imx_uart_stop_tx now checks for incomplete transmission AND whether TC
-interrupts are enabled before bailing to be retriggered. This makes sure
-the state machine handling is reached, and is properly set to
-WAIT_AFTER_SEND.
+Hmm OK good point, tx can currently have an extra delay if a serdev
+device is active, and the serial port controller device is not active.
 
-Signed-off-by: Paul Geurts <paul_geurts@live.nl>
----
- drivers/tty/serial/imx.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+So we can check for active port->dev instead of &port_dev->dev though
+to know when when start_tx() is safe to do as below.
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 13cb78340709..90a4b7841030 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -421,13 +421,13 @@ static void imx_uart_stop_tx(struct uart_port *port)
- 	ucr1 = imx_uart_readl(sport, UCR1);
- 	imx_uart_writel(sport, ucr1 & ~UCR1_TRDYEN, UCR1);
- 
-+	ucr4 = imx_uart_readl(sport, UCR4);
- 	usr2 = imx_uart_readl(sport, USR2);
--	if (!(usr2 & USR2_TXDC)) {
-+	if ((!(usr2 & USR2_TXDC)) && (ucr4 & UCR4_TCEN)) {
- 		/* The shifter is still busy, so retry once TC triggers */
- 		return;
- 	}
- 
--	ucr4 = imx_uart_readl(sport, UCR4);
- 	ucr4 &= ~UCR4_TCEN;
- 	imx_uart_writel(sport, ucr4, UCR4);
- 
--- 
-2.20.1
+Thanks.
 
+Tony
+
+8< -----------------
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 6207f0051f23d..defecc5b04422 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -156,7 +156,7 @@ static void __uart_start(struct uart_state *state)
+ 	 * enabled, serial_port_runtime_resume() calls start_tx() again
+ 	 * after enabling the device.
+ 	 */
+-	if (pm_runtime_active(&port_dev->dev))
++	if (!pm_runtime_enabled(port->dev) || pm_runtime_active(port->dev))
+ 		port->ops->start_tx(port);
+ 	pm_runtime_mark_last_busy(&port_dev->dev);
+ 	pm_runtime_put_autosuspend(&port_dev->dev);
