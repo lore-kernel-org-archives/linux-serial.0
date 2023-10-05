@@ -2,129 +2,108 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E180DE92707
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 14:32:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6EB3E9270F
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 14:33:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233331AbjJEOcu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Oct 2023 10:32:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38892 "EHLO
+        id S234126AbjJEOdW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Oct 2023 10:33:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234300AbjJEObZ (ORCPT
+        with ESMTP id S235180AbjJEObh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Oct 2023 10:31:25 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FF0328114;
-        Thu,  5 Oct 2023 06:44:57 -0700 (PDT)
+        Thu, 5 Oct 2023 10:31:37 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153C110CE;
+        Thu,  5 Oct 2023 06:48:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1696513497; x=1728049497;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=5SpEVemSirx21NVTF+jU5S1sEv0Gnxk/3NfB/f1IUz4=;
-  b=aQKUx/FTxmgbepNPNIG/kWF8sBDNepyMMmRnsReYPUs1iCTyRG9KGhr/
-   aW8ULEpE6gdquYw5Y4uDf83OEE5ceWBBWuoXUg8dCvplOUou7YG3J5Kzf
-   7T5RKx7EA567zpFvPkYy/uQNEpH+HiLwv01Iax42iHKiaWRv0CqrElMDO
-   08x+2gqpWSfauslQ7sThhZ077OVlCJOgX5X1G1DbWq+58aYiLz2aT8F/X
-   vsgT0TIRwLYYzy4gvryPh8vHhDvNJ8LfCH01Ld8jwwfP4cJhSCqNekDuT
-   1cJeWXuOCUoGEKdMDpDqbydzKUaTskjXdXW2R+ue/oJerBuh5U2izDYMy
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10854"; a="447665974"
+  t=1696513714; x=1728049714;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/qcg9z9QjvBBFf2lrrpqt3uTlEPx56wjWhM7cNUhZdk=;
+  b=DaVpxLG1ZwQB4MHj+/gzTu8CSLiAGjp1z7nfUXvDWVUsfBxC9+pPwnxq
+   f2fuCpmdjz1WD0FRy27NWgiox21j32NZDBeAVXEWSamm+jtJT1uBu2u+K
+   TXJR6Vej63HpBHDONxpncO2INswa4IznDOSwWeqZU2krjD0X1ff4u4lV+
+   CQ8pbtDRLhnbxFcp+JHh9tdd8UcmfZ66BW/2R0yGB4FUP/4HJFwhl12mX
+   +a0GDs2kblAc8s06lMcu2OEXqrWXg8dL8WL21FwaFuKkSsZN99MyoO9Jf
+   Vk/EV5dyAxKoA98FpEAS3cRtJUydqJqemDopwGrKx8yW+nXVHJpM1XB3c
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10853"; a="469745820"
 X-IronPort-AV: E=Sophos;i="6.03,203,1694761200"; 
-   d="scan'208";a="447665974"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2023 05:45:55 -0700
+   d="scan'208";a="469745820"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2023 05:00:57 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10854"; a="1083010888"
+X-IronPort-AV: E=McAfee;i="6600,9927,10853"; a="867860677"
 X-IronPort-AV: E=Sophos;i="6.03,203,1694761200"; 
-   d="scan'208";a="1083010888"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga005.fm.intel.com with ESMTP; 05 Oct 2023 05:45:53 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 0AC6C35A; Thu,  5 Oct 2023 15:45:51 +0300 (EEST)
+   d="scan'208";a="867860677"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2023 05:00:54 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97-RC1)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qoN2B-000000030w6-1WjO;
+        Thu, 05 Oct 2023 15:00:51 +0300
+Date:   Thu, 5 Oct 2023 15:00:51 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andi Shyti <andi.shyti@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 1/1] serial: 8250_bcm7271: Use devm_clk_get_optional_enabled()
-Date:   Thu,  5 Oct 2023 15:45:50 +0300
-Message-Id: <20231005124550.3607234-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.40.0.1.gaa8946217a0b
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>
+Subject: Re: [PATCH] serial: core: Fix checks for tx runtime PM state
+Message-ID: <ZR6lc/F1Esxt5ChI@smile.fi.intel.com>
+References: <20231005075644.25936-1-tony@atomide.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231005075644.25936-1-tony@atomide.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use devm_clk_get_optional_enabled() to simplify the code.
+On Thu, Oct 05, 2023 at 10:56:42AM +0300, Tony Lindgren wrote:
+> Maximilian reported that surface_serial_hub serdev tx does not work during
+> system suspend. During system suspend, runtime PM gets disabled in
+> __device_suspend_late(), and tx is unable to wake-up the serial core port
+> device that we use to check if tx is safe to start. Johan summarized the
+> regression noting that serdev tx no longer always works as earlier when the
+> serdev device is runtime PM active.
+> 
+> The serdev device and the serial core controller devices are siblings of
+> the serial port hardware device. The runtime PM usage count from serdev
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-v2: fixed the returned value (Andi)
- drivers/tty/serial/8250/8250_bcm7271.c | 24 +++++++++---------------
- 1 file changed, 9 insertions(+), 15 deletions(-)
+I'm a bit lost in terminology here.
+AFAIU there are:
+1) children of the serial physical device;
+2) siblings (to each other).
 
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index 1a853a08654a..55dea2539c47 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -1015,26 +1015,23 @@ static int brcmuart_probe(struct platform_device *pdev)
- 	of_property_read_u32(np, "clock-frequency", &clk_rate);
- 
- 	/* See if a Baud clock has been specified */
--	baud_mux_clk = devm_clk_get(dev, "sw_baud");
--	if (IS_ERR(baud_mux_clk)) {
--		if (PTR_ERR(baud_mux_clk) == -EPROBE_DEFER) {
--			ret = -EPROBE_DEFER;
--			goto release_dma;
--		}
--		dev_dbg(dev, "BAUD MUX clock not specified\n");
--	} else {
-+	baud_mux_clk = devm_clk_get_optional_enabled(dev, "sw_baud");
-+	ret = PTR_ERR_OR_ZERO(baud_mux_clk);
-+	if (ret)
-+		goto release_dma;
-+	if (baud_mux_clk) {
- 		dev_dbg(dev, "BAUD MUX clock found\n");
--		ret = clk_prepare_enable(baud_mux_clk);
--		if (ret)
--			goto release_dma;
-+
- 		priv->baud_mux_clk = baud_mux_clk;
- 		init_real_clk_rates(dev, priv);
- 		clk_rate = priv->default_mux_rate;
-+	} else {
-+		dev_dbg(dev, "BAUD MUX clock not specified\n");
- 	}
- 
- 	if (clk_rate == 0) {
- 		ret = dev_err_probe(dev, -EINVAL, "clock-frequency or clk not defined\n");
--		goto err_clk_disable;
-+		goto release_dma;
- 	}
- 
- 	dev_dbg(dev, "DMA is %senabled\n", priv->dma_enabled ? "" : "not ");
-@@ -1118,8 +1115,6 @@ static int brcmuart_probe(struct platform_device *pdev)
- 	serial8250_unregister_port(priv->line);
- err:
- 	brcmuart_free_bufs(dev, priv);
--err_clk_disable:
--	clk_disable_unprepare(baud_mux_clk);
- release_dma:
- 	if (priv->dma_enabled)
- 		brcmuart_arbitration(priv, 0);
-@@ -1134,7 +1129,6 @@ static int brcmuart_remove(struct platform_device *pdev)
- 	hrtimer_cancel(&priv->hrt);
- 	serial8250_unregister_port(priv->line);
- 	brcmuart_free_bufs(&pdev->dev, priv);
--	clk_disable_unprepare(priv->baud_mux_clk);
- 	if (priv->dma_enabled)
- 		brcmuart_arbitration(priv, 0);
- 	return 0;
+But may be I mistakenly deciphered the diagram from the previous discussion.
+
+> device does not propagate to the serial core device siblings, it only
+> propagates to the parent.
+> 
+> In addition to the tx issue for suspend, testing for the serial core port
+> device can cause an unnecessary delay in enabling tx while waiting for the
+> serial core port device to wake-up. The serial core port device wake-up is
+> only needed to flush pending tx when the serial port hardware device was
+> in runtime PM suspended state.
+> 
+> To fix the regression, we need to check the runtime PM state of the parent
+> serial port hardware device for tx instead of the serial core port device.
+> 
+> As the serial port device drivers may or may not implement runtime PM, we
+> need to also add a check for pm_runtime_enabled().
+
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
 -- 
-2.40.0.1.gaa8946217a0b
+With Best Regards,
+Andy Shevchenko
+
 
