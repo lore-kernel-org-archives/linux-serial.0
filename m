@@ -2,100 +2,150 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84367E9270C
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 14:36:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C61E9270B
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 14:38:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236582AbjJEOgn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Oct 2023 10:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46256 "EHLO
+        id S233639AbjJEOiN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Oct 2023 10:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236139AbjJEOej (ORCPT
+        with ESMTP id S232004AbjJEOfT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Oct 2023 10:34:39 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D9B526D;
-        Thu,  5 Oct 2023 06:52:34 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B799AC116D7;
-        Thu,  5 Oct 2023 10:13:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1696500793;
-        bh=RJWoMbVbJ151+uWDTX/jr/W0fr8rED5wB3RE5Q7hp/4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=B+LvITA9/TODmPovJDG3ZIkXUJcV9Ds0N6YYFKHuMNE1kHES5iPpht2W9i4nTpdzO
-         NQo/V78oIcqgPvapVvUw/Gn7sDyPTStNIOyxHOyMDjAIXB4bxvP7xEaZT0CPPaWgCX
-         xeDB3HqgvAstsvDWxm8ZGT2AAk2hlhdcdk/OJCGmsh1+9j+WY8DbCz2I0zd9Rqnw9K
-         nyCmRpjLq2yUe7rrnKBuAGU30l8uu0qVYYmUaxufXUJGHcmyKIpBcMb9ThWVtZQWNb
-         3ug8M5Kq9avnc1JJ01h48Lq2yUWyZvBV7gF6RmYNKwi4Dt/eabYT8W1qMmIB6uohpX
-         HaJsyENCOHGmA==
-Date:   Thu, 5 Oct 2023 11:13:07 +0100
-From:   Lee Jones <lee@kernel.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Florian Eckert <fe@dev.tdt.de>, Jiri Slaby <jirislaby@kernel.org>,
-        Eckert.Florian@googlemail.com, pavel@ucw.cz, kabel@kernel.org,
-        u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-leds@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v2 3/4] trigger: ledtrig-tty: move variable definition to
- the top
-Message-ID: <20231005101307.GE83257@google.com>
-References: <20230928132632.200263-1-fe@dev.tdt.de>
- <20230928132632.200263-4-fe@dev.tdt.de>
- <20231002140559.GB8453@google.com>
- <acda5dc4-e6d3-4870-929f-fb91636b5649@kernel.org>
- <59cc4073a94edbdec5d77f8457ed4f73@dev.tdt.de>
- <05b03f3e-5863-4d33-8c70-03be7d7e972f@kernel.org>
- <d59855493baa936485a2b00aa29d0449@dev.tdt.de>
- <2023100508-prelaunch-marbled-3a93@gregkh>
+        Thu, 5 Oct 2023 10:35:19 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on20612.outbound.protection.outlook.com [IPv6:2a01:111:f400:7d00::612])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B17624EAD;
+        Thu,  5 Oct 2023 04:38:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ANFpj4IULXdF8ImYyo9w7NI5ys0aC9w9O8uKbGpV8qt1ZzEG41OKjYpPxKQuVO3a/uDy1DBciO507fKJn/Bj3gR6TPIVqGFpNzB/NjMeZ6reGGJLIlRAkmQcwsRcz3fh8EVYHXOqoPIeQgramDE8SFf2ndS1HPDA/qAqElEONXa8I3N/1YPL0xf+py/EN5atbFCc8IMf2sgvNU7+12WbUirB5s9KRwvcnnuAlNVW4HozyOQlAfqDSBxGgc3GYYiFY1osRSHrl9i5AgAogadCu1vMj82DbC7GDvwQkRn2MD6hglnVT+e4onPIiEqzAP+aMGXe5+tLxHvXwJ6+PEorTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2om6Pqhpb5FBuR6EnrS8XYy7+AeZI92VMlG5M2Ul03E=;
+ b=JKP/MxjDNuvGyWTvj8dCkIsUXok3buCMyEKKo37VCepzYeH1CqlSbZzi8N+07bNIUed3hfCq0h/EbeQ36JrcS+TH1OVPDKE2juxrwhno497kqiB8feiMCszVANjqWh1GCDPuvfBwm/mtDf47sFMXc4UBZb3IAC1ZwpOC6FnVboGM5ccqxnhVzTPWo7qGQavagqPSwMdlaZy9zpsM83wvVx69xKkHj/xUZOVn3TgmKa6PVBGircw1V0CNJq7O9B3BXeXZT7sb+Lfz+ELKOO0O2gx4gxkmJQkn2ERkBTm4Y6EGBjVEQ27f3H6wOpP8HxcY/h/qLlLEwf6M5a4nJk62mQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2om6Pqhpb5FBuR6EnrS8XYy7+AeZI92VMlG5M2Ul03E=;
+ b=xMo2oH45Uh99y9fKt6lReezE+dgqWAOZqFwJupDXMogfOPcxkEy+kXbOdsL2m7/3cfVQeEQk0WinPAofgDT6aq4YSaSfmVsITQr1sX8yMn4ZibihLin6x7ySWH2mlE7bgR/EcaKVhPe4y0GmAOekvicCz0F1Su+706kfUad2kNyViA4w38JqZv6TvDR/YY5Fu1HxdPd26YzLvtw2OFK4qrH6S6aCRXhnPPqI8FiIpu+yrCBFUMBhntATAJly5wMBXRXDcNhEH35ahWW6lcRhPKUS7cY6QLBPeLZ7FyKD9sN/wQvWOoMY/aWV7sQ1A9Qf89KPRvemDTXIj+aYpvdLug==
+Received: from DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:395::21)
+ by PAWPR10MB6878.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:33b::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.29; Thu, 5 Oct
+ 2023 11:38:27 +0000
+Received: from DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::4880:f83a:7de4:ac92]) by DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::4880:f83a:7de4:ac92%5]) with mapi id 15.20.6838.028; Thu, 5 Oct 2023
+ 11:38:27 +0000
+From:   "Starke, Daniel" <daniel.starke@siemens.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lee Jones <lee@kernel.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Fedor Pchelkin <pchelkin@ispras.ru>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com" 
+        <syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com>
+Subject: RE: [PATCH 1/1] tty: n_gsm: Avoid sleeping during .write() whilst
+ atomic
+Thread-Topic: [PATCH 1/1] tty: n_gsm: Avoid sleeping during .write() whilst
+ atomic
+Thread-Index: AQHZ9hsms1Jp2Ee+x0K6pi4iDpsHIrA4XssAgADExJCAAeHBWoAADgKAgAABXnA=
+Date:   Thu, 5 Oct 2023 11:38:27 +0000
+Message-ID: <DB9PR10MB5881E8D3903C19EBAD9AF895E0CAA@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+References: <2023100320-immorally-outboard-573a@gregkh>
+ <DB9PR10MB588170E923A6ED8B3D6D9613E0CBA@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+ <2023100421-negotiate-stammer-1b35@gregkh> <20231004085720.GA9374@google.com>
+ <2023100448-cotton-safehouse-aca2@gregkh> <20231004125704.GA83257@google.com>
+ <2023100435-xerox-idiocy-5cf0@gregkh> <20231005090311.GD83257@google.com>
+ <2023100528-directory-arrogant-2ca9@gregkh>
+ <20231005104311.GG83257@google.com>
+ <2023100512-charger-cherisher-9a3d@gregkh>
+In-Reply-To: <2023100512-charger-cherisher-9a3d@gregkh>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ActionId=cd53cfc0-f0ab-48f7-8496-12dc0a54646c;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ContentBits=0;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Enabled=true;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Method=Standard;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Name=restricted;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SetDate=2023-10-05T11:34:24Z;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SiteId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DB9PR10MB5881:EE_|PAWPR10MB6878:EE_
+x-ms-office365-filtering-correlation-id: 30fcbdb8-a1ff-497a-9fc5-08dbc5979736
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: X4PEnTY4b7B9qXi3WUc5KfluhourXXFwSogzzIX/ffuDVr/xrJmpDFNvM0kDt4xMeCw+VA7+PvtYRMCemrGaRVetRB/RHcpxFn9qePnkdNIRkOujKwVihZtkBM2AYg5F4maynTc9+Lz1sHYnRsqsRV4SFMwJo1GVtqzjCoSuaKqwa6s05ud5T9+GMKrfW0J3KUtzVmjZteRUJvP3FA4VKwGaKpcgc3Fdf/6HzR81/1SkuXlgLwsU0Q/MUN3dA1PGd/jYu4VF29VlHGkwmhPLSAfb9bI4lcfiBeBLLkHpAD/DV+T0qiQ1Du2q3qN1ID6fMPYmjpbFiH/RX4ahiagXgbfBB3uEuX0/9BAnaAB8slUaWB6+SAjzVXCxIFumzET7aNNkkLarA2WiBsniguwPqqerwvG2LmOJYLWuaWYHhuJKpN+r6I81oS57OQqUhtnp2j3NxBaE4d26Z6RiTCfvhqMV1RshGRcb/GfxxcLzvXiw+kcmZwMJTYQmekgXJoyLXWYvj1Nnl+5IEUQwXgCzum75xMvNe6nfpqnV+xqo36kijIyrSI1juH6cdp1IHb6B570NXsWEAUylL3r9W5pYfLo93xaVEgduLnhc/WAxu+Ea14ZmxLIe4sYMEYIlYPm5h7qhq0/r/IL1kOutwqa6cA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(346002)(136003)(366004)(396003)(376002)(230922051799003)(1800799009)(451199024)(186009)(64100799003)(66946007)(2906002)(76116006)(8676002)(5660300002)(66446008)(316002)(8936002)(54906003)(64756008)(4326008)(66556008)(4744005)(110136005)(52536014)(66476007)(41300700001)(478600001)(9686003)(6506007)(7696005)(71200400001)(38100700002)(55016003)(26005)(122000001)(38070700005)(82960400001)(33656002)(86362001)(142923001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?+JWk2GTVirY6U7vnpVmW9/LjRNGNcWuaKyw0WZlqyju4hi6Dt19RNG5tb83X?=
+ =?us-ascii?Q?Rx9b/Sb5l48B/b9pvJKXHMix+p4rgQbFWBmUoryldMa+J9fB6/+lUBeOjndy?=
+ =?us-ascii?Q?M3J9ghwnwbilfHfPIvSknrNPflYum6luQ8r15JvMsrKMKOHgAffWHDStQz35?=
+ =?us-ascii?Q?SjbBOay8rvuPoOYaqLO1iohB8BnYeJ5WDd9DwUiItIXifoku5tzucxrN6Mru?=
+ =?us-ascii?Q?cbndn/JAPNO1d4vxYjjM7UUibLLNAwbx46Dtviek0lotbflvNP/sMnJcvGoJ?=
+ =?us-ascii?Q?StFxDxV3/2DWJwoTQyGViN+U2rUr86r2Z3Nan0Q123OWoLpk5EHTKu233eeX?=
+ =?us-ascii?Q?wHs0ZYgAwhoDAC6UAlZKQahIomoAdbQPHy5BrMAOqwys/EDRugoegOf96jfW?=
+ =?us-ascii?Q?EKP/Os7MEw4oG/Ar0ygUBqjziinyB+C2/ZVcZ96kSpt4oQivU3lmXxPeWQSW?=
+ =?us-ascii?Q?eRS8mXXZ+7HIHIvDhTb0yBvQLML+nLDWM0/qy5yd7jsEOg/w85W6qf8cX9Y8?=
+ =?us-ascii?Q?u2q3ji+Kfwa5Y4XlDOfyxSOEw1SMzNhKRgVXsxClPMR0PeM9frYouM4v9OzI?=
+ =?us-ascii?Q?r1TvF/RQllzIYuKMlXVbApG7wwE1uF8nhV0LpnAmrwibhUhk6kHXs+o6UwIH?=
+ =?us-ascii?Q?ss698kOo1fdUehOzmG8VxraGkqzBjUCeHXZT6LBX2s2/Hm4iVTfxAIawPW3R?=
+ =?us-ascii?Q?wIZ20cBwvmxvMsNimng3cHz5z7qz83yR5twqMR9hPV5e5Dv9JrRLEAaFkWUo?=
+ =?us-ascii?Q?JaHni/c7OfczsZLF1bUMm1YhcPzpjdU9eLPGReiF+XgGQZH5DTR0sJ+hukwJ?=
+ =?us-ascii?Q?K8/41x4ZmVOaE1bHAyoN03HkwHAxvLrbM+o9cREIqKk10WrCZSzjcvbVPK1F?=
+ =?us-ascii?Q?OCg3WRg6xqVk6YGya4SQliiCXXAjmPNHaIKoXH/2ooXJP/t3eJE93aNjskrZ?=
+ =?us-ascii?Q?S1uTQnmrJlwuKxNMB7q5lfNknkDgeNWigSriMIDY6qlStXSShnZmrL5pD8Du?=
+ =?us-ascii?Q?dMxHbq7VIDxUKPwG4mjojiZaprYtdBnwu13RnwwSyLhgRYjm91BC204qMw7f?=
+ =?us-ascii?Q?7HT9hFpNA6C742dgO2qU9cY4TXAnT4HfOZobZZBEVDRRUqR/9FplWGtRqPml?=
+ =?us-ascii?Q?9Lwzdt+SYzFcx7f/Xued/6+0KFf0bynJJIUZNPrnsrRuqcxi//e/9UOMl6ce?=
+ =?us-ascii?Q?G3QjKIfIiuS1POSfICYxuqi3SDHqQk3kaxMdgYtfcyZM6xjTiK0zy34G5DwS?=
+ =?us-ascii?Q?UC77WCFT6fzK9D9mXftb/dxSYFE1alro6CSPYEJEY6KuZlWS3kKesy4iX/lO?=
+ =?us-ascii?Q?dCGq2E2F8PacceuF8bMqtx8wlbLK303pBMcne9CnkdBO97JVmVvEXFexkbkd?=
+ =?us-ascii?Q?zLnWK8qxiaiuVVIsIT2MLIPMv9etQTkOnK+bRC0AcClJzHLW7PqHenbdcks/?=
+ =?us-ascii?Q?3HVMfkHj/Fv9ZhwOlF/5dbvkd6CZ6yNFc1HoXwEEIiqhKwGZPCYKtFEHkHMQ?=
+ =?us-ascii?Q?aibZmG9ClnGePYe8CZn3hfCyL1fB+J3BOo2nxoIq4AGJlDbRPvLip4oGOBhs?=
+ =?us-ascii?Q?sdP0a/nQ2aqhW8YYbgbssFehr10OLVSkytT3z2rY?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2023100508-prelaunch-marbled-3a93@gregkh>
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 30fcbdb8-a1ff-497a-9fc5-08dbc5979736
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Oct 2023 11:38:27.0670
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: HFwYFnmflurvsv08pga6+YdGv1uKJBSiqPBDmOWw4VRUsWhgLz+XCA6kftKP4n9eHVy2I2IxVnUB2bZW0U2EGwzjOkgttPIIZgdXPp4Jk50=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR10MB6878
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 05 Oct 2023, Greg KH wrote:
+> > Would something like this tick that box?
+> >=20
+> > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c index=20
+> > 1f3aba607cd51..5c1d2fcd5d9e2 100644
+> > --- a/drivers/tty/n_gsm.c
+> > +++ b/drivers/tty/n_gsm.c
+> > @@ -3716,6 +3716,10 @@ static ssize_t gsmld_write(struct tty_struct *tt=
+y, struct file *file,
+> >         if (!gsm)
+> >                 return -ENODEV;
+> > =20
+> > +       /* The GSM line discipline does not support binding to console =
+*/
+> > +       if (strncmp(tty->name, "tty", 3))
+> > +               return -EINVAL;
+>=20
+> No, that's not going to work, some consoles do not start with "tty" :(
 
-> On Wed, Oct 04, 2023 at 10:36:09AM +0200, Florian Eckert wrote:
-> > 
-> > 
-> > > > I decided to move the variable definition with a separate commit
-> > > > to the top of the function, to make the build robot happy. After that
-> > > > I made my changes for v2 to the ledtrig-tty to add the feature.
-> > > > 
-> > > > > Ah, lkp, then also the Closes: line as it suggests.
-> > > > 
-> > > > Sorry I do not understand your statement
-> > > 
-> > > The link you pasted above states:
-> > > =======
-> > > If you fix the issue in a separate patch/commit (i.e. not just a new
-> > > version of
-> > > the same patch/commit), kindly add following tags
-> > > | Reported-by: kernel test robot <lkp@intel.com>
-> > > | Closes:
-> > > https://lore.kernel.org/oe-kbuild-all/202309270440.IJB24Xap-lkp@intel.com/
-> > > =======
-> > > 
-> > > So please follow that suggestion ;).
-> > 
-> > Ok, I understand, thanks will to this on a v3 patchset.
-> > I will now wait for the comments of my changes in ledtrig-tty from the led
-> > subsystem.
-> > And then I will send a new patch set with the requested changes.
-> > 
-> > Sorry for the silly question. But do I have to send this patch again for a
-> > v3?
-> > https://lore.kernel.org/linux-leds/f41dc1e1-6d34-48b2-97dd-ba67df6003c6@kernel.org/T/#u
-> > It was already marked by you with a `Reviewed-by:` from you?
+Also, I would recommend exiting as early as possible. E.g. in gsmld_open().
+And please retain support for real serial devices (e.g. ttyS, ttyUSB,
+ttyACM, ...).
 
-Yes please.  I will pick this up as a set once it's ready.
-
-> This series is long gone from my review queue, so a v3 will be needed at
-> the very least.
-
-Nothing for Greg to worry about here (unless you *want* to review).
-
--- 
-Lee Jones [李琼斯]
+Best regards,
+Daniel Starke
