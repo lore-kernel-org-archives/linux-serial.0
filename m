@@ -2,116 +2,102 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A8CFE9271C
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 16:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B79DBE75451
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 16:18:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240864AbjJEQRd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Oct 2023 12:17:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36020 "EHLO
+        id S242439AbjJEQR7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Oct 2023 12:17:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237601AbjJEQQA (ORCPT
+        with ESMTP id S240754AbjJEQQB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Oct 2023 12:16:00 -0400
+        Thu, 5 Oct 2023 12:16:01 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34251FEE0;
-        Thu,  5 Oct 2023 07:48:12 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0ED7C32796;
-        Thu,  5 Oct 2023 12:17:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1696508281;
-        bh=aotJxKAUr5fNyYcGF3ZP9uIlZ7mocu6gSY2nlgBj31E=;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE147101BE;
+        Thu,  5 Oct 2023 07:17:31 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0442CC3277E;
+        Thu,  5 Oct 2023 10:40:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1696502444;
+        bh=zG4Uy0wbVjgN17aTIqGgXL6FFxktGI57Cl5UBJTqWsk=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sJeXqnVUw1BmYx8upkqSRycudLWPKn1wQrNad8ETIduOkhWs8cB6z8l8OM2YONcWq
-         JLfH7bQ3zhGXFKeofSHLIvzYLLVYOeJzqPuYtcT4pZNGvXeO+ITk1/HtxptNWiMRPF
-         L96l6zKccQJX/nYmCknRh6rnoC00XtEjB4+enCDnb7aNbGHjq07j8lz+4rOJKpPDf2
-         Ol4v6eatnS6Y0aRNTHFemG6TL/N8NOZCf2g45G0lspraqtBgxVcOzLNIf0d5kgHIFg
-         r5JEPTYfI2QzVvLlRcT4mqiI0rJuCM+Txnb3EVOjXQSRIl08YlU/zt4ai427LtgaDc
-         CEYCF6UOai2wQ==
-Date:   Thu, 5 Oct 2023 13:17:56 +0100
-From:   Lee Jones <lee@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "Starke, Daniel" <daniel.starke@siemens.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Fedor Pchelkin <pchelkin@ispras.ru>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com" 
-        <syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com>
-Subject: Re: [PATCH 1/1] tty: n_gsm: Avoid sleeping during .write() whilst
- atomic
-Message-ID: <20231005121756.GB681678@google.com>
-References: <2023100448-cotton-safehouse-aca2@gregkh>
- <20231004125704.GA83257@google.com>
- <2023100435-xerox-idiocy-5cf0@gregkh>
- <20231005090311.GD83257@google.com>
- <2023100528-directory-arrogant-2ca9@gregkh>
- <20231005104311.GG83257@google.com>
- <2023100512-charger-cherisher-9a3d@gregkh>
- <DB9PR10MB5881E8D3903C19EBAD9AF895E0CAA@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
- <20231005114632.GA681678@google.com>
- <2023100507-worst-quarrel-2b97@gregkh>
+        b=cdyW1v9SF2VgC9a4TmbOmocRzolbrpxmNVkrE9kfIn+MQ5QJdbLKT21p1AnOscccW
+         Z9TDm3eRJfphN5+Ivz9zfR4cUetq8CHk/PfFUVEqD9rrzlBep1u/TkG5Oc/6YOg3Hx
+         qbGyY9/pl/m+BpEW6XreGIHUIo7gzyDWuPPMTsuE=
+Date:   Thu, 5 Oct 2023 12:40:41 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Lee Jones <lee@kernel.org>
+Cc:     Florian Eckert <fe@dev.tdt.de>, Jiri Slaby <jirislaby@kernel.org>,
+        Eckert.Florian@googlemail.com, pavel@ucw.cz, kabel@kernel.org,
+        u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-leds@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v2 3/4] trigger: ledtrig-tty: move variable definition to
+ the top
+Message-ID: <2023100524-liftoff-obnoxious-ec1e@gregkh>
+References: <20230928132632.200263-1-fe@dev.tdt.de>
+ <20230928132632.200263-4-fe@dev.tdt.de>
+ <20231002140559.GB8453@google.com>
+ <acda5dc4-e6d3-4870-929f-fb91636b5649@kernel.org>
+ <59cc4073a94edbdec5d77f8457ed4f73@dev.tdt.de>
+ <05b03f3e-5863-4d33-8c70-03be7d7e972f@kernel.org>
+ <d59855493baa936485a2b00aa29d0449@dev.tdt.de>
+ <2023100508-prelaunch-marbled-3a93@gregkh>
+ <20231005101307.GE83257@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2023100507-worst-quarrel-2b97@gregkh>
+In-Reply-To: <20231005101307.GE83257@google.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 05 Oct 2023, Greg Kroah-Hartman wrote:
-
-> On Thu, Oct 05, 2023 at 12:46:32PM +0100, Lee Jones wrote:
-> > On Thu, 05 Oct 2023, Starke, Daniel wrote:
-> > 
-> > > > > Would something like this tick that box?
-> > > > > 
-> > > > > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c index 
-> > > > > 1f3aba607cd51..5c1d2fcd5d9e2 100644
-> > > > > --- a/drivers/tty/n_gsm.c
-> > > > > +++ b/drivers/tty/n_gsm.c
-> > > > > @@ -3716,6 +3716,10 @@ static ssize_t gsmld_write(struct tty_struct *tty, struct file *file,
-> > > > >         if (!gsm)
-> > > > >                 return -ENODEV;
-> > > > >  
-> > > > > +       /* The GSM line discipline does not support binding to console */
-> > > > > +       if (strncmp(tty->name, "tty", 3))
-> > > > > +               return -EINVAL;
-> > > > 
-> > > > No, that's not going to work, some consoles do not start with "tty" :(
-> > 
-> > Ah, you mean there are others that we need to consider?
-> > 
-> > I was just covering off con_write() from drivers/tty/vt/vt.c.
-> > 
-> > Does anyone have a counter proposal?
+On Thu, Oct 05, 2023 at 11:13:07AM +0100, Lee Jones wrote:
+> On Thu, 05 Oct 2023, Greg KH wrote:
 > 
-> consoles are dynamically assigned, the device knows if it is a console
-> or not, so there is a way to determine this at runtime.  It's not a
-> device naming thing at all.
+> > On Wed, Oct 04, 2023 at 10:36:09AM +0200, Florian Eckert wrote:
+> > > 
+> > > 
+> > > > > I decided to move the variable definition with a separate commit
+> > > > > to the top of the function, to make the build robot happy. After that
+> > > > > I made my changes for v2 to the ledtrig-tty to add the feature.
+> > > > > 
+> > > > > > Ah, lkp, then also the Closes: line as it suggests.
+> > > > > 
+> > > > > Sorry I do not understand your statement
+> > > > 
+> > > > The link you pasted above states:
+> > > > =======
+> > > > If you fix the issue in a separate patch/commit (i.e. not just a new
+> > > > version of
+> > > > the same patch/commit), kindly add following tags
+> > > > | Reported-by: kernel test robot <lkp@intel.com>
+> > > > | Closes:
+> > > > https://lore.kernel.org/oe-kbuild-all/202309270440.IJB24Xap-lkp@intel.com/
+> > > > =======
+> > > > 
+> > > > So please follow that suggestion ;).
+> > > 
+> > > Ok, I understand, thanks will to this on a v3 patchset.
+> > > I will now wait for the comments of my changes in ledtrig-tty from the led
+> > > subsystem.
+> > > And then I will send a new patch set with the requested changes.
+> > > 
+> > > Sorry for the silly question. But do I have to send this patch again for a
+> > > v3?
+> > > https://lore.kernel.org/linux-leds/f41dc1e1-6d34-48b2-97dd-ba67df6003c6@kernel.org/T/#u
+> > > It was already marked by you with a `Reviewed-by:` from you?
+> 
+> Yes please.  I will pick this up as a set once it's ready.
+> 
+> > This series is long gone from my review queue, so a v3 will be needed at
+> > the very least.
+> 
+> Nothing for Greg to worry about here (unless you *want* to review).
 
-It's not a device naming thing, but it is a ... :)
+Yes, I want to ensure that the tty change is correct, last round I
+didn't think it was...
 
-Okay, here's another uninformed stab in the dark:
+thanks,
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 1f3aba607cd51..ddf00f6a4141d 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -3629,6 +3629,10 @@ static int gsmld_open(struct tty_struct *tty)
-        if (tty->ops->write == NULL)
-                return -EINVAL;
-
-+       /* The GSM line discipline does not support binding to console */
-+       if (tty->driver->type == TTY_DRIVER_TYPE_CONSOLE)
-+               return -EINVAL;
-+
-        /* Attach our ldisc data */
-        gsm = gsm_alloc_mux();
-        if (gsm == NULL)
-
-This seems to allow for the real serial devices (TTY_DRIVER_TYPE_SERIAL)
-suggested by Daniel.
-
--- 
-Lee Jones [李琼斯]
+greg k-h
