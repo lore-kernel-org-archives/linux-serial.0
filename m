@@ -2,99 +2,97 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03381E92704
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 14:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B24DCE92707
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 14:25:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233160AbjJEOQv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Oct 2023 10:16:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43604 "EHLO
+        id S231784AbjJEOYx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Oct 2023 10:24:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233820AbjJEOPD (ORCPT
+        with ESMTP id S233876AbjJEOWv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Oct 2023 10:15:03 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87A7A5E9
-        for <linux-serial@vger.kernel.org>; Thu,  5 Oct 2023 02:32:51 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-53406799540so1267898a12.1
-        for <linux-serial@vger.kernel.org>; Thu, 05 Oct 2023 02:32:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1696498370; x=1697103170; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=qNwLLYEchjqrT8u4dds+22/hvzzwVkXCbPu7CyE+3Mk=;
-        b=V4REbNl/YAk00RXPG9rZxg5pwJCWIBFL6E5x0WAlIICbPHdhHu2STeD/ZWKy739zw0
-         vkfNqbtr7nun1bxGzAJMLOzce40sjFpy3nJoo+lkuG7rAKzsVGkVPMpG9TpBE8/7f9+F
-         K73Dq2cz4suXtGGUuAJWN5jpwJDATKp3RJU3GdLFSYdK4WK6G/+4Bx7Z1N6dgi8nkxdL
-         kkDfq8pWYK8KkIQ3X4j6fNKKFrp3pN09WSkbjd0ci+2H/7sA/EY16yplSwsIC4lUVSQZ
-         m1LBONZfdebCqNX1+FKtzMmqkvaXg+jjzBmuh5hx0N/XYvuiqNG/9dc8calhLVhl3WM7
-         ORxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696498370; x=1697103170;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=qNwLLYEchjqrT8u4dds+22/hvzzwVkXCbPu7CyE+3Mk=;
-        b=HBeXww3FtYRaT7mf3dt5TtAVtM72zqM91+TBAkW4BmtdMDy2+GLmEwJxBJ43rXJeOf
-         CL+grkYHiNdrrvenHgq5eAgYKQUBWVWww5iakr7w3BauuMqtZ0hoOhLn1PlPciVfKklo
-         OPpzGcIHvg2eUgkKGvMnnrxCTK2xnoukmGeGtwIZa3HIhWxVmAWGa5Acw6pAhLOLQltn
-         Is3B/NkTd0HBx/I0fAQw3fVYawzFYJZJfnMrXH6iFG8rZGkiIMagv7Q12OButfgQQxS9
-         EVxdGT+EW3dR9AI6mvVg/Y17TZp7BFtGOl11V4VJAOtjTfkW6T07r6gH7rMthoJqdDQ3
-         LL8A==
-X-Gm-Message-State: AOJu0Yyl6ZUEvksDOTWXKIMvMfB3YQTnYKpWu0RHMdbA5RfdLnHVig1x
-        Ngz/Y0jvufS7LtAd8GyDKpzJMw==
-X-Google-Smtp-Source: AGHT+IGGASEELZoOzZ6BfyTzvlBZV9PBihNgej7jZay1gXGRYHNhNO+WGFiREWZMmxKPAgpv4B/eZA==
-X-Received: by 2002:a17:906:310b:b0:9ae:5765:c134 with SMTP id 11-20020a170906310b00b009ae5765c134mr4869914ejx.15.1696498370178;
-        Thu, 05 Oct 2023 02:32:50 -0700 (PDT)
-Received: from krzk-bin.. (5-157-101-10.dyn.eolo.it. [5.157.101.10])
-        by smtp.gmail.com with ESMTPSA id rn4-20020a170906d92400b0099bc038eb2bsm863893ejb.58.2023.10.05.02.32.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Oct 2023 02:32:49 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andreas Kemnade <andreas@kemnade.info>
-Subject: [PATCH 1/2] dt-bindings: serial: fix regex pattern for matching serial node children
-Date:   Thu,  5 Oct 2023 11:32:46 +0200
-Message-Id: <20231005093247.128166-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Thu, 5 Oct 2023 10:22:51 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFD927B3F;
+        Thu,  5 Oct 2023 06:44:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1696513470; x=1728049470;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FKCtbN7+J1DFK4Wis91OM2jfqlmQHuZrK9CqwaCbtBg=;
+  b=K4RNaZ1Fl3Yxi4bjM6GMuqaoaNJMQGhR0h0ruSSuib0ySaKpUTArK/PE
+   wZCLu/bKPAuplja7F5qDgvuoGG1v2rd0YKNGHC57MUSsDZA+gjt0CKcrl
+   18zdhbcMO6sh2o17QT/99EKnTY7Q4ZblWYzMvL1LDjLJdkkZQDMyjAJyV
+   6e8ZOmE2PBIotJiXB28O0fd6kOPskPVsNn+UTvWtlcR1fevHWsN7aovHe
+   tfVaDZDswNqk2IMIa4yOtYqG85BAXI+ecNXq7A5e5xZjymIXFzet59e6E
+   Ig/xW2/ZliIvjjqgjFTgbQQUNzaTN7pvc4CXuzoJIhGAZTAKh0fOjB324
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10853"; a="387321291"
+X-IronPort-AV: E=Sophos;i="6.03,202,1694761200"; 
+   d="scan'208";a="387321291"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2023 02:03:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10853"; a="701591191"
+X-IronPort-AV: E=Sophos;i="6.03,202,1694761200"; 
+   d="scan'208";a="701591191"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2023 02:03:33 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97-RC1)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qoKGY-00000002yxu-1DYA;
+        Thu, 05 Oct 2023 12:03:30 +0300
+Date:   Thu, 5 Oct 2023 12:03:30 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] serial: 8250_omap: Drop pm_runtime_irq_safe()
+Message-ID: <ZR574o7etTozvhzt@smile.fi.intel.com>
+References: <20231004062650.64487-1-tony@atomide.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231004062650.64487-1-tony@atomide.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The regular expression pattern for matching serial node children should
-accept only nodes starting and ending with the set of words: bluetooth,
-gnss, gps or mcu.  Add missing brackets to enforce such matching.
+On Wed, Oct 04, 2023 at 09:26:48AM +0300, Tony Lindgren wrote:
+> Let's drop the use of pm_runtime_irq_safe() for 8250_omap. The use of
+> pm_runtime_irq_safe() is not nice as it takes a permanent usage count on
+> the parent device.
+> 
+> We can finally drop pm_runtime_irq_safe() safely as the kernel now knows
+> when the uart port tx is active. This changed with commit 84a9582fd203
+> ("serial: core: Start managing serial controllers to enable runtime PM").
+> 
+> For serial port rx, we already use Linux generic wakeirqs for 8250_omap.
+> 
+> To drop pm_runtime_irq_safe(), we need to add handling for shallow idle
+> state where the port hardware may already be awake and an IO interrupt
+> happens. We also need to replace the serial8250_rpm sync calls in the
+> interrupt handlers with async runtime PM calls.
+> 
+> Note that omap8250_irq() calls omap_8250_dma_handle_irq(), so we don't
+> need separate runtime PM calls in omap_8250_dma_handle_irq().
+> 
+> While at it, let's also add the missing line break to the end of
+> omap8250_runtime_resume() to group the calls.
 
-Fixes: 0c559bc8abfb ("dt-bindings: serial: restrict possible child node names")
-Reported-by: Andreas Kemnade <andreas@kemnade.info>
-Closes: https://lore.kernel.org/all/20231004170021.36b32465@aktux/
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/serial/serial.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Yoo-hoo! A few years only to get to the point :-)
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-diff --git a/Documentation/devicetree/bindings/serial/serial.yaml b/Documentation/devicetree/bindings/serial/serial.yaml
-index ea277560a596..5727bd549dec 100644
---- a/Documentation/devicetree/bindings/serial/serial.yaml
-+++ b/Documentation/devicetree/bindings/serial/serial.yaml
-@@ -96,7 +96,7 @@ then:
-     rts-gpios: false
- 
- patternProperties:
--  "^bluetooth|gnss|gps|mcu$":
-+  "^(bluetooth|gnss|gps|mcu)$":
-     if:
-       type: object
-     then:
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
