@@ -2,110 +2,128 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F6FDE9270D
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 15:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E4C7E9270D
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 15:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233690AbjJEPtG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Oct 2023 11:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42784 "EHLO
+        id S236057AbjJEPwb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Oct 2023 11:52:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233288AbjJEPsL (ORCPT
+        with ESMTP id S235410AbjJEPvI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Oct 2023 11:48:11 -0400
+        Thu, 5 Oct 2023 11:51:08 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD866836D7;
-        Thu,  5 Oct 2023 07:17:31 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 572B2C32781;
-        Thu,  5 Oct 2023 10:41:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1696502510;
-        bh=+UWawGPzDK4CYmUN8+VsVxuwKPoTNCTpbmBUGcqqN1s=;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B716079E;
+        Thu,  5 Oct 2023 07:07:44 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CA90C116B8;
+        Thu,  5 Oct 2023 09:18:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1696497497;
+        bh=er2gV/B0WGFGwTMx3YbhEbm41Uarn24n6lRwoScj7y4=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sbq0og2c4+AXbPKf/Qr2aab52CTfDKFtWtvpgX2NqjOHZe2urj4CyQfu+bMlS6jX5
-         EnQUS9mgCqTuKvmq3fyQc7wbKE3YY2YOHMQLB8uz/3lXJSgWFcoKrbpRHXh3ldh6bK
-         IVrUN6JvN5WDGASVF2SsZVZdJwDfQDIvKjK0iQOcza8TAPjNXBFXZGs47JlTx3y5tm
-         uHvOHmFaN7tUx8geiHPXG78YJcrDei+znjn/f3QSsTTVgpVtVt8QGDmIZm2UqPcYKV
-         2U0fixKMgOcLLnXYo+nS2+6qq8nvuW9I6yeRjkqG8M8E/0Go7PskZ6MMGFP0+kBQN/
-         8yKp3VGCKfs1g==
-Date:   Thu, 5 Oct 2023 11:41:45 +0100
-From:   Lee Jones <lee@kernel.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Florian Eckert <fe@dev.tdt.de>, Jiri Slaby <jirislaby@kernel.org>,
-        Eckert.Florian@googlemail.com, pavel@ucw.cz, kabel@kernel.org,
-        u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-leds@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v2 3/4] trigger: ledtrig-tty: move variable definition to
- the top
-Message-ID: <20231005104145.GF83257@google.com>
-References: <20230928132632.200263-1-fe@dev.tdt.de>
- <20230928132632.200263-4-fe@dev.tdt.de>
- <20231002140559.GB8453@google.com>
- <acda5dc4-e6d3-4870-929f-fb91636b5649@kernel.org>
- <59cc4073a94edbdec5d77f8457ed4f73@dev.tdt.de>
- <05b03f3e-5863-4d33-8c70-03be7d7e972f@kernel.org>
- <d59855493baa936485a2b00aa29d0449@dev.tdt.de>
- <2023100508-prelaunch-marbled-3a93@gregkh>
- <20231005101307.GE83257@google.com>
- <2023100524-liftoff-obnoxious-ec1e@gregkh>
+        b=0V/zks3qAJ5nzMioieCIDud+bGbfkFe+9f0mnDo772FRR8YsbFjMw0sctDIrO3PFZ
+         nZV0Gm93NEvl6n/mwYKwei2JXj330Jd4CZOYF9zaTScF7OBP5YMYV5ou3bTpQwWS3Z
+         Q355DK9M+2o0elgzOH08Weh4qq4s6NbYIdTGqF5s=
+Date:   Thu, 5 Oct 2023 11:18:14 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Lee Jones <lee@kernel.org>
+Cc:     "Starke, Daniel" <daniel.starke@siemens.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Fedor Pchelkin <pchelkin@ispras.ru>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com" 
+        <syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com>
+Subject: Re: [PATCH 1/1] tty: n_gsm: Avoid sleeping during .write() whilst
+ atomic
+Message-ID: <2023100528-directory-arrogant-2ca9@gregkh>
+References: <20231003170020.830242-1-lee@kernel.org>
+ <2023100320-immorally-outboard-573a@gregkh>
+ <DB9PR10MB588170E923A6ED8B3D6D9613E0CBA@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+ <2023100421-negotiate-stammer-1b35@gregkh>
+ <20231004085720.GA9374@google.com>
+ <2023100448-cotton-safehouse-aca2@gregkh>
+ <20231004125704.GA83257@google.com>
+ <2023100435-xerox-idiocy-5cf0@gregkh>
+ <20231005090311.GD83257@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2023100524-liftoff-obnoxious-ec1e@gregkh>
+In-Reply-To: <20231005090311.GD83257@google.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 05 Oct 2023, Greg KH wrote:
-
-> On Thu, Oct 05, 2023 at 11:13:07AM +0100, Lee Jones wrote:
-> > On Thu, 05 Oct 2023, Greg KH wrote:
-> > 
-> > > On Wed, Oct 04, 2023 at 10:36:09AM +0200, Florian Eckert wrote:
-> > > > 
-> > > > 
-> > > > > > I decided to move the variable definition with a separate commit
-> > > > > > to the top of the function, to make the build robot happy. After that
-> > > > > > I made my changes for v2 to the ledtrig-tty to add the feature.
-> > > > > > 
-> > > > > > > Ah, lkp, then also the Closes: line as it suggests.
-> > > > > > 
-> > > > > > Sorry I do not understand your statement
-> > > > > 
-> > > > > The link you pasted above states:
-> > > > > =======
-> > > > > If you fix the issue in a separate patch/commit (i.e. not just a new
-> > > > > version of
-> > > > > the same patch/commit), kindly add following tags
-> > > > > | Reported-by: kernel test robot <lkp@intel.com>
-> > > > > | Closes:
-> > > > > https://lore.kernel.org/oe-kbuild-all/202309270440.IJB24Xap-lkp@intel.com/
-> > > > > =======
-> > > > > 
-> > > > > So please follow that suggestion ;).
-> > > > 
-> > > > Ok, I understand, thanks will to this on a v3 patchset.
-> > > > I will now wait for the comments of my changes in ledtrig-tty from the led
-> > > > subsystem.
-> > > > And then I will send a new patch set with the requested changes.
-> > > > 
-> > > > Sorry for the silly question. But do I have to send this patch again for a
-> > > > v3?
-> > > > https://lore.kernel.org/linux-leds/f41dc1e1-6d34-48b2-97dd-ba67df6003c6@kernel.org/T/#u
-> > > > It was already marked by you with a `Reviewed-by:` from you?
-> > 
-> > Yes please.  I will pick this up as a set once it's ready.
-> > 
-> > > This series is long gone from my review queue, so a v3 will be needed at
-> > > the very least.
-> > 
-> > Nothing for Greg to worry about here (unless you *want* to review).
+On Thu, Oct 05, 2023 at 10:03:11AM +0100, Lee Jones wrote:
+> On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
 > 
-> Yes, I want to ensure that the tty change is correct, last round I
-> didn't think it was...
+> > On Wed, Oct 04, 2023 at 01:57:04PM +0100, Lee Jones wrote:
+> > > On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
+> > > 
+> > > > On Wed, Oct 04, 2023 at 09:57:20AM +0100, Lee Jones wrote:
+> > > > > On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
+> > > > > 
+> > > > > > On Wed, Oct 04, 2023 at 05:59:09AM +0000, Starke, Daniel wrote:
+> > > > > > > > Daniel, any thoughts?
+> > > > > > > 
+> > > > > > > Our application of this protocol is only with specific modems to enable
+> > > > > > > circuit switched operation (handling calls, selecting/querying networks,
+> > > > > > > etc.) while doing packet switched communication (i.e. IP traffic over PPP).
+> > > > > > > The protocol was developed for such use cases.
+> > > > > > > 
+> > > > > > > Regarding the issue itself:
+> > > > > > > There was already an attempt to fix all this by switching from spinlocks to
+> > > > > > > mutexes resulting in ~20% performance loss. However, the patch was reverted
+> > > > > > > as it did not handle the T1 timer leading into sleep during atomic within
+> > > > > > > gsm_dlci_t1() on every mutex lock there.
+> > > > > 
+> > > > > That's correct.  When I initially saw this report, my initial thought
+> > > > > was to replace the spinlocks with mutexts, but having read the previous
+> > > > > accepted attempt and it's subsequent reversion I started to think of
+> > > > > other ways to solve this issue.  This solution, unlike the last, does
+> > > > > not involve adding sleep inducing locks into atomic contexts, nor
+> > > > > should it negatively affect performance.
+> > > > > 
+> > > > > > > There was also a suggestion to fix this in do_con_write() as
+> > > > > > > tty_operations::write() appears to be documented as "not allowed to sleep".
+> > > > > > > The patch for this was rejected. It did not fix the issue within n_gsm.
+> > > > > > > 
+> > > > > > > Link: https://lore.kernel.org/all/20221203215518.8150-1-pchelkin@ispras.ru/
+> > > > > > > Link: https://lore.kernel.org/all/20221212023530.2498025-1-zengheng4@huawei.com/
+> > > > > > > Link: https://lore.kernel.org/all/5a994a13-d1f2-87a8-09e4-a877e65ed166@kernel.org/
+> > > > > > 
+> > > > > > Ok, I thought I remembered this, I'll just drop this patch from my
+> > > > > > review queue and wait for a better solution if it ever comes up as this
+> > > > > > isn't a real issue that people are seeing on actual systems, but just a
+> > > > > > syzbot report.
+> > > > > 
+> > > > > What does the "better solution" look like?
+> > > > 
+> > > > One that actually fixes the root problem here (i.e. does not break the
+> > > > recursion loop, or cause a performance decrease for normal users, or
+> > > > prevent this from being bound to the console).
+> > > 
+> > > Does this solution break the recursion loop or affect performance?
+> > 
+> > This solution broke the recursion by returning an error, right?
+> 
+> This is the part I was least sure about.
+> 
+> If this was considered valid and we were to go forward with a solution
+> like this, what would a quality improvement look like?  Should we have
+> stayed in this function and waited for the previous occupant to leave
+> before continuing through ->write()?
 
-Sounds good, thanks.
+This isn't valid, as it obviously never shows up in real use.
 
--- 
-Lee Jones [李琼斯]
+The real solution should be to prevent binding a console to this line
+discipline as it can not handle the recursion that consoles require for
+the write path.
+
+Then, if consoles are really needed, the code can be fixed up to handle
+such recursion.  That's not a trivial thing to do, as can be seen by the
+crazy gyrations that the n_tty line discipline does in its write path...
+
+thanks,
+
+greg k-h
