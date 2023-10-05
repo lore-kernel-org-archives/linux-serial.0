@@ -2,123 +2,112 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B3D4E9271E
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 15:57:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 304D9E92718
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 15:58:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237852AbjJEP55 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Oct 2023 11:57:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48856 "EHLO
+        id S237884AbjJEP56 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Oct 2023 11:57:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233815AbjJEP4n (ORCPT
+        with ESMTP id S232660AbjJEP4o (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Oct 2023 11:56:43 -0400
+        Thu, 5 Oct 2023 11:56:44 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 467335253;
-        Thu,  5 Oct 2023 06:52:33 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E89CDC116B6;
-        Thu,  5 Oct 2023 09:03:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1696496596;
-        bh=Oh6z41EHlAHzegiycj3Z6oYPy1RmyXl7393yq+axU3s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UR6p4R+erialbPxyVBaJL+VX62WIR8Bz2v9JB71U/XVJSIIQNHrns0+nTXBeM8g/T
-         OGobN5quUApdhCidM5WG1cGtuaVNuyZm1hgS0ooqQeBuMocA3OIyhrif+bhiZA9VK4
-         UzRz3RrM8dyxiqc0zwCiXekiZ/6GkQB4rV7UykluYzCVh2JpW9/WzkI7qyRrKhNPqa
-         rewZKIro45kQa8b7gAmzOPI55uN/c6gMX7gj3QZw5XjQaUW9nz1seXnl36NdPyU6xB
-         a+SY1heOfrZEAtGvJ8GDdhUZqaBYEe/G6YOizxJSyvh5idHP3xKofDFx4KlCcvm5DJ
-         xvmaIT3sCP3Og==
-Date:   Thu, 5 Oct 2023 10:03:11 +0100
-From:   Lee Jones <lee@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "Starke, Daniel" <daniel.starke@siemens.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Fedor Pchelkin <pchelkin@ispras.ru>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com" 
-        <syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com>
-Subject: Re: [PATCH 1/1] tty: n_gsm: Avoid sleeping during .write() whilst
- atomic
-Message-ID: <20231005090311.GD83257@google.com>
-References: <20231003170020.830242-1-lee@kernel.org>
- <2023100320-immorally-outboard-573a@gregkh>
- <DB9PR10MB588170E923A6ED8B3D6D9613E0CBA@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
- <2023100421-negotiate-stammer-1b35@gregkh>
- <20231004085720.GA9374@google.com>
- <2023100448-cotton-safehouse-aca2@gregkh>
- <20231004125704.GA83257@google.com>
- <2023100435-xerox-idiocy-5cf0@gregkh>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C8984ED4;
+        Thu,  5 Oct 2023 06:52:31 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D177DC4AF6E;
+        Thu,  5 Oct 2023 13:33:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1696512835;
+        bh=Ajq8gV1LGJFvnPZhXDFFK3hzihK5NkBL+73XF7NmfLI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gnPv76MvuwiBgqT0NgoekRfweaFvnh+3jHOlQlW7mrJYPUb4SPLy3W1JV1ZEtZpnU
+         SHKV1Kbs5ahtwZ31CnUJMi4jhkyP2Gaw13sJniLcx/imC72HsarqQ3+MV1L97SZcrm
+         ZLRVgnOb3HNVtxsqIjyQVKlBIL1Xa4Zj8QOR+QSg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-serial@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH 2/2] tty: vc_screen: make vc_class constant
+Date:   Thu,  5 Oct 2023 15:33:48 +0200
+Message-ID: <2023100549-sixth-anger-ac34@gregkh>
+X-Mailer: git-send-email 2.42.0
+In-Reply-To: <2023100546-humbly-prologue-e58c@gregkh>
+References: <2023100546-humbly-prologue-e58c@gregkh>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2689; i=gregkh@linuxfoundation.org; h=from:subject:message-id; bh=Ajq8gV1LGJFvnPZhXDFFK3hzihK5NkBL+73XF7NmfLI=; b=owGbwMvMwCRo6H6F97bub03G02pJDKlyu+3yq3oYfi5vZ1p9a+Hi5Av96lVGVge1BaQOep2o4 dZ8krC0I5aFQZCJQVZMkeXLNp6j+ysOKXoZ2p6GmcPKBDKEgYtTACYiJsmwYN38TToLHZN+7te/ 9LvMguFf8FV3P4Y5nG90Xhf83Xa61FfjptL/l0Z8FeseAgA=
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <2023100435-xerox-idiocy-5cf0@gregkh>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
+Now that the driver core allows for struct class to be in read-only
+memory, making all 'class' structures to be declared at build time
+placing them into read-only memory, instead of having to be dynamically
+allocated at load time.
 
-> On Wed, Oct 04, 2023 at 01:57:04PM +0100, Lee Jones wrote:
-> > On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
-> > 
-> > > On Wed, Oct 04, 2023 at 09:57:20AM +0100, Lee Jones wrote:
-> > > > On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
-> > > > 
-> > > > > On Wed, Oct 04, 2023 at 05:59:09AM +0000, Starke, Daniel wrote:
-> > > > > > > Daniel, any thoughts?
-> > > > > > 
-> > > > > > Our application of this protocol is only with specific modems to enable
-> > > > > > circuit switched operation (handling calls, selecting/querying networks,
-> > > > > > etc.) while doing packet switched communication (i.e. IP traffic over PPP).
-> > > > > > The protocol was developed for such use cases.
-> > > > > > 
-> > > > > > Regarding the issue itself:
-> > > > > > There was already an attempt to fix all this by switching from spinlocks to
-> > > > > > mutexes resulting in ~20% performance loss. However, the patch was reverted
-> > > > > > as it did not handle the T1 timer leading into sleep during atomic within
-> > > > > > gsm_dlci_t1() on every mutex lock there.
-> > > > 
-> > > > That's correct.  When I initially saw this report, my initial thought
-> > > > was to replace the spinlocks with mutexts, but having read the previous
-> > > > accepted attempt and it's subsequent reversion I started to think of
-> > > > other ways to solve this issue.  This solution, unlike the last, does
-> > > > not involve adding sleep inducing locks into atomic contexts, nor
-> > > > should it negatively affect performance.
-> > > > 
-> > > > > > There was also a suggestion to fix this in do_con_write() as
-> > > > > > tty_operations::write() appears to be documented as "not allowed to sleep".
-> > > > > > The patch for this was rejected. It did not fix the issue within n_gsm.
-> > > > > > 
-> > > > > > Link: https://lore.kernel.org/all/20221203215518.8150-1-pchelkin@ispras.ru/
-> > > > > > Link: https://lore.kernel.org/all/20221212023530.2498025-1-zengheng4@huawei.com/
-> > > > > > Link: https://lore.kernel.org/all/5a994a13-d1f2-87a8-09e4-a877e65ed166@kernel.org/
-> > > > > 
-> > > > > Ok, I thought I remembered this, I'll just drop this patch from my
-> > > > > review queue and wait for a better solution if it ever comes up as this
-> > > > > isn't a real issue that people are seeing on actual systems, but just a
-> > > > > syzbot report.
-> > > > 
-> > > > What does the "better solution" look like?
-> > > 
-> > > One that actually fixes the root problem here (i.e. does not break the
-> > > recursion loop, or cause a performance decrease for normal users, or
-> > > prevent this from being bound to the console).
-> > 
-> > Does this solution break the recursion loop or affect performance?
-> 
-> This solution broke the recursion by returning an error, right?
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/vt/vc_screen.c | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
-This is the part I was least sure about.
-
-If this was considered valid and we were to go forward with a solution
-like this, what would a quality improvement look like?  Should we have
-stayed in this function and waited for the previous occupant to leave
-before continuing through ->write()?
-
-> The performance one was by using mutexes as in previous attempts.
-
-Right.  This solution was designed to avoid that.
-
+diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
+index 829c4be66f3b..b16ea517bb17 100644
+--- a/drivers/tty/vt/vc_screen.c
++++ b/drivers/tty/vt/vc_screen.c
+@@ -786,23 +786,22 @@ static const struct file_operations vcs_fops = {
+ 	.release	= vcs_release,
+ };
+ 
+-static struct class *vc_class;
++static const struct class vc_class = {
++	.name = "vc",
++};
+ 
+ void vcs_make_sysfs(int index)
+ {
+-	device_create(vc_class, NULL, MKDEV(VCS_MAJOR, index + 1), NULL,
+-		      "vcs%u", index + 1);
+-	device_create(vc_class, NULL, MKDEV(VCS_MAJOR, index + 65), NULL,
+-		      "vcsu%u", index + 1);
+-	device_create(vc_class, NULL, MKDEV(VCS_MAJOR, index + 129), NULL,
+-		      "vcsa%u", index + 1);
++	device_create(&vc_class, NULL, MKDEV(VCS_MAJOR, index + 1), NULL, "vcs%u", index + 1);
++	device_create(&vc_class, NULL, MKDEV(VCS_MAJOR, index + 65), NULL, "vcsu%u", index + 1);
++	device_create(&vc_class, NULL, MKDEV(VCS_MAJOR, index + 129), NULL, "vcsa%u", index + 1);
+ }
+ 
+ void vcs_remove_sysfs(int index)
+ {
+-	device_destroy(vc_class, MKDEV(VCS_MAJOR, index + 1));
+-	device_destroy(vc_class, MKDEV(VCS_MAJOR, index + 65));
+-	device_destroy(vc_class, MKDEV(VCS_MAJOR, index + 129));
++	device_destroy(&vc_class, MKDEV(VCS_MAJOR, index + 1));
++	device_destroy(&vc_class, MKDEV(VCS_MAJOR, index + 65));
++	device_destroy(&vc_class, MKDEV(VCS_MAJOR, index + 129));
+ }
+ 
+ int __init vcs_init(void)
+@@ -811,11 +810,12 @@ int __init vcs_init(void)
+ 
+ 	if (register_chrdev(VCS_MAJOR, "vcs", &vcs_fops))
+ 		panic("unable to get major %d for vcs device", VCS_MAJOR);
+-	vc_class = class_create("vc");
++	if (class_register(&vc_class))
++		panic("unable to create vc_class");
+ 
+-	device_create(vc_class, NULL, MKDEV(VCS_MAJOR, 0), NULL, "vcs");
+-	device_create(vc_class, NULL, MKDEV(VCS_MAJOR, 64), NULL, "vcsu");
+-	device_create(vc_class, NULL, MKDEV(VCS_MAJOR, 128), NULL, "vcsa");
++	device_create(&vc_class, NULL, MKDEV(VCS_MAJOR, 0), NULL, "vcs");
++	device_create(&vc_class, NULL, MKDEV(VCS_MAJOR, 64), NULL, "vcsu");
++	device_create(&vc_class, NULL, MKDEV(VCS_MAJOR, 128), NULL, "vcsa");
+ 	for (i = 0; i < MIN_NR_CONSOLES; i++)
+ 		vcs_make_sysfs(i);
+ 	return 0;
 -- 
-Lee Jones [李琼斯]
+2.42.0
+
