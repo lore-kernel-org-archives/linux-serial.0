@@ -2,76 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62875E92720
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 17:56:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 664D8E92726
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 18:44:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230168AbjJER4J (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Oct 2023 13:56:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46910 "EHLO
+        id S229826AbjJESox (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Oct 2023 14:44:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230203AbjJERzk (ORCPT
+        with ESMTP id S229723AbjJESox (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Oct 2023 13:55:40 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA53EE;
-        Thu,  5 Oct 2023 10:55:38 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82002C433C7;
-        Thu,  5 Oct 2023 17:55:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1696528538;
-        bh=syrxBjcZsi/Kog//nnV2tNttcVlAwK5eng/5m4lhvGY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CmqQBLZ1xFpKi+cuDEg6u4hCv7CRv257LFpQZs9CWOAr5UGFLNwni2tKsA9Qm9oiD
-         VSaetGacFCk323jeULlESt+CsK0pMCQOwPbAbmFz3ZzbYFZrx2HCRVulSJ6/iTt/Kv
-         Jq4nLoxThnUyL5Keov8m02Q97IJc5cuyyhLEv/oM=
-Date:   Thu, 5 Oct 2023 19:55:34 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Alexey Dobriyan <adobriyan@gmail.com>
+        Thu, 5 Oct 2023 14:44:53 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA1990;
+        Thu,  5 Oct 2023 11:44:52 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id a640c23a62f3a-9b96c3b4be4so236011266b.1;
+        Thu, 05 Oct 2023 11:44:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1696531491; x=1697136291; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=PFWNBtU76KeJxQDIO0H4Sfx+OEo8k0YfwMgIigfU3y4=;
+        b=esLrc60YZ050PpyPfGaBa3NrN/iXKEVKVKrJwLZhl8RGs2VsmLMtGZ7hjI1BiIzEBM
+         ElSzpWvQARbVZvY6OWrzKsm7e8/NdC0z0une1B1uG6gpUMlFLY0AGnpReSnjSqcWPeye
+         mZ4SRfgxC4kAaC/EAlNMF+H0ODaJqCwnWTWSiwLILKjtFtxSo84Rj7oYmk9dl1f21hTw
+         7MUFVf4wq7JgoxQSkf14bAEaU4R+3353cYIWXZbJigxrCIkeh3IUt3EwNt+Foqko9FNT
+         Y6u6tAjlp1f4hLRtBlgXa70Ae01XC7OaJhSuXcGLmWTmE5jkAiGzrdsWZ0r60NSR9bVG
+         a4ZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696531491; x=1697136291;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PFWNBtU76KeJxQDIO0H4Sfx+OEo8k0YfwMgIigfU3y4=;
+        b=WPIaWMzJ38oMTUnCrsXBvGe1LCQGCOcBCAmYbco9SS+vb66YtMVPwEGzgzAj2eEGq+
+         EyTTeUcwXPtjtQHDl8NwfwEzOr/tSIuMbCpl0+F6ichIJwUTVocq/oK6e/jT9owzIRTO
+         qAZCQd4e2OxOV2J/8DkNavNOQoJ2H41w7UvMZcY2bTmZH8R7+4TkKzA5UHk+9yVsS+sy
+         Cf8JSH+W+hlhA/epicrFqnq5/WsnPBXoTYBqQv7joHvSpBG1xZr8ol6XdWP/r5lP/Nsk
+         WJDG+5NPSM5jQLynfGVBqKzvm8YRDWEYVtu+aNAxwOXtQw+4dNSrA/iumds20h9LizZZ
+         seFw==
+X-Gm-Message-State: AOJu0Yx6dNh816/cI7idQSpebrrqq5ClM59zSIme7DPw75eVTF0uzBl+
+        fsPHGHs/2gJ3ZoQbPIGlvPeoJxmJQg==
+X-Google-Smtp-Source: AGHT+IFWXvrZu4aCXs4zboJsobrVMpPTUNnb21FYrPXw/V8l88YlfWVulP2h/oXPDHUNcN0gPIm2NQ==
+X-Received: by 2002:a17:907:75e5:b0:9a5:852f:10ae with SMTP id jz5-20020a17090775e500b009a5852f10aemr5208540ejc.60.1696531490553;
+        Thu, 05 Oct 2023 11:44:50 -0700 (PDT)
+Received: from p183 ([46.53.253.206])
+        by smtp.gmail.com with ESMTPSA id ks8-20020a170906f84800b0099b6becb107sm1596011ejb.95.2023.10.05.11.44.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Oct 2023 11:44:50 -0700 (PDT)
+Date:   Thu, 5 Oct 2023 21:44:44 +0300
+From:   Alexey Dobriyan <adobriyan@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Subject: Re: stack leak via uart_get_info() ?
-Message-ID: <2023100517-washer-why-7513@gregkh>
+Message-ID: <4bb69834-405c-40da-ac3d-f5b29d2eecf0@p183>
 References: <967b9ef1-fb36-48bf-9e6a-1b99af24c052@p183>
+ <2023100517-washer-why-7513@gregkh>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <967b9ef1-fb36-48bf-9e6a-1b99af24c052@p183>
+In-Reply-To: <2023100517-washer-why-7513@gregkh>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 05, 2023 at 07:34:21PM +0300, Alexey Dobriyan wrote:
-> If this check ever triggers
+On Thu, Oct 05, 2023 at 07:55:34PM +0200, Greg Kroah-Hartman wrote:
+> On Thu, Oct 05, 2023 at 07:34:21PM +0300, Alexey Dobriyan wrote:
+> > If this check ever triggers
+> > 
+> > 	static int uart_get_info(struct tty_port *port, struct serial_struct *retinfo)
+> > 	{
+> > 
+> > 		uport = uart_port_check(state);
+> > 	        if (!uport)
+> > 	                goto out;
+> > 
+> > then all those sysfs users will print stack contents to userspace.
+> > 
+> > Can it trigger while sysfs read is executing?
 > 
-> 	static int uart_get_info(struct tty_port *port, struct serial_struct *retinfo)
-> 	{
+> I don't think it can ever fail, we don't even check the result in other
+> places, so it should all be fine.
 > 
-> 		uport = uart_port_check(state);
-> 	        if (!uport)
-> 	                goto out;
+> > Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+> > ---
+> > 
+> > --- a/drivers/tty/serial/serial_core.c
+> > +++ b/drivers/tty/serial/serial_core.c
+> > @@ -775,6 +775,8 @@ static int uart_get_info(struct tty_port *port, struct serial_struct *retinfo)
+> >  	struct uart_port *uport;
+> >  	int ret = -ENODEV;
+> >  
+> > +	*retinfo = (struct serial_struct){};
 > 
-> then all those sysfs users will print stack contents to userspace.
-> 
-> Can it trigger while sysfs read is executing?
+> This is good (although I hate the implied memcpy), a real memset would
+> be best to ensure that any holes are also filled.  Want to do that, or
+> want me to?
 
-I don't think it can ever fail, we don't even check the result in other
-places, so it should all be fine.
+I don't mind memset(), but "struct serial_struct" structure has kernel
+pointers:
 
-> Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
-> ---
-> 
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -775,6 +775,8 @@ static int uart_get_info(struct tty_port *port, struct serial_struct *retinfo)
->  	struct uart_port *uport;
->  	int ret = -ENODEV;
->  
-> +	*retinfo = (struct serial_struct){};
+	unsigned char* iomem_base;
 
-This is good (although I hate the implied memcpy), a real memset would
-be best to ensure that any holes are also filled.  Want to do that, or
-want me to?
-
-thanks,
-
-greg k-h
+so it is not shipped to userspace, so padding isn't an issue.
