@@ -2,100 +2,124 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F93EE14D8
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 13:56:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F0D0E9270C
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 13:56:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229732AbjJENzy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S229877AbjJENzy convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
         Thu, 5 Oct 2023 09:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34504 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243741AbjJENtF (ORCPT
+        with ESMTP id S244186AbjJENvv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Oct 2023 09:49:05 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0167FA5EA
-        for <linux-serial@vger.kernel.org>; Thu,  5 Oct 2023 02:32:52 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id a640c23a62f3a-9b2cee55056so140739866b.3
-        for <linux-serial@vger.kernel.org>; Thu, 05 Oct 2023 02:32:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1696498371; x=1697103171; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YdLOn08HJMrX2Ou2DkH0AnNqsbvAINSqQuseGJAmCt0=;
-        b=hHpq1jnNTJvqDyADj+w00PSih1ks2bzAQ2JLnQumUe5tM8tnwyzVR2+Cia5H8agxTD
-         MnBzxiSrUf+q6DcwSSFBf7fVUIjAI7MQN9MB5ggTzn8le6ze6kW6HmCZgRbxxh2ImOgv
-         IBV23glvYDtO+a7qul8BnaSuNgMLGK+fNQAacNBN6mcVdZLHQtZhveKpkrnM2XPY7tCP
-         CKxwWsE5vwzj2CooSXTDRoTAGMbpeNKELEucG0XeK2QPjsNwu9uvgQBW6GL1nK2TyWfw
-         2ZMxyPc4cej04yGjMeRy/TZSo1cfgn3KOIvOqfx4d921R85yGdVAV0e20AEo8aXncBIK
-         R4YQ==
+        Thu, 5 Oct 2023 09:51:51 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04CDD1FEFD;
+        Thu,  5 Oct 2023 03:12:25 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id 98e67ed59e1d1-27740ce6c76so518566a91.0;
+        Thu, 05 Oct 2023 03:12:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696498371; x=1697103171;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1696500743; x=1697105543;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=YdLOn08HJMrX2Ou2DkH0AnNqsbvAINSqQuseGJAmCt0=;
-        b=s8WYuJhnIpzGp9WtTdw3x1N6Jt4fzETheIqN+pHWmE1W7Ysu6E1t6sC7LgaXi+tXp5
-         VbyAHk07yn+oFUajo7BrLb9cyi0yDswiykYNDn/JQKTRPcnM4UBoZi3iYrDP+F2rEAnf
-         RL7O0pEwmgd4quGXdFijB0uhtHDdWPZL8rrl+WH3460/7qzI0Jl8IXhIR9snbtUnsCHM
-         8b9T+UPWqvtLMORXQtozOZvVH1MBOEvYjAsvAxWT2X6XktygnGpA5l6pFhlbT/kdim47
-         fxIjiCj7OJMusGd+8t51bgHGnuwR9Jf3rAxl2RpJZkXqRXyiFFf4zSTQiKtpdPkCdo9s
-         K3BA==
-X-Gm-Message-State: AOJu0YxNC+7163lOfYjhBlVywxey7/gm/wQfSKduE/ghogLco4j03y+l
-        RjBhZ6VEbkaFUdnrBuhGNch0vQ==
-X-Google-Smtp-Source: AGHT+IEGiwd6GZAfK3FbFUd2UMYw/vGyBuvevBUIP7Ff7gNZtLv+jk3/3mwwnVIKtSHWpnmRH8BORw==
-X-Received: by 2002:a17:906:74cc:b0:9a1:d0bb:d215 with SMTP id z12-20020a17090674cc00b009a1d0bbd215mr4501972ejl.5.1696498371530;
-        Thu, 05 Oct 2023 02:32:51 -0700 (PDT)
-Received: from krzk-bin.. (5-157-101-10.dyn.eolo.it. [5.157.101.10])
-        by smtp.gmail.com with ESMTPSA id rn4-20020a170906d92400b0099bc038eb2bsm863893ejb.58.2023.10.05.02.32.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Oct 2023 02:32:51 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andreas Kemnade <andreas@kemnade.info>
-Subject: [PATCH 2/2] dt-bindings: serial: allow naming of Bluetooth with GPS children
-Date:   Thu,  5 Oct 2023 11:32:47 +0200
-Message-Id: <20231005093247.128166-2-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20231005093247.128166-1-krzysztof.kozlowski@linaro.org>
-References: <20231005093247.128166-1-krzysztof.kozlowski@linaro.org>
+        bh=fv9CC0NKV/kDN0XcdNF3KHHTr6xmrbhe/ImONu1Cags=;
+        b=Giw1I3Ju1d6hfOmKdKuo6YszAyThE9paLeypz1rTzFMw+0yjYZJYrQcVSeO64vqx5V
+         yVyH9GA3VCnRxseyPAjSwprImt3vlWHOE6w4GMntjxHjUP9q10Jl3q/suxBs9x5NagX9
+         nUHK3H9HxrhUr/54hRVqc4u7mBiTUsJiIimOAWJ8bYrNTH7uSqL2wVVkReDVeTUqmsNH
+         SZXSTUa5WQ/ODVC+3Q28VlvtCRgWrSJr3MvLvABQ+tXjsRaoSndM3FMWqttZH31WulAn
+         qdLcbIEahdwCxqJDBs9u+tLKA3FyTdX9G2FTzLCWwi2wI1Su/DVeSb6v8XKTBLVEw58C
+         luiA==
+X-Gm-Message-State: AOJu0YyJ1PUSfOvSV9FW4efGARc72ububnFdvIEKW1RqMnQsrHvSuR/9
+        xGZwoclbkycn/qsestKQzOsHZNEiNS2hHQ==
+X-Google-Smtp-Source: AGHT+IF0FJerdb2vdfKFEdkJKe+kuKwgXZU30X1yZibd2zAGh2N/1/yTzojGTleMwimkCtz8klao0g==
+X-Received: by 2002:a17:90a:43c7:b0:268:2543:723 with SMTP id r65-20020a17090a43c700b0026825430723mr4741800pjg.5.1696500743345;
+        Thu, 05 Oct 2023 03:12:23 -0700 (PDT)
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com. [209.85.214.178])
+        by smtp.gmail.com with ESMTPSA id b10-20020a170903228a00b001b03a1a3151sm1256766plh.70.2023.10.05.03.12.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Oct 2023 03:12:23 -0700 (PDT)
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-1c3d8fb23d9so5368785ad.0;
+        Thu, 05 Oct 2023 03:12:22 -0700 (PDT)
+X-Received: by 2002:a81:a089:0:b0:5a2:47bf:88ec with SMTP id
+ x131-20020a81a089000000b005a247bf88ecmr5134243ywg.19.1696500261276; Thu, 05
+ Oct 2023 03:04:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20230929053915.1530607-1-claudiu.beznea@bp.renesas.com>
+ <20230929053915.1530607-19-claudiu.beznea@bp.renesas.com> <CAMuHMdWQVtroKntVamANrWiheDYa6+=L8K53__1WUZg3bF8EFQ@mail.gmail.com>
+In-Reply-To: <CAMuHMdWQVtroKntVamANrWiheDYa6+=L8K53__1WUZg3bF8EFQ@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 5 Oct 2023 12:04:09 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXsvs886VaKsVgG-h-0iBAhueunUBBcYW0L48GTHApUbA@mail.gmail.com>
+Message-ID: <CAMuHMdXsvs886VaKsVgG-h-0iBAhueunUBBcYW0L48GTHApUbA@mail.gmail.com>
+Subject: Re: [PATCH v2 18/28] pinctrl: renesas: rzg2l: add support for
+ different ds values on different groups
+To:     Claudiu <claudiu.beznea@tuxon.dev>
+Cc:     geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        magnus.damm@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        quic_bjorande@quicinc.com, konrad.dybcio@linaro.org, arnd@arndb.de,
+        neil.armstrong@linaro.org, prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, linux-renesas-soc@vger.kernel.org,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Some devices attached over UART combine Bluetooth and GNSS/GPS receiver,
-so allow "bluetooth-gnss" naming of children nodes.
+On Wed, Oct 4, 2023 at 3:17 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> On Fri, Sep 29, 2023 at 7:39 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> > From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> >
+> > RZ/G3S supports different drive strength values for different power sources
+> > and pin groups (A, B, C). On each group there could be up to 4 drive
+> > strength values per power source. Available power sources are 1v8, 2v5,
+> > 3v3. Drive strength values are fine tuned than what was previously
+> > available on the driver thus the necessity of having micro-amp support.
+> > As drive strength and power source values are linked together the
+> > hardware setup for these was moved at the end of
+> > rzg2l_pinctrl_pinconf_set() to ensure proper validation of the new
+> > values.
+> >
+> > The drive strength values are expected to be initialized though SoC
+> > specific hardware configuration data structure.
+> >
+> > Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> > ---
+> >
+> > Changes in v2:
+> > - s/strenght/strength, s/togheter/together in commit description
+> > - got rid of RZG2L_INVALID_IOLH_VAL macro and consider zero as invalid
+> >   value for entries in struct rzg2l_hwcfg::iolh_group[abc]_ua[] arrays
+> > - removed spinlock in rzg2l_[sg]et_power_source()
+> > - introduced caps_to_pwr_reg() and simplified the code in
+> >   rzg2l_[sg]et_power_source()
+> > - changed return type of rzg2l_iolh_ua_to_val() to int and return
+> >   -EINVAL on failure cases
+> > - s/rzg2l_ds_supported/rzg2l_ds_is_supported
+> > - inverted the logic in rzg2l_pinctrl_pinconf_set() when applying drive
+> >   strength and power source to hardware registers and thus simplified the
+> >   code
+> > - used devm_kcalloc() instead of devm_kzalloc()
+> > - adderessed the rest of the review comments
 
-Link: https://lore.kernel.org/all/20231004070309.2408745-1-andreas@kemnade.info/
-Suggested-by: Andreas Kemnade <andreas@kemnade.info>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/serial/serial.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-diff --git a/Documentation/devicetree/bindings/serial/serial.yaml b/Documentation/devicetree/bindings/serial/serial.yaml
-index 5727bd549dec..468af429c3e6 100644
---- a/Documentation/devicetree/bindings/serial/serial.yaml
-+++ b/Documentation/devicetree/bindings/serial/serial.yaml
-@@ -96,7 +96,7 @@ then:
-     rts-gpios: false
- 
- patternProperties:
--  "^(bluetooth|gnss|gps|mcu)$":
-+  "^(bluetooth|bluetooth-gnss|gnss|gps|mcu)$":
-     if:
-       type: object
-     then:
+> Thanks, will queue in renesas-pinctrl-for-v6.7, with Paul's comment
+> addresses.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.34.1
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
