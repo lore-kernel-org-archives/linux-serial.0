@@ -2,29 +2,29 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DB6DE92706
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 14:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC466E9271A
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 14:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235014AbjJEOjA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Oct 2023 10:39:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45878 "EHLO
+        id S234122AbjJEOm5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Oct 2023 10:42:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235976AbjJEOg0 (ORCPT
+        with ESMTP id S236767AbjJEOhD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Oct 2023 10:36:26 -0400
+        Thu, 5 Oct 2023 10:37:03 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52E240FA7;
-        Thu,  5 Oct 2023 06:59:06 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C39EEC3279B;
-        Thu,  5 Oct 2023 12:37:40 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2937547884;
+        Thu,  5 Oct 2023 07:02:59 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C669C3278D;
+        Thu,  5 Oct 2023 11:33:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1696509461;
-        bh=yPssmHk+h0I732PLM72/lK/bohTqVJvSoMLO4hpb3D4=;
+        s=korg; t=1696505618;
+        bh=Gujm2UgMSTQVzZie35S9mqqAaJznypMdR0YvTSDXPyw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=0wxIPavtBAUyeJXufOCmBYrGsalBt0X+Y/fZ+1f7IbmQtmxkzMsmJbQAqTKWiU3P9
-         awgP8FnfwpkOZvIUnLAjHJS3EYKj6L83fSwtnRA2Bp/g3xRN8TlfGg+k8wjSIzqa9c
-         3NQ/IXPowUMQ4UWRhCIA1yWbvAPUawd1Ro6Ck9cQ=
-Date:   Thu, 5 Oct 2023 14:37:38 +0200
+        b=gELojnSzg2yqBqBfMB47SkfKfxYds38jUHnz9IRgkoQe81teDdJPkSeX3TarlowRb
+         GontVOYLTVhOXmW7ZTrBaQWOUKmb7pZ4Qv4hT2k4mpS8yHzVWzMqxwNM78V3hAQw3N
+         2BwFhyD/1rAtxM4OlLFICsGfX3oHxORpjgt/VMrY=
+Date:   Thu, 5 Oct 2023 13:33:31 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     Lee Jones <lee@kernel.org>
 Cc:     "Starke, Daniel" <daniel.starke@siemens.com>,
@@ -36,91 +36,109 @@ Cc:     "Starke, Daniel" <daniel.starke@siemens.com>,
         <syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com>
 Subject: Re: [PATCH 1/1] tty: n_gsm: Avoid sleeping during .write() whilst
  atomic
-Message-ID: <2023100524-obituary-scoundrel-971d@gregkh>
-References: <20231004125704.GA83257@google.com>
+Message-ID: <2023100512-charger-cherisher-9a3d@gregkh>
+References: <2023100320-immorally-outboard-573a@gregkh>
+ <DB9PR10MB588170E923A6ED8B3D6D9613E0CBA@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+ <2023100421-negotiate-stammer-1b35@gregkh>
+ <20231004085720.GA9374@google.com>
+ <2023100448-cotton-safehouse-aca2@gregkh>
+ <20231004125704.GA83257@google.com>
  <2023100435-xerox-idiocy-5cf0@gregkh>
  <20231005090311.GD83257@google.com>
  <2023100528-directory-arrogant-2ca9@gregkh>
  <20231005104311.GG83257@google.com>
- <2023100512-charger-cherisher-9a3d@gregkh>
- <DB9PR10MB5881E8D3903C19EBAD9AF895E0CAA@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
- <20231005114632.GA681678@google.com>
- <2023100507-worst-quarrel-2b97@gregkh>
- <20231005121756.GB681678@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231005121756.GB681678@google.com>
+In-Reply-To: <20231005104311.GG83257@google.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 05, 2023 at 01:17:56PM +0100, Lee Jones wrote:
+On Thu, Oct 05, 2023 at 11:43:11AM +0100, Lee Jones wrote:
 > On Thu, 05 Oct 2023, Greg Kroah-Hartman wrote:
 > 
-> > On Thu, Oct 05, 2023 at 12:46:32PM +0100, Lee Jones wrote:
-> > > On Thu, 05 Oct 2023, Starke, Daniel wrote:
+> > On Thu, Oct 05, 2023 at 10:03:11AM +0100, Lee Jones wrote:
+> > > On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
 > > > 
-> > > > > > Would something like this tick that box?
-> > > > > > 
-> > > > > > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c index 
-> > > > > > 1f3aba607cd51..5c1d2fcd5d9e2 100644
-> > > > > > --- a/drivers/tty/n_gsm.c
-> > > > > > +++ b/drivers/tty/n_gsm.c
-> > > > > > @@ -3716,6 +3716,10 @@ static ssize_t gsmld_write(struct tty_struct *tty, struct file *file,
-> > > > > >         if (!gsm)
-> > > > > >                 return -ENODEV;
-> > > > > >  
-> > > > > > +       /* The GSM line discipline does not support binding to console */
-> > > > > > +       if (strncmp(tty->name, "tty", 3))
-> > > > > > +               return -EINVAL;
+> > > > On Wed, Oct 04, 2023 at 01:57:04PM +0100, Lee Jones wrote:
+> > > > > On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
 > > > > > 
-> > > > > No, that's not going to work, some consoles do not start with "tty" :(
+> > > > > > On Wed, Oct 04, 2023 at 09:57:20AM +0100, Lee Jones wrote:
+> > > > > > > On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
+> > > > > > > 
+> > > > > > > > On Wed, Oct 04, 2023 at 05:59:09AM +0000, Starke, Daniel wrote:
+> > > > > > > > > > Daniel, any thoughts?
+> > > > > > > > > 
+> > > > > > > > > Our application of this protocol is only with specific modems to enable
+> > > > > > > > > circuit switched operation (handling calls, selecting/querying networks,
+> > > > > > > > > etc.) while doing packet switched communication (i.e. IP traffic over PPP).
+> > > > > > > > > The protocol was developed for such use cases.
+> > > > > > > > > 
+> > > > > > > > > Regarding the issue itself:
+> > > > > > > > > There was already an attempt to fix all this by switching from spinlocks to
+> > > > > > > > > mutexes resulting in ~20% performance loss. However, the patch was reverted
+> > > > > > > > > as it did not handle the T1 timer leading into sleep during atomic within
+> > > > > > > > > gsm_dlci_t1() on every mutex lock there.
+> > > > > > > 
+> > > > > > > That's correct.  When I initially saw this report, my initial thought
+> > > > > > > was to replace the spinlocks with mutexts, but having read the previous
+> > > > > > > accepted attempt and it's subsequent reversion I started to think of
+> > > > > > > other ways to solve this issue.  This solution, unlike the last, does
+> > > > > > > not involve adding sleep inducing locks into atomic contexts, nor
+> > > > > > > should it negatively affect performance.
+> > > > > > > 
+> > > > > > > > > There was also a suggestion to fix this in do_con_write() as
+> > > > > > > > > tty_operations::write() appears to be documented as "not allowed to sleep".
+> > > > > > > > > The patch for this was rejected. It did not fix the issue within n_gsm.
+> > > > > > > > > 
+> > > > > > > > > Link: https://lore.kernel.org/all/20221203215518.8150-1-pchelkin@ispras.ru/
+> > > > > > > > > Link: https://lore.kernel.org/all/20221212023530.2498025-1-zengheng4@huawei.com/
+> > > > > > > > > Link: https://lore.kernel.org/all/5a994a13-d1f2-87a8-09e4-a877e65ed166@kernel.org/
+> > > > > > > > 
+> > > > > > > > Ok, I thought I remembered this, I'll just drop this patch from my
+> > > > > > > > review queue and wait for a better solution if it ever comes up as this
+> > > > > > > > isn't a real issue that people are seeing on actual systems, but just a
+> > > > > > > > syzbot report.
+> > > > > > > 
+> > > > > > > What does the "better solution" look like?
+> > > > > > 
+> > > > > > One that actually fixes the root problem here (i.e. does not break the
+> > > > > > recursion loop, or cause a performance decrease for normal users, or
+> > > > > > prevent this from being bound to the console).
+> > > > > 
+> > > > > Does this solution break the recursion loop or affect performance?
+> > > > 
+> > > > This solution broke the recursion by returning an error, right?
 > > > 
-> > > Ah, you mean there are others that we need to consider?
+> > > This is the part I was least sure about.
 > > > 
-> > > I was just covering off con_write() from drivers/tty/vt/vt.c.
-> > > 
-> > > Does anyone have a counter proposal?
+> > > If this was considered valid and we were to go forward with a solution
+> > > like this, what would a quality improvement look like?  Should we have
+> > > stayed in this function and waited for the previous occupant to leave
+> > > before continuing through ->write()?
 > > 
-> > consoles are dynamically assigned, the device knows if it is a console
-> > or not, so there is a way to determine this at runtime.  It's not a
-> > device naming thing at all.
+> > This isn't valid, as it obviously never shows up in real use.
+> > 
+> > The real solution should be to prevent binding a console to this line
+> > discipline as it can not handle the recursion that consoles require for
+> > the write path.
 > 
-> It's not a device naming thing, but it is a ... :)
-> 
-> Okay, here's another uninformed stab in the dark:
+> Would something like this tick that box?
 > 
 > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index 1f3aba607cd51..ddf00f6a4141d 100644
+> index 1f3aba607cd51..5c1d2fcd5d9e2 100644
 > --- a/drivers/tty/n_gsm.c
 > +++ b/drivers/tty/n_gsm.c
-> @@ -3629,6 +3629,10 @@ static int gsmld_open(struct tty_struct *tty)
->         if (tty->ops->write == NULL)
->                 return -EINVAL;
-> 
+> @@ -3716,6 +3716,10 @@ static ssize_t gsmld_write(struct tty_struct *tty, struct file *file,
+>         if (!gsm)
+>                 return -ENODEV;
+>  
 > +       /* The GSM line discipline does not support binding to console */
-> +       if (tty->driver->type == TTY_DRIVER_TYPE_CONSOLE)
+> +       if (strncmp(tty->name, "tty", 3))
 > +               return -EINVAL;
-> +
->         /* Attach our ldisc data */
->         gsm = gsm_alloc_mux();
->         if (gsm == NULL)
-> 
-> This seems to allow for the real serial devices (TTY_DRIVER_TYPE_SERIAL)
-> suggested by Daniel.
 
-Close, but not quite.
-
-Driver "types" can say if they are a console or not, but that doesn't
-mean you can't run the console over a serial port as well, right?
-
-Sorry, I don't have a real solution right now, and wouldn't wish the
-phrase "just dig through the tty console code!" on anyone, but that's
-what it is going to take to figure it out somehow, I can't remember the
-exact way consoles are hooked up at the moment (I conviently skipped
-that portion of the tty layer in my Embedded Recipies talk last week,
-saying "it's magic...")
+No, that's not going to work, some consoles do not start with "tty" :(
 
 thanks,
 
