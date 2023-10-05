@@ -2,102 +2,246 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B79DBE75451
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 16:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8DCAE7B614
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 16:33:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242439AbjJEQR7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Oct 2023 12:17:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38630 "EHLO
+        id S231190AbjJEQck (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Oct 2023 12:32:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240754AbjJEQQB (ORCPT
+        with ESMTP id S236169AbjJEQc3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Oct 2023 12:16:01 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE147101BE;
-        Thu,  5 Oct 2023 07:17:31 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0442CC3277E;
-        Thu,  5 Oct 2023 10:40:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1696502444;
-        bh=zG4Uy0wbVjgN17aTIqGgXL6FFxktGI57Cl5UBJTqWsk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cdyW1v9SF2VgC9a4TmbOmocRzolbrpxmNVkrE9kfIn+MQ5QJdbLKT21p1AnOscccW
-         Z9TDm3eRJfphN5+Ivz9zfR4cUetq8CHk/PfFUVEqD9rrzlBep1u/TkG5Oc/6YOg3Hx
-         qbGyY9/pl/m+BpEW6XreGIHUIo7gzyDWuPPMTsuE=
-Date:   Thu, 5 Oct 2023 12:40:41 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Lee Jones <lee@kernel.org>
-Cc:     Florian Eckert <fe@dev.tdt.de>, Jiri Slaby <jirislaby@kernel.org>,
-        Eckert.Florian@googlemail.com, pavel@ucw.cz, kabel@kernel.org,
-        u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-leds@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v2 3/4] trigger: ledtrig-tty: move variable definition to
- the top
-Message-ID: <2023100524-liftoff-obnoxious-ec1e@gregkh>
-References: <20230928132632.200263-1-fe@dev.tdt.de>
- <20230928132632.200263-4-fe@dev.tdt.de>
- <20231002140559.GB8453@google.com>
- <acda5dc4-e6d3-4870-929f-fb91636b5649@kernel.org>
- <59cc4073a94edbdec5d77f8457ed4f73@dev.tdt.de>
- <05b03f3e-5863-4d33-8c70-03be7d7e972f@kernel.org>
- <d59855493baa936485a2b00aa29d0449@dev.tdt.de>
- <2023100508-prelaunch-marbled-3a93@gregkh>
- <20231005101307.GE83257@google.com>
+        Thu, 5 Oct 2023 12:32:29 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C58F3585
+        for <linux-serial@vger.kernel.org>; Wed,  4 Oct 2023 21:24:35 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id 4fb4d7f45d1cf-53447d0241eso860762a12.3
+        for <linux-serial@vger.kernel.org>; Wed, 04 Oct 2023 21:24:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tuxon.dev; s=google; t=1696479874; x=1697084674; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1FDosmr4pTB4y3KlQsf5VlEUdTtkvwPO8SEeca8pbEI=;
+        b=hX0m0BamELUggdQn39+7vtvWTGBxZchWqIskXYXn0EsJhWiMfZG57nQmTBttxulXPY
+         Xp9GzqCPQRHEHQFrus/zUMu0smuaM4t7G5UDobUNAgHoZUpvQN7S7UFluwh367KmRreo
+         DqT8hXm9WcmWoysGWdYnzJaKgSuu3hGmQQeOvEdijxo1Naa3DOsZEXk8s8TxHmPIsEnP
+         ugJPDN4Fc3n8ceZW0Ko8UWenQn82/RHit9ogb2jacfS1BnaysYHyrwrWLEVKLHObJvMP
+         UWtgKtpPaAJgRiPZtcjXOae2bJDRFAwUYEHyfjwZlQ6YzRtDv+fcB6lltK0jxowXi4k0
+         k61A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696479874; x=1697084674;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1FDosmr4pTB4y3KlQsf5VlEUdTtkvwPO8SEeca8pbEI=;
+        b=JygEjssa0fDMDAROsL2qhjKm90ckQDrg/M9KmOSzq8cpjs4/gSW0EfjnWgLI/i+Bp3
+         I1yngaRbtInIuawxVj0T7IkA9K56G6crIXoG6+h2h5qpB8oOPs+K8u9npgpJxHhSy8pA
+         GPZUT3WIwvthkpJGWgDcW3cymEhmsQa/rzphx8sX4uewpCisibbX7kO2x8R/W94OtskU
+         8m3tQSAofIK5jwhy1kMduRQGdhwnhYJNoZoFCw3IJHw+MIw7yozcoSja3wTFnvEm11TQ
+         f++SYb6l/ZtbzQybqOGrv/PpQPlNqEEOQ+UtPTnpmy5S7l8fcb4HzsLNfGISjMgBDwoP
+         Y+FQ==
+X-Gm-Message-State: AOJu0YzhOcxJgDGYFXQSy1RgUG6+3+oYTRwFOsZAx8lua/91DqNVGb8q
+        HhhmctqNno8YJiT3BiyURNYejQ==
+X-Google-Smtp-Source: AGHT+IHa/5RZ0/NvxslXh1L0yV6vSI7aQFJL/Ac85bcm5Do80CLgawrfw75osdtTrQOTg2Bt7hM+iQ==
+X-Received: by 2002:aa7:da83:0:b0:533:d81b:36d5 with SMTP id q3-20020aa7da83000000b00533d81b36d5mr3553479eds.15.1696479873654;
+        Wed, 04 Oct 2023 21:24:33 -0700 (PDT)
+Received: from [192.168.32.2] ([147.161.130.252])
+        by smtp.gmail.com with ESMTPSA id w25-20020a056402071900b00537fd4abdc5sm388339edx.54.2023.10.04.21.24.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Oct 2023 21:24:33 -0700 (PDT)
+Message-ID: <0d0448c7-c33b-8960-d2ed-0a22e2f7fb3d@tuxon.dev>
+Date:   Thu, 5 Oct 2023 07:24:30 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231005101307.GE83257@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH v2 10/28] clk: renesas: rzg2l: refactor sd mux driver
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        linus.walleij@linaro.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, magnus.damm@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org,
+        quic_bjorande@quicinc.com, konrad.dybcio@linaro.org, arnd@arndb.de,
+        neil.armstrong@linaro.org, prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, linux-renesas-soc@vger.kernel.org,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20230929053915.1530607-1-claudiu.beznea@bp.renesas.com>
+ <20230929053915.1530607-11-claudiu.beznea@bp.renesas.com>
+ <CAMuHMdUJj+h5LfhQXTNkN3Cp2wP62SX6fY3frzytJQBcKXDJJQ@mail.gmail.com>
+From:   claudiu beznea <claudiu.beznea@tuxon.dev>
+In-Reply-To: <CAMuHMdUJj+h5LfhQXTNkN3Cp2wP62SX6fY3frzytJQBcKXDJJQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 05, 2023 at 11:13:07AM +0100, Lee Jones wrote:
-> On Thu, 05 Oct 2023, Greg KH wrote:
-> 
-> > On Wed, Oct 04, 2023 at 10:36:09AM +0200, Florian Eckert wrote:
-> > > 
-> > > 
-> > > > > I decided to move the variable definition with a separate commit
-> > > > > to the top of the function, to make the build robot happy. After that
-> > > > > I made my changes for v2 to the ledtrig-tty to add the feature.
-> > > > > 
-> > > > > > Ah, lkp, then also the Closes: line as it suggests.
-> > > > > 
-> > > > > Sorry I do not understand your statement
-> > > > 
-> > > > The link you pasted above states:
-> > > > =======
-> > > > If you fix the issue in a separate patch/commit (i.e. not just a new
-> > > > version of
-> > > > the same patch/commit), kindly add following tags
-> > > > | Reported-by: kernel test robot <lkp@intel.com>
-> > > > | Closes:
-> > > > https://lore.kernel.org/oe-kbuild-all/202309270440.IJB24Xap-lkp@intel.com/
-> > > > =======
-> > > > 
-> > > > So please follow that suggestion ;).
-> > > 
-> > > Ok, I understand, thanks will to this on a v3 patchset.
-> > > I will now wait for the comments of my changes in ledtrig-tty from the led
-> > > subsystem.
-> > > And then I will send a new patch set with the requested changes.
-> > > 
-> > > Sorry for the silly question. But do I have to send this patch again for a
-> > > v3?
-> > > https://lore.kernel.org/linux-leds/f41dc1e1-6d34-48b2-97dd-ba67df6003c6@kernel.org/T/#u
-> > > It was already marked by you with a `Reviewed-by:` from you?
-> 
-> Yes please.  I will pick this up as a set once it's ready.
-> 
-> > This series is long gone from my review queue, so a v3 will be needed at
-> > the very least.
-> 
-> Nothing for Greg to worry about here (unless you *want* to review).
+Hi, Geert,
 
-Yes, I want to ensure that the tty change is correct, last round I
-didn't think it was...
+On 04.10.2023 14:30, Geert Uytterhoeven wrote:
+> Hi Claudiu,
+> 
+> On Fri, Sep 29, 2023 at 7:39 AM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+>> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>>
+>> Refactor SD MUX driver to be able to reuse the same code on RZ/G3S.
+>> RZ/G2{L, UL} has a limitation with regards to switching the clock source
+>> for SD MUX (MUX clock source has to be switched to 266MHz before switching
+>> b/w 533MHz and 400MHz). This limitation has been introduced as a clock
+>> notifier that is registered on platform based initialization data thus the
+>> SD MUX code could be reused on RZ/G3S.
+>>
+>> As both RZ/G2{L, UL} and RZ/G3S has specific bits in specific registers
+>> to check if the clock switching has been done, this configuration (register
+>> offset, register bits and bits width) is now passed though
+>> struct cpg_core_clk::sconf (status configuration) from platform specific
+>> initialization code.
+>>
+>> Along with struct cpg_core_clk::sconf the mux table indices are also
+>> passed from platform specific initialization code.
+>>
+>> Also, mux flags are now passed to DEF_SD_MUX() as they will be later
+>> used by RZ/G3S.
+>>
+>> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>> ---
+>>
+>> Changes in v2:
+>> - s/indexes/indices in commit description
+>> - mentioned in commit description that mux flags can now be passed to
+>>   driver though DEF_SD_MUX() macro
+>> - removed SoC specific names from macros' names
+>> - added spaces after { and before } when initializing arrays
+>> - preserved the order of .[gs]set_parent() API definitions for simpler
+>>   diff b/w versions
+>> - removed SD_MUX_NOTIF macro
+> 
+> Thanks for the update!
+> 
+>> --- a/drivers/clk/renesas/rzg2l-cpg.c
+>> +++ b/drivers/clk/renesas/rzg2l-cpg.c
+> 
+>> @@ -142,6 +146,77 @@ static void rzg2l_cpg_del_clk_provider(void *data)
+>>         of_clk_del_provider(data);
+>>  }
+>>
+>> +/* Must be called in atomic context. */
+>> +static int rzg2l_cpg_wait_clk_update_done(void __iomem *base, u32 conf)
+>> +{
+>> +       u32 bitmask = GENMASK(GET_WIDTH(conf) - 1, 0) << GET_SHIFT(conf);
+>> +       u32 off = GET_REG_OFFSET(conf);
+>> +       u32 val;
+>> +
+>> +       return readl_poll_timeout_atomic(base + off, val, !(val & bitmask), 10, 200);
+>> +}
+>> +
+>> +int rzg2l_cpg_sd_mux_clk_notifier(struct notifier_block *nb, unsigned long event,
+>> +                                 void *data)
+>> +{
+>> +       struct clk_notifier_data *cnd = data;
+>> +       struct clk_hw *hw = __clk_get_hw(cnd->clk);
+>> +       struct clk_hw_data *clk_hw_data = to_clk_hw_data(hw);
+>> +       struct rzg2l_cpg_priv *priv = clk_hw_data->priv;
+>> +       u32 off = GET_REG_OFFSET(clk_hw_data->conf);
+>> +       u32 shift = GET_SHIFT(clk_hw_data->conf);
+>> +       const u32 clk_src_266 = 3;
+>> +       unsigned long flags;
+>> +       u32 bitmask;
+>> +       int ret;
+>> +
+>> +       if (event != PRE_RATE_CHANGE || (cnd->new_rate / MEGA == 266))
+>> +               return 0;
+> 
+> include/linux/clk.h:
+> 
+>  * PRE_RATE_CHANGE - called immediately before the clk rate is changed,
+>  *     to indicate that the rate change will proceed.  Drivers must
+>  *     immediately terminate any operations that will be affected by the
+>  *     rate change.  Callbacks may either return NOTIFY_DONE, NOTIFY_OK,
+>  *     NOTIFY_STOP or NOTIFY_BAD.
 
-thanks,
+Indeed I missed these.
 
-greg k-h
+> 
+>> +
+>> +       spin_lock_irqsave(&priv->rmw_lock, flags);
+>> +
+>> +       /*
+>> +        * As per the HW manual, we should not directly switch from 533 MHz to
+>> +        * 400 MHz and vice versa. To change the setting from 2’b01 (533 MHz)
+>> +        * to 2’b10 (400 MHz) or vice versa, Switch to 2’b11 (266 MHz) first,
+>> +        * and then switch to the target setting (2’b01 (533 MHz) or 2’b10
+>> +        * (400 MHz)).
+>> +        * Setting a value of '0' to the SEL_SDHI0_SET or SEL_SDHI1_SET clock
+>> +        * switching register is prohibited.
+>> +        * The clock mux has 3 input clocks(533 MHz, 400 MHz, and 266 MHz), and
+>> +        * the index to value mapping is done by adding 1 to the index.
+>> +        */
+>> +       bitmask = (GENMASK(GET_WIDTH(clk_hw_data->conf) - 1, 0) << shift) << 16;
+>> +       writel(bitmask | (clk_src_266 << shift), priv->base + off);
+>> +
+>> +       /* Wait for the update done. */
+>> +       ret = rzg2l_cpg_wait_clk_update_done(priv->base, clk_hw_data->sconf);
+>> +
+>> +       spin_unlock_irqrestore(&priv->rmw_lock, flags);
+>> +
+>> +       if (ret)
+>> +               dev_err(priv->dev, "failed to switch to safe clk source\n");
+>> +
+>> +       return ret;
+> 
+> Likewise.
+> 
+>> +}
+> 
+>>
+>>  static const struct clk_ops rzg2l_cpg_sd_clk_mux_ops = {
+>>         .determine_rate = __clk_mux_determine_rate_closest,
+>> -       .set_parent     = rzg2l_cpg_sd_clk_mux_set_parent,
+>> -       .get_parent     = rzg2l_cpg_sd_clk_mux_get_parent,
+>> +       .set_parent     = rzg2l_cpg_sd_mux_clk_set_parent,
+>> +       .get_parent     = rzg2l_cpg_sd_mux_clk_get_parent,
+> 
+> Please keep the old names, for consistency with
+> __clk_mux_determine_rate_closest() and drivers/clk/clk-mux.c, and to
+> reduce the diff.
+> 
+> Any existing inconsistent use of "clk_mux" vs. "mux_clk" can be resolved
+> later with a separate patch, if anyone cares.
+
+ok
+
+> 
+>> --- a/drivers/clk/renesas/rzg2l-cpg.h
+>> +++ b/drivers/clk/renesas/rzg2l-cpg.h
+> 
+>> @@ -272,4 +276,6 @@ extern const struct rzg2l_cpg_info r9a07g044_cpg_info;
+>>  extern const struct rzg2l_cpg_info r9a07g054_cpg_info;
+>>  extern const struct rzg2l_cpg_info r9a09g011_cpg_info;
+>>
+>> +int rzg2l_cpg_sd_mux_clk_notifier(struct notifier_block *nb, unsigned long event, void *data);
+> 
+> rzg2l_cpg_sd_clk_mux_notifier()?
+
+ok
+
+> 
+>> +
+>>  #endif
+> 
+> The rest LGTM.
+> 
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+> 
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
