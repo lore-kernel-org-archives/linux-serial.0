@@ -2,89 +2,126 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B6BFE92711
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 15:36:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB43E92711
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 15:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233913AbjJEPgJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Oct 2023 11:36:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50520 "EHLO
+        id S232198AbjJEPhr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Oct 2023 11:37:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229766AbjJEPfa (ORCPT
+        with ESMTP id S231461AbjJEPh3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Oct 2023 11:35:30 -0400
+        Thu, 5 Oct 2023 11:37:29 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FAED5C68B;
-        Thu,  5 Oct 2023 07:50:49 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E445C433BD;
-        Thu,  5 Oct 2023 07:38:29 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0CC35C18;
+        Thu,  5 Oct 2023 07:53:30 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C1B3C433BF;
+        Thu,  5 Oct 2023 07:46:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1696491510;
-        bh=IlcFL0Ucixl4pYJLprQCCNUw2SjWVzzJQeaMUDlMx0E=;
+        s=korg; t=1696491987;
+        bh=1jTpDnM2GecCVC4qOmqZGahpZXui/D5O8mYTLXlY9MY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OaIkL6A4CYjNbyQebbP6Yd0cnVsPIaK6QAG8faOg4JEacU7res4MGn61zx0ouZHxN
-         orkn8binUoDtP7EGuwK0XyQqSLgY5L7GYU7K6XNfXPshLf+V5ljzOLt0J2Vf8DDXzd
-         KLs1g8EvEmpWVwl6ZZ294xQYKQQotykzAPPGBJs8=
-Date:   Thu, 5 Oct 2023 09:38:27 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Florian Eckert <fe@dev.tdt.de>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, Lee Jones <lee@kernel.org>,
-        Eckert.Florian@googlemail.com, pavel@ucw.cz, kabel@kernel.org,
-        u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-leds@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v2 3/4] trigger: ledtrig-tty: move variable definition to
- the top
-Message-ID: <2023100508-prelaunch-marbled-3a93@gregkh>
-References: <20230928132632.200263-1-fe@dev.tdt.de>
- <20230928132632.200263-4-fe@dev.tdt.de>
- <20231002140559.GB8453@google.com>
- <acda5dc4-e6d3-4870-929f-fb91636b5649@kernel.org>
- <59cc4073a94edbdec5d77f8457ed4f73@dev.tdt.de>
- <05b03f3e-5863-4d33-8c70-03be7d7e972f@kernel.org>
- <d59855493baa936485a2b00aa29d0449@dev.tdt.de>
+        b=baKb8dI33lKNmtfP0r/aNrrd2keZ5tsQ7Qh58HRXedsgre70GS3XfV3dwuabXHD1a
+         5T5658L4OGPxPwdTsIz8B7UjmZSbtJnhgQ8BHkvj9+mLwfBuFL/lDx7sjDp47HkoPA
+         FBP3c6DhXRJxKH41xHedx/xf32NU4T2UzOnR29lQ=
+Date:   Thu, 5 Oct 2023 09:46:25 +0200
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     =?iso-8859-1?Q?Rodr=EDguez_Barbarin=2C_Jos=E9?= Javier 
+        <josejavier.rodriguez@duagon.com>
+Cc:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "jth@kernel.org" <jth@kernel.org>,
+        =?iso-8859-1?B?U2FuanXhbiBHYXJj7WEs?= Jorge 
+        <Jorge.SanjuanGarcia@duagon.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "morbidrsa@gmail.com" <morbidrsa@gmail.com>
+Subject: Re: [PATCH v3 2/2] mcb: use short version for function pointer for
+ mcb_free_bus
+Message-ID: <2023100557-mournful-veto-64a2@gregkh>
+References: <20230906114901.63174-1-JoseJavier.Rodriguez@duagon.com>
+ <20230906114901.63174-3-JoseJavier.Rodriguez@duagon.com>
+ <2023092000-overprice-guileless-e1a3@gregkh>
+ <352fb63a17943b974f5bf6eebb4d861ae8307b24.camel@duagon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <d59855493baa936485a2b00aa29d0449@dev.tdt.de>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <352fb63a17943b974f5bf6eebb4d861ae8307b24.camel@duagon.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 04, 2023 at 10:36:09AM +0200, Florian Eckert wrote:
-> 
-> 
-> > > I decided to move the variable definition with a separate commit
-> > > to the top of the function, to make the build robot happy. After that
-> > > I made my changes for v2 to the ledtrig-tty to add the feature.
+On Fri, Sep 22, 2023 at 12:28:14PM +0000, Rodríguez Barbarin, José Javier wrote:
+> On Wed, 2023-09-20 at 15:18 +0200, gregkh@linuxfoundation.org wrote:
+> > On Wed, Sep 06, 2023 at 11:49:28AM +0000, Rodríguez Barbarin, José
+> > Javier wrote:
+> > > From: Jorge Sanjuan Garcia <jorge.sanjuangarcia@duagon.com>
 > > > 
-> > > > Ah, lkp, then also the Closes: line as it suggests.
+> > > Just a style change so that the device release callbacks are
+> > > defined
+> > > in the same way for devices in mcb_bus and mcb_device.
 > > > 
-> > > Sorry I do not understand your statement
+> > > Signed-off-by: Jorge Sanjuan Garcia
+> > > <jorge.sanjuangarcia@duagon.com>
+> > > Co-developed-by: Jose Javier Rodriguez Barbarin
+> > > <JoseJavier.Rodriguez@duagon.com>
+> > > Signed-off-by: Jose Javier Rodriguez Barbarin
+> > > <JoseJavier.Rodriguez@duagon.com>
+> > > ---
+> > >  drivers/mcb/mcb-core.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/mcb/mcb-core.c b/drivers/mcb/mcb-core.c
+> > > index 0cac5bead84f..5c6157b0db75 100644
+> > > --- a/drivers/mcb/mcb-core.c
+> > > +++ b/drivers/mcb/mcb-core.c
+> > > @@ -288,7 +288,7 @@ struct mcb_bus *mcb_alloc_bus(struct device
+> > > *carrier)
+> > >         bus->dev.parent = carrier;
+> > >         bus->dev.bus = &mcb_bus_type;
+> > >         bus->dev.type = &mcb_carrier_device_type;
+> > > -       bus->dev.release = &mcb_free_bus;
+> > > +       bus->dev.release = mcb_free_bus;
 > > 
-> > The link you pasted above states:
-> > =======
-> > If you fix the issue in a separate patch/commit (i.e. not just a new
-> > version of
-> > the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <lkp@intel.com>
-> > | Closes:
-> > https://lore.kernel.org/oe-kbuild-all/202309270440.IJB24Xap-lkp@intel.com/
-> > =======
+> > But you aren't fixing the root cause here of an incorrect pointer
+> > being
+> > passed to this function, right?
 > > 
-> > So please follow that suggestion ;).
+> > Yes, removing the single variable is nicer, so the crash doesn't
+> > happen,
+> > but you are still passing the wrong pointer around, so why not fix
+> > that?
+> > 
 > 
-> Ok, I understand, thanks will to this on a v3 patchset.
-> I will now wait for the comments of my changes in ledtrig-tty from the led
-> subsystem.
-> And then I will send a new patch set with the requested changes.
+> > thanks,
+> > 
+> > greg k-h
 > 
-> Sorry for the silly question. But do I have to send this patch again for a
-> v3?
-> https://lore.kernel.org/linux-leds/f41dc1e1-6d34-48b2-97dd-ba67df6003c6@kernel.org/T/#u
-> It was already marked by you with a `Reviewed-by:` from you?
+> The pointer to struct device in function __mcb_bus_add_devices() always
+> was the correct one. The problem came when calling to function
+> to_mcb_device() which was hapenning even for the case of struct device
+> pointer being a member of struct mcb_bus.
+> 
+> Removing the need for this conversion makes the function generic so
+> that it will work for both mcb_device and mcb_bus structs. This already
+> fixes the crash as no member overlapping will occur (is_added in
+> mcb_device struct and bus_nr in mcb_bus struct).
+> 
+> We belive the pointer is the correct one and this patch series was
+> actually fixing the root cause of the crash. What do you mean by
+> "passing the wrong pointer around"? are we missing something?
 
-This series is long gone from my review queue, so a v3 will be needed at
-the very least.
+Ok, I understand now, yes, this looks correct.
+
+But, the function mcb_bus_add_devices() seems odd to me.  You are
+passing in a parameter that you are never using, so why have it at all?
+You are implying that you only have one bus, yet you are ignoring the
+bus sent to you?
+
+This still seems wrong.
+
+I'll queue up this series as it obviously fixes a bug, but more needs to
+be done here.
 
 thanks,
 
