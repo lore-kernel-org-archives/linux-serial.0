@@ -2,127 +2,87 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB43E92711
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 15:37:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6A6DE9271A
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 15:45:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232198AbjJEPhr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Oct 2023 11:37:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50544 "EHLO
+        id S234186AbjJEPpm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Oct 2023 11:45:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231461AbjJEPh3 (ORCPT
+        with ESMTP id S233951AbjJEPpB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Oct 2023 11:37:29 -0400
+        Thu, 5 Oct 2023 11:45:01 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0CC35C18;
-        Thu,  5 Oct 2023 07:53:30 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C1B3C433BF;
-        Thu,  5 Oct 2023 07:46:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1696491987;
-        bh=1jTpDnM2GecCVC4qOmqZGahpZXui/D5O8mYTLXlY9MY=;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B9207694;
+        Thu,  5 Oct 2023 07:32:31 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68020C433BC;
+        Thu,  5 Oct 2023 07:26:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1696490769;
+        bh=OX4KD6sfNOWtabDqGM1DP4NFuApW1Y4ZymyK5RMSEPI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=baKb8dI33lKNmtfP0r/aNrrd2keZ5tsQ7Qh58HRXedsgre70GS3XfV3dwuabXHD1a
-         5T5658L4OGPxPwdTsIz8B7UjmZSbtJnhgQ8BHkvj9+mLwfBuFL/lDx7sjDp47HkoPA
-         FBP3c6DhXRJxKH41xHedx/xf32NU4T2UzOnR29lQ=
-Date:   Thu, 5 Oct 2023 09:46:25 +0200
-From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To:     =?iso-8859-1?Q?Rodr=EDguez_Barbarin=2C_Jos=E9?= Javier 
-        <josejavier.rodriguez@duagon.com>
-Cc:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "jth@kernel.org" <jth@kernel.org>,
-        =?iso-8859-1?B?U2FuanXhbiBHYXJj7WEs?= Jorge 
-        <Jorge.SanjuanGarcia@duagon.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "morbidrsa@gmail.com" <morbidrsa@gmail.com>
-Subject: Re: [PATCH v3 2/2] mcb: use short version for function pointer for
- mcb_free_bus
-Message-ID: <2023100557-mournful-veto-64a2@gregkh>
-References: <20230906114901.63174-1-JoseJavier.Rodriguez@duagon.com>
- <20230906114901.63174-3-JoseJavier.Rodriguez@duagon.com>
- <2023092000-overprice-guileless-e1a3@gregkh>
- <352fb63a17943b974f5bf6eebb4d861ae8307b24.camel@duagon.com>
+        b=cZ6jTkFREYPJRFOwRFjbSPJ7/FDC/aGBRU0UrLvX7xZstG1VZmUsL6+x41d8A02ZI
+         B1CRAWlPaX2eIFD4fr/SJJUP0l1sY957YCEBfpwHesJjjfIbCPlxxhfYhDtckIPXdh
+         hRC5DUDj8QFpvjPzyLsuC+CQdlzXujp6enO4QlzNhEEY7zfWp5ceqDfwz1qf4/AXub
+         71OC4T1LFCeeUf5BB/SxQk9+G7TsMlk9Pw/PUz7xK2sQ5Ds/OMHsAf8GrhvDXppNj9
+         Ot2y4YfFLZ3VRZxUeubUk5FBbOZJPPvVk258+Jhs0dOOw63K9smDgiHwyFFOkcz2VQ
+         H+ZIDfq3b9wwQ==
+Date:   Thu, 5 Oct 2023 08:26:04 +0100
+From:   Lee Jones <lee@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>,
+        Fedor Pchelkin <pchelkin@ispras.ru>,
+        linux-serial@vger.kernel.org,
+        syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] tty: n_gsm: Avoid sleeping during .write() whilst
+ atomic
+Message-ID: <20231005072604.GC83257@google.com>
+References: <20231003170020.830242-1-lee@kernel.org>
+ <2023100320-immorally-outboard-573a@gregkh>
+ <20231003185500.GD8453@google.com>
+ <2023100457-entail-freefall-06fd@gregkh>
+ <20231004090918.GB9374@google.com>
+ <2023100425-unwieldy-reaffirm-2a1b@gregkh>
+ <20231004125758.GB83257@google.com>
+ <1c2afee3-6c1b-4703-8b9a-487f96a2526b@kernel.org>
+ <2023100511-unpeeled-dinginess-fefd@gregkh>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <352fb63a17943b974f5bf6eebb4d861ae8307b24.camel@duagon.com>
+In-Reply-To: <2023100511-unpeeled-dinginess-fefd@gregkh>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Sep 22, 2023 at 12:28:14PM +0000, RodrÌguez Barbarin, JosÈ Javier wrote:
-> On Wed, 2023-09-20 at 15:18 +0200, gregkh@linuxfoundation.org wrote:
-> > On Wed, Sep 06, 2023 at 11:49:28AM +0000, RodrÌguez Barbarin, JosÈ
-> > Javier wrote:
-> > > From: Jorge Sanjuan Garcia <jorge.sanjuangarcia@duagon.com>
+On Thu, 05 Oct 2023, Greg Kroah-Hartman wrote:
+
+> On Thu, Oct 05, 2023 at 06:59:50AM +0200, Jiri Slaby wrote:
+> > On 04. 10. 23, 14:57, Lee Jones wrote:
+> > > > > n_gsm is available on all the systems I have available.  The mention of
+> > > > > 'EXPERIMENTAL' in the module description appears to have zero effect on
+> > > > > whether distros choose to make it available or not.  If you're saying
+> > > > > that we know this module is BROKEN however, then perhaps we should mark
+> > > > > it as such.
+> > > > 
+> > > > Also, I think this requires root to set this line discipline to the
+> > > > console, right?  A normal user can't do that, or am I missing a code
+> > > > path here?
 > > > 
-> > > Just a style change so that the device release callbacks are
-> > > defined
-> > > in the same way for devices in mcb_bus and mcb_device.
-> > > 
-> > > Signed-off-by: Jorge Sanjuan Garcia
-> > > <jorge.sanjuangarcia@duagon.com>
-> > > Co-developed-by: Jose Javier Rodriguez Barbarin
-> > > <JoseJavier.Rodriguez@duagon.com>
-> > > Signed-off-by: Jose Javier Rodriguez Barbarin
-> > > <JoseJavier.Rodriguez@duagon.com>
-> > > ---
-> > > †drivers/mcb/mcb-core.c | 2 +-
-> > > †1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/mcb/mcb-core.c b/drivers/mcb/mcb-core.c
-> > > index 0cac5bead84f..5c6157b0db75 100644
-> > > --- a/drivers/mcb/mcb-core.c
-> > > +++ b/drivers/mcb/mcb-core.c
-> > > @@ -288,7 +288,7 @@ struct mcb_bus *mcb_alloc_bus(struct device
-> > > *carrier)
-> > > ††††††††bus->dev.parent = carrier;
-> > > ††††††††bus->dev.bus = &mcb_bus_type;
-> > > ††††††††bus->dev.type = &mcb_carrier_device_type;
-> > > -†††††††bus->dev.release = &mcb_free_bus;
-> > > +†††††††bus->dev.release = mcb_free_bus;
+> > > I haven't been testing long, but yes, early indications show that root
+> > > is required.
 > > 
-> > But you aren't fixing the root cause here of an incorrect pointer
-> > being
-> > passed to this function, right?
-> > 
-> > Yes, removing the single variable is nicer, so the crash doesn't
-> > happen,
-> > but you are still passing the wrong pointer around, so why not fix
-> > that?
-> > 
+> > FWIW I concluded to the same yesterday, so I disputed the connected
+> > CVE-2023-31082. Waiting for mitre's ack/nack.
 > 
-> > thanks,
-> > 
-> > greg k-h
+> Trying to dispute obviously-wrong CVEs is a never-ending task.
 > 
-> The pointer to struct device in function __mcb_bus_add_devices() always
-> was the correct one. The problem came when calling to function
-> to_mcb_device() which was hapenning even for the case of struct device
-> pointer being a member of struct mcb_bus.
-> 
-> Removing the need for this conversion makes the function generic so
-> that it will work for both mcb_device and mcb_bus structs. This already
-> fixes the crash as no member overlapping will occur (is_added in
-> mcb_device struct and bus_nr in mcb_bus struct).
-> 
-> We belive the pointer is the correct one and this patch series was
-> actually fixing the root cause of the crash. What do you mean by
-> "passing the wrong pointer around"? are we missing something?
+> Personally, it's fun to see who keeps popping up to attempt to resolve
+> this issue showing what companies have their security policies dictated
+> by a random government authority that can be modified by anyone :)
 
-Ok, I understand now, yes, this looks correct.
+It's a struggle! :)
 
-But, the function mcb_bus_add_devices() seems odd to me.  You are
-passing in a parameter that you are never using, so why have it at all?
-You are implying that you only have one bus, yet you are ignoring the
-bus sent to you?
-
-This still seems wrong.
-
-I'll queue up this series as it obviously fixes a bug, but more needs to
-be done here.
-
-thanks,
-
-greg k-h
+-- 
+Lee Jones [ÊùéÁêºÊñØ]
