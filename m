@@ -2,87 +2,100 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 926E2E92706
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 14:36:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84367E9270C
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 14:36:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236569AbjJEOgl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Oct 2023 10:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46292 "EHLO
+        id S236582AbjJEOgn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Oct 2023 10:36:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236150AbjJEOej (ORCPT
+        with ESMTP id S236139AbjJEOej (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 5 Oct 2023 10:34:39 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 17C3A4233;
-        Thu,  5 Oct 2023 06:53:03 -0700 (PDT)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 51FE280A0;
-        Thu,  5 Oct 2023 07:56:47 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>
-Subject: [PATCH] serial: core: Fix checks for tx runtime PM state
-Date:   Thu,  5 Oct 2023 10:56:42 +0300
-Message-ID: <20231005075644.25936-1-tony@atomide.com>
-X-Mailer: git-send-email 2.42.0
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D9B526D;
+        Thu,  5 Oct 2023 06:52:34 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B799AC116D7;
+        Thu,  5 Oct 2023 10:13:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1696500793;
+        bh=RJWoMbVbJ151+uWDTX/jr/W0fr8rED5wB3RE5Q7hp/4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=B+LvITA9/TODmPovJDG3ZIkXUJcV9Ds0N6YYFKHuMNE1kHES5iPpht2W9i4nTpdzO
+         NQo/V78oIcqgPvapVvUw/Gn7sDyPTStNIOyxHOyMDjAIXB4bxvP7xEaZT0CPPaWgCX
+         xeDB3HqgvAstsvDWxm8ZGT2AAk2hlhdcdk/OJCGmsh1+9j+WY8DbCz2I0zd9Rqnw9K
+         nyCmRpjLq2yUe7rrnKBuAGU30l8uu0qVYYmUaxufXUJGHcmyKIpBcMb9ThWVtZQWNb
+         3ug8M5Kq9avnc1JJ01h48Lq2yUWyZvBV7gF6RmYNKwi4Dt/eabYT8W1qMmIB6uohpX
+         HaJsyENCOHGmA==
+Date:   Thu, 5 Oct 2023 11:13:07 +0100
+From:   Lee Jones <lee@kernel.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Florian Eckert <fe@dev.tdt.de>, Jiri Slaby <jirislaby@kernel.org>,
+        Eckert.Florian@googlemail.com, pavel@ucw.cz, kabel@kernel.org,
+        u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-leds@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v2 3/4] trigger: ledtrig-tty: move variable definition to
+ the top
+Message-ID: <20231005101307.GE83257@google.com>
+References: <20230928132632.200263-1-fe@dev.tdt.de>
+ <20230928132632.200263-4-fe@dev.tdt.de>
+ <20231002140559.GB8453@google.com>
+ <acda5dc4-e6d3-4870-929f-fb91636b5649@kernel.org>
+ <59cc4073a94edbdec5d77f8457ed4f73@dev.tdt.de>
+ <05b03f3e-5863-4d33-8c70-03be7d7e972f@kernel.org>
+ <d59855493baa936485a2b00aa29d0449@dev.tdt.de>
+ <2023100508-prelaunch-marbled-3a93@gregkh>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <2023100508-prelaunch-marbled-3a93@gregkh>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Maximilian reported that surface_serial_hub serdev tx does not work during
-system suspend. During system suspend, runtime PM gets disabled in
-__device_suspend_late(), and tx is unable to wake-up the serial core port
-device that we use to check if tx is safe to start. Johan summarized the
-regression noting that serdev tx no longer always works as earlier when the
-serdev device is runtime PM active.
+On Thu, 05 Oct 2023, Greg KH wrote:
 
-The serdev device and the serial core controller devices are siblings of
-the serial port hardware device. The runtime PM usage count from serdev
-device does not propagate to the serial core device siblings, it only
-propagates to the parent.
+> On Wed, Oct 04, 2023 at 10:36:09AM +0200, Florian Eckert wrote:
+> > 
+> > 
+> > > > I decided to move the variable definition with a separate commit
+> > > > to the top of the function, to make the build robot happy. After that
+> > > > I made my changes for v2 to the ledtrig-tty to add the feature.
+> > > > 
+> > > > > Ah, lkp, then also the Closes: line as it suggests.
+> > > > 
+> > > > Sorry I do not understand your statement
+> > > 
+> > > The link you pasted above states:
+> > > =======
+> > > If you fix the issue in a separate patch/commit (i.e. not just a new
+> > > version of
+> > > the same patch/commit), kindly add following tags
+> > > | Reported-by: kernel test robot <lkp@intel.com>
+> > > | Closes:
+> > > https://lore.kernel.org/oe-kbuild-all/202309270440.IJB24Xap-lkp@intel.com/
+> > > =======
+> > > 
+> > > So please follow that suggestion ;).
+> > 
+> > Ok, I understand, thanks will to this on a v3 patchset.
+> > I will now wait for the comments of my changes in ledtrig-tty from the led
+> > subsystem.
+> > And then I will send a new patch set with the requested changes.
+> > 
+> > Sorry for the silly question. But do I have to send this patch again for a
+> > v3?
+> > https://lore.kernel.org/linux-leds/f41dc1e1-6d34-48b2-97dd-ba67df6003c6@kernel.org/T/#u
+> > It was already marked by you with a `Reviewed-by:` from you?
 
-In addition to the tx issue for suspend, testing for the serial core port
-device can cause an unnecessary delay in enabling tx while waiting for the
-serial core port device to wake-up. The serial core port device wake-up is
-only needed to flush pending tx when the serial port hardware device was
-in runtime PM suspended state.
+Yes please.  I will pick this up as a set once it's ready.
 
-To fix the regression, we need to check the runtime PM state of the parent
-serial port hardware device for tx instead of the serial core port device.
+> This series is long gone from my review queue, so a v3 will be needed at
+> the very least.
 
-As the serial port device drivers may or may not implement runtime PM, we
-need to also add a check for pm_runtime_enabled().
+Nothing for Greg to worry about here (unless you *want* to review).
 
-Reported-by: Maximilian Luz <luzmaximilian@gmail.com>
-Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/serial/serial_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -156,7 +156,7 @@ static void __uart_start(struct uart_state *state)
- 	 * enabled, serial_port_runtime_resume() calls start_tx() again
- 	 * after enabling the device.
- 	 */
--	if (pm_runtime_active(&port_dev->dev))
-+	if (!pm_runtime_enabled(port->dev) || pm_runtime_active(port->dev))
- 		port->ops->start_tx(port);
- 	pm_runtime_mark_last_busy(&port_dev->dev);
- 	pm_runtime_put_autosuspend(&port_dev->dev);
 -- 
-2.42.0
+Lee Jones [李琼斯]
