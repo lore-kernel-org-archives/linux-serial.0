@@ -2,79 +2,152 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 315F2E92708
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 14:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF9DAE9270D
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 14:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239267AbjJEOrD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Oct 2023 10:47:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37562 "EHLO
+        id S239282AbjJEOrF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Oct 2023 10:47:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239903AbjJEOop (ORCPT
+        with ESMTP id S239925AbjJEOoq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Oct 2023 10:44:45 -0400
+        Thu, 5 Oct 2023 10:44:46 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651959F6DF;
-        Thu,  5 Oct 2023 07:22:31 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6C68C4339A;
-        Thu,  5 Oct 2023 06:05:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1696485946;
-        bh=rk5p7W6fSQ6pw6CpBqK3HLdmoCK6lM1ieyuWARySvic=;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6550E9F6E0;
+        Thu,  5 Oct 2023 07:22:32 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB13BC32783;
+        Thu,  5 Oct 2023 10:43:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1696502596;
+        bh=gWG0kwFgWZxRtQ6Nrksz+XK9wtbC3RLde8erZXYpo2U=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sokU60XWR+EfzHCLK43tEYXy9berTkNUZW7mZfQDwM+Gy8WwKE/QBiiHNzSNYyYZu
-         +TZoEIZQJX7vZnZcroCoGDmOlAJGfBIUAPcCjHZAco68IpYXvgsOmE7Eba5u/3V6bt
-         Ew4u7dLEay8PA73HpCunzek9VBixgSGGjtb8QJXY=
-Date:   Thu, 5 Oct 2023 08:05:43 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Lee Jones <lee@kernel.org>, linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>,
+        b=Qpd4sTjfKqtOVaDsmk3zL0WpPOXVMVQG/L+vXgD8TKTh362Xf4Lphctvjt+8SRvxE
+         hd43LSt5jnSzVWSKGILRSwNlJ4xAn8VIqJ5vdO9yWkVDr3ZZivVsMfj48s5s0YN/mo
+         i5ZgBW8F29H1/UwYp/cNsxyy5SoLlZ+y9fAtz3ln2ofO0uI6bkiVG5Oa7G55MxnIkf
+         8KQgCicPdTBBz/VQBxRCBhXRmUZG3mD2tya4pkBu0AWQJX9Lw3tbF9cQ+4AasA/9tA
+         Xy6AVWg4RkFSJGMJUEm7lOtVTkWGl7pajLYySd2iTSzYAVqby5QgGMN0atEvYHC2Oy
+         Wtv+c9dVX/pGA==
+Date:   Thu, 5 Oct 2023 11:43:11 +0100
+From:   Lee Jones <lee@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     "Starke, Daniel" <daniel.starke@siemens.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Fedor Pchelkin <pchelkin@ispras.ru>,
-        linux-serial@vger.kernel.org,
-        syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com
+        Jiri Slaby <jirislaby@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com" 
+        <syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com>
 Subject: Re: [PATCH 1/1] tty: n_gsm: Avoid sleeping during .write() whilst
  atomic
-Message-ID: <2023100511-unpeeled-dinginess-fefd@gregkh>
+Message-ID: <20231005104311.GG83257@google.com>
 References: <20231003170020.830242-1-lee@kernel.org>
  <2023100320-immorally-outboard-573a@gregkh>
- <20231003185500.GD8453@google.com>
- <2023100457-entail-freefall-06fd@gregkh>
- <20231004090918.GB9374@google.com>
- <2023100425-unwieldy-reaffirm-2a1b@gregkh>
- <20231004125758.GB83257@google.com>
- <1c2afee3-6c1b-4703-8b9a-487f96a2526b@kernel.org>
+ <DB9PR10MB588170E923A6ED8B3D6D9613E0CBA@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+ <2023100421-negotiate-stammer-1b35@gregkh>
+ <20231004085720.GA9374@google.com>
+ <2023100448-cotton-safehouse-aca2@gregkh>
+ <20231004125704.GA83257@google.com>
+ <2023100435-xerox-idiocy-5cf0@gregkh>
+ <20231005090311.GD83257@google.com>
+ <2023100528-directory-arrogant-2ca9@gregkh>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1c2afee3-6c1b-4703-8b9a-487f96a2526b@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2023100528-directory-arrogant-2ca9@gregkh>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 05, 2023 at 06:59:50AM +0200, Jiri Slaby wrote:
-> On 04. 10. 23, 14:57, Lee Jones wrote:
-> > > > n_gsm is available on all the systems I have available.  The mention of
-> > > > 'EXPERIMENTAL' in the module description appears to have zero effect on
-> > > > whether distros choose to make it available or not.  If you're saying
-> > > > that we know this module is BROKEN however, then perhaps we should mark
-> > > > it as such.
-> > > 
-> > > Also, I think this requires root to set this line discipline to the
-> > > console, right?  A normal user can't do that, or am I missing a code
-> > > path here?
+On Thu, 05 Oct 2023, Greg Kroah-Hartman wrote:
+
+> On Thu, Oct 05, 2023 at 10:03:11AM +0100, Lee Jones wrote:
+> > On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
 > > 
-> > I haven't been testing long, but yes, early indications show that root
-> > is required.
+> > > On Wed, Oct 04, 2023 at 01:57:04PM +0100, Lee Jones wrote:
+> > > > On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
+> > > > 
+> > > > > On Wed, Oct 04, 2023 at 09:57:20AM +0100, Lee Jones wrote:
+> > > > > > On Wed, 04 Oct 2023, Greg Kroah-Hartman wrote:
+> > > > > > 
+> > > > > > > On Wed, Oct 04, 2023 at 05:59:09AM +0000, Starke, Daniel wrote:
+> > > > > > > > > Daniel, any thoughts?
+> > > > > > > > 
+> > > > > > > > Our application of this protocol is only with specific modems to enable
+> > > > > > > > circuit switched operation (handling calls, selecting/querying networks,
+> > > > > > > > etc.) while doing packet switched communication (i.e. IP traffic over PPP).
+> > > > > > > > The protocol was developed for such use cases.
+> > > > > > > > 
+> > > > > > > > Regarding the issue itself:
+> > > > > > > > There was already an attempt to fix all this by switching from spinlocks to
+> > > > > > > > mutexes resulting in ~20% performance loss. However, the patch was reverted
+> > > > > > > > as it did not handle the T1 timer leading into sleep during atomic within
+> > > > > > > > gsm_dlci_t1() on every mutex lock there.
+> > > > > > 
+> > > > > > That's correct.  When I initially saw this report, my initial thought
+> > > > > > was to replace the spinlocks with mutexts, but having read the previous
+> > > > > > accepted attempt and it's subsequent reversion I started to think of
+> > > > > > other ways to solve this issue.  This solution, unlike the last, does
+> > > > > > not involve adding sleep inducing locks into atomic contexts, nor
+> > > > > > should it negatively affect performance.
+> > > > > > 
+> > > > > > > > There was also a suggestion to fix this in do_con_write() as
+> > > > > > > > tty_operations::write() appears to be documented as "not allowed to sleep".
+> > > > > > > > The patch for this was rejected. It did not fix the issue within n_gsm.
+> > > > > > > > 
+> > > > > > > > Link: https://lore.kernel.org/all/20221203215518.8150-1-pchelkin@ispras.ru/
+> > > > > > > > Link: https://lore.kernel.org/all/20221212023530.2498025-1-zengheng4@huawei.com/
+> > > > > > > > Link: https://lore.kernel.org/all/5a994a13-d1f2-87a8-09e4-a877e65ed166@kernel.org/
+> > > > > > > 
+> > > > > > > Ok, I thought I remembered this, I'll just drop this patch from my
+> > > > > > > review queue and wait for a better solution if it ever comes up as this
+> > > > > > > isn't a real issue that people are seeing on actual systems, but just a
+> > > > > > > syzbot report.
+> > > > > > 
+> > > > > > What does the "better solution" look like?
+> > > > > 
+> > > > > One that actually fixes the root problem here (i.e. does not break the
+> > > > > recursion loop, or cause a performance decrease for normal users, or
+> > > > > prevent this from being bound to the console).
+> > > > 
+> > > > Does this solution break the recursion loop or affect performance?
+> > > 
+> > > This solution broke the recursion by returning an error, right?
+> > 
+> > This is the part I was least sure about.
+> > 
+> > If this was considered valid and we were to go forward with a solution
+> > like this, what would a quality improvement look like?  Should we have
+> > stayed in this function and waited for the previous occupant to leave
+> > before continuing through ->write()?
 > 
-> FWIW I concluded to the same yesterday, so I disputed the connected
-> CVE-2023-31082. Waiting for mitre's ack/nack.
+> This isn't valid, as it obviously never shows up in real use.
+> 
+> The real solution should be to prevent binding a console to this line
+> discipline as it can not handle the recursion that consoles require for
+> the write path.
 
-Trying to dispute obviously-wrong CVEs is a never-ending task.
+Would something like this tick that box?
 
-Personally, it's fun to see who keeps popping up to attempt to resolve
-this issue showing what companies have their security policies dictated
-by a random government authority that can be modified by anyone :)
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 1f3aba607cd51..5c1d2fcd5d9e2 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -3716,6 +3716,10 @@ static ssize_t gsmld_write(struct tty_struct *tty, struct file *file,
+        if (!gsm)
+                return -ENODEV;
+ 
++       /* The GSM line discipline does not support binding to console */
++       if (strncmp(tty->name, "tty", 3))
++               return -EINVAL;
++
+        ret = -ENOBUFS;
+        spin_lock_irqsave(&gsm->tx_lock, flags);
+        space = tty_write_room(tty);
 
-thanks,
+> Then, if consoles are really needed, the code can be fixed up to handle
+> such recursion.  That's not a trivial thing to do, as can be seen by the
+ > crazy gyrations that the n_tty line discipline does in its write path...
 
-greg k-h
+-- 
+Lee Jones [李琼斯]
