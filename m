@@ -2,87 +2,110 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6A6DE9271A
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 15:45:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F6FDE9270D
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Oct 2023 15:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234186AbjJEPpm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Oct 2023 11:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40136 "EHLO
+        id S233690AbjJEPtG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Oct 2023 11:49:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233951AbjJEPpB (ORCPT
+        with ESMTP id S233288AbjJEPsL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Oct 2023 11:45:01 -0400
+        Thu, 5 Oct 2023 11:48:11 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B9207694;
-        Thu,  5 Oct 2023 07:32:31 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68020C433BC;
-        Thu,  5 Oct 2023 07:26:07 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD866836D7;
+        Thu,  5 Oct 2023 07:17:31 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 572B2C32781;
+        Thu,  5 Oct 2023 10:41:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1696490769;
-        bh=OX4KD6sfNOWtabDqGM1DP4NFuApW1Y4ZymyK5RMSEPI=;
+        s=k20201202; t=1696502510;
+        bh=+UWawGPzDK4CYmUN8+VsVxuwKPoTNCTpbmBUGcqqN1s=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cZ6jTkFREYPJRFOwRFjbSPJ7/FDC/aGBRU0UrLvX7xZstG1VZmUsL6+x41d8A02ZI
-         B1CRAWlPaX2eIFD4fr/SJJUP0l1sY957YCEBfpwHesJjjfIbCPlxxhfYhDtckIPXdh
-         hRC5DUDj8QFpvjPzyLsuC+CQdlzXujp6enO4QlzNhEEY7zfWp5ceqDfwz1qf4/AXub
-         71OC4T1LFCeeUf5BB/SxQk9+G7TsMlk9Pw/PUz7xK2sQ5Ds/OMHsAf8GrhvDXppNj9
-         Ot2y4YfFLZ3VRZxUeubUk5FBbOZJPPvVk258+Jhs0dOOw63K9smDgiHwyFFOkcz2VQ
-         H+ZIDfq3b9wwQ==
-Date:   Thu, 5 Oct 2023 08:26:04 +0100
+        b=sbq0og2c4+AXbPKf/Qr2aab52CTfDKFtWtvpgX2NqjOHZe2urj4CyQfu+bMlS6jX5
+         EnQUS9mgCqTuKvmq3fyQc7wbKE3YY2YOHMQLB8uz/3lXJSgWFcoKrbpRHXh3ldh6bK
+         IVrUN6JvN5WDGASVF2SsZVZdJwDfQDIvKjK0iQOcza8TAPjNXBFXZGs47JlTx3y5tm
+         uHvOHmFaN7tUx8geiHPXG78YJcrDei+znjn/f3QSsTTVgpVtVt8QGDmIZm2UqPcYKV
+         2U0fixKMgOcLLnXYo+nS2+6qq8nvuW9I6yeRjkqG8M8E/0Go7PskZ6MMGFP0+kBQN/
+         8yKp3VGCKfs1g==
+Date:   Thu, 5 Oct 2023 11:41:45 +0100
 From:   Lee Jones <lee@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>,
-        Fedor Pchelkin <pchelkin@ispras.ru>,
-        linux-serial@vger.kernel.org,
-        syzbot+5f47a8cea6a12b77a876@syzkaller.appspotmail.com
-Subject: Re: [PATCH 1/1] tty: n_gsm: Avoid sleeping during .write() whilst
- atomic
-Message-ID: <20231005072604.GC83257@google.com>
-References: <20231003170020.830242-1-lee@kernel.org>
- <2023100320-immorally-outboard-573a@gregkh>
- <20231003185500.GD8453@google.com>
- <2023100457-entail-freefall-06fd@gregkh>
- <20231004090918.GB9374@google.com>
- <2023100425-unwieldy-reaffirm-2a1b@gregkh>
- <20231004125758.GB83257@google.com>
- <1c2afee3-6c1b-4703-8b9a-487f96a2526b@kernel.org>
- <2023100511-unpeeled-dinginess-fefd@gregkh>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Florian Eckert <fe@dev.tdt.de>, Jiri Slaby <jirislaby@kernel.org>,
+        Eckert.Florian@googlemail.com, pavel@ucw.cz, kabel@kernel.org,
+        u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-leds@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v2 3/4] trigger: ledtrig-tty: move variable definition to
+ the top
+Message-ID: <20231005104145.GF83257@google.com>
+References: <20230928132632.200263-1-fe@dev.tdt.de>
+ <20230928132632.200263-4-fe@dev.tdt.de>
+ <20231002140559.GB8453@google.com>
+ <acda5dc4-e6d3-4870-929f-fb91636b5649@kernel.org>
+ <59cc4073a94edbdec5d77f8457ed4f73@dev.tdt.de>
+ <05b03f3e-5863-4d33-8c70-03be7d7e972f@kernel.org>
+ <d59855493baa936485a2b00aa29d0449@dev.tdt.de>
+ <2023100508-prelaunch-marbled-3a93@gregkh>
+ <20231005101307.GE83257@google.com>
+ <2023100524-liftoff-obnoxious-ec1e@gregkh>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <2023100511-unpeeled-dinginess-fefd@gregkh>
+In-Reply-To: <2023100524-liftoff-obnoxious-ec1e@gregkh>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 05 Oct 2023, Greg Kroah-Hartman wrote:
+On Thu, 05 Oct 2023, Greg KH wrote:
 
-> On Thu, Oct 05, 2023 at 06:59:50AM +0200, Jiri Slaby wrote:
-> > On 04. 10. 23, 14:57, Lee Jones wrote:
-> > > > > n_gsm is available on all the systems I have available.  The mention of
-> > > > > 'EXPERIMENTAL' in the module description appears to have zero effect on
-> > > > > whether distros choose to make it available or not.  If you're saying
-> > > > > that we know this module is BROKEN however, then perhaps we should mark
-> > > > > it as such.
-> > > > 
-> > > > Also, I think this requires root to set this line discipline to the
-> > > > console, right?  A normal user can't do that, or am I missing a code
-> > > > path here?
-> > > 
-> > > I haven't been testing long, but yes, early indications show that root
-> > > is required.
+> On Thu, Oct 05, 2023 at 11:13:07AM +0100, Lee Jones wrote:
+> > On Thu, 05 Oct 2023, Greg KH wrote:
 > > 
-> > FWIW I concluded to the same yesterday, so I disputed the connected
-> > CVE-2023-31082. Waiting for mitre's ack/nack.
+> > > On Wed, Oct 04, 2023 at 10:36:09AM +0200, Florian Eckert wrote:
+> > > > 
+> > > > 
+> > > > > > I decided to move the variable definition with a separate commit
+> > > > > > to the top of the function, to make the build robot happy. After that
+> > > > > > I made my changes for v2 to the ledtrig-tty to add the feature.
+> > > > > > 
+> > > > > > > Ah, lkp, then also the Closes: line as it suggests.
+> > > > > > 
+> > > > > > Sorry I do not understand your statement
+> > > > > 
+> > > > > The link you pasted above states:
+> > > > > =======
+> > > > > If you fix the issue in a separate patch/commit (i.e. not just a new
+> > > > > version of
+> > > > > the same patch/commit), kindly add following tags
+> > > > > | Reported-by: kernel test robot <lkp@intel.com>
+> > > > > | Closes:
+> > > > > https://lore.kernel.org/oe-kbuild-all/202309270440.IJB24Xap-lkp@intel.com/
+> > > > > =======
+> > > > > 
+> > > > > So please follow that suggestion ;).
+> > > > 
+> > > > Ok, I understand, thanks will to this on a v3 patchset.
+> > > > I will now wait for the comments of my changes in ledtrig-tty from the led
+> > > > subsystem.
+> > > > And then I will send a new patch set with the requested changes.
+> > > > 
+> > > > Sorry for the silly question. But do I have to send this patch again for a
+> > > > v3?
+> > > > https://lore.kernel.org/linux-leds/f41dc1e1-6d34-48b2-97dd-ba67df6003c6@kernel.org/T/#u
+> > > > It was already marked by you with a `Reviewed-by:` from you?
+> > 
+> > Yes please.  I will pick this up as a set once it's ready.
+> > 
+> > > This series is long gone from my review queue, so a v3 will be needed at
+> > > the very least.
+> > 
+> > Nothing for Greg to worry about here (unless you *want* to review).
 > 
-> Trying to dispute obviously-wrong CVEs is a never-ending task.
-> 
-> Personally, it's fun to see who keeps popping up to attempt to resolve
-> this issue showing what companies have their security policies dictated
-> by a random government authority that can be modified by anyone :)
+> Yes, I want to ensure that the tty change is correct, last round I
+> didn't think it was...
 
-It's a struggle! :)
+Sounds good, thanks.
 
 -- 
 Lee Jones [李琼斯]
