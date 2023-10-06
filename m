@@ -2,104 +2,129 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E78AE92FFB
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Oct 2023 10:27:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 596BCE92FFB
+	for <linux-serial@archiver.kernel.org>; Fri,  6 Oct 2023 10:40:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231693AbjJFK1w (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 6 Oct 2023 06:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34048 "EHLO
+        id S231807AbjJFKkZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 6 Oct 2023 06:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231703AbjJFK1u (ORCPT
+        with ESMTP id S231676AbjJFKkY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 6 Oct 2023 06:27:50 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C7309F;
-        Fri,  6 Oct 2023 03:27:49 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id 98e67ed59e1d1-2773f2e599cso1416990a91.1;
-        Fri, 06 Oct 2023 03:27:49 -0700 (PDT)
+        Fri, 6 Oct 2023 06:40:24 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61510D6
+        for <linux-serial@vger.kernel.org>; Fri,  6 Oct 2023 03:40:22 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id a640c23a62f3a-9ad8a822508so378866566b.0
+        for <linux-serial@vger.kernel.org>; Fri, 06 Oct 2023 03:40:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1696588069; x=1697192869; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lySe1hMe8uGNZO8PPWsTJao8eRENoz2n4qp0tx6fqRg=;
-        b=ZW7CKuJtK2Xs1PoiEO8xCgRm6BC39EqXTciRmOqtsBtaHVvKPOsATJoara4P+SaGcK
-         M+cT9tlYhb0p0Q+DtckuZORDBIEdUHmZPJWa9rlAjQaHwUNy9UseZbHZba/fGuE75qV2
-         VevkSm3jvfYE8rRCN/H1Zpmq3aX3q/cHLJ5CNRVF8aM9AFetqN/qMYXYWWXneWzMN0X0
-         SUnG5fGMzjub941qfkU7KpfE/+Dx/voi+t32yC5hsbN6lc7y6iFOhRCRwvkAq+xDahqI
-         1+PLyn0ouMNVGsGKFx2A4gEYm59jFBxlHZ09T6QVLde8CcwdjkXof+7fZeczZiysJaM7
-         xS7Q==
+        d=tuxon.dev; s=google; t=1696588821; x=1697193621; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=KeQqgG9kHc72c2g0exnbDlVNb4xPw3G7iuO/4geTEVQ=;
+        b=eVaKKxPVNCaiezl69xNhZrzLn9Li3v0m4TrLKxnFAqJbdyZXvr72PJICTyXDKw10g3
+         m9X/L8xui4uhSqYiNv58mmBqqyUgvkN9dEuRy3xUJs1lNRLXBUDA1VR0t69/twUgwfX4
+         fLe7w2kKDSAMQoc5P8GpvX13feseMsiuxXEazYOU5sEIElUCASUQhufuMibB4IKZkZOs
+         4yk3GxVABsKvyVTA1ivQNT//ezcjeefA0W6lKMomDs4DYEAJLLnxFK4fARnKiDM21vy/
+         IPRXXstR8Ax+cxddcuqz+b2imLUg1kegX7JuZHL+mQD8KSg7tV2iGCECgM2NgdNDvzt6
+         oxyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696588069; x=1697192869;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=lySe1hMe8uGNZO8PPWsTJao8eRENoz2n4qp0tx6fqRg=;
-        b=k9sYd8lVDVfPYkZTHQsJDDSDbzP/NjHaPRjur2Fm+PFtBJoUR4TgzZ5iZrnpszRBtY
-         tLVGyV48RNrQtUim/mvEs2SMY7Qt9tbe9UNoehGoYWPtEcF5y6eP6m4rhTLItHArTqzw
-         2CtVihqIKcCJD2zv0RML82jXNIOa0nvqK7Tm79cCPgGc0nX1rcVBtAVWWPEQYvR9iGss
-         e6tQadyXe67ECQnlg0sQwNMc6dZylRc8egmI+bnGG2t2NS11JcRliemuXwHL97RWyIiH
-         QWurEVJAwPFg63wE/nzIjWRbqMqPaD0AVfCppBLx0DnUq+cm0JLJdGbM3x+m5za5a1YR
-         /YTA==
-X-Gm-Message-State: AOJu0YydMRu8T9UE5NOZBNqHx1u3YlIzEA6+dhiiZfbpdgpzfqNWxHRf
-        H2SP6oiC2XJ3sAYXL9vp/EfrTwRrk1ZqgTSGqhQ=
-X-Google-Smtp-Source: AGHT+IH6SXgFj0kmejgotdy2ONeMvmaauQTRhUwpyQJu2H3/YxhXrZu30hvf8PM6m0+CdwnGziyGnGt2LCRWHQBqFKs=
-X-Received: by 2002:a17:90b:1801:b0:268:314f:8f35 with SMTP id
- lw1-20020a17090b180100b00268314f8f35mr7307299pjb.6.1696588068971; Fri, 06 Oct
- 2023 03:27:48 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1696588821; x=1697193621;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=KeQqgG9kHc72c2g0exnbDlVNb4xPw3G7iuO/4geTEVQ=;
+        b=fvgi+ZxbiBvqdm+eYIw9B4rUz/gdXAGyTOHE2j7rsCySX2Lurjmzik9JSOPxsKaScC
+         zx/ic1RuVGJCKGoJeeyD9OSKyDXaaaQGugXLQTsCQeuu7MAsmap/HjRaEA/xBmHmQCUN
+         jq1EDepAtIMEC6VZIkJ8Cut/pfvFoWpgwcNXfdy8bFfMZhy2ZkeQCEb8/V9ffOwfu3L2
+         raJQ0Yk0T3O0cvrjhUP+q8jRfzURKmrS/zVXnfDVXg2n8xMmkr4kC5kgGknWMZsyf4We
+         QPsxkhgQFY3eC2dB1VrEBq41+ioMSBPPVuPYFyL3HkHJMJxrQv4s9XJgPTOgEfsFhtB/
+         O0WQ==
+X-Gm-Message-State: AOJu0Yzm0+tjvNQSWWmnaSQUa8R6OpD3dQhRfFJ2lPOmpQwzb+/P1DIh
+        Lo8ZPcZM0ZNnj//1VBNrVUwTZg==
+X-Google-Smtp-Source: AGHT+IHMKEAZG+zX5i9Cl32pZ+P5QmVcPSYDJ5qyvhw04Q1MitxDEPTj2audMVvwor1W/QPxocLXVQ==
+X-Received: by 2002:a17:907:78d7:b0:9ae:3a68:93e8 with SMTP id kv23-20020a17090778d700b009ae3a6893e8mr7117382ejc.14.1696588820745;
+        Fri, 06 Oct 2023 03:40:20 -0700 (PDT)
+Received: from claudiu-X670E-Pro-RS.. ([82.78.167.24])
+        by smtp.gmail.com with ESMTPSA id br13-20020a170906d14d00b0099cb349d570sm2642490ejb.185.2023.10.06.03.40.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Oct 2023 03:40:20 -0700 (PDT)
+From:   Claudiu <claudiu.beznea@tuxon.dev>
+X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
+To:     geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, magnus.damm@gmail.com
+Cc:     linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Subject: [PATCH v3 0/4] Add new Renesas RZ/G3S SoC and RZ/G3S SMARC EVK
+Date:   Fri,  6 Oct 2023 13:39:55 +0300
+Message-Id: <20231006103959.197485-1-claudiu.beznea.uj@bp.renesas.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-References: <20230928151631.149333-1-jcmvbkbc@gmail.com> <20230928151631.149333-6-jcmvbkbc@gmail.com>
- <2023100326-crushing-septic-4856@gregkh> <CAMo8BfJgpP-=tNEChcyR3z6i_QeJ9Ywq7EOjjC5i7Uq4OrgXNA@mail.gmail.com>
- <2023100544-rendering-identify-e0ad@gregkh> <CAMo8Bf+wS+qiX2mMZm0i8dt7xkDO8RvroP8RF=78zxgFj-zwaA@mail.gmail.com>
- <2023100625-water-molehill-4a8f@gregkh>
-In-Reply-To: <2023100625-water-molehill-4a8f@gregkh>
-From:   Max Filippov <jcmvbkbc@gmail.com>
-Date:   Fri, 6 Oct 2023 03:27:37 -0700
-Message-ID: <CAMo8BfLfBEQVTyBXw=K2wsgGF+ZUfJhffX4ax8kX+k_DPSOKYg@mail.gmail.com>
-Subject: Re: [PATCH v4 5/5] drivers/tty/serial: add ESP32S3 ACM device driver
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 6, 2023 at 2:34=E2=80=AFAM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
-> If you only want your code being used in Linux, then stick with
-> "GPL-2.0".  If you want your code to be able to be copied into other
-> GPLv3 licensed code bodies (like Hurd and others), then license it as
-> "GPL-2.0-or-later".  Your call.
+From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-Thanks. From that point of view I prefer GPL-2.0-or-later.
+Hi,
 
-> > > Yes, but not all do.  If you don't need to do anything special, it ca=
-n
-> > > just claim to be a normal device, we've had threads about this on the
-> > > list before.  If you don't need to determine in userspace from the tt=
-y
-> > > connection what device it is, just use the default one instead.
-> >
-> > Ok, it looks like having
-> >
-> > #define PORT_ESP32ACM (-1)
-> >
-> > in the driver source should be ok? I've tested that it works.
->
-> Hah, I like that hack.  But why not just use PORT_UNKNOWN?
+This patch series adds initial support for The Renesas RZ/G3S (R9A08G045{S33})
+SoC. The RZ/G3S device is a general-purpose microprocessor with a
+single-core Arm® Cortex®-A55 (1.1GHz) and a dual-core Arm® Cortex®-M33 (250MHz),
+perfect for an IOT gateway controller.
 
-A lot of functionality doesn't work with PORT_UNKNOWN, e.g.
-console or modem control.
-I've got the idea of using -1 from this email:
-https://lore.kernel.org/linux-serial/502240f7-2cac-4fe6-9e27-f9861db3666d@a=
-pp.fastmail.com/
+This includes:
+- SoC identification;
+- clocks (core clocks, pin controller clock, serial interface, SD ch0
+  clock) and corresponding resets;
+- minimal device tree for SoM and carrier boards.
 
---=20
-Thanks.
--- Max
+With this series Linux can boot from eMMC or SD card. The eMMC and uSD
+interface are multiplexed on the SoM; selection is made using a hardware
+switch.
+
+Patches are gouped as follows:
+- 01    documents scif support;
+- 02-04	clock changes needed by RZ/G3S
+
+Changes in v3:
+- remove from series patches that were already integrated
+- addressed review comments
+- please see individual patches for detailed changes
+
+Changes in v2:
+- addressed review comments
+- collected tags
+- removed from series patches that were already integrated
+- added patches:
+	- [PATCH v2 19/28] dt-bindings: pinctrl: renesas: set additionalProperties: false
+	- [PATCH v2 23/28] dt-bindings: arm: renesas: document RZ/G3S SMARC SoM
+	- [PATCH v2 26/28] dt-bindings: arm: renesas: document SMARC Carrier-II EVK
+- please see individual patches for detailed changes
+
+Claudiu Beznea (4):
+  dt-bindings: serial: renesas,scif: document r9a08g045 support
+  clk: renesas: rzg2l: refactor sd mux driver
+  clk: renesas: rzg2l: add a divider clock for RZ/G3S
+  clk: renesas: add minimal boot support for RZ/G3S SoC
+
+ .../bindings/serial/renesas,scif.yaml         |   1 +
+ drivers/clk/renesas/Kconfig                   |   7 +-
+ drivers/clk/renesas/Makefile                  |   1 +
+ drivers/clk/renesas/r9a07g043-cpg.c           |  12 +-
+ drivers/clk/renesas/r9a07g044-cpg.c           |  12 +-
+ drivers/clk/renesas/r9a08g045-cpg.c           | 214 +++++++++++
+ drivers/clk/renesas/rzg2l-cpg.c               | 342 +++++++++++++++---
+ drivers/clk/renesas/rzg2l-cpg.h               |  28 +-
+ 8 files changed, 565 insertions(+), 52 deletions(-)
+ create mode 100644 drivers/clk/renesas/r9a08g045-cpg.c
+
+-- 
+2.39.2
+
