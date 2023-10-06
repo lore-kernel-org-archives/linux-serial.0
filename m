@@ -2,104 +2,108 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D10B5E81DFE
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Oct 2023 14:11:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EDEFE81E0D
+	for <linux-serial@archiver.kernel.org>; Fri,  6 Oct 2023 15:37:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230197AbjJFOLb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 6 Oct 2023 10:11:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53058 "EHLO
+        id S232855AbjJFPhk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 6 Oct 2023 11:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231755AbjJFOLb (ORCPT
+        with ESMTP id S232859AbjJFPhi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 6 Oct 2023 10:11:31 -0400
+        Fri, 6 Oct 2023 11:37:38 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B095AD;
-        Fri,  6 Oct 2023 07:11:30 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B30ABC433C9;
-        Fri,  6 Oct 2023 14:11:29 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11E81AD;
+        Fri,  6 Oct 2023 08:37:36 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A52ABC433C7;
+        Fri,  6 Oct 2023 15:37:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1696601489;
-        bh=5tWpzn+db/xeesoge1NIJxaqKZEBJNCGXxgh72xvPnI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=sclvbRf3j5/VQUNwhfrnngjkICudKIMNiN3Uxkp73tEzBBWUdOME4Zh6s6EIYphwZ
-         METNwvLIiegNONyMNktrsxV6RhogXZUtyeYWtfXWLS51VrZP+SWFkLRZnweqBwl8Eh
-         bbNRvfqF/rayqXEmSrS1oRiTTjc2uZixT8WPIQVG+ftWG5mCxS5AeHwRpUd54BYk5m
-         jNaRhe3Fw40VnNviTTUmQStmgsbL1QMbw5ydPGnUB8zZBAxFWc2kHfPGHX8ERoayS8
-         MpQFUBLd/cBge+yypJwXEIzuAEA1X875e2O/atxCKdA4UxyU/o4TDzyf5lcWniMioR
-         LKkcuMOIFPo+A==
-Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2bff936e10fso39334101fa.1;
-        Fri, 06 Oct 2023 07:11:29 -0700 (PDT)
-X-Gm-Message-State: AOJu0Yx5ywyNVv5tdaXeHY1vGCybieFEAwjXLCIFKYnG671hHlujnaPi
-        M2g1KElWp4z3z81J4E33/bnQ/2KS1WXveB/8ow==
-X-Google-Smtp-Source: AGHT+IGnz1Ff6DvENmltYUWEskgQXY/YyUpIq7T1Rw7LI+ePtRgtX8IVkWZIARzzAawJA3leguoktI0tJw9wWIAMTg8=
-X-Received: by 2002:a05:6512:1245:b0:504:20a5:7375 with SMTP id
- fb5-20020a056512124500b0050420a57375mr4003520lfb.29.1696601487910; Fri, 06
- Oct 2023 07:11:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230928151631.149333-1-jcmvbkbc@gmail.com> <20230928151631.149333-6-jcmvbkbc@gmail.com>
- <2023100326-crushing-septic-4856@gregkh> <CAMo8BfJgpP-=tNEChcyR3z6i_QeJ9Ywq7EOjjC5i7Uq4OrgXNA@mail.gmail.com>
-In-Reply-To: <CAMo8BfJgpP-=tNEChcyR3z6i_QeJ9Ywq7EOjjC5i7Uq4OrgXNA@mail.gmail.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Fri, 6 Oct 2023 09:11:15 -0500
-X-Gmail-Original-Message-ID: <CAL_Jsq+P9VAv1uSn=sU1J7Q-=mgFBFiOj7EkgncnrQwhWGQETA@mail.gmail.com>
-Message-ID: <CAL_Jsq+P9VAv1uSn=sU1J7Q-=mgFBFiOj7EkgncnrQwhWGQETA@mail.gmail.com>
-Subject: Re: [PATCH v4 5/5] drivers/tty/serial: add ESP32S3 ACM device driver
-To:     Max Filippov <jcmvbkbc@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        s=k20201202; t=1696606655;
+        bh=NmvkWFD8bZHwX17GRmdTtmtgoVM/o6Qpx7umeFUh+O0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=A5llU35VLJGd50hYxUpaWZU9/v5UvRAzBWhsxz+ESpi21DbdU67fPQh+mIokBW06b
+         bQwj9Kr2EtNJh2Qd3oTOnwx3oDkrI6iO/UsIIe1N46QPM8LW5CgUEabASjf/yR2m7V
+         NbZvoe4JWQCqeJdiv4DjN3Px1Tx9/uoVl2+Wvp99voVIxIBXZC58p5n+3QU3W7TQIU
+         wJT1lKhqO4iFIJz7QF04sa/DPW8N/sVhjenipYP3AQOF1BVitEETtUZUSQJCZWdTdp
+         6vCeu96fhuChuvsSUTwGBshAQVcWZpx0FtLLg4LZqutyZY16PB/D4CPyh/0iaf8B6T
+         sAZE+gUqD557A==
+Received: from johan by xi.lan with local (Exim 4.96)
+        (envelope-from <johan@kernel.org>)
+        id 1qomtm-00068G-0D;
+        Fri, 06 Oct 2023 17:37:54 +0200
+Date:   Fri, 6 Oct 2023 17:37:54 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Maximilian Luz <luzmaximilian@gmail.com>
+Subject: Re: [PATCH] serial: core: Fix checks for tx runtime PM state
+Message-ID: <ZSAp0hUOPQNtOG_T@hovoldconsulting.com>
+References: <20231005075644.25936-1-tony@atomide.com>
+ <ZR6lc/F1Esxt5ChI@smile.fi.intel.com>
+ <20231006072738.GI34982@atomide.com>
+ <ZR-_TUSwvIs6Vl_v@hovoldconsulting.com>
+ <20231006083712.GJ34982@atomide.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231006083712.GJ34982@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Oct 3, 2023 at 2:47=E2=80=AFPM Max Filippov <jcmvbkbc@gmail.com> wr=
-ote:
->
-> On Tue, Oct 3, 2023 at 5:55=E2=80=AFAM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Thu, Sep 28, 2023 at 08:16:31AM -0700, Max Filippov wrote:
-> > > Add driver for the ACM  controller of the Espressif ESP32S3 Soc.
-> >
-> > Odd extra space :(
->
-> Ok.
->
-> > > Hardware specification is available at the following URL:
-> > >
-> > >   https://www.espressif.com/sites/default/files/documentation/esp32-s=
-3_technical_reference_manual_en.pdf
-> > >   (Chapter 33 USB Serial/JTAG Controller)
-> >
-> > I don't understand this driver, "ACM" is a USB host <-> gadget protocol=
-,
-> > why do you need a platform serial driver for this?
->
-> The USB part of this piece of hardware is fixed and not controllable, so
-> all we have is a very limited UART interface. But to the outside world
-> it's a USB device with the CDC-ACM interface.
->
-> > > diff --git a/drivers/tty/serial/esp32_acm.c b/drivers/tty/serial/esp3=
-2_acm.c
-> > > new file mode 100644
-> > > index 000000000000..f02abd2ac65e
-> > > --- /dev/null
-> > > +++ b/drivers/tty/serial/esp32_acm.c
-> > > @@ -0,0 +1,459 @@
-> > > +// SPDX-License-Identifier: GPL-2.0-or-later
-> >
-> > Why "or later"?  I have to ask, sorry.
->
-> I don't really have a preference here. Is there a reason to choose
-> GPL-2.0 only for a new code?
+On Fri, Oct 06, 2023 at 11:37:12AM +0300, Tony Lindgren wrote:
+> * Johan Hovold <johan@kernel.org> [231006 08:03]:
+> > On Fri, Oct 06, 2023 at 10:27:38AM +0300, Tony Lindgren wrote:
 
-Yes, that's the default license for the kernel. So you should have a
-reason for picking something else. Like maybe you copied all this from
-somewhere else and that was the license.
+> > > You're right, so how about:
+> > > 
+> > > The serdev device and the serial core controller devices are children of
+> > > the serial port hardware device. The runtime PM usage count from serdev
+> > > device does not propagate to the serial core device siblings, it only
+> > > propagates to the parent.
+> > 
+> > That's still not accurate:
+> > 
+> >  - the serdev device is not a child (but a grandchild) of the serial
+> >    controller
+> >  - the new serial port devices are not "siblings" (but descendants) of
+> >    the serial controller
+> >  - the serdev controller ignores the power state of its children so that
+> >    bit is also incorrect
+> > 
+> > You just want to describe the fact that the serdev controller runtime PM
+> > state is currently not propagated to your new "devices" that are
+> > descendants to the serial controller.
+> 
+> OK so let's just use:
+> 
+> The serdev controller runtime PM state is not currently propagated
+> to the serial core controller port device. The runtime PM usage count
+> only propagates to the parent device.
 
-Rob
+That sounds better.
+
+> > I'm still not sure why it was implemented this way, or if it is even
+> > correct, but this seems to be the state of things.
+> 
+> Care to clarify a bit which parts are unclear? The hierarchy of port
+> devices, making serial core manage runtime PM in a generic way, or
+> flushing tx?
+
+I still don't know why you added these two new abstractions (controller
+and port), and that isn't really explained by the commit message either.
+And if these are indeed needed, then why isn't the serdev controller now
+a child of the "port" device, for example?
+
+There are just a lot of questions and I worry that there are more
+problems lurking, but unfortunately I still don't have time to review
+this.
+
+Johan
