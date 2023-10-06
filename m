@@ -2,79 +2,127 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96D2DE936F8
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Oct 2023 11:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D71F0E81DE9
+	for <linux-serial@archiver.kernel.org>; Fri,  6 Oct 2023 11:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231880AbjJFLEh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 6 Oct 2023 07:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38946 "EHLO
+        id S232063AbjJFLiS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 6 Oct 2023 07:38:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231936AbjJFLEh (ORCPT
+        with ESMTP id S232018AbjJFLiR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 6 Oct 2023 07:04:37 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCC91CA;
-        Fri,  6 Oct 2023 04:04:35 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E05BEC433C7;
-        Fri,  6 Oct 2023 11:04:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1696590275;
-        bh=XLlwpGj1hGJ6zbiAJm0mczBltVK0XU1/GnjKB3xO8Kw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=t9sDin+6Bx9KckpASK79eyQQDDBomfGeuU8KogasxXKv1d57Mtv6mAj2kIKRC3dLy
-         VBKwFd5ahyGAq9dVV30loulisE9s6e5uBc/iPD9mZ01kDzVB8/J1vvH6HbPHu+M7sx
-         6PD2ArRTwAJZmzeD6382ROVEM6iZjKSSbIo4/4ao=
-Date:   Fri, 6 Oct 2023 13:04:32 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Max Filippov <jcmvbkbc@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: Re: [PATCH v4 5/5] drivers/tty/serial: add ESP32S3 ACM device driver
-Message-ID: <2023100640-isolating-privatize-7bf7@gregkh>
-References: <20230928151631.149333-1-jcmvbkbc@gmail.com>
- <20230928151631.149333-6-jcmvbkbc@gmail.com>
- <2023100326-crushing-septic-4856@gregkh>
- <CAMo8BfJgpP-=tNEChcyR3z6i_QeJ9Ywq7EOjjC5i7Uq4OrgXNA@mail.gmail.com>
- <2023100544-rendering-identify-e0ad@gregkh>
- <CAMo8Bf+wS+qiX2mMZm0i8dt7xkDO8RvroP8RF=78zxgFj-zwaA@mail.gmail.com>
- <2023100625-water-molehill-4a8f@gregkh>
- <CAMo8BfLfBEQVTyBXw=K2wsgGF+ZUfJhffX4ax8kX+k_DPSOKYg@mail.gmail.com>
+        Fri, 6 Oct 2023 07:38:17 -0400
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C38283;
+        Fri,  6 Oct 2023 04:38:15 -0700 (PDT)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 1E7A3E0010;
+        Fri,  6 Oct 2023 11:38:05 +0000 (UTC)
+Message-ID: <e08d9ab1-a61f-442c-9eb2-81aaac291815@ghiti.fr>
+Date:   Fri, 6 Oct 2023 13:38:05 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+From:   Alexandre Ghiti <alex@ghiti.fr>
+Subject: Re: [PATCH] Test for riscv fixes
+To:     Mark Rutland <mark.rutland@arm.com>,
+        Alexandre Ghiti <alexghiti@rivosinc.com>
+Cc:     Edward AD <twuufnxlz@gmail.com>, aou@eecs.berkeley.edu,
+        conor@kernel.org, gregkh@linuxfoundation.org, guoren@kernel.org,
+        jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
+        liushixin2@huawei.com, palmer@dabbelt.com,
+        paul.walmsley@sifive.com,
+        syzbot+8d2757d62d403b2d9275@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com
+References: <CAHVXubhG2c=ShFHF4hMMFm8=BYDTyDUduOizujbUWQBW+55wTw@mail.gmail.com>
+ <20230929230549.45206-2-twuufnxlz@gmail.com>
+ <CAHVXubiBVKJ89fBtV1fvEpoOyLvdvjkWfeDmw2yZsod5ao9hPw@mail.gmail.com>
+ <ZRrIcaa-2Co2cSJm@FVFF77S0Q05N.cambridge.arm.com>
+Content-Language: en-US
+In-Reply-To: <ZRrIcaa-2Co2cSJm@FVFF77S0Q05N.cambridge.arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMo8BfLfBEQVTyBXw=K2wsgGF+ZUfJhffX4ax8kX+k_DPSOKYg@mail.gmail.com>
+X-GND-Sasl: alex@ghiti.fr
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 06, 2023 at 03:27:37AM -0700, Max Filippov wrote:
-> On Fri, Oct 6, 2023 at 2:34 AM Greg Kroah-Hartman
-> > > > Yes, but not all do.  If you don't need to do anything special, it can
-> > > > just claim to be a normal device, we've had threads about this on the
-> > > > list before.  If you don't need to determine in userspace from the tty
-> > > > connection what device it is, just use the default one instead.
-> > >
-> > > Ok, it looks like having
-> > >
-> > > #define PORT_ESP32ACM (-1)
-> > >
-> > > in the driver source should be ok? I've tested that it works.
-> >
-> > Hah, I like that hack.  But why not just use PORT_UNKNOWN?
-> 
-> A lot of functionality doesn't work with PORT_UNKNOWN, e.g.
-> console or modem control.
-> I've got the idea of using -1 from this email:
-> https://lore.kernel.org/linux-serial/502240f7-2cac-4fe6-9e27-f9861db3666d@app.fastmail.com/
+Hi Mark,
 
-Ok, we should encode this as a "real" number, "PORT_ANY" and set it to
--1 and let all new devices use it.
+On 02/10/2023 15:41, Mark Rutland wrote:
+> On Mon, Oct 02, 2023 at 09:13:52AM +0200, Alexandre Ghiti wrote:
+>> Hi Edward,
+>>
+>> On Sat, Sep 30, 2023 at 1:06 AM Edward AD<twuufnxlz@gmail.com>  wrote:
+>>> Hi Alexandre,
+>>>
+>>> On Fri, 29 Sep 2023 10:25:59 +0200 Alexandre Ghiti<alexghiti@rivosinc.com>  wrote:
+>>>> I'm still not convinced this will fix the kasan out-of-bounds
+>>>> accesses, the page can be valid but the read can happen at an offset
+>>>> not initialized and trigger such errors right? I still think there is
+>>>> something weird about the stack frame, as to me this should not happen
+>>>> (but admittedly I don't know much about that).
+>>> The added check can confirm that the physical page is invalid (whether it is a
+>>> vmalloc allocated page or a slab allocated page), and exit the for loop when it is invalid.
+>> Yes, but to me this is not what happens in the bug report you link:
+>>
+>> | BUG: KASAN: out-of-bounds in walk_stackframe+0x130/0x2f2
+>> arch/riscv/kernel/stacktrace.c:59
+>> | Read of size 8 at addr ff20000006d37c38 by task swapper/1/0
+>>
+>> So the read at address ff20000006d37c38 is not "normal" according to
+>> KASAN (you can see there is no trap, meaning the physical mapping
+>> exists).
+>>
+>> | The buggy address belongs to the virtual mapping at
+>> |  [ff20000006d30000, ff20000006d39000) created by:
+>> | kernel_clone+0x118/0x896 kernel/fork.c:2909
+>>
+>> The virtual address is legitimate since the vma exists ^
+>>
+>> | The buggy address belongs to the physical page:
+>> | page:ff1c00000250dbc0 refcount:1 mapcount:0 mapping:0000000000000000
+>> index:0x0 pfn:0x9436f
+>>
+>> And the physical page also exists ^
+>>
+>> So I insist, checking that a physical mapping exists to exit the loop
+>> is not enough, to me, the error here is that the backtrace goes "too
+>> far" at an address where nothing was written before and then KASAN
+>> complains about that, again, we don't take any page fault here so it's
+>> not a problem of existing physical mapping.
+> Yep!
+>
+> I believe what's happening here is one task unwinding another (starting from
+> whatever gets saved in switch_to()), and there's nothing that prevents that
+> other task from running concurrently and modifying/poisoning its stack. In
+> general trying to unwind a remote stack is racy and broken, but we're stuck
+> with a few bits of the kernel tryingto do that occasionally and so the arch
+> code needs to handle that without blowing up.
 
-thanks,
 
-greg k-h
+Thanks for that, I had already fixed the "imprecise" unwinder (when we 
+don't have a frame pointer) using READ_ONCE_NOCHECK() but I had not this 
+use case in mind, so I'll fix that too.
+
+
+> For KASAN specifically you'll need to access the stack with unchecked accesses
+> (e.g. using READ_ONCE_NOCHECK() to read the struct stackframe), and you'll
+> probably want to add some explicit checks that pointers are within stack bounds
+> since concurrent modification (or corruption) could result in entirely bogus
+> pointers.
+>
+> I *think* that we do the right thing on arm64, so you might want to take a look
+> at arm64's unwinder in arch/arm64/kernel/stacktrace.c,
+> arch/arm64/include/asm/stacktrace.h, and
+> arch/arm64/include/asm/stacktrace/common.h.
+
+
+And I'll check that for the stack bounds check.
+
+Thanks again,
+
+Alex
+
+
+>
+> Mark.
