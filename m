@@ -2,102 +2,99 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86DF9E92FE4
-	for <linux-serial@archiver.kernel.org>; Sat,  7 Oct 2023 05:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92850E936FB
+	for <linux-serial@archiver.kernel.org>; Sat,  7 Oct 2023 06:53:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343510AbjJGFps (ORCPT
+        id S1343577AbjJGGx4 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 7 Oct 2023 01:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54074 "EHLO
+        Sat, 7 Oct 2023 02:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233675AbjJGFpr (ORCPT
+        with ESMTP id S1343634AbjJGGxz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 7 Oct 2023 01:45:47 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2A372BB;
-        Fri,  6 Oct 2023 22:45:46 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id A15F380E0;
-        Sat,  7 Oct 2023 05:45:42 +0000 (UTC)
-Date:   Sat, 7 Oct 2023 08:45:41 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>
-Subject: Re: [PATCH] serial: core: Fix checks for tx runtime PM state
-Message-ID: <20231007054541.GL34982@atomide.com>
-References: <20231005075644.25936-1-tony@atomide.com>
- <ZR6lc/F1Esxt5ChI@smile.fi.intel.com>
- <20231006072738.GI34982@atomide.com>
- <ZR-_TUSwvIs6Vl_v@hovoldconsulting.com>
- <20231006083712.GJ34982@atomide.com>
- <ZSAp0hUOPQNtOG_T@hovoldconsulting.com>
+        Sat, 7 Oct 2023 02:53:55 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16007C6;
+        Fri,  6 Oct 2023 23:53:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1696661634; x=1728197634;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Lkjh2DlKGv+XkL1fsm3QR5cpnUjOHFrVxxfgTbR0pBY=;
+  b=UJOOnAWxRKgldkQ3bDwobOMLLX8OSzMp6vwiS6NCwWQbglBRgzFtihgM
+   YxwUE3YthjotfbhYbWMASb4V9XdnxWf0NMpElx4kuOqvpxIq1tNyYLAZI
+   q0I5oRK5oSj6JgKRO/r4AjUV5yzpPx+r/MtzdAQEeQpjZxhH7HsZqZ3DS
+   8Qu6Pc0E3VwmlylJo2w79xmJG1vpZYmiYCPyPvfKOIL4DdF+BpaXw3oQE
+   DpvJKqeeUIVo34mM+d0jUTwcRSTTGG2mv/HHDHXysnOp7Vic7/xNvU4tn
+   nUGvWIKuvzsjYBIeL5tl+Ihf1HLzSp6c3mRlxC8Cf75u9VmQfZJ/XebNB
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10855"; a="386738664"
+X-IronPort-AV: E=Sophos;i="6.03,205,1694761200"; 
+   d="scan'208";a="386738664"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2023 23:53:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10855"; a="868600730"
+X-IronPort-AV: E=Sophos;i="6.03,205,1694761200"; 
+   d="scan'208";a="868600730"
+Received: from lkp-server01.sh.intel.com (HELO 8a3a91ad4240) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 06 Oct 2023 23:53:49 -0700
+Received: from kbuild by 8a3a91ad4240 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1qp1C7-00043t-0Q;
+        Sat, 07 Oct 2023 06:53:47 +0000
+Date:   Sat, 7 Oct 2023 14:53:08 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dan Raymond <raymod2@gmail.com>, linux-kernel@vger.kernel.org,
+        x86@kernel.org, linux-serial <linux-serial@vger.kernel.org>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com, peterz@infradead.org,
+        Greg KH <greg@kroah.com>, andriy.shevchenko@linux.intel.com,
+        quic_saipraka@quicinc.com, Steven Rostedt <rostedt@goodmis.org>
+Cc:     oe-kbuild-all@lists.linux.dev
+Subject: Re: [PATCH v4] arch/x86: port I/O tracing on x86
+Message-ID: <202310071410.19ffOGGp-lkp@intel.com>
+References: <80b84be0-a0ad-d1a9-607a-a87c6cf509e0@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZSAp0hUOPQNtOG_T@hovoldconsulting.com>
+In-Reply-To: <80b84be0-a0ad-d1a9-607a-a87c6cf509e0@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Johan Hovold <johan@kernel.org> [231006 15:37]:
-> On Fri, Oct 06, 2023 at 11:37:12AM +0300, Tony Lindgren wrote:
-> > OK so let's just use:
-> > 
-> > The serdev controller runtime PM state is not currently propagated
-> > to the serial core controller port device. The runtime PM usage count
-> > only propagates to the parent device.
-> 
-> That sounds better.
+Hi Dan,
 
-OK
+kernel test robot noticed the following build errors:
 
-> > > I'm still not sure why it was implemented this way, or if it is even
-> > > correct, but this seems to be the state of things.
-> > 
-> > Care to clarify a bit which parts are unclear? The hierarchy of port
-> > devices, making serial core manage runtime PM in a generic way, or
-> > flushing tx?
-> 
-> I still don't know why you added these two new abstractions (controller
-> and port), and that isn't really explained by the commit message either.
+[auto build test ERROR on be8b93b5cc7d533eb8c9b0590cdac055ecafe13a]
 
-We want serial core to do runtime PM in a generic way and have the usage
-count propagate to the parent serial port hardware device. This way we
-don't need to care much if the numerous serial port drivers implement
-runtime PM or not. Well, except for now we need to check the parent state
-for this fix :)
+url:    https://github.com/intel-lab-lkp/linux/commits/Dan-Raymond/arch-x86-port-I-O-tracing-on-x86/20231007-053424
+base:   be8b93b5cc7d533eb8c9b0590cdac055ecafe13a
+patch link:    https://lore.kernel.org/r/80b84be0-a0ad-d1a9-607a-a87c6cf509e0%40gmail.com
+patch subject: [PATCH v4] arch/x86: port I/O tracing on x86
+config: x86_64-randconfig-001-20231007 (https://download.01.org/0day-ci/archive/20231007/202310071410.19ffOGGp-lkp@intel.com/config)
+compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231007/202310071410.19ffOGGp-lkp@intel.com/reproduce)
 
-We also want serial core to know the serial port to serial port hardware
-mapping as we already have multiport devices. The serial core controller
-is there to group the serial ports for each serial port hardware device.
-We at least now have an option to support devices with multiple controllers
-and ports in case we ever happen to see such things.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202310071410.19ffOGGp-lkp@intel.com/
 
-> And if these are indeed needed, then why isn't the serdev controller now
-> a child of the "port" device, for example?
+All errors (new ones prefixed by >>):
 
-Yes I agree we should now move serdev controller to be a child of the
-serial core port device. Then this $subject patch can be reverted.
+   ld: arch/x86/realmode/rm/wakemain.o: in function `__inb':
+   arch/x86/include/asm/shared/io.h:31: undefined reference to `do_trace_portio_read'
+   ld: arch/x86/realmode/rm/wakemain.o: in function `__outw':
+   arch/x86/include/asm/shared/io.h:32: undefined reference to `do_trace_portio_write'
+   ld: arch/x86/realmode/rm/wakemain.o: in function `__outb':
+   arch/x86/include/asm/shared/io.h:31: undefined reference to `do_trace_portio_write'
+>> ld: arch/x86/realmode/rm/wakemain.o:(__jump_table+0x8): undefined reference to `__tracepoint_portio_read'
+>> ld: arch/x86/realmode/rm/wakemain.o:(__jump_table+0x14): undefined reference to `__tracepoint_portio_write'
+   ld: arch/x86/realmode/rm/wakemain.o:(__jump_table+0x20): undefined reference to `__tracepoint_portio_write'
 
-Moving serdev controller should also help serdev to deal with multiport
-devices I think?
-
-In the long run serial port specific functions could live there too.
-
-> There are just a lot of questions and I worry that there are more
-> problems lurking, but unfortunately I still don't have time to review
-> this.
-
-Well incremental steps should be easier to do now.
-
-Regards,
-
-Tony
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
