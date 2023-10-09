@@ -2,220 +2,136 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D80E95A67
-	for <linux-serial@archiver.kernel.org>; Sun,  8 Oct 2023 17:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A65F2E95A8D
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Oct 2023 05:28:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229945AbjJHRuL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 8 Oct 2023 13:50:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34596 "EHLO
+        id S1345094AbjJIF2J (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 Oct 2023 01:28:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231167AbjJHRuK (ORCPT
+        with ESMTP id S1345049AbjJIF2I (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 8 Oct 2023 13:50:10 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21BFA3
-        for <linux-serial@vger.kernel.org>; Sun,  8 Oct 2023 10:50:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1696787409; x=1728323409;
-  h=date:from:to:cc:subject:message-id;
-  bh=J2ehbgWXSp2KhtZ8IstujkpSlnNFMM/L9jvzTofWNVw=;
-  b=mxWmd5cgRefhz85/FymfCbnpnNJEpoUMBzv6v7SIOSY8jo5AFXAJgVzY
-   jZ0lCPTx7j8/dHJuR5eROJmVwiKxdl8Z/KVBOLEm/4v/fuWEsjVfThcKr
-   vZka9w4wSapKJhPKW7pmuWdmMtvfkFP7Y9HoNkpwbnsS43MbvFr1XZUIX
-   UeI2sqY7qO6JQhfwu9fEjdys39KUkD/vLGEHN+oeuyu0VdJj3T5LzZPMj
-   QmQGu1XmgQLjT8xsQAS8qnG3kzDCTJ4FLNAYKQoVzMdEhQwfFXQzJVWvl
-   SImtvB2HTB//Q1mEVLSzDe0GHkDbnISIqcXQk8aY018j3+vnNEcrQo1Oc
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="470294512"
-X-IronPort-AV: E=Sophos;i="6.03,207,1694761200"; 
-   d="scan'208";a="470294512"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Oct 2023 10:50:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="702647653"
-X-IronPort-AV: E=Sophos;i="6.03,207,1694761200"; 
-   d="scan'208";a="702647653"
-Received: from lkp-server01.sh.intel.com (HELO 8a3a91ad4240) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 08 Oct 2023 10:50:07 -0700
-Received: from kbuild by 8a3a91ad4240 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1qpXum-0005bk-2l;
-        Sun, 08 Oct 2023 17:50:04 +0000
-Date:   Mon, 09 Oct 2023 01:49:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-linus] BUILD SUCCESS
- b3fa3cf02e3ce92d32bfdeedd5a6bd0825f55a14
-Message-ID: <202310090115.Qy7H7olQ-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+        Mon, 9 Oct 2023 01:28:08 -0400
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77EC49E;
+        Sun,  8 Oct 2023 22:28:06 -0700 (PDT)
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-9b27bc8b65eso682504166b.0;
+        Sun, 08 Oct 2023 22:28:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696829285; x=1697434085;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=j+afoSmcF0IJhO5eazQTPFiwv2tSyRb98FrrmdVYsWo=;
+        b=TsOq/gApMhwD4GgaTPXGLZxvLQMcS/1nJXG4LO2Kbc7laWaBWWYwAtFAiE6Wq/JJ0o
+         VyixBd04Ciw+pCW4zyfEwdfPlRlmwxZdG4vbhCikvJauGsuRnUXL33IGbZsOzD+Zf0SE
+         VT+cjOPP3aqXGkhhrxq90+C5ddg97lo1Ratyl7VIgd8X2jZBhXJKt31VWWIArDDbHT0h
+         Jit1+zwqOKyLCl41rZnqFRNL7lnuItKGct0k8ba61TksL7HjSo63cjkbV2utPytYO83N
+         EBAB48qowQxywOjUC3y+smCJwvel2Np2Sms5LjDKUxWPVlz72MTwusdk3HZygdZQsX8s
+         l89g==
+X-Gm-Message-State: AOJu0YxoSRIoIW/RZJogDJmmdGjjqMVZmtmCo3In/81FxAHYeaCbAM8j
+        g+pcPqN5cuN9Jlgzkev2JrHFGSGv/c0=
+X-Google-Smtp-Source: AGHT+IF2ra0ODkoOfgyzWvYIiafNopnyBcpAckIjaj/KDHNa0pgDr4EyV5OqSqd7kL4YTBBzwMdmIw==
+X-Received: by 2002:a17:906:8a52:b0:9a9:e943:b601 with SMTP id gx18-20020a1709068a5200b009a9e943b601mr10352191ejc.46.1696829284703;
+        Sun, 08 Oct 2023 22:28:04 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id by8-20020a170906a2c800b009b913aa7cdasm6290049ejb.92.2023.10.08.22.28.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Oct 2023 22:28:03 -0700 (PDT)
+Message-ID: <68c4b7ee-345f-42e4-a69e-700384b711ad@kernel.org>
+Date:   Mon, 9 Oct 2023 07:28:03 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] tty: vc_screen: make vc_class constant
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+References: <2023100546-humbly-prologue-e58c@gregkh>
+ <2023100549-sixth-anger-ac34@gregkh>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <2023100549-sixth-anger-ac34@gregkh>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
-branch HEAD: b3fa3cf02e3ce92d32bfdeedd5a6bd0825f55a14  ASoC: ti: ams-delta: Fix cx81801_receive() argument types
+On 05. 10. 23, 15:33, Greg Kroah-Hartman wrote:
+> Now that the driver core allows for struct class to be in read-only
+> memory, making all 'class' structures to be declared at build time
+> placing them into read-only memory, instead of having to be dynamically
+> allocated at load time.
+> 
+> Cc: Jiri Slaby <jirislaby@kernel.org>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>   drivers/tty/vt/vc_screen.c | 28 ++++++++++++++--------------
+>   1 file changed, 14 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
+> index 829c4be66f3b..b16ea517bb17 100644
+> --- a/drivers/tty/vt/vc_screen.c
+> +++ b/drivers/tty/vt/vc_screen.c
+...
+> @@ -811,11 +810,12 @@ int __init vcs_init(void)
+>   
+>   	if (register_chrdev(VCS_MAJOR, "vcs", &vcs_fops))
+>   		panic("unable to get major %d for vcs device", VCS_MAJOR);
+> -	vc_class = class_create("vc");
+> +	if (class_register(&vc_class))
+> +		panic("unable to create vc_class");
 
-elapsed time: 720m
+FWIW it's no longer "create". Now it's "register".
 
-configs tested: 149
-configs skipped: 2
+Anyway, for the sake of archives:
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-tested configs:
-alpha                             allnoconfig   gcc  
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-arc                              allmodconfig   gcc  
-arc                               allnoconfig   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arc                   randconfig-001-20231008   gcc  
-arm                              allmodconfig   gcc  
-arm                               allnoconfig   gcc  
-arm                              allyesconfig   gcc  
-arm                                 defconfig   gcc  
-arm                       imx_v4_v5_defconfig   clang
-arm                       multi_v4t_defconfig   gcc  
-arm                          pxa910_defconfig   gcc  
-arm                   randconfig-001-20231008   gcc  
-arm                             rpc_defconfig   gcc  
-arm64                            allmodconfig   gcc  
-arm64                             allnoconfig   gcc  
-arm64                            allyesconfig   gcc  
-arm64                               defconfig   gcc  
-csky                             allmodconfig   gcc  
-csky                              allnoconfig   gcc  
-csky                             allyesconfig   gcc  
-csky                                defconfig   gcc  
-hexagon                          alldefconfig   clang
-i386                             allmodconfig   gcc  
-i386                              allnoconfig   gcc  
-i386                             allyesconfig   gcc  
-i386         buildonly-randconfig-001-20231008   gcc  
-i386         buildonly-randconfig-002-20231008   gcc  
-i386         buildonly-randconfig-003-20231008   gcc  
-i386         buildonly-randconfig-004-20231008   gcc  
-i386         buildonly-randconfig-005-20231008   gcc  
-i386         buildonly-randconfig-006-20231008   gcc  
-i386                              debian-10.3   gcc  
-i386                                defconfig   gcc  
-i386                  randconfig-001-20231008   gcc  
-i386                  randconfig-002-20231008   gcc  
-i386                  randconfig-003-20231008   gcc  
-i386                  randconfig-004-20231008   gcc  
-i386                  randconfig-005-20231008   gcc  
-i386                  randconfig-006-20231008   gcc  
-i386                  randconfig-011-20231008   gcc  
-i386                  randconfig-012-20231008   gcc  
-i386                  randconfig-013-20231008   gcc  
-i386                  randconfig-014-20231008   gcc  
-i386                  randconfig-015-20231008   gcc  
-i386                  randconfig-016-20231008   gcc  
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                        allyesconfig   gcc  
-loongarch                           defconfig   gcc  
-loongarch             randconfig-001-20231008   gcc  
-m68k                             allmodconfig   gcc  
-m68k                              allnoconfig   gcc  
-m68k                             allyesconfig   gcc  
-m68k                                defconfig   gcc  
-microblaze                       allmodconfig   gcc  
-microblaze                        allnoconfig   gcc  
-microblaze                       allyesconfig   gcc  
-microblaze                          defconfig   gcc  
-mips                             allmodconfig   gcc  
-mips                              allnoconfig   gcc  
-mips                             allyesconfig   gcc  
-mips                           ip22_defconfig   clang
-nios2                            allmodconfig   gcc  
-nios2                             allnoconfig   gcc  
-nios2                            allyesconfig   gcc  
-nios2                               defconfig   gcc  
-openrisc                         allmodconfig   gcc  
-openrisc                          allnoconfig   gcc  
-openrisc                         allyesconfig   gcc  
-openrisc                            defconfig   gcc  
-openrisc                       virt_defconfig   gcc  
-parisc                           allmodconfig   gcc  
-parisc                            allnoconfig   gcc  
-parisc                           allyesconfig   gcc  
-parisc                              defconfig   gcc  
-parisc64                            defconfig   gcc  
-powerpc                     akebono_defconfig   clang
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-powerpc                          allyesconfig   gcc  
-powerpc                 mpc836x_rdk_defconfig   clang
-powerpc                     powernv_defconfig   clang
-powerpc                     taishan_defconfig   gcc  
-riscv                            allmodconfig   gcc  
-riscv                             allnoconfig   gcc  
-riscv                            allyesconfig   gcc  
-riscv                               defconfig   gcc  
-riscv                 randconfig-001-20231008   gcc  
-riscv                          rv32_defconfig   gcc  
-s390                             alldefconfig   clang
-s390                             allmodconfig   gcc  
-s390                              allnoconfig   gcc  
-s390                             allyesconfig   gcc  
-s390                                defconfig   gcc  
-s390                  randconfig-001-20231008   gcc  
-sh                               allmodconfig   gcc  
-sh                                allnoconfig   gcc  
-sh                               allyesconfig   gcc  
-sh                                  defconfig   gcc  
-sh                          rsk7269_defconfig   gcc  
-sh                        sh7757lcr_defconfig   gcc  
-sparc                            alldefconfig   gcc  
-sparc                            allmodconfig   gcc  
-sparc                             allnoconfig   gcc  
-sparc                            allyesconfig   gcc  
-sparc                               defconfig   gcc  
-sparc                 randconfig-001-20231008   gcc  
-sparc64                          allmodconfig   gcc  
-sparc64                          allyesconfig   gcc  
-sparc64                             defconfig   gcc  
-um                               allmodconfig   clang
-um                                allnoconfig   clang
-um                               allyesconfig   clang
-um                                  defconfig   gcc  
-um                             i386_defconfig   gcc  
-um                           x86_64_defconfig   gcc  
-x86_64                            allnoconfig   gcc  
-x86_64                           allyesconfig   gcc  
-x86_64       buildonly-randconfig-001-20231008   gcc  
-x86_64       buildonly-randconfig-002-20231008   gcc  
-x86_64       buildonly-randconfig-003-20231008   gcc  
-x86_64       buildonly-randconfig-004-20231008   gcc  
-x86_64       buildonly-randconfig-005-20231008   gcc  
-x86_64       buildonly-randconfig-006-20231008   gcc  
-x86_64                              defconfig   gcc  
-x86_64                randconfig-001-20231008   gcc  
-x86_64                randconfig-002-20231008   gcc  
-x86_64                randconfig-003-20231008   gcc  
-x86_64                randconfig-004-20231008   gcc  
-x86_64                randconfig-005-20231008   gcc  
-x86_64                randconfig-006-20231008   gcc  
-x86_64                randconfig-011-20231008   gcc  
-x86_64                randconfig-012-20231008   gcc  
-x86_64                randconfig-013-20231008   gcc  
-x86_64                randconfig-014-20231008   gcc  
-x86_64                randconfig-015-20231008   gcc  
-x86_64                randconfig-016-20231008   gcc  
-x86_64                randconfig-071-20231008   gcc  
-x86_64                randconfig-072-20231008   gcc  
-x86_64                randconfig-073-20231008   gcc  
-x86_64                randconfig-074-20231008   gcc  
-x86_64                randconfig-075-20231008   gcc  
-x86_64                randconfig-076-20231008   gcc  
-x86_64                          rhel-8.3-rust   clang
-x86_64                               rhel-8.3   gcc  
-
+regards,
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+js
+suse labs
+
