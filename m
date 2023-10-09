@@ -2,152 +2,220 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B411DE95A8D
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Oct 2023 06:03:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB12FE95A91
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Oct 2023 10:05:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345135AbjJIGDz (ORCPT
+        id S1346026AbjJIKFb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 Oct 2023 02:03:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54632 "EHLO
+        Mon, 9 Oct 2023 06:05:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345128AbjJIGDx (ORCPT
+        with ESMTP id S1346045AbjJIKFa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 Oct 2023 02:03:53 -0400
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433D39E;
-        Sun,  8 Oct 2023 23:03:52 -0700 (PDT)
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-9b9faf05f51so465725566b.2;
-        Sun, 08 Oct 2023 23:03:52 -0700 (PDT)
+        Mon, 9 Oct 2023 06:05:30 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A0299
+        for <linux-serial@vger.kernel.org>; Mon,  9 Oct 2023 03:05:28 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id 38308e7fff4ca-2bffd6c1460so50507691fa.3
+        for <linux-serial@vger.kernel.org>; Mon, 09 Oct 2023 03:05:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1696845926; x=1697450726; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=qFG+CiAZlRg4OOl3cBMYm6ObwNj6T13IKlkez+l7sys=;
+        b=M/RDmf1d3ZD6SdaLyBJvyBVT4KjON7mq4I0ex7QsQt+NcY6zO3DPXY+TY/bw6+o25J
+         BdBmLiVfCyAnUUjduFdQGYMpK/yTIjce13efaPxglf0r+K830+2rAyfvba0V/na5T9F+
+         QIxyL8aHEPYCZ+J891llrE0wOYEzCtoeruNwbXGLXZZamfZvzqQ9CJKklG5OXKgDuzr6
+         5CjpuwuWrNP7V5dJ/c3uYJCex7RJnGBoNFeR26mamBUsL4GqE7Y/spAQnH/WG39XvpXh
+         tCNH5ZMN5oRpSoe31vZ/l2Z8M1wVYXvkYtg8aiFGlvfRY5MmtF48d06hNGtuTKw/w3oh
+         SJ0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696831431; x=1697436231;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1696845926; x=1697450726;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1rqQIE2tSCVvRi3+hOn6TUFncCXIMdVf8RTEYbciBYQ=;
-        b=EvuGVeg5mUc6HkgnoHKAhFJzNFNdtFJOSjzhrQ6vh3LIq1SlUsrN9mLHmGxYOkYR6E
-         tiAPb1H4Bf52SFpD2vaGvlpjEaPb2bgx64g1K+hwXRNMXpKngH+5U7Vyofk7GTEa77DF
-         8s3ltUKVcY3uW5wL95/UyXS2wfxgMWzZqRdVC5eGw2Y8xFUmxSsfuPqiXx6HpCXVNlFJ
-         rT7rCmNUlBMV+Gym4kfxuX9hGLlZKeS/qnadVTH9Nj3//KOAMKTRcaWd2Xtw0pKYBA2r
-         IRS2KoL5QOgOyGCYrRgVit5zQ7j72o/iTQQnAVNvesHA90F35OwAFU0iAAArLtGRtk6S
-         pM4g==
-X-Gm-Message-State: AOJu0YxO3J5R7Z8IT836l0AOG7TupSmHKHsUWainHxpcnynrOXdpM/D7
-        n0z763t8r/pbciBQnqVmNTE=
-X-Google-Smtp-Source: AGHT+IEpUD9rN2WKMDFcHPGTD+DzIsmmThM5r4FlW2dQqqJwu1Kvqdn4FoEv715pvxC9BZou4d+gjQ==
-X-Received: by 2002:a17:906:2210:b0:9b2:8323:d916 with SMTP id s16-20020a170906221000b009b28323d916mr13997909ejs.17.1696831430631;
-        Sun, 08 Oct 2023 23:03:50 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id jp20-20020a170906f75400b0099bcb44493fsm6359252ejb.147.2023.10.08.23.03.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 Oct 2023 23:03:49 -0700 (PDT)
-Message-ID: <33bd60a8-77ea-426d-a158-f289e020d21a@kernel.org>
-Date:   Mon, 9 Oct 2023 08:03:49 +0200
+        bh=qFG+CiAZlRg4OOl3cBMYm6ObwNj6T13IKlkez+l7sys=;
+        b=CwcIoZDMQKrhZGQbZxZWgwHBMk0DS3wDQ7yLV+pEOkru9j6j0SgiJ9HC2JSiDpKzTx
+         L0i1NOG2FYzmCpgO3Ya0hLdfR1Wqq5Etugp4GPVV2CpfeclAjvYtqWTegpB1DoOZi1F4
+         ni1jez5iTF/kCLtifc0fwJlXBR+/6x7QD1jpLCD/p8mL37TGpfc5RNXKWun3afryCT3J
+         ZtYcxZt2m0rbMEGzOJTfJgcBu5wU4byKbBqrpdrTKlNy8RSel/xVizCAdJhdPMFbk2l2
+         eoaRJSSJJVAdx0AuGbOnHySdIwnAHN9dYpY5g3Fxg/v1IEvhkYfK3txbywQy/Xjo854r
+         1cVg==
+X-Gm-Message-State: AOJu0YwoB2QAud7z6clX5cvPr2DBohSozBKQUBYpIS4dMsNhmcmllldP
+        LFsidqGd9SJVBjKPt55v+5q70NqfzEiypQ/cAxs=
+X-Google-Smtp-Source: AGHT+IGiDgo+rsW3vX/OG1IO4kHkeXBvv4m9x76xZ13hyIEnChIQOvMw7PZQzqbXZtaXuD2aoXZc6w==
+X-Received: by 2002:a2e:9882:0:b0:2bd:a5:3560 with SMTP id b2-20020a2e9882000000b002bd00a53560mr12695521ljj.38.1696845926404;
+        Mon, 09 Oct 2023 03:05:26 -0700 (PDT)
+Received: from nuoska (dsl-olubng11-54f814-94.dhcp.inet.fi. [84.248.20.94])
+        by smtp.gmail.com with ESMTPSA id y2-20020a2eb002000000b002c128e4524dsm1983944ljk.116.2023.10.09.03.05.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Oct 2023 03:05:25 -0700 (PDT)
+Date:   Mon, 9 Oct 2023 13:05:23 +0300
+From:   Mikko Rapeli <mikko.rapeli@linaro.org>
+To:     linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Richard Purdie <richard.purdie@linuxfoundation.org>
+Cc:     openembedded-core <openembedded-core@lists.openembedded.org>,
+        Paul Gortmaker <p_gortmaker@yahoo.com>,
+        Bruce Ashfield <bruce.ashfield@gmail.com>,
+        Randy MacLeod <randy.macleod@windriver.com>
+Subject: Kernel 6.5 ttyS1 hang with qemu (was Re: [OE-core] Summary of the
+ remaining 6.5 kernel serial issue (and 6.5 summary)
+Message-ID: <ZSPQY6UYg21Z0PnN@nuoska>
+References: <178BF2895FF685E6.5378@lists.openembedded.org>
+ <a2ad67a0575548b6d5d8d187e597dcd72ae07f64.camel@linuxfoundation.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] serial: add PORT_GENERIC definition
-Content-Language: en-US
-To:     Max Filippov <jcmvbkbc@gmail.com>, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>
-References: <20231008001804.889727-1-jcmvbkbc@gmail.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20231008001804.889727-1-jcmvbkbc@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a2ad67a0575548b6d5d8d187e597dcd72ae07f64.camel@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 08. 10. 23, 2:18, Max Filippov wrote:
-> Current pattern in the linux kernel is that every new serial driver adds
-> one or more new PORT_ definitions because uart_ops::config_port()
-> callback documentation prescribes setting port->type according to the
-> type of port found, or to PORT_UNKNOWN if no port was detected.
+Hi linux-serial and Greg,
+
+Yocto Linux distro maintainer Richard Purdie is seeing a regression or behavior
+change after updating kernel from 6.4 to 6.5. Yocto runs a lot of automated tests with qemu
+where a python test framework configures and spawns qemu (version 8.1) with two
+serial ports and boots a newly built kernel and rootfs there. The python test framework
+tries to detect getty login prompt from ttyS1 while boot time logging
+from qemu, kernel, userspace etc happens on serial console ttyS0. This has worked
+reliably for years and across multiple kernel versions. Now with 6.5 kernel there are
+suddenly frequent failures where ttyS1 doesn't show the login prompt in the python code
+which listens on the qemu socket from target system ttyS1. The target system ttyS0 is working
+and boot time logs and getty prompt are visible there. The ttyS1 logs from test framework show
+that only two characters CR and LF make it through. This same happens on x86_64 host
+running qemu machine for x86_64 and arm64 targets.
+
+The kernel boot logs from target system with 6.5.5 don't show any errors and getty
+processes are started correctly and they don't see any errors either. Data from
+target system userspace is being written, but seems to sometimes hang inside kernel
+or qemu serial port buffers, and only on the ttyS1 while ttyS0 works reliably all
+the time.
+
+Example target logs with 6.5.5 via ttyS0:
+
+https://autobuilder.yocto.io/pub/failed-builds-data/6.5%20kernel/j/qemu_boot_log.20231007084853
+or https://pastebin.com/raw/jRRa2CwW
+
+ttyS1 logs from the same run:
+https://autobuilder.yocto.io/pub/failed-builds-data/6.5%20kernel/j/qemu_boot_log.20231007084853.2
+
+Kernel config:
+https://pastebin.com/raw/Lv9Hfeuh
+
+Do you have any ideas or hints how to debug or possibly fix this?
+
+tty layer has seen quite a few major changes between 6.4.14 and 6.5.5 and we're not able
+to pinpoint or bisect the issue, since it so annoyingly rare.
+
+Some more details from Richard below.
+
+Cheers,
+
+-Mikko
+
+On Sun, Oct 08, 2023 at 09:23:57AM +0100, Richard Purdie wrote:
+> On Sat, 2023-10-07 at 23:05 +0100, Richard Purdie via
+> lists.openembedded.org wrote:
+> > I thought I'd summarise where things are at with the 6.5 kernel.
+> > 
+> > We've fixed:
+> > * the ARM LTP OOM lockup (kernel patch)
+> > * the locale ARM selftest failure which was OOM due to silly buffer 
+> >   allocations in 6.5 (kernel commandline)
+> > * the ARM jitterentropy errors (kernel patch)
+> > * the cryptodev build failures (recipe updated)
+> > 
+> > We've also:
+> > * disabled the strace tests that fail with 6.5.
+> > * made sure the serial ports and getty counts match
+> > * added ttyrun which wraps serial consoles and avoids hacks
+> > * made the qemurunner logging save all the port logs
+> > * made the qemurunner write the binary data it is sent verbatim
+> > * made sure to use nodelay on qemu's tcpserial
+> > 
+> > This leaves an annoying serial console problem where ttyS1 never has
+> > the getty login prompt appear.
+> > 
+> > What we know:
+> > 
+> > * We've only seen this on x86 more recently (yesterday/today) but have
+> > seen it on ARM in the days before that.
+> > 
+> > * It affects both sysvinit and systemd images.
+> > 
+> > * Systemd does print that it started a getty on ttyS0 and ttyS1 when
+> > the failure occurs
+> > 
+> > * There is a getty running according to "ps" when the failure occurs
+> > 
+> > * There are only ever one or three characters received to ttyS1 in the
+> > failure case (0x0d and 0x0a chars, i.e. CR and LF)
+> > 
+> > * It can't be any kind of utf-8 conversion issue since the login prompt
+> > isn't visible in the binary log
+> > 
+> > * the kernel boot logs do show the serial port created with the same
+> > ioport and irq on x86.
+> > 
+> > Previously we did see some logs with timing issues on the ttyS0 port
+> > but the nodelay parameter may have helped with that.
+> > 
+> > There are debug patches in master-next against qemurunner which try and
+> > poke around to gather more debug when things fail using ttyS0.
+> > 
+> > The best failure log we have is now this one:
+> > 
+> > https://autobuilder.yoctoproject.org/typhoon/#/builders/79/builds/5874/steps/14/logs/stdio
+> > 
+> > where I've saved the logs:
+> > 
+> > https://autobuilder.yocto.io/pub/failed-builds-data/6.5%20kernel/j/qemu_boot_log.20231007084853
+> > and
+> > https://autobuilder.yocto.io/pub/failed-builds-data/6.5%20kernel/j/qemu_boot_log.20231007084853.2
+> > 
+> > You can see ttyS1 times out after 1000 seconds and the port only has a
+> > single byte (in the .2 file). The other log shows ps output showing the
+> > getty running for ttyS1.
+> > 
+> > Ideas welcome on where from here. 
+> > 
+> > I've tweaked master-next to keep reading the ttyS1 port after we poke
+> > it from ttyS0 to see if that reveals anything next time it fails (build
+> > running).
 > 
-> When the specific type of the port is not important to the userspace
-> there's no need for a unique PORT_ value, but so far there's no suitable
-> identifier for that case.
+> Testing overnight with the new debug yielded:
 > 
-> Provide generic port type identifier other than PORT_UNKNOWN for ports
-> which type is not important to userspace.
-
-Oh, finally someone submitted this.
-
-> Suggested-by: Arnd Bergmann <arnd@arndb.de>
-> Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-In that case metoo [1]:
-Suggested-by: Jiri Slaby <jirislaby@kernel.org>
-and
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-
-[1] 
-https://lore.kernel.org/all/75375f8d-e157-a364-3da5-9c8d5b832927@kernel.org/
-
-> Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-> ---
-> Changes v1->v2:
-> - move to the end of PORT_ definition list
-> - rename to PORT_GENERIC
+> https://autobuilder.yoctoproject.org/typhoon/#/builders/87/builds/5895/steps/14/logs/stdio
 > 
->   include/uapi/linux/serial_core.h | 3 +++
->   1 file changed, 3 insertions(+)
+> The interesting bit being:
 > 
-> diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-> index add349889d0a..0a5090e08657 100644
-> --- a/include/uapi/linux/serial_core.h
-> +++ b/include/uapi/linux/serial_core.h
-> @@ -245,4 +245,7 @@
->   /* Sunplus UART */
->   #define PORT_SUNPLUS	123
->   
-> +/* Generic type identifier for ports which type is not important to userspace. */
-> +#define PORT_GENERIC	(-1)
-> +
->   #endif /* _UAPILINUX_SERIAL_CORE_H */
-
--- 
-js
-suse labs
-
+> """
+> WARNING: core-image-full-cmdline-1.0-r0 do_testimage: Extra read data: 
+> Poky (Yocto Project Reference Distro) 4.2+snapshot-
+> 7cb4ffbd8380b0509d7fac9191095379af321686 qemux86-64 ttyS1
+> 
+> qemux86-64 login: helloA
+> 
+> Poky (Yocto Project Reference Distro) 4.2+snapshot-
+> 7cb4ffbd8380b0509d7fac9191095379af321686 qemux86-64 ttyS1
+> qemux86-64 login: 
+> 
+> """
+> 
+> i.e. the getty didn't appear in 1000s but sometime in shutdown the
+> original prompt, the "helloA" and the new getty prompt did.
+> 
+> So the data *is* there but stuck in a buffer somehow. Kernel or qemu
+> side, I don't know.
+> 
+> Cheers,
+> 
+> Richard
+> 
+> 
+> 
+> 
