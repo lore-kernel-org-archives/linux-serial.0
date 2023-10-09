@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A65F2E95A8D
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Oct 2023 05:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B411DE95A8D
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Oct 2023 06:03:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345094AbjJIF2J (ORCPT
+        id S1345135AbjJIGDz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 Oct 2023 01:28:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59908 "EHLO
+        Mon, 9 Oct 2023 02:03:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345049AbjJIF2I (ORCPT
+        with ESMTP id S1345128AbjJIGDx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 Oct 2023 01:28:08 -0400
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77EC49E;
-        Sun,  8 Oct 2023 22:28:06 -0700 (PDT)
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-9b27bc8b65eso682504166b.0;
-        Sun, 08 Oct 2023 22:28:06 -0700 (PDT)
+        Mon, 9 Oct 2023 02:03:53 -0400
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433D39E;
+        Sun,  8 Oct 2023 23:03:52 -0700 (PDT)
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-9b9faf05f51so465725566b.2;
+        Sun, 08 Oct 2023 23:03:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696829285; x=1697434085;
+        d=1e100.net; s=20230601; t=1696831431; x=1697436231;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=j+afoSmcF0IJhO5eazQTPFiwv2tSyRb98FrrmdVYsWo=;
-        b=TsOq/gApMhwD4GgaTPXGLZxvLQMcS/1nJXG4LO2Kbc7laWaBWWYwAtFAiE6Wq/JJ0o
-         VyixBd04Ciw+pCW4zyfEwdfPlRlmwxZdG4vbhCikvJauGsuRnUXL33IGbZsOzD+Zf0SE
-         VT+cjOPP3aqXGkhhrxq90+C5ddg97lo1Ratyl7VIgd8X2jZBhXJKt31VWWIArDDbHT0h
-         Jit1+zwqOKyLCl41rZnqFRNL7lnuItKGct0k8ba61TksL7HjSo63cjkbV2utPytYO83N
-         EBAB48qowQxywOjUC3y+smCJwvel2Np2Sms5LjDKUxWPVlz72MTwusdk3HZygdZQsX8s
-         l89g==
-X-Gm-Message-State: AOJu0YxoSRIoIW/RZJogDJmmdGjjqMVZmtmCo3In/81FxAHYeaCbAM8j
-        g+pcPqN5cuN9Jlgzkev2JrHFGSGv/c0=
-X-Google-Smtp-Source: AGHT+IF2ra0ODkoOfgyzWvYIiafNopnyBcpAckIjaj/KDHNa0pgDr4EyV5OqSqd7kL4YTBBzwMdmIw==
-X-Received: by 2002:a17:906:8a52:b0:9a9:e943:b601 with SMTP id gx18-20020a1709068a5200b009a9e943b601mr10352191ejc.46.1696829284703;
-        Sun, 08 Oct 2023 22:28:04 -0700 (PDT)
+        bh=1rqQIE2tSCVvRi3+hOn6TUFncCXIMdVf8RTEYbciBYQ=;
+        b=EvuGVeg5mUc6HkgnoHKAhFJzNFNdtFJOSjzhrQ6vh3LIq1SlUsrN9mLHmGxYOkYR6E
+         tiAPb1H4Bf52SFpD2vaGvlpjEaPb2bgx64g1K+hwXRNMXpKngH+5U7Vyofk7GTEa77DF
+         8s3ltUKVcY3uW5wL95/UyXS2wfxgMWzZqRdVC5eGw2Y8xFUmxSsfuPqiXx6HpCXVNlFJ
+         rT7rCmNUlBMV+Gym4kfxuX9hGLlZKeS/qnadVTH9Nj3//KOAMKTRcaWd2Xtw0pKYBA2r
+         IRS2KoL5QOgOyGCYrRgVit5zQ7j72o/iTQQnAVNvesHA90F35OwAFU0iAAArLtGRtk6S
+         pM4g==
+X-Gm-Message-State: AOJu0YxO3J5R7Z8IT836l0AOG7TupSmHKHsUWainHxpcnynrOXdpM/D7
+        n0z763t8r/pbciBQnqVmNTE=
+X-Google-Smtp-Source: AGHT+IEpUD9rN2WKMDFcHPGTD+DzIsmmThM5r4FlW2dQqqJwu1Kvqdn4FoEv715pvxC9BZou4d+gjQ==
+X-Received: by 2002:a17:906:2210:b0:9b2:8323:d916 with SMTP id s16-20020a170906221000b009b28323d916mr13997909ejs.17.1696831430631;
+        Sun, 08 Oct 2023 23:03:50 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id by8-20020a170906a2c800b009b913aa7cdasm6290049ejb.92.2023.10.08.22.28.03
+        by smtp.gmail.com with ESMTPSA id jp20-20020a170906f75400b0099bcb44493fsm6359252ejb.147.2023.10.08.23.03.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 Oct 2023 22:28:03 -0700 (PDT)
-Message-ID: <68c4b7ee-345f-42e4-a69e-700384b711ad@kernel.org>
-Date:   Mon, 9 Oct 2023 07:28:03 +0200
+        Sun, 08 Oct 2023 23:03:49 -0700 (PDT)
+Message-ID: <33bd60a8-77ea-426d-a158-f289e020d21a@kernel.org>
+Date:   Mon, 9 Oct 2023 08:03:49 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] tty: vc_screen: make vc_class constant
+Subject: Re: [PATCH v2] serial: add PORT_GENERIC definition
 Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To:     Max Filippov <jcmvbkbc@gmail.com>, linux-kernel@vger.kernel.org,
         linux-serial@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-References: <2023100546-humbly-prologue-e58c@gregkh>
- <2023100549-sixth-anger-ac34@gregkh>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>
+References: <20231008001804.889727-1-jcmvbkbc@gmail.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -93,44 +93,60 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <2023100549-sixth-anger-ac34@gregkh>
+In-Reply-To: <20231008001804.889727-1-jcmvbkbc@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 05. 10. 23, 15:33, Greg Kroah-Hartman wrote:
-> Now that the driver core allows for struct class to be in read-only
-> memory, making all 'class' structures to be declared at build time
-> placing them into read-only memory, instead of having to be dynamically
-> allocated at load time.
+On 08. 10. 23, 2:18, Max Filippov wrote:
+> Current pattern in the linux kernel is that every new serial driver adds
+> one or more new PORT_ definitions because uart_ops::config_port()
+> callback documentation prescribes setting port->type according to the
+> type of port found, or to PORT_UNKNOWN if no port was detected.
 > 
-> Cc: Jiri Slaby <jirislaby@kernel.org>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->   drivers/tty/vt/vc_screen.c | 28 ++++++++++++++--------------
->   1 file changed, 14 insertions(+), 14 deletions(-)
+> When the specific type of the port is not important to the userspace
+> there's no need for a unique PORT_ value, but so far there's no suitable
+> identifier for that case.
 > 
-> diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
-> index 829c4be66f3b..b16ea517bb17 100644
-> --- a/drivers/tty/vt/vc_screen.c
-> +++ b/drivers/tty/vt/vc_screen.c
-...
-> @@ -811,11 +810,12 @@ int __init vcs_init(void)
->   
->   	if (register_chrdev(VCS_MAJOR, "vcs", &vcs_fops))
->   		panic("unable to get major %d for vcs device", VCS_MAJOR);
-> -	vc_class = class_create("vc");
-> +	if (class_register(&vc_class))
-> +		panic("unable to create vc_class");
+> Provide generic port type identifier other than PORT_UNKNOWN for ports
+> which type is not important to userspace.
 
-FWIW it's no longer "create". Now it's "register".
+Oh, finally someone submitted this.
 
-Anyway, for the sake of archives:
+> Suggested-by: Arnd Bergmann <arnd@arndb.de>
+> Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+In that case metoo [1]:
+Suggested-by: Jiri Slaby <jirislaby@kernel.org>
+and
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-regards,
+[1] 
+https://lore.kernel.org/all/75375f8d-e157-a364-3da5-9c8d5b832927@kernel.org/
+
+> Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+> ---
+> Changes v1->v2:
+> - move to the end of PORT_ definition list
+> - rename to PORT_GENERIC
+> 
+>   include/uapi/linux/serial_core.h | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+> index add349889d0a..0a5090e08657 100644
+> --- a/include/uapi/linux/serial_core.h
+> +++ b/include/uapi/linux/serial_core.h
+> @@ -245,4 +245,7 @@
+>   /* Sunplus UART */
+>   #define PORT_SUNPLUS	123
+>   
+> +/* Generic type identifier for ports which type is not important to userspace. */
+> +#define PORT_GENERIC	(-1)
+> +
+>   #endif /* _UAPILINUX_SERIAL_CORE_H */
+
 -- 
 js
 suse labs
