@@ -2,166 +2,146 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37550E95A96
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Oct 2023 15:14:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08DE7C2BA1B
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Oct 2023 16:01:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377745AbjJIPOb (ORCPT
+        id S1377086AbjJIQBo (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 Oct 2023 11:14:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56208 "EHLO
+        Mon, 9 Oct 2023 12:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376488AbjJIPOJ (ORCPT
+        with ESMTP id S230326AbjJIQBo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 Oct 2023 11:14:09 -0400
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D4CE1;
-        Mon,  9 Oct 2023 08:13:56 -0700 (PDT)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 8696A20008;
-        Mon,  9 Oct 2023 15:13:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1696864434;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qXkxOiYSFneTGLhk5il+8SZPucsOCBsZOYZ/HrPz4DA=;
-        b=odLtLQNAUf7WSgCe5nu+P4zzFmfpRimsiVBXhYJbezc11TiAcFzcjdOBJ5Z68HDQ2aqOCa
-        Q8DbEb544MwpITwL1g5S9P2WrWhWgsODl4V9xkkdcz6SkJ0WD2AdjE4jm1EvvEX8gVswrh
-        RGCKYRavraWFYQB6k2NSJ84WNMAyiUxoyFasL3gPj/UKbgjtdnp1r+t/tBesg9eaOWOvWW
-        ZkZwJMkMbKxrr6Gb39k2UhwwkT7rlOzR2nrWMTfk5WCnf2Gcxu86ggjV+0YXsMm9LNNiWW
-        j8TSEhaJ3HIaa0yU3ESkhQefQUBlzqlNfnngLtv0VrTQhyHNFQ0o6vvubRm+Ig==
-Message-ID: <a5bee830-07af-426b-94ac-3574cba34bec@bootlin.com>
-Date:   Mon, 9 Oct 2023 17:13:52 +0200
+        Mon, 9 Oct 2023 12:01:44 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3383591;
+        Mon,  9 Oct 2023 09:01:42 -0700 (PDT)
+Received: from [192.168.100.7] (unknown [39.34.187.171])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: usama.anjum)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id A44B2660716E;
+        Mon,  9 Oct 2023 17:01:36 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1696867300;
+        bh=JyCJjEdKDLAlTbnUu+YzmviHWlf4l4V/ZaDd4AoNfZ8=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=arLoE8vSMK/pwr6KnXQ+vQrYtq9qdcjIYiv7IEBKOikws56wuAIQVlTpi6EtrzhWu
+         vRT33AmD8Cu+60weu9K6XF8Yro/M1RfKLQYWcPEH8sVUo4h5jUbZK98Ra5j1Kk/gAj
+         +gWiNC6i7E+a6tfbo6+cCNAfNXq9OhPm6M3/1gwKayAfPBYAjoBtXuRYJftPOcq4TW
+         o0flrKM6W11fUTtaKtOEhN8L8D2fMJIB3jUeuzWyRUFFd+T/7Q5NKdpSZzV6Q2WiJN
+         WFhUYgyCq2y7c5CKsVlOpi14BRUJdgNuOy68ho6nJj8LT8vyGfw96J+jn0gSfymVEn
+         89Id3+cpBkw1w==
+Message-ID: <c3835e0a-97ef-4c95-9e2b-abb3092d3ef3@collabora.com>
+Date:   Mon, 9 Oct 2023 21:01:33 +0500
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: serial: 8250_omap: suspend issue with console_suspend disabled
+Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Ingo Molnar <mingo@elte.hu>, kernel@collabora.com,
+        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3] tty/sysrq: replace smp_processor_id() with get_cpu()
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+References: <20230822102606.2821311-1-usama.anjum@collabora.com>
+ <2023091835-quill-congress-b691@gregkh>
+ <d0406751-829d-4892-9939-0e8873be3318@kernel.org>
+ <2023091957-roundish-epilepsy-9686@gregkh>
 Content-Language: en-US
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     linux-pm@vger.kernel.org, linux-serial@vger.kernel.org,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Kumar Udit <u-kumar1@ti.com>, Dhruva Gole <d-gole@ti.com>
-References: <59b13c93-6637-3050-c145-31be0d6c12c9@bootlin.com>
- <20230920053828.GD5282@atomide.com>
-From:   Thomas Richard <thomas.richard@bootlin.com>
-In-Reply-To: <20230920053828.GD5282@atomide.com>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <2023091957-roundish-epilepsy-9686@gregkh>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-GND-Sasl: thomas.richard@bootlin.com
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 9/20/23 07:38, Tony Lindgren wrote:
-> Hi,
-> 
-> * Thomas Richard <thomas.richard@bootlin.com> [230915 09:57]:
->> The regression was introduced in commit 20a41a62618d "serial: 8250_omap:
->> Use force_suspend and resume for system suspend"
-> ...
-> 
->> --- a/drivers/tty/serial/8250/8250_omap.c
->> +++ b/drivers/tty/serial/8250/8250_omap.c
->> @@ -1630,7 +1630,7 @@ static int omap8250_suspend(struct device *dev)
->>         err = pm_runtime_force_suspend(dev);
->>         flush_work(&priv->qos_work);
+On 9/19/23 12:13 PM, Greg Kroah-Hartman wrote:
+> On Tue, Sep 19, 2023 at 07:52:42AM +0200, Jiri Slaby wrote:
+>> On 18. 09. 23, 10:10, Greg Kroah-Hartman wrote:
+>>> On Tue, Aug 22, 2023 at 03:26:06PM +0500, Muhammad Usama Anjum wrote:
+>>>> The smp_processor_id() shouldn't be called from preemptible code.
+>>>> Instead use get_cpu() and put_cpu() which disables preemption in
+>>>> addition to getting the processor id. This fixes the following bug:
+>>>>
+>>>> [  119.143590] sysrq: Show backtrace of all active CPUs
+>>>> [  119.143902] BUG: using smp_processor_id() in preemptible [00000000] code: bash/873
+>>>> [  119.144586] caller is debug_smp_processor_id+0x20/0x30
+>>>> [  119.144827] CPU: 6 PID: 873 Comm: bash Not tainted 5.10.124-dirty #3
+>>>> [  119.144861] Hardware name: QEMU QEMU Virtual Machine, BIOS 2023.05-1 07/22/2023
+>>>> [  119.145053] Call trace:
+>>>> [  119.145093]  dump_backtrace+0x0/0x1a0
+>>>> [  119.145122]  show_stack+0x18/0x70
+>>>> [  119.145141]  dump_stack+0xc4/0x11c
+>>>> [  119.145159]  check_preemption_disabled+0x100/0x110
+>>>> [  119.145175]  debug_smp_processor_id+0x20/0x30
+>>>> [  119.145195]  sysrq_handle_showallcpus+0x20/0xc0
+>>>> [  119.145211]  __handle_sysrq+0x8c/0x1a0
+>>>> [  119.145227]  write_sysrq_trigger+0x94/0x12c
+>>>> [  119.145247]  proc_reg_write+0xa8/0xe4
+>>>> [  119.145266]  vfs_write+0xec/0x280
+>>>> [  119.145282]  ksys_write+0x6c/0x100
+>>>> [  119.145298]  __arm64_sys_write+0x20/0x30
+>>>> [  119.145315]  el0_svc_common.constprop.0+0x78/0x1e4
+>>>> [  119.145332]  do_el0_svc+0x24/0x8c
+>>>> [  119.145348]  el0_svc+0x10/0x20
+>>>> [  119.145364]  el0_sync_handler+0x134/0x140
+>>>> [  119.145381]  el0_sync+0x180/0x1c0
+>>>>
+>>>> Cc: stable@vger.kernel.org
+>>>> Fixes: 47cab6a722d4 ("debug lockups: Improve lockup detection, fix generic arch fallback")
+>>>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+>>>> ---
+>>>> Changes since v2:
+>>>> - Add changelog and resend
+>>>>
+>>>> Changes since v1:
+>>>> - Add "Cc: stable@vger.kernel.org" tag
+>>>> ---
+>>>>   drivers/tty/sysrq.c | 3 ++-
+>>>>   1 file changed, 2 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+>>>> index 23198e3f1461a..6b4a28bcf2f5f 100644
+>>>> --- a/drivers/tty/sysrq.c
+>>>> +++ b/drivers/tty/sysrq.c
+>>>> @@ -262,13 +262,14 @@ static void sysrq_handle_showallcpus(u8 key)
+>>>>   		if (in_hardirq())
+>>>>   			regs = get_irq_regs();
+>>>> -		pr_info("CPU%d:\n", smp_processor_id());
+>>>> +		pr_info("CPU%d:\n", get_cpu());
+>>>
+>>> Why not call put_cpu() right here?
+>>>
+>>>>   		if (regs)
+>>>>   			show_regs(regs);
+>>>>   		else
+>>>>   			show_stack(NULL, NULL, KERN_INFO);
+>>>>   		schedule_work(&sysrq_showallcpus);
+>>>> +		put_cpu();
+>>>
+>>> Why wait so long here after you have scheduled work?  Please drop the
+>>> cpu reference right away, you don't need to hold it for this length of
+>>> time, right?
 >>
->> -       return err;
->> +       return 0;
->>  }
+>> As I understand it, this way, schedule_work() will queue the work on the
+>> "gotten" (current) CPU. So sysrq_showregs_othercpus() will really dump other
+>> than the "gotten" cpu.
 > 
-> Maybe we can now just simplify things a bit here with the patch below.
-> Care to give it a try, it's compile tested only so far.
+> Ok, that makes a bit more sense, but that's not what the code does
+> today, have people seen the regs dumped from the wrong cpu in the past?
 > 
->> Once the omap8250_suspend doesn't return an error, the suspend sequence
->> can continue, but I get an other issue.
->> This issue is not related to commit 20a41a62618d, it has already been
->> present.
->> The power domain of the console is powered-off, so no more messages are
->> printed, and the SoC is stucked.
->> As the uart port is used as console, we don't want to power-off it.
->> My workaround is to set the corresponding power domain to
->> GENPD_FLAG_ALWAYS_ON, so the uart port is not powered-off.
-> 
-> The runtime PM usage count should keep the related power domain on though,
-> sounds like this issue somewhere else if the power domains get force
-> suspended with runtime PM usage count?
-
-If I understand correctly, there are 2 solutions to keep the power
-domain on through.
-The first one is to set the flag GENPD_FLAG_ALWAYS_ON for the power domain.
-The second one is to set the wakup_path of the device (using
-device_set_wakeup_path) and set the flag GENPD_FLAG_ACTIVE_WAKEUP to the
-power domain.
-
-I didn't found any flag or option to say that the device is not
-suspended, but it is not an error, so we don't want to poweroff the
-power domain.
-
-Regards,
-
-Thomas
+>> If that is the case, it indeed should have been described in the commit log.
+Thanks for review. I'll add the explanation in the commit log and send again.
 
 > 
-> Regards,
+> Agreed.
 > 
-> Tony
+> thanks for the review,
 > 
-> 8< ------------------------------
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -1617,7 +1617,7 @@ static int omap8250_suspend(struct device *dev)
->  {
->  	struct omap8250_priv *priv = dev_get_drvdata(dev);
->  	struct uart_8250_port *up = serial8250_get_port(priv->line);
-> -	int err;
-> +	int err = 0;
->  
->  	serial8250_suspend_port(priv->line);
->  
-> @@ -1627,7 +1627,8 @@ static int omap8250_suspend(struct device *dev)
->  	if (!device_may_wakeup(dev))
->  		priv->wer = 0;
->  	serial_out(up, UART_OMAP_WER, priv->wer);
-> -	err = pm_runtime_force_suspend(dev);
-> +	if (uart_console(&up->port) && console_suspend_enabled)
-> +		err = pm_runtime_force_suspend(dev);
->  	flush_work(&priv->qos_work);
->  
->  	return err;
-> @@ -1636,11 +1637,15 @@ static int omap8250_suspend(struct device *dev)
->  static int omap8250_resume(struct device *dev)
->  {
->  	struct omap8250_priv *priv = dev_get_drvdata(dev);
-> +	struct uart_8250_port *up = serial8250_get_port(priv->line);
->  	int err;
->  
-> -	err = pm_runtime_force_resume(dev);
-> -	if (err)
-> -		return err;
-> +	if (uart_console(&up->port) && console_suspend_enabled) {
-> +		err = pm_runtime_force_resume(dev);
-> +		if (err)
-> +			return err;
-> +	}
-> +
->  	serial8250_resume_port(priv->line);
->  	/* Paired with pm_runtime_resume_and_get() in omap8250_suspend() */
->  	pm_runtime_mark_last_busy(dev);
-> @@ -1717,16 +1722,6 @@ static int omap8250_runtime_suspend(struct device *dev)
->  
->  	if (priv->line >= 0)
->  		up = serial8250_get_port(priv->line);
-> -	/*
-> -	 * When using 'no_console_suspend', the console UART must not be
-> -	 * suspended. Since driver suspend is managed by runtime suspend,
-> -	 * preventing runtime suspend (by returning error) will keep device
-> -	 * active during suspend.
-> -	 */
-> -	if (priv->is_suspending && !console_suspend_enabled) {
-> -		if (up && uart_console(&up->port))
-> -			return -EBUSY;
-> -	}
->  
->  	if (priv->habit & UART_ERRATA_CLOCK_DISABLE) {
->  		int ret;
+> greg k-h
+
+-- 
+BR,
+Muhammad Usama Anjum
