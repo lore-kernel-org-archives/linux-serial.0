@@ -2,129 +2,166 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A45F8E95A8E
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Oct 2023 12:57:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37550E95A96
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Oct 2023 15:14:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376567AbjJIM5O (ORCPT
+        id S1377745AbjJIPOb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 Oct 2023 08:57:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
+        Mon, 9 Oct 2023 11:14:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376530AbjJIM5O (ORCPT
+        with ESMTP id S1376488AbjJIPOJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 Oct 2023 08:57:14 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654518E
-        for <linux-serial@vger.kernel.org>; Mon,  9 Oct 2023 05:57:12 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id 5b1f17b1804b1-4056ce55e7eso42272705e9.2
-        for <linux-serial@vger.kernel.org>; Mon, 09 Oct 2023 05:57:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1696856231; x=1697461031; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :references:cc:to:content-language:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=EZXoHEUdlaSpzaGNvl0KYK8jIguk5p4r9xc4kKWkyNI=;
-        b=cQ8n5i8gBa6K5tN65CTo0SfyYm3lqrHYuM7Hjhg0fboo73ZIf1Vw5bs97nrGOcQ7R9
-         NoxKEl+qPh+d6w+REN0VGQhYHWfMqwP/kVP/bocTd2hUsEsIRZ7TW23ZB6w1kG+zwE48
-         hNAaMMYzNhqEQowpEIUuXXU1XbZDYfzh57B9kI5jUkbKbqWskkzp1SYICz5pU7G6B81e
-         TgkKFhx3IqfJcIsbHg4hewVu8OaGps7maOVqowKiRIYQ7564GgokGVWaj498Z2OeAYXk
-         voGrz9GBedmE/cJ2qQHtXCd0NvqY5KNTlZ959c288nh2hqIm/lb87VTepx3djB3I7RDx
-         WGsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696856231; x=1697461031;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :references:cc:to:content-language:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=EZXoHEUdlaSpzaGNvl0KYK8jIguk5p4r9xc4kKWkyNI=;
-        b=xTN6SK9UY8hsMLzuXFFg2LvD+wdGP5LH3wRCV4/5cGG6k/3NM68tf4I0hUWVYtXoqE
-         wgTIXVumkBq44N6z1OCajnj+y/esNZNVO3Virsev5dauDAKGnIbsQl2bQyHJAeEdTTkH
-         P+A9d5OnjJkmSHb6DiXtE2IKOBpVXCo2IP7bKXHsPocIvO/7v7wzvn67jj4cwogPh7/5
-         sVBqwF9bpOrwWRtIi4qejO/Y15EjZHMgA1oFgyD9bdsE6DAujhnFiPr7jynFEp87gpRT
-         j/DdHqYR/YwxAxbX2KJU7GX1oVKsQPPGN01w8vXhfE0QBg9QQTi1lHbXDdZtyOvo9rVn
-         XMhQ==
-X-Gm-Message-State: AOJu0YxLhLV6Q7a41o7ByJRKfWbmkDZoU8CJrZtDO3lHjdKuqXqYxyBe
-        /0NTbx96ztP471tDdux32oJNHEpJLJLx+bjV69K0CBpn
-X-Google-Smtp-Source: AGHT+IFCcZ9U4VKbmvYJqVAUH/X0Z49KpYeQVkB7vsetwEcUfdpmXdEvFY1+nTDw39WcIZKChcMilw==
-X-Received: by 2002:adf:f641:0:b0:31f:b6ea:af48 with SMTP id x1-20020adff641000000b0031fb6eaaf48mr13186215wrp.49.1696856230815;
-        Mon, 09 Oct 2023 05:57:10 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:982:cbb0:4406:fc3c:1c62:7b3e? ([2a01:e0a:982:cbb0:4406:fc3c:1c62:7b3e])
-        by smtp.gmail.com with ESMTPSA id m8-20020a056000180800b00321773bb933sm9575321wrh.77.2023.10.09.05.57.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Oct 2023 05:57:10 -0700 (PDT)
-Message-ID: <d25ce389-b18b-4c45-9c61-5a909b514699@linaro.org>
-Date:   Mon, 9 Oct 2023 14:57:09 +0200
+        Mon, 9 Oct 2023 11:14:09 -0400
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D4CE1;
+        Mon,  9 Oct 2023 08:13:56 -0700 (PDT)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 8696A20008;
+        Mon,  9 Oct 2023 15:13:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1696864434;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qXkxOiYSFneTGLhk5il+8SZPucsOCBsZOYZ/HrPz4DA=;
+        b=odLtLQNAUf7WSgCe5nu+P4zzFmfpRimsiVBXhYJbezc11TiAcFzcjdOBJ5Z68HDQ2aqOCa
+        Q8DbEb544MwpITwL1g5S9P2WrWhWgsODl4V9xkkdcz6SkJ0WD2AdjE4jm1EvvEX8gVswrh
+        RGCKYRavraWFYQB6k2NSJ84WNMAyiUxoyFasL3gPj/UKbgjtdnp1r+t/tBesg9eaOWOvWW
+        ZkZwJMkMbKxrr6Gb39k2UhwwkT7rlOzR2nrWMTfk5WCnf2Gcxu86ggjV+0YXsMm9LNNiWW
+        j8TSEhaJ3HIaa0yU3ESkhQefQUBlzqlNfnngLtv0VrTQhyHNFQ0o6vvubRm+Ig==
+Message-ID: <a5bee830-07af-426b-94ac-3574cba34bec@bootlin.com>
+Date:   Mon, 9 Oct 2023 17:13:52 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-From:   Neil Armstrong <neil.armstrong@linaro.org>
-Reply-To: neil.armstrong@linaro.org
-Subject: Re: [PATCH v2] tty: serial: meson: Add a earlycon for the S4 SoC
-Content-Language: en-US, fr
-To:     Lucas Tanure <tanure@linux.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org
-References: <20231009121151.4509-1-tanure@linux.com>
-Autocrypt: addr=neil.armstrong@linaro.org; keydata=
- xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
- GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
- BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
- qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
- 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
- AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
- OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
- Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
- YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
- GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
- UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
- GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
- yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
- QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
- SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
- 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
- Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
- oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
- M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
- 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
- KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
- 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
- QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
-Organization: Linaro Developer Services
-In-Reply-To: <20231009121151.4509-1-tanure@linux.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: serial: 8250_omap: suspend issue with console_suspend disabled
+Content-Language: en-US
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     linux-pm@vger.kernel.org, linux-serial@vger.kernel.org,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Kumar Udit <u-kumar1@ti.com>, Dhruva Gole <d-gole@ti.com>
+References: <59b13c93-6637-3050-c145-31be0d6c12c9@bootlin.com>
+ <20230920053828.GD5282@atomide.com>
+From:   Thomas Richard <thomas.richard@bootlin.com>
+In-Reply-To: <20230920053828.GD5282@atomide.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-GND-Sasl: thomas.richard@bootlin.com
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 09/10/2023 14:11, Lucas Tanure wrote:
-> The new Amlogic S4 SoC does not have a always-on uart, so add
-> OF_EARLYCON_DECLARE for it.
-> Amlogic T7 will use this as fallback.
+On 9/20/23 07:38, Tony Lindgren wrote:
+> Hi,
 > 
-> Signed-off-by: Lucas Tanure <tanure@linux.com>
-> ---
->   drivers/tty/serial/meson_uart.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+> * Thomas Richard <thomas.richard@bootlin.com> [230915 09:57]:
+>> The regression was introduced in commit 20a41a62618d "serial: 8250_omap:
+>> Use force_suspend and resume for system suspend"
+> ...
 > 
-> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-> index 45cc23e9e399..de298bf75d9b 100644
-> --- a/drivers/tty/serial/meson_uart.c
-> +++ b/drivers/tty/serial/meson_uart.c
-> @@ -646,8 +646,8 @@ meson_serial_early_console_setup(struct earlycon_device *device, const char *opt
->   	return 0;
->   }
->   
-> -OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
-> -		    meson_serial_early_console_setup);
-> +OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart", meson_serial_early_console_setup);
-> +OF_EARLYCON_DECLARE(meson, "amlogic,meson-s4-uart", meson_serial_early_console_setup);
->   
->   #define MESON_SERIAL_CONSOLE_PTR(_devname) (&meson_serial_console_##_devname)
->   #else
+>> --- a/drivers/tty/serial/8250/8250_omap.c
+>> +++ b/drivers/tty/serial/8250/8250_omap.c
+>> @@ -1630,7 +1630,7 @@ static int omap8250_suspend(struct device *dev)
+>>         err = pm_runtime_force_suspend(dev);
+>>         flush_work(&priv->qos_work);
+>>
+>> -       return err;
+>> +       return 0;
+>>  }
+> 
+> Maybe we can now just simplify things a bit here with the patch below.
+> Care to give it a try, it's compile tested only so far.
+> 
+>> Once the omap8250_suspend doesn't return an error, the suspend sequence
+>> can continue, but I get an other issue.
+>> This issue is not related to commit 20a41a62618d, it has already been
+>> present.
+>> The power domain of the console is powered-off, so no more messages are
+>> printed, and the SoC is stucked.
+>> As the uart port is used as console, we don't want to power-off it.
+>> My workaround is to set the corresponding power domain to
+>> GENPD_FLAG_ALWAYS_ON, so the uart port is not powered-off.
+> 
+> The runtime PM usage count should keep the related power domain on though,
+> sounds like this issue somewhere else if the power domains get force
+> suspended with runtime PM usage count?
 
-Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
+If I understand correctly, there are 2 solutions to keep the power
+domain on through.
+The first one is to set the flag GENPD_FLAG_ALWAYS_ON for the power domain.
+The second one is to set the wakup_path of the device (using
+device_set_wakeup_path) and set the flag GENPD_FLAG_ACTIVE_WAKEUP to the
+power domain.
+
+I didn't found any flag or option to say that the device is not
+suspended, but it is not an error, so we don't want to poweroff the
+power domain.
+
+Regards,
+
+Thomas
+
+> 
+> Regards,
+> 
+> Tony
+> 
+> 8< ------------------------------
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -1617,7 +1617,7 @@ static int omap8250_suspend(struct device *dev)
+>  {
+>  	struct omap8250_priv *priv = dev_get_drvdata(dev);
+>  	struct uart_8250_port *up = serial8250_get_port(priv->line);
+> -	int err;
+> +	int err = 0;
+>  
+>  	serial8250_suspend_port(priv->line);
+>  
+> @@ -1627,7 +1627,8 @@ static int omap8250_suspend(struct device *dev)
+>  	if (!device_may_wakeup(dev))
+>  		priv->wer = 0;
+>  	serial_out(up, UART_OMAP_WER, priv->wer);
+> -	err = pm_runtime_force_suspend(dev);
+> +	if (uart_console(&up->port) && console_suspend_enabled)
+> +		err = pm_runtime_force_suspend(dev);
+>  	flush_work(&priv->qos_work);
+>  
+>  	return err;
+> @@ -1636,11 +1637,15 @@ static int omap8250_suspend(struct device *dev)
+>  static int omap8250_resume(struct device *dev)
+>  {
+>  	struct omap8250_priv *priv = dev_get_drvdata(dev);
+> +	struct uart_8250_port *up = serial8250_get_port(priv->line);
+>  	int err;
+>  
+> -	err = pm_runtime_force_resume(dev);
+> -	if (err)
+> -		return err;
+> +	if (uart_console(&up->port) && console_suspend_enabled) {
+> +		err = pm_runtime_force_resume(dev);
+> +		if (err)
+> +			return err;
+> +	}
+> +
+>  	serial8250_resume_port(priv->line);
+>  	/* Paired with pm_runtime_resume_and_get() in omap8250_suspend() */
+>  	pm_runtime_mark_last_busy(dev);
+> @@ -1717,16 +1722,6 @@ static int omap8250_runtime_suspend(struct device *dev)
+>  
+>  	if (priv->line >= 0)
+>  		up = serial8250_get_port(priv->line);
+> -	/*
+> -	 * When using 'no_console_suspend', the console UART must not be
+> -	 * suspended. Since driver suspend is managed by runtime suspend,
+> -	 * preventing runtime suspend (by returning error) will keep device
+> -	 * active during suspend.
+> -	 */
+> -	if (priv->is_suspending && !console_suspend_enabled) {
+> -		if (up && uart_console(&up->port))
+> -			return -EBUSY;
+> -	}
+>  
+>  	if (priv->habit & UART_ERRATA_CLOCK_DISABLE) {
+>  		int ret;
