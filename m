@@ -2,220 +2,120 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB12FE95A91
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Oct 2023 10:05:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D18E8E95A97
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Oct 2023 11:53:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346026AbjJIKFb (ORCPT
+        id S234531AbjJILxh convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 Oct 2023 06:05:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46348 "EHLO
+        Mon, 9 Oct 2023 07:53:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346045AbjJIKFa (ORCPT
+        with ESMTP id S232860AbjJILxh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 Oct 2023 06:05:30 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A0299
-        for <linux-serial@vger.kernel.org>; Mon,  9 Oct 2023 03:05:28 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id 38308e7fff4ca-2bffd6c1460so50507691fa.3
-        for <linux-serial@vger.kernel.org>; Mon, 09 Oct 2023 03:05:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1696845926; x=1697450726; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=qFG+CiAZlRg4OOl3cBMYm6ObwNj6T13IKlkez+l7sys=;
-        b=M/RDmf1d3ZD6SdaLyBJvyBVT4KjON7mq4I0ex7QsQt+NcY6zO3DPXY+TY/bw6+o25J
-         BdBmLiVfCyAnUUjduFdQGYMpK/yTIjce13efaPxglf0r+K830+2rAyfvba0V/na5T9F+
-         QIxyL8aHEPYCZ+J891llrE0wOYEzCtoeruNwbXGLXZZamfZvzqQ9CJKklG5OXKgDuzr6
-         5CjpuwuWrNP7V5dJ/c3uYJCex7RJnGBoNFeR26mamBUsL4GqE7Y/spAQnH/WG39XvpXh
-         tCNH5ZMN5oRpSoe31vZ/l2Z8M1wVYXvkYtg8aiFGlvfRY5MmtF48d06hNGtuTKw/w3oh
-         SJ0Q==
+        Mon, 9 Oct 2023 07:53:37 -0400
+Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4831BAC;
+        Mon,  9 Oct 2023 04:53:36 -0700 (PDT)
+Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-579de633419so54428567b3.3;
+        Mon, 09 Oct 2023 04:53:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696845926; x=1697450726;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qFG+CiAZlRg4OOl3cBMYm6ObwNj6T13IKlkez+l7sys=;
-        b=CwcIoZDMQKrhZGQbZxZWgwHBMk0DS3wDQ7yLV+pEOkru9j6j0SgiJ9HC2JSiDpKzTx
-         L0i1NOG2FYzmCpgO3Ya0hLdfR1Wqq5Etugp4GPVV2CpfeclAjvYtqWTegpB1DoOZi1F4
-         ni1jez5iTF/kCLtifc0fwJlXBR+/6x7QD1jpLCD/p8mL37TGpfc5RNXKWun3afryCT3J
-         ZtYcxZt2m0rbMEGzOJTfJgcBu5wU4byKbBqrpdrTKlNy8RSel/xVizCAdJhdPMFbk2l2
-         eoaRJSSJJVAdx0AuGbOnHySdIwnAHN9dYpY5g3Fxg/v1IEvhkYfK3txbywQy/Xjo854r
-         1cVg==
-X-Gm-Message-State: AOJu0YwoB2QAud7z6clX5cvPr2DBohSozBKQUBYpIS4dMsNhmcmllldP
-        LFsidqGd9SJVBjKPt55v+5q70NqfzEiypQ/cAxs=
-X-Google-Smtp-Source: AGHT+IGiDgo+rsW3vX/OG1IO4kHkeXBvv4m9x76xZ13hyIEnChIQOvMw7PZQzqbXZtaXuD2aoXZc6w==
-X-Received: by 2002:a2e:9882:0:b0:2bd:a5:3560 with SMTP id b2-20020a2e9882000000b002bd00a53560mr12695521ljj.38.1696845926404;
-        Mon, 09 Oct 2023 03:05:26 -0700 (PDT)
-Received: from nuoska (dsl-olubng11-54f814-94.dhcp.inet.fi. [84.248.20.94])
-        by smtp.gmail.com with ESMTPSA id y2-20020a2eb002000000b002c128e4524dsm1983944ljk.116.2023.10.09.03.05.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Oct 2023 03:05:25 -0700 (PDT)
-Date:   Mon, 9 Oct 2023 13:05:23 +0300
-From:   Mikko Rapeli <mikko.rapeli@linaro.org>
-To:     linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Richard Purdie <richard.purdie@linuxfoundation.org>
-Cc:     openembedded-core <openembedded-core@lists.openembedded.org>,
-        Paul Gortmaker <p_gortmaker@yahoo.com>,
-        Bruce Ashfield <bruce.ashfield@gmail.com>,
-        Randy MacLeod <randy.macleod@windriver.com>
-Subject: Kernel 6.5 ttyS1 hang with qemu (was Re: [OE-core] Summary of the
- remaining 6.5 kernel serial issue (and 6.5 summary)
-Message-ID: <ZSPQY6UYg21Z0PnN@nuoska>
-References: <178BF2895FF685E6.5378@lists.openembedded.org>
- <a2ad67a0575548b6d5d8d187e597dcd72ae07f64.camel@linuxfoundation.org>
+        d=1e100.net; s=20230601; t=1696852415; x=1697457215;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ybye+C8MBcGUmV871n4R2YjpePe8r44+vRs5z5Nx4zI=;
+        b=OLFYtRGY+AMU98QuZGQ6OK/XyMgb6Q6JgN1oGyPoaVjwE5agRBHJ11TpfPl/D3p77E
+         kD9nQKSIh6YhK1dvHaHO8TqWKi/2gAcJZ8St2/gwZqvMxZZo93Y6CPKure6yVGBOIJzI
+         xIYeyjLM2haflPge70D0FaysN5INkTiHjrCK5u9zUmR9F7g6+rplVIgJ7ZpkXEVflD07
+         sIDWjKIARrBjWSHAvWdoolr+IcZrsNI3qqwVTqogMz09eGxQwjhbCCE9PeIJ9+p/c1QT
+         pKyF115c9x+MdJ6fz9GJUBJW/BExMY63WMZf+zNJa+DILx4zFlME2Hw2py1LijVLBmuP
+         XajQ==
+X-Gm-Message-State: AOJu0YwNuMFdWt8V6xAbOc1syjEfWZYfBQX6kwQUtbKp4MlmeZMzobg7
+        wjfBg3iif7vii3dCvkRX19kGvGnzQ19z3g==
+X-Google-Smtp-Source: AGHT+IHEk4UbDiByxR21O7SPoeWjtHDXgNHxoLPN8LktwTqJ8Du4hUmJii56fKdYl6+oWTyc4RAyqA==
+X-Received: by 2002:a81:bb48:0:b0:59e:8f6d:92e with SMTP id a8-20020a81bb48000000b0059e8f6d092emr13788329ywl.49.1696852415229;
+        Mon, 09 Oct 2023 04:53:35 -0700 (PDT)
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com. [209.85.128.171])
+        by smtp.gmail.com with ESMTPSA id w16-20020a81a210000000b005a0f9718a5fsm3610662ywg.78.2023.10.09.04.53.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 Oct 2023 04:53:34 -0700 (PDT)
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-579de633419so54428397b3.3;
+        Mon, 09 Oct 2023 04:53:34 -0700 (PDT)
+X-Received: by 2002:a0d:f783:0:b0:58c:b8b4:2785 with SMTP id
+ h125-20020a0df783000000b0058cb8b42785mr13288672ywf.45.1696852414682; Mon, 09
+ Oct 2023 04:53:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a2ad67a0575548b6d5d8d187e597dcd72ae07f64.camel@linuxfoundation.org>
+References: <20231006103959.197485-1-claudiu.beznea.uj@bp.renesas.com> <20231006103959.197485-3-claudiu.beznea.uj@bp.renesas.com>
+In-Reply-To: <20231006103959.197485-3-claudiu.beznea.uj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 9 Oct 2023 13:53:22 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUNHRPzPBJPE0khaVuoLdEVPaum9JSSKRmdp4s7hBVV5g@mail.gmail.com>
+Message-ID: <CAMuHMdUNHRPzPBJPE0khaVuoLdEVPaum9JSSKRmdp4s7hBVV5g@mail.gmail.com>
+Subject: Re: [PATCH v3 2/4] clk: renesas: rzg2l: refactor sd mux driver
+To:     Claudiu <claudiu.beznea@tuxon.dev>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, magnus.damm@gmail.com,
+        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi linux-serial and Greg,
+On Fri, Oct 6, 2023 at 12:40â€¯PM Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>
+> Refactor SD MUX driver to be able to reuse the same code on RZ/G3S.
+> RZ/G2{L, UL} has a limitation with regards to switching the clock source
+> for SD MUX (MUX clock source has to be switched to 266MHz before switching
+> b/w 533MHz and 400MHz). This limitation has been introduced as a clock
+> notifier that is registered on platform based initialization data thus the
+> SD MUX code could be reused on RZ/G3S.
+>
+> As both RZ/G2{L, UL} and RZ/G3S has specific bits in specific registers
+> to check if the clock switching has been done, this configuration (register
+> offset, register bits and bits width) is now passed though
+> struct cpg_core_clk::sconf (status configuration) from platform specific
+> initialization code.
+>
+> Along with struct cpg_core_clk::sconf the mux table indices are also
+> passed from platform specific initialization code.
+>
+> Also, mux flags are now passed to DEF_SD_MUX() as they will be later
+> used by RZ/G3S.
+>
+> CPG_WEN_BIT macro has been introduced to select propertly the WEN bit
+> of various registers.
+>
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> ---
+>
+> Changes in v3:
+> - return proper value from notifier
+> - kept old names for members of rzg2l_cpg_sd_clk_mux_ops object
+> - s/rzg2l_cpg_sd_mux_clk_notifier/rzg2l_cpg_sd_clk_mux_notifier/g
+> - introduced CPG_WEN_BIT macro to set WEN bits of various registers
+>   with this functionality
+> - removed bitmask variable from rzg2l_cpg_sd_clk_mux_notifier() and
+>   rzg2l_cpg_sd_clk_mux_set_parent() as it is no longer needed
+> - tested on RZ/G2L and RZ/G3S
 
-Yocto Linux distro maintainer Richard Purdie is seeing a regression or behavior
-change after updating kernel from 6.4 to 6.5. Yocto runs a lot of automated tests with qemu
-where a python test framework configures and spawns qemu (version 8.1) with two
-serial ports and boots a newly built kernel and rootfs there. The python test framework
-tries to detect getty login prompt from ttyS1 while boot time logging
-from qemu, kernel, userspace etc happens on serial console ttyS0. This has worked
-reliably for years and across multiple kernel versions. Now with 6.5 kernel there are
-suddenly frequent failures where ttyS1 doesn't show the login prompt in the python code
-which listens on the qemu socket from target system ttyS1. The target system ttyS0 is working
-and boot time logs and getty prompt are visible there. The ttyS1 logs from test framework show
-that only two characters CR and LF make it through. This same happens on x86_64 host
-running qemu machine for x86_64 and arm64 targets.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-clk-for-v6.7.
 
-The kernel boot logs from target system with 6.5.5 don't show any errors and getty
-processes are started correctly and they don't see any errors either. Data from
-target system userspace is being written, but seems to sometimes hang inside kernel
-or qemu serial port buffers, and only on the ttyS1 while ttyS0 works reliably all
-the time.
+Gr{oetje,eeting}s,
 
-Example target logs with 6.5.5 via ttyS0:
+                        Geert
 
-https://autobuilder.yocto.io/pub/failed-builds-data/6.5%20kernel/j/qemu_boot_log.20231007084853
-or https://pastebin.com/raw/jRRa2CwW
 
-ttyS1 logs from the same run:
-https://autobuilder.yocto.io/pub/failed-builds-data/6.5%20kernel/j/qemu_boot_log.20231007084853.2
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Kernel config:
-https://pastebin.com/raw/Lv9Hfeuh
-
-Do you have any ideas or hints how to debug or possibly fix this?
-
-tty layer has seen quite a few major changes between 6.4.14 and 6.5.5 and we're not able
-to pinpoint or bisect the issue, since it so annoyingly rare.
-
-Some more details from Richard below.
-
-Cheers,
-
--Mikko
-
-On Sun, Oct 08, 2023 at 09:23:57AM +0100, Richard Purdie wrote:
-> On Sat, 2023-10-07 at 23:05 +0100, Richard Purdie via
-> lists.openembedded.org wrote:
-> > I thought I'd summarise where things are at with the 6.5 kernel.
-> > 
-> > We've fixed:
-> > * the ARM LTP OOM lockup (kernel patch)
-> > * the locale ARM selftest failure which was OOM due to silly buffer 
-> >   allocations in 6.5 (kernel commandline)
-> > * the ARM jitterentropy errors (kernel patch)
-> > * the cryptodev build failures (recipe updated)
-> > 
-> > We've also:
-> > * disabled the strace tests that fail with 6.5.
-> > * made sure the serial ports and getty counts match
-> > * added ttyrun which wraps serial consoles and avoids hacks
-> > * made the qemurunner logging save all the port logs
-> > * made the qemurunner write the binary data it is sent verbatim
-> > * made sure to use nodelay on qemu's tcpserial
-> > 
-> > This leaves an annoying serial console problem where ttyS1 never has
-> > the getty login prompt appear.
-> > 
-> > What we know:
-> > 
-> > * We've only seen this on x86 more recently (yesterday/today) but have
-> > seen it on ARM in the days before that.
-> > 
-> > * It affects both sysvinit and systemd images.
-> > 
-> > * Systemd does print that it started a getty on ttyS0 and ttyS1 when
-> > the failure occurs
-> > 
-> > * There is a getty running according to "ps" when the failure occurs
-> > 
-> > * There are only ever one or three characters received to ttyS1 in the
-> > failure case (0x0d and 0x0a chars, i.e. CR and LF)
-> > 
-> > * It can't be any kind of utf-8 conversion issue since the login prompt
-> > isn't visible in the binary log
-> > 
-> > * the kernel boot logs do show the serial port created with the same
-> > ioport and irq on x86.
-> > 
-> > Previously we did see some logs with timing issues on the ttyS0 port
-> > but the nodelay parameter may have helped with that.
-> > 
-> > There are debug patches in master-next against qemurunner which try and
-> > poke around to gather more debug when things fail using ttyS0.
-> > 
-> > The best failure log we have is now this one:
-> > 
-> > https://autobuilder.yoctoproject.org/typhoon/#/builders/79/builds/5874/steps/14/logs/stdio
-> > 
-> > where I've saved the logs:
-> > 
-> > https://autobuilder.yocto.io/pub/failed-builds-data/6.5%20kernel/j/qemu_boot_log.20231007084853
-> > and
-> > https://autobuilder.yocto.io/pub/failed-builds-data/6.5%20kernel/j/qemu_boot_log.20231007084853.2
-> > 
-> > You can see ttyS1 times out after 1000 seconds and the port only has a
-> > single byte (in the .2 file). The other log shows ps output showing the
-> > getty running for ttyS1.
-> > 
-> > Ideas welcome on where from here. 
-> > 
-> > I've tweaked master-next to keep reading the ttyS1 port after we poke
-> > it from ttyS0 to see if that reveals anything next time it fails (build
-> > running).
-> 
-> Testing overnight with the new debug yielded:
-> 
-> https://autobuilder.yoctoproject.org/typhoon/#/builders/87/builds/5895/steps/14/logs/stdio
-> 
-> The interesting bit being:
-> 
-> """
-> WARNING: core-image-full-cmdline-1.0-r0 do_testimage: Extra read data: 
-> Poky (Yocto Project Reference Distro) 4.2+snapshot-
-> 7cb4ffbd8380b0509d7fac9191095379af321686 qemux86-64 ttyS1
-> 
-> qemux86-64 login: helloA
-> 
-> Poky (Yocto Project Reference Distro) 4.2+snapshot-
-> 7cb4ffbd8380b0509d7fac9191095379af321686 qemux86-64 ttyS1
-> qemux86-64 login: 
-> 
-> """
-> 
-> i.e. the getty didn't appear in 1000s but sometime in shutdown the
-> original prompt, the "helloA" and the new getty prompt did.
-> 
-> So the data *is* there but stuck in a buffer somehow. Kernel or qemu
-> side, I don't know.
-> 
-> Cheers,
-> 
-> Richard
-> 
-> 
-> 
-> 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
