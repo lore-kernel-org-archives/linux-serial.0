@@ -2,145 +2,119 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B862CD68FD
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Oct 2023 06:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B7A8CD690A
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Oct 2023 08:59:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442389AbjJJG6r convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Oct 2023 02:58:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47426 "EHLO
+        id S229533AbjJJI7o (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 10 Oct 2023 04:59:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442319AbjJJG6p (ORCPT
+        with ESMTP id S229539AbjJJI7n (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Oct 2023 02:58:45 -0400
-X-Greylist: delayed 602 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 Oct 2023 23:58:43 PDT
-Received: from relay.hostedemail.com (smtprelay0011.hostedemail.com [216.40.44.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB0499;
-        Mon,  9 Oct 2023 23:58:43 -0700 (PDT)
-Received: from omf06.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay08.hostedemail.com (Postfix) with ESMTP id 9C649140199;
-        Tue, 10 Oct 2023 06:48:39 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf06.hostedemail.com (Postfix) with ESMTPA id 379272000F;
-        Tue, 10 Oct 2023 06:48:11 +0000 (UTC)
-Message-ID: <f511170fe61d7e7214a3a062661cf4103980dad6.camel@perches.com>
-Subject: Re: [PATCH 6/7] fs/sysfs/group: make attribute_group pointers const
-From:   Joe Perches <joe@perches.com>
-To:     Max Kellermann <max.kellermann@ionos.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     Jens Axboe <axboe@kernel.dk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Tue, 10 Oct 2023 04:59:43 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7252CA4;
+        Tue, 10 Oct 2023 01:59:38 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id 41be03b00d2f7-58916df84c8so3414075a12.3;
+        Tue, 10 Oct 2023 01:59:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1696928377; x=1697533177; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nJQrTaJjPi0Je/kfhPU0DQ5oya5Qf9MZSqPuDbE0Nms=;
+        b=ahQYp+b+SNyVKnOGaEF2d3hq7fuYdVWGQHAS7MjB19zTF75UCa+UYJBVb3EH2Cu2+4
+         lqAXijhW9dmZvBs8bnasx43/nqQ2oIbMb4Rnu019BvxPKLAa3uEezxRJA1fMtrtsZguf
+         aJqENAPnoTh0KkG2Z1RZ41pyNkvH5Zlc4LIXWIm4tgVbJivI7BhMoqn3tswLExWugqst
+         W0Mcy/OKtlAdLlzjB8QvB9bIobBe/0FO46qYasn7Xnw0AaIreldQLRW6GZqmPk82LqXK
+         2h8XXrPEeDxjVvDqhsiWPLSO5mIOBJCdVS9Ob/H7wZYLaVT/cMHwU/sSpEKEj5bCruyX
+         6B0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696928377; x=1697533177;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=nJQrTaJjPi0Je/kfhPU0DQ5oya5Qf9MZSqPuDbE0Nms=;
+        b=Jqkk7d+JfpGNfbJU3oJGes3FknhpSvahY8CG2d4JMv5THeI4bkMvus4ynwykPhencm
+         h0K/7KbX/iXSjlNc0em8OQfPBdskasRvJC99GB+sa5YmSQ+Z4DjKL+uXUZlO6UKZCbCx
+         4ht2gQEI+ih3STIPK1E6GMGj4qe5rt9zI13lr0TJltYWPPaxBc+kXKTsseOLrwsushkt
+         sf/66bfLBtAUuijDUgNICbi4IWCsOq9ygtqcG+K1qRMRSGnww0Y3v7uONEXi9WAgagVu
+         Epgmrvq4DchrQ1r9ILOw4c7XOE2q/FnwmQdn+txrg9p+5cazQpQQqlXy/Cmohlm6sns/
+         0p0Q==
+X-Gm-Message-State: AOJu0YwT0A/qArtKQNz8jUq7J7AF8fEhM3C9xWlTkXvOpqhRySFbfB6M
+        TQW3yfYNIK1sWW/pXftgnq8Rs+wnchQ=
+X-Google-Smtp-Source: AGHT+IHiDzgTslln6QB9BjU5V4YxjCpd8q1lMFq/5OF/t2L4x4RwUoLdTLB8v/D8FsZ4ezkuvTZhdQ==
+X-Received: by 2002:a17:90b:4b86:b0:279:e5e:ea1b with SMTP id lr6-20020a17090b4b8600b002790e5eea1bmr15363646pjb.5.1696928377627;
+        Tue, 10 Oct 2023 01:59:37 -0700 (PDT)
+Received: from octofox.hsd1.ca.comcast.net ([2601:646:a201:19d0:f462:7ab2:1aaa:db73])
+        by smtp.gmail.com with ESMTPSA id o12-20020a17090a3d4c00b0027782f611d1sm12542731pjf.36.2023.10.10.01.59.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Oct 2023 01:59:37 -0700 (PDT)
+From:   Max Filippov <jcmvbkbc@gmail.com>
+To:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        James Clark <james.clark@arm.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-        nvdimm@lists.linux.dev, linux-nvme@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        linux-leds@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-scsi@vger.kernel.org
-Date:   Mon, 09 Oct 2023 23:48:10 -0700
-In-Reply-To: <CAKPOu+8k2x1CucWSzoouts0AfMJk+srJXWWf3iWVOeY+fWkOpQ@mail.gmail.com>
-References: <20231009165741.746184-1-max.kellermann@ionos.com>
-         <20231009165741.746184-6-max.kellermann@ionos.com>
-         <264fa39d-aed6-4a54-a085-107997078f8d@roeck-us.net>
-         <CAKPOu+8k2x1CucWSzoouts0AfMJk+srJXWWf3iWVOeY+fWkOpQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.48.4 (3.48.4-1.fc38) 
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH v5 1/5] serial: core: tidy invalid baudrate handling in uart_get_baud_rate
+Date:   Tue, 10 Oct 2023 01:59:22 -0700
+Message-Id: <20231010085926.1021667-2-jcmvbkbc@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20231010085926.1021667-1-jcmvbkbc@gmail.com>
+References: <20231010085926.1021667-1-jcmvbkbc@gmail.com>
 MIME-Version: 1.0
-X-Stat-Signature: x66gji9pr8zwbank5ef871m9qoojjjfr
-X-Rspamd-Server: rspamout04
-X-Rspamd-Queue-Id: 379272000F
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19bm9nHqj2XrX3TKwatvC/C1GajNvD5h9I=
-X-HE-Tag: 1696920491-749924
-X-HE-Meta: U2FsdGVkX1/+029EmPc9sKVNFK2VRUjBCte/A2E+5y43hxFCP+MAKFoIxkcikfn6Jucu52vLqnvIqQDvdm6WvqlwnI8PH42O3yPwjrf6/Rk44z8SFUR40tWN1QdYZq3HPOEvKn0PLMPTqRRMr7zlpFwkMW85ySQYIyr+J8E4OP6W/LoiP3zYhR+0cmnV5ToftIwEMltweE+g/zUx+NL1fSjTbqk3Sf4w33VMSw7k9oncskJ8CUN/bQZEOiHhpNbgGpLqoQJ7ob3InQymsj8a//o/6ldtQbuoxFCk/RnYuGfC0EahOFEMbfIs5+kJ0g+hK4chvkcdMx/L2QmQgmCvPhqiadvx8BYdkeJ2IpCV5Y5g+W85x67f7ON0uqOVXWab
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 2023-10-09 at 22:05 +0200, Max Kellermann wrote:
-> On Mon, Oct 9, 2023 at 7:24 PM Guenter Roeck <linux@roeck-us.net> wrote:
-> > Also, I don't know why checkpatch is happy with all the
-> > 
-> >         const struct attribute_group *const*groups;
-> > 
-> > instead of
-> > 
-> >         const struct attribute_group *const *groups;
-> 
-> I found out that checkpatch has no check for this at all; it does
-> complain about such lines, but only for local variables. But that
-> warning is actually a bug, because this is a check for unary
-> operators: it thinks the asterisk is a dereference operator, not a
-> pointer declaration, and complains that the unary operator must be
-> preceded by a space. Thus warnings on local variable are only correct
-> by coincidence, not by design.
-> 
-> Inside structs or parameters (where my coding style violations can be
-> found), it's a different context and thus checkpatch doesn't apply the
-> rules for unary operators.
+uart_get_baud_rate has input parameters 'min' and 'max' limiting the
+range of acceptable baud rates from the caller's perspective. If neither
+current or old termios structures have acceptable baud rate setting and
+9600 is not in the min/max range either the function returns 0 and
+issues a warning.
+However for a UART that does not support speed of 9600 baud this is
+expected behavior.
+Clarify that 0 can be (and always could be) returned from the
+uart_get_baud_rate. Don't issue a warning in that case.
 
-My opinion is that const use in the kernel should almost
-always have whitespace before and after it except when
-preceded by a open parenthesis or a newline.
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+---
+Changes v4->v5:
+- fix commit message
 
-$ git grep -wh const -- '*.[ch]' | \
-  grep -oP "[ \*\(]?const[ \*]?" | \
-  sort | uniq -c | sort -rn
- 222438  const 
-  83386 const 
-  51667 (const 
-   2766 *const 
-    834 const
-    442  const
-    343  const*
-     88 *const
-     37 (const
-      4 *const*
+Changes v3->v4:
+- drop WARN_ON from uart_get_divisor()
+
+ drivers/tty/serial/serial_core.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 7bdc21d5e13b..3f130fe9f1a0 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -431,7 +431,7 @@ EXPORT_SYMBOL(uart_update_timeout);
+  * baud.
+  *
+  * If the new baud rate is invalid, try the @old termios setting. If it's still
+- * invalid, we try 9600 baud.
++ * invalid, we try 9600 baud. If that is also invalid 0 is returned.
+  *
+  * The @termios structure is updated to reflect the baud rate we're actually
+  * going to be using. Don't do this for the case where B0 is requested ("hang
+@@ -515,8 +515,6 @@ uart_get_baud_rate(struct uart_port *port, struct ktermios *termios,
+ 							max - 1, max - 1);
+ 		}
+ 	}
+-	/* Should never happen */
+-	WARN_ON(1);
+ 	return 0;
+ }
+ EXPORT_SYMBOL(uart_get_baud_rate);
+-- 
+2.30.2
 
