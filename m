@@ -2,617 +2,186 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79B77CD68E8
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Oct 2023 08:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D6D4CD6916
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Oct 2023 09:37:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229539AbjJJI7s (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Oct 2023 04:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51252 "EHLO
+        id S230142AbjJJJhh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 10 Oct 2023 05:37:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229772AbjJJI7p (ORCPT
+        with ESMTP id S229516AbjJJJhg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Oct 2023 04:59:45 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF53B6;
-        Tue, 10 Oct 2023 01:59:42 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id d9443c01a7336-1c7373cff01so47184175ad.1;
-        Tue, 10 Oct 2023 01:59:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1696928382; x=1697533182; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9N5APtimwj2+roJc3MYRzOc/TcU5zlnnJVZ6QBv4p44=;
-        b=PC/xp5IlqyDcM7Otnh5VIYo1L/3X6o7CK1n8PdyP7ejhtoLun2b7fSv6d5DfXbUtYV
-         W8V1QA63ECWOznb3K6xs5H2kVwHXXohzt/HAHiVS3NzG0o3afk9EYPJf/gKAamM+vR8w
-         nHyC5oFShhLS7cLYyUhPqizkISMNhswsL+0/JilAIC6CLcauHPHywtWxOvZigbUnopvC
-         73kYO4ySaFF4t/i34HYOcDr1ZdzrsGF30UvKBSAwQkoSbOzPANPX3UHtxj2fhmC5S4sJ
-         r14zbu9AKiMIKR+IyzwLCFIECZkruMeccCDF3G6aapkaSYuoUlP7wanljUpwh6RBZRzt
-         fw4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696928382; x=1697533182;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9N5APtimwj2+roJc3MYRzOc/TcU5zlnnJVZ6QBv4p44=;
-        b=sYlUrhCkxEBn9Dc07+8GneLJNStbYrMbe2FeArurzUQq7APMqDq9O89n9s7jTDSwl+
-         pJIU+ZxMdAS/p/XckhZAXvhnrDaeeDUNb67ivNiLiiZszWBZYROQGjum3YmSLuuX4c6X
-         E9PRIMmPEb7DXqEFWnDaVUMLDEUbA7oJKSV+7nKgI+7oFfu/gXTzjligTd3RKRxZ4bcf
-         4uRoKIxDQen5zBpR9NhuNuyZDK+3mphSVAKbLZiNwGVsqvneuaQpBRRPxp4p2PebI58m
-         Yghp0rOdz9D1XMFR+6c63tPr60uGHWDU2s8FCJfpn8v/sJeBoArYUy9DEZvkUm/JRThY
-         pggw==
-X-Gm-Message-State: AOJu0YwtnZlNpPoaoN6CCvSzYDyqSXR5AZZjNbYGLJ9+n6RlEGw9stOg
-        594gCqBzgEDgbci2zdE1TuS9f8uTGCk=
-X-Google-Smtp-Source: AGHT+IEylAeBCkJlO38T4nP2awtInP9oNV9Hb+gog4E0F2SEkWJNmmqm08TWyNNF1EISxx71ErnXuA==
-X-Received: by 2002:a17:90b:4d8b:b0:27c:df02:88b3 with SMTP id oj11-20020a17090b4d8b00b0027cdf0288b3mr2803824pjb.8.1696928382132;
-        Tue, 10 Oct 2023 01:59:42 -0700 (PDT)
-Received: from octofox.hsd1.ca.comcast.net ([2601:646:a201:19d0:f462:7ab2:1aaa:db73])
-        by smtp.gmail.com with ESMTPSA id o12-20020a17090a3d4c00b0027782f611d1sm12542731pjf.36.2023.10.10.01.59.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Oct 2023 01:59:41 -0700 (PDT)
-From:   Max Filippov <jcmvbkbc@gmail.com>
-To:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH v5 5/5] drivers/tty/serial: add ESP32S3 ACM gadget driver
-Date:   Tue, 10 Oct 2023 01:59:26 -0700
-Message-Id: <20231010085926.1021667-6-jcmvbkbc@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20231010085926.1021667-1-jcmvbkbc@gmail.com>
-References: <20231010085926.1021667-1-jcmvbkbc@gmail.com>
+        Tue, 10 Oct 2023 05:37:36 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D395193;
+        Tue, 10 Oct 2023 02:37:33 -0700 (PDT)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 1724A1C0003;
+        Tue, 10 Oct 2023 09:37:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1696930652;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jPkINlL8/YAShL73uQq6KpZyCNMmhaNa5D5RvFmTRz4=;
+        b=C5cvqBns28peKwrQxh+ogwR4P/9jGZyi9uhSqNgZLHq+Lf8+0hJRwxGytKn94+MCBUvIMo
+        sTRvwHwlMoH+QMsVYKG2tq/oQ+i7gFzTzKHiv04OwZ4raAQeBA3V+Qv4riX5trdmE3+3zP
+        SrxcLg1EjnnZ+tCpzIFUJCewV7TI7hS/6GbjXhxQO5P5FViFpFKbfRnyeZ7iI1VRQBfYxn
+        JbDrBhxFNzCv4857rysqkLU+x+7D5Hnnw9VopKxjMwLNwJO/4Jy3Egp4lDGwrVBzPZ1Nzj
+        ynUqmInJbcPle+nisIJpsD6M4aT8IlykD+kuiyrqy3jr+Hg62EBDeVwI6aA8MQ==
+Message-ID: <a1756492-1caf-43d5-a64f-02b29512654d@bootlin.com>
+Date:   Tue, 10 Oct 2023 11:37:30 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: serial: 8250_omap: suspend issue with console_suspend disabled
+Content-Language: en-US
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     linux-pm@vger.kernel.org, linux-serial@vger.kernel.org,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Kumar Udit <u-kumar1@ti.com>, Dhruva Gole <d-gole@ti.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Vignesh R <vigneshr@ti.com>
+References: <59b13c93-6637-3050-c145-31be0d6c12c9@bootlin.com>
+ <20230920053828.GD5282@atomide.com>
+ <a5bee830-07af-426b-94ac-3574cba34bec@bootlin.com>
+ <20231010065145.GD27774@atomide.com>
+From:   Thomas Richard <thomas.richard@bootlin.com>
+In-Reply-To: <20231010065145.GD27774@atomide.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-GND-Sasl: thomas.richard@bootlin.com
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add driver for the ACM gadget controller of the Espressif ESP32S3 SoC.
-Hardware specification is available at the following URL:
+On 10/10/23 08:51, Tony Lindgren wrote:
+> Hi,
+> 
+> * Thomas Richard <thomas.richard@bootlin.com> [231009 15:13]:
+>>> The runtime PM usage count should keep the related power domain on though,
+>>> sounds like this issue somewhere else if the power domains get force
+>>> suspended with runtime PM usage count?
+>>
+>> If I understand correctly, there are 2 solutions to keep the power
+>> domain on through.
+>> The first one is to set the flag GENPD_FLAG_ALWAYS_ON for the power domain.
+>> The second one is to set the wakup_path of the device (using
+>> device_set_wakeup_path) and set the flag GENPD_FLAG_ACTIVE_WAKEUP to the
+>> power domain.
+>>
+>> I didn't found any flag or option to say that the device is not
+>> suspended, but it is not an error, so we don't want to poweroff the
+>> power domain.
+> 
+> If no_console_suspend is set then GENPD_FLAG_ALWAYS_ON makes sense to
+> me as we want to see the debug messages. This will also alter the SoCs
+> suspend state though, so no_console_suspend is of limited use. Can you
+> please send an updated patch against tty-next branch for this?
 
-  https://www.espressif.com/sites/default/files/documentation/esp32-s3_technical_reference_manual_en.pdf
-  (Chapter 33 USB Serial/JTAG Controller)
+Please find below a proposal based on tty-next branch.
+I had to add your patch 'serial: 8250_omap: Fix errors with
+no_console_suspend' as it is not present in this branch.
+And I need it to not have an error in omap8250_suspend.
 
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
----
-Changes v4->v5:
-- fix commit message formatting
-- rename device from ttyACM to ttyiGS
-- drop ttyACM device name mention from the Kconfig entry help
-- use PORT_GENERIC instead of unique PORT_ESP32ACM
-- add the word 'gadget' to the commit description and to Kconfig text
-  to make it more consistent with linux terminology
+> 
+> It would be good to understand why the related power domain gets suspended
+> with active runtime PM usage count though. To me it seems this might be
+> an issue somewhere in the SoC related power domain code that just tries
+> to force suspend everything.
 
-Changes v2->v3:
-- use HZ instead of msecs_to_jiffies(1000) in esp32_acm_put_char_sync
-- add early return to esp32_acm_transmit_buffer
-- use request_irq/free_irq instead of devm_* versions
+I found nothing to say, there is a device in use (and not suspended) in
+this power domain, so do not poweroff it.
+Maybe I missed something.
 
-Changes v1->v2:
-- redefine register fields using BIT and GENMASK
-- drop _MASK suffix from register field definitions
-- drop *_SHIFT definitions where possible
-- split register reads/writes and bitwise operations into multiple lines
-- use u8 instead of unsigned char in internal functions
-- add timeout to esp32_acm_put_char_sync
-- use uart_port_tx_limited in esp32_acm_transmit_buffer
-- use IRQ_RETVAL in esp32_acm_int
-- drop esp32s3_acm_console_putchar and esp32s3_acm_earlycon_putchar
-- turn num_read into unsigned int in esp32_acm_earlycon_read
-- drop MODULE_DESCRIPTION
+Regards,
 
- drivers/tty/serial/Kconfig     |  13 +
- drivers/tty/serial/Makefile    |   1 +
- drivers/tty/serial/esp32_acm.c | 459 +++++++++++++++++++++++++++++++++
- 3 files changed, 473 insertions(+)
- create mode 100644 drivers/tty/serial/esp32_acm.c
+Thomas
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index d9ca6b268f01..732c893c8d16 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1591,6 +1591,19 @@ config SERIAL_ESP32
- 	    earlycon=esp32s3uart,mmio32,0x60000000,115200n8,40000000
- 	    earlycon=esp32uart,mmio32,0x3ff40000,115200n8
- 
-+config SERIAL_ESP32_ACM
-+	tristate "Espressif ESP32 USB ACM gadget support"
-+	depends on XTENSA_PLATFORM_ESP32 || (COMPILE_TEST && OF)
-+	select SERIAL_CORE
-+	select SERIAL_CORE_CONSOLE
-+	select SERIAL_EARLYCON
-+	help
-+	  Driver for the CDC ACM gadget controller of the Espressif ESP32S3
-+	  SoCs that share separate USB controller with the JTAG adapter.
-+	  When earlycon option is enabled the following kernel command line
-+	  snippet may be used:
-+	    earlycon=esp32s3acm,mmio32,0x60038000
+> 
+> Regards,
+> 
+> Tony
+
+diff --git a/drivers/tty/serial/8250/8250_omap.c
+b/drivers/tty/serial/8250/8250_omap.c
+index 4b33f4529aed..2d42f485c987 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -28,6 +28,7 @@
+ #include <linux/pm_wakeirq.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/sys_soc.h>
++#include <linux/pm_domain.h>
+
+ #include "8250.h"
+
+@@ -115,6 +116,12 @@
+ /* RX FIFO occupancy indicator */
+ #define UART_OMAP_RX_LVL		0x19
+
++/*
++ * Copy of the genpd flags for the console.
++ * Only used if console suspend is disabled
++ */
++static unsigned int genpd_flags_console;
 +
- endmenu
- 
- config SERIAL_MCTRL_GPIO
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index 7b73137df7f3..970a292ca418 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -89,6 +89,7 @@ obj-$(CONFIG_SERIAL_SIFIVE)	+= sifive.o
- obj-$(CONFIG_SERIAL_LITEUART) += liteuart.o
- obj-$(CONFIG_SERIAL_SUNPLUS)	+= sunplus-uart.o
- obj-$(CONFIG_SERIAL_ESP32)	+= esp32_uart.o
-+obj-$(CONFIG_SERIAL_ESP32_ACM)	+= esp32_acm.o
- 
- # GPIOLIB helpers for modem control lines
- obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+= serial_mctrl_gpio.o
-diff --git a/drivers/tty/serial/esp32_acm.c b/drivers/tty/serial/esp32_acm.c
-new file mode 100644
-index 000000000000..cb28a87736aa
---- /dev/null
-+++ b/drivers/tty/serial/esp32_acm.c
-@@ -0,0 +1,459 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-+#include <linux/console.h>
-+#include <linux/delay.h>
-+#include <linux/io.h>
-+#include <linux/irq.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/serial_core.h>
-+#include <linux/slab.h>
-+#include <linux/tty_flip.h>
-+#include <asm/serial.h>
-+
-+#define DRIVER_NAME	"esp32s3-acm"
-+#define DEV_NAME	"ttyGS"
-+#define UART_NR		4
-+
-+#define ESP32S3_ACM_TX_FIFO_SIZE	64
-+
-+#define USB_SERIAL_JTAG_EP1_REG		0x00
-+#define USB_SERIAL_JTAG_EP1_CONF_REG	0x04
-+#define USB_SERIAL_JTAG_WR_DONE				BIT(0)
-+#define USB_SERIAL_JTAG_SERIAL_IN_EP_DATA_FREE		BIT(1)
-+#define USB_SERIAL_JTAG_INT_ST_REG	0x0c
-+#define USB_SERIAL_JTAG_SERIAL_OUT_RECV_PKT_INT_ST	BIT(2)
-+#define USB_SERIAL_JTAG_SERIAL_IN_EMPTY_INT_ST		BIT(3)
-+#define USB_SERIAL_JTAG_INT_ENA_REG	0x10
-+#define USB_SERIAL_JTAG_SERIAL_OUT_RECV_PKT_INT_ENA	BIT(2)
-+#define USB_SERIAL_JTAG_SERIAL_IN_EMPTY_INT_ENA		BIT(3)
-+#define USB_SERIAL_JTAG_INT_CLR_REG	0x14
-+#define USB_SERIAL_JTAG_IN_EP1_ST_REG	0x2c
-+#define USB_SERIAL_JTAG_IN_EP1_WR_ADDR			GENMASK(8, 2)
-+#define USB_SERIAL_JTAG_OUT_EP1_ST_REG	0x3c
-+#define USB_SERIAL_JTAG_OUT_EP1_REC_DATA_CNT		GENMASK(22, 16)
-+
-+static const struct of_device_id esp32s3_acm_dt_ids[] = {
-+	{
-+		.compatible = "esp,esp32s3-acm",
-+	}, { /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, esp32s3_acm_dt_ids);
-+
-+static struct uart_port *esp32s3_acm_ports[UART_NR];
-+
-+static void esp32s3_acm_write(struct uart_port *port, unsigned long reg, u32 v)
-+{
-+	writel(v, port->membase + reg);
-+}
-+
-+static u32 esp32s3_acm_read(struct uart_port *port, unsigned long reg)
-+{
-+	return readl(port->membase + reg);
-+}
-+
-+static u32 esp32s3_acm_tx_fifo_free(struct uart_port *port)
-+{
-+	u32 status = esp32s3_acm_read(port, USB_SERIAL_JTAG_EP1_CONF_REG);
-+
-+	return status & USB_SERIAL_JTAG_SERIAL_IN_EP_DATA_FREE;
-+}
-+
-+static u32 esp32s3_acm_tx_fifo_cnt(struct uart_port *port)
-+{
-+	u32 status = esp32s3_acm_read(port, USB_SERIAL_JTAG_IN_EP1_ST_REG);
-+
-+	return FIELD_GET(USB_SERIAL_JTAG_IN_EP1_WR_ADDR, status);
-+}
-+
-+static u32 esp32s3_acm_rx_fifo_cnt(struct uart_port *port)
-+{
-+	u32 status = esp32s3_acm_read(port, USB_SERIAL_JTAG_OUT_EP1_ST_REG);
-+
-+	return FIELD_GET(USB_SERIAL_JTAG_OUT_EP1_REC_DATA_CNT, status);
-+}
-+
-+/* return TIOCSER_TEMT when transmitter is not busy */
-+static unsigned int esp32s3_acm_tx_empty(struct uart_port *port)
-+{
-+	return esp32s3_acm_tx_fifo_cnt(port) == 0 ? TIOCSER_TEMT : 0;
-+}
-+
-+static void esp32s3_acm_set_mctrl(struct uart_port *port, unsigned int mctrl)
-+{
-+}
-+
-+static unsigned int esp32s3_acm_get_mctrl(struct uart_port *port)
-+{
-+	return TIOCM_CAR;
-+}
-+
-+static void esp32s3_acm_stop_tx(struct uart_port *port)
-+{
-+	u32 int_ena;
-+
-+	int_ena = esp32s3_acm_read(port, USB_SERIAL_JTAG_INT_ENA_REG);
-+	int_ena &= ~USB_SERIAL_JTAG_SERIAL_IN_EMPTY_INT_ENA;
-+	esp32s3_acm_write(port, USB_SERIAL_JTAG_INT_ENA_REG, int_ena);
-+}
-+
-+static void esp32s3_acm_rxint(struct uart_port *port)
-+{
-+	struct tty_port *tty_port = &port->state->port;
-+	u32 rx_fifo_cnt = esp32s3_acm_rx_fifo_cnt(port);
-+	unsigned long flags;
-+	u32 i;
-+
-+	if (!rx_fifo_cnt)
-+		return;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	for (i = 0; i < rx_fifo_cnt; ++i) {
-+		u32 rx = esp32s3_acm_read(port, USB_SERIAL_JTAG_EP1_REG);
-+
-+		++port->icount.rx;
-+		tty_insert_flip_char(tty_port, rx, TTY_NORMAL);
-+	}
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
-+	tty_flip_buffer_push(tty_port);
-+}
-+
-+static void esp32s3_acm_push(struct uart_port *port)
-+{
-+	if (esp32s3_acm_tx_fifo_free(port))
-+		esp32s3_acm_write(port, USB_SERIAL_JTAG_EP1_CONF_REG,
-+				  USB_SERIAL_JTAG_WR_DONE);
-+}
-+
-+static void esp32s3_acm_put_char(struct uart_port *port, u8 c)
-+{
-+	esp32s3_acm_write(port, USB_SERIAL_JTAG_EP1_REG, c);
-+}
-+
-+static void esp32s3_acm_put_char_sync(struct uart_port *port, u8 c)
-+{
-+	unsigned long timeout = jiffies + HZ;
-+
-+	while (!esp32s3_acm_tx_fifo_free(port)) {
-+		if (time_after(jiffies, timeout)) {
-+			dev_warn(port->dev, "timeout waiting for TX FIFO\n");
-+			return;
+ struct omap8250_priv {
+ 	void __iomem *membase;
+ 	int line;
+@@ -1623,6 +1630,7 @@ static int omap8250_suspend(struct device *dev)
+ {
+ 	struct omap8250_priv *priv = dev_get_drvdata(dev);
+ 	struct uart_8250_port *up = serial8250_get_port(priv->line);
++	struct generic_pm_domain *genpd = pd_to_genpd(dev->pm_domain);
+ 	int err = 0;
+
+ 	serial8250_suspend_port(priv->line);
+@@ -1633,8 +1641,19 @@ static int omap8250_suspend(struct device *dev)
+ 	if (!device_may_wakeup(dev))
+ 		priv->wer = 0;
+ 	serial_out(up, UART_OMAP_WER, priv->wer);
+-	if (uart_console(&up->port) && console_suspend_enabled)
+-		err = pm_runtime_force_suspend(dev);
++	if (uart_console(&up->port)) {
++		if (console_suspend_enabled)
++			err = pm_runtime_force_suspend(dev);
++		else {
++			/*
++			 * The pd shall not be powered-off (no console suspend).
++			 * Make copy of genpd flags before to set it always on.
++			 * The original value is restored during the resume.
++			 */
++			genpd_flags_console = genpd->flags;
++			genpd->flags |= GENPD_FLAG_ALWAYS_ON;
 +		}
-+		cpu_relax();
 +	}
-+	esp32s3_acm_put_char(port, c);
-+	esp32s3_acm_push(port);
-+}
-+
-+static void esp32s3_acm_transmit_buffer(struct uart_port *port)
-+{
-+	u32 tx_fifo_used;
-+	unsigned int pending;
-+	u8 ch;
-+
-+	if (!esp32s3_acm_tx_fifo_free(port))
-+		return;
-+
-+	tx_fifo_used = esp32s3_acm_tx_fifo_cnt(port);
-+	pending = uart_port_tx_limited(port, ch,
-+				       ESP32S3_ACM_TX_FIFO_SIZE - tx_fifo_used,
-+				       true, esp32s3_acm_put_char(port, ch),
-+				       ({}));
-+	if (pending) {
-+		u32 int_ena;
-+
-+		int_ena = esp32s3_acm_read(port, USB_SERIAL_JTAG_INT_ENA_REG);
-+		int_ena |= USB_SERIAL_JTAG_SERIAL_IN_EMPTY_INT_ENA;
-+		esp32s3_acm_write(port, USB_SERIAL_JTAG_INT_ENA_REG, int_ena);
-+	}
-+	esp32s3_acm_push(port);
-+}
-+
-+static void esp32s3_acm_txint(struct uart_port *port)
-+{
-+	esp32s3_acm_transmit_buffer(port);
-+}
-+
-+static irqreturn_t esp32s3_acm_int(int irq, void *dev_id)
-+{
-+	struct uart_port *port = dev_id;
-+	u32 status;
-+
-+	status = esp32s3_acm_read(port, USB_SERIAL_JTAG_INT_ST_REG);
-+	esp32s3_acm_write(port, USB_SERIAL_JTAG_INT_CLR_REG, status);
-+
-+	if (status & USB_SERIAL_JTAG_SERIAL_OUT_RECV_PKT_INT_ST)
-+		esp32s3_acm_rxint(port);
-+	if (status & USB_SERIAL_JTAG_SERIAL_IN_EMPTY_INT_ST)
-+		esp32s3_acm_txint(port);
-+
-+	return IRQ_RETVAL(status);
-+}
-+
-+static void esp32s3_acm_start_tx(struct uart_port *port)
-+{
-+	esp32s3_acm_transmit_buffer(port);
-+}
-+
-+static void esp32s3_acm_stop_rx(struct uart_port *port)
-+{
-+	u32 int_ena;
-+
-+	int_ena = esp32s3_acm_read(port, USB_SERIAL_JTAG_INT_ENA_REG);
-+	int_ena &= ~USB_SERIAL_JTAG_SERIAL_OUT_RECV_PKT_INT_ENA;
-+	esp32s3_acm_write(port, USB_SERIAL_JTAG_INT_ENA_REG, int_ena);
-+}
-+
-+static int esp32s3_acm_startup(struct uart_port *port)
-+{
-+	int ret;
-+
-+	ret = request_irq(port->irq, esp32s3_acm_int, 0, DRIVER_NAME, port);
-+	if (ret)
-+		return ret;
-+	esp32s3_acm_write(port, USB_SERIAL_JTAG_INT_ENA_REG,
-+			  USB_SERIAL_JTAG_SERIAL_OUT_RECV_PKT_INT_ENA);
-+
-+	return 0;
-+}
-+
-+static void esp32s3_acm_shutdown(struct uart_port *port)
-+{
-+	esp32s3_acm_write(port, USB_SERIAL_JTAG_INT_ENA_REG, 0);
-+	free_irq(port->irq, port);
-+}
-+
-+static void esp32s3_acm_set_termios(struct uart_port *port,
-+				    struct ktermios *termios,
-+				    const struct ktermios *old)
-+{
-+}
-+
-+static const char *esp32s3_acm_type(struct uart_port *port)
-+{
-+	return "ESP32S3 ACM";
-+}
-+
-+/* configure/auto-configure the port */
-+static void esp32s3_acm_config_port(struct uart_port *port, int flags)
-+{
-+	if (flags & UART_CONFIG_TYPE)
-+		port->type = PORT_GENERIC;
-+}
-+
-+#ifdef CONFIG_CONSOLE_POLL
-+static void esp32s3_acm_poll_put_char(struct uart_port *port, unsigned char c)
-+{
-+	esp32s3_acm_put_char_sync(port, c);
-+}
-+
-+static int esp32s3_acm_poll_get_char(struct uart_port *port)
-+{
-+	if (esp32s3_acm_rx_fifo_cnt(port))
-+		return esp32s3_acm_read(port, USB_SERIAL_JTAG_EP1_REG);
-+	else
-+		return NO_POLL_CHAR;
-+}
-+#endif
-+
-+static const struct uart_ops esp32s3_acm_pops = {
-+	.tx_empty	= esp32s3_acm_tx_empty,
-+	.set_mctrl	= esp32s3_acm_set_mctrl,
-+	.get_mctrl	= esp32s3_acm_get_mctrl,
-+	.stop_tx	= esp32s3_acm_stop_tx,
-+	.start_tx	= esp32s3_acm_start_tx,
-+	.stop_rx	= esp32s3_acm_stop_rx,
-+	.startup	= esp32s3_acm_startup,
-+	.shutdown	= esp32s3_acm_shutdown,
-+	.set_termios	= esp32s3_acm_set_termios,
-+	.type		= esp32s3_acm_type,
-+	.config_port	= esp32s3_acm_config_port,
-+#ifdef CONFIG_CONSOLE_POLL
-+	.poll_put_char	= esp32s3_acm_poll_put_char,
-+	.poll_get_char	= esp32s3_acm_poll_get_char,
-+#endif
-+};
-+
-+static void esp32s3_acm_string_write(struct uart_port *port, const char *s,
-+				     unsigned int count)
-+{
-+	uart_console_write(port, s, count, esp32s3_acm_put_char_sync);
-+}
-+
-+static void
-+esp32s3_acm_console_write(struct console *co, const char *s, unsigned int count)
-+{
-+	struct uart_port *port = esp32s3_acm_ports[co->index];
-+	unsigned long flags;
-+	bool locked = true;
-+
-+	if (port->sysrq)
-+		locked = false;
-+	else if (oops_in_progress)
-+		locked = spin_trylock_irqsave(&port->lock, flags);
-+	else
-+		spin_lock_irqsave(&port->lock, flags);
-+
-+	esp32s3_acm_string_write(port, s, count);
-+
-+	if (locked)
-+		spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+static struct uart_driver esp32s3_acm_reg;
-+static struct console esp32s3_acm_console = {
-+	.name		= DEV_NAME,
-+	.write		= esp32s3_acm_console_write,
-+	.device		= uart_console_device,
-+	.flags		= CON_PRINTBUFFER,
-+	.index		= -1,
-+	.data		= &esp32s3_acm_reg,
-+};
-+
-+static void esp32s3_acm_earlycon_write(struct console *con, const char *s,
-+				      unsigned int n)
-+{
-+	struct earlycon_device *dev = con->data;
-+
-+	uart_console_write(&dev->port, s, n, esp32s3_acm_put_char_sync);
-+}
-+
-+#ifdef CONFIG_CONSOLE_POLL
-+static int esp32s3_acm_earlycon_read(struct console *con, char *s, unsigned int n)
-+{
-+	struct earlycon_device *dev = con->data;
-+	unsigned int num_read = 0;
-+
-+	while (num_read < n) {
-+		int c = esp32s3_acm_poll_get_char(&dev->port);
-+
-+		if (c == NO_POLL_CHAR)
-+			break;
-+		s[num_read++] = c;
-+	}
-+	return num_read;
-+}
-+#endif
-+
-+static int __init esp32s3_acm_early_console_setup(struct earlycon_device *device,
-+						   const char *options)
-+{
-+	if (!device->port.membase)
-+		return -ENODEV;
-+
-+	device->con->write = esp32s3_acm_earlycon_write;
-+#ifdef CONFIG_CONSOLE_POLL
-+	device->con->read = esp32s3_acm_earlycon_read;
-+#endif
-+	return 0;
-+}
-+
-+OF_EARLYCON_DECLARE(esp32s3acm, "esp,esp32s3-acm",
-+		    esp32s3_acm_early_console_setup);
-+
-+static struct uart_driver esp32s3_acm_reg = {
-+	.owner		= THIS_MODULE,
-+	.driver_name	= DRIVER_NAME,
-+	.dev_name	= DEV_NAME,
-+	.nr		= ARRAY_SIZE(esp32s3_acm_ports),
-+	.cons		= &esp32s3_acm_console,
-+};
-+
-+static int esp32s3_acm_probe(struct platform_device *pdev)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+	struct uart_port *port;
-+	struct resource *res;
-+	int ret;
-+
-+	port = devm_kzalloc(&pdev->dev, sizeof(*port), GFP_KERNEL);
-+	if (!port)
-+		return -ENOMEM;
-+
-+	ret = of_alias_get_id(np, "serial");
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
-+		return ret;
-+	}
-+	if (ret >= UART_NR) {
-+		dev_err(&pdev->dev, "driver limited to %d serial ports\n",
-+			UART_NR);
-+		return -ENOMEM;
-+	}
-+
-+	port->line = ret;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -ENODEV;
-+
-+	port->mapbase = res->start;
-+	port->membase = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(port->membase))
-+		return PTR_ERR(port->membase);
-+
-+	port->dev = &pdev->dev;
-+	port->type = PORT_GENERIC;
-+	port->iotype = UPIO_MEM;
-+	port->irq = platform_get_irq(pdev, 0);
-+	port->ops = &esp32s3_acm_pops;
-+	port->flags = UPF_BOOT_AUTOCONF;
-+	port->has_sysrq = 1;
-+	port->fifosize = ESP32S3_ACM_TX_FIFO_SIZE;
-+
-+	esp32s3_acm_ports[port->line] = port;
-+
-+	platform_set_drvdata(pdev, port);
-+
-+	return uart_add_one_port(&esp32s3_acm_reg, port);
-+}
-+
-+static int esp32s3_acm_remove(struct platform_device *pdev)
-+{
-+	struct uart_port *port = platform_get_drvdata(pdev);
-+
-+	uart_remove_one_port(&esp32s3_acm_reg, port);
-+	return 0;
-+}
-+
-+
-+static struct platform_driver esp32s3_acm_driver = {
-+	.probe		= esp32s3_acm_probe,
-+	.remove		= esp32s3_acm_remove,
-+	.driver		= {
-+		.name	= DRIVER_NAME,
-+		.of_match_table	= esp32s3_acm_dt_ids,
-+	},
-+};
-+
-+static int __init esp32s3_acm_init(void)
-+{
-+	int ret;
-+
-+	ret = uart_register_driver(&esp32s3_acm_reg);
-+	if (ret)
-+		return ret;
-+
-+	ret = platform_driver_register(&esp32s3_acm_driver);
-+	if (ret)
-+		uart_unregister_driver(&esp32s3_acm_reg);
-+
-+	return ret;
-+}
-+
-+static void __exit esp32s3_acm_exit(void)
-+{
-+	platform_driver_unregister(&esp32s3_acm_driver);
-+	uart_unregister_driver(&esp32s3_acm_reg);
-+}
-+
-+module_init(esp32s3_acm_init);
-+module_exit(esp32s3_acm_exit);
-+
-+MODULE_AUTHOR("Max Filippov <jcmvbkbc@gmail.com>");
-+MODULE_LICENSE("GPL");
+ 	flush_work(&priv->qos_work);
+
+ 	return err;
+@@ -1644,12 +1663,16 @@ static int omap8250_resume(struct device *dev)
+ {
+ 	struct omap8250_priv *priv = dev_get_drvdata(dev);
+ 	struct uart_8250_port *up = serial8250_get_port(priv->line);
++	struct generic_pm_domain *genpd = pd_to_genpd(dev->pm_domain);
+ 	int err;
+
+ 	if (uart_console(&up->port) && console_suspend_enabled) {
+-		err = pm_runtime_force_resume(dev);
+-		if (err)
+-			return err;
++		if (console_suspend_enabled) {
++			err = pm_runtime_force_resume(dev);
++			if (err)
++				return err;
++		} else
++			genpd->flags = genpd_flags_console;
+ 	}
+
+ 	serial8250_resume_port(priv->line);
+
+
 -- 
-2.30.2
+Thomas Richard, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
 
