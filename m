@@ -2,53 +2,55 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9275CD98CC
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Oct 2023 22:49:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C34CD98CE
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Oct 2023 22:50:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234278AbjJJWtx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Oct 2023 18:49:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54884 "EHLO
+        id S1344058AbjJJWuD (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 10 Oct 2023 18:50:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343967AbjJJWtw (ORCPT
+        with ESMTP id S234627AbjJJWt5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Oct 2023 18:49:52 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171919D
-        for <linux-serial@vger.kernel.org>; Tue, 10 Oct 2023 15:49:48 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id 5b1f17b1804b1-405497850dbso57554505e9.0
-        for <linux-serial@vger.kernel.org>; Tue, 10 Oct 2023 15:49:48 -0700 (PDT)
+        Tue, 10 Oct 2023 18:49:57 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF3698
+        for <linux-serial@vger.kernel.org>; Tue, 10 Oct 2023 15:49:50 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id 5b1f17b1804b1-4065f29e933so61176425e9.1
+        for <linux-serial@vger.kernel.org>; Tue, 10 Oct 2023 15:49:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1696978186; x=1697582986; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=sbuVfEELPjWRyHywl2N/5ORyt876lTLvJftRhFQgfeo=;
-        b=JM4hlSBBp34g2CTUMwKf5nkVDCejiCeezGqPfOleGKNaQip2CoJWOlRAxqZLDbjbee
-         etfIyuuaq1lXx1Ry1RJWt/L9QYsmW6GCZN8kS7lfsn/oWqkB0MoVv0Eq9U/ncpeeh8Vl
-         MPLmvnm8RfaRcPOutd87Zj9569KQwn26ofV/w7vJ4hc+wrgd6uFgpxCn1UJaVkB1CxwA
-         DK6iyYpdu/Pzo2WqdyyrbVXv6/8Kn8fnWBtY9MZozH4o/4zTQPnu2dbRFXhwaZAF/uVD
-         XryhBjFjbGlEYdOy6/LyjBINXCdu4yAjZKtc8/+l6xpnKo67UpUWnUIGqTaeyj70X5pQ
-         Wf8g==
+        d=linaro.org; s=google; t=1696978189; x=1697582989; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=s1ede9GgyAiL5UrcDWpPX7pkaTXBw6/WntnP2DcpHNg=;
+        b=dVkqbomR5aA3DjZEZYNELXToEb3BRQOCOVtWaDLrh03RhgV7evX6xBmQpieB9dAtX7
+         BDPTzFcFp9HtdImRQ/1k4ylSj+x8kz8HmxXJo1JKicien588IJ5qPLFScSEHFN7ThFxi
+         MK/R7hcIrv8dE03hmrSryqjtDz8RSxtZOfNzkUdtgvNzdY+c2Fo9AUQ1SUwmI+GEJevO
+         Pf1/AP6vxDkJG/hDOyeQKjFJ5YjsHxc4Cwag9AKF/FwnceSFUHjJrxDmYYz6A/XdEplh
+         LRjXXkHJ2DfkP2dvTUg+y9FX4gTRfAFXeqmEUrJlr1qRqEErSiPrYIS+3FTWiHpp/ifa
+         Togg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696978186; x=1697582986;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=sbuVfEELPjWRyHywl2N/5ORyt876lTLvJftRhFQgfeo=;
-        b=b8gazL49zOTUzZerESsb7yBuXnDET6JSeeQqnZjPzzX4ar5zFQotvutRcPZsbJ6qL2
-         erhZJM0PyBBqEzxfxauKWlQU+C/5kBku/LC+VhhDoGbAhoh43scH7s9MdDoHw6S3ueu9
-         i3BX2XW4vP/c/TahpECncOGFuw848Qppz5tos4lyWusmwQ+VsuQ0eU5TfChS4QAdaO5O
-         +LO1Q4FWzho9pRSeVTxUtJxMHHTQNFUBTkP5YWR0e63YypbUQmDiff6Hez+IFJXKJXQa
-         4dBLwJWML2UBUi+dNvjC1hwudcaud8rdgKQwarwa083maX0BEdHnHlrdMJz+NYsfMRtB
-         ZjOQ==
-X-Gm-Message-State: AOJu0Yznt1RYVUlw5woPlkwd24x/2SPRa0nvCK4wc733q3c4KNsQRe/e
-        bkX2Ytv6Xl/cnqRDbpfYsxYOOA==
-X-Google-Smtp-Source: AGHT+IHj8gB6UPf+MoFrcYoRWXiVyvEqaR26l4a3qKGlDqPVGTZQ3pdV81svnPyT+nUCQYXJMsPFNQ==
-X-Received: by 2002:a7b:ce89:0:b0:402:f07c:4b48 with SMTP id q9-20020a7bce89000000b00402f07c4b48mr16484655wmj.28.1696978186429;
-        Tue, 10 Oct 2023 15:49:46 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1696978189; x=1697582989;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=s1ede9GgyAiL5UrcDWpPX7pkaTXBw6/WntnP2DcpHNg=;
+        b=vpCCB2O3NVnb8Cxzw+DKHLJAN518/WaS+fsiQf8mfKbd4ggNIMPN5zwVFHi38S/bCS
+         ncqKmpwHJRVHU19oKe1Zbvqj6d0+MXBl4C/1vP7b5qJ9Fwl+D0o5L/Ly7Vhl3FNRrnLa
+         Gp8vbiSYltFzsnRGJX5H3XAJdtrtvIbMBvhSXLvu8XoT5nWlFMVz+YpODuAYc4ryNLZc
+         0TLtllDkcfaGzNUhayCsx2Q79mgZWah/jLRwLObYBU67yl2z2qfk8P2b8HeTYN8cKCAN
+         LxnA4C5ipKMPMLbslAjZJ0Iy3QSInE0jWj4BAQwwm6vC2DiOJT4l92qdfe+ZIqZIE+xJ
+         wAxA==
+X-Gm-Message-State: AOJu0Yx08TMBWDdk7ulmrUBlOz1Xmygm00t++Q+E8yTOELnGEUnUyVIP
+        lXcqoX3y4NgEZRrFgipkSkpEug==
+X-Google-Smtp-Source: AGHT+IEY3IfkH4SbeXn/7e950F27MybaJvs+3CopsCK3CDHrpsl0ATriNe2q63gtrGz+7r7Wwt5hlA==
+X-Received: by 2002:adf:ed45:0:b0:31f:fd9c:8ee8 with SMTP id u5-20020adfed45000000b0031ffd9c8ee8mr16562928wro.38.1696978189143;
+        Tue, 10 Oct 2023 15:49:49 -0700 (PDT)
 Received: from gpeter-l.lan (host-92-12-225-146.as13285.net. [92.12.225.146])
-        by smtp.gmail.com with ESMTPSA id j13-20020adfe50d000000b003196b1bb528sm13689547wrm.64.2023.10.10.15.49.45
+        by smtp.gmail.com with ESMTPSA id j13-20020adfe50d000000b003196b1bb528sm13689547wrm.64.2023.10.10.15.49.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Oct 2023 15:49:45 -0700 (PDT)
+        Tue, 10 Oct 2023 15:49:48 -0700 (PDT)
 From:   Peter Griffin <peter.griffin@linaro.org>
 To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
@@ -63,151 +65,398 @@ Cc:     peter.griffin@linaro.org, tudor.ambarus@linaro.org,
         linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
         kernel-team@android.com, linux-serial@vger.kernel.org
-Subject: [PATCH v2 00/20] Add minimal Tensor/GS101 SoC support and Oriole/Pixel6 board
-Date:   Tue, 10 Oct 2023 23:49:08 +0100
-Message-ID: <20231010224928.2296997-1-peter.griffin@linaro.org>
+Subject: [PATCH v2 02/20] dt-bindings: clock: Add Google gs101 clock management unit bindings
+Date:   Tue, 10 Oct 2023 23:49:10 +0100
+Message-ID: <20231010224928.2296997-3-peter.griffin@linaro.org>
 X-Mailer: git-send-email 2.42.0.609.gbb76f46606-goog
+In-Reply-To: <20231010224928.2296997-1-peter.griffin@linaro.org>
+References: <20231010224928.2296997-1-peter.griffin@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi folks,
+Provide dt-schema documentation for Google gs101 SoC clock controller.
+Currently this adds support for cmu_top, cmu_misc and cmu_apm.
 
-Firstly, thanks to everyone who reviewed the v1 series! V2 incorporates all
-the review feedback received so far.
-
-This series adds initial SoC support for the GS101 SoC and also initial board
-support for Pixel 6 phone (Oriole).
-
-The gs101 / Tensor SoC is also used in Pixel6a (bluejay) and Pixel 6 Pro
-(raven) phones. Currently DT is added for the gs101 SoC and Oriole.
-As you can see from the patches the SoC is based on a Samsung Exynos SoC,
-and therefore lots of the low level Exynos drivers can be re-used.
-
-The support added in this series consists of:
-* cpus
-* pinctrl
-* some CCF implementation
-* watchdog
-* uart
-* gpio
-
-This is enough to boot through to a busybox initramfs and shell using an
-upstream kernel though :) More platform support will be added over the
-following weeks and months.
-
-Note 1: I've removed the dtbo overlay from v2 submission and will re-submit once
-I have appropriate documentation for it.
-
-Note 2: I've left the bootargs in dts with earlycon for now, for two reasons.
-1) The bootloader hangs if bootargs isn't present in the dtb as it tries to
-re-write this with additional bootargs.
-2) there is a issue whereby the full serial console doesn't come up properly
-if earlycon isn't also specified. This issue needs further investigation.
-
-Note 3: In `dt-bindings: pinctrl: samsung: add google,gs101-pinctrl compatible`
-I tried to narrow the interrupts check to google,gs101-pinctrl but I still see
-a warning:
-gs101-oriole.dtb: pinctrl@174d0000: interrupts: [[0, 0, 4],[..] is too long
-
-If anyone can educate me on what I've done wrong here it would be most
-appreciated!
-
-kind regards,
-
-Peter.
-
-Changes since v1:
- - Remove irq/gs101.h and replace macros with irq numbers globally
- - exynos-pmu - keep alphabetical order
- - add cmu_apm to clock bindings documentation
- - sysreg bindings - remove superfluous `google,gs101-sysreg`
- - watchdog bindings - Alphanumerical order, update gs201 comment
- - samsung,pinctrl.yaml - add new "if:then:else:" to narrow for google SoC
- - samsung,pinctrl-wakeup-interrupt.yaml - Alphanumerical order
- - samsung,pinctrl- add google,gs101-wakeup-eint compatible
- - clk-pll: fixup typos
- - clk-gs101: fix kernel test robot warnings (add 2 new clocks,dividers,gate)
- - clk-gs101: fix alphabetical order
- - clk-gs101: cmu_apm: fixup typo and missing empty entry
- - clk-gs101: cmu_misc: remove clocks that were being registerred twice
- - pinctrl: filter sel: rename/reorder variables, add comment for FLTCON bitfield
- - pinctrl: filter sel: avoid setting reserved bits by loop over FLTCON1 pins as well
- - pinctrl: gs101: rename bank_type_6/7 structs to be more specific, split from filter
- - watchdog: s3c2410_wdt: remove dev_info prints
- - gs101.dtsi/oriole.dts: order by unit node, remove underscores from node name, blank lines
-   add SoC node, split dts and dtsi into separate patches, remove 'DVT' suffix
- - gs101-oriole.dtso: Remove overlay until board_id is documented properly
- - Add GS101_PIN_* macros to gs101-pinctrl.h instead of using Exynos ones
- - gpio-keys: update linux,code to use input-event-code macros
- - add dedicated gs101-uart compatible
-
-Peter Griffin (20):
-  dt-bindings: soc: samsung: exynos-pmu: Add gs101 compatible
-  dt-bindings: clock: Add Google gs101 clock management unit bindings
-  dt-bindings: soc: google: exynos-sysreg: add dedicated SYSREG
-    compatibles to GS101
-  dt-bindings: watchdog: Document Google gs101 & gs201 watchdog bindings
-  dt-bindings: arm: google: Add bindings for Google ARM platforms
-  dt-bindings: pinctrl: samsung: add google,gs101-pinctrl compatible
-  dt-bindings: pinctrl: samsung: add gs101-wakeup-eint compatible
-  dt-bindings: serial: samsung: Add google-gs101-uart compatible
-  clk: samsung: clk-pll: Add support for pll_{0516,0517,518}
-  clk: samsung: clk-gs101: Add cmu_top registers, plls, mux and gates
-  clk: samsung: clk-gs101: add CMU_APM support
-  clk: samsung: clk-gs101: Add support for CMU_MISC clock unit
-  pinctrl: samsung: Add filter selection support for alive banks
-  pinctrl: samsung: Add gs101 SoC pinctrl configuration
-  watchdog: s3c2410_wdt: Add support for Google tensor SoCs
-  tty: serial: samsung: Add gs101 compatible and SoC data
-  arm64: dts: google: Add initial Google gs101 SoC support
-  arm64: dts: google: Add initial Oriole/pixel 6 board support
-  arm64: defconfig: Enable Google Tensor SoC
-  MAINTAINERS: add entry for Google Tensor SoC
-
- .../devicetree/bindings/arm/google.yaml       |   46 +
- .../bindings/clock/google,gs101-clock.yaml    |  125 +
- .../samsung,pinctrl-wakeup-interrupt.yaml     |    2 +
- .../bindings/pinctrl/samsung,pinctrl.yaml     |   19 +
- .../bindings/serial/samsung_uart.yaml         |    2 +
- .../bindings/soc/samsung/exynos-pmu.yaml      |    2 +
- .../soc/samsung/samsung,exynos-sysreg.yaml    |    6 +
- .../bindings/watchdog/samsung-wdt.yaml        |   10 +-
- MAINTAINERS                                   |   10 +
- arch/arm64/Kconfig.platforms                  |    6 +
- arch/arm64/boot/dts/Makefile                  |    1 +
- arch/arm64/boot/dts/google/Makefile           |    4 +
- arch/arm64/boot/dts/google/gs101-oriole.dts   |   79 +
- arch/arm64/boot/dts/google/gs101-pinctrl.dtsi | 1275 ++++++++++
- arch/arm64/boot/dts/google/gs101-pinctrl.h    |   32 +
- arch/arm64/boot/dts/google/gs101.dtsi         |  503 ++++
- arch/arm64/configs/defconfig                  |    1 +
- drivers/clk/samsung/Kconfig                   |    9 +
- drivers/clk/samsung/Makefile                  |    2 +
- drivers/clk/samsung/clk-gs101.c               | 2164 +++++++++++++++++
- drivers/clk/samsung/clk-pll.c                 |    9 +-
- drivers/clk/samsung/clk-pll.h                 |    3 +
- .../pinctrl/samsung/pinctrl-exynos-arm64.c    |  163 ++
- drivers/pinctrl/samsung/pinctrl-exynos.c      |   84 +-
- drivers/pinctrl/samsung/pinctrl-exynos.h      |   41 +
- drivers/pinctrl/samsung/pinctrl-samsung.c     |    4 +
- drivers/pinctrl/samsung/pinctrl-samsung.h     |   24 +
- drivers/tty/serial/samsung_tty.c              |   12 +
- drivers/watchdog/s3c2410_wdt.c                |  104 +-
- include/dt-bindings/clock/google,gs101.h      |  232 ++
- 30 files changed, 4961 insertions(+), 13 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/arm/google.yaml
+Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+---
+ .../bindings/clock/google,gs101-clock.yaml    | 125 ++++++++++
+ include/dt-bindings/clock/google,gs101.h      | 232 ++++++++++++++++++
+ 2 files changed, 357 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/clock/google,gs101-clock.yaml
- create mode 100644 arch/arm64/boot/dts/google/Makefile
- create mode 100644 arch/arm64/boot/dts/google/gs101-oriole.dts
- create mode 100644 arch/arm64/boot/dts/google/gs101-pinctrl.dtsi
- create mode 100644 arch/arm64/boot/dts/google/gs101-pinctrl.h
- create mode 100644 arch/arm64/boot/dts/google/gs101.dtsi
- create mode 100644 drivers/clk/samsung/clk-gs101.c
  create mode 100644 include/dt-bindings/clock/google,gs101.h
 
+diff --git a/Documentation/devicetree/bindings/clock/google,gs101-clock.yaml b/Documentation/devicetree/bindings/clock/google,gs101-clock.yaml
+new file mode 100644
+index 000000000000..f74494594b3b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/clock/google,gs101-clock.yaml
+@@ -0,0 +1,125 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/clock/google,gs101-clock.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Google GS101 SoC clock controller
++
++maintainers:
++  - Peter Griffin <peter.griffin@linaro.org>
++
++description: |
++  Google GS101 clock controller is comprised of several CMU units, generating
++  clocks for different domains. Those CMU units are modeled as separate device
++  tree nodes, and might depend on each other. The root clock in that clock tree
++  is OSCCLK (24.576 MHz). That external clock must be defined as a fixed-rate
++  clock in dts.
++
++  CMU_TOP is a top-level CMU, where all base clocks are prepared using PLLs and
++  dividers; all other leaf clocks (other CMUs) are usually derived from CMU_TOP.
++
++  Each clock is assigned an identifier and client nodes can use this identifier
++  to specify the clock which they consume. All clocks available for usage
++  in clock consumer nodes are defined as preprocessor macros in
++  'dt-bindings/clock/gs101.h' header.
++
++properties:
++  compatible:
++    enum:
++      - google,gs101-cmu-top
++      - google,gs101-cmu-apm
++      - google,gs101-cmu-misc
++
++  clocks:
++    minItems: 1
++    maxItems: 2
++
++  clock-names:
++    minItems: 1
++    maxItems: 2
++
++  "#clock-cells":
++    const: 1
++
++  reg:
++    maxItems: 1
++
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: google,gs101-cmu-top
++
++    then:
++      properties:
++        clocks:
++          items:
++            - description: External reference clock (24.576 MHz)
++
++        clock-names:
++          items:
++            - const: oscclk
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: google,gs101-cmu-misc
++
++    then:
++      properties:
++        clocks:
++          items:
++            - description: External reference clock (24.576 MHz)
++            - description: Misc bus clock (from CMU_TOP)
++
++        clock-names:
++          items:
++            - const: oscclk
++            - const: dout_cmu_misc_bus
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: google,gs101-cmu-apm
++
++    then:
++      properties:
++        clocks:
++          items:
++            - description: External reference clock (24.576 MHz)
++
++        clock-names:
++          items:
++            - const: oscclk
++
++required:
++  - compatible
++  - "#clock-cells"
++  - clocks
++  - clock-names
++  - reg
++
++additionalProperties: false
++
++examples:
++  # Clock controller node for CMU_TOP
++  - |
++    #include <dt-bindings/clock/google,gs101.h>
++    soc {
++        #address-cells = <2>;
++        #size-cells = <1>;
++
++        cmu_top: clock-controller@1e080000 {
++            compatible = "google,gs101-cmu-top";
++            reg = <0x0 0x1e080000 0x8000>;
++            #clock-cells = <1>;
++            clocks = <&ext_24_5m>;
++            clock-names = "oscclk";
++        };
++    };
++
++...
+diff --git a/include/dt-bindings/clock/google,gs101.h b/include/dt-bindings/clock/google,gs101.h
+new file mode 100644
+index 000000000000..7765ba68f734
+--- /dev/null
++++ b/include/dt-bindings/clock/google,gs101.h
+@@ -0,0 +1,232 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++/*
++ * Copyright (C) 2023 Linaro Ltd.
++ * Author: Peter Griffin <peter.griffin@linaro.org>
++ *
++ * Device Tree binding constants for Google gs101 clock controller.
++ */
++
++#ifndef _DT_BINDINGS_CLOCK_GOOGLE_GS101_H
++#define _DT_BINDINGS_CLOCK_GOOGLE_GS101_H
++
++/* CMU_TOP PLL*/
++#define CLK_FOUT_SHARED0_PLL		1
++#define CLK_FOUT_SHARED1_PLL		2
++#define CLK_FOUT_SHARED2_PLL		3
++#define CLK_FOUT_SHARED3_PLL		4
++#define CLK_FOUT_SPARE_PLL		5
++
++/* CMU_TOP MUX*/
++#define CLK_MOUT_SHARED0_PLL		6
++#define CLK_MOUT_SHARED1_PLL		7
++#define CLK_MOUT_SHARED2_PLL		8
++#define CLK_MOUT_SHARED3_PLL		9
++#define CLK_MOUT_SPARE_PLL		10
++#define CLK_MOUT_BUS0_BUS		11
++#define CLK_MOUT_CMU_BOOST		12
++#define CLK_MOUT_BUS1_BUS		13
++#define CLK_MOUT_BUS2_BUS		14
++#define CLK_MOUT_CORE_BUS		15
++#define CLK_MOUT_EH_BUS			16
++#define CLK_MOUT_CPUCL2_SWITCH		17
++#define CLK_MOUT_CPUCL1_SWITCH		18
++#define CLK_MOUT_CPUCL0_SWITCH		19
++#define CLK_MOUT_CPUCL0_DBG		20
++#define CLK_MOUT_CMU_HPM		21
++#define CLK_MOUT_G3D_SWITCH		22
++#define CLK_MOUT_G3D_GLB		23
++#define CLK_MOUT_DPU_BUS		24
++#define CLK_MOUT_DISP_BUS		25
++#define CLK_MOUT_G2D_G2D		26
++#define CLK_MOUT_G2D_MSCL		27
++#define CLK_MOUT_HSI0_USB31DRD		28
++#define CLK_MOUT_HSI0_BUS		29
++#define CLK_MOUT_HSI0_DPGTC		30
++#define CLK_MOUT_HSI0_USBDPDGB		31
++#define CLK_MOUT_HSI1_BUS		32
++#define CLK_MOUT_HSI1_PCIE		33
++#define CLK_MOUT_HSI2_BUS		34
++#define CLK_MOUT_HSI2_PCIE		35
++#define CLK_MOUT_HSI2_UFS_EMBD		36
++#define CLK_MOUT_HSI2_MMC_CARD		37
++#define CLK_MOUT_CSIS			38
++#define CLK_MOUT_PDP_BUS		39
++#define CLK_MOUT_PDP_VRA		40
++#define CLK_MOUT_IPP_BUS		41
++#define CLK_MOUT_G3AA			42
++#define CLK_MOUT_ITP			43
++#define CLK_MOUT_DNS_BUS		44
++#define CLK_MOUT_TNR_BUS		45
++#define CLK_MOUT_MCSC_ITSC		46
++#define CLK_MOUT_MCSC_MCSC		47
++#define CLK_MOUT_GDC_SCSC		48
++#define CLK_MOUT_GDC_GDC0		49
++#define CLK_MOUT_GDC_GDC1		50
++#define CLK_MOUT_MFC_MFC		51
++#define CLK_MOUT_MIF_SWITCH		52
++#define CLK_MOUT_MIF_BUS		53
++#define CLK_MOUT_MISC_BUS		54
++#define CLK_MOUT_MISC_SSS		55
++#define CLK_MOUT_PERIC0_IP		56
++#define CLK_MOUT_PERIC0_BUS		57
++#define CLK_MOUT_PERIC1_IP		58
++#define CLK_MOUT_PERIC1_BUS		59
++#define CLK_MOUT_TPU_TPU		60
++#define CLK_MOUT_TPU_TPUCTL		61
++#define CLK_MOUT_TPU_BUS		62
++#define CLK_MOUT_TPU_UART		63
++#define CLK_MOUT_TPU_HPM		64
++#define CLK_MOUT_BO_BUS			65
++#define CLK_MOUT_G3D_BUSD		66
++
++/* CMU_TOP Dividers*/
++#define CLK_DOUT_SHARED0_DIV3		67
++#define CLK_DOUT_SHARED0_DIV2		68
++#define CLK_DOUT_SHARED0_DIV4		69
++#define CLK_DOUT_SHARED0_DIV5		70
++#define CLK_DOUT_SHARED1_DIV3		71
++#define CLK_DOUT_SHARED1_DIV2		72
++#define CLK_DOUT_SHARED1_DIV4		73
++#define CLK_DOUT_SHARED2_DIV2		74
++#define CLK_DOUT_SHARED3_DIV2		75
++#define CLK_DOUT_BUS0_BUS		76
++#define CLK_DOUT_CMU_BOOST		77
++#define CLK_DOUT_BUS1_BUS		78
++#define CLK_DOUT_BUS2_BUS		79
++#define CLK_DOUT_CORE_BUS		80
++#define CLK_DOUT_EH_BUS			81
++#define CLK_DOUT_CPUCL2_SWITCH		82
++#define CLK_DOUT_CPUCL1_SWITCH		83
++#define CLK_DOUT_CPUCL0_SWITCH		84
++#define CLK_DOUT_CPUCL0_DBG		85
++#define CLK_DOUT_CMU_HPM		86
++#define CLK_DOUT_G3D_SWITCH		87
++#define CLK_DOUT_G3D_GLB		88
++#define CLK_DOUT_DPU_BUS		89
++#define CLK_DOUT_DISP_BUS		90
++#define CLK_DOUT_G2D_G2D		91
++#define CLK_DOUT_G2D_MSCL		92
++#define CLK_DOUT_HSI0_USB31DRD		93
++#define CLK_DOUT_HSI0_BUS		94
++#define CLK_DOUT_HSI0_DPGTC		95
++#define CLK_DOUT_HSI0_USBDPDGB		96
++#define CLK_DOUT_HSI1_BUS		97
++#define CLK_DOUT_HSI1_PCIE		98
++#define CLK_DOUT_HSI2_BUS		100
++#define CLK_DOUT_HSI2_PCIE		101
++#define CLK_DOUT_HSI2_UFS_EMBD		102
++#define CLK_DOUT_HSI2_MMC_CARD		103
++#define CLK_DOUT_CSIS			104
++#define CLK_DOUT_PDP_BUS		105
++#define CLK_DOUT_PDP_VRA		106
++#define CLK_DOUT_IPP_BUS		107
++#define CLK_DOUT_G3AA			108
++#define CLK_DOUT_ITP			109
++#define CLK_DOUT_DNS_BUS		110
++#define CLK_DOUT_TNR_BUS		111
++#define CLK_DOUT_MCSC_ITSC		112
++#define CLK_DOUT_MCSC_MCSC		113
++#define CLK_DOUT_GDC_SCSC		114
++#define CLK_DOUT_GDC_GDC0		115
++#define CLK_DOUT_GDC_GDC1		116
++#define CLK_DOUT_MFC_MFC		117
++#define CLK_DOUT_MIF_BUS		118
++#define CLK_DOUT_MISC_BUS		119
++#define CLK_DOUT_MISC_SSS		120
++#define CLK_DOUT_PERIC0_BUS		121
++#define CLK_DOUT_PERIC0_IP		122
++#define CLK_DOUT_PERIC1_BUS		123
++#define CLK_DOUT_PERIC1_IP		124
++#define CLK_DOUT_TPU_TPU		125
++#define CLK_DOUT_TPU_TPUCTL		126
++#define CLK_DOUT_TPU_BUS		127
++#define CLK_DOUT_TPU_UART		128
++#define CLK_DOUT_TPU_HPM		129
++#define CLK_DOUT_BO_BUS			130
++
++/* CMU_TOP Gates*/
++#define CLK_GOUT_BUS0_BUS		131
++#define CLK_GOUT_BUS1_BUS		132
++#define CLK_GOUT_BUS2_BUS		133
++#define CLK_GOUT_CORE_BUS		134
++#define CLK_GOUT_EH_BUS			135
++#define CLK_GOUT_CPUCL2_SWITCH		136
++#define CLK_GOUT_CPUCL1_SWITCH		137
++#define CLK_GOUT_CPUCL0_SWITCH		138
++#define CLK_GOUT_CPUCL0_DBG		139
++#define CLK_GOUT_CMU_HPM		140
++#define CLK_GOUT_G3D_SWITCH		141
++#define CLK_GOUT_G3D_GLB		142
++#define CLK_GOUT_DPU_BUS		143
++#define CLK_GOUT_DISP_BUS		144
++#define CLK_GOUT_G2D_G2D		145
++#define CLK_GOUT_G2D_MSCL		146
++#define CLK_GOUT_HSI0_USB31DRD		147
++#define CLK_GOUT_HSI0_BUS		148
++#define CLK_GOUT_HSI0_DPGTC		149
++#define CLK_GOUT_HSI0_USBDPDGB		150
++#define CLK_GOUT_HSI1_BUS		151
++#define CLK_GOUT_HSI1_PCIE		152
++#define CLK_GOUT_HSI2_BUS		153
++#define CLK_GOUT_HSI2_PCIE		154
++#define CLK_GOUT_HSI2_UFS_EMBD		155
++#define CLK_GOUT_HSI2_MMC_CARD		156
++#define CLK_GOUT_CSIS			157
++#define CLK_GOUT_PDP_BUS		158
++#define CLK_GOUT_PDP_VRA		159
++#define CLK_GOUT_IPP_BUS		160
++#define CLK_GOUT_G3AA			161
++#define CLK_GOUT_ITP			162
++#define CLK_GOUT_DNS_BUS		163
++#define CLK_GOUT_TNR_BUS		164
++#define CLK_GOUT_MCSC_ITSC		165
++#define CLK_GOUT_MCSC_MCSC		166
++#define CLK_GOUT_GDC_SCSC		167
++#define CLK_GOUT_GDC_GDC0		168
++#define CLK_GOUT_GDC_GDC1		169
++#define CLK_GOUT_MFC_MFC		170
++#define CLK_GOUT_MIF_SWITCH		171
++#define CLK_GOUT_MIF_BUS		172
++#define CLK_GOUT_MISC_BUS		173
++#define CLK_GOUT_MISC_SSS		174
++#define CLK_GOUT_PERIC0_BUS		175
++#define CLK_GOUT_PERIC0_IP		176
++#define CLK_GOUT_PERIC1_BUS		177
++#define CLK_GOUT_PERIC1_IP		178
++#define CLK_GOUT_TPU_TPU		179
++#define CLK_GOUT_TPU_TPUCTL		180
++#define CLK_GOUT_TPU_BUS		181
++#define CLK_GOUT_TPU_UART		182
++#define CLK_GOUT_TPU_HPM		183
++#define CLK_GOUT_BO_BUS			184
++#define CLK_GOUT_CMU_BOOST		185
++
++/* CMU_APM */
++
++#define CLK_MOUT_APM_FUNC					1
++#define CLK_MOUT_APM_FUNCSRC					2
++#define CLK_DOUT_APM_BOOST					3
++#define CLK_DOUT_APM_USI0_UART					4
++#define CLK_DOUT_APM_USI0_USI					5
++#define CLK_DOUT_APM_USI1_UART					6
++#define CLK_GOUT_APM_FUNC					7
++#define CLK_GOUT_APM_UID_APBIF_GPIO_ALIVE_IPCLKPORT_PCLK	8
++#define CLK_GOUT_APM_UID_APBIF_GPIO_FAR_ALIVE_IPCLKPORT_PCLK	9
++#define CLK_GOUT_APM_UID_APBIF_PMU_ALIVE_IPCLKPORT_PCLK		10
++#define CLK_GOUT_APM_UID_SYSREG_APM_IPCLKPORT_PCLK		11
++#define CLK_APM_PLL_DIV2_APM					12
++#define CLK_APM_PLL_DIV4_APM					13
++#define CLK_APM_PLL_DIV16_APM					14
++
++/* CMU_MISC */
++
++#define CLK_MOUT_MISC_BUS_USER					1
++#define CLK_MOUT_MISC_SSS_USER					2
++#define CLK_DOUT_MISC_BUSP					3
++#define CLK_DOUT_MISC_GIC					4
++#define CLK_GOUT_MISC_PCLK					5
++#define CLK_GOUT_MISC_SYSREG_PCLK				6
++#define CLK_GOUT_MISC_WDT_CLUSTER0				7
++#define CLK_GOUT_MISC_WDT_CLUSTER1				8
++
++#endif /* _DT_BINDINGS_CLOCK_GOOGLE_GS101_H */
 -- 
 2.42.0.609.gbb76f46606-goog
 
