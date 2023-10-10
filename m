@@ -2,55 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2180ACD98CD
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Oct 2023 22:50:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC62CD98D8
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Oct 2023 22:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344251AbjJJWuM (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Oct 2023 18:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54782 "EHLO
+        id S234718AbjJJWuP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 10 Oct 2023 18:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234722AbjJJWuE (ORCPT
+        with ESMTP id S1344171AbjJJWuK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Oct 2023 18:50:04 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DF6EDA
-        for <linux-serial@vger.kernel.org>; Tue, 10 Oct 2023 15:49:55 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id 5b1f17b1804b1-40666aa674fso58841295e9.0
-        for <linux-serial@vger.kernel.org>; Tue, 10 Oct 2023 15:49:55 -0700 (PDT)
+        Tue, 10 Oct 2023 18:50:10 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 160D3101
+        for <linux-serial@vger.kernel.org>; Tue, 10 Oct 2023 15:49:58 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id ffacd0b85a97d-31fa15f4cc6so5991489f8f.2
+        for <linux-serial@vger.kernel.org>; Tue, 10 Oct 2023 15:49:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1696978193; x=1697582993; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1696978197; x=1697582997; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=XJ74cedc8GAeBZmTMzF3JIrX0TJ1DJCXAuIkw6TmlM0=;
-        b=yBdR59ceuFX+07FjC7A+0Akkg75cSdzxwTfAk6suBwRvZkc9jfKLXzO6lM/6RvJULI
-         d0oLxTYKYq/Yva7k1Yf65kox5ByBjEjTWP5YwKaSnCGkUHZVG8RTq71YqFDBiccuw6+9
-         oFTlpAjEwzkPX8Lqqls+WRQoC8fFXo/ODfH7ahoYCi+NIFREoLifyGQSwhJ70z0j1MEG
-         gJdrDHctdUzmuTGaksrVCVXr0Wy2V+6LZoY4x1CuphdFojaLQk4aijp9Ee7bPVmW501R
-         FRElxjnpZG+vmm3OjA2nCxaDDGl+jkeJSbcTrYBPUeSK9duEkYttsM84DKt8ORz9LRY2
-         ERUQ==
+        bh=5N6uqi00UvIi9OwQaXTzg3QTlqfUdmw6j0gCgPzNTCQ=;
+        b=akISxRLBQkxEDVL2V6xY76L2MFD4fdNBHB4+SwCIxBAHAUEkycBrsteHgDYH91ukBK
+         IsYlLM35b3QNodVSFVHjpBTvVEvcWpLjk1crVHhLk/zm0JjmvwGw/o4QICF3xgfg6zwj
+         CGgwuRv8y2bjYJlcJ4Zq8RuuMd/9Ie9xP30w55meNnuoEgKUQy1YoRMnIZ22TcbHZ3dF
+         D0VBdVSAXGdK9P1rHYT3EtRbkTgfWLYLD9Ff65VIUkB9gyOU7DoHY6KIJjFb98N8y7M2
+         6aSjeLt+zOWjvmW6UmORGb+xACvGF5Trq8rpbw3LEOIFLmfqMDa0Eor7lVeKLUfLP0wu
+         d6Ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696978193; x=1697582993;
+        d=1e100.net; s=20230601; t=1696978197; x=1697582997;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=XJ74cedc8GAeBZmTMzF3JIrX0TJ1DJCXAuIkw6TmlM0=;
-        b=Coby5AJ4e5bTnXTCYqqAMyZbaTtPmvRu56v8YiGKD+E8TT5OwgQikfquQ3DO59OzYH
-         dDLGdQYoGBbR62vqgGLGcIvWaFNA2rKtf0i88nM1JXk/GzzA+Xvz2STCXzLx8UhC5jRF
-         +MXy3CrHjA4ROdzF1WP/MUbqcagYvQ5QdskM1F/U47QcH+I0LyhM/rxpeRg4Hhy9T1Oq
-         vwsvNr7TYz4MhhTAt12Y+o7N11vE0C19QrP81iWuTYmjWBcqJA2fDOJPH9v+E8VlMRYc
-         /ZkfYWyFsUIc14T6VFYj0prV94eYh5XnAbuw4nrWBl6D68yjJtFtLENh7s+t5Yjw7bSz
-         X6OQ==
-X-Gm-Message-State: AOJu0YzU0hLZn2yFkdH9WiBqI+PhNpYuotycUhJEFqWvxmlSnoEWWbiL
-        cNGhD1vP6wetZ3VJA3lhPkcBIQ==
-X-Google-Smtp-Source: AGHT+IHFt44IvIgGbFix0PK/p+OZEdJuoaRo0Ks4rXQWEu9pD0qfPoVh/wjSuvtPwm9PDp+J2Wwexw==
-X-Received: by 2002:a5d:4cc1:0:b0:324:885f:f7fd with SMTP id c1-20020a5d4cc1000000b00324885ff7fdmr17262662wrt.15.1696978193218;
-        Tue, 10 Oct 2023 15:49:53 -0700 (PDT)
+        bh=5N6uqi00UvIi9OwQaXTzg3QTlqfUdmw6j0gCgPzNTCQ=;
+        b=npPFoaai0UWeVr4taZUYfg8NkJCcZtOVgtmacfZ+gigwIe+31IQEPPBGSC/642l75J
+         0VyOEyUij0Q5PSRtQAzzkEckWrE4KZxtmMHYneHPHlPRJ9MByH3raS59gL1o7FmqNzSZ
+         Xh40+cXyZRe1ebGKyS3TI0tMbh9jl/32zl0I5GWuZqKzlvZ/SrSfse1y9bB+pfEl2r0H
+         mYQ0FpO5n2saMh79YLxEopRSMAOB4jcP8SYLmA10occI0NiI593PD+ueWfxoLNaXW/F9
+         IcMuD+zGnve4EcsVU0CfKH7QkL1z+kIUYXG+dNsghKIDgvrxlqSAB/P8MT8743bsoURR
+         FVBg==
+X-Gm-Message-State: AOJu0YzYwE3wTkF55DwtJPsMDwIFouBwwGY0f2D+0aNzI92a4XPMVLSD
+        z7Hx5XNKnAdy4KsDiLOrbWh0aQ==
+X-Google-Smtp-Source: AGHT+IE7hch8Cm0CH6klFQ3QwAy2VSjuJtf78sVmRF1c85lzowQfudVhpSBVhmAyAGdnZWZlPmCBQg==
+X-Received: by 2002:adf:f74c:0:b0:31f:651f:f84f with SMTP id z12-20020adff74c000000b0031f651ff84fmr17109139wrp.27.1696978197446;
+        Tue, 10 Oct 2023 15:49:57 -0700 (PDT)
 Received: from gpeter-l.lan (host-92-12-225-146.as13285.net. [92.12.225.146])
-        by smtp.gmail.com with ESMTPSA id j13-20020adfe50d000000b003196b1bb528sm13689547wrm.64.2023.10.10.15.49.51
+        by smtp.gmail.com with ESMTPSA id j13-20020adfe50d000000b003196b1bb528sm13689547wrm.64.2023.10.10.15.49.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Oct 2023 15:49:52 -0700 (PDT)
+        Tue, 10 Oct 2023 15:49:56 -0700 (PDT)
 From:   Peter Griffin <peter.griffin@linaro.org>
 To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
@@ -64,11 +63,10 @@ Cc:     peter.griffin@linaro.org, tudor.ambarus@linaro.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        kernel-team@android.com, linux-serial@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 05/20] dt-bindings: arm: google: Add bindings for Google ARM platforms
-Date:   Tue, 10 Oct 2023 23:49:13 +0100
-Message-ID: <20231010224928.2296997-6-peter.griffin@linaro.org>
+        kernel-team@android.com, linux-serial@vger.kernel.org
+Subject: [PATCH v2 08/20] dt-bindings: serial: samsung: Add google-gs101-uart compatible
+Date:   Tue, 10 Oct 2023 23:49:16 +0100
+Message-ID: <20231010224928.2296997-9-peter.griffin@linaro.org>
 X-Mailer: git-send-email 2.42.0.609.gbb76f46606-goog
 In-Reply-To: <20231010224928.2296997-1-peter.griffin@linaro.org>
 References: <20231010224928.2296997-1-peter.griffin@linaro.org>
@@ -78,68 +76,32 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This introduces bindings and dt-schema for the Google tensor SoCs.
-Currently just gs101 and pixel 6 are supported.
+Add dedicated google-gs101-uart compatible to the dt-schema for
+representing uart of the Google Tensor gs101 SoC.
 
 Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- .../devicetree/bindings/arm/google.yaml       | 46 +++++++++++++++++++
- 1 file changed, 46 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/google.yaml
+ Documentation/devicetree/bindings/serial/samsung_uart.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/google.yaml b/Documentation/devicetree/bindings/arm/google.yaml
-new file mode 100644
-index 000000000000..167945e4d5ee
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/google.yaml
-@@ -0,0 +1,46 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/arm/google.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Google Tensor platforms
-+
-+maintainers:
-+  - Peter Griffin <peter.griffin@linaro.org>
-+
-+description: |
-+  ARM platforms using SoCs designed by Google branded "Tensor" used in Pixel
-+  devices.
-+
-+  Currently upstream this is devices using "gs101" SoC which is found in Pixel
-+  6, Pixel 6 Pro and Pixel 6a.
-+
-+  Google have a few different names for the SoC.
-+  - Marketing name ("Tensor")
-+  - Codename ("Whitechapel")
-+  - SoC ID ("gs101")
-+  - Die ID ("S5P9845");
-+
-+  Likewise there are a couple of names for the actual device
-+  - Marketing name ("Pixel 6")
-+  - Codename ("Oriole")
-+
-+  Devicetrees should use the lowercased SoC ID and lowercased board codename.
-+  e.g. gs101 and gs101-oriole
-+
-+properties:
-+  $nodename:
-+    const: '/'
-+  compatible:
-+    oneOf:
-+
-+      - description: Google Pixel 6 / Oriole
-+        items:
-+          - enum:
-+              - google,gs101-oriole
-+          - const: google,gs101
-+
-+additionalProperties: true
-+
-+...
+diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+index 8bd88d5cbb11..72471ebe5734 100644
+--- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
++++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+@@ -19,11 +19,13 @@ properties:
+   compatible:
+     oneOf:
+       - items:
++          - const: google,gs101-uart
+           - const: samsung,exynosautov9-uart
+           - const: samsung,exynos850-uart
+       - enum:
+           - apple,s5l-uart
+           - axis,artpec8-uart
++          - google,gs101-uart
+           - samsung,s3c2410-uart
+           - samsung,s3c2412-uart
+           - samsung,s3c2440-uart
 -- 
 2.42.0.609.gbb76f46606-goog
 
