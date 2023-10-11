@@ -2,111 +2,121 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51731CD98F6
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 07:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDEDCD98F9
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 07:51:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344707AbjJKH1I (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Oct 2023 03:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44422 "EHLO
+        id S230005AbjJKHvW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 11 Oct 2023 03:51:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344185AbjJKH1H (ORCPT
+        with ESMTP id S230287AbjJKHvN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Oct 2023 03:27:07 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E870B98;
-        Wed, 11 Oct 2023 00:27:05 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03683C433C7;
-        Wed, 11 Oct 2023 07:27:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1697009225;
-        bh=wdBRBWPG1q+slhhNVCbJyKyr4zxhG5iWNoRBaC45st0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sM6P/GYLthcfQbXg4JirQV4bK0QZKxkEghoQcQYgs8kX/K4EDu95Wcn6L8UQnSDWW
-         rZf7pdAcvMFZONtoU2fTHSUZHnC60MjoaJkIYNcuGZQyH3EmdflPgP4Jl75eTej5di
-         KYtj+i110e2I/lBBebrafdiPPzsNzo4mviAIPdOE=
-Date:   Wed, 11 Oct 2023 09:27:02 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Conor Dooley <conor@kernel.org>,
-        Andrew Jones <ajones@ventanamicro.com>, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/6] RISC-V: KVM: Change the SBI specification version to
- v2.0
-Message-ID: <2023101107-endorse-large-ef50@gregkh>
-References: <20231010170503.657189-1-apatel@ventanamicro.com>
- <20231010170503.657189-3-apatel@ventanamicro.com>
- <2023101013-overfeed-online-7f69@gregkh>
- <CAK9=C2WbW_WvoU59Ba9VrKf5GbbXmMOhB2jsiAp0a=SJYh3d7w@mail.gmail.com>
+        Wed, 11 Oct 2023 03:51:13 -0400
+X-Greylist: delayed 362 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 11 Oct 2023 00:51:01 PDT
+Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com [66.111.4.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5459F10B;
+        Wed, 11 Oct 2023 00:51:00 -0700 (PDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 891765804C1;
+        Wed, 11 Oct 2023 03:44:57 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Wed, 11 Oct 2023 03:44:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1697010297; x=1697017497; bh=JZ
+        ToOnQlaLQI+R1OJZjMd5txCt25LannQJkkFemkr7A=; b=2I1Uee41GqQiS5mRa7
+        b+oLFHaHse24HaozrZAH5aB5O6tH1OPeNXTHMFgWUHQJ+EJrC95eZNw0k/kn8TZb
+        d6GCEPJJATP1hL/7LLiPs0dvVLy8RoNLfmxVDGtXO4ipZcHbiVIT1NI8sArIRDOi
+        YDGadkOLR5hnJyg7EPvK9G+ig7LRP5tS9geD5LCHiKDX6NUQw4JC1uWIZt65jSZK
+        8bRYsHbC42O24GL2BsXZKGaB7ycIUgDZ35VrUzyduSd68q8XBij2krCyq+GZQNYh
+        Kq6ZqaWI+slgetPhXhJo7c8WPDuI73LD4ayto3V5YDYrbx0gsQ5OfiDcVInJZ40p
+        0gYQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:content-type:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; t=1697010297; x=1697017497; bh=JZToOnQlaLQI+
+        R1OJZjMd5txCt25LannQJkkFemkr7A=; b=QQKKGB5UoVL3YQ4FtdrsWsjqKcufn
+        37TnvP56+FqTFex/vwIupr3qRdQVV6X2EN77rH/ZNuY6bb9D6MP4/rZPooCFVk0M
+        F3SPsWyKMjwEqeO3KolFnelceT5+rSaIEmm58c62wdJ9G1IURsJzIPoswNjDRAdI
+        173HETIxvG91z1fOkEvVRki7NY2I8XbVCOX5F/V/3gnuDO2SjoOHesDFb/8Q6Ey6
+        0kqrfdQ2i+Ntru8WNRY5wDWQFPgF0Hf/fChlcV2REkh171SUXjK3YlRDy0EYodqE
+        WHcNY7lzlv0ZeiyxZNbNcBJmmH7Nv72e+moVHzabqtZ631FoEb0nogqYw==
+X-ME-Sender: <xms:eFImZej4eHDXn_Ru6WgufJrf4kJLu_4wat-r3vbGWJUgjAli7pT8ww>
+    <xme:eFImZfCG-IC8RIx8_MLrdpmX8ABknJIFkLOnpp2QKfWhOnzcg-Iaj3U2K7p8oHRMs
+    k3Cx-zzzijiAw>
+X-ME-Received: <xmr:eFImZWFsra_F7BfmAimk0JZCBx8cgzCGV50sPziqXQC9edJzx9dShwXQ-JKfpVct_6WI9-87IMUeO-zHEUAuLxI_XpSraHxY-E5fMczONP4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrheejgdekudcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeehgedvve
+    dvleejuefgtdduudfhkeeltdeihfevjeekjeeuhfdtueefhffgheekteenucevlhhushht
+    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
+    drtghomh
+X-ME-Proxy: <xmx:eFImZXS3hehWydKzE9FCS1Sofv1sITbomg94NeHwJ3ml1wLj3qFBvw>
+    <xmx:eFImZbwY9RZWoEXZgGd9ZlKbXYRoRshZv_o6MT-02QoNXjo085Itgw>
+    <xmx:eFImZV4My1BsUQZ15GES-Nc6HIUF3bbFldSh1_jvRjCuSEZbj6fhBw>
+    <xmx:eVImZTMd-gdYVE_hUjMN2G9PoVBnopKaS3wkDx9nBKgBmBcMR6ZgLw>
+Feedback-ID: i787e41f1:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 11 Oct 2023 03:44:55 -0400 (EDT)
+Date:   Wed, 11 Oct 2023 09:44:52 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Peter Griffin <peter.griffin@linaro.org>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
+        tomasz.figa@gmail.com, s.nawrocki@samsung.com,
+        linus.walleij@linaro.org, wim@linux-watchdog.org,
+        linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org,
+        arnd@arndb.de, olof@lixom.net, cw00.choi@samsung.com,
+        tudor.ambarus@linaro.org, andre.draszik@linaro.org,
+        semen.protsenko@linaro.org, saravanak@google.com,
+        willmcvicker@google.com, soc@kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        kernel-team@android.com, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2 00/20] Add minimal Tensor/GS101 SoC support and
+ Oriole/Pixel6 board
+Message-ID: <2023101101-mauve-underarm-1b48@gregkh>
+References: <20231010224928.2296997-1-peter.griffin@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAK9=C2WbW_WvoU59Ba9VrKf5GbbXmMOhB2jsiAp0a=SJYh3d7w@mail.gmail.com>
+In-Reply-To: <20231010224928.2296997-1-peter.griffin@linaro.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 11, 2023 at 11:49:14AM +0530, Anup Patel wrote:
-> On Tue, Oct 10, 2023 at 10:43 PM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Tue, Oct 10, 2023 at 10:34:59PM +0530, Anup Patel wrote:
-> > > We will be implementing SBI DBCN extension for KVM RISC-V so let
-> > > us change the KVM RISC-V SBI specification version to v2.0.
-> > >
-> > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> > > ---
-> > >  arch/riscv/include/asm/kvm_vcpu_sbi.h | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/arch/riscv/include/asm/kvm_vcpu_sbi.h b/arch/riscv/include/asm/kvm_vcpu_sbi.h
-> > > index cdcf0ff07be7..8d6d4dce8a5e 100644
-> > > --- a/arch/riscv/include/asm/kvm_vcpu_sbi.h
-> > > +++ b/arch/riscv/include/asm/kvm_vcpu_sbi.h
-> > > @@ -11,7 +11,7 @@
-> > >
-> > >  #define KVM_SBI_IMPID 3
-> > >
-> > > -#define KVM_SBI_VERSION_MAJOR 1
-> > > +#define KVM_SBI_VERSION_MAJOR 2
-> >
-> > What does this number mean?  Who checks it?  Why do you have to keep
-> > incrementing it?
+On Tue, Oct 10, 2023 at 11:49:08PM +0100, Peter Griffin wrote:
+> Hi folks,
 > 
-> This number is the SBI specification version implemented by KVM RISC-V
-> for the Guest kernel.
+> Firstly, thanks to everyone who reviewed the v1 series! V2 incorporates all
+> the review feedback received so far.
 > 
-> The original sbi_console_putchar() and sbi_console_getchar() are legacy
-> functions (aka SBI v0.1) which were introduced a few years back along
-> with the Linux RISC-V port.
+> This series adds initial SoC support for the GS101 SoC and also initial board
+> support for Pixel 6 phone (Oriole).
 > 
-> The latest SBI v2.0 specification (which is now frozen) introduces a new
-> SBI debug console extension which replaces legacy sbi_console_putchar()
-> and sbi_console_getchar() functions with better alternatives.
-> (Refer, https://github.com/riscv-non-isa/riscv-sbi-doc/releases/download/commit-fe4562532a9cc57e5743b6466946c5e5c98c73ca/riscv-sbi.pdf)
+> The gs101 / Tensor SoC is also used in Pixel6a (bluejay) and Pixel 6 Pro
+> (raven) phones. Currently DT is added for the gs101 SoC and Oriole.
+> As you can see from the patches the SoC is based on a Samsung Exynos SoC,
+> and therefore lots of the low level Exynos drivers can be re-used.
 > 
-> This series adds SBI debug console implementation in KVM RISC-V
-> so the SBI specification version advertised by KVM RISC-V must also be
-> upgraded to v2.0.
-> 
-> Regarding who checks its, the SBI client drivers in the Linux kernel
-> will check SBI specification version implemented by higher privilege
-> mode (M-mode firmware or HS-mode hypervisor) before probing
-> the SBI extension. For example, the HVC SBI driver (PATCH5)
-> will ensure SBI spec version to be at least v2.0 before probing
-> SBI debug console extension.
+> The support added in this series consists of:
+> * cpus
+> * pinctrl
+> * some CCF implementation
+> * watchdog
+> * uart
+> * gpio
 
-Is this api backwards compatible, or did you just break existing
-userspace that only expects version 1.0?
+So you have sent a patch series that crosses multiple subsystems, who is
+supposed to be taking these patches?  Or do you not want them actually
+merged?
 
-thanks,
+confused,
 
 greg k-h
