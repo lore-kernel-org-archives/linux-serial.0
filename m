@@ -2,70 +2,69 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C4C1CD6E63
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 12:09:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D528CD6E5D
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 12:12:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346462AbjJKMJU (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Oct 2023 08:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56870 "EHLO
+        id S234984AbjJKMMX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 11 Oct 2023 08:12:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346415AbjJKMJR (ORCPT
+        with ESMTP id S234936AbjJKMMU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Oct 2023 08:09:17 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D141EA4
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 05:09:11 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id 5b1f17b1804b1-40684f53ef3so66540135e9.3
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 05:09:11 -0700 (PDT)
+        Wed, 11 Oct 2023 08:12:20 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9625210A
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 05:10:45 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id 5b1f17b1804b1-4060b623e64so5631585e9.0
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 05:10:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1697026150; x=1697630950; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1697026211; x=1697631011; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=L1E2lRmOBg6aoXCFS4y3iLweaD9iag4McKGgCCSC38Y=;
-        b=OwHVc4CVLBEHt1uk45h2q7LWgtMd5DqBrr04Q5cevir0OXvduQv8nJWtWQESCnNFJY
-         J4RsqUHAFkxCOiJY1Fjpl++CujQA74PhixQmIGOKrSlGsiY2QCVX63tBcQrc9kBZvky+
-         020mXbGQRSrGyuFDc7MV1VkJQ64M1YeraLFvg22IuTkGsAuIldkoCnczlyDGz2sgrsB9
-         qA/+HsJ0eS3CeUzCpnKGDUgRIHK5p9H7Km7bIIT6exPlI6GYfpB75Ct1WnD9YV4iOaJ6
-         GgYBFz24aqntJYlnTutGLexogVtZdgNACP0+lgtqpJIX6RT0sEukA6t601Vr7tShtNF8
-         unkA==
+        bh=0YuxREZxQvI3tZUj1y+IWBqA31a/S6I3QHsKO3D5ABk=;
+        b=SCpf6AZqF1nF3TZY2ygxJjU8tbxx3tPCJvH5u+xiNaSf/6cXokVWw8TYbAK30FpumR
+         T/h/0uHC79yqH+BX37gCd+5LTtJGZRQxqTdtIweaGafnEhbUxpgZcsOwIfVXDqwQMfwV
+         XgjlQAEHFYPtAV5IMSYTW4MDrDAFBDq8im4hYwGyCFXR92FjQW/v3C3qRq2PVvvS59Ky
+         IbrymsdKSK6W+sKSTdnRBxrEvV1f0Y+gVA83ruN33YlKNieN1VmLj6h+UpPwhFDz/IQS
+         ffQwpXmnZ+V3I9Rj2n9ud8yUsmhAty+9Xw+5eJfT/+EXUZ5Y9FMiOjWSbTIX2mjSzFOG
+         BjCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697026150; x=1697630950;
+        d=1e100.net; s=20230601; t=1697026211; x=1697631011;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=L1E2lRmOBg6aoXCFS4y3iLweaD9iag4McKGgCCSC38Y=;
-        b=FTqY4gTOsKI8o+3wtzdjXfp3eYuYg/Bk1bLvp1cr1AWq2CVKQenk3t7EXa4jPW+025
-         EKTtBhfQVffnMAXO6S9c1oW17bwO7aJ3qOWPvbihFwZVyWb0ooIclO+5Bm8gyGpBLbqQ
-         KqoctvoTm9xSoXYK8DD13DHBgo90xOfu6wkAnIRvoUzo2l1bprXZVjERncgUvoSDyZZS
-         5KtaEjx05CHjdNWkpxReF1oOoYsHcnDBtEIyDi/rMC18AW2tPMN/lMQryYhz2ZiUzeRi
-         gNdvX3duqKb4ok9pzT98wkwYdfVL7FM9ttMRs2H/+9tOMvzAny0wmo8fAyu46DJkr+jI
-         +0jA==
-X-Gm-Message-State: AOJu0YyttmZtwBLHFj9rIT1r1uqp7BAs+yUWyIK5XFmeyDooYLotU7ho
-        IA2mOGZlD0BcXhGsTqt0yKR0+w==
-X-Google-Smtp-Source: AGHT+IFnxPH3PwSQWtDJFnYjMvj2ffXSdpOTDsmYhaYuYy0XeIMrrml++5l5LQ9/uTeKVGxLRwHyCw==
-X-Received: by 2002:a7b:c391:0:b0:405:359a:c950 with SMTP id s17-20020a7bc391000000b00405359ac950mr17759383wmj.19.1697026150214;
-        Wed, 11 Oct 2023 05:09:10 -0700 (PDT)
+        bh=0YuxREZxQvI3tZUj1y+IWBqA31a/S6I3QHsKO3D5ABk=;
+        b=VfZxF6Uvb8c2iimZBwdZBdkv4xK6eg4x2xeQK6uwg8M3Ln5U/uAzinsOmuAzPvLjdh
+         lDbvKklk0IyuWk4byhGVM5/ocPTKxCqYD+hOvlJPG0KczjXFWaNxTLQOtvc+K5HsdE+5
+         DaAzWrQ4lg951JJirgGNXB2xTr6bUzoto7wMlwjwd1tJUfnKxSFJkX0VMAWiIxO7Wuaq
+         Ft4jOV6kl4awP+Vo3f3rbolG5V0BH1RLvvFT231mzYcDvjyFFf3qTm8IeklPBSN5uBhW
+         2b39u68DO1LCqCHY9AQSx83+gltZ0xKIeS2/NhSltiQVX6CLkX7UiiNhije4K75ZzBvl
+         08nQ==
+X-Gm-Message-State: AOJu0YwSXFr3kVef0ef1IkLkFtC0TEB4Qphiou9E1EzmvHlCTW3vaB3k
+        dszqxT0e/iOtOxHi2oobbdgZ/w==
+X-Google-Smtp-Source: AGHT+IFej/5ayi8PI4oLjjatno7uw1mo+oOL4QBnoMGwo84AkbVNBqUIDzpbQ4PilDXJwCzZ+KTYzQ==
+X-Received: by 2002:a05:600c:5390:b0:405:29ba:9b5c with SMTP id hg16-20020a05600c539000b0040529ba9b5cmr14599821wmb.16.1697026210671;
+        Wed, 11 Oct 2023 05:10:10 -0700 (PDT)
 Received: from [192.168.1.20] ([178.197.219.100])
-        by smtp.gmail.com with ESMTPSA id e24-20020a05600c219800b004013797efb6sm18902138wme.9.2023.10.11.05.09.07
+        by smtp.gmail.com with ESMTPSA id e24-20020a05600c219800b004013797efb6sm18902138wme.9.2023.10.11.05.10.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Oct 2023 05:09:09 -0700 (PDT)
-Message-ID: <1b7dcc34-1c9c-44cb-ae14-f63aca2317ea@linaro.org>
-Date:   Wed, 11 Oct 2023 14:09:06 +0200
+        Wed, 11 Oct 2023 05:10:10 -0700 (PDT)
+Message-ID: <03090f30-8788-45ff-a4eb-66199f0cf3cf@linaro.org>
+Date:   Wed, 11 Oct 2023 14:10:08 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 08/20] dt-bindings: serial: samsung: Add
- google-gs101-uart compatible
+Subject: Re: [PATCH v2 00/20] Add minimal Tensor/GS101 SoC support and
+ Oriole/Pixel6 board
 Content-Language: en-US
-To:     Peter Griffin <peter.griffin@linaro.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
-        conor+dt@kernel.org, sboyd@kernel.org, tomasz.figa@gmail.com,
-        s.nawrocki@samsung.com, linus.walleij@linaro.org,
-        wim@linux-watchdog.org, linux@roeck-us.net,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        olof@lixom.net, cw00.choi@samsung.com
-Cc:     tudor.ambarus@linaro.org, andre.draszik@linaro.org,
+To:     Greg KH <greg@kroah.com>, Peter Griffin <peter.griffin@linaro.org>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
+        tomasz.figa@gmail.com, s.nawrocki@samsung.com,
+        linus.walleij@linaro.org, wim@linux-watchdog.org,
+        linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org,
+        arnd@arndb.de, olof@lixom.net, cw00.choi@samsung.com,
+        tudor.ambarus@linaro.org, andre.draszik@linaro.org,
         semen.protsenko@linaro.org, saravanak@google.com,
         willmcvicker@google.com, soc@kernel.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
@@ -73,7 +72,7 @@ Cc:     tudor.ambarus@linaro.org, andre.draszik@linaro.org,
         linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
         kernel-team@android.com, linux-serial@vger.kernel.org
 References: <20231010224928.2296997-1-peter.griffin@linaro.org>
- <20231010224928.2296997-9-peter.griffin@linaro.org>
+ <2023101101-mauve-underarm-1b48@gregkh>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -119,41 +118,41 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20231010224928.2296997-9-peter.griffin@linaro.org>
+In-Reply-To: <2023101101-mauve-underarm-1b48@gregkh>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 11/10/2023 00:49, Peter Griffin wrote:
-> Add dedicated google-gs101-uart compatible to the dt-schema for
-> representing uart of the Google Tensor gs101 SoC.
+On 11/10/2023 09:44, Greg KH wrote:
+> On Tue, Oct 10, 2023 at 11:49:08PM +0100, Peter Griffin wrote:
+>> Hi folks,
+>>
+>> Firstly, thanks to everyone who reviewed the v1 series! V2 incorporates all
+>> the review feedback received so far.
+>>
+>> This series adds initial SoC support for the GS101 SoC and also initial board
+>> support for Pixel 6 phone (Oriole).
+>>
+>> The gs101 / Tensor SoC is also used in Pixel6a (bluejay) and Pixel 6 Pro
+>> (raven) phones. Currently DT is added for the gs101 SoC and Oriole.
+>> As you can see from the patches the SoC is based on a Samsung Exynos SoC,
+>> and therefore lots of the low level Exynos drivers can be re-used.
+>>
+>> The support added in this series consists of:
+>> * cpus
+>> * pinctrl
+>> * some CCF implementation
+>> * watchdog
+>> * uart
+>> * gpio
 > 
-> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
-> ---
->  Documentation/devicetree/bindings/serial/samsung_uart.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> index 8bd88d5cbb11..72471ebe5734 100644
-> --- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> @@ -19,11 +19,13 @@ properties:
->    compatible:
->      oneOf:
->        - items:
-> +          - const: google,gs101-uart
+> So you have sent a patch series that crosses multiple subsystems, who is
+> supposed to be taking these patches?  Or do you not want them actually
+> merged?
 
-You just broke existing users.
-
-It does not look like you tested the DTS against bindings. Please run
-`make dtbs_check W=1` (see
-Documentation/devicetree/bindings/writing-schema.rst or
-https://www.linaro.org/blog/tips-and-tricks-for-validating-devicetree-sources-with-the-devicetree-schema/
-for instructions).
-
-
+Me, through Samsung SoC -> ARM SoC. The cover letter could say that.
 
 Best regards,
 Krzysztof
