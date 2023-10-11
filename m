@@ -2,157 +2,95 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE41CD98C7
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 06:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD163CD98F5
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 06:58:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344710AbjJKGco (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Oct 2023 02:32:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56142 "EHLO
+        id S229587AbjJKG6p (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 11 Oct 2023 02:58:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344315AbjJKGcn (ORCPT
+        with ESMTP id S229608AbjJKG6p (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Oct 2023 02:32:43 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1ED9D
-        for <linux-serial@vger.kernel.org>; Tue, 10 Oct 2023 23:32:40 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id 41be03b00d2f7-5892832f8daso522479a12.0
-        for <linux-serial@vger.kernel.org>; Tue, 10 Oct 2023 23:32:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1697005960; x=1697610760; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qlCvzn9D9MWfXzyAjQXrd2l33CVlRWaoX+EsCqMd6ps=;
-        b=kWTWVPK7N9NCNf2HZ3Fyp42qChTUEHUHU97/4FONyjQgtNtbeeDXBEMNrp4zfUlB2x
-         vX8T9j9s5s/ARkEB/UTWO0sisG0aSIWSqSzC4PvABUFj0ZSX7YtcnAA3sPm/ccNFz1dn
-         Cch+OPNt05lppQURTmvKrfRsnNHKAK2a9/lZzh5RKgkp58iWhKD9slxYcvPXpEznkydo
-         BwuPnbCUXdYJEG6R1oOGbPVpXS9PA9eEBdiFUoU2yfd7jwNOnoF1L81rbqLlouQUA/kc
-         fAi5QEBKkuyqfXDx0cyrFI2nxm61QRBAgtxwQ49npw0Oq4dWd2GyhXTcSgYJ8R4USj+D
-         Vd1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697005960; x=1697610760;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qlCvzn9D9MWfXzyAjQXrd2l33CVlRWaoX+EsCqMd6ps=;
-        b=PP9/Fv95hZFqcuxx/uvz76sluNb4V3Kx7uFXwnfX0O7TFBbqIdtEnlySRzzIBzd2L7
-         BXw57eo2zmQe6R0L+96t5sA4/WMJ0365NM3YqastA+ttliehGBQ9auBP79gw8BhO7Jtr
-         CDwSFYs9K/iZ5rt2MSZS/d6OWs4WrqlIZbzZrxr2pLOKTLPpgOo2Zq+lyTSmz3FFGRel
-         5IJvK/R1a15h3vxlaERxnAz1LzGaMyu992AbDDc+Jm+7bPGGaXc5fzsa5nuTMY6Liwsk
-         Iz1M1fbessesXMJjziHehzPWBTrRvbMYJDF82wX5U+ld1SKaGeDJY5z5vn357xKGwUWi
-         qsPg==
-X-Gm-Message-State: AOJu0Yxqq+KMnUyqnvO33tcdKTycdShF90/1aLSZRm29Fx58KhJ5Lptw
-        hMzfYQu1umhCMqylXGHKstUM2k+xXQkAhlscqa0T2Q==
-X-Google-Smtp-Source: AGHT+IH0b9pvjz2wUtu97VMbjcxmgb/lTA+sWvTdIT6U1QGtyomZxkrbbJUyvfIkk70xvT4UTjANIh9gr7AwN1M7ntI=
-X-Received: by 2002:a17:90b:4a02:b0:277:61d7:78be with SMTP id
- kk2-20020a17090b4a0200b0027761d778bemr24784754pjb.14.1697005960055; Tue, 10
- Oct 2023 23:32:40 -0700 (PDT)
+        Wed, 11 Oct 2023 02:58:45 -0400
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [91.198.224.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C7A98
+        for <linux-serial@vger.kernel.org>; Tue, 10 Oct 2023 23:58:43 -0700 (PDT)
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <prvs=96621b7d4a=fe@dev.tdt.de>)
+        id 1qqTB3-00ESrC-AQ
+        for linux-serial@vger.kernel.org; Wed, 11 Oct 2023 08:58:41 +0200
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <fe@dev.tdt.de>)
+        id 1qqTB2-008ZTB-VC
+        for linux-serial@vger.kernel.org; Wed, 11 Oct 2023 08:58:40 +0200
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 6ECF42400B0
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 08:58:40 +0200 (CEST)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 271D1240082;
+        Wed, 11 Oct 2023 08:58:40 +0200 (CEST)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id 7E37B334C9;
+        Wed, 11 Oct 2023 08:58:39 +0200 (CEST)
 MIME-Version: 1.0
-References: <20231010170503.657189-1-apatel@ventanamicro.com>
- <20231010170503.657189-4-apatel@ventanamicro.com> <2023101048-attach-drift-d77b@gregkh>
-In-Reply-To: <2023101048-attach-drift-d77b@gregkh>
-From:   Anup Patel <apatel@ventanamicro.com>
-Date:   Wed, 11 Oct 2023 12:02:30 +0530
-Message-ID: <CAK9=C2UEcQpHg8WZM3XxLa5yCEZ6wtWJj=8g5_m_0_RkiNMkTA@mail.gmail.com>
-Subject: Re: [PATCH 3/6] RISC-V: KVM: Forward SBI DBCN extension to user-space
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Conor Dooley <conor@kernel.org>,
-        Andrew Jones <ajones@ventanamicro.com>, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 11 Oct 2023 08:58:39 +0200
+From:   Florian Eckert <fe@dev.tdt.de>
+To:     Lee Jones <lee@kernel.org>
+Cc:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, pavel@ucw.cz, kabel@kernel.org,
+        u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-leds@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v2 3/4] trigger: ledtrig-tty: move variable definition to
+ the top
+In-Reply-To: <20231002140559.GB8453@google.com>
+References: <20230928132632.200263-1-fe@dev.tdt.de>
+ <20230928132632.200263-4-fe@dev.tdt.de> <20231002140559.GB8453@google.com>
+Message-ID: <66ca9e2231629a72e098e1b17736ca34@dev.tdt.de>
+X-Sender: fe@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.17
+X-purgate-ID: 151534::1697007521-91376A89-A86807DF/0/0
+X-purgate: clean
+X-purgate-type: clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Oct 10, 2023 at 10:45=E2=80=AFPM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Tue, Oct 10, 2023 at 10:35:00PM +0530, Anup Patel wrote:
-> > The SBI DBCN extension needs to be emulated in user-space
->
-> Why?
+Hello Lee,
 
-The SBI debug console is similar to a console port available to
-KVM Guest so the KVM user space tool (i.e. QEMU-KVM or
-KVMTOOL) can redirect the input/output of SBI debug console
-wherever it wants (e.g.  telnet, file, stdio, etc).
+I only got reviews for the fixes and preparations for commits that 
+change the
+tty subsystem, but no reaction from the maintainer of the feature I want 
+to
+add to ledtrig-tty for v1 and v2 patchset.
 
-We forward SBI DBCN calls to KVM user space so that the
-in-kernel KVM does not need to be aware of the guest
-console devices.
+How should I proceed? Send a v3 with the the requested changes.
 
->
-> > so let
-> > us forward console_puts() call to user-space.
->
-> What could go wrong!
->
-> Why does userspace have to get involved in a console message?  Why is
-> this needed at all?  The kernel can not handle userspace consoles as
-> obviously they have to be re-entrant and irq safe.
+[Patch v2 1/4]: 
+https://lore.kernel.org/linux-leds/20230928132632.200263-1-fe@dev.tdt.de/T/#m913d3822465f35b54dfa24b1dfe4d50e61352980
+Change got a 'Reviewed-by: Jiri Slaby <jirislaby@kernel.org>'.
+Will add this to an upcoming v3 again.
 
-As mentioned above, these are KVM guest console messages which
-the VMM (i.e. KVM user-space) can choose to manage on its own.
+[Patch v2 2/4] : 
+https://lore.kernel.org/linux-leds/20230928132632.200263-1-fe@dev.tdt.de/T/#m7ee7618894a66fd3c89bed488a2394265a3f8df1
+I missed to add the robot error message to the commit message and also 
+missed
+to add the the following 'Reported-by: kernel test robot 
+<lkp@intel.com>' and
+'Closes: 
+https://lore.kernel.org/oe-kbuild-all/202309270440.IJB24Xap-lkp@intel.com/'
+to the commit message. Will add this to an upcoming v3.
 
-This is more about providing flexibility to KVM user-space which
-allows it to manage guest console devices.
+And do not wait for the review of the following patches.
+https://lore.kernel.org/linux-leds/20230928132632.200263-1-fe@dev.tdt.de/T/#mc0ecb912fa0e59015ad0a9b4cb491ae9f18c1ea9
+https://lore.kernel.org/linux-leds/20230928132632.200263-1-fe@dev.tdt.de/T/#mba36217323c386ecd900e188bbdf6276c3c96c91
 
->
-> >
-> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> > ---
-> >  arch/riscv/include/asm/kvm_vcpu_sbi.h |  1 +
-> >  arch/riscv/include/uapi/asm/kvm.h     |  1 +
-> >  arch/riscv/kvm/vcpu_sbi.c             |  4 ++++
-> >  arch/riscv/kvm/vcpu_sbi_replace.c     | 31 +++++++++++++++++++++++++++
-> >  4 files changed, 37 insertions(+)
-> >
-> > diff --git a/arch/riscv/include/asm/kvm_vcpu_sbi.h b/arch/riscv/include=
-/asm/kvm_vcpu_sbi.h
-> > index 8d6d4dce8a5e..a85f95eb6e85 100644
-> > --- a/arch/riscv/include/asm/kvm_vcpu_sbi.h
-> > +++ b/arch/riscv/include/asm/kvm_vcpu_sbi.h
-> > @@ -69,6 +69,7 @@ extern const struct kvm_vcpu_sbi_extension vcpu_sbi_e=
-xt_ipi;
-> >  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_rfence;
-> >  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_srst;
-> >  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_hsm;
-> > +extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_dbcn;
-> >  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_experimental;
-> >  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_vendor;
-> >
-> > diff --git a/arch/riscv/include/uapi/asm/kvm.h b/arch/riscv/include/uap=
-i/asm/kvm.h
-> > index 917d8cc2489e..60d3b21dead7 100644
-> > --- a/arch/riscv/include/uapi/asm/kvm.h
-> > +++ b/arch/riscv/include/uapi/asm/kvm.h
-> > @@ -156,6 +156,7 @@ enum KVM_RISCV_SBI_EXT_ID {
-> >       KVM_RISCV_SBI_EXT_PMU,
-> >       KVM_RISCV_SBI_EXT_EXPERIMENTAL,
-> >       KVM_RISCV_SBI_EXT_VENDOR,
-> > +     KVM_RISCV_SBI_EXT_DBCN,
-> >       KVM_RISCV_SBI_EXT_MAX,
->
-> You just broke a user/kernel ABI here, why?
+---
 
-The KVM_RISCV_SBI_EXT_MAX only represents the number
-of entries in "enum KVM_RISCV_SBI_EXT_ID" so we are not
-breaking "enum KVM_RISCV_SBI_EXT_ID" rather appending
-new ID to existing enum.
-
->
-> thanks,
->
-> greg k-h
-
-Thanks,
-Anup
+Florian
