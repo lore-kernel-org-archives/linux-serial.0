@@ -2,236 +2,175 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85921CDB482
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 22:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3938CDB482
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 22:37:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233727AbjJKWV0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Oct 2023 18:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
+        id S235197AbjJKWhW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 11 Oct 2023 18:37:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233397AbjJKWVZ (ORCPT
+        with ESMTP id S235192AbjJKWhU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Oct 2023 18:21:25 -0400
+        Wed, 11 Oct 2023 18:37:20 -0400
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55C9AB8;
-        Wed, 11 Oct 2023 15:21:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2560C6;
+        Wed, 11 Oct 2023 15:37:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
-        :From:subject:date:message-id:reply-to;
-        bh=j0lKlo34pg/0a0B2e7rNH4hcNejowX7t2+Le7q0Qbrg=; b=cBQSMF35Hown+M2FtHLQx7n63s
-        qfppfY99To5Ke/yfP2U/YkPiXtBqy7Wikl6cB4yayoeBSEDKkPg8DqDaONAjIvETNYIqwb3DtVHdB
-        K6+cAkgTL4vjolnN1z4s9FNtYGwc+eK/elTPCcPuQO7zv8QdJdE8KBWgR4SIWaolgrac=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:53922 helo=pettiford.lan)
+        ; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+        :Date:subject:date:message-id:reply-to;
+        bh=AYz1EPrm1Fqih3X2Rnu7bOSa8uMT4hUtRWPajXMNV2A=; b=W83zvwiucyvyA08VAiLSuRRMWG
+        kMcp8kjSKqz/q615DYRkbMrE3FAJCN8n1L1t/HyM1pn5dxjbZryzY7oe+aygqciPnYqmh9IYbEu5M
+        KAMZDMkiG5WhVd0d5kOfC4665c0Ph9Dt40H7KYJSPu4trtquXfVlEe0Gp+yhkaTe3D0w=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:37416 helo=pettiford)
         by mail.hugovil.com with esmtpa (Exim 4.92)
         (envelope-from <hugo@hugovil.com>)
-        id 1qqhZr-0007QE-2I; Wed, 11 Oct 2023 18:21:16 -0400
+        id 1qqhp3-0007ag-1r; Wed, 11 Oct 2023 18:36:57 -0400
+Date:   Wed, 11 Oct 2023 18:36:56 -0400
 From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Cc:     hugo@hugovil.com, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Date:   Wed, 11 Oct 2023 18:21:05 -0400
-Message-Id: <20231011222105.2587175-1-hugo@hugovil.com>
-X-Mailer: git-send-email 2.39.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+To:     Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        LinoSanfilippo@gmx.de, lukas@wunner.de, p.rosenberger@kunbus.com,
+        stable@vger.kernel.org
+Message-Id: <20231011183656.5111ba32ec0c9d43171662a1@hugovil.com>
+In-Reply-To: <20231011181544.7893-2-l.sanfilippo@kunbus.com>
+References: <20231011181544.7893-1-l.sanfilippo@kunbus.com>
+        <20231011181544.7893-2-l.sanfilippo@kunbus.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-SA-Exim-Connect-IP: 70.80.174.168
 X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: [PATCH] dt-bindings: max310x: convert to YAML
+Subject: Re: [PATCH v3 1/6] serial: Do not hold the port lock when setting
+ rx-during-tx GPIO
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Wed, 11 Oct 2023 20:15:39 +0200
+Lino Sanfilippo <l.sanfilippo@kunbus.com> wrote:
 
-Convert binding from text format to YAML.
+> Both the imx and stm32 driver set the rx-during-tx GPIO in the
+> rs485_config() function by means of gpiod_set_value(). Since rs485_config()
+> is called with the port lock held, this can be an problem in case that
+> setting the GPIO line can sleep (e.g. if a GPIO expander is used which is
+> connected via SPI or I2C).
+> 
+> Avoid this issue by setting the GPIO outside of the port lock in the serial
+> core and by using gpiod_set_value_cansleep() instead of gpiod_set_value().
 
-Additions to original text binding:
-  - add rs485 reference.
+Hi Lino,
+it seems to me that both drivers were already using
+gpiod_set_value_cansleep()? Maybe update your commit
+message if this is the case.
 
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
----
- .../bindings/serial/maxim,max310x.txt         |  48 --------
- .../bindings/serial/maxim,max310x.yaml        | 107 ++++++++++++++++++
- 2 files changed, 107 insertions(+), 48 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/maxim,max310x.txt
- create mode 100644 Documentation/devicetree/bindings/serial/maxim,max310x.yaml
+> 
+> Since now both the term and the rx-during-tx GPIO are set within the serial
+> core use a common function uart_set_rs485_gpios() to set both.
+> 
+> With moving it into the serial core setting the rx-during-tx GPIO is now
+> automatically done for all drivers that support such a GPIO.
+> 
+> Fixes: c54d48543689 ("serial: stm32: Add support for rs485 RX_DURING_TX output GPIO")
+> Fixes: ca530cfa968c ("serial: imx: Add support for RS485 RX_DURING_TX output GPIO")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> ---
+>  drivers/tty/serial/imx.c         |  4 ----
+>  drivers/tty/serial/serial_core.c | 10 ++++++----
+>  drivers/tty/serial/stm32-usart.c |  5 +----
+>  3 files changed, 7 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 13cb78340709..edb2ec6a5567 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -1947,10 +1947,6 @@ static int imx_uart_rs485_config(struct uart_port *port, struct ktermios *termio
+>  	    rs485conf->flags & SER_RS485_RX_DURING_TX)
+>  		imx_uart_start_rx(port);
+>  
+> -	if (port->rs485_rx_during_tx_gpio)
+> -		gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio,
+> -					 !!(rs485conf->flags & SER_RS485_RX_DURING_TX));
+> -
+>  	return 0;
+>  }
+>  
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 7bdc21d5e13b..ef0500be3553 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1391,14 +1391,16 @@ static void uart_sanitize_serial_rs485(struct uart_port *port, struct serial_rs4
+>  	memset(rs485->padding1, 0, sizeof(rs485->padding1));
+>  }
+>  
+> -static void uart_set_rs485_termination(struct uart_port *port,
+> -				       const struct serial_rs485 *rs485)
+> +static void uart_set_rs485_gpios(struct uart_port *port,
+> +				 const struct serial_rs485 *rs485)
+>  {
+>  	if (!(rs485->flags & SER_RS485_ENABLED))
+>  		return;
+>  
+>  	gpiod_set_value_cansleep(port->rs485_term_gpio,
+>  				 !!(rs485->flags & SER_RS485_TERMINATE_BUS));
+> +	gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio,
+> +				 !!(rs485->flags & SER_RS485_RX_DURING_TX));
+>  }
+>  
+>  static int uart_rs485_config(struct uart_port *port)
+> @@ -1407,7 +1409,7 @@ static int uart_rs485_config(struct uart_port *port)
+>  	int ret;
+>  
+>  	uart_sanitize_serial_rs485(port, rs485);
+> -	uart_set_rs485_termination(port, rs485);
+> +	uart_set_rs485_gpios(port, rs485);
 
-diff --git a/Documentation/devicetree/bindings/serial/maxim,max310x.txt b/Documentation/devicetree/bindings/serial/maxim,max310x.txt
-deleted file mode 100644
-index 79e10a05a96a..000000000000
---- a/Documentation/devicetree/bindings/serial/maxim,max310x.txt
-+++ /dev/null
-@@ -1,48 +0,0 @@
--* Maxim MAX310X advanced Universal Asynchronous Receiver-Transmitter (UART)
--
--Required properties:
--- compatible: Should be one of the following:
--  - "maxim,max3107" for Maxim MAX3107,
--  - "maxim,max3108" for Maxim MAX3108,
--  - "maxim,max3109" for Maxim MAX3109,
--  - "maxim,max14830" for Maxim MAX14830.
--- reg: SPI chip select number.
--- interrupts: Specifies the interrupt source of the parent interrupt
--  controller. The format of the interrupt specifier depends on the
--  parent interrupt controller.
--- clocks: phandle to the IC source clock.
--- clock-names: Should be "xtal" if clock is an external crystal or
--  "osc" if an external clock source is used.
--
--Optional properties:
--- gpio-controller: Marks the device node as a GPIO controller.
--- #gpio-cells: Should be two. The first cell is the GPIO number and
--  the second cell is used to specify the GPIO polarity:
--    0 = active high,
--    1 = active low.
--
--Example:
--
--/ {
--	clocks {
--		spi_uart_clk: osc_max14830 {
--			compatible = "fixed-clock";
--			#clock-cells = <0>;
--			clock-frequency = <3686400>;
--		};
--
--	};
--};
--
--&spi0 {
--	max14830: max14830@0 {
--		compatible = "maxim,max14830";
--		reg = <0>;
--		clocks = <&spi_uart_clk>;
--		clock-names = "osc";
--		interrupt-parent = <&gpio3>;
--		interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
--		gpio-controller;
--		#gpio-cells = <2>;
--	};
--};
-diff --git a/Documentation/devicetree/bindings/serial/maxim,max310x.yaml b/Documentation/devicetree/bindings/serial/maxim,max310x.yaml
-new file mode 100644
-index 000000000000..05fd00d95260
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/maxim,max310x.yaml
-@@ -0,0 +1,107 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/maxim,max310x.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Maxim MAX310X Advanced Universal Asynchronous Receiver-Transmitter (UART)
-+
-+maintainers:
-+  - Hugo Villeneuve <hvilleneuve@dimonoff.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - maxim,max3107
-+      - maxim,max3108
-+      - maxim,max3109
-+      - maxim,max14830
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-frequency:
-+    description:
-+      When there is no clock provider visible to the platform, this
-+      is the source crystal frequency for the IC in Hz.
-+    minimum: 1000000
-+    maximum: 4000000
-+
-+  clock-names:
-+    enum:
-+      - xtal # External crystal
-+      - osc  # External clock source
-+
-+  gpio-controller: true
-+
-+  "#gpio-cells":
-+    const: 2
-+
-+  gpio-line-names:
-+    minItems: 1
-+    maxItems: 16
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+  - $ref: /schemas/serial/serial.yaml#
-+  - $ref: /schemas/serial/rs485.yaml#
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+oneOf:
-+  - required:
-+      - clocks
-+      - clock-names
-+  - required:
-+      - clock-frequency
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        serial@2c {
-+            compatible = "maxim,max3107";
-+            reg = <0x2c>;
-+            clocks = <&xtal4m>;
-+            clock-names = "xtal";
-+            interrupt-parent = <&gpio3>;
-+            interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
-+            gpio-controller;
-+            #gpio-cells = <2>;
-+        };
-+
-+        serial@60 {
-+            compatible = "maxim,max3108";
-+            reg = <0x60>;
-+            clocks = <&clk20m>;
-+            clock-names = "osc";
-+            interrupt-parent = <&gpio3>;
-+            interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
-+            gpio-controller;
-+            #gpio-cells = <2>;
-+        };
-+
-+        serial@6f {
-+            compatible = "maxim,max14830";
-+            reg = <0x6f>;
-+            clock-frequency = <3000000>;
-+            interrupt-parent = <&gpio3>;
-+            interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
-+            gpio-controller;
-+            #gpio-cells = <2>;
-+        };
-+    };
+Suggestion: define a new function to handle rx_during_tx, to keep
+uart_set_rs485_termination(), which is more self-documenting than
+uart_set_rs485_gpios().
 
-base-commit: 8182d7a3f1b8982c0136dca82a846ea375a4d6e9
--- 
-2.39.2
+ex: 
+ 	uart_set_rs485_termination(port, rs485);
+ +	uart_set_rs485_rx_during_tx(port, rs485);
 
+Hugo.
+
+
+>  
+>  	ret = port->rs485_config(port, NULL, rs485);
+>  	if (ret)
+> @@ -1449,7 +1451,7 @@ static int uart_set_rs485_config(struct tty_struct *tty, struct uart_port *port,
+>  	if (ret)
+>  		return ret;
+>  	uart_sanitize_serial_rs485(port, &rs485);
+> -	uart_set_rs485_termination(port, &rs485);
+> +	uart_set_rs485_gpios(port, &rs485);
+>  
+>  	spin_lock_irqsave(&port->lock, flags);
+>  	ret = port->rs485_config(port, &tty->termios, &rs485);
+> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+> index 5e9cf0c48813..8eb13bf055f2 100644
+> --- a/drivers/tty/serial/stm32-usart.c
+> +++ b/drivers/tty/serial/stm32-usart.c
+> @@ -226,10 +226,7 @@ static int stm32_usart_config_rs485(struct uart_port *port, struct ktermios *ter
+>  
+>  	stm32_usart_clr_bits(port, ofs->cr1, BIT(cfg->uart_enable_bit));
+>  
+> -	if (port->rs485_rx_during_tx_gpio)
+> -		gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio,
+> -					 !!(rs485conf->flags & SER_RS485_RX_DURING_TX));
+> -	else
+> +	if (!port->rs485_rx_during_tx_gpio)
+>  		rs485conf->flags |= SER_RS485_RX_DURING_TX;
+>  
+>  	if (rs485conf->flags & SER_RS485_ENABLED) {
+> -- 
+> 2.40.1
+> 
