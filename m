@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B54CDB47A
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 18:49:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18897CDB47B
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 18:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235195AbjJKStm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Oct 2023 14:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53236 "EHLO
+        id S235204AbjJKStn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 11 Oct 2023 14:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233157AbjJKSt0 (ORCPT
+        with ESMTP id S233270AbjJKSt3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Oct 2023 14:49:26 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B096EA
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 11:49:21 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id 5b1f17b1804b1-4056ce55e7eso2142845e9.2
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 11:49:21 -0700 (PDT)
+        Wed, 11 Oct 2023 14:49:29 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F44E9D
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 11:49:25 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id 5b1f17b1804b1-4060b623e64so872355e9.0
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 11:49:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1697050160; x=1697654960; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1697050164; x=1697654964; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gwPgb0Vxa46C21WbpKo3fGsmmsstakxunKdlGSyuz/I=;
-        b=DmTTJvaYJ+Q7OFi+LHLfTdgDh2QI8Cm+mXFcsvKzl17BEw+YM2XvSiKYH2mUh6HAUU
-         b2wPZx0mdQEvxLdcY/Ri5W9eoDSjgwG6TfobKpqV2xObFGPP/m+p5F1Oafgveuuyzqo1
-         VF2qoYJRkPiL6c40jeO8jWvwSLpVgj2gWXYSJSASMdW9tMbNvikNl6luoU/+Dodv0QhS
-         nzO5p75Y49EQ5EWkPrP7txpIRf9AeINZV+loVymjOosjZLSnLrZVR2h0OrjESRyAS1QA
-         3qR5FJMqUzjleUuS8hKDzJa1EC0PrNxqu0D3lkEBz5tcNBBDEz7d709GwBrlW3UEaoIY
-         SoMQ==
+        bh=yofb7s9KpXjYrtBhecTDWpMWHMMT9y1sYOj5t1WJR70=;
+        b=Vgm/n/kPCkajbNAU6jhofNvERvwMxZdZRMeclaAjsCxKsgsgBnlRI/To/vlADjBcdj
+         /PIp8SdxZyz4UbASWfiKDbR/BrN3xVa2KtMP3DhWqlY7Xt5+qaT7aqzR05ZuS6BYzfcD
+         f0o6Epk4SLhlqqIlROSt+wHTQNzw7+qc4FRGX4vokaG3wrZn/kquyDWy2tHmQfjWMOfI
+         r1ImFZZf57tuJKrJm60Ml3OcaET/0VGRzEw4KTyAj24BJvOJMvqH7ynAMk8DGlErEIW2
+         NT/Ddfje9e2UVVG6Tr9/KPjN+gVaA3TcDE5j+kOR+gaN3LVISoC66dfZD7rjzs6BT3Ua
+         wlbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697050160; x=1697654960;
+        d=1e100.net; s=20230601; t=1697050164; x=1697654964;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=gwPgb0Vxa46C21WbpKo3fGsmmsstakxunKdlGSyuz/I=;
-        b=uqGSr5TLRDcXB8Nh1+JbvmVbHI9zMY5CiE92WR/vsQWalMVgU3quYRgfxkY3Z+b/kw
-         e5hHBZ8DrP2eKSUxAwlVx7IadAQ9xcaHuLZ0QoyU2vw3rJa1IVrfOfPLYKv+HBEOxqdW
-         KzUZ/XFudXWi98bdgBCPAcS3A6PlPxMrsmXe40HgMTfcJq0aSnkobDNfGMpAXKmM79bC
-         UDoxqEwO6X9/CCbsgdYMVnapOet6Bph9VQfsJq05ppgVSkYgtujrTM9L3iG4C/IXvIBw
-         CLD/qXDn7FhCEMqdHlbjd36TJvEFPhA4k1fEeIG2sfub2RYE/ric+xVPxKLOBy+RB7l1
-         pC/Q==
-X-Gm-Message-State: AOJu0YyoHe8p0S8n53nxbiXUgYr9Q8qLVJf/rRDnsY8dHfZhklOSnjC7
-        3pVqAF4XjnsuwYRnepBTXd6SAg==
-X-Google-Smtp-Source: AGHT+IFxq973Ob/kOR6t1bmL2SP/if638Oo0uwRo3quVfL0DpoW+bXn2/XL7gAGw658ulQS/plNO0g==
-X-Received: by 2002:a5d:4a0b:0:b0:31a:b3aa:d19b with SMTP id m11-20020a5d4a0b000000b0031ab3aad19bmr19222081wrq.23.1697050159908;
-        Wed, 11 Oct 2023 11:49:19 -0700 (PDT)
+        bh=yofb7s9KpXjYrtBhecTDWpMWHMMT9y1sYOj5t1WJR70=;
+        b=fpsDk5sOc7TgKjKYdXPAUT/0DeKTG59B6RfCcRwm3PEbtngLQ/GsHzsgSqfWZrso1h
+         mmEPac5ymvbRbH+ZSRSoksQCFX2ZIkvhMihvry6GhaQrJ9y8bNgM2oReq9JaLuuFuPLE
+         TsuTye1ruUyC1drUVn9lMrip+ydcLVydyR2wU04Y/OVinFCVC9O+JaiKule5p/EeKe48
+         5jPAw0fmuQSdqSADThwojhznmhJbBfjqmDV5Dxgu3VUeW4LoYq1Jpu83vHFym3oA9YNK
+         qUEWmg4N3G1w2NSI2efQxSQNtUyUq/kB7ifvbzWNjqCPX8NJGZkQAHRENa/+Ns8sR03u
+         SekA==
+X-Gm-Message-State: AOJu0Yya+aXdHupmglOC1NjWIkEDqvx/lJhT0TQ8jWM2VOIuS1CM9BVH
+        3fpcwyjgJS/cb40htQC8G60D/Q==
+X-Google-Smtp-Source: AGHT+IGRf9EJmduCoWrPdacsOlAVwtKIk7xvt+R0abAHC3IS9G9FktwJ/XEdwmLlUD4wNHZenVMAsA==
+X-Received: by 2002:a05:600c:3657:b0:406:44fc:65c9 with SMTP id y23-20020a05600c365700b0040644fc65c9mr17722504wmq.8.1697050164013;
+        Wed, 11 Oct 2023 11:49:24 -0700 (PDT)
 Received: from gpeter-l.lan (host-92-12-225-146.as13285.net. [92.12.225.146])
-        by smtp.gmail.com with ESMTPSA id v6-20020adff686000000b0031980294e9fsm16003875wrp.116.2023.10.11.11.49.18
+        by smtp.gmail.com with ESMTPSA id v6-20020adff686000000b0031980294e9fsm16003875wrp.116.2023.10.11.11.49.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Oct 2023 11:49:19 -0700 (PDT)
+        Wed, 11 Oct 2023 11:49:23 -0700 (PDT)
 From:   Peter Griffin <peter.griffin@linaro.org>
 To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
@@ -65,9 +65,9 @@ Cc:     peter.griffin@linaro.org, tudor.ambarus@linaro.org,
         linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
         kernel-team@android.com, linux-serial@vger.kernel.org
-Subject: [PATCH v3 06/20] dt-bindings: pinctrl: samsung: add google,gs101-pinctrl compatible
-Date:   Wed, 11 Oct 2023 19:48:09 +0100
-Message-ID: <20231011184823.443959-7-peter.griffin@linaro.org>
+Subject: [PATCH v3 09/20] clk: samsung: clk-pll: Add support for pll_{0516,0517,518}
+Date:   Wed, 11 Oct 2023 19:48:12 +0100
+Message-ID: <20231011184823.443959-10-peter.griffin@linaro.org>
 X-Mailer: git-send-email 2.42.0.655.g421f12c284-goog
 In-Reply-To: <20231011184823.443959-1-peter.griffin@linaro.org>
 References: <20231011184823.443959-1-peter.griffin@linaro.org>
@@ -77,64 +77,79 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add the "google,gs101-pinctrl" compatible to the dt-schema bindings
-documentation.
+These plls are found in the Tensor gs101 SoC found in the Pixel 6.
 
-Add maxItems of 50 for the interrupts property as gs101 can have
-multiple irqs.
+pll0516x: Integer PLL with high frequency
+pll0517x: Integer PLL with middle frequency
+pll0518x: Integer PLL with low frequency
+
+PLL0516x
+FOUT = (MDIV * 2 * FIN)/PDIV * 2^SDIV)
+
+PLL0517x and PLL0518x
+FOUT = (MDIV * FIN)/PDIV*2^SDIV)
+
+The PLLs are similar enough to pll_0822x that the same code can handle
+both. The main difference is the change in the fout formula for the
+high frequency 0516 pll.
+
+Locktime for 516,517 & 518 is 150 the same as the pll_0822x lock factor.
+MDIV, SDIV PDIV masks and bit shifts are also the same as 0822x.
+
+When defining the PLL the "con" parameter should be set to CON3
+register, like this
+
+PLL(pll_0517x, CLK_FOUT_SHARED0_PLL, "fout_shared0_pll", "oscclk",
+    PLL_LOCKTIME_PLL_SHARED0, PLL_CON3_PLL_SHARED0,
+    NULL),
 
 Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
 ---
- .../bindings/pinctrl/samsung,pinctrl.yaml     | 22 ++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+ drivers/clk/samsung/clk-pll.c | 9 ++++++++-
+ drivers/clk/samsung/clk-pll.h | 3 +++
+ 2 files changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
-index 26614621774a..6dc648490668 100644
---- a/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
-@@ -35,6 +35,7 @@ properties:
+diff --git a/drivers/clk/samsung/clk-pll.c b/drivers/clk/samsung/clk-pll.c
+index 74934c6182ce..4ef9fea2a425 100644
+--- a/drivers/clk/samsung/clk-pll.c
++++ b/drivers/clk/samsung/clk-pll.c
+@@ -442,7 +442,11 @@ static unsigned long samsung_pll0822x_recalc_rate(struct clk_hw *hw,
+ 	pdiv = (pll_con3 >> PLL0822X_PDIV_SHIFT) & PLL0822X_PDIV_MASK;
+ 	sdiv = (pll_con3 >> PLL0822X_SDIV_SHIFT) & PLL0822X_SDIV_MASK;
  
-   compatible:
-     enum:
-+      - google,gs101-pinctrl
-       - samsung,s3c2412-pinctrl
-       - samsung,s3c2416-pinctrl
-       - samsung,s3c2440-pinctrl
-@@ -58,7 +59,8 @@ properties:
-   interrupts:
-     description:
-       Required for GPIO banks supporting external GPIO interrupts.
--    maxItems: 1
-+    minItems: 1
-+    maxItems: 50
- 
-   power-domains:
-     maxItems: 1
-@@ -134,6 +136,24 @@ allOf:
-           minItems: 1
-           maxItems: 1
- 
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: google,gs101-pinctrl
-+    then:
-+      properties:
-+        interrupts:
-+          description:
-+            Required for external wakeup interrupts. List all external
-+            wakeup interrupts supported by this bank.
-+          minItems: 1
-+          maxItems: 50
-+    else:
-+      properties:
-+        interrupts:
-+          maxItems: 1
+-	fvco *= mdiv;
++	if (pll->type == pll_0516x)
++		fvco = fvco * 2 * mdiv;
++	else
++		fvco *= mdiv;
 +
- additionalProperties: false
+ 	do_div(fvco, (pdiv << sdiv));
  
- examples:
+ 	return (unsigned long)fvco;
+@@ -1316,6 +1320,9 @@ static void __init _samsung_clk_register_pll(struct samsung_clk_provider *ctx,
+ 	case pll_1417x:
+ 	case pll_0818x:
+ 	case pll_0822x:
++	case pll_0516x:
++	case pll_0517x:
++	case pll_0518x:
+ 		pll->enable_offs = PLL0822X_ENABLE_SHIFT;
+ 		pll->lock_offs = PLL0822X_LOCK_STAT_SHIFT;
+ 		if (!pll->rate_table)
+diff --git a/drivers/clk/samsung/clk-pll.h b/drivers/clk/samsung/clk-pll.h
+index 0725d485c6ee..ffd3d52c0dec 100644
+--- a/drivers/clk/samsung/clk-pll.h
++++ b/drivers/clk/samsung/clk-pll.h
+@@ -38,6 +38,9 @@ enum samsung_pll_type {
+ 	pll_0822x,
+ 	pll_0831x,
+ 	pll_142xx,
++	pll_0516x,
++	pll_0517x,
++	pll_0518x,
+ };
+ 
+ #define PLL_RATE(_fin, _m, _p, _s, _k, _ks) \
 -- 
 2.42.0.655.g421f12c284-goog
 
