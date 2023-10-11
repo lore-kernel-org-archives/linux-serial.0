@@ -2,236 +2,236 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9BA4CDB483
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 21:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85921CDB482
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 22:21:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233339AbjJKV7C (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Oct 2023 17:59:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42460 "EHLO
+        id S233727AbjJKWV0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 11 Oct 2023 18:21:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235180AbjJKV6w (ORCPT
+        with ESMTP id S233397AbjJKWVZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Oct 2023 17:58:52 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97C17D9
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 14:58:49 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id d9443c01a7336-1c9c496c114so63435ad.0
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 14:58:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1697061528; x=1697666328; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=84Uf9uELl6ZUNY1fM8dZqGWxG/vDPtGz8bCxaFhiGFg=;
-        b=S8xRHp1eeQoeLTxAEXLfVmJR6TNQ3xqS9sv+Tq7T2Dp4SGn9xSoT05qTeRRQup5rrh
-         ueDXFzaWWHUYbXDzkZ9359RGgS3lkMeedK2Yy9fflkvXstGLebEvVBUnP/lOYs/QVPs7
-         edhw8ZeNGnTTWcW3vvGDmXaDrzmBcvs5ALBCLU0N/VQ5XF4qT13BvuqJoTPCYGBVlUf+
-         FSeKU7j/+itiePbkV79NGCwtC+B9n5WQa/ok8+Cphrce5n8emkrNusvZ77b9H5G7gi/n
-         f25SxdtGSiDaXX8nYeJZJs/ECdBqgvlD/LGl+Dmjx4r1gy9F7K6ITJrQc2YmLryu7WF+
-         XQeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697061528; x=1697666328;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=84Uf9uELl6ZUNY1fM8dZqGWxG/vDPtGz8bCxaFhiGFg=;
-        b=mduPPgqe5omBdVKHhDf1uiPEn+zgSNcBlniCg4sTZ2QSG8kMxXyRvjVdzhaBCcOLeq
-         Ps9meejJmqF9IwR99XHzpzGTyOqMhejsHKIhoXSzYlnUDSOBvubfvVaP6t4zCT5h99uD
-         x5pHWIFVIDKS6SZMCso/TF1kd9Gn4tawfNweKiALyP5xs2gNZUjsW1eYFDYyeJG/4h59
-         ytB0+Hy1V4EVNcuqfYUJtd2Se5xMtHgV1YAnbCcotpMl2Y8CQhfhNDhVy8DifiKLY2x2
-         n2EKlY6+DKgFzH9YvTRklgoqp7F1+2LzTIBTwnJGr3Lebwhj/uuBbBawc4bm5jviAGdC
-         Jb7w==
-X-Gm-Message-State: AOJu0YxJQ7VNqL64MtcfL2Has39cGw2XoUhnyk2Q7nFsejrDpOZ7XdT/
-        wB0giRAJSa8RVY8snHokFJRW4w==
-X-Google-Smtp-Source: AGHT+IGizLr+HXYXT7Fe7nzJBHeo3JXLm3dQ9IRSvebWQzrtbzJLQAny19NC+mTlXml8nrFrWFn/JA==
-X-Received: by 2002:a17:902:cecc:b0:1c9:b786:4e3d with SMTP id d12-20020a170902cecc00b001c9b7864e3dmr362630plg.24.1697061528346;
-        Wed, 11 Oct 2023 14:58:48 -0700 (PDT)
-Received: from google.com (13.65.82.34.bc.googleusercontent.com. [34.82.65.13])
-        by smtp.gmail.com with ESMTPSA id iw19-20020a170903045300b001c44dbc92a2sm322770plb.184.2023.10.11.14.58.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Oct 2023 14:58:47 -0700 (PDT)
-Date:   Wed, 11 Oct 2023 14:58:44 -0700
-From:   William McVicker <willmcvicker@google.com>
-To:     Peter Griffin <peter.griffin@linaro.org>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
-        tomasz.figa@gmail.com, s.nawrocki@samsung.com,
-        linus.walleij@linaro.org, wim@linux-watchdog.org,
-        linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org,
-        arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org,
-        cw00.choi@samsung.com, tudor.ambarus@linaro.org,
-        andre.draszik@linaro.org, semen.protsenko@linaro.org,
-        saravanak@google.com, soc@kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        kernel-team@android.com, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 00/20] Add minimal Tensor/GS101 SoC support and
- Oriole/Pixel6 board
-Message-ID: <ZScalKHMRq9gaGOh@google.com>
-References: <20231011184823.443959-1-peter.griffin@linaro.org>
+        Wed, 11 Oct 2023 18:21:25 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55C9AB8;
+        Wed, 11 Oct 2023 15:21:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
+        :From:subject:date:message-id:reply-to;
+        bh=j0lKlo34pg/0a0B2e7rNH4hcNejowX7t2+Le7q0Qbrg=; b=cBQSMF35Hown+M2FtHLQx7n63s
+        qfppfY99To5Ke/yfP2U/YkPiXtBqy7Wikl6cB4yayoeBSEDKkPg8DqDaONAjIvETNYIqwb3DtVHdB
+        K6+cAkgTL4vjolnN1z4s9FNtYGwc+eK/elTPCcPuQO7zv8QdJdE8KBWgR4SIWaolgrac=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:53922 helo=pettiford.lan)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1qqhZr-0007QE-2I; Wed, 11 Oct 2023 18:21:16 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Cc:     hugo@hugovil.com, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+Date:   Wed, 11 Oct 2023 18:21:05 -0400
+Message-Id: <20231011222105.2587175-1-hugo@hugovil.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231011184823.443959-1-peter.griffin@linaro.org>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: [PATCH] dt-bindings: max310x: convert to YAML
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 10/11/2023, Peter Griffin wrote:
-> Hi folks,
-> 
-> Firstly, thanks to everyone who reviewed the v2/V1 series! V3 incorporates
-> all the review feedback received so far.
-> 
-> As this series spans multiple subsytems the expectation is that Krzysztof
-> will apply the whole series through the Samsung SoC tree. If the relevant
-> subsystem maintainers can give a acked-by or reviewed-by on the relevant
-> patches that would be most appreciated!
-> 
-> This series adds initial SoC support for the GS101 SoC and also initial board
-> support for Pixel 6 phone (Oriole).
-> 
-> The gs101 / Tensor SoC is also used in Pixel6a (bluejay) and Pixel 6 Pro
-> (raven) phones. Currently DT is added for the gs101 SoC and Oriole.
-> As you can see from the patches the SoC is based on a Samsung Exynos SoC,
-> and therefore lots of the low level Exynos drivers and bindings can be
-> re-used.
-> 
-> The support added in this series consists of:
-> * cpus
-> * pinctrl
-> * some CCF implementation
-> * watchdog
-> * uart
-> * gpio
-> 
-> This is enough to boot through to a busybox initramfs and shell using an
-> upstream kernel though :) More platform support will be added over the
-> following weeks and months.
-> 
-> For further information on how to build and flash the upstream kernel on your
-> Pixel 6, with a prebuilt busybox initramfs please refer to the script and
-> README.md here:
-> 
-> https://git.codelinaro.org/linaro/googlelt/pixelscripts
-> 
-> Note 1: I've removed the dtbo overlay from v2 and later submissions and
-> will re-submit once I have appropriate documentation for it.
-> 
-> Note 2: I've left the bootargs in dts with earlycon for now, for two reasons.
-> 1) The bootloader hangs if bootargs isn't present in the dtb as it tries to
-> re-write this with additional bootargs.
-> 2) there is a issue whereby the full serial console doesn't come up properly
-> if earlycon isn't also specified. This issue needs further investigation.
-> 
-> kind regards,
-> 
-> Peter.
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Thanks Peter for sending the series out and for the quick turn around in
-addressing the feedback! I've tested the v3 patch series on my oriole device by
-following your README. I was able to successfully boot to the busybox console.
+Convert binding from text format to YAML.
 
-Thanks,
-Will
+Additions to original text binding:
+  - add rs485 reference.
 
-> 
-> Changes since v2:
->  - Fixup pinctrl@174d0000: interrupts: [..] is too long DTC warning (Tudor)
->  - Add missing windowed watchdog code (Guenter)
->  - Fixup UART YAML bindings error (Krzysztof)
->  - gs101.dtsi add missing serial_0 alias (me)
->  - samsung_tty.c: fixup gs101_serial_drv_data so fifosize os obtained from DT
->  
-> Changes since v1:
->  - Remove irq/gs101.h and replace macros with irq numbers globally
->  - exynos-pmu - keep alphabetical order
->  - add cmu_apm to clock bindings documentation
->  - sysreg bindings - remove superfluous `google,gs101-sysreg`
->  - watchdog bindings - Alphanumerical order, update gs201 comment
->  - samsung,pinctrl.yaml - add new "if:then:else:" to narrow for google SoC
->  - samsung,pinctrl-wakeup-interrupt.yaml - Alphanumerical order
->  - samsung,pinctrl- add google,gs101-wakeup-eint compatible
->  - clk-pll: fixup typos
->  - clk-gs101: fix kernel test robot warnings (add 2 new clocks,dividers,gate)
->  - clk-gs101: fix alphabetical order
->  - clk-gs101: cmu_apm: fixup typo and missing empty entry
->  - clk-gs101: cmu_misc: remove clocks that were being registerred twice
->  - pinctrl: filter sel: rename/reorder variables, add comment for FLTCON bitfield
->  - pinctrl: filter sel: avoid setting reserved bits by loop over FLTCON1 pins as well
->  - pinctrl: gs101: rename bank_type_6/7 structs to be more specific, split from filter
->  - watchdog: s3c2410_wdt: remove dev_info prints
->  - gs101.dtsi/oriole.dts: order by unit node, remove underscores from node name, blank lines
->    add SoC node, split dts and dtsi into separate patches, remove 'DVT' suffix
->  - gs101-oriole.dtso: Remove overlay until board_id is documented properly
->  - Add GS101_PIN_* macros to gs101-pinctrl.h instead of using Exynos ones
->  - gpio-keys: update linux,code to use input-event-code macros
->  - add dedicated gs101-uart compatible
-> 
-> Peter Griffin (20):
->   dt-bindings: soc: samsung: exynos-pmu: Add gs101 compatible
->   dt-bindings: clock: Add Google gs101 clock management unit bindings
->   dt-bindings: soc: google: exynos-sysreg: add dedicated SYSREG
->     compatibles to GS101
->   dt-bindings: watchdog: Document Google gs101 & gs201 watchdog bindings
->   dt-bindings: arm: google: Add bindings for Google ARM platforms
->   dt-bindings: pinctrl: samsung: add google,gs101-pinctrl compatible
->   dt-bindings: pinctrl: samsung: add gs101-wakeup-eint compatible
->   dt-bindings: serial: samsung: Add google-gs101-uart compatible
->   clk: samsung: clk-pll: Add support for pll_{0516,0517,518}
->   clk: samsung: clk-gs101: Add cmu_top registers, plls, mux and gates
->   clk: samsung: clk-gs101: add CMU_APM support
->   clk: samsung: clk-gs101: Add support for CMU_MISC clock unit
->   pinctrl: samsung: Add filter selection support for alive banks
->   pinctrl: samsung: Add gs101 SoC pinctrl configuration
->   watchdog: s3c2410_wdt: Add support for Google tensor SoCs
->   tty: serial: samsung: Add gs101 compatible and SoC data
->   arm64: dts: google: Add initial Google gs101 SoC support
->   arm64: dts: google: Add initial Oriole/pixel 6 board support
->   arm64: defconfig: Enable Google Tensor SoC
->   MAINTAINERS: add entry for Google Tensor SoC
-> 
->  .../devicetree/bindings/arm/google.yaml       |   46 +
->  .../bindings/clock/google,gs101-clock.yaml    |  125 +
->  .../samsung,pinctrl-wakeup-interrupt.yaml     |    2 +
->  .../bindings/pinctrl/samsung,pinctrl.yaml     |   22 +-
->  .../bindings/serial/samsung_uart.yaml         |    1 +
->  .../bindings/soc/samsung/exynos-pmu.yaml      |    2 +
->  .../soc/samsung/samsung,exynos-sysreg.yaml    |    6 +
->  .../bindings/watchdog/samsung-wdt.yaml        |   10 +-
->  MAINTAINERS                                   |   10 +
->  arch/arm64/Kconfig.platforms                  |    6 +
->  arch/arm64/boot/dts/Makefile                  |    1 +
->  arch/arm64/boot/dts/google/Makefile           |    4 +
->  arch/arm64/boot/dts/google/gs101-oriole.dts   |   79 +
->  arch/arm64/boot/dts/google/gs101-pinctrl.dtsi | 1275 ++++++++++
->  arch/arm64/boot/dts/google/gs101-pinctrl.h    |   32 +
->  arch/arm64/boot/dts/google/gs101.dtsi         |  504 ++++
->  arch/arm64/configs/defconfig                  |    1 +
->  drivers/clk/samsung/Kconfig                   |    9 +
->  drivers/clk/samsung/Makefile                  |    2 +
->  drivers/clk/samsung/clk-gs101.c               | 2164 +++++++++++++++++
->  drivers/clk/samsung/clk-pll.c                 |    9 +-
->  drivers/clk/samsung/clk-pll.h                 |    3 +
->  .../pinctrl/samsung/pinctrl-exynos-arm64.c    |  163 ++
->  drivers/pinctrl/samsung/pinctrl-exynos.c      |   84 +-
->  drivers/pinctrl/samsung/pinctrl-exynos.h      |   41 +
->  drivers/pinctrl/samsung/pinctrl-samsung.c     |    4 +
->  drivers/pinctrl/samsung/pinctrl-samsung.h     |   24 +
->  drivers/tty/serial/samsung_tty.c              |   13 +
->  drivers/watchdog/s3c2410_wdt.c                |  127 +-
->  include/dt-bindings/clock/google,gs101.h      |  232 ++
->  30 files changed, 4985 insertions(+), 16 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/arm/google.yaml
->  create mode 100644 Documentation/devicetree/bindings/clock/google,gs101-clock.yaml
->  create mode 100644 arch/arm64/boot/dts/google/Makefile
->  create mode 100644 arch/arm64/boot/dts/google/gs101-oriole.dts
->  create mode 100644 arch/arm64/boot/dts/google/gs101-pinctrl.dtsi
->  create mode 100644 arch/arm64/boot/dts/google/gs101-pinctrl.h
->  create mode 100644 arch/arm64/boot/dts/google/gs101.dtsi
->  create mode 100644 drivers/clk/samsung/clk-gs101.c
->  create mode 100644 include/dt-bindings/clock/google,gs101.h
-> 
-> -- 
-> 2.42.0.655.g421f12c284-goog
-> 
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+---
+ .../bindings/serial/maxim,max310x.txt         |  48 --------
+ .../bindings/serial/maxim,max310x.yaml        | 107 ++++++++++++++++++
+ 2 files changed, 107 insertions(+), 48 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/maxim,max310x.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/maxim,max310x.yaml
+
+diff --git a/Documentation/devicetree/bindings/serial/maxim,max310x.txt b/Documentation/devicetree/bindings/serial/maxim,max310x.txt
+deleted file mode 100644
+index 79e10a05a96a..000000000000
+--- a/Documentation/devicetree/bindings/serial/maxim,max310x.txt
++++ /dev/null
+@@ -1,48 +0,0 @@
+-* Maxim MAX310X advanced Universal Asynchronous Receiver-Transmitter (UART)
+-
+-Required properties:
+-- compatible: Should be one of the following:
+-  - "maxim,max3107" for Maxim MAX3107,
+-  - "maxim,max3108" for Maxim MAX3108,
+-  - "maxim,max3109" for Maxim MAX3109,
+-  - "maxim,max14830" for Maxim MAX14830.
+-- reg: SPI chip select number.
+-- interrupts: Specifies the interrupt source of the parent interrupt
+-  controller. The format of the interrupt specifier depends on the
+-  parent interrupt controller.
+-- clocks: phandle to the IC source clock.
+-- clock-names: Should be "xtal" if clock is an external crystal or
+-  "osc" if an external clock source is used.
+-
+-Optional properties:
+-- gpio-controller: Marks the device node as a GPIO controller.
+-- #gpio-cells: Should be two. The first cell is the GPIO number and
+-  the second cell is used to specify the GPIO polarity:
+-    0 = active high,
+-    1 = active low.
+-
+-Example:
+-
+-/ {
+-	clocks {
+-		spi_uart_clk: osc_max14830 {
+-			compatible = "fixed-clock";
+-			#clock-cells = <0>;
+-			clock-frequency = <3686400>;
+-		};
+-
+-	};
+-};
+-
+-&spi0 {
+-	max14830: max14830@0 {
+-		compatible = "maxim,max14830";
+-		reg = <0>;
+-		clocks = <&spi_uart_clk>;
+-		clock-names = "osc";
+-		interrupt-parent = <&gpio3>;
+-		interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
+-		gpio-controller;
+-		#gpio-cells = <2>;
+-	};
+-};
+diff --git a/Documentation/devicetree/bindings/serial/maxim,max310x.yaml b/Documentation/devicetree/bindings/serial/maxim,max310x.yaml
+new file mode 100644
+index 000000000000..05fd00d95260
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/maxim,max310x.yaml
+@@ -0,0 +1,107 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/maxim,max310x.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Maxim MAX310X Advanced Universal Asynchronous Receiver-Transmitter (UART)
++
++maintainers:
++  - Hugo Villeneuve <hvilleneuve@dimonoff.com>
++
++properties:
++  compatible:
++    enum:
++      - maxim,max3107
++      - maxim,max3108
++      - maxim,max3109
++      - maxim,max14830
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-frequency:
++    description:
++      When there is no clock provider visible to the platform, this
++      is the source crystal frequency for the IC in Hz.
++    minimum: 1000000
++    maximum: 4000000
++
++  clock-names:
++    enum:
++      - xtal # External crystal
++      - osc  # External clock source
++
++  gpio-controller: true
++
++  "#gpio-cells":
++    const: 2
++
++  gpio-line-names:
++    minItems: 1
++    maxItems: 16
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++  - $ref: /schemas/serial/serial.yaml#
++  - $ref: /schemas/serial/rs485.yaml#
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++oneOf:
++  - required:
++      - clocks
++      - clock-names
++  - required:
++      - clock-frequency
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        serial@2c {
++            compatible = "maxim,max3107";
++            reg = <0x2c>;
++            clocks = <&xtal4m>;
++            clock-names = "xtal";
++            interrupt-parent = <&gpio3>;
++            interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
++            gpio-controller;
++            #gpio-cells = <2>;
++        };
++
++        serial@60 {
++            compatible = "maxim,max3108";
++            reg = <0x60>;
++            clocks = <&clk20m>;
++            clock-names = "osc";
++            interrupt-parent = <&gpio3>;
++            interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
++            gpio-controller;
++            #gpio-cells = <2>;
++        };
++
++        serial@6f {
++            compatible = "maxim,max14830";
++            reg = <0x6f>;
++            clock-frequency = <3000000>;
++            interrupt-parent = <&gpio3>;
++            interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
++            gpio-controller;
++            #gpio-cells = <2>;
++        };
++    };
+
+base-commit: 8182d7a3f1b8982c0136dca82a846ea375a4d6e9
+-- 
+2.39.2
+
