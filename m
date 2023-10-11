@@ -2,256 +2,147 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2B10CD98C7
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 07:07:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D80CD98F6
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 07:26:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343944AbjJKHH1 (ORCPT
+        id S1344715AbjJKH0F (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Oct 2023 03:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51922 "EHLO
+        Wed, 11 Oct 2023 03:26:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344489AbjJKHHZ (ORCPT
+        with ESMTP id S1344424AbjJKH0E (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Oct 2023 03:07:25 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126F7B0
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 00:07:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697008043; x=1728544043;
-  h=date:from:to:cc:subject:message-id;
-  bh=8sLvUa66V6+PYtJjnd75Q5Q3nJhEHeFlVgTDWKo47Sg=;
-  b=ko449jkb3k/NYxfh8Nk/zRH/bdHgr6WP4GUD/7HbAGhoy89WsiACVsoZ
-   xd6cmT9GM2799dzbnldBW3bA8Jpsf5maE82hI7U5vzznUQ3oJN7349hgO
-   tqoIZXIRShj5tgoVxFdBP7GB3dLUHWF4NJs7igFatLGu+rK8cRgF9nlrD
-   ynTC2dxGgyhzycH1XpwumVUm2AEkUrn5+zDmxvvQVKoRXiLxyZhOEhJQs
-   a7m+29dPBrCB+fQ4xO10b3aqIa6UxW6kAi4oQK9VvDUdzFDoLg+z1rxef
-   V9icVV4m7uLZ2ntRaOheVRlTcS7NQQigAH3tESee9bNJ4WDTkV/MkTM8G
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10859"; a="451089936"
-X-IronPort-AV: E=Sophos;i="6.03,214,1694761200"; 
-   d="scan'208";a="451089936"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2023 00:07:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10859"; a="824056433"
-X-IronPort-AV: E=Sophos;i="6.03,214,1694761200"; 
-   d="scan'208";a="824056433"
-Received: from lkp-server02.sh.intel.com (HELO f64821696465) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 11 Oct 2023 00:07:20 -0700
-Received: from kbuild by f64821696465 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1qqTJN-0001tB-0t;
-        Wed, 11 Oct 2023 07:07:18 +0000
-Date:   Wed, 11 Oct 2023 15:07:11 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- dd976a97d15b47656991e185a94ef42a0fa5cfd4
-Message-ID: <202310111508.da09kvJl-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+        Wed, 11 Oct 2023 03:26:04 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A45C8F;
+        Wed, 11 Oct 2023 00:25:59 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72CD2C433C7;
+        Wed, 11 Oct 2023 07:25:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1697009159;
+        bh=I+hjt1PIAmeTlSR8yMwMC5kINnpTg7kd2uxBgq828hE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vvUjAcwiuU1Y7Tj7a0D35EZe0SxqN+mW7fhJhdPKPZHsA7bkpi+kq6XyZgKWRJkuv
+         wFoBLopdpeV8uJrtE3LTjN5hQ4GGXvHKw8zhDirGSmsdZTrIVkOmuPDRDKHXj1+LnL
+         4btIOyNUCM+4qGWuJA+oAlJPtLbETjMO8IeYC9sw=
+Date:   Wed, 11 Oct 2023 09:25:56 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Conor Dooley <conor@kernel.org>,
+        Andrew Jones <ajones@ventanamicro.com>, kvm@vger.kernel.org,
+        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
+        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/6] RISC-V: KVM: Forward SBI DBCN extension to user-space
+Message-ID: <2023101105-oink-aerospace-989e@gregkh>
+References: <20231010170503.657189-1-apatel@ventanamicro.com>
+ <20231010170503.657189-4-apatel@ventanamicro.com>
+ <2023101048-attach-drift-d77b@gregkh>
+ <CAK9=C2UEcQpHg8WZM3XxLa5yCEZ6wtWJj=8g5_m_0_RkiNMkTA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAK9=C2UEcQpHg8WZM3XxLa5yCEZ6wtWJj=8g5_m_0_RkiNMkTA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: dd976a97d15b47656991e185a94ef42a0fa5cfd4  tty/sysrq: replace smp_processor_id() with get_cpu()
+On Wed, Oct 11, 2023 at 12:02:30PM +0530, Anup Patel wrote:
+> On Tue, Oct 10, 2023 at 10:45 PM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Tue, Oct 10, 2023 at 10:35:00PM +0530, Anup Patel wrote:
+> > > The SBI DBCN extension needs to be emulated in user-space
+> >
+> > Why?
+> 
+> The SBI debug console is similar to a console port available to
+> KVM Guest so the KVM user space tool (i.e. QEMU-KVM or
+> KVMTOOL) can redirect the input/output of SBI debug console
+> wherever it wants (e.g.  telnet, file, stdio, etc).
+> 
+> We forward SBI DBCN calls to KVM user space so that the
+> in-kernel KVM does not need to be aware of the guest
+> console devices.
 
-elapsed time: 1449m
+Hint, my "Why" was attempting to get you to write a better changelog
+description, which would include the above information.  Please read the
+kernel documentation for hints on how to do this so that we know what
+why changes are being made.
 
-configs tested: 183
-configs skipped: 2
+> > > so let
+> > > us forward console_puts() call to user-space.
+> >
+> > What could go wrong!
+> >
+> > Why does userspace have to get involved in a console message?  Why is
+> > this needed at all?  The kernel can not handle userspace consoles as
+> > obviously they have to be re-entrant and irq safe.
+> 
+> As mentioned above, these are KVM guest console messages which
+> the VMM (i.e. KVM user-space) can choose to manage on its own.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+If it chooses not to, what happens?
 
-tested configs:
-alpha                             allnoconfig   gcc  
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-arc                              allmodconfig   gcc  
-arc                               allnoconfig   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arc                   randconfig-001-20231011   gcc  
-arm                              allmodconfig   gcc  
-arm                               allnoconfig   gcc  
-arm                              allyesconfig   gcc  
-arm                                 defconfig   gcc  
-arm                           h3600_defconfig   gcc  
-arm                   randconfig-001-20231010   gcc  
-arm                   randconfig-001-20231011   gcc  
-arm                        vexpress_defconfig   clang
-arm64                             allnoconfig   gcc  
-arm64                               defconfig   gcc  
-csky                             allmodconfig   gcc  
-csky                              allnoconfig   gcc  
-csky                             allyesconfig   gcc  
-csky                                defconfig   gcc  
-i386                             allmodconfig   gcc  
-i386                              allnoconfig   gcc  
-i386                             allyesconfig   gcc  
-i386         buildonly-randconfig-001-20231010   gcc  
-i386         buildonly-randconfig-001-20231011   gcc  
-i386         buildonly-randconfig-002-20231010   gcc  
-i386         buildonly-randconfig-002-20231011   gcc  
-i386         buildonly-randconfig-003-20231010   gcc  
-i386         buildonly-randconfig-003-20231011   gcc  
-i386         buildonly-randconfig-004-20231010   gcc  
-i386         buildonly-randconfig-004-20231011   gcc  
-i386         buildonly-randconfig-005-20231010   gcc  
-i386         buildonly-randconfig-005-20231011   gcc  
-i386         buildonly-randconfig-006-20231010   gcc  
-i386         buildonly-randconfig-006-20231011   gcc  
-i386                              debian-10.3   gcc  
-i386                                defconfig   gcc  
-i386                  randconfig-001-20231011   gcc  
-i386                  randconfig-002-20231011   gcc  
-i386                  randconfig-003-20231011   gcc  
-i386                  randconfig-004-20231011   gcc  
-i386                  randconfig-005-20231011   gcc  
-i386                  randconfig-006-20231010   gcc  
-i386                  randconfig-006-20231011   gcc  
-i386                  randconfig-011-20231010   gcc  
-i386                  randconfig-011-20231011   gcc  
-i386                  randconfig-012-20231010   gcc  
-i386                  randconfig-012-20231011   gcc  
-i386                  randconfig-013-20231010   gcc  
-i386                  randconfig-013-20231011   gcc  
-i386                  randconfig-014-20231010   gcc  
-i386                  randconfig-014-20231011   gcc  
-i386                  randconfig-015-20231010   gcc  
-i386                  randconfig-015-20231011   gcc  
-i386                  randconfig-016-20231010   gcc  
-i386                  randconfig-016-20231011   gcc  
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                        allyesconfig   gcc  
-loongarch                           defconfig   gcc  
-loongarch             randconfig-001-20231010   gcc  
-loongarch             randconfig-001-20231011   gcc  
-m68k                             allmodconfig   gcc  
-m68k                              allnoconfig   gcc  
-m68k                             allyesconfig   gcc  
-m68k                                defconfig   gcc  
-microblaze                       allmodconfig   gcc  
-microblaze                        allnoconfig   gcc  
-microblaze                       allyesconfig   gcc  
-microblaze                          defconfig   gcc  
-mips                             allmodconfig   gcc  
-mips                              allnoconfig   clang
-mips                              allnoconfig   gcc  
-mips                             allyesconfig   gcc  
-mips                  cavium_octeon_defconfig   clang
-mips                          malta_defconfig   clang
-nios2                            allmodconfig   gcc  
-nios2                             allnoconfig   gcc  
-nios2                            allyesconfig   gcc  
-nios2                               defconfig   gcc  
-openrisc                         allmodconfig   gcc  
-openrisc                          allnoconfig   gcc  
-openrisc                         allyesconfig   gcc  
-openrisc                            defconfig   gcc  
-parisc                           allmodconfig   gcc  
-parisc                            allnoconfig   gcc  
-parisc                           allyesconfig   gcc  
-parisc                              defconfig   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-powerpc                          allyesconfig   gcc  
-powerpc                   lite5200b_defconfig   clang
-powerpc                 mpc832x_rdb_defconfig   clang
-powerpc                 mpc834x_itx_defconfig   gcc  
-powerpc                      pcm030_defconfig   gcc  
-powerpc                    socrates_defconfig   clang
-powerpc                     tqm8555_defconfig   gcc  
-riscv                            allmodconfig   gcc  
-riscv                             allnoconfig   gcc  
-riscv                            allyesconfig   gcc  
-riscv                               defconfig   gcc  
-riscv                 randconfig-001-20231011   gcc  
-riscv                          rv32_defconfig   gcc  
-s390                             allmodconfig   gcc  
-s390                              allnoconfig   gcc  
-s390                             allyesconfig   gcc  
-s390                                defconfig   gcc  
-s390                  randconfig-001-20231011   gcc  
-sh                               allmodconfig   gcc  
-sh                                allnoconfig   gcc  
-sh                               allyesconfig   gcc  
-sh                                  defconfig   gcc  
-sh                         microdev_defconfig   gcc  
-sparc                            allmodconfig   gcc  
-sparc                             allnoconfig   gcc  
-sparc                            allyesconfig   gcc  
-sparc                               defconfig   gcc  
-sparc                 randconfig-001-20231010   gcc  
-sparc                 randconfig-001-20231011   gcc  
-sparc64                          allmodconfig   gcc  
-sparc64                          allyesconfig   gcc  
-sparc64                             defconfig   gcc  
-um                               allmodconfig   clang
-um                                allnoconfig   clang
-um                               allyesconfig   clang
-um                                  defconfig   gcc  
-um                             i386_defconfig   gcc  
-um                           x86_64_defconfig   gcc  
-x86_64                            allnoconfig   gcc  
-x86_64                           allyesconfig   gcc  
-x86_64       buildonly-randconfig-001-20231010   gcc  
-x86_64       buildonly-randconfig-001-20231011   gcc  
-x86_64       buildonly-randconfig-002-20231010   gcc  
-x86_64       buildonly-randconfig-002-20231011   gcc  
-x86_64       buildonly-randconfig-003-20231010   gcc  
-x86_64       buildonly-randconfig-003-20231011   gcc  
-x86_64       buildonly-randconfig-004-20231010   gcc  
-x86_64       buildonly-randconfig-004-20231011   gcc  
-x86_64       buildonly-randconfig-005-20231010   gcc  
-x86_64       buildonly-randconfig-005-20231011   gcc  
-x86_64       buildonly-randconfig-006-20231010   gcc  
-x86_64       buildonly-randconfig-006-20231011   gcc  
-x86_64                              defconfig   gcc  
-x86_64                randconfig-001-20231010   gcc  
-x86_64                randconfig-001-20231011   gcc  
-x86_64                randconfig-002-20231010   gcc  
-x86_64                randconfig-002-20231011   gcc  
-x86_64                randconfig-003-20231010   gcc  
-x86_64                randconfig-003-20231011   gcc  
-x86_64                randconfig-004-20231010   gcc  
-x86_64                randconfig-004-20231011   gcc  
-x86_64                randconfig-005-20231010   gcc  
-x86_64                randconfig-005-20231011   gcc  
-x86_64                randconfig-006-20231010   gcc  
-x86_64                randconfig-006-20231011   gcc  
-x86_64                randconfig-011-20231011   gcc  
-x86_64                randconfig-012-20231011   gcc  
-x86_64                randconfig-013-20231011   gcc  
-x86_64                randconfig-014-20231011   gcc  
-x86_64                randconfig-015-20231011   gcc  
-x86_64                randconfig-016-20231010   gcc  
-x86_64                randconfig-016-20231011   gcc  
-x86_64                randconfig-071-20231010   gcc  
-x86_64                randconfig-071-20231011   gcc  
-x86_64                randconfig-072-20231010   gcc  
-x86_64                randconfig-072-20231011   gcc  
-x86_64                randconfig-073-20231010   gcc  
-x86_64                randconfig-073-20231011   gcc  
-x86_64                randconfig-074-20231010   gcc  
-x86_64                randconfig-074-20231011   gcc  
-x86_64                randconfig-075-20231010   gcc  
-x86_64                randconfig-075-20231011   gcc  
-x86_64                randconfig-076-20231010   gcc  
-x86_64                randconfig-076-20231011   gcc  
-x86_64                          rhel-8.3-func   gcc  
-x86_64                    rhel-8.3-kselftests   gcc  
-x86_64                           rhel-8.3-ltp   gcc  
-x86_64                          rhel-8.3-rust   clang
-x86_64                               rhel-8.3   gcc  
-xtensa                            allnoconfig   gcc  
-xtensa                           allyesconfig   gcc  
+> This is more about providing flexibility to KVM user-space which
+> allows it to manage guest console devices.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Why not use the normal virtio console device interface instead of making
+a riscv-custom one?
+
+Where is the userspace side of this interface at?  Where are the patches
+to handle this new api you added?
+
+> 
+> >
+> > >
+> > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > > ---
+> > >  arch/riscv/include/asm/kvm_vcpu_sbi.h |  1 +
+> > >  arch/riscv/include/uapi/asm/kvm.h     |  1 +
+> > >  arch/riscv/kvm/vcpu_sbi.c             |  4 ++++
+> > >  arch/riscv/kvm/vcpu_sbi_replace.c     | 31 +++++++++++++++++++++++++++
+> > >  4 files changed, 37 insertions(+)
+> > >
+> > > diff --git a/arch/riscv/include/asm/kvm_vcpu_sbi.h b/arch/riscv/include/asm/kvm_vcpu_sbi.h
+> > > index 8d6d4dce8a5e..a85f95eb6e85 100644
+> > > --- a/arch/riscv/include/asm/kvm_vcpu_sbi.h
+> > > +++ b/arch/riscv/include/asm/kvm_vcpu_sbi.h
+> > > @@ -69,6 +69,7 @@ extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_ipi;
+> > >  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_rfence;
+> > >  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_srst;
+> > >  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_hsm;
+> > > +extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_dbcn;
+> > >  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_experimental;
+> > >  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_vendor;
+> > >
+> > > diff --git a/arch/riscv/include/uapi/asm/kvm.h b/arch/riscv/include/uapi/asm/kvm.h
+> > > index 917d8cc2489e..60d3b21dead7 100644
+> > > --- a/arch/riscv/include/uapi/asm/kvm.h
+> > > +++ b/arch/riscv/include/uapi/asm/kvm.h
+> > > @@ -156,6 +156,7 @@ enum KVM_RISCV_SBI_EXT_ID {
+> > >       KVM_RISCV_SBI_EXT_PMU,
+> > >       KVM_RISCV_SBI_EXT_EXPERIMENTAL,
+> > >       KVM_RISCV_SBI_EXT_VENDOR,
+> > > +     KVM_RISCV_SBI_EXT_DBCN,
+> > >       KVM_RISCV_SBI_EXT_MAX,
+> >
+> > You just broke a user/kernel ABI here, why?
+> 
+> The KVM_RISCV_SBI_EXT_MAX only represents the number
+> of entries in "enum KVM_RISCV_SBI_EXT_ID" so we are not
+> breaking "enum KVM_RISCV_SBI_EXT_ID" rather appending
+> new ID to existing enum.
+
+So you are sure that userspace never actually tests or sends that _MAX
+value anywhere?  If not, why is it even needed?
+
+thanks,
+
+greg k-h
