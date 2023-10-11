@@ -2,175 +2,151 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDEECD6E7E
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 15:38:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B49A5CDB471
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 17:39:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232816AbjJKPiY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Oct 2023 11:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59602 "EHLO
+        id S231611AbjJKRjK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 11 Oct 2023 13:39:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232708AbjJKPiX (ORCPT
+        with ESMTP id S230234AbjJKRjJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Oct 2023 11:38:23 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9E093
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 08:38:21 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id 41be03b00d2f7-564b6276941so5163944a12.3
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 08:38:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1697038701; x=1697643501; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1bZpkRgovz51AKO2Ok87+Y9u7MeLQt0Mw3B5ANlnfec=;
-        b=msVb2fwfQ0RSkKlGNIjoO0jg/GdEFZEW3wB/D9iCFdHefI+rOovi7bK23pRnKEFl34
-         j9dQcZUvwhKjm7SijzDg9SK2xWuulSyDufCg912mTL4d8SDcDH60Q6eJYGiZ+wQXGyiw
-         o5/sJgRhEjY16tpPh8+EAA3UqahUfJiWAZz4tBAaoQRe/TYkSGbNwB1auAYePf2S25Ux
-         2XYB9T51z32d2HIFdHAaiWRjbEQSGDdLFCt9aBwBVhcC5pqqKD8VacGPrDEQBvSedBTU
-         vN3o/73ahdhhys9XduvBE16auxNNdSTlnyLJ7g3JWzsCM40lxaZAuEKJIkK56cFxH5FO
-         mNlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697038701; x=1697643501;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1bZpkRgovz51AKO2Ok87+Y9u7MeLQt0Mw3B5ANlnfec=;
-        b=LnAMKfmbqi/S0XbKTvbHmXtr7Y2ZeSvi5FsB+ZmOVl7e3t4Q1TveQvZSJ+Np5RQnWy
-         MwOvdy6Yk9WYSg2JUTCkW78q3wGG0JgIAvpZLBqM3IyLg01HSQwFfZuSM3OC+Ityz+mF
-         sz9kSGAFZnX4/2Ayf79zM5l+XLJQJx0wfX95ZLjp8/Gof4wEJLBABHJuq6V1DHjMsr0a
-         FdfijbUX7ZamLTvrUnbgF/mVve7vbmeM+CL+ipTdIfYNqRUeXaR/gu3p4U1PtHqIPENz
-         0mJoCgAsutWwnDRP1XFJL6PiuHWbXLf4BSrNojNtuQy3XCs2FjTd5FosPuXkGg3ys/Xl
-         OYvQ==
-X-Gm-Message-State: AOJu0YwTaGZ4hlqzR/Xdcmqa78wEJz86MNe/9IpkhkC3OEFKick9zrar
-        GkceVKTuZUe6YTP2McUE4RaKtORvI+phIPSFoylFwA==
-X-Google-Smtp-Source: AGHT+IH+Duhf61q+4YQ+h+trrczoreLWiVAuNX7LPf/svKzSeewv2TIyrBxClNtHOHej4LGq2AeV1O2tRvRwJwp6muo=
-X-Received: by 2002:a17:90a:5383:b0:27c:ea4c:d8c5 with SMTP id
- y3-20020a17090a538300b0027cea4cd8c5mr5192162pjh.19.1697038701054; Wed, 11 Oct
- 2023 08:38:21 -0700 (PDT)
+        Wed, 11 Oct 2023 13:39:09 -0400
+Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2088.outbound.protection.outlook.com [40.107.249.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBA028F;
+        Wed, 11 Oct 2023 10:39:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bDevMVhDvbc6kRDXNzrXcRpTHkgmxe0U0G7UE8Ia2IVrJSEnAb4m8LGZUcTQ2fCFRVtjf+US+3J1Si2ovXzJKBVF4vHUm02+kcPjmhMfAq6TpmzQ5o92chlorUDeefCJ/n9F6RN4NUzRRF9di+0/EWZqdzroDuGxZSfPHtGs41sLRKP88nYYFQinvUkaT9vE1oo7YG47sXny2AqqR6ettUNWodZWx4yziYC5QWRBytus64KgmItm0dLwR8RtmR4pLuQLmIZuIWH6OH5eebQ/h0mIaBpkEv7BKtOCb2hbVrRvJVnMvsG9302R63gEadWvxLncXaOS00c0A4MJRaUXnQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=q170O49BWb4vWVIGCynhtqlpm6sOEHUx3HPMx7DxdIo=;
+ b=TVHIvyL7Gc2el+3aBock9CMshXY4fw/TwV80oEYFawNAlAWh3tLV5+BLMdecVWkQBE9DSFQl2HNHZlNWIlZ8cNOr0oMqz/3VQWzOpbXFb+v3B5xh95npzzPP9N2Bj7I6+AQgweohGVRYCbB5fQOK5Drzp0UIwLuNVxYHzzkLuVrdSHhuw5nbSveOln4Dk/eVF0HMMjNGRFljs1dUr3e/ds1IH/vbQobnMtAWh4Jx80mPqerrjsmrpxyVYdcXzouedXxqVvR1La5azlH9aAuQoRPHsVSuxw6ix1/Ofzpe8leI4COH5mIhTzLfd+tZo+PEI1/Dj7y6pEUitvIDy8TbQA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=kunbus.com; dmarc=pass action=none header.from=kunbus.com;
+ dkim=pass header.d=kunbus.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kunbus.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=q170O49BWb4vWVIGCynhtqlpm6sOEHUx3HPMx7DxdIo=;
+ b=oDg+nq97Nkkck+PnQufrfUKg9axHwegqUeSa2ayw3lyzkT7282EjMeLhQeF+5Ktqi1qJcCy9hiu3miNy3m0k8lime7c6K59Q+uzfMFXknqlX4dh2DW3/Cahiglmxw62OtZMTnJzFElblvtrlJnLT+yuhb7vKaVohi1duKEgXfoQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=kunbus.com;
+Received: from VI1P193MB0413.EURP193.PROD.OUTLOOK.COM (2603:10a6:803:4e::14)
+ by AM8P193MB1187.EURP193.PROD.OUTLOOK.COM (2603:10a6:20b:362::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6863.41; Wed, 11 Oct
+ 2023 17:39:04 +0000
+Received: from VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
+ ([fe80::550d:2425:c0ed:3e59]) by VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
+ ([fe80::550d:2425:c0ed:3e59%3]) with mapi id 15.20.6863.032; Wed, 11 Oct 2023
+ 17:39:04 +0000
+From:   Lino Sanfilippo <l.sanfilippo@kunbus.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com
+Cc:     shawnguo@kernel.org, s.hauer@pengutronix.de,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
+        cniedermaier@dh-electronics.com, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, LinoSanfilippo@gmx.de,
+        lukas@wunner.de, p.rosenberger@kunbus.com,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Subject: [PATCH v2 0/7] Fixes and improvements for RS485
+Date:   Wed, 11 Oct 2023 19:38:22 +0200
+Message-Id: <20231011173829.10508-1-l.sanfilippo@kunbus.com>
+X-Mailer: git-send-email 2.40.1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-ClientProxiedBy: FR2P281CA0093.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:9b::18) To VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
+ (2603:10a6:803:4e::14)
 MIME-Version: 1.0
-References: <20231010170503.657189-1-apatel@ventanamicro.com>
- <20231010170503.657189-3-apatel@ventanamicro.com> <2023101013-overfeed-online-7f69@gregkh>
- <CAK9=C2WbW_WvoU59Ba9VrKf5GbbXmMOhB2jsiAp0a=SJYh3d7w@mail.gmail.com>
- <2023101107-endorse-large-ef50@gregkh> <CAK9=C2XYQ0U9CbuCg6cTf79sSsy+0BxF5mBE0R+E3s9iZFzEWw@mail.gmail.com>
- <2023101148-anatomy-mantis-a0f5@gregkh>
-In-Reply-To: <2023101148-anatomy-mantis-a0f5@gregkh>
-From:   Anup Patel <apatel@ventanamicro.com>
-Date:   Wed, 11 Oct 2023 21:08:10 +0530
-Message-ID: <CAK9=C2XpfQc2eoBmrd5ZicR+HO34-2BZdvrNu_CQ5qC47WKBVw@mail.gmail.com>
-Subject: Re: [PATCH 2/6] RISC-V: KVM: Change the SBI specification version to v2.0
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Conor Dooley <conor@kernel.org>,
-        Andrew Jones <ajones@ventanamicro.com>, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1P193MB0413:EE_|AM8P193MB1187:EE_
+X-MS-Office365-Filtering-Correlation-Id: 064ba462-99fa-4ca0-2688-08dbca80f664
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: p6ZJ9vlgFiUtQej6AWxdefWRb4rlUL6nAWxjLIWlvYg92zFMXlE6ttfUmWPC7gPZpBwQzk2xV5qdlPS6zQL8Jbs4AxfKqgSRHpeKuDk2unR33X8LjYA2+rWGvgDnqn/gP+6qcPSW9WrNa/z83022VO6PnGnneFyWyGgv5N2tpPPAeKwoeWpNmlL1LgYLV3cVRYRTD5Xsy2Y4j7Lo6CsufXpWZCT+ZT2Md9KtaEDAaLqPJ7sSrnFCU4WlzazsZkQo6SpTTDhIAN/j4xViivS+tuSJAI6vrWmjCyl8Bb3IgU7/47lq6IUCrgLR4njzrjA2MVp44rG0M7nYcJOa0DnE/TRtxde3Vqe3IxDBZGUblt3lH+ngivzsTLXsGfyu+dmVG276FEG/ZHjL5ZI/uoe1pF9Sh0i43cVLnuEIhTYoAiGqfqWwDHdQX0poDeDQnEZTHp6qEtKIgJh9abihu1SCurAmgCPKxa8d4jFfCFD1GGP0FFsgvw9BUb7NOK8XbIRG6lTs5xdcniduKosRFy9VKFNNkbcT9ZNZCrmUH5JpaoNiNTO0P5lRga6M9JGdWaN1
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P193MB0413.EURP193.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(136003)(39840400004)(376002)(366004)(346002)(396003)(230922051799003)(186009)(64100799003)(451199024)(1800799009)(6666004)(2616005)(83380400001)(6486002)(478600001)(1076003)(107886003)(52116002)(38100700002)(6506007)(6512007)(66476007)(66946007)(66556008)(4326008)(8676002)(8936002)(41300700001)(316002)(86362001)(7416002)(2906002)(36756003)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cGRtWGdDTjdTYTFBeDNuY3BXQnZtVG9PdEhyeEEwSW9OMHFTSTA3TFBSL2Ra?=
+ =?utf-8?B?d3B3NmRoRGFCbGdyK0svamt2Ri9DT0FBL05zOE5UbXBPWHBZUHlvR2NtRjRH?=
+ =?utf-8?B?Q3BwQWFQVkJrdVFWeENGZm05SzZ3T0JWamRuN3FsMGFUTTRFZWdObGc1Z2VL?=
+ =?utf-8?B?RUFXdmV3aDB6ckVaQStBU2VQc1hNS1l4QTJVbVdFdHhlRkZuUFNxWlpCeEhS?=
+ =?utf-8?B?UVlTRWFWRXBMYjg5cXBDa2pFL2RZMGxLdkMxWHFFVHJhWEY5bGo1TE9OUC9C?=
+ =?utf-8?B?WFFlWXJIVkUrSU85RVR0WkthcDNDVmRrSnpTb2VDc3ZkZjVLU1I0elc3YzBR?=
+ =?utf-8?B?am42VzA0VmR2WjZ2WGpxTzJJbnAzcFZJRnIydkdvLzdyQU9HdDlKMGV5cVU2?=
+ =?utf-8?B?aExNTDJDSmpycUN1cU9PakcvZ1RINHpGMG9MUC9PRFdSVXhrQ1NxdHM1SEp6?=
+ =?utf-8?B?M0dWSUViVStPanZnNzlHTTZHQnFKQTRxckczSnIrRVlpOG9PclBDT3AyQlJF?=
+ =?utf-8?B?VlB0SnhEV1RIVGtrc0ZlNTZDcDlTL2hHaktlVFYrbnJud1Z4VEdlSUZmNW8z?=
+ =?utf-8?B?ZzFtVldLUUl0UGRTM3Z2NUlpTk10M3dLVTdRZmZRNzA3VW1nenY5bXBuVC8x?=
+ =?utf-8?B?eGc2bHlmenVFSVM3SUgxN0ZGdGFqa3lLeThobVJMMmVQWXMvQi9pQ04wZDF3?=
+ =?utf-8?B?dHM4NloxdHE3Q3l3bzM0NzI4L01PQnRDdjVYcE5BNDB2MlpLNzFyQkRkM2dZ?=
+ =?utf-8?B?cVo4WDM2b0E0NDVHQnNNcXZFUDR3Ky9XejlaeFhmRzNVYzVXbGxsZk9tVnRV?=
+ =?utf-8?B?ckFzWWxjbGdyTVNUOFRNTmpTZktEcDlOZ0ZsdUxaRHRuODU0QzBHYmFQL21Y?=
+ =?utf-8?B?MzdzaWFRT0NrQi9iYi9iZmVCQmtkK1g4ZmN5UlZTUm1MYWhKZUVLRlN2MkJj?=
+ =?utf-8?B?QXVYVVlBMjR6ZXBielFHQmJZS1RybFoxazE2VDNyU1ZQdVRSbkkzMlhLRlMx?=
+ =?utf-8?B?U09DT01XYlAvUml3eE40NjJ4c0dOT29FWG5UQXc2TFNGVmE5cCt1VjNodGw1?=
+ =?utf-8?B?OVlyalppbkxqRnZJMUwwRk9ZUEZMSU5ndnhJais2Y01ISEd0c29IQkwwL1BX?=
+ =?utf-8?B?dCtoemRvd0ZadEw1Ym4wVk5QQ2FlcDVadUM2Mi9lNkhuaEpXWC93a3lXVUh5?=
+ =?utf-8?B?eGRCTlZXdUhDMzN4YTNwL2dPRk45eGdwSFdtZnFUamJqbzQyNVRaR1hmNWFv?=
+ =?utf-8?B?QTB3Ry83clZ3cWNqNXF1dERZcUlJUkpFeURHYW82aWx0dkxIS2RnN1IvVnoy?=
+ =?utf-8?B?QWtpemVJdFZwV2h3VXJTUkxURnA1WW1ZbVBrNCtUMjlsYms1VFRjK0w2eTda?=
+ =?utf-8?B?WDl0Y3liK3cvdklTcXliMmJ3ZnU1MENleTdYaVl6MGpaUUNkVlhwNUZnWk5V?=
+ =?utf-8?B?UFhJUC9ObU1kVE9GTGdpV3crT1BxVmtoWExiWXdRNVVYbkduVzN1VFdKTjNJ?=
+ =?utf-8?B?ZitKSk5LY28vYS94UUdTREFGUkJUM1ppNmc0M0dReTNYRWN6ZGJKOENYNHFp?=
+ =?utf-8?B?ZWdYVmJRMmVzZDdlSG5RTDE5YTRSTE00dlJqV0pjeHZTYzFsOWp0NWVYbG9m?=
+ =?utf-8?B?b0ZMcC9lczRBb29WaFZ0UGkxeHI1WkRncEZ5bnJBVWluaDZIRWp2N1hwQjZi?=
+ =?utf-8?B?eVY2QmZFVzBLNmx5bXRDdHJPUFZ5N09DdGt6NWJ2b3liQ0JhWUthdG1lSGIr?=
+ =?utf-8?B?OUxuRlBGMFJ3Vlh2U01Ub0htVFVQMitHWFp5VUJPT3lqa3NTSlduUnZ0ME5p?=
+ =?utf-8?B?Q1BjY3ZJQXkrSnRnQ2E4Nk9hZFNOOHU3c0JDcTNBYjBSc1pWRkIxUC9SWmVj?=
+ =?utf-8?B?SENSRjNDRzIxSGdZYndzVmFkRTVacGM3ZndvZnkwdk1FZmRjcWtxZiswbUcz?=
+ =?utf-8?B?ODdhVmVNaS9xUnl1d2tSMGZoOC9XNVBCbGRjM2FMUkhZdE5udW5tTmdBSG5q?=
+ =?utf-8?B?RFVtWTEyOE00MlRSWjR4V05LdHNabUkrSU15a3ZxUWV5aUtKRlozWThwMVRS?=
+ =?utf-8?B?R0tRcXdYNlZoSVpuMHFOc0JHR0E4TWIwemFoVVFkWW1kVmtObzRTNXdwRVY0?=
+ =?utf-8?B?aWZwNCsrRDlFSXY2YnRSQks2QXl0OFhBbVkvS1BGVFA0cS9odXMvWGx0YmxW?=
+ =?utf-8?Q?hZC6ji64DjRN0VlsP4MnO2i0/LsmHgpf2COKX7Xu27fC?=
+X-OriginatorOrg: kunbus.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 064ba462-99fa-4ca0-2688-08dbca80f664
+X-MS-Exchange-CrossTenant-AuthSource: VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Oct 2023 17:39:04.3886
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: aaa4d814-e659-4b0a-9698-1c671f11520b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kV8DmyrLEOxoyxJdHJik5aiunok/Cwe/CFAR8SmdYIBHguwbAVEIkiiN2L71UdTQsTZSWeylBxpZtuJ6a8rcBg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8P193MB1187
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 11, 2023 at 8:56=E2=80=AFPM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Wed, Oct 11, 2023 at 04:32:22PM +0530, Anup Patel wrote:
-> > On Wed, Oct 11, 2023 at 12:57=E2=80=AFPM Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Wed, Oct 11, 2023 at 11:49:14AM +0530, Anup Patel wrote:
-> > > > On Tue, Oct 10, 2023 at 10:43=E2=80=AFPM Greg Kroah-Hartman
-> > > > <gregkh@linuxfoundation.org> wrote:
-> > > > >
-> > > > > On Tue, Oct 10, 2023 at 10:34:59PM +0530, Anup Patel wrote:
-> > > > > > We will be implementing SBI DBCN extension for KVM RISC-V so le=
-t
-> > > > > > us change the KVM RISC-V SBI specification version to v2.0.
-> > > > > >
-> > > > > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> > > > > > ---
-> > > > > >  arch/riscv/include/asm/kvm_vcpu_sbi.h | 2 +-
-> > > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > > >
-> > > > > > diff --git a/arch/riscv/include/asm/kvm_vcpu_sbi.h b/arch/riscv=
-/include/asm/kvm_vcpu_sbi.h
-> > > > > > index cdcf0ff07be7..8d6d4dce8a5e 100644
-> > > > > > --- a/arch/riscv/include/asm/kvm_vcpu_sbi.h
-> > > > > > +++ b/arch/riscv/include/asm/kvm_vcpu_sbi.h
-> > > > > > @@ -11,7 +11,7 @@
-> > > > > >
-> > > > > >  #define KVM_SBI_IMPID 3
-> > > > > >
-> > > > > > -#define KVM_SBI_VERSION_MAJOR 1
-> > > > > > +#define KVM_SBI_VERSION_MAJOR 2
-> > > > >
-> > > > > What does this number mean?  Who checks it?  Why do you have to k=
-eep
-> > > > > incrementing it?
-> > > >
-> > > > This number is the SBI specification version implemented by KVM RIS=
-C-V
-> > > > for the Guest kernel.
-> > > >
-> > > > The original sbi_console_putchar() and sbi_console_getchar() are le=
-gacy
-> > > > functions (aka SBI v0.1) which were introduced a few years back alo=
-ng
-> > > > with the Linux RISC-V port.
-> > > >
-> > > > The latest SBI v2.0 specification (which is now frozen) introduces =
-a new
-> > > > SBI debug console extension which replaces legacy sbi_console_putch=
-ar()
-> > > > and sbi_console_getchar() functions with better alternatives.
-> > > > (Refer, https://github.com/riscv-non-isa/riscv-sbi-doc/releases/dow=
-nload/commit-fe4562532a9cc57e5743b6466946c5e5c98c73ca/riscv-sbi.pdf)
-> > > >
-> > > > This series adds SBI debug console implementation in KVM RISC-V
-> > > > so the SBI specification version advertised by KVM RISC-V must also=
- be
-> > > > upgraded to v2.0.
-> > > >
-> > > > Regarding who checks its, the SBI client drivers in the Linux kerne=
-l
-> > > > will check SBI specification version implemented by higher privileg=
-e
-> > > > mode (M-mode firmware or HS-mode hypervisor) before probing
-> > > > the SBI extension. For example, the HVC SBI driver (PATCH5)
-> > > > will ensure SBI spec version to be at least v2.0 before probing
-> > > > SBI debug console extension.
-> > >
-> > > Is this api backwards compatible, or did you just break existing
-> > > userspace that only expects version 1.0?
-> >
-> > The legacy sbi_console_putchar() and sbi_console_getchar()
-> > functions have not changed so it does not break existing
-> > user-space.
-> >
-> > The new SBI DBCN functions to be implemented by KVM
-> > user space are:
-> > sbi_debug_console_write()
-> > sbi_debug_console_read()
-> > sbi_debug_console_write_byte()
->
-> And where exactly is that code for us to review that this is tested?
-
-The KVM selftests for KVM RISC-V are under development. Eventually,
-we will have dedicated KVM selftests for the SBI extensions implemented
-by KVM RISC-V.
-
-Until then we have KVMTOOL implementation for SBI DBCN, which is
-available in riscv_sbi_dbcn_v1 branch at:
-https://github.com/avpatel/kvmtool.git
-
->
-> thanks,
->
-> greg k-h
-
-Regards,
-Anup
+VGhlIGZvbGxvd2luZyBzZXJpZXMgaW5jbHVkZXMgc29tZSBmaXhlcyBhbmQgaW1wcm92ZW1lbnRz
+IGFyb3VuZCBSUzQ4NSBpbgp0aGUgc2VyaWFsIGNvcmUgYW5kIFVBUlQgZHJpdmVyczoKClBhdGNo
+IDE6IERvIG5vdCBob2xkIHRoZSBwb3J0IGxvY2sgd2hlbiBzZXR0aW5nIHJ4LWR1cmluZy10eCBH
+UElPClBhdGNoIDI6IEdldCByaWQgb2YgdXNlbGVzcyB3cmFwcGVyIHBsMDExX2dldF9yczQ4NV9t
+b2RlKCkKUGF0Y2ggMzogc2V0IG1pc3Npbmcgc3VwcG9ydGVkIGZsYWcgZm9yIFJYIGR1cmluZyBU
+WCBHUElPClBhdGNoIDQ6IGZpeCBzYW5pdGl6aW5nIGNoZWNrIGZvciBSVFMgc2V0dGluZ3MKUGF0
+Y2ggNTogbWFrZSBzdXJlIFJTNDg1IGlzIGNhbm5vdCBiZSBlbmFibGVkIHdoZW4gaXQgaXMgbm90
+IHN1cHBvcnRlZApQYXRjaCA2OiBpbXg6IGRvIG5vdCBzZXQgUlM0ODUgZW5hYmxlZCBpZiBpdCBp
+cyBub3Qgc3VwcG9ydGVkClBhdGNoIDc6IG9tYXA6IGRvIG5vdCBvdmVycmlkZSBzZXR0aW5ncyBm
+b3IgcnM0ODUgc3VwcG9ydAoKQ2hhbmdlcyBpbiB2MjoKLSBhZGQgbWlzc2luZyAnRml4ZXMnIHRh
+Z3MgYXMgcmVxdWVzdGVkIGJ5IEdyZWcKLSBjb3JyZWN0ZWQgYSB0eXBvIGFzIHBvaW50ZWQgb3V0
+IGJ5IEh1Z28KLSBmaXggaXNzdWUgaW4gaW14IGRyaXZlciBpbiB0aGUgc2VyaWFsIGNvcmUgYXMg
+c3VnZ2VzdGVkIGJ5IFV3ZQotIHBhcnRseSByZXBocmFzZSBzb21lIGNvbW1pdCBtZXNzYWdlcwot
+IGFkZCBwYXRjaCA3CgpMaW5vIFNhbmZpbGlwcG8gKDcpOgogIHNlcmlhbDogRG8gbm90IGhvbGQg
+dGhlIHBvcnQgbG9jayB3aGVuIHNldHRpbmcgcngtZHVyaW5nLXR4IEdQSU8KICBzZXJpYWw6IGFt
+YmEtcGwwMTE6IGdldCByaWQgb2YgdXNlbGVzcyB3cmFwcGVyIHBsMDExX2dldF9yczQ4NV9tb2Rl
+KCkKICBzZXJpYWw6IGNvcmU6IHNldCBtaXNzaW5nIHN1cHBvcnRlZCBmbGFnIGZvciBSWCBkdXJp
+bmcgVFggR1BJTwogIHNlcmlhbDogY29yZTogZml4IHNhbml0aXppbmcgY2hlY2sgZm9yIFJUUyBz
+ZXR0aW5ncwogIHNlcmlhbDogY29yZTogbWFrZSBzdXJlIFJTNDg1IGNhbm5vdCBiZSBlbmFibGVk
+IHdoZW4gaXQgaXMgbm90CiAgICBzdXBwb3J0ZWQKICBzZXJpYWw6IGNvcmUsIGlteDogZG8gbm90
+IHNldCBSUzQ4NSBlbmFibGVkIGlmIGl0IGlzIG5vdCBzdXBwb3J0ZWQKICBzZXJpYWw6IG9tYXA6
+IGRvIG5vdCBvdmVycmlkZSBzZXR0aW5ncyBmb3IgUlM0ODUgc3VwcG9ydAoKIGRyaXZlcnMvdHR5
+L3NlcmlhbC9hbWJhLXBsMDExLmMgIHwgMTQgKy0tLS0tLS0tLQogZHJpdmVycy90dHkvc2VyaWFs
+L2lteC5jICAgICAgICAgfCAgOCAtLS0tLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC9vbWFwLXNlcmlh
+bC5jIHwgIDggKysrLS0tCiBkcml2ZXJzL3R0eS9zZXJpYWwvc2VyaWFsX2NvcmUuYyB8IDQ4ICsr
+KysrKysrKysrKysrKysrKysrKystLS0tLS0tLS0tCiBkcml2ZXJzL3R0eS9zZXJpYWwvc3RtMzIt
+dXNhcnQuYyB8ICA1ICstLS0KIDUgZmlsZXMgY2hhbmdlZCwgMzkgaW5zZXJ0aW9ucygrKSwgNDQg
+ZGVsZXRpb25zKC0pCgoKYmFzZS1jb21taXQ6IDk0ZjZmMDU1MGM2MjVmYWIxZjM3M2JiODZhNjY2
+OWI0NWU5NzQ4YjMKLS0gCjIuNDAuMQoK
