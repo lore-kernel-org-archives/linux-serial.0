@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D212FCDB47A
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 18:49:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B54CDB47A
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 18:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233288AbjJKSta (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Oct 2023 14:49:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58662 "EHLO
+        id S235195AbjJKStm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 11 Oct 2023 14:49:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233290AbjJKStZ (ORCPT
+        with ESMTP id S233157AbjJKSt0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Oct 2023 14:49:25 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30698CF
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 11:49:20 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id ffacd0b85a97d-32d80ae19f8so122967f8f.2
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 11:49:20 -0700 (PDT)
+        Wed, 11 Oct 2023 14:49:26 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B096EA
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 11:49:21 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id 5b1f17b1804b1-4056ce55e7eso2142845e9.2
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 11:49:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1697050158; x=1697654958; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1697050160; x=1697654960; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SpmvATsaTcMJ19Dm+6zr7DE57EEBi8DlV0ssb1TyaVI=;
-        b=Yn74MsWDY5XPIxWpuOLDgKRYUkcnYiGitzvhwywR8QfkbRU+zF9WMjJ+p0CQJUeyB/
-         tFfICExNk8DX8LyNbb/+N2H34iAdT5OVnOY0VAfDb3PA8wuKdiIdK0fOc0OJcAqMrKgU
-         v/vgiVcIQIwDUttWJUAJv9Nwv6U64Psiz+UZoE92e+iN5YN0ZM00RKi2fpsgkxF87aq5
-         xkeVL/34rdo5dku0Loz8CZ6TQamfipbQ4ybSp04t54f22SPyybr+IyQQefpJIVqeEqS3
-         VifF0KGZt63ANUdyt6ih/qBeedZtqWKd92M98Qq468ZWbePKJ4aSBDO9ZW7KLL/pnB8G
-         NSQA==
+        bh=gwPgb0Vxa46C21WbpKo3fGsmmsstakxunKdlGSyuz/I=;
+        b=DmTTJvaYJ+Q7OFi+LHLfTdgDh2QI8Cm+mXFcsvKzl17BEw+YM2XvSiKYH2mUh6HAUU
+         b2wPZx0mdQEvxLdcY/Ri5W9eoDSjgwG6TfobKpqV2xObFGPP/m+p5F1Oafgveuuyzqo1
+         VF2qoYJRkPiL6c40jeO8jWvwSLpVgj2gWXYSJSASMdW9tMbNvikNl6luoU/+Dodv0QhS
+         nzO5p75Y49EQ5EWkPrP7txpIRf9AeINZV+loVymjOosjZLSnLrZVR2h0OrjESRyAS1QA
+         3qR5FJMqUzjleUuS8hKDzJa1EC0PrNxqu0D3lkEBz5tcNBBDEz7d709GwBrlW3UEaoIY
+         SoMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697050158; x=1697654958;
+        d=1e100.net; s=20230601; t=1697050160; x=1697654960;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=SpmvATsaTcMJ19Dm+6zr7DE57EEBi8DlV0ssb1TyaVI=;
-        b=dIl3aJZHDWZo036Pqx+Nu+Hx6iSLhaVRiDZXhx6Mk6Ge5uxbEMBfxsNlHVZAKKMYKD
-         eekxujd8O49j/L0Zgv0b8cC5t2SvZJHNaJAG7FMao2+SoirEnKO07KbAV//A1XEYx/dn
-         bXvpQZ5PEjmShJVujr0XddKaiUCLl6LYaz6LPXswuYrxPiIvPtzixjvJehDb9r69/jAS
-         Cm3h+fS6+/AFYmA+VPZbiRivVZIsXzcIEgaEnX73pkiesK8/REY1LNetzL/75kMm2+Op
-         AEeM6uz653kx/biUKiAC9PTzKVjE+RXy814ioZoYsxqnR/x0Mqq1EBMivg5jxdlaCKra
-         oTZw==
-X-Gm-Message-State: AOJu0YzfLPeRBGYwXZq3iF72Akz5++bEKntJ4ecSMnkppq+EK4BOJ3lI
-        9FtQWRnnJ/DVE4p1DAJt6rRh2w==
-X-Google-Smtp-Source: AGHT+IHAy75oAsFakfAP4prwtA4lP8VergujqRJdjvDK4geKc35P1aWpL2Iak1gQMuJSm2FE2tk89Q==
-X-Received: by 2002:a5d:568e:0:b0:319:867e:97d7 with SMTP id f14-20020a5d568e000000b00319867e97d7mr19718489wrv.52.1697050158598;
-        Wed, 11 Oct 2023 11:49:18 -0700 (PDT)
+        bh=gwPgb0Vxa46C21WbpKo3fGsmmsstakxunKdlGSyuz/I=;
+        b=uqGSr5TLRDcXB8Nh1+JbvmVbHI9zMY5CiE92WR/vsQWalMVgU3quYRgfxkY3Z+b/kw
+         e5hHBZ8DrP2eKSUxAwlVx7IadAQ9xcaHuLZ0QoyU2vw3rJa1IVrfOfPLYKv+HBEOxqdW
+         KzUZ/XFudXWi98bdgBCPAcS3A6PlPxMrsmXe40HgMTfcJq0aSnkobDNfGMpAXKmM79bC
+         UDoxqEwO6X9/CCbsgdYMVnapOet6Bph9VQfsJq05ppgVSkYgtujrTM9L3iG4C/IXvIBw
+         CLD/qXDn7FhCEMqdHlbjd36TJvEFPhA4k1fEeIG2sfub2RYE/ric+xVPxKLOBy+RB7l1
+         pC/Q==
+X-Gm-Message-State: AOJu0YyoHe8p0S8n53nxbiXUgYr9Q8qLVJf/rRDnsY8dHfZhklOSnjC7
+        3pVqAF4XjnsuwYRnepBTXd6SAg==
+X-Google-Smtp-Source: AGHT+IFxq973Ob/kOR6t1bmL2SP/if638Oo0uwRo3quVfL0DpoW+bXn2/XL7gAGw658ulQS/plNO0g==
+X-Received: by 2002:a5d:4a0b:0:b0:31a:b3aa:d19b with SMTP id m11-20020a5d4a0b000000b0031ab3aad19bmr19222081wrq.23.1697050159908;
+        Wed, 11 Oct 2023 11:49:19 -0700 (PDT)
 Received: from gpeter-l.lan (host-92-12-225-146.as13285.net. [92.12.225.146])
-        by smtp.gmail.com with ESMTPSA id v6-20020adff686000000b0031980294e9fsm16003875wrp.116.2023.10.11.11.49.17
+        by smtp.gmail.com with ESMTPSA id v6-20020adff686000000b0031980294e9fsm16003875wrp.116.2023.10.11.11.49.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Oct 2023 11:49:18 -0700 (PDT)
+        Wed, 11 Oct 2023 11:49:19 -0700 (PDT)
 From:   Peter Griffin <peter.griffin@linaro.org>
 To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
@@ -64,11 +64,10 @@ Cc:     peter.griffin@linaro.org, tudor.ambarus@linaro.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        kernel-team@android.com, linux-serial@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 05/20] dt-bindings: arm: google: Add bindings for Google ARM platforms
-Date:   Wed, 11 Oct 2023 19:48:08 +0100
-Message-ID: <20231011184823.443959-6-peter.griffin@linaro.org>
+        kernel-team@android.com, linux-serial@vger.kernel.org
+Subject: [PATCH v3 06/20] dt-bindings: pinctrl: samsung: add google,gs101-pinctrl compatible
+Date:   Wed, 11 Oct 2023 19:48:09 +0100
+Message-ID: <20231011184823.443959-7-peter.griffin@linaro.org>
 X-Mailer: git-send-email 2.42.0.655.g421f12c284-goog
 In-Reply-To: <20231011184823.443959-1-peter.griffin@linaro.org>
 References: <20231011184823.443959-1-peter.griffin@linaro.org>
@@ -78,68 +77,64 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This introduces bindings and dt-schema for the Google tensor SoCs.
-Currently just gs101 and pixel 6 are supported.
+Add the "google,gs101-pinctrl" compatible to the dt-schema bindings
+documentation.
+
+Add maxItems of 50 for the interrupts property as gs101 can have
+multiple irqs.
 
 Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- .../devicetree/bindings/arm/google.yaml       | 46 +++++++++++++++++++
- 1 file changed, 46 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/google.yaml
+ .../bindings/pinctrl/samsung,pinctrl.yaml     | 22 ++++++++++++++++++-
+ 1 file changed, 21 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/google.yaml b/Documentation/devicetree/bindings/arm/google.yaml
-new file mode 100644
-index 000000000000..167945e4d5ee
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/google.yaml
-@@ -0,0 +1,46 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/arm/google.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
+index 26614621774a..6dc648490668 100644
+--- a/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
+@@ -35,6 +35,7 @@ properties:
+ 
+   compatible:
+     enum:
++      - google,gs101-pinctrl
+       - samsung,s3c2412-pinctrl
+       - samsung,s3c2416-pinctrl
+       - samsung,s3c2440-pinctrl
+@@ -58,7 +59,8 @@ properties:
+   interrupts:
+     description:
+       Required for GPIO banks supporting external GPIO interrupts.
+-    maxItems: 1
++    minItems: 1
++    maxItems: 50
+ 
+   power-domains:
+     maxItems: 1
+@@ -134,6 +136,24 @@ allOf:
+           minItems: 1
+           maxItems: 1
+ 
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: google,gs101-pinctrl
++    then:
++      properties:
++        interrupts:
++          description:
++            Required for external wakeup interrupts. List all external
++            wakeup interrupts supported by this bank.
++          minItems: 1
++          maxItems: 50
++    else:
++      properties:
++        interrupts:
++          maxItems: 1
 +
-+title: Google Tensor platforms
-+
-+maintainers:
-+  - Peter Griffin <peter.griffin@linaro.org>
-+
-+description: |
-+  ARM platforms using SoCs designed by Google branded "Tensor" used in Pixel
-+  devices.
-+
-+  Currently upstream this is devices using "gs101" SoC which is found in Pixel
-+  6, Pixel 6 Pro and Pixel 6a.
-+
-+  Google have a few different names for the SoC.
-+  - Marketing name ("Tensor")
-+  - Codename ("Whitechapel")
-+  - SoC ID ("gs101")
-+  - Die ID ("S5P9845");
-+
-+  Likewise there are a couple of names for the actual device
-+  - Marketing name ("Pixel 6")
-+  - Codename ("Oriole")
-+
-+  Devicetrees should use the lowercased SoC ID and lowercased board codename.
-+  e.g. gs101 and gs101-oriole
-+
-+properties:
-+  $nodename:
-+    const: '/'
-+  compatible:
-+    oneOf:
-+
-+      - description: Google Pixel 6 / Oriole
-+        items:
-+          - enum:
-+              - google,gs101-oriole
-+          - const: google,gs101
-+
-+additionalProperties: true
-+
-+...
+ additionalProperties: false
+ 
+ examples:
 -- 
 2.42.0.655.g421f12c284-goog
 
