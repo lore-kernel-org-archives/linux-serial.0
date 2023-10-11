@@ -2,60 +2,60 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D81FCD98C7
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 06:20:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE41CD98C7
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 06:32:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345262AbjJKGUp (ORCPT
+        id S1344710AbjJKGco (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Oct 2023 02:20:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60380 "EHLO
+        Wed, 11 Oct 2023 02:32:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344424AbjJKGUm (ORCPT
+        with ESMTP id S1344315AbjJKGcn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Oct 2023 02:20:42 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0F21D7D
-        for <linux-serial@vger.kernel.org>; Tue, 10 Oct 2023 23:19:30 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id 41be03b00d2f7-578d0dcd4e1so4238994a12.2
-        for <linux-serial@vger.kernel.org>; Tue, 10 Oct 2023 23:19:30 -0700 (PDT)
+        Wed, 11 Oct 2023 02:32:43 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1ED9D
+        for <linux-serial@vger.kernel.org>; Tue, 10 Oct 2023 23:32:40 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id 41be03b00d2f7-5892832f8daso522479a12.0
+        for <linux-serial@vger.kernel.org>; Tue, 10 Oct 2023 23:32:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1697005164; x=1697609964; darn=vger.kernel.org;
+        d=ventanamicro.com; s=google; t=1697005960; x=1697610760; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=zcqMB30naFRgYdHZVjh4rWtjXZPaceEDVeZe+D6ZGQM=;
-        b=oYPInmB2+tfsY5VSLQcX+ksIVpEbszEojCThY8Thzo7e/kJT1tjvQmQuGKX6bkfQxc
-         YzdllyGRSAA1pX5Xcw5qtIOC/UwlooyuihXTul6XnDIrJlT+HHeSHqyGP66XxK8OH0Ne
-         6RKkpFZgnsTX5PVaOBIbEz2LY02fkDWv5omF3P5UUtacxgRAuev/+wb8lQXKA3I3riHz
-         3E8wNsopkvnVyH6sxuDkrPbQlGgiJJM1qk2fpyLFWPohvYlFSknl55CJPEGaxWc7Gx2t
-         ETUTh3zTDWvJA7ifiCpKdDBenNIMi2RH8cNtCmLn3biDF9xFyd22D3/AisXDNeMwxSj4
-         OEnA==
+        bh=qlCvzn9D9MWfXzyAjQXrd2l33CVlRWaoX+EsCqMd6ps=;
+        b=kWTWVPK7N9NCNf2HZ3Fyp42qChTUEHUHU97/4FONyjQgtNtbeeDXBEMNrp4zfUlB2x
+         vX8T9j9s5s/ARkEB/UTWO0sisG0aSIWSqSzC4PvABUFj0ZSX7YtcnAA3sPm/ccNFz1dn
+         Cch+OPNt05lppQURTmvKrfRsnNHKAK2a9/lZzh5RKgkp58iWhKD9slxYcvPXpEznkydo
+         BwuPnbCUXdYJEG6R1oOGbPVpXS9PA9eEBdiFUoU2yfd7jwNOnoF1L81rbqLlouQUA/kc
+         fAi5QEBKkuyqfXDx0cyrFI2nxm61QRBAgtxwQ49npw0Oq4dWd2GyhXTcSgYJ8R4USj+D
+         Vd1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697005164; x=1697609964;
+        d=1e100.net; s=20230601; t=1697005960; x=1697610760;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=zcqMB30naFRgYdHZVjh4rWtjXZPaceEDVeZe+D6ZGQM=;
-        b=TctiXF1aqg6/tBCAdkOqqXnsHceuPmj+yJUAlK+61lHcuAWItlv9CQdIerj0syMNgG
-         cZoo1okMNtPrsRp2u1U0ff4rBEUouCebyN86RQ6waLOWtMgCqE1pwIXVSi1I+HHx+sF9
-         GDW2k3o/iv8VlhgdNedFu7BV4n3WUMWmWYUFJZ+KU1VkK+7DJy0PkltUYBjcfGM+4Rmo
-         f9IKw2lBEFxvNZ22JrvWt5bJZZG50FnMhCOpK9Q5ytL+c5zwCvY9gH3WjOf9Tvmk1368
-         DO8p/HKpAvSAvg9fdZPXVJfw76Kw2l/0x9JKlrNZ+/7NkvwaG7zmiq7eq2aO1hp/gGcs
-         U24g==
-X-Gm-Message-State: AOJu0YzJsjN1ywDEltJVhphIeHoveKFbSX+S4vHAFz/he+2Ng6xbzAGM
-        pl08O6TxOnMd3jKJ7irktdY6ryIbmVpDtqe5JZ8xlQ==
-X-Google-Smtp-Source: AGHT+IH0dVQdsDAFTukx58Mm4npJdNbm0bLcgPLvVKj0AVOxI4yYVZT6FxUGUblbjBF7BjO/DvhKeANQ/axsKvXGtw8=
-X-Received: by 2002:a05:6a20:4305:b0:15e:2d9f:cae0 with SMTP id
- h5-20020a056a20430500b0015e2d9fcae0mr20933619pzk.10.1697005164547; Tue, 10
- Oct 2023 23:19:24 -0700 (PDT)
+        bh=qlCvzn9D9MWfXzyAjQXrd2l33CVlRWaoX+EsCqMd6ps=;
+        b=PP9/Fv95hZFqcuxx/uvz76sluNb4V3Kx7uFXwnfX0O7TFBbqIdtEnlySRzzIBzd2L7
+         BXw57eo2zmQe6R0L+96t5sA4/WMJ0365NM3YqastA+ttliehGBQ9auBP79gw8BhO7Jtr
+         CDwSFYs9K/iZ5rt2MSZS/d6OWs4WrqlIZbzZrxr2pLOKTLPpgOo2Zq+lyTSmz3FFGRel
+         5IJvK/R1a15h3vxlaERxnAz1LzGaMyu992AbDDc+Jm+7bPGGaXc5fzsa5nuTMY6Liwsk
+         Iz1M1fbessesXMJjziHehzPWBTrRvbMYJDF82wX5U+ld1SKaGeDJY5z5vn357xKGwUWi
+         qsPg==
+X-Gm-Message-State: AOJu0Yxqq+KMnUyqnvO33tcdKTycdShF90/1aLSZRm29Fx58KhJ5Lptw
+        hMzfYQu1umhCMqylXGHKstUM2k+xXQkAhlscqa0T2Q==
+X-Google-Smtp-Source: AGHT+IH0b9pvjz2wUtu97VMbjcxmgb/lTA+sWvTdIT6U1QGtyomZxkrbbJUyvfIkk70xvT4UTjANIh9gr7AwN1M7ntI=
+X-Received: by 2002:a17:90b:4a02:b0:277:61d7:78be with SMTP id
+ kk2-20020a17090b4a0200b0027761d778bemr24784754pjb.14.1697005960055; Tue, 10
+ Oct 2023 23:32:40 -0700 (PDT)
 MIME-Version: 1.0
 References: <20231010170503.657189-1-apatel@ventanamicro.com>
- <20231010170503.657189-3-apatel@ventanamicro.com> <2023101013-overfeed-online-7f69@gregkh>
-In-Reply-To: <2023101013-overfeed-online-7f69@gregkh>
+ <20231010170503.657189-4-apatel@ventanamicro.com> <2023101048-attach-drift-d77b@gregkh>
+In-Reply-To: <2023101048-attach-drift-d77b@gregkh>
 From:   Anup Patel <apatel@ventanamicro.com>
-Date:   Wed, 11 Oct 2023 11:49:14 +0530
-Message-ID: <CAK9=C2WbW_WvoU59Ba9VrKf5GbbXmMOhB2jsiAp0a=SJYh3d7w@mail.gmail.com>
-Subject: Re: [PATCH 2/6] RISC-V: KVM: Change the SBI specification version to v2.0
+Date:   Wed, 11 Oct 2023 12:02:30 +0530
+Message-ID: <CAK9=C2UEcQpHg8WZM3XxLa5yCEZ6wtWJj=8g5_m_0_RkiNMkTA@mail.gmail.com>
+Subject: Re: [PATCH 3/6] RISC-V: KVM: Forward SBI DBCN extension to user-space
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Paolo Bonzini <pbonzini@redhat.com>,
         Atish Patra <atishp@atishpatra.org>,
@@ -73,61 +73,86 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Oct 10, 2023 at 10:43=E2=80=AFPM Greg Kroah-Hartman
+On Tue, Oct 10, 2023 at 10:45=E2=80=AFPM Greg Kroah-Hartman
 <gregkh@linuxfoundation.org> wrote:
 >
-> On Tue, Oct 10, 2023 at 10:34:59PM +0530, Anup Patel wrote:
-> > We will be implementing SBI DBCN extension for KVM RISC-V so let
-> > us change the KVM RISC-V SBI specification version to v2.0.
+> On Tue, Oct 10, 2023 at 10:35:00PM +0530, Anup Patel wrote:
+> > The SBI DBCN extension needs to be emulated in user-space
+>
+> Why?
+
+The SBI debug console is similar to a console port available to
+KVM Guest so the KVM user space tool (i.e. QEMU-KVM or
+KVMTOOL) can redirect the input/output of SBI debug console
+wherever it wants (e.g.  telnet, file, stdio, etc).
+
+We forward SBI DBCN calls to KVM user space so that the
+in-kernel KVM does not need to be aware of the guest
+console devices.
+
+>
+> > so let
+> > us forward console_puts() call to user-space.
+>
+> What could go wrong!
+>
+> Why does userspace have to get involved in a console message?  Why is
+> this needed at all?  The kernel can not handle userspace consoles as
+> obviously they have to be re-entrant and irq safe.
+
+As mentioned above, these are KVM guest console messages which
+the VMM (i.e. KVM user-space) can choose to manage on its own.
+
+This is more about providing flexibility to KVM user-space which
+allows it to manage guest console devices.
+
+>
 > >
 > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
 > > ---
-> >  arch/riscv/include/asm/kvm_vcpu_sbi.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >  arch/riscv/include/asm/kvm_vcpu_sbi.h |  1 +
+> >  arch/riscv/include/uapi/asm/kvm.h     |  1 +
+> >  arch/riscv/kvm/vcpu_sbi.c             |  4 ++++
+> >  arch/riscv/kvm/vcpu_sbi_replace.c     | 31 +++++++++++++++++++++++++++
+> >  4 files changed, 37 insertions(+)
 > >
 > > diff --git a/arch/riscv/include/asm/kvm_vcpu_sbi.h b/arch/riscv/include=
 /asm/kvm_vcpu_sbi.h
-> > index cdcf0ff07be7..8d6d4dce8a5e 100644
+> > index 8d6d4dce8a5e..a85f95eb6e85 100644
 > > --- a/arch/riscv/include/asm/kvm_vcpu_sbi.h
 > > +++ b/arch/riscv/include/asm/kvm_vcpu_sbi.h
-> > @@ -11,7 +11,7 @@
+> > @@ -69,6 +69,7 @@ extern const struct kvm_vcpu_sbi_extension vcpu_sbi_e=
+xt_ipi;
+> >  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_rfence;
+> >  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_srst;
+> >  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_hsm;
+> > +extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_dbcn;
+> >  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_experimental;
+> >  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_vendor;
 > >
-> >  #define KVM_SBI_IMPID 3
-> >
-> > -#define KVM_SBI_VERSION_MAJOR 1
-> > +#define KVM_SBI_VERSION_MAJOR 2
+> > diff --git a/arch/riscv/include/uapi/asm/kvm.h b/arch/riscv/include/uap=
+i/asm/kvm.h
+> > index 917d8cc2489e..60d3b21dead7 100644
+> > --- a/arch/riscv/include/uapi/asm/kvm.h
+> > +++ b/arch/riscv/include/uapi/asm/kvm.h
+> > @@ -156,6 +156,7 @@ enum KVM_RISCV_SBI_EXT_ID {
+> >       KVM_RISCV_SBI_EXT_PMU,
+> >       KVM_RISCV_SBI_EXT_EXPERIMENTAL,
+> >       KVM_RISCV_SBI_EXT_VENDOR,
+> > +     KVM_RISCV_SBI_EXT_DBCN,
+> >       KVM_RISCV_SBI_EXT_MAX,
 >
-> What does this number mean?  Who checks it?  Why do you have to keep
-> incrementing it?
+> You just broke a user/kernel ABI here, why?
 
-This number is the SBI specification version implemented by KVM RISC-V
-for the Guest kernel.
-
-The original sbi_console_putchar() and sbi_console_getchar() are legacy
-functions (aka SBI v0.1) which were introduced a few years back along
-with the Linux RISC-V port.
-
-The latest SBI v2.0 specification (which is now frozen) introduces a new
-SBI debug console extension which replaces legacy sbi_console_putchar()
-and sbi_console_getchar() functions with better alternatives.
-(Refer, https://github.com/riscv-non-isa/riscv-sbi-doc/releases/download/co=
-mmit-fe4562532a9cc57e5743b6466946c5e5c98c73ca/riscv-sbi.pdf)
-
-This series adds SBI debug console implementation in KVM RISC-V
-so the SBI specification version advertised by KVM RISC-V must also be
-upgraded to v2.0.
-
-Regarding who checks its, the SBI client drivers in the Linux kernel
-will check SBI specification version implemented by higher privilege
-mode (M-mode firmware or HS-mode hypervisor) before probing
-the SBI extension. For example, the HVC SBI driver (PATCH5)
-will ensure SBI spec version to be at least v2.0 before probing
-SBI debug console extension.
+The KVM_RISCV_SBI_EXT_MAX only represents the number
+of entries in "enum KVM_RISCV_SBI_EXT_ID" so we are not
+breaking "enum KVM_RISCV_SBI_EXT_ID" rather appending
+new ID to existing enum.
 
 >
 > thanks,
 >
 > greg k-h
 
-Regards,
+Thanks,
 Anup
