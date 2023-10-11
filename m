@@ -2,151 +2,163 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB1BCD6E5A
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 11:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85A49CD6E62
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 11:55:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346780AbjJKLDO (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Oct 2023 07:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51002 "EHLO
+        id S232018AbjJKLzj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 11 Oct 2023 07:55:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234916AbjJKLCz (ORCPT
+        with ESMTP id S232023AbjJKLzh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Oct 2023 07:02:55 -0400
-Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D3E412A
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 04:02:35 -0700 (PDT)
-Received: by mail-ua1-x92f.google.com with SMTP id a1e0cc1a2514c-7ab5150a7b5so548286241.0
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 04:02:35 -0700 (PDT)
+        Wed, 11 Oct 2023 07:55:37 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 013F4A9
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 04:55:34 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id 6a1803df08f44-66d01345d73so6222746d6.2
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 04:55:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1697022154; x=1697626954; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Xm0CdxGnQbe0GlEx3+GHVomKZQHiVEeERNIEs1qllzo=;
-        b=VZvMO6mfkwhG4ZN258/KVtS10RK9KNdvy2Tr1pqJIawr8ZgchnndzYkT7iPrYlCDfy
-         Oejz89MSEUcwBzsWyDDanwyyOj7XGMkjSecwi1EQ3piUgar2tceW/XSQqgh/3agSwSO1
-         M7T10caA1HtiP+YQw8JuBpVO5eQgsZ/VfGX0p+NXKPiLzE/UZ+YCX8tcmZQ4jDZS+ybU
-         7a8J/a6Sk4gPRgiTYZGSaBXX0cwnqjCvjqUtmdpMOyTPGIPCFFDlHE0h2UCoJOp1Rlcl
-         bOfOe4UdTBAqPcI/FhXhmxGhFy6oMiPZ8VMemYYGomIonWivw7LGlxJ3TjH4KlbSHnA/
-         DjNw==
+        d=linaro.org; s=google; t=1697025334; x=1697630134; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=7cvXO7x5gI5C47ss6Zq2+fePRAxMCbTat+Dh3Sp9OFA=;
+        b=lMydwga41zA6WI8F5LYb5U1SFCCyxLVhOCyfsl0M7MVvaFjkHZtGRbYR/5RBfhOi6J
+         wPpd7KrRlAg6Z4Aj7TBaFL6x5Zc3rsMfupoR5SUf/eM0+lY6d/HpvbmA8amtM/AxTGC0
+         XIK7vEguyW2miqMSI6MnWZ+0bSQRuSWreKrqgMrDUeuhyJ8v2YveAOQmHj4CwpXVXZ6d
+         /iNlBKGn85jZNECaafYe+08y5G4ds49lH6dSB2tLshjeF/bA3dxlgIZyn+ON3ijlRNuj
+         ewtJ8fVH9/qJ64RpQ8sW2biMq3z41ZIPktI+CSdSnoADFsNKlpxXRLFwtQgARs88CFhf
+         3xuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697022154; x=1697626954;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Xm0CdxGnQbe0GlEx3+GHVomKZQHiVEeERNIEs1qllzo=;
-        b=PCgtvyCYludAHFAh/8PXbtkmu8LC8g2tXoqY5Y5odLdNkX1FKS/1x9PvzvyaA5YU/V
-         haBSI4sG8si2/MoJpcvH3pMNW404OhRS30ctJngqKoi8GYKzIL6UR32CX+QkDg8Fsmxo
-         JlSTQraQcIR3Sbkuj4lZaenRL+oFhgK7qdzp+68pZPumDXugGh3gjtGSG0JR+YIO/yCG
-         5NgZ0nX5yzfSjaKWQmhPnUU5P0n70Ub8TzPnyyjTZ5+1lmuPdP/ZMJCli+JP2Yx98PHh
-         l3GEzipGOx9c6iC1PxV3IRLFQ+YPyNEb3rUvkx2K11+kqrenuu12M1MgGopFN2RwXfWW
-         2VNg==
-X-Gm-Message-State: AOJu0YzPeSCM5DzsUU5wwRAmvKSegHD+zlP2axH7z74chDk0U6fKsdl8
-        ywVd34ARnr0CQ2+9Gi8B9ozUCHp3/CwHpuZCcl3Ehg==
-X-Google-Smtp-Source: AGHT+IFIHtzjwJekUc0/aKAwYGhSo8Q1f+C4Kna6UDSuc6EpwK7D5p52+dKgEnHoF5qIkm5zUTFf99ptwfMujMMVIFQ=
-X-Received: by 2002:a05:6102:27c8:b0:452:79da:94a with SMTP id
- t8-20020a05610227c800b0045279da094amr8993764vsu.4.1697022154194; Wed, 11 Oct
- 2023 04:02:34 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1697025334; x=1697630134;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=7cvXO7x5gI5C47ss6Zq2+fePRAxMCbTat+Dh3Sp9OFA=;
+        b=DS0Tp0S8yjGBFmYraEX2jbsCAmUSbrvwSOI9Yrt4QH42WPqYahK1WEEgTZC+Sn3MjM
+         eW7RLXW1kHZii7ZXWleopXBMxaIE2Fg+vbBIlcUjj8017pg2nULhWWYF6Y0SiMnF/3zz
+         Pk045X8AWi+tKl5+me7eksM0LbcE2+13lqInrYG665T9h1iAGfCCiawq1lZdrURW/J4e
+         Umegw7b0PgjPiR0cMyBlD9u5gurZr3MYjsK3kX7VFta7lJOJxRUHG8Hz60fWtzpbatQ5
+         Tjra74Zs/fUZGP82R/XfxU3+l9uLRg9Xle2kq6jW08IIuFAwPcLPxgjCcnCWitYR87qq
+         VVLg==
+X-Gm-Message-State: AOJu0Yz5ajhEWonmK5aj32mtOZO1F52Cbfsf7T37i4L0z7pr1KqvTF9R
+        8cavfLI+sOF7b/QjbkScp6KkwlBF0Sb9rGV6HuvjiQ==
+X-Google-Smtp-Source: AGHT+IHe2JDHf5GLsILYW0FI9jDBRkvodk/k8lYoYKPnNONC72RAopfMzahZ/vKq9W2HnpUivorIyRfGPJ/qy+LqbFg=
+X-Received: by 2002:a05:6214:5010:b0:65b:31df:df76 with SMTP id
+ jo16-20020a056214501000b0065b31dfdf76mr27858740qvb.44.1697025333986; Wed, 11
+ Oct 2023 04:55:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20231010170503.657189-1-apatel@ventanamicro.com>
- <20231010170503.657189-3-apatel@ventanamicro.com> <2023101013-overfeed-online-7f69@gregkh>
- <CAK9=C2WbW_WvoU59Ba9VrKf5GbbXmMOhB2jsiAp0a=SJYh3d7w@mail.gmail.com> <2023101107-endorse-large-ef50@gregkh>
-In-Reply-To: <2023101107-endorse-large-ef50@gregkh>
-From:   Anup Patel <apatel@ventanamicro.com>
-Date:   Wed, 11 Oct 2023 16:32:22 +0530
-Message-ID: <CAK9=C2XYQ0U9CbuCg6cTf79sSsy+0BxF5mBE0R+E3s9iZFzEWw@mail.gmail.com>
-Subject: Re: [PATCH 2/6] RISC-V: KVM: Change the SBI specification version to v2.0
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Conor Dooley <conor@kernel.org>,
-        Andrew Jones <ajones@ventanamicro.com>, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
+References: <20231010224928.2296997-1-peter.griffin@linaro.org>
+ <20231010224928.2296997-9-peter.griffin@linaro.org> <2023101111-banknote-satin-1f77@gregkh>
+ <a6c57156-d3a5-4524-8ef8-6f27cf0a2c97@linaro.org> <2023101137-fester-rerun-5c39@gregkh>
+ <fe7cf585-622a-420e-8138-10de1cbca511@app.fastmail.com> <2023101126-stash-manor-7162@gregkh>
+ <c454503a-8f89-4bcf-949d-4970595540fc@app.fastmail.com>
+In-Reply-To: <c454503a-8f89-4bcf-949d-4970595540fc@app.fastmail.com>
+From:   Peter Griffin <peter.griffin@linaro.org>
+Date:   Wed, 11 Oct 2023 12:55:22 +0100
+Message-ID: <CADrjBPq6HVVFRyrqFJhQ5_cj12HRAzCO6yKGW8c3Txmv1vcPhw@mail.gmail.com>
+Subject: Re: [PATCH v2 08/20] dt-bindings: serial: samsung: Add
+ google-gs101-uart compatible
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tudor Ambarus <tudor.ambarus@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Olof Johansson <olof@lixom.net>,
+        Chanwoo Choi <cw00.choi@samsung.com>, andre.draszik@linaro.org,
+        semen.protsenko@linaro.org, saravanak@google.com,
+        William McVicker <willmcvicker@google.com>, soc@kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-watchdog@vger.kernel.org, kernel-team@android.com,
+        linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 11, 2023 at 12:57=E2=80=AFPM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Wed, Oct 11, 2023 at 11:49:14AM +0530, Anup Patel wrote:
-> > On Tue, Oct 10, 2023 at 10:43=E2=80=AFPM Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Tue, Oct 10, 2023 at 10:34:59PM +0530, Anup Patel wrote:
-> > > > We will be implementing SBI DBCN extension for KVM RISC-V so let
-> > > > us change the KVM RISC-V SBI specification version to v2.0.
-> > > >
-> > > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> > > > ---
-> > > >  arch/riscv/include/asm/kvm_vcpu_sbi.h | 2 +-
-> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/arch/riscv/include/asm/kvm_vcpu_sbi.h b/arch/riscv/inc=
-lude/asm/kvm_vcpu_sbi.h
-> > > > index cdcf0ff07be7..8d6d4dce8a5e 100644
-> > > > --- a/arch/riscv/include/asm/kvm_vcpu_sbi.h
-> > > > +++ b/arch/riscv/include/asm/kvm_vcpu_sbi.h
-> > > > @@ -11,7 +11,7 @@
-> > > >
-> > > >  #define KVM_SBI_IMPID 3
-> > > >
-> > > > -#define KVM_SBI_VERSION_MAJOR 1
-> > > > +#define KVM_SBI_VERSION_MAJOR 2
-> > >
-> > > What does this number mean?  Who checks it?  Why do you have to keep
-> > > incrementing it?
-> >
-> > This number is the SBI specification version implemented by KVM RISC-V
-> > for the Guest kernel.
-> >
-> > The original sbi_console_putchar() and sbi_console_getchar() are legacy
-> > functions (aka SBI v0.1) which were introduced a few years back along
-> > with the Linux RISC-V port.
-> >
-> > The latest SBI v2.0 specification (which is now frozen) introduces a ne=
-w
-> > SBI debug console extension which replaces legacy sbi_console_putchar()
-> > and sbi_console_getchar() functions with better alternatives.
-> > (Refer, https://github.com/riscv-non-isa/riscv-sbi-doc/releases/downloa=
-d/commit-fe4562532a9cc57e5743b6466946c5e5c98c73ca/riscv-sbi.pdf)
-> >
-> > This series adds SBI debug console implementation in KVM RISC-V
-> > so the SBI specification version advertised by KVM RISC-V must also be
-> > upgraded to v2.0.
-> >
-> > Regarding who checks its, the SBI client drivers in the Linux kernel
-> > will check SBI specification version implemented by higher privilege
-> > mode (M-mode firmware or HS-mode hypervisor) before probing
-> > the SBI extension. For example, the HVC SBI driver (PATCH5)
-> > will ensure SBI spec version to be at least v2.0 before probing
-> > SBI debug console extension.
->
-> Is this api backwards compatible, or did you just break existing
-> userspace that only expects version 1.0?
+Hi Arnd,
 
-The legacy sbi_console_putchar() and sbi_console_getchar()
-functions have not changed so it does not break existing
-user-space.
+Thanks for your feedback.
 
-The new SBI DBCN functions to be implemented by KVM
-user space are:
-sbi_debug_console_write()
-sbi_debug_console_read()
-sbi_debug_console_write_byte()
-
+On Wed, 11 Oct 2023 at 11:19, Arnd Bergmann <arnd@arndb.de> wrote:
 >
-> thanks,
+> On Wed, Oct 11, 2023, at 11:42, Greg Kroah-Hartman wrote:
+> > On Wed, Oct 11, 2023 at 11:30:25AM +0200, Arnd Bergmann wrote:
+> >> On Wed, Oct 11, 2023, at 10:57, Greg KH wrote:
+> >> >
+> >> >> It's not only the IP itself
+> >> >> that can differ, it's also the integration of the IP into the final
+> >> >> product that could have an influence on the behavior.
+> >> >
+> >> > This is for the Pixel 6, a device that is no longer even shipping.  The
+> >> > "final product" is long stable, so this should not be an issue.
+> >>
+> >> The driver does have soc specific settings for each compatible
+> >> string, in this case it looks like it overrides the FIFO size
+> >> based on driver specific data and the order in which the
+> >> ports are probed [1]. I don't understand why the driver does
+> >> this, but my impression is that if we wanted to change it to no
+> >> longer rely on that data, we'd also need a new compatible
+> >> string.
+> >
+> > As I reviewed that patch already, it is just duplicating an existing
+> > quirk/device that the driver already supports, so there is no need for
+> > any "new device type" to be added to that driver, just use the existing
+> > hardware description in the dt and all should be fine.
 >
-> greg k-h
+> The thing is, I suspect that the FIFO size override is actually
+> wrong for the exynos850 as well, and is almost certainly wrong
+> for both exynosautov9 and google-gs101:
+>
+> - The driver overrides an exynos850 compatible uart to use a
+>   256 byte FIFO on whichever port is probed first, 64 byte
+>   on the next three ports, and the setting from DT on any
+>   later ones, falling back to 16 bytes if the DT does not set
+>   anything.
+>
+> - exynos850 only actually has three of these ports, not
+>   four. It does not lists  FIFO size in the dts at all.
+>
+> - exynosautov9 has a total of 11 ports, each of these
+>   compatible with both "samsung,exynosautov9-uart" as
+>   the specific value and "samsung,exynos850-uart" as
+>   the generic fallback. The DT lists a FIFO size of 256
+>   bytes for ports 0, 1, and 6, but lists FIFO size 64
+>   for each of the other ones.
+>
+> - google-gs101 only lists a single uart in the dts,
+>   and sets it to a 256 byte FIFO.
+>
+> - testla-fsd claims to be compatible with exynos4210,
+>   which also overrides the first two ports in probe
+>   order to 256 and 64 bytes respectively (like exynos850),
+>   but it only has two ports.
+>
+> - artpec8 has a separate compatible string so it overrides
+>   all ports to 64 bytes.
+>
+> I don't know why probe order would have anything to do
+> with this, so most likely these are all the same thing
+> and should just put a fixed FIFO size into the DT for
+> each port instance.
 
-Regards,
-Anup
+I agree, I just looked again at gs101 and in total we can have
+19 uarts on this SoC. 3 of them are 256byte rx/tx fifo and the
+other 16 have 64byte tx/rx fifo size, but this is a SoC design
+choice and has nothing to do with probe order.
+
+I will update in v3 to get fifo size from DT.
+
+regards,
+
+Peter.
