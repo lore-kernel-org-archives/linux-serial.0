@@ -2,112 +2,118 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 869FBCD6E7C
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 14:43:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B073CD6E7C
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Oct 2023 14:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234905AbjJKOn3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Oct 2023 10:43:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59606 "EHLO
+        id S232316AbjJKO4R (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 11 Oct 2023 10:56:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232262AbjJKOn1 (ORCPT
+        with ESMTP id S231129AbjJKO4P (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Oct 2023 10:43:27 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7121A94
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 07:43:24 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id 3f1490d57ef6-d8168d08bebso7281617276.0
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 07:43:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1697035403; x=1697640203; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=QHSGgNwplrQByUQEFDMoiW6T88xkz7+Z7CzZX4tel1c=;
-        b=del6lvyz8L/ympiDcQdKBYdjBpFmPkmZ7Hr6GrQOkREWEDZcGYfYb4WMWOZLH2TMts
-         o6WSTmSS2ny1c1H8OSRu1fyqeJdqcYrklcELEuMoEC/sPc3oTqdvu0GX+GckmWgNEgez
-         3pyiWkpYVMugu6DSqC3J1iqh2se1SgoYzuspzkGnh7sY7z81mwf66lE/QrIisDhxRsvZ
-         DLpLxRIFzTqKNMpCukYEsAJhnfZHF5ntiGCUmiSLQbWUpEKqxwlENPyS2GMU3P47Xick
-         mXWSkcVyTq0b4ML0CCwo/ZZu8n4tBWcLA+dAjCL6ZVWDVQQIJz2rV2Skmm8kIQRzLCxO
-         LWNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697035403; x=1697640203;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QHSGgNwplrQByUQEFDMoiW6T88xkz7+Z7CzZX4tel1c=;
-        b=seK8mQXb3UTf0KMaqAsC7onj6LPT52pBnHDjAAJZDjwsp4XXD+MHzbKZYs/PFf/0bX
-         uW3/kwCFlsQbtOkm5pi11b2rVHvxrVSbrBGafLtNeWn5yIcDtJ+dlWdPtzrHUH5f/whu
-         7mqRJvS04Oe4hnTrJXjy7lmHvshGriR1czly/PGnFJk0uJSoYmGz4SCQiz+PsM05DAPH
-         5s56tY6T+WYjcMz134E8PtiC1XRShYAb3H0qUBZzBJR6kF6KIE1Z6FkSAGZMd5G3M/t4
-         pXTLq6vq7G6H5T9uspUsnFXvheFDqfiAhK/VUxkiHFVewiXXVr5hVSkVxO32qNgE6UWD
-         JCCg==
-X-Gm-Message-State: AOJu0YymeMN5CVw1i3cZsntms3LlYC8oXgSLMd9BI1AJ+Yr+5QNrJvjm
-        psUgdS+2LTixbKuayGCJC8FH5SOO7SgjS8A7MuiQwQ==
-X-Google-Smtp-Source: AGHT+IG6ejFYIQqSBlCuZeoLJFdvXD5HM2pcfGye3trv5p0ja9AYy6Vps/U8uovRHfUX5MkuYivucvBJhgbz9bJ3CCY=
-X-Received: by 2002:a25:5d1:0:b0:d9a:501e:95d7 with SMTP id
- 200-20020a2505d1000000b00d9a501e95d7mr4970434ybf.8.1697035403592; Wed, 11 Oct
- 2023 07:43:23 -0700 (PDT)
+        Wed, 11 Oct 2023 10:56:15 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2045.outbound.protection.outlook.com [40.107.93.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D2B94;
+        Wed, 11 Oct 2023 07:56:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EsrQrWKhzoT4V9udEn4SYergsTi/Eje5SvXB3p0buUXgo110oMji4TsTY4cMw0WhqCbT/pIiyi4MlRTcwWrE5JbvT4S/Wpdy+SWGaPwcY6YVB+f6mzpYkIESw0ibnjc9aTabH/VCxsecPYcrgYMf/WTTq2ccPcP9wMnmRcBm1BN0ePQ/kCsm9BDY04U0n4LotqLYFi8Y+nCZlkKpWRiFTtQNaRkdXSAW6VxFox6kGCbUcES5of9A6s+kS8VUdujl5apEsrjjPyyHgVqQTWQWSbuAs7WrRQRQOYAHTkaUwS8cV73uvMkh76+SOa9YyFTY+o1NHZ8ShUPoR7nCMIRhvA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WTZuU97T/nd0HNvsHkCqgZJ5An5LTGnuwhiUR5qHSkg=;
+ b=OqF5/neA37K8J1OYpZKM5L2foY3DZKz+JZorGLyTRAyp1tsiJz2l4YY9ajl7Og/aozQimxm2efxSv6pCN9CtQOjtMa0r5b8lxbZXvJZDFD74NUXWSo8sFQX/H/xbWyWSqAeZ476GHVEJoSykiIiyyUrADbG8O9Cim0nqUli2lxADftd/cyQiaFDF6VSNLcTkYFZyOs2pkv7izE2v5vqqcwPhGfvw8cjIa13pAbxRnjfqLOg4o7/WAtuCMJa7Y2OF2dl+dMpIK2djfdxFelwBj/O7rirDXKPfVKQVBAyDgnV8nDH3tJ7HVBcpwhH0sMtI6z6/h4CRUHb4OS+Vov5AnQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=linuxfoundation.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WTZuU97T/nd0HNvsHkCqgZJ5An5LTGnuwhiUR5qHSkg=;
+ b=itDfPbJ/xZ55io+DNclrlKzJUtWCZSDLGAkjLs0Y5n2JDRsyni3fq9mH7R3XbMFN7QU4kFFYXfO1+BFJRIVJux0f9hsHT+1um1oe6GarNppyo8Pw8yM7XbVH9JZtLaImNjlyxqdUIVAB053nZ1gzfktjpd1RUyucPGm3zGJJ89E=
+Received: from BL0PR03CA0011.namprd03.prod.outlook.com (2603:10b6:208:2d::24)
+ by CY8PR12MB7147.namprd12.prod.outlook.com (2603:10b6:930:5d::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6863.42; Wed, 11 Oct
+ 2023 14:56:10 +0000
+Received: from BL6PEPF0001AB4F.namprd04.prod.outlook.com
+ (2603:10b6:208:2d:cafe::f5) by BL0PR03CA0011.outlook.office365.com
+ (2603:10b6:208:2d::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.27 via Frontend
+ Transport; Wed, 11 Oct 2023 14:56:10 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BL6PEPF0001AB4F.mail.protection.outlook.com (10.167.242.73) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6838.22 via Frontend Transport; Wed, 11 Oct 2023 14:56:10 +0000
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Wed, 11 Oct
+ 2023 09:56:09 -0500
+Received: from xhdsgoud40.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server id 15.1.2507.27 via Frontend
+ Transport; Wed, 11 Oct 2023 09:56:05 -0500
+From:   Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+To:     <git@amd.com>, <michal.simek@amd.com>,
+        <gregkh@linuxfoundation.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <jirislaby@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <radhey.shyam.pandey@amd.com>, <srinivas.goud@amd.com>,
+        <shubhrajyoti.datta@amd.com>, <manion05gk@gmail.com>,
+        Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+Subject: [PATCH V2 0/2] Add rs485 support to uartps driver
+Date:   Wed, 11 Oct 2023 20:26:00 +0530
+Message-ID: <20231011145602.3619616-1-manikanta.guntupalli@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20231010224928.2296997-1-peter.griffin@linaro.org>
- <20231010224928.2296997-16-peter.griffin@linaro.org> <e2320e90-5e3b-4b50-8af9-56dee639d022@roeck-us.net>
-In-Reply-To: <e2320e90-5e3b-4b50-8af9-56dee639d022@roeck-us.net>
-From:   Peter Griffin <peter.griffin@linaro.org>
-Date:   Wed, 11 Oct 2023 15:43:12 +0100
-Message-ID: <CADrjBPoaG2XPx-hrxXAVj9xFQeCPJrJMX0sM-cOkv0gRV=zAOw@mail.gmail.com>
-Subject: Re: [PATCH v2 15/20] watchdog: s3c2410_wdt: Add support for Google
- tensor SoCs
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
-        tomasz.figa@gmail.com, s.nawrocki@samsung.com,
-        linus.walleij@linaro.org, wim@linux-watchdog.org,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        olof@lixom.net, cw00.choi@samsung.com, tudor.ambarus@linaro.org,
-        andre.draszik@linaro.org, semen.protsenko@linaro.org,
-        saravanak@google.com, willmcvicker@google.com, soc@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        kernel-team@android.com, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL6PEPF0001AB4F:EE_|CY8PR12MB7147:EE_
+X-MS-Office365-Filtering-Correlation-Id: 90c1400a-b71c-4a64-454c-08dbca6a34b8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bONnUggd1fsNFsaQu2A2NO5cwV0HiiFuTsgujHG+S43q5D5+e752l8o2YDfSKB57U/KMcgoks0AH/2afJp4gewOZ5su/uYjlXlUsZIoA4FmUTJKXxK7czulKinSMjLTzmyUAPST8Yt46bKx2tzq5MJHrJTWNza3AKnzYi+AVtZH5MLomTaxjd28FPKnEBOYGRJFdHZRW9C8zPjpbRToAA1Br42H69eTblHFIXh2NZLpYaPHxqg6fuo6QmDhk+t8c3LJWlKSdvezRaHZYJczjJMdB3m49WrDaeF5+QxuB9Q1FD/RrjahNISNND44V5T5z50h9SztWx34jprbbdu8IjgoLZfrP6lWJKDO44UAdBxnuGEhNrrW1Dtbjn70oYDLzbzlRJHqvGenuPF8UtOv4QL2WNoyYg40BwGfsZY4fLL5Sw04P+Y6/qfRcNZsXLqmbZxvLlhG2jj38AzDKFH1WfSq2W3eE3xlK28IVm1ScSdXdNi/5phabPd1bNucQuXeHS+MykiVog3skSiA1W4BTNJ26jUc+tkw2CXcY06WLbol+WGrT4jqFMktXA5orOex3M24mPyMp31KBObh0udsPAF+/N9Qxvcr6kdN1eHImuViCCE/4qlRbocZpLkf1vIMlgJxVABgdGMlmsGIZLLU7ga8lueaJ3zgV2Cg3lAUOx2kIQlLtyAVLr+NQocu4JNfquCPbLkQnDkDH6vEmHHW7XJGJd921hVTHefOQfRUSNmBXVHQic468wujMm7Vm4KdHC+wJIXXIs8KIOmTwXmcOmVe9WodG1JVkRWxmbZm57RI=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(136003)(396003)(39860400002)(346002)(376002)(230922051799003)(451199024)(1800799009)(186009)(82310400011)(64100799003)(40470700004)(36840700001)(46966006)(40480700001)(40460700003)(2616005)(356005)(81166007)(1076003)(41300700001)(26005)(82740400003)(921005)(70586007)(36756003)(86362001)(70206006)(110136005)(316002)(54906003)(83380400001)(4744005)(44832011)(7416002)(336012)(426003)(36860700001)(2906002)(8936002)(8676002)(4326008)(47076005)(5660300002)(478600001)(6666004)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Oct 2023 14:56:10.2424
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 90c1400a-b71c-4a64-454c-08dbca6a34b8
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BL6PEPF0001AB4F.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7147
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Guenter,
+Add optional gpio property to uartps node to support rs485.
+Add rs485 support to uartps driver.
+---
+Changes for V2:
+Modify optional gpio name to xlnx,phy-ctrl-gpios.
+Update commit description.
+Add support for RTS, delay_rts_before_send and delay_rts_after_send in RS485 mode.
 
-Thanks for your review.
+Manikanta Guntupalli (2):
+  dt-bindings: Add optional gpio property to uartps node to support
+    rs485
+  tty: serial: uartps: Add rs485 support to uartps driver
 
-On Wed, 11 Oct 2023 at 00:56, Guenter Roeck <linux@roeck-us.net> wrote:
->
-> On Tue, Oct 10, 2023 at 11:49:23PM +0100, Peter Griffin wrote:
-> > This patch adds the compatibles and drvdata for the Google
-> > gs101 & gs201 SoCs found in Pixel 6 and Pixel 7 phones. Similar
-> > to Exynos850 it has two watchdog instances, one for each cluster
-> > and has some control bits in PMU registers.
-> >
-> > The watchdog IP found in gs101 SoCs also supports a few
-> > additional bits/features in the WTCON register which we add
-> > support for and an additional register detailed below.
-> >
-> > dbgack-mask - Enables masking WDT interrupt and reset request
-> > according to asserted DBGACK input
-> >
-> > windowed-mode - Enabled Windowed watchdog mode
-> >
-> > Windowed watchdog mode also has an additional register WTMINCNT.
-> > If windowed watchdog is enabled and you reload WTCNT when the
-> > value is greater than WTMINCNT, it prompts interrupt or reset
-> > request as if the watchdog time has expired.
->
-> I am a bit lost with this one. The patch adds QUIRK_HAS_WTMINCNT_REG
-> but doesn't use it. It also adds S3C2410_WTMINCNT but does not use it
-> either.
->
-> What is the point of doing that ? It is just confusing.
+ .../devicetree/bindings/serial/cdns,uart.yaml |   6 +
+ drivers/tty/serial/xilinx_uartps.c            | 116 +++++++++++++++++-
+ 2 files changed, 121 insertions(+), 1 deletion(-)
 
-Good spot, it seems I lost a few hunks from this patch at some point, sorry
-about that. I will update and send a v3.
+-- 
+2.25.1
 
-regards,
-
-Peter.
