@@ -2,125 +2,91 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD91C41513
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 10:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FAA7CDB46E
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 10:39:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347129AbjJLKjS (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Oct 2023 06:39:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33918 "EHLO
+        id S235661AbjJLKjx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 12 Oct 2023 06:39:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343649AbjJLKjS (ORCPT
+        with ESMTP id S235660AbjJLKjw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Oct 2023 06:39:18 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905B794
-        for <linux-serial@vger.kernel.org>; Thu, 12 Oct 2023 03:39:14 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-5a505762c9dso9673007b3.2
-        for <linux-serial@vger.kernel.org>; Thu, 12 Oct 2023 03:39:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1697107153; x=1697711953; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=3oDNI1r5lnQu4SogBoFfe1dTr8U9qrvg3JFlPaLZjkQ=;
-        b=uEVzMo6ANZEA4+H1Wp+o8FzyCyx7DgWwzuhBiD7vv28bFN1i24xFEjoAvNZOqG8VWw
-         GUa/n844hCwQey90judRdFae+nZTpVdt5DOICJB7RONmf896qu6fvWh/FJBZj6ROUshn
-         pVFyxUiN+ht+y269nsGpyG9+Uzb4x42nGRn2siu5J6dcN0Q58gXgj1lEYAq/VbqxlQEa
-         X1cH7r3l05+LroKi4Qj6YIWWbR+PeNgkvJ5yG0zwkuLMhD5/IbGQDhBQXAtfI6wz8DO3
-         b4DF0YIdzTMgCUow0SNAdp7SyMHzv+lovaiXv0KH+fY0mSKFPRMoYDfIrM/lMhDMMe0S
-         4jdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697107153; x=1697711953;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=3oDNI1r5lnQu4SogBoFfe1dTr8U9qrvg3JFlPaLZjkQ=;
-        b=NskZ0r5NxhfEaQUPizupXeefIYgHwbftAIPRvaZqOxQmYg1VtQHqrbkl0Uj1H/u4yj
-         JKeKj2mhYHeI5eY89EFbzxjHq17+5YYJpXA/564CErETc5f9A37vWTdHi2pxiEd0MI3e
-         4lXi9KPojMIeETelGx3Xh/TgLrCgoPbgs5tJ/aVOr0Q20j2VMmf/etXekQFokyt9Sz8n
-         FXXfkOdcs5/k+onabTNeEcNuLNI4SjuQFjUe/L+/gkFXIZ5xxvszQJGnaTJFYGIEJP7q
-         9DFdxoMQLwozIa8flKGipRY3CkO86ylzhQ8Mx+YZOplVyD+HgQ5wtc346oNCH73hoCDj
-         ewaA==
-X-Gm-Message-State: AOJu0YyO4lhGdXy6L5tj/mCG7ReYG/Tm5aF6ZuC2aBN8Uh9GadjCFZ9I
-        rcHmzOV3Z7aIhUs0ZIhhR6koY/hLHlxwKkO7o06Uuw==
-X-Google-Smtp-Source: AGHT+IFxRHuALoKeSjfKb3H4CN2bFTSSU2Bt+HgqEZX9jtOl6oxsdLqG69us8msuH/TRvisud8wxsgY5xod/E0gS4Uc=
-X-Received: by 2002:a0d:f204:0:b0:569:479f:6d7f with SMTP id
- b4-20020a0df204000000b00569479f6d7fmr22902098ywf.43.1697107153677; Thu, 12
- Oct 2023 03:39:13 -0700 (PDT)
+        Thu, 12 Oct 2023 06:39:52 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A289F94
+        for <linux-serial@vger.kernel.org>; Thu, 12 Oct 2023 03:39:51 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E69D0C433C9;
+        Thu, 12 Oct 2023 10:39:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1697107191;
+        bh=SsADl0k564/gnage9RYeke7KXr1ZVX1VwQjjnLQwFVk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OnIRIlGBiG3ScyycJp6/AsUtoARPZcL0MKMElg2G52dXuGq+jk72FrNDSrZNd0UM/
+         9IbhjF4FOSKf5hSDi9HMO3dY0ho9RVbu0pzpVbo5D/NHLV0cLIZ1W0EKCDf3EjkFK+
+         VdaThnvHoKJXv9tsAkKlwz6IYB5vekHG3/hvhghU=
+Date:   Thu, 12 Oct 2023 12:39:47 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Julien MALIK - UNSEENLABS <julien.malik@unseenlabs.fr>
+Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH] serial: xilinx_uartps: unset STOPBRK when setting
+ STARTBRK
+Message-ID: <2023101201-wistful-fresh-567c@gregkh>
+References: <20230624210323.88455-1-julien.malik@unseenlabs.fr>
+ <3fdb8c7a-6b31-4569-829c-cff84d8b836d@unseenlabs.fr>
 MIME-Version: 1.0
-References: <20231011184823.443959-1-peter.griffin@linaro.org>
- <20231011184823.443959-3-peter.griffin@linaro.org> <5907e2b3-9a0b-4871-be08-6ca42200b8ec@linaro.org>
- <CADrjBPqF67bcTnssQO8cN2n1ZbevziVNa+gA5azEDz_1wXzaNQ@mail.gmail.com> <809be13a-74b7-4934-8319-17330febc1b7@linaro.org>
-In-Reply-To: <809be13a-74b7-4934-8319-17330febc1b7@linaro.org>
-From:   Peter Griffin <peter.griffin@linaro.org>
-Date:   Thu, 12 Oct 2023 11:39:02 +0100
-Message-ID: <CADrjBPpzfOmmr4sVDSXCM_RyVK1GKM+nVN6Cm=eMSBfN3sMciA@mail.gmail.com>
-Subject: Re: [PATCH v3 02/20] dt-bindings: clock: Add Google gs101 clock
- management unit bindings
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
-        tomasz.figa@gmail.com, s.nawrocki@samsung.com,
-        linus.walleij@linaro.org, wim@linux-watchdog.org,
-        linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org,
-        arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org,
-        cw00.choi@samsung.com, tudor.ambarus@linaro.org,
-        andre.draszik@linaro.org, semen.protsenko@linaro.org,
-        saravanak@google.com, willmcvicker@google.com, soc@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        kernel-team@android.com, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <3fdb8c7a-6b31-4569-829c-cff84d8b836d@unseenlabs.fr>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Krzysztof
-
-On Thu, 12 Oct 2023 at 11:20, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 12/10/2023 12:15, Peter Griffin wrote:
->
-> >>> +  - if:
-> >>> +      properties:
-> >>> +        compatible:
-> >>> +          contains:
-> >>> +            const: google,gs101-cmu-top
-> >>> +
-> >>> +    then:
-> >>> +      properties:
-> >>> +        clocks:
-> >>> +          items:
-> >>> +            - description: External reference clock (24.576 MHz)
-> >>> +
-> >>> +        clock-names:
-> >>> +          items:
-> >>> +            - const: oscclk
-> >>> +
-> >>> +  - if:
-> >>> +      properties:
-> >>> +        compatible:
-> >>> +          contains:
-> >>
-> >> enum:
-> >>   - google,gs101-cmu-apm
-> >>   - google,gs101-cmu-misc
+On Thu, Oct 12, 2023 at 07:40:16AM +0000, Julien MALIK - UNSEENLABS wrote:
+> Le 24/06/2023 à 23:03, Julien Malik a écrit :
+> > Zynq UG585 states, in chapter B.33, for XUARTPS_CR_STARTBRK:
+> > It can only be set if STPBRK (Stop transmitter break) is not high
 > >
-> > Ok just to be clear, are you saying I should have it like this?
+> > This fixes tcsendbreak, which otherwise does not actually break.
 > >
-> >   - if:
-> >       properties:
-> >         compatible:
-> >           contains:
-> >             enum:
-> >               - google,gs101-cmu-misc
->
-> No, my bad, I meant apm + google,gs101-cmu-top
->
-> >               - google,gs101-cmu-apm
+> > Signed-Off-By: Julien Malik <julien.malik@unseenlabs.fr>
+> > ---
+> >   drivers/tty/serial/xilinx_uartps.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+> > index 8e521c69a959..2e69fceaa792 100644
+> > --- a/drivers/tty/serial/xilinx_uartps.c
+> > +++ b/drivers/tty/serial/xilinx_uartps.c
+> > @@ -657,7 +657,7 @@ static void cdns_uart_break_ctl(struct uart_port *port, int ctl)
+> >   	status = readl(port->membase + CDNS_UART_CR);
+> >   
+> >   	if (ctl == -1)
+> > -		writel(CDNS_UART_CR_STARTBRK | status,
+> > +		writel(CDNS_UART_CR_STARTBRK | (~CDNS_UART_CR_STOPBRK & status),
+> >   				port->membase + CDNS_UART_CR);
+> >   	else {
+> >   		if ((status & CDNS_UART_CR_STOPBRK) == 0)
+> 
+> 
+> Dear reviewers,
+> 
+> 
+> This is a kind ping to attract more attention to this small patch.
+> 
+> 
+> The issue and corresponding fix has already been suggested back in 2016 
+> on the xilinx forum [1].
+> 
+> 
+> This is my very first patch submission to the kernel.
+> 
+> Though I did my best, maybe I did not follow best practices, in which 
+> case I'm all ears to suggestions.
 
-Ah OK, yes that makes more sense. Thanks for the clarification :)
+Odd, I don't see this in my queue anywhere, nor do I see any responses,
+very sorry about that.  I'll try to apply it later today.
 
-Peter.
+thanks,
+
+greg k-h
