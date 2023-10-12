@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0920CDB47E
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 05:15:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F13FCDB483
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 05:15:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235294AbjJLFPb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Oct 2023 01:15:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44112 "EHLO
+        id S235311AbjJLFPy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 12 Oct 2023 01:15:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377075AbjJLFP3 (ORCPT
+        with ESMTP id S235303AbjJLFPu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Oct 2023 01:15:29 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 978E9BA
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 22:15:28 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id d2e1a72fcca58-69101d33315so480227b3a.3
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 22:15:28 -0700 (PDT)
+        Thu, 12 Oct 2023 01:15:50 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB25E1
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 22:15:33 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id 98e67ed59e1d1-27d113508bfso451162a91.3
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 22:15:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1697087728; x=1697692528; darn=vger.kernel.org;
+        d=ventanamicro.com; s=google; t=1697087732; x=1697692532; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=l3lhlJZP7U6sfVX0rlDY0S8d2x8DhhVnWXy5WEJL0wg=;
-        b=bO+joST4fnerVfNdvxbD3G3EoUdUyb/IiYMN7kJDot/319BBpvmqIEXizqDQpzw4fo
-         Zr71ov/sReYoJpVlsLm+EYW8Y0K0WOwapk0LVesTMBkXNfV4GShQfOza4eChN6syVvUn
-         GnGch/9x0NYKMJnJN7NWWdonUf5rTM90CKKcOU0mJGwc62UI5u4dSrOValXKOmSFap/b
-         alTHuwF8ML7KvPL0/HQITD035UCzdTBp+7YnJOhRdaq5oDZtarz3pdVCDdJK6lZEjaTP
-         V//DM5DKE0DsYP+ErdQZiOrK8UcJOb9mLLl9CYmCW/sXMYZ1pJcXiJuqUAKlon7wYXC9
-         9LAA==
+        bh=UnnUYFylMM7osLHu6Gv9hbGwiUDTuyMbxo3uWzdsMQU=;
+        b=dqE0nNGaOHUpekPXSfgZl7ELDKFozCRnkUzlU0U79v0qa1HjKV6VKTn94IdJwbs7Dx
+         WBV/TEw69VackiL3io9W+O9SJwsvcYvVtefCIgaZoqRtZnERLNvu65TF/AgODJigZ47c
+         280MMqvMu3EwXueYABWHYwTTE0vrpmw64V4PpYZ1mNhJCDxHoF9732oki6ogsw79wnMI
+         cKAWequtAgEVA1UaAM8ryMEpuhk5DmWBr0U2XsK9sObQRyqiLxJuS72bVkcVKKe2bbsK
+         V5Tn47JSKahVP3WomCV1qh0HsGySjZ9K9NFL40HoxkmMuhTLhikGx3gjT/2t9ahU4scX
+         jQJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697087728; x=1697692528;
+        d=1e100.net; s=20230601; t=1697087732; x=1697692532;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=l3lhlJZP7U6sfVX0rlDY0S8d2x8DhhVnWXy5WEJL0wg=;
-        b=siEQH0DyP5A4/wsJRtHfmjBU7P+NgrpTtb64RXY6EAz6w7xvg+AuoB6+J6X2BTfaOA
-         yRunmwDlORQRtrqnarXVHXIpPhpRyxSR7A0ECsGTo/2N6mIR5cM8kPyA5UFpSZalsD6d
-         UI1GJwvSaSN2FSjHEDDvMegn77QCHnK+/yBIepyj7ImnCVQ5whSdsIuDJqBOfPpkHtNA
-         B+yxOc06qxQeOjsgg5Xy9zxLW3Mco9oZ4RuxuonNrdPWuH/oS8aR1U36bXfARQExGDaq
-         Jy36lzFLSptqf/QrEOYRdbOkVIFTob31FU5RiE9g1l3GwAhOkKwkXhKipD5JsmddlYPk
-         y6pA==
-X-Gm-Message-State: AOJu0YzOeEUZhFC3kWTYfFXwUmXjfnESH5aA1aK3hfvUIY2uEEcMIMGK
-        ZzEVPyhY3SzlQFeqVzqWz8X/xw==
-X-Google-Smtp-Source: AGHT+IEYTYmKd3tYlh3LiHGeR+Se06zPGfuu6PsLv0v0PYM+oZ1DNY/YAR7he8NCW/RMMx46gl3FeQ==
-X-Received: by 2002:a05:6a21:7784:b0:173:318:b1ec with SMTP id bd4-20020a056a21778400b001730318b1ecmr5209664pzc.35.1697087727987;
-        Wed, 11 Oct 2023 22:15:27 -0700 (PDT)
+        bh=UnnUYFylMM7osLHu6Gv9hbGwiUDTuyMbxo3uWzdsMQU=;
+        b=WI+MJ+RZKvnM7L0unpayx1LGw6+ymSUkXKny3D5VqwG2yv+IjDdjWKr0LxLsDFl7gs
+         lnq/eD8VyemfXqDHv1QG3qUEgASFmB9rdpP8Kps7mEYccBU9rRCD3CiJnv0y/GyH2wKd
+         rkFXZvBbVwlzCHdu/opciMjrYqcpS37EzVpf3Oi+5IvOQsDi4xX3+RsHMYMQz/SZs8cG
+         F/kuWiJuH+jGPVYO29tssyff5Wiw+ipiDzGze2+hnHJC9W98UEqY4O2MYDzSobNVUd2T
+         nCDBSEA10Sq6/aCypOErwCAtxGKyr+Ejt5bbV4U+R0BalSHREEAgJNxoqm0PROhqqdvO
+         mC6A==
+X-Gm-Message-State: AOJu0YxdJknEJOhM0BBkvSWkoZpuj+dNZROZ3lhWcVsMPsJxBkIbgewz
+        AZfaJqkg8YEziaSU9wKlOAXdTw==
+X-Google-Smtp-Source: AGHT+IFfVbiUmgMwoeGwA3ZIdiIUuzVdm9gRZ3aJR2yt7ibzGaKFZJms3sDVibgDvTppejsGgzuaOA==
+X-Received: by 2002:a17:90a:c254:b0:27d:1f9f:a57f with SMTP id d20-20020a17090ac25400b0027d1f9fa57fmr918230pjx.32.1697087732343;
+        Wed, 11 Oct 2023 22:15:32 -0700 (PDT)
 Received: from anup-ubuntu-vm.localdomain ([106.51.83.242])
-        by smtp.gmail.com with ESMTPSA id s18-20020a17090330d200b001b9d95945afsm851309plc.155.2023.10.11.22.15.23
+        by smtp.gmail.com with ESMTPSA id s18-20020a17090330d200b001b9d95945afsm851309plc.155.2023.10.11.22.15.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Oct 2023 22:15:27 -0700 (PDT)
+        Wed, 11 Oct 2023 22:15:31 -0700 (PDT)
 From:   Anup Patel <apatel@ventanamicro.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>,
         Atish Patra <atishp@atishpatra.org>,
@@ -62,9 +62,9 @@ Cc:     Conor Dooley <conor@kernel.org>,
         kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
         linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         linux-kernel@vger.kernel.org, Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH v2 2/8] RISC-V: KVM: Change the SBI specification version to v2.0
-Date:   Thu, 12 Oct 2023 10:45:03 +0530
-Message-Id: <20231012051509.738750-3-apatel@ventanamicro.com>
+Subject: [PATCH v2 3/8] RISC-V: KVM: Allow some SBI extensions to be disabled by default
+Date:   Thu, 12 Oct 2023 10:45:04 +0530
+Message-Id: <20231012051509.738750-4-apatel@ventanamicro.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231012051509.738750-1-apatel@ventanamicro.com>
 References: <20231012051509.738750-1-apatel@ventanamicro.com>
@@ -74,27 +74,131 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We will be implementing SBI DBCN extension for KVM RISC-V so let
-us change the KVM RISC-V SBI specification version to v2.0.
+Currently, all SBI extensions are enabled by default which is
+problematic for SBI extensions (such as DBCN) which are forwarded
+to the KVM user-space because we might have an older KVM user-space
+which is not aware/ready to handle newer SBI extensions. Ideally,
+the SBI extensions forwarded to the KVM user-space must be
+disabled by default.
+
+To address above, we allow certain SBI extensions to be disabled
+by default so that KVM user-space must explicitly enable such
+SBI extensions to receive forwarded calls from Guest VCPU.
 
 Signed-off-by: Anup Patel <apatel@ventanamicro.com>
 ---
- arch/riscv/include/asm/kvm_vcpu_sbi.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/riscv/include/asm/kvm_vcpu_sbi.h |  4 +++
+ arch/riscv/kvm/vcpu.c                 |  6 ++++
+ arch/riscv/kvm/vcpu_sbi.c             | 45 ++++++++++++++++-----------
+ 3 files changed, 36 insertions(+), 19 deletions(-)
 
 diff --git a/arch/riscv/include/asm/kvm_vcpu_sbi.h b/arch/riscv/include/asm/kvm_vcpu_sbi.h
-index cdcf0ff07be7..8d6d4dce8a5e 100644
+index 8d6d4dce8a5e..c02bda5559d7 100644
 --- a/arch/riscv/include/asm/kvm_vcpu_sbi.h
 +++ b/arch/riscv/include/asm/kvm_vcpu_sbi.h
-@@ -11,7 +11,7 @@
+@@ -35,6 +35,9 @@ struct kvm_vcpu_sbi_return {
+ struct kvm_vcpu_sbi_extension {
+ 	unsigned long extid_start;
+ 	unsigned long extid_end;
++
++	bool default_unavail;
++
+ 	/**
+ 	 * SBI extension handler. It can be defined for a given extension or group of
+ 	 * extension. But it should always return linux error codes rather than SBI
+@@ -59,6 +62,7 @@ int kvm_riscv_vcpu_get_reg_sbi_ext(struct kvm_vcpu *vcpu,
+ const struct kvm_vcpu_sbi_extension *kvm_vcpu_sbi_find_ext(
+ 				struct kvm_vcpu *vcpu, unsigned long extid);
+ int kvm_riscv_vcpu_sbi_ecall(struct kvm_vcpu *vcpu, struct kvm_run *run);
++void kvm_riscv_vcpu_sbi_init(struct kvm_vcpu *vcpu);
  
- #define KVM_SBI_IMPID 3
+ #ifdef CONFIG_RISCV_SBI_V01
+ extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_v01;
+diff --git a/arch/riscv/kvm/vcpu.c b/arch/riscv/kvm/vcpu.c
+index c061a1c5fe98..e087c809073c 100644
+--- a/arch/riscv/kvm/vcpu.c
++++ b/arch/riscv/kvm/vcpu.c
+@@ -141,6 +141,12 @@ int kvm_arch_vcpu_create(struct kvm_vcpu *vcpu)
+ 	if (rc)
+ 		return rc;
  
--#define KVM_SBI_VERSION_MAJOR 1
-+#define KVM_SBI_VERSION_MAJOR 2
- #define KVM_SBI_VERSION_MINOR 0
++	/*
++	 * Setup SBI extensions
++	 * NOTE: This must be the last thing to be initialized.
++	 */
++	kvm_riscv_vcpu_sbi_init(vcpu);
++
+ 	/* Reset VCPU */
+ 	kvm_riscv_reset_vcpu(vcpu);
  
- enum kvm_riscv_sbi_ext_status {
+diff --git a/arch/riscv/kvm/vcpu_sbi.c b/arch/riscv/kvm/vcpu_sbi.c
+index 9cd97091c723..1b1cee86efda 100644
+--- a/arch/riscv/kvm/vcpu_sbi.c
++++ b/arch/riscv/kvm/vcpu_sbi.c
+@@ -155,14 +155,8 @@ static int riscv_vcpu_set_sbi_ext_single(struct kvm_vcpu *vcpu,
+ 	if (!sext)
+ 		return -ENOENT;
+ 
+-	/*
+-	 * We can't set the extension status to available here, since it may
+-	 * have a probe() function which needs to confirm availability first,
+-	 * but it may be too early to call that here. We can set the status to
+-	 * unavailable, though.
+-	 */
+-	if (!reg_val)
+-		scontext->ext_status[sext->ext_idx] =
++	scontext->ext_status[sext->ext_idx] = (reg_val) ?
++			KVM_RISCV_SBI_EXT_AVAILABLE :
+ 			KVM_RISCV_SBI_EXT_UNAVAILABLE;
+ 
+ 	return 0;
+@@ -337,18 +331,8 @@ const struct kvm_vcpu_sbi_extension *kvm_vcpu_sbi_find_ext(
+ 			    scontext->ext_status[entry->ext_idx] ==
+ 						KVM_RISCV_SBI_EXT_AVAILABLE)
+ 				return ext;
+-			if (scontext->ext_status[entry->ext_idx] ==
+-						KVM_RISCV_SBI_EXT_UNAVAILABLE)
+-				return NULL;
+-			if (ext->probe && !ext->probe(vcpu)) {
+-				scontext->ext_status[entry->ext_idx] =
+-					KVM_RISCV_SBI_EXT_UNAVAILABLE;
+-				return NULL;
+-			}
+ 
+-			scontext->ext_status[entry->ext_idx] =
+-				KVM_RISCV_SBI_EXT_AVAILABLE;
+-			return ext;
++			return NULL;
+ 		}
+ 	}
+ 
+@@ -419,3 +403,26 @@ int kvm_riscv_vcpu_sbi_ecall(struct kvm_vcpu *vcpu, struct kvm_run *run)
+ 
+ 	return ret;
+ }
++
++void kvm_riscv_vcpu_sbi_init(struct kvm_vcpu *vcpu)
++{
++	struct kvm_vcpu_sbi_context *scontext = &vcpu->arch.sbi_context;
++	const struct kvm_riscv_sbi_extension_entry *entry;
++	const struct kvm_vcpu_sbi_extension *ext;
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(sbi_ext); i++) {
++		entry = &sbi_ext[i];
++		ext = entry->ext_ptr;
++
++		if (ext->probe && !ext->probe(vcpu)) {
++			scontext->ext_status[entry->ext_idx] =
++				KVM_RISCV_SBI_EXT_UNAVAILABLE;
++			continue;
++		}
++
++		scontext->ext_status[entry->ext_idx] = ext->default_unavail ?
++					KVM_RISCV_SBI_EXT_UNAVAILABLE :
++					KVM_RISCV_SBI_EXT_AVAILABLE;
++	}
++}
 -- 
 2.34.1
 
