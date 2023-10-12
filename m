@@ -2,137 +2,97 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78D18CDB46E
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 13:22:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53CE2CDB46E
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 13:30:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347153AbjJLNWw convert rfc822-to-8bit (ORCPT
+        id S1377883AbjJLNaI (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Oct 2023 09:22:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60654 "EHLO
+        Thu, 12 Oct 2023 09:30:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343733AbjJLNWv (ORCPT
+        with ESMTP id S1347209AbjJLNaH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Oct 2023 09:22:51 -0400
-Received: from postfix2.imaqliq.com (postfix2.imaqliq.com [93.189.151.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7383491;
-        Thu, 12 Oct 2023 06:22:49 -0700 (PDT)
-Received: from verse.imaqliq.com (verse.imaqliq.com [93.189.151.95])
-        by postfix2.imaqliq.com (Postfix) with ESMTP id A128A1C293B;
-        Thu, 12 Oct 2023 16:22:47 +0300 (MSK)
-MIME-Version: 1.0
-Sensitivity: 
-Importance: Normal
-X-Priority: 3 (Normal)
-In-Reply-To: 
-References: 
-Subject: [PATCH v2] tty: serial: meson: hard LOCKUP on crtscts mode
-From:   pkrasavin@imaqliq.ru
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        Thu, 12 Oct 2023 09:30:07 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA3494;
+        Thu, 12 Oct 2023 06:30:05 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AD6DC433C8;
+        Thu, 12 Oct 2023 13:30:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1697117404;
+        bh=NKCpsSQBteE4J7/LEFm7hT7vdH4qeVTvzOUHXiJH5eU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ysSN7UJGZcbdfH4+nBdUKklO43ddpWgMKFxbnAo9qYLKaELcE1aptQXZiteVeYl39
+         rq5MVgQ9Bszo64Caen+oio/M2Wl/WZtSu8XId0X0fpDob6RWorKz4e/QMnLTDXCup6
+         30UV/okoD8M2nV3/OdSJ2XZtSp/+HPJ8mrqdabKE=
+Date:   Thu, 12 Oct 2023 15:30:01 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     pkrasavin@imaqliq.ru
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
         Neil Armstrong <neil.armstrong@linaro.org>,
         Kevin Hilman <khilman@baylibre.com>,
         Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-amlogic@lists.infradead.org
-Date:   Thu, 12 Oct 2023 13:22:41 +0000
-Message-ID: <OF950BEF72.7F425944-ON00258A46.00488A76-00258A46.00497D44@gdc.ru>
-X-Mailer: Lotus Domino Web Server Release 12.0.2 November 03, 2022
-X-MIMETrack: Serialize by http on verse/com(Release 12.0.2|November 03, 2022) at 10/12/2023
- 13:22:41,
-        Serialize complete at 10/12/2023 13:22:41,
-        Serialize by Router on verse/com(Release 12.0.2|November 03, 2022) at 10/12/2023
- 13:22:47
-X-KeepSent: 950BEF72:7F425944-00258A46:00488A76;
- type=4; name=$KeepSent
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-KLMS-Rule-ID: 1
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Lua-Profiles: 180567 [Oct 12 2023]
-X-KLMS-AntiSpam-Version: 6.0.0.2
-X-KLMS-AntiSpam-Envelope-From: pkrasavin@imaqliq.ru
-X-KLMS-AntiSpam-Rate: 10
-X-KLMS-AntiSpam-Status: not_detected
-X-KLMS-AntiSpam-Method: none
-X-KLMS-AntiSpam-Auth: dmarc=fail header.from=imaqliq.ru policy=none;spf=softfail smtp.mailfrom=imaqliq.ru;dkim=none
-X-KLMS-AntiSpam-Info: LuaCore: 539 539 807534d9021bfe9ca369c363d15ac993cd93d4d9, {rep_avail}, {Tracking_uf_ne_domains}, {Tracking_from_domain_doesnt_match_to}, d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;gdc.ru:7.1.1;lore.kernel.org:7.1.1;imaqliq.ru:7.1.1;verse.imaqliq.com:7.1.1;93.189.151.95:7.1.2;127.0.0.199:7.1.2, FromAlignment: s, {Tracking_dmark_f}, ApMailHostAddress: 93.189.151.95
-X-MS-Exchange-Organization-SCL: -1
-X-KLMS-AntiSpam-Interceptor-Info: scan successful
-X-KLMS-AntiPhishing: Clean, bases: 2023/10/12 11:06:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2023/10/12 09:47:00 #22170412
-X-KLMS-AntiVirus-Status: Clean, skipped
+Subject: Re: [PATCH v2] tty: serial: meson: hard LOCKUP on crtscts mode
+Message-ID: <2023101224-outmost-yesterday-5623@gregkh>
+References: <OF950BEF72.7F425944-ON00258A46.00488A76-00258A46.00497D44@gdc.ru>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <OF950BEF72.7F425944-ON00258A46.00488A76-00258A46.00497D44@gdc.ru>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-There might be hard lockup if we set crtscts mode on port without RTS/CTS configured:
+On Thu, Oct 12, 2023 at 01:22:41PM +0000, pkrasavin@imaqliq.ru wrote:
+> There might be hard lockup if we set crtscts mode on port without RTS/CTS configured:
+> 
+> # stty -F /dev/ttyAML6 crtscts; echo 1 > /dev/ttyAML6; echo 2 > /dev/ttyAML6
+> [   95.890386] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+> [   95.890857] rcu:     3-...0: (201 ticks this GP) idle=e33c/1/0x4000000000000000 softirq=5844/5846 fqs=4984
+> [   95.900212] rcu:     (detected by 2, t=21016 jiffies, g=7753, q=296 ncpus=4)
+> [   95.906972] Task dump for CPU 3:
+> [   95.910178] task:bash            state:R  running task     stack:0     pid:205   ppid:1      flags:0x00000202
+> [   95.920059] Call trace:
+> [   95.922485]  __switch_to+0xe4/0x168
+> [   95.925951]  0xffffff8003477508
+> [   95.974379] watchdog: Watchdog detected hard LOCKUP on cpu 3
+> [   95.974424] Modules linked in: 88x2cs(O) rtc_meson_vrtc
+> 
+> Possible solution would be to not allow to setup crtscts on such port.
+> 
+> Tested on S905X3 based board.
+> 
+> Signed-off-by: Pavel Krasavin <pkrasavin@imaqliq.com>
 
-# stty -F /dev/ttyAML6 crtscts; echo 1 > /dev/ttyAML6; echo 2 > /dev/ttyAML6
-[   95.890386] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-[   95.890857] rcu:     3-...0: (201 ticks this GP) idle=e33c/1/0x4000000000000000 softirq=5844/5846 fqs=4984
-[   95.900212] rcu:     (detected by 2, t=21016 jiffies, g=7753, q=296 ncpus=4)
-[   95.906972] Task dump for CPU 3:
-[   95.910178] task:bash            state:R  running task     stack:0     pid:205   ppid:1      flags:0x00000202
-[   95.920059] Call trace:
-[   95.922485]  __switch_to+0xe4/0x168
-[   95.925951]  0xffffff8003477508
-[   95.974379] watchdog: Watchdog detected hard LOCKUP on cpu 3
-[   95.974424] Modules linked in: 88x2cs(O) rtc_meson_vrtc
 
-Possible solution would be to not allow to setup crtscts on such port.
+Hi,
 
-Tested on S905X3 based board.
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-Signed-off-by: Pavel Krasavin <pkrasavin@imaqliq.com>
----
-v2: braces for single statement removed according to Dmitry's note
-v1: https://lore.kernel.org/lkml/OF28B2B8C9.5BC0CD28-ON00258A46.0037688F-00258A46.0039155B@gdc.ru/
----
+You are receiving this message because of the following common error(s)
+as indicated below:
 
---- a/drivers/tty/serial/meson_uart.c	2023-10-12 15:44:02.410538523 +0300
-+++ b/drivers/tty/serial/meson_uart.c	2023-10-12 15:58:06.242395253 +0300
-@@ -380,10 +380,14 @@ static void meson_uart_set_termios(struc
- 	else
- 		val |= AML_UART_STOP_BIT_1SB;
- 
--	if (cflags & CRTSCTS)
--		val &= ~AML_UART_TWO_WIRE_EN;
--	else
-+	if (cflags & CRTSCTS) {
-+		if (port->flags & UPF_HARD_FLOW)
-+			val &= ~AML_UART_TWO_WIRE_EN;
-+		else
-+			termios->c_cflag &= ~CRTSCTS;
-+	} else {
- 		val |= AML_UART_TWO_WIRE_EN;
-+	}
- 
- 	writel(val, port->membase + AML_UART_CONTROL);
- 
-@@ -705,6 +709,7 @@ static int meson_uart_probe(struct platf
- 	u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
- 	int ret = 0;
- 	int irq;
-+	bool has_rtscts;
- 
- 	if (pdev->dev.of_node)
- 		pdev->id = of_alias_get_id(pdev->dev.of_node, "serial");
-@@ -732,6 +737,7 @@ static int meson_uart_probe(struct platf
- 		return irq;
- 
- 	of_property_read_u32(pdev->dev.of_node, "fifo-size", &fifosize);
-+	has_rtscts = of_property_read_bool(pdev->dev.of_node, "uart-has-rtscts");
- 
- 	if (meson_ports[pdev->id]) {
- 		return dev_err_probe(&pdev->dev, -EBUSY,
-@@ -762,6 +768,8 @@ static int meson_uart_probe(struct platf
- 	port->mapsize = resource_size(res_mem);
- 	port->irq = irq;
- 	port->flags = UPF_BOOT_AUTOCONF | UPF_LOW_LATENCY;
-+	if (has_rtscts)
-+		port->flags |= UPF_HARD_FLOW;
- 	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_MESON_CONSOLE);
- 	port->dev = &pdev->dev;
- 	port->line = pdev->id;
+- It looks like you did not use your name for the patch on either the
+  Signed-off-by: line, or the From: line (both of which have to match).
+  Please read the kernel file,
+  Documentation/process/submitting-patches.rst for how to do this
+  correctly.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
