@@ -2,135 +2,125 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1EA5CDB46E
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 10:29:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD91C41513
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 10:39:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343796AbjJLK3o convert rfc822-to-8bit (ORCPT
+        id S1347129AbjJLKjS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Oct 2023 06:29:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
+        Thu, 12 Oct 2023 06:39:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343654AbjJLK3m (ORCPT
+        with ESMTP id S1343649AbjJLKjS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Oct 2023 06:29:42 -0400
-X-Greylist: delayed 359 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 Oct 2023 03:29:38 PDT
-Received: from postfix2.imaqliq.com (postfix2.imaqliq.com [93.189.151.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F58B8;
-        Thu, 12 Oct 2023 03:29:38 -0700 (PDT)
-Received: from verse.imaqliq.com (verse.imaqliq.com [93.189.151.95])
-        by postfix2.imaqliq.com (Postfix) with ESMTP id 4A93A1C2941;
-        Thu, 12 Oct 2023 13:23:36 +0300 (MSK)
+        Thu, 12 Oct 2023 06:39:18 -0400
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905B794
+        for <linux-serial@vger.kernel.org>; Thu, 12 Oct 2023 03:39:14 -0700 (PDT)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-5a505762c9dso9673007b3.2
+        for <linux-serial@vger.kernel.org>; Thu, 12 Oct 2023 03:39:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1697107153; x=1697711953; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=3oDNI1r5lnQu4SogBoFfe1dTr8U9qrvg3JFlPaLZjkQ=;
+        b=uEVzMo6ANZEA4+H1Wp+o8FzyCyx7DgWwzuhBiD7vv28bFN1i24xFEjoAvNZOqG8VWw
+         GUa/n844hCwQey90judRdFae+nZTpVdt5DOICJB7RONmf896qu6fvWh/FJBZj6ROUshn
+         pVFyxUiN+ht+y269nsGpyG9+Uzb4x42nGRn2siu5J6dcN0Q58gXgj1lEYAq/VbqxlQEa
+         X1cH7r3l05+LroKi4Qj6YIWWbR+PeNgkvJ5yG0zwkuLMhD5/IbGQDhBQXAtfI6wz8DO3
+         b4DF0YIdzTMgCUow0SNAdp7SyMHzv+lovaiXv0KH+fY0mSKFPRMoYDfIrM/lMhDMMe0S
+         4jdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697107153; x=1697711953;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3oDNI1r5lnQu4SogBoFfe1dTr8U9qrvg3JFlPaLZjkQ=;
+        b=NskZ0r5NxhfEaQUPizupXeefIYgHwbftAIPRvaZqOxQmYg1VtQHqrbkl0Uj1H/u4yj
+         JKeKj2mhYHeI5eY89EFbzxjHq17+5YYJpXA/564CErETc5f9A37vWTdHi2pxiEd0MI3e
+         4lXi9KPojMIeETelGx3Xh/TgLrCgoPbgs5tJ/aVOr0Q20j2VMmf/etXekQFokyt9Sz8n
+         FXXfkOdcs5/k+onabTNeEcNuLNI4SjuQFjUe/L+/gkFXIZ5xxvszQJGnaTJFYGIEJP7q
+         9DFdxoMQLwozIa8flKGipRY3CkO86ylzhQ8Mx+YZOplVyD+HgQ5wtc346oNCH73hoCDj
+         ewaA==
+X-Gm-Message-State: AOJu0YyO4lhGdXy6L5tj/mCG7ReYG/Tm5aF6ZuC2aBN8Uh9GadjCFZ9I
+        rcHmzOV3Z7aIhUs0ZIhhR6koY/hLHlxwKkO7o06Uuw==
+X-Google-Smtp-Source: AGHT+IFxRHuALoKeSjfKb3H4CN2bFTSSU2Bt+HgqEZX9jtOl6oxsdLqG69us8msuH/TRvisud8wxsgY5xod/E0gS4Uc=
+X-Received: by 2002:a0d:f204:0:b0:569:479f:6d7f with SMTP id
+ b4-20020a0df204000000b00569479f6d7fmr22902098ywf.43.1697107153677; Thu, 12
+ Oct 2023 03:39:13 -0700 (PDT)
 MIME-Version: 1.0
-Sensitivity: 
-Importance: Normal
-X-Priority: 3 (Normal)
-In-Reply-To: 
-References: 
-Subject: [PATCH] tty: serial: meson: hard LOCKUP on crtscts mode
-From:   pkrasavin@imaqliq.ru
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, pkrasavin@imaqliq.ru
-Date:   Thu, 12 Oct 2023 10:23:30 +0000
-Message-ID: <OF28B2B8C9.5BC0CD28-ON00258A46.0037688F-00258A46.0039155B@gdc.ru>
-X-Mailer: Lotus Domino Web Server Release 12.0.2 November 03, 2022
-X-MIMETrack: Serialize by http on verse/com(Release 12.0.2|November 03, 2022) at 10/12/2023
- 10:23:30,
-        Serialize complete at 10/12/2023 10:23:30,
-        Serialize by Router on verse/com(Release 12.0.2|November 03, 2022) at 10/12/2023
- 10:23:35
-X-KeepSent: 28B2B8C9:5BC0CD28-00258A46:0037688F;
- type=4; name=$KeepSent
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-KLMS-Rule-ID: 1
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Lua-Profiles: 180559 [Oct 12 2023]
-X-KLMS-AntiSpam-Version: 6.0.0.2
-X-KLMS-AntiSpam-Envelope-From: pkrasavin@imaqliq.ru
-X-KLMS-AntiSpam-Rate: 10
-X-KLMS-AntiSpam-Status: not_detected
-X-KLMS-AntiSpam-Method: none
-X-KLMS-AntiSpam-Auth: dmarc=fail header.from=imaqliq.ru policy=none;spf=softfail smtp.mailfrom=imaqliq.ru;dkim=none
-X-KLMS-AntiSpam-Info: LuaCore: 539 539 807534d9021bfe9ca369c363d15ac993cd93d4d9, {rep_avail}, {Tracking_from_domain_doesnt_match_to}, d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;gdc.ru:7.1.1;127.0.0.199:7.1.2;imaqliq.ru:7.1.1;verse.imaqliq.com:7.1.1;93.189.151.95:7.1.2, FromAlignment: s, {Tracking_dmark_f}, ApMailHostAddress: 93.189.151.95
-X-MS-Exchange-Organization-SCL: -1
-X-KLMS-AntiSpam-Interceptor-Info: scan successful
-X-KLMS-AntiPhishing: Clean, bases: 2023/10/12 08:55:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2023/10/12 01:34:00 #22164647
-X-KLMS-AntiVirus-Status: Clean, skipped
+References: <20231011184823.443959-1-peter.griffin@linaro.org>
+ <20231011184823.443959-3-peter.griffin@linaro.org> <5907e2b3-9a0b-4871-be08-6ca42200b8ec@linaro.org>
+ <CADrjBPqF67bcTnssQO8cN2n1ZbevziVNa+gA5azEDz_1wXzaNQ@mail.gmail.com> <809be13a-74b7-4934-8319-17330febc1b7@linaro.org>
+In-Reply-To: <809be13a-74b7-4934-8319-17330febc1b7@linaro.org>
+From:   Peter Griffin <peter.griffin@linaro.org>
+Date:   Thu, 12 Oct 2023 11:39:02 +0100
+Message-ID: <CADrjBPpzfOmmr4sVDSXCM_RyVK1GKM+nVN6Cm=eMSBfN3sMciA@mail.gmail.com>
+Subject: Re: [PATCH v3 02/20] dt-bindings: clock: Add Google gs101 clock
+ management unit bindings
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
+        tomasz.figa@gmail.com, s.nawrocki@samsung.com,
+        linus.walleij@linaro.org, wim@linux-watchdog.org,
+        linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org,
+        arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org,
+        cw00.choi@samsung.com, tudor.ambarus@linaro.org,
+        andre.draszik@linaro.org, semen.protsenko@linaro.org,
+        saravanak@google.com, willmcvicker@google.com, soc@kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        kernel-team@android.com, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-There might be hard lockup if we set crtscts mode on port without RTS/CTS configured:
+Hi Krzysztof
 
-# stty -F /dev/ttyAML6 crtscts; echo 1 > /dev/ttyAML6; echo 2 > /dev/ttyAML6
-[   95.890386] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-[   95.890857] rcu:     3-...0: (201 ticks this GP) idle=e33c/1/0x4000000000000000 softirq=5844/5846 fqs=4984
-[   95.900212] rcu:     (detected by 2, t=21016 jiffies, g=7753, q=296 ncpus=4)
-[   95.906972] Task dump for CPU 3:
-[   95.910178] task:bash            state:R  running task     stack:0     pid:205   ppid:1      flags:0x00000202
-[   95.920059] Call trace:
-[   95.922485]  __switch_to+0xe4/0x168
-[   95.925951]  0xffffff8003477508
-[   95.974379] watchdog: Watchdog detected hard LOCKUP on cpu 3
-[   95.974424] Modules linked in: 88x2cs(O) rtc_meson_vrtc
+On Thu, 12 Oct 2023 at 11:20, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 12/10/2023 12:15, Peter Griffin wrote:
+>
+> >>> +  - if:
+> >>> +      properties:
+> >>> +        compatible:
+> >>> +          contains:
+> >>> +            const: google,gs101-cmu-top
+> >>> +
+> >>> +    then:
+> >>> +      properties:
+> >>> +        clocks:
+> >>> +          items:
+> >>> +            - description: External reference clock (24.576 MHz)
+> >>> +
+> >>> +        clock-names:
+> >>> +          items:
+> >>> +            - const: oscclk
+> >>> +
+> >>> +  - if:
+> >>> +      properties:
+> >>> +        compatible:
+> >>> +          contains:
+> >>
+> >> enum:
+> >>   - google,gs101-cmu-apm
+> >>   - google,gs101-cmu-misc
+> >
+> > Ok just to be clear, are you saying I should have it like this?
+> >
+> >   - if:
+> >       properties:
+> >         compatible:
+> >           contains:
+> >             enum:
+> >               - google,gs101-cmu-misc
+>
+> No, my bad, I meant apm + google,gs101-cmu-top
+>
+> >               - google,gs101-cmu-apm
 
-Possible solution would be to not allow to setup crtscts on such port.
+Ah OK, yes that makes more sense. Thanks for the clarification :)
 
-Tested on S905X3 based board.
-
-Signed-off-by: Pavel Krasavin <pkrasavin@imaqliq.com>
-
---- a/drivers/tty/serial/meson_uart.c	2023-08-22 12:46:50.933814528 +0300
-+++ b/drivers/tty/serial/meson_uart.c	2023-08-22 14:48:15.593169948 +0300
-@@ -380,10 +380,15 @@ static void meson_uart_set_termios(struc
- 	else
- 		val |= AML_UART_STOP_BIT_1SB;
- 
--	if (cflags & CRTSCTS)
--		val &= ~AML_UART_TWO_WIRE_EN;
--	else
-+	if (cflags & CRTSCTS) {
-+		if (port->flags & UPF_HARD_FLOW) {
-+			val &= ~AML_UART_TWO_WIRE_EN;
-+		} else {
-+			termios->c_cflag &= ~CRTSCTS;
-+		}
-+	} else {
- 		val |= AML_UART_TWO_WIRE_EN;
-+	}
- 
- 	writel(val, port->membase + AML_UART_CONTROL);
- 
-@@ -705,6 +710,7 @@ static int meson_uart_probe(struct platf
- 	u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
- 	int ret = 0;
- 	int irq;
-+	bool has_rtscts;
- 
- 	if (pdev->dev.of_node)
- 		pdev->id = of_alias_get_id(pdev->dev.of_node, "serial");
-@@ -732,6 +738,7 @@ static int meson_uart_probe(struct platf
- 		return irq;
- 
- 	of_property_read_u32(pdev->dev.of_node, "fifo-size", &fifosize);
-+	has_rtscts = of_property_read_bool(pdev->dev.of_node, "uart-has-rtscts");
- 
- 	if (meson_ports[pdev->id]) {
- 		return dev_err_probe(&pdev->dev, -EBUSY,
-@@ -762,6 +769,8 @@ static int meson_uart_probe(struct platf
- 	port->mapsize = resource_size(res_mem);
- 	port->irq = irq;
- 	port->flags = UPF_BOOT_AUTOCONF | UPF_LOW_LATENCY;
-+	if (has_rtscts)
-+		port->flags |= UPF_HARD_FLOW;
- 	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_MESON_CONSOLE);
- 	port->dev = &pdev->dev;
- 	port->line = pdev->id;
+Peter.
