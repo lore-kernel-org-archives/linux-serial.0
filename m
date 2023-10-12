@@ -2,183 +2,212 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76336CDB46E
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 14:14:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60263CDB46E
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 15:27:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347227AbjJLOOJ (ORCPT
+        id S1379472AbjJLP1B (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Oct 2023 10:14:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58266 "EHLO
+        Thu, 12 Oct 2023 11:27:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347262AbjJLOOI (ORCPT
+        with ESMTP id S1379385AbjJLP1A (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Oct 2023 10:14:08 -0400
+        Thu, 12 Oct 2023 11:27:00 -0400
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB9CC0;
-        Thu, 12 Oct 2023 07:14:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38D0E8;
+        Thu, 12 Oct 2023 08:26:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-        :Date:subject:date:message-id:reply-to;
-        bh=9VpF/Uuoa5LtK/FqlX3p38prza5EIg0SaAOUIaysKJU=; b=hAP3iD6JtEl1Oj3Rrbe/N9IWlE
-        X6pWxY+oamjoU3lpTjdY0qE0P7HNjMvQK1gig25EhiySPXC35O+lvw22YvplGyPF1kYdPP29cqX9q
-        NCs95fP1+kZkVkSqDopEEKdWqmDrooMvdOHQy6mpl3EdEgGuAFdPsi2HleVBe0bI3/B0=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:45238 helo=pettiford)
+        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
+        :From:subject:date:message-id:reply-to;
+        bh=A4tcsRYv0zAR+IykEXFJLbmWdjR/S0UrKbdwgttyzoY=; b=G3u0szbsRjEx+Mk6e0l6H4z8GZ
+        D5WQkbWCRIC/ZTViHUXZ//ez4L6jtw4nEJnxlRNk8xyC5fgBPSUvWGd2wODWo88GaNdvXFPxFLuWc
+        1zve3NUjF1HuTcdQkaXz4nU94N+ZD6+6CmQgsuh1PI+YfkUxd3Js9UYDJJpi586XmMbk=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:41278 helo=pettiford.lan)
         by mail.hugovil.com with esmtpa (Exim 4.92)
         (envelope-from <hugo@hugovil.com>)
-        id 1qqwRu-0002rM-IE; Thu, 12 Oct 2023 10:14:03 -0400
-Date:   Thu, 12 Oct 2023 10:14:02 -0400
+        id 1qqxaL-0003rP-GV; Thu, 12 Oct 2023 11:26:50 -0400
 From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Conor Dooley <conor+dt@kernel.org>,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, andriy.shevchenko@linux.intel.com
-Message-Id: <20231012101402.6cbea154169f64c6b0922ed7@hugovil.com>
-In-Reply-To: <5b971fd6-3dd1-4071-80b3-606f2fa869b5@linaro.org>
-References: <20231011222105.2587175-1-hugo@hugovil.com>
-        <f24bab3b-4a45-4843-a834-e3a57c7d8aed@linaro.org>
-        <20231012095935.0bf2c58c424559492e7f5c25@hugovil.com>
-        <5b971fd6-3dd1-4071-80b3-606f2fa869b5@linaro.org>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Cc:     hugo@hugovil.com, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+Date:   Thu, 12 Oct 2023 11:26:47 -0400
+Message-Id: <20231012152647.2607455-1-hugo@hugovil.com>
+X-Mailer: git-send-email 2.39.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 70.80.174.168
 X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH] dt-bindings: max310x: convert to YAML
+Subject: [PATCH v2] dt-bindings: serial: max310x: convert to YAML
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 12 Oct 2023 16:01:54 +0200
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-> On 12/10/2023 15:59, Hugo Villeneuve wrote:
-> >>> +  clock-frequency:
-> >>> +    description:
-> >>> +      When there is no clock provider visible to the platform, this
-> >>> +      is the source crystal frequency for the IC in Hz.
-> >>> +    minimum: 1000000
-> >>> +    maximum: 4000000
-> >>
-> >> This wasn't in original binding. Explain this in the commit msg.
-> > 
-> > I will add the corresponding explanation in V2. 
-> > 
-> > The 'clock-frequency' property is already supported
-> > by the driver but was not documented in the original txt binding.
-> > 
-> > This is related to the commit d4d6f03c4fb3: serial: max310x: Try to
-> > get crystal clock rate from property (Author: Andy Shevchenko):
-> >     
-> >     In some configurations, mainly ACPI-based, the clock frequency of
-> >     the device is supplied by very well established 'clock-frequency'
-> >     property. Hence, try to get it from the property at last if no other
-> >     providers are available.
-> 
-> This does not justify adding it to bindings. ACPI stuff stays with ACPI.
-> Drop it.
+Convert binding from text format to YAML.
 
-Hi,
-ok, no problem. I will drop it. I will also drop a similar property
-from nxp,sc16is7xx.yaml which was added by me a few weeks ago (in a
-separate patch, of course).
+Additions to original text binding:
+  - add rs485 reference.
 
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-> > 
-> > 
-> >>
-> >>> +
-> >>> +  clock-names:
-> >>> +    enum:
-> >>> +      - xtal # External crystal
-> >>> +      - osc  # External clock source
-> >>
-> >> clock-names follow immediately clocks.
-> > 
-> > Will fix for V2.
-> > 
-> > 
-> >>
-> >>> +
-> >>> +  gpio-controller: true
-> >>> +
-> >>> +  "#gpio-cells":
-> >>> +    const: 2
-> >>> +
-> >>> +  gpio-line-names:
-> >>> +    minItems: 1
-> >>> +    maxItems: 16
-> >>> +
-> >>> +allOf:
-> >>
-> >> allOf: block goes after required: block.
-> > 
-> > Will fix for V2.
-> > 
-> > 
-> >>
-> >>> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> >>> +  - $ref: /schemas/serial/serial.yaml#
-> >>> +  - $ref: /schemas/serial/rs485.yaml#
-> >>> +
-> >>> +required:
-> >>> +  - compatible
-> >>> +  - reg
-> >>> +  - interrupts
-> >>> +
-> >>> +oneOf:
-> >>> +  - required:
-> >>> +      - clocks
-> >>> +      - clock-names
-> >>> +  - required:
-> >>> +      - clock-frequency
-> >>
-> >> That's also something new as well. The original binding required clocks.
-> >> Why are you changing this?
-> > 
-> > See explanation above about clock-frequency.
-> > 
-> > If clocks is not provided, than at least 'clock-frequency' must be
-> > provided.
-> > 
-> > 
-> >>> +
-> >>> +unevaluatedProperties: false
-> >>> +
-> >>> +examples:
-> >>> +  - |
-> >>> +    #include <dt-bindings/interrupt-controller/irq.h>
-> >>> +    i2c {
-> >>> +        #address-cells = <1>;
-> >>> +        #size-cells = <0>;
-> >>> +
-> >>> +        serial@2c {
-> >>> +            compatible = "maxim,max3107";
-> >>> +            reg = <0x2c>;
-> >>> +            clocks = <&xtal4m>;
-> >>> +            clock-names = "xtal";
-> >>> +            interrupt-parent = <&gpio3>;
-> >>> +            interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
-> >>> +            gpio-controller;
-> >>> +            #gpio-cells = <2>;
-> >>> +        };
-> >>> +
-> >>
-> >> One example is enuogh. All other are the same.
-> > 
-> > Not really, clock-names is different for example 2 (osc), and example 3
-> > shows that 'clock-frequency' can be used if no clock is provided?
-> 
-> Difference by one property does not really justify new example. The
-> third case - clock frequency - is okay, but the property is going away.
+---
+Changes for V2:
+- Add serial prefix to log message title
+- Move clock-name property after clocks
+- Remove 'clock-frequency' property
+- Move 'allOf' block after 'required'
+- Remove examples 2 and 3
 
-Ok, I will drop examples 2 and 3.
+ .../bindings/serial/maxim,max310x.txt         | 48 ------------
+ .../bindings/serial/maxim,max310x.yaml        | 74 +++++++++++++++++++
+ 2 files changed, 74 insertions(+), 48 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/maxim,max310x.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/maxim,max310x.yaml
 
-Hugo.
+diff --git a/Documentation/devicetree/bindings/serial/maxim,max310x.txt b/Documentation/devicetree/bindings/serial/maxim,max310x.txt
+deleted file mode 100644
+index 79e10a05a96a..000000000000
+--- a/Documentation/devicetree/bindings/serial/maxim,max310x.txt
++++ /dev/null
+@@ -1,48 +0,0 @@
+-* Maxim MAX310X advanced Universal Asynchronous Receiver-Transmitter (UART)
+-
+-Required properties:
+-- compatible: Should be one of the following:
+-  - "maxim,max3107" for Maxim MAX3107,
+-  - "maxim,max3108" for Maxim MAX3108,
+-  - "maxim,max3109" for Maxim MAX3109,
+-  - "maxim,max14830" for Maxim MAX14830.
+-- reg: SPI chip select number.
+-- interrupts: Specifies the interrupt source of the parent interrupt
+-  controller. The format of the interrupt specifier depends on the
+-  parent interrupt controller.
+-- clocks: phandle to the IC source clock.
+-- clock-names: Should be "xtal" if clock is an external crystal or
+-  "osc" if an external clock source is used.
+-
+-Optional properties:
+-- gpio-controller: Marks the device node as a GPIO controller.
+-- #gpio-cells: Should be two. The first cell is the GPIO number and
+-  the second cell is used to specify the GPIO polarity:
+-    0 = active high,
+-    1 = active low.
+-
+-Example:
+-
+-/ {
+-	clocks {
+-		spi_uart_clk: osc_max14830 {
+-			compatible = "fixed-clock";
+-			#clock-cells = <0>;
+-			clock-frequency = <3686400>;
+-		};
+-
+-	};
+-};
+-
+-&spi0 {
+-	max14830: max14830@0 {
+-		compatible = "maxim,max14830";
+-		reg = <0>;
+-		clocks = <&spi_uart_clk>;
+-		clock-names = "osc";
+-		interrupt-parent = <&gpio3>;
+-		interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
+-		gpio-controller;
+-		#gpio-cells = <2>;
+-	};
+-};
+diff --git a/Documentation/devicetree/bindings/serial/maxim,max310x.yaml b/Documentation/devicetree/bindings/serial/maxim,max310x.yaml
+new file mode 100644
+index 000000000000..889eeaca64a0
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/maxim,max310x.yaml
+@@ -0,0 +1,74 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/maxim,max310x.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Maxim MAX310X Advanced Universal Asynchronous Receiver-Transmitter (UART)
++
++maintainers:
++  - Hugo Villeneuve <hvilleneuve@dimonoff.com>
++
++properties:
++  compatible:
++    enum:
++      - maxim,max3107
++      - maxim,max3108
++      - maxim,max3109
++      - maxim,max14830
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    enum:
++      - xtal # External crystal
++      - osc  # External clock source
++
++  gpio-controller: true
++
++  "#gpio-cells":
++    const: 2
++
++  gpio-line-names:
++    minItems: 1
++    maxItems: 16
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++  - $ref: /schemas/serial/serial.yaml#
++  - $ref: /schemas/serial/rs485.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        serial@2c {
++            compatible = "maxim,max3107";
++            reg = <0x2c>;
++            clocks = <&xtal4m>;
++            clock-names = "xtal";
++            interrupt-parent = <&gpio3>;
++            interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
++            gpio-controller;
++            #gpio-cells = <2>;
++        };
++    };
+
+base-commit: 401644852d0b2a278811de38081be23f74b5bb04
+-- 
+2.39.2
+
