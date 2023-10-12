@@ -2,81 +2,77 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6761EC41513
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 06:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33928C41513
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 06:11:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377181AbjJLGHy (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Oct 2023 02:07:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38756 "EHLO
+        id S233915AbjJLGLe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 12 Oct 2023 02:11:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232786AbjJLGHx (ORCPT
+        with ESMTP id S233976AbjJLGLe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Oct 2023 02:07:53 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34774C4
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 23:07:51 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id 5b1f17b1804b1-406618d0992so6764755e9.0
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 23:07:51 -0700 (PDT)
+        Thu, 12 Oct 2023 02:11:34 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D98DBA
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 23:11:31 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id a640c23a62f3a-9b974955474so87705266b.1
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 23:11:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1697090869; x=1697695669; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=iiBkhIc1H6jTMySk6KuTtv18GiDy08QttS5wrhvQDw8=;
-        b=rxr0nXFIU2uokAr45iwmek0VJ/5VjGcYLsBZFvGX3K3sQCmZ7zFKDbs/i2reZ42TJ0
-         5fD0O2cMu39mfMc45/g/qWAfyeJ0gYvxqXOzcRvCzfjF6Danw1dvQjrfj9eJk/1mYG8I
-         iuW5tYoaL6ti3+W/Q6mEwhkBQkcbLXK/PG/uK9DJSMXb4JWPQGPLvGcRqfbdcTifKO2c
-         v+o4dhW8/VgsRl9qb+l95C1vfMoyTqhiEE0GnqDYQoFcw4Z2VqnnVDF9AyzkqgJ0CT/4
-         Lg9G4n/iNDKhh46DidN6OBrMYtFPxP1humXYbtiUZlLC4d6dDX2M6HyS60N6HI4xVu9p
-         4V3w==
+        d=linaro.org; s=google; t=1697091090; x=1697695890; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=igF/5LmpmhE4gSuwaumzhHmJL2dxT6YCbgQzJaidc7k=;
+        b=A+fu7HbQ3/UWOlp+J8z8zxNdWHsKSxE20eFUCNpRUXo0WwlnqpneVLAd2aifZB/+hM
+         jvFJCDUIKYpj/E1czKkflP3+8nMnXIjH/cJXrRPSMSwIlC28uJewSwboxAM9klAete7F
+         kit8WV3qqjnD+h8b8MpIiaSIOuhdk7aotGAFPUBnU3A/hFY+E6bFcxMWDD53/a847PVR
+         h7FCMNJZWJPJ5kLUiPbmzKDxm1Xm3/+zuJkoXUjAZfrHLv70d3zqqSQvAbuHl3kkcDlG
+         mmJ7ZtC3QtpiUrnQ2yqLNhGXOWoL0pt4dOWO3CsOn7dJe54q+dOWQ5cmFaS5mlR7qHMP
+         aCIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697090869; x=1697695669;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iiBkhIc1H6jTMySk6KuTtv18GiDy08QttS5wrhvQDw8=;
-        b=liHEKvbXycg1PuuVX479xYlNwmXqD6MgMB6NMZP4kBBWs3vAjF7xUiYctB+oPQsRAt
-         JrS7nwoI8jo1GC+yI9pJu7LBVDmZ7BGR1+gMtirmLIQTELdYfpKXzcbI+1OhVZQ0N7NI
-         FF7YN0iKvoBa1sD+i72d5tfhGoCRU7ChRZm0qv83XbX1tGX4Awk+WWGkkc8SHWLXs4P1
-         OQtDHKBn5CGS0xPxgFQ/05GiyTcp69KxXfLRxFRKVs8HxFT5zbZqS8zm8klQOlwi6apG
-         wr4ZU1ywCvG/5RrWIgvkPuya1J9+bmXL4pPDuUrKGKU/69mKS2yeFA7D/Q7vPgqlB9We
-         K+0Q==
-X-Gm-Message-State: AOJu0YwgG/6MqfobkixSznIcPOk6IX2rG3ifAi2Hq+euNss3AfNvPtwz
-        klxsUaiH5f1HW+t5tLeCMMk2Cw==
-X-Google-Smtp-Source: AGHT+IG3EwN8wooPwhog6t44GMmWyiZnvMyZyvdN/O4YY7UTLugFZrQL0vKZL0KbDSbvBVXX8tiIiA==
-X-Received: by 2002:a1c:7917:0:b0:405:3d27:70e8 with SMTP id l23-20020a1c7917000000b004053d2770e8mr19665470wme.36.1697090869564;
-        Wed, 11 Oct 2023 23:07:49 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1697091090; x=1697695890;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=igF/5LmpmhE4gSuwaumzhHmJL2dxT6YCbgQzJaidc7k=;
+        b=nwOWvlMNlDBwKbIPv6rfN3vYCKiyX7NfXNwvZttsBgqXp+PWUoaDjoLVpWksCSDwYy
+         AC57xlPaAjO+OzjeEmLUMZ7HWmqshg5G0/vBgpcGrMrp8GdkinIc2mVADsGhwDnVtgsd
+         vWvAsgWY6SJM6EyXuQB4t+OMwRuiQmyWDsQZ+gxhT/cQkayXHb8FvmJrf3Edxza9MQKI
+         tL57x+Q+GkGSdrUYQPqQzTCFcjX+7mMlJ9D9xrfFyPVQK0/xL4Ouna/BULICFLWb1hjQ
+         2DPxGQAg30DNsdbub5rxgrk8TcRsmvxYpbrJoe9qWLCNHDaqOsy+FpYwtySsN1Vgjcai
+         OK7g==
+X-Gm-Message-State: AOJu0YwtQJ7zkA5tGH+28nG8ZHIzTzIAoH3PHEQkuc8V86AXxK08krst
+        MBSPz7SJpJHpIBm236uRQdohVQ==
+X-Google-Smtp-Source: AGHT+IE6+AwCWc2CDeJ0y8HyTovv2nztpXF36aB4dc6fbttyYuN/Qoi2gkSxoHNp0elxx61whdAtZg==
+X-Received: by 2002:a17:907:78c3:b0:9a2:232f:6f85 with SMTP id kv3-20020a17090778c300b009a2232f6f85mr22371842ejc.52.1697091089986;
+        Wed, 11 Oct 2023 23:11:29 -0700 (PDT)
 Received: from [192.168.1.20] ([178.197.219.100])
-        by smtp.gmail.com with ESMTPSA id q15-20020a7bce8f000000b00405391f485fsm18504681wmj.41.2023.10.11.23.07.46
+        by smtp.gmail.com with ESMTPSA id l9-20020a170906230900b009928b4e3b9fsm10670872eja.114.2023.10.11.23.11.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Oct 2023 23:07:49 -0700 (PDT)
-Message-ID: <e4523fc3-e1dd-4791-b950-98dfc6dce1f5@linaro.org>
-Date:   Thu, 12 Oct 2023 08:07:45 +0200
+        Wed, 11 Oct 2023 23:11:29 -0700 (PDT)
+Message-ID: <5907e2b3-9a0b-4871-be08-6ca42200b8ec@linaro.org>
+Date:   Thu, 12 Oct 2023 08:11:27 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v3 02/20] dt-bindings: clock: Add Google gs101 clock
  management unit bindings
-To:     William McVicker <willmcvicker@google.com>,
-        Peter Griffin <peter.griffin@linaro.org>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
-        tomasz.figa@gmail.com, s.nawrocki@samsung.com,
-        linus.walleij@linaro.org, wim@linux-watchdog.org,
-        linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org,
-        arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org,
-        cw00.choi@samsung.com, tudor.ambarus@linaro.org,
-        andre.draszik@linaro.org, semen.protsenko@linaro.org,
-        saravanak@google.com, soc@kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
+Content-Language: en-US
+To:     Peter Griffin <peter.griffin@linaro.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+        conor+dt@kernel.org, sboyd@kernel.org, tomasz.figa@gmail.com,
+        s.nawrocki@samsung.com, linus.walleij@linaro.org,
+        wim@linux-watchdog.org, linux@roeck-us.net,
+        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+        olof@lixom.net, gregkh@linuxfoundation.org, cw00.choi@samsung.com
+Cc:     tudor.ambarus@linaro.org, andre.draszik@linaro.org,
+        semen.protsenko@linaro.org, saravanak@google.com,
+        willmcvicker@google.com, soc@kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
         kernel-team@android.com, linux-serial@vger.kernel.org
 References: <20231011184823.443959-1-peter.griffin@linaro.org>
  <20231011184823.443959-3-peter.griffin@linaro.org>
- <ZScYOUi7qhvGmMIF@google.com>
-Content-Language: en-US
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -122,23 +118,107 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <ZScYOUi7qhvGmMIF@google.com>
+In-Reply-To: <20231011184823.443959-3-peter.griffin@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 11/10/2023 23:48, William McVicker wrote:
-> On 10/11/2023, Peter Griffin wrote:
->> Provide dt-schema documentation for Google gs101 SoC clock controller.
->> Currently this adds support for cmu_top, cmu_misc and cmu_apm.
->>
->> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+On 11/10/2023 20:48, Peter Griffin wrote:
+> Provide dt-schema documentation for Google gs101 SoC clock controller.
+> Currently this adds support for cmu_top, cmu_misc and cmu_apm.
 > 
-> Tested-by: Will McVicker <willmcvicker@google.com>
+> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> ---
+>  .../bindings/clock/google,gs101-clock.yaml    | 125 ++++++++++
+>  include/dt-bindings/clock/google,gs101.h      | 232 ++++++++++++++++++
+>  2 files changed, 357 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/clock/google,gs101-clock.yaml
+>  create mode 100644 include/dt-bindings/clock/google,gs101.h
+> 
+> diff --git a/Documentation/devicetree/bindings/clock/google,gs101-clock.yaml b/Documentation/devicetree/bindings/clock/google,gs101-clock.yaml
+> new file mode 100644
+> index 000000000000..f74494594b3b
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/clock/google,gs101-clock.yaml
+> @@ -0,0 +1,125 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/clock/google,gs101-clock.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Google GS101 SoC clock controller
+> +
+> +maintainers:
+> +  - Peter Griffin <peter.griffin@linaro.org>
+> +
+> +description: |
+> +  Google GS101 clock controller is comprised of several CMU units, generating
+> +  clocks for different domains. Those CMU units are modeled as separate device
+> +  tree nodes, and might depend on each other. The root clock in that clock tree
+> +  is OSCCLK (24.576 MHz). That external clock must be defined as a fixed-rate
+> +  clock in dts.
+> +
+> +  CMU_TOP is a top-level CMU, where all base clocks are prepared using PLLs and
+> +  dividers; all other leaf clocks (other CMUs) are usually derived from CMU_TOP.
+> +
+> +  Each clock is assigned an identifier and client nodes can use this identifier
+> +  to specify the clock which they consume. All clocks available for usage
+> +  in clock consumer nodes are defined as preprocessor macros in
+> +  'dt-bindings/clock/gs101.h' header.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - google,gs101-cmu-top
+> +      - google,gs101-cmu-apm
+> +      - google,gs101-cmu-misc
+> +
+> +  clocks:
+> +    minItems: 1
+> +    maxItems: 2
+> +
+> +  clock-names:
+> +    minItems: 1
+> +    maxItems: 2
+> +
+> +  "#clock-cells":
+> +    const: 1
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +allOf:
 
-And how do you perform testing of a binding?
+No improvements here from v1.
+
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: google,gs101-cmu-top
+> +
+> +    then:
+> +      properties:
+> +        clocks:
+> +          items:
+> +            - description: External reference clock (24.576 MHz)
+> +
+> +        clock-names:
+> +          items:
+> +            - const: oscclk
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+
+enum:
+  - google,gs101-cmu-apm
+  - google,gs101-cmu-misc
+
 
 Best regards,
 Krzysztof
