@@ -2,63 +2,60 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BE49CDB482
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 07:39:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3031CDB47E
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 07:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235321AbjJLHjo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Oct 2023 03:39:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59226 "EHLO
+        id S235319AbjJLHkp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 12 Oct 2023 03:40:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233631AbjJLHjn (ORCPT
+        with ESMTP id S233918AbjJLHkZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Oct 2023 03:39:43 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649FAC0
-        for <linux-serial@vger.kernel.org>; Thu, 12 Oct 2023 00:39:41 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id 5b1f17b1804b1-40684f53bfcso6995065e9.0
-        for <linux-serial@vger.kernel.org>; Thu, 12 Oct 2023 00:39:41 -0700 (PDT)
+        Thu, 12 Oct 2023 03:40:25 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463F8D9
+        for <linux-serial@vger.kernel.org>; Thu, 12 Oct 2023 00:40:20 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id d2e1a72fcca58-694ed84c981so533589b3a.3
+        for <linux-serial@vger.kernel.org>; Thu, 12 Oct 2023 00:40:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1697096380; x=1697701180; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=jq4pcZfc1W+TFJeWnT4fKP7AUIOJHCSytA/kznt6DHE=;
-        b=wtWKjrss9S2VVwQVELOIXFjGj398Ho3Fj0V1g2hgfDcybM5csVkb6yeFApGeyBWCL0
-         mh1d4gocn9DfQ1mDaOr/yZJ+GpAGHFb3SGwz/WJfhEzNOO9oukaRMeLJ8OnteuatNlBo
-         WVCDWq35XhAP58FKI3jJSLFMt8NuNQsch/ir3cXSRCBTQcagz5rph+ZO2nD6cT+mFczq
-         3aZU12utqKZQ0zUyq8G5oSFcNW1RJ2i5uf4nFCQctvw4o60/9i1XJM4sMc+3a3WfKIHp
-         2ZBkBX5xO8h7guTxi+nzEYtf1DAH72Y1fCdRnRNX1baznIA/PYGuFBzDpDTqPbH0Js+y
-         bE6Q==
+        d=linaro.org; s=google; t=1697096420; x=1697701220; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=WeyFnsq7kj9nc73z+mJcYj/SpiIQNbMhSQED5EpeFnk=;
+        b=J2YsdFYQ2M8Nck2NuIb55XvT7ouEU99gTX4h7OsZE8vL7D6pwGoK60bwO2T9BJXbG8
+         JMNo062PU3Cc/fUPbDKWoblALxERXIlGXz/95ioDPWKGk8zE0xuqZXe7VqTXFofxncQ2
+         25z4J9nW5vDhCkYUMWfFanRyG6YFUeV2At7B/k/4FbcTTYx+ABDS6qNu7a/iC1WTF6Ud
+         o1ZUZ4vAvLQspjUMSl+reTDAqkgw1wrlelzXINM2IMONcV+F88uaehpjRnOpFotNMHfN
+         mEFDcQoUCmxZy0O3SXOcNDlxOV/avXxkAGukvubRWpPeyE5Gpmc7yxE7JPai1lDhSWYk
+         Nb0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697096380; x=1697701180;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=jq4pcZfc1W+TFJeWnT4fKP7AUIOJHCSytA/kznt6DHE=;
-        b=dktZjgvyXuYU3bUwYnjq7YKT57+gfrNaH5shFrndVor1eAz1GFCUbvtE6SItIgQjIB
-         ao5yzUDcWTd9Jg0G7ZRZjfFQY7Alh07d/kQ+766gBaE+bc9VsKDj2auIf94q1sRJoxX4
-         lt3+edUhyIFLs81sMXDS0d3Nfm67maLPv+g33ACrDV7Z+GbG1gCF3c/iNypjZauk+xwW
-         kmvQ59siahMj9KR8WYWaOCc5il9nS7tnUuNIsN1uEeKkPLEE2SWFio1h9fcxvjp2H6cq
-         p7qOQD7GaxGVHKRmCaSMXd5+HDD7WiG/Aj7hJ+akdurCSeNy2YCbkTOzJRNEJ+HZ+/jq
-         tetA==
-X-Gm-Message-State: AOJu0Yx2Pfp8Mk7U8SkWzQ8/zY+kyKAnpUebSwgutPb0JQiLFJCKwUVv
-        6SiehKuuxLVCkYkXdc7zmkA2zw==
-X-Google-Smtp-Source: AGHT+IEy+Won7VtTOhXXMCBSuPCMGf1w+H8V04AmQwkwqSGHaVIUhNjY+aTN2rs9eHPMgUGczKfuyA==
-X-Received: by 2002:adf:ea4f:0:b0:32d:8958:c570 with SMTP id j15-20020adfea4f000000b0032d8958c570mr2730777wrn.29.1697096379853;
-        Thu, 12 Oct 2023 00:39:39 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.219.100])
-        by smtp.gmail.com with ESMTPSA id k7-20020a5d66c7000000b0031fd849e797sm17492784wrw.105.2023.10.12.00.39.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Oct 2023 00:39:39 -0700 (PDT)
-Message-ID: <ae13c25f-6131-4ef2-8116-bb04aef389b0@linaro.org>
-Date:   Thu, 12 Oct 2023 09:39:36 +0200
+        d=1e100.net; s=20230601; t=1697096420; x=1697701220;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=WeyFnsq7kj9nc73z+mJcYj/SpiIQNbMhSQED5EpeFnk=;
+        b=vSFndYzYF0svASGLBkWJmuenMXjlC5SCDs49y3wdgAmqB46U8n+DHlydbmjbg6PjiQ
+         fOk6AdbJ54ciIshq1WL76x4G3xjrLhgaQ82cUx/sVnuTTC1R0bv4yeLm9FaHpS27oGdC
+         SKSF4JctNYI0xqBIVo2di7ywu2LqkGl7iO5yq5h+jPPzEf13ffxwv5/sVTK/wP66K9Sk
+         JW7p79ZvRQ+1P90QfWKG+7izxhY9EYyOpgXY6LySncJf+/MICYa95u2ujiF3kCVTN4w1
+         IyJEguBWjLd5cLEmB8JDn2a5mKm0TvniA4HrhHsg4TPzQhvLORjKNZcIM3x38hRSAYZ3
+         ontQ==
+X-Gm-Message-State: AOJu0Yw57kTyV4Qbj7Mehsb2BAxBRXe2PQtZK9x7gwxU1FOhGatD99Lw
+        wEs5B6zRIXEKNqGKXNrBoHf8OyItGjnDRlBqyWvY1A==
+X-Google-Smtp-Source: AGHT+IH/pqOJSGAUpimWG1P472lbC+Hea49S/OE3uBkgKRUitvR9pB1D0mSrJquRil0M1gwvWAx/gEyoiscMqY9skRo=
+X-Received: by 2002:a05:6a20:4286:b0:159:e0b9:bd02 with SMTP id
+ o6-20020a056a20428600b00159e0b9bd02mr25980791pzj.40.1697096419671; Thu, 12
+ Oct 2023 00:40:19 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 17/20] arm64: dts: google: Add initial Google gs101 SoC
- support
-Content-Language: en-US
-To:     Sam Protsenko <semen.protsenko@linaro.org>,
-        Peter Griffin <peter.griffin@linaro.org>
+References: <20231011184823.443959-1-peter.griffin@linaro.org> <20231011184823.443959-19-peter.griffin@linaro.org>
+In-Reply-To: <20231011184823.443959-19-peter.griffin@linaro.org>
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+Date:   Thu, 12 Oct 2023 02:40:07 -0500
+Message-ID: <CAPLW+4mX5bK7zxpxS_1a5Gi1gG8UFRDpMehnSxxXibTFCn_Txg@mail.gmail.com>
+Subject: Re: [PATCH v3 18/20] arm64: dts: google: Add initial Oriole/pixel 6
+ board support
+To:     Peter Griffin <peter.griffin@linaro.org>
 Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
         tomasz.figa@gmail.com, s.nawrocki@samsung.com,
@@ -72,77 +69,149 @@ Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
         kernel-team@android.com, linux-serial@vger.kernel.org
-References: <20231011184823.443959-1-peter.griffin@linaro.org>
- <20231011184823.443959-18-peter.griffin@linaro.org>
- <CAPLW+4=uDEcsJBbkjy48NMF5DPvheJ1ygO8=542=fb91ff8COw@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <CAPLW+4=uDEcsJBbkjy48NMF5DPvheJ1ygO8=542=fb91ff8COw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 12/10/2023 09:23, Sam Protsenko wrote:
->> +
->> +               cpu0: cpu@0 {
->> +                       device_type = "cpu";
->> +                       compatible = "arm,armv8";
-> 
-> Is there maybe any more specific Cortex compatible?
+On Wed, Oct 11, 2023 at 1:49=E2=80=AFPM Peter Griffin <peter.griffin@linaro=
+.org> wrote:
+>
+> Add initial board support for the Pixel 6 phone code named Oriole. This
+> has been tested with a minimal busybox initramfs and boots to a shell.
+>
+> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> ---
+>  arch/arm64/boot/dts/google/Makefile         |  4 ++
+>  arch/arm64/boot/dts/google/gs101-oriole.dts | 79 +++++++++++++++++++++
+>  2 files changed, 83 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/google/Makefile
+>  create mode 100644 arch/arm64/boot/dts/google/gs101-oriole.dts
+>
+> diff --git a/arch/arm64/boot/dts/google/Makefile b/arch/arm64/boot/dts/go=
+ogle/Makefile
+> new file mode 100644
+> index 000000000000..5cea8ff27141
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/google/Makefile
+> @@ -0,0 +1,4 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +
+> +dtb-$(CONFIG_ARCH_GOOGLE_TENSOR) +=3D \
+> +       gs101-oriole.dtb \
+> diff --git a/arch/arm64/boot/dts/google/gs101-oriole.dts b/arch/arm64/boo=
+t/dts/google/gs101-oriole.dts
+> new file mode 100644
+> index 000000000000..3bebca989d34
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/google/gs101-oriole.dts
+> @@ -0,0 +1,79 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Oriole Device Tree
+> + *
+> + * Copyright 2021-2023 Google,LLC
+> + */
+> +
+> +/dts-v1/;
+> +/plugin/;
 
-Thanks for noticing. It must be a specific compatible. This is *ONLY*
-for software models.
+Why is this needed? Is that really not possible to build this board
+dts as actual dtb, not dtbo (and remove this 'plugin' line)? If GS
+bootloader is similar to Exynos850 bootloader, it should be possible
+to only use dtb, and flash empty dtbo image. Just a thought.
 
-I really wished people stopped upstreaming junk vendor DTS, but instead
-take recent, clean DTS and customize it. The approach with junk vendor
-DTS is always a pain. For everyone.
+> +
+> +#include <dt-bindings/gpio/gpio.h>
+> +#include <dt-bindings/input/input.h>
+> +#include "gs101-pinctrl.h"
+> +#include "gs101.dtsi"
+> +
+> +/ {
+> +       model =3D "Oriole";
+> +       compatible =3D "google,gs101-oriole", "google,gs101";
+> +
+> +       chosen {
+> +               bootargs =3D "earlycon=3Dexynos4210,mmio32,0x10A00000 con=
+sole=3DttySAC0";
 
+Why is that earlycon is needed here? The serial should work fine (and
+actually even better) without that. Might be very useful for debugging
+though, but in production dts I'd remove that bit. Also, not sure why
+console is needed. Isn't it enough to just have something like:
 
-Best regards,
-Krzysztof
+        stdout-path =3D &serial_0;
 
+inside of /chosen node?
+
+Btw, why isn't serial node enabled somewhere in this dts?
+
+> +       };
+> +
+> +       gpio-keys {
+> +               compatible =3D "gpio-keys";
+> +               pinctrl-names =3D "default";
+> +               pinctrl-0 =3D <&key_voldown &key_volup &key_power>;
+> +
+> +               button-vol-down {
+> +                       label =3D "KEY_VOLUMEDOWN";
+> +                       linux,code =3D <KEY_VOLUMEDOWN>;
+> +                       gpios =3D <&gpa7 3 GPIO_ACTIVE_LOW>;
+> +                       wakeup-source;
+> +               };
+> +
+> +               button-vol-up {
+> +                       label =3D "KEY_VOLUMEUP";
+> +                       linux,code =3D <KEY_VOLUMEUP>;
+> +                       gpios =3D <&gpa8 1 GPIO_ACTIVE_LOW>;
+> +                       wakeup-source;
+> +               };
+> +
+> +               button-power {
+> +                       label =3D "KEY_POWER";
+> +                       linux,code =3D <KEY_POWER>;
+> +                       gpios =3D <&gpa10 1 GPIO_ACTIVE_LOW>;
+> +                       wakeup-source;
+> +               };
+> +       };
+> +};
+> +
+> +&pinctrl_1 {
+> +       key_voldown: key-voldown-pins {
+> +               samsung,pins =3D "gpa7-3";
+> +               samsung,pin-function =3D <0xf>;
+> +               samsung,pin-pud =3D <0>;
+
+Here and further: maybe replace pid-function and pin-pud hard-coded
+values with corresponding named constants?
+
+> +               samsung,pin-drv =3D <GS101_PIN_DRV_2_5_MA>;
+> +       };
+> +
+> +       key_volup: key-volup-pins {
+> +               samsung,pins =3D "gpa8-1";
+> +               samsung,pin-function =3D <0xf>;
+> +               samsung,pin-pud =3D <0>;
+> +               samsung,pin-drv =3D <GS101_PIN_DRV_2_5_MA>;
+> +       };
+> +};
+> +
+> +&pinctrl_0 {
+> +       key_power: key-power-pins {
+> +               samsung,pins =3D "gpa10-1";
+> +               samsung,pin-function =3D <0xf>;
+> +               samsung,pin-pud =3D <0>;
+> +               samsung,pin-drv =3D <GS101_PIN_DRV_2_5_MA>;
+> +       };
+> +};
+> +
+> +&watchdog_cl0 {
+> +       timeout-sec =3D <30>;
+
+No status =3D "okay" here? The same question goes for wdt_cl1.
+
+> +};
+> --
+> 2.42.0.655.g421f12c284-goog
+>
