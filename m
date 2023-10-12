@@ -2,112 +2,144 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E7BCDB482
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 05:17:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB7DCDB483
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 05:38:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377243AbjJLFQ7 (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Oct 2023 01:16:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
+        id S233879AbjJLFiV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 12 Oct 2023 01:38:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235288AbjJLFQ3 (ORCPT
+        with ESMTP id S235294AbjJLFiU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Oct 2023 01:16:29 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28BF3F5
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 22:15:55 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id 41be03b00d2f7-5a1d89ff4b9so427473a12.0
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 22:15:55 -0700 (PDT)
+        Thu, 12 Oct 2023 01:38:20 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E392BE
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 22:38:18 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id 98e67ed59e1d1-278f0f565e2so470373a91.2
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 22:38:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1697087754; x=1697692554; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=linaro.org; s=google; t=1697089098; x=1697693898; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=OF/0DZOVOE1sZojsrN9hmq2DR3MNn3xhzg86O8Xb4xI=;
-        b=WYjq3fg+8kKiVa5lkt3Ks+ekmj+gy00U9BX1uXQVGlpx/A1AFhE38CRYGV1BzRmkSe
-         6C4AtQhwGvXkRKCeq3U2VYQl6StssivMYavEveO0X22ivPNkDvRLZxqzJ3CMinEfdGox
-         sbv4g8Ozapgl3IoNbjw7S2QuOQzQORhlJR9hLWSWMhTzIP1MsCoZtd4NbPF//KgABS4P
-         wjM3QofnJce4VWzVmEhAPSVVZ3KxtJ0BEbf8FtONP9r3TEZrS5xbkL7hESyFco+/8Q5g
-         Qvm11BtO62vFh2YbUD2Crh01K3/rCZxnPlAQAL0AC9IUwQDmC3mTEg2S2tXpVO5/daZy
-         zssg==
+        bh=wwWnNHAbWyeAscY15FX+TU6dhJaouDy+zgSEChH3FwY=;
+        b=hrhdeNL+xrFwt5JwZw2WTndkt3uiH1J30wKia9q7VffNmYl4iEhp32agj2z88CKH2q
+         B1PZ0h0mz/aygSprMv+aUJ0etTN6MZzdmpThC7MSs/IKZIRX4d23Buf9OkWtORpbqLq2
+         NrpkE8FLNrmAnDzTH47YWGRffztAQ1/vDPm+B+Ii5jNcKPSHIqu5SpGCqFKfXrjGXm+A
+         CGxGxgReWs13EJ1d3vG8ALrwgdsKiqrcgnTf+H6qhS16qVdGuvS5jjwCOrrSIgxH+GAf
+         pGPeXjxU2riHHxXosc5fneN9e/KBDDWBx5xWxbqlGawA8Ga2N+c1P+rgIANSduNugJQm
+         mDLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697087754; x=1697692554;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1697089098; x=1697693898;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=OF/0DZOVOE1sZojsrN9hmq2DR3MNn3xhzg86O8Xb4xI=;
-        b=Y6YjXf9OwNK+HC1LLw4IxpHrBavCOQG+tPEWji2hWimz7ko9BEx6deYyc6nIeS17JO
-         YXAvGlkDJuryir7PCvW+0+IBUyYBFByXd8vQLgyWCfdrL0e2np6NoORbVI0PybKrwX2A
-         5sy2sW0nTzs9hr+pDRCYeCqdnBDVnYwq30jD52o2jjVo/3xov/m6Fb6fcPiOlXHLLMnU
-         PipjvL5GvTitss0Qc5mvJ3Nm4kC6gpC+fClPrtoOnzXnr6dEknYtSxXvp03NsMpvcCtW
-         WAO6FZVgCO5u00KdTI001I27MGPVwGF3H9mNxsU3R5Ii4h2vVa9/DsTcfsxxQz57MP0P
-         VfxQ==
-X-Gm-Message-State: AOJu0YymrVqnEJO9lCscoC8Rh4nqmphPJNso3A5xq08CL9WS9u01ooL8
-        Xy71AN6uVXpOg8n9LAWNLB6kqg==
-X-Google-Smtp-Source: AGHT+IHHIH1Tdrtn/mSat4PHYLTk01ptLU1brEyLKx+dYtjl1X4EaH3wN0nwyAyQPO2cGFlvgUSgrQ==
-X-Received: by 2002:a05:6a20:918e:b0:162:edc2:4e9f with SMTP id v14-20020a056a20918e00b00162edc24e9fmr22994297pzd.62.1697087754489;
-        Wed, 11 Oct 2023 22:15:54 -0700 (PDT)
-Received: from anup-ubuntu-vm.localdomain ([106.51.83.242])
-        by smtp.gmail.com with ESMTPSA id s18-20020a17090330d200b001b9d95945afsm851309plc.155.2023.10.11.22.15.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Oct 2023 22:15:54 -0700 (PDT)
-From:   Anup Patel <apatel@ventanamicro.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Conor Dooley <conor@kernel.org>,
-        Andrew Jones <ajones@ventanamicro.com>, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH v2 8/8] RISC-V: Enable SBI based earlycon support
-Date:   Thu, 12 Oct 2023 10:45:09 +0530
-Message-Id: <20231012051509.738750-9-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20231012051509.738750-1-apatel@ventanamicro.com>
-References: <20231012051509.738750-1-apatel@ventanamicro.com>
+        bh=wwWnNHAbWyeAscY15FX+TU6dhJaouDy+zgSEChH3FwY=;
+        b=ivlJgE+hI488/xywtMrfUMQbwNmV5/cPcAcejGjJ7VweRZ/b+FO+CPyYtJ1A0EZn9V
+         r5aI5FN2K5VAvTCxDA754sEjM5KXf7SNHTPyxNYeiPNu6KmqtenuSD4Pean+lxweK253
+         eCGdT6nHapDbL2I+vtPmGTHHUg9XynPOM8n2VmjkIHCvtv0BXGBEhSnZeR5XeDRCDu4F
+         MatxXa6OqODsK+fIc6RDbUXnqkIXJY3LrRGvv5vain5+fwGQe3A17bPLE3+w96QDybuK
+         bphHdS0DeIRiTQK6fKKWh3PEorLxxuhqBmlEHt9xQ67DtXjo+nKXJsV9R0x8e3xsWUZE
+         MEIA==
+X-Gm-Message-State: AOJu0Yzp0cTK7ZFYuHCsJTueyxwXwxiML+g/mtauMLxxNUPi59DiNGZ9
+        OtC5fLZQX3UCwZ2VvSjXNwXcFN3nXt1mPAwTbUcwiQ==
+X-Google-Smtp-Source: AGHT+IGSsE9UdV0Qgkc/+49sBerKsPKwjip2GPaMvf0yjDHtLvarJUP6ASq6DTMnyLnKKYmGaxwKGOUUUcsGQWvpu/Q=
+X-Received: by 2002:a17:90b:1c83:b0:274:616e:3fc4 with SMTP id
+ oo3-20020a17090b1c8300b00274616e3fc4mr19950072pjb.34.1697089097916; Wed, 11
+ Oct 2023 22:38:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20231011184823.443959-1-peter.griffin@linaro.org> <20231011184823.443959-17-peter.griffin@linaro.org>
+In-Reply-To: <20231011184823.443959-17-peter.griffin@linaro.org>
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+Date:   Thu, 12 Oct 2023 00:38:06 -0500
+Message-ID: <CAPLW+4m1KLXJ67uDJ83V+zdSA0qU4cDh9Q+irpcixz1btMVv7Q@mail.gmail.com>
+Subject: Re: [PATCH v3 16/20] tty: serial: samsung: Add gs101 compatible and
+ SoC data
+To:     Peter Griffin <peter.griffin@linaro.org>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
+        tomasz.figa@gmail.com, s.nawrocki@samsung.com,
+        linus.walleij@linaro.org, wim@linux-watchdog.org,
+        linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org,
+        arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org,
+        cw00.choi@samsung.com, tudor.ambarus@linaro.org,
+        andre.draszik@linaro.org, saravanak@google.com,
+        willmcvicker@google.com, soc@kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        kernel-team@android.com, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Let us enable SBI based earlycon support in defconfigs for both RV32
-and RV64 so that "earlycon=sbi" can be used again.
+On Wed, Oct 11, 2023 at 1:49=E2=80=AFPM Peter Griffin <peter.griffin@linaro=
+.org> wrote:
+>
+> Add serial driver data for Google Tensor gs101 SoC.
+>
+> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> ---
 
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
----
- arch/riscv/configs/defconfig      | 1 +
- arch/riscv/configs/rv32_defconfig | 1 +
- 2 files changed, 2 insertions(+)
+Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
 
-diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-index ab86ec3b9eab..f82700da0056 100644
---- a/arch/riscv/configs/defconfig
-+++ b/arch/riscv/configs/defconfig
-@@ -132,6 +132,7 @@ CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_8250_DW=y
- CONFIG_SERIAL_OF_PLATFORM=y
- CONFIG_SERIAL_SH_SCI=y
-+CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
- CONFIG_VIRTIO_CONSOLE=y
- CONFIG_HW_RANDOM=y
- CONFIG_HW_RANDOM_VIRTIO=y
-diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
-index 89b601e253a6..5721af39afd1 100644
---- a/arch/riscv/configs/rv32_defconfig
-+++ b/arch/riscv/configs/rv32_defconfig
-@@ -66,6 +66,7 @@ CONFIG_INPUT_MOUSEDEV=y
- CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_OF_PLATFORM=y
-+CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
- CONFIG_VIRTIO_CONSOLE=y
- CONFIG_HW_RANDOM=y
- CONFIG_HW_RANDOM_VIRTIO=y
--- 
-2.34.1
-
+>  drivers/tty/serial/samsung_tty.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
+>
+> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsun=
+g_tty.c
+> index 07fb8a9dac63..26bc52e681a4 100644
+> --- a/drivers/tty/serial/samsung_tty.c
+> +++ b/drivers/tty/serial/samsung_tty.c
+> @@ -2597,14 +2597,22 @@ static const struct s3c24xx_serial_drv_data exyno=
+s850_serial_drv_data =3D {
+>         .fifosize =3D { 256, 64, 64, 64 },
+>  };
+>
+> +static const struct s3c24xx_serial_drv_data gs101_serial_drv_data =3D {
+> +       EXYNOS_COMMON_SERIAL_DRV_DATA(),
+> +       /* rely on samsung,uart-fifosize DT property for fifosize */
+> +       .fifosize =3D { 0 },
+> +};
+> +
+>  #define EXYNOS4210_SERIAL_DRV_DATA (&exynos4210_serial_drv_data)
+>  #define EXYNOS5433_SERIAL_DRV_DATA (&exynos5433_serial_drv_data)
+>  #define EXYNOS850_SERIAL_DRV_DATA (&exynos850_serial_drv_data)
+> +#define GS101_SERIAL_DRV_DATA (&gs101_serial_drv_data)
+>
+>  #else
+>  #define EXYNOS4210_SERIAL_DRV_DATA NULL
+>  #define EXYNOS5433_SERIAL_DRV_DATA NULL
+>  #define EXYNOS850_SERIAL_DRV_DATA NULL
+> +#define GS101_SERIAL_DRV_DATA NULL
+>  #endif
+>
+>  #ifdef CONFIG_ARCH_APPLE
+> @@ -2688,6 +2696,9 @@ static const struct platform_device_id s3c24xx_seri=
+al_driver_ids[] =3D {
+>         }, {
+>                 .name           =3D "artpec8-uart",
+>                 .driver_data    =3D (kernel_ulong_t)ARTPEC8_SERIAL_DRV_DA=
+TA,
+> +       }, {
+> +               .name           =3D "gs101-uart",
+> +               .driver_data    =3D (kernel_ulong_t)GS101_SERIAL_DRV_DATA=
+,
+>         },
+>         { },
+>  };
+> @@ -2709,6 +2720,8 @@ static const struct of_device_id s3c24xx_uart_dt_ma=
+tch[] =3D {
+>                 .data =3D EXYNOS850_SERIAL_DRV_DATA },
+>         { .compatible =3D "axis,artpec8-uart",
+>                 .data =3D ARTPEC8_SERIAL_DRV_DATA },
+> +       { .compatible =3D "google,gs101-uart",
+> +               .data =3D  GS101_SERIAL_DRV_DATA },
+>         {},
+>  };
+>  MODULE_DEVICE_TABLE(of, s3c24xx_uart_dt_match);
+> --
+> 2.42.0.655.g421f12c284-goog
+>
