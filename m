@@ -2,55 +2,55 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26EB3CDB482
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 05:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E7BCDB482
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 05:17:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377123AbjJLFQs (ORCPT
+        id S1377243AbjJLFQ7 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Oct 2023 01:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33600 "EHLO
+        Thu, 12 Oct 2023 01:16:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377465AbjJLFQO (ORCPT
+        with ESMTP id S235288AbjJLFQ3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Oct 2023 01:16:14 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 105A6D60
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 22:15:50 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id d9443c01a7336-1c60cec8041so4288245ad.3
-        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 22:15:50 -0700 (PDT)
+        Thu, 12 Oct 2023 01:16:29 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28BF3F5
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 22:15:55 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id 41be03b00d2f7-5a1d89ff4b9so427473a12.0
+        for <linux-serial@vger.kernel.org>; Wed, 11 Oct 2023 22:15:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1697087750; x=1697692550; darn=vger.kernel.org;
+        d=ventanamicro.com; s=google; t=1697087754; x=1697692554; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=9VumssqyPhV2g3eQM7/n//T8x0MORKj84YM3EuzCDgk=;
-        b=PpBMcsLo0YLbCwEhfTkGiYXB/ljqeq5i+tc7tZeUFN3xxaV5pb+yuY+N93pff7q3g6
-         FfISoZsgmYzxMKByO3sUxAzct2Tj5UzuP0p4PKWoD58YQ9Fygeqq0ntTRobM/dWnx62Z
-         xKZig/1H5Zeg/jLhGBGLjtbpO266i7dzuetXzpwTBnek1W7p9WdpXj0c7av7o/xIC12F
-         uGg4xj9jO3fQFgzAHSHWJ2KSIbic1tDTJzduPiVq0AxYHZG1Fo/fG1QXGYpbfeh2UNMr
-         MwWoSvTxTgRIcvgP07aE8Vh4/BSNaDVFbejuJ0JnRAa/GLu6OhpAt/Ts7YWI1rsiObxS
-         3PEg==
+        bh=OF/0DZOVOE1sZojsrN9hmq2DR3MNn3xhzg86O8Xb4xI=;
+        b=WYjq3fg+8kKiVa5lkt3Ks+ekmj+gy00U9BX1uXQVGlpx/A1AFhE38CRYGV1BzRmkSe
+         6C4AtQhwGvXkRKCeq3U2VYQl6StssivMYavEveO0X22ivPNkDvRLZxqzJ3CMinEfdGox
+         sbv4g8Ozapgl3IoNbjw7S2QuOQzQORhlJR9hLWSWMhTzIP1MsCoZtd4NbPF//KgABS4P
+         wjM3QofnJce4VWzVmEhAPSVVZ3KxtJ0BEbf8FtONP9r3TEZrS5xbkL7hESyFco+/8Q5g
+         Qvm11BtO62vFh2YbUD2Crh01K3/rCZxnPlAQAL0AC9IUwQDmC3mTEg2S2tXpVO5/daZy
+         zssg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697087750; x=1697692550;
+        d=1e100.net; s=20230601; t=1697087754; x=1697692554;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=9VumssqyPhV2g3eQM7/n//T8x0MORKj84YM3EuzCDgk=;
-        b=kFAkqBTCAE2no7Do9Do06DrpIaY7hFHC4AXkXbhgjRor7JIzwv3iZph9xDMhQQf6cF
-         ytT0K7XvsxlcIO8tIa4bsfj95q4dhnTCIy/iDpk9MvbwTBJnaY12HF4/zoQIgi52wiAJ
-         0bqK6lyYu4X+EXJSOQs7CvB21DWLOuxKT975DYCXp8s2EthveVCG59QsVaj2gNUb9rEm
-         YJ0wUN97tXYUPcC9Iyz4MTd1izdPrLOs5bzg/ps2YgaW4FrlwxtGIeRPAWxiNqsUlbe1
-         HYR+u+l6VEj0DzDBIcbjV6kR5ZWShDrlEt9cpFnTh2gL+PGV2sAgQiY5qhNRwfzeO+zl
-         velQ==
-X-Gm-Message-State: AOJu0YwTL8M/2lB/PpRTzrlhZb53aouv/Lx/8wA9YXsnIw4sDDHUkWLg
-        5hMdlVgJH864GbbUyQ/d5oDWiQ==
-X-Google-Smtp-Source: AGHT+IFQ1W43pn4VQeKIkawEacDc40dCj7u4jClbhdGq+OcNM4Reual0u2XRPGbMPIHdZ7ZptLiBeQ==
-X-Received: by 2002:a17:903:2341:b0:1c7:1f3f:b6dc with SMTP id c1-20020a170903234100b001c71f3fb6dcmr23793872plh.11.1697087750172;
-        Wed, 11 Oct 2023 22:15:50 -0700 (PDT)
+        bh=OF/0DZOVOE1sZojsrN9hmq2DR3MNn3xhzg86O8Xb4xI=;
+        b=Y6YjXf9OwNK+HC1LLw4IxpHrBavCOQG+tPEWji2hWimz7ko9BEx6deYyc6nIeS17JO
+         YXAvGlkDJuryir7PCvW+0+IBUyYBFByXd8vQLgyWCfdrL0e2np6NoORbVI0PybKrwX2A
+         5sy2sW0nTzs9hr+pDRCYeCqdnBDVnYwq30jD52o2jjVo/3xov/m6Fb6fcPiOlXHLLMnU
+         PipjvL5GvTitss0Qc5mvJ3Nm4kC6gpC+fClPrtoOnzXnr6dEknYtSxXvp03NsMpvcCtW
+         WAO6FZVgCO5u00KdTI001I27MGPVwGF3H9mNxsU3R5Ii4h2vVa9/DsTcfsxxQz57MP0P
+         VfxQ==
+X-Gm-Message-State: AOJu0YymrVqnEJO9lCscoC8Rh4nqmphPJNso3A5xq08CL9WS9u01ooL8
+        Xy71AN6uVXpOg8n9LAWNLB6kqg==
+X-Google-Smtp-Source: AGHT+IHHIH1Tdrtn/mSat4PHYLTk01ptLU1brEyLKx+dYtjl1X4EaH3wN0nwyAyQPO2cGFlvgUSgrQ==
+X-Received: by 2002:a05:6a20:918e:b0:162:edc2:4e9f with SMTP id v14-20020a056a20918e00b00162edc24e9fmr22994297pzd.62.1697087754489;
+        Wed, 11 Oct 2023 22:15:54 -0700 (PDT)
 Received: from anup-ubuntu-vm.localdomain ([106.51.83.242])
-        by smtp.gmail.com with ESMTPSA id s18-20020a17090330d200b001b9d95945afsm851309plc.155.2023.10.11.22.15.45
+        by smtp.gmail.com with ESMTPSA id s18-20020a17090330d200b001b9d95945afsm851309plc.155.2023.10.11.22.15.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Oct 2023 22:15:49 -0700 (PDT)
+        Wed, 11 Oct 2023 22:15:54 -0700 (PDT)
 From:   Anup Patel <apatel@ventanamicro.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>,
         Atish Patra <atishp@atishpatra.org>,
@@ -62,11 +62,10 @@ Cc:     Conor Dooley <conor@kernel.org>,
         Andrew Jones <ajones@ventanamicro.com>, kvm@vger.kernel.org,
         kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
         linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Atish Patra <atishp@rivosinc.com>,
-        Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH v2 7/8] tty: Add SBI debug console support to HVC SBI driver
-Date:   Thu, 12 Oct 2023 10:45:08 +0530
-Message-Id: <20231012051509.738750-8-apatel@ventanamicro.com>
+        linux-kernel@vger.kernel.org, Anup Patel <apatel@ventanamicro.com>
+Subject: [PATCH v2 8/8] RISC-V: Enable SBI based earlycon support
+Date:   Thu, 12 Oct 2023 10:45:09 +0530
+Message-Id: <20231012051509.738750-9-apatel@ventanamicro.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231012051509.738750-1-apatel@ventanamicro.com>
 References: <20231012051509.738750-1-apatel@ventanamicro.com>
@@ -76,128 +75,39 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Atish Patra <atishp@rivosinc.com>
+Let us enable SBI based earlycon support in defconfigs for both RV32
+and RV64 so that "earlycon=sbi" can be used again.
 
-RISC-V SBI specification supports advanced debug console
-support via SBI DBCN extension.
-
-Extend the HVC SBI driver to support it.
-
-Signed-off-by: Atish Patra <atishp@rivosinc.com>
 Signed-off-by: Anup Patel <apatel@ventanamicro.com>
 ---
- drivers/tty/hvc/Kconfig         |  2 +-
- drivers/tty/hvc/hvc_riscv_sbi.c | 76 ++++++++++++++++++++++++++++++---
- 2 files changed, 70 insertions(+), 8 deletions(-)
+ arch/riscv/configs/defconfig      | 1 +
+ arch/riscv/configs/rv32_defconfig | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/tty/hvc/Kconfig b/drivers/tty/hvc/Kconfig
-index 4f9264d005c0..6e05c5c7bca1 100644
---- a/drivers/tty/hvc/Kconfig
-+++ b/drivers/tty/hvc/Kconfig
-@@ -108,7 +108,7 @@ config HVC_DCC_SERIALIZE_SMP
- 
- config HVC_RISCV_SBI
- 	bool "RISC-V SBI console support"
--	depends on RISCV_SBI_V01
-+	depends on RISCV_SBI
- 	select HVC_DRIVER
- 	help
- 	  This enables support for console output via RISC-V SBI calls, which
-diff --git a/drivers/tty/hvc/hvc_riscv_sbi.c b/drivers/tty/hvc/hvc_riscv_sbi.c
-index 31f53fa77e4a..da318d7f55c5 100644
---- a/drivers/tty/hvc/hvc_riscv_sbi.c
-+++ b/drivers/tty/hvc/hvc_riscv_sbi.c
-@@ -39,21 +39,83 @@ static int hvc_sbi_tty_get(uint32_t vtermno, char *buf, int count)
- 	return i;
- }
- 
--static const struct hv_ops hvc_sbi_ops = {
-+static const struct hv_ops hvc_sbi_v01_ops = {
- 	.get_chars = hvc_sbi_tty_get,
- 	.put_chars = hvc_sbi_tty_put,
- };
- 
--static int __init hvc_sbi_init(void)
-+static int hvc_sbi_dbcn_tty_put(uint32_t vtermno, const char *buf, int count)
- {
--	return PTR_ERR_OR_ZERO(hvc_alloc(0, 0, &hvc_sbi_ops, 16));
-+	phys_addr_t pa;
-+	struct sbiret ret;
-+
-+	if (is_vmalloc_addr(buf))
-+		pa = page_to_phys(vmalloc_to_page(buf)) + offset_in_page(buf);
-+	else
-+		pa = __pa(buf);
-+
-+	if (IS_ENABLED(CONFIG_32BIT))
-+		ret = sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE,
-+				count, lower_32_bits(pa), upper_32_bits(pa),
-+				0, 0, 0);
-+	else
-+		ret = sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE,
-+				count, pa, 0, 0, 0, 0);
-+	if (ret.error)
-+		return 0;
-+
-+	return count;
- }
--device_initcall(hvc_sbi_init);
- 
--static int __init hvc_sbi_console_init(void)
-+static int hvc_sbi_dbcn_tty_get(uint32_t vtermno, char *buf, int count)
- {
--	hvc_instantiate(0, 0, &hvc_sbi_ops);
-+	phys_addr_t pa;
-+	struct sbiret ret;
-+
-+	if (is_vmalloc_addr(buf))
-+		pa = page_to_phys(vmalloc_to_page(buf)) + offset_in_page(buf);
-+	else
-+		pa = __pa(buf);
-+
-+	if (IS_ENABLED(CONFIG_32BIT))
-+		ret = sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_READ,
-+				count, lower_32_bits(pa), upper_32_bits(pa),
-+				0, 0, 0);
-+	else
-+		ret = sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_READ,
-+				count, pa, 0, 0, 0, 0);
-+	if (ret.error)
-+		return 0;
-+
-+	return ret.value;
-+}
-+
-+static const struct hv_ops hvc_sbi_dbcn_ops = {
-+	.put_chars = hvc_sbi_dbcn_tty_put,
-+	.get_chars = hvc_sbi_dbcn_tty_get,
-+};
-+
-+static int __init hvc_sbi_init(void)
-+{
-+	int err;
-+
-+	if ((sbi_spec_version >= sbi_mk_version(2, 0)) &&
-+	    (sbi_probe_extension(SBI_EXT_DBCN) > 0)) {
-+		err = PTR_ERR_OR_ZERO(hvc_alloc(0, 0, &hvc_sbi_dbcn_ops, 16));
-+		if (err)
-+			return err;
-+		hvc_instantiate(0, 0, &hvc_sbi_dbcn_ops);
-+	} else {
-+		if (IS_ENABLED(CONFIG_RISCV_SBI_V01)) {
-+			err = PTR_ERR_OR_ZERO(hvc_alloc(0, 0, &hvc_sbi_v01_ops, 16));
-+			if (err)
-+				return err;
-+			hvc_instantiate(0, 0, &hvc_sbi_v01_ops);
-+		} else {
-+			return -ENODEV;
-+		}
-+	}
- 
- 	return 0;
- }
--console_initcall(hvc_sbi_console_init);
-+device_initcall(hvc_sbi_init);
+diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
+index ab86ec3b9eab..f82700da0056 100644
+--- a/arch/riscv/configs/defconfig
++++ b/arch/riscv/configs/defconfig
+@@ -132,6 +132,7 @@ CONFIG_SERIAL_8250_CONSOLE=y
+ CONFIG_SERIAL_8250_DW=y
+ CONFIG_SERIAL_OF_PLATFORM=y
+ CONFIG_SERIAL_SH_SCI=y
++CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
+ CONFIG_VIRTIO_CONSOLE=y
+ CONFIG_HW_RANDOM=y
+ CONFIG_HW_RANDOM_VIRTIO=y
+diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
+index 89b601e253a6..5721af39afd1 100644
+--- a/arch/riscv/configs/rv32_defconfig
++++ b/arch/riscv/configs/rv32_defconfig
+@@ -66,6 +66,7 @@ CONFIG_INPUT_MOUSEDEV=y
+ CONFIG_SERIAL_8250=y
+ CONFIG_SERIAL_8250_CONSOLE=y
+ CONFIG_SERIAL_OF_PLATFORM=y
++CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
+ CONFIG_VIRTIO_CONSOLE=y
+ CONFIG_HW_RANDOM=y
+ CONFIG_HW_RANDOM_VIRTIO=y
 -- 
 2.34.1
 
