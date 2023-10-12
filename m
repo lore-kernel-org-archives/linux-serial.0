@@ -2,147 +2,152 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8887BCDB46E
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 11:38:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86384CDB482
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 11:55:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343858AbjJLLit (ORCPT
+        id S1347210AbjJLLzJ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Oct 2023 07:38:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56456 "EHLO
+        Thu, 12 Oct 2023 07:55:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343824AbjJLLit (ORCPT
+        with ESMTP id S1379124AbjJLLxy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Oct 2023 07:38:49 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 672C394;
-        Thu, 12 Oct 2023 04:38:47 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F688C433C7;
-        Thu, 12 Oct 2023 11:38:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1697110727;
-        bh=VIjNs8XAzFrSrD46vd4rLb+i7yS6FSpOQzPGdLFca3I=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=hyQLEv+1J8r5uGrpnxlhbH7cdZUYJ0sUhwdXhnH7m6avcqRv3zQP0sQ8LYdf6kWu7
-         /x/B7UHwjQPXgeKsT9kxZr2GB9McF6/+brZFPn1Tb8vtntOLd2ZLGCrWdhdV51SRpG
-         mKex4JFjTf6Jp+hTRKW1er/RxhxwXCGxmat7LLs5jzr3rMXlHwVLQaQtN5jr1ZRsfU
-         6Cvvwj9rHZjPx9fH1FkgB2pfdSwSrnCHFVouAwZzQprfpoBBkgp5i8kW3cxlnG/k7t
-         IOTbVEM1v972unfuwienAF3jcsYgP6l6gf41BNyPK1Wv3Qjy7L1n3vHC+XGwkkixMT
-         Dh/KwmVXd9J/g==
-From:   =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-To:     Anup Patel <apatel@ventanamicro.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Conor Dooley <conor@kernel.org>,
-        Andrew Jones <ajones@ventanamicro.com>, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Atish Patra <atishp@rivosinc.com>,
-        Anup Patel <apatel@ventanamicro.com>
-Subject: Re: [PATCH v2 7/8] tty: Add SBI debug console support to HVC SBI
- driver
-In-Reply-To: <20231012051509.738750-8-apatel@ventanamicro.com>
-References: <20231012051509.738750-1-apatel@ventanamicro.com>
- <20231012051509.738750-8-apatel@ventanamicro.com>
-Date:   Thu, 12 Oct 2023 13:38:44 +0200
-Message-ID: <87fs2ghxyz.fsf@all.your.base.are.belong.to.us>
+        Thu, 12 Oct 2023 07:53:54 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 625FA5FD7
+        for <linux-serial@vger.kernel.org>; Thu, 12 Oct 2023 04:51:19 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id 6a1803df08f44-66cfef11a25so5089216d6.3
+        for <linux-serial@vger.kernel.org>; Thu, 12 Oct 2023 04:51:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1697111470; x=1697716270; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6wguIFACywm82p+kwjY1C1abIOanzWtWu5hp7VdYjEQ=;
+        b=Z4U/+th/egFk8MmlMe51P1QDT1DNtPvvKYERJLMtNUAu4M1cv1BxyhPKQgRl6xQ7cf
+         IvgMlpRUD4Ri/F20Arw31eY9Joa34yYp1AXPzsLtsCggUWoOUyYqkzV2XWPQXCl4IkUM
+         ai0oHYqn36eJlNdS2Q3nH911LJi+s3oZyb5PIl/ssCP/q+/EYYDvgT1ICRVJI6kRoEaq
+         GuHLl4n1Es/y+XW0qlbzJHLhkJF2LzkcAspzL2mjQYBR3/i6NYTlaabEnS+cxrp2/28D
+         RkZa6PN3UweN56aV2+3OSXDCjX98r9PEX2wdQvw0Fx6oFbj2mWBGk+3eXfIXwOryVoiZ
+         XfNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697111470; x=1697716270;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6wguIFACywm82p+kwjY1C1abIOanzWtWu5hp7VdYjEQ=;
+        b=nq+9LtPz1uJcV7IdTmrNJWICEdXV5umuGeD7nMDohtadw8TzxlzIYdhrGyLpThDyzU
+         n1AkCqq0ZSl8kTSd4ri6yPOLBSI/9jwIIigJhz9cl7B+4JRRDDnarXOLEF8L67XzSQV7
+         7grjaWS34Fokb3hr75RKhb1hwouoIfNUszXZpec3kkYxqxW4Mo5WnYjRl5rfIFwjQnrP
+         ie9kdofwU25Lz/Cu2cWzSQgwcn5SaWwJmHiVE+1mJKJyDYiZdX3PFXp0g32tUnitxiu+
+         0TojydxE0NqL1iF6LLiN7Ykm08Uq5liRt4Lo4DHjncgZWKEJCEbOFJMVQzkxhXTVzFNQ
+         osAw==
+X-Gm-Message-State: AOJu0YzToP8LonWgPX89K+gHDNTp0N4e5ryYs7dLb8qS/tX+pR6Zim29
+        AiWe/ZI6tgbDxywr87z3NvEWFICl6OMbnA1DyAPXXQ==
+X-Google-Smtp-Source: AGHT+IEvqT6kbO6hVsQ4G1yNHRRTZQluz8FwmB8xQs8FuXvEunZhGsOYdqUcE+o4RW+c8m2PI7lkpx1R0l5LGmrcKek=
+X-Received: by 2002:a0c:d641:0:b0:668:7bc2:d64d with SMTP id
+ e1-20020a0cd641000000b006687bc2d64dmr21776663qvj.27.1697111470058; Thu, 12
+ Oct 2023 04:51:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+References: <20231011184823.443959-1-peter.griffin@linaro.org>
+ <20231011184823.443959-10-peter.griffin@linaro.org> <CAPLW+4nmonxdLCWEZy15attd5ULUfL0VgZf5YQzFBA_0bvUwUw@mail.gmail.com>
+In-Reply-To: <CAPLW+4nmonxdLCWEZy15attd5ULUfL0VgZf5YQzFBA_0bvUwUw@mail.gmail.com>
+From:   Peter Griffin <peter.griffin@linaro.org>
+Date:   Thu, 12 Oct 2023 12:50:58 +0100
+Message-ID: <CADrjBPoCOzJ0tNU3XSZFy7PAVAUAqCN3bFFDZZPaeyZ_wTJygw@mail.gmail.com>
+Subject: Re: [PATCH v3 09/20] clk: samsung: clk-pll: Add support for pll_{0516,0517,518}
+To:     Sam Protsenko <semen.protsenko@linaro.org>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
+        tomasz.figa@gmail.com, s.nawrocki@samsung.com,
+        linus.walleij@linaro.org, wim@linux-watchdog.org,
+        linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org,
+        arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org,
+        cw00.choi@samsung.com, tudor.ambarus@linaro.org,
+        andre.draszik@linaro.org, saravanak@google.com,
+        willmcvicker@google.com, soc@kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        kernel-team@android.com, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Anup Patel <apatel@ventanamicro.com> writes:
+Hi Sam,
 
-> From: Atish Patra <atishp@rivosinc.com>
+On Thu, 12 Oct 2023 at 00:19, Sam Protsenko <semen.protsenko@linaro.org> wr=
+ote:
 >
-> RISC-V SBI specification supports advanced debug console
-> support via SBI DBCN extension.
+> On Wed, Oct 11, 2023 at 1:49=E2=80=AFPM Peter Griffin <peter.griffin@lina=
+ro.org> wrote:
+> >
+> > These plls are found in the Tensor gs101 SoC found in the Pixel 6.
+> >
+> > pll0516x: Integer PLL with high frequency
+> > pll0517x: Integer PLL with middle frequency
+> > pll0518x: Integer PLL with low frequency
+> >
+> > PLL0516x
+> > FOUT =3D (MDIV * 2 * FIN)/PDIV * 2^SDIV)
+> >
+> > PLL0517x and PLL0518x
+> > FOUT =3D (MDIV * FIN)/PDIV*2^SDIV)
+> >
+> > The PLLs are similar enough to pll_0822x that the same code can handle
+> > both. The main difference is the change in the fout formula for the
+> > high frequency 0516 pll.
+> >
+> > Locktime for 516,517 & 518 is 150 the same as the pll_0822x lock factor=
+.
+> > MDIV, SDIV PDIV masks and bit shifts are also the same as 0822x.
+> >
+> > When defining the PLL the "con" parameter should be set to CON3
+> > register, like this
+> >
+> > PLL(pll_0517x, CLK_FOUT_SHARED0_PLL, "fout_shared0_pll", "oscclk",
+> >     PLL_LOCKTIME_PLL_SHARED0, PLL_CON3_PLL_SHARED0,
+> >     NULL),
+> >
+> > Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> > ---
+> >  drivers/clk/samsung/clk-pll.c | 9 ++++++++-
+> >  drivers/clk/samsung/clk-pll.h | 3 +++
+> >  2 files changed, 11 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/clk/samsung/clk-pll.c b/drivers/clk/samsung/clk-pl=
+l.c
+> > index 74934c6182ce..4ef9fea2a425 100644
+> > --- a/drivers/clk/samsung/clk-pll.c
+> > +++ b/drivers/clk/samsung/clk-pll.c
+> > @@ -442,7 +442,11 @@ static unsigned long samsung_pll0822x_recalc_rate(=
+struct clk_hw *hw,
+> >         pdiv =3D (pll_con3 >> PLL0822X_PDIV_SHIFT) & PLL0822X_PDIV_MASK=
+;
+> >         sdiv =3D (pll_con3 >> PLL0822X_SDIV_SHIFT) & PLL0822X_SDIV_MASK=
+;
+> >
+> > -       fvco *=3D mdiv;
+> > +       if (pll->type =3D=3D pll_0516x)
+> > +               fvco =3D fvco * 2 * mdiv;
+> > +       else
+> > +               fvco *=3D mdiv;
+> > +
 >
-> Extend the HVC SBI driver to support it.
+> Can be written like this I guess:
 >
-> Signed-off-by: Atish Patra <atishp@rivosinc.com>
-> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> ---
->  drivers/tty/hvc/Kconfig         |  2 +-
->  drivers/tty/hvc/hvc_riscv_sbi.c | 76 ++++++++++++++++++++++++++++++---
->  2 files changed, 70 insertions(+), 8 deletions(-)
+>        fvco *=3D mdiv;
+>        if (pll->type =3D=3D pll_0516x)
+>               fvco *=3D 2;
 >
-> diff --git a/drivers/tty/hvc/Kconfig b/drivers/tty/hvc/Kconfig
-> index 4f9264d005c0..6e05c5c7bca1 100644
-> --- a/drivers/tty/hvc/Kconfig
-> +++ b/drivers/tty/hvc/Kconfig
-> @@ -108,7 +108,7 @@ config HVC_DCC_SERIALIZE_SMP
->=20=20
->  config HVC_RISCV_SBI
->  	bool "RISC-V SBI console support"
-> -	depends on RISCV_SBI_V01
-> +	depends on RISCV_SBI
->  	select HVC_DRIVER
->  	help
->  	  This enables support for console output via RISC-V SBI calls, which
-> diff --git a/drivers/tty/hvc/hvc_riscv_sbi.c b/drivers/tty/hvc/hvc_riscv_=
-sbi.c
-> index 31f53fa77e4a..da318d7f55c5 100644
-> --- a/drivers/tty/hvc/hvc_riscv_sbi.c
-> +++ b/drivers/tty/hvc/hvc_riscv_sbi.c
-> @@ -39,21 +39,83 @@ static int hvc_sbi_tty_get(uint32_t vtermno, char *bu=
-f, int count)
->  	return i;
->  }
->=20=20
-> -static const struct hv_ops hvc_sbi_ops =3D {
-> +static const struct hv_ops hvc_sbi_v01_ops =3D {
->  	.get_chars =3D hvc_sbi_tty_get,
->  	.put_chars =3D hvc_sbi_tty_put,
->  };
->=20=20
-> -static int __init hvc_sbi_init(void)
-> +static int hvc_sbi_dbcn_tty_put(uint32_t vtermno, const char *buf, int c=
-ount)
->  {
-> -	return PTR_ERR_OR_ZERO(hvc_alloc(0, 0, &hvc_sbi_ops, 16));
-> +	phys_addr_t pa;
-> +	struct sbiret ret;
-> +
-> +	if (is_vmalloc_addr(buf))
-> +		pa =3D page_to_phys(vmalloc_to_page(buf)) + offset_in_page(buf);
+> if you think it's more neat. Other than that:
+>
+> Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
 
-What is assumed from buf here? If buf is crossing a page, you need to
-adjust the count, no?
+I will update like you suggest and add your Reviewed-by tag.
 
-> +	else
-> +		pa =3D __pa(buf);
-> +
-> +	if (IS_ENABLED(CONFIG_32BIT))
-> +		ret =3D sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE,
-> +				count, lower_32_bits(pa), upper_32_bits(pa),
-> +				0, 0, 0);
-> +	else
-> +		ret =3D sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE,
-> +				count, pa, 0, 0, 0, 0);
-> +	if (ret.error)
-> +		return 0;
-> +
-> +	return count;
->  }
-> -device_initcall(hvc_sbi_init);
->=20=20
-> -static int __init hvc_sbi_console_init(void)
-> +static int hvc_sbi_dbcn_tty_get(uint32_t vtermno, char *buf, int count)
->  {
-> -	hvc_instantiate(0, 0, &hvc_sbi_ops);
-> +	phys_addr_t pa;
-> +	struct sbiret ret;
-> +
-> +	if (is_vmalloc_addr(buf))
-> +		pa =3D page_to_phys(vmalloc_to_page(buf)) + offset_in_page(buf);
+regards,
 
-And definitely adjust count here, if we're crossing a page!
-
-
-Bj=C3=B6rn
+Peter.
