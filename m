@@ -2,175 +2,135 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92CCDCDB484
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 10:20:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1EA5CDB46E
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 10:29:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343737AbjJLKUP (ORCPT
+        id S1343796AbjJLK3o convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Oct 2023 06:20:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33464 "EHLO
+        Thu, 12 Oct 2023 06:29:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343713AbjJLKUO (ORCPT
+        with ESMTP id S1343654AbjJLK3m (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Oct 2023 06:20:14 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2877C6
-        for <linux-serial@vger.kernel.org>; Thu, 12 Oct 2023 03:20:09 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id 5b1f17b1804b1-4066241289bso8536255e9.0
-        for <linux-serial@vger.kernel.org>; Thu, 12 Oct 2023 03:20:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1697106008; x=1697710808; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=AspipUdpFrV9sBDnAvz0RM3nr2I6T9tlDfxO+8+4APw=;
-        b=rdm0TfVNDpluKx3ntDKET8smKwFLgGQaSv7xKa9UWSvfrB51M9+oT3bk7zKvujUH4j
-         mARpn4ob1csAcNqD/VI8WcBOCbshw3qa9ujP/Fx3h4DexVq42uEhW3l9/qX+IaBezXP+
-         3g1y8+0naA5DJCY02WgWmFO3bFnKKIS7g7r4Fo4gPY9FVoLlUMjRljbdM5kwhY1qKKm6
-         tXQWimE/3qK7tZA+ZiP8dNyYtd7W3MrmHh8Nzleixg9gso4380qADTZ81qZ51nL2pU/q
-         MM21rStDKub+o3M1dNX7KF1mSiVYUF9inqAJ6EulF4FJD8Cza+9Ssu7pZyGhr62cylCW
-         Jj+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697106008; x=1697710808;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=AspipUdpFrV9sBDnAvz0RM3nr2I6T9tlDfxO+8+4APw=;
-        b=Se8RSg/VDJgqXj/M/w9AojHosJjeXNL6U4Gpe5LqJVZK3MmyOj8gDgPn9HC0EZbARl
-         oKKmc6EV26RujgWHORIMkTq2X69u2QtARyjWYO4fpzr3kURJm9oM8wITLOGrONRjRL+t
-         boSdYxjp4PwOCXM312gwvr+UrWcau27Qw8ZjzqwwrL3n2Ae9MfU5JQi+vn1hjEfMk/dZ
-         u0NM1gxoPpnMNoSpqyolAY3Mik7b35PNNmxuOJLEDAbxMRSFCM5W7/hSlfwwaMrDM4J9
-         4TVkV4PZq7mBKWPl33J0titywAisfWqsKG+Hqabpf3P58KsiOnUso5KUOt653q6infXd
-         cMgw==
-X-Gm-Message-State: AOJu0YylUcnM36i9qJyZfnlkU2V/8T93B+cXA/bobBiBOFXVN6xJl+p+
-        t/ciVmhJIx9VJFv2DdlBTpi4eQ==
-X-Google-Smtp-Source: AGHT+IFrdSVLCatnxPmHTw7VE67zNkY8kP6acUi9dJdfTSK7WmF6YKDDPKb4Oo0dC0PIHOEJVGgZkw==
-X-Received: by 2002:a7b:c7d7:0:b0:3fd:2e89:31bd with SMTP id z23-20020a7bc7d7000000b003fd2e8931bdmr20660572wmk.14.1697106008213;
-        Thu, 12 Oct 2023 03:20:08 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.219.100])
-        by smtp.gmail.com with ESMTPSA id p4-20020a05600c204400b00403b63e87f2sm19036109wmg.32.2023.10.12.03.20.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Oct 2023 03:20:07 -0700 (PDT)
-Message-ID: <809be13a-74b7-4934-8319-17330febc1b7@linaro.org>
-Date:   Thu, 12 Oct 2023 12:20:04 +0200
+        Thu, 12 Oct 2023 06:29:42 -0400
+X-Greylist: delayed 359 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 Oct 2023 03:29:38 PDT
+Received: from postfix2.imaqliq.com (postfix2.imaqliq.com [93.189.151.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F58B8;
+        Thu, 12 Oct 2023 03:29:38 -0700 (PDT)
+Received: from verse.imaqliq.com (verse.imaqliq.com [93.189.151.95])
+        by postfix2.imaqliq.com (Postfix) with ESMTP id 4A93A1C2941;
+        Thu, 12 Oct 2023 13:23:36 +0300 (MSK)
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 02/20] dt-bindings: clock: Add Google gs101 clock
- management unit bindings
-Content-Language: en-US
-To:     Peter Griffin <peter.griffin@linaro.org>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
-        tomasz.figa@gmail.com, s.nawrocki@samsung.com,
-        linus.walleij@linaro.org, wim@linux-watchdog.org,
-        linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org,
-        arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org,
-        cw00.choi@samsung.com, tudor.ambarus@linaro.org,
-        andre.draszik@linaro.org, semen.protsenko@linaro.org,
-        saravanak@google.com, willmcvicker@google.com, soc@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        kernel-team@android.com, linux-serial@vger.kernel.org
-References: <20231011184823.443959-1-peter.griffin@linaro.org>
- <20231011184823.443959-3-peter.griffin@linaro.org>
- <5907e2b3-9a0b-4871-be08-6ca42200b8ec@linaro.org>
- <CADrjBPqF67bcTnssQO8cN2n1ZbevziVNa+gA5azEDz_1wXzaNQ@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <CADrjBPqF67bcTnssQO8cN2n1ZbevziVNa+gA5azEDz_1wXzaNQ@mail.gmail.com>
+Sensitivity: 
+Importance: Normal
+X-Priority: 3 (Normal)
+In-Reply-To: 
+References: 
+Subject: [PATCH] tty: serial: meson: hard LOCKUP on crtscts mode
+From:   pkrasavin@imaqliq.ru
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, pkrasavin@imaqliq.ru
+Date:   Thu, 12 Oct 2023 10:23:30 +0000
+Message-ID: <OF28B2B8C9.5BC0CD28-ON00258A46.0037688F-00258A46.0039155B@gdc.ru>
+X-Mailer: Lotus Domino Web Server Release 12.0.2 November 03, 2022
+X-MIMETrack: Serialize by http on verse/com(Release 12.0.2|November 03, 2022) at 10/12/2023
+ 10:23:30,
+        Serialize complete at 10/12/2023 10:23:30,
+        Serialize by Router on verse/com(Release 12.0.2|November 03, 2022) at 10/12/2023
+ 10:23:35
+X-KeepSent: 28B2B8C9:5BC0CD28-00258A46:0037688F;
+ type=4; name=$KeepSent
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8BIT
+X-KLMS-Rule-ID: 1
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Lua-Profiles: 180559 [Oct 12 2023]
+X-KLMS-AntiSpam-Version: 6.0.0.2
+X-KLMS-AntiSpam-Envelope-From: pkrasavin@imaqliq.ru
+X-KLMS-AntiSpam-Rate: 10
+X-KLMS-AntiSpam-Status: not_detected
+X-KLMS-AntiSpam-Method: none
+X-KLMS-AntiSpam-Auth: dmarc=fail header.from=imaqliq.ru policy=none;spf=softfail smtp.mailfrom=imaqliq.ru;dkim=none
+X-KLMS-AntiSpam-Info: LuaCore: 539 539 807534d9021bfe9ca369c363d15ac993cd93d4d9, {rep_avail}, {Tracking_from_domain_doesnt_match_to}, d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;gdc.ru:7.1.1;127.0.0.199:7.1.2;imaqliq.ru:7.1.1;verse.imaqliq.com:7.1.1;93.189.151.95:7.1.2, FromAlignment: s, {Tracking_dmark_f}, ApMailHostAddress: 93.189.151.95
+X-MS-Exchange-Organization-SCL: -1
+X-KLMS-AntiSpam-Interceptor-Info: scan successful
+X-KLMS-AntiPhishing: Clean, bases: 2023/10/12 08:55:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2023/10/12 01:34:00 #22164647
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 12/10/2023 12:15, Peter Griffin wrote:
+There might be hard lockup if we set crtscts mode on port without RTS/CTS configured:
 
->>> +  - if:
->>> +      properties:
->>> +        compatible:
->>> +          contains:
->>> +            const: google,gs101-cmu-top
->>> +
->>> +    then:
->>> +      properties:
->>> +        clocks:
->>> +          items:
->>> +            - description: External reference clock (24.576 MHz)
->>> +
->>> +        clock-names:
->>> +          items:
->>> +            - const: oscclk
->>> +
->>> +  - if:
->>> +      properties:
->>> +        compatible:
->>> +          contains:
->>
->> enum:
->>   - google,gs101-cmu-apm
->>   - google,gs101-cmu-misc
-> 
-> Ok just to be clear, are you saying I should have it like this?
-> 
->   - if:
->       properties:
->         compatible:
->           contains:
->             enum:
->               - google,gs101-cmu-misc
+# stty -F /dev/ttyAML6 crtscts; echo 1 > /dev/ttyAML6; echo 2 > /dev/ttyAML6
+[   95.890386] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+[   95.890857] rcu:     3-...0: (201 ticks this GP) idle=e33c/1/0x4000000000000000 softirq=5844/5846 fqs=4984
+[   95.900212] rcu:     (detected by 2, t=21016 jiffies, g=7753, q=296 ncpus=4)
+[   95.906972] Task dump for CPU 3:
+[   95.910178] task:bash            state:R  running task     stack:0     pid:205   ppid:1      flags:0x00000202
+[   95.920059] Call trace:
+[   95.922485]  __switch_to+0xe4/0x168
+[   95.925951]  0xffffff8003477508
+[   95.974379] watchdog: Watchdog detected hard LOCKUP on cpu 3
+[   95.974424] Modules linked in: 88x2cs(O) rtc_meson_vrtc
 
-No, my bad, I meant apm + google,gs101-cmu-top
+Possible solution would be to not allow to setup crtscts on such port.
 
->               - google,gs101-cmu-apm
+Tested on S905X3 based board.
 
+Signed-off-by: Pavel Krasavin <pkrasavin@imaqliq.com>
 
-
-
-Best regards,
-Krzysztof
-
+--- a/drivers/tty/serial/meson_uart.c	2023-08-22 12:46:50.933814528 +0300
++++ b/drivers/tty/serial/meson_uart.c	2023-08-22 14:48:15.593169948 +0300
+@@ -380,10 +380,15 @@ static void meson_uart_set_termios(struc
+ 	else
+ 		val |= AML_UART_STOP_BIT_1SB;
+ 
+-	if (cflags & CRTSCTS)
+-		val &= ~AML_UART_TWO_WIRE_EN;
+-	else
++	if (cflags & CRTSCTS) {
++		if (port->flags & UPF_HARD_FLOW) {
++			val &= ~AML_UART_TWO_WIRE_EN;
++		} else {
++			termios->c_cflag &= ~CRTSCTS;
++		}
++	} else {
+ 		val |= AML_UART_TWO_WIRE_EN;
++	}
+ 
+ 	writel(val, port->membase + AML_UART_CONTROL);
+ 
+@@ -705,6 +710,7 @@ static int meson_uart_probe(struct platf
+ 	u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
+ 	int ret = 0;
+ 	int irq;
++	bool has_rtscts;
+ 
+ 	if (pdev->dev.of_node)
+ 		pdev->id = of_alias_get_id(pdev->dev.of_node, "serial");
+@@ -732,6 +738,7 @@ static int meson_uart_probe(struct platf
+ 		return irq;
+ 
+ 	of_property_read_u32(pdev->dev.of_node, "fifo-size", &fifosize);
++	has_rtscts = of_property_read_bool(pdev->dev.of_node, "uart-has-rtscts");
+ 
+ 	if (meson_ports[pdev->id]) {
+ 		return dev_err_probe(&pdev->dev, -EBUSY,
+@@ -762,6 +769,8 @@ static int meson_uart_probe(struct platf
+ 	port->mapsize = resource_size(res_mem);
+ 	port->irq = irq;
+ 	port->flags = UPF_BOOT_AUTOCONF | UPF_LOW_LATENCY;
++	if (has_rtscts)
++		port->flags |= UPF_HARD_FLOW;
+ 	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_MESON_CONSOLE);
+ 	port->dev = &pdev->dev;
+ 	port->line = pdev->id;
