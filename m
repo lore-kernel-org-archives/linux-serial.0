@@ -2,100 +2,86 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0D5ECDB47E
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 08:56:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CDABCDB46E
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Oct 2023 09:21:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235318AbjJLI4f (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Oct 2023 04:56:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35148 "EHLO
+        id S235427AbjJLJVP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 12 Oct 2023 05:21:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232023AbjJLI4d (ORCPT
+        with ESMTP id S229884AbjJLJVP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Oct 2023 04:56:33 -0400
-Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 807C091
-        for <linux-serial@vger.kernel.org>; Thu, 12 Oct 2023 01:56:31 -0700 (PDT)
-Received: by mail-ua1-x933.google.com with SMTP id a1e0cc1a2514c-7b102a6565eso342470241.0
-        for <linux-serial@vger.kernel.org>; Thu, 12 Oct 2023 01:56:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1697100990; x=1697705790; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=pPBtRkAyR8/yvLpXM2v/s42WseLth6/jHTmdZIsTmP0=;
-        b=h+nB6pHrr77EtQ4S5o4MRd7OTpOniGIk1qmH0SD7P1yihaFadtNX08ZAa3UC4n+z+w
-         egb3mxjqXvdZVieow3GbzQ0T8dPal4vUmMeILL1RDrVf8ni43FoTUwCHvr2Z6uENnib9
-         zv+O0fuspWiqBIEcJF/7nyw48/R1tj+B+ENxZhdQpyX2CxWToMaDGNAG12M9pdKErOci
-         1Ke1h3Uj0y/TuNBElQ/h3w66J8/o2p70L8KrTkEyNhYJP6G8OuTzeMCXhxulXgOkfSrx
-         D2jXyaoFNlq3EoYUKZmP2v+J12ptE0XY3qKRcpZu504cKvXK9yAXdUu71AOoWYIfBYkS
-         sfHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697100990; x=1697705790;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=pPBtRkAyR8/yvLpXM2v/s42WseLth6/jHTmdZIsTmP0=;
-        b=F1/iXIORN9vul1r+PkTok0lU+xEpSdpHVuotula+aSeSO+ZgWaKCu/mjpp80JhSVJ8
-         EegB2xvfy87CikCFxrcWiTxdEMfLouihYBxO06HT0jvS+RH8cEGBzjyznJ6gRgsJ0VsK
-         TGA4vEJ6cBsLuv852uhtaU7Vw7DRbEn95l5gMUkWVFtgFDqWdTGGJaOQbWMChcxOGhqw
-         TbY71TvVfAr28rEHI/Bj03nLAigz3Nu6PrAqDQAZwyR0K6t+HZRDHTv1wm8OvRRV/v/O
-         bDfn4HIjfQO0gp3uUoXFGIfgr5wYqx5PsjE8l0Dx+nCyuYBcYUMg6kGDwA07YeBoWISV
-         A5ig==
-X-Gm-Message-State: AOJu0YxHFjKi5OqQ6wF/PyjCoCUmj6rp5DzLBQw8xaCQmcjcYL40BdiJ
-        8889GDZsTrztJayWEm16PrUpo4FaC1fmO0ac//udaA==
-X-Google-Smtp-Source: AGHT+IFo3Lm+2RcnGTHf/V2J1XBT43I24bimP6qoGhCOeQNixS13RWY5pVJxbWa7Xp+lhHh0Is6YyxIfDwTn7aNz6FQ=
-X-Received: by 2002:a67:e2cb:0:b0:452:c3a4:1f8c with SMTP id
- i11-20020a67e2cb000000b00452c3a41f8cmr18858896vsm.2.1697100990608; Thu, 12
- Oct 2023 01:56:30 -0700 (PDT)
+        Thu, 12 Oct 2023 05:21:15 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C32E791;
+        Thu, 12 Oct 2023 02:21:13 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07BACC433C8;
+        Thu, 12 Oct 2023 09:21:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1697102473;
+        bh=SbH4FF+AoysrqBe5kKWS7My653sdFw0g+bfWwXIpZZk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iKwC4DIp81mBmf/nnA1FLjrVqbEsPK970YamzftlRJTsIi9bcrkBdYbyQqu/j8Jwi
+         MrqeGKEaSacHFGr3ZlV+8qz8+gEND1xEpj4+GGkOwjQ/nQ69sMzqSMaVFRe4fYIRvj
+         H41/C6eJ6rrxh6ieRFuKsNQ0a1Tb9BD5wBiFDH80HfJZXd9ibWbbzSFlQ3rmYoG7Cl
+         taQ3Zur00X1d7RWY/h1U+CtWA25Z2b9NWwwzKtDObQQu3hwo+0Zsj+jLl7JXYZHQvx
+         7dkBHX9aFWiD87o0fFkXdSfFCm4mV/S63lpG2BiRxvhBBbTb8yiLQF3l4qIPLAjlTq
+         UxSJSBiItIsYg==
+Date:   Thu, 12 Oct 2023 10:21:07 +0100
+From:   Lee Jones <lee@kernel.org>
+To:     Florian Eckert <fe@dev.tdt.de>
+Cc:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, pavel@ucw.cz, kabel@kernel.org,
+        u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-leds@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v2 3/4] trigger: ledtrig-tty: move variable definition to
+ the top
+Message-ID: <20231012092107.GE8314@google.com>
+References: <20230928132632.200263-1-fe@dev.tdt.de>
+ <20230928132632.200263-4-fe@dev.tdt.de>
+ <20231002140559.GB8453@google.com>
+ <66ca9e2231629a72e098e1b17736ca34@dev.tdt.de>
 MIME-Version: 1.0
-References: <20231011184823.443959-1-peter.griffin@linaro.org>
- <20231011184823.443959-3-peter.griffin@linaro.org> <ZScYOUi7qhvGmMIF@google.com>
- <e4523fc3-e1dd-4791-b950-98dfc6dce1f5@linaro.org>
-In-Reply-To: <e4523fc3-e1dd-4791-b950-98dfc6dce1f5@linaro.org>
-From:   Peter Griffin <peter.griffin@linaro.org>
-Date:   Thu, 12 Oct 2023 09:56:19 +0100
-Message-ID: <CADrjBPpntJMsxb6oGQ7zuX3f0dgE3oYFepL4OdxamBz=_or7kw@mail.gmail.com>
-Subject: Re: [PATCH v3 02/20] dt-bindings: clock: Add Google gs101 clock
- management unit bindings
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     William McVicker <willmcvicker@google.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
-        conor+dt@kernel.org, sboyd@kernel.org, tomasz.figa@gmail.com,
-        s.nawrocki@samsung.com, linus.walleij@linaro.org,
-        wim@linux-watchdog.org, linux@roeck-us.net,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        olof@lixom.net, gregkh@linuxfoundation.org, cw00.choi@samsung.com,
-        tudor.ambarus@linaro.org, andre.draszik@linaro.org,
-        semen.protsenko@linaro.org, saravanak@google.com, soc@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        kernel-team@android.com, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <66ca9e2231629a72e098e1b17736ca34@dev.tdt.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Krzysztof,
+On Wed, 11 Oct 2023, Florian Eckert wrote:
 
-On Thu, 12 Oct 2023 at 07:07, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 11/10/2023 23:48, William McVicker wrote:
-> > On 10/11/2023, Peter Griffin wrote:
-> >> Provide dt-schema documentation for Google gs101 SoC clock controller.
-> >> Currently this adds support for cmu_top, cmu_misc and cmu_apm.
-> >>
-> >> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
-> >
-> > Tested-by: Will McVicker <willmcvicker@google.com>
->
-> And how do you perform testing of a binding?
+> Hello Lee,
+> 
+> I only got reviews for the fixes and preparations for commits that change
+> the
+> tty subsystem, but no reaction from the maintainer of the feature I want to
+> add to ledtrig-tty for v1 and v2 patchset.
+> 
+> How should I proceed? Send a v3 with the the requested changes.
+> 
+> [Patch v2 1/4]: https://lore.kernel.org/linux-leds/20230928132632.200263-1-fe@dev.tdt.de/T/#m913d3822465f35b54dfa24b1dfe4d50e61352980
+> Change got a 'Reviewed-by: Jiri Slaby <jirislaby@kernel.org>'.
+> Will add this to an upcoming v3 again.
+> 
+> [Patch v2 2/4] : https://lore.kernel.org/linux-leds/20230928132632.200263-1-fe@dev.tdt.de/T/#m7ee7618894a66fd3c89bed488a2394265a3f8df1
+> I missed to add the robot error message to the commit message and also
+> missed
+> to add the the following 'Reported-by: kernel test robot <lkp@intel.com>'
+> and
+> 'Closes:
+> https://lore.kernel.org/oe-kbuild-all/202309270440.IJB24Xap-lkp@intel.com/'
+> to the commit message. Will add this to an upcoming v3.
+> 
+> And do not wait for the review of the following patches.
+> https://lore.kernel.org/linux-leds/20230928132632.200263-1-fe@dev.tdt.de/T/#mc0ecb912fa0e59015ad0a9b4cb491ae9f18c1ea9
+> https://lore.kernel.org/linux-leds/20230928132632.200263-1-fe@dev.tdt.de/T/#mba36217323c386ecd900e188bbdf6276c3c96c91
 
-I guess if William is using my script to build and flash the kernel it actually
-runs the DTC checks as part of the build process.
+Yes.  I've removed this from my queue.
 
-See https://git.codelinaro.org/linaro/googlelt/pixelscripts/-/blob/clo/main/buildp21upstream.sh#L44
+Better to resend it with the fixes.
 
-regards,
-
-Peter.
+-- 
+Lee Jones [李琼斯]
