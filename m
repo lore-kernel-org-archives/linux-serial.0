@@ -2,204 +2,180 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84529C41513
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Oct 2023 15:37:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21143CDB47E
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Oct 2023 15:42:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232410AbjJMPhM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Oct 2023 11:37:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42352 "EHLO
+        id S232434AbjJMPmD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 13 Oct 2023 11:42:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232356AbjJMPhL (ORCPT
+        with ESMTP id S232469AbjJMPmC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Oct 2023 11:37:11 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB87BD
-        for <linux-serial@vger.kernel.org>; Fri, 13 Oct 2023 08:37:09 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id 5b1f17b1804b1-4075c58ac39so23330215e9.3
-        for <linux-serial@vger.kernel.org>; Fri, 13 Oct 2023 08:37:09 -0700 (PDT)
+        Fri, 13 Oct 2023 11:42:02 -0400
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E80D9
+        for <linux-serial@vger.kernel.org>; Fri, 13 Oct 2023 08:41:59 -0700 (PDT)
+Received: by mail-ot1-x32d.google.com with SMTP id 46e09a7af769-6c4bf619b57so1416772a34.1
+        for <linux-serial@vger.kernel.org>; Fri, 13 Oct 2023 08:41:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1697211428; x=1697816228; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :references:cc:to:content-language:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=G5oyTNCPKWdkGABnn1l8QHV8SiFeKXaFhQsDAfS3/jU=;
-        b=aym9Nv+PadcwpIrIfwgOZy/3JnjwJl9QdWW8TPf4G1C18L2WdOZOLrFRNGtquy7Mqz
-         IoNI4PX0P1WvAX1mCmqQd0N25STgMkpL/5vVrnH8hm12THKmh39MLJ78kYUSo5eNiSpo
-         NBKv5R16X4YelqdaompdFyZ+hHZDn2tk/3QHgxXP1pJN6eI5e0XlaR6hGcV1HsatyxWr
-         2isteUhGzgBwTg02ciaBtLpDGxiBZDxkoNbS2S5mlpSAU0XJL+3ocghLl3Q8CRPzn71l
-         ucOaDVcwWHLdoZsU9Pk5aBdR3zUN7rT1hFeRwtEmkHl0HXtw5gm8ENQiLcbe7eBwpFAF
-         C2ow==
+        d=ventanamicro.com; s=google; t=1697211718; x=1697816518; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=58F4pC3mBDu8F+pvcYNIm1FByUJEAPva6M9hCs3f/vs=;
+        b=n+BqQMAKWJX45AnFEWePhAqGlkLkXrnY0T7msk+XhAMKqkVcC1Zncxg9ON0N79vJQi
+         uuCIL7VVp44DdNoBOoFFoZM4dH1AjhOWHn8i/jNP+HbNGexnAJVYNcdGfhSCXIuv5zZk
+         xG8BSJqWHcc1NGCb5y/9PfstHSukkld0lzVWudGZ38hwnUAnKvHVf51rJg81bjSrDAD8
+         QsXt0gsfgcjBv0JOp28jbp7zOeqUKPu3YOQivYr/XxG0Heg5lRqySMHPxQdx97uWW8h8
+         ukDBuHjTaiDAytEaWbqZZgRowb8J1y5SXTGPlox+JisQsKaGTs7BGacRiVDBz1FZiNq9
+         bMjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697211428; x=1697816228;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :references:cc:to:content-language:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=G5oyTNCPKWdkGABnn1l8QHV8SiFeKXaFhQsDAfS3/jU=;
-        b=tdbnN3YtL6PrLFYv1aUCDwO4ZkdXKRICA6mQXJ45cbi7gCd4jpiLoZdd5s7Xj5VwzF
-         Uy4D2wK7AO/52XchszkSxAH0D8bgcUiNFwnvcwLz7fAtrWdODLKqLWmTuCmnMtBDXlGn
-         JVnJQvDyGORCNiGUA1YU1Iw/C4MPVbOYKrdbXXcBUBX0U9chLKCVD2S8xdqBiKaBsrTa
-         Ytaop+gIxWNXPxGe4vpmrb+f7NWoAG1I3GypMuclWwSNJWrFkMyBkDDlsRonUPu5zZde
-         +4C0a8IyPJaW+ltB/vHm9BkIjxQx/g6RBAI8tOyzmHG1jPU8dO/27928ATeI0yYMthaJ
-         BeXQ==
-X-Gm-Message-State: AOJu0YyZXil0cFRLmZx35HUMk8Q1jaV6mfcf2ZKtqAmDD927UUprnWwo
-        XdLyC1RmZWUdouI8LJYj/4zgjA==
-X-Google-Smtp-Source: AGHT+IFI4ILutivv2eLxcQlHbN7zkoPuh7ogi1AL06gLefp4u5sMqFPNWTdX3w2XIt20z9wTmiFJGQ==
-X-Received: by 2002:adf:f005:0:b0:321:52fb:5703 with SMTP id j5-20020adff005000000b0032152fb5703mr24943473wro.13.1697211427824;
-        Fri, 13 Oct 2023 08:37:07 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:982:cbb0:535e:33c9:c7dd:4940? ([2a01:e0a:982:cbb0:535e:33c9:c7dd:4940])
-        by smtp.gmail.com with ESMTPSA id bw14-20020a0560001f8e00b0032d886039easm6912044wrb.14.2023.10.13.08.37.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Oct 2023 08:37:07 -0700 (PDT)
-Message-ID: <5765a10c-8f75-4bf4-830b-b5fba501d164@linaro.org>
-Date:   Fri, 13 Oct 2023 17:37:06 +0200
+        d=1e100.net; s=20230601; t=1697211718; x=1697816518;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=58F4pC3mBDu8F+pvcYNIm1FByUJEAPva6M9hCs3f/vs=;
+        b=R3g/fDISEsBabMe5TD3fl+JnmxLf6s9m9jmHxecoCnBgP+pVWaBG3XV6GvKwlpz0cZ
+         eKd/QlENUPZkscUC5tQLvDTjypCPxEDLeiAGviTT8EEF+44dSYCa4ZF9capD3PHG4vd9
+         RLSKbVhJTNE80VwfBzcY7BTTbXoMlhVnNPZsJ6gqTyRlhL2wBWvc9kmx3lcSB962eRmq
+         BAzmS/xiRZ37p3/FjLE+8IvOfCcGP1txyydmF6XImH9K4UspipSNmip9/4TVS0CWikl3
+         I4yzwuTAoZAw1ApKFLnGzD4QZCdgASBz1gJsgUUPZ/f05nYxnXXjDgMV0amtdrtgoSmP
+         ISPg==
+X-Gm-Message-State: AOJu0YxqXted+2BeI08giXY7LiIkcRmF+hiQFAO3zx6Tlx3CVNv3+vBr
+        zrSumLaKo+tvJOruL0OmFifB3+KY6mnTYd/WeGsCHA==
+X-Google-Smtp-Source: AGHT+IEzcIYsSKMe5bsbRMbzf4xh1PED9ixUfbd1o7ixVah0VHZj9arKWffuv9/jPa1nkBsBkAGklSaRf41sshg9uSY=
+X-Received: by 2002:a05:6870:6587:b0:1e9:b7a7:8efe with SMTP id
+ fp7-20020a056870658700b001e9b7a78efemr5211668oab.2.1697211718067; Fri, 13 Oct
+ 2023 08:41:58 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From:   Neil Armstrong <neil.armstrong@linaro.org>
-Reply-To: neil.armstrong@linaro.org
-Subject: Re: [PATCH v4] tty: serial: meson: fix hard LOCKUP on crtscts mode
-Content-Language: en-US, fr
-To:     Dmitry Rokosov <ddrokosov@salutedevices.com>,
-        Pavel Krasavin <pkrasavin@imaqliq.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+References: <20231012051509.738750-1-apatel@ventanamicro.com>
+ <20231012051509.738750-8-apatel@ventanamicro.com> <87fs2ghxyz.fsf@all.your.base.are.belong.to.us>
+In-Reply-To: <87fs2ghxyz.fsf@all.your.base.are.belong.to.us>
+From:   Anup Patel <apatel@ventanamicro.com>
+Date:   Fri, 13 Oct 2023 21:11:46 +0530
+Message-ID: <CAK9=C2XFTULtQ6YoNHDb7WJwm8p3wkG_pJA8h+XYGEOzt18Ctg@mail.gmail.com>
+Subject: Re: [PATCH v2 7/8] tty: Add SBI debug console support to HVC SBI driver
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org
-References: <OF55521400.7512350F-ON00258A47.003F7254-00258A47.0040E15C@gdc.ru>
- <20231013141818.adq6eujrx2wueobp@CAB-WSD-L081021>
-Autocrypt: addr=neil.armstrong@linaro.org; keydata=
- xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
- GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
- BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
- qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
- 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
- AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
- OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
- Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
- YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
- GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
- UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
- GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
- yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
- QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
- SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
- 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
- Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
- oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
- M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
- 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
- KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
- 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
- QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
-Organization: Linaro Developer Services
-In-Reply-To: <20231013141818.adq6eujrx2wueobp@CAB-WSD-L081021>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Conor Dooley <conor@kernel.org>,
+        Andrew Jones <ajones@ventanamicro.com>, kvm@vger.kernel.org,
+        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
+        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, Atish Patra <atishp@rivosinc.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 13/10/2023 16:18, Dmitry Rokosov wrote:
-> I believe it would be necessary to include a 'Fixes' tag for that. Neil,
-> what do you think?
-> Since a HARDLOCKUP is an undesirable situation, I don't think we want to
-> have it in the LTS kernels either.
+On Thu, Oct 12, 2023 at 5:08=E2=80=AFPM Bj=C3=B6rn T=C3=B6pel <bjorn@kernel=
+.org> wrote:
+>
+> Anup Patel <apatel@ventanamicro.com> writes:
+>
+> > From: Atish Patra <atishp@rivosinc.com>
+> >
+> > RISC-V SBI specification supports advanced debug console
+> > support via SBI DBCN extension.
+> >
+> > Extend the HVC SBI driver to support it.
+> >
+> > Signed-off-by: Atish Patra <atishp@rivosinc.com>
+> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > ---
+> >  drivers/tty/hvc/Kconfig         |  2 +-
+> >  drivers/tty/hvc/hvc_riscv_sbi.c | 76 ++++++++++++++++++++++++++++++---
+> >  2 files changed, 70 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/drivers/tty/hvc/Kconfig b/drivers/tty/hvc/Kconfig
+> > index 4f9264d005c0..6e05c5c7bca1 100644
+> > --- a/drivers/tty/hvc/Kconfig
+> > +++ b/drivers/tty/hvc/Kconfig
+> > @@ -108,7 +108,7 @@ config HVC_DCC_SERIALIZE_SMP
+> >
+> >  config HVC_RISCV_SBI
+> >       bool "RISC-V SBI console support"
+> > -     depends on RISCV_SBI_V01
+> > +     depends on RISCV_SBI
+> >       select HVC_DRIVER
+> >       help
+> >         This enables support for console output via RISC-V SBI calls, w=
+hich
+> > diff --git a/drivers/tty/hvc/hvc_riscv_sbi.c b/drivers/tty/hvc/hvc_risc=
+v_sbi.c
+> > index 31f53fa77e4a..da318d7f55c5 100644
+> > --- a/drivers/tty/hvc/hvc_riscv_sbi.c
+> > +++ b/drivers/tty/hvc/hvc_riscv_sbi.c
+> > @@ -39,21 +39,83 @@ static int hvc_sbi_tty_get(uint32_t vtermno, char *=
+buf, int count)
+> >       return i;
+> >  }
+> >
+> > -static const struct hv_ops hvc_sbi_ops =3D {
+> > +static const struct hv_ops hvc_sbi_v01_ops =3D {
+> >       .get_chars =3D hvc_sbi_tty_get,
+> >       .put_chars =3D hvc_sbi_tty_put,
+> >  };
+> >
+> > -static int __init hvc_sbi_init(void)
+> > +static int hvc_sbi_dbcn_tty_put(uint32_t vtermno, const char *buf, int=
+ count)
+> >  {
+> > -     return PTR_ERR_OR_ZERO(hvc_alloc(0, 0, &hvc_sbi_ops, 16));
+> > +     phys_addr_t pa;
+> > +     struct sbiret ret;
+> > +
+> > +     if (is_vmalloc_addr(buf))
+> > +             pa =3D page_to_phys(vmalloc_to_page(buf)) + offset_in_pag=
+e(buf);
+>
+> What is assumed from buf here? If buf is crossing a page, you need to
+> adjust the count, no?
 
-Yes, and please keep the previous Reviewed-by Dmitry and I added on v3 and send a v5 with the Fixes added.
+I never saw a page crossing buffer but I will certainly address this
+in the next revision.
 
-It should be:
-Fixes: ff7693d079e5 ("ARM: meson: serial: add MesonX SoC on-chip uart driver")
+>
+> > +     else
+> > +             pa =3D __pa(buf);
+> > +
+> > +     if (IS_ENABLED(CONFIG_32BIT))
+> > +             ret =3D sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRIT=
+E,
+> > +                             count, lower_32_bits(pa), upper_32_bits(p=
+a),
+> > +                             0, 0, 0);
+> > +     else
+> > +             ret =3D sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRIT=
+E,
+> > +                             count, pa, 0, 0, 0, 0);
+> > +     if (ret.error)
+> > +             return 0;
+> > +
+> > +     return count;
+> >  }
+> > -device_initcall(hvc_sbi_init);
+> >
+> > -static int __init hvc_sbi_console_init(void)
+> > +static int hvc_sbi_dbcn_tty_get(uint32_t vtermno, char *buf, int count=
+)
+> >  {
+> > -     hvc_instantiate(0, 0, &hvc_sbi_ops);
+> > +     phys_addr_t pa;
+> > +     struct sbiret ret;
+> > +
+> > +     if (is_vmalloc_addr(buf))
+> > +             pa =3D page_to_phys(vmalloc_to_page(buf)) + offset_in_pag=
+e(buf);
+>
+> And definitely adjust count here, if we're crossing a page!
 
-Hopefully it will be the last iteration.
+Sure, I will update here as well.
 
 Thanks,
-Neil
-> 
-> On Fri, Oct 13, 2023 at 11:48:39AM +0000, Pavel Krasavin wrote:
->> From: Pavel Krasavin <pkrasavin@imaqliq.com>
->>
->> There might be hard lockup if we set crtscts mode on port without RTS/CTS configured:
->>
->> # stty -F /dev/ttyAML6 crtscts; echo 1 > /dev/ttyAML6; echo 2 > /dev/ttyAML6
->> [   95.890386] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
->> [   95.890857] rcu:     3-...0: (201 ticks this GP) idle=e33c/1/0x4000000000000000 softirq=5844/5846 fqs=4984
->> [   95.900212] rcu:     (detected by 2, t=21016 jiffies, g=7753, q=296 ncpus=4)
->> [   95.906972] Task dump for CPU 3:
->> [   95.910178] task:bash            state:R  running task     stack:0     pid:205   ppid:1      flags:0x00000202
->> [   95.920059] Call trace:
->> [   95.922485]  __switch_to+0xe4/0x168
->> [   95.925951]  0xffffff8003477508
->> [   95.974379] watchdog: Watchdog detected hard LOCKUP on cpu 3
->> [   95.974424] Modules linked in: 88x2cs(O) rtc_meson_vrtc
->>
->> Possible solution would be to not allow to setup crtscts on such port.
->>
->> Tested on S905X3 based board.
->>
->> Signed-off-by: Pavel Krasavin <pkrasavin@imaqliq.com>
->> ---
->> v4: More correct patch subject according to Jiri's note
->> v3: https://lore.kernel.org/lkml/OF6CF5FFA0.CCFD0E8E-ON00258A46.00549EDF-00258A46.0054BB62@gdc.ru/
->> "From:" line added to the mail
->> v2: https://lore.kernel.org/lkml/OF950BEF72.7F425944-ON00258A46.00488A76-00258A46.00497D44@gdc.ru/
->> braces for single statement removed according to Dmitry's note
->> v1: https://lore.kernel.org/lkml/OF28B2B8C9.5BC0CD28-ON00258A46.0037688F-00258A46.0039155B@gdc.ru/
->> ---
->>
->> --- a/drivers/tty/serial/meson_uart.c	2023-10-12 15:44:02.410538523 +0300
->> +++ b/drivers/tty/serial/meson_uart.c	2023-10-12 15:58:06.242395253 +0300
->> @@ -380,10 +380,14 @@ static void meson_uart_set_termios(struc
->>   	else
->>   		val |= AML_UART_STOP_BIT_1SB;
->>   
->> -	if (cflags & CRTSCTS)
->> -		val &= ~AML_UART_TWO_WIRE_EN;
->> -	else
->> +	if (cflags & CRTSCTS) {
->> +		if (port->flags & UPF_HARD_FLOW)
->> +			val &= ~AML_UART_TWO_WIRE_EN;
->> +		else
->> +			termios->c_cflag &= ~CRTSCTS;
->> +	} else {
->>   		val |= AML_UART_TWO_WIRE_EN;
->> +	}
->>   
->>   	writel(val, port->membase + AML_UART_CONTROL);
->>   
->> @@ -705,6 +709,7 @@ static int meson_uart_probe(struct platf
->>   	u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
->>   	int ret = 0;
->>   	int irq;
->> +	bool has_rtscts;
->>   
->>   	if (pdev->dev.of_node)
->>   		pdev->id = of_alias_get_id(pdev->dev.of_node, "serial");
->> @@ -732,6 +737,7 @@ static int meson_uart_probe(struct platf
->>   		return irq;
->>   
->>   	of_property_read_u32(pdev->dev.of_node, "fifo-size", &fifosize);
->> +	has_rtscts = of_property_read_bool(pdev->dev.of_node, "uart-has-rtscts");
->>   
->>   	if (meson_ports[pdev->id]) {
->>   		return dev_err_probe(&pdev->dev, -EBUSY,
->> @@ -762,6 +768,8 @@ static int meson_uart_probe(struct platf
->>   	port->mapsize = resource_size(res_mem);
->>   	port->irq = irq;
->>   	port->flags = UPF_BOOT_AUTOCONF | UPF_LOW_LATENCY;
->> +	if (has_rtscts)
->> +		port->flags |= UPF_HARD_FLOW;
->>   	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_MESON_CONSOLE);
->>   	port->dev = &pdev->dev;
->>   	port->line = pdev->id;
->>
->> _______________________________________________
->> linux-amlogic mailing list
->> linux-amlogic@lists.infradead.org
->> http://lists.infradead.org/mailman/listinfo/linux-amlogic
-> 
-
+Anup
