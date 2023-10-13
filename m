@@ -2,59 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBECDCDB474
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Oct 2023 02:56:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AAE6CDB482
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Oct 2023 06:29:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229524AbjJMC4q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Oct 2023 22:56:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58726 "EHLO
+        id S229781AbjJMG3n (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 13 Oct 2023 02:29:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbjJMC4q (ORCPT
+        with ESMTP id S229761AbjJMG3n (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Oct 2023 22:56:46 -0400
-Received: from jari.cn (unknown [218.92.28.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA1C191;
-        Thu, 12 Oct 2023 19:56:43 -0700 (PDT)
-Received: from chenguohua$jari.cn ( [182.148.14.172] ) by
- ajax-webmail-localhost.localdomain (Coremail) ; Fri, 13 Oct 2023 10:55:01
- +0800 (GMT+08:00)
-X-Originating-IP: [182.148.14.172]
-Date:   Fri, 13 Oct 2023 10:55:01 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   chenguohua@jari.cn
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH] vt: Clean up errors in selection.h
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version 2023.1-cmXT6 build
- 20230419(ff23bf83) Copyright (c) 2002-2023 www.mailtech.cn
- mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Fri, 13 Oct 2023 02:29:43 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C70FB7;
+        Thu, 12 Oct 2023 23:29:41 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6601CC433C7;
+        Fri, 13 Oct 2023 06:29:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1697178581;
+        bh=ddmv6NZdkEiu+CdZIPIU1a/xmALRcZOj0furUIUeAtI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dUEg6HzJB8gzh3s708jayGqSozY/KG1LzQ9mnvWr8yBF9K8fUtcrxGsycwQWCeq8h
+         ZzAQbC6dT6hyrdiy6kar2gNi/DkUTxsB4HzmhijWrgg/gRaujwnhZeKw1IlcD4UIEf
+         1k/Q6i7+NiSDut8cWvCpbWAJsZkKZ85HhEQk3Kpc=
+Date:   Fri, 13 Oct 2023 08:29:37 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     chenguohua@jari.cn
+Cc:     jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH] vt: Clean up errors in selection.h
+Message-ID: <2023101313-aftermost-skydiver-c587@gregkh>
+References: <4545cc2c.940.18b26f571fe.Coremail.chenguohua@jari.cn>
 MIME-Version: 1.0
-Message-ID: <4545cc2c.940.18b26f571fe.Coremail.chenguohua@jari.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: AQAAfwBn+D2FsShluNfBAA--.681W
-X-CM-SenderInfo: xfkh0w5xrk3tw6md2xgofq/1tbiAQADEWUnvzMAGQACsG
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4545cc2c.940.18b26f571fe.Coremail.chenguohua@jari.cn>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Rml4IHRoZSBmb2xsb3dpbmcgZXJyb3JzIHJlcG9ydGVkIGJ5IGNoZWNrcGF0Y2g6CgpFUlJPUjog
-ImZvbyAqIGJhciIgc2hvdWxkIGJlICJmb28gKmJhciIKClNpZ25lZC1vZmYtYnk6IEd1b0h1YSBD
-aGVuZyA8Y2hlbmd1b2h1YUBqYXJpLmNuPgotLS0KIGluY2x1ZGUvbGludXgvc2VsZWN0aW9uLmgg
-fCAyICstCiAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkKCmRp
-ZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L3NlbGVjdGlvbi5oIGIvaW5jbHVkZS9saW51eC9zZWxl
-Y3Rpb24uaAppbmRleCAxNzBlZjI4ZmYyNmIuLjNiZmY5NTY5OTA4MyAxMDA2NDQKLS0tIGEvaW5j
-bHVkZS9saW51eC9zZWxlY3Rpb24uaAorKysgYi9pbmNsdWRlL2xpbnV4L3NlbGVjdGlvbi5oCkBA
-IC0yMiw3ICsyMiw3IEBAIGV4dGVybiBpbnQgc2V0X3NlbGVjdGlvbl9rZXJuZWwoc3RydWN0IHRp
-b2NsX3NlbGVjdGlvbiAqdiwKIGV4dGVybiBpbnQgcGFzdGVfc2VsZWN0aW9uKHN0cnVjdCB0dHlf
-c3RydWN0ICp0dHkpOwogZXh0ZXJuIGludCBzZWxfbG9hZGx1dChjaGFyIF9fdXNlciAqcCk7CiBl
-eHRlcm4gaW50IG1vdXNlX3JlcG9ydGluZyh2b2lkKTsKLWV4dGVybiB2b2lkIG1vdXNlX3JlcG9y
-dChzdHJ1Y3QgdHR5X3N0cnVjdCAqIHR0eSwgaW50IGJ1dHQsIGludCBtcngsIGludCBtcnkpOwor
-ZXh0ZXJuIHZvaWQgbW91c2VfcmVwb3J0KHN0cnVjdCB0dHlfc3RydWN0ICp0dHksIGludCBidXR0
-LCBpbnQgbXJ4LCBpbnQgbXJ5KTsKIAogYm9vbCB2Y19pc19zZWwoc3RydWN0IHZjX2RhdGEgKnZj
-KTsKIAotLSAKMi4xNy4xCg==
+On Fri, Oct 13, 2023 at 10:55:01AM +0800, chenguohua@jari.cn wrote:
+> Fix the following errors reported by checkpatch:
+> 
+> ERROR: "foo * bar" should be "foo *bar"
+> 
+> Signed-off-by: GuoHua Cheng <chenguohua@jari.cn>
+> ---
+>  include/linux/selection.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/selection.h b/include/linux/selection.h
+> index 170ef28ff26b..3bff95699083 100644
+> --- a/include/linux/selection.h
+> +++ b/include/linux/selection.h
+> @@ -22,7 +22,7 @@ extern int set_selection_kernel(struct tiocl_selection *v,
+>  extern int paste_selection(struct tty_struct *tty);
+>  extern int sel_loadlut(char __user *p);
+>  extern int mouse_reporting(void);
+> -extern void mouse_report(struct tty_struct * tty, int butt, int mrx, int mry);
+> +extern void mouse_report(struct tty_struct *tty, int butt, int mrx, int mry);
+>  
+>  bool vc_is_sel(struct vc_data *vc);
+>  
+> -- 
+> 2.17.1
+
+Hi,
+
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
+
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- It looks like you did not use your name for the patch on either
+  the Signed-off-by: line, or the From: line (both of which have to
+  match).  Please read the kernel file,
+  Documentation/process/submitting-patches.rst for how to do this
+  correctly.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
