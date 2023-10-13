@@ -2,148 +2,110 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4205CDB47E
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Oct 2023 16:31:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E1F4CDB482
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Oct 2023 21:29:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232444AbjJMQbO convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Oct 2023 12:31:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54718 "EHLO
+        id S232034AbjJMV3T (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 13 Oct 2023 17:29:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232280AbjJMQa7 (ORCPT
+        with ESMTP id S230297AbjJMV3S (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Oct 2023 12:30:59 -0400
-Received: from postfix2.imaqliq.com (postfix2.imaqliq.com [93.189.151.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D7C12105;
-        Fri, 13 Oct 2023 09:29:31 -0700 (PDT)
-Received: from verse.imaqliq.com (verse.imaqliq.com [93.189.151.95])
-        by postfix2.imaqliq.com (Postfix) with ESMTP id 3867D1C2914;
-        Fri, 13 Oct 2023 19:29:29 +0300 (MSK)
+        Fri, 13 Oct 2023 17:29:18 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52676B7
+        for <linux-serial@vger.kernel.org>; Fri, 13 Oct 2023 14:29:17 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id d75a77b69052e-419b53acc11so35551cf.0
+        for <linux-serial@vger.kernel.org>; Fri, 13 Oct 2023 14:29:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1697232556; x=1697837356; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cbnszuC6zZy9ZUsF74yWxSFhfV0I+Nmxa40zOQ2lSHM=;
+        b=IgK+mnsKu8Ft4bT9XiWU9pObZSzyJRLvAieYMC3f08hehTP9jVLMkTpG10L1paiBlK
+         JkSv10u18Ix5Kq/P4422fRm9wWDW+pDCrPRZ9XsHRaTlVNHrRcSb8QhVxi/y/nJGMD5U
+         UNdxHsKsCkH5Sf7EA7pd0mO2a/UACdhOjE7wJfaXI5cyMIdpBt1E9cvInLGU38j+0hxr
+         jW7Z0FQre9XxK2ru6nRlUMZ+PpElyLsbOob09vzxk4ivzXtq4PECLZt6O6fxhC1aFBrn
+         QpSZ/KyLCt8dKeQDAFY6yzkUStE9cEU9N1C6ry5HLETWcFATZekPscERJmpGHj76FgUM
+         gwhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697232556; x=1697837356;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=cbnszuC6zZy9ZUsF74yWxSFhfV0I+Nmxa40zOQ2lSHM=;
+        b=Li3BQEeyJzLvR7sSoHm1n2Jn4bQvSTYeqGPAbAYdwlqecvOtytySjcVpNS9C9Bvvz9
+         1x9cDGqsP6mM8fippusER+kBXeJFbxC9WNHkimoTQ0rtxlJ6rGkx9XJSIUnnSxAF6lP2
+         pub1uGfS463zNpKkQKJtklkVhLaFa+1CDKFaPZQPkA/qWZSmUpt0LbsmYWk4zuBXNGu8
+         IXaFLW1Z68y8P494DJZ4mz8VgbdVGBxKXXs0/vgFxJwkm9Jn/RL4nfalXUGJqFDm3qWo
+         TobLiStymSrRvpcMzlIz9SajqrwfRtX+5Y63tpByt7uO0dCEGJIPV5DELTsJrek11hIi
+         fGtA==
+X-Gm-Message-State: AOJu0Yy13aB3bYvOPf5smZK+6NrkptgSfVkDupakm+WiX85Q3Or2tPf1
+        JdWaelF0sZjmkqXo1KVbrwU07o9FynYfRRL+J9c8lQ==
+X-Google-Smtp-Source: AGHT+IHpRGFmriEzL/KQ9RKsS2oHgCTUAzVCmj/q0lNV14br53Tcpyvzbb4wsjq5Hz1EXcDQc6RCLu7ojVHBJSnpDQs=
+X-Received: by 2002:a05:622a:2c02:b0:417:9238:5a30 with SMTP id
+ kk2-20020a05622a2c0200b0041792385a30mr283qtb.29.1697232556224; Fri, 13 Oct
+ 2023 14:29:16 -0700 (PDT)
 MIME-Version: 1.0
-Sensitivity: 
-Importance: Normal
-X-Priority: 3 (Normal)
-In-Reply-To: 
-References: 
-Subject: [PATCH v5] tty: serial: meson: fix hard LOCKUP on crtscts mode
-From:   Pavel Krasavin <pkrasavin@imaqliq.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org
-Date:   Fri, 13 Oct 2023 16:29:24 +0000
-Message-ID: <OF43DA36FF.2BD3BB21-ON00258A47.005A8125-00258A47.005A9513@gdc.ru>
-X-Mailer: Lotus Domino Web Server Release 12.0.2 November 03, 2022
-X-MIMETrack: Serialize by http on verse/com(Release 12.0.2|November 03, 2022) at 10/13/2023
- 16:29:24,
-        Serialize complete at 10/13/2023 16:29:24,
-        Serialize by Router on verse/com(Release 12.0.2|November 03, 2022) at 10/13/2023
- 16:29:29
-X-KeepSent: 43DA36FF:2BD3BB21-00258A47:005A8125;
- type=4; name=$KeepSent
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-KLMS-Rule-ID: 1
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Lua-Profiles: 180614 [Oct 13 2023]
-X-KLMS-AntiSpam-Version: 6.0.0.2
-X-KLMS-AntiSpam-Envelope-From: pkrasavin@imaqliq.com
-X-KLMS-AntiSpam-Rate: 10
-X-KLMS-AntiSpam-Status: not_detected
-X-KLMS-AntiSpam-Method: none
-X-KLMS-AntiSpam-Auth: dmarc=fail header.from=imaqliq.com policy=none;spf=softfail smtp.mailfrom=imaqliq.com;dkim=none
-X-KLMS-AntiSpam-Info: LuaCore: 539 539 807534d9021bfe9ca369c363d15ac993cd93d4d9, {rep_avail}, {Tracking_uf_ne_domains}, {Tracking_from_domain_doesnt_match_to}, verse.imaqliq.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;gdc.ru:7.1.1;lore.kernel.org:7.1.1;93.189.151.95:7.1.2;imaqliq.com:7.1.1, FromAlignment: s, {Tracking_dmark_f}, ApMailHostAddress: 93.189.151.95
-X-MS-Exchange-Organization-SCL: -1
-X-KLMS-AntiSpam-Interceptor-Info: scan successful
-X-KLMS-AntiPhishing: Clean, bases: 2023/10/13 15:28:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2023/10/13 14:32:00 #22183459
-X-KLMS-AntiVirus-Status: Clean, skipped
+References: <20231013154742.76836-1-emkan@prevas.dk>
+In-Reply-To: <20231013154742.76836-1-emkan@prevas.dk>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Fri, 13 Oct 2023 14:28:40 -0700
+Message-ID: <CAGETcx-MP7XNUa0uObFpEDBiwjaGgTGvKu6Q-RXkrh0+hvXZvQ@mail.gmail.com>
+Subject: Re: [PATCH] serial: amba-pl011: set fwnode from parent device
+To:     Emil Kronborg Andersen <emkan@prevas.dk>
+Cc:     linux@armlinux.org.uk, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Pavel Krasavin <pkrasavin@imaqliq.com>
+On Fri, Oct 13, 2023 at 8:48=E2=80=AFAM Emil Kronborg Andersen <emkan@preva=
+s.dk> wrote:
+>
+> After commit 3fb16866b51d ("driver core: fw_devlink: Make cycle
+> detection more robust"), consumer devices without their fwnode set
+> printed errors like the one below:
+>
+> [    0.261887] uart-pl011 3f201000.serial: Failed to create device link (=
+0x180) with soc:firmware:gpio
+>
+> To fix this, set the fwnode so fw_devlink can find and handle it
+> properly.
+>
+> Fixes: 3fb16866b51d ("driver core: fw_devlink: Make cycle detection more =
+robust")
+> Signed-off-by: Emil Kronborg Andersen <emkan@prevas.dk>
+> ---
+>  drivers/tty/serial/amba-pl011.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl=
+011.c
+> index 3dc9b0fcab1c..29cef84b71c0 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -2798,6 +2798,8 @@ static int pl011_probe(struct amba_device *dev, con=
+st struct amba_id *id)
+>         int portnr, ret;
+>         u32 val;
+>
+> +       device_set_node(&dev->dev, dev_fwnode(dev->dev.parent));
+> +
 
-There might be hard lockup if we set crtscts mode on port without RTS/CTS configured:
+Can we do this at a tty/serial framework level instead of just this
+driver? Also, this is the latest kernel? I feel like I fixed exactly
+this (but at a framework level) several months ago.
 
-# stty -F /dev/ttyAML6 crtscts; echo 1 > /dev/ttyAML6; echo 2 > /dev/ttyAML6
-[   95.890386] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-[   95.890857] rcu:     3-...0: (201 ticks this GP) idle=e33c/1/0x4000000000000000 softirq=5844/5846 fqs=4984
-[   95.900212] rcu:     (detected by 2, t=21016 jiffies, g=7753, q=296 ncpus=4)
-[   95.906972] Task dump for CPU 3:
-[   95.910178] task:bash            state:R  running task     stack:0     pid:205   ppid:1      flags:0x00000202
-[   95.920059] Call trace:
-[   95.922485]  __switch_to+0xe4/0x168
-[   95.925951]  0xffffff8003477508
-[   95.974379] watchdog: Watchdog detected hard LOCKUP on cpu 3
-[   95.974424] Modules linked in: 88x2cs(O) rtc_meson_vrtc
+-Saravana
 
-Possible solution would be to not allow to setup crtscts on such port.
-
-Tested on S905X3 based board.
-
-Fixes: ff7693d079e5 ("ARM: meson: serial: add MesonX SoC on-chip uart driver")
-Signed-off-by: Pavel Krasavin <pkrasavin@imaqliq.com>
-Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
-Reviewed-by: Dmitry Rokosov <ddrokosov@salutedevices.com>
----
-v5: added missed Reviewed-by tags, Fixes tag added according to Dmitry and Neil notes
-v4: https://lore.kernel.org/lkml/OF55521400.7512350F-ON00258A47.003F7254-00258A47.0040E15C@gdc.ru/
-More correct patch subject according to Jiri's note
-v3: https://lore.kernel.org/lkml/OF6CF5FFA0.CCFD0E8E-ON00258A46.00549EDF-00258A46.0054BB62@gdc.ru/
-"From:" line added to the mail
-v2: https://lore.kernel.org/lkml/OF950BEF72.7F425944-ON00258A46.00488A76-00258A46.00497D44@gdc.ru/
-braces for single statement removed according to Dmitry's note
-v1: https://lore.kernel.org/lkml/OF28B2B8C9.5BC0CD28-ON00258A46.0037688F-00258A46.0039155B@gdc.ru/
----
-
---- a/drivers/tty/serial/meson_uart.c	2023-10-12 15:44:02.410538523 +0300
-+++ b/drivers/tty/serial/meson_uart.c	2023-10-12 15:58:06.242395253 +0300
-@@ -380,10 +380,14 @@ static void meson_uart_set_termios(struc
- 	else
- 		val |= AML_UART_STOP_BIT_1SB;
- 
--	if (cflags & CRTSCTS)
--		val &= ~AML_UART_TWO_WIRE_EN;
--	else
-+	if (cflags & CRTSCTS) {
-+		if (port->flags & UPF_HARD_FLOW)
-+			val &= ~AML_UART_TWO_WIRE_EN;
-+		else
-+			termios->c_cflag &= ~CRTSCTS;
-+	} else {
- 		val |= AML_UART_TWO_WIRE_EN;
-+	}
- 
- 	writel(val, port->membase + AML_UART_CONTROL);
- 
-@@ -705,6 +709,7 @@ static int meson_uart_probe(struct platf
- 	u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
- 	int ret = 0;
- 	int irq;
-+	bool has_rtscts;
- 
- 	if (pdev->dev.of_node)
- 		pdev->id = of_alias_get_id(pdev->dev.of_node, "serial");
-@@ -732,6 +737,7 @@ static int meson_uart_probe(struct platf
- 		return irq;
- 
- 	of_property_read_u32(pdev->dev.of_node, "fifo-size", &fifosize);
-+	has_rtscts = of_property_read_bool(pdev->dev.of_node, "uart-has-rtscts");
- 
- 	if (meson_ports[pdev->id]) {
- 		return dev_err_probe(&pdev->dev, -EBUSY,
-@@ -762,6 +768,8 @@ static int meson_uart_probe(struct platf
- 	port->mapsize = resource_size(res_mem);
- 	port->irq = irq;
- 	port->flags = UPF_BOOT_AUTOCONF | UPF_LOW_LATENCY;
-+	if (has_rtscts)
-+		port->flags |= UPF_HARD_FLOW;
- 	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_MESON_CONSOLE);
- 	port->dev = &pdev->dev;
- 	port->line = pdev->id;
+>         portnr =3D pl011_find_free_port();
+>         if (portnr < 0)
+>                 return portnr;
+> --
+> 2.41.0
+>
