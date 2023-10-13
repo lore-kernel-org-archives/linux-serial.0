@@ -2,43 +2,45 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D33CDB483
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Oct 2023 14:19:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E60C41513
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Oct 2023 14:19:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232105AbjJMOTf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S232024AbjJMOTf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Fri, 13 Oct 2023 10:19:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59412 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231808AbjJMOTe (ORCPT
+        with ESMTP id S232034AbjJMOTe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Fri, 13 Oct 2023 10:19:34 -0400
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E1CC95;
-        Fri, 13 Oct 2023 07:19:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 728F6BE;
+        Fri, 13 Oct 2023 07:19:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
         ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
         :From:subject:date:message-id:reply-to;
-        bh=KQrKVxYQCrMBjcH0ANoR+56jGVR79jGy1Tv47viYRdk=; b=S4iUb1ptzFVW2Zqb2FnCoZZw0z
-        nYn6cVrI7xdQWuXOTm523FoDo8w4LMcK1jcxELn7urirnmGy41meYfOBxHf3Byj+Bjp2SCnVYEp57
-        0I4C+cRKRGKyK6wtTz1ImCTyJJ6EmFHhCAWlZr1rPWL4uSsMNjs1RKB4kpxt58vv1qJA=;
+        bh=iQgc8ugoV+cWytBNeAfWc+zsoe0xTQmmxE4CSL1oZV4=; b=LynlOPyJLi2iPH8rD2ayaq6Uww
+        Zs778MjaKr+WCdxwgB/rn+BIvJgtLBJP9h6n+GE1Q0JmFSsfTeAfVrnT4kUJ3OgXrG9VZKUX1IP0U
+        YiapD9tXhpsP2vf/TI46iWW4JayTBYfWKFANQj/R1VKW88sESy9fRurD9X9JM6jxMn2U=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:40430 helo=pettiford.lan)
         by mail.hugovil.com with esmtpa (Exim 4.92)
         (envelope-from <hugo@hugovil.com>)
-        id 1qrJ0i-0005Ve-AW; Fri, 13 Oct 2023 10:19:28 -0400
+        id 1qrJ0k-0005Ve-El; Fri, 13 Oct 2023 10:19:31 -0400
 From:   Hugo Villeneuve <hugo@hugovil.com>
 To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
         robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         conor+dt@kernel.org, hvilleneuve@dimonoff.com
 Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         devicetree@vger.kernel.org, hugo@hugovil.com
-Date:   Fri, 13 Oct 2023 10:19:23 -0400
-Message-Id: <20231013141925.3427158-1-hugo@hugovil.com>
+Date:   Fri, 13 Oct 2023 10:19:25 -0400
+Message-Id: <20231013141925.3427158-3-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20231013141925.3427158-1-hugo@hugovil.com>
+References: <20231013141925.3427158-1-hugo@hugovil.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 70.80.174.168
 X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: [PATCH 0/2] serial: sc16is7xx: device tree improvements
+Subject: [PATCH 2/2] dt-bindings: serial: sc16is7xx: remove 'clock-frequency' property
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
@@ -47,23 +49,54 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Hello,
-this patch series fixes style issues and remove a unused 'clock-frequency'
-property in sc16is7xx YAML DT bindings.
+The 'clock-frequency' property is supported but mainly in ACPI-based
+configurations, for example.
 
-Based on gregkh tty tree, tty-next branch.
+This property has therefore no place in the sc16is7xx YAML binding.
 
-Thank you.
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+---
+ .../devicetree/bindings/serial/nxp,sc16is7xx.yaml  | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
-Hugo Villeneuve (2):
-  dt-bindings: serial: sc16is7xx: move 'allOf' block after 'required'
-  dt-bindings: serial: sc16is7xx: remove 'clock-frequency' property
-
- .../bindings/serial/nxp,sc16is7xx.yaml        | 22 +++++--------------
- 1 file changed, 5 insertions(+), 17 deletions(-)
-
-
-base-commit: dd976a97d15b47656991e185a94ef42a0fa5cfd4
+diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+index 5dec15b7e7c3..5050176e8b80 100644
+--- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
++++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+@@ -28,13 +28,6 @@ properties:
+   clocks:
+     maxItems: 1
+ 
+-  clock-frequency:
+-    description:
+-      When there is no clock provider visible to the platform, this
+-      is the source crystal or external clock frequency for the IC in Hz.
+-    minimum: 1
+-    maximum: 80000000
+-
+   gpio-controller: true
+ 
+   "#gpio-cells":
+@@ -74,18 +67,13 @@ required:
+   - compatible
+   - reg
+   - interrupts
++  - clocks
+ 
+ allOf:
+   - $ref: /schemas/spi/spi-peripheral-props.yaml#
+   - $ref: /schemas/serial/serial.yaml#
+   - $ref: /schemas/serial/rs485.yaml#
+ 
+-oneOf:
+-  - required:
+-      - clocks
+-  - required:
+-      - clock-frequency
+-
+ unevaluatedProperties: false
+ 
+ examples:
 -- 
 2.39.2
 
