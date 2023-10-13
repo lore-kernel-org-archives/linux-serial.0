@@ -2,94 +2,182 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AAE6CDB482
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Oct 2023 06:29:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27023CDB47E
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Oct 2023 07:51:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbjJMG3n (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Oct 2023 02:29:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46944 "EHLO
+        id S229921AbjJMHv2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 13 Oct 2023 03:51:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbjJMG3n (ORCPT
+        with ESMTP id S229886AbjJMHv1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Oct 2023 02:29:43 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C70FB7;
-        Thu, 12 Oct 2023 23:29:41 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6601CC433C7;
-        Fri, 13 Oct 2023 06:29:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1697178581;
-        bh=ddmv6NZdkEiu+CdZIPIU1a/xmALRcZOj0furUIUeAtI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dUEg6HzJB8gzh3s708jayGqSozY/KG1LzQ9mnvWr8yBF9K8fUtcrxGsycwQWCeq8h
-         ZzAQbC6dT6hyrdiy6kar2gNi/DkUTxsB4HzmhijWrgg/gRaujwnhZeKw1IlcD4UIEf
-         1k/Q6i7+NiSDut8cWvCpbWAJsZkKZ85HhEQk3Kpc=
-Date:   Fri, 13 Oct 2023 08:29:37 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     chenguohua@jari.cn
-Cc:     jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH] vt: Clean up errors in selection.h
-Message-ID: <2023101313-aftermost-skydiver-c587@gregkh>
-References: <4545cc2c.940.18b26f571fe.Coremail.chenguohua@jari.cn>
+        Fri, 13 Oct 2023 03:51:27 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCDDC83
+        for <linux-serial@vger.kernel.org>; Fri, 13 Oct 2023 00:51:25 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id 5b1f17b1804b1-405361bba99so18202005e9.2
+        for <linux-serial@vger.kernel.org>; Fri, 13 Oct 2023 00:51:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1697183484; x=1697788284; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :references:cc:to:content-language:subject:reply-to:from:user-agent
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=QGLLNmMEIoHetPjQdGeJ01Fu1b8ChkbYllNK8qDfC4A=;
+        b=loMoCZhhMObEiOI3kkUu1WaCtSld/JgLIS8554/9FAgZ1oM3LHJV91dqNcJKNRuyVr
+         l2XP5dH0g46uQQjsWs3MDuKu59L7advxIREkxNXsidDPfJndDE3AjXJdjQH0TWrqXjzv
+         Z+k4hKEPjUd0cZrfvV8eCcxBPejQs0zdSMHxIhieTCA+69SbhJWuELaR3qAA8F8Q2ceJ
+         Tt2Ne6KUjOpIyaAGs/Oq3NzW2+WiP2Mp6cb1C7zMYkyemvPEf+2thVMo+99UgF3HpTL4
+         gBrbpxT4UY1/EUZ5GqtEvwQLHBiiacoF+7L/yuW9EsKzoC767Jl5wGVuDwLh47OkLolv
+         CB7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697183484; x=1697788284;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :references:cc:to:content-language:subject:reply-to:from:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=QGLLNmMEIoHetPjQdGeJ01Fu1b8ChkbYllNK8qDfC4A=;
+        b=fbtBwz4lPI43S2Pf538TzgIjcIJk1lDeNmQiae/gLFvQq9/AfiofIkFwUODJugDOfK
+         K3l5bNy+JqLpmwUz2tLi7veH1ubu9p3+vEbMwJvL8FCBYjBF8/GmiTZvwkzk0mQQosWP
+         bx3VAKIGO0etq0pvsK6Mp26bpp/MYCcWba5RuS5GCc64GFMVC/1O/S2VMow3/rdLedIK
+         +uBMBexeN/O+wwc4TTLXJf08FLbbYkTRdIrhsixvQzv4pET+6Y6winpXSJ3zyVSftHtQ
+         eHLhcVl2LdJftt5ZLR3UAHnhWz/kVIe0+oxKKT5sKVV2T676FTbCKjlBbYwJC5HKufcy
+         vrdw==
+X-Gm-Message-State: AOJu0YxEwXsO8VU8TEINiQgFqLpynSymEOX/SsLXd87hkLUEynVyeME3
+        ZyD8EQxQFfnG59RXYVMVyTexAQ==
+X-Google-Smtp-Source: AGHT+IELG391V1Ud7elbQt4QWMSF5GEdV2anomcs+s+Wryke+mq9djUBHEODiUiryn2RFZg18FUapQ==
+X-Received: by 2002:a05:600c:ac1:b0:405:39b4:3145 with SMTP id c1-20020a05600c0ac100b0040539b43145mr23450412wmr.2.1697183484112;
+        Fri, 13 Oct 2023 00:51:24 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:982:cbb0:535e:33c9:c7dd:4940? ([2a01:e0a:982:cbb0:535e:33c9:c7dd:4940])
+        by smtp.gmail.com with ESMTPSA id t15-20020a7bc3cf000000b00401b242e2e6sm1783318wmj.47.2023.10.13.00.51.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 Oct 2023 00:51:23 -0700 (PDT)
+Message-ID: <39193720-d105-47c0-8475-3e321f7095b5@linaro.org>
+Date:   Fri, 13 Oct 2023 09:51:22 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4545cc2c.940.18b26f571fe.Coremail.chenguohua@jari.cn>
+User-Agent: Mozilla Thunderbird
+From:   Neil Armstrong <neil.armstrong@linaro.org>
+Reply-To: neil.armstrong@linaro.org
+Subject: Re: [PATCH v3] tty: serial: meson: hard LOCKUP on crtscts mode
+Content-Language: en-US, fr
+To:     Pavel Krasavin <pkrasavin@imaqliq.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org
+References: <OF6CF5FFA0.CCFD0E8E-ON00258A46.00549EDF-00258A46.0054BB62@gdc.ru>
+Autocrypt: addr=neil.armstrong@linaro.org; keydata=
+ xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
+ GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
+ BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
+ qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
+ 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
+ AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
+ OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
+ Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
+ YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
+ GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
+ UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
+ GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
+ yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
+ QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
+ SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
+ 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
+ Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
+ oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
+ M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
+ 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
+ KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
+ 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
+ QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
+Organization: Linaro Developer Services
+In-Reply-To: <OF6CF5FFA0.CCFD0E8E-ON00258A46.00549EDF-00258A46.0054BB62@gdc.ru>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 13, 2023 at 10:55:01AM +0800, chenguohua@jari.cn wrote:
-> Fix the following errors reported by checkpatch:
+On 12/10/2023 17:25, Pavel Krasavin wrote:
+> From: Pavel Krasavin <pkrasavin@imaqliq.com>
 > 
-> ERROR: "foo * bar" should be "foo *bar"
+> There might be hard lockup if we set crtscts mode on port without RTS/CTS configured:
 > 
-> Signed-off-by: GuoHua Cheng <chenguohua@jari.cn>
+> # stty -F /dev/ttyAML6 crtscts; echo 1 > /dev/ttyAML6; echo 2 > /dev/ttyAML6
+> [   95.890386] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+> [   95.890857] rcu:     3-...0: (201 ticks this GP) idle=e33c/1/0x4000000000000000 softirq=5844/5846 fqs=4984
+> [   95.900212] rcu:     (detected by 2, t=21016 jiffies, g=7753, q=296 ncpus=4)
+> [   95.906972] Task dump for CPU 3:
+> [   95.910178] task:bash            state:R  running task     stack:0     pid:205   ppid:1      flags:0x00000202
+> [   95.920059] Call trace:
+> [   95.922485]  __switch_to+0xe4/0x168
+> [   95.925951]  0xffffff8003477508
+> [   95.974379] watchdog: Watchdog detected hard LOCKUP on cpu 3
+> [   95.974424] Modules linked in: 88x2cs(O) rtc_meson_vrtc
+> 
+> Possible solution would be to not allow to setup crtscts on such port.
+> 
+> Tested on S905X3 based board.
+> 
+> Signed-off-by: Pavel Krasavin <pkrasavin@imaqliq.com>
 > ---
->  include/linux/selection.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> v3: "From:" line added to the mail
+> v2: https://lore.kernel.org/lkml/OF950BEF72.7F425944-ON00258A46.00488A76-00258A46.00497D44@gdc.ru/
+> braces for single statement removed according to Dmitry's note
+> v1: https://lore.kernel.org/lkml/OF28B2B8C9.5BC0CD28-ON00258A46.0037688F-00258A46.0039155B@gdc.ru/
+> ---
 > 
-> diff --git a/include/linux/selection.h b/include/linux/selection.h
-> index 170ef28ff26b..3bff95699083 100644
-> --- a/include/linux/selection.h
-> +++ b/include/linux/selection.h
-> @@ -22,7 +22,7 @@ extern int set_selection_kernel(struct tiocl_selection *v,
->  extern int paste_selection(struct tty_struct *tty);
->  extern int sel_loadlut(char __user *p);
->  extern int mouse_reporting(void);
-> -extern void mouse_report(struct tty_struct * tty, int butt, int mrx, int mry);
-> +extern void mouse_report(struct tty_struct *tty, int butt, int mrx, int mry);
->  
->  bool vc_is_sel(struct vc_data *vc);
->  
-> -- 
-> 2.17.1
+> --- a/drivers/tty/serial/meson_uart.c	2023-10-12 15:44:02.410538523 +0300
+> +++ b/drivers/tty/serial/meson_uart.c	2023-10-12 15:58:06.242395253 +0300
+> @@ -380,10 +380,14 @@ static void meson_uart_set_termios(struc
+>   	else
+>   		val |= AML_UART_STOP_BIT_1SB;
+>   
+> -	if (cflags & CRTSCTS)
+> -		val &= ~AML_UART_TWO_WIRE_EN;
+> -	else
+> +	if (cflags & CRTSCTS) {
+> +		if (port->flags & UPF_HARD_FLOW)
+> +			val &= ~AML_UART_TWO_WIRE_EN;
+> +		else
+> +			termios->c_cflag &= ~CRTSCTS;
+> +	} else {
+>   		val |= AML_UART_TWO_WIRE_EN;
+> +	}
+>   
+>   	writel(val, port->membase + AML_UART_CONTROL);
+>   
+> @@ -705,6 +709,7 @@ static int meson_uart_probe(struct platf
+>   	u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
+>   	int ret = 0;
+>   	int irq;
+> +	bool has_rtscts;
+>   
+>   	if (pdev->dev.of_node)
+>   		pdev->id = of_alias_get_id(pdev->dev.of_node, "serial");
+> @@ -732,6 +737,7 @@ static int meson_uart_probe(struct platf
+>   		return irq;
+>   
+>   	of_property_read_u32(pdev->dev.of_node, "fifo-size", &fifosize);
+> +	has_rtscts = of_property_read_bool(pdev->dev.of_node, "uart-has-rtscts");
+>   
+>   	if (meson_ports[pdev->id]) {
+>   		return dev_err_probe(&pdev->dev, -EBUSY,
+> @@ -762,6 +768,8 @@ static int meson_uart_probe(struct platf
+>   	port->mapsize = resource_size(res_mem);
+>   	port->irq = irq;
+>   	port->flags = UPF_BOOT_AUTOCONF | UPF_LOW_LATENCY;
+> +	if (has_rtscts)
+> +		port->flags |= UPF_HARD_FLOW;
+>   	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_MESON_CONSOLE);
+>   	port->dev = &pdev->dev;
+>   	port->line = pdev->id;
 
-Hi,
+Looks fine, I expected the tty core to check uart-has-rtscts or UPF_HARD_FLOW, but seems I was naive.
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- It looks like you did not use your name for the patch on either
-  the Signed-off-by: line, or the From: line (both of which have to
-  match).  Please read the kernel file,
-  Documentation/process/submitting-patches.rst for how to do this
-  correctly.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+LGTM
+Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
