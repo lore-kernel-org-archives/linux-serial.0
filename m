@@ -2,180 +2,140 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21143CDB47E
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Oct 2023 15:42:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 750CCCDB483
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Oct 2023 15:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232434AbjJMPmD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Oct 2023 11:42:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55082 "EHLO
+        id S232493AbjJMPsK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 13 Oct 2023 11:48:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232469AbjJMPmC (ORCPT
+        with ESMTP id S232372AbjJMPsJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Oct 2023 11:42:02 -0400
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E80D9
-        for <linux-serial@vger.kernel.org>; Fri, 13 Oct 2023 08:41:59 -0700 (PDT)
-Received: by mail-ot1-x32d.google.com with SMTP id 46e09a7af769-6c4bf619b57so1416772a34.1
-        for <linux-serial@vger.kernel.org>; Fri, 13 Oct 2023 08:41:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1697211718; x=1697816518; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=58F4pC3mBDu8F+pvcYNIm1FByUJEAPva6M9hCs3f/vs=;
-        b=n+BqQMAKWJX45AnFEWePhAqGlkLkXrnY0T7msk+XhAMKqkVcC1Zncxg9ON0N79vJQi
-         uuCIL7VVp44DdNoBOoFFoZM4dH1AjhOWHn8i/jNP+HbNGexnAJVYNcdGfhSCXIuv5zZk
-         xG8BSJqWHcc1NGCb5y/9PfstHSukkld0lzVWudGZ38hwnUAnKvHVf51rJg81bjSrDAD8
-         QsXt0gsfgcjBv0JOp28jbp7zOeqUKPu3YOQivYr/XxG0Heg5lRqySMHPxQdx97uWW8h8
-         ukDBuHjTaiDAytEaWbqZZgRowb8J1y5SXTGPlox+JisQsKaGTs7BGacRiVDBz1FZiNq9
-         bMjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697211718; x=1697816518;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=58F4pC3mBDu8F+pvcYNIm1FByUJEAPva6M9hCs3f/vs=;
-        b=R3g/fDISEsBabMe5TD3fl+JnmxLf6s9m9jmHxecoCnBgP+pVWaBG3XV6GvKwlpz0cZ
-         eKd/QlENUPZkscUC5tQLvDTjypCPxEDLeiAGviTT8EEF+44dSYCa4ZF9capD3PHG4vd9
-         RLSKbVhJTNE80VwfBzcY7BTTbXoMlhVnNPZsJ6gqTyRlhL2wBWvc9kmx3lcSB962eRmq
-         BAzmS/xiRZ37p3/FjLE+8IvOfCcGP1txyydmF6XImH9K4UspipSNmip9/4TVS0CWikl3
-         I4yzwuTAoZAw1ApKFLnGzD4QZCdgASBz1gJsgUUPZ/f05nYxnXXjDgMV0amtdrtgoSmP
-         ISPg==
-X-Gm-Message-State: AOJu0YxqXted+2BeI08giXY7LiIkcRmF+hiQFAO3zx6Tlx3CVNv3+vBr
-        zrSumLaKo+tvJOruL0OmFifB3+KY6mnTYd/WeGsCHA==
-X-Google-Smtp-Source: AGHT+IEzcIYsSKMe5bsbRMbzf4xh1PED9ixUfbd1o7ixVah0VHZj9arKWffuv9/jPa1nkBsBkAGklSaRf41sshg9uSY=
-X-Received: by 2002:a05:6870:6587:b0:1e9:b7a7:8efe with SMTP id
- fp7-20020a056870658700b001e9b7a78efemr5211668oab.2.1697211718067; Fri, 13 Oct
- 2023 08:41:58 -0700 (PDT)
+        Fri, 13 Oct 2023 11:48:09 -0400
+Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2126.outbound.protection.outlook.com [40.107.241.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E9DABD;
+        Fri, 13 Oct 2023 08:48:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cCiPAM4m5h1kBcCX1LtmNTryMNosiItk1KgrY8m82khDdDq0zzLLIJH2AMhCVuxi49LfwKc1gKxk5+uBlP75V0bCxKxCBj/mGMdtE3yFkdODofvzi2A4Si4S1Z7G1lq+J05t2FrUoegAJr2Ndes3BM2xB8/HQG1WZjkZqfpposrwHC4WMoDxF2Ez7LTH9vkFwmKEKMPyspZ3Hmvju08Yjv9F1r0FSZGUv9uEu3cOlWSz984KrM8xHpEHOFc4IiGLDDUeXmgLE8/GpOa61wG5k9SM13oFhlZ5o8I8Fb80WY2JTXKby/80eoyHom9i5spQaIeL0r4T2nV7JPNcg8wn3g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uBs/WpjvyK7bbl8B0Hw3cWl0gUOeweqrNR+s6y6bubk=;
+ b=CwAneneojIDbY2WULuerpdbkWB/MwiASX4Ds+7SIEA+vxoepJfG6DIVmPurXNtUieXwF/+ObsnS35NpT9Wqgj+NiCr4HcS7K5of1z1BYA+x1P4iKK1t46xDQyLSBIG1i+RStdSkz/3vaxb87hMRGHwdkYIVmdPxEuva2PiO4RzAUF8pc+zTIqoZQHaB6leepDm5sFMNDVrfSRrZ6YM/Oaayg+4uiI+mlq1SOEOVcPv6c8cZmWaSLpx5GRJPUxDnaGa7RV9KEO/6RooqACfWxMsCpZBO7sJ/a8UMFqq7hDVnklSqSBS+WMTE+kW1XIgivl/6MCvQZtJVwRJcIV4V0rw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
+ dkim=pass header.d=prevas.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uBs/WpjvyK7bbl8B0Hw3cWl0gUOeweqrNR+s6y6bubk=;
+ b=KLSGKBcaFLIjwg5JVwA+dBmJQOThFwJpJPMQNA4l+C2bHiqREAZcPctRGJ8x/tCpUsC8CUSerNi9DIUkTtwee2Q25kTWqjncHs7F+n46qpO8N+xUHDevH0Ny1kBhvpMSBJ06sElg4h14xPse8RjUNyuSjbQs0LceQSKuOP6P3JU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=prevas.dk;
+Received: from PA4PR10MB4576.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:10a::24)
+ by AM0PR10MB3153.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:184::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6863.45; Fri, 13 Oct
+ 2023 15:48:03 +0000
+Received: from PA4PR10MB4576.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::1315:9ecc:6928:f486]) by PA4PR10MB4576.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::1315:9ecc:6928:f486%4]) with mapi id 15.20.6863.046; Fri, 13 Oct 2023
+ 15:48:03 +0000
+From:   Emil Kronborg Andersen <emkan@prevas.dk>
+To:     linux@armlinux.org.uk
+Cc:     emkan@prevas.dk, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        saravanak@google.com
+Subject: [PATCH] serial: amba-pl011: set fwnode from parent device
+Date:   Fri, 13 Oct 2023 17:47:42 +0200
+Message-ID: <20231013154742.76836-1-emkan@prevas.dk>
+X-Mailer: git-send-email 2.41.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MM0P280CA0011.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:190:a::33) To PA4PR10MB4576.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:102:10a::24)
 MIME-Version: 1.0
-References: <20231012051509.738750-1-apatel@ventanamicro.com>
- <20231012051509.738750-8-apatel@ventanamicro.com> <87fs2ghxyz.fsf@all.your.base.are.belong.to.us>
-In-Reply-To: <87fs2ghxyz.fsf@all.your.base.are.belong.to.us>
-From:   Anup Patel <apatel@ventanamicro.com>
-Date:   Fri, 13 Oct 2023 21:11:46 +0530
-Message-ID: <CAK9=C2XFTULtQ6YoNHDb7WJwm8p3wkG_pJA8h+XYGEOzt18Ctg@mail.gmail.com>
-Subject: Re: [PATCH v2 7/8] tty: Add SBI debug console support to HVC SBI driver
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Conor Dooley <conor@kernel.org>,
-        Andrew Jones <ajones@ventanamicro.com>, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Atish Patra <atishp@rivosinc.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PA4PR10MB4576:EE_|AM0PR10MB3153:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8ea52308-7569-4826-8667-08dbcc03c8e0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Gipw1Pf1SVlmNOmQ/cZcTXRTrx9Byx0F3Je5AyUtLOymxDBx+SzaNJt9F5tW4DdeEO+yrNvoF0+bh/OPymDlwlPsIAynhIgxGEWDgCSD16db/47XRB6OwtPpjByD5eCwTKrWFzv8VREb9nyVXiSoLatp9ZI+Uwfg4+g/5DpIQlaPCnLFkOJi0emlVS+6JpvJskHMk/YJKHN087YLiNh979x8PJ1NTL3STX4uQMNAWvfk8sAMgrwuNkbkLBrij6OeUUn8UdXbrnUN9HFiv9HoN/esclataPJKodJV7OTNrbJ3dgQOnaSST2v4DAcD2XxmJ+fwO8J7RIiAGttiLihu9ygVwXWNiyf/a9bD5AlEfC6HzS5REO7NKyLQoiOFO8Q39qwF/IQfUHOGzNL/RWOzqO8wQxrm7GOgUaNVpviQhT8ReUw5qDps0PHaADT+ANGMtYVFEAvEcK62nIq6QaU/eN3ZHUO+8nW/Pq4oKkhNIAJMbDEhCWqvReuzPwZ7pEWa2LCfIgnoynClIuaW4jc8QhGjkaoFrmVrFTaZ1x8JvQecIBG15YEwlG2rw7rKYJ+eFtRqDcb9GwT4iCV5UVbt/2c5yRO4y1dsn7m9vRrVtSC0gxZwxgFv11UvB2Ix8d72
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR10MB4576.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(396003)(366004)(136003)(39850400004)(376002)(346002)(230922051799003)(451199024)(64100799003)(1800799009)(186009)(8676002)(2616005)(1076003)(6666004)(6506007)(6512007)(52116002)(26005)(83380400001)(5660300002)(41300700001)(4326008)(2906002)(8936002)(478600001)(6486002)(8976002)(66946007)(66476007)(316002)(6916009)(66556008)(38350700002)(38100700002)(36756003)(86362001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?47517WfhkOPd1/QXheaMyuy8iw++ioWtuaC+Sgv8o1xrun+LhTn1+UxgIXmw?=
+ =?us-ascii?Q?fjRPR/iV88IRAUGUAivZay5tBw6V0ZhalIBZF1C5c+f0iCJMdQpGlgVhvMgV?=
+ =?us-ascii?Q?IvgW4RMb4n93Z24vnMDw5ZPRack/17NW4ZXPk9KOA6RhHl1o/JJ3XATKy6Df?=
+ =?us-ascii?Q?pnTF1EIXeEd6NXnyQ556GmPgE2w0S8MsJFzVkpkGcKEu+ohHVp8f47e7pUtQ?=
+ =?us-ascii?Q?wfAitJqLqvxuwwR0P/+zXJa97Jkf5lbtnIRIO5b3dsrNOii+m2kEmCrSO7xq?=
+ =?us-ascii?Q?xsR8F8BrdZI15/F53Ys9tmiA32G+PKIgiP/SP2a5JURp3D+dKdz9jZ+Mm0HG?=
+ =?us-ascii?Q?O2Q9c/CuB1BFZW3bomLpPRv6AF4wm3s1vM9DYNfjzF/vSWy3D63VGhoEAgek?=
+ =?us-ascii?Q?b78/gKtPX2NYyCkmBEoSDbbuVxuv2DOyvXOGb3HSNszkSwqfO+AkoThk9W5W?=
+ =?us-ascii?Q?yeEzzUiRAPCKvsocmao1sZUfYoLvfFS83fJgqmaRQsQIMUCTELAcFmaYc9qe?=
+ =?us-ascii?Q?rDY56Ma8jqMD5/VFwfs7ksRZYxmY64kBTAMqo7CcnKqHCGzKJA4h9i/as0s0?=
+ =?us-ascii?Q?uKRs5ja4463/mjdChz3EaWStIU+ZulahZAZIjvx9HjqlqqU+olLilk5LcUp2?=
+ =?us-ascii?Q?AXVCzcwI+vLja12Wpv+ugCl7XflCdiVaxI5PhZJv27hT1uiX6hL67iDjPKJg?=
+ =?us-ascii?Q?Dz6Y9f+wPPR0OCCIl+PIFTyfd90OmdDq+L8TzEOCJZqwv0OHqDRhXknglodB?=
+ =?us-ascii?Q?0nMBdbEPjkLbFhOcGOJt1YZEaUquPfduzQSCLwflZikuepZRU1ABLF4VX4fo?=
+ =?us-ascii?Q?iOpCRhCRHmTpc+x/o3wpbKim0/BqHNPRGHhwiQ96PEaDcfeWTTHjhJ3gCx24?=
+ =?us-ascii?Q?nXP8/ibz8CCW4RwPYQjVBu+LHNHgi9EJ1vsawTFZbZLxPE7TZSNDQFDa+2gx?=
+ =?us-ascii?Q?D2i+h9vztJoZii63Qo4AB1bF8jvVauzlfI4Nw63ZY0qR1uFeLwaefSXFrQnT?=
+ =?us-ascii?Q?FzlhdDgKZTxHWPaPoad5g2Nd3jfgqznS7MDZsuYObfYIlBgKx9Jnz+SqcJbq?=
+ =?us-ascii?Q?QOjWVqZQ9Tx3m9y8E4MdWTSIl7iJPpL8wvJiIonG22XADKbnLVSPqO6qPjUG?=
+ =?us-ascii?Q?ha0eV6RBSbMGpGWzVrNA+ahu370vfm06ZbbdHxpDXcYzI6IXBsvXOIuYV8lR?=
+ =?us-ascii?Q?t8ZFkt3aLsKv6ZT7bCcstt47xLkKGEMuERXJW4OHjmVClrzZnYNfSX9W7vTi?=
+ =?us-ascii?Q?Ql9OjU+PcLdJ+9Yixo3k98xfACTkcg5mLSSFEpIs6LikQXiTxKTiUVj0lOsm?=
+ =?us-ascii?Q?lP0AZ53WrTYkxeCj4pvq9/TpNTZlA4EldVbvHDeuMps0L1Rs2WhdVWw5xceg?=
+ =?us-ascii?Q?ZJdIDcrgC2m6YSvSWMczZQ6NBOxpxRNFA9aGR4WlhNq8nn+PMrPnJly4jMc9?=
+ =?us-ascii?Q?IDuJ/+qOtF4qIYGxxH/pnnpLbNQGyL1b/mLbw+FBhGF7d/YJ5XrzV2o7m+cD?=
+ =?us-ascii?Q?P1Hy7QFDteqmzPsoGj7IMhvNuoa/Giomi29IJizGNg5xK1G9SuLBUA2MdyFq?=
+ =?us-ascii?Q?y2ZqHclFSOd9aQtMR2ZmG4HppJs9gOTFHpoAd/efpkRogoY/46qTXc6/rJKC?=
+ =?us-ascii?Q?Sw=3D=3D?=
+X-OriginatorOrg: prevas.dk
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8ea52308-7569-4826-8667-08dbcc03c8e0
+X-MS-Exchange-CrossTenant-AuthSource: PA4PR10MB4576.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2023 15:48:03.1724
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: A0GE7TUgncHU6cCW4GVrLlRYjaAHaeez0lpT2mviqPKRSkqo904ngwlJNcQ6AzEdI2IHRGDbJNatV/GzrFupAA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB3153
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 12, 2023 at 5:08=E2=80=AFPM Bj=C3=B6rn T=C3=B6pel <bjorn@kernel=
-.org> wrote:
->
-> Anup Patel <apatel@ventanamicro.com> writes:
->
-> > From: Atish Patra <atishp@rivosinc.com>
-> >
-> > RISC-V SBI specification supports advanced debug console
-> > support via SBI DBCN extension.
-> >
-> > Extend the HVC SBI driver to support it.
-> >
-> > Signed-off-by: Atish Patra <atishp@rivosinc.com>
-> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> > ---
-> >  drivers/tty/hvc/Kconfig         |  2 +-
-> >  drivers/tty/hvc/hvc_riscv_sbi.c | 76 ++++++++++++++++++++++++++++++---
-> >  2 files changed, 70 insertions(+), 8 deletions(-)
-> >
-> > diff --git a/drivers/tty/hvc/Kconfig b/drivers/tty/hvc/Kconfig
-> > index 4f9264d005c0..6e05c5c7bca1 100644
-> > --- a/drivers/tty/hvc/Kconfig
-> > +++ b/drivers/tty/hvc/Kconfig
-> > @@ -108,7 +108,7 @@ config HVC_DCC_SERIALIZE_SMP
-> >
-> >  config HVC_RISCV_SBI
-> >       bool "RISC-V SBI console support"
-> > -     depends on RISCV_SBI_V01
-> > +     depends on RISCV_SBI
-> >       select HVC_DRIVER
-> >       help
-> >         This enables support for console output via RISC-V SBI calls, w=
-hich
-> > diff --git a/drivers/tty/hvc/hvc_riscv_sbi.c b/drivers/tty/hvc/hvc_risc=
-v_sbi.c
-> > index 31f53fa77e4a..da318d7f55c5 100644
-> > --- a/drivers/tty/hvc/hvc_riscv_sbi.c
-> > +++ b/drivers/tty/hvc/hvc_riscv_sbi.c
-> > @@ -39,21 +39,83 @@ static int hvc_sbi_tty_get(uint32_t vtermno, char *=
-buf, int count)
-> >       return i;
-> >  }
-> >
-> > -static const struct hv_ops hvc_sbi_ops =3D {
-> > +static const struct hv_ops hvc_sbi_v01_ops =3D {
-> >       .get_chars =3D hvc_sbi_tty_get,
-> >       .put_chars =3D hvc_sbi_tty_put,
-> >  };
-> >
-> > -static int __init hvc_sbi_init(void)
-> > +static int hvc_sbi_dbcn_tty_put(uint32_t vtermno, const char *buf, int=
- count)
-> >  {
-> > -     return PTR_ERR_OR_ZERO(hvc_alloc(0, 0, &hvc_sbi_ops, 16));
-> > +     phys_addr_t pa;
-> > +     struct sbiret ret;
-> > +
-> > +     if (is_vmalloc_addr(buf))
-> > +             pa =3D page_to_phys(vmalloc_to_page(buf)) + offset_in_pag=
-e(buf);
->
-> What is assumed from buf here? If buf is crossing a page, you need to
-> adjust the count, no?
+After commit 3fb16866b51d ("driver core: fw_devlink: Make cycle
+detection more robust"), consumer devices without their fwnode set
+printed errors like the one below:
 
-I never saw a page crossing buffer but I will certainly address this
-in the next revision.
+[    0.261887] uart-pl011 3f201000.serial: Failed to create device link (0x180) with soc:firmware:gpio
 
->
-> > +     else
-> > +             pa =3D __pa(buf);
-> > +
-> > +     if (IS_ENABLED(CONFIG_32BIT))
-> > +             ret =3D sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRIT=
-E,
-> > +                             count, lower_32_bits(pa), upper_32_bits(p=
-a),
-> > +                             0, 0, 0);
-> > +     else
-> > +             ret =3D sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRIT=
-E,
-> > +                             count, pa, 0, 0, 0, 0);
-> > +     if (ret.error)
-> > +             return 0;
-> > +
-> > +     return count;
-> >  }
-> > -device_initcall(hvc_sbi_init);
-> >
-> > -static int __init hvc_sbi_console_init(void)
-> > +static int hvc_sbi_dbcn_tty_get(uint32_t vtermno, char *buf, int count=
-)
-> >  {
-> > -     hvc_instantiate(0, 0, &hvc_sbi_ops);
-> > +     phys_addr_t pa;
-> > +     struct sbiret ret;
-> > +
-> > +     if (is_vmalloc_addr(buf))
-> > +             pa =3D page_to_phys(vmalloc_to_page(buf)) + offset_in_pag=
-e(buf);
->
-> And definitely adjust count here, if we're crossing a page!
+To fix this, set the fwnode so fw_devlink can find and handle it
+properly.
 
-Sure, I will update here as well.
+Fixes: 3fb16866b51d ("driver core: fw_devlink: Make cycle detection more robust")
+Signed-off-by: Emil Kronborg Andersen <emkan@prevas.dk>
+---
+ drivers/tty/serial/amba-pl011.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Thanks,
-Anup
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 3dc9b0fcab1c..29cef84b71c0 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2798,6 +2798,8 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 	int portnr, ret;
+ 	u32 val;
+ 
++	device_set_node(&dev->dev, dev_fwnode(dev->dev.parent));
++
+ 	portnr = pl011_find_free_port();
+ 	if (portnr < 0)
+ 		return portnr;
+-- 
+2.41.0
+
