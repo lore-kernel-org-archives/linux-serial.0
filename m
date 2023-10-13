@@ -2,87 +2,79 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDFF3CDB482
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Oct 2023 11:09:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B370CDB47E
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Oct 2023 11:17:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230103AbjJMLJe convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Oct 2023 07:09:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33082 "EHLO
+        id S230041AbjJMLRu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 13 Oct 2023 07:17:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230150AbjJMLJd (ORCPT
+        with ESMTP id S229903AbjJMLRt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Oct 2023 07:09:33 -0400
-Received: from postfix2.imaqliq.com (postfix2.imaqliq.com [93.189.151.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC98BF;
-        Fri, 13 Oct 2023 04:09:30 -0700 (PDT)
-Received: from verse.imaqliq.com (verse.imaqliq.com [93.189.151.95])
-        by postfix2.imaqliq.com (Postfix) with ESMTP id B8A001C2928;
-        Fri, 13 Oct 2023 14:09:27 +0300 (MSK)
+        Fri, 13 Oct 2023 07:17:49 -0400
+Received: from connect.vanmierlo.com (fieber.vanmierlo.com [84.243.197.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06ADB7;
+        Fri, 13 Oct 2023 04:17:45 -0700 (PDT)
+X-Footer: dmFubWllcmxvLmNvbQ==
+Received: from roundcube.vanmierlo.com ([192.168.37.37])
+        (authenticated user m.brock@vanmierlo.com)
+        by connect.vanmierlo.com (Kerio Connect 9.4.2) with ESMTPA;
+        Fri, 13 Oct 2023 13:17:37 +0200
 MIME-Version: 1.0
-Sensitivity: 
-Importance: Normal
-X-Priority: 3 (Normal)
-In-Reply-To: <0120de74-0b86-469a-b19a-b4b98a60a080@kernel.org>
-References: <0120de74-0b86-469a-b19a-b4b98a60a080@kernel.org>,
-        <OF950BEF72.7F425944-ON00258A46.00488A76-00258A46.00497D44@gdc.ru>
-Subject: Re: [PATCH v2] tty: serial: meson: hard LOCKUP on crtscts mode
-From:   Pavel Krasavin <pkrasavin@imaqliq.com>
-To:     "Jiri Slaby" <jirislaby@kernel.org>
-Cc:     Pavel Krasavin <pkrasavin@imaqliq.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Neil Armstrong" <neil.armstrong@linaro.org>,
-        "Kevin Hilman" <khilman@baylibre.com>,
-        "Jerome Brunet" <jbrunet@baylibre.com>,
-        "Martin Blumenstingl" <martin.blumenstingl@googlemail.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org
-Date:   Fri, 13 Oct 2023 11:09:22 +0000
-Message-ID: <OF9F10A7E1.E13FABB2-ON00258A47.003D2ECF-00258A47.003D485B@gdc.ru>
-X-Mailer: Lotus Domino Web Server Release 12.0.2 November 03, 2022
-X-MIMETrack: Serialize by http on verse/com(Release 12.0.2|November 03, 2022) at 10/13/2023
- 11:09:22,
-        Serialize complete at 10/13/2023 11:09:22,
-        Serialize by Router on verse/com(Release 12.0.2|November 03, 2022) at 10/13/2023
- 11:09:27
-X-KeepSent: 9F10A7E1:E13FABB2-00258A47:003D2ECF;
- type=4; name=$KeepSent
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-KLMS-Rule-ID: 1
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Lua-Profiles: 180603 [Oct 13 2023]
-X-KLMS-AntiSpam-Version: 6.0.0.2
-X-KLMS-AntiSpam-Envelope-From: pkrasavin@imaqliq.com
-X-KLMS-AntiSpam-Rate: 10
-X-KLMS-AntiSpam-Status: not_detected
-X-KLMS-AntiSpam-Method: none
-X-KLMS-AntiSpam-Auth: dmarc=fail header.from=imaqliq.com policy=none;spf=softfail smtp.mailfrom=imaqliq.com;dkim=none
-X-KLMS-AntiSpam-Info: LuaCore: 539 539 807534d9021bfe9ca369c363d15ac993cd93d4d9, {rep_avail}, {Tracking_from_domain_doesnt_match_to}, 127.0.0.199:7.1.2;gdc.ru:7.1.1;93.189.151.95:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;verse.imaqliq.com:7.1.1;imaqliq.com:7.1.1, FromAlignment: s, {Tracking_dmark_f}, ApMailHostAddress: 93.189.151.95
-X-MS-Exchange-Organization-SCL: -1
-X-KLMS-AntiSpam-Interceptor-Info: scan successful
-X-KLMS-AntiPhishing: Clean, bases: 2023/10/13 09:19:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2023/10/13 08:46:00 #22180318
-X-KLMS-AntiVirus-Status: Clean, skipped
+Date:   Fri, 13 Oct 2023 13:17:37 +0200
+From:   m.brock@vanmierlo.com
+To:     Rob Herring <robh@kernel.org>
+Cc:     Manikanta Guntupalli <manikanta.guntupalli@amd.com>, git@amd.com,
+        michal.simek@amd.com, gregkh@linuxfoundation.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jirislaby@kernel.org,
+        linux-arm-kernel@lists.infradead.org, radhey.shyam.pandey@amd.com,
+        srinivas.goud@amd.com, shubhrajyoti.datta@amd.com,
+        manion05gk@gmail.com
+Subject: Re: [PATCH V2 1/2] dt-bindings: Add optional gpio property to uartps
+ node to support rs485
+In-Reply-To: <20231012205158.GA1714449-robh@kernel.org>
+References: <20231011145602.3619616-1-manikanta.guntupalli@amd.com>
+ <20231011145602.3619616-2-manikanta.guntupalli@amd.com>
+ <c4d6ec9a13807866b7dbc7cbed478494@vanmierlo.com>
+ <20231012205158.GA1714449-robh@kernel.org>
+Message-ID: <42864886e6d5cf11b6ab817f57008611@vanmierlo.com>
+X-Sender: m.brock@vanmierlo.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello Jiri,
+Rob Herring wrote on 2023-10-12 22:51:
+>> How about introducing an rs485 generic gpios property instead of xlnx
+>> private one? See also rs485-term-gpios and rs485-rx-during-tx-gpios.
+>> 
+>> Also note that every kernel driver expects to use RTS for this 
+>> purpose.
+>> So why not give this driver the option to choose a gpio instead of its
+>> native RTS? And from there on use the rts route?
+>> What if someone wants to use normal (non-rs485) RTS on a GPIO instead
+>> of the native pin?
+>> 
+>> @Rob Herring
+>> I am curious to know how the rs485 maintainers look at this.
+> 
+> Ask them.
 
------ "Jiri Slaby" <jirislaby@kernel.org> писал(а): -----
-> Subject: tty: serial: meson: hard LOCKUP on crtscts mode
+Funny, your name is the only one listed under the maintainers in
+Documentation/devicetree/bindings/serial/rs485.yaml
 
-> Ah, you are fixing one? So how does this sound:
-> tty: serial: meson: fix hard LOCKUP on crtscts mode
-> ?
+And there is no mention of (RS-)485 in MAINTAINERS.
 
-you are right, idea was to fix it, not to add :)
-I agree, your subject looks better!
+> We already have 'rts-gpios'. If that's what's always used, then perhaps
+> we should use that in the RS485 case too?
+> 
+> Rob
 
-So, do I need to prepare v4 of this patch, right?
+Sounds like a good idea.
 
---
-Regards,
-Pavel.
+Maarten
+
