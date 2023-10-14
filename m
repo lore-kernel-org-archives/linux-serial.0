@@ -2,124 +2,151 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30860CDB482
-	for <linux-serial@archiver.kernel.org>; Sat, 14 Oct 2023 11:14:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A5A6CDB465
+	for <linux-serial@archiver.kernel.org>; Sat, 14 Oct 2023 11:39:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232957AbjJNLN7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 14 Oct 2023 07:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57068 "EHLO
+        id S233033AbjJNLji convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 14 Oct 2023 07:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232937AbjJNLN6 (ORCPT
+        with ESMTP id S232977AbjJNLjh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 14 Oct 2023 07:13:58 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E3EAD
-        for <linux-serial@vger.kernel.org>; Sat, 14 Oct 2023 04:13:56 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id 5b1f17b1804b1-4065dea9a33so29226215e9.3
-        for <linux-serial@vger.kernel.org>; Sat, 14 Oct 2023 04:13:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google; t=1697282035; x=1697886835; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=7Hoabk9LgDG7AVtJ/9VbI0K4NvP7rAaguGPxnfhSPGw=;
-        b=NlGf57MEqwMAJGxt0hsPXHyJ5vYKBmoWH1WbSkXsJdFelXinnLus4yoxwo3dTKE6Ql
-         o+bMWmvh3+meNa7bOgG+935MHCfJcNah59dyZc0+ipJPntX0TcHcqWdWERIbrv1Nxukh
-         1qSAg0z6RMnajDhMJfqPIR+7nMa8Vcjbu6QCo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697282035; x=1697886835;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7Hoabk9LgDG7AVtJ/9VbI0K4NvP7rAaguGPxnfhSPGw=;
-        b=wmJkAXG22lH8KP0bM8jwTfIBXWIh9geet+GvxAf9BkwEwwniMjunfYlkOtYXKwXwNx
-         YPIIuE79plIQnnwsdq4k5GuCCKhEvm7unzalsbcIKyTkRIPN6pb1e/SjDSNviU8aXSmv
-         Q1zxTnp0wGIrW5iCEbjqVxQ2EMC3WRiFYCa4r/+fQp5SEJHo3oSoIzT0DvdawAHKblc+
-         zdR/2UXzoezah4ABPW+pdw7GTH4VffT4m9dsIDyPqrzHlhUk0/q4Vrz53kd1f4oFrJrx
-         E/72CJWeGP32G7YPtP+4A3VEtr7LT/rCFt7jP0V/9X3LHX5pyATAfXUUbMNiKyvPJwtz
-         p92A==
-X-Gm-Message-State: AOJu0Yxwv4vaL1T076tDGW/gXYQwBcPLn+qo/b95QLLSJCK2ZGUtS2+1
-        rp/y43GZEXS49+SgsXQ0Gs6EbpBwJh8KcIc8oKk=
-X-Google-Smtp-Source: AGHT+IETk0aw9hqoEn4tFp5lP32SpVPRyTIgWwiZ+OYJ6SOoh93lN/8euNp27nFtrND9kctMy4PDrw==
-X-Received: by 2002:a7b:c387:0:b0:3f9:b430:199b with SMTP id s7-20020a7bc387000000b003f9b430199bmr25481496wmj.15.1697282034719;
-        Sat, 14 Oct 2023 04:13:54 -0700 (PDT)
-Received: from ?IPv6:2001:8b0:aba:5f3c:66ae:9f57:4dbd:827d? ([2001:8b0:aba:5f3c:66ae:9f57:4dbd:827d])
-        by smtp.gmail.com with ESMTPSA id s19-20020a05600c45d300b0040648217f4fsm1745278wmo.39.2023.10.14.04.13.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Oct 2023 04:13:54 -0700 (PDT)
-Message-ID: <c85ab969826989c27402711155ec086fd81574fb.camel@linuxfoundation.org>
-Subject: Re: Kernel 6.5 ttyS1 hang with qemu (was Re: [OE-core] Summary of
- the remaining 6.5 kernel serial issue (and 6.5 summary)
-From:   Richard Purdie <richard.purdie@linuxfoundation.org>
-To:     Mikko Rapeli <mikko.rapeli@linaro.org>,
-        linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tony Lindgren <tony@atomide.com>
-Cc:     openembedded-core <openembedded-core@lists.openembedded.org>,
-        Bruce Ashfield <bruce.ashfield@gmail.com>,
-        Randy MacLeod <randy.macleod@windriver.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>
-Date:   Sat, 14 Oct 2023 12:13:53 +0100
-In-Reply-To: <1520ecb5f4b6959af835a7781b94694913f76912.camel@linuxfoundation.org>
-References: <178BF2895FF685E6.5378@lists.openembedded.org>
-         <a2ad67a0575548b6d5d8d187e597dcd72ae07f64.camel@linuxfoundation.org>
-         <ZSPQY6UYg21Z0PnN@nuoska>
-         <1520ecb5f4b6959af835a7781b94694913f76912.camel@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.48.1-0ubuntu1 
+        Sat, 14 Oct 2023 07:39:37 -0400
+Received: from postfix2.imaqliq.com (postfix2.imaqliq.com [93.189.151.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288D4C9;
+        Sat, 14 Oct 2023 04:39:35 -0700 (PDT)
+Received: from verse.imaqliq.com (unknown [93.189.151.95])
+        by postfix2.imaqliq.com (Postfix) with ESMTP id 8C4041C294E;
+        Sat, 14 Oct 2023 14:39:32 +0300 (MSK)
 MIME-Version: 1.0
+Sensitivity: 
+Importance: Normal
+X-Priority: 3 (Normal)
+In-Reply-To: 
+References: 
+Subject: [PATCH v6] tty: serial: meson: fix hard LOCKUP on crtscts mode
+From:   Pavel Krasavin <pkrasavin@imaqliq.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org
+Date:   Sat, 14 Oct 2023 11:39:26 +0000
+Message-ID: <OF66360032.51C36182-ON00258A48.003F656B-00258A48.0040092C@gdc.ru>
+X-Mailer: Lotus Domino Web Server Release 12.0.2 November 03, 2022
+X-MIMETrack: Serialize by http on verse/com(Release 12.0.2|November 03, 2022) at 10/14/2023
+ 11:39:26,
+        Serialize complete at 10/14/2023 11:39:26,
+        Serialize by Router on verse/com(Release 12.0.2|November 03, 2022) at 10/14/2023
+ 11:39:31
+X-KeepSent: 66360032:51C36182-00258A48:003F656B;
+ type=4; name=$KeepSent
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-KLMS-Rule-ID: 1
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Lua-Profiles: 180616 [Oct 13 2023]
+X-KLMS-AntiSpam-Version: 6.0.0.2
+X-KLMS-AntiSpam-Envelope-From: pkrasavin@imaqliq.com
+X-KLMS-AntiSpam-Rate: 10
+X-KLMS-AntiSpam-Status: not_detected
+X-KLMS-AntiSpam-Method: none
+X-KLMS-AntiSpam-Auth: dmarc=fail header.from=imaqliq.com policy=none;spf=softfail smtp.mailfrom=imaqliq.com;dkim=none
+X-KLMS-AntiSpam-Info: LuaCore: 539 539 807534d9021bfe9ca369c363d15ac993cd93d4d9, {rep_avail}, {Tracking_uf_ne_domains}, {Tracking_from_domain_doesnt_match_to}, imaqliq.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;lore.kernel.org:7.1.1;127.0.0.199:7.1.2;93.189.151.95:7.1.2;gdc.ru:7.1.1;verse.imaqliq.com:7.1.1, FromAlignment: s, {Tracking_dmark_f}, ApMailHostAddress: 93.189.151.95
+X-MS-Exchange-Organization-SCL: -1
+X-KLMS-AntiSpam-Interceptor-Info: scan successful
+X-KLMS-AntiPhishing: Clean, bases: 2023/10/14 10:01:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2023/10/14 08:14:00 #22187517
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 2023-10-14 at 10:41 +0100, Richard Purdie wrote:
-> Brief summary:
->=20
-> We're seeing an issue on x86_64 with 6.5.X where data appears to be
-> left in the transmission buffer and not sent to the port on the second
-> serial port (ttyS1) until we trigger it with intervention.
->=20
-> Paul Gortmaker did some painful bisection over a few days down to:
->=20
-> serial: core: Start managing serial controllers to enable runtime PM
-> https://lore.kernel.org/linux-serial/1431f5b4-fb39-483b-9314-ed2b7c118c11=
-@gmail.com/T/#t
+From: Pavel Krasavin <pkrasavin@imaqliq.com>
 
-Having poked around a bit and knowing nothing about any of this, should
-this bit of new code added in the above commit to __uart_start() in
-serial_core.c:
+There might be hard lockup if we set crtscts mode on port without RTS/CTS configured:
 
-	/*
-	 * Start TX if enabled, and kick runtime PM. If the device is not
-	 * enabled, serial_port_runtime_resume() calls start_tx()
-again
-	 * after enabling the device.
-	 */
-	if (pm_runtime_active(&port_dev->dev))
-		port->ops->start_tx(port);
+# stty -F /dev/ttyAML6 crtscts; echo 1 > /dev/ttyAML6; echo 2 > /dev/ttyAML6
+[   95.890386] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+[   95.890857] rcu:     3-...0: (201 ticks this GP) idle=e33c/1/0x4000000000000000 softirq=5844/5846 fqs=4984
+[   95.900212] rcu:     (detected by 2, t=21016 jiffies, g=7753, q=296 ncpus=4)
+[   95.906972] Task dump for CPU 3:
+[   95.910178] task:bash            state:R  running task     stack:0     pid:205   ppid:1      flags:0x00000202
+[   95.920059] Call trace:
+[   95.922485]  __switch_to+0xe4/0x168
+[   95.925951]  0xffffff8003477508
+[   95.974379] watchdog: Watchdog detected hard LOCKUP on cpu 3
+[   95.974424] Modules linked in: 88x2cs(O) rtc_meson_vrtc
 
+Possible solution would be to not allow to setup crtscts on such port.
 
-actually be something like:
+Tested on S905X3 based board.
 
+Fixes: ff7693d079e5 ("ARM: meson: serial: add MesonX SoC on-chip uart driver")
+Cc: stable@vger.kernel.org
+Signed-off-by: Pavel Krasavin <pkrasavin@imaqliq.com>
+Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
+Reviewed-by: Dmitry Rokosov <ddrokosov@salutedevices.com>
+---
+v6: stable tag added
+v5: https://lore.kernel.org/lkml/OF43DA36FF.2BD3BB21-ON00258A47.005A8125-00258A47.005A9513@gdc.ru/
+added missed Reviewed-by tags, Fixes tag added according to Dmitry and Neil notes
+v4: https://lore.kernel.org/lkml/OF55521400.7512350F-ON00258A47.003F7254-00258A47.0040E15C@gdc.ru/
+More correct patch subject according to Jiri's note
+v3: https://lore.kernel.org/lkml/OF6CF5FFA0.CCFD0E8E-ON00258A46.00549EDF-00258A46.0054BB62@gdc.ru/
+"From:" line added to the mail
+v2: https://lore.kernel.org/lkml/OF950BEF72.7F425944-ON00258A46.00488A76-00258A46.00497D44@gdc.ru/
+braces for single statement removed according to Dmitry's note
+v1: https://lore.kernel.org/lkml/OF28B2B8C9.5BC0CD28-ON00258A46.0037688F-00258A46.0039155B@gdc.ru/
+---
 
-	if (pm_runtime_active(&port_dev->dev) || !pm_runtime_enabled(&port_dev->de=
-v))
-		port->ops->start_tx(port);
-
-
-since there are uarts that don't enable runtime PM?
-
-I notice that 16550A I'm using doesn't set UART_CAP_RPM and since we
-have data left in the xmit buffer (I managed to confirm that), it is as
-if during init, there is a race between the serial probing and the
-getty putting data in the buffer? If it weren't statrted, that would
-explain things...
-
-Keep in mind I know nothing about pm_runtime or serial/uarts so this is
-guesswork on my part.
-
-Cheers,
-
-Richard
-
+--- a/drivers/tty/serial/meson_uart.c	2023-10-12 15:44:02.410538523 +0300
++++ b/drivers/tty/serial/meson_uart.c	2023-10-12 15:58:06.242395253 +0300
+@@ -380,10 +380,14 @@ static void meson_uart_set_termios(struc
+ 	else
+ 		val |= AML_UART_STOP_BIT_1SB;
+ 
+-	if (cflags & CRTSCTS)
+-		val &= ~AML_UART_TWO_WIRE_EN;
+-	else
++	if (cflags & CRTSCTS) {
++		if (port->flags & UPF_HARD_FLOW)
++			val &= ~AML_UART_TWO_WIRE_EN;
++		else
++			termios->c_cflag &= ~CRTSCTS;
++	} else {
+ 		val |= AML_UART_TWO_WIRE_EN;
++	}
+ 
+ 	writel(val, port->membase + AML_UART_CONTROL);
+ 
+@@ -705,6 +709,7 @@ static int meson_uart_probe(struct platf
+ 	u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
+ 	int ret = 0;
+ 	int irq;
++	bool has_rtscts;
+ 
+ 	if (pdev->dev.of_node)
+ 		pdev->id = of_alias_get_id(pdev->dev.of_node, "serial");
+@@ -732,6 +737,7 @@ static int meson_uart_probe(struct platf
+ 		return irq;
+ 
+ 	of_property_read_u32(pdev->dev.of_node, "fifo-size", &fifosize);
++	has_rtscts = of_property_read_bool(pdev->dev.of_node, "uart-has-rtscts");
+ 
+ 	if (meson_ports[pdev->id]) {
+ 		return dev_err_probe(&pdev->dev, -EBUSY,
+@@ -762,6 +768,8 @@ static int meson_uart_probe(struct platf
+ 	port->mapsize = resource_size(res_mem);
+ 	port->irq = irq;
+ 	port->flags = UPF_BOOT_AUTOCONF | UPF_LOW_LATENCY;
++	if (has_rtscts)
++		port->flags |= UPF_HARD_FLOW;
+ 	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_MESON_CONSOLE);
+ 	port->dev = &pdev->dev;
+ 	port->line = pdev->id;
