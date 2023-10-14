@@ -2,191 +2,120 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4306CDB465
-	for <linux-serial@archiver.kernel.org>; Sat, 14 Oct 2023 12:23:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AB07CDB482
+	for <linux-serial@archiver.kernel.org>; Sat, 14 Oct 2023 18:13:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233060AbjJNMXo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 14 Oct 2023 08:23:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
+        id S233033AbjJNSNm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 14 Oct 2023 14:13:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232957AbjJNMXn (ORCPT
+        with ESMTP id S231330AbjJNSNm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 14 Oct 2023 08:23:43 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 385E6A2;
-        Sat, 14 Oct 2023 05:23:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
- t=1697286197; x=1697890997; i=linosanfilippo@gmx.de;
- bh=kgDuOk3z1Ea4qWhQuI9kBo9177OQ8y0oXsIYIljyoes=;
- h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
- b=baYtoi4D36rhBH1R75lao0TrIMwT7MSTlReTcTd2/u6L8ytG2F+iablgvpbkCkb2tr4ZMG3i4Ae
- zoRFLLXRReS87RU4+d+oOyfyfmBqXNzIjc6ZBkMY5up3TdND2RB1nI0HD4NiVRKzm50Imt8Y+6V5O
- t7/sBEG99IW/vUDYmDGRn7itTTCgjpm9j3PUID1vNyE9u/bc+4t7pKePjj4cF6IG9uiN7uKdu69ci
- Xoz6E/t/DRGuwNc6rREYMumcKbZN2JzoqStUQ2Io97u7WrX9Qr/NOE4yMug9iL50DbT7ip28y0emn
- Uv35oY/mHqsjdc1rLYQiWHZDrYHPcgn6m0Ew==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.2.42] ([84.162.21.41]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MNt0C-1rBW0K3zlQ-00OFiE; Sat, 14
- Oct 2023 14:23:17 +0200
-Message-ID: <b06c2fcd-02c0-464b-a7e8-4dfbf9e2befc@gmx.de>
-Date:   Sat, 14 Oct 2023 14:23:15 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/6] serial: core: fix sanitizing check for RTS
- settings
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
-        stable@vger.kernel.org
-References: <20231011181544.7893-1-l.sanfilippo@kunbus.com>
- <20231011181544.7893-4-l.sanfilippo@kunbus.com>
- <40e4c6b1-e217-2926-a351-bf685a5b775f@linux.intel.com>
- <da9a9d10-2568-4960-b9f8-9d43cbc1b295@kunbus.com>
- <63b62f6c-d97d-8d45-1612-968ef74b6365@linux.intel.com>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <63b62f6c-d97d-8d45-1612-968ef74b6365@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:CHN2pNHaAkw0ZESaLnuGgSm6m6EKCzvkaP3fYPHWXDJPm8blbaR
- 1SvWzi/huJIP50I3EY9CvPuSJF5a/GqlaIgxjbqZENub4y/aumnjrINqe0hIuWCyVXJY7oZ
- yOY1HGek1NFehYlgQGEwF2lwzPtjeTaDp7m7tQNyO09UvstSh7VuHqR3jh6GqDbH2ck3QB2
- zzuOqMfk8QVZxIY59kaFw==
-UI-OutboundReport: notjunk:1;M01:P0:smEzDPWVI2Y=;uVqFcyRNYsaSTA4KRKzG75nbiRu
- nd1nafhYNxCBNLPACMbRf+9R/FLLTAZQ5F4MoZdZd1HRhhqRj7Vt273DeMpVMI9ki3nOrTYMG
- MrxUpjxN18lZXMG6sVvn80fPyaGlXNnYQbSEcUG++tPCK/apPzRYdHGuI7UB5Q4VstgMwFDUJ
- VAnt/LjiGbclPxP2LBKPH646RpovSaoQf6iOq9eWDrVTRlT529qA9NwfrrMZxhxB39r4WcI5E
- Bzoni88qhfA19p60Eg/XGbHoxRZ00yp0oILbUI7umFVQ9tuyhOaPEcc7paQN4j/bo0T//pdhO
- mGCT2gYkT6cJvY0ZCUyX97fH9zO8O8e4P9t4CxhMNzi3QZPw8fzZwiBhZhME/i0Ld2/r/lHCK
- T2bhAJ7cqzTyY2Gau3x+9znO1Pw9nlBMCCuR9bbJRv48PzAzm51k+z2WjbYd+HuThyc1G6u9s
- 9ekFjOdoDvBwVj9c5G4HUb9u2SWxz6mImws3r0gBiQnXJkKYF+6c+1pQmHzKXtmFBa4mQ7pCi
- LKASlxHgHvOW0c/I3jaqRZQcsbCP41/psTBENAOYD3wLZbRf3bY4v2biXjhqfxu7i3w6Yr8Ls
- 9DffQeuauvy2rYhqQ4yhxa/BI2NY1WBSJhIdYbKy5sp4Y250dLcHj//Q1q7fGotTk5STOTVGM
- HxUM5fzncxHDtjSPZ3MGkOSjBySFS7wrqlW+5XjqfojOFWBlQA0E6LAicC5DjQ4naqPd9SnoF
- fguYsJmCAapR19oz7Hay1PanBq7US/gr55zeYkBtbgaErRpKaogSWUBOj+0nQdD8Ck93+xIEN
- PGQzuSWiUeRVfceo7e4V2s1kMeDC+G8m+y/ewJ8LivnpTayJcu6WZuxI03+oXik07ld7KeSSo
- BvQPY8E2ztyv7N2pUdeMrsfM+co9C74UYeGsJq5cpD/3YtM3JRaUNhVB2ao3stoGbiadWRXK/
- C4upYg==
+        Sat, 14 Oct 2023 14:13:42 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61CD7A1
+        for <linux-serial@vger.kernel.org>; Sat, 14 Oct 2023 11:13:40 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id 3f1490d57ef6-c647150c254so2585337276.1
+        for <linux-serial@vger.kernel.org>; Sat, 14 Oct 2023 11:13:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1697307219; x=1697912019; darn=vger.kernel.org;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=rKyrhxaGZv0nPLnMXbvJXkiVEGuU/Lq6wP9rgM/Alfg=;
+        b=u/yYNOojuWmJosMmEwVDzzax7C8pIpjeMNn6ObQ2JFgunKX5fe3pJvQUIhHaq3wXfx
+         muDTEoWT32bmlJ0SmlSdQjj4DayGooJQ6F1X/SZv0NLDdmcbCb1lyRWbVsEyOz1RWE1Z
+         /5e83rH3pztsq+OrAwowSsXxvfydaRQOUAKDex/lwj2iwlzODSKDhM1myiOOlt0XTzBt
+         gR/qxsCJCPcbObAYBnc3ECzKuxca/dwcoUcoOENHJOoXOSZtHhsKaGZIDVFX0alEXYx5
+         3FI5Omjd7jEhF/5ukmATWtr67wQgkI/sd3bcLNm+C5xKMwdcqcA5lAodoPOYzxswrBKL
+         ASCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697307219; x=1697912019;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=rKyrhxaGZv0nPLnMXbvJXkiVEGuU/Lq6wP9rgM/Alfg=;
+        b=IIyuBjyvLxbHWgcHCSFnvzSqOqUsuwDW1rMdBEjyMMtggqILkKFvUF7SUKYkbSdx0O
+         friGXBXweGe+mX9S6Z3aYFCX5dPVtCySEoxFv3YAUwhn9jl0JlB0mFfRTdskpC1P60wv
+         9qqzh18YNfpRCeQEy41HHhnDRyjx2L5BXHRIpzwWM1ecZPdjykLlumcIXZHK+Ih/867/
+         Y98DPRHdo/YkdvWmxo93N4ilIP9STRqoO/PBMHnvCy7iyZCL7fbZI8JWjbEE5It6bdpw
+         weOYiGB1mmFnsdtXYvfJuCQwOykzJlfL4xoLnnEmwx+YgMk5SaCO+3tHEFiTnawcoL1e
+         DxaQ==
+X-Gm-Message-State: AOJu0YyKBDdx6zuptp8KjpkBFfJi+MSEILJrvijmpQ6EsD4i003/o9H3
+        mgDnAzJ8Djcf2jifMipRPogw0lX3GZAfbTxdj2Kr
+X-Google-Smtp-Source: AGHT+IH0MJExwfauji0fzv9X3e2ja5LOFD5TgaDDRwSxh/LV1XA12gw16CrCrlDxSl0RHLgxPKVAr43tr6sACN2TaXH5
+X-Received: from vamshig51.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:70c])
+ (user=vamshigajjela job=sendgmr) by 2002:a25:d748:0:b0:d89:cd65:c2b0 with
+ SMTP id o69-20020a25d748000000b00d89cd65c2b0mr95600ybg.6.1697307219523; Sat,
+ 14 Oct 2023 11:13:39 -0700 (PDT)
+Date:   Sat, 14 Oct 2023 23:43:33 +0530
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.42.0.655.g421f12c284-goog
+Message-ID: <20231014181333.2579530-1-vamshigajjela@google.com>
+Subject: [PATCH v2 1/3] serial: core: Potential overflow of frame_time
+From:   Vamshi Gajjela <vamshigajjela@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        ilpo.jarvinen@linux.intel.com
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        manugautam@google.com, Subhash Jadavani <sjadavani@google.com>,
+        Channa Kadabi <kadabi@google.com>,
+        VAMSHI GAJJELA <vamshigajjela@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Ilpo,
+From: VAMSHI GAJJELA <vamshigajjela@google.com>
 
-On 13.10.23 12:24, Ilpo J=C3=A4rvinen wrote:
-> On Thu, 12 Oct 2023, Lino Sanfilippo wrote:
->> On 12.10.23 15:10, Ilpo J=C3=A4rvinen wrote:
->>> On Wed, 11 Oct 2023, Lino Sanfilippo wrote:
->>>
->>>> Among other things uart_sanitize_serial_rs485() tests the sanity of t=
-he RTS
->>>> settings in a RS485 configuration that has been passed by userspace.
->>>> If RTS-on-send and RTS-after-send are both set or unset the configura=
-tion
->>>> is adjusted and RTS-after-send is disabled and RTS-on-send enabled.
->>>>
->>>> This however makes only sense if both RTS modes are actually supporte=
-d by
->>>> the driver.
->>>>
->>>> With commit be2e2cb1d281 ("serial: Sanitize rs485_struct") the code d=
-oes
->>>> take the driver support into account but only checks if one of both R=
-TS
->>>> modes are supported. This may lead to the errorneous result of RTS-on=
--send
->>>> being set even if only RTS-after-send is supported.
->>>>
->>>> Fix this by changing the implemented logic: First clear all unsupport=
-ed
->>>> flags in the RS485 configuration, then adjust an invalid RTS setting =
-by
->>>> taking into account which RTS mode is supported.
->>>>
->>>> Cc: stable@vger.kernel.org
->>>> Fixes: be2e2cb1d281 ("serial: Sanitize rs485_struct")
->>>> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->>>> ---
->>>>  drivers/tty/serial/serial_core.c | 28 ++++++++++++++++++----------
->>>>  1 file changed, 18 insertions(+), 10 deletions(-)
->>>>
->>>> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/se=
-rial_core.c
->>>> index 697c36dc7ec8..f4feebf8200f 100644
->>>> --- a/drivers/tty/serial/serial_core.c
->>>> +++ b/drivers/tty/serial/serial_core.c
->>>> @@ -1370,19 +1370,27 @@ static void uart_sanitize_serial_rs485(struct=
- uart_port *port, struct serial_rs4
->>>>               return;
->>>>       }
->>>>
->>>> +     rs485->flags &=3D supported_flags;
->>>> +
->>>>       /* Pick sane settings if the user hasn't */
->>>> -     if ((supported_flags & (SER_RS485_RTS_ON_SEND|SER_RS485_RTS_AFT=
-ER_SEND)) &&
->>>> -         !(rs485->flags & SER_RS485_RTS_ON_SEND) =3D=3D
->>>> +     if (!(rs485->flags & SER_RS485_RTS_ON_SEND) =3D=3D
->>>>           !(rs485->flags & SER_RS485_RTS_AFTER_SEND)) {
->>>> -             dev_warn_ratelimited(port->dev,
->>>> -                     "%s (%d): invalid RTS setting, using RTS_ON_SEN=
-D instead\n",
->>>> -                     port->name, port->line);
->>>> -             rs485->flags |=3D SER_RS485_RTS_ON_SEND;
->>>> -             rs485->flags &=3D ~SER_RS485_RTS_AFTER_SEND;
->>>> -             supported_flags |=3D SER_RS485_RTS_ON_SEND|SER_RS485_RT=
-S_AFTER_SEND;
->>>> -     }
->>>> +             if (supported_flags & SER_RS485_RTS_ON_SEND) {
->>>> +                     rs485->flags |=3D SER_RS485_RTS_ON_SEND;
->>>> +                     rs485->flags &=3D ~SER_RS485_RTS_AFTER_SEND;
->>>>
->>>> -     rs485->flags &=3D supported_flags;
->>>> +                     dev_warn_ratelimited(port->dev,
->>>> +                             "%s (%d): invalid RTS setting, using RT=
-S_ON_SEND instead\n",
->>>> +                             port->name, port->line);
->>>> +             } else {
->>>> +                     rs485->flags |=3D SER_RS485_RTS_AFTER_SEND;
->>>> +                     rs485->flags &=3D ~SER_RS485_RTS_ON_SEND;
->>>
->>> So if neither of the flags is supported, what will happen? You might w=
-ant
->>> add if after that else?
->>>
->>
->> I would consider this a bug in the driver, as at least one of both mode=
-s
->> has to be supported. If the driver does not have at least one of both f=
-lags
->> set in rs485_supported.flags we could print a warning though. Would you=
- prefer that?
->
-> 8250_exar.c needs to fixed then?
-I was taking these as things one can
-> "configure" even if when there's support only for a one of them there's
-> not that much to configure. As there was neither in 8250_exar's code, I
-> didn't add either flag.
+uart_update_timeout() sets a u64 value to an unsigned int frame_time.
+While it can be cast to u32 before assignment, there's a specific case
+where frame_time is cast to u64. Since frame_time consistently
+participates in u64 arithmetic, its data type is converted to u64 to
+eliminate the need for explicit casting.
 
-> But I suppose your interpretation of those flag makes more sense.
->
+Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
+---
+v2:
+- use DIV64_U64_ROUND_UP with frame_time
 
-IMHO this is consistent with what we have in uart_get_rs485_mode(). This f=
-unction
-ensures that we have at least one RTS mode set (with default to RTS_ON_SEN=
-D). So
-concerning 8250_exar.c, I think it should be fixed (havent noticed the mis=
-sing
-RTS mode though until you mentioned it). Would you like to provide a fix f=
-or this
-or shall I include one into the next version of this series?
+ drivers/tty/serial/8250/8250_port.c | 2 +-
+ include/linux/serial_core.h         | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 141627370aab..d1bf794498c4 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1510,7 +1510,7 @@ static inline void __stop_tx(struct uart_8250_port *p)
+ 			 * rather than after it is fully sent.
+ 			 * Roughly estimate 1 extra bit here with / 7.
+ 			 */
+-			stop_delay = p->port.frame_time + DIV_ROUND_UP(p->port.frame_time, 7);
++			stop_delay = p->port.frame_time + DIV64_U64_ROUND_UP(p->port.frame_time, 7);
+ 		}
+ 
+ 		__stop_tx_rs485(p, stop_delay);
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index bb6f073bc159..b128513b009a 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -558,7 +558,7 @@ struct uart_port {
+ 
+ 	bool			hw_stopped;		/* sw-assisted CTS flow state */
+ 	unsigned int		mctrl;			/* current modem ctrl settings */
+-	unsigned int		frame_time;		/* frame timing in ns */
++	unsigned long		frame_time;		/* frame timing in ns */
+ 	unsigned int		type;			/* port type */
+ 	const struct uart_ops	*ops;
+ 	unsigned int		custom_divisor;
+@@ -764,7 +764,7 @@ unsigned int uart_get_divisor(struct uart_port *port, unsigned int baud);
+  */
+ static inline unsigned long uart_fifo_timeout(struct uart_port *port)
+ {
+-	u64 fifo_timeout = (u64)READ_ONCE(port->frame_time) * port->fifosize;
++	u64 fifo_timeout = READ_ONCE(port->frame_time) * port->fifosize;
+ 
+ 	/* Add .02 seconds of slop */
+ 	fifo_timeout += 20 * NSEC_PER_MSEC;
+-- 
+2.42.0.655.g421f12c284-goog
 
-BR,
-Lino
