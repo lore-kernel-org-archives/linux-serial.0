@@ -2,284 +2,187 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15EF8CDB47E
-	for <linux-serial@archiver.kernel.org>; Sun, 15 Oct 2023 17:13:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B62FCDB483
+	for <linux-serial@archiver.kernel.org>; Sun, 15 Oct 2023 17:50:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231314AbjJORND (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 15 Oct 2023 13:13:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47022 "EHLO
+        id S230178AbjJORuE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 15 Oct 2023 13:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230464AbjJORMf (ORCPT
+        with ESMTP id S229522AbjJORuE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 15 Oct 2023 13:12:35 -0400
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-he1eur01olkn2014.outbound.protection.outlook.com [40.92.65.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39664116;
-        Sun, 15 Oct 2023 10:12:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QyBnjNiC1CZO/QOjCg7VmAOpuTuyVGtbs8mKzm1UyTdS8lEBh5rzr1svKqNU6q+zaHIR17QNU4k1gFL1SEkM5KVKsuy+eLnbIBXZM18bSRmFE1qswNBrSg0z9sbsns0oxfDi1xiWN8ebewjNbFNMKO5hX/dj9IuNl5tsJx+eYfkQ7GErfQXeQVniu4CWYST9qPr+6Pt8FSNexpGOhRdQWEORBM6iRfqYJtkGIALzwYHJ/dEhsVBJciyvP1wh7SeVuiFy/1qWV9Igm8n7BFRN6mEg5t/MM26H3Z0L1HeZO3dvotctlRABHNnq7KGaBPhXMbazUhU0TWT7QeKjXFxYOQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6Jv045tXMbphD4fy29eGMMI0gvuPje4eD7NGbIYhyBA=;
- b=dYh2Q5D2hmEkcW7O3emUFsDW70GyfLZjaEwjQ8DWoG96lwvtLD9PJBQ/FyalUBIboCRjsNIRzw5Def56b9AYZXYTznEaXPQJIzUGFKWXLlfcFphljWRpVWFfHjbEyHv6ZQfLx77YRcUE55h72VzpCT73u6aodiBSp0uQp3FZKu1yiGYRaqspOgfJIOjWZwdbuwg+NN6Yz7QYAuH2roTharXE2CqF76wd2d3GRIeqJQuwbe6UNuoIOafwNgzpZv0dOqYfjje7/leVrO0T1d/K7QS8DpMb6qtVcVwvfhAfmxCDmcLRmhvRO5RgpIexGHzbTGO7uXIQjSuvERaLDlEtFA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from DU0PR02MB7899.eurprd02.prod.outlook.com (2603:10a6:10:347::11)
- by VI1PR02MB6093.eurprd02.prod.outlook.com (2603:10a6:800:18b::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.35; Sun, 15 Oct
- 2023 17:12:26 +0000
-Received: from DU0PR02MB7899.eurprd02.prod.outlook.com
- ([fe80::b753:178a:394e:af8e]) by DU0PR02MB7899.eurprd02.prod.outlook.com
- ([fe80::b753:178a:394e:af8e%7]) with mapi id 15.20.6886.034; Sun, 15 Oct 2023
- 17:12:26 +0000
-From:   Cameron Williams <cang1@live.co.uk>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc:     Cameron Williams <cang1@live.co.uk>
-Subject: [PATCH v3 7/7] tty: 8250: Add Brainboxes Oxford Semiconductor-based quirks
-Date:   Sun, 15 Oct 2023 18:10:22 +0100
-Message-ID: <DU0PR02MB78998961117757F4750A3AFFC4D0A@DU0PR02MB7899.eurprd02.prod.outlook.com>
-X-Mailer: git-send-email 2.42.0
-In-Reply-To: <20231015171141.3309-1-cang1@live.co.uk>
-References: <BBPatchesV3>
- <20231015171141.3309-1-cang1@live.co.uk>
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-TMN:  [NUy5mmo+IygKYg1HKy8FMUKL891YccSB]
-X-ClientProxiedBy: LO4P123CA0066.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:153::17) To DU0PR02MB7899.eurprd02.prod.outlook.com
- (2603:10a6:10:347::11)
-X-Microsoft-Original-Message-ID: <20231015171141.3309-8-cang1@live.co.uk>
+        Sun, 15 Oct 2023 13:50:04 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24797C1
+        for <linux-serial@vger.kernel.org>; Sun, 15 Oct 2023 10:50:01 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id 4fb4d7f45d1cf-534694a9f26so5464a12.1
+        for <linux-serial@vger.kernel.org>; Sun, 15 Oct 2023 10:50:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1697392199; x=1697996999; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YhI6/CEtA7dPuJC2WbvamIAcAZbCRPrEicy0biCB5oM=;
+        b=yF2QnBJbFrpP1iRq/qALEwYezT77hXdRXPpmHRaAfADC17pW0W7k/k9lh3wZoIosLi
+         eCUp6YmLgyBitR3u0uiEoDY54n3Rfgv+90FoKq+EpEgYazD+Xdh5Bntz3CTXDjxvjpLQ
+         UQrB8FnTgu74TEbS0JVr60Cg3V79CUBo+pz2s6zCKpvzLd/qLYPu3J0JbvqHlQZGYwQU
+         m1YWqILXCuRMavlSAMipjDDBiNh3PD/jt1Ok7b+nER5ZA8grow7iD1S3azq4O9hhliLm
+         NALeekhhD10S4XbLv0xmMH1feQZkqUr0t3mCVxuU09jvThe+J1AbQPVys/xbN0wM4Kg5
+         iZlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697392199; x=1697996999;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=YhI6/CEtA7dPuJC2WbvamIAcAZbCRPrEicy0biCB5oM=;
+        b=gTtinyl+1/5GPQr8fKy1qlvyFIpyK/YVSn4eAuiPMkr/qDlF+CeMwBlpMOFLUxNWwn
+         hsgneqQ6vxzvd4uf2Eg55dt1FThudionpQ1lF+7wK5oyMcjM/IpXtAL7xBH7et3/5KIE
+         H9Fqqoglzcgxf81kwuS4xE44Y42Z1wVPr9nO1HGKhrjzxV2KIK8xbPvDuAy8HqlsZPnj
+         DUglmSpipWCXOp/aY8eMIE0AxUyM6cZQyvCF2+TJQEm7CIiSxeyHI4GmxIB1j4y4c1JY
+         k2eOWLaSVCebRBcSDuLlmQfsxgh8F7g7ZH5oR+zeMFUa/7a8yidQh96iTGQfYWD03W5e
+         PdYw==
+X-Gm-Message-State: AOJu0Yx4gbn0sJoYCX/ijER0pdDVzOwNKk61Y20KvewhzSd1vTVnb29D
+        TCF230CfLjQ3LY1MNtjDxUeWWtridmgec/23QmZUuw==
+X-Google-Smtp-Source: AGHT+IF7HTW4HSQYWHMETNkTzAk/Ya6xhaLXwi7KHbmL9ZmGzJDwwiQqJu77JqH6Sl2GyBBNxDTh6tmX1tMx4sykqac=
+X-Received: by 2002:a50:8a95:0:b0:538:5f9e:f0fc with SMTP id
+ j21-20020a508a95000000b005385f9ef0fcmr147551edj.0.1697392199329; Sun, 15 Oct
+ 2023 10:49:59 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DU0PR02MB7899:EE_|VI1PR02MB6093:EE_
-X-MS-Office365-Filtering-Correlation-Id: 758b9260-c6fe-49fc-d3d7-08dbcda1e7aa
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0vvKqtioe42vtuA2uMg0Vh0A/LelNScSw3YlcwWwsk54NZOdDmlmyazMoTFMnyP2kI5uJIj6Uf50DidYu/boTxGr3s6h6LQbTqDg1QQiMQZ91HHyDK4XCEeFXooGtNmicq9cUvT7C9jl9Mv0FJfI8w8rmFQ7/EBYnpVPuhyDAX9DWVu59bZKN5xc2/pd//QkZE4p4/FfpPkA18ndsuwYYRqmqrCH0cuuS1fx0v7J+nh+R8TY4UiCplPM587+/Cu9vvTOdABWI8H0LXmThHU8ZbJcvLbmiHssbGYUaMgCGqN+pP51llVN6srP2yklcxGMfWHliJ9l9JynyjXbHwEDRHKgtf2MdUkq0z7QYDSinX7nrQ7B4mPHdCoutSsj03lK/f/YOWV7FJOMExe2sTa8MU97iJ9r2XgdZ/wFOcMgd2VdO25J79uF/BVEXek4AGHKpcEMKQ3RQTjAlpjrQt6s8MRUuNnLh4igYoKWqzvyb7sKvGBRWAJGMV7VcJv7iNGkj/T+ZXh1kTcMEte0547VhLV01uuuj2Bo70eKoRt9jjFHubB0sVLiGQc9xoUBW61T9oELZ2EwZ1d1Ko4fxBtoxa1FYOYs7RlJvBY1nr+TTctCX2gB0mMPEN1lNTcq2h55vr//gBapGuyOgNQI+FIDuw==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?du6uhUED2Jy81OlL6ToiLp1XzRGAPfBoXe0RsnXNidubzVaqy/S9TqHRsj/G?=
- =?us-ascii?Q?OBT3f/LkJpZ3RCftX8UPAmHDnyuQIW7IB65ZB7UX4qLKFJrCLGfVthWZqwu2?=
- =?us-ascii?Q?ncZ+ZJYwkVFN4W4ad/Zsy7YBRortM1Dwh14zhtKEIulNjr8FvaRJb51F0GJV?=
- =?us-ascii?Q?qTP5iDgS9Nx2phpuv2I9vinlO/0QDEz161XHfQXf1FX3QtlfX1UeK6vvzSjm?=
- =?us-ascii?Q?/T5mCkM/G1t95ldS+cY/yyeqjjsso80iL+pUkIK2znYGOtVPlepfHhHUU/sa?=
- =?us-ascii?Q?UF9UllqerppGRSh4dJOB6M7/GfE1NrK5VaKEIUD31eSYfP9pC3fzvD7944s3?=
- =?us-ascii?Q?l++uvxsTyqpnTUOl3FZuX+E5ao59mK9ww0U430ItZaoGrOgYEPSVMDgpeH42?=
- =?us-ascii?Q?Zs08EI3NTfA/wkt28OZSxnMvfdVUlagtXAKuZQDmkRqeaskIty359PHtTv/P?=
- =?us-ascii?Q?Xb8mr+2EVcZBT8qYHNQxG09d1/PkLN6te5j5pEwD5SBllrkYXs0g9ZWikcjz?=
- =?us-ascii?Q?dOLW6VDJ0Nufqtqnm/EiopTgEsK4A5np7VJZtg+1rSTVByhe1n0QSzf8ZPuq?=
- =?us-ascii?Q?NgENgkoihJ81hUcm9CnSTw/GRhug98Xk8uH0FOSGaSMGwyQg59kMnnPGphWR?=
- =?us-ascii?Q?DcR4o7jPlqQ17RdsKyJGx94T7PBOa89UVE4nNq5LPFFZddbNIC6ZxrbOPssW?=
- =?us-ascii?Q?vFgZRB6K/KGPnjXJh16M4hqi5ISnCCfXNvaRsJLJZ8VLNSQVddFsLxt+r02d?=
- =?us-ascii?Q?WY1vImDE+VwL7kS9wHPAYzH8Sw1xemYgCkFzLTp4WW9Q3Wanwv5SIk5PDhyD?=
- =?us-ascii?Q?yyfAgYl6j5BhrKktriZL1GOUCq7uwZdeR6kw2I/Fyz+A0tz6OSizDpicnj70?=
- =?us-ascii?Q?aI6/wWoNnpgC/BGdVksiJ6tUpTFvJg5W7KH+2uZVLKVkdxwPxOypIHg5anpM?=
- =?us-ascii?Q?aQX7W/NyqAnyfG4+VCabF0+1iVLU7YZJo2VJ7MkiCy0LgZaynHX6VBuJyxQ5?=
- =?us-ascii?Q?SVjtvkQrPDHiD6W962pkL52Q7CRJt/0b9w628ednmEPjgbBSHbMhRn8ECX5F?=
- =?us-ascii?Q?fOOnWEwSUbCaowsR552w4OSnI3tj5fEJuEjvRJnCXAC8P1v+OvWS4rrlbX/0?=
- =?us-ascii?Q?LuRAZozr/qVfQslxqy312bcLV46Vr5IHkA4ntE5kG/Yhu85mHSudH8P0SQa2?=
- =?us-ascii?Q?cgbopJOnlxBsXzmdkBtq8tZa1AlHu7GNjmiV4g=3D=3D?=
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-ab7de.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 758b9260-c6fe-49fc-d3d7-08dbcda1e7aa
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR02MB7899.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2023 17:12:26.5855
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR02MB6093
+References: <20231014181333.2579530-1-vamshigajjela@google.com> <20231014191355.7f44aac3537a8d260225fa0c@hugovil.com>
+In-Reply-To: <20231014191355.7f44aac3537a8d260225fa0c@hugovil.com>
+From:   VAMSHI GAJJELA <vamshigajjela@google.com>
+Date:   Sun, 15 Oct 2023 23:19:47 +0530
+Message-ID: <CAMTSyjohXMQVqesqWsqd=vfRGEhqFB=MBnh8ZRk3hjHOXLdEkg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] serial: core: Potential overflow of frame_time
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        ilpo.jarvinen@linux.intel.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, manugautam@google.com,
+        Subhash Jadavani <sjadavani@google.com>,
+        Channa Kadabi <kadabi@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Some of the later revisions of the Brainboxes PX cards are based
-on the Oxford Semiconductor chipset. Due to the chip's unique setup
-these cards need to be initialised.
-Previously these were tested against a reference card with the same broken
-baudrate on another PC, cancelling out the effect. With this patch they
-work and can transfer/receive find against an FTDI-based device.
+On Sun, Oct 15, 2023 at 4:44=E2=80=AFAM Hugo Villeneuve <hugo@hugovil.com> =
+wrote:
+>
+> On Sat, 14 Oct 2023 23:43:33 +0530
+> Vamshi Gajjela <vamshigajjela@google.com> wrote:
+>
+> > From: VAMSHI GAJJELA <vamshigajjela@google.com>
+>
+> Hi,
+> your commit title doesn't really explain what this patch is doing.
+>
+> Please see: https://cbea.ms/git-commit/#imperative
+Thanks Hugo for the review, I will provide details in the following respons=
+e.
+>
+>
+> > uart_update_timeout() sets a u64 value to an unsigned int frame_time.
+> > While it can be cast to u32 before assignment, there's a specific case
+> > where frame_time is cast to u64. Since frame_time consistently
+> > participates in u64 arithmetic, its data type is converted to u64 to
+> > eliminate the need for explicit casting.
+>
+> Again, refering to your title commit message, I would expect that you
+> would describe precisely how a potential overflow can happen here, and
+> I am not seeing it.
+>
+> And based on your log message, it seems that your commit is simply some
+> kind of optimization, not a fix?
 
-Add all of the cards which require this setup to the quirks table.
-Thanks to Maciej W. Rozycki for clarification on this chip.
+In the function uart_update_timeout() within serial_core.c, a u64 value is
+assigned to an "unsigned int" variable frame_time. This raises concerns abo=
+ut
+potential overflow. While the code in the patch doesn't explicitly manifest
+the issue in the following line of uart_update_timeout()
 
-Signed-off-by: Cameron Williams <cang1@live.co.uk>
----
-v2 - v3:
-Re-submit patch series using git send-email to make threading work.
+"port->frame_time =3D DIV64_U64_ROUND_UP(frame_time, baud);"
 
-v1 - v2:
-This is a resubmission series for the patch series below. That series
-was lots of changes sent to lots of maintainers, this series is just for
-the tty/serial/8250 subsystem.
+lacks a u32 typecast for frame_time.
 
-[1] https://lore.kernel.org/all/DU0PR02MB789950E64D808DB57E9D7312C4F8A@DU0PR02MB7899.eurprd02.prod.outlook.com/
-[2] https://lore.kernel.org/all/DU0PR02MB7899DE53DFC900EFB50E53F2C4F8A@DU0PR02MB7899.eurprd02.prod.outlook.com/
-[3] https://lore.kernel.org/all/DU0PR02MB7899033E7E81EAF3694BC20AC4F8A@DU0PR02MB7899.eurprd02.prod.outlook.com/
-[4] https://lore.kernel.org/all/DU0PR02MB7899EABA8C3DCAC94DCC79D4C4F8A@DU0PR02MB7899.eurprd02.prod.outlook.com/
+In the function "uart_fifo_timeout" has the following line of code
 
- drivers/tty/serial/8250/8250_pci.c | 147 +++++++++++++++++++++++++++++
- 1 file changed, 147 insertions(+)
+u64 fifo_timeout =3D (u64)READ_ONCE(port->frame_time) * port->fifosize;
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 82b445ddedb4..8242918970f6 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -2429,6 +2429,153 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
- 		.init			= pci_oxsemi_tornado_init,
- 		.setup		= pci_oxsemi_tornado_setup,
- 	},
-+	/*
-+	 * Brainboxes devices - all Oxsemi based
-+	 */
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x4027,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x4028,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x4029,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x4019,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x4016,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x4015,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x400A,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x400E,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x400C,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x400B,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x400F,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x4010,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x4011,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x401D,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x401E,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x4013,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x4017,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
-+	{
-+		.vendor		= PCI_VENDOR_ID_INTASHIELD,
-+		.device		= 0x4018,
-+		.subvendor	= PCI_ANY_ID,
-+		.subdevice	= PCI_ANY_ID,
-+		.init		= pci_oxsemi_tornado_init,
-+		.setup		= pci_oxsemi_tornado_setup,
-+	},
- 	{
- 		.vendor         = PCI_VENDOR_ID_INTEL,
- 		.device         = 0x8811,
--- 
-2.42.0
+In the above line frame_time is typecast to u64
 
+also, timeout values in the serial core associated with frame_time are used
+in the u64 arithmetic. To maintain consistency and readability, I've update=
+d
+the size of frame_time from "unsigned int" to "unsigned long". This ensures
+uniformity with typecasts elsewhere in the code, addressing potential issue=
+s
+and enhancing clarity.
+
+I hope this provides clarity. Would you find it helpful if I were to provid=
+e
+further details in the commit message?
+>
+> Hugo.
+>
+>
+>
+> > Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
+> > ---
+> > v2:
+> > - use DIV64_U64_ROUND_UP with frame_time
+> >
+> >  drivers/tty/serial/8250/8250_port.c | 2 +-
+> >  include/linux/serial_core.h         | 4 ++--
+> >  2 files changed, 3 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8=
+250/8250_port.c
+> > index 141627370aab..d1bf794498c4 100644
+> > --- a/drivers/tty/serial/8250/8250_port.c
+> > +++ b/drivers/tty/serial/8250/8250_port.c
+> > @@ -1510,7 +1510,7 @@ static inline void __stop_tx(struct uart_8250_por=
+t *p)
+> >                        * rather than after it is fully sent.
+> >                        * Roughly estimate 1 extra bit here with / 7.
+> >                        */
+> > -                     stop_delay =3D p->port.frame_time + DIV_ROUND_UP(=
+p->port.frame_time, 7);
+> > +                     stop_delay =3D p->port.frame_time + DIV64_U64_ROU=
+ND_UP(p->port.frame_time, 7);
+> >               }
+> >
+> >               __stop_tx_rs485(p, stop_delay);
+> > diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> > index bb6f073bc159..b128513b009a 100644
+> > --- a/include/linux/serial_core.h
+> > +++ b/include/linux/serial_core.h
+> > @@ -558,7 +558,7 @@ struct uart_port {
+> >
+> >       bool                    hw_stopped;             /* sw-assisted CT=
+S flow state */
+> >       unsigned int            mctrl;                  /* current modem =
+ctrl settings */
+> > -     unsigned int            frame_time;             /* frame timing i=
+n ns */
+> > +     unsigned long           frame_time;             /* frame timing i=
+n ns */
+> >       unsigned int            type;                   /* port type */
+> >       const struct uart_ops   *ops;
+> >       unsigned int            custom_divisor;
+> > @@ -764,7 +764,7 @@ unsigned int uart_get_divisor(struct uart_port *por=
+t, unsigned int baud);
+> >   */
+> >  static inline unsigned long uart_fifo_timeout(struct uart_port *port)
+> >  {
+> > -     u64 fifo_timeout =3D (u64)READ_ONCE(port->frame_time) * port->fif=
+osize;
+> > +     u64 fifo_timeout =3D READ_ONCE(port->frame_time) * port->fifosize=
+;
+> >
+> >       /* Add .02 seconds of slop */
+> >       fifo_timeout +=3D 20 * NSEC_PER_MSEC;
+> > --
+> > 2.42.0.655.g421f12c284-goog
+> >
