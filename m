@@ -2,134 +2,158 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE70CDB47E
-	for <linux-serial@archiver.kernel.org>; Sun, 15 Oct 2023 12:29:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0CD7CDB47E
+	for <linux-serial@archiver.kernel.org>; Sun, 15 Oct 2023 13:03:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229603AbjJOM3y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 15 Oct 2023 08:29:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37958 "EHLO
+        id S229603AbjJONDa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 15 Oct 2023 09:03:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbjJOM3x (ORCPT
+        with ESMTP id S229555AbjJOND3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 15 Oct 2023 08:29:53 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A12CA9
-        for <linux-serial@vger.kernel.org>; Sun, 15 Oct 2023 05:29:51 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id 5b1f17b1804b1-40684f53bfcso33760575e9.0
-        for <linux-serial@vger.kernel.org>; Sun, 15 Oct 2023 05:29:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google; t=1697372990; x=1697977790; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Jd4dGzeuShlvV9q6icZG+R3G0Op506/3I5rmGPuLIck=;
-        b=fbc0u0vCBoB9vxAu69S4AIVSgvgrzS5WYKXo8q/SlkuzBfUvNrBYIxG1/4otiqofdc
-         dgjRTdrYsgr/PM98S6D7SgZ+smHobB0VnT4XAL47EFs2MfsZwAEU7LZmsX3LerMuVCMa
-         ZwKJQLKiS+rqbUh3Q3Ln1iXPoZ+1y1ildR9og=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697372990; x=1697977790;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Jd4dGzeuShlvV9q6icZG+R3G0Op506/3I5rmGPuLIck=;
-        b=SIydFAdES8miEb6M7uGeTesE3gmTdgrJBTitSGC11PDMMqG3RmbmCjf9TtnHy0uxwT
-         3MQF1pzHrXxRzDFH+alhcOB5MvWuAK80qXQAwYfgE32yo0oeQulsyF3NltSQswBf/ln+
-         3heYh111ym7eF3p5epw5H1RsD9PmpZMYKX4bb6MHJxkJEDnVgsoLEgMHeMczoSakBwo6
-         yu/pI7DO8KOOvJ3Lox7pWa516R+zwZTbqQb/EndpidqzqX7cEdo+zueURPYhA7t0tZru
-         Y8fRDFpcwY6xZOfprSCvH3mm+rfcQ6Voxs4r0Sxq6hftbJJQG74HdM1OqXmfxg5m8PVx
-         B1+A==
-X-Gm-Message-State: AOJu0Yx1zrX+TDiDK6/yO99RYo8dz8ImjDrFyBBQK8NHrGFV45gwOm/B
-        gQgqRqYdpGeZ9gD2BgoFdz1eUR7vD8Hi4rj1PUQ=
-X-Google-Smtp-Source: AGHT+IFDQJ6yoRoHRgbmhjCTUTFtgDStDsEt0yK9tDFAw7vEVws7HAkZDhWf+R0B7uw+7QAlprMd2w==
-X-Received: by 2002:a05:600c:2a4e:b0:405:49aa:d578 with SMTP id x14-20020a05600c2a4e00b0040549aad578mr27882419wme.37.1697372989770;
-        Sun, 15 Oct 2023 05:29:49 -0700 (PDT)
-Received: from ?IPv6:2001:8b0:aba:5f3c:7e01:6bdd:8c85:9c17? ([2001:8b0:aba:5f3c:7e01:6bdd:8c85:9c17])
-        by smtp.gmail.com with ESMTPSA id t7-20020a1c7707000000b0040586360a36sm4386647wmi.17.2023.10.15.05.29.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Oct 2023 05:29:49 -0700 (PDT)
-Message-ID: <b208c9c6b72be4ef0f2aadb7bed103280bff60a0.camel@linuxfoundation.org>
-Subject: Re: Kernel 6.5 ttyS1 hang with qemu (was Re: [OE-core] Summary of
- the remaining 6.5 kernel serial issue (and 6.5 summary)
-From:   Richard Purdie <richard.purdie@linuxfoundation.org>
-To:     Mikko Rapeli <mikko.rapeli@linaro.org>,
-        linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tony Lindgren <tony@atomide.com>
-Cc:     openembedded-core <openembedded-core@lists.openembedded.org>,
-        Bruce Ashfield <bruce.ashfield@gmail.com>,
-        Randy MacLeod <randy.macleod@windriver.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>
-Date:   Sun, 15 Oct 2023 13:29:48 +0100
-In-Reply-To: <178DF50519C11C84.8679@lists.openembedded.org>
-References: <178BF2895FF685E6.5378@lists.openembedded.org>
-         <a2ad67a0575548b6d5d8d187e597dcd72ae07f64.camel@linuxfoundation.org>
-         <ZSPQY6UYg21Z0PnN@nuoska>
-         <1520ecb5f4b6959af835a7781b94694913f76912.camel@linuxfoundation.org>
-         <178DF50519C11C84.8679@lists.openembedded.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.48.1-0ubuntu1 
+        Sun, 15 Oct 2023 09:03:29 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2083.outbound.protection.outlook.com [40.107.7.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9914AD;
+        Sun, 15 Oct 2023 06:03:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OPLYd0SrtBj6SMjM7NDFEZjses4XG+wG5esz2laL20vx8qqyDeVc8ykd0ootR3o3y31VdfatZkBwSKIix9It8eP6szCEFOpqvXNTAh7Dxr44P7QibmDGnclyj1JcFWGd5gbvRaNWiFyD8mclVMlKd8W+QgXBgmNyylLsNAZuAToWI/YbAV38guw4fVpaB85sT6SWBdn065dhhSLfHmzURyeiiYAFvQFhMVrbWd20+iNYXJ0gTla0OG9rwTcJ3AAuXnw4NJBWuGRwsiBXQ3cohuM2rR8Su5HpOAb4U8XYAe97E/dNPn3krWQ3eyR1VqKZftHz/hPq13ep3rGO9mqdFw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WZEdw5yBq6bVsizgAYQQd+w/awdGEoftjGFqBmkQKO8=;
+ b=NH4egsltLDBL/KqnUtvX78TnP2ZlUnUSalwANo78RW+p0j8KLn4tl+w69YeuYreHzuPI6cCEdrH5uzNtUBDmu/CAqAq3vaS3lxTjdU9XdQXdhb+Li09f/86S9ashxh7uOvT4+qG1YQiLwKz5sd4DyS4SDFvc8h7apFjey/rdn7I9YrxJn6b3UXSi/qGbDgesWLyikSezM9YXZ4+iyMCziPtTENTI4XrH46B+waJvMh9FIreYT63xjnEGx5uVHKw3NDd/GoEzbWWhBi9b8/WCR/6z1hdiYoLFdKHznu1ILGBl2OOuWx1eiJduJ4iSOMV9KS0SzyfTYsWvurBAGc41TQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=kunbus.com; dmarc=pass action=none header.from=kunbus.com;
+ dkim=pass header.d=kunbus.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kunbus.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WZEdw5yBq6bVsizgAYQQd+w/awdGEoftjGFqBmkQKO8=;
+ b=xFdjoCLO+Z3eOX24P3jnlWN7M2g1R5Y8km8L08czFWWJS2/azBskstBevn/sq+V/k1mvL3ZS0MlYsij+1smLbwsO2iBDg6jIfFcqJoerjolqVVC14O/eKLKUXkskTbqfh8qu9+mbHgV3vvU2qRf+3D5qv68BDsQ99gLa/KIXYAE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=kunbus.com;
+Received: from VI1P193MB0413.EURP193.PROD.OUTLOOK.COM (2603:10a6:803:4e::14)
+ by AM9P193MB1346.EURP193.PROD.OUTLOOK.COM (2603:10a6:20b:2fe::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.34; Sun, 15 Oct
+ 2023 13:03:24 +0000
+Received: from VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
+ ([fe80::550d:2425:c0ed:3e59]) by VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
+ ([fe80::550d:2425:c0ed:3e59%3]) with mapi id 15.20.6863.046; Sun, 15 Oct 2023
+ 13:03:23 +0000
+Message-ID: <0ca84efc-c999-4077-85aa-e13fd0984182@kunbus.com>
+Date:   Sun, 15 Oct 2023 15:03:20 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 0/6] Fixes and improvements for RS485
+Content-Language: en-US
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, u.kleine-koenig@pengutronix.de
+Cc:     shawnguo@kernel.org, s.hauer@pengutronix.de,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
+        cniedermaier@dh-electronics.com, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, LinoSanfilippo@gmx.de,
+        lukas@wunner.de, p.rosenberger@kunbus.com
+References: <20231011181544.7893-1-l.sanfilippo@kunbus.com>
+From:   Lino Sanfilippo <l.sanfilippo@kunbus.com>
+In-Reply-To: <20231011181544.7893-1-l.sanfilippo@kunbus.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR0P281CA0008.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:15::13) To VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
+ (2603:10a6:803:4e::14)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1P193MB0413:EE_|AM9P193MB1346:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2fd995d6-a9c4-421c-0124-08dbcd7f1cbc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: D/zoYB8EVLOnhqNN+AvpnsrPh0wNr7DwZGpX7+32dl3upTKppEN5L0f/Jd9482iwRGozIL9fsuHvDhZ1g4N+AvYz7o6N2NBrGoeCvGn2+/DYFNkAo9VCvMtTKsU1A9PV0upxFxb89ZIOryk/ulQZu4Mh95gT60mvg0s8bcT8tnCVgg4aqt2/Np2MIKX2hBSPSv4KV2w0//Q4TfvRCydQaHbvhNhDlF28s/UA6kNrjlQlQm7OicWrj2K/FtZEGMJaAM2+zaTxCDZ3D4bWgx5PBXv37TMDpBcJzpTft4o4F8ATgDBmmx1HLqKbogOlzJA2DRMZNjXfSfE1NjEzgonObgPe6RxustAGeZzly/YHyB9qCefurB9SC8U+Vu1rXp15W7BL3Fen2TNYr1Blf4ynDkZnJMf6ohigLGBVEodrHFmnRrVnKy7TP05nN/Vp7TEKkZbYAxyVVoaIh8rkugl2u9mzD5h+Ppi4F3UuzDHcy+MjhxC49qFVJ6u9hy94ARIaaELsrF+I0qnLciR5W91XUVhN6q+6PRbMUqZ+/yxVjlaiSmlu+RCOYrl1F6VmZQeIj15UXxAeLGm1pFrHnWOzhCzuaf0AZodUWeCB73UdHeHXu8jspLe0lWCOu9ps+wrDvViDP6Qmb4ymIg6XY1ru1g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P193MB0413.EURP193.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(136003)(376002)(366004)(39830400003)(346002)(396003)(230922051799003)(1800799009)(186009)(451199024)(64100799003)(31686004)(478600001)(6486002)(66946007)(66476007)(66556008)(83380400001)(31696002)(86362001)(38100700002)(316002)(6512007)(107886003)(53546011)(2616005)(52116002)(6506007)(41300700001)(5660300002)(36756003)(8676002)(4326008)(7416002)(2906002)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?R0NpcjhpOEoySXZFVDU3RXl4OTNYelpnUkRXdk02dHpScGRsWWlwc3BTOXVk?=
+ =?utf-8?B?aFdpbUt6WFBzK28zdXJ0L1J6RmVYMkw1Z2pVRG4vVk02L3pRUzFoZnJFcHEz?=
+ =?utf-8?B?MXhYVWxOVnprMDZ3Z1VOQk9yMzZUWndCckRvNlJabG9Kd3dlTm1sVSsxbzFP?=
+ =?utf-8?B?ZFZOaXhSZHRFYWxWaG1KTlJvMUdyMm9XakpwSGhFVHU5OFlORzNIYVEvK0M5?=
+ =?utf-8?B?bXRtQkRrV2NJRTl6YnRNODRSSGIyZzlnakZJOTdPeUpFYk1rQmV6R09UWEto?=
+ =?utf-8?B?ZFRFMDd2bFpILzNjd1dPd0Z0TnFoSmV3RW5PeVBBamQvdlNhdWhKRjFVOGhF?=
+ =?utf-8?B?MWRqUDMxZXRja3VWQTdTem85N1lpNkN6QmtJaUFPd3VXOUpSMURqdXFvdTJO?=
+ =?utf-8?B?WWsvSmJldVllODF1Uk9KY1B5R2lBL0o2dTRzSG1lQk45Mjk2bWlXRmJPS2pE?=
+ =?utf-8?B?L0hqdUhmUk5OUjNLMWNvR2JSS0tMY0FmUFhTRTJPUDZGUXlrTDZjNUhLalcv?=
+ =?utf-8?B?eks2ZVJFaHpzRENUQ3lGUm1sKzJVYVJCekVDSWhzZzI5MHVha2FJYmI1M01p?=
+ =?utf-8?B?NU1LUFVodFZxQlhKVVRmS2FRS1d2bkJibmFxeUNZd280ckFZdUFkbmE0amhF?=
+ =?utf-8?B?U1RRamFYaGtlVy8xcjkxdEJjejc4RDhENzZ0UG9lV3NOdkxKZ1dhcFBxd1NY?=
+ =?utf-8?B?b2p2bkgySkI2WmlJT2ozUkJMUGY2S0pMV3BPVHVnV1VlQXRzQm1nZzVkU2dN?=
+ =?utf-8?B?OFRYbDFTR2IzYmVsTWttZ2x1S0hHZS85WTliTEQ5bHU4dTI3MjVlT3lFWWJP?=
+ =?utf-8?B?ZmZhZVdOQkxtTDI1Mk9abkFkU1ZhaDMyWHp1WTM2YWxUMklMbmtXN1RCUE4w?=
+ =?utf-8?B?TnF0djdPVkdDbHladG4rUkxMYk5PbHhOZzg0MGwzOGg1NHd1U3NWdFhQSmth?=
+ =?utf-8?B?Rkd4akF5dkRSY3FjOHNPdW5IY2JnTGhkWDNOdmk4NEZub0VKMHpqWDdNdDhI?=
+ =?utf-8?B?TWFhcmEvS2oxOHM1VXZZVUZHZWdmcnNUSkowcjNGbEl6NGRSMisrZzRsYUYz?=
+ =?utf-8?B?dmVMd09CbTdyM0xLdU85bndnRUJUN0U2azZZL0JzbFlrYXJmaWZEM05kbG5i?=
+ =?utf-8?B?U28wZ1JMRGJYdFQyaXVUZXBxd2huZDYya0xYUFY5QVBCY1NOL0JKM0x1UkJ5?=
+ =?utf-8?B?aEJUWWRwNzNzQTRWNUZZUVR6eGZydW93VDZCMWFMSWZiakRPaERpUy9COFlI?=
+ =?utf-8?B?M3VUY29IOTl6UXdpcjU4Uks1Rmo2cmRSd1g3T0l0VWFrUUh6YmFyVTdvZDFE?=
+ =?utf-8?B?alQxSWJpMG02bTdBOE1BRHRNd2ZXbGRkd1BhVnA5YzI0d1dkZHVPZWt6YTRI?=
+ =?utf-8?B?WEN0K2x6a0hjZlRHbnVlY0hhRnJkc2VoaFhPYlpUVVpITnZyaEFWaGJkZmRv?=
+ =?utf-8?B?MHFPMVA3R0dNQnk5OXdaZnUwZVJRVk1EMGcvMmdGSHRJemdpTlB6RzBBV3NS?=
+ =?utf-8?B?M1lOM2Z2bW9ud25qUkZJOFdFTmRqNkxqNHdZWEhDWmt6UGxORFRXc3NQUkR3?=
+ =?utf-8?B?M2E1MnNLb3RRY0wwQjFEV1hleWdSekRxVVpxMEV6czZlenROTEpTdldyaTR2?=
+ =?utf-8?B?SFdCazI0MjJ4YzBGVitDK1FKL0RZV212a3huR1F3WmU0d2JScDBWL29YMlM4?=
+ =?utf-8?B?Ym9IWC9mNWZmby9yUmpPQ0gwK3VicjUzbnArWnRxNjQ0WnNBZmlqbXkyWXVk?=
+ =?utf-8?B?bWpyWVpmSmx0YnBTNG1uUzZWb3BGWWc5aS9ENlI0Q1JqZ0c1bXFCMkFOSXA3?=
+ =?utf-8?B?MFRwSHhLU0cvdHp4UHhHSzEwK0Fhai9scEY5NUt4aDdvN2tJdk82azBpSVdi?=
+ =?utf-8?B?TnVjUzJhUkZaWDQyTE1aQXcrbEgxYkRQYXpOSzRCa1RuUG5QUmxLaEdqN3ht?=
+ =?utf-8?B?S3UzRndzMlYwRVV5RFlBM3M4S2N6dWw1dHBaaEg5Z0NKWnZyUzQyVjZlZXhH?=
+ =?utf-8?B?djF0c3F5TWczMjRlZVVXb2dBcHNWcVM1QzFYMmlIYmV5MzRPNkZQNW40MENG?=
+ =?utf-8?B?VjdUc2o1T1NtVlZrM0MvODF0ZktDRDNJSGNBNEZDdEppRzg3VmRhb2xoZFMx?=
+ =?utf-8?B?OW9GVzVnNitYS3c3bGlvanhoQzlkWTN1Mm96UDZvUk1hT1FGaG5SSUxXUlpl?=
+ =?utf-8?Q?jUuXQ4nuyQ9kB7uc+7YvaHmk7XeJEP+YNBsen+IIRHjW?=
+X-OriginatorOrg: kunbus.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2fd995d6-a9c4-421c-0124-08dbcd7f1cbc
+X-MS-Exchange-CrossTenant-AuthSource: VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2023 13:03:23.6844
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: aaa4d814-e659-4b0a-9698-1c671f11520b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /vkiqOscqBKgWDgZi4v02pXHb1Fn6ie0elh6ihgKTE4FQjUxWoYT7JJNNBBHkbC0gtmYWGx2mznF7rTSH0TPig==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9P193MB1346
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 2023-10-14 at 12:13 +0100, Richard Purdie via
-lists.openembedded.org wrote:
-> On Sat, 2023-10-14 at 10:41 +0100, Richard Purdie wrote:
-> > Brief summary:
-> >=20
-> > We're seeing an issue on x86_64 with 6.5.X where data appears to be
-> > left in the transmission buffer and not sent to the port on the second
-> > serial port (ttyS1) until we trigger it with intervention.
-> >=20
-> > Paul Gortmaker did some painful bisection over a few days down to:
-> >=20
-> > serial: core: Start managing serial controllers to enable runtime PM
-> > https://lore.kernel.org/linux-serial/1431f5b4-fb39-483b-9314-ed2b7c118c=
-11@gmail.com/T/#t
->=20
-> Having poked around a bit and knowing nothing about any of this, should
-> this bit of new code added in the above commit to __uart_start() in
-> serial_core.c:
->=20
-> 	/*
-> 	 * Start TX if enabled, and kick runtime PM. If the device is not
-> 	 * enabled, serial_port_runtime_resume() calls start_tx()
-> again
-> 	 * after enabling the device.
-> 	 */
-> 	if (pm_runtime_active(&port_dev->dev))
-> 		port->ops->start_tx(port);
->=20
->=20
-> actually be something like:
->=20
->=20
-> 	if (pm_runtime_active(&port_dev->dev) || !pm_runtime_enabled(&port_dev->=
-dev))
-> 		port->ops->start_tx(port);
->=20
->=20
-> since there are uarts that don't enable runtime PM?
->=20
-> I notice that 16550A I'm using doesn't set UART_CAP_RPM and since we
-> have data left in the xmit buffer (I managed to confirm that), it is as
-> if during init, there is a race between the serial probing and the
-> getty putting data in the buffer? If it weren't statrted, that would
-> explain things...
 
-The above change didn't work but what does appear to be making a
-difference is making this code call start_tx unconditionally which is
-what it did prior to the patch. That does cause a "wake" when there
-might not be any data but the code handles that gracefully.
 
-I therefore suspect this is the place the issue is, the question is
-what the right conditions for calling start_tx are?
+Ccing Uwe.
 
-I'll keep going with testing of that as the intermittent nature does
-make this hard to know if any change helps or not.
+On 11.10.23 20:15, Lino Sanfilippo wrote:
+> The following series includes some fixes and improvements around RS485 in
+> the serial core and UART drivers:
+> 
+> Patch 1: Do not hold the port lock when setting rx-during-tx GPIO
+> Patch 2: Get rid of useless wrapper pl011_get_rs485_mode()
+> Patch 3: set missing supported flag for RX during TX GPIO
+> Patch 4: fix sanitizing check for RTS settings
+> Patch 5: make sure RS485 is cannot be enabled when it is not supported
+> Patch 6: imx: do not set RS485 enabled if it is not supported
+> Patch 7: omap: do not override settings for rs485 support
+> 
+> Changes in v2:
+> - add missing 'Fixes' tags as requested by Greg
+> - corrected a typo as pointed out by Hugo
+> - fix issue in imx driver in the serial core as suggested by Uwe
+> - partly rephrase some commit messages
+> - add patch 7
+> 
+> Changes in v3
+> - Drop patch "Get rid of useless wrapper pl011_get_rs485_mode()" as
+>   requested by Greg
+> 
 
-Cheers,
 
-Richard
+Sorry Uwe, you gave valuable input for the former version of this series and I
+just noticed now that I forgot to Cc you for this version. 
+
+BR,
+Lino
