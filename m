@@ -2,187 +2,219 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B62FCDB483
-	for <linux-serial@archiver.kernel.org>; Sun, 15 Oct 2023 17:50:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1921CDB47E
+	for <linux-serial@archiver.kernel.org>; Sun, 15 Oct 2023 21:30:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230178AbjJORuE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 15 Oct 2023 13:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40812 "EHLO
+        id S229518AbjJOVax (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 15 Oct 2023 17:30:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbjJORuE (ORCPT
+        with ESMTP id S229772AbjJOVaw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 15 Oct 2023 13:50:04 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24797C1
-        for <linux-serial@vger.kernel.org>; Sun, 15 Oct 2023 10:50:01 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id 4fb4d7f45d1cf-534694a9f26so5464a12.1
-        for <linux-serial@vger.kernel.org>; Sun, 15 Oct 2023 10:50:01 -0700 (PDT)
+        Sun, 15 Oct 2023 17:30:52 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B3CA9
+        for <linux-serial@vger.kernel.org>; Sun, 15 Oct 2023 14:30:50 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id 5b1f17b1804b1-4065dea9a33so37167065e9.3
+        for <linux-serial@vger.kernel.org>; Sun, 15 Oct 2023 14:30:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1697392199; x=1697996999; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YhI6/CEtA7dPuJC2WbvamIAcAZbCRPrEicy0biCB5oM=;
-        b=yF2QnBJbFrpP1iRq/qALEwYezT77hXdRXPpmHRaAfADC17pW0W7k/k9lh3wZoIosLi
-         eCUp6YmLgyBitR3u0uiEoDY54n3Rfgv+90FoKq+EpEgYazD+Xdh5Bntz3CTXDjxvjpLQ
-         UQrB8FnTgu74TEbS0JVr60Cg3V79CUBo+pz2s6zCKpvzLd/qLYPu3J0JbvqHlQZGYwQU
-         m1YWqILXCuRMavlSAMipjDDBiNh3PD/jt1Ok7b+nER5ZA8grow7iD1S3azq4O9hhliLm
-         NALeekhhD10S4XbLv0xmMH1feQZkqUr0t3mCVxuU09jvThe+J1AbQPVys/xbN0wM4Kg5
-         iZlw==
+        d=linuxfoundation.org; s=google; t=1697405449; x=1698010249; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=C2nGlzinV6cB6NHNvb3oZZiKEgqkp2ZYj2O1yT8Va4E=;
+        b=hY96bZqliSDoBaT3iFB5Fv1fMSL5fxeGf1xH/woZwSY/stQXpXqC9YJUhuW9+ANCvK
+         SVEGRAdaVJqo0+rfF/dAm2NXXK2I7jOBx/yV+VSEEU4iKOI9nVKSq+wNY9llRBxv+xBz
+         o913mwKe72cPgCsZmtQqLPfV+coKcuZzrw1Us=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697392199; x=1697996999;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=YhI6/CEtA7dPuJC2WbvamIAcAZbCRPrEicy0biCB5oM=;
-        b=gTtinyl+1/5GPQr8fKy1qlvyFIpyK/YVSn4eAuiPMkr/qDlF+CeMwBlpMOFLUxNWwn
-         hsgneqQ6vxzvd4uf2Eg55dt1FThudionpQ1lF+7wK5oyMcjM/IpXtAL7xBH7et3/5KIE
-         H9Fqqoglzcgxf81kwuS4xE44Y42Z1wVPr9nO1HGKhrjzxV2KIK8xbPvDuAy8HqlsZPnj
-         DUglmSpipWCXOp/aY8eMIE0AxUyM6cZQyvCF2+TJQEm7CIiSxeyHI4GmxIB1j4y4c1JY
-         k2eOWLaSVCebRBcSDuLlmQfsxgh8F7g7ZH5oR+zeMFUa/7a8yidQh96iTGQfYWD03W5e
-         PdYw==
-X-Gm-Message-State: AOJu0Yx4gbn0sJoYCX/ijER0pdDVzOwNKk61Y20KvewhzSd1vTVnb29D
-        TCF230CfLjQ3LY1MNtjDxUeWWtridmgec/23QmZUuw==
-X-Google-Smtp-Source: AGHT+IF7HTW4HSQYWHMETNkTzAk/Ya6xhaLXwi7KHbmL9ZmGzJDwwiQqJu77JqH6Sl2GyBBNxDTh6tmX1tMx4sykqac=
-X-Received: by 2002:a50:8a95:0:b0:538:5f9e:f0fc with SMTP id
- j21-20020a508a95000000b005385f9ef0fcmr147551edj.0.1697392199329; Sun, 15 Oct
- 2023 10:49:59 -0700 (PDT)
-MIME-Version: 1.0
-References: <20231014181333.2579530-1-vamshigajjela@google.com> <20231014191355.7f44aac3537a8d260225fa0c@hugovil.com>
-In-Reply-To: <20231014191355.7f44aac3537a8d260225fa0c@hugovil.com>
-From:   VAMSHI GAJJELA <vamshigajjela@google.com>
-Date:   Sun, 15 Oct 2023 23:19:47 +0530
-Message-ID: <CAMTSyjohXMQVqesqWsqd=vfRGEhqFB=MBnh8ZRk3hjHOXLdEkg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] serial: core: Potential overflow of frame_time
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        ilpo.jarvinen@linux.intel.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, manugautam@google.com,
-        Subhash Jadavani <sjadavani@google.com>,
-        Channa Kadabi <kadabi@google.com>
+        d=1e100.net; s=20230601; t=1697405449; x=1698010249;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=C2nGlzinV6cB6NHNvb3oZZiKEgqkp2ZYj2O1yT8Va4E=;
+        b=uHLqz/iScU3HBrr1hR7zAs3q7BF2gImRmKpWtV2/DGzhKtITl7kNjUrJHISCmvil6H
+         dGwJ0bqaMtv4WGd/M5x9e09yKR4ZlXVnCnofOii1UdTpkoYryjCVI7tBUXkpMw/pZWsV
+         tuK545Jwma0uJsCRgwuv65A1nGolzO0nKapv8gQmwZW7YNVQJtw42CJ2/vC0f26aUFx2
+         BAUTRfJYoaZquABIKZkFnLnQkQzS1Lfs2PyJofNTiIwUzonGlQ8FyEhnn74aKdqe5uLO
+         dbjosrx9MzyrK9xRoQH+2JHYSPuzjfWa1xntv8dFDcGYfAtEWlxFedn6V4P+2NniisI3
+         jQFA==
+X-Gm-Message-State: AOJu0YyjKpaIezsFLMK3H5vkaLfwK3tGfDzkPUYYqML4+0UUYkD/iqTg
+        10hS3lgP0OnXZjYzxWw2uBFX9A==
+X-Google-Smtp-Source: AGHT+IHlPgT180oGSbo/RRCzou55LKTouEa9OfMqH4/HAdiYBtIdRNh7QKDPcl7m9XmOcZS1+13Vpg==
+X-Received: by 2002:a05:600c:2613:b0:401:d947:c8a9 with SMTP id h19-20020a05600c261300b00401d947c8a9mr28058119wma.19.1697405449216;
+        Sun, 15 Oct 2023 14:30:49 -0700 (PDT)
+Received: from ?IPv6:2001:8b0:aba:5f3c:67e:6714:eb50:d32? ([2001:8b0:aba:5f3c:67e:6714:eb50:d32])
+        by smtp.gmail.com with ESMTPSA id r17-20020a05600c459100b003fee8793911sm5396071wmo.44.2023.10.15.14.30.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Oct 2023 14:30:48 -0700 (PDT)
+Message-ID: <214757eca7f4cd639a7a8d9a822476c1ec30f01c.camel@linuxfoundation.org>
+Subject: Re: Kernel 6.5 ttyS1 hang with qemu (was Re: [OE-core] Summary of
+ the remaining 6.5 kernel serial issue (and 6.5 summary)
+From:   Richard Purdie <richard.purdie@linuxfoundation.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Mikko Rapeli <mikko.rapeli@linaro.org>,
+        linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
+        openembedded-core <openembedded-core@lists.openembedded.org>,
+        Bruce Ashfield <bruce.ashfield@gmail.com>,
+        Randy MacLeod <randy.macleod@windriver.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>
+Date:   Sun, 15 Oct 2023 22:30:47 +0100
+In-Reply-To: <2023101516-unmolded-otter-e3e0@gregkh>
+References: <178BF2895FF685E6.5378@lists.openembedded.org>
+         <a2ad67a0575548b6d5d8d187e597dcd72ae07f64.camel@linuxfoundation.org>
+         <ZSPQY6UYg21Z0PnN@nuoska>
+         <1520ecb5f4b6959af835a7781b94694913f76912.camel@linuxfoundation.org>
+         <178DF50519C11C84.8679@lists.openembedded.org>
+         <b208c9c6b72be4ef0f2aadb7bed103280bff60a0.camel@linuxfoundation.org>
+         <2023101516-unmolded-otter-e3e0@gregkh>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.1-0ubuntu1 
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Oct 15, 2023 at 4:44=E2=80=AFAM Hugo Villeneuve <hugo@hugovil.com> =
-wrote:
->
-> On Sat, 14 Oct 2023 23:43:33 +0530
-> Vamshi Gajjela <vamshigajjela@google.com> wrote:
->
-> > From: VAMSHI GAJJELA <vamshigajjela@google.com>
->
-> Hi,
-> your commit title doesn't really explain what this patch is doing.
->
-> Please see: https://cbea.ms/git-commit/#imperative
-Thanks Hugo for the review, I will provide details in the following respons=
-e.
->
->
-> > uart_update_timeout() sets a u64 value to an unsigned int frame_time.
-> > While it can be cast to u32 before assignment, there's a specific case
-> > where frame_time is cast to u64. Since frame_time consistently
-> > participates in u64 arithmetic, its data type is converted to u64 to
-> > eliminate the need for explicit casting.
->
-> Again, refering to your title commit message, I would expect that you
-> would describe precisely how a potential overflow can happen here, and
-> I am not seeing it.
->
-> And based on your log message, it seems that your commit is simply some
-> kind of optimization, not a fix?
+On Sun, 2023-10-15 at 17:31 +0200, Greg Kroah-Hartman wrote:
+> On Sun, Oct 15, 2023 at 01:29:48PM +0100, Richard Purdie wrote:
+> > On Sat, 2023-10-14 at 12:13 +0100, Richard Purdie via
+> > lists.openembedded.org wrote:
+> > > On Sat, 2023-10-14 at 10:41 +0100, Richard Purdie wrote:
+> > > > Brief summary:
+> > > >=20
+> > > > We're seeing an issue on x86_64 with 6.5.X where data appears to be
+> > > > left in the transmission buffer and not sent to the port on the sec=
+ond
+> > > > serial port (ttyS1) until we trigger it with intervention.
+> > > >=20
+> > > > Paul Gortmaker did some painful bisection over a few days down to:
+> > > >=20
+> > > > serial: core: Start managing serial controllers to enable runtime P=
+M
+> > > > https://lore.kernel.org/linux-serial/1431f5b4-fb39-483b-9314-ed2b7c=
+118c11@gmail.com/T/#t
+> > >=20
+> > > Having poked around a bit and knowing nothing about any of this, shou=
+ld
+> > > this bit of new code added in the above commit to __uart_start() in
+> > > serial_core.c:
+> > >=20
+> > > 	/*
+> > > 	 * Start TX if enabled, and kick runtime PM. If the device is not
+> > > 	 * enabled, serial_port_runtime_resume() calls start_tx()
+> > > again
+> > > 	 * after enabling the device.
+> > > 	 */
+> > > 	if (pm_runtime_active(&port_dev->dev))
+> > > 		port->ops->start_tx(port);
+> > >=20
+> > >=20
+> > > actually be something like:
+> > >=20
+> > >=20
+> > > 	if (pm_runtime_active(&port_dev->dev) || !pm_runtime_enabled(&port_d=
+ev->dev))
+> > > 		port->ops->start_tx(port);
+> > >=20
+> > >=20
+> > > since there are uarts that don't enable runtime PM?
+> > >=20
+> > > I notice that 16550A I'm using doesn't set UART_CAP_RPM and since we
+> > > have data left in the xmit buffer (I managed to confirm that), it is =
+as
+> > > if during init, there is a race between the serial probing and the
+> > > getty putting data in the buffer? If it weren't statrted, that would
+> > > explain things...
+> >=20
+> > The above change didn't work but what does appear to be making a
+> > difference is making this code call start_tx unconditionally which is
+> > what it did prior to the patch. That does cause a "wake" when there
+> > might not be any data but the code handles that gracefully.
+> >=20
+> > I therefore suspect this is the place the issue is, the question is
+> > what the right conditions for calling start_tx are?
+> >=20
+> > I'll keep going with testing of that as the intermittent nature does
+> > make this hard to know if any change helps or not.
+>=20
+> Can you try the patch below?  I just sent it to Linus and it's from Tony
+> to resolve some other pm issues with the serial port code.
 
-In the function uart_update_timeout() within serial_core.c, a u64 value is
-assigned to an "unsigned int" variable frame_time. This raises concerns abo=
-ut
-potential overflow. While the code in the patch doesn't explicitly manifest
-the issue in the following line of uart_update_timeout()
+Thanks for the pointer to this. I've put it through some testing and
+had one failure so far so I suspect this isn't enough unfortunately.
 
-"port->frame_time =3D DIV64_U64_ROUND_UP(frame_time, baud);"
+FWIW I was looping the testing on the complete removal of the
+conditions and didn't see any failures with that.
 
-lacks a u32 typecast for frame_time.
+Cheers,
 
-In the function "uart_fifo_timeout" has the following line of code
+Richard
 
-u64 fifo_timeout =3D (u64)READ_ONCE(port->frame_time) * port->fifosize;
-
-In the above line frame_time is typecast to u64
-
-also, timeout values in the serial core associated with frame_time are used
-in the u64 arithmetic. To maintain consistency and readability, I've update=
-d
-the size of frame_time from "unsigned int" to "unsigned long". This ensures
-uniformity with typecasts elsewhere in the code, addressing potential issue=
-s
-and enhancing clarity.
-
-I hope this provides clarity. Would you find it helpful if I were to provid=
+>=20
+> thanks,
+>=20
+> greg k-h
+>=20
+> From 81a61051e0ce5fd7e09225c0d5985da08c7954a7 Mon Sep 17 00:00:00 2001
+> From: Tony Lindgren <tony@atomide.com>
+> Date: Thu, 5 Oct 2023 10:56:42 +0300
+> Subject: [PATCH 3/4] serial: core: Fix checks for tx runtime PM state
+>=20
+> Maximilian reported that surface_serial_hub serdev tx does not work durin=
+g
+> system suspend. During system suspend, runtime PM gets disabled in
+> __device_suspend_late(), and tx is unable to wake-up the serial core port
+> device that we use to check if tx is safe to start. Johan summarized the
+> regression noting that serdev tx no longer always works as earlier when t=
+he
+> serdev device is runtime PM active.
+>=20
+> The serdev device and the serial core controller devices are siblings of
+> the serial port hardware device. The runtime PM usage count from serdev
+> device does not propagate to the serial core device siblings, it only
+> propagates to the parent.
+>=20
+> In addition to the tx issue for suspend, testing for the serial core port
+> device can cause an unnecessary delay in enabling tx while waiting for th=
 e
-further details in the commit message?
->
-> Hugo.
->
->
->
-> > Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
-> > ---
-> > v2:
-> > - use DIV64_U64_ROUND_UP with frame_time
-> >
-> >  drivers/tty/serial/8250/8250_port.c | 2 +-
-> >  include/linux/serial_core.h         | 4 ++--
-> >  2 files changed, 3 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8=
-250/8250_port.c
-> > index 141627370aab..d1bf794498c4 100644
-> > --- a/drivers/tty/serial/8250/8250_port.c
-> > +++ b/drivers/tty/serial/8250/8250_port.c
-> > @@ -1510,7 +1510,7 @@ static inline void __stop_tx(struct uart_8250_por=
-t *p)
-> >                        * rather than after it is fully sent.
-> >                        * Roughly estimate 1 extra bit here with / 7.
-> >                        */
-> > -                     stop_delay =3D p->port.frame_time + DIV_ROUND_UP(=
-p->port.frame_time, 7);
-> > +                     stop_delay =3D p->port.frame_time + DIV64_U64_ROU=
-ND_UP(p->port.frame_time, 7);
-> >               }
-> >
-> >               __stop_tx_rs485(p, stop_delay);
-> > diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> > index bb6f073bc159..b128513b009a 100644
-> > --- a/include/linux/serial_core.h
-> > +++ b/include/linux/serial_core.h
-> > @@ -558,7 +558,7 @@ struct uart_port {
-> >
-> >       bool                    hw_stopped;             /* sw-assisted CT=
-S flow state */
-> >       unsigned int            mctrl;                  /* current modem =
-ctrl settings */
-> > -     unsigned int            frame_time;             /* frame timing i=
-n ns */
-> > +     unsigned long           frame_time;             /* frame timing i=
-n ns */
-> >       unsigned int            type;                   /* port type */
-> >       const struct uart_ops   *ops;
-> >       unsigned int            custom_divisor;
-> > @@ -764,7 +764,7 @@ unsigned int uart_get_divisor(struct uart_port *por=
-t, unsigned int baud);
-> >   */
-> >  static inline unsigned long uart_fifo_timeout(struct uart_port *port)
-> >  {
-> > -     u64 fifo_timeout =3D (u64)READ_ONCE(port->frame_time) * port->fif=
-osize;
-> > +     u64 fifo_timeout =3D READ_ONCE(port->frame_time) * port->fifosize=
-;
-> >
-> >       /* Add .02 seconds of slop */
-> >       fifo_timeout +=3D 20 * NSEC_PER_MSEC;
-> > --
-> > 2.42.0.655.g421f12c284-goog
-> >
+> serial core port device to wake-up. The serial core port device wake-up i=
+s
+> only needed to flush pending tx when the serial port hardware device was
+> in runtime PM suspended state.
+>=20
+> To fix the regression, we need to check the runtime PM state of the paren=
+t
+> serial port hardware device for tx instead of the serial core port device=
+.
+>=20
+> As the serial port device drivers may or may not implement runtime PM, we
+> need to also add a check for pm_runtime_enabled().
+>=20
+> Reported-by: Maximilian Luz <luzmaximilian@gmail.com>
+> Cc: stable <stable@kernel.org>
+> Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to =
+enable runtime PM")
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> Tested-by: Maximilian Luz <luzmaximilian@gmail.com>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Link: https://lore.kernel.org/r/20231005075644.25936-1-tony@atomide.com
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>  drivers/tty/serial/serial_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
+_core.c
+> index ca26a8aef2cb..d5ba6e90bd95 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -156,7 +156,7 @@ static void __uart_start(struct uart_state *state)
+>  	 * enabled, serial_port_runtime_resume() calls start_tx() again
+>  	 * after enabling the device.
+>  	 */
+> -	if (pm_runtime_active(&port_dev->dev))
+> +	if (!pm_runtime_enabled(port->dev) || pm_runtime_active(port->dev))
+>  		port->ops->start_tx(port);
+>  	pm_runtime_mark_last_busy(&port_dev->dev);
+>  	pm_runtime_put_autosuspend(&port_dev->dev);
+
