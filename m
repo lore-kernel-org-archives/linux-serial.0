@@ -2,110 +2,151 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D4FCDB47E
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 02:19:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF0DCDB465
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 03:38:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230479AbjJPCTh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 15 Oct 2023 22:19:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56762 "EHLO
+        id S230478AbjJPDit (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 15 Oct 2023 23:38:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229600AbjJPCTg (ORCPT
+        with ESMTP id S229600AbjJPDis (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 15 Oct 2023 22:19:36 -0400
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B523AB;
-        Sun, 15 Oct 2023 19:19:35 -0700 (PDT)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-1dcfb2a3282so2677234fac.2;
-        Sun, 15 Oct 2023 19:19:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697422774; x=1698027574;
-        h=date:subject:message-id:references:in-reply-to:cc:to:from
-         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=RAvM3mQHGLzSjyaaj6W6Mr1yy9NF7LUqNnpuELskbso=;
-        b=NpoDwoCdAKLjLgyg0Gu8KPTtdhg/Ol14qQ5aMbf/0ZrOJStRPsEqhc8C1buXsKVjt7
-         CIm4ViZplWcp5Pt/vJ4Fej+iGXis7B1mKbPUxcROaQqe5ik0KxD3vWGKTKHrKvp6HedR
-         Y5qeBprLipxjxxur8XXGGInQCvwfYprBSs/1Onnm89t4QabuOwqf4RDmCvMthjJKB1U5
-         L01ZP4BkxgnYssiUTJVzZzpnGm8JflC4gZci4d/DMk4O52ZMFOeT3y0PiWQH7cK+OqAT
-         GluW0rjhGewTvutK6esjZnWI3ddqiWHMi0YAp8TvBn0WuYXJaH/OFMFGCiWZQPJCxoAa
-         r89Q==
-X-Gm-Message-State: AOJu0Yxlwz1MteUqzQDqL0zDkegMV6rJXsVm/SPoIcjBFhKl0eNTHtQ4
-        V+JLXyX5fMO2axO2jIOtuA==
-X-Google-Smtp-Source: AGHT+IH10D1f35QWfj0fOe8YbpXwuo3ctZLbjgSChkKoMRBuhe5qjCb80199s1iwjt42yEU931BCrg==
-X-Received: by 2002:a05:6870:1056:b0:1e9:b82e:ba29 with SMTP id 22-20020a056870105600b001e9b82eba29mr11937626oaj.24.1697422774342;
-        Sun, 15 Oct 2023 19:19:34 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id e2-20020a056870c34200b001dd533c4bd1sm884321oak.1.2023.10.15.19.19.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Oct 2023 19:19:33 -0700 (PDT)
-Received: (nullmailer pid 1179447 invoked by uid 1000);
-        Mon, 16 Oct 2023 02:19:23 -0000
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+        Sun, 15 Oct 2023 23:38:48 -0400
+Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2064.outbound.protection.outlook.com [40.107.117.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE6BAD;
+        Sun, 15 Oct 2023 20:38:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Gpc4rWHwZe+HRaVvSB0iSlr7O9WE1vHsf9/SuAFgK78nfWPqhWhGsXEPezaztZUzI+WP2AFxAGSC/e95NCsTZtbk3ZDTuVac+XzbR0Diter6do79O1RFUpwaqA5r1ls621kdS9Hz1idnpPR5iws73Hyr8GoSoNq8HdWYt7ncpdho3KfcrdUPELemw4AoMbJPENI7Exlgp4+SmVMteeMZeQgI7rN6l2tMEY5aPSu1cL4ewQgVocQ3yhIAx2B6IzmY+RdDvoG+ZmxsLWVgOoru9krcBAvmEW7d9+OovKEhdCcPlC8z2JWa6uan05FnrKzNfb7d1PSAZ1N1MU1ewUAEQQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=j51DCuFonmq3B4gfPdW7pEc4DbnvYc7UPb/9AfL2Qpg=;
+ b=M4lGnK5gD5jKPUxR8xEu9vi13Xw1+TlxEr5fKnED+7sWmEQS5vvXArZqOiiZqb69gUVoMAEcBcu2CFHny6h9iotzEDx0SJ/QXwVhnxg/kNB0IQ5uZampTA5CfWMMOAhncISznlXE4pZk63IzldnxoJVMfatuWxscj5VTaC7DKSPw1X3aUpfcIC5cihdeo1dbZJgJZ0N48oCZuugEOAy/16eXA1XNA1naAdcAoVXtgpR4Uv/Ll9QZErlYngd6i3M9yejJ21GvPQ9y+NzGHHINZYlK7o0D3+i3/xRszxDJtnE6QSmUrbM4YuEi2bPlz9dTPext6kSZhkAZdpthsHiW4Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
+ dkim=pass header.d=moxa.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=j51DCuFonmq3B4gfPdW7pEc4DbnvYc7UPb/9AfL2Qpg=;
+ b=GjOafQRBGKD9DBx/S92N9Jg31L2M+/UjE3nFAX30mfJK5VMOcvk061RZwUAF3tViLlZR/qQgkUXQH3TDml9beqqHecGc8y2Zy6GoAHFXvytjKlONwno0AjwRgOkIaYwZtDr66pX9mOtqWkws13csidR08ReO84pBTFIuL3Q6w38=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=moxa.com;
+Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:115::14) by KL1PR01MB5156.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:d6::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.34; Mon, 16 Oct
+ 2023 03:38:42 +0000
+Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ ([fe80::3f1:6c0e:dec3:714b]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ ([fe80::3f1:6c0e:dec3:714b%5]) with mapi id 15.20.6886.034; Mon, 16 Oct 2023
+ 03:38:41 +0000
+From:   Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+Subject: [Patch v2 0/6] tty: serial: 8250: Changes of MOXA PCIe boards in 8250_pci.c
+Date:   Mon, 16 Oct 2023 11:36:59 +0800
+Message-Id: <20231016033705.20669-1-crescentcy.hsieh@moxa.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: TY2PR01CA0015.jpnprd01.prod.outlook.com
+ (2603:1096:404:a::27) To PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:115::14)
 MIME-Version: 1.0
-From:   Rob Herring <robh@kernel.org>
-To:     Richard Laing <richard.laing@alliedtelesis.co.nz>
-Cc:     robh+dt@kernel.org, jirislaby@kernel.org,
-        andriy.shevchenko@linux.intel.com, ilpo.jarvinen@linux.intel.com,
-        gregkh@linuxfoundation.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20231016013207.2249946-3-richard.laing@alliedtelesis.co.nz>
-References: <20231016013207.2249946-1-richard.laing@alliedtelesis.co.nz>
- <20231016013207.2249946-3-richard.laing@alliedtelesis.co.nz>
-Message-Id: <169742276359.1179325.14095701588793602461.robh@kernel.org>
-Subject: Re: [PATCH] dt-bindings: serial: snps-dw-apb-uart: Add property to
- drain TX FIFO
-Date:   Sun, 15 Oct 2023 21:19:23 -0500
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|KL1PR01MB5156:EE_
+X-MS-Office365-Filtering-Correlation-Id: efbca0cb-a549-47be-6401-08dbcdf96456
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HneztAvfsAlqkTBbpv3gc5DXxz53EtPDME4YUivHOQjwIbB3S1tIlHMD+VUlyoUIhMxpz8/oqPc2SuRAc1Lw0VcZilwBUZkELD8Ph+Sj9So+qoW9z/N1Hu3mrzL+rUQuwRLb9SPug3ahiJMRm4ohACKmSSro0wJjgzPA6Ya9o2mSxMRWUMOmvSqXCQsDsmTKA4xHmHpKQY9Mekcs/kZfJv0cQ6JPo8yY/6G42Z8rH0P5VP/RvlemOKGdhw0+JTVbvD+DPedQBMqx4fvmzhAMzGSd/kCVV+2EkqYDdJu9UcJpoSY+SC7VIvyWLrYkRI1m2I1FUH+egq4My/juI0K43EPY7RM/QbzliLAohzUzSLpHP6ke0voOAehlNNA1Ku+0vPAuFSSheROzeOXIraFUNX1r+acDGaAW+h92B7sVyBSJCTSeRd4Kni034MvSEzBk8YIim37QoPIbo50qWbg1bl9P7Zct3HOkCO/Fy8EbeZFBnyy/p8HLmxI9txnzLwNe1+0MKah1aMXZYQu86NpudDId+RNPvjtZeaURc4hUCHRXjhENphpS+wzKBFYnT8+fLabCHagEgPTlXNx81nOQnbv2tctacFjRFnyfo1RZ0dI=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(396003)(39850400004)(366004)(376002)(136003)(230922051799003)(186009)(1800799009)(64100799003)(451199024)(6506007)(1076003)(26005)(107886003)(2616005)(38100700002)(316002)(52116002)(66946007)(66476007)(66556008)(966005)(6486002)(478600001)(6512007)(83380400001)(6666004)(38350700005)(4326008)(8936002)(8676002)(5660300002)(2906002)(41300700001)(36756003)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cgql+L1J8s92anCM2aCV6+z4RENhk1V0NcA5l2wCMJKHu3OAn0Hs2hIqzHcs?=
+ =?us-ascii?Q?XeBa0zNqJHhC/KrzCh8uBiV0iqP0R9Y+U8/yVKtPg7Kflved2hVWU5OaCVZl?=
+ =?us-ascii?Q?6lBI+uUmC84NhHEmIvwRn++ijPTAzqyfHtrIzG1BPUfs+XWitPOROVeznnm+?=
+ =?us-ascii?Q?6CEEI3o2sQ2ZGiQu1Ns1NJEyl65rYagHG1DeFPv1LXUyYqBs4s2JfjQsx81E?=
+ =?us-ascii?Q?u+FMy5EsMrZ2+RhJOg/MWwijDzINYVR4HaScDbxmBMU4CTK5K97qasgbi0VD?=
+ =?us-ascii?Q?okqBfzeh16fYG31mvAcTKQ/PV52WDLmvxokcJM1g8vj2k5mEUQGHtj9LUoiN?=
+ =?us-ascii?Q?37OzbagUseibLntldFN6pK8CiS4Bw7aHcV0lzjmLxYDKwrGfpyyrj0YUrhFd?=
+ =?us-ascii?Q?3UocMGyUgS0A8QzRkEjTnIg16e6hZ6a2NAKhI/vLpCDZZXZZh40EAQ4XsUQk?=
+ =?us-ascii?Q?C6UYnd/KIGHPPzFzHH5G34J1lDzNAlSgExP6SA18gaN5FljxJlO3hokdULN1?=
+ =?us-ascii?Q?yOemV77naDekgTQJRv2+5nru/1otbchjoVTAkVIOywq/dK0iC1YkHg7tnjHt?=
+ =?us-ascii?Q?1+7rVWCRlJOzSvK/jHSoV69wJqBCdCgoxfCsG++MZvRcIAOTA0CIqKohM/uQ?=
+ =?us-ascii?Q?7O/7VuAEZ0J5+A0wrOE/jGdulO3q/APz4pCn3LaPpliblXU7cau2o42EgZUp?=
+ =?us-ascii?Q?XQmYyyHEhjK9Rci+wDGfrPyYZrbX21OAReHlf6KOgPTCi/GGl/orT0i4QKuj?=
+ =?us-ascii?Q?o56gI7JRE0Lh9x0D0a4rkV8REZftopbxKpiUJc2WJ74w0IPA09tlUAhiGRgl?=
+ =?us-ascii?Q?3WQWC/gLvZH9FWfj2JPLMXv3/cWG6J68s8or8ywsdktVvsV04WZkRUJ/tu5B?=
+ =?us-ascii?Q?+9Fjo0hivVaP8mBo+Tj4yg5Yy9tkb6qWhcZ//btGZ0+8IAh7C8VOVdUY4x8T?=
+ =?us-ascii?Q?IGoGRjn5VVAfEfv4Uo04sCMpUsy6WHvTHtL5SKSMDGGyR1SxszvEufzrk+/V?=
+ =?us-ascii?Q?oF3RInBbSsvVbtsIiD0sXtngRmzGFjDA29lvOrQnlue42nVDymqJ33Od2QY/?=
+ =?us-ascii?Q?v/irynYMYc6s9i6XlfMCgbltgoYgduTKnvmnyudhn15JROHCn34Lmks2fjGC?=
+ =?us-ascii?Q?WL+cRqroNs4dYzz0dxgTOAVGLtLgDg+7sNyOjn5ZQPdiVsd1a35oSc9yKjbz?=
+ =?us-ascii?Q?eE2FfPUKEd26Jj+RMoxD9TkD32zjTzwYJ9CB4gJyXFJ3j0QznnL/kS1zrEDR?=
+ =?us-ascii?Q?J3bfJQI+TYBoh7YLGqfydS1yKdmfffSXLaZStfC1SgPUnp8LaMI/6/pwOhEn?=
+ =?us-ascii?Q?GOwHjJF+kWeDuBUprcVRVVaR9efdFZiUGe779lMyYWtITR++13Mey2oGOheb?=
+ =?us-ascii?Q?mMrxeVq5Uh8U9acf9ztTSgEKA2669coGJmnoCMkurPbIp0WrIdMwHURqGqLZ?=
+ =?us-ascii?Q?TRftEuF16VhjYSvO8GW41Bth24y+X31Q4YU6vjVsCAxeSDdKPDGogXHESJu8?=
+ =?us-ascii?Q?uRmmp0bdQ9FyLZWScuVIax6NOlyGLXiHN6iauIUkLR/Og1mesL3td0esiHvy?=
+ =?us-ascii?Q?Wf4/bCNwVu8t2KDZApVZXm+OOja6fhRSR5fjCjVHQBGxkQcjFE2fL8VGtjdH?=
+ =?us-ascii?Q?ZQ=3D=3D?=
+X-OriginatorOrg: moxa.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: efbca0cb-a549-47be-6401-08dbcdf96456
+X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2023 03:38:41.8400
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wAcWreQSdGtn/7BdjAtdgLzyBPUKPpUMn7UL/opcuQkgRiBCIDyokdmBv6poEyQIOd29vAvANLVzrWWikbXUGJz3Ur0pnTklYD2Vme3v0X8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: KL1PR01MB5156
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+These patch series do some changes to MOXA PCIe boards in 8250_pci.c,
+including:
 
-On Mon, 16 Oct 2023 14:32:07 +1300, Richard Laing wrote:
-> An issue has been observed on the Broadcom BCM56160 serial port which
-> appears closely related to a similar issue on the Marvell Armada 38x
-> serial port.
-> 
-> Add a new property to force the TX FIFO to be drained before
-> changing the UART_LCR.
-> 
-> Signed-off-by: Richard Laing <richard.laing@alliedtelesis.co.nz>
-> ---
->  .../devicetree/bindings/serial/snps-dw-apb-uart.yaml        | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
+- Modify MOXA enum name within 8250_pci.c
+- Cleanup MOXA configurations within 8250_pci.c
+- Relocate macros within 8250_pci.c
+- Add support for MOXA Mini PCIe boards
+- Fix MOXA RS422/RS485 boards not function by default
+- Add support for MOXA PCIe boards to switch between different serial
+  interfaces
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Each patch depends on previous one.
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml:120:5: [error] syntax error: could not find expected ':' (syntax)
+---
+Changes in v2:
+- Split cleanup patch into first 2 patches of this patch series.
+- Reposition macro list to the top of the code.
+- Use PCI_VDEVICE() instead of PCI_DEVICE() in serial_pci_tbl[].
+- Replace some C99 types with kernel types.
+- Introduce functions for checking device ID pattern.
+- Replace magic constant with BIT().
+- Sort macros into pre-existing macro list.
+- Rewrite set_interface condition architecture.
+- Utilize unused flag to represent RS422 interface instead of adding a
+  new one.
 
-dtschema/dtc warnings/errors:
-make[2]: *** Deleting file 'Documentation/devicetree/bindings/serial/snps-dw-apb-uart.example.dts'
-Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml:120:5: could not find expected ':'
-make[2]: *** [Documentation/devicetree/bindings/Makefile:26: Documentation/devicetree/bindings/serial/snps-dw-apb-uart.example.dts] Error 1
-make[2]: *** Waiting for unfinished jobs....
-./Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml:120:5: could not find expected ':'
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml: ignoring, error parsing file
-make[1]: *** [/builds/robherring/dt-review-ci/linux/Makefile:1427: dt_binding_check] Error 2
-make: *** [Makefile:234: __sub-make] Error 2
+v1: https://lore.kernel.org/all/20231002015702.30509-1-crescentcy.hsieh@moxa.com/
 
-doc reference errors (make refcheckdocs):
+Crescent CY Hsieh (6):
+  tty: serial: 8250: Modify MOXA enum name within 8250_pci.c
+  tty: serial: 8250: Cleanup MOXA configurations within 8250_pci.c
+  tty: serial: 8250: Relocate macros within 8250_pci.c
+  tty: serial: 8250: Add support for MOXA Mini PCIe boards
+  tty: serial: 8250: Fix MOXA RS422/RS485 PCIe boards not work by
+    default
+  tty: serial: 8250: Add support for MOXA PCIe boards to switch
+    interface between RS422/RS485
 
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20231016013207.2249946-3-richard.laing@alliedtelesis.co.nz
+ drivers/tty/serial/8250/8250_pci.c | 354 +++++++++++++++++++----------
+ 1 file changed, 240 insertions(+), 114 deletions(-)
 
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
+-- 
+2.34.1
 
