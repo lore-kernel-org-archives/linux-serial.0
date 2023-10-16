@@ -2,78 +2,64 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80F78CDB465
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 08:46:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C269CDB474
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 08:48:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232745AbjJPIqz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Oct 2023 04:46:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40942 "EHLO
+        id S230090AbjJPIsa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Oct 2023 04:48:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232764AbjJPIqw (ORCPT
+        with ESMTP id S230330AbjJPIsa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Oct 2023 04:46:52 -0400
-Received: from connect.vanmierlo.com (fieber.vanmierlo.com [84.243.197.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2846E5;
-        Mon, 16 Oct 2023 01:46:47 -0700 (PDT)
-X-Footer: dmFubWllcmxvLmNvbQ==
-Received: from roundcube.vanmierlo.com ([192.168.37.37])
-        (authenticated user m.brock@vanmierlo.com)
-        by connect.vanmierlo.com (Kerio Connect 9.4.2) with ESMTPA;
-        Mon, 16 Oct 2023 10:46:44 +0200
+        Mon, 16 Oct 2023 04:48:30 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 858559B
+        for <linux-serial@vger.kernel.org>; Mon, 16 Oct 2023 01:48:27 -0700 (PDT)
+Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1qsJH0-00014n-1j; Mon, 16 Oct 2023 10:48:26 +0200
+Message-ID: <edd0bc66-b4b3-4c12-a4b9-25a7357f38d7@leemhuis.info>
+Date:   Mon, 16 Oct 2023 10:48:25 +0200
 MIME-Version: 1.0
-Date:   Mon, 16 Oct 2023 10:46:44 +0200
-From:   m.brock@vanmierlo.com
-To:     Florian Eckert <fe@dev.tdt.de>
-Cc:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
-        kabel@kernel.org, u.kleine-koenig@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-leds@vger.kernel.org, kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v3 3/4] trigger: ledtrig-tty: move variable definition to
- the top
-In-Reply-To: <20231016071332.597654-4-fe@dev.tdt.de>
-References: <20231016071332.597654-1-fe@dev.tdt.de>
- <20231016071332.597654-4-fe@dev.tdt.de>
-Message-ID: <93dcb9f6f218593084f834ba6b450999@vanmierlo.com>
-X-Sender: m.brock@vanmierlo.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+User-Agent: Mozilla Thunderbird
+Subject: Re: Regression: serial: 8250_omap: error during suspend if
+ no_console_suspend is set
+Content-Language: en-US, de-DE
+From:   "Linux regression tracking #update (Thorsten Leemhuis)" 
+        <regressions@leemhuis.info>
+To:     Linux kernel regressions list <regressions@lists.linux.dev>
+Cc:     linux-serial@vger.kernel.org, thomas.richard@bootlin.com
+Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>,
+          Linux regressions mailing list 
+          <regressions@lists.linux.dev>
+References: <8a856171-e743-737e-eb9d-42852e4e4f19@bootlin.com>
+ <33bf96d0-fbe0-dfb4-a791-233f49f9080d@leemhuis.info>
+In-Reply-To: <33bf96d0-fbe0-dfb4-a791-233f49f9080d@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1697446107;6e0bb11c;
+X-HE-SMSGID: 1qsJH0-00014n-1j
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Florian Eckert wrote on 2023-10-16 09:13:
-> Has complained about the following construct:
+[TLDR: This mail in primarily relevant for Linux kernel regression
+tracking. See link in footer if these mails annoy you.]
 
-Who is "Has" or who/what has complained?
+On 20.09.23 16:36, Linux regression tracking #adding (Thorsten Leemhuis)
+wrote:
+> On 14.09.23 18:26, Thomas Richard wrote:
+>>
+>> After switching to Linux 6.6-rc1, i met an issue during suspend to idle
+>> with 8250_omap driver (no_console_suspend is set).
+>> The driver fails to suspend the uart port used for the serial console so
+>> the suspend sequence is stopped.
 
-> drivers/leds/trigger/ledtrig-tty.c:362:3: error: a label can only be
-> part of a statement and a declaration is not a statement
-> 
-> Hence move the variable definition to the beginning of the function.
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Closes:
-> https://lore.kernel.org/oe-kbuild-all/202309270440.IJB24Xap-lkp@intel.com/
-> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
-> ---
-> @@ -124,8 +125,6 @@ static void ledtrig_tty_work(struct work_struct 
-> *work)
-> 
->  	if (icount.rx != trigger_data->rx ||
->  	    icount.tx != trigger_data->tx) {
-> -		unsigned long interval = LEDTRIG_TTY_INTERVAL;
-> -
+#regzbot fix: 560706eff7c8e5621b0
+#regzbot ignore-activity
 
-Is this kernel test robot broken?
-I see no label definition here.
-And this variable declaration is at the start of a new block which does 
-not
-even require C99 support.
-
->  		led_blink_set_oneshot(trigger_data->led_cdev, &interval,
->  				      &interval, 0);
-
-Maarten
-
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+--
+Everything you wanna know about Linux kernel regression tracking:
+https://linux-regtracking.leemhuis.info/about/#tldr
+That page also explains what to do if mails like this annoy you.
