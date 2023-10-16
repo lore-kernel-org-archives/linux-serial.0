@@ -2,50 +2,49 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41B5DCDB474
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 12:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDB0CCDB465
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 12:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230017AbjJPMOF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Oct 2023 08:14:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34044 "EHLO
+        id S229848AbjJPMUy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Oct 2023 08:20:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbjJPMOE (ORCPT
+        with ESMTP id S231508AbjJPMUx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Oct 2023 08:14:04 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5718E;
-        Mon, 16 Oct 2023 05:14:02 -0700 (PDT)
+        Mon, 16 Oct 2023 08:20:53 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC4F88E;
+        Mon, 16 Oct 2023 05:20:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697458442; x=1728994442;
+  t=1697458850; x=1728994850;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=fYX09gVTs+rdDQq31Aoyype6rTbwF7iR1knuJuk7e3c=;
-  b=YJIgkJkiK06uaWWlR8PBXUYghOok8tWbm6xqg/Gp+UrIm9/teAqypPSw
-   XblyLHWYKcS4rlVfvmM7j4jYLckJzWY0100mIwISAO0DwH5jLtJ5jDeK4
-   IQDwrBX3rZGy3Y6cop36fusWR3WZZX04dfUSQXYr3Tj9u17s2ZTOGJoyv
-   xIHHEqoY3XlztNI0a3wFGLaUIpiHiOYrVVjliyK6RhygxHcQXz0PhferE
-   gOwpVBxSJIhsIbwmRr8anteOrjdWGWjHl9NgS/taEIgStVhwyyY7/2N80
-   jGzNad//S4EJFuYrPPAqW/QHYuvrFWlircBFxHWDMtB5tMblDY6uXpqiI
+  bh=ju6GSa3Te5xfMivOhV89l8PydA1byI2D3QT5q1MaBTk=;
+  b=jQLFpGoHrgvv22l5pYgV3OOGvaQ2DRHsZyoMQ5zJ8PSGPX/AZofYHRLg
+   g5mtShEOtSdzx8gwfUMAHobKMhVl6w2o88oDZfyLTYTWPPpAMJ+IB0h04
+   FFvfJtx47+Go2LR85ldxwgtzAHREEtLzxtnSuSPs4qeNNslu8oHWwd1RH
+   4wbxrlgUk3HlFvvnoUq2+FeoDBJec1GRNDHzMZWi0lOfdA0lmfhlskqlO
+   kAk6ZlyUw0LmMwuJddGd7MlGaaGaDMPSG6dt7rnn7mRiKje+hzfF1lCOD
+   PcocEJ5dapJR+auw4wQjENsuybskJj9mJ2GjzsXHwkuppA4Zlij+osRty
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="449720154"
+X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="416582456"
 X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
-   d="scan'208";a="449720154"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 05:14:02 -0700
+   d="scan'208";a="416582456"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 05:20:50 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="929322173"
+X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="879410152"
 X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
-   d="scan'208";a="929322173"
+   d="scan'208";a="879410152"
 Received: from rhaeussl-mobl.ger.corp.intel.com ([10.252.59.103])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 05:13:59 -0700
-Date:   Mon, 16 Oct 2023 15:13:56 +0300 (EEST)
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 05:20:47 -0700
+Date:   Mon, 16 Oct 2023 15:20:45 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Richard Laing <richard.laing@alliedtelesis.co.nz>
 cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        ilpo.jarvinen@linux.intel.com,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         LKML <linux-kernel@vger.kernel.org>,
         linux-serial <linux-serial@vger.kernel.org>,
@@ -54,118 +53,55 @@ Subject: Re: [PATCH] serial: 8250_dw: Allow TX FIFO to drain before writing
  to UART_LCR An issue has been observed on the Broadcom BCM56160 serial port
  which appears closely related to a similar issue on the Marvell Armada 38x
  serial port.
-In-Reply-To: <20231016013207.2249946-2-richard.laing@alliedtelesis.co.nz>
-Message-ID: <fb92ed83-478-4d71-2bd-ab3a37b1352@linux.intel.com>
-References: <20231016013207.2249946-1-richard.laing@alliedtelesis.co.nz> <20231016013207.2249946-2-richard.laing@alliedtelesis.co.nz>
+In-Reply-To: <fb92ed83-478-4d71-2bd-ab3a37b1352@linux.intel.com>
+Message-ID: <a7e2f6ee-ea44-5fed-1a-274863a5613@linux.intel.com>
+References: <20231016013207.2249946-1-richard.laing@alliedtelesis.co.nz> <20231016013207.2249946-2-richard.laing@alliedtelesis.co.nz> <fb92ed83-478-4d71-2bd-ab3a37b1352@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: multipart/mixed; boundary="8323329-344325805-1697458849=:1986"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 16 Oct 2023, Richard Laing wrote:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Your subject line is way too long. If you refer to some other issue, 
-please link to it properly with commit id and/or with Link: tags.
+--8323329-344325805-1697458849=:1986
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-> Writes to UART_LCR can result in characters that are currently held in the
-> TX FIFO being lost rather than sent, even if the userspace process has
-> attempted to flush them.
+On Mon, 16 Oct 2023, Ilpo Järvinen wrote:
+
+> On Mon, 16 Oct 2023, Richard Laing wrote:
 > 
-> This is most visible when using the "resize" command (tested on Busybox),
-> where we have observed the escape code for restoring cursor position
-> becoming mangled.
+> Your subject line is way too long. If you refer to some other issue, 
+> please link to it properly with commit id and/or with Link: tags.
 > 
-> Since this appears to be a more common problem add a new driver option
-> to flush the TX FIFO before writing to the UART_LCR.
+> > Writes to UART_LCR can result in characters that are currently held in the
+> > TX FIFO being lost rather than sent, even if the userspace process has
+> > attempted to flush them.
+> > 
+> > This is most visible when using the "resize" command (tested on Busybox),
+> > where we have observed the escape code for restoring cursor position
+> > becoming mangled.
+> > 
+> > Since this appears to be a more common problem add a new driver option
+> > to flush the TX FIFO before writing to the UART_LCR.
+> 
+> This looks like a problem we already have solution for, the userspace can 
+> use TCSADRAIN/FLUSH to indicate what kind of flushing it wants for Tx 
+> when it makes the tcsetattr() call. Thus, userspace can avoid the Tx side 
+> corruption as long as its behavior is sane and doesn't e.g. try to race 
+> writes with tcsetattr() call as mentioned in commit 094fb49a2d0d ("tty: 
+> Prevent writing chars during tcsetattr TCSADRAIN/FLUSH").
 
-This looks like a problem we already have solution for, the userspace can 
-use TCSADRAIN/FLUSH to indicate what kind of flushing it wants for Tx 
-when it makes the tcsetattr() call. Thus, userspace can avoid the Tx side 
-corruption as long as its behavior is sane and doesn't e.g. try to race 
-writes with tcsetattr() call as mentioned in commit 094fb49a2d0d ("tty: 
-Prevent writing chars during tcsetattr TCSADRAIN/FLUSH").
+I'm sorry, it was actually mentioned in commit 146a37e05d62 ("serial: 
+8250: Fix serial8250_tx_empty() race with DMA Tx") although that 
+094fb49a2d0d is also related to the draining.
 
-Have you tried to use the userspace solution? Isn't it working for some 
-reason?
+> Have you tried to use the userspace solution? Isn't it working for some 
+> reason?
 
 -- 
  i.
 
-> 
-> Signed-off-by: Richard Laing <richard.laing@alliedtelesis.co.nz>
-> ---
->  drivers/tty/serial/8250/8250_dw.c    | 18 ++++++++++++++++++
->  drivers/tty/serial/8250/8250_dwlib.h |  1 +
->  2 files changed, 19 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index f4cafca1a7da..17ee824294c7 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -161,6 +161,10 @@ static void dw8250_serial_out(struct uart_port *p, int offset, int value)
->  {
->  	struct dw8250_data *d = to_dw8250_data(p->private_data);
->  
-> +	/* Allow the TX to drain before we reconfigure */
-> +	if (offset == UART_LCR && d->drain_before_lcr_change)
-> +		dw8250_tx_wait_empty(p);
-> +
->  	writeb(value, p->membase + (offset << p->regshift));
->  
->  	if (offset == UART_LCR && !d->uart_16550_compatible)
-> @@ -197,6 +201,10 @@ static void dw8250_serial_outq(struct uart_port *p, int offset, int value)
->  {
->  	struct dw8250_data *d = to_dw8250_data(p->private_data);
->  
-> +	/* Allow the TX to drain before we reconfigure */
-> +	if (offset == UART_LCR && d->drain_before_lcr_change)
-> +		dw8250_tx_wait_empty(p);
-> +
->  	value &= 0xff;
->  	__raw_writeq(value, p->membase + (offset << p->regshift));
->  	/* Read back to ensure register write ordering. */
-> @@ -211,6 +219,10 @@ static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
->  {
->  	struct dw8250_data *d = to_dw8250_data(p->private_data);
->  
-> +	/* Allow the TX to drain before we reconfigure */
-> +	if (offset == UART_LCR && d->drain_before_lcr_change)
-> +		dw8250_tx_wait_empty(p);
-> +
->  	writel(value, p->membase + (offset << p->regshift));
->  
->  	if (offset == UART_LCR && !d->uart_16550_compatible)
-> @@ -228,6 +240,10 @@ static void dw8250_serial_out32be(struct uart_port *p, int offset, int value)
->  {
->  	struct dw8250_data *d = to_dw8250_data(p->private_data);
->  
-> +	/* Allow the TX to drain before we reconfigure */
-> +	if (offset == UART_LCR && d->drain_before_lcr_change)
-> +		dw8250_tx_wait_empty(p);
-> +
->  	iowrite32be(value, p->membase + (offset << p->regshift));
->  
->  	if (offset == UART_LCR && !d->uart_16550_compatible)
-> @@ -597,6 +613,8 @@ static int dw8250_probe(struct platform_device *pdev)
->  	/* Always ask for fixed clock rate from a property. */
->  	device_property_read_u32(dev, "clock-frequency", &p->uartclk);
->  
-> +	data->drain_before_lcr_change = device_property_read_bool(dev, "drain-before-lcr-change");
-> +
->  	/* If there is separate baudclk, get the rate from it. */
->  	data->clk = devm_clk_get_optional(dev, "baudclk");
->  	if (data->clk == NULL)
-> diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
-> index f13e91f2cace..f7d88fa8f058 100644
-> --- a/drivers/tty/serial/8250/8250_dwlib.h
-> +++ b/drivers/tty/serial/8250/8250_dwlib.h
-> @@ -45,6 +45,7 @@ struct dw8250_data {
->  
->  	unsigned int		skip_autocfg:1;
->  	unsigned int		uart_16550_compatible:1;
-> +	unsigned int		drain_before_lcr_change:1;
->  };
->  
->  void dw8250_do_set_termios(struct uart_port *p, struct ktermios *termios, const struct ktermios *old);
-
+--8323329-344325805-1697458849=:1986--
