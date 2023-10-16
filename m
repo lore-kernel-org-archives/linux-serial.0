@@ -2,67 +2,97 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE7BDCDB474
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 06:35:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43E60CDB465
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 07:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231750AbjJPGfF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Oct 2023 02:35:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
+        id S229623AbjJPHNo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Oct 2023 03:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230257AbjJPGfF (ORCPT
+        with ESMTP id S231975AbjJPHNn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Oct 2023 02:35:05 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 815EBAD
-        for <linux-serial@vger.kernel.org>; Sun, 15 Oct 2023 23:35:03 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 698B380CC;
-        Mon, 16 Oct 2023 06:35:02 +0000 (UTC)
-Date:   Mon, 16 Oct 2023 09:35:01 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Richard Purdie <richard.purdie@linuxfoundation.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mikko Rapeli <mikko.rapeli@linaro.org>,
-        linux-serial@vger.kernel.org,
-        openembedded-core <openembedded-core@lists.openembedded.org>,
-        Bruce Ashfield <bruce.ashfield@gmail.com>,
-        Randy MacLeod <randy.macleod@windriver.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: Kernel 6.5 ttyS1 hang with qemu (was Re: [OE-core] Summary of
- the remaining 6.5 kernel serial issue (and 6.5 summary)
-Message-ID: <20231016063501.GL27774@atomide.com>
-References: <178BF2895FF685E6.5378@lists.openembedded.org>
- <a2ad67a0575548b6d5d8d187e597dcd72ae07f64.camel@linuxfoundation.org>
- <ZSPQY6UYg21Z0PnN@nuoska>
- <1520ecb5f4b6959af835a7781b94694913f76912.camel@linuxfoundation.org>
- <178DF50519C11C84.8679@lists.openembedded.org>
- <b208c9c6b72be4ef0f2aadb7bed103280bff60a0.camel@linuxfoundation.org>
- <2023101516-unmolded-otter-e3e0@gregkh>
- <214757eca7f4cd639a7a8d9a822476c1ec30f01c.camel@linuxfoundation.org>
+        Mon, 16 Oct 2023 03:13:43 -0400
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [91.198.224.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318B5EE
+        for <linux-serial@vger.kernel.org>; Mon, 16 Oct 2023 00:13:41 -0700 (PDT)
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <prvs=966793e2c5=fe@dev.tdt.de>)
+        id 1qsHnH-008yyG-8e
+        for linux-serial@vger.kernel.org; Mon, 16 Oct 2023 09:13:39 +0200
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <fe@dev.tdt.de>)
+        id 1qsHnG-005bbR-SV
+        for linux-serial@vger.kernel.org; Mon, 16 Oct 2023 09:13:38 +0200
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id A1640240053
+        for <linux-serial@vger.kernel.org>; Mon, 16 Oct 2023 09:13:38 +0200 (CEST)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 5C94624004D;
+        Mon, 16 Oct 2023 09:13:38 +0200 (CEST)
+Received: from localhost.localdomain (unknown [10.2.3.40])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 27CD12BE05;
+        Mon, 16 Oct 2023 09:13:38 +0200 (CEST)
+From:   Florian Eckert <fe@dev.tdt.de>
+To:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
+        kabel@kernel.org, u.kleine-koenig@pengutronix.de
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-leds@vger.kernel.org, kernel test robot <lkp@intel.com>
+Subject: [PATCH v3 3/4] trigger: ledtrig-tty: move variable definition to the top
+Date:   Mon, 16 Oct 2023 09:13:31 +0200
+Message-ID: <20231016071332.597654-4-fe@dev.tdt.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20231016071332.597654-1-fe@dev.tdt.de>
+References: <20231016071332.597654-1-fe@dev.tdt.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <214757eca7f4cd639a7a8d9a822476c1ec30f01c.camel@linuxfoundation.org>
+Content-Transfer-Encoding: quoted-printable
+X-purgate-type: clean
+X-purgate: clean
+X-purgate-ID: 151534::1697440419-FA0CB49D-00961E3F/0/0
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Richard Purdie <richard.purdie@linuxfoundation.org> [231015 21:30]:
-> On Sun, 2023-10-15 at 17:31 +0200, Greg Kroah-Hartman wrote:
-> > Can you try the patch below?  I just sent it to Linus and it's from Tony
-> > to resolve some other pm issues with the serial port code.
-> 
-> Thanks for the pointer to this. I've put it through some testing and
-> had one failure so far so I suspect this isn't enough unfortunately.
->
-> FWIW I was looping the testing on the complete removal of the
-> conditions and didn't see any failures with that.
+Has complained about the following construct:
+drivers/leds/trigger/ledtrig-tty.c:362:3: error: a label can only be
+part of a statement and a declaration is not a statement
 
-Care to clarify what's the failing test now?
+Hence move the variable definition to the beginning of the function.
 
-Is the issue still the second port not always coming up after boot or
-something else?
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202309270440.IJB24Xap-lkp@i=
+ntel.com/
+Signed-off-by: Florian Eckert <fe@dev.tdt.de>
+---
+ drivers/leds/trigger/ledtrig-tty.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Regards,
+diff --git a/drivers/leds/trigger/ledtrig-tty.c b/drivers/leds/trigger/le=
+dtrig-tty.c
+index 8ae0d2d284af..1c6fadf0b856 100644
+--- a/drivers/leds/trigger/ledtrig-tty.c
++++ b/drivers/leds/trigger/ledtrig-tty.c
+@@ -82,6 +82,7 @@ static void ledtrig_tty_work(struct work_struct *work)
+ {
+ 	struct ledtrig_tty_data *trigger_data =3D
+ 		container_of(work, struct ledtrig_tty_data, dwork.work);
++	unsigned long interval =3D LEDTRIG_TTY_INTERVAL;
+ 	struct serial_icounter_struct icount;
+ 	int ret;
+=20
+@@ -124,8 +125,6 @@ static void ledtrig_tty_work(struct work_struct *work=
+)
+=20
+ 	if (icount.rx !=3D trigger_data->rx ||
+ 	    icount.tx !=3D trigger_data->tx) {
+-		unsigned long interval =3D LEDTRIG_TTY_INTERVAL;
+-
+ 		led_blink_set_oneshot(trigger_data->led_cdev, &interval,
+ 				      &interval, 0);
+=20
+--=20
+2.30.2
 
-Tony
