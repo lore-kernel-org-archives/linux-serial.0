@@ -2,60 +2,60 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39FDDCDB465
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 06:10:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D749CDB465
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 06:11:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229991AbjJPGKE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Oct 2023 02:10:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
+        id S231572AbjJPGLg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Oct 2023 02:11:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbjJPGKD (ORCPT
+        with ESMTP id S229834AbjJPGLf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Oct 2023 02:10:03 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ADF7DE
-        for <linux-serial@vger.kernel.org>; Sun, 15 Oct 2023 23:10:01 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id a640c23a62f3a-9be7e3fa1daso262814666b.3
-        for <linux-serial@vger.kernel.org>; Sun, 15 Oct 2023 23:10:00 -0700 (PDT)
+        Mon, 16 Oct 2023 02:11:35 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37CA9DC
+        for <linux-serial@vger.kernel.org>; Sun, 15 Oct 2023 23:11:32 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id a640c23a62f3a-99de884ad25so661584966b.3
+        for <linux-serial@vger.kernel.org>; Sun, 15 Oct 2023 23:11:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1697436599; x=1698041399; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1697436690; x=1698041490; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=PVE4Fp1iw8WKJixYgT2hJ0Ht8/G6WBROKr6ExMjWaXM=;
-        b=acbH/J5PiPeqQwRFpcr6iPFmltneRENfbBvsLYEzKo7TIsPHSpSUsaHREe0tRENTdR
-         bYCgkfSsN3BohDcqpDZMsxcc2QPpPTxmBMJgB56OVlzyWtUXXBlay7sRxdF9oUlk/Dxu
-         ndS1g3D2k2zCtB6+xQgXEdnlnnyktLmYoSaZ/IkVhXIUMpRWHaIn/48h/bllKZlKhf94
-         klfFb/j04O4Mrsy0k9ksuSojp4SJigUlQ0hX58L2/VZq6H0sfGM8qhBDTo0kXzShSsV1
-         DCLZBk/sZxFm3CDEzC+MZFXBWXpB+hWK4gx7KJ7IlBJ5rbAFb5zrpO3blnlsWJgFiM7R
-         H9SA==
+        bh=vF79aULcz1sIXc9hQlXxFw5EsuIwvZhPnZf3dLMpAkg=;
+        b=vHxaa/N1MUjJAci4pvmWYABUon+IhbSpaFyOIc3FoA2HuIlZ63qdmBxlD5csll72im
+         +vOJ/pQkSB4CaO3AEzuiIt4tDxM96UEkNsz7P6AQi20ffUL1wPE8Xi8uTGZ5vRPxdfQO
+         nVvgYD6mKsEsnUURKVujUlUggIn0JmEJF0yGFpQ4OM9fil4YjPA7XiWx1D9vbpcEqftK
+         2hLZ01Cxr5jDTL4l8GA9uml69BN+gItcd9R05fgoAkMvLK8SBbBxs1Lzgdg7k82fT6Zp
+         6sYLWUKW7v/hfRKj+XeQ9DsneOpA4JGuBeJP3xJrfXOtl/KroO9vmFHgNcMXDz6oZZxb
+         a42g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697436599; x=1698041399;
+        d=1e100.net; s=20230601; t=1697436690; x=1698041490;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=PVE4Fp1iw8WKJixYgT2hJ0Ht8/G6WBROKr6ExMjWaXM=;
-        b=iu0kx3+R2c7Jq9BgaNFLIB6YCwt5pWRL6WqBViDtci2aqR6RKpgicz35ZBkAvTmUI7
-         lVaE5KvBpeSLdsQzG1Ve8FKqLvPXgHZC4xSv8D6B0V2bfrUb5OS3INkLTMWN8LFdH5FQ
-         VAkPyR1SsaVwBqt2rejCpT2R57gXYHehUUOhd15jneecJ5FwnL8YxA4bF/bRmxdXgfEe
-         fFzl6pZ5oYUR7Rly3IoP4xRGjxGcvaERioBibcBXliv1x9/XxPhDQ3YMkQgNzsykXU4U
-         dHtZbegEZAtXZcaQTsPgOBtx5NtdV6NJnHfCvWwQOWtl8iU6i/qLAIXvM+DqTAKzjwEc
-         3gKQ==
-X-Gm-Message-State: AOJu0YxoyYZGTnjPEmMSB0AoR3gsFf8JN2zcZXXgu29otwz6TIm0aElf
-        6xQmNKt25peQ6vfKxNKwo1TtzBEVQzv7Vwc9tkc=
-X-Google-Smtp-Source: AGHT+IFVCD+geRuU9sZalpDfWWdxh3WfdnKKNn/dFPghy+JHOER3vWK96NGqLbZKG7pEz9gDUKIc8Q==
-X-Received: by 2002:a17:907:da6:b0:9be:dce3:6e09 with SMTP id go38-20020a1709070da600b009bedce36e09mr5526916ejc.68.1697436599486;
-        Sun, 15 Oct 2023 23:09:59 -0700 (PDT)
+        bh=vF79aULcz1sIXc9hQlXxFw5EsuIwvZhPnZf3dLMpAkg=;
+        b=PGRVEt8k415+Vre32JTrqc/g7EL3tUYRRkXfwuf19z8O8OukYEySU4gO77Ur+qBgLq
+         Wl1Oq2PRPcjUUoZldoFxj1YIgdWO4lcDXgmtlq3rvPjFN9WY7MSj27UCuDlhMd8Tlc1U
+         GjMhROr7pxj4r8KqtxaRhXC+zdZz6teoWNC35dk22alYW0/aEfjefG7bPQheXP4/+pf0
+         TiTswgYtiqfHz1vtWCX2Y1ZMrV6NXuj2GaQw7XB1GKK5VuoWgjUKFPRcU8kKPuKSxLCz
+         tjZ4dJCSV2+PTes2cC46pLAt6+z5jOOERTKAFhQAUgIYr79DCrAENpDzWAti2+iWHJbd
+         OBCA==
+X-Gm-Message-State: AOJu0YzrCNG1uK5qGk8NLReoi0Yy+B8xQY7HOif6wnNPNB5+zpbYSo+d
+        SYNtemc+JOkHhON2EKxUQ4H8vw==
+X-Google-Smtp-Source: AGHT+IEXdFFcaRItGeSRZQulllW5dkpEmZ2hGyYRZIvwx+8YORDkhao1DuaEHQ2RvcED7wVuWZ+sKA==
+X-Received: by 2002:a17:906:4fcd:b0:9bf:4915:22ca with SMTP id i13-20020a1709064fcd00b009bf491522camr4385412ejw.45.1697436690676;
+        Sun, 15 Oct 2023 23:11:30 -0700 (PDT)
 Received: from [192.168.1.20] ([178.197.219.154])
-        by smtp.gmail.com with ESMTPSA id m24-20020a170906235800b009c503bf61c9sm153141eja.165.2023.10.15.23.09.57
+        by smtp.gmail.com with ESMTPSA id m24-20020a170906235800b009c503bf61c9sm153141eja.165.2023.10.15.23.11.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 15 Oct 2023 23:09:58 -0700 (PDT)
-Message-ID: <2b12a49c-ed82-4632-86c6-349976cd714b@linaro.org>
-Date:   Mon, 16 Oct 2023 08:09:56 +0200
+        Sun, 15 Oct 2023 23:11:30 -0700 (PDT)
+Message-ID: <6bc4e497-97df-4e46-b981-9679c5830492@linaro.org>
+Date:   Mon, 16 Oct 2023 08:11:29 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] dt-bindings: serial: sc16is7xx: remove
- 'clock-frequency' property
+Subject: Re: [PATCH 1/2] dt-bindings: serial: sc16is7xx: move 'allOf' block
+ after 'required'
 Content-Language: en-US
 To:     Hugo Villeneuve <hugo@hugovil.com>, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, robh+dt@kernel.org,
@@ -64,7 +64,7 @@ To:     Hugo Villeneuve <hugo@hugovil.com>, gregkh@linuxfoundation.org,
 Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         devicetree@vger.kernel.org
 References: <20231013141925.3427158-1-hugo@hugovil.com>
- <20231013141925.3427158-3-hugo@hugovil.com>
+ <20231013141925.3427158-2-hugo@hugovil.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -110,7 +110,7 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20231013141925.3427158-3-hugo@hugovil.com>
+In-Reply-To: <20231013141925.3427158-2-hugo@hugovil.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -120,13 +120,15 @@ X-Mailing-List: linux-serial@vger.kernel.org
 On 13/10/2023 16:19, Hugo Villeneuve wrote:
 > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > 
-> The 'clock-frequency' property is supported but mainly in ACPI-based
-> configurations, for example.
+> The 'allOf' block should go after the 'required' block according to DT
+> bindings best practices.
 > 
-> This property has therefore no place in the sc16is7xx YAML binding.
+> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> ---
 
-Please reference commit which you question - 0d447e927. I don't
-understand why do you remove it. The property was in the original binding.
+This is just a matter of style.
+
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 Best regards,
 Krzysztof
