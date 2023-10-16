@@ -2,203 +2,138 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42716C46CA1
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 10:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76255CDB465
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 10:33:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231411AbjJPKKf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Oct 2023 06:10:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50018 "EHLO
+        id S229666AbjJPKds (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Oct 2023 06:33:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232133AbjJPKKe (ORCPT
+        with ESMTP id S229459AbjJPKdr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Oct 2023 06:10:34 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A78883;
-        Mon, 16 Oct 2023 03:10:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
- t=1697451004; x=1698055804; i=linosanfilippo@gmx.de;
- bh=L341XeVnPnSSuucfm8gEM6lOvZc0P3FGdj7nOTjmjP0=;
- h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
- b=eXaOxyLFxAGAmIPbSlWvS9Bv1nAhEXirTAfedxV0wnRi8P7xz8AaPmqM71ycA1GCnrju3xpGwM1
- rbL+eKHVbeHqGyrbhHCkeAiyALJIzNV7e9td5PuaEq6P6tkL/oTlFXkz1jCHIsnpnElfZbULS2Usl
- jnDvZOcdKkb5mzmTyfuTKGMegpieifthwDQ9u91tvy/6i2NRLdvx0/HoeiY/sMAkBXJMIalDtbdRj
- dYBX/MHBUSp6lSCw0cCpfsGXXFOcAfuUdw8sJEXNt4oL7JYIQ7DFptpSsmn5CrYQMglMu25bTbyKU
- k6WHs73nVAFK+RWL9yf6Wa75msyGPzqbZa7Q==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.2.42] ([84.162.21.41]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MOzSu-1rB6uW2DoS-00PLxj; Mon, 16
- Oct 2023 12:10:04 +0200
-Message-ID: <ac48dd6e-5f08-4372-ba2e-2f161978f1f3@gmx.de>
-Date:   Mon, 16 Oct 2023 12:10:02 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/6] serial: core: fix sanitizing check for RTS
- settings
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com,
-        LKML <linux-kernel@vger.kernel.org>,
+        Mon, 16 Oct 2023 06:33:47 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A7483;
+        Mon, 16 Oct 2023 03:33:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1697452426; x=1728988426;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=XYtfn268wDdb2xRd7dtN0hGq1egPK3I+Lq+i14Uyjos=;
+  b=SSRQRLScXZPJFYwofc0oEmn8gtyfOpPeAVBO0EKl0R/fhm0JrLzoOrEF
+   ppBxq5wbziNnjD+l+FL+EdILx70+emb4GW3Y7EVNjhF0QynVFV8aDgl74
+   WYaTLBPQRpnne9u+2KbuExsbH7JOkCYaZEI4Vd9CVOhj/sXOV6PYs/9Tu
+   y4+Wa0D65yp4BGRZUFF5P3I9oynfMUzmV9WIbGoc2rnC9leKy7OMOOA/p
+   PWCi3KQ1o7r4d+XnK3IR/b7EJTqK9TN/zdSKq4B/a4maAZ/Ux353ULN52
+   IyEiaHLF+bfKVwbsKmy3pnA/nARbBRMfy35mhWXW9bzukuaYEQ6gKjyLU
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="4106426"
+X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
+   d="scan'208";a="4106426"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 03:33:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="899446234"
+X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
+   d="scan'208";a="899446234"
+Received: from rhaeussl-mobl.ger.corp.intel.com ([10.252.59.103])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 03:31:45 -0700
+Date:   Mon, 16 Oct 2023 13:33:41 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Vamshi Gajjela <vamshigajjela@google.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         linux-serial <linux-serial@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
-        stable@vger.kernel.org
-References: <20231011181544.7893-1-l.sanfilippo@kunbus.com>
- <20231011181544.7893-4-l.sanfilippo@kunbus.com>
- <40e4c6b1-e217-2926-a351-bf685a5b775f@linux.intel.com>
- <da9a9d10-2568-4960-b9f8-9d43cbc1b295@kunbus.com>
- <63b62f6c-d97d-8d45-1612-968ef74b6365@linux.intel.com>
- <b06c2fcd-02c0-464b-a7e8-4dfbf9e2befc@gmx.de>
- <fe473887-3aa0-9a32-53d2-a39ce5247ccb@linux.intel.com>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <fe473887-3aa0-9a32-53d2-a39ce5247ccb@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:ORhRzJZg8wY+08udyEK6cZ6i8r27p6VIpt3xbEERnKIeMBztY8t
- 2IRl3nfjg12x/y5MYwmyHa4vksWyfUl3cye0ErrBEp3sdPB6NDCZ+EwdBWebzB9ztzxr7SF
- sWAhHJSKVxnwL58cIp7AmH0LLp4t3E/hb8v5L0Ohg1b+APxLhEhOsR0sYH2Pl29U72xMsMM
- WtYnEgZ7RANqv/02t2HKw==
-UI-OutboundReport: notjunk:1;M01:P0:7z5GCjWqsrQ=;IT40LDxHrpLISXGcwLqXM+1rw3F
- oIWc9qwWf9NG4KWL6mgxjs+h0Kx4r5J+LYOeHG978EJ4BHXNMRZisrFFfFIcYTK59mgGhQkv8
- L1pxDFYXztFR7qBJW4l7ZYSSAAnU2iM4EbWsTSTJfliifcOaaNToBcChAUUS9MA280WiP+GMr
- ZE5H5iuRqsmA5q5Z/SxIsMbPlkXaC/7KwXBMNbnFgmI90uk4pVBwhcOe1OlEEiqlKhYHPFv+D
- BTK2YG5jC+XQ2z/fOuGsKNZu3mvDkVb3pUvuyraQzFtvRLmCI3U5Nzn1G+ulyQjLyrjMjs3f8
- RU04us6qxlhULwhgTU7vRbDgkx7hpPMlaAi3/lx4nzccEL4rj+dDNgsaDVLWL4DR5ghV1Dh9X
- ZcxVIKe6N9+wPbbp8KB/w6tvJQ8tr5WqZtcSuPHaTlA4ClEaGpNMy/girVtKLXU0UzVMHVlVd
- UK6PtagIynUd2ppiG2o5qttRthMhCUu9PQxOABBigk9PdwOVNg9gBFD4N49EHhr+tWb45JAPQ
- XAatuoCPe3DgO9GisMC9EDeBPi2fw8TWEUtqfg1NWvO+ohHWI0lFuU/1SdjYHDuxLbLpUdcCT
- FpB5G+MDogLBwqNwwcWjlmmhZ7eODOfW53sh04OiWD0PIkD+gdMGtv52YQA+xgVXrzmHKyRFP
- pw7ks3uUE5K4/RD6ymEKQu12rpcRS8Tq3rqh8PowvhsCUGTQTCJh0Xf3JEJAgSo60/OpW7MOD
- kSaTIP4R6zJhQQalfgAcoa+iAfwzRO9+36KjGN9z7VMBtiOUsb2OCh6dneCcqU7aPIk//J4dw
- FEBeqxkdHW7KkpDvIEIcCA2hFy3awasbi/8ZBIh7dEELcB1ZzEMQfowR8HODD0oOWIrjsjHmP
- 2vyIUTw1cFgc9ZJu4hh2SHb1cQdPnS+zW/d41xAdZDTONekVJPReMbB4lw9nC2MkajsYebazP
- K6gvvA==
+        LKML <linux-kernel@vger.kernel.org>, manugautam@google.com,
+        Subhash Jadavani <sjadavani@google.com>,
+        Channa Kadabi <kadabi@google.com>
+Subject: Re: [PATCH 1/3] serial: core: Potential overflow of frame_time
+In-Reply-To: <20231014104942.856152-2-vamshigajjela@google.com>
+Message-ID: <6f25e6fb-bebc-3f9b-9876-5e14d2582f6@linux.intel.com>
+References: <20231014104942.856152-1-vamshigajjela@google.com> <20231014104942.856152-2-vamshigajjela@google.com>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323329-1847621484-1697452425=:1986"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
+--8323329-1847621484-1697452425=:1986
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-On 16.10.23 12:05, Ilpo J=C3=A4rvinen wrote:
-> On Sat, 14 Oct 2023, Lino Sanfilippo wrote:
->> On 13.10.23 12:24, Ilpo J=C3=A4rvinen wrote:
->>> On Thu, 12 Oct 2023, Lino Sanfilippo wrote:
->>>> On 12.10.23 15:10, Ilpo J=C3=A4rvinen wrote:
->>>>> On Wed, 11 Oct 2023, Lino Sanfilippo wrote:
->>>>>
->>>>>> Among other things uart_sanitize_serial_rs485() tests the sanity of=
- the RTS
->>>>>> settings in a RS485 configuration that has been passed by userspace=
-.
->>>>>> If RTS-on-send and RTS-after-send are both set or unset the configu=
-ration
->>>>>> is adjusted and RTS-after-send is disabled and RTS-on-send enabled.
->>>>>>
->>>>>> This however makes only sense if both RTS modes are actually suppor=
-ted by
->>>>>> the driver.
->>>>>>
->>>>>> With commit be2e2cb1d281 ("serial: Sanitize rs485_struct") the code=
- does
->>>>>> take the driver support into account but only checks if one of both=
- RTS
->>>>>> modes are supported. This may lead to the errorneous result of RTS-=
-on-send
->>>>>> being set even if only RTS-after-send is supported.
->>>>>>
->>>>>> Fix this by changing the implemented logic: First clear all unsuppo=
-rted
->>>>>> flags in the RS485 configuration, then adjust an invalid RTS settin=
-g by
->>>>>> taking into account which RTS mode is supported.
->>>>>>
->>>>>> Cc: stable@vger.kernel.org
->>>>>> Fixes: be2e2cb1d281 ("serial: Sanitize rs485_struct")
->>>>>> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->>>>>> ---
->>>>>>  drivers/tty/serial/serial_core.c | 28 ++++++++++++++++++----------
->>>>>>  1 file changed, 18 insertions(+), 10 deletions(-)
->>>>>>
->>>>>> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/=
-serial_core.c
->>>>>> index 697c36dc7ec8..f4feebf8200f 100644
->>>>>> --- a/drivers/tty/serial/serial_core.c
->>>>>> +++ b/drivers/tty/serial/serial_core.c
->>>>>> @@ -1370,19 +1370,27 @@ static void uart_sanitize_serial_rs485(stru=
-ct uart_port *port, struct serial_rs4
->>>>>>               return;
->>>>>>       }
->>>>>>
->>>>>> +     rs485->flags &=3D supported_flags;
->>>>>> +
->>>>>>       /* Pick sane settings if the user hasn't */
->>>>>> -     if ((supported_flags & (SER_RS485_RTS_ON_SEND|SER_RS485_RTS_A=
-FTER_SEND)) &&
->>>>>> -         !(rs485->flags & SER_RS485_RTS_ON_SEND) =3D=3D
->>>>>> +     if (!(rs485->flags & SER_RS485_RTS_ON_SEND) =3D=3D
->>>>>>           !(rs485->flags & SER_RS485_RTS_AFTER_SEND)) {
->>>>>> -             dev_warn_ratelimited(port->dev,
->>>>>> -                     "%s (%d): invalid RTS setting, using RTS_ON_S=
-END instead\n",
->>>>>> -                     port->name, port->line);
->>>>>> -             rs485->flags |=3D SER_RS485_RTS_ON_SEND;
->>>>>> -             rs485->flags &=3D ~SER_RS485_RTS_AFTER_SEND;
->>>>>> -             supported_flags |=3D SER_RS485_RTS_ON_SEND|SER_RS485_=
-RTS_AFTER_SEND;
->>>>>> -     }
->>>>>> +             if (supported_flags & SER_RS485_RTS_ON_SEND) {
->>>>>> +                     rs485->flags |=3D SER_RS485_RTS_ON_SEND;
->>>>>> +                     rs485->flags &=3D ~SER_RS485_RTS_AFTER_SEND;
->>>>>>
->>>>>> -     rs485->flags &=3D supported_flags;
->>>>>> +                     dev_warn_ratelimited(port->dev,
->>>>>> +                             "%s (%d): invalid RTS setting, using =
-RTS_ON_SEND instead\n",
->>>>>> +                             port->name, port->line);
->>>>>> +             } else {
->>>>>> +                     rs485->flags |=3D SER_RS485_RTS_AFTER_SEND;
->>>>>> +                     rs485->flags &=3D ~SER_RS485_RTS_ON_SEND;
->>>>>
->>>>> So if neither of the flags is supported, what will happen? You might=
- want
->>>>> add if after that else?
->>>>>
->>>>
->>>> I would consider this a bug in the driver, as at least one of both mo=
-des
->>>> has to be supported. If the driver does not have at least one of both=
- flags
->>>> set in rs485_supported.flags we could print a warning though. Would y=
-ou prefer that?
->>>
->>> 8250_exar.c needs to fixed then?
->> I was taking these as things one can
->>> "configure" even if when there's support only for a one of them there'=
-s
->>> not that much to configure. As there was neither in 8250_exar's code, =
-I
->>> didn't add either flag.
->>
->>> But I suppose your interpretation of those flag makes more sense.
->>
->> IMHO this is consistent with what we have in uart_get_rs485_mode(). Thi=
-s function
->> ensures that we have at least one RTS mode set (with default to RTS_ON_=
-SEND). So
->> concerning 8250_exar.c, I think it should be fixed (havent noticed the =
-missing
->> RTS mode though until you mentioned it). Would you like to provide a fi=
-x for this
->> or shall I include one into the next version of this series?
->
-> Just create that fix yourself thank you and include it into your series,
-> I'm busy with other stuff currently.
->
->
+On Sat, 14 Oct 2023, Vamshi Gajjela wrote:
 
-Sure, will do.
+> From: VAMSHI GAJJELA <vamshigajjela@google.com>
+> 
+> uart_update_timeout() sets a u64 value to an unsigned int frame_time.
 
-BR,
-Lino
+Yes it does, because uart_update_timeout() does math that requires u64 but 
+the result is always smaller than what requires u64. If you insist on 
+doing something add the cast there.
+
+> While it can be cast to u32 before assignment, there's a specific case
+> where frame_time is cast to u64.
+
+Because it gets multipled with something that results in a big number
+The cast is all correct too because the developer actually thought of 
+possiblity of an overflow on multiply (something every developer should 
+be conscious of), so there's nothing to see there either. 
+
+> Since frame_time consistently
+> participates in u64 arithmetic, its data type is converted to u64 to
+> eliminate the need for explicit casting.
+
+You need a way more convincing argument that that since you're not even 
+converting it to u64 like you falsely stated so the sizes still won't 
+match on all architectures.
+
+I see you've realized u32 is more than enough to store frame time for the 
+speeds UART operates with? So why exactly is this patch needed? Should all 
+the other cases where 64-bit arithmetic needs to be used in the kernel be 
+similarly upconverted to 64 bits?
+
+Also, did you happen to realize frame_time also participates in 32-bit 
+arithmetic which you just make much worse with this change? (Yes, there 
+are 32-bit divides done for it.)
+
+So NACK from me to this "fix" of a non-problem by causing much worse 
+problems you seem to be entirely unaware.
+
+NACKED-by:  Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+-- 
+ i.
+
+> Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
+> ---
+>  include/linux/serial_core.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index bb6f073bc159..b128513b009a 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -558,7 +558,7 @@ struct uart_port {
+>  
+>  	bool			hw_stopped;		/* sw-assisted CTS flow state */
+>  	unsigned int		mctrl;			/* current modem ctrl settings */
+> -	unsigned int		frame_time;		/* frame timing in ns */
+> +	unsigned long		frame_time;		/* frame timing in ns */
+>  	unsigned int		type;			/* port type */
+>  	const struct uart_ops	*ops;
+>  	unsigned int		custom_divisor;
+> @@ -764,7 +764,7 @@ unsigned int uart_get_divisor(struct uart_port *port, unsigned int baud);
+>   */
+>  static inline unsigned long uart_fifo_timeout(struct uart_port *port)
+>  {
+> -	u64 fifo_timeout = (u64)READ_ONCE(port->frame_time) * port->fifosize;
+> +	u64 fifo_timeout = READ_ONCE(port->frame_time) * port->fifosize;
+>  
+>  	/* Add .02 seconds of slop */
+>  	fifo_timeout += 20 * NSEC_PER_MSEC;
+> 
+--8323329-1847621484-1697452425=:1986--
