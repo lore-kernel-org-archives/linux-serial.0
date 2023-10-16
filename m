@@ -2,56 +2,57 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D46CDB465
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 11:39:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D62EC41513
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 11:44:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230090AbjJPLjb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Oct 2023 07:39:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50650 "EHLO
+        id S230343AbjJPLol (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Oct 2023 07:44:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230017AbjJPLja (ORCPT
+        with ESMTP id S229621AbjJPLok (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Oct 2023 07:39:30 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDBED9;
-        Mon, 16 Oct 2023 04:39:29 -0700 (PDT)
+        Mon, 16 Oct 2023 07:44:40 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD6C2DC;
+        Mon, 16 Oct 2023 04:44:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697456369; x=1728992369;
+  t=1697456678; x=1728992678;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=lDcyUcRHd6gIh/r9WZ7PJipz1qSJMSm4ZlUlo62jqA8=;
-  b=DZLB8C9RceCbKF2wb2VyhVJWZsdW4b94jnsEeqsDKuXnOGAgs5XHiPgE
-   lGdTa2CJKXJXb3SA1p0HpNg4JyWA2TiehepZr3jSI5tnWmF5ptfLk3sqm
-   cANQKDI3O0lJFU1YW1/0fyvdPZOuYTY1K/HmVfNugbr1jrSPOorqNBdEO
-   6j2OYHsBEHNLDYnrBUbdenwp9GHOg8uTgKQr/8hxxZbCj0X6S90RS+ayw
-   uxwTvqvpJl7923btMcMslJhpyehX3sXCQY700wLuPmpIJckrSR46zBobr
-   Ue51zN0YXhdnZJ+3Z03ffPIxoWGUv1MDybXvBRnCEPcVQSPbLNheKhj3Z
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="7070323"
+  bh=jhmZOMCgOQZFyiS8nyvND4T+5urSIoQvwa9vLe3IUqo=;
+  b=ITK+cr033ixgnoaWjUIiFD2GF+RVGGzy6kUoWjqzStcvk4eU6wwsMsGK
+   TFNE2X8LCWbiF/PBEJXJ6wjo8CtA1S7UHXRvLcZ8pnl6UHSAG2JrLSEvt
+   ktWtblu2ZAjyAhD9c3qvcYqq3abXHHUduH1tOby7nOly3fmSD9jH5eMv/
+   ATziqX9g8jmFDHeiNM5rgxqWssG/pb2J70DdSiGZ2HL4Zd8geOPxE9MJc
+   sgxBm4J5YYqp5H7osdWtK50yfptuFOfh5RGUTlHKZ47p+EiqOrG1WhwjA
+   DuJUw+QeCyAra2FbOQ1vRJNoXlmFmaYHxISMK5R6cV981fw9YX4ljxqSB
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="384377867"
 X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
-   d="scan'208";a="7070323"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 04:39:29 -0700
+   d="scan'208";a="384377867"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 04:44:38 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="879402460"
+X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="705588280"
 X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
-   d="scan'208";a="879402460"
-Received: from rhaeussl-mobl.ger.corp.intel.com (HELO bhoerz-mobl1.ger.corp.intel.com) ([10.252.59.103])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 04:39:25 -0700
-Date:   Mon, 16 Oct 2023 14:39:23 +0300 (EEST)
+   d="scan'208";a="705588280"
+Received: from rhaeussl-mobl.ger.corp.intel.com ([10.252.59.103])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 04:44:35 -0700
+Date:   Mon, 16 Oct 2023 14:44:32 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Vamshi Gajjela <vamshigajjela@google.com>
 cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, manugautam@google.com,
+        ilpo.jarvinen@linux.intel.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, manugautam@google.com,
         Subhash Jadavani <sjadavani@google.com>,
         Channa Kadabi <kadabi@google.com>
-Subject: Re: [PATCH 2/3] serial: core: Make local variable size to u64
-In-Reply-To: <20231014104942.856152-3-vamshigajjela@google.com>
-Message-ID: <b0ec67b1-24a2-d67d-d7c1-9c3fdafdb570@linux.intel.com>
-References: <20231014104942.856152-1-vamshigajjela@google.com> <20231014104942.856152-3-vamshigajjela@google.com>
+Subject: Re: [PATCH 3/3] serial: core: Update uart_poll_timeout function to
+ return unsigned int
+In-Reply-To: <20231014104942.856152-4-vamshigajjela@google.com>
+Message-ID: <32aae753-4a3-9c1c-9e4c-95fd2da8d4@linux.intel.com>
+References: <20231014104942.856152-1-vamshigajjela@google.com> <20231014104942.856152-4-vamshigajjela@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
@@ -62,38 +63,41 @@ On Sat, 14 Oct 2023, Vamshi Gajjela wrote:
 
 > From: VAMSHI GAJJELA <vamshigajjela@google.com>
 > 
-> The variable size has been changed from u32 to u64 to accommodate a
-> larger range of values without the need for explicit typecasting.
-
-Don't use too broad/generic terminology in shortlog (on [PATCH] line in 
-subject) or changelog but explicitly mention the variable names please.
-
+> uart_fifo_timeout() returns unsigned value, hence the function
+> uart_poll_timeout has been modified to use an unsigned int type for
+> timeout values instead of a signed int. The return type of the function
+> has been changed from int to unsigned int for consistency with the type
+> of timeout values. The result of uart_fifo_timeout() is cast to u32,
+> indicating that the value is truncated.
+> 
 > Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
 > ---
->  drivers/tty/serial/serial_core.c | 4 ++--
+>  include/linux/serial_core.h | 4 ++--
 >  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 7bdc21d5e13b..fb4696d17a8b 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -410,10 +410,10 @@ void
->  uart_update_timeout(struct uart_port *port, unsigned int cflag,
->  		    unsigned int baud)
->  {
-> -	unsigned int size = tty_get_frame_size(cflag);
-> +	u64 size = tty_get_frame_size(cflag);
->  	u64 frame_time;
->  
-> -	frame_time = (u64)size * NSEC_PER_SEC;
-> +	frame_time = size * NSEC_PER_SEC;
->  	port->frame_time = DIV64_U64_ROUND_UP(frame_time, baud);
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index b128513b009a..445a1ff7e502 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -773,9 +773,9 @@ static inline unsigned long uart_fifo_timeout(struct uart_port *port)
 >  }
->  EXPORT_SYMBOL(uart_update_timeout);
+>  
+>  /* Base timer interval for polling */
+> -static inline int uart_poll_timeout(struct uart_port *port)
+> +static inline unsigned int uart_poll_timeout(struct uart_port *port)
 
-This is actually a good cleanup all by itself unrelated to the other 
-change but you need to adapt the changelog to reflect why this is helpful 
-instead wording it based on the other change.
+This is in jiffies so why don't you return unsigned long instead also 
+here?
+
+>  {
+> -	int timeout = uart_fifo_timeout(port);
+> +	unsigned int timeout = (u32)uart_fifo_timeout(port);
+
+Use unsigned long and avoid casting entirely?
+>  
+>  	return timeout > 6 ? (timeout / 2 - 2) : 1;
+>  }
+> 
 
 -- 
  i.
