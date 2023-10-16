@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3DAFCDB465
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 05:11:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5078ACDB465
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 05:12:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229633AbjJPFLH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Oct 2023 01:11:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50358 "EHLO
+        id S231771AbjJPFM1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Oct 2023 01:12:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231140AbjJPFLG (ORCPT
+        with ESMTP id S231797AbjJPFMX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Oct 2023 01:11:06 -0400
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ED88F1;
-        Sun, 15 Oct 2023 22:11:04 -0700 (PDT)
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-53d82bea507so7033696a12.2;
-        Sun, 15 Oct 2023 22:11:04 -0700 (PDT)
+        Mon, 16 Oct 2023 01:12:23 -0400
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF94C194;
+        Sun, 15 Oct 2023 22:12:10 -0700 (PDT)
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-9ad8a822508so651448466b.0;
+        Sun, 15 Oct 2023 22:12:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697433063; x=1698037863;
+        d=1e100.net; s=20230601; t=1697433129; x=1698037929;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UYiKLckHgXgU2yS2Ix0VvBQw7TUtIsOGfv4ve38Xaxk=;
-        b=dUQdQAVykV6lGomB+K42MPvI1P8KvvFJRYM3Ti4NUuszXLVPMLO5BWfUKXm+BwfGiJ
-         l/3t4IfxV7mcH7T0ewcD2onEb52/qMVOMxVV7WKKhSDicP3WPEhulk9C9/pVamyspNpy
-         cw2z9hntZ2CKs27alPgx4JA0Mfg0b2t4pyCkcjdaC0TLjWlzpS0wNMIUmBiilAXKxnbE
-         rU36vZZidLF6FbjAJsQtcvrBixiQvwgLBa4ywuByqh9+r/KpzQTMYdaZidl15rBa0+fK
-         vtlmCLLTogEfTRzsBkDgdb0yFpT0tuVP8tPHW2RSoRphhhk/SOyTtWbEMTI9yfivVVBj
-         QAJQ==
-X-Gm-Message-State: AOJu0YzctlGV2eHlCLdJnZi5wcNFPTSzFtZm0GvjQ5iwkFhfKrzAT2N8
-        cCkdlus1RhXdEXT3zrqmadSay6rr0oI=
-X-Google-Smtp-Source: AGHT+IFCxz4NFTu4OGHdYVRGhGzCka50GE40UBL0PBuiLUmsgPEyOy18KVRRHZTLwx1266s0eIqteg==
-X-Received: by 2002:a17:906:4fcd:b0:9bf:1477:ad8b with SMTP id i13-20020a1709064fcd00b009bf1477ad8bmr4787970ejw.51.1697433062918;
-        Sun, 15 Oct 2023 22:11:02 -0700 (PDT)
+        bh=RsD/mSOP7HRfrdnI1L/S6qyByiO5uReuXrgW8Fn6I80=;
+        b=PZUfHwycU7GvaUmtbeMvICfM/6oAJiF4vhXR1LJ0NcZnQ/UHsmtxLrPFZfv6Af35ZC
+         Yl7/vrMjQe/Ndx1h4lLKgSJ0ONIupSGyJ1UhKh+BG/4OmRg7h6orDQKu9sFKyFSBBxnG
+         tlVYy3EaK4HEPSbjvnL3XyslWAVze/R1WPGv5L654vqt8IADuhxPw0LNVpCzp1tcecq2
+         VI7XvEz/gdvFaWiwDi0xohXobs3C/muuDJLJGfKu1lZnYfbiE3aQwwV02nmwCt9V7cod
+         /fU4kG+FrQTA80G3kcuuNL6KqaQNYnVbaMog3+1E3unVCUvfLYxcWmQVubCG96iBg6k8
+         /zQw==
+X-Gm-Message-State: AOJu0YxxDI87fFSvrFx2UthXio6DdDIxjkUMzn8oiG1R9EQXKFUkxija
+        L3TAvrzIPwaKEAvWnKCjEkc5NV+EMaM=
+X-Google-Smtp-Source: AGHT+IHIwttAKhpvr+rDz+by0LIyIasCEr4bJgH4hk8jqrmdbUWD/UV0D69BABEZW3uqy0lJHg8yoQ==
+X-Received: by 2002:a17:907:7788:b0:9ba:2fe3:c976 with SMTP id ky8-20020a170907778800b009ba2fe3c976mr13479365ejc.12.1697433129154;
+        Sun, 15 Oct 2023 22:12:09 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id lu32-20020a170906fae000b0099b7276235esm3247365ejb.93.2023.10.15.22.11.01
+        by smtp.gmail.com with ESMTPSA id lu32-20020a170906fae000b0099b7276235esm3247365ejb.93.2023.10.15.22.12.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 15 Oct 2023 22:11:02 -0700 (PDT)
-Message-ID: <1f318d02-aceb-4262-854b-5e14c7c9a7f1@kernel.org>
-Date:   Mon, 16 Oct 2023 07:11:01 +0200
+        Sun, 15 Oct 2023 22:12:08 -0700 (PDT)
+Message-ID: <9d7b842e-402b-4d46-aada-e658ef4acf99@kernel.org>
+Date:   Mon, 16 Oct 2023 07:12:08 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [Patch v2 1/6] tty: serial: 8250: Modify MOXA enum name within
- 8250_pci.c
+Subject: Re: [Patch v2 2/6] tty: serial: 8250: Cleanup MOXA configurations
+ within 8250_pci.c
 Content-Language: en-US
 To:     Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
         gregkh@linuxfoundation.org
 Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 References: <20231016033705.20669-1-crescentcy.hsieh@moxa.com>
- <20231016033705.20669-2-crescentcy.hsieh@moxa.com>
+ <20231016033705.20669-3-crescentcy.hsieh@moxa.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -93,7 +93,7 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20231016033705.20669-2-crescentcy.hsieh@moxa.com>
+In-Reply-To: <20231016033705.20669-3-crescentcy.hsieh@moxa.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -101,8 +101,11 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 16. 10. 23, 5:37, Crescent CY Hsieh wrote:
-> To improve clarity, modify the MOXA enum name within pci_board_num_t.
-> 
+> To improve clarity, clean up the MOXA configurations within
+> serial_pci_tbl.
+
+Perhaps append "using PCI_VDEVICE".
+
 > Signed-off-by: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
 
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
