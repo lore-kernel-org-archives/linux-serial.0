@@ -2,64 +2,119 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C269CDB474
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 08:48:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89F68C41513
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 09:12:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230090AbjJPIsa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Oct 2023 04:48:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57954 "EHLO
+        id S231302AbjJPJMY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Oct 2023 05:12:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230330AbjJPIsa (ORCPT
+        with ESMTP id S232459AbjJPJMX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Oct 2023 04:48:30 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 858559B
-        for <linux-serial@vger.kernel.org>; Mon, 16 Oct 2023 01:48:27 -0700 (PDT)
-Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1qsJH0-00014n-1j; Mon, 16 Oct 2023 10:48:26 +0200
-Message-ID: <edd0bc66-b4b3-4c12-a4b9-25a7357f38d7@leemhuis.info>
-Date:   Mon, 16 Oct 2023 10:48:25 +0200
+        Mon, 16 Oct 2023 05:12:23 -0400
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1164595;
+        Mon, 16 Oct 2023 02:12:21 -0700 (PDT)
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <prvs=966793e2c5=fe@dev.tdt.de>)
+        id 1qsJe7-00BNkA-81; Mon, 16 Oct 2023 11:12:19 +0200
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <fe@dev.tdt.de>)
+        id 1qsJe6-007pp2-Rf; Mon, 16 Oct 2023 11:12:18 +0200
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 804A324004D;
+        Mon, 16 Oct 2023 11:12:18 +0200 (CEST)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 300BB240049;
+        Mon, 16 Oct 2023 11:12:18 +0200 (CEST)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id 0603A2BD22;
+        Mon, 16 Oct 2023 11:12:16 +0200 (CEST)
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Regression: serial: 8250_omap: error during suspend if
- no_console_suspend is set
-Content-Language: en-US, de-DE
-From:   "Linux regression tracking #update (Thorsten Leemhuis)" 
-        <regressions@leemhuis.info>
-To:     Linux kernel regressions list <regressions@lists.linux.dev>
-Cc:     linux-serial@vger.kernel.org, thomas.richard@bootlin.com
-Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>,
-          Linux regressions mailing list 
-          <regressions@lists.linux.dev>
-References: <8a856171-e743-737e-eb9d-42852e4e4f19@bootlin.com>
- <33bf96d0-fbe0-dfb4-a791-233f49f9080d@leemhuis.info>
-In-Reply-To: <33bf96d0-fbe0-dfb4-a791-233f49f9080d@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1697446107;6e0bb11c;
-X-HE-SMSGID: 1qsJH0-00014n-1j
+Date:   Mon, 16 Oct 2023 11:12:15 +0200
+From:   Florian Eckert <fe@dev.tdt.de>
+To:     m.brock@vanmierlo.com
+Cc:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
+        kabel@kernel.org, u.kleine-koenig@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-leds@vger.kernel.org, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v3 3/4] trigger: ledtrig-tty: move variable definition to
+ the top
+In-Reply-To: <93dcb9f6f218593084f834ba6b450999@vanmierlo.com>
+References: <20231016071332.597654-1-fe@dev.tdt.de>
+ <20231016071332.597654-4-fe@dev.tdt.de>
+ <93dcb9f6f218593084f834ba6b450999@vanmierlo.com>
+Message-ID: <34e8fcd94b4a959fe2336485e4722c3b@dev.tdt.de>
+X-Sender: fe@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.17
+X-purgate: clean
+X-purgate-type: clean
+X-purgate-ID: 151534::1697447539-9E3497EA-C04EA6BA/0/0
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-[TLDR: This mail in primarily relevant for Linux kernel regression
-tracking. See link in footer if these mails annoy you.]
 
-On 20.09.23 16:36, Linux regression tracking #adding (Thorsten Leemhuis)
-wrote:
-> On 14.09.23 18:26, Thomas Richard wrote:
->>
->> After switching to Linux 6.6-rc1, i met an issue during suspend to idle
->> with 8250_omap driver (no_console_suspend is set).
->> The driver fails to suspend the uart port used for the serial console so
->> the suspend sequence is stopped.
 
-#regzbot fix: 560706eff7c8e5621b0
-#regzbot ignore-activity
+On 2023-10-16 10:46, m.brock@vanmierlo.com wrote:
+> Florian Eckert wrote on 2023-10-16 09:13:
+>> Has complained about the following construct:
+> 
+> Who is "Has" or who/what has complained?
 
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
---
-Everything you wanna know about Linux kernel regression tracking:
-https://linux-regtracking.leemhuis.info/about/#tldr
-That page also explains what to do if mails like this annoy you.
+The test robot who does not agree with my change in the v1 patchset.
+
+>> drivers/leds/trigger/ledtrig-tty.c:362:3: error: a label can only be
+>> part of a statement and a declaration is not a statement
+>> 
+>> Hence move the variable definition to the beginning of the function.
+>> 
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Closes:
+>> https://lore.kernel.org/oe-kbuild-all/202309270440.IJB24Xap-lkp@intel.com/
+>> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
+>> ---
+>> @@ -124,8 +125,6 @@ static void ledtrig_tty_work(struct work_struct 
+>> *work)
+>> 
+>>  	if (icount.rx != trigger_data->rx ||
+>>  	    icount.tx != trigger_data->tx) {
+>> -		unsigned long interval = LEDTRIG_TTY_INTERVAL;
+>> -
+> 
+> Is this kernel test robot broken?
+
+The test robot does nothing wrong.
+
+> I see no label definition here.
+> And this variable declaration is at the start of a new block which does 
+> not
+> even require C99 support.
+
+I made change in patch set v1, that moves the definition of the variable
+`interval` into the switch case statement.
+https://lore.kernel.org/linux-leds/20230926093607.59536-3-fe@dev.tdt.de/
+The robot complained about this.
+
+So I decided to move the definition of the variable 'interval' to 
+function
+head to make the test robot happy in the commit. So this commit prepares
+the code for my change.
+
+If it is more common, I can merge this patch [1] into the next patch [2]
+of this set.
+
+[1] 
+https://lore.kernel.org/linux-leds/20231016071332.597654-4-fe@dev.tdt.de/
+[2] 
+https://lore.kernel.org/linux-leds/20231016071332.597654-5-fe@dev.tdt.de/
+
+
+Florian
