@@ -2,97 +2,139 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43E60CDB465
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 07:13:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2991C46CA1
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 07:13:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbjJPHNo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Oct 2023 03:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54050 "EHLO
+        id S231881AbjJPHNz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Oct 2023 03:13:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231975AbjJPHNn (ORCPT
+        with ESMTP id S231974AbjJPHNy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Oct 2023 03:13:43 -0400
-Received: from mxout70.expurgate.net (mxout70.expurgate.net [91.198.224.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318B5EE
-        for <linux-serial@vger.kernel.org>; Mon, 16 Oct 2023 00:13:41 -0700 (PDT)
+        Mon, 16 Oct 2023 03:13:54 -0400
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC7FED;
+        Mon, 16 Oct 2023 00:13:50 -0700 (PDT)
 Received: from [127.0.0.1] (helo=localhost)
         by relay.expurgate.net with smtp (Exim 4.92)
         (envelope-from <prvs=966793e2c5=fe@dev.tdt.de>)
-        id 1qsHnH-008yyG-8e
-        for linux-serial@vger.kernel.org; Mon, 16 Oct 2023 09:13:39 +0200
+        id 1qsHnI-007WDA-2f; Mon, 16 Oct 2023 09:13:40 +0200
 Received: from [195.243.126.94] (helo=securemail.tdt.de)
         by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <fe@dev.tdt.de>)
-        id 1qsHnG-005bbR-SV
-        for linux-serial@vger.kernel.org; Mon, 16 Oct 2023 09:13:38 +0200
+        id 1qsHnH-002Nht-5h; Mon, 16 Oct 2023 09:13:39 +0200
 Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id A1640240053
-        for <linux-serial@vger.kernel.org>; Mon, 16 Oct 2023 09:13:38 +0200 (CEST)
+        by securemail.tdt.de (Postfix) with ESMTP id C7A66240050;
+        Mon, 16 Oct 2023 09:13:38 +0200 (CEST)
 Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 5C94624004D;
+        by securemail.tdt.de (Postfix) with ESMTP id 267C1240049;
         Mon, 16 Oct 2023 09:13:38 +0200 (CEST)
 Received: from localhost.localdomain (unknown [10.2.3.40])
-        by mail.dev.tdt.de (Postfix) with ESMTPSA id 27CD12BE05;
-        Mon, 16 Oct 2023 09:13:38 +0200 (CEST)
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id DE03E2BD62;
+        Mon, 16 Oct 2023 09:13:37 +0200 (CEST)
 From:   Florian Eckert <fe@dev.tdt.de>
 To:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
         kabel@kernel.org, u.kleine-koenig@pengutronix.de
 Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-leds@vger.kernel.org, kernel test robot <lkp@intel.com>
-Subject: [PATCH v3 3/4] trigger: ledtrig-tty: move variable definition to the top
-Date:   Mon, 16 Oct 2023 09:13:31 +0200
-Message-ID: <20231016071332.597654-4-fe@dev.tdt.de>
+        linux-leds@vger.kernel.org
+Subject: [PATCH v3 2/4] tty: add new helper function tty_get_tiocm
+Date:   Mon, 16 Oct 2023 09:13:30 +0200
+Message-ID: <20231016071332.597654-3-fe@dev.tdt.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20231016071332.597654-1-fe@dev.tdt.de>
 References: <20231016071332.597654-1-fe@dev.tdt.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+X-purgate-ID: 151534::1697440419-056076AA-42FACB7D/0/0
 X-purgate-type: clean
 X-purgate: clean
-X-purgate-ID: 151534::1697440419-FA0CB49D-00961E3F/0/0
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Has complained about the following construct:
-drivers/leds/trigger/ledtrig-tty.c:362:3: error: a label can only be
-part of a statement and a declaration is not a statement
+The struct 'tty_struct' has a callback to read the status flags of the tt=
+y
+if the tty driver provides them. So fare, the data is transferred directl=
+y
+to userspace with the function 'tty_tiocmget'. This function cannot be
+used to evaluate the status line of the tty interface in the ledtrig-tty
+trigger. To make this possible, a new function must be added that does
+not immediately pass the data on to userspace.
 
-Hence move the variable definition to the beginning of the function.
+The new function 'tty_get_tiocm' only returns the status register.
+This information can then be processed further in the ledtrig-tty
+trigger.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Closes: https://lore.kernel.org/oe-kbuild-all/202309270440.IJB24Xap-lkp@i=
-ntel.com/
 Signed-off-by: Florian Eckert <fe@dev.tdt.de>
 ---
- drivers/leds/trigger/ledtrig-tty.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/tty/tty_io.c | 28 ++++++++++++++++++++++------
+ include/linux/tty.h  |  1 +
+ 2 files changed, 23 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/leds/trigger/ledtrig-tty.c b/drivers/leds/trigger/le=
-dtrig-tty.c
-index 8ae0d2d284af..1c6fadf0b856 100644
---- a/drivers/leds/trigger/ledtrig-tty.c
-+++ b/drivers/leds/trigger/ledtrig-tty.c
-@@ -82,6 +82,7 @@ static void ledtrig_tty_work(struct work_struct *work)
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 3299a5d50727..a12f63854ac4 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -2494,6 +2494,24 @@ static int send_break(struct tty_struct *tty, unsi=
+gned int duration)
+ 	return retval;
+ }
+=20
++/**
++ * tty_get_tiocm - get tiocm status register
++ * @tty: tty device
++ *
++ * Obtain the modem status bits from the tty driver if the feature
++ * is supported.
++ */
++int tty_get_tiocm(struct tty_struct *tty)
++{
++	int retval =3D -ENOTTY;
++
++	if (tty->ops->tiocmget)
++		retval =3D tty->ops->tiocmget(tty);
++
++	return retval;
++}
++EXPORT_SYMBOL_GPL(tty_get_tiocm);
++
+ /**
+  * tty_tiocmget - get modem status
+  * @tty: tty device
+@@ -2506,14 +2524,12 @@ static int send_break(struct tty_struct *tty, uns=
+igned int duration)
+  */
+ static int tty_tiocmget(struct tty_struct *tty, int __user *p)
  {
- 	struct ledtrig_tty_data *trigger_data =3D
- 		container_of(work, struct ledtrig_tty_data, dwork.work);
-+	unsigned long interval =3D LEDTRIG_TTY_INTERVAL;
- 	struct serial_icounter_struct icount;
- 	int ret;
+-	int retval =3D -ENOTTY;
++	int retval;
 =20
-@@ -124,8 +125,6 @@ static void ledtrig_tty_work(struct work_struct *work=
-)
+-	if (tty->ops->tiocmget) {
+-		retval =3D tty->ops->tiocmget(tty);
++	retval =3D tty_get_tiocm(tty);
++	if (retval >=3D 0)
++		retval =3D put_user(retval, p);
 =20
- 	if (icount.rx !=3D trigger_data->rx ||
- 	    icount.tx !=3D trigger_data->tx) {
--		unsigned long interval =3D LEDTRIG_TTY_INTERVAL;
--
- 		led_blink_set_oneshot(trigger_data->led_cdev, &interval,
- 				      &interval, 0);
+-		if (retval >=3D 0)
+-			retval =3D put_user(retval, p);
+-	}
+ 	return retval;
+ }
 =20
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index f002d0f25db7..8e4d0b3b12b7 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -421,6 +421,7 @@ int tty_unthrottle_safe(struct tty_struct *tty);
+ int tty_do_resize(struct tty_struct *tty, struct winsize *ws);
+ int tty_get_icount(struct tty_struct *tty,
+ 		struct serial_icounter_struct *icount);
++int tty_get_tiocm(struct tty_struct *tty);
+ int is_current_pgrp_orphaned(void);
+ void tty_hangup(struct tty_struct *tty);
+ void tty_vhangup(struct tty_struct *tty);
 --=20
 2.30.2
 
