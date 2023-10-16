@@ -2,135 +2,165 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A01A4CDB465
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 10:04:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0B0CDB465
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 10:05:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230152AbjJPKEs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Oct 2023 06:04:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58688 "EHLO
+        id S232100AbjJPKFy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Oct 2023 06:05:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbjJPKEr (ORCPT
+        with ESMTP id S230056AbjJPKFw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Oct 2023 06:04:47 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2138.outbound.protection.outlook.com [40.107.21.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13425AC;
-        Mon, 16 Oct 2023 03:04:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cSvsKEQczeJubuXyJt1CrQ6ZSOOaok8tJ6iWuwP5b7ggZfyLSTAb1CExtbqNzQpWr4e6hdbNRGjKr2K6olHezIkZqmQlZClkk33vWHOXHz33MPaiZOYdCU6HcECxBGm5IQGZHR11UhdplddSr1OHjhph7HS2fqmC1gST/LuEdd23pHohQKbNuP5UaRBBvKxvB/pXVHsOvxj50jsq3N5HDsSu/Zpd8MA8/tUHI0VZ9rYfOA95X6wZRvBuJuyucN6atCbwSNr4FgzZiTIH1n54buAIDBgH+6ZWalYBEqKHFdGmnLzyAL8ZFBiElBcoPSywn4JWTjbZ7acGRSGAFhHD5g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vbMeSWYm8KPCQwawSSov3A8QflecMkqssxcRITSehNo=;
- b=dcWQkoVJPyTeK1p1Ax7+HA4Sfzqm6oIJShMmg4FCuuJI8YCSX9ubqhNjvh+C2EZt279gt/2fQ006iIvMjvTYnOCe9Kjphu7NBwO8jHhJviZyUX+G1pylIl6fvzw/JoYqftsy2bqINHnWNClhdetQIdldkRwHJjpKY3x7Y3R7xZhyQ7uMBmQEkwwkt9h5I/+mWRb6BaCSpR+L2Xg4WCqETOlH/fNZUxxztRcqsx4pFW1XEvPBsA0pE2QJLocwuUTTb4GugC/iEk6FMV4IQd1cKMr0ZkMy+NrjUheHX10hsEemIiv0EQEywwb4kHSoNx6zZt91aHaH4u29v+k+nFXHeA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
- dkim=pass header.d=prevas.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vbMeSWYm8KPCQwawSSov3A8QflecMkqssxcRITSehNo=;
- b=HSj0/DvVryGw0YbxtfyvWxr+NGdeRQ64bzLIbZ0rzdnlYtKqX6Ca3/sHqTPOKAbkV6kCAgLXuxIuKD2nKh5Dgfk+YHgNAMoe19M/GezFNtgBV1OYQPq+kcEXeLkH3PlaKCA/ioH6qD9/3nXaC3ts/d/jPl4ayy0mFdv9Lr4Bw0Q=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=prevas.dk;
-Received: from PA4PR10MB4576.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:10a::24)
- by DB4PR10MB6143.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:389::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.35; Mon, 16 Oct
- 2023 10:04:40 +0000
-Received: from PA4PR10MB4576.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::1315:9ecc:6928:f486]) by PA4PR10MB4576.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::1315:9ecc:6928:f486%4]) with mapi id 15.20.6863.046; Mon, 16 Oct 2023
- 10:04:40 +0000
-Date:   Mon, 16 Oct 2023 12:04:31 +0200
-From:   Emil Kronborg <emkan@prevas.dk>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     linux@armlinux.org.uk, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: amba-pl011: set fwnode from parent device
-Message-ID: <imjcptmiirsbevdbk6lpbdcdmodaic3bfaj6hkrh6nqvkrrjni@6u6g7ko6ekd5>
-References: <20231013154742.76836-1-emkan@prevas.dk>
- <CAGETcx-MP7XNUa0uObFpEDBiwjaGgTGvKu6Q-RXkrh0+hvXZvQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAGETcx-MP7XNUa0uObFpEDBiwjaGgTGvKu6Q-RXkrh0+hvXZvQ@mail.gmail.com>
-X-ClientProxiedBy: MM0P280CA0096.SWEP280.PROD.OUTLOOK.COM
- (2603:10a6:190:9::31) To PA4PR10MB4576.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:102:10a::24)
+        Mon, 16 Oct 2023 06:05:52 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 197EFAC;
+        Mon, 16 Oct 2023 03:05:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1697450748; x=1728986748;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=0Sr8jONeB/iwXa7yLiDNjBaWW6JJ+LVwSwU2BiigDKM=;
+  b=BznR9sOeygkGhQcCBbca03ald54lpFvmkM78paGW6Ikf1VP8UMiPcSgk
+   TJ1O1pAhQvsz4lsJQrQC5BcQFTguJWtRcrImF7mgeN4wG8zlvu54mRs2P
+   40fFE1oZj0jmNrDDCH+CivhHlZl+9INrJ7SFIJeDC9DRs2yM4sIHdyes+
+   a9cXE+7/pCNUDgm0onP0uqstCLx28MwkLRkzwHYqpWmdzPTCjt/bvo8dT
+   CrJzP+BEQSrcGWYkKoQ1gwFTs/IlvD34hetuxBIOc/FZcbr9shGDzYiYm
+   6YVj/4qkBRTyD1/lVhRvjzITDcAGUv9OOBCU5JR9sef7CeP36SD0eqpgo
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="365748639"
+X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
+   d="scan'208";a="365748639"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 03:05:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="846338695"
+X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
+   d="scan'208";a="846338695"
+Received: from rhaeussl-mobl.ger.corp.intel.com (HELO bhoerz-mobl1.ger.corp.intel.com) ([10.252.59.103])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 03:05:42 -0700
+Date:   Mon, 16 Oct 2023 13:05:37 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+cc:     Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v3 3/6] serial: core: fix sanitizing check for RTS
+ settings
+In-Reply-To: <b06c2fcd-02c0-464b-a7e8-4dfbf9e2befc@gmx.de>
+Message-ID: <fe473887-3aa0-9a32-53d2-a39ce5247ccb@linux.intel.com>
+References: <20231011181544.7893-1-l.sanfilippo@kunbus.com> <20231011181544.7893-4-l.sanfilippo@kunbus.com> <40e4c6b1-e217-2926-a351-bf685a5b775f@linux.intel.com> <da9a9d10-2568-4960-b9f8-9d43cbc1b295@kunbus.com> <63b62f6c-d97d-8d45-1612-968ef74b6365@linux.intel.com>
+ <b06c2fcd-02c0-464b-a7e8-4dfbf9e2befc@gmx.de>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PA4PR10MB4576:EE_|DB4PR10MB6143:EE_
-X-MS-Office365-Filtering-Correlation-Id: d53ca775-4557-4171-b8ef-08dbce2f4fb2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8GdzOI4nyTJ6B7s3bEWxOLeCO6dQbS60oNl2/2wbWP1QQ6MSQ2P2YHfVGyNXXW8by7M9D0Dgff9A17KWCY4TkZwSueqrFIYGmAa5CE0Z1iHQTV3txal5kMxNTL9TUULpVh78nrLRkcnMlefysGG16REEtThXu9Y2POaSLbKohoIBJuHYeVhVqKTGTaqKFcocIsKSsaV9v6xsyFFbRALBeMjd58abn1Mft2AR0SuvFXP4+stAi72e/sGzsIgz7b/LLj7WluaglfpF9HHxWmvQDxsftOLHRHVwOoiSI3bnZdO7Ig8pDmwx/LphqER6r55RRZ+ypicRV6UW9tiVt+GqFsUUgqoG5+Papt3OS2Krj64LgWPekbH56A6InvxfFHbMFFkWIKo1psHnn/H6LtgPs76dv+Yc2OrDDTL2pjiq5NDQYw2glI0Tjl4ZCROEpZOtPHutqC2ul2XyQ6Ezz7+zNHrU5JetqFbv5bBbKZBDJjFHYdcgm2VJd8WqfVCkbepsABBgNLhY/jfV+gWgwnhGI3s/uNWVivmC9M0NfKAPo+ms1iEpNSH5GRfqsCduHiO/IvhHGtS0DqURMezhnebAqGlTkkXhbpMM+TIpmYY9uLnuwzooEyyxIoEWO7eQ3E6s
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR10MB4576.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(7916004)(376002)(366004)(346002)(136003)(396003)(39840400004)(230922051799003)(451199024)(64100799003)(186009)(1800799009)(6486002)(38350700005)(38100700002)(6666004)(53546011)(9686003)(26005)(6512007)(52116002)(6506007)(66946007)(66556008)(66476007)(6916009)(316002)(478600001)(41300700001)(4744005)(2906002)(86362001)(5660300002)(8936002)(8676002)(4326008)(33716001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UzMrd3ZWYzVOWENsUnhQNjhVUGNrUVQ4eFVFMTdkNDZnQ2VqL2tRNmZLR3BQ?=
- =?utf-8?B?dUt0MWhJRkd1eEJTbHNqNGhrdVRyeEpIMmU2MXJ1ZktRUDNSQi9HZDloMnVG?=
- =?utf-8?B?MnM3UnFMQWxDTFpLUWoranV3bGJkWnNnNkdBTndWcHluUlZjVDYxcHBpcXZG?=
- =?utf-8?B?TUs4TTRNKzFIVm4yOHhNbmtvWjhMTThpdHZ2Yks0bVVQLzFNdVVqcmNTckx2?=
- =?utf-8?B?V3NlQWpnZ0NXTTNraFAvM3NSeU9DQnZFKzlWd2l6SUNoSUhKSE5QUmJCNzA4?=
- =?utf-8?B?cGJ6eHpKUGZxa0lWcTJXNU15bTdGQmRsWVMyTzBmY3BsUHBSVkRKTW1LSFFZ?=
- =?utf-8?B?S0dSNDFvem9Sc1QzN2J4NncwdUwvd3FNS3J3RDB6c2huSjZPQ05GcUFLMUtL?=
- =?utf-8?B?c3I3SWNTR2JPaDlUdkNFTE9TcTFJeWxQQ0tWSnkvMnZNeXM5Y0ZyTHVjN0oz?=
- =?utf-8?B?SjJpd2I5SlIvMVQ4VVpsRU5RRksxWC85K3hqUWY1MFdqanltaWV6eEU3cW5O?=
- =?utf-8?B?ZHdWcUlGNGV1QWFtZEhBR1F4L1ZndHcwZE1Fem1aV0J5d3BEc2tRaVVZMEFU?=
- =?utf-8?B?dENCQitwd2FqVWpSVW5IWDhNTklzTGp6R1Z6MXVzK01NRU54aVV6THV5bWNL?=
- =?utf-8?B?enVhVHNVRFdPYmxiRm1neUlFVHBRa0wzRGM4RkhaRzAxWFhMWXBVY1VUcVZh?=
- =?utf-8?B?Qk4xclJhOEUydlNTblM1QzdHN2VielpqTWthYm1PcjNoeVA1WmMrSlJDU3Vp?=
- =?utf-8?B?cDNhdWpWRTRvRlFLZmR0bUxYTUl6VTY5S3VJWkJaZUwwWldHSnBwclhJVWFj?=
- =?utf-8?B?MW04SDhFQ0FjRkVEdU5pVXhWUTlhejJRMTBLTHFtMWdySk01UTRsRGdvT0hM?=
- =?utf-8?B?dnR2V3hsMTZZdW1DNG15emdXTWdQU1RPVDBvWC9mUlNjRVdIYlIyK2NRMEFX?=
- =?utf-8?B?L2hKRXRzN1B2WFljbjZaWTcrWHBpVnp1RmNZZjdsK2FIWGcvMmI0ekkwbmFB?=
- =?utf-8?B?eCtGdGNBT1JBM2F2a2xLM2E1TG9pdnpDaG5TYjlWV2NTZ0F4UXpCUFovRmV5?=
- =?utf-8?B?VU9ycElJNitTRDRnbDVPR0wwNmtnVE1JVHQ3TmtLMjh6WkxTV0IyL3U1YjNH?=
- =?utf-8?B?NllOM0x5Q29kUGZKVG5sQVppdFRwdjhsblJnOWNzcnN5QmlULy9mSU5pbWEv?=
- =?utf-8?B?TnFZaU9HenlNblN0bmVBdXpaWjYxU1lOUEpHOElPdytWVyt6VWZiOGlXSDJV?=
- =?utf-8?B?ZEE3RWp4OHlPeHFMdytRb3lPZDYwZG5aaTdFZDRaVU4vbFFNRXI4WDJuRDRk?=
- =?utf-8?B?MDNMSUZ2V3Q0a0NmcGErcVc1OGJjNWtrcmk4ZEdpRzBUeEhDWGRITlgzeWph?=
- =?utf-8?B?cUtmQUY2S1pTbHluZmFITmJiUFFhVjM5QytnVjQyak9pNDJ3dVpJRXVseFRZ?=
- =?utf-8?B?TUFLeTZYenVQUS8vT0FTWE0vYWR3ZGdvYkpzWExhZGJlOE9acFRmanFack4z?=
- =?utf-8?B?Y3ZFa1VraDhJeTJLUzBJYzdsRDhqdWd0MmhaN0gydml6Nkx3RmV5T0t4Q1Ir?=
- =?utf-8?B?SXYrQlo1NlFMai9jQmMwcXo1Z0RJVVNPYXAzaGVQNWgzZ2s1bmFVUDZ2a2J4?=
- =?utf-8?B?QW5FWFBURkxORU1tb1V6V1FpbHNqVGg1WG9HWjU3bWdmRWNMeHdLZnp1Q0V5?=
- =?utf-8?B?OUlFYVJVM2lzbERHWjFETlZzY25GbnVSMWJ3QmMrZzNUdXZRWkxRa0MxTVhU?=
- =?utf-8?B?SzRXV0pDUm16ZGpBNU12Q1NIZitPY1NHbUhISVFtYitESkJlQTdVbC9UT3l3?=
- =?utf-8?B?WFhyL09SWXQ2MnoyVThoYW15VEVES0F4aThjQ2VJZ2RMc0RpaEQwbFluS0FG?=
- =?utf-8?B?NXlGYjZZRlVLamtySkw0QSsvM0RyNmo1M1FHY0FISytSQW1HenBlWkVEczlS?=
- =?utf-8?B?T2ZRbitQdStrMnRGVE8rTHFWWVF2SjRFVHNFT1ZBaEVvQWt4ZGFybk4vdDNl?=
- =?utf-8?B?OFhRYnRlT0o0M1Nubk9kb1F6M0tUUSt2VFo1eVE1bVMzbG1ZY1F5b29Fa0Y3?=
- =?utf-8?B?a3h1R2hoZUVoN1IzTHgrbWJuR1pqcWtFY0Z5MTRORkZZeWFZZ0xDM28rNTFC?=
- =?utf-8?B?WEZiWFJDRmtXOTB0UEdqVDM3VWRtdjZtZHUzMHNxWWx4YVAvVlZTOFZteitX?=
- =?utf-8?B?d3c9PQ==?=
-X-OriginatorOrg: prevas.dk
-X-MS-Exchange-CrossTenant-Network-Message-Id: d53ca775-4557-4171-b8ef-08dbce2f4fb2
-X-MS-Exchange-CrossTenant-AuthSource: PA4PR10MB4576.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2023 10:04:40.3387
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DsddBWLV7W67D8XFLjV/1BtBqZYJCr0uvoJQ3US2HmyhLAbVr9KnMONCDCmjskFc1H6MPRitr1dKODJsw+Bdag==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB4PR10MB6143
+Content-Type: multipart/mixed; boundary="8323329-1860581932-1697450746=:1986"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 13, 2023 at 14:28 -0700, Saravana Kannan wrote:
->
-> On Fri, Oct 13, 2023 at 8:48 AM Emil Kronborg Andersen <emkan@prevas.dk> wrote:
-> Can we do this at a tty/serial framework level instead of just this
-> driver? Also, this is the latest kernel? I feel like I fixed exactly
-> this (but at a framework level) several months ago.
-> 
-> -Saravana
-> 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-You are right about about having fixed it. I mistakenly mixed up two
-boards and thus tested my patch with a wrong kernel version. I apologize
-for that. Commit 1a5ecc73b2bf ("serdev: Set fwnode for serdev devices")
-resolved the issue at tty/serial framework level.
+--8323329-1860581932-1697450746=:1986
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+
+On Sat, 14 Oct 2023, Lino Sanfilippo wrote:
+> On 13.10.23 12:24, Ilpo Järvinen wrote:
+> > On Thu, 12 Oct 2023, Lino Sanfilippo wrote:
+> >> On 12.10.23 15:10, Ilpo Järvinen wrote:
+> >>> On Wed, 11 Oct 2023, Lino Sanfilippo wrote:
+> >>>
+> >>>> Among other things uart_sanitize_serial_rs485() tests the sanity of the RTS
+> >>>> settings in a RS485 configuration that has been passed by userspace.
+> >>>> If RTS-on-send and RTS-after-send are both set or unset the configuration
+> >>>> is adjusted and RTS-after-send is disabled and RTS-on-send enabled.
+> >>>>
+> >>>> This however makes only sense if both RTS modes are actually supported by
+> >>>> the driver.
+> >>>>
+> >>>> With commit be2e2cb1d281 ("serial: Sanitize rs485_struct") the code does
+> >>>> take the driver support into account but only checks if one of both RTS
+> >>>> modes are supported. This may lead to the errorneous result of RTS-on-send
+> >>>> being set even if only RTS-after-send is supported.
+> >>>>
+> >>>> Fix this by changing the implemented logic: First clear all unsupported
+> >>>> flags in the RS485 configuration, then adjust an invalid RTS setting by
+> >>>> taking into account which RTS mode is supported.
+> >>>>
+> >>>> Cc: stable@vger.kernel.org
+> >>>> Fixes: be2e2cb1d281 ("serial: Sanitize rs485_struct")
+> >>>> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> >>>> ---
+> >>>>  drivers/tty/serial/serial_core.c | 28 ++++++++++++++++++----------
+> >>>>  1 file changed, 18 insertions(+), 10 deletions(-)
+> >>>>
+> >>>> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> >>>> index 697c36dc7ec8..f4feebf8200f 100644
+> >>>> --- a/drivers/tty/serial/serial_core.c
+> >>>> +++ b/drivers/tty/serial/serial_core.c
+> >>>> @@ -1370,19 +1370,27 @@ static void uart_sanitize_serial_rs485(struct uart_port *port, struct serial_rs4
+> >>>>               return;
+> >>>>       }
+> >>>>
+> >>>> +     rs485->flags &= supported_flags;
+> >>>> +
+> >>>>       /* Pick sane settings if the user hasn't */
+> >>>> -     if ((supported_flags & (SER_RS485_RTS_ON_SEND|SER_RS485_RTS_AFTER_SEND)) &&
+> >>>> -         !(rs485->flags & SER_RS485_RTS_ON_SEND) ==
+> >>>> +     if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
+> >>>>           !(rs485->flags & SER_RS485_RTS_AFTER_SEND)) {
+> >>>> -             dev_warn_ratelimited(port->dev,
+> >>>> -                     "%s (%d): invalid RTS setting, using RTS_ON_SEND instead\n",
+> >>>> -                     port->name, port->line);
+> >>>> -             rs485->flags |= SER_RS485_RTS_ON_SEND;
+> >>>> -             rs485->flags &= ~SER_RS485_RTS_AFTER_SEND;
+> >>>> -             supported_flags |= SER_RS485_RTS_ON_SEND|SER_RS485_RTS_AFTER_SEND;
+> >>>> -     }
+> >>>> +             if (supported_flags & SER_RS485_RTS_ON_SEND) {
+> >>>> +                     rs485->flags |= SER_RS485_RTS_ON_SEND;
+> >>>> +                     rs485->flags &= ~SER_RS485_RTS_AFTER_SEND;
+> >>>>
+> >>>> -     rs485->flags &= supported_flags;
+> >>>> +                     dev_warn_ratelimited(port->dev,
+> >>>> +                             "%s (%d): invalid RTS setting, using RTS_ON_SEND instead\n",
+> >>>> +                             port->name, port->line);
+> >>>> +             } else {
+> >>>> +                     rs485->flags |= SER_RS485_RTS_AFTER_SEND;
+> >>>> +                     rs485->flags &= ~SER_RS485_RTS_ON_SEND;
+> >>>
+> >>> So if neither of the flags is supported, what will happen? You might want
+> >>> add if after that else?
+> >>>
+> >>
+> >> I would consider this a bug in the driver, as at least one of both modes
+> >> has to be supported. If the driver does not have at least one of both flags
+> >> set in rs485_supported.flags we could print a warning though. Would you prefer that?
+> >
+> > 8250_exar.c needs to fixed then?
+> I was taking these as things one can
+> > "configure" even if when there's support only for a one of them there's
+> > not that much to configure. As there was neither in 8250_exar's code, I
+> > didn't add either flag.
+> 
+> > But I suppose your interpretation of those flag makes more sense.
+> 
+> IMHO this is consistent with what we have in uart_get_rs485_mode(). This function
+> ensures that we have at least one RTS mode set (with default to RTS_ON_SEND). So
+> concerning 8250_exar.c, I think it should be fixed (havent noticed the missing
+> RTS mode though until you mentioned it). Would you like to provide a fix for this
+> or shall I include one into the next version of this series?
+
+Just create that fix yourself thank you and include it into your series, 
+I'm busy with other stuff currently.
+
+
+-- 
+ i.
+
+--8323329-1860581932-1697450746=:1986--
