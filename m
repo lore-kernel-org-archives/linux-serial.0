@@ -2,55 +2,52 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D79C9CDB465
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 05:35:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9615BCDB465
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 05:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231255AbjJPFfQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Oct 2023 01:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45906 "EHLO
+        id S229680AbjJPFht (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Oct 2023 01:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231783AbjJPFfO (ORCPT
+        with ESMTP id S230479AbjJPFhs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Oct 2023 01:35:14 -0400
+        Mon, 16 Oct 2023 01:37:48 -0400
 Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B16AE120;
-        Sun, 15 Oct 2023 22:35:05 -0700 (PDT)
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-405497850dbso41234255e9.0;
-        Sun, 15 Oct 2023 22:35:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2185E6;
+        Sun, 15 Oct 2023 22:37:46 -0700 (PDT)
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-40535597f01so40720505e9.3;
+        Sun, 15 Oct 2023 22:37:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697434504; x=1698039304;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1697434665; x=1698039465;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cOvvTQQy+JfGRbCEkEtFd8cZk3x1MPjZLKQ8b9QGiKU=;
-        b=d8pASWNRWlheRT/OCvXdBIC3LJQoEiBKaaRv8pURKL3lQg2g4GKjLQkQg4dbzfQTnL
-         j7EoHln3Er1wOQwbvjVEKRWpYp3YJJDo9Rv3E7v05QZqbSahRlRkiagy3tBvobbwNCRU
-         7a+4X2FHN3g6dgzDULM58roEbv66kQkq7xR579YfFzoZvWMQIhNMVkEThWHoOJMl9N2y
-         CayQWpBlsKHyw5NpPW//MiY8B9SEnoj7Mha4WRxSfXmTrttFmfr/rQZ5lsZqQdYlQI8I
-         PmKozCOMSMBLFiHo2FXK39B96ryy0aGdvggEoHx6s5HezOuP5aGK0RsEh9Z8FskKuEqK
-         UT2w==
-X-Gm-Message-State: AOJu0YxYMfmoHf/957hE2kww/LsvsxT2/Pp6QDUB1UINGeygHLu5ofM8
-        cLZzhbgXkuDa1DsPR4Al4chhXsnJEqk=
-X-Google-Smtp-Source: AGHT+IFPZe+piZQPNHSWAA8zt7wf5lSfRigoQiafEWSLJwRkAESEX8SvLMO4dQgrZTTnxw5TiwCvnA==
-X-Received: by 2002:a05:600c:2197:b0:405:514d:eb0e with SMTP id e23-20020a05600c219700b00405514deb0emr28704305wme.19.1697434503719;
-        Sun, 15 Oct 2023 22:35:03 -0700 (PDT)
+        bh=NoRwRd2FOoeoTUZJRPmm8sNMHLwLmY132MC+3WaitWQ=;
+        b=d/zzjkQKG9LUXGbfAYCu8ShSL6zh5utI2xAc0IxpKSL7+Eu7MnPprcmYg9pGbPPccu
+         R+IVh24twwLAga3J0tVKcG0oJ9eHrghk1hA4hBNKg0c9yHvIWj+o1fZdVRwOkrkzpvhX
+         KDWcASDFXrJCaDFWWBZ9X+iKLtacE1X4zGWRL6040BzOA+Av2F6kIkbtgjWGPX/5oQNV
+         3NmdWiqYCkhhaNy5DuDA1DIfi/rxipUW4lPhFIf46NTBhqngrKK/3+PqQvnr8PLdKbaF
+         V8vb0UEs1CeN4MCFSibqwz2saBznT0HvNVgdDkFIvlfpbBQvE/RtFHoFoGNEBKHongG7
+         rzkA==
+X-Gm-Message-State: AOJu0YwbZlNFm9Wy/rm2aG/Hc+kffMBwexd7n37BuwEtNV23jlJj4oUD
+        WY6x6JBQU/GU9a2CV2RMy0uNhFKqAEw=
+X-Google-Smtp-Source: AGHT+IHiLs2U7CjpiL1gWL1T4G2iDexcNUmHsW3QMJBvCdbNGPbYgVWLTUMbRusJTpzxtFgY9S1K+w==
+X-Received: by 2002:a7b:c456:0:b0:405:3e5e:6698 with SMTP id l22-20020a7bc456000000b004053e5e6698mr30606720wmi.27.1697434665030;
+        Sun, 15 Oct 2023 22:37:45 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id t14-20020a05600c198e00b00405c7591b09sm6161011wmq.35.2023.10.15.22.35.03
+        by smtp.gmail.com with ESMTPSA id l11-20020a05600c1d0b00b00401e32b25adsm6209143wms.4.2023.10.15.22.37.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 15 Oct 2023 22:35:03 -0700 (PDT)
-Message-ID: <0d5f9af2-22ac-4753-8c5a-76c4d44dcc9c@kernel.org>
-Date:   Mon, 16 Oct 2023 07:35:02 +0200
+        Sun, 15 Oct 2023 22:37:44 -0700 (PDT)
+Message-ID: <17636fae-6aad-4f6f-bd16-6296e726b324@kernel.org>
+Date:   Mon, 16 Oct 2023 07:37:43 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/3] serial: core: Potential overflow of frame_time
+Subject: Re: [PATCH v3 1/7] tty: 8250: Fix IS-200 PCI ID comment
 Content-Language: en-US
-To:     Vamshi Gajjela <vamshigajjela@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        ilpo.jarvinen@linux.intel.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        manugautam@google.com, Subhash Jadavani <sjadavani@google.com>,
-        Channa Kadabi <kadabi@google.com>
-References: <20231014181333.2579530-1-vamshigajjela@google.com>
+To:     Cameron Williams <cang1@live.co.uk>, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <BBPatchesV3> <20231015171141.3309-1-cang1@live.co.uk>
+ <DU0PR02MB78991BB41F77731BF0BDD777C4D0A@DU0PR02MB7899.eurprd02.prod.outlook.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -94,75 +91,56 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20231014181333.2579530-1-vamshigajjela@google.com>
+In-Reply-To: <DU0PR02MB78991BB41F77731BF0BDD777C4D0A@DU0PR02MB7899.eurprd02.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 14. 10. 23, 20:13, Vamshi Gajjela wrote:
-> From: VAMSHI GAJJELA <vamshigajjela@google.com>
-> 
-> uart_update_timeout() sets a u64 value to an unsigned int frame_time.
-> While it can be cast to u32 before assignment, there's a specific case
-> where frame_time is cast to u64. Since frame_time consistently
-> participates in u64 arithmetic, its data type is converted to u64 to
-> eliminate the need for explicit casting.
+On 15. 10. 23, 19:10, Cameron Williams wrote:
+> Fix the PCI comment for the IS-200 card. The PCI ID for the IS-200
+> is 0x0d80, and the definition used (PCI_DEVICE_ID_INTASHIELD_IS200)
+> is indeed 0x0d80, clarify that by fixing the comment as its
+> neighbouring cards are all at 0x0020 offsets.
 
-And make the divisions by the order of magnutude slower for no good 
-reason? (Hint: have you looked what DIV64_U64_ROUND_UP() looks like on 
-32bit yet?)
+The real question is why to maintain a comment here at all? I suggest 
+dropping them both instead.
 
-Unless you provide a reason it can overflow in real (in fact you spell 
-the opposite in the text above):
-NACKED-by: Jiri Slaby <jirislaby@kernel.org>
-
-> Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
+> Signed-off-by: Cameron Williams <cang1@live.co.uk>
 > ---
-> v2:
-> - use DIV64_U64_ROUND_UP with frame_time
+> v2 - v3:
+> Clarify commit message with better explanation of the change.
+> Re-submit patch series using git send-email to make threading work.
 > 
->   drivers/tty/serial/8250/8250_port.c | 2 +-
->   include/linux/serial_core.h         | 4 ++--
->   2 files changed, 3 insertions(+), 3 deletions(-)
+> v1 - v2:
+> This is a resubmission series for the patch series below. That series
+> was lots of changes sent to lots of maintainers, this series is just for
+> the tty/serial/8250 subsystem.
 > 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 141627370aab..d1bf794498c4 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1510,7 +1510,7 @@ static inline void __stop_tx(struct uart_8250_port *p)
->   			 * rather than after it is fully sent.
->   			 * Roughly estimate 1 extra bit here with / 7.
->   			 */
-> -			stop_delay = p->port.frame_time + DIV_ROUND_UP(p->port.frame_time, 7);
-> +			stop_delay = p->port.frame_time + DIV64_U64_ROUND_UP(p->port.frame_time, 7);
->   		}
->   
->   		__stop_tx_rs485(p, stop_delay);
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index bb6f073bc159..b128513b009a 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -558,7 +558,7 @@ struct uart_port {
->   
->   	bool			hw_stopped;		/* sw-assisted CTS flow state */
->   	unsigned int		mctrl;			/* current modem ctrl settings */
-> -	unsigned int		frame_time;		/* frame timing in ns */
-> +	unsigned long		frame_time;		/* frame timing in ns */
->   	unsigned int		type;			/* port type */
->   	const struct uart_ops	*ops;
->   	unsigned int		custom_divisor;
-> @@ -764,7 +764,7 @@ unsigned int uart_get_divisor(struct uart_port *port, unsigned int baud);
->    */
->   static inline unsigned long uart_fifo_timeout(struct uart_port *port)
->   {
-> -	u64 fifo_timeout = (u64)READ_ONCE(port->frame_time) * port->fifosize;
-> +	u64 fifo_timeout = READ_ONCE(port->frame_time) * port->fifosize;
->   
->   	/* Add .02 seconds of slop */
->   	fifo_timeout += 20 * NSEC_PER_MSEC;
+> [1] https://lore.kernel.org/all/DU0PR02MB789950E64D808DB57E9D7312C4F8A@DU0PR02MB7899.eurprd02.prod.outlook.com/
+> [2] https://lore.kernel.org/all/DU0PR02MB7899DE53DFC900EFB50E53F2C4F8A@DU0PR02MB7899.eurprd02.prod.outlook.com/
+> [3] https://lore.kernel.org/all/DU0PR02MB7899033E7E81EAF3694BC20AC4F8A@DU0PR02MB7899.eurprd02.prod.outlook.com/
+> [4] https://lore.kernel.org/all/DU0PR02MB7899EABA8C3DCAC94DCC79D4C4F8A@DU0PR02MB7899.eurprd02.prod.outlook.com/
+> 
+>   drivers/tty/serial/8250/8250_pci.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index 62a9bd30b4db..ecb4e9acc70d 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -4917,7 +4917,7 @@ static const struct pci_device_id serial_pci_tbl[] = {
+>   	 * IntaShield IS-200
+>   	 */
+>   	{	PCI_VENDOR_ID_INTASHIELD, PCI_DEVICE_ID_INTASHIELD_IS200,
+> -		PCI_ANY_ID, PCI_ANY_ID, 0, 0,	/* 135a.0811 */
+> +		PCI_ANY_ID, PCI_ANY_ID, 0, 0,	/* 135a.0d80 */
+>   		pbn_b2_2_115200 },
+>   	/*
+>   	 * IntaShield IS-400
 
+thanks,
 -- 
 js
 suse labs
