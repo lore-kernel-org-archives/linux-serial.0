@@ -2,103 +2,181 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D62EC41513
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 11:44:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC10CDB484
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 12:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230343AbjJPLol (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Oct 2023 07:44:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43904 "EHLO
+        id S232370AbjJPMDd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Oct 2023 08:03:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbjJPLok (ORCPT
+        with ESMTP id S229501AbjJPMDc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Oct 2023 07:44:40 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD6C2DC;
-        Mon, 16 Oct 2023 04:44:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697456678; x=1728992678;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=jhmZOMCgOQZFyiS8nyvND4T+5urSIoQvwa9vLe3IUqo=;
-  b=ITK+cr033ixgnoaWjUIiFD2GF+RVGGzy6kUoWjqzStcvk4eU6wwsMsGK
-   TFNE2X8LCWbiF/PBEJXJ6wjo8CtA1S7UHXRvLcZ8pnl6UHSAG2JrLSEvt
-   ktWtblu2ZAjyAhD9c3qvcYqq3abXHHUduH1tOby7nOly3fmSD9jH5eMv/
-   ATziqX9g8jmFDHeiNM5rgxqWssG/pb2J70DdSiGZ2HL4Zd8geOPxE9MJc
-   sgxBm4J5YYqp5H7osdWtK50yfptuFOfh5RGUTlHKZ47p+EiqOrG1WhwjA
-   DuJUw+QeCyAra2FbOQ1vRJNoXlmFmaYHxISMK5R6cV981fw9YX4ljxqSB
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="384377867"
-X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
-   d="scan'208";a="384377867"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 04:44:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="705588280"
-X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
-   d="scan'208";a="705588280"
-Received: from rhaeussl-mobl.ger.corp.intel.com ([10.252.59.103])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 04:44:35 -0700
-Date:   Mon, 16 Oct 2023 14:44:32 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Vamshi Gajjela <vamshigajjela@google.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        ilpo.jarvinen@linux.intel.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, manugautam@google.com,
-        Subhash Jadavani <sjadavani@google.com>,
-        Channa Kadabi <kadabi@google.com>
-Subject: Re: [PATCH 3/3] serial: core: Update uart_poll_timeout function to
- return unsigned int
-In-Reply-To: <20231014104942.856152-4-vamshigajjela@google.com>
-Message-ID: <32aae753-4a3-9c1c-9e4c-95fd2da8d4@linux.intel.com>
-References: <20231014104942.856152-1-vamshigajjela@google.com> <20231014104942.856152-4-vamshigajjela@google.com>
+        Mon, 16 Oct 2023 08:03:32 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C840AE6;
+        Mon, 16 Oct 2023 05:03:29 -0700 (PDT)
+Received: from pps.filterd (m0369458.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 39G7h1Um007323;
+        Mon, 16 Oct 2023 14:02:47 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+        message-id:date:mime-version:from:subject:to:cc:references
+        :in-reply-to:content-type:content-transfer-encoding; s=
+        selector1; bh=GEtT1vGNrN2L3qXSsS6BjSB5ruMmKsplVyDRLRyeo9Y=; b=1J
+        98O2DjQg2zsjt4f510btLN/TCgkmPUp32hr+x1F3zVIG6OoZLfC3Cbyjc01lX9nZ
+        VSS73Gn48GLdu2Pj2PdtzQCh6rQpYFXh63DE6xW8H+rsFN1zzvxxEYZ+i7yOrOVy
+        1ybut4hcc4ZKwAQt8fVMxknPbllcUus7znWDRJmPQvi1rHJqIrPWzqu6PICGgi4T
+        lPhNG+AgOBhZOVBNR4OCi7G99qM+FbpiuaYRVCuRKuOTObDyKtkIfcpdvYv/o3Zu
+        vwBRb1d9cJyQS7368vGtITam91qeWebiryaExexOXLeN9hsY/CpxbuHNjAGKdma9
+        ZC1Ob39vbFcYhfvYRXtg==
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3tr4hyn1db-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 Oct 2023 14:02:47 +0200 (MEST)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 3AB9A10005B;
+        Mon, 16 Oct 2023 14:02:45 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id A384A22F7D3;
+        Mon, 16 Oct 2023 14:02:45 +0200 (CEST)
+Received: from [10.201.20.32] (10.201.20.32) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Mon, 16 Oct
+ 2023 14:02:43 +0200
+Message-ID: <b16ed06f-66fd-457b-9610-a67ad07deb60@foss.st.com>
+Date:   Mon, 16 Oct 2023 14:02:39 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+From:   Gatien CHEVALLIER <gatien.chevallier@foss.st.com>
+Subject: Re: [PATCH v6 10/11] ARM: dts: stm32: add ETZPC as a system bus for
+ STM32MP15x boards
+To:     Rob Herring <robh@kernel.org>
+CC:     <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <alexandre.torgue@foss.st.com>, <vkoul@kernel.org>,
+        <jic23@kernel.org>, <olivier.moysan@foss.st.com>,
+        <arnaud.pouliquen@foss.st.com>, <mchehab@kernel.org>,
+        <fabrice.gasnier@foss.st.com>, <andi.shyti@kernel.org>,
+        <ulf.hansson@linaro.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <hugues.fruchet@foss.st.com>,
+        <lee@kernel.org>, <will@kernel.org>, <catalin.marinas@arm.com>,
+        <arnd@kernel.org>, <richardcochran@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>, <peng.fan@oss.nxp.com>,
+        <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
+        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-p.hy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>
+References: <20231010125719.784627-1-gatien.chevallier@foss.st.com>
+ <20231010125719.784627-11-gatien.chevallier@foss.st.com>
+ <20231010184212.GA1221641-robh@kernel.org>
+ <8f1b6915-68be-a525-c5d5-37f0983c14de@foss.st.com>
+ <20231012153012.GA698406-robh@kernel.org>
+Content-Language: en-US
+In-Reply-To: <20231012153012.GA698406-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.201.20.32]
+X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-10-16_05,2023-10-12_01,2023-05-22_02
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 14 Oct 2023, Vamshi Gajjela wrote:
+Hi Rob,
 
-> From: VAMSHI GAJJELA <vamshigajjela@google.com>
+On 10/12/23 17:30, Rob Herring wrote:
+> On Wed, Oct 11, 2023 at 10:49:58AM +0200, Gatien CHEVALLIER wrote:
+>> Hi Rob,
+>>
+>> On 10/10/23 20:42, Rob Herring wrote:
+>>> On Tue, Oct 10, 2023 at 02:57:18PM +0200, Gatien Chevallier wrote:
+>>>> ETZPC is a firewall controller. Put all peripherals filtered by the
+>>>> ETZPC as ETZPC subnodes and reference ETZPC as an
+>>>> access-control-provider.
+>>>>
+>>>> For more information on which peripheral is securable or supports MCU
+>>>> isolation, please read the STM32MP15 reference manual.
+>>>>
+>>>> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
+>>>> ---
+>>>>
+>>>> Changes in V6:
+>>>>       	- Renamed access-controller to access-controllers
+>>>>       	- Removal of access-control-provider property
+>>>>
+>>>> Changes in V5:
+>>>>       	- Renamed feature-domain* to access-control*
+>>>>
+>>>>    arch/arm/boot/dts/st/stm32mp151.dtsi  | 2756 +++++++++++++------------
+>>>>    arch/arm/boot/dts/st/stm32mp153.dtsi  |   52 +-
+>>>>    arch/arm/boot/dts/st/stm32mp15xc.dtsi |   19 +-
+>>>>    3 files changed, 1450 insertions(+), 1377 deletions(-)
+>>>
+>>> This is not reviewable. Change the indentation and any non-functional
+>>> change in one patch and then actual changes in another.
+>>
+>> Ok, I'll make it easier to read.
+>>
+>>>
+>>> This is also an ABI break. Though I'm not sure it's avoidable. All the
+>>> devices below the ETZPC node won't probe on existing kernel. A
+>>> simple-bus fallback for ETZPC node should solve that.
+>>>
+>>
+>> I had one issue when trying with a simple-bus fallback that was the
+>> drivers were probing even though the access rights aren't correct.
+>> Hence the removal of the simple-bus compatible in the STM32MP25 patch.
 > 
-> uart_fifo_timeout() returns unsigned value, hence the function
-> uart_poll_timeout has been modified to use an unsigned int type for
-> timeout values instead of a signed int. The return type of the function
-> has been changed from int to unsigned int for consistency with the type
-> of timeout values. The result of uart_fifo_timeout() is cast to u32,
-> indicating that the value is truncated.
-> 
-> Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
-> ---
->  include/linux/serial_core.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index b128513b009a..445a1ff7e502 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -773,9 +773,9 @@ static inline unsigned long uart_fifo_timeout(struct uart_port *port)
->  }
->  
->  /* Base timer interval for polling */
-> -static inline int uart_poll_timeout(struct uart_port *port)
-> +static inline unsigned int uart_poll_timeout(struct uart_port *port)
-
-This is in jiffies so why don't you return unsigned long instead also 
-here?
-
->  {
-> -	int timeout = uart_fifo_timeout(port);
-> +	unsigned int timeout = (u32)uart_fifo_timeout(port);
-
-Use unsigned long and avoid casting entirely?
->  
->  	return timeout > 6 ? (timeout / 2 - 2) : 1;
->  }
+> But it worked before, right? So the difference is you have either added
+> new devices which need setup or your firmware changed how devices are
+> setup (or not setup). Certainly can't fix the latter case. You just need
+> to be explicit about what you are doing to users.
 > 
 
--- 
- i.
+I should've specified it was during a test where I deliberately set
+incorrect rights on a peripheral and enabled its node to see if the
+firewall would allow the creation of the device.
 
+> 
+>> Even though a node is tagged with the OF_POPULATED flag when checking
+>> the access rights with the firewall controller, it seems that when
+>> simple-bus is probing, there's no check of this flag.
+> 
+> It shouldn't. Those flags are for creating the devices (or not) and
+> removing only devices of_platform_populate() created.
+> 
+
+About the "simple-bus" being a fallback, I think I understood why I saw
+that the devices were created.
+
+All devices under a node whose compatible is "simple-bus" are created
+in of_platform_device_create_pdata(), called by
+of_platform_default_populate_init() at arch_initcall level. This
+before the firewall-controller has a chance to populate it's bus.
+
+Therefore, when I flag nodes when populating the firewall-bus, the
+devices are already created. The "simple-bus" mechanism is not a
+fallback here as it precedes the driver probe.
+
+Is there a safe way to safely remove/disable a device created this way?
+Devices that are under the firewall controller (simple-bus) node
+should not be probed before it as they're child of it.
+
+Best regards,
+Gatien
+
+>> of_platform_populate() checks and sets the OF_POPULATED_BUS flag.
+>> Maybe that is my error and the firewall bus populate should set
+>> OF_POPULATED_BUS instead of OF_POPULATED. Is that correct?
+> 
+> Shrug. Off hand, I'd say probably not, but am not certain.
+> 
+> Rob
