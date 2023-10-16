@@ -2,138 +2,95 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76255CDB465
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 10:33:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89AE1CDB465
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 10:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229666AbjJPKds (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Oct 2023 06:33:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54376 "EHLO
+        id S231180AbjJPKjW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Oct 2023 06:39:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbjJPKdr (ORCPT
+        with ESMTP id S229459AbjJPKjU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Oct 2023 06:33:47 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A7483;
-        Mon, 16 Oct 2023 03:33:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697452426; x=1728988426;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=XYtfn268wDdb2xRd7dtN0hGq1egPK3I+Lq+i14Uyjos=;
-  b=SSRQRLScXZPJFYwofc0oEmn8gtyfOpPeAVBO0EKl0R/fhm0JrLzoOrEF
-   ppBxq5wbziNnjD+l+FL+EdILx70+emb4GW3Y7EVNjhF0QynVFV8aDgl74
-   WYaTLBPQRpnne9u+2KbuExsbH7JOkCYaZEI4Vd9CVOhj/sXOV6PYs/9Tu
-   y4+Wa0D65yp4BGRZUFF5P3I9oynfMUzmV9WIbGoc2rnC9leKy7OMOOA/p
-   PWCi3KQ1o7r4d+XnK3IR/b7EJTqK9TN/zdSKq4B/a4maAZ/Ux353ULN52
-   IyEiaHLF+bfKVwbsKmy3pnA/nARbBRMfy35mhWXW9bzukuaYEQ6gKjyLU
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="4106426"
-X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
-   d="scan'208";a="4106426"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 03:33:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="899446234"
-X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
-   d="scan'208";a="899446234"
-Received: from rhaeussl-mobl.ger.corp.intel.com ([10.252.59.103])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 03:31:45 -0700
-Date:   Mon, 16 Oct 2023 13:33:41 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Vamshi Gajjela <vamshigajjela@google.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, manugautam@google.com,
-        Subhash Jadavani <sjadavani@google.com>,
-        Channa Kadabi <kadabi@google.com>
-Subject: Re: [PATCH 1/3] serial: core: Potential overflow of frame_time
-In-Reply-To: <20231014104942.856152-2-vamshigajjela@google.com>
-Message-ID: <6f25e6fb-bebc-3f9b-9876-5e14d2582f6@linux.intel.com>
-References: <20231014104942.856152-1-vamshigajjela@google.com> <20231014104942.856152-2-vamshigajjela@google.com>
+        Mon, 16 Oct 2023 06:39:20 -0400
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82571C5
+        for <linux-serial@vger.kernel.org>; Mon, 16 Oct 2023 03:39:18 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qsL03-00053y-82; Mon, 16 Oct 2023 12:39:03 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qsL01-0023rC-3p; Mon, 16 Oct 2023 12:39:01 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qsL00-00H9OI-Qc; Mon, 16 Oct 2023 12:39:00 +0200
+Date:   Mon, 16 Oct 2023 12:38:56 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        LinoSanfilippo@gmx.de, lukas@wunner.de, p.rosenberger@kunbus.com
+Subject: Re: [PATCH v3 0/6] Fixes and improvements for RS485
+Message-ID: <20231016103856.d2i2nk5ubaeqpd6a@pengutronix.de>
+References: <20231011181544.7893-1-l.sanfilippo@kunbus.com>
+ <0ca84efc-c999-4077-85aa-e13fd0984182@kunbus.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1847621484-1697452425=:1986"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ledji7kb3pwli75k"
+Content-Disposition: inline
+In-Reply-To: <0ca84efc-c999-4077-85aa-e13fd0984182@kunbus.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-1847621484-1697452425=:1986
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
+--ledji7kb3pwli75k
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, 14 Oct 2023, Vamshi Gajjela wrote:
+Hello Lino,
 
-> From: VAMSHI GAJJELA <vamshigajjela@google.com>
-> 
-> uart_update_timeout() sets a u64 value to an unsigned int frame_time.
+On Sun, Oct 15, 2023 at 03:03:20PM +0200, Lino Sanfilippo wrote:
+> Sorry Uwe, you gave valuable input for the former version of this series =
+and I
+> just noticed now that I forgot to Cc you for this version.=20
 
-Yes it does, because uart_update_timeout() does math that requires u64 but 
-the result is always smaller than what requires u64. If you insist on 
-doing something add the cast there.
+My mail setup works good enough that this series already landed in my
+inbox without the explict Cc, but I'm currently doing too much other
+stuff to find the time for an appropriate look here, sorry.
 
-> While it can be cast to u32 before assignment, there's a specific case
-> where frame_time is cast to u64.
+Best regards
+Uwe
 
-Because it gets multipled with something that results in a big number
-The cast is all correct too because the developer actually thought of 
-possiblity of an overflow on multiply (something every developer should 
-be conscious of), so there's nothing to see there either. 
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
-> Since frame_time consistently
-> participates in u64 arithmetic, its data type is converted to u64 to
-> eliminate the need for explicit casting.
+--ledji7kb3pwli75k
+Content-Type: application/pgp-signature; name="signature.asc"
 
-You need a way more convincing argument that that since you're not even 
-converting it to u64 like you falsely stated so the sizes still won't 
-match on all architectures.
+-----BEGIN PGP SIGNATURE-----
 
-I see you've realized u32 is more than enough to store frame time for the 
-speeds UART operates with? So why exactly is this patch needed? Should all 
-the other cases where 64-bit arithmetic needs to be used in the kernel be 
-similarly upconverted to 64 bits?
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmUtEr8ACgkQj4D7WH0S
+/k6z/gf9G7mcEVUtd7B3pBLcscJ8i8p/kb6s5QAq6eXp2zAoQD5L+++GTNXPxr5O
+12H1DX0B8Q58LFI3fI9OcGGCe8TbMD0LSTB7t97g935yAoopjs+0yQcWL2a21F8w
+uzhk67DEmUGPBRzKV4fRCEaKUBAc5fFahfYyC+Bz/TQxgxcAAVG562LFw+i2vS6E
+W5CCQuU0aSJavGwDE4ghrDlfrs21pFFLn52STwW9iyLY2el9Y0fFpa2rqUJxb/AR
+dWd5WGOR0+Z1EkLf8+4sacTFQALWPFmSKKOM/R+wOU23NPLyB0YBmo9Ftj/77cgo
+xCT/S9mNMy2AQOMExF+i2YwnDicD+w==
+=47/E
+-----END PGP SIGNATURE-----
 
-Also, did you happen to realize frame_time also participates in 32-bit 
-arithmetic which you just make much worse with this change? (Yes, there 
-are 32-bit divides done for it.)
-
-So NACK from me to this "fix" of a non-problem by causing much worse 
-problems you seem to be entirely unaware.
-
-NACKED-by:  Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
--- 
- i.
-
-> Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
-> ---
->  include/linux/serial_core.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index bb6f073bc159..b128513b009a 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -558,7 +558,7 @@ struct uart_port {
->  
->  	bool			hw_stopped;		/* sw-assisted CTS flow state */
->  	unsigned int		mctrl;			/* current modem ctrl settings */
-> -	unsigned int		frame_time;		/* frame timing in ns */
-> +	unsigned long		frame_time;		/* frame timing in ns */
->  	unsigned int		type;			/* port type */
->  	const struct uart_ops	*ops;
->  	unsigned int		custom_divisor;
-> @@ -764,7 +764,7 @@ unsigned int uart_get_divisor(struct uart_port *port, unsigned int baud);
->   */
->  static inline unsigned long uart_fifo_timeout(struct uart_port *port)
->  {
-> -	u64 fifo_timeout = (u64)READ_ONCE(port->frame_time) * port->fifosize;
-> +	u64 fifo_timeout = READ_ONCE(port->frame_time) * port->fifosize;
->  
->  	/* Add .02 seconds of slop */
->  	fifo_timeout += 20 * NSEC_PER_MSEC;
-> 
---8323329-1847621484-1697452425=:1986--
+--ledji7kb3pwli75k--
