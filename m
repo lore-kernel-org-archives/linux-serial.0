@@ -2,63 +2,55 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36D86CDB465
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 16:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97FB8CDB465
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 18:19:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233960AbjJPQvn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Oct 2023 12:51:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58704 "EHLO
+        id S229943AbjJPSTV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Oct 2023 14:19:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233959AbjJPQv1 (ORCPT
+        with ESMTP id S232388AbjJPSTU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Oct 2023 12:51:27 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66FA476B3
-        for <linux-serial@vger.kernel.org>; Mon, 16 Oct 2023 09:43:20 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id ffacd0b85a97d-3296b49c546so3899452f8f.3
-        for <linux-serial@vger.kernel.org>; Mon, 16 Oct 2023 09:43:20 -0700 (PDT)
+        Mon, 16 Oct 2023 14:19:20 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5341E1
+        for <linux-serial@vger.kernel.org>; Mon, 16 Oct 2023 11:19:15 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id 4fb4d7f45d1cf-5384975e34cso8681151a12.0
+        for <linux-serial@vger.kernel.org>; Mon, 16 Oct 2023 11:19:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1697474598; x=1698079398; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=U90PKyQy8RzBzVE8g7+FffuJkYhpwU9/9u8RDDZpT5A=;
-        b=CP4yIFTyTnCeWQuyA7VpmZeC6291kdSA3lotlCWTvo7q30yNArqmdWqkki7LzJOg1z
-         XbSyRZAUT0x0Ak0czCD27nQPM/z3OucRWwAnm9ZpOrvwRRMWMVz43dqOQH41+7siVX/B
-         OwaSH2NxY1CXh/a2RdIWnSsCyFviXaB12A8E4OyozLT9X8HtLCKRvC2wfUckkclK+Dk/
-         OllTi4pi5xObfPErzzeLSesVDHZdLb+hlJQmpwjwEBrGoBRmNy2EHIUJ9ptHAlLUcp3h
-         7drI7IV1K+6kTmdBDaTtro++TMLGeRe+Nd7lgbQSoSPIdrHmAm9Wlo8Y1L1mOKcLBE+m
-         A0Uw==
+        d=linaro.org; s=google; t=1697480354; x=1698085154; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=yHxnwMIuOK6pun4FBy6K8m98uQdlQ5j3Zr63BQJ4VwE=;
+        b=ryfDFKBR//BHm5yLeVLYxiDiksAsxv2jQLH4sey9IbaTwN+sVWh3aJOD9gcojk3Dks
+         4GYIBP+pj8hTuCfJ8JgMZ6weUiYmTTvQRVSrrLU9/WSGaG9hB4gbbF/NMVsb5fZ8Mz5+
+         /PjOizwC7whJXwJ8RumtRzt0g/+Qnu7q/og1dCWllOyGb+szbdY9SaYOAaU+r/eXCVcw
+         p51cnTiYTlFt9jasyQXUt7T64FQH6gSo/uAbCIXx269bs4d0Qmj6gVnC2/bhoFWfwQVK
+         0N1nWDTqN0xEt5ROx+ZXjXyVPJiGwk7EXxTuSq6nHv+bH2rRO5gvsinMO2IwTlnsDNGS
+         s7EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697474598; x=1698079398;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=U90PKyQy8RzBzVE8g7+FffuJkYhpwU9/9u8RDDZpT5A=;
-        b=SKyaflX8LItNeHVLn/haU2HSt2e2EdKku4xHYkZoZI9gi4ZtmJRj84iYpc0JjVH+dk
-         AJMn5FBFy5RlttACNo3+am5HN71ch7ToTEIwXk8RWHk3iMCyURi5R8dbBTe9LCc/toW0
-         MdaKz37vvxJltxKgFXafeBli+6VtrvbMhTbTmIlxQ+GtusS+0qvxrSAB+vG3vT+kZ9Hr
-         FbLvbOTjzp3PSUvDNbo6xP1MFHUOenetifIIaiNRg88o2GsTznMtrBylwEqMWlE3EpZ+
-         +jTPGcBLoFgMU913dFZ9cKbdRoLHhzOQxN5vEAam4sabgVfC7p7PspWsgF91AkNOn4+l
-         YUDQ==
-X-Gm-Message-State: AOJu0YybLIcubL3b3TC+EKeEk+J4iK3PpT6LBw2PVxBfHFJcG9RevivN
-        DlpZPJXTPIPE7EaFVpN1F5ctig==
-X-Google-Smtp-Source: AGHT+IHm5BYixCZcKzMcNGKF90Yd8AI//XzB6EXLdNhPg6zWoBLyzYBhSNSxhkSXpQeKd1R7PEILlw==
-X-Received: by 2002:a5d:6a8e:0:b0:323:36f1:c256 with SMTP id s14-20020a5d6a8e000000b0032336f1c256mr28191416wru.11.1697474598616;
-        Mon, 16 Oct 2023 09:43:18 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.219.154])
-        by smtp.gmail.com with ESMTPSA id bx7-20020a5d5b07000000b003232f167df5sm2075253wrb.108.2023.10.16.09.43.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Oct 2023 09:43:18 -0700 (PDT)
-Message-ID: <45c6ab18-4bdd-455a-beb6-da9b25c6fd2c@linaro.org>
-Date:   Mon, 16 Oct 2023 18:43:16 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dt-bindings: serial: re-order entries to match coding
- convention
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        d=1e100.net; s=20230601; t=1697480354; x=1698085154;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=yHxnwMIuOK6pun4FBy6K8m98uQdlQ5j3Zr63BQJ4VwE=;
+        b=TJGY6Cx6R8fH9YmGMfOacYWYc/BI7Z1wBgK3VK9yJsPbP4/Lb+5Oc0Epvdz/UmbARO
+         IsYhH5dKO/oYOUq6ge/xbDvce/E27koS0eIUPe2xtxlQOfPUoBWJTsaOVUbkpfwXuaG8
+         2UMKxG6ANg9udoZSkxojd3FPmm0AOZfj6UMQrjRwouUcXf9EqU3zUfLtWGZ42C9Zn0am
+         A4eFLlXZtack6Ec05pa4XtCz/CYkOueVl5QJO3NDb+xYPfm0qNvOpW64+VWpvOVf3yYr
+         2LWSzdzfRvS/KupSsej1XlIseAJjMSQG6Dd4xMck524WACN2rWDJnBNoLJjhdzq+FuXc
+         ptxg==
+X-Gm-Message-State: AOJu0YxoR5WIS+olmzYTkyLb4doOP+wev1EpCHuD+Yyhb6Bp9Yxsyrnq
+        Kmx0kWA9EcjF180SpDwgSQkLNw==
+X-Google-Smtp-Source: AGHT+IHaIMFNUycBgL3Pnr/xgETpMNd73VZDZCmkin8neQ/N99qgETS78YHHg5F5PDrGT6N3LQzRHg==
+X-Received: by 2002:a05:6402:4405:b0:53e:343a:76c4 with SMTP id y5-20020a056402440500b0053e343a76c4mr7073eda.30.1697480354326;
+        Mon, 16 Oct 2023 11:19:14 -0700 (PDT)
+Received: from krzk-bin.. ([178.197.219.154])
+        by smtp.gmail.com with ESMTPSA id cw3-20020a056402228300b005333922efb0sm237483edb.78.2023.10.16.11.19.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Oct 2023 11:19:13 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -73,87 +65,271 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-References: <20231016061654.22267-1-krzysztof.kozlowski@linaro.org>
- <CAMuHMdVTFpqbXc0L--Kz3URrfpSm9NX8th9zAp+th1Tv1+027g@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <CAMuHMdVTFpqbXc0L--Kz3URrfpSm9NX8th9zAp+th1Tv1+027g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2] dt-bindings: serial: re-order entries to match coding convention
+Date:   Mon, 16 Oct 2023 20:19:09 +0200
+Message-Id: <20231016181909.368429-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 16/10/2023 10:00, Geert Uytterhoeven wrote:
-> On Mon, Oct 16, 2023 at 8:17 AM Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
->> The DT schema coding convetion express in
-> 
-> convention expressed
-> 
->> Documentation/devicetree/bindings/example-schema.yaml expects entries in
->> following order:
->>  - properties, patternProperties
->>  - required
->>  - if blocks, allOf with if-blocks
->>  - additionalProperties/unevaluatedProperties
->>
->> Re-order few schemas to match the convention to avoid repeating reviews
-> 
-> review comments
-> 
->> for new patches using existing code as template.  No functional changes.
->>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> 
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+The DT schema coding convention expressed in
+Documentation/devicetree/bindings/example-schema.yaml expects entries in
+following order:
+ - properties, patternProperties
+ - required
+ - if blocks, allOf with if-blocks
+ - additionalProperties/unevaluatedProperties
 
-I should have run spell-check. Thanks for review. I will send v2.
+Re-order few schemas to match the convention to avoid repeating review
+comments for new patches using existing code as template.  No functional
+changes.
 
-Best regards,
-Krzysztof
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+---
+
+Changes in v2:
+1. Fix typos in commit msg.
+2. Add Geert's review tag.
+---
+ .../bindings/serial/nvidia,tegra20-hsuart.yaml   | 10 +++++-----
+ .../bindings/serial/qcom,msm-uart.yaml           |  4 ++--
+ .../bindings/serial/qcom,msm-uartdm.yaml         |  4 ++--
+ .../bindings/serial/renesas,em-uart.yaml         | 14 +++++++-------
+ .../bindings/serial/renesas,hscif.yaml           |  4 ++--
+ .../bindings/serial/renesas,scifa.yaml           |  4 ++--
+ .../bindings/serial/renesas,scifb.yaml           |  4 ++--
+ .../devicetree/bindings/serial/samsung_uart.yaml |  4 ++--
+ .../devicetree/bindings/serial/serial.yaml       | 16 ++++++++--------
+ 9 files changed, 32 insertions(+), 32 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.yaml b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.yaml
+index 04d55fecf47c..a5d67563cd53 100644
+--- a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.yaml
++++ b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.yaml
+@@ -91,11 +91,6 @@ properties:
+         - description: range upper bound
+         - description: adjustment (in permyriad, i.e. 0.01%)
+ 
+-allOf:
+-  - $ref: serial.yaml
+-
+-unevaluatedProperties: false
+-
+ required:
+   - compatible
+   - reg
+@@ -106,6 +101,11 @@ required:
+   - dmas
+   - dma-names
+ 
++allOf:
++  - $ref: serial.yaml
++
++unevaluatedProperties: false
++
+ examples:
+   - |
+     #include <dt-bindings/clock/tegra30-car.h>
+diff --git a/Documentation/devicetree/bindings/serial/qcom,msm-uart.yaml b/Documentation/devicetree/bindings/serial/qcom,msm-uart.yaml
+index a052aaef21f4..ea6abfe2d95e 100644
+--- a/Documentation/devicetree/bindings/serial/qcom,msm-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/qcom,msm-uart.yaml
+@@ -40,11 +40,11 @@ required:
+   - interrupts
+   - reg
+ 
+-unevaluatedProperties: false
+-
+ allOf:
+   - $ref: /schemas/serial/serial.yaml#
+ 
++unevaluatedProperties: false
++
+ examples:
+   - |
+     serial@a9c00000 {
+diff --git a/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
+index 484b9a51f6a9..ee52bf8e8917 100644
+--- a/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
++++ b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
+@@ -78,8 +78,6 @@ required:
+   - interrupts
+   - reg
+ 
+-unevaluatedProperties: false
+-
+ allOf:
+   - $ref: /schemas/serial/serial.yaml#
+ 
+@@ -97,6 +95,8 @@ allOf:
+         reg:
+           maxItems: 1
+ 
++unevaluatedProperties: false
++
+ examples:
+   - |
+     #include <dt-bindings/interrupt-controller/arm-gic.h>
+diff --git a/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
+index 3fc2601f1338..89f1eb0f2c5a 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
+@@ -38,6 +38,13 @@ properties:
+       - const: sclk
+       - const: pclk
+ 
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++
+ allOf:
+   - $ref: serial.yaml#
+ 
+@@ -53,13 +60,6 @@ allOf:
+         clock-names:
+           minItems: 2
+ 
+-required:
+-  - compatible
+-  - reg
+-  - interrupts
+-  - clocks
+-  - clock-names
+-
+ unevaluatedProperties: false
+ 
+ examples:
+diff --git a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
+index 1c7f1276aed6..2046e2dc0a3d 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
+@@ -111,8 +111,6 @@ required:
+   - clock-names
+   - power-domains
+ 
+-unevaluatedProperties: false
+-
+ if:
+   properties:
+     compatible:
+@@ -125,6 +123,8 @@ then:
+   required:
+     - resets
+ 
++unevaluatedProperties: false
++
+ examples:
+   - |
+     #include <dt-bindings/clock/r8a7795-cpg-mssr.h>
+diff --git a/Documentation/devicetree/bindings/serial/renesas,scifa.yaml b/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
+index 499507678cdf..c98657cf4666 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
+@@ -77,8 +77,6 @@ required:
+   - clock-names
+   - power-domains
+ 
+-unevaluatedProperties: false
+-
+ if:
+   properties:
+     compatible:
+@@ -89,6 +87,8 @@ then:
+   required:
+     - resets
+ 
++unevaluatedProperties: false
++
+ examples:
+   - |
+     #include <dt-bindings/clock/r8a7790-cpg-mssr.h>
+diff --git a/Documentation/devicetree/bindings/serial/renesas,scifb.yaml b/Documentation/devicetree/bindings/serial/renesas,scifb.yaml
+index 810d8a991fdd..fb695b3111ac 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,scifb.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,scifb.yaml
+@@ -77,8 +77,6 @@ required:
+   - clock-names
+   - power-domains
+ 
+-unevaluatedProperties: false
+-
+ if:
+   properties:
+     compatible:
+@@ -89,6 +87,8 @@ then:
+   required:
+     - resets
+ 
++unevaluatedProperties: false
++
+ examples:
+   - |
+     #include <dt-bindings/clock/r8a7740-clock.h>
+diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+index 8bd88d5cbb11..aecb6761b49c 100644
+--- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
++++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+@@ -86,8 +86,6 @@ required:
+   - interrupts
+   - reg
+ 
+-unevaluatedProperties: false
+-
+ allOf:
+   - $ref: serial.yaml#
+ 
+@@ -128,6 +126,8 @@ allOf:
+             - const: uart
+             - const: clk_uart_baud0
+ 
++unevaluatedProperties: false
++
+ examples:
+   - |
+     #include <dt-bindings/clock/samsung,s3c64xx-clock.h>
+diff --git a/Documentation/devicetree/bindings/serial/serial.yaml b/Documentation/devicetree/bindings/serial/serial.yaml
+index 468af429c3e6..65804ca274ae 100644
+--- a/Documentation/devicetree/bindings/serial/serial.yaml
++++ b/Documentation/devicetree/bindings/serial/serial.yaml
+@@ -87,14 +87,6 @@ properties:
+     description:
+       TX FIFO threshold configuration (in bytes).
+ 
+-if:
+-  required:
+-    - uart-has-rtscts
+-then:
+-  properties:
+-    cts-gpios: false
+-    rts-gpios: false
+-
+ patternProperties:
+   "^(bluetooth|bluetooth-gnss|gnss|gps|mcu)$":
+     if:
+@@ -136,6 +128,14 @@ patternProperties:
+       required:
+         - compatible
+ 
++if:
++  required:
++    - uart-has-rtscts
++then:
++  properties:
++    cts-gpios: false
++    rts-gpios: false
++
+ additionalProperties: true
+ 
+ examples:
+-- 
+2.34.1
 
