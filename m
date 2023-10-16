@@ -2,139 +2,105 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EBDCDB474
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 13:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75165CDB474
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 13:59:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233764AbjJPNuG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Oct 2023 09:50:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49042 "EHLO
+        id S233592AbjJPN7A (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Oct 2023 09:59:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234253AbjJPNtq (ORCPT
+        with ESMTP id S233643AbjJPN6z (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Oct 2023 09:49:46 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDEC512F;
-        Mon, 16 Oct 2023 06:49:16 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (213-243-189-158.bb.dnainternet.fi [213.243.189.158])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id A23CC814;
-        Mon, 16 Oct 2023 15:49:09 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1697464149;
-        bh=t+PLOpuYLM9fzpu9xviRvNQwyTYfO+G1IWfy8+wyL2Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nGDLclfqRR8+n8ZgI6ljy/el2KWIiCfzcS913xdb/xuu5px5BBNqyK4DHaPvlDA52
-         rvkIZZvLdIkQJ3h8kM6OcJ1WfBqfDNkBgooQEgQO3dOK+GumUmBmC+Oy5VYmLJUW4u
-         vy6niDqta9QmRoC7+yzNLMDzOk4VEfMxikxlAsyE=
-Date:   Mon, 16 Oct 2023 16:49:22 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Bernhard =?utf-8?Q?Rosenkr=C3=A4nzer?= <bero@baylibre.com>
-Cc:     linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        angelogioacchino.delregno@collabora.com, matthias.bgg@gmail.com,
-        gregkh@linuxfoundation.org, krzysztof.kozlowski+dt@linaro.org,
-        robh+dt@kernel.org, maz@kernel.org, tglx@linutronix.de
-Subject: Re: [PATCH v11 3/3] arm64: dts: mediatek: Initial mt8365-evk support
-Message-ID: <20231016134922.GA6523@pendragon.ideasonboard.com>
-References: <20230309213501.794764-1-bero@baylibre.com>
- <20230309213501.794764-4-bero@baylibre.com>
- <20231016134804.GA15778@pendragon.ideasonboard.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20231016134804.GA15778@pendragon.ideasonboard.com>
+        Mon, 16 Oct 2023 09:58:55 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B77A510D;
+        Mon, 16 Oct 2023 06:58:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+        :Date:subject:date:message-id:reply-to;
+        bh=IlCu/jWp8SVoI/cMKgzgDIUk/DbaqOCC0hxXFHL5jQs=; b=R58bHo9++XgOQJOs0Ni2j2q631
+        5at3w+OTR1BhxmRlw9U03h0l8beJbj9vhcM5wSS5Ar7V49Lta+q8FmgHU4YnwojtnNeMqtld1dxt4
+        A1YF6Jx7y0Lh4dnZApjwUgb3aJiFp8LebkIMbxE6hL8oor6YAh541SAsqoRlThxD2xOw=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:56974 helo=pettiford)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1qsO7N-000654-LP; Mon, 16 Oct 2023 09:58:50 -0400
+Date:   Mon, 16 Oct 2023 09:58:48 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, hvilleneuve@dimonoff.com,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org
+Message-Id: <20231016095848.ba76e14c41bb7ceae8217e04@hugovil.com>
+In-Reply-To: <2b12a49c-ed82-4632-86c6-349976cd714b@linaro.org>
+References: <20231013141925.3427158-1-hugo@hugovil.com>
+        <20231013141925.3427158-3-hugo@hugovil.com>
+        <2b12a49c-ed82-4632-86c6-349976cd714b@linaro.org>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: Re: [PATCH 2/2] dt-bindings: serial: sc16is7xx: remove
+ 'clock-frequency' property
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Oct 16, 2023 at 04:48:06PM +0300, Laurent Pinchart wrote:
-> Hello,
-> 
-> A bit of a late reply, but I've just noticed an issue related to this
-> patch.
-> 
-> On Thu, Mar 09, 2023 at 10:35:01PM +0100, Bernhard Rosenkränzer wrote:
-> > From: Fabien Parent <fparent@baylibre.com>
+On Mon, 16 Oct 2023 08:09:56 +0200
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+
+> On 13/10/2023 16:19, Hugo Villeneuve wrote:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > > 
-> > This adds minimal support for the Mediatek 8365 SOC and the EVK reference
-> > board, allowing the board to boot to initramfs with serial port I/O.
+> > The 'clock-frequency' property is supported but mainly in ACPI-based
+> > configurations, for example.
 > > 
-> > Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> > [bero@baylibre.com: Removed parts depending on drivers that aren't upstream yet, cleanups, add CPU cache layout, add systimer, fix GIC]
-> > Signed-off-by: Bernhard Rosenkränzer <bero@baylibre.com>
-> > [aouledameur@baylibre.com: Fix systimer properties]
-> > Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
-> > Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
-> > Tested-by: Kevin Hilman <khilman@baylibre.com>
-> > Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> > ---
-> >  arch/arm64/boot/dts/mediatek/Makefile       |   1 +
-> >  arch/arm64/boot/dts/mediatek/mt8365-evk.dts | 168 +++++++++
-> >  arch/arm64/boot/dts/mediatek/mt8365.dtsi    | 377 ++++++++++++++++++++
-> >  3 files changed, 546 insertions(+)
-> >  create mode 100644 arch/arm64/boot/dts/mediatek/mt8365-evk.dts
-> >  create mode 100644 arch/arm64/boot/dts/mediatek/mt8365.dtsi
+> > This property has therefore no place in the sc16is7xx YAML binding.
 > 
-> [snip]
-> 
-> > diff --git a/arch/arm64/boot/dts/mediatek/mt8365.dtsi b/arch/arm64/boot/dts/mediatek/mt8365.dtsi
-> > new file mode 100644
-> > index 0000000000000..351197c453c91
-> > --- /dev/null
-> > +++ b/arch/arm64/boot/dts/mediatek/mt8365.dtsi
-> > @@ -0,0 +1,377 @@
-> > +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> > +/*
-> > + * (C) 2018 MediaTek Inc.
-> > + * Copyright (C) 2022 BayLibre SAS
-> > + * Fabien Parent <fparent@baylibre.com>
-> > + * Bernhard Rosenkränzer <bero@baylibre.com>
-> > + */
-> > +#include <dt-bindings/clock/mediatek,mt8365-clk.h>
-> > +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> > +#include <dt-bindings/interrupt-controller/irq.h>
-> > +#include <dt-bindings/phy/phy.h>
-> > +
-> > +/ {
-> 
-> [snip]
-> 
-> > +	soc {
-> 
-> [snip]
-> 
-> > +		infracfg: syscon@10001000 {
-> > +			compatible = "mediatek,mt8365-infracfg", "syscon";
-> > +			reg = <0 0x10001000 0 0x1000>;
-> > +			#clock-cells = <1>;
-> > +		};
-> 
-> [snip]
-> 
-> > +		infracfg_nao: infracfg@1020e000 {
-> > +			compatible = "mediatek,mt8365-infracfg", "syscon";
-> > +			reg = <0 0x1020e000 0 0x1000>;
-> > +			#clock-cells = <1>;
-> > +		};
-> 
-> These two nodes cause the infracfg clocks to be registered twice, with
-> the second probe of the clk-mt8365 driver failing with -EEXIST.
+> Please reference commit which you question - 0d447e927. I don't
+> understand why do you remove it. The property was in the original binding.
 
-These are the messages printed by v6.6-rc6:
+Hi,
+in the max310x YAML conversion review (last week), you told me to
+drop the clock-frequency from the binding, even
+if it is supported by the driver, since it is related to ACPI
+configuration, not DT.
 
-[    0.540254] Failed to register clk ifr_pmic_tmr: -EEXIST
-[    0.541003] clk-mt8365: probe of 1020e000.infracfg failed with error -17
+The sc16is7xx driver (IC) is very similar to the max310x, and it also
+supports the clock-frequency property, and I just assumed that its
+presence in the original text binding was some kind of error or legacy
+leftover, and would need to be removed based on your comments.
 
-> [snip]
-> 
-> > +	};
-> 
-> [snip]
-> 
-> > +};
+Just as a reference, here are the original commits in both drivers that
+added support for the clock-frequency property:
 
--- 
-Regards,
+-----------------------
+commit d4d6f03c4fb3a91dadfe147b47edd40e4d7e4d36
+Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Date:   Mon May 17 20:29:30 2021 +0300
 
-Laurent Pinchart
+    serial: max310x: Try to get crystal clock rate from property
+    
+    In some configurations, mainly ACPI-based, the clock frequency of
+the device is supplied by very well established 'clock-frequency'
+property. Hence, try to get it from the property at last if no other
+providers are available.
+
+
+commit 24bc6e68efa00f95034dbef0ba91661dd80bd37d
+Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Date:   Mon Mar 18 12:29:15 2019 +0200
+
+    serial: sc16is7xx: Respect clock-frequency property
+    
+    If the property is provided and there are no other possibilities to
+detect UART clock frequency, use it as a fallback.
+-----------------------
+
+Hugo.
