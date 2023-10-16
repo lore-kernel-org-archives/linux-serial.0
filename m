@@ -2,54 +2,55 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B30D0CDB465
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 05:27:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D79C9CDB465
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Oct 2023 05:35:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230418AbjJPF1b (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Oct 2023 01:27:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55340 "EHLO
+        id S231255AbjJPFfQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Oct 2023 01:35:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbjJPF1a (ORCPT
+        with ESMTP id S231783AbjJPFfO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Oct 2023 01:27:30 -0400
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BA8E6;
-        Sun, 15 Oct 2023 22:27:29 -0700 (PDT)
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-40684f53ef3so44568875e9.3;
-        Sun, 15 Oct 2023 22:27:28 -0700 (PDT)
+        Mon, 16 Oct 2023 01:35:14 -0400
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B16AE120;
+        Sun, 15 Oct 2023 22:35:05 -0700 (PDT)
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-405497850dbso41234255e9.0;
+        Sun, 15 Oct 2023 22:35:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697434047; x=1698038847;
+        d=1e100.net; s=20230601; t=1697434504; x=1698039304;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zqVI/Zj6gDUN/fhSkPe4D6BU2OUIPZzVnbqR1FLt//4=;
-        b=piTB6dxJDRWPecwimm9MkwqwgY+arWcxWKRA3prNi9AuQ+8jz04W9fsdAozAvsXcWI
-         Yg22MwFmXU2+RxtjrhsEn2iPNav77jFMmBMur3tPoAxUuCs5DAd5PXdyoFKWFPwGescX
-         f6iK8vcBCAckGOd107IFyDPpFH56JEU2xTFpRq81/ha8Da/KdzM2ekWMM/HYUKAjmzJ/
-         fEnL9/q4Bm/pGyhyGDRoKFnEh4CtMeMZrNDYTwaxKjxmQ0xFT/IVogGDYH8mBea8b/HH
-         KzvgESOkxHVbmJScjOz+0H40EpXV2xkkIg8T5yFFusej47+I02oRCcOtAQyPO/oxolT9
-         12IA==
-X-Gm-Message-State: AOJu0YyvhoBOFQ9ecW5U5lRkd1F1XtI0PsDnPs8qlf+Wa2PDH6Nfg+ZY
-        ejYW2q+LUvquAtZgW+61YGE=
-X-Google-Smtp-Source: AGHT+IFcNsQ1Lo4i/XkaFaNrbO9d/6gOzRZpq7weQMS4O2gkcghfvBOR0B7Z72VOK5Igksb0sV7eug==
-X-Received: by 2002:a05:600c:2150:b0:402:8c7e:ba5 with SMTP id v16-20020a05600c215000b004028c7e0ba5mr27611779wml.18.1697434047281;
-        Sun, 15 Oct 2023 22:27:27 -0700 (PDT)
+        bh=cOvvTQQy+JfGRbCEkEtFd8cZk3x1MPjZLKQ8b9QGiKU=;
+        b=d8pASWNRWlheRT/OCvXdBIC3LJQoEiBKaaRv8pURKL3lQg2g4GKjLQkQg4dbzfQTnL
+         j7EoHln3Er1wOQwbvjVEKRWpYp3YJJDo9Rv3E7v05QZqbSahRlRkiagy3tBvobbwNCRU
+         7a+4X2FHN3g6dgzDULM58roEbv66kQkq7xR579YfFzoZvWMQIhNMVkEThWHoOJMl9N2y
+         CayQWpBlsKHyw5NpPW//MiY8B9SEnoj7Mha4WRxSfXmTrttFmfr/rQZ5lsZqQdYlQI8I
+         PmKozCOMSMBLFiHo2FXK39B96ryy0aGdvggEoHx6s5HezOuP5aGK0RsEh9Z8FskKuEqK
+         UT2w==
+X-Gm-Message-State: AOJu0YxYMfmoHf/957hE2kww/LsvsxT2/Pp6QDUB1UINGeygHLu5ofM8
+        cLZzhbgXkuDa1DsPR4Al4chhXsnJEqk=
+X-Google-Smtp-Source: AGHT+IFPZe+piZQPNHSWAA8zt7wf5lSfRigoQiafEWSLJwRkAESEX8SvLMO4dQgrZTTnxw5TiwCvnA==
+X-Received: by 2002:a05:600c:2197:b0:405:514d:eb0e with SMTP id e23-20020a05600c219700b00405514deb0emr28704305wme.19.1697434503719;
+        Sun, 15 Oct 2023 22:35:03 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id n23-20020a7bcbd7000000b0040536dcec17sm6101035wmi.27.2023.10.15.22.27.26
+        by smtp.gmail.com with ESMTPSA id t14-20020a05600c198e00b00405c7591b09sm6161011wmq.35.2023.10.15.22.35.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 15 Oct 2023 22:27:26 -0700 (PDT)
-Message-ID: <79a2006b-abca-4e06-b8a3-58411318b9d7@kernel.org>
-Date:   Mon, 16 Oct 2023 07:27:26 +0200
+        Sun, 15 Oct 2023 22:35:03 -0700 (PDT)
+Message-ID: <0d5f9af2-22ac-4753-8c5a-76c4d44dcc9c@kernel.org>
+Date:   Mon, 16 Oct 2023 07:35:02 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [Patch v2 6/6] tty: serial: 8250: Add support for MOXA PCIe
- boards to switch interface between RS422/RS485
+Subject: Re: [PATCH v2 1/3] serial: core: Potential overflow of frame_time
 Content-Language: en-US
-To:     Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
-        gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20231016033705.20669-1-crescentcy.hsieh@moxa.com>
- <20231016033705.20669-7-crescentcy.hsieh@moxa.com>
+To:     Vamshi Gajjela <vamshigajjela@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        ilpo.jarvinen@linux.intel.com
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        manugautam@google.com, Subhash Jadavani <sjadavani@google.com>,
+        Channa Kadabi <kadabi@google.com>
+References: <20231014181333.2579530-1-vamshigajjela@google.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -93,132 +94,75 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20231016033705.20669-7-crescentcy.hsieh@moxa.com>
+In-Reply-To: <20231014181333.2579530-1-vamshigajjela@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 16. 10. 23, 5:37, Crescent CY Hsieh wrote:
-> MOXA PCIe boards have 4 serial interfaces and don't require additional
-> stuff to switch between interfaces:
+On 14. 10. 23, 20:13, Vamshi Gajjela wrote:
+> From: VAMSHI GAJJELA <vamshigajjela@google.com>
 > 
-> - RS232
-> - RS422
-> - RS485_2W (half-duplex)
-> - RS485_4W (full-duplex)
-> 
-> By using ioctl command "TIOCRS485", it can switch between default
-> interface and RS485 if supported.
-> 
-> That means, for RS422/RS485 board, it can switch between RS422 and
-> RS485 by setting the flags within struct serial_rs485.
-> 
-> However, for the RS232/RS422/RS485 board, it can only switch between
-> RS232 and RS485, there's no flag for switching interface into RS422.
-> 
-> This patch uses "SER_RS485_TERMINATE_BUS" to represent RS422 as a
-> workaround solution.
-> 
-> Signed-off-by: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+> uart_update_timeout() sets a u64 value to an unsigned int frame_time.
+> While it can be cast to u32 before assignment, there's a specific case
+> where frame_time is cast to u64. Since frame_time consistently
+> participates in u64 arithmetic, its data type is converted to u64 to
+> eliminate the need for explicit casting.
+
+And make the divisions by the order of magnutude slower for no good 
+reason? (Hint: have you looked what DIV64_U64_ROUND_UP() looks like on 
+32bit yet?)
+
+Unless you provide a reason it can overflow in real (in fact you spell 
+the opposite in the text above):
+NACKED-by: Jiri Slaby <jirislaby@kernel.org>
+
+> Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
 > ---
->   drivers/tty/serial/8250/8250_pci.c | 52 ++++++++++++++++++++++++++++++
->   1 file changed, 52 insertions(+)
+> v2:
+> - use DIV64_U64_ROUND_UP with frame_time
 > 
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index 72dd27141801..e2e8a28242bc 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -1976,6 +1976,10 @@ pci_sunix_setup(struct serial_private *priv,
->   #define MOXA_RS485_2W	0x0F
->   #define MOXA_UIR_OFFSET	0x04
+>   drivers/tty/serial/8250/8250_port.c | 2 +-
+>   include/linux/serial_core.h         | 4 ++--
+>   2 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 141627370aab..d1bf794498c4 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -1510,7 +1510,7 @@ static inline void __stop_tx(struct uart_8250_port *p)
+>   			 * rather than after it is fully sent.
+>   			 * Roughly estimate 1 extra bit here with / 7.
+>   			 */
+> -			stop_delay = p->port.frame_time + DIV_ROUND_UP(p->port.frame_time, 7);
+> +			stop_delay = p->port.frame_time + DIV64_U64_ROUND_UP(p->port.frame_time, 7);
+>   		}
 >   
-> +static const struct serial_rs485 pci_moxa_rs485_supported = {
-> +	.flags = SER_RS485_ENABLED | SER_RS485_RX_DURING_TX | SER_RS485_TERMINATE_BUS,
-> +};
-> +
->   static bool pci_moxa_is_mini_pcie(unsigned short device)
->   {
->   	if (device == PCI_DEVICE_ID_MOXA_CP102N	||
-> @@ -1989,6 +1993,11 @@ static bool pci_moxa_is_mini_pcie(unsigned short device)
->   	return false;
->   }
+>   		__stop_tx_rs485(p, stop_delay);
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index bb6f073bc159..b128513b009a 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -558,7 +558,7 @@ struct uart_port {
 >   
-> +static bool pci_moxa_match_x1xx(unsigned short device)
-> +{
-> +	return (device & 0x0F00) == 0x0100;
-> +}
-> +
->   static bool pci_moxa_match_x3xx(unsigned short device)
-
-I wonder if it made more sense to have only a single function like:
-
-static bool pci_moxa_match(unsigned short device, unsigned short matching)
-{
-	return (device & 0x0F00) == matching;
-}
-
-and call:
-pci_moxa_match(device, 0x0100)
-pci_moxa_match(device, 0x0300)
-?
-
-Perhaps name the function better. According to what the second digit in 
-the device ID in fact means.
-
+>   	bool			hw_stopped;		/* sw-assisted CTS flow state */
+>   	unsigned int		mctrl;			/* current modem ctrl settings */
+> -	unsigned int		frame_time;		/* frame timing in ns */
+> +	unsigned long		frame_time;		/* frame timing in ns */
+>   	unsigned int		type;			/* port type */
+>   	const struct uart_ops	*ops;
+>   	unsigned int		custom_divisor;
+> @@ -764,7 +764,7 @@ unsigned int uart_get_divisor(struct uart_port *port, unsigned int baud);
+>    */
+>   static inline unsigned long uart_fifo_timeout(struct uart_port *port)
 >   {
->   	return (device & 0x0F00) == 0x0300;
-> @@ -2016,6 +2025,36 @@ static int pci_moxa_set_interface(const struct pci_dev *dev,
->   	return 0;
->   }
+> -	u64 fifo_timeout = (u64)READ_ONCE(port->frame_time) * port->fifosize;
+> +	u64 fifo_timeout = READ_ONCE(port->frame_time) * port->fifosize;
 >   
-> +static int pci_moxa_rs485_config(struct uart_port *port,
-> +				 struct ktermios *termios,
-> +				 struct serial_rs485 *rs485)
-> +{
-> +	struct pci_dev *dev = to_pci_dev(port->dev);
-> +	unsigned short device = dev->device;
-> +	u8 mode = MOXA_RS232;
-> +
-> +	if (rs485->flags & SER_RS485_ENABLED) {
-> +		/* Use SER_RS485_TERMINATE_BUS to represent RS422 as a workaround. */
-> +		if (rs485->flags & SER_RS485_TERMINATE_BUS) {
-> +			mode = MOXA_RS422;
-> +		} else {
-> +			if (rs485->flags & SER_RS485_RX_DURING_TX)
-> +				mode = MOXA_RS485_4W;
-> +			else
-> +				mode = MOXA_RS485_2W;
-> +		}
-> +	} else {
-> +		/*
-> +		 * RS232 is not supported for those device IDs of
-> +		 * MOXA PCIe boards match the pattern 0x*3**.
+>   	/* Add .02 seconds of slop */
+>   	fifo_timeout += 20 * NSEC_PER_MSEC;
 
-I am not native, but I can hardly parse this.
-
-Maybe:
-RS232 is not supported on MOXA PCIe boards with device IDs matching the 
-pattern 0x*3**.
-?
-
-> +		 */
-> +		if (pci_moxa_match_x3xx(device))
-> +			return -EINVAL;
-
-Perhaps EOPNOTSUPP?
-
-> +	}
-> +
-> +	return pci_moxa_set_interface(dev, port->port_id, mode);
-> +}
-> +
->   static int pci_moxa_init(struct pci_dev *dev)
->   {
->   	unsigned short device = dev->device;
-
-thanks,
 -- 
 js
 suse labs
