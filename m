@@ -2,83 +2,98 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC8ACDB474
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Oct 2023 06:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D51CDB483
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Oct 2023 07:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234032AbjJQG4W (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Oct 2023 02:56:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52388 "EHLO
+        id S234620AbjJQHjH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 17 Oct 2023 03:39:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbjJQG4W (ORCPT
+        with ESMTP id S229666AbjJQHjH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Oct 2023 02:56:22 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8A973AB
-        for <linux-serial@vger.kernel.org>; Mon, 16 Oct 2023 23:56:18 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 8933A8027;
-        Tue, 17 Oct 2023 06:56:17 +0000 (UTC)
-Date:   Tue, 17 Oct 2023 09:56:16 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Richard Purdie <richard.purdie@linuxfoundation.org>
-Cc:     Mikko Rapeli <mikko.rapeli@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org,
-        openembedded-core <openembedded-core@lists.openembedded.org>,
-        Bruce Ashfield <bruce.ashfield@gmail.com>,
-        Randy MacLeod <randy.macleod@windriver.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: Kernel 6.5 ttyS1 hang with qemu (was Re: [OE-core] Summary of
- the remaining 6.5 kernel serial issue (and 6.5 summary)
-Message-ID: <20231017065616.GN27774@atomide.com>
-References: <ZSPQY6UYg21Z0PnN@nuoska>
- <1520ecb5f4b6959af835a7781b94694913f76912.camel@linuxfoundation.org>
- <178DF50519C11C84.8679@lists.openembedded.org>
- <b208c9c6b72be4ef0f2aadb7bed103280bff60a0.camel@linuxfoundation.org>
- <2023101516-unmolded-otter-e3e0@gregkh>
- <214757eca7f4cd639a7a8d9a822476c1ec30f01c.camel@linuxfoundation.org>
- <20231016063501.GL27774@atomide.com>
- <ZSzjNgdCH_wmB4u2@nuoska>
- <20231016072352.GM27774@atomide.com>
- <0d86deae37877258f46322d4d727903fca12ad21.camel@linuxfoundation.org>
+        Tue, 17 Oct 2023 03:39:07 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83FA83;
+        Tue, 17 Oct 2023 00:39:05 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 008E3C433C8;
+        Tue, 17 Oct 2023 07:39:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1697528345;
+        bh=E3VbYqSMvyiuHUGdccKqMdLJPOjqHC/bdo4qEHIAeUI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eLRvHJ6pDXK67WrNVe+iczMpc4sdd59wHvXDtmiVyYSS4kgiT4gY4ESbvC+D/aBeC
+         mC0Qwe0Pf6qNjvoTklFkR/LNPL3woOPLeqBg9eL4uh9auBBuwaZjYKeg2ZoweXnk5s
+         r1ZgKXgGv5MyEmvpKOOykYGYFeLWK5YUMO5a2usoVBDmZD1vvap2blDYtu1s1X8MuI
+         e05vOHVl0RODMOxM2NLuBkSrYob321SgQ9iJd9QfwK6xrc556uESKDQmgS3cSIJjLV
+         +vZmqqC6kxurd2YmCYbMZpVHDWbvyHmDr3JR/IQ/dXHXlwtS7+SzjYvHrUd1eYZZsJ
+         k8ZUKAQCsxN3w==
+Date:   Tue, 17 Oct 2023 08:38:59 +0100
+From:   Conor Dooley <conor@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH v2] dt-bindings: serial: re-order entries to match coding
+ convention
+Message-ID: <20231017-grandma-unsuited-e922a2fd24de@spud>
+References: <20231016181909.368429-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="1+71Q60Wioam/cGb"
 Content-Disposition: inline
-In-Reply-To: <0d86deae37877258f46322d4d727903fca12ad21.camel@linuxfoundation.org>
+In-Reply-To: <20231016181909.368429-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Richard Purdie <richard.purdie@linuxfoundation.org> [231016 08:10]:
-> The port sometimes doesn't come up properly at boot.
-> 
-> To be clear, the "\n\n" from the qemu side into the port doesn't seem
-> to help. The "echo helloB > /dev/ttyS1" inside the image does seem to
-> wake it up. 
 
-So if I understand correctly, this issue still happens with kernel patched
-with commit 81a61051e0ce ("serial: core: Fix checks for tx runtime PM
-state"), and the issue now only happens sometimes.
+--1+71Q60Wioam/cGb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I wonder if the following additional change might help?
+On Mon, Oct 16, 2023 at 08:19:09PM +0200, Krzysztof Kozlowski wrote:
+> The DT schema coding convention expressed in
+> Documentation/devicetree/bindings/example-schema.yaml expects entries in
+> following order:
+>  - properties, patternProperties
+>  - required
+>  - if blocks, allOf with if-blocks
+>  - additionalProperties/unevaluatedProperties
+>=20
+> Re-order few schemas to match the convention to avoid repeating review
+> comments for new patches using existing code as template.  No functional
+> changes.
+>=20
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-I have not yet tried to reproduce with the full test case you guys have,
-just with qemu and two ports but no luck so far with a minimal test case.
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 
-Regards,
+Thanks,
+Conor.
 
-Tony
+--1+71Q60Wioam/cGb
+Content-Type: application/pgp-signature; name="signature.asc"
 
-8< -------------------
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -146,7 +146,7 @@ static void __uart_start(struct uart_state *state)
- 
- 	/* Increment the runtime PM usage count for the active check below */
- 	err = pm_runtime_get(&port_dev->dev);
--	if (err < 0) {
-+	if (err < 0 && err != -EINPROGRESS) {
- 		pm_runtime_put_noidle(&port_dev->dev);
- 		return;
- 	}
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZS46EwAKCRB4tDGHoIJi
+0iYrAP97qYyTlCLaxrpzHug1qLPaMkDNoEDl6vLYwErKorOmjAEA+o9HNVu2/Vnk
+aEwghWPY16NO2j39CEu9MQuwz4GAawM=
+=mnUY
+-----END PGP SIGNATURE-----
+
+--1+71Q60Wioam/cGb--
