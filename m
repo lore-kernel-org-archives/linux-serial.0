@@ -2,101 +2,83 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E95ACDB47E
-	for <linux-serial@archiver.kernel.org>; Wed, 18 Oct 2023 05:07:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E86ACDB47E
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Oct 2023 05:28:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234971AbjJRFHz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 18 Oct 2023 01:07:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38750 "EHLO
+        id S229499AbjJRF20 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 18 Oct 2023 01:28:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235074AbjJRFHo (ORCPT
+        with ESMTP id S229597AbjJRF2Z (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 18 Oct 2023 01:07:44 -0400
+        Wed, 18 Oct 2023 01:28:25 -0400
 Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3749D12D;
-        Tue, 17 Oct 2023 22:07:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E3BA1FA
+        for <linux-serial@vger.kernel.org>; Tue, 17 Oct 2023 22:28:23 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id E341F8027;
-        Wed, 18 Oct 2023 05:07:28 +0000 (UTC)
-Date:   Wed, 18 Oct 2023 08:07:27 +0300
+        by muru.com (Postfix) with ESMTPS id 5DEA18027;
+        Wed, 18 Oct 2023 05:28:23 +0000 (UTC)
+Date:   Wed, 18 Oct 2023 08:28:22 +0300
 From:   Tony Lindgren <tony@atomide.com>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+To:     Richard Purdie <richard.purdie@linuxfoundation.org>
+Cc:     Mikko Rapeli <mikko.rapeli@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>
-Subject: Re: [PATCH] serial: core: Fix checks for tx runtime PM state
-Message-ID: <20231018050727.GI34982@atomide.com>
-References: <20231005075644.25936-1-tony@atomide.com>
- <ZR6lc/F1Esxt5ChI@smile.fi.intel.com>
- <20231006072738.GI34982@atomide.com>
- <ZR-_TUSwvIs6Vl_v@hovoldconsulting.com>
- <20231006083712.GJ34982@atomide.com>
- <ZSAp0hUOPQNtOG_T@hovoldconsulting.com>
- <20231007054541.GL34982@atomide.com>
- <ZS1UQS4FQYq2ZeaC@hovoldconsulting.com>
+        linux-serial@vger.kernel.org,
+        openembedded-core <openembedded-core@lists.openembedded.org>,
+        Bruce Ashfield <bruce.ashfield@gmail.com>,
+        Randy MacLeod <randy.macleod@windriver.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: Kernel 6.5 ttyS1 hang with qemu (was Re: [OE-core] Summary of
+ the remaining 6.5 kernel serial issue (and 6.5 summary)
+Message-ID: <20231018052822.GP27774@atomide.com>
+References: <178DF50519C11C84.8679@lists.openembedded.org>
+ <b208c9c6b72be4ef0f2aadb7bed103280bff60a0.camel@linuxfoundation.org>
+ <2023101516-unmolded-otter-e3e0@gregkh>
+ <214757eca7f4cd639a7a8d9a822476c1ec30f01c.camel@linuxfoundation.org>
+ <20231016063501.GL27774@atomide.com>
+ <ZSzjNgdCH_wmB4u2@nuoska>
+ <20231016072352.GM27774@atomide.com>
+ <0d86deae37877258f46322d4d727903fca12ad21.camel@linuxfoundation.org>
+ <20231017065616.GN27774@atomide.com>
+ <87cdf04bfd7997465dad157d9d81fc14ca7d122f.camel@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZS1UQS4FQYq2ZeaC@hovoldconsulting.com>
+In-Reply-To: <87cdf04bfd7997465dad157d9d81fc14ca7d122f.camel@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Johan Hovold <johan@kernel.org> [231016 15:18]:
-> On Sat, Oct 07, 2023 at 08:45:41AM +0300, Tony Lindgren wrote:
-> > * Johan Hovold <johan@kernel.org> [231006 15:37]:
-> > > On Fri, Oct 06, 2023 at 11:37:12AM +0300, Tony Lindgren wrote:
-> 
-> > > > Care to clarify a bit which parts are unclear? The hierarchy of port
-> > > > devices, making serial core manage runtime PM in a generic way, or
-> > > > flushing tx?
+* Richard Purdie <richard.purdie@linuxfoundation.org> [231017 22:15]:
+> On Tue, 2023-10-17 at 09:56 +0300, Tony Lindgren wrote:
+> > * Richard Purdie <richard.purdie@linuxfoundation.org> [231016 08:10]:
+> > > The port sometimes doesn't come up properly at boot.
 > > > 
-> > > I still don't know why you added these two new abstractions (controller
-> > > and port), and that isn't really explained by the commit message either.
+> > > To be clear, the "\n\n" from the qemu side into the port doesn't seem
+> > > to help. The "echo helloB > /dev/ttyS1" inside the image does seem to
+> > > wake it up. 
 > > 
-> > We want serial core to do runtime PM in a generic way and have the usage
-> > count propagate to the parent serial port hardware device. This way we
-> > don't need to care much if the numerous serial port drivers implement
-> > runtime PM or not. Well, except for now we need to check the parent state
-> > for this fix :)
+> > So if I understand correctly, this issue still happens with kernel patched
+> > with commit 81a61051e0ce ("serial: core: Fix checks for tx runtime PM
+> > state"), and the issue now only happens sometimes.
 > 
-> That sounds like a lot of complexity to avoid checking if (the single
-> instance of) pm_runtime_get() returns -EACCESS.
+> The issue has always been intermittent and it appeared to happen less
+> frequently with 81a61051e0ce added but it was hard to know if I was
+> imagining that.
 
-Yes only one call so far. but we have the serial core generic PM patch(es)
-from Andy and Ilpo that are still coming.
+Oh OK.
 
-> > We also want serial core to know the serial port to serial port hardware
-> > mapping as we already have multiport devices. The serial core controller
-> > is there to group the serial ports for each serial port hardware device.
-> > We at least now have an option to support devices with multiple controllers
-> > and ports in case we ever happen to see such things.
+> > I wonder if the following additional change might help?
 > 
-> Hypothetical multiple serial controllers should be modelled as separate
-> controllers, but yeah, perhaps we want to describe the ports.
+> I've added it into testing and have not reproduced the failure with it
+> applied yet, locally or on our autobuilder. We need to sort some
+> release pieces which have been delayed by these issues and we're going
+> with a workaround for that. Once that is built I can get back to
+> testing this change more extensively, see if we can still provoke the
+> issue or not. It may take a day or two of testing before we know with
+> any certainty if the issue is resolved or not.
 
-Yes and we already have multiport controllers.
-
-> > > And if these are indeed needed, then why isn't the serdev controller now
-> > > a child of the "port" device, for example?
-> > 
-> > Yes I agree we should now move serdev controller to be a child of the
-> > serial core port device. Then this $subject patch can be reverted.
-> > 
-> > Moving serdev controller should also help serdev to deal with multiport
-> > devices I think?
-> 
-> It wouldn't help currently I think, since we already resume the
-> controller and don't manage ports individually, but if we now have port
-> devices then it probably should be moved.
-
-I'll post a patch for that after some more checks.
+Thanks for the update, let's wait a few days and see then.
 
 Regards,
 
