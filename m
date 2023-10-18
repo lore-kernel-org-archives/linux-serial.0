@@ -2,195 +2,119 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A886CDB483
-	for <linux-serial@archiver.kernel.org>; Wed, 18 Oct 2023 14:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF342CDB47E
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Oct 2023 14:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344795AbjJROCK (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 18 Oct 2023 10:02:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47932 "EHLO
+        id S235219AbjJROZz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 18 Oct 2023 10:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231839AbjJROCJ (ORCPT
+        with ESMTP id S1345230AbjJROZb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 18 Oct 2023 10:02:09 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5069395
-        for <linux-serial@vger.kernel.org>; Wed, 18 Oct 2023 07:02:07 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id 5b1f17b1804b1-40662119cd0so68505e9.1
-        for <linux-serial@vger.kernel.org>; Wed, 18 Oct 2023 07:02:07 -0700 (PDT)
+        Wed, 18 Oct 2023 10:25:31 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D857D193
+        for <linux-serial@vger.kernel.org>; Wed, 18 Oct 2023 07:17:16 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-51e24210395so12330a12.0
+        for <linux-serial@vger.kernel.org>; Wed, 18 Oct 2023 07:17:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1697637726; x=1698242526; darn=vger.kernel.org;
+        d=google.com; s=20230601; t=1697638633; x=1698243433; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=je7THM0Q6WDll0ILuhNv36+yFTJhhililTvbjgw8ZHU=;
-        b=hm2JnfOsquK3rpgoo2HYBGlM5g0jTTW/ysA0hZQNg69/CawZoMV0WRsxl740kcVDNr
-         l6hW5fJ6wO/r0yMM+evjcw8rCNc/xdaPTGInAzAA/fnGkRs2khXY7WhHIMcouBUz1kq/
-         eCkVvaU03KSQrn6ttoS+vXNRAlcPRDtRlwUvjq3wJIBZNZmmb6YdNrOcAo+sP1rPrI1C
-         6HxGj/rFg/+U38REx6JmtQlWEN3IsfXxMfVxptFoMUPObJoJo3F7YCbpBghgANLh5Vdx
-         SIlWvYBdHMienrzDqM1h+pSc1tKIpVhY32kFp5/qF8Hv6oBXzAKVMK6aMdkUXd9cfnwC
-         WwmA==
+        bh=QOE/HwXbjXBM8pvrHd8gpMB/9CB4hrW/MzpGagoB2q0=;
+        b=0t0nAVvHIAmh1ekQB8kNEH/ekimf1bdP9TqJyMJMAzlrC/61akbCcHKl2FTG8Ggyt7
+         2bRwZf31LtuYyaql30L3t1pXyfqqXdhMfNFLu5l0T7ERcNUin+BSJzGulJnr6s3G4hvS
+         i6JQmCdj+DtnvG7ltbNybrfYyAy0A4T/rXWv7iJSaN93/S6EzTJU1KWyEDcaejjQ8kOJ
+         vlK5vwPMGmkg/6IblukKn6PQRwP+D5WPfyTTCQ2F16NEAC5DDzD4il7/3bef/xlz9GmX
+         iMbyD9o9Lp4dINnTAdl76MFT8FEs1aVv0oG0RlHq3uuA2F/Is56JzQk6pi8tFkGWQXRO
+         GxKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697637726; x=1698242526;
+        d=1e100.net; s=20230601; t=1697638633; x=1698243433;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=je7THM0Q6WDll0ILuhNv36+yFTJhhililTvbjgw8ZHU=;
-        b=tX6EEUICUswbMCbUL7YpxzN2GFykUcTfl6YFbQhkLL+4zF6qRkxBxgrkS7HuulK0K8
-         2JPyTEjlcHII3HkeZodoQj7vcWF6C/PTQOfxOaDTrQzIb99KHduCzDLK1TwqdDzzOiyE
-         LLMWRDCOHQMt82rYUmTpLp3qWzy6FnlyQbbtjK+tPnQeJcpipZE1n/YB21lO+BpLreZW
-         LtK1gwC0E9ykQ+W7lEtkO7fTkdk5bDKtiQAM6v0eVr2hYGyBPeFr76girugs+XHCmc1n
-         3LKQo/NrJAmJIw1mrik+tWlq5OcWkRaUd5n5EqRbGHoxangp9cx+EbtVU3KzS/MKcs3g
-         C0jQ==
-X-Gm-Message-State: AOJu0Yyl1mMEPPVmz8MvaFBm07UB223JCaN4gscrPotXy39/CsnmnRNk
-        i1hhAIgNal9zMzLgU19RvDAu0A6KZubJqCd7nncEoA==
-X-Google-Smtp-Source: AGHT+IHcuMsAxR+b1GedFvT4k/wv4HydLC0ior1sGatheO5efFqmnxwEU39tFYCX4Cd5UIhqW3KiyG3eAVs4VWgaZqo=
-X-Received: by 2002:a1c:6a16:0:b0:3f7:3e85:36a with SMTP id
- f22-20020a1c6a16000000b003f73e85036amr100035wmc.7.1697637725279; Wed, 18 Oct
- 2023 07:02:05 -0700 (PDT)
+        bh=QOE/HwXbjXBM8pvrHd8gpMB/9CB4hrW/MzpGagoB2q0=;
+        b=Tzv+32hFxww2gSEm81WNkmlK86GKI6sIFREbmjeXpCKeSUK8Idjuz8ZPr2kkhGX/rC
+         Tcry4fTsUOgnSeM2oID/OpARSrnguT4lri5lyB7D0GTNGQdyjnRny+rvywh0mm369IlF
+         Xaa/2hjamV3OuHi6BYbi90reZbkiXOh9Dehtv/eE6OM8gcanvf3m/Ksid3+05ZsN/ixc
+         EhRnl8sNWaSCsC/r7zzM8TGOJCs37KW/03qMLTo5wTCbVdyC8d//wmhUwUDCX/TIfLhV
+         EbiIbbYg+9hMTvNceBSQWWfGLcgUbA1ZUVNkxwEPOxRx1chIJ6kLY3jJqhgSbylgpMLv
+         Yeeg==
+X-Gm-Message-State: AOJu0YxP6PFUqGAjVY3L68KjtO8yGlD2XMqiRaa3tebYA3udKXP+Kcz5
+        mP1mkhdrvqN88ZO77SITctArQkom1C+RIN+kwINjJw==
+X-Google-Smtp-Source: AGHT+IHmL8s7uMe74PQsFSvo3cbKUEO4eKQ6ofJYGQCkXl0yaoYhv0BaAcEdSxe3CnHa/wjM6y76eZdS/9Xom2hW1rY=
+X-Received: by 2002:a50:9f03:0:b0:52e:f99a:b5f8 with SMTP id
+ b3-20020a509f03000000b0052ef99ab5f8mr99470edf.7.1697638632991; Wed, 18 Oct
+ 2023 07:17:12 -0700 (PDT)
 MIME-Version: 1.0
-References: <20231014181333.2579530-1-vamshigajjela@google.com>
- <0d5f9af2-22ac-4753-8c5a-76c4d44dcc9c@kernel.org> <7d5493f0-b9a6-5ddc-75a-9add2eb75a24@linux.intel.com>
-In-Reply-To: <7d5493f0-b9a6-5ddc-75a-9add2eb75a24@linux.intel.com>
+References: <20231014104942.856152-1-vamshigajjela@google.com>
+ <20231014104942.856152-3-vamshigajjela@google.com> <b0ec67b1-24a2-d67d-d7c1-9c3fdafdb570@linux.intel.com>
+In-Reply-To: <b0ec67b1-24a2-d67d-d7c1-9c3fdafdb570@linux.intel.com>
 From:   VAMSHI GAJJELA <vamshigajjela@google.com>
-Date:   Wed, 18 Oct 2023 19:31:52 +0530
-Message-ID: <CAMTSyjojcrKzWWsDdnuO__x5Zwik5m1rW6c7xi2jETh5=jJrwg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] serial: core: Potential overflow of frame_time
+Date:   Wed, 18 Oct 2023 19:46:59 +0530
+Message-ID: <CAMTSyjpiz_LVtVAzaNpD-xThtp6sKNy-Uvkr+CaH9b10VRYD9A@mail.gmail.com>
+Subject: Re: [PATCH 2/3] serial: core: Make local variable size to u64
 To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         linux-serial <linux-serial@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>, manugautam@google.com,
         Subhash Jadavani <sjadavani@google.com>,
-        Channa Kadabi <kadabi@google.com>,
-        Jiri Slaby <jirislaby@kernel.org>
+        Channa Kadabi <kadabi@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Oct 16, 2023 at 4:30=E2=80=AFPM Ilpo J=C3=A4rvinen
+On Mon, Oct 16, 2023 at 5:09=E2=80=AFPM Ilpo J=C3=A4rvinen
 <ilpo.jarvinen@linux.intel.com> wrote:
 >
-> On Mon, 16 Oct 2023, Jiri Slaby wrote:
+> On Sat, 14 Oct 2023, Vamshi Gajjela wrote:
 >
-> > On 14. 10. 23, 20:13, Vamshi Gajjela wrote:
-> > > From: VAMSHI GAJJELA <vamshigajjela@google.com>
-> > >
-> > > uart_update_timeout() sets a u64 value to an unsigned int frame_time.
-> > > While it can be cast to u32 before assignment, there's a specific cas=
-e
-> > > where frame_time is cast to u64. Since frame_time consistently
-> > > participates in u64 arithmetic, its data type is converted to u64 to
-> > > eliminate the need for explicit casting.
+> > From: VAMSHI GAJJELA <vamshigajjela@google.com>
 > >
-> > And make the divisions by the order of magnutude slower for no good rea=
-son?
-> > (Hint: have you looked what DIV64_U64_ROUND_UP() looks like on 32bit ye=
-t?)
+> > The variable size has been changed from u32 to u64 to accommodate a
+> > larger range of values without the need for explicit typecasting.
+>
+> Don't use too broad/generic terminology in shortlog (on [PATCH] line in
+> subject) or changelog but explicitly mention the variable names please.
+name of the variable is "size", may be now I will rename the variable
+to "frame_size" in v2
+>
+> > Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
+> > ---
+> >  drivers/tty/serial/serial_core.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
 > >
-> > Unless you provide a reason it can overflow in real (in fact you spell =
-the
-> > opposite in the text above):
-> > NACKED-by: Jiri Slaby <jirislaby@kernel.org>
+> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
+al_core.c
+> > index 7bdc21d5e13b..fb4696d17a8b 100644
+> > --- a/drivers/tty/serial/serial_core.c
+> > +++ b/drivers/tty/serial/serial_core.c
+> > @@ -410,10 +410,10 @@ void
+> >  uart_update_timeout(struct uart_port *port, unsigned int cflag,
+> >                   unsigned int baud)
+> >  {
+> > -     unsigned int size =3D tty_get_frame_size(cflag);
+> > +     u64 size =3D tty_get_frame_size(cflag);
+> >       u64 frame_time;
+> >
+> > -     frame_time =3D (u64)size * NSEC_PER_SEC;
+> > +     frame_time =3D size * NSEC_PER_SEC;
+> >       port->frame_time =3D DIV64_U64_ROUND_UP(frame_time, baud);
+> >  }
+> >  EXPORT_SYMBOL(uart_update_timeout);
 >
-> I sorry but I have to concur Jiri heavily here,
->
-> NACKED-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
->
-> > > Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
-> > > ---
-> > > v2:
-> > > - use DIV64_U64_ROUND_UP with frame_time
->
-> Please, I barely managed to read your v1 and it's v2 already, don't send
-> the next version this soon. There's absolutely no need to fill our inboxe=
-s
-> with n versions of your patch over a weekend, just remain patient
-> and wait reasonable amount of time to gather feedback, please. ...I know
-> it's often hard to wait, it's hard for me too at times.
->
-> You even failed to convert the other divide done on ->frame_time to
-> DIV64_u64_ROUND_UP(), which looks a mindboggling oversight to me.
-> So far you've managed to cause so many problems with these two attempts t=
-o
-> fix a non-problem I heavily suggest you focus on something that doesn't
-> relate to fixing types. It takes time to understand the related code when
-> doing something as simple as type change, which you clearly did not have
-> as demonstrated by you missing that other divide which can be trivially
-> found with git grep.
-Apologies for the inconvenience caused, I should have waited for the respon=
-se
-on v1 before making v2, by leaving a comment about the anticipated change.
+> This is actually a good cleanup all by itself unrelated to the other
+> change but you need to adapt the changelog to reflect why this is helpful
+> instead wording it based on the other change.
+I shall submit this as a separate patch. As mentioned in 1/3 patch
+I will also add a cast u32 before assigning the value to port->frametime
+along with variable name and size change.
 
-I have clearly not considered all the architectures in the patch, and
-the overhead
-of division on 32-archs, mistake from my side. once again apologies for tha=
-t.
-
-Thanks Jiri Slaby & Ilpo J=C3=A4rvinen for the review.
->
-> > >
-> > >   drivers/tty/serial/8250/8250_port.c | 2 +-
-> > >   include/linux/serial_core.h         | 4 ++--
-> > >   2 files changed, 3 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/drivers/tty/serial/8250/8250_port.c
-> > > b/drivers/tty/serial/8250/8250_port.c
-> > > index 141627370aab..d1bf794498c4 100644
-> > > --- a/drivers/tty/serial/8250/8250_port.c
-> > > +++ b/drivers/tty/serial/8250/8250_port.c
-> > > @@ -1510,7 +1510,7 @@ static inline void __stop_tx(struct uart_8250_p=
-ort *p)
-> > >                      * rather than after it is fully sent.
-> > >                      * Roughly estimate 1 extra bit here with / 7.
-> > >                      */
-> > > -                   stop_delay =3D p->port.frame_time +
-> > > DIV_ROUND_UP(p->port.frame_time, 7);
-> > > +                   stop_delay =3D p->port.frame_time +
-> > > DIV64_U64_ROUND_UP(p->port.frame_time, 7);
-> > >             }
-> > >                     __stop_tx_rs485(p, stop_delay);
-> > > diff --git a/include/linux/serial_core.h b/include/linux/serial_core.=
-h
-> > > index bb6f073bc159..b128513b009a 100644
-> > > --- a/include/linux/serial_core.h
-> > > +++ b/include/linux/serial_core.h
-> > > @@ -558,7 +558,7 @@ struct uart_port {
-> > >             bool                    hw_stopped;             /* sw-ass=
-isted CTS
-> > > flow state */
-> > >     unsigned int            mctrl;                  /* current modem =
-ctrl
-> > > settings */
-> > > -   unsigned int            frame_time;             /* frame timing i=
-n ns
-> > > */
-> > > +   unsigned long           frame_time;             /* frame timing i=
-n ns
-> > > */
->
-> As with v1, u64 !=3D unsigned long, I hope you do know that much about
-> different architectures...
 >
 > --
 >  i.
 >
-> > >     unsigned int            type;                   /* port type */
-> > >     const struct uart_ops   *ops;
-> > >     unsigned int            custom_divisor;
-> > > @@ -764,7 +764,7 @@ unsigned int uart_get_divisor(struct uart_port *p=
-ort,
-> > > unsigned int baud);
-> > >    */
-> > >   static inline unsigned long uart_fifo_timeout(struct uart_port *por=
-t)
-> > >   {
-> > > -   u64 fifo_timeout =3D (u64)READ_ONCE(port->frame_time) * port->fif=
-osize;
-> > > +   u64 fifo_timeout =3D READ_ONCE(port->frame_time) * port->fifosize=
-;
-> > >             /* Add .02 seconds of slop */
-> > >     fifo_timeout +=3D 20 * NSEC_PER_MSEC;
-> >
-> >
