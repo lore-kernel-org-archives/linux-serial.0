@@ -2,60 +2,62 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D779ACDB483
-	for <linux-serial@archiver.kernel.org>; Wed, 18 Oct 2023 19:52:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51119CDB47E
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Oct 2023 19:54:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229757AbjJRTwu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 18 Oct 2023 15:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50174 "EHLO
+        id S229702AbjJRTyE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 18 Oct 2023 15:54:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230366AbjJRTwt (ORCPT
+        with ESMTP id S231657AbjJRTyD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 18 Oct 2023 15:52:49 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC92B8
-        for <linux-serial@vger.kernel.org>; Wed, 18 Oct 2023 12:52:46 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id ffacd0b85a97d-32799639a2aso6193773f8f.3
-        for <linux-serial@vger.kernel.org>; Wed, 18 Oct 2023 12:52:46 -0700 (PDT)
+        Wed, 18 Oct 2023 15:54:03 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D77E119
+        for <linux-serial@vger.kernel.org>; Wed, 18 Oct 2023 12:54:01 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id ffacd0b85a97d-323ef9a8b59so6520174f8f.3
+        for <linux-serial@vger.kernel.org>; Wed, 18 Oct 2023 12:54:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1697658765; x=1698263565; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=nm6W4GF2fEza/pR8Pn+Fd8sPcS6wBwKszXRTj0SkRso=;
-        b=Ube3Hd6VxLMlTIG6EmCWGG+t7tj7aN5QtTUx7Nor+iXdie4VQrXAvmK06sZIjDzI/p
-         CTaF3+V9p9XrzbyQL7eVjpfFjQc03KZBvZ/vP96wvy2jr0jGTUn40kGgSt/kEYdUUMO8
-         RqPvNMbhE/2gizPRdAqGfjRUpQ2yMrMpok3A+mSxCkMvFsuVmWk0jNdeGw4MiOlkWOTg
-         SAVyhf/tDHZJaKtKZcmzfg3q5IFPKp4CDw78HCPgLhupllxUPRTjAHFNNGeyJByNO4X1
-         8ArW7i5yzaZ0TDfk9U6iIDsCcEMIOVzHuyfPFk61DsmtEyscN7PavftxfQ5kqUQ1z6no
-         iOtQ==
+        d=linaro.org; s=google; t=1697658840; x=1698263640; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
+         :from:content-language:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=APFhD2dbMwxltNImL/wOSymF+XEkMWF4V9pDcyMRenw=;
+        b=h6ANmHGkyr6jHwBUDkuiE3YKasGFbIohfZiW3pzAM8sld/PF/rUugWPEvRuTnd+jGg
+         IW6H95MrKbQYWDO51JZSTR2+wo3arEXFHwBJufdynJXhLBVHCppDw+J9/5xdy4ga/1jL
+         dQ3aJ/mqBfTBumT2oOQMHk664h911Al4c2ixon5lDKcUrKmAqQPxhz6E8Mnf47rhJZAP
+         M3aggPaHFgQ2RhQIxcSETzh6REjsnSlzdn7s/QXSMV7aeYnopxRcklPtAt499Rapesrh
+         D7jwF4/VObUOxZaq5FYW+PjUM7QxlwJQ5xMabxX4d0o2cjRz4DotPOEFegU0OugogHyC
+         Z/FQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697658765; x=1698263565;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nm6W4GF2fEza/pR8Pn+Fd8sPcS6wBwKszXRTj0SkRso=;
-        b=SRYEHBaJ+PTs4u1Ae3c9mTeIJYXuQ5kObWvGHFTG+AHIVvIHAfKv5Rvd5MvSqnnLKo
-         t1cPZF/Wzi4t7aH9THi+oqayGG9CIOG4rwPKseJsARVa8P6+YL7SgSOx18Tql1UzD/sE
-         OhPXb6h6w4BPQRioBuJ+aDeBHTmzkq6e4TWIm7w8s5YWbVu11gm8Q929rGePHBxXKWtX
-         3PKp/04ofHKQgOjPyrgBpYrLgOE9qmgAayZjIs6UvvEkw9XSMt3b3Z502gNn8XO5E/KY
-         7yp0x/gC2tWi9pQ2eI4dm16wcUQdbZ0Ag/RSVODHfsf8e437d64JTfhpa3eAAf6GdJct
-         Fs5A==
-X-Gm-Message-State: AOJu0YwiXasw/f8P2DTtpFo5N7ELJLh+pJ1km2thBXHqEaQwJJgmuqIv
-        q/bBEoLFtCFlQmX0QVlxFFwlkw==
-X-Google-Smtp-Source: AGHT+IGxqL1+fgOdw1Qir7iE4fmFD3glIhrdd9CUL8vVbEGsIM1fBySeJk6KV1L3NeGH6cmML/TezA==
-X-Received: by 2002:adf:f492:0:b0:32d:b7d4:b90 with SMTP id l18-20020adff492000000b0032db7d40b90mr52515wro.39.1697658765025;
-        Wed, 18 Oct 2023 12:52:45 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1697658840; x=1698263640;
+        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
+         :from:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=APFhD2dbMwxltNImL/wOSymF+XEkMWF4V9pDcyMRenw=;
+        b=djVqQKSbib/1eWqQ8mvwM7u0J8wNUuqB9o2bk5nCObZnh3Ma23OsBJWXmLBAFSW+sh
+         WPHOT9qCVAMnSiqN2IDv2a7lXFqXYPACnpV9u61mak3b3bcwxecQGIrifzvFvzr+pI5P
+         0BM8er0z3BLZkj1K7xIldlGZG+ElvfjiwYMyeO6HCLJEJt4eR16EbSQDOdilYtzI1oma
+         NzpwCXz5uusgWhqs29VeOO9sf/Q3AwrdCBlpBTNH9XZpBBbahq0fux59loIcpyxJteVa
+         ste1U4fCuVzie5GMsrwpKTVQE5pe9hde9RKqODQqfmrd6MyY7bIch43rHn/ZukB0gj7J
+         BVxw==
+X-Gm-Message-State: AOJu0Yz0wwWEsIdkJ0U7Vvxl7F/QLRZ+FWpdDBi5Plt4UJK3dhBTj4PD
+        0Ijr5lqf7G2uKfth4kcbwasxQw==
+X-Google-Smtp-Source: AGHT+IFfQSIKRBvNccm0+dPie5ojeG6TjamhMefYmTJrxj/HDo34QZ5+SAXlfswSMG81HFCLR1XOMQ==
+X-Received: by 2002:a5d:4f06:0:b0:31f:dc60:13b5 with SMTP id c6-20020a5d4f06000000b0031fdc6013b5mr36544wru.25.1697658839864;
+        Wed, 18 Oct 2023 12:53:59 -0700 (PDT)
 Received: from [192.168.1.20] ([178.197.223.49])
-        by smtp.gmail.com with ESMTPSA id j4-20020adfe504000000b0032da7454ebesm2793693wrm.79.2023.10.18.12.52.43
+        by smtp.gmail.com with ESMTPSA id j4-20020adfe504000000b0032da7454ebesm2793693wrm.79.2023.10.18.12.53.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Oct 2023 12:52:44 -0700 (PDT)
-Message-ID: <3360b33c-a6ce-463f-b2d8-43a08340f3c7@linaro.org>
-Date:   Wed, 18 Oct 2023 21:52:42 +0200
+        Wed, 18 Oct 2023 12:53:59 -0700 (PDT)
+Message-ID: <f4d1bb66-4d1f-47c5-a252-b64d8a505b74@linaro.org>
+Date:   Wed, 18 Oct 2023 21:53:58 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH] tty: serial: samsung_tty: remove dead code
 Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     =?UTF-8?Q?Andr=C3=A9_Draszik?= <git@andred.net>,
         linux-kernel@vger.kernel.org
 Cc:     alim.akhtar@samsung.com, gregkh@linuxfoundation.org,
@@ -63,7 +65,7 @@ Cc:     alim.akhtar@samsung.com, gregkh@linuxfoundation.org,
         linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
         =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>
 References: <20231018105454.3911161-1-git@andred.net>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+ <3360b33c-a6ce-463f-b2d8-43a08340f3c7@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
  cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
@@ -108,31 +110,34 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20231018105454.3911161-1-git@andred.net>
+In-Reply-To: <3360b33c-a6ce-463f-b2d8-43a08340f3c7@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 18/10/2023 12:54, André Draszik wrote:
-> From: André Draszik <andre.draszik@linaro.org>
+On 18/10/2023 21:52, Krzysztof Kozlowski wrote:
+> On 18/10/2023 12:54, André Draszik wrote:
+>> From: André Draszik <andre.draszik@linaro.org>
+>>
+>> When support for various old platforms was removed in commit
+>> 1ea35b355722, s3c24xx_serial_ops also became unused here because
 > 
-> When support for various old platforms was removed in commit
-> 1ea35b355722, s3c24xx_serial_ops also became unused here because
-
-Please use commit xyz ("foo") syntax as pointed out by checkpatch.
-
-> nothing sets port type TYPE_S3C24XX anymore.
+> Please use commit xyz ("foo") syntax as pointed out by checkpatch.
 > 
-> Remove s3c24xx_serial_ops and all the code that's unreachable now.
+>> nothing sets port type TYPE_S3C24XX anymore.
+>>
+>> Remove s3c24xx_serial_ops and all the code that's unreachable now.
+>>
+>> Fixes: 1ea35b355722 ("ARM: s3c: remove s3c24xx specific hacks")
+>> Signed-off-by: André Draszik <andre.draszik@linaro.org>
 > 
-> Fixes: 1ea35b355722 ("ARM: s3c: remove s3c24xx specific hacks")
-> Signed-off-by: André Draszik <andre.draszik@linaro.org>
+> Rest looks good:
+> 
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Rest looks good:
-
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+.... and not entirely. You left earlycon.
 
 Best regards,
 Krzysztof
