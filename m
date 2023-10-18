@@ -2,229 +2,246 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A73A7CDB47E
-	for <linux-serial@archiver.kernel.org>; Wed, 18 Oct 2023 09:21:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 520FACDB47E
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Oct 2023 10:55:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229807AbjJRJVk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 18 Oct 2023 05:21:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40240 "EHLO
+        id S229563AbjJRKz0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 18 Oct 2023 06:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbjJRJVD (ORCPT
+        with ESMTP id S229482AbjJRKzZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 18 Oct 2023 05:21:03 -0400
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2040.outbound.protection.outlook.com [40.107.255.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4DC109;
-        Wed, 18 Oct 2023 02:20:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IGkVb6etcvkXT8cyrH43pn+awWmxzMNSS3CmhTWVgt2aTjkwa32Cwfl9SXkKMdZnOEH8cQ1jaqpPiIC4TILh7e1xkQWP+vGeu5aIsoLypwfsPGeOmCs7pk/TjdrzOCp7rSSavBNibDJM3Z0nHQ/3XCLeXFpHw4+4BNc2tuD4r9ZhIVGbG4AAmIUqr5/Y56i6099DPNbSjV2lp2MaSepdcinFjd/2+LLb0nzdO9O+8CTTP1mJm7AvrFNctP7e1oD5NutRRnr8exl9WKO7z6I0NXwrzV1Hg3ZjOoZJcToz32TWO3qby1gIMJIPXnDofDtZSjFsPsUKHWC+xZxoRmGFbQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5pgFiIzlSiWLOpPxreoLMBN5dOg4+aZsk9xdeiqTmd8=;
- b=C7q7Wlxc2IFH3ChGzDcp2DcFAFwkqLhFU0zfdPdms2khnprZD5E73odNxRXf0p/AfuedGvoSviKybQcb/7eippajHuTqk+ojNoi8H+LVQTx8Ehqhh8k+COpzmfo/ebLR1hTVgxjNelOQbCMwmpt65aXMjyDwAChiemWsTIhX8AMTWRlcyN3h9BZ+Tu5hCZoRse3CGdwgqwgt/6hFHd+apEj84Ev7zzWgfKJmD4+0gCe5K/CbqWu9hn/PbmiRy514AFAEOzz/WSm9r4XVe6GGClQQPDZ4UwelLLwULP1ofH+449ReW2h4KwJiYaVomc2WWCWY7eu0xFXicZOgbZdHbg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
- dkim=pass header.d=moxa.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5pgFiIzlSiWLOpPxreoLMBN5dOg4+aZsk9xdeiqTmd8=;
- b=gbl/PewuNelvjIMT1ikirgz1ayK/aegKpiwJT0C+fIPbgFvKpLaocDSH6HGQFG/kBJN/c86Jms2CSoliJAULaKfzdDcSE3O0dbcVbDodB+Mzuw9cnbDFqi7VyTvP/hKNPsrkVuoY8qoU4iHPfXXcvZA9rsUSCaun7PHG8oKuMCA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=moxa.com;
-Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- (2603:1096:301:115::14) by SEZPR01MB4134.apcprd01.prod.exchangelabs.com
- (2603:1096:101:46::5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.21; Wed, 18 Oct
- 2023 09:20:53 +0000
-Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- ([fe80::3f1:6c0e:dec3:714b]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- ([fe80::3f1:6c0e:dec3:714b%5]) with mapi id 15.20.6886.034; Wed, 18 Oct 2023
- 09:20:53 +0000
-From:   Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-Subject: [PATCH v3 6/6] tty: serial: 8250: Add support for MOXA PCIe boards to switch interface between RS422/RS485
-Date:   Wed, 18 Oct 2023 17:17:39 +0800
-Message-Id: <20231018091739.10125-7-crescentcy.hsieh@moxa.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20231018091739.10125-1-crescentcy.hsieh@moxa.com>
-References: <20231018091739.10125-1-crescentcy.hsieh@moxa.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: TYCP286CA0015.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:400:26c::19) To PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- (2603:1096:301:115::14)
+        Wed, 18 Oct 2023 06:55:25 -0400
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA83AEA;
+        Wed, 18 Oct 2023 03:55:21 -0700 (PDT)
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-407da05f05aso12426155e9.3;
+        Wed, 18 Oct 2023 03:55:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697626520; x=1698231320;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=rs9LevmP9tka/XKvdemB1cXwK7JUBe4mAxtgJ4jhXQs=;
+        b=SSJGC80ny3PUUBbQCGC1pQFZm07ohO8UkWIJwuTzdDxKJgp5k1PioSEsjjI9ulmcLa
+         9iIlMiez7sgTcbHmXRJzlOL0DUGph0t0Pliqp43n+98XCwsRV/aSAtznaEz8fwpUWQY1
+         eQnlG/tpMeax6jj6J38WibXNDP9YjOf6jAHKTkqySGZEJQErsjp5+rvfIFqDySRIQBFP
+         nVP0q9UmePMyEl7h7hRoa7334dNTeQW+yD4qekEALj3gB+R+/6em5zEmAXK2GtFzpYSr
+         Ng+Ibn4foq7r6WsupyRA5kcab9/KuZOD+ilcy8k0o9QzQd6NIXAK3irAyu7O989T/+OU
+         wy7Q==
+X-Gm-Message-State: AOJu0YwdwgS+yjkMS+BFWxg1V9e9M/FbZqeAwspJb9opixsc7fwq87g1
+        zDgaaJoVE4fWvIHw9XJQ6g9nYAXTXwV5fUrM
+X-Google-Smtp-Source: AGHT+IEDc0yLySq1GGICz5oXgWSJXPi85MBgBwuCoh4eNVzLkUZNzn+GehG6KoZtTKGkg+SUolDtnA==
+X-Received: by 2002:a05:600c:4fd2:b0:407:3b6d:b561 with SMTP id o18-20020a05600c4fd200b004073b6db561mr3649087wmq.9.1697626519887;
+        Wed, 18 Oct 2023 03:55:19 -0700 (PDT)
+Received: from salami.lan ([80.111.64.44])
+        by smtp.gmail.com with ESMTPSA id o36-20020a05600c512400b00405959469afsm1374498wms.3.2023.10.18.03.55.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Oct 2023 03:55:19 -0700 (PDT)
+From:   =?UTF-8?q?Andr=C3=A9=20Draszik?= <git@andred.net>
+To:     linux-kernel@vger.kernel.org
+Cc:     krzysztof.kozlowski@linaro.org, alim.akhtar@samsung.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        =?UTF-8?q?Andr=C3=A9=20Draszik?= <andre.draszik@linaro.org>
+Subject: [PATCH] tty: serial: samsung_tty: remove dead code
+Date:   Wed, 18 Oct 2023 11:54:54 +0100
+Message-Id: <20231018105454.3911161-1-git@andred.net>
+X-Mailer: git-send-email 2.40.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|SEZPR01MB4134:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9f0ef1c2-2b5b-4110-6999-08dbcfbb86b5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: c53LSErJVldqrtvaKQ3drVkMZtPmdzHQp9CRbPVhGa6ZWdTPq4m1T1CgHtOfi4UQsoYEkcY/kRNCleUMCxDuAfUd/MP7aaEFg9oOdWHBqmnSdjPMubDgoLOKBHBcR5J3RKmCWBB7iSwHstcd8mmq+VV3mZdehSvrXrXK1YJIaEGvzwKjAwiC1R4AjD+VywwF6bcxSWhgjdzYeS01Xu2FstyxIxC37/fT26pIHkXH9su//NG2B3e2xFFmx9qrO/NoMa+g40u1CoC5tTV+CB9Kg+MV4MBDeA7WSlrysXYReErqsEDvsV4QlJXPnt2t56DTDrwOFRQ0SxLe7fabzkvKtnSEMzw4aK8J1DqyfufOY0sMvbtZa1ZCHl+Hly14O94rG+CC09KA7CWwC9siulDmsGglnW9iqYD6Aim8hL8hA3u1RRvbEaQLj8vFNDhfHf9Frg/sPAkoerN0MVf8QNckqnyIWIOyupTO6UOynt8cM9vjlnShGoGWSNrEBAc4N7hmoEATAr5xhbMWbsWqFBhKT+E5GT2nfJw/ciHpTw8inFEvMOC34Wq5mLegtQwHI0Uv0Xc8dECdBHp7JebXX+UTFDGNB8syIwDZRAIWiaz6Bl9IOo4V26xdziRlUGZLFjDs
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(366004)(396003)(136003)(376002)(39860400002)(230922051799003)(64100799003)(186009)(451199024)(1800799009)(107886003)(38350700005)(6666004)(6506007)(52116002)(6512007)(6486002)(508600001)(66476007)(110136005)(316002)(26005)(36756003)(1076003)(66556008)(66946007)(2616005)(41300700001)(38100700002)(5660300002)(8936002)(4326008)(8676002)(2906002)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?my4ILQl1e05ai5DYvxV4mDx6fnnzyDF7jEZYaBH7mQ+LumZ/74xVYjfabKKu?=
- =?us-ascii?Q?s2NZqCDO7gyp/1hjwZzZ5A0Bt2JwYHVY7Z60/ttTTImbQzE57HCDfWirXOms?=
- =?us-ascii?Q?52EpbXPVSukzkw+Gi9MeaGl8EsImodVkPe9ijdL7G7Z/u7ml5uDz1vzM6Qha?=
- =?us-ascii?Q?syK64TtlwDDa8NMzTTchBW0s4jIVqJ+oZ/AooDDPOQnRipykbMUNPkEW2FrG?=
- =?us-ascii?Q?kLiTWd5RSaYHsrFu2JMPEiB1CmfhwaT0u/zOYrmKcH54S/5us1BXcfGF7WTC?=
- =?us-ascii?Q?d6GvMMax+tqH9xs7CzQocRvOiu+4bHll7lGlZCnD111SCBr6mJXKrlxl0MP/?=
- =?us-ascii?Q?bSn4R+GOWcgZS/I2tlFbWsYXmROZdyywuJ48xKpiAMPluZ7lpPUUhCgfMmXL?=
- =?us-ascii?Q?W+1/nJ3r4EKK/3BZx3fSLjF0MdNqgmT092L24wA1FHW7fl/tMD9/g/DY4BAu?=
- =?us-ascii?Q?lCz/g8nRq8kaReQM5Fsu2bh3jeXK/ctfrmDAEviCXu/mJaHNLqj/IkswvwNt?=
- =?us-ascii?Q?QqxZz87uM2pDUonsJO92khg8i2EHmxGYi+Q4TcqOsFToEW8SEcdgSRB5Ao++?=
- =?us-ascii?Q?Y3+NqlcrvKXbcU7fCJ4zKVE/HVrjzXuxvbQN1L5OJD9VzageJXOiPdm2XyE3?=
- =?us-ascii?Q?gEf8KGtMHyFgRfpIGeG27ntdw3SCUKcJqvZphdIMcIQ1yr+WpurBEs1X8bB1?=
- =?us-ascii?Q?A8Ll4g6M9yXVwnTxTLqXeZgY5kwyBqOGV1ZAl80YTwYdsbhuWBh5JWqYUGOc?=
- =?us-ascii?Q?J169iK8JDZLgEjfcV+Db9CXb7CCNsoZEtvG0RPki/LmR2fWaMLCWaz8Bv1++?=
- =?us-ascii?Q?GU2IRdBUNKvqyovtBPS01KnZY3qbcS6FEL6cBLM/7dUzGxtF7EWcaPGriSWa?=
- =?us-ascii?Q?RIRZgCi752Mw5A6YM2p2LAaXU2FXnkNfTQxYwsi9obiFQ19DBaU3nSX84Son?=
- =?us-ascii?Q?o3n9HMs1kl49XO3HLIzNO0ieQnFqewvVpPcpUWFM2JBUZ9v0meLH9Amc6Psl?=
- =?us-ascii?Q?NbBR52OUImEq1h7eFrgrdBDYcI9Mcwr7r8zx8xCGc9U+Q2HylbcGgQBIqt9O?=
- =?us-ascii?Q?zvdtoC9A37yjX2V+tF+Pt/0I9mbfA3t6Pe5CxhGMSyXtQNtifigKaBsLF5Ym?=
- =?us-ascii?Q?BY8ZxHdDjqOjFVPCSvHPSwx+U3eSpuv0yusFlOYSDzBmV7WyyTuc6Mu+obes?=
- =?us-ascii?Q?V7pmEUVbeUlWOQ59bX8BuuosRu+QsVv5DirSou4AuaryQfRx20WavfkSX3XM?=
- =?us-ascii?Q?gSAtz2vPf1AndTqiKkbfR9oLpAr0p9s1bn03GRkZGObZiZjtyk3/SfHxhvti?=
- =?us-ascii?Q?GxGHC53Zyz2bS97VEJaFfkBOATF+wjlfHy1ODF1cHaRi31Jw1XRb1j/ZpaDq?=
- =?us-ascii?Q?kiAXj4/z//iw8W9fq6LvnLTohLsQL07KQMFxol9vSVQfSlkKLQvm7+VbzxKt?=
- =?us-ascii?Q?WQO45NdkqnR5XC1eIjHPzmek7VzJfzq1HldZvoi0V4ml+5snv49sHGolMYHR?=
- =?us-ascii?Q?CLAgGPvsNwFSWLJIZy6uLiO/zBDDNBDyLXGZYs6UD+b914ScipYgglcSLJzQ?=
- =?us-ascii?Q?EcAr2rI9KN1KpvEoNqU3vtQScXG1jIRKmpu35pml8SlXhUJlbHXVc2q/9DfN?=
- =?us-ascii?Q?ZQ=3D=3D?=
-X-OriginatorOrg: moxa.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9f0ef1c2-2b5b-4110-6999-08dbcfbb86b5
-X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2023 09:20:53.0269
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /bfsLwv2cXdaLuQs/LAqPJuetff8G9L5+SECbZkUP1Oy839NnAE7oU+SaRgn+vW9St02bxVXYVuh/WFqOgDcOac0oDhH4tZCx2quooVsZ9I=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEZPR01MB4134
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-MOXA PCIe boards have 4 serial interfaces and don't require additional
-stuff to switch between interfaces:
+From: André Draszik <andre.draszik@linaro.org>
 
-- RS232
-- RS422
-- RS485_2W (half-duplex)
-- RS485_4W (full-duplex)
+When support for various old platforms was removed in commit
+1ea35b355722, s3c24xx_serial_ops also became unused here because
+nothing sets port type TYPE_S3C24XX anymore.
 
-By using ioctl command "TIOCRS485", it can switch between default
-interface and RS485 if supported.
+Remove s3c24xx_serial_ops and all the code that's unreachable now.
 
-That means, for RS422/RS485 board, it can switch between RS422 and
-RS485 by setting the flags within struct serial_rs485.
-
-However, for the RS232/RS422/RS485 board, it can only switch between
-RS232 and RS485, there's no flag for switching interface into RS422.
-
-This patch uses "SER_RS485_TERMINATE_BUS" to represent RS422 as a
-workaround solution:
-
-- RS232                   = (no flags are set)
-- RS422                   = SER_RS485_ENABLED | SER_RS485_TERMINATE_BUS
-- RS485_2W (half-duplex)  = SER_RS485_ENABLED
-- RS485_4W (full-duplex)  = SER_RS485_ENABLED | SER_RS485_RX_DURING_TX
-
-Signed-off-by: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+Fixes: 1ea35b355722 ("ARM: s3c: remove s3c24xx specific hacks")
+Signed-off-by: André Draszik <andre.draszik@linaro.org>
 ---
- drivers/tty/serial/8250/8250_pci.c | 58 ++++++++++++++++++++++++++++++
- 1 file changed, 58 insertions(+)
+ drivers/tty/serial/samsung_tty.c | 105 -------------------------------
+ 1 file changed, 105 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 29a28e72b..098ac466b 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1974,6 +1974,10 @@ pci_sunix_setup(struct serial_private *priv,
- #define MOXA_RS485_2W	0x0F
- #define MOXA_UIR_OFFSET	0x04
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 07fb8a9dac63..6b8d4b4402e9 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -64,7 +64,6 @@
+ #define RXSTAT_DUMMY_READ (0x10000000)
  
-+static const struct serial_rs485 pci_moxa_rs485_supported = {
-+	.flags = SER_RS485_ENABLED | SER_RS485_RX_DURING_TX | SER_RS485_TERMINATE_BUS,
-+};
-+
- static bool pci_moxa_is_mini_pcie(unsigned short device)
- {
- 	if (device == PCI_DEVICE_ID_MOXA_CP102N	||
-@@ -2024,6 +2028,46 @@ static int pci_moxa_set_interface(const struct pci_dev *dev,
- 	return 0;
+ enum s3c24xx_port_type {
+-	TYPE_S3C24XX,
+ 	TYPE_S3C6400,
+ 	TYPE_APPLE_S5L,
+ };
+@@ -128,8 +127,6 @@ struct s3c24xx_uart_dma {
+ };
+ 
+ struct s3c24xx_uart_port {
+-	unsigned char			rx_claimed;
+-	unsigned char			tx_claimed;
+ 	unsigned char			rx_enabled;
+ 	unsigned char			tx_enabled;
+ 	unsigned int			pm_level;
+@@ -1166,29 +1163,6 @@ static void s3c24xx_serial_release_dma(struct s3c24xx_uart_port *p)
+ 	}
  }
  
-+/*
-+ * MOXA PCIe boards support switching the serial interface using the ioctl
-+ * command "TIOCSRS485", but there is currently no dedicated flag for switching
-+ * to RS422. As a workaround, we utilize the "SER_RS485_TERMINATE_BUS" flag to
-+ * represent RS422.
-+ *
-+ *	RS232			= (no flags are set)
-+ *	RS422			= SER_RS485_ENABLED | SER_RS485_TERMINATE_BUS
-+ *	RS485_2W (half-duplex)	= SER_RS485_ENABLED
-+ *	RS485_4W (full-duplex)	= SER_RS485_ENABLED | SER_RS485_RX_DURING_TX
-+ */
-+static int pci_moxa_rs485_config(struct uart_port *port,
-+				 struct ktermios *termios,
-+				 struct serial_rs485 *rs485)
-+{
-+	struct pci_dev *dev = to_pci_dev(port->dev);
-+	unsigned short device = dev->device;
-+	u8 mode = MOXA_RS232;
-+
-+	if (rs485->flags & SER_RS485_ENABLED) {
-+		if (rs485->flags & SER_RS485_TERMINATE_BUS) {
-+			mode = MOXA_RS422;
-+		} else {
-+			if (rs485->flags & SER_RS485_RX_DURING_TX)
-+				mode = MOXA_RS485_4W;
-+			else
-+				mode = MOXA_RS485_2W;
-+		}
-+	} else {
-+		/*
-+		 * RS232 is not supported for MOXA PCIe boards with device IDs
-+		 * matching the pattern 0x*3**.
-+		 */
-+		if (pci_moxa_match_second_digit(device, 0x0300))
-+			return -EOPNOTSUPP;
-+	}
-+
-+	return pci_moxa_set_interface(dev, port->port_id, mode);
-+}
-+
- static int pci_moxa_init(struct pci_dev *dev)
+-static void s3c24xx_serial_shutdown(struct uart_port *port)
+-{
+-	struct s3c24xx_uart_port *ourport = to_ourport(port);
+-
+-	if (ourport->tx_claimed) {
+-		free_irq(ourport->tx_irq, ourport);
+-		ourport->tx_enabled = 0;
+-		ourport->tx_claimed = 0;
+-		ourport->tx_mode = 0;
+-	}
+-
+-	if (ourport->rx_claimed) {
+-		free_irq(ourport->rx_irq, ourport);
+-		ourport->rx_claimed = 0;
+-		ourport->rx_enabled = 0;
+-	}
+-
+-	if (ourport->dma)
+-		s3c24xx_serial_release_dma(ourport);
+-
+-	ourport->tx_in_progress = 0;
+-}
+-
+ static void s3c64xx_serial_shutdown(struct uart_port *port)
  {
- 	unsigned short device = dev->device;
-@@ -2063,9 +2107,23 @@ pci_moxa_setup(struct serial_private *priv,
- 		const struct pciserial_board *board,
- 		struct uart_8250_port *port, int idx)
- {
-+	struct pci_dev *dev = priv->dev;
-+	unsigned short device = dev->device;
- 	unsigned int bar = FL_GET_BASE(board->flags);
- 	int offset;
+ 	struct s3c24xx_uart_port *ourport = to_ourport(port);
+@@ -1234,48 +1208,6 @@ static void apple_s5l_serial_shutdown(struct uart_port *port)
+ 	ourport->tx_in_progress = 0;
+ }
  
-+	/*
-+	 * For the device IDs of MOXA PCIe boards match the pattern 0x*1** and 0x*3**,
-+	 * these boards support switching interface between RS422/RS485 using TIOCSRS485.
-+	 */
-+	if (pci_moxa_match_second_digit(device, 0x0100) ||
-+	    pci_moxa_match_second_digit(device, 0x0300)) {
-+		port->port.rs485_config = pci_moxa_rs485_config;
-+		port->port.rs485_supported = pci_moxa_rs485_supported;
-+
-+		if (pci_moxa_match_second_digit(device, 0x0300))
-+			port->port.rs485.flags |= SER_RS485_ENABLED | SER_RS485_TERMINATE_BUS;
-+	}
- 	if (board->num_ports == 4 && idx == 3)
- 		offset = 7 * board->uart_offset;
- 	else
+-static int s3c24xx_serial_startup(struct uart_port *port)
+-{
+-	struct s3c24xx_uart_port *ourport = to_ourport(port);
+-	int ret;
+-
+-	ourport->rx_enabled = 1;
+-
+-	ret = request_irq(ourport->rx_irq, s3c24xx_serial_rx_irq, 0,
+-			  s3c24xx_serial_portname(port), ourport);
+-
+-	if (ret != 0) {
+-		dev_err(port->dev, "cannot get irq %d\n", ourport->rx_irq);
+-		return ret;
+-	}
+-
+-	ourport->rx_claimed = 1;
+-
+-	dev_dbg(port->dev, "requesting tx irq...\n");
+-
+-	ourport->tx_enabled = 1;
+-
+-	ret = request_irq(ourport->tx_irq, s3c24xx_serial_tx_irq, 0,
+-			  s3c24xx_serial_portname(port), ourport);
+-
+-	if (ret) {
+-		dev_err(port->dev, "cannot get irq %d\n", ourport->tx_irq);
+-		goto err;
+-	}
+-
+-	ourport->tx_claimed = 1;
+-
+-	/* the port reset code should have done the correct
+-	 * register setup for the port controls
+-	 */
+-
+-	return ret;
+-
+-err:
+-	s3c24xx_serial_shutdown(port);
+-	return ret;
+-}
+-
+ static int s3c64xx_serial_startup(struct uart_port *port)
+ {
+ 	struct s3c24xx_uart_port *ourport = to_ourport(port);
+@@ -1692,8 +1624,6 @@ static const char *s3c24xx_serial_type(struct uart_port *port)
+ 	const struct s3c24xx_uart_port *ourport = to_ourport(port);
+ 
+ 	switch (ourport->info->type) {
+-	case TYPE_S3C24XX:
+-		return "S3C24XX";
+ 	case TYPE_S3C6400:
+ 		return "S3C6400/10";
+ 	case TYPE_APPLE_S5L:
+@@ -1753,27 +1683,6 @@ static void s3c24xx_serial_put_poll_char(struct uart_port *port,
+ 			 unsigned char c);
+ #endif
+ 
+-static const struct uart_ops s3c24xx_serial_ops = {
+-	.pm		= s3c24xx_serial_pm,
+-	.tx_empty	= s3c24xx_serial_tx_empty,
+-	.get_mctrl	= s3c24xx_serial_get_mctrl,
+-	.set_mctrl	= s3c24xx_serial_set_mctrl,
+-	.stop_tx	= s3c24xx_serial_stop_tx,
+-	.start_tx	= s3c24xx_serial_start_tx,
+-	.stop_rx	= s3c24xx_serial_stop_rx,
+-	.break_ctl	= s3c24xx_serial_break_ctl,
+-	.startup	= s3c24xx_serial_startup,
+-	.shutdown	= s3c24xx_serial_shutdown,
+-	.set_termios	= s3c24xx_serial_set_termios,
+-	.type		= s3c24xx_serial_type,
+-	.config_port	= s3c24xx_serial_config_port,
+-	.verify_port	= s3c24xx_serial_verify_port,
+-#if defined(CONFIG_SERIAL_SAMSUNG_CONSOLE) && defined(CONFIG_CONSOLE_POLL)
+-	.poll_get_char = s3c24xx_serial_get_poll_char,
+-	.poll_put_char = s3c24xx_serial_put_poll_char,
+-#endif
+-};
+-
+ static const struct uart_ops s3c64xx_serial_ops = {
+ 	.pm		= s3c24xx_serial_pm,
+ 	.tx_empty	= s3c24xx_serial_tx_empty,
+@@ -1836,7 +1745,6 @@ static void s3c24xx_serial_init_port_default(int index) {
+ 	port->iotype = UPIO_MEM;
+ 	port->uartclk = 0;
+ 	port->fifosize = 16;
+-	port->ops = &s3c24xx_serial_ops;
+ 	port->flags = UPF_BOOT_AUTOCONF;
+ 	port->line = index;
+ }
+@@ -1954,16 +1862,6 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+ 		ourport->tx_irq = ret + 1;
+ 	}
+ 
+-	switch (ourport->info->type) {
+-	case TYPE_S3C24XX:
+-		ret = platform_get_irq(platdev, 1);
+-		if (ret > 0)
+-			ourport->tx_irq = ret;
+-		break;
+-	default:
+-		break;
+-	}
+-
+ 	/*
+ 	 * DMA is currently supported only on DT platforms, if DMA properties
+ 	 * are specified.
+@@ -2083,9 +1981,6 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+ 			&ourport->drv_data->def_cfg;
+ 
+ 	switch (ourport->info->type) {
+-	case TYPE_S3C24XX:
+-		ourport->port.ops = &s3c24xx_serial_ops;
+-		break;
+ 	case TYPE_S3C6400:
+ 		ourport->port.ops = &s3c64xx_serial_ops;
+ 		break;
 -- 
-2.34.1
+2.40.1
 
