@@ -2,115 +2,137 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50031CDB465
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 09:13:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DABAFCDB465
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 09:17:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345137AbjJSJNR (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Oct 2023 05:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54106 "EHLO
+        id S235223AbjJSJRd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 Oct 2023 05:17:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345016AbjJSJNG (ORCPT
+        with ESMTP id S233040AbjJSJRc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Oct 2023 05:13:06 -0400
-Received: from connect.vanmierlo.com (fieber.vanmierlo.com [84.243.197.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0976218C;
-        Thu, 19 Oct 2023 02:12:57 -0700 (PDT)
-X-Footer: dmFubWllcmxvLmNvbQ==
-Received: from roundcube.vanmierlo.com ([192.168.37.37])
-        (authenticated user m.brock@vanmierlo.com)
-        by connect.vanmierlo.com (Kerio Connect 9.4.2) with ESMTPA;
-        Thu, 19 Oct 2023 11:12:53 +0200
+        Thu, 19 Oct 2023 05:17:32 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC50131
+        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 02:17:30 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id ffacd0b85a97d-32d81864e3fso5959717f8f.2
+        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 02:17:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google; t=1697707048; x=1698311848; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=bcsnYpAdLM0em0FjxCCFcChvrh3CN3lWApFF37wa+JE=;
+        b=BPG/BIKe8y/kUb1c1997E4CB0SJBH8lvMMeUOwxjLgg3PdHnKFLeEa1b9P15H+Ygn6
+         GZTakKl79VFLDWgSLF4ZhkcgDXn1hxlqU7thbIqvtYNANxLHnbLVWU3C1u5sR9+jfetr
+         fsq3kEAydfAH8CcAocGVpMUHKTDZxhwxNVFBL/vzNjawjNXTkwy+rQR258xT23FY8gxD
+         0w5sBPWW9Juj+umlRSFYMzPLHbWCWrRDHpDVhAgm3JyIesa90vcakvBHDCuvTjyYp2p+
+         W/Ns/NOL4kmFtbmI2B2jhUaVKipdb5g5/6E9dCmVD8SDfa9LvpjRwcnaBRRk5E13ITV+
+         vKJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697707048; x=1698311848;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bcsnYpAdLM0em0FjxCCFcChvrh3CN3lWApFF37wa+JE=;
+        b=dp6jOHRoEqqtqDg16jENEtnVhrotbK3aQUHQrncj4aaDVOIr39UBYLR+8uiyHYxcbj
+         9v8bmhgLZM0WJOTy/U/bpeb6IvvmGdJoLCKzavcRcTW+8LDocbSVPWxh1BS6I+1aUAxS
+         jzzmMFm8sSbrUa6/BEn5kYtC6l4IergidYUOsV8G1ADoDiTod/1eyO1chWMdrFeOWWSj
+         kSRYTGei6YPVhpqWX6bX9/UT+U2Jj2I2L1X64U+DwuHel9oJCei9fF2rb/fE+C0xKyw4
+         Xc0hiBPHTb/teMik31IaqebstDUfk9lEzhJ9SKAxCsT62dNlOCcUTor3lCOfUN4y1BzG
+         4yAA==
+X-Gm-Message-State: AOJu0YwLAnhUJYB5jzE8pczAFqj/LNP0vZq1QMHIudpKSvAMNR7N3Ted
+        Vx+3sEtlWHEMo500//DvKHdw9A==
+X-Google-Smtp-Source: AGHT+IG8jOCLnI027DgY6Yx/fVy/qYUq7DqIReW1lUlcofpdY/Llx77hEFpM5sP3dOt6SenXND9+/w==
+X-Received: by 2002:adf:f74d:0:b0:32d:8da0:48d0 with SMTP id z13-20020adff74d000000b0032d8da048d0mr923979wrp.68.1697707048600;
+        Thu, 19 Oct 2023 02:17:28 -0700 (PDT)
+Received: from localhost (cst2-173-16.cust.vodafone.cz. [31.30.173.16])
+        by smtp.gmail.com with ESMTPSA id x8-20020adfec08000000b0032dbf6bf7a2sm3994451wrn.97.2023.10.19.02.17.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Oct 2023 02:17:27 -0700 (PDT)
+Date:   Thu, 19 Oct 2023 11:17:26 +0200
+From:   Andrew Jones <ajones@ventanamicro.com>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Conor Dooley <conor@kernel.org>, kvm@vger.kernel.org,
+        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
+        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/8] RISC-V: KVM: Forward SBI DBCN extension to
+ user-space
+Message-ID: <20231019-7471d3927d94ab7158d61c6b@orel>
+References: <20231012051509.738750-1-apatel@ventanamicro.com>
+ <20231012051509.738750-5-apatel@ventanamicro.com>
 MIME-Version: 1.0
-Date:   Thu, 19 Oct 2023 11:12:53 +0200
-From:   m.brock@vanmierlo.com
-To:     Florian Eckert <fe@dev.tdt.de>
-Cc:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
-        kabel@kernel.org, u.kleine-koenig@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-leds@vger.kernel.org, kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v3 3/4] trigger: ledtrig-tty: move variable definition to
- the top
-In-Reply-To: <34e8fcd94b4a959fe2336485e4722c3b@dev.tdt.de>
-References: <20231016071332.597654-1-fe@dev.tdt.de>
- <20231016071332.597654-4-fe@dev.tdt.de>
- <93dcb9f6f218593084f834ba6b450999@vanmierlo.com>
- <34e8fcd94b4a959fe2336485e4722c3b@dev.tdt.de>
-Message-ID: <9cecf21f8691d474441f8ff30a9dcb23@vanmierlo.com>
-X-Sender: m.brock@vanmierlo.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231012051509.738750-5-apatel@ventanamicro.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Florian Eckert wrote on 2023-10-16 11:12:
-> On 2023-10-16 10:46, m.brock@vanmierlo.com wrote:
->> Florian Eckert wrote on 2023-10-16 09:13:
->>> Has complained about the following construct:
->> 
->> Who is "Has" or who/what has complained?
+On Thu, Oct 12, 2023 at 10:45:05AM +0530, Anup Patel wrote:
+> The frozen SBI v2.0 specification defines the SBI debug console
+> (DBCN) extension which replaces the legacy SBI v0.1 console
+> functions namely sbi_console_getchar() and sbi_console_putchar().
 > 
-> The test robot who does not agree with my change in the v1 patchset.
+> The SBI DBCN extension needs to be emulated in the KVM user-space
+> (i.e. QEMU-KVM or KVMTOOL) so we forward SBI DBCN calls from KVM
+> guest to the KVM user-space which can then redirect the console
+> input/output to wherever it wants (e.g. telnet, file, stdio, etc).
+> 
+> The SBI debug console is simply a early console available to KVM
+> guest for early prints and it does not intend to replace the proper
+> console devices such as 8250, VirtIO console, etc.
+> 
+> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> ---
+>  arch/riscv/include/asm/kvm_vcpu_sbi.h |  1 +
+>  arch/riscv/include/uapi/asm/kvm.h     |  1 +
+>  arch/riscv/kvm/vcpu_sbi.c             |  4 ++++
+>  arch/riscv/kvm/vcpu_sbi_replace.c     | 32 +++++++++++++++++++++++++++
+>  4 files changed, 38 insertions(+)
+> 
+> diff --git a/arch/riscv/include/asm/kvm_vcpu_sbi.h b/arch/riscv/include/asm/kvm_vcpu_sbi.h
+> index c02bda5559d7..6a453f7f8b56 100644
+> --- a/arch/riscv/include/asm/kvm_vcpu_sbi.h
+> +++ b/arch/riscv/include/asm/kvm_vcpu_sbi.h
+> @@ -73,6 +73,7 @@ extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_ipi;
+>  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_rfence;
+>  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_srst;
+>  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_hsm;
+> +extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_dbcn;
+>  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_experimental;
+>  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_vendor;
+>  
+> diff --git a/arch/riscv/include/uapi/asm/kvm.h b/arch/riscv/include/uapi/asm/kvm.h
+> index 917d8cc2489e..60d3b21dead7 100644
+> --- a/arch/riscv/include/uapi/asm/kvm.h
+> +++ b/arch/riscv/include/uapi/asm/kvm.h
+> @@ -156,6 +156,7 @@ enum KVM_RISCV_SBI_EXT_ID {
+>  	KVM_RISCV_SBI_EXT_PMU,
+>  	KVM_RISCV_SBI_EXT_EXPERIMENTAL,
+>  	KVM_RISCV_SBI_EXT_VENDOR,
+> +	KVM_RISCV_SBI_EXT_DBCN,
 
-You don't have to explain to me, just fix the comment.
+We should add this new register to the get-reg-list kselftest, i.e.
 
->>> drivers/leds/trigger/ledtrig-tty.c:362:3: error: a label can only be
->>> part of a statement and a declaration is not a statement
->>> 
->>> Hence move the variable definition to the beginning of the function.
->>> 
->>> Reported-by: kernel test robot <lkp@intel.com>
->>> Closes:
->>> https://lore.kernel.org/oe-kbuild-all/202309270440.IJB24Xap-lkp@intel.com/
->>> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
->>> ---
->>> @@ -124,8 +125,6 @@ static void ledtrig_tty_work(struct work_struct 
->>> *work)
->>> 
->>>  	if (icount.rx != trigger_data->rx ||
->>>  	    icount.tx != trigger_data->tx) {
->>> -		unsigned long interval = LEDTRIG_TTY_INTERVAL;
->>> -
->> 
->> Is this kernel test robot broken?
-> 
-> The test robot does nothing wrong.
-> 
->> I see no label definition here.
->> And this variable declaration is at the start of a new block which 
->> does
->> not even require C99 support.
-> 
-> I made change in patch set v1, that moves the definition of the 
-> variable
-> `interval` into the switch case statement.
-> https://lore.kernel.org/linux-leds/20230926093607.59536-3-fe@dev.tdt.de/
-> The robot complained about this.
-> 
-> So I decided to move the definition of the variable 'interval' to 
-> function
-> head to make the test robot happy in the commit. So this commit 
-> prepares
-> the code for my change.
-> 
-> If it is more common, I can merge this patch [1] into the next patch 
-> [2]
-> of this set.
+diff --git a/tools/testing/selftests/kvm/riscv/get-reg-list.c b/tools/testing/selftests/kvm/riscv/get-reg-list.c
+index 234006d035c9..4a0f8a8cfbf8 100644
+--- a/tools/testing/selftests/kvm/riscv/get-reg-list.c
++++ b/tools/testing/selftests/kvm/riscv/get-reg-list.c
+@@ -565,6 +565,7 @@ static __u64 base_regs[] = {
+ 	KVM_REG_RISCV | KVM_REG_SIZE_ULONG | KVM_REG_RISCV_SBI_EXT | KVM_REG_RISCV_SBI_SINGLE | KVM_RISCV_SBI_EXT_SRST,
+ 	KVM_REG_RISCV | KVM_REG_SIZE_ULONG | KVM_REG_RISCV_SBI_EXT | KVM_REG_RISCV_SBI_SINGLE | KVM_RISCV_SBI_EXT_HSM,
+ 	KVM_REG_RISCV | KVM_REG_SIZE_ULONG | KVM_REG_RISCV_SBI_EXT | KVM_REG_RISCV_SBI_SINGLE | KVM_RISCV_SBI_EXT_PMU,
++	KVM_REG_RISCV | KVM_REG_SIZE_ULONG | KVM_REG_RISCV_SBI_EXT | KVM_REG_RISCV_SBI_SINGLE | KVM_RISCV_SBI_EXT_DBCN,
+ 	KVM_REG_RISCV | KVM_REG_SIZE_ULONG | KVM_REG_RISCV_SBI_EXT | KVM_REG_RISCV_SBI_SINGLE | KVM_RISCV_SBI_EXT_EXPERIMENTAL,
+ 	KVM_REG_RISCV | KVM_REG_SIZE_ULONG | KVM_REG_RISCV_SBI_EXT | KVM_REG_RISCV_SBI_SINGLE | KVM_RISCV_SBI_EXT_VENDOR,
+ 	KVM_REG_RISCV | KVM_REG_SIZE_ULONG | KVM_REG_RISCV_SBI_EXT | KVM_REG_RISCV_SBI_MULTI_EN | 0,
 
-Yes, please. You're fixing a problem that does not exist yet (and never
-will), because the patch that introduces it is not yet applied. So fix
-the proposed patch instead of patching the patch.
-
-> [1] 
-> https://lore.kernel.org/linux-leds/20231016071332.597654-4-fe@dev.tdt.de/
-> [2] 
-> https://lore.kernel.org/linux-leds/20231016071332.597654-5-fe@dev.tdt.de/
-> 
-> 
-> Florian
-
-Maarten
-
+Thanks,
+drew
