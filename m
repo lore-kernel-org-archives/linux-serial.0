@@ -2,114 +2,147 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B003CDB465
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 08:46:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A8A1C46CA1
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 08:52:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232846AbjJSIqr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Oct 2023 04:46:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
+        id S232876AbjJSIw2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 Oct 2023 04:52:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230469AbjJSIqq (ORCPT
+        with ESMTP id S232865AbjJSIw1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Oct 2023 04:46:46 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B1FAB
-        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 01:46:44 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id ffacd0b85a97d-32db188e254so3160384f8f.0
-        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 01:46:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1697705202; x=1698310002; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=FirHlCGgMz/FvpzIKQkoBCDO6SGDDg5U9N5KzhQ/LwY=;
-        b=M+bRJ0N64mXHeowvT6EHhoGdfEzMFYyLN/bla2lLRUx+GkKhxDDcejVsvqFHHoBT9v
-         PWRFXzSQQvog2wP9JmZziHGIlImoAQxfz4JzZPiR3qWCoE5HGoxmU7qIyeEodz7CA33u
-         TDfLa2e53MSsoYbcf7smyVho7qVQn2jidrErCGBYwRvfOaSjrp+PWf+BRdgWGrBa88Ev
-         j5I9im9yJiLAGJW1u4hvGyoAdIm2DxD2gO4pEhMz4dtGl504zpao8MUmp5EwH6E3c3lW
-         mL0bKidCGXzs+PXy6FXC/9q/FjbgmuSrankUynWGWSHLvgarjbIn9ods9/P/w3J8eMt8
-         DzUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697705202; x=1698310002;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FirHlCGgMz/FvpzIKQkoBCDO6SGDDg5U9N5KzhQ/LwY=;
-        b=fTjc+s+uZo55r+Idms+kg+AAmy3kdwyT2SXDTrKCbA9UlxRnS8h+Fl2XlxEKTeI9US
-         T0EwJizUzhauxDPEoSiQpKoD1GfBQnBmIYTZBk0hEub1m6TAznyCEB4o7uxnNPRLJNTK
-         Q03fEKr5jcPiFgcjw8yrS3CLlTBMpO2xHq2spKv3UAtBNTgjr/JrBIWh2BVePhVVc8VO
-         xyeCwOq+5WEeShfzh4RejQRC9zoepSolJGXG/dgxhHhNhSEEkXSgEZY/+JM+p8PsQYm3
-         ONt39smbl9fMv2HIGchuMrm9o6Qz1afUbcy4YgMfFGkAhMMQC6VwVYtwSHSxVgQlfGHv
-         E1oA==
-X-Gm-Message-State: AOJu0YzzpI9mnTN8tVyUtic1m1VxEO/arlC79n8PP1WoJzkIKMDi7/2Z
-        s2v/UwiMzW7mepEons1dCv/dtQ==
-X-Google-Smtp-Source: AGHT+IHIrPhAgCqHiVC0M3rtirooHgesr0AO+GlYhKykcNrHjz1YNAMNd8HgQcR133zWbZZBLn3Q5w==
-X-Received: by 2002:adf:cd83:0:b0:329:6be4:e199 with SMTP id q3-20020adfcd83000000b003296be4e199mr1046765wrj.13.1697705202536;
-        Thu, 19 Oct 2023 01:46:42 -0700 (PDT)
-Received: from localhost (cst2-173-16.cust.vodafone.cz. [31.30.173.16])
-        by smtp.gmail.com with ESMTPSA id l16-20020a5d6750000000b0032dc1fc84f2sm3960900wrw.46.2023.10.19.01.46.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Oct 2023 01:46:42 -0700 (PDT)
-Date:   Thu, 19 Oct 2023 10:46:40 +0200
-From:   Andrew Jones <ajones@ventanamicro.com>
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Conor Dooley <conor@kernel.org>, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 8/8] RISC-V: Enable SBI based earlycon support
-Message-ID: <20231019-08c33e28cf77beab61519f49@orel>
-References: <20231012051509.738750-1-apatel@ventanamicro.com>
- <20231012051509.738750-9-apatel@ventanamicro.com>
+        Thu, 19 Oct 2023 04:52:27 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9FDEEAB;
+        Thu, 19 Oct 2023 01:52:22 -0700 (PDT)
+Received: from uucp by elvis.franken.de with local-rmail (Exim 3.36 #1)
+        id 1qtOlP-0004JJ-00; Thu, 19 Oct 2023 10:52:19 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 81227C0198; Thu, 19 Oct 2023 10:50:05 +0200 (CEST)
+Date:   Thu, 19 Oct 2023 10:50:05 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     linux-mips@vger.kernel.org, Jonas Gorski <jonas.gorski@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 0/6] remove AR7 platform and associated drivers
+Message-ID: <ZTDtvR732kzchtxF@alpha.franken.de>
+References: <20230922061530.3121-1-wsa+renesas@sang-engineering.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231012051509.738750-9-apatel@ventanamicro.com>
+In-Reply-To: <20230922061530.3121-1-wsa+renesas@sang-engineering.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 12, 2023 at 10:45:09AM +0530, Anup Patel wrote:
-> Let us enable SBI based earlycon support in defconfigs for both RV32
-> and RV64 so that "earlycon=sbi" can be used again.
+On Fri, Sep 22, 2023 at 08:15:21AM +0200, Wolfram Sang wrote:
+> Changes since v1:
+> * kept uapi define for for serial port type
+> * added acks
 > 
-> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> ---
->  arch/riscv/configs/defconfig      | 1 +
->  arch/riscv/configs/rv32_defconfig | 1 +
->  2 files changed, 2 insertions(+)
+> Still valid cover letter from v1:
 > 
-> diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-> index ab86ec3b9eab..f82700da0056 100644
-> --- a/arch/riscv/configs/defconfig
-> +++ b/arch/riscv/configs/defconfig
-> @@ -132,6 +132,7 @@ CONFIG_SERIAL_8250_CONSOLE=y
->  CONFIG_SERIAL_8250_DW=y
->  CONFIG_SERIAL_OF_PLATFORM=y
->  CONFIG_SERIAL_SH_SCI=y
-> +CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
->  CONFIG_VIRTIO_CONSOLE=y
->  CONFIG_HW_RANDOM=y
->  CONFIG_HW_RANDOM_VIRTIO=y
-> diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
-> index 89b601e253a6..5721af39afd1 100644
-> --- a/arch/riscv/configs/rv32_defconfig
-> +++ b/arch/riscv/configs/rv32_defconfig
-> @@ -66,6 +66,7 @@ CONFIG_INPUT_MOUSEDEV=y
->  CONFIG_SERIAL_8250=y
->  CONFIG_SERIAL_8250_CONSOLE=y
->  CONFIG_SERIAL_OF_PLATFORM=y
-> +CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
->  CONFIG_VIRTIO_CONSOLE=y
->  CONFIG_HW_RANDOM=y
->  CONFIG_HW_RANDOM_VIRTIO=y
-> -- 
-> 2.34.1
->
+> When trying to get rid of the obsolete VLYNQ bus, Jonas and Florian
+> pointed out that its only user, the AR7 platform can probaly go entirely
+> [1]. This series does exactly that. Even OpenWRT has removed support
+> because these devices are "stuck with 3.18" [2].
+> 
+> It removes the drivers first, because watchdog and network include
+> platform specific headers. Once the drivers are gone, we remove the
+> platform. The patches are based on 6.6-rc2 and created with
+> "--irreversible-delete" to save some space.
+> 
+> My suggestion is that everything is merged via the MIPS tree in one go,
+> so we don't have broken drivers because of missing platform headers. But
+> maybe there are reasons for a two-cycle removal with the drivers first
+> and the platform later?
+> 
+> Looking forward to comments.
+> 
+> Happy hacking,
+> 
+>    Wolfram
+> 
+> 
+> [1] https://lore.kernel.org/r/3395161f-2543-46f0-83d9-b918800305e1@gmail.com
+> [2] https://openwrt.org/docs/techref/targets/ar7
+> 
+> 
+> Wolfram Sang (6):
+>   serial: 8250: remove AR7 support
+>   mtd: parsers: ar7: remove support
+>   vlynq: remove bus driver
+>   watchdog: ar7_wdt: remove driver to prepare for platform removal
+>   net: cpmac: remove driver to prepare for platform removal
+>   MIPS: AR7: remove platform
+> 
+>  MAINTAINERS                             |   13 -
+>  arch/arm/configs/pxa_defconfig          |    1 -
+>  arch/mips/Kbuild.platforms              |    1 -
+>  arch/mips/Kconfig                       |   22 -
+>  arch/mips/ar7/Makefile                  |   11 -
+>  arch/mips/ar7/Platform                  |    5 -
+>  arch/mips/ar7/clock.c                   |  439 --------
+>  arch/mips/ar7/gpio.c                    |  332 ------
+>  arch/mips/ar7/irq.c                     |  165 ---
+>  arch/mips/ar7/memory.c                  |   51 -
+>  arch/mips/ar7/platform.c                |  722 -------------
+>  arch/mips/ar7/prom.c                    |  256 -----
+>  arch/mips/ar7/setup.c                   |   93 --
+>  arch/mips/ar7/time.c                    |   31 -
+>  arch/mips/boot/compressed/uart-16550.c  |    5 -
+>  arch/mips/configs/ar7_defconfig         |  119 ---
+>  arch/mips/include/asm/mach-ar7/ar7.h    |  191 ----
+>  arch/mips/include/asm/mach-ar7/irq.h    |   16 -
+>  arch/mips/include/asm/mach-ar7/prom.h   |   12 -
+>  arch/mips/include/asm/mach-ar7/spaces.h |   22 -
+>  drivers/Kconfig                         |    2 -
+>  drivers/Makefile                        |    1 -
+>  drivers/mtd/parsers/Kconfig             |    5 -
+>  drivers/mtd/parsers/Makefile            |    1 -
+>  drivers/mtd/parsers/ar7part.c           |  129 ---
+>  drivers/net/ethernet/ti/Kconfig         |    9 +-
+>  drivers/net/ethernet/ti/Makefile        |    1 -
+>  drivers/net/ethernet/ti/cpmac.c         | 1251 -----------------------
+>  drivers/tty/serial/8250/8250_port.c     |    7 -
+>  drivers/vlynq/Kconfig                   |   21 -
+>  drivers/vlynq/Makefile                  |    6 -
+>  drivers/vlynq/vlynq.c                   |  799 ---------------
+>  drivers/watchdog/Kconfig                |    6 -
+>  drivers/watchdog/Makefile               |    1 -
+>  drivers/watchdog/ar7_wdt.c              |  315 ------
+>  include/linux/vlynq.h                   |  149 ---
+>  36 files changed, 1 insertion(+), 5209 deletions(-)
+>  delete mode 100644 arch/mips/ar7/Makefile
+>  delete mode 100644 arch/mips/ar7/Platform
+>  delete mode 100644 arch/mips/ar7/clock.c
+>  delete mode 100644 arch/mips/ar7/gpio.c
+>  delete mode 100644 arch/mips/ar7/irq.c
+>  delete mode 100644 arch/mips/ar7/memory.c
+>  delete mode 100644 arch/mips/ar7/platform.c
+>  delete mode 100644 arch/mips/ar7/prom.c
+>  delete mode 100644 arch/mips/ar7/setup.c
+>  delete mode 100644 arch/mips/ar7/time.c
+>  delete mode 100644 arch/mips/configs/ar7_defconfig
+>  delete mode 100644 arch/mips/include/asm/mach-ar7/ar7.h
+>  delete mode 100644 arch/mips/include/asm/mach-ar7/irq.h
+>  delete mode 100644 arch/mips/include/asm/mach-ar7/prom.h
+>  delete mode 100644 arch/mips/include/asm/mach-ar7/spaces.h
+>  delete mode 100644 drivers/mtd/parsers/ar7part.c
+>  delete mode 100644 drivers/net/ethernet/ti/cpmac.c
+>  delete mode 100644 drivers/vlynq/Kconfig
+>  delete mode 100644 drivers/vlynq/Makefile
+>  delete mode 100644 drivers/vlynq/vlynq.c
+>  delete mode 100644 drivers/watchdog/ar7_wdt.c
+>  delete mode 100644 include/linux/vlynq.h
 
-Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
+applied to mips-next, minus patch 5, which is already applied to net-next.
+
+Thomas.
+
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
