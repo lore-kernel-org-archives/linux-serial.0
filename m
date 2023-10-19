@@ -2,57 +2,91 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35DA6CDB465
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 15:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43677CDB482
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 15:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346336AbjJSPjB (ORCPT
+        id S1345979AbjJSPqs (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Oct 2023 11:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37984 "EHLO
+        Thu, 19 Oct 2023 11:46:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346030AbjJSPjA (ORCPT
+        with ESMTP id S1345938AbjJSPqr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Oct 2023 11:39:00 -0400
+        Thu, 19 Oct 2023 11:46:47 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C383124;
-        Thu, 19 Oct 2023 08:38:59 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 907D1C433CA;
-        Thu, 19 Oct 2023 15:38:58 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17D1CCF;
+        Thu, 19 Oct 2023 08:46:46 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E061C433C8;
+        Thu, 19 Oct 2023 15:46:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1697729939;
-        bh=AREkZrmSccQRuZ4xGIzEq28d+dMWO3ytqI01nPqGsxk=;
+        s=korg; t=1697730405;
+        bh=dlXwrAmr23RZBJTQ4tZB3ILSltevA7NR468NS5iSreI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UYBi5Ia4cNzwlQhZHuxcog/XnJeh+GxvXj3dDk7kRzJ545iYDy0kSx0QGHXiUuz9f
-         8M7ojGLcm1HjqBDTsaffw3GAYXKBaczOF1RGbSjqGMgks59s9Nj4Wx1jdRPMtdDFpR
-         DdSO0z4pBuRnNKlSMUjDKY22rosC2Cj5KT1NJ3QA=
-Date:   Thu, 19 Oct 2023 17:38:55 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Frank Li <Frank.Li@nxp.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:TTY LAYER AND SERIAL DRIVERS" 
-        <linux-serial@vger.kernel.org>, alexandre.belloni@bootlin.com,
-        conor.culhane@silvaco.com, imx@lists.linux.dev, joe@perches.com,
-        linux-i3c@lists.infradead.org, miquel.raynal@bootlin.com
-Subject: Re: [PATCH 1/1] tty: i3c: add tty over i3c master support
-Message-ID: <2023101906-rimmed-unmarked-0ba2@gregkh>
-References: <20231018211111.3437929-1-Frank.Li@nxp.com>
+        b=Qd9oN9q3CDls1FHxrQ/fEHIzbFe3gGdXb9PwNIyIMVNdcHKeYaukZaB+ZRvCEElLa
+         IN5LRY41J2F9SBZ6c/hCI9wkG2d/He9mO/VpTf4aiVbz8OUqOpL6ZMkc7mc//znpQM
+         TuUnrJkSUHMZ4Zz2Q0AY/tlRHyf71pcP6uT6/L6w=
+Date:   Thu, 19 Oct 2023 17:46:42 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Frank Li <Frank.li@nxp.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        miquel.raynal@bootlin.com, conor.culhane@silvaco.com,
+        alexandre.belloni@bootlin.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        corbet@lwn.net, joe@perches.com, linux-i3c@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, imx@lists.linux.dev,
+        jirislaby@kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH 1/5] i3c: add slave mode support
+Message-ID: <2023101935-papaya-legible-5849@gregkh>
+References: <20231018215809.3477437-1-Frank.Li@nxp.com>
+ <20231018215809.3477437-2-Frank.Li@nxp.com>
+ <dd06c2d3-e273-4356-835b-42619543dfab@linaro.org>
+ <ZTFE8hrRgPBrb7e3@lizhi-Precision-Tower-5810>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231018211111.3437929-1-Frank.Li@nxp.com>
+In-Reply-To: <ZTFE8hrRgPBrb7e3@lizhi-Precision-Tower-5810>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 18, 2023 at 05:11:09PM -0400, Frank Li wrote:
-> Add new driver to allow tty over i3c master.
+On Thu, Oct 19, 2023 at 11:02:10AM -0400, Frank Li wrote:
+> On Thu, Oct 19, 2023 at 09:00:05AM +0200, Krzysztof Kozlowski wrote:
+> > On 18/10/2023 23:58, Frank Li wrote:
+> > > Introduce a new slave core layer in order to support slave functions in
+> > > linux kernel. This comprises the controller library and function library.
+> > > Controller library implements functions specific to an slave controller
+> > > and function library implements functions specific to an slave function.
+> > > 
+> > > Introduce a new configfs entry to configure the slave function configuring
+> > > and bind the slave function with slave controller.
+> > > 
+> > > Signed-off-by: Frank Li <Frank.Li@nxp.com>
+> > > ---
+> > >  drivers/i3c/Kconfig       |  26 ++
+> > >  drivers/i3c/Makefile      |   2 +
+> > >  drivers/i3c/i3c-cfs.c     | 389 +++++++++++++++++++++++++++++
+> > >  drivers/i3c/slave.c       | 453 ++++++++++++++++++++++++++++++++++
+> > >  include/linux/i3c/slave.h | 503 ++++++++++++++++++++++++++++++++++++++
+> > >  5 files changed, 1373 insertions(+)
+> > >  create mode 100644 drivers/i3c/i3c-cfs.c
+> > >  create mode 100644 drivers/i3c/slave.c
+> > >  create mode 100644 include/linux/i3c/slave.h
+> > > 
+> > > diff --git a/drivers/i3c/Kconfig b/drivers/i3c/Kconfig
+> > > index 30a441506f61c..d5f5ca7cd6a56 100644
+> > > --- a/drivers/i3c/Kconfig
+> > > +++ b/drivers/i3c/Kconfig
+> > > @@ -22,3 +22,29 @@ menuconfig I3C
+> > >  if I3C
+> > >  source "drivers/i3c/master/Kconfig"
+> > >  endif # I3C
+> > > +
+> > > +config I3C_SLAVE
+> > 
+> > It doesn't look like you follow Kernel naming convention (see coding style).
+> 
+> I checked I3C spec. It use words 'target'.
+> Is it okay using I3C_TARGET?
 
-As Jiri said, you need a lot more description here before we can even
-start to review it.
-
-Please fix up and send a v2.
-
-thanks,
-
-greg k-h
+Why wouldn't it be?
