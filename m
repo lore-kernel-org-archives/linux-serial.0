@@ -2,91 +2,78 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43677CDB482
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 15:46:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB33ACDB465
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 15:48:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345979AbjJSPqs (ORCPT
+        id S1346368AbjJSPsp (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Oct 2023 11:46:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
+        Thu, 19 Oct 2023 11:48:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345938AbjJSPqr (ORCPT
+        with ESMTP id S1346336AbjJSPso (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Oct 2023 11:46:47 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17D1CCF;
-        Thu, 19 Oct 2023 08:46:46 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E061C433C8;
-        Thu, 19 Oct 2023 15:46:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1697730405;
-        bh=dlXwrAmr23RZBJTQ4tZB3ILSltevA7NR468NS5iSreI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Qd9oN9q3CDls1FHxrQ/fEHIzbFe3gGdXb9PwNIyIMVNdcHKeYaukZaB+ZRvCEElLa
-         IN5LRY41J2F9SBZ6c/hCI9wkG2d/He9mO/VpTf4aiVbz8OUqOpL6ZMkc7mc//znpQM
-         TuUnrJkSUHMZ4Zz2Q0AY/tlRHyf71pcP6uT6/L6w=
-Date:   Thu, 19 Oct 2023 17:46:42 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Frank Li <Frank.li@nxp.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        miquel.raynal@bootlin.com, conor.culhane@silvaco.com,
-        alexandre.belloni@bootlin.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        corbet@lwn.net, joe@perches.com, linux-i3c@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, imx@lists.linux.dev,
-        jirislaby@kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 1/5] i3c: add slave mode support
-Message-ID: <2023101935-papaya-legible-5849@gregkh>
-References: <20231018215809.3477437-1-Frank.Li@nxp.com>
- <20231018215809.3477437-2-Frank.Li@nxp.com>
- <dd06c2d3-e273-4356-835b-42619543dfab@linaro.org>
- <ZTFE8hrRgPBrb7e3@lizhi-Precision-Tower-5810>
+        Thu, 19 Oct 2023 11:48:44 -0400
+Received: from mail11.truemail.it (mail11.truemail.it [217.194.8.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2229193;
+        Thu, 19 Oct 2023 08:48:43 -0700 (PDT)
+Received: from francesco-nb.pivistrello.it (93-49-2-63.ip317.fastwebnet.it [93.49.2.63])
+        by mail11.truemail.it (Postfix) with ESMTPA id 0613721169;
+        Thu, 19 Oct 2023 17:48:39 +0200 (CEST)
+From:   Francesco Dolcini <francesco@dolcini.it>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH] dt-bindings: serial: rs485: Add rs485-rts-active-high
+Date:   Thu, 19 Oct 2023 17:48:34 +0200
+Message-Id: <20231019154834.41721-1-francesco@dolcini.it>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZTFE8hrRgPBrb7e3@lizhi-Precision-Tower-5810>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 19, 2023 at 11:02:10AM -0400, Frank Li wrote:
-> On Thu, Oct 19, 2023 at 09:00:05AM +0200, Krzysztof Kozlowski wrote:
-> > On 18/10/2023 23:58, Frank Li wrote:
-> > > Introduce a new slave core layer in order to support slave functions in
-> > > linux kernel. This comprises the controller library and function library.
-> > > Controller library implements functions specific to an slave controller
-> > > and function library implements functions specific to an slave function.
-> > > 
-> > > Introduce a new configfs entry to configure the slave function configuring
-> > > and bind the slave function with slave controller.
-> > > 
-> > > Signed-off-by: Frank Li <Frank.Li@nxp.com>
-> > > ---
-> > >  drivers/i3c/Kconfig       |  26 ++
-> > >  drivers/i3c/Makefile      |   2 +
-> > >  drivers/i3c/i3c-cfs.c     | 389 +++++++++++++++++++++++++++++
-> > >  drivers/i3c/slave.c       | 453 ++++++++++++++++++++++++++++++++++
-> > >  include/linux/i3c/slave.h | 503 ++++++++++++++++++++++++++++++++++++++
-> > >  5 files changed, 1373 insertions(+)
-> > >  create mode 100644 drivers/i3c/i3c-cfs.c
-> > >  create mode 100644 drivers/i3c/slave.c
-> > >  create mode 100644 include/linux/i3c/slave.h
-> > > 
-> > > diff --git a/drivers/i3c/Kconfig b/drivers/i3c/Kconfig
-> > > index 30a441506f61c..d5f5ca7cd6a56 100644
-> > > --- a/drivers/i3c/Kconfig
-> > > +++ b/drivers/i3c/Kconfig
-> > > @@ -22,3 +22,29 @@ menuconfig I3C
-> > >  if I3C
-> > >  source "drivers/i3c/master/Kconfig"
-> > >  endif # I3C
-> > > +
-> > > +config I3C_SLAVE
-> > 
-> > It doesn't look like you follow Kernel naming convention (see coding style).
-> 
-> I checked I3C spec. It use words 'target'.
-> Is it okay using I3C_TARGET?
+From: Francesco Dolcini <francesco.dolcini@toradex.com>
 
-Why wouldn't it be?
+Add rs485-rts-active-high property, this is a legacy property
+used by 8250_omap.
+
+This fixes the following make dt_binding_check warning:
+
+Documentation/devicetree/bindings/serial/8250_omap.yaml:
+rs485-rts-active-high: missing type definition
+
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Closes: https://lore.kernel.org/all/CAMuHMdUkPiA=o_QLyuwsTYW7y1ksCjHAqyNSHFx2QZ-dP-HGsQ@mail.gmail.com/
+Fixes: 403e97d6ab2c ("dt-bindings: serial: 8250_omap: add rs485-rts-active-high")
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+---
+ Documentation/devicetree/bindings/serial/rs485.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/serial/rs485.yaml b/Documentation/devicetree/bindings/serial/rs485.yaml
+index 303a443d9e29..9418fd66a8e9 100644
+--- a/Documentation/devicetree/bindings/serial/rs485.yaml
++++ b/Documentation/devicetree/bindings/serial/rs485.yaml
+@@ -29,6 +29,10 @@ properties:
+           default: 0
+           maximum: 100
+ 
++  rs485-rts-active-high:
++    description: drive RTS high when sending (this is the default).
++    $ref: /schemas/types.yaml#/definitions/flag
++
+   rs485-rts-active-low:
+     description: drive RTS low when sending (default is high).
+     $ref: /schemas/types.yaml#/definitions/flag
+-- 
+2.25.1
+
