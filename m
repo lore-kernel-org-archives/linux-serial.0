@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40021CDB483
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 08:02:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C72CDB465
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 08:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232799AbjJSICB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Oct 2023 04:02:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38992 "EHLO
+        id S232897AbjJSIEA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 Oct 2023 04:04:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232870AbjJSICA (ORCPT
+        with ESMTP id S232870AbjJSIDu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Oct 2023 04:02:00 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F9A4130
-        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 01:01:57 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id 38308e7fff4ca-2c50906f941so90378141fa.2
-        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 01:01:57 -0700 (PDT)
+        Thu, 19 Oct 2023 04:03:50 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8173713D
+        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 01:03:47 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id ffacd0b85a97d-32da9ef390fso3634790f8f.2
+        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 01:03:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1697702515; x=1698307315; darn=vger.kernel.org;
+        d=ventanamicro.com; s=google; t=1697702626; x=1698307426; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=wThBUxBh7v0znNn0ZPl0WI7OQvkdGdCrZ1lZ3b6Zyy4=;
-        b=TKDKNnH7UEYugL3PqHv4G/pue0itDTbyzaWo4llf4Jg5vd7fKtuAYkA5nJpkma0VZV
-         b7md8SubrS+e136mFp1dk48jczJRFHnqvLCgLIVNHiqavQUTHDVi+AIGUdQoS3g3Rkyk
-         fsUQCSwrUcUTSIb3A5ngKK4jA83PTx8dynJkIH1iETBUXNj4KjRIXZOIpqoYM3O33pn5
-         S7MMRIMmwqnjtcCD8eu5bRjfCuD/tcpJpjGf9yzfI7R7+ZtDsoFoYFSq8pJe6P11Mj0/
-         wcxsOWxzYnjSyKbBqK1Z7dxKC2RaI6NXPJ5Igmx0c10jouzK2ddM3g4NeR74AvPTrt9X
-         Xrbw==
+        bh=PH3CTrts87/bU27l3EN5JAWxWDeGWRQ9EMGON+8aZg4=;
+        b=gMTUlmtnfk+4ygnaS28gWJ1F0cOGkdJsD8RqieWbofx8z9aUdiGQzf+y49rvw8eMji
+         NYF3wqk4CdeEf/s9x3YcmFtOaemW8dzt1Nz3gy7AdOe8wyKLRJxykSUTiE0Q6TGwri1A
+         tiZ1lG41ecgSPiahPtGdtQKRYeKpdxgz5gRJgQxSDqCSUOMo9F25sc6nkipivZ9GVrM9
+         Jf3kWzL15UsKfujybgFfFr5iKWxtaZOFO8TmT6qy0KdUp8592aMcZc9ZrklWqDbtGJez
+         jirbapSwpADuM6J+IbCL431h+zPQwxnPcFEqDPaummcGWmeRslxa9i/Jk9YevTb34VMf
+         2Ahw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697702515; x=1698307315;
+        d=1e100.net; s=20230601; t=1697702626; x=1698307426;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=wThBUxBh7v0znNn0ZPl0WI7OQvkdGdCrZ1lZ3b6Zyy4=;
-        b=OEc0NtCfoBg4IEB31QfSXN79ui+FF8g/CiBwzl7FGtxncgnJLFT2T+0Jy4Ae2KcF2u
-         x4FqbBiwHVK/0u6V+YR3i85++JT5CdDRx2XJN8Xd5yC4cAIsozWCVak62OYCGH1MOeO+
-         IBMI4O9jvqQx7SA5V5EgUnttEjqa+M7Wpz5eoxfypXDNoegB8Gj04G4NHeC+Y58/uPGV
-         T0Uzwqg2EZV2u+kinrEWpL3vWxu9ugRZnhs1ahkrAsyLl/xBZqIMu6LENcGhiSp8AxDJ
-         ieownJ1vhhmKqWKQvB4N9z+sWMpzWn9hlNoNzXSJ04DYVo9R4zNNljoP0Uy0Xnk/aSpw
-         7zXg==
-X-Gm-Message-State: AOJu0YzpwSr/3yf19hU+U02tW2MGjtFffTGs2pdSAPgj1WFKaB7NcmMz
-        a/Nca6KaDJeDS8Idr7QCwAODXg==
-X-Google-Smtp-Source: AGHT+IEkF+Ae4mUiCJOXGTWK+iVSfRk0ko7bvAOvA0qtVmbQYW0wA+W8atiyY1iQZ4X9vKJwGK3qXg==
-X-Received: by 2002:a2e:bc04:0:b0:2c5:13e8:e6dc with SMTP id b4-20020a2ebc04000000b002c513e8e6dcmr1149965ljf.31.1697702515155;
-        Thu, 19 Oct 2023 01:01:55 -0700 (PDT)
+        bh=PH3CTrts87/bU27l3EN5JAWxWDeGWRQ9EMGON+8aZg4=;
+        b=qqu1Bn6gOdvlV6pPdj3hN3Kjre52C6Q08G0MkoWJ6kH1Ygxo6WzLT+YjlikofE6E2H
+         rldUGJXtntaIeUhuYEyvz4xns0CmcxGcXtIyF275HBzRHChn+ZsZ3W60IDeT91yqXjpo
+         5y7m2YhfOd6rYWgzq3xVu6+qt2Qdq8CO8adnYTEMatTo1jgrH1hQX1EpulYLysA8wc3m
+         JbGzf5qGQTipe/d+w5NpeyBtAmUFVmCFlvBJCe1abdtzyraAbu4gsBc7J1FtOhODpYd1
+         s901VekQUeGmIJJJYHeh5NY0X3tPlJyJ4jzbE4jJ3Rf7Fl5wJQlj4RIFMZ0vjAfL6HNB
+         JHng==
+X-Gm-Message-State: AOJu0Yy5vWXQhUOzUNK4+zF+jYddyhlafBFievSebSn8PwMR563J5TRk
+        0IjNv6JM6F5afr+mEOp1beATxQ==
+X-Google-Smtp-Source: AGHT+IHYgrLP95m19T8VV4j4IIENiIUl+y5B0n5FUWHPqZ/oM3kMO8SamCcDgZ0NeNrUiRnd8JBlpA==
+X-Received: by 2002:a05:6000:11c9:b0:31f:b120:143 with SMTP id i9-20020a05600011c900b0031fb1200143mr887639wrx.59.1697702625844;
+        Thu, 19 Oct 2023 01:03:45 -0700 (PDT)
 Received: from localhost (cst2-173-16.cust.vodafone.cz. [31.30.173.16])
-        by smtp.gmail.com with ESMTPSA id je6-20020a05600c1f8600b004063ea92492sm3790133wmb.22.2023.10.19.01.01.53
+        by smtp.gmail.com with ESMTPSA id c12-20020adfe70c000000b0031c6e1ea4c7sm3818471wrm.90.2023.10.19.01.03.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Oct 2023 01:01:54 -0700 (PDT)
-Date:   Thu, 19 Oct 2023 10:01:53 +0200
+        Thu, 19 Oct 2023 01:03:45 -0700 (PDT)
+Date:   Thu, 19 Oct 2023 10:03:44 +0200
 From:   Andrew Jones <ajones@ventanamicro.com>
 To:     Anup Patel <apatel@ventanamicro.com>
 Cc:     Paolo Bonzini <pbonzini@redhat.com>,
@@ -62,122 +62,55 @@ Cc:     Paolo Bonzini <pbonzini@redhat.com>,
         kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
         linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/8] RISC-V: KVM: Forward SBI DBCN extension to
- user-space
-Message-ID: <20231019-5e79c16a0731f60d862ddfff@orel>
+Subject: Re: [PATCH v2 5/8] RISC-V: Add inline version of
+ sbi_console_putchar/getchar() functions
+Message-ID: <20231019-61b3653a98a1c021623b091e@orel>
 References: <20231012051509.738750-1-apatel@ventanamicro.com>
- <20231012051509.738750-5-apatel@ventanamicro.com>
+ <20231012051509.738750-6-apatel@ventanamicro.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231012051509.738750-5-apatel@ventanamicro.com>
+In-Reply-To: <20231012051509.738750-6-apatel@ventanamicro.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 12, 2023 at 10:45:05AM +0530, Anup Patel wrote:
-> The frozen SBI v2.0 specification defines the SBI debug console
-> (DBCN) extension which replaces the legacy SBI v0.1 console
-> functions namely sbi_console_getchar() and sbi_console_putchar().
-> 
-> The SBI DBCN extension needs to be emulated in the KVM user-space
-> (i.e. QEMU-KVM or KVMTOOL) so we forward SBI DBCN calls from KVM
-> guest to the KVM user-space which can then redirect the console
-> input/output to wherever it wants (e.g. telnet, file, stdio, etc).
-> 
-> The SBI debug console is simply a early console available to KVM
-> guest for early prints and it does not intend to replace the proper
-> console devices such as 8250, VirtIO console, etc.
+On Thu, Oct 12, 2023 at 10:45:06AM +0530, Anup Patel wrote:
+> The functions sbi_console_putchar() and sbi_console_getchar() are
+> not defined when CONFIG_RISCV_SBI_V01 is disabled so let us add
+> inline version of these functions to avoid "#ifdef" on user side.
+
+nit: Here and in the summary I'd probably use the word "stub" instead of
+"inline version".
+
 > 
 > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
 > ---
->  arch/riscv/include/asm/kvm_vcpu_sbi.h |  1 +
->  arch/riscv/include/uapi/asm/kvm.h     |  1 +
->  arch/riscv/kvm/vcpu_sbi.c             |  4 ++++
->  arch/riscv/kvm/vcpu_sbi_replace.c     | 32 +++++++++++++++++++++++++++
->  4 files changed, 38 insertions(+)
+>  arch/riscv/include/asm/sbi.h | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
-> diff --git a/arch/riscv/include/asm/kvm_vcpu_sbi.h b/arch/riscv/include/asm/kvm_vcpu_sbi.h
-> index c02bda5559d7..6a453f7f8b56 100644
-> --- a/arch/riscv/include/asm/kvm_vcpu_sbi.h
-> +++ b/arch/riscv/include/asm/kvm_vcpu_sbi.h
-> @@ -73,6 +73,7 @@ extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_ipi;
->  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_rfence;
->  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_srst;
->  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_hsm;
-> +extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_dbcn;
->  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_experimental;
->  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_vendor;
+> diff --git a/arch/riscv/include/asm/sbi.h b/arch/riscv/include/asm/sbi.h
+> index 12dfda6bb924..cbcefa344417 100644
+> --- a/arch/riscv/include/asm/sbi.h
+> +++ b/arch/riscv/include/asm/sbi.h
+> @@ -271,8 +271,13 @@ struct sbiret sbi_ecall(int ext, int fid, unsigned long arg0,
+>  			unsigned long arg3, unsigned long arg4,
+>  			unsigned long arg5);
 >  
-> diff --git a/arch/riscv/include/uapi/asm/kvm.h b/arch/riscv/include/uapi/asm/kvm.h
-> index 917d8cc2489e..60d3b21dead7 100644
-> --- a/arch/riscv/include/uapi/asm/kvm.h
-> +++ b/arch/riscv/include/uapi/asm/kvm.h
-> @@ -156,6 +156,7 @@ enum KVM_RISCV_SBI_EXT_ID {
->  	KVM_RISCV_SBI_EXT_PMU,
->  	KVM_RISCV_SBI_EXT_EXPERIMENTAL,
->  	KVM_RISCV_SBI_EXT_VENDOR,
-> +	KVM_RISCV_SBI_EXT_DBCN,
->  	KVM_RISCV_SBI_EXT_MAX,
->  };
->  
-> diff --git a/arch/riscv/kvm/vcpu_sbi.c b/arch/riscv/kvm/vcpu_sbi.c
-> index 1b1cee86efda..bb76c3cf633f 100644
-> --- a/arch/riscv/kvm/vcpu_sbi.c
-> +++ b/arch/riscv/kvm/vcpu_sbi.c
-> @@ -66,6 +66,10 @@ static const struct kvm_riscv_sbi_extension_entry sbi_ext[] = {
->  		.ext_idx = KVM_RISCV_SBI_EXT_PMU,
->  		.ext_ptr = &vcpu_sbi_ext_pmu,
->  	},
-> +	{
-> +		.ext_idx = KVM_RISCV_SBI_EXT_DBCN,
-> +		.ext_ptr = &vcpu_sbi_ext_dbcn,
-> +	},
->  	{
->  		.ext_idx = KVM_RISCV_SBI_EXT_EXPERIMENTAL,
->  		.ext_ptr = &vcpu_sbi_ext_experimental,
-> diff --git a/arch/riscv/kvm/vcpu_sbi_replace.c b/arch/riscv/kvm/vcpu_sbi_replace.c
-> index 7c4d5d38a339..23b57c931b15 100644
-> --- a/arch/riscv/kvm/vcpu_sbi_replace.c
-> +++ b/arch/riscv/kvm/vcpu_sbi_replace.c
-> @@ -175,3 +175,35 @@ const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_srst = {
->  	.extid_end = SBI_EXT_SRST,
->  	.handler = kvm_sbi_ext_srst_handler,
->  };
-> +
-> +static int kvm_sbi_ext_dbcn_handler(struct kvm_vcpu *vcpu,
-> +				    struct kvm_run *run,
-> +				    struct kvm_vcpu_sbi_return *retdata)
-> +{
-> +	struct kvm_cpu_context *cp = &vcpu->arch.guest_context;
-> +	unsigned long funcid = cp->a6;
-> +
-> +	switch (funcid) {
-> +	case SBI_EXT_DBCN_CONSOLE_WRITE:
-> +	case SBI_EXT_DBCN_CONSOLE_READ:
-> +	case SBI_EXT_DBCN_CONSOLE_WRITE_BYTE:
-> +		/*
-> +		 * The SBI debug console functions are unconditionally
-> +		 * forwarded to the userspace.
-> +		 */
-> +		kvm_riscv_vcpu_sbi_forward(vcpu, run);
-> +		retdata->uexit = true;
-> +		break;
-> +	default:
-> +		retdata->err_val = SBI_ERR_NOT_SUPPORTED;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_dbcn = {
-> +	.extid_start = SBI_EXT_DBCN,
-> +	.extid_end = SBI_EXT_DBCN,
-> +	.default_unavail = true,
-> +	.handler = kvm_sbi_ext_dbcn_handler,
-> +};
+> +#ifdef CONFIG_RISCV_SBI_V01
+>  void sbi_console_putchar(int ch);
+>  int sbi_console_getchar(void);
+> +#else
+> +static inline void sbi_console_putchar(int ch) { }
+> +static inline int sbi_console_getchar(void) { return -1; }
+> +#endif
+>  long sbi_get_mvendorid(void);
+>  long sbi_get_marchid(void);
+>  long sbi_get_mimpid(void);
 > -- 
 > 2.34.1
 >
+
+Otherwise,
 
 Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
