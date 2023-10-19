@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A7DCDB465
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 06:00:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3176CDB465
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 06:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235294AbjJSGAx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Oct 2023 02:00:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42828 "EHLO
+        id S230297AbjJSGGo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 Oct 2023 02:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235260AbjJSGAg (ORCPT
+        with ESMTP id S232076AbjJSGGn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Oct 2023 02:00:36 -0400
-Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com [209.85.208.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D10D41;
-        Wed, 18 Oct 2023 22:59:20 -0700 (PDT)
-Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-2c518a1d83fso72992911fa.3;
-        Wed, 18 Oct 2023 22:59:20 -0700 (PDT)
+        Thu, 19 Oct 2023 02:06:43 -0400
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E660116;
+        Wed, 18 Oct 2023 23:06:41 -0700 (PDT)
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-40675f06f1fso1910395e9.1;
+        Wed, 18 Oct 2023 23:06:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697695158; x=1698299958;
+        d=1e100.net; s=20230601; t=1697695600; x=1698300400;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=oMNlz6Cxdkl+zH/G54X2MxUz7Wqg3pA8w42qPZNqH/w=;
-        b=QHmz/pRBtZzJt9mvBsWyeABAcA7RDx1jss7u4cy/ynF1LwzRCkfQL5X1To70Ma3JsS
-         pUC2g9q8IVcLbwWjQL5CKhBpBlPl2yD831aX3ti2MHTfFE1ilI7zigZsDrnbd9uf/hz7
-         9JR1SUdqzTGSJtO2sarOufajw0IOI3st+KbZ4/RP7xu7K+hY1wjuyJPavuyIJsk/jheq
-         PBnSIqvYpunL1pHqQf50pzn41Rav428Qe5eg2lIHayn4ioIhfL9d7vjRApXDtPdNmZ4u
-         Xtl6KNcy8fQEGSqX6dwcFUbRxvf+emSOsg5FEOooABdYWD5CFEOBhT9cV6sW0rYb+b20
-         tqYw==
-X-Gm-Message-State: AOJu0YzgMc3PcPxazbtTu8VJRnGh2qP/C6qSgqSqrySjhIXEkVyjYVWG
-        +113XikJ9BLqONATEh7kAOz97EKEPTk=
-X-Google-Smtp-Source: AGHT+IEFUDv1bUvCKipr9WPFTcJbIQhZXjicY9dc0svILoD8+/81L/IWsGw6/+CJlDgk/ImukxxEfA==
-X-Received: by 2002:a2e:8783:0:b0:2c5:14f8:d5dc with SMTP id n3-20020a2e8783000000b002c514f8d5dcmr530994lji.14.1697695158038;
-        Wed, 18 Oct 2023 22:59:18 -0700 (PDT)
+        bh=XdiAvv6/GMuTeUsasZL+eYHRNQDVY32PG9JD+9V4JpE=;
+        b=QolD7BAHCDacCmnkUybPnty0O6ZRfFUSBaXVmzRohafHhtLe5zysYVjQ4UZT7M2Qfo
+         r0ag1PoqxwaiIqN1JUoEvi3QKi1GJWyVedWNCZrImmyqjbKAT/yI+0LXzmO6to6C1Dy1
+         EGdAH/oDikMGjmwlbsH55HH0tj9JZf2tAlLc80LneK/PgyLaff1ZxYtVgk+5dJWv7rso
+         X2lNjkawkZYmdGArbFL4MX5l7f8yV1NHrIcLUBQ5RAcQ9UI2vHSc0uIh1frZFs8E6FiT
+         xdHLqgSpZNkAi5XF6Lmv/Fz5gbOQZXN34VO0ho8I3d3qVhnyEky/qWBwYE4KwPF5aYwp
+         QuBg==
+X-Gm-Message-State: AOJu0YzhbP70S0Dx9PHvyZ72vMdwjPQxfrf1iTWEfDtlBYP9bXEs/UPo
+        ZNfX9drBNzl5yZDszBjn6nY=
+X-Google-Smtp-Source: AGHT+IFtl04YdsvvvMm7EAt3S4aCtSBLxCu7nzX9l49zHKIKRYbzcyqgRCdEFPcgyGwh0rnkOLekRw==
+X-Received: by 2002:a05:600c:1e20:b0:407:5de2:ea4d with SMTP id ay32-20020a05600c1e2000b004075de2ea4dmr705836wmb.13.1697695599524;
+        Wed, 18 Oct 2023 23:06:39 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id n15-20020a7bcbcf000000b004060f0a0fdbsm3445721wmi.41.2023.10.18.22.59.17
+        by smtp.gmail.com with ESMTPSA id j20-20020a05600c191400b0040641a9d49bsm3521225wmq.17.2023.10.18.23.06.38
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Oct 2023 22:59:17 -0700 (PDT)
-Message-ID: <164c77f6-2f03-440a-aabe-dd0a1fd27592@kernel.org>
-Date:   Thu, 19 Oct 2023 07:59:16 +0200
+        Wed, 18 Oct 2023 23:06:39 -0700 (PDT)
+Message-ID: <3332a86c-1a1d-4b78-bbfa-8ac3e2e642a1@kernel.org>
+Date:   Thu, 19 Oct 2023 08:06:38 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 5/6] tty: serial: 8250: Fix MOXA RS422/RS485 PCIe
- boards not work by default
+Subject: Re: [PATCH v3 6/6] tty: serial: 8250: Add support for MOXA PCIe
+ boards to switch interface between RS422/RS485
 Content-Language: en-US
 To:     Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 References: <20231018091739.10125-1-crescentcy.hsieh@moxa.com>
- <20231018091739.10125-6-crescentcy.hsieh@moxa.com>
+ <20231018091739.10125-7-crescentcy.hsieh@moxa.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -93,7 +93,7 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20231018091739.10125-6-crescentcy.hsieh@moxa.com>
+In-Reply-To: <20231018091739.10125-7-crescentcy.hsieh@moxa.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -101,17 +101,74 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 18. 10. 23, 11:17, Crescent CY Hsieh wrote:
-> MOXA PCIe RS422/RS485 boards will not function by default because of the
-> initial default serial interface of all MOXA PCIe boards is set to RS232.
+> MOXA PCIe boards have 4 serial interfaces and don't require additional
+> stuff to switch between interfaces:
 > 
-> This patch fixes the problem above by setting the initial default serial
-> interface to RS422 for those MOXA RS422/RS485 PCIe boards.
+> - RS232
+> - RS422
+> - RS485_2W (half-duplex)
+> - RS485_4W (full-duplex)
+> 
+> By using ioctl command "TIOCRS485", it can switch between default
+> interface and RS485 if supported.
+> 
+> That means, for RS422/RS485 board, it can switch between RS422 and
+> RS485 by setting the flags within struct serial_rs485.
+> 
+> However, for the RS232/RS422/RS485 board, it can only switch between
+> RS232 and RS485, there's no flag for switching interface into RS422.
+> 
+> This patch uses "SER_RS485_TERMINATE_BUS" to represent RS422 as a
+> workaround solution:
+> 
+> - RS232                   = (no flags are set)
+> - RS422                   = SER_RS485_ENABLED | SER_RS485_TERMINATE_BUS
+> - RS485_2W (half-duplex)  = SER_RS485_ENABLED
+> - RS485_4W (full-duplex)  = SER_RS485_ENABLED | SER_RS485_RX_DURING_TX
 > 
 > Signed-off-by: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+> ---
+>   drivers/tty/serial/8250/8250_pci.c | 58 ++++++++++++++++++++++++++++++
+>   1 file changed, 58 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index 29a28e72b..098ac466b 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -1974,6 +1974,10 @@ pci_sunix_setup(struct serial_private *priv,
+>   #define MOXA_RS485_2W	0x0F
+>   #define MOXA_UIR_OFFSET	0x04
+>   
+> +static const struct serial_rs485 pci_moxa_rs485_supported = {
+> +	.flags = SER_RS485_ENABLED | SER_RS485_RX_DURING_TX | SER_RS485_TERMINATE_BUS,
+> +};
+> +
+>   static bool pci_moxa_is_mini_pcie(unsigned short device)
+>   {
+>   	if (device == PCI_DEVICE_ID_MOXA_CP102N	||
+> @@ -2024,6 +2028,46 @@ static int pci_moxa_set_interface(const struct pci_dev *dev,
+>   	return 0;
+>   }
+>   
+> +/*
+> + * MOXA PCIe boards support switching the serial interface using the ioctl
+> + * command "TIOCSRS485", but there is currently no dedicated flag for switching
+> + * to RS422. As a workaround, we utilize the "SER_RS485_TERMINATE_BUS" flag to
+> + * represent RS422.
+> + *
+> + *	RS232			= (no flags are set)
+> + *	RS422			= SER_RS485_ENABLED | SER_RS485_TERMINATE_BUS
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Oh, I noticed only now. Can we implement this properly? I mean by 
+defining e.g. SER_RS422_ENABLED? And add checks to 
+uart_check_rs485_flags() that only one of 485/422 is set and whatever 
+else makes sense.
 
+> + *	RS485_2W (half-duplex)	= SER_RS485_ENABLED
+> + *	RS485_4W (full-duplex)	= SER_RS485_ENABLED | SER_RS485_RX_DURING_TX
+> + */
 
+thanks,
 -- 
 js
 suse labs
