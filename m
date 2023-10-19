@@ -2,277 +2,132 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 671F3CDB483
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 14:31:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 068A3CDB465
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 14:32:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346244AbjJSObd (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Oct 2023 10:31:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53902 "EHLO
+        id S235508AbjJSOcs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 Oct 2023 10:32:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235455AbjJSObQ (ORCPT
+        with ESMTP id S1346179AbjJSOcj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Oct 2023 10:31:16 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B082D1993
-        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 07:30:35 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id d9443c01a7336-1c9e06f058bso6651995ad.0
-        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 07:30:35 -0700 (PDT)
+        Thu, 19 Oct 2023 10:32:39 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18341BF
+        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 07:31:47 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id d9443c01a7336-1c9fa869a63so42986505ad.0
+        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 07:31:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1697725834; x=1698330634; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1697725907; x=1698330707; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=VzcEjsEl2uWtmVR4keMfinsYtgfviSGELDDXhjbHV44=;
-        b=ObbaY9hdvymww775dmYBTvWj5+OUDo9TXF9GCAeKETNhpKmJWZDN81FVqNeuUteujP
-         hSE3t6TuRNIrKXE9CO5t8FuVoBaGMFtJBhjYdW5W2ZoqiEaWki3aBmNTEVTlJXW6qXuk
-         as80Eyh8nssijQn6OFozV2XUgGPJ7HHO1icLDNZtraFFJ3gMTnCwdbpaX1pFxpoCGCiw
-         dwJm0mWfo7S51NiMnj5Om7wbB23TKLqWNeHaafNB6l2W2bWYa15zFrjGLwkCiE/TzrzZ
-         KESct1MLOfrtSzOBpxflhrCSoTlOb1Y/wxJaxaCukaD+QBSKaJblTCkd+FOpPejeIVnX
-         vEvA==
+        bh=CIi5sl7kotf6K4zebahXrePOnqvZwmDyPuUbQKhEpnY=;
+        b=DmWQkwvPkYojGMkbaeaACKz0u0I7ynfk+ssHQuK4vCwDDHODXHDkY9APjTyMKAaSd5
+         ZlKwyztpwjFX5tIUG3Csdwof8ZiMWzvqeZSCrRZtdNy/JNrXWy47by5UVoqU94uEfNsl
+         84k/jiDdQl9CSPLdYo/tm+uHzV8+aJ8KOkoxA1mhTfJLIp+FFK015Qu92nqoqwPQrunB
+         hjsOCeS5VLDi2AFd6PE7wS/Q8MiZMwIGxX0oYPq9zBqQgS8QErOd4Y3zatBgIHIxbVHj
+         ZpzFqr/lXXthwbOW7ytoNDhK3EYf77QYKmEN5F/y9ju/B0xSUyIBBL88ShgQ3rHP/BGT
+         WwWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697725834; x=1698330634;
+        d=1e100.net; s=20230601; t=1697725907; x=1698330707;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=VzcEjsEl2uWtmVR4keMfinsYtgfviSGELDDXhjbHV44=;
-        b=HR4BcpbhC9YTCZ8qXOe1hnecqybFepATs1yptq+nAhZfEKwVQ8T/TNuklbT8Qr6f3V
-         3ZnBuuQEx/grnpcGI+SgeyNl9nZu1Nidn/5+T6EpW6lbcqL9lW1VHHZMyeFW978ky7tP
-         0v7McDfgbTaKYDo14a0cV9sg4zEQ6sHTGluVtUfVtBwEpVlwTbWWHiS7VWvrUi9fFkhV
-         j87tH2XTN3XfVaWYyIpAn0lMCVsHXDID4trJCFmF/OzJjIhoAzlhzc1Qd78owsLzSi8k
-         QRuVeDeODit4gAbd1LSVqBnaYipMOuPgOxKuDJrdVp0WzGUHjQbQH9wVDzUwvwG2ob0h
-         E4Jw==
-X-Gm-Message-State: AOJu0YzGLHYBFsrAI8m/lvVWxboZ3GvaqU5eqedYqIGH32Do3mL2KrVQ
-        KIKcow30hjWLorp23nvivaoXIpB3NCVmV0Svqic7WA==
-X-Google-Smtp-Source: AGHT+IG67nzoAxZvjHVM1Fg3hfBlSRytt3fgQ43njR364pQJif9r0I4lxmmiyf5fzvCNdBSaetiup45v6FCPQyBzv+k=
-X-Received: by 2002:a17:903:1cd:b0:1c9:cad9:e6e3 with SMTP id
- e13-20020a17090301cd00b001c9cad9e6e3mr3243398plh.32.1697725833502; Thu, 19
- Oct 2023 07:30:33 -0700 (PDT)
+        bh=CIi5sl7kotf6K4zebahXrePOnqvZwmDyPuUbQKhEpnY=;
+        b=hEFL1orKQBHiSLM+nmPuZrJatTTM/j0BwAWrdn1e+Pdy9OCt1cSEhZYWa/Lfo4sc8f
+         Gf5i3raQ6kPh09JcZsSbM20k0AIOcSFbp4KWcxETGQ21k4sqCDHOYIztv3YYGUcIoF+e
+         UDRPJLMZV5GFlZKn9QobzNSBP/mO7gcau+4L6IZrrVwuWmM+XLaXBtHsqlR34xcj+eON
+         s33tnss8IQjOpJFgxlMG23tf3DPmMCkAn6z302CkB4z9fVra6NlHuwYvuqNHQ4OwfCPQ
+         l7Hp6N5nHmrygaVgJW+KaoRFEetQfjk649RTj7nZDaEArIAIU/fk5MfDXqUKon3FTMEO
+         z9gw==
+X-Gm-Message-State: AOJu0YybDPxEGvY3lorhel1hibQpeA5cCpdDQ07MWnjdIhLsbm3lxHUp
+        eiVDR9Gx9qithE+bDoS/tav7PDE54l5sxMa6Hj9MhQ==
+X-Google-Smtp-Source: AGHT+IG/GJqdnqvx4V9L4BUA/fWFsRzxuErdFglDBcvKmdt4ZRtxaP1ns06xq1OdK3DtBHOoyVfRHYqF5bvkZSe5uxs=
+X-Received: by 2002:a17:902:db0b:b0:1c8:a06e:fce9 with SMTP id
+ m11-20020a170902db0b00b001c8a06efce9mr2922496plx.52.1697725907291; Thu, 19
+ Oct 2023 07:31:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <20231019100901.4026680-1-andre.draszik@linaro.org>
-In-Reply-To: <20231019100901.4026680-1-andre.draszik@linaro.org>
+References: <20231019100639.4026283-1-andre.draszik@linaro.org>
+In-Reply-To: <20231019100639.4026283-1-andre.draszik@linaro.org>
 From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Thu, 19 Oct 2023 09:30:22 -0500
-Message-ID: <CAPLW+4ndcW0jtXNiBOctPnbK8QNz_Ra8TcXwLxg0tGFWFHvWHA@mail.gmail.com>
-Subject: Re: [PATCH v2] tty: serial: samsung_tty: remove dead code
+Date:   Thu, 19 Oct 2023 09:31:36 -0500
+Message-ID: <CAPLW+4=oY1PjTTbsLq6QL5k37CZnqY1NprC1AxyAMkO4zBBDsQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] tty: serial: samsung: drop earlycon support for
+ unsupported platforms
 To:     =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, krzysztof.kozlowski@linaro.org,
-        alim.akhtar@samsung.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        alim.akhtar@samsung.com, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 19, 2023 at 5:09=E2=80=AFAM Andr=C3=A9 Draszik <andre.draszik@l=
+On Thu, Oct 19, 2023 at 5:06=E2=80=AFAM Andr=C3=A9 Draszik <andre.draszik@l=
 inaro.org> wrote:
 >
-> When support for various old platforms was removed in commit
-> 1ea35b355722 ("ARM: s3c: remove s3c24xx specific hacks"),
-> s3c24xx_serial_ops also became unused here because nothing sets port
-> type TYPE_S3C24XX anymore.
+> Commit 1ea35b355722 ("ARM: s3c: remove s3c24xx specific hacks") removed
+> support here for several old platforms, but kept support for earlycon
+> for those same platforms.
 >
-> Remove s3c24xx_serial_ops and all the code that's unreachable now.
+> As earlycon support for otherwise unsupported platforms doesn't seem to
+> be useful, just drop it as well.
 >
-> Fixes: 1ea35b355722 ("ARM: s3c: remove s3c24xx specific hacks")
+> Suggested-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > Signed-off-by: Andr=C3=A9 Draszik <andre.draszik@linaro.org>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->
 > ---
 
 Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
 
-> v2: update commit message
-> ---
->  drivers/tty/serial/samsung_tty.c | 105 -------------------------------
->  1 file changed, 105 deletions(-)
+>  drivers/tty/serial/samsung_tty.c | 16 +---------------
+>  1 file changed, 1 insertion(+), 15 deletions(-)
 >
 > diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsun=
 g_tty.c
-> index 07fb8a9dac63..6b8d4b4402e9 100644
+> index 6b8d4b4402e9..a74ecc78f4e0 100644
 > --- a/drivers/tty/serial/samsung_tty.c
 > +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -64,7 +64,6 @@
->  #define RXSTAT_DUMMY_READ (0x10000000)
->
->  enum s3c24xx_port_type {
-> -       TYPE_S3C24XX,
->         TYPE_S3C6400,
->         TYPE_APPLE_S5L,
->  };
-> @@ -128,8 +127,6 @@ struct s3c24xx_uart_dma {
+> @@ -2735,17 +2735,7 @@ static struct samsung_early_console_data s3c2410_e=
+arly_console_data =3D {
+>         .rxfifo_mask =3D S3C2410_UFSTAT_RXFULL | S3C2410_UFSTAT_RXMASK,
 >  };
 >
->  struct s3c24xx_uart_port {
-> -       unsigned char                   rx_claimed;
-> -       unsigned char                   tx_claimed;
->         unsigned char                   rx_enabled;
->         unsigned char                   tx_enabled;
->         unsigned int                    pm_level;
-> @@ -1166,29 +1163,6 @@ static void s3c24xx_serial_release_dma(struct s3c2=
-4xx_uart_port *p)
->         }
->  }
->
-> -static void s3c24xx_serial_shutdown(struct uart_port *port)
+> -static int __init s3c2410_early_console_setup(struct earlycon_device *de=
+vice,
+> -                                             const char *opt)
 > -{
-> -       struct s3c24xx_uart_port *ourport =3D to_ourport(port);
-> -
-> -       if (ourport->tx_claimed) {
-> -               free_irq(ourport->tx_irq, ourport);
-> -               ourport->tx_enabled =3D 0;
-> -               ourport->tx_claimed =3D 0;
-> -               ourport->tx_mode =3D 0;
-> -       }
-> -
-> -       if (ourport->rx_claimed) {
-> -               free_irq(ourport->rx_irq, ourport);
-> -               ourport->rx_claimed =3D 0;
-> -               ourport->rx_enabled =3D 0;
-> -       }
-> -
-> -       if (ourport->dma)
-> -               s3c24xx_serial_release_dma(ourport);
-> -
-> -       ourport->tx_in_progress =3D 0;
+> -       device->port.private_data =3D &s3c2410_early_console_data;
+> -       return samsung_early_console_setup(device, opt);
 > -}
 > -
->  static void s3c64xx_serial_shutdown(struct uart_port *port)
->  {
->         struct s3c24xx_uart_port *ourport =3D to_ourport(port);
-> @@ -1234,48 +1208,6 @@ static void apple_s5l_serial_shutdown(struct uart_=
-port *port)
->         ourport->tx_in_progress =3D 0;
+> -OF_EARLYCON_DECLARE(s3c2410, "samsung,s3c2410-uart",
+> -                       s3c2410_early_console_setup);
+> -
+> -/* S3C2412, S3C2440, S3C64xx */
+> +/* S3C64xx */
+>  static struct samsung_early_console_data s3c2440_early_console_data =3D =
+{
+>         .txfull_mask =3D S3C2440_UFSTAT_TXFULL,
+>         .rxfifo_mask =3D S3C2440_UFSTAT_RXFULL | S3C2440_UFSTAT_RXMASK,
+> @@ -2758,10 +2748,6 @@ static int __init s3c2440_early_console_setup(stru=
+ct earlycon_device *device,
+>         return samsung_early_console_setup(device, opt);
 >  }
 >
-> -static int s3c24xx_serial_startup(struct uart_port *port)
-> -{
-> -       struct s3c24xx_uart_port *ourport =3D to_ourport(port);
-> -       int ret;
-> -
-> -       ourport->rx_enabled =3D 1;
-> -
-> -       ret =3D request_irq(ourport->rx_irq, s3c24xx_serial_rx_irq, 0,
-> -                         s3c24xx_serial_portname(port), ourport);
-> -
-> -       if (ret !=3D 0) {
-> -               dev_err(port->dev, "cannot get irq %d\n", ourport->rx_irq=
-);
-> -               return ret;
-> -       }
-> -
-> -       ourport->rx_claimed =3D 1;
-> -
-> -       dev_dbg(port->dev, "requesting tx irq...\n");
-> -
-> -       ourport->tx_enabled =3D 1;
-> -
-> -       ret =3D request_irq(ourport->tx_irq, s3c24xx_serial_tx_irq, 0,
-> -                         s3c24xx_serial_portname(port), ourport);
-> -
-> -       if (ret) {
-> -               dev_err(port->dev, "cannot get irq %d\n", ourport->tx_irq=
-);
-> -               goto err;
-> -       }
-> -
-> -       ourport->tx_claimed =3D 1;
-> -
-> -       /* the port reset code should have done the correct
-> -        * register setup for the port controls
-> -        */
-> -
-> -       return ret;
-> -
-> -err:
-> -       s3c24xx_serial_shutdown(port);
-> -       return ret;
-> -}
-> -
->  static int s3c64xx_serial_startup(struct uart_port *port)
->  {
->         struct s3c24xx_uart_port *ourport =3D to_ourport(port);
-> @@ -1692,8 +1624,6 @@ static const char *s3c24xx_serial_type(struct uart_=
-port *port)
->         const struct s3c24xx_uart_port *ourport =3D to_ourport(port);
+> -OF_EARLYCON_DECLARE(s3c2412, "samsung,s3c2412-uart",
+> -                       s3c2440_early_console_setup);
+> -OF_EARLYCON_DECLARE(s3c2440, "samsung,s3c2440-uart",
+> -                       s3c2440_early_console_setup);
+>  OF_EARLYCON_DECLARE(s3c6400, "samsung,s3c6400-uart",
+>                         s3c2440_early_console_setup);
 >
->         switch (ourport->info->type) {
-> -       case TYPE_S3C24XX:
-> -               return "S3C24XX";
->         case TYPE_S3C6400:
->                 return "S3C6400/10";
->         case TYPE_APPLE_S5L:
-> @@ -1753,27 +1683,6 @@ static void s3c24xx_serial_put_poll_char(struct ua=
-rt_port *port,
->                          unsigned char c);
->  #endif
->
-> -static const struct uart_ops s3c24xx_serial_ops =3D {
-> -       .pm             =3D s3c24xx_serial_pm,
-> -       .tx_empty       =3D s3c24xx_serial_tx_empty,
-> -       .get_mctrl      =3D s3c24xx_serial_get_mctrl,
-> -       .set_mctrl      =3D s3c24xx_serial_set_mctrl,
-> -       .stop_tx        =3D s3c24xx_serial_stop_tx,
-> -       .start_tx       =3D s3c24xx_serial_start_tx,
-> -       .stop_rx        =3D s3c24xx_serial_stop_rx,
-> -       .break_ctl      =3D s3c24xx_serial_break_ctl,
-> -       .startup        =3D s3c24xx_serial_startup,
-> -       .shutdown       =3D s3c24xx_serial_shutdown,
-> -       .set_termios    =3D s3c24xx_serial_set_termios,
-> -       .type           =3D s3c24xx_serial_type,
-> -       .config_port    =3D s3c24xx_serial_config_port,
-> -       .verify_port    =3D s3c24xx_serial_verify_port,
-> -#if defined(CONFIG_SERIAL_SAMSUNG_CONSOLE) && defined(CONFIG_CONSOLE_POL=
-L)
-> -       .poll_get_char =3D s3c24xx_serial_get_poll_char,
-> -       .poll_put_char =3D s3c24xx_serial_put_poll_char,
-> -#endif
-> -};
-> -
->  static const struct uart_ops s3c64xx_serial_ops =3D {
->         .pm             =3D s3c24xx_serial_pm,
->         .tx_empty       =3D s3c24xx_serial_tx_empty,
-> @@ -1836,7 +1745,6 @@ static void s3c24xx_serial_init_port_default(int in=
-dex) {
->         port->iotype =3D UPIO_MEM;
->         port->uartclk =3D 0;
->         port->fifosize =3D 16;
-> -       port->ops =3D &s3c24xx_serial_ops;
->         port->flags =3D UPF_BOOT_AUTOCONF;
->         port->line =3D index;
->  }
-> @@ -1954,16 +1862,6 @@ static int s3c24xx_serial_init_port(struct s3c24xx=
-_uart_port *ourport,
->                 ourport->tx_irq =3D ret + 1;
->         }
->
-> -       switch (ourport->info->type) {
-> -       case TYPE_S3C24XX:
-> -               ret =3D platform_get_irq(platdev, 1);
-> -               if (ret > 0)
-> -                       ourport->tx_irq =3D ret;
-> -               break;
-> -       default:
-> -               break;
-> -       }
-> -
->         /*
->          * DMA is currently supported only on DT platforms, if DMA proper=
-ties
->          * are specified.
-> @@ -2083,9 +1981,6 @@ static int s3c24xx_serial_probe(struct platform_dev=
-ice *pdev)
->                         &ourport->drv_data->def_cfg;
->
->         switch (ourport->info->type) {
-> -       case TYPE_S3C24XX:
-> -               ourport->port.ops =3D &s3c24xx_serial_ops;
-> -               break;
->         case TYPE_S3C6400:
->                 ourport->port.ops =3D &s3c64xx_serial_ops;
->                 break;
 > --
 > 2.40.1
+>
 >
