@@ -2,117 +2,113 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03735CDB465
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 10:09:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD2BCDB483
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 11:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345206AbjJSKJ2 convert rfc822-to-8bit (ORCPT
+        id S233155AbjJSL2U convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Oct 2023 06:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38384 "EHLO
+        Thu, 19 Oct 2023 07:28:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345212AbjJSKJ0 (ORCPT
+        with ESMTP id S233152AbjJSL2T (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Oct 2023 06:09:26 -0400
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C0A5129;
-        Thu, 19 Oct 2023 03:09:24 -0700 (PDT)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-5a7cc03dee5so95440137b3.3;
-        Thu, 19 Oct 2023 03:09:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697710162; x=1698314962;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xakoCHP0UqUBxiXAUCeloI+dGQZ3rFKCf0jLKLTYknY=;
-        b=r10Cqd1rU6cy3CfWvgYlt4c5KqO7f2L5pgZ05tB2a+/xD95enaWLRIppRLqGb2f70X
-         0NFcgT/zLTI5fTnmTokjhYtsumfjTjKYWS5a0/2+THHau95LAOX69AifnpldqIEMman1
-         724dUJea9uWwy8wdHVA4nVkMDxVUEfVi1BsYTWOeucYHwfxzew/L7Wlww7u8cszneN+W
-         ZnNgfVZiwhCULmmlrTCE+RkqPWLD8Y8qdigtf0zYl1j53e0ZVvih3KvPsLnZ1LGb3yhq
-         K4Rbf8nLtwIbtNE6xYPMjsg/Hp4XSU2j+NKfqjw229AzcHslMg5ZuDgB+1TQdtCwFUb7
-         3AKw==
-X-Gm-Message-State: AOJu0YwCzTYwT2nnynssvWdHWefu36k+KEzrqlWiAEQdd8To3VIgV9Uo
-        eZsfih+dbtkg8KLOpDXM9500JcgKqxy0yw==
-X-Google-Smtp-Source: AGHT+IHzalEo6s11B+/Y2UPEZbUxPhiu3b5Nn9ALWSn4awdd7VH2o9e6IFYct4pz4pYf2eHLoJQRKw==
-X-Received: by 2002:a25:37ca:0:b0:d9a:ccdf:3873 with SMTP id e193-20020a2537ca000000b00d9accdf3873mr1741281yba.48.1697710161656;
-        Thu, 19 Oct 2023 03:09:21 -0700 (PDT)
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com. [209.85.128.171])
-        by smtp.gmail.com with ESMTPSA id y33-20020a25ad21000000b00d7ba4c5e31fsm1956073ybi.39.2023.10.19.03.09.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Oct 2023 03:09:21 -0700 (PDT)
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-5a7eef0b931so95806917b3.0;
-        Thu, 19 Oct 2023 03:09:20 -0700 (PDT)
-X-Received: by 2002:a81:8486:0:b0:5a7:a838:3fa with SMTP id
- u128-20020a818486000000b005a7a83803famr1994997ywf.3.1697710160501; Thu, 19
- Oct 2023 03:09:20 -0700 (PDT)
+        Thu, 19 Oct 2023 07:28:19 -0400
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B5FBBE;
+        Thu, 19 Oct 2023 04:28:17 -0700 (PDT)
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <prvs=9670043017=fe@dev.tdt.de>)
+        id 1qtRCI-0022g3-ST; Thu, 19 Oct 2023 13:28:14 +0200
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <fe@dev.tdt.de>)
+        id 1qtRCI-001boV-FI; Thu, 19 Oct 2023 13:28:14 +0200
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 207DD240049;
+        Thu, 19 Oct 2023 13:28:14 +0200 (CEST)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id C3699240040;
+        Thu, 19 Oct 2023 13:28:13 +0200 (CEST)
+Received: from localhost.localdomain (unknown [10.2.3.40])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 1CB822062B;
+        Thu, 19 Oct 2023 13:28:13 +0200 (CEST)
+From:   Florian Eckert <fe@dev.tdt.de>
+To:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
+        kabel@kernel.org, u.kleine-koenig@pengutronix.de,
+        ansuelsmth@gmail.com, m.brock@vanmierlo.com
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-leds@vger.kernel.org
+Subject: [PATCH v4 0/3] ledtrig-tty: add additional tty state evaluation
+Date:   Thu, 19 Oct 2023 13:28:06 +0200
+Message-ID: <20231019112809.881730-1-fe@dev.tdt.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20230531111038.6302-1-francesco@dolcini.it>
-In-Reply-To: <20230531111038.6302-1-francesco@dolcini.it>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 19 Oct 2023 12:09:06 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUkPiA=o_QLyuwsTYW7y1ksCjHAqyNSHFx2QZ-dP-HGsQ@mail.gmail.com>
-Message-ID: <CAMuHMdUkPiA=o_QLyuwsTYW7y1ksCjHAqyNSHFx2QZ-dP-HGsQ@mail.gmail.com>
-Subject: Re: [PATCH v2] dt-bindings: serial: 8250_omap: add rs485-rts-active-high
-To:     Francesco Dolcini <francesco@dolcini.it>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        Francesco Dolcini <francesco.dolcini@toradex.com>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8BIT
+X-purgate: clean
+X-purgate-type: clean
+X-purgate-ID: 151534::1697714894-056076AA-1C963A01/0/0
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Francesco,
+Changes in v4:
+- Merging patch 3/4 into patch number 4/4 from previous series, because
+  it fixes a problem that does not exist upstream. This was a note from
+  the build robot regarding my change that I added with previous series.
+  This change was never upstream and therefore this is not relevant.
+- Update the commit message of patch 1/3 of this series, that this commit
+  also changes the 'ndashes' to simple dashes. There were no changes, so
+  I add the 'Reviewed-by' that the commit received before.
+- With this patchset version I have reworked my implementation for the
+  evaluation of the additional line state, so that this changes becomes
+  smaller. As basis I have used the staged commits from Christian Marangi
+  that makes this changes to the netdev trigger. This has already been
+  applied to 'for-leds-next-next' by Lee Jones. I adapted this to the
+  tty trigger.
+  Convert device attr to macro:
+  https://git.kernel.org/pub/scm/linux/kernel/git/lee/leds.git/commit/drivers/leds/trigger?h=for-leds-next-next&id=509412749002f4bac4c29f2012fff90c08d8afca
+  Unify sysfs and state handling:
+  https://git.kernel.org/pub/scm/linux/kernel/git/lee/leds.git/commit/drivers/leds/trigger?h=for-leds-next-next&id=0fd93ac8582627bee9a3c824489f302dff722881
 
-On Wed, May 31, 2023 at 1:14 PM Francesco Dolcini <francesco@dolcini.it> wrote:
-> From: Francesco Dolcini <francesco.dolcini@toradex.com>
->
-> Add rs485-rts-active-high property, this was removed by mistake.
-> In general we just use rs485-rts-active-low property, however the OMAP
-> UART for legacy reason uses the -high one.
->
-> Fixes: 767d3467eb60 ("dt-bindings: serial: 8250_omap: drop rs485 properties")
-> Closes: https://lore.kernel.org/all/ZGefR4mTHHo1iQ7H@francesco-nb.int.toradex.com/
-> Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
-> ---
-> v2: removed reported-by
+Changes in v3:
+- Add missing 'kernel test robot' information to the commit message.
+- Additional information added to the commit message
 
-Thanks for your patch, which is now commit 403e97d6ab2cb6fd
-("dt-bindings: serial: 8250_omap: add rs485-rts-active-high")
-in v6.4-rc5.
+Changes in v2:
+- rename new function from tty_get_mget() to tty_get_tiocm() as
+  requested by 'Jiri Slaby'.
+- As suggested by 'Jiri Slaby', fixed tabs in function documentation
+  throughout the file '/drivers/tty/tty_io.c' in a separate commit.
+- Move the variable definition to the top in function
+  'ledtrig_tty_work()'.
+  This was reported by the 'kernel test robot' after my change in v1.
+- Also set the 'max_brightness' to 'blink_brightness' if no
+  'blink_brightness' was set. This fixes a problem at startup when the
+  brightness is still set to 0 and only 'line_*' is evaluated. I looked
+  in the netdev trigger and that's exactly how it's done there.
 
-> --- a/Documentation/devicetree/bindings/serial/8250_omap.yaml
-> +++ b/Documentation/devicetree/bindings/serial/8250_omap.yaml
-> @@ -70,6 +70,7 @@ properties:
->    dsr-gpios: true
->    rng-gpios: true
->    dcd-gpios: true
-> +  rs485-rts-active-high: true
+v1:
+This is a follow-up patchset, based on the mailing list discussion from
+March 2023 based on the old patchset v8 [1]. I have changed, the LED
+trigger handling via the sysfs interfaces as suggested by Uwe Kleine-König.
+[1] https://lore.kernel.org/linux-leds/20230306094113.273988-1-fe@dev.tdt.de/
 
-make dt_binding_check complains:
+Florian Eckert (3):
+  tty: whitespaces in descriptions corrected by replacing tabs with
+    spaces
+  tty: add new helper function tty_get_tiocm
+  leds: ledtrig-tty: add new line mode evaluation
 
-    Documentation/devicetree/bindings/serial/8250_omap.yaml:
-rs485-rts-active-high: missing type definition
-
-This property should have been added to
-Documentation/devicetree/bindings/serial/serial.yaml first.
-
->    rts-gpio: true
->    power-domains: true
->    clock-frequency: true
-
-Gr{oetje,eeting}s,
-
-                        Geert
+ .../ABI/testing/sysfs-class-led-trigger-tty   |  54 +++++
+ drivers/leds/trigger/ledtrig-tty.c            | 192 +++++++++++++++++-
+ drivers/tty/tty_io.c                          | 130 ++++++------
+ include/linux/tty.h                           |   1 +
+ 4 files changed, 309 insertions(+), 68 deletions(-)
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.30.2
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
