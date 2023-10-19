@@ -2,201 +2,116 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D636CDB465
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 07:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F506CDB482
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 07:45:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232948AbjJSHVp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Oct 2023 03:21:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44592 "EHLO
+        id S1344894AbjJSHpI (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 Oct 2023 03:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232788AbjJSHVo (ORCPT
+        with ESMTP id S1344884AbjJSHpG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Oct 2023 03:21:44 -0400
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CFC812E;
-        Thu, 19 Oct 2023 00:21:42 -0700 (PDT)
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4083ac51d8aso13927575e9.2;
-        Thu, 19 Oct 2023 00:21:42 -0700 (PDT)
+        Thu, 19 Oct 2023 03:45:06 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F451182
+        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 00:45:03 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id 5b1f17b1804b1-40839652b97so15600025e9.3
+        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 00:45:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google; t=1697701501; x=1698306301; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=5pmXZfNDgHWU97eVG0ao9ZDPxa8/NusQS8x4RuYWhWk=;
+        b=iZWOzNajhWf3yU3oCewYpD2OUdH0ARGWLZ4rj91MZvBr6MGURqHWgXt53Y/CbaD/H1
+         3En+jtm90Q6JThv8z87H1h6VnnICzay2rrVWCIL+TfEKFMxDv0DR0XxxhZncnE66OEnJ
+         oHxwLI5irsn44RwZjOXLsPVqkr9jNXYRpkCBvozGyI1+tCh2F6c2wOSxPRWr9NKiFRYV
+         DAFBA89sVAtvQwvzsH+5pwhNJVDW8krDzFjc4vOI1ya+ylqt3ep04naCqDfirKBJqxka
+         yW3bM2N+iG8EGM6zU6FL1K61xlHa1SXRQhBmhc64AV4sr0nFg6b+KuO8iCFqyodkdOtL
+         5hCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697700100; x=1698304900;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Wd+CZoB3ZUKbrf75iwEsiONnc1Z3WWVEgj1SxQ7RWs4=;
-        b=cXT6QqGDFOcUfo71vGB11MYzJYHuwphwHXFZcDS+zP1ihK4C503cXTfNlf0WspYyPj
-         xvoFpK9Y6vfTKmagux1+5+e5xclqq3TE2vivx6RFle1GFMFNnfdWrZd6sZzM5UvXTvCF
-         mukyn0o185ylsdd1yGKJPwZDRcw6Jb5al+H72HgROggvFKSylJI4v3Duwomy7qqJCaVc
-         6onQOEJqwDQJ2swOAWCZ3hm6ufCFJlJuy1MIcgsSFIiXOGM6lYzJeATI+namUVjOp519
-         sWGsmQ9JwpuVUt953CcdmVWBRi2RivZwqGJddTm6hqaNk2lHQhIk5nxbNvju6M3vYVgB
-         kwRA==
-X-Gm-Message-State: AOJu0YzvQSrczYGZuNB05JgZxGhv3TDeI/+eGKTRkl6cpc439XeIXSuL
-        X6VqAbCyjicukJXNubN1Q9o=
-X-Google-Smtp-Source: AGHT+IHY1Z8PJ1keSg0UJBWEGxH64D6kzeBE9qCkMCKICnXexHfCdZlwk7bieKLMonAHTEXzCTKCfA==
-X-Received: by 2002:a05:600c:4506:b0:403:7b2:6d8f with SMTP id t6-20020a05600c450600b0040307b26d8fmr1214903wmo.2.1697700100284;
-        Thu, 19 Oct 2023 00:21:40 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id m16-20020a7bca50000000b00405d9a950a2sm3588552wml.28.2023.10.19.00.21.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Oct 2023 00:21:39 -0700 (PDT)
-Message-ID: <83a0f0a0-56b1-4021-a37d-ef68e7fab712@kernel.org>
-Date:   Thu, 19 Oct 2023 09:21:38 +0200
+        d=1e100.net; s=20230601; t=1697701501; x=1698306301;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5pmXZfNDgHWU97eVG0ao9ZDPxa8/NusQS8x4RuYWhWk=;
+        b=U1I+/ycsEBy50HltL8l8eLXqakOI17Zzl619o7Afv/P1JWRBVH/24fCIAHwxpN0z7y
+         NgkB8f6INYZUlpZTs5LfPrfuy+BAQx4X+MFDvE7uRaXRjnX+uFeS6B2NCMAqTrvGpEMX
+         Y3ib0UaldgUSzW6Ask/stXrqNcjQh7vJ+fPedIffrCkCeEFxkjgSpDemTS7U0JHxlLQt
+         3m3KMB3HZ0PpeZsB3Wq6xg9j1eGPsebkbjkLyNo3n9GCibZow3uGzDMK1cATrzaFvPFp
+         5lIWESjiNcHmlMMOggks3sQuVL0v0ttpo9YMNF4faJ8fHVKHKe9sguED5GSzlnOY9LK+
+         BrSA==
+X-Gm-Message-State: AOJu0YxpExJ0evWIXTJ9oaohnTc9tKG5Zi2R/hGU1zlS0RHQIgTpCuxI
+        4BKchfLm3up9kvDauKxS0w6vRQ==
+X-Google-Smtp-Source: AGHT+IF7BQxJkgtIKhJz33b7TksgaeCJ/FKlTDLOVy2fY0p9glVw/wOjAaJE92kUJE4r9I59EYQnCA==
+X-Received: by 2002:a05:600c:3b95:b0:408:37aa:4766 with SMTP id n21-20020a05600c3b9500b0040837aa4766mr1021340wms.5.1697701501064;
+        Thu, 19 Oct 2023 00:45:01 -0700 (PDT)
+Received: from localhost (cst2-173-16.cust.vodafone.cz. [31.30.173.16])
+        by smtp.gmail.com with ESMTPSA id 1-20020a05600c028100b004077219aed5sm3630164wmk.6.2023.10.19.00.45.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Oct 2023 00:45:00 -0700 (PDT)
+Date:   Thu, 19 Oct 2023 09:44:59 +0200
+From:   Andrew Jones <ajones@ventanamicro.com>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Conor Dooley <conor@kernel.org>, kvm@vger.kernel.org,
+        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
+        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/8] RISC-V: Add defines for SBI debug console
+ extension
+Message-ID: <20231019-5e24c756f19e98cd9d3f89bb@orel>
+References: <20231012051509.738750-1-apatel@ventanamicro.com>
+ <20231012051509.738750-2-apatel@ventanamicro.com>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/5] i3c: slave: func: add tty driver
-Content-Language: en-US
-To:     Frank Li <Frank.Li@nxp.com>, miquel.raynal@bootlin.com,
-        conor.culhane@silvaco.com, alexandre.belloni@bootlin.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, corbet@lwn.net, joe@perches.com,
-        linux-i3c@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
-Cc:     gregkh@linuxfoundation.org, imx@lists.linux.dev,
-        linux-serial@vger.kernel.org
-References: <20231018215809.3477437-1-Frank.Li@nxp.com>
- <20231018215809.3477437-5-Frank.Li@nxp.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20231018215809.3477437-5-Frank.Li@nxp.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231012051509.738750-2-apatel@ventanamicro.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 18. 10. 23, 23:58, Frank Li wrote:
-> Add tty over I3C slave function driver.
-
-Many of the master review comments apply also here. Please fix here too. 
-More below.
-
-> --- /dev/null
-> +++ b/drivers/i3c/func/tty.c
-> @@ -0,0 +1,548 @@
-...
-> +static void i3c_slave_tty_rx_complete(struct i3c_request *req)
-> +{
-> +	struct ttyi3c_port *port = req->context;
+On Thu, Oct 12, 2023 at 10:45:02AM +0530, Anup Patel wrote:
+> We add SBI debug console extension related defines/enum to the
+> asm/sbi.h header.
+> 
+> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> ---
+>  arch/riscv/include/asm/sbi.h | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/arch/riscv/include/asm/sbi.h b/arch/riscv/include/asm/sbi.h
+> index 5b4a1bf5f439..12dfda6bb924 100644
+> --- a/arch/riscv/include/asm/sbi.h
+> +++ b/arch/riscv/include/asm/sbi.h
+> @@ -30,6 +30,7 @@ enum sbi_ext_id {
+>  	SBI_EXT_HSM = 0x48534D,
+>  	SBI_EXT_SRST = 0x53525354,
+>  	SBI_EXT_PMU = 0x504D55,
+> +	SBI_EXT_DBCN = 0x4442434E,
+>  
+>  	/* Experimentals extensions must lie within this range */
+>  	SBI_EXT_EXPERIMENTAL_START = 0x08000000,
+> @@ -236,6 +237,12 @@ enum sbi_pmu_ctr_type {
+>  /* Flags defined for counter stop function */
+>  #define SBI_PMU_STOP_FLAG_RESET (1 << 0)
+>  
+> +enum sbi_ext_dbcn_fid {
+> +	SBI_EXT_DBCN_CONSOLE_WRITE = 0,
+> +	SBI_EXT_DBCN_CONSOLE_READ = 1,
+> +	SBI_EXT_DBCN_CONSOLE_WRITE_BYTE = 2,
+> +};
 > +
-> +	if (req->status == I3C_REQUEST_CANCEL) {
-> +		i3c_slave_ctrl_free_request(req);
-> +		return;
-> +	}
-> +
-> +	for (int i = 0; i < req->actual; i++)
-> +		tty_insert_flip_char(&port->port, *(u8 *)(req->buf + i), 0);
+>  #define SBI_SPEC_VERSION_DEFAULT	0x1
+>  #define SBI_SPEC_VERSION_MAJOR_SHIFT	24
+>  #define SBI_SPEC_VERSION_MAJOR_MASK	0x7f
+> -- 
+> 2.34.1
+>
 
-Maybe I miss something obvious, but req->buf is void *. So why not 
-simple tty_insert_flip_string()?
-
-
-> +	sport->buffer = (void *)get_zeroed_page(GFP_KERNEL);
-> +	if (!sport->buffer)
-> +		return -ENOMEM;
-> +
-> +	sport->xmit.buf = (void *)get_zeroed_page(GFP_KERNEL);
-
-tty_port_alloc_xmit_buf()
-
-
-> +static int i3c_tty_probe(struct i3c_slave_func *func)
-> +{
-> +	struct device *dev = &func->dev;
-> +	struct ttyi3c_port *port;
-> +
-> +	port = devm_kzalloc(dev, sizeof(*port), GFP_KERNEL);
-> +	if (!port)
-> +		return -ENOMEM;
-> +
-> +	port->i3cdev = func;
-> +	dev_set_drvdata(&func->dev, port);
-> +
-> +	port->workqueue = alloc_workqueue("%s", 0, 0, dev_name(&func->dev));
-
-Another wq? You'd have to have a strong reason for these. Drop that.
-
-> +	if (!port->workqueue)
-> +		return -ENOMEM;
-> +
-> +	INIT_WORK(&port->work, i3c_slave_tty_i3c_work);
-> +
-> +	return 0;
-> +}
-> +
-> +static void  i3c_tty_remove(struct i3c_slave_func *func)
-> +{
-> +	struct ttyi3c_port *port;
-> +
-> +	port = dev_get_drvdata(&func->dev);
-
-That can be on one line.
-
-> +
-> +	destroy_workqueue(port->workqueue);
-> +}
-
-
-> +static int i3c_open(struct tty_struct *tty, struct file *filp)
-> +{
-> +	struct ttyi3c_port *sport = tty->driver_data;
-> +	int ret;
-> +
-> +	if (!i3c_slave_ctrl_get_addr(sport->i3cdev->ctrl)) {
-> +		dev_info(&sport->i3cdev->dev, "No slave addr assigned, try hotjoin");
-
-Should this be a debug print instead?
-
-> +		ret = i3c_slave_ctrl_hotjoin(sport->i3cdev->ctrl);
-> +		if (ret) {
-> +			dev_err(&sport->i3cdev->dev, "Hotjoin failure, check connection");
-> +			return ret;
-> +		}
-> +	}
-> +
-> +	return tty_port_open(&sport->port, tty, filp);
-
-regards,
--- 
-js
-suse labs
-
+Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
