@@ -2,55 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C75CDB482
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 08:27:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B003CDB465
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 08:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344865AbjJSI10 (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Oct 2023 04:27:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49838 "EHLO
+        id S232846AbjJSIqr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 Oct 2023 04:46:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235301AbjJSI1Y (ORCPT
+        with ESMTP id S230469AbjJSIqq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Oct 2023 04:27:24 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3136513A
-        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 01:27:22 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id 5b1f17b1804b1-40651a726acso67006665e9.1
-        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 01:27:22 -0700 (PDT)
+        Thu, 19 Oct 2023 04:46:46 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B1FAB
+        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 01:46:44 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id ffacd0b85a97d-32db188e254so3160384f8f.0
+        for <linux-serial@vger.kernel.org>; Thu, 19 Oct 2023 01:46:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1697704040; x=1698308840; darn=vger.kernel.org;
+        d=ventanamicro.com; s=google; t=1697705202; x=1698310002; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=aS9ZmATMA5UdrpXcs84XzGO/WomcKSWd4ogsdFNAVRI=;
-        b=XeWRh86NjQnJhCBd8Cr+Vl4dZlXoiCz0GwycngbJlR16x1ywvojIjh/UUDdn7MHnNq
-         VqwtW1qQGPrXZ0fZQGGc9U6ybwc8y0HmfLDerpVU6QRjNXeJqRRm3vFTXkwfUZRHtslf
-         4XNr+sqxHbvhiVFOkgO4gz+YtI8lfSRtdtDbaCJFydbNfCfwaGgHdqmjgg2SWbGvvPgH
-         AF46fUdxRtIY8bpcoxoCHrZE0EkVj0HdWLotshF/LILmyJ4y2GLpprUfpXNaigkLPe4+
-         Ro549X/Nx3m0SnNguhOZJbl3GRqXuyP7ZJokkFvtKjMDu5xvFKoPfeSnJ6C3bKDpR7R9
-         iS8w==
+        bh=FirHlCGgMz/FvpzIKQkoBCDO6SGDDg5U9N5KzhQ/LwY=;
+        b=M+bRJ0N64mXHeowvT6EHhoGdfEzMFYyLN/bla2lLRUx+GkKhxDDcejVsvqFHHoBT9v
+         PWRFXzSQQvog2wP9JmZziHGIlImoAQxfz4JzZPiR3qWCoE5HGoxmU7qIyeEodz7CA33u
+         TDfLa2e53MSsoYbcf7smyVho7qVQn2jidrErCGBYwRvfOaSjrp+PWf+BRdgWGrBa88Ev
+         j5I9im9yJiLAGJW1u4hvGyoAdIm2DxD2gO4pEhMz4dtGl504zpao8MUmp5EwH6E3c3lW
+         mL0bKidCGXzs+PXy6FXC/9q/FjbgmuSrankUynWGWSHLvgarjbIn9ods9/P/w3J8eMt8
+         DzUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697704040; x=1698308840;
+        d=1e100.net; s=20230601; t=1697705202; x=1698310002;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=aS9ZmATMA5UdrpXcs84XzGO/WomcKSWd4ogsdFNAVRI=;
-        b=v4VjXBgbkMGp5PdTDrvApC4aoHJ8ygC9MQDCoEPMAm5+VgNT/Ga1b/cW1V9as2s0Js
-         o3V5n8ByHFsf/oiHIRCRr10CWzqZ8mODmQ143unBE5FMErv9t4T/mN/mCoUuyWZOEfWK
-         ev44khB5pHuJVZnInb8RdEHNa7YJ4upCDppbtscDVVL8dkw34FJR1CXMRYdkJE1mfpAt
-         SOIL2lq1pGJ+EYYHQxXWACy3LyzYy9dAgy7WxUovxFfCgfvyp0szqnixZ5p/GqjU66lN
-         fM9F5NSUK5Pl7Dp9bPdFcmYocNvm6pw7VcxAvmDU5llV0cp+0oVEl0sbbvn5YBNB2QXI
-         QeVA==
-X-Gm-Message-State: AOJu0YyxLV84q0C3/q77YMHSYgyRvp6Y+H9N5JzYUTB6Uy40dGZbKO5R
-        9AAExjsGcynHZKg3OBDmqCIHqw==
-X-Google-Smtp-Source: AGHT+IHskKNqI6cyPtwKoTi5Al9ucFLHv3VeiXwM9dmzqt6kOBsKQXH4yfubGN4sdMpzP0jv+CThYA==
-X-Received: by 2002:a05:600c:3542:b0:401:73b2:f039 with SMTP id i2-20020a05600c354200b0040173b2f039mr1228282wmq.7.1697704040501;
-        Thu, 19 Oct 2023 01:27:20 -0700 (PDT)
+        bh=FirHlCGgMz/FvpzIKQkoBCDO6SGDDg5U9N5KzhQ/LwY=;
+        b=fTjc+s+uZo55r+Idms+kg+AAmy3kdwyT2SXDTrKCbA9UlxRnS8h+Fl2XlxEKTeI9US
+         T0EwJizUzhauxDPEoSiQpKoD1GfBQnBmIYTZBk0hEub1m6TAznyCEB4o7uxnNPRLJNTK
+         Q03fEKr5jcPiFgcjw8yrS3CLlTBMpO2xHq2spKv3UAtBNTgjr/JrBIWh2BVePhVVc8VO
+         xyeCwOq+5WEeShfzh4RejQRC9zoepSolJGXG/dgxhHhNhSEEkXSgEZY/+JM+p8PsQYm3
+         ONt39smbl9fMv2HIGchuMrm9o6Qz1afUbcy4YgMfFGkAhMMQC6VwVYtwSHSxVgQlfGHv
+         E1oA==
+X-Gm-Message-State: AOJu0YzzpI9mnTN8tVyUtic1m1VxEO/arlC79n8PP1WoJzkIKMDi7/2Z
+        s2v/UwiMzW7mepEons1dCv/dtQ==
+X-Google-Smtp-Source: AGHT+IHIrPhAgCqHiVC0M3rtirooHgesr0AO+GlYhKykcNrHjz1YNAMNd8HgQcR133zWbZZBLn3Q5w==
+X-Received: by 2002:adf:cd83:0:b0:329:6be4:e199 with SMTP id q3-20020adfcd83000000b003296be4e199mr1046765wrj.13.1697705202536;
+        Thu, 19 Oct 2023 01:46:42 -0700 (PDT)
 Received: from localhost (cst2-173-16.cust.vodafone.cz. [31.30.173.16])
-        by smtp.gmail.com with ESMTPSA id o36-20020a05600c512400b00405959469afsm3842187wms.3.2023.10.19.01.27.19
+        by smtp.gmail.com with ESMTPSA id l16-20020a5d6750000000b0032dc1fc84f2sm3960900wrw.46.2023.10.19.01.46.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Oct 2023 01:27:19 -0700 (PDT)
-Date:   Thu, 19 Oct 2023 10:27:13 +0200
+        Thu, 19 Oct 2023 01:46:42 -0700 (PDT)
+Date:   Thu, 19 Oct 2023 10:46:40 +0200
 From:   Andrew Jones <ajones@ventanamicro.com>
 To:     Anup Patel <apatel@ventanamicro.com>
 Cc:     Paolo Bonzini <pbonzini@redhat.com>,
@@ -63,92 +62,52 @@ Cc:     Paolo Bonzini <pbonzini@redhat.com>,
         kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
         linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 6/8] tty/serial: Add RISC-V SBI debug console based
- earlycon
-Message-ID: <20231019-f3c3768f5e95e747e1457c49@orel>
+Subject: Re: [PATCH v2 8/8] RISC-V: Enable SBI based earlycon support
+Message-ID: <20231019-08c33e28cf77beab61519f49@orel>
 References: <20231012051509.738750-1-apatel@ventanamicro.com>
- <20231012051509.738750-7-apatel@ventanamicro.com>
+ <20231012051509.738750-9-apatel@ventanamicro.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231012051509.738750-7-apatel@ventanamicro.com>
+In-Reply-To: <20231012051509.738750-9-apatel@ventanamicro.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 12, 2023 at 10:45:07AM +0530, Anup Patel wrote:
-> We extend the existing RISC-V SBI earlycon support to use the new
-> RISC-V SBI debug console extension.
+On Thu, Oct 12, 2023 at 10:45:09AM +0530, Anup Patel wrote:
+> Let us enable SBI based earlycon support in defconfigs for both RV32
+> and RV64 so that "earlycon=sbi" can be used again.
 > 
 > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
 > ---
->  drivers/tty/serial/Kconfig              |  2 +-
->  drivers/tty/serial/earlycon-riscv-sbi.c | 32 +++++++++++++++++++++----
->  2 files changed, 29 insertions(+), 5 deletions(-)
+>  arch/riscv/configs/defconfig      | 1 +
+>  arch/riscv/configs/rv32_defconfig | 1 +
+>  2 files changed, 2 insertions(+)
 > 
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index bdc568a4ab66..cec46091a716 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -87,7 +87,7 @@ config SERIAL_EARLYCON_SEMIHOST
->  
->  config SERIAL_EARLYCON_RISCV_SBI
->  	bool "Early console using RISC-V SBI"
-> -	depends on RISCV_SBI_V01
-> +	depends on RISCV_SBI
->  	select SERIAL_CORE
->  	select SERIAL_CORE_CONSOLE
->  	select SERIAL_EARLYCON
-> diff --git a/drivers/tty/serial/earlycon-riscv-sbi.c b/drivers/tty/serial/earlycon-riscv-sbi.c
-> index 27afb0b74ea7..c21cdef254e7 100644
-> --- a/drivers/tty/serial/earlycon-riscv-sbi.c
-> +++ b/drivers/tty/serial/earlycon-riscv-sbi.c
-> @@ -15,17 +15,41 @@ static void sbi_putc(struct uart_port *port, unsigned char c)
->  	sbi_console_putchar(c);
->  }
->  
-> -static void sbi_console_write(struct console *con,
-> -			      const char *s, unsigned n)
-> +static void sbi_0_1_console_write(struct console *con,
-> +				  const char *s, unsigned int n)
->  {
->  	struct earlycon_device *dev = con->data;
->  	uart_console_write(&dev->port, s, n, sbi_putc);
->  }
->  
-> +static void sbi_dbcn_console_write(struct console *con,
-> +				   const char *s, unsigned int n)
-> +{
-> +	phys_addr_t pa = __pa(s);
-> +
-> +	if (IS_ENABLED(CONFIG_32BIT))
-> +		sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE,
-> +			  n, lower_32_bits(pa), upper_32_bits(pa), 0, 0, 0);
-> +	else
-> +		sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE,
-> +			  n, pa, 0, 0, 0, 0);
-> +}
-> +
->  static int __init early_sbi_setup(struct earlycon_device *device,
->  				  const char *opt)
->  {
-> -	device->con->write = sbi_console_write;
-> -	return 0;
-> +	int ret = 0;
-> +
-> +	if ((sbi_spec_version >= sbi_mk_version(2, 0)) &&
-> +	    (sbi_probe_extension(SBI_EXT_DBCN) > 0)) {
-> +		device->con->write = sbi_dbcn_console_write;
-> +	} else {
-> +		if (IS_ENABLED(CONFIG_RISCV_SBI_V01))
-> +			device->con->write = sbi_0_1_console_write;
-> +		else
-> +			ret = -ENODEV;
-> +	}
-> +
-> +	return ret;
->  }
->  EARLYCON_DECLARE(sbi, early_sbi_setup);
+> diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
+> index ab86ec3b9eab..f82700da0056 100644
+> --- a/arch/riscv/configs/defconfig
+> +++ b/arch/riscv/configs/defconfig
+> @@ -132,6 +132,7 @@ CONFIG_SERIAL_8250_CONSOLE=y
+>  CONFIG_SERIAL_8250_DW=y
+>  CONFIG_SERIAL_OF_PLATFORM=y
+>  CONFIG_SERIAL_SH_SCI=y
+> +CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
+>  CONFIG_VIRTIO_CONSOLE=y
+>  CONFIG_HW_RANDOM=y
+>  CONFIG_HW_RANDOM_VIRTIO=y
+> diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
+> index 89b601e253a6..5721af39afd1 100644
+> --- a/arch/riscv/configs/rv32_defconfig
+> +++ b/arch/riscv/configs/rv32_defconfig
+> @@ -66,6 +66,7 @@ CONFIG_INPUT_MOUSEDEV=y
+>  CONFIG_SERIAL_8250=y
+>  CONFIG_SERIAL_8250_CONSOLE=y
+>  CONFIG_SERIAL_OF_PLATFORM=y
+> +CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
+>  CONFIG_VIRTIO_CONSOLE=y
+>  CONFIG_HW_RANDOM=y
+>  CONFIG_HW_RANDOM_VIRTIO=y
 > -- 
 > 2.34.1
 >
