@@ -2,101 +2,151 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 505F4CDB465
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 17:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC16DCDB483
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Oct 2023 19:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233273AbjJSRG4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Oct 2023 13:06:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53106 "EHLO
+        id S1346521AbjJSTeU (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 Oct 2023 15:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233041AbjJSRGz (ORCPT
+        with ESMTP id S1346523AbjJSTeT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Oct 2023 13:06:55 -0400
+        Thu, 19 Oct 2023 15:34:19 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE636CF;
-        Thu, 19 Oct 2023 10:06:53 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09122C433C8;
-        Thu, 19 Oct 2023 17:06:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1697735213;
-        bh=OfIb+lpv0671Es84Qid81/qEM6OnY8JU1k800ZktAjE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AyztDa4xFEDQBWGj65Eny50dOxSsQ8HfVh9mGYnsfdPITjjp5TSzmd2A61j18o0dZ
-         0OH2NgDcKYRk70r2SWg3NAm/rOgOveahn6ZTkwcDUpjG8VVkJ9U/0uEOWnHptksytO
-         ycG+Wl7shbxsg1ajy0vPnAk1ILawdVgiN87xg3w8=
-Date:   Thu, 19 Oct 2023 19:06:49 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Frank Li <Frank.li@nxp.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        miquel.raynal@bootlin.com, conor.culhane@silvaco.com,
-        alexandre.belloni@bootlin.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        corbet@lwn.net, joe@perches.com, linux-i3c@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, imx@lists.linux.dev,
-        jirislaby@kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 1/5] i3c: add slave mode support
-Message-ID: <2023101959-smile-oxidizing-7010@gregkh>
-References: <20231018215809.3477437-1-Frank.Li@nxp.com>
- <20231018215809.3477437-2-Frank.Li@nxp.com>
- <dd06c2d3-e273-4356-835b-42619543dfab@linaro.org>
- <ZTFE8hrRgPBrb7e3@lizhi-Precision-Tower-5810>
- <2023101935-papaya-legible-5849@gregkh>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF1DBCA;
+        Thu, 19 Oct 2023 12:34:16 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 528E7C433CB;
+        Thu, 19 Oct 2023 19:34:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1697744056;
+        bh=U4uvieOMjkf+PFUrgjolzRXzsKujYoPFvUARZuVi93g=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=XIOTf/856ZdqwalZjvSzQ8fSJO1n4KiWsacm/1Df7JYiUp4JB9+Te46XnHn37YMh6
+         DmDC6p3CZwBQ9TNRluPc5gDxlMifNmNfCynXNl7w77U8SU5X/2cl6Bh40IHYohVL9V
+         QFqX91wAJ6EwJv39lI18MJr4yik6jMcvOZmUaQNmIgh1WGbV3TXiF/9kar9VpiLyIa
+         8rg2ohTES4fShSu/LyTDgVEGa2jyonSjwsiuaeHhgbvOiABJuvPpBaanXnP9Gk/T4z
+         jtFPG6S8YHnhpTfXlxYvqQL+rrke88jZtd/WUlrGbCqkDIn1Nko5Hpb10PIKK2bvr4
+         R41si6gdULx6g==
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-507c8316abcso9210e87.1;
+        Thu, 19 Oct 2023 12:34:16 -0700 (PDT)
+X-Gm-Message-State: AOJu0Ywe5PT97BFNi+5/HuL7SCaAs2Vk4eOjxtYchmwPrkvZlHwJAkZG
+        iEwDLl0VYgCE1hAqXAXVykQFu1WPCTIo/FVGPQ==
+X-Google-Smtp-Source: AGHT+IGMT9Lrdbp7434FU0vSJTcnDLj9QZz+YqqqKURgtaUGGFvehHaTryvXAxTMKsvBGBRehz5HOHtRRNA6CFuynY8=
+X-Received: by 2002:a05:6512:20d2:b0:507:a701:3206 with SMTP id
+ u18-20020a05651220d200b00507a7013206mr2071442lfr.49.1697744054489; Thu, 19
+ Oct 2023 12:34:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2023101935-papaya-legible-5849@gregkh>
+References: <20230531111038.6302-1-francesco@dolcini.it> <CAMuHMdUkPiA=o_QLyuwsTYW7y1ksCjHAqyNSHFx2QZ-dP-HGsQ@mail.gmail.com>
+ <ZTFFp8Yr7lq6HIab@francesco-nb.int.toradex.com> <CAMuHMdXtA3LNL6UkWyz6oytfNpSv77EShfF-uQvnPJktMUr40A@mail.gmail.com>
+ <ZTFNNudzuvDtSn4J@francesco-nb.int.toradex.com>
+In-Reply-To: <ZTFNNudzuvDtSn4J@francesco-nb.int.toradex.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Thu, 19 Oct 2023 14:34:02 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqKQrkeFmdtvdrscDMTTO6TfUZvJejCNGgC+osC3KjwE8Q@mail.gmail.com>
+Message-ID: <CAL_JsqKQrkeFmdtvdrscDMTTO6TfUZvJejCNGgC+osC3KjwE8Q@mail.gmail.com>
+Subject: Re: [PATCH v2] dt-bindings: serial: 8250_omap: add rs485-rts-active-high
+To:     Francesco Dolcini <francesco@dolcini.it>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 19, 2023 at 05:46:42PM +0200, Greg KH wrote:
-> On Thu, Oct 19, 2023 at 11:02:10AM -0400, Frank Li wrote:
-> > On Thu, Oct 19, 2023 at 09:00:05AM +0200, Krzysztof Kozlowski wrote:
-> > > On 18/10/2023 23:58, Frank Li wrote:
-> > > > Introduce a new slave core layer in order to support slave functions in
-> > > > linux kernel. This comprises the controller library and function library.
-> > > > Controller library implements functions specific to an slave controller
-> > > > and function library implements functions specific to an slave function.
-> > > > 
-> > > > Introduce a new configfs entry to configure the slave function configuring
-> > > > and bind the slave function with slave controller.
-> > > > 
-> > > > Signed-off-by: Frank Li <Frank.Li@nxp.com>
-> > > > ---
-> > > >  drivers/i3c/Kconfig       |  26 ++
-> > > >  drivers/i3c/Makefile      |   2 +
-> > > >  drivers/i3c/i3c-cfs.c     | 389 +++++++++++++++++++++++++++++
-> > > >  drivers/i3c/slave.c       | 453 ++++++++++++++++++++++++++++++++++
-> > > >  include/linux/i3c/slave.h | 503 ++++++++++++++++++++++++++++++++++++++
-> > > >  5 files changed, 1373 insertions(+)
-> > > >  create mode 100644 drivers/i3c/i3c-cfs.c
-> > > >  create mode 100644 drivers/i3c/slave.c
-> > > >  create mode 100644 include/linux/i3c/slave.h
-> > > > 
-> > > > diff --git a/drivers/i3c/Kconfig b/drivers/i3c/Kconfig
-> > > > index 30a441506f61c..d5f5ca7cd6a56 100644
-> > > > --- a/drivers/i3c/Kconfig
-> > > > +++ b/drivers/i3c/Kconfig
-> > > > @@ -22,3 +22,29 @@ menuconfig I3C
-> > > >  if I3C
-> > > >  source "drivers/i3c/master/Kconfig"
-> > > >  endif # I3C
-> > > > +
-> > > > +config I3C_SLAVE
-> > > 
-> > > It doesn't look like you follow Kernel naming convention (see coding style).
-> > 
-> > I checked I3C spec. It use words 'target'.
-> > Is it okay using I3C_TARGET?
-> 
-> Why wouldn't it be?
+On Thu, Oct 19, 2023 at 10:37=E2=80=AFAM Francesco Dolcini <francesco@dolci=
+ni.it> wrote:
+>
+> On Thu, Oct 19, 2023 at 05:13:01PM +0200, Geert Uytterhoeven wrote:
+> > Hi Franceso,
+> >
+> > On Thu, Oct 19, 2023 at 5:05=E2=80=AFPM Francesco Dolcini <francesco@do=
+lcini.it> wrote:
+> > > On Thu, Oct 19, 2023 at 12:09:06PM +0200, Geert Uytterhoeven wrote:
+> > > > On Wed, May 31, 2023 at 1:14=E2=80=AFPM Francesco Dolcini <francesc=
+o@dolcini.it> wrote:
+> > > > > From: Francesco Dolcini <francesco.dolcini@toradex.com>
+> > > > >
+> > > > > Add rs485-rts-active-high property, this was removed by mistake.
+> > > > > In general we just use rs485-rts-active-low property, however the=
+ OMAP
+> > > > > UART for legacy reason uses the -high one.
+> > > > >
+> > > > > Fixes: 767d3467eb60 ("dt-bindings: serial: 8250_omap: drop rs485 =
+properties")
+> > > > > Closes: https://lore.kernel.org/all/ZGefR4mTHHo1iQ7H@francesco-nb=
+.int.toradex.com/
+> > > > > Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+> > > > > ---
+> > > > > v2: removed reported-by
+> > > >
+> > > > Thanks for your patch, which is now commit 403e97d6ab2cb6fd
+> > > > ("dt-bindings: serial: 8250_omap: add rs485-rts-active-high")
+> > > > in v6.4-rc5.
+> > > >
+> > > > > --- a/Documentation/devicetree/bindings/serial/8250_omap.yaml
+> > > > > +++ b/Documentation/devicetree/bindings/serial/8250_omap.yaml
+> > > > > @@ -70,6 +70,7 @@ properties:
+> > > > >    dsr-gpios: true
+> > > > >    rng-gpios: true
+> > > > >    dcd-gpios: true
+> > > > > +  rs485-rts-active-high: true
+> > > >
+> > > > make dt_binding_check complains:
+> > > >
+> > > >     Documentation/devicetree/bindings/serial/8250_omap.yaml:
+> > > > rs485-rts-active-high: missing type definition
+> > >
+> > > For some reasons it works for me (and worked when I did send the patc=
+h)
+> > >
+> > > $ make dt_binding_check DT_SCHEMA_FILES=3D8250_omap.yaml
+> > > ...
+> > >   HOSTCC  scripts/dtc/libfdt/fdt_overlay.o
+> > >   HOSTCC  scripts/dtc/fdtoverlay.o
+> > >   HOSTLD  scripts/dtc/fdtoverlay
+> > >   LINT    Documentation/devicetree/bindings
+> > > invalid config: unknown option "required" for rule "quoted-strings"
+> > > xargs: /usr/bin/yamllint: exited with status 255; aborting
+> > >   CHKDT   Documentation/devicetree/bindings/processed-schema.json
+> > >   SCHEMA  Documentation/devicetree/bindings/processed-schema.json
+> > > /home/francesco/Toradex/sources/linux/Documentation/devicetree/bindin=
+gs/phy/qcom,usb-snps-femto-v2.yaml: ignoring, error in schema: properties: =
+qcom,ls-fs-output-impedance-bp
+> > > /home/francesco/Toradex/sources/linux/Documentation/devicetree/bindin=
+gs/arm/vexpress-sysreg.yaml: ignoring, error in schema: properties: gpio-co=
+ntroller
+> > > /home/francesco/Toradex/sources/linux/Documentation/devicetree/bindin=
+gs/iio/temperature/adi,ltc2983.yaml: ignoring, error in schema: patternProp=
+erties: ^thermistor@: properties: adi,excitation-current-nanoamp
+> > > /home/francesco/Toradex/sources/linux/Documentation/devicetree/bindin=
+gs/iio/adc/adi,ad4130.yaml: ignoring, error in schema: patternProperties: ^=
+channel@([0-9a-f])$: properties: adi,burnout-current-nanoamp
+> > > /home/francesco/Toradex/sources/linux/Documentation/devicetree/bindin=
+gs/iio/addac/adi,ad74115.yaml: ignoring, error in schema: properties: adi,e=
+xt2-burnout-current-nanoamp
+> > >   DTEX    Documentation/devicetree/bindings/serial/8250_omap.example.=
+dts
+> > >   DTC_CHK Documentation/devicetree/bindings/serial/8250_omap.example.=
+dtb
+> > >
+> > >
+> > > any idea on what could be different between us?
+> >
+> > Are you using the latest dt-schema?
 
-Sorry, that was snotty of me, long day of driving, my apologies.  Yes,
-please use "target" and the other terminology to reflect this, and not
-the ones you used in your driver as it is against the current kernel
-coding style rules.
+Indeed, it is a new check.
 
-thanks,
+> Nope, and I tried to update it and now everything fails in a miserable
+> way.
 
-greg k-h
+Do you have more details?
+
+Rob
