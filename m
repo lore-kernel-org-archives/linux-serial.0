@@ -2,171 +2,172 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A5D5C0032E
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Oct 2023 16:16:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95868C00A8F
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Oct 2023 21:48:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbjJTQQC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Oct 2023 12:16:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58712 "EHLO
+        id S233213AbjJTVsH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 20 Oct 2023 17:48:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229799AbjJTQP6 (ORCPT
+        with ESMTP id S233208AbjJTVsG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Oct 2023 12:15:58 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78DCD1A8;
-        Fri, 20 Oct 2023 09:15:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Sender:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
-        Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=tKr5NCYEWPmX5deg+2Ptja2Fo3YNlvlkNEh9wJh6ZDg=; b=ERnIsojrkc5WLnr34IDZQWQKrG
-        wFzlSNa4uSGkth0zeh9LHdVk5FXd6R1LgmCBut8RlHh4SGdWnzA22SU/ejGMiigfeW+6R5k7l2fg2
-        0uiPSrmfiUIoAU5Q2qVPTTjT2kI+9So4NYm2If5BnDiMQZk7Rt7YUcegC1ffCiPYVpfP+E6Imy9hV
-        i2YFd5mM2Jc+985Yim+drAaCsJdkxvZKx7L2lWkn8w4S+76vvn2Jy23msUjaZ2EOVxJJfAY6wkfgh
-        GDrxLxeDVf77oL1C2C89fPb2hRzeM7pGCmELvA/wEZqdkqmaffpDBxTbaPsfNHSm8zNZg6XsaeLtV
-        M17Mpk1w==;
-Received: from [2001:8b0:10b:1::ebe] (helo=i7.infradead.org)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1qts9u-00E44E-8P; Fri, 20 Oct 2023 16:15:34 +0000
-Received: from dwoodhou by i7.infradead.org with local (Exim 4.96 #2 (Red Hat Linux))
-        id 1qts9s-001UOc-1F;
-        Fri, 20 Oct 2023 17:15:32 +0100
-From:   David Woodhouse <dwmw2@infradead.org>
-To:     Juergen Gross <jgross@suse.com>, xen-devel@lists.xenproject.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Roger Pau Monne <roger.pau@citrix.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Dawei Li <set_pte_at@outlook.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, Paul Durrant <paul@xen.org>
-Subject: [PATCH v2 3/3] hvc/xen: fix console unplug
-Date:   Fri, 20 Oct 2023 17:15:29 +0100
-Message-Id: <20231020161529.355083-4-dwmw2@infradead.org>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20231020161529.355083-1-dwmw2@infradead.org>
-References: <20231020161529.355083-1-dwmw2@infradead.org>
+        Fri, 20 Oct 2023 17:48:06 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6784910C8
+        for <linux-serial@vger.kernel.org>; Fri, 20 Oct 2023 14:48:00 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id 6a1803df08f44-66d17fd450aso20427896d6.1
+        for <linux-serial@vger.kernel.org>; Fri, 20 Oct 2023 14:48:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1697838479; x=1698443279; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=/mBv1buCpcnwBc220mZjRsjDHmbRRP2xfyJ2lFdmR6s=;
+        b=fkQSFbeTNaotD+CG4FKQHumTVggsF4QQ1QA1edAb3YoOcjsvemrDs8zsMNkGu8wPXk
+         oAgYd+57Et82jKpaGhkZ75Y1hHIdDtaCiAA5rF8ge6XQaC4O9pD2CYSBjNz2uPwIn6tV
+         sGHY4IrTsZcuOg6d+uCtLwqow3Iu/LVm/UHyHTUHRcYN5PNYRtTKiamZvH+raxvq+qgD
+         8hM6sHMSRlABL5JBLc1XL9igXG0ZIoHslLimSfvDAcYpMUzkDwwdmJcjtSulMFPyYXd6
+         O0iTtB1UJfvENqmACX6Z1BwL7l/Q+RC5Pt1a62/rxF1VRwMC0PyUI6ixz/gYgrUA24s8
+         WmWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697838479; x=1698443279;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/mBv1buCpcnwBc220mZjRsjDHmbRRP2xfyJ2lFdmR6s=;
+        b=selktoJwL1cAMo7+4LAMYNuy4lnmS7je0K8paNYhF1Sl77nuf9NlTGCOs85qQvhf+Y
+         XZpMEe32FGdLZX5EZnURVRtYoTaWaQC+BsGoMZdkw4Lvy1pU395uPWmRxFTTluvr9AR9
+         axc0/bnqmdwIXYuiBLkn2nOf9+DTzQjDuCxz8uFFIcZitIy/3936Jc4UhRaxxkywCfWQ
+         R49kYoD15TGuhf9XTWJnR9EJWV1kvnBhGEfIFrQdraFiFo7Fc3Ufh9zt8PQMP8mZUUdU
+         VAztMY9VoDNimjVNTpTjcjOo64pKzd3lK1cTzh6Fmj7kWLLRMgEt0+WA0p1O/lMMo5xP
+         3Dwg==
+X-Gm-Message-State: AOJu0Yzhl5HaWZc+LW4yDfgiiRbenvI4pmevKYCAC8H2Ekqm3wp491Uq
+        9I9O734zZT9OQ8ixbiuQqjDhe2t79ez1gNmdDXsaIw==
+X-Google-Smtp-Source: AGHT+IHQJ7x9/SuQ4EBTGwOQciXDqQRU/H0wUJap6zldAAHxxJLfRsl7IevqZUOUANlVf9xne6BrdF0f6OpD88sD5HM=
+X-Received: by 2002:ad4:5dc2:0:b0:66d:9b63:72fb with SMTP id
+ m2-20020ad45dc2000000b0066d9b6372fbmr2943620qvh.5.1697838479398; Fri, 20 Oct
+ 2023 14:47:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Sender: David Woodhouse <dwmw2@infradead.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+References: <20231011184823.443959-1-peter.griffin@linaro.org>
+ <20231011184823.443959-17-peter.griffin@linaro.org> <eca9feea-b4a6-438c-83c7-452e8fe388c6@app.fastmail.com>
+In-Reply-To: <eca9feea-b4a6-438c-83c7-452e8fe388c6@app.fastmail.com>
+From:   Peter Griffin <peter.griffin@linaro.org>
+Date:   Fri, 20 Oct 2023 22:47:47 +0100
+Message-ID: <CADrjBPqPR54FqsdG1irrAYVn+Bkuc5hU3Vip7mUS8Aeq1b=JOw@mail.gmail.com>
+Subject: Re: [PATCH v3 16/20] tty: serial: samsung: Add gs101 compatible and
+ SoC data
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Olof Johansson <olof@lixom.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Tudor Ambarus <tudor.ambarus@linaro.org>,
+        andre.draszik@linaro.org,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        saravanak@google.com, William McVicker <willmcvicker@google.com>,
+        soc@kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-watchdog@vger.kernel.org, kernel-team@android.com,
+        linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: David Woodhouse <dwmw@amazon.co.uk>
+Hi Arnd,
 
-On unplug of a Xen console, xencons_disconnect_backend() unconditionally
-calls free_irq() via unbind_from_irqhandler(), causing a warning of
-freeing an already-free IRQ:
+On Thu, 12 Oct 2023 at 07:07, Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> On Wed, Oct 11, 2023, at 20:48, Peter Griffin wrote:
+> > Add serial driver data for Google Tensor gs101 SoC.
+> >
+> > Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+>
+> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
 
-(qemu) device_del con1
-[   32.050919] ------------[ cut here ]------------
-[   32.050942] Trying to free already-free IRQ 33
-[   32.050990] WARNING: CPU: 0 PID: 51 at kernel/irq/manage.c:1895 __free_irq+0x1d4/0x330
+Thanks!
 
-It should be using evtchn_put() to tear down the event channel binding,
-and let the Linux IRQ side of it be handled by notifier_del_irq() through
-the HVC code.
+>
+> While the patch is now correct, I would point out a few
+> improvements we could make on top:
+>
+> > +static const struct s3c24xx_serial_drv_data gs101_serial_drv_data = {
+> > +     EXYNOS_COMMON_SERIAL_DRV_DATA(),
+> > +     /* rely on samsung,uart-fifosize DT property for fifosize */
+> > +     .fifosize = { 0 },
+> > +};
+> > +
+> >  #define EXYNOS4210_SERIAL_DRV_DATA (&exynos4210_serial_drv_data)
+> >  #define EXYNOS5433_SERIAL_DRV_DATA (&exynos5433_serial_drv_data)
+> >  #define EXYNOS850_SERIAL_DRV_DATA (&exynos850_serial_drv_data)
+> > +#define GS101_SERIAL_DRV_DATA (&gs101_serial_drv_data)
+>
+> Since this is now actually correct for any Exynos variant that
+> has the FIFO size listed in the DT, we could use a variable/macro
+> name that leads itself to being used by future chips.
 
-On which topic... xencons_disconnect_backend() should call hvc_remove()
-*first*, rather than tearing down the event channel and grant mapping
-while they are in use. And then the IRQ is guaranteed to be freed by
-the time it's torn down by evtchn_put().
+I've updated this to exynos_fifoszdt_serial_drv_data and
+EXYNOS_FIFOSZDT_SERIAL_DRV_DATA in v4 and added a
+comment that it is common struct for platforms that specify
+uart,fifosize in DT.
 
-Since evtchn_put() also closes the actual event channel, avoid calling
-xenbus_free_evtchn() except in the failure path where the IRQ was not
-successfully set up.
+I've also updated the YAML to make this a required property for
+google,gs101-uart.
 
-However, calling hvc_remove() at the start of xencons_disconnect_backend()
-still isn't early enough. An unplug request is indicated by the backend
-setting its state to XenbusStateClosing, which triggers a notification
-to xencons_backend_changed(), which... does nothing except set its own
-frontend state directly to XenbusStateClosed without *actually* tearing
-down the HVC device or, you know, making sure it isn't actively in use.
+>
+> There is also the question of whether we want to address the
+> ordering bug for the other SoC types. The way I understand it,
+> the .fifosize array logic is wrong because it relies on having
+> a particular alias for each of the ports to match the entry in
+> the array.
+> For the exynosautov9, this would be trivially fixed
+> by using the same data as gs101 (since it already lists the
+> correct size in DT), but for the other ones we'd need a different
+> logic.
+>
 
-So the backend sees the guest frontend set its state to XenbusStateClosed
-and stops servicing the interrupt... and the guest spins for ever in the
-domU_write_console() function waiting for the ring to drain.
+It seems samsung,exynosautov9-uart is in the yaml bindings and
+exynosautov9.dtsi but never actually made it into the driver. But
+it could be added to the driver and made to use the common
+exynos_fifoszdt_serial_drv_data mentioned above.
 
-Fix that one by calling hvc_remove() from xencons_backend_changed() before
-signalling to the backend that it's OK to proceed with the removal.
+I think any new platform should specify this in DT as many of these
+UARTs on newer Exynos are actually universal serial IPs which can
+be UART, I2C or SPI which is board dependent. So having the fifosize
+in the driver, based on a SoC compatible and relying on probe order
+and DT aliases seems very prone to error.
 
-Tested with 'dd if=/dev/zero of=/dev/hvc1' while telling Qemu to remove
-the console device.
+regards,
 
-Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
-Cc: stable@vger.kernel.org
----
- drivers/tty/hvc/hvc_xen.c | 32 ++++++++++++++++++++++++--------
- 1 file changed, 24 insertions(+), 8 deletions(-)
+Peter.
 
-diff --git a/drivers/tty/hvc/hvc_xen.c b/drivers/tty/hvc/hvc_xen.c
-index 4a768b504263..34c01874f45b 100644
---- a/drivers/tty/hvc/hvc_xen.c
-+++ b/drivers/tty/hvc/hvc_xen.c
-@@ -377,18 +377,21 @@ void xen_console_resume(void)
- #ifdef CONFIG_HVC_XEN_FRONTEND
- static void xencons_disconnect_backend(struct xencons_info *info)
- {
--	if (info->irq > 0)
--		unbind_from_irqhandler(info->irq, NULL);
--	info->irq = 0;
-+	if (info->hvc != NULL)
-+		hvc_remove(info->hvc);
-+	info->hvc = NULL;
-+	if (info->irq > 0) {
-+		evtchn_put(info->evtchn);
-+		info->irq = 0;
-+		info->evtchn = 0;
-+	}
-+	/* evtchn_put() will also close it so this is only an error path */
- 	if (info->evtchn > 0)
- 		xenbus_free_evtchn(info->xbdev, info->evtchn);
- 	info->evtchn = 0;
- 	if (info->gntref > 0)
- 		gnttab_free_grant_references(info->gntref);
- 	info->gntref = 0;
--	if (info->hvc != NULL)
--		hvc_remove(info->hvc);
--	info->hvc = NULL;
- }
- 
- static void xencons_free(struct xencons_info *info)
-@@ -553,10 +556,23 @@ static void xencons_backend_changed(struct xenbus_device *dev,
- 		if (dev->state == XenbusStateClosed)
- 			break;
- 		fallthrough;	/* Missed the backend's CLOSING state */
--	case XenbusStateClosing:
-+	case XenbusStateClosing: {
-+		struct xencons_info *info = dev_get_drvdata(&dev->dev);;
-+
-+		/*
-+		 * Don't tear down the evtchn and grant ref before the other
-+		 * end has disconnected, but do stop userspace from trying
-+		 * to use the device before we allow the backend to close.
-+		 */
-+		if (info->hvc) {
-+			hvc_remove(info->hvc);
-+			info->hvc = NULL;
-+		}
-+
- 		xenbus_frontend_closed(dev);
- 		break;
- 	}
-+	}
- }
- 
- static const struct xenbus_device_id xencons_ids[] = {
-@@ -616,7 +632,7 @@ static int __init xen_hvc_init(void)
- 		list_del(&info->list);
- 		spin_unlock_irqrestore(&xencons_lock, flags);
- 		if (info->irq)
--			unbind_from_irqhandler(info->irq, NULL);
-+			evtchn_put(info->evtchn);
- 		kfree(info);
- 		return r;
- 	}
--- 
-2.40.1
-
+> > @@ -2688,6 +2696,9 @@ static const struct platform_device_id
+> > s3c24xx_serial_driver_ids[] = {
+> >       }, {
+> >               .name           = "artpec8-uart",
+> >               .driver_data    = (kernel_ulong_t)ARTPEC8_SERIAL_DRV_DATA,
+> > +     }, {
+> > +             .name           = "gs101-uart",
+> > +             .driver_data    = (kernel_ulong_t)GS101_SERIAL_DRV_DATA,
+> >       },
+> >       { },
+> >  };
+>
+> I just noticed that the platform_device_id array is currently
+> only used for mach-crag6410, since everything else uses DT
+> based probing. s3c64xx is scheduled for removal in early 2024
+> (though no patch has been sent), and we can probably just
+> remove all the atags/platform_device based code when that happens.
+>
+>       Arnd
