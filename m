@@ -2,110 +2,270 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4CB3C004C0
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Oct 2023 08:15:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A58CDB47E
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Oct 2023 08:51:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235677AbjJTIPN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Oct 2023 04:15:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40136 "EHLO
+        id S1376509AbjJTIvr (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 20 Oct 2023 04:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235669AbjJTIPM (ORCPT
+        with ESMTP id S1376487AbjJTIvq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Oct 2023 04:15:12 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0559318F
-        for <linux-serial@vger.kernel.org>; Fri, 20 Oct 2023 01:15:10 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id 4fb4d7f45d1cf-538e8eca9c1so668925a12.3
-        for <linux-serial@vger.kernel.org>; Fri, 20 Oct 2023 01:15:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1697789708; x=1698394508; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=I9mLk3QRlIYO5dYhhdXhtQWG8pCu0/EaP/qTEbU6WOs=;
-        b=or4kQJYHBDCG6v6ilXxgAtz/QWahpgm8w3WD6dliDwJT6rl7XyPisP+SdbR6HOXOO6
-         QCJ6OkaA/d4SvjkcBibK1R39AzHOVEL+gZMEvCZikXGVBnBBiPh8K+t7zju1UbwFgkA2
-         W1Y/S4LiGQmtprW7ecf/LGKykJAUa9tJRLXLNBFxr2LYnJwbVcc6OMzReC0+oIaH/Zug
-         UmnDjQyvdAHFU9QW2Dr2xiw4amF08b8S167KzAr0dgc7Yky8SwwMz6pWhV5UAXtHk87K
-         m3Bk4DoZGbQZn9VMRt0vsF7INoLyIAJh9yrlBGsVP4RtwwrOah2qiUsamlIA2R6NkYEE
-         DXvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697789708; x=1698394508;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=I9mLk3QRlIYO5dYhhdXhtQWG8pCu0/EaP/qTEbU6WOs=;
-        b=ocy1T3a45m+Uod0XeMJq0ez/12U6WqcS0W8HIHZIBTA91oND3FeMpcmd4tTDJ4n6Wh
-         jgOkiu7csSbVaRWu8ybwDjWg4JVhb2XtU9IOdPfBaPwAgGG6ONWju3ZxjbDH7du9+qZA
-         OJM6JqSokcG7+WiqYOrhHzSsSsoUJYFUOmEY8QbXgKCm8HqN6G3dGq6J1+FsqVH75kGs
-         9SPxvyaLYH3horHmtu+fjUasbvxGVgPPrsRIi0YQrciOeU+gFrbA832sAmG7TwPVe0K2
-         MivU413mhB48ZEAqFoUTVfbVQJtnNrpgvNcGjFb3LjzFqyR7+AgMGKj26FJ5XHziOv/G
-         hx5A==
-X-Gm-Message-State: AOJu0YxfnzI9JhmvrPbjAH/dNQje67Wj8RkCCfeDpRVRosOIgEeQxG6u
-        V6C56R0IIl6eoflPUAS7FmhaBg==
-X-Google-Smtp-Source: AGHT+IFxDBdUK0jjgrdu/5lSvIddhM3Qd3L9VVDVSECPo1+jfo3eLrczA0b0wVyjpO8bPpxHApIM6Q==
-X-Received: by 2002:a17:906:ef0e:b0:9b2:bb02:a543 with SMTP id f14-20020a170906ef0e00b009b2bb02a543mr922414ejs.74.1697789707967;
-        Fri, 20 Oct 2023 01:15:07 -0700 (PDT)
-Received: from localhost (2001-1ae9-1c2-4c00-20f-c6b4-1e57-7965.ip6.tmcz.cz. [2001:1ae9:1c2:4c00:20f:c6b4:1e57:7965])
-        by smtp.gmail.com with ESMTPSA id h25-20020a170906261900b0099cc36c4681sm994192ejc.157.2023.10.20.01.15.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Oct 2023 01:15:07 -0700 (PDT)
-Date:   Fri, 20 Oct 2023 10:15:06 +0200
-From:   Andrew Jones <ajones@ventanamicro.com>
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Conor Dooley <conor@kernel.org>, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 5/9] KVM: riscv: selftests: Add SBI DBCN extension to
- get-reg-list test
-Message-ID: <20231020-825e5e2e7d355330a93f1194@orel>
-References: <20231020072140.900967-1-apatel@ventanamicro.com>
- <20231020072140.900967-6-apatel@ventanamicro.com>
+        Fri, 20 Oct 2023 04:51:46 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E13BF91;
+        Fri, 20 Oct 2023 01:51:43 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 49B641F38C;
+        Fri, 20 Oct 2023 08:51:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1697791902; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+        bh=Sx6c/b3BNfpWksSQqdT6HOGDJovBDX7QQg69KCIxqB8=;
+        b=H/6mMpCtAKnh+nbWOGqiJShom48YhD3dIGyXjcnl0s71pUvU9EdVkqtMu/5RyWZVdJMLQT
+        UYdMvGDL3BszRYLHtzKVT8fW598upc9dFrE+SIlPpuoB3aGbESCz11fEnC0382bLeTCtNK
+        wP8RnmthrxuWRwt+sZUIXjWtOzxyPpE=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E7EDB138E2;
+        Fri, 20 Oct 2023 08:51:41 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id x0ctN50/MmVuLAAAMHmgww
+        (envelope-from <jgross@suse.com>); Fri, 20 Oct 2023 08:51:41 +0000
+Message-ID: <36c9298d-2052-42de-9ef4-135c120a2417@suse.com>
+Date:   Fri, 20 Oct 2023 10:51:41 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231020072140.900967-6-apatel@ventanamicro.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] hvc/xen: fix event channel handling for secondary
+ consoles
+To:     David Woodhouse <dwmw2@infradead.org>,
+        xen-devel <xen-devel@lists.xenproject.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Roger Pau Monne <roger.pau@citrix.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Dawei Li <set_pte_at@outlook.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, Paul Durrant <paul@xen.org>
+References: <72609f999d9451c13240acb8e4a4e54f8c62f542.camel@infradead.org>
+Content-Language: en-US
+From:   Juergen Gross <jgross@suse.com>
+Autocrypt: addr=jgross@suse.com; keydata=
+ xsBNBFOMcBYBCACgGjqjoGvbEouQZw/ToiBg9W98AlM2QHV+iNHsEs7kxWhKMjrioyspZKOB
+ ycWxw3ie3j9uvg9EOB3aN4xiTv4qbnGiTr3oJhkB1gsb6ToJQZ8uxGq2kaV2KL9650I1SJve
+ dYm8Of8Zd621lSmoKOwlNClALZNew72NjJLEzTalU1OdT7/i1TXkH09XSSI8mEQ/ouNcMvIJ
+ NwQpd369y9bfIhWUiVXEK7MlRgUG6MvIj6Y3Am/BBLUVbDa4+gmzDC9ezlZkTZG2t14zWPvx
+ XP3FAp2pkW0xqG7/377qptDmrk42GlSKN4z76ELnLxussxc7I2hx18NUcbP8+uty4bMxABEB
+ AAHNH0p1ZXJnZW4gR3Jvc3MgPGpncm9zc0BzdXNlLmNvbT7CwHkEEwECACMFAlOMcK8CGwMH
+ CwkIBwMCAQYVCAIJCgsEFgIDAQIeAQIXgAAKCRCw3p3WKL8TL8eZB/9G0juS/kDY9LhEXseh
+ mE9U+iA1VsLhgDqVbsOtZ/S14LRFHczNd/Lqkn7souCSoyWsBs3/wO+OjPvxf7m+Ef+sMtr0
+ G5lCWEWa9wa0IXx5HRPW/ScL+e4AVUbL7rurYMfwCzco+7TfjhMEOkC+va5gzi1KrErgNRHH
+ kg3PhlnRY0Udyqx++UYkAsN4TQuEhNN32MvN0Np3WlBJOgKcuXpIElmMM5f1BBzJSKBkW0Jc
+ Wy3h2Wy912vHKpPV/Xv7ZwVJ27v7KcuZcErtptDevAljxJtE7aJG6WiBzm+v9EswyWxwMCIO
+ RoVBYuiocc51872tRGywc03xaQydB+9R7BHPzsBNBFOMcBYBCADLMfoA44MwGOB9YT1V4KCy
+ vAfd7E0BTfaAurbG+Olacciz3yd09QOmejFZC6AnoykydyvTFLAWYcSCdISMr88COmmCbJzn
+ sHAogjexXiif6ANUUlHpjxlHCCcELmZUzomNDnEOTxZFeWMTFF9Rf2k2F0Tl4E5kmsNGgtSa
+ aMO0rNZoOEiD/7UfPP3dfh8JCQ1VtUUsQtT1sxos8Eb/HmriJhnaTZ7Hp3jtgTVkV0ybpgFg
+ w6WMaRkrBh17mV0z2ajjmabB7SJxcouSkR0hcpNl4oM74d2/VqoW4BxxxOD1FcNCObCELfIS
+ auZx+XT6s+CE7Qi/c44ibBMR7hyjdzWbABEBAAHCwF8EGAECAAkFAlOMcBYCGwwACgkQsN6d
+ 1ii/Ey9D+Af/WFr3q+bg/8v5tCknCtn92d5lyYTBNt7xgWzDZX8G6/pngzKyWfedArllp0Pn
+ fgIXtMNV+3t8Li1Tg843EXkP7+2+CQ98MB8XvvPLYAfW8nNDV85TyVgWlldNcgdv7nn1Sq8g
+ HwB2BHdIAkYce3hEoDQXt/mKlgEGsLpzJcnLKimtPXQQy9TxUaLBe9PInPd+Ohix0XOlY+Uk
+ QFEx50Ki3rSDl2Zt2tnkNYKUCvTJq7jvOlaPd6d/W0tZqpyy7KVay+K4aMobDsodB3dvEAs6
+ ScCnh03dDAFgIq5nsB11j3KPKdVoPlfucX2c7kGNH+LUMbzqV6beIENfNexkOfxHfw==
+In-Reply-To: <72609f999d9451c13240acb8e4a4e54f8c62f542.camel@infradead.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------ZlGG2j4tKEV7xmIaEUbPt7TK"
+Authentication-Results: smtp-out2.suse.de;
+        none
+X-Spamd-Result: default: False [-6.76 / 50.00];
+         ARC_NA(0.00)[];
+         RCVD_VIA_SMTP_AUTH(0.00)[];
+         FREEMAIL_CC(0.00)[linuxfoundation.org,kernel.org,citrix.com,outlook.com,lists.ozlabs.org,vger.kernel.org,xen.org];
+         XM_UA_NO_VERSION(0.01)[];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         FREEMAIL_ENVRCPT(0.00)[outlook.com];
+         MIME_GOOD(-0.20)[multipart/signed,multipart/mixed,text/plain];
+         HAS_ATTACHMENT(0.00)[];
+         NEURAL_HAM_LONG(-3.00)[-1.000];
+         BAYES_HAM(-0.77)[84.34%];
+         DKIM_SIGNED(0.00)[suse.com:s=susede1];
+         NEURAL_HAM_SHORT(-1.00)[-1.000];
+         MIME_BASE64_TEXT(0.10)[];
+         RCPT_COUNT_SEVEN(0.00)[11];
+         SIGNED_PGP(-2.00)[];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+,1:+,2:+,3:+,4:~,5:~];
+         RCVD_COUNT_TWO(0.00)[2];
+         RCVD_TLS_ALL(0.00)[];
+         MID_RHS_MATCH_FROM(0.00)[];
+         MIME_UNKNOWN(0.10)[application/pgp-keys]
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 20, 2023 at 12:51:36PM +0530, Anup Patel wrote:
-> We have a new SBI debug console (DBCN) extension supported by in-kernel
-> KVM so let us add this extension to get-reg-list test.
-> 
-> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> ---
->  tools/testing/selftests/kvm/riscv/get-reg-list.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/tools/testing/selftests/kvm/riscv/get-reg-list.c b/tools/testing/selftests/kvm/riscv/get-reg-list.c
-> index 234006d035c9..6bedaea95395 100644
-> --- a/tools/testing/selftests/kvm/riscv/get-reg-list.c
-> +++ b/tools/testing/selftests/kvm/riscv/get-reg-list.c
-> @@ -394,6 +394,7 @@ static const char *sbi_ext_single_id_to_str(__u64 reg_off)
->  		KVM_SBI_EXT_ARR(KVM_RISCV_SBI_EXT_PMU),
->  		KVM_SBI_EXT_ARR(KVM_RISCV_SBI_EXT_EXPERIMENTAL),
->  		KVM_SBI_EXT_ARR(KVM_RISCV_SBI_EXT_VENDOR),
-> +		KVM_SBI_EXT_ARR(KVM_RISCV_SBI_EXT_DBCN),
->  	};
->  
->  	if (reg_off >= ARRAY_SIZE(kvm_sbi_ext_reg_name))
-> @@ -567,6 +568,7 @@ static __u64 base_regs[] = {
->  	KVM_REG_RISCV | KVM_REG_SIZE_ULONG | KVM_REG_RISCV_SBI_EXT | KVM_REG_RISCV_SBI_SINGLE | KVM_RISCV_SBI_EXT_PMU,
->  	KVM_REG_RISCV | KVM_REG_SIZE_ULONG | KVM_REG_RISCV_SBI_EXT | KVM_REG_RISCV_SBI_SINGLE | KVM_RISCV_SBI_EXT_EXPERIMENTAL,
->  	KVM_REG_RISCV | KVM_REG_SIZE_ULONG | KVM_REG_RISCV_SBI_EXT | KVM_REG_RISCV_SBI_SINGLE | KVM_RISCV_SBI_EXT_VENDOR,
-> +	KVM_REG_RISCV | KVM_REG_SIZE_ULONG | KVM_REG_RISCV_SBI_EXT | KVM_REG_RISCV_SBI_SINGLE | KVM_RISCV_SBI_EXT_DBCN,
->  	KVM_REG_RISCV | KVM_REG_SIZE_ULONG | KVM_REG_RISCV_SBI_EXT | KVM_REG_RISCV_SBI_MULTI_EN | 0,
->  	KVM_REG_RISCV | KVM_REG_SIZE_ULONG | KVM_REG_RISCV_SBI_EXT | KVM_REG_RISCV_SBI_MULTI_DIS | 0,
->  };
-> -- 
-> 2.34.1
->
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------ZlGG2j4tKEV7xmIaEUbPt7TK
+Content-Type: multipart/mixed; boundary="------------00whzQoLz1xVw85756gzGJ00";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: David Woodhouse <dwmw2@infradead.org>,
+ xen-devel <xen-devel@lists.xenproject.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Roger Pau Monne <roger.pau@citrix.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Dawei Li <set_pte_at@outlook.com>, linuxppc-dev@lists.ozlabs.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ Paul Durrant <paul@xen.org>
+Message-ID: <36c9298d-2052-42de-9ef4-135c120a2417@suse.com>
+Subject: Re: [PATCH] hvc/xen: fix event channel handling for secondary
+ consoles
+References: <72609f999d9451c13240acb8e4a4e54f8c62f542.camel@infradead.org>
+In-Reply-To: <72609f999d9451c13240acb8e4a4e54f8c62f542.camel@infradead.org>
 
-Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
+--------------00whzQoLz1xVw85756gzGJ00
+Content-Type: multipart/mixed; boundary="------------gXm9r0J0R4GhK6yQaAcHe0Me"
+
+--------------gXm9r0J0R4GhK6yQaAcHe0Me
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
+
+T24gMTguMTAuMjMgMDE6NDYsIERhdmlkIFdvb2Rob3VzZSB3cm90ZToNCj4gRnJvbTogRGF2
+aWQgV29vZGhvdXNlIDxkd213QGFtYXpvbi5jby51az4NCj4gDQo+IFRoZSB4ZW5jb25zX2Nv
+bm5lY3RfYmFja2VuZCgpIGZ1bmN0aW9uIGFsbG9jYXRlcyBhIGxvY2FsIGludGVyZG9tYWlu
+DQo+IGV2ZW50IGNoYW5uZWwgd2l0aCB4ZW5idXNfYWxsb2NfZXZ0Y2huKCksIHRoZW4gY2Fs
+bHMNCj4gYmluZF9pbnRlcmRvbWFpbl9ldnRjaG5fdG9faXJxX2xhdGVlb2koKSB0byBiaW5k
+IHRvIHRoYXQgcG9ydCMgb24gdGhlDQo+ICpyZW1vdGUqIGRvbWFpbi4NCj4gDQo+IFRoYXQg
+ZG9lc24ndCB3b3JrIHZlcnkgd2VsbDoNCj4gDQo+IChxZW11KSBkZXZpY2VfYWRkIHhlbi1j
+b25zb2xlLGlkPWNvbjEsY2hhcmRldj1wdHkwDQo+IFsgICA0NC4zMjM4NzJdIHhlbmNvbnNv
+bGUgY29uc29sZS0xOiAyIHhlbmJ1c19kZXZfcHJvYmUgb24gZGV2aWNlL2NvbnNvbGUvMQ0K
+PiBbICAgNDQuMzIzOTk1XSB4ZW5jb25zb2xlOiBwcm9iZSBvZiBjb25zb2xlLTEgZmFpbGVk
+IHdpdGggZXJyb3IgLTINCj4gDQo+IEZpeCBpdCB0byB1c2UgYmluZF9ldnRjaG5fdG9faXJx
+X2xhdGVlb2koKSwgd2hpY2ggZG9lcyB0aGUgcmlnaHQgdGhpbmcNCj4gYnkganVzdCBiaW5k
+aW5nIHRoYXQgKmxvY2FsKiBldmVudCBjaGFubmVsIHRvIGFuIGlycS4gVGhlIGJhY2tlbmQg
+d2lsbA0KPiBkbyB0aGUgaW50ZXJkb21haW4gYmluZGluZy4NCj4gDQo+IFRoaXMgZGlkbid0
+IGFmZmVjdCB0aGUgcHJpbWFyeSBjb25zb2xlIGJlY2F1c2UgdGhlIHNldHVwIGZvciB0aGF0
+IGlzDQo+IHNwZWNpYWwg4oCUIHRoZSB0b29sc3RhY2sgYWxsb2NhdGVzIHRoZSBndWVzdCBl
+dmVudCBjaGFubmVsIGFuZCB0aGUgZ3Vlc3QNCj4gZGlzY292ZXJzIGl0IHdpdGggSFZNT1Bf
+Z2V0X3BhcmFtLg0KPiANCj4gT25jZSB0aGF0J3MgZml4ZWQsIHRoZXJlJ3MgYWxzbyBhIHdh
+cm5pbmcgb24gaG90LXVucGx1ZyBiZWNhdXNlDQo+IHhlbmNvbnNfZGlzY29ubmVjdF9iYWNr
+ZW5kKCkgdW5jb25kaXRpb25hbGx5IGNhbGxzIGZyZWVfaXJxKCkgdmlhDQo+IHVuYmluZF9m
+cm9tX2lycWhhbmRsZXIoKToNCj4gDQo+IChxZW11KSBkZXZpY2VfZGVsIGNvbjENCj4gWyAg
+IDMyLjA1MDkxOV0gLS0tLS0tLS0tLS0tWyBjdXQgaGVyZSBdLS0tLS0tLS0tLS0tDQo+IFsg
+ICAzMi4wNTA5NDJdIFRyeWluZyB0byBmcmVlIGFscmVhZHktZnJlZSBJUlEgMzMNCj4gWyAg
+IDMyLjA1MDk5MF0gV0FSTklORzogQ1BVOiAwIFBJRDogNTEgYXQga2VybmVsL2lycS9tYW5h
+Z2UuYzoxODk1IF9fZnJlZV9pcnErMHgxZDQvMHgzMzANCj4gDQo+IEZpeCB0aGF0IGJ5IGNh
+bGxpbmcgbm90aWZpZXJfZGVsX2lycSgpIGZpcnN0LCB3aGljaCBvbmx5IGNhbGxzDQo+IGZy
+ZWVfaXJxKCkgaWYgdGhlIGlycSB3YXMgcmVxdWVzdGVkIGluIHRoZSBmaXJzdCBwbGFjZS4g
+VGhlbiB1c2UNCg0KSSBkb24ndCB0aGluayB0aGUgImlmIHRoZSBpcnEgd2FzIHJlcXVlc3Rl
+ZCBpbiB0aGUgZmlyc3QgcGxhY2UiIGlzIHRoZSBjb3JyZWN0DQpyZWFzb25pbmcuDQoNCkkg
+dGhpbmsgdGhlIHByb2JsZW0gaXMgdGhhdCBub3RpZmllcl9kZWxfaXJxKCkgd2lsbCBiZSBj
+YWxsZWQgYW5vdGhlciB0aW1lDQp0aHJvdWdoIHRoZSAubm90aWZpZXJfZGVsIGhvb2suIFR3
+byBjYWxscyBvZiBub3RpZmllcl9kZWxfaXJxKCkgYXJlIGZpbmUsIGJ1dA0Kb25lIGNhbGwg
+b2YgaXQgYW5kIGFub3RoZXIgY2FsbCBvZiBmcmVlX2lycSgpIHZpYSB1bmJpbmRfZnJvbV9p
+cnFoYW5kbGVyKCkgaXMNCmEgcHJvYmxlbS4NCg0KPiBldnRjaG5fcHV0KCkgdG8gcmVsZWFz
+ZSB0aGUgaXJxIGFuZCBldmVudCBjaGFubmVsLiBBdm9pZCBjYWxsaW5nDQo+IHhlbmJ1c19m
+cmVlX2V2dGNobigpIGluIHRoZSBub3JtYWwgY2FzZSwgYXMgZXZ0Y2huX3B1dCgpIHdpbGwg
+ZG8gdGhhdA0KPiB0b28uIFRoZSBvbmx5IHRpbWUgeGVuYnVzX2ZyZWVfZXZ0Y2huKCkgbmVl
+ZHMgdG8gYmUgY2FsbGVkIGlzIGZvciB0aGUNCj4gY2xlYW51cCB3aGVuIGJpbmRfZXZ0Y2hu
+X3RvX2lycV9sYXRlZW9pKCkgZmFpbHMuDQo+IA0KPiBGaW5hbGx5LCBmaXggdGhlIGVycm9y
+IHBhdGggaW4geGVuX2h2Y19pbml0KCkgd2hlbiB0aGVyZSdzIG5vIHByaW1hcnkNCj4gY29u
+c29sZS4gSXQgc2hvdWxkIHN0aWxsIHJlZ2lzdGVyIHRoZSBmcm9udGVuZCBkcml2ZXIsIGFz
+IHRoZXJlIG1heSBiZQ0KPiBzZWNvbmRhcnkgY29uc29sZXMuIChRZW11IGNhbiBhbHdheXMg
+YWRkIHNlY29uZGFyeSBjb25zb2xlcywgYnV0IG9ubHkNCj4gdGhlIHRvb2xzdGFjayBjYW4g
+YWRkIHRoZSBwcmltYXJ5IGJlY2F1c2UgaXQncyBzcGVjaWFsLikNCj4gDQo+IEZpeGVzOiBm
+ZTQxNTE4NmI0ICgieGVuL2NvbnNvbGU6IGhhcmRlbiBodmNfeGVuIGFnYWluc3QgZXZlbnQg
+Y2hhbm5lbCBzdG9ybXMiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBEYXZpZCBXb29kaG91c2UgPGR3
+bXdAYW1hem9uLmNvLnVrPg0KPiBDYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZw0KDQpXaXRo
+IGFib3ZlIGZpeGVkIGluIHRoZSBjb21taXQgbWVzc2FnZToNCg0KUmV2aWV3ZWQtYnk6IEp1
+ZXJnZW4gR3Jvc3MgPGpncm9zc0BzdXNlLmNvbT4NCg0KDQpKdWVyZ2VuDQoNCg==
+--------------gXm9r0J0R4GhK6yQaAcHe0Me
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------gXm9r0J0R4GhK6yQaAcHe0Me--
+
+--------------00whzQoLz1xVw85756gzGJ00--
+
+--------------ZlGG2j4tKEV7xmIaEUbPt7TK
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmUyP50FAwAAAAAACgkQsN6d1ii/Ey/Q
+Qgf/bvZD/IabgI1gRWTi/vIi1b36ZkMGWfFnZbXCE1ND8eGlezRgQDri0Zt+l9DG62juTECd/BSM
+ZD2OAulGS3VceLcWhbplqrwGs+OrexJJfkFWwd/p0FtPwQPr9r4ClX+FeF3wGQlUd7XOwVeMoJr8
+TQ3pNdq38O9paW620O466JhS6PE0lGK7eaiO07I6Z0ICtgRMgWZgmB4jIuHjXMZfQg6Zhm0f3gRg
+MNM7mblE7vegLv8jZHceGXDJLONRZFABQ+s+5JopsQ08Tr1AfJb31fAFouakveuarF+6RsQyCr3u
+H4X3DPB0mb0S9Wvlb0HzFlawhCK++tp/ljaQEgCnPA==
+=24Co
+-----END PGP SIGNATURE-----
+
+--------------ZlGG2j4tKEV7xmIaEUbPt7TK--
