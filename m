@@ -2,157 +2,125 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94BEDCDB47E
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Oct 2023 11:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D98CDB474
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Oct 2023 12:03:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376984AbjJTLOF (ORCPT
+        id S1377356AbjJTMDP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Oct 2023 07:14:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44604 "EHLO
+        Fri, 20 Oct 2023 08:03:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376927AbjJTLOE (ORCPT
+        with ESMTP id S1377346AbjJTMDO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Oct 2023 07:14:04 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BCCA18F
-        for <linux-serial@vger.kernel.org>; Fri, 20 Oct 2023 04:14:02 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id e9e14a558f8ab-351437112c1so2536285ab.3
-        for <linux-serial@vger.kernel.org>; Fri, 20 Oct 2023 04:14:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20230601.gappssmtp.com; s=20230601; t=1697800441; x=1698405241; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0Ui4lAScxS4avp7oCJ7ZH8jd7TnRHOi5lmcUoRRDmRE=;
-        b=Cpj3I7CBqqtjU1eMO55yWvD4nivuNfVhBaom75clkV+yxX2/QanwvFJwSvSWTOq6F8
-         hvxzseN2uR1tUTfrxETJionCMWLh68iNTjgJc+A/4g12BaUSl05srD39ZQ5UfiTQ1WhY
-         hBW1TOocPprig61gN1hS1RE8eUmlbTLraZ4P9cmk4MzurNPATRMffnJ4rElw23mLFkkY
-         yhtp28S2up5RoAPHo2ddrNj7ZTWCr4TN7jRqT1vyby2BFlYKSL+HFBOKRH7RgW8EPnVA
-         iEu4AIn2ZsIo3rFtvocNJQjojVQVEik0g1QD1uQJzH5J1lvAyURvMWWryagY1nBo2/8a
-         +bBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697800441; x=1698405241;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=0Ui4lAScxS4avp7oCJ7ZH8jd7TnRHOi5lmcUoRRDmRE=;
-        b=Pt/tZZzsmuWpp2fUmQgacc3FZDr8uLE56/Y4dBMQOWCSH2VPiWefa/93Jxm1SU7PyI
-         A87xRoLX6ehRo3VAKGxuBGs0veJ1FRfIO7O3ySl/bThCLy/BkdCDJX4AjZmlEhm6Bl2Q
-         ORym59jvNNT1/NnBljNBx1lajxrkZT6QrQPMTFeqULHXhDlhqMF3hxbnoNppAKQO8f55
-         P4k86QQp9vUj0Dge92pRYPELdU50Ed7OaLXxbHK4NPfqfJEkZ8/DK6DTuQXzeYS7+XzQ
-         r3oahrBOyiZZjkHGUnWnsE4NZ/YQjhGa8ogc9IBwo8XxW5A4/magXHt+psBLSM2zCvs0
-         1ADQ==
-X-Gm-Message-State: AOJu0YzyyrgyV8G1OnH3xQU5YPshBUmPTkXhBbbhmNaAeVxl87f4nlKx
-        RFMPSPwZJ2xrYbwF19PV7B+ocXs/1ji9YU1dSZB/qA==
-X-Google-Smtp-Source: AGHT+IEitVBts/lHHu15Qiuy69Q0OAhUE5hrFg148JtL4A9RHhcapJhDM1ssRdMIbsrFJ9GgKO6swmiB+E5FvbTcRNA=
-X-Received: by 2002:a05:6e02:147:b0:357:5234:802d with SMTP id
- j7-20020a056e02014700b003575234802dmr1903255ilr.10.1697800441567; Fri, 20 Oct
- 2023 04:14:01 -0700 (PDT)
-MIME-Version: 1.0
-References: <20231020072140.900967-1-apatel@ventanamicro.com>
-In-Reply-To: <20231020072140.900967-1-apatel@ventanamicro.com>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Fri, 20 Oct 2023 16:43:49 +0530
-Message-ID: <CAAhSdy2Ncc4+fvjrWHGZuHKB8jFtd1WkRhPifiTEfftpyEY7+w@mail.gmail.com>
-Subject: Re: [PATCH v3 0/9] RISC-V SBI debug console extension support
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
+        Fri, 20 Oct 2023 08:03:14 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2B19E;
+        Fri, 20 Oct 2023 05:03:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1697803391; x=1729339391;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=a0cCePIIEGKptYoyh7Pp+IV6nY/vFaOdAf4qBUS5Nws=;
+  b=oEREyZY7TT0rSKTajf4gbz050HzsGx2dXVkc6Ens+kWtvdk0HD8iu+a1
+   XqSpS5GXdpuKAd9Q2c8LLy162ZmlatQWpmjX1nXSFy6u12wUuTTvwHggT
+   04DRMQCs3td3OAxmWbfJwS9BYHJdXeUGYMzo5zzTeU9+NwMiDJF0Ded3J
+   urmw8KdVYe9zLDDNHdwxiZQPSqLXh2Z+HhEZEXBW73F+Jmf98CjE+B5oR
+   T49fxsTPtH6vEshn4a2as5wo0TXM/vxEtMKGWzctThXxxk11GUmW7xiQd
+   uQJEYa4mC9SYCxi4yrtw66uklmNJhKg6fcaFZWswYMW2zSbMc5QpjDspd
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="452962009"
+X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
+   d="scan'208";a="452962009"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2023 05:03:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="901123585"
+X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
+   d="scan'208";a="901123585"
+Received: from lkp-server01.sh.intel.com (HELO 8917679a5d3e) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 20 Oct 2023 05:00:58 -0700
+Received: from kbuild by 8917679a5d3e with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1qtoDZ-0003Uk-22;
+        Fri, 20 Oct 2023 12:03:05 +0000
+Date:   Fri, 20 Oct 2023 20:02:20 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Frank Li <Frank.Li@nxp.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Conor Dooley <conor@kernel.org>,
-        Andrew Jones <ajones@ventanamicro.com>, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:TTY LAYER AND SERIAL DRIVERS" 
+        <linux-serial@vger.kernel.org>
+Cc:     oe-kbuild-all@lists.linux.dev, alexandre.belloni@bootlin.com,
+        conor.culhane@silvaco.com, imx@lists.linux.dev, joe@perches.com,
+        linux-i3c@lists.infradead.org, miquel.raynal@bootlin.com
+Subject: Re: [PATCH 1/1] tty: i3c: add tty over i3c master support
+Message-ID: <202310201933.9lZn2Ebl-lkp@intel.com>
+References: <20231018211111.3437929-1-Frank.Li@nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231018211111.3437929-1-Frank.Li@nxp.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 20, 2023 at 12:51=E2=80=AFPM Anup Patel <apatel@ventanamicro.co=
-m> wrote:
->
-> The SBI v2.0 specification is now frozen. The SBI v2.0 specification defi=
-nes
-> SBI debug console (DBCN) extension which replaces the legacy SBI v0.1
-> functions sbi_console_putchar() and sbi_console_getchar().
-> (Refer v2.0-rc5 at https://github.com/riscv-non-isa/riscv-sbi-doc/release=
-s)
->
-> This series adds support for SBI debug console (DBCN) extension in KVM RI=
-SC-V
-> and Linux RISC-V.
->
-> To try these patches with KVM RISC-V, use KVMTOOL from riscv_sbi_dbcn_v1
-> branch at: https://github.com/avpatel/kvmtool.git
->
-> These patches can also be found in the riscv_sbi_dbcn_v3 branch at:
-> https://github.com/avpatel/linux.git
->
-> Changes since v2:
->  - Rebased on Linux-6.6-rc5
->  - Handled page-crossing in PATCH7 of v2 series
->  - Addressed Drew's comment in PATCH3 of v2 series
->  - Added new PATCH5 to make get-reg-list test aware of SBI DBCN extension
->
-> Changes since v1:
->  - Remove use of #ifdef from PATCH4 and PATCH5 of the v1 series
->  - Improved commit description of PATCH3 in v1 series
->  - Introduced new PATCH3 in this series to allow some SBI extensions
->    (such as SBI DBCN) do to disabled by default so that older KVM user sp=
-ace
->    work fine and newer KVM user space have to explicitly opt-in for emula=
-ting
->    SBI DBCN.
->  - Introduced new PATCH5 in this series which adds inline version of
->    sbi_console_getchar() and sbi_console_putchar() for the case where
->    CONFIG_RISCV_SBI_V01 is disabled.
->
-> Anup Patel (8):
->   RISC-V: Add defines for SBI debug console extension
->   RISC-V: KVM: Change the SBI specification version to v2.0
->   RISC-V: KVM: Allow some SBI extensions to be disabled by default
->   RISC-V: KVM: Forward SBI DBCN extension to user-space
->   KVM: riscv: selftests: Add SBI DBCN extension to get-reg-list test
->   RISC-V: Add stubs for sbi_console_putchar/getchar()
->   tty/serial: Add RISC-V SBI debug console based earlycon
->   RISC-V: Enable SBI based earlycon support
->
-> Atish Patra (1):
->   tty: Add SBI debug console support to HVC SBI driver
+Hi Frank,
 
-Queued PATCH1 to PATCH5 for Linux-6.7
+kernel test robot noticed the following build warnings:
 
-Remaining PATCH6 to PATCH9 are still under review.
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on tty/tty-next tty/tty-linus linus/master v6.6-rc6 next-20231019]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Thanks,
-Anup
+url:    https://github.com/intel-lab-lkp/linux/commits/Frank-Li/tty-i3c-add-tty-over-i3c-master-support/20231019-051407
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20231018211111.3437929-1-Frank.Li%40nxp.com
+patch subject: [PATCH 1/1] tty: i3c: add tty over i3c master support
+config: sparc-allyesconfig (https://download.01.org/0day-ci/archive/20231020/202310201933.9lZn2Ebl-lkp@intel.com/config)
+compiler: sparc64-linux-gcc (GCC) 13.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231020/202310201933.9lZn2Ebl-lkp@intel.com/reproduce)
 
->
->  arch/riscv/configs/defconfig                  |  1 +
->  arch/riscv/configs/rv32_defconfig             |  1 +
->  arch/riscv/include/asm/kvm_vcpu_sbi.h         |  7 +-
->  arch/riscv/include/asm/sbi.h                  | 12 +++
->  arch/riscv/include/uapi/asm/kvm.h             |  1 +
->  arch/riscv/kvm/vcpu.c                         |  6 ++
->  arch/riscv/kvm/vcpu_sbi.c                     | 61 +++++++-------
->  arch/riscv/kvm/vcpu_sbi_replace.c             | 32 ++++++++
->  drivers/tty/hvc/Kconfig                       |  2 +-
->  drivers/tty/hvc/hvc_riscv_sbi.c               | 82 +++++++++++++++++--
->  drivers/tty/serial/Kconfig                    |  2 +-
->  drivers/tty/serial/earlycon-riscv-sbi.c       | 32 +++++++-
->  .../selftests/kvm/riscv/get-reg-list.c        |  2 +
->  13 files changed, 198 insertions(+), 43 deletions(-)
->
-> --
-> 2.34.1
->
->
-> --
-> kvm-riscv mailing list
-> kvm-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/kvm-riscv
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202310201933.9lZn2Ebl-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+   drivers/tty/i3c_tty.c: In function 'tty_i3c_rxwork':
+   drivers/tty/i3c_tty.c:265:26: error: 'struct i3c_priv_xfer' has no member named 'actual_len'
+     265 |                 if (xfers.actual_len) {
+         |                          ^
+   drivers/tty/i3c_tty.c:266:82: error: 'struct i3c_priv_xfer' has no member named 'actual_len'
+     266 |                         tty_insert_flip_string(&sport->port, sport->buffer, xfers.actual_len);
+         |                                                                                  ^
+   drivers/tty/i3c_tty.c:271:25: error: implicit declaration of function 'i3c_device_getstatus_format1' [-Werror=implicit-function-declaration]
+     271 |                         i3c_device_getstatus_format1(sport->i3cdev, &status);
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/tty/i3c_tty.c: At top level:
+>> drivers/tty/i3c_tty.c:400:6: warning: no previous prototype for 'i3c_remove' [-Wmissing-prototypes]
+     400 | void i3c_remove(struct i3c_device *dev)
+         |      ^~~~~~~~~~
+   cc1: some warnings being treated as errors
+
+
+vim +/i3c_remove +400 drivers/tty/i3c_tty.c
+
+   399	
+ > 400	void i3c_remove(struct i3c_device *dev)
+   401	{
+   402		struct ttyi3c_port *sport = dev_get_drvdata(&dev->dev);
+   403	
+   404		tty_port_unregister_device(&sport->port, i3c_tty_driver, sport->minor);
+   405		cancel_work_sync(&sport->txwork);
+   406		destroy_workqueue(sport->workqueue);
+   407	}
+   408	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
