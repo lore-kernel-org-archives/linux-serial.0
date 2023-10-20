@@ -2,125 +2,253 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D98CDB474
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Oct 2023 12:03:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1F03CDB474
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Oct 2023 13:47:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377356AbjJTMDP (ORCPT
+        id S1377460AbjJTNrU (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Oct 2023 08:03:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45376 "EHLO
+        Fri, 20 Oct 2023 09:47:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377346AbjJTMDO (ORCPT
+        with ESMTP id S1377401AbjJTNrU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Oct 2023 08:03:14 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2B19E;
-        Fri, 20 Oct 2023 05:03:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697803391; x=1729339391;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=a0cCePIIEGKptYoyh7Pp+IV6nY/vFaOdAf4qBUS5Nws=;
-  b=oEREyZY7TT0rSKTajf4gbz050HzsGx2dXVkc6Ens+kWtvdk0HD8iu+a1
-   XqSpS5GXdpuKAd9Q2c8LLy162ZmlatQWpmjX1nXSFy6u12wUuTTvwHggT
-   04DRMQCs3td3OAxmWbfJwS9BYHJdXeUGYMzo5zzTeU9+NwMiDJF0Ded3J
-   urmw8KdVYe9zLDDNHdwxiZQPSqLXh2Z+HhEZEXBW73F+Jmf98CjE+B5oR
-   T49fxsTPtH6vEshn4a2as5wo0TXM/vxEtMKGWzctThXxxk11GUmW7xiQd
-   uQJEYa4mC9SYCxi4yrtw66uklmNJhKg6fcaFZWswYMW2zSbMc5QpjDspd
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="452962009"
-X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
-   d="scan'208";a="452962009"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2023 05:03:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="901123585"
-X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
-   d="scan'208";a="901123585"
-Received: from lkp-server01.sh.intel.com (HELO 8917679a5d3e) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 20 Oct 2023 05:00:58 -0700
-Received: from kbuild by 8917679a5d3e with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1qtoDZ-0003Uk-22;
-        Fri, 20 Oct 2023 12:03:05 +0000
-Date:   Fri, 20 Oct 2023 20:02:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Frank Li <Frank.Li@nxp.com>,
+        Fri, 20 Oct 2023 09:47:20 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC2E19E
+        for <linux-serial@vger.kernel.org>; Fri, 20 Oct 2023 06:47:16 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id 41be03b00d2f7-5ab53b230f1so567703a12.3
+        for <linux-serial@vger.kernel.org>; Fri, 20 Oct 2023 06:47:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google; t=1697809636; x=1698414436; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ujFKaHWQlVUmMQlPTcdZIic60Ioy7TSqQ3nDhHoDDn0=;
+        b=P6hJA9XHLrlREANM92ye5l+V/OvcbTs9+UCzklsxfA+8AWC2JFc3ImCtV4ectOGTkh
+         ABMJoNI3/T1b90RNFNBMNHvPEyZ5mcPXcGCP+OjLVezORt1WOZeJhjXp4D7Fdu+BmDt2
+         736ngLQ/QdC6O0hRN+h8OzjY2f4Ba+vmCBJjrLMBOoRu49V/QyPAZX33coy7A7VaCjCF
+         4zyAGQA91ak6Q6I3bYsdbGrFTZ9NFWiIdUE07XMVb8M0+KTF+785ac3Czh1ic/9ArUtD
+         4TjOavBfPz7YIGHs3zm1hwp/hI1OGwboG22n3JL0bkksqaCoTjCfvQvzqKDjyFQli1Sh
+         c5JA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697809636; x=1698414436;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ujFKaHWQlVUmMQlPTcdZIic60Ioy7TSqQ3nDhHoDDn0=;
+        b=aACKWVORALR7/UiLyq9+zAqIamg9FGUB9I0P2mIpwgD10KGcvq2URmFWU8jPk2YmW+
+         SeFq5cQuz0hwNrXpuhjvn2xzTdWcHVPuzrtm7Y/8nl+bHllVWk5yyRlQQTQa5DRmU56I
+         5N1ZXNMse+SZOJXu4SX5tDFS23nE/WwxbzBSarmGC0eFXbykOwb0Xt4HZ1GsGxjpPiDA
+         Oqn41f3Qc/GXW/2OJ6lX8z92rjGoVr4VkYyuGU8RDqZJl/8OchFMKn1QGTU7rxyCjIS5
+         5bPs2brq66lgUdZQplnjf/25i+5E8GsnqiduKtsphXyPfa0/2Etn1MP+dIsGsHAxu3uK
+         1URQ==
+X-Gm-Message-State: AOJu0YwZekjMVUByKyi5Wmb2Sw+PZrJx/t9c/CrAqw6dq+pP8Xxw3EJS
+        6foa6TNUzaMR1L/FlAG14zACsV5XR3QFBwiWZPyyiw==
+X-Google-Smtp-Source: AGHT+IEe1qO4q6kLy01GbxGxRAix8XMIPBN+082Nf7nryQBHvgSvHroABh+Pz6NLehEhxMDygq9zBHrYtbpZO8gR1/0=
+X-Received: by 2002:a05:6a21:66cb:b0:172:f4e:5104 with SMTP id
+ ze11-20020a056a2166cb00b001720f4e5104mr1738132pzb.20.1697809636011; Fri, 20
+ Oct 2023 06:47:16 -0700 (PDT)
+MIME-Version: 1.0
+References: <20231020072140.900967-1-apatel@ventanamicro.com>
+ <20231020072140.900967-9-apatel@ventanamicro.com> <20231020-f1ec2b7e384a4cfeae39966f@orel>
+In-Reply-To: <20231020-f1ec2b7e384a4cfeae39966f@orel>
+From:   Anup Patel <apatel@ventanamicro.com>
+Date:   Fri, 20 Oct 2023 19:17:03 +0530
+Message-ID: <CAK9=C2Vg8O_6OaND_s1MhpBHpm1petoU7DNXOOaSOxXYUY1iAw@mail.gmail.com>
+Subject: Re: [PATCH v3 8/9] tty: Add SBI debug console support to HVC SBI driver
+To:     Andrew Jones <ajones@ventanamicro.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:TTY LAYER AND SERIAL DRIVERS" 
-        <linux-serial@vger.kernel.org>
-Cc:     oe-kbuild-all@lists.linux.dev, alexandre.belloni@bootlin.com,
-        conor.culhane@silvaco.com, imx@lists.linux.dev, joe@perches.com,
-        linux-i3c@lists.infradead.org, miquel.raynal@bootlin.com
-Subject: Re: [PATCH 1/1] tty: i3c: add tty over i3c master support
-Message-ID: <202310201933.9lZn2Ebl-lkp@intel.com>
-References: <20231018211111.3437929-1-Frank.Li@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231018211111.3437929-1-Frank.Li@nxp.com>
+        Conor Dooley <conor@kernel.org>, kvm@vger.kernel.org,
+        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
+        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, Atish Patra <atishp@rivosinc.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Frank,
+On Fri, Oct 20, 2023 at 4:16=E2=80=AFPM Andrew Jones <ajones@ventanamicro.c=
+om> wrote:
+>
+> On Fri, Oct 20, 2023 at 12:51:39PM +0530, Anup Patel wrote:
+> > From: Atish Patra <atishp@rivosinc.com>
+> >
+> > RISC-V SBI specification supports advanced debug console
+> > support via SBI DBCN extension.
+> >
+> > Extend the HVC SBI driver to support it.
+> >
+> > Signed-off-by: Atish Patra <atishp@rivosinc.com>
+> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > ---
+> >  drivers/tty/hvc/Kconfig         |  2 +-
+> >  drivers/tty/hvc/hvc_riscv_sbi.c | 82 ++++++++++++++++++++++++++++++---
+> >  2 files changed, 76 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/drivers/tty/hvc/Kconfig b/drivers/tty/hvc/Kconfig
+> > index 4f9264d005c0..6e05c5c7bca1 100644
+> > --- a/drivers/tty/hvc/Kconfig
+> > +++ b/drivers/tty/hvc/Kconfig
+> > @@ -108,7 +108,7 @@ config HVC_DCC_SERIALIZE_SMP
+> >
+> >  config HVC_RISCV_SBI
+> >       bool "RISC-V SBI console support"
+> > -     depends on RISCV_SBI_V01
+> > +     depends on RISCV_SBI
+> >       select HVC_DRIVER
+> >       help
+> >         This enables support for console output via RISC-V SBI calls, w=
+hich
+> > diff --git a/drivers/tty/hvc/hvc_riscv_sbi.c b/drivers/tty/hvc/hvc_risc=
+v_sbi.c
+> > index 31f53fa77e4a..56da1a4b5aca 100644
+> > --- a/drivers/tty/hvc/hvc_riscv_sbi.c
+> > +++ b/drivers/tty/hvc/hvc_riscv_sbi.c
+> > @@ -39,21 +39,89 @@ static int hvc_sbi_tty_get(uint32_t vtermno, char *=
+buf, int count)
+> >       return i;
+> >  }
+> >
+> > -static const struct hv_ops hvc_sbi_ops =3D {
+> > +static const struct hv_ops hvc_sbi_v01_ops =3D {
+> >       .get_chars =3D hvc_sbi_tty_get,
+> >       .put_chars =3D hvc_sbi_tty_put,
+> >  };
+> >
+> > -static int __init hvc_sbi_init(void)
+> > +static int hvc_sbi_dbcn_tty_put(uint32_t vtermno, const char *buf, int=
+ count)
+> >  {
+> > -     return PTR_ERR_OR_ZERO(hvc_alloc(0, 0, &hvc_sbi_ops, 16));
+> > +     phys_addr_t pa;
+> > +     struct sbiret ret;
+> > +
+> > +     if (is_vmalloc_addr(buf)) {
+> > +             pa =3D page_to_phys(vmalloc_to_page(buf)) + offset_in_pag=
+e(buf);
+> > +             if (PAGE_SIZE < (offset_in_page(buf) + count))
+>
+> I thought checkpatch complained about uppercase constants being on the
+> left in comparisons.
 
-kernel test robot noticed the following build warnings:
+Nope checkpatch does not complain about this.
 
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on tty/tty-next tty/tty-linus linus/master v6.6-rc6 next-20231019]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+>
+> > +                     count =3D PAGE_SIZE - offset_in_page(buf);
+> > +     } else {
+> > +             pa =3D __pa(buf);
+> > +     }
+> > +
+> > +     if (IS_ENABLED(CONFIG_32BIT))
+> > +             ret =3D sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRIT=
+E,
+> > +                             count, lower_32_bits(pa), upper_32_bits(p=
+a),
+> > +                             0, 0, 0);
+> > +     else
+> > +             ret =3D sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRIT=
+E,
+> > +                             count, pa, 0, 0, 0, 0);
+> > +     if (ret.error)
+> > +             return 0;
+> > +
+> > +     return count;
+>
+> Shouldn't we return ret.value here in case it's less than count? I see we
+> already do that below in get().
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Frank-Li/tty-i3c-add-tty-over-i3c-master-support/20231019-051407
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20231018211111.3437929-1-Frank.Li%40nxp.com
-patch subject: [PATCH 1/1] tty: i3c: add tty over i3c master support
-config: sparc-allyesconfig (https://download.01.org/0day-ci/archive/20231020/202310201933.9lZn2Ebl-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 13.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231020/202310201933.9lZn2Ebl-lkp@intel.com/reproduce)
+Ahh, yes. Good catch, I will update.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202310201933.9lZn2Ebl-lkp@intel.com/
+>
+> >  }
+> > -device_initcall(hvc_sbi_init);
+> >
+> > -static int __init hvc_sbi_console_init(void)
+> > +static int hvc_sbi_dbcn_tty_get(uint32_t vtermno, char *buf, int count=
+)
+> >  {
+> > -     hvc_instantiate(0, 0, &hvc_sbi_ops);
+> > +     phys_addr_t pa;
+> > +     struct sbiret ret;
+> > +
+> > +     if (is_vmalloc_addr(buf)) {
+> > +             pa =3D page_to_phys(vmalloc_to_page(buf)) + offset_in_pag=
+e(buf);
+> > +             if (PAGE_SIZE < (offset_in_page(buf) + count))
+> > +                     count =3D PAGE_SIZE - offset_in_page(buf);
+> > +     } else {
+> > +             pa =3D __pa(buf);
+> > +     }
+> > +
+> > +     if (IS_ENABLED(CONFIG_32BIT))
+> > +             ret =3D sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_READ=
+,
+> > +                             count, lower_32_bits(pa), upper_32_bits(p=
+a),
+> > +                             0, 0, 0);
+> > +     else
+> > +             ret =3D sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_READ=
+,
+> > +                             count, pa, 0, 0, 0, 0);
+> > +     if (ret.error)
+> > +             return 0;
+> > +
+> > +     return ret.value;
+> > +}
+> > +
+> > +static const struct hv_ops hvc_sbi_dbcn_ops =3D {
+> > +     .put_chars =3D hvc_sbi_dbcn_tty_put,
+> > +     .get_chars =3D hvc_sbi_dbcn_tty_get,
+> > +};
+> > +
+> > +static int __init hvc_sbi_init(void)
+> > +{
+> > +     int err;
+> > +
+> > +     if ((sbi_spec_version >=3D sbi_mk_version(2, 0)) &&
+> > +         (sbi_probe_extension(SBI_EXT_DBCN) > 0)) {
+> > +             err =3D PTR_ERR_OR_ZERO(hvc_alloc(0, 0, &hvc_sbi_dbcn_ops=
+, 16));
+>
+> Why an outbuf size of only 16?
 
-All warnings (new ones prefixed by >>):
+The output buffer size of 16 is a very common choice across
+HVC drivers. The next best choice is 256.
 
-   drivers/tty/i3c_tty.c: In function 'tty_i3c_rxwork':
-   drivers/tty/i3c_tty.c:265:26: error: 'struct i3c_priv_xfer' has no member named 'actual_len'
-     265 |                 if (xfers.actual_len) {
-         |                          ^
-   drivers/tty/i3c_tty.c:266:82: error: 'struct i3c_priv_xfer' has no member named 'actual_len'
-     266 |                         tty_insert_flip_string(&sport->port, sport->buffer, xfers.actual_len);
-         |                                                                                  ^
-   drivers/tty/i3c_tty.c:271:25: error: implicit declaration of function 'i3c_device_getstatus_format1' [-Werror=implicit-function-declaration]
-     271 |                         i3c_device_getstatus_format1(sport->i3cdev, &status);
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/tty/i3c_tty.c: At top level:
->> drivers/tty/i3c_tty.c:400:6: warning: no previous prototype for 'i3c_remove' [-Wmissing-prototypes]
-     400 | void i3c_remove(struct i3c_device *dev)
-         |      ^~~~~~~~~~
-   cc1: some warnings being treated as errors
+I guess 256 is better so I will go with that.
 
+>
+> > +             if (err)
+> > +                     return err;
+> > +             hvc_instantiate(0, 0, &hvc_sbi_dbcn_ops);
+> > +     } else {
+> > +             if (IS_ENABLED(CONFIG_RISCV_SBI_V01)) {
+> > +                     err =3D PTR_ERR_OR_ZERO(hvc_alloc(0, 0, &hvc_sbi_=
+v01_ops, 16));
+> > +                     if (err)
+> > +                             return err;
+> > +                     hvc_instantiate(0, 0, &hvc_sbi_v01_ops);
+> > +             } else {
+> > +                     return -ENODEV;
+> > +             }
+> > +     }
+> >
+> >       return 0;
+> >  }
+> > -console_initcall(hvc_sbi_console_init);
+> > +device_initcall(hvc_sbi_init);
+> > --
+> > 2.34.1
+> >
+>
+> Thanks,
+> drew
 
-vim +/i3c_remove +400 drivers/tty/i3c_tty.c
-
-   399	
- > 400	void i3c_remove(struct i3c_device *dev)
-   401	{
-   402		struct ttyi3c_port *sport = dev_get_drvdata(&dev->dev);
-   403	
-   404		tty_port_unregister_device(&sport->port, i3c_tty_driver, sport->minor);
-   405		cancel_work_sync(&sport->txwork);
-   406		destroy_workqueue(sport->workqueue);
-   407	}
-   408	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Regards,
+Anup
