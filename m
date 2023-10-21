@@ -2,172 +2,231 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95868C00A8F
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Oct 2023 21:48:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31DADC001E0
+	for <linux-serial@archiver.kernel.org>; Sat, 21 Oct 2023 16:00:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233213AbjJTVsH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Oct 2023 17:48:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48810 "EHLO
+        id S231604AbjJUQAt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 21 Oct 2023 12:00:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233208AbjJTVsG (ORCPT
+        with ESMTP id S231372AbjJUQAs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Oct 2023 17:48:06 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6784910C8
-        for <linux-serial@vger.kernel.org>; Fri, 20 Oct 2023 14:48:00 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id 6a1803df08f44-66d17fd450aso20427896d6.1
-        for <linux-serial@vger.kernel.org>; Fri, 20 Oct 2023 14:48:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1697838479; x=1698443279; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=/mBv1buCpcnwBc220mZjRsjDHmbRRP2xfyJ2lFdmR6s=;
-        b=fkQSFbeTNaotD+CG4FKQHumTVggsF4QQ1QA1edAb3YoOcjsvemrDs8zsMNkGu8wPXk
-         oAgYd+57Et82jKpaGhkZ75Y1hHIdDtaCiAA5rF8ge6XQaC4O9pD2CYSBjNz2uPwIn6tV
-         sGHY4IrTsZcuOg6d+uCtLwqow3Iu/LVm/UHyHTUHRcYN5PNYRtTKiamZvH+raxvq+qgD
-         8hM6sHMSRlABL5JBLc1XL9igXG0ZIoHslLimSfvDAcYpMUzkDwwdmJcjtSulMFPyYXd6
-         O0iTtB1UJfvENqmACX6Z1BwL7l/Q+RC5Pt1a62/rxF1VRwMC0PyUI6ixz/gYgrUA24s8
-         WmWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697838479; x=1698443279;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=/mBv1buCpcnwBc220mZjRsjDHmbRRP2xfyJ2lFdmR6s=;
-        b=selktoJwL1cAMo7+4LAMYNuy4lnmS7je0K8paNYhF1Sl77nuf9NlTGCOs85qQvhf+Y
-         XZpMEe32FGdLZX5EZnURVRtYoTaWaQC+BsGoMZdkw4Lvy1pU395uPWmRxFTTluvr9AR9
-         axc0/bnqmdwIXYuiBLkn2nOf9+DTzQjDuCxz8uFFIcZitIy/3936Jc4UhRaxxkywCfWQ
-         R49kYoD15TGuhf9XTWJnR9EJWV1kvnBhGEfIFrQdraFiFo7Fc3Ufh9zt8PQMP8mZUUdU
-         VAztMY9VoDNimjVNTpTjcjOo64pKzd3lK1cTzh6Fmj7kWLLRMgEt0+WA0p1O/lMMo5xP
-         3Dwg==
-X-Gm-Message-State: AOJu0Yzhl5HaWZc+LW4yDfgiiRbenvI4pmevKYCAC8H2Ekqm3wp491Uq
-        9I9O734zZT9OQ8ixbiuQqjDhe2t79ez1gNmdDXsaIw==
-X-Google-Smtp-Source: AGHT+IHQJ7x9/SuQ4EBTGwOQciXDqQRU/H0wUJap6zldAAHxxJLfRsl7IevqZUOUANlVf9xne6BrdF0f6OpD88sD5HM=
-X-Received: by 2002:ad4:5dc2:0:b0:66d:9b63:72fb with SMTP id
- m2-20020ad45dc2000000b0066d9b6372fbmr2943620qvh.5.1697838479398; Fri, 20 Oct
- 2023 14:47:59 -0700 (PDT)
+        Sat, 21 Oct 2023 12:00:48 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75094188;
+        Sat, 21 Oct 2023 09:00:41 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E2C2C433C7;
+        Sat, 21 Oct 2023 16:00:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1697904041;
+        bh=u7QWjefvvhtj9JYfMJo3vYUfs5HQpQfQAshJw2ij5Vw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wdVEBmLa1kPbIQ5smiCijdD7+3yZv3hEd/PfixRKYQudqL3ib6A8Z0s3tUi9oQ1Dt
+         MhNqrs7XN1SUhrVKleq49C3OTp/LTLC+6b5cdi/QBYPZ+l0w/qXMrKAGmfwlP9qcU+
+         S0ZXkdW88DF/GxeV+h3/8qAY3ZiuuyBgDAux095c=
+Date:   Sat, 21 Oct 2023 18:00:38 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Dan Raymond <raymod2@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        linux-serial <linux-serial@vger.kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, peterz@infradead.org,
+        andriy.shevchenko@linux.intel.com, quic_saipraka@quicinc.com,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH v5] arch/x86: port I/O tracing on x86
+Message-ID: <2023102122-diabetes-trend-57d0@gregkh>
+References: <b8eae358-a3b3-fd68-82f1-b2c53534b922@gmail.com>
+ <2023100344-dart-jailbreak-c371@gregkh>
+ <94e2b77c-9cc4-534f-e650-06d7e0697f9f@gmail.com>
+ <20231004195001.76a57417@gandalf.local.home>
+ <80b84be0-a0ad-d1a9-607a-a87c6cf509e0@gmail.com>
+ <cc7fba3b-9da2-b9eb-95c8-7336e1cd4449@gmail.com>
 MIME-Version: 1.0
-References: <20231011184823.443959-1-peter.griffin@linaro.org>
- <20231011184823.443959-17-peter.griffin@linaro.org> <eca9feea-b4a6-438c-83c7-452e8fe388c6@app.fastmail.com>
-In-Reply-To: <eca9feea-b4a6-438c-83c7-452e8fe388c6@app.fastmail.com>
-From:   Peter Griffin <peter.griffin@linaro.org>
-Date:   Fri, 20 Oct 2023 22:47:47 +0100
-Message-ID: <CADrjBPqPR54FqsdG1irrAYVn+Bkuc5hU3Vip7mUS8Aeq1b=JOw@mail.gmail.com>
-Subject: Re: [PATCH v3 16/20] tty: serial: samsung: Add gs101 compatible and
- SoC data
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Olof Johansson <olof@lixom.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Tudor Ambarus <tudor.ambarus@linaro.org>,
-        andre.draszik@linaro.org,
-        Sam Protsenko <semen.protsenko@linaro.org>,
-        saravanak@google.com, William McVicker <willmcvicker@google.com>,
-        soc@kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-watchdog@vger.kernel.org, kernel-team@android.com,
-        linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cc7fba3b-9da2-b9eb-95c8-7336e1cd4449@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Arnd,
+On Sat, Oct 07, 2023 at 11:56:53AM -0600, Dan Raymond wrote:
+> Add support for port I/O tracing on x86.  Memory mapped I/O tracing is
+> available on x86 via CONFIG_MMIOTRACE but that relies on page faults
+> so it doesn't work with port I/O.  This feature uses tracepoints in a
+> similar manner as CONFIG_TRACE_MMIO_ACCESS.
+> 
+> Signed-off-by: Dan Raymond <raymod2@gmail.com>
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-On Thu, 12 Oct 2023 at 07:07, Arnd Bergmann <arnd@arndb.de> wrote:
->
-> On Wed, Oct 11, 2023, at 20:48, Peter Griffin wrote:
-> > Add serial driver data for Google Tensor gs101 SoC.
-> >
-> > Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
->
-> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+This is now outside of my subsystems to review, sorry.  It's going to
+have to go through the x86 tree, so you are going to have to convince
+them that this is something that actually matters and is needed by
+people, as maintaining it over time is going to add to their workload.
 
-Thanks!
+Note, you are keeping tracing from working in a few areas that might not
+be good:
 
->
-> While the patch is now correct, I would point out a few
-> improvements we could make on top:
->
-> > +static const struct s3c24xx_serial_drv_data gs101_serial_drv_data = {
-> > +     EXYNOS_COMMON_SERIAL_DRV_DATA(),
-> > +     /* rely on samsung,uart-fifosize DT property for fifosize */
-> > +     .fifosize = { 0 },
-> > +};
-> > +
-> >  #define EXYNOS4210_SERIAL_DRV_DATA (&exynos4210_serial_drv_data)
-> >  #define EXYNOS5433_SERIAL_DRV_DATA (&exynos5433_serial_drv_data)
-> >  #define EXYNOS850_SERIAL_DRV_DATA (&exynos850_serial_drv_data)
-> > +#define GS101_SERIAL_DRV_DATA (&gs101_serial_drv_data)
->
-> Since this is now actually correct for any Exynos variant that
-> has the FIFO size listed in the DT, we could use a variable/macro
-> name that leads itself to being used by future chips.
+> --- a/arch/x86/boot/Makefile
+> +++ b/arch/x86/boot/Makefile
+> @@ -70,6 +70,7 @@ KBUILD_CFLAGS	:= $(REALMODE_CFLAGS) -D_SETUP
+>  KBUILD_AFLAGS	:= $(KBUILD_CFLAGS) -D__ASSEMBLY__
+>  KBUILD_CFLAGS	+= $(call cc-option,-fmacro-prefix-map=$(srctree)/=)
+>  KBUILD_CFLAGS	+= -fno-asynchronous-unwind-tables
+> +KBUILD_CFLAGS	+= -DDISABLE_TRACEPOINTS
+>  GCOV_PROFILE := n
+>  UBSAN_SANITIZE := n
+>  
+> diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
+> index 35ce1a64068b..c368bcc008eb 100644
+> --- a/arch/x86/boot/compressed/Makefile
+> +++ b/arch/x86/boot/compressed/Makefile
+> @@ -51,6 +51,7 @@ KBUILD_CFLAGS += -D__DISABLE_EXPORTS
+>  # Disable relocation relaxation in case the link is not PIE.
+>  KBUILD_CFLAGS += $(call as-option,-Wa$(comma)-mrelax-relocations=no)
+>  KBUILD_CFLAGS += -include $(srctree)/include/linux/hidden.h
+> +KBUILD_CFLAGS += -DDISABLE_TRACEPOINTS
+>  
+>  # sev.c indirectly inludes inat-table.h which is generated during
+>  # compilation and stored in $(objtree). Add the directory to the includes so
 
-I've updated this to exynos_fifoszdt_serial_drv_data and
-EXYNOS_FIFOSZDT_SERIAL_DRV_DATA in v4 and added a
-comment that it is common struct for platforms that specify
-uart,fifosize in DT.
+Now I know why you did that for this patch (i.e. so early boot doesn't
+get the printk mess), but that kind of defeats the use of tracepoints at
+all for this part of the kernel, is that ok?  Are any existing
+tracepoints now removed?
 
-I've also updated the YAML to make this a required property for
-google,gs101-uart.
+Some other random comments:
 
->
-> There is also the question of whether we want to address the
-> ordering bug for the other SoC types. The way I understand it,
-> the .fifosize array logic is wrong because it relies on having
-> a particular alias for each of the ports to match the entry in
-> the array.
-> For the exynosautov9, this would be trivially fixed
-> by using the same data as gs101 (since it already lists the
-> correct size in DT), but for the other ones we'd need a different
-> logic.
->
+> --- a/arch/x86/include/asm/cmpxchg_32.h
+> +++ b/arch/x86/include/asm/cmpxchg_32.h
+> @@ -37,13 +37,16 @@ static inline void set_64bit(volatile u64 *ptr, u64 value)
+>  
+>  #ifdef CONFIG_X86_CMPXCHG64
+>  #define arch_cmpxchg64(ptr, o, n)					\
+> -	((__typeof__(*(ptr)))__cmpxchg64((ptr), (unsigned long long)(o), \
+> +	((__typeof__(*(ptr)))__cmpxchg64((unsigned long long *)(ptr),	\
+> +					 (unsigned long long)(o),	\
+>  					 (unsigned long long)(n)))
+> -#define arch_cmpxchg64_local(ptr, o, n)					\
+> -	((__typeof__(*(ptr)))__cmpxchg64_local((ptr), (unsigned long long)(o), \
+> +#define arch_cmpxchg64_local(ptr, o, n)						\
+> +	((__typeof__(*(ptr)))__cmpxchg64_local((unsigned long long *)(ptr),	\
+> +					       (unsigned long long)(o),		\
+>  					       (unsigned long long)(n)))
+> -#define arch_try_cmpxchg64(ptr, po, n)					\
+> -	__try_cmpxchg64((ptr), (unsigned long long *)(po), \
+> +#define arch_try_cmpxchg64(ptr, po, n)			\
+> +	__try_cmpxchg64((unsigned long long *)(ptr),	\
+> +			(unsigned long long *)(po),	\
+>  			(unsigned long long)(n))
+>  #endif
+>  
 
-It seems samsung,exynosautov9-uart is in the yaml bindings and
-exynosautov9.dtsi but never actually made it into the driver. But
-it could be added to the driver and made to use the common
-exynos_fifoszdt_serial_drv_data mentioned above.
+Why are these needed to be changed at all?  What code changes with it,
+and it's not mentioned in the changelog, so why is it required?
 
-I think any new platform should specify this in DT as many of these
-UARTs on newer Exynos are actually universal serial IPs which can
-be UART, I2C or SPI which is board dependent. So having the fifosize
-in the driver, based on a SoC compatible and relying on probe order
-and DT aliases seems very prone to error.
+> diff --git a/arch/x86/include/asm/shared/io.h b/arch/x86/include/asm/shared/io.h
+> index c0ef921c0586..82664956ce41 100644
+> --- a/arch/x86/include/asm/shared/io.h
+> +++ b/arch/x86/include/asm/shared/io.h
+> @@ -2,13 +2,20 @@
+>  #ifndef _ASM_X86_SHARED_IO_H
+>  #define _ASM_X86_SHARED_IO_H
+>  
+> +#include <linux/tracepoint-defs.h>
+> +#include <linux/trace_portio.h>
+>  #include <linux/types.h>
+>  
+> +DECLARE_TRACEPOINT(portio_write);
+> +DECLARE_TRACEPOINT(portio_read);
+> +
+>  #define BUILDIO(bwl, bw, type)						\
+>  static inline void __out##bwl(type value, u16 port)			\
+>  {									\
+>  	asm volatile("out" #bwl " %" #bw "0, %w1"			\
+>  		     : : "a"(value), "Nd"(port));			\
+> +	if (tracepoint_enabled(portio_write))				\
+> +		do_trace_portio_write(value, port, #bwl[0]);		\
 
-regards,
+Your level of indirection here seems deep, why doesn't
+do_trace_portio_write() belong in a .h file here and do the
+tracepoint_enabled() check?
 
-Peter.
+Is this a by-product of the tracing macros that require this deeper
+callchain to happen?
 
-> > @@ -2688,6 +2696,9 @@ static const struct platform_device_id
-> > s3c24xx_serial_driver_ids[] = {
-> >       }, {
-> >               .name           = "artpec8-uart",
-> >               .driver_data    = (kernel_ulong_t)ARTPEC8_SERIAL_DRV_DATA,
-> > +     }, {
-> > +             .name           = "gs101-uart",
-> > +             .driver_data    = (kernel_ulong_t)GS101_SERIAL_DRV_DATA,
-> >       },
-> >       { },
-> >  };
->
-> I just noticed that the platform_device_id array is currently
-> only used for mach-crag6410, since everything else uses DT
-> based probing. s3c64xx is scheduled for removal in early 2024
-> (though no patch has been sent), and we can probably just
-> remove all the atags/platform_device based code when that happens.
->
->       Arnd
+>  }									\
+>  									\
+>  static inline type __in##bwl(u16 port)					\
+> @@ -16,6 +23,8 @@ static inline type __in##bwl(u16 port)					\
+>  	type value;							\
+>  	asm volatile("in" #bwl " %w1, %" #bw "0"			\
+>  		     : "=a"(value) : "Nd"(port));			\
+> +	if (tracepoint_enabled(portio_read))				\
+> +		do_trace_portio_read(value, port, #bwl[0]);		\
+>  	return value;							\
+>  }
+>  
+> diff --git a/arch/x86/lib/Makefile b/arch/x86/lib/Makefile
+> index f76747862bd2..254f223c025d 100644
+> --- a/arch/x86/lib/Makefile
+> +++ b/arch/x86/lib/Makefile
+> @@ -40,6 +40,7 @@ $(obj)/inat.o: $(obj)/inat-tables.c
+>  clean-files := inat-tables.c
+>  
+>  obj-$(CONFIG_SMP) += msr-smp.o cache-smp.o
+> +obj-$(CONFIG_TRACEPOINTS) += trace_portio.o
+
+So you are always enabling these if any CONFIG_TRACEPOINTS is enabled?
+That seems brave.
+
+> --- a/arch/x86/realmode/rm/Makefile
+> +++ b/arch/x86/realmode/rm/Makefile
+> @@ -75,5 +75,6 @@ KBUILD_CFLAGS	:= $(REALMODE_CFLAGS) -D_SETUP -D_WAKEUP \
+>  		   -I$(srctree)/arch/x86/boot
+>  KBUILD_AFLAGS	:= $(KBUILD_CFLAGS) -D__ASSEMBLY__
+>  KBUILD_CFLAGS	+= -fno-asynchronous-unwind-tables
+> +KBUILD_CFLAGS	+= -DDISABLE_TRACEPOINTS
+
+Again, you prevent any tracepoints from this code chunk, is that going
+to be ok going forward?
+
+>  GCOV_PROFILE := n
+>  UBSAN_SANITIZE := n
+> diff --git a/include/linux/trace_portio.h b/include/linux/trace_portio.h
+> new file mode 100644
+> index 000000000000..2324d62e6c9e
+> --- /dev/null
+> +++ b/include/linux/trace_portio.h
+> @@ -0,0 +1,6 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +
+> +#include <linux/types.h>
+> +
+> +extern void do_trace_portio_read(u32 value, u16 port, char width);
+> +extern void do_trace_portio_write(u32 value, u16 port, char width);
+
+Nit, "extern" isn't needed in .h files anymore.  Not a big deal, just
+for other work you do going forward.
+
+> diff --git a/include/linux/tracepoint-defs.h b/include/linux/tracepoint-defs.h
+> index e7c2276be33e..bfe70e17b2aa 100644
+> --- a/include/linux/tracepoint-defs.h
+> +++ b/include/linux/tracepoint-defs.h
+> @@ -80,7 +80,7 @@ struct bpf_raw_event_map {
+>  #define DECLARE_TRACEPOINT(tp) \
+>  	extern struct tracepoint __tracepoint_##tp
+>  
+> -#ifdef CONFIG_TRACEPOINTS
+> +#if defined(CONFIG_TRACEPOINTS) && !defined(DISABLE_TRACEPOINTS)
+
+Why this global change?
+
+Anyway, it's up to the x86 maintainers now, good luck!
+
+But personally, I don't see the real need for this at all.  It's a
+debugging thing for what exactly?  Who needs this?  Who will use it?
+When will they use it?  And why?
+
+thanks,
+
+greg k-h
