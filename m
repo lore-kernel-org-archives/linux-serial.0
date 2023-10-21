@@ -2,64 +2,66 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2CBCC001E0
-	for <linux-serial@archiver.kernel.org>; Sat, 21 Oct 2023 16:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70883C001E0
+	for <linux-serial@archiver.kernel.org>; Sat, 21 Oct 2023 16:28:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231760AbjJUQTm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 21 Oct 2023 12:19:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50840 "EHLO
+        id S231356AbjJUQ2z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 21 Oct 2023 12:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231710AbjJUQTm (ORCPT
+        with ESMTP id S231594AbjJUQ2y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 21 Oct 2023 12:19:42 -0400
+        Sat, 21 Oct 2023 12:28:54 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5093E1A8;
-        Sat, 21 Oct 2023 09:19:37 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E495C433C7;
-        Sat, 21 Oct 2023 16:19:36 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D754F106;
+        Sat, 21 Oct 2023 09:28:49 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 775D7C433C8;
+        Sat, 21 Oct 2023 16:28:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1697905177;
-        bh=KuG7HJuTbJpgl9cv4/FVqC+PNkm0XhOMATgkMOUl4+I=;
+        s=korg; t=1697905727;
+        bh=VjbjoB+vbGx+egXMLwVw1EQb/Pg3ogPkAciDz+i5XVU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mNcyvyWZ1y+3lWlA7lp2c2yrpbOrsJxyUssI6vntD6tzMvueT97Ecwpw9Ep0CRdLT
-         3Kv/0KmeH34f1j5fQLN4Olq+GWEujWGMPpTM/usmLwM2d16FYJuKU3O6q9AhnioFRg
-         jBtzOdK58g6bF8q1Sl6koDUQ1UuJfHaAQKu+Nhcc=
-Date:   Sat, 21 Oct 2023 18:19:34 +0200
+        b=M0MHZcsifQNktVBDmc/wfsq+a0/EqXJZNzmLlCYjisqQpiN6qlsgIkOoeRTnH5MVC
+         dIuCD4gwl2jnbLpt4VeZ65Otj3aODBJ3ArRRDWWeKqUSn/Y6VjXO2xFaw8rPyZyqoH
+         TUc+MGyL5YBCns5DvVgvjm+goiPKovaez8ut0Tik=
+Date:   Sat, 21 Oct 2023 18:28:44 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Cameron Williams <cang1@live.co.uk>
-Cc:     jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v4 01/11] tty: 8250: Fix IS-200 PCI ID comment
-Message-ID: <2023102107-poser-recipient-3593@gregkh>
-References: <BBPatchesV4>
- <20231020160412.118550-1-cang1@live.co.uk>
- <DU0PR02MB78993B6AD85F6550AF6590FBC4DBA@DU0PR02MB7899.eurprd02.prod.outlook.com>
+To:     Florian Eckert <fe@dev.tdt.de>
+Cc:     Eckert.Florian@googlemail.com, jirislaby@kernel.org, pavel@ucw.cz,
+        lee@kernel.org, kabel@kernel.org, u.kleine-koenig@pengutronix.de,
+        ansuelsmth@gmail.com, m.brock@vanmierlo.com,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-leds@vger.kernel.org
+Subject: Re: [PATCH v4 1/3] tty: whitespaces in descriptions corrected by
+ replacing tabs with spaces
+Message-ID: <2023102110-starlight-wispy-1f28@gregkh>
+References: <20231019112809.881730-1-fe@dev.tdt.de>
+ <20231019112809.881730-2-fe@dev.tdt.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <DU0PR02MB78993B6AD85F6550AF6590FBC4DBA@DU0PR02MB7899.eurprd02.prod.outlook.com>
+In-Reply-To: <20231019112809.881730-2-fe@dev.tdt.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 20, 2023 at 05:03:07PM +0100, Cameron Williams wrote:
-> Fix the PCI comment for the IS-200 card. The PCI ID for the IS-200
-> is 0x0d80, and the definition used (PCI_DEVICE_ID_INTASHIELD_IS200)
-> is indeed 0x0d80, clarify that by fixing the comment as its
-> neighbouring cards are all at 0x0020 offsets.
+On Thu, Oct 19, 2023 at 01:28:07PM +0200, Florian Eckert wrote:
+> Tabs were used in the function description, to make this look more
+> uniform, the tabs were replaced by spaces where necessary.
 > 
-> Fixes: 737c17561fb2 ("[SERIAL] Support for Intashield 2 port PCI serial card")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Cameron Williams <cang1@live.co.uk>
+> While we're at it, I also replaced the 'ndashes' with simple dashes, since
+> only those are supported by sphinx.
+> 
+> Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
 > ---
-> I argue for fixing this rather than removing due to this patch series (and
-> the code already in the kernel) referring to the rest of the cards in
-> the manufacturer's product line by hex ID, makes sense to me to
-> have the hex IDs all displayed correctly one way or another in the
-> one driver as the IS-200 and 400 are the only cards to use a definition instead.
+>  drivers/tty/tty_io.c | 102 +++++++++++++++++++++----------------------
+>  1 file changed, 51 insertions(+), 51 deletions(-)
 
-I'll take this, but it is obviously not for stable kernels to take, as
-it has no code functional changes.
+This didn't apply cleanly as portions of this patch were already in my
+tree, what did tree did you make it against?
+
+Anyway, I've fixed it up and taken it now.
 
 thanks,
 
