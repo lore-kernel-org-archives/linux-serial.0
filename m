@@ -2,29 +2,29 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0144DC001E0
-	for <linux-serial@archiver.kernel.org>; Sat, 21 Oct 2023 16:36:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11383C001E0
+	for <linux-serial@archiver.kernel.org>; Sat, 21 Oct 2023 16:46:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231719AbjJUQgH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 21 Oct 2023 12:36:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35764 "EHLO
+        id S231843AbjJUQqA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 21 Oct 2023 12:46:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231745AbjJUQfh (ORCPT
+        with ESMTP id S231721AbjJUQp6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 21 Oct 2023 12:35:37 -0400
+        Sat, 21 Oct 2023 12:45:58 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27603112;
-        Sat, 21 Oct 2023 09:35:32 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FEBCC433C7;
-        Sat, 21 Oct 2023 16:35:31 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65B0DD;
+        Sat, 21 Oct 2023 09:45:46 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA210C433C8;
+        Sat, 21 Oct 2023 16:45:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1697906131;
-        bh=IRSw7P9VmuHhUOMwdDBR2XmA3tdHqhvGWiakm/9oZ9I=;
+        s=korg; t=1697906746;
+        bh=MN1/oJukE4EkbtjF4EsDiPa4e+4k6rhpReY9dOx0rVo=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GD3fLXMdp5ENzoMaZS+fNNSFjexby3//ktNJIxMQagbYFEmNH3sSMrJXmCP2wsitu
-         NrGJogc+Bu5bu3tSoeN4KQxU/sz4js+A7eNkYq+lMJyEIUkmN5C4FddLlrBRpCvFct
-         FbETBGPoIvSAMvZX/nqXEko6qB+5TuJlxbNyZfLs=
-Date:   Sat, 21 Oct 2023 18:35:29 +0200
+        b=EG2rxm/nXn3ve2cTPaP/raeMGmB70IeM1Ut27WsvANxOpR+Veq+GgHzIg+//lxz4d
+         6uLoJ0ZsctjIObzV1It7g+tCxrCAJLp6lzF65mWR7jFRpoYEsMeABM1F4q5uU5Dvok
+         W1RsvxDiwmItNWuJHnqnamJDE9ZshM/EFWVQyZ1g=
+Date:   Sat, 21 Oct 2023 18:45:43 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     Anup Patel <apatel@ventanamicro.com>
 Cc:     Paolo Bonzini <pbonzini@redhat.com>,
@@ -37,46 +37,84 @@ Cc:     Paolo Bonzini <pbonzini@redhat.com>,
         kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
         linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 6/9] RISC-V: Add stubs for
- sbi_console_putchar/getchar()
-Message-ID: <2023102113-harsh-trout-be8f@gregkh>
+Subject: Re: [PATCH v3 7/9] tty/serial: Add RISC-V SBI debug console based
+ earlycon
+Message-ID: <2023102120-unleveled-composed-45a2@gregkh>
 References: <20231020072140.900967-1-apatel@ventanamicro.com>
- <20231020072140.900967-7-apatel@ventanamicro.com>
+ <20231020072140.900967-8-apatel@ventanamicro.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231020072140.900967-7-apatel@ventanamicro.com>
+In-Reply-To: <20231020072140.900967-8-apatel@ventanamicro.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 20, 2023 at 12:51:37PM +0530, Anup Patel wrote:
-> The functions sbi_console_putchar() and sbi_console_getchar() are
-> not defined when CONFIG_RISCV_SBI_V01 is disabled so let us add
-> stub of these functions to avoid "#ifdef" on user side.
+On Fri, Oct 20, 2023 at 12:51:38PM +0530, Anup Patel wrote:
+> We extend the existing RISC-V SBI earlycon support to use the new
+> RISC-V SBI debug console extension.
 > 
 > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
 > Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
 > ---
->  arch/riscv/include/asm/sbi.h | 5 +++++
->  1 file changed, 5 insertions(+)
+>  drivers/tty/serial/Kconfig              |  2 +-
+>  drivers/tty/serial/earlycon-riscv-sbi.c | 32 +++++++++++++++++++++----
+>  2 files changed, 29 insertions(+), 5 deletions(-)
 > 
-> diff --git a/arch/riscv/include/asm/sbi.h b/arch/riscv/include/asm/sbi.h
-> index 12dfda6bb924..cbcefa344417 100644
-> --- a/arch/riscv/include/asm/sbi.h
-> +++ b/arch/riscv/include/asm/sbi.h
-> @@ -271,8 +271,13 @@ struct sbiret sbi_ecall(int ext, int fid, unsigned long arg0,
->  			unsigned long arg3, unsigned long arg4,
->  			unsigned long arg5);
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index bdc568a4ab66..cec46091a716 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -87,7 +87,7 @@ config SERIAL_EARLYCON_SEMIHOST
 >  
-> +#ifdef CONFIG_RISCV_SBI_V01
->  void sbi_console_putchar(int ch);
->  int sbi_console_getchar(void);
-> +#else
-> +static inline void sbi_console_putchar(int ch) { }
-> +static inline int sbi_console_getchar(void) { return -1; }
+>  config SERIAL_EARLYCON_RISCV_SBI
+>  	bool "Early console using RISC-V SBI"
+> -	depends on RISCV_SBI_V01
+> +	depends on RISCV_SBI
+>  	select SERIAL_CORE
+>  	select SERIAL_CORE_CONSOLE
+>  	select SERIAL_EARLYCON
+> diff --git a/drivers/tty/serial/earlycon-riscv-sbi.c b/drivers/tty/serial/earlycon-riscv-sbi.c
+> index 27afb0b74ea7..c21cdef254e7 100644
+> --- a/drivers/tty/serial/earlycon-riscv-sbi.c
+> +++ b/drivers/tty/serial/earlycon-riscv-sbi.c
+> @@ -15,17 +15,41 @@ static void sbi_putc(struct uart_port *port, unsigned char c)
+>  	sbi_console_putchar(c);
+>  }
+>  
+> -static void sbi_console_write(struct console *con,
+> -			      const char *s, unsigned n)
+> +static void sbi_0_1_console_write(struct console *con,
+> +				  const char *s, unsigned int n)
+>  {
+>  	struct earlycon_device *dev = con->data;
+>  	uart_console_write(&dev->port, s, n, sbi_putc);
+>  }
+>  
+> +static void sbi_dbcn_console_write(struct console *con,
+> +				   const char *s, unsigned int n)
+> +{
+> +	phys_addr_t pa = __pa(s);
+> +
+> +	if (IS_ENABLED(CONFIG_32BIT))
+> +		sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE,
+> +			  n, lower_32_bits(pa), upper_32_bits(pa), 0, 0, 0);
+> +	else
+> +		sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE,
+> +			  n, pa, 0, 0, 0, 0);
 
-Why not return a real error, "-1" isn't that :)
+This is still a bit hard to follow, and I guarantee it will be a pain to
+maintain over time, trying to keep both calls in sync, right?
+
+Why not fix up sbi_ecall() to get this correct instead?  It should be
+handling phys_addr_t values, not forcing you to do odd bit masking every
+single time you call it, right?  That would make things much easier
+overall, and this patch simpler, as well as the next one.
+
+Oh wait, sbi_ecall() is crazy, and just a pass-through, so that's not
+going to work, you need a wrapper function for this mess to do that bit
+twiddeling for you instead of forcing you to do it each time, I guess
+that's what you are trying to do here, but ick, is it correct?
 
 thanks,
 
