@@ -2,250 +2,213 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFC6CC001E0
-	for <linux-serial@archiver.kernel.org>; Sat, 21 Oct 2023 20:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FF0DC001DF
+	for <linux-serial@archiver.kernel.org>; Sun, 22 Oct 2023 10:24:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229621AbjJUUPK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 21 Oct 2023 16:15:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32900 "EHLO
+        id S231302AbjJVKYe convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 22 Oct 2023 06:24:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbjJUUPJ (ORCPT
+        with ESMTP id S229588AbjJVKYe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 21 Oct 2023 16:15:09 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 416D7112;
-        Sat, 21 Oct 2023 13:15:07 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 191E2C433C8;
-        Sat, 21 Oct 2023 20:15:04 +0000 (UTC)
-Date:   Sat, 21 Oct 2023 16:15:03 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Dan Raymond <raymod2@gmail.com>, linux-kernel@vger.kernel.org,
-        x86@kernel.org, linux-serial <linux-serial@vger.kernel.org>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, hpa@zytor.com, peterz@infradead.org,
-        andriy.shevchenko@linux.intel.com, quic_saipraka@quicinc.com
-Subject: Re: [PATCH v5] arch/x86: port I/O tracing on x86
-Message-ID: <20231021161503.382e3d2e@rorschach.local.home>
-In-Reply-To: <2023102122-diabetes-trend-57d0@gregkh>
-References: <b8eae358-a3b3-fd68-82f1-b2c53534b922@gmail.com>
-        <2023100344-dart-jailbreak-c371@gregkh>
-        <94e2b77c-9cc4-534f-e650-06d7e0697f9f@gmail.com>
-        <20231004195001.76a57417@gandalf.local.home>
-        <80b84be0-a0ad-d1a9-607a-a87c6cf509e0@gmail.com>
-        <cc7fba3b-9da2-b9eb-95c8-7336e1cd4449@gmail.com>
-        <2023102122-diabetes-trend-57d0@gregkh>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Sun, 22 Oct 2023 06:24:34 -0400
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [91.198.224.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 581CFA7;
+        Sun, 22 Oct 2023 03:24:31 -0700 (PDT)
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <prvs=9673dbd9fc=fe@dev.tdt.de>)
+        id 1quVdF-001mWT-Ft; Sun, 22 Oct 2023 12:24:29 +0200
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <fe@dev.tdt.de>)
+        id 1quVdF-00766v-2N; Sun, 22 Oct 2023 12:24:29 +0200
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id B7531240049;
+        Sun, 22 Oct 2023 12:24:28 +0200 (CEST)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 61CA6240040;
+        Sun, 22 Oct 2023 12:24:28 +0200 (CEST)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id C441D213BE;
+        Sun, 22 Oct 2023 12:24:27 +0200 (CEST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Date:   Sun, 22 Oct 2023 12:24:27 +0200
+From:   Florian Eckert <fe@dev.tdt.de>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Eckert.Florian@googlemail.com, jirislaby@kernel.org, pavel@ucw.cz,
+        lee@kernel.org, kabel@kernel.org, u.kleine-koenig@pengutronix.de,
+        ansuelsmth@gmail.com, m.brock@vanmierlo.com,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-leds@vger.kernel.org
+Subject: Re: [PATCH v4 3/3] leds: ledtrig-tty: add new line mode evaluation
+In-Reply-To: <2023102136-reenact-cash-7295@gregkh>
+References: <20231019112809.881730-1-fe@dev.tdt.de>
+ <20231019112809.881730-4-fe@dev.tdt.de>
+ <2023102136-reenact-cash-7295@gregkh>
+Message-ID: <72be6923ff6dd03a5d02d04ee1c5796f@dev.tdt.de>
+X-Sender: fe@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.17
+Content-Transfer-Encoding: 8BIT
+X-purgate: clean
+X-purgate-type: clean
+X-purgate-ID: 151534::1697970269-3EF30C7C-726A4F18/0/0
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 21 Oct 2023 18:00:38 +0200
-Greg KH <gregkh@linuxfoundation.org> wrote:
+On 2023-10-21 18:07, Greg KH wrote:
+>> diff --git a/drivers/leds/trigger/ledtrig-tty.c 
+>> b/drivers/leds/trigger/ledtrig-tty.c
+>> index 8ae0d2d284af..6a96439a7e55 100644
+>> --- a/drivers/leds/trigger/ledtrig-tty.c
+>> +++ b/drivers/leds/trigger/ledtrig-tty.c
+>> @@ -16,6 +16,24 @@ struct ledtrig_tty_data {
+>>  	const char *ttyname;
+>>  	struct tty_struct *tty;
+>>  	int rx, tx;
+>> +	unsigned long mode;
+> 
+> Why is mode "unsigned long" when the tty layer treats it as an int?  
+> And
+> really, this should be set to an explit size, u32 perhaps?  Or am I
+> confused as to exactly what this is?
 
-> On Sat, Oct 07, 2023 at 11:56:53AM -0600, Dan Raymond wrote:
-> > Add support for port I/O tracing on x86.  Memory mapped I/O tracing is
-> > available on x86 via CONFIG_MMIOTRACE but that relies on page faults
-> > so it doesn't work with port I/O.  This feature uses tracepoints in a
-> > similar manner as CONFIG_TRACE_MMIO_ACCESS.
-> > 
-> > Signed-off-by: Dan Raymond <raymod2@gmail.com>
-> > Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>  
+This is about the line state that the LED should show "altogether".
+All states that the LED is to display are stored here.
 
-BTW, It's usually common practice to send a new revision of a patch as
-a new thread and not as a reply to another thread. When I go look for
-patches (besides in patchwork), I only look at top level threads. If I
-see a patch that has comments against it for a new revision, I might
-ignore the rest of the thread to wait for the new revision. If the new
-revision is a reply to the existing thread, it may never be seen. 
+For example:
+Via the sysfs of the LED I can set the flags rx, tx and line_cts to
+a "not" zero value. That means that the led is enable if the CTS of the
+tty ist set, and the LED flashes if rx/tx data are transmitted via
+this tty.
 
-> 
-> This is now outside of my subsystems to review, sorry.  It's going to
-> have to go through the x86 tree, so you are going to have to convince
-> them that this is something that actually matters and is needed by
-> people, as maintaining it over time is going to add to their workload.
-> 
-> Note, you are keeping tracing from working in a few areas that might not
-> be good:
-> 
-> > --- a/arch/x86/boot/Makefile
-> > +++ b/arch/x86/boot/Makefile
-> > @@ -70,6 +70,7 @@ KBUILD_CFLAGS	:= $(REALMODE_CFLAGS) -D_SETUP
-> >  KBUILD_AFLAGS	:= $(KBUILD_CFLAGS) -D__ASSEMBLY__
-> >  KBUILD_CFLAGS	+= $(call cc-option,-fmacro-prefix-map=$(srctree)/=)
-> >  KBUILD_CFLAGS	+= -fno-asynchronous-unwind-tables
-> > +KBUILD_CFLAGS	+= -DDISABLE_TRACEPOINTS
-> >  GCOV_PROFILE := n
-> >  UBSAN_SANITIZE := n
-> >  
-> > diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
-> > index 35ce1a64068b..c368bcc008eb 100644
-> > --- a/arch/x86/boot/compressed/Makefile
-> > +++ b/arch/x86/boot/compressed/Makefile
-> > @@ -51,6 +51,7 @@ KBUILD_CFLAGS += -D__DISABLE_EXPORTS
-> >  # Disable relocation relaxation in case the link is not PIE.
-> >  KBUILD_CFLAGS += $(call as-option,-Wa$(comma)-mrelax-relocations=no)
-> >  KBUILD_CFLAGS += -include $(srctree)/include/linux/hidden.h
-> > +KBUILD_CFLAGS += -DDISABLE_TRACEPOINTS
-> >  
-> >  # sev.c indirectly inludes inat-table.h which is generated during
-> >  # compilation and stored in $(objtree). Add the directory to the includes so  
-> 
-> Now I know why you did that for this patch (i.e. so early boot doesn't
-> get the printk mess), but that kind of defeats the use of tracepoints at
-> all for this part of the kernel, is that ok?  Are any existing
-> tracepoints now removed?
+Therefore, the bits 0 (TRIGGER_TTY_RX), 1 (TRIGGER_TTY_TX) and
+2 (TRIGGER_TTY_CTS) are set in the variable. As defined in the
+enum led_trigger_tty_modes
 
-I believe everything in arch/x86/boot is not part of the kernel proper
-and not having tracepoints there is fine.
+I think I have not chosen the correct name for the variable there.
+Maybe line_state, would be a better choice?
 
+>> +};
+>> +
+>> +enum led_trigger_tty_state {
+>> +	TTY_LED_BLINK,
+>> +	TTY_LED_ENABLE,
+>> +	TTY_LED_DISABLE,
+>> +};
+>> +
+>> +enum led_trigger_tty_modes {
+>> +	TRIGGER_TTY_RX = 0,
+>> +	TRIGGER_TTY_TX,
+>> +	TRIGGER_TTY_CTS,
+>> +	TRIGGER_TTY_DSR,
+>> +	TRIGGER_TTY_CAR,
+>> +	TRIGGER_TTY_RNG,
+>> +	/* Keep last */
+>> +	__TRIGGER_TTY_MAX,
+>>  };
+>> 
 > 
-> Some other random comments:
-> 
-> > --- a/arch/x86/include/asm/cmpxchg_32.h
-> > +++ b/arch/x86/include/asm/cmpxchg_32.h
-> > @@ -37,13 +37,16 @@ static inline void set_64bit(volatile u64 *ptr, u64 value)
-> >  
-> >  #ifdef CONFIG_X86_CMPXCHG64
-> >  #define arch_cmpxchg64(ptr, o, n)					\
-> > -	((__typeof__(*(ptr)))__cmpxchg64((ptr), (unsigned long long)(o), \
-> > +	((__typeof__(*(ptr)))__cmpxchg64((unsigned long long *)(ptr),	\
-> > +					 (unsigned long long)(o),	\
-> >  					 (unsigned long long)(n)))
-> > -#define arch_cmpxchg64_local(ptr, o, n)					\
-> > -	((__typeof__(*(ptr)))__cmpxchg64_local((ptr), (unsigned long long)(o), \
-> > +#define arch_cmpxchg64_local(ptr, o, n)						\
-> > +	((__typeof__(*(ptr)))__cmpxchg64_local((unsigned long long *)(ptr),	\
-> > +					       (unsigned long long)(o),		\
-> >  					       (unsigned long long)(n)))
-> > -#define arch_try_cmpxchg64(ptr, po, n)					\
-> > -	__try_cmpxchg64((ptr), (unsigned long long *)(po), \
-> > +#define arch_try_cmpxchg64(ptr, po, n)			\
-> > +	__try_cmpxchg64((unsigned long long *)(ptr),	\
-> > +			(unsigned long long *)(po),	\
-> >  			(unsigned long long)(n))
-> >  #endif
-> >    
-> 
-> Why are these needed to be changed at all?  What code changes with it,
-> and it's not mentioned in the changelog, so why is it required?
+> Oh wait, is "mode" this?  If so, why not define it as an enum?  Or if
+> not, I'm totally confused as to what is going on here, sorry.
 
-Agreed, if this has issues, it probably should be a separate patch.
+See explanation above. I can not set this to an enum because I could
+set more then one Flag via the sysfs.
 
 > 
-> > diff --git a/arch/x86/include/asm/shared/io.h b/arch/x86/include/asm/shared/io.h
-> > index c0ef921c0586..82664956ce41 100644
-> > --- a/arch/x86/include/asm/shared/io.h
-> > +++ b/arch/x86/include/asm/shared/io.h
-> > @@ -2,13 +2,20 @@
-> >  #ifndef _ASM_X86_SHARED_IO_H
-> >  #define _ASM_X86_SHARED_IO_H
-> >  
-> > +#include <linux/tracepoint-defs.h>
-> > +#include <linux/trace_portio.h>
-> >  #include <linux/types.h>
-> >  
-> > +DECLARE_TRACEPOINT(portio_write);
-> > +DECLARE_TRACEPOINT(portio_read);
-> > +
-> >  #define BUILDIO(bwl, bw, type)						\
-> >  static inline void __out##bwl(type value, u16 port)			\
-> >  {									\
-> >  	asm volatile("out" #bwl " %" #bw "0, %w1"			\
-> >  		     : : "a"(value), "Nd"(port));			\
-> > +	if (tracepoint_enabled(portio_write))				\
-> > +		do_trace_portio_write(value, port, #bwl[0]);		\  
+>>  static void ledtrig_tty_restart(struct ledtrig_tty_data 
+>> *trigger_data)
+>> @@ -78,13 +96,106 @@ static ssize_t ttyname_store(struct device *dev,
+>>  }
+>>  static DEVICE_ATTR_RW(ttyname);
+>> 
+>> +static ssize_t ledtrig_tty_attr_show(struct device *dev, char *buf,
+>> +	enum led_trigger_tty_modes attr)
+>> +{
+>> +	struct ledtrig_tty_data *trigger_data = 
+>> led_trigger_get_drvdata(dev);
+>> +	int bit;
+>> +
+>> +	switch (attr) {
+>> +	case TRIGGER_TTY_RX:
+>> +	case TRIGGER_TTY_TX:
+>> +	case TRIGGER_TTY_CTS:
+>> +	case TRIGGER_TTY_DSR:
+>> +	case TRIGGER_TTY_CAR:
+>> +	case TRIGGER_TTY_RNG:
+>> +		bit = attr;
+>> +		break;
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	return sprintf(buf, "%u\n", test_bit(bit, &trigger_data->mode));
 > 
-> Your level of indirection here seems deep, why doesn't
-> do_trace_portio_write() belong in a .h file here and do the
-> tracepoint_enabled() check?
-> 
-> Is this a by-product of the tracing macros that require this deeper
-> callchain to happen?
+> sysfs_emit() for all new sysfs attributes please.
 
-Yeah. tracepoints cannot be in header files as the macros cause a lot
-of side effects. If you need to have them in a header file, then you
-need to do this little trick above. That is, use tracepoint_enabled(tp)
-and then call a function that will call the tracepoint in a C file.
+Correct. Thanks for the hint will use sysf_emit() function in the next
+patchset round.
 
 > 
-> >  }									\
-> >  									\
-> >  static inline type __in##bwl(u16 port)					\
-> > @@ -16,6 +23,8 @@ static inline type __in##bwl(u16 port)					\
-> >  	type value;							\
-> >  	asm volatile("in" #bwl " %w1, %" #bw "0"			\
-> >  		     : "=a"(value) : "Nd"(port));			\
-> > +	if (tracepoint_enabled(portio_read))				\
-> > +		do_trace_portio_read(value, port, #bwl[0]);		\
-> >  	return value;							\
-> >  }
-> >  
-> > diff --git a/arch/x86/lib/Makefile b/arch/x86/lib/Makefile
-> > index f76747862bd2..254f223c025d 100644
-> > --- a/arch/x86/lib/Makefile
-> > +++ b/arch/x86/lib/Makefile
-> > @@ -40,6 +40,7 @@ $(obj)/inat.o: $(obj)/inat-tables.c
-> >  clean-files := inat-tables.c
-> >  
-> >  obj-$(CONFIG_SMP) += msr-smp.o cache-smp.o
-> > +obj-$(CONFIG_TRACEPOINTS) += trace_portio.o  
+>> +}
+>> +
+>> +static ssize_t ledtrig_tty_attr_store(struct device *dev, const char 
+>> *buf,
+>> +	size_t size, enum led_trigger_tty_modes attr)
+>> +{
+>> +	struct ledtrig_tty_data *trigger_data = 
+>> led_trigger_get_drvdata(dev);
+>> +	unsigned long state;
+>> +	int ret;
+>> +	int bit;
+>> +
+>> +	ret = kstrtoul(buf, 0, &state);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	switch (attr) {
+>> +	case TRIGGER_TTY_RX:
+>> +	case TRIGGER_TTY_TX:
+>> +	case TRIGGER_TTY_CTS:
+>> +	case TRIGGER_TTY_DSR:
+>> +	case TRIGGER_TTY_CAR:
+>> +	case TRIGGER_TTY_RNG:
+>> +		bit = attr;
+>> +		break;
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	if (state)
+>> +		set_bit(bit, &trigger_data->mode);
+>> +	else
+>> +		clear_bit(bit, &trigger_data->mode);
 > 
-> So you are always enabling these if any CONFIG_TRACEPOINTS is enabled?
-> That seems brave.
-> 
-> > --- a/arch/x86/realmode/rm/Makefile
-> > +++ b/arch/x86/realmode/rm/Makefile
-> > @@ -75,5 +75,6 @@ KBUILD_CFLAGS	:= $(REALMODE_CFLAGS) -D_SETUP -D_WAKEUP \
-> >  		   -I$(srctree)/arch/x86/boot
-> >  KBUILD_AFLAGS	:= $(KBUILD_CFLAGS) -D__ASSEMBLY__
-> >  KBUILD_CFLAGS	+= -fno-asynchronous-unwind-tables
-> > +KBUILD_CFLAGS	+= -DDISABLE_TRACEPOINTS  
-> 
-> Again, you prevent any tracepoints from this code chunk, is that going
-> to be ok going forward?
+> I think your test of "state" here is wrong, if you write in "40000" you
+> are treating it as "1", which I don't think you want, right?
 
-I don't know this code very well, but "realmode" sounds like code
-that's not going to be "normal" ;-)
+If I have understood your question correctly, then I would say that your
+assumption is not correct. I just want to check here whether it is a 
+number
+greater than zero or not. If the number is greater than zero then the 
+bit
+should be set in the 'mode' variable of the struct and if it is zero 
+then
+it should be cleared.
 
-> 
-> >  GCOV_PROFILE := n
-> >  UBSAN_SANITIZE := n
-> > diff --git a/include/linux/trace_portio.h b/include/linux/trace_portio.h
-> > new file mode 100644
-> > index 000000000000..2324d62e6c9e
-> > --- /dev/null
-> > +++ b/include/linux/trace_portio.h
-> > @@ -0,0 +1,6 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +
-> > +#include <linux/types.h>
-> > +
-> > +extern void do_trace_portio_read(u32 value, u16 port, char width);
-> > +extern void do_trace_portio_write(u32 value, u16 port, char width);  
-> 
-> Nit, "extern" isn't needed in .h files anymore.  Not a big deal, just
-> for other work you do going forward.
-> 
-> > diff --git a/include/linux/tracepoint-defs.h b/include/linux/tracepoint-defs.h
-> > index e7c2276be33e..bfe70e17b2aa 100644
-> > --- a/include/linux/tracepoint-defs.h
-> > +++ b/include/linux/tracepoint-defs.h
-> > @@ -80,7 +80,7 @@ struct bpf_raw_event_map {
-> >  #define DECLARE_TRACEPOINT(tp) \
-> >  	extern struct tracepoint __tracepoint_##tp
-> >  
-> > -#ifdef CONFIG_TRACEPOINTS
-> > +#if defined(CONFIG_TRACEPOINTS) && !defined(DISABLE_TRACEPOINTS)  
-> 
-> Why this global change?
+The LED could indicate more then one state there. As described above.
+This was requested by Uwe Kleine-König in the old v7 patch series [1].
 
-Yeah, DISABLE_TRACEPOINTS does not currently exist. If this is to be a
-new way to disable TRACEPOINTS it needs a separate patch and be able to
-disable tracepoints everywhere (maybe include/trace/*.h files also need
-to be modified?), and also be documented somewhere in Documentation/trace.
+Thanks for your review!
 
--- Steve
+---
+Florian
+
+Links:
+[1] 
+https://lore.kernel.org/linux-leds/20230306093524.amm7o4ppa7gon4ew@pengutronix.de/
