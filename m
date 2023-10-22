@@ -2,44 +2,31 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D9CC07545
-	for <linux-serial@archiver.kernel.org>; Sun, 22 Oct 2023 10:25:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C1C6C0032E
+	for <linux-serial@archiver.kernel.org>; Sun, 22 Oct 2023 11:20:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231799AbjJVKZE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 22 Oct 2023 06:25:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44000 "EHLO
+        id S229588AbjJVLUD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 22 Oct 2023 07:20:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231806AbjJVKZC (ORCPT
+        with ESMTP id S231537AbjJVLUC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 22 Oct 2023 06:25:02 -0400
-Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A624D60;
-        Sun, 22 Oct 2023 03:24:58 -0700 (PDT)
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <prvs=9673dbd9fc=fe@dev.tdt.de>)
-        id 1quVdg-005dUP-O3; Sun, 22 Oct 2023 12:24:56 +0200
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <fe@dev.tdt.de>)
-        id 1quVdg-004cAb-Ap; Sun, 22 Oct 2023 12:24:56 +0200
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 113B3240049;
-        Sun, 22 Oct 2023 12:24:56 +0200 (CEST)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id C0246240040;
-        Sun, 22 Oct 2023 12:24:55 +0200 (CEST)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id 7873A213BE;
-        Sun, 22 Oct 2023 12:24:55 +0200 (CEST)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Sun, 22 Oct 2023 12:24:55 +0200
-From:   Florian Eckert <fe@dev.tdt.de>
-To:     Greg KH <gregkh@linuxfoundation.org>
+        Sun, 22 Oct 2023 07:20:02 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30864E8;
+        Sun, 22 Oct 2023 04:20:01 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 725A7C433C8;
+        Sun, 22 Oct 2023 11:20:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1697973600;
+        bh=Mg6hajx48C9/LEuN7kgioSJmku4tU+Nwv0q9EXNVnhQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DJokRb4zg1kGdS4g4ZwE2OoW/4JO3yuM+DlXJJ7fDJro0DW8x4dmNr2SxtHHUbavX
+         vOVEEIwOp/lwnw1nt5jqyfQCRqvCXdcMSQXv+A6BJH5i1OyOl28Erxv4w8MF8SdXyi
+         jexDbOd8oBij9LHwxLm2EmyAaOTmustSb2dAPZpQ=
+Date:   Sun, 22 Oct 2023 13:19:58 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Florian Eckert <fe@dev.tdt.de>
 Cc:     Eckert.Florian@googlemail.com, jirislaby@kernel.org, pavel@ucw.cz,
         lee@kernel.org, kabel@kernel.org, u.kleine-koenig@pengutronix.de,
         ansuelsmth@gmail.com, m.brock@vanmierlo.com,
@@ -47,56 +34,53 @@ Cc:     Eckert.Florian@googlemail.com, jirislaby@kernel.org, pavel@ucw.cz,
         linux-leds@vger.kernel.org
 Subject: Re: [PATCH v4 1/3] tty: whitespaces in descriptions corrected by
  replacing tabs with spaces
-In-Reply-To: <2023102110-starlight-wispy-1f28@gregkh>
+Message-ID: <2023102251-playoff-utensil-0457@gregkh>
 References: <20231019112809.881730-1-fe@dev.tdt.de>
  <20231019112809.881730-2-fe@dev.tdt.de>
  <2023102110-starlight-wispy-1f28@gregkh>
-Message-ID: <dce966de5bec159dae67d958653aaa42@dev.tdt.de>
-X-Sender: fe@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.17
-X-purgate: clean
-X-purgate-type: clean
-X-purgate-ID: 151534::1697970296-6D0F3018-70AAFCAB/0/0
+ <dce966de5bec159dae67d958653aaa42@dev.tdt.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dce966de5bec159dae67d958653aaa42@dev.tdt.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2023-10-21 18:28, Greg KH wrote:
-> On Thu, Oct 19, 2023 at 01:28:07PM +0200, Florian Eckert wrote:
->> Tabs were used in the function description, to make this look more
->> uniform, the tabs were replaced by spaces where necessary.
->> 
->> While we're at it, I also replaced the 'ndashes' with simple dashes, 
->> since
->> only those are supported by sphinx.
->> 
->> Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
->> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
->> ---
->>  drivers/tty/tty_io.c | 102 
->> +++++++++++++++++++++----------------------
->>  1 file changed, 51 insertions(+), 51 deletions(-)
+On Sun, Oct 22, 2023 at 12:24:55PM +0200, Florian Eckert wrote:
+> On 2023-10-21 18:28, Greg KH wrote:
+> > On Thu, Oct 19, 2023 at 01:28:07PM +0200, Florian Eckert wrote:
+> > > Tabs were used in the function description, to make this look more
+> > > uniform, the tabs were replaced by spaces where necessary.
+> > > 
+> > > While we're at it, I also replaced the 'ndashes' with simple dashes,
+> > > since
+> > > only those are supported by sphinx.
+> > > 
+> > > Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+> > > Signed-off-by: Florian Eckert <fe@dev.tdt.de>
+> > > ---
+> > >  drivers/tty/tty_io.c | 102
+> > > +++++++++++++++++++++----------------------
+> > >  1 file changed, 51 insertions(+), 51 deletions(-)
+> > 
+> > This didn't apply cleanly as portions of this patch were already in my
+> > tree, what did tree did you make it against?
 > 
-> This didn't apply cleanly as portions of this patch were already in my
-> tree, what did tree did you make it against?
+> I have already seen that I should add a base commit next time.
+> So I made it against the master from last week.
+> 
+> However, I was not sure which tree to use as I am changing
+> something in the tty and led subsystem-
+> 
+> > Anyway, I've fixed it up and taken it now.
+> 
+> Thank you for adopting my change and correcting my commit so that
+> it can be applied cleanly.
+> 
+> I will not add this patch in the next series, as it is already in the
+> tty-testing branch [1] from you?
 
-I have already seen that I should add a base commit next time.
-So I made it against the master from last week.
+That is correct, thanks!
 
-However, I was not sure which tree to use as I am changing
-something in the tty and led subsystem-
-
-> Anyway, I've fixed it up and taken it now.
-
-Thank you for adopting my change and correcting my commit so that
-it can be applied cleanly.
-
-I will not add this patch in the next series, as it is already in the
-tty-testing branch [1] from you?
-
----
-Florian
-
-Links:
-[1] 
-https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/commit/?h=tty-testing&id=838eb763c3e939a8de8d4c55a17ddcce737685c1
+greg k-h
