@@ -2,229 +2,146 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B431C25B45
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Oct 2023 20:28:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD39C25B45
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Oct 2023 21:07:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231131AbjJWU2L (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 Oct 2023 16:28:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45774 "EHLO
+        id S230428AbjJWVHO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 23 Oct 2023 17:07:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231244AbjJWU2K (ORCPT
+        with ESMTP id S230202AbjJWVHN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 Oct 2023 16:28:10 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAAD7D79;
-        Mon, 23 Oct 2023 13:28:07 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id ca18e2360f4ac-7a66aa8ebb7so143812139f.3;
-        Mon, 23 Oct 2023 13:28:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1698092887; x=1698697687; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=BtorBiTAqkC2vFXm3dsPMBRxE7TMLbnZ/0poxgEUxAI=;
-        b=GEmp7xkLPNA+eygYC0nKsdYQL5UM66bBTmrUnVNcdoVLK/wyuvOR2FE7VpkRmv3AMA
-         /w+if9gZa6gjC3zjsQeIWTzk2+mgDglbLuw4GR9kXOo6gMPtPPj4JvjFfZwHCfIQ3Hn0
-         5/sP6y+s5JYMC0GEBAHmnUwJhBzfWWLQ8Te4YATp1Zdt2g1WddV68rtvz4qKyoKp2j+8
-         ybx+sSVQcCctnj1BuLAis6/PCZlMThkE05dZvQKl8cakFs4s5dx6gxtGHhKyBlvxGpl3
-         wa2Fu/YJF3rJnE1WTyPU/Yq/r4XlKvCdczWyHepzDYlA1royneA9+fRoPdgCaahHZtiu
-         IoxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698092887; x=1698697687;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=BtorBiTAqkC2vFXm3dsPMBRxE7TMLbnZ/0poxgEUxAI=;
-        b=WY5BZ31j6fRdsP7qjcFWvgMDQnObxqwX0QERSsVFyncq5xaB8vCxnbQon4GoCYR2CA
-         Qr2kKNA+QU/F7cmmSwCuwmSNcFfupIuAfW2y2wjndm2DM0gGprmdRvyll5KESJ3F6Syq
-         8H0puvVqIdnGRpIBg0hVO7QjH5cL5Qh/gdOsikD28aor2lnHuaUKtO3X8aJ26KQLv418
-         hE5i7nImdcw6uJM88mtM0B31nAHXkfdsspP67eeexJLfz5uMqs7pPwbrZw/LZhu3yUnA
-         cNRNXWrbS64rIFPBN4kOgxxwEwnxaXSuTq8eOwJJ8Okhqr1sIxDTQ+B7x4MDCqPUM/L7
-         uFTw==
-X-Gm-Message-State: AOJu0YwTPuXBzEfVHBU617dVII54bpAVq/eNSEMmQc+S8YHHb8s0UJh1
-        hOGlkgBXyBg5XlJLbJFNSA==
-X-Google-Smtp-Source: AGHT+IEj5EEnfTcf/gw6571wylJf8QGV8TB8FvMcTYoU2jxYL1CZtc99KrnZruv8iwZPZ1C4SMQsjQ==
-X-Received: by 2002:a92:c087:0:b0:357:46e3:58be with SMTP id h7-20020a92c087000000b0035746e358bemr10523881ile.1.1698092886678;
-        Mon, 23 Oct 2023 13:28:06 -0700 (PDT)
-Received: from [192.168.1.3] ([161.97.241.227])
-        by smtp.googlemail.com with ESMTPSA id o7-20020a92c687000000b0034ff58af12dsm2668398ilg.77.2023.10.23.13.28.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Oct 2023 13:28:06 -0700 (PDT)
-Message-ID: <62349c78-14b8-4d5c-87ea-00dbd662fe26@gmail.com>
-Date:   Mon, 23 Oct 2023 14:28:04 -0600
+        Mon, 23 Oct 2023 17:07:13 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2133.outbound.protection.outlook.com [40.107.93.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FBD5BE;
+        Mon, 23 Oct 2023 14:07:09 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nHcwXhfvjs5CN0p4jifRlnyPs6+2IXptp5ElDMFwe//U8KmHk8VttrJxFUrn3Hj6ARsFmhkh2w6srDcqkhw3Go85BLyEcwu8xFXDYDRfv6UKmyRLbZeWm/cguN+Cg4dx2g1i3J/ZkpIlDuZoX1EY8yFZh/Cz3H5bipozGgChUWvrR04xAJbZ2AO/gS8BiqETuEY0aliMOL6cb0B3LVTsITierdUDblMzNnW7AjtD009eMgUriFBjjGJPnisOPf8NKyCbOfZhyBwlcQRuZFCPdXYv9Gfbz87dKZ7SW9sldauOBucXAHwZ9hCjM8V/G6q/VGiXTc1W/SKx20LszVeMlQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=os7ErRXujv+r5OobqNcDiUKc6N3TQnz7sF1gybOkZBg=;
+ b=gJfcMBRnPCqKyPIFb6DNd6v3FBldb/1JsAfv3QF+ZeRmbYF6qqEd3j8Bugp4C2bQljlsWqnxxkDunCl0CptIXy0pEGt8Ow+mNNXD4uoyxCQ+bWd2XJPU7H4XDZDz+Gvbl/MqTERYgyywNFy7ahvd707eBF+TKKeLB2VZc8W4aRneljJ+BSwcXblqWAzotSdqNl6pIv9IHVxd9rF8l1LVW3/4EOyCisp4dWuUx/rkHV/jvMW2AL3FshhJbvuj31iv4nn1M/wJ3dKFPoSOlgbVL2Ogq7Ae7UQbv0Y5L4YKsEg/Hlsb9IaQzncy2rv55Rke9fLmuYdHiq4uSVgzVfjgUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=ni.com; dmarc=pass action=none header.from=ni.com; dkim=pass
+ header.d=ni.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ni.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=os7ErRXujv+r5OobqNcDiUKc6N3TQnz7sF1gybOkZBg=;
+ b=QaX0yfVog3KrMR1zZajTeJ39t7t8AYNdipmpRMIE65EOKi6arax4P1HprUwauy+ueT0zRZ7yTU0+qAsjBtQ0anRhQmiLgVtPSxbeEeb8nCyDsxmAy+Nxa9NzlfC24W0CqrNFOP4jkKLspMP1SQk8qtgcd68Fx8m3HfCFC0nfo2A=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=ni.com;
+Received: from SN6PR04MB4973.namprd04.prod.outlook.com (2603:10b6:805:91::30)
+ by DM8PR04MB8134.namprd04.prod.outlook.com (2603:10b6:5:317::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.33; Mon, 23 Oct
+ 2023 21:07:06 +0000
+Received: from SN6PR04MB4973.namprd04.prod.outlook.com
+ ([fe80::9481:d7e:63a6:1bef]) by SN6PR04MB4973.namprd04.prod.outlook.com
+ ([fe80::9481:d7e:63a6:1bef%4]) with mapi id 15.20.6907.030; Mon, 23 Oct 2023
+ 21:07:05 +0000
+From:   Brenda Streiff <brenda.streiff@ni.com>
+Cc:     Brenda Streiff <brenda.streiff@ni.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH v6 tty-next 0/2] serial: Add driver for National Instruments UARTs
+Date:   Mon, 23 Oct 2023 16:04:55 -0500
+Message-Id: <20231023210458.447779-1-brenda.streiff@ni.com>
+X-Mailer: git-send-email 2.30.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SN1PR12CA0112.namprd12.prod.outlook.com
+ (2603:10b6:802:21::47) To SN6PR04MB4973.namprd04.prod.outlook.com
+ (2603:10b6:805:91::30)
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5] arch/x86: port I/O tracing on x86
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, peterz@infradead.org,
-        andriy.shevchenko@linux.intel.com, quic_saipraka@quicinc.com,
-        Steven Rostedt <rostedt@goodmis.org>
-References: <b8eae358-a3b3-fd68-82f1-b2c53534b922@gmail.com>
- <2023100344-dart-jailbreak-c371@gregkh>
- <94e2b77c-9cc4-534f-e650-06d7e0697f9f@gmail.com>
- <20231004195001.76a57417@gandalf.local.home>
- <80b84be0-a0ad-d1a9-607a-a87c6cf509e0@gmail.com>
- <cc7fba3b-9da2-b9eb-95c8-7336e1cd4449@gmail.com>
- <2023102122-diabetes-trend-57d0@gregkh>
-Content-Language: en-US
-From:   Dan Raymond <raymod2@gmail.com>
-In-Reply-To: <2023102122-diabetes-trend-57d0@gregkh>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN6PR04MB4973:EE_|DM8PR04MB8134:EE_
+X-MS-Office365-Filtering-Correlation-Id: 824b058b-e58f-4d0c-3362-08dbd40c0275
+x-ni-monitor: EOP Exclude NI Domains ETR True
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ClD5PXfP7QmRzUMRJGzTv89s5B5uXLPvz6w9irJK3iR/ljhJ/bL6Z19e93DSdzmnj6B4kLFSrWvCfCUestfqRQrBKI4tRE+J1xvSn3xN0Ia1Or8DtbXfZOzRfljbY1DRReT1YSSwTQ2QSNPdN8I5b/LP3EwuLjXvcm7LKdiL4uEhPARHuG/KrDzHabKLYCjYgHFIO+NuCogjXDOX6Z1oE9ee/2u6FM35aH38A1aozNLfJqNiOVX0mOG9VKj/rxAMGTMPvILpgIgyQvXI59zBGziAOtzTBgcqrK/A8W/mkKHUJrD0WTi2QffUYlYWBQsgQ2U473wbTesBg/liH7sidsRHPNO7fRAYKCWI5V6GnuVCVNkp6Iqrkzg8GEOEC/VoSnwp1rF51xO9DLPTHG6dUMdw/owLsG2FQ18ZNtYG8dUv1lMM61hrMh13nb7u+mOC6tdItLaeTpF8xJaotfFmNIDkbuctf3zGZoKvhfzguIInGvG22y9Rf2exKZSuKl1ARKbSvkOHmBCK/byYjqnixkQTGmqnriexfiM76Fl3B+sP1v9KnQB3I6UT9+xMCm24klv9SIdSgGn1bPtlheF89w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR04MB4973.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(366004)(136003)(39860400002)(396003)(346002)(230922051799003)(1800799009)(186009)(64100799003)(451199024)(109986022)(2616005)(6506007)(6512007)(38100700002)(36756003)(86362001)(1076003)(26005)(44832011)(2906002)(6666004)(966005)(6486002)(478600001)(8936002)(41300700001)(83380400001)(4326008)(8676002)(5660300002)(54906003)(66946007)(66476007)(316002)(66556008)(266003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?oCicetd+u3cmW/qPT67niqKqZdaOtyq06orc0oKnHZzeQF8AfsNZ6igXoNGQ?=
+ =?us-ascii?Q?i/oUuvqMCa/uUIYJr2BrRNiKzDkdVKE5/65gNRxogSvr5Qh6KHwhR+td36ys?=
+ =?us-ascii?Q?NlwBrvOCFDQA5zMCgw6iQEIWOH6bE4YD27kpDe/rmKwnKQfM/kwERadryUa4?=
+ =?us-ascii?Q?hgGipgGnCi5nNO+4N92kD/9WPoxX428COyeJTs1XrcQD/XuFgIFTiNUCjSUg?=
+ =?us-ascii?Q?LqgdNzDLAOA6Jz8Omr24KE4roJM3VX8jn7uc+d0kphcn2G7yuL7EZiwFsKEh?=
+ =?us-ascii?Q?C5GZOHl7tcVQEPz0rUkzmb9xDrvh2UOnhiADioQRghoSscqip3SueE1s+LQe?=
+ =?us-ascii?Q?/2THkv7GQ+USOlveeCWl4UG1fVyACCxJZs4JwwecFn+CGpPSFQNJCI7Whavh?=
+ =?us-ascii?Q?FGuuCTd0nvluyIBndo8yqWJNMM2I4dr1BbWuX3o4JQZQhGPzt14/Pszj7K3o?=
+ =?us-ascii?Q?nIecrweLlSdbmYixbI0VL4bZ8zTYESZY3Bmser5UJVspdSz1nBFvB9CibVF1?=
+ =?us-ascii?Q?bRDqA1NXO+y0VY29caV1M4saI+U7/q9iYvRfEQHWg4F7CJvHnavjrao7r2pw?=
+ =?us-ascii?Q?yP/mJiwnM/yyoK3U3Cm+kBktqys8rIE1SPl2cCnwzqMyqhtnPw/J1pmxhp0s?=
+ =?us-ascii?Q?dsH+e9e/tptsu8u6NIHrlAJ4myjx3f4h2+dRs+Dh5tcrmeHO8HOLovcGatx2?=
+ =?us-ascii?Q?CH8CiHIx9BRXUPVX1ClZdCpZFC1sR55mcHOVeF88Ze6pHudNEARKDl1l3slU?=
+ =?us-ascii?Q?1wiPrR6bZXLFSewKLUEoe3eQwTjsZecYY+/PGsw4LSP3SPijL/pWtena7L2h?=
+ =?us-ascii?Q?MvjPoGQdrsZL349Qyh+sME8y9lUkgWcwjGVApdEj1g2YNihMvQwRyLlTUD42?=
+ =?us-ascii?Q?yGhh5Prmo49/toRxJiwzmqsygBjDP2yEPQSmfaDENFNDkHfrUVFP9S/b1whF?=
+ =?us-ascii?Q?ZulWIJtRdtYGl1UEmNdxycHVw1cmI/Rkzezhlc6arodY/vwqxlNw4YhYu5OX?=
+ =?us-ascii?Q?pCQF+zxCbZFKdsGi6nVStHNpx8NBz8Y57r75gI3npfr1982OcPOXviA12IY4?=
+ =?us-ascii?Q?fDD/MA+wEJlwDzOTE+zbh8im48ij4kSlWX6sz0ZAL1SwfdOB/Rq0KviJQe/+?=
+ =?us-ascii?Q?UUeUzLFgBMnwM/yBSB7uSNO/wyG/IFHWkycX3A+IZALM4MB/BXztS1V0fh2r?=
+ =?us-ascii?Q?ZCzRyj6w186qlnfoXIx9L4PaCh0iib741ddPTwryJVrpoS7/6zez5lVak2oD?=
+ =?us-ascii?Q?ZBnfwabPdPuQrVPqZxMsXy2ogNVfuP81gMkWf90reqjyXekWauM2fhVi2e0l?=
+ =?us-ascii?Q?0tp6Q13OnFDvzq5yILz5dw9+nojRHxQebGNSHfO7XbLFnRutVsVj+eZvNOxF?=
+ =?us-ascii?Q?HFzj9PRdD+OzgScRU17Bi7qjrRmkNeBVET0qUn/tNmixGPKROeWOpTR60FrU?=
+ =?us-ascii?Q?HWRYkXSfs2LnLSYhnxzPmd9kEDrPtF+SWLkdgjKO50UjDlHpcRnelMgessCX?=
+ =?us-ascii?Q?tb+m6FL/QEzmfFqrClFYlWU45d68sbgN9SfocmljQwxza4onyIeZL8t1ZT8F?=
+ =?us-ascii?Q?whOyH5juQkEfAJXVUXjRs+0e4gnyJgsQSWROPMFv?=
+X-OriginatorOrg: ni.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 824b058b-e58f-4d0c-3362-08dbd40c0275
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR04MB4973.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2023 21:07:05.3391
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 87ba1f9a-44cd-43a6-b008-6fdb45a5204e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8T0q8tpx6K+KLTFaJV04FlaLvSeRDcUoLuzPLFec4fPpP0fj5+2BtsQYVzjRPm0X6Bt2lHVW5dDi/Mzfq/h4wQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR04MB8134
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 10/21/2023 10:00 AM, Greg KH wrote:> This is now outside of my subsystems to review, sorry.  It's going to> have to go through the x86 tree, so you are going to have to convince
-> them that this is something that actually matters and is needed by
-> people, as maintaining it over time is going to add to their workload.
+This patch series adds a driver for the 16550-like UARTs on National
+Instruments (NI) embedded controller hardware.
 
-Tracing is not needed, per se, but it can be incredibly useful for
-debugging certain types of problems.  I think the utility of tracing is
-well accepted by the community.  
+These UARTs have an interface that is compatible with the TL16C550C (for
+which we build on top of 8250_core) but also has extra registers for
+the embedded RS-232/RS-485 transceiver control circuitry.
+---
+Changes from v5 -> v6:
+- fix unused-const-variable warnings with COMPILE_TEST=y and W=1
+  https://lore.kernel.org/oe-kbuild-all/202310170418.GCOnw1n1-lkp@intel.com/
 
-Quoting Peter Zijlstra:
+v5: https://lore.kernel.org/linux-serial/20231012205112.112261-1-brenda.streiff@ni.com/
+v4: https://lore.kernel.org/linux-serial/20230505213850.829639-1-brenda.streiff@ni.com/
+v3: https://lore.kernel.org/linux-serial/20230418223800.284601-1-brenda.streiff@ni.com/
+v2: https://lore.kernel.org/linux-serial/20230410211152.94332-1-brenda.streiff@ni.com/
+v1: https://lore.kernel.org/linux-serial/20230329154235.615349-1-brenda.streiff@ni.com/
 
-   "...tracepoints in general are useful"
+Brenda Streiff (2):
+  dt-bindings: serial: ni,ni16650: add bindings
+  serial: 8250: add driver for NI UARTs
 
-Quoting Andy Shevchenko:
+ .../bindings/serial/ni,ni16550.yaml           |  51 ++
+ MAINTAINERS                                   |   7 +
+ drivers/tty/serial/8250/8250_ni.c             | 478 ++++++++++++++++++
+ drivers/tty/serial/8250/Kconfig               |  13 +
+ drivers/tty/serial/8250/Makefile              |   1 +
+ 5 files changed, 550 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/ni,ni16550.yaml
+ create mode 100644 drivers/tty/serial/8250/8250_ni.c
 
-   "...you may trace any IO on some architectures (at least x86), it's
-   called mmiotracer (I have used it like 5 years ago or so to trace UART)"
-
-Similar trace functionality is already present in the kernel today
-(CONFIG_MMIOTRACE and CONFIG_TRACE_MMIO_ACCESS) and it does anecdotally
-get used.  However, as mentioned in the patch description, those tracing
-features don't work with port-based I/O hence the need for this patch.
-I don't see how this is going to create a maintenance burden.  It adds
-two lines of code to a macro that rarely if ever changes.
-
->> --- a/arch/x86/boot/Makefile
->> +++ b/arch/x86/boot/Makefile
->
-> Note, you are keeping tracing from working in a few areas that might not
-> be good...
->> Now I know why you did that for this patch (i.e. so early boot doesn't
-> get the printk mess), but that kind of defeats the use of tracepoints at
-> all for this part of the kernel, is that ok?  Are any existing
-> tracepoints now removed?
-
-Some of the kernel sources (arch/x86/boot/* and arch/x86/realmode/*) are
-not part of the kernel proper and they don't have the infrastructure to
-support tracepoints.  When these sources include header files that
-reference tracepoints it causes compiler errors.  I previously worked
-around this issue with include guard checks but you objected to that:
-
-   "I see what you are doing here in trying to see if a .h file has been
-   included already, but now you are making an assumption on both the .h
-   file ordering, and the #ifdef guard for those .h files, which are
-   something that we almost never remember or even consider when dealing
-   with .h files files."
-
-Therefore I implemented a more reliable mechanism to disable tracepoints.
-I explained this earlier in the thread:
-
-   "What we need is to disable tracepoints altogether in arch/x86/boot/*
-   so I added -DDISABLE_TRACEPOINTS to the relevant Makefiles and I added
-   a check for that symbol in tracepoint-defs.h.  I will submit a v4
-   version of my patch with these changes shortly.
-
-   This resolves the problem with <asm/msr.h> as well.  After applying
-   the v4 patch I was able to call rdmsr()/wrmsr() from
-   arch/x86/boot/misc.c.  Theoretically we can now remove
-   arch/x86/boot/msr.h but I had trouble with that due to compiler
-   warnings and errors.  The include files in arch/x86/boot are a mess.
-   Maybe this can be cleaned up in another patch."
-
->> --- a/arch/x86/include/asm/cmpxchg_32.h
->> +++ b/arch/x86/include/asm/cmpxchg_32.h
-> 
-> Why are these needed to be changed at all?  What code changes with it,
-> and it's not mentioned in the changelog, so why is it required?
-
-I did mention these changes in the changelog:
-
-   "fix compiler warnings due to signed/unsigned mismatch in arch_cmpxchg64()"
-
-These warnings appear to be a latent defect which was triggered by the
-include file changes in this patch.  I assume that introducing compiler
-warnings (even indirectly) is not allowed so I fixed them on this patch.
-
->> +	if (tracepoint_enabled(portio_write))				\
->> +		do_trace_portio_write(value, port, #bwl[0]);		\
-> 
-> Your level of indirection here seems deep, why doesn't
-> do_trace_portio_write() belong in a .h file here and do the
-> tracepoint_enabled() check?
-> 
-> Is this a by-product of the tracing macros that require this deeper
-> callchain to happen?
-
-Please reference Documentation/trace/tracepoints.rst:
-
-   "If you require calling a tracepoint from a header file, it is not
-   recommended to call one directly or to use the
-   trace_<tracepoint>_enabled() function call, as tracepoints in header
-   files can have side effects..."
-
-The tracepoint_enabled() macro is very efficient and causes only one
-instruction of overhead (a nop) when tracing is disabled.  I verified
-this by disassembling vmlinux.
-
->> +obj-$(CONFIG_TRACEPOINTS) += trace_portio.o
-> 
-> So you are always enabling these if any CONFIG_TRACEPOINTS is enabled?
-> That seems brave.
-
-This doesn't enable the tracepoints.  It just adds support for portio
-tracepoints to the kernel image.  The tracepoints are disabled by default
-and must be explicitly enabled by the user at runtime.  The overhead is
-very modest when portio tracing is disabled (as I mentioned above).
-
-> Again, you prevent any tracepoints from this code chunk, is that going
-> to be ok going forward?
-
-I addressed this question above.
-
-> Nit, "extern" isn't needed in .h files anymore.  Not a big deal, just
-> for other work you do going forward.
-
-Noted.
-
->> -#ifdef CONFIG_TRACEPOINTS
->> +#if defined(CONFIG_TRACEPOINTS) && !defined(DISABLE_TRACEPOINTS)
-> 
-> Why this global change?
-
-I addressed this question above.  This is how we prevent tracepoint
-logic in header files from causing compiler errors in source files that
-aren't part of the kernel proper.
-
-> Anyway, it's up to the x86 maintainers now, good luck!
-> 
-> But personally, I don't see the real need for this at all.  It's a
-> debugging thing for what exactly?  Who needs this?  Who will use it?
-> When will they use it?  And why?
-
-This comment confuses me.  As you know I originally submitted a patch
-that added I/O tracing just to the 8250 serial driver.  The patch was
-titled "create debugfs interface for UART register tracing".  You said
-this at the time:
-
-   "Anyway, again, cool feature, I like it, but if you can tie it into
-   the existing trace framework better (either by using that entirely
-   which might be best), or at the least, putting your hook into the
-   data path with it, that would be best."
-
-My original patch went through a few revisions before Andy Shevchenko
-suggested I should add portio tracing instead in a manner similar to
-how CONFIG_TRACE_MMIO_ACCESS works.  You agreed.  Hence I created this
-patch.
-
-
-
-
+-- 
+2.30.2
 
