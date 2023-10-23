@@ -2,129 +2,147 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E64BC25B45
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Oct 2023 21:31:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AE7DC25B45
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Oct 2023 21:51:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230486AbjJWVbw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 Oct 2023 17:31:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54002 "EHLO
+        id S231352AbjJWVvV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 23 Oct 2023 17:51:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229853AbjJWVbw (ORCPT
+        with ESMTP id S229845AbjJWVvU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 Oct 2023 17:31:52 -0400
-Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A67ABD
-        for <linux-serial@vger.kernel.org>; Mon, 23 Oct 2023 14:31:50 -0700 (PDT)
-Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-27cefb5ae1fso2455362a91.3
-        for <linux-serial@vger.kernel.org>; Mon, 23 Oct 2023 14:31:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698096709; x=1698701509;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wG6sO/IsCd3y0zJDWWQFvNIIql0UCn1hV1GB1fm/8pA=;
-        b=l+OPEkixp+MXK/VzGOxoh/Bzj759LKzdMBd63YwLQHD8GSkdCeoj/7CxBx1FWX4zcH
-         u3XhoNL8dV1caSlOkm1iBQE3EDdDNBdnM7D6RW+mYTWn05byeNQbswI+XY51/WO01Kjb
-         cuFQNqXmO09Xh0vPrO2PnnqrJbelUkDscSAstGTEPivBZ1e3PhtATnkF//Qvnkj5o8NL
-         b1yAVq2b5YuLePSlgrMeI8OBou8iBC4fShdo/2kP+hmfx75YoHXCzJMNMejBaxgUdYJM
-         8vbDSo1mmdPqOiRk/YhWIqlC6jTdojoCEpYrQpq5Jy9Q9+pc+UU3wUZrT1nUdcZ+GDOQ
-         TH8g==
-X-Gm-Message-State: AOJu0YzfcXz6NuWWYPWj3BroChw84eMm+3+50PAxJeUnmyuUAJel2G25
-        ZstnePtQWVXOFBQh9/BBK+0xhxhAaH0LvR8cr1Tfqw==
-X-Google-Smtp-Source: AGHT+IE72DNgkOPUjRTMNTIzntz14KLEtOtzLCAtRYxd4ab4gXjeXs9JPC7ZL9hdHz2eXVBMwiulXQ==
-X-Received: by 2002:a17:90a:1602:b0:279:1367:b9a3 with SMTP id n2-20020a17090a160200b002791367b9a3mr7663670pja.4.1698096709458;
-        Mon, 23 Oct 2023 14:31:49 -0700 (PDT)
-Received: from localhost (97-113-50-134.tukw.qwest.net. [97.113.50.134])
-        by smtp.gmail.com with ESMTPSA id oj3-20020a17090b4d8300b0027ced921e80sm7725525pjb.38.2023.10.23.14.31.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Oct 2023 14:31:49 -0700 (PDT)
-From:   Kevin Hilman <khilman@kernel.org>
-To:     Thomas Richard <thomas.richard@bootlin.com>,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org, tony@atomide.com
-Cc:     linux-serial@vger.kernel.org, gregory.clement@bootlin.com,
-        u-kumar1@ti.com, d-gole@ti.com, thomas.petazzoni@bootlin.com,
-        Thomas Richard <thomas.richard@bootlin.com>
-Subject: Re: [PATCH] serial: 8250_omap: Set the console genpd always on if
- no console suspend
-In-Reply-To: <20231017130540.1149721-1-thomas.richard@bootlin.com>
-References: <20231017130540.1149721-1-thomas.richard@bootlin.com>
-Date:   Mon, 23 Oct 2023 14:31:48 -0700
-Message-ID: <7hfs213u0r.fsf@baylibre.com>
+        Mon, 23 Oct 2023 17:51:20 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6683BD;
+        Mon, 23 Oct 2023 14:51:18 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C83A0C433C8;
+        Mon, 23 Oct 2023 21:51:16 +0000 (UTC)
+Date:   Mon, 23 Oct 2023 17:51:12 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Dan Raymond <raymod2@gmail.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
+        x86@kernel.org, linux-serial <linux-serial@vger.kernel.org>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com, peterz@infradead.org,
+        andriy.shevchenko@linux.intel.com, quic_saipraka@quicinc.com
+Subject: Re: [PATCH v5] arch/x86: port I/O tracing on x86
+Message-ID: <20231023175112.251f7072@gandalf.local.home>
+In-Reply-To: <78787d18-0f30-4be0-9e7c-1b6dbf142fec@gmail.com>
+References: <b8eae358-a3b3-fd68-82f1-b2c53534b922@gmail.com>
+        <2023100344-dart-jailbreak-c371@gregkh>
+        <94e2b77c-9cc4-534f-e650-06d7e0697f9f@gmail.com>
+        <20231004195001.76a57417@gandalf.local.home>
+        <80b84be0-a0ad-d1a9-607a-a87c6cf509e0@gmail.com>
+        <cc7fba3b-9da2-b9eb-95c8-7336e1cd4449@gmail.com>
+        <2023102122-diabetes-trend-57d0@gregkh>
+        <20231021161503.382e3d2e@rorschach.local.home>
+        <78787d18-0f30-4be0-9e7c-1b6dbf142fec@gmail.com>
+X-Mailer: Claws Mail 3.19.1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Thomas Richard <thomas.richard@bootlin.com> writes:
+On Mon, 23 Oct 2023 15:29:53 -0600
+Dan Raymond <raymod2@gmail.com> wrote:
 
-> If the console suspend is disabled, the genpd of the console shall not
-> be powered-off during suspend.
-> Set the flag GENPD_FLAG_ALWAYS_ON to the corresponding genpd during
-> suspend, and restore the original value during the resume.
->
-> Signed-off-by: Thomas Richard <thomas.richard@bootlin.com>
-> ---
->  drivers/tty/serial/8250/8250_omap.c | 33 ++++++++++++++++++++++++-----
->  1 file changed, 28 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> index ca972fd37725..91a483dc460c 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -27,6 +27,7 @@
->  #include <linux/pm_wakeirq.h>
->  #include <linux/dma-mapping.h>
->  #include <linux/sys_soc.h>
-> +#include <linux/pm_domain.h>
->  
->  #include "8250.h"
->  
-> @@ -114,6 +115,12 @@
->  /* RX FIFO occupancy indicator */
->  #define UART_OMAP_RX_LVL		0x19
->  
-> +/*
-> + * Copy of the genpd flags for the console.
-> + * Only used if console suspend is disabled
-> + */
-> +static unsigned int genpd_flags_console;
-> +
->  struct omap8250_priv {
->  	void __iomem *membase;
->  	int line;
-> @@ -1617,6 +1624,7 @@ static int omap8250_suspend(struct device *dev)
->  {
->  	struct omap8250_priv *priv = dev_get_drvdata(dev);
->  	struct uart_8250_port *up = serial8250_get_port(priv->line);
-> +	struct generic_pm_domain *genpd = pd_to_genpd(dev->pm_domain);
->  	int err = 0;
->  
->  	serial8250_suspend_port(priv->line);
-> @@ -1627,8 +1635,19 @@ static int omap8250_suspend(struct device *dev)
->  	if (!device_may_wakeup(dev))
->  		priv->wer = 0;
->  	serial_out(up, UART_OMAP_WER, priv->wer);
-> -	if (uart_console(&up->port) && console_suspend_enabled)
-> -		err = pm_runtime_force_suspend(dev);
-> +	if (uart_console(&up->port)) {
-> +		if (console_suspend_enabled)
-> +			err = pm_runtime_force_suspend(dev);
-> +		else {
-> +			/*
-> +			 * The pd shall not be powered-off (no console suspend).
-> +			 * Make copy of genpd flags before to set it always on.
-> +			 * The original value is restored during the resume.
-> +			 */
-> +			genpd_flags_console = genpd->flags;
-> +			genpd->flags |= GENPD_FLAG_ALWAYS_ON;
-> +		}
-> +	}
+> On 10/21/2023 2:15 PM, Steven Rostedt wrote:
+> 
+> >> Why are these needed to be changed at all?  What code changes with it,
+> >> and it's not mentioned in the changelog, so why is it required?  
 
-This is not the right approach IMO.
+BTW, trimming is good, but it's still better to leave the code that the
+comment was talking about. I had to go back to my sent folder to figure it
+out.
 
-Instead, what should be happening is that when `no_console_suspend` is
-set, there should be an extra pm_runtime_get() which increases the
-device usecount such that the device never runtime suspends, and thus
-the domain will not get powered off.
+Adding back here for reference:
 
-Kevin
+
+> > --- a/arch/x86/include/asm/cmpxchg_32.h
+> > +++ b/arch/x86/include/asm/cmpxchg_32.h
+> > @@ -37,13 +37,16 @@ static inline void set_64bit(volatile u64 *ptr, u64 value)
+> >  
+> >  #ifdef CONFIG_X86_CMPXCHG64
+> >  #define arch_cmpxchg64(ptr, o, n)					\
+> > -	((__typeof__(*(ptr)))__cmpxchg64((ptr), (unsigned long long)(o), \
+> > +	((__typeof__(*(ptr)))__cmpxchg64((unsigned long long *)(ptr),	\
+> > +					 (unsigned long long)(o),	\
+> >  					 (unsigned long long)(n)))
+> > -#define arch_cmpxchg64_local(ptr, o, n)					\
+> > -	((__typeof__(*(ptr)))__cmpxchg64_local((ptr), (unsigned long long)(o), \
+> > +#define arch_cmpxchg64_local(ptr, o, n)						\
+> > +	((__typeof__(*(ptr)))__cmpxchg64_local((unsigned long long *)(ptr),	\
+> > +					       (unsigned long long)(o),		\
+> >  					       (unsigned long long)(n)))
+> > -#define arch_try_cmpxchg64(ptr, po, n)					\
+> > -	__try_cmpxchg64((ptr), (unsigned long long *)(po), \
+> > +#define arch_try_cmpxchg64(ptr, po, n)			\
+> > +	__try_cmpxchg64((unsigned long long *)(ptr),	\
+> > +			(unsigned long long *)(po),	\
+> >  			(unsigned long long)(n))
+> >  #endif
+
+> > 
+> > Agreed, if this has issues, it probably should be a separate patch.  
+> 
+> As I mentioned to Greg, this fix is needed to avoid compiler warnings
+> triggered by this patch.  If I submitted this separately it would have
+> to be merged first.  Isn't it easier to combine them since this is
+> not a functional change (it just makes a cast explicit)?
+
+That's what patch series are for. You make a series of changes where one is
+dependent on the other. But each commit should only do one thing. If you
+need to fix something to do your one thing, that fix should be a separate
+patch, but make it part of a series.
+
+Just a "cast explicit" that's in generic code should be a separate change
+with a change log explaining why it is needed, and why it didn't work
+without it. Single commits can be just "no functional change".
+
+> 
+> >>> -#ifdef CONFIG_TRACEPOINTS
+> >>> +#if defined(CONFIG_TRACEPOINTS) && !defined(DISABLE_TRACEPOINTS)    
+> >>
+> >> Why this global change?  
+> > 
+> > Yeah, DISABLE_TRACEPOINTS does not currently exist. If this is to be a
+> > new way to disable TRACEPOINTS it needs a separate patch and be able to
+> > disable tracepoints everywhere (maybe include/trace/*.h files also need
+> > to be modified?), and also be documented somewhere in Documentation/trace.  
+> 
+> It's only needed to suppress compiler errors when building arch/x86/boot/*
+> and arch/x86/realmode/*.  Those source files include various x86 headers
+> such as <asm/msr.h> and <asm/shared/io.h>.  Those x86 headers include
+> <linux/tracepoint-defs.h> which references static_key_false() in
+> <linux/jump_label.h>.  DISABLE_TRACEPOINTS eliminates that reference and
+> hence suppresses the compiler error.
+> 
+> I didn't intend for this macro to be used by developers adding new
+> tracepoints so I didn't document it as such.  As far as creating a
+> separate patch: again this is a requirement for this patch and it doesn't
+> cause any functional changes so can't we combine them?
+
+This is touching generic code, and as such, it *will* be used by others. If
+generic code needs something like "DISABLE_TRACEPOINTS" for your use case,
+it may be needed for someone else's.
+
+For the same reason above, it really needs to be a separate patch with a
+change log explaining why it is needed.
+
+If this should only be used by code that is not part of the kernel proper,
+then we should probably call it something else.
+
+#ifdef PRE_LINUX_CODE  ?
+
+Or something that more explicitly states that this is included in code
+that's not part of the Linux proper. By saying "DISABLE_TRACEPOINTS" it
+will look like this is the way to disable it for other use cases. Maybe we
+want that, or perhaps we don't.
+
+Either case, it should still be separate with a detailed explanation, for
+when another developer sees this code, a git blame will give all the
+explanation necessary for why it exists.
+
+-- Steve
