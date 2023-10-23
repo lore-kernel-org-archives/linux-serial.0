@@ -2,123 +2,148 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C08CDB474
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Oct 2023 09:41:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0281DCDB474
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Oct 2023 09:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229687AbjJWJlB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 Oct 2023 05:41:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60472 "EHLO
+        id S229807AbjJWJmU convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 23 Oct 2023 05:42:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229662AbjJWJlA (ORCPT
+        with ESMTP id S229448AbjJWJmT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 Oct 2023 05:41:00 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3CFAB7
-        for <linux-serial@vger.kernel.org>; Mon, 23 Oct 2023 02:40:57 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id 5b1f17b1804b1-40836ea8cbaso22637585e9.0
-        for <linux-serial@vger.kernel.org>; Mon, 23 Oct 2023 02:40:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google; t=1698054056; x=1698658856; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=2e6e3Lcqli+2alSmk+94dBX3KJpg6geqhFS7BprVkcU=;
-        b=GL7h0iFse/gxCet0otgmb1uFRctB9gzKAtzvSyWHCnxPjEe8xM+DRZAyb/w4636jfY
-         iXVZpu+M3AkHhMRlSIDGUt6KFJ7mBAviT5QfB+P4nFSJ5W8lj5KERW5jO0A4HdsCA8o0
-         +uLOH0qJeBktDMxxSYxa6IqT9jbLT0HTYxXow=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698054056; x=1698658856;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=2e6e3Lcqli+2alSmk+94dBX3KJpg6geqhFS7BprVkcU=;
-        b=dHfXbnqUCNn6Jl5IBP01YV2Vc7HppPEJpfnjsKhypsoGzc7jorFLjP+dkg7uBO9VS5
-         FIDHTJNLVRO4Uv53MWRmlxCK1BIpiZ//rsxwyfRk+Etq1kLPXP9CursXFLRrMVIX/J3X
-         R9p2kAK2gBVDGEBwrcDpWV1zlYllGE8JnVb3cFG3PNO3SUskqN2AwOfr7m9Sthwo/MDz
-         b+5vLRovXNEsY/acw+agCXReJweHIHIbimVDGX06+2bFOuV792AWMF7JAXinywqQJCRz
-         Swf5IXXSFROVsqCXZphXc4DjrVqCFf8C004uRaG2SuJAS3zXvMMcCVyEvm9F/j8GH/S/
-         4dTg==
-X-Gm-Message-State: AOJu0YyC9Q8dNNK5GHyNlAxNZjuUPgUHeyGTQN48dVomoSr3gK0Kz8pK
-        7ndWe4iq/iUBLmQTQ5plWPa6uQ==
-X-Google-Smtp-Source: AGHT+IFiv0PaRNaUlIPDIvrAD0L8WPCgy4IVeKPszHKpE2+d3heHK/NlRODAuG2AKmxQC3FMfHXD6Q==
-X-Received: by 2002:a05:600c:3583:b0:401:eb0:a974 with SMTP id p3-20020a05600c358300b004010eb0a974mr6582584wmq.3.1698054055794;
-        Mon, 23 Oct 2023 02:40:55 -0700 (PDT)
-Received: from ?IPv6:2001:8b0:aba:5f3c:3e73:a41c:6787:e5d4? ([2001:8b0:aba:5f3c:3e73:a41c:6787:e5d4])
-        by smtp.gmail.com with ESMTPSA id h15-20020a05600c350f00b003fe1fe56202sm9011512wmq.33.2023.10.23.02.40.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Oct 2023 02:40:55 -0700 (PDT)
-Message-ID: <5c49bc0f468e9fb5ae7ff7f53443fdb1fc3c77f2.camel@linuxfoundation.org>
-Subject: Re: [PATCH] serial: core: Fix runtime PM handling for pending tx
-From:   Richard Purdie <richard.purdie@linuxfoundation.org>
-To:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Bruce Ashfield <bruce.ashfield@gmail.com>,
-        Mikko Rapeli <mikko.rapeli@linaro.org>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Randy MacLeod <randy.macleod@windriver.com>
-Date:   Mon, 23 Oct 2023 10:40:54 +0100
-In-Reply-To: <20231023074856.61896-1-tony@atomide.com>
-References: <20231023074856.61896-1-tony@atomide.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.48.1-0ubuntu1 
+        Mon, 23 Oct 2023 05:42:19 -0400
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [91.198.224.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9BDDA4
+        for <linux-serial@vger.kernel.org>; Mon, 23 Oct 2023 02:42:16 -0700 (PDT)
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <prvs=9674b5d38b=fe@dev.tdt.de>)
+        id 1qurRu-00FTm2-0w
+        for linux-serial@vger.kernel.org; Mon, 23 Oct 2023 11:42:14 +0200
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <fe@dev.tdt.de>)
+        id 1qurRt-003GsA-Lh
+        for linux-serial@vger.kernel.org; Mon, 23 Oct 2023 11:42:13 +0200
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 5C15C24004B
+        for <linux-serial@vger.kernel.org>; Mon, 23 Oct 2023 11:42:13 +0200 (CEST)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 18EC8240040;
+        Mon, 23 Oct 2023 11:42:13 +0200 (CEST)
+Received: from localhost.localdomain (unknown [10.2.3.40])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 8C6AC216D6;
+        Mon, 23 Oct 2023 11:42:12 +0200 (CEST)
+From:   Florian Eckert <fe@dev.tdt.de>
+To:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
+        kabel@kernel.org, u.kleine-koenig@pengutronix.de,
+        m.brock@vanmierlo.com
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-leds@vger.kernel.org
+Subject: [PATCH v5 0/2] ledtrig-tty: add additional tty state evaluation
+Date:   Mon, 23 Oct 2023 11:42:03 +0200
+Message-ID: <20231023094205.2706812-1-fe@dev.tdt.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-purgate-ID: 151534::1698054133-CFEF43D8-06C53B18/0/0
+X-purgate: clean
+X-purgate-type: clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 2023-10-23 at 10:48 +0300, Tony Lindgren wrote:
-> Richard reported that a serial port may end up sometimes with tx data
-> pending in the buffer for long periods of time.
->=20
-> Turns out we bail out early on any errors from pm_runtime_get(),
-> including -EINPROGRESS. To fix the issue, we need to ignore -EINPROGRESS
-> as we only care about the runtime PM usage count at this point. We check
-> for an active runtime PM state later on for tx.
->=20
-> Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to =
-enable runtime PM")
-> Reported-by: Richard Purdie <richard.purdie@linuxfoundation.org>
+Changes in v5:
+==============
+- Update commit message as request by greg k-h, to make the commit message
+  more generic and not focusing on my use case [1]. Thanks for that.
+- Removing PATCH v4 1/3 from previous set. This has been already applied to
+  tty-testing [2] by greg k-h.
+- As requested by greq k-h. I have also made the following changes to
+  PATCH v4 3/3 [3].
+  * Add a comment to the enum that this is already used for bit evaluation and
+    sysfs read and write.
+  * Renaming the variable 'unsigned long mode' to 'unsigned long ttytrigger'
+    in the ledtrig_tty_data structure to make it clearer that the selected
+    triggers are stored there.
+  * Using sysfs_emit() function to dump the requestd ttytrigger to userland.
+  * Also using the kstrtobool() function to write the selected ttytrigger
+    via the sysfs. This values are booleans.
+- I also removed the function ledtrig_tty_evaluate() from my last patchset.
+  PATCH v4 3/3 [3]. The new API tty_get_tiocm() function is only called once
+  now and checked for each ttytrigger bit. Previously this function was
+  called for each bit, which is not necessary.
 
-Tested-by: Richard Purdie <richard.purdie@linuxfoundation.org>
+Links:
+[1] https://lore.kernel.org/linux-leds/2023102115-stock-scrambled-f7d5@gregkh/
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/commit/?h=tty-testing&id=838eb763c3e939a8de8d4c55a17ddcce737685c1
+[3] https://lore.kernel.org/linux-leds/20231019112809.881730-4-fe@dev.tdt.de/
 
-Thanks, I can confirm that since we added this into our builds/tests
-we've not seen the serial data go missing.
+Changes in v4:
+==============
+v4: https://lore.kernel.org/linux-leds/20231019112809.881730-1-fe@dev.tdt.de/
+- Merging patch 3/4 into patch number 4/4 from previous series, because
+  it fixes a problem that does not exist upstream. This was a note from
+  the build robot regarding my change that I added with previous series.
+  This change was never upstream and therefore this is not relevant.
+- Update the commit message of patch 1/3 of this series, that this commit
+  also changes the 'ndashes' to simple dashes. There were no changes, so
+  I add the 'Reviewed-by' that the commit received before.
+- With this patchset version I have reworked my implementation for the
+  evaluation of the additional line state, so that this changes becomes
+  smaller. As basis I have used the staged commits from Christian Marangi
+  that makes this changes to the netdev trigger. This has already been
+  applied to 'for-leds-next-next' by Lee Jones. I adapted this to the
+  tty trigger.
+  Convert device attr to macro:
+  https://git.kernel.org/pub/scm/linux/kernel/git/lee/leds.git/commit/drivers/leds/trigger?h=for-leds-next-next&id=509412749002f4bac4c29f2012fff90c08d8afca
+  Unify sysfs and state handling:
+  https://git.kernel.org/pub/scm/linux/kernel/git/lee/leds.git/commit/drivers/leds/trigger?h=for-leds-next-next&id=0fd93ac8582627bee9a3c824489f302dff722881
 
-Cheers,
+Changes in v3:
+==============
+v3: https://lore.kernel.org/linux-leds/20231016071332.597654-1-fe@dev.tdt.de/
+- Add missing 'kernel test robot' information to the commit message.
+- Additional information added to the commit message
 
-Richard
+Changes in v2:
+==============
+v2: https://lore.kernel.org/linux-leds/20230928132632.200263-1-fe@dev.tdt.de/
+- rename new function from tty_get_mget() to tty_get_tiocm() as
+  requested by 'Jiri Slaby'.
+- As suggested by 'Jiri Slaby', fixed tabs in function documentation
+  throughout the file '/drivers/tty/tty_io.c' in a separate commit.
+- Move the variable definition to the top in function
+  'ledtrig_tty_work()'.
+  This was reported by the 'kernel test robot' after my change in v1.
+- Also set the 'max_brightness' to 'blink_brightness' if no
+  'blink_brightness' was set. This fixes a problem at startup when the
+  brightness is still set to 0 and only 'line_*' is evaluated. I looked
+  in the netdev trigger and that's exactly how it's done there.
 
-> Cc: Bruce Ashfield <bruce.ashfield@gmail.com>
-> Cc: Mikko Rapeli <mikko.rapeli@linaro.org>
-> Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
-> Cc: Randy MacLeod <randy.macleod@windriver.com>
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
->  drivers/tty/serial/serial_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
-_core.c
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -146,7 +146,7 @@ static void __uart_start(struct uart_state *state)
-> =20
->  	/* Increment the runtime PM usage count for the active check below */
->  	err =3D pm_runtime_get(&port_dev->dev);
-> -	if (err < 0) {
-> +	if (err < 0 && err !=3D -EINPROGRESS) {
->  		pm_runtime_put_noidle(&port_dev->dev);
->  		return;
->  	}
+Changes in v1:
+==============
+v1: https://lore.kernel.org/linux-leds/20230926093607.59536-1-fe@dev.tdt.de/
+This is a follow-up patchset, based on the mailing list discussion from
+March 2023 based on the old patchset v8 [1]. I have changed, the LED
+trigger handling via the sysfs interfaces as suggested by Uwe Kleine-König.
+Links:
+[1] https://lore.kernel.org/linux-leds/20230306094113.273988-1-fe@dev.tdt.de/
+
+Florian Eckert (2):
+  tty: add new helper function tty_get_tiocm
+  leds: ledtrig-tty: add new line mode evaluation
+
+ .../ABI/testing/sysfs-class-led-trigger-tty   |  54 +++++
+ drivers/leds/trigger/ledtrig-tty.c            | 187 ++++++++++++++++--
+ drivers/tty/tty_io.c                          |  28 ++-
+ include/linux/tty.h                           |   1 +
+ 4 files changed, 253 insertions(+), 17 deletions(-)
+
+-- 
+2.30.2
 
