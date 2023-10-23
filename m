@@ -2,54 +2,55 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC6EEC001E0
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Oct 2023 09:21:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 878F8CDB474
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Oct 2023 09:25:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229640AbjJWJVO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 Oct 2023 05:21:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39622 "EHLO
+        id S229463AbjJWJZc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 23 Oct 2023 05:25:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230056AbjJWJVM (ORCPT
+        with ESMTP id S232747AbjJWJZ1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 Oct 2023 05:21:12 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33338F5;
-        Mon, 23 Oct 2023 02:21:10 -0700 (PDT)
+        Mon, 23 Oct 2023 05:25:27 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 903AB10CC;
+        Mon, 23 Oct 2023 02:25:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698052870; x=1729588870;
+  t=1698053123; x=1729589123;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=p1SAne+x2Vqn1d6KCvK50Z1tyZPw11rQLG9JPCmxBzc=;
-  b=hcrlfluXJjwzz25dpO1hf1++djIm+WBKaCWBfTkITLBFwwBOBEACXY9x
-   gsRdKAoj3xbbMXDlk4ZAko0kIA6KPy/GUcXBSw4WdfiXIWV0T7W5dAs2K
-   kEp6ga8/8NgioM8ODCQ5ba3pO25yOJVnmtm4bDEUA+EsnaFRyUHSItAd+
-   wOXMLrLFlGQGsRjhZmRSlRxJj7k+vOqBsBWAHBukoVBYH/oU3vBeIWBMh
-   GuqeaNhRZXrXiKA0vO6Sl9V3LG17crEt0wlJLFqKYSyL9CEgEBGf76KtX
-   mPvtvSyLJv3J19rxrg5DLouwUOyaOphkOH0AmIxYAWvUVddI6iV3IQXzr
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10871"; a="453270585"
+  bh=BPcJleJXfgS4giacNwHEY9onpzFBQYYKxKALjBr+ncI=;
+  b=Hg/KNbQPAjcqU8Pd8EI5MospZQT0RTuK7pX7oGYbhOVhBEUOR7PE6pze
+   UB0dR1Ya1/CBcUsLSiVJCHrRZC/WCMgrf0LX5+UGTu+tps4oXGu2YCu+g
+   Qzi2zJ3XMrG0FNDOn+LKOpdmv0ELkVhf762P2k9gGk/wJu6oa/1mJO2RQ
+   tF8GqlDzPfVBRZrdVO79xXMVdZKnxE4Lb9VGzx+nz4yhjUwnrkDNTtR5N
+   J6WlmS4OGQ0BNB1Z07EV/Tuh/MUbsxQrn2ww+8l23YWYecwgpWxUekAn8
+   UVjsVGMJlOT6O69+fmw1cwF0KNNahKeN7Sa4KlrJhVTUOqiV6+Vze7tN0
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10871"; a="390690036"
 X-IronPort-AV: E=Sophos;i="6.03,244,1694761200"; 
-   d="scan'208";a="453270585"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2023 02:21:09 -0700
+   d="scan'208";a="390690036"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2023 02:25:22 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10871"; a="848737994"
+X-IronPort-AV: E=McAfee;i="6600,9927,10871"; a="751573917"
 X-IronPort-AV: E=Sophos;i="6.03,244,1694761200"; 
-   d="scan'208";a="848737994"
+   d="scan'208";a="751573917"
 Received: from foliveix-mobl5.amr.corp.intel.com ([10.251.211.194])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2023 02:21:07 -0700
-Date:   Mon, 23 Oct 2023 12:21:01 +0300 (EEST)
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2023 02:25:20 -0700
+Date:   Mon, 23 Oct 2023 12:25:18 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
 cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 5/6] tty: serial: 8250: Fix MOXA RS422/RS485 PCIe
- boards not work by default
-In-Reply-To: <20231018091739.10125-6-crescentcy.hsieh@moxa.com>
-Message-ID: <f04e4269-0d9-ed2d-cfd1-6a9d462182a5@linux.intel.com>
-References: <20231018091739.10125-1-crescentcy.hsieh@moxa.com> <20231018091739.10125-6-crescentcy.hsieh@moxa.com>
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH v3 6/6] tty: serial: 8250: Add support for MOXA PCIe
+ boards to switch interface between RS422/RS485
+In-Reply-To: <20231018091739.10125-7-crescentcy.hsieh@moxa.com>
+Message-ID: <f49feb43-e255-43bb-4271-8a13db2859fc@linux.intel.com>
+References: <20231018091739.10125-1-crescentcy.hsieh@moxa.com> <20231018091739.10125-7-crescentcy.hsieh@moxa.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
@@ -58,120 +59,134 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 On Wed, 18 Oct 2023, Crescent CY Hsieh wrote:
 
-> MOXA PCIe RS422/RS485 boards will not function by default because of the
-> initial default serial interface of all MOXA PCIe boards is set to RS232.
+> MOXA PCIe boards have 4 serial interfaces and don't require additional
+> stuff to switch between interfaces:
 > 
-> This patch fixes the problem above by setting the initial default serial
-> interface to RS422 for those MOXA RS422/RS485 PCIe boards.
+> - RS232
+> - RS422
+> - RS485_2W (half-duplex)
+> - RS485_4W (full-duplex)
+> 
+> By using ioctl command "TIOCRS485", it can switch between default
+> interface and RS485 if supported.
+> 
+> That means, for RS422/RS485 board, it can switch between RS422 and
+> RS485 by setting the flags within struct serial_rs485.
+> 
+> However, for the RS232/RS422/RS485 board, it can only switch between
+> RS232 and RS485, there's no flag for switching interface into RS422.
+> 
+> This patch uses "SER_RS485_TERMINATE_BUS" to represent RS422 as a
+> workaround solution:
+> 
+> - RS232                   = (no flags are set)
+> - RS422                   = SER_RS485_ENABLED | SER_RS485_TERMINATE_BUS
+> - RS485_2W (half-duplex)  = SER_RS485_ENABLED
+> - RS485_4W (full-duplex)  = SER_RS485_ENABLED | SER_RS485_RX_DURING_TX
 > 
 > Signed-off-by: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
 > ---
->  drivers/tty/serial/8250/8250_pci.c | 52 ++++++++++++++++++++++++++++++
->  1 file changed, 52 insertions(+)
+>  drivers/tty/serial/8250/8250_pci.c | 58 ++++++++++++++++++++++++++++++
+>  1 file changed, 58 insertions(+)
 > 
 > diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index b2be3783f..29a28e72b 100644
+> index 29a28e72b..098ac466b 100644
 > --- a/drivers/tty/serial/8250/8250_pci.c
 > +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -1968,6 +1968,12 @@ pci_sunix_setup(struct serial_private *priv,
+> @@ -1974,6 +1974,10 @@ pci_sunix_setup(struct serial_private *priv,
+>  #define MOXA_RS485_2W	0x0F
+>  #define MOXA_UIR_OFFSET	0x04
 >  
->  #define MOXA_GPIO_PIN2	BIT(2)
->  
-> +#define MOXA_RS232	0x00
-> +#define MOXA_RS422	0x01
-> +#define MOXA_RS485_4W	0x0B
-> +#define MOXA_RS485_2W	0x0F
-> +#define MOXA_UIR_OFFSET	0x04
+> +static const struct serial_rs485 pci_moxa_rs485_supported = {
+> +	.flags = SER_RS485_ENABLED | SER_RS485_RX_DURING_TX | SER_RS485_TERMINATE_BUS,
+
+As recently discussed on linux-serial list, one of the RTS flags should be
+enabled (the one the HW uses even if it's not configurable).
+
+> +};
 > +
 >  static bool pci_moxa_is_mini_pcie(unsigned short device)
 >  {
 >  	if (device == PCI_DEVICE_ID_MOXA_CP102N	||
-> @@ -1981,13 +1987,59 @@ static bool pci_moxa_is_mini_pcie(unsigned short device)
->  	return false;
+> @@ -2024,6 +2028,46 @@ static int pci_moxa_set_interface(const struct pci_dev *dev,
+>  	return 0;
 >  }
 >  
 > +/*
-> + * The second digit of the MOXA PCIe device ID in hexadecimal indicates
-> + * which serial interface modes this board supports:
+> + * MOXA PCIe boards support switching the serial interface using the ioctl
+> + * command "TIOCSRS485", but there is currently no dedicated flag for switching
+> + * to RS422. As a workaround, we utilize the "SER_RS485_TERMINATE_BUS" flag to
+> + * represent RS422.
 > + *
-> + *	0x*0** - RS232
-> + *	0x*1** - RS232/RS422/RS485
-> + *	0x*3** - RS422/RS485
-> + *	0x*6** - RS232
+> + *	RS232			= (no flags are set)
+> + *	RS422			= SER_RS485_ENABLED | SER_RS485_TERMINATE_BUS
+> + *	RS485_2W (half-duplex)	= SER_RS485_ENABLED
+> + *	RS485_4W (full-duplex)	= SER_RS485_ENABLED | SER_RS485_RX_DURING_TX
 > + */
-> +static bool pci_moxa_match_second_digit(unsigned short device,
-> +					unsigned short pattern)
+> +static int pci_moxa_rs485_config(struct uart_port *port,
+> +				 struct ktermios *termios,
+> +				 struct serial_rs485 *rs485)
 > +{
-> +	return (device & 0x0F00) == pattern;
-
-Define a named field, not literal.
-
-IMO, the function name is not good because it tells what code does, not 
-why it does. I think the name should be based on .
-
-> +}
+> +	struct pci_dev *dev = to_pci_dev(port->dev);
+> +	unsigned short device = dev->device;
+> +	u8 mode = MOXA_RS232;
 > +
-> +static int pci_moxa_set_interface(const struct pci_dev *dev,
-> +				  unsigned int port_idx,
-> +				  u8 mode)
-> +{
-> +	resource_size_t iobar_addr = pci_resource_start(dev, 2);
-> +	resource_size_t UIR_addr = iobar_addr + MOXA_UIR_OFFSET + port_idx / 2;
-> +	u8 val;
-> +
-> +	val = inb(UIR_addr);
-> +
-> +	if (port_idx % 2) {
-> +		val &= 0x0F;
-> +		val |= mode << 4;
+> +	if (rs485->flags & SER_RS485_ENABLED) {
+> +		if (rs485->flags & SER_RS485_TERMINATE_BUS) {
+> +			mode = MOXA_RS422;
+> +		} else {
+> +			if (rs485->flags & SER_RS485_RX_DURING_TX)
+> +				mode = MOXA_RS485_4W;
+> +			else
+> +				mode = MOXA_RS485_2W;
+> +		}
 > +	} else {
-> +		val &= 0xF0;
-> +		val |= mode;
+> +		/*
+> +		 * RS232 is not supported for MOXA PCIe boards with device IDs
+> +		 * matching the pattern 0x*3**.
+> +		 */
+> +		if (pci_moxa_match_second_digit(device, 0x0300))
+> +			return -EOPNOTSUPP;
 
-These should use the typical pattern instead:
-
-	val &= ~NAMED_DEFINE;
-	val |= FIELD_PREP(NAMED_DEFINE, mode);
-
-Also, don't forget to add bitfield.h if it's not there yet among the 
-includes.
-
--- 
- i.
-
-
+This is not the correct error code I think. Maybe return -ENXIO instead.
 
 > +	}
-> +	outb(val, UIR_addr);
 > +
-> +	return 0;
+> +	return pci_moxa_set_interface(dev, port->port_id, mode);
 > +}
 > +
 >  static int pci_moxa_init(struct pci_dev *dev)
 >  {
 >  	unsigned short device = dev->device;
->  	resource_size_t iobar_addr = pci_resource_start(dev, 2);
-> +	unsigned int i;
->  	unsigned int num_ports = (device & 0x00F0) >> 4;
-
-Put declaration of i after num_ports.
-
->  	u8 val;
+> @@ -2063,9 +2107,23 @@ pci_moxa_setup(struct serial_private *priv,
+>  		const struct pciserial_board *board,
+>  		struct uart_8250_port *port, int idx)
+>  {
+> +	struct pci_dev *dev = priv->dev;
+> +	unsigned short device = dev->device;
+>  	unsigned int bar = FL_GET_BASE(board->flags);
+>  	int offset;
 >  
 > +	/*
-> +	 * For the device IDs of MOXA PCIe boards match the pattern 0x*3**,
-> +	 * the initial default serial interface mode should be set to RS422.
+> +	 * For the device IDs of MOXA PCIe boards match the pattern 0x*1** and 0x*3**,
+> +	 * these boards support switching interface between RS422/RS485 using TIOCSRS485.
 > +	 */
-> +	if (pci_moxa_match_second_digit(device, 0x0300)) {
+> +	if (pci_moxa_match_second_digit(device, 0x0100) ||
+> +	    pci_moxa_match_second_digit(device, 0x0300)) {
 
-Name the literal with define, once you have better name for the function 
-and no literal, the comment is no longer necessary at all because the code 
-will document itself much better!
+As mentioned in the other patch, all these literals must be named.
 
-> +		for (i = 0; i < num_ports; ++i)
-> +			pci_moxa_set_interface(dev, i, MOXA_RS422);
+> +		port->port.rs485_config = pci_moxa_rs485_config;
+> +		port->port.rs485_supported = pci_moxa_rs485_supported;
+> +
+> +		if (pci_moxa_match_second_digit(device, 0x0300))
+> +			port->port.rs485.flags |= SER_RS485_ENABLED | SER_RS485_TERMINATE_BUS;
 > +	}
->  	/*
->  	 * Enable hardware buffer to prevent break signal output when system boots up.
->  	 * This hardware buffer is only supported on Mini PCIe series.
+>  	if (board->num_ports == 4 && idx == 3)
+>  		offset = 7 * board->uart_offset;
+>  	else
 > 
+
+-- 
+ i.
+
