@@ -2,224 +2,145 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9BC3C25B41
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Oct 2023 05:48:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DD53CDB474
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Oct 2023 07:44:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229469AbjJWFsk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 Oct 2023 01:48:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44446 "EHLO
+        id S229820AbjJWHop (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 23 Oct 2023 03:44:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbjJWFsj (ORCPT
+        with ESMTP id S229650AbjJWHoo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 Oct 2023 01:48:39 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B453FFC
-        for <linux-serial@vger.kernel.org>; Sun, 22 Oct 2023 22:48:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698040117; x=1729576117;
-  h=date:from:to:cc:subject:message-id;
-  bh=PZIlM7vaJeYBpiJgdpXD7rgUKNt8RUinVV3VMXX++Sc=;
-  b=PQId869HQn2O+6v3TUcJSiV4t8eBKb/nlKX9joNdfTnTOpxxUtT3Nlyt
-   18FKUaO/hD6Kvf8jvperSsu9Itro8h0LdMuk88Ei7qTqrKKP8YQ0XR+BZ
-   uRbqsHKrms8zKCJ3ed3VSIrtEo0RAr9suCMhJcDWV+bj87YL9rPegxwcl
-   11hKTEBtLdhDf7a+km+r/9FQUah6i47NjDpHPQu7GINS/wXKZuLnP+kmi
-   Tln4rZxKSC1fWqr4htHNZDXN5TSm3x414l2TWuD88bvnQ+HDhl69bti1+
-   c20DEFpNhkYgthqRdf3La4FQMgOzFvwuNHuYHeK5NbrNcGc6AcPpSvNGT
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10871"; a="383971675"
-X-IronPort-AV: E=Sophos;i="6.03,244,1694761200"; 
-   d="scan'208";a="383971675"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2023 22:48:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10871"; a="881642260"
-X-IronPort-AV: E=Sophos;i="6.03,244,1694761200"; 
-   d="scan'208";a="881642260"
-Received: from lkp-server01.sh.intel.com (HELO 8917679a5d3e) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 22 Oct 2023 22:48:34 -0700
-Received: from kbuild by 8917679a5d3e with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1qunnk-0006br-0v;
-        Mon, 23 Oct 2023 05:48:32 +0000
-Date:   Mon, 23 Oct 2023 13:47:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 936323f8de4139c9f6ebc0d08e20f1fe200b78a8
-Message-ID: <202310231349.6ql02eDy-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+        Mon, 23 Oct 2023 03:44:44 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 95C7ECC
+        for <linux-serial@vger.kernel.org>; Mon, 23 Oct 2023 00:44:42 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 6ACD380BB;
+        Mon, 23 Oct 2023 07:44:41 +0000 (UTC)
+Date:   Mon, 23 Oct 2023 10:44:40 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Thomas Richard <thomas.richard@bootlin.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, gregory.clement@bootlin.com,
+        u-kumar1@ti.com, d-gole@ti.com, thomas.petazzoni@bootlin.com,
+        Vignesh R <vigneshr@ti.com>,
+        Kevin Hilman <khilman@baylibre.com>
+Subject: Re: [PATCH] serial: 8250_omap: Set the console genpd always on if no
+ console suspend
+Message-ID: <20231023074440.GS27774@atomide.com>
+References: <20231017130540.1149721-1-thomas.richard@bootlin.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231017130540.1149721-1-thomas.richard@bootlin.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 936323f8de4139c9f6ebc0d08e20f1fe200b78a8  dt-bindings: serial: drop unsupported samsung bindings
+Hi,
 
-elapsed time: 2181m
+Adding Kevin and Vignesh too in case they have better ideas on how to
+prevent the power domain from suspending for no_console_suspend kernel
+parameter.
 
-configs tested: 153
-configs skipped: 2
+* Thomas Richard <thomas.richard@bootlin.com> [231017 13:05]:
+> If the console suspend is disabled, the genpd of the console shall not
+> be powered-off during suspend.
+> Set the flag GENPD_FLAG_ALWAYS_ON to the corresponding genpd during
+> suspend, and restore the original value during the resume.
+> 
+> Signed-off-by: Thomas Richard <thomas.richard@bootlin.com>
+> ---
+>  drivers/tty/serial/8250/8250_omap.c | 33 ++++++++++++++++++++++++-----
+>  1 file changed, 28 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> index ca972fd37725..91a483dc460c 100644
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -27,6 +27,7 @@
+>  #include <linux/pm_wakeirq.h>
+>  #include <linux/dma-mapping.h>
+>  #include <linux/sys_soc.h>
+> +#include <linux/pm_domain.h>
+>  
+>  #include "8250.h"
+>  
+> @@ -114,6 +115,12 @@
+>  /* RX FIFO occupancy indicator */
+>  #define UART_OMAP_RX_LVL		0x19
+>  
+> +/*
+> + * Copy of the genpd flags for the console.
+> + * Only used if console suspend is disabled
+> + */
+> +static unsigned int genpd_flags_console;
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+This should be priv->genpd_flags_console or something similar as the
+uarts in an always-on power domain may have different flags from other
+power domains.
 
-tested configs:
-alpha                             allnoconfig   gcc  
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-arc                              allmodconfig   gcc  
-arc                               allnoconfig   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arc                   randconfig-001-20231022   gcc  
-arc                   randconfig-001-20231023   gcc  
-arm                              allmodconfig   gcc  
-arm                               allnoconfig   gcc  
-arm                              allyesconfig   gcc  
-arm                                 defconfig   gcc  
-arm                   randconfig-001-20231023   gcc  
-arm64                            allmodconfig   gcc  
-arm64                             allnoconfig   gcc  
-arm64                            allyesconfig   gcc  
-arm64                               defconfig   gcc  
-csky                             allmodconfig   gcc  
-csky                              allnoconfig   gcc  
-csky                             allyesconfig   gcc  
-csky                                defconfig   gcc  
-i386                             allmodconfig   gcc  
-i386                              allnoconfig   gcc  
-i386                             allyesconfig   gcc  
-i386         buildonly-randconfig-001-20231023   gcc  
-i386         buildonly-randconfig-002-20231023   gcc  
-i386         buildonly-randconfig-003-20231023   gcc  
-i386         buildonly-randconfig-004-20231023   gcc  
-i386         buildonly-randconfig-005-20231023   gcc  
-i386         buildonly-randconfig-006-20231023   gcc  
-i386                              debian-10.3   gcc  
-i386                                defconfig   gcc  
-i386                  randconfig-001-20231023   gcc  
-i386                  randconfig-002-20231023   gcc  
-i386                  randconfig-003-20231023   gcc  
-i386                  randconfig-004-20231023   gcc  
-i386                  randconfig-005-20231023   gcc  
-i386                  randconfig-006-20231023   gcc  
-i386                  randconfig-011-20231023   gcc  
-i386                  randconfig-012-20231023   gcc  
-i386                  randconfig-013-20231023   gcc  
-i386                  randconfig-014-20231023   gcc  
-i386                  randconfig-015-20231023   gcc  
-i386                  randconfig-016-20231023   gcc  
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                        allyesconfig   gcc  
-loongarch                           defconfig   gcc  
-loongarch             randconfig-001-20231022   gcc  
-loongarch             randconfig-001-20231023   gcc  
-m68k                             allmodconfig   gcc  
-m68k                              allnoconfig   gcc  
-m68k                             allyesconfig   gcc  
-m68k                                defconfig   gcc  
-microblaze                       allmodconfig   gcc  
-microblaze                        allnoconfig   gcc  
-microblaze                       allyesconfig   gcc  
-microblaze                          defconfig   gcc  
-mips                             allmodconfig   gcc  
-mips                              allnoconfig   gcc  
-mips                             allyesconfig   gcc  
-nios2                            allmodconfig   gcc  
-nios2                             allnoconfig   gcc  
-nios2                            allyesconfig   gcc  
-nios2                               defconfig   gcc  
-openrisc                         allmodconfig   gcc  
-openrisc                          allnoconfig   gcc  
-openrisc                         allyesconfig   gcc  
-openrisc                            defconfig   gcc  
-parisc                           allmodconfig   gcc  
-parisc                            allnoconfig   gcc  
-parisc                           allyesconfig   gcc  
-parisc                              defconfig   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-powerpc                          allyesconfig   gcc  
-powerpc                     ep8248e_defconfig   gcc  
-powerpc                      makalu_defconfig   gcc  
-powerpc                 mpc8313_rdb_defconfig   clang
-riscv                            allmodconfig   gcc  
-riscv                             allnoconfig   gcc  
-riscv                            allyesconfig   gcc  
-riscv                               defconfig   gcc  
-riscv             nommu_k210_sdcard_defconfig   gcc  
-riscv                 randconfig-001-20231022   gcc  
-riscv                 randconfig-001-20231023   gcc  
-riscv                          rv32_defconfig   gcc  
-s390                             allmodconfig   gcc  
-s390                              allnoconfig   gcc  
-s390                             allyesconfig   gcc  
-s390                                defconfig   gcc  
-s390                  randconfig-001-20231022   gcc  
-s390                  randconfig-001-20231023   gcc  
-sh                               allmodconfig   gcc  
-sh                                allnoconfig   gcc  
-sh                               allyesconfig   gcc  
-sh                                  defconfig   gcc  
-sparc                            allmodconfig   gcc  
-sparc                             allnoconfig   gcc  
-sparc                            allyesconfig   gcc  
-sparc                               defconfig   gcc  
-sparc                 randconfig-001-20231023   gcc  
-sparc64                          allmodconfig   gcc  
-sparc64                          allyesconfig   gcc  
-sparc64                             defconfig   gcc  
-um                               allmodconfig   clang
-um                                allnoconfig   clang
-um                               allyesconfig   clang
-um                                  defconfig   gcc  
-um                             i386_defconfig   gcc  
-um                           x86_64_defconfig   gcc  
-x86_64                            allnoconfig   gcc  
-x86_64                           allyesconfig   gcc  
-x86_64       buildonly-randconfig-001-20231022   gcc  
-x86_64       buildonly-randconfig-001-20231023   gcc  
-x86_64       buildonly-randconfig-002-20231022   gcc  
-x86_64       buildonly-randconfig-002-20231023   gcc  
-x86_64       buildonly-randconfig-003-20231022   gcc  
-x86_64       buildonly-randconfig-003-20231023   gcc  
-x86_64       buildonly-randconfig-004-20231022   gcc  
-x86_64       buildonly-randconfig-004-20231023   gcc  
-x86_64       buildonly-randconfig-005-20231022   gcc  
-x86_64       buildonly-randconfig-005-20231023   gcc  
-x86_64       buildonly-randconfig-006-20231022   gcc  
-x86_64       buildonly-randconfig-006-20231023   gcc  
-x86_64                              defconfig   gcc  
-x86_64                                  kexec   gcc  
-x86_64                randconfig-001-20231023   gcc  
-x86_64                randconfig-002-20231023   gcc  
-x86_64                randconfig-003-20231023   gcc  
-x86_64                randconfig-004-20231023   gcc  
-x86_64                randconfig-005-20231023   gcc  
-x86_64                randconfig-006-20231023   gcc  
-x86_64                randconfig-011-20231023   gcc  
-x86_64                randconfig-012-20231023   gcc  
-x86_64                randconfig-013-20231023   gcc  
-x86_64                randconfig-014-20231023   gcc  
-x86_64                randconfig-015-20231023   gcc  
-x86_64                randconfig-016-20231023   gcc  
-x86_64                randconfig-071-20231023   gcc  
-x86_64                randconfig-072-20231023   gcc  
-x86_64                randconfig-073-20231023   gcc  
-x86_64                randconfig-074-20231023   gcc  
-x86_64                randconfig-075-20231023   gcc  
-x86_64                randconfig-076-20231023   gcc  
-x86_64                           rhel-8.3-bpf   gcc  
-x86_64                         rhel-8.3-kunit   gcc  
-x86_64                          rhel-8.3-rust   clang
-x86_64                               rhel-8.3   gcc  
-xtensa                            allnoconfig   gcc  
-xtensa                           allyesconfig   gcc  
+Other than that I'm fine with with unless other people have better ideas
+on how to handle this.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Regards,
+
+Tony
+
+>  struct omap8250_priv {
+>  	void __iomem *membase;
+>  	int line;
+> @@ -1617,6 +1624,7 @@ static int omap8250_suspend(struct device *dev)
+>  {
+>  	struct omap8250_priv *priv = dev_get_drvdata(dev);
+>  	struct uart_8250_port *up = serial8250_get_port(priv->line);
+> +	struct generic_pm_domain *genpd = pd_to_genpd(dev->pm_domain);
+>  	int err = 0;
+>  
+>  	serial8250_suspend_port(priv->line);
+> @@ -1627,8 +1635,19 @@ static int omap8250_suspend(struct device *dev)
+>  	if (!device_may_wakeup(dev))
+>  		priv->wer = 0;
+>  	serial_out(up, UART_OMAP_WER, priv->wer);
+> -	if (uart_console(&up->port) && console_suspend_enabled)
+> -		err = pm_runtime_force_suspend(dev);
+> +	if (uart_console(&up->port)) {
+> +		if (console_suspend_enabled)
+> +			err = pm_runtime_force_suspend(dev);
+> +		else {
+> +			/*
+> +			 * The pd shall not be powered-off (no console suspend).
+> +			 * Make copy of genpd flags before to set it always on.
+> +			 * The original value is restored during the resume.
+> +			 */
+> +			genpd_flags_console = genpd->flags;
+> +			genpd->flags |= GENPD_FLAG_ALWAYS_ON;
+> +		}
+> +	}
+>  	flush_work(&priv->qos_work);
+>  
+>  	return err;
+> @@ -1638,12 +1657,16 @@ static int omap8250_resume(struct device *dev)
+>  {
+>  	struct omap8250_priv *priv = dev_get_drvdata(dev);
+>  	struct uart_8250_port *up = serial8250_get_port(priv->line);
+> +	struct generic_pm_domain *genpd = pd_to_genpd(dev->pm_domain);
+>  	int err;
+>  
+>  	if (uart_console(&up->port) && console_suspend_enabled) {
+> -		err = pm_runtime_force_resume(dev);
+> -		if (err)
+> -			return err;
+> +		if (console_suspend_enabled) {
+> +			err = pm_runtime_force_resume(dev);
+> +			if (err)
+> +				return err;
+> +		} else
+> +			genpd->flags = genpd_flags_console;
+>  	}
+>  
+>  	serial8250_resume_port(priv->line);
+> -- 
+> 2.39.2
+> 
