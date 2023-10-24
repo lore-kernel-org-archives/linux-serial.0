@@ -2,87 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA8E5C07545
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 09:33:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85BFEC25B47
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 09:42:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234297AbjJXJdu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Oct 2023 05:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40950 "EHLO
+        id S234349AbjJXJmR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 24 Oct 2023 05:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234061AbjJXJdg (ORCPT
+        with ESMTP id S234412AbjJXJmF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Oct 2023 05:33:36 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F7C03259;
-        Tue, 24 Oct 2023 02:32:44 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B569C433C7;
-        Tue, 24 Oct 2023 09:32:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1698139964;
-        bh=UPQBF1hjWZNZJzepFfkVdTlAkejOqi2qCPHFJIJlpoo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=1yRUBc8YUTQyJ3mKxupBcm8GBt5PJZ82/ESPqSF3ssB3JJfGEg1YaqKI/fYTogBPM
-         WVxqdjED8e1T7WhoxBzzvaZzA7qVJ7CO7CRW9AoAnOM85CmkLqckbMumWTm0jjs/BZ
-         SA8McnxFrETIDIRO1STRzZm/qBwhUsU7ueYbeC4k=
-Date:   Tue, 24 Oct 2023 11:32:41 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Dan Raymond <raymod2@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, peterz@infradead.org,
-        andriy.shevchenko@linux.intel.com, quic_saipraka@quicinc.com,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH v5] arch/x86: port I/O tracing on x86
-Message-ID: <2023102406-prodigal-evidence-471d@gregkh>
-References: <b8eae358-a3b3-fd68-82f1-b2c53534b922@gmail.com>
- <2023100344-dart-jailbreak-c371@gregkh>
- <94e2b77c-9cc4-534f-e650-06d7e0697f9f@gmail.com>
- <20231004195001.76a57417@gandalf.local.home>
- <80b84be0-a0ad-d1a9-607a-a87c6cf509e0@gmail.com>
- <cc7fba3b-9da2-b9eb-95c8-7336e1cd4449@gmail.com>
- <2023102122-diabetes-trend-57d0@gregkh>
- <62349c78-14b8-4d5c-87ea-00dbd662fe26@gmail.com>
+        Tue, 24 Oct 2023 05:42:05 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E942F1998;
+        Tue, 24 Oct 2023 02:41:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1698140506; x=1729676506;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=tVQ+svt2jXvzExnt2d/wwyQCA0p17A4isUzWQkmRUDo=;
+  b=BtWA1/4rO/G+LzpzYAMCz7LLmnJk/nxSfWoyB/2to9Y2V81aJBMlidue
+   ZFMnZpViAGgW/Uu5qdxxPZsEo/aMb0JSavwOB0AW6KPH5UhdHLmNW6BhZ
+   2EQpldx0ijK9GJ4m2yMsoSS+jZ3oc1qvl5a7sJABKDdZV83L9+/P5XYgD
+   aYYex9tt00BIth47PPBNmH2do9Tm0o776K8Dxk4a1+bE0P5FpspsOgucA
+   wlXKi252JUO/15nK0KQ8dh4UtFRW4UFqfnppfOGtysZUNoaSxd1+IcWY/
+   LiARgdWzTFx430wk+3hqTKI3O4kb6QMpOqKDKms3dCe3fQTqCcTL4WgcV
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10872"; a="386831913"
+X-IronPort-AV: E=Sophos;i="6.03,247,1694761200"; 
+   d="scan'208";a="386831913"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 02:41:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10872"; a="751942077"
+X-IronPort-AV: E=Sophos;i="6.03,247,1694761200"; 
+   d="scan'208";a="751942077"
+Received: from nkraljev-mobl.ger.corp.intel.com ([10.249.41.91])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 02:41:44 -0700
+Date:   Tue, 24 Oct 2023 12:41:38 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Cameron Williams <cang1@live.co.uk>
+cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v4 05/11] tty: 8250: Add support for Intashield IS-100
+In-Reply-To: <DU0PR02MB7899A0E0CDAA505AF5A874CDC4DBA@DU0PR02MB7899.eurprd02.prod.outlook.com>
+Message-ID: <201af1d6-b82b-5588-017-5d8a9050c458@linux.intel.com>
+References: <BBPatchesV4> <20231020160412.118550-1-cang1@live.co.uk> <DU0PR02MB7899A0E0CDAA505AF5A874CDC4DBA@DU0PR02MB7899.eurprd02.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <62349c78-14b8-4d5c-87ea-00dbd662fe26@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Oct 23, 2023 at 02:28:04PM -0600, Dan Raymond wrote:
-> > Anyway, it's up to the x86 maintainers now, good luck!
-> > 
-> > But personally, I don't see the real need for this at all.  It's a
-> > debugging thing for what exactly?  Who needs this?  Who will use it?
-> > When will they use it?  And why?
+On Fri, 20 Oct 2023, Cameron Williams wrote:
+
+> Add support for the Intashield IS-100 1 port serial card.
 > 
-> This comment confuses me.  As you know I originally submitted a patch
-> that added I/O tracing just to the 8250 serial driver.  The patch was
-> titled "create debugfs interface for UART register tracing".  You said
-> this at the time:
+> Cc: stable@vger.kernel.org
+
+Why is this cc stable? I think it should be dropped.
+
+-- 
+ i.
+
+> Signed-off-by: Cameron Williams <cang1@live.co.uk>
+> ---
+> v3 - v4:
+> Add Cc: tag.
 > 
->    "Anyway, again, cool feature, I like it, but if you can tie it into
->    the existing trace framework better (either by using that entirely
->    which might be best), or at the least, putting your hook into the
->    data path with it, that would be best."
-
-Remember some of us, like myself, get on average 1000+ emails a day that
-they need to file/delete/review, so what I wrote yesterday I usually
-can't remember, let alone weeks ago :)
-
-> My original patch went through a few revisions before Andy Shevchenko
-> suggested I should add portio tracing instead in a manner similar to
-> how CONFIG_TRACE_MMIO_ACCESS works.  You agreed.  Hence I created this
-> patch.
-
-That's great, but it turns out that the x86 maintainers don't like this,
-so perhaps that's not going to work out well.
-
-I still think the original idea of using tracepoints for serial data
-would be best, but hey, I don't need this feature :)
-
-thanks,
-
-greg k-h
+> v2 - v3:
+> Re-submit patch series using git send-email to make threading work.
+> 
+> v1 - v2:
+> This is a resubmission series for the patch series below. That series
+> was lots of changes sent to lots of maintainers, this series is just for
+> the tty/serial/8250 subsystem.
+> 
+> [1] https://lore.kernel.org/all/DU0PR02MB789950E64D808DB57E9D7312C4F8A@DU0PR02MB7899.eurprd02.prod.outlook.com/
+> [2] https://lore.kernel.org/all/DU0PR02MB7899DE53DFC900EFB50E53F2C4F8A@DU0PR02MB7899.eurprd02.prod.outlook.com/
+> [3] https://lore.kernel.org/all/DU0PR02MB7899033E7E81EAF3694BC20AC4F8A@DU0PR02MB7899.eurprd02.prod.outlook.com/
+> [4] https://lore.kernel.org/all/DU0PR02MB7899EABA8C3DCAC94DCC79D4C4F8A@DU0PR02MB7899.eurprd02.prod.outlook.com/
+> 
+>  drivers/tty/serial/8250/8250_pci.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index 1c46b65789c9..b0a632415d8e 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -4913,6 +4913,12 @@ static const struct pci_device_id serial_pci_tbl[] = {
+>  		0, 0,
+>  		pbn_b1_bt_1_115200 },
+>  
+> +	/*
+> +	 * IntaShield IS-100
+> +	 */
+> +	{	PCI_VENDOR_ID_INTASHIELD, 0x0D60,
+> +		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+> +		pbn_b2_1_115200 },
+>  	/*
+>  	 * IntaShield IS-200
+>  	 */
+> 
