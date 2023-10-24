@@ -2,71 +2,71 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E618C07545
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 11:36:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0B9C00A8F
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 11:52:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231348AbjJXLgm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Oct 2023 07:36:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56102 "EHLO
+        id S231348AbjJXLwY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 24 Oct 2023 07:52:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231241AbjJXLgl (ORCPT
+        with ESMTP id S232461AbjJXLwY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Oct 2023 07:36:41 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E6D8BD68;
-        Tue, 24 Oct 2023 04:36:39 -0700 (PDT)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 81D158127;
-        Tue, 24 Oct 2023 11:36:37 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Tue, 24 Oct 2023 07:52:24 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B09C1;
+        Tue, 24 Oct 2023 04:52:22 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF3B5C433C8;
+        Tue, 24 Oct 2023 11:52:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1698148342;
+        bh=1AtkwXmqxTgRaQsRN4z6we2958oGeHE/fEu9KMk8/js=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oUN1cBvSqnotcbu8SXs81255s5ZTlXR+hg/atviUc1DgWhqAK7W7iUB8EoeXnsL4r
+         YpIOCB1NSztz7K/5oyZxztjT//+mIvDm8D6ViMBXrZW+6WAQw4i/zbmNyG5VRsRke1
+         WK95D8mCK9Bl4/zxh/7mont4ItUsCsh4Hk5kMMu8=
+Date:   Tue, 24 Oct 2023 13:52:19 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
         Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         John Ogness <john.ogness@linutronix.de>,
         Johan Hovold <johan@kernel.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [RFC PATCH 2/2] serial: core: Revert checks for tx runtime PM state
-Date:   Tue, 24 Oct 2023 14:36:19 +0300
-Message-ID: <20231024113624.54364-2-tony@atomide.com>
-X-Mailer: git-send-email 2.42.0
-In-Reply-To: <20231024113624.54364-1-tony@atomide.com>
+        Maximilian Luz <luzmaximilian@gmail.com>
+Subject: Re: [RFC PATCH 1/2] serial: core: Move tty and serdev to be children
+ of serial core port device
+Message-ID: <2023102401-playtime-moonrise-6f05@gregkh>
 References: <20231024113624.54364-1-tony@atomide.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231024113624.54364-1-tony@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This reverts commit 81a61051e0ce5fd7e09225c0d5985da08c7954a7.
+On Tue, Oct 24, 2023 at 02:36:18PM +0300, Tony Lindgren wrote:
+> Let's move tty and serdev controller to be children of the serial core port
+> device. This way the runtime PM usage count of a child device propagates
+> to the serial hardware device.
+> 
+> The tty and serdev devices are associated with a specific serial port of
+> a serial hardware controller device, and we now have serial core hierarchy
+> of controllers and ports.
+> 
+> The tty device moves happily with just a change of the parent device.
+> The serdev device init needs some changes to separate the serial hardware
+> controller device from the parent device.
+> 
 
-With tty and serdev controller moved to be children of the serial core
-port device, runtime PM usage count of the serdev controller now
-propagates to the serial hardware controller parent device as expected.
+What does this change the sysfs tree to look like?
 
-Cc: Maximilian Luz <luzmaximilian@gmail.com>
-Cc: Rob Herring <robh@kernel.org>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/serial/serial_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+No objection from me, just curious.
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -156,7 +156,7 @@ static void __uart_start(struct uart_state *state)
- 	 * enabled, serial_port_runtime_resume() calls start_tx() again
- 	 * after enabling the device.
- 	 */
--	if (!pm_runtime_enabled(port->dev) || pm_runtime_active(port->dev))
-+	if (pm_runtime_active(&port_dev->dev))
- 		port->ops->start_tx(port);
- 	pm_runtime_mark_last_busy(&port_dev->dev);
- 	pm_runtime_put_autosuspend(&port_dev->dev);
--- 
-2.42.0
+thanks,
+
+greg k-h
