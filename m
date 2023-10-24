@@ -2,97 +2,127 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41279C00A8F
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 12:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CECBAC00A8F
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 13:33:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234400AbjJXMuX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Oct 2023 08:50:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33200 "EHLO
+        id S234231AbjJXNdk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 24 Oct 2023 09:33:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234405AbjJXMuV (ORCPT
+        with ESMTP id S232073AbjJXNdj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Oct 2023 08:50:21 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72870D79;
-        Tue, 24 Oct 2023 05:50:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698151819; x=1729687819;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=knR7ls1kB5KT3RFeC+htrjrkzsMRNbLQDuFhEdcYC3I=;
-  b=fKKAwqvxkCUp65mrkvSjley4uzLtMycVd9EwR53AZT3JP8yhSPGRGbY1
-   x8ZMnebWVwgWRDjnZiZC5Os6ZQrwj0HdfRMlTKfdeuWbZAqoVt5k0XwLW
-   MEDWU3ocqCZ8EjSC03EPfrj8Stst4pyLZ7Kg7uV0vBV+G58r7Uqpo3eUf
-   XJwCvC9cpM+On5+JBrXk2VLCsLIs3XYPzI6cQJACkmeGffc+aagnp2rzs
-   8lqZb+vSnc4JTTfDeUCo8jTOeb+6fKfQNMwERPelkqZ16qgfoPgEx9fxz
-   oiikxgPhhnjGf3CugPyNxNjySFIJfqhB+0RzU+PiXfa8et29Z/RizNC90
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="418172703"
-X-IronPort-AV: E=Sophos;i="6.03,247,1694761200"; 
-   d="scan'208";a="418172703"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 05:50:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="875061014"
-X-IronPort-AV: E=Sophos;i="6.03,247,1694761200"; 
-   d="scan'208";a="875061014"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 24 Oct 2023 05:50:13 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 5AD9681C; Tue, 24 Oct 2023 15:41:17 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Rob Herring <robh@kernel.org>,
+        Tue, 24 Oct 2023 09:33:39 -0400
+Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97CB66E9E;
+        Tue, 24 Oct 2023 06:33:37 -0700 (PDT)
+Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-1d544a4a2f2so2946698fac.3;
+        Tue, 24 Oct 2023 06:33:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1698154417; x=1698759217;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=R27q7c9EKmEosDmmZaiSbraI2ky/QFLv5D4s5VAG5mA=;
+        b=ksApmv3bSRNvZImi++yoceTVO4ClUrdTPsowLaUo0GovB6afs44ErdjJANeiWuWFcI
+         76gQtuBO9qQ848ymKwDZVMY1feUqJSxoDgD/NztmASSvkChyyLgNjTJwNbAxiXxns/Xo
+         i4n27V13vEGQ9R5hFewUDKNBZd0z5KmSEL9FN4meMm9jr/cF/qWH6J3DtqCt7M04A+kD
+         IuD3S7wvL/kQJ210KYX9k7STt27V4GFbJNnExl3Xz0kUP+Tc7rpIOr37IiXVEwwsOfJV
+         PS+uz0ezBJNqba8XGDV/8M68c2JnbJcbEogud7x3H9lKaMh1VfCBvAKLfjYc+IWEH4Ik
+         bAAA==
+X-Gm-Message-State: AOJu0YzTfYOE5BRXRKHdZD4ma1W1I7hQFzl1y5oWJlUPRfDoyKSQx3Fw
+        ynta46/vnfGQHFxKq+4SR6gM2bXFnQ==
+X-Google-Smtp-Source: AGHT+IE0RQWbN5MRGPoN8XI3I5uiTU4s7pxD1k09Wc4jt7VpGEBTvj8O1EeQdZbkLq80NXHKwW83Ag==
+X-Received: by 2002:a05:6870:4c02:b0:1be:ceca:c666 with SMTP id pk2-20020a0568704c0200b001bececac666mr17699878oab.14.1698154416791;
+        Tue, 24 Oct 2023 06:33:36 -0700 (PDT)
+Received: from herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id zl1-20020a0568716d8100b001d4c5e4c2c5sm2112612oab.25.2023.10.24.06.33.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Oct 2023 06:33:36 -0700 (PDT)
+Received: (nullmailer pid 3514808 invoked by uid 1000);
+        Tue, 24 Oct 2023 13:33:34 -0000
+Date:   Tue, 24 Oct 2023 08:33:34 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Brenda Streiff <brenda.streiff@ni.com>
+Cc:     Gratian Crisan <gratian.crisan@ni.com>,
+        Jason Smith <jason.smith@ni.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Tony Lindgren <tony@atomide.com>
-Subject: [PATCH v1 1/3] serdev: Make use of device_set_node()
-Date:   Tue, 24 Oct 2023 15:41:13 +0300
-Message-Id: <20231024124115.3598090-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.40.0.1.gaa8946217a0b
-In-Reply-To: <20231024124115.3598090-1-andriy.shevchenko@linux.intel.com>
-References: <20231024124115.3598090-1-andriy.shevchenko@linux.intel.com>
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v6 tty-next 1/2] dt-bindings: serial: ni,ni16650: add
+ bindings
+Message-ID: <20231024133334.GA3505191-robh@kernel.org>
+References: <20231023210458.447779-1-brenda.streiff@ni.com>
+ <20231023210458.447779-2-brenda.streiff@ni.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231023210458.447779-2-brenda.streiff@ni.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use device_set_node() instead of assigning ctrl->dev.of_node
-directly because it also sets the firmware node.
+On Mon, Oct 23, 2023 at 04:04:56PM -0500, Brenda Streiff wrote:
+> Add bindings for the NI 16550 UART.
+> 
+> Signed-off-by: Brenda Streiff <brenda.streiff@ni.com>
+> Cc: Gratian Crisan <gratian.crisan@ni.com>
+> Cc: Jason Smith <jason.smith@ni.com>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  .../bindings/serial/ni,ni16550.yaml           | 51 +++++++++++++++++++
+>  1 file changed, 51 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/ni,ni16550.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/ni,ni16550.yaml b/Documentation/devicetree/bindings/serial/ni,ni16550.yaml
+> new file mode 100644
+> index 000000000000..72ab125dd892
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/ni,ni16550.yaml
+> @@ -0,0 +1,51 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/serial/ni,ni16550.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: NI 16550 asynchronous serial interface (UART)
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serdev/core.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Is this significantly different than all the other 8250 compatible UARTs 
+in 8250.yaml?
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index e7d663901c07..e46448efc48d 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -15,9 +15,11 @@
- #include <linux/of_device.h>
- #include <linux/pm_domain.h>
- #include <linux/pm_runtime.h>
-+#include <linux/property.h>
- #include <linux/sched.h>
- #include <linux/serdev.h>
- #include <linux/slab.h>
-+
- #include <linux/platform_data/x86/apple.h>
- 
- static bool is_registered;
-@@ -510,7 +512,7 @@ struct serdev_controller *serdev_controller_alloc(struct device *parent,
- 	ctrl->dev.type = &serdev_ctrl_type;
- 	ctrl->dev.bus = &serdev_bus_type;
- 	ctrl->dev.parent = parent;
--	ctrl->dev.of_node = parent->of_node;
-+	device_set_node(&ctrl->dev, dev_fwnode(parent));
- 	serdev_controller_set_drvdata(ctrl, &ctrl[1]);
- 
- 	dev_set_name(&ctrl->dev, "serial%d", id);
--- 
-2.40.0.1.gaa8946217a0b
+> +
+> +maintainers:
+> +  - Brenda Streiff <brenda.streiff@ni.com>
+> +
+> +allOf:
+> +  - $ref: serial.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    const: ni,ni16550
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  ni,serial-port-mode:
+> +    description: Indicates whether this is an RS-232 or RS-485 serial port.
+> +    $ref: /schemas/types.yaml#/definitions/string
+> +    enum: [ RS-232, RS-485 ]
+> +    default: RS-485
 
+We already have 'linux,rs485-enabled-at-boot-time' which seems similar 
+purpose. It also tells me this is not a fixed in hardware setting. If 
+that property doesn't work for you, come up with something common and 
+explain why. Or explain why this is completely unique to this UART.
+
+Rob
