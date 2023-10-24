@@ -2,54 +2,29 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F36BC00A8F
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 12:17:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D01B2C07545
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 12:29:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231794AbjJXMRh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Oct 2023 08:17:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50574 "EHLO
+        id S232580AbjJXM37 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 24 Oct 2023 08:29:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231478AbjJXMRg (ORCPT
+        with ESMTP id S231521AbjJXM36 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Oct 2023 08:17:36 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A29A2;
-        Tue, 24 Oct 2023 05:17:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698149854; x=1729685854;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=wuBMd3mo+5ZEGiZ3gwI9A1ReTEQWMLj66Y1biRz0ulw=;
-  b=ZgR1IZJWSokh3u0a7yTLfBwAkCRlBUy8LxFeMaMfA4JEU4gApFx3Temh
-   YZmEHXh8QAOZpvyPIxgoFYY2alVw30Ln8Q9v5gYC3T1Pvppkuo4WzmxcK
-   LF/x+x93Xgmf0SuT6Xyf8syTVaYyKojxy8ou6YFgrkECx0Ky+Qztbity9
-   vSfd+k/ohoSdnZSRn1/5pv4seV20LhavZrixmHZsMiTJL9pzDMY/f/32c
-   +3cAh75M7PNMIr+1DTky2Bx3pd+eNwoQofdlic8KnzQu5YdJhudQoS8SN
-   DNeSJ4eprHsaAbxQVpQc+XjA3lsMkZLBELb57tVbWzn00cZXq2AD6auKM
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10872"; a="451273155"
-X-IronPort-AV: E=Sophos;i="6.03,247,1694761200"; 
-   d="scan'208";a="451273155"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 05:17:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10872"; a="902149502"
-X-IronPort-AV: E=Sophos;i="6.03,247,1694761200"; 
-   d="scan'208";a="902149502"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga001.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 05:15:09 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97-RC3)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1qvGLe-00000008HMX-3G6I;
-        Tue, 24 Oct 2023 15:17:26 +0300
-Date:   Tue, 24 Oct 2023 15:17:26 +0300
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Rob Herring <robh@kernel.org>, Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Tue, 24 Oct 2023 08:29:58 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF035A2;
+        Tue, 24 Oct 2023 05:29:56 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 6259680AA;
+        Tue, 24 Oct 2023 12:29:56 +0000 (UTC)
+Date:   Tue, 24 Oct 2023 15:29:55 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
         John Ogness <john.ogness@linutronix.de>,
         Johan Hovold <johan@kernel.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
@@ -58,59 +33,32 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Maximilian Luz <luzmaximilian@gmail.com>
 Subject: Re: [RFC PATCH 1/2] serial: core: Move tty and serdev to be children
  of serial core port device
-Message-ID: <ZTe11rbKgcusPRD/@smile.fi.intel.com>
+Message-ID: <20231024122955.GL34982@atomide.com>
 References: <20231024113624.54364-1-tony@atomide.com>
+ <2023102401-playtime-moonrise-6f05@gregkh>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231024113624.54364-1-tony@atomide.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <2023102401-playtime-moonrise-6f05@gregkh>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Oct 24, 2023 at 02:36:18PM +0300, Tony Lindgren wrote:
-> Let's move tty and serdev controller to be children of the serial core port
-> device. This way the runtime PM usage count of a child device propagates
-> to the serial hardware device.
-> 
-> The tty and serdev devices are associated with a specific serial port of
-> a serial hardware controller device, and we now have serial core hierarchy
-> of controllers and ports.
-> 
-> The tty device moves happily with just a change of the parent device.
-> The serdev device init needs some changes to separate the serial hardware
-> controller device from the parent device.
+* Greg Kroah-Hartman <gregkh@linuxfoundation.org> [231024 11:52]:
+> What does this change the sysfs tree to look like?
 
-...
+On x86 qemu for the ttys:
 
-> -	ctrl->dev.of_node = parent->of_node;
-> +	ctrl->dev.of_node = host->of_node;
+# find /sys -name tty
+/sys/class/tty
+/sys/class/tty/tty
+/sys/devices/pnp0/00:04/00:04:0/00:04:0.0/tty
+/sys/devices/platform/serial8250/serial8250:0/serial8250:0.3/tty
+/sys/devices/platform/serial8250/serial8250:0/serial8250:0.1/tty
+/sys/devices/platform/serial8250/serial8250:0/serial8250:0.2/tty
+/sys/devices/virtual/tty
+/sys/devices/virtual/tty/tty
 
-Even above should have been using device_set_node(&ctrl->dev, dev_fwnode(host)).
+Regards,
 
-...
-
->  	/* Make sure controller and ResourceSource handle match */
-> -	if (ACPI_HANDLE(ctrl->dev.parent) != lookup.controller_handle)
-> +	if (ACPI_HANDLE(ctrl->host) != lookup.controller_handle)
-
-This can be changed to use device_match_acpi_handle().
-
->  		return -ENODEV;
-
-...
-
-> -	if (!has_acpi_companion(ctrl->dev.parent))
-> +	if (!has_acpi_companion(ctrl->host))
-
-I prefer is_acpi_device_node(dev_fwnode(...)) check, but here seems no other
-use for fwnode (haven't checked the full context, though).
-
->  		return -ENODEV;
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Tony
