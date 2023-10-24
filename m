@@ -2,103 +2,86 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8455C25B6E
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 09:32:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA8E5C07545
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 09:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234176AbjJXJcK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Oct 2023 05:32:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50156 "EHLO
+        id S234297AbjJXJdu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 24 Oct 2023 05:33:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234607AbjJXJbu (ORCPT
+        with ESMTP id S234061AbjJXJdg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Oct 2023 05:31:50 -0400
+        Tue, 24 Oct 2023 05:33:36 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 742C130EE;
-        Tue, 24 Oct 2023 02:30:36 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80090C433C9;
-        Tue, 24 Oct 2023 09:30:35 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F7C03259;
+        Tue, 24 Oct 2023 02:32:44 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B569C433C7;
+        Tue, 24 Oct 2023 09:32:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1698139835;
-        bh=lfJMJbOYdamcZjypq7loLpV55PVSQrhIV+tsgO35xUE=;
+        s=korg; t=1698139964;
+        bh=UPQBF1hjWZNZJzepFfkVdTlAkejOqi2qCPHFJIJlpoo=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eQqhPxToyrs3vqmMeCKlk5bZX2OfeDMkcfkyXUkrRfSHcOXI9NfZOiANOVDUCW1Y1
-         3GDIZ2Qc0UffhsGfHGoPdOw7ik5n9L4MpJpOpBOZNKW/VYJmtTnzsYgFRFACmASTnU
-         B4N1a925JlUu1JfnZBprYULTMAd3/v8cpR5bDM0w=
-Date:   Tue, 24 Oct 2023 11:30:33 +0200
+        b=1yRUBc8YUTQyJ3mKxupBcm8GBt5PJZ82/ESPqSF3ssB3JJfGEg1YaqKI/fYTogBPM
+         WVxqdjED8e1T7WhoxBzzvaZzA7qVJ7CO7CRW9AoAnOM85CmkLqckbMumWTm0jjs/BZ
+         SA8McnxFrETIDIRO1STRzZm/qBwhUsU7ueYbeC4k=
+Date:   Tue, 24 Oct 2023 11:32:41 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Frank Li <Frank.li@nxp.com>
-Cc:     alexandre.belloni@bootlin.com, conor.culhane@silvaco.com,
-        imx@lists.linux.dev, jirislaby@kernel.org, joe@perches.com,
-        linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, miquel.raynal@bootlin.com
-Subject: Re: [PATCH v2 1/1] tty: i3c: add TTY over I3C master support
-Message-ID: <2023102457-galore-uphill-4c84@gregkh>
-References: <20231020160027.3663772-1-Frank.Li@nxp.com>
- <2023102105-outfit-legroom-1633@gregkh>
- <ZTaewidgtcDaBega@lizhi-Precision-Tower-5810>
+To:     Dan Raymond <raymod2@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        linux-serial <linux-serial@vger.kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, peterz@infradead.org,
+        andriy.shevchenko@linux.intel.com, quic_saipraka@quicinc.com,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH v5] arch/x86: port I/O tracing on x86
+Message-ID: <2023102406-prodigal-evidence-471d@gregkh>
+References: <b8eae358-a3b3-fd68-82f1-b2c53534b922@gmail.com>
+ <2023100344-dart-jailbreak-c371@gregkh>
+ <94e2b77c-9cc4-534f-e650-06d7e0697f9f@gmail.com>
+ <20231004195001.76a57417@gandalf.local.home>
+ <80b84be0-a0ad-d1a9-607a-a87c6cf509e0@gmail.com>
+ <cc7fba3b-9da2-b9eb-95c8-7336e1cd4449@gmail.com>
+ <2023102122-diabetes-trend-57d0@gregkh>
+ <62349c78-14b8-4d5c-87ea-00dbd662fe26@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZTaewidgtcDaBega@lizhi-Precision-Tower-5810>
+In-Reply-To: <62349c78-14b8-4d5c-87ea-00dbd662fe26@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Oct 23, 2023 at 12:26:42PM -0400, Frank Li wrote:
-> On Sat, Oct 21, 2023 at 07:02:40PM +0200, Greg KH wrote:
-> > Note, your subject line needs to change.
+On Mon, Oct 23, 2023 at 02:28:04PM -0600, Dan Raymond wrote:
+> > Anyway, it's up to the x86 maintainers now, good luck!
 > > 
-> > On Fri, Oct 20, 2023 at 12:00:27PM -0400, Frank Li wrote:
-> > > In typical embedded Linux systems, UART consoles require at least two pins,
-> > > TX and RX. In scenarios where I2C/I3C devices like sensors or PMICs are
-> > > present, we can save these two pins by using this driver. Pins is crucial
-> > 
-> > "Pins are crucial"
-> > 
-> > > resources, especially in small chip packages.
-> > > 
-> > > This introduces support for using the I3C bus to transfer console tty data,
-> > > effectively replacing the need for dedicated UART pins. This not only
-> > > conserves valuable pin resources but also facilitates testing of I3C's
-> > > advanced features, including early termination, in-band interrupt (IBI)
-> > > support, and the creation of more complex data patterns. Additionally,
-> > > it aids in identifying and addressing issues within the I3C controller
-> > > driver.
-> > 
-> > But where is the serial data ending up at?  Not a normal uart, what is
-> > on the other end?  And do line settings mean anything here?
+> > But personally, I don't see the real need for this at all.  It's a
+> > debugging thing for what exactly?  Who needs this?  Who will use it?
+> > When will they use it?  And why?
 > 
-> Currently, it use slave i3c code. 
-> https://lore.kernel.org/imx/20231018215809.3477437-1-Frank.Li@nxp.com/T/#t
+> This comment confuses me.  As you know I originally submitted a patch
+> that added I/O tracing just to the 8250 serial driver.  The patch was
+> titled "create debugfs interface for UART register tracing".  You said
+> this at the time:
 > 
-> idealy build an i3c->usb dongle to bride it to usb acm. 
+>    "Anyway, again, cool feature, I like it, but if you can tie it into
+>    the existing trace framework better (either by using that entirely
+>    which might be best), or at the least, putting your hook into the
+>    data path with it, that would be best."
 
-So no one has built such a thing yet to determine if any of this works?
+Remember some of us, like myself, get on average 1000+ emails a day that
+they need to file/delete/review, so what I wrote yesterday I usually
+can't remember, let alone weeks ago :)
 
-> > > +static DEFINE_IDR(i3c_tty_minors);
-> > > +static DEFINE_MUTEX(i3c_tty_minors_lock);
-> > 
-> > I thought idr didn't need a mutex anymore, are you sure this is still
-> > needed?
-> > 
-> > > +static struct tty_driver *i3c_tty_driver;
-> > > +
-> > > +#define I3C_TTY_MINORS		256
-> > 
-> > Do you really need 256 minors?
-> 
-> Any resource concern about it. Maybe 32/64 is enough. I refer from USB tty
-> driver.
+> My original patch went through a few revisions before Andy Shevchenko
+> suggested I should add portio tracing instead in a manner similar to
+> how CONFIG_TRACE_MMIO_ACCESS works.  You agreed.  Hence I created this
+> patch.
 
-USB serial devices are quite common, and in some places, replaced PCI
-serial cards for modem connections.  So for them, we do actually use all
-256 minors.
+That's great, but it turns out that the x86 maintainers don't like this,
+so perhaps that's not going to work out well.
 
-But for this, it's a debugging device, how are you going to have so many
-different debugging ports on a system at once?
-
-How about making it small, like 8, and see if you ever actually exceed
-that in real life?
+I still think the original idea of using tracepoints for serial data
+would be best, but hey, I don't need this feature :)
 
 thanks,
 
