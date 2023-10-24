@@ -2,182 +2,135 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3473AC25B48
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 14:32:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1493AC07545
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 14:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343493AbjJXOcG (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Oct 2023 10:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40764 "EHLO
+        id S234523AbjJXOtG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 24 Oct 2023 10:49:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234502AbjJXOcF (ORCPT
+        with ESMTP id S234517AbjJXOtF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Oct 2023 10:32:05 -0400
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2087.outbound.protection.outlook.com [40.107.8.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B1710C6;
-        Tue, 24 Oct 2023 07:32:01 -0700 (PDT)
+        Tue, 24 Oct 2023 10:49:05 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2083.outbound.protection.outlook.com [40.107.244.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E83A111;
+        Tue, 24 Oct 2023 07:49:00 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TohdtvoqbaPdo7lm03H6YTU0nMHG4sJF8diW8SKIuqQs3bg7RmXnSnmgTdD/FDI9AZPRlZzW1YAUTHEPc3iNofAblriB+HQd+DbyjtrNd3IGSquO8kGwjPZSoseCQsxL/n0JnmJ0wxHcWNyqS9L+d0pjL0UnEN2fWbF0bOW4N6XQZD0T/tr4dF+POxiB9RhxDxM4vys8TFMUnk13kWvGfEptdgwix73kjGEV9cDJIVX2LKmQ/EXtwUxRTsH5T5ddAtjcFfjbR6A6QNxW5Vo9eGv5js7ZfwIPVyb7A53eSVHf3PDjzTzfuKKh6jWO4mtEb+BgqXEDvQYwO0sSvtgbgQ==
+ b=gtKqL/cO2yH36hKO5htnc28mAmugTGReSACRnJc5zCYVNJSfAo8h0/Sp2Hzs33Yz47ZNnzgFJLYqCAMnzqeXEq/Gp4nyXIWz1t7ofYaeMDgTGTmUaLce5I0Xg8XlrvHJRsGNdAMB4ZPohDvofCc/Jnk+ij0CmFj42Xo+8iiTGjjEFkOr3qc1WOlv2NaPIKGSPd0+WKQJity4iYLciPAGyACaExB+jLPDeUvnFKL6Gstd604XZKSXsjmVv7mDOu+dOirPPSsNrThj6dP+KPFyl4P7AgLVu6QvkazhFr9aGMQVezYroo9nrSpvELCgdEfloxTwfNGoYTo5K+ite8/aHg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bpVR8xkc2e+YdicUm6jUc+RMbsQHLlZSgDjS6yE13G0=;
- b=dc4qEU1jmWtwYL3xw26uCZOOGjkKbhmci1kY1PtE1NcybOvmU8TBVuzfPJvs1LGZNbQACaIGdm0K8PF8aXZDRpNA4Io+AiNGirPmnMcQCBCxhSH63bCTNAntcIXsyhcW+jVQtkozAeeWnqNlnCTnyzRs2bE8JzuYwE9aU5dYdVKBNe5dPKs7+Uqe6v9X/fj8rtiDbfX7s0pUa2jSE/Lce7XJlAcswHiaEK6mrM8OZAJg9UvPtVer4jPA5Jnu10RfDLGZ9KIdiZlHXpTVXM5l8qE4yFNJ0NkYWaF4Y4Ku6Jat+V1ve8eO0gQ8+VrP3wMdDEQojNkSJ9altnnCabaaww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ bh=MLonJK7F+AyNL6Gbtd2QP9D0eJwmTC7Zj7rlI078qLg=;
+ b=aRFcB2MMpMi8gSMrJz2Ar2EGLGz4eFyHxKlelQ5rU3UHJF0KvYbXKqrrEeKM+nxBwPiKa1C9jzJejrBhoyWKtgGwHe3eWiLvzrixvqHly3T7h4Qt3UALo7Y4eQjm+h3s6ynFu2YD04PmmvnQ2bExOBvEU/VxzybHH7Bmd3ZOV2BX5LXM//CVOagA9HEgxzPs6IbWTWDdnuIh8+O5LneV1a/h2pN2CGcFo91l132zx4jvSUbqaMtTG0d900R1uTGqh7gy7wsWDrTcqBRymh+EDWimgwXqkEEhL1ruhsfBR5xbDVCtoFMmh6+U32KgV+nCgeMSOkqi1kuoAc2bMy12Ag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=linuxfoundation.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bpVR8xkc2e+YdicUm6jUc+RMbsQHLlZSgDjS6yE13G0=;
- b=JmaK8SMwTQsMesbl3g9KTMdorU+/zhYkHRNUafGdOaeD6HkuMqdET9ThqW6qHm3AYjb3zd9kBOV9ZBxzWYU8QB8+n0l/iO9UMpnKrFKMClkDOd8hpvlkstQSNy9Ka5txUvCnpwEs/sh3EKbVy+s1RBVttoLHfPg9idBZOvapKb4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM6PR04MB4838.eurprd04.prod.outlook.com (2603:10a6:20b:4::16)
- by DB8PR04MB6921.eurprd04.prod.outlook.com (2603:10a6:10:119::12) with
+ bh=MLonJK7F+AyNL6Gbtd2QP9D0eJwmTC7Zj7rlI078qLg=;
+ b=uFANhXjQVVNobRk97ikR6ZHZLA7GyaaodAHW0W3ST/tAYterSDLSxETUOHAysoHw8R7QUiP3AvaSfKLV/STU/9iVj4IccT9BEqImc/GKER3EbNlfd8qSfqa8lM6HsrpBRVqsbeoe0s+43k1qeupgZgCPEzxg0TWme3vZKgi+e1s=
+Received: from CYZPR11CA0009.namprd11.prod.outlook.com (2603:10b6:930:8d::12)
+ by PH7PR12MB6665.namprd12.prod.outlook.com (2603:10b6:510:1a7::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6933.11; Tue, 24 Oct
- 2023 14:31:58 +0000
-Received: from AM6PR04MB4838.eurprd04.prod.outlook.com
- ([fe80::97ca:a905:8e64:c098]) by AM6PR04MB4838.eurprd04.prod.outlook.com
- ([fe80::97ca:a905:8e64:c098%6]) with mapi id 15.20.6933.011; Tue, 24 Oct 2023
- 14:31:58 +0000
-Date:   Tue, 24 Oct 2023 10:31:51 -0400
-From:   Frank Li <Frank.li@nxp.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     alexandre.belloni@bootlin.com, conor.culhane@silvaco.com,
-        imx@lists.linux.dev, jirislaby@kernel.org, joe@perches.com,
-        linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, miquel.raynal@bootlin.com
-Subject: Re: [PATCH v2 1/1] tty: i3c: add TTY over I3C master support
-Message-ID: <ZTfVV3DW8jqH6ek9@lizhi-Precision-Tower-5810>
-References: <20231020160027.3663772-1-Frank.Li@nxp.com>
- <2023102105-outfit-legroom-1633@gregkh>
- <ZTaewidgtcDaBega@lizhi-Precision-Tower-5810>
- <2023102457-galore-uphill-4c84@gregkh>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2023102457-galore-uphill-4c84@gregkh>
-X-ClientProxiedBy: SJ0PR03CA0056.namprd03.prod.outlook.com
- (2603:10b6:a03:33e::31) To AM6PR04MB4838.eurprd04.prod.outlook.com
- (2603:10a6:20b:4::16)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.33; Tue, 24 Oct
+ 2023 14:48:55 +0000
+Received: from CY4PEPF0000E9CD.namprd03.prod.outlook.com
+ (2603:10b6:930:8d:cafe::b2) by CYZPR11CA0009.outlook.office365.com
+ (2603:10b6:930:8d::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.33 via Frontend
+ Transport; Tue, 24 Oct 2023 14:48:55 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CY4PEPF0000E9CD.mail.protection.outlook.com (10.167.241.140) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6933.15 via Frontend Transport; Tue, 24 Oct 2023 14:48:55 +0000
+Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Tue, 24 Oct
+ 2023 09:48:54 -0500
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB06.amd.com
+ (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Tue, 24 Oct
+ 2023 09:48:54 -0500
+Received: from xhdsgoud40.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server id 15.1.2507.27 via Frontend
+ Transport; Tue, 24 Oct 2023 09:48:50 -0500
+From:   Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+To:     <git@amd.com>, <michal.simek@amd.com>,
+        <gregkh@linuxfoundation.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <jirislaby@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <radhey.shyam.pandey@amd.com>, <srinivas.goud@amd.com>,
+        <shubhrajyoti.datta@amd.com>, <manion05gk@gmail.com>,
+        Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+Subject: [PATCH V3 0/2] Add rs485 support to uartps driver
+Date:   Tue, 24 Oct 2023 20:18:45 +0530
+Message-ID: <20231024144847.2316941-1-manikanta.guntupalli@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM6PR04MB4838:EE_|DB8PR04MB6921:EE_
-X-MS-Office365-Filtering-Correlation-Id: b1c79291-c846-4ed2-1312-08dbd49dfa88
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9CD:EE_|PH7PR12MB6665:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0996a78b-7324-4c23-6a9c-08dbd4a058f5
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MjAvqyHLvFgBXVSrQ1piMQD6ZH+ALYG60pNrm+aIs5AlshxPqVpdggfBDdGtywCQ7FyppEbVTJQl+49jhXKFQiVT6rbzN+ILgADiSWbUxQX2A2oGPWdi8LBywABP0NS3Knj3MMTM0xCfzUb/wXZE+un0EKEyKLUL04UMfcSnWJVKTUYuKQ2/8uDT+zfPq7FkVhuOT/uDi/VSPlxzELYz76oVQuzgs7Jl4wle6k4C75Z4ms77yG1QLq4smS3l7pzrYXPUQ7TfLRn3R9FHIRAfQUiW50Usf9WjG/andEg1/YTQVc5z7SvMKObo9WeRjyMliIdkUpbozzEcwsnEqbSL6BSsEicn4S+LupZ9SgYUmWxJs9PPE3WoZLh44krpLZJlLNyFxHs+HyjGiOCAA/2DwUgafegEzksy5E7o0CqRYO6iDA+mRp9zNtG5THCr7SbDF8RbqLyt214pAOZeMvbdBj9bIfTKHErqAe0Czud+bsYhqOHNZqbuCghtU98pfz2eDcdz5+Jkbdt032UK9gKLmU/pMLvQLHZntCn1ljQCE4zJDeL3cMC+6CiTCX9mziKaaVswNqV20ptTx5S4TLtjtKxbXHmp6Fm/WaXRLe5Q9Bg=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB4838.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(396003)(346002)(376002)(136003)(39860400002)(366004)(230922051799003)(1800799009)(186009)(451199024)(64100799003)(33716001)(26005)(38350700005)(66899024)(38100700002)(41300700001)(2906002)(86362001)(5660300002)(7416002)(66476007)(8936002)(8676002)(4326008)(478600001)(6506007)(6666004)(6916009)(316002)(66556008)(66946007)(83380400001)(966005)(6486002)(9686003)(6512007)(52116002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vkpLGo6clfAxAZCNsJVVib2T9uFKKHt1xcby+OgeEoTe8AWvxHseHABSuYRV?=
- =?us-ascii?Q?+OeKZQmw9vUg+HJM5Dzq+q7ptEAXP/nNnqQa8dMOnsj/6oYTtT6CkrelD590?=
- =?us-ascii?Q?rAXEoeEzundq29bhRf1YB3YKBmMwfxV9KgyKybN4+zHA+wDFvqTTxFIIcx7q?=
- =?us-ascii?Q?gSndmkBn+K2gVX0dcUTjKbdmGhLD3N/umCRy9goCYEd03t0hJ8kwzbHKY+qm?=
- =?us-ascii?Q?SQXMq3FCG2OCiRDYmRvLnUeHKOs1CwpWjE4VOqHHDELbUTRfKpq9R6yLVT7w?=
- =?us-ascii?Q?7sOEGtzc7IsN/gR3/op3/5oZL5MYNumOQUf+CWhKZXa2gG4YG0ESM9j8Ncyo?=
- =?us-ascii?Q?VindZ1p0xJDjXno/iXDvwSInfjT2FsANeejvE47To8pUzujo8Hg0Ln7AXEfK?=
- =?us-ascii?Q?KBmoaO+w6trtbG8M9Qbi9TDHckTJrrNClYA+GTLOB2HRNqvO5tRkma9Jmdfz?=
- =?us-ascii?Q?b++KZgkTh5vgOfisaRo/grj3MdLLJC1xgjM4XPUXnZpruYN1kYvXFM7xn7Ii?=
- =?us-ascii?Q?ckRjjsAM1cBdUw4Y2ZhcODWGNJMOxVF8JkPQDt8uSqTlab3MeNosxExKrV4G?=
- =?us-ascii?Q?/uS/M0jWJNUw7s8uo/tD2G9I5YQEPjw/oJB74Oi9FwySSecNDbharA6BeixM?=
- =?us-ascii?Q?wyyjtkR4MP/XgbcH1lgnw/huduvaGVnvxxht8eRfnDJVBPxuFLjTFvTTDsTL?=
- =?us-ascii?Q?D3dlZRen0gX8cRElOhWpIszjKimT73BYt9ZzwhRJdt/sdeF2Ej92h6YqfbR+?=
- =?us-ascii?Q?wgwZchU0Xg39ofBeIo6QGqw0VDkC5f+5jisKi2Wp8qlKbv2mnvdUvdu8sfhm?=
- =?us-ascii?Q?CSH5szHcEoJA8lVR5DSRsJNyS5yYzYS6vQEwFmgEBdw5dgwU5NctWsp04vf5?=
- =?us-ascii?Q?d7uvD10/JSfNrYPSpH8faPYvkWUNy6YxzEu1UdM5DAhkWor0fN51jQUMOCl1?=
- =?us-ascii?Q?wUwOijiAKxqyUvNhzlHCyIzhU0jTGFsp+m03uUaD2st0CxX6lNk28hF+bzrZ?=
- =?us-ascii?Q?BKLVkr1QEBK7s60Xi/zD0UFlLgp33fO5Q1eZoNTtymXoOO1YfspeTX5GeeYy?=
- =?us-ascii?Q?d4CvHSOj4AX9d4GTJr53ONVmOdXWapDxJ0fwa/iMvdL8fhzKxqTNV+RQiXUi?=
- =?us-ascii?Q?IybAtbmVflkDCmE86O61yDaqIdM/P97y8YbIiH+gAhyxxGFvLtJOPHbUbVff?=
- =?us-ascii?Q?/Ry3MoNDW3R3MsRbUA8Bi+H1v5PNzstdPB4RA9XUQ0iXrc2LTH3io14OGJzp?=
- =?us-ascii?Q?RX1I7f1+V7Od4F7orOCMqemZT8Ud86DAUmM+uhcb+tgDJYiEeeiuGMsCU1cY?=
- =?us-ascii?Q?9/N53ueu6dor+/o0hPYL2bsippgRCo85Hr5XvBQS++1+CgcAIBDFfVHae6Pq?=
- =?us-ascii?Q?Q2KXeBiSa/IlkdiU9o6oIapb9tKO+DspvOq4GHGP7ULdX6IwL1CqXTZDL47w?=
- =?us-ascii?Q?DxGyE2/LWuZEzauPaHWBp1src02tJIXBWpf9j6m5IMfT6eVDCD00d8I3lyAJ?=
- =?us-ascii?Q?Vdznv0cCUAmxlIY1kOp2z5lz94JaTaB/DSd5MOfJPYlgOkLzJPumXyFOYEKB?=
- =?us-ascii?Q?tix52faEEZXQQ8wkaZQ=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b1c79291-c846-4ed2-1312-08dbd49dfa88
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB4838.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Oct 2023 14:31:58.3002
+X-Microsoft-Antispam-Message-Info: 54u6F8/rCXJBajw6RJFKgVpTIaocDmzNE6ZTET5RC48q6vIFPUBnHARDljACtVYuGzNi3m54lkVgRxJ0bcKFmek+gMv5NIOBFoG2323P4HrOE7AcF3LOY/zjl5PjXsE7UEvrsTHiMM+57yvWhHiuFrTe3ajWw4o55BxtAmnf/dzKkYTfZx8JXLgdPj93UuODmb8hOiEXbxJ93gXeVRxW5rxOyaFXCp9im+x/K4nF6Fb7O0Wmio+NJ9Ox6NJB4svf29p3bVYXdCo9vQun02mstW4SVXOGSzokrEiIII6xcFBHtRxeemckPK+okrzAg5ObWm03n0pYa8xcu5Q65AkPJorsZFCW3BC/WJDM/tduM0KMtJTL47HdYt4ex4hXpq3IoqpVFTpw29M3L4yJvAX32U5dGwona+zfp0AptqF2gGXpAbw3/hgVG4n/0pQNiksFc80AB2Iaedz1kfv5hQcPHRhj4r8sYe7UFns/FYXT2D0PBSGjVr2WI1qc+/O+i9gm39BVkLZlMTmmg5TK9SuyTBb2A755EUCQ2zBIS/wioMxlV1Yi2s06he6yMWJQv26P+k8iuAVnDZXuADeBtA07csZF2btnU2F7HlirndXWhJPIYJhplPZ4XFNneY60uRjXRYhiIpyS2ucBaeTB4mOmhIT9+nmaGHcer3oIZewndie9/2sTZg68rTLofvNBpdVsiHbZCGn2C+81XBiRsd8x649ub2lkR7oA3c5rKTZsKX42qc+RPtboCB1hzehhu94BC5tETzi2cN8/6ryOfpeHEdGWfTIzTAVXspFO+TTb81I=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(376002)(39860400002)(136003)(396003)(346002)(230922051799003)(451199024)(64100799003)(1800799009)(82310400011)(186009)(36840700001)(46966006)(40470700004)(356005)(36860700001)(81166007)(36756003)(82740400003)(6666004)(110136005)(2616005)(26005)(478600001)(54906003)(316002)(83380400001)(1076003)(70586007)(336012)(47076005)(86362001)(70206006)(426003)(921008)(44832011)(41300700001)(8936002)(4326008)(8676002)(40460700003)(40480700001)(2906002)(7416002)(5660300002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Oct 2023 14:48:55.4454
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zgPf7aIkpZ755OvT3RFjFcbMrUsVkwnKVSBJ0ED4zdq7q7Bvgd5/W1EA/BNCw55d7lGrdSGWTAToqjlTNgI4zQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6921
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0996a78b-7324-4c23-6a9c-08dbd4a058f5
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CY4PEPF0000E9CD.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6665
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Oct 24, 2023 at 11:30:33AM +0200, Greg KH wrote:
-> On Mon, Oct 23, 2023 at 12:26:42PM -0400, Frank Li wrote:
-> > On Sat, Oct 21, 2023 at 07:02:40PM +0200, Greg KH wrote:
-> > > Note, your subject line needs to change.
-> > > 
-> > > On Fri, Oct 20, 2023 at 12:00:27PM -0400, Frank Li wrote:
-> > > > In typical embedded Linux systems, UART consoles require at least two pins,
-> > > > TX and RX. In scenarios where I2C/I3C devices like sensors or PMICs are
-> > > > present, we can save these two pins by using this driver. Pins is crucial
-> > > 
-> > > "Pins are crucial"
-> > > 
-> > > > resources, especially in small chip packages.
-> > > > 
-> > > > This introduces support for using the I3C bus to transfer console tty data,
-> > > > effectively replacing the need for dedicated UART pins. This not only
-> > > > conserves valuable pin resources but also facilitates testing of I3C's
-> > > > advanced features, including early termination, in-band interrupt (IBI)
-> > > > support, and the creation of more complex data patterns. Additionally,
-> > > > it aids in identifying and addressing issues within the I3C controller
-> > > > driver.
-> > > 
-> > > But where is the serial data ending up at?  Not a normal uart, what is
-> > > on the other end?  And do line settings mean anything here?
-> > 
-> > Currently, it use slave i3c code. 
-> > https://lore.kernel.org/imx/20231018215809.3477437-1-Frank.Li@nxp.com/T/#t
-> > 
-> > idealy build an i3c->usb dongle to bride it to usb acm. 
-> 
-> So no one has built such a thing yet to determine if any of this works?
+Add optional gpio property to uartps node to support rs485.
+Add rs485 support to uartps driver.
+---
+Changes for V2:
+Modify optional gpio name to xlnx,phy-ctrl-gpios.
+Update commit description.
+Add support for RTS, delay_rts_before_send and delay_rts_after_send in RS485 mode.
+Changes for V3:
+Modify optional gpio name to rts-gpios.
+Update commit description.
+Move cdns_uart_tx_empty function to avoid prototype statement.
+Remove assignment of struct serial_rs485 to port->rs485 as
+serial core performs that.
+Switch to native RTS in non GPIO case.
+Handle rs485 during stop tx.
+Remove explicit calls to configure gpio direction and value,
+as devm_gpiod_get_optional performs that by using GPIOD_OUT_LOW argument.
+Update implementation to support configuration of GPIO/RTS value
+based on user configuration of SER_RS485_RTS_ON_SEND and
+SER_RS485_RTS_AFTER_SEND. Move implementation to start_tx from handle_tx.
 
-It is easy to proof concept by I3C slave code and USB gadget ACM, then pipe
-two tty (ttyACM0 and ttySI3C0 together).
+Manikanta Guntupalli (2):
+  dt-bindings: Add optional gpio property to uartps node to support
+    rs485
+  tty: serial: uartps: Add rs485 support to uartps driver
 
-Of we also can implement a USB to I3C class standard, base on this, reuse
-this tty driver at host side.
+ .../devicetree/bindings/serial/cdns,uart.yaml |   6 +
+ drivers/tty/serial/xilinx_uartps.c            | 180 ++++++++++++++++--
+ 2 files changed, 171 insertions(+), 15 deletions(-)
 
-Frank
+-- 
+2.25.1
 
-> 
-> > > > +static DEFINE_IDR(i3c_tty_minors);
-> > > > +static DEFINE_MUTEX(i3c_tty_minors_lock);
-> > > 
-> > > I thought idr didn't need a mutex anymore, are you sure this is still
-> > > needed?
-> > > 
-> > > > +static struct tty_driver *i3c_tty_driver;
-> > > > +
-> > > > +#define I3C_TTY_MINORS		256
-> > > 
-> > > Do you really need 256 minors?
-> > 
-> > Any resource concern about it. Maybe 32/64 is enough. I refer from USB tty
-> > driver.
-> 
-> USB serial devices are quite common, and in some places, replaced PCI
-> serial cards for modem connections.  So for them, we do actually use all
-> 256 minors.
-> 
-> But for this, it's a debugging device, how are you going to have so many
-> different debugging ports on a system at once?
-> 
-> How about making it small, like 8, and see if you ever actually exceed
-> that in real life?
-> 
-> thanks,
-> 
-> greg k-h
