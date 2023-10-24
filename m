@@ -2,55 +2,104 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D538C25B47
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 08:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8455C25B6E
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 09:32:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233799AbjJXILT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Oct 2023 04:11:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34896 "EHLO
+        id S234176AbjJXJcK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 24 Oct 2023 05:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233815AbjJXILR (ORCPT
+        with ESMTP id S234607AbjJXJbu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Oct 2023 04:11:17 -0400
-Received: from mail.citycodes.pl (mail.citycodes.pl [158.255.215.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E09E9
-        for <linux-serial@vger.kernel.org>; Tue, 24 Oct 2023 01:11:16 -0700 (PDT)
-Received: by mail.citycodes.pl (Postfix, from userid 1001)
-        id D824B214FB; Tue, 24 Oct 2023 10:10:43 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=citycodes.pl; s=mail;
-        t=1698135074; bh=fClkhHu/p6gIm8tbpvFwCqGX3kXIMdqjiuDdSiYGEkk=;
-        h=Date:From:To:Subject:From;
-        b=mQK6zH5d5zHVIAmRyDsmnzrRJYvdTa8RbFomLTELo+XBWaCtMv6l8GAv6x47lbDFH
-         Po1p2KiCdGOZ5v1utdvis82yCjcuS+6l1bWhuj8fVr3Hswa992Puc/lUwg2brmlrcM
-         9Rr33KNPGQUkRC6cZ7mJo8Aigub7D9Jsv1nDSbyQb1nEjtOSZZFL/4M80RksLhOA1q
-         JRSOTPprn2LbzJj90rtNlUJHqABH+3qYasUIWhUyvTKixNU6vg7C978UrkahqgOTuY
-         FvzXY8Cu3SSvtP50cDkIxOn2JS4oepjSyuuGE0bjLpTWiglFDThP9rc8U+zbvhQUtx
-         m4xLs3pu9UXZw==
-Received: by mail.citycodes.pl for <linux-serial@vger.kernel.org>; Tue, 24 Oct 2023 08:10:35 GMT
-Message-ID: <20231024084500-0.1.8a.l8a6.0.epk0tqor3b@citycodes.pl>
-Date:   Tue, 24 Oct 2023 08:10:35 GMT
-From:   "Kamil Lasek" <kamil.lasek@citycodes.pl>
-To:     <linux-serial@vger.kernel.org>
-Subject: Wycena paneli fotowoltaicznych
-X-Mailer: mail.citycodes.pl
+        Tue, 24 Oct 2023 05:31:50 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 742C130EE;
+        Tue, 24 Oct 2023 02:30:36 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80090C433C9;
+        Tue, 24 Oct 2023 09:30:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1698139835;
+        bh=lfJMJbOYdamcZjypq7loLpV55PVSQrhIV+tsgO35xUE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eQqhPxToyrs3vqmMeCKlk5bZX2OfeDMkcfkyXUkrRfSHcOXI9NfZOiANOVDUCW1Y1
+         3GDIZ2Qc0UffhsGfHGoPdOw7ik5n9L4MpJpOpBOZNKW/VYJmtTnzsYgFRFACmASTnU
+         B4N1a925JlUu1JfnZBprYULTMAd3/v8cpR5bDM0w=
+Date:   Tue, 24 Oct 2023 11:30:33 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Frank Li <Frank.li@nxp.com>
+Cc:     alexandre.belloni@bootlin.com, conor.culhane@silvaco.com,
+        imx@lists.linux.dev, jirislaby@kernel.org, joe@perches.com,
+        linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, miquel.raynal@bootlin.com
+Subject: Re: [PATCH v2 1/1] tty: i3c: add TTY over I3C master support
+Message-ID: <2023102457-galore-uphill-4c84@gregkh>
+References: <20231020160027.3663772-1-Frank.Li@nxp.com>
+ <2023102105-outfit-legroom-1633@gregkh>
+ <ZTaewidgtcDaBega@lizhi-Precision-Tower-5810>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZTaewidgtcDaBega@lizhi-Precision-Tower-5810>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dzie=C5=84 dobry,
+On Mon, Oct 23, 2023 at 12:26:42PM -0400, Frank Li wrote:
+> On Sat, Oct 21, 2023 at 07:02:40PM +0200, Greg KH wrote:
+> > Note, your subject line needs to change.
+> > 
+> > On Fri, Oct 20, 2023 at 12:00:27PM -0400, Frank Li wrote:
+> > > In typical embedded Linux systems, UART consoles require at least two pins,
+> > > TX and RX. In scenarios where I2C/I3C devices like sensors or PMICs are
+> > > present, we can save these two pins by using this driver. Pins is crucial
+> > 
+> > "Pins are crucial"
+> > 
+> > > resources, especially in small chip packages.
+> > > 
+> > > This introduces support for using the I3C bus to transfer console tty data,
+> > > effectively replacing the need for dedicated UART pins. This not only
+> > > conserves valuable pin resources but also facilitates testing of I3C's
+> > > advanced features, including early termination, in-band interrupt (IBI)
+> > > support, and the creation of more complex data patterns. Additionally,
+> > > it aids in identifying and addressing issues within the I3C controller
+> > > driver.
+> > 
+> > But where is the serial data ending up at?  Not a normal uart, what is
+> > on the other end?  And do line settings mean anything here?
+> 
+> Currently, it use slave i3c code. 
+> https://lore.kernel.org/imx/20231018215809.3477437-1-Frank.Li@nxp.com/T/#t
+> 
+> idealy build an i3c->usb dongle to bride it to usb acm. 
 
-dostrzegam mo=C5=BCliwo=C5=9B=C4=87 wsp=C3=B3=C5=82pracy z Pa=C5=84stwa f=
-irm=C4=85.
+So no one has built such a thing yet to determine if any of this works?
 
-=C5=9Awiadczymy kompleksow=C4=85 obs=C5=82ug=C4=99 inwestycji w fotowolta=
-ik=C4=99, kt=C3=B3ra obni=C5=BCa koszty energii elektrycznej.
+> > > +static DEFINE_IDR(i3c_tty_minors);
+> > > +static DEFINE_MUTEX(i3c_tty_minors_lock);
+> > 
+> > I thought idr didn't need a mutex anymore, are you sure this is still
+> > needed?
+> > 
+> > > +static struct tty_driver *i3c_tty_driver;
+> > > +
+> > > +#define I3C_TTY_MINORS		256
+> > 
+> > Do you really need 256 minors?
+> 
+> Any resource concern about it. Maybe 32/64 is enough. I refer from USB tty
+> driver.
 
-Czy s=C4=85 Pa=C5=84stwo zainteresowani weryfikacj=C4=85 wst=C4=99pnych p=
-ropozycji?
+USB serial devices are quite common, and in some places, replaced PCI
+serial cards for modem connections.  So for them, we do actually use all
+256 minors.
 
+But for this, it's a debugging device, how are you going to have so many
+different debugging ports on a system at once?
 
-Pozdrawiam,
-Kamil Lasek
+How about making it small, like 8, and see if you ever actually exceed
+that in real life?
+
+thanks,
+
+greg k-h
