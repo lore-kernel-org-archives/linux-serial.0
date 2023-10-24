@@ -2,75 +2,55 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BB74C07545
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 08:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D538C25B47
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 08:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233780AbjJXIKY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Oct 2023 04:10:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35310 "EHLO
+        id S233799AbjJXILT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 24 Oct 2023 04:11:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232893AbjJXIKX (ORCPT
+        with ESMTP id S233815AbjJXILR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Oct 2023 04:10:23 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59A331A4;
-        Tue, 24 Oct 2023 01:10:20 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFC23C433C8;
-        Tue, 24 Oct 2023 08:10:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1698135020;
-        bh=5xhUOdK0houexRKXcOj94zVlL2PpAocoXIRj8TfVKBU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KG5T8Mq204F7Y8wCR8YhBSH8HQhdygp9fDkcBf8ZbjAsamSjwbx9XVKJUTxcVpUKH
-         cgiqTFb8Et2+yKm7cGxUrh6kHKpQCi3p68Yb89KSDvvM0OKF/3L3OLYEfDvzJupvFi
-         /BrbMIvLz6iAAboqli2ryXqpYg2mCto1wk/3RNw4=
-Date:   Tue, 24 Oct 2023 10:10:16 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v3 6/6] tty: serial: 8250: Add support for MOXA PCIe
- boards to switch interface between RS422/RS485
-Message-ID: <2023102403-clash-utmost-8377@gregkh>
-References: <20231018091739.10125-1-crescentcy.hsieh@moxa.com>
- <20231018091739.10125-7-crescentcy.hsieh@moxa.com>
- <f49feb43-e255-43bb-4271-8a13db2859fc@linux.intel.com>
- <ZTd2t9nsBx9pZKD9@moxa-ThinkCentre-M90t>
+        Tue, 24 Oct 2023 04:11:17 -0400
+Received: from mail.citycodes.pl (mail.citycodes.pl [158.255.215.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E09E9
+        for <linux-serial@vger.kernel.org>; Tue, 24 Oct 2023 01:11:16 -0700 (PDT)
+Received: by mail.citycodes.pl (Postfix, from userid 1001)
+        id D824B214FB; Tue, 24 Oct 2023 10:10:43 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=citycodes.pl; s=mail;
+        t=1698135074; bh=fClkhHu/p6gIm8tbpvFwCqGX3kXIMdqjiuDdSiYGEkk=;
+        h=Date:From:To:Subject:From;
+        b=mQK6zH5d5zHVIAmRyDsmnzrRJYvdTa8RbFomLTELo+XBWaCtMv6l8GAv6x47lbDFH
+         Po1p2KiCdGOZ5v1utdvis82yCjcuS+6l1bWhuj8fVr3Hswa992Puc/lUwg2brmlrcM
+         9Rr33KNPGQUkRC6cZ7mJo8Aigub7D9Jsv1nDSbyQb1nEjtOSZZFL/4M80RksLhOA1q
+         JRSOTPprn2LbzJj90rtNlUJHqABH+3qYasUIWhUyvTKixNU6vg7C978UrkahqgOTuY
+         FvzXY8Cu3SSvtP50cDkIxOn2JS4oepjSyuuGE0bjLpTWiglFDThP9rc8U+zbvhQUtx
+         m4xLs3pu9UXZw==
+Received: by mail.citycodes.pl for <linux-serial@vger.kernel.org>; Tue, 24 Oct 2023 08:10:35 GMT
+Message-ID: <20231024084500-0.1.8a.l8a6.0.epk0tqor3b@citycodes.pl>
+Date:   Tue, 24 Oct 2023 08:10:35 GMT
+From:   "Kamil Lasek" <kamil.lasek@citycodes.pl>
+To:     <linux-serial@vger.kernel.org>
+Subject: Wycena paneli fotowoltaicznych
+X-Mailer: mail.citycodes.pl
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ZTd2t9nsBx9pZKD9@moxa-ThinkCentre-M90t>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Oct 24, 2023 at 03:48:07PM +0800, Crescent CY Hsieh wrote:
-> On Mon, Oct 23, 2023 at 12:25:18PM +0300, Ilpo Järvinen wrote:
-> > On Wed, 18 Oct 2023, Crescent CY Hsieh wrote:
-> > > +		/*
-> > > +		 * RS232 is not supported for MOXA PCIe boards with device IDs
-> > > +		 * matching the pattern 0x*3**.
-> > > +		 */
-> > > +		if (pci_moxa_match_second_digit(device, 0x0300))
-> > > +			return -EOPNOTSUPP;
-> > 
-> > This is not the correct error code I think. Maybe return -ENXIO instead.
-> 
-> I think EOPNOTSUPP or ENOTSUPP would be more reasonable, they directly
-> indicates "operation is not supported".
-> 
-> However, EOPNOTSUPP is used for network-related and ENOTSUPP is used for
-> NFSv3 protocol, even though they are already been used throughout the
-> kernel.
-> 
-> Maybe add a new one stand for serial, or clean them up into a general
-> one, or use EOPNOTSUPP and ENOTSUPP just for now?
+Dzie=C5=84 dobry,
 
--ENODEV should be the proper one here.
+dostrzegam mo=C5=BCliwo=C5=9B=C4=87 wsp=C3=B3=C5=82pracy z Pa=C5=84stwa f=
+irm=C4=85.
 
-thanks,
+=C5=9Awiadczymy kompleksow=C4=85 obs=C5=82ug=C4=99 inwestycji w fotowolta=
+ik=C4=99, kt=C3=B3ra obni=C5=BCa koszty energii elektrycznej.
 
-greg k-h
+Czy s=C4=85 Pa=C5=84stwo zainteresowani weryfikacj=C4=85 wst=C4=99pnych p=
+ropozycji?
+
+
+Pozdrawiam,
+Kamil Lasek
