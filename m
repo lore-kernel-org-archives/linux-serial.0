@@ -2,45 +2,45 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75BC6C00A8F
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 12:50:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B36C25B48
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Oct 2023 12:50:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234406AbjJXMuW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Oct 2023 08:50:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33200 "EHLO
+        id S234419AbjJXMuX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 24 Oct 2023 08:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234396AbjJXMuU (ORCPT
+        with ESMTP id S234420AbjJXMuU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Tue, 24 Oct 2023 08:50:20 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404E410D5;
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A8F10D8;
         Tue, 24 Oct 2023 05:50:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698151817; x=1729687817;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=KaitaaTgM9cu8b9iRzHkj5trQ0LrGSk+xNOF3Ya/2bQ=;
-  b=HhVzcX/jwDB6uNwqWJX/qTrVtYxgVVUaFSL9U0bCPaVoii8CL/y4rhun
-   UEp5U3l7XpWxxigmvhvTItCAcff+wQmc70Ldk/e/YLSt3/Xi9GtvpfwWt
-   ZFMQIqmsRWaDs6NjTymt96yioZFv2wx3IBXJD+0XS52D6mVBKR/DniU1Y
-   PMiOFR4yEGBpHRP+B2DEpq+oKQwHEDZ6FVAiU12S17f7azmgTeNpAnPeT
-   5iGkQsr4DRzf9jzFFL+ZcJwWxeuPfhsJLYJG5JznYMlyWs3UssNEsaMRq
-   vZdcI8DWtIh1h15goqQfBf2neZ0oB4nf+gzNa01jkmAG7EveGSaOKISft
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="418172698"
+  t=1698151818; x=1729687818;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=UXnRqjyzjWzzZfjLxhQj7kQzPRXeZHU7gyF5jvqB5MM=;
+  b=fJKIQgT6K16BNXFsn81MoTQDfYphZ1ZymJMNjQqs4LsMjuu2EI7V2yhX
+   MjuiK2ADNJkOwb812N3XlXHoc0Gww7PZJ6bJh1KmunFf1V2giaDATDT2I
+   cH4KFuj7cKdLjs7wDZGGBGP8RedLr0DD8/Pvzcrd6Fds5mfhjlUS0AkYW
+   3M1tCcgFCFphnlImH4MJJHzx4sovmVid3v8vmEq3aHuJtwuTNGifsWcd9
+   G8aJ2QtLUhNzbv+B3pIbfDuT63KlUmD//oyrjmWuHYqEz1G3xwrN9gKzR
+   NstwZwCyoEDyQW3PfZSPiYJjQptPOOR4VrI1mHWdScN83rBlCxS7mcn8K
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="5670832"
 X-IronPort-AV: E=Sophos;i="6.03,247,1694761200"; 
-   d="scan'208";a="418172698"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 05:50:16 -0700
+   d="scan'208";a="5670832"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 05:50:17 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="875061013"
+X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="762088386"
 X-IronPort-AV: E=Sophos;i="6.03,247,1694761200"; 
-   d="scan'208";a="875061013"
+   d="scan'208";a="762088386"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 24 Oct 2023 05:50:13 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 24 Oct 2023 05:50:14 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 725ADBD4; Tue, 24 Oct 2023 15:41:17 +0300 (EEST)
+        id 4ADB4871; Tue, 24 Oct 2023 15:41:17 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -48,39 +48,29 @@ Cc:     Rob Herring <robh@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Tony Lindgren <tony@atomide.com>
-Subject: [PATCH v1 3/3] serdev: Replace custom code with device_match_acpi_handle()
-Date:   Tue, 24 Oct 2023 15:41:15 +0300
-Message-Id: <20231024124115.3598090-4-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 0/3] serdev: Update a few places to use new APIs
+Date:   Tue, 24 Oct 2023 15:41:12 +0300
+Message-Id: <20231024124115.3598090-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.40.0.1.gaa8946217a0b
-In-Reply-To: <20231024124115.3598090-1-andriy.shevchenko@linux.intel.com>
-References: <20231024124115.3598090-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Since driver core provides a generic device_match_acpi_handle()
-we may replace the custom code with it.
+Inspired by the reviwing the patch by Tony Lindgren.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serdev/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The first one makes a behavioural change on ACPI platforms where sysfs
+entry will get firmware_node link in addition to what it has now.
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index 6a1e75f98f16..a5fdaf5e148e 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -665,7 +665,7 @@ static int acpi_serdev_check_resources(struct serdev_controller *ctrl,
- 		acpi_get_parent(adev->handle, &lookup.controller_handle);
- 
- 	/* Make sure controller and ResourceSource handle match */
--	if (ACPI_HANDLE(ctrl->dev.parent) != lookup.controller_handle)
-+	if (!device_match_acpi_handle(ctrl->dev.parent, lookup.controller_handle))
- 		return -ENODEV;
- 
- 	return 0;
+Andy Shevchenko (3):
+  serdev: Make use of device_set_node()
+  serdev: Simplify devm_serdev_device_open() function
+  serdev: Replace custom code with device_match_acpi_handle()
+
+ drivers/tty/serdev/core.c | 24 ++++++++----------------
+ 1 file changed, 8 insertions(+), 16 deletions(-)
+
 -- 
 2.40.0.1.gaa8946217a0b
 
