@@ -2,103 +2,209 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA33EC0032E
-	for <linux-serial@archiver.kernel.org>; Wed, 25 Oct 2023 14:26:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A83AC0032E
+	for <linux-serial@archiver.kernel.org>; Wed, 25 Oct 2023 20:24:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235102AbjJYO0j (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 25 Oct 2023 10:26:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59904 "EHLO
+        id S229909AbjJYUYP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 25 Oct 2023 16:24:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345099AbjJYO02 (ORCPT
+        with ESMTP id S229812AbjJYUYO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 25 Oct 2023 10:26:28 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D931210E2
-        for <linux-serial@vger.kernel.org>; Wed, 25 Oct 2023 07:26:18 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id 3f1490d57ef6-da05b786f1dso1200175276.2
-        for <linux-serial@vger.kernel.org>; Wed, 25 Oct 2023 07:26:18 -0700 (PDT)
+        Wed, 25 Oct 2023 16:24:14 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70EEC133
+        for <linux-serial@vger.kernel.org>; Wed, 25 Oct 2023 13:24:09 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id 41be03b00d2f7-577fff1cae6so96454a12.1
+        for <linux-serial@vger.kernel.org>; Wed, 25 Oct 2023 13:24:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1698243978; x=1698848778; darn=vger.kernel.org;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=6GAV3+HGX/GSuMk9leWi7r46JVl0NQ2JAhtg14sSj10=;
-        b=uC+OcpNuVUcrcaigHU4roLYmXYrONduaPE/A7YesAErqV8JX5eb0ddpAcKj9dsjS1n
-         GINsk4UipHmNxmY+sMyLDSaH9HyejG0y9twMSOEjYMvaiit3XahrrhNEYSpZ8QKB57w3
-         0OK7seifXAJs0qZER7QoKNHxNcQnHDehniyiQQRHBw5ZdCa0j2vSQvBFwMuWmmhVcOLl
-         G7pmjPB74kd1e/OEyPC0TI1trHSM86Wpy6WOMa2ePGQ50++rdieGSk+mu6YXPcY7hwmU
-         RjC5urbynxAi3AabwmmQz7CLCxmMtZXRilvVAF3iPpcVx/Q9fPinWbfKhK3EnpnGi2cW
-         6xAg==
+        d=ventanamicro.com; s=google; t=1698265449; x=1698870249; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=F9/pedB262IMNHEh1PUtoWlFeNdn65+nq0ZZR6F2re8=;
+        b=KDBnVad/L98ks9dD6PFiobWlP+Y3q+9Zm0vjzN3/+4omI65ozoSxrD30/6HzY+mbQM
+         H6IwEnthNvfRwxUvup1anEfy2bOrqPYRKxmyXL8n7RErVvzVMLkMSVCO7hpfrjYtH967
+         DjN2SsObKv5oVudbtz50lcuB4ySHSDcD6Wh6SOMfo2yD3D+YqW0nTUr0e5GspcQSN1RR
+         0SQngTgKrPvDXXIV4axCjPlx5lK03PX8xn98jaouG9PAq2gCBMUUmhBYWJdAC6qDUJ0p
+         LWmZI7tMzbAE30w6Pfmzr9D5j2bPqBiUqkDxoC4PhCl3ovTi17+Z+lXxmFwU3u+0FhpL
+         rZMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698243978; x=1698848778;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6GAV3+HGX/GSuMk9leWi7r46JVl0NQ2JAhtg14sSj10=;
-        b=er4t6G4Ruhzak/DMN1k9L3Vrm74WZ79jE4a5dW0JRkwkxS3ivbLEl8axyoAVoAZ66v
-         kA+0gMd28+1JXGIJPWnUFFITMmjNOg+E934lC+XcLBXnAQ6wiBsiQ27qDV2ye6X7pk3N
-         /gYEKiipfLen62UEhKoHZr8L1eSIq4FfPYUTIhmMS9xzYVIUv2BFFzQuq1oM6oDry0NL
-         WA0fptLBMiqw5qxY+V0bv/JSJBABJSGuR9ioiGtufhij0+aLCZLBGTJ4aj17augT/y1G
-         dkpcinUL7dHNiBgNO7KnGvk+fumZDufQZq/BFd9JpYCfUwI1tAvm3Y8JNwRXkPb/9siS
-         i4Ew==
-X-Gm-Message-State: AOJu0Yy25UYg0XIxSmFsbo3BoIjZ/tvMCRS7uaGdjwSsKWK+catyUFTB
-        SHtLKUZ81BewzBXj2FhZAbYa/WvjufJYephLl+w3
-X-Google-Smtp-Source: AGHT+IE8qkvhuHEwCdG/rkr7SGSR29nrcqu5lQD4EekiOS30hAPsOqt/pFLDJJUCH+3QM6yXxRXicgLxuBeYUP5/b+hv
-X-Received: from vamshig51.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:70c])
- (user=vamshigajjela job=sendgmr) by 2002:a25:211:0:b0:d9a:c3a2:48a3 with SMTP
- id 17-20020a250211000000b00d9ac3a248a3mr285649ybc.6.1698243978033; Wed, 25
- Oct 2023 07:26:18 -0700 (PDT)
-Date:   Wed, 25 Oct 2023 19:56:09 +0530
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.42.0.758.gaed0368e0e-goog
-Message-ID: <20231025142609.2869769-1-vamshigajjela@google.com>
-Subject: [PATCH v2 3/3] serial: core: Update uart_poll_timeout() function to
- return unsigned long
-From:   Vamshi Gajjela <vamshigajjela@google.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        d=1e100.net; s=20230601; t=1698265449; x=1698870249;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=F9/pedB262IMNHEh1PUtoWlFeNdn65+nq0ZZR6F2re8=;
+        b=cbGcnQRsEhyIY0JwkV8CzH1GQ5NoJlLLH0RsLES37c0ryIBnMfoqQd4jNftguAWyTQ
+         W0XmQXyrDx9ZWOj8yGbigJK2Tt2ejOXkOlKmtZuAVv2lF4/8fYRYrDq291hDvyZnLOyh
+         ClSQwsMpcgddq0lDmy8mjSWGpL6n3hbbssv+r0ahfBNtlaiC07ICQvA/Nh6Tf1EWDAYF
+         NnR6yPc8Z4Gf7hgpiAXFNVO1OsAngTfs8kvTeAdTVGryk98T0Aik2nT8HxjhjSdgXf0a
+         ihlW5nNouffHcBcrorIt3jf30k1iiW0MDUSxji6XsCrDT8JPSSlKrGARlgzOE/dprMcS
+         da3g==
+X-Gm-Message-State: AOJu0YyKeoChmjSm7crpXpBeUzKDtxEGhuzIQrs6nobo5t+nyvFET1xq
+        He/HvNnBG28uuVfb9PIvahqshw==
+X-Google-Smtp-Source: AGHT+IEV4o/13i3hZesUJvr2asiwuxud0jha6gl4OJB79xQ7DR2BCPeSNSC6qZTwPjauiylzsIcCjw==
+X-Received: by 2002:a05:6a20:8e12:b0:14e:2208:d62f with SMTP id y18-20020a056a208e1200b0014e2208d62fmr801359pzj.22.1698265448502;
+        Wed, 25 Oct 2023 13:24:08 -0700 (PDT)
+Received: from sunil-pc.Dlink ([106.51.188.78])
+        by smtp.gmail.com with ESMTPSA id y3-20020aa79423000000b006b84ed9371esm10079590pfo.177.2023.10.25.13.24.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Oct 2023 13:24:08 -0700 (PDT)
+From:   Sunil V L <sunilvl@ventanamicro.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Anup Patel <anup@brainfault.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        ilpo.jarvinen@linux.intel.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        manugautam@google.com, Subhash Jadavani <sjadavani@google.com>,
-        Channa Kadabi <kadabi@google.com>,
-        VAMSHI GAJJELA <vamshigajjela@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Conor Dooley <conor.dooley@microchip.com>,
+        Andrew Jones <ajones@ventanamicro.com>,
+        Atish Kumar Patra <atishp@rivosinc.com>,
+        Haibo Xu <haibo1.xu@intel.com>,
+        Sunil V L <sunilvl@ventanamicro.com>
+Subject: [RFC PATCH v2 00/21] RISC-V: ACPI: Add external interrupt controller support 
+Date:   Thu, 26 Oct 2023 01:53:23 +0530
+Message-Id: <20231025202344.581132-1-sunilvl@ventanamicro.com>
+X-Mailer: git-send-email 2.39.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: VAMSHI GAJJELA <vamshigajjela@google.com>
+This series adds support for the below ECR approved by ASWG.
+1) MADT - https://drive.google.com/file/d/1oMGPyOD58JaPgMl1pKasT-VKsIKia7zR/view?usp=sharing
 
-The function uart_fifo_timeout() returns an unsigned long value, which is
-the number of jiffies. Therefore, the function uart_poll_timeout() has been
-modified to use an unsigned long type for timeout values instead of an int
-and to avoid truncation.
-The return type of the function uart_poll_timeout() has also been changed
-from int to unsigned long to be consistent with the type of timeout values.
+The series primarily enables irqchip drivers for RISC-V ACPI based
+platforms.
 
-Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
----
-v2:
-- unsigned long instead of unsigned int
-- added () after function name in short log
-- updated description
- include/linux/serial_core.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+In addition, PCI ACPI related functions are migrated from arm64 to
+common file so that we don't need to duplicate them for RISC-V.
 
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index bb6f073bc159..6916a1d7e477 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -773,9 +773,9 @@ static inline unsigned long uart_fifo_timeout(struct uart_port *port)
- }
- 
- /* Base timer interval for polling */
--static inline int uart_poll_timeout(struct uart_port *port)
-+static inline unsigned long uart_poll_timeout(struct uart_port *port)
- {
--	int timeout = uart_fifo_timeout(port);
-+	unsigned long timeout = uart_fifo_timeout(port);
- 
- 	return timeout > 6 ? (timeout / 2 - 2) : 1;
- }
+On RISC-V platforms, apart from root irqchips which provide local
+interrupts and IPI, all other interrupt controllers are probed late
+during boot. Hence, the drivers for the devices connected to these
+interrupt controllers which are probed late, should also support
+deferred probe. While ACPI platform devices/drivers seem to support
+deferred probe since they use acpi_irq_get(), the PNP devices and the
+PCI INTx expect GSIs are registered early. So, patches are required
+to enable few essential drivers to support deferred probe. To minimize
+the impact, a new CONFIG option is introduced which can be enabled only
+by the architecture like RISC-V which supports deferred irqchip probe.
+
+This series is based on Anup's AIA v11 series. Since Anup's AIA v11 is
+not merged yet and first time introducing deferred probe, this series is
+still kept as RFC. Looking forward for the feedback!
+
+Changes since RFC v1:
+	1) Abandoned swnode approach as per Marc's feedback.
+	2) To cope up with AIA series changes which changed irqchip driver
+	   probe from core_initcall() to platform_driver, added patches
+	   to support deferred probing.
+	3) Rebased on top of Anup's AIA v11 and added tags.
+
+To test the series,
+
+1) Qemu should be built using the riscv_acpi_b2_v4 branch at
+https://github.com/vlsunil/qemu.git
+
+2) EDK2 should be built using the instructions at:
+https://github.com/tianocore/edk2/blob/master/OvmfPkg/RiscVVirt/README.md
+
+3) Build Linux using this series on top of Anup's AIA v11 series.
+
+Run Qemu:
+qemu-system-riscv64 \
+ -M virt,pflash0=pflash0,pflash1=pflash1,aia=aplic-imsic \
+ -m 2G -smp 8 \
+ -serial mon:stdio \
+ -device virtio-gpu-pci -full-screen \
+ -device qemu-xhci \
+ -device usb-kbd \
+ -blockdev node-name=pflash0,driver=file,read-only=on,filename=RISCV_VIRT_CODE.fd \
+ -blockdev node-name=pflash1,driver=file,filename=RISCV_VIRT_VARS.fd \
+ -netdev user,id=net0 -device virtio-net-pci,netdev=net0 \
+ -kernel arch/riscv/boot/Image \
+ -initrd rootfs.cpio \
+ -append "root=/dev/ram ro console=ttyS0 rootwait earlycon=uart8250,mmio,0x10000000"
+
+To boot with APLIC only, use aia=aplic.
+To boot with PLIC, remove aia= option.
+
+This series is also available in acpi_b2_v2_riscv_aia_v11 branch at
+https://github.com/vlsunil/linux.git
+
+Based-on: 20231023172800.315343-1-apatel@ventanamicro.com
+(https://lore.kernel.org/lkml/20231023172800.315343-1-apatel@ventanamicro.com/)
+
+Sunil V L (21):
+  arm64: PCI: Migrate ACPI related functions to pci-acpi.c
+  RISC-V: ACPI: Implement PCI related functionality
+  ACPI: Kconfig: Introduce new option to support deferred GSI probe
+  ACPI: irq: Add support for deferred probe in acpi_register_gsi()
+  pnp.h: Return -EPROBE_DEFER for disabled IRQ resource in pnp_irq()
+  RISC-V: Kconfig: Select deferred GSI probe for ACPI systems
+  serial: 8250_pnp: Add support for deferred probe
+  ACPI: pci_irq: Avoid warning for deferred probe in
+    acpi_pci_irq_enable()
+  ACPI: scan.c: Add weak arch specific function to reorder the IRQCHIP
+    probe
+  ACPI: RISC-V: Implement arch function to reorder irqchip probe entries
+  PCI: MSI: Add helper function to set system wide MSI support
+  PCI: pci-acpi.c: Return correct value from pcibios_alloc_irq()
+  irqchip: riscv-intc: Add ACPI support for AIA
+  irqchip: riscv-imsic: Add ACPI support
+  irqchip: riscv-aplic: Add ACPI support
+  irqchip: irq-sifive-plic: Add ACPI support
+  ACPI: bus: Add RINTC IRQ model for RISC-V
+  irqchip: riscv-intc: Set ACPI irqmodel
+  ACPI: bus: Add acpi_riscv_init function
+  ACPI: RISC-V: Create APLIC platform device
+  ACPI: RISC-V: Create PLIC platform device
+
+ arch/arm64/kernel/pci.c                    | 191 ---------------------
+ arch/riscv/Kconfig                         |   3 +
+ arch/riscv/include/asm/irq.h               |  31 ++++
+ arch/riscv/kernel/acpi.c                   |  31 ++--
+ drivers/acpi/Kconfig                       |   3 +
+ drivers/acpi/bus.c                         |   4 +
+ drivers/acpi/irq.c                         |  12 +-
+ drivers/acpi/pci_irq.c                     |   7 +-
+ drivers/acpi/riscv/Makefile                |   2 +-
+ drivers/acpi/riscv/init.c                  |  15 ++
+ drivers/acpi/riscv/init.h                  |   6 +
+ drivers/acpi/riscv/irq.c                   | 120 +++++++++++++
+ drivers/acpi/scan.c                        |   3 +
+ drivers/irqchip/irq-riscv-aplic-direct.c   |  22 ++-
+ drivers/irqchip/irq-riscv-aplic-main.c     | 105 ++++++++---
+ drivers/irqchip/irq-riscv-aplic-main.h     |   1 +
+ drivers/irqchip/irq-riscv-aplic-msi.c      |  10 +-
+ drivers/irqchip/irq-riscv-imsic-early.c    |  52 +++++-
+ drivers/irqchip/irq-riscv-imsic-platform.c |  51 ++++--
+ drivers/irqchip/irq-riscv-imsic-state.c    | 128 +++++++-------
+ drivers/irqchip/irq-riscv-imsic-state.h    |   2 +-
+ drivers/irqchip/irq-riscv-intc.c           | 114 +++++++++++-
+ drivers/irqchip/irq-sifive-plic.c          | 113 ++++++++++--
+ drivers/pci/msi/msi.c                      |   5 +
+ drivers/pci/pci-acpi.c                     | 182 ++++++++++++++++++++
+ drivers/pci/pci.h                          |   2 +
+ drivers/tty/serial/8250/8250_pnp.c         |  18 +-
+ include/linux/acpi.h                       |   9 +
+ include/linux/irqchip/riscv-imsic.h        |  10 ++
+ include/linux/pnp.h                        |  10 +-
+ 30 files changed, 906 insertions(+), 356 deletions(-)
+ create mode 100644 drivers/acpi/riscv/init.c
+ create mode 100644 drivers/acpi/riscv/init.h
+ create mode 100644 drivers/acpi/riscv/irq.c
+
 -- 
-2.42.0.758.gaed0368e0e-goog
+2.39.2
 
