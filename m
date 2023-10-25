@@ -2,97 +2,103 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 987ABC0032E
-	for <linux-serial@archiver.kernel.org>; Wed, 25 Oct 2023 11:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA33EC0032E
+	for <linux-serial@archiver.kernel.org>; Wed, 25 Oct 2023 14:26:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234479AbjJYLWK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 25 Oct 2023 07:22:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39534 "EHLO
+        id S235102AbjJYO0j (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 25 Oct 2023 10:26:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232363AbjJYLWJ (ORCPT
+        with ESMTP id S1345099AbjJYO02 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 25 Oct 2023 07:22:09 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0CAD130
-        for <linux-serial@vger.kernel.org>; Wed, 25 Oct 2023 04:22:06 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id 38308e7fff4ca-2c50cd16f3bso79207051fa.2
-        for <linux-serial@vger.kernel.org>; Wed, 25 Oct 2023 04:22:06 -0700 (PDT)
+        Wed, 25 Oct 2023 10:26:28 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D931210E2
+        for <linux-serial@vger.kernel.org>; Wed, 25 Oct 2023 07:26:18 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id 3f1490d57ef6-da05b786f1dso1200175276.2
+        for <linux-serial@vger.kernel.org>; Wed, 25 Oct 2023 07:26:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1698232925; x=1698837725; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+        d=google.com; s=20230601; t=1698243978; x=1698848778; darn=vger.kernel.org;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=dwp8E74sI4tVBaqrgu+e8RzHTAWo0YSAPvz5KCe5hyQ=;
-        b=aY07CGEIYA8zybKuO4KqyfbYe0+V0m3ih1/Mp8aNqLBEwpZhGwZbL1IkCxiW1RyUoK
-         NdhfhGU5a7byOEXq9tN5DvTBVfouTZDZv9uHaH47eVbvaxM4fU2WTklwOe/v/IORSCM9
-         renAg5q1HekURoFkVl8Okn5DdHlA5u08iCGhYaIXRDHrqklc2gkfoH25rCx8NuPzPlL8
-         3t3gZKXjwKpQJJhLRqrFay1GnbNvFTImTAwV8kDmgD5+SdTcawFMkVKduS+LYAGbsZ8Y
-         ch7M6mqaqwto/BYwKcH6XlX7bcHNWQTkZGKj1byZZuGjpkJl5Av2fsedBXU7Sq2sqgB8
-         y6WA==
+        bh=6GAV3+HGX/GSuMk9leWi7r46JVl0NQ2JAhtg14sSj10=;
+        b=uC+OcpNuVUcrcaigHU4roLYmXYrONduaPE/A7YesAErqV8JX5eb0ddpAcKj9dsjS1n
+         GINsk4UipHmNxmY+sMyLDSaH9HyejG0y9twMSOEjYMvaiit3XahrrhNEYSpZ8QKB57w3
+         0OK7seifXAJs0qZER7QoKNHxNcQnHDehniyiQQRHBw5ZdCa0j2vSQvBFwMuWmmhVcOLl
+         G7pmjPB74kd1e/OEyPC0TI1trHSM86Wpy6WOMa2ePGQ50++rdieGSk+mu6YXPcY7hwmU
+         RjC5urbynxAi3AabwmmQz7CLCxmMtZXRilvVAF3iPpcVx/Q9fPinWbfKhK3EnpnGi2cW
+         6xAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698232925; x=1698837725;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+        d=1e100.net; s=20230601; t=1698243978; x=1698848778;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=dwp8E74sI4tVBaqrgu+e8RzHTAWo0YSAPvz5KCe5hyQ=;
-        b=YEGOhpBpZ5NMoT0DUogN6Pa85y8Flu1J9w6mZ3/aSCDWofdGq3iXj1cro6V2tDqJbA
-         /uoU7St37bnPWGMtarWNgvx0PaHYE/EzHuMZh/ustYnzb9dZNyFwF8ZGDOVF+W8aWd+J
-         ZF7l4ShLqSKAlmIYwOLVrJivrbi6ufDf5EUHfALw/VygT0GpIOpcagI8Tn8aiJk7a8ND
-         7FOd/sW2Vs2y51/5sxicLSzRDVA4sk3be8EIoX7H2/wSO9upwv30E2CR20PwbW57Wxw0
-         FSsKwPOZBScD+DKojznS2zvrpWeGoQ9zoA/+OdKWx/p7Y9F466t1RCLSAc8VGndwmEvZ
-         N+lg==
-X-Gm-Message-State: AOJu0YyQ5k9UYTheXd1p0HFIKvRB1W9V/jbqRNdVXtyV6iNnt2WObOA2
-        RFGb5xpNtSVvBLU2D2HeIop6DQ==
-X-Google-Smtp-Source: AGHT+IFlEL56ocYJgKzp9u4zcIru0vmdc7o15SYfWmBqbz4xfgdTzW9qzGMVBhIZCBtLcMqtAQbTVA==
-X-Received: by 2002:a05:651c:b20:b0:2c5:8a4:9e6f with SMTP id b32-20020a05651c0b2000b002c508a49e6fmr12089142ljr.37.1698232924963;
-        Wed, 25 Oct 2023 04:22:04 -0700 (PDT)
-Received: from draszik.lan ([80.111.64.44])
-        by smtp.gmail.com with ESMTPSA id o12-20020a05600c4fcc00b0040775501256sm14361794wmq.16.2023.10.25.04.22.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Oct 2023 04:22:04 -0700 (PDT)
-Message-ID: <d6fdf664bd18eee581a2644e376124e830633045.camel@linaro.org>
-Subject: Re: [PATCH v2] tty: serial: samsung_tty: remove dead code
-From:   =?ISO-8859-1?Q?Andr=E9?= Draszik <andre.draszik@linaro.org>
-To:     Andi Shyti <andi.shyti@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, krzysztof.kozlowski@linaro.org,
-        alim.akhtar@samsung.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
-Date:   Wed, 25 Oct 2023 12:22:03 +0100
-In-Reply-To: <20231024215509.ak4jbbahw2vsahs6@zenone.zhora.eu>
-References: <20231019100901.4026680-1-andre.draszik@linaro.org>
-         <20231024215509.ak4jbbahw2vsahs6@zenone.zhora.eu>
+        bh=6GAV3+HGX/GSuMk9leWi7r46JVl0NQ2JAhtg14sSj10=;
+        b=er4t6G4Ruhzak/DMN1k9L3Vrm74WZ79jE4a5dW0JRkwkxS3ivbLEl8axyoAVoAZ66v
+         kA+0gMd28+1JXGIJPWnUFFITMmjNOg+E934lC+XcLBXnAQ6wiBsiQ27qDV2ye6X7pk3N
+         /gYEKiipfLen62UEhKoHZr8L1eSIq4FfPYUTIhmMS9xzYVIUv2BFFzQuq1oM6oDry0NL
+         WA0fptLBMiqw5qxY+V0bv/JSJBABJSGuR9ioiGtufhij0+aLCZLBGTJ4aj17augT/y1G
+         dkpcinUL7dHNiBgNO7KnGvk+fumZDufQZq/BFd9JpYCfUwI1tAvm3Y8JNwRXkPb/9siS
+         i4Ew==
+X-Gm-Message-State: AOJu0Yy25UYg0XIxSmFsbo3BoIjZ/tvMCRS7uaGdjwSsKWK+catyUFTB
+        SHtLKUZ81BewzBXj2FhZAbYa/WvjufJYephLl+w3
+X-Google-Smtp-Source: AGHT+IE8qkvhuHEwCdG/rkr7SGSR29nrcqu5lQD4EekiOS30hAPsOqt/pFLDJJUCH+3QM6yXxRXicgLxuBeYUP5/b+hv
+X-Received: from vamshig51.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:70c])
+ (user=vamshigajjela job=sendgmr) by 2002:a25:211:0:b0:d9a:c3a2:48a3 with SMTP
+ id 17-20020a250211000000b00d9ac3a248a3mr285649ybc.6.1698243978033; Wed, 25
+ Oct 2023 07:26:18 -0700 (PDT)
+Date:   Wed, 25 Oct 2023 19:56:09 +0530
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.42.0.758.gaed0368e0e-goog
+Message-ID: <20231025142609.2869769-1-vamshigajjela@google.com>
+Subject: [PATCH v2 3/3] serial: core: Update uart_poll_timeout() function to
+ return unsigned long
+From:   Vamshi Gajjela <vamshigajjela@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        ilpo.jarvinen@linux.intel.com
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        manugautam@google.com, Subhash Jadavani <sjadavani@google.com>,
+        Channa Kadabi <kadabi@google.com>,
+        VAMSHI GAJJELA <vamshigajjela@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.48.4-1 
-MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Andi,
+From: VAMSHI GAJJELA <vamshigajjela@google.com>
 
-On Tue, 2023-10-24 at 23:55 +0200, Andi Shyti wrote:
-> Hi Andre,
->=20
-> On Thu, Oct 19, 2023 at 11:09:01AM +0100, Andr=C3=A9 Draszik wrote:
-> > When support for various old platforms was removed in commit
-> > 1ea35b355722 ("ARM: s3c: remove s3c24xx specific hacks"),
-> > s3c24xx_serial_ops also became unused here because nothing sets
-> > port
-> > type TYPE_S3C24XX anymore.
-> >=20
-> > Remove s3c24xx_serial_ops and all the code that's unreachable now.
-> >=20
-> > Fixes: 1ea35b355722 ("ARM: s3c: remove s3c24xx specific hacks")
->=20
-> is this really a fix? Or is it a cleanup?
+The function uart_fifo_timeout() returns an unsigned long value, which is
+the number of jiffies. Therefore, the function uart_poll_timeout() has been
+modified to use an unsigned long type for timeout values instead of an int
+and to avoid truncation.
+The return type of the function uart_poll_timeout() has also been changed
+from int to unsigned long to be consistent with the type of timeout values.
 
-I guess from my position it's fixing the issue of dead code, introduced
-in the commit referenced. Which is of course also a cleanup :-)
+Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
+---
+v2:
+- unsigned long instead of unsigned int
+- added () after function name in short log
+- updated description
+ include/linux/serial_core.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Not sure...
-
-Cheers,
-Andre
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index bb6f073bc159..6916a1d7e477 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -773,9 +773,9 @@ static inline unsigned long uart_fifo_timeout(struct uart_port *port)
+ }
+ 
+ /* Base timer interval for polling */
+-static inline int uart_poll_timeout(struct uart_port *port)
++static inline unsigned long uart_poll_timeout(struct uart_port *port)
+ {
+-	int timeout = uart_fifo_timeout(port);
++	unsigned long timeout = uart_fifo_timeout(port);
+ 
+ 	return timeout > 6 ? (timeout / 2 - 2) : 1;
+ }
+-- 
+2.42.0.758.gaed0368e0e-goog
 
