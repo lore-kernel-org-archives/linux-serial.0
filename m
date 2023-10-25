@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55896C0032E
-	for <linux-serial@archiver.kernel.org>; Wed, 25 Oct 2023 20:24:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 316C6C07545
+	for <linux-serial@archiver.kernel.org>; Wed, 25 Oct 2023 20:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234859AbjJYUYm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 25 Oct 2023 16:24:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37970 "EHLO
+        id S235012AbjJYUY4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 25 Oct 2023 16:24:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234789AbjJYUYe (ORCPT
+        with ESMTP id S234759AbjJYUYl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 25 Oct 2023 16:24:34 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43BE718C
-        for <linux-serial@vger.kernel.org>; Wed, 25 Oct 2023 13:24:32 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id d2e1a72fcca58-6b7f0170d7bso126141b3a.2
-        for <linux-serial@vger.kernel.org>; Wed, 25 Oct 2023 13:24:32 -0700 (PDT)
+        Wed, 25 Oct 2023 16:24:41 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E1161A6
+        for <linux-serial@vger.kernel.org>; Wed, 25 Oct 2023 13:24:38 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id d2e1a72fcca58-6b77ab73c6fso101065b3a.1
+        for <linux-serial@vger.kernel.org>; Wed, 25 Oct 2023 13:24:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1698265472; x=1698870272; darn=vger.kernel.org;
+        d=ventanamicro.com; s=google; t=1698265477; x=1698870277; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6XsFHpyMSXpsQo/vHxUfuExbd7P0HKVdbzIKlbRfdpg=;
-        b=IFtzf0U28RD+GSQFbYyzqFLKa6bFdIIzW112ahFh3jc6XjWupq1EfHGncUr3/acJN2
-         xKkmXVXxG7yatZXJkIhLGItwrgVD0Shu6ZTXXUD3qqhwkOdQUdlLTtpvF94vrXozoQ//
-         7vYVru2vVcy5/m8p39WgVLXSfjDQTxXvsOry+mE87DCmz6tmOiX2VGR6bUCogS+y03ht
-         aDoqwfgMZbvOU9gvHx6lvPJie+sezYV/17tHuqIsG3LsWt1nW3LjOC1fi2ZJGbIytPdX
-         Nf49mk5iCdvFgyh9zAOJEnJxrAbxkpp8H3h/bPzVJ1EM9s+nVXXbBH8rkanHNFu/0ibM
-         he6g==
+        bh=J8S/JDCmwBJX/s4tcuif01AJjqTYAtUjVSzvHHCYv3Q=;
+        b=nNqvGjA6QPmPkU0pIK+PisNTyVgj2VgA4U5e51WIi1UAtB68oOcDrAFNkopUNesM5k
+         x5L/8RGmTh7GA0rwpMIDrGTAfFijRQogXgvaxhxfntL7XlcCcztZsFKcL45pLMhuRGcP
+         HDaG3Z2kIzvvvvrPWQh+rvSak5AwjfkNG5+O6B6BLQxWc+MTHPvMxYWttNwgWppF25vJ
+         glcd/sy1FvIwxr7bfe//85NgZBsIJ+qhTJAByTugflLc9l77og8LLV94aKgAb/i72lJx
+         V4qVcEQj5eXnFn3BigSXcUMY7LN3Zr7E5hveMCoS84pk0QvbHq4XbsyfXz85Gezfp/m6
+         Tuvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698265472; x=1698870272;
+        d=1e100.net; s=20230601; t=1698265477; x=1698870277;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=6XsFHpyMSXpsQo/vHxUfuExbd7P0HKVdbzIKlbRfdpg=;
-        b=rP14j5Z04NcRSCo2z84rZ6mKED/ToRSU4yCLkjWyaczXKhusMvhpARXahIFhcBUiCL
-         Xt5VNbRhbppICgO+0m3GwIUyVDyMuvktI8DOPZXQtWYhc2/7FNWezA9+Ub8C9X9fFXI+
-         xHB9MP1hCI/11RwwR8ZEIy6cEDHaM//TcFx0l6uuzCKkmAJAEp/AWqc37lJQho8A41VN
-         65nnIPtQxsi5iTauxFXIw66AzwLXudtM+KWHLvtAJyxlfES81Sktkba8V9oOgkMjrRiF
-         FQoKDawwfImv6Ni/zsvBrIkpsdfhPUz26DrbnzA3+KbbsvQzOacs3I0zWLiDiZjirmOj
-         +sIQ==
-X-Gm-Message-State: AOJu0Yz+gzFWyNT3PPLv9rD+b3Xxodjzt94re5Aq6y8ag6o9mt8zHmYj
-        tSEuoYItoBoIzFtIyhQmvVP/rA==
-X-Google-Smtp-Source: AGHT+IG17/2PVfDmNtmjstcH9/wp6PkDje8IYgLOfv4MBT6NCYwfFeoyShSprXc6RSlzfPVHtacKoA==
-X-Received: by 2002:a05:6a00:2d86:b0:68a:59c6:c0a6 with SMTP id fb6-20020a056a002d8600b0068a59c6c0a6mr18973480pfb.24.1698265471729;
-        Wed, 25 Oct 2023 13:24:31 -0700 (PDT)
+        bh=J8S/JDCmwBJX/s4tcuif01AJjqTYAtUjVSzvHHCYv3Q=;
+        b=rYCE7FRwINvubklKgPxPsgwxSyoSym/Zq879IeboY99VjAb/vNXDuxQYJ6TajUiJGv
+         7JAP6FtXlleS80eXcxfwyqz9I2cQDVuOLUa3y1S9d1EzJFcy51ClfpxPQY3/q8pI51BU
+         G8lzjyh3hy8+Jn9FJatMaHJTahKUbZmfDkJnK0tuiIwTEdoR5HAiC3bqjv7h/7neDAo2
+         AfQyASo7oTTtHHkd51CWf+T/LrhmvdG/ZUHD6DC2InZmYestIr0/lYkYdnE8BiL5cPi6
+         2YugG83eJEQ1EqewrOVJF8vm6hY+BcASGfvRyaB8YvaBqSnGsXkbFRaHAkgv8ZIVa4o7
+         cQmg==
+X-Gm-Message-State: AOJu0YwUxO/j04PvXEZmIwt/djLU8zNSNXBmL2mdLoPhUbenhZLwMG3+
+        tTmgYUD1vEV4zzN1uzDWuoLn7A==
+X-Google-Smtp-Source: AGHT+IGn0Ntg16V2ATutjBKN8vUehxORe09c59/GsjNsvnPR9Qebb6VfuMhALgVB74e2gHGUr8GJNA==
+X-Received: by 2002:a05:6a00:1396:b0:68f:b015:ea99 with SMTP id t22-20020a056a00139600b0068fb015ea99mr913751pfg.10.1698265477463;
+        Wed, 25 Oct 2023 13:24:37 -0700 (PDT)
 Received: from sunil-pc.Dlink ([106.51.188.78])
-        by smtp.gmail.com with ESMTPSA id y3-20020aa79423000000b006b84ed9371esm10079590pfo.177.2023.10.25.13.24.26
+        by smtp.gmail.com with ESMTPSA id y3-20020aa79423000000b006b84ed9371esm10079590pfo.177.2023.10.25.13.24.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Oct 2023 13:24:31 -0700 (PDT)
+        Wed, 25 Oct 2023 13:24:37 -0700 (PDT)
 From:   Sunil V L <sunilvl@ventanamicro.com>
 To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
@@ -71,9 +71,9 @@ Cc:     Catalin Marinas <catalin.marinas@arm.com>,
         Atish Kumar Patra <atishp@rivosinc.com>,
         Haibo Xu <haibo1.xu@intel.com>,
         Sunil V L <sunilvl@ventanamicro.com>
-Subject: [RFC PATCH v2 04/21] ACPI: irq: Add support for deferred probe in acpi_register_gsi()
-Date:   Thu, 26 Oct 2023 01:53:27 +0530
-Message-Id: <20231025202344.581132-5-sunilvl@ventanamicro.com>
+Subject: [RFC PATCH v2 05/21] pnp.h: Return -EPROBE_DEFER for disabled IRQ resource in pnp_irq()
+Date:   Thu, 26 Oct 2023 01:53:28 +0530
+Message-Id: <20231025202344.581132-6-sunilvl@ventanamicro.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20231025202344.581132-1-sunilvl@ventanamicro.com>
 References: <20231025202344.581132-1-sunilvl@ventanamicro.com>
@@ -83,47 +83,40 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The chip which provides the GSI support may not be initialized at the
-time of acpi_register_gsi(). Return -EPROBE_DEFER to support deferred
-probing similar to acpi_irq_get().
+To support deferred PNP driver probe, pnp_irq() must return -EPROBE_DEFER
+so that the device driver can do deferred probe if the interrupt controller
+is not probed early.
 
 Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
 ---
- drivers/acpi/irq.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ include/linux/pnp.h | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
-index 1687483ff319..c06cfc9725cb 100644
---- a/drivers/acpi/irq.c
-+++ b/drivers/acpi/irq.c
-@@ -51,19 +51,23 @@ EXPORT_SYMBOL_GPL(acpi_gsi_to_irq);
-  * @polarity: polarity of the GSI to be mapped
-  *
-  * Returns: a valid linux IRQ number on success
-+ *          -EPROBE_DEFER if irqdomain is not available.
-  *          -EINVAL on failure
-  */
- int acpi_register_gsi(struct device *dev, u32 gsi, int trigger,
- 		      int polarity)
+diff --git a/include/linux/pnp.h b/include/linux/pnp.h
+index c2a7cfbca713..21cf833789fb 100644
+--- a/include/linux/pnp.h
++++ b/include/linux/pnp.h
+@@ -147,12 +147,18 @@ static inline resource_size_t pnp_mem_len(struct pnp_dev *dev,
+ }
+ 
+ 
+-static inline resource_size_t pnp_irq(struct pnp_dev *dev, unsigned int bar)
++static inline int pnp_irq(struct pnp_dev *dev, unsigned int bar)
  {
-+	struct irq_domain *domain;
- 	struct irq_fwspec fwspec;
- 	unsigned int irq;
+ 	struct resource *res = pnp_get_resource(dev, IORESOURCE_IRQ, bar);
  
- 	fwspec.fwnode = acpi_get_gsi_domain_id(gsi);
--	if (WARN_ON(!fwspec.fwnode)) {
--		pr_warn("GSI: No registered irqchip, giving up\n");
--		return -EINVAL;
--	}
-+	if (!fwspec.fwnode)
-+		return -EPROBE_DEFER;
+-	if (pnp_resource_valid(res))
++	if (pnp_resource_valid(res)) {
++#if IS_ENABLED(CONFIG_ARCH_ACPI_DEFERRED_GSI)
++		if (!pnp_resource_enabled(res))
++			return -EPROBE_DEFER;
++#endif
 +
-+	domain = irq_find_matching_fwnode(fwspec.fwnode, DOMAIN_BUS_ANY);
-+	if (!domain)
-+		return -EPROBE_DEFER;
+ 		return res->start;
++	}
+ 	return -1;
+ }
  
- 	fwspec.param[0] = gsi;
- 	fwspec.param[1] = acpi_dev_get_irq_type(trigger, polarity);
 -- 
 2.39.2
 
