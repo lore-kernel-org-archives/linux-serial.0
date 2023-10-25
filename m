@@ -2,113 +2,97 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62FDAC0032E
-	for <linux-serial@archiver.kernel.org>; Wed, 25 Oct 2023 08:24:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 987ABC0032E
+	for <linux-serial@archiver.kernel.org>; Wed, 25 Oct 2023 11:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232665AbjJYIYh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 25 Oct 2023 04:24:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51814 "EHLO
+        id S234479AbjJYLWK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 25 Oct 2023 07:22:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232657AbjJYIYh (ORCPT
+        with ESMTP id S232363AbjJYLWJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 25 Oct 2023 04:24:37 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 523FF9C;
-        Wed, 25 Oct 2023 01:24:35 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 686C480B0;
-        Wed, 25 Oct 2023 08:24:34 +0000 (UTC)
-Date:   Wed, 25 Oct 2023 11:24:33 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>
-Subject: Re: [RFC PATCH 1/2] serial: core: Move tty and serdev to be children
- of serial core port device
-Message-ID: <20231025082433.GQ34982@atomide.com>
-References: <20231024113624.54364-1-tony@atomide.com>
- <2023102401-playtime-moonrise-6f05@gregkh>
- <20231024122955.GL34982@atomide.com>
- <2023102442-statue-kept-febc@gregkh>
- <20231025065152.GO34982@atomide.com>
- <ZTjEtWcF4a95BWBK@hovoldconsulting.com>
+        Wed, 25 Oct 2023 07:22:09 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0CAD130
+        for <linux-serial@vger.kernel.org>; Wed, 25 Oct 2023 04:22:06 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id 38308e7fff4ca-2c50cd16f3bso79207051fa.2
+        for <linux-serial@vger.kernel.org>; Wed, 25 Oct 2023 04:22:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1698232925; x=1698837725; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=dwp8E74sI4tVBaqrgu+e8RzHTAWo0YSAPvz5KCe5hyQ=;
+        b=aY07CGEIYA8zybKuO4KqyfbYe0+V0m3ih1/Mp8aNqLBEwpZhGwZbL1IkCxiW1RyUoK
+         NdhfhGU5a7byOEXq9tN5DvTBVfouTZDZv9uHaH47eVbvaxM4fU2WTklwOe/v/IORSCM9
+         renAg5q1HekURoFkVl8Okn5DdHlA5u08iCGhYaIXRDHrqklc2gkfoH25rCx8NuPzPlL8
+         3t3gZKXjwKpQJJhLRqrFay1GnbNvFTImTAwV8kDmgD5+SdTcawFMkVKduS+LYAGbsZ8Y
+         ch7M6mqaqwto/BYwKcH6XlX7bcHNWQTkZGKj1byZZuGjpkJl5Av2fsedBXU7Sq2sqgB8
+         y6WA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1698232925; x=1698837725;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=dwp8E74sI4tVBaqrgu+e8RzHTAWo0YSAPvz5KCe5hyQ=;
+        b=YEGOhpBpZ5NMoT0DUogN6Pa85y8Flu1J9w6mZ3/aSCDWofdGq3iXj1cro6V2tDqJbA
+         /uoU7St37bnPWGMtarWNgvx0PaHYE/EzHuMZh/ustYnzb9dZNyFwF8ZGDOVF+W8aWd+J
+         ZF7l4ShLqSKAlmIYwOLVrJivrbi6ufDf5EUHfALw/VygT0GpIOpcagI8Tn8aiJk7a8ND
+         7FOd/sW2Vs2y51/5sxicLSzRDVA4sk3be8EIoX7H2/wSO9upwv30E2CR20PwbW57Wxw0
+         FSsKwPOZBScD+DKojznS2zvrpWeGoQ9zoA/+OdKWx/p7Y9F466t1RCLSAc8VGndwmEvZ
+         N+lg==
+X-Gm-Message-State: AOJu0YyQ5k9UYTheXd1p0HFIKvRB1W9V/jbqRNdVXtyV6iNnt2WObOA2
+        RFGb5xpNtSVvBLU2D2HeIop6DQ==
+X-Google-Smtp-Source: AGHT+IFlEL56ocYJgKzp9u4zcIru0vmdc7o15SYfWmBqbz4xfgdTzW9qzGMVBhIZCBtLcMqtAQbTVA==
+X-Received: by 2002:a05:651c:b20:b0:2c5:8a4:9e6f with SMTP id b32-20020a05651c0b2000b002c508a49e6fmr12089142ljr.37.1698232924963;
+        Wed, 25 Oct 2023 04:22:04 -0700 (PDT)
+Received: from draszik.lan ([80.111.64.44])
+        by smtp.gmail.com with ESMTPSA id o12-20020a05600c4fcc00b0040775501256sm14361794wmq.16.2023.10.25.04.22.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Oct 2023 04:22:04 -0700 (PDT)
+Message-ID: <d6fdf664bd18eee581a2644e376124e830633045.camel@linaro.org>
+Subject: Re: [PATCH v2] tty: serial: samsung_tty: remove dead code
+From:   =?ISO-8859-1?Q?Andr=E9?= Draszik <andre.draszik@linaro.org>
+To:     Andi Shyti <andi.shyti@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, krzysztof.kozlowski@linaro.org,
+        alim.akhtar@samsung.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
+Date:   Wed, 25 Oct 2023 12:22:03 +0100
+In-Reply-To: <20231024215509.ak4jbbahw2vsahs6@zenone.zhora.eu>
+References: <20231019100901.4026680-1-andre.draszik@linaro.org>
+         <20231024215509.ak4jbbahw2vsahs6@zenone.zhora.eu>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.4-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZTjEtWcF4a95BWBK@hovoldconsulting.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Johan Hovold <johan@kernel.org> [231025 07:32]:
-> Your diff is missing the actual tty devices. 'tty' is just the class
-> directory. 
+Hi Andi,
 
-Ah right, that explains :) The find must be for ttyS* in this case,
-here's the diff for qemu x86 for command:
+On Tue, 2023-10-24 at 23:55 +0200, Andi Shyti wrote:
+> Hi Andre,
+>=20
+> On Thu, Oct 19, 2023 at 11:09:01AM +0100, Andr=C3=A9 Draszik wrote:
+> > When support for various old platforms was removed in commit
+> > 1ea35b355722 ("ARM: s3c: remove s3c24xx specific hacks"),
+> > s3c24xx_serial_ops also became unused here because nothing sets
+> > port
+> > type TYPE_S3C24XX anymore.
+> >=20
+> > Remove s3c24xx_serial_ops and all the code that's unreachable now.
+> >=20
+> > Fixes: 1ea35b355722 ("ARM: s3c: remove s3c24xx specific hacks")
+>=20
+> is this really a fix? Or is it a cleanup?
 
-# find /sys -name ttyS*
+I guess from my position it's fixing the issue of dead code, introduced
+in the commit referenced. Which is of course also a cleanup :-)
 
---- /tmp/before 2023-10-25 10:50:29.870083012 +0300
-+++ /tmp/after  2023-10-25 10:52:52.770393075 +0300
-@@ -3,7 +3,7 @@
- /sys/class/tty/ttyS0
- /sys/class/tty/ttyS3
- /sys/class/tty/ttyS1
--/sys/devices/pnp0/00:04/tty/ttyS0
--/sys/devices/platform/serial8250/tty/ttyS2
--/sys/devices/platform/serial8250/tty/ttyS3
--/sys/devices/platform/serial8250/tty/ttyS1
-+/sys/devices/pnp0/00:04/00:04:0/00:04:0.0/tty/ttyS0
-+/sys/devices/platform/serial8250/serial8250:0/serial8250:0.3/tty/ttyS3
-+/sys/devices/platform/serial8250/serial8250:0/serial8250:0.1/tty/ttyS1
-+/sys/devices/platform/serial8250/serial8250:0/serial8250:0.2/tty/ttyS2
+Not sure...
 
-> And can you post the equivalent diff for serdev as well for completeness?
+Cheers,
+Andre
 
-I don't have an x86 or arm64 testcase for serdev, but here's a armv7 wlcore
-hci-uart serdev diff for command:
-
-# find /sys -name ttyS* -o -name serial0
-
---- /tmp/before 2023-10-25 08:23:15.468382112 +0000
-+++ /tmp/after  2023-10-25 08:23:15.468382112 +0000
-@@ -1,10 +1,9 @@
--# find /sys -name ttyS* -o -name serial0
--/sys/devices/platform/ocp/48000000.interconnect/48000000.interconnect:segment@0/4806e050.target-module/4806e000.serial/serial0
--/sys/devices/platform/ocp/48000000.interconnect/48000000.interconnect:segment@0/48020050.target-module/48020000.serial/tty/ttyS2
--/sys/devices/platform/ocp/48000000.interconnect/48000000.interconnect:segment@0/4806a050.target-module/4806a000.serial/tty/ttyS0
--/sys/devices/platform/ocp/48000000.interconnect/48000000.interconnect:segment@0/4806c050.target-module/4806c000.serial/tty/ttyS1
--/sys/devices/platform/serial8250/tty/ttyS4
--/sys/devices/platform/serial8250/tty/ttyS5
-+/sys/devices/platform/ocp/48000000.interconnect/48000000.interconnect:segment@0/4806e050.target-module/4806e000.serial/4806e000.serial:0/4806e000.serial:0.0/serial0
-+/sys/devices/platform/ocp/48000000.interconnect/48000000.interconnect:segment@0/48020050.target-module/48020000.serial/48020000.serial:0/48020000.serial:0.0/tty/ttyS2
-+/sys/devices/platform/ocp/48000000.interconnect/48000000.interconnect:segment@0/4806a050.target-module/4806a000.serial/4806a000.serial:0/4806a000.serial:0.0/tty/ttyS0
-+/sys/devices/platform/ocp/48000000.interconnect/48000000.interconnect:segment@0/4806c050.target-module/4806c000.serial/4806c000.serial:0/4806c000.serial:0.0/tty/ttyS1
-+/sys/devices/platform/serial8250/serial8250:0/serial8250:0.5/tty/ttyS5
-+/sys/devices/platform/serial8250/serial8250:0/serial8250:0.4/tty/ttyS4
- /sys/class/tty/ttyS4
- /sys/class/tty/ttyS2
- /sys/class/tty/ttyS0
-
-> > There are multiple ports claimed by serial8250. So I think the new sysfs
-> > output is correct showing more ttys. If there's some reason why serial8250
-> > should only have one tty and this output is not correct let me know too..
-> 
-> There should not be more class devices, you've just moved them and thus
-> there are more class directories (with one device per directory).
-
-OK makes sense.
-
-Thanks,
-
-Tony
