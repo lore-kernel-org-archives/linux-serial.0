@@ -2,58 +2,59 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26398C25B6E
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Oct 2023 13:38:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60DFCC25B67
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Oct 2023 13:46:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231168AbjJZNij (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Oct 2023 09:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53040 "EHLO
+        id S230514AbjJZNqe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 26 Oct 2023 09:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230413AbjJZNii (ORCPT
+        with ESMTP id S230330AbjJZNqd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Oct 2023 09:38:38 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BCB018A
-        for <linux-serial@vger.kernel.org>; Thu, 26 Oct 2023 06:38:36 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-5a7c011e113so7317537b3.1
-        for <linux-serial@vger.kernel.org>; Thu, 26 Oct 2023 06:38:36 -0700 (PDT)
+        Thu, 26 Oct 2023 09:46:33 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BCBBCC
+        for <linux-serial@vger.kernel.org>; Thu, 26 Oct 2023 06:46:30 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-1e9c9d181d6so527750fac.0
+        for <linux-serial@vger.kernel.org>; Thu, 26 Oct 2023 06:46:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1698327516; x=1698932316; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1698327989; x=1698932789; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=uW0IaiCDGPtfg501Nw8p6UpGLwS2ZUBRonlHE2LLZzs=;
-        b=x9+2I1elp0NtJ/7n3Lq5bsXDYJ22d7FQ3CIwYlL/bAWTq6Fly7DG+90wSXYHNibwno
-         M8SCWrBgF6P2wREpmxfuXu7puQfp3SurlxI9kTp36Np35XQrLX/FcW/gke59c5H7CISs
-         dTrAH2Twacm0j2ccQJRYGRRxCNgFtSTjya1GcTaI45mRoX1x4TmT9zeEdOxjvPhelVOA
-         Oj65dQQVGYW5gOPooEz1vz7ncNj9YROA797GPRlCSz8ofyimAy44wsvHMU4Mj0AYxSfV
-         eeyjrcpZjwrPNNWmnREcJ6QF1OnOOaj/1lTxZxOKuyzrk7J/1FvHngvKtZn29nsDWCHT
-         dQvg==
+        bh=EdyVVw0aBVMHPJpP77t0JsBJNKlhvsWo73t+NTi0GM8=;
+        b=zSCLn1Xx3oirlDQLkV2dktoqiTTgCLUIjAUgiWgiQx36E6M67EdgwqaKpP7woCRjAh
+         +piQKOs89247vNn960XRCU5hNc96TSfqzJXAh2HkU2cLdypASINfZPVqq+7xL/6a3nsb
+         47mpF+gK2kGXVktz/gS6kOopKcwn1L7iDPlU8lERtUF0z6evcATShynlw6K2NTmjnqb6
+         J3jugKPopMNl5oAO5vlNmrO4w/ZgTl1vaBWL6wNDtuyQE9yz7/0FfN1JEQUjj3KfOeK8
+         gTdNXefDkH76n5ax50NUM2jEDb+UcA61ogFp1p0VxMRRzbjvFVKEKsuOW4Nt0vXqcez1
+         ZUIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698327516; x=1698932316;
+        d=1e100.net; s=20230601; t=1698327989; x=1698932789;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=uW0IaiCDGPtfg501Nw8p6UpGLwS2ZUBRonlHE2LLZzs=;
-        b=rOdYuQ/BGSuoMMUGJzjk3wGFkLLruAxVRk83xliUN1vA9uQSxdpn7ctJpHdM3p18ZT
-         8s2NuYKMNYC/mRr0kqzJ96KeghUiBrZP9HwttfIRnetiZnNzgsklWb9DY2ZHK5mbTLv7
-         gH0GCmYzr7gDZTmNwUuLXr1MlLEWaF4rn8KuhZjPnfp018s6Hqk43Tq4oJIIZGpDLGH2
-         EJlDtn0I7iHJyfpmZboL2hCBWsgx3J1+ggLeFJ8QuFBuqDH72DCn0DZnYsrvYebXt6in
-         OYs9iIk5YGmGzuCEFHO/6qK0nZQ5WV6OUUaZPyS94vDkDQHv4mll0w8umVEeS7lfhmIg
-         tznw==
-X-Gm-Message-State: AOJu0Ywp80iovzIjJICelCRI6JboupVt6xB3Ys3cG5fx4lLuwilqu4Ky
-        NyZSIYOWf4Wu6keWvZTZmpm/XCnpx9Qi5PMrDOwr0A==
-X-Google-Smtp-Source: AGHT+IGniiZ+KAxKfAUBm/LTzqfB6hvkLHRlM0D1QsLMcILZ735k3hAKAdypCFeMnj5XsdasrMZtYIBxfs4MJ1az3/I=
-X-Received: by 2002:a0d:e2c9:0:b0:5a8:286d:339e with SMTP id
- l192-20020a0de2c9000000b005a8286d339emr20086367ywe.4.1698327515767; Thu, 26
- Oct 2023 06:38:35 -0700 (PDT)
+        bh=EdyVVw0aBVMHPJpP77t0JsBJNKlhvsWo73t+NTi0GM8=;
+        b=a7M6hhYee4OI7+VKAkvQiMnRyqmjEjpyeH1NcnPWzA8KXSk4B0QcfU2yrSPkiGg2JW
+         zDauMfpL7udi33chgXZNpzvXxHCBhb/cgqybmaHD/wLua/Pqo1rck7SYseiJwPu12uuL
+         OHdnIcFtz/Ko3g4vGbE600nh5elNHKgNEWqj72xLCkUxvD5qjL/kNx6hkQHs9CWYDK8/
+         +dHluqAa/J9E+L7V6p46S/G+Ru5MUoqUOxur/jCGrCXFZqi6sJo2NkOPds6w+/YRqZ6o
+         UpGUZ207g0EH9Z+RypFqO4A9BjwYzTY5MO+Xzrxcqgs9gdonymvW7fNWuOoZ4w+SBRII
+         P7ow==
+X-Gm-Message-State: AOJu0YxUCODWb8oPW/3JGqaRF0sd3G97t09Hr3Z2ZnnFnsPG0dUFOdSp
+        sX3qmvpEtONpfReja2pGb5C88Q3cTgLGEekHujpBbw==
+X-Google-Smtp-Source: AGHT+IG7t8B3P3kKeLg6CoQvDuqK9LBfIdNsKeqT9G9yoMJXpb7eWsJTzdRDKDCS3Xpwgm9anaN/0YyEZAjEQDYjsrk=
+X-Received: by 2002:a05:6870:7a1b:b0:1e9:f0be:cbbe with SMTP id
+ hf27-20020a0568707a1b00b001e9f0becbbemr24209376oab.9.1698327989467; Thu, 26
+ Oct 2023 06:46:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20231026-mbly-uart-v1-0-9258eea297d3@bootlin.com> <20231026-mbly-uart-v1-3-9258eea297d3@bootlin.com>
-In-Reply-To: <20231026-mbly-uart-v1-3-9258eea297d3@bootlin.com>
+References: <20231026-mbly-uart-v1-0-9258eea297d3@bootlin.com> <20231026-mbly-uart-v1-4-9258eea297d3@bootlin.com>
+In-Reply-To: <20231026-mbly-uart-v1-4-9258eea297d3@bootlin.com>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 26 Oct 2023 15:38:24 +0200
-Message-ID: <CACRpkdYant-8UGXMVFSTMxz-VRmD=iNiKiskAGbF1Bd-TyBMsA@mail.gmail.com>
-Subject: Re: [PATCH 3/6] tty: serial: amba-pl011: cleanup driver
+Date:   Thu, 26 Oct 2023 15:46:18 +0200
+Message-ID: <CACRpkdZRW6Evzr+CWuhpz6hinfAnwXaEp4GG=9+zY6yJy14xmw@mail.gmail.com>
+Subject: Re: [PATCH 4/6] tty: serial: amba-pl011: replace TIOCMBIT macros by
+ static functions
 To:     =?UTF-8?B?VGjDqW8gTGVicnVu?= <theo.lebrun@bootlin.com>
 Cc:     Russell King <linux@armlinux.org.uk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -73,41 +74,24 @@ X-Mailing-List: linux-serial@vger.kernel.org
 On Thu, Oct 26, 2023 at 12:41=E2=80=AFPM Th=C3=A9o Lebrun <theo.lebrun@boot=
 lin.com> wrote:
 
-
-> Follow recommandations from:
+> The driver uses two TIOCMBIT macros inside pl011_{get,set}_mctrl to
+> simplify the logic. Those look scary to checkpatch because they contain
+> ifs without do-while loops.
 >
->     $ ./scripts/checkpatch.pl --strict --file \
->             drivers/tty/serial/amba-pl011.c
+> Avoid the macros by creating small equivalent static functions; that
+> lets the compiler do its type checking & avoids checkpatch errors.
 >
-> It does NOT fix alerts relative to TIOCMBIT which will be dealt with in
-> another patch. Fixes following alerts:
->
->     CHECK: Alignment should match open parenthesis
->     CHECK: Blank lines aren't necessary after an open brace '{'
->     CHECK: Comparison to NULL could be written [...]
->     CHECK: Lines should not end with a '('
->     CHECK: Please don't use multiple blank lines
->     CHECK: Please use a blank line after function/struct/union/enum decla=
-rations
->     CHECK: Prefer using the BIT macro
->     CHECK: Unbalanced braces around else statement
->     CHECK: Unnecessary parentheses around [...]
->     CHECK: braces {} should be used on all arms of this statement
->     CHECK: spaces preferred around that '/' (ctx:VxV)
->     CHECK: spaces preferred around that '|' (ctx:VxV)
->     ERROR: do not initialise statics to false
->     WARNING: Comparisons should place the constant on the right side of t=
-he test
->     WARNING: Possible unnecessary 'out of memory' message
->     WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
->     WARNING: Prefer [subsystem eg: netdev]_info([subsystem]dev, ... then =
-dev_info(dev, ... then pr_info(...  to printk(KERN_INFO ...
->     WARNING: quoted string split across lines
+> For the second instance __assign_bit is not usable because it deals with
+> unsigned long pointers whereas we have an unsigned int in
+> pl011_set_mctrl.
 >
 > Signed-off-by: Th=C3=A9o Lebrun <theo.lebrun@bootlin.com>
 
-These look harmless enough to me.
+The kernel looks better after this patch than before, so:
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+
+Since the eternal defines uses masks rather than bits we can't
+use __set_bit() & friends in this case and that's life.
 
 Yours,
 Linus Walleij
