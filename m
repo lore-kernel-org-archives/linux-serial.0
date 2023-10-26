@@ -2,59 +2,58 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60DFCC25B67
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Oct 2023 13:46:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CF42C25B48
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Oct 2023 13:47:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230514AbjJZNqe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Oct 2023 09:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59380 "EHLO
+        id S231216AbjJZNrS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 26 Oct 2023 09:47:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230330AbjJZNqd (ORCPT
+        with ESMTP id S230330AbjJZNrR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Oct 2023 09:46:33 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BCBBCC
-        for <linux-serial@vger.kernel.org>; Thu, 26 Oct 2023 06:46:30 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-1e9c9d181d6so527750fac.0
-        for <linux-serial@vger.kernel.org>; Thu, 26 Oct 2023 06:46:30 -0700 (PDT)
+        Thu, 26 Oct 2023 09:47:17 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8DA8187
+        for <linux-serial@vger.kernel.org>; Thu, 26 Oct 2023 06:47:13 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id 3f1490d57ef6-da0737c451cso1683312276.1
+        for <linux-serial@vger.kernel.org>; Thu, 26 Oct 2023 06:47:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1698327989; x=1698932789; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1698328031; x=1698932831; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EdyVVw0aBVMHPJpP77t0JsBJNKlhvsWo73t+NTi0GM8=;
-        b=zSCLn1Xx3oirlDQLkV2dktoqiTTgCLUIjAUgiWgiQx36E6M67EdgwqaKpP7woCRjAh
-         +piQKOs89247vNn960XRCU5hNc96TSfqzJXAh2HkU2cLdypASINfZPVqq+7xL/6a3nsb
-         47mpF+gK2kGXVktz/gS6kOopKcwn1L7iDPlU8lERtUF0z6evcATShynlw6K2NTmjnqb6
-         J3jugKPopMNl5oAO5vlNmrO4w/ZgTl1vaBWL6wNDtuyQE9yz7/0FfN1JEQUjj3KfOeK8
-         gTdNXefDkH76n5ax50NUM2jEDb+UcA61ogFp1p0VxMRRzbjvFVKEKsuOW4Nt0vXqcez1
-         ZUIg==
+        bh=S9n8fdUMuomZpDrsqxoqTl0ThgWJwRuU8B75KmpTiCQ=;
+        b=MCpUpM7CtFd1Btnkh1HIhaUSCpEnpauHx760oIQliConkLYOX9efKUT96lyZIoWiVZ
+         fTVVmVl4xdHL/H5S1eLIavWaW+4vWHHmgtKiKSu899To+qM+s+tgcxNcjoY2VEYmXmoP
+         L0lx1M7chS5sMrz6K0xS59X7hRs3uCwpCh0hAvp/ffqQv1E/8fAtE1XcLVLAlfsuKh4v
+         RnHok0wD4xBEVbms6KG+lJH+wucy5WAaup5qGuS6OVdRV7qLXIG/MGBSlyyk11tlDN5x
+         pTzrOonKfnkDiM5thKG4FDzSTERdbPaHnW2ZQnqt63+svDFc5PAtOcefFz9NUq0/VDvX
+         QNfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698327989; x=1698932789;
+        d=1e100.net; s=20230601; t=1698328031; x=1698932831;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=EdyVVw0aBVMHPJpP77t0JsBJNKlhvsWo73t+NTi0GM8=;
-        b=a7M6hhYee4OI7+VKAkvQiMnRyqmjEjpyeH1NcnPWzA8KXSk4B0QcfU2yrSPkiGg2JW
-         zDauMfpL7udi33chgXZNpzvXxHCBhb/cgqybmaHD/wLua/Pqo1rck7SYseiJwPu12uuL
-         OHdnIcFtz/Ko3g4vGbE600nh5elNHKgNEWqj72xLCkUxvD5qjL/kNx6hkQHs9CWYDK8/
-         +dHluqAa/J9E+L7V6p46S/G+Ru5MUoqUOxur/jCGrCXFZqi6sJo2NkOPds6w+/YRqZ6o
-         UpGUZ207g0EH9Z+RypFqO4A9BjwYzTY5MO+Xzrxcqgs9gdonymvW7fNWuOoZ4w+SBRII
-         P7ow==
-X-Gm-Message-State: AOJu0YxUCODWb8oPW/3JGqaRF0sd3G97t09Hr3Z2ZnnFnsPG0dUFOdSp
-        sX3qmvpEtONpfReja2pGb5C88Q3cTgLGEekHujpBbw==
-X-Google-Smtp-Source: AGHT+IG7t8B3P3kKeLg6CoQvDuqK9LBfIdNsKeqT9G9yoMJXpb7eWsJTzdRDKDCS3Xpwgm9anaN/0YyEZAjEQDYjsrk=
-X-Received: by 2002:a05:6870:7a1b:b0:1e9:f0be:cbbe with SMTP id
- hf27-20020a0568707a1b00b001e9f0becbbemr24209376oab.9.1698327989467; Thu, 26
- Oct 2023 06:46:29 -0700 (PDT)
+        bh=S9n8fdUMuomZpDrsqxoqTl0ThgWJwRuU8B75KmpTiCQ=;
+        b=VVRSDyvZLq77q7SYQkJDuTbn5Yljm2ZVVEoFzLTFT1i5Tl4rJMO2XCFDyzUH1cGVnK
+         QMhf2h40qt5cYR+NIDi20s+qQnRab/eYr5gdd+3qkNFarUABr3gQLJaQxGCLajCvmWOI
+         tkD55d6/E1e+lCpcKexmo2oqWkkdF9tQsWDZA0bn+Wv7al4O7yFHpuB2b0BHMuhvRkQ1
+         GbvtA6FoWdcwFH3jfS8qXkf0HPerlFK7gNvABtfTDhQMfQpf3+bU1Z3vTGxzhsbSgOxj
+         0k7dNkTTEN1wYN5KAKdL6bbMSZFbZatX2wetLj02SHKP6vUTp6MNA/GztxDZOHzaRsfa
+         nGng==
+X-Gm-Message-State: AOJu0YwmDDwJEPRJAne4+N4XMKKGsDoSBkz3BkYNhG1DlB28262/oIel
+        +bABcOnc7X+Hb4E+tqCheR92uETqtjgT1epy5wsRxw==
+X-Google-Smtp-Source: AGHT+IGzqfAtuY+CnvRNbJPNwqa8xrhztIhzvjmFd68cerFhlPPGEGhTxQKguYR027QteX+t5yUAkIEXGQBA9Orufqc=
+X-Received: by 2002:a5b:8c5:0:b0:da0:3ec1:f3f with SMTP id w5-20020a5b08c5000000b00da03ec10f3fmr5401782ybq.3.1698328029846;
+ Thu, 26 Oct 2023 06:47:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20231026-mbly-uart-v1-0-9258eea297d3@bootlin.com> <20231026-mbly-uart-v1-4-9258eea297d3@bootlin.com>
-In-Reply-To: <20231026-mbly-uart-v1-4-9258eea297d3@bootlin.com>
+References: <20231026-mbly-uart-v1-0-9258eea297d3@bootlin.com> <20231026-mbly-uart-v1-5-9258eea297d3@bootlin.com>
+In-Reply-To: <20231026-mbly-uart-v1-5-9258eea297d3@bootlin.com>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 26 Oct 2023 15:46:18 +0200
-Message-ID: <CACRpkdZRW6Evzr+CWuhpz6hinfAnwXaEp4GG=9+zY6yJy14xmw@mail.gmail.com>
-Subject: Re: [PATCH 4/6] tty: serial: amba-pl011: replace TIOCMBIT macros by
- static functions
+Date:   Thu, 26 Oct 2023 15:46:58 +0200
+Message-ID: <CACRpkdbLqB29gMHYU2sT=3VD6XuOeaFSAdO2=qDS+=KCBi0jPA@mail.gmail.com>
+Subject: Re: [PATCH 5/6] tty: serial: amba-pl011: unindent pl011_console_get_options
+ function body
 To:     =?UTF-8?B?VGjDqW8gTGVicnVu?= <theo.lebrun@bootlin.com>
 Cc:     Russell King <linux@armlinux.org.uk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -74,24 +73,14 @@ X-Mailing-List: linux-serial@vger.kernel.org
 On Thu, Oct 26, 2023 at 12:41=E2=80=AFPM Th=C3=A9o Lebrun <theo.lebrun@boot=
 lin.com> wrote:
 
-> The driver uses two TIOCMBIT macros inside pl011_{get,set}_mctrl to
-> simplify the logic. Those look scary to checkpatch because they contain
-> ifs without do-while loops.
+> The whole function body is encapsulated inside an if-condition. Reverse
+> the if logic and early return to remove one indentation level.
 >
-> Avoid the macros by creating small equivalent static functions; that
-> lets the compiler do its type checking & avoids checkpatch errors.
->
-> For the second instance __assign_bit is not usable because it deals with
-> unsigned long pointers whereas we have an unsigned int in
-> pl011_set_mctrl.
+> Also turn two nested ifs into a single one at the end of the function.
 >
 > Signed-off-by: Th=C3=A9o Lebrun <theo.lebrun@bootlin.com>
 
-The kernel looks better after this patch than before, so:
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Since the eternal defines uses masks rather than bits we can't
-use __set_bit() & friends in this case and that's life.
 
 Yours,
 Linus Walleij
