@@ -2,111 +2,114 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED825C25B6B
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Oct 2023 08:27:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 416BEC25B70
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Oct 2023 08:29:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230283AbjJZI1o (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Oct 2023 04:27:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42926 "EHLO
+        id S1344604AbjJZI3z (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 26 Oct 2023 04:29:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbjJZI1n (ORCPT
+        with ESMTP id S1344522AbjJZI3y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Oct 2023 04:27:43 -0400
+        Thu, 26 Oct 2023 04:29:54 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A8ABB8;
-        Thu, 26 Oct 2023 01:27:42 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 520FCC433C8;
-        Thu, 26 Oct 2023 08:27:41 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804A610E;
+        Thu, 26 Oct 2023 01:29:52 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1B3CC433CB;
+        Thu, 26 Oct 2023 08:29:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1698308861;
-        bh=cHwm43gql1hfewW6pZ04oWSAGFpGE+sNl6YJbfSjVeg=;
+        s=korg; t=1698308992;
+        bh=dCX8OHq5uHSIRb/Tm2FFJ8vPJxRQRvuLh+p/6rWRQZk=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RFJSc0kp4TMTuN+42N9GVaWO6LDeJgrYEh6/lcxK8CDpO3S3owIW9Dr6+02KY5v3K
-         7M2aLuv0KD3ntTUc5MVIfQIQCLyFZ0sDqpXwfVNZmto9jNi866n0EOsSNATSEq0Z9A
-         1d8OSCpkj4m3Xa6ce4W/XUinBKP3Xl1COHon2bLU=
-Date:   Thu, 26 Oct 2023 10:27:37 +0200
+        b=XzdDxq0Z+z1LysCbhE4BuFsSiK7GEruM2/e9znnsM6IE5iOQzZ6tDY5i201knNbHp
+         WuNK5v/K34Krx4ehe/noljp7PUrMuLwQmzpBpUBXurA8Y0RAvK4JWxPlRsmZBzSp3O
+         J+pJl/owyT2sikfPoJcZ6tvBMumz8y+S3+6KTAEc=
+Date:   Thu, 26 Oct 2023 10:29:47 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     "D. Starke" <daniel.starke@siemens.com>
 Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
         ilpo.jarvinen@linux.intel.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] tty: n_gsm: fix race condition in status line change
- on dead connections
-Message-ID: <2023102629-onward-bust-d049@gregkh>
+Subject: Re: [PATCH 2/2] tty: n_gsm: add partial copyright Siemens Mobility
+ GmbH
+Message-ID: <2023102649-batch-turbojet-11cb@gregkh>
 References: <20231026055844.3127-1-daniel.starke@siemens.com>
+ <20231026055844.3127-2-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231026055844.3127-1-daniel.starke@siemens.com>
+In-Reply-To: <20231026055844.3127-2-daniel.starke@siemens.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 26, 2023 at 07:58:43AM +0200, D. Starke wrote:
+On Thu, Oct 26, 2023 at 07:58:44AM +0200, D. Starke wrote:
 > From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> gsm_cleanup_mux() cleans up the gsm by closing all DLCIs, stopping all
-> timers, removing the virtual tty devices and clearing the data queues.
-> This procedure, however, may cause subsequent changes of the virtual modem
-> status lines of a DLCI. More data is being added the outgoing data queue
-> and the deleted kick timer is restarted to handle this. At this point many
-> resources have already been removed by the cleanup procedure. Thus, a
-> kernel panic occurs.
+> More than 1/3 of the n_gsm code has been contributed by us in the last
+> 1.5 years, completing conformance with the standard and stabilizing the
+> driver:
+> - added UI (unnumbered information) frame support
+> - added PN (parameter negotiation) message handling and function support
+> - added optional keep-alive control link supervision via test messages
+> - added TIOCM_OUT1 and TIOCM_OUT2 to allow responder to operate as modem
+> - added TIOCMIWAIT support on virtual ttys
+> - added additional ioctls and parameters to configure the new functions
+> - added overall locking mechanism to avoid data race conditions
+> - added outgoing data flow to decouple physical from virtual tty handling
+>   for better performance and to avoid dead-locks
+> - fixed advanced option mode implementation
+> - fixed convergence layer type 2 implementation
+> - fixed handling of CLD (multiplexer close down) messages
+> - fixed broken muxer close down procedure
+> - and many more bug fixes
 > 
-> Fix this by proving in gsm_modem_update() that the cleanup procedure has
-> not been started and the mux is still alive.
+> With this most of our initial RFC has been implemented. It gives the driver
+> a quality boost unseen in the decade before.
 > 
-> Note that writing to a virtual tty is already protected by checks against
-> the DLCI specific connection state.
+> Add a partial copyright notice to the n_gsm files to highlight this
+> contribution.
 > 
-> Fixes: c568f7086c6e ("tty: n_gsm: fix missing timer to handle stalled links")
+> Link: https://lore.kernel.org/all/20220225080758.2869-1-daniel.starke@siemens.com/
 > Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 > ---
->  drivers/tty/n_gsm.c | 2 ++
->  1 file changed, 2 insertions(+)
+>  drivers/tty/n_gsm.c         | 1 +
+>  include/uapi/linux/gsmmux.h | 1 +
+>  2 files changed, 2 insertions(+)
 > 
 > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index 1f3aba607cd5..0ee7531c9201 100644
+> index 0ee7531c9201..fa882c7f4770 100644
 > --- a/drivers/tty/n_gsm.c
 > +++ b/drivers/tty/n_gsm.c
-> @@ -4108,6 +4108,8 @@ static int gsm_modem_upd_via_msc(struct gsm_dlci *dlci, u8 brk)
->  
->  static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk)
->  {
-> +	if (dlci->gsm->dead)
-> +		return -EL2HLT;
->  	if (dlci->adaption == 2) {
->  		/* Send convergence layer type 2 empty data frame. */
->  		gsm_modem_upd_via_data(dlci, brk);
-> -- 
-> 2.34.1
-> 
+> @@ -2,6 +2,7 @@
+>  /*
+>   * n_gsm.c GSM 0710 tty multiplexor
+>   * Copyright (c) 2009/10 Intel Corporation
+> + * Portions Copyright (c) 2022/23 Siemens Mobility GmbH
 
-Hi,
+I have no objection to you adding your copyright, you all have done a
+ton of great work here and it is correct to add.  But the "Portions"
+line is odd, and isn't something we generally use.  Can you just resend
+this with that word removed?
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+>   *
+>   *	* THIS IS A DEVELOPMENT SNAPSHOT IT IS NOT A FINAL RELEASE *
+>   *
+> diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
+> index 4c878d84dbda..101ebd15954e 100644
+> --- a/include/uapi/linux/gsmmux.h
+> +++ b/include/uapi/linux/gsmmux.h
+> @@ -1,4 +1,5 @@
+>  /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+> +/* Portions Copyright (c) 2022/23 Siemens Mobility GmbH */
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+Same here, just drop the "Portions"?
 
-- You have marked a patch with a "Fixes:" tag for a commit that is in an
-  older released kernel, yet you do not have a cc: stable line in the
-  signed-off-by area at all, which means that the patch will not be
-  applied to any older kernel releases.  To properly fix this, please
-  follow the documented rules in the
-  Documentation/process/stable-kernel-rules.rst file for how to resolve
-  this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
+Odd that Intel didn't put their copyright here, but as we all know,
+absence of that line does not mean that someone does not have copyright
+on it, lines like these are lawyer cargo-cult-safety, so we play along
+with them :)
 
 thanks,
 
-greg k-h's patch email bot
+greg k-h
