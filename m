@@ -2,83 +2,182 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C817C25B48
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Oct 2023 14:18:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40CB2C25B6B
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Oct 2023 14:24:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230493AbjJZOSw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Oct 2023 10:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34938 "EHLO
+        id S235053AbjJZOYo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 26 Oct 2023 10:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229815AbjJZOSv (ORCPT
+        with ESMTP id S235084AbjJZOYm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Oct 2023 10:18:51 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DEAE1A2;
-        Thu, 26 Oct 2023 07:18:48 -0700 (PDT)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 19B2A60011;
-        Thu, 26 Oct 2023 14:18:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1698329926;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NpvjpaWtzMB/CtrOWZk8LM8Ct/Hhoy84K2WxkxvwHDU=;
-        b=jcu6Btyg2XCxUpJBhXuU0SAC8lWpnX1XFst/tYghkn92ma3+5y+Z3uQ/rwtlbO5eaK16pO
-        RGYm9rwsuLJww8ic7v9RY5m0O7AQN7P350ZFEt5dStb1RR+nxVhISF+0/eh7+2oa/d6/W0
-        yT3/p9lddwAnkniLBHjOP5HPkNw6yW4gccZORnZO5xedxrqCguUneK1dTvu2rLpIMrzZuj
-        1DXCkwmfw7n8VxVe53EL1a4dT/yC2EdfHywPMvDTGWwKc7CC8pJM+v/eNPZ8mcS4PiPvZ7
-        /dLGtzPtAQ7Dr0qZpPVmvDoY1U/EWQQNAp4d/lACmeHuJ/fLNUx7munpfFdB6Q==
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date:   Thu, 26 Oct 2023 16:18:45 +0200
-Message-Id: <CWIFPP04TD0A.G0Q3H51W9E9S@tleb-bootlin-xps13-01>
-Cc:     "Russell King" <linux@armlinux.org.uk>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Jiri Slaby" <jirislaby@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        "Gregory CLEMENT" <gregory.clement@bootlin.com>,
-        "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
-        "Thomas Petazzoni" <thomas.petazzoni@bootlin.com>,
-        "Vladimir Kondratiev" <vladimir.kondratiev@mobileye.com>,
-        "Tawfik Bayouk" <tawfik.bayouk@mobileye.com>
-To:     "Linus Walleij" <linus.walleij@linaro.org>
-From:   =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
-Subject: Re: [PATCH 6/6] tty: serial: amba-pl011: Parse bits option as 5, 6,
- 7 or 8 in _get_options
-X-Mailer: aerc 0.15.2
+        Thu, 26 Oct 2023 10:24:42 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9596C1BE;
+        Thu, 26 Oct 2023 07:24:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+        :Date:subject:date:message-id:reply-to;
+        bh=I0PpOgjWWDUtxtcOnCmhc1dwoPuyIJGwsTA62bPuxdc=; b=nhsJ2VtHaOS/D4tIqoPFSsYHKG
+        yGxCJb2fIAPmrXCq6gq0DsKRU/qB38i0o7MIwgUXNCp4HO/KTmncSo8rpoGU/wQtNB9j39mAC1/mI
+        jwKmqDqH0vJkfqi2OoFVGvXsupb2OG0FUPWXbrhtIouKr28N6Rfs3lTufY81vg0GNQRQ=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:41414 helo=pettiford)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1qw1Hd-0007wo-EI; Thu, 26 Oct 2023 10:24:26 -0400
+Date:   Thu, 26 Oct 2023 10:24:24 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     =?ISO-8859-1?Q?Th=E9o?= Lebrun <theo.lebrun@bootlin.com>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Vladimir Kondratiev <vladimir.kondratiev@mobileye.com>,
+        Tawfik Bayouk <tawfik.bayouk@mobileye.com>
+Message-Id: <20231026102424.81c0f7487df505d2ed92cf13@hugovil.com>
+In-Reply-To: <20231026-mbly-uart-v1-4-9258eea297d3@bootlin.com>
 References: <20231026-mbly-uart-v1-0-9258eea297d3@bootlin.com>
- <20231026-mbly-uart-v1-6-9258eea297d3@bootlin.com>
- <CACRpkdYkgg91HXuZ6LVymwHvLTRGzb5ubU-7k3wUm3DDRwkmww@mail.gmail.com>
-In-Reply-To: <CACRpkdYkgg91HXuZ6LVymwHvLTRGzb5ubU-7k3wUm3DDRwkmww@mail.gmail.com>
-X-GND-Sasl: theo.lebrun@bootlin.com
+        <20231026-mbly-uart-v1-4-9258eea297d3@bootlin.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: Re: [PATCH 4/6] tty: serial: amba-pl011: replace TIOCMBIT macros by
+ static functions
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+On Thu, 26 Oct 2023 12:41:21 +0200
+Th=E9o Lebrun <theo.lebrun@bootlin.com> wrote:
 
-On Thu Oct 26, 2023 at 3:48 PM CEST, Linus Walleij wrote:
-> On Thu, Oct 26, 2023 at 12:41=E2=80=AFPM Th=C3=A9o Lebrun <theo.lebrun@bo=
-otlin.com> wrote:
->
-> > pl011_console_get_options() gets called to retrieve currently configure=
-d
-> > options from the registers. Previously, LCRH_TX.WLEN was being parsed
-> > as either 7 or 8 (fallback). Hardware supports values from 5 to 8
-> > inclusive, which pl011_set_termios() exploits for example.
-> >
-> > Signed-off-by: Th=C3=A9o Lebrun <theo.lebrun@bootlin.com>
->
-> With Ilpo's comment fixed:
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Hi,
 
-It's been fixed locally. Thank you for your review Linus!
+> The driver uses two TIOCMBIT macros inside pl011_{get,set}_mctrl to
+> simplify the logic. Those look scary to checkpatch because they contain
+> ifs without do-while loops.
+>=20
+> Avoid the macros by creating small equivalent static functions; that
+> lets the compiler do its type checking & avoids checkpatch errors.
+>=20
+> For the second instance __assign_bit is not usable because it deals with
+> unsigned long pointers whereas we have an unsigned int in
+> pl011_set_mctrl.
+>=20
+> Signed-off-by: Th=E9o Lebrun <theo.lebrun@bootlin.com>
+> ---
+>  drivers/tty/serial/amba-pl011.c | 46 +++++++++++++++++++++--------------=
+------
+>  1 file changed, 24 insertions(+), 22 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl=
+011.c
+> index 0d53973374de..bb3082c4d35c 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -1087,7 +1087,6 @@ static void pl011_dma_rx_poll(struct timer_list *t)
+>  	 */
+>  	if (jiffies_to_msecs(jiffies - dmarx->last_jiffies)
+>  			> uap->dmarx.poll_timeout) {
+> -
 
-Regards,
+This should go into a separate patch, or simply be merged with one
+of your other coding style/whitespace cleanup patches.
 
---
-Th=C3=A9o Lebrun, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Hugo.
+
+
+>  		spin_lock_irqsave(&uap->port.lock, flags);
+>  		pl011_dma_rx_stop(uap);
+>  		uap->im |=3D UART011_RXIM;
+> @@ -1595,6 +1594,12 @@ static unsigned int pl011_tx_empty(struct uart_por=
+t *port)
+>  							0 : TIOCSER_TEMT;
+>  }
+> =20
+> +static void pl011_maybe_set_bit(bool cond, unsigned int *ptr, unsigned i=
+nt mask)
+> +{
+> +	if (cond)
+> +		*ptr |=3D mask;
+> +}
+> +
+>  static unsigned int pl011_get_mctrl(struct uart_port *port)
+>  {
+>  	struct uart_amba_port *uap =3D
+> @@ -1602,18 +1607,22 @@ static unsigned int pl011_get_mctrl(struct uart_p=
+ort *port)
+>  	unsigned int result =3D 0;
+>  	unsigned int status =3D pl011_read(uap, REG_FR);
+> =20
+> -#define TIOCMBIT(uartbit, tiocmbit)	\
+> -	if (status & uartbit)		\
+> -		result |=3D tiocmbit
+> +	pl011_maybe_set_bit(status & UART01x_FR_DCD, &result, TIOCM_CAR);
+> +	pl011_maybe_set_bit(status & uap->vendor->fr_dsr, &result, TIOCM_DSR);
+> +	pl011_maybe_set_bit(status & uap->vendor->fr_cts, &result, TIOCM_CTS);
+> +	pl011_maybe_set_bit(status & uap->vendor->fr_ri, &result, TIOCM_RNG);
+> =20
+> -	TIOCMBIT(UART01x_FR_DCD, TIOCM_CAR);
+> -	TIOCMBIT(uap->vendor->fr_dsr, TIOCM_DSR);
+> -	TIOCMBIT(uap->vendor->fr_cts, TIOCM_CTS);
+> -	TIOCMBIT(uap->vendor->fr_ri, TIOCM_RNG);
+> -#undef TIOCMBIT
+>  	return result;
+>  }
+> =20
+> +static void pl011_assign_bit(bool cond, unsigned int *ptr, unsigned int =
+mask)
+> +{
+> +	if (cond)
+> +		*ptr |=3D mask;
+> +	else
+> +		*ptr &=3D ~mask;
+> +}
+> +
+>  static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
+>  {
+>  	struct uart_amba_port *uap =3D
+> @@ -1622,23 +1631,16 @@ static void pl011_set_mctrl(struct uart_port *por=
+t, unsigned int mctrl)
+> =20
+>  	cr =3D pl011_read(uap, REG_CR);
+> =20
+> -#define	TIOCMBIT(tiocmbit, uartbit)		\
+> -	if (mctrl & tiocmbit)		\
+> -		cr |=3D uartbit;		\
+> -	else				\
+> -		cr &=3D ~uartbit
+> -
+> -	TIOCMBIT(TIOCM_RTS, UART011_CR_RTS);
+> -	TIOCMBIT(TIOCM_DTR, UART011_CR_DTR);
+> -	TIOCMBIT(TIOCM_OUT1, UART011_CR_OUT1);
+> -	TIOCMBIT(TIOCM_OUT2, UART011_CR_OUT2);
+> -	TIOCMBIT(TIOCM_LOOP, UART011_CR_LBE);
+> +	pl011_assign_bit(mctrl & TIOCM_RTS, &cr, UART011_CR_RTS);
+> +	pl011_assign_bit(mctrl & TIOCM_DTR, &cr, UART011_CR_DTR);
+> +	pl011_assign_bit(mctrl & TIOCM_OUT1, &cr, UART011_CR_OUT1);
+> +	pl011_assign_bit(mctrl & TIOCM_OUT2, &cr, UART011_CR_OUT2);
+> +	pl011_assign_bit(mctrl & TIOCM_LOOP, &cr, UART011_CR_LBE);
+> =20
+>  	if (port->status & UPSTAT_AUTORTS) {
+>  		/* We need to disable auto-RTS if we want to turn RTS off */
+> -		TIOCMBIT(TIOCM_RTS, UART011_CR_RTSEN);
+> +		pl011_assign_bit(mctrl & TIOCM_RTS, &cr, UART011_CR_RTSEN);
+>  	}
+> -#undef TIOCMBIT
+> =20
+>  	pl011_write(cr, uap, REG_CR);
+>  }
+>=20
+> --=20
+> 2.41.0
+>=20
