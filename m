@@ -2,106 +2,121 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F25A6C25B6B
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Oct 2023 14:37:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D07C2C25B48
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Oct 2023 14:53:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345264AbjJZOhp (ORCPT
+        id S1345312AbjJZOxi (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Oct 2023 10:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43570 "EHLO
+        Thu, 26 Oct 2023 10:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345180AbjJZOho (ORCPT
+        with ESMTP id S235105AbjJZOxh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Oct 2023 10:37:44 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4BB91;
-        Thu, 26 Oct 2023 07:37:42 -0700 (PDT)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 4EEF31BF212;
-        Thu, 26 Oct 2023 14:37:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1698331060;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pzSuZl465f+Jw66lZVHayZUu0n4I8LWguWFqGsE/18w=;
-        b=DbDoxLgbqro29XdM0gY29MtYs4ooiF4qgT22KXvka2hhLiMVQ+xQ6ULB0R7LvOQ4hmZ3zs
-        mxea+1SLXuVzs6Fa3+JaKb1QxexFrmfdQIoUg6Zdtg8vhTivKsxTLHdhdpcAAS3ojjzWbR
-        IMkeLWrlLREm+bvTYa5dOnaaQ/oM2bvdQWMljFsAO7JlLXLoJZQoQ+SRyqkZJv22AR/A8y
-        zhnTC+fN6abIHKo1BAO0m9II2/+RdiXwN2caWR7oTSkQsKEo3zqw7kHfyJ7lnbHF2Yh+4z
-        uVeZFlY6ovF0wYb4gHEgUij/5/NQ1j8uEL8L0LWrNfmfJd/mq59yuVbqdq7UMg==
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date:   Thu, 26 Oct 2023 16:37:39 +0200
-Cc:     "Russell King" <linux@armlinux.org.uk>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Jiri Slaby" <jirislaby@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        "Linus Walleij" <linus.walleij@linaro.org>,
-        "Gregory CLEMENT" <gregory.clement@bootlin.com>,
-        "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
-        "Thomas Petazzoni" <thomas.petazzoni@bootlin.com>,
-        "Vladimir Kondratiev" <vladimir.kondratiev@mobileye.com>,
-        "Tawfik Bayouk" <tawfik.bayouk@mobileye.com>
-To:     "Hugo Villeneuve" <hugo@hugovil.com>
-From:   =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
-Subject: Re: [PATCH 4/6] tty: serial: amba-pl011: replace TIOCMBIT macros by
- static functions
-Message-Id: <CWIG462JY229.13125CHGHKGX0@tleb-bootlin-xps13-01>
-X-Mailer: aerc 0.15.2
+        Thu, 26 Oct 2023 10:53:37 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445DE1AB;
+        Thu, 26 Oct 2023 07:53:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+        :Date:subject:date:message-id:reply-to;
+        bh=w6udVa4KUY8OESpc/iEhA/RHWN8N+ZaBUDRJEiNm8UQ=; b=qGnAHknZk5303TPW5XwmmRAOwt
+        1vg8nM9bJvMGqK58yAERPJfSzd8POJ7+Se9WS/UYl9OM7SNiVWrCG7AGV4fLyBvC8mdNe5Dw/6VPo
+        VwvBEusfs2CQSLhNSghyuePvixQuDkPo12emztbL+WClTQpyqdDy4TEU9y3Y+Ty7itbs=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:51632 helo=pettiford)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1qw1jm-0008PR-3F; Thu, 26 Oct 2023 10:53:31 -0400
+Date:   Thu, 26 Oct 2023 10:53:29 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     =?ISO-8859-1?Q?Th=E9o?= Lebrun <theo.lebrun@bootlin.com>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Vladimir Kondratiev <vladimir.kondratiev@mobileye.com>,
+        Tawfik Bayouk <tawfik.bayouk@mobileye.com>
+Message-Id: <20231026105329.0ee9603563202bd2157a7d27@hugovil.com>
+In-Reply-To: <20231026-mbly-uart-v1-6-9258eea297d3@bootlin.com>
 References: <20231026-mbly-uart-v1-0-9258eea297d3@bootlin.com>
- <20231026-mbly-uart-v1-4-9258eea297d3@bootlin.com>
- <20231026102424.81c0f7487df505d2ed92cf13@hugovil.com>
-In-Reply-To: <20231026102424.81c0f7487df505d2ed92cf13@hugovil.com>
-X-GND-Sasl: theo.lebrun@bootlin.com
+        <20231026-mbly-uart-v1-6-9258eea297d3@bootlin.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: Re: [PATCH 6/6] tty: serial: amba-pl011: Parse bits option as 5, 6,
+ 7 or 8 in _get_options
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+On Thu, 26 Oct 2023 12:41:23 +0200
+Th=E9o Lebrun <theo.lebrun@bootlin.com> wrote:
 
-On Thu Oct 26, 2023 at 4:24 PM CEST, Hugo Villeneuve wrote:
-> On Thu, 26 Oct 2023 12:41:21 +0200
-> Th=C3=A9o Lebrun <theo.lebrun@bootlin.com> wrote:
-> > The driver uses two TIOCMBIT macros inside pl011_{get,set}_mctrl to
-> > simplify the logic. Those look scary to checkpatch because they contain
-> > ifs without do-while loops.
-> >=20
-> > Avoid the macros by creating small equivalent static functions; that
-> > lets the compiler do its type checking & avoids checkpatch errors.
-> >=20
-> > For the second instance __assign_bit is not usable because it deals wit=
-h
-> > unsigned long pointers whereas we have an unsigned int in
-> > pl011_set_mctrl.
-> >=20
-> > Signed-off-by: Th=C3=A9o Lebrun <theo.lebrun@bootlin.com>
-> > ---
-> >  drivers/tty/serial/amba-pl011.c | 46 +++++++++++++++++++++------------=
---------
-> >  1 file changed, 24 insertions(+), 22 deletions(-)
-> >=20
-> > diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-=
-pl011.c
-> > index 0d53973374de..bb3082c4d35c 100644
-> > --- a/drivers/tty/serial/amba-pl011.c
-> > +++ b/drivers/tty/serial/amba-pl011.c
-> > @@ -1087,7 +1087,6 @@ static void pl011_dma_rx_poll(struct timer_list *=
-t)
-> >  	 */
-> >  	if (jiffies_to_msecs(jiffies - dmarx->last_jiffies)
-> >  			> uap->dmarx.poll_timeout) {
-> > -
->
-> This should go into a separate patch, or simply be merged with one
-> of your other coding style/whitespace cleanup patches.
+Hi,
+I would change the commit title to better indicate that you add support
+for bits 5 and 6, which was missing.
 
-Indeed, added to "tty: serial: amba-pl011: cleanup driver". Thanks.
+Maybe "Add support for 5 and 6 bits in..." ?
 
-Regards,
+> pl011_console_get_options() gets called to retrieve currently configured
+> options from the registers. Previously, LCRH_TX.WLEN was being parsed
 
---
-Th=C3=A9o Lebrun, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+It took me some time to understand your explanation :) Maybe change
+to:
+
+"Previously, only 7 or 8 bits were supported."
+
+> as either 7 or 8 (fallback). Hardware supports values from 5 to 8
+
+Add bits:
+
+"5 to 8 bits..."
+
+And indicate that this patch adds support for 5 and 6 bits.
+
+
+> inclusive, which pl011_set_termios() exploits for example.
+>=20
+> Signed-off-by: Th=E9o Lebrun <theo.lebrun@bootlin.com>
+> ---
+>  drivers/tty/serial/amba-pl011.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl=
+011.c
+> index 5774d48c7f16..b2062e4cbbab 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -2384,10 +2384,7 @@ static void pl011_console_get_options(struct uart_=
+amba_port *uap, int *baud,
+>  			*parity =3D 'o';
+>  	}
+> =20
+> -	if ((lcr_h & 0x60) =3D=3D UART01x_LCRH_WLEN_7)
+> -		*bits =3D 7;
+> -	else
+> -		*bits =3D 8;
+> +	*bits =3D FIELD_GET(0x60, lcr_h) + 5; /* from 5 to 8 inclusive */
+
+Capital "F" -> "From...".
+
+And add "bits" -> "From 5 to 8 bits..."
+
+Hugo.
+
+
+> =20
+>  	ibrd =3D pl011_read(uap, REG_IBRD);
+>  	fbrd =3D pl011_read(uap, REG_FBRD);
+>=20
+> --=20
+> 2.41.0
+>=20
