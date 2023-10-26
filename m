@@ -2,32 +2,32 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99571C25B67
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Oct 2023 16:51:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77FEBC25B67
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Oct 2023 17:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231140AbjJZQv4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Oct 2023 12:51:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48530 "EHLO
+        id S231810AbjJZRES (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 26 Oct 2023 13:04:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229815AbjJZQvz (ORCPT
+        with ESMTP id S231774AbjJZREQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Oct 2023 12:51:55 -0400
+        Thu, 26 Oct 2023 13:04:16 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B59187;
-        Thu, 26 Oct 2023 09:51:52 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 283EDC433C7;
-        Thu, 26 Oct 2023 16:51:52 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADE51B8;
+        Thu, 26 Oct 2023 10:04:11 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6849CC433C8;
+        Thu, 26 Oct 2023 17:04:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1698339112;
-        bh=V8qM86kYWnahH8L8to5RnmhawuvXMtXfMH61MytOS1c=;
+        s=k20201202; t=1698339850;
+        bh=lohn07v+85pAnB2Smu7iOTuTgIcJkgpWbWvasyT0Fgw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=BlavQRLWWVuUARbinIctcKA8CrUyeRJJCzAYRa0Fnlh/gujQqIpQDkbPZLXuTsxB2
-         anoCTsLnIYAxfr4tz2637av8xqeK14rbMoxBmRXEei5mUPe81JdX75sAvTlkKPRNqV
-         aynexxIOqntWEOLzZPUH5nNkvFYeW0ENy6fgdQP35bLmHR0J1eUHWj6v7oBJfkeF9r
-         QCu85klS6/56jeSeth5ZOSf58mkffvvnAjmJn+9muzJEhOFbbnf3HVpv6YH7BlEevY
-         /nN6PwqU4zJ5iUO6kAuM0XyjWTf/804GKb8OJVf4hoVSFGWdZyt/87Y+yIhWIg3Hfp
-         kQuiBNn/fG3wA==
-Date:   Thu, 26 Oct 2023 11:51:50 -0500
+        b=Escr5IAbmRkywpD2oy80GZ3HPbUNYPxv48Yrj/nfqrSprJK3BJmybCJQwbFisJOjy
+         NrPuQWhwMOQvib+LwQXPASzj+Jyg12NTH2EGevoiJ4zXjWl5BDARgpagN13VoFZwcY
+         6xdVtztFRh3d3ukt8I/e+qpzBO8CYpcnaWAMpqGwO5WbEORXXThtSLF2G6haunf86F
+         pL3KUoqYEvk9PvF99SIzEEDiSDrmZQwjPFjbwUIaw9JU0WlXEj1qIRchKwFdWqPrw6
+         MPQdaZZrSB/9NQZ1Zoinq/WAh5vDMUB9YW+eyh9N2zc7VRPkH5LMo4lBpOiORHFGRw
+         Ife18O45et1cw==
+Date:   Thu, 26 Oct 2023 12:04:08 -0500
 From:   Bjorn Helgaas <helgaas@kernel.org>
 To:     Sunil V L <sunilvl@ventanamicro.com>
 Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -49,38 +49,62 @@ Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Andrew Jones <ajones@ventanamicro.com>,
         Atish Kumar Patra <atishp@rivosinc.com>,
         Haibo Xu <haibo1.xu@intel.com>
-Subject: Re: [RFC PATCH v2 13/21] irqchip: riscv-intc: Add ACPI support for
- AIA
-Message-ID: <20231026165150.GA1825130@bhelgaas>
+Subject: Re: [RFC PATCH v2 06/21] RISC-V: Kconfig: Select deferred GSI probe
+ for ACPI systems
+Message-ID: <20231026170408.GA1825378@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231025202344.581132-14-sunilvl@ventanamicro.com>
+In-Reply-To: <20231025202344.581132-7-sunilvl@ventanamicro.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 26, 2023 at 01:53:36AM +0530, Sunil V L wrote:
-> The RINTC subtype structure in MADT also has information about other
-> interrupt controllers like MMIO. So, save those information and provide
-> interfaces to retrieve them when required by corresponding drivers.
+On Thu, Oct 26, 2023 at 01:53:29AM +0530, Sunil V L wrote:
+> On RISC-V platforms, apart from root interrupt controllers (which
+> provide local interrupts and IPI), other interrupt controllers in the
+> hierarchy are probed late. Enable this select this CONFIG option for
+> RISC-V platforms so that device drivers which connect to deferred
+> interrupt controllers can take appropriate action.
 
-> @@ -218,7 +306,19 @@ static int __init riscv_intc_acpi_init(union acpi_subtable_headers *header,
+Quite a bit of this series seems related to the question of interrupt
+controllers being probed "late".
 
-> +	 * MSI controller (IMSIC) in RISC-V is optional. So, unless
-> +	 * IMSIC is discovered, set system wide MSI support as
-> +	 * unsupported. Once IMSIC is probed, MSI support will be set.
-> +	 */
-> +	pci_no_msi();
+I don't see anything specific about *how* late this might be, but from
+the use of -EPROBE_DEFER in individual drivers (8250_pnp explicitly,
+and acpi_register_gsi() and pnp_irq() and acpi_pci_irq_enable(), which
+are called from driver .probe() paths) it seems like interrupt
+controllers might be detected even after devices that use them.
 
-It doesn't seem like we should have to tell the PCI core about
-functionality we *don't* have.
-
-I would think IMSIC would be detected before enumerating PCI devices
-that might use it, and if we *haven't* found an IMSIC by the time we
-get to pci_register_host_bridge(), would/should we set
-PCI_BUS_FLAGS_NO_MSI there?
-
-I see Thomas is cc'd; he'd have better insight.
+That seems like a fairly invasive change to the driver probe flow.
+If we really need to do that, I think it might merit a little more
+background as justification since we haven't had to do it for any
+other arch yet.
 
 Bjorn
+
+> Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
+> ---
+>  arch/riscv/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+> index 8c105a151e12..b62441aefa6a 100644
+> --- a/arch/riscv/Kconfig
+> +++ b/arch/riscv/Kconfig
+> @@ -12,6 +12,7 @@ config 32BIT
+>  
+>  config RISCV
+>  	def_bool y
+> +	select ARCH_ACPI_DEFERRED_GSI if ACPI
+>  	select ACPI_GENERIC_GSI if ACPI
+>  	select ACPI_MCFG if (ACPI && PCI)
+>  	select ACPI_REDUCED_HARDWARE_ONLY if ACPI
+> -- 
+> 2.39.2
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
