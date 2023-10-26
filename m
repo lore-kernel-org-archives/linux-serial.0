@@ -2,58 +2,58 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94903C25B48
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Oct 2023 13:37:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26398C25B6E
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Oct 2023 13:38:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231195AbjJZNhh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Oct 2023 09:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47584 "EHLO
+        id S231168AbjJZNij (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 26 Oct 2023 09:38:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231168AbjJZNhg (ORCPT
+        with ESMTP id S230413AbjJZNii (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Oct 2023 09:37:36 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51DA418A
-        for <linux-serial@vger.kernel.org>; Thu, 26 Oct 2023 06:37:33 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-5a7dd65052aso7440577b3.0
-        for <linux-serial@vger.kernel.org>; Thu, 26 Oct 2023 06:37:33 -0700 (PDT)
+        Thu, 26 Oct 2023 09:38:38 -0400
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BCB018A
+        for <linux-serial@vger.kernel.org>; Thu, 26 Oct 2023 06:38:36 -0700 (PDT)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-5a7c011e113so7317537b3.1
+        for <linux-serial@vger.kernel.org>; Thu, 26 Oct 2023 06:38:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1698327452; x=1698932252; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1698327516; x=1698932316; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=GOx8ddXc9Yb3bG6JoRDnlwg8757x2FxWfqO5ucclk30=;
-        b=zfDXuaaw4RgQfQ+NkWn5wjm9vPsaP0FnmEdSfI7WMVVRG1Iy1F1metRKnZa14w0cwm
-         d4c6HqrI/8AmzdMJfFHOwyPDGoJV46Nl0rQJPRhx7/+5uFWJQMQz3/GFBdLMHPWyFLk4
-         RknBqe26GyEeNbOqV0SuWd3sRtJcVaFhwFakkEFRX1cjfCWpBLmfKQYhBUYpvCRKhkaC
-         UaiRm0SYOxl+HST8RL75wd/uWmlLjvNOACrhoKaBMlZu1bXTWh2dbBe2jCPAQqrS5Soe
-         +MYvesVkIcEGEha42zYv8826W7VcRpQS3pEomJ9ZbuxEF6ATlKXKOPGlaksXU/BONiqO
-         DiZQ==
+        bh=uW0IaiCDGPtfg501Nw8p6UpGLwS2ZUBRonlHE2LLZzs=;
+        b=x9+2I1elp0NtJ/7n3Lq5bsXDYJ22d7FQ3CIwYlL/bAWTq6Fly7DG+90wSXYHNibwno
+         M8SCWrBgF6P2wREpmxfuXu7puQfp3SurlxI9kTp36Np35XQrLX/FcW/gke59c5H7CISs
+         dTrAH2Twacm0j2ccQJRYGRRxCNgFtSTjya1GcTaI45mRoX1x4TmT9zeEdOxjvPhelVOA
+         Oj65dQQVGYW5gOPooEz1vz7ncNj9YROA797GPRlCSz8ofyimAy44wsvHMU4Mj0AYxSfV
+         eeyjrcpZjwrPNNWmnREcJ6QF1OnOOaj/1lTxZxOKuyzrk7J/1FvHngvKtZn29nsDWCHT
+         dQvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698327452; x=1698932252;
+        d=1e100.net; s=20230601; t=1698327516; x=1698932316;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=GOx8ddXc9Yb3bG6JoRDnlwg8757x2FxWfqO5ucclk30=;
-        b=FFH271cxxsAqF42dCbyC4p12N2F0jS0cC3nvVJg0rn40W6+lTImsQLEeOGzVAsqh2u
-         zKDB0ZPMCH0dkImGWhAfpyA0R6Sp1W3lUNFdZxUzW7NBGcFIc+mWgETm6/+ZgtNeNJP8
-         tPzByAfX06cKWEUX3dKPbPek7jLrufMvZgYf+XUCclcGDSoaUCfUC5ILZDhKWwakrLDM
-         lvarOXXpxYwgc/eVh1NT8gjGQ991a2/ezE8sWmWNomiNBxCvHQICmOO9xFdfhF2aJut7
-         e0D6g20Did/cWy6Ob6/boMJidVDPacbLUuhcZmqgt28SjhSPniENCv3zd3eRfRqINQ4f
-         JYWw==
-X-Gm-Message-State: AOJu0YwBxEicLTxyMlYe+GqCZR8by2fRrrK/BDwNisyuJlVXn5tpQ9AC
-        RK3hCtHodYPPg1DWgw3k2k3Ar2D7ducYw1oZP92lgA==
-X-Google-Smtp-Source: AGHT+IF7yl72QxYny7p60ivvgeD16vtCXalAnDaE7lw9lLxXrLOrIca+EPOAUIhxKK6pLp+OC+111zcBVAAfVBNGvGs=
-X-Received: by 2002:a81:a187:0:b0:5a7:ab55:b9af with SMTP id
- y129-20020a81a187000000b005a7ab55b9afmr20163841ywg.35.1698327452521; Thu, 26
- Oct 2023 06:37:32 -0700 (PDT)
+        bh=uW0IaiCDGPtfg501Nw8p6UpGLwS2ZUBRonlHE2LLZzs=;
+        b=rOdYuQ/BGSuoMMUGJzjk3wGFkLLruAxVRk83xliUN1vA9uQSxdpn7ctJpHdM3p18ZT
+         8s2NuYKMNYC/mRr0kqzJ96KeghUiBrZP9HwttfIRnetiZnNzgsklWb9DY2ZHK5mbTLv7
+         gH0GCmYzr7gDZTmNwUuLXr1MlLEWaF4rn8KuhZjPnfp018s6Hqk43Tq4oJIIZGpDLGH2
+         EJlDtn0I7iHJyfpmZboL2hCBWsgx3J1+ggLeFJ8QuFBuqDH72DCn0DZnYsrvYebXt6in
+         OYs9iIk5YGmGzuCEFHO/6qK0nZQ5WV6OUUaZPyS94vDkDQHv4mll0w8umVEeS7lfhmIg
+         tznw==
+X-Gm-Message-State: AOJu0Ywp80iovzIjJICelCRI6JboupVt6xB3Ys3cG5fx4lLuwilqu4Ky
+        NyZSIYOWf4Wu6keWvZTZmpm/XCnpx9Qi5PMrDOwr0A==
+X-Google-Smtp-Source: AGHT+IGniiZ+KAxKfAUBm/LTzqfB6hvkLHRlM0D1QsLMcILZ735k3hAKAdypCFeMnj5XsdasrMZtYIBxfs4MJ1az3/I=
+X-Received: by 2002:a0d:e2c9:0:b0:5a8:286d:339e with SMTP id
+ l192-20020a0de2c9000000b005a8286d339emr20086367ywe.4.1698327515767; Thu, 26
+ Oct 2023 06:38:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20231026-mbly-uart-v1-0-9258eea297d3@bootlin.com> <20231026-mbly-uart-v1-2-9258eea297d3@bootlin.com>
-In-Reply-To: <20231026-mbly-uart-v1-2-9258eea297d3@bootlin.com>
+References: <20231026-mbly-uart-v1-0-9258eea297d3@bootlin.com> <20231026-mbly-uart-v1-3-9258eea297d3@bootlin.com>
+In-Reply-To: <20231026-mbly-uart-v1-3-9258eea297d3@bootlin.com>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 26 Oct 2023 15:37:20 +0200
-Message-ID: <CACRpkdaBGRsH3q9xY5-YuvgO4jXSr9x-+wZZ4bPXByZbrHt4Qg@mail.gmail.com>
-Subject: Re: [PATCH 2/6] tty: serial: amba: Use BIT() macro for constant declarations
+Date:   Thu, 26 Oct 2023 15:38:24 +0200
+Message-ID: <CACRpkdYant-8UGXMVFSTMxz-VRmD=iNiKiskAGbF1Bd-TyBMsA@mail.gmail.com>
+Subject: Re: [PATCH 3/6] tty: serial: amba-pl011: cleanup driver
 To:     =?UTF-8?B?VGjDqW8gTGVicnVu?= <theo.lebrun@bootlin.com>
 Cc:     Russell King <linux@armlinux.org.uk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -73,18 +73,40 @@ X-Mailing-List: linux-serial@vger.kernel.org
 On Thu, Oct 26, 2023 at 12:41=E2=80=AFPM Th=C3=A9o Lebrun <theo.lebrun@boot=
 lin.com> wrote:
 
-> The driver uses bit shifts and hexadecimal expressions to declare
-> constants. Replace that with the BIT() macro that clarifies intent.
+
+> Follow recommandations from:
+>
+>     $ ./scripts/checkpatch.pl --strict --file \
+>             drivers/tty/serial/amba-pl011.c
+>
+> It does NOT fix alerts relative to TIOCMBIT which will be dealt with in
+> another patch. Fixes following alerts:
+>
+>     CHECK: Alignment should match open parenthesis
+>     CHECK: Blank lines aren't necessary after an open brace '{'
+>     CHECK: Comparison to NULL could be written [...]
+>     CHECK: Lines should not end with a '('
+>     CHECK: Please don't use multiple blank lines
+>     CHECK: Please use a blank line after function/struct/union/enum decla=
+rations
+>     CHECK: Prefer using the BIT macro
+>     CHECK: Unbalanced braces around else statement
+>     CHECK: Unnecessary parentheses around [...]
+>     CHECK: braces {} should be used on all arms of this statement
+>     CHECK: spaces preferred around that '/' (ctx:VxV)
+>     CHECK: spaces preferred around that '|' (ctx:VxV)
+>     ERROR: do not initialise statics to false
+>     WARNING: Comparisons should place the constant on the right side of t=
+he test
+>     WARNING: Possible unnecessary 'out of memory' message
+>     WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
+>     WARNING: Prefer [subsystem eg: netdev]_info([subsystem]dev, ... then =
+dev_info(dev, ... then pr_info(...  to printk(KERN_INFO ...
+>     WARNING: quoted string split across lines
 >
 > Signed-off-by: Th=C3=A9o Lebrun <theo.lebrun@bootlin.com>
-> ---
->  include/linux/amba/serial.h | 182 ++++++++++++++++++++++----------------=
-------
 
-Since you don't know where this header may be included, you should
-add #include <linux/bits.h> at the top of linux/amba/serial.h
-
-With that fixed:
+These look harmless enough to me.
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
 Yours,
