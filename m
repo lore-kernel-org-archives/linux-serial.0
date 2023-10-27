@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80BB6C25B47
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Oct 2023 08:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2D44C25B67
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Oct 2023 08:29:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235098AbjJ0IW4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Oct 2023 04:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35114 "EHLO
+        id S235036AbjJ0I3r (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 27 Oct 2023 04:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234901AbjJ0IWd (ORCPT
+        with ESMTP id S235012AbjJ0I3q (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Oct 2023 04:22:33 -0400
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36077D43;
-        Fri, 27 Oct 2023 01:22:24 -0700 (PDT)
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-40891d38e3fso13504175e9.1;
-        Fri, 27 Oct 2023 01:22:24 -0700 (PDT)
+        Fri, 27 Oct 2023 04:29:46 -0400
+Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288801BE;
+        Fri, 27 Oct 2023 01:29:42 -0700 (PDT)
+Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2c5071165d5so22086461fa.0;
+        Fri, 27 Oct 2023 01:29:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698394942; x=1698999742;
+        d=1e100.net; s=20230601; t=1698395380; x=1699000180;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4CQQlrBErvgOxS3WqayWxp2Le5CNMpbxTzLttbKK5WM=;
-        b=pCXKmEYOWPNw9T5J0jV0i+GH0oqmORcJJ233G2GIfxuz9e7eveb9GrMDrMWf1Z1uH2
-         5tI6pewxRh7nYrrjrILx65ms+neiNR3dSiTjZZ8h04Y96Ti4GuQj/n+6fTIo1iNklYRM
-         8lwJ7a/0ep4CXY45PsnVEoc0HYsX1IjGEuVSywFTNZqbOHmwQcQoXS/5H0d181DY5DE2
-         wsDq+ytSlel+kG99NSlYzQVqEvPhim8yqICibCorWrBoRe1tq5chnWrnMt9kG9yOcuW1
-         aPhH5U9ywJYgUYot3lIivAOiRCx0xCC5kuGh4abApUn6A1Z9FI5AxJXDWwNPQYnZVNu9
-         +UHQ==
-X-Gm-Message-State: AOJu0Yxornjv5vc4wvKPr+R4cIOZiFX8d1KZzScnQO+pv1uSCUY/JFLv
-        HJyBCdYAdDbMoh7R+wgTol20/FllvK8=
-X-Google-Smtp-Source: AGHT+IFYc7YkYasEuq+C4PKZCxc+gQodyN3JHMFRS6HABfGW/fbEACnl1LsIyfEYjZ+/gm2Y5uX3Sg==
-X-Received: by 2002:a05:600c:474a:b0:408:c6ec:1ac9 with SMTP id w10-20020a05600c474a00b00408c6ec1ac9mr1594199wmo.28.1698394942284;
-        Fri, 27 Oct 2023 01:22:22 -0700 (PDT)
+        bh=stJbb23w3VUqP0eHkdL98f2jZhQvcq9EYPxztKnA6VY=;
+        b=VPrAr06OoUv+izTP6JFnd3aqFzGoVfW+XFE9VaWIESad/uJ7ubM0+aipB4mkgbbAZp
+         Pe/HnQtd1MYaiozDbFQXj/d151ir7J1uSBf2BeNKrRYb+x7cKkJaWgVGxGyM9eA6sieA
+         FvD+TVuZxgw644eb+XXoVWLToRgI4KXPLuhfJOMNkaES+UhPtxmqo1SPdgsInhVed2kL
+         iZJKWyrL5KkhALmKCw6khebstE5c5b6sd0rUTJalzyhpnYWuDWyzjAZl17mv/KDYlWTg
+         5E6M3f/lye24dY6nQp93kKF3xRegFxeSJM1bgOuBQQ7n7geFwYkNVMZthbIBey0iTjYp
+         HwaQ==
+X-Gm-Message-State: AOJu0YznJjuttF6XYwSL+PLxImspFlVwn7mk4axFmjwbz4aBOy9D0A2W
+        eeCotNCXIvDoUr19eNLd1eI=
+X-Google-Smtp-Source: AGHT+IFAj3Y6IG4ZWvAYqebBD+zyEarmRzLf/EZHCsiRr1qFHDFKzdzKc6zpyG0CGQgWF/u5ROm9aQ==
+X-Received: by 2002:a2e:a167:0:b0:2c5:12ae:adb3 with SMTP id u7-20020a2ea167000000b002c512aeadb3mr1517585ljl.44.1698395380014;
+        Fri, 27 Oct 2023 01:29:40 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id t3-20020a1c7703000000b004042dbb8925sm4445659wmi.38.2023.10.27.01.22.21
+        by smtp.gmail.com with ESMTPSA id bg9-20020a05600c3c8900b004063cd8105csm4602183wmb.22.2023.10.27.01.29.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Oct 2023 01:22:21 -0700 (PDT)
-Message-ID: <8ea5fdcc-7a8c-48c6-a674-27eeaeb6dac0@kernel.org>
-Date:   Fri, 27 Oct 2023 10:22:21 +0200
+        Fri, 27 Oct 2023 01:29:39 -0700 (PDT)
+Message-ID: <37a5e055-93b5-4f05-bcca-4caa5ed6f97f@kernel.org>
+Date:   Fri, 27 Oct 2023 10:29:38 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] tty: serial: 8250: Fix MOXA RS422/RS485 PCIe boards
- not work by default
+Subject: Re: [PATCH 2/2] tty: serial: 8250: Add support for MOXA PCIe boards
+ to switch interface
 Content-Language: en-US
 To:     Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 References: <20231027062440.7749-1-crescentcy.hsieh@moxa.com>
- <20231027062440.7749-2-crescentcy.hsieh@moxa.com>
+ <20231027062440.7749-3-crescentcy.hsieh@moxa.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -93,7 +93,7 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20231027062440.7749-2-crescentcy.hsieh@moxa.com>
+In-Reply-To: <20231027062440.7749-3-crescentcy.hsieh@moxa.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -101,16 +101,134 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 27. 10. 23, 8:24, Crescent CY Hsieh wrote:
-> MOXA PCIe RS422/RS485 boards will not function by default because of the
-> initial default serial interface of all MOXA PCIe boards is set to
-> RS232.
+> MOXA PCIe boards have 4 serial interfaces and don't require additional
+> stuff to switch between interfaces:
 > 
-> This patch fixes the problem above by setting the initial default serial
-> interface to RS422 for those MOXA RS422/RS485 PCIe boards.
+> - RS232
+> - RS422
+> - RS485_2W (half-duplex)
+> - RS485_4W (full-duplex)
 > 
-> Signed-off-by: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+> By using ioctl command "TIOCRS485", it can switch between default
+> interface and RS485 if supported.
+> 
+> That means, for RS422/RS485 board, it can switch between RS422 and
+> RS485 by setting the flags within struct serial_rs485.
+> 
+> However, for the RS232/RS422/RS485 board, it can only switch between
+> RS232 and RS485, there's no flag for switching interface into RS422.
+> 
+> This patch adds a flag call "SER_RS422_ENALBED" in serial.h and modifies
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+It's not "ENALBED".
+
+Anyway, I am afraid you have to split the patch into two:
+1) add the flag and core support (but wait a bit for others if they 
+agree with this approach)
+2) add the support for moxa.
+
+> serial_core.c to make it possible to switch interface between RS232,
+> RS422 and RS485.
+...
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+
+> @@ -2032,6 +2036,37 @@ static int pci_moxa_set_interface(const struct pci_dev *dev,
+>   	return 0;
+>   }
+>   
+> +/*
+> + * MOXA PCIe boards support switching the serial interface using the ioctl
+> + * command "TIOCSRS485".
+> + *
+> + *	RS232			= (no flags are set)
+> + *	RS422			= SER_RS422_ENABLED
+> + *	RS485_2W (half-duplex)	= SER_RS485_ENABLED
+> + *	RS485_4W (full-duplex)	= SER_RS485_ENABLED | SER_RS485_RX_DURING_TX
+> + */
+> +static int pci_moxa_rs485_config(struct uart_port *port,
+> +				 struct ktermios *termios,
+> +				 struct serial_rs485 *rs485)
+> +{
+> +	struct pci_dev *dev = to_pci_dev(port->dev);
+> +	u8 mode = MOXA_RS232;
+> +
+> +	if (rs485->flags & SER_RS485_ENABLED) {
+> +		if (rs485->flags & SER_RS485_RX_DURING_TX)
+> +			mode = MOXA_RS485_4W;
+> +		else
+> +			mode = MOXA_RS485_2W;
+> +	} else if (rs485->flags & SER_RS422_ENABLED) {
+> +		mode = MOXA_RS422;
+> +	} else {
+> +		if (!(pci_moxa_supported_rs(dev) & MOXA_SUPP_RS232))
+> +			return -ENODEV;
+> +	}
+> +
+> +	return pci_moxa_set_interface(dev, port->port_id, mode);
+
+Looks good to me now.
+
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1305,7 +1305,7 @@ static int uart_get_icount(struct tty_struct *tty,
+>   
+>   #define SER_RS485_LEGACY_FLAGS	(SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | \
+>   				 SER_RS485_RTS_AFTER_SEND | SER_RS485_RX_DURING_TX | \
+> -				 SER_RS485_TERMINATE_BUS)
+> +				 SER_RS485_TERMINATE_BUS | SER_RS422_ENABLED)
+>   
+>   static int uart_check_rs485_flags(struct uart_port *port, struct serial_rs485 *rs485)
+>   {
+> @@ -1371,11 +1371,26 @@ static void uart_sanitize_serial_rs485(struct uart_port *port, struct serial_rs4
+>   {
+>   	u32 supported_flags = port->rs485_supported.flags;
+>   
+> -	if (!(rs485->flags & SER_RS485_ENABLED)) {
+> +	if (!(rs485->flags & SER_RS485_ENABLED) && !(rs485->flags & SER_RS422_ENABLED)) {
+
+maybe easier:
+   if (!(rs485->flags & (SER_RS485_ENABLED | SER_RS422_ENABLED))) {
+?
+
+>   		memset(rs485, 0, sizeof(*rs485));
+>   		return;
+>   	}
+>   
+> +	/* Pick sane setting if the user enables both interfaces */
+> +	if (rs485->flags & SER_RS485_ENABLED && rs485->flags & SER_RS422_ENABLED) {
+> +		dev_warn_ratelimited(port->dev,
+> +			"%s (%d): Invalid serial interface setting, using RS485 instead\n",
+> +			port->name, port->line);
+> +		rs485->flags &= ~(SER_RS422_ENABLED);
+
+No need for parens.
+
+> +	}
+> +
+> +	/* Clear other bits and return if enable RS422 */
+
+"if RS422 is enabled"
+or
+"if enabling RS422"
+
+> +	if (rs485->flags & SER_RS422_ENABLED) {
+> +		memset(rs485, 0, sizeof(*rs485));
+> +		rs485->flags |= SER_RS422_ENABLED;
+> +		return;
+> +	}
+> +
+>   	/* Pick sane settings if the user hasn't */
+>   	if ((supported_flags & (SER_RS485_RTS_ON_SEND|SER_RS485_RTS_AFTER_SEND)) &&
+>   	    !(rs485->flags & SER_RS485_RTS_ON_SEND) ==
+> @@ -1400,7 +1415,7 @@ static void uart_sanitize_serial_rs485(struct uart_port *port, struct serial_rs4
+>   static void uart_set_rs485_termination(struct uart_port *port,
+>   				       const struct serial_rs485 *rs485)
+>   {
+> -	if (!(rs485->flags & SER_RS485_ENABLED))
+> +	if (!(rs485->flags & SER_RS485_ENABLED) && !(rs485->flags & SER_RS422_ENABLED))
+
+if (!(rs485->flags & (SER_RS485_ENABLED | SER_RS422_ENABLED))) {
 
 thanks,
 -- 
