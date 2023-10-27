@@ -2,112 +2,71 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C474C25B47
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Oct 2023 11:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B739AC25B67
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Oct 2023 11:03:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231463AbjJ0LBQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Oct 2023 07:01:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44232 "EHLO
+        id S1345539AbjJ0LD6 (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 27 Oct 2023 07:03:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231493AbjJ0LBP (ORCPT
+        with ESMTP id S1345585AbjJ0LD5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Oct 2023 07:01:15 -0400
+        Fri, 27 Oct 2023 07:03:57 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71452194;
-        Fri, 27 Oct 2023 04:01:13 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78592C433C7;
-        Fri, 27 Oct 2023 11:01:12 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4ACD9C;
+        Fri, 27 Oct 2023 04:03:55 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE2E1C433C8;
+        Fri, 27 Oct 2023 11:03:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1698404473;
-        bh=fo/rUXgDjTxBbkKJ2TCB2u4T9XooXAgroVyEUw22fOk=;
+        s=korg; t=1698404635;
+        bh=rKqTsV9BKs2B75uTkGng9ux0ILcsTDMPSxQwjPaFWkk=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cJUXesXSq2hAhGnCykcZJshduWF/zMlmm+472mtKTo8zwcOUxJyQGAdcqk6kaS0K7
-         JYWQ1nidcPg6vPggvF0TO1z6M/FGpGcMEVxu5Bm+PxgKngfzfy+Q1ylIvUCc+dUyIV
-         3sac4vNlcRRvBujo3+jQxm1TqKoN8xcpsNXo2FNs=
-Date:   Fri, 27 Oct 2023 13:01:10 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Vamshi Gajjela <vamshigajjela@google.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, manugautam@google.com,
-        Subhash Jadavani <sjadavani@google.com>,
-        Channa Kadabi <kadabi@google.com>
-Subject: Re: [PATCH v3 3/3] serial: core: Update uart_poll_timeout() function
- to return unsigned long
-Message-ID: <2023102738-sandpaper-renovator-3afe@gregkh>
-References: <20231026135628.2800617-1-vamshigajjela@google.com>
- <2023102712-frolic-bush-3d67@gregkh>
- <f4358da2-af4-189a-eb93-3e82404c72eb@linux.intel.com>
+        b=zxyV9PfOYYe4HD8hDn8OIR17NlgLmYO5UXZzKhYq1xjn9D18NGhS+r0Dqx4g8FtAJ
+         24uq3TBrr3yeWNbIZgVUw7THjdZaZAw8uoNJD47t6itNI3rdq52VHFYL+Rd8uQnYg4
+         7pBcbjy1nyuA+XA419DRA2NlRmi7me+HWnhBnaNo=
+Date:   Fri, 27 Oct 2023 13:03:52 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Cc:     jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
+        u.kleine-koenig@pengutronix.de, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        LinoSanfilippo@gmx.de, lukas@wunner.de, p.rosenberger@kunbus.com
+Subject: Re: [PATCH v4 0/7] Fixes and improvements for RS485
+Message-ID: <2023102707-customer-nastiness-9c80@gregkh>
+References: <20231018174840.28977-1-l.sanfilippo@kunbus.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f4358da2-af4-189a-eb93-3e82404c72eb@linux.intel.com>
+In-Reply-To: <20231018174840.28977-1-l.sanfilippo@kunbus.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 27, 2023 at 11:19:26AM +0300, Ilpo Järvinen wrote:
-> On Fri, 27 Oct 2023, Greg Kroah-Hartman wrote:
+On Wed, Oct 18, 2023 at 07:48:33PM +0200, Lino Sanfilippo wrote:
+> The following series includes some fixes and improvements around RS485 in
+> the serial core and UART drivers:
 > 
-> > On Thu, Oct 26, 2023 at 07:26:28PM +0530, Vamshi Gajjela wrote:
-> > > From: VAMSHI GAJJELA <vamshigajjela@google.com>
-> > 
-> > Please use lower case letters like I think you mean to?
-> > 
-> > Also, where are patches 1/3 and 2/3 of this series?  I can't do anything
-> > without them as well.
-> > 
-> > > The function uart_fifo_timeout() returns an unsigned long value, which
-> > > is the number of jiffies. Therefore, change the variable timeout in the
-> > > function uart_poll_timeout() from int to unsigned long.
-> > > Change the return type of the function uart_poll_timeout() from int to
-> > > unsigned long to be consistent with the type of timeout values.
-> > > 
-> > > Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
-> > > ---
-> > > v3:
-> > > - updated description
-> > > v2:
-> > > - unsigned long instead of unsigned int
-> > > - added () after function name in short log
-> > > - updated description
-> > > 
-> > >  include/linux/serial_core.h | 4 ++--
-> > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> > > index bb6f073bc159..6916a1d7e477 100644
-> > > --- a/include/linux/serial_core.h
-> > > +++ b/include/linux/serial_core.h
-> > > @@ -773,9 +773,9 @@ static inline unsigned long uart_fifo_timeout(struct uart_port *port)
-> > >  }
-> > >  
-> > >  /* Base timer interval for polling */
-> > > -static inline int uart_poll_timeout(struct uart_port *port)
-> > > +static inline unsigned long uart_poll_timeout(struct uart_port *port)
-> > >  {
-> > > -	int timeout = uart_fifo_timeout(port);
-> > > +	unsigned long timeout = uart_fifo_timeout(port);
-> > >  
-> > >  	return timeout > 6 ? (timeout / 2 - 2) : 1;
-> > 
-> > So we are now doing 64bit math?  Did that just make things slower?
+> Patch 1: Do not hold the port lock when setting rx-during-tx GPIO
+> Patch 2: set missing supported flag for RX during TX GPIO
+> Patch 3: fix sanitizing check for RTS settings
+> Patch 4: make sure RS485 is cannot be enabled when it is not supported
+> Patch 5: imx: do not set RS485 enabled if it is not supported
+> Patch 6: omap: do not override settings for rs485 support
+> Patch 7: exar: set missing RS485 supported flag
 > 
-> That divide with a constant 2 though so I'd expect compiler to turn it 
-> into a shift.
+> Changes in v4:
+> - add comment for function uart_set_rs485_gpios after hint from Hugo
+> - correct commit message as pointed out by Hugo
+> - rephrase commit messages
+> - add patch 7 after discussion with Ilpo
 
-Hopefully :)
-
-> > What bug is this actually fixing?  How have you tested this to verify it
-> > works?
-> 
-> AFAIK this doesn't fix anything because emptying when measured in jiffies
-> isn't that big number. It's just about making the types more consistent.
-
-Ah, ok, I'll wait for a proper version to be sent as I obviously can't
-take it like-this.
+There's a lot of fuzz for this series against my current tree, so much
+so I don't feel comfortable taking it right now.  Can you resend it
+after 6.7-rc1 is out and you have rebased it against that?  If these
+really are all bugfixes, we can still get them into 6.7-final then.
 
 thanks,
 
