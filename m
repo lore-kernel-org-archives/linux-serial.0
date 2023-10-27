@@ -2,132 +2,100 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B79C25B48
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Oct 2023 18:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6072FC25B48
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Oct 2023 05:41:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231178AbjJZSHb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Oct 2023 14:07:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58912 "EHLO
+        id S229633AbjJ0Fla (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 27 Oct 2023 01:41:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231550AbjJZSHa (ORCPT
+        with ESMTP id S229590AbjJ0Fl3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Oct 2023 14:07:30 -0400
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBE91B1;
-        Thu, 26 Oct 2023 11:07:26 -0700 (PDT)
-Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-6cd1918afb2so658527a34.0;
-        Thu, 26 Oct 2023 11:07:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698343646; x=1698948446;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ENEollqMGRKDMhbkSMkHaoD54thLMovQWmP1n7sRCUc=;
-        b=GmE/V+sI1/WQXUB++djPnINZ9rRjRwXRsmMKn+t72afl1UvkxufzdVr4AQOif0mXYj
-         LT65o0au8ksgYEo+VquGLluGdiK2N+kR+O6RF1Bd7GF1KcO15bQmOA93bJK4ME0E6DjD
-         JXFf9uYeyXC19EhfrQMXhz7Poi1V0y88LAue7FLDV4zaHiB0hqJAyTeZIGPtNVkV3ts+
-         FoSNqGZMCsEnh3wSrm+BZcUZUOnAXjZIx5sAf0+rp6yC1hVYL0EQJhE2qbWeSJAa29mK
-         uS570XXwozahuRGEVfU30zzlStzA8czJA+w94p3EeIB3e3NJuMBs31wdlmkIAxJs6mXX
-         vr9A==
-X-Gm-Message-State: AOJu0Yz6t0gUEpXxv8qLXFHdzzH5u26qgVTTZAU183w54bRRGI/tu50E
-        1RdHdQgM6vayvL2UF9s6ew==
-X-Google-Smtp-Source: AGHT+IET1KctVP9taJ0RgRpXEMx9LPCq13Vxv2nxhaSHIPgh/LGOf33ATDy4SqI5QHe0tIaxDHaL5w==
-X-Received: by 2002:a05:6830:3110:b0:6b9:3f64:4e8c with SMTP id b16-20020a056830311000b006b93f644e8cmr232430ots.9.1698343645780;
-        Thu, 26 Oct 2023 11:07:25 -0700 (PDT)
-Received: from herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id m6-20020a05683026c600b006c4d38e12b9sm2746216otu.65.2023.10.26.11.07.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Oct 2023 11:07:25 -0700 (PDT)
-Received: (nullmailer pid 4121876 invoked by uid 1000);
-        Thu, 26 Oct 2023 18:07:24 -0000
-Date:   Thu, 26 Oct 2023 13:07:24 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Manikanta Guntupalli <manikanta.guntupalli@amd.com>
-Cc:     git@amd.com, michal.simek@amd.com, gregkh@linuxfoundation.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jirislaby@kernel.org,
-        linux-arm-kernel@lists.infradead.org, radhey.shyam.pandey@amd.com,
-        srinivas.goud@amd.com, shubhrajyoti.datta@amd.com,
-        manion05gk@gmail.com
-Subject: Re: [PATCH V3 1/2] dt-bindings: Add optional gpio property to uartps
- node to support rs485
-Message-ID: <20231026180724.GA4108223-robh@kernel.org>
-References: <20231024144847.2316941-1-manikanta.guntupalli@amd.com>
- <20231024144847.2316941-2-manikanta.guntupalli@amd.com>
+        Fri, 27 Oct 2023 01:41:29 -0400
+X-Greylist: delayed 61 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 26 Oct 2023 22:41:26 PDT
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0485B1AC
+        for <linux-serial@vger.kernel.org>; Thu, 26 Oct 2023 22:41:25 -0700 (PDT)
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202310270540212456d5a93266ceede1
+        for <linux-serial@vger.kernel.org>;
+        Fri, 27 Oct 2023 07:40:21 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=/KZ/e7ZMbAbly9okDCQ6zH4k2JlUxSD/DyA86W16Z+k=;
+ b=qIxsC0d8D+pXUIy5HcRwCfSS1WpXHiH8s3D6Ak5jTZ7MpK2O05CQDZGIvX9MQNm5RyRrYJ
+ CrR0NQK5q0lyRT46rCCdw7VD9/DwUjUIHHZbcgCSpxD5ptxYZpnrzWnU00xV3+JZJsCsMM8e
+ 9BgUVbVIhmm6lEYXrOXJj1YSkv8ak=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 1/1] tty: n_gsm: add copyright Siemens Mobility GmbH
+Date:   Fri, 27 Oct 2023 07:39:03 +0200
+Message-Id: <20231027053903.1886-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231024144847.2316941-2-manikanta.guntupalli@amd.com>
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Oct 24, 2023 at 08:18:46PM +0530, Manikanta Guntupalli wrote:
-> Add optional gpio property to uartps node and reference to rs485.yaml
-> 
-> On Xilinx/AMD Kria SOM KD240 board rs485 connects via TI ISOW1432
-> Transceiver device, where one GPIO is used for driving DE/RE signals.
-> With rs485 half duplex configuration, DE and RE are shorted to each other,
-> and at a time, any node acts as either a driver or a receiver.
-> 
-> Here,
-> DE - Driver enable. If pin is floating, driver is disabled.
-> RE - Receiver enable. If pin is floating, receiver buffer is disabled.
+From: Daniel Starke <daniel.starke@siemens.com>
 
-What happens when pin is not floating? Is floating (i.e. open drain) for 
-RTS a requirement? And floating doesn't define high or low because it 
-could be pulled either way.
+More than 1/3 of the n_gsm code has been contributed by us in the last
+1.5 years, completing conformance with the standard and stabilizing the
+driver:
+- added UI (unnumbered information) frame support
+- added PN (parameter negotiation) message handling and function support
+- added optional keep-alive control link supervision via test messages
+- added TIOCM_OUT1 and TIOCM_OUT2 to allow responder to operate as modem
+- added TIOCMIWAIT support on virtual ttys
+- added additional ioctls and parameters to configure the new functions
+- added overall locking mechanism to avoid data race conditions
+- added outgoing data flow to decouple physical from virtual tty handling
+  for better performance and to avoid dead-locks
+- fixed advanced option mode implementation
+- fixed convergence layer type 2 implementation
+- fixed handling of CLD (multiplexer close down) messages
+- fixed broken muxer close down procedure
+- and many more bug fixes
 
-> 
-> For more deatils, please find below link which contains Transceiver
-> device(ISOW1432) datasheet
-> https://www.ti.com/lit/ds/symlink/isow1432.pdf?ts=1682607122706&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FISOW1432%252Fpart-details%252FISOW1432DFMR%253FkeyMatch%253DISOW1432DFMR%2526tisearch%253Dsearch-everything%2526usecase%253DOPN
-> 
-> rts-gpios is optional property, because it is not required
-> for uart console node.
-> 
-> Signed-off-by: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
-> ---
-> Changes for V2:
-> Modify optional gpio name to xlnx,phy-ctrl-gpios.
-> Update commit description.
-> Changes for V3:
-> Modify optional gpio name to rts-gpios.
-> Update commit description.
-> ---
->  Documentation/devicetree/bindings/serial/cdns,uart.yaml | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.yaml b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-> index e35ad1109efc..7ee305f9a45f 100644
-> --- a/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-> @@ -46,6 +46,11 @@ properties:
->    power-domains:
->      maxItems: 1
->  
-> +  rts-gpios:
-> +    description: Optional GPIO to control transmit/receive on RS485 phy
-> +      in halfduplex mode.
+With this most of our initial RFC has been implemented. It gives the driver
+a quality boost unseen in the decade before.
 
-You need to define what 'active' means here because -gpios all have an 
-active flag. Is it always active low (or high) or depends on the board?
+Add a copyright notice to the n_gsm files to highlight this contribution.
 
+Link: https://lore.kernel.org/all/20220225080758.2869-1-daniel.starke@siemens.com/
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c         | 1 +
+ include/uapi/linux/gsmmux.h | 1 +
+ 2 files changed, 2 insertions(+)
 
-> +    maxItems: 1
-> +
->  required:
->    - compatible
->    - reg
-> @@ -55,6 +60,7 @@ required:
->  
->  allOf:
->    - $ref: serial.yaml#
-> +  - $ref: rs485.yaml#
->    - if:
->        properties:
->          compatible:
-> -- 
-> 2.25.1
-> 
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 1f3aba607cd5..647e06b656bf 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2,6 +2,7 @@
+ /*
+  * n_gsm.c GSM 0710 tty multiplexor
+  * Copyright (c) 2009/10 Intel Corporation
++ * Copyright (c) 2022/23 Siemens Mobility GmbH
+  *
+  *	* THIS IS A DEVELOPMENT SNAPSHOT IT IS NOT A FINAL RELEASE *
+  *
+diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
+index 4c878d84dbda..3a93f17ca943 100644
+--- a/include/uapi/linux/gsmmux.h
++++ b/include/uapi/linux/gsmmux.h
+@@ -1,4 +1,5 @@
+ /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++/* Copyright (c) 2022/23 Siemens Mobility GmbH */
+ #ifndef _LINUX_GSMMUX_H
+ #define _LINUX_GSMMUX_H
+ 
+-- 
+2.34.1
+
