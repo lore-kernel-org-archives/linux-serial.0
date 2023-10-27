@@ -2,79 +2,75 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFB9CC25B70
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Oct 2023 18:31:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66354C25B6F
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Oct 2023 18:32:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346326AbjJ0SbK (ORCPT
+        id S1346384AbjJ0Scg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Oct 2023 14:31:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
+        Fri, 27 Oct 2023 14:32:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235142AbjJ0Sa7 (ORCPT
+        with ESMTP id S1346378AbjJ0ScR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Oct 2023 14:30:59 -0400
+        Fri, 27 Oct 2023 14:32:17 -0400
 Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D503AA9;
-        Fri, 27 Oct 2023 11:30:23 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id BDEBA3200A13;
-        Fri, 27 Oct 2023 14:27:10 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9052847BC;
+        Fri, 27 Oct 2023 11:29:54 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.west.internal (Postfix) with ESMTP id 74DBA32007F1;
+        Fri, 27 Oct 2023 14:26:59 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Fri, 27 Oct 2023 14:27:11 -0400
+  by compute1.internal (MEProxy); Fri, 27 Oct 2023 14:27:00 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
         cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; t=1698431230; x=
-        1698517630; bh=SX5fl+EhwuJvuJSgszNvKWpCysGddZbGyxPGegx2anM=; b=j
-        FRAXDUuK2CFPQX5/xA0kUTtyU567S0snECMD+OHTNcU8aQCUTpOb9inZjuSuKJvd
-        zGvLRA1OFzH1Y5NZTXse/wulq+xgRyWzBvnmxITUUOlJBAMIhCAlECE/qu6ntzrn
-        F3nY1dvVHx3m+YB6DaLmW5xNJvPmZbMyTTC8fxLv5OOqqgWywO3ANEftOLW22kIm
-        HS+QPnl8cxWrGk5zgI9JYpIk2cy6/Opf/ecV0oQ1otlikweEgKE+esZRqbId3BSW
-        iWdp0imEGPBt+5DXXDOfksjtacbFfWqY3hwRRyEHKUVx1Iej+fBhdFRfjlggETmx
-        F1E86efsjDfbTsD4hvixg==
+        :in-reply-to:message-id:mime-version:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1698431218; x=1698517618; bh=SX5fl+Ehwu
+        JvuJSgszNvKWpCysGddZbGyxPGegx2anM=; b=03IfJ58iQg6kqNHZAjKDSOW9WC
+        dyWo/vU4NUtyJZoGGkJLC0j3MXU84+1hpXAwShK4fBfDwFhVygwT1FszYi/sSr6O
+        v25Bs5xNplaNbpsvUou2carBJpqhvzps4kTmR82hVy/GapjEkSX+HIW7KeCBNOxD
+        4cVb0UYzyN7vuC/G7/7DlJNl3+hYozXf7PDOIq9tuzMvTkqiXlMed+3AWsOqOkX0
+        mzuABIydFwpTZrCn5EXiAe8aSPQFhEU4Er/BhjMcdfRqx3ja5Nx3fJFqFBnu0MhY
+        fqPka0WW4bE9zRlwSM0iPvmNvPnZLrr/BE5CrflqZgU62+HzHOSea2RKHq7w==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding
         :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1698431230; x=
-        1698517630; bh=SX5fl+EhwuJvuJSgszNvKWpCysGddZbGyxPGegx2anM=; b=F
-        wk4pn7WFZEFlB6XbJ3pn0TwDefOr50L7wsw59vOtX4b5fWI0awk4sVgWYr4DMKyC
-        +uDiOBSgBZxlPTTMXSvtslyXP+FptDNdGSrS89LvFb5OdfmGZ9boOsiZDskflHSM
-        erxHbOOQaVebV/950eJ0A2jhVhlXce95GQddvpTsNn7F5qkZIsv3W8d0fcqTA1zk
-        R4U35v+iZwkLAqN2fkk3lXnx4dwEyniCY1mEwiq6v+PtMGq1bdsXP2D5CWkNNu3W
-        0lrbF8+fXDvEc/WT7e+EQQV6QW+QDN1iSZNQXtEO9NkrYQChkVDaWL/ptnExaKM3
-        hJLNelkDszevOZcTWlBmw==
-X-ME-Sender: <xms:_QA8ZccQ54tfTkmXKGJqd5XrTcy1n7ePLwL0MX2Cx7XNDwDP0eshdQ>
-    <xme:_QA8ZeMK33uPp_jWvnlkJOOuOoM9xlzZtuSYqyGGM38VS5-1rzTDe0m9oPIPGOExU
-    5uIwd4DhpUyYZ8Ri3A>
-X-ME-Received: <xmr:_QA8ZdjsY_xYP_gQPeu4H7g8CmOimDWAQACyxQZV9MS1uXT0cPqPTrpWsPySR0resaAqCVp8CG4>
+        :in-reply-to:message-id:mime-version:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; t=1698431218; x=1698517618; bh=SX5fl+EhwuJvu
+        JSgszNvKWpCysGddZbGyxPGegx2anM=; b=HpPOfN2dlfROpP3t8TrgZNgJAQA6n
+        M8ZpKN93bsaQrh1sRVjyH6WKIhjCzvJ0LCPqBt9m4opxgekG1hrijcZ/VXkQowR0
+        nUh3DmzkJSjULI35unYyQ7L3uwwXbdSzY1TfCN3Vnw6JmjIFO/nQrjdwiAXjuO+J
+        L/hnUDWmNptkycwjjeY0cHZ5Z4JKGZ6eCUcJKPDvjyiCqWYj5dmVBwF4TN7MpJEZ
+        LdBW0v7Lzd6LSN4QcACuMsW6hJBlZ2OP1m4gXTSNYzSlfP+xfVBE96ypUoK1mmmR
+        exOXZHXrIRw9ImvfKgPjO3MwqRWjB1iZZYw8wkQJroBm24q2BzzqdjEwg==
+X-ME-Sender: <xms:8gA8ZbUIoLZC6XrAH9_8UjVGxYtUfMAbot2QdGXdvIwFT2pFOxxbCw>
+    <xme:8gA8ZTlvyM6wCgQMlYTf1VUBA7y14U2_Jry7zwvhSkrt89b_zxrMs2WpuoqfP26Sb
+    -nL5jU7JbjqBZfcess>
+X-ME-Received: <xmr:8gA8ZXbpMA2eK5OE8nRl7kSaksfGPixFhpLVy6ZkdNx4GvOCd_-_NCoaiofILBipizI0WkUcYPU>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrleeggdduvdeiucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvfevufffkffojghfggfgsedtke
-    ertdertddtnecuhfhrohhmpeflihgrgihunhcujggrnhhguceojhhirgiguhhnrdihrghn
-    ghesfhhlhihgohgrthdrtghomheqnecuggftrfgrthhtvghrnhepfeeludefheegvdeuvd
-    dvgeekgfdvtdettdelieeihfegtedugeekhfdvhfejfedtnecuvehluhhsthgvrhfuihii
-    vgeptdenucfrrghrrghmpehmrghilhhfrhhomhepjhhirgiguhhnrdihrghnghesfhhlhi
-    hgohgrthdrtghomh
-X-ME-Proxy: <xmx:_QA8ZR9UWSkqkTO8VVe1_lN1OTFffYAUdcFkx7wJ91BEl_-dGquWZg>
-    <xmx:_QA8ZYtvdIcWLPKsXwpLfb_mAvxtQ4TnDKxd2okYHyeI5bO_ZAbnMA>
-    <xmx:_QA8ZYH81Cc6ovOM7V6e4U-R9iqN2sv00WTqq-D_Uhb3ZWPP8-wG6g>
-    <xmx:_gA8ZSW70abzJYYV1_K4QNmwZ00aAPcDdo4VFm4q273IneEapd3Gag>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvfevufffkffoggfgsedtkeertd
+    ertddtnecuhfhrohhmpeflihgrgihunhcujggrnhhguceojhhirgiguhhnrdihrghnghes
+    fhhlhihgohgrthdrtghomheqnecuggftrfgrthhtvghrnhephfetuddtudevieeljeejte
+    ffheeujeduhefgffejudfhueelleduffefgfffveeknecuvehluhhsthgvrhfuihiivgep
+    tdenucfrrghrrghmpehmrghilhhfrhhomhepjhhirgiguhhnrdihrghnghesfhhlhihgoh
+    grthdrtghomh
+X-ME-Proxy: <xmx:8gA8ZWXXPmH_TsyAFIQ3LBaulq7D-tiHeXEPZVn_3rkPuZfNBwPiSQ>
+    <xmx:8gA8ZVk4pkDVrcyCVKSlmvJ74RVV6rfSoI9bM7vMLxM9ajokHsFhCA>
+    <xmx:8gA8ZTeQWH4zvfIuDNBu5524wwVQ9uoTRt2WfEJjyNWEp941Mulyhw>
+    <xmx:8gA8ZYu7uNvy9bMNUMP9MLzvYFUYXjNmEBi1yflfJfqPRQJ9Prom7A>
 Feedback-ID: ifd894703:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 27 Oct 2023 14:27:08 -0400 (EDT)
+ 27 Oct 2023 14:26:57 -0400 (EDT)
 From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
 To:     linux-mips@vger.kernel.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         tsbogend@alpha.franken.de, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, Jiaxun Yang <jiaxun.yang@flygoat.com>
 Subject: [PATCH 0/3] serial, MIPS: Add MIPS UHI semihosting support
-Date:   Fri, 27 Oct 2023 19:26:47 +0100
-Message-Id: <20231027182650.281405-5-jiaxun.yang@flygoat.com>
+Date:   Fri, 27 Oct 2023 19:26:43 +0100
+Message-Id: <20231027182650.281405-1-jiaxun.yang@flygoat.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20231027182650.281405-1-jiaxun.yang@flygoat.com>
-References: <20231027182650.281405-1-jiaxun.yang@flygoat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
