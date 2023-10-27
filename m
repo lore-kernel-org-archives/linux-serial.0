@@ -2,57 +2,41 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFAAEC25B47
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Oct 2023 11:55:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F786C25B48
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Oct 2023 17:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345735AbjJ0LzK (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Oct 2023 07:55:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47478 "EHLO
+        id S231594AbjJ0Rpq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 27 Oct 2023 13:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345793AbjJ0LzJ (ORCPT
+        with ESMTP id S231464AbjJ0Rpq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Oct 2023 07:55:09 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39614192
-        for <linux-serial@vger.kernel.org>; Fri, 27 Oct 2023 04:55:04 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id d9443c01a7336-1c8a1541232so17720275ad.0
-        for <linux-serial@vger.kernel.org>; Fri, 27 Oct 2023 04:55:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1698407703; x=1699012503; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=e5FujhKIaH/uwx0lIrEstVD0nII/dzmNIeNJ8ebqYu0=;
-        b=StVDK6iWENOIw4cbhc1kGnRGHoFOc+mmrjv3JwtRZMaGFn6+6vv1FCNwb9w+V1F9lF
-         X+fCT1jk9DSxIIMBWzhcis5IcSUn6wvFM2mgb+hDXzkEEddNoSnXJ5seAJG3sIMafw70
-         GXzinIDEgB3EJ/ka2nAJzSjgTFE6xIC1bx/qpxBSNOCoD+OdKQM3INsvkQc55IaqodfW
-         vyY8uLyrndhYDr/4vpABnT00QCaw9BLbck4k2IoRC2RYdeoVdTqd6/MSd+iUqq408SDK
-         fofxJnHChiqm/zSWNkBCj017d+6VVAMtLPob7rXYl/fuNwX6jCMqdrKfLG4kdW61d0qS
-         1njQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698407703; x=1699012503;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=e5FujhKIaH/uwx0lIrEstVD0nII/dzmNIeNJ8ebqYu0=;
-        b=k4ODEB+XtzvJGhbFfkVz11HinCmJ3xXO2h2HSny8BEVWqRyr+B8Q0gV5pw2BoZ3WsF
-         7Aok3+Z/fYLs2X6/vO2u72TvtOcQzZjOZw0z72GvrUMYIO3VXeAe1PEA0OfZ9GbRSsQq
-         4Mzrj9g9qKbU+dSm1LiM51f8KmCbPPchP1uwMdNrCPcnCcjvn3SzoqJrR5DowXuMpCkn
-         EOe5PyMV/yB+uyOA1VAXwPLLUnGwBHRCCZABjYb23KXjd8YtSfk/T3qfGsctSy1BKHQm
-         ooDf5ihPTzGb09sQhFXPars01JPCF5atMUlmblt4hkzSqnCSVioth1umiKyvaoLTkAJD
-         GMqA==
-X-Gm-Message-State: AOJu0Yz02XNHmohsE79NWj73Y/q1Vkj7506ppJDKPMX+Qy2/PxOmT9Ow
-        nc83eK3oSjsDOIxJwZGn2iLnEg==
-X-Google-Smtp-Source: AGHT+IHUO3uODEbp/2xpVvuNkWZLUzFgyUmu6ctAkgCEdcwdjl1R6oJFy7lgIUS+r693E6SqK+uHMg==
-X-Received: by 2002:a17:902:cf41:b0:1ca:7086:60f7 with SMTP id e1-20020a170902cf4100b001ca708660f7mr3256113plg.28.1698407703704;
-        Fri, 27 Oct 2023 04:55:03 -0700 (PDT)
-Received: from sunil-laptop ([106.51.188.78])
-        by smtp.gmail.com with ESMTPSA id f12-20020a170902684c00b001b9f032bb3dsm1424132pln.3.2023.10.27.04.54.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Oct 2023 04:55:03 -0700 (PDT)
-Date:   Fri, 27 Oct 2023 17:24:51 +0530
-From:   Sunil V L <sunilvl@ventanamicro.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
+        Fri, 27 Oct 2023 13:45:46 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 988ABF3;
+        Fri, 27 Oct 2023 10:45:40 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1698428739;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vCF2sTMjoJARe87DP7lAD8rcZvlM4BFzZKH7cV3QuU8=;
+        b=xXX2ovs1OHhXbwDuZac6CP8IsOrVj54bZeD5nyxWlPUBOXUniX1BJWPV+PcVr7obtLN3eF
+        I6uPBnLwqsSeXJfTpISEjW/ksbeWDMkDlGhuSLkQd0gwCvAm+Ogc1qakMhd99FaKFmFOz6
+        1GIjy1E+N/YDe03TxrnRIU53J4jidS28NuERCZkDyMkX8X5wFJu/OtV20oF773goJYLcMm
+        /ktLuCbvSshkq1Zxca8OxoWF8VJ4zqw5Ohr8CYTRGpLm9x96JuE60jmezp5gm6X3Yn94AK
+        7ns6idG1lqprpc0Y27+8vH0y0yrCC8o1DwW3zTycAy/bFh5YoXh4wv0+CbwiwA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1698428739;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vCF2sTMjoJARe87DP7lAD8rcZvlM4BFzZKH7cV3QuU8=;
+        b=WWHizKPPbjghvXPvf1/QyrM9sNTsNYrmVq6GoM+JMN89I9M6CgHAYJRHoOSGLIiqmVpfsl
+        B+qpDGnW7YiT4hDg==
+To:     Bjorn Helgaas <helgaas@kernel.org>,
+        Sunil V L <sunilvl@ventanamicro.com>
 Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
         linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
@@ -65,66 +49,52 @@ Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Len Brown <lenb@kernel.org>,
         Bjorn Helgaas <bhelgaas@google.com>,
         Anup Patel <anup@brainfault.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Conor Dooley <conor.dooley@microchip.com>,
         Andrew Jones <ajones@ventanamicro.com>,
         Atish Kumar Patra <atishp@rivosinc.com>,
-        Haibo Xu <haibo1.xu@intel.com>
-Subject: Re: [RFC PATCH v2 13/21] irqchip: riscv-intc: Add ACPI support for
- AIA
-Message-ID: <ZTulC3tUuTm92/Li@sunil-laptop>
-References: <20231025202344.581132-14-sunilvl@ventanamicro.com>
- <20231026165150.GA1825130@bhelgaas>
- <ZTufD/InY/gwpE+Q@sunil-laptop>
+        Haibo Xu <haibo1.xu@intel.com>, Marc Zyngier <maz@kernel.org>
+Subject: Re: [RFC PATCH v2 13/21] irqchip: riscv-intc: Add ACPI support for AIA
+In-Reply-To: <20231026165150.GA1825130@bhelgaas>
+References: <20231026165150.GA1825130@bhelgaas>
+Date:   Fri, 27 Oct 2023 19:45:38 +0200
+Message-ID: <87jzr82c3h.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZTufD/InY/gwpE+Q@sunil-laptop>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 27, 2023 at 04:59:31PM +0530, Sunil V L wrote:
-> Hi Bjorn,
-> 
-> On Thu, Oct 26, 2023 at 11:51:50AM -0500, Bjorn Helgaas wrote:
-> > On Thu, Oct 26, 2023 at 01:53:36AM +0530, Sunil V L wrote:
-> > > The RINTC subtype structure in MADT also has information about other
-> > > interrupt controllers like MMIO. So, save those information and provide
-> > > interfaces to retrieve them when required by corresponding drivers.
-> > 
-> > > @@ -218,7 +306,19 @@ static int __init riscv_intc_acpi_init(union acpi_subtable_headers *header,
-> > 
-> > > +	 * MSI controller (IMSIC) in RISC-V is optional. So, unless
-> > > +	 * IMSIC is discovered, set system wide MSI support as
-> > > +	 * unsupported. Once IMSIC is probed, MSI support will be set.
-> > > +	 */
-> > > +	pci_no_msi();
-> > 
-> > It doesn't seem like we should have to tell the PCI core about
-> > functionality we *don't* have.
-> > 
-> > I would think IMSIC would be detected before enumerating PCI devices
-> > that might use it, and if we *haven't* found an IMSIC by the time we
-> > get to pci_register_host_bridge(), would/should we set
-> > PCI_BUS_FLAGS_NO_MSI there?
-> >
-> The check in pci_register_host_bridge() is like below.
-> 
-> if (bridge->msi_domain && !dev_get_msi_domain(&bus->dev) &&
->             !pci_host_of_has_msi_map(parent))
->                 bus->bus_flags |= PCI_BUS_FLAGS_NO_MSI;
-> 
-> When there is no IMSIC, bridge->msi_domain is 0 and hence
-> PCI_BUS_FLAGS_NO_MSI will never be set. Do you recommend to set
-> PCI_BUS_FLAGS_NO_MSI if bridge->msi_domain is 0? Let me know if I am
-> missing something.
-> 
-What seems to work is, setting bridge->msi_domain = true in
-pci_create_root_bus() similar to how pci_host_common_probe() sets for OF
-framework. Would that be better solution?
+On Thu, Oct 26 2023 at 11:51, Bjorn Helgaas wrote:
+> On Thu, Oct 26, 2023 at 01:53:36AM +0530, Sunil V L wrote:
+>> The RINTC subtype structure in MADT also has information about other
+>> interrupt controllers like MMIO. So, save those information and provide
+>> interfaces to retrieve them when required by corresponding drivers.
+>
+>> @@ -218,7 +306,19 @@ static int __init riscv_intc_acpi_init(union acpi_subtable_headers *header,
+>
+>> +	 * MSI controller (IMSIC) in RISC-V is optional. So, unless
+>> +	 * IMSIC is discovered, set system wide MSI support as
+>> +	 * unsupported. Once IMSIC is probed, MSI support will be set.
+>> +	 */
+>> +	pci_no_msi();
+>
+> It doesn't seem like we should have to tell the PCI core about
+> functionality we *don't* have.
+>
+> I would think IMSIC would be detected before enumerating PCI devices
+> that might use it, and if we *haven't* found an IMSIC by the time we
+> get to pci_register_host_bridge(), would/should we set
+> PCI_BUS_FLAGS_NO_MSI there?
+>
+> I see Thomas is cc'd; he'd have better insight.
+
+I was not really involved with this bus and MSI domain logic. Marc
+should know. CC'ed.
 
 Thanks,
-Sunil
+
+        tglx
+
+
