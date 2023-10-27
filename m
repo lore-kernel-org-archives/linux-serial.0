@@ -2,55 +2,55 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ACD0C25B67
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Oct 2023 11:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFAAEC25B47
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Oct 2023 11:55:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345767AbjJ0L3f (ORCPT
+        id S1345735AbjJ0LzK (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Oct 2023 07:29:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56336 "EHLO
+        Fri, 27 Oct 2023 07:55:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345688AbjJ0L3e (ORCPT
+        with ESMTP id S1345793AbjJ0LzJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Oct 2023 07:29:34 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58CBD10A
-        for <linux-serial@vger.kernel.org>; Fri, 27 Oct 2023 04:29:32 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id 98e67ed59e1d1-28011cedd7aso308129a91.0
-        for <linux-serial@vger.kernel.org>; Fri, 27 Oct 2023 04:29:32 -0700 (PDT)
+        Fri, 27 Oct 2023 07:55:09 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39614192
+        for <linux-serial@vger.kernel.org>; Fri, 27 Oct 2023 04:55:04 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id d9443c01a7336-1c8a1541232so17720275ad.0
+        for <linux-serial@vger.kernel.org>; Fri, 27 Oct 2023 04:55:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1698406172; x=1699010972; darn=vger.kernel.org;
+        d=ventanamicro.com; s=google; t=1698407703; x=1699012503; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=vI28YtitrNIniIpGPiCXYWH3fIICBsHFcX18SbMwXaI=;
-        b=FkLUCTFaZcySOAam9iz6DHlyvMFgwb0dciaQzfdEKzSevC6tu7bXghqDN03SvNdfXI
-         TpVwftwoRNylOP52CRKkfEd+HY6JOQtmKcnBIu1bAyG/Ld23VYJTHCS830eXVN/+1WBM
-         kaAWuFHIbGb+5FObTqY8EYp0t1xctpoP6eFlbLuTew1V6TZOKIBp1igLyRcrviXNXMzZ
-         sLDZszDFDI7J368kdHkZ+dvHbQnlRjH9r8pmTeCi5gny46waklCU9d/weTWNNrqjP2wr
-         EkuRxqDu1n98QeIm87t0zIce4WfpuNi1WOKztgx7E1VzD51Vg5wY81r+AEulrqMDvYHq
-         c9aw==
+        bh=e5FujhKIaH/uwx0lIrEstVD0nII/dzmNIeNJ8ebqYu0=;
+        b=StVDK6iWENOIw4cbhc1kGnRGHoFOc+mmrjv3JwtRZMaGFn6+6vv1FCNwb9w+V1F9lF
+         X+fCT1jk9DSxIIMBWzhcis5IcSUn6wvFM2mgb+hDXzkEEddNoSnXJ5seAJG3sIMafw70
+         GXzinIDEgB3EJ/ka2nAJzSjgTFE6xIC1bx/qpxBSNOCoD+OdKQM3INsvkQc55IaqodfW
+         vyY8uLyrndhYDr/4vpABnT00QCaw9BLbck4k2IoRC2RYdeoVdTqd6/MSd+iUqq408SDK
+         fofxJnHChiqm/zSWNkBCj017d+6VVAMtLPob7rXYl/fuNwX6jCMqdrKfLG4kdW61d0qS
+         1njQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698406172; x=1699010972;
+        d=1e100.net; s=20230601; t=1698407703; x=1699012503;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=vI28YtitrNIniIpGPiCXYWH3fIICBsHFcX18SbMwXaI=;
-        b=UOpfvS0XNTnDw0IJqrx8iQsQHHFV7fSW2dfKhoq+Ftef2M9KgwFKMVPAurR0sAwTcd
-         e9MIS9xCeyFgMznM4XWYectmETjZBujzCtZ26yaYDOizQY7Vhcc005C7xSyfAjlazZZT
-         ZZ3PVLbspHvXUGhSphTRnwqbGPg9SiPeRR58Kj5Wfyng/TgueZVpwDdQ038D1PbTHJGu
-         P9BUe/FlA0qmT4GnVlHDzYNCZUQTpmDasumIdK2CgQ3onyAm3o8WSuGXAeN3PHuNglrk
-         b7FF2/IuEK1s2GUebCz6yuDLpNXx/99K2pBSSmkrmwo9mU1En7gpRl9suzyAwkKTsJH9
-         xHXg==
-X-Gm-Message-State: AOJu0YzpkPO2Ido1wcWQIdv7thfbs1g63sS3hdSGtG+fEpa7vB1FVPcn
-        M53PLk1a20lM/sxPhRzZgARRbA==
-X-Google-Smtp-Source: AGHT+IG13tL5qlADUCcZnk0Slm9dLAj/0ICfwInuvtA89OSHyk/VCX3hGHfCAQFvPk1ScgHB/OgdWA==
-X-Received: by 2002:a17:90b:100b:b0:27d:1051:83c4 with SMTP id gm11-20020a17090b100b00b0027d105183c4mr2196967pjb.12.1698406171798;
-        Fri, 27 Oct 2023 04:29:31 -0700 (PDT)
+        bh=e5FujhKIaH/uwx0lIrEstVD0nII/dzmNIeNJ8ebqYu0=;
+        b=k4ODEB+XtzvJGhbFfkVz11HinCmJ3xXO2h2HSny8BEVWqRyr+B8Q0gV5pw2BoZ3WsF
+         7Aok3+Z/fYLs2X6/vO2u72TvtOcQzZjOZw0z72GvrUMYIO3VXeAe1PEA0OfZ9GbRSsQq
+         4Mzrj9g9qKbU+dSm1LiM51f8KmCbPPchP1uwMdNrCPcnCcjvn3SzoqJrR5DowXuMpCkn
+         EOe5PyMV/yB+uyOA1VAXwPLLUnGwBHRCCZABjYb23KXjd8YtSfk/T3qfGsctSy1BKHQm
+         ooDf5ihPTzGb09sQhFXPars01JPCF5atMUlmblt4hkzSqnCSVioth1umiKyvaoLTkAJD
+         GMqA==
+X-Gm-Message-State: AOJu0Yz02XNHmohsE79NWj73Y/q1Vkj7506ppJDKPMX+Qy2/PxOmT9Ow
+        nc83eK3oSjsDOIxJwZGn2iLnEg==
+X-Google-Smtp-Source: AGHT+IHUO3uODEbp/2xpVvuNkWZLUzFgyUmu6ctAkgCEdcwdjl1R6oJFy7lgIUS+r693E6SqK+uHMg==
+X-Received: by 2002:a17:902:cf41:b0:1ca:7086:60f7 with SMTP id e1-20020a170902cf4100b001ca708660f7mr3256113plg.28.1698407703704;
+        Fri, 27 Oct 2023 04:55:03 -0700 (PDT)
 Received: from sunil-laptop ([106.51.188.78])
-        by smtp.gmail.com with ESMTPSA id r65-20020a17090a43c700b0028018af8dc2sm252642pjg.23.2023.10.27.04.29.23
+        by smtp.gmail.com with ESMTPSA id f12-20020a170902684c00b001b9f032bb3dsm1424132pln.3.2023.10.27.04.54.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Oct 2023 04:29:31 -0700 (PDT)
-Date:   Fri, 27 Oct 2023 16:59:19 +0530
+        Fri, 27 Oct 2023 04:55:03 -0700 (PDT)
+Date:   Fri, 27 Oct 2023 17:24:51 +0530
 From:   Sunil V L <sunilvl@ventanamicro.com>
 To:     Bjorn Helgaas <helgaas@kernel.org>
 Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -74,51 +74,57 @@ Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Haibo Xu <haibo1.xu@intel.com>
 Subject: Re: [RFC PATCH v2 13/21] irqchip: riscv-intc: Add ACPI support for
  AIA
-Message-ID: <ZTufD/InY/gwpE+Q@sunil-laptop>
+Message-ID: <ZTulC3tUuTm92/Li@sunil-laptop>
 References: <20231025202344.581132-14-sunilvl@ventanamicro.com>
  <20231026165150.GA1825130@bhelgaas>
+ <ZTufD/InY/gwpE+Q@sunil-laptop>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231026165150.GA1825130@bhelgaas>
+In-Reply-To: <ZTufD/InY/gwpE+Q@sunil-laptop>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Bjorn,
-
-On Thu, Oct 26, 2023 at 11:51:50AM -0500, Bjorn Helgaas wrote:
-> On Thu, Oct 26, 2023 at 01:53:36AM +0530, Sunil V L wrote:
-> > The RINTC subtype structure in MADT also has information about other
-> > interrupt controllers like MMIO. So, save those information and provide
-> > interfaces to retrieve them when required by corresponding drivers.
+On Fri, Oct 27, 2023 at 04:59:31PM +0530, Sunil V L wrote:
+> Hi Bjorn,
 > 
-> > @@ -218,7 +306,19 @@ static int __init riscv_intc_acpi_init(union acpi_subtable_headers *header,
+> On Thu, Oct 26, 2023 at 11:51:50AM -0500, Bjorn Helgaas wrote:
+> > On Thu, Oct 26, 2023 at 01:53:36AM +0530, Sunil V L wrote:
+> > > The RINTC subtype structure in MADT also has information about other
+> > > interrupt controllers like MMIO. So, save those information and provide
+> > > interfaces to retrieve them when required by corresponding drivers.
+> > 
+> > > @@ -218,7 +306,19 @@ static int __init riscv_intc_acpi_init(union acpi_subtable_headers *header,
+> > 
+> > > +	 * MSI controller (IMSIC) in RISC-V is optional. So, unless
+> > > +	 * IMSIC is discovered, set system wide MSI support as
+> > > +	 * unsupported. Once IMSIC is probed, MSI support will be set.
+> > > +	 */
+> > > +	pci_no_msi();
+> > 
+> > It doesn't seem like we should have to tell the PCI core about
+> > functionality we *don't* have.
+> > 
+> > I would think IMSIC would be detected before enumerating PCI devices
+> > that might use it, and if we *haven't* found an IMSIC by the time we
+> > get to pci_register_host_bridge(), would/should we set
+> > PCI_BUS_FLAGS_NO_MSI there?
+> >
+> The check in pci_register_host_bridge() is like below.
 > 
-> > +	 * MSI controller (IMSIC) in RISC-V is optional. So, unless
-> > +	 * IMSIC is discovered, set system wide MSI support as
-> > +	 * unsupported. Once IMSIC is probed, MSI support will be set.
-> > +	 */
-> > +	pci_no_msi();
+> if (bridge->msi_domain && !dev_get_msi_domain(&bus->dev) &&
+>             !pci_host_of_has_msi_map(parent))
+>                 bus->bus_flags |= PCI_BUS_FLAGS_NO_MSI;
 > 
-> It doesn't seem like we should have to tell the PCI core about
-> functionality we *don't* have.
+> When there is no IMSIC, bridge->msi_domain is 0 and hence
+> PCI_BUS_FLAGS_NO_MSI will never be set. Do you recommend to set
+> PCI_BUS_FLAGS_NO_MSI if bridge->msi_domain is 0? Let me know if I am
+> missing something.
 > 
-> I would think IMSIC would be detected before enumerating PCI devices
-> that might use it, and if we *haven't* found an IMSIC by the time we
-> get to pci_register_host_bridge(), would/should we set
-> PCI_BUS_FLAGS_NO_MSI there?
->
-The check in pci_register_host_bridge() is like below.
-
-if (bridge->msi_domain && !dev_get_msi_domain(&bus->dev) &&
-            !pci_host_of_has_msi_map(parent))
-                bus->bus_flags |= PCI_BUS_FLAGS_NO_MSI;
-
-When there is no IMSIC, bridge->msi_domain is 0 and hence
-PCI_BUS_FLAGS_NO_MSI will never be set. Do you recommend to set
-PCI_BUS_FLAGS_NO_MSI if bridge->msi_domain is 0? Let me know if I am
-missing something.
+What seems to work is, setting bridge->msi_domain = true in
+pci_create_root_bus() similar to how pci_host_common_probe() sets for OF
+framework. Would that be better solution?
 
 Thanks,
 Sunil
