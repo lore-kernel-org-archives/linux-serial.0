@@ -2,236 +2,116 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2D44C25B67
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Oct 2023 08:29:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45085C25B47
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Oct 2023 09:10:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235036AbjJ0I3r (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Oct 2023 04:29:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56636 "EHLO
+        id S229636AbjJ0JKZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 27 Oct 2023 05:10:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235012AbjJ0I3q (ORCPT
+        with ESMTP id S235057AbjJ0JKY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Oct 2023 04:29:46 -0400
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288801BE;
-        Fri, 27 Oct 2023 01:29:42 -0700 (PDT)
-Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2c5071165d5so22086461fa.0;
-        Fri, 27 Oct 2023 01:29:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698395380; x=1699000180;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=stJbb23w3VUqP0eHkdL98f2jZhQvcq9EYPxztKnA6VY=;
-        b=VPrAr06OoUv+izTP6JFnd3aqFzGoVfW+XFE9VaWIESad/uJ7ubM0+aipB4mkgbbAZp
-         Pe/HnQtd1MYaiozDbFQXj/d151ir7J1uSBf2BeNKrRYb+x7cKkJaWgVGxGyM9eA6sieA
-         FvD+TVuZxgw644eb+XXoVWLToRgI4KXPLuhfJOMNkaES+UhPtxmqo1SPdgsInhVed2kL
-         iZJKWyrL5KkhALmKCw6khebstE5c5b6sd0rUTJalzyhpnYWuDWyzjAZl17mv/KDYlWTg
-         5E6M3f/lye24dY6nQp93kKF3xRegFxeSJM1bgOuBQQ7n7geFwYkNVMZthbIBey0iTjYp
-         HwaQ==
-X-Gm-Message-State: AOJu0YznJjuttF6XYwSL+PLxImspFlVwn7mk4axFmjwbz4aBOy9D0A2W
-        eeCotNCXIvDoUr19eNLd1eI=
-X-Google-Smtp-Source: AGHT+IFAj3Y6IG4ZWvAYqebBD+zyEarmRzLf/EZHCsiRr1qFHDFKzdzKc6zpyG0CGQgWF/u5ROm9aQ==
-X-Received: by 2002:a2e:a167:0:b0:2c5:12ae:adb3 with SMTP id u7-20020a2ea167000000b002c512aeadb3mr1517585ljl.44.1698395380014;
-        Fri, 27 Oct 2023 01:29:40 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id bg9-20020a05600c3c8900b004063cd8105csm4602183wmb.22.2023.10.27.01.29.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Oct 2023 01:29:39 -0700 (PDT)
-Message-ID: <37a5e055-93b5-4f05-bcca-4caa5ed6f97f@kernel.org>
-Date:   Fri, 27 Oct 2023 10:29:38 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] tty: serial: 8250: Add support for MOXA PCIe boards
- to switch interface
-Content-Language: en-US
+        Fri, 27 Oct 2023 05:10:24 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2D11A7;
+        Fri, 27 Oct 2023 02:10:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1698397822; x=1729933822;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qIHuhHWz9ol66WYZ+Sr2Acwu5Rt20Ci8LRus1iREHJo=;
+  b=TAVEKwsMHuHSAdND3duuF/F9K/XR5TCHjEMedEnrYnxYmjTZiK6I3p+Q
+   u+UWfE9b3pL/cozYJURs4n+Kq9+uDd0SOqGI7293gfErSe+cZhyNaq8JT
+   ZLU/an0M8j8IOEj5CnCWmSBZxOQTf5bDapZb9bETvSjf9ii3D4rJTnGdZ
+   tEVSaxSlPvtQL7yjJJHLaRMSDpnSIdgOqALrQE1E15qiZHQ2sSN9cXXLp
+   Pxp4yn2wDhojmhVw+nk7+Rwma2JAFHUu0nOBf5zVYC2NTYfHl5iI2PGHp
+   0kZxpGznmh3xXuRjVyQs4o+BbqV2JfK7QATS4nSWC/IHum8PIQaQahOab
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10875"; a="367949327"
+X-IronPort-AV: E=Sophos;i="6.03,255,1694761200"; 
+   d="scan'208";a="367949327"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2023 02:10:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10875"; a="903212004"
+X-IronPort-AV: E=Sophos;i="6.03,255,1694761200"; 
+   d="scan'208";a="903212004"
+Received: from lkp-server01.sh.intel.com (HELO 8917679a5d3e) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 27 Oct 2023 02:07:52 -0700
+Received: from kbuild by 8917679a5d3e with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1qwIrC-000Afb-0l;
+        Fri, 27 Oct 2023 09:10:18 +0000
+Date:   Fri, 27 Oct 2023 17:09:37 +0800
+From:   kernel test robot <lkp@intel.com>
 To:     Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20231027062440.7749-1-crescentcy.hsieh@moxa.com>
- <20231027062440.7749-3-crescentcy.hsieh@moxa.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20231027062440.7749-3-crescentcy.hsieh@moxa.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+Subject: Re: [PATCH 1/2] tty: serial: 8250: Fix MOXA RS422/RS485 PCIe boards
+ not work by default
+Message-ID: <202310271618.QBCWA4yo-lkp@intel.com>
+References: <20231027062440.7749-2-crescentcy.hsieh@moxa.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231027062440.7749-2-crescentcy.hsieh@moxa.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 27. 10. 23, 8:24, Crescent CY Hsieh wrote:
-> MOXA PCIe boards have 4 serial interfaces and don't require additional
-> stuff to switch between interfaces:
-> 
-> - RS232
-> - RS422
-> - RS485_2W (half-duplex)
-> - RS485_4W (full-duplex)
-> 
-> By using ioctl command "TIOCRS485", it can switch between default
-> interface and RS485 if supported.
-> 
-> That means, for RS422/RS485 board, it can switch between RS422 and
-> RS485 by setting the flags within struct serial_rs485.
-> 
-> However, for the RS232/RS422/RS485 board, it can only switch between
-> RS232 and RS485, there's no flag for switching interface into RS422.
-> 
-> This patch adds a flag call "SER_RS422_ENALBED" in serial.h and modifies
+Hi Crescent,
 
-It's not "ENALBED".
+kernel test robot noticed the following build warnings:
 
-Anyway, I am afraid you have to split the patch into two:
-1) add the flag and core support (but wait a bit for others if they 
-agree with this approach)
-2) add the support for moxa.
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on tty/tty-next next-20231026]
+[cannot apply to tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.6-rc7]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-> serial_core.c to make it possible to switch interface between RS232,
-> RS422 and RS485.
-...
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
+url:    https://github.com/intel-lab-lkp/linux/commits/Crescent-CY-Hsieh/tty-serial-8250-Fix-MOXA-RS422-RS485-PCIe-boards-not-work-by-default/20231027-142745
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20231027062440.7749-2-crescentcy.hsieh%40moxa.com
+patch subject: [PATCH 1/2] tty: serial: 8250: Fix MOXA RS422/RS485 PCIe boards not work by default
+config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20231027/202310271618.QBCWA4yo-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 13.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231027/202310271618.QBCWA4yo-lkp@intel.com/reproduce)
 
-> @@ -2032,6 +2036,37 @@ static int pci_moxa_set_interface(const struct pci_dev *dev,
->   	return 0;
->   }
->   
-> +/*
-> + * MOXA PCIe boards support switching the serial interface using the ioctl
-> + * command "TIOCSRS485".
-> + *
-> + *	RS232			= (no flags are set)
-> + *	RS422			= SER_RS422_ENABLED
-> + *	RS485_2W (half-duplex)	= SER_RS485_ENABLED
-> + *	RS485_4W (full-duplex)	= SER_RS485_ENABLED | SER_RS485_RX_DURING_TX
-> + */
-> +static int pci_moxa_rs485_config(struct uart_port *port,
-> +				 struct ktermios *termios,
-> +				 struct serial_rs485 *rs485)
-> +{
-> +	struct pci_dev *dev = to_pci_dev(port->dev);
-> +	u8 mode = MOXA_RS232;
-> +
-> +	if (rs485->flags & SER_RS485_ENABLED) {
-> +		if (rs485->flags & SER_RS485_RX_DURING_TX)
-> +			mode = MOXA_RS485_4W;
-> +		else
-> +			mode = MOXA_RS485_2W;
-> +	} else if (rs485->flags & SER_RS422_ENABLED) {
-> +		mode = MOXA_RS422;
-> +	} else {
-> +		if (!(pci_moxa_supported_rs(dev) & MOXA_SUPP_RS232))
-> +			return -ENODEV;
-> +	}
-> +
-> +	return pci_moxa_set_interface(dev, port->port_id, mode);
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202310271618.QBCWA4yo-lkp@intel.com/
 
-Looks good to me now.
+All warnings (new ones prefixed by >>):
 
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1305,7 +1305,7 @@ static int uart_get_icount(struct tty_struct *tty,
->   
->   #define SER_RS485_LEGACY_FLAGS	(SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | \
->   				 SER_RS485_RTS_AFTER_SEND | SER_RS485_RX_DURING_TX | \
-> -				 SER_RS485_TERMINATE_BUS)
-> +				 SER_RS485_TERMINATE_BUS | SER_RS422_ENABLED)
->   
->   static int uart_check_rs485_flags(struct uart_port *port, struct serial_rs485 *rs485)
->   {
-> @@ -1371,11 +1371,26 @@ static void uart_sanitize_serial_rs485(struct uart_port *port, struct serial_rs4
->   {
->   	u32 supported_flags = port->rs485_supported.flags;
->   
-> -	if (!(rs485->flags & SER_RS485_ENABLED)) {
-> +	if (!(rs485->flags & SER_RS485_ENABLED) && !(rs485->flags & SER_RS422_ENABLED)) {
+>> drivers/tty/serial/8250/8250_pci.c:2001:5: warning: no previous prototype for 'pci_moxa_supported_rs' [-Wmissing-prototypes]
+    2001 | u32 pci_moxa_supported_rs(struct pci_dev *dev)
+         |     ^~~~~~~~~~~~~~~~~~~~~
 
-maybe easier:
-   if (!(rs485->flags & (SER_RS485_ENABLED | SER_RS422_ENABLED))) {
-?
 
->   		memset(rs485, 0, sizeof(*rs485));
->   		return;
->   	}
->   
-> +	/* Pick sane setting if the user enables both interfaces */
-> +	if (rs485->flags & SER_RS485_ENABLED && rs485->flags & SER_RS422_ENABLED) {
-> +		dev_warn_ratelimited(port->dev,
-> +			"%s (%d): Invalid serial interface setting, using RS485 instead\n",
-> +			port->name, port->line);
-> +		rs485->flags &= ~(SER_RS422_ENABLED);
+vim +/pci_moxa_supported_rs +2001 drivers/tty/serial/8250/8250_pci.c
 
-No need for parens.
+  2000	
+> 2001	u32 pci_moxa_supported_rs(struct pci_dev *dev)
+  2002	{
+  2003		switch (dev->device & 0x0F00) {
+  2004		case 0x0000:
+  2005		case 0x0600:
+  2006			return MOXA_SUPP_RS232;
+  2007		case 0x0100:
+  2008			return MOXA_SUPP_RS232 | MOXA_SUPP_RS422 | MOXA_SUPP_RS485;
+  2009		case 0x0300:
+  2010			return MOXA_SUPP_RS422 | MOXA_SUPP_RS485;
+  2011		}
+  2012		return 0;
+  2013	}
+  2014	
 
-> +	}
-> +
-> +	/* Clear other bits and return if enable RS422 */
-
-"if RS422 is enabled"
-or
-"if enabling RS422"
-
-> +	if (rs485->flags & SER_RS422_ENABLED) {
-> +		memset(rs485, 0, sizeof(*rs485));
-> +		rs485->flags |= SER_RS422_ENABLED;
-> +		return;
-> +	}
-> +
->   	/* Pick sane settings if the user hasn't */
->   	if ((supported_flags & (SER_RS485_RTS_ON_SEND|SER_RS485_RTS_AFTER_SEND)) &&
->   	    !(rs485->flags & SER_RS485_RTS_ON_SEND) ==
-> @@ -1400,7 +1415,7 @@ static void uart_sanitize_serial_rs485(struct uart_port *port, struct serial_rs4
->   static void uart_set_rs485_termination(struct uart_port *port,
->   				       const struct serial_rs485 *rs485)
->   {
-> -	if (!(rs485->flags & SER_RS485_ENABLED))
-> +	if (!(rs485->flags & SER_RS485_ENABLED) && !(rs485->flags & SER_RS422_ENABLED))
-
-if (!(rs485->flags & (SER_RS485_ENABLED | SER_RS422_ENABLED))) {
-
-thanks,
 -- 
-js
-suse labs
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
