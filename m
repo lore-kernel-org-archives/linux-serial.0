@@ -2,93 +2,80 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4431FC25B6E
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Oct 2023 06:43:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6B6CC25B67
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Oct 2023 07:22:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231504AbjJ0Gne (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Oct 2023 02:43:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42522 "EHLO
+        id S232306AbjJ0HWI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 27 Oct 2023 03:22:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbjJ0Gne (ORCPT
+        with ESMTP id S230369AbjJ0HWH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Oct 2023 02:43:34 -0400
+        Fri, 27 Oct 2023 03:22:07 -0400
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38CC9121;
-        Thu, 26 Oct 2023 23:43:32 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32AF0C433C8;
-        Fri, 27 Oct 2023 06:43:30 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CFE1AC;
+        Fri, 27 Oct 2023 00:22:05 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69AF7C433C8;
+        Fri, 27 Oct 2023 07:22:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1698389011;
-        bh=KGXKiq9/VImXyR51J/+ak66IF52o9zUiuOaFpU02Cmo=;
+        s=korg; t=1698391324;
+        bh=Qg4YTpWg2YhUPY+UM5NUghA/FNgriO1WcVRTdtepE0g=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tjwp8i+he7nUfKuVK7ic7roJ2dFtUlSeXz23MOZBAwAPCphfUilacNafOWwde3iQ0
-         U/nh4WG9WuOwFDNoKHJZy6RaP3GvT4plh6co7Gz8/wtrlROCeXmE91Xaw+UXjJak3r
-         vp2KdPo4ZoEkVfRJhxO1bgcWbXZmmPAmi7ZD4P2k=
-Date:   Fri, 27 Oct 2023 08:43:27 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Vamshi Gajjela <vamshigajjela@google.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, ilpo.jarvinen@linux.intel.com,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        manugautam@google.com, Subhash Jadavani <sjadavani@google.com>,
-        Channa Kadabi <kadabi@google.com>
-Subject: Re: [PATCH v3 3/3] serial: core: Update uart_poll_timeout() function
- to return unsigned long
-Message-ID: <2023102712-frolic-bush-3d67@gregkh>
-References: <20231026135628.2800617-1-vamshigajjela@google.com>
+        b=wXGY6vb4/zA35H4eUGZmPVpMsKXmZU9dd5cAz2aTp+nx1+2heJyN+8yOXVM6jTz/3
+         QoWc21EtM2aPLnRYMC86f6ZKzUhDmrij9U6yslpqNCGGJxfTI8PMhIYHnW+p2CBkDG
+         n9NttdeSqo+XFSS7mxBqQtAg1vbNGqMaux50bvrw=
+Date:   Fri, 27 Oct 2023 09:22:01 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "D. Starke" <daniel.starke@siemens.com>
+Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] tty: n_gsm: add copyright Siemens Mobility GmbH
+Message-ID: <2023102726-divided-improving-efb2@gregkh>
+References: <20231027053903.1886-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231026135628.2800617-1-vamshigajjela@google.com>
+In-Reply-To: <20231027053903.1886-1-daniel.starke@siemens.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 26, 2023 at 07:26:28PM +0530, Vamshi Gajjela wrote:
-> From: VAMSHI GAJJELA <vamshigajjela@google.com>
-
-Please use lower case letters like I think you mean to?
-
-Also, where are patches 1/3 and 2/3 of this series?  I can't do anything
-without them as well.
-
-> The function uart_fifo_timeout() returns an unsigned long value, which
-> is the number of jiffies. Therefore, change the variable timeout in the
-> function uart_poll_timeout() from int to unsigned long.
-> Change the return type of the function uart_poll_timeout() from int to
-> unsigned long to be consistent with the type of timeout values.
+On Fri, Oct 27, 2023 at 07:39:03AM +0200, D. Starke wrote:
+> From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
+> More than 1/3 of the n_gsm code has been contributed by us in the last
+> 1.5 years, completing conformance with the standard and stabilizing the
+> driver:
+> - added UI (unnumbered information) frame support
+> - added PN (parameter negotiation) message handling and function support
+> - added optional keep-alive control link supervision via test messages
+> - added TIOCM_OUT1 and TIOCM_OUT2 to allow responder to operate as modem
+> - added TIOCMIWAIT support on virtual ttys
+> - added additional ioctls and parameters to configure the new functions
+> - added overall locking mechanism to avoid data race conditions
+> - added outgoing data flow to decouple physical from virtual tty handling
+>   for better performance and to avoid dead-locks
+> - fixed advanced option mode implementation
+> - fixed convergence layer type 2 implementation
+> - fixed handling of CLD (multiplexer close down) messages
+> - fixed broken muxer close down procedure
+> - and many more bug fixes
+> 
+> With this most of our initial RFC has been implemented. It gives the driver
+> a quality boost unseen in the decade before.
+> 
+> Add a copyright notice to the n_gsm files to highlight this contribution.
+> 
+> Link: https://lore.kernel.org/all/20220225080758.2869-1-daniel.starke@siemens.com/
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 > ---
-> v3:
-> - updated description
-> v2:
-> - unsigned long instead of unsigned int
-> - added () after function name in short log
-> - updated description
-> 
->  include/linux/serial_core.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index bb6f073bc159..6916a1d7e477 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -773,9 +773,9 @@ static inline unsigned long uart_fifo_timeout(struct uart_port *port)
->  }
->  
->  /* Base timer interval for polling */
-> -static inline int uart_poll_timeout(struct uart_port *port)
-> +static inline unsigned long uart_poll_timeout(struct uart_port *port)
->  {
-> -	int timeout = uart_fifo_timeout(port);
-> +	unsigned long timeout = uart_fifo_timeout(port);
->  
->  	return timeout > 6 ? (timeout / 2 - 2) : 1;
+>  drivers/tty/n_gsm.c         | 1 +
+>  include/uapi/linux/gsmmux.h | 1 +
+>  2 files changed, 2 insertions(+)
 
-So we are now doing 64bit math?  Did that just make things slower?
+Nit, you didn't include what changed from v1 below the --- line.
 
-What bug is this actually fixing?  How have you tested this to verify it
-works?
+I'll take this now, but be more careful in the future.
 
 thanks,
 
