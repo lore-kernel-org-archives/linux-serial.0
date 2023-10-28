@@ -2,250 +2,115 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA82C25B47
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Oct 2023 20:49:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6262BC0032E
+	for <linux-serial@archiver.kernel.org>; Sat, 28 Oct 2023 10:11:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232575AbjJ0UtM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Oct 2023 16:49:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
+        id S229449AbjJ1KLZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 28 Oct 2023 06:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229712AbjJ0UtL (ORCPT
+        with ESMTP id S229460AbjJ1KLY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Oct 2023 16:49:11 -0400
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B991B6;
-        Fri, 27 Oct 2023 13:49:05 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id E95153200996;
-        Fri, 27 Oct 2023 16:49:04 -0400 (EDT)
-Received: from imap44 ([10.202.2.94])
-  by compute3.internal (MEProxy); Fri, 27 Oct 2023 16:49:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
-        cc:cc:content-transfer-encoding:content-type:content-type:date
-        :date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to; s=fm1; t=
-        1698439744; x=1698526144; bh=dtOld/txYEOwF3Z5A2XVbShO6PkSrUylLU0
-        +N0ne2fI=; b=YI7V5BNQfndHxfn7jpabB9fYqmIj+CRgL4ysUxV4nYvbo+5zVCW
-        +9txpKvXCf2MIBhuP29eBKTgByfwLd24YCLCtpLXzsju0A/E+slD2B4er9T0Je4y
-        6fGgiQEF5zPMOgALq/DnyMw7GT2KNJLeiRPdHeg+gIYx3s6+aFvaMZTB1jbzaOUg
-        nugSnN9YJeBHRBDgE4ykcBtUZ/1s9HdoC+/VPlDYBZFgfoAi1eNqsQcsk7R9vN5A
-        JDz21zIlE5Cv6iMvUgjdvZn1wHnRynCIJ9c+Ct+9JQTXTIAEez25cQ8kpQ4mZwiZ
-        4D4fl9hj+dnmzSEaFWZGXEWfb0fXT2leWlA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:content-type:date:date:feedback-id:feedback-id
-        :from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
-        1698439744; x=1698526144; bh=dtOld/txYEOwF3Z5A2XVbShO6PkSrUylLU0
-        +N0ne2fI=; b=YaTDunpVdvmvwSu7OfYWGjPB0iVxw+pZu8jN6KzAcmHfrBdmh7C
-        IN1WadDtE3ay1uxZ+yvqrQk1FzQErkaXzyX4rO0p7vPgRlh/Q8M8p5kyHgr90+kv
-        6+WN01EqXXm5NjBYpSP0fbHrrwC2VFQQsAJnMJLt8V+4fOEdbyqBPsoBqs82Oxuw
-        4EeLECVPQHqXh7BDooGBfuqX/olIwuwRStzx0XQ/sA6XWO/DBN5Ol3NLezoXZYuj
-        qYG5MUaVMlkAKyuS/vGohmPUpsk23gQHQ6vO6b3JpCh6hC2R9AEkScWJ8sn7t5J4
-        ZtLyzHgwnmbULT8pSNNpt7xLz7cP+s4U6TA==
-X-ME-Sender: <xms:QCI8ZUN9Y6scGzHKDTV_4XERCJ7c4dnWrS_zlbQbIQSwQopVYxlFXA>
-    <xme:QCI8Za-joDeTMvv4l3Bm8RI2tf8O1ZnV5cQawY2LCMFPAXRE-Pynipp2NZalti64A
-    PWVXQ9Y6QZXI8gQ4EE>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrleeggdduheegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtgfesthhqredtreerjeenucfhrhhomhepfdfl
-    ihgrgihunhcujggrnhhgfdcuoehjihgrgihunhdrhigrnhhgsehflhihghhorghtrdgtoh
-    hmqeenucggtffrrghtthgvrhhnpedufeegfeetudeghefftdehfefgveffleefgfehhfej
-    ueegveethfduuddvieehgfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmh
-    grihhlfhhrohhmpehjihgrgihunhdrhigrnhhgsehflhihghhorghtrdgtohhm
-X-ME-Proxy: <xmx:QCI8ZbRDKaF-fy8xo4u3Iga4END5S3_jR3tAED7QxBdc4Dvl0Gp-rQ>
-    <xmx:QCI8Zcv3OHjULDmtL01KgJoMOgJPual9Gx9XUG7GErEVuJ2ip9RBAw>
-    <xmx:QCI8ZcenSRTI_FSViz_Lj1cbqmFd0NVuhTDvl1v9G7A6p8z-_dLVGw>
-    <xmx:QCI8ZU4Qajc6nRZPYbhX0eBxUNBdowEMSaDEcQSc3xYM_UJ1u9Ydhw>
-Feedback-ID: ifd894703:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 3988636A0075; Fri, 27 Oct 2023 16:49:04 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-1048-g9229b632c5-fm-20231019.001-g9229b632
+        Sat, 28 Oct 2023 06:11:24 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCDCEF4;
+        Sat, 28 Oct 2023 03:11:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1698487881; x=1730023881;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ueezLwtbvr39ZJVFUoD3Y4+eTOwTiKbv97K1nH9NctY=;
+  b=MhDjFrBBuOT/625ijkdr3+baF3733LCt73PsQMQ72P+R0KI4qfSJHd+Z
+   OHM5iqQZbWlp+7oH05ftXB+r+K9PCsO+Ef3byELPFrIFfGV4iUqBTS6JE
+   OxVZJyzySh7yS/RUAQDpjp96Y0WE3lK5gbNuJCRKoRgibj1vLGgTHgSY3
+   mygZ0tHH/Mgl2J/RN4FBUsVuFWNc61NiGhT/j6hECW9FG9d2PK3fue+BN
+   1Br/TXJ/gOyykLExxKPxwYcOXPKdKV5/mrjuSXV0JktA7xh4m3WWQkPQq
+   UjlqDZ/txF59HBO7w0iDuuDxWI87QideUuP0ECz4alDFejzEans+gu7ga
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10876"; a="474129336"
+X-IronPort-AV: E=Sophos;i="6.03,259,1694761200"; 
+   d="scan'208";a="474129336"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2023 03:11:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.03,259,1694761200"; 
+   d="scan'208";a="1035055"
+Received: from lkp-server01.sh.intel.com (HELO 8917679a5d3e) ([10.239.97.150])
+  by orviesa002.jf.intel.com with ESMTP; 28 Oct 2023 03:10:41 -0700
+Received: from kbuild by 8917679a5d3e with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1qwgHj-000Bdn-0V;
+        Sat, 28 Oct 2023 10:11:15 +0000
+Date:   Sat, 28 Oct 2023 18:10:23 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+Subject: Re: [PATCH 1/2] tty: serial: 8250: Fix MOXA RS422/RS485 PCIe boards
+ not work by default
+Message-ID: <202310281723.0DAslF1o-lkp@intel.com>
+References: <20231027062440.7749-2-crescentcy.hsieh@moxa.com>
 MIME-Version: 1.0
-Message-Id: <c6503877-b120-4685-9665-7d728b8fd760@app.fastmail.com>
-In-Reply-To: <20231027182650.281405-8-jiaxun.yang@flygoat.com>
-References: <20231027182650.281405-1-jiaxun.yang@flygoat.com>
- <20231027182650.281405-8-jiaxun.yang@flygoat.com>
-Date:   Fri, 27 Oct 2023 21:48:44 +0100
-From:   "Jiaxun Yang" <jiaxun.yang@flygoat.com>
-To:     "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Thomas Bogendoerfer" <tsbogend@alpha.franken.de>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        jirislaby@kernel.org
-Subject: Re: [PATCH 3/3] serial: Add an earlycon driver for MIPS UHI semihosting
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231027062440.7749-2-crescentcy.hsieh@moxa.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Crescent,
+
+kernel test robot noticed the following build warnings:
+
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on tty/tty-next next-20231027]
+[cannot apply to tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.6-rc7]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Crescent-CY-Hsieh/tty-serial-8250-Fix-MOXA-RS422-RS485-PCIe-boards-not-work-by-default/20231027-142745
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20231027062440.7749-2-crescentcy.hsieh%40moxa.com
+patch subject: [PATCH 1/2] tty: serial: 8250: Fix MOXA RS422/RS485 PCIe boards not work by default
+config: i386-randconfig-002-20231028 (https://download.01.org/0day-ci/archive/20231028/202310281723.0DAslF1o-lkp@intel.com/config)
+compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231028/202310281723.0DAslF1o-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202310281723.0DAslF1o-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/tty/serial/8250/8250_pci.c:2001:5: warning: no previous declaration for 'pci_moxa_supported_rs' [-Wmissing-declarations]
+    u32 pci_moxa_supported_rs(struct pci_dev *dev)
+        ^~~~~~~~~~~~~~~~~~~~~
 
 
-=E5=9C=A82023=E5=B9=B410=E6=9C=8827=E6=97=A5=E5=8D=81=E6=9C=88 =E4=B8=8B=
-=E5=8D=887:26=EF=BC=8CJiaxun Yang=E5=86=99=E9=81=93=EF=BC=9A
-> UHI is MIPS's implementation of semihosting.
-> Add an earlycon driver to help with debugging on boot.
->
-> This driver is capable for print log using UHI's "Plog" or interact
-> with KGDB using UHI's stdio function.
->
-> Signed-off-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
-> ---
->  drivers/tty/serial/Kconfig             | 13 ++++
->  drivers/tty/serial/Makefile            |  1 +
->  drivers/tty/serial/earlycon-mips-uhi.c | 85 ++++++++++++++++++++++++++
->  3 files changed, 99 insertions(+)
->  create mode 100644 drivers/tty/serial/earlycon-mips-uhi.c
->
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index bdc568a4ab66..04c62c6b45cd 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -85,6 +85,19 @@ config SERIAL_EARLYCON_SEMIHOST
->  	  This is enabled with "earlycon=3Dsmh" on the kernel command line.
->  	  The console is enabled when early_param is processed.
->=20
-> +config SERIAL_EARLYCON_UHI
+vim +/pci_moxa_supported_rs +2001 drivers/tty/serial/8250/8250_pci.c
 
-^ Oops there is a symbol name mismatch, will fix in v2.
+  2000	
+> 2001	u32 pci_moxa_supported_rs(struct pci_dev *dev)
+  2002	{
+  2003		switch (dev->device & 0x0F00) {
+  2004		case 0x0000:
+  2005		case 0x0600:
+  2006			return MOXA_SUPP_RS232;
+  2007		case 0x0100:
+  2008			return MOXA_SUPP_RS232 | MOXA_SUPP_RS422 | MOXA_SUPP_RS485;
+  2009		case 0x0300:
+  2010			return MOXA_SUPP_RS422 | MOXA_SUPP_RS485;
+  2011		}
+  2012		return 0;
+  2013	}
+  2014	
 
-Sorry for the noise.
-
-Thanks
-- Jiaxun
-
-> +	bool "Early console using MIPS UHI semihosting"
-> +	depends on MIPS
-> +	select SERIAL_CORE
-> +	select SERIAL_CORE_CONSOLE
-> +	select SERIAL_EARLYCON
-> +	help
-> +	  Support for early debug console using UHI semihosting.
-> +	  This enables the console before standard serial driver is probed.
-> +	  This is enabled with "earlycon=3Duhi" or "earlycon=3Duhi_stdio" on=
- the
-> +	  kernel command line.
-> +	  The console is enabled when early_param is processed.
-> +
->  config SERIAL_EARLYCON_RISCV_SBI
->  	bool "Early console using RISC-V SBI"
->  	depends on RISCV_SBI_V01
-> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-> index f6b8c220dcfb..ef5e9c87aea1 100644
-> --- a/drivers/tty/serial/Makefile
-> +++ b/drivers/tty/serial/Makefile
-> @@ -9,6 +9,7 @@ serial_base-y :=3D serial_core.o serial_base_bus.o=20
-> serial_ctrl.o serial_port.o
->  obj-$(CONFIG_SERIAL_EARLYCON) +=3D earlycon.o
->  obj-$(CONFIG_SERIAL_EARLYCON_SEMIHOST) +=3D earlycon-semihost.o
->  obj-$(CONFIG_SERIAL_EARLYCON_RISCV_SBI) +=3D earlycon-riscv-sbi.o
-> +obj-$(CONFIG_SERIAL_EARLYCON_MIPS_UHI) +=3D earlycon-mips-uhi.o
->=20
->  # These Sparc drivers have to appear before others such as 8250
->  # which share ttySx minor node space.  Otherwise console device
-> diff --git a/drivers/tty/serial/earlycon-mips-uhi.c=20
-> b/drivers/tty/serial/earlycon-mips-uhi.c
-> new file mode 100644
-> index 000000000000..002bb2c37064
-> --- /dev/null
-> +++ b/drivers/tty/serial/earlycon-mips-uhi.c
-> @@ -0,0 +1,85 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * MIPS UHI semihosting based earlycon
-> + *
-> + * Copyright (C) 2023 Jiaxun Yang <jiaxun.yang@flygoat.com>
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/console.h>
-> +#include <linux/init.h>
-> +#include <linux/serial_core.h>
-> +#include <asm/uhi.h>
-> +
-> +static int stdin_fd =3D -1;
-> +static int stdout_fd =3D -1;
-> +
-> +static void uhi_plog_write(struct console *con, const char *s,=20
-> unsigned int n)
-> +{
-> +	uhi_plog(s, 0);
-> +}
-> +
-> +static void uhi_stdout_write(struct console *con, const char *s,=20
-> unsigned int n)
-> +{
-> +	if (stdout_fd < 0)
-> +		return;
-> +
-> +	uhi_write(stdout_fd, s, n);
-> +}
-> +
-> +#ifdef CONFIG_CONSOLE_POLL
-> +static int uhi_stdin_read(struct console *con, char *s, unsigned int =
-n)
-> +{
-> +	if (stdin_fd < 0)
-> +		return 0;
-> +
-> +	return uhi_read(stdin_fd, s, n);
-> +}
-> +#endif
-> +
-> +static int uhi_stdio_fd_open(struct console *co, char *options)
-> +{
-> +	/*
-> +	 * You have to open both stdin and stdout to get console work
-> +	 * properly on some old CodeScape debugger.
-> +	 */
-> +	stdin_fd =3D uhi_open("/dev/stdin", UHI_O_RDONLY, 0);
-> +	stdout_fd =3D uhi_open("/dev/stdout", UHI_O_WRONLY, 0);
-> +
-> +	return (stdin_fd < 0 || stdout_fd < 0) ? -ENODEV : 0;
-> +}
-> +
-> +static int uhi_stdio_fd_close(struct console *co)
-> +{
-> +	int ret1 =3D 0, ret2 =3D 0;
-> +
-> +	if (stdin_fd >=3D 0)
-> +		ret1 =3D uhi_close(stdin_fd);
-> +	if (stdout_fd >=3D 0)
-> +		ret2 =3D uhi_close(stdout_fd);
-> +
-> +	return (ret1 < 0 || ret2 < 0) ? -ENODEV : 0;
-> +}
-> +
-> +static int
-> +__init early_uhi_setup(struct earlycon_device *device, const char *op=
-t)
-> +{
-> +	device->con->write =3D uhi_plog_write;
-> +	return 0;
-> +}
-> +
-> +static int
-> +__init early_uhi_stdio_setup(struct earlycon_device *device, const=20
-> char *opt)
-> +{
-> +
-> +	device->con->setup =3D uhi_stdio_fd_open;
-> +	device->con->exit =3D uhi_stdio_fd_close;
-> +	device->con->write =3D uhi_stdout_write;
-> +#ifdef CONFIG_CONSOLE_POLL
-> +	device->con->read =3D uhi_stdin_read;
-> +#endif
-> +	return 0;
-> +}
-> +
-> +EARLYCON_DECLARE(uhi, early_uhi_setup);
-> +EARLYCON_DECLARE(uhi_stdio, early_uhi_stdio_setup);
-> --=20
-> 2.34.1
-
---=20
-- Jiaxun
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
