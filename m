@@ -2,115 +2,183 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6262BC0032E
-	for <linux-serial@archiver.kernel.org>; Sat, 28 Oct 2023 10:11:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C324C27C48
+	for <linux-serial@archiver.kernel.org>; Sat, 28 Oct 2023 10:43:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229449AbjJ1KLZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 28 Oct 2023 06:11:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56246 "EHLO
+        id S229469AbjJ1Knu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 28 Oct 2023 06:43:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbjJ1KLY (ORCPT
+        with ESMTP id S229450AbjJ1Kns (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 28 Oct 2023 06:11:24 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCDCEF4;
-        Sat, 28 Oct 2023 03:11:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698487881; x=1730023881;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ueezLwtbvr39ZJVFUoD3Y4+eTOwTiKbv97K1nH9NctY=;
-  b=MhDjFrBBuOT/625ijkdr3+baF3733LCt73PsQMQ72P+R0KI4qfSJHd+Z
-   OHM5iqQZbWlp+7oH05ftXB+r+K9PCsO+Ef3byELPFrIFfGV4iUqBTS6JE
-   OxVZJyzySh7yS/RUAQDpjp96Y0WE3lK5gbNuJCRKoRgibj1vLGgTHgSY3
-   mygZ0tHH/Mgl2J/RN4FBUsVuFWNc61NiGhT/j6hECW9FG9d2PK3fue+BN
-   1Br/TXJ/gOyykLExxKPxwYcOXPKdKV5/mrjuSXV0JktA7xh4m3WWQkPQq
-   UjlqDZ/txF59HBO7w0iDuuDxWI87QideUuP0ECz4alDFejzEans+gu7ga
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10876"; a="474129336"
-X-IronPort-AV: E=Sophos;i="6.03,259,1694761200"; 
-   d="scan'208";a="474129336"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2023 03:11:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.03,259,1694761200"; 
-   d="scan'208";a="1035055"
-Received: from lkp-server01.sh.intel.com (HELO 8917679a5d3e) ([10.239.97.150])
-  by orviesa002.jf.intel.com with ESMTP; 28 Oct 2023 03:10:41 -0700
-Received: from kbuild by 8917679a5d3e with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1qwgHj-000Bdn-0V;
-        Sat, 28 Oct 2023 10:11:15 +0000
-Date:   Sat, 28 Oct 2023 18:10:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-Subject: Re: [PATCH 1/2] tty: serial: 8250: Fix MOXA RS422/RS485 PCIe boards
- not work by default
-Message-ID: <202310281723.0DAslF1o-lkp@intel.com>
-References: <20231027062440.7749-2-crescentcy.hsieh@moxa.com>
+        Sat, 28 Oct 2023 06:43:48 -0400
+Received: from connect.vanmierlo.com (fieber.vanmierlo.com [84.243.197.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA71C1;
+        Sat, 28 Oct 2023 03:43:43 -0700 (PDT)
+X-Footer: dmFubWllcmxvLmNvbQ==
+Received: from roundcube.vanmierlo.com ([192.168.37.37])
+        (authenticated user m.brock@vanmierlo.com)
+        by connect.vanmierlo.com (Kerio Connect 10.0.2 patch 1) with ESMTPA;
+        Sat, 28 Oct 2023 12:43:40 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231027062440.7749-2-crescentcy.hsieh@moxa.com>
+Date:   Sat, 28 Oct 2023 12:43:40 +0200
+From:   m.brock@vanmierlo.com
+To:     Florian Eckert <fe@dev.tdt.de>
+Cc:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
+        kabel@kernel.org, u.kleine-koenig@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-leds@vger.kernel.org
+Subject: Re: [PATCH v5 2/2] leds: ledtrig-tty: add new line mode evaluation
+In-Reply-To: <20231023094205.2706812-3-fe@dev.tdt.de>
+References: <20231023094205.2706812-1-fe@dev.tdt.de>
+ <20231023094205.2706812-3-fe@dev.tdt.de>
+Message-ID: <ddf9439a092576cd18c6e025d0b61602@vanmierlo.com>
+X-Sender: m.brock@vanmierlo.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Crescent,
+Florian Eckert wrote on 2023-10-23 11:42:
 
-kernel test robot noticed the following build warnings:
+> @@ -16,6 +16,28 @@ struct ledtrig_tty_data {
+>      const char *ttyname;
+>      struct tty_struct *tty;
+>      int rx, tx;
+> +     unsigned long ttytrigger;
+> +};
 
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on tty/tty-next next-20231027]
-[cannot apply to tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.6-rc7]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+ttytriggers ?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Crescent-CY-Hsieh/tty-serial-8250-Fix-MOXA-RS422-RS485-PCIe-boards-not-work-by-default/20231027-142745
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20231027062440.7749-2-crescentcy.hsieh%40moxa.com
-patch subject: [PATCH 1/2] tty: serial: 8250: Fix MOXA RS422/RS485 PCIe boards not work by default
-config: i386-randconfig-002-20231028 (https://download.01.org/0day-ci/archive/20231028/202310281723.0DAslF1o-lkp@intel.com/config)
-compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231028/202310281723.0DAslF1o-lkp@intel.com/reproduce)
+[...]
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202310281723.0DAslF1o-lkp@intel.com/
+>  static void ledtrig_tty_work(struct work_struct *work)
+>  {
+>  	struct ledtrig_tty_data *trigger_data =
+>  		container_of(work, struct ledtrig_tty_data, dwork.work);
+> +	struct led_classdev *led_cdev = trigger_data->led_cdev;
+> +	unsigned long interval = LEDTRIG_TTY_INTERVAL;
+>  	struct serial_icounter_struct icount;
+> +	enum led_trigger_tty_state state;
+> +	int current_brightness;
+> +	int status;
+>  	int ret;
+> 
+> +	state = TTY_LED_DISABLE;
+>  	mutex_lock(&trigger_data->mutex);
+> 
+>  	if (!trigger_data->ttyname) {
+> @@ -115,22 +218,74 @@ static void ledtrig_tty_work(struct work_struct 
+> *work)
+>  		trigger_data->tty = tty;
+>  	}
+> 
+> -	ret = tty_get_icount(trigger_data->tty, &icount);
+> -	if (ret) {
+> -		dev_info(trigger_data->tty->dev, "Failed to get icount, stopped 
+> polling\n");
+> -		mutex_unlock(&trigger_data->mutex);
+> -		return;
+> +	status = tty_get_tiocm(trigger_data->tty);
+> +	if (status > 0) {
+> +		if (test_bit(TRIGGER_TTY_CTS, &trigger_data->ttytrigger)) {
+> +			if (status & TIOCM_CTS)
+> +				state = TTY_LED_ENABLE;
+> +		}
+> +
+> +		if (test_bit(TRIGGER_TTY_DSR, &trigger_data->ttytrigger)) {
+> +			if (status & TIOCM_DSR)
+> +				state = TTY_LED_ENABLE;
+> +		}
+> +
+> +		if (test_bit(TRIGGER_TTY_CAR, &trigger_data->ttytrigger)) {
+> +			if (status & TIOCM_CAR)
+> +				state = TTY_LED_ENABLE;
+> +		}
+> +
+> +		if (test_bit(TRIGGER_TTY_RNG, &trigger_data->ttytrigger)) {
+> +			if (status & TIOCM_RNG)
+> +				state = TTY_LED_ENABLE;
+> +		}
+> +	}
+> +
+> +	/* The rx/tx handling must come after the evaluation of TIOCM_*,
+> +	 * since the display for rx/tx has priority
+> +	 */
+> +	if (test_bit(TRIGGER_TTY_RX, &trigger_data->ttytrigger) ||
+> +	    test_bit(TRIGGER_TTY_TX, &trigger_data->ttytrigger)) {
+> +		ret = tty_get_icount(trigger_data->tty, &icount);
+> +		if (ret) {
+> +			dev_info(trigger_data->tty->dev, "Failed to get icount, stopped 
+> polling\n");
+> +			mutex_unlock(&trigger_data->mutex);
+> +			return;
+> +		}
+> +
+> +		if (test_bit(TRIGGER_TTY_RX, &trigger_data->ttytrigger) &&
+> +		    (icount.tx != trigger_data->tx)) {
 
-All warnings (new ones prefixed by >>):
+You check for TRIGGER_TTY_RX and then compare icount.tx, is that 
+correct?
 
->> drivers/tty/serial/8250/8250_pci.c:2001:5: warning: no previous declaration for 'pci_moxa_supported_rs' [-Wmissing-declarations]
-    u32 pci_moxa_supported_rs(struct pci_dev *dev)
-        ^~~~~~~~~~~~~~~~~~~~~
+> +			trigger_data->tx = icount.tx;
+> +			state = TTY_LED_BLINK;
+> +		}
+> +
+> +		if (test_bit(TRIGGER_TTY_TX, &trigger_data->ttytrigger) &&
+> +		    (icount.rx != trigger_data->rx)) {
 
+You check for TRIGGER_TTY_TX and then compare icount.rx, is that 
+correct?
 
-vim +/pci_moxa_supported_rs +2001 drivers/tty/serial/8250/8250_pci.c
+> +			trigger_data->rx = icount.rx;
+> +			state = TTY_LED_BLINK;
+> +		}
+>  	}
+> 
+> -	if (icount.rx != trigger_data->rx ||
+> -	    icount.tx != trigger_data->tx) {
+> -		unsigned long interval = LEDTRIG_TTY_INTERVAL;
+> +	current_brightness = led_cdev->brightness;
+> +	if (current_brightness)
+> +		led_cdev->blink_brightness = current_brightness;
+> 
+> +	if (!led_cdev->blink_brightness)
+> +		led_cdev->blink_brightness = led_cdev->max_brightness;
 
-  2000	
-> 2001	u32 pci_moxa_supported_rs(struct pci_dev *dev)
-  2002	{
-  2003		switch (dev->device & 0x0F00) {
-  2004		case 0x0000:
-  2005		case 0x0600:
-  2006			return MOXA_SUPP_RS232;
-  2007		case 0x0100:
-  2008			return MOXA_SUPP_RS232 | MOXA_SUPP_RS422 | MOXA_SUPP_RS485;
-  2009		case 0x0300:
-  2010			return MOXA_SUPP_RS422 | MOXA_SUPP_RS485;
-  2011		}
-  2012		return 0;
-  2013	}
-  2014	
+Is it OK to override the chosen brightness here?
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+> +
+> +	switch (state) {
+> +	case TTY_LED_BLINK:
+>  		led_blink_set_oneshot(trigger_data->led_cdev, &interval,
+>  				      &interval, 0);
+
+Change trigger_data->led_cdev to simply led_cdev
+
+Shouldn't the led return to the line controlled steady state?
+Set an invert variable to true if state was TTY_LED_ENABLE before it got 
+set
+to TTY_LED_BLINK
+
+How do interval and the frequency of ledtrig_tty_work() relate?
+
+> -
+> -		trigger_data->rx = icount.rx;
+> -		trigger_data->tx = icount.tx;
+> +		break;
+> +	case TTY_LED_ENABLE:
+> +		led_set_brightness(led_cdev, led_cdev->blink_brightness);
+> +		break;
+> +	case TTY_LED_DISABLE:
+> +		fallthrough;
+> +	default:
+> +		led_set_brightness(led_cdev, LED_OFF);
+> +		break;
+>  	}
+
+Maarten
+
