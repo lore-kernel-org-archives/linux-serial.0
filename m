@@ -2,38 +2,41 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C324C27C48
-	for <linux-serial@archiver.kernel.org>; Sat, 28 Oct 2023 10:43:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25C74C0032E
+	for <linux-serial@archiver.kernel.org>; Sat, 28 Oct 2023 10:59:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229469AbjJ1Knu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 28 Oct 2023 06:43:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46218 "EHLO
+        id S229460AbjJ1K7l (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 28 Oct 2023 06:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbjJ1Kns (ORCPT
+        with ESMTP id S229449AbjJ1K7k (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 28 Oct 2023 06:43:48 -0400
+        Sat, 28 Oct 2023 06:59:40 -0400
 Received: from connect.vanmierlo.com (fieber.vanmierlo.com [84.243.197.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA71C1;
-        Sat, 28 Oct 2023 03:43:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04ABCB4;
+        Sat, 28 Oct 2023 03:59:35 -0700 (PDT)
 X-Footer: dmFubWllcmxvLmNvbQ==
 Received: from roundcube.vanmierlo.com ([192.168.37.37])
         (authenticated user m.brock@vanmierlo.com)
         by connect.vanmierlo.com (Kerio Connect 10.0.2 patch 1) with ESMTPA;
-        Sat, 28 Oct 2023 12:43:40 +0200
+        Sat, 28 Oct 2023 12:59:28 +0200
 MIME-Version: 1.0
-Date:   Sat, 28 Oct 2023 12:43:40 +0200
+Date:   Sat, 28 Oct 2023 12:59:28 +0200
 From:   m.brock@vanmierlo.com
-To:     Florian Eckert <fe@dev.tdt.de>
-Cc:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
-        kabel@kernel.org, u.kleine-koenig@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-leds@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] leds: ledtrig-tty: add new line mode evaluation
-In-Reply-To: <20231023094205.2706812-3-fe@dev.tdt.de>
-References: <20231023094205.2706812-1-fe@dev.tdt.de>
- <20231023094205.2706812-3-fe@dev.tdt.de>
-Message-ID: <ddf9439a092576cd18c6e025d0b61602@vanmierlo.com>
+To:     Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+Cc:     git@amd.com, michal.simek@amd.com, gregkh@linuxfoundation.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jirislaby@kernel.org, linux-arm-kernel@lists.infradead.org,
+        radhey.shyam.pandey@amd.com, srinivas.goud@amd.com,
+        shubhrajyoti.datta@amd.com, manion05gk@gmail.com
+Subject: Re: [PATCH V3 1/2] dt-bindings: Add optional gpio property to uartps
+ node to support rs485
+In-Reply-To: <20231024144847.2316941-2-manikanta.guntupalli@amd.com>
+References: <20231024144847.2316941-1-manikanta.guntupalli@amd.com>
+ <20231024144847.2316941-2-manikanta.guntupalli@amd.com>
+Message-ID: <ea3ee738155af7a0f19c2fef3a482a7d@vanmierlo.com>
 X-Sender: m.brock@vanmierlo.com
 Content-Type: text/plain; charset=US-ASCII;
  format=flowed
@@ -42,143 +45,69 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Florian Eckert wrote on 2023-10-23 11:42:
-
-> @@ -16,6 +16,28 @@ struct ledtrig_tty_data {
->      const char *ttyname;
->      struct tty_struct *tty;
->      int rx, tx;
-> +     unsigned long ttytrigger;
-> +};
-
-ttytriggers ?
-
-[...]
-
->  static void ledtrig_tty_work(struct work_struct *work)
->  {
->  	struct ledtrig_tty_data *trigger_data =
->  		container_of(work, struct ledtrig_tty_data, dwork.work);
-> +	struct led_classdev *led_cdev = trigger_data->led_cdev;
-> +	unsigned long interval = LEDTRIG_TTY_INTERVAL;
->  	struct serial_icounter_struct icount;
-> +	enum led_trigger_tty_state state;
-> +	int current_brightness;
-> +	int status;
->  	int ret;
+Manikanta Guntupalli schreef op 2023-10-24 16:48:
+> Add optional gpio property to uartps node and reference to rs485.yaml
 > 
-> +	state = TTY_LED_DISABLE;
->  	mutex_lock(&trigger_data->mutex);
+> On Xilinx/AMD Kria SOM KD240 board rs485 connects via TI ISOW1432
+> Transceiver device, where one GPIO is used for driving DE/RE signals.
+> With rs485 half duplex configuration, DE and RE are shorted to each 
+> other,
+> and at a time, any node acts as either a driver or a receiver.
 > 
->  	if (!trigger_data->ttyname) {
-> @@ -115,22 +218,74 @@ static void ledtrig_tty_work(struct work_struct 
-> *work)
->  		trigger_data->tty = tty;
->  	}
+> Here,
+> DE - Driver enable. If pin is floating, driver is disabled.
+> RE - Receiver enable. If pin is floating, receiver buffer is disabled.
 > 
-> -	ret = tty_get_icount(trigger_data->tty, &icount);
-> -	if (ret) {
-> -		dev_info(trigger_data->tty->dev, "Failed to get icount, stopped 
-> polling\n");
-> -		mutex_unlock(&trigger_data->mutex);
-> -		return;
-> +	status = tty_get_tiocm(trigger_data->tty);
-> +	if (status > 0) {
-> +		if (test_bit(TRIGGER_TTY_CTS, &trigger_data->ttytrigger)) {
-> +			if (status & TIOCM_CTS)
-> +				state = TTY_LED_ENABLE;
-> +		}
-> +
-> +		if (test_bit(TRIGGER_TTY_DSR, &trigger_data->ttytrigger)) {
-> +			if (status & TIOCM_DSR)
-> +				state = TTY_LED_ENABLE;
-> +		}
-> +
-> +		if (test_bit(TRIGGER_TTY_CAR, &trigger_data->ttytrigger)) {
-> +			if (status & TIOCM_CAR)
-> +				state = TTY_LED_ENABLE;
-> +		}
-> +
-> +		if (test_bit(TRIGGER_TTY_RNG, &trigger_data->ttytrigger)) {
-> +			if (status & TIOCM_RNG)
-> +				state = TTY_LED_ENABLE;
-> +		}
-> +	}
-> +
-> +	/* The rx/tx handling must come after the evaluation of TIOCM_*,
-> +	 * since the display for rx/tx has priority
-> +	 */
-> +	if (test_bit(TRIGGER_TTY_RX, &trigger_data->ttytrigger) ||
-> +	    test_bit(TRIGGER_TTY_TX, &trigger_data->ttytrigger)) {
-> +		ret = tty_get_icount(trigger_data->tty, &icount);
-> +		if (ret) {
-> +			dev_info(trigger_data->tty->dev, "Failed to get icount, stopped 
-> polling\n");
-> +			mutex_unlock(&trigger_data->mutex);
-> +			return;
-> +		}
-> +
-> +		if (test_bit(TRIGGER_TTY_RX, &trigger_data->ttytrigger) &&
-> +		    (icount.tx != trigger_data->tx)) {
-
-You check for TRIGGER_TTY_RX and then compare icount.tx, is that 
-correct?
-
-> +			trigger_data->tx = icount.tx;
-> +			state = TTY_LED_BLINK;
-> +		}
-> +
-> +		if (test_bit(TRIGGER_TTY_TX, &trigger_data->ttytrigger) &&
-> +		    (icount.rx != trigger_data->rx)) {
-
-You check for TRIGGER_TTY_TX and then compare icount.rx, is that 
-correct?
-
-> +			trigger_data->rx = icount.rx;
-> +			state = TTY_LED_BLINK;
-> +		}
->  	}
+> For more deatils, please find below link which contains Transceiver
+> device(ISOW1432) datasheet
+> https://www.ti.com/lit/ds/symlink/isow1432.pdf?ts=1682607122706&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FISOW1432%252Fpart-details%252FISOW1432DFMR%253FkeyMatch%253DISOW1432DFMR%2526tisearch%253Dsearch-everything%2526usecase%253DOPN
 > 
-> -	if (icount.rx != trigger_data->rx ||
-> -	    icount.tx != trigger_data->tx) {
-> -		unsigned long interval = LEDTRIG_TTY_INTERVAL;
-> +	current_brightness = led_cdev->brightness;
-> +	if (current_brightness)
-> +		led_cdev->blink_brightness = current_brightness;
+> rts-gpios is optional property, because it is not required
+> for uart console node.
 > 
-> +	if (!led_cdev->blink_brightness)
-> +		led_cdev->blink_brightness = led_cdev->max_brightness;
-
-Is it OK to override the chosen brightness here?
-
+> Signed-off-by: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+> ---
+> Changes for V2:
+> Modify optional gpio name to xlnx,phy-ctrl-gpios.
+> Update commit description.
+> Changes for V3:
+> Modify optional gpio name to rts-gpios.
+> Update commit description.
+> ---
+>  Documentation/devicetree/bindings/serial/cdns,uart.yaml | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.yaml
+> b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
+> index e35ad1109efc..7ee305f9a45f 100644
+> --- a/Documentation/devicetree/bindings/serial/cdns,uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
+> @@ -46,6 +46,11 @@ properties:
+>    power-domains:
+>      maxItems: 1
+> 
+> +  rts-gpios:
+> +    description: Optional GPIO to control transmit/receive on RS485 
+> phy
+> +      in halfduplex mode.
+> +    maxItems: 1
 > +
-> +	switch (state) {
-> +	case TTY_LED_BLINK:
->  		led_blink_set_oneshot(trigger_data->led_cdev, &interval,
->  				      &interval, 0);
 
-Change trigger_data->led_cdev to simply led_cdev
+Why would this be related to RS485? A user could also have a need for a
+gpio instead of the native pin to be used as normal rts.
+All RS485 references can be removed.
 
-Shouldn't the led return to the line controlled steady state?
-Set an invert variable to true if state was TTY_LED_ENABLE before it got 
-set
-to TTY_LED_BLINK
-
-How do interval and the frequency of ledtrig_tty_work() relate?
-
-> -
-> -		trigger_data->rx = icount.rx;
-> -		trigger_data->tx = icount.tx;
-> +		break;
-> +	case TTY_LED_ENABLE:
-> +		led_set_brightness(led_cdev, led_cdev->blink_brightness);
-> +		break;
-> +	case TTY_LED_DISABLE:
-> +		fallthrough;
-> +	default:
-> +		led_set_brightness(led_cdev, LED_OFF);
-> +		break;
->  	}
+>  required:
+>    - compatible
+>    - reg
+> @@ -55,6 +60,7 @@ required:
+> 
+>  allOf:
+>    - $ref: serial.yaml#
+> +  - $ref: rs485.yaml#
+>    - if:
+>        properties:
+>          compatible:
 
 Maarten
 
