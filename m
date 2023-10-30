@@ -2,115 +2,136 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3FAC4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 30 Oct 2023 09:33:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F339C4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 30 Oct 2023 10:14:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232231AbjJ3Jdj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 30 Oct 2023 05:33:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60346 "EHLO
+        id S232592AbjJ3KOn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 30 Oct 2023 06:14:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232084AbjJ3Jdi (ORCPT
+        with ESMTP id S232594AbjJ3KO2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 30 Oct 2023 05:33:38 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C471C5;
-        Mon, 30 Oct 2023 02:33:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698658416; x=1730194416;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=MGg7v733cJVIT8wJVh7PM70i+jR+qkVB9DzADA8OUSY=;
-  b=XufLPj3gYhXw94I3awud52zmqtlyxoNa40w01xE9bFdZFnIWOUFFnjkg
-   8BzF51QceRWqihWOIjHQw5wQGrCdBJ1DxEqC4CanIJjI0Soxt2WT+5/2K
-   EJ3Zay4po7eAUjFHKK7wCsrlkgDDRHK7p5gwS4o4cWSN7XzNzkW/QY8bQ
-   XJjem/yNP6O6Svj/UObKNFWLvcQYgZ8BUMpGKqQAPezjNc0ToHg29zGnt
-   MD4wIZ5Ea09qZ5RZSvuTJNp2Fx9IaCsObMzRp+Ja+9IJ+0g0jUrRAX0jl
-   7kkNxbUOrSJbVwg89Nh4K/+DdiUQv2YKTUlwT6nwtUvomAPeVMirqRuXQ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10878"; a="378414013"
-X-IronPort-AV: E=Sophos;i="6.03,263,1694761200"; 
-   d="scan'208";a="378414013"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2023 02:33:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.03,263,1694761200"; 
-   d="scan'208";a="8283768"
-Received: from sgruszka-mobl.ger.corp.intel.com ([10.252.50.181])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2023 02:33:33 -0700
-Date:   Mon, 30 Oct 2023 11:33:30 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Vamshi Gajjela <vamshigajjela@google.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, manugautam@google.com,
-        Subhash Jadavani <sjadavani@google.com>,
-        Channa Kadabi <kadabi@google.com>
-Subject: Re: [PATCH v5 2/2] serial: core: Clean up uart_update_timeout()
- function
-In-Reply-To: <20231030073542.251281-3-vamshigajjela@google.com>
-Message-ID: <275b9b10-204f-534e-2155-98f623d9f63a@linux.intel.com>
-References: <20231030073542.251281-1-vamshigajjela@google.com> <20231030073542.251281-3-vamshigajjela@google.com>
+        Mon, 30 Oct 2023 06:14:28 -0400
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C1FE76AC
+        for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 03:04:55 -0700 (PDT)
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <prvs=9681cd3a30=fe@dev.tdt.de>)
+        id 1qxP8g-00FarI-C8
+        for linux-serial@vger.kernel.org; Mon, 30 Oct 2023 11:04:54 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <fe@dev.tdt.de>)
+        id 1qxP8f-004YcK-Vd
+        for linux-serial@vger.kernel.org; Mon, 30 Oct 2023 11:04:54 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id B2778240050
+        for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 11:04:53 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 70E5A24004D;
+        Mon, 30 Oct 2023 11:04:53 +0100 (CET)
+Received: from localhost.localdomain (unknown [10.2.3.40])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 27666215D4;
+        Mon, 30 Oct 2023 11:04:53 +0100 (CET)
+From:   Florian Eckert <fe@dev.tdt.de>
+To:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
+        kabel@kernel.org, u.kleine-koenig@pengutronix.de,
+        m.brock@vanmierlo.com
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-leds@vger.kernel.org
+Subject: [Patch v6 2/7] tty: add new helper function tty_get_tiocm
+Date:   Mon, 30 Oct 2023 11:04:42 +0100
+Message-ID: <20231030100447.63477-3-fe@dev.tdt.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20231030100447.63477-1-fe@dev.tdt.de>
+References: <20231030100447.63477-1-fe@dev.tdt.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+X-purgate-ID: 151534::1698660294-A0B71DE9-9B112877/0/0
+X-purgate: clean
+X-purgate-type: clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 30 Oct 2023, Vamshi Gajjela wrote:
+There is no in-kernel function to get the status register of a tty device
+like the TIOCMGET ioctl returns to userspace. Create a new function,
+tty_get_tiocm(), to obtain the status register that other portions of the
+kernel can call if they need this information, and move the existing
+internal tty_tiocmget() function to use this interface.
 
-> Rename the variable size to temp and change its data type from
-> unsigned int to u64 to avoid type casting in multiplication. Remove the
-> intermediate variable frame_time and use temp instead to accommodate
-> the nanoseconds. port->frame_time is an unsigned int, therefore an
-> explicit cast is used to improve readability.
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Florian Eckert <fe@dev.tdt.de>
+---
+ drivers/tty/tty_io.c | 28 ++++++++++++++++++++++------
+ include/linux/tty.h  |  1 +
+ 2 files changed, 23 insertions(+), 6 deletions(-)
 
-You should focus more on why instead of what. So add explanation that the 
-frame time is small (you could even calculate the largest value and add 
-it to the commit message) and therefore it always fits safely to unsigned 
-int. And that we do not upconvert the type to avoid unnecessary costly 
-64-bit arithmetic done in a few places in the serial code.
-
-> Signed-off-by: Vamshi Gajjela <vamshigajjela@google.com>
-> ---
-> v5:
-> - shortlog changed from "serial: core: Make local variable size to
->   u64" to "Clean up uart_update_timeout() function"
-> - renamed local variable size to temp, generic name
-> - removed intermediate variable frame_time
-> - added typecast "unsigned int" while assigning to port->frame_time
-> v4:
-> - no change, not submitted with series
-> v3:
-> - no change, not submitted with series
-> v2:
-> - no change, not submitted with series
-> 
->  drivers/tty/serial/serial_core.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 7bdc21d5e13b..21d345a9812a 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -410,11 +410,10 @@ void
->  uart_update_timeout(struct uart_port *port, unsigned int cflag,
->  		    unsigned int baud)
->  {
-> -	unsigned int size = tty_get_frame_size(cflag);
-> -	u64 frame_time;
-> +	u64 temp = tty_get_frame_size(cflag);
->  
-> -	frame_time = (u64)size * NSEC_PER_SEC;
-> -	port->frame_time = DIV64_U64_ROUND_UP(frame_time, baud);
-> +	temp *= NSEC_PER_SEC;
-> +	port->frame_time = (unsigned int)DIV64_U64_ROUND_UP(temp, baud);
->  }
->  EXPORT_SYMBOL(uart_update_timeout);
->  
-> 
-
--- 
- i.
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 3299a5d50727..a12f63854ac4 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -2494,6 +2494,24 @@ static int send_break(struct tty_struct *tty, unsi=
+gned int duration)
+ 	return retval;
+ }
+=20
++/**
++ * tty_get_tiocm - get tiocm status register
++ * @tty: tty device
++ *
++ * Obtain the modem status bits from the tty driver if the feature
++ * is supported.
++ */
++int tty_get_tiocm(struct tty_struct *tty)
++{
++	int retval =3D -ENOTTY;
++
++	if (tty->ops->tiocmget)
++		retval =3D tty->ops->tiocmget(tty);
++
++	return retval;
++}
++EXPORT_SYMBOL_GPL(tty_get_tiocm);
++
+ /**
+  * tty_tiocmget - get modem status
+  * @tty: tty device
+@@ -2506,14 +2524,12 @@ static int send_break(struct tty_struct *tty, uns=
+igned int duration)
+  */
+ static int tty_tiocmget(struct tty_struct *tty, int __user *p)
+ {
+-	int retval =3D -ENOTTY;
++	int retval;
+=20
+-	if (tty->ops->tiocmget) {
+-		retval =3D tty->ops->tiocmget(tty);
++	retval =3D tty_get_tiocm(tty);
++	if (retval >=3D 0)
++		retval =3D put_user(retval, p);
+=20
+-		if (retval >=3D 0)
+-			retval =3D put_user(retval, p);
+-	}
+ 	return retval;
+ }
+=20
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index f002d0f25db7..8e4d0b3b12b7 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -421,6 +421,7 @@ int tty_unthrottle_safe(struct tty_struct *tty);
+ int tty_do_resize(struct tty_struct *tty, struct winsize *ws);
+ int tty_get_icount(struct tty_struct *tty,
+ 		struct serial_icounter_struct *icount);
++int tty_get_tiocm(struct tty_struct *tty);
+ int is_current_pgrp_orphaned(void);
+ void tty_hangup(struct tty_struct *tty);
+ void tty_vhangup(struct tty_struct *tty);
+--=20
+2.30.2
 
