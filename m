@@ -2,84 +2,115 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E74D9C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 30 Oct 2023 09:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D89FC4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 30 Oct 2023 09:25:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232384AbjJ3JO2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 30 Oct 2023 05:14:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60648 "EHLO
+        id S232338AbjJ3JZp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 30 Oct 2023 05:25:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232374AbjJ3JO0 (ORCPT
+        with ESMTP id S232340AbjJ3JZp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 30 Oct 2023 05:14:26 -0400
-Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 539FAC2
-        for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 02:14:24 -0700 (PDT)
-Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-6c6370774e8so5916044a34.0
-        for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 02:14:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698657263; x=1699262063;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FFwD3xWT5oqCS0O4af7YvkoJOuliGWNyJ/KuY2nX1ZU=;
-        b=WaR1Al6U7LAcw2XvCdP1nIBzG+KdAfmCSLXmqtR0o3MMWllGvicj4seUBwTB72Gu2O
-         rHFHhN1OPBq+xq9JKbJXR8qqRx7ovFF0oyjwaUaY8qiPuW4FlFhwf0AKzlnuB3AT3FwD
-         Min+30CKRuao0dAv+VgPpB0R9V+M+G9CD4SREQAyrQ5SpI3CJX+pkOLQnUwhfYOUh0zs
-         YNHpRQ8AnLXbKpJ+tvYoDoBNpWeCLLuGOlK2FBls8y/cAe1Y6yC19PfWU5uR81Uf3XpC
-         BV7TPHtNs6gKwA/rcFYmJSZDmlloQwslbr/dNW6iXmAY7Uwq0T50zAVu6uU57iViZbR4
-         4YPg==
-X-Gm-Message-State: AOJu0YySPOoccs4xw5QQunpn85Lt9IssddPbr4YDUw6LIKCfWgY76T2p
-        79+xvKGHbGCYrtcx6r/B9WB7Xs+c65jk+k0sr0bAjxTUSqAE
-X-Google-Smtp-Source: AGHT+IGVrdWp+aHEL4oApo6HrJlGIG6WhESJIcskwFV2cl2khGWVdjOBbnuViWlwOcH6psaxEVRYpLrjgRA2q7t+DdpCPMGva+wU
+        Mon, 30 Oct 2023 05:25:45 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC79EA;
+        Mon, 30 Oct 2023 02:25:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1698657942; x=1730193942;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=wTMbD+Y3gUCGRghE6+820yKHgUukE/w0guWwpnRSIoo=;
+  b=BDqKdv2oCsjhXEcKyWweyQW77xniZj/c+3NnW5ezZnI/P9ajEwNu/TEA
+   MzjSaBILxArq5+zI2uPwarRGouVXle0wKxi/P19hpTvy9yV0S7k8St/8m
+   UYgewTzxTMWv64JOMHuIiwgIFE8vw8OJnNUtzoi49hmiVnH/xCfAfRPXX
+   Qr/X9WhEHNA+/g1c+ekKvwtM8eimkuGs09AQhO/DFYwz7sj9lf+0ikWX3
+   t1DMRWzetbc4O3VQGNIfFh/jXT0u30L/EJA/sFx0IBAgN8plMxJS9iX3b
+   sLXX45xv+/emFXzN4Qj1lrdcF77+wevExyXWdiKABxjI9jj3AMgIOuH07
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10878"; a="367386344"
+X-IronPort-AV: E=Sophos;i="6.03,263,1694761200"; 
+   d="scan'208";a="367386344"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2023 02:25:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10878"; a="830632658"
+X-IronPort-AV: E=Sophos;i="6.03,263,1694761200"; 
+   d="scan'208";a="830632658"
+Received: from sgruszka-mobl.ger.corp.intel.com ([10.252.50.181])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2023 02:25:39 -0700
+Date:   Mon, 30 Oct 2023 11:25:37 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Vamshi Gajjela <vamshigajjela@google.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        ilpo.jarvinen@linux.intel.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, manugautam@google.com,
+        Subhash Jadavani <sjadavani@google.com>,
+        Channa Kadabi <kadabi@google.com>
+Subject: Re: [PATCH v5 1/2] serial: core: Update uart_poll_timeout() function
+ to return unsigned long
+In-Reply-To: <20231030073542.251281-2-vamshigajjela@google.com>
+Message-ID: <2ed2249-d4ce-410-17d1-b78be4a3a643@linux.intel.com>
+References: <20231030073542.251281-1-vamshigajjela@google.com> <20231030073542.251281-2-vamshigajjela@google.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6870:71d0:b0:1d1:3ff8:9f80 with SMTP id
- p16-20020a05687071d000b001d13ff89f80mr4618079oag.8.1698657263634; Mon, 30 Oct
- 2023 02:14:23 -0700 (PDT)
-Date:   Mon, 30 Oct 2023 02:14:23 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000cb55e20608eb7677@google.com>
-Subject: [syzbot] Monthly serial report (Oct 2023)
-From:   syzbot <syzbot+list6c6ceafbd04e2bbf4614@syzkaller.appspotmail.com>
-To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/mixed; boundary="8323329-1516915826-1698657941=:1729"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello serial maintainers/developers,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-This is a 31-day syzbot report for the serial subsystem.
-All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/serial
+--8323329-1516915826-1698657941=:1729
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-During the period, 1 new issues were detected and 0 were fixed.
-In total, 14 issues are still open and 41 have been fixed so far.
+On Mon, 30 Oct 2023, Vamshi Gajjela wrote:
 
-Some of the still happening issues:
+> The function uart_fifo_timeout() returns an unsigned long value, which
+> is the number of jiffies. Therefore, change the variable timeout in the
+> function uart_poll_timeout() from int to unsigned long.
+> Change the return type of the function uart_poll_timeout() from int to
+> unsigned long to be consistent with the type of timeout values.
+> 
+> Signed-off-by: Vamshi Gajjela <vamshigajjela@google.com>
+> ---
+> v5:
+> - no change. Consistent version for series
+> v4:
+> - author name in capitals to lowercase
+> v3:
+> - updated description
+> v2:
+> - unsigned long instead of unsigned int
+> - added () after function name in short log
+> - updated description
+> 
+>  include/linux/serial_core.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index bb6f073bc159..6916a1d7e477 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -773,9 +773,9 @@ static inline unsigned long uart_fifo_timeout(struct uart_port *port)
+>  }
+>  
+>  /* Base timer interval for polling */
+> -static inline int uart_poll_timeout(struct uart_port *port)
+> +static inline unsigned long uart_poll_timeout(struct uart_port *port)
+>  {
+> -	int timeout = uart_fifo_timeout(port);
+> +	unsigned long timeout = uart_fifo_timeout(port);
+>  
+>  	return timeout > 6 ? (timeout / 2 - 2) : 1;
+>  }
+> 
 
-Ref Crashes Repro Title
-<1> 4047    Yes   BUG: sleeping function called from invalid context in console_lock (2)
-                  https://syzkaller.appspot.com/bug?extid=dbac96d8e73b61aa559c
-<2> 58      Yes   general protection fault in serial8250_tx_chars
-                  https://syzkaller.appspot.com/bug?extid=837b8c9032c053262db8
-<3> 52      Yes   BUG: soft lockup in tx
-                  https://syzkaller.appspot.com/bug?extid=5e87db90e68fbc4707c6
-<4> 32      Yes   KASAN: stack-out-of-bounds Read in sched_show_task
-                  https://syzkaller.appspot.com/bug?extid=8d2757d62d403b2d9275
-<5> 22      Yes   INFO: task can't die in show_free_areas
-                  https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+-- 
+ i.
 
-To disable reminders for individual bugs, reply with the following command:
-#syz set <Ref> no-reminders
-
-To change bug's subsystems, reply with:
-#syz set <Ref> subsystems: new-subsystem
-
-You may send multiple commands in a single email message.
+--8323329-1516915826-1698657941=:1729--
