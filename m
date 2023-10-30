@@ -2,254 +2,84 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC8BC4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 30 Oct 2023 08:15:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E74D9C4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 30 Oct 2023 09:14:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231609AbjJ3IPh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 30 Oct 2023 04:15:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50776 "EHLO
+        id S232384AbjJ3JO2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 30 Oct 2023 05:14:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232043AbjJ3IPg (ORCPT
+        with ESMTP id S232374AbjJ3JO0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 30 Oct 2023 04:15:36 -0400
-Received: from mxout70.expurgate.net (mxout70.expurgate.net [91.198.224.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54814A7
-        for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 01:15:33 -0700 (PDT)
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <prvs=9681cd3a30=fe@dev.tdt.de>)
-        id 1qxNQo-00EzjB-Uw
-        for linux-serial@vger.kernel.org; Mon, 30 Oct 2023 09:15:31 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <fe@dev.tdt.de>)
-        id 1qxNQo-00GSJl-Jp
-        for linux-serial@vger.kernel.org; Mon, 30 Oct 2023 09:15:30 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 46039240049
-        for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 09:15:30 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 01A4E240040;
-        Mon, 30 Oct 2023 09:15:29 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id 2BE07215D4;
-        Mon, 30 Oct 2023 09:15:28 +0100 (CET)
+        Mon, 30 Oct 2023 05:14:26 -0400
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 539FAC2
+        for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 02:14:24 -0700 (PDT)
+Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-6c6370774e8so5916044a34.0
+        for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 02:14:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1698657263; x=1699262063;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=FFwD3xWT5oqCS0O4af7YvkoJOuliGWNyJ/KuY2nX1ZU=;
+        b=WaR1Al6U7LAcw2XvCdP1nIBzG+KdAfmCSLXmqtR0o3MMWllGvicj4seUBwTB72Gu2O
+         rHFHhN1OPBq+xq9JKbJXR8qqRx7ovFF0oyjwaUaY8qiPuW4FlFhwf0AKzlnuB3AT3FwD
+         Min+30CKRuao0dAv+VgPpB0R9V+M+G9CD4SREQAyrQ5SpI3CJX+pkOLQnUwhfYOUh0zs
+         YNHpRQ8AnLXbKpJ+tvYoDoBNpWeCLLuGOlK2FBls8y/cAe1Y6yC19PfWU5uR81Uf3XpC
+         BV7TPHtNs6gKwA/rcFYmJSZDmlloQwslbr/dNW6iXmAY7Uwq0T50zAVu6uU57iViZbR4
+         4YPg==
+X-Gm-Message-State: AOJu0YySPOoccs4xw5QQunpn85Lt9IssddPbr4YDUw6LIKCfWgY76T2p
+        79+xvKGHbGCYrtcx6r/B9WB7Xs+c65jk+k0sr0bAjxTUSqAE
+X-Google-Smtp-Source: AGHT+IGVrdWp+aHEL4oApo6HrJlGIG6WhESJIcskwFV2cl2khGWVdjOBbnuViWlwOcH6psaxEVRYpLrjgRA2q7t+DdpCPMGva+wU
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 30 Oct 2023 09:15:28 +0100
-From:   Florian Eckert <fe@dev.tdt.de>
-To:     m.brock@vanmierlo.com
-Cc:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
-        kabel@kernel.org, u.kleine-koenig@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-leds@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] leds: ledtrig-tty: add new line mode evaluation
-In-Reply-To: <ddf9439a092576cd18c6e025d0b61602@vanmierlo.com>
-References: <20231023094205.2706812-1-fe@dev.tdt.de>
- <20231023094205.2706812-3-fe@dev.tdt.de>
- <ddf9439a092576cd18c6e025d0b61602@vanmierlo.com>
-Message-ID: <2951fd563fc6a364d8cddfb7ec17808b@dev.tdt.de>
-X-Sender: fe@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.17
-X-purgate-type: clean
-X-purgate-ID: 151534::1698653730-4FF36C7C-91F7C049/0/0
-X-purgate: clean
+X-Received: by 2002:a05:6870:71d0:b0:1d1:3ff8:9f80 with SMTP id
+ p16-20020a05687071d000b001d13ff89f80mr4618079oag.8.1698657263634; Mon, 30 Oct
+ 2023 02:14:23 -0700 (PDT)
+Date:   Mon, 30 Oct 2023 02:14:23 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000cb55e20608eb7677@google.com>
+Subject: [syzbot] Monthly serial report (Oct 2023)
+From:   syzbot <syzbot+list6c6ceafbd04e2bbf4614@syzkaller.appspotmail.com>
+To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hello serial maintainers/developers,
 
+This is a 31-day syzbot report for the serial subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/serial
 
-On 2023-10-28 12:43, m.brock@vanmierlo.com wrote:
-> Florian Eckert wrote on 2023-10-23 11:42:
-> 
->> @@ -16,6 +16,28 @@ struct ledtrig_tty_data {
->>      const char *ttyname;
->>      struct tty_struct *tty;
->>      int rx, tx;
->> +     unsigned long ttytrigger;
->> +};
-> 
-> ttytriggers ?
+During the period, 1 new issues were detected and 0 were fixed.
+In total, 14 issues are still open and 41 have been fixed so far.
 
-Yes that would be nicer name. thanks
+Some of the still happening issues:
 
-> [...]
-> 
->>  static void ledtrig_tty_work(struct work_struct *work)
->>  {
->>  	struct ledtrig_tty_data *trigger_data =
->>  		container_of(work, struct ledtrig_tty_data, dwork.work);
->> +	struct led_classdev *led_cdev = trigger_data->led_cdev;
->> +	unsigned long interval = LEDTRIG_TTY_INTERVAL;
->>  	struct serial_icounter_struct icount;
->> +	enum led_trigger_tty_state state;
->> +	int current_brightness;
->> +	int status;
->>  	int ret;
->> 
->> +	state = TTY_LED_DISABLE;
->>  	mutex_lock(&trigger_data->mutex);
->> 
->>  	if (!trigger_data->ttyname) {
->> @@ -115,22 +218,74 @@ static void ledtrig_tty_work(struct work_struct 
->> *work)
->>  		trigger_data->tty = tty;
->>  	}
->> 
->> -	ret = tty_get_icount(trigger_data->tty, &icount);
->> -	if (ret) {
->> -		dev_info(trigger_data->tty->dev, "Failed to get icount, stopped 
->> polling\n");
->> -		mutex_unlock(&trigger_data->mutex);
->> -		return;
->> +	status = tty_get_tiocm(trigger_data->tty);
->> +	if (status > 0) {
->> +		if (test_bit(TRIGGER_TTY_CTS, &trigger_data->ttytrigger)) {
->> +			if (status & TIOCM_CTS)
->> +				state = TTY_LED_ENABLE;
->> +		}
->> +
->> +		if (test_bit(TRIGGER_TTY_DSR, &trigger_data->ttytrigger)) {
->> +			if (status & TIOCM_DSR)
->> +				state = TTY_LED_ENABLE;
->> +		}
->> +
->> +		if (test_bit(TRIGGER_TTY_CAR, &trigger_data->ttytrigger)) {
->> +			if (status & TIOCM_CAR)
->> +				state = TTY_LED_ENABLE;
->> +		}
->> +
->> +		if (test_bit(TRIGGER_TTY_RNG, &trigger_data->ttytrigger)) {
->> +			if (status & TIOCM_RNG)
->> +				state = TTY_LED_ENABLE;
->> +		}
->> +	}
->> +
->> +	/* The rx/tx handling must come after the evaluation of TIOCM_*,
->> +	 * since the display for rx/tx has priority
->> +	 */
->> +	if (test_bit(TRIGGER_TTY_RX, &trigger_data->ttytrigger) ||
->> +	    test_bit(TRIGGER_TTY_TX, &trigger_data->ttytrigger)) {
->> +		ret = tty_get_icount(trigger_data->tty, &icount);
->> +		if (ret) {
->> +			dev_info(trigger_data->tty->dev, "Failed to get icount, stopped 
->> polling\n");
->> +			mutex_unlock(&trigger_data->mutex);
->> +			return;
->> +		}
->> +
->> +		if (test_bit(TRIGGER_TTY_RX, &trigger_data->ttytrigger) &&
->> +		    (icount.tx != trigger_data->tx)) {
-> 
-> You check for TRIGGER_TTY_RX and then compare icount.tx, is that 
-> correct?
-
-I would say this is correct. At first I check if the tx path should be 
-evaluated
-and if this is correct I check if there was a tx transmission during the 
-last run.
-
->> +			trigger_data->tx = icount.tx;
->> +			state = TTY_LED_BLINK;
->> +		}
->> +
->> +		if (test_bit(TRIGGER_TTY_TX, &trigger_data->ttytrigger) &&
->> +		    (icount.rx != trigger_data->rx)) {
-> 
-> You check for TRIGGER_TTY_TX and then compare icount.rx, is that 
-> correct?
-
-I would say this is correct. At first I check if the rx path should be 
-evaluated
-and if this is correct I check if there was a rx transmission during the 
-last run.
-
->> +			trigger_data->rx = icount.rx;
->> +			state = TTY_LED_BLINK;
->> +		}
->>  	}
->> 
->> -	if (icount.rx != trigger_data->rx ||
->> -	    icount.tx != trigger_data->tx) {
->> -		unsigned long interval = LEDTRIG_TTY_INTERVAL;
->> +	current_brightness = led_cdev->brightness;
->> +	if (current_brightness)
->> +		led_cdev->blink_brightness = current_brightness;
->> 
->> +	if (!led_cdev->blink_brightness)
->> +		led_cdev->blink_brightness = led_cdev->max_brightness;
-> 
-> Is it OK to override the chosen brightness here?
-
-In my setup my brightness in the sysfs path of the LED ist set to '0'.
-Even though the tty trigger was configured correctly the LED was not
-turned on. If I set max_brightness in this path the LED works correctly.
-I would check this a gain if this is still needed.
-
->> +
->> +	switch (state) {
->> +	case TTY_LED_BLINK:
->>  		led_blink_set_oneshot(trigger_data->led_cdev, &interval,
->>  				      &interval, 0);
-> 
-> Change trigger_data->led_cdev to simply led_cdev
-
-Thanks for the hint. I will change this.
-
-> Shouldn't the led return to the line controlled steady state?
-
-Sorry I do not understand your question.
-
-> Set an invert variable to true if state was TTY_LED_ENABLE before it 
-> got set
-> to TTY_LED_BLINK
-
-No matter whether the LED is on or off beforehand. I understand that the
-LED is always on for the first half of the period and off for the rest 
-of
-the period. I think that is correct and I don't need to make a 
-distinction
-via invert here. I hope I have understood your comment correctly here.
-
-> How do interval and the frequency of ledtrig_tty_work() relate?
-
-The work is twice as long as of the interval. So the variable
-LEDTRIG_TTY_INTERVAL = 50 and the work is scheduled LEDTRIG_TTY_INTERVAL 
-* 2.
-But that was also before my change.
-
->> -
->> -		trigger_data->rx = icount.rx;
->> -		trigger_data->tx = icount.tx;
->> +		break;
->> +	case TTY_LED_ENABLE:
->> +		led_set_brightness(led_cdev, led_cdev->blink_brightness);
->> +		break;
->> +	case TTY_LED_DISABLE:
->> +		fallthrough;
->> +	default:
->> +		led_set_brightness(led_cdev, LED_OFF);
->> +		break;
->>  	}
-> 
-> Maarten
-
-Thank you for your feedback. I must say, however, that I am currently in
-the process of preparing v6, which will implement the comments and
-change requests from 'greg k-h' [1]. The big change here in v6 is, that 
-I have
-switched to completion and split the change in more reviewable commits.
-I will see if your comments can also be incorporated into the new 
-approach.
+Ref Crashes Repro Title
+<1> 4047    Yes   BUG: sleeping function called from invalid context in console_lock (2)
+                  https://syzkaller.appspot.com/bug?extid=dbac96d8e73b61aa559c
+<2> 58      Yes   general protection fault in serial8250_tx_chars
+                  https://syzkaller.appspot.com/bug?extid=837b8c9032c053262db8
+<3> 52      Yes   BUG: soft lockup in tx
+                  https://syzkaller.appspot.com/bug?extid=5e87db90e68fbc4707c6
+<4> 32      Yes   KASAN: stack-out-of-bounds Read in sched_show_task
+                  https://syzkaller.appspot.com/bug?extid=8d2757d62d403b2d9275
+<5> 22      Yes   INFO: task can't die in show_free_areas
+                  https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
 
 ---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Florian
+To disable reminders for individual bugs, reply with the following command:
+#syz set <Ref> no-reminders
 
-[1] 
-https://lore.kernel.org/linux-leds/2023102341-jogger-matching-dded@gregkh/
+To change bug's subsystems, reply with:
+#syz set <Ref> subsystems: new-subsystem
+
+You may send multiple commands in a single email message.
