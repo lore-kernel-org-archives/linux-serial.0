@@ -2,115 +2,115 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D89FC4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 30 Oct 2023 09:25:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3FAC4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 30 Oct 2023 09:33:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232338AbjJ3JZp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 30 Oct 2023 05:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33464 "EHLO
+        id S232231AbjJ3Jdj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 30 Oct 2023 05:33:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232340AbjJ3JZp (ORCPT
+        with ESMTP id S232084AbjJ3Jdi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 30 Oct 2023 05:25:45 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC79EA;
-        Mon, 30 Oct 2023 02:25:42 -0700 (PDT)
+        Mon, 30 Oct 2023 05:33:38 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C471C5;
+        Mon, 30 Oct 2023 02:33:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698657942; x=1730193942;
+  t=1698658416; x=1730194416;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=wTMbD+Y3gUCGRghE6+820yKHgUukE/w0guWwpnRSIoo=;
-  b=BDqKdv2oCsjhXEcKyWweyQW77xniZj/c+3NnW5ezZnI/P9ajEwNu/TEA
-   MzjSaBILxArq5+zI2uPwarRGouVXle0wKxi/P19hpTvy9yV0S7k8St/8m
-   UYgewTzxTMWv64JOMHuIiwgIFE8vw8OJnNUtzoi49hmiVnH/xCfAfRPXX
-   Qr/X9WhEHNA+/g1c+ekKvwtM8eimkuGs09AQhO/DFYwz7sj9lf+0ikWX3
-   t1DMRWzetbc4O3VQGNIfFh/jXT0u30L/EJA/sFx0IBAgN8plMxJS9iX3b
-   sLXX45xv+/emFXzN4Qj1lrdcF77+wevExyXWdiKABxjI9jj3AMgIOuH07
+  bh=MGg7v733cJVIT8wJVh7PM70i+jR+qkVB9DzADA8OUSY=;
+  b=XufLPj3gYhXw94I3awud52zmqtlyxoNa40w01xE9bFdZFnIWOUFFnjkg
+   8BzF51QceRWqihWOIjHQw5wQGrCdBJ1DxEqC4CanIJjI0Soxt2WT+5/2K
+   EJ3Zay4po7eAUjFHKK7wCsrlkgDDRHK7p5gwS4o4cWSN7XzNzkW/QY8bQ
+   XJjem/yNP6O6Svj/UObKNFWLvcQYgZ8BUMpGKqQAPezjNc0ToHg29zGnt
+   MD4wIZ5Ea09qZ5RZSvuTJNp2Fx9IaCsObMzRp+Ja+9IJ+0g0jUrRAX0jl
+   7kkNxbUOrSJbVwg89Nh4K/+DdiUQv2YKTUlwT6nwtUvomAPeVMirqRuXQ
    Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10878"; a="367386344"
+X-IronPort-AV: E=McAfee;i="6600,9927,10878"; a="378414013"
 X-IronPort-AV: E=Sophos;i="6.03,263,1694761200"; 
-   d="scan'208";a="367386344"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2023 02:25:41 -0700
+   d="scan'208";a="378414013"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2023 02:33:35 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10878"; a="830632658"
 X-IronPort-AV: E=Sophos;i="6.03,263,1694761200"; 
-   d="scan'208";a="830632658"
+   d="scan'208";a="8283768"
 Received: from sgruszka-mobl.ger.corp.intel.com ([10.252.50.181])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2023 02:25:39 -0700
-Date:   Mon, 30 Oct 2023 11:25:37 +0200 (EET)
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2023 02:33:33 -0700
+Date:   Mon, 30 Oct 2023 11:33:30 +0200 (EET)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Vamshi Gajjela <vamshigajjela@google.com>
 cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        ilpo.jarvinen@linux.intel.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, manugautam@google.com,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, manugautam@google.com,
         Subhash Jadavani <sjadavani@google.com>,
         Channa Kadabi <kadabi@google.com>
-Subject: Re: [PATCH v5 1/2] serial: core: Update uart_poll_timeout() function
- to return unsigned long
-In-Reply-To: <20231030073542.251281-2-vamshigajjela@google.com>
-Message-ID: <2ed2249-d4ce-410-17d1-b78be4a3a643@linux.intel.com>
-References: <20231030073542.251281-1-vamshigajjela@google.com> <20231030073542.251281-2-vamshigajjela@google.com>
+Subject: Re: [PATCH v5 2/2] serial: core: Clean up uart_update_timeout()
+ function
+In-Reply-To: <20231030073542.251281-3-vamshigajjela@google.com>
+Message-ID: <275b9b10-204f-534e-2155-98f623d9f63a@linux.intel.com>
+References: <20231030073542.251281-1-vamshigajjela@google.com> <20231030073542.251281-3-vamshigajjela@google.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1516915826-1698657941=:1729"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1516915826-1698657941=:1729
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
 On Mon, 30 Oct 2023, Vamshi Gajjela wrote:
 
-> The function uart_fifo_timeout() returns an unsigned long value, which
-> is the number of jiffies. Therefore, change the variable timeout in the
-> function uart_poll_timeout() from int to unsigned long.
-> Change the return type of the function uart_poll_timeout() from int to
-> unsigned long to be consistent with the type of timeout values.
-> 
+> Rename the variable size to temp and change its data type from
+> unsigned int to u64 to avoid type casting in multiplication. Remove the
+> intermediate variable frame_time and use temp instead to accommodate
+> the nanoseconds. port->frame_time is an unsigned int, therefore an
+> explicit cast is used to improve readability.
+
+You should focus more on why instead of what. So add explanation that the 
+frame time is small (you could even calculate the largest value and add 
+it to the commit message) and therefore it always fits safely to unsigned 
+int. And that we do not upconvert the type to avoid unnecessary costly 
+64-bit arithmetic done in a few places in the serial code.
+
 > Signed-off-by: Vamshi Gajjela <vamshigajjela@google.com>
 > ---
 > v5:
-> - no change. Consistent version for series
+> - shortlog changed from "serial: core: Make local variable size to
+>   u64" to "Clean up uart_update_timeout() function"
+> - renamed local variable size to temp, generic name
+> - removed intermediate variable frame_time
+> - added typecast "unsigned int" while assigning to port->frame_time
 > v4:
-> - author name in capitals to lowercase
+> - no change, not submitted with series
 > v3:
-> - updated description
+> - no change, not submitted with series
 > v2:
-> - unsigned long instead of unsigned int
-> - added () after function name in short log
-> - updated description
+> - no change, not submitted with series
 > 
->  include/linux/serial_core.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/tty/serial/serial_core.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
 > 
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index bb6f073bc159..6916a1d7e477 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -773,9 +773,9 @@ static inline unsigned long uart_fifo_timeout(struct uart_port *port)
->  }
->  
->  /* Base timer interval for polling */
-> -static inline int uart_poll_timeout(struct uart_port *port)
-> +static inline unsigned long uart_poll_timeout(struct uart_port *port)
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 7bdc21d5e13b..21d345a9812a 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -410,11 +410,10 @@ void
+>  uart_update_timeout(struct uart_port *port, unsigned int cflag,
+>  		    unsigned int baud)
 >  {
-> -	int timeout = uart_fifo_timeout(port);
-> +	unsigned long timeout = uart_fifo_timeout(port);
+> -	unsigned int size = tty_get_frame_size(cflag);
+> -	u64 frame_time;
+> +	u64 temp = tty_get_frame_size(cflag);
 >  
->  	return timeout > 6 ? (timeout / 2 - 2) : 1;
+> -	frame_time = (u64)size * NSEC_PER_SEC;
+> -	port->frame_time = DIV64_U64_ROUND_UP(frame_time, baud);
+> +	temp *= NSEC_PER_SEC;
+> +	port->frame_time = (unsigned int)DIV64_U64_ROUND_UP(temp, baud);
 >  }
+>  EXPORT_SYMBOL(uart_update_timeout);
+>  
 > 
-
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
 -- 
  i.
 
---8323329-1516915826-1698657941=:1729--
