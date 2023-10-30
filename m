@@ -2,102 +2,102 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4277C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 30 Oct 2023 18:40:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75030C4167D
+	for <linux-serial@archiver.kernel.org>; Mon, 30 Oct 2023 19:25:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229795AbjJ3SkM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 30 Oct 2023 14:40:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35580 "EHLO
+        id S231437AbjJ3TZw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 30 Oct 2023 15:25:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbjJ3SkL (ORCPT
+        with ESMTP id S232360AbjJ3SWD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 30 Oct 2023 14:40:11 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF3DDB7;
-        Mon, 30 Oct 2023 11:40:08 -0700 (PDT)
+        Mon, 30 Oct 2023 14:22:03 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2ECE1738;
+        Mon, 30 Oct 2023 11:21:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-        t=1698691198; x=1699295998; i=rwahl@gmx.de;
-        bh=27RRESGc2uODi+u0giI2RrxmPZLNkWSIaKlElwaCV/U=;
+        t=1698690066; x=1699294866; i=rwahl@gmx.de;
+        bh=juI+8xCOhSJyejFjOT2zkvfZkD279hxgL01eRZueXmI=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=m4q/cNMHfPFXVDXhV7VC0poCbjnOHFxgFsSXoYHfsDCs4UVqSLbhuzVPrIX0jnwi
-         PCvPBAMQVg5lLd0Zt2cz7GM+IOHPwOdpTNa1GaNGkytL2Nv7A5X2seQiOyovBhvbw
-         8kME2mRTvRmA99OE3EmAdKBRz5qlOadn05coR8Va2RcEJSBKz3ABnDgwbUHNK+bkE
-         JS1PZhFywJVmmQ4Eq7TUtx0J8MDOt36vcn2+xGB2D94LL63cpbywdGNgJGEjzjmV6
-         /GMseLwBu0wzaWm9cKk8IGAIzuKF2AiAUl/XXKbDKkREXTIJwskNh8PzXQNZNc4uY
-         k62IFBvNziD4n0LUbQ==
+        b=dhnkcWSOdzAkTce9+0fTzPMoVmi6fOPzmDE1BgDM9CfeIdKlFEwoYDiRDMvdSIAd
+         1jGYvTDc9KBE96pWCRY0a7T3+fc39EpTrF3CThFdu3JdIsT6yZULGbU+C+8QCDsIF
+         o7XxFF+JP77rTTL9wk6/4KJntb7PHNUC7qrO7P/+JoYqMd0KIkzFcgV83atE+TdVF
+         RTzHfDWnc8vM7m9Bis45Ljk/Fv//Pk8S1iHGy697NTimNx4B23NNW1xnBs68tqSLh
+         tQiQG4EsQeE0hBRd3rr3CPRiKZKTUdMWN5ITM0yAyqKY0CfPs41JNFk2zpZQPWMAR
+         odAB4uPU58HyIrDU7A==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from rohan.localdomain ([84.156.147.134]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MGhyc-1qjjep3kEk-00DkmI; Mon, 30
- Oct 2023 19:39:57 +0100
+Received: from rohan.localdomain ([84.156.147.134]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1Mnpns-1rGbIB3wj4-00pMjn; Mon, 30
+ Oct 2023 19:21:05 +0100
 From:   Ronald Wahl <rwahl@gmx.de>
 To:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Vignesh Raghavendra <vigneshr@ti.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Ronald Wahl <ronald.wahl@raritan.com>
-Subject: [PATCH] serial: 8250: 8250_omap: Do not start RX DMA on THRI interrupt
-Date:   Mon, 30 Oct 2023 19:39:51 +0100
-Message-ID: <20231030183951.15331-1-rwahl@gmx.de>
+Subject: [PATCH] serial: 8250: 8250_omap: Clear UART_HAS_RHR_IT_DIS bit
+Date:   Mon, 30 Oct 2023 19:20:44 +0100
+Message-ID: <20231030182044.14056-1-rwahl@gmx.de>
 X-Mailer: git-send-email 2.41.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Fbjb7EBuSKecN9y3Stcy7ML/8gd17DauMMlKaSXlrmHhzRO8LyE
- 82/lESIwfH+SOlwshww6Kpm1HY7efEV4oa+V1MlSutGd1Agxxdm71go6hgt7ehnRsDsrbMS
- nGRip/Q2fR46TGc3DxUKm3mq3a+bU9wlQlG2YvyCiIAhAaEbz7thw7Xa+61Gin+bjv63Sfi
- iMdfuEh3wZfmvTt7HCW9A==
-UI-OutboundReport: notjunk:1;M01:P0:EqntbAvvnIk=;mVEf8wRMZgwoIkthCFxxD+snD6g
- 6e4RlIqCJbvuax1Qou3ZZJuCE7hlgJObVxKaN1gKk4hxYPn3aBuhNlp0aYVNb8iS0EGPsojtq
- CqyYVNEpoM7pQN22SqqJTxCHVn8a+NpESnlqaojbmF5KzbHCC80yZ9UqyMZoeMhcD+Yotd6XB
- upXpnhsDFUiZ0gy++p0hEbefqIytYcaXAQDYCKIKcuxYmUkzdG6HSTV4eMj2FaIVuoZ7y7EuI
- DybgmeaFEALETCgP4r9FbLS8/SS9Q7hWoCU8DE17Cesn+GZZpKaNQnXkt3gFcoidAA1L92nVx
- DgkA9+tWAJZ9BHuq4KHa4JYTfsmxG0TJq7GmnwGQPFqkDctAvYTP9x3J6m9Lx61UbxtQNjFnU
- XrSTJ4kbZst/bu6VSGVW75S8kxHP8Vam7N8Y3QWaDRfWbhJCUMr850yKLJG13PewltD8+Yjk8
- 5NpAjqpdsbcM3yZKjhHXBZYyThQ2TWBhJ4P8dUi4m/GDEENQ1VpNK0bjD8Zg0b/orwR4PuKqN
- fzJQsUfYiuDnk/+s5z75VMPcmCHZnxCrKt8ZHlfAPZTdiw9lSyMAffMosPrK9KcYe1+E78U0v
- MY5qwXwJcXPsvovbwRF4cOKcfHboghXm3kaFTOm3tMSldU+hWKPQ9o+iVn8fP2CXh4cCP9ltX
- WshWqyE5k8kRolxUHYhLOF8303eZD6X0HF7NiA/7UmsfA/bmRctRmsxfo/VxSEOBLjsKNXigA
- +YeWYCoCwFYWu1QYcLcnsZTeGvcX22uqX348yv4FugFtq9HROh8p3fJBrJsU02sPovR7WS+xg
- 4TnL9UyEGlE+OAtSBMbnqeTs1kQlqbpHM9snBX2pYP3gYMonlCeRWkYx2h0XHjeOvG7d4CvmK
- ptSzsgMHZj0E0bTHUJCT6EKMWqFbNirBaOi4AeI5wH4R+cTXM2LJyxAnqrbhYKGuuY73Du3PI
- Vb2XQQfFDzOWZY7Lz29m5Y2FE4o=
+X-Provags-ID: V03:K1:6aEzOJf8ErnBwG/cjEQ/aqFw3nonnMkCVnajg0LlL2q0bNLLcLA
+ 9ajQSHt7hlGwrKrgidJ1nQQetWU8U1yMsO7HF9o9HyvNET9X+NlKpMSIYgn8ySOLqBuEvnB
+ pCo4UAwzcBPy9H4IQy0YiEXuIRPSYJUTrGuEkgWzGCXqh8BI1gFGcfoKU+8aR6E4BuyV2Nd
+ T5ED3kSMnL+orUyWoaKyw==
+UI-OutboundReport: notjunk:1;M01:P0:OFvOA48QsX4=;+71PI5ffwO95P42qbi7HnE9iE8B
+ mGeuc9wafxvcFgoiRqt8/9fDJSEmcIQzRhVZS3+SryF0hMQ7xGiuMrKCi8jel8rVrjB0WC3JU
+ FSSBJ1OkvCy0c+KZlc4cYhIS+i9dIt5fwMNkX3o1jTo1LdqDgxwVGQJpJ+jqs7jZc6zMCZDCQ
+ jMvoNnK8RKaYltsZ+Usuf2FTN+F4T7TU3MMq/Ngeyk/Z5QK4nkxMqjdreGGaO45PgoZ/2ER+e
+ mEJrHBC2fqXlQqBjkEPiXnjRL56mWuxcM23Ck53tPwpwp1ycTiSh+g2qFRxxzbbKySSF3k0Lc
+ 2hSBLZCF0uvmw9cZMfSzCj5douhIx3RKI/9bpmQIwPBB/VZGnmqJuYUbvU4v1s0O2CT73Zk0h
+ I+qL/e0cQevqJoBQyHdIwnAOToQVmpxVDLOEcb6uYECE12i9xKoQHgJPJ9al48hjJlDffPSfK
+ xY6fgtHdn2bJL+GdaLKKoz+pGfJhshDuVbiRs4CnXsyeXwEbFhD2xJTvRYYJACGelE+f5S+1Q
+ QLv/UFdA26IgdPjz9Wk7tHLMD1FHhWkOTyWluqbMWlWBeZH59dIqphqqPFiNBsrLNOq41zneN
+ eyeLF+y9AvMKoKVdfSjRpRtHzjNGPR2MeLxq84VkWG4Xaxz330Q2rlSUSJ8NbERKhusBi4gRT
+ WoIGX+A19TV8Xd3f/0it9hi+ZRBK9jxhWF24lpcLeyi+VpsSZM7mcLhqQWvle0EpVu4rUWkQk
+ zu6qAZ6JjcvReC7bs4XGtKRjW/TebAku7zg+5UmVkOOCt/hr+ptdFAcO6cNV8S14kMnMOT6c+
+ ElpBpMUaCaULV0F9UDr5gqGtn0RufFIRg0lIw6AtP4GNpZON6UPSNc1iX1jVTvwRfEtipSYIT
+ V+R1juwOsHj6nyRwevKAVuhawq1ZJg4cB2SRLuRgbRbnf9i+wqY1H/zFlLSGTFAdWMfgHsrmE
+ vEqBwMWg3GHssQLDt7yrjQuu2Xk=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Starting RX DMA on THRI interrupt is too early because TX may not have
-finished yet.
-
-This change is inspired by commit 90b8596ac460 ("serial: 8250: Prevent
-starting up DMA Rx on THRI interrupt") and fixes DMA issues I had with
-an AM62 SoC that is using the 8250 OMAP variant.
+This fixes commit 439c7183e5b9 ("serial: 8250: 8250_omap: Disable RX
+interrupt after DMA enable") which unfortunately set the
+UART_HAS_RHR_IT_DIS bit in the UART_OMAP_IER2 register and never
+cleared it.
 
 Signed-off-by: Ronald Wahl <ronald.wahl@raritan.com>
 =2D--
- drivers/tty/serial/8250/8250_omap.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/tty/serial/8250/8250_omap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250=
 /8250_omap.c
-index c7ab2963040b..f2f59ec6b50b 100644
+index ca972fd37725..c7ab2963040b 100644
 =2D-- a/drivers/tty/serial/8250/8250_omap.c
 +++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -1282,10 +1282,11 @@ static int omap_8250_dma_handle_irq(struct uart_po=
-rt *port)
+@@ -914,7 +914,7 @@ static void __dma_rx_do_complete(struct uart_8250_port=
+ *p)
+ 	if (priv->habit & UART_HAS_RHR_IT_DIS) {
+ 		reg =3D serial_in(p, UART_OMAP_IER2);
+ 		reg &=3D ~UART_OMAP_IER2_RHR_IT_DIS;
+-		serial_out(p, UART_OMAP_IER2, UART_OMAP_IER2_RHR_IT_DIS);
++		serial_out(p, UART_OMAP_IER2, reg);
+ 	}
 
- 	status =3D serial_port_in(port, UART_LSR);
+ 	dmaengine_tx_status(rxchan, cookie, &state);
+@@ -1060,7 +1060,7 @@ static int omap_8250_rx_dma(struct uart_8250_port *p=
+)
+ 	if (priv->habit & UART_HAS_RHR_IT_DIS) {
+ 		reg =3D serial_in(p, UART_OMAP_IER2);
+ 		reg |=3D UART_OMAP_IER2_RHR_IT_DIS;
+-		serial_out(p, UART_OMAP_IER2, UART_OMAP_IER2_RHR_IT_DIS);
++		serial_out(p, UART_OMAP_IER2, reg);
+ 	}
 
--	if (priv->habit & UART_HAS_EFR2)
--		am654_8250_handle_rx_dma(up, iir, status);
--	else
--		status =3D omap_8250_handle_rx_dma(up, iir, status);
-+	if ((iir & 0x3f) !=3D UART_IIR_THRI)
-+		if (priv->habit & UART_HAS_EFR2)
-+			am654_8250_handle_rx_dma(up, iir, status);
-+		else
-+			status =3D omap_8250_handle_rx_dma(up, iir, status);
-
- 	serial8250_modem_status(up);
- 	if (status & UART_LSR_THRE && up->dma->tx_err) {
+ 	dma_async_issue_pending(dma->rxchan);
 =2D-
 2.41.0
 
