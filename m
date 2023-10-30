@@ -2,90 +2,82 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75FB6C001B2
-	for <linux-serial@archiver.kernel.org>; Mon, 30 Oct 2023 10:34:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1DD7C4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 30 Oct 2023 14:28:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232549AbjJ3Ke0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 30 Oct 2023 06:34:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54076 "EHLO
+        id S233362AbjJ3O27 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 30 Oct 2023 10:28:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233455AbjJ3KeG (ORCPT
+        with ESMTP id S233197AbjJ3O26 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 30 Oct 2023 06:34:06 -0400
-Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E484876B8
-        for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 03:04:56 -0700 (PDT)
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <prvs=9681cd3a30=fe@dev.tdt.de>)
-        id 1qxP8h-0057eP-AU
-        for linux-serial@vger.kernel.org; Mon, 30 Oct 2023 11:04:55 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <fe@dev.tdt.de>)
-        id 1qxP8g-0076X7-4k
-        for linux-serial@vger.kernel.org; Mon, 30 Oct 2023 11:04:54 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id DDCFA240053
-        for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 11:04:53 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id A0FDB240049;
-        Mon, 30 Oct 2023 11:04:53 +0100 (CET)
-Received: from localhost.localdomain (unknown [10.2.3.40])
-        by mail.dev.tdt.de (Postfix) with ESMTPSA id 714B0223E0;
-        Mon, 30 Oct 2023 11:04:53 +0100 (CET)
-From:   Florian Eckert <fe@dev.tdt.de>
-To:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
-        kabel@kernel.org, u.kleine-koenig@pengutronix.de,
-        m.brock@vanmierlo.com
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-leds@vger.kernel.org
-Subject: [Patch v6 3/7] leds: ledtrig-tty: free allocated ttyname buffer on deactivate
-Date:   Mon, 30 Oct 2023 11:04:43 +0100
-Message-ID: <20231030100447.63477-4-fe@dev.tdt.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20231030100447.63477-1-fe@dev.tdt.de>
-References: <20231030100447.63477-1-fe@dev.tdt.de>
+        Mon, 30 Oct 2023 10:28:58 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3807F9F;
+        Mon, 30 Oct 2023 07:28:56 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1698676134;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HGYwynunSWpp7MY0OO3XJkBFIC76kaNXkC48AoOrAVc=;
+        b=HG5UUtFdFYt0Bica1QYIiuNSEnQMtxRj9w+bpsYb3AfvdlKXY7TY7mG0I7mfBNJ26Vb3vH
+        ER4H+Nk6g/JJW+Vn/Oi13KEL6TEQLaGby5uQ6JqENOPTd6j2Jmflk+MxodDPQmZZD26+91
+        GrnifWswkG3mK1wi/Ks+vRIrhC6i7fLlRRulZxfm8mzbuCumlthapIZTd8RtggLw0yswll
+        XBp1pDDuxSh27lbtEBhVahhSXksr9sda76qTJ88Esg4Bwcj203d453C5XBKRoiR5vEavF3
+        yZOr9uPr8SsPoXo2eSnlKfAuctUz5lgEeGQpqPKDtf9P6WaWZW8KRQacCl/P3A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1698676134;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HGYwynunSWpp7MY0OO3XJkBFIC76kaNXkC48AoOrAVc=;
+        b=QaOIDXiFtF6jCGy9EsLrcRusyaTEH5L7V++quj7q1yHWGNZwm+B08xNgGMCk9CUXz1WMun
+        3MLluabPLEJBK5DQ==
+To:     Sunil V L <sunilvl@ventanamicro.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Anup Patel <anup@brainfault.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Andrew Jones <ajones@ventanamicro.com>,
+        Atish Kumar Patra <atishp@rivosinc.com>,
+        Haibo Xu <haibo1.xu@intel.com>,
+        Sunil V L <sunilvl@ventanamicro.com>
+Subject: Re: [RFC PATCH v2 11/21] PCI: MSI: Add helper function to set
+ system wide MSI support
+In-Reply-To: <20231025202344.581132-12-sunilvl@ventanamicro.com>
+References: <20231025202344.581132-1-sunilvl@ventanamicro.com>
+ <20231025202344.581132-12-sunilvl@ventanamicro.com>
+Date:   Mon, 30 Oct 2023 15:28:53 +0100
+Message-ID: <87a5s0yyje.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-purgate-type: clean
-X-purgate: clean
-X-purgate-ID: 151534::1698660294-9C8ED7EA-774721DD/0/0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The ttyname buffer for the ledtrig_tty_data struct is allocated in the
-sysfs ttyname_store() function. This buffer must be released on trigger
-deactivation. This was missing and is thus a memory leak.
+On Thu, Oct 26 2023 at 01:53, Sunil V. L. wrote:
+> Like pci_no_msi() used to disable MSI support, add a function to enable
+> system wide MSI support.
 
-While we are at it, the tty handler in the ledtrig_tty_data struct should
-also be returned in case of the trigger deactivation call.
+Why?
 
-Signed-off-by: Florian Eckert <fe@dev.tdt.de>
----
- drivers/leds/trigger/ledtrig-tty.c | 4 ++++
- 1 file changed, 4 insertions(+)
+int pci_msi_enable = 1;
 
-diff --git a/drivers/leds/trigger/ledtrig-tty.c b/drivers/leds/trigger/le=
-dtrig-tty.c
-index 8ae0d2d284af..3e69a7bde928 100644
---- a/drivers/leds/trigger/ledtrig-tty.c
-+++ b/drivers/leds/trigger/ledtrig-tty.c
-@@ -168,6 +168,10 @@ static void ledtrig_tty_deactivate(struct led_classd=
-ev *led_cdev)
-=20
- 	cancel_delayed_work_sync(&trigger_data->dwork);
-=20
-+	kfree(trigger_data->ttyname);
-+	tty_kref_put(trigger_data->tty);
-+	trigger_data->tty =3D NULL;
-+
- 	kfree(trigger_data);
- }
-=20
---=20
-2.30.2
+So this function makes it more one or what am I missing here?
 
+Thanks,
+
+        tglx
