@@ -2,113 +2,254 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 420F8C4167B
-	for <linux-serial@archiver.kernel.org>; Mon, 30 Oct 2023 07:36:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC8BC4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 30 Oct 2023 08:15:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232124AbjJ3HgH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 30 Oct 2023 03:36:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48898 "EHLO
+        id S231609AbjJ3IPh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 30 Oct 2023 04:15:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232127AbjJ3HgD (ORCPT
+        with ESMTP id S232043AbjJ3IPg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 30 Oct 2023 03:36:03 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F41CBE1
-        for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 00:36:00 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-5afe220cadeso28312427b3.3
-        for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 00:36:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1698651360; x=1699256160; darn=vger.kernel.org;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MJYRMGz5Km6YdZ6S41UQtlr9nImkATltc1KA9WGy+hA=;
-        b=yI67vC9fqrQEeXKZsIIS1FL+y29Hx2GYVD96oofZiRfIwyPbry7HG7w5KQqvm8TtYG
-         d2dYUpJfgL7nZvgsJ6Yvl1n1BfHIfd4NLC7l4tJG/E0n3XyBy1OHSXbqSkqejesnBgpS
-         61OvFzVx+v9TH63rL/bOtCZ8ujOeDhVbnm1acE0YidnFr+AHx6SQUsHPv49k8j5Ky3a9
-         PHGc+Iytv8PXBACnIPRGj/jc0x6jqXFQRTw0SfMz7GXFjAcPtc1NyPogYpRz3F/zEa3O
-         7U70Pkr8/jjEBz3LeNu46vA7C7wt2ZJ9P39lWq7B6seQz+pITVm9jta4cmNPU0AGqs7d
-         AGkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698651360; x=1699256160;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=MJYRMGz5Km6YdZ6S41UQtlr9nImkATltc1KA9WGy+hA=;
-        b=U6mxUiM1esoQAllVIKSfJhHPz4n2T76xt27fqI4L5Xrx6tCZ9hM/ij4l4TBx72uS3X
-         mzHTUvM4uwflkZE2kNQ4tOiWaKlwVVTALyqt7W81lVCEewbMwxB9uZTkCaySI8RfoXp3
-         hnyPRKnhKoa6qPHwMlwINb4yo+i78eP1M98EU3J1ky4J7x5KAQGcZi+lA0zoiCGt6X4J
-         iCGlvLZt3HT9jwB4DpJPGSEhCekgIoPMJ5JCIcaVAyhF+BwYD9xf4Am12ebq6rXDJjMu
-         6O7Fbw3riZr8NpwROZyZnLCxHAcZcu3wpzKTCNutbRSLbrih2Bz4jW3QnSiEnZDVEMY4
-         D0kA==
-X-Gm-Message-State: AOJu0Yw/uhiEkZaXIKTa1DYLkplOn6bttd17QC04NlIIT+A+btqqUIvb
-        aVKv00orP6v8QPXCkqGf3vJlJOvOuiU6X5PzPRRD
-X-Google-Smtp-Source: AGHT+IH43k6QWEJV2RtBgKwWnWVAcIXj5xEnffXwHQsmz+m5ajj1E80bw/CPBrQ699JZ3HJWOMm33zn6gH7AL2HWwX8P
-X-Received: from vamshig51.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:70c])
- (user=vamshigajjela job=sendgmr) by 2002:a05:690c:2a45:b0:5af:a9ab:e131 with
- SMTP id ej5-20020a05690c2a4500b005afa9abe131mr155448ywb.1.1698651360172; Mon,
- 30 Oct 2023 00:36:00 -0700 (PDT)
-Date:   Mon, 30 Oct 2023 13:05:42 +0530
-In-Reply-To: <20231030073542.251281-1-vamshigajjela@google.com>
-Mime-Version: 1.0
-References: <20231030073542.251281-1-vamshigajjela@google.com>
-X-Mailer: git-send-email 2.42.0.820.g83a721a137-goog
-Message-ID: <20231030073542.251281-3-vamshigajjela@google.com>
-Subject: [PATCH v5 2/2] serial: core: Clean up uart_update_timeout() function
-From:   Vamshi Gajjela <vamshigajjela@google.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        ilpo.jarvinen@linux.intel.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        manugautam@google.com, Subhash Jadavani <sjadavani@google.com>,
-        Channa Kadabi <kadabi@google.com>,
-        Vamshi Gajjela <vamshigajjela@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 30 Oct 2023 04:15:36 -0400
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [91.198.224.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54814A7
+        for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 01:15:33 -0700 (PDT)
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <prvs=9681cd3a30=fe@dev.tdt.de>)
+        id 1qxNQo-00EzjB-Uw
+        for linux-serial@vger.kernel.org; Mon, 30 Oct 2023 09:15:31 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <fe@dev.tdt.de>)
+        id 1qxNQo-00GSJl-Jp
+        for linux-serial@vger.kernel.org; Mon, 30 Oct 2023 09:15:30 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 46039240049
+        for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 09:15:30 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 01A4E240040;
+        Mon, 30 Oct 2023 09:15:29 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id 2BE07215D4;
+        Mon, 30 Oct 2023 09:15:28 +0100 (CET)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 30 Oct 2023 09:15:28 +0100
+From:   Florian Eckert <fe@dev.tdt.de>
+To:     m.brock@vanmierlo.com
+Cc:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
+        kabel@kernel.org, u.kleine-koenig@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-leds@vger.kernel.org
+Subject: Re: [PATCH v5 2/2] leds: ledtrig-tty: add new line mode evaluation
+In-Reply-To: <ddf9439a092576cd18c6e025d0b61602@vanmierlo.com>
+References: <20231023094205.2706812-1-fe@dev.tdt.de>
+ <20231023094205.2706812-3-fe@dev.tdt.de>
+ <ddf9439a092576cd18c6e025d0b61602@vanmierlo.com>
+Message-ID: <2951fd563fc6a364d8cddfb7ec17808b@dev.tdt.de>
+X-Sender: fe@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.17
+X-purgate-type: clean
+X-purgate-ID: 151534::1698653730-4FF36C7C-91F7C049/0/0
+X-purgate: clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Rename the variable size to temp and change its data type from
-unsigned int to u64 to avoid type casting in multiplication. Remove the
-intermediate variable frame_time and use temp instead to accommodate
-the nanoseconds. port->frame_time is an unsigned int, therefore an
-explicit cast is used to improve readability.
 
-Signed-off-by: Vamshi Gajjela <vamshigajjela@google.com>
+
+On 2023-10-28 12:43, m.brock@vanmierlo.com wrote:
+> Florian Eckert wrote on 2023-10-23 11:42:
+> 
+>> @@ -16,6 +16,28 @@ struct ledtrig_tty_data {
+>>      const char *ttyname;
+>>      struct tty_struct *tty;
+>>      int rx, tx;
+>> +     unsigned long ttytrigger;
+>> +};
+> 
+> ttytriggers ?
+
+Yes that would be nicer name. thanks
+
+> [...]
+> 
+>>  static void ledtrig_tty_work(struct work_struct *work)
+>>  {
+>>  	struct ledtrig_tty_data *trigger_data =
+>>  		container_of(work, struct ledtrig_tty_data, dwork.work);
+>> +	struct led_classdev *led_cdev = trigger_data->led_cdev;
+>> +	unsigned long interval = LEDTRIG_TTY_INTERVAL;
+>>  	struct serial_icounter_struct icount;
+>> +	enum led_trigger_tty_state state;
+>> +	int current_brightness;
+>> +	int status;
+>>  	int ret;
+>> 
+>> +	state = TTY_LED_DISABLE;
+>>  	mutex_lock(&trigger_data->mutex);
+>> 
+>>  	if (!trigger_data->ttyname) {
+>> @@ -115,22 +218,74 @@ static void ledtrig_tty_work(struct work_struct 
+>> *work)
+>>  		trigger_data->tty = tty;
+>>  	}
+>> 
+>> -	ret = tty_get_icount(trigger_data->tty, &icount);
+>> -	if (ret) {
+>> -		dev_info(trigger_data->tty->dev, "Failed to get icount, stopped 
+>> polling\n");
+>> -		mutex_unlock(&trigger_data->mutex);
+>> -		return;
+>> +	status = tty_get_tiocm(trigger_data->tty);
+>> +	if (status > 0) {
+>> +		if (test_bit(TRIGGER_TTY_CTS, &trigger_data->ttytrigger)) {
+>> +			if (status & TIOCM_CTS)
+>> +				state = TTY_LED_ENABLE;
+>> +		}
+>> +
+>> +		if (test_bit(TRIGGER_TTY_DSR, &trigger_data->ttytrigger)) {
+>> +			if (status & TIOCM_DSR)
+>> +				state = TTY_LED_ENABLE;
+>> +		}
+>> +
+>> +		if (test_bit(TRIGGER_TTY_CAR, &trigger_data->ttytrigger)) {
+>> +			if (status & TIOCM_CAR)
+>> +				state = TTY_LED_ENABLE;
+>> +		}
+>> +
+>> +		if (test_bit(TRIGGER_TTY_RNG, &trigger_data->ttytrigger)) {
+>> +			if (status & TIOCM_RNG)
+>> +				state = TTY_LED_ENABLE;
+>> +		}
+>> +	}
+>> +
+>> +	/* The rx/tx handling must come after the evaluation of TIOCM_*,
+>> +	 * since the display for rx/tx has priority
+>> +	 */
+>> +	if (test_bit(TRIGGER_TTY_RX, &trigger_data->ttytrigger) ||
+>> +	    test_bit(TRIGGER_TTY_TX, &trigger_data->ttytrigger)) {
+>> +		ret = tty_get_icount(trigger_data->tty, &icount);
+>> +		if (ret) {
+>> +			dev_info(trigger_data->tty->dev, "Failed to get icount, stopped 
+>> polling\n");
+>> +			mutex_unlock(&trigger_data->mutex);
+>> +			return;
+>> +		}
+>> +
+>> +		if (test_bit(TRIGGER_TTY_RX, &trigger_data->ttytrigger) &&
+>> +		    (icount.tx != trigger_data->tx)) {
+> 
+> You check for TRIGGER_TTY_RX and then compare icount.tx, is that 
+> correct?
+
+I would say this is correct. At first I check if the tx path should be 
+evaluated
+and if this is correct I check if there was a tx transmission during the 
+last run.
+
+>> +			trigger_data->tx = icount.tx;
+>> +			state = TTY_LED_BLINK;
+>> +		}
+>> +
+>> +		if (test_bit(TRIGGER_TTY_TX, &trigger_data->ttytrigger) &&
+>> +		    (icount.rx != trigger_data->rx)) {
+> 
+> You check for TRIGGER_TTY_TX and then compare icount.rx, is that 
+> correct?
+
+I would say this is correct. At first I check if the rx path should be 
+evaluated
+and if this is correct I check if there was a rx transmission during the 
+last run.
+
+>> +			trigger_data->rx = icount.rx;
+>> +			state = TTY_LED_BLINK;
+>> +		}
+>>  	}
+>> 
+>> -	if (icount.rx != trigger_data->rx ||
+>> -	    icount.tx != trigger_data->tx) {
+>> -		unsigned long interval = LEDTRIG_TTY_INTERVAL;
+>> +	current_brightness = led_cdev->brightness;
+>> +	if (current_brightness)
+>> +		led_cdev->blink_brightness = current_brightness;
+>> 
+>> +	if (!led_cdev->blink_brightness)
+>> +		led_cdev->blink_brightness = led_cdev->max_brightness;
+> 
+> Is it OK to override the chosen brightness here?
+
+In my setup my brightness in the sysfs path of the LED ist set to '0'.
+Even though the tty trigger was configured correctly the LED was not
+turned on. If I set max_brightness in this path the LED works correctly.
+I would check this a gain if this is still needed.
+
+>> +
+>> +	switch (state) {
+>> +	case TTY_LED_BLINK:
+>>  		led_blink_set_oneshot(trigger_data->led_cdev, &interval,
+>>  				      &interval, 0);
+> 
+> Change trigger_data->led_cdev to simply led_cdev
+
+Thanks for the hint. I will change this.
+
+> Shouldn't the led return to the line controlled steady state?
+
+Sorry I do not understand your question.
+
+> Set an invert variable to true if state was TTY_LED_ENABLE before it 
+> got set
+> to TTY_LED_BLINK
+
+No matter whether the LED is on or off beforehand. I understand that the
+LED is always on for the first half of the period and off for the rest 
+of
+the period. I think that is correct and I don't need to make a 
+distinction
+via invert here. I hope I have understood your comment correctly here.
+
+> How do interval and the frequency of ledtrig_tty_work() relate?
+
+The work is twice as long as of the interval. So the variable
+LEDTRIG_TTY_INTERVAL = 50 and the work is scheduled LEDTRIG_TTY_INTERVAL 
+* 2.
+But that was also before my change.
+
+>> -
+>> -		trigger_data->rx = icount.rx;
+>> -		trigger_data->tx = icount.tx;
+>> +		break;
+>> +	case TTY_LED_ENABLE:
+>> +		led_set_brightness(led_cdev, led_cdev->blink_brightness);
+>> +		break;
+>> +	case TTY_LED_DISABLE:
+>> +		fallthrough;
+>> +	default:
+>> +		led_set_brightness(led_cdev, LED_OFF);
+>> +		break;
+>>  	}
+> 
+> Maarten
+
+Thank you for your feedback. I must say, however, that I am currently in
+the process of preparing v6, which will implement the comments and
+change requests from 'greg k-h' [1]. The big change here in v6 is, that 
+I have
+switched to completion and split the change in more reviewable commits.
+I will see if your comments can also be incorporated into the new 
+approach.
+
 ---
-v5:
-- shortlog changed from "serial: core: Make local variable size to
-  u64" to "Clean up uart_update_timeout() function"
-- renamed local variable size to temp, generic name
-- removed intermediate variable frame_time
-- added typecast "unsigned int" while assigning to port->frame_time
-v4:
-- no change, not submitted with series
-v3:
-- no change, not submitted with series
-v2:
-- no change, not submitted with series
 
- drivers/tty/serial/serial_core.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+Florian
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 7bdc21d5e13b..21d345a9812a 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -410,11 +410,10 @@ void
- uart_update_timeout(struct uart_port *port, unsigned int cflag,
- 		    unsigned int baud)
- {
--	unsigned int size = tty_get_frame_size(cflag);
--	u64 frame_time;
-+	u64 temp = tty_get_frame_size(cflag);
- 
--	frame_time = (u64)size * NSEC_PER_SEC;
--	port->frame_time = DIV64_U64_ROUND_UP(frame_time, baud);
-+	temp *= NSEC_PER_SEC;
-+	port->frame_time = (unsigned int)DIV64_U64_ROUND_UP(temp, baud);
- }
- EXPORT_SYMBOL(uart_update_timeout);
- 
--- 
-2.42.0.820.g83a721a137-goog
-
+[1] 
+https://lore.kernel.org/linux-leds/2023102341-jogger-matching-dded@gregkh/
