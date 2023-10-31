@@ -2,34 +2,41 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42B11C4332F
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Oct 2023 13:39:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A13EC4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Oct 2023 13:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344585AbjJaNjP (ORCPT
+        id S1344650AbjJaNvv (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 Oct 2023 09:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36670 "EHLO
+        Tue, 31 Oct 2023 09:51:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344599AbjJaNjP (ORCPT
+        with ESMTP id S1344592AbjJaNvv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 Oct 2023 09:39:15 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D34E6;
-        Tue, 31 Oct 2023 06:39:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-        :Date:subject:date:message-id:reply-to;
-        bh=E/yUX/f4ZCe3DyW2zI4fL8vzPIun1wWgfcaAJyJfsSA=; b=K6C6qQbMSnrXsvrXDh8sNCgaUe
-        EHjQ50sGgULoNbjtSR7S8tzUutGq/zji5Iiq74+KyaChkfPgTX1Qb5oN/RE7jAtkJJJrQZMas1r+y
-        cyETvV7KrlgMtpCPIOD3xc4Gl9F8PNrSY+5vrMKTTKJhU8Z/r2Zyec5xacPEOUFZXTM0=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:52896 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1qxoxS-00067I-Kz; Tue, 31 Oct 2023 09:39:04 -0400
-Date:   Tue, 31 Oct 2023 09:39:01 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     =?ISO-8859-1?Q?Th=E9o?= Lebrun <theo.lebrun@bootlin.com>
-Cc:     "Russell King" <linux@armlinux.org.uk>,
+        Tue, 31 Oct 2023 09:51:51 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BAB3DE;
+        Tue, 31 Oct 2023 06:51:48 -0700 (PDT)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id D7CE16000C;
+        Tue, 31 Oct 2023 13:51:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1698760306;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lh/+wUApvt6UyuoxEjUcgfFXqmHXTrUff3SZed4i+ZQ=;
+        b=PEc+Z5Itp+zlf1r7FsF2KO7B4aIZ1aW+icMbCRQbtwpEuvX1DiuPxQpdzD3T+9YDkuLaZc
+        yfup0SWyCDs5LMWAZQgZGSEWw/1NWkZKPGqalzhxhBI7L+0VBW0GbFLd5pYqyP7Yg2AY0r
+        lT1ZFOy2IhtZqcL0HyepYmIGFAsQB8IjZ4vEzLwHBnl0nPJUkatqcljXWBMLX+v3I+KqYh
+        lyF5eB7C8DSGqjpFCd0XOHy3whIzaEG3bc0IvPzcwWxkfNMn+1PtPN2v1txMBe/b5K80hU
+        lUdUE9TtbHMmieEj/IQXc1LEtXy40jQ/2p95fTYuf8BLS6xqOcz4OORODuJ66Q==
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date:   Tue, 31 Oct 2023 14:51:45 +0100
+Subject: Re: [PATCH 6/6] tty: serial: amba-pl011: Parse bits option as 5, 6,
+ 7 or 8 in _get_options
+Cc:     "Hugo Villeneuve" <hugo@hugovil.com>,
         "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
         "Jiri Slaby" <jirislaby@kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
@@ -39,81 +46,72 @@ Cc:     "Russell King" <linux@armlinux.org.uk>,
         "Thomas Petazzoni" <thomas.petazzoni@bootlin.com>,
         "Vladimir Kondratiev" <vladimir.kondratiev@mobileye.com>,
         "Tawfik Bayouk" <tawfik.bayouk@mobileye.com>
-Message-Id: <20231031093901.aa085ec1316ab0d008cb0080@hugovil.com>
-In-Reply-To: <CWMITJ9VX9IP.1WPQCX981VRDE@tleb-bootlin-xps13-01>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+From:   =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
+Message-Id: <CWMNJ47MO8E6.7CXJRZ181PXJ@tleb-bootlin-xps13-01>
+X-Mailer: aerc 0.15.2
 References: <20231026-mbly-uart-v1-0-9258eea297d3@bootlin.com>
-        <20231026-mbly-uart-v1-6-9258eea297d3@bootlin.com>
-        <20231026105329.0ee9603563202bd2157a7d27@hugovil.com>
-        <CWMITJ9VX9IP.1WPQCX981VRDE@tleb-bootlin-xps13-01>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH 6/6] tty: serial: amba-pl011: Parse bits option as 5, 6,
- 7 or 8 in _get_options
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+ <20231026-mbly-uart-v1-6-9258eea297d3@bootlin.com>
+ <20231026105329.0ee9603563202bd2157a7d27@hugovil.com>
+ <CWMITJ9VX9IP.1WPQCX981VRDE@tleb-bootlin-xps13-01>
+ <ZUDS5UpWlo+DUZc4@shell.armlinux.org.uk>
+ <CWMKPFZ9LOVD.2756QU9AP6U3W@tleb-bootlin-xps13-01>
+ <ZUDjhpQKgUgqVeBh@shell.armlinux.org.uk>
+In-Reply-To: <ZUDjhpQKgUgqVeBh@shell.armlinux.org.uk>
+X-GND-Sasl: theo.lebrun@bootlin.com
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 31 Oct 2023 10:35:29 +0100
-Th=E9o Lebrun <theo.lebrun@bootlin.com> wrote:
+On Tue Oct 31, 2023 at 12:22 PM CET, Russell King (Oracle) wrote:
+> On Tue, Oct 31, 2023 at 12:04:11PM +0100, Th=C3=A9o Lebrun wrote:
+> > On Tue Oct 31, 2023 at 11:11 AM CET, Russell King (Oracle) wrote:
+> > > There is no point in supporting 5 or 6 bits for console usage. Think
+> > > about it. What values are going to be sent over the console? It'll be
+> > > ASCII, which requires at _least_ 7-bit. 6-bit would turn alpha
+> > > characters into control characters, punctuation and numbers. 5-bit
+> > > would be all control characters.
+> > >
+> > > So there's no point trying to do anything with 5 or 6 bits per byte,
+> > > and I decided we might as well take that as an error (or maybe a
+> > > case that the hardware has not been setup) and default to 8 bits per
+> > > byte.
+> >=20
+> > I see your point. Two things come to mind:
+> >=20
+> >  - I added this parsing of 5/6 bits to be symmetrical with
+> >    pl011_set_termios that handles 5/6 properly. Should pl011_set_termio=
+s
+> >    be modified then?
+>
+> Why should it? Note that I said above about _console_ usage which is
+> what you were referring to - the early code that sets up the console
+> by either reading the current settings (so that we can transparently
+> use the UART when its handed over already setup by a boot loader).
+>
+> This is completely different to what happens once the kernel is running.
+> Userspace might very well have a reason to set 5 or 6 bits if it wants
+> to communicate with a device that uses those sizes.
+>
+> However, such a device won't be a console for the reasons I outlined
+> above (it will truncate the ASCII characters turning console messages
+> into garbage.)
 
-> Hello,
->=20
-> On Thu Oct 26, 2023 at 4:53 PM CEST, Hugo Villeneuve wrote:
-> > On Thu, 26 Oct 2023 12:41:23 +0200
-> > Th=E9o Lebrun <theo.lebrun@bootlin.com> wrote:
-> >
-> > Hi,
-> > I would change the commit title to better indicate that you add support
-> > for bits 5 and 6, which was missing.
-> >
-> > Maybe "Add support for 5 and 6 bits in..." ?
-> >
-> > > pl011_console_get_options() gets called to retrieve currently configu=
-red
-> > > options from the registers. Previously, LCRH_TX.WLEN was being parsed
-> >
-> > It took me some time to understand your explanation :) Maybe change
-> > to:
-> >
-> > "Previously, only 7 or 8 bits were supported."
-> >
-> > > as either 7 or 8 (fallback). Hardware supports values from 5 to 8
-> >
-> > Add bits:
-> >
-> > "5 to 8 bits..."
-> >
-> > And indicate that this patch adds support for 5 and 6 bits.
->=20
-> I agree the whole commit message is unclear. Let's rewrite it. What do
-> you think of the following:
->=20
->    tty: serial: amba-pl011: Allow parsing word length of 5/6 bits at cons=
-ole setup
->=20
->    If no options are given at console setup, we parse hardware register
->    LCRH_TX.WLEN for bits per word. We compare the value to the 7 bits
->    value (UART01x_LCRH_WLEN_7). If the hardware is configured for 5, 6
->    or 8 bits per word, we fallback to 8 bits.
->=20
->    Change that behavior to parse the whole range available: from 5 to 8
->    bits per word.
->=20
-> Note that we don't add support for 5/6 bits, we only update the parsing
-> of the regs (if no options are passed at setup) to reflect the current
-> hardware config. The behavior will be different only if the inherited
-> value (from reset/bootloader) is 5 or 6: previously we guessed 8 bits
-> word length, now we guess the right value.
->=20
-> What's your opinion on this new commit message?
+I'm not sure I get it. (1) We assume it is a console so it's ASCII so no
+reason to set to 5 or 6 bits per word. But (2) there might be a reason
+to set the UART to 5 or 6 bits, the userspace decides.
 
-Hi,
-that's fine with me.
+How do the two interact? Say we boot to Linux, userspace configures to 6
+bits because reasons and we reset. At second probe we see a config of 6
+bits per word but assume that can't be logical, even though it is.
 
-Hugo.
+What makes us suppose at probe that it must be a console?
+
+I won't die on a hill for this topic; we'll go the way you prefer!
+
+Regards,
+
+--
+Th=C3=A9o Lebrun, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
