@@ -2,137 +2,125 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62DB5C4167B
-	for <linux-serial@archiver.kernel.org>; Mon, 30 Oct 2023 21:22:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 289C6C4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Oct 2023 02:00:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230364AbjJ3VW6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 30 Oct 2023 17:22:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40594 "EHLO
+        id S229766AbjJaCAv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 30 Oct 2023 22:00:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231951AbjJ3VW5 (ORCPT
+        with ESMTP id S229583AbjJaCAu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 30 Oct 2023 17:22:57 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 992D511B;
-        Mon, 30 Oct 2023 14:22:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
-        :From:subject:date:message-id:reply-to;
-        bh=OZB13UmFkPitLseb0iuRjPOZ75p/5s1IyVR8C319A1g=; b=jaXEIT90jztxDfvjed9tBlay0d
-        9b2c7qp9BihSRd5X/6+CnGnPEr/O8BQJnn+JsOqo0zBX1/Oll76bvPih2lYi3EuiNNTwplwFlIAJj
-        xfYls16fXv/oaEqe4RB+a63okFNYp+VlmhfEWjjhmAYcgiwOJAp3RGynbMWOJfgkZHhk=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:51974 helo=pettiford.lan)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1qxZib-0005os-Uc; Mon, 30 Oct 2023 17:22:42 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+        Mon, 30 Oct 2023 22:00:50 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7194E6
+        for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 19:00:47 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id 41be03b00d2f7-53fbf2c42bfso4109864a12.3
+        for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 19:00:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google; t=1698717647; x=1699322447; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ysFHtwfLEtis2HEwrxQHDKnfNsPImE2g/7GGtzNp+Cs=;
+        b=RA0zuQurBpzYYfjoncjl1kshFj3iAGNIw3NKTxySaBBPtVj/wd5SKoIIAEqT071n2g
+         u8J8MlnD8DYzzR4sOIQPxbwdVqRqjyN1CPa2FTv+5p0A6cWkQqe9e5/wx7ZoTZre/dws
+         n6YeCGYiyXr0yQYwjly+z4aEl4jxOH/7s1dtkQ7y7hoyy7/7jUM0j5ddNVd+B/zJadk+
+         sb1a++EwzSH11of0XYBZmkazOmcCqjL4Exyyk7ZJHvpsCehjyowvTW8DWITyYOvg6fUw
+         sr5RJmpYKdB0yuSm6ixVX0ixxlNR3G2v9EyVqHnquwekNJ0sboVSZB30lCkWvcA1EI//
+         Nziw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1698717647; x=1699322447;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ysFHtwfLEtis2HEwrxQHDKnfNsPImE2g/7GGtzNp+Cs=;
+        b=RxajGvLxLLdfZLcYRAsZ5Q3FemRt/3sEROdJJN+5VG1M8b+IXAQaNpdQPIJq3e7GWy
+         Y3nWxMwiV9RJWEqujKRJzfDlLSyRHnaqFw0acBn/lJigcA8s/nVlof2advF+5jADqaIm
+         Gfsww1lneZQkIu9LUBJW2uhcHi2KSkyfOXGjDVSFtGyzSyZB5/BOGblVWBEDSeNsLNXz
+         kUDDOrMcqxdGJ+j7+aU+oaJKYT1rBovo9i91Tl+PZOo3dBOe6Nt7fu87O5Q4DdpIld9p
+         EAlx185OGCrqogly4oOdPh5OLFC1v72aWLaxRAxms3nqEA7EbIw/08asG4BJ/MbVqsGc
+         Ap1g==
+X-Gm-Message-State: AOJu0YxBZCTfaco7TATYMn1xQmr3UCFoKESVJolvilA8WJc/QI6B2FPv
+        hb6uYau6ichMKMgpIpcMSTVNPQ==
+X-Google-Smtp-Source: AGHT+IEf0KaLXQATJy7Y+aQfRDpTBjnOxd6k1XM+fNDmCwu9+0PAZyGarOs4HgtrLS/PIbK2VfXdgQ==
+X-Received: by 2002:a05:6a20:a220:b0:17b:e0a3:f6f4 with SMTP id u32-20020a056a20a22000b0017be0a3f6f4mr9170362pzk.25.1698717647083;
+        Mon, 30 Oct 2023 19:00:47 -0700 (PDT)
+Received: from sunil-laptop ([106.51.188.78])
+        by smtp.gmail.com with ESMTPSA id b17-20020a056a000a9100b006934e7ceb79sm159585pfl.32.2023.10.30.19.00.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Oct 2023 19:00:46 -0700 (PDT)
+Date:   Tue, 31 Oct 2023 07:30:35 +0530
+From:   Sunil V L <sunilvl@ventanamicro.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Anup Patel <anup@brainfault.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     hugo@hugovil.com, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Date:   Mon, 30 Oct 2023 17:22:40 -0400
-Message-Id: <20231030212240.975885-1-hugo@hugovil.com>
-X-Mailer: git-send-email 2.39.2
+        Jiri Slaby <jirislaby@kernel.org>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Andrew Jones <ajones@ventanamicro.com>,
+        Atish Kumar Patra <atishp@rivosinc.com>,
+        Haibo Xu <haibo1.xu@intel.com>, Marc Zyngier <maz@kernel.org>
+Subject: Re: [RFC PATCH v2 11/21] PCI: MSI: Add helper function to set system
+ wide MSI support
+Message-ID: <ZUBfw2vrzc+GyAny@sunil-laptop>
+References: <20231025202344.581132-1-sunilvl@ventanamicro.com>
+ <20231025202344.581132-12-sunilvl@ventanamicro.com>
+ <87a5s0yyje.ffs@tglx>
+ <ZT/t0UY5rbudhjfH@sunil-laptop>
+ <874ji7zz7a.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: [PATCH] serial: sunsab: remove trailing whitespaces
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <874ji7zz7a.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Mon, Oct 30, 2023 at 08:29:13PM +0100, Thomas Gleixner wrote:
+> On Mon, Oct 30 2023 at 23:24, Sunil V. L. wrote:
+> > On Mon, Oct 30, 2023 at 03:28:53PM +0100, Thomas Gleixner wrote:
+> > Just noting related discussion :
+> > https://www.spinics.net/lists/linux-serial/msg57616.html
+> >
+> > The MSI controller on RISC-V (IMSIC) is optional for the platform. So,
+> > when by default pci_msi_enable = 1 and the MSI controller is not
+> > discovered, we get stack trace like below.
+> 
+> <SNIP>
+> 
+> > So, what I did was, by default call pci_no_msi() to disable MSI and then
+> > call pci_set_msi() to enable when MSI controller is probed.
+> 
+> Your taste sensors should have gone out of range ...
+> 
+> > But I think Bjorn's suggestion to depend on PCI_BUS_FLAGS_NO_MSI may be
+> > better idea. In that case, we need to set bridge->msi_domain to true in
+> > pci_create_root_bus(). Let me know what do you prefer or if I am
+> > completely missing something here.
+> 
+> That's definitely more sensible, but as I said in the other thread, Marc
+> is the one who did the PCI core/bridge setup magic and he is definitely
+> in a better position to answer that bridge->msi_domain question.
+> 
+Thanks!. It looks like Marc introduced bridge->msi_domain in [1] for
+exactly the same problem we have with RISC-V + ACPI. Let me remove this
+hack and do similar to pci_host_common_probe() in next revision unless I
+get objections to that approach.
 
-Fix coding style. No functional changes.
+Sorry, somehow my script didn't copy Marc in the series. Will make sure
+I copy him explicitly in next revision.
 
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
----
- drivers/tty/serial/sunsab.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+[1] - https://lore.kernel.org/all/20210330151145.997953-12-maz@kernel.org/
 
-diff --git a/drivers/tty/serial/sunsab.c b/drivers/tty/serial/sunsab.c
-index 6aa51a6f8063..1ef2057a7366 100644
---- a/drivers/tty/serial/sunsab.c
-+++ b/drivers/tty/serial/sunsab.c
-@@ -443,7 +443,7 @@ static void sunsab_start_tx(struct uart_port *port)
- 
- 	up->interrupt_mask1 &= ~(SAB82532_IMR1_ALLS|SAB82532_IMR1_XPR);
- 	writeb(up->interrupt_mask1, &up->regs->w.imr1);
--	
-+
- 	if (!test_bit(SAB82532_XPR, &up->irqflags))
- 		return;
- 
-@@ -549,7 +549,7 @@ static int sunsab_startup(struct uart_port *port)
- 	(void) readb(&up->regs->r.isr1);
- 
- 	/*
--	 * Now, initialize the UART 
-+	 * Now, initialize the UART
- 	 */
- 	writeb(0, &up->regs->w.ccr0);				/* power-down */
- 	writeb(SAB82532_CCR0_MCE | SAB82532_CCR0_SC_NRZ |
-@@ -563,7 +563,7 @@ static int sunsab_startup(struct uart_port *port)
- 			   SAB82532_MODE_RAC);
- 	writeb(up->cached_mode, &up->regs->w.mode);
- 	writeb(SAB82532_RFC_DPS|SAB82532_RFC_RFTH_32, &up->regs->w.rfc);
--	
-+
- 	tmp = readb(&up->regs->rw.ccr0);
- 	tmp |= SAB82532_CCR0_PU;	/* power-up */
- 	writeb(tmp, &up->regs->rw.ccr0);
-@@ -607,7 +607,7 @@ static void sunsab_shutdown(struct uart_port *port)
- 	up->cached_dafo &= ~SAB82532_DAFO_XBRK;
- 	writeb(up->cached_dafo, &up->regs->rw.dafo);
- 
--	/* Disable Receiver */	
-+	/* Disable Receiver */
- 	up->cached_mode &= ~SAB82532_MODE_RAC;
- 	writeb(up->cached_mode, &up->regs->rw.mode);
- 
-@@ -622,7 +622,7 @@ static void sunsab_shutdown(struct uart_port *port)
- 	 * speed the chip was configured for when the port was open).
- 	 */
- #if 0
--	/* Power Down */	
-+	/* Power Down */
- 	tmp = readb(&up->regs->rw.ccr0);
- 	tmp &= ~SAB82532_CCR0_PU;
- 	writeb(tmp, &up->regs->rw.ccr0);
-@@ -649,7 +649,7 @@ static void calc_ebrg(int baud, int *n_ret, int *m_ret)
- 		*m_ret = 0;
- 		return;
- 	}
--     
-+
- 	/*
- 	 * We scale numbers by 10 so that we get better accuracy
- 	 * without having to use floating point.  Here we increment m
-@@ -788,7 +788,7 @@ static const char *sunsab_type(struct uart_port *port)
- {
- 	struct uart_sunsab_port *up = (void *)port;
- 	static char buf[36];
--	
-+
- 	sprintf(buf, "SAB82532 %s", sab82532_version[up->type]);
- 	return buf;
- }
-@@ -933,7 +933,7 @@ static int sunsab_console_setup(struct console *con, char *options)
- 	sunsab_set_mctrl(&up->port, TIOCM_DTR | TIOCM_RTS);
- 
- 	uart_port_unlock_irqrestore(&up->port, flags);
--	
-+
- 	return 0;
- }
- 
-
-base-commit: 64ebf8797249e792af2143eb9e4bd404d10a022e
--- 
-2.39.2
-
+Thanks!
+Sunil
