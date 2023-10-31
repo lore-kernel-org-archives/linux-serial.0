@@ -2,120 +2,91 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1019EC4332F
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Oct 2023 11:22:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF52C4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Oct 2023 13:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231269AbjJaLWz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 Oct 2023 07:22:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48168 "EHLO
+        id S1344455AbjJaNNB (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 31 Oct 2023 09:13:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbjJaLWy (ORCPT
+        with ESMTP id S1344451AbjJaNNA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 Oct 2023 07:22:54 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F2F97;
-        Tue, 31 Oct 2023 04:22:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Nl4LFqAC2Uv3TVZuzpPEiO7Jkauztt8lcPvawy8/0uQ=; b=Kp6zpNUs6KcfyhFpW5tSRUsQZF
-        WpmYkBuWO1HqYKkZXTDiQ2b0NbeDN7e2SoF5+Em0fB7YOPCZu6LNR8eckskhLN5Q/sWFhbKukYVjD
-        RfAudewliQ3zZcnklKfZMcRcCBSbCR5XnqfHaHH5DoApCCR7Jrikh5vboSXnWZ0WanTZXY2ccUOrk
-        arAIQH7DAPcNOj6Y6fbCahsq1+qEd1pmoog3i1+4mfQWywrqROclHVFdWmqMvwSgA6Vam5nZ6Z/Fq
-        h2+1U7N2/43lWSO1TczzWjHFmQKscUGAgcqJHvsTwJLJeGyYMzEtF0CwA3rRRC+jpciiUl0yTNQLz
-        BcOpjwoA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35478)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.96)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1qxmpZ-0002by-2c;
-        Tue, 31 Oct 2023 11:22:45 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1qxmpa-00053o-OJ; Tue, 31 Oct 2023 11:22:46 +0000
-Date:   Tue, 31 Oct 2023 11:22:46 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     =?iso-8859-1?Q?Th=E9o?= Lebrun <theo.lebrun@bootlin.com>
-Cc:     Hugo Villeneuve <hugo@hugovil.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Vladimir Kondratiev <vladimir.kondratiev@mobileye.com>,
-        Tawfik Bayouk <tawfik.bayouk@mobileye.com>
-Subject: Re: [PATCH 6/6] tty: serial: amba-pl011: Parse bits option as 5, 6,
- 7 or 8 in _get_options
-Message-ID: <ZUDjhpQKgUgqVeBh@shell.armlinux.org.uk>
-References: <20231026-mbly-uart-v1-0-9258eea297d3@bootlin.com>
- <20231026-mbly-uart-v1-6-9258eea297d3@bootlin.com>
- <20231026105329.0ee9603563202bd2157a7d27@hugovil.com>
- <CWMITJ9VX9IP.1WPQCX981VRDE@tleb-bootlin-xps13-01>
- <ZUDS5UpWlo+DUZc4@shell.armlinux.org.uk>
- <CWMKPFZ9LOVD.2756QU9AP6U3W@tleb-bootlin-xps13-01>
+        Tue, 31 Oct 2023 09:13:00 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6EF7DF;
+        Tue, 31 Oct 2023 06:12:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
+        t=1698757969; x=1699362769; i=rwahl@gmx.de;
+        bh=DybnFajxEuPHd+61nGW7rQ4Cxy8DUD5XRFxh+JCVPts=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=o5gy8DVFaOmRSRh9u3hh2GhAhwvxlwIcvEMXFlUh9c799hPZK+OlvpsRNsnHKAEN
+         e6lqgPQjWKARgKnc4VwdjW+oiTbRxrfEVnuTuvhhuNAxwXPpIGgQMm2u6RDoU3irD
+         9pS3ITiMyTbksmKX3GwTstOJn+iUznWB+VnSriiHjABwjq0mSLopAe3BsPAFo2/Ji
+         bBAOOvLiLtEco8aM6uufMm3h04E5oYk1cZVFL9NNwxDgIk/smeO/AkCP70IYT3EG2
+         2hUEXkF3RAINsxEpAuQwxnH/+t8yUY/IJCf2Ey1P58Ebeux/O7BC1a+5oSVxe12bF
+         IrD+hK+oYJylzzZ6VA==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from rohan.localdomain ([84.156.147.134]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MNKhs-1qnGwc3VWs-00OmwH; Tue, 31
+ Oct 2023 14:12:48 +0100
+From:   Ronald Wahl <rwahl@gmx.de>
+To:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ronald Wahl <ronald.wahl@raritan.com>
+Subject: [PATCH] serial: 8250_omap: Add earlycon support for the AM654 UART controller
+Date:   Tue, 31 Oct 2023 14:12:42 +0100
+Message-ID: <20231031131242.15516-1-rwahl@gmx.de>
+X-Mailer: git-send-email 2.41.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CWMKPFZ9LOVD.2756QU9AP6U3W@tleb-bootlin-xps13-01>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:vVTJPTIGWlLkGSIShGQsFU14QTakS3wfHkFaWTQbogkd6trPrp3
+ tsehEKEYuRmreqnYzIXfTYQsf21SiCymBSdOSJhiX0rNzttbjOtgGd5gYO6VDhNR30iqhjc
+ 32FGncr6B7PgtVl19BYHXcxsIkIUwVqW3+v7fkR+EpzOsRAxIZcDhj9k0eqnmW88a6Y5BJ7
+ qOfziCM9kYD5eyVH0pKWw==
+UI-OutboundReport: notjunk:1;M01:P0:xaL67cqQmNw=;LAwWpnZuak42V3kq/86EPZYcwV+
+ xLzsydFX2kxA3hdeUJO25mJL3cM22juWhiyrOpUZ9OwWjIft0eS/ZEDqqcR+oS46W4gWUxWmp
+ zQOuKGSRnBsDgSL/ey+FKgZkdYU+PlRxGf1pbCOU/WxMXNSBBeMBzvr5NCBmk0FwufSwwh4A3
+ yjEFD3HWi7agToLyKNyC3EcKZDz1JzFbu+NUswzyXJGMnajJ9NY7YU2JwRp/TcP9e43QfnMzv
+ 6EBpkTdZew1T4RNAfx6mhRXDyV4b/hhdqxuqmYf9b33VtNBJft6sEmhQ6oue3s38uyutaoZya
+ aj5krRAIFRxRKufDOshGI5jhxMKLXbxfmn4ARpYge5rgNxfEqN1+LK5mp2vMZin73jme+qufM
+ XkeSmw5/9IRh8Bf/h0k0l6qNEREg3ApvRHvbu9c2IbGGaOz2XCzMwrqVGkK/fK3Dzzgzmz5pI
+ Af+uJJ8Todrxlc1MFktFW2jm8sIxpbgolCC8qVS0ZPokoBAaxmSaRAbKsrjJICXEeMIq/zcYb
+ Ht9F+NC+YnOx+1HKfhJX1CBEK6yi/MSCXfz8jCsVtQ27hJ4pH+sbTxduT1QYSM69v9gAJQQwy
+ tI8qT5OWP0k8YXlQPmjv66BQOqL/DNT8bw+xtIwwQBt6OcCH26MugBO16E+IwnmfXfkpG4ZSb
+ vwfC6ZBoh0AKNtlgW+iKrbc9SyjATEksisg1BCMNT1zyAPUV8CPctXqcCVACvb4t8EGR7PpE7
+ B3AnmnoPeMuZKd9u+yrs5w9x+4qcuFK276Iity13u/cxA1ODwg/ECA8OypfhrApiUZzq81Knv
+ dw
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Oct 31, 2023 at 12:04:11PM +0100, Théo Lebrun wrote:
-> Hello,
-> 
-> On Tue Oct 31, 2023 at 11:11 AM CET, Russell King (Oracle) wrote:
-> > There is no point in supporting 5 or 6 bits for console usage. Think
-> > about it. What values are going to be sent over the console? It'll be
-> > ASCII, which requires at _least_ 7-bit. 6-bit would turn alpha
-> > characters into control characters, punctuation and numbers. 5-bit
-> > would be all control characters.
-> >
-> > So there's no point trying to do anything with 5 or 6 bits per byte,
-> > and I decided we might as well take that as an error (or maybe a
-> > case that the hardware has not been setup) and default to 8 bits per
-> > byte.
-> 
-> I see your point. Two things come to mind:
-> 
->  - I added this parsing of 5/6 bits to be symmetrical with
->    pl011_set_termios that handles 5/6 properly. Should pl011_set_termios
->    be modified then?
+From: Ronald Wahl <ronald.wahl@raritan.com>
 
-Why should it? Note that I said above about _console_ usage which is
-what you were referring to - the early code that sets up the console
-by either reading the current settings (so that we can transparently
-use the UART when its handed over already setup by a boot loader).
+Currently there is no support for earlycon on the AM654 UART
+controller. This commit adds it.
 
-This is completely different to what happens once the kernel is running.
-Userspace might very well have a reason to set 5 or 6 bits if it wants
-to communicate with a device that uses those sizes.
+Signed-off-by: Ronald Wahl <ronald.wahl@raritan.com>
+=2D--
+ drivers/tty/serial/8250/8250_early.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-However, such a device won't be a console for the reasons I outlined
-above (it will truncate the ASCII characters turning console messages
-into garbage.)
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/825=
+0/8250_early.c
+index 9837a27739fd..e3f482fd3de4 100644
+=2D-- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -189,5 +189,6 @@ static int __init early_omap8250_setup(struct earlycon=
+_device *device,
+ OF_EARLYCON_DECLARE(omap8250, "ti,omap2-uart", early_omap8250_setup);
+ OF_EARLYCON_DECLARE(omap8250, "ti,omap3-uart", early_omap8250_setup);
+ OF_EARLYCON_DECLARE(omap8250, "ti,omap4-uart", early_omap8250_setup);
++OF_EARLYCON_DECLARE(omap8250, "ti,am654-uart", early_omap8250_setup);
 
-> If you decide to keep the current behavior, I'd be down to adding a
-> comment to explicit this choice in pl011_console_get_options.
+ #endif
+=2D-
+2.41.0
 
-Well, honestly I don't think it needs a comment _if_ one thinks about
-what these sizes mean for what is supposed to be a console displaying
-ASCII characters. It feels to me like pointing out the obvious, and
-would be on the level of teaching people how to suck eggs... but then
-again, maybe there are times when people need to be taught how to
-suck eggs...
-
-So yes, add a comment if you think it's a good idea, but should that
-comment be replicated in almost every driver or should it be documented
-elsewhere?
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
