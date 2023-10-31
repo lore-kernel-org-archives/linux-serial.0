@@ -2,147 +2,84 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF286C4332F
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Oct 2023 14:30:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE48CC4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Oct 2023 17:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343657AbjJaOaj (ORCPT
+        id S1344406AbjJaRe6 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 Oct 2023 10:30:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40726 "EHLO
+        Tue, 31 Oct 2023 13:34:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231286AbjJaOai (ORCPT
+        with ESMTP id S1343574AbjJaRe5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 Oct 2023 10:30:38 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A857FDA;
-        Tue, 31 Oct 2023 07:30:35 -0700 (PDT)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 0E39C240003;
-        Tue, 31 Oct 2023 14:30:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1698762634;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SjOGE62KGqyY3N71na39yHJ0YOnyX5TL/3wHgzUTP/8=;
-        b=NoLpvVHH3MSIfsCf0iOpECRB4omBKIBVCnSXPLUg1MEmEOESPXlRDmbqIBVNoLBS3/5MTn
-        tIP5CDC0mWLjCd8f3OhiAZ9jFZvUAYFjRk/xzE59IPH/TvGXfeNv833u+wzOXZpSh3607t
-        0tDzfGDEbG5lEN0QDhwgICpWXIMwuLhPaSWJAAPVVggzovzV13jaeSCxliAoEVVjMUQAfn
-        iD2WGpkEHToB6YhJO3eOm6gq4Jpe+Z2qZp/+JOE+hRNHKBNSCl8xzdWxyZ1g0Ahg8FMjNW
-        qRVtjGGvuaI4vMnMolWqmehXwo/pf5pifD5BFcnqofTUmzz7jKEtZx75/GQnqg==
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 31 Oct 2023 15:30:32 +0100
-Message-Id: <CWMP3FX78B9O.9GVKCAH3OFGZ@tleb-bootlin-xps13-01>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-From:   =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
-Subject: Re: [PATCH 6/6] tty: serial: amba-pl011: Parse bits option as 5, 6,
- 7 or 8 in _get_options
-Cc:     "Hugo Villeneuve" <hugo@hugovil.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Jiri Slaby" <jirislaby@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        "Linus Walleij" <linus.walleij@linaro.org>,
-        "Gregory CLEMENT" <gregory.clement@bootlin.com>,
-        "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
-        "Thomas Petazzoni" <thomas.petazzoni@bootlin.com>,
-        "Vladimir Kondratiev" <vladimir.kondratiev@mobileye.com>,
-        "Tawfik Bayouk" <tawfik.bayouk@mobileye.com>
-X-Mailer: aerc 0.15.2
-References: <20231026-mbly-uart-v1-0-9258eea297d3@bootlin.com>
- <20231026-mbly-uart-v1-6-9258eea297d3@bootlin.com>
- <20231026105329.0ee9603563202bd2157a7d27@hugovil.com>
- <CWMITJ9VX9IP.1WPQCX981VRDE@tleb-bootlin-xps13-01>
- <ZUDS5UpWlo+DUZc4@shell.armlinux.org.uk>
- <CWMKPFZ9LOVD.2756QU9AP6U3W@tleb-bootlin-xps13-01>
- <ZUDjhpQKgUgqVeBh@shell.armlinux.org.uk>
- <CWMNJ47MO8E6.7CXJRZ181PXJ@tleb-bootlin-xps13-01>
- <ZUEJjdfk/vmH8XTR@shell.armlinux.org.uk>
-In-Reply-To: <ZUEJjdfk/vmH8XTR@shell.armlinux.org.uk>
-X-GND-Sasl: theo.lebrun@bootlin.com
+        Tue, 31 Oct 2023 13:34:57 -0400
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336EC8F
+        for <linux-serial@vger.kernel.org>; Tue, 31 Oct 2023 10:34:55 -0700 (PDT)
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-28094a3b760so1318297a91.3
+        for <linux-serial@vger.kernel.org>; Tue, 31 Oct 2023 10:34:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1698773692; x=1699378492;
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=BXofEti8JZwCHmgwTE3vRVhbr56U4e+wTA5dWayHUSY=;
+        b=aKvJfXtLmxNSoMsakH/5m7Hc5ieGC1xwac0wKzlt9KJtwad/Ahj4ngqTGyy9VcWd8V
+         h0/YU35CDro/NLL9tSqhbxQ0VYRXciGhbPjr7I/tNBd6mYYdhl6D1n5uSiM5+fX4TcyV
+         Qw6f35/sdG3CT5278kGswPNDexboQ9OpszW6VWHZ0UJXzrMIa9yl+zbxiu2JrwhzxHd+
+         7fe84/sKWgm+5/G262Rn7yzIMenWKmOBcgGgCRoVm1hZ4BrB2vn2LcVYnXzm3KkJrptu
+         gL7ymqe0kl27cyqgxtrV9kTo2u5TgFL0twAJuQq9ZhiqdbPf1bvYue6oaEWZXKzaer/d
+         887A==
+X-Gm-Message-State: AOJu0Yx3RvM41dA+weD0d4/i3x+CLttHbhGaY/Wm5tk1nWI5RyF2+Jry
+        oYjWgiLLzCuPL6FeTaysKIl9Rg==
+X-Google-Smtp-Source: AGHT+IFNQNukXbiGrmnVenNCdhVkQD5ki1y5oU+7Q17KWZUlrk5JuFTubJ6QAp08WQPas03FyJmx0g==
+X-Received: by 2002:a17:90a:9a98:b0:27e:3d05:418c with SMTP id e24-20020a17090a9a9800b0027e3d05418cmr9502150pjp.22.1698773692108;
+        Tue, 31 Oct 2023 10:34:52 -0700 (PDT)
+Received: from localhost (97-126-94-246.tukw.qwest.net. [97.126.94.246])
+        by smtp.gmail.com with ESMTPSA id d5-20020a170902c18500b001b03f208323sm1586749pld.64.2023.10.31.10.34.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Oct 2023 10:34:51 -0700 (PDT)
+From:   Kevin Hilman <khilman@kernel.org>
+To:     Tony Lindgren <tony@atomide.com>,
+        Thomas Richard <thomas.richard@bootlin.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, gregory.clement@bootlin.com,
+        u-kumar1@ti.com, d-gole@ti.com, thomas.petazzoni@bootlin.com
+Subject: Re: [PATCH] serial: 8250_omap: Set the console genpd always on if
+ no console suspend
+In-Reply-To: <20231031105247.GC57044@atomide.com>
+References: <20231017130540.1149721-1-thomas.richard@bootlin.com>
+ <7hfs213u0r.fsf@baylibre.com> <20231024045109.GT27774@atomide.com>
+ <7hjzrbj29t.fsf@baylibre.com> <20231025064131.GZ27774@atomide.com>
+ <75b6cda8-c809-409b-8be9-ad8a4db63c14@bootlin.com>
+ <20231031105247.GC57044@atomide.com>
+Date:   Tue, 31 Oct 2023 10:34:51 -0700
+Message-ID: <7h34xqitl0.fsf@baylibre.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+Tony Lindgren <tony@atomide.com> writes:
 
-On Tue Oct 31, 2023 at 3:05 PM CET, Russell King (Oracle) wrote:
-> On Tue, Oct 31, 2023 at 02:51:45PM +0100, Th=C3=A9o Lebrun wrote:
-> > On Tue Oct 31, 2023 at 12:22 PM CET, Russell King (Oracle) wrote:
-> > > On Tue, Oct 31, 2023 at 12:04:11PM +0100, Th=C3=A9o Lebrun wrote:
-> > > > On Tue Oct 31, 2023 at 11:11 AM CET, Russell King (Oracle) wrote:
-> > > > > There is no point in supporting 5 or 6 bits for console usage. Th=
-ink
-> > > > > about it. What values are going to be sent over the console? It'l=
-l be
-> > > > > ASCII, which requires at _least_ 7-bit. 6-bit would turn alpha
-> > > > > characters into control characters, punctuation and numbers. 5-bi=
-t
-> > > > > would be all control characters.
-> > > > >
-> > > > > So there's no point trying to do anything with 5 or 6 bits per by=
-te,
-> > > > > and I decided we might as well take that as an error (or maybe a
-> > > > > case that the hardware has not been setup) and default to 8 bits =
-per
-> > > > > byte.
-> > > >=20
-> > > > I see your point. Two things come to mind:
-> > > >=20
-> > > >  - I added this parsing of 5/6 bits to be symmetrical with
-> > > >    pl011_set_termios that handles 5/6 properly. Should pl011_set_te=
-rmios
-> > > >    be modified then?
-> > >
-> > > Why should it? Note that I said above about _console_ usage which is
-> > > what you were referring to - the early code that sets up the console
-> > > by either reading the current settings (so that we can transparently
-> > > use the UART when its handed over already setup by a boot loader).
-> > >
-> > > This is completely different to what happens once the kernel is runni=
-ng.
-> > > Userspace might very well have a reason to set 5 or 6 bits if it want=
-s
-> > > to communicate with a device that uses those sizes.
-> > >
-> > > However, such a device won't be a console for the reasons I outlined
-> > > above (it will truncate the ASCII characters turning console messages
-> > > into garbage.)
-> >=20
-> > I'm not sure I get it. (1) We assume it is a console so it's ASCII so n=
-o
-> > reason to set to 5 or 6 bits per word. But (2) there might be a reason
-> > to set the UART to 5 or 6 bits, the userspace decides.
+> * Thomas Richard <thomas.richard@bootlin.com> [231031 10:15]:
+>> Please find below the logs of the test you asked me.
 >
-> Precisely.
+> OK great thanks!
 >
-> > How do the two interact? Say we boot to Linux, userspace configures to =
-6
-> > bits because reasons and we reset. At second probe we see a config of 6
-> > bits per word but assume that can't be logical, even though it is.
+>> I added the call of pm_runtime_get_usage_count at the end of the suspend
+>> function.
+>> The console is attached on 2800000.serial, it has usage_count=4.
+>> Other serial has usage_count=3.
 >
-> I think you're conflating "serial console" with "serial port". A
-> "serial port" can support multiple different formats, and in this case,
-> such as 5, 6, 7, and 8 bits. 5 and 6 bits are likely to be a specialised
-> application which uses a binary protocol, not ASCII.
->
-> A "serial console" is one application of a "serial port" and a "serial
-> console" is used to send ASCII characters, not a binary protocol.
+> So as suspected, it seems the power domain gets force suspended
+> somewhere despite the usage_count.
 
-That was all clear in my mind; I was missing the following bit:
+I think the only way this could happen (excluding any bugs, of course)
+would be for pm_runtime_force_suspend() to be getting called somewhere,
+but I thought the earlier patch made that call conditional, so maybe
+there is another path where that is getting called?
 
-> Sorry, but no, we don't assume every serial port is a serial console.
-> Unless something has changed since I was involved with the serial
-> layer, **we only read the parameters from a serial port _if_ and only
-> if that port is being used as a serial console.**
+Kevin
 
-Thank you for the time you took; I'll get rid of the patch and send a V2
-fixing nits for other patches.
 
-Regards,
-
---
-Th=C3=A9o Lebrun, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
