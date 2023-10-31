@@ -2,96 +2,113 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F99C4167D
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Oct 2023 11:04:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10301C4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Oct 2023 11:09:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233601AbjJaLES (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 Oct 2023 07:04:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34460 "EHLO
+        id S1343995AbjJaLJd (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 31 Oct 2023 07:09:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231165AbjJaLER (ORCPT
+        with ESMTP id S1344026AbjJaLJd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 Oct 2023 07:04:17 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36FADF;
-        Tue, 31 Oct 2023 04:04:13 -0700 (PDT)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id B274DC0004;
-        Tue, 31 Oct 2023 11:04:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1698750252;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gdH4ndnFFRWypp8VD9egRiAHe4ArCrVlink+NxvjNco=;
-        b=no2UbQfmYmQ2oPoObwHZxxMVuHKMSVsWQe132gKW10ZGKFXxzq0kwps2F6wSOZIaIO64ik
-        VZG2v1zF6eCg8tDHWodzkVlLvniRTEpZQgOTCQc+az8n+3UA4FjLvnk0KsIr1LQBzBzdf5
-        O+EPcNvxzAR+Bhfw6dkmZ4jrLuGongRNvs5O6hybHt0tLzUrC9VZ8KytwLVd+v5F2G8GmF
-        NCMJjPTemcZJSnfyeOGCADmvePqv/hIdGTQwiHeoVLfeEbfROqBgpIlbbwDvTT3Gjdu31R
-        rP0eA33xpw8kQop64lorh9I8+fHoz61QCfzCFi7iL7peifhHnI4ZEEz1sygWzw==
-Mime-Version: 1.0
+        Tue, 31 Oct 2023 07:09:33 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99E04FC;
+        Tue, 31 Oct 2023 04:09:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
+        t=1698750563; x=1699355363; i=rwahl@gmx.de;
+        bh=pWFUU3PD5OIMpvpaP0tb8mgejL5DJ4aG473dM5x6J60=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=eQX/xwUNW7BAL24QBW8O6482LJiRlFB0Raj7BCYxuAUUH3ZWFOVT6X9F7ZpTNI5G
+         HKHzwO7WZ6Br5+Re6ET+4gzkYJGJO7iDrHuKOZaFmavSmdAEH5JknuWvr8hy8qV1K
+         ve8Ece1+5Ak17yHMiCJ34qRh0nonLYtphAuUVJqF8fkyjdvcfwMySjdK+rPAcAd/n
+         INb7CKFZYMnl6zsrAOKWzfkpeoH6aXGfotOL3zCQiHoLIzczvgSNbg+/EVXQ+u5fl
+         5PSsfMyc+5VKrSQzkH7ftavtYIAiC2zUhYxQa1E8HPqgzd/QXxuZx4uhHYaTw4tWT
+         JV0/4dctKeHnzhyT1g==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from rohan.localdomain ([84.156.147.134]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1M1po0-1qzzY32d20-002Dpa; Tue, 31
+ Oct 2023 12:09:23 +0100
+From:   Ronald Wahl <rwahl@gmx.de>
+To:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ronald Wahl <ronald.wahl@raritan.com>, stable@vger.kernel.org
+Subject: [PATCH v3] serial: 8250: 8250_omap: Clear UART_HAS_RHR_IT_DIS bit
+Date:   Tue, 31 Oct 2023 12:09:09 +0100
+Message-ID: <20231031110909.11695-1-rwahl@gmx.de>
+X-Mailer: git-send-email 2.41.0
+MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 31 Oct 2023 12:04:11 +0100
-Message-Id: <CWMKPFZ9LOVD.2756QU9AP6U3W@tleb-bootlin-xps13-01>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-From:   =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
-Subject: Re: [PATCH 6/6] tty: serial: amba-pl011: Parse bits option as 5, 6,
- 7 or 8 in _get_options
-Cc:     "Hugo Villeneuve" <hugo@hugovil.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Jiri Slaby" <jirislaby@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        "Linus Walleij" <linus.walleij@linaro.org>,
-        "Gregory CLEMENT" <gregory.clement@bootlin.com>,
-        "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
-        "Thomas Petazzoni" <thomas.petazzoni@bootlin.com>,
-        "Vladimir Kondratiev" <vladimir.kondratiev@mobileye.com>,
-        "Tawfik Bayouk" <tawfik.bayouk@mobileye.com>
-X-Mailer: aerc 0.15.2
-References: <20231026-mbly-uart-v1-0-9258eea297d3@bootlin.com>
- <20231026-mbly-uart-v1-6-9258eea297d3@bootlin.com>
- <20231026105329.0ee9603563202bd2157a7d27@hugovil.com>
- <CWMITJ9VX9IP.1WPQCX981VRDE@tleb-bootlin-xps13-01>
- <ZUDS5UpWlo+DUZc4@shell.armlinux.org.uk>
-In-Reply-To: <ZUDS5UpWlo+DUZc4@shell.armlinux.org.uk>
-X-GND-Sasl: theo.lebrun@bootlin.com
+X-Provags-ID: V03:K1:gOseK3Km/gFJ2PhS/d+snCZm/h4A1zwOObjyPd+e6edCohA+d/u
+ TFHOuTMyF2mi9J5IEyI4DKEAOw88rn8T07MwEJmU2VIhuAQzbD35usznfrfCx5TDnzE9Pah
+ 7DSB5T82gk8Ujy033l5tgjjZEpq8GyJ9+H4wk6lBNaW/qwlFlyg6C1h+YG+qOrMP9+GVmqY
+ R1chUDQ8wob0VXJBwrRSg==
+UI-OutboundReport: notjunk:1;M01:P0:hxMtm8BXEcE=;rD2x+s6ILz5ut8nptxKwF2SiYow
+ BQ/0njUICFKwRDm4FtE+V/qOwgd12/qv0ZIcAxm/XFLAwt5hpTtlFN/SO2RCJ4b4/bKHiFrlf
+ iPsYjXQhdOBxuvCEd38lVR1GQoGQZYIpXcHgnIhjcsV9ee1+vF2j70JG3cBzQa8/6vfBnLLfP
+ Do5RPf867B9254xoriKWif0ssl0pTi58t+6DxV2vUK/wG6MNJGOs3HwTMtzCV63m2c6/dfBJ2
+ 06mo5iLK21ZNiGy1sZ2SqNHECWmvXm8mKY8AfGPLlo+QclgcM8cmO5PNOIef/DLZ3faVxnhX0
+ +iZGZ2+3EzDf7vYGAnmzzo1mRDOMfn7R5swXgDLyN9aVsGtzmSpLUekX085utE4ulWEI3n3Io
+ wLftFm63ZPCpOD9w5WdI6LOkU1K8dB3KrYPLgtylxUWhhFjlT9oNQe25u4sOTcSywCGxNV8fa
+ jZFSCjrBzgwyOYBqqXbXCBz8Tm17XSNamj7yVI7fTy8E0JoqWmRm6LmeybHAGGZRMY5JWKv8c
+ eVPeAiNcnCOfqHdJ3VTanxfr9PwG/GnNp+VlcA5QOFdE0u3icOwHb3HwiKbPlpQhEcslGkvJV
+ cCXXvRFyZKMl4AQgIHNvifBoGArUVXUbxaUZAxGEnHzCNZPAC1/27e3WvsiptCOl4xk7G4BBf
+ IDyiKSXZu09eF4QGcpfkN95/2nq/9Q8CVGYJz1PLMyJHb8wKF1Buf/EDjuvh8uxztjThGHmqU
+ sm0zwV7/ZY6E8xfkJqq1yhJ4RzV2XH79V9PFqc+ea57gHZobaOpb0uan/CXkbWTqSzwIG7QUt
+ o8US7l+NmNbS5ueJe1Y5+HIRDx/7tfHVWWzQicmHn9m6Vf8V4UWdANpHnopEmcZH/WiI39/yF
+ Epv/9R0XcFxZfiVmfp/edVY4is7ZzarkSYkq8GykqF7CXwwJwyCxh9KhM5l29jU7EtcL1a7xW
+ DSVlVSaDtRJeA1igZgNhIDtKQT8=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+From: Ronald Wahl <ronald.wahl@raritan.com>
 
-On Tue Oct 31, 2023 at 11:11 AM CET, Russell King (Oracle) wrote:
-> There is no point in supporting 5 or 6 bits for console usage. Think
-> about it. What values are going to be sent over the console? It'll be
-> ASCII, which requires at _least_ 7-bit. 6-bit would turn alpha
-> characters into control characters, punctuation and numbers. 5-bit
-> would be all control characters.
->
-> So there's no point trying to do anything with 5 or 6 bits per byte,
-> and I decided we might as well take that as an error (or maybe a
-> case that the hardware has not been setup) and default to 8 bits per
-> byte.
+This fixes commit 439c7183e5b9 ("serial: 8250: 8250_omap: Disable RX
+interrupt after DMA enable") which unfortunately set the
+UART_HAS_RHR_IT_DIS bit in the UART_OMAP_IER2 register and never
+cleared it.
 
-I see your point. Two things come to mind:
+Cc: stable@vger.kernel.org
+Fixes: 439c7183e5b9 ("serial: 8250: 8250_omap: Disable RX interrupt after =
+DMA enable")
+Signed-off-by: Ronald Wahl <ronald.wahl@raritan.com>
+=2D--
+V3: - add Cc: stable@vger.kernel.org
 
- - I added this parsing of 5/6 bits to be symmetrical with
-   pl011_set_termios that handles 5/6 properly. Should pl011_set_termios
-   be modified then?
+V2: - add Fixes: tag
+    - fix author
 
- - If a value of 5 or 6 means the hardware has not been setup, shouldn't
-   we ignore all other parsed values?
+ drivers/tty/serial/8250/8250_omap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-If you decide to keep the current behavior, I'd be down to adding a
-comment to explicit this choice in pl011_console_get_options.
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250=
+/8250_omap.c
+index ca972fd37725..c7ab2963040b 100644
+=2D-- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -914,7 +914,7 @@ static void __dma_rx_do_complete(struct uart_8250_port=
+ *p)
+ 	if (priv->habit & UART_HAS_RHR_IT_DIS) {
+ 		reg =3D serial_in(p, UART_OMAP_IER2);
+ 		reg &=3D ~UART_OMAP_IER2_RHR_IT_DIS;
+-		serial_out(p, UART_OMAP_IER2, UART_OMAP_IER2_RHR_IT_DIS);
++		serial_out(p, UART_OMAP_IER2, reg);
+ 	}
 
-Regards,
+ 	dmaengine_tx_status(rxchan, cookie, &state);
+@@ -1060,7 +1060,7 @@ static int omap_8250_rx_dma(struct uart_8250_port *p=
+)
+ 	if (priv->habit & UART_HAS_RHR_IT_DIS) {
+ 		reg =3D serial_in(p, UART_OMAP_IER2);
+ 		reg |=3D UART_OMAP_IER2_RHR_IT_DIS;
+-		serial_out(p, UART_OMAP_IER2, UART_OMAP_IER2_RHR_IT_DIS);
++		serial_out(p, UART_OMAP_IER2, reg);
+ 	}
 
---
-Th=C3=A9o Lebrun, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
-
-------------------------------------------------------------------------
+ 	dma_async_issue_pending(dma->rxchan);
+=2D-
+2.41.0
 
