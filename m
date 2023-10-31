@@ -2,187 +2,109 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F46DC4332F
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Oct 2023 10:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6497C4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Oct 2023 10:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236155AbjJaKPz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 Oct 2023 06:15:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50970 "EHLO
+        id S235928AbjJaKUm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 31 Oct 2023 06:20:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236158AbjJaKPy (ORCPT
+        with ESMTP id S235003AbjJaKUm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 Oct 2023 06:15:54 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B10A1
-        for <linux-serial@vger.kernel.org>; Tue, 31 Oct 2023 03:15:49 -0700 (PDT)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 704B6E0011;
-        Tue, 31 Oct 2023 10:15:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1698747348;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dlapY09yIWGor+GfD4FtWichPuxFnnu9Iw6HSlf15sA=;
-        b=fiuiPccJ5fbEqj7PpaT7rep5GEIZxXtAh5tu0MGL2iYCMQoCp/wRZBv++5jSwOHUmfwj9U
-        ZwCqhpiShOqagdsnbJaAd85KnuVuuuL27Osh+2QeAGFuyQgwFPLeY0m4+vvQiaIOHGiS5+
-        gKAIDqONHTL+4h19Knu/9ZBPFsqc8dhRlu3Q/VfsSyHgYbx1bn++060/MT8A3tAhj+3Jqe
-        GK68ScEPwq8JvL+YjNgSZXOBlwZXGg9Z7QOlpGwIiSzErVQ5bqXLZfxO/pf3tPtdhwQoWH
-        7UfSeeeN5Uu5Wi/GeQf9hMJCphePz6gXi3LaTf2NdlFVAxT2XJusJ4+umo6EmA==
-Message-ID: <75b6cda8-c809-409b-8be9-ad8a4db63c14@bootlin.com>
-Date:   Tue, 31 Oct 2023 11:15:46 +0100
+        Tue, 31 Oct 2023 06:20:42 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F80DE;
+        Tue, 31 Oct 2023 03:20:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
+        t=1698747633; x=1699352433; i=rwahl@gmx.de;
+        bh=8KUc/Sw7tIPGe75TyB2d3JWyjue4bvCoh74xhIWYR1o=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=GF4RrG1McZkxMwr8GPYDaosOu01rTUUZOkEG4I8gq1ISGfQvTN94Q5XHJpxPNPG0
+         ynA41ekXL0yKlSxaenVCNki0+Ii7JIBHqxFewjhVrbpjVL4816faTwC6J4BsA0WXQ
+         zyZNw+f8rQ0K43+gHvNV4goyfhRM47LHs9CNKz8+eXrxW9LopwsGT0EfKeAR1pyCh
+         gIdIE2H++mlrgWTM2GhireCeoojn+/30qgVPPrFLmMOwLeCWWeXXe/jyfCwqBH/lK
+         z23uNCl0VmaiKgAXMYKexGCcn9oYFS9EHN+WvYfDvXVUMQoZCIxkCPRFhAnbbmlt4
+         x2E2NhJwqrSU55Ix/A==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from rohan.localdomain ([84.156.147.134]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MEFvj-1r7yaq2qgv-00AIde; Tue, 31
+ Oct 2023 11:20:33 +0100
+From:   Ronald Wahl <rwahl@gmx.de>
+To:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ronald Wahl <ronald.wahl@raritan.com>
+Subject: [PATCH v2] serial: 8250: 8250_omap: Clear UART_HAS_RHR_IT_DIS bit
+Date:   Tue, 31 Oct 2023 11:20:24 +0100
+Message-ID: <20231031102024.9973-1-rwahl@gmx.de>
+X-Mailer: git-send-email 2.41.0
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: 8250_omap: Set the console genpd always on if no
- console suspend
-Content-Language: en-US
-To:     Tony Lindgren <tony@atomide.com>, Kevin Hilman <khilman@kernel.org>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org, gregory.clement@bootlin.com,
-        u-kumar1@ti.com, d-gole@ti.com, thomas.petazzoni@bootlin.com
-References: <20231017130540.1149721-1-thomas.richard@bootlin.com>
- <7hfs213u0r.fsf@baylibre.com> <20231024045109.GT27774@atomide.com>
- <7hjzrbj29t.fsf@baylibre.com> <20231025064131.GZ27774@atomide.com>
-From:   Thomas Richard <thomas.richard@bootlin.com>
-In-Reply-To: <20231025064131.GZ27774@atomide.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-GND-Sasl: thomas.richard@bootlin.com
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:J42Rvwev/XCjYJrWI0iYmpHXJrUGYjJ0gOtj07t/iMcnNp3Z0Fs
+ OUM4c0iu4g1/BJphvjFMXA9SB6DvK8PpvGPrx2YWqEuMRDccHiuteewsnulbGVCb9bh9nXJ
+ lmO7kIoRjgIcQAX95beQ2ItKHYPkK3E3gEIjr7VLpwOTdrlkvhQ9Mci7rCFyy4b0JJP6IaF
+ xrUfH+Q0+GneTzDvYWbnQ==
+UI-OutboundReport: notjunk:1;M01:P0:wJXI9Vn1AN4=;ZOyEThFmvZSCukLqgzIlySsuWW8
+ SWwlM7/2PHfRqstnZWYXmCOB0hK6WrEkp/YCGqnVoasdvbd7bS6AU/zQi21CBRUJX67BTnuL+
+ BKDuh/a/Hv1bpiNSnuB0T9o1UYb1AkdE1z1ia1/nysoqlgSU3PNseLMySc3awxTuf7HC8GbKl
+ bYSEX+xZ9Rqjf4wjWP6sA+r7rIAtLTz9AITyQ43W6sLsVq5mD+4u64/8Lj6AU6NTEWn8wN6ft
+ PDP66eSRM8DEkkk7NqFw/I5RmjMynuHvHSqfqfJJnWzvQM/QRz3Lgi3WcIK+2dhOlJu02qrN1
+ 8nOu8Yi3qyjbPDzP/XDeh51/U1zB0VFgN/JQTQGmFKoRnuG8TLIPlfF1i3SrjntTlXvesLuMw
+ +DX19xKheO7GQRApTyWf2rV2gcji3DHQMQOECIanykKFXZoaRWjXAbDtZ+laIX81wfs2buj/W
+ x6hWUE/j7/2mAdNdyhSuxfs3uDWTqusn7UFU8Pe8GGB7bOiFNpc8JPgsWPrZxm/LB2fzR9E+U
+ wvKF6KvGKuG0h/KgKvk2CeUrYukog1tNeUDGc/CUP84hPgc5t7X1KX0JiP5xdTFFpz2zmiOLZ
+ MCz+GAetAtM9EiMHHdBTz8DqfZziQRcpO2rwkBbwW1vECcC7NaKOJfK7tyZ7gw00HNmGGu9W9
+ +wTRORZzBg7TwGUr9KHbw2mL/H8uvK89J0KS+sDrTzrebFGevtHqnx0fNUseDmaPW6zsudqsQ
+ RFZPV8I8mXZ8FhO7VOxM9mj6MjwlVhNPExNXQKy+tin9AL7g2SVvVfCuAiQU17F48hBUWys8H
+ 8HJMg21lfSlTStedvtQSrJkjb0rDmUDoaIeRPsqCbTrsH06hwcEjNBAvNz5H4Cs69osnJAW+l
+ 5PoTmUHWe4ig6amVoR2a2qVEJZdcBw5fIB6X4/nYC3X05bihsXYq6M6ZCeex0oDJm3fHeix7e
+ LzOr3QwfB+75HRYFZD9bACPZXhs=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 10/25/23 08:41, Tony Lindgren wrote:
-> * Kevin Hilman <khilman@kernel.org> [231024 18:36]:
->> Tony Lindgren <tony@atomide.com> writes:
->>
->>> * Kevin Hilman <khilman@kernel.org> [231023 21:31]:
->>>> Instead, what should be happening is that when `no_console_suspend` is
->>>> set, there should be an extra pm_runtime_get() which increases the
->>>> device usecount such that the device never runtime suspends, and thus
->>>> the domain will not get powered off.
->>>
->>> We already have the runtime PM usage count kept in the driver (unless
->>> there's a bug somewhere). The issue is that on suspend the power domain
->>> still gets shut down.
->>>
->>> I suspect that some of the SoC power domains get
->>> force shut down on suspend somewhere?
->>
->> If setting GENPD_FLAG_ALWAYS_ON works as this patch proposes, then a
->> force shutdown would override that genpd flag also, so I suspect the 
->> runtime PM usage count is not correct.
-> 
-> OK good point.
-> 
->> I quick skim of 8250_omap.c, and I don't see any pm_runtime_get() calls
->> that are conditional on no_console_suspend, which is what I would
->> suspect for the domain to stay on.
-> 
-> If a serial console is attached, we now have runtime PM usage count
-> always kept. Users can detach the console via sysfs as needed. See these
-> two earlier commits from Andy:
-> 
-> a3cb39d258ef ("serial: core: Allow detach and attach serial device for console")
-> bedb404e91bb ("serial: 8250_port: Don't use power management for kernel console")
-> 
-> Sounds like there's a bug somewhere. It's worth verifying if the runtime
-> PM usage count is kept for 8250_omap on suspend.
-> 
-> Thomas, care to check your test case with the attached debug hack
-> and by adding a call for pm_runtime_get_usage_count() on the suspend
-> path?
+From: Ronald Wahl <ronald.wahl@raritan.com>
 
-Hi Tony,
+This fixes commit 439c7183e5b9 ("serial: 8250: 8250_omap: Disable RX
+interrupt after DMA enable") which unfortunately set the
+UART_HAS_RHR_IT_DIS bit in the UART_OMAP_IER2 register and never
+cleared it.
 
-Please find below the logs of the test you asked me.
-I added the call of pm_runtime_get_usage_count at the end of the suspend
-function.
-The console is attached on 2800000.serial, it has usage_count=4.
-Other serial has usage_count=3.
+Fixes: 439c7183e5b9 ("serial: 8250: 8250_omap: Disable RX interrupt after =
+DMA enable")
+Signed-off-by: Ronald Wahl <ronald.wahl@raritan.com>
+=2D--
+V2: - add Fixes: tag
+    - fix author
 
-[    4.859058] port 2830000.serial:0.0: PM: calling
-pm_runtime_force_suspend+0x0/0x134 @ 114, parent: 2830000.serial:0
-[    4.869478] port 2830000.serial:0.0: PM:
-pm_runtime_force_suspend+0x0/0x134 returned 0 after 0 usecs
-[    4.878602] omap8250 2830000.serial: PM: calling
-omap8250_suspend+0x0/0x144 @ 114, parent: bus@100000
-[    4.887813] omap8250 2830000.serial: omap8250_suspend: 1634:
-usage_count = 3
-[    4.894851] omap8250 2830000.serial: PM: omap8250_suspend+0x0/0x144
-returned 0 after 7042 usecs
-[    4.903538] port 2810000.serial:0.0: PM: calling
-pm_runtime_force_suspend+0x0/0x134 @ 114, parent: 2810000.serial:0
-[    4.913957] port 2810000.serial:0.0: PM:
-pm_runtime_force_suspend+0x0/0x134 returned 0 after 0 usecs
-[    4.923080] omap8250 2810000.serial: PM: calling
-omap8250_suspend+0x0/0x144 @ 114, parent: bus@100000
-[    4.932288] omap8250 2810000.serial: omap8250_suspend: 1634:
-usage_count = 3
-[    4.939323] omap8250 2810000.serial: PM: omap8250_suspend+0x0/0x144
-returned 0 after 7038 usecs
-[    4.948010] port 2800000.serial:0.0: PM: calling
-pm_runtime_force_suspend+0x0/0x134 @ 114, parent: 2800000.serial:0
-[    4.958433] port 2800000.serial:0.0: PM:
-pm_runtime_force_suspend+0x0/0x134 returned 0 after 1 usecs
-[    4.967557] omap8250 2800000.serial: PM: calling
-omap8250_suspend+0x0/0x144 @ 114, parent: bus@100000
-[    4.976764] omap8250 2800000.serial: omap8250_suspend: 1634:
-usage_count = 4
-[    4.983799] omap8250 2800000.serial: PM: omap8250_suspend+0x0/0x144
-returned 0 after 7036 usecs
-[    4.992488] port 40a00000.serial:0.0: PM: calling
-pm_runtime_force_suspend+0x0/0x134 @ 114, parent: 40a00000.serial:0
-[    5.003081] port 40a00000.serial:0.0: PM:
-pm_runtime_force_suspend+0x0/0x134 returned 0 after 0 usecs
-[    5.012291] omap8250 40a00000.serial: PM: calling
-omap8250_suspend+0x0/0x144 @ 114, parent: bus@100000:bus@28380000
-[    5.022714] omap8250 40a00000.serial: omap8250_suspend: 1634:
-usage_count = 3
-[    5.029836] omap8250 40a00000.serial: PM: omap8250_suspend+0x0/0x144
-returned 0 after 7124 usecs
+ drivers/tty/serial/8250/8250_omap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Regards,
-
-Thomas
-
-8< -------------------------------
-diff --git a/drivers/tty/serial/8250/8250_omap.c
-b/drivers/tty/serial/8250/8250_omap.c
-index ca972fd37725..b978f12fd542 100644
---- a/drivers/tty/serial/8250/8250_omap.c
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250=
+/8250_omap.c
+index ca972fd37725..c7ab2963040b 100644
+=2D-- a/drivers/tty/serial/8250/8250_omap.c
 +++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -1631,6 +1631,9 @@ static int omap8250_suspend(struct device *dev)
-                err = pm_runtime_force_suspend(dev);
-        flush_work(&priv->qos_work);
+@@ -914,7 +914,7 @@ static void __dma_rx_do_complete(struct uart_8250_port=
+ *p)
+ 	if (priv->habit & UART_HAS_RHR_IT_DIS) {
+ 		reg =3D serial_in(p, UART_OMAP_IER2);
+ 		reg &=3D ~UART_OMAP_IER2_RHR_IT_DIS;
+-		serial_out(p, UART_OMAP_IER2, UART_OMAP_IER2_RHR_IT_DIS);
++		serial_out(p, UART_OMAP_IER2, reg);
+ 	}
 
-+       dev_info(dev, "%s: %d: usage_count = %d\n",
-+                __func__, __LINE__, pm_runtime_get_usage_count(dev));
-+
-        return err;
- }
+ 	dmaengine_tx_status(rxchan, cookie, &state);
+@@ -1060,7 +1060,7 @@ static int omap_8250_rx_dma(struct uart_8250_port *p=
+)
+ 	if (priv->habit & UART_HAS_RHR_IT_DIS) {
+ 		reg =3D serial_in(p, UART_OMAP_IER2);
+ 		reg |=3D UART_OMAP_IER2_RHR_IT_DIS;
+-		serial_out(p, UART_OMAP_IER2, UART_OMAP_IER2_RHR_IT_DIS);
++		serial_out(p, UART_OMAP_IER2, reg);
+ 	}
 
-
-> 
-> Regards,
-> 
-> Tony
-> 
-> 8< -------------------------------
-> diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
-> --- a/include/linux/pm_runtime.h
-> +++ b/include/linux/pm_runtime.h
-> @@ -129,6 +129,11 @@ static inline void pm_runtime_get_noresume(struct device *dev)
->  	atomic_inc(&dev->power.usage_count);
->  }
->  
-> +static inline int pm_runtime_get_usage_count(struct device *dev)
-> +{
-> +	return atomic_read(&dev->power.usage_count);
-> +}
-> +
->  /**
->   * pm_runtime_put_noidle - Drop runtime PM usage counter of a device.
->   * @dev: Target device.
-
+ 	dma_async_issue_pending(dma->rxchan);
+=2D-
+2.41.0
 
