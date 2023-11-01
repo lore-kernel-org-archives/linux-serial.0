@@ -2,140 +2,116 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E458C4332F
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Nov 2023 06:50:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8977C4167B
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Nov 2023 17:15:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231261AbjKAGuC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Nov 2023 02:50:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33064 "EHLO
+        id S1344671AbjKARPA (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 1 Nov 2023 13:15:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231240AbjKAGuC (ORCPT
+        with ESMTP id S1344562AbjKARO7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Nov 2023 02:50:02 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA35A6;
-        Tue, 31 Oct 2023 23:49:56 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5249C433C8;
-        Wed,  1 Nov 2023 06:49:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1698821396;
-        bh=IrJZzwa1LgUljgZ2pNJ6BxSyMe71q3iklIBfrKxqK5g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zz4teDGVyicLH+2JW0PTJ/4ys7ufZO5iW4ESyOqVpIzH++E1HRi7nYG3N+BJCa6ja
-         sWDNEPGZ6CyFu0VTP3itptGAxbgW+oGvrnMTZSmA38HcsW6ND8od9LDYmCznkCNNSB
-         pvWFb3+LKGTKPu2DkztOkcBPwFeWrgQHjxLfTOyA=
-Date:   Wed, 1 Nov 2023 07:49:48 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2] tty: serial: Add RS422 flag to struct serial_rs485
-Message-ID: <2023110127-wireless-candy-c298@gregkh>
-References: <20231101064404.45711-1-crescentcy.hsieh@moxa.com>
+        Wed, 1 Nov 2023 13:14:59 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B87A6;
+        Wed,  1 Nov 2023 10:14:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
+        t=1698858884; x=1699463684; i=rwahl@gmx.de;
+        bh=EriKGdVhkjZE/JW8h0Day4T4RmUpBJKLvzPhAYNXNLI=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=T6QKpQEh0+ITgaCW1YWnQiQak5N89ZYBJQnfNlOwVsmEG/2+NECZ6AVpinFbGtaL
+         owz8ZMeiYQYpjAqGwKM0ZIjR/GKuxgl9fWtdnQaxunAhNJOGT/Un31eojphAAfEP3
+         SSrjMUOwPg+4EXCPM6m3ntizj5kXT/liJ3K/7dN+8/nFU+G7H16b6SIcWIBn9TIgE
+         Jfu0A2O8jpQ03prOswovmX7xOavcQb23cdcIYfjA5fQtyGMX2hZZTf/UrSjuN+AI+
+         0WqBdmJhA/Lkkjxd/cyZlpxQS+M7uJ/whYkWhd5zywMCQ2PjViKCu9aci4o30bCLu
+         8TT6DVoPh0Jx/n1ZyQ==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from rohan.localdomain ([84.156.147.134]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MUGeB-1qpGPH2S4B-00RJT5; Wed, 01
+ Nov 2023 18:14:44 +0100
+From:   Ronald Wahl <rwahl@gmx.de>
+To:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Ronald Wahl <ronald.wahl@raritan.com>, stable@vger.kernel.org
+Subject: [PATCH v4] serial: 8250: 8250_omap: Do not start RX DMA on THRI interrupt
+Date:   Wed,  1 Nov 2023 18:14:31 +0100
+Message-ID: <20231101171431.16495-1-rwahl@gmx.de>
+X-Mailer: git-send-email 2.41.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231101064404.45711-1-crescentcy.hsieh@moxa.com>
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:OU2kS9jqgy2fT3w5uBLnJbbnDx7Tjfr6MYf8PnuM07Qq6IGpNSX
+ /2D7bW0HTTX0RYxg/DoeuwfkkyrUX8LBM4jCVaMMcfFlx0lzfkAdkzlUzyLIUHiPsvCc1q6
+ OOOAice4sEsIUqqmEIKhbqatANdaPcZM5bO4EjGDFleJnfx+7VkiFc23QK+qFEepIgmjhhZ
+ jD7DcXK6lcx/vIFmdSkbg==
+UI-OutboundReport: notjunk:1;M01:P0:53AjFZVSRN4=;5723rBi+1Md/zfc/YkPrOSPr4iD
+ 930nbU4C6fvaWXJ1VOKaJLLD0KqLaYNaI1A93BIPSoqsIyu92H440hXkvnGz15siwq6rrqDDY
+ iXqf81ls9hgcaLZVJunD+B3mzlxy02KS5IihNpAxKay+NdSq2Cg0rFnK3SAkdhIIhz9CQkKlB
+ 55//g62HUPPis0UhiHehtXJXim3/rSkHmEaihyBjb9w3+gi+8vpGLPXVX/AgEyjSrxHDjiGKi
+ VNY2Cq+pIVg60Prb8/+fCGe6pVJp9DXttKSkLC/IxC53sp3OKmKqost13Jlix96pziAdeImff
+ pFOFOg0ym6BXoBeAB2k/RfuRBUJ8aurqgvA/24CghJ3E1bDZZs+1vN1dmYgzNLBGqEcqSpdrR
+ Hbr6pferUVBVWCvVJiORwc/w1+0gNfvezxBZTEE3gLD/ix6KE7ZPPweJ3Otbo3+YMv1kL/1fj
+ nGRx+SI8fXLualUzbXk3ilW1oJlnYxiN67Ttz6mLh3F26keInVNPjracBXZtqDeinUjBuAaY+
+ 5GegC59OGOzpcv3rnMaG9HLcyVbGqobXCCq5Qu4pnPn9Yj+sqYLBEFKroTd1XxoniDsydggE3
+ xy8WIPkbl1BHBPg7PYDELlAWTn7F6zMTyO4scxJ2SnhY3TByUtHfil2eVUQQhjPgxMSRVvl2Z
+ wRzIz11MmCIhuWUzkpGEl/07rM+E0P5ZzzinDMWCUM4tO+9pyl9Scc2wuPePpoQl51w0YsCbR
+ GBjG4ITVgoFKyzvRlAZ0ZQ18RrdnVRxjOhjlb4uj+OfrtCRwSrqAqEslbUchNr8TNtCxYFfE0
+ 9Gl7fC9R+xu7d+j4L09O6G34toosBZNwta87IU0LBWas1sP8T7Ti4xG65QVrbxTT9Dc7ItfYK
+ WO7tDyT+uosO39kUJqoh3lQbEaDcA1rcsGn0QVT66UdjMDLveGsZGsvFZg0U5i+JzVR1l8e2w
+ i2bqMw==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Nov 01, 2023 at 02:44:04PM +0800, Crescent CY Hsieh wrote:
-> Add "SER_RS422_ENABLED" flag within struct serial_rs485, so that serial
-> port can switching interface into RS422 if supported by using ioctl
-> command "TIOCSRS485".
-> 
-> In case of interfaces confliction, add checks within
-> uart_sanitize_serial_rs485() such that only one of RS422/RS485 is set.
-> 
-> Signed-off-by: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-> 
-> ---
-> Changes in v2:
-> - Revise the logic that checks whether RS422/RS485 are enabled
->   simultaneously.
-> 
-> v1: https://lore.kernel.org/all/20231030053632.5109-1-crescentcy.hsieh@moxa.com/
-> 
-> ---
->  drivers/tty/serial/serial_core.c | 19 +++++++++++++++++--
->  include/uapi/linux/serial.h      |  4 ++++
->  2 files changed, 21 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 831d03361..54a104c52 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1305,7 +1305,7 @@ static int uart_get_icount(struct tty_struct *tty,
->  
->  #define SER_RS485_LEGACY_FLAGS	(SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | \
->  				 SER_RS485_RTS_AFTER_SEND | SER_RS485_RX_DURING_TX | \
-> -				 SER_RS485_TERMINATE_BUS)
-> +				 SER_RS485_TERMINATE_BUS | SER_RS422_ENABLED)
+From: Ronald Wahl <ronald.wahl@raritan.com>
 
-A new flag is "legacy"?
+Starting RX DMA on THRI interrupt is too early because TX may not have
+finished yet.
 
->  
->  static int uart_check_rs485_flags(struct uart_port *port, struct serial_rs485 *rs485)
->  {
-> @@ -1371,11 +1371,26 @@ static void uart_sanitize_serial_rs485(struct uart_port *port, struct serial_rs4
->  {
->  	u32 supported_flags = port->rs485_supported.flags;
->  
-> -	if (!(rs485->flags & SER_RS485_ENABLED)) {
-> +	if (!(rs485->flags & (SER_RS485_ENABLED | SER_RS422_ENABLED))) {
->  		memset(rs485, 0, sizeof(*rs485));
->  		return;
->  	}
->  
-> +	/* Pick sane setting if the user enables both interfaces */
-> +	if (rs485->flags & SER_RS485_ENABLED && rs485->flags & SER_RS422_ENABLED) {
-> +		dev_warn_ratelimited(port->dev,
-> +			"%s (%d): Invalid serial interface setting, using RS485 instead\n",
-> +			port->name, port->line);
+This change is inspired by commit 90b8596ac460 ("serial: 8250: Prevent
+starting up DMA Rx on THRI interrupt") and fixes DMA issues I had with
+an AM62 SoC that is using the 8250 OMAP variant.
 
-Why is this ratelimited?  What would cause lots of repeats of this?
+Cc: stable@vger.kernel.org
+Fixes: c26389f998a8 ("serial: 8250: 8250_omap: Add DMA support for UARTs o=
+n K3 SoCs")
+Signed-off-by: Ronald Wahl <ronald.wahl@raritan.com>
+=2D--
+V4: - add missing braces to fix build warning
 
+V3: - add Cc: stable@vger.kernel.org
 
-> +		rs485->flags &= ~SER_RS422_ENABLED;
-> +	}
-> +
-> +	/* Clear other bits and return if RS422 is enabled */
-> +	if (rs485->flags & SER_RS422_ENABLED) {
-> +		memset(rs485, 0, sizeof(*rs485));
-> +		rs485->flags |= SER_RS422_ENABLED;
-> +		return;
-> +	}
-> +
->  	/* Pick sane settings if the user hasn't */
->  	if ((supported_flags & (SER_RS485_RTS_ON_SEND|SER_RS485_RTS_AFTER_SEND)) &&
->  	    !(rs485->flags & SER_RS485_RTS_ON_SEND) ==
-> diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
-> index 53bc1af67..427609fd5 100644
-> --- a/include/uapi/linux/serial.h
-> +++ b/include/uapi/linux/serial.h
-> @@ -137,6 +137,8 @@ struct serial_icounter_struct {
->   * * %SER_RS485_ADDRB		- Enable RS485 addressing mode.
->   * * %SER_RS485_ADDR_RECV - Receive address filter (enables @addr_recv). Requires %SER_RS485_ADDRB.
->   * * %SER_RS485_ADDR_DEST - Destination address (enables @addr_dest). Requires %SER_RS485_ADDRB.
-> + *
-> + * * %SER_RS422_ENABLED		- RS422 enabled.
->   */
->  struct serial_rs485 {
->  	__u32	flags;
-> @@ -149,6 +151,8 @@ struct serial_rs485 {
->  #define SER_RS485_ADDR_RECV		(1 << 7)
->  #define SER_RS485_ADDR_DEST		(1 << 8)
->  
-> +#define SER_RS422_ENABLED		(1 << 9)
+V2: - add Fixes: tag
+    - fix author
 
-Why the extra blank line before this?
+ drivers/tty/serial/8250/8250_omap.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-And why isn't it using the proper BIT() type macro instead (yeah, the
-others are not, I understand...)
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250=
+/8250_omap.c
+index c7ab2963040b..1122f37fe744 100644
+=2D-- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1282,10 +1282,12 @@ static int omap_8250_dma_handle_irq(struct uart_po=
+rt *port)
 
-Also, what userspace code is going to use this?  How is it tested?
+ 	status =3D serial_port_in(port, UART_LSR);
 
-thanks,
+-	if (priv->habit & UART_HAS_EFR2)
+-		am654_8250_handle_rx_dma(up, iir, status);
+-	else
+-		status =3D omap_8250_handle_rx_dma(up, iir, status);
++	if ((iir & 0x3f) !=3D UART_IIR_THRI) {
++		if (priv->habit & UART_HAS_EFR2)
++			am654_8250_handle_rx_dma(up, iir, status);
++		else
++			status =3D omap_8250_handle_rx_dma(up, iir, status);
++	}
 
-greg k-h
+ 	serial8250_modem_status(up);
+ 	if (status & UART_LSR_THRE && up->dma->tx_err) {
+=2D-
+2.41.0
+
