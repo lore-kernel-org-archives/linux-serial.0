@@ -2,101 +2,151 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E70C4332F
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Oct 2023 21:49:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 960C5C4167D
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Nov 2023 01:04:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346187AbjJaVts (ORCPT
+        id S1347110AbjKABEw (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 Oct 2023 17:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41992 "EHLO
+        Tue, 31 Oct 2023 21:04:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344894AbjJaVtr (ORCPT
+        with ESMTP id S1345068AbjKABEv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 Oct 2023 17:49:47 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466C7E8;
-        Tue, 31 Oct 2023 14:49:45 -0700 (PDT)
+        Tue, 31 Oct 2023 21:04:51 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE410C9;
+        Tue, 31 Oct 2023 18:04:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698788985; x=1730324985;
+  t=1698800685; x=1730336685;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=8LmVIWxXOjxqP6+KababCGJaUptAGF2CRhq+6uxRgeo=;
-  b=NK8z/4ys8IP8hnl8Mnfo3Yk9EtBc/APfBbVQqBHePTqN+FCVm56uHMsB
-   QFyMo9TbWtmMeJTJkGpSNgOfWmkGkTgf4q7Niclj0+D1BxsoiShEyEEG3
-   qfxjCOkW7gF47hkX1r4BL6m2gb1K+FA8abmUQPW/9rqt6DIlwg0HVsY4m
-   Cks6WBa4JS3OIzFksp8WCBzvFyUJMGrQ0aVw26dtUbbmDAcuUjPf+lBtj
-   LUykikYK7kNU3ISndA0v27LEKCbnnNhV+htJbMEc4AEO2gZQgZIOHPJlG
-   KYxUbIVvGfKh7lmP/3r0SEIP+VXAjVoDPtu79OOTD1epXxgUxcVGJQ3wn
+  bh=kmVtTe8yZZhwGEv3fwHYpE27eB8B9HkShe2k3vvydso=;
+  b=KTzxf1StetAWnbJmgzfDdOv2w+eoJJNhPKlHYxBtvMWvhOKGvKbfJL52
+   8ZTzJaL5HuNh13bmibyVMdDBVwD39WaU/8UiiU4iZSEIS2M9zBBLles0i
+   aCdUSWuanOlTWIRiLQX1gJa8c8fQo0PRivedmAAFhD0J00yYTXACzII21
+   aJSsOJfG8HF/cJ1ENHL7ZoVH4AUd4+C5h5FdfKkUFDM/NVRvhMKbeX9SB
+   uLy5AhLHN9PS/ZmsoKvumySz9CYva665sbMQDw9fESYuc67kRH6Z92eY/
+   WazVTDBgJiPYpLvgmgT2Vqbz4GP0pOuM2/TP1A37zJnx+kMXNpqJSVC3C
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10880"; a="454850509"
+X-IronPort-AV: E=McAfee;i="6600,9927,10880"; a="368614301"
 X-IronPort-AV: E=Sophos;i="6.03,266,1694761200"; 
-   d="scan'208";a="454850509"
+   d="scan'208";a="368614301"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2023 14:49:44 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2023 18:03:57 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10880"; a="760748095"
+X-IronPort-AV: E=McAfee;i="6600,9927,10880"; a="760790591"
 X-IronPort-AV: E=Sophos;i="6.03,266,1694761200"; 
-   d="scan'208";a="760748095"
+   d="scan'208";a="760790591"
 Received: from lkp-server01.sh.intel.com (HELO 17d9e85e5079) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 31 Oct 2023 14:49:42 -0700
+  by orsmga002.jf.intel.com with ESMTP; 31 Oct 2023 18:03:54 -0700
 Received: from kbuild by 17d9e85e5079 with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1qxwcG-0000PK-0e;
-        Tue, 31 Oct 2023 21:49:40 +0000
-Date:   Wed, 1 Nov 2023 05:49:39 +0800
+        id 1qxzeB-0000Uy-2R;
+        Wed, 01 Nov 2023 01:03:51 +0000
+Date:   Wed, 1 Nov 2023 09:03:49 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Jiaxun Yang <jiaxun.yang@flygoat.com>, linux-mips@vger.kernel.org
-Cc:     oe-kbuild-all@lists.linux.dev, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, tsbogend@alpha.franken.de,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>
-Subject: Re: [PATCH 2/3] MIPS: zboot: Add UHI semihosting debug print support
-Message-ID: <202311010521.7YJZiVJm-lkp@intel.com>
-References: <20231027182650.281405-7-jiaxun.yang@flygoat.com>
+To:     Ronald Wahl <rwahl@gmx.de>, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Cc:     oe-kbuild-all@lists.linux.dev,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Ronald Wahl <ronald.wahl@raritan.com>, stable@vger.kernel.org
+Subject: Re: [PATCH v3] serial: 8250: 8250_omap: Do not start RX DMA on THRI
+ interrupt
+Message-ID: <202311010816.kXNniDbT-lkp@intel.com>
+References: <20231031110950.11714-1-rwahl@gmx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231027182650.281405-7-jiaxun.yang@flygoat.com>
+In-Reply-To: <20231031110950.11714-1-rwahl@gmx.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Jiaxun,
+Hi Ronald,
 
 kernel test robot noticed the following build warnings:
 
 [auto build test WARNING on tty/tty-testing]
-[also build test WARNING on tty/tty-next tty/tty-linus linus/master v6.6 next-20231030]
+[also build test WARNING on tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.6 next-20231031]
 [If your patch is applied to the wrong git tree, kindly drop us a note.
 And when submitting patch, we suggest to use '--base' as documented in
 https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jiaxun-Yang/MIPS-zboot-Add-UHI-semihosting-debug-print-support/20231028-032719
+url:    https://github.com/intel-lab-lkp/linux/commits/Ronald-Wahl/serial-8250-8250_omap-Do-not-start-RX-DMA-on-THRI-interrupt/20231031-191258
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20231027182650.281405-7-jiaxun.yang%40flygoat.com
-patch subject: [PATCH 2/3] MIPS: zboot: Add UHI semihosting debug print support
-config: mips-allmodconfig (https://download.01.org/0day-ci/archive/20231101/202311010521.7YJZiVJm-lkp@intel.com/config)
+patch link:    https://lore.kernel.org/r/20231031110950.11714-1-rwahl%40gmx.de
+patch subject: [PATCH v3] serial: 8250: 8250_omap: Do not start RX DMA on THRI interrupt
+config: mips-allmodconfig (https://download.01.org/0day-ci/archive/20231101/202311010816.kXNniDbT-lkp@intel.com/config)
 compiler: mips-linux-gcc (GCC) 13.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231101/202311010521.7YJZiVJm-lkp@intel.com/reproduce)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231101/202311010816.kXNniDbT-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202311010521.7YJZiVJm-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202311010816.kXNniDbT-lkp@intel.com/
 
-Note: functions only called from assembly code should be annotated with the asmlinkage attribute
 All warnings (new ones prefixed by >>):
 
->> arch/mips/boot/compressed/dbg-uhi.c:8:6: warning: no previous prototype for 'puts' [-Wmissing-prototypes]
-       8 | void puts(const char *s)
-         |      ^~~~
+   drivers/tty/serial/8250/8250_omap.c: In function 'omap_8250_dma_handle_irq':
+>> drivers/tty/serial/8250/8250_omap.c:1301:12: warning: suggest explicit braces to avoid ambiguous 'else' [-Wdangling-else]
+    1301 |         if ((iir & 0x3f) != UART_IIR_THRI)
+         |            ^
 
 
-vim +/puts +8 arch/mips/boot/compressed/dbg-uhi.c
+vim +/else +1301 drivers/tty/serial/8250/8250_omap.c
 
-     7	
-   > 8	void puts(const char *s)
+  1279	
+  1280	/*
+  1281	 * This is mostly serial8250_handle_irq(). We have a slightly different DMA
+  1282	 * hoook for RX/TX and need different logic for them in the ISR. Therefore we
+  1283	 * use the default routine in the non-DMA case and this one for with DMA.
+  1284	 */
+  1285	static int omap_8250_dma_handle_irq(struct uart_port *port)
+  1286	{
+  1287		struct uart_8250_port *up = up_to_u8250p(port);
+  1288		struct omap8250_priv *priv = up->port.private_data;
+  1289		u16 status;
+  1290		u8 iir;
+  1291	
+  1292		iir = serial_port_in(port, UART_IIR);
+  1293		if (iir & UART_IIR_NO_INT) {
+  1294			return IRQ_HANDLED;
+  1295		}
+  1296	
+  1297		uart_port_lock(port);
+  1298	
+  1299		status = serial_port_in(port, UART_LSR);
+  1300	
+> 1301		if ((iir & 0x3f) != UART_IIR_THRI)
+  1302			if (priv->habit & UART_HAS_EFR2)
+  1303				am654_8250_handle_rx_dma(up, iir, status);
+  1304			else
+  1305				status = omap_8250_handle_rx_dma(up, iir, status);
+  1306	
+  1307		serial8250_modem_status(up);
+  1308		if (status & UART_LSR_THRE && up->dma->tx_err) {
+  1309			if (uart_tx_stopped(&up->port) ||
+  1310			    uart_circ_empty(&up->port.state->xmit)) {
+  1311				up->dma->tx_err = 0;
+  1312				serial8250_tx_chars(up);
+  1313			} else  {
+  1314				/*
+  1315				 * try again due to an earlier failer which
+  1316				 * might have been resolved by now.
+  1317				 */
+  1318				if (omap_8250_tx_dma(up))
+  1319					serial8250_tx_chars(up);
+  1320			}
+  1321		}
+  1322	
+  1323		uart_unlock_and_check_sysrq(port);
+  1324	
+  1325		return 1;
+  1326	}
+  1327	
 
 -- 
 0-DAY CI Kernel Test Service
