@@ -2,116 +2,122 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E721BC4332F
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Nov 2023 05:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16F9BC4332F
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Nov 2023 08:51:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230390AbjKBFrv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Nov 2023 01:47:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44662 "EHLO
+        id S234118AbjKBIvA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Nov 2023 04:51:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235794AbjKBFph (ORCPT
+        with ESMTP id S233696AbjKBIu6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Nov 2023 01:45:37 -0400
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB0F112;
-        Wed,  1 Nov 2023 22:45:32 -0700 (PDT)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68F08C433C8;
-        Thu,  2 Nov 2023 05:45:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1698903931;
-        bh=deTWce1Ruc+WuMtuvtN9mov19AKFx2bIim+XWnVSxyY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XFIZyzIM6Os/iGOUa/HBwCScp/KWQ75JB5Pxl+4A3LNJqZGM6tDk/gDrY5zF1BevE
-         /7K8pQZg58ICXeHGyRPhoYoJrU1zR/pgPlfaQNe+0N2IemO4XII/p6b14c/wLvz7m2
-         OECxYE+IreLfyBoX8+RRBIUtqwrOzIBsTSSSLyNs=
-Date:   Thu, 2 Nov 2023 06:45:28 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     dimadrumspro@gmail.com
-Cc:     dimaac@bk.ru, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH 2/2] drivers: tty: vt: vt.c: fixed segmentation fault in
- vt.c
-Message-ID: <2023110236-onstage-skipper-30be@gregkh>
-References: <20231101235332.4314-1-dimadrumspro@gmail.com>
+        Thu, 2 Nov 2023 04:50:58 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1B6137;
+        Thu,  2 Nov 2023 01:50:46 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 3A28oYrQ033035;
+        Thu, 2 Nov 2023 03:50:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1698915034;
+        bh=EykruRatXE7RVb6LMNRJfyVGU31FMDJe9o9Z2a0tiH0=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=j91EtjcCIX1vHpL0h8LqkBFRxyMkf2zF6zoaFHG2tA4qzww2mbRuvOLDXSdOd9lDr
+         Tzy2/ajzP558x+Y9WvxDPXF02cIRsGj3zPM2YQvmpjEqsNX/8+jG9JJofyMo/Z1Dy4
+         aY/ZKlGVcenM42kwtY0UPXXYXA7s3OcyGYR0QDrE=
+Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 3A28oYBq114998
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 2 Nov 2023 03:50:34 -0500
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Thu, 2
+ Nov 2023 03:50:34 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
+ Frontend Transport; Thu, 2 Nov 2023 03:50:34 -0500
+Received: from [172.24.227.94] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 3A28oUf1079168;
+        Thu, 2 Nov 2023 03:50:31 -0500
+Message-ID: <b3e76fae-fc04-4231-b215-560f4c97ebe1@ti.com>
+Date:   Thu, 2 Nov 2023 14:20:30 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231101235332.4314-1-dimadrumspro@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4] serial: 8250: 8250_omap: Do not start RX DMA on THRI
+ interrupt
+Content-Language: en-US
+To:     Ronald Wahl <rwahl@gmx.de>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Ronald Wahl <ronald.wahl@raritan.com>, <stable@vger.kernel.org>
+References: <20231101171431.16495-1-rwahl@gmx.de>
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+In-Reply-To: <20231101171431.16495-1-rwahl@gmx.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Nov 02, 2023 at 12:53:32AM +0100, dimadrumspro@gmail.com wrote:
-> From: dimaaac <dimadrumspro@gmail.com>
+
+
+On 01/11/23 22:44, Ronald Wahl wrote:
+> From: Ronald Wahl <ronald.wahl@raritan.com>
 > 
-> The previous code lacked proper synchronization, leading to potential data corruption and crashes. Added a spin lock to protect shared variable 'scrollback_delta' to prevent concurrent access.
+> Starting RX DMA on THRI interrupt is too early because TX may not have
+> finished yet.
 > 
-> Signed-off-by: dimaaac <dimaac@bk.ru>
+> This change is inspired by commit 90b8596ac460 ("serial: 8250: Prevent
+> starting up DMA Rx on THRI interrupt") and fixes DMA issues I had with
+> an AM62 SoC that is using the 8250 OMAP variant.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: c26389f998a8 ("serial: 8250: 8250_omap: Add DMA support for UARTs on K3 SoCs")
+> Signed-off-by: Ronald Wahl <ronald.wahl@raritan.com>
 > ---
->  drivers/tty/vt/vt.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
+> V4: - add missing braces to fix build warning
 > 
-> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-> index 5c47f77804f0..29cf7fe11662 100644
-> --- a/drivers/tty/vt/vt.c
-> +++ b/drivers/tty/vt/vt.c
-> @@ -301,12 +301,13 @@ static inline unsigned short *screenpos(const struct vc_data *vc, int offset,
->  }
->  
->  /* Called  from the keyboard irq path.. */
-> +static DEFINE_SPINLOCK(scrolldelta_lock);
-> +
->  static inline void scrolldelta(int lines)
->  {
-> -	/* FIXME */
-> -	/* scrolldelta needs some kind of consistency lock, but the BKL was
-> -	   and still is not protecting versus the scheduled back end */
-> +	spin_lock(&scrolldelta_lock);
->  	scrollback_delta += lines;
-> +	spin_unlock(&scrolldelta_lock);
->  	schedule_console_callback();
->  }
->  
-> -- 
-> 2.42.0
+> V3: - add Cc: stable@vger.kernel.org
+> 
+> V2: - add Fixes: tag
+>     - fix author
+> 
+>  drivers/tty/serial/8250/8250_omap.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> index c7ab2963040b..1122f37fe744 100644
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -1282,10 +1282,12 @@ static int omap_8250_dma_handle_irq(struct uart_port *port)
+> 
+>  	status = serial_port_in(port, UART_LSR);
+> 
+> -	if (priv->habit & UART_HAS_EFR2)
+> -		am654_8250_handle_rx_dma(up, iir, status);
+> -	else
+> -		status = omap_8250_handle_rx_dma(up, iir, status);
+> +	if ((iir & 0x3f) != UART_IIR_THRI) {
+> +		if (priv->habit & UART_HAS_EFR2)
+> +			am654_8250_handle_rx_dma(up, iir, status);
+> +		else
+> +			status = omap_8250_handle_rx_dma(up, iir, status);
+> +	}
+
+Reviewed-by: Vignesh Raghavendra <vigneshr@ti.com>
+
+Thanks for the fix!
+
+> 
+>  	serial8250_modem_status(up);
+>  	if (status & UART_LSR_THRE && up->dma->tx_err) {
+> --
+> 2.41.0
 > 
 
-Hi,
-
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- You did not specify a description of why the patch is needed, or
-  possibly, any description at all, in the email body.  Please read the
-  section entitled "The canonical patch format" in the kernel file,
-  Documentation/process/submitting-patches.rst for what is needed in
-  order to properly describe the change.
-
-- You did not write a descriptive Subject: for the patch, allowing Greg,
-  and everyone else, to know what this patch is all about.  Please read
-  the section entitled "The canonical patch format" in the kernel file,
-  Documentation/process/submitting-patches.rst for what a proper
-  Subject: line should look like.
-
-- It looks like you did not use your "real" name for the patch on either
-  the Signed-off-by: line, or the From: line (both of which have to
-  match).  Please read the kernel file,
-  Documentation/process/submitting-patches.rst for how to do this
-  correctly.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+-- 
+Regards
+Vignesh
