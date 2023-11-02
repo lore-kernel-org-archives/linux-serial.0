@@ -2,157 +2,235 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27E9DC4332F
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Nov 2023 22:08:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0A98C4332F
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Nov 2023 22:32:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229825AbjKBWIs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Nov 2023 18:08:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54052 "EHLO
+        id S234638AbjKBWc1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Nov 2023 18:32:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229741AbjKBWIs (ORCPT
+        with ESMTP id S229759AbjKBWc0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Nov 2023 18:08:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2233191
-        for <linux-serial@vger.kernel.org>; Thu,  2 Nov 2023 15:07:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1698962875;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IkWJVPJFaRtARApP/xOT73zf0/RfYFWCBPOHT7K33GA=;
-        b=F2+sLUbpsKBURhWUq2/y75Rm4V6gCP4imPnqKSIt6Hi81MRmIk0tUP5M6BpS0y0l+vqMzo
-        iPi4cf45Vb+OeSv9aqdOhANxqgYiyFjcLhJ4mT0uSL5ZxPm7AzaHQc2vrdAWVtTR3DQ2yf
-        H+YunAmcdwvt+ssUF09PcZZvqLQ9Pts=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-59-cdy9wxjTNW-QdvyeITJiCQ-1; Thu, 02 Nov 2023 18:07:54 -0400
-X-MC-Unique: cdy9wxjTNW-QdvyeITJiCQ-1
-Received: by mail-ed1-f69.google.com with SMTP id 4fb4d7f45d1cf-542d011ca7dso224624a12.1
-        for <linux-serial@vger.kernel.org>; Thu, 02 Nov 2023 15:07:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698962873; x=1699567673;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+        Thu, 2 Nov 2023 18:32:26 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604CCDE
+        for <linux-serial@vger.kernel.org>; Thu,  2 Nov 2023 15:32:23 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id 4fb4d7f45d1cf-5409bc907edso2377653a12.0
+        for <linux-serial@vger.kernel.org>; Thu, 02 Nov 2023 15:32:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=lpnu-ua.20230601.gappssmtp.com; s=20230601; t=1698964342; x=1699569142; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=IkWJVPJFaRtARApP/xOT73zf0/RfYFWCBPOHT7K33GA=;
-        b=CzO0V/F1zF1WLY/4wuiV2xT3KdsSQH45ucWFJyoG6DBz/bFUBJgAU9nghM9MpX3VmU
-         n7a9G09tRYq+T2j0AIED4am2Cjsr77Djl2B3b1vmkaKiTPQ0BwnhqB2tr9pyvwpXo8VV
-         T2MsBmNkyA9PcUcS12nOUSMq234tvLcKRUyK6ryCfeqXR9NV3w5J1GexiMHqZNRDdU1A
-         9JbyFhIsIPNx2sy0PxQJYmyYmI7N0zHuGZ1c9KWynzubhy+95tirpZo35PEqbE2RO46l
-         DavR7rkK4A3tRJUlfBY0z1oobg2gBYKBenysGF5G9Q0CaAhFCz/elzqQ7sycQtn6+HdR
-         hPgQ==
-X-Gm-Message-State: AOJu0YyVMcf0z2UDxrQL2AAGQd0W0iswtUCRp8VvkMRodiaS1J3pTVJv
-        OUi6YNW2NnTyxsIZg/2ei+Z+KOqcEoYdQIYo0vUc/VD9X174659vAF1gLw1e2vsu8mzQRjJ6KBU
-        UKAckCzzVoBPUgK+rPUu5gAO+
-X-Received: by 2002:a50:c05b:0:b0:543:83a3:f39 with SMTP id u27-20020a50c05b000000b0054383a30f39mr6383126edd.4.1698962873044;
-        Thu, 02 Nov 2023 15:07:53 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFYB5pMCj8ov2H3l8xfTg6DCVUBcRNCnuF1xlx8YzxWJryLAx/pozKFMTC55qPQqelAfT1XKw==
-X-Received: by 2002:a50:c05b:0:b0:543:83a3:f39 with SMTP id u27-20020a50c05b000000b0054383a30f39mr6383110edd.4.1698962872750;
-        Thu, 02 Nov 2023 15:07:52 -0700 (PDT)
-Received: from pstanner-thinkpadt14sgen1.remote.csb ([2001:9e8:32c5:d600:227b:d2ff:fe26:2a7a])
-        by smtp.gmail.com with ESMTPSA id u14-20020a50c04e000000b005412c0ba2f9sm212636edd.13.2023.11.02.15.07.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Nov 2023 15:07:52 -0700 (PDT)
-Message-ID: <37ab45c67d630b4832912cb8403ce8235f52d9c0.camel@redhat.com>
-Subject: Re: [PATCH] drivers/tty/vt: copy userspace arrays safely
-From:   Philipp Stanner <pstanner@redhat.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>,
-        David Airlie <airlied@redhat.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ard Biesheuvel <ardb@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Date:   Thu, 02 Nov 2023 23:07:51 +0100
-In-Reply-To: <20231102204903.GM1957730@ZenIV>
-References: <20231102192134.53301-2-pstanner@redhat.com>
-         <20231102201424.GL1957730@ZenIV>
-         <CAMwc25rgdNt3oO3Yf=v05AWOSgN5W4j=ST=Y9qikeBrNTqqW2w@mail.gmail.com>
-         <20231102204903.GM1957730@ZenIV>
-User-Agent: Evolution 3.48.4 (3.48.4-1.fc38)
+        bh=e9nBSRGeG0oGTzQFHQdu8lyilaZO5899sWrirHLiN9k=;
+        b=B1891VoePKS4oYv8Drekbn5Q83HvK0+q7HvssMGkCDcNeQCThFdtr96gv7J7yDZE++
+         pVzZ8bxEycQgaXJbPMu20kNpNeaVdLsft4ExoUHzzc1MVQfyG/DalUCFAo2ideXwW//F
+         O+fatX3TsMFRlnQTbVC8l3RlL4UKslOGtJeamGVQk6q+pDYZ6aX1WM5JjmQK8hmqI0Pw
+         w2S2JAFQWb4wFb4ixmI+2B6gKfIBvZsOf7ze0gVrOW9xCedg1c4CaQ3LvCB09tJFW3Eh
+         tWULKyi+SdZviXmJVj7GoisX7Nt5286GOOPXJtdU9W1rkujXXNtyrIR+KcIEX4Rn7Spw
+         k3HA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1698964342; x=1699569142;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=e9nBSRGeG0oGTzQFHQdu8lyilaZO5899sWrirHLiN9k=;
+        b=PydZJUir1zEFHvVACdZcB1r8Q5ACxwE/4L13QjK4dH7EbsICizepuzG9GH+/fofd+G
+         YRUUvWDKfkw+n8kdl8MqsSf9jhbpY7i5wL21RSbwbTT2gQzm1uIjHH5vkSy1O7seO1CS
+         +ziyjPP3OgkChi6iZaFVWZXnsjLqnVuBnnnEgi4G3cPWpQuPq0ehbZeGZ5/35GQVJN4e
+         5DsvMF2K+eXY5585tQY1+ef3An72zbyHG/eOdDuaXa9L3BnGcMPBgeRttIJXEz45g7bl
+         6CyPgciysCe5agWWhmvlBhcler0pRDRAFHFYQcSIHt8b7CP8eEymWz22e2P+wKBpj1BC
+         u6Rg==
+X-Gm-Message-State: AOJu0YzXE7agnaAQ9p9MQD+izsITs3OvZJNUg6cNieCBTKwxg11Kj4pX
+        NM5EqtHHL2ItIOfag8rrSHLcoQ==
+X-Google-Smtp-Source: AGHT+IGGugFSjo/xuux56sQ3cRW8VoLU9P/hoAn4qsI0tDYESiYS+N/GiIJRqt7VUfRp5VZAyIgUDg==
+X-Received: by 2002:a50:9fe9:0:b0:543:714b:535d with SMTP id c96-20020a509fe9000000b00543714b535dmr8093289edf.3.1698964341806;
+        Thu, 02 Nov 2023 15:32:21 -0700 (PDT)
+Received: from [192.168.1.3] ([37.54.67.136])
+        by smtp.gmail.com with ESMTPSA id u14-20020a50c04e000000b005412c0ba2f9sm233202edd.13.2023.11.02.15.32.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Nov 2023 15:32:21 -0700 (PDT)
+Message-ID: <3d489d6c-2098-4f0c-9ec4-f6040665753e@lpnu.ua>
+Date:   Fri, 3 Nov 2023 00:32:17 +0200
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 00/20] Add minimal Tensor/GS101 SoC support and
+ Oriole/Pixel6 board
+Content-Language: en-US
+To:     Peter Griffin <peter.griffin@linaro.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+        conor+dt@kernel.org, sboyd@kernel.org, tomasz.figa@gmail.com,
+        s.nawrocki@samsung.com, linus.walleij@linaro.org,
+        wim@linux-watchdog.org, linux@roeck-us.net,
+        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+        olof@lixom.net, cw00.choi@samsung.com
+Cc:     tudor.ambarus@linaro.org, andre.draszik@linaro.org,
+        semen.protsenko@linaro.org, saravanak@google.com,
+        willmcvicker@google.com, soc@kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        kernel-team@android.com, linux-serial@vger.kernel.org
+References: <20231010224928.2296997-1-peter.griffin@linaro.org>
+From:   Maksym Holovach <maksym.holovach.an.2022@lpnu.ua>
+In-Reply-To: <20231010224928.2296997-1-peter.griffin@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 2023-11-02 at 20:49 +0000, Al Viro wrote:
-> On Fri, Nov 03, 2023 at 06:24:09AM +1000, David Airlie wrote:
-> > On Fri, Nov 3, 2023 at 6:14=E2=80=AFAM Al Viro <viro@zeniv.linux.org.uk=
+Hi, all
+
+I wanted to inquire about how do you all feel about calling this SoC by 
+the Google "gs101" name.
+
+I believe the proper name for it should be the actual Samsung name, 
+written in the silicon and reported in the Chip ID hardware: Exynos9845. 
+This also touches the Tensor G2 (Exynos9855), Tensor G3 (Exynos9865), 
+and possibly the "Tesla" SoCs.
+
+I do not think the Linux kernel should be a marketing material: it 
+should reflect reality. The chip is almost 100% composed of Samsung 
+Exynos IP blocks and should be called that way.
+
+Yours,
+
+- Markuss
+
+On 10/11/23 01:49, Peter Griffin wrote:
+> Hi folks,
 >
-> > wrote:
-> > >=20
-> > > On Thu, Nov 02, 2023 at 08:21:35PM +0100, Philipp Stanner wrote:
-> > > > The functions (v)memdup_user() are utilized to copy userspace
-> > > > arrays.
-> > > > This is done without overflow checks.
-> > > >=20
-> > > > Use the new wrappers memdup_array_user() and
-> > > > vmemdup_array_user() to
-> > > > copy the arrays more safely.
-> > >=20
-> > > > @@ -644,7 +644,7 @@ int con_set_unimap(struct vc_data *vc,
-> > > > ushort ct, struct unipair __user *list)
-> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!ct)
-> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 return 0;
-> > >=20
-> > > > -=C2=A0=C2=A0=C2=A0=C2=A0 unilist =3D vmemdup_user(list, array_size=
-(sizeof(*unilist),
-> > > > ct));
-> > > > +=C2=A0=C2=A0=C2=A0=C2=A0 unilist =3D vmemdup_array_user(list, ct, =
-sizeof(*unilist));
-> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (IS_ERR(unilist))
-> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 return PTR_ERR(unilist);
-> > >=20
-> > > a 16bit value times sizeof(something).
-> >=20
-> > So since it's already using array_size here, moving it to a new
-> > helper
-> > for consistency just makes things clearer, and so you are fine with
-> > the patch?
->=20
-> Sigh...=C2=A0 OK, if you want it spelled out, there we go.=C2=A0 I have n=
-o
-> objections
-> to the contents of patches; e.g. in case of ppp ioctl it saves the
-> reader
-> a grep in search of structure definitions, which is a good thing.=C2=A0
-> The one
-> and only suggestion I have for those patches is that such patches
-> might be
-> better off with explicit "in this case the overflow is avoided due to
-> <reasons>, but use of this helper makes it obviously safe" - or, in
-> case
-> of real bugs, "the overflow is, indeed, possible here", in which case
-> Fixes: ... and Cc: stable might be in order.
->=20
-
-So if you agree the content is improving things a little bit then it
-seems the only critical thing is the commit message :)
-
-So let's get that fixed, shifting the focus from security to
-readability and general usefulness.
-
-Do you have a proposal for a good wording?
-
-Personally, I would have gone with something minimalistic like here in
-my other commit, where the irrelevance of the overflow-aspect was more
-obvious for me to see [1]
-I can also add a sentence clarifying that it's about improving
-readability or sth if you think that's better
-
-Kind regards,
-P.
-
-[1] https://lore.kernel.org/all/20231102192402.53721-2-pstanner@redhat.com/
-
+> Firstly, thanks to everyone who reviewed the v1 series! V2 incorporates all
+> the review feedback received so far.
+>
+> This series adds initial SoC support for the GS101 SoC and also initial board
+> support for Pixel 6 phone (Oriole).
+>
+> The gs101 / Tensor SoC is also used in Pixel6a (bluejay) and Pixel 6 Pro
+> (raven) phones. Currently DT is added for the gs101 SoC and Oriole.
+> As you can see from the patches the SoC is based on a Samsung Exynos SoC,
+> and therefore lots of the low level Exynos drivers can be re-used.
+>
+> The support added in this series consists of:
+> * cpus
+> * pinctrl
+> * some CCF implementation
+> * watchdog
+> * uart
+> * gpio
+>
+> This is enough to boot through to a busybox initramfs and shell using an
+> upstream kernel though :) More platform support will be added over the
+> following weeks and months.
+>
+> Note 1: I've removed the dtbo overlay from v2 submission and will re-submit once
+> I have appropriate documentation for it.
+>
+> Note 2: I've left the bootargs in dts with earlycon for now, for two reasons.
+> 1) The bootloader hangs if bootargs isn't present in the dtb as it tries to
+> re-write this with additional bootargs.
+> 2) there is a issue whereby the full serial console doesn't come up properly
+> if earlycon isn't also specified. This issue needs further investigation.
+>
+> Note 3: In `dt-bindings: pinctrl: samsung: add google,gs101-pinctrl compatible`
+> I tried to narrow the interrupts check to google,gs101-pinctrl but I still see
+> a warning:
+> gs101-oriole.dtb: pinctrl@174d0000: interrupts: [[0, 0, 4],[..] is too long
+>
+> If anyone can educate me on what I've done wrong here it would be most
+> appreciated!
+>
+> kind regards,
+>
+> Peter.
+>
+> Changes since v1:
+>   - Remove irq/gs101.h and replace macros with irq numbers globally
+>   - exynos-pmu - keep alphabetical order
+>   - add cmu_apm to clock bindings documentation
+>   - sysreg bindings - remove superfluous `google,gs101-sysreg`
+>   - watchdog bindings - Alphanumerical order, update gs201 comment
+>   - samsung,pinctrl.yaml - add new "if:then:else:" to narrow for google SoC
+>   - samsung,pinctrl-wakeup-interrupt.yaml - Alphanumerical order
+>   - samsung,pinctrl- add google,gs101-wakeup-eint compatible
+>   - clk-pll: fixup typos
+>   - clk-gs101: fix kernel test robot warnings (add 2 new clocks,dividers,gate)
+>   - clk-gs101: fix alphabetical order
+>   - clk-gs101: cmu_apm: fixup typo and missing empty entry
+>   - clk-gs101: cmu_misc: remove clocks that were being registerred twice
+>   - pinctrl: filter sel: rename/reorder variables, add comment for FLTCON bitfield
+>   - pinctrl: filter sel: avoid setting reserved bits by loop over FLTCON1 pins as well
+>   - pinctrl: gs101: rename bank_type_6/7 structs to be more specific, split from filter
+>   - watchdog: s3c2410_wdt: remove dev_info prints
+>   - gs101.dtsi/oriole.dts: order by unit node, remove underscores from node name, blank lines
+>     add SoC node, split dts and dtsi into separate patches, remove 'DVT' suffix
+>   - gs101-oriole.dtso: Remove overlay until board_id is documented properly
+>   - Add GS101_PIN_* macros to gs101-pinctrl.h instead of using Exynos ones
+>   - gpio-keys: update linux,code to use input-event-code macros
+>   - add dedicated gs101-uart compatible
+>
+> Peter Griffin (20):
+>    dt-bindings: soc: samsung: exynos-pmu: Add gs101 compatible
+>    dt-bindings: clock: Add Google gs101 clock management unit bindings
+>    dt-bindings: soc: google: exynos-sysreg: add dedicated SYSREG
+>      compatibles to GS101
+>    dt-bindings: watchdog: Document Google gs101 & gs201 watchdog bindings
+>    dt-bindings: arm: google: Add bindings for Google ARM platforms
+>    dt-bindings: pinctrl: samsung: add google,gs101-pinctrl compatible
+>    dt-bindings: pinctrl: samsung: add gs101-wakeup-eint compatible
+>    dt-bindings: serial: samsung: Add google-gs101-uart compatible
+>    clk: samsung: clk-pll: Add support for pll_{0516,0517,518}
+>    clk: samsung: clk-gs101: Add cmu_top registers, plls, mux and gates
+>    clk: samsung: clk-gs101: add CMU_APM support
+>    clk: samsung: clk-gs101: Add support for CMU_MISC clock unit
+>    pinctrl: samsung: Add filter selection support for alive banks
+>    pinctrl: samsung: Add gs101 SoC pinctrl configuration
+>    watchdog: s3c2410_wdt: Add support for Google tensor SoCs
+>    tty: serial: samsung: Add gs101 compatible and SoC data
+>    arm64: dts: google: Add initial Google gs101 SoC support
+>    arm64: dts: google: Add initial Oriole/pixel 6 board support
+>    arm64: defconfig: Enable Google Tensor SoC
+>    MAINTAINERS: add entry for Google Tensor SoC
+>
+>   .../devicetree/bindings/arm/google.yaml       |   46 +
+>   .../bindings/clock/google,gs101-clock.yaml    |  125 +
+>   .../samsung,pinctrl-wakeup-interrupt.yaml     |    2 +
+>   .../bindings/pinctrl/samsung,pinctrl.yaml     |   19 +
+>   .../bindings/serial/samsung_uart.yaml         |    2 +
+>   .../bindings/soc/samsung/exynos-pmu.yaml      |    2 +
+>   .../soc/samsung/samsung,exynos-sysreg.yaml    |    6 +
+>   .../bindings/watchdog/samsung-wdt.yaml        |   10 +-
+>   MAINTAINERS                                   |   10 +
+>   arch/arm64/Kconfig.platforms                  |    6 +
+>   arch/arm64/boot/dts/Makefile                  |    1 +
+>   arch/arm64/boot/dts/google/Makefile           |    4 +
+>   arch/arm64/boot/dts/google/gs101-oriole.dts   |   79 +
+>   arch/arm64/boot/dts/google/gs101-pinctrl.dtsi | 1275 ++++++++++
+>   arch/arm64/boot/dts/google/gs101-pinctrl.h    |   32 +
+>   arch/arm64/boot/dts/google/gs101.dtsi         |  503 ++++
+>   arch/arm64/configs/defconfig                  |    1 +
+>   drivers/clk/samsung/Kconfig                   |    9 +
+>   drivers/clk/samsung/Makefile                  |    2 +
+>   drivers/clk/samsung/clk-gs101.c               | 2164 +++++++++++++++++
+>   drivers/clk/samsung/clk-pll.c                 |    9 +-
+>   drivers/clk/samsung/clk-pll.h                 |    3 +
+>   .../pinctrl/samsung/pinctrl-exynos-arm64.c    |  163 ++
+>   drivers/pinctrl/samsung/pinctrl-exynos.c      |   84 +-
+>   drivers/pinctrl/samsung/pinctrl-exynos.h      |   41 +
+>   drivers/pinctrl/samsung/pinctrl-samsung.c     |    4 +
+>   drivers/pinctrl/samsung/pinctrl-samsung.h     |   24 +
+>   drivers/tty/serial/samsung_tty.c              |   12 +
+>   drivers/watchdog/s3c2410_wdt.c                |  104 +-
+>   include/dt-bindings/clock/google,gs101.h      |  232 ++
+>   30 files changed, 4961 insertions(+), 13 deletions(-)
+>   create mode 100644 Documentation/devicetree/bindings/arm/google.yaml
+>   create mode 100644 Documentation/devicetree/bindings/clock/google,gs101-clock.yaml
+>   create mode 100644 arch/arm64/boot/dts/google/Makefile
+>   create mode 100644 arch/arm64/boot/dts/google/gs101-oriole.dts
+>   create mode 100644 arch/arm64/boot/dts/google/gs101-pinctrl.dtsi
+>   create mode 100644 arch/arm64/boot/dts/google/gs101-pinctrl.h
+>   create mode 100644 arch/arm64/boot/dts/google/gs101.dtsi
+>   create mode 100644 drivers/clk/samsung/clk-gs101.c
+>   create mode 100644 include/dt-bindings/clock/google,gs101.h
+>
