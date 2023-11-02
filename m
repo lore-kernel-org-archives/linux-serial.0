@@ -2,121 +2,96 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12320C4332F
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Nov 2023 09:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 836CBC4332F
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Nov 2023 11:39:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345606AbjKBJ1N (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Nov 2023 05:27:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43614 "EHLO
+        id S229693AbjKBLjd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Nov 2023 07:39:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345474AbjKBJ1M (ORCPT
+        with ESMTP id S229483AbjKBLjc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Nov 2023 05:27:12 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E18182;
-        Thu,  2 Nov 2023 02:27:05 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 3A29Qw2s040645;
-        Thu, 2 Nov 2023 04:26:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1698917218;
-        bh=EdqLodOTtlgjyV9CO9EMSOpuI3JKeo6eegqllj6+txQ=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=hhhmxvvL/rHOkqRaSB3M149il/k9OZMXuuo/M8GgV1WegTb2vgEWaZ1Q2b5LP3kop
-         Y3Lak7DKcHfgMEKvywMC2SMUx9984d6LptAWtn8efgaFRrHnYj7W9YCKq1PtFpZ8Ag
-         pJK/NSIjOMfZeBwhf1Ql3LhkSr/rcWi0NeXIKbNU=
-Received: from DFLE101.ent.ti.com (dfle101.ent.ti.com [10.64.6.22])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 3A29Qw0O117654
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 2 Nov 2023 04:26:58 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Thu, 2
- Nov 2023 04:26:57 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Thu, 2 Nov 2023 04:26:57 -0500
-Received: from [172.24.227.94] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 3A29QtML112967;
-        Thu, 2 Nov 2023 04:26:56 -0500
-Message-ID: <fbe705a6-dade-49ce-9ec8-6d7b87198d11@ti.com>
-Date:   Thu, 2 Nov 2023 14:56:54 +0530
+        Thu, 2 Nov 2023 07:39:32 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4E4E130;
+        Thu,  2 Nov 2023 04:39:29 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id 2adb3069b0e04-507a55302e0so1024208e87.0;
+        Thu, 02 Nov 2023 04:39:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1698925168; x=1699529968; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=pFAkU6GcGXUSqClGaG/Aj9mW9sz3PJshV1+U1L2egZM=;
+        b=m7fXcSrC92SU9wfOQ8g0OCwFTCsXaluHI4CF39hHkcNSiqdHJof9Qm3B0lT4KhhFJv
+         02L2RNGJLc9IuY+tFpVODfwbjvDvtxj/2FcxBfkyi03JI9oSMcg4FZSm531wANPdl28s
+         OVcH5JbVxBmtzgmWHPz0/xTf1+LAflAHH+FlW1Phm+u1qIXh4zOq8H4qXhU2Orxud7ju
+         00MOGEkOJOryWGHfh1YABGEXR9LdyVmbGsmjcwBTRoxQOknoFkucrm1s1dN+bg8b8Ob9
+         fB4Ru2XBsRRvoVlOGJVpEDXwdebiW1zB//8PY5MFS2rRHCZRnjbrmD4CvdkTKnhBqG/e
+         XxTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1698925168; x=1699529968;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=pFAkU6GcGXUSqClGaG/Aj9mW9sz3PJshV1+U1L2egZM=;
+        b=JIpiVYDbVp16bhPClb+GfGBbNXif3F07LRHd5tkbC45YHTQuUyd1Kfgt9qyvzoxdov
+         mg52dmvpPVsLGHhMUG7M/Itf9R4s5iBQ1EKxZ+Tkov5CMLgA93etXeNvOekBbX27ZxO/
+         xQQzSQIL+aKUU7kwPEieCP0N2DiDVHiePefspvRmmuqueJotKIcjscFUpXqlELgMh53Y
+         kxb2xA78+zJAA0HPKaQ7uS4XDoXem+5TP9AzuQQQkoV+tdKxb/Yld6N4J63IW3ydgj2/
+         9CmSbOa+J+kOFFjimZWIzwSx7lQSfD31YYZGYMOlTOUc4k/9Mhr7dHCOAX8z8XrpCNGw
+         yFOg==
+X-Gm-Message-State: AOJu0YwN4B4nbEA34gqnWE6tgcxwLc6IRqYf3f2KQOlwN70K0eQJOhoH
+        jiAxnbwEST2l/wecy8kpic8=
+X-Google-Smtp-Source: AGHT+IEJc6VIAMYI45bW308VbYVXQjoxmI9eD46JPlsWaYNhKmPbYpAIt3cwQRbMpshNHbec3Dx5Vg==
+X-Received: by 2002:ac2:5f6d:0:b0:506:899d:1989 with SMTP id c13-20020ac25f6d000000b00506899d1989mr11529967lfc.44.1698925167443;
+        Thu, 02 Nov 2023 04:39:27 -0700 (PDT)
+Received: from archlinux.. ([88.127.172.169])
+        by smtp.gmail.com with ESMTPSA id i16-20020adfb650000000b003200c918c81sm386934wre.112.2023.11.02.04.39.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Nov 2023 04:39:27 -0700 (PDT)
+From:   dimadrumspro@gmail.com
+To:     dimadrumspro@gmail.com
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH 2/2] drivers: tty: vt: vt.c: fixed segmentation fault in vt.c
+Date:   Thu,  2 Nov 2023 12:39:26 +0100
+Message-ID: <20231102113926.2019-1-dimadrumspro@gmail.com>
+X-Mailer: git-send-email 2.42.0
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] serial: 8250: 8250_omap: Clear UART_HAS_RHR_IT_DIS bit
-Content-Language: en-US
-To:     Ronald Wahl <rwahl@gmx.de>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ronald Wahl <ronald.wahl@raritan.com>, <stable@vger.kernel.org>
-References: <20231031110909.11695-1-rwahl@gmx.de>
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-In-Reply-To: <20231031110909.11695-1-rwahl@gmx.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+From: Dima <dimadrumspro@gmail.com>
 
+The previous code lacked proper synchronization, leading to potential data corruption and crashes. Added a spin lock to protect shared variable 'scrollback_delta' to prevent concurrent access.
 
-On 31/10/23 16:39, Ronald Wahl wrote:
-> From: Ronald Wahl <ronald.wahl@raritan.com>
-> 
-> This fixes commit 439c7183e5b9 ("serial: 8250: 8250_omap: Disable RX
-> interrupt after DMA enable") which unfortunately set the
-> UART_HAS_RHR_IT_DIS bit in the UART_OMAP_IER2 register and never
-> cleared it.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 439c7183e5b9 ("serial: 8250: 8250_omap: Disable RX interrupt after DMA enable")
-> Signed-off-by: Ronald Wahl <ronald.wahl@raritan.com>
-> ---
-> V3: - add Cc: stable@vger.kernel.org
-> 
-> V2: - add Fixes: tag
->     - fix author
-> 
->  drivers/tty/serial/8250/8250_omap.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> index ca972fd37725..c7ab2963040b 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -914,7 +914,7 @@ static void __dma_rx_do_complete(struct uart_8250_port *p)
->  	if (priv->habit & UART_HAS_RHR_IT_DIS) {
->  		reg = serial_in(p, UART_OMAP_IER2);
->  		reg &= ~UART_OMAP_IER2_RHR_IT_DIS;
-> -		serial_out(p, UART_OMAP_IER2, UART_OMAP_IER2_RHR_IT_DIS);
-> +		serial_out(p, UART_OMAP_IER2, reg);
->  	}
-> 
->  	dmaengine_tx_status(rxchan, cookie, &state);
-> @@ -1060,7 +1060,7 @@ static int omap_8250_rx_dma(struct uart_8250_port *p)
->  	if (priv->habit & UART_HAS_RHR_IT_DIS) {
->  		reg = serial_in(p, UART_OMAP_IER2);
->  		reg |= UART_OMAP_IER2_RHR_IT_DIS;
-> -		serial_out(p, UART_OMAP_IER2, UART_OMAP_IER2_RHR_IT_DIS);
-> +		serial_out(p, UART_OMAP_IER2, reg);
->  	}
-> 
->  	dma_async_issue_pending(dma->rxchan);
+Signed-off-by: Dima <dimadrumspro@gmail.com>
+---
+ drivers/tty/vt/vt.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-
-Thanks for the fix!
-
-Reviewed-by: Vignesh Raghavendra <vigneshr@ti.com>
-
-
-
-> --
-> 2.41.0
-> 
-
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index 5c47f77804f0..29cf7fe11662 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -301,12 +301,13 @@ static inline unsigned short *screenpos(const struct vc_data *vc, int offset,
+ }
+ 
+ /* Called  from the keyboard irq path.. */
++static DEFINE_SPINLOCK(scrolldelta_lock);
++
+ static inline void scrolldelta(int lines)
+ {
+-	/* FIXME */
+-	/* scrolldelta needs some kind of consistency lock, but the BKL was
+-	   and still is not protecting versus the scheduled back end */
++	spin_lock(&scrolldelta_lock);
+ 	scrollback_delta += lines;
++	spin_unlock(&scrolldelta_lock);
+ 	schedule_console_callback();
+ }
+ 
 -- 
-Regards
-Vignesh
+2.42.0
+
