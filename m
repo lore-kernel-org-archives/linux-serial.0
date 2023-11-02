@@ -2,96 +2,127 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 836CBC4332F
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Nov 2023 11:39:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99EE6C4332F
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Nov 2023 11:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229693AbjKBLjd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Nov 2023 07:39:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38108 "EHLO
+        id S232578AbjKBLnG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Nov 2023 07:43:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbjKBLjc (ORCPT
+        with ESMTP id S233622AbjKBLnE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Nov 2023 07:39:32 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4E4E130;
-        Thu,  2 Nov 2023 04:39:29 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id 2adb3069b0e04-507a55302e0so1024208e87.0;
-        Thu, 02 Nov 2023 04:39:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1698925168; x=1699529968; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=pFAkU6GcGXUSqClGaG/Aj9mW9sz3PJshV1+U1L2egZM=;
-        b=m7fXcSrC92SU9wfOQ8g0OCwFTCsXaluHI4CF39hHkcNSiqdHJof9Qm3B0lT4KhhFJv
-         02L2RNGJLc9IuY+tFpVODfwbjvDvtxj/2FcxBfkyi03JI9oSMcg4FZSm531wANPdl28s
-         OVcH5JbVxBmtzgmWHPz0/xTf1+LAflAHH+FlW1Phm+u1qIXh4zOq8H4qXhU2Orxud7ju
-         00MOGEkOJOryWGHfh1YABGEXR9LdyVmbGsmjcwBTRoxQOknoFkucrm1s1dN+bg8b8Ob9
-         fB4Ru2XBsRRvoVlOGJVpEDXwdebiW1zB//8PY5MFS2rRHCZRnjbrmD4CvdkTKnhBqG/e
-         XxTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698925168; x=1699529968;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=pFAkU6GcGXUSqClGaG/Aj9mW9sz3PJshV1+U1L2egZM=;
-        b=JIpiVYDbVp16bhPClb+GfGBbNXif3F07LRHd5tkbC45YHTQuUyd1Kfgt9qyvzoxdov
-         mg52dmvpPVsLGHhMUG7M/Itf9R4s5iBQ1EKxZ+Tkov5CMLgA93etXeNvOekBbX27ZxO/
-         xQQzSQIL+aKUU7kwPEieCP0N2DiDVHiePefspvRmmuqueJotKIcjscFUpXqlELgMh53Y
-         kxb2xA78+zJAA0HPKaQ7uS4XDoXem+5TP9AzuQQQkoV+tdKxb/Yld6N4J63IW3ydgj2/
-         9CmSbOa+J+kOFFjimZWIzwSx7lQSfD31YYZGYMOlTOUc4k/9Mhr7dHCOAX8z8XrpCNGw
-         yFOg==
-X-Gm-Message-State: AOJu0YwN4B4nbEA34gqnWE6tgcxwLc6IRqYf3f2KQOlwN70K0eQJOhoH
-        jiAxnbwEST2l/wecy8kpic8=
-X-Google-Smtp-Source: AGHT+IEJc6VIAMYI45bW308VbYVXQjoxmI9eD46JPlsWaYNhKmPbYpAIt3cwQRbMpshNHbec3Dx5Vg==
-X-Received: by 2002:ac2:5f6d:0:b0:506:899d:1989 with SMTP id c13-20020ac25f6d000000b00506899d1989mr11529967lfc.44.1698925167443;
-        Thu, 02 Nov 2023 04:39:27 -0700 (PDT)
-Received: from archlinux.. ([88.127.172.169])
-        by smtp.gmail.com with ESMTPSA id i16-20020adfb650000000b003200c918c81sm386934wre.112.2023.11.02.04.39.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Nov 2023 04:39:27 -0700 (PDT)
-From:   dimadrumspro@gmail.com
+        Thu, 2 Nov 2023 07:43:04 -0400
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE7B198;
+        Thu,  2 Nov 2023 04:42:53 -0700 (PDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.nyi.internal (Postfix) with ESMTP id 7B6615C00F5;
+        Thu,  2 Nov 2023 07:42:52 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute6.internal (MEProxy); Thu, 02 Nov 2023 07:42:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm3; t=1698925372; x=1699011772; bh=ZH
+        EuquhPntkdWzSrucJf7v5/zvj5F435h9SAa5O8f6k=; b=ak5mtVRldD1ynp8CF3
+        PZEB+9JuM08uNUM5xuBMtrFG48TSICVeVkk35La7aFJxpaUmVpN0meovYN6xWCXM
+        +6/1kjXeeA90z5VERleQAsqO2kKpUCmHMg3q0xYM4ombh27SyzcwT+uIGObOIeE8
+        ACNXvCZqHI/qZQiEWAyiSAHllPPKfOGfJlPfNTfEbKHZI3QFTgWKumhfAB0M1WN7
+        A1IhDZpHfHM/moAtSQqyogEG1+xwPumaQFHprQEIhrFJE9oUEnch95XkW0YoR+JA
+        Rb3Y/a3OTRzBRNnuSLQnycHLLuOpkiguLu2WNQfrrzj5Iibl2DKIbOA/clxn/K1w
+        X1/g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:content-type:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; t=1698925372; x=1699011772; bh=ZHEuquhPntkdW
+        zSrucJf7v5/zvj5F435h9SAa5O8f6k=; b=BIhWMPADjCeavnkC/DEhwL4gd+WpQ
+        cNwke5zvo6V2r76ZLbPQj4sUiduH2fP0RV98xi645cLXebmU/nfd4HTX7AtFVn5Y
+        jDK9qP0OHOjpokC3MQ9WHUzxxq/LCXGCCMcKWv+KPBEiMxyt8ArSmj1MQkrrrVtZ
+        VwHrNB66OjtfStTI15gNCZ83NrTXYpnOBQSKY0hbPUh51aMrMY04ovAXxpkx6F8v
+        RgB3QRsTP12s/4naOyPJ3WWFAB9dMcE2egAbzMZx5DXlx06DFH9cwRD5wXyU9ql+
+        4SwQZesU3FDcVpdo8aiHle11GeawsBtQpDR3TxwrCqJU2Y/Tg8thx3LLw==
+X-ME-Sender: <xms:PItDZfKKraEj66lEPLCyjTJQsoJAnmxuXpolJX5H0Tf5oDv2f_4Chg>
+    <xme:PItDZTKxx_zugV81JSL3lWRP0zqQkD8pWxMYKVFjt3fKy4CJCLQHpf761Kk16zPNB
+    ZOwv3TUn8aK0Q>
+X-ME-Received: <xmr:PItDZXu2sbeqJzDlH_24nxQ6-2ez0MGqMjcpd14g-0Hj0h-xkCCHBARhhei1MiQzVbxdIde_BjjgaSDfBCqqlxSGGcA-uX16STq67Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedruddtiedgfeduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvvefukfhfgggtuggjsehttd
+    ertddttddvnecuhfhrohhmpefirhgvghcumffjuceoghhrvghgsehkrhhorghhrdgtohhm
+    qeenucggtffrrghtthgvrhhnpeehgedvvedvleejuefgtdduudfhkeeltdeihfevjeekje
+    euhfdtueefhffgheekteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgr
+    ihhlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
+X-ME-Proxy: <xmx:PItDZYag5AjifNA6L-emh600_e_IZPisI_aD2dW5HNuV9GZS2rzw4w>
+    <xmx:PItDZWaBXJ2DtPoK2EkFdDdzMDmqGQb0nV1Muotj-ADPc1GDFyG19A>
+    <xmx:PItDZcBYk1tAlTtIGKuoYwQfNQbargN7rdeDJDSkdqDbetSfbvQ9pw>
+    <xmx:PItDZdVMMjgoq425maw_7V67Hl4CGK6OU_6Sa0uS9FCX7s76i2wY1A>
+Feedback-ID: i787e41f1:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 2 Nov 2023 07:42:51 -0400 (EDT)
+Date:   Thu, 2 Nov 2023 12:42:48 +0100
+From:   Greg KH <greg@kroah.com>
 To:     dimadrumspro@gmail.com
 Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH 2/2] drivers: tty: vt: vt.c: fixed segmentation fault in vt.c
-Date:   Thu,  2 Nov 2023 12:39:26 +0100
-Message-ID: <20231102113926.2019-1-dimadrumspro@gmail.com>
-X-Mailer: git-send-email 2.42.0
+Subject: Re: [PATCH 2/2] drivers: tty: vt: vt.c: fixed segmentation fault in
+ vt.c
+Message-ID: <2023110206-robin-feel-d73f@gregkh>
+References: <20231102113926.2019-1-dimadrumspro@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231102113926.2019-1-dimadrumspro@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Dima <dimadrumspro@gmail.com>
+Where is patch 1/2?
 
-The previous code lacked proper synchronization, leading to potential data corruption and crashes. Added a spin lock to protect shared variable 'scrollback_delta' to prevent concurrent access.
+On Thu, Nov 02, 2023 at 12:39:26PM +0100, dimadrumspro@gmail.com wrote:
+> From: Dima <dimadrumspro@gmail.com>
 
-Signed-off-by: Dima <dimadrumspro@gmail.com>
----
- drivers/tty/vt/vt.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Is that your full name?
 
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 5c47f77804f0..29cf7fe11662 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -301,12 +301,13 @@ static inline unsigned short *screenpos(const struct vc_data *vc, int offset,
- }
- 
- /* Called  from the keyboard irq path.. */
-+static DEFINE_SPINLOCK(scrolldelta_lock);
-+
- static inline void scrolldelta(int lines)
- {
--	/* FIXME */
--	/* scrolldelta needs some kind of consistency lock, but the BKL was
--	   and still is not protecting versus the scheduled back end */
-+	spin_lock(&scrolldelta_lock);
- 	scrollback_delta += lines;
-+	spin_unlock(&scrolldelta_lock);
- 	schedule_console_callback();
- }
- 
--- 
-2.42.0
+> 
+> The previous code lacked proper synchronization, leading to potential data corruption and crashes. Added a spin lock to protect shared variable 'scrollback_delta' to prevent concurrent access.
 
+Please wrap your lines properly, as your editor hinted that you should.
+
+And always run scripts/checkpatch.pl on your patch before submitting it.
+
+> 
+> Signed-off-by: Dima <dimadrumspro@gmail.com>
+> ---
+>  drivers/tty/vt/vt.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+> index 5c47f77804f0..29cf7fe11662 100644
+> --- a/drivers/tty/vt/vt.c
+> +++ b/drivers/tty/vt/vt.c
+> @@ -301,12 +301,13 @@ static inline unsigned short *screenpos(const struct vc_data *vc, int offset,
+>  }
+>  
+>  /* Called  from the keyboard irq path.. */
+> +static DEFINE_SPINLOCK(scrolldelta_lock);
+> +
+>  static inline void scrolldelta(int lines)
+>  {
+> -	/* FIXME */
+> -	/* scrolldelta needs some kind of consistency lock, but the BKL was
+> -	   and still is not protecting versus the scheduled back end */
+> +	spin_lock(&scrolldelta_lock);
+>  	scrollback_delta += lines;
+> +	spin_unlock(&scrolldelta_lock);
+
+How exactly did you test this?  This patch does not do anything that I
+can determine.
+
+And what "crashes" have you fixed here?  What "data corruption"?  Your
+changelog text does not match this actual change at all from what I can
+tell.
+
+thanks,
+
+greg k-h
