@@ -2,98 +2,116 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34621C4332F
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Nov 2023 23:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E721BC4332F
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Nov 2023 05:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229816AbjKAXxj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Nov 2023 19:53:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45356 "EHLO
+        id S230390AbjKBFrv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Nov 2023 01:47:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbjKAXxi (ORCPT
+        with ESMTP id S235794AbjKBFph (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Nov 2023 19:53:38 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA216C2;
-        Wed,  1 Nov 2023 16:53:35 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id 5b1f17b1804b1-4083f61322fso2592935e9.1;
-        Wed, 01 Nov 2023 16:53:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1698882814; x=1699487614; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=3BgQx+ZoqpwlxPpWNlIrALpYgnFDkCJPO5cLrhzB9PI=;
-        b=jrz+Tcfe+05NnCxvv+djkcm27Tvx3reP9M+pszJXOQlvsz5uw2DSKlbJ1Sbs3ifcLU
-         jCDHbKcr1k45NxC0BVg551I12+WT7Pm8KJxLeMes+wnEIrvA4gpDPrfntk2ga1bfQFPa
-         MlK01oR9egNfMQHPQQX64/RZ6Vz5woA/BlvIAHDl48Zumc5nFYwgfZnYnhCMS4GQiZk2
-         qOoxu/kkP62zQ6d/1xth7jyFW9946UKLiKd1eJzmeDd8qxAn1cxFBS/VXHQ2mp6ZVpV2
-         PJQG9UjLYlcmbvUbTYJ3noA6a9A7m0rQXVWaeeClH4W433exi0S17vForREvF11O8f60
-         EC7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698882814; x=1699487614;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=3BgQx+ZoqpwlxPpWNlIrALpYgnFDkCJPO5cLrhzB9PI=;
-        b=VpkyOBTrD4lv3PNDuZR4w8u4g1UO8VsKpOVA6COKVpBLuNn+zcBesMGXGNIfNXUQBM
-         PFF3ifKQz2rZQiHbTwIWr1V5kg4pPi2d2T145n2AGR558YRzlvKuooR/JTlkIlRuUs81
-         4MucaFgRIMf3eD/GJdk/rZBrfdBD9VifnTvwd3B7GmD1VLSFXSkgiE93If/g0E0HIDe1
-         ivSxEVBhlKGnlWAQgd2M3Nfqexfl11JdAz+Lrfbi9yhXj0k34ejNi4R2Ir3S/hJBYl+G
-         lsqjvC+fpkJtApSpLnO78tnCE3xMvIojNV7kA39c0OirMSEzbPfo3bJj9Z65vImXsR04
-         onoA==
-X-Gm-Message-State: AOJu0YyBB2TVUnqmGWVvaUJ7QS5vIJ/Honp6hXUUzCPiiEZYOYUQA1uL
-        Mqj36PXgvdOGzrb0ZKVi3QE=
-X-Google-Smtp-Source: AGHT+IGo5bIUIzQ8KJtHM9VlInvkNOfDXo2WDE5tMgw3TN28eWBB5DdK4IiQ1cmKvQ8keolWoy+MNA==
-X-Received: by 2002:a05:600c:1f87:b0:406:411f:742e with SMTP id je7-20020a05600c1f8700b00406411f742emr14103113wmb.34.1698882813966;
-        Wed, 01 Nov 2023 16:53:33 -0700 (PDT)
-Received: from archlinux.. ([88.127.172.169])
-        by smtp.gmail.com with ESMTPSA id y20-20020a1c4b14000000b00406408dc788sm1031347wma.44.2023.11.01.16.53.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Nov 2023 16:53:33 -0700 (PDT)
-From:   dimadrumspro@gmail.com
-X-Google-Original-From: dimadrumspro@@gmail.com
-To:     dimaac@bk.ru
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        dimaaac <dimadrumspro@gmail.com>
-Subject: [PATCH 2/2] drivers: tty: vt: vt.c: fixed segmentation fault in vt.c
-Date:   Thu,  2 Nov 2023 00:53:32 +0100
-Message-ID: <20231101235332.4314-1-dimadrumspro@gmail.com>
-X-Mailer: git-send-email 2.42.0
+        Thu, 2 Nov 2023 01:45:37 -0400
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB0F112;
+        Wed,  1 Nov 2023 22:45:32 -0700 (PDT)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68F08C433C8;
+        Thu,  2 Nov 2023 05:45:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1698903931;
+        bh=deTWce1Ruc+WuMtuvtN9mov19AKFx2bIim+XWnVSxyY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XFIZyzIM6Os/iGOUa/HBwCScp/KWQ75JB5Pxl+4A3LNJqZGM6tDk/gDrY5zF1BevE
+         /7K8pQZg58ICXeHGyRPhoYoJrU1zR/pgPlfaQNe+0N2IemO4XII/p6b14c/wLvz7m2
+         OECxYE+IreLfyBoX8+RRBIUtqwrOzIBsTSSSLyNs=
+Date:   Thu, 2 Nov 2023 06:45:28 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     dimadrumspro@gmail.com
+Cc:     dimaac@bk.ru, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH 2/2] drivers: tty: vt: vt.c: fixed segmentation fault in
+ vt.c
+Message-ID: <2023110236-onstage-skipper-30be@gregkh>
+References: <20231101235332.4314-1-dimadrumspro@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231101235332.4314-1-dimadrumspro@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: dimaaac <dimadrumspro@gmail.com>
+On Thu, Nov 02, 2023 at 12:53:32AM +0100, dimadrumspro@gmail.com wrote:
+> From: dimaaac <dimadrumspro@gmail.com>
+> 
+> The previous code lacked proper synchronization, leading to potential data corruption and crashes. Added a spin lock to protect shared variable 'scrollback_delta' to prevent concurrent access.
+> 
+> Signed-off-by: dimaaac <dimaac@bk.ru>
+> ---
+>  drivers/tty/vt/vt.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+> index 5c47f77804f0..29cf7fe11662 100644
+> --- a/drivers/tty/vt/vt.c
+> +++ b/drivers/tty/vt/vt.c
+> @@ -301,12 +301,13 @@ static inline unsigned short *screenpos(const struct vc_data *vc, int offset,
+>  }
+>  
+>  /* Called  from the keyboard irq path.. */
+> +static DEFINE_SPINLOCK(scrolldelta_lock);
+> +
+>  static inline void scrolldelta(int lines)
+>  {
+> -	/* FIXME */
+> -	/* scrolldelta needs some kind of consistency lock, but the BKL was
+> -	   and still is not protecting versus the scheduled back end */
+> +	spin_lock(&scrolldelta_lock);
+>  	scrollback_delta += lines;
+> +	spin_unlock(&scrolldelta_lock);
+>  	schedule_console_callback();
+>  }
+>  
+> -- 
+> 2.42.0
+> 
 
-The previous code lacked proper synchronization, leading to potential data corruption and crashes. Added a spin lock to protect shared variable 'scrollback_delta' to prevent concurrent access.
+Hi,
 
-Signed-off-by: dimaaac <dimaac@bk.ru>
----
- drivers/tty/vt/vt.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 5c47f77804f0..29cf7fe11662 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -301,12 +301,13 @@ static inline unsigned short *screenpos(const struct vc_data *vc, int offset,
- }
- 
- /* Called  from the keyboard irq path.. */
-+static DEFINE_SPINLOCK(scrolldelta_lock);
-+
- static inline void scrolldelta(int lines)
- {
--	/* FIXME */
--	/* scrolldelta needs some kind of consistency lock, but the BKL was
--	   and still is not protecting versus the scheduled back end */
-+	spin_lock(&scrolldelta_lock);
- 	scrollback_delta += lines;
-+	spin_unlock(&scrolldelta_lock);
- 	schedule_console_callback();
- }
- 
--- 
-2.42.0
+You are receiving this message because of the following common error(s)
+as indicated below:
 
+- You did not specify a description of why the patch is needed, or
+  possibly, any description at all, in the email body.  Please read the
+  section entitled "The canonical patch format" in the kernel file,
+  Documentation/process/submitting-patches.rst for what is needed in
+  order to properly describe the change.
+
+- You did not write a descriptive Subject: for the patch, allowing Greg,
+  and everyone else, to know what this patch is all about.  Please read
+  the section entitled "The canonical patch format" in the kernel file,
+  Documentation/process/submitting-patches.rst for what a proper
+  Subject: line should look like.
+
+- It looks like you did not use your "real" name for the patch on either
+  the Signed-off-by: line, or the From: line (both of which have to
+  match).  Please read the kernel file,
+  Documentation/process/submitting-patches.rst for how to do this
+  correctly.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
