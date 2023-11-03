@@ -2,145 +2,157 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D796C4332F
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Nov 2023 10:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16A01C4332F
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Nov 2023 11:13:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347220AbjKCKrv (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Nov 2023 06:47:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46752 "EHLO
+        id S230038AbjKCLN1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 3 Nov 2023 07:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347004AbjKCKrt (ORCPT
+        with ESMTP id S229960AbjKCLN0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Nov 2023 06:47:49 -0400
-Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2065.outbound.protection.outlook.com [40.107.117.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A581DD7;
-        Fri,  3 Nov 2023 03:47:43 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IQs1d75dfjx+FemsNmE156hSpAw2aJRxcx/ep3r2Gz4O+Po0deFbyRQBwP7DSJJge+ayccQrDesjzLX9yfF681UA0m+k+KPZ2rr0b+jnfl5T0mVBZxXoVrM2+nrBTJ/QAn9lDDZ1NRENT+OZQ5fiyGffQpC935xQagWGRvvocFv77M1Gq8gaXuzn6hkPFo2f8SQve6ywfn53uGYquXk7mH6RPEuC5wng44uCYzDnA1xhWf3SQT4TrwSJu7X+N5CcfDdTTm5+0LKEyOTbaAaDfSNBarqGEKloKM0TuIF2Vi07rRmsWvnMe2aG0Z53MQ6TqL2XT4gMGhFLidlFJVNwwg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aiMMyIpLCofZGheNNGN5/JH/HZ1bWbuCxvpNCvMLQEk=;
- b=S6cGhIvidnPl4rSZT8S0tn09NwjT0DwxEBXhwaEEsUPuHGzcMlRiQEKtPEzGRPjNxBAzH5qAvV1zYNRyxOS8gxhyH/a0vyvP0onWMkN/9yKv5PMQ1d8cPKoRnuyM4lSAOHpulM24+57d6/nA4fy6dPw3NZNcE4S7vvY4RpNZZfDCDyOrKYAa71luNN0eXGeYcZQvasGN3vK86qPm6b9z1U++X/vh8ruRs/3iV0Bk4W63PuQ1DpRSxaUyZ4sJGxOiqY/rVDujs4tbCmOQkIzAAGp+vaaDRp4prDyQKzw1T/uDODayv10Le1wz+8FWegD8aBFRSYfTEzZdVchJIQjMag==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
- dkim=pass header.d=moxa.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aiMMyIpLCofZGheNNGN5/JH/HZ1bWbuCxvpNCvMLQEk=;
- b=SgrWjbapzPQbUUUmn+O+8GHq4MzRotTJz9ym29UwV1fEmQrju9Q2hmLhI+ujvXVXEVzdZpc2ytuJf8taPvVeCHuW9k25b8HKd/5bEvUtth5alArQPmhV8R6YR+atIFKkTaG7qfr5m2ZQYBRhEUfqcuunj+0m8Lj9PoIMi2fKCg0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=moxa.com;
-Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- (2603:1096:301:115::14) by TYZPR01MB4578.apcprd01.prod.exchangelabs.com
- (2603:1096:400:1ff::5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6954.21; Fri, 3 Nov
- 2023 10:47:39 +0000
-Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- ([fe80::5856:88f7:3f55:3d72]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- ([fe80::5856:88f7:3f55:3d72%3]) with mapi id 15.20.6954.019; Fri, 3 Nov 2023
- 10:47:38 +0000
-Date:   Fri, 3 Nov 2023 18:47:34 +0800
-From:   Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2] tty: serial: Add RS422 flag to struct serial_rs485
-Message-ID: <ZUTPxkEbmF3jajQg@moxa-ThinkCentre-M90t>
-References: <20231101064404.45711-1-crescentcy.hsieh@moxa.com>
- <2023110127-wireless-candy-c298@gregkh>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2023110127-wireless-candy-c298@gregkh>
-X-ClientProxiedBy: TYCP286CA0370.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:405:79::18) To PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- (2603:1096:301:115::14)
+        Fri, 3 Nov 2023 07:13:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6BCA18B
+        for <linux-serial@vger.kernel.org>; Fri,  3 Nov 2023 04:12:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1699009961;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=EKotJyX83ZQaavHXcaSrvHRltZ/PTiWvZAqWNqbIC/E=;
+        b=dP1lA0wXVllVPCB3f4apEs5lAuV3FpAUHHQwcquHvgmzQqIezPv7QCJoHlTy3xFJ8lWkJy
+        +8mUzbQG1xxxxIj3+Nhgv8TfmIVNrPzcDK/680OH3CANwY3rB7pmNOyQomRMGJXK2JhnGm
+        uL/JJP1y4wkZcqlaaOuZk81zoJ/ySSs=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-686-zXMrJ4JuNmef0FsLOw_pVw-1; Fri, 03 Nov 2023 07:12:39 -0400
+X-MC-Unique: zXMrJ4JuNmef0FsLOw_pVw-1
+Received: by mail-ej1-f70.google.com with SMTP id a640c23a62f3a-9c39f53775fso29748766b.1
+        for <linux-serial@vger.kernel.org>; Fri, 03 Nov 2023 04:12:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699009958; x=1699614758;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=EKotJyX83ZQaavHXcaSrvHRltZ/PTiWvZAqWNqbIC/E=;
+        b=CCrXnNnGfmHQiOiG2vt4rxwbM/RP38oxq8rvN/yO7aeSuSCP3nwVsqmVwUbhkXQ4wC
+         Lhyqer4njihRUNpbXfDTga7Grwx3Z1WqZbzHic1zBWv4lyRFk8M5lLOzYNVZxp+tvLSG
+         wLIRE6jp49U8uwdByc6IGqE9jVCzfumLEzD8JQGk6kWOoFLTZooMpYm+thO7PGd1teM2
+         kO2sWa0M70KlkhKKAbDto7+DT0tLw4SpsxEj5JHzhoBnnZ2iTf4TiTyUzbI+dCq9TKMj
+         PV7arbz/atnPVorytqm1fBOj02PQA+fhS4WAgg9uMos3Br1JE0Azb/6zfKltM/91DGnh
+         nIng==
+X-Gm-Message-State: AOJu0YyEy4SWZJJvEjBq9V6EnDYpiGxXNZNYMp1IXi7iensZiijJzls6
+        amHkJBUzURaiYECYhnbwL1wDlCFRIOnN8TkaydhWkQlNb0k72BHBQEkA0pKHZ+UrzGRyTdHOPDJ
+        xVUOkrBUJcKx0KuoICBuF93s9
+X-Received: by 2002:a17:907:1c92:b0:9be:8de2:a56c with SMTP id nb18-20020a1709071c9200b009be8de2a56cmr19512557ejc.0.1699009958712;
+        Fri, 03 Nov 2023 04:12:38 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGQ97Ex9NOJxwu7cZf4ypToBcAvCkm8BR3IA1Z58ARKTni5k4nc2QCM9BdvMu0agZFpWc0fWA==
+X-Received: by 2002:a17:907:1c92:b0:9be:8de2:a56c with SMTP id nb18-20020a1709071c9200b009be8de2a56cmr19512524ejc.0.1699009958376;
+        Fri, 03 Nov 2023 04:12:38 -0700 (PDT)
+Received: from pstanner-thinkpadt14sgen1.fritz.box ([2001:9e8:32d1:5200:227b:d2ff:fe26:2a7a])
+        by smtp.gmail.com with ESMTPSA id gw14-20020a170906f14e00b009ae3d711fd9sm786814ejb.69.2023.11.03.04.12.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Nov 2023 04:12:38 -0700 (PDT)
+From:   Philipp Stanner <pstanner@redhat.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Philipp Stanner <pstanner@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Dave Airlie <airlied@redhat.com>
+Subject: [PATCH v2] drivers/tty/vt: use standard array-copy-functions
+Date:   Fri,  3 Nov 2023 12:12:08 +0100
+Message-ID: <20231103111207.74621-2-pstanner@redhat.com>
+X-Mailer: git-send-email 2.41.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|TYZPR01MB4578:EE_
-X-MS-Office365-Filtering-Correlation-Id: d0c7b049-34d7-4ee3-d32e-08dbdc5a4c2e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EzjerleEo/Lq26Y/hGNDDMvL8LJjzDdoQbCbcRNX/Qy1bVSSiuQvtKBSjGCg7F1F8GF/WWNI6tleouHl5OpHqpYqINywtsrNcR115iDNFL7Jqqk1huIVE+DOoXVDKagcNJEgUstBVVUbs7JftLfPLDD//SNQkLcXCI6YcZ46rUEdOGQGD1qcheZlNn6m1p6fl5IhafTS1RygwPct7cGssaqN9+csWuKK7orBaRIoVtp/CCmI/+y4fXS3vxDjon0icb291u8TrpBQ9wxv28mHdcIdhRIuubIxVhV01cVhA/bdXSCNXokfufI5Y5XyLrYEmFazXrCwtIu3eOCHcF2BALEDicjZU9iPb9QbmV9oPbYZdWEcKLfitq+BADPna/+d+P3pW8ecg6qgggtZXiJXJ9X6vdudIF2SS3wGROaiXKeJAaJrP4b/Lynq3AWZbEBsvo/VYjxMcsuqnKsQye9vNFBHmwicBIbAwWbnGD2GG/qxLVmitm7wUO6/t7hXgq6c+jj4iLksbD9VkZSmWEa1Q7hi9DvvtLAG3qyl78/CqoE+/1OqkVNDFWKMyWirgc4IcT2Le1CGC/4fpAYYpfpPmnd6o2R3a1qKmslPE+UytjLuJVo/PMDeAzOozxMzDven
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(396003)(346002)(366004)(136003)(376002)(39850400004)(230922051799003)(186009)(1800799009)(451199024)(64100799003)(316002)(26005)(38100700002)(66476007)(66946007)(6916009)(5660300002)(66556008)(4326008)(8936002)(8676002)(6506007)(2906002)(41300700001)(6486002)(478600001)(6666004)(9686003)(52116002)(6512007)(38350700005)(86362001)(33716001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yaL4WOO5B/Dl5H+zGGHCNuq0Vr3Ja32gO/MCgs5wGMjhKlAfVqbiRexOZkOj?=
- =?us-ascii?Q?ZSw9lDF/xuTd3UIkICnBmnzVngm2woKYjsLRrEO2d9FSdtxzsfbBQ1/Ob653?=
- =?us-ascii?Q?guMpSJ7wjyRvo8hVrjMMhaQdICt2wWU5RU4ak4iS2d7X0F8giiJQBhJAgvH+?=
- =?us-ascii?Q?6kT39cGHQJcRegyrGkfFvydJD+EQ49serUwQrDBd07HW5aZNrwDvUO+c92V0?=
- =?us-ascii?Q?FoC0+TzRMmVoCucKVQ8HSC/86AUplAYa1nyLuiiGqb3u47yxUVJbfIPmiAA3?=
- =?us-ascii?Q?wdd5xS8DyzL9WXLxR3V8P5IeiivbELRID1gmfb3uXE9ukl9P7+Jjpss9Zm4k?=
- =?us-ascii?Q?d/9venDtpZw5GRWfBGBol3W5G0NAjHsWQ9kaSqFaURd8cIHtBlzSoF2kquqC?=
- =?us-ascii?Q?b2Eb6ghPlwp8inN8CvmSQmmnD4hz4nMqUx76Lkm/CJAl7t1HelhT6I5LboMU?=
- =?us-ascii?Q?i84McGLQUCKPNgFYiaXlcEhforooltpnKKw5+Edb2Mj1ahWpUcaxd2bbSVXo?=
- =?us-ascii?Q?yUSTcgxJyl2lz/Qt/HcnAFcQ5S+FDosmgOC7KOCwqIat1XKGNcOQTJ4mkwth?=
- =?us-ascii?Q?4RFGBaxe6Efr4t+JjO1tG+X6BrxP9umBc/wBwHGguCRh9DhTO9EhH9M0/Mkw?=
- =?us-ascii?Q?0lj3vpkOrgthdi2IRaMDzGoQEjNkHXvBLtgoUK2NegZV+8A9WuJSqhqEh6Qb?=
- =?us-ascii?Q?j/DIwtlESKfGsDG23rpgk8FVxMyaKXuyLKJSGww1Q3moYqoyI3sJZt2XNYD6?=
- =?us-ascii?Q?LuEIlB5z+AYoSqoe157ED1lJo0/QDa84kIvuufM8bWndW4jVtBWgTGeXtT6F?=
- =?us-ascii?Q?Z+PW3/b2x3DFS+feb4u27n4g+4NoHSwaIRanZy2stk+lVYG6Ax7xuWdj18BF?=
- =?us-ascii?Q?fT6QwYrShpuTovtg+BRElTMXFELHhQ8Y0kfLM2vo9wNHjAMxH5/haIgM98ZN?=
- =?us-ascii?Q?nI63zqnX2TOGMnuWHxXu5lPRFIXJHgBdAfptKY2GSAwqQJ38Yd3ebhBkfh2f?=
- =?us-ascii?Q?OGTPtw5H4Pm2kDIztjMMCb1nmb4b/tisSVgDRis95+rHfN76/4Kg4ovnhok9?=
- =?us-ascii?Q?F8wQ0UZRM+uL9MRNKYRONG5ITqmTBC3/qxSqvc9cCUHQYa7Rx+Y/cUrjNMaO?=
- =?us-ascii?Q?ElbEfRXcPL4uyRitpSyr9ERn5aeZtEpCwA55rSRkaSydbxiwmGb08N4CH+5v?=
- =?us-ascii?Q?v9l2ceEZwmJOPkEWPXZZeuf9+1Nd4jDWD9GmWr38PEVTUFn0k9yF9LU1WiyG?=
- =?us-ascii?Q?ErNt0bl+P2Srn7mSHNRvDrUd9Nu+jfphLlkeIdyvQYtkiOhazkBWIc1jYbxQ?=
- =?us-ascii?Q?Rv2bMOL5InsYb8/8K56phf2pARfwbuJiF75PBf0vF9JbbwcOFOSIcprQoIhx?=
- =?us-ascii?Q?ZR7Rcg8vnsPBYow36wE8Ux6Be8JdMSIm1Pnl/sPvIIEnIfPiC7T0QPAP5y+s?=
- =?us-ascii?Q?Xth0Y6D8r8+yHEPws9cv+8jCgJwgt5J4Xly8rsZFbnp27/vR/IXIwKZOElkl?=
- =?us-ascii?Q?MS+wxVXA6HvAZlVkxByhwHh0r3EzzmgEgGzOairHx4ystGGwXwS128+5o0aV?=
- =?us-ascii?Q?v5gcsrmKceKjoK3A5hx5nU6XI2urB+Lbcqq26K9gVan3e4pWbOwUOBpYtqMG?=
- =?us-ascii?Q?Xw=3D=3D?=
-X-OriginatorOrg: moxa.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d0c7b049-34d7-4ee3-d32e-08dbdc5a4c2e
-X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2023 10:47:38.7741
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eIs0W2wzLLDYjKZmkaR2RTDurPLQH3/nX/L7kvt1Dm89tyvIKFtPgaK+vDAmtoDL0MtQeEtQmfUojpYzSei3DEivSfSCLUemd1vPIC9dYg8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR01MB4578
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Nov 01, 2023 at 07:49:48AM +0100, Greg Kroah-Hartman wrote:
-> On Wed, Nov 01, 2023 at 02:44:04PM +0800, Crescent CY Hsieh wrote:
-> > diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
-> > index 53bc1af67..427609fd5 100644
-> > --- a/include/uapi/linux/serial.h
-> > +++ b/include/uapi/linux/serial.h
-> > @@ -137,6 +137,8 @@ struct serial_icounter_struct {
-> >   * * %SER_RS485_ADDRB		- Enable RS485 addressing mode.
-> >   * * %SER_RS485_ADDR_RECV - Receive address filter (enables @addr_recv). Requires %SER_RS485_ADDRB.
-> >   * * %SER_RS485_ADDR_DEST - Destination address (enables @addr_dest). Requires %SER_RS485_ADDRB.
-> > + *
-> > + * * %SER_RS422_ENABLED		- RS422 enabled.
-> >   */
-> >  struct serial_rs485 {
-> >  	__u32	flags;
-> > @@ -149,6 +151,8 @@ struct serial_rs485 {
-> >  #define SER_RS485_ADDR_RECV		(1 << 7)
-> >  #define SER_RS485_ADDR_DEST		(1 << 8)
-> >  
-> > +#define SER_RS422_ENABLED		(1 << 9)
-> 
-> Why the extra blank line before this?
+tty/vt currently uses memdup_user() and vmemdup_array_user() to copy
+userspace arrays.
 
-The extra blank line is for the clarity, to seperate RS422 flag from
-RS485 flags.
+Whereas there is no danger of overflowing, the call to vmemdup_user()
+currently utilizes array_size() to calculate the array size
+nevertheless. This is not useful because array_size() would return
+SIZE_MAX and pass it to vmemdup_user() in case of (the impossible)
+overflow.
 
-> Also, what userspace code is going to use this?  How is it tested?
+string.h from the core-API now provides the wrappers memdup_array_user()
+and vmemdup_array_user() to copy userspace arrays in a standardized
+manner. Additionally, they also perform generic overflow-checks.
 
-This flag could be used when user tries to switch serial interface into
-RS422, just like the original flag "SER_RS485_ENABLED" can also be used to
-switch serial interface into RS485 with some RS485 configurations.
+Use these wrappers to make it more obvious and readable that arrays are
+being copied.
 
+As we are at it, remove two unnecessary empty lines.
+
+Suggested-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Philipp Stanner <pstanner@redhat.com>
 ---
-Sincerely,
-Crescent CY Hsieh
+Changes in v2:
+- Remove two empty lines from keyboard.c
+- Rephrase the commit message completely to make it obvious that we're
+  not actually fixing a really possible overflow here. Emphasize the
+  commit being about unifying array-copying. (Al Viro)
+---
+ drivers/tty/vt/consolemap.c |  2 +-
+ drivers/tty/vt/keyboard.c   | 10 ++++------
+ 2 files changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+index f02d21e2a96e..313cef3322eb 100644
+--- a/drivers/tty/vt/consolemap.c
++++ b/drivers/tty/vt/consolemap.c
+@@ -644,7 +644,7 @@ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
+ 	if (!ct)
+ 		return 0;
+ 
+-	unilist = vmemdup_user(list, array_size(sizeof(*unilist), ct));
++	unilist = vmemdup_array_user(list, ct, sizeof(*unilist));
+ 	if (IS_ERR(unilist))
+ 		return PTR_ERR(unilist);
+ 
+diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
+index 1fe6107b539b..96f19ef360b5 100644
+--- a/drivers/tty/vt/keyboard.c
++++ b/drivers/tty/vt/keyboard.c
+@@ -1772,12 +1772,10 @@ int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
+ 			return -EINVAL;
+ 
+ 		if (ct) {
+-
+-			dia = memdup_user(a->kbdiacr,
+-					sizeof(struct kbdiacr) * ct);
++			dia = memdup_array_user(a->kbdiacr,
++						ct, sizeof(struct kbdiacr));
+ 			if (IS_ERR(dia))
+ 				return PTR_ERR(dia);
+-
+ 		}
+ 
+ 		spin_lock_irqsave(&kbd_event_lock, flags);
+@@ -1811,8 +1809,8 @@ int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
+ 			return -EINVAL;
+ 
+ 		if (ct) {
+-			buf = memdup_user(a->kbdiacruc,
+-					  ct * sizeof(struct kbdiacruc));
++			buf = memdup_array_user(a->kbdiacruc,
++						ct, sizeof(struct kbdiacruc));
+ 			if (IS_ERR(buf))
+ 				return PTR_ERR(buf);
+ 		} 
+-- 
+2.41.0
+
