@@ -2,59 +2,55 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E264C4167B
-	for <linux-serial@archiver.kernel.org>; Sat,  4 Nov 2023 04:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E3C9C4167B
+	for <linux-serial@archiver.kernel.org>; Sat,  4 Nov 2023 13:26:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229585AbjKDE2T (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 4 Nov 2023 00:28:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54526 "EHLO
+        id S232180AbjKDN0C (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 4 Nov 2023 09:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229509AbjKDE2T (ORCPT
+        with ESMTP id S230151AbjKDN0B (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 4 Nov 2023 00:28:19 -0400
-X-Greylist: delayed 4229 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 03 Nov 2023 21:28:15 PDT
-Received: from mail.profitpathwaygo.com (mail.profitpathwaygo.com [141.94.21.238])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79AEAD44
-        for <linux-serial@vger.kernel.org>; Fri,  3 Nov 2023 21:28:15 -0700 (PDT)
-Received: by mail.profitpathwaygo.com (Postfix, from userid 1002)
-        id 1C99C4FBEB; Mon, 30 Oct 2023 08:30:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=profitpathwaygo.com;
-        s=mail; t=1698656363;
-        bh=qp3Ofokho6Ql+WtI8ZPVilyHYhskXL7fod7u9CWs8W4=;
-        h=Date:From:To:Subject:From;
-        b=PFgnEd5wdZcxUwFhfrIzckaziWArUF6AlnphdbJ6LOsUavovTOYAlDHfGSvXc2iCB
-         IcXbaXKCgWM4RohbT1jNLvcQaQ7TEVa+3LgFhBH/rOy9/Xlw1fWw6YIU7htymCoinw
-         DLNVpRmk6MH6esnaGIY83Q2lT3zuBmNIXsmYfeyRjcJSUbHFzyG/3jsYXAv2mlEviO
-         PKltfl4pZrNLU42G/dCi3wuHujQnhYuVxFXrSJ4bi055qUt1SYEcpKIdFPY1BCvWwk
-         zxn39ACHT8875y/t8gUD8X5kKQLwuKB5WuDMy2EZUy4KNDm4MMHTuOOupbhXjH/lB2
-         +rb5w2y8rL6QA==
-Received: by mail.profitpathwaygo.com for <linux-serial@vger.kernel.org>; Mon, 30 Oct 2023 08:30:28 GMT
-Message-ID: <20231030074500-0.1.2s.154d9.0.k52mnsbkog@profitpathwaygo.com>
-Date:   Mon, 30 Oct 2023 08:30:28 GMT
-From:   "Adam Charachuta" <adam.charachuta@profitpathwaygo.com>
-To:     <linux-serial@vger.kernel.org>
-Subject: =?UTF-8?Q?S=C5=82owa_kluczowe_do_wypozycjonowania_?=
-X-Mailer: mail.profitpathwaygo.com
+        Sat, 4 Nov 2023 09:26:01 -0400
+Received: from connect.vanmierlo.com (fieber.vanmierlo.com [84.243.197.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FBACE3;
+        Sat,  4 Nov 2023 06:25:55 -0700 (PDT)
+X-Footer: dmFubWllcmxvLmNvbQ==
+Received: from roundcube.vanmierlo.com ([192.168.37.37])
+        (authenticated user m.brock@vanmierlo.com)
+        by connect.vanmierlo.com (Kerio Connect 10.0.2 patch 1) with ESMTPA;
+        Sat, 4 Nov 2023 14:25:51 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Date:   Sat, 04 Nov 2023 14:25:51 +0100
+From:   m.brock@vanmierlo.com
+To:     Florian Eckert <fe@dev.tdt.de>
+Cc:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
+        kabel@kernel.org, u.kleine-koenig@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-leds@vger.kernel.org
+Subject: Re: [Patch v6 3/7] leds: ledtrig-tty: free allocated ttyname buffer
+ on deactivate
+In-Reply-To: <20231030100447.63477-4-fe@dev.tdt.de>
+References: <20231030100447.63477-1-fe@dev.tdt.de>
+ <20231030100447.63477-4-fe@dev.tdt.de>
+Message-ID: <6be2d8101fb8da3455974ead01721e7e@vanmierlo.com>
+X-Sender: m.brock@vanmierlo.com
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dzie=C5=84 dobry,
+Florian Eckert wrote on 2023-10-30 11:04:
+> The ttyname buffer for the ledtrig_tty_data struct is allocated in the
+> sysfs ttyname_store() function. This buffer must be released on trigger
+> deactivation. This was missing and is thus a memory leak.
 
-zapozna=C5=82em si=C4=99 z Pa=C5=84stwa ofert=C4=85 i z przyjemno=C5=9Bci=
-=C4=85 przyznaj=C4=99, =C5=BCe przyci=C4=85ga uwag=C4=99 i zach=C4=99ca d=
-o dalszych rozm=C3=B3w.=20
+Shouldn´t there be a Fixes tag here?
 
-Pomy=C5=9Bla=C5=82em, =C5=BCe mo=C5=BCe m=C3=B3g=C5=82bym mie=C4=87 sw=C3=
-=B3j wk=C5=82ad w Pa=C5=84stwa rozw=C3=B3j i pom=C3=B3c dotrze=C4=87 z t=C4=
-=85 ofert=C4=85 do wi=C4=99kszego grona odbiorc=C3=B3w. Pozycjonuj=C4=99 =
-strony www, dzi=C4=99ki czemu generuj=C4=85 =C5=9Bwietny ruch w sieci.
+And as a side note: you have patches 1..7/7 and a cover letter 0/8 ?
 
-Mo=C5=BCemy porozmawia=C4=87 w najbli=C5=BCszym czasie?
+Maarten
 
-
-Pozdrawiam serdecznie
-Adam Charachuta
