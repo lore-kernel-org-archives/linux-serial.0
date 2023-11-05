@@ -2,186 +2,83 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A5F1C0018A
-	for <linux-serial@archiver.kernel.org>; Sun,  5 Nov 2023 13:14:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CCDC4332F
+	for <linux-serial@archiver.kernel.org>; Sun,  5 Nov 2023 21:44:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229486AbjKENOf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 5 Nov 2023 08:14:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55554 "EHLO
+        id S229451AbjKEVog (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 5 Nov 2023 16:44:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229707AbjKENOe (ORCPT
+        with ESMTP id S229445AbjKEVof (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 5 Nov 2023 08:14:34 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740D7EE
-        for <linux-serial@vger.kernel.org>; Sun,  5 Nov 2023 05:14:31 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id 38308e7fff4ca-2c5210a1515so50262161fa.0
-        for <linux-serial@vger.kernel.org>; Sun, 05 Nov 2023 05:14:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1699190069; x=1699794869; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=yqSv2UnZ+U1pe5KGwf29GbAFTynYSNuIgS0ilx1Gh6k=;
-        b=uiNdfudBiCcsNQNDXsk+cinHgAvz74PPBwjQ8AgBK8+Ok4/cSY/xJCETjpaKBMtFMx
-         RdjKw8d5QfudrCtWNB82U0RjNJmFoufxnrt0AJfGNAfJDCviawRk1ldDRIkR9oFpDYnz
-         jkgm2WGcQD/2t6WUMCwSmypXf2olRfcq3g8xZPqanu6WN8qsqLDx6FiuYr8FJM5G7lur
-         6T9OBtNQHlg7m33W1U0yhecAcCs8OCPUVyAwPV6c9pMv0o0wLiZBUQw3YjxwDz0aI9kO
-         s0mAceMcdlFMKbAUwKcua7JcK9snqjsnyHQG6VjzBkYmoBf1i5b+ZHlVpQbz7LZyG3WV
-         dv+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699190069; x=1699794869;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=yqSv2UnZ+U1pe5KGwf29GbAFTynYSNuIgS0ilx1Gh6k=;
-        b=JvFgbR7sdAHSxgF1D2r4DKxKgYKPorV5Ns9x6wUCcBCoPqqRQw3DmJSlRorKeVuv3t
-         ANecsbS/aCBb57aPNebTEF+Uh1nAcJ5sdvzjTrjYWeot3JJTyjdQaFifimQsusUjx60s
-         UL4YcFUrgXPJyqJ6PSpV0yZp83H7zgRGG9xOc8ApKJ0dYHmVbPm9caginee6vQaDhIgR
-         tr+lUD1TORxx3kKcdkYDu8+xJOz9SkcrLUKQJdrY+naet8L8AjazN7NzhyRgYXVu7ScR
-         1AhfNHT3VPOm1onxy9jrkHf6rVh+EAF0tK8aitbsitMvZMmZtaSDL+oC9AvbL1W5t8+Z
-         yTow==
-X-Gm-Message-State: AOJu0YxMvskHeXiYvH67J7yLJR+a1J0FRMg6HOO3DNHDt02VQmiLv8mH
-        HXTLcIIlrYCMIG1gj4mpE5LQQw==
-X-Google-Smtp-Source: AGHT+IGnKSMKqoVLMGiYGZbCupSjzNBC45bZJAUhZDif0PqgX/r7v34/Obqmw9T2Y6euojIAW4UL7A==
-X-Received: by 2002:a2e:9246:0:b0:2c5:724:fd64 with SMTP id v6-20020a2e9246000000b002c50724fd64mr20383790ljg.46.1699190069521;
-        Sun, 05 Nov 2023 05:14:29 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.218.126])
-        by smtp.gmail.com with ESMTPSA id ay8-20020a05600c1e0800b0040772138bb7sm9025518wmb.2.2023.11.05.05.14.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 05 Nov 2023 05:14:29 -0800 (PST)
-Message-ID: <17aed57a-5e40-494b-a1d6-293533498804@linaro.org>
-Date:   Sun, 5 Nov 2023 14:14:25 +0100
+        Sun, 5 Nov 2023 16:44:35 -0500
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12FEBF
+        for <linux-serial@vger.kernel.org>; Sun,  5 Nov 2023 13:44:30 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qzkun-0005cC-Oi; Sun, 05 Nov 2023 22:44:17 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qzkul-006sXL-OP; Sun, 05 Nov 2023 22:44:15 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1qzkul-00DHxV-Es; Sun, 05 Nov 2023 22:44:15 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linuxppc-dev@lists.ozlabs.org, kernel@pengutronix.de,
+        linux-serial@vger.kernel.org
+Subject: [PATCH 0/2] tty: hvc: Convert to platform remove callback returning void
+Date:   Sun,  5 Nov 2023 22:44:07 +0100
+Message-ID: <20231105214406.3765906-4-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.42.0
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 00/20] Add minimal Tensor/GS101 SoC support and
- Oriole/Pixel6 board
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     William McVicker <willmcvicker@google.com>,
-        Maksym Holovach <maksym.holovach.an.2022@lpnu.ua>,
-        Peter Griffin <peter.griffin@linaro.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
-        conor+dt@kernel.org, sboyd@kernel.org, tomasz.figa@gmail.com,
-        s.nawrocki@samsung.com, linus.walleij@linaro.org,
-        wim@linux-watchdog.org, linux@roeck-us.net,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        olof@lixom.net, cw00.choi@samsung.com, tudor.ambarus@linaro.org,
-        andre.draszik@linaro.org, semen.protsenko@linaro.org,
-        saravanak@google.com, soc@kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        kernel-team@android.com, linux-serial@vger.kernel.org,
-        Alim Akhtar <alim.akhtar@samsung.com>
-References: <20231010224928.2296997-1-peter.griffin@linaro.org>
- <3d489d6c-2098-4f0c-9ec4-f6040665753e@lpnu.ua>
- <CADrjBPp+fyNoPdix6=Wp4cDCRFq2Mui8NS6WENejcHn+H1M-jA@mail.gmail.com>
- <48e1c0bd-9518-4927-b490-f3206256bbd4@lpnu.ua>
- <c0b8f356-0f26-459d-850d-ec0fa1fd3987@linaro.org>
- <ZUUvp3kqM7NPlyZ_@google.com>
- <cee1b28d-5bd9-46eb-b9f4-facbad10b5d7@linaro.org>
- <2023110535-rare-underdone-b508@gregkh>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <2023110535-rare-underdone-b508@gregkh>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1041; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=2G89HgbYBqf0Lwg13SXDRVWuf/UVadm57eZl7j7tSLs=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlSAynd3H0mMld8K/mCAxD8Ftf264W7AoOj2MGQ YI68GhmeDyJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZUgMpwAKCRCPgPtYfRL+ Ts9aB/9xWS/XexOtt4MrBteSIpKz45O4fgJ05w2EZFjyMcCQR+x6P5kmzIV7vMkeXc9a7yMh+0c 0B340N8ctuaQGvTEAPJdhYiOQoYLS+06FN1MP1M0a+N4MACHtomPKpvL5tarZHT1pqyfm/yBUfU cWO4pQ+73IoGd/casIVxeo6To/P460wir5nn9X1ad6o9VzfvSDvhvouTvzR9YYaOv05i4fbCj1Y pZ5XKnoHoJS2tcrM9XtTPpckwFQrdaNMSmPgyyQDHZZwulxBvUylPk+wT1UkEXZTs0/wgtApPmB maVVnEh4K0s3SiLOJuXeDrYmrsEolHgrfFVYKt0kWBUUL3w7
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 05/11/2023 14:08, Greg KH wrote:
-> On Sun, Nov 05, 2023 at 01:52:22PM +0100, Krzysztof Kozlowski wrote:
->> On 03/11/2023 18:36, William McVicker wrote:
->>
->>>>
->>>> That's indeed a problem. Future Tesla SoC might have just few pieces
->>>> similar to FSD. There would be no common SoC part, except the actual
->>>> Tesla IP.
->>>>
->>>> Same for Google. Future GSXXX, if done by Qualcomm, will be absolutely
->>>> different than GS101 and the only common part would be the TPU (Tensor).
->>>>
->>>> So now let's decide what is the common denominator:
->>>> 1. Core SoC architecture, like buses, pinctrl, clocks, timers, serial,
->>>> and many IP blocks, which constitute 95% of Devicetree bindings and drivers,
->>>> 2. The one, big piece made by Samsung's customer: TPU, NPU or whatever.
->>>
->>> As mentioned above, I think this should be based on how the DTBs and DTBOs are
->>> used and distributed.
->>
->> None of existing platforms do it. Nowhere. All chromebooks are split per
->> SoC, not "how DTBs should be used and distributed". There is no google,
->> no Chromebook directory. None of Samsung phones have it. No
->> Samsung-phone directory. None of Google phones have Pixel directory.
-> 
-> but for code we have:
-> 	drivers/patform/chrome/
-> 	drivers/firmware/google/
-> 	drivers/net/ethernet/google/
-> 
-> don't know if that matters or not, but thought I would mention it...
+Hello,
 
-Yes, for the drivers for the similar hardware we have it. We have
-drivers for Chromebook's Embedded Controller - let's put it in one
-place, so that maintenance and review will be easier.
+The hvc_opal driver had an error path in its remove function resulting
+in returning a non-zero value. This is a bad thing because the core
+doesn't do error handling and effectively ignores the return value.
 
-Now for DTS, the common hardware is not "Samsung phones", but "Samsung
-SoC". We organize it like:
-1. Samsung phones with Samsung SoC -> arm64/dts/samsung
-2. Samsung phones with Qualcomm SoC -> arm64/dts/qcom
+In this case it's not as bad as it sounds though, as this error path is
+never taken.
 
-because the main common part is the SoC, not the rest of the phone.
-There is no reviewer or maintainer for Samsung phones. There is no need
-for such. No benefits, almost not many common parts except some touchscreen.
+After the first patch changes hvc_remove() to return void the remove
+function obviously always returns zero. Then it can be trivially
+converted to .remove_new(). See commit 5c5a7680e67b ("platform: Provide
+a remove callback that returns no value") for an extended explanation
+and the eventual goal of this conversion.
 
-Why Google Pixel suddenly should be exception from the way we handle DTS
-of all ARM64 platforms?
+Uwe Kleine-König (2):
+  tty: hvc: Make hvc_remove() return no value
+  tty: hvc: hvc_opal: Convert to platform remove callback returning void
 
-Best regards,
-Krzysztof
+ drivers/tty/hvc/hvc_console.c |  3 +--
+ drivers/tty/hvc/hvc_console.h |  2 +-
+ drivers/tty/hvc/hvc_opal.c    | 17 +++++++----------
+ 3 files changed, 9 insertions(+), 13 deletions(-)
+
+base-commit: e27090b1413ff236ca1aec26d6b022149115de2c
+-- 
+2.42.0
 
