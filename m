@@ -2,63 +2,64 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA8C8C0018A
-	for <linux-serial@archiver.kernel.org>; Sun,  5 Nov 2023 12:52:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A5F1C0018A
+	for <linux-serial@archiver.kernel.org>; Sun,  5 Nov 2023 13:14:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229436AbjKEMwb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 5 Nov 2023 07:52:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44082 "EHLO
+        id S229486AbjKENOf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 5 Nov 2023 08:14:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229592AbjKEMwa (ORCPT
+        with ESMTP id S229707AbjKENOe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 5 Nov 2023 07:52:30 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39945112
-        for <linux-serial@vger.kernel.org>; Sun,  5 Nov 2023 04:52:27 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id 5b1f17b1804b1-40859c46447so23062135e9.1
-        for <linux-serial@vger.kernel.org>; Sun, 05 Nov 2023 04:52:27 -0800 (PST)
+        Sun, 5 Nov 2023 08:14:34 -0500
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740D7EE
+        for <linux-serial@vger.kernel.org>; Sun,  5 Nov 2023 05:14:31 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id 38308e7fff4ca-2c5210a1515so50262161fa.0
+        for <linux-serial@vger.kernel.org>; Sun, 05 Nov 2023 05:14:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1699188745; x=1699793545; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1699190069; x=1699794869; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=h6Ws5fasEZRSyu0hAsK2i2tL+g26EZkfruEDDht/rZ4=;
-        b=WKJCGHISpwOpT6PYXE5Z0ZwJue+kSb7GrxnNqA3zSY/HTAKUhyLV3vlQS1w96NzLes
-         P0WtneRD0jndhsKPu1NVTwLVgejRafqZoXDM4xRwpzCiaDKW9hMwLe4Hk9V4pxwX5xXq
-         6BSdwpKkIvu7Wo++OpPB4mEAlaWNyjnZpWcGHEnQFmeTtXJpR2Ri+cIeJ4FP8zXjJd4S
-         68P9EamoKcZBXVCeDQslsk24KtQ9m2G3hO8EARuTGIeM48nkAm/mY5cBNejFYNURIA5J
-         tMy5FdGe9Du9P2PDuQIrBl5F1M2Eg4+0stphxhGh/Kh26aNi+uhbR7tfmIGY/voEjaA2
-         Sh/w==
+        bh=yqSv2UnZ+U1pe5KGwf29GbAFTynYSNuIgS0ilx1Gh6k=;
+        b=uiNdfudBiCcsNQNDXsk+cinHgAvz74PPBwjQ8AgBK8+Ok4/cSY/xJCETjpaKBMtFMx
+         RdjKw8d5QfudrCtWNB82U0RjNJmFoufxnrt0AJfGNAfJDCviawRk1ldDRIkR9oFpDYnz
+         jkgm2WGcQD/2t6WUMCwSmypXf2olRfcq3g8xZPqanu6WN8qsqLDx6FiuYr8FJM5G7lur
+         6T9OBtNQHlg7m33W1U0yhecAcCs8OCPUVyAwPV6c9pMv0o0wLiZBUQw3YjxwDz0aI9kO
+         s0mAceMcdlFMKbAUwKcua7JcK9snqjsnyHQG6VjzBkYmoBf1i5b+ZHlVpQbz7LZyG3WV
+         dv+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699188745; x=1699793545;
+        d=1e100.net; s=20230601; t=1699190069; x=1699794869;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=h6Ws5fasEZRSyu0hAsK2i2tL+g26EZkfruEDDht/rZ4=;
-        b=H9yc9rRZc/Akj7E3OdUZiWpdFfDnxUFJtr4U3X1hBCsKviexX2SkZ1QZ2B3PypfuN6
-         lK0wLFBs7JB2bvPMuHb2YIXP3uzzcrxlq5c3EbUWnTb123Hl+qGr4CySSc3k1wDBc/a6
-         tSQwuqogyYRSRRD4UTXKRccFWrWCaOAhqJAc94Uz+AmJKA6iiLsx+IgFHIJH9XwmpkhK
-         PLPUt+drb/eigMrt0S22RTIB9ivDrH0GT13ncC2LG9yO552V7PIodm1xKCddIG8ZV2fQ
-         BdiQIvPGpcEe0mkZwaOncWfBOGzcqWpPq5BJMpWNgQ7QBSZRJNNkieoLq7uUDzl4h2r2
-         InCw==
-X-Gm-Message-State: AOJu0YwvDr+T8XhLgMUEDq1XQpJVaF2Gg2SVhgYotZ56pymirjRZf2aF
-        1+4aZDIJeypMfUts0bU5+aPhfA==
-X-Google-Smtp-Source: AGHT+IFIoSYERlOtxkCbopDwJv3f3AmYqItz+jjn7M2N4vnCCxyJvTlh9wlSBGFIwO8BLoYs2JurTw==
-X-Received: by 2002:a05:600c:524a:b0:408:4160:1528 with SMTP id fc10-20020a05600c524a00b0040841601528mr22116065wmb.30.1699188745125;
-        Sun, 05 Nov 2023 04:52:25 -0800 (PST)
+        bh=yqSv2UnZ+U1pe5KGwf29GbAFTynYSNuIgS0ilx1Gh6k=;
+        b=JvFgbR7sdAHSxgF1D2r4DKxKgYKPorV5Ns9x6wUCcBCoPqqRQw3DmJSlRorKeVuv3t
+         ANecsbS/aCBb57aPNebTEF+Uh1nAcJ5sdvzjTrjYWeot3JJTyjdQaFifimQsusUjx60s
+         UL4YcFUrgXPJyqJ6PSpV0yZp83H7zgRGG9xOc8ApKJ0dYHmVbPm9caginee6vQaDhIgR
+         tr+lUD1TORxx3kKcdkYDu8+xJOz9SkcrLUKQJdrY+naet8L8AjazN7NzhyRgYXVu7ScR
+         1AhfNHT3VPOm1onxy9jrkHf6rVh+EAF0tK8aitbsitMvZMmZtaSDL+oC9AvbL1W5t8+Z
+         yTow==
+X-Gm-Message-State: AOJu0YxMvskHeXiYvH67J7yLJR+a1J0FRMg6HOO3DNHDt02VQmiLv8mH
+        HXTLcIIlrYCMIG1gj4mpE5LQQw==
+X-Google-Smtp-Source: AGHT+IGnKSMKqoVLMGiYGZbCupSjzNBC45bZJAUhZDif0PqgX/r7v34/Obqmw9T2Y6euojIAW4UL7A==
+X-Received: by 2002:a2e:9246:0:b0:2c5:724:fd64 with SMTP id v6-20020a2e9246000000b002c50724fd64mr20383790ljg.46.1699190069521;
+        Sun, 05 Nov 2023 05:14:29 -0800 (PST)
 Received: from [192.168.1.20] ([178.197.218.126])
-        by smtp.gmail.com with ESMTPSA id f6-20020a05600c4e8600b003fefb94ccc9sm9046377wmq.11.2023.11.05.04.52.22
+        by smtp.gmail.com with ESMTPSA id ay8-20020a05600c1e0800b0040772138bb7sm9025518wmb.2.2023.11.05.05.14.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 05 Nov 2023 04:52:24 -0800 (PST)
-Message-ID: <cee1b28d-5bd9-46eb-b9f4-facbad10b5d7@linaro.org>
-Date:   Sun, 5 Nov 2023 13:52:22 +0100
+        Sun, 05 Nov 2023 05:14:29 -0800 (PST)
+Message-ID: <17aed57a-5e40-494b-a1d6-293533498804@linaro.org>
+Date:   Sun, 5 Nov 2023 14:14:25 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v2 00/20] Add minimal Tensor/GS101 SoC support and
  Oriole/Pixel6 board
 Content-Language: en-US
-To:     William McVicker <willmcvicker@google.com>
-Cc:     Maksym Holovach <maksym.holovach.an.2022@lpnu.ua>,
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     William McVicker <willmcvicker@google.com>,
+        Maksym Holovach <maksym.holovach.an.2022@lpnu.ua>,
         Peter Griffin <peter.griffin@linaro.org>, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
         conor+dt@kernel.org, sboyd@kernel.org, tomasz.figa@gmail.com,
@@ -79,6 +80,8 @@ References: <20231010224928.2296997-1-peter.griffin@linaro.org>
  <48e1c0bd-9518-4927-b490-f3206256bbd4@lpnu.ua>
  <c0b8f356-0f26-459d-850d-ec0fa1fd3987@linaro.org>
  <ZUUvp3kqM7NPlyZ_@google.com>
+ <cee1b28d-5bd9-46eb-b9f4-facbad10b5d7@linaro.org>
+ <2023110535-rare-underdone-b508@gregkh>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -124,47 +127,60 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <ZUUvp3kqM7NPlyZ_@google.com>
+In-Reply-To: <2023110535-rare-underdone-b508@gregkh>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 03/11/2023 18:36, William McVicker wrote:
-
+On 05/11/2023 14:08, Greg KH wrote:
+> On Sun, Nov 05, 2023 at 01:52:22PM +0100, Krzysztof Kozlowski wrote:
+>> On 03/11/2023 18:36, William McVicker wrote:
 >>
->> That's indeed a problem. Future Tesla SoC might have just few pieces
->> similar to FSD. There would be no common SoC part, except the actual
->> Tesla IP.
+>>>>
+>>>> That's indeed a problem. Future Tesla SoC might have just few pieces
+>>>> similar to FSD. There would be no common SoC part, except the actual
+>>>> Tesla IP.
+>>>>
+>>>> Same for Google. Future GSXXX, if done by Qualcomm, will be absolutely
+>>>> different than GS101 and the only common part would be the TPU (Tensor).
+>>>>
+>>>> So now let's decide what is the common denominator:
+>>>> 1. Core SoC architecture, like buses, pinctrl, clocks, timers, serial,
+>>>> and many IP blocks, which constitute 95% of Devicetree bindings and drivers,
+>>>> 2. The one, big piece made by Samsung's customer: TPU, NPU or whatever.
+>>>
+>>> As mentioned above, I think this should be based on how the DTBs and DTBOs are
+>>> used and distributed.
 >>
->> Same for Google. Future GSXXX, if done by Qualcomm, will be absolutely
->> different than GS101 and the only common part would be the TPU (Tensor).
->>
->> So now let's decide what is the common denominator:
->> 1. Core SoC architecture, like buses, pinctrl, clocks, timers, serial,
->> and many IP blocks, which constitute 95% of Devicetree bindings and drivers,
->> 2. The one, big piece made by Samsung's customer: TPU, NPU or whatever.
+>> None of existing platforms do it. Nowhere. All chromebooks are split per
+>> SoC, not "how DTBs should be used and distributed". There is no google,
+>> no Chromebook directory. None of Samsung phones have it. No
+>> Samsung-phone directory. None of Google phones have Pixel directory.
 > 
-> As mentioned above, I think this should be based on how the DTBs and DTBOs are
-> used and distributed.
+> but for code we have:
+> 	drivers/patform/chrome/
+> 	drivers/firmware/google/
+> 	drivers/net/ethernet/google/
+> 
+> don't know if that matters or not, but thought I would mention it...
 
-None of existing platforms do it. Nowhere. All chromebooks are split per
-SoC, not "how DTBs should be used and distributed". There is no google,
-no Chromebook directory. None of Samsung phones have it. No
-Samsung-phone directory. None of Google phones have Pixel directory.
+Yes, for the drivers for the similar hardware we have it. We have
+drivers for Chromebook's Embedded Controller - let's put it in one
+place, so that maintenance and review will be easier.
 
-You are now trying to introduce completely new rule, not existing in any
-upstream platform.
+Now for DTS, the common hardware is not "Samsung phones", but "Samsung
+SoC". We organize it like:
+1. Samsung phones with Samsung SoC -> arm64/dts/samsung
+2. Samsung phones with Qualcomm SoC -> arm64/dts/qcom
 
+because the main common part is the SoC, not the rest of the phone.
+There is no reviewer or maintainer for Samsung phones. There is no need
+for such. No benefits, almost not many common parts except some touchscreen.
 
-> What is the benefit of adding the gs101 board files under
-> the exynos folder?
-
-To make it easier for us to maintain. You won't be maintaining any of
-these platforms. None of Google folks contributed patches or maintained
-any of these platforms so far, so it is up to upstream community to
-decide what is the most convenience way to maintain the kernel sources.
+Why Google Pixel suddenly should be exception from the way we handle DTS
+of all ARM64 platforms?
 
 Best regards,
 Krzysztof
