@@ -2,151 +2,170 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24AECC4332F
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Nov 2023 14:44:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6D26C4708E
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Nov 2023 15:16:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231555AbjKFOoF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Nov 2023 09:44:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46330 "EHLO
+        id S232110AbjKFPQk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Nov 2023 10:16:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231778AbjKFOoE (ORCPT
+        with ESMTP id S232097AbjKFPQg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Nov 2023 09:44:04 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96869B6;
-        Mon,  6 Nov 2023 06:44:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-        t=1699281830; x=1699886630; i=linosanfilippo@gmx.de;
-        bh=hEXmBjzYmq+iyTpBkbCwl1Phma6+Z7uaRav85K2TYII=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
-         In-Reply-To;
-        b=Wa1jJXjCpBAzAHhS65MjWQJmAzReYR+wfA6o6bDKak17EWsN2DQetWOHkmklSPoe
-         l39oZ9ovBlxNlBfONw2e65BwNgUiiBWFZCYug7kusXSqj8XfbJYP9tFu1faM9s3Gl
-         BRGvHV4avTPJAMjhwmCzCAIPDTcGqvwsazWdH1ViLx0sLQs0pcDEpLcqVw2B5F6Bb
-         m+OgLgqnHm+mbryMblL/dJuCsEGBiqTvHGngRtvONfouFNRNGCAVTA9bgfdzcJFum
-         1fphMALn8qnZagm6VMHZ38fuXDGXDylk8E0uAak8uc5QhBGuaREkmLWYOMWY9IITo
-         /aMvqkin2+c0K7Nx5Q==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.2.42] ([84.162.21.41]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1M1HZo-1qyLs41MRm-002lUq; Mon, 06
- Nov 2023 15:43:50 +0100
-Message-ID: <3fc18b13-fef0-439e-abf0-1fe4e46b224a@gmx.de>
-Date:   Mon, 6 Nov 2023 15:43:49 +0100
+        Mon, 6 Nov 2023 10:16:36 -0500
+X-Greylist: delayed 349 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Nov 2023 07:16:31 PST
+Received: from out-183.mta0.migadu.com (out-183.mta0.migadu.com [IPv6:2001:41d0:1004:224b::b7])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B939ED8
+        for <linux-serial@vger.kernel.org>; Mon,  6 Nov 2023 07:16:31 -0800 (PST)
+Date:   Mon, 6 Nov 2023 16:10:35 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=grimler.se; s=key1;
+        t=1699283440;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8IseJkdw2ZJ4O7QHhV2msEv4n+4BZunk72A86TeVvNk=;
+        b=QR638+RBEN1ZHFuLBGLLLrN272CNfvCND66lm1i+46gFJNp6vZDMtp8k1YAKbFmkRujKH+
+        r+YZGpmpBotCu6G1KjbUd8OaC7opFiOjxzygN0tcKlomn/80U23ZP18rLgK0w4t550aIgN
+        jHd1GSjM5rrNfyeFi3RTFyrvDTVcj8A=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Henrik Grimler <henrik@grimler.se>
+To:     Peter Griffin <peter.griffin@linaro.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Maksym Holovach <maksym.holovach.an.2022@lpnu.ua>,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
+        tomasz.figa@gmail.com, s.nawrocki@samsung.com,
+        linus.walleij@linaro.org, wim@linux-watchdog.org,
+        linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org,
+        arnd@arndb.de, olof@lixom.net, cw00.choi@samsung.com,
+        tudor.ambarus@linaro.org, andre.draszik@linaro.org,
+        semen.protsenko@linaro.org, saravanak@google.com,
+        willmcvicker@google.com, soc@kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        kernel-team@android.com, linux-serial@vger.kernel.org,
+        Alim Akhtar <alim.akhtar@samsung.com>
+Subject: Re: [PATCH v2 00/20] Add minimal Tensor/GS101 SoC support and
+ Oriole/Pixel6 board
+Message-ID: <ZUkB6yVyxEmldVPs@samsung-a5>
+References: <20231010224928.2296997-1-peter.griffin@linaro.org>
+ <3d489d6c-2098-4f0c-9ec4-f6040665753e@lpnu.ua>
+ <CADrjBPp+fyNoPdix6=Wp4cDCRFq2Mui8NS6WENejcHn+H1M-jA@mail.gmail.com>
+ <48e1c0bd-9518-4927-b490-f3206256bbd4@lpnu.ua>
+ <c0b8f356-0f26-459d-850d-ec0fa1fd3987@linaro.org>
+ <CADrjBPqXQa0ZhM3YFToH5kZcOU27ZuSajm-gj5mWybGTRM++-Q@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] tty: serial: Add RS422 flag to struct serial_rs485
-Content-Language: en-US
-To:     Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20231101064404.45711-1-crescentcy.hsieh@moxa.com>
- <0d203024-ba5c-4258-b549-b9304622978b@gmx.de>
- <ZUiTkyZSbbmTUGYQ@moxa-ThinkCentre-M90t>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <ZUiTkyZSbbmTUGYQ@moxa-ThinkCentre-M90t>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:DJf+fGVHnv4vAYJP+DKZ9MaNmbBkIQbu7i1QwzdmM725Oc6M4jP
- 6a3Pz4/Oh78eImtiHPw4OqVQRTBNQtFS9SARTbrkREGKoF2vJr+n0P2dw96UgFf5UpAsBwp
- iR3zsdpAYQKxmxlcazr9d2j8/6DjQayXELYQfpgtUtfqV2QwHdmXgNCRIqEGGiSHz4HpwwP
- KxsUOx1giGJs6MDWYFLkQ==
-UI-OutboundReport: notjunk:1;M01:P0:a6hp+FgPuPc=;zNAvda4tm4/qzcEdzNqKn7OrzHP
- TNL3MTY5/bhIj7weNVx6nutq2npUNjczo8RMSkyGydmdFCIHmkVHTUaC1ujzdrbRqENtHXgyT
- ennODDzwDjhIepwMJbX193egpyZnki8Z6ArV76LuEt19iPKNJekntbQ1r6rWEnhpd1Slx1lKZ
- XxKj1JSd8gcMnfo2oaThbmcaXoPr/g56y+uQF+lyE60nP3umprQ3aSPh/oISYFJAp/F1wBUmE
- +kwaS0B95FKsmh43bAki/B/FWnK7QC/nBIKIlPXzwcbmcY7f8AfIiiRWq6FnKLnwuDlfd+6fv
- 3p0oV58+U2HAkEMxu9AWh3wIi6niLcnRTgHhFex17AWItCrlq1uT5fqDcA893oA/dbKBvY3fx
- 39eG0RItmxAcCAxC7ev0M842Rf62MnGYjg38vwlNQ8cyahp1xp+WXz+VtPZceZQ/vmc+DulvK
- Qp44UKCVjz0aDKTYwAR7+jxH0VBryys5by9ys8BAPlFH0b0b/4y7mU87EqHFPEvmhY1rLldGh
- Su5Bv9ssSUAyrnLBJSGm4kgfipl/Z2dswywaIk490tBKhtSQ1NvTDTHepYND5BfHFWEsllcyR
- uimtPYGNqr1bxBWLZ8Om0wx02Fb/x6CMhMc2DdC0npnWnm4iTjjMItMiZSM5pazoPkOVnsWMg
- ek30GxiKQgdlzYNYrjuH/RZEhq+PL+6yY3VS7zG+5g1lgQyvoEwLBefFHO1CgU/hs+ZodKu+L
- te7y3I4kFMk2wkMvN+VyRacvCDjeQazjr2XTELFYUzJyY0qVMIzWPYDRynCgXFa3H/5im6bA0
- rzUBafxVIGMhcmqJaVz+2aK1/jTnGuWiZFI2MndVu8Xmw9O9Yx7Ne/8/bD8BynKTFw53qJ4Th
- Pr+WCMzDLAVI6GwAz2gedHkgQECqMFVgdi7cp0eX/R9D3F1kJnriYKjnJptZ4t7gs+q372Ej7
- 8g6SCA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CADrjBPqXQa0ZhM3YFToH5kZcOU27ZuSajm-gj5mWybGTRM++-Q@mail.gmail.com>
+X-Migadu-Flow: FLOW_OUT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+Hi all,
 
-On 06.11.23 08:19, Crescent CY Hsieh wrote:
-> On Sat, Nov 04, 2023 at 08:53:18PM +0100, Lino Sanfilippo wrote:
->> On 01.11.23 07:44, Crescent CY Hsieh wrote:
->>> @@ -1371,11 +1371,26 @@ static void uart_sanitize_serial_rs485(struct =
-uart_port *port, struct serial_rs4
->>>  {
->>>  	u32 supported_flags =3D port->rs485_supported.flags;
->>>
->>> -	if (!(rs485->flags & SER_RS485_ENABLED)) {
->>> +	if (!(rs485->flags & (SER_RS485_ENABLED | SER_RS422_ENABLED))) {
->>>  		memset(rs485, 0, sizeof(*rs485));
->>>  		return;
->>>  	}
->>>
->>> +	/* Pick sane setting if the user enables both interfaces */
->>> +	if (rs485->flags & SER_RS485_ENABLED && rs485->flags & SER_RS422_ENA=
-BLED) {
->>> +		dev_warn_ratelimited(port->dev,
->>> +			"%s (%d): Invalid serial interface setting, using RS485 instead\n"=
-,
->>> +			port->name, port->line);
->>> +		rs485->flags &=3D ~SER_RS422_ENABLED;
->>> +	}
->>> +
->>> +	/* Clear other bits and return if RS422 is enabled */
->>> +	if (rs485->flags & SER_RS422_ENABLED) {
->>> +		memset(rs485, 0, sizeof(*rs485));
->>
->> Why are all flags cleared but SER_RS422_ENABLED?
->
-> IMO, RS422 and RS485 are distinct serial interfaces. Therefore, when
-> RS422 is enabled, the other RS485 flags should be cleared, and vice
-> versa.
->
->>> +		rs485->flags |=3D SER_RS422_ENABLED;
->>> +		return;
->>> +	}
->>
->> What about all the other code places that check for SER_RS485_ENABLED?
->> For example uart_update_mctrl(), uart_suspend_port() and uart_resume_po=
-rt() check this flag
->> to decide whether to set the modem control lines or not. Should this no=
-t also apply to
->> SER_RS422_ENABLED?
->
-> After reviewing the code in serial_core.c, there are actually some codes
-> that check for "SER_RS485_ENABLED" flag before setting the modem control
-> lines.
->
-> It also appears that these codes can only be done when disabling RS485.
->
-> So yes, I will apply "SER_RS422_ENABLED" flag to these locations in the
-> next patch.
->
->>
->> Maybe it would be better to change the meaning of the flag: Instead of =
-being a substitution for
->> SER_RS485_ENABLED, it could be used to mark a special mode.
->> So if both SER_RS485_ENABLED and SER_RS485_MODE_RS422 are set it would =
-mean that we have RS422.
->
-> RS422 is not a mode of RS485, so I think using two flags to represent
-> them is much more reasonable, even though they are both included in the
-> "struct serial_rs485".
+On Mon, Nov 06, 2023 at 01:36:24PM +0000, Peter Griffin wrote:
+> Hi Krzysztof,
+> 
+> On Fri, 3 Nov 2023 at 14:49, Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org> wrote:
+> >
+> > On 03/11/2023 14:56, Maksym Holovach wrote:
+> > > Hi Peter,
+> > >
+> > > On 11/3/23 15:11, Peter Griffin wrote:
+> > >> Hi Maksym,
+> > >>
+> > >> Thanks for your feedback.
 
-Yes, RS422 is not a mode of RS485, but you are already using the rs485 (an=
-d not a rs422) structure.
-And treating RS422 as a different mode in the existing code would make thi=
-ngs much easier and keep the code
-clean. For example you would not have to alter all the code places that ch=
-eck for SER_RS485_ENABLED.
-Also SER_RS485_ENABLED and SER_RS422_ENABLED would have the exact same eff=
-ect, so why use two
-different flags, when the effect is the same?
+[ ... ]
 
-Regards,
-Lino
+> > >> I guess the same is also true for `axis,artpec8` and `tesla,fsd` SoCs.
+> > >> IMO the SoC compatible string should be uniquely identifying the actual
+> > >> SoC, not a close relative.
+> > >>
+> > >> Regarding product_id you are correct this reads 0x09845000 but even
+> > >> within Samsung Exynos family there are examples where the register
+> > >> value does not match the SoC compatible. For example Exynos850 SoC
+> > >> has a product ID value of "E3830". Where the Linux compatible is
+> > >> matching the Samsung marketing name, not the internal/outdated name.
+> > >
+> > > I did not know Exynos 850 is also not going under it's real name.
+> > > Ultimately, I believe all of those SoCs should go under their technical
+> > > name in the exynos/ directory.
+> >
+> > The initial technical name does not exist outside of vendor sources and
+> > part name. E.g. Winlink E850 board hardware manual calls it:
+> > "Samsung Exynos 850, S5E3830"
+> > and everywhere else Exynos 850 SoC is used.
+> >
+> > If you start calling it Exynos 3830, only me and Sam (who mainlined it)
+> > would know what is it. Everyone else, all users of kernel, would be
+> > confused.
+> >
+> > Therefore using well known final product name is for Exynos850 reasonable.
+> 
+> I agree that was the correct decision IMO, and it is a very similar
+> situation here
+> as far as I'm concerned. Most people don't know Tensor G1 SoC as Exynos
+> 9845.
 
+I am not sure if Exynos 3830 and the like would be *that* confusing to
+users. It does not seem like the internal names (like Exynos 3830) are
+well guarded secret. The wikipedia article for Exynos even sort of
+gives these names for recent Exynos models, Exynos 850 is called
+S5E3830 for example, see section for Exynos 800:
+https://en.wikipedia.org/wiki/Exynos#Exynos_800_series
+
+Exynos 9845/S5E9845 is not mentioned in the article though.
+
+[ ... ]
+
+> > > Another concern is that Google could in the future license other SoC: be
+> > > it Qualcomm, Nvidia or anything. If we put completely different hw under
+> > > google/ directory, does it really make sense? In that case, who'll
+> > > maintain the google/ directory? Exynos people? Qualcomm people if they
+> > > license it? Some other people?
+> >
+> > That's indeed a problem. Future Tesla SoC might have just few pieces
+> > similar to FSD. There would be no common SoC part, except the actual
+> > Tesla IP.
+> >
+> > Same for Google. Future GSXXX, if done by Qualcomm, will be absolutely
+> > different than GS101 and the only common part would be the TPU (Tensor).
+> 
+> There is more Google IP than TPU but I see the point you're making.
+> 
+> >
+> > So now let's decide what is the common denominator:
+> > 1. Core SoC architecture, like buses, pinctrl, clocks, timers, serial,
+> > and many IP blocks, which constitute 95% of Devicetree bindings and drivers,
+> > 2. The one, big piece made by Samsung's customer: TPU, NPU or whatever.
+> 
+> Or multiple big pieces of IP.
+> 
+> Does having it all under the exynos directory help you somehow with
+> maintenance? Has having Alim maintain tesla-fsd in a separate directory
+> caused issues?
+> 
+> I structured it like this as I thought it would scale better, and also
+> because it was
+> consistent with what you had accepted previously for other Exynos derived SoCs
+> like Tesla.
+
+Another small benefit of putting GS101 in exynos/ is that it makes it
+easier for future contributors to find the code. If someone is for
+example trying to add mainline support for their Samsung Galaxy S21
+(Exynos 2100/Exynos 9840) and want to find somewhat related boards to
+draw inspiration from then it is not clear at a first glance that
+google/gs101-* are (somewhat) related.
+
+[ ... ]
+
+> Thanks,
+> 
+> Peter.
+
+Best regards,
+Henrik Grimler
