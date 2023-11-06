@@ -2,39 +2,39 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E68F3C4167B
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Nov 2023 12:34:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DF98C0018A
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Nov 2023 12:34:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229922AbjKFMee (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Nov 2023 07:34:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59564 "EHLO
+        id S231421AbjKFMef (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Nov 2023 07:34:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231421AbjKFMed (ORCPT
+        with ESMTP id S231493AbjKFMed (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Mon, 6 Nov 2023 07:34:33 -0500
 Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2598B7
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA7B0B8
         for <linux-serial@vger.kernel.org>; Mon,  6 Nov 2023 04:34:29 -0800 (PST)
 Received: from [127.0.0.1] (helo=localhost)
         by relay.expurgate.net with smtp (Exim 4.92)
         (envelope-from <prvs=068806c1c2=fe@dev.tdt.de>)
-        id 1qzyoG-00DGWX-4J
-        for linux-serial@vger.kernel.org; Mon, 06 Nov 2023 13:34:28 +0100
+        id 1qzyoF-00HTwT-SC
+        for linux-serial@vger.kernel.org; Mon, 06 Nov 2023 13:34:27 +0100
 Received: from [195.243.126.94] (helo=securemail.tdt.de)
         by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <fe@dev.tdt.de>)
-        id 1qzyoF-00CA0I-OO
+        id 1qzyoF-00GOP2-Gj
         for linux-serial@vger.kernel.org; Mon, 06 Nov 2023 13:34:27 +0100
 Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 7B5E3240053
+        by securemail.tdt.de (Postfix) with ESMTP id 46C22240040
         for <linux-serial@vger.kernel.org>; Mon,  6 Nov 2023 13:34:27 +0100 (CET)
 Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 3BB64240052;
+        by securemail.tdt.de (Postfix) with ESMTP id 0589224004D;
         Mon,  6 Nov 2023 13:34:27 +0100 (CET)
 Received: from localhost.localdomain (unknown [10.2.3.40])
-        by mail.dev.tdt.de (Postfix) with ESMTPSA id 05AE1227EE;
-        Mon,  6 Nov 2023 13:34:27 +0100 (CET)
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id C858B2225B;
+        Mon,  6 Nov 2023 13:34:26 +0100 (CET)
 From:   Florian Eckert <fe@dev.tdt.de>
 To:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
@@ -42,9 +42,9 @@ To:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
         m.brock@vanmierlo.com
 Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-leds@vger.kernel.org
-Subject: [Patch v7 3/6] leds: ledtrig-tty: change logging if get icount failed
-Date:   Mon,  6 Nov 2023 13:34:12 +0100
-Message-ID: <20231106123415.3365732-4-fe@dev.tdt.de>
+Subject: [Patch v7 2/6] leds: ledtrig-tty: free allocated ttyname buffer on deactivate
+Date:   Mon,  6 Nov 2023 13:34:11 +0100
+Message-ID: <20231106123415.3365732-3-fe@dev.tdt.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20231106123415.3365732-1-fe@dev.tdt.de>
 References: <20231106123415.3365732-1-fe@dev.tdt.de>
@@ -52,57 +52,41 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-purgate: clean
 X-purgate-type: clean
-X-purgate-ID: 151534::1699274068-D1E98639-6052BF18/0/0
+X-purgate-ID: 151534::1699274067-86F347EA-21FD1674/0/0
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Change the log level from info to warn, because there is something
-wrong. That is more a warn message than an info message.
+The ttyname buffer for the ledtrig_tty_data struct is allocated in the
+sysfs ttyname_store() function. This buffer must be released on trigger
+deactivation. This was missing and is thus a memory leak.
 
-While we are at it, the device prefix is also changed, as this is the
-led device and not the tty device that generates this message.
+While we are at it, the tty handler in the ledtrig_tty_data struct should
+also be returned in case of the trigger deactivation call.
 
+Fixes: fd4a641ac88f ("leds: trigger: implement a tty trigger")
 Signed-off-by: Florian Eckert <fe@dev.tdt.de>
 ---
- drivers/leds/trigger/ledtrig-tty.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/leds/trigger/ledtrig-tty.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/leds/trigger/ledtrig-tty.c b/drivers/leds/trigger/le=
 dtrig-tty.c
-index 3e69a7bde928..86595add72cd 100644
+index 8ae0d2d284af..3e69a7bde928 100644
 --- a/drivers/leds/trigger/ledtrig-tty.c
 +++ b/drivers/leds/trigger/ledtrig-tty.c
-@@ -83,6 +83,7 @@ static void ledtrig_tty_work(struct work_struct *work)
- 	struct ledtrig_tty_data *trigger_data =3D
- 		container_of(work, struct ledtrig_tty_data, dwork.work);
- 	struct serial_icounter_struct icount;
-+	struct led_classdev *led_cdev =3D trigger_data->led_cdev;
- 	int ret;
+@@ -168,6 +168,10 @@ static void ledtrig_tty_deactivate(struct led_classd=
+ev *led_cdev)
 =20
- 	mutex_lock(&trigger_data->mutex);
-@@ -117,7 +118,7 @@ static void ledtrig_tty_work(struct work_struct *work=
-)
+ 	cancel_delayed_work_sync(&trigger_data->dwork);
 =20
- 	ret =3D tty_get_icount(trigger_data->tty, &icount);
- 	if (ret) {
--		dev_info(trigger_data->tty->dev, "Failed to get icount, stopped pollin=
-g\n");
-+		dev_warn(led_cdev->dev, "Failed to get icount, stop polling\n");
- 		mutex_unlock(&trigger_data->mutex);
- 		return;
- 	}
-@@ -126,8 +127,7 @@ static void ledtrig_tty_work(struct work_struct *work=
-)
- 	    icount.tx !=3D trigger_data->tx) {
- 		unsigned long interval =3D LEDTRIG_TTY_INTERVAL;
++	kfree(trigger_data->ttyname);
++	tty_kref_put(trigger_data->tty);
++	trigger_data->tty =3D NULL;
++
+ 	kfree(trigger_data);
+ }
 =20
--		led_blink_set_oneshot(trigger_data->led_cdev, &interval,
--				      &interval, 0);
-+		led_blink_set_oneshot(led_cdev, &interval, &interval, 0);
-=20
- 		trigger_data->rx =3D icount.rx;
- 		trigger_data->tx =3D icount.tx;
 --=20
 2.30.2
 
