@@ -2,170 +2,167 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6D26C4708E
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Nov 2023 15:16:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8946AC4332F
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Nov 2023 15:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232110AbjKFPQk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Nov 2023 10:16:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44784 "EHLO
+        id S230405AbjKFPY5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Nov 2023 10:24:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232097AbjKFPQg (ORCPT
+        with ESMTP id S229839AbjKFPY4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Nov 2023 10:16:36 -0500
-X-Greylist: delayed 349 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Nov 2023 07:16:31 PST
-Received: from out-183.mta0.migadu.com (out-183.mta0.migadu.com [IPv6:2001:41d0:1004:224b::b7])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B939ED8
-        for <linux-serial@vger.kernel.org>; Mon,  6 Nov 2023 07:16:31 -0800 (PST)
-Date:   Mon, 6 Nov 2023 16:10:35 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=grimler.se; s=key1;
-        t=1699283440;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=8IseJkdw2ZJ4O7QHhV2msEv4n+4BZunk72A86TeVvNk=;
-        b=QR638+RBEN1ZHFuLBGLLLrN272CNfvCND66lm1i+46gFJNp6vZDMtp8k1YAKbFmkRujKH+
-        r+YZGpmpBotCu6G1KjbUd8OaC7opFiOjxzygN0tcKlomn/80U23ZP18rLgK0w4t550aIgN
-        jHd1GSjM5rrNfyeFi3RTFyrvDTVcj8A=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Henrik Grimler <henrik@grimler.se>
-To:     Peter Griffin <peter.griffin@linaro.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Maksym Holovach <maksym.holovach.an.2022@lpnu.ua>,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
-        tomasz.figa@gmail.com, s.nawrocki@samsung.com,
-        linus.walleij@linaro.org, wim@linux-watchdog.org,
-        linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org,
-        arnd@arndb.de, olof@lixom.net, cw00.choi@samsung.com,
-        tudor.ambarus@linaro.org, andre.draszik@linaro.org,
-        semen.protsenko@linaro.org, saravanak@google.com,
-        willmcvicker@google.com, soc@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        kernel-team@android.com, linux-serial@vger.kernel.org,
-        Alim Akhtar <alim.akhtar@samsung.com>
-Subject: Re: [PATCH v2 00/20] Add minimal Tensor/GS101 SoC support and
- Oriole/Pixel6 board
-Message-ID: <ZUkB6yVyxEmldVPs@samsung-a5>
-References: <20231010224928.2296997-1-peter.griffin@linaro.org>
- <3d489d6c-2098-4f0c-9ec4-f6040665753e@lpnu.ua>
- <CADrjBPp+fyNoPdix6=Wp4cDCRFq2Mui8NS6WENejcHn+H1M-jA@mail.gmail.com>
- <48e1c0bd-9518-4927-b490-f3206256bbd4@lpnu.ua>
- <c0b8f356-0f26-459d-850d-ec0fa1fd3987@linaro.org>
- <CADrjBPqXQa0ZhM3YFToH5kZcOU27ZuSajm-gj5mWybGTRM++-Q@mail.gmail.com>
+        Mon, 6 Nov 2023 10:24:56 -0500
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2040.outbound.protection.outlook.com [40.107.104.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4774107;
+        Mon,  6 Nov 2023 07:24:52 -0800 (PST)
+ARC-Seal: i=2; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=pass;
+ b=GYH9yqwl1KN2M/LVaO2uLzRS64ulLz9d9YkLyZB3ZzR8jHimBWH0SPoL/vMHG6Qjtf70dcQdKdLatZbhyIZj4kxwvOkkww7fnfJxArtrXhif7U3hxo7YfVvGsxu1u0XphGJt3aw0TkSq0lKXxlxWx5wQDK9NK1wyv79p3aSrumQ5PRLEOP+eSQjtcUEsCS3+mtRqvA46YGJQ+UVPRzdRT5lv3vC7lXlTl+RzccntDTxDbyrnywPzO03G4nfvb1KmFCPhZMoFwRIj7sBTshzShLQF9+4o1joP7kkyc2VB68g+WJbOtdrfrySURYWwpN7QoZrYdZ+HAPneM5ZjJ8asgQ==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lSS31mY8PaWHPjEgWzeL96CBmRwbr7366AiZWWs8RvQ=;
+ b=RVCXwRKZI+32QDmpbc7Cr1+dSBzHeAdwFTLDycWfAnhcfZfA95Y9rcUa1Hhsno0yc3IVtoJvjhDfB4tiKo40rctfFApX0Wxmk/eQfn0PHJu9Av8A4uVc/YWbtNIVETiV1NmVT9BY9l74F0Df/B5WCgGO8F3xtpMkSHGlQipp99jWlq5cosTUV3mlldyE98urXEOlt6Wo3Mgva1X7oqawwI/TxSnDXwruwzIXm7fGD2Bz+g2/1BHC9LII20pQ24kNNDsvx96cRb+Gake3KQr6GRRq0yUJ+FeU1PFjoHVDvmpV9Pm62RiDHs6P0PBvtkjTU5ih/OmZl50NewQOHHclxg==
+ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=pass (sender ip is
+ 20.160.56.83) smtp.rcpttodomain=intel.com smtp.mailfrom=seco.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=seco.com; dkim=pass
+ (signature was verified) header.d=seco.com; arc=pass (0 oda=1 ltdi=1
+ spf=[1,1,smtp.mailfrom=seco.com] dkim=[1,1,header.d=seco.com]
+ dmarc=[1,1,header.from=seco.com])
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lSS31mY8PaWHPjEgWzeL96CBmRwbr7366AiZWWs8RvQ=;
+ b=JrarzBemgDNnxuwIHzdfEOzyvF/C++4hwTNfdU7i/HZcwC7WJS6+ovUBeY08GvG+18DhYVvaRUrRlP1+AumFKwKLwJc+r6K6Pe6XJPLwN8sYvjjBASj59sq1XbZ3sdvMyhQoTHGXeqp+ghQ3ct5vFyzoGhGpdzqILSP2CUtIwGADkkaQlonInrSHYvhZZf4pWSc0aWKXAnS77F0k4Zt0vth8W1r41/B27oX+dxQvG+Ws5qwn9RO28xI7bZW0IsFvywshVGd3+NC1j+9op6T9RAlE1hY0QkeOsiL3TXa9ghXZQpTk/x+Bpx5n0TYuoQpM7jprESjEcnEDCSNfqxJAJw==
+Received: from DUZPR01CA0094.eurprd01.prod.exchangelabs.com
+ (2603:10a6:10:4bb::20) by AS8PR03MB7448.eurprd03.prod.outlook.com
+ (2603:10a6:20b:293::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6954.27; Mon, 6 Nov
+ 2023 15:24:50 +0000
+Received: from DB8EUR05FT020.eop-eur05.prod.protection.outlook.com
+ (2603:10a6:10:4bb:cafe::99) by DUZPR01CA0094.outlook.office365.com
+ (2603:10a6:10:4bb::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6954.28 via Frontend
+ Transport; Mon, 6 Nov 2023 15:24:50 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 20.160.56.83)
+ smtp.mailfrom=seco.com; dkim=pass (signature was verified)
+ header.d=seco.com;dmarc=pass action=none header.from=seco.com;
+Received-SPF: Pass (protection.outlook.com: domain of seco.com designates
+ 20.160.56.83 as permitted sender) receiver=protection.outlook.com;
+ client-ip=20.160.56.83; helo=inpost-eu.tmcas.trendmicro.com; pr=C
+Received: from inpost-eu.tmcas.trendmicro.com (20.160.56.83) by
+ DB8EUR05FT020.mail.protection.outlook.com (10.233.238.136) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6977.16 via Frontend Transport; Mon, 6 Nov 2023 15:24:49 +0000
+Received: from outmta (unknown [192.168.82.135])
+        by inpost-eu.tmcas.trendmicro.com (Trend Micro CAS) with ESMTP id 669D0200813AB;
+        Mon,  6 Nov 2023 15:24:49 +0000 (UTC)
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (unknown [104.47.18.105])
+        by repre.tmcas.trendmicro.com (Trend Micro CAS) with ESMTPS id 227FA2008006F;
+        Mon,  6 Nov 2023 15:24:46 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jq0WwuDU+Wm0qKxC19fz+oxcYufBMIrryyeVNT1LusrysW7bFs+yHotd8zI43hD+SZ6oD5K7tBXlC5mVhBo1F/1e1CRdT229e16YGoZ74jtQGoyisQ6toC+U62FH1zK5fQ0MKHYOqyt5FNxgC3rRUZ5x10uUnMjg4kuIxqqQ7MIezm9qSZl9eeE+NyB3QmMTRH6b3T5MgiPvILY3ipFbbDyN0zPadNiHT09liEOxlGy/1sDxX/qoPZz3Oh1UDNiXYLAiBRQY/4X0QdlPofyC01m47Mmj4himlxXzH+ABLxvwSsa2rbpxySrzrRIpY1d6zhm5q3gVs0jKJw5+VHPITQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lSS31mY8PaWHPjEgWzeL96CBmRwbr7366AiZWWs8RvQ=;
+ b=WGzNSKC2TkQzWRLh3Fw1ra6AHX7vAFwGJeA+Duo6EhCRRqDX9KsHRl547AvO2CVxI3kecC+7qH4l+vV845V7mRaFwjnTiOJxVnBPGVK2fvtcNVEF6JCslNIeN+o1W8Y2IvYXDuBmiNlbaNc3P8DvDgE5cN+GomLB7/n+Y7rrcwt+0b/SagY5pp5s06uD5yF1it8QaVfTz3/IFk7ibcv2Qk7GZpbSslNPcdqCyw5FdaEZo34mafiuIsy8KY7+nS6IJSyPnyqVefkKea342cI0gS5Dz9SX2sOcLfniTnAzibt7lYi65Soeq3YxvB8iNfSPYfxx8xK0IzOGqsJrbSrlBw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lSS31mY8PaWHPjEgWzeL96CBmRwbr7366AiZWWs8RvQ=;
+ b=JrarzBemgDNnxuwIHzdfEOzyvF/C++4hwTNfdU7i/HZcwC7WJS6+ovUBeY08GvG+18DhYVvaRUrRlP1+AumFKwKLwJc+r6K6Pe6XJPLwN8sYvjjBASj59sq1XbZ3sdvMyhQoTHGXeqp+ghQ3ct5vFyzoGhGpdzqILSP2CUtIwGADkkaQlonInrSHYvhZZf4pWSc0aWKXAnS77F0k4Zt0vth8W1r41/B27oX+dxQvG+Ws5qwn9RO28xI7bZW0IsFvywshVGd3+NC1j+9op6T9RAlE1hY0QkeOsiL3TXa9ghXZQpTk/x+Bpx5n0TYuoQpM7jprESjEcnEDCSNfqxJAJw==
+Authentication-Results-Original: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB9PR03MB8847.eurprd03.prod.outlook.com (2603:10a6:10:3dd::13)
+ by AS8PR03MB8740.eurprd03.prod.outlook.com (2603:10a6:20b:53b::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6954.28; Mon, 6 Nov
+ 2023 15:24:45 +0000
+Received: from DB9PR03MB8847.eurprd03.prod.outlook.com
+ ([fe80::6176:6be7:d620:8a87]) by DB9PR03MB8847.eurprd03.prod.outlook.com
+ ([fe80::6176:6be7:d620:8a87%4]) with mapi id 15.20.6954.028; Mon, 6 Nov 2023
+ 15:24:45 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Peter Korsgaard <jacmet@sunsite.dk>,
+        Sean Anderson <sean.anderson@seco.com>,
+        kernel test robot <yujie.liu@intel.com>
+Subject: [PATCH] tty: serial: uartlite: Document uartlite_data in kernel-doc style
+Date:   Mon,  6 Nov 2023 10:24:28 -0500
+Message-Id: <20231106152428.3641883-1-sean.anderson@seco.com>
+X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MN2PR22CA0016.namprd22.prod.outlook.com
+ (2603:10b6:208:238::21) To DB9PR03MB8847.eurprd03.prod.outlook.com
+ (2603:10a6:10:3dd::13)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CADrjBPqXQa0ZhM3YFToH5kZcOU27ZuSajm-gj5mWybGTRM++-Q@mail.gmail.com>
-X-Migadu-Flow: FLOW_OUT
+X-MS-TrafficTypeDiagnostic: DB9PR03MB8847:EE_|AS8PR03MB8740:EE_|DB8EUR05FT020:EE_|AS8PR03MB7448:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4ba5f409-d66e-4cc0-5856-08dbdedc8453
+X-TrendMicro-CAS-OUT-LOOP-IDENTIFIER: 656f966764b7fb185830381c646b41a1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original: LEi88wDm53QOvPfKiJtNSwrsQRvJizMvpja1Bd2EcSbNgHLmSbRlxJlh81gIFxLEyV1Vac5X0PSmxFA+cZEc/V5kwD51KEu6+ZhvjpV8b23gEaQF3fKLIOWlITk1mVuGGzr0ic6s1j3505lhNv87z+pIuxZVeOxKiu7kB+THVlUltv5t+94m4h23CKZOmqc8dzuTjLdKPZgeU4qcraQ9x3hl9WOWns5a+iMgBjANNw6SNh5nXOafgt4Sh6vFOfBi+yUVbAyOBqtqie+8FuLxdAW3zrDLmBKd7pcj5MF8hcKi+8pykIPyJSUUgGNQJAOKFRCA2hQP0/ZOdRhrTJyitJ1OszhqHdaMF7kb2E72/cqLK+21DPx8NRcU41kNLGVvWxOXSG8jKiiqNofkNWhGCceTJSXPyoeWnRKPJU0Mbkotv8FSWvJv7dj3H9neXNXhclQQwGKG09gHL7vfY0naDWBK4eprt/9jkSIUDb/3rst6a/QEyUNxtb1KFq+4xI4I9IqZ6TuC/nQMZgiliX5Vy5uVkIwO7lgGJ2D5Is2K+C99S3CDS3yf/BImHSieei3IwXxiaYMYdWjnExcCmdWebJj2CRMtzKY9fvln1Khibi0qEqTODcGC7BUN46nU6WeH
+X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR03MB8847.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(346002)(136003)(396003)(376002)(39850400004)(230922051799003)(64100799003)(1800799009)(186009)(451199024)(52116002)(83380400001)(1076003)(6512007)(66946007)(110136005)(2616005)(26005)(478600001)(6506007)(8936002)(4326008)(8676002)(6486002)(66556008)(54906003)(66476007)(316002)(44832011)(6666004)(5660300002)(41300700001)(38100700002)(86362001)(2906002)(38350700005)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR03MB8740
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped: DB8EUR05FT020.eop-eur05.prod.protection.outlook.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id-Prvs: 482edb9a-99dc-47db-797c-08dbdedc8164
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SmXlg3mvNbYQ2GU82BNu+jc4bUqd+rnn1W6gIYCU6wzuTl9bMMmAm8zdfjx31OWhVAP7CwYMrNN+v8RqkXDxXIq9aT/sn6nDykXs4mrrpYfsCW5CItmdCRB/pLAq6FMgAMlm5VeXs+p+o3N/XeySnipDibBuZFPbHHh6pmXvTljVAzugMCTCo7qZlDlZm6c01BDUrYaolQsFIs6lQkv/wkjlMiuF5jSBMlMH0OTzi2K1XyrSAQE2oGaq7a7pzoTGlT877qmzgLsRCEUzgvCg84/xVvb7d0rPY0zv4cdwpMz8n4LI6sKSkuCZAoYv91ZdJ8s5Nq1oaXnxxiexfiKYQWD7DasvtbtfcaV253HDR+xPR5kxQeEjjyv4BKzBbxQ1GUUT678iT1L0kcd1gaH1tbXZK5wnIAxEqIXC+75s0I+DWFqIHT1RuncSyxBfGP3o+YaMhVoH2uk7DmH4gFF+FZ2qrffZzxHxIsDimJw8plLe9sykpeV3wCTyIKmi73qbgqvSV47Ty+/WEZiXghrocCzUO39c47x2mLGMc/GnQSIGtg5nyV1aXk0/BQOxl1QmU6LnDFDtU3wd7sZVReK+3P1GNsYj2Tj+uIfdJM35m2RYZK9qbHk89zelJvtuUN/fTpKZTfCCx2B00vbBY13+NoUCz85fhfhXF7UTetU0bYF7IQ7csh4fdtx5j/+IubzPvCJ5J6gUqL5WFmwy4b2nWFNuNvz1PDmHH0ZCLCvcvYJ/YgCwmauUHEipRQA6K7qqOLLz7QvrSwuDh60j3AkESQ==
+X-Forefront-Antispam-Report: CIP:20.160.56.83;CTRY:NL;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:inpost-eu.tmcas.trendmicro.com;PTR:inpost-eu.tmcas.trendmicro.com;CAT:NONE;SFS:(13230031)(39850400004)(396003)(346002)(376002)(136003)(230922051799003)(82310400011)(1800799009)(186009)(451199024)(64100799003)(40470700004)(36840700001)(46966006)(41300700001)(2906002)(34070700002)(6486002)(6666004)(6512007)(6506007)(2616005)(478600001)(83380400001)(47076005)(336012)(26005)(1076003)(5660300002)(54906003)(110136005)(44832011)(8936002)(4326008)(70586007)(70206006)(8676002)(316002)(36860700001)(36756003)(7636003)(7596003)(82740400003)(356005)(86362001)(40480700001)(40460700003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2023 15:24:49.6501
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4ba5f409-d66e-4cc0-5856-08dbdedc8453
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=bebe97c3-6438-442e-ade3-ff17aa50e733;Ip=[20.160.56.83];Helo=[inpost-eu.tmcas.trendmicro.com]
+X-MS-Exchange-CrossTenant-AuthSource: DB8EUR05FT020.eop-eur05.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR03MB7448
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi all,
+Use @ and - to conform with kernel-doc style.
 
-On Mon, Nov 06, 2023 at 01:36:24PM +0000, Peter Griffin wrote:
-> Hi Krzysztof,
-> 
-> On Fri, 3 Nov 2023 at 14:49, Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
-> >
-> > On 03/11/2023 14:56, Maksym Holovach wrote:
-> > > Hi Peter,
-> > >
-> > > On 11/3/23 15:11, Peter Griffin wrote:
-> > >> Hi Maksym,
-> > >>
-> > >> Thanks for your feedback.
+Reported-by: kernel test robot <yujie.liu@intel.com>
+Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+---
+I have no idea what phase of release the kernel is in. If it is too
+late/early in the cycle, please just review this at the appropriate
+time. This patch is unlikely to need rebasing, and I am unlikely to
+remember to send it later.
 
-[ ... ]
+ drivers/tty/serial/uartlite.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-> > >> I guess the same is also true for `axis,artpec8` and `tesla,fsd` SoCs.
-> > >> IMO the SoC compatible string should be uniquely identifying the actual
-> > >> SoC, not a close relative.
-> > >>
-> > >> Regarding product_id you are correct this reads 0x09845000 but even
-> > >> within Samsung Exynos family there are examples where the register
-> > >> value does not match the SoC compatible. For example Exynos850 SoC
-> > >> has a product ID value of "E3830". Where the Linux compatible is
-> > >> matching the Samsung marketing name, not the internal/outdated name.
-> > >
-> > > I did not know Exynos 850 is also not going under it's real name.
-> > > Ultimately, I believe all of those SoCs should go under their technical
-> > > name in the exynos/ directory.
-> >
-> > The initial technical name does not exist outside of vendor sources and
-> > part name. E.g. Winlink E850 board hardware manual calls it:
-> > "Samsung Exynos 850, S5E3830"
-> > and everywhere else Exynos 850 SoC is used.
-> >
-> > If you start calling it Exynos 3830, only me and Sam (who mainlined it)
-> > would know what is it. Everyone else, all users of kernel, would be
-> > confused.
-> >
-> > Therefore using well known final product name is for Exynos850 reasonable.
-> 
-> I agree that was the correct decision IMO, and it is a very similar
-> situation here
-> as far as I'm concerned. Most people don't know Tensor G1 SoC as Exynos
-> 9845.
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index 404c14acafa5..e586d7aeac98 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -62,11 +62,11 @@ static struct uart_port *console_port;
+ #endif
+ 
+ /**
+- * struct uartlite_data: Driver private data
+- * reg_ops: Functions to read/write registers
+- * clk: Our parent clock, if present
+- * baud: The baud rate configured when this device was synthesized
+- * cflags: The cflags for parity and data bits
++ * struct uartlite_data - Driver private data
++ * @reg_ops: Functions to read/write registers
++ * @clk: Our parent clock, if present
++ * @baud: The baud rate configured when this device was synthesized
++ * @cflags: The cflags for parity and data bits
+  */
+ struct uartlite_data {
+ 	const struct uartlite_reg_ops *reg_ops;
+-- 
+2.35.1.1320.gc452695387.dirty
 
-I am not sure if Exynos 3830 and the like would be *that* confusing to
-users. It does not seem like the internal names (like Exynos 3830) are
-well guarded secret. The wikipedia article for Exynos even sort of
-gives these names for recent Exynos models, Exynos 850 is called
-S5E3830 for example, see section for Exynos 800:
-https://en.wikipedia.org/wiki/Exynos#Exynos_800_series
-
-Exynos 9845/S5E9845 is not mentioned in the article though.
-
-[ ... ]
-
-> > > Another concern is that Google could in the future license other SoC: be
-> > > it Qualcomm, Nvidia or anything. If we put completely different hw under
-> > > google/ directory, does it really make sense? In that case, who'll
-> > > maintain the google/ directory? Exynos people? Qualcomm people if they
-> > > license it? Some other people?
-> >
-> > That's indeed a problem. Future Tesla SoC might have just few pieces
-> > similar to FSD. There would be no common SoC part, except the actual
-> > Tesla IP.
-> >
-> > Same for Google. Future GSXXX, if done by Qualcomm, will be absolutely
-> > different than GS101 and the only common part would be the TPU (Tensor).
-> 
-> There is more Google IP than TPU but I see the point you're making.
-> 
-> >
-> > So now let's decide what is the common denominator:
-> > 1. Core SoC architecture, like buses, pinctrl, clocks, timers, serial,
-> > and many IP blocks, which constitute 95% of Devicetree bindings and drivers,
-> > 2. The one, big piece made by Samsung's customer: TPU, NPU or whatever.
-> 
-> Or multiple big pieces of IP.
-> 
-> Does having it all under the exynos directory help you somehow with
-> maintenance? Has having Alim maintain tesla-fsd in a separate directory
-> caused issues?
-> 
-> I structured it like this as I thought it would scale better, and also
-> because it was
-> consistent with what you had accepted previously for other Exynos derived SoCs
-> like Tesla.
-
-Another small benefit of putting GS101 in exynos/ is that it makes it
-easier for future contributors to find the code. If someone is for
-example trying to add mainline support for their Samsung Galaxy S21
-(Exynos 2100/Exynos 9840) and want to find somewhat related boards to
-draw inspiration from then it is not clear at a first glance that
-google/gs101-* are (somewhat) related.
-
-[ ... ]
-
-> Thanks,
-> 
-> Peter.
-
-Best regards,
-Henrik Grimler
