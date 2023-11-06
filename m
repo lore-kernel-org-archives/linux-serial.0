@@ -2,294 +2,151 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B95C41535
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Nov 2023 13:46:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24AECC4332F
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Nov 2023 14:44:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232560AbjKFNqq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Nov 2023 08:46:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34588 "EHLO
+        id S231555AbjKFOoF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Nov 2023 09:44:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231935AbjKFNqp (ORCPT
+        with ESMTP id S231778AbjKFOoE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Nov 2023 08:46:45 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B7B100
-        for <linux-serial@vger.kernel.org>; Mon,  6 Nov 2023 05:46:40 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id 5b1f17b1804b1-40859dee28cso34769355e9.0
-        for <linux-serial@vger.kernel.org>; Mon, 06 Nov 2023 05:46:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1699278399; x=1699883199; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=TfclcSLgQxICu2GB1UKyZCIx3NhEDKrGC7w4owwvvMY=;
-        b=dkXiW86+UVI4f+Bz8CsF2Rj43l1JVYZBLSldiJfttmrl0s1+WHONLvcj8l842O4ecV
-         ZMgjDYVNWFV3uIoNDIvegkSCLHc6sIiiIoniri3Rw1e+0iQYWVUmEFB/ps0DMO6MwzZV
-         v9/0MzpeK/kcfRqUmZzWsviPHVnCMFnesG9znKRu8+Hn8skcxoQZfkzuv/Y2kelamuVH
-         CkBFVW5JoU53gmQNT88po/Y37jyFHu6hxre9aaMecJ/f1uV36HGri/2k3v8fcR6LSPmM
-         UZM3e90UOXb0h24iJAjwj1938KjapeUNjzIF2fQLfhxTeBaiwfi+6EfIIWS5fPR85I44
-         q/kQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699278399; x=1699883199;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=TfclcSLgQxICu2GB1UKyZCIx3NhEDKrGC7w4owwvvMY=;
-        b=v8gvDnfYqjC3No1xjXk2aCJCiMwfNwkGpYv49+C6IFTDerxQKWAeGAbyeU2k5JEQ0i
-         DtVKoxIRS8oDtx733FHpK6VXeg3lhe4lcSPbc3Nrch3bHN8kA7i46QJ4aw5Oxz7oBNML
-         fJG2/jxmlWdduvPnoRSE5mh/nb34S/Hr0r18HLsBsh1HnW20l1gxTQaNlQ0W0fM0jjM8
-         BifbUqrgpRLZgzpHwNHxGCo2/Kw17aHJ9ikQFNUDnCM4Qc09R9crP14LM++t6rGLiADS
-         h38CFbv17ImG5GQ/NZucjC8hUsBbSYDjytv9++18KHhYyKoIP3tdYtJZ7h+oKGPQaHJA
-         zAUw==
-X-Gm-Message-State: AOJu0YxeXPRPqfG5u21jqrn3VXu6h1qrr2GvBlmX0zqjBhkd/agb3gP2
-        +r7VhlaOMkblPbmU4Inm1i6o2Q==
-X-Google-Smtp-Source: AGHT+IFYMfGYrwL1R4L0XkqT72HNxHdjpYeTOLe3yXLpAnvzcJ4/8ou6iLx70ZjuhAa+uxOYu/Rk9Q==
-X-Received: by 2002:a05:600c:1988:b0:409:19a0:d26f with SMTP id t8-20020a05600c198800b0040919a0d26fmr24323551wmq.23.1699278398828;
-        Mon, 06 Nov 2023 05:46:38 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.218.126])
-        by smtp.gmail.com with ESMTPSA id n30-20020a05600c501e00b00405442edc69sm12377550wmr.14.2023.11.06.05.46.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Nov 2023 05:46:38 -0800 (PST)
-Message-ID: <308e2d07-1993-42d2-95eb-8132efaed1df@linaro.org>
-Date:   Mon, 6 Nov 2023 14:46:35 +0100
+        Mon, 6 Nov 2023 09:44:04 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96869B6;
+        Mon,  6 Nov 2023 06:44:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
+        t=1699281830; x=1699886630; i=linosanfilippo@gmx.de;
+        bh=hEXmBjzYmq+iyTpBkbCwl1Phma6+Z7uaRav85K2TYII=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
+         In-Reply-To;
+        b=Wa1jJXjCpBAzAHhS65MjWQJmAzReYR+wfA6o6bDKak17EWsN2DQetWOHkmklSPoe
+         l39oZ9ovBlxNlBfONw2e65BwNgUiiBWFZCYug7kusXSqj8XfbJYP9tFu1faM9s3Gl
+         BRGvHV4avTPJAMjhwmCzCAIPDTcGqvwsazWdH1ViLx0sLQs0pcDEpLcqVw2B5F6Bb
+         m+OgLgqnHm+mbryMblL/dJuCsEGBiqTvHGngRtvONfouFNRNGCAVTA9bgfdzcJFum
+         1fphMALn8qnZagm6VMHZ38fuXDGXDylk8E0uAak8uc5QhBGuaREkmLWYOMWY9IITo
+         /aMvqkin2+c0K7Nx5Q==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.2.42] ([84.162.21.41]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1M1HZo-1qyLs41MRm-002lUq; Mon, 06
+ Nov 2023 15:43:50 +0100
+Message-ID: <3fc18b13-fef0-439e-abf0-1fe4e46b224a@gmx.de>
+Date:   Mon, 6 Nov 2023 15:43:49 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 00/20] Add minimal Tensor/GS101 SoC support and
- Oriole/Pixel6 board
+Subject: Re: [PATCH v2] tty: serial: Add RS422 flag to struct serial_rs485
 Content-Language: en-US
-To:     Peter Griffin <peter.griffin@linaro.org>,
-        Maksym Holovach <maksym.holovach.an.2022@lpnu.ua>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
-        tomasz.figa@gmail.com, s.nawrocki@samsung.com,
-        linus.walleij@linaro.org, wim@linux-watchdog.org,
-        linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org,
-        arnd@arndb.de, olof@lixom.net, cw00.choi@samsung.com,
-        tudor.ambarus@linaro.org, andre.draszik@linaro.org,
-        semen.protsenko@linaro.org, saravanak@google.com,
-        willmcvicker@google.com, soc@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        kernel-team@android.com, linux-serial@vger.kernel.org,
-        Alim Akhtar <alim.akhtar@samsung.com>
-References: <20231010224928.2296997-1-peter.griffin@linaro.org>
- <3d489d6c-2098-4f0c-9ec4-f6040665753e@lpnu.ua>
- <CADrjBPp+fyNoPdix6=Wp4cDCRFq2Mui8NS6WENejcHn+H1M-jA@mail.gmail.com>
- <48e1c0bd-9518-4927-b490-f3206256bbd4@lpnu.ua>
- <CADrjBPqB5MOQeMV6uSJHLVyMJYWm7Nm_1XGSq331gPRfO1jkzg@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <CADrjBPqB5MOQeMV6uSJHLVyMJYWm7Nm_1XGSq331gPRfO1jkzg@mail.gmail.com>
+To:     Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20231101064404.45711-1-crescentcy.hsieh@moxa.com>
+ <0d203024-ba5c-4258-b549-b9304622978b@gmx.de>
+ <ZUiTkyZSbbmTUGYQ@moxa-ThinkCentre-M90t>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+In-Reply-To: <ZUiTkyZSbbmTUGYQ@moxa-ThinkCentre-M90t>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:DJf+fGVHnv4vAYJP+DKZ9MaNmbBkIQbu7i1QwzdmM725Oc6M4jP
+ 6a3Pz4/Oh78eImtiHPw4OqVQRTBNQtFS9SARTbrkREGKoF2vJr+n0P2dw96UgFf5UpAsBwp
+ iR3zsdpAYQKxmxlcazr9d2j8/6DjQayXELYQfpgtUtfqV2QwHdmXgNCRIqEGGiSHz4HpwwP
+ KxsUOx1giGJs6MDWYFLkQ==
+UI-OutboundReport: notjunk:1;M01:P0:a6hp+FgPuPc=;zNAvda4tm4/qzcEdzNqKn7OrzHP
+ TNL3MTY5/bhIj7weNVx6nutq2npUNjczo8RMSkyGydmdFCIHmkVHTUaC1ujzdrbRqENtHXgyT
+ ennODDzwDjhIepwMJbX193egpyZnki8Z6ArV76LuEt19iPKNJekntbQ1r6rWEnhpd1Slx1lKZ
+ XxKj1JSd8gcMnfo2oaThbmcaXoPr/g56y+uQF+lyE60nP3umprQ3aSPh/oISYFJAp/F1wBUmE
+ +kwaS0B95FKsmh43bAki/B/FWnK7QC/nBIKIlPXzwcbmcY7f8AfIiiRWq6FnKLnwuDlfd+6fv
+ 3p0oV58+U2HAkEMxu9AWh3wIi6niLcnRTgHhFex17AWItCrlq1uT5fqDcA893oA/dbKBvY3fx
+ 39eG0RItmxAcCAxC7ev0M842Rf62MnGYjg38vwlNQ8cyahp1xp+WXz+VtPZceZQ/vmc+DulvK
+ Qp44UKCVjz0aDKTYwAR7+jxH0VBryys5by9ys8BAPlFH0b0b/4y7mU87EqHFPEvmhY1rLldGh
+ Su5Bv9ssSUAyrnLBJSGm4kgfipl/Z2dswywaIk490tBKhtSQ1NvTDTHepYND5BfHFWEsllcyR
+ uimtPYGNqr1bxBWLZ8Om0wx02Fb/x6CMhMc2DdC0npnWnm4iTjjMItMiZSM5pazoPkOVnsWMg
+ ek30GxiKQgdlzYNYrjuH/RZEhq+PL+6yY3VS7zG+5g1lgQyvoEwLBefFHO1CgU/hs+ZodKu+L
+ te7y3I4kFMk2wkMvN+VyRacvCDjeQazjr2XTELFYUzJyY0qVMIzWPYDRynCgXFa3H/5im6bA0
+ rzUBafxVIGMhcmqJaVz+2aK1/jTnGuWiZFI2MndVu8Xmw9O9Yx7Ne/8/bD8BynKTFw53qJ4Th
+ Pr+WCMzDLAVI6GwAz2gedHkgQECqMFVgdi7cp0eX/R9D3F1kJnriYKjnJptZ4t7gs+q372Ej7
+ 8g6SCA==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 06/11/2023 13:46, Peter Griffin wrote:
->>
->> Also, what kind of Google IP are you talking about? I believe only the
->> neural accelerator should be custom-ish.
-> 
-> This should not be considered an exhaustive list, but whilst looking in the
-> downstream public drivers at least the following Google IPs in the SoC
-> 
-> TPU/ML accelerator
-> Bigocean av1 video accelerator
-> Emerald hill compression engine
-> Camera ISP blocks
-> (AoC) Always on Compute
-> 
-> Plus of course Arm IPs (CPU+GPU), Synopsis IPs (USB, PCI. phys) etc.
+Hi,
 
-These are all common to Exynos and usually they use Exynos-specific
-glue, so we consider them all Exynos-specific.
-
-> 
-> The Exynos based IPs tend to be for things like pinmux, clocks, i2c, spi,
-> uart, mfc, display controller, timer etc.
-> 
->>
->> Additionally, I believe it having or not having Google IP is irrelevant:
->> for example, the new Raspberry Pi 5 Broadcom SoC has a lot of
->> Raspberry's own IP, but it's still called Broadcom as it's the real
->> manufacturer and designer of the chip.
-> 
-> I think RPi / Broadcom is a very different situation to this. The original SoC
-> in RPi 1 was wholly designed by Broadcom, and marketed as a Broadcom
-> SoC [1].
-> 
-> Further iterations of the SoC until now have also not had RPi IP integrated.
-> RPi themselves refer to them as "Broadcom SoCs" on their webpage [2],
-> so it is completely expected that they live in a broadcom directory.
-> 
-> BCM2717 has integrated the RPi ISP, but to all intents and purposes this is a
-> Broadcom owned and designed SoC, albeit only now sold to one customer.
-
-Not that different.
-Broadcom designed previous chip.
-Samsung designed previous chip.
-Broadcom designed BCM2717 with RPi ISP.
-Samsung designed GS101 with Tensor NPU and other blocks.
-
+On 06.11.23 08:19, Crescent CY Hsieh wrote:
+> On Sat, Nov 04, 2023 at 08:53:18PM +0100, Lino Sanfilippo wrote:
+>> On 01.11.23 07:44, Crescent CY Hsieh wrote:
+>>> @@ -1371,11 +1371,26 @@ static void uart_sanitize_serial_rs485(struct =
+uart_port *port, struct serial_rs4
+>>>  {
+>>>  	u32 supported_flags =3D port->rs485_supported.flags;
 >>>
->>> I guess the same is also true for `axis,artpec8` and `tesla,fsd` SoCs.
->>> IMO the SoC compatible string should be uniquely identifying the actual
->>> SoC, not a close relative.
+>>> -	if (!(rs485->flags & SER_RS485_ENABLED)) {
+>>> +	if (!(rs485->flags & (SER_RS485_ENABLED | SER_RS422_ENABLED))) {
+>>>  		memset(rs485, 0, sizeof(*rs485));
+>>>  		return;
+>>>  	}
 >>>
->>> Regarding product_id you are correct this reads 0x09845000 but even
->>> within Samsung Exynos family there are examples where the register
->>> value does not match the SoC compatible. For example Exynos850 SoC
->>> has a product ID value of "E3830". Where the Linux compatible is
->>> matching the Samsung marketing name, not the internal/outdated name.
+>>> +	/* Pick sane setting if the user enables both interfaces */
+>>> +	if (rs485->flags & SER_RS485_ENABLED && rs485->flags & SER_RS422_ENA=
+BLED) {
+>>> +		dev_warn_ratelimited(port->dev,
+>>> +			"%s (%d): Invalid serial interface setting, using RS485 instead\n"=
+,
+>>> +			port->name, port->line);
+>>> +		rs485->flags &=3D ~SER_RS422_ENABLED;
+>>> +	}
+>>> +
+>>> +	/* Clear other bits and return if RS422 is enabled */
+>>> +	if (rs485->flags & SER_RS422_ENABLED) {
+>>> +		memset(rs485, 0, sizeof(*rs485));
 >>
->> I did not know Exynos 850 is also not going under it's real name.
-> 
-> It is going by its real name :) just not by its internal name that nobody has
-> heard of.
-> 
->> Ultimately, I believe all of those SoCs should go under their technical
->> name in the exynos/ directory.
+>> Why are all flags cleared but SER_RS422_ENABLED?
+>
+> IMO, RS422 and RS485 are distinct serial interfaces. Therefore, when
+> RS422 is enabled, the other RS485 flags should be cleared, and vice
+> versa.
+>
+>>> +		rs485->flags |=3D SER_RS422_ENABLED;
+>>> +		return;
+>>> +	}
 >>
->> Another concern is that Google could in the future license other SoC: be
->> it Qualcomm, Nvidia or anything. If we put completely different hw under
->> google/ directory, does it really make sense? In that case, who'll
->> maintain the google/ directory? Exynos people? Qualcomm people if they
->> license it? Some other people?
-> 
-> I expect Google, or Google sponsored devs (as is the case for Linaro) to be
-> helping maintain the Google SoCs upstream. See the MAINTAINERS entry
-> for this series of who I expect to maintain this google directory.
-
-That's fine. What I don't agree is with putting it into Google, because
-Google wants to have all its phones in one place. That's not the
-argument we used for any other SoCs or products.
-
-We do not make decisions based on marketing or packaging wishes of some
-company. Otherwise Samsung phones will be together. Toradex boards (also
-spanning over NXP and TI) as well. Chromebooks DTS as well (oh, Doug
-would be happy, I guess :) ). And so on.
-
-> 
+>> What about all the other code places that check for SER_RS485_ENABLED?
+>> For example uart_update_mctrl(), uart_suspend_port() and uart_resume_po=
+rt() check this flag
+>> to decide whether to set the modem control lines or not. Should this no=
+t also apply to
+>> SER_RS422_ENABLED?
+>
+> After reviewing the code in serial_core.c, there are actually some codes
+> that check for "SER_RS485_ENABLED" flag before setting the modem control
+> lines.
+>
+> It also appears that these codes can only be done when disabling RS485.
+>
+> So yes, I will apply "SER_RS422_ENABLED" flag to these locations in the
+> next patch.
+>
 >>
->> Then, I don't think Tensor G3 has a proper "GS" name, it goes by "Zuma"
->> in decompiled kernel modules as far as I see.
-> 
-> That is correct, it is named Zuma downstream and they did away with the
-> gs101, gs201 type naming scheme.
-> 
->>
->> Finally, Tesla people already tried to submit drivers called by Tesla
->> name, but which basically copied the functionality of the Exynos
->> drivers. We would want to avoid that, ideally.
-> 
-> As you can see from this series we are not proposing that. Any IPs that
-> use Exynos IP we are using the existing upstream driver and enhance
-> it where we have features that aren't present upstream.
-> 
->>
->> My opinion is that all the Tesla and Google SoCs should be in the
->> exynos/ directory, not only because they are basically Samsung Exynos,
->> but also because they don't really need a separate directory: neither
->> Google nor Tesla didn't neither manufacture or design those SoCs from
->> scratch.
-> 
-> Who manufactures it seems irrelevant. Qcom and Broadcom don't
-> manufacture their SoCs either, but they still live in qcom and broadcom
-> directories upstream. Whether they designed the SoC from scratch or not
-> is also IMO largely irrelevant. In many cases the upstream community
-> has no way to determine whether things were outsourced or not anyway.
-> Did Apple outsource things in their silicon design? Who knows, and why
-> do we care? It's an apple branded chip in an apple branded product
-> let's call the directory apple.
-> 
-> Interestingly apple uses the same uart driver as Tensor, when I check back
-> through the commits in the driver.
-> 
-> fcbba344907afe26da487f1ed0b0e285c06a547b
-> 
-> tty: serial: samsung_tty: Add support for Apple UARTs
-> 
-> Apple SoCs are a distant descendant of Samsung designs and use yet
->  another variant of their UART style, with different interrupt handling.
-> 
-> 
->> The only reason I can think of for them to have it in a
->> separate directory is maybe because Google and Tesla actually paid
->> Samsung money for the right to call Exynos "Google designed" SoCs, but I
->> believe the kernel should be left out of that.
-> 
-> Also the fact that they contain IPs not found in Samsung designed devices,
-> aren't known to most people as Exynos, and the maintenance issues of
-> having all the Google, Tesla, Axis, Exynos based SoCs in the same directory
-> (and who knows how many other ASIC customers in the future).
-> 
-> Ultimately it is Krzysztof's decision I think. I followed what he had previously
-> accepted for other SoCs for consistency and also because it seemed like the
-> correct approach to help scale up and ease the maintenance burden. If I look
-> at the number of tensor based SoCs, phones per SoC and board variants per
-> phone model, then you end up having a lot of files in the exynos directory over
-> time.
+>> Maybe it would be better to change the meaning of the flag: Instead of =
+being a substitution for
+>> SER_RS485_ENABLED, it could be used to mark a special mode.
+>> So if both SER_RS485_ENABLED and SER_RS485_MODE_RS422 are set it would =
+mean that we have RS422.
+>
+> RS422 is not a mode of RS485, so I think using two flags to represent
+> them is much more reasonable, even though they are both included in the
+> "struct serial_rs485".
 
-I agreed on Tesla FSD in its own place mainly because of arguments
-provided that time: it's entirely different architecture. These
-arguments were not backed by actual facts or proofs, though. The
-upstreamed parts of FSD turned out to be... only Exynos specific. There
-is literally nothing non-Exynos in upstream. Therefore knowing the
-outcome I would say: put FSD into samsung directory.
+Yes, RS422 is not a mode of RS485, but you are already using the rs485 (an=
+d not a rs422) structure.
+And treating RS422 as a different mode in the existing code would make thi=
+ngs much easier and keep the code
+clean. For example you would not have to alter all the code places that ch=
+eck for SER_RS485_ENABLED.
+Also SER_RS485_ENABLED and SER_RS422_ENABLED would have the exact same eff=
+ect, so why use two
+different flags, when the effect is the same?
 
-About GS101 I have the same questions - how similar it is? I am pretty
-sure that 95% of upstreamed code (DTS and drivers) will be Exynos-like
-(except for missing upstream support for generations of Exynos SoC!).
-But I cannot really judge and I am not going to investigate downstream
-code to figure this out. Thus if you insist that SoC architecture and
-core features are quite different from Exynos family, then sure, I can
-live with it.
-
-Best regards,
-Krzysztof
+Regards,
+Lino
 
