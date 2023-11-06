@@ -2,129 +2,132 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D283BC4332F
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Nov 2023 08:41:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 412F0C4332F
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Nov 2023 11:35:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231307AbjKFIlQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Nov 2023 03:41:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43238 "EHLO
+        id S231462AbjKFLff (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Nov 2023 06:35:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231550AbjKFIlD (ORCPT
+        with ESMTP id S230018AbjKFLfe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Nov 2023 03:41:03 -0500
-Received: from mxout70.expurgate.net (mxout70.expurgate.net [91.198.224.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0412136
-        for <linux-serial@vger.kernel.org>; Mon,  6 Nov 2023 00:40:53 -0800 (PST)
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <prvs=068806c1c2=fe@dev.tdt.de>)
-        id 1qzvAB-009jU2-Q9
-        for linux-serial@vger.kernel.org; Mon, 06 Nov 2023 09:40:51 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <fe@dev.tdt.de>)
-        id 1qzvAB-00DzxC-Ew
-        for linux-serial@vger.kernel.org; Mon, 06 Nov 2023 09:40:51 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 3EE7E240049
-        for <linux-serial@vger.kernel.org>; Mon,  6 Nov 2023 09:40:51 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 037C4240040;
-        Mon,  6 Nov 2023 09:40:51 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id 8F6B02267B;
-        Mon,  6 Nov 2023 09:40:50 +0100 (CET)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 06 Nov 2023 09:40:50 +0100
-From:   Florian Eckert <fe@dev.tdt.de>
-To:     m.brock@vanmierlo.com
-Cc:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
-        kabel@kernel.org, u.kleine-koenig@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-leds@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] leds: ledtrig-tty: add new line mode evaluation
-In-Reply-To: <ceec1d36f889eb82e724335d007334fd@vanmierlo.com>
-References: <20231023094205.2706812-1-fe@dev.tdt.de>
- <20231023094205.2706812-3-fe@dev.tdt.de>
- <ddf9439a092576cd18c6e025d0b61602@vanmierlo.com>
- <2951fd563fc6a364d8cddfb7ec17808b@dev.tdt.de>
- <ceec1d36f889eb82e724335d007334fd@vanmierlo.com>
-Message-ID: <092914b1a78135f7dcd0bab40e7995af@dev.tdt.de>
-X-Sender: fe@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.17
-X-purgate-ID: 151534::1699260051-DD48F3D8-ABAE0073/0/0
-X-purgate: clean
-X-purgate-type: clean
+        Mon, 6 Nov 2023 06:35:34 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFCDABE;
+        Mon,  6 Nov 2023 03:35:31 -0800 (PST)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 832BAC433C7;
+        Mon,  6 Nov 2023 11:35:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1699270531;
+        bh=fI4NKuZ1uY8mqL9yZ9YNJndkjv1j7nVGFqh2pflGyYI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cRiY+eu6yXREipoxzeem9UkMf7DbKLyTEsBhihxAIIk9nQ7OhutANlrX0EN63aFg8
+         ZSOLFibjhi2PMsmJgXzpwOvA3yqj+aXKhPs5qY42O3Uubyo3b9ra3w1ryHOdHG+HiZ
+         lHOvlA1VxBzJlQ/bT8UqOpfVLA184ZKyXm6dfKOVjFk5US/uhLcvJeH9TagyH2mwcu
+         9b39ZbgDKTEhKmjrt0MJvhXN1mZbmQCjYEQL13faJBplEzfT8BihvSFWhGl8cQUWBC
+         bWSHz+fQSNq7mqI8jiAcEbQjHnTmI/qTbh4GYesnI1QXEQSU6GqcBjGWWa/rNB3tBe
+         ESW6CSQ0mYtcg==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=goblin-girl.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1qzxtA-00AkGy-HO;
+        Mon, 06 Nov 2023 11:35:28 +0000
+Date:   Mon, 06 Nov 2023 11:35:27 +0000
+Message-ID: <86fs1j15ds.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Sunil V L <sunilvl@ventanamicro.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Anup Patel <anup@brainfault.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Andrew Jones <ajones@ventanamicro.com>,
+        Atish Kumar Patra <atishp@rivosinc.com>,
+        Haibo Xu <haibo1.xu@intel.com>
+Subject: Re: [RFC PATCH v2 13/21] irqchip: riscv-intc: Add ACPI support for AIA
+In-Reply-To: <87jzr82c3h.ffs@tglx>
+References: <20231026165150.GA1825130@bhelgaas>
+        <87jzr82c3h.ffs@tglx>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/29.1
+ (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: tglx@linutronix.de, helgaas@kernel.org, sunilvl@ventanamicro.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, catalin.marinas@arm.com, will@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu, rafael@kernel.org, lenb@kernel.org, bhelgaas@google.com, anup@brainfault.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, conor.dooley@microchip.com, ajones@ventanamicro.com, atishp@rivosinc.com, haibo1.xu@intel.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2023-11-04 14:59, m.brock@vanmierlo.com wrote:
-> Florian Eckert wrote on 2023-10-30 09:15:
+On Fri, 27 Oct 2023 18:45:38 +0100,
+Thomas Gleixner <tglx@linutronix.de> wrote:
 > 
->>> Shouldn't the led return to the line controlled steady state?
->> 
->> Sorry I do not understand your question.
->> 
->>> Set an invert variable to true if state was TTY_LED_ENABLE before it 
->>> got set
->>> to TTY_LED_BLINK
->> 
->> No matter whether the LED is on or off beforehand. I understand that 
->> the
->> LED is always on for the first half of the period and off for the rest 
->> of
->> the period. I think that is correct and I don't need to make a 
->> distinction
->> via invert here. I hope I have understood your comment correctly here.
->> 
->>> How do interval and the frequency of ledtrig_tty_work() relate?
->> 
->> The work is twice as long as of the interval. So the variable
->> LEDTRIG_TTY_INTERVAL = 50 and the work is scheduled 
->> LEDTRIG_TTY_INTERVAL * 2.
->> But that was also before my change.
+> On Thu, Oct 26 2023 at 11:51, Bjorn Helgaas wrote:
+> > On Thu, Oct 26, 2023 at 01:53:36AM +0530, Sunil V L wrote:
+> >> The RINTC subtype structure in MADT also has information about other
+> >> interrupt controllers like MMIO. So, save those information and provide
+> >> interfaces to retrieve them when required by corresponding drivers.
+> >
+> >> @@ -218,7 +306,19 @@ static int __init riscv_intc_acpi_init(union acpi_subtable_headers *header,
+> >
+> >> +	 * MSI controller (IMSIC) in RISC-V is optional. So, unless
+> >> +	 * IMSIC is discovered, set system wide MSI support as
+> >> +	 * unsupported. Once IMSIC is probed, MSI support will be set.
+> >> +	 */
+> >> +	pci_no_msi();
+> >
+> > It doesn't seem like we should have to tell the PCI core about
+> > functionality we *don't* have.
+> >
+> > I would think IMSIC would be detected before enumerating PCI devices
+> > that might use it, and if we *haven't* found an IMSIC by the time we
+> > get to pci_register_host_bridge(), would/should we set
+> > PCI_BUS_FLAGS_NO_MSI there?
+> >
+> > I see Thomas is cc'd; he'd have better insight.
 > 
-> This explains why you don't necessarily need to invert the blink.
-> If E.g. both CTS and TX are configured I would expect to see the led 
-> turn on
-> once CTS actives and then blink off when something is transmitted. 
-> After that
-> I expect to see the led still on because CTS is still active.
+> I was not really involved with this bus and MSI domain logic. Marc
+> should know. CC'ed.
 
-The evaluation starts again with the next iteration of the work.
-And if no data was transferred but CTS was set, the LED is enabled again
-but does not flash.
+The canonical way of doing this is by the platform expressing that
+there is no linkage between the PCIe RC and the MSI controller.  If
+there is no MSI domain associated with the RC, then by extension the
+endpoints don't get one either.
 
-> Now only because the work interval is 2*LEDTRIG_TTY_INTERVAL and the 
-> blink
-> uses an interval of LEDTRIG_TTY_INTERVAL for both on and off the user 
-> doesn't
-> notice any difference except maybe a bit of delay of the blink.
+There are additional quirks linked to the msi_domain host bridge
+property, allowing the host bridge driver to indicate that it isn't in
+charge of MSIs, but that a third party may provide it (in which case a
+MSI irq domain will be associated with it).
 
-That is correct
+In any case, slapping a pci_no_msi() call in an irqchip driver is
+gross and most probably a sign that this is going in the wrong
+direction, specially as this is platform-wide.
 
-> If either the work schedule was larger than 2*LEDTRIG_TTY_INTERVAL or 
-> the on
-> interval would differ from the off interval the behaviour would differ
-> noticably.
-> 
-> This is why I recommend to use an invert variable that is set to true 
-> when
-> the previous state was TTY_LED_ENABLE.
+The only cases I'd expect this function to be called are:
 
-In the next patch round, I will save the state of the LED and evaluate 
-whether
-I need to invert the LED if the state of the LED has been set to blink.
+- Platform or firmware explicitly disallowing MSIs
+- pci=nomsi on the command line
 
-> Maarten
+none of which are the business of an irqchip driver.
 
-Thanks for your feedback
+HTH,
 
---
-Florian
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
