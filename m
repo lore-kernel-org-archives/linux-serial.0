@@ -2,246 +2,121 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C459FC41535
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Nov 2023 13:57:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98F38C4708E
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Nov 2023 23:22:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229535AbjKGN50 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Nov 2023 08:57:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40150 "EHLO
+        id S1343772AbjKGXWl (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Nov 2023 18:22:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231952AbjKGN5Z (ORCPT
+        with ESMTP id S235249AbjKGXWk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Nov 2023 08:57:25 -0500
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66C0DB6
-        for <linux-serial@vger.kernel.org>; Tue,  7 Nov 2023 05:57:21 -0800 (PST)
-Received: by mail-qv1-xf36.google.com with SMTP id 6a1803df08f44-66d17bdabe1so39733266d6.0
-        for <linux-serial@vger.kernel.org>; Tue, 07 Nov 2023 05:57:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1699365440; x=1699970240; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=CbqpJ5gw9GOJ91Wt05ZBQ3B3ajCS3+ZL+yYMKlVS/7w=;
-        b=IjbOo4faoEMViNBUpWlV1QZx/HopQt16gv26gV9X86KEP+BznglaZRA2Kyg+2RcgIa
-         kB2tYLVfGWnyV1RRKFQgjLg4FIFYiYYLL808Vj7ABZrkZhv7UjnCvy8zIFHYlfzFCjEr
-         6f3AyfnEoZNDcEWae0QE/xQJkjv3nspH8oUtzJ6qDyVuKsc680CMk+LS1RsSOdromTek
-         w0RTpbaWmoYMiPXafccIL482Sg+cXP06FSClyO2WvGrRCBq4u4m8v7BSRuqnJeT7fAOb
-         nhMlVfrKYvTBcEHYLbHT1Mi+chI1SEcRmgS9xkx/cM7TgmPOv+8qOiPhwJBvz/KGVDEg
-         GBHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699365440; x=1699970240;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=CbqpJ5gw9GOJ91Wt05ZBQ3B3ajCS3+ZL+yYMKlVS/7w=;
-        b=HwI3VeTaLSAX+FN4r1ZFvmdRPjPnXSl5OQnN5uOyqKP5HppvrgNOx75qzRwbpBr33S
-         X1rZ4Ql6IwcIZciAkln/X/omqzfnuuLQv7oqR5li3EJPrNbrYhrpfjp+udrtfZ4F5fFw
-         tRKBiM3/nZCYZdaCQIya1J96ryZEYNiAjGZLa6f8vWQIZhHKfgy7W0QkGUVt/jbEEr74
-         ZgSugvQWky6EyAVegvIae4bfkdNCszwsmezxY/vwnkQIZxbfMPWwCcga54re3ByzybKB
-         yjxrdEMiutqys0cImkszRckRJdmgzWGBB8S1R1I2KmsiB+sqJ0ol0KZF2zjfDkV4KSxR
-         GpFw==
-X-Gm-Message-State: AOJu0Yy8DHhy3AX4TJ5ljpH7uddpuywVMcCMAt8xnfUm3OhhavyXHG5X
-        mEg+3gBKvuk0qMm8ZvSDPaoWM89lczRBNVI3EzWVfg==
-X-Google-Smtp-Source: AGHT+IFPmCDJWmXuqEspf2Hkzm+uYMa/h3WFcFn4tmvryaRRUPo6gpp0HW4f25qoMF9Xg4paJyLmxWpEpUjIXDfQnzY=
-X-Received: by 2002:a05:6214:529b:b0:66d:3474:a93a with SMTP id
- kj27-20020a056214529b00b0066d3474a93amr37508496qvb.30.1699365440438; Tue, 07
- Nov 2023 05:57:20 -0800 (PST)
+        Tue, 7 Nov 2023 18:22:40 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D66FAD79;
+        Tue,  7 Nov 2023 15:22:38 -0800 (PST)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97962C433C7;
+        Tue,  7 Nov 2023 23:22:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1699399358;
+        bh=5aSZH5wA6ryFjcHVYhyKB+UrEDRCSQpwhWEc+VLnw3E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=k653T4fGNRynBicjyfYrUeOpXHpsnRzIgavbo0w3+38r4oAVzVXBAgmMSMM6q+fx7
+         +o8ooOkbivz1N+96hU1yHFHEKkQ2An+AvbKVuTvWcf5jjjnKhDMrETsn3rEEhVO/Pm
+         z2R7DvYxkT95R5fcar2un5btWuOlbe5zjS39B8LX9gF9f8pK2fnLAKMzKZuLIf2WTT
+         u56tY3eCJaPgYsXk/3a3Jm/PtT7wYEchxnoo7JEErWgqFnDTpz9NW8cO/+Ipkx+8tf
+         EmNn1UMgK8zc2ZMrqvXWqNPpiSbRJtjG70vd3mYTAXHT+rdgbWSg/qOMG9g6G1rwcj
+         eBhIhg0hn404w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Yi Yang <yiyang13@huawei.com>, Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        sparclinux@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.6 03/18] tty: vcc: Add check for kstrdup() in vcc_probe()
+Date:   Tue,  7 Nov 2023 18:21:57 -0500
+Message-ID: <20231107232231.3775605-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.42.0
+In-Reply-To: <20231107232231.3775605-1-sashal@kernel.org>
+References: <20231107232231.3775605-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20231011184823.443959-1-peter.griffin@linaro.org>
- <20231011184823.443959-11-peter.griffin@linaro.org> <aae4e6cd-dcfc-442d-9ed7-d5a73c419ba8@kernel.org>
-In-Reply-To: <aae4e6cd-dcfc-442d-9ed7-d5a73c419ba8@kernel.org>
-From:   Peter Griffin <peter.griffin@linaro.org>
-Date:   Tue, 7 Nov 2023 13:57:09 +0000
-Message-ID: <CADrjBPrUsSigThoLU9thmZiaG4690B9-BcZYrBn44K9Fc8z3vg@mail.gmail.com>
-Subject: Re: [PATCH v3 10/20] clk: samsung: clk-gs101: Add cmu_top registers,
- plls, mux and gates
-To:     Chanwoo Choi <chanwoo@kernel.org>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
-        tomasz.figa@gmail.com, s.nawrocki@samsung.com,
-        linus.walleij@linaro.org, wim@linux-watchdog.org,
-        linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org,
-        arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org,
-        cw00.choi@samsung.com, tudor.ambarus@linaro.org,
-        andre.draszik@linaro.org, semen.protsenko@linaro.org,
-        saravanak@google.com, willmcvicker@google.com, soc@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        kernel-team@android.com, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+X-stable-base: Linux 6.6
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Chanwoo,
+From: Yi Yang <yiyang13@huawei.com>
 
-Thanks for your review!
+[ Upstream commit d81ffb87aaa75f842cd7aa57091810353755b3e6 ]
 
-On Wed, 18 Oct 2023 at 17:51, Chanwoo Choi <chanwoo@kernel.org> wrote:
->
-> Hi Peter,
->
-> On 23. 10. 12. 03:48, Peter Griffin wrote:
-> > CMU_TOP is the top level clock management unit which contains PLLs, muxes
-> > and gates that feed the other clock management units.
-> >
-> > Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
-> > ---
-> >  drivers/clk/samsung/Kconfig     |    9 +
-> >  drivers/clk/samsung/Makefile    |    2 +
-> >  drivers/clk/samsung/clk-gs101.c | 1551 +++++++++++++++++++++++++++++++
-> >  3 files changed, 1562 insertions(+)
-> >  create mode 100644 drivers/clk/samsung/clk-gs101.c
-> >
-> > diff --git a/drivers/clk/samsung/Kconfig b/drivers/clk/samsung/Kconfig
-> > index 76a494e95027..14362ec9c543 100644
-> > --- a/drivers/clk/samsung/Kconfig
-> > +++ b/drivers/clk/samsung/Kconfig
-> > @@ -12,6 +12,7 @@ config COMMON_CLK_SAMSUNG
-> >       select EXYNOS_5410_COMMON_CLK if ARM && SOC_EXYNOS5410
-> >       select EXYNOS_5420_COMMON_CLK if ARM && SOC_EXYNOS5420
-> >       select EXYNOS_ARM64_COMMON_CLK if ARM64 && ARCH_EXYNOS
-> > +     select GOOGLE_GS101_COMMON_CLK if ARM64 && ARCH_GOOGLE_TENSOR
-> >       select TESLA_FSD_COMMON_CLK if ARM64 && ARCH_TESLA_FSD
-> >
-> >  config S3C64XX_COMMON_CLK
-> > @@ -95,6 +96,14 @@ config EXYNOS_CLKOUT
-> >         status of the certains clocks from SoC, but it could also be tied to
-> >         other devices as an input clock.
-> >
-> > +config GOOGLE_GS101_COMMON_CLK
-> > +     bool "Google gs101 clock controller support" if COMPILE_TEST
-> > +     depends on COMMON_CLK_SAMSUNG
-> > +     depends on EXYNOS_ARM64_COMMON_CLK
-> > +     help
-> > +       Support for the clock controller present on the Google gs101 SoC.
-> > +       Choose Y here only if you build for this SoC.
-> > +
->
-> (snip)
->
-> > +
-> > +/* gs101 */
-> > +static const struct samsung_mux_clock cmu_top_mux_clks[] __initconst = {
-> > +     /* CMU_TOP_PURECLKCOMP */
-> > +     MUX(CLK_MOUT_SHARED0_PLL, "mout_shared0_pll", mout_shared0_pll_p,
-> > +         PLL_CON0_PLL_SHARED0, 4, 1),
-> > +     MUX(CLK_MOUT_SHARED1_PLL, "mout_shared1_pll", mout_shared1_pll_p,
-> > +         PLL_CON0_PLL_SHARED1, 4, 1),
-> > +     MUX(CLK_MOUT_SHARED2_PLL, "mout_shared2_pll", mout_shared2_pll_p,
-> > +         PLL_CON0_PLL_SHARED2, 4, 1),
-> > +     MUX(CLK_MOUT_SHARED3_PLL, "mout_shared3_pll", mout_shared3_pll_p,
-> > +         PLL_CON0_PLL_SHARED3, 4, 1),
-> > +     MUX(CLK_MOUT_SPARE_PLL, "mout_spare_pll", mout_spare_pll_p,
-> > +         PLL_CON0_PLL_SPARE, 4, 1),
-> > +
-> > +     /* BUS0 */
-> > +     MUX(CLK_MOUT_BUS0_BUS, "mout_cmu_bus0_bus", mout_cmu_bus0_bus_p,
-> > +         CLK_CON_MUX_MUX_CLKCMU_BUS0_BUS, 0, 2),
-> > +     MUX(CLK_MOUT_CMU_BOOST, "mout_cmu_boost", mout_cmu_cmu_boost_p,
->
-> In order to keep the consistent naming style,
-> I think that need to change from 'mout_cmu_boost' to 'mout_cmu_cmu_boost'.
+Add check for the return value of kstrdup() and return the error, if it
+fails in order to avoid NULL pointer dereference.
 
-Yes, that's a good point, and a good spot! Will fix it in v4.
+Signed-off-by: Yi Yang <yiyang13@huawei.com>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Link: https://lore.kernel.org/r/20230904035220.48164-1-yiyang13@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/vcc.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
->
-> > +         CLK_CON_MUX_MUX_CLKCMU_CMU_BOOST, 0, 2),
-> > +
-> > +     /* BUS1 */
-> > +     MUX(CLK_MOUT_BUS1_BUS, "mout_cmu_bus1_bus", mout_cmu_bus1_bus_p,
-> > +         CLK_CON_MUX_MUX_CLKCMU_BUS1_BUS, 0, 2),
-> > +
-> > +     /* BUS2 */
-> > +     MUX(CLK_MOUT_BUS2_BUS, "mout_cmu_bus2_bus", mout_cmu_bus2_bus_p,
-> > +         CLK_CON_MUX_MUX_CLKCMU_BUS2_BUS, 0, 2),
-> > +
-> > +     /* CORE */
-> > +     MUX(CLK_MOUT_CORE_BUS, "mout_cmu_core_bus", mout_cmu_core_bus_p,
-> > +         CLK_CON_MUX_MUX_CLKCMU_CORE_BUS, 0, 2),
-> > +
-> > +     /* EH */
-> > +     MUX(CLK_MOUT_EH_BUS, "mout_cmu_eh_bus", mout_cmu_eh_bus_p,
-> > +         CLK_CON_MUX_MUX_CLKCMU_CORE_BUS, 0, 2),
->
-> 'mout_cmu_core_bus' and 'mout_cmu_eh_bus' uses the same register/shift/width information.
-> I think it should be modified by changing the regiter or changing the shift/width information.
+diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
+index a39ed981bfd3e..5b625f20233b4 100644
+--- a/drivers/tty/vcc.c
++++ b/drivers/tty/vcc.c
+@@ -579,18 +579,22 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+ 		return -ENOMEM;
+ 
+ 	name = kstrdup(dev_name(&vdev->dev), GFP_KERNEL);
++	if (!name) {
++		rv = -ENOMEM;
++		goto free_port;
++	}
+ 
+ 	rv = vio_driver_init(&port->vio, vdev, VDEV_CONSOLE_CON, vcc_versions,
+ 			     ARRAY_SIZE(vcc_versions), NULL, name);
+ 	if (rv)
+-		goto free_port;
++		goto free_name;
+ 
+ 	port->vio.debug = vcc_dbg_vio;
+ 	vcc_ldc_cfg.debug = vcc_dbg_ldc;
+ 
+ 	rv = vio_ldc_alloc(&port->vio, &vcc_ldc_cfg, port);
+ 	if (rv)
+-		goto free_port;
++		goto free_name;
+ 
+ 	spin_lock_init(&port->lock);
+ 
+@@ -624,6 +628,11 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+ 		goto unreg_tty;
+ 	}
+ 	port->domain = kstrdup(domain, GFP_KERNEL);
++	if (!port->domain) {
++		rv = -ENOMEM;
++		goto unreg_tty;
++	}
++
+ 
+ 	mdesc_release(hp);
+ 
+@@ -653,8 +662,9 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+ 	vcc_table_remove(port->index);
+ free_ldc:
+ 	vio_ldc_free(&port->vio);
+-free_port:
++free_name:
+ 	kfree(name);
++free_port:
+ 	kfree(port);
+ 
+ 	return rv;
+-- 
+2.42.0
 
-It should be using the CLK_CON_MUX_MUX_CLKCMU_EH_BUS register.
-Will fix it in v4.
-
->
-> > +
-> > +     /* CPUCL{0,1,2,} */
-> > +     MUX(CLK_MOUT_CPUCL2_SWITCH, "mout_cmu_cpucl2_switch", mout_cmu_cpucl2_switch_p,
-> > +         CLK_CON_MUX_MUX_CLKCMU_CPUCL2_SWITCH, 0, 2),
-> > +
-> > +     MUX(CLK_MOUT_CPUCL1_SWITCH, "mout_cmu_cpucl1_switch", mout_cmu_cpucl1_switch_p,
-> > +         CLK_CON_MUX_MUX_CLKCMU_CPUCL1_SWITCH, 0, 2),
-> > +
-> > +     MUX(CLK_MOUT_CPUCL0_SWITCH, "mout_cmu_cpucl0_switch", mout_cmu_cpucl0_switch_p,
-> > +         CLK_CON_MUX_MUX_CLKCMU_CPUCL0_SWITCH, 0, 2),
-> > +
-> > +     MUX(CLK_MOUT_CPUCL0_DBG, "mout_cmu_cpucl0_dbg", mout_cmu_cpucl0_dbg_p,
-> > +         CLK_CON_DIV_CLKCMU_CPUCL0_DBG, 0, 2),
-> > +
-> > +     MUX(CLK_MOUT_CMU_HPM, "mout_cmu_hpm", mout_cmu_hpm_p,
-> > +         CLK_CON_MUX_MUX_CLKCMU_HPM, 0, 2),
-> >
->
-> (snip)
->
-> > +     /* PDP */
-> > +     MUX(CLK_MOUT_PDP_BUS, "mout_cmu_pdp_bus", mout_cmu_pdp_bus_p,
-> > +         CLK_CON_MUX_MUX_CLKCMU_PDP_BUS, 0, 2),
-> > +
-> > +     /* PDP */
-> > +     MUX(CLK_MOUT_PDP_VRA, "mout_cmu_pdp_vra", mout_cmu_pdp_vra_p,
-> > +         CLK_CON_MUX_MUX_CLKCMU_PDP_VRA, 0, 2),
-> > +
-> > +     /* IPP */
-> > +     MUX(CLK_MOUT_IPP_BUS, "mout_cmu_ipp_bus", mout_cmu_ipp_bus_p,
-> > +         CLK_CON_MUX_MUX_CLKCMU_IPP_BUS, 0, 2),
-> > +
-> > +     /* G3AA */
-> > +     MUX(CLK_MOUT_G3AA, "mout_cmu_g3aa", mout_cmu_g3aa_p,
-> > +         CLK_CON_MUX_MUX_CLKCMU_G3AA_G3AA, 0, 2),
->
-> I think that need to change the mux name and mux parent name
-> because other mux name use the twice word according to the register name
-> even if use the same work such as 'mout_cmu_g2d_g2d', 'mout_cmu_mcsc_mcsc' and 'mout_cmu_mfc_mfc'.
-> - mout_cmu_g3aa -> mout_cmu_g3aa_g3aa
-> - mout_cmu_g3aa_p -> mount_cmu_g3aa_g3aa_p
-
-Will fix in v4
-
->
-> (snip)
->
-> > +     /* CSIS */
-> > +     GATE(CLK_GOUT_CSIS, "gout_cmu_csis_bus", "mout_cmu_csis_bus",
-> > +          CLK_CON_GAT_GATE_CLKCMU_CSIS_BUS, 21, 0, 0),
-> > +     /* PDP */
-> > +     GATE(CLK_GOUT_PDP_BUS, "gout_cmu_pdp_bus", "mout_cmu_pdp_bus",
-> > +          CLK_CON_GAT_GATE_CLKCMU_PDP_BUS, 21, 0, 0),
-> > +
-> > +     GATE(CLK_GOUT_PDP_VRA, "gout_cmu_pdp_vra", "mout_cmu_pdp_vra",
-> > +          CLK_CON_GAT_GATE_CLKCMU_PDP_BUS, 21, 0, 0),
-> > +
-> > +     /* IPP */
-> > +     GATE(CLK_GOUT_IPP_BUS, "gout_cmu_ipp_bus", "mout_cmu_ipp_bus",
-> > +          CLK_CON_GAT_GATE_CLKCMU_IPP_BUS, 21, 0, 0),
-> > +     /* G3AA */
-> > +     GATE(CLK_GOUT_G3AA, "gout_cmu_g3aa", "mout_cmu_g3aa",
-> > +          CLK_CON_MUX_MUX_CLKCMU_G3AA_G3AA, 21, 0, 0),
->
-> ditto.
-> gout_cmu_g3aa -> gout_cmu_g3aa_g3aa
-> mout_cmu_g3aa -> mout_cmu_g3aa_g3aa
-
-Will fix in V4
-
-regards,
-
-Peter.
