@@ -2,135 +2,117 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B2EC4167B
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Nov 2023 18:37:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27978C04E88
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Nov 2023 18:56:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229705AbjKHShJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Nov 2023 13:37:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60846 "EHLO
+        id S230375AbjKHS4h (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Nov 2023 13:56:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbjKHShI (ORCPT
+        with ESMTP id S229635AbjKHS4f (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Nov 2023 13:37:08 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A9C62105;
-        Wed,  8 Nov 2023 10:37:06 -0800 (PST)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2E37C433C7;
-        Wed,  8 Nov 2023 18:37:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1699468625;
-        bh=EoZDLxwmLFbEEIkyOEmztWMHpHCSGiYEo4ayX1PT9GY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GPHv4DtiTNP/0xV1Zk9vqsAbNJUeKn0ZJKyBIpObozF5wckFlaJGMe4CNBfdiOI8d
-         gFRKV7FHCWQYH9IN+bD+8yBXzmTkcCNIkd7ietT4ZSPSBAgDkVqh4s6HVLzl+zmRRc
-         HhYwTYSI0dS7lXRzfwNnkZE19FBS/IVOt7h385+r+XZyWMYGXr2Z+bDlLLp/FjclZ0
-         94Rqnp7IPuCKVgysW/jZttyZQGjUUQJsHtmuOSZpUG4YoOsvs7s/LtgntArPAEj6I+
-         w9kLmzAcyhCLPFYdnwf9g4iudvMu0qn4Gb8KHiTb7Z4HypxrLZl2z2Ij/lL2k4hm3X
-         dzhS2/GBDPGGw==
-Received: from [185.201.63.253] (helo=wait-a-minute.misterjones.org)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <maz@kernel.org>)
-        id 1r0nQD-00BW1k-GG;
-        Wed, 08 Nov 2023 18:37:02 +0000
-Date:   Wed, 08 Nov 2023 18:36:13 +0000
-Message-ID: <87leb85bz6.wl-maz@kernel.org>
-From:   Marc Zyngier <maz@kernel.org>
-To:     Sunil V L <sunilvl@ventanamicro.com>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Anup Patel <anup@brainfault.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 8 Nov 2023 13:56:35 -0500
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45212210D;
+        Wed,  8 Nov 2023 10:56:33 -0800 (PST)
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-1f0f94943d9so1269626fac.2;
+        Wed, 08 Nov 2023 10:56:33 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699469792; x=1700074592;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=C0s3leUhfdCXtqd2GQERP13Q2t1M8oOeLUmcRLyKV8Y=;
+        b=kCHCZdLlgHL2Z8THYqohXsXQLyceJubLKF+B9kWnJIbjy74FfGwGcf8nDZKlI+98yI
+         vVFYoAEalh04e/y69MlLQVtAUdoQvFZ/6LfvU0GaXL0SP4MmVZGLA+diOrVN2RKkNlUf
+         s5ggPo8kUvFz3SXkfH6r3ZHrNPfhuccZmToh5CSgGXj1iHECfhh2Ub2Jaq+FXy2DfZqD
+         dugVwK29TgynEpAZT4sTnq4kOJO6WgJvpCcNB7oZ46Mmi01hFYM9Ac1E58m8jKzGyDxE
+         UjHonWdNpCSKqs1SyegXnS4EBgMchxYvn0ZAJwFXTVN83nIDrWaFNephfOJVmDAfU/62
+         R1AA==
+X-Gm-Message-State: AOJu0YxGrZg9s8KlZb+1tTEWVn3LGopjphhD99+LHS6I9SEFM94cS2jU
+        4JdtqnLs3ObX6XBfjkBkVw==
+X-Google-Smtp-Source: AGHT+IE0mbiHvR9GjYeolkzHi9SUwOP9v8XsmJuVs9xWh9Zkn8dD1A7MBvs46KqOAxR54Xhtj5FP+A==
+X-Received: by 2002:a05:6870:fe91:b0:1e9:af81:54c2 with SMTP id qm17-20020a056870fe9100b001e9af8154c2mr2838245oab.45.1699469792539;
+        Wed, 08 Nov 2023 10:56:32 -0800 (PST)
+Received: from herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id ef4-20020a0568701a8400b001efb3910402sm408267oab.0.2023.11.08.10.56.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Nov 2023 10:56:31 -0800 (PST)
+Received: (nullmailer pid 2748787 invoked by uid 1000);
+        Wed, 08 Nov 2023 18:56:30 -0000
+Date:   Wed, 8 Nov 2023 12:56:30 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     linux-i2c@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-serial@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Andi Shyti <andi.shyti@kernel.org>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Maxime Ripard <mripard@kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Andrew Jones <ajones@ventanamicro.com>,
-        Atish Kumar Patra <atishp@rivosinc.com>,
-        Haibo Xu <haibo1.xu@intel.com>
-Subject: Re: [RFC PATCH v2 06/21] RISC-V: Kconfig: Select deferred GSI probe for ACPI systems
-In-Reply-To: <ZUtailOcozI9xIou@sunil-laptop>
-References: <ZTuzJ1nsicZYp+uh@sunil-laptop>
-        <20231106221606.GA264641@bhelgaas>
-        <ZUtailOcozI9xIou@sunil-laptop>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/28.2
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
-X-SA-Exim-Connect-IP: 185.201.63.253
-X-SA-Exim-Rcpt-To: sunilvl@ventanamicro.com, helgaas@kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, catalin.marinas@arm.com, will@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu, rafael@kernel.org, lenb@kernel.org, bhelgaas@google.com, anup@brainfault.org, tglx@linutronix.de, gregkh@linuxfoundation.org, jirislaby@kernel.org, conor.dooley@microchip.com, ajones@ventanamicro.com, atishp@rivosinc.com, haibo1.xu@intel.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        dri-devel@lists.freedesktop.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        linux-iio@vger.kernel.org, Jaehoon Chung <jh80.chung@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Lee Jones <lee@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        alsa-devel@alsa-project.org, linux-mmc@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-sound@vger.kernel.org,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        David Airlie <airlied@gmail.com>
+Subject: Re: [PATCH 01/17] dt-bindings: hwinfo: samsung,exynos-chipid: add
+ specific compatibles for existing SoC
+Message-ID: <169946978921.2748598.1967407376619995212.robh@kernel.org>
+References: <20231108104343.24192-1-krzysztof.kozlowski@linaro.org>
+ <20231108104343.24192-2-krzysztof.kozlowski@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231108104343.24192-2-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 08 Nov 2023 09:53:14 +0000,
-Sunil V L <sunilvl@ventanamicro.com> wrote:
+
+On Wed, 08 Nov 2023 11:43:27 +0100, Krzysztof Kozlowski wrote:
+> Samsung Exynos SoC reuses several devices from older designs, thus
+> historically we kept the old (block's) compatible only.  This works fine
+> and there is no bug here, however guidelines expressed in
+> Documentation/devicetree/bindings/writing-bindings.rst state that:
+> 1. Compatibles should be specific.
+> 2. We should add new compatibles in case of bugs or features.
 > 
-> That's partly correct. APLIC platform devices are created prior to PCI
-> host bridges added. But the actual APLIC driver which creates the
-> irqdomain will be probed as a regular platform driver for the APLIC
-> device. The platform driver probe will happen using DD framework and
-> devices don't have any dependency on APLIC which can cause device probe
-> prior to APLIC driver probe.
+> Add compatibles specific to each SoC in front of all old-SoC-like
+> compatibles.
 > 
-> DT supports fw_devlink framework which makes it easier for IRQ devices
-> to use regular platform drivers and produces-consumers are probed in the
-> order without requiring drivers to do deferred probe. But I don't see
-> that supported for ACPI framework.  Also, the way PNP devices get added
-> there is an assumption that interrupt controller is already setup fully.
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > 
-> With this new use case in RISC-V, here are the alternatives I am aware of.
+> ---
 > 
-> 1) Use core_initcall() in the APLIC drivers which makes APLIC driver to
-> be probed prior to PNP or PCI INTx devices. But this was ruled out in
-> the context of DT from Marc.
->
-> 2) Like the approach tried in this series, add support for deferred
-> probe in drivers. This will be invasive change requiring many drivers to
-> change like you pointed.
+> I propose to take the patch through Samsung SoC (me). See cover letter
+> for explanation.
+> ---
+>  .../bindings/hwinfo/samsung,exynos-chipid.yaml  | 17 ++++++++++++++---
+>  1 file changed, 14 insertions(+), 3 deletions(-)
 > 
-> I don't know which is less evil or if there is any other alternative
-> which I am not aware of.
-> 
-> Thomas/Marc, could you allow APLIC (and PLIC) irqchip drivers to use
-> core_initcall() for ACPI?
 
-I don't have a say about this anymore, so this is only a passing
-comment, which you are free to cast aside.
+Acked-by: Rob Herring <robh@kernel.org>
 
-My personal view is that if you need to rely on core_initcall() for a
-particular firmware interface, then your architecture will end-up
-being an unmaintainable ball of hacks, with conflicting requirements
-and increasingly diverging behaviours. Those who had the 'privilege'
-to deal with the 32bit ARM transition to DT will understand what I
-mean.
-
-Having to rely on initcalls can only mean two things:
-
-- you're missing crucial topology information that will eventually
-  bite you where it hurts, and you're better off going back to the
-  drawing board to fix it before any HW ships,
-
-- you're not making use of the kernel's dependency management
-  infrastructure, which is pretty sad. Yes, it is DT specific for now,
-  but nothing prevents you from improving it to make it grok another
-  firmware interface.
-
-But as I said, I don't have much skin in that game anymore.
-
-	M.
-
--- 
-Without deviation from the norm, progress is not possible.
