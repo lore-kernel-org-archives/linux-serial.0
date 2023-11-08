@@ -2,203 +2,187 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B82A9C4332F
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Nov 2023 09:53:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14FC4C41535
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Nov 2023 10:43:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343896AbjKHJxa (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Nov 2023 04:53:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36136 "EHLO
+        id S235585AbjKHKn7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Nov 2023 05:43:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231674AbjKHJx3 (ORCPT
+        with ESMTP id S229989AbjKHKn6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Nov 2023 04:53:29 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32C70D46
-        for <linux-serial@vger.kernel.org>; Wed,  8 Nov 2023 01:53:27 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id d2e1a72fcca58-6c396ef9a3dso3659638b3a.1
-        for <linux-serial@vger.kernel.org>; Wed, 08 Nov 2023 01:53:27 -0800 (PST)
+        Wed, 8 Nov 2023 05:43:58 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E1491723
+        for <linux-serial@vger.kernel.org>; Wed,  8 Nov 2023 02:43:56 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id 5b1f17b1804b1-4083ac51d8aso51147255e9.2
+        for <linux-serial@vger.kernel.org>; Wed, 08 Nov 2023 02:43:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1699437206; x=1700042006; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=juZI1n0aMz+KCog5r3XPutHhgq5o1lm8dusNtuYCGmE=;
-        b=l4+BwGgY2FKriVF/7CpzeLjOonahsX0UZ+iRlPfKa5SCMWP3uOmqqSvDaHQXXn97Nl
-         CaRsML0xSTtH4bN1IDXI1yeVyQRl8O0vFVZx0oVVL7f4wTYykEtD75oLJem13+2Pj46r
-         dE+B+f7R8+YlrjLV6Np5COFcnaVwXxSAZEEjDm/pwCulNSkBh4VogF8RucBzCftg1CqK
-         sd1E8gnivGkhxH9jYMz+VZbhnnThdzq9ssdHSLDhH94pXHWioa32JWxiWlJhRx0ls7/t
-         Lnxg3mput54c1cqplbmUFgOXLaaXlRyzH7+neGhNDUxqYiALdscsQQIHKXhvSIdktCn0
-         094A==
+        d=linaro.org; s=google; t=1699440235; x=1700045035; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=VTczEAqOVbvVARsgwQf+QqYx6Pwq1efdiOYWiIKMhjk=;
+        b=rdROhjws0/ICfjI1ewaE9rSOKrgp9O/V+UucX2YHu6XtDYgYjJexraF0QxdyqGEMvV
+         NI9D+yg28fNdaqsQkHCOoeZFcrnJiWCA2yVWICdmNHK/rnDC51Jl3Y+yLpK3nJapNHFA
+         wLrltqMv4A8u3klaS5I3S6Kcb5/cKWNKMw+kgg2lH9YE9xHIp6sKvE4p7dug72fNT9Ch
+         PdYD6nbk+TBK6S/xZPJAGZdOP/WHXVTOlV8sxPSesFydHWnOELMJiqCFWdukyiD8/GlF
+         JdBVdJy9ResoWu4L2eH7DN5kkXykn+aLE5Sn1cfUBTeN86PvADRQuSpJwdL0ukEmizBQ
+         fwEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699437206; x=1700042006;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=juZI1n0aMz+KCog5r3XPutHhgq5o1lm8dusNtuYCGmE=;
-        b=Ebl3ec/dst+zZgZztkc5iRF3qCCCnRf9kwoNFWp7zCF7j73Hsu54w8R2JxbqnhL18o
-         ssmug6r2LyeS/BVWC9OOEL8s9JvSyV+JasFzo2kSFdOoad+enRryBP0aRum1Zy34dczH
-         Ky/hRacnKIyvkIpOluoUBr4O61PtEWuRao9cD473bRk0Vqh6AbP6+uOtZA3sYG4BrNdd
-         lpykjrV7srIgXsNearz+KrjGOLYWtDe8RoXAccvwq4Pg5cTFTA6zx7nVqwxBkX8R7Rw8
-         dNooodoyeXZlypUrR+OSVsx/KRHWO+ZI5lV8IVHWb1x7rMjsareciwbrGkpOKxMjqlv1
-         IyZw==
-X-Gm-Message-State: AOJu0YzlnsrWAW28ZOPAEYw7kc7ZIg1yET4sIkd7Ria4X6zHaXsxeAy5
-        x9E6R/4b+y+8AOyPkybJ+SrhOQ==
-X-Google-Smtp-Source: AGHT+IEEgxtG4vAOOXAzU0cQ43q+y/GuzULUrpgSTtLmSEOIhXbF+HzsEiLo0Th7PmwROQ6HsMZIlg==
-X-Received: by 2002:a05:6a20:7495:b0:14e:43b0:5f99 with SMTP id p21-20020a056a20749500b0014e43b05f99mr1462760pzd.52.1699437206593;
-        Wed, 08 Nov 2023 01:53:26 -0800 (PST)
-Received: from sunil-laptop ([106.51.188.78])
-        by smtp.gmail.com with ESMTPSA id c24-20020a170902d91800b001c728609574sm1346631plz.6.2023.11.08.01.53.17
+        d=1e100.net; s=20230601; t=1699440235; x=1700045035;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=VTczEAqOVbvVARsgwQf+QqYx6Pwq1efdiOYWiIKMhjk=;
+        b=svQfqGWWz/orvRgvhrQBESGvSVJGCKjLHnG+1JKi8WxHfNT8+8DHrB3vtnh0mFVgeL
+         4pjgE1WhFixnf7YfG4QrorldF/qQ7CIxCZUrWrDCDKCTeNfhkYxlB8LfKDTv+H7nJSON
+         l2aoUn//hvw5iHsB6ogkeqm9Zj8Ial91mUjX7/qQ1NumR2peAUCQ6hNnAAWG+3VnanYT
+         VGuWb56sVTR4VuSra8yTH8YmFi/gy0F32KfFTwQqAxVIQ1Rtg9SRz3ZRgtm7S0HJlEuW
+         ypCGpzRsL3zcYXCRph2hgagXT/17xGpiU1eCNkCL3/+f6wsdQrmLnYNGYuFzxh3aClkB
+         rRfQ==
+X-Gm-Message-State: AOJu0Yx26XkCUub3ACEqwmIxGlsLU1YmdbB6xly94y8Roz+npZ6l8S1Q
+        TGjKoX/DR18whd0X2h1LN7iuJQ==
+X-Google-Smtp-Source: AGHT+IHiDWmBeuBOZUqxDCJkN9irswNWvo/qNXRb1omqiS2LAbu6ncxcqqv9pqzxYLbz6uacwStwug==
+X-Received: by 2002:a05:600c:5113:b0:405:336b:8307 with SMTP id o19-20020a05600c511300b00405336b8307mr1360908wms.7.1699440234966;
+        Wed, 08 Nov 2023 02:43:54 -0800 (PST)
+Received: from krzk-bin.. ([178.197.218.126])
+        by smtp.gmail.com with ESMTPSA id fj12-20020a05600c0c8c00b004094c5d92bdsm19377377wmb.31.2023.11.08.02.43.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Nov 2023 01:53:25 -0800 (PST)
-Date:   Wed, 8 Nov 2023 15:23:14 +0530
-From:   Sunil V L <sunilvl@ventanamicro.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Anup Patel <anup@brainfault.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
+        Wed, 08 Nov 2023 02:43:54 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Andi Shyti <andi.shyti@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lee Jones <lee@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Andrew Jones <ajones@ventanamicro.com>,
-        Atish Kumar Patra <atishp@rivosinc.com>,
-        Haibo Xu <haibo1.xu@intel.com>, Marc Zyngier <maz@kernel.org>
-Subject: Re: [RFC PATCH v2 06/21] RISC-V: Kconfig: Select deferred GSI probe
- for ACPI systems
-Message-ID: <ZUtailOcozI9xIou@sunil-laptop>
-References: <ZTuzJ1nsicZYp+uh@sunil-laptop>
- <20231106221606.GA264641@bhelgaas>
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaehoon Chung <jh80.chung@samsung.com>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-sound@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 00/17] dt-bindings: samsung: add specific compatibles for existing SoC
+Date:   Wed,  8 Nov 2023 11:43:26 +0100
+Message-Id: <20231108104343.24192-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231106221606.GA264641@bhelgaas>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Bjorn,
+Hi,
 
-On Mon, Nov 06, 2023 at 04:16:06PM -0600, Bjorn Helgaas wrote:
-> On Fri, Oct 27, 2023 at 06:25:03PM +0530, Sunil V L wrote:
-> > On Thu, Oct 26, 2023 at 12:04:08PM -0500, Bjorn Helgaas wrote:
-> > > On Thu, Oct 26, 2023 at 01:53:29AM +0530, Sunil V L wrote:
-> > > > On RISC-V platforms, apart from root interrupt controllers (which
-> > > > provide local interrupts and IPI), other interrupt controllers in the
-> > > > hierarchy are probed late. Enable this select this CONFIG option for
-> > > > RISC-V platforms so that device drivers which connect to deferred
-> > > > interrupt controllers can take appropriate action.
-> > > 
-> > > Quite a bit of this series seems related to the question of interrupt
-> > > controllers being probed "late".
-> > > 
-> > > I don't see anything specific about *how* late this might be, but from
-> > > the use of -EPROBE_DEFER in individual drivers (8250_pnp explicitly,
-> > > and acpi_register_gsi() and pnp_irq() and acpi_pci_irq_enable(), which
-> > > are called from driver .probe() paths) it seems like interrupt
-> > > controllers might be detected even after devices that use them.
-> > > 
-> > > That seems like a fairly invasive change to the driver probe flow.
-> > > If we really need to do that, I think it might merit a little more
-> > > background as justification since we haven't had to do it for any
-> > > other arch yet.
-> > 
-> > In RISC-V, the APLIC can be a converter from wired (GSI) to MSI interrupts.
-> > Hence, especially in this mode, it has to be a platform device to use
-> > device MSI domain. Also, according to Marc Zyngier there is no reason to
-> > probe interrupt controllers early apart from root controller. So, the
-> > device drivers which use wired interrupts need to be probed after APLIC.
-> > 
-> > The PNP devices and PCI INTx GSI links use either
-> > acpi_dev_resource_interrupt() (PNP) or acpi_register_gsi() directly
-> > (PCI). The approach taken here is to follow the example of
-> > acpi_irq_get() which is enhanced to return EPROBE_DEFER and several
-> > platform device drivers which use platform_get_irq() seem to be handling
-> > this already.
-> 
-> This series (patch 04/21 "ACPI: irq: Add support for deferred probe in
-> acpi_register_gsi()" [1]) makes acpi_register_gsi() return
-> -EPROBE_DEFER, which percolates up through pci_enable_device().
-> 
-> Maybe that's ok, but this affects *all* PCI drivers, and it's a new
-> case that did not occur before.  Many drivers emit warning or error
-> messages for any pci_enable_device() failure, which you probably don't
-> want in this case, since -EPROBE_DEFER is not really a "failure";
-> IIUC, it just means "probe again later."
->
-Yeah, I think all the drivers which need to be supported on RISC-V
-ACPI based systems will have to support deferred probe with this scheme.
+Merging
+=======
+I propose to take entire patchset through my tree (Samsung SoC), because:
+1. Next cycle two new SoCs will be coming (Google GS101 and ExynosAutov920), so
+   they will touch the same lines in some of the DT bindings (not all, though).
+   It is reasonable for me to take the bindings for the new SoCs, to have clean
+   `make dtbs_check` on the new DTS.
+2. Having it together helps me to have clean `make dtbs_check` within my tree
+   on the existing DTS.
+3. No drivers are affected by this change.
+4. I plan to do the same for Tesla FSD and Exynos ARM32 SoCs, thus expect
+   follow up patchsets.
 
-> > Using ResourceSource dependency (mbigen uses) in the namespace as part of
-> > Extended Interrupt Descriptor will not ensure the order since PNP/INTx
-> > GSI devices don't work with that.
-> 
-> Are these PNP/INTx GSI devices described in ACPI?  In the namespace?
-> Or in a static table?
-> 
-Yes, these are standard devices in the namespace. For ex: PNP0501(16550)
-or PNP0C0F (PCI interrupt link devices) are in the namespace.
+If folks agree, please kindly Ack the patches.
 
-> > Is there any other better way to create dependency between IO devices
-> > and the interrupt controllers when interrupt controller itself is a
-> > platform device? While using core_initcall() for interrupt controllers
-> > seem to work which forces the interrupt controller to be probed first,
-> > Marc is not in favor of that approach since it is fragile.
-> 
-> I guess PCI interrupts from the PCI host bridges (PNP0A03 devices)
-> feed into the APLIC?  And APLIC is described via MADT?  Based on this
-> series, it looks like this:
-> 
->     acpi_init
->   +   acpi_riscv_init
->   +     riscv_acpi_aplic_platform_init
->   +       acpi_table_parse_madt(ACPI_MADT_TYPE_APLIC, aplic_parse_madt, 0)
->       acpi_scan_init
->         acpi_pci_root_init
->         acpi_pci_link_init
-> 	acpi_bus_scan             # add PCI host bridges, etc
-> 
-> If that's the sequence, it looks like aplic_parse_madt() should be
-> called before the PCI host bridges are added.
-> 
-> Or maybe this isn't how the APLICs are enumerated?
-> 
-That's partly correct. APLIC platform devices are created prior to PCI
-host bridges added. But the actual APLIC driver which creates the
-irqdomain will be probed as a regular platform driver for the APLIC
-device. The platform driver probe will happen using DD framework and
-devices don't have any dependency on APLIC which can cause device probe
-prior to APLIC driver probe.
+Description
+===========
+Samsung Exynos SoCs reuse several devices from older designs, thus historically
+we kept the old (block's) compatible only.  This works fine and there is no bug
+here, however guidelines expressed in
+Documentation/devicetree/bindings/writing-bindings.rst state that:
+1. Compatibles should be specific.
+2. We should add new compatibles in case of bugs or features.
 
-DT supports fw_devlink framework which makes it easier for IRQ devices
-to use regular platform drivers and produces-consumers are probed in the
-order without requiring drivers to do deferred probe. But I don't see
-that supported for ACPI framework.  Also, the way PNP devices get added
-there is an assumption that interrupt controller is already setup fully.
+Add compatibles specific to each SoC in front of all old-SoC-like compatibles.
+This will also help reviews of new code using existing DTS as template.  No
+functional impact on Linux drivers behavior.
 
-With this new use case in RISC-V, here are the alternatives I am aware of.
+Future
+======
+If reasonable, I will do similar work for Tesla FSD and ARMv7/ARM32 Exynos
+bindings and DTS.
 
-1) Use core_initcall() in the APLIC drivers which makes APLIC driver to
-be probed prior to PNP or PCI INTx devices. But this was ruled out in
-the context of DT from Marc.
+Best regards,
+Krzysztof
 
-2) Like the approach tried in this series, add support for deferred
-probe in drivers. This will be invasive change requiring many drivers to
-change like you pointed.
+Krzysztof Kozlowski (17):
+  dt-bindings: hwinfo: samsung,exynos-chipid: add specific compatibles
+    for existing SoC
+  dt-bindings: i2c: exynos5: add specific compatibles for existing SoC
+  dt-bindings: i2c: samsung,s3c2410-i2c: add specific compatibles for
+    existing SoC
+  dt-bindings: mmc: samsung,exynos-dw-mshc: add specific compatibles for
+    existing SoC
+  dt-bindings: pinctrl: samsung: add specific compatibles for existing
+    SoC
+  dt-bindings: rtc: s3c-rtc: add specific compatibles for existing SoC
+  dt-bindings: serial: samsung: add specific compatibles for existing
+    SoC
+  dt-bindings: samsung: exynos-pmu: add specific compatibles for
+    existing SoC
+  dt-bindings: gpu: arm,mali-midgard: add specific compatibles for
+    existing Exynos SoC
+  dt-bindings: iio: samsung,exynos-adc: add specific compatibles for
+    existing SoC
+  ASoC: dt-bindings: samsung-i2s: add specific compatibles for existing
+    SoC
+  dt-bindings: pwm: samsung: add specific compatibles for existing SoC
+  arm64: dts: exynos5433: add specific compatibles to several blocks
+  arm64: dts: exynos7: add specific compatibles to several blocks
+  arm64: dts: exynos7885: add specific compatibles to several blocks
+  arm64: dts: exynos850: add specific compatibles to several blocks
+  arm64: dts: exynosautov9: add specific compatibles to several blocks
 
-I don't know which is less evil or if there is any other alternative
-which I am not aware of.
+ .../bindings/gpu/arm,mali-midgard.yaml        |  5 ++
+ .../hwinfo/samsung,exynos-chipid.yaml         | 17 +++++-
+ .../devicetree/bindings/i2c/i2c-exynos5.yaml  | 10 +++-
+ .../bindings/i2c/samsung,s3c2410-i2c.yaml     | 22 ++++---
+ .../bindings/iio/adc/samsung,exynos-adc.yaml  | 29 +++++----
+ .../mfd/samsung,exynos5433-lpass.yaml         |  2 +-
+ .../bindings/mmc/samsung,exynos-dw-mshc.yaml  | 25 +++++---
+ .../samsung,pinctrl-wakeup-interrupt.yaml     | 24 +++++---
+ .../bindings/pinctrl/samsung,pinctrl.yaml     |  3 +-
+ .../devicetree/bindings/pwm/pwm-samsung.yaml  |  2 +
+ .../devicetree/bindings/rtc/s3c-rtc.yaml      |  5 ++
+ .../bindings/serial/samsung_uart.yaml         | 14 ++++-
+ .../bindings/soc/samsung/exynos-pmu.yaml      |  6 ++
+ .../bindings/soc/samsung/exynos-usi.yaml      |  2 +-
+ .../bindings/sound/samsung-i2s.yaml           | 19 +++---
+ arch/arm64/boot/dts/exynos/exynos5433.dtsi    | 60 ++++++++++++-------
+ arch/arm64/boot/dts/exynos/exynos7.dtsi       | 18 +++---
+ arch/arm64/boot/dts/exynos/exynos7885.dtsi    | 45 +++++++++-----
+ arch/arm64/boot/dts/exynos/exynos850.dtsi     | 34 ++++++-----
+ arch/arm64/boot/dts/exynos/exynosautov9.dtsi  |  6 +-
+ 20 files changed, 233 insertions(+), 115 deletions(-)
 
-Thomas/Marc, could you allow APLIC (and PLIC) irqchip drivers to use
-core_initcall() for ACPI?
+-- 
+2.34.1
 
-Thanks,
-Sunil
