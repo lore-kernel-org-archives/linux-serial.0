@@ -2,55 +2,55 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5C14C04A92
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Nov 2023 10:45:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC42AC4167D
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Nov 2023 10:45:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344594AbjKHKpW (ORCPT
+        id S1344662AbjKHKpi (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Nov 2023 05:45:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37578 "EHLO
+        Wed, 8 Nov 2023 05:45:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235592AbjKHKow (ORCPT
+        with ESMTP id S1344466AbjKHKpE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Nov 2023 05:44:52 -0500
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7660C2125
-        for <linux-serial@vger.kernel.org>; Wed,  8 Nov 2023 02:44:23 -0800 (PST)
-Received: by mail-lj1-x233.google.com with SMTP id 38308e7fff4ca-2c514cbbe7eso94769061fa.1
-        for <linux-serial@vger.kernel.org>; Wed, 08 Nov 2023 02:44:23 -0800 (PST)
+        Wed, 8 Nov 2023 05:45:04 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11FEF2592
+        for <linux-serial@vger.kernel.org>; Wed,  8 Nov 2023 02:44:27 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id 5b1f17b1804b1-4084de32db5so57281335e9.0
+        for <linux-serial@vger.kernel.org>; Wed, 08 Nov 2023 02:44:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1699440262; x=1700045062; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1699440265; x=1700045065; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=932+POzuiCpVd1FMO8emES7304xq1CZHsFhbsNym7D8=;
-        b=EhaNtd0bfrAm6px/3RYUsAwCR4nSvu+SAtQY7zQxmXwMSDX3RxmwPOJxfDWG+rHUtq
-         ZR0WGiK5hakg8RqL7b1HXhHvryvlQrjQMmdE7HM9F3hx4jjJpMHfuuD7wbjN4OxPv1JW
-         VBxOYeByEVZOUu+DLYfGVEwqXx/Wvx9rEo1SEXNC3xQUlGZfnwfWhI0AsoZJUraZrt0Q
-         Q3zTvDhpnSP9qeC27LQ7+8HgM+LBMMjoDpLH7xCbf7x6+NZmboPp5VC6ilUHP7VDlr9h
-         bFTWvu7Jh07B5vQBaZ5YrDrLU3OX2QfVKO/K0jOm+uMx3qscz7WuCgoFRGyqWsR/oNyf
-         K6lQ==
+        bh=PV5diolHzkDYNZO8WufyA3F1OzLH/Kn/j0r7E3RxmpI=;
+        b=q/fFqIm1pNWVw9RWz0hbxrB8zEjHFyWAKjlSgQkEKbcncTumbpZOBQQjgsLCqeB9c2
+         TYScirxbqaQUEk4FyO/Ks0dAaRAy5TzlbXdoDJ6IVa331XbRyxRhp1Ovm+r+FMq1G9Ij
+         zf5nwCYKSu+EZmS+Rs2A56cUEvdpopnia26x/aEuSm8Pn0rFXM0GhRyR1JwR4DEOl5g1
+         elzgD1tNrCv99tR7Y1/YCOAOSO/0h9PrS6g25YzPImrF2kvQQ9XDXuVWrdb0s5+PvSHf
+         7kNC+eNgqcm8ctHaQ64i5dbvCyYRsi92XdRVJN5zfjoEPYQnjyOS0wTZ2Sn3n40Rd0AQ
+         MvOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699440262; x=1700045062;
+        d=1e100.net; s=20230601; t=1699440265; x=1700045065;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=932+POzuiCpVd1FMO8emES7304xq1CZHsFhbsNym7D8=;
-        b=Ytv7JntA/5PYM9/+eM7vJxO92wrXpPhn3UGFkk9L0w75hio4M146cZF9SaSd7P69QQ
-         lohipSpan6819pAx1kU1M1EU46xpwOKHVRzeCMT6L1ixrlbqDzAGEfIWOSnhorc2A6Q4
-         z314BUJesd+6P68A+ssQs55WVEUAg1BIH3OTLFUHgKy4l3a8obCSowgAJ6vhfAtSHvrw
-         Jb1t56jjy4CXeo8/tmOoPLYwAa0NwBTpDKV2d7rXGLsRp82pzzH7Diwu0ESh1jwlzvVE
-         4p6iUccZnnGeRNVvYEaleH953SIcnq9zSpLFNSvEke6iCg/+X71K+Ihe3jxyD+TYTlcZ
-         sXcw==
-X-Gm-Message-State: AOJu0YydPnp4JrxyZlpqnIGV34ltgbN+Pf4TV3dtNT+9AIhuoIiLTRa+
-        aUvZHDKDSouyWgILUWIq7IDUMQ==
-X-Google-Smtp-Source: AGHT+IGCpSGI0CR0667rdoPAw+/9BwGIOQ5vf5WLNiqXBsw+h3xPKE36aRvV/bSi7NnLY3zOJHYzOg==
-X-Received: by 2002:a05:651c:504:b0:2c5:14e3:f1b8 with SMTP id o4-20020a05651c050400b002c514e3f1b8mr1507701ljp.7.1699440261813;
-        Wed, 08 Nov 2023 02:44:21 -0800 (PST)
+        bh=PV5diolHzkDYNZO8WufyA3F1OzLH/Kn/j0r7E3RxmpI=;
+        b=cFVsE4c8e0UdZvOT7U9wRYGf/+fpewodcEAEbz7VoU5MnDRMJwLuFuA2etr+jMh32c
+         xeEO6WUQ+XRHHfMkPfHHUd4zvj0nKETajeb4jbzvDfpTEqZAt+RqxrX8+igUHA180Gl8
+         Tgk0u+pibjhDBrSC8yOqlkKSreq7HbxyJyUyAMjbeAEIiLxmA+uMjqkxlKNvfml7YXyo
+         M9vX90QwA+SLqC3rO23JDO3huUNHRgtc4aqjRT7C+f4Zc4GUJm/4dVcVhe2w6P02wlrn
+         X9YeZl8bmTbxugP8df2efBDK9zRMiY56lOPRth21GLea2b0zAqeGtf6/RFAkvDIwDY2e
+         sKRQ==
+X-Gm-Message-State: AOJu0YxfrqxSZz9wb/URDwg/qMCnriIrmmjQuswvqoNuNLPcTVYgpyvW
+        8ywZvWDIlCaB6iblLaNdc9tF1g==
+X-Google-Smtp-Source: AGHT+IE6LA57XGwizIDEYldEFclmufoWGtfeboQZQs5v6tX5jMVi5UnfB4CCXBaPubn6aW9Tzqj6ag==
+X-Received: by 2002:a05:600c:1f8f:b0:406:81e9:ad0c with SMTP id je15-20020a05600c1f8f00b0040681e9ad0cmr1347385wmb.41.1699440265563;
+        Wed, 08 Nov 2023 02:44:25 -0800 (PST)
 Received: from krzk-bin.. ([178.197.218.126])
-        by smtp.gmail.com with ESMTPSA id fj12-20020a05600c0c8c00b004094c5d92bdsm19377377wmb.31.2023.11.08.02.44.18
+        by smtp.gmail.com with ESMTPSA id fj12-20020a05600c0c8c00b004094c5d92bdsm19377377wmb.31.2023.11.08.02.44.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Nov 2023 02:44:21 -0800 (PST)
+        Wed, 08 Nov 2023 02:44:25 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
         Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
@@ -87,9 +87,9 @@ To:     David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
         linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
         alsa-devel@alsa-project.org, linux-sound@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 07/17] dt-bindings: serial: samsung: add specific compatibles for existing SoC
-Date:   Wed,  8 Nov 2023 11:43:33 +0100
-Message-Id: <20231108104343.24192-8-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 08/17] dt-bindings: samsung: exynos-pmu: add specific compatibles for existing SoC
+Date:   Wed,  8 Nov 2023 11:43:34 +0100
+Message-Id: <20231108104343.24192-9-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231108104343.24192-1-krzysztof.kozlowski@linaro.org>
 References: <20231108104343.24192-1-krzysztof.kozlowski@linaro.org>
@@ -109,9 +109,6 @@ Documentation/devicetree/bindings/writing-bindings.rst state that:
 Add compatibles specific to each SoC in front of all old-SoC-like
 compatibles.
 
-Re-shuffle also the entries in compatibles, so the one-compatible-enum
-is the first.
-
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 ---
@@ -119,41 +116,26 @@ Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 I propose to take the patch through Samsung SoC (me). See cover letter
 for explanation.
 ---
- .../devicetree/bindings/serial/samsung_uart.yaml   | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ .../devicetree/bindings/soc/samsung/exynos-pmu.yaml         | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-index ac60ab1e35e3..0d0215b23ab7 100644
---- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-@@ -18,9 +18,6 @@ description: |+
- properties:
-   compatible:
-     oneOf:
--      - items:
--          - const: samsung,exynosautov9-uart
--          - const: samsung,exynos850-uart
-       - enum:
-           - apple,s5l-uart
-           - axis,artpec8-uart
-@@ -29,6 +26,17 @@ properties:
-           - samsung,exynos4210-uart
-           - samsung,exynos5433-uart
-           - samsung,exynos850-uart
+diff --git a/Documentation/devicetree/bindings/soc/samsung/exynos-pmu.yaml b/Documentation/devicetree/bindings/soc/samsung/exynos-pmu.yaml
+index e1d716df5dfa..6492e92586d9 100644
+--- a/Documentation/devicetree/bindings/soc/samsung/exynos-pmu.yaml
++++ b/Documentation/devicetree/bindings/soc/samsung/exynos-pmu.yaml
+@@ -48,6 +48,12 @@ properties:
+               - samsung,exynos850-pmu
+               - samsung-s5pv210-pmu
+           - const: syscon
 +      - items:
 +          - enum:
-+              - samsung,exynos7-uart
-+          - const: samsung,exynos4210-uart
-+      - items:
-+          - enum:
-+              - samsung,exynos7885-uart
-+          - const: samsung,exynos5433-uart
-+      - items:
-+          - const: samsung,exynosautov9-uart
-+          - const: samsung,exynos850-uart
- 
-   reg:
-     maxItems: 1
++              - samsung,exynos7885-pmu
++              - samsung,exynosautov9-pmu
++          - const: samsung,exynos7-pmu
++          - const: syscon
+       - items:
+           - enum:
+               - samsung,exynos3250-pmu
 -- 
 2.34.1
 
