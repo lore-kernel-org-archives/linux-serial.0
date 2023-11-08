@@ -2,301 +2,135 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D381C4167B
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Nov 2023 17:34:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B2EC4167B
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Nov 2023 18:37:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231926AbjKHReC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Nov 2023 12:34:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50088 "EHLO
+        id S229705AbjKHShJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Nov 2023 13:37:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229558AbjKHReB (ORCPT
+        with ESMTP id S229555AbjKHShI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Nov 2023 12:34:01 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7971FC8
-        for <linux-serial@vger.kernel.org>; Wed,  8 Nov 2023 09:33:59 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id 98e67ed59e1d1-2809fb0027cso5504900a91.2
-        for <linux-serial@vger.kernel.org>; Wed, 08 Nov 2023 09:33:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1699464838; x=1700069638; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sAWSOoeAjfBbJekhTKUv9QwV6bzlMliXHO1btit3MQo=;
-        b=PAs55n9UN0Tt4azZuzlN/v4fOpAQkVUhX1VuQsYZhU0jHvGaVLULti+ZZd2hhS1CPg
-         lcJPvfGofMpQ8x8KjEyqQ37WRb0aeqwbmSt7r8bLqRFOxeKkAxsZiPgH2AVJn6Pfnfnf
-         ROZxj/y8NDoH0G/VUip3RR9Jqnc2sOyGKuQhcfj7mF/DVB9ybWbBzx9rQG/Nj9GxVExg
-         N8U4TR5MAvenuZMFnJOsSS3CBJX7ob6xMg7AV4QDqMEtUZbKLOfMf2Onc/Zpmv2dOcr9
-         iYOEJGKcz897YYDG3ynCmFFDcmU3euYGFCU5QOi6XwttWgO46PIBpu4HalMhZ5RdSYgw
-         jJeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699464838; x=1700069638;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=sAWSOoeAjfBbJekhTKUv9QwV6bzlMliXHO1btit3MQo=;
-        b=syHD6VhPy+77cyk2kN1jCzZJ2YdiWFT1P+h7jmHBHDMys48KO8XxYcddzTXD3yrH2P
-         NQJlr20iLPm3b6VM0aUqfvDfjpR2ngW2oVgztx17YvAIJ1ohvBg8C49QCXjGZXFeJ6+4
-         FWdLEDkl+y3YGNYCMPUZnUCXVrCppK5xRu8tQyBK6s37f7xCNz9h8W6vHJY0i7uvfHDE
-         I7FO+La6FImQ/O0AMQbk5DjOSmNSO2Mg0ysALHx2Qxnt3WgqKU2uelpIMPoDRsbOj9tN
-         pejGYg25VCx3cMsS3TUEUVDptac8j5IxyO5rNGxI7odJdQkG3JYdXFC0sQ6VPksE7YEX
-         vLJw==
-X-Gm-Message-State: AOJu0YwStVlyaubk0zRcV437Ya+UamZYhOMRgPiFqMrfF5iXe9ZvLUhv
-        AmlzjwLbIMgStXq/Avu9GI//u9hZ3848wgkIh5/ErQ==
-X-Google-Smtp-Source: AGHT+IGY4VBAJ38xlUtcmXFmIEhynykPBn3dfo+SVZRmQxxurhZcoKtbYoXN1XDKnlHvImSQIH0q75kjXSAbWt8IHAw=
-X-Received: by 2002:a17:90a:6888:b0:281:da1:4b96 with SMTP id
- a8-20020a17090a688800b002810da14b96mr2347498pjd.22.1699464838284; Wed, 08 Nov
- 2023 09:33:58 -0800 (PST)
-MIME-Version: 1.0
-References: <20231011184823.443959-1-peter.griffin@linaro.org>
- <20231011184823.443959-11-peter.griffin@linaro.org> <aae4e6cd-dcfc-442d-9ed7-d5a73c419ba8@kernel.org>
- <CADrjBPrUsSigThoLU9thmZiaG4690B9-BcZYrBn44K9Fc8z3vg@mail.gmail.com>
-In-Reply-To: <CADrjBPrUsSigThoLU9thmZiaG4690B9-BcZYrBn44K9Fc8z3vg@mail.gmail.com>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Wed, 8 Nov 2023 11:33:46 -0600
-Message-ID: <CAPLW+4m+n-U4cAkJZTeCsoE_e6r1j8srYmVjSLawPWwHi6SEAw@mail.gmail.com>
-Subject: Re: [PATCH v3 10/20] clk: samsung: clk-gs101: Add cmu_top registers,
- plls, mux and gates
-To:     Peter Griffin <peter.griffin@linaro.org>
-Cc:     Chanwoo Choi <chanwoo@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
-        conor+dt@kernel.org, sboyd@kernel.org, tomasz.figa@gmail.com,
-        s.nawrocki@samsung.com, linus.walleij@linaro.org,
-        wim@linux-watchdog.org, linux@roeck-us.net,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        olof@lixom.net, gregkh@linuxfoundation.org, cw00.choi@samsung.com,
-        tudor.ambarus@linaro.org, andre.draszik@linaro.org,
-        saravanak@google.com, willmcvicker@google.com, soc@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        kernel-team@android.com, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 8 Nov 2023 13:37:08 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A9C62105;
+        Wed,  8 Nov 2023 10:37:06 -0800 (PST)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2E37C433C7;
+        Wed,  8 Nov 2023 18:37:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1699468625;
+        bh=EoZDLxwmLFbEEIkyOEmztWMHpHCSGiYEo4ayX1PT9GY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GPHv4DtiTNP/0xV1Zk9vqsAbNJUeKn0ZJKyBIpObozF5wckFlaJGMe4CNBfdiOI8d
+         gFRKV7FHCWQYH9IN+bD+8yBXzmTkcCNIkd7ietT4ZSPSBAgDkVqh4s6HVLzl+zmRRc
+         HhYwTYSI0dS7lXRzfwNnkZE19FBS/IVOt7h385+r+XZyWMYGXr2Z+bDlLLp/FjclZ0
+         94Rqnp7IPuCKVgysW/jZttyZQGjUUQJsHtmuOSZpUG4YoOsvs7s/LtgntArPAEj6I+
+         w9kLmzAcyhCLPFYdnwf9g4iudvMu0qn4Gb8KHiTb7Z4HypxrLZl2z2Ij/lL2k4hm3X
+         dzhS2/GBDPGGw==
+Received: from [185.201.63.253] (helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1r0nQD-00BW1k-GG;
+        Wed, 08 Nov 2023 18:37:02 +0000
+Date:   Wed, 08 Nov 2023 18:36:13 +0000
+Message-ID: <87leb85bz6.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Sunil V L <sunilvl@ventanamicro.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Anup Patel <anup@brainfault.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Andrew Jones <ajones@ventanamicro.com>,
+        Atish Kumar Patra <atishp@rivosinc.com>,
+        Haibo Xu <haibo1.xu@intel.com>
+Subject: Re: [RFC PATCH v2 06/21] RISC-V: Kconfig: Select deferred GSI probe for ACPI systems
+In-Reply-To: <ZUtailOcozI9xIou@sunil-laptop>
+References: <ZTuzJ1nsicZYp+uh@sunil-laptop>
+        <20231106221606.GA264641@bhelgaas>
+        <ZUtailOcozI9xIou@sunil-laptop>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/28.2
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.201.63.253
+X-SA-Exim-Rcpt-To: sunilvl@ventanamicro.com, helgaas@kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, catalin.marinas@arm.com, will@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu, rafael@kernel.org, lenb@kernel.org, bhelgaas@google.com, anup@brainfault.org, tglx@linutronix.de, gregkh@linuxfoundation.org, jirislaby@kernel.org, conor.dooley@microchip.com, ajones@ventanamicro.com, atishp@rivosinc.com, haibo1.xu@intel.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 7, 2023 at 7:57=E2=80=AFAM Peter Griffin <peter.griffin@linaro.=
-org> wrote:
+On Wed, 08 Nov 2023 09:53:14 +0000,
+Sunil V L <sunilvl@ventanamicro.com> wrote:
+> 
+> That's partly correct. APLIC platform devices are created prior to PCI
+> host bridges added. But the actual APLIC driver which creates the
+> irqdomain will be probed as a regular platform driver for the APLIC
+> device. The platform driver probe will happen using DD framework and
+> devices don't have any dependency on APLIC which can cause device probe
+> prior to APLIC driver probe.
+> 
+> DT supports fw_devlink framework which makes it easier for IRQ devices
+> to use regular platform drivers and produces-consumers are probed in the
+> order without requiring drivers to do deferred probe. But I don't see
+> that supported for ACPI framework.  Also, the way PNP devices get added
+> there is an assumption that interrupt controller is already setup fully.
+> 
+> With this new use case in RISC-V, here are the alternatives I am aware of.
+> 
+> 1) Use core_initcall() in the APLIC drivers which makes APLIC driver to
+> be probed prior to PNP or PCI INTx devices. But this was ruled out in
+> the context of DT from Marc.
 >
-> Hi Chanwoo,
->
-> Thanks for your review!
->
-> On Wed, 18 Oct 2023 at 17:51, Chanwoo Choi <chanwoo@kernel.org> wrote:
-> >
-> > Hi Peter,
-> >
-> > On 23. 10. 12. 03:48, Peter Griffin wrote:
-> > > CMU_TOP is the top level clock management unit which contains PLLs, m=
-uxes
-> > > and gates that feed the other clock management units.
-> > >
-> > > Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
-> > > ---
-> > >  drivers/clk/samsung/Kconfig     |    9 +
-> > >  drivers/clk/samsung/Makefile    |    2 +
-> > >  drivers/clk/samsung/clk-gs101.c | 1551 +++++++++++++++++++++++++++++=
-++
-> > >  3 files changed, 1562 insertions(+)
-> > >  create mode 100644 drivers/clk/samsung/clk-gs101.c
-> > >
-> > > diff --git a/drivers/clk/samsung/Kconfig b/drivers/clk/samsung/Kconfi=
-g
-> > > index 76a494e95027..14362ec9c543 100644
-> > > --- a/drivers/clk/samsung/Kconfig
-> > > +++ b/drivers/clk/samsung/Kconfig
-> > > @@ -12,6 +12,7 @@ config COMMON_CLK_SAMSUNG
-> > >       select EXYNOS_5410_COMMON_CLK if ARM && SOC_EXYNOS5410
-> > >       select EXYNOS_5420_COMMON_CLK if ARM && SOC_EXYNOS5420
-> > >       select EXYNOS_ARM64_COMMON_CLK if ARM64 && ARCH_EXYNOS
-> > > +     select GOOGLE_GS101_COMMON_CLK if ARM64 && ARCH_GOOGLE_TENSOR
-> > >       select TESLA_FSD_COMMON_CLK if ARM64 && ARCH_TESLA_FSD
-> > >
-> > >  config S3C64XX_COMMON_CLK
-> > > @@ -95,6 +96,14 @@ config EXYNOS_CLKOUT
-> > >         status of the certains clocks from SoC, but it could also be =
-tied to
-> > >         other devices as an input clock.
-> > >
-> > > +config GOOGLE_GS101_COMMON_CLK
-> > > +     bool "Google gs101 clock controller support" if COMPILE_TEST
-> > > +     depends on COMMON_CLK_SAMSUNG
-> > > +     depends on EXYNOS_ARM64_COMMON_CLK
-> > > +     help
-> > > +       Support for the clock controller present on the Google gs101 =
-SoC.
-> > > +       Choose Y here only if you build for this SoC.
-> > > +
-> >
-> > (snip)
-> >
-> > > +
-> > > +/* gs101 */
-> > > +static const struct samsung_mux_clock cmu_top_mux_clks[] __initconst=
- =3D {
-> > > +     /* CMU_TOP_PURECLKCOMP */
-> > > +     MUX(CLK_MOUT_SHARED0_PLL, "mout_shared0_pll", mout_shared0_pll_=
-p,
-> > > +         PLL_CON0_PLL_SHARED0, 4, 1),
-> > > +     MUX(CLK_MOUT_SHARED1_PLL, "mout_shared1_pll", mout_shared1_pll_=
-p,
-> > > +         PLL_CON0_PLL_SHARED1, 4, 1),
-> > > +     MUX(CLK_MOUT_SHARED2_PLL, "mout_shared2_pll", mout_shared2_pll_=
-p,
-> > > +         PLL_CON0_PLL_SHARED2, 4, 1),
-> > > +     MUX(CLK_MOUT_SHARED3_PLL, "mout_shared3_pll", mout_shared3_pll_=
-p,
-> > > +         PLL_CON0_PLL_SHARED3, 4, 1),
-> > > +     MUX(CLK_MOUT_SPARE_PLL, "mout_spare_pll", mout_spare_pll_p,
-> > > +         PLL_CON0_PLL_SPARE, 4, 1),
-> > > +
-> > > +     /* BUS0 */
-> > > +     MUX(CLK_MOUT_BUS0_BUS, "mout_cmu_bus0_bus", mout_cmu_bus0_bus_p=
-,
-> > > +         CLK_CON_MUX_MUX_CLKCMU_BUS0_BUS, 0, 2),
-> > > +     MUX(CLK_MOUT_CMU_BOOST, "mout_cmu_boost", mout_cmu_cmu_boost_p,
-> >
-> > In order to keep the consistent naming style,
-> > I think that need to change from 'mout_cmu_boost' to 'mout_cmu_cmu_boos=
-t'.
->
-> Yes, that's a good point, and a good spot! Will fix it in v4.
->
+> 2) Like the approach tried in this series, add support for deferred
+> probe in drivers. This will be invasive change requiring many drivers to
+> change like you pointed.
+> 
+> I don't know which is less evil or if there is any other alternative
+> which I am not aware of.
+> 
+> Thomas/Marc, could you allow APLIC (and PLIC) irqchip drivers to use
+> core_initcall() for ACPI?
 
-Why do we need cmu_cmu part at all? From the look of it, renaming all
-*_cmu_cmu_* clocks to just cmu wouldn't cause any naming conflicts. So
-I don't see any benefit of double cmu prefix really.
+I don't have a say about this anymore, so this is only a passing
+comment, which you are free to cast aside.
 
-> >
-> > > +         CLK_CON_MUX_MUX_CLKCMU_CMU_BOOST, 0, 2),
-> > > +
-> > > +     /* BUS1 */
-> > > +     MUX(CLK_MOUT_BUS1_BUS, "mout_cmu_bus1_bus", mout_cmu_bus1_bus_p=
-,
-> > > +         CLK_CON_MUX_MUX_CLKCMU_BUS1_BUS, 0, 2),
-> > > +
-> > > +     /* BUS2 */
-> > > +     MUX(CLK_MOUT_BUS2_BUS, "mout_cmu_bus2_bus", mout_cmu_bus2_bus_p=
-,
-> > > +         CLK_CON_MUX_MUX_CLKCMU_BUS2_BUS, 0, 2),
-> > > +
-> > > +     /* CORE */
-> > > +     MUX(CLK_MOUT_CORE_BUS, "mout_cmu_core_bus", mout_cmu_core_bus_p=
-,
-> > > +         CLK_CON_MUX_MUX_CLKCMU_CORE_BUS, 0, 2),
-> > > +
-> > > +     /* EH */
-> > > +     MUX(CLK_MOUT_EH_BUS, "mout_cmu_eh_bus", mout_cmu_eh_bus_p,
-> > > +         CLK_CON_MUX_MUX_CLKCMU_CORE_BUS, 0, 2),
-> >
-> > 'mout_cmu_core_bus' and 'mout_cmu_eh_bus' uses the same register/shift/=
-width information.
-> > I think it should be modified by changing the regiter or changing the s=
-hift/width information.
->
-> It should be using the CLK_CON_MUX_MUX_CLKCMU_EH_BUS register.
-> Will fix it in v4.
->
-> >
-> > > +
-> > > +     /* CPUCL{0,1,2,} */
-> > > +     MUX(CLK_MOUT_CPUCL2_SWITCH, "mout_cmu_cpucl2_switch", mout_cmu_=
-cpucl2_switch_p,
-> > > +         CLK_CON_MUX_MUX_CLKCMU_CPUCL2_SWITCH, 0, 2),
-> > > +
-> > > +     MUX(CLK_MOUT_CPUCL1_SWITCH, "mout_cmu_cpucl1_switch", mout_cmu_=
-cpucl1_switch_p,
-> > > +         CLK_CON_MUX_MUX_CLKCMU_CPUCL1_SWITCH, 0, 2),
-> > > +
-> > > +     MUX(CLK_MOUT_CPUCL0_SWITCH, "mout_cmu_cpucl0_switch", mout_cmu_=
-cpucl0_switch_p,
-> > > +         CLK_CON_MUX_MUX_CLKCMU_CPUCL0_SWITCH, 0, 2),
-> > > +
-> > > +     MUX(CLK_MOUT_CPUCL0_DBG, "mout_cmu_cpucl0_dbg", mout_cmu_cpucl0=
-_dbg_p,
-> > > +         CLK_CON_DIV_CLKCMU_CPUCL0_DBG, 0, 2),
-> > > +
-> > > +     MUX(CLK_MOUT_CMU_HPM, "mout_cmu_hpm", mout_cmu_hpm_p,
-> > > +         CLK_CON_MUX_MUX_CLKCMU_HPM, 0, 2),
-> > >
-> >
-> > (snip)
-> >
-> > > +     /* PDP */
-> > > +     MUX(CLK_MOUT_PDP_BUS, "mout_cmu_pdp_bus", mout_cmu_pdp_bus_p,
-> > > +         CLK_CON_MUX_MUX_CLKCMU_PDP_BUS, 0, 2),
-> > > +
-> > > +     /* PDP */
-> > > +     MUX(CLK_MOUT_PDP_VRA, "mout_cmu_pdp_vra", mout_cmu_pdp_vra_p,
-> > > +         CLK_CON_MUX_MUX_CLKCMU_PDP_VRA, 0, 2),
-> > > +
-> > > +     /* IPP */
-> > > +     MUX(CLK_MOUT_IPP_BUS, "mout_cmu_ipp_bus", mout_cmu_ipp_bus_p,
-> > > +         CLK_CON_MUX_MUX_CLKCMU_IPP_BUS, 0, 2),
-> > > +
-> > > +     /* G3AA */
-> > > +     MUX(CLK_MOUT_G3AA, "mout_cmu_g3aa", mout_cmu_g3aa_p,
-> > > +         CLK_CON_MUX_MUX_CLKCMU_G3AA_G3AA, 0, 2),
-> >
-> > I think that need to change the mux name and mux parent name
-> > because other mux name use the twice word according to the register nam=
-e
-> > even if use the same work such as 'mout_cmu_g2d_g2d', 'mout_cmu_mcsc_mc=
-sc' and 'mout_cmu_mfc_mfc'.
-> > - mout_cmu_g3aa -> mout_cmu_g3aa_g3aa
-> > - mout_cmu_g3aa_p -> mount_cmu_g3aa_g3aa_p
->
-> Will fix in v4
->
+My personal view is that if you need to rely on core_initcall() for a
+particular firmware interface, then your architecture will end-up
+being an unmaintainable ball of hacks, with conflicting requirements
+and increasingly diverging behaviours. Those who had the 'privilege'
+to deal with the 32bit ARM transition to DT will understand what I
+mean.
 
-That consistent name duplication, while not causing any conflicts when
-being removed, looks suspicious to me. That's probably some internal
-scheme which doesn't make much sense for us and doesn't bring any
-value, in terms of clock drivers. Maybe it'll be better to instead get
-rid of such duplication throughout the driver, at least for clock name
-strings? I mention this, because that's what I did in clk-exynos850.
-With the only exception being the main domain clocks, which basically
-enables/disables the whole unit internally, e.g.
+Having to rely on initcalls can only mean two things:
 
-    GATE(CLK_GOUT_G3D_CMU_G3D_PCLK, "gout_g3d_cmu_g3d_pclk", ...
+- you're missing crucial topology information that will eventually
+  bite you where it hurts, and you're better off going back to the
+  drawing board to fix it before any HW ships,
 
-which "G3D domain gate clock that enables/disables G3D", or something
-like that. But clk-exynos850 doesn't have any duplicating bits like
-"cmu_cmu" or "g3d_g3d". And the reason why I did that is I wanted
-those clock names appear short and nice in device tree, as there were
-no benefits in those duplicating bits.
+- you're not making use of the kernel's dependency management
+  infrastructure, which is pretty sad. Yes, it is DT specific for now,
+  but nothing prevents you from improving it to make it grok another
+  firmware interface.
 
-> >
-> > (snip)
-> >
-> > > +     /* CSIS */
-> > > +     GATE(CLK_GOUT_CSIS, "gout_cmu_csis_bus", "mout_cmu_csis_bus",
-> > > +          CLK_CON_GAT_GATE_CLKCMU_CSIS_BUS, 21, 0, 0),
-> > > +     /* PDP */
-> > > +     GATE(CLK_GOUT_PDP_BUS, "gout_cmu_pdp_bus", "mout_cmu_pdp_bus",
-> > > +          CLK_CON_GAT_GATE_CLKCMU_PDP_BUS, 21, 0, 0),
-> > > +
-> > > +     GATE(CLK_GOUT_PDP_VRA, "gout_cmu_pdp_vra", "mout_cmu_pdp_vra",
-> > > +          CLK_CON_GAT_GATE_CLKCMU_PDP_BUS, 21, 0, 0),
-> > > +
-> > > +     /* IPP */
-> > > +     GATE(CLK_GOUT_IPP_BUS, "gout_cmu_ipp_bus", "mout_cmu_ipp_bus",
-> > > +          CLK_CON_GAT_GATE_CLKCMU_IPP_BUS, 21, 0, 0),
-> > > +     /* G3AA */
-> > > +     GATE(CLK_GOUT_G3AA, "gout_cmu_g3aa", "mout_cmu_g3aa",
-> > > +          CLK_CON_MUX_MUX_CLKCMU_G3AA_G3AA, 21, 0, 0),
-> >
-> > ditto.
-> > gout_cmu_g3aa -> gout_cmu_g3aa_g3aa
-> > mout_cmu_g3aa -> mout_cmu_g3aa_g3aa
->
+But as I said, I don't have much skin in that game anymore.
 
-Ditto.
+	M.
 
-> Will fix in V4
->
-> regards,
->
-> Peter.
+-- 
+Without deviation from the norm, progress is not possible.
