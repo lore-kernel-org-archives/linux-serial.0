@@ -2,174 +2,136 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E2DC4167D
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Nov 2023 08:39:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13E7DC4332F
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Nov 2023 08:50:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233523AbjKIIjG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Nov 2023 03:39:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50334 "EHLO
+        id S229697AbjKIIuw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Nov 2023 03:50:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233389AbjKIIjE (ORCPT
+        with ESMTP id S233691AbjKIIuu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Nov 2023 03:39:04 -0500
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5803B210A
-        for <linux-serial@vger.kernel.org>; Thu,  9 Nov 2023 00:39:02 -0800 (PST)
-Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20231109083900epoutp012b9f8949be0c6e2b1514861bdfc90995~V56dgwNgo1388513885epoutp01G
-        for <linux-serial@vger.kernel.org>; Thu,  9 Nov 2023 08:39:00 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20231109083900epoutp012b9f8949be0c6e2b1514861bdfc90995~V56dgwNgo1388513885epoutp01G
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1699519140;
-        bh=IA8tVDEiR3OUTboPQ/PY/TxTQuBZRkJALEc43ISnuNw=;
-        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-        b=efnhyxMsGaqfr7z8Na7Z/qh30v8tBNgLijusUHWi6q01cSuhLt5yQfssJqyr41RTt
-         rkbNP6cuPL/vDT3c54BV7m2c40IFjc/WQw7UkpjxXS3bvVSq8iwGEqmI/AYo78B6bt
-         YoJJjPNED8O6l2y74/vmFNrRIUK1dURpFcBpJ1rI=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
-        20231109083900epcas2p39eed51ad7909b12b62e08be1ac5800ee~V56dJWP7F1153011530epcas2p3N;
-        Thu,  9 Nov 2023 08:39:00 +0000 (GMT)
-Received: from epsmges2p1.samsung.com (unknown [182.195.36.89]) by
-        epsnrtp1.localdomain (Postfix) with ESMTP id 4SQwNM3dj6z4x9Pp; Thu,  9 Nov
-        2023 08:38:59 +0000 (GMT)
-Received: from epcas2p1.samsung.com ( [182.195.41.53]) by
-        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
-        D8.23.10006.3AA9C456; Thu,  9 Nov 2023 17:38:59 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
-        20231109083858epcas2p48cae9d866b6b51405c76b01156b4ce95~V56cIIqxB0079200792epcas2p4z;
-        Thu,  9 Nov 2023 08:38:58 +0000 (GMT)
-Received: from epsmgms1p2new.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20231109083858epsmtrp2538ba1605409bc6c9cca25c453e2662c~V56cHPEKs2879728797epsmtrp24;
-        Thu,  9 Nov 2023 08:38:58 +0000 (GMT)
-X-AuditID: b6c32a45-179ff70000002716-20-654c9aa3d2f2
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        78.56.08817.2AA9C456; Thu,  9 Nov 2023 17:38:58 +0900 (KST)
-Received: from [10.229.8.168] (unknown [10.229.8.168]) by
-        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20231109083858epsmtip151265ef90607b87f0931ae4cf9ce8288~V56bwhdvF0398903989epsmtip16;
-        Thu,  9 Nov 2023 08:38:58 +0000 (GMT)
-Message-ID: <7c98023e-9207-c6fe-8a98-c8277c6d2c1a@samsung.com>
-Date:   Thu, 9 Nov 2023 17:36:12 +0900
+        Thu, 9 Nov 2023 03:50:50 -0500
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C5D270E
+        for <linux-serial@vger.kernel.org>; Thu,  9 Nov 2023 00:50:48 -0800 (PST)
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <prvs=06912c668f=fe@dev.tdt.de>)
+        id 1r10kQ-00FPZB-Po
+        for linux-serial@vger.kernel.org; Thu, 09 Nov 2023 09:50:46 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <fe@dev.tdt.de>)
+        id 1r10kQ-00E9kp-Ee
+        for linux-serial@vger.kernel.org; Thu, 09 Nov 2023 09:50:46 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 34992240040
+        for <linux-serial@vger.kernel.org>; Thu,  9 Nov 2023 09:50:46 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id E9CC824004B;
+        Thu,  9 Nov 2023 09:50:45 +0100 (CET)
+Received: from localhost.localdomain (unknown [10.2.3.40])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 33B70222EE;
+        Thu,  9 Nov 2023 09:50:45 +0100 (CET)
+From:   Florian Eckert <fe@dev.tdt.de>
+To:     Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org,
+        kabel@kernel.org, u.kleine-koenig@pengutronix.de,
+        m.brock@vanmierlo.com
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-leds@vger.kernel.org
+Subject: [Patch v8 1/6] tty: add new helper function tty_get_tiocm
+Date:   Thu,  9 Nov 2023 09:50:33 +0100
+Message-ID: <20231109085038.371977-2-fe@dev.tdt.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20231109085038.371977-1-fe@dev.tdt.de>
+References: <20231109085038.371977-1-fe@dev.tdt.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
-        Thunderbird/102.11.0
-Subject: Re: [PATCH 04/10] dt-bindings: pwm: samsung: add exynosautov9
- compatible
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     Alim Akhtar <alim.akhtar@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org
-From:   Jaewon Kim <jaewon02.kim@samsung.com>
-In-Reply-To: <545b681e-2da7-4adf-9c3c-0d292951ef94@linaro.org>
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrFJsWRmVeSWpSXmKPExsWy7bCmqe7iWT6pBs+Wi1o8mLeNzWLN3nNM
-        FvOPnGO1aF68ns3i3VwZi72vt7JbTPmznMli0+NrrBab5/9htLi8aw6bxd27qxgtZpzfx2Rx
-        ZnEvu0Xr3iPsFofftLNa/Nw1j8Vi1S6gutsTJzM6CHnsnHWX3WPTqk42jzvX9rB57J+7ht1j
-        85J6j/6/Bh59W1YxenzeJBfAEZVtk5GamJJapJCal5yfkpmXbqvkHRzvHG9qZmCoa2hpYa6k
-        kJeYm2qr5OIToOuWmQP0iZJCWWJOKVAoILG4WEnfzqYov7QkVSEjv7jEVim1ICWnwLxArzgx
-        t7g0L10vL7XEytDAwMgUqDAhO+Nq4wf2go3cFTMWnmdvYOzl7GLk5JAQMJHYcOY1SxcjF4eQ
-        wA5GiY71n9ggnE+MEkceH2OFcL4xSpw9P58VpuXykutQLXsZJSbfW8YE4bxmlDj09Dc7SBWv
-        gJ3E41d9YDaLgIrE8gkHmSHighInZz5hAbFFBaIlWpfdZwOxhQWCJaYvnQZmMwuIS9x6Mp8J
-        xBYRqJP4Pukj2DZmgUssEksWvgMbxCagLfF9/WKwkziBlq2/3wXVLC/RvHU2M8Spbzgkft1O
-        gLBdJI68bGCEsIUlXh3fwg5hS0l8freXDcLOlmif/gfqzQqJixtmQ8WNJWY9awfq5QCarymx
-        fpc+iCkhoCxx5BYLxFY+iY7Df9khwrwSHW1CEI1qEvennoMaIiMx6chKJgjbQ2LyzVamCYyK
-        s5ACZRaS52ch+WUWwt4FjCyrGMVSC4pz01OLjQoM4ZGdnJ+7iRGcyLVcdzBOfvtB7xAjEwfj
-        IUYJDmYlEd4LJj6pQrwpiZVVqUX58UWlOanFhxhNgVEzkVlKNDkfmEvySuINTSwNTMzMDM2N
-        TA3MlcR577XOTRESSE8sSc1OTS1ILYLpY+LglGpgWr1/zu/j8Y5rtfs1NT6XP/VqZ5rf/GbW
-        /Mxz6yblPfv2+Zrg4T9brYr0JnUUSj48kLJjxY9ZfDXF04QSJ7h8dRY02x97z822eOnPTZFv
-        K0y3/xLLnlwby/69ZqZ39j1FIZ3dGywS5spvMooVXblnRW3d08lBLXJrqwTynC66m1bsX5i2
-        SPt7yukn7LotLv+y3LVlK1bb8KRunqGjl3HxoF/AkayDPgcn1iXqzWJ5c+z59VNSz65umT5t
-        /gft26bpzBcCbic63+jfM+dCTodf1WKj1fwRd926RNe/ivy+h8tM31rmy62y/PmfWIqv7ZjO
-        vursOVl+/pka1aWWspwlfcFTDRd6LTul6Xhyul2RqRJLcUaioRZzUXEiAGma4ohtBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrFIsWRmVeSWpSXmKPExsWy7bCSnO6iWT6pBpceG1s8mLeNzWLN3nNM
-        FvOPnGO1aF68ns3i3VwZi72vt7JbTPmznMli0+NrrBab5/9htLi8aw6bxd27qxgtZpzfx2Rx
-        ZnEvu0Xr3iPsFofftLNa/Nw1j8Vi1S6gutsTJzM6CHnsnHWX3WPTqk42jzvX9rB57J+7ht1j
-        85J6j/6/Bh59W1YxenzeJBfAEcVlk5Kak1mWWqRvl8CVcbXxA3vBRu6KGQvPszcw9nJ2MXJy
-        SAiYSFxecp0FxBYS2M0o8WlrCERcRmL5sz42CFtY4n7LEVaImpeMErPf64DYvAJ2Eo9f9bGD
-        2CwCKhLLJxxkhogLSpyc+QRspqhAtMTqzxfAeoUFgiWmL50GNpNZQFzi1pP5TCC2iECdxKqX
-        f4HmcAHFr7BIvHr8hgnEERJYxyTReG47WAebgLbE9/WLwSZxAm1ef78LapKZRNfWLkYIW16i
-        eets5gmMQrOQHDILycJZSFpmIWlZwMiyilEytaA4Nz232LDAKC+1XK84Mbe4NC9dLzk/dxMj
-        OHq1tHYw7ln1Qe8QIxMH4yFGCQ5mJRHeCyY+qUK8KYmVValF+fFFpTmpxYcYpTlYlMR5v73u
-        TRESSE8sSc1OTS1ILYLJMnFwSjUwWa58IjpNT8dJ4+jmWU3b+Z0PJt959vhV4+LD2fluel53
-        jqwyfvzv5eSMRWdSHxiF79zMO0mghoHP5MGFQqu4sMX/fl9bVxCUvJJZrCziNde1txZnYiId
-        k7iTv54/cNuhebJmWZam6oEVfzrmvM2327d4X86UbL4/kz8I/fmwuOFcuqnQA/XTjz+9nxh4
-        ZHvC2zTp7q+T77NHR3R9T2KaH8XTs/1kWsd1IWevJZ/dbv5bZjjvu9O8TR9Mti2Vubfy0P50
-        0ZjGGyGM8tYzfWf8WlB/RDCwbdu5qk3/WSeWXu5mv2Gy2tNqWdfrshUTDt7wbPP/87pngmB0
-        0LOGKJ6I3bGtt09dKp144Kiq/vq+L5uVWIozEg21mIuKEwFVLcuKTQMAAA==
-X-CMS-MailID: 20231109083858epcas2p48cae9d866b6b51405c76b01156b4ce95
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20231031095017epcas2p306a504619cbaf1fc260f6c46f8b75dd8
-References: <20231031094852.118677-1-jaewon02.kim@samsung.com>
-        <CGME20231031095017epcas2p306a504619cbaf1fc260f6c46f8b75dd8@epcas2p3.samsung.com>
-        <20231031094852.118677-5-jaewon02.kim@samsung.com>
-        <20231109062807.ko53f63arpxgigd5@pengutronix.de>
-        <545b681e-2da7-4adf-9c3c-0d292951ef94@linaro.org>
+Content-Transfer-Encoding: quoted-printable
+X-purgate-type: clean
+X-purgate-ID: 151534::1699519846-6E8D6018-C758AFD6/0/0
+X-purgate: clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+There is no in-kernel function to get the status register of a tty device
+like the TIOCMGET ioctl returns to userspace. Create a new function,
+tty_get_tiocm(), to obtain the status register that other portions of the
+kernel can call if they need this information, and move the existing
+internal tty_tiocmget() function to use this interface.
 
-On 23. 11. 9. 17:23, Krzysztof Kozlowski wrote:
-> On 09/11/2023 07:28, Uwe Kleine-König wrote:
->> Hello,
->>
->> On Tue, Oct 31, 2023 at 06:47:46PM +0900, Jaewon Kim wrote:
->>> Add samsung,exynosautov920-pwm compatible string to binding document.
->>>
->>> Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
->>> ---
->>>   Documentation/devicetree/bindings/pwm/pwm-samsung.yaml | 1 +
->>>   1 file changed, 1 insertion(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml b/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
->>> index 2162f661ed5a..b6beca2ae81e 100644
->>> --- a/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
->>> +++ b/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
->>> @@ -30,6 +30,7 @@ properties:
->>>         - items:
->>>             - enum:
->>>                 - samsung,exynosautov9-pwm
->>> +              - samsung,exynosautov920-pwm
->>>             - const: samsung,exynos4210-pwm
->> Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
->>
->> What is the merge plan here? Should this go via the pwm tree, or can it
->> better go via some exynos tree together with the dts files?
-> I propose I will take it. I will have conflicting change and keeping
-> bindings with DTS together allows smooth dtbs_check.
->
-> Best regards,
-> Krzysztof
->
->
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Florian Eckert <fe@dev.tdt.de>
+---
+ drivers/tty/tty_io.c | 28 ++++++++++++++++++++++------
+ include/linux/tty.h  |  1 +
+ 2 files changed, 23 insertions(+), 6 deletions(-)
 
-I also agree it would be better to enter the exynos tree.
-
-Thanks Krzysztof.
-
-
-Thanks,
-
-Jaewon Kim
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 06414e43e0b5..e2e93404133e 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -2498,6 +2498,24 @@ static int send_break(struct tty_struct *tty, unsi=
+gned int duration)
+ 	return retval;
+ }
+=20
++/**
++ * tty_get_tiocm - get tiocm status register
++ * @tty: tty device
++ *
++ * Obtain the modem status bits from the tty driver if the feature
++ * is supported.
++ */
++int tty_get_tiocm(struct tty_struct *tty)
++{
++	int retval =3D -ENOTTY;
++
++	if (tty->ops->tiocmget)
++		retval =3D tty->ops->tiocmget(tty);
++
++	return retval;
++}
++EXPORT_SYMBOL_GPL(tty_get_tiocm);
++
+ /**
+  * tty_tiocmget - get modem status
+  * @tty: tty device
+@@ -2510,14 +2528,12 @@ static int send_break(struct tty_struct *tty, uns=
+igned int duration)
+  */
+ static int tty_tiocmget(struct tty_struct *tty, int __user *p)
+ {
+-	int retval =3D -ENOTTY;
++	int retval;
+=20
+-	if (tty->ops->tiocmget) {
+-		retval =3D tty->ops->tiocmget(tty);
++	retval =3D tty_get_tiocm(tty);
++	if (retval >=3D 0)
++		retval =3D put_user(retval, p);
+=20
+-		if (retval >=3D 0)
+-			retval =3D put_user(retval, p);
+-	}
+ 	return retval;
+ }
+=20
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 4b6340ac2af2..d219a11e3fe0 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -419,6 +419,7 @@ bool tty_unthrottle_safe(struct tty_struct *tty);
+ int tty_do_resize(struct tty_struct *tty, struct winsize *ws);
+ int tty_get_icount(struct tty_struct *tty,
+ 		struct serial_icounter_struct *icount);
++int tty_get_tiocm(struct tty_struct *tty);
+ int is_current_pgrp_orphaned(void);
+ void tty_hangup(struct tty_struct *tty);
+ void tty_vhangup(struct tty_struct *tty);
+--=20
+2.30.2
 
