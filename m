@@ -2,126 +2,162 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D435AC4167D
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Nov 2023 06:34:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 680E8C41535
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Nov 2023 08:23:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232603AbjKIGeo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Nov 2023 01:34:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57962 "EHLO
+        id S233499AbjKIIX5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Nov 2023 03:23:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232529AbjKIGek (ORCPT
+        with ESMTP id S233519AbjKIIXw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Nov 2023 01:34:40 -0500
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8DB26BA
-        for <linux-serial@vger.kernel.org>; Wed,  8 Nov 2023 22:34:38 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-5a909b4e079so7299617b3.2
-        for <linux-serial@vger.kernel.org>; Wed, 08 Nov 2023 22:34:37 -0800 (PST)
+        Thu, 9 Nov 2023 03:23:52 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF2B2D57
+        for <linux-serial@vger.kernel.org>; Thu,  9 Nov 2023 00:23:50 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id 4fb4d7f45d1cf-53df747cfe5so869115a12.2
+        for <linux-serial@vger.kernel.org>; Thu, 09 Nov 2023 00:23:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1699511677; x=1700116477; darn=vger.kernel.org;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=M2jeNRJU0TFD96K4lSEDdfn2J8CEyCQsEfZlnbJs/fQ=;
-        b=J59rg+dsa94u9B4P3pkKLux7QJaxEA4cZVpTKwVqTgS/3ZJBj291p2ZxAoFL2PjHAy
-         +zT5vgpu+0GxOYIIlPDOPJ4ABpcTcK2yU86jnL7LpIXuHS5n1LnrfJqg5WAipLmWxX80
-         rt32Rs37/fTwR0Pom4BrUdsGJejntpOmiQNnPN69oaHfJ/15+3OmYuXE0Uq6r37pHr4S
-         5tgXn2OCky8CfzbMCxLTAUQdILm7pU34roQh1D/YZgPL2OxzmA1QzUv3SNplz2LeIuTm
-         7TxYtrmAUKHQIc1P8YdPqtDfIdx9LcWEBj670pMCeCMP9pZzvwnYbrVEdjE1lgyd9doI
-         E2ew==
+        d=linaro.org; s=google; t=1699518229; x=1700123029; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=H4KlDa2s73U5ZR+WLe1Ye4zeFuM3NNyCjUsipdRrEUo=;
+        b=XI5l2jTnkLCIdwCr7HGSn/eeEawFnHl40bbJ8QS/I718cqt14cZISfKsQYcz1bboxo
+         Tdwpy1NA4Do4Sks44FK2Id8aKn1YgSvfLUZdDpVbbpcBwAyDrbj7pwPlCn8EVUYo1Q86
+         bg1l8S+/m6/Bz981oAbvx95iwlXyLoATh22iZYAIGwwfSocWEMV5es3oIadc4GmN/38G
+         S1twYgOETXpmX6Xkc9guNa39kVGLTCLgq63aVkTg9sroEmAzZ6hUqbk4rjdN7mobnHRU
+         RojDR8c/r6/mU/JaXbt5qfGZNUlRuWpisM82CPyItJXE/Cl26k9VITyCwqjbdcuWHmk0
+         4NSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699511677; x=1700116477;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=M2jeNRJU0TFD96K4lSEDdfn2J8CEyCQsEfZlnbJs/fQ=;
-        b=s9JQ21E4QyJC1gRxFE9guX7Ly/5BOxZrq4KgmVxfOxP0YvCn0RSezMoUpxNfsgQ9/h
-         TSxHSUpQzz19h1/3evYvgTotQusDk7gFIhJgtwjxD4atSyhaYNc2wgJq3gs8pWpwTnOv
-         SATGKU+VCCGV+qdBSjdDU117UWQSmZFhtG/K9WxkJW7sIu3vmTlNVlbZHYbNX4P7DfAz
-         e1/5LIb6sMA3j+5ye9EW2BnGAIuHFsdswNfqGxo6rTWU6dGZ4GGjt4V0fMxJ4x9O64b1
-         0893VPxf/NDfmvlRdFxmFMpUoZz6nNyUsnGWxzFJGxOgkH8Kwe1nb2lL3EUU1U6phl9F
-         PVmw==
-X-Gm-Message-State: AOJu0Ywa7eA2OqaV8KZ59Y1DuRLHi5LBaozuyzqxHHiI+gAqCnBcogOP
-        hJ/DG4Zq2mWmeYUTfwhoN0614ZHPHCuuB+2Wqc+Q
-X-Google-Smtp-Source: AGHT+IFpLLF3700te+1leBboL3zkKzOivjeT5UF2frLwk+rOXmt0zRCDKRl5SE47mWFhfAeXcHQ/z1keJv7cPxycX4/u
-X-Received: from vamshig51.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:70c])
- (user=vamshigajjela job=sendgmr) by 2002:a81:9a44:0:b0:5be:94a6:d84b with
- SMTP id r65-20020a819a44000000b005be94a6d84bmr107029ywg.5.1699511676886; Wed,
- 08 Nov 2023 22:34:36 -0800 (PST)
-Date:   Thu,  9 Nov 2023 12:04:17 +0530
-In-Reply-To: <20231109063417.3971005-1-vamshigajjela@google.com>
-Mime-Version: 1.0
-References: <20231109063417.3971005-1-vamshigajjela@google.com>
-X-Mailer: git-send-email 2.42.0.869.gea05f2083d-goog
-Message-ID: <20231109063417.3971005-3-vamshigajjela@google.com>
-Subject: [PATCH v6 2/2] serial: core: Clean up uart_update_timeout() function
-From:   Vamshi Gajjela <vamshigajjela@google.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        d=1e100.net; s=20230601; t=1699518229; x=1700123029;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=H4KlDa2s73U5ZR+WLe1Ye4zeFuM3NNyCjUsipdRrEUo=;
+        b=SGJdPuHTY7fuf6Y8VCXA7ROJafuAESSD65Z3Z+5heh1a2ujT6eZf01RYQTbM8yRuGI
+         IIpnocRLSFrOjGB9fdpNRJv9ji0uXppHEdk6jqDItqotUDzYFFuuBK/PICVq21lFICxH
+         eR72L4ascC7ovaTb9QdgdYc8eLdubuc3MfiOjpGToq2DvrduRT7uPUtMsdcFsysCpKlk
+         R87t+gYDjfSYC+s/XzPM0ycWHiZs6O0YvEGTZUmQGS+5KpLdWrwkBNdZ2u+fxcygwdDs
+         0r4b3zgLry6Le7sY/D3n8DOnuGqIYxpiOoVqK09GBomVsNb2PmtjSlCpJEcYf7Pcvn19
+         elMw==
+X-Gm-Message-State: AOJu0Yz2BGCmkmHkeg5hqMFgz45zr6iuNnvxNBHrNPZ0bDPCSaGuxFsT
+        VCJj5cCcSf+7SGl7eMfeQkwOUA==
+X-Google-Smtp-Source: AGHT+IH9osJXKtdxF363YAoh9Q62JQgp3QvNBOfLZ2Dbr8h3wEggBPgGAlxYveXAoo2El57DxFB+7g==
+X-Received: by 2002:a50:d4dc:0:b0:543:7812:63cd with SMTP id e28-20020a50d4dc000000b00543781263cdmr3512102edj.17.1699518228753;
+        Thu, 09 Nov 2023 00:23:48 -0800 (PST)
+Received: from [192.168.1.20] ([178.197.218.126])
+        by smtp.gmail.com with ESMTPSA id ba26-20020a0564021ada00b00533dad8a9c5sm7739126edb.38.2023.11.09.00.23.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Nov 2023 00:23:48 -0800 (PST)
+Message-ID: <545b681e-2da7-4adf-9c3c-0d292951ef94@linaro.org>
+Date:   Thu, 9 Nov 2023 09:23:46 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 04/10] dt-bindings: pwm: samsung: add exynosautov9
+ compatible
+Content-Language: en-US
+To:     =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+        Jaewon Kim <jaewon02.kim@samsung.com>
+Cc:     Alim Akhtar <alim.akhtar@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        ilpo.jarvinen@linux.intel.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        manugautam@google.com, Subhash Jadavani <sjadavani@google.com>,
-        Channa Kadabi <kadabi@google.com>,
-        Vamshi Gajjela <vamshigajjela@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20231031094852.118677-1-jaewon02.kim@samsung.com>
+ <CGME20231031095017epcas2p306a504619cbaf1fc260f6c46f8b75dd8@epcas2p3.samsung.com>
+ <20231031094852.118677-5-jaewon02.kim@samsung.com>
+ <20231109062807.ko53f63arpxgigd5@pengutronix.de>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <20231109062807.ko53f63arpxgigd5@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Rename the variable size to temp and change its data type from
-unsigned int to u64 to avoid type casting in multiplication. Remove the
-intermediate variable frame_time and use temp instead to accommodate
-the nanoseconds(ns). port->frame_time is an unsigned int, therefore an
-explicit cast is used to improve readability. Having said this unsigned
-int is sufficinet to hold frame time duration in nanoseconds for all
-the standard baudrates.
+On 09/11/2023 07:28, Uwe Kleine-König wrote:
+> Hello,
+> 
+> On Tue, Oct 31, 2023 at 06:47:46PM +0900, Jaewon Kim wrote:
+>> Add samsung,exynosautov920-pwm compatible string to binding document.
+>>
+>> Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
+>> ---
+>>  Documentation/devicetree/bindings/pwm/pwm-samsung.yaml | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml b/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
+>> index 2162f661ed5a..b6beca2ae81e 100644
+>> --- a/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
+>> +++ b/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
+>> @@ -30,6 +30,7 @@ properties:
+>>        - items:
+>>            - enum:
+>>                - samsung,exynosautov9-pwm
+>> +              - samsung,exynosautov920-pwm
+>>            - const: samsung,exynos4210-pwm
+> 
+> Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> 
+> What is the merge plan here? Should this go via the pwm tree, or can it
+> better go via some exynos tree together with the dts files?
 
-Consider 9600 baud, it takes 1/9600 seconds for one bit, for a total of
-10 bits (start, 8-bit data, stop) 10/9600=1.04 ms for 1 byte transfer,
-frame_time here is 1041667ns. As baudrate increases frame_time
-decreases, say for 115200 baud it is 86806ns.
+I propose I will take it. I will have conflicting change and keeping
+bindings with DTS together allows smooth dtbs_check.
 
-To avoid costly 64-bit arithmetic we do not upconvert the type for
-variable frame_time as overflow happens for extremely low baudrates
-which are impractical and are not used in real-world applications.
-
-Signed-off-by: Vamshi Gajjela <vamshigajjela@google.com>
----
-v6:
-- Updated description with an example
-v5:
-- shortlog changed from "serial: core: Make local variable size to
-  u64" to "Clean up uart_update_timeout() function"
-- renamed local variable size to temp, generic name
-- removed intermediate variable frame_time
-- added typecast "unsigned int" while assigning to port->frame_time
-v4:
-- no change, not submitted with series
-v3:
-- no change, not submitted with series
-v2:
-- no change, not submitted with series
-
- drivers/tty/serial/serial_core.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index f1348a509552..ec88cab2c8d7 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -410,11 +410,10 @@ void
- uart_update_timeout(struct uart_port *port, unsigned int cflag,
- 		    unsigned int baud)
- {
--	unsigned int size = tty_get_frame_size(cflag);
--	u64 frame_time;
-+	u64 temp = tty_get_frame_size(cflag);
- 
--	frame_time = (u64)size * NSEC_PER_SEC;
--	port->frame_time = DIV64_U64_ROUND_UP(frame_time, baud);
-+	temp *= NSEC_PER_SEC;
-+	port->frame_time = (unsigned int)DIV64_U64_ROUND_UP(temp, baud);
- }
- EXPORT_SYMBOL(uart_update_timeout);
- 
--- 
-2.42.0.869.gea05f2083d-goog
+Best regards,
+Krzysztof
 
