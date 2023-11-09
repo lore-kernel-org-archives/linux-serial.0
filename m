@@ -2,121 +2,81 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8D6CC4332F
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Nov 2023 06:28:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A99B9C4332F
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Nov 2023 06:34:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229697AbjKIG2g (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Nov 2023 01:28:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43186 "EHLO
+        id S231161AbjKIGe2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Nov 2023 01:34:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232221AbjKIG2e (ORCPT
+        with ESMTP id S231146AbjKIGe1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Nov 2023 01:28:34 -0500
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 863CA111
-        for <linux-serial@vger.kernel.org>; Wed,  8 Nov 2023 22:28:32 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1r0yWQ-0003Jy-QX; Thu, 09 Nov 2023 07:28:10 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1r0yWN-007iJD-W2; Thu, 09 Nov 2023 07:28:08 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1r0yWN-00Flde-MN; Thu, 09 Nov 2023 07:28:07 +0100
-Date:   Thu, 9 Nov 2023 07:28:07 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Jaewon Kim <jaewon02.kim@samsung.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thu, 9 Nov 2023 01:34:27 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B8662685
+        for <linux-serial@vger.kernel.org>; Wed,  8 Nov 2023 22:34:25 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id 3f1490d57ef6-d81e9981ff4so642967276.3
+        for <linux-serial@vger.kernel.org>; Wed, 08 Nov 2023 22:34:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1699511664; x=1700116464; darn=vger.kernel.org;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=cLnjAgoVfswUxIoFV0K4fzcOHC1F9ghlhp68grXoQ9k=;
+        b=aGy0w3OADYznzx8VXQZ+rU6NwHU1fKOnOFGAm8WdBpcdjFLUzvWenJEZCW7bFsnSx/
+         LFSsx0pxwPp3o0z5jswWbX9a2QPBzPeE42Q9ZQRs9XPLe2CC8sUzhMpSY2PpJZUMBzLM
+         NzW0+nv/iJ436MRqYCZVSPGWSfog0FuGoqIeOp91veYeUaNsNMFagTmrwcEZqEFslmwi
+         XZ//1a7DCIWPWZG5yW2LbHbyXFa2XLAFunwnhfsGhoETg6dcmlftUGysm6Og5frmWQJL
+         oGkEuHiitXfTRlSSoaRMpP3ydAKzTrTgaxARzieYrmpBTPyHRc5cbn5LJIfXpjM+JRHx
+         A0qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699511664; x=1700116464;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=cLnjAgoVfswUxIoFV0K4fzcOHC1F9ghlhp68grXoQ9k=;
+        b=AjZRwieXrgLloazQQIlTJeZLNTrUzDof73R1rGECYs+feLWMM/aT2eSXI2lD4oJviw
+         pJNzARYBEBeghqdWMM6VmoHvMMjUqLu+aJ8LF24n4891yxkrKmY6wEgcfJNwWnVumUig
+         GFghRZnQsiFCtbJkIMDNxt7lCqEj9BUGYLbhGOkHwLioX/w4NKYPFL1FPEMqBDyM7QoJ
+         APaTTJTybZHNTov4rxsrpIdNTh/01NmmbIl1Up66JlsRoJKWdlEmdKpbPMKpCUpcmrOE
+         FYuUEPT3WWa3Z8d7rmEyhST8GiGK4BdP1iWGUHyWgLL2/PXYZjKF0oVGBH6ncWpmkE0I
+         7CwA==
+X-Gm-Message-State: AOJu0YzW3Mzm9QZy+h3GCKhbwn0NTAgTl4CABJjwoom/tRbhglsDK++S
+        vlmNwK1aXwc3DODjmBUzF8Q/FQXoldwn3PqxgylG
+X-Google-Smtp-Source: AGHT+IHt7rFMay7LO40mRqdDaP6ZD3WZv5mpiJscbJ+prTBu4yEvsRI5aZRWLsHb0zfChQTB47czu3pqk+06kFFTIstw
+X-Received: from vamshig51.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:70c])
+ (user=vamshigajjela job=sendgmr) by 2002:a05:6902:102:b0:da3:723b:b2a4 with
+ SMTP id o2-20020a056902010200b00da3723bb2a4mr94869ybh.7.1699511664016; Wed,
+ 08 Nov 2023 22:34:24 -0800 (PST)
+Date:   Thu,  9 Nov 2023 12:04:15 +0530
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.42.0.869.gea05f2083d-goog
+Message-ID: <20231109063417.3971005-1-vamshigajjela@google.com>
+Subject: [PATCH v6 0/2] serial core type consistency and clean up
+From:   Vamshi Gajjela <vamshigajjela@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 04/10] dt-bindings: pwm: samsung: add exynosautov9
- compatible
-Message-ID: <20231109062807.ko53f63arpxgigd5@pengutronix.de>
-References: <20231031094852.118677-1-jaewon02.kim@samsung.com>
- <CGME20231031095017epcas2p306a504619cbaf1fc260f6c46f8b75dd8@epcas2p3.samsung.com>
- <20231031094852.118677-5-jaewon02.kim@samsung.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="phrujihovcq5oywv"
-Content-Disposition: inline
-In-Reply-To: <20231031094852.118677-5-jaewon02.kim@samsung.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+        ilpo.jarvinen@linux.intel.com
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        manugautam@google.com, Subhash Jadavani <sjadavani@google.com>,
+        Channa Kadabi <kadabi@google.com>,
+        Vamshi Gajjela <vamshigajjela@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+This patch series primarily focus on improving type consistency and
+ensuring proper handling of timeout values. The changes aim to enhance
+the redability and maintainability of the serial core.
 
---phrujihovcq5oywv
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Vamshi Gajjela (2):
+  serial: core: Update uart_poll_timeout() function to return unsigned
+    long
+  serial: core: Clean up uart_update_timeout() function
 
-Hello,
+ drivers/tty/serial/serial_core.c | 7 +++----
+ include/linux/serial_core.h      | 4 ++--
+ 2 files changed, 5 insertions(+), 6 deletions(-)
 
-On Tue, Oct 31, 2023 at 06:47:46PM +0900, Jaewon Kim wrote:
-> Add samsung,exynosautov920-pwm compatible string to binding document.
->=20
-> Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-samsung.yaml | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml b/Doc=
-umentation/devicetree/bindings/pwm/pwm-samsung.yaml
-> index 2162f661ed5a..b6beca2ae81e 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-samsung.yaml
-> @@ -30,6 +30,7 @@ properties:
->        - items:
->            - enum:
->                - samsung,exynosautov9-pwm
-> +              - samsung,exynosautov920-pwm
->            - const: samsung,exynos4210-pwm
+-- 
+2.42.0.869.gea05f2083d-goog
 
-Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-
-What is the merge plan here? Should this go via the pwm tree, or can it
-better go via some exynos tree together with the dts files?
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---phrujihovcq5oywv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmVMe/YACgkQj4D7WH0S
-/k4EXggAlFjY54YEO/PoOnIolDxKx9chBDVEVMJlsOyI2QZet0UQWoLYDkiYs/dr
-HK9yQQNy4yPzu6/SvsDCEWPUYiE4VxlVBD3ZHopuEw1ALgsbVgpr80/LOVtmah/h
-oE0A1eRVmw0DcjltUE0z+jkMPwPWK2TrDf+g/lWlhDU2mAXXZRVUDr51AMaP2CQ9
-bZMmgTi1mpHrbs3QqUwvLrA7vgAQJyGE0XnGbBDY14Ay+Se5Nqw3n8BpwnnKuIFP
-+mR1DrMlbkRwWaGGlXd3XpUzXCSTE++0lH1DZAkbpaIe4vkmOXF4UNTqVJ1ZWVeH
-XI7tMTivTMbH9Nlwdtonbq/Qu8z/wg==
-=pKZI
------END PGP SIGNATURE-----
-
---phrujihovcq5oywv--
