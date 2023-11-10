@@ -2,110 +2,102 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 984EFC4167B
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Nov 2023 18:27:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F00C41535
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Nov 2023 18:27:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345683AbjKJS1O (ORCPT
+        id S1345758AbjKJS1P (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Nov 2023 13:27:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37170 "EHLO
+        Fri, 10 Nov 2023 13:27:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345758AbjKJSZr (ORCPT
+        with ESMTP id S1346097AbjKJS0H (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Nov 2023 13:25:47 -0500
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A173AE12
-        for <linux-serial@vger.kernel.org>; Fri, 10 Nov 2023 07:30:58 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1r1TT5-0006NU-Fo; Fri, 10 Nov 2023 16:30:47 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1r1TT4-0083Ka-71; Fri, 10 Nov 2023 16:30:46 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1r1TT3-00Gnwo-U3; Fri, 10 Nov 2023 16:30:45 +0100
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        linux-arm-msm@vger.kernel.org, kernel@pengutronix.de,
-        linux-serial@vger.kernel.org
-Subject: [PATCH 31/52] serial: qcom_geni: Convert to platform remove callback returning void
-Date:   Fri, 10 Nov 2023 16:29:59 +0100
-Message-ID: <20231110152927.70601-32-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
-In-Reply-To: <20231110152927.70601-1-u.kleine-koenig@pengutronix.de>
-References: <20231110152927.70601-1-u.kleine-koenig@pengutronix.de>
+        Fri, 10 Nov 2023 13:26:07 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C95ED446EA
+        for <linux-serial@vger.kernel.org>; Fri, 10 Nov 2023 09:31:21 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id d2e1a72fcca58-6c39ad730aaso1991110b3a.0
+        for <linux-serial@vger.kernel.org>; Fri, 10 Nov 2023 09:31:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1699637481; x=1700242281; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hnwW179nyTllOKG0D16X3B6vz95PczJo8nLjcbrxEZU=;
+        b=bn272Y5JiOt/O02gW8mNR85H6jSjT3vEZgqRpIOQvdjawbNqUObezMJbK3bNvaiwKS
+         gAwM0aBlex8aTKM1V7uU9FXYHJjw4gtu0QXc6AS8TWXKNf7/gqWg95HBbKhbvFQKMNm+
+         b0lVDqaNx1PlcN0uosDAd/yhGTpsG13y/aOu/p5elwSh+TpRXMzuObtp0RuQ8QTHwbTn
+         kwRj7N4hOae+XfgzdwIM5U2umj13VxAJQ4oMjGZuxAeSp3Osf+ap8QQIMhBjpqPEBxgq
+         JpXb2d8Ms2jDnVOAUC+gTAclpMtFidzEGqdbEtVAeAS5RV0j56qAuDN/vKYf/YoUbIfV
+         uk4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699637481; x=1700242281;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=hnwW179nyTllOKG0D16X3B6vz95PczJo8nLjcbrxEZU=;
+        b=bfxRzIxjDsuIX75/XY+GPfBXKXmFur98y8PlmcoPtwV+bzAYvly9YgWRtI1WIMGrSC
+         dyAQzv69vcCyrwSB3v3ZEWdL5XQ8o7PiZzR3xTzkTb6U2Ac1LblbskksyPRNwXahkDFZ
+         1aauvzwRbfo1h3N3WEe7WJufQEPwR54kTbC3w1fNqiLLyUZeCLodlw7VEe/gFx1r34Fv
+         Zxn82StifcFQQu73+1RCCV+e29a8Uq3r7h7T1Fc8VAO1fMwnbFClwFuYcG0dTpv/I2Eu
+         vJ+XvAzrmKnrXtL3AjNtKGMIxXOjk5bOQOMQtwXdmyQRtmLtkxqE6wXaQnA/mMrvWCOQ
+         E5ag==
+X-Gm-Message-State: AOJu0YwWD4Ofqind+Sp5lwNussDX0/O11TBj/p3UF28cefwtcE3sQhd4
+        51wyStWhTop8S+rWl+q9kmO0pg==
+X-Google-Smtp-Source: AGHT+IFiAMSaqTolxOW1ag3pPDpxGq3qo4a1pcOE2s9npsdIWcyo8J+kunGA0rlXT5isrpxVTj+xew==
+X-Received: by 2002:a05:6a21:2702:b0:17f:8f9f:14c2 with SMTP id rm2-20020a056a21270200b0017f8f9f14c2mr6512532pzb.27.1699637481277;
+        Fri, 10 Nov 2023 09:31:21 -0800 (PST)
+Received: from [10.46.15.71] ([156.39.10.100])
+        by smtp.gmail.com with ESMTPSA id b10-20020a056a00114a00b0068bbd43a6e2sm13263773pfm.10.2023.11.10.09.31.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Nov 2023 09:31:20 -0800 (PST)
+Message-ID: <bf3c7786-4b62-40d7-93c2-77665afe37ae@sifive.com>
+Date:   Fri, 10 Nov 2023 09:31:19 -0800
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 39/52] serial: sifive: Convert to platform remove callback
+ returning void
+Content-Language: en-US
+To:     =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Ben Dooks <ben.dooks@codethink.co.uk>,
+        Nick Hu <nick.hu@sifive.com>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Ruan Jinjie <ruanjinjie@huawei.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Yangtao Li <frank.li@vivo.com>, kernel@pengutronix.de,
+        linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org
+References: <20231110152927.70601-1-u.kleine-koenig@pengutronix.de>
+ <20231110152927.70601-40-u.kleine-koenig@pengutronix.de>
+From:   Samuel Holland <samuel.holland@sifive.com>
+In-Reply-To: <20231110152927.70601-40-u.kleine-koenig@pengutronix.de>
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2137; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=jSi3z2or1rdpGNyOiJdggwaRQkzjjaHHI+qrhcFS8qE=; b=owGbwMvMwMXY3/A7olbonx/jabUkhlQ/n/o/xgXSPPabC8Q2PtD8+jPCUyrTzc1iYuyUDi3xL ZXnFnzuZDRmYWDkYpAVU2Sxb1yTaVUlF9m59t9lmEGsTCBTGLg4BWAiaiwcDB21eRahC5vZfv/R MNTjOqW8p7RS75CRZHtMaEJhZ5hdidxplekqMbrMa3r+FjzVWO0vKsrSM2/Cx7Ou6S5WDvfeFW5 silo06U1Tzu87OzmcemT6ds7b8TlVqU8z/+6LTd8OGW3ee/7K5VAbzi+a1R2nfj/QNwtbYawu7q 02+cT3J6rLHjZ8D9mX3q8XIN1atepy6t75lpy72G6+W/DSKfBrheaCFfWzXggXHqm+eWy3h1O+g RgLK08U2/riCfnxeZLJ79/UxbRYBFd1/mH4fLTm7vzHgdZGTK5sC3TcDVdHW4T6PvN9r6wzv1t3 ifSSfre4ebyRAef4ueY0eYlV9DrWdbtvLaz0n3BOaT8A
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The .remove() callback for a platform driver returns an int which makes
-many driver authors wrongly assume it's possible to do error handling by
-returning an error code. However the value returned is ignored (apart
-from emitting a warning) and this typically results in resource leaks.
+On 2023-11-10 7:30 AM, Uwe Kleine-König wrote:
+> The .remove() callback for a platform driver returns an int which makes
+> many driver authors wrongly assume it's possible to do error handling by
+> returning an error code. However the value returned is ignored (apart
+> from emitting a warning) and this typically results in resource leaks.
+> 
+> To improve here there is a quest to make the remove callback return
+> void. In the first step of this quest all drivers are converted to
+> .remove_new(), which already returns void. Eventually after all drivers
+> are converted, .remove_new() will be renamed to .remove().
+> 
+> Trivially convert this driver from always returning zero in the remove
+> callback to the void returning variant.
+> 
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> ---
+>  drivers/tty/serial/sifive.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
 
-To improve here there is a quest to make the remove callback return
-void. In the first step of this quest all drivers are converted to
-.remove_new(), which already returns void. Eventually after all drivers
-are converted, .remove_new() will be renamed to .remove().
-
-Trivially convert this driver from always returning zero in the remove
-callback to the void returning variant.
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/tty/serial/qcom_geni_serial.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 7e78f97e8f43..e63a8fbe63bd 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1696,7 +1696,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	return 0;
- }
- 
--static int qcom_geni_serial_remove(struct platform_device *pdev)
-+static void qcom_geni_serial_remove(struct platform_device *pdev)
- {
- 	struct qcom_geni_serial_port *port = platform_get_drvdata(pdev);
- 	struct uart_driver *drv = port->private_data.drv;
-@@ -1704,8 +1704,6 @@ static int qcom_geni_serial_remove(struct platform_device *pdev)
- 	dev_pm_clear_wake_irq(&pdev->dev);
- 	device_init_wakeup(&pdev->dev, false);
- 	uart_remove_one_port(drv, &port->uport);
--
--	return 0;
- }
- 
- static int qcom_geni_serial_sys_suspend(struct device *dev)
-@@ -1805,7 +1803,7 @@ static const struct of_device_id qcom_geni_serial_match_table[] = {
- MODULE_DEVICE_TABLE(of, qcom_geni_serial_match_table);
- 
- static struct platform_driver qcom_geni_serial_platform_driver = {
--	.remove = qcom_geni_serial_remove,
-+	.remove_new = qcom_geni_serial_remove,
- 	.probe = qcom_geni_serial_probe,
- 	.driver = {
- 		.name = "qcom_geni_serial",
--- 
-2.42.0
+Reviewed-by: Samuel Holland <samuel.holland@sifive.com>
 
