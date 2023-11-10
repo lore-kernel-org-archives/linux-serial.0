@@ -2,83 +2,80 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AEADC4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Nov 2023 18:51:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46327C4332F
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Nov 2023 18:51:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344362AbjKJSvG (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Nov 2023 13:51:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51520 "EHLO
+        id S235650AbjKJSvp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 10 Nov 2023 13:51:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345503AbjKJSus (ORCPT
+        with ESMTP id S235898AbjKJSv0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Nov 2023 13:50:48 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FEDEB7709
-        for <linux-serial@vger.kernel.org>; Fri, 10 Nov 2023 10:09:30 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id a640c23a62f3a-9d0b4dfd60dso370801766b.1
-        for <linux-serial@vger.kernel.org>; Fri, 10 Nov 2023 10:09:29 -0800 (PST)
+        Fri, 10 Nov 2023 13:51:26 -0500
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70AB6BD2C2
+        for <linux-serial@vger.kernel.org>; Fri, 10 Nov 2023 10:10:05 -0800 (PST)
+Received: by mail-qv1-xf29.google.com with SMTP id 6a1803df08f44-66d122e0c85so13767296d6.3
+        for <linux-serial@vger.kernel.org>; Fri, 10 Nov 2023 10:10:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1699639767; x=1700244567; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=qcAYtz5VhzsShDEx0OiwP1CZfdmkXBrcYXEUstOPYz8=;
-        b=LetHJPvpCwP/Br0LiZBi2HJwFExQjtMkjiN0xXfN+bYohbwAIFepBChiPG53eDS+Yb
-         BALdYQ+yGpml3cgd7uFeTBTl53blq+X8xWc3zEuows/204Hbf1Y3qF6AyClwJie6JWxE
-         LBVxsK+ogYUQvPbVhqgrqQayNme5OheUBDN4OYRW6ZjbcRyfZ0g5Wb1NHDCtL6d2Jshh
-         QTErb+oiryqKl6ov3sJkR3v6vqcYLcbPJORt8UwIzOwohOYDg81uHQ8YZSQ6gtkQ+nqw
-         IDlzfccMjYEkZTGuUOBZFf2ou2hwgrQLKDbApbBnw0+fI9tUCYnLStK2ajQ0Mw20WeIn
-         Jdfw==
+        d=gmail.com; s=20230601; t=1699639798; x=1700244598; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=uBGjD9Baza/GRKpnHbvo9bFT85edeTEQFkIvyH/n+SU=;
+        b=QjVzw7eXbcLG3kavv8B4oOlhRWjV7VuXondYsfrI/lgs33Aw//5eoAsBQSTQOLe6+N
+         PhHm2fjrDMbwcCYQZrKJewaUCA3UvG06Hahi6RKxEfHmOaXk0aR67JVmA2ZbShq1E75U
+         zD6ysLVHO0WYw9ArYUu53lZ0s2ncHT7owyMJWKjQj57m62GhgxwyMkbJynsxMTAoM5Og
+         p1m2OhpijKPq3rpvAKdjMqazvmHmHwMvsODSGqEyAMZ9HHjPj+uIcH3nCgNB6DbngY0Q
+         1lgbG56pJSjyTLnVUrtu04+moKPUBI4tBA0X97hZFzrJmfuLE8UgC1mUnsULSA+Fjowm
+         hJpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699639767; x=1700244567;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1699639798; x=1700244598;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qcAYtz5VhzsShDEx0OiwP1CZfdmkXBrcYXEUstOPYz8=;
-        b=i2MziEdeD20g+FAF/1Lk+xcjGBDI3r1zPAoU1JLucU7hoiJuY/86RUYFafEtsrPIW4
-         f0ILqQrGk9T0XTUgTbFzThQXM08zcRQYf8yMqluEA69ifoep9z6dZKLTQpC3InD5xt2N
-         eq8dC63Gxe8A9hYXYqgoO4AIgUxgUeDOkyovvLstsGFzh9JxSkqmhw0DGnN200ZGfxE7
-         U+9ODk4gK10dTuOi/M6t425ZPyn/hRZvq0GoXW5JVIcJ/juxy0W7SrcF99unps+l07St
-         KyaDtJZdIh3seAcBapvkwey7r+uFbyMgSK4Z0zI4kpk+pwh+/hTqDobLfp6D+FhfTS3S
-         Qynw==
-X-Gm-Message-State: AOJu0Yw+/+Nj2tYcDN5LVby2+LChTSOLVGX4zy4bfxMA4ZjnL7fip96T
-        URzBSeUNopcIct8BCcupEY30uQ==
-X-Google-Smtp-Source: AGHT+IFkbT2IYBBLIee0zwGEamHUQl/6PMtAAGKrQMMnEwAQ/v/3Buy0Sr3Y1nttLOuLOe16yY61LA==
-X-Received: by 2002:a17:907:a47:b0:9c4:d19:4a64 with SMTP id be7-20020a1709070a4700b009c40d194a64mr7077337ejc.25.1699639767569;
-        Fri, 10 Nov 2023 10:09:27 -0800 (PST)
-Received: from [192.168.50.4] ([82.78.167.125])
-        by smtp.gmail.com with ESMTPSA id u20-20020a1709060b1400b009cb2fd85371sm4243772ejg.8.2023.11.10.10.09.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Nov 2023 10:09:27 -0800 (PST)
-Message-ID: <6a5900ca-ef5b-40e5-9509-c0e7b654c02e@tuxon.dev>
-Date:   Fri, 10 Nov 2023 20:09:25 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 08/52] serial: atmel: Convert to platform remove callback
- returning void
-Content-Language: en-US
-To:     =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        kernel@pengutronix.de, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
+        bh=uBGjD9Baza/GRKpnHbvo9bFT85edeTEQFkIvyH/n+SU=;
+        b=B+tSDewR3hM5M16aWT0DchJnVZ+5JfjLAddIOcTkm9ISaZLJqKDHPjPI4XjIAWdQFf
+         lyeTBPBnLKUSUXda6RbkOg+Xgq+FcMkTnGKrci2dT2d3+ccCFhRC4wV4501+vweFHpwn
+         hHejXP9mITCf2rZtwsi4C/0njuQ2kc3N4FXVK7urRJaOEucW6X7+nJp56V9U83DVSa/Z
+         qq6WDaJ5RYGgPgzC3rhCk/fJXgTg0sgt8Ub3dOzFwizhDg10eD5r0WFe+ZHKe+6X30q1
+         00Vm6R02T2wf/qk8GNfwepBqeZTGJb1NS9/k4TeL77SBfKv+aD4pk35QYAeTlCCM+Fwm
+         3s0w==
+X-Gm-Message-State: AOJu0YxA9Fv41WhvH7F1/OUAUpfH0BULb2ZfFynuNjdXM+boDpLWg5K7
+        qUCqq+G/2+xBLyqdFAN4mGg=
+X-Google-Smtp-Source: AGHT+IFGglEBXzsA5OFptUb4vitlMnayTEU6eWkoiV3Dixu/VB7ZyKPYv7qW5nKWH5LCKHixTTqJTQ==
+X-Received: by 2002:a05:6214:2509:b0:66d:5dec:6099 with SMTP id gf9-20020a056214250900b0066d5dec6099mr9609179qvb.41.1699639798198;
+        Fri, 10 Nov 2023 10:09:58 -0800 (PST)
+Received: from errol.ini.cmu.edu ([72.95.245.133])
+        by smtp.gmail.com with ESMTPSA id bd12-20020ad4568c000000b00670a8921170sm11222qvb.112.2023.11.10.10.09.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Nov 2023 10:09:57 -0800 (PST)
+Date:   Fri, 10 Nov 2023 13:09:55 -0500
+From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Joel Stanley <joel@jms.id.au>, kernel@pengutronix.de,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH 19/52] serial: liteuart: Convert to platform remove
+ callback returning void
+Message-ID: <ZU5x80fullMsHHGI@errol.ini.cmu.edu>
 References: <20231110152927.70601-1-u.kleine-koenig@pengutronix.de>
- <20231110152927.70601-9-u.kleine-koenig@pengutronix.de>
-From:   claudiu beznea <claudiu.beznea@tuxon.dev>
-In-Reply-To: <20231110152927.70601-9-u.kleine-koenig@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8
+ <20231110152927.70601-20-u.kleine-koenig@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20231110152927.70601-20-u.kleine-koenig@pengutronix.de>
+X-Clacks-Overhead: GNU Terry Pratchett
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On 10.11.2023 17:29, Uwe Kleine-KÃ¶nig wrote:
+On Fri, Nov 10, 2023 at 04:29:47PM +0100, Uwe Kleine-König wrote:
 > The .remove() callback for a platform driver returns an int which makes
 > many driver authors wrongly assume it's possible to do error handling by
 > returning an error code. However the value returned is ignored (apart
@@ -92,42 +89,46 @@ On 10.11.2023 17:29, Uwe Kleine-KÃ¶nig wrote:
 > Trivially convert this driver from always returning zero in the remove
 > callback to the void returning variant.
 > 
-> Signed-off-by: Uwe Kleine-KÃ¶nig <u.kleine-koenig@pengutronix.de>
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-Reviewed-by: Claudiu Beznea <claudiu.beznea@tuxon.dev>
+Thanks!
+
+Acked-by: Gabriel Somlo <gsomlo@gmail.com>
 
 > ---
->  drivers/tty/serial/atmel_serial.c | 6 ++----
+>  drivers/tty/serial/liteuart.c | 6 ++----
 >  1 file changed, 2 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 1946fafc3f3e..6792680690bd 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -3001,7 +3001,7 @@ static int atmel_serial_probe(struct platform_device *pdev)
->   * protocol that needs bitbanging on IO lines, but use the regular serial
->   * port in the normal case.
->   */
-> -static int atmel_serial_remove(struct platform_device *pdev)
-> +static void atmel_serial_remove(struct platform_device *pdev)
+> diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+> index a25ab1efe38f..3ce369f76349 100644
+> --- a/drivers/tty/serial/liteuart.c
+> +++ b/drivers/tty/serial/liteuart.c
+> @@ -336,15 +336,13 @@ static int liteuart_probe(struct platform_device *pdev)
+>  	return ret;
+>  }
+>  
+> -static int liteuart_remove(struct platform_device *pdev)
+> +static void liteuart_remove(struct platform_device *pdev)
 >  {
 >  	struct uart_port *port = platform_get_drvdata(pdev);
->  	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-> @@ -3020,8 +3020,6 @@ static int atmel_serial_remove(struct platform_device *pdev)
->  	clear_bit(port->line, atmel_ports_in_use);
+>  	unsigned int line = port->line;
 >  
->  	pdev->dev.of_node = NULL;
+>  	uart_remove_one_port(&liteuart_driver, port);
+>  	xa_erase(&liteuart_array, line);
 > -
 > -	return 0;
 >  }
 >  
->  static SIMPLE_DEV_PM_OPS(atmel_serial_pm_ops, atmel_serial_suspend,
-> @@ -3029,7 +3027,7 @@ static SIMPLE_DEV_PM_OPS(atmel_serial_pm_ops, atmel_serial_suspend,
+>  static const struct of_device_id liteuart_of_match[] = {
+> @@ -355,7 +353,7 @@ MODULE_DEVICE_TABLE(of, liteuart_of_match);
 >  
->  static struct platform_driver atmel_serial_driver = {
->  	.probe		= atmel_serial_probe,
-> -	.remove		= atmel_serial_remove,
-> +	.remove_new	= atmel_serial_remove,
->  	.driver		= {
->  		.name			= "atmel_usart_serial",
->  		.of_match_table		= of_match_ptr(atmel_serial_dt_ids),
+>  static struct platform_driver liteuart_platform_driver = {
+>  	.probe = liteuart_probe,
+> -	.remove = liteuart_remove,
+> +	.remove_new = liteuart_remove,
+>  	.driver = {
+>  		.name = KBUILD_MODNAME,
+>  		.of_match_table = liteuart_of_match,
+> -- 
+> 2.42.0
+> 
