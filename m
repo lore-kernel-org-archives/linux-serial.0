@@ -2,50 +2,49 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 927C7C4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Nov 2023 17:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42174C4332F
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Nov 2023 17:53:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230287AbjKJRxp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Nov 2023 12:53:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60094 "EHLO
+        id S229568AbjKJRyA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 10 Nov 2023 12:54:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229676AbjKJRwt (ORCPT
+        with ESMTP id S229582AbjKJRwu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Nov 2023 12:52:49 -0500
+        Fri, 10 Nov 2023 12:52:50 -0500
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17DFA3A8A8
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1712B3A8A7
         for <linux-serial@vger.kernel.org>; Fri, 10 Nov 2023 07:30:50 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1r1TT1-00067r-6Y; Fri, 10 Nov 2023 16:30:43 +0100
+        id 1r1TT0-000678-Iu; Fri, 10 Nov 2023 16:30:42 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1r1TT0-0083JK-8Z; Fri, 10 Nov 2023 16:30:42 +0100
+        id 1r1TSz-0083JB-RP; Fri, 10 Nov 2023 16:30:41 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1r1TSz-00Gnva-Vf; Fri, 10 Nov 2023 16:30:41 +0100
+        id 1r1TSz-00GnvR-IF; Fri, 10 Nov 2023 16:30:41 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
-Cc:     Baruch Siach <baruch@tkos.co.il>,
-        Thierry Reding <treding@nvidia.com>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Thomas Gleixner <tglx@linutronix.de>, kernel@pengutronix.de,
+Cc:     Alexander Shiyan <shc_work@mail.ru>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Yangtao Li <frank.li@vivo.com>, kernel@pengutronix.de,
         linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 12/52] serial: digicolor: Convert to platform remove callback returning void
-Date:   Fri, 10 Nov 2023 16:29:40 +0100
-Message-ID: <20231110152927.70601-13-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 10/52] serial: clps711x: Convert to platform remove callback returning void
+Date:   Fri, 10 Nov 2023 16:29:38 +0100
+Message-ID: <20231110152927.70601-11-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231110152927.70601-1-u.kleine-koenig@pengutronix.de>
 References: <20231110152927.70601-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1870; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=m1r+QnP/V3kim5WaF5/ossgE+daOyiM+Oba/zRsf6PU=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlTkxldbtdlasu2fgCBkvHIU0UHpc1TpfPHHQ4i C+4HuAlVYqJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZU5MZQAKCRCPgPtYfRL+ TjSTCACuWfN+bQoO9xganPfDGRi2FGjr5tmYUWYpcGC9fB+4bGv+CfhkRiG58Q/z7V8418yuo7h JAY7M7ASFODk5DgfEwW9E8QUVDFXA1IeyZZebxiOniXQCxfTQfN+QgnPxAaNz1Fsp22Yv0/9fd0 ynVktuIei55uYWy/R3GsUcp/qkmImrcLe/fFU407NdHkRmdna7tGy6MiVF1Y/kokZvC+QSfXZH9 7sfseQB9ua4mBl1IHcv96YPMCqCQ06DYRKV/0PpnMx/ytsKLUQ67MIzspZcQW7ezFCxlrMrLZ7q dEJVe8Dqut7Y/YaP21S4Tt94fHXtp8+WAIlHpTVdhO8/WNfW
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1802; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=zGO14akMC49w4hWUT2FVP0Zn7JKdFIeplvEQPynooZY=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlTkxjnfc+m4POnHiYSF/BMoC+3SURS9VfYyQql AwsdGbvL9+JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZU5MYwAKCRCPgPtYfRL+ TjvGB/94QeQhTPLSU4/YEu6O18DGMPuEgHh6J514QoQdI4zA0dqcmIA5IKwVhRZFaIrrjWHwC25 w06aHlc05uZT7xXlyBZ3lwW1cBs6X2N9Rf+0OMJifzXyemsvXgKOm44jWK2ifWjQyGpqG0CJoCw GkNxe7IBOWBdv60CvC+U+i+gsvNB5fnB31fAt0Qp1aCDndITHlbERp/Bp/Uuyw/xAsfiY1H/GVR K0t0jNrePc7zb2mLtXaoLmy0use1ck5q5hDXWulMYCW3A2A9WuaZtcXU6zBcBg8kx9FyH4do6XA +opPckvU+uAfOTNxVZsMAoUdQzRbiWPH0B9NnyIyqPLVgRQt
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -71,37 +70,37 @@ callback to the void returning variant.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/tty/serial/digicolor-usart.c | 6 ++----
+ drivers/tty/serial/clps711x.c | 6 ++----
  1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
-index 5004125f3045..e419c4bde8b7 100644
---- a/drivers/tty/serial/digicolor-usart.c
-+++ b/drivers/tty/serial/digicolor-usart.c
-@@ -503,13 +503,11 @@ static int digicolor_uart_probe(struct platform_device *pdev)
- 	return uart_add_one_port(&digicolor_uart, &dp->port);
+diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
+index 55d19937efbd..7927725b8957 100644
+--- a/drivers/tty/serial/clps711x.c
++++ b/drivers/tty/serial/clps711x.c
+@@ -510,13 +510,11 @@ static int uart_clps711x_probe(struct platform_device *pdev)
+ 	return ret;
  }
  
--static int digicolor_uart_remove(struct platform_device *pdev)
-+static void digicolor_uart_remove(struct platform_device *pdev)
+-static int uart_clps711x_remove(struct platform_device *pdev)
++static void uart_clps711x_remove(struct platform_device *pdev)
  {
- 	struct uart_port *port = platform_get_drvdata(pdev);
+ 	struct clps711x_port *s = platform_get_drvdata(pdev);
  
- 	uart_remove_one_port(&digicolor_uart, port);
+ 	uart_remove_one_port(&clps711x_uart, &s->port);
 -
 -	return 0;
  }
  
- static const struct of_device_id digicolor_uart_dt_ids[] = {
-@@ -524,7 +522,7 @@ static struct platform_driver digicolor_uart_platform = {
- 		.of_match_table	= of_match_ptr(digicolor_uart_dt_ids),
+ static const struct of_device_id __maybe_unused clps711x_uart_dt_ids[] = {
+@@ -531,7 +529,7 @@ static struct platform_driver clps711x_uart_platform = {
+ 		.of_match_table	= of_match_ptr(clps711x_uart_dt_ids),
  	},
- 	.probe	= digicolor_uart_probe,
--	.remove	= digicolor_uart_remove,
-+	.remove_new = digicolor_uart_remove,
+ 	.probe	= uart_clps711x_probe,
+-	.remove	= uart_clps711x_remove,
++	.remove_new = uart_clps711x_remove,
  };
  
- static int __init digicolor_uart_init(void)
+ static int __init uart_clps711x_init(void)
 -- 
 2.42.0
 
