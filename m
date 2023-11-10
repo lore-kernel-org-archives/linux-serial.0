@@ -2,116 +2,100 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E9FC07352
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Nov 2023 20:45:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA47C4332F
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Nov 2023 20:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235995AbjKJUpI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Nov 2023 15:45:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44280 "EHLO
+        id S235735AbjKJU5e (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 10 Nov 2023 15:57:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235791AbjKJUop (ORCPT
+        with ESMTP id S229787AbjKJU5V (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Nov 2023 15:44:45 -0500
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E00E15596;
-        Fri, 10 Nov 2023 12:43:37 -0800 (PST)
-Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-6ce2fc858feso1340548a34.3;
-        Fri, 10 Nov 2023 12:43:37 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699649017; x=1700253817;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8JelqBtasuctrFq8aA1lg5BQxbworEzE8yTnhOMjZkc=;
-        b=g3Z97gzxwzroBwBn23TrnQrTUU3yKB7lZPzm5LZHjrMTEThjfDkrn5X1FgQ2ji5wSi
-         dLpjzbjr0MX+pa5hlTfiBCSBDTKpYvcjvXan/UMF9dlTe9/OK0E++X/IgtqG/xQD84bs
-         oPQkgOebb3OhqCXYQzYgdXMsC5rzwFLGqPhAOF73R8mttCR09Ouc8yoK8+Kk8DNMu2pO
-         ymd6Py26ZN0E69vK0K/SNu26ZE+6/7LaeMZBHh2DQFuS4nMLZ7hofnLBixHPq+RzLg5x
-         KgCil5ReM8VEjqqA6HoM+OSfFFCSlnGIE96eNvevfmgtL3Jz8zChfHStWbrIp6NV0Z4j
-         2a7Q==
-X-Gm-Message-State: AOJu0Yxe3D0xrPc72/W/HPK4Crsvew2EY5B8uc9E9/3CjsLf6jHCPsdT
-        EEgPHtYC4eUwj2ageZhd8A==
-X-Google-Smtp-Source: AGHT+IHvxcWxE9DKzdafhiZ3HFcZS9N0tFj/iDRHQnxnirdx157d/x13I8sAnvTh754BbGSMSLyN9Q==
-X-Received: by 2002:a05:6830:3492:b0:6b8:dc53:9efd with SMTP id c18-20020a056830349200b006b8dc539efdmr345339otu.3.1699649017102;
-        Fri, 10 Nov 2023 12:43:37 -0800 (PST)
-Received: from herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id l19-20020a056830269300b006ce2fce83cbsm52941otu.25.2023.11.10.12.43.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Nov 2023 12:43:36 -0800 (PST)
-Received: (nullmailer pid 399226 invoked by uid 1000);
-        Fri, 10 Nov 2023 20:43:34 -0000
-Date:   Fri, 10 Nov 2023 14:43:34 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-mmc@vger.kernel.org,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linux-gpio@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-kernel@vger.kernel.org, Andi Shyti <andi.shyti@kernel.org>,
-        linux-sound@vger.kernel.org, linux-iio@vger.kernel.org,
-        Sam Protsenko <semen.protsenko@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jaehoon Chung <jh80.chung@samsung.com>,
-        linux-i2c@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        alsa-devel@alsa-project.org, linux-rtc@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        linux-samsung-soc@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        devicetree@vger.kernel.org,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        David Airlie <airlied@gmail.com>, Lee Jones <lee@kernel.org>
-Subject: Re: [PATCH 12/17] dt-bindings: pwm: samsung: add specific
- compatibles for existing SoC
-Message-ID: <169964901433.399188.3619478168082919994.robh@kernel.org>
-References: <20231108104343.24192-1-krzysztof.kozlowski@linaro.org>
- <20231108104343.24192-13-krzysztof.kozlowski@linaro.org>
+        Fri, 10 Nov 2023 15:57:21 -0500
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E71FA3A897
+        for <linux-serial@vger.kernel.org>; Fri, 10 Nov 2023 07:30:45 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1r1TT0-00068M-Ta; Fri, 10 Nov 2023 16:30:42 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1r1TT0-0083JQ-GY; Fri, 10 Nov 2023 16:30:42 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1r1TT0-00Gnve-7W; Fri, 10 Nov 2023 16:30:42 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Max Filippov <jcmvbkbc@gmail.com>, kernel@pengutronix.de,
+        linux-serial@vger.kernel.org
+Subject: [PATCH 13/52] serial: esp32_acm: Convert to platform remove callback returning void
+Date:   Fri, 10 Nov 2023 16:29:41 +0100
+Message-ID: <20231110152927.70601-14-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
+In-Reply-To: <20231110152927.70601-1-u.kleine-koenig@pengutronix.de>
+References: <20231110152927.70601-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231108104343.24192-13-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1697; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=0zkCG7vtEFfPJVH6axZyttIBTTJt/qfiQOul78Bc3qs=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlTkxmkAqoy9cFczX9NB5uWXgcGVK3diZ8fgMn7 pq4k6Wb4xKJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZU5MZgAKCRCPgPtYfRL+ TrdTCACrlGxcmZqWht6IypULLXqdsA2/Vx4CCaBQRPg7ExcDH40A23fip4SUHVj7UsubT/2QUXd SHSj2KwZJ0CDWefSmz8OIsqXovGFDkr3Lmo311NkBc8+93cexx+n9Rvc4qIizeiek3u9lx2xPgk f1NxaVAdFD3+oc5U1KXAM8Joa36/jtM/d+YtB13g3AF2ngG2l97QRxTnRsYT25VlnDAdOgdM0W1 WSce302ZpGmkHehAPbM8ZA3UtnveoL1Qdu2XKA9mWX4WvIviv8IrOx1Aijzh6XtkI0SU+LUvqGo Xm5yXnM38RDCVW6VqcCrdsdrQp63d8lPKoGsLqoZnQWzW1Dq
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+The .remove() callback for a platform driver returns an int which makes
+many driver authors wrongly assume it's possible to do error handling by
+returning an error code. However the value returned is ignored (apart
+from emitting a warning) and this typically results in resource leaks.
 
-On Wed, 08 Nov 2023 11:43:38 +0100, Krzysztof Kozlowski wrote:
-> Samsung Exynos SoC reuses several devices from older designs, thus
-> historically we kept the old (block's) compatible only.  This works fine
-> and there is no bug here, however guidelines expressed in
-> Documentation/devicetree/bindings/writing-bindings.rst state that:
-> 1. Compatibles should be specific.
-> 2. We should add new compatibles in case of bugs or features.
-> 
-> Add compatibles specific to each SoC in front of all old-SoC-like
-> compatibles.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
-> 
-> I propose to take the patch through Samsung SoC (me). See cover letter
-> for explanation.
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-samsung.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+To improve here there is a quest to make the remove callback return
+void. In the first step of this quest all drivers are converted to
+.remove_new(), which already returns void. Eventually after all drivers
+are converted, .remove_new() will be renamed to .remove().
 
-Acked-by: Rob Herring <robh@kernel.org>
+Trivially convert this driver from always returning zero in the remove
+callback to the void returning variant.
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/tty/serial/esp32_acm.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/esp32_acm.c b/drivers/tty/serial/esp32_acm.c
+index cb28a87736aa..a4cbaedb5170 100644
+--- a/drivers/tty/serial/esp32_acm.c
++++ b/drivers/tty/serial/esp32_acm.c
+@@ -413,18 +413,17 @@ static int esp32s3_acm_probe(struct platform_device *pdev)
+ 	return uart_add_one_port(&esp32s3_acm_reg, port);
+ }
+ 
+-static int esp32s3_acm_remove(struct platform_device *pdev)
++static void esp32s3_acm_remove(struct platform_device *pdev)
+ {
+ 	struct uart_port *port = platform_get_drvdata(pdev);
+ 
+ 	uart_remove_one_port(&esp32s3_acm_reg, port);
+-	return 0;
+ }
+ 
+ 
+ static struct platform_driver esp32s3_acm_driver = {
+ 	.probe		= esp32s3_acm_probe,
+-	.remove		= esp32s3_acm_remove,
++	.remove_new	= esp32s3_acm_remove,
+ 	.driver		= {
+ 		.name	= DRIVER_NAME,
+ 		.of_match_table	= esp32s3_acm_dt_ids,
+-- 
+2.42.0
 
