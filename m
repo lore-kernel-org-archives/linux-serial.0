@@ -2,50 +2,48 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E83DC4167B
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Nov 2023 20:31:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0AC5C4167B
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Nov 2023 20:36:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345296AbjKJUbx (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Nov 2023 15:31:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58108 "EHLO
+        id S235929AbjKJUgy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 10 Nov 2023 15:36:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345064AbjKJUbc (ORCPT
+        with ESMTP id S235469AbjKJUgk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Nov 2023 15:31:32 -0500
+        Fri, 10 Nov 2023 15:36:40 -0500
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 708253A8AB
-        for <linux-serial@vger.kernel.org>; Fri, 10 Nov 2023 07:30:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826633AE0A
+        for <linux-serial@vger.kernel.org>; Fri, 10 Nov 2023 07:30:57 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1r1TT3-0006G7-CM; Fri, 10 Nov 2023 16:30:45 +0100
+        id 1r1TT8-0006Tc-4o; Fri, 10 Nov 2023 16:30:50 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1r1TT1-0083Ju-UG; Fri, 10 Nov 2023 16:30:43 +0100
+        id 1r1TT7-0083La-6T; Fri, 10 Nov 2023 16:30:49 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1r1TT1-00Gnw6-LH; Fri, 10 Nov 2023 16:30:43 +0100
+        id 1r1TT6-00Gnxr-Tj; Fri, 10 Nov 2023 16:30:48 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
-Cc:     Vladimir Zapolskiy <vz@mleia.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        John Ogness <john.ogness@linutronix.de>, kernel@pengutronix.de,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 20/52] serial: lpc32xx_hs: Convert to platform remove callback returning void
-Date:   Fri, 10 Nov 2023 16:29:48 +0100
-Message-ID: <20231110152927.70601-21-u.kleine-koenig@pengutronix.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        sparclinux@vger.kernel.org, kernel@pengutronix.de,
+        linux-serial@vger.kernel.org
+Subject: [PATCH 46/52] serial: sunsu: Convert to platform remove callback returning void
+Date:   Fri, 10 Nov 2023 16:30:14 +0100
+Message-ID: <20231110152927.70601-47-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
 In-Reply-To: <20231110152927.70601-1-u.kleine-koenig@pengutronix.de>
 References: <20231110152927.70601-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1861; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=DVcQQb+CmJ21hxu1PtSgyIcrg3soROBUhSF8wYyvkOI=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlTkxuHUt62+WjZkkOCz3dJvfYHjyd5V700VnXm YZ3G8CchyaJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZU5MbgAKCRCPgPtYfRL+ TqLSB/9FYiCtp2pOcz02o4zxja59N/vPJPe3n2K98J6uXdQi7OFr5r3XBfhvLGSLC1sEyRZLEPa rRTGsnniGj+fsyJ7ZFoHYaAz89T2tlmYmnO4O0F5G5VHUl+7WAygI1I+rK21c3Z/LcxDwkYTPwR S7tydzAgd4gpbBErXH6jjyx9LE8TPm5FLJwis4mSIAtF0+5a/b8MDxv5EQEWQ3VEzRiNMknbMmw YCwh9Z95Xe4CYKsnoylLiqQwWo0eXE8PL3iQIqsnsFdlNSylyYlRAQn+ove0F3JMTPURe7DlgbK LmsBk89lzTJV6rVkI2oUFbMwjZ60Pju+1D0h7APSRL/B5NmV
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1719; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=bJvr6ajvc8acvcU6LpWDvOv5tO3tdCW3m+BAMBN9sSk=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBlTkySfFl2F/BTiBQOkgUXRv47nPJftRH90peJI DfvmZmIeAOJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZU5MkgAKCRCPgPtYfRL+ TnN7B/wLODkAOPQCFWUj4zF150l4kwLErWUwDX15OAohX+Bjvr3cvggKOwDd1eqQJyfRh2Aq3qd 0gtrGa09D2onXpxFGJU9gHHfCV73uttZTYRdbLqibO+mn88rJVLq+1GOZHnC3Ack3giSB4wqSs3 mExxuWH/y6zzdP7xViHRWx8v+dp48hKXcAwZXSLkPRRFvBmBss3omhCsdDvAtHyZQs0N8OGsNcE 6EpxsX4c8XIYx7USAYj2IJL3pf2+jY/A+8Dd7nBFcteFiCyWKX8Q6c8dMwl8IohKBBfogrsNjty VQzAvv3PfFA9hEzW6dIrTvJvmdPC5eAVqniqgA7/GRmi78VV
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -71,37 +69,40 @@ callback to the void returning variant.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/tty/serial/lpc32xx_hs.c | 6 ++----
+ drivers/tty/serial/sunsu.c | 6 ++----
  1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_hs.c
-index 5149a947b7fe..ec20329f0603 100644
---- a/drivers/tty/serial/lpc32xx_hs.c
-+++ b/drivers/tty/serial/lpc32xx_hs.c
-@@ -659,13 +659,11 @@ static int serial_hs_lpc32xx_probe(struct platform_device *pdev)
- /*
-  * Remove serial ports registered against a platform device.
-  */
--static int serial_hs_lpc32xx_remove(struct platform_device *pdev)
-+static void serial_hs_lpc32xx_remove(struct platform_device *pdev)
- {
- 	struct lpc32xx_hsuart_port *p = platform_get_drvdata(pdev);
+diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
+index 1e051cc2591c..c8b65f4b2710 100644
+--- a/drivers/tty/serial/sunsu.c
++++ b/drivers/tty/serial/sunsu.c
+@@ -1515,7 +1515,7 @@ static int su_probe(struct platform_device *op)
+ 	return err;
+ }
  
- 	uart_remove_one_port(&lpc32xx_hs_reg, &p->port);
+-static int su_remove(struct platform_device *op)
++static void su_remove(struct platform_device *op)
+ {
+ 	struct uart_sunsu_port *up = platform_get_drvdata(op);
+ 	bool kbdms = false;
+@@ -1536,8 +1536,6 @@ static int su_remove(struct platform_device *op)
+ 
+ 	if (kbdms)
+ 		kfree(up);
 -
 -	return 0;
  }
  
+ static const struct of_device_id su_match[] = {
+@@ -1565,7 +1563,7 @@ static struct platform_driver su_driver = {
+ 		.of_match_table = su_match,
+ 	},
+ 	.probe		= su_probe,
+-	.remove		= su_remove,
++	.remove_new	= su_remove,
+ };
  
-@@ -702,7 +700,7 @@ MODULE_DEVICE_TABLE(of, serial_hs_lpc32xx_dt_ids);
- 
- static struct platform_driver serial_hs_lpc32xx_driver = {
- 	.probe		= serial_hs_lpc32xx_probe,
--	.remove		= serial_hs_lpc32xx_remove,
-+	.remove_new	= serial_hs_lpc32xx_remove,
- 	.suspend	= serial_hs_lpc32xx_suspend,
- 	.resume		= serial_hs_lpc32xx_resume,
- 	.driver		= {
+ static int __init sunsu_init(void)
 -- 
 2.42.0
 
