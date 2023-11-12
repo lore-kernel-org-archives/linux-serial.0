@@ -2,183 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEBB2C072AB
-	for <linux-serial@archiver.kernel.org>; Sat, 11 Nov 2023 01:46:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73130C4167B
+	for <linux-serial@archiver.kernel.org>; Sun, 12 Nov 2023 00:55:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345352AbjKKBqC (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Nov 2023 20:46:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48050 "EHLO
+        id S229854AbjKLAzv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 11 Nov 2023 19:55:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230070AbjKKBp7 (ORCPT
+        with ESMTP id S229864AbjKLAzu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Nov 2023 20:45:59 -0500
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DC0449A;
-        Fri, 10 Nov 2023 17:45:56 -0800 (PST)
-Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20231111014554epoutp01fb86d2c6357c226f27098220f02060d0~WbkWh2cK-2782027820epoutp01j;
-        Sat, 11 Nov 2023 01:45:54 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20231111014554epoutp01fb86d2c6357c226f27098220f02060d0~WbkWh2cK-2782027820epoutp01j
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1699667154;
-        bh=pmPCvpEQALsN2I+z2mdUOLAfesbaw0dmr1s6esTrmwM=;
-        h=From:To:In-Reply-To:Subject:Date:References:From;
-        b=rk/VnfhwOir17zh6etek14ytr7EuArzKJdnZPSXpap8K2N1CaYJ0yinihj9aqTD28
-         p7iZJYobSFiBBoi4h7qZa4Oiz16cVCe7fGYAOwULdgIhE/pc2lq9QdBbBGIA0KKlRm
-         DKJwy0WggijLlen+KSmEHzxq75+EKGe4FVgX4eIU=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
-        20231111014554epcas5p493bb28599928ed4789b47172fe7d1467~WbkWR5WD12395723957epcas5p4l;
-        Sat, 11 Nov 2023 01:45:54 +0000 (GMT)
-Received: from epsmgec5p1new.samsung.com (unknown [182.195.38.175]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4SRz6n28PJz4x9Pr; Sat, 11 Nov
-        2023 01:45:53 +0000 (GMT)
-Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
-        epsmgec5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        B6.BE.08567.1DCDE456; Sat, 11 Nov 2023 10:45:53 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
-        20231111014552epcas5p17256164fc9ca6ea2b575207f03919877~WbkUnwO9c2897028970epcas5p1I;
-        Sat, 11 Nov 2023 01:45:52 +0000 (GMT)
-Received: from epsmgmcp1.samsung.com (unknown [182.195.42.82]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20231111014552epsmtrp1036115db57eb4aaba270dfbeb1040557~WbkUmN2lP3109231092epsmtrp1_;
-        Sat, 11 Nov 2023 01:45:52 +0000 (GMT)
-X-AuditID: b6c32a44-617fd70000002177-14-654edcd17e98
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgmcp1.samsung.com (Symantec Messaging Gateway) with SMTP id
-        79.73.18939.0DCDE456; Sat, 11 Nov 2023 10:45:52 +0900 (KST)
-Received: from INBRO000447 (unknown [107.122.12.5]) by epsmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20231111014547epsmtip1027d013442d29eabc5f9d04f6fa045be~WbkPd9a2L2014520145epsmtip1F;
-        Sat, 11 Nov 2023 01:45:47 +0000 (GMT)
-From:   "Alim Akhtar" <alim.akhtar@samsung.com>
-To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@linaro.org>,
-        "'David Airlie'" <airlied@gmail.com>,
-        "'Daniel Vetter'" <daniel@ffwll.ch>,
-        "'Maarten Lankhorst'" <maarten.lankhorst@linux.intel.com>,
-        "'Maxime Ripard'" <mripard@kernel.org>,
-        "'Thomas Zimmermann'" <tzimmermann@suse.de>,
-        "'Rob Herring'" <robh+dt@kernel.org>,
-        "'Krzysztof Kozlowski'" <krzysztof.kozlowski+dt@linaro.org>,
-        "'Conor Dooley'" <conor+dt@kernel.org>,
-        "'Andi Shyti'" <andi.shyti@kernel.org>,
-        "'Jonathan Cameron'" <jic23@kernel.org>,
-        "'Lars-Peter Clausen'" <lars@metafoo.de>,
-        "'Lee Jones'" <lee@kernel.org>,
-        "'Ulf Hansson'" <ulf.hansson@linaro.org>,
-        "'Tomasz Figa'" <tomasz.figa@gmail.com>,
-        "'Sylwester Nawrocki'" <s.nawrocki@samsung.com>,
-        "'Linus Walleij'" <linus.walleij@linaro.org>,
-        "'Thierry Reding'" <thierry.reding@gmail.com>,
-        =?utf-8?Q?'Uwe_Kleine-K=C3=B6nig'?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "'Alessandro Zummo'" <a.zummo@towertech.it>,
-        "'Alexandre Belloni'" <alexandre.belloni@bootlin.com>,
-        "'Greg Kroah-Hartman'" <gregkh@linuxfoundation.org>,
-        "'Jiri Slaby'" <jirislaby@kernel.org>,
-        "'Liam Girdwood'" <lgirdwood@gmail.com>,
-        "'Mark Brown'" <broonie@kernel.org>,
-        "'Jaehoon Chung'" <jh80.chung@samsung.com>,
-        "'Sam Protsenko'" <semen.protsenko@linaro.org>,
-        <dri-devel@lists.freedesktop.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-samsung-soc@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
-        <linux-gpio@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
-        <linux-rtc@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <linux-sound@vger.kernel.org>
-In-Reply-To: <20231108104343.24192-18-krzysztof.kozlowski@linaro.org>
-Subject: RE: [PATCH 17/17] arm64: dts: exynosautov9: add specific
- compatibles to several blocks
-Date:   Sat, 11 Nov 2023 07:15:46 +0530
-Message-ID: <05ad01da1440$cdb40340$691c09c0$@samsung.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQGWJB6kbFUwx2+cGuz2YrV1SxstmQGBpPEAAjHDf/Cw3p3ngA==
-Content-Language: en-us
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Te0zTVxTHc3+P/qqu5mfFeYfGsDqzgQHaQbuLAUbk4U/nHM4EzLIFG/oL
-        EKB0LUzRJTIN5SUwBIM0tIAQwCrpVh7BMkSwWt1MeYqoMMZgysMxJ68JOFb4oeO/z/me77nn
-        nnNz+bhwmnLmxygTWbVSHifirScabrq6uXf2H2LFQzUUqui8T6E7Dy5hKG2ykkI9nW0YGpxJ
-        B+jC0AgPXW22Y2ipIQ9HJVY7iXpm/uKhs+UmHuqb15LotzNGDE3qt6Oc0SEcNU/UO47LLyFR
-        o7aMQLM96RgqWKzCkHm4l0S1JYsApb+aBshgnSRQt6WYh6xLuQANDBgBun2lh4cutl/H0L3y
-        bArpnxTgqOzvegJpMypJlNpspdDNZ2kkeprjsLy0GAhktDjOq3uWR6LHefkA2WrCA1yZH6bO
-        8BjD1VNM82wpwVzTDVCM2ZjBY/p7f3Lodw8zLfqrFDOYZcOY2orTTMWzNpLJfSVmcuqMgKn9
-        5RRTaHiJMVPmHaH0F7G+0axcwapdWGVkgiJGGeUn+uRIRGCEVCaWuEt80EciF6U8nvUTBR0M
-        dQ+JiXMsWOTyjTwuySGFyjUakae/rzohKZF1iU7QJPqJWJUiTuWt8tDI4zVJyigPJZu4RyIW
-        fyh1GI/FRleZRkjVz9SJB/qHvBRQzcsE6/iQ9oY3ZkpBJljPF9JNANptVowLXgBoy7SDN4HF
-        Mke+LjGabPgyC+lrAM4X7+RMowCaa8uw5QSPdoeN5VrecsKJbhLA7pbfieXEOjoYtkxdXGm+
-        mZbD9uE7YJkJehdsaC5a0QW0D3xeZyY53gTvFo2s1OL0blhZNoFzt3CBL/+oXPE40Xthy6/V
-        FOfZCsduWSnOU78eZlZ8znEQTKlOX9U3w3Fb3So7w7FcrYP5DmbgpUVnTo6Gf1aZAMcfwxs9
-        xcSyBaddocniyXXaCLMXRjCuUgDTtULOvQuenbxPcLwN5mVlra6Ngfey21aX2wVgdmsf/j1w
-        0a0ZUrdmSN2aYXT/dy4FhBG8w6o08VFspFQlUbLH37x3ZEK8Gax8P7egRtBX8q9HG8D4oA1A
-        Pi5yEnR4H2SFAoU8+SSrTohQJ8WxmjYgdWw+D3feEpng+L/KxAiJt4/YWyaTeft4ySSirYKJ
-        VL1CSEfJE9lYllWx6td1GH+dcwqWlFPW5Iqb97z942iHOrD6M6el925tmd5QSCpDzHcN1oD0
-        jufhngH/EPteiIZb9wkWQhvOdeiSR5vH9uffblQgVJNZKI3psi6UH02ztx8QvPXVC0PvuCaM
-        nN0uau3PzJdVzXVqv00tORmuHoncn/zoVIYBhg6K6wIPP9zUxL67d/5w5XeLlz3C7OrT3bnS
-        gglJCuX5WNpInbDprwhQ/MyY//gHipCva8b1T48xBxe2Dwrv9Xp4Wc77nrus22Caef9Lwhic
-        HdO64eTOUv+ijK4W+lP7bkXtdfORC4uPwrwsW9yG8p7MKe39O7Y5uctkHof6jup1llrT+bLW
-        4JSczfD4RhGhiZZL3HC1Rv4fd75WOwcFAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA02SfVDTdRzH/f6eh437NUi/B+XlujrDBDw8+9KlZw+cvz+6JLrq8o90wU8g
-        Gew2SHno8CDHwAJBPXC5DQSWzNVkPEjIWIxNwsnEQBYHSCMeJImwhd08HoLt6vjvdZ/3+/P6
-        fP/4MrjIRYYxqemZvDxdkiamgojWbvG2Xf2j7/LRFtNzqO7uPRr95L6MoaJ5PY0G79owNL6o
-        AuiCZ5JCRosLQ6ut5TjS2V0kGlz8k0KFtSYK/fJESaJfCwwYmtc8i0ofeHBkedhCo7pzOhK1
-        KWsI9HhQhaHzS99iyPzbEImadEsAqZb/BkhrnyfQQPslCtlXywAaGzMAdPPqIIWq7nRi6Hbt
-        1zTSTJ/HUc2jFgIpi/UkOm2x06h7rohEM6VrFV+7lkCG9jVf81w5iUbKzwHU891HB17mrnkL
-        KE5rzOUsj6sJ7gf1GM2ZDcUUNzrUsTbvfY+zaow0N36mB+Oa6vK5ujkbyZUtR3OlzQbANTlz
-        uUqtD+O85m3x7OGg15P4tNTPeXnU/qNBKQXFnUBmo09OfFmDnwLVVAkQMJDdAw2mHrwEBDEi
-        9jqA7TcekYEgHLobz9IBDoENKzN0oDQNoONmE1gPKHYXbKtV+k2h7LAQOkcPBUouAGe7m/2B
-        gI2DVm+Vn0PYI/DWjXFsnQn2RdhqueifC9lYuNBsJgP8NOy9OEmsM87uhFPDU/+zvuYhHnjR
-        89A3pScDh9+E1vtX6EBnK5x12OmzQKTeoFJvUKk3qNQbVqoBYQDP8DKFNFmaKNsdqZBIFVnp
-        yZGJGVIz8H+5iIQ2oDctR9oAxgAbgAwuDhX273mHFwmTJNk5vDzjiDwrjVfYQDhDiLcKX0gr
-        ThKxyZJM/jjPy3j5fynGCMJOYbkf7uvQdmmmszWfbg79xtm/4wt31HjfkGlTQ0XlVSA2h33S
-        EV72z2n7AZeuRHVicsJ2+3p0T19q9Bn3k6hjwbErR1/Ncg6Dsr2a/vQtVxKUbM5KYuHee6Uf
-        Gx0Vnre9M/eXJC2CRLVk561FacbCyI98+UFVzsktMfGz33flyQ3H4AlV6/xo8MQDq+791e3G
-        eIfzD3fvJoc179IbWfWH/2oM66yvGnFcrkyIrIqITSEm1R+4SuIG7qQUen4ufIXxRLxECroE
-        MXGVTwV/FRrjO76wL8874EvdfmHztfpDjXE7dH2CBl2XS0YU5U/nW2SN2ba3QjIXXjtI/P6Z
-        umKqY3F/p5hQpEh2R+ByheRf5sU5kOEDAAA=
-X-CMS-MailID: 20231111014552epcas5p17256164fc9ca6ea2b575207f03919877
-X-Msg-Generator: CA
+        Sat, 11 Nov 2023 19:55:50 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26FE830CF;
+        Sat, 11 Nov 2023 16:55:47 -0800 (PST)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5AB5DC433CB;
+        Sun, 12 Nov 2023 00:55:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1699750546;
+        bh=+f1eXcr91euPusl3Xe/1/DfSwfjp6Uid8mOwDf2yltU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=H9MS3tqxULUVIVZESINTI28qjs/DgCx9l4kuIeVhz4pohNE2WbN6BAyRD14y7BF90
+         RY/kpgyT8TdPukD/AJXGR6o8Z2GVO/Tbn0sIbWVqCz5W7mWfsxghmcPMVtHUtZAPrC
+         qqNpGPrxFKZ3yyxP0rldcBKY2bhSoRfQtQVcL8qvIMNKeEmyCCrEvebptP7LgI0KBF
+         /AnhzXoAPcu8zsPopEYtFbsEgq1v9bjfR6k6cNBR6JEHcNqYRsqNMQaFXwH/40eL5s
+         lBAwWg+oSDpWNSMXZQtdILBi85B+aR6+jOZwz8NZST6UxEclBVUtElAOeYPYWgvOQi
+         DZpbY6goJKsuw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3BA38E00089;
+        Sun, 12 Nov 2023 00:55:46 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20231108104502epcas5p335e39d7cc94ca84aa4423ceee1a0a315
-References: <20231108104343.24192-1-krzysztof.kozlowski@linaro.org>
-        <CGME20231108104502epcas5p335e39d7cc94ca84aa4423ceee1a0a315@epcas5p3.samsung.com>
-        <20231108104343.24192-18-krzysztof.kozlowski@linaro.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3 0/9] RISC-V SBI debug console extension support
+From:   patchwork-bot+linux-riscv@kernel.org
+Message-Id: <169975054624.11360.10545081285064306783.git-patchwork-notify@kernel.org>
+Date:   Sun, 12 Nov 2023 00:55:46 +0000
+References: <20231020072140.900967-1-apatel@ventanamicro.com>
+In-Reply-To: <20231020072140.900967-1-apatel@ventanamicro.com>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     linux-riscv@lists.infradead.org, pbonzini@redhat.com,
+        atishp@atishpatra.org, palmer@dabbelt.com,
+        paul.walmsley@sifive.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, conor@kernel.org, ajones@ventanamicro.com,
+        kvm@vger.kernel.org, kvm-riscv@lists.infradead.org,
+        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hello:
 
+This series was applied to riscv/linux.git (fixes)
+by Anup Patel <anup@brainfault.org>:
 
-> -----Original Message-----
-> From: Krzysztof Kozlowski <krzysztof.kozlowski=40linaro.org>
-> ExynosAutov9 reuses several devices from older designs, thus historically=
- we
-> kept the old (block's) compatible only.  This works fine and there is no =
-bug
-> here, however guidelines expressed in
-> Documentation/devicetree/bindings/writing-bindings.rst state that:
-> 1. Compatibles should be specific.
-> 2. We should add new compatibles in case of bugs or features.
->=20
-> Add compatibles specific to ExynosAutov9 in front of all old-SoC-like
-> compatibles.  This will also help reviews of new code using existing DTS =
-as
-> template.  No functional impact on Linux drivers behavior.
->=20
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski=40linaro.org>
-> ---
+On Fri, 20 Oct 2023 12:51:31 +0530 you wrote:
+> The SBI v2.0 specification is now frozen. The SBI v2.0 specification defines
+> SBI debug console (DBCN) extension which replaces the legacy SBI v0.1
+> functions sbi_console_putchar() and sbi_console_getchar().
+> (Refer v2.0-rc5 at https://github.com/riscv-non-isa/riscv-sbi-doc/releases)
+> 
+> This series adds support for SBI debug console (DBCN) extension in KVM RISC-V
+> and Linux RISC-V.
+> 
+> [...]
 
-Reviewed-by: Alim Akhtar <alim.akhtar=40samsung.com>
+Here is the summary with links:
+  - [v3,1/9] RISC-V: Add defines for SBI debug console extension
+    https://git.kernel.org/riscv/c/dadf7886993c
+  - [v3,2/9] RISC-V: KVM: Change the SBI specification version to v2.0
+    https://git.kernel.org/riscv/c/b88e87a0a1ec
+  - [v3,3/9] RISC-V: KVM: Allow some SBI extensions to be disabled by default
+    https://git.kernel.org/riscv/c/56d8a385b605
+  - [v3,4/9] RISC-V: KVM: Forward SBI DBCN extension to user-space
+    https://git.kernel.org/riscv/c/c667ad229d13
+  - [v3,5/9] KVM: riscv: selftests: Add SBI DBCN extension to get-reg-list test
+    https://git.kernel.org/riscv/c/d9c00f44e5de
+  - [v3,6/9] RISC-V: Add stubs for sbi_console_putchar/getchar()
+    (no matching commit)
+  - [v3,7/9] tty/serial: Add RISC-V SBI debug console based earlycon
+    (no matching commit)
+  - [v3,8/9] tty: Add SBI debug console support to HVC SBI driver
+    (no matching commit)
+  - [v3,9/9] RISC-V: Enable SBI based earlycon support
+    (no matching commit)
 
->  arch/arm64/boot/dts/exynos/exynosautov9.dtsi =7C 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->=20
-(...)
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
