@@ -2,98 +2,325 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EED95C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Nov 2023 02:31:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B54C4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Nov 2023 08:08:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232874AbjKMCb3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 12 Nov 2023 21:31:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33998 "EHLO
+        id S230361AbjKMIIK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Nov 2023 03:08:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232813AbjKMCb2 (ORCPT
+        with ESMTP id S229768AbjKMIIJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 12 Nov 2023 21:31:28 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A596F109
-        for <linux-serial@vger.kernel.org>; Sun, 12 Nov 2023 18:31:25 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id d9443c01a7336-1cc3388621cso36317055ad.1
-        for <linux-serial@vger.kernel.org>; Sun, 12 Nov 2023 18:31:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1699842685; x=1700447485; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=sd10hTgpNqYujYyn3UZDz1YnF+lDmSTrk9YJNSbPP8c=;
-        b=CjcdcvmjGOEtaLjZu8WsRNJIIP/ADVPq0Tklm+q3GiHI382L81t9yXBVFtYMfBdNcq
-         z+puoccTIGoiijIMkthzVo+UJI9gSY/JjlQQguhuWEObFvU9dO/AagTuHzvLc8iDGodq
-         p9LaKw0bQUMyJFlafLe3C7uMGP4v/RvAmwFDGpS3SCELInCYxcK7Okoirb3MQ/kdQY22
-         owAK6UrwyGa1f0Zg4VgBnvg/QA2Th//hr3wJ6rfx7f3WhRYSz9N5kjDc3EMF3ye/RXU4
-         VVcEu7iDXnkeGu7a5y8A3GYSZYMs4cLNN0+08/cCTPNex68DONInF/JNGtTux4uBQum9
-         6nTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699842685; x=1700447485;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=sd10hTgpNqYujYyn3UZDz1YnF+lDmSTrk9YJNSbPP8c=;
-        b=PpYn/RtlEIywytnw9MHw7NnQzGfaRvyqcfKg5MwRYoAEciEh9BzbweCywSNyy/p1vn
-         VOGcfgm6ShkONOR46TvGFQ6zt8gxn7ysH4dWWB6LZmzhtlEX5xVz3PzS6wJtOJQFIYLH
-         i7Rcq74gzWv/U4GEFlTZ9IkqFuMS1VSTTDEE0s/EKxuPh1Bc/3IrBANEVoSKhFTOPCG2
-         Kv9UXjb40/ygKMtnOabHjPuW8WBHum2GOVm6Z3zzDF0AFBc6ng6ssn8KXmxEnzRedHdd
-         /N6zD8PjmFLaNHT+sE8hqe1jeIBck3vBDpzZcNg0NjSKLMJdmb6mbAMNISN49pKk93Cf
-         icQw==
-X-Gm-Message-State: AOJu0Yx8khi8kYtMtYlMb9bGW7ZDrA2eSH5YNwNvDDPOEYmopEaz04CL
-        Wc1yq7p3SNlgenPsWGzPIpEfVQ==
-X-Google-Smtp-Source: AGHT+IGH+R3Li3avmxjpcVqHSD9l7bHR0YYeJvyXAI9k1LPViN5lzWQ03fiF6Iics7iinolaM2XpYw==
-X-Received: by 2002:a17:903:32c9:b0:1cc:332f:9e4b with SMTP id i9-20020a17090332c900b001cc332f9e4bmr8122899plr.1.1699842684834;
-        Sun, 12 Nov 2023 18:31:24 -0800 (PST)
-Received: from sw06.internal.sifive.com ([4.53.31.132])
-        by smtp.gmail.com with ESMTPSA id ji19-20020a170903325300b001c9c5a1b477sm3143643plb.169.2023.11.12.18.31.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Nov 2023 18:31:24 -0800 (PST)
-From:   Samuel Holland <samuel.holland@sifive.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Samuel Holland <samuel.holland@sifive.com>,
+        Mon, 13 Nov 2023 03:08:09 -0500
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1068E10F4;
+        Mon, 13 Nov 2023 00:08:05 -0800 (PST)
+Received: from hillo.muru.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTP id 062C2809E;
+        Mon, 13 Nov 2023 08:08:01 +0000 (UTC)
+From:   Tony Lindgren <tony@atomide.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         John Ogness <john.ogness@linutronix.de>,
-        Nick Hu <nick.hu@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Ruan Jinjie <ruanjinjie@huawei.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Yangtao Li <frank.li@vivo.com>, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org
-Subject: [PATCH] serial: sifive: Declare PM operations as static
-Date:   Sun, 12 Nov 2023 18:31:19 -0800
-Message-ID: <20231113023122.1185407-1-samuel.holland@sifive.com>
-X-Mailer: git-send-email 2.42.0
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>
+Subject: [PATCH v2 1/2] serial: core: Move tty and serdev to be children of serial core port device
+Date:   Mon, 13 Nov 2023 10:07:52 +0200
+Message-ID: <20231113080758.30346-1-tony@atomide.com>
+X-Mailer: git-send-email 2.42.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-They are only used within this file, so they should have static linkage.
+Let's move tty and serdev controller to be children of the serial core port
+device. This way the runtime PM usage count of a child device propagates
+to the serial hardware device.
 
-Signed-off-by: Samuel Holland <samuel.holland@sifive.com>
+The tty and serdev devices are associated with a specific serial port of
+a serial hardware controller device, and we now have serial core hierarchy
+of controllers and ports.
+
+The tty device moves happily with just a change of the parent device and
+update of device_find_child() handling. The serdev device init needs some
+changes to separate the serial hardware controller device from the parent
+device.
+
+With this change the tty devices move under sysfs similar to this x86_64
+qemu example of a diff of "find /sys -name ttyS*":
+
+ /sys/class/tty/ttyS0
+ /sys/class/tty/ttyS3
+ /sys/class/tty/ttyS1
+-/sys/devices/pnp0/00:04/tty/ttyS0
+-/sys/devices/platform/serial8250/tty/ttyS2
+-/sys/devices/platform/serial8250/tty/ttyS3
+-/sys/devices/platform/serial8250/tty/ttyS1
++/sys/devices/pnp0/00:04/00:04:0/00:04:0.0/tty/ttyS0
++/sys/devices/platform/serial8250/serial8250:0/serial8250:0.3/tty/ttyS3
++/sys/devices/platform/serial8250/serial8250:0/serial8250:0.1/tty/ttyS1
++/sys/devices/platform/serial8250/serial8250:0/serial8250:0.2/tty/ttyS2
+
+If a serdev device is used instead of a tty, it moves in a similar way.
+
+Suggested-by: Johan Hovold <johan@kernel.org>
+Cc: Maximilian Luz <luzmaximilian@gmail.com>
+Cc: Rob Herring <robh@kernel.org>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 ---
 
- drivers/tty/serial/sifive.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Changes since v1:
 
-diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
-index b296e57a9dee..3babc6c3a527 100644
---- a/drivers/tty/serial/sifive.c
-+++ b/drivers/tty/serial/sifive.c
-@@ -1033,8 +1033,8 @@ static int sifive_serial_resume(struct device *dev)
- 	return uart_resume_port(&sifive_serial_uart_driver, &ssp->port);
+- Fix device_find_child() for suspend and resume as noted by Johan
+
+- Update the description with sysfs naming change example and drop
+  the RFC tag
+
+---
+ drivers/tty/serdev/core.c           | 15 +++++++++------
+ drivers/tty/serdev/serdev-ttyport.c |  3 ++-
+ drivers/tty/serial/serial_core.c    |  7 ++++---
+ drivers/tty/tty_port.c              | 16 +++++++++-------
+ include/linux/serdev.h              |  8 +++++++-
+ include/linux/tty_port.h            |  4 ++--
+ 6 files changed, 33 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -468,6 +468,7 @@ EXPORT_SYMBOL_GPL(serdev_device_alloc);
+ 
+ /**
+  * serdev_controller_alloc() - Allocate a new serdev controller
++ * @host:	serial port hardware controller device
+  * @parent:	parent device
+  * @size:	size of private data
+  *
+@@ -476,8 +477,9 @@ EXPORT_SYMBOL_GPL(serdev_device_alloc);
+  * The allocated private data region may be accessed via
+  * serdev_controller_get_drvdata()
+  */
+-struct serdev_controller *serdev_controller_alloc(struct device *parent,
+-					      size_t size)
++struct serdev_controller *serdev_controller_alloc(struct device *host,
++						  struct device *parent,
++						  size_t size)
+ {
+ 	struct serdev_controller *ctrl;
+ 	int id;
+@@ -502,7 +504,8 @@ struct serdev_controller *serdev_controller_alloc(struct device *parent,
+ 	ctrl->dev.type = &serdev_ctrl_type;
+ 	ctrl->dev.bus = &serdev_bus_type;
+ 	ctrl->dev.parent = parent;
+-	device_set_node(&ctrl->dev, dev_fwnode(parent));
++	ctrl->host = host;
++	device_set_node(&ctrl->dev, dev_fwnode(host));
+ 	serdev_controller_set_drvdata(ctrl, &ctrl[1]);
+ 
+ 	dev_set_name(&ctrl->dev, "serial%d", id);
+@@ -665,7 +668,7 @@ static int acpi_serdev_check_resources(struct serdev_controller *ctrl,
+ 		acpi_get_parent(adev->handle, &lookup.controller_handle);
+ 
+ 	/* Make sure controller and ResourceSource handle match */
+-	if (!device_match_acpi_handle(ctrl->dev.parent, lookup.controller_handle))
++	if (!device_match_acpi_handle(ctrl->host, lookup.controller_handle))
+ 		return -ENODEV;
+ 
+ 	return 0;
+@@ -730,7 +733,7 @@ static int acpi_serdev_register_devices(struct serdev_controller *ctrl)
+ 	bool skip;
+ 	int ret;
+ 
+-	if (!has_acpi_companion(ctrl->dev.parent))
++	if (!has_acpi_companion(ctrl->host))
+ 		return -ENODEV;
+ 
+ 	/*
+@@ -739,7 +742,7 @@ static int acpi_serdev_register_devices(struct serdev_controller *ctrl)
+ 	 * succeed in this case, so that the proper serdev devices can be
+ 	 * added "manually" later.
+ 	 */
+-	ret = acpi_quirk_skip_serdev_enumeration(ctrl->dev.parent, &skip);
++	ret = acpi_quirk_skip_serdev_enumeration(ctrl->host, &skip);
+ 	if (ret)
+ 		return ret;
+ 	if (skip)
+diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+--- a/drivers/tty/serdev/serdev-ttyport.c
++++ b/drivers/tty/serdev/serdev-ttyport.c
+@@ -274,6 +274,7 @@ static const struct serdev_controller_ops ctrl_ops = {
+ };
+ 
+ struct device *serdev_tty_port_register(struct tty_port *port,
++					struct device *host,
+ 					struct device *parent,
+ 					struct tty_driver *drv, int idx)
+ {
+@@ -284,7 +285,7 @@ struct device *serdev_tty_port_register(struct tty_port *port,
+ 	if (!port || !drv || !parent)
+ 		return ERR_PTR(-ENODEV);
+ 
+-	ctrl = serdev_controller_alloc(parent, sizeof(struct serport));
++	ctrl = serdev_controller_alloc(host, parent, sizeof(struct serport));
+ 	if (!ctrl)
+ 		return ERR_PTR(-ENOMEM);
+ 	serport = serdev_controller_get_drvdata(ctrl);
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2342,7 +2342,7 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 
+ 	mutex_lock(&port->mutex);
+ 
+-	tty_dev = device_find_child(uport->dev, &match, serial_match_port);
++	tty_dev = device_find_child(&uport->port_dev->dev, &match, serial_match_port);
+ 	if (tty_dev && device_may_wakeup(tty_dev)) {
+ 		enable_irq_wake(uport->irq);
+ 		put_device(tty_dev);
+@@ -2423,7 +2423,7 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+ 
+ 	mutex_lock(&port->mutex);
+ 
+-	tty_dev = device_find_child(uport->dev, &match, serial_match_port);
++	tty_dev = device_find_child(&uport->port_dev->dev, &match, serial_match_port);
+ 	if (!uport->suspended && device_may_wakeup(tty_dev)) {
+ 		if (irqd_is_wakeup_set(irq_get_irq_data((uport->irq))))
+ 			disable_irq_wake(uport->irq);
+@@ -3153,7 +3153,8 @@ static int serial_core_add_one_port(struct uart_driver *drv, struct uart_port *u
+ 	 * setserial to be used to alter this port's parameters.
+ 	 */
+ 	tty_dev = tty_port_register_device_attr_serdev(port, drv->tty_driver,
+-			uport->line, uport->dev, port, uport->tty_groups);
++			uport->line, uport->dev, &uport->port_dev->dev, port,
++			uport->tty_groups);
+ 	if (!IS_ERR(tty_dev)) {
+ 		device_set_wakeup_capable(tty_dev, 1);
+ 	} else {
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -171,7 +171,8 @@ EXPORT_SYMBOL_GPL(tty_port_register_device_attr);
+  * @port: tty_port of the device
+  * @driver: tty_driver for this device
+  * @index: index of the tty
+- * @device: parent if exists, otherwise NULL
++ * @host: serial port hardware device
++ * @parent: parent if exists, otherwise NULL
+  * @drvdata: driver data for the device
+  * @attr_grp: attribute group for the device
+  *
+@@ -180,20 +181,20 @@ EXPORT_SYMBOL_GPL(tty_port_register_device_attr);
+  */
+ struct device *tty_port_register_device_attr_serdev(struct tty_port *port,
+ 		struct tty_driver *driver, unsigned index,
+-		struct device *device, void *drvdata,
++		struct device *host, struct device *parent, void *drvdata,
+ 		const struct attribute_group **attr_grp)
+ {
+ 	struct device *dev;
+ 
+ 	tty_port_link_device(port, driver, index);
+ 
+-	dev = serdev_tty_port_register(port, device, driver, index);
++	dev = serdev_tty_port_register(port, host, parent, driver, index);
+ 	if (PTR_ERR(dev) != -ENODEV) {
+ 		/* Skip creating cdev if we registered a serdev device */
+ 		return dev;
+ 	}
+ 
+-	return tty_register_device_attr(driver, index, device, drvdata,
++	return tty_register_device_attr(driver, index, parent, drvdata,
+ 			attr_grp);
  }
+ EXPORT_SYMBOL_GPL(tty_port_register_device_attr_serdev);
+@@ -203,17 +204,18 @@ EXPORT_SYMBOL_GPL(tty_port_register_device_attr_serdev);
+  * @port: tty_port of the device
+  * @driver: tty_driver for this device
+  * @index: index of the tty
+- * @device: parent if exists, otherwise NULL
++ * @host: serial port hardware controller device
++ * @parent: parent if exists, otherwise NULL
+  *
+  * Register a serdev or tty device depending on if the parent device has any
+  * defined serdev clients or not.
+  */
+ struct device *tty_port_register_device_serdev(struct tty_port *port,
+ 		struct tty_driver *driver, unsigned index,
+-		struct device *device)
++		struct device *host, struct device *parent)
+ {
+ 	return tty_port_register_device_attr_serdev(port, driver, index,
+-			device, NULL, NULL);
++			host, parent, NULL, NULL);
+ }
+ EXPORT_SYMBOL_GPL(tty_port_register_device_serdev);
  
--DEFINE_SIMPLE_DEV_PM_OPS(sifive_uart_pm_ops, sifive_serial_suspend,
--			 sifive_serial_resume);
-+static DEFINE_SIMPLE_DEV_PM_OPS(sifive_uart_pm_ops, sifive_serial_suspend,
-+				sifive_serial_resume);
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -99,12 +99,14 @@ struct serdev_controller_ops {
+ /**
+  * struct serdev_controller - interface to the serdev controller
+  * @dev:	Driver model representation of the device.
++ * @host:	Serial port hardware controller device
+  * @nr:		number identifier for this controller/bus.
+  * @serdev:	Pointer to slave device for this controller.
+  * @ops:	Controller operations.
+  */
+ struct serdev_controller {
+ 	struct device		dev;
++	struct device		*host;
+ 	unsigned int		nr;
+ 	struct serdev_device	*serdev;
+ 	const struct serdev_controller_ops *ops;
+@@ -167,7 +169,9 @@ struct serdev_device *serdev_device_alloc(struct serdev_controller *);
+ int serdev_device_add(struct serdev_device *);
+ void serdev_device_remove(struct serdev_device *);
  
- static const struct of_device_id sifive_serial_of_match[] = {
- 	{ .compatible = "sifive,fu540-c000-uart0" },
+-struct serdev_controller *serdev_controller_alloc(struct device *, size_t);
++struct serdev_controller *serdev_controller_alloc(struct device *host,
++						  struct device *parent,
++						  size_t size);
+ int serdev_controller_add(struct serdev_controller *);
+ void serdev_controller_remove(struct serdev_controller *);
+ 
+@@ -311,11 +315,13 @@ struct tty_driver;
+ 
+ #ifdef CONFIG_SERIAL_DEV_CTRL_TTYPORT
+ struct device *serdev_tty_port_register(struct tty_port *port,
++					struct device *host,
+ 					struct device *parent,
+ 					struct tty_driver *drv, int idx);
+ int serdev_tty_port_unregister(struct tty_port *port);
+ #else
+ static inline struct device *serdev_tty_port_register(struct tty_port *port,
++					   struct device *host,
+ 					   struct device *parent,
+ 					   struct tty_driver *drv, int idx)
+ {
+diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
+--- a/include/linux/tty_port.h
++++ b/include/linux/tty_port.h
+@@ -149,10 +149,10 @@ struct device *tty_port_register_device_attr(struct tty_port *port,
+ 		const struct attribute_group **attr_grp);
+ struct device *tty_port_register_device_serdev(struct tty_port *port,
+ 		struct tty_driver *driver, unsigned index,
+-		struct device *device);
++		struct device *host, struct device *parent);
+ struct device *tty_port_register_device_attr_serdev(struct tty_port *port,
+ 		struct tty_driver *driver, unsigned index,
+-		struct device *device, void *drvdata,
++		struct device *host, struct device *parent, void *drvdata,
+ 		const struct attribute_group **attr_grp);
+ void tty_port_unregister_device(struct tty_port *port,
+ 		struct tty_driver *driver, unsigned index);
 -- 
-2.42.0
-
+2.42.1
