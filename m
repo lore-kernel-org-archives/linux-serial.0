@@ -2,113 +2,112 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21D6FC4167B
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Nov 2023 08:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E8C8C4167B
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Nov 2023 09:09:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233285AbjKMI6T (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Nov 2023 03:58:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59610 "EHLO
+        id S230015AbjKMJJm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Nov 2023 04:09:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233440AbjKMI6E (ORCPT
+        with ESMTP id S229817AbjKMJJl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Nov 2023 03:58:04 -0500
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED86B4C0B
-        for <linux-serial@vger.kernel.org>; Mon, 13 Nov 2023 00:57:16 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1r2Skp-0003x4-Am; Mon, 13 Nov 2023 09:57:11 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1r2Skm-008gzA-Uc; Mon, 13 Nov 2023 09:57:08 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1r2Skm-000aw6-LI; Mon, 13 Nov 2023 09:57:08 +0100
-Date:   Mon, 13 Nov 2023 09:57:08 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Alexander Shiyan <shc_work@mail.ru>
-Cc:     kernel@pengutronix.de, Yangtao Li <frank.li@vivo.com>,
-        Richard GENOUD <richard.genoud@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH 02/52] serial: sccnxp: Improve error message if
- regulator_disable() fails
-Message-ID: <20231113085708.pwlplxpkvdvtbagh@pengutronix.de>
-References: <20231110152927.70601-1-u.kleine-koenig@pengutronix.de>
- <20231110152927.70601-3-u.kleine-koenig@pengutronix.de>
- <1699851843.639333963@f702.i.mail.ru>
+        Mon, 13 Nov 2023 04:09:41 -0500
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B5610D0;
+        Mon, 13 Nov 2023 01:09:38 -0800 (PST)
+Received: from [100.107.97.3] (cola.collaboradmins.com [195.201.22.229])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 25D3C66003B2;
+        Mon, 13 Nov 2023 09:09:33 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1699866575;
+        bh=+biIpFAEesmQeyQ0ajxFqoWe4IfKev4rpI+PhrI9rhQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=gQ3C+vqtj839O3n3L/ymQgH5t2FA4orXI/4KbT4WaNjrPKOE9Zd2VJsOerugMFMDK
+         7gxj104S3lY4XsC0+1zWzEjORjCy5vKauxi14SaX5z8noDgNuw8aoDj4GM3bQ6XZW5
+         5v7erfC5J0ixZXoprbrjUaiIQK+96g2IW61NrTRRuFSTHaXINn0BVekFaloiQoIyuy
+         j0DwcdKMIoMh+5EKeg9qKvTxq1q/mrjYZtKPpPd1wg2R54ahkspMyhbHSdZb8nuxxc
+         EaavpD76t7v/qgNdgboQD5sK0vkceUzToyzWcyjYaEU5TlVl28UA7jGHq/fJuGr/vv
+         7c2XU5BP2NyGA==
+Message-ID: <023e2184-c2e4-4f3e-a1e1-492dbf7a2e7f@collabora.com>
+Date:   Mon, 13 Nov 2023 10:09:30 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ujx23tlyjshira4q"
-Content-Disposition: inline
-In-Reply-To: <1699851843.639333963@f702.i.mail.ru>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 03/52] serial: 8250: Convert to platform remove callback
+ returning void
+To:     =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@codeconstruct.com.au>,
+        Florian Fainelli <florian.fainelli@broadcom.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Al Cooper <alcooperx@gmail.com>,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tony Lindgren <tony@atomide.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Johan Hovold <johan@kernel.org>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Andi Shyti <andi.shyti@linux.intel.com>,
+        Thomas Richard <thomas.richard@bootlin.com>,
+        Rob Herring <robh@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        =?UTF-8?Q?Duje_Mihanovi=C4=87?= <duje.mihanovic@skole.hr>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        kernel@pengutronix.de, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org,
+        linux-rpi-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org
+References: <20231110152927.70601-1-u.kleine-koenig@pengutronix.de>
+ <20231110152927.70601-4-u.kleine-koenig@pengutronix.de>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Content-Language: en-US
+In-Reply-To: <20231110152927.70601-4-u.kleine-koenig@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Il 10/11/23 16:29, Uwe Kleine-König ha scritto:
+> The .remove() callback for a platform driver returns an int which makes
+> many driver authors wrongly assume it's possible to do error handling by
+> returning an error code. However the value returned is ignored (apart
+> from emitting a warning) and this typically results in resource leaks.
+> 
+> To improve here there is a quest to make the remove callback return
+> void. In the first step of this quest all drivers are converted to
+> .remove_new(), which already returns void. Eventually after all drivers
+> are converted, .remove_new() will be renamed to .remove().
+> 
+> Trivially convert this driver from always returning zero in the remove
+> callback to the void returning variant.
+> 
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
---ujx23tlyjshira4q
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+For MediaTek:
 
-On Mon, Nov 13, 2023 at 08:04:03AM +0300, Alexander Shiyan wrote:
->=20
-> Hello.
-> =A0
-> > Returning an error code from .remove() makes the driver core emit the
-> > little helpful error message:
-> > > remove callback returned a non-zero value. This will be ignored.
-> > > and then remove the device anyhow.
-> >
-> > So replace the error return (and with it the little helpful error
-> > message) by a more useful error message.
-> ...
-> > - if (!IS_ERR(s->regulator))
-> > - return regulator_disable(s->regulator);
-> > + if (!IS_ERR(s->regulator)) {
-> > + int ret =3D regulator_disable(s->regulator);
-> > + if (ret)
-> > + dev_err(&pdev->dev, "Failed to disable regulator\n");
-> > + }
-> > =A0
-> > =A0 return 0;
-> =A0
-> return ret ? =A0
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-No, return 0 is right. Please look at platform_remove() in
-drivers/base/platform.c and optionally reread the commit log to convince
-yourself about that.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---ujx23tlyjshira4q
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmVR5OMACgkQj4D7WH0S
-/k6BNgf/W5rGUa3px4R1Vnn1dvHL7TlotyAoWRDK5cli3X3ink7aUULrfI7Xmt3M
-8ofMQ0FgayxS5x8osbPh+nMpA3L4i0NrV3y76fS1sF1+dy1iY40jRMVy3MZBmMxX
-Bl1UGlIyOxBMnvOXLw34BDVNlpO0SGb7WFuwcHHZ1Vj0/KTnqnvoT5jUJAhAbucW
-PeOiTHAhNnceSMjTDlmiOMOixKRA6QkotiKHqtxolhru2rkzXDMpoSBKX564KDjc
-aqaleibuMERGWBJ8jELYe2XiZv4kLR18fFtZiUiBW+4uHKdyo/r01whp4J00vz3j
-DzZ0ajYBvLldrH/JoX3V52upqx1izA==
-=1tYs
------END PGP SIGNATURE-----
-
---ujx23tlyjshira4q--
