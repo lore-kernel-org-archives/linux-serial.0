@@ -2,71 +2,113 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C912C4167B
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Nov 2023 08:08:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21D6FC4167B
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Nov 2023 08:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233083AbjKMIIT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Nov 2023 03:08:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55456 "EHLO
+        id S233285AbjKMI6T (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Nov 2023 03:58:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229817AbjKMIIS (ORCPT
+        with ESMTP id S233440AbjKMI6E (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Nov 2023 03:08:18 -0500
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D19D410F5;
-        Mon, 13 Nov 2023 00:08:09 -0800 (PST)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 33F3E816E;
-        Mon, 13 Nov 2023 08:08:07 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 2/2] serial: core: Revert checks for tx runtime PM state
-Date:   Mon, 13 Nov 2023 10:07:53 +0200
-Message-ID: <20231113080758.30346-2-tony@atomide.com>
-X-Mailer: git-send-email 2.42.1
-In-Reply-To: <20231113080758.30346-1-tony@atomide.com>
-References: <20231113080758.30346-1-tony@atomide.com>
+        Mon, 13 Nov 2023 03:58:04 -0500
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED86B4C0B
+        for <linux-serial@vger.kernel.org>; Mon, 13 Nov 2023 00:57:16 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1r2Skp-0003x4-Am; Mon, 13 Nov 2023 09:57:11 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1r2Skm-008gzA-Uc; Mon, 13 Nov 2023 09:57:08 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1r2Skm-000aw6-LI; Mon, 13 Nov 2023 09:57:08 +0100
+Date:   Mon, 13 Nov 2023 09:57:08 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Alexander Shiyan <shc_work@mail.ru>
+Cc:     kernel@pengutronix.de, Yangtao Li <frank.li@vivo.com>,
+        Richard GENOUD <richard.genoud@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH 02/52] serial: sccnxp: Improve error message if
+ regulator_disable() fails
+Message-ID: <20231113085708.pwlplxpkvdvtbagh@pengutronix.de>
+References: <20231110152927.70601-1-u.kleine-koenig@pengutronix.de>
+ <20231110152927.70601-3-u.kleine-koenig@pengutronix.de>
+ <1699851843.639333963@f702.i.mail.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ujx23tlyjshira4q"
+Content-Disposition: inline
+In-Reply-To: <1699851843.639333963@f702.i.mail.ru>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This reverts commit 81a61051e0ce5fd7e09225c0d5985da08c7954a7.
 
-With tty and serdev controller moved to be children of the serial core
-port device, runtime PM usage count of the serdev controller now
-propagates to the serial hardware controller parent device as expected.
+--ujx23tlyjshira4q
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Cc: Maximilian Luz <luzmaximilian@gmail.com>
-Cc: Rob Herring <robh@kernel.org>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/serial/serial_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Mon, Nov 13, 2023 at 08:04:03AM +0300, Alexander Shiyan wrote:
+>=20
+> Hello.
+> =A0
+> > Returning an error code from .remove() makes the driver core emit the
+> > little helpful error message:
+> > > remove callback returned a non-zero value. This will be ignored.
+> > > and then remove the device anyhow.
+> >
+> > So replace the error return (and with it the little helpful error
+> > message) by a more useful error message.
+> ...
+> > - if (!IS_ERR(s->regulator))
+> > - return regulator_disable(s->regulator);
+> > + if (!IS_ERR(s->regulator)) {
+> > + int ret =3D regulator_disable(s->regulator);
+> > + if (ret)
+> > + dev_err(&pdev->dev, "Failed to disable regulator\n");
+> > + }
+> > =A0
+> > =A0 return 0;
+> =A0
+> return ret ? =A0
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -156,7 +156,7 @@ static void __uart_start(struct uart_state *state)
- 	 * enabled, serial_port_runtime_resume() calls start_tx() again
- 	 * after enabling the device.
- 	 */
--	if (!pm_runtime_enabled(port->dev) || pm_runtime_active(port->dev))
-+	if (pm_runtime_active(&port_dev->dev))
- 		port->ops->start_tx(port);
- 	pm_runtime_mark_last_busy(&port_dev->dev);
- 	pm_runtime_put_autosuspend(&port_dev->dev);
--- 
-2.42.1
+No, return 0 is right. Please look at platform_remove() in
+drivers/base/platform.c and optionally reread the commit log to convince
+yourself about that.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--ujx23tlyjshira4q
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmVR5OMACgkQj4D7WH0S
+/k6BNgf/W5rGUa3px4R1Vnn1dvHL7TlotyAoWRDK5cli3X3ink7aUULrfI7Xmt3M
+8ofMQ0FgayxS5x8osbPh+nMpA3L4i0NrV3y76fS1sF1+dy1iY40jRMVy3MZBmMxX
+Bl1UGlIyOxBMnvOXLw34BDVNlpO0SGb7WFuwcHHZ1Vj0/KTnqnvoT5jUJAhAbucW
+PeOiTHAhNnceSMjTDlmiOMOixKRA6QkotiKHqtxolhru2rkzXDMpoSBKX564KDjc
+aqaleibuMERGWBJ8jELYe2XiZv4kLR18fFtZiUiBW+4uHKdyo/r01whp4J00vz3j
+DzZ0ajYBvLldrH/JoX3V52upqx1izA==
+=1tYs
+-----END PGP SIGNATURE-----
+
+--ujx23tlyjshira4q--
