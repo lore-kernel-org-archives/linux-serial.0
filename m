@@ -2,93 +2,101 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACCC3C4167D
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Nov 2023 14:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80186C4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Nov 2023 14:31:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231129AbjKMOL7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Nov 2023 09:11:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33974 "EHLO
+        id S230104AbjKMObN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Nov 2023 09:31:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbjKMOL6 (ORCPT
+        with ESMTP id S229549AbjKMObM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Nov 2023 09:11:58 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F2AD59
-        for <linux-serial@vger.kernel.org>; Mon, 13 Nov 2023 06:11:55 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id 3f1490d57ef6-d9c66e70ebdso4374646276.2
-        for <linux-serial@vger.kernel.org>; Mon, 13 Nov 2023 06:11:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1699884714; x=1700489514; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WJr1OXkuxnT03SCv+djqBRWs+VoPNnRqt/gpqMoKcS4=;
-        b=dPhazqou+ayKP4zGXmB+bzWYXpFj2na6UysngAOocfO76BBDDfHgFB+8GVn/2Lry4k
-         l0qmn+GxKZyYwtqjvecGw+Ji6JZ0bXN3uxrtoznmnRbVVcrSHHxfOaJ5mQa7dIvEX0KC
-         NDnFpoDTBJQdKiXKOKDJsAs1zzTN0pTT5XY8Cz3KT/faS2rTKgKlDUH61ntJFT8XJv8n
-         BPsZETaP6WEwiYNoVtOkqT8bvsuAJhbD/yAuKf47ZEQrL04tn1wiI7mtyTpVJ+Rf8du/
-         0HcLl2ZGTe48CmWBa/e7lFjIipbFxLT1c99vqSeo8Q+rA/oNBwelIwpkeURr68QYfBKa
-         Hq5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699884714; x=1700489514;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WJr1OXkuxnT03SCv+djqBRWs+VoPNnRqt/gpqMoKcS4=;
-        b=TYST2ltNae4SpNsxmPnYEZENbKDUVBKgh/2YConGIsB/aHtQ2FsQIw9kdX1YnWhzSL
-         2UrwECcfatA7MunjTTS6c8QRk6mE4CrpkG/8wgVLEz8aQoLWVXXhtjG2mWgmk0wJk21z
-         D6XoRNaSjD2gDYdstbL7tt0B7wAiKg0PS1MKy5rQ723NH8YY9wgyGMDlvTJun/leOk/2
-         trzMhnATfZ//kfV/SxbaF+rzpBI6PDsIiVQnUecw3Jje2UTem43ctaSmnxazvrVpyolL
-         iy0MVB2S1Ntp4rc3CJKqtXVnwxqrYSmz5IFS2v4lr6dDDQS4WqjpvuVy9LhQu1vwOQ8p
-         g+jw==
-X-Gm-Message-State: AOJu0YzDkmxmg2Nll2TYJsl/uXdQM/XVKFnVQbnkuY1LWMrqWnCGIanX
-        hTrTGtZ+bbv+hOR+WaAFHu4FbAgk7x86Fxu3MKnd7g==
-X-Google-Smtp-Source: AGHT+IHOnTJi2b1Q0iw6JudAumqU6ptqzEHKAsTPQMqY6ERd/tzWqcc2NMGHeiZAy1A323D3e8TLe3gaGaKgn7ddmRc=
-X-Received: by 2002:a25:d196:0:b0:d9a:4bc3:226e with SMTP id
- i144-20020a25d196000000b00d9a4bc3226emr5511950ybg.37.1699884713789; Mon, 13
- Nov 2023 06:11:53 -0800 (PST)
-MIME-Version: 1.0
-References: <CGME20231031095014epcas2p2814fa2bb5f940ccb0d0951667df34f98@epcas2p2.samsung.com>
- <20231031094852.118677-1-jaewon02.kim@samsung.com>
-In-Reply-To: <20231031094852.118677-1-jaewon02.kim@samsung.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 13 Nov 2023 15:11:42 +0100
-Message-ID: <CACRpkdZRMJgWkLwKstpN_9=VGutbE1wBv+X_a15RJ=7ddNtbHw@mail.gmail.com>
-Subject: Re: [PATCH 00/10] Introduce ExynosAutov920 SoC and SADK board
-To:     Jaewon Kim <jaewon02.kim@samsung.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mon, 13 Nov 2023 09:31:12 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7C1D59
+        for <linux-serial@vger.kernel.org>; Mon, 13 Nov 2023 06:31:09 -0800 (PST)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F554C433C7;
+        Mon, 13 Nov 2023 14:31:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1699885868;
+        bh=EFRRufbeFQ+IM6jr2E8iXNUpk4Tyw5xoM0LYuJZwr8w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pPDiCWXSIqFqXZ9MOcD99iR88SRKkLJSmnwlm8qL6KDxCfToWHGm6CcOqGS1gASdr
+         /iJKFCZcJeiJhzAti/ScTSRQ1etmlJdz1geaJa/4TYngvaPNFQyDBywqYk4QQRyOrs
+         0vnlmNE10/B5JXu0n+NRzGFs4gr19pkFXSACiE9I=
+Date:   Mon, 13 Nov 2023 09:31:04 -0500
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Michal Simek <michal.simek@amd.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Petr Mladek <pmladek@suse.com>, linux-serial@vger.kernel.org,
+        John Ogness <john.ogness@linutronix.de>,
+        Ruan Jinjie <ruanjinjie@huawei.com>,
+        Julien Malik <julien.malik@unseenlabs.fr>,
+        kernel@pengutronix.de, Thomas Gleixner <tglx@linutronix.de>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 52/52] serial: xilinx_uartps: Convert to platform remove
+ callback returning void
+Message-ID: <2023111330-tigress-suffering-e329@gregkh>
+References: <20231110152927.70601-1-u.kleine-koenig@pengutronix.de>
+ <20231110152927.70601-53-u.kleine-koenig@pengutronix.de>
+ <15784357-6557-4431-a1dd-128152b48160@amd.com>
+ <20231113100342.sih3te7a7z5jeh4j@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20231113100342.sih3te7a7z5jeh4j@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Jaewon,
+On Mon, Nov 13, 2023 at 11:03:42AM +0100, Uwe Kleine-König wrote:
+> On Mon, Nov 13, 2023 at 10:41:17AM +0100, Michal Simek wrote:
+> > 
+> > 
+> > On 11/10/23 16:30, Uwe Kleine-König wrote:
+> > > The .remove() callback for a platform driver returns an int which makes
+> > > many driver authors wrongly assume it's possible to do error handling by
+> > > returning an error code. However the value returned is ignored (apart
+> > > from emitting a warning) and this typically results in resource leaks.
+> > > 
+> > > To improve here there is a quest to make the remove callback return
+> > > void. In the first step of this quest all drivers are converted to
+> > > .remove_new(), which already returns void. Eventually after all drivers
+> > > are converted, .remove_new() will be renamed to .remove().
+> > > 
+> > > Trivially convert this driver from always returning zero in the remove
+> > > callback to the void returning variant.
+> > > 
+> > > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> > > ---
+> > >   drivers/tty/serial/xilinx_uartps.c | 5 ++---
+> > >   1 file changed, 2 insertions(+), 3 deletions(-)
+> > > 
+> > > diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+> > > index 66a45a634158..6decf2b13340 100644
+> > > --- a/drivers/tty/serial/xilinx_uartps.c
+> > > +++ b/drivers/tty/serial/xilinx_uartps.c
+> > > @@ -1666,7 +1666,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
+> > >    *
+> > >    * Return: 0 on success, negative errno otherwise
+> > 
+> > this line should be also removed.
+> 
+> Good catch.
+> 
+> @gregkh: What is the preferred way to address that? I can follow up with
+> a patch on top of this one (and you squash it or not), I can send a
+> patch that gets that does the conversion and drops the comment (and you
+> skip this incomplete patch when applying this series) or I can resend
+> the whole series in a week or so.
 
-thanks for your patches!
+Follow-on patch is fine, I'll take this whole series in a week when I
+catch up from the merge-window-backlog as I'm at the Plumbers conference
+this week...
 
-On Tue, Oct 31, 2023 at 10:50=E2=80=AFAM Jaewon Kim <jaewon02.kim@samsung.c=
-om> wrote:
+thanks,
 
->   dt-bindings: pinctrl: samsung: add exynosautov920 pinctrl binding
->   pinctrl: samsung: add exynosautv920 pinctrl
-
-It is best if I can apply these two separately once Krzysztof is happy
-with them. I hope that would work? I don't see any specific dependencies.
-
-Yours,
-Linus Walleij
+greg k-h
