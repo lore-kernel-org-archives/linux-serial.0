@@ -2,60 +2,59 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D60C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Nov 2023 09:45:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E59AC4167D
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Nov 2023 09:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233174AbjKMJpq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Nov 2023 04:45:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44406 "EHLO
+        id S232633AbjKMJpr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Nov 2023 04:45:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232633AbjKMJpi (ORCPT
+        with ESMTP id S233421AbjKMJpq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Nov 2023 04:45:38 -0500
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9651810D0
-        for <linux-serial@vger.kernel.org>; Mon, 13 Nov 2023 01:45:35 -0800 (PST)
-Received: by mail-oi1-x233.google.com with SMTP id 5614622812f47-3b6d80daae8so1349305b6e.2
-        for <linux-serial@vger.kernel.org>; Mon, 13 Nov 2023 01:45:35 -0800 (PST)
+        Mon, 13 Nov 2023 04:45:46 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD47810D0
+        for <linux-serial@vger.kernel.org>; Mon, 13 Nov 2023 01:45:41 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id d2e1a72fcca58-6b709048d8eso3579208b3a.2
+        for <linux-serial@vger.kernel.org>; Mon, 13 Nov 2023 01:45:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1699868735; x=1700473535; darn=vger.kernel.org;
-        h=in-reply-to:references:subject:cc:to:from:message-id:date
+        d=gmail.com; s=20230601; t=1699868741; x=1700473541; darn=vger.kernel.org;
+        h=in-reply-to:references:from:subject:cc:to:message-id:date
          :content-transfer-encoding:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DH0+6wLGxWwjy472SttpQ7v+g/1+3nWfcjmEcwBuwzw=;
-        b=a3Sp2TFKQrhowuIg/Lzry+4IaQx23X5wVB7WjWkvvEzNdBteQjdGKdpcgAup45fKd+
-         E91ka1H6zbStN9uKgSVYy4l3iAC9pEijnrYjNglHaHblbtlroOKhstaAaFLna/ESF+FU
-         jZjzjl8hR9mare4rOfibRHCqCTKQC659ALsEpaPrdxwQgje+aJAsCDQOzOuqrZE1LqLQ
-         tTpfNYyJwhFH29meI3vh0UZjZW2rNrTJ5waxn0tHYddwO1/kT671p2uorJwv97FhM6E6
-         uDEo1CFpBUe9hcRkHCTqN8hgZyD5OAPwZcEhwVxlbV1aF1huGxxXdKobPS35b1eX3z/5
-         tNoA==
+        bh=jzM7qsd4kxlzFFVzlxkQP7hy5Byv9YvRdWtaoTYAspI=;
+        b=UqltH1EpYoGnGXOGN3yS5RPQgpiHTS0nhQuJdXpvNJt7zkVNhel7jk6rCYkucw8zKi
+         5z+g1k1wcZYfGMYKbW9ecbalq3EiHG/vu4y1QfJD5O9CMndpxxBUEuJ4LnZAiHNt0CHn
+         neI56FshzrjhgW4TjNGjo360fcRuPM9atyN58N5P3egwn0PVXPagzSApSAeYSIAIqNEK
+         kmkL9yUXgnxzKGxo4OxoIGl9f5p3sDuJ8x6GZtm5uOMVOcEAMfqQdRViQilHmXUNODgi
+         kwEQMkflwDbLjzyH6RXRGAr8wihY0RHqnNGu03Xz/sIw89PljoEELdG+y9uX+/5eze8P
+         cP5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699868735; x=1700473535;
-        h=in-reply-to:references:subject:cc:to:from:message-id:date
+        d=1e100.net; s=20230601; t=1699868741; x=1700473541;
+        h=in-reply-to:references:from:subject:cc:to:message-id:date
          :content-transfer-encoding:mime-version:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=DH0+6wLGxWwjy472SttpQ7v+g/1+3nWfcjmEcwBuwzw=;
-        b=aHadxyi9GyC23NxlFJGmxZ7Qzpan9/vfVqf3Fvee5GMoWh9N+ABRTaT33vXYdy/M8M
-         afWY72nuwEOMrOQUQ7BPReEc8UX4WztJ5zduuBNhTmj6N38id/xaXAgaDHJDepxibu0b
-         YLzNPBRDXFMT5gvu8L0NyA4pIBYJx/nTjw4sOM/ihoUMu0URzAIE9hs0alq9YjYQFTCx
-         Ry/P2OWgiNQfBJG4aQDMyMH/scWvt/MQsHW31uQx9cQ8xFOrRFKkR/U/JEUVNa7QLj7A
-         Qh8suFoueqv3n/bex3yTdYAtKiprIB8yXJtiw6yQVQgILDyuMXSCueOHr9LmxvVwMQut
-         0+Bw==
-X-Gm-Message-State: AOJu0YwdGN4DyWZ497nquulZI4+56wkxtXF0qqra+X/h4sHOKmTBjL0Z
-        bNLw22aqYyBp7ZsU+bQ8j7Si9CXucLE=
-X-Google-Smtp-Source: AGHT+IHOUOR//3wC59eMz6lgRIfMMJu55sBtkT65NSJmHTGq2jczN/Y6uSp9M3V/RXvztWc5sOVOLw==
-X-Received: by 2002:a05:6808:1a18:b0:3ab:74a2:ab2b with SMTP id bk24-20020a0568081a1800b003ab74a2ab2bmr9435372oib.48.1699868734521;
-        Mon, 13 Nov 2023 01:45:34 -0800 (PST)
+        bh=jzM7qsd4kxlzFFVzlxkQP7hy5Byv9YvRdWtaoTYAspI=;
+        b=j09B90Fl9z13FrXSYxDk4PPETZGhTqd5BVkZpVRrWIyEpnYqbu+H+UmV7tpZVt0Uky
+         fqiT88ZmsTWe+886WtIPPbxTzx2hWBBPZ2kqz4arOm8c4x46TbXi+2UQtksz9zR+wAf+
+         FryOVDjc/+R1X8I+AKSbWecCFeibCMSIP6zxics55QxcZz847SUZUeQesftX/6LWib/P
+         hi9tRW3fu67y+C7NsJfavhcp/7aIuwN4AqwepSz3bzmTci2L6Bd8cUBfezkiJmIYHner
+         /vRgSJC2485MbkAvwPNUa/aW7xE10xSoLBvyqbF9zmoH+avK7hIf46X4y84F3+8goQ36
+         Qckg==
+X-Gm-Message-State: AOJu0YxD3vAL2PrzmDzgmYPVMD03H3XRBvhfmcEYukWKmH/vD7xQqsb4
+        7/JZbiCqyif92PpDdf3qv7t+hXA5WXA=
+X-Google-Smtp-Source: AGHT+IG1wFy1xio7JaUU6hUVa0c8LjvOmg/Y99hOi073oUDxSBl7T1/PO8Vs1QrJeMUJvyIqt9Tocg==
+X-Received: by 2002:a62:ab0c:0:b0:68e:3772:4e40 with SMTP id p12-20020a62ab0c000000b0068e37724e40mr3655156pff.3.1699868741168;
+        Mon, 13 Nov 2023 01:45:41 -0800 (PST)
 Received: from localhost (121-44-82-40.tpgi.com.au. [121.44.82.40])
-        by smtp.gmail.com with ESMTPSA id fh8-20020a056a00390800b006c03fa6300dsm3523184pfb.117.2023.11.13.01.45.30
+        by smtp.gmail.com with ESMTPSA id it13-20020a056a00458d00b006b58af8aae3sm3544447pfb.77.2023.11.13.01.45.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Nov 2023 01:45:33 -0800 (PST)
+        Mon, 13 Nov 2023 01:45:40 -0800 (PST)
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset=UTF-8
-Date:   Mon, 13 Nov 2023 19:45:27 +1000
-Message-Id: <CWXL68T68A18.BZ8WHB15ZU2Y@wheely>
-From:   "Nicholas Piggin" <npiggin@gmail.com>
+Date:   Mon, 13 Nov 2023 19:45:34 +1000
+Message-Id: <CWXL6C3YNTI6.2OBLBYUWUQG3W@wheely>
 To:     =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
         "Michael Ellerman" <mpe@ellerman.id.au>,
         "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
@@ -63,99 +62,67 @@ To:     =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
 Cc:     "Christophe Leroy" <christophe.leroy@csgroup.eu>,
         <linuxppc-dev@lists.ozlabs.org>, <kernel@pengutronix.de>,
         <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH 1/2] tty: hvc: Make hvc_remove() return no value
+Subject: Re: [PATCH 2/2] tty: hvc: hvc_opal: Convert to platform remove
+ callback returning void
+From:   "Nicholas Piggin" <npiggin@gmail.com>
 X-Mailer: aerc 0.15.2
 References: <20231105214406.3765906-4-u.kleine-koenig@pengutronix.de>
- <20231105214406.3765906-5-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <20231105214406.3765906-5-u.kleine-koenig@pengutronix.de>
+ <20231105214406.3765906-6-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20231105214406.3765906-6-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On Mon Nov 6, 2023 at 7:44 AM AEST, Uwe Kleine-K=C3=B6nig wrote:
-> The function hvc_remove() returns zero unconditionally. Make it return
-> void instead to make it obvious that the caller doesn't need to do any
-> error handling. Accordingly drop the error handling from
-> hvc_opal_remove().
+> The .remove() callback for a platform driver returns an int which makes
+> many driver authors wrongly assume it's possible to do error handling by
+> returning an error code. However the value returned is ignored (apart
+> from emitting a warning) and this typically results in resource leaks.
 >
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-
-IIUC these are functionally no change, just tidying and removing
-dead code? Unless I'm mistaken, then
+> To improve here there is a quest to make the remove callback return
+> void. In the first step of this quest all drivers are converted to
+> .remove_new(), which already returns void. Eventually after all drivers
+> are converted, .remove_new() will be renamed to .remove().
+>
+> Trivially convert this driver from always returning zero in the remove
+> callback to the void returning variant.
 
 Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
 
-> ---
->  drivers/tty/hvc/hvc_console.c |  3 +--
->  drivers/tty/hvc/hvc_console.h |  2 +-
->  drivers/tty/hvc/hvc_opal.c    | 15 +++++++--------
->  3 files changed, 9 insertions(+), 11 deletions(-)
 >
-> diff --git a/drivers/tty/hvc/hvc_console.c b/drivers/tty/hvc/hvc_console.=
-c
-> index 959fae54ca39..57f5c37125e6 100644
-> --- a/drivers/tty/hvc/hvc_console.c
-> +++ b/drivers/tty/hvc/hvc_console.c
-> @@ -976,7 +976,7 @@ struct hvc_struct *hvc_alloc(uint32_t vtermno, int da=
-ta,
->  }
->  EXPORT_SYMBOL_GPL(hvc_alloc);
-> =20
-> -int hvc_remove(struct hvc_struct *hp)
-> +void hvc_remove(struct hvc_struct *hp)
->  {
->  	unsigned long flags;
->  	struct tty_struct *tty;
-> @@ -1010,7 +1010,6 @@ int hvc_remove(struct hvc_struct *hp)
->  		tty_vhangup(tty);
->  		tty_kref_put(tty);
->  	}
-> -	return 0;
->  }
->  EXPORT_SYMBOL_GPL(hvc_remove);
-> =20
-> diff --git a/drivers/tty/hvc/hvc_console.h b/drivers/tty/hvc/hvc_console.=
-h
-> index 9668f821db01..78f7543511f1 100644
-> --- a/drivers/tty/hvc/hvc_console.h
-> +++ b/drivers/tty/hvc/hvc_console.h
-> @@ -77,7 +77,7 @@ extern int hvc_instantiate(uint32_t vtermno, int index,
->  extern struct hvc_struct * hvc_alloc(uint32_t vtermno, int data,
->  				     const struct hv_ops *ops, int outbuf_size);
->  /* remove a vterm from hvc tty operation (module_exit or hotplug remove)=
- */
-> -extern int hvc_remove(struct hvc_struct *hp);
-> +extern void hvc_remove(struct hvc_struct *hp);
-> =20
->  /* data available */
->  int hvc_poll(struct hvc_struct *hp);
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> ---
+>  drivers/tty/hvc/hvc_opal.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+>
 > diff --git a/drivers/tty/hvc/hvc_opal.c b/drivers/tty/hvc/hvc_opal.c
-> index 992e199e0ea8..8995b253cf90 100644
+> index 8995b253cf90..2cdf66e395cc 100644
 > --- a/drivers/tty/hvc/hvc_opal.c
 > +++ b/drivers/tty/hvc/hvc_opal.c
-> @@ -235,16 +235,15 @@ static int hvc_opal_probe(struct platform_device *d=
-ev)
->  static int hvc_opal_remove(struct platform_device *dev)
+> @@ -232,7 +232,7 @@ static int hvc_opal_probe(struct platform_device *dev=
+)
+>  	return 0;
+>  }
+> =20
+> -static int hvc_opal_remove(struct platform_device *dev)
+> +static void hvc_opal_remove(struct platform_device *dev)
 >  {
 >  	struct hvc_struct *hp =3D dev_get_drvdata(&dev->dev);
-> -	int rc, termno;
-> +	int termno;
-> =20
->  	termno =3D hp->vtermno;
-> -	rc =3D hvc_remove(hp);
-> -	if (rc =3D=3D 0) {
-> -		if (hvc_opal_privs[termno] !=3D &hvc_opal_boot_priv)
-> -			kfree(hvc_opal_privs[termno]);
-> -		hvc_opal_privs[termno] =3D NULL;
-> -	}
-> -	return rc;
-> +	hvc_remove(hp);
-> +	if (hvc_opal_privs[termno] !=3D &hvc_opal_boot_priv)
-> +		kfree(hvc_opal_privs[termno]);
-> +	hvc_opal_privs[termno] =3D NULL;
-> +
-> +	return 0;
+>  	int termno;
+> @@ -242,13 +242,11 @@ static int hvc_opal_remove(struct platform_device *=
+dev)
+>  	if (hvc_opal_privs[termno] !=3D &hvc_opal_boot_priv)
+>  		kfree(hvc_opal_privs[termno]);
+>  	hvc_opal_privs[termno] =3D NULL;
+> -
+> -	return 0;
 >  }
 > =20
 >  static struct platform_driver hvc_opal_driver =3D {
+>  	.probe		=3D hvc_opal_probe,
+> -	.remove		=3D hvc_opal_remove,
+> +	.remove_new	=3D hvc_opal_remove,
+>  	.driver		=3D {
+>  		.name	=3D hvc_opal_name,
+>  		.of_match_table	=3D hvc_opal_match,
 
