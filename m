@@ -2,54 +2,59 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E74C4332F
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Nov 2023 09:44:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B57CC4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Nov 2023 09:48:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229697AbjKNJoX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Nov 2023 04:44:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48576 "EHLO
+        id S230027AbjKNJsR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Nov 2023 04:48:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbjKNJoW (ORCPT
+        with ESMTP id S229585AbjKNJsQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Nov 2023 04:44:22 -0500
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCDB191;
-        Tue, 14 Nov 2023 01:44:19 -0800 (PST)
-Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-52bd9ddb741so8294666a12.0;
-        Tue, 14 Nov 2023 01:44:19 -0800 (PST)
+        Tue, 14 Nov 2023 04:48:16 -0500
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A0D115;
+        Tue, 14 Nov 2023 01:48:13 -0800 (PST)
+Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-9dd6dc9c00cso810868966b.3;
+        Tue, 14 Nov 2023 01:48:13 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699955058; x=1700559858;
+        d=1e100.net; s=20230601; t=1699955292; x=1700560092;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=jUNzJ2edP92bJxD8AgDGlr8qj4Lt1Mw4NxCr0R4hJ8c=;
-        b=PFZAdWoGiBU60YgLbOPTF80ovOjP63SajKy6iT8O4jOeqKXrHR0LGg+P4SWMzVUVJx
-         sv8SulPwz9tYkLoJMuoIlYPiNlaPDEO1DlUU6LZKj3N/dLB9TsZ5wHscpgoJKPVVfzJy
-         8nSnK6ddI9NIUk0pCqACUgOlgS1IJkQjc8G4nwOkYvIw3xVGyH/rCK3UWHXk4plEaA4C
-         +ttKTvYf+MTXOMU8aoF7FVk2rwvuTaBxKFieKobxcqoy0OpEpWmBp5jhfh4BomolwLbu
-         XdwAkN0SebsbtM4cg2vqoGhtJjn5pUGDFW8jcO7M/4IXZhZHIkNuU+tuuWAuTB4/Eu/Q
-         Rzuw==
-X-Gm-Message-State: AOJu0Yym3zHTAgQ9C+A8p+mYI8ipwUso+tvu42He/21Y96i7hfr9ut1h
-        dvYF1ZphkH4piP2Yk/hJseE=
-X-Google-Smtp-Source: AGHT+IEQfONUWB4cDTMK0qP+dDw3hIEqdKbiG9dDjY4qhssIKf+Hxz+moOfEQRVmW2C98IIqhpsZQQ==
-X-Received: by 2002:a17:906:141b:b0:9e0:727a:e491 with SMTP id p27-20020a170906141b00b009e0727ae491mr6096699ejc.35.1699955057467;
-        Tue, 14 Nov 2023 01:44:17 -0800 (PST)
+        bh=xmgsoxyNFNBJw4J08KM/o4qvUbkmavsgJRhDbBneMmY=;
+        b=fxabq41pf8u6xzQ2s4HZRBK4T2rUdoiqzDdSvZlvBHNLRo3CpGZO66LnvvRkdrduy4
+         IcQVjFLhyvXvqECkaTjgk7PCq/KEHz41t1JGn9VJVHcRQ/sFIwOjPdsN6UpVc4NNFBjX
+         SWOwkCd73EyEvo29Pow9zEze7C+9+DcD6N+4PxhxZJ43r4Z2tK3H74ZpAB5hkdmWq2cB
+         FVdgeemNVj5ZEd5Au37SBsZXhMbDjGxMAHaw/BgAffdbW5QI7YE4SMMZ69ZmgdtYF3bB
+         ZGgX7bEDKr4TxzKaxmFKeQ9LYZ1fVuAyc0ZR916vpBIOZTZxB++pdlVeOBq0uXXLaze6
+         xzSw==
+X-Gm-Message-State: AOJu0YwjmrNWEmxyb3XGT7G1FIqla7NOx/cnP9ZyBQa6ppRusxxHPB95
+        e6JFiu7ME12XvGOPO5deuNo=
+X-Google-Smtp-Source: AGHT+IE630q16P809pZHCB8dZm7V0xHgAE4X3XhtoUQIgynu6nai7tw3ePJnYlFHUSjl39B/R2M/8g==
+X-Received: by 2002:a17:907:6d11:b0:9c5:cfa3:d04d with SMTP id sa17-20020a1709076d1100b009c5cfa3d04dmr8556337ejc.52.1699955291947;
+        Tue, 14 Nov 2023 01:48:11 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id z9-20020a170906714900b0099d804da2e9sm5285960ejj.225.2023.11.14.01.44.16
+        by smtp.gmail.com with ESMTPSA id rp21-20020a170906d97500b009e6af2efd77sm5225001ejb.45.2023.11.14.01.48.11
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Nov 2023 01:44:17 -0800 (PST)
-Message-ID: <c1100a92-90de-4029-bb9c-8f4b6ee2c552@kernel.org>
-Date:   Tue, 14 Nov 2023 10:44:16 +0100
+        Tue, 14 Nov 2023 01:48:11 -0800 (PST)
+Message-ID: <08ce16bc-e4e9-4cad-b724-ea009d9bcbcb@kernel.org>
+Date:   Tue, 14 Nov 2023 10:48:10 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] /proc/sysrq-trigger: accept multiple keys at once
+Subject: Re: [PATCH V2 2/2] serial: uartlite: Use dynamic allocation for major
+ number when uart ports > 4
 Content-Language: en-US
-To:     Tomas Mudrunka <tomas.mudrunka@gmail.com>,
-        gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        corbet@lwn.net, linux-doc@vger.kernel.org
-References: <2023111330-headstone-pyromania-c57e@gregkh>
- <20231114093525.71871-1-tomas.mudrunka@gmail.com>
+To:     Manikanta Guntupalli <manikanta.guntupalli@amd.com>, git@amd.com,
+        michal.simek@amd.com, jacmet@sunsite.dk,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, corbet@lwn.net,
+        christophe.leroy@csgroup.eu, rdunlap@infradead.org,
+        airlied@redhat.com, ogabbay@kernel.org, linux-doc@vger.kernel.org
+Cc:     radhey.shyam.pandey@amd.com, srinivas.goud@amd.com,
+        shubhrajyoti.datta@amd.com, manion05gk@gmail.com
+References: <20231114093303.2718141-1-manikanta.guntupalli@amd.com>
+ <20231114093303.2718141-3-manikanta.guntupalli@amd.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -93,87 +98,72 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20231114093525.71871-1-tomas.mudrunka@gmail.com>
+In-Reply-To: <20231114093303.2718141-3-manikanta.guntupalli@amd.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 14. 11. 23, 10:35, Tomas Mudrunka wrote:
-> Just for convenience.
-> This way we can do:
-> `echo _reisub > /proc/sysrq-trigger`
-> Instead of:
-> `for i in r e i s u b; do echo "$i" > /proc/sysrq-trigger; done;`
+On 14. 11. 23, 10:33, Manikanta Guntupalli wrote:
+> Device number 204 has a range of minors on major number.
+> uart_register_driver is failing due to lack of minor numbers
+> when more number of uart ports used. So, to avoid minor number
+> limitation on 204 major number use dynamic major allocation
+> when more than 4 uart ports used otherwise use static major
+> allocation.
 > 
-> This can be very useful when trying to execute sysrq combo remotely
-> or from userspace. When sending keys in multiple separate writes,
-> userspace can be killed before whole combo is completed.
-> Therefore putting all keys in single write is more robust approach.
+> https://docs.kernel.org/arch/arm/sa1100/serial_uart.html
 > 
-> Signed-off-by: Tomas Mudrunka <tomas.mudrunka@gmail.com>
+> Signed-off-by: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
 > ---
->   Documentation/admin-guide/sysrq.rst |  4 ++++
->   drivers/tty/sysrq.c                 | 17 ++++++++++++++---
->   2 files changed, 18 insertions(+), 3 deletions(-)
+> Changes for V2:
+> Update logic to use either static or dynamic major allocation.
+> Update commit description.
+> Update description of SERIAL_UARTLITE_NR_UARTS in Kconfig.
+> ---
+>   drivers/tty/serial/Kconfig    | 2 ++
+>   drivers/tty/serial/uartlite.c | 5 +++++
+>   2 files changed, 7 insertions(+)
 > 
-> diff --git a/Documentation/admin-guide/sysrq.rst b/Documentation/admin-guide/sysrq.rst
-> index 51906e473..9d46a33e5 100644
-> --- a/Documentation/admin-guide/sysrq.rst
-> +++ b/Documentation/admin-guide/sysrq.rst
-> @@ -79,6 +79,10 @@ On all
->   
->   		echo t > /proc/sysrq-trigger
->   
-> +	Alternatively write key combo prepended by underscore. e.g.::
-> +
-> +		echo _reisub > /proc/sysrq-trigger
-> +
->   The :kbd:`<command key>` is case sensitive.
->   
->   What are the 'command' keys?
-> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-> index 6b4a28bcf..3455e6dd3 100644
-> --- a/drivers/tty/sysrq.c
-> +++ b/drivers/tty/sysrq.c
-> @@ -1150,16 +1150,27 @@ EXPORT_SYMBOL(unregister_sysrq_key);
->   #ifdef CONFIG_PROC_FS
->   /*
->    * writing 'C' to /proc/sysrq-trigger is like sysrq-C
-> + * If first character in write is underscore, all characters are interpreted.
->    */
->   static ssize_t write_sysrq_trigger(struct file *file, const char __user *buf,
->   				   size_t count, loff_t *ppos)
->   {
-> -	if (count) {
-> +	char bulk = false;
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 732c893c8d16..368c63066a86 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -532,6 +532,8 @@ config SERIAL_UARTLITE_NR_UARTS
+>   	help
+>   	  Set this to the number of uartlites in your system, or the number
+>   	  you think you might implement.
+> +	  If maximum number of uartlite serial ports more than 4,
 
-bool
+A verb is missing. The same in patch 1/2.
 
-> +	size_t i;
-> +
-> +	for (i = 0; i < count; i++) {
->   		char c;
+> then driver uses
+> +	  dynamic allocation instead of static allocation for major number.
 >   
-> -		if (get_user(c, buf))
-> +		if (get_user(c, buf+i))
-
-spaces around +
-
->   			return -EFAULT;
-> -		__handle_sysrq(c, false);
-> +
-> +		if (c == '_')
-> +			bulk = true;
-> +		else
-> +			__handle_sysrq(c, false);
-> +
-> +		if (!bulk)
-> +			break;
->   	}
+>   config SERIAL_SUNCORE
+>   	bool
+> diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+> index 404c14acafa5..517f1f34143d 100644
+> --- a/drivers/tty/serial/uartlite.c
+> +++ b/drivers/tty/serial/uartlite.c
+> @@ -24,8 +24,13 @@
+>   #include <linux/pm_runtime.h>
 >   
->   	return count;
+>   #define ULITE_NAME		"ttyUL"
+> +#if (CONFIG_SERIAL_UARTLITE_NR_UARTS > 4)
+
+The parentheses are unneeded, right?
+
+> +#define ULITE_MAJOR             0       /* use dynamic node allocation */
+> +#define ULITE_MINOR             0
+> +#else
+>   #define ULITE_MAJOR		204
+>   #define ULITE_MINOR		187
+> +#endif
+>   #define ULITE_NR_UARTS		CONFIG_SERIAL_UARTLITE_NR_UARTS
+>   
+>   /* ---------------------------------------------------------------------
 
 -- 
 js
