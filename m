@@ -2,116 +2,124 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C7BEC41535
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Nov 2023 13:05:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBDDBC4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Nov 2023 15:13:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232997AbjKNNFQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Nov 2023 08:05:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43730 "EHLO
+        id S233518AbjKNPNL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Nov 2023 10:13:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232842AbjKNNFP (ORCPT
+        with ESMTP id S233569AbjKNPNI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Nov 2023 08:05:15 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E46197
-        for <linux-serial@vger.kernel.org>; Tue, 14 Nov 2023 05:05:11 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id 3f1490d57ef6-d9a518d66a1so5689441276.0
-        for <linux-serial@vger.kernel.org>; Tue, 14 Nov 2023 05:05:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1699967110; x=1700571910; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Y3kLet+ZFc4FiXhXyJTUcUEX1JsMDtWsRFc0PYkqxJM=;
-        b=nMk4bjzWl2OH2sgI2kginq+JqGE7cwEcr+JGDejTGiX2niImmLs4RpluHd3H9DmyOX
-         39NxMktLxD0KR/1jO0DVPvee/GYRKvdT0NGDyOOY9mugEYri1z7tPGOuN1UaDnDslMPM
-         07KVGoolts85BnWYiBEeoDTKbfNmDvu5SMcH8fkerB/VCr7HRL3nOmT0dMFAw6psXo7L
-         PQ/yETAMDp42UEMSaZHW8fDmMccfGZ99jpCF2zkYMbjDRmxmbKkkPuIGDPaJjXwpkPJN
-         6YRQJ9NnpBeWQwKLA6iHGmEX2qiNv1VB3X4ejZsla3zyizgE0zAnjBWzAhmBMv96hrt4
-         Sceg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699967110; x=1700571910;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Y3kLet+ZFc4FiXhXyJTUcUEX1JsMDtWsRFc0PYkqxJM=;
-        b=p49H3pxufcghsqaPyvZd2JQCwn+wnlMxngo4KqRNjenXoPgtPmVSPUgF7Sj8rnuxKr
-         a7+a0eyWFmABeyD4JerwzEQK5gMeid+qO4uEZtfNW5WMMIkkvjdSy/K/e4Ng4zqUn6Y5
-         TXgf/vS4Kpe1utsoUk8kBzjqv8ZfSWAkGDN1h70PkdeMJY8QXkQWnOdwEhfdCjIjFoLK
-         2H2d1EiMrrP0rFCkhlqarhutjhy2FYoVzWf31ZA8QCnn30Y3UpAtR7+CBdEQQ0pzrqag
-         65ownUXC4J6O+5Nhil86XO1lSsZLcQhtXtgzwWj8kWHxv7MH7lhJK7wdwBLc6G5K2HYB
-         fcMg==
-X-Gm-Message-State: AOJu0YyU163YtMLuosE04phj7xD3uylG0YvZkDSjd9RkMwa5MUb/cNAG
-        2McszCa9pnm3qIfu+f9f/d+hXQzu1vi/M5dk53fZkw==
-X-Google-Smtp-Source: AGHT+IHU/EMXoR/AsvwDR5tVM/hTfhag7Py4pB8zx2h4lfdu8R1hVWGA8wCYGXEvgGG4RCO6d/pEhnbc29+P4adFbGc=
-X-Received: by 2002:a25:35d6:0:b0:daf:66f9:cfab with SMTP id
- c205-20020a2535d6000000b00daf66f9cfabmr8292993yba.9.1699967110411; Tue, 14
- Nov 2023 05:05:10 -0800 (PST)
+        Tue, 14 Nov 2023 10:13:08 -0500
+Received: from harvie.cz (harvie.cz [77.87.242.242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 489D5E3
+        for <linux-serial@vger.kernel.org>; Tue, 14 Nov 2023 07:13:05 -0800 (PST)
+Received: from anemophobia.amit.cz (unknown [31.30.84.130])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by harvie.cz (Postfix) with ESMTPSA id B5E7F180282;
+        Tue, 14 Nov 2023 16:12:58 +0100 (CET)
+From:   Tomas Mudrunka <tomas.mudrunka@gmail.com>
+To:     tomas.mudrunka@gmail.com
+Cc:     corbet@lwn.net, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH v6] /proc/sysrq-trigger: accept multiple keys at once
+Date:   Tue, 14 Nov 2023 16:12:52 +0100
+Message-ID: <20231114151252.117575-1-tomas.mudrunka@gmail.com>
+X-Mailer: git-send-email 2.42.1
+In-Reply-To: <20231114124152.97010-1-tomas.mudrunka@gmail.com>
+References: <20231114124152.97010-1-tomas.mudrunka@gmail.com>
 MIME-Version: 1.0
-References: <20231108104343.24192-1-krzysztof.kozlowski@linaro.org> <20231108104343.24192-6-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20231108104343.24192-6-krzysztof.kozlowski@linaro.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 14 Nov 2023 14:04:59 +0100
-Message-ID: <CACRpkdaSPTjjPA=TS-WbOb3E=TabtP6MFEx6Q+Dar-Mh=EtknQ@mail.gmail.com>
-Subject: Re: [PATCH 05/17] dt-bindings: pinctrl: samsung: add specific
- compatibles for existing SoC
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Andi Shyti <andi.shyti@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Lee Jones <lee@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaehoon Chung <jh80.chung@samsung.com>,
-        Sam Protsenko <semen.protsenko@linaro.org>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-sound@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Nov 8, 2023 at 11:44=E2=80=AFAM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
+Just for convenience.
+This way we can do:
+`echo _reisub > /proc/sysrq-trigger`
+Instead of:
+`for i in r e i s u b; do echo "$i" > /proc/sysrq-trigger; done;`
 
-> Samsung Exynos SoC reuses several devices from older designs, thus
-> historically we kept the old (block's) compatible only.  This works fine
-> and there is no bug here, however guidelines expressed in
-> Documentation/devicetree/bindings/writing-bindings.rst state that:
-> 1. Compatibles should be specific.
-> 2. We should add new compatibles in case of bugs or features.
->
-> Add compatibles specific to each SoC in front of all old-SoC-like
-> compatibles.
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+This can be very useful when trying to execute sysrq combo remotely
+or from userspace. When sending keys in multiple separate writes,
+userspace can be killed before whole combo is completed.
+Therefore putting all keys in single write is more robust approach.
 
-This is more formally correct indeed.
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Tomas Mudrunka <tomas.mudrunka@gmail.com>
+---
+V5 -> V6: Documentation now has notice about undefined behavior
+V4 -> V5: Added this list of changes
+V3 -> V4: Bulk is now bool instead of char (and fixed typo)
+V2 -> V3: Fixed code styling (and introduced typo)
+V1 -> V2: Bulk mode only activated by underscore now, added docs
 
-Yours,
-Linus Walleij
+ Documentation/admin-guide/sysrq.rst | 11 ++++++++++-
+ drivers/tty/sysrq.c                 | 17 ++++++++++++++---
+ 2 files changed, 24 insertions(+), 4 deletions(-)
+
+diff --git a/Documentation/admin-guide/sysrq.rst b/Documentation/admin-guide/sysrq.rst
+index 51906e473..e7a82cba7 100644
+--- a/Documentation/admin-guide/sysrq.rst
++++ b/Documentation/admin-guide/sysrq.rst
+@@ -75,10 +75,19 @@ On other
+ 	submit a patch to be included in this section.
+ 
+ On all
+-	Write a character to /proc/sysrq-trigger.  e.g.::
++	Write single character to /proc/sysrq-trigger.
++	Only first character is interpreted, rest of string is ignored.
++	However it is not reccomended to write any extra characters
++	as the behavior is undefined and might change in the future versions.
++	e.g.::
+ 
+ 		echo t > /proc/sysrq-trigger
+ 
++	Alternatively write multiple keys combo prepended by underscore.
++	All characters are interpreted this way. e.g.::
++
++		echo _reisub > /proc/sysrq-trigger
++
+ The :kbd:`<command key>` is case sensitive.
+ 
+ What are the 'command' keys?
+diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+index 6b4a28bcf..ad07bc812 100644
+--- a/drivers/tty/sysrq.c
++++ b/drivers/tty/sysrq.c
+@@ -1150,16 +1150,27 @@ EXPORT_SYMBOL(unregister_sysrq_key);
+ #ifdef CONFIG_PROC_FS
+ /*
+  * writing 'C' to /proc/sysrq-trigger is like sysrq-C
++ * If first character in write is underscore, all characters are interpreted.
+  */
+ static ssize_t write_sysrq_trigger(struct file *file, const char __user *buf,
+ 				   size_t count, loff_t *ppos)
+ {
+-	if (count) {
++	bool bulk = false;
++	size_t i;
++
++	for (i = 0; i < count; i++) {
+ 		char c;
+ 
+-		if (get_user(c, buf))
++		if (get_user(c, buf + i))
+ 			return -EFAULT;
+-		__handle_sysrq(c, false);
++
++		if (c == '_')
++			bulk = true;
++		else
++			__handle_sysrq(c, false);
++
++		if (!bulk)
++			break;
+ 	}
+ 
+ 	return count;
+-- 
+2.42.1
