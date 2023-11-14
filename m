@@ -2,89 +2,91 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 770A1C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Nov 2023 21:37:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5DD8C4167B
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Nov 2023 07:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231745AbjKMVhk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Nov 2023 16:37:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52218 "EHLO
+        id S232215AbjKNH6g (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Nov 2023 02:58:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229511AbjKMVhk (ORCPT
+        with ESMTP id S229566AbjKNH6f (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Nov 2023 16:37:40 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281A0D68;
-        Mon, 13 Nov 2023 13:37:37 -0800 (PST)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B3C9C433C8;
-        Mon, 13 Nov 2023 21:37:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1699911456;
-        bh=xQc5JLHDvxSflGI+W8bGTg4cLOgkDFItdB/5D5OsLX0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kZkMXIZ2NrBr3aq9q4+sjYbpUUB6ZpoKXpTlbLgWblC3mLGyQdsFlCxitfh4JoliK
-         I3qLle93j0VcFR+vdIHegyW7L/I2QAV3HZZQ+5bN+8gHJdTEJMYPM6RLxvTV/pzrjK
-         /mSZsog3D1IEd/459lwnsvxfIjLqRuURCt2gqyGM=
-Date:   Mon, 13 Nov 2023 16:37:34 -0500
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     =?utf-8?B?VG9tw6HFoSBNdWRydcWIa2E=?= <tomas.mudrunka@gmail.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH] /proc/sysrq-trigger: accept multiple keys at once
-Message-ID: <2023111330-headstone-pyromania-c57e@gregkh>
-References: <20231113182227.698989-1-tomas.mudrunka@gmail.com>
- <2023111333-duly-mobility-edc7@gregkh>
- <CAH2-hcLoz591mduTVPtFd0ZOEzMNSzhU108qqvv-ZWre7+jm9Q@mail.gmail.com>
+        Tue, 14 Nov 2023 02:58:35 -0500
+X-Greylist: delayed 554 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 13 Nov 2023 23:58:31 PST
+Received: from mail.bugwerft.de (mail.bugwerft.de [46.23.86.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC86619B;
+        Mon, 13 Nov 2023 23:58:31 -0800 (PST)
+Received: from hq-00595.fritz.box (unknown [178.19.214.146])
+        by mail.bugwerft.de (Postfix) with ESMTPSA id 05DF928071D;
+        Tue, 14 Nov 2023 07:49:15 +0000 (UTC)
+From:   Daniel Mack <daniel@zonque.org>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        lech.perczak@camlingroup.com, u.kleine-koenig@pengutronix.de
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Daniel Mack <daniel@zonque.org>,
+        Maxim Popov <maxim.snafu@gmail.com>, stable@vger.kernel.org
+Subject: [PATCH] serial: sc16is7xx: address RX timeout interrupt errata
+Date:   Tue, 14 Nov 2023 08:49:04 +0100
+Message-ID: <20231114074904.239458-1-daniel@zonque.org>
+X-Mailer: git-send-email 2.41.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAH2-hcLoz591mduTVPtFd0ZOEzMNSzhU108qqvv-ZWre7+jm9Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 13, 2023 at 10:09:50PM +0100, Tomáš Mudruňka wrote:
-> po 13. 11. 2023 v 19:33 Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> > What did you just break where people would send a string and only relied
-> > on the first character being checked?  This might not be ok to do.
-> 
-> It truly might not be ok. But i hope you will not consider me impolite
-> if i open further discussion. Is this actual use case for some people?
+This devices has a silicon bug that makes it report a timeout interrupt
+but no data in FIFO.
 
-It might be, we can't start doing different functionality just because
-we were previously ignoring all the other characters.  Especially for a
-user/kernel api that is allowed to reboot the machine :)
+The datasheet states the following in the errata section 18.1.4:
 
-> I understand that it might be, but currently i can only think about
-> this being done by mistake, rather than on purpose... are you aware of
-> any software actually leveraging this feature?
+  "If the host reads the receive FIFO at the at the same time as a
+  time-out interrupt condition happens, the host might read 0xCC
+  (time-out) in the Interrupt Indication Register (IIR), but bit 0
+  of the Line Status Register (LSR) is not set (means there is not
+  data in the receive FIFO)."
 
-I'm not, but there is a lot of userspace software out there...
+When this happens, the loop in sc16is7xx_irq() will run forever,
+which effectively blocks the i2c bus and breaks the functionality
+of the UART.
 
-> Please also note that there is really good use case for this. if i do
-> the REISUB bash loop as suggested, the bash will be killed during E or
-> I and the rest of emergency procedure will not finish. Therefore i
-> really think it makes sense to be able to pass whole sysrq batch to
-> the kernel at once.
-> 
-> In case you are sure that this is a bad idea, i can suggest
-> alternative approach. only activate the "bulk mode" when first
-> character is '_' (underscore).
-> User would then be able to do
-> echo _reisub > /proc/sysrq-trigger
-> 
-> Would you prefer if i do it this way? In my opinion it does introduce
-> little unnecessary complexity, to fix something that might arguably
-> not be actual issue. I mean... we still have /dev/null in case people
-> need to discard some extra characters. :-)
-> But if you think it's better to stay on safe side, i think it's viable
-> option as well...
+From the information above, it is assumed that when the bug is
+triggered, the FIFO does in fact have payload in its buffer, but the
+fill level reporting is off-by-one. Hence this patch fixes the issue
+by reading one byte from the FIFO when that condition is detected.
 
-I think you are only going to be able to do this "mode switch" method as
-we can't potentially break existing systems.  Your change should prevent
-that from happening, so at a quick glance, yes, this seems like the only
-way forward if this is needed at all (an independent question...)
+This clears the interrupt and hence breaks the polling loop.
 
-thanks,
+Signed-off-by: Daniel Mack <daniel@zonque.org>
+Co-Developed-by: Maxim Popov <maxim.snafu@gmail.com>
+Cc: stable@vger.kernel.org
+---
+ drivers/tty/serial/sc16is7xx.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-greg k-h
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 289ca7d4e566..76f76e510ed1 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -765,6 +765,18 @@ static bool sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
+ 		case SC16IS7XX_IIR_RTOI_SRC:
+ 		case SC16IS7XX_IIR_XOFFI_SRC:
+ 			rxlen = sc16is7xx_port_read(port, SC16IS7XX_RXLVL_REG);
++
++			/*
++			 * There is a silicon bug that makes the chip report a
++			 * time-out interrupt but no data in the FIFO. This is
++			 * described in errata section 18.1.4.
++			 *
++			 * When this happens, read one byte from the FIFO to
++			 * clear the interrupt.
++			 */
++			if (iir == SC16IS7XX_IIR_RTOI_SRC && !rxlen)
++				rxlen = 1;
++
+ 			if (rxlen)
+ 				sc16is7xx_handle_rx(port, rxlen, iir);
+ 			break;
+-- 
+2.41.0
+
