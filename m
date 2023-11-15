@@ -2,106 +2,112 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BF73C54FB9
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Nov 2023 21:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F30F3C5ACB2
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Nov 2023 21:55:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344893AbjKOVYt (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Nov 2023 16:24:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47670 "EHLO
+        id S229757AbjKOVzO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Nov 2023 16:55:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229912AbjKOVYq (ORCPT
+        with ESMTP id S235622AbjKOVzM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Nov 2023 16:24:46 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D6792;
-        Wed, 15 Nov 2023 13:24:43 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id 5b1f17b1804b1-40790b0a224so665535e9.0;
-        Wed, 15 Nov 2023 13:24:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1700083482; x=1700688282; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=of+hBS/1vxGoQEjHInTVG1yToe4mkNTd0Roy8SORSbI=;
-        b=Xylnh/WID/1IFlThce1isxfssE6Rib9awT1A7x9S2KEarKrBIu0QBQYyDS2Vsq3m7b
-         R00vSufCFom4n6jghyhEQKu6c4D1IinVwbK/0YUlcyEhr81ZGbH1s49M6sPY3JTWBAVt
-         5f4Q2seiS5spRhaMf1tRTR0fii8Kp6wbaQSSmB0d9gABBt9MuOI7ON9S3vb7h93AIOrR
-         5D2VjQE58wT7NTS4j7SIiLQygwwwCUu6qK3/o4cAR+sYIalewadqd6ZvvnuOmFpvKlYS
-         y1Yr8xWfx1Gs8poQtgtOFJlbCte8bHbditRNpdMHZfLAX15uBvXNJxnyMOEWlTWMB+Gp
-         mihQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700083482; x=1700688282;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=of+hBS/1vxGoQEjHInTVG1yToe4mkNTd0Roy8SORSbI=;
-        b=iINzkTZkavj89m5ECeWvbKknp2twhh4HFQ2+MvbdlDdKCozHQp4Zjx0Sk9XJRbTXRJ
-         P4JnBWjKqU0VYzUh1K6mfvdsFGdx3hMqcBRWOiKP1Mt4ewxjIvLcPdrG9G925dw7eNLf
-         WOcCPFgenlVexxHJMhLnE8M8+y3a1sQAlonBBUayJJLlriLwjYbhjQgz+YWGypjQgRtM
-         JdKwUoHOtey6+m8CV7P0MKmKHYnXpePXmoub/e51jEjhU+p4W6BHMyLNYN6r4UGcTFdH
-         qWHgZWNArdgF+teyVU90RSko22u7nnPJOSKVocTEOz4XwjnycWdqBkyBVYfhT8z/fpt6
-         P2DA==
-X-Gm-Message-State: AOJu0Yzup716ebs1CmefJOLAUb8e40dJZV3r/c4vcIsA9bXbr0gNyQo+
-        YsUrIiNPFT3BJqn1bZlLV9o=
-X-Google-Smtp-Source: AGHT+IFJIW+jb6ynBCWuoASAZ3cq+ntXLe8x7yzBP03ZM2Ch5SgnNh7fTP2ZWadFQUgKPMhtw6TIYA==
-X-Received: by 2002:a05:600c:354f:b0:407:8f23:cf3 with SMTP id i15-20020a05600c354f00b004078f230cf3mr11373253wmq.26.1700083482003;
-        Wed, 15 Nov 2023 13:24:42 -0800 (PST)
-Received: from prasmi.home ([2a00:23c8:2500:a01:e8e:4851:e049:93fd])
-        by smtp.gmail.com with ESMTPSA id n21-20020a7bc5d5000000b003fbe4cecc3bsm913621wmk.16.2023.11.15.13.24.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Nov 2023 13:24:41 -0800 (PST)
-From:   Prabhakar <prabhakar.csengg@gmail.com>
-X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 15 Nov 2023 16:55:12 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05FDA199;
+        Wed, 15 Nov 2023 13:55:09 -0800 (PST)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F554C433C8;
+        Wed, 15 Nov 2023 21:55:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1700085308;
+        bh=6FPkdmASCVL9BjatyPPFNez/SmMwVn+Df5pcKuTZyO0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Z+216bj8TImuQwGVZmJWMvUAJ1rJqm3cmUC50XeRID0REBiqBC32jkdnD30aN959c
+         fDe4iHCsYLQTJ+sg7Glxn/gkjJoq+PwkDBTij2N4izF7ojFlw9TSUleHtxbvVqpRdl
+         GsSf4ZUVrWBxv4aINzDVpIsVSRbtK4mlRL49q6fueLPkM7AywfWnvygQkwKT5iepYC
+         8cKFdSda6qGRBiHcfOScT9cbRPL4sTthMjju5lDOJaY0RnrS6aMqX8ANU7KO67GcJg
+         aGCea0UWbM0N9bRIGku7TDRDAt43cuoaCm7yGbXCVkYJClBEI9isEstZJhIqfOUsiM
+         tqef1SlN4fsSg==
+Date:   Wed, 15 Nov 2023 21:55:04 +0000
+From:   Conor Dooley <conor@kernel.org>
+To:     Prabhakar <prabhakar.csengg@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Conor Dooley <conor+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Magnus Damm <magnus.damm@gmail.com>, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
         Biju Das <biju.das.jz@bp.renesas.com>,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH] dt-bindings: serial: renesas,sci: Document RZ/Five SoC
-Date:   Wed, 15 Nov 2023 21:24:31 +0000
-Message-Id: <20231115212431.32872-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.34.1
+Subject: Re: [PATCH] dt-bindings: serial: renesas,sci: Document RZ/Five SoC
+Message-ID: <20231115-vineyard-cartload-91c28009a2d8@squawk>
+References: <20231115212431.32872-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="AJiWvaDVJmb9d83n"
+Content-Disposition: inline
+In-Reply-To: <20231115212431.32872-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-The SCI block on the RZ/Five SoC is identical to one found on the RZ/G2UL
-SoC. "renesas,r9a07g043-sci" compatible string will be used on the RZ/Five
-SoC so to make this clear and to keep this file consistent, update the
-comment to include RZ/Five SoC.
+--AJiWvaDVJmb9d83n
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-No driver changes are required as generic compatible string "renesas,sci"
-will be used as a fallback on RZ/Five SoC.
+On Wed, Nov 15, 2023 at 09:24:31PM +0000, Prabhakar wrote:
+> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>=20
+> The SCI block on the RZ/Five SoC is identical to one found on the RZ/G2UL
+> SoC. "renesas,r9a07g043-sci" compatible string will be used on the RZ/Five
+> SoC so to make this clear and to keep this file consistent, update the
+> comment to include RZ/Five SoC.
+>=20
+> No driver changes are required as generic compatible string "renesas,sci"
+> will be used as a fallback on RZ/Five SoC.
+>=20
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
- Documentation/devicetree/bindings/serial/renesas,sci.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,sci.yaml b/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-index 9f7305200c47..64d3db6e54e5 100644
---- a/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-@@ -17,7 +17,7 @@ properties:
-     oneOf:
-       - items:
-           - enum:
--              - renesas,r9a07g043-sci     # RZ/G2UL
-+              - renesas,r9a07g043-sci     # RZ/G2UL and RZ/Five
-               - renesas,r9a07g044-sci     # RZ/G2{L,LC}
-               - renesas,r9a07g054-sci     # RZ/V2L
-           - const: renesas,sci            # generic SCI compatible UART
--- 
-2.34.1
+Cheers,
+Conor.
 
+> ---
+>  Documentation/devicetree/bindings/serial/renesas,sci.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/serial/renesas,sci.yaml b/=
+Documentation/devicetree/bindings/serial/renesas,sci.yaml
+> index 9f7305200c47..64d3db6e54e5 100644
+> --- a/Documentation/devicetree/bindings/serial/renesas,sci.yaml
+> +++ b/Documentation/devicetree/bindings/serial/renesas,sci.yaml
+> @@ -17,7 +17,7 @@ properties:
+>      oneOf:
+>        - items:
+>            - enum:
+> -              - renesas,r9a07g043-sci     # RZ/G2UL
+> +              - renesas,r9a07g043-sci     # RZ/G2UL and RZ/Five
+>                - renesas,r9a07g044-sci     # RZ/G2{L,LC}
+>                - renesas,r9a07g054-sci     # RZ/V2L
+>            - const: renesas,sci            # generic SCI compatible UART
+> --=20
+> 2.34.1
+>=20
+
+--AJiWvaDVJmb9d83n
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZVU+NQAKCRB4tDGHoIJi
+0ujNAQCPEOKBixWaz5gdxaw0aG9OqkCq4DoE9oxF8EEJfn5btwEAvX4sT2aXb7cP
+WSwF8KqiKJbG60crl1EtXMVJsRhpGwk=
+=gtzN
+-----END PGP SIGNATURE-----
+
+--AJiWvaDVJmb9d83n--
