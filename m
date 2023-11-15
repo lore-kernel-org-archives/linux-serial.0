@@ -2,118 +2,225 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4789C07548
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Nov 2023 11:22:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26EE0C07548
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Nov 2023 12:29:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343576AbjKOLWQ (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Nov 2023 06:22:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45404 "EHLO
+        id S234680AbjKOM26 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Nov 2023 07:28:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343564AbjKOLWP (ORCPT
+        with ESMTP id S234916AbjKOM25 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Nov 2023 06:22:15 -0500
-Received: from mail.bugwerft.de (mail.bugwerft.de [46.23.86.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F3522F5;
-        Wed, 15 Nov 2023 03:22:11 -0800 (PST)
-Received: from [10.10.0.76] (unknown [62.214.9.170])
-        by mail.bugwerft.de (Postfix) with ESMTPSA id 8B8E228154F;
-        Wed, 15 Nov 2023 11:22:10 +0000 (UTC)
-Message-ID: <ecc90a62-7cfa-45c9-9f6c-188e2c8ac50f@zonque.org>
-Date:   Wed, 15 Nov 2023 12:22:10 +0100
+        Wed, 15 Nov 2023 07:28:57 -0500
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5559211F
+        for <linux-serial@vger.kernel.org>; Wed, 15 Nov 2023 04:28:53 -0800 (PST)
+Received: by mail-qv1-xf30.google.com with SMTP id 6a1803df08f44-66d190a8f87so38869366d6.0
+        for <linux-serial@vger.kernel.org>; Wed, 15 Nov 2023 04:28:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1700051331; x=1700656131; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=dwjGBPv0LggRv8ucHbctzDyEB0uQFRFM/3IXkTUdnCo=;
+        b=lTD5ZvvZCoGiMSuKgEYFq2kK4QFgFjoumEiVf91QEpiFd0xLhzO2ENmi4tV2FWmoVD
+         8XwfxtceJF7Wr67GCPoWT0Kv7dc79JLaf/no3/Bw3xvveTROjTpgW9xFZcddSoM9y7HV
+         HyDV4gHkmAfbObHrJRKbsA+31smB96Ob1oX6EZX6NU9CreLPXwMiBKDfXRuxBBHkBTkX
+         5xvJNIyTwlRlM/nz1/rwiOz95vPPLK+ZhZJY4gy+0eN3Q+LcvL0subm5feKGewOaEfCx
+         TQqbs0xvUWQhkO2uo85zppsIFNUyjMunbLejTa8v1yreFcLnIUFB6dYrdzoTgnL9WRLs
+         tBjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700051331; x=1700656131;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=dwjGBPv0LggRv8ucHbctzDyEB0uQFRFM/3IXkTUdnCo=;
+        b=Bq5CAdbDrM3YpNiXCsHzzeqquWoeQN1s8clzBGJ1OJ2z4p3hUmIbNts/9bBS6pW33X
+         N//486BlZ/INitAH3VRXGEGPgiVhJqc3Wnl1PDL73MJXISAwttx4wzp3Cn5GWkxkrDi0
+         q4LA0XlxNlbJvHsB0uCsdKggGrEIUVeAioSX8HDkT+fNi+imwxUPnb8+0BfvnwE9gCfi
+         mI2IHgT0b8uygmfIRhihMCR9MwmdxEhlrpkKovlRjdlV//1CNqhFtV1j4PdppxuVYmZe
+         ToFo+0ycw6SOMrD8ISYmX9fazSRiJ2jt9vUilTh2JzJUcNM8DZOyWBT3Ic3DMSBlifJi
+         6HxQ==
+X-Gm-Message-State: AOJu0YxeGdPmqpyQRqLVsfpqGtTu2xuccZLvlhdSZTpKjsycH3/Cf0m3
+        8xPadWo3n1cf+iYWOAFaTff2nQ==
+X-Google-Smtp-Source: AGHT+IFtow3WlRKFN1IOoty6QWnONoJvytKJit31/+ebAwkvSlyX2HYbGen471zV2MI9N/6R9jevvg==
+X-Received: by 2002:a05:6214:40f:b0:677:a0f6:8f7c with SMTP id z15-20020a056214040f00b00677a0f68f7cmr7674391qvx.24.1700051331495;
+        Wed, 15 Nov 2023 04:28:51 -0800 (PST)
+Received: from [192.168.212.13] ([12.191.197.195])
+        by smtp.gmail.com with ESMTPSA id pr18-20020a056214141200b0067169e210b3sm494437qvb.70.2023.11.15.04.28.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Nov 2023 04:28:50 -0800 (PST)
+Message-ID: <62b7176d-f99c-49f6-a287-17a6b3604c1c@linaro.org>
+Date:   Wed, 15 Nov 2023 13:28:45 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: sc16is7xx: address RX timeout interrupt errata
+Subject: Re: [PATCH v2 10/12] pinctrl: samsung: add exynosautov920 pinctrl
 Content-Language: en-US
-To:     Lech Perczak <lech.perczak@camlingroup.com>,
-        Hugo Villeneuve <hugo@hugovil.com>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        u.kleine-koenig@pengutronix.de, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Maxim Popov <maxim.snafu@gmail.com>,
-        stable@vger.kernel.org
-References: <20231114074904.239458-1-daniel@zonque.org>
- <20231114102025.d48c0a6ec6c413f274b7680b@hugovil.com>
- <140280a6-1948-4630-b10c-8e6a2afec2de@zonque.org>
- <3fac7d72-0a1b-4d93-9245-a0f8af1240a6@camlingroup.com>
-From:   Daniel Mack <daniel@zonque.org>
-In-Reply-To: <3fac7d72-0a1b-4d93-9245-a0f8af1240a6@camlingroup.com>
+To:     Jaewon Kim <jaewon02.kim@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20231115095609.39883-1-jaewon02.kim@samsung.com>
+ <CGME20231115095856epcas2p1c3ee85750828bec2ee4ab0adeaeaff28@epcas2p1.samsung.com>
+ <20231115095609.39883-11-jaewon02.kim@samsung.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <20231115095609.39883-11-jaewon02.kim@samsung.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Lech,
+On 15/11/2023 10:56, Jaewon Kim wrote:
+> ExynosAutov920 GPIO has a different register structure.
+> In the existing Exynos series, EINT control register enumerated after
+> a specific offset (e.g EXYNOS_GPIO_ECON_OFFSET).
+> However, in ExynosAutov920 SoC, the register that controls EINT belongs
+> to each GPIO group, and each GPIO group has 0x1000 align.
+> 
+> This is a structure to protect the GPIO group with S2MPU in VM environment,
+> and will only be applied in ExynosAuto series SoCs.
+> 
+> Example)
+> -------------------------------------------------
+> | original		| ExynosAutov920	|
+> |-----------------------------------------------|
+> | 0x0	GPIO_CON	| 0x0	GPIO_CON	|
+> | 0x4	GPIO_DAT	| 0x4	GPIO_DAT	|
+> | 0x8	GPIO_PUD	| 0x8	GPIO_PUD	|
+> | 0xc	GPIO_DRV	| 0xc	GPIO_DRV	|
+> | 0x700	EINT_CON	| 0x18	EINT_CON	|
+> | 0x800	EINT_FLTCON	| 0x1c	EINT_FLTCON0	|
+> | 0x900	EINT_MASK	| 0x20	EINT_FLTCON1	|
+> | 0xa00	EINT_PEND	| 0x24	EINT_MASK	|
+> |			| 0x28	EINT_PEND	|
+> -------------------------------------------------
+> 
+> Pinctrl data for ExynosAutoV920 SoC.
+>  - GPA0,GPA1 (10): External wake up interrupt
+>  - GPQ0 (2): SPMI (PMIC I/F)
+>  - GPB0,GPB1,GPB2,GPB3,GPB4,GPB5,GPB6 (47): I2S Audio
+>  - GPH0,GPH1,GPH2,GPH3,GPH4,GPH5,GPH6,GPH8 (49): PCIE, UFS, Ethernet
+>  - GPG0,GPG1,GPG2,GPG3,GPG4,GPG5 (29): General purpose
+>  - GPP0,GPP1,GPP2,GPP3,GPP4,GPP5,GPP6,GPP7,GPP8,GPP9,GPP10 (77): USI
+> 
+> Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
+> ---
+>  .../pinctrl/samsung/pinctrl-exynos-arm64.c    | 140 ++++++++++++++++++
+>  drivers/pinctrl/samsung/pinctrl-exynos.c      | 102 ++++++++++++-
+>  drivers/pinctrl/samsung/pinctrl-exynos.h      |  27 ++++
+>  drivers/pinctrl/samsung/pinctrl-samsung.c     |   5 +
+>  drivers/pinctrl/samsung/pinctrl-samsung.h     |  13 ++
+>  5 files changed, 280 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c b/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+> index cb965cf93705..cf86722a70a3 100644
+> --- a/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+> +++ b/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+> @@ -796,3 +796,143 @@ const struct samsung_pinctrl_of_match_data fsd_of_data __initconst = {
+>  	.ctrl		= fsd_pin_ctrl,
+>  	.num_ctrl	= ARRAY_SIZE(fsd_pin_ctrl),
+>  };
+> +
+> +/* pin banks of exynosautov920 pin-controller 0 (ALIVE) */
+> +static struct samsung_pin_bank_data exynosautov920_pin_banks0[] = {
 
-On 11/15/23 11:51, Lech Perczak wrote:
-> W dniu 14.11.2023 o 16:55, Daniel Mack pisze:
->> Hi Hugo,
->>
->> On 11/14/23 16:20, Hugo Villeneuve wrote:
->>> On Tue, 14 Nov 2023 08:49:04 +0100
->>> Daniel Mack <daniel@zonque.org> wrote:
->>>> This devices has a silicon bug that makes it report a timeout interrupt
->>>> but no data in FIFO.
->>>>
->>>> The datasheet states the following in the errata section 18.1.4:
->>>>
->>>>   "If the host reads the receive FIFO at the at the same time as a
->>>>   time-out interrupt condition happens, the host might read 0xCC
->>>>   (time-out) in the Interrupt Indication Register (IIR), but bit 0
->>>>   of the Line Status Register (LSR) is not set (means there is not
->>>>   data in the receive FIFO)."
->>>>
->>>> When this happens, the loop in sc16is7xx_irq() will run forever,
->>>> which effectively blocks the i2c bus and breaks the functionality
->>>> of the UART.
->>>>
->>>> From the information above, it is assumed that when the bug is
->>>> triggered, the FIFO does in fact have payload in its buffer, but the
->>>> fill level reporting is off-by-one. Hence this patch fixes the issue
->>>> by reading one byte from the FIFO when that condition is detected.
->>> From what I understand from the errata, when the problem occurs, it
->>> affects bit 0 of the LSR register. I see no mention that it
->>> also affects the RX FIFO level register (SC16IS7XX_RXLVL_REG)?
->> True, the errata doesn't explicitly mention that, but tests have shown
->> that the RXLVL register is equally affected.
->>
->>> LSR[0] would be checked only if we were using polled mode of
->>> operation, but we always use the interrupt mode (IRQ), and therefore I
->>> would say that this errata doesn't apply to this driver, and the
->>> patch is not necessary...
->> Well, it is. We have seen this bug in the wild and extensively
->> stress-tested the patch on dozens of boards for many days. Without this
->> patch, kernels on affected systems would consume a lot of CPU cycles in
->> the interrupt threads and effectively render the I2C bus unusable due to
->> the busy polling.
->>
->> With this patch applied, we were no longer able to reproduce the issue.
-> Could you share some more details on the setup you use to reproduce this? I'd like to try out as well.
+So you created patch from some downstream code? No, please work on
+upstream. Take upstream code and customize it to your needs. That way
+you won't introduce same mistakes fixes years ago.
 
-We have boards with 2 I2C busses with an SC16IS752IBS on both. The UARTs
-are configured in infrared mode, and they send receive IR signals
-constantly. I guess the same would happen with other electrical
-interfaces, but the important bit is that the UARTs see a steady stream
-of inbound data.
+Missing const.
 
-The bug has hit us on production units and when it does, sc16is7xx_irq()
-would spin forever because sc16is7xx_port_irq() keeps seeing an
-interrupt in the IIR register that is not cleared because the driver
-does not call into sc16is7xx_handle_rx() unless the RXLVL register
-reports at least one byte in the FIFO.
+...
 
-Note that this issue might only occur in revision E of the silicon. And
-there seems to be now way to read the revision code through I2C, so I
-guess you won't be able to figure out easily whether your chip is affected.
+> @@ -31,6 +31,7 @@
+>  #define EXYNOS7_WKUP_EMASK_OFFSET	0x900
+>  #define EXYNOS7_WKUP_EPEND_OFFSET	0xA00
+>  #define EXYNOS_SVC_OFFSET		0xB08
+> +#define EXYNOSAUTOV920_SVC_OFFSET	0xF008
+>  
 
-Let me know if I can provide more information.
+...
 
+>  #ifdef CONFIG_PINCTRL_S3C64XX
+>  	{ .compatible = "samsung,s3c64xx-pinctrl",
+> diff --git a/drivers/pinctrl/samsung/pinctrl-samsung.h b/drivers/pinctrl/samsung/pinctrl-samsung.h
+> index 9b3db50adef3..cbb78178651b 100644
+> --- a/drivers/pinctrl/samsung/pinctrl-samsung.h
+> +++ b/drivers/pinctrl/samsung/pinctrl-samsung.h
+> @@ -122,6 +122,9 @@ struct samsung_pin_bank_type {
+>   * @eint_type: type of the external interrupt supported by the bank.
+>   * @eint_mask: bit mask of pins which support EINT function.
+>   * @eint_offset: SoC-specific EINT register or interrupt offset of bank.
+> + * @mask_offset: SoC-specific EINT mask register offset of bank.
+> + * @pend_offset: SoC-specific EINT pend register offset of bank.
+> + * @combine: EINT register is adjacent to the GPIO control register.
 
-Thanks,
-Daniel
+I don't understand it. Adjacent? Are you sure? GPIO control register has
+0xF004 (EXYNOSAUTOV920_SVC_OFFSET + 0x4)? Anyway, this does not scale.
+What if next revision comes with not-adjacent. There will be
+"combine_plus"? Also name confuses me - combine means together.
 
+Also your first map of registers does not have it adjacent...
 
+Anyway first patch is to rework driver to support new register layout.
+Second patch is to add new variant.
 
-
-
+Best regards,
+Krzysztof
 
