@@ -2,103 +2,90 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD22BC072A2
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Nov 2023 15:12:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3AAC2BB3F
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Nov 2023 15:27:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344379AbjKOPMg (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Nov 2023 10:12:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36206 "EHLO
+        id S229619AbjKOP1n (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Nov 2023 10:27:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343952AbjKOPMg (ORCPT
+        with ESMTP id S229861AbjKOP1m (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Nov 2023 10:12:36 -0500
+        Wed, 15 Nov 2023 10:27:42 -0500
 Received: from mail.bugwerft.de (mail.bugwerft.de [46.23.86.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4210818A;
-        Wed, 15 Nov 2023 07:12:32 -0800 (PST)
-Received: from [192.168.178.97] (pd95ef485.dip0.t-ipconnect.de [217.94.244.133])
-        by mail.bugwerft.de (Postfix) with ESMTPSA id 1FB5228157A;
-        Wed, 15 Nov 2023 15:12:31 +0000 (UTC)
-Message-ID: <beb4421c-c012-4833-abf8-f2780bcc43db@zonque.org>
-Date:   Wed, 15 Nov 2023 16:12:30 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: sc16is7xx: address RX timeout interrupt errata
-Content-Language: en-US
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     Lech Perczak <lech.perczak@camlingroup.com>,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        u.kleine-koenig@pengutronix.de, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Maxim Popov <maxim.snafu@gmail.com>,
-        stable@vger.kernel.org
-References: <20231114074904.239458-1-daniel@zonque.org>
- <20231114102025.d48c0a6ec6c413f274b7680b@hugovil.com>
- <140280a6-1948-4630-b10c-8e6a2afec2de@zonque.org>
- <3fac7d72-0a1b-4d93-9245-a0f8af1240a6@camlingroup.com>
- <ecc90a62-7cfa-45c9-9f6c-188e2c8ac50f@zonque.org>
- <20231115100121.5c926d4eb6d3abb02234887d@hugovil.com>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 37AC5CC;
+        Wed, 15 Nov 2023 07:27:39 -0800 (PST)
+Received: from hq-00595.fritz.box (pd95ef485.dip0.t-ipconnect.de [217.94.244.133])
+        by mail.bugwerft.de (Postfix) with ESMTPSA id 4C4B328157A;
+        Wed, 15 Nov 2023 15:27:38 +0000 (UTC)
 From:   Daniel Mack <daniel@zonque.org>
-In-Reply-To: <20231115100121.5c926d4eb6d3abb02234887d@hugovil.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        lech.perczak@camlingroup.com, u.kleine-koenig@pengutronix.de
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Daniel Mack <daniel@zonque.org>
+Subject: [PATCH v2] serial: sc16is7xx: address RX timeout interrupt errata
+Date:   Wed, 15 Nov 2023 16:27:30 +0100
+Message-ID: <20231115152730.699758-1-daniel@zonque.org>
+X-Mailer: git-send-email 2.41.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Hugo,
+This device has a silicon bug that makes it report a timeout interrupt
+but no data in FIFO.
 
-On 11/15/23 16:01, Hugo Villeneuve wrote:
-> On Wed, 15 Nov 2023 12:22:10 +0100
-> Daniel Mack <daniel@zonque.org> wrote:
-> Hi Daniel,
-> 
->> The bug has hit us on production units and when it does, sc16is7xx_irq()
->> would spin forever because sc16is7xx_port_irq() keeps seeing an
->> interrupt in the IIR register that is not cleared because the driver
->> does not call into sc16is7xx_handle_rx() unless the RXLVL register
->> reports at least one byte in the FIFO.
-> 
-> I would suggest that you replace the second paragraph or your original
-> commit message with this, it better explains what is the problem.
+The datasheet states this in the errata section 18.1.4:
 
-Good idea, will do.
+  "If the host reads the receive FIFO at the same time as a
+  time-out interrupt condition happens, the host might read 0xCC
+  (time-out) in the Interrupt Indication Register (IIR), but bit 0
+  of the Line Status Register (LSR) is not set (means there is no
+  data in the receive FIFO)."
 
-> Also, when the problem happens, you say that "the fill level reporting
-> is off-by-one", so doest it mean that RXLVL can sometimes be non-zero
-> when the bug occurs?
+The errata doesn't explicitly mention that, but tests have shown
+that the RXLVL register is equally affected.
 
-Maybe, but if that happens we would read one byte too less, which
-doesn't harm as we would get another interrupt later to handle the rest.
-The problematic case is when we don't read any data at all even though
-there is something in the FIFO, and the interrupt suggested that as well.
+This bug has hit us on production units and when it does, sc16is7xx_irq()
+would spin forever because sc16is7xx_port_irq() keeps seeing an
+interrupt in the IIR register that is not cleared because the driver
+does not call into sc16is7xx_handle_rx() unless the RXLVL register
+reports at least one byte in the FIFO.
 
->> Note that this issue might only occur in revision E of the silicon. And
-> 
-> Is this just a supposition or based on NXP info or some actual tests?
+Fix this by always reading one byte when this condition is detected
+in order to clear the interrupt.
 
-Well, the datasheet states "Errata for Rev. E added 12 August 2011", and
-as "Revision E" does not seem to refer to a datasheet version, it will
-most likely be about the silicon revision. And another assumption is
-that the issue would fixed in subsequent versions of the chip, in case
-there are any at all.
+Signed-off-by: Daniel Mack <daniel@zonque.org>
+---
+v2: reworded the commit log a bit for more context.
 
-FTR, this is the document I'm looking at:
+ drivers/tty/serial/sc16is7xx.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-  https://www.nxp.com/docs/en/data-sheet/SC16IS752_SC16IS762.pdf
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 289ca7d4e566..76f76e510ed1 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -765,6 +765,18 @@ static bool sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
+ 		case SC16IS7XX_IIR_RTOI_SRC:
+ 		case SC16IS7XX_IIR_XOFFI_SRC:
+ 			rxlen = sc16is7xx_port_read(port, SC16IS7XX_RXLVL_REG);
++
++			/*
++			 * There is a silicon bug that makes the chip report a
++			 * time-out interrupt but no data in the FIFO. This is
++			 * described in errata section 18.1.4.
++			 *
++			 * When this happens, read one byte from the FIFO to
++			 * clear the interrupt.
++			 */
++			if (iir == SC16IS7XX_IIR_RTOI_SRC && !rxlen)
++				rxlen = 1;
++
+ 			if (rxlen)
+ 				sc16is7xx_handle_rx(port, rxlen, iir);
+ 			break;
+-- 
+2.41.0
 
->> there seems to be now way to read the revision code through I2C, so I
->> guess you won't be able to figure out easily whether your chip is affected.
->>
->> Let me know if I can provide more information.
-> 
-> I have a board with two SC16IS752IPW using SPI interface, but I don't
-> know (yet) what is the revision. I will try to determine it if possible,
-> although I do not see any info on that in the datasheet.
-> 
-> I will also try to reproduce the issue, and test your patch.
-
-Great, thanks!
-
-
-Best regards,
-Daniel
