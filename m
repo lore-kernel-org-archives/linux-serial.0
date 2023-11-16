@@ -2,91 +2,60 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E23C197A0
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Nov 2023 12:18:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7109DC54FB9
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Nov 2023 13:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345196AbjKPMSe (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Nov 2023 07:18:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41712 "EHLO
+        id S231143AbjKPNh5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Nov 2023 08:37:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345138AbjKPMSd (ORCPT
+        with ESMTP id S231178AbjKPNhz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Nov 2023 07:18:33 -0500
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DAD99B;
-        Thu, 16 Nov 2023 04:18:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1700137110; x=1731673110;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=632IDd1YA/w8bQMmxOxMQIlw2Qz5AmbYHV5NAgXZ0hg=;
-  b=i8UHS0P3jaimOSRZvmRSVWaZYlH8NBh7DRE4GvPsuKa25sThadfHlF/p
-   oMrtLciqeuXsYYxo6fr9BlXyXGxIJ9XCMOsIk3RtAq9b80SZTFAQtH8wX
-   b3AMN7cU5ckqjBuR2SkorjGg4I3DREBhG1x8ISY3q9DLti4vuz0fiHZD2
-   YiMIwQHj8iwMXHTvGUqIOkN1R63cXKMtM7ue1BcY2hC35CTnMlyaxfzHd
-   hom3lLIFK/I3ervIdnH9MR87FESxyEcCTcTjnPummeEUcSTeeJybfWwVR
-   vd4li5m+JLFyU0k3o2kyze4GCSF/NbqeWrK4zOUFvwMMs1TSI/TG0Rzs4
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="422168659"
-X-IronPort-AV: E=Sophos;i="6.04,308,1695711600"; 
-   d="scan'208";a="422168659"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2023 04:17:59 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="715212232"
-X-IronPort-AV: E=Sophos;i="6.04,308,1695711600"; 
-   d="scan'208";a="715212232"
-Received: from jhsteyn-mobl1.ger.corp.intel.com ([10.252.40.9])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2023 04:17:55 -0800
-Date:   Thu, 16 Nov 2023 14:17:53 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     =?ISO-8859-15?Q?Th=E9o_Lebrun?= <theo.lebrun@bootlin.com>
-cc:     Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thu, 16 Nov 2023 08:37:55 -0500
+X-Greylist: delayed 334 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Nov 2023 05:37:50 PST
+Received: from sym2.noone.org (sym.noone.org [178.63.92.236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81EED50
+        for <linux-serial@vger.kernel.org>; Thu, 16 Nov 2023 05:37:50 -0800 (PST)
+Received: by sym2.noone.org (Postfix, from userid 1002)
+        id 4SWLYW0WDfzvjfm; Thu, 16 Nov 2023 14:32:14 +0100 (CET)
+Date:   Thu, 16 Nov 2023 14:32:14 +0100
+From:   Tobias Klauser <tklauser@distanz.ch>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        =?ISO-8859-15?Q?Gr=E9gory_Clement?= <gregory.clement@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Vladimir Kondratiev <vladimir.kondratiev@mobileye.com>,
-        Tawfik Bayouk <tawfik.bayouk@mobileye.com>
-Subject: Re: [PATCH v2 1/5] tty: serial: amba: cleanup whitespace
-In-Reply-To: <20231116-mbly-uart-v2-1-863f665ce520@bootlin.com>
-Message-ID: <f674bffd-7d30-f2b1-56d-e1eb106c447d@linux.intel.com>
-References: <20231116-mbly-uart-v2-0-863f665ce520@bootlin.com> <20231116-mbly-uart-v2-1-863f665ce520@bootlin.com>
+        linux-serial@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: [PATCH 05/52] serial: altera: Convert to platform remove
+ callback returning void
+Message-ID: <20231116133214.qjb4vqodxnmoef6v@distanz.ch>
+References: <20231110152927.70601-1-u.kleine-koenig@pengutronix.de>
+ <20231110152927.70601-6-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-2031671838-1700137079=:1886"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20231110152927.70601-6-u.kleine-koenig@pengutronix.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-2031671838-1700137079=:1886
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-
-On Thu, 16 Nov 2023, ThÃ©o Lebrun wrote:
-
-> Fix whitespace in include/linux/amba/serial.h to match current kernel
-> coding standards. Fixes about:
+On 2023-11-10 at 16:29:33 +0100, Uwe Kleine-König <u.kleine-koenig@pengutronix.de> wrote:
+> The .remove() callback for a platform driver returns an int which makes
+> many driver authors wrongly assume it's possible to do error handling by
+> returning an error code. However the value returned is ignored (apart
+> from emitting a warning) and this typically results in resource leaks.
 > 
->  - CHECK: spaces preferred around that '|' (ctx:VxV)
->  - ERROR: code indent should use tabs where possible
->  - WARNING: Unnecessary space before function pointer arguments
->  - WARNING: please, no spaces at the start of a line
+> To improve here there is a quest to make the remove callback return
+> void. In the first step of this quest all drivers are converted to
+> .remove_new(), which already returns void. Eventually after all drivers
+> are converted, .remove_new() will be renamed to .remove().
 > 
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: ThÃ©o Lebrun <theo.lebrun@bootlin.com>
+> Trivially convert this driver from always returning zero in the remove
+> callback to the void returning variant.
+> 
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-Reviewed-by: Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com>
+Acked-by: Tobias Klauser <tklauser@distanz.ch>
 
-
--- 
- i.
-
---8323329-2031671838-1700137079=:1886--
+Thanks
