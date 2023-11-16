@@ -2,42 +2,43 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A5E9C197A0
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Nov 2023 10:31:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76387C5ACB3
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Nov 2023 10:31:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234029AbjKPKbb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Nov 2023 05:31:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36108 "EHLO
+        id S235193AbjKPKbc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Nov 2023 05:31:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229749AbjKPKb3 (ORCPT
+        with ESMTP id S230315AbjKPKba (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Nov 2023 05:31:29 -0500
+        Thu, 16 Nov 2023 05:31:30 -0500
 Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026B8B7;
-        Thu, 16 Nov 2023 02:31:23 -0800 (PST)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id BAB8660005;
-        Thu, 16 Nov 2023 10:31:21 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DED2D1;
+        Thu, 16 Nov 2023 02:31:26 -0800 (PST)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 635AF60010;
+        Thu, 16 Nov 2023 10:31:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1700130682;
+        t=1700130684;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ixpklLWwSkk4I/yPqqbqBcWEcsYH1dKNM9IZkWS8e0M=;
-        b=RcvKFHwK/5hxl0ISDxClwPnpyCAZE4zebORmbm+2jMfjVR3am4J9EkJeDaShPuIkHjvlwZ
-        nilZweL4mJSiCtu1rxkqfCBkK6RMFovVGBVw2wo/5OuBvZI6uaNvTHLSZqfgk1mtH6EdgL
-        Px+Fs0uCgJTeTKIoUXTjF8UUC4j2V4DMKO+4I5PIEqRo+qYCjv+sV/WNTMXBFKm0a9RqZx
-        x7KA7sMJJipPIf8N0CJVVenw5YcqXtlTtNnTJWoXoYfYgl0rkHlxDGufWPEDpCJ73sfupu
-        YAzflqr8WqL5QwrgoWi/F0EKhVP6QUDdvPSyUPX41A8/dkbD4h9r98eq1aKSZA==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4lN48hLGgtpA2K973BPzgWFsxjYsrvJpsG7a0gWgGow=;
+        b=kW5JAA/3sAxvjEU8LiacB3LHGZ1xiT4vu56zT+KTrSd8Nui8pdSQL+OD0HcaH+CDvG++h4
+        tZY1M4iD/g3r/V/k+oEKiVwWiQyGDf6KVQqisqPSk79GQ98c6/Znad7W36Rfhkw2azIyK0
+        ROBu+2kbKYahO7DliybsDrzUe6xeb9RyXf+w72XC7XcmRKsksvBdbf22oms1115TfBtT2/
+        6ZjbupXxboGercs1muPCvhApQCC1GsHTAVSPp7NvL7w3L4WkLjdthfQowZSTy7K7goVCNK
+        8ePn2UIhBEd/ZJYOIXPuwsLPVssLyzvxj9S3ShbYzl8tuC1V/IhhQH+av7zaKg==
 From:   =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
-Subject: [PATCH v2 0/5] Cleanup AMBA PL011 driver
-Date:   Thu, 16 Nov 2023 11:31:03 +0100
-Message-Id: <20231116-mbly-uart-v2-0-863f665ce520@bootlin.com>
+Date:   Thu, 16 Nov 2023 11:31:07 +0100
+Subject: [PATCH v2 4/5] tty: serial: amba-pl011: replace TIOCMBIT macros by
+ static functions
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAGfvVWUC/03MQQrDIBCF4auEWdeSGNpqV71HyULN2AwkWtRKQ
- /DutYFCF7P4h8e3QcRAGOHabBAwUyTvavBDA2ZS7oGMxtrAW9539dii55W9VEhMWaOM1lJYoaH
- unwEtvXfrPtSeKCYf1p3O3ff7U85/Su5YyyQ/CUTF5WXsb9r7NJM7Gr/AUEr5ACNBik2kAAAA
+Message-Id: <20231116-mbly-uart-v2-4-863f665ce520@bootlin.com>
+References: <20231116-mbly-uart-v2-0-863f665ce520@bootlin.com>
+In-Reply-To: <20231116-mbly-uart-v2-0-863f665ce520@bootlin.com>
 To:     Russell King <linux@armlinux.org.uk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
@@ -55,51 +56,102 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+The driver uses two TIOCMBIT macros inside pl011_{get,set}_mctrl to
+simplify the logic. Those look scary to checkpatch because they contain
+ifs without do-while loops.
 
-While adding upstream support to a new platform (Mobileye EyeQ5[1]) that
-uses the AMBA PL011 driver, I took some time to look at the PL011
-driver and ended up with a few patches that cleanup parts of it. The
-line-diff is big mostly because of the checkpatch-fixing commits.
+Avoid the macros by creating small equivalent static functions; that
+lets the compiler do its type checking & avoids checkpatch errors.
 
-The driver hadn't received any love for quite some time. A single commit
-changes the code's behavior: see "tty: serial: amba-pl011: Parse bits
-option as 5, 6, 7 or 8 in _get_options". See commit messages for more
-information.
+For the second instance __assign_bit is not usable because it deals with
+unsigned long pointers whereas we have an unsigned int in
+pl011_set_mctrl.
 
-Compared to v1, we drop one [PATCH 6/6] & we fix some nits.
-
-[1]: https://lore.kernel.org/all/202310050726.GDpZbMDO-lkp@intel.com/T/
-
-Have a nice day,
-Théo Lebrun
-
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Théo Lebrun <theo.lebrun@bootlin.com>
 ---
-Changes in v2:
-- [PATCH 2]: add #include <linux/bits.h> in include/linux/amba/serial.h
-  as we use the BIT() macro.
-- Move one whitespace cleanup from [PATCH 4/6] to [PATCH v2 3/5] where
-  it belongs.
-- Drop [PATCH 6/6]: console will never have a word length of 5 or 6.
-- Link to v1: https://lore.kernel.org/r/20231026-mbly-uart-v1-0-9258eea297d3@bootlin.com
+ drivers/tty/serial/amba-pl011.c | 45 ++++++++++++++++++++++-------------------
+ 1 file changed, 24 insertions(+), 21 deletions(-)
 
----
-Théo Lebrun (5):
-      tty: serial: amba: cleanup whitespace
-      tty: serial: amba: Use BIT() macro for constant declarations
-      tty: serial: amba-pl011: cleanup driver
-      tty: serial: amba-pl011: replace TIOCMBIT macros by static functions
-      tty: serial: amba-pl011: unindent pl011_console_get_options function body
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index d56607957158..bb3082c4d35c 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1594,6 +1594,12 @@ static unsigned int pl011_tx_empty(struct uart_port *port)
+ 							0 : TIOCSER_TEMT;
+ }
+ 
++static void pl011_maybe_set_bit(bool cond, unsigned int *ptr, unsigned int mask)
++{
++	if (cond)
++		*ptr |= mask;
++}
++
+ static unsigned int pl011_get_mctrl(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap =
+@@ -1601,18 +1607,22 @@ static unsigned int pl011_get_mctrl(struct uart_port *port)
+ 	unsigned int result = 0;
+ 	unsigned int status = pl011_read(uap, REG_FR);
+ 
+-#define TIOCMBIT(uartbit, tiocmbit)	\
+-	if (status & uartbit)		\
+-		result |= tiocmbit
++	pl011_maybe_set_bit(status & UART01x_FR_DCD, &result, TIOCM_CAR);
++	pl011_maybe_set_bit(status & uap->vendor->fr_dsr, &result, TIOCM_DSR);
++	pl011_maybe_set_bit(status & uap->vendor->fr_cts, &result, TIOCM_CTS);
++	pl011_maybe_set_bit(status & uap->vendor->fr_ri, &result, TIOCM_RNG);
+ 
+-	TIOCMBIT(UART01x_FR_DCD, TIOCM_CAR);
+-	TIOCMBIT(uap->vendor->fr_dsr, TIOCM_DSR);
+-	TIOCMBIT(uap->vendor->fr_cts, TIOCM_CTS);
+-	TIOCMBIT(uap->vendor->fr_ri, TIOCM_RNG);
+-#undef TIOCMBIT
+ 	return result;
+ }
+ 
++static void pl011_assign_bit(bool cond, unsigned int *ptr, unsigned int mask)
++{
++	if (cond)
++		*ptr |= mask;
++	else
++		*ptr &= ~mask;
++}
++
+ static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+ 	struct uart_amba_port *uap =
+@@ -1621,23 +1631,16 @@ static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 
+ 	cr = pl011_read(uap, REG_CR);
+ 
+-#define	TIOCMBIT(tiocmbit, uartbit)		\
+-	if (mctrl & tiocmbit)		\
+-		cr |= uartbit;		\
+-	else				\
+-		cr &= ~uartbit
+-
+-	TIOCMBIT(TIOCM_RTS, UART011_CR_RTS);
+-	TIOCMBIT(TIOCM_DTR, UART011_CR_DTR);
+-	TIOCMBIT(TIOCM_OUT1, UART011_CR_OUT1);
+-	TIOCMBIT(TIOCM_OUT2, UART011_CR_OUT2);
+-	TIOCMBIT(TIOCM_LOOP, UART011_CR_LBE);
++	pl011_assign_bit(mctrl & TIOCM_RTS, &cr, UART011_CR_RTS);
++	pl011_assign_bit(mctrl & TIOCM_DTR, &cr, UART011_CR_DTR);
++	pl011_assign_bit(mctrl & TIOCM_OUT1, &cr, UART011_CR_OUT1);
++	pl011_assign_bit(mctrl & TIOCM_OUT2, &cr, UART011_CR_OUT2);
++	pl011_assign_bit(mctrl & TIOCM_LOOP, &cr, UART011_CR_LBE);
+ 
+ 	if (port->status & UPSTAT_AUTORTS) {
+ 		/* We need to disable auto-RTS if we want to turn RTS off */
+-		TIOCMBIT(TIOCM_RTS, UART011_CR_RTSEN);
++		pl011_assign_bit(mctrl & TIOCM_RTS, &cr, UART011_CR_RTSEN);
+ 	}
+-#undef TIOCMBIT
+ 
+ 	pl011_write(cr, uap, REG_CR);
+ }
 
- drivers/tty/serial/amba-pl011.c | 241 ++++++++++++++++++++--------------------
- include/linux/amba/serial.h     | 193 ++++++++++++++++----------------
- 2 files changed, 218 insertions(+), 216 deletions(-)
----
-base-commit: 82251bf0515a7c32121b0e833922708d4dd70da9
-change-id: 20231023-mbly-uart-afcacbb98f8b
-
-Best regards,
 -- 
-Théo Lebrun <theo.lebrun@bootlin.com>
+2.41.0
 
