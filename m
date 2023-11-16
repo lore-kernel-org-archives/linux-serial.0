@@ -2,170 +2,160 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CDFDC5ACB2
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Nov 2023 03:53:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5DDDC47071
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Nov 2023 04:03:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230338AbjKPDxQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Nov 2023 22:53:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48134 "EHLO
+        id S230125AbjKPEDe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Nov 2023 23:03:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbjKPDxP (ORCPT
+        with ESMTP id S229692AbjKPEDd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Nov 2023 22:53:15 -0500
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E4A192
-        for <linux-serial@vger.kernel.org>; Wed, 15 Nov 2023 19:53:11 -0800 (PST)
-Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20231116035310epoutp0452f3dc5729828befde20972577ad7bcb~X-h47eHZA0521605216epoutp04I
-        for <linux-serial@vger.kernel.org>; Thu, 16 Nov 2023 03:53:10 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20231116035310epoutp0452f3dc5729828befde20972577ad7bcb~X-h47eHZA0521605216epoutp04I
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1700106790;
-        bh=pIIlFTM4Wlq3IT9Jc9JjGxdZxFss84n5wkN7Qu/QvFI=;
-        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-        b=HnGZdjSOmujFeu4XRtAKsWniNwYc8x3dy1r58F81UDg5uOM3Btl4b7BD+ULnciTi1
-         aTdRlxPowcp96/V/NJbnvqSrGXohaz+YPWA2zvs3agxU7cPV+U3RkSSfWNxl5SsPbG
-         ydbE/mAIS2fxnoqyCNqlLmEqaQdLE8R1HP7fQcMU=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
-        20231116035309epcas2p12d3044f1a97efee4b72c81479cb7508d~X-h4WphoS1017910179epcas2p1u;
-        Thu, 16 Nov 2023 03:53:09 +0000 (GMT)
-Received: from epsmgec2p1.samsung.com (unknown [182.195.36.101]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4SW5jK1W4Nz4x9Pw; Thu, 16 Nov
-        2023 03:53:09 +0000 (GMT)
-Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
-        epsmgec2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
-        64.F7.08648.52295556; Thu, 16 Nov 2023 12:53:09 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
-        20231116035308epcas2p2ccabb652c85571f3a2697deabd317169~X-h3g6DfU0293602936epcas2p2w;
-        Thu, 16 Nov 2023 03:53:08 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20231116035308epsmtrp1fd1f12486541cd5bdbd67a98dbb86a74~X-h3gATok2054420544epsmtrp1d;
-        Thu, 16 Nov 2023 03:53:08 +0000 (GMT)
-X-AuditID: b6c32a43-4b3ff700000021c8-e2-6555922511a4
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        70.97.08755.42295556; Thu, 16 Nov 2023 12:53:08 +0900 (KST)
-Received: from [10.229.8.168] (unknown [10.229.8.168]) by
-        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20231116035308epsmtip1df9058ed61801aa00b83f8201c9303dc~X-h3LSI891299512995epsmtip18;
-        Thu, 16 Nov 2023 03:53:08 +0000 (GMT)
-Message-ID: <221efdec-4940-031c-73b1-30aed96c76b0@samsung.com>
-Date:   Thu, 16 Nov 2023 12:50:21 +0900
+        Wed, 15 Nov 2023 23:03:33 -0500
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2068.outbound.protection.outlook.com [40.107.215.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B84F194;
+        Wed, 15 Nov 2023 20:03:29 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HU8nafaGcvJIXwP3qsJp3pufIrvzo6N3QB1eGCVEjriNaFFNOCqy+A/DPTTlx7Bmk9YQCAHHBjifmvOvhy3AaB8YVzIrbdIYT4YV6kzfO6bX0TVY/l2uhHiDiHCT+g5Z06aeO9zGIin5qCif3XvozvaUUDea6wCzJ4x5PLOdrcIZ5MSmKY/ACLhojReZ3bduzOfvzWmI6KUd6nawekIx+fv1ywJLCF68rnzVtfTk4ulc07HqR83d016ElK/yttampxb2OCIV+2zvGcWkaJpaMjRGopRelFadN2yAtUpGqj1bAtLFlxj/id8CgUL9E9LyeNvaKD/CFpMQtVLfz6WBqw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jkIpYmfnmy1O0JDIr1mtTZa+OlWUjQo3eWypg7vFhFc=;
+ b=FF2nIu7A6cseAJ00oD/7et+1YbCbomgjtCigYeIN/0yh3mD18xSpV4a1Tqif6a7exr+mhXr5A3CKZER43ReKWpZGZQCzyS6ohE168WH77nOlAjBD0aTNtIXx+CEYiCYJdsbCzkp0fR9Ydiwsg3zYmPIxoJbHni6Ezrjx9D5rvuMkJZz4L9ZjGqQ/Z1vqbqUuKjujooKiSgQRciyWBEK/9/MUv3t07LUh9bvjtNijVh+k6RvednjyrEoAzMxSZjmJc6KP4uDrftEXNUWjRGcwChAxSUf1iUxrqva2BkNmNz7NQ7fkYJyNGfe1Th2FYXP/ayH7RFVqF5GkUAl8GbidIg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
+ dkim=pass header.d=moxa.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jkIpYmfnmy1O0JDIr1mtTZa+OlWUjQo3eWypg7vFhFc=;
+ b=Azxbf3kzA69Nct0J+iXo6vTYP2Hr7GoA45fr7FsXGT2CfhAWPxwavzN5Psq10h2w1cYbV6h+JdPhrwp2ezraAj/skAVjXgWyPi7o46YcQXOl4TL43vUntUJwwBZuAZdqk7uScSshNGZI24+Laktbh+EWSxEzaYVWQ2Z+e/YO4gI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=moxa.com;
+Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:115::14) by KL1PR01MB6199.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:12f::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.20; Thu, 16 Nov
+ 2023 04:03:25 +0000
+Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ ([fe80::e90e:640c:2742:6339]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ ([fe80::e90e:640c:2742:6339%3]) with mapi id 15.20.7002.021; Thu, 16 Nov 2023
+ 04:03:24 +0000
+Date:   Thu, 16 Nov 2023 12:03:20 +0800
+From:   Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+To:     Brenda Streiff <brenda.streiff@ni.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v4] tty: serial: Add RS422 flag to struct serial_rs485
+Message-ID: <ZVWUiMykxXsuuxMd@moxa-ThinkCentre-M90t>
+References: <20231113094136.52003-1-crescentcy.hsieh@moxa.com>
+ <c6ea912f-d5ab-4761-813d-3b6b6be141cb@ni.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c6ea912f-d5ab-4761-813d-3b6b6be141cb@ni.com>
+X-ClientProxiedBy: TY2PR02CA0034.apcprd02.prod.outlook.com
+ (2603:1096:404:a6::22) To PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:115::14)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
-        Thunderbird/102.11.0
-Subject: Re: [PATCH v2 10/12] pinctrl: samsung: add exynosautov920 pinctrl
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org
-From:   Jaewon Kim <jaewon02.kim@samsung.com>
-In-Reply-To: <ae03b902-fa12-4a33-9a4f-ab3a5956ea5c@linaro.org>
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrBJsWRmVeSWpSXmKPExsWy7bCmua7qpNBUgwev2S0ezNvGZrFm7zkm
-        i/lHzrFaNC9ez2bxbq6Mxd7XW9ktpvxZzmSx6fE1VovN8/8wWlzeNYfN4u7dVYwWM87vY7I4
-        s7iX3aJ17xF2i8Nv2lktfu6ax2KxahdQ3e2JkxkdhDx2zrrL7rFpVSebx51re9g89s9dw+6x
-        eUm9R/9fA4++LasYPT5vkgvgiMq2yUhNTEktUkjNS85PycxLt1XyDo53jjc1MzDUNbS0MFdS
-        yEvMTbVVcvEJ0HXLzAH6REmhLDGnFCgUkFhcrKRvZ1OUX1qSqpCRX1xiq5RakJJTYF6gV5yY
-        W1yal66Xl1piZWhgYGQKVJiQnXFq5y/2gtmcFWd3bmVuYNzN3sXIySEhYCLxe81TRhBbSGAH
-        o8TJtWxdjFxA9idGiad33jFDJL4xStz5XQ7T8O7hKaiivYwSp5ousEIUvWaUmHFPAcTmFbCT
-        mDHhPxuIzSKgKjFn43EmiLigxMmZT1hAbFGBaInWZffBaoQFvCRO7dwDNodZQFzi1pP5YPUi
-        AveZJV63VYMsYxZ4wCgx99xXsFPZBLQlvq9fDNbACbSs589lqGZ5ie1v5zCDNEgIvOCQuLrr
-        NDPE2S4SfzpbGCFsYYlXx7dA/S8l8bK/DcrOlmif/ocVwq6QuLhhNhuEbSwx61k7UC8H0AJN
-        ifW79EFMCQFliSO3WCDW8kl0HP7LDhHmlehoE4JoVJO4P/Uc1BAZiUlHVjJB2B4SzZOns01g
-        VJyFFCqzkHw/C8kzsxD2LmBkWcUollpQnJuemmxUYAiP6uT83E2M4CSu5byD8cr8f3qHGJk4
-        GA8xSnAwK4nwmsuFpArxpiRWVqUW5ccXleakFh9iNAXGzURmKdHkfGAeySuJNzSxNDAxMzM0
-        NzI1MFcS573XOjdFSCA9sSQ1OzW1ILUIpo+Jg1OqgYln0+XSy8vj30zXWv510WZv80TXBcXP
-        22+m8jXMK1j7+VDPnVfr73vcuOWtWt387Bj7UsaTx3OKalXsr0Y/dzqzIX9iwwqzmM0yN6+x
-        +fuu+yh32Y+p+dHuGQrhP0TCzlXpPv9SuGNu+c6ihgXRVsF7CkRTpfMn/TL4l3JwVsaUhbWm
-        WQ+u7xB4dkjl2zrbN6FXz+b1fYnN57e+H7BZ3kxH7+L+P1/4tpzSaHt13ebj3JBXuz3v/nbc
-        W8BdUvggdFHIU0Pv2RmTE/rZvboP3NC7FjJ3L0fX9K2N3tPt7x/6LyP+5a3GhvUicT6f7jG4
-        z3nrHLj8xu2dxTw7K3Ukyp789ni5LfJ4TYJ+XpxflWCXEktxRqKhFnNRcSIAv3fkCGsEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrLIsWRmVeSWpSXmKPExsWy7bCSnK7KpNBUg0l35S0ezNvGZrFm7zkm
-        i/lHzrFaNC9ez2bxbq6Mxd7XW9ktpvxZzmSx6fE1VovN8/8wWlzeNYfN4u7dVYwWM87vY7I4
-        s7iX3aJ17xF2i8Nv2lktfu6ax2KxahdQ3e2JkxkdhDx2zrrL7rFpVSebx51re9g89s9dw+6x
-        eUm9R/9fA4++LasYPT5vkgvgiOKySUnNySxLLdK3S+DKOLXzF3vBbM6Kszu3Mjcw7mbvYuTk
-        kBAwkXj38BRbFyMXh5DAbkaJWzu3QiVkJJY/62ODsIUl7rccYYUoesko8XDvYbAiXgE7iRkT
-        /oMVsQioSszZeJwJIi4ocXLmExYQW1QgWmL15wusILawgJfEqZ17wGxmAXGJW0/mM4EMFRF4
-        zCzxcOp/ZhCHWeABo8TySY+g1v1ilJjfPR9sLJuAtsT39YvB2jmBVvf8uQw1ykyia2sXI4Qt
-        L7H97RzmCYxCs5BcMgvJxllIWmYhaVnAyLKKUTK1oDg3PbfYsMAwL7Vcrzgxt7g0L10vOT93
-        EyM4hrU0dzBuX/VB7xAjEwfjIUYJDmYlEV5zuZBUId6UxMqq1KL8+KLSnNTiQ4zSHCxK4rzi
-        L3pThATSE0tSs1NTC1KLYLJMHJxSDUxL7xjP2r/72OztVlGrmU1vnSu9Ps85W6ggd8mDbRda
-        InTmJhpOsNZon2D67/JC/SWT9/qw2MeUlbgtdK14Kze9zCPynMnJxDwDzh3++6OEPNxNmYu4
-        Imqfehz86PP01h2Gr5+YbiT5xm+85qc0MXTtn7zPX2q4RIuqtwovStOxOP1D2cZOYvWsmhOx
-        USoMW9rdm9ijzuecDv14oc9tzj0rGU+LSP/XC6TW9L+7+TLmCoO46ft7bXI2tXfW7+fYucbL
-        vyi36nfvD01T25zs6pYrYqU890o3FBYv05qz4cpD06Mf5B9pewQomxanpXJd2Mf3+MOqwhtH
-        j98NY/ZmldTRY/E+k3dkucYD/tpObSWW4oxEQy3mouJEAKXl4UxQAwAA
-X-CMS-MailID: 20231116035308epcas2p2ccabb652c85571f3a2697deabd317169
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20231115095856epcas2p1c3ee85750828bec2ee4ab0adeaeaff28
-References: <20231115095609.39883-1-jaewon02.kim@samsung.com>
-        <CGME20231115095856epcas2p1c3ee85750828bec2ee4ab0adeaeaff28@epcas2p1.samsung.com>
-        <20231115095609.39883-11-jaewon02.kim@samsung.com>
-        <ae03b902-fa12-4a33-9a4f-ab3a5956ea5c@linaro.org>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|KL1PR01MB6199:EE_
+X-MS-Office365-Filtering-Correlation-Id: 711f2663-0144-416e-dcc7-08dbe658faef
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2HjMOmPsYiNAUhSxMj6RBnWy5lj9RN/PrG8bDwQ6UZgVMe4CVDWZoy8ISMrzqEpVvHvWR/5otuDA+7eexhHBnhtrJwMuN7+5176W4RI5stPry1ubQxoqaGUTQ57vNZLikcI4uWvWFgw1TQR51psGLsvg1HW1zNbHbgB21C9NxRWis3MJel+0GbxSkXjujMNDwzLg2EVWhLcg9f012DQ6f+VPO9tAWZLbSBOtoK9EylA4ksVZLwyyF3LLrg6+hked18xD3MuUStBgyTVCaESYzjn98UDZwvk27Ja7iiLLFY4OOwBC8x0ISbHrpc4ZVGDk6VXvUp+2F+6oCP3Vksc4JDpF+pSi9hsJhYNT8cTZ8fFPdy5npd1RQR6rVORVslpNw3YgdGIBMhThD8qBSWFC98By+U2qQ2pZa+AwO8y/e66g4Ng52mwkg2UAGX5rO2QoNtr52cBaxtwgAiaTK5911sLP32I4UK7wXw045HhO38vldY42FtXl7iMxLwwIv8+5jYpMkmCZsCf7ZKCMjceQKL4ijCgHyXLB/UdQt9t3I8rbT4BbGcX6Sba6cn5uo/VQXfYGE7yWHg20xW1ox09SOaK8i/zPk0AMxNKOEQGvtWc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(346002)(396003)(39850400004)(376002)(136003)(366004)(230922051799003)(64100799003)(1800799009)(451199024)(186009)(41300700001)(6666004)(2906002)(8936002)(8676002)(5660300002)(4326008)(38350700005)(66556008)(86362001)(66476007)(54906003)(66946007)(6486002)(966005)(316002)(478600001)(33716001)(6506007)(52116002)(6916009)(6512007)(9686003)(26005)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tkifJFF2GWkWiNvr7H+68ClD0yVMKUKA0p7qnotMqYuLPHvln5lDVlMbGiT6?=
+ =?us-ascii?Q?+Uokr50snKJN/Yu9Xm5IDegdg1RKvPPthFhCpUKFHT/N+kfz5vwp88efMcYF?=
+ =?us-ascii?Q?77GoW/8OJpZlWvowDKkVYNwLKJw8ywoXtF9xF2ZnAMyda8wIZuWycNcSFLGs?=
+ =?us-ascii?Q?A5NEQuKcvlBXSOxBX+uu8Sbt4wAWTrpNb1fN+kiK15DXMZavpXMSZcmWIfWG?=
+ =?us-ascii?Q?JzbZBzyYO886riAyOrC/O4cO8xtppZ2NTqmM22V4z5AeDQ5PCnyl1LrgU+Nw?=
+ =?us-ascii?Q?eIJ7etckEHfHSCvMgfTLJ8sP70YOhnvJ1NxVrIDeRFVgH1PPK2qg5OimnmIb?=
+ =?us-ascii?Q?+qcdE4rdHwZWsyeaFdeKK2PkNKSefEZlpdbw2HEsAlV47R9vlV3C2kkndhbC?=
+ =?us-ascii?Q?Cxdum9RCIm4R8HKA8nsi/hvfYAgU1UPs81YV9ySHFkQ8wG5Fc0NvKre7PBHw?=
+ =?us-ascii?Q?iEasRQDhN+cVT2xy0I/3oK4WCNOmQqxHSEhPmSMmSN5zyq0fXrYGSe0a1g89?=
+ =?us-ascii?Q?1gZzp1WrTk3I9qsKVZTNrLHY2fxHb8b6fIjLr/+iq3qB856wvAFOYfyeZrPa?=
+ =?us-ascii?Q?L1fFJhouyTLwYb2Izr6BPnjchc3fIaHjwlB0QCremqNYuxj+MGXbaXYdsLNI?=
+ =?us-ascii?Q?LEpx25o/8TAiXKBkuyItgfvXHTvGoiY9YkE2r0qGZBJ/rZS7TtusUC3J4s56?=
+ =?us-ascii?Q?hrNEj9WgFSRs2hFt1/rRTlUWsCIUUtuS9EzSTO4UByZ58DtREziU5Drud/1F?=
+ =?us-ascii?Q?4i+v91rd5EPuev8neeF/kCdT7uT0TxVXpl16hSi601Qf8ZwqmO6rNj2LhJ/N?=
+ =?us-ascii?Q?dglMeMFCU8ysAFWK+tFiB4WfW8QOTaGeoYf5nMU7fO9jdXv3YCmWHmJ7he1Q?=
+ =?us-ascii?Q?gNg7/Mz+4JcpzqG6G/Nf601b3tIb8FIKCrlUsjY/VATQ7pCW4h+WxnpmY2Oy?=
+ =?us-ascii?Q?k6C48QuYYBhRiOPGjpDnDvNodt4JzKtvbFjicJxADjNO9IvnoQ+re1XF/t1F?=
+ =?us-ascii?Q?TrAbXDnWF3A8WK5HdNFJonVHJi9nQWvObLBKuvp9tDaxUzhGN5OMiJDz6q18?=
+ =?us-ascii?Q?SIhMMPHodgGi8oWZ84QX3DyOg9LyxR0Z0oiWxoMBYx7JFUfuTFMI4mZLNE0v?=
+ =?us-ascii?Q?eQSYRNeo6th85CklVdkYThnBlwaXvmWIwk2+X8EPmEwU3FjtQAkQMn4YvLdB?=
+ =?us-ascii?Q?WZAojop818AAYcrYUNpiFQ0UnxQh710uOA8r+YMUuB3Ab3vu8ZxPmiOd7LVp?=
+ =?us-ascii?Q?BP335yKH9OgixdrcbaCpJWb7onC31LpRPZm0ZFbDzOBefA89J+iUs8KyKP/H?=
+ =?us-ascii?Q?VPho4FyiFkXqmOAizL1yr7d3HZsCYs146PSRxbnV+P+zjAS4emiKvlEdz7yh?=
+ =?us-ascii?Q?3A0ZJpast7gIBAFE1rDqj29jzbco8ET/iGo7354trgLW0fYXAYMv2KmoqJNI?=
+ =?us-ascii?Q?QJZq+hnKfKKRmMTkLC7eF3NIlt07YyrxRElZhmkGHedxS3qcxcRXNeMndQtT?=
+ =?us-ascii?Q?sRxdlpi2gwgWOeXoClS0rimdZs6zD/B9BYFtVed82dosjGOuTfuhsZuQN038?=
+ =?us-ascii?Q?MTPYyFlhmbyVDy/Bt+jrOX00fHLaqGLxHbe9E9NUFtXqrvxwV29nxd/H/czX?=
+ =?us-ascii?Q?+w=3D=3D?=
+X-OriginatorOrg: moxa.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 711f2663-0144-416e-dcc7-08dbe658faef
+X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2023 04:03:24.6532
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kC0JPGC9+3Zen3LcfV4CE4AwuJDq99OFukMo35Om9KlteJ1eL2tM0vjkQtOM5U1eu3bM7m1nK6yCHQx8q9HtYQk+j9d2GagrhRXZLfPlDOs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: KL1PR01MB6199
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Tue, Nov 14, 2023 at 08:50:42PM -0600, Brenda Streiff wrote:
+> If I compare this to your original patch set [1] for your hardware, then
+> your proposed flag would be used in the following ways, correct?
+> 
+> RS-232:                       rs485->flags = 0
+> RS-422:                       rs485->flags = SER_RS485_ENABLED|SER_RS485_MODE_RS422
+> RS-485 (2-wire half-duplex):  rs485->flags = SER_RS485_ENABLED
+> RS-485 (4-wire full-duplex):  rs485->flags = SER_RS485_ENABLED|SER_RS485_RX_DURING_TX
+> 
+> In iot2040_rs485_config in 8250_exar.c [2] we already seem to have:
+> RS-232:                       rs485->flags = 0
+> RS-422:                       rs485->flags = SER_RS485_ENABLED|SER_RS485_RX_DURING_TX
+> RS-485 (2-wire half-duplex?): rs485->flags = SER_RS485_ENABLED
+> 
+> This would seem to create an inconsistency in this API.
 
-On 23. 11. 15. 21:42, Krzysztof Kozlowski wrote:
-> On 15/11/2023 10:56, Jaewon Kim wrote:
->> ExynosAutov920 GPIO has a different register structure.
->> In the existing Exynos series, EINT control register enumerated after
->> a specific offset (e.g EXYNOS_GPIO_ECON_OFFSET).
->> However, in ExynosAutov920 SoC, the register that controls EINT belongs
->> to each GPIO group, and each GPIO group has 0x1000 align.
->>
->> This is a structure to protect the GPIO group with S2MPU in VM environment,
->> and will only be applied in ExynosAuto series SoCs.
-> Checkpatch points some warnings:
->
-> CHECK: Alignment should match open parenthesis
-> CHECK: Lines should not end with a '('
-> CHECK: Macro argument reuse 'reg' - possible side-effects?
+I've checked the patch series of iot2040_rs485_config() about RS422 [1],
+it seems to be reasonable back then so no one dicussed about that.
 
-I don`t know this happens.
+> I've also been trying to get a driver for NI's serial hardware upstream [3]; we
+> have "RS-485" products that can do both RS-422/RS-485, and also have use of
+> functionality to toggle between the two modes, so-- whichever way this flag
+> goes-- I'd like to be consistent with how other drivers do it.
+> 
+> [1] https://lore.kernel.org/linux-serial/20231018091739.10125-7-crescentcy.hsieh@moxa.com/
+> [2] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/tty/serial/8250/8250_exar.c?h=v6.6#n459
+> [3] https://lore.kernel.org/linux-serial/20231023210458.447779-3-brenda.streiff@ni.com/
 
-When I did the checkpatch, there were no problems as shown below.
+Originally, I was trying to add a new flag "SER_RS422_ENABLED" to
+represent RS422, but Jiri replied "Hopefully not" [2].
+
+So I used an unused flag to represent RS422 as a workaround solution,
+then Jiri realized what was I trying to do and recommeded to add RS422
+flag [3].
+
+Then, when I was adding a new flag for RS422, Lino suggested to see
+RS422 as a mode of RS485 [4].
+
+Anyway, IMO, it's more reasonable to add a flag for representing RS422,
+as for the naming, structure or future extention, it would require more
+discussion.
+
+[1] https://lore.kernel.org/all/?q=IOT2040_UART_MODE_RS422
+[2] https://lore.kernel.org/linux-serial/92aed0d9-791f-4708-8a73-4c78457a710e@kernel.org/
+[3] https://lore.kernel.org/linux-serial/3332a86c-1a1d-4b78-bbfa-8ac3e2e642a1@kernel.org/
+[4] https://lore.kernel.org/all/3fc18b13-fef0-439e-abf0-1fe4e46b224a@gmx.de/
 
 ---
-
-./scripts/checkpatch.pl 
-0010-pinctrl-samsung-add-exynosautov920-pinctrl.patch
-total: 0 errors, 0 warnings, 416 lines checked
-
-0010-pinctrl-samsung-add-exynosautov920-pinctrl.patch has no obvious 
-style problems and is ready for submission.
-
----
-
->
-> Best regards,
-> Krzysztof
->
->
-
-Thanks
-
-Jaewon Kim
-
+Sincerely,
+Crescent CY Hsieh
