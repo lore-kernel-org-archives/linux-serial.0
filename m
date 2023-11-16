@@ -2,44 +2,45 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1598CC54FB9
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Nov 2023 11:55:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ED90C54FB9
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Nov 2023 11:59:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230374AbjKPLzc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Nov 2023 06:55:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36680 "EHLO
+        id S1345003AbjKPL7O (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Nov 2023 06:59:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbjKPLzb (ORCPT
+        with ESMTP id S1344966AbjKPL7O (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Nov 2023 06:55:31 -0500
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38829B0;
-        Thu, 16 Nov 2023 03:55:27 -0800 (PST)
+        Thu, 16 Nov 2023 06:59:14 -0500
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF2EC4;
+        Thu, 16 Nov 2023 03:59:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1700135727; x=1731671727;
+  t=1700135951; x=1731671951;
   h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=idgzep+H+rCXGm/O2ITkrOwgiB1VoNxL3UyIBXGeatg=;
-  b=c75nyKulhKKXE+8gX1FUh5/peDI7Vps0x6Ao1uwZZjBWLk87dGXSkSBl
-   pDEkM7EXBD2dzqL7TYN9Nv1e4nVmByyOSUyvW2QSniFad645bVM/oYC4m
-   90Gsmmfn1I0cey8otSBCoZohbNWtDEm+EGvG+XDm/yD89G0P5Fr5borEt
-   KoMhb92Uwvt0uSrb6+4ej3eg4ZQw6X/VpYg1Jj20FKiqEHcyVORlYIDtn
-   Hopu2ZOlsNbPEa1WEQU5eDkXi928KkNJIyt9M6nsFihkt32eE4Y4ZfzWt
-   RIlW8lmOMOmbVio3+ZCOfJ2XYWQal3Q4m7tTCuXoMiwhpxMUjK9/CvyFk
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="422162705"
+   references:mime-version;
+  bh=yfjwvutV3fWRMCledUt71e/FG844u9FWetQGI9rtK0c=;
+  b=a5e0wJwpFW1Hlpf+iNbU1FJQ3Afpo0bHh+jVIcVPKJFGrOD+iH02dJ3U
+   Tc7wwLGhAOKnyYwOieftw1EiV27mE41ypJB7BM/VNtxy0JGKytFO8dCH9
+   ZAj7XNbZjf0V7SKTbDBLkH/df7qszaLD8Ya19flw5M0m2ZBuID857a74w
+   w8nKLlaxyKmTMK+1I3f4CKR5fMyCFt12qG//kb5vrBUccpS4AJoegXkBs
+   pCmiiUSvwz0HcRnJvmc1drHDEHtLdLLubRM2sWwa7Cu4C701XHyK7klLy
+   VtVQ/gy+cn9xPFCMJl1TepELvEssqQna4cJ5a1TGdCSvOAVthG9b3bSiM
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="4201731"
 X-IronPort-AV: E=Sophos;i="6.04,308,1695711600"; 
-   d="scan'208";a="422162705"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2023 03:55:26 -0800
+   d="scan'208";a="4201731"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2023 03:59:11 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="715205764"
+X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="765281699"
 X-IronPort-AV: E=Sophos;i="6.04,308,1695711600"; 
-   d="scan'208";a="715205764"
+   d="scan'208";a="765281699"
 Received: from jhsteyn-mobl1.ger.corp.intel.com ([10.252.40.9])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2023 03:55:23 -0800
-Date:   Thu, 16 Nov 2023 13:55:20 +0200 (EET)
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2023 03:59:07 -0800
+Date:   Thu, 16 Nov 2023 13:59:04 +0200 (EET)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     =?ISO-8859-15?Q?Th=E9o_Lebrun?= <theo.lebrun@bootlin.com>
 cc:     Russell King <linux@armlinux.org.uk>,
@@ -53,14 +54,13 @@ cc:     Russell King <linux@armlinux.org.uk>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Vladimir Kondratiev <vladimir.kondratiev@mobileye.com>,
         Tawfik Bayouk <tawfik.bayouk@mobileye.com>
-Subject: Re: [PATCH v2 2/5] tty: serial: amba: Use BIT() macro for constant
- declarations
-In-Reply-To: <20231116-mbly-uart-v2-2-863f665ce520@bootlin.com>
-Message-ID: <94d698d-f0a4-fe43-fbe4-4d4d62a8ee2c@linux.intel.com>
-References: <20231116-mbly-uart-v2-0-863f665ce520@bootlin.com> <20231116-mbly-uart-v2-2-863f665ce520@bootlin.com>
+Subject: Re: [PATCH v2 5/5] tty: serial: amba-pl011: unindent pl011_console_get_options
+ function body
+In-Reply-To: <20231116-mbly-uart-v2-5-863f665ce520@bootlin.com>
+Message-ID: <25fd6fe9-5ac3-69e9-81e8-ca7a37efcdc9@linux.intel.com>
+References: <20231116-mbly-uart-v2-0-863f665ce520@bootlin.com> <20231116-mbly-uart-v2-5-863f665ce520@bootlin.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-312832558-1700135472=:1886"
-Content-ID: <d1f22071-d360-5a9-6992-9ad91dd875@linux.intel.com>
+Content-Type: multipart/mixed; boundary="8323329-1334176037-1700135950=:1886"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -68,45 +68,38 @@ X-Mailing-List: linux-serial@vger.kernel.org
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-312832558-1700135472=:1886
-Content-Type: text/plain; CHARSET=ISO-8859-15
+--8323329-1334176037-1700135950=:1886
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8BIT
-Content-ID: <2b55d7d3-433-8e8a-99bc-326bff513ad0@linux.intel.com>
 
-On Thu, 16 Nov 2023, Théo Lebrun wrote:
+On Thu, 16 Nov 2023, ThÃ©o Lebrun wrote:
 
-> The driver uses bit shifts and hexadecimal expressions to declare
-> constants. Replace that with the BIT() macro that clarifies intent.
+> The whole function body is encapsulated inside an if-condition. Reverse
+> the if logic and early return to remove one indentation level.
+> 
+> Also turn two nested ifs into a single one at the end of the function.
 > 
 > Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: Théo Lebrun <theo.lebrun@bootlin.com>
-
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
+> Signed-off-by: ThÃ©o Lebrun <theo.lebrun@bootlin.com>
 > ---
->  include/linux/amba/serial.h | 183 ++++++++++++++++++++++----------------------
->  1 file changed, 92 insertions(+), 91 deletions(-)
-> 
-> diff --git a/include/linux/amba/serial.h b/include/linux/amba/serial.h
-> index 27003ec52114..a1f966fcb9c5 100644
-> --- a/include/linux/amba/serial.h
-> +++ b/include/linux/amba/serial.h
-> @@ -10,6 +10,7 @@
+>  
 
->  #define ST_UART011_DMAWM_RX_1	(0 << 3)
->  #define ST_UART011_DMAWM_RX_2	(1 << 3)
+> -		if (uap->vendor->oversampling) {
+> -			if (pl011_read(uap, REG_CR)
+> -				  & ST_UART011_CR_OVSFACT)
+> -				*baud *= 2;
+> -		}
+> +	if (uap->vendor->oversampling &&
+> +	    (pl011_read(uap, REG_CR) & ST_UART011_CR_OVSFACT)) {
+> +		*baud *= 2;
+>  	}
+>  }
 
-Just noting a potential futurework item, these (and alike) could be 
-changed to:
+Braces are no longer necessary for this block.
 
-#define ST_UART011_DMAWM_RX	GENMASK(5, 3)
-#define ST_UART011_DMAWM_TX	GENMASK(2, 0)
-
-#define ST_UART011_DMAWM_RX_1	FIELD_PREP(ST_UART011_DMAWM_RX, 0)
-#define ST_UART011_DMAWM_RX_2	FIELD_PREP(ST_UART011_DMAWM_RX, 1)
-...
-
+Reviewed-by: Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com>
 
 -- 
  i.
---8323329-312832558-1700135472=:1886--
+
+--8323329-1334176037-1700135950=:1886--
