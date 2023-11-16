@@ -2,160 +2,302 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5DDDC47071
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Nov 2023 04:03:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B77A4C197A0
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Nov 2023 07:21:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230125AbjKPEDe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Nov 2023 23:03:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37780 "EHLO
+        id S229997AbjKPHVP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Nov 2023 02:21:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbjKPEDd (ORCPT
+        with ESMTP id S230127AbjKPHVO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Nov 2023 23:03:33 -0500
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2068.outbound.protection.outlook.com [40.107.215.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B84F194;
-        Wed, 15 Nov 2023 20:03:29 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HU8nafaGcvJIXwP3qsJp3pufIrvzo6N3QB1eGCVEjriNaFFNOCqy+A/DPTTlx7Bmk9YQCAHHBjifmvOvhy3AaB8YVzIrbdIYT4YV6kzfO6bX0TVY/l2uhHiDiHCT+g5Z06aeO9zGIin5qCif3XvozvaUUDea6wCzJ4x5PLOdrcIZ5MSmKY/ACLhojReZ3bduzOfvzWmI6KUd6nawekIx+fv1ywJLCF68rnzVtfTk4ulc07HqR83d016ElK/yttampxb2OCIV+2zvGcWkaJpaMjRGopRelFadN2yAtUpGqj1bAtLFlxj/id8CgUL9E9LyeNvaKD/CFpMQtVLfz6WBqw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jkIpYmfnmy1O0JDIr1mtTZa+OlWUjQo3eWypg7vFhFc=;
- b=FF2nIu7A6cseAJ00oD/7et+1YbCbomgjtCigYeIN/0yh3mD18xSpV4a1Tqif6a7exr+mhXr5A3CKZER43ReKWpZGZQCzyS6ohE168WH77nOlAjBD0aTNtIXx+CEYiCYJdsbCzkp0fR9Ydiwsg3zYmPIxoJbHni6Ezrjx9D5rvuMkJZz4L9ZjGqQ/Z1vqbqUuKjujooKiSgQRciyWBEK/9/MUv3t07LUh9bvjtNijVh+k6RvednjyrEoAzMxSZjmJc6KP4uDrftEXNUWjRGcwChAxSUf1iUxrqva2BkNmNz7NQ7fkYJyNGfe1Th2FYXP/ayH7RFVqF5GkUAl8GbidIg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
- dkim=pass header.d=moxa.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jkIpYmfnmy1O0JDIr1mtTZa+OlWUjQo3eWypg7vFhFc=;
- b=Azxbf3kzA69Nct0J+iXo6vTYP2Hr7GoA45fr7FsXGT2CfhAWPxwavzN5Psq10h2w1cYbV6h+JdPhrwp2ezraAj/skAVjXgWyPi7o46YcQXOl4TL43vUntUJwwBZuAZdqk7uScSshNGZI24+Laktbh+EWSxEzaYVWQ2Z+e/YO4gI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=moxa.com;
-Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- (2603:1096:301:115::14) by KL1PR01MB6199.apcprd01.prod.exchangelabs.com
- (2603:1096:820:12f::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.20; Thu, 16 Nov
- 2023 04:03:25 +0000
-Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- ([fe80::e90e:640c:2742:6339]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- ([fe80::e90e:640c:2742:6339%3]) with mapi id 15.20.7002.021; Thu, 16 Nov 2023
- 04:03:24 +0000
-Date:   Thu, 16 Nov 2023 12:03:20 +0800
-From:   Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-To:     Brenda Streiff <brenda.streiff@ni.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4] tty: serial: Add RS422 flag to struct serial_rs485
-Message-ID: <ZVWUiMykxXsuuxMd@moxa-ThinkCentre-M90t>
-References: <20231113094136.52003-1-crescentcy.hsieh@moxa.com>
- <c6ea912f-d5ab-4761-813d-3b6b6be141cb@ni.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c6ea912f-d5ab-4761-813d-3b6b6be141cb@ni.com>
-X-ClientProxiedBy: TY2PR02CA0034.apcprd02.prod.outlook.com
- (2603:1096:404:a6::22) To PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- (2603:1096:301:115::14)
+        Thu, 16 Nov 2023 02:21:14 -0500
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60741199
+        for <linux-serial@vger.kernel.org>; Wed, 15 Nov 2023 23:21:10 -0800 (PST)
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20231116072106epoutp02c797bcc5e54e15f84af23cc8f16f46fa~YCXcnK9Wf0092500925epoutp02T
+        for <linux-serial@vger.kernel.org>; Thu, 16 Nov 2023 07:21:06 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20231116072106epoutp02c797bcc5e54e15f84af23cc8f16f46fa~YCXcnK9Wf0092500925epoutp02T
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1700119266;
+        bh=u8E99f1NXOYNCstPOVw2U01/UNiPDcWsjwx3IgmBrr0=;
+        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+        b=nsFDoVLNSvPth1+4tEJQgfPY3s9JOHpabCJm3StYmFGDuOkEGIcP5W+oGB5iY1p12
+         FS7/8b3O8wa+VJYs9WmWkJgGj5myGlTwdRln+2ma2Bnpc+2a015sj+LqP6+MQO1UlS
+         IoOZVQTpXEkupv0ojzyBZacys1ddJbxlfzYrVuNw=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20231116072106epcas2p127f6a407e41cecf23fa7007cfb2dcb15~YCXcFPkJg2754627546epcas2p1G;
+        Thu, 16 Nov 2023 07:21:06 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.36.70]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4SWBKF34krz4x9Q4; Thu, 16 Nov
+        2023 07:21:05 +0000 (GMT)
+Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
+        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        88.00.10006.1E2C5556; Thu, 16 Nov 2023 16:21:05 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
+        20231116072104epcas2p32f44be9479074149027c07ee00b90cb3~YCXa0rH8t1977419774epcas2p3O;
+        Thu, 16 Nov 2023 07:21:04 +0000 (GMT)
+Received: from epsmgms1p2new.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20231116072104epsmtrp1c4a7b897c2ff6e30a28fb17111379e72~YCXazagqQ0860308603epsmtrp1o;
+        Thu, 16 Nov 2023 07:21:04 +0000 (GMT)
+X-AuditID: b6c32a45-179ff70000002716-61-6555c2e10ad0
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        5F.10.08817.0E2C5556; Thu, 16 Nov 2023 16:21:04 +0900 (KST)
+Received: from [10.229.8.168] (unknown [10.229.8.168]) by
+        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20231116072104epsmtip1e9d95f8033c6e5a44d6ed5eaecff878a~YCXaeTzXU0695006950epsmtip1U;
+        Thu, 16 Nov 2023 07:21:04 +0000 (GMT)
+Message-ID: <bd312683-c3fc-bb85-3e8e-4b329e7e5719@samsung.com>
+Date:   Thu, 16 Nov 2023 16:18:17 +0900
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|KL1PR01MB6199:EE_
-X-MS-Office365-Filtering-Correlation-Id: 711f2663-0144-416e-dcc7-08dbe658faef
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2HjMOmPsYiNAUhSxMj6RBnWy5lj9RN/PrG8bDwQ6UZgVMe4CVDWZoy8ISMrzqEpVvHvWR/5otuDA+7eexhHBnhtrJwMuN7+5176W4RI5stPry1ubQxoqaGUTQ57vNZLikcI4uWvWFgw1TQR51psGLsvg1HW1zNbHbgB21C9NxRWis3MJel+0GbxSkXjujMNDwzLg2EVWhLcg9f012DQ6f+VPO9tAWZLbSBOtoK9EylA4ksVZLwyyF3LLrg6+hked18xD3MuUStBgyTVCaESYzjn98UDZwvk27Ja7iiLLFY4OOwBC8x0ISbHrpc4ZVGDk6VXvUp+2F+6oCP3Vksc4JDpF+pSi9hsJhYNT8cTZ8fFPdy5npd1RQR6rVORVslpNw3YgdGIBMhThD8qBSWFC98By+U2qQ2pZa+AwO8y/e66g4Ng52mwkg2UAGX5rO2QoNtr52cBaxtwgAiaTK5911sLP32I4UK7wXw045HhO38vldY42FtXl7iMxLwwIv8+5jYpMkmCZsCf7ZKCMjceQKL4ijCgHyXLB/UdQt9t3I8rbT4BbGcX6Sba6cn5uo/VQXfYGE7yWHg20xW1ox09SOaK8i/zPk0AMxNKOEQGvtWc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(346002)(396003)(39850400004)(376002)(136003)(366004)(230922051799003)(64100799003)(1800799009)(451199024)(186009)(41300700001)(6666004)(2906002)(8936002)(8676002)(5660300002)(4326008)(38350700005)(66556008)(86362001)(66476007)(54906003)(66946007)(6486002)(966005)(316002)(478600001)(33716001)(6506007)(52116002)(6916009)(6512007)(9686003)(26005)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tkifJFF2GWkWiNvr7H+68ClD0yVMKUKA0p7qnotMqYuLPHvln5lDVlMbGiT6?=
- =?us-ascii?Q?+Uokr50snKJN/Yu9Xm5IDegdg1RKvPPthFhCpUKFHT/N+kfz5vwp88efMcYF?=
- =?us-ascii?Q?77GoW/8OJpZlWvowDKkVYNwLKJw8ywoXtF9xF2ZnAMyda8wIZuWycNcSFLGs?=
- =?us-ascii?Q?A5NEQuKcvlBXSOxBX+uu8Sbt4wAWTrpNb1fN+kiK15DXMZavpXMSZcmWIfWG?=
- =?us-ascii?Q?JzbZBzyYO886riAyOrC/O4cO8xtppZ2NTqmM22V4z5AeDQ5PCnyl1LrgU+Nw?=
- =?us-ascii?Q?eIJ7etckEHfHSCvMgfTLJ8sP70YOhnvJ1NxVrIDeRFVgH1PPK2qg5OimnmIb?=
- =?us-ascii?Q?+qcdE4rdHwZWsyeaFdeKK2PkNKSefEZlpdbw2HEsAlV47R9vlV3C2kkndhbC?=
- =?us-ascii?Q?Cxdum9RCIm4R8HKA8nsi/hvfYAgU1UPs81YV9ySHFkQ8wG5Fc0NvKre7PBHw?=
- =?us-ascii?Q?iEasRQDhN+cVT2xy0I/3oK4WCNOmQqxHSEhPmSMmSN5zyq0fXrYGSe0a1g89?=
- =?us-ascii?Q?1gZzp1WrTk3I9qsKVZTNrLHY2fxHb8b6fIjLr/+iq3qB856wvAFOYfyeZrPa?=
- =?us-ascii?Q?L1fFJhouyTLwYb2Izr6BPnjchc3fIaHjwlB0QCremqNYuxj+MGXbaXYdsLNI?=
- =?us-ascii?Q?LEpx25o/8TAiXKBkuyItgfvXHTvGoiY9YkE2r0qGZBJ/rZS7TtusUC3J4s56?=
- =?us-ascii?Q?hrNEj9WgFSRs2hFt1/rRTlUWsCIUUtuS9EzSTO4UByZ58DtREziU5Drud/1F?=
- =?us-ascii?Q?4i+v91rd5EPuev8neeF/kCdT7uT0TxVXpl16hSi601Qf8ZwqmO6rNj2LhJ/N?=
- =?us-ascii?Q?dglMeMFCU8ysAFWK+tFiB4WfW8QOTaGeoYf5nMU7fO9jdXv3YCmWHmJ7he1Q?=
- =?us-ascii?Q?gNg7/Mz+4JcpzqG6G/Nf601b3tIb8FIKCrlUsjY/VATQ7pCW4h+WxnpmY2Oy?=
- =?us-ascii?Q?k6C48QuYYBhRiOPGjpDnDvNodt4JzKtvbFjicJxADjNO9IvnoQ+re1XF/t1F?=
- =?us-ascii?Q?TrAbXDnWF3A8WK5HdNFJonVHJi9nQWvObLBKuvp9tDaxUzhGN5OMiJDz6q18?=
- =?us-ascii?Q?SIhMMPHodgGi8oWZ84QX3DyOg9LyxR0Z0oiWxoMBYx7JFUfuTFMI4mZLNE0v?=
- =?us-ascii?Q?eQSYRNeo6th85CklVdkYThnBlwaXvmWIwk2+X8EPmEwU3FjtQAkQMn4YvLdB?=
- =?us-ascii?Q?WZAojop818AAYcrYUNpiFQ0UnxQh710uOA8r+YMUuB3Ab3vu8ZxPmiOd7LVp?=
- =?us-ascii?Q?BP335yKH9OgixdrcbaCpJWb7onC31LpRPZm0ZFbDzOBefA89J+iUs8KyKP/H?=
- =?us-ascii?Q?VPho4FyiFkXqmOAizL1yr7d3HZsCYs146PSRxbnV+P+zjAS4emiKvlEdz7yh?=
- =?us-ascii?Q?3A0ZJpast7gIBAFE1rDqj29jzbco8ET/iGo7354trgLW0fYXAYMv2KmoqJNI?=
- =?us-ascii?Q?QJZq+hnKfKKRmMTkLC7eF3NIlt07YyrxRElZhmkGHedxS3qcxcRXNeMndQtT?=
- =?us-ascii?Q?sRxdlpi2gwgWOeXoClS0rimdZs6zD/B9BYFtVed82dosjGOuTfuhsZuQN038?=
- =?us-ascii?Q?MTPYyFlhmbyVDy/Bt+jrOX00fHLaqGLxHbe9E9NUFtXqrvxwV29nxd/H/czX?=
- =?us-ascii?Q?+w=3D=3D?=
-X-OriginatorOrg: moxa.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 711f2663-0144-416e-dcc7-08dbe658faef
-X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2023 04:03:24.6532
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kC0JPGC9+3Zen3LcfV4CE4AwuJDq99OFukMo35Om9KlteJ1eL2tM0vjkQtOM5U1eu3bM7m1nK6yCHQx8q9HtYQk+j9d2GagrhRXZLfPlDOs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: KL1PR01MB6199
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+        Thunderbird/102.11.0
+Subject: Re: [PATCH v2 10/12] pinctrl: samsung: add exynosautov920 pinctrl
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org
+From:   Jaewon Kim <jaewon02.kim@samsung.com>
+In-Reply-To: <62b7176d-f99c-49f6-a287-17a6b3604c1c@linaro.org>
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrFJsWRmVeSWpSXmKPExsWy7bCmme7DQ6GpBh/bxCwezNvGZrFm7zkm
+        i/lHzrFaNC9ez2bxbq6Mxd7XW9ktpvxZzmSx6fE1VovN8/8wWlzeNYfN4u7dVYwWM87vY7I4
+        s7iX3aJ17xF2i8Nv2lktfu6ax2KxahdQ3e2JkxkdhDx2zrrL7rFpVSebx51re9g89s9dw+6x
+        eUm9R/9fA4++LasYPT5vkgvgiMq2yUhNTEktUkjNS85PycxLt1XyDo53jjc1MzDUNbS0MFdS
+        yEvMTbVVcvEJ0HXLzAH6REmhLDGnFCgUkFhcrKRvZ1OUX1qSqpCRX1xiq5RakJJTYF6gV5yY
+        W1yal66Xl1piZWhgYGQKVJiQndHycj57wV7jirdfTrI3ML7T7GLk5JAQMJG4emMySxcjF4eQ
+        wA5GiTl3XrNDOJ8YJdra3kM53xglPvbsZINpOfzmJTNEYi+jxKwbj5kgnNeMEpNnNwG1cHDw
+        CthJTLshBNLAIqAqMf1vC1gzr4CgxMmZT1hAbFGBaInWZffB4sICXhKndu5hBbGZBcQlbj2Z
+        zwRiiwjcZ5Z43VYNMp9Z4AGjxNxzXxlBEmwC2hLf1y8Ga+AE2jXz+XUmiGZ5ie1v54BdJyHw
+        gUPi4cW7jBBnu0g8OvcRyhaWeHV8CzuELSXxsr8Nys6WaJ/+hxXCrpC4uGE21MvGErOetTOC
+        PMYsoCmxfpc+iCkhoCxx5BYLxFo+iY7Df9khwrwSHW1CEI1qEvennoMaIiMx6chKJgjbQ6J5
+        8nS2CYyKs5BCZRaS72cheWYWwt4FjCyrGMVSC4pz01OLjQoM4ZGdnJ+7iRGcyLVcdzBOfvtB
+        7xAjEwfjIUYJDmYlEV5zuZBUId6UxMqq1KL8+KLSnNTiQ4ymwLiZyCwlmpwPzCV5JfGGJpYG
+        JmZmhuZGpgbmSuK891rnpggJpCeWpGanphakFsH0MXFwSjUwNSu+uR8/W1XllInl/n4Fq0UH
+        s596OU6JWfbr6vHbV9/eSSkO0ORk9VaLluGfa5OSXZ/zmKvjJqP2DpUbH/dxBuuc2R4yf9re
+        Hl+eabGrhdu/MUWzH7k79XbP8iPsGz7tWCwXvOWQ4FmuoKSlugk27Teu/DpWf3BlbfGPKO/K
+        v+Wmz+9e/JHarCH86lh7VtKyAxP2pRc7mAvfXsu1I/i+0yTL+JVGkZ4/mWI/dH6U3pC7NvKY
+        dtBsszX+zLtOGWrt8tr8tKxw/+81c+oUpr2pO3j8P+cdESmzo8cmr2E34W+ec+2P9XzDaYlZ
+        O66+qxCrPrd6VfXba0rilhOKJ5dHKS7Tl+uYtrDVnFPrlFv/GyWW4oxEQy3mouJEAAl1KuNt
+        BAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrNIsWRmVeSWpSXmKPExsWy7bCSnO6DQ6GpBo9uqls8mLeNzWLN3nNM
+        FvOPnGO1aF68ns3i3VwZi72vt7JbTPmznMli0+NrrBab5/9htLi8aw6bxd27qxgtZpzfx2Rx
+        ZnEvu0Xr3iPsFofftLNa/Nw1j8Vi1S6gutsTJzM6CHnsnHWX3WPTqk42jzvX9rB57J+7ht1j
+        85J6j/6/Bh59W1YxenzeJBfAEcVlk5Kak1mWWqRvl8CV0fJyPnvBXuOKt19OsjcwvtPsYuTk
+        kBAwkTj85iUziC0ksJtR4uYXJoi4jMTyZ31sELawxP2WI6xdjFxANS8ZJW7c3gBUxMHBK2An
+        Me2GEEgNi4CqxPS/LWD1vAKCEidnPmEBsUUFoiVWf77ACmILC3hJnNq5B8xmFhCXuPVkPhPI
+        TBGBx8wSD6f+ZwZxmAUeMEosn/QIatsvRom+eXPAxrIJaEt8X78YrJ0TaPPM59eZIEaZSXRt
+        7WKEsOUltr+dwzyBUWgWkktmIdk4C0nLLCQtCxhZVjFKphYU56bnFhsWGOWllusVJ+YWl+al
+        6yXn525iBMevltYOxj2rPugdYmTiYDzEKMHBrCTCay4XkirEm5JYWZValB9fVJqTWnyIUZqD
+        RUmc99vr3hQhgfTEktTs1NSC1CKYLBMHp1QD085jt5Zax2434epcZvIwzXzHiycK207eL77S
+        EKgce/Wqtt3puo5Uidm/XevOGj8PLOet2dKRuFKiuL9Uc9d9Jukrr7PDyyeFmN2ZzSCfvIDn
+        csglY0PD3Y5njqbY/VtXv/tafm2C06IFVlUSL9McNaTaWqy797VPWfT2zmlZeeUrm2dnCFy8
+        vuBdyxHxHZPfmokvaN2wNVXrneyt2rPHV/y98JB/11WrkM6Tnxs2xMqf7+DwesctEvdWnXP2
+        9j1BD1MnaXQaCazr2CXPv+D8FZ8zzYXHvljNaH3S1PBysrSOeXSE++lfwsrd287JvFpUxmwk
+        FL9o4qZoDsWYlwE/vaa+bNpwx9XIaU179NvjNUosxRmJhlrMRcWJAGF6i29OAwAA
+X-CMS-MailID: 20231116072104epcas2p32f44be9479074149027c07ee00b90cb3
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20231115095856epcas2p1c3ee85750828bec2ee4ab0adeaeaff28
+References: <20231115095609.39883-1-jaewon02.kim@samsung.com>
+        <CGME20231115095856epcas2p1c3ee85750828bec2ee4ab0adeaeaff28@epcas2p1.samsung.com>
+        <20231115095609.39883-11-jaewon02.kim@samsung.com>
+        <62b7176d-f99c-49f6-a287-17a6b3604c1c@linaro.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 14, 2023 at 08:50:42PM -0600, Brenda Streiff wrote:
-> If I compare this to your original patch set [1] for your hardware, then
-> your proposed flag would be used in the following ways, correct?
-> 
-> RS-232:                       rs485->flags = 0
-> RS-422:                       rs485->flags = SER_RS485_ENABLED|SER_RS485_MODE_RS422
-> RS-485 (2-wire half-duplex):  rs485->flags = SER_RS485_ENABLED
-> RS-485 (4-wire full-duplex):  rs485->flags = SER_RS485_ENABLED|SER_RS485_RX_DURING_TX
-> 
-> In iot2040_rs485_config in 8250_exar.c [2] we already seem to have:
-> RS-232:                       rs485->flags = 0
-> RS-422:                       rs485->flags = SER_RS485_ENABLED|SER_RS485_RX_DURING_TX
-> RS-485 (2-wire half-duplex?): rs485->flags = SER_RS485_ENABLED
-> 
-> This would seem to create an inconsistency in this API.
+Hi all,
 
-I've checked the patch series of iot2040_rs485_config() about RS422 [1],
-it seems to be reasonable back then so no one dicussed about that.
 
-> I've also been trying to get a driver for NI's serial hardware upstream [3]; we
-> have "RS-485" products that can do both RS-422/RS-485, and also have use of
-> functionality to toggle between the two modes, so-- whichever way this flag
-> goes-- I'd like to be consistent with how other drivers do it.
-> 
-> [1] https://lore.kernel.org/linux-serial/20231018091739.10125-7-crescentcy.hsieh@moxa.com/
-> [2] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/tty/serial/8250/8250_exar.c?h=v6.6#n459
-> [3] https://lore.kernel.org/linux-serial/20231023210458.447779-3-brenda.streiff@ni.com/
+I sent it again because the mail format was broken due to the HTML part.
 
-Originally, I was trying to add a new flag "SER_RS422_ENABLED" to
-represent RS422, but Jiri replied "Hopefully not" [2].
 
-So I used an unused flag to represent RS422 as a workaround solution,
-then Jiri realized what was I trying to do and recommeded to add RS422
-flag [3].
+On 23. 11. 15. 21:28, Krzysztof Kozlowski wrote:
+> On 15/11/2023 10:56, Jaewon Kim wrote:
+>> ExynosAutov920 GPIO has a different register structure.
+>> In the existing Exynos series, EINT control register enumerated after
+>> a specific offset (e.g EXYNOS_GPIO_ECON_OFFSET).
+>> However, in ExynosAutov920 SoC, the register that controls EINT belongs
+>> to each GPIO group, and each GPIO group has 0x1000 align.
+>>
+>> This is a structure to protect the GPIO group with S2MPU in VM environment,
+>> and will only be applied in ExynosAuto series SoCs.
+>>
+>> Example)
+>> -------------------------------------------------
+>> | original		| ExynosAutov920	|
+>> |-----------------------------------------------|
+>> | 0x0	GPIO_CON	| 0x0	GPIO_CON	|
+>> | 0x4	GPIO_DAT	| 0x4	GPIO_DAT	|
+>> | 0x8	GPIO_PUD	| 0x8	GPIO_PUD	|
+>> | 0xc	GPIO_DRV	| 0xc	GPIO_DRV	|
+>> | 0x700	EINT_CON	| 0x18	EINT_CON	|
+>> | 0x800	EINT_FLTCON	| 0x1c	EINT_FLTCON0	|
+>> | 0x900	EINT_MASK	| 0x20	EINT_FLTCON1	|
+>> | 0xa00	EINT_PEND	| 0x24	EINT_MASK	|
+>> |			| 0x28	EINT_PEND	|
+>> -------------------------------------------------
+>>
+>> Pinctrl data for ExynosAutoV920 SoC.
+>>   - GPA0,GPA1 (10): External wake up interrupt
+>>   - GPQ0 (2): SPMI (PMIC I/F)
+>>   - GPB0,GPB1,GPB2,GPB3,GPB4,GPB5,GPB6 (47): I2S Audio
+>>   - GPH0,GPH1,GPH2,GPH3,GPH4,GPH5,GPH6,GPH8 (49): PCIE, UFS, Ethernet
+>>   - GPG0,GPG1,GPG2,GPG3,GPG4,GPG5 (29): General purpose
+>>   - GPP0,GPP1,GPP2,GPP3,GPP4,GPP5,GPP6,GPP7,GPP8,GPP9,GPP10 (77): USI
+>>
+>> Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
+>> ---
+>>   .../pinctrl/samsung/pinctrl-exynos-arm64.c    | 140 ++++++++++++++++++
+>>   drivers/pinctrl/samsung/pinctrl-exynos.c      | 102 ++++++++++++-
+>>   drivers/pinctrl/samsung/pinctrl-exynos.h      |  27 ++++
+>>   drivers/pinctrl/samsung/pinctrl-samsung.c     |   5 +
+>>   drivers/pinctrl/samsung/pinctrl-samsung.h     |  13 ++
+>>   5 files changed, 280 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c b/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+>> index cb965cf93705..cf86722a70a3 100644
+>> --- a/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+>> +++ b/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+>> @@ -796,3 +796,143 @@ const struct samsung_pinctrl_of_match_data fsd_of_data __initconst = {
+>>   	.ctrl		= fsd_pin_ctrl,
+>>   	.num_ctrl	= ARRAY_SIZE(fsd_pin_ctrl),
+>>   };
+>> +
+>> +/* pin banks of exynosautov920 pin-controller 0 (ALIVE) */
+>> +static struct samsung_pin_bank_data exynosautov920_pin_banks0[] = {
+> So you created patch from some downstream code? No, please work on
+> upstream. Take upstream code and customize it to your needs. That way
+> you won't introduce same mistakes fixes years ago.
+>
+> Missing const.
 
-Then, when I was adding a new flag for RS422, Lino suggested to see
-RS422 as a mode of RS485 [4].
+I did not work on downstream source.
 
-Anyway, IMO, it's more reasonable to add a flag for representing RS422,
-as for the naming, structure or future extention, it would require more
-discussion.
+Kernel version is different, and there are numerous SoCs, So bringing 
+the patch
 
-[1] https://lore.kernel.org/all/?q=IOT2040_UART_MODE_RS422
-[2] https://lore.kernel.org/linux-serial/92aed0d9-791f-4708-8a73-4c78457a710e@kernel.org/
-[3] https://lore.kernel.org/linux-serial/3332a86c-1a1d-4b78-bbfa-8ac3e2e642a1@kernel.org/
-[4] https://lore.kernel.org/all/3fc18b13-fef0-439e-abf0-1fe4e46b224a@gmx.de/
+form the downstream make conflicts. Don`t worry about it.
 
----
-Sincerely,
-Crescent CY Hsieh
+Only GPIO struct was copied in the downstream code and the 'const' was 
+missing.
+
+Anyway, I will add const in next version.
+
+
+>
+> ...
+>
+>> @@ -31,6 +31,7 @@
+>>   #define EXYNOS7_WKUP_EMASK_OFFSET	0x900
+>>   #define EXYNOS7_WKUP_EPEND_OFFSET	0xA00
+>>   #define EXYNOS_SVC_OFFSET		0xB08
+>> +#define EXYNOSAUTOV920_SVC_OFFSET	0xF008
+>>   
+> ...
+>
+>>   #ifdef CONFIG_PINCTRL_S3C64XX
+>>   	{ .compatible = "samsung,s3c64xx-pinctrl",
+>> diff --git a/drivers/pinctrl/samsung/pinctrl-samsung.h b/drivers/pinctrl/samsung/pinctrl-samsung.h
+>> index 9b3db50adef3..cbb78178651b 100644
+>> --- a/drivers/pinctrl/samsung/pinctrl-samsung.h
+>> +++ b/drivers/pinctrl/samsung/pinctrl-samsung.h
+>> @@ -122,6 +122,9 @@ struct samsung_pin_bank_type {
+>>    * @eint_type: type of the external interrupt supported by the bank.
+>>    * @eint_mask: bit mask of pins which support EINT function.
+>>    * @eint_offset: SoC-specific EINT register or interrupt offset of bank.
+>> + * @mask_offset: SoC-specific EINT mask register offset of bank.
+>> + * @pend_offset: SoC-specific EINT pend register offset of bank.
+>> + * @combine: EINT register is adjacent to the GPIO control register.
+> I don't understand it. Adjacent? Are you sure? GPIO control register has
+> 0xF004 (EXYNOSAUTOV920_SVC_OFFSET + 0x4)? Anyway, this does not scale.
+> What if next revision comes with not-adjacent. There will be
+> "combine_plus"? Also name confuses me - combine means together.
+>
+> Also your first map of registers does not have it adjacent...
+
+I think I should have added more information about new architect.
+
+-------------------------------------------------
+| original		| ExynosAutov920	 |
+|------------------------------------------------|
+| 0x0   GPA_CON		| 0x0    GPA_CON	 |
+| 0x4   GPA_DAT		| 0x4    GPA_DAT	 |
+| 0x8   GPA_PUD		| 0x8    GPA_PUD	 |
+| 0xc   GPA_DRV		| 0xc    GPA_DRV	 |
+|-----------------------| 0x18   EINT_GPA_CON	 |
+| 0x20  GPB_CON		| 0x1c   EINT_GPA_FLTCON0|
+| 0x24  GPB_DAT		| 0x20   EINT_GPA_FLTCON1|
+| 0x28  GPB_PUD		| 0x24   EINT_GPA_MASK	 |
+| 0x2c  GPB_DRV		| 0x28   EINT_GPA_PEND	 |
+|-----------------------|------------------------|
+| 0x700 EINT_GPA_CON	| 0x1000 GPB_CON	 |
+| 0x704 EINT_GPB_CON	| 0x1004 GPB_DAT	 |
+|-----------------------| 0x1008 GPB_PUD	 |
+| 0x800 EINT_GPA_FLTCON	| 0x100c GPB_DRV	 |
+| 0x804 EINT_GPB_FLTCON	| 0x1018 EINT_GPB_CON	 |
+|-----------------------| 0x101c EINT_GPB_FLTCON0|
+| 0x900 EINT_GPA_MASK	| 0x1020 EINT_GPB_FLTCON1|
+| 0x904 EINT_GPB_MASK	| 0x1024 EINT_GPB_MASK	 |
+|-----------------------| 0x1028 EINT_GPB_PEND	 |
+| 0xa00 EINT_GPA_PEND	|------------------------|
+| 0xa04 EINT_GPB_PEND	|			 |
+|-----------------------|------------------------|
+| 0xb08 SVC		| 0xf008 SVC		 |
+-------------------------------------------------|
+
+
+The reason why I chose variable name 'combine' is that EINT registers was
+
+separated from gpio control address. However, in exynosautov920 EINT
+
+registers combined with GPx group. So I chose "combine" word.
+
+If there is more reasonable name, i will change it.
+
+And I will also change the description of the variable.
+
+
+EINT registers related to the entire group(e.g SVC) were at the end of
+
+the GPIO block 0xb00 and now it has been moved to 0xf000.
+
+
+>
+> Anyway first patch is to rework driver to support new register layout.
+> Second patch is to add new variant.
+
+Okay, I will divide the patch in the next version.
+
+>
+> Best regards,
+> Krzysztof
+>
+>
+
+Thanks
+
+Jaewon Kim
+
