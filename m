@@ -2,95 +2,112 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A6ADC54FB9
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Nov 2023 13:52:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C30DC54FB9
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Nov 2023 14:36:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345197AbjKPNwe convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Nov 2023 08:52:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41976 "EHLO
+        id S235157AbjKPOgb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Nov 2023 09:36:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231149AbjKPNwd (ORCPT
+        with ESMTP id S233968AbjKPOga (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Nov 2023 08:52:33 -0500
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72665C1;
-        Thu, 16 Nov 2023 05:52:30 -0800 (PST)
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-5bf58204b7aso8603307b3.3;
-        Thu, 16 Nov 2023 05:52:30 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700142749; x=1700747549;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=JzufO5Lt3FVnDmzOuT58+m08IhXCdYwexFPysvr+x2k=;
-        b=tf30GTGS3IenvmKiyUHhpU56kNUSs1eOIG2Cc8rO8UWB5HvhwqZ+qvpkNM76DT7ELm
-         hEMgF3azS6s1n5XUQHDC0zrWLThtnIe8StUH1XtbvLaw7i/DT9+g2ESOALmrAoOnxKqa
-         stD6eBvONaIdcp2qLXgC7K9YA0xJy+y9HZ/wneBTyxDd6iV3D27B7EkTFdz4rsFMt1oU
-         Jk9kIss9t7XtBPECXhgxhHZqlIy7Tetc75eiO4HV4FMKFDDbJVgy3FD4kqIJ+Q2dKko+
-         A1CMqHgDZvAzz6WnWkQU+dVUwrHHkz98UcPcG9WhYSuL3sdoBwMDdmlzBoflYW8+EDUT
-         dhBQ==
-X-Gm-Message-State: AOJu0Yz/LP8Xj2DJ28ZEA07hIntDUORpNbL+8Nl/dUuPk2dIZcyI7Naw
-        XEwjiGD5XLcgXrXSwbmEZeU+8KV7vkQdjw==
-X-Google-Smtp-Source: AGHT+IGtBIf5UK55DfnPIzYcBO+RQexVudNI78EI7vItw6lFEWXpnQvtHbaDiNDC5KMa/2p5vg5HNw==
-X-Received: by 2002:a0d:c886:0:b0:5a7:c777:2be1 with SMTP id k128-20020a0dc886000000b005a7c7772be1mr15478375ywd.11.1700142749529;
-        Thu, 16 Nov 2023 05:52:29 -0800 (PST)
-Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
-        by smtp.gmail.com with ESMTPSA id i201-20020a8191d2000000b005a8a78fa9d2sm1017202ywg.17.2023.11.16.05.52.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Nov 2023 05:52:29 -0800 (PST)
-Received: by mail-yb1-f173.google.com with SMTP id 3f1490d57ef6-da041ffef81so846260276.0;
-        Thu, 16 Nov 2023 05:52:29 -0800 (PST)
-X-Received: by 2002:a25:2d1f:0:b0:d7f:af26:2c7e with SMTP id
- t31-20020a252d1f000000b00d7faf262c7emr15299081ybt.20.1700142749231; Thu, 16
- Nov 2023 05:52:29 -0800 (PST)
-MIME-Version: 1.0
-References: <20231115212431.32872-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20231115212431.32872-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 16 Nov 2023 14:52:18 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWHfZqeZJFJLffDWr8Oo6HtFXk5txKoJtU87vWqNkDJoA@mail.gmail.com>
-Message-ID: <CAMuHMdWHfZqeZJFJLffDWr8Oo6HtFXk5txKoJtU87vWqNkDJoA@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: serial: renesas,sci: Document RZ/Five SoC
-To:     Prabhakar <prabhakar.csengg@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thu, 16 Nov 2023 09:36:30 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA4D181;
+        Thu, 16 Nov 2023 06:36:27 -0800 (PST)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10041C433C7;
+        Thu, 16 Nov 2023 14:36:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1700145387;
+        bh=OyITewxPkxNCTFIYqji7Ivpq0vZare/32nbCo4GuYNI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mim3lN82s00lA25X5lCbXXbeKf3sO2lQqSOE3n9TiKH1LmNKp/3BzxVZ4N/78rzZU
+         RkebEPoiPwWZBQ353Enf7j6CQaKTqaH9+gcdLgXBQXdsYikNiy7qXfQys4LjdIW45f
+         4bS34QP0FcG8tCGqKa5Kv3cPQse3rwLmvVvRD1dc9tVIE6mO3lCLYVX8U7yVfO+WBA
+         5j+MYh9OAxx3ClUsk21UvoyIXIjD5GY5SuSZJpv1PkQBqnew31I83Y0xf5CnVihb6y
+         P9tifTb+fRqGhKktucKsQ6/F9Jy3iHAPxLzZrBwbJHIYQ767SAHA9iwP/n7+5NSWWD
+         ZEAoa9xet75rw==
+Date:   Thu, 16 Nov 2023 14:36:24 +0000
+From:   Conor Dooley <conor@kernel.org>
+To:     Chester Lin <clin@suse.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, Chester Lin <chester62515@gmail.com>,
+        NXP S32 Linux Team <s32@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+        Conor Dooley <conor+dt@kernel.org>
+Subject: Re: [PATCH] dt-bindings: serial: fsl-linflexuart: change the
+ maintainer email address
+Message-ID: <20231116-flight-motivate-625a5ab39dad@squawk>
+References: <20231115235732.13633-1-clin@suse.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="lTcXpuFKDHaLOpGv"
+Content-Disposition: inline
+In-Reply-To: <20231115235732.13633-1-clin@suse.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Nov 15, 2023 at 10:24 PM Prabhakar <prabhakar.csengg@gmail.com> wrote:
-> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
->
-> The SCI block on the RZ/Five SoC is identical to one found on the RZ/G2UL
-> SoC. "renesas,r9a07g043-sci" compatible string will be used on the RZ/Five
-> SoC so to make this clear and to keep this file consistent, update the
-> comment to include RZ/Five SoC.
->
-> No driver changes are required as generic compatible string "renesas,sci"
-> will be used as a fallback on RZ/Five SoC.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+--lTcXpuFKDHaLOpGv
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Gr{oetje,eeting}s,
+On Thu, Nov 16, 2023 at 07:57:32AM +0800, Chester Lin wrote:
+> I am leaving SUSE so the current email address <clin@suse.com> will be
+> disabled soon. <chester62515@gmail.com> will be my new address for handli=
+ng
+> emails, patches and pull requests from upstream and communities.
+>=20
+> Cc: Chester Lin <chester62515@gmail.com>
+> Cc: NXP S32 Linux Team <s32@nxp.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jirislaby@kernel.org>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+> Cc: Conor Dooley <conor+dt@kernel.org>
+> Signed-off-by: Chester Lin <clin@suse.com>
 
-                        Geert
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Cheers,
+Conor.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> ---
+>  .../devicetree/bindings/serial/fsl,s32-linflexuart.yaml         | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart=
+=2Eyaml b/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.yaml
+> index 920539926d7e..7a105551fa6a 100644
+> --- a/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.yaml
+> @@ -13,7 +13,7 @@ description: |
+>    https://www.nxp.com/webapp/Download?colCode=3DS32V234RM.
+> =20
+>  maintainers:
+> -  - Chester Lin <clin@suse.com>
+> +  - Chester Lin <chester62515@gmail.com>
+> =20
+>  allOf:
+>    - $ref: serial.yaml#
+> --=20
+> 2.40.0
+>=20
+
+--lTcXpuFKDHaLOpGv
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZVYo5QAKCRB4tDGHoIJi
+0ukMAP9ct19q7TkUXkNezcsUl6fNCe1XRrZBAvDlHYVfDXv9AAD9EarhPAo3ZxTe
+8ymj18fN79puxR+C1Zj+APiRZiJFMg0=
+=tDSh
+-----END PGP SIGNATURE-----
+
+--lTcXpuFKDHaLOpGv--
