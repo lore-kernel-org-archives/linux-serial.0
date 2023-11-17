@@ -2,61 +2,63 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D66C3C072A2
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Nov 2023 10:57:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC86C5AD4C
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Nov 2023 11:01:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345977AbjKQK5l (ORCPT
+        id S1346001AbjKQLBI (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Nov 2023 05:57:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55098 "EHLO
+        Fri, 17 Nov 2023 06:01:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235701AbjKQK5j (ORCPT
+        with ESMTP id S1345923AbjKQLBH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Nov 2023 05:57:39 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4455D52
-        for <linux-serial@vger.kernel.org>; Fri, 17 Nov 2023 02:57:34 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id a640c23a62f3a-9e623356d5dso259959866b.3
-        for <linux-serial@vger.kernel.org>; Fri, 17 Nov 2023 02:57:34 -0800 (PST)
+        Fri, 17 Nov 2023 06:01:07 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EED718B
+        for <linux-serial@vger.kernel.org>; Fri, 17 Nov 2023 03:01:01 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id 5b1f17b1804b1-4094301d505so14115785e9.2
+        for <linux-serial@vger.kernel.org>; Fri, 17 Nov 2023 03:01:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1700218653; x=1700823453; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/7+0aqbL1GUW2uOUHinN7TVWlVf7xDbT0umbdNRYkjI=;
-        b=H72T+FNbpFlSFdOZ/X1Ej8M02sj/GMhhlDSvQrhUYTXggtYGB+szF/l3jHSvDmlFTR
-         WnhSANY+FD1hueVAJOaJbr5H5rqHJtQbEZcDqNpF09DTiSYenpEu+rPBEazT15LZgNpO
-         Zh4VAF/Y4p2ML8fLvDOyQsQW98k/DwwzmmVT03y4JUnFm28I6xgWitilyylBJOSCS2xm
-         wlwFvRDd8R6ypStIM3nzIzklnRpHpF4uhd0su0OtnWU8cqgKUyVl/bHUCLW/yee6oO2Q
-         Uc5gjJnTelPvWii0luNCAIrBas7jidV13XCuFuVuof0FuDOPiyi1xCbRvaK9T18/vfJG
-         BKQw==
+        d=linaro.org; s=google; t=1700218860; x=1700823660; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
+         :from:content-language:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=gBWkWs6StiOKfZQ+gAI/eCLlmHQRf4tCCrVpnJkf8qc=;
+        b=W0uNR290x1Ntnui7K7UmUFehZfs9YCbOHy08yjZeg6e3Rkh3piwN3o19Lzno8LaPMt
+         /YVCXnFxGPfdBrIrk6a2RuJuGVy7QXePRcNj2RnkGE/l7LI/2D+RA36WKNi2sVWV3THQ
+         fdSePkMBuPOztyQIZGUJQGotOVxSgBvdn1xpmEvuXeHY88f6UncLbUDmXoe+GMXHfpIJ
+         MtTwX07n2C50WriWjJ1J+RuZOiyfH2+9O8c6F8DfePU4Ddk/DaAyr8SPVb4yBGYctrJA
+         kpScAChJo7x/ee3mvCrikUkJgz1HCRf3b0Yissmy0Q+RIKo++j33LRWava+3pkyPsnBV
+         2owA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700218653; x=1700823453;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/7+0aqbL1GUW2uOUHinN7TVWlVf7xDbT0umbdNRYkjI=;
-        b=om47H/YXeBD+klukCeklIS+l20ltqKe9rF2txA5Qe8OYoaTjOTrQleMUmPDWAMN90a
-         R0mJzXIOtsged/IcoAmANCT2HKYkrsTsXpKXAAOsRLl/t6StRup9O499BItzVYpqbmL3
-         1mUXH6IkV/8T1u526EOB+iJ5Ec4Ym1J3V4oPsDmzE6nOCsSaF99Gdli1FqtxQ7yzWnlr
-         n/Jykm8h1MoKy7wEyh6vppGsuLUV57kKAJAmO0aOOOzLxFh01IssQP9AfYkAmv1GHbIf
-         cBPvUJm8Hrz9lN8HFH+/FYSQwYtanRpgV9cyY47jwg77JlRRvhxopys1XrbCWfsqRow0
-         31Og==
-X-Gm-Message-State: AOJu0YxhdW1x8UVUjTRcFmU3vY9nLO1cr9QuHxeYVrj9Teo/PHuuLdUs
-        R+5B3C8G6kgJ7+NF9hoZqkvsJg==
-X-Google-Smtp-Source: AGHT+IHXP2YaW9B3fqSoTooJZbPpDTIMwfN0a+ksm058nEWX4ZGbOPl1OjB0YO3ORx8B0yU1sGZkaA==
-X-Received: by 2002:a17:907:da5:b0:9e8:f669:4763 with SMTP id go37-20020a1709070da500b009e8f6694763mr13123149ejc.43.1700218652959;
-        Fri, 17 Nov 2023 02:57:32 -0800 (PST)
+        d=1e100.net; s=20230601; t=1700218860; x=1700823660;
+        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
+         :from:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gBWkWs6StiOKfZQ+gAI/eCLlmHQRf4tCCrVpnJkf8qc=;
+        b=hc+AnsuzlKbmypSnNNkxp7N2DjCxJZ/zp8qiFQxxb8BNaDjrkRSmt0TiWwe6InR/DL
+         xxS9cEQg5t5gxQL6vQY9EIRGu9jMb+Nf7Z8cmXJtpz/ylpxGJQApwteutGDZDIYt1h35
+         71QetX/583DbBwu1UBHyhg1xuirV9NCHIh2gYp8P/8Oz5e8KJMZvKmbsN+Qjqnpeb1kF
+         +fU7ea/nDjLrI6wA4QPYaAlYOKkju7B/efH4LG+aNFLs2xo7tQqlATCkBOJt2z4SDulG
+         7BpezA4Kgnx1l4l1SRoKk7NeiH+lGpC6CMuf9BvXOgK2yzJVPUVc4eJWt1qhJH2yeBeF
+         3IfQ==
+X-Gm-Message-State: AOJu0YwSPW2pvHePltvIsZQkiInMHxXGViLmObQG+DVkjkZ6guaPTdb8
+        ZSHhSRSJj67NW4wRuGYPDyS1jQ==
+X-Google-Smtp-Source: AGHT+IGd8YPlZqn1eCwDFIOssIZfG00UFoHhXUsgBkImO7mtVQMHzM/KiiylOUJ/af6wFmBcGBqOhw==
+X-Received: by 2002:a5d:6e01:0:b0:32f:d88b:2245 with SMTP id h1-20020a5d6e01000000b0032fd88b2245mr13415500wrz.19.1700218859958;
+        Fri, 17 Nov 2023 03:00:59 -0800 (PST)
 Received: from [192.168.1.20] ([178.197.218.126])
-        by smtp.gmail.com with ESMTPSA id q2-20020a170906b28200b009ad8acac02asm664229ejz.172.2023.11.17.02.57.31
+        by smtp.gmail.com with ESMTPSA id x11-20020a5d60cb000000b00331697bbcf5sm1770892wrt.94.2023.11.17.03.00.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Nov 2023 02:57:32 -0800 (PST)
-Message-ID: <2febc62c-c763-42ae-b649-2ca284543cc0@linaro.org>
-Date:   Fri, 17 Nov 2023 11:57:30 +0100
+        Fri, 17 Nov 2023 03:00:57 -0800 (PST)
+Message-ID: <d565624f-0cb2-4c42-bcfc-eebef3b7b26c@linaro.org>
+Date:   Fri, 17 Nov 2023 12:00:53 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v2 00/12] Introduce ExynosAutov920 SoC and SADK board
 Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Jaewon Kim <jaewon02.kim@samsung.com>,
         Alim Akhtar <alim.akhtar@samsung.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -80,7 +82,7 @@ References: <CGME20231115095852epcas2p21e067efe75275c6abd2aebf04c5c6166@epcas2p2
  <d6f3d451-6a53-46b6-2263-cc071a9dc44c@samsung.com>
  <d8fbd100-2351-4dbe-ae7f-d98a84432589@linaro.org>
  <af102ef7-aa34-1b9d-c39c-228729fef015@samsung.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+ <2febc62c-c763-42ae-b649-2ca284543cc0@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
  cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
@@ -125,74 +127,59 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <af102ef7-aa34-1b9d-c39c-228729fef015@samsung.com>
+In-Reply-To: <2febc62c-c763-42ae-b649-2ca284543cc0@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 17/11/2023 08:19, Jaewon Kim wrote:
-> 
-> On 23. 11. 16. 20:17, Krzysztof Kozlowski wrote:
->> On 16/11/2023 04:32, Jaewon Kim wrote:
->>> On 23. 11. 16. 06:17, Krzysztof Kozlowski wrote:
->>>> On 15/11/2023 22:11, Krzysztof Kozlowski wrote:
->>>>> On 15/11/2023 14:08, Krzysztof Kozlowski wrote:
->>>>>> On Wed, 15 Nov 2023 18:55:56 +0900, Jaewon Kim wrote:
->>>>>>> ExynosAutov920[1] is ARMv8-based automotive-oriented SoC.
->>>>>>> This SoC is the next generation of exynosautov9 and AE(Automotive Enhanced)
->>>>>>> IPs are used for safety.
->>>>>>>
->>>>>>> This patchset is the minimal set for ExynosAutov920 SoC and SADK board.
->>>>>>> Currently, ramdisk console is available and Clock, UFS, and USI will be
->>>>>>> added after this patchset.
->>>>>>>
->>>>>>> [...]
->>>>>> Applied, thanks!
+On 17/11/2023 11:57, Krzysztof Kozlowski wrote:
+>>>>>> And dropped. You did not test it. Please read Samsung SoC maintainer
+>>>>>> profile:
+>>>>>> https://www.kernel.org/doc/html/latest/process/maintainers.html#arm-samsung-s3c-s5p-and-exynos-arm-architectures
 >>>>>>
->>>>> And dropped. You did not test it. Please read Samsung SoC maintainer
->>>>> profile:
->>>>> https://www.kernel.org/doc/html/latest/process/maintainers.html#arm-samsung-s3c-s5p-and-exynos-arm-architectures
+>>>>>> I also made announcements on the lists and on social.kernel.org. I don't
+>>>>>> know where to announce it more...
+>>>>>>
+>>>>> To clarify, I dropped only DTS and kept bindings. Let me know if
+>>>>> bindings are problematic here...
 >>>>>
->>>>> I also made announcements on the lists and on social.kernel.org. I don't
->>>>> know where to announce it more...
+>>>>> I also repeated the announcement:
+>>>>> https://social.kernel.org/notice/AbqJkj9gOZJ3sG8eCu
+>>>>> Please share internally within Samsung, so there will be no surprises.
 >>>>>
->>>> To clarify, I dropped only DTS and kept bindings. Let me know if
->>>> bindings are problematic here...
+>>>>> Best regards,
+>>>>> Krzysztof
+>>>>>
+>>>>>
+>>>> I already checked and there were no warnings or errors as shown below.
 >>>>
->>>> I also repeated the announcement:
->>>> https://social.kernel.org/notice/AbqJkj9gOZJ3sG8eCu
->>>> Please share internally within Samsung, so there will be no surprises.
->>>>
->>>> Best regards,
->>>> Krzysztof
->>>>
->>>>
->>> I already checked and there were no warnings or errors as shown below.
+>>>> Did I miss something??
+>>> It's not what is written in maintainer profile. Where do you see the
+>>> result of dtc W=1?
 >>>
->>> Did I miss something??
->> It's not what is written in maintainer profile. Where do you see the
->> result of dtc W=1?
 >>
+>> Sorry, Krzysztof I miss W=1.
+>>
+>> I haven`t been active in mainline for a long time, so I`m missing out on 
+>> a lot of things.
 > 
-> Sorry, Krzysztof I miss W=1.
+> If you (plural you, Samsung) ever gave me an email address where I can
+> send notifications I would gladly forward them to you.
 > 
-> I haven`t been active in mainline for a long time, so I`m missing out on 
-> a lot of things.
+> Over the time I sent few of them, like the one about deprecation of
+> platforms or changing some rules, feedback for common solution for
+> minidump (to remind: Samsung decided to skip it so we go with Qualcomm
+> idea and you will not be able to come with your own later) etc. I was
+> even contacting some addresses in Samsung LSI, but there was never a
+> response, except the one about minidump.
+> 
+> There was like never a chance to really get to Samsung, so sorry, now it
+> is Samsung's fault it does not follow announcements.
 
-If you (plural you, Samsung) ever gave me an email address where I can
-send notifications I would gladly forward them to you.
-
-Over the time I sent few of them, like the one about deprecation of
-platforms or changing some rules, feedback for common solution for
-minidump (to remind: Samsung decided to skip it so we go with Qualcomm
-idea and you will not be able to come with your own later) etc. I was
-even contacting some addresses in Samsung LSI, but there was never a
-response, except the one about minidump.
-
-There was like never a chance to really get to Samsung, so sorry, now it
-is Samsung's fault it does not follow announcements.
+Heh, my post on social.kernel.org is pinned (pinned!) for four months!
+Four months is still not enough...
 
 Best regards,
 Krzysztof
