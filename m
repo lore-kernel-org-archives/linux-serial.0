@@ -2,164 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2195C072A2
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Nov 2023 08:16:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B732C072A2
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Nov 2023 10:12:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230184AbjKQIQk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Nov 2023 03:16:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51864 "EHLO
+        id S230379AbjKQKM5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Nov 2023 05:12:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235715AbjKQIKq (ORCPT
+        with ESMTP id S229952AbjKQKMz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Nov 2023 03:10:46 -0500
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B8AED79
-        for <linux-serial@vger.kernel.org>; Fri, 17 Nov 2023 00:10:42 -0800 (PST)
-Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20231117081040epoutp032a31ac5dfd3f0a381914331d4c03dce5~YWsAbyXlq0319203192epoutp03L
-        for <linux-serial@vger.kernel.org>; Fri, 17 Nov 2023 08:10:40 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20231117081040epoutp032a31ac5dfd3f0a381914331d4c03dce5~YWsAbyXlq0319203192epoutp03L
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1700208640;
-        bh=tRpB3896SyLcsMUDCM2XhWVI5aC9qRKxa02VqHFlm78=;
-        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-        b=LGyeX04RSXWnCyBe83k77kUq039TI5CNuC8hVzUfrVc0zvqMlY3XEMP6qag9lvXAl
-         Wi+uf6bX+11tVIwT1dwoPqDt6wPqS/d+bRZ146uOh3hDfBtbrSJakL1ELDKKCsK8US
-         HYoYJCpPTRB6JUUvXSX/r+fPj7CFveEZ8aH+I6KA=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
-        20231117081039epcas2p2693a4a160cf4d199d4979939608cbb66~YWr-06B793164431644epcas2p2_;
-        Fri, 17 Nov 2023 08:10:39 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.36.99]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4SWqMz2CwPz4x9Q2; Fri, 17 Nov
-        2023 08:10:39 +0000 (GMT)
-Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
-        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        DC.20.10022.FFF17556; Fri, 17 Nov 2023 17:10:39 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
-        20231117081038epcas2p2d3ee4bdc76859faa8776384aa89d92e5~YWr_5CSwq3164431644epcas2p24;
-        Fri, 17 Nov 2023 08:10:38 +0000 (GMT)
-Received: from epsmgms1p2new.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20231117081038epsmtrp2e2713eb9e7350efb20c9e41d20ec7116~YWr_2YkS50744607446epsmtrp2u;
-        Fri, 17 Nov 2023 08:10:38 +0000 (GMT)
-X-AuditID: b6c32a47-bfdfa70000002726-cc-65571fff5626
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        4F.FA.08817.EFF17556; Fri, 17 Nov 2023 17:10:38 +0900 (KST)
-Received: from [10.229.8.168] (unknown [10.229.8.168]) by
-        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20231117081038epsmtip1e87c5a0eb9614993019dcedd14b5da20~YWr_e0FI_2924529245epsmtip19;
-        Fri, 17 Nov 2023 08:10:38 +0000 (GMT)
-Message-ID: <8326bf22-f19f-6268-961a-41528ae7a0c2@samsung.com>
-Date:   Fri, 17 Nov 2023 17:07:51 +0900
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
-        Thunderbird/102.11.0
-Subject: Re: [PATCH v2 10/12] pinctrl: samsung: add exynosautov920 pinctrl
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fri, 17 Nov 2023 05:12:55 -0500
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C349C5
+        for <linux-serial@vger.kernel.org>; Fri, 17 Nov 2023 02:12:51 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1r3vqB-0003IM-KA; Fri, 17 Nov 2023 11:12:47 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1r3vq9-009ejI-OR; Fri, 17 Nov 2023 11:12:45 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1r3vq9-002zo1-FB; Fri, 17 Nov 2023 11:12:45 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org
-From:   Jaewon Kim <jaewon02.kim@samsung.com>
-In-Reply-To: <b25df5a4-d426-418c-b8da-cc92f441f2bf@linaro.org>
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrFJsWRmVeSWpSXmKPExsWy7bCmhe5/+fBUgxN7eSwezNvGZrFm7zkm
-        i/lHzrFaNC9ez2bxbq6Mxd7XW9ktpvxZzmSx6fE1VovN8/8wWlzeNYfN4u7dVYwWM87vY7I4
-        s7iX3aJ17xF2i8Nv2lktfu6ax2KxahdQ3e2JkxkdhDx2zrrL7rFpVSebx51re9g89s9dw+6x
-        eUm9R/9fA4++LasYPT5vkgvgiMq2yUhNTEktUkjNS85PycxLt1XyDo53jjc1MzDUNbS0MFdS
-        yEvMTbVVcvEJ0HXLzAH6REmhLDGnFCgUkFhcrKRvZ1OUX1qSqpCRX1xiq5RakJJTYF6gV5yY
-        W1yal66Xl1piZWhgYGQKVJiQnfF6ykbGgvccFdPv9jM1ME5l72Lk5JAQMJH49nszcxcjF4eQ
-        wA5Gib0btrBAOJ8YJQ6v38AG4XxjlFiy5hRQhgOs5WK/NUR8L6PEg/MrGSGc14wSsxdPZwSZ
-        yytgJ9F77jcziM0ioCqxe+sfNoi4oMTJmU9YQGxRgWiJ1mX3weLCAl4Sp3buYQWxmQXEJW49
-        mc8EYosI3GeWeN1WDbKAWeABo8Tcc1/BFrAJaEt8X78YrIETaNmVHXfZIJrlJba/nQP2kITA
-        Fw6Js8ua2SA+dZH4+AVis4SAsMSr41ugISAl8fndXqiabIn26X9YIewKiYsbZkPFjSVmPWtn
-        BHmfWUBTYv0ufUhIKEscucUCsZZPouPwX3aIMK9ER5sQRKOaxP2p56CGyEhMOrKSCcL2kGie
-        PJ1tAqPiLKRQmYXk+1lInpmFsHcBI8sqRrHUguLc9NRiowJjeGQn5+duYgQnci33HYwz3n7Q
-        O8TIxMF4iFGCg1lJhNdcLiRViDclsbIqtSg/vqg0J7X4EKMpMG4mMkuJJucDc0leSbyhiaWB
-        iZmZobmRqYG5kjjvvda5KUIC6YklqdmpqQWpRTB9TBycUg1MhoEHb24QNis/W7/Ac4m9k3m7
-        6aNJn/flrTt30Koi/wTzuj8nD/EyiPqbLDtUwRsubcc2M6vU1nJrJ4PWbrV7QtzrBAMmdD1m
-        3ffW906v0p0vR2alTvdtqFI/vfm/1Iky7lURu65vNozmnsNnZ81V3qxjLpjlufKPwGSOD5LW
-        3gZhtofzHiTO7WrbfMa6YtWxpy8yJthVZ1/SaGXZHcO4yM7upY6E4M4XpxsrRc3+bWw/9vVU
-        dHlw00KBFfk+LYYmAgWfH+xlr9jdt5d33jH5jZaXE+Znh15/uG/aH+Wcj1JtX2VVla9FSfnM
-        vzOFkVuj5p9oZMnkp4VXz4i0nt21Pqbx+HHtu1Fma09f2vdDiaU4I9FQi7moOBEA4dcBu20E
-        AAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrNIsWRmVeSWpSXmKPExsWy7bCSnO4/+fBUg9831SwezNvGZrFm7zkm
-        i/lHzrFaNC9ez2bxbq6Mxd7XW9ktpvxZzmSx6fE1VovN8/8wWlzeNYfN4u7dVYwWM87vY7I4
-        s7iX3aJ17xF2i8Nv2lktfu6ax2KxahdQ3e2JkxkdhDx2zrrL7rFpVSebx51re9g89s9dw+6x
-        eUm9R/9fA4++LasYPT5vkgvgiOKySUnNySxLLdK3S+DKeD1lI2PBe46K6Xf7mRoYp7J3MXJw
-        SAiYSFzst+5i5OQQEtjNKLHrlDeILSEgI7H8WR8bhC0scb/lCGsXIxdQzUtGiTPfX7CCJHgF
-        7CR6z/1mBrFZBFQldm/9wwYRF5Q4OfMJC4gtKhAtsfrzBbB6YQEviVM794DZzALiEreezGcC
-        GSoi8JhZ4uHU/8wgDrPAA0aJ5ZMeQa17zCTxeuIxJpAWNgFtie/rF4O1cwKtvrLjLhvEKDOJ
-        rq1djBC2vMT2t3OYJzAKzUJyySwkG2chaZmFpGUBI8sqRsnUguLc9NxiwwKjvNRyveLE3OLS
-        vHS95PzcTYzg+NXS2sG4Z9UHvUOMTByMhxglOJiVRHjN5UJShXhTEiurUovy44tKc1KLDzFK
-        c7AoifN+e92bIiSQnliSmp2aWpBaBJNl4uCUamBK139zaf4z32k2TzMcX9+Y8e/D0R+Lr63K
-        rnIJSdDz3eIb0Wq/bkX/kg3BTv/LWw2PNPjdP3Zj4jLJU8kWwkZX/2903K4ey3DkyATWrVIN
-        V3oD11Usyl/i4z3392Kj64tt2XSPzBW8Wp9U9sAo+bNRWF2U8QG2F39/nSm8rnTiMM8VpqiL
-        n5JU5zQw5Kr0ZXp2t3yaen8Cl7f+lhtsuwIzzjWcznp1nOlBOTP/+8LwU+vVLpyPrmvT5fvI
-        7feJn83htfeBybqzbWzm5ydlb/qh7bPrMpsA+/F/S0WNvht/bHL8HXWgcZPser3I/481Zlwt
-        VYqI+M4au8Lvm5GSlwv3Xo1/9qe62i54RstP+XpGiaU4I9FQi7moOBEAEdAk6k4DAAA=
-X-CMS-MailID: 20231117081038epcas2p2d3ee4bdc76859faa8776384aa89d92e5
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20231115095856epcas2p1c3ee85750828bec2ee4ab0adeaeaff28
-References: <20231115095609.39883-1-jaewon02.kim@samsung.com>
-        <CGME20231115095856epcas2p1c3ee85750828bec2ee4ab0adeaeaff28@epcas2p1.samsung.com>
-        <20231115095609.39883-11-jaewon02.kim@samsung.com>
-        <ae03b902-fa12-4a33-9a4f-ab3a5956ea5c@linaro.org>
-        <221efdec-4940-031c-73b1-30aed96c76b0@samsung.com>
-        <b25df5a4-d426-418c-b8da-cc92f441f2bf@linaro.org>
+Cc:     Michal Simek <michal.simek@amd.com>, kernel@pengutronix.de,
+        linux-serial@vger.kernel.org
+Subject: [PATCH] serial: xilinx_uartps: Fix kernel doc about .remove()'s return code
+Date:   Fri, 17 Nov 2023 11:12:37 +0100
+Message-ID: <20231117101236.878008-1-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.42.0.586.gbc5204569f7d.dirty
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1398; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=IlfRtfw1bZn6P0M0eBlb7IowjX5BeTFe0EqT64Ibnds=; b=owGbwMvMwMXY3/A7olbonx/jabUkhtRwmyllTrFrwqL5lE2P3bY/NnnOrxrdVx6Lr1aybmT77 Znct3BjJ6MxCwMjF4OsmCKLfeOaTKsqucjOtf8uwwxiZQKZwsDFKQATCZrLwbBwq3SJUPC9b3p7 u98+TdzIonSul2+mnMX/oN7iU7rxyz4H5EjIsyX/3efbtJSjLK1KOmvVlcYVIc5MFy7FpMTVfMu Jzuw+ZB5tqio6T2ThtBqjc6ujtGNfZiwxc16fFM1udmSWzcLnl1b/Ou/FtXuJQMHHzzpsFpoJmx 3yXX2jdhV/Npg/6Xp0ttpp1cpPLZ3n5lmysWdyysXOkzFSW7fs1y65JG3RH4JcF0ztnbqVdVjmW LU2nToe/SFBZZ5In3L39ocy02Y1XHZJWnhP8kayvcGttqDqBqG9uWf8V++KrLoRvHqqmcSW6cz7 mZRn/UtR+2lfUuGqcifijV1K9q3kqLO3tY9K+iqJThQBAA==
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Since the driver was converted to use .remove_new() the return function
+doesn't return a value any more. So remove the obsolete documentation
+about the return value.
 
-On 23. 11. 16. 20:17, Krzysztof Kozlowski wrote:
-> On 16/11/2023 04:50, Jaewon Kim wrote:
->> On 23. 11. 15. 21:42, Krzysztof Kozlowski wrote:
->>> On 15/11/2023 10:56, Jaewon Kim wrote:
->>>> ExynosAutov920 GPIO has a different register structure.
->>>> In the existing Exynos series, EINT control register enumerated after
->>>> a specific offset (e.g EXYNOS_GPIO_ECON_OFFSET).
->>>> However, in ExynosAutov920 SoC, the register that controls EINT belongs
->>>> to each GPIO group, and each GPIO group has 0x1000 align.
->>>>
->>>> This is a structure to protect the GPIO group with S2MPU in VM environment,
->>>> and will only be applied in ExynosAuto series SoCs.
->>> Checkpatch points some warnings:
->>>
->>> CHECK: Alignment should match open parenthesis
->>> CHECK: Lines should not end with a '('
->>> CHECK: Macro argument reuse 'reg' - possible side-effects?
->> I don`t know this happens.
->>
->> When I did the checkpatch, there were no problems as shown below.
-> Didn't you miss some arguments? Lime --strict?
->
- From next time, I will check with --strict option.
+Reported-by: Michal Simek <michal.simek@amd.com>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+Hello,
 
-Thanks Krzysztof.
+the patch converting to .remove_new is not yet applied, so I didn't
+reference its commit id. It's available at
 
+	https://lore.kernel.org/linux-serial/20231110152927.70601-53-u.kleine-koenig@pengutronix.de
 
-Thanks
+and obviously this patch dropping the comment should get applied after
+the conversion to void.
 
-Jaewon Kim
+Best regards
+Uwe
 
+ drivers/tty/serial/xilinx_uartps.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 6decf2b13340..920762d7b4a4 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1663,8 +1663,6 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ /**
+  * cdns_uart_remove - called when the platform driver is unregistered
+  * @pdev: Pointer to the platform device structure
+- *
+- * Return: 0 on success, negative errno otherwise
+  */
+ static void cdns_uart_remove(struct platform_device *pdev)
+ {
+
+base-commit: eff99d8edbed7918317331ebd1e365d8e955d65e
+prerequisite-patch-id: 78ddb8b8246b06d5805c7dc8ad6481c7e4bc22c8
+-- 
+2.42.0
 
