@@ -2,68 +2,78 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78146C2BB3F
-	for <linux-serial@archiver.kernel.org>; Sat, 18 Nov 2023 15:53:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD539C5ACB3
+	for <linux-serial@archiver.kernel.org>; Sat, 18 Nov 2023 15:54:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230178AbjKRPxw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 18 Nov 2023 10:53:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44652 "EHLO
+        id S233048AbjKRPy1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 18 Nov 2023 10:54:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231157AbjKRPwx (ORCPT
+        with ESMTP id S231197AbjKRPxJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 18 Nov 2023 10:52:53 -0500
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A9310F7;
-        Sat, 18 Nov 2023 07:51:41 -0800 (PST)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-5c9169300caso5651217b3.2;
-        Sat, 18 Nov 2023 07:51:41 -0800 (PST)
+        Sat, 18 Nov 2023 10:53:09 -0500
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEA111FE5;
+        Sat, 18 Nov 2023 07:51:50 -0800 (PST)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-5b499b18b28so32751827b3.0;
+        Sat, 18 Nov 2023 07:51:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1700322699; x=1700927499; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1700322709; x=1700927509; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=KH/C2GbGilv4dEVGrlEtm1neXP6vUXqVIR2w3PMGoMU=;
-        b=l1wglQacW5bOp1InX5DIoQdvtQBnkVSQYzCPO11Q64OYnQnkYSOLykca4riSKSiBkk
-         E0BU9SRbJi+7G8534ABotGg3Mi4jtFnH7arCjWR/tcvS0LpKeEm0ct1F0IpC06WMJgC1
-         24PVVzDzyCB2fwWj+cN2t2tu7ddqB4tf0JH+ArX30sMP+e6A5xoXjQemJnzFZ9DgdeeU
-         e/aOO+iJn/v/eQ2+nBd8kn6ROXq7O95FlDHrwCafcpeevlKZ5pv6h2WHLKra0cEXtHug
-         GwTPHVVre3UOlyXXBJTgPB+eMq0WT++SfG3j3repoa7Z0nH2Hks66sza2TwOuzOhN7VD
-         4+dw==
+        bh=q0DdBJNYkBobnoLbuVdpfFwfkBXRkkwlqArhSXd28Ns=;
+        b=h85wGB4uDaCRaOlOiipFKIhfT6uht+Bl+Tl8v7GH6vA18ehtjHt6ia+qyyd2qF82b4
+         BlwOMtt/hLHgeDnRymeeBW6olQA+DKhBpK5Ah/S063zZWYRrkhad6iOQueZwZw8/EpXQ
+         1l7EWkKEcpiSnNIg3eHYj2n74NoG6P2vlDg2/CI3ty1mhuGWyegQBINphlEkjHeSHCCc
+         CROPr/XXZaDg+nW0qCIWwGnvBYRA7hRvYKkA4e1wRa/cOvVn/7iNN5eUy77scPYSWHeG
+         LICzIKT46NXe3LyehwIrnOAHIgPaeoLhzVGr0j4xNFptnsqn51ddM5nQWajRx4Q7MNPb
+         MnTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700322699; x=1700927499;
+        d=1e100.net; s=20230601; t=1700322709; x=1700927509;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=KH/C2GbGilv4dEVGrlEtm1neXP6vUXqVIR2w3PMGoMU=;
-        b=VxEm2Df9RIjMC2a0y94OFs8TXVij0mgoEl7ir/ixFvKMUrF0XzMMtCfeFtzMIUYpRb
-         oFmpjZ2Kk5+r86s5KNBEkN5WRXIVgAvW1QnJkooA19IvhX2MlZdQw8ZPC8fAmdIQKdx1
-         B6oRVTpg31E6h6UHm/0/9g/MSLEcG4ymS+QAehWOCs0qzXQ2aPduhUmWE9lY2/gO+1m8
-         c407Gli2AkKgnBJLb5HLv5cmdjfd0LIJ18Cs5zwVPdTMRs4qJY26IhRn8dtG3Dd/x3Rz
-         bFjOOnzlOfq8vLqRB0EIdm0oTho+JcwoTx+yFMleaRzHnyVgRkvwd/1WwWtTcy5iNEAz
-         vr0w==
-X-Gm-Message-State: AOJu0YzbVYSm83orr5EYTVRziJ757bp+/ifrP4F7NbhoZXmL8M32dy3l
-        JQ465BX+rojqgqkl2hMJUmN+EchTly22GOfN
-X-Google-Smtp-Source: AGHT+IH8iE5pRuee+JQIvG8dc4ZEm5Lvvk2s9b3hTX2Ou24/UpkP0ESpVFcnBMmBTlDyte+avOB5TA==
-X-Received: by 2002:a25:ac89:0:b0:da0:c744:3211 with SMTP id x9-20020a25ac89000000b00da0c7443211mr2333419ybi.2.1700322699285;
-        Sat, 18 Nov 2023 07:51:39 -0800 (PST)
+        bh=q0DdBJNYkBobnoLbuVdpfFwfkBXRkkwlqArhSXd28Ns=;
+        b=SBHnHTG2TU3yX+A+q9zRJnjGH9J99pAljaSW1/lskIvLJOVLJ03xVH3Db1zdOpR45g
+         AAGWS/n3dipL2HgpuJlRdd3idwXDYm1F2Rp//Ymr4hhK3+hcsb2wJQdcc0kVhW43kF8g
+         6/VMYME1fsT+LuO+2ussn2Owi2dNAgFYMmsKAU9PdlEMzaK2JwcCTr5HKjgPPsbZJPSH
+         MakhXNp1nxbQFvWaymWJMrEy9XZTpzM7CdIZuMgFU6AIA+wp1czKBNokdzapaLjX3TOk
+         U6JynVgkJwbFC7z5wUoXu4dmOTuMCSOBcBtvnF8TlF/wqXGjsOsrXpxkvWwNr6PLLdo6
+         y1gg==
+X-Gm-Message-State: AOJu0YwEUcGyoKjR7IoNapoe5tMfBd62W1kjelnHvdY1R3ZNsbDG7bFl
+        PCR4HGhc6BnH0oJLiYqBthuASZuOcSaokAdo
+X-Google-Smtp-Source: AGHT+IHf/y6t164pMjc17343PBLUYFLD9XOP4hlMacNZfcaCxBOFO6cO3hN3hjM1cdowPx+3vJjRHQ==
+X-Received: by 2002:a81:4fcf:0:b0:5a7:c906:14f with SMTP id d198-20020a814fcf000000b005a7c906014fmr2498604ywb.11.1700322708779;
+        Sat, 18 Nov 2023 07:51:48 -0800 (PST)
 Received: from localhost ([2601:344:8301:57f0:48a9:bd4c:868d:dc97])
-        by smtp.gmail.com with ESMTPSA id l129-20020a257087000000b00d8168e226e6sm1005873ybc.47.2023.11.18.07.51.38
+        by smtp.gmail.com with ESMTPSA id y200-20020a81a1d1000000b005af5ef0687bsm1177615ywg.13.2023.11.18.07.51.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Nov 2023 07:51:38 -0800 (PST)
+        Sat, 18 Nov 2023 07:51:48 -0800 (PST)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Cc:     Yury Norov <yury.norov@gmail.com>, Jan Kara <jack@suse.cz>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        Lech Perczak <lech.perczak@camlingroup.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Hui Wang <hui.wang@canonical.com>,
+        Isaac True <isaac.true@canonical.com>,
+        Yury Norov <yury.norov@gmail.com>, linux-serial@vger.kernel.org
+Cc:     Jan Kara <jack@suse.cz>,
         Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>,
         Matthew Wilcox <willy@infradead.org>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Maxim Kuvyrkov <maxim.kuvyrkov@linaro.org>,
         Alexey Klimov <klimov.linux@gmail.com>
-Subject: [PATCH 20/34] tty: nozomi: optimize interrupt_handler()
-Date:   Sat, 18 Nov 2023 07:50:51 -0800
-Message-Id: <20231118155105.25678-21-yury.norov@gmail.com>
+Subject: [PATCH 27/34] serial: sc12is7xx: optimize sc16is7xx_alloc_line()
+Date:   Sat, 18 Nov 2023 07:50:58 -0800
+Message-Id: <20231118155105.25678-28-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20231118155105.25678-1-yury.norov@gmail.com>
 References: <20231118155105.25678-1-yury.norov@gmail.com>
@@ -73,34 +83,35 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In exit path of interrupt_handler(), dc->flip map is traversed bit by
-bit to find and clear set bits and call tty_flip_buffer_push() for
-corresponding ports.
-
-We can do it better by using for_each_test_and_clear_bit(), because it
-skips already clear bits.
+Instead of polling every bit in sc16is7xx_lines, switch it to using a
+dedicated find_and_set_bit(), and make the function a simple one-liner.
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- drivers/tty/nozomi.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/tty/serial/sc16is7xx.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/drivers/tty/nozomi.c b/drivers/tty/nozomi.c
-index 02cd40147b3a..de0503247391 100644
---- a/drivers/tty/nozomi.c
-+++ b/drivers/tty/nozomi.c
-@@ -1220,9 +1220,8 @@ static irqreturn_t interrupt_handler(int irq, void *dev_id)
- exit_handler:
- 	spin_unlock(&dc->spin_mutex);
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index db2bb1c0d36c..6a463988d5e0 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -427,15 +427,9 @@ static void sc16is7xx_port_update(struct uart_port *port, u8 reg,
  
--	for (a = 0; a < NOZOMI_MAX_PORTS; a++)
--		if (test_and_clear_bit(a, &dc->flip))
--			tty_flip_buffer_push(&dc->port[a].port);
-+	for_each_test_and_clear_bit(a, &dc->flip, NOZOMI_MAX_PORTS)
-+		tty_flip_buffer_push(&dc->port[a].port);
+ static int sc16is7xx_alloc_line(void)
+ {
+-	int i;
+-
+ 	BUILD_BUG_ON(SC16IS7XX_MAX_DEVS > BITS_PER_LONG);
  
- 	return IRQ_HANDLED;
- none:
+-	for (i = 0; i < SC16IS7XX_MAX_DEVS; i++)
+-		if (!test_and_set_bit(i, &sc16is7xx_lines))
+-			break;
+-
+-	return i;
++	return find_and_set_bit(&sc16is7xx_lines, SC16IS7XX_MAX_DEVS);
+ }
+ 
+ static void sc16is7xx_power(struct uart_port *port, int on)
 -- 
 2.39.2
 
