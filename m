@@ -2,203 +2,131 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC44AC197A0
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Nov 2023 13:11:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4057DC2BB3F
+	for <linux-serial@archiver.kernel.org>; Sat, 18 Nov 2023 03:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345808AbjKQNLj (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Nov 2023 08:11:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53010 "EHLO
+        id S232181AbjKRDjf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Nov 2023 22:39:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235193AbjKQNLi (ORCPT
+        with ESMTP id S229994AbjKRDje (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Nov 2023 08:11:38 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 296D3D59
-        for <linux-serial@vger.kernel.org>; Fri, 17 Nov 2023 05:11:35 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id 41be03b00d2f7-5c19a328797so1459673a12.3
-        for <linux-serial@vger.kernel.org>; Fri, 17 Nov 2023 05:11:35 -0800 (PST)
+        Fri, 17 Nov 2023 22:39:34 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83BF2D79
+        for <linux-serial@vger.kernel.org>; Fri, 17 Nov 2023 19:39:31 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id 98e67ed59e1d1-2839c113cbcso944941a91.3
+        for <linux-serial@vger.kernel.org>; Fri, 17 Nov 2023 19:39:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20230601.gappssmtp.com; s=20230601; t=1700226694; x=1700831494; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6E9rdo8qzUdOfFpLyb8P/NwaQhOJy8xXp5m1DZcVMbs=;
-        b=0Jh9IEncApe3dbjC0pYFA6uGR96saTAaIoi1TMkeMwBv+5Oswt9hbuRJ9gjctTfZVv
-         iMeoPeCv+tjez7DDFpZGYLpF/ix0UIse7qdmeKx/YKD6UZaOaF7s2Bl3/WoIOM9npcJd
-         k4/VCKT43U6Ra9sPQiQL9xyaRHnRTWiEf4CJTybfC2jSvKB1gUsMrvLdklhzT079E9Qx
-         5BnVRW2uSlZ6PyUutWCMgFdYUrAQzM88i0AJaWuN/lB0lsAmhPJ8HMEuP5gsxlx+c+XF
-         GIFUUTcqdZL38LIARq68Z1xfFsG4inBCIhfeqGKvd1EODnp9bSBmRUGQlvHWoiGIvVqs
-         sjiA==
+        d=ventanamicro.com; s=google; t=1700278771; x=1700883571; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=2Xk65QbdRKZdLNSQh19GKuOPbc61/SWIMytvbu8dUYc=;
+        b=jsiDW+/iFIlrJvhc1hGwOytoJLciIuIJz7wYjuNWDFnZ5gFquyO+WxRLDmDf5KmNJ+
+         eG085RVuTESbmH30O6YSw8ZW16Q7nLxcgyL9+bMp6SI3m5pWoLrHgy887fKYprXZpcrx
+         oMEzW3lRZpTqyB728Efq+OoAtH9CWzEzyaNwvWGBFjaxWg3dZz/nsVVU0iAZfsFfI/4Y
+         EsxySpBUlSzbfQVUjuAOCMVGxvMtyMtb10oppx2S905yksnzieWrRF17TgLpe11JBXu1
+         P1shtwpdQNms3HtW890uvEIPO3UYTqHZ5Lg8UU6lp2/7b8CotK6ZFshNEW8Y2O/GlU+l
+         Rbog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700226694; x=1700831494;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=6E9rdo8qzUdOfFpLyb8P/NwaQhOJy8xXp5m1DZcVMbs=;
-        b=OcuiLtSSYkwRAx4iilmGjEzkiQXpGlRwuQiERxeWZOOWFhe2yOy28hhNj2077SFkR/
-         me+pxLbzW0HA5+/4KdmK5OCGsFAI3mLuJIgDGkKiyuu2eEOwPKK6qdNQZjRV+bmR/eGE
-         qDdzCEfPMsdWdfx5igfb/yORDONlxKObdouz0UBCF9CPmX5b41cszqkPa+KUxt8B6bcy
-         XQkiG2JQNmqnZLDgByYbiTMFx8Vt+D/w3ToBplst7qqjnQnB3Q91e7L4u5UPWXOKXdJq
-         xYWCTLYSRkPi0QcdIir35zaj7YZtMnL8mfhs70Zg6/iEooc4jDiF1TT95TAfZpJ2zClA
-         hL6A==
-X-Gm-Message-State: AOJu0YyDHcECPO20qN6qE6T7ecn0Nog4BNaUGzI/bDGYJ40aHu+YvtGZ
-        kd6scPYAVWplz60WIxe3jX9tVQyZqgjO9WzbeSiC8A==
-X-Google-Smtp-Source: AGHT+IFgkLOaY0/DJgU/R9AI39sZ+6DPT8zwZKvyF4UaFzfmMFJIGvIF2iBAT0bJLBWK5QSv+GXZ5swJVYptGL1IhU4=
-X-Received: by 2002:a17:90a:974a:b0:281:3a4a:2e61 with SMTP id
- i10-20020a17090a974a00b002813a4a2e61mr14672875pjw.14.1700226694377; Fri, 17
- Nov 2023 05:11:34 -0800 (PST)
-MIME-Version: 1.0
-References: <20231020072140.900967-1-apatel@ventanamicro.com>
- <20231020072140.900967-9-apatel@ventanamicro.com> <2023102153-retread-narrow-54ee@gregkh>
-In-Reply-To: <2023102153-retread-narrow-54ee@gregkh>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Fri, 17 Nov 2023 18:41:23 +0530
-Message-ID: <CAAhSdy1T-Ca7V21SSW=UCByujv39te7wRYGm40ZqDQ-JxH6pbA@mail.gmail.com>
-Subject: Re: [PATCH v3 8/9] tty: Add SBI debug console support to HVC SBI driver
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Anup Patel <apatel@ventanamicro.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
+        d=1e100.net; s=20230601; t=1700278771; x=1700883571;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=2Xk65QbdRKZdLNSQh19GKuOPbc61/SWIMytvbu8dUYc=;
+        b=j1pmUjnthJymv5Yf0n/xYCwuH+QjkyBEVp4KS9nUcfyYeINWWa5kA2AC4AhKbJMjqA
+         dbEXTIzRVF5sk4MYSuTPKhGdj3V6i7aiRz54yQ1bmUHXY8mLrl+loGi66KYF+FjFAloN
+         InaBI9YL4AnRQojg382r50DYFl2A9EMBFF0O9SogDGRpDfF9DY3E2tevWpSeLqyyC/i4
+         rrHHzC4QJhMwwp9bLY++PRx1VpNdQVvqdGrRKjW/cBe9WSwvnaGrEQfS8I0rjmXgmJ5w
+         UX3r/iSb1WclcqPSb0QitLn2k1ZIw/2kRXOT9f6LJkTqWZmtF9YcfdFEUbUVy8m6QL0M
+         Briw==
+X-Gm-Message-State: AOJu0Yzj3aZzEq21w00z5My7jIZLVFImIwKJpuMSO8ncnL+GpmVcpowS
+        2sIzOhLtNCJvTOJl3c9vvVU6yw==
+X-Google-Smtp-Source: AGHT+IEdivzV5yM9VLUbAmX/fPwvXT56J4szG18kUoyADgqsU5ZolAzZbNQxZHHnYCkaszm6OKc0Yw==
+X-Received: by 2002:a17:90b:4a49:b0:280:4ec6:97e9 with SMTP id lb9-20020a17090b4a4900b002804ec697e9mr1593141pjb.30.1700278770582;
+        Fri, 17 Nov 2023 19:39:30 -0800 (PST)
+Received: from anup-ubuntu-vm.localdomain ([171.76.80.108])
+        by smtp.gmail.com with ESMTPSA id cz8-20020a17090ad44800b00280fcbbe774sm2053823pjb.10.2023.11.17.19.39.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Nov 2023 19:39:29 -0800 (PST)
+From:   Anup Patel <apatel@ventanamicro.com>
+To:     Palmer Dabbelt <palmer@dabbelt.com>,
         Paul Walmsley <paul.walmsley@sifive.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Conor Dooley <conor@kernel.org>,
-        Andrew Jones <ajones@ventanamicro.com>, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Atish Patra <atishp@rivosinc.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Conor Dooley <conor@kernel.org>,
+        Andrew Jones <ajones@ventanamicro.com>,
+        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Anup Patel <apatel@ventanamicro.com>
+Subject: [PATCH v4 0/5] RISC-V SBI debug console extension support
+Date:   Sat, 18 Nov 2023 09:08:54 +0530
+Message-Id: <20231118033859.726692-1-apatel@ventanamicro.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Oct 21, 2023 at 10:16=E2=80=AFPM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Fri, Oct 20, 2023 at 12:51:39PM +0530, Anup Patel wrote:
-> > From: Atish Patra <atishp@rivosinc.com>
-> >
-> > RISC-V SBI specification supports advanced debug console
-> > support via SBI DBCN extension.
-> >
-> > Extend the HVC SBI driver to support it.
-> >
-> > Signed-off-by: Atish Patra <atishp@rivosinc.com>
-> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> > ---
-> >  drivers/tty/hvc/Kconfig         |  2 +-
-> >  drivers/tty/hvc/hvc_riscv_sbi.c | 82 ++++++++++++++++++++++++++++++---
-> >  2 files changed, 76 insertions(+), 8 deletions(-)
-> >
-> > diff --git a/drivers/tty/hvc/Kconfig b/drivers/tty/hvc/Kconfig
-> > index 4f9264d005c0..6e05c5c7bca1 100644
-> > --- a/drivers/tty/hvc/Kconfig
-> > +++ b/drivers/tty/hvc/Kconfig
-> > @@ -108,7 +108,7 @@ config HVC_DCC_SERIALIZE_SMP
-> >
-> >  config HVC_RISCV_SBI
-> >       bool "RISC-V SBI console support"
-> > -     depends on RISCV_SBI_V01
-> > +     depends on RISCV_SBI
-> >       select HVC_DRIVER
-> >       help
-> >         This enables support for console output via RISC-V SBI calls, w=
-hich
-> > diff --git a/drivers/tty/hvc/hvc_riscv_sbi.c b/drivers/tty/hvc/hvc_risc=
-v_sbi.c
-> > index 31f53fa77e4a..56da1a4b5aca 100644
-> > --- a/drivers/tty/hvc/hvc_riscv_sbi.c
-> > +++ b/drivers/tty/hvc/hvc_riscv_sbi.c
-> > @@ -39,21 +39,89 @@ static int hvc_sbi_tty_get(uint32_t vtermno, char *=
-buf, int count)
-> >       return i;
-> >  }
-> >
-> > -static const struct hv_ops hvc_sbi_ops =3D {
-> > +static const struct hv_ops hvc_sbi_v01_ops =3D {
-> >       .get_chars =3D hvc_sbi_tty_get,
-> >       .put_chars =3D hvc_sbi_tty_put,
-> >  };
-> >
-> > -static int __init hvc_sbi_init(void)
-> > +static int hvc_sbi_dbcn_tty_put(uint32_t vtermno, const char *buf, int=
- count)
-> >  {
-> > -     return PTR_ERR_OR_ZERO(hvc_alloc(0, 0, &hvc_sbi_ops, 16));
-> > +     phys_addr_t pa;
-> > +     struct sbiret ret;
-> > +
-> > +     if (is_vmalloc_addr(buf)) {
-> > +             pa =3D page_to_phys(vmalloc_to_page(buf)) + offset_in_pag=
-e(buf);
-> > +             if (PAGE_SIZE < (offset_in_page(buf) + count))
-> > +                     count =3D PAGE_SIZE - offset_in_page(buf);
-> > +     } else {
-> > +             pa =3D __pa(buf);
-> > +     }
-> > +
-> > +     if (IS_ENABLED(CONFIG_32BIT))
-> > +             ret =3D sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRIT=
-E,
-> > +                             count, lower_32_bits(pa), upper_32_bits(p=
-a),
-> > +                             0, 0, 0);
-> > +     else
-> > +             ret =3D sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRIT=
-E,
-> > +                             count, pa, 0, 0, 0, 0);
->
-> Again, you need a helper function here to keep you from having to keep
-> this all in sync.
+The SBI v2.0 specification is now frozen. The SBI v2.0 specification defines
+SBI debug console (DBCN) extension which replaces the legacy SBI v0.1
+functions sbi_console_putchar() and sbi_console_getchar().
+(Refer v2.0-rc5 at https://github.com/riscv-non-isa/riscv-sbi-doc/releases)
 
-Sure, I will update.
+This series adds support for SBI debug console (DBCN) extension in KVM RISC-V
+and Linux RISC-V.
 
->
-> > +     if (ret.error)
-> > +             return 0;
-> > +
-> > +     return count;
-> >  }
-> > -device_initcall(hvc_sbi_init);
-> >
-> > -static int __init hvc_sbi_console_init(void)
-> > +static int hvc_sbi_dbcn_tty_get(uint32_t vtermno, char *buf, int count=
-)
-> >  {
-> > -     hvc_instantiate(0, 0, &hvc_sbi_ops);
-> > +     phys_addr_t pa;
-> > +     struct sbiret ret;
-> > +
-> > +     if (is_vmalloc_addr(buf)) {
-> > +             pa =3D page_to_phys(vmalloc_to_page(buf)) + offset_in_pag=
-e(buf);
-> > +             if (PAGE_SIZE < (offset_in_page(buf) + count))
-> > +                     count =3D PAGE_SIZE - offset_in_page(buf);
-> > +     } else {
-> > +             pa =3D __pa(buf);
-> > +     }
-> > +
-> > +     if (IS_ENABLED(CONFIG_32BIT))
-> > +             ret =3D sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_READ=
-,
-> > +                             count, lower_32_bits(pa), upper_32_bits(p=
-a),
-> > +                             0, 0, 0);
-> > +     else
-> > +             ret =3D sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_READ=
-,
-> > +                             count, pa, 0, 0, 0, 0);
->
-> And here too.
+To try these patches with KVM RISC-V, use KVMTOOL from riscv_sbi_dbcn_v1
+branch at: https://github.com/avpatel/kvmtool.git
 
-Okay.
+These patches can also be found in the riscv_sbi_dbcn_v4 branch at:
+https://github.com/avpatel/linux.git
 
->
-> thanks,
->
-> greg k-h
+Changes since v3:
+ - Rebased on Linux-6.7-rc1
+ - Dropped PATCH1 to PATCH5 of v3 series since these were merged through
+   KVM RISC-V tree for Linux-6.7
+ - Used proper error code in PATCH1
+ - Added new PATCH2 which add common SBI debug console helper functions
+ - Updated PATCH3 and PATCH4 to use SBI debug console helper functions
 
-Regards,
-Anup
+Changes since v2:
+ - Rebased on Linux-6.6-rc5
+ - Handled page-crossing in PATCH7 of v2 series
+ - Addressed Drew's comment in PATCH3 of v2 series
+ - Added new PATCH5 to make get-reg-list test aware of SBI DBCN extension
+
+Changes since v1:
+ - Remove use of #ifdef from PATCH4 and PATCH5 of the v1 series
+ - Improved commit description of PATCH3 in v1 series
+ - Introduced new PATCH3 in this series to allow some SBI extensions
+   (such as SBI DBCN) do to disabled by default so that older KVM user space
+   work fine and newer KVM user space have to explicitly opt-in for emulating
+   SBI DBCN.
+ - Introduced new PATCH5 in this series which adds inline version of
+   sbi_console_getchar() and sbi_console_putchar() for the case where
+   CONFIG_RISCV_SBI_V01 is disabled.
+
+Anup Patel (4):
+  RISC-V: Add stubs for sbi_console_putchar/getchar()
+  RISC-V: Add SBI debug console helper routines
+  tty/serial: Add RISC-V SBI debug console based earlycon
+  RISC-V: Enable SBI based earlycon support
+
+Atish Patra (1):
+  tty: Add SBI debug console support to HVC SBI driver
+
+ arch/riscv/configs/defconfig            |  1 +
+ arch/riscv/configs/rv32_defconfig       |  1 +
+ arch/riscv/include/asm/sbi.h            | 10 +++++
+ arch/riscv/kernel/sbi.c                 | 43 ++++++++++++++++++
+ drivers/tty/hvc/Kconfig                 |  2 +-
+ drivers/tty/hvc/hvc_riscv_sbi.c         | 59 ++++++++++++++++++++++---
+ drivers/tty/serial/Kconfig              |  2 +-
+ drivers/tty/serial/earlycon-riscv-sbi.c | 24 ++++++++--
+ 8 files changed, 129 insertions(+), 13 deletions(-)
+
+-- 
+2.34.1
+
