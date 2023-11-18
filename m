@@ -2,115 +2,113 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DD03C2BB3F
-	for <linux-serial@archiver.kernel.org>; Sat, 18 Nov 2023 19:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EEE5C2BB3F
+	for <linux-serial@archiver.kernel.org>; Sat, 18 Nov 2023 21:26:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230373AbjKRTg5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 18 Nov 2023 14:36:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53416 "EHLO
+        id S229723AbjKRV0m (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 18 Nov 2023 16:26:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231213AbjKRTgc (ORCPT
+        with ESMTP id S229610AbjKRV0l (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 18 Nov 2023 14:36:32 -0500
+        Sat, 18 Nov 2023 16:26:41 -0500
 Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979171BE3;
-        Sat, 18 Nov 2023 11:35:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A95D8;
+        Sat, 18 Nov 2023 13:26:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-        t=1700336107; x=1700940907; i=linosanfilippo@gmx.de;
-        bh=Ikulmv0OWG9oj4px7fDbSbJHKMR8cPpQwYidISoLDMc=;
+        t=1700342784; x=1700947584; i=linosanfilippo@gmx.de;
+        bh=sJe1k8Wh7h7cBJJ58NutdITe2TTL1AkuIGMYa/sVtFA=;
         h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
          In-Reply-To;
-        b=MQecScliHiWBudktJezhtLPQW9okknSpjjtjCmnPXG8tIeu2/MAkjVi2n95OBEsE
-         8qtFVY0lvrU0YZF9pa655cPmlozcWPNtgHRt3S1F/lJsQ3ven3zzvzqcCqx2pSZWr
-         zY1kWEYD/F4li/Sx9dN0ROHjwe8w1okEoeoPPDNMSfT5rIfOgI64keGTsGlSyl/YA
-         7qlgSar0AsEjPACKkn/6ork3aqVQ00O712vgudJgpbRgR/hAVWzKNsog+p/+fdNAR
-         MgLDMCFMxOabaIdA/lMfkJusdatlns1iyVeXTZn57gGK+JYVpW8ZqaQU3mFXaBiAF
-         iQRbUx5lCfjr3mVCSA==
+        b=Jr+rVxc3+X7+76iKxDdPKI9DFmdo5oPqyuGgkzE0qnE9MHw38MOm0JobqVNaI1Fg
+         bhQ+/MlLZaWt1Dt3xj/dODrtUH/CmJ1N/pt9X5hPOIMsVVFYiIS9VRu3HZltWSReM
+         w5qKUbkipig/P/Nqex7aXgJpz4tncqv9M499lb15/PirrSS6/SYp6ciQECm0BQOrl
+         3lU+f//8jDZnC/H8HOAQbJobKkdYU/2xts6Nt0YB4HDBoMw4hDx1Sg13Ini1BNkZu
+         pDfjxKm2vQ8emGnMjiV5PEOQT9p/zdrloH3uUf/cdHRp4q48113t8Z3S0awjEYjxS
+         Vv/lF+PZHUtWIOpYXA==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
 Received: from [192.168.2.42] ([84.162.21.41]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1ML9yS-1qnSRN1uMM-00IAx4; Sat, 18
- Nov 2023 20:35:07 +0100
-Message-ID: <50a34ccb-d26e-4e8b-b371-a3e268dec126@gmx.de>
-Date:   Sat, 18 Nov 2023 20:35:06 +0100
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1M1Ycr-1r2X9v1I3H-00373G; Sat, 18
+ Nov 2023 22:26:24 +0100
+Message-ID: <5f192c82-7f61-4a29-972b-5e455db464b1@gmx.de>
+Date:   Sat, 18 Nov 2023 22:26:23 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V3 2/2] tty: serial: uartps: Add rs485 support to uartps
- driver
+Subject: Re: [PATCH v4] tty: serial: Add RS422 flag to struct serial_rs485
 Content-Language: en-US
-To:     "Guntupalli, Manikanta" <manikanta.guntupalli@amd.com>,
-        "git (AMD-Xilinx)" <git@amd.com>,
-        "Simek, Michal" <michal.simek@amd.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "conor+dt@kernel.org" <conor+dt@kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Cc:     "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>,
-        "Goud, Srinivas" <srinivas.goud@amd.com>,
-        "Datta, Shubhrajyoti" <shubhrajyoti.datta@amd.com>,
-        "manion05gk@gmail.com" <manion05gk@gmail.com>
-References: <20231024144847.2316941-1-manikanta.guntupalli@amd.com>
- <20231024144847.2316941-3-manikanta.guntupalli@amd.com>
- <97bfc5ee-6c07-4e4b-8192-f46c701a0604@gmx.de>
- <DM4PR12MB6109482E2C540D2794A446C78CB1A@DM4PR12MB6109.namprd12.prod.outlook.com>
+To:     Brenda Streiff <brenda.streiff@ni.com>,
+        Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20231113094136.52003-1-crescentcy.hsieh@moxa.com>
+ <c6ea912f-d5ab-4761-813d-3b6b6be141cb@ni.com>
 From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <DM4PR12MB6109482E2C540D2794A446C78CB1A@DM4PR12MB6109.namprd12.prod.outlook.com>
+In-Reply-To: <c6ea912f-d5ab-4761-813d-3b6b6be141cb@ni.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:gke6qnG3un9v6Mzn4MeN0WnT/7NvLD2h4Wn7LvNRFRlQ+0K8NUQ
- qoIJz77qEmjl9X9VTVOhYsISnJFfac3/yp70hPyCqdf6GoGuceOXDU/8KhNH8B0pnvqioB0
- jDejsaq4kr88PylAtpZEeUjMtPhz6CyK1GEWIX9NEjf8BgqyqH2pJ0+mgrdc4zYAW5WyubS
- UHtTSNlYediu+Eo85P+LA==
-UI-OutboundReport: notjunk:1;M01:P0:Ge3/s5fUzNo=;HeyuoUPLFbRS22W5DhdsJk38a9i
- kLthU/YZ29X5/XPO+tkD9DOeQ1rtWIJ+W186QGJ1OcrKJBstSGdfb8YQzficepj3qlWh45enr
- pGgidWop23K6PaYnEY1LbSEahbntsiCZ3mZ9OyxQesiNqn5upW60ka1jSrVXfQ9q+mHaZuXp7
- 8HXZ1+5MF3Gtm4Dhd10I0j5oCyednVhobEeoZHba+Zsy5M70rZTGeY2uxXW52YrOzkddUyfma
- myMCpAOeYHRSerF/EMURPSl6l4zGJfH/mbnteBg6EBJtOLeUZhsoyynNzpjOm4QA0BwPvK80w
- u1JHD50wKV31xTk0/xlz0fCiFs7CHEYrplz2nAEa2uweMmhpAnRdKQwJ55qFIxqjX+ikgmUjq
- AgYpPj/6//HLLd5rBTfR5Jk0ufnEHtns20IAz+HCAGYqREY61GsXxH3KsR7yYa7CFrTFoBrLN
- Kj8JiWEWyIhJpF76N048mNJIvm6hQ197Bt99Qoy69jS94Ai7vGSLU/UTPLs51S5fL6l2hgIVh
- qdUflEQcqZ9GPe6bR0DnQgfeZ0iywrMJL0j4b5Pdd66Ubk3mv1rcZYbbXdLtUQiJixre4+IDj
- aD6ZPlKOPBNq6c+e5tEPuYLjdpuYArXGlqVdCn/1t9R+QuKKbuKUyWB7Q5L9yf4yPDM4Jt4go
- 1Q5xY0q99eYDaSrv7cjiKVKBSE5DVRtahZbKvD4i4hCg8SxKCPFDZx6gr/bqanSUYi/Xn43+9
- TxGL1t11y8Me1eB1P4r3M+GoekfEZwyzzgMz5aIaMlAq4VRP9tyyPhMJL7NUiHq5Gfizo753p
- MLfHtS4qGIhhUue1ZH+3bTsJpsX4sYRu5A+BkSIL/2GB7QvJ52Zu+jMQA5WkG6Lgibn6ERqy5
- 4qHAVeDmPPDdUgzBltg/xcx3+dbs4d4p5eSKQg4XemCPydH5+T1VLPQxDLZnZfezGiDsiWjQ/
- ER03GnoJI93zLhc2os917qQ+WiA=
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:GzMbmu0TZNwIBf3GSyzh8rtdsEK/yu7aYjR0jNo9VZptaVuGCYq
+ 9kNdD8GzH/6/fZUkLb+8vTqEya4IBC9DSP4jzBxe9GT6vjlC4Kv3JZygBhn7krspZNkW83H
+ b6cLoGIZjdjSuqEUiFUU9f83txpzcpBLth/ecj2c9V3Lz5fQy+JIWjJ5t9glaAuJvzxkLd5
+ AB0q0a3Y2N2w9iN+rI0iQ==
+UI-OutboundReport: notjunk:1;M01:P0:ltLux1ypQgc=;ZZRCyLBSZLAhdvUeID94cdsYiwJ
+ nLTisrAqLTFcZJysSB5haqfDxQyNxaXqzH7Px94j3omYVxmnN9ETn1d+PMSuIlvtx2jDS1cBV
+ LipwrkRbTTVzGZ13WCeF4/gNSta69qQl53cAT1qXzWjcbmnvERQVjFQ45hRGzLRcFcQ0JTjuD
+ Yb90vfaoL4DcV6K6Xp2wgDis95Q1p5HketPu7pyK+ew75YGCN/IiwyJTPCowVOrEstr00NfH6
+ mum9EU8unnVDaJ5yz5KK+F/GlmbiFNMrgpUAU080fgh9kssRNIzZy7uJK12pO9GShOTjbhqjz
+ NfjiuV8GH8iSJ+6KmD73qDl4Cz1HinP5qCaXHXftQLqlSDL7WS/GSSXNn+liSXBz/2gGcSo1T
+ l3Mn/4rgdmcGmj/peu62VjeK1CEfqfySWBCO4GOkLbpSd3xJSX0vkk2VqA1JQr+4LalS88EJ9
+ md5XFErzxGrFkdkMWxLDylW2OQ865JZ3/lNoWdM17ptvkgR/Rh3lVUdGyz5+NK4WHGMU5CA/6
+ m+GqZM540lSIYfmQNxAzInn+UZ/EFUy4XpMX+EkjONYer9iwNXxDD9eriiS33EY17EoEIkIN9
+ SxEeXVXSODYU7vbRP7ZVWclAN3YbC+5rP7f0MLTK8ePfeF4I73/DKB8IMA2aQXEBjdtRxBzR8
+ svCYu9BZrRm48y1eZpFcFmYsChzUOhuVoDhqkSx1ndXbKA3gJ3uQzZP1mY7lpJsMvsyZIdT9d
+ JCWDtvqY5osafnGRfnRhR5QR5qtgK4ZvxMITcRIUX+PKR9oIS4q3IeuFhuQgMbskneanplwLh
+ AWptz1iSHCS7+M5d+o3sot9I+8LClXe27nb2zeQLmMeB9/DplSgM4q+/wlV55hP92uLL9H7Pl
+ hqH4/UvDARxl4JOGKuqSq3enTJlLMQRe2VrQe7Sqk3VXJ5opjtIgRH+ufyfGMlXLtN9Cxql5p
+ toLFRFmqO9HEOqDLSJg13S30pt4=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 Hi,
 
-On 15.11.23 07:50, Guntupalli, Manikanta wrote:
+On 15.11.23 03:50, Brenda Streiff wrote:
 
->> From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
->>
->> So, this will be executed each time (including the rts_before_send delay) the
->> core wants to send data? This is not how it is supposed to work: The tx setup
->> (and the delay before send) has to be done once when transmission starts.
->> Note that when sending a bulk of data the core may call cdns_uart_start_tx()
->> several times before it eventually calls cdns_uart_stop_tx() to stop the
->> transmission.
-> We have tested bulk transfer (5000 bytes) and observed that cdns_uart_start_tx() is getting called only once. Can you please suggest how to reproduce the case where the core may call cdns_uart_start_tx() several times before it eventually calls cdns_uart_stop_tx().
+>
+> Documentation/driver-api/serial/serial-rs485.rst could also use an updat=
+e,
+> since it doesn't mention your new flag at all.
+>
+> The documentation as it is also doesn't give a very good idea of what fl=
+ags
+> userspace might need to set for RS-232 vs RS-422 vs RS-485 (2- or 4-wire=
+).
+>
+> If I compare this to your original patch set [1] for your hardware, then
+> your proposed flag would be used in the following ways, correct?
+>
+> RS-232:                       rs485->flags =3D 0
+> RS-422:                       rs485->flags =3D SER_RS485_ENABLED|SER_RS4=
+85_MODE_RS422
+> RS-485 (2-wire half-duplex):  rs485->flags =3D SER_RS485_ENABLED
+> RS-485 (4-wire full-duplex):  rs485->flags =3D SER_RS485_ENABLED|SER_RS4=
+85_RX_DURING_TX
+>
+> In iot2040_rs485_config in 8250_exar.c [2] we already seem to have:
+> RS-232:                       rs485->flags =3D 0
+> RS-422:                       rs485->flags =3D SER_RS485_ENABLED|SER_RS4=
+85_RX_DURING_TX
+> RS-485 (2-wire half-duplex?): rs485->flags =3D SER_RS485_ENABLED
+>
+> This would seem to create an inconsistency in this API.
+>
 
-
-Thats strange. Normally the uart_ports start_tx() function is called whenever there is new
-data in the tty circular buffer (see uart_write()) and the writing process is suspended after
-that (see n_tty_write() in case of N_TTY line discipline). The writing process is woken up via
-uart_write_wakeup() called from the uart driver and then it writes new data into the circular
-buffer which results in another call to the uart_ports start_tx(). There is no stop_tx() until
-all data from the passed userspace buffer is written. But there is a start_tx for every new bulk
-of data that is available in the circular buffer.
-This is at least what I can observe in my test setup (using a PL011 UART with the amba driver). If
-I write a test buffer of 9212 bytes to the tty device using one single write() I can see 10
-consecutive calls of tx_start() before tx_stop() eventually is called. What does your test setup look like?
+We can adjust 8250_exar later to also honor SER_RS485_MODE_RS422.
+But yes, we have to also keep the current logic (i.e. set the RS422 mode i=
+f
+SER_RS485_ENABLED|SER_RS485_RX_DURING_TX is set) for backward compatibilit=
+y.
 
 Regards,
 Lino
+
