@@ -2,110 +2,200 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A33FCC47071
-	for <linux-serial@archiver.kernel.org>; Sat, 18 Nov 2023 03:40:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3311DC5AE5B
+	for <linux-serial@archiver.kernel.org>; Sat, 18 Nov 2023 07:46:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235808AbjKRDkJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Nov 2023 22:40:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56734 "EHLO
+        id S229702AbjKRHq0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 18 Nov 2023 02:46:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346473AbjKRDj4 (ORCPT
+        with ESMTP id S231863AbjKRHqY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Nov 2023 22:39:56 -0500
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F8371706
-        for <linux-serial@vger.kernel.org>; Fri, 17 Nov 2023 19:39:49 -0800 (PST)
-Received: by mail-io1-xd31.google.com with SMTP id ca18e2360f4ac-7b09035b850so43964639f.3
-        for <linux-serial@vger.kernel.org>; Fri, 17 Nov 2023 19:39:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1700278789; x=1700883589; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UwuJDohRQ3aqDyqXIkqqX8SciM39GRJg3jYARQ14u9s=;
-        b=aRonvU5ownT5UnSsSA8+v5t8/CtqHPWQKm3q796XR4S5793C2R62EUvHSVvEJYBWzZ
-         UHXUnoObMEmMbkeCTEurnSG3mgcaUHS95oOJTicP6z8hJIqXl/HdIAFGFjhlw1CVWgn7
-         5wxi0JZjD2sPQ0feNKIWt9laCyCWeq+7d2HIklu23vpSWZ7dUhDJSc1f/VF7jFqRaZnj
-         jRt1iB4zDecwtkqk1PFoiz1Kp8LHNGqdfQo525vW62gvENA94YogwLgLZ54QrI+a3kgH
-         /3etdgH5a1552oTQq2/SLkXXMsBrFglJVNAaf608u5LnB4JD/IFJZSmIdfdDLbQ3MyPp
-         rFVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700278789; x=1700883589;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=UwuJDohRQ3aqDyqXIkqqX8SciM39GRJg3jYARQ14u9s=;
-        b=j8m/yyQAwp4oYqBxAbosAwOWjP0ejLgvVAWMkqjZ4MAVn2sUhJ2gGXkPpLqBH6FOdq
-         aHBIBUJOhnHpfJ9s05S+Ij1F7mval6lFDCOq42UkdC1C94ErGD/RbeNOJnRA53xntHsj
-         RHGxdw+u2jWui5vmtaQNwr6nFk8v8gOvCYHn6CaNTn4JTllHScv2dF9PdLqoqQ/zPHAM
-         PQzs20/0Ks2dd/qAxMs0JPvvCt0385l62GYjFUpo+9f2CC/ne3iAhSnIVhgdCLG9FBtV
-         moTk5PrSmDzbR6/DoTqVsoX0G1B5d1Cfipd/ulD1U5SMzy2gcGH3DX3g85fKZqnXOdkR
-         Rsjw==
-X-Gm-Message-State: AOJu0YzrhvzHlpbZx42gfI6lx4eUhyb6dyip9JkeZVYDQdTcaJU5pw3a
-        bVI0FRxTJsHKrlZEq/zGHbMVpA==
-X-Google-Smtp-Source: AGHT+IHOlKnIVZ4ksof0LCT4ATUyA4aQHrNLe3GwQ2oPH5iU/GU5vmFy/egl6dy1iF7ul/LCCaVvEg==
-X-Received: by 2002:a05:6e02:58f:b0:357:4a63:2ad2 with SMTP id c15-20020a056e02058f00b003574a632ad2mr1554139ils.21.1700278788781;
-        Fri, 17 Nov 2023 19:39:48 -0800 (PST)
-Received: from anup-ubuntu-vm.localdomain ([171.76.80.108])
-        by smtp.gmail.com with ESMTPSA id cz8-20020a17090ad44800b00280fcbbe774sm2053823pjb.10.2023.11.17.19.39.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Nov 2023 19:39:48 -0800 (PST)
-From:   Anup Patel <apatel@ventanamicro.com>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
+        Sat, 18 Nov 2023 02:46:24 -0500
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A5A10CE
+        for <linux-serial@vger.kernel.org>; Fri, 17 Nov 2023 23:46:19 -0800 (PST)
+Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20231118074615epoutp02983e4765a548fe51cef961c018993872~Yp-_mli552105721057epoutp029
+        for <linux-serial@vger.kernel.org>; Sat, 18 Nov 2023 07:46:15 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20231118074615epoutp02983e4765a548fe51cef961c018993872~Yp-_mli552105721057epoutp029
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1700293575;
+        bh=vxlFjRpQHG/9qO2SmYUUMv1L/YanqCR+lSiJehcyrD4=;
+        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+        b=vhGEcGX6mcyzUnuY+s3bpRiVQ3+jHYQ0QNCIeNuXd77t2huVm+sHnFXZCVFejDYtT
+         P4j9PjmbE40H4v9C05W4bivsVciGIKu6kOv55gixk28uhQhSKyxNQJRc3o3HO+CquL
+         8FZrCVIQKcfrGEvRcre8+ImayGmPDVpimta5/nlc=
+Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20231118074614epcas2p151f840ee664d3130848da3fd7faf9105~Yp-9f4f6g3120531205epcas2p1L;
+        Sat, 18 Nov 2023 07:46:14 +0000 (GMT)
+Received: from epsmges2p2.samsung.com (unknown [182.195.36.91]) by
+        epsnrtp3.localdomain (Postfix) with ESMTP id 4SXQnL22K3z4x9Pr; Sat, 18 Nov
+        2023 07:46:14 +0000 (GMT)
+Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        D8.09.09622.6CB68556; Sat, 18 Nov 2023 16:46:14 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
+        20231118074613epcas2p422f7c882546ce89461420d92a70f5ee3~Yp-8qrZNr1418714187epcas2p4R;
+        Sat, 18 Nov 2023 07:46:13 +0000 (GMT)
+Received: from epsmgmc1p1new.samsung.com (unknown [182.195.42.40]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20231118074613epsmtrp282137b87c7e7ca89811fd3644159abc4~Yp-8pDwxC2675426754epsmtrp2J;
+        Sat, 18 Nov 2023 07:46:13 +0000 (GMT)
+X-AuditID: b6c32a46-fcdfd70000002596-c8-65586bc6b895
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgmc1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        BF.C8.07368.5CB68556; Sat, 18 Nov 2023 16:46:13 +0900 (KST)
+Received: from [10.229.8.168] (unknown [10.229.8.168]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20231118074613epsmtip2454513e84a2a41152fd3a056707b3d5d~Yp-8PetGS1672716727epsmtip2N;
+        Sat, 18 Nov 2023 07:46:13 +0000 (GMT)
+Message-ID: <ab17d61e-f645-9b76-962c-4ba2849c5f42@samsung.com>
+Date:   Sat, 18 Nov 2023 16:43:26 +0900
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+        Thunderbird/102.11.0
+Subject: Re: [PATCH v2 10/12] pinctrl: samsung: add exynosautov920 pinctrl
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
-Cc:     Conor Dooley <conor@kernel.org>,
-        Andrew Jones <ajones@ventanamicro.com>,
-        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH v4 5/5] RISC-V: Enable SBI based earlycon support
-Date:   Sat, 18 Nov 2023 09:08:59 +0530
-Message-Id: <20231118033859.726692-6-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20231118033859.726692-1-apatel@ventanamicro.com>
-References: <20231118033859.726692-1-apatel@ventanamicro.com>
-MIME-Version: 1.0
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org
+From:   Jaewon Kim <jaewon02.kim@samsung.com>
+In-Reply-To: <0fdb7bec-9ea4-454f-a0fb-d450f27ebc6b@linaro.org>
 Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrNJsWRmVeSWpSXmKPExsWy7bCmue6x7IhUg4VP2C0ezNvGZrFm7zkm
+        i/lHzrFaNC9ez2bxbq6Mxd7XW9ktpvxZzmSx6fE1VovN8/8wWlzeNYfN4u7dVYwWM87vY7I4
+        s7iX3aJ17xF2i8Nv2lktfu6ax2KxahdQ3e2JkxkdhDx2zrrL7rFpVSebx51re9g89s9dw+6x
+        eUm9R/9fA4++LasYPT5vkgvgiMq2yUhNTEktUkjNS85PycxLt1XyDo53jjc1MzDUNbS0MFdS
+        yEvMTbVVcvEJ0HXLzAH6REmhLDGnFCgUkFhcrKRvZ1OUX1qSqpCRX1xiq5RakJJTYF6gV5yY
+        W1yal66Xl1piZWhgYGQKVJiQnfH+03+Wgn08FSvunmJqYLzM2cXIySEhYCJxe9cz1i5GLg4h
+        gR2MEpfebGGEcD4xSiz7+JkZwvnGKHG55QcrTEv3jbfsEIm9jBKTv99mgXBeM0qcmLCIGaSK
+        V8BO4tiKGewgNouAqsSJm39ZIOKCEidnPgGzRQWiJVqX3WcDsYUFvCRO7dwDtoFZQFzi1pP5
+        TCC2iMB9ZonXbdUgC5gFHjBKzD33lREkwSagLfF9/WKwBk6gZQePvGWGaJaXaN46G+xuCYE3
+        HBIXV05mg7jbReL7sU6oH4QlXh3fwg5hS0l8frcXqiZbon36H6iaComLG2ZDxY0lZj1rB1rM
+        AbRAU2L9Ln0QU0JAWeLILRaItXwSHYf/skOEeSU62oQgGtUk7k89BzVERmLSkZVMELaHRPPk
+        6WwTGBVnIYXKLCTfz0LyzCyEvQsYWVYxiqUWFOempxYbFRjBYzs5P3cTIziVa7ntYJzy9oPe
+        IUYmDsZDjBIczEoivN+EIlKFeFMSK6tSi/Lji0pzUosPMZoC42Yis5Rocj4wm+SVxBuaWBqY
+        mJkZmhuZGpgrifPea52bIiSQnliSmp2aWpBaBNPHxMEp1cBkdDZiq4kNR2FVr5x8VrAta79o
+        qdCW4kszNLY+/ruGjSG0aFnA/V/F2wTU74WJB31ZxG3rIBLDK7Vso+/0n8sdu7dFXtBX2xV9
+        VebS9zXTAh37GQ2eznqY9pp//p3aMu8w5kfC1UIfpy/MMJu2+FTCQuOwJ+G/Tr/gMI2pqMib
+        MeedhuvaEzOYY5jFTpQYL72T47D70BIv46x3Z5RiIr3j/ic7bF70vvzfXQ+DRec/yzgLerTy
+        5DlNvfR9h04nz3zr6w+/S/7+yhmqI+bac+7fmhqp9ovxt2VfPF7yL7BOe79Vb53u7cJVT4+w
+        Xzm7ct96BivljAKNoOu5Gj7b1zLtndx+/v6XU8uZjNdVfrqnxFKckWioxVxUnAgAduB9v24E
+        AAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrLIsWRmVeSWpSXmKPExsWy7bCSvO7R7IhUg9WT5C0ezNvGZrFm7zkm
+        i/lHzrFaNC9ez2bxbq6Mxd7XW9ktpvxZzmSx6fE1VovN8/8wWlzeNYfN4u7dVYwWM87vY7I4
+        s7iX3aJ17xF2i8Nv2lktfu6ax2KxahdQ3e2JkxkdhDx2zrrL7rFpVSebx51re9g89s9dw+6x
+        eUm9R/9fA4++LasYPT5vkgvgiOKySUnNySxLLdK3S+DKeP/pP0vBPp6KFXdPMTUwXubsYuTk
+        kBAwkei+8Za9i5GLQ0hgN6PEze5eRoiEjMTyZ31sELawxP2WI6wQRS8ZJS4tewpWxCtgJ3Fs
+        xQx2EJtFQFXixM2/LBBxQYmTM5+A2aIC0RKrP19gBbGFBbwkTu3cA2YzC4hL3HoynwlkqIjA
+        Y2aJh1P/M4M4zAIPGCWWT3oEte4Ms8TlG01g69gEtCW+r18M1s4JtPrgkbfMEKPMJLq2djFC
+        2PISzVtnM09gFJqF5JJZSDbOQtIyC0nLAkaWVYySqQXFuem5yYYFhnmp5XrFibnFpXnpesn5
+        uZsYwTGspbGD8d78f3qHGJk4GA8xSnAwK4nwfhOKSBXiTUmsrEotyo8vKs1JLT7EKM3BoiTO
+        azhjdoqQQHpiSWp2ampBahFMlomDU6qByY7ndO2ulclNgdJdMQli2j7tllfOP5slxmC4+mvp
+        5JTALTcmfGM2Oa6+c9LjQ7ETWmf5x7sZHUhve2TduL/o49K55+8etotP+um+oPyJmYqXc6eq
+        HqOO377zLxczcgRKsEgvkTycGGlj1j+F9Z071w3uiKr92mZsZe8vvrmu+7Kg9Y8Od9eSkumH
+        SssWNn6vzYkxb7A0at3mmqlgXXdZXT6T7eCUCY2sJWfqDySeWGQdLZ2pFp+3y4e16mBQxq+z
+        lVvXVlfpfs/2VWzezhqmvSV0vo3+lq8f2gX2GTZay7wS5w75Xvjz2oSzvSYFbEWrxcwseR94
+        fIiS75vifMaGMf3dLTZZzlnTd/+uPqrEUpyRaKjFXFScCAB1RboDUAMAAA==
+X-CMS-MailID: 20231118074613epcas2p422f7c882546ce89461420d92a70f5ee3
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20231115095856epcas2p1c3ee85750828bec2ee4ab0adeaeaff28
+References: <20231115095609.39883-1-jaewon02.kim@samsung.com>
+        <CGME20231115095856epcas2p1c3ee85750828bec2ee4ab0adeaeaff28@epcas2p1.samsung.com>
+        <20231115095609.39883-11-jaewon02.kim@samsung.com>
+        <62b7176d-f99c-49f6-a287-17a6b3604c1c@linaro.org>
+        <f0f6a7af-2170-89a2-1eea-dfb9d8440321@samsung.com>
+        <6a5610e0-e60d-4ab7-8708-6f77a38527b7@linaro.org>
+        <926ea5c5-20ac-5e63-16ea-6f0c20e2db0a@samsung.com>
+        <0fdb7bec-9ea4-454f-a0fb-d450f27ebc6b@linaro.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Let us enable SBI based earlycon support in defconfigs for both RV32
-and RV64 so that "earlycon=sbi" can be used again.
 
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
----
- arch/riscv/configs/defconfig      | 1 +
- arch/riscv/configs/rv32_defconfig | 1 +
- 2 files changed, 2 insertions(+)
+On 23. 11. 17. 19:48, Krzysztof Kozlowski wrote:
+> On 17/11/2023 08:36, Jaewon Kim wrote:
+>>>> The reason why I chose variable name 'combine' is that EINT registers was
+>>>> separated from gpio control address. However, in exynosautov920 EINT
+>>>> registers combined with GPx group. So I chose "combine" word.
+>>> What does it mean "the GPx group"? Combined means the same place, the
+>>> same register. I could imagine offset is 0x4, what I wrote last time.
+>>>
+>>> Is the offset 0x4?
 
-diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-index 905881282a7c..eaf34e871e30 100644
---- a/arch/riscv/configs/defconfig
-+++ b/arch/riscv/configs/defconfig
-@@ -149,6 +149,7 @@ CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_8250_DW=y
- CONFIG_SERIAL_OF_PLATFORM=y
- CONFIG_SERIAL_SH_SCI=y
-+CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
- CONFIG_VIRTIO_CONSOLE=y
- CONFIG_HW_RANDOM=y
- CONFIG_HW_RANDOM_VIRTIO=y
-diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
-index 89b601e253a6..5721af39afd1 100644
---- a/arch/riscv/configs/rv32_defconfig
-+++ b/arch/riscv/configs/rv32_defconfig
-@@ -66,6 +66,7 @@ CONFIG_INPUT_MOUSEDEV=y
- CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_OF_PLATFORM=y
-+CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
- CONFIG_VIRTIO_CONSOLE=y
- CONFIG_HW_RANDOM=y
- CONFIG_HW_RANDOM_VIRTIO=y
--- 
-2.34.1
+If you are asking about the offset of GPIO control register and EINT 
+control register, 0x4 is correct.
+
+There is no empty space between the two register.
+
+
+0x0 CON
+
+0x4 DAT
+
+0x8 PUD
+
+0xc DRV
+
+0x10 CONPDN
+
+0x14 PUDPDN
+
+0x18 EINT_CON
+
+0x1c EINT_FLTCON
+
+0x20 or 0x24 EINT_MASK (The size of FLTCON register depending on the 
+number of gpio)
+
+0x24 or 0x28 EINT_PEND
+
+
+>>>
+>>>
+>>>> Is another reasonable word, I will change it.
+>>> Why you cannot store the offset?
+>>>
+>>>> EINT registers related to the entire group(e.g SVC) were at the end of
+>>>> the GPIO block and are now moved to 0xf000.
+>>> So not in the same register, not combined?
+>>>
+>> Okay,
+>>
+>> Instead of the word combine, I will think of a better word in next version.
+> I want to know answer to:
+>
+> "Why you cannot store the offset?"
+>
+I did not understand exactly what you said, but if i guess,,
+
+you want to get rid of the offs because the value of the offs is always 
+the same?
+
+#define EXYNOSV920_PIN_BANK_EINTG(pins, reg, id, offs, mask_offs, pend_offs)
+
+
+Thanks
+
+Jaewon Kim
 
