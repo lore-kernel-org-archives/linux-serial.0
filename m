@@ -2,35 +2,35 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D624C54E76
-	for <linux-serial@archiver.kernel.org>; Sun, 19 Nov 2023 16:12:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99DF2C072A2
+	for <linux-serial@archiver.kernel.org>; Sun, 19 Nov 2023 16:22:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231372AbjKSQM7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 19 Nov 2023 11:12:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45398 "EHLO
+        id S229642AbjKSQW2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 19 Nov 2023 11:22:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231384AbjKSQM6 (ORCPT
+        with ESMTP id S229556AbjKSQW2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 19 Nov 2023 11:12:58 -0500
-Received: from smtp.smtpout.orange.fr (smtp-24.smtpout.orange.fr [80.12.242.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 127AE115
-        for <linux-serial@vger.kernel.org>; Sun, 19 Nov 2023 08:12:53 -0800 (PST)
+        Sun, 19 Nov 2023 11:22:28 -0500
+Received: from smtp.smtpout.orange.fr (smtp-25.smtpout.orange.fr [80.12.242.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04E6126
+        for <linux-serial@vger.kernel.org>; Sun, 19 Nov 2023 08:22:24 -0800 (PST)
 Received: from pop-os.home ([86.243.2.178])
         by smtp.orange.fr with ESMTPA
-        id 4kPhraC9JxVPt4kPhrzakJ; Sun, 19 Nov 2023 17:12:51 +0100
+        id 4kYvrrFxYgbbT4kYvreJzl; Sun, 19 Nov 2023 17:22:22 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
-        s=t20230301; t=1700410371;
-        bh=Cq+Ma44I5rcVPvAOPNh8K0fTdo2ud4VzNDLd8VR7lXI=;
+        s=t20230301; t=1700410942;
+        bh=kEuqgZIEPcB/w+zrez3UmGeoQW8VSNG01XU6Pt+hyqs=;
         h=From:To:Cc:Subject:Date;
-        b=ChbdukErzOOtfglZwCpdHBkaxrzADa93OvyXoTIXUi46MzloHVfMLE9En/DKorGUJ
-         P67PUvUMGM2Tuxtf2ZASz8tK/Ha20efRoGORtHBBZhklDdIUkI80oBd/bEW+BYYg9W
-         PGKQJBdN1GPrDtAaM78QjibbFvlRiI6FX7AWxIHUdDk6UTtvUmhzoOBmHv63yk3rnT
-         Al4Uo4eCuAVvBlyUfbHLrIttdWucFsU0OYo3HETEMaekfESvUW/Ml+7at0b7oqvDk2
-         oR8S8nSLKLLDDddjpWPU3hP3mkp2wWbGxh4pfjCP1WDB7uFgfZWjSfbSrJkY0RQg8w
-         QdkqQ9/u2in5A==
+        b=enN28/GCg/o1MtohjakZQm91u1MvRpCSbQuHhXWFMR6UvfttSKKILWBIsfbftK5aA
+         CowZAZeDniDETM4+CmkQOq+OVHiUhBEC+LHslvrat23jziV0EgQKbrRzukdfzcVwrH
+         Lmvg9rsTpPuqXHPhgHcfut0o/Q2YjxYPc1XTTIp2B+Dc5+i9WESPIAN1/rw5WTCkKl
+         tSNDNG/MbMBNND77Tl46u2cQERux4HBllG7ElqCF7BQTvPIY6PXo1xCDfJZ67efZPF
+         mNGBosP2DFpJaAkpreGbS07hRlZnmcXAs73qtYybR5YDvtRoRm/+58bVlgN1EF813W
+         f9nBg1Y1KqXqg==
 X-ME-Helo: pop-os.home
 X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 19 Nov 2023 17:12:51 +0100
+X-ME-Date: Sun, 19 Nov 2023 17:22:22 +0100
 X-ME-IP: 86.243.2.178
 From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -43,9 +43,9 @@ To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
         Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] serial: imx: convert not to use dma_request_slave_channel()
-Date:   Sun, 19 Nov 2023 17:12:48 +0100
-Message-Id: <a46b493c6b5cfa09417e3e138e304fd01b61e748.1700410346.git.christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] serial: mxs-auart: convert not to use dma_request_slave_channel()
+Date:   Sun, 19 Nov 2023 17:22:20 +0100
+Message-Id: <94812f7063e4db5590254ec45fe9bb3c6569509e.1700410918.git.christophe.jaillet@wanadoo.fr>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -60,63 +60,49 @@ Switch to the preferred function and update the error handling accordingly.
 
 Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
-I don't think that the:
-   sport->dma_chan_xx = NULL;
-are really needed. I added it just to make sure that the behavior was
-exactly the same as before.
-
-Anyway, it can't hurt.
-
-Changing the returned value from -EINVAL to something else is fine. The
-only caller on check if == 0 or not.
+I don't think that setting s->xx_dma_chan to NULL in case of error is
+needed, because their would be some other problems or leak if it was
+needed.
 ---
- drivers/tty/serial/imx.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ drivers/tty/serial/mxs-auart.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 708b9852a575..5cb74d8f9d2a 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1336,15 +1336,18 @@ static int imx_uart_dma_init(struct imx_port *sport)
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index 8eeecf8ad359..1bbe8f2e2fcc 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -904,21 +904,27 @@ static void mxs_auart_dma_exit(struct mxs_auart_port *s)
+ 
+ static int mxs_auart_dma_init(struct mxs_auart_port *s)
  {
- 	struct dma_slave_config slave_config = {};
- 	struct device *dev = sport->port.dev;
 +	struct dma_chan *chan;
- 	int ret;
++
+ 	if (auart_dma_enabled(s))
+ 		return 0;
  
- 	/* Prepare for RX : */
--	sport->dma_chan_rx = dma_request_slave_channel(dev, "rx");
--	if (!sport->dma_chan_rx) {
-+	chan = dma_request_chan(dev, "rx");
-+	if (IS_ERR(chan)) {
- 		dev_dbg(dev, "cannot get the DMA channel.\n");
--		ret = -EINVAL;
-+		sport->dma_chan_rx = NULL;
-+		ret = PTR_ERR(chan);
- 		goto err;
- 	}
-+	sport->dma_chan_rx = chan;
+ 	/* init for RX */
+-	s->rx_dma_chan = dma_request_slave_channel(s->dev, "rx");
+-	if (!s->rx_dma_chan)
++	chan = dma_request_chan(s->dev, "rx");
++	if (IS_ERR(chan))
+ 		goto err_out;
++	s->rx_dma_chan = chan;
++
+ 	s->rx_dma_buf = kzalloc(UART_XMIT_SIZE, GFP_KERNEL | GFP_DMA);
+ 	if (!s->rx_dma_buf)
+ 		goto err_out;
  
- 	slave_config.direction = DMA_DEV_TO_MEM;
- 	slave_config.src_addr = sport->port.mapbase + URXD0;
-@@ -1366,12 +1369,14 @@ static int imx_uart_dma_init(struct imx_port *sport)
- 	sport->rx_ring.buf = sport->rx_buf;
- 
- 	/* Prepare for TX : */
--	sport->dma_chan_tx = dma_request_slave_channel(dev, "tx");
--	if (!sport->dma_chan_tx) {
-+	chan = dma_request_chan(dev, "tx");
-+	if (IS_ERR(chan)) {
- 		dev_err(dev, "cannot get the TX DMA channel!\n");
--		ret = -EINVAL;
-+		sport->dma_chan_tx = NULL;
-+		ret = PTR_ERR(chan);
- 		goto err;
- 	}
-+	sport->dma_chan_tx = chan;
- 
- 	slave_config.direction = DMA_MEM_TO_DEV;
- 	slave_config.dst_addr = sport->port.mapbase + URTX0;
+ 	/* init for TX */
+-	s->tx_dma_chan = dma_request_slave_channel(s->dev, "tx");
+-	if (!s->tx_dma_chan)
++	chan = dma_request_chan(s->dev, "tx");
++	if (IS_ERR(chan))
+ 		goto err_out;
++	s->tx_dma_chan = chan;
++
+ 	s->tx_dma_buf = kzalloc(UART_XMIT_SIZE, GFP_KERNEL | GFP_DMA);
+ 	if (!s->tx_dma_buf)
+ 		goto err_out;
 -- 
 2.34.1
 
