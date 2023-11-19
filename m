@@ -2,113 +2,147 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EEE5C2BB3F
-	for <linux-serial@archiver.kernel.org>; Sat, 18 Nov 2023 21:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7545C5ACB3
+	for <linux-serial@archiver.kernel.org>; Sun, 19 Nov 2023 11:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229723AbjKRV0m (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 18 Nov 2023 16:26:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53220 "EHLO
+        id S232032AbjKSLcK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 19 Nov 2023 06:32:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbjKRV0l (ORCPT
+        with ESMTP id S231898AbjKSLb4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 18 Nov 2023 16:26:41 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A95D8;
-        Sat, 18 Nov 2023 13:26:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-        t=1700342784; x=1700947584; i=linosanfilippo@gmx.de;
-        bh=sJe1k8Wh7h7cBJJ58NutdITe2TTL1AkuIGMYa/sVtFA=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
-         In-Reply-To;
-        b=Jr+rVxc3+X7+76iKxDdPKI9DFmdo5oPqyuGgkzE0qnE9MHw38MOm0JobqVNaI1Fg
-         bhQ+/MlLZaWt1Dt3xj/dODrtUH/CmJ1N/pt9X5hPOIMsVVFYiIS9VRu3HZltWSReM
-         w5qKUbkipig/P/Nqex7aXgJpz4tncqv9M499lb15/PirrSS6/SYp6ciQECm0BQOrl
-         3lU+f//8jDZnC/H8HOAQbJobKkdYU/2xts6Nt0YB4HDBoMw4hDx1Sg13Ini1BNkZu
-         pDfjxKm2vQ8emGnMjiV5PEOQT9p/zdrloH3uUf/cdHRp4q48113t8Z3S0awjEYjxS
-         Vv/lF+PZHUtWIOpYXA==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.2.42] ([84.162.21.41]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1M1Ycr-1r2X9v1I3H-00373G; Sat, 18
- Nov 2023 22:26:24 +0100
-Message-ID: <5f192c82-7f61-4a29-972b-5e455db464b1@gmx.de>
-Date:   Sat, 18 Nov 2023 22:26:23 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4] tty: serial: Add RS422 flag to struct serial_rs485
-Content-Language: en-US
-To:     Brenda Streiff <brenda.streiff@ni.com>,
-        Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20231113094136.52003-1-crescentcy.hsieh@moxa.com>
- <c6ea912f-d5ab-4761-813d-3b6b6be141cb@ni.com>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <c6ea912f-d5ab-4761-813d-3b6b6be141cb@ni.com>
+        Sun, 19 Nov 2023 06:31:56 -0500
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2065.outbound.protection.outlook.com [40.107.104.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611E33874;
+        Sun, 19 Nov 2023 03:30:02 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ffHUZxP6X1XCfwENwfK4oFGuJ3ytDTaGbrfzNgYGD+cOn+ITNMnnFf5i1OgDCLgrpwTnI/XitF2QbZXHg71830CLW0DR2/9OEg8njDYav6+40CrUcuLDI3/qpxLwoQ0eBS9NZydH1lYJsKkNXflMRozOm3IOanacbREMhF1ohEp6yw8wb6Krd2OXYccti6MwDM8erFFjoqDJ1YlbYBPNmUhn/ZDYrDA3Whc/d/+zLubp15NeOhfMRaPgj2MNbH3aVMSyYY/2kt0CvY5gAqQb25dquh1lI9JSrhvAvSBCb7iz5duy7zM6p5X74S6oGtHXyrQUD5Q7kbuGfYfXg6FrJA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=e+YOTlv4fFpBwWqW+ic1F06SjLNaWiy0dZ1p8DofigA=;
+ b=f1WG+xBMj6csXQV9zqwj4yE8GJb7V/IpRuHWHQEkZF00uGWfg7Bd7i3bm5Ddm2+UD6le2SThQM+Q3Hm9jl8FafzLYSupVDeSq4sBv3A7eqR6BYTlBgExoPBjilmC3O5/ukUfz1i5RQzP8gMXrr8xkpljKbUIq4IIx2D3Kuao870IG9wH00zoxe+mrinrpE+QL29BlXkPFtwX8e12Njxwu0gb2QP2HBzw+2DcrZkrZ735RsBslMqflHIUg5PNmusi7ALhULTSgGZVba9sU0+lF8azfJC2GS2J3ETGVUyj2LPQbppq1ssA3V034ooBxekNjlhEq2N7dUhjBZmyXWvaWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=kunbus.com; dmarc=pass action=none header.from=kunbus.com;
+ dkim=pass header.d=kunbus.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kunbus.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e+YOTlv4fFpBwWqW+ic1F06SjLNaWiy0dZ1p8DofigA=;
+ b=nSbxM+LW/4pv6UBOyf4LbR2WM/WcSMszBIyBdmpMma+fphoScJx+uj9/a/IwjQ9kO3BfcD4kG09Eia4Iu/Ptm7u3O4wbvguyhBnJfoi+R6xQtG+np/OzrmFPmxgNb5aVfT0m0bT9hOv0EHGG89BtpO0OHQBXwmdLTGTiHgW5Nqw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=kunbus.com;
+Received: from VI1P193MB0413.EURP193.PROD.OUTLOOK.COM (2603:10a6:803:4e::14)
+ by AM8P193MB1060.EURP193.PROD.OUTLOOK.COM (2603:10a6:20b:1e5::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.26; Sun, 19 Nov
+ 2023 11:29:59 +0000
+Received: from VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
+ ([fe80::653f:d0f3:e7f6:8c06]) by VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
+ ([fe80::653f:d0f3:e7f6:8c06%5]) with mapi id 15.20.7002.025; Sun, 19 Nov 2023
+ 11:29:58 +0000
+From:   Lino Sanfilippo <l.sanfilippo@kunbus.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com
+Cc:     u.kleine-koenig@pengutronix.de, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        LinoSanfilippo@gmx.de, lukas@wunner.de, p.rosenberger@kunbus.com,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Subject: [RESEND PATCH v4 0/7] Fixes and improvements for RS485 (RESEND)
+Date:   Sun, 19 Nov 2023 12:28:48 +0100
+Message-ID: <20231119112856.11587-1-l.sanfilippo@kunbus.com>
+X-Mailer: git-send-email 2.42.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:GzMbmu0TZNwIBf3GSyzh8rtdsEK/yu7aYjR0jNo9VZptaVuGCYq
- 9kNdD8GzH/6/fZUkLb+8vTqEya4IBC9DSP4jzBxe9GT6vjlC4Kv3JZygBhn7krspZNkW83H
- b6cLoGIZjdjSuqEUiFUU9f83txpzcpBLth/ecj2c9V3Lz5fQy+JIWjJ5t9glaAuJvzxkLd5
- AB0q0a3Y2N2w9iN+rI0iQ==
-UI-OutboundReport: notjunk:1;M01:P0:ltLux1ypQgc=;ZZRCyLBSZLAhdvUeID94cdsYiwJ
- nLTisrAqLTFcZJysSB5haqfDxQyNxaXqzH7Px94j3omYVxmnN9ETn1d+PMSuIlvtx2jDS1cBV
- LipwrkRbTTVzGZ13WCeF4/gNSta69qQl53cAT1qXzWjcbmnvERQVjFQ45hRGzLRcFcQ0JTjuD
- Yb90vfaoL4DcV6K6Xp2wgDis95Q1p5HketPu7pyK+ew75YGCN/IiwyJTPCowVOrEstr00NfH6
- mum9EU8unnVDaJ5yz5KK+F/GlmbiFNMrgpUAU080fgh9kssRNIzZy7uJK12pO9GShOTjbhqjz
- NfjiuV8GH8iSJ+6KmD73qDl4Cz1HinP5qCaXHXftQLqlSDL7WS/GSSXNn+liSXBz/2gGcSo1T
- l3Mn/4rgdmcGmj/peu62VjeK1CEfqfySWBCO4GOkLbpSd3xJSX0vkk2VqA1JQr+4LalS88EJ9
- md5XFErzxGrFkdkMWxLDylW2OQ865JZ3/lNoWdM17ptvkgR/Rh3lVUdGyz5+NK4WHGMU5CA/6
- m+GqZM540lSIYfmQNxAzInn+UZ/EFUy4XpMX+EkjONYer9iwNXxDD9eriiS33EY17EoEIkIN9
- SxEeXVXSODYU7vbRP7ZVWclAN3YbC+5rP7f0MLTK8ePfeF4I73/DKB8IMA2aQXEBjdtRxBzR8
- svCYu9BZrRm48y1eZpFcFmYsChzUOhuVoDhqkSx1ndXbKA3gJ3uQzZP1mY7lpJsMvsyZIdT9d
- JCWDtvqY5osafnGRfnRhR5QR5qtgK4ZvxMITcRIUX+PKR9oIS4q3IeuFhuQgMbskneanplwLh
- AWptz1iSHCS7+M5d+o3sot9I+8LClXe27nb2zeQLmMeB9/DplSgM4q+/wlV55hP92uLL9H7Pl
- hqH4/UvDARxl4JOGKuqSq3enTJlLMQRe2VrQe7Sqk3VXJ5opjtIgRH+ufyfGMlXLtN9Cxql5p
- toLFRFmqO9HEOqDLSJg13S30pt4=
+Content-Transfer-Encoding: base64
+X-ClientProxiedBy: FR5P281CA0007.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:f2::17) To VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
+ (2603:10a6:803:4e::14)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1P193MB0413:EE_|AM8P193MB1060:EE_
+X-MS-Office365-Filtering-Correlation-Id: d930aba1-4660-46a0-4232-08dbe8f2dc74
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ShozBxtbYSqDHKMI4XDiEgzdXLOcoWOqZdMOVNhvjzkI3t1dpYFtAPOSqQWIUTM24525ZfxvljgNEp03UezuhF1sk+frT+5Bm/vozW/hPMJeJZ2+1XDBIIq0INgsHba/lSwLIRWXnutpWzrwwwbrXZsLi+OdsRWcbaQfDMc6JEc1B5b9prxmTH0Sg2+UrAq6P/ZAMzI/0f7xSqhJfdrojwPzp8dS3S/iQSuXV3YWxaBhTX7VTt4vuMtr7DSrB0MWJGWal1JeqOSL3Rl1n9jvhykFQD2U1pGq+yELhxFxgxjLkCcQGaMYXBhSHGVSjRUlXG2z+0zbnV70/HHlJTUwndORY6Xn2qotyoat3qfKOq88dMOSnMusK97KIankkw5KyYV1wTyOsvwCqcwthzLTET2AXDbsIFvWuRD6yd8nvYQTiN9RqKTs9VwvHAXTiE9gqGWtoqHR3/uyRD+zMngenWK74yklw3oyqqmgS3foesi+r0eyPlZsNmlFnl7LocT4IYzxRs4L4M7tioHLan6mP1OFRZ2fIFI6Qyyp0GKb50fBemLNvq0sIHBKdmQttIOa
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P193MB0413.EURP193.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(346002)(136003)(396003)(366004)(39830400003)(376002)(230922051799003)(1800799012)(64100799003)(186009)(451199024)(6506007)(6512007)(52116002)(66946007)(66556008)(316002)(4326008)(8676002)(8936002)(66476007)(6486002)(478600001)(83380400001)(1076003)(2616005)(107886003)(38100700002)(6666004)(5660300002)(7416002)(2906002)(86362001)(41300700001)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eGozUVBnL0V5SFNsaUFMVHB3TlpwZ1ZicnRMRnBEYzJwekZpWnpCbjFUb0F2?=
+ =?utf-8?B?cURpMEFhN2h2dmJISGR2UDBnUmQ3cGxQT1Q5YXVKeTRoS2huRHV6VkRkZ1Vy?=
+ =?utf-8?B?SElVd1ZSNFhRL0U2bndMcnRXYXZ0RmJ5UnlwTk45UlpnWXQzTnhjN2tBelZl?=
+ =?utf-8?B?YktVZEo5blJqVkd1dExsRExLYzRBRFFNL2gyTSt3SEVucU5hTW96UjdhTllu?=
+ =?utf-8?B?VUlqdmJ6emxVb25PVUdnejFRTWNvTUsrQlhrSDRsVjM2OE1qOXV5cmVEVDNv?=
+ =?utf-8?B?RDA2dE4rV3FLakxONWFHL3UvemprZDZvTFdmd3lpUk0xV0p5dzBHZzR5L3M2?=
+ =?utf-8?B?QUgydDBiU0lnenhnd1lvNFl1N3QrV3RTQVd6SnNnNzhwUHZLWjF2N01yY25u?=
+ =?utf-8?B?K1hUNEdncWxnell1TktZOVRGcnlsbTlZSE16ZkkzUlk5UG5XZEs4K3NnUURH?=
+ =?utf-8?B?QWFUbmZxWnBxaVVsTmZuZXBpWDBKQWhOdzJPaGNFYTNoTDFPRDU3UFpLbUpv?=
+ =?utf-8?B?dTRMdTV0MnkvNVh2bU96TjZuTGdXbzgrU1BYa0xIT2c4aThDMXQxblIzRXZ5?=
+ =?utf-8?B?RlpQZWVvdGVUZFNEbUxlYXpWMDNKdkVWRTZkRWl0YzJ1R09PVTM0UlJQOUsx?=
+ =?utf-8?B?dzUrMkl0QXd5Y2NDVDJzV1hrcjZINlNvNjJEK203WE54VDNHM0VpV0VHNHYw?=
+ =?utf-8?B?T0dCMStkVDcyVkRON05FaXFWL1lveHFacEhsL2haQ0hlZ29lazdYa25yTjFT?=
+ =?utf-8?B?dlJ5cEFjaWtOV3QxT0FnYjZEdXNZbUZLWFllSlpMVEFQSGhHZGd2VTFBejhB?=
+ =?utf-8?B?RzBVNUpkZU5ZdGtUNFpYTTJaMFdQcTA1cTdSbXo1eVhIR2lZbW5uUzkvRVpw?=
+ =?utf-8?B?RGNVQVpkUk5CZzVENHZGa1Zkb0pPZ0R1d0Z2OTZxK216aHJyK1ZsakNEQWhw?=
+ =?utf-8?B?Y2dOOUtwWWVKZmNybXJtS2JLaEgzK3dtTFFWWUhkb1l3VXpReFA5eXRMUlo4?=
+ =?utf-8?B?S3Y5OThXalpHK1IyOTRSb3lBeXBBTXM0bTBXSVo0b09JaVU0WHlRbW85RVJx?=
+ =?utf-8?B?dnlzWVBaVkl1aVJEdUVtamFlWnIyYmM0L2V5alMraWppWFl6VncyN01WTXBD?=
+ =?utf-8?B?Z2g1U2pzdElEUXpKVjVtak1nM0FydW5LbHcrYmVKbTlEK1NLZCtJL1Y0amdr?=
+ =?utf-8?B?SGt4R2g0VVhPaHlzWTNCdzJLbkhhUzdEcS9JQzJoYitmc000bnpoSWplb3p6?=
+ =?utf-8?B?eldJRjh1enRoNEJKbmVIQmZ3VW0rTmV0Rk5pZEpURkdPaDVVdXFVbHRnMDJn?=
+ =?utf-8?B?Vm1DYkpJeVhlbzBmSTV3ZWRxb1EyRWRaQURxbU9YNjFGdkhoaW1wZzdHejBz?=
+ =?utf-8?B?ZEo0dFFCMThaOTZybFJaOHdTQXNsUFZoQVJJOG1udVdyblIxQXRKK0d3c212?=
+ =?utf-8?B?VDJ4bWdDc3FDRGMxS05LVWRlemxKMkFINmwyUEgzME9nZmo5MHpoaUZ3OTNj?=
+ =?utf-8?B?U3k2dUpKd1pYTGVuaWF5V2V5bnBiWmE5K01TWDhpLzZhcjhPTkJkWFlLaHNT?=
+ =?utf-8?B?eDIrbkIxT3lneGRmdEVvZjVIVWc3VkE2RXA1MnlPeFF4L3dmcnNQZFRFaTJZ?=
+ =?utf-8?B?L3dOWW1mVW5NcitXUkthZ3AzNU9oSW0rdkYzR2JseFhYQ2dkTlZkeVA0QStn?=
+ =?utf-8?B?UUJvQjBDanUycEN5cGljclR4NFdSYTY1cVFVY2Jad1RpUEdHK3NVZXJMNTY0?=
+ =?utf-8?B?WXpvc3Z3UnplaHdYRGhTTG05bHRPSnA3cFlzV2syZ2xyU2ZyY0k2bmdHazZR?=
+ =?utf-8?B?OXVGdzRWbmZGcGtKSkh4R1hEOVkrbitIWlRBa2MwbVZjdUpKK3NJRHFlN0hN?=
+ =?utf-8?B?bHVQQ3ZJWHB5UEx0amF1WndIUjlYdDFDZnNqQ29CazhRMkVHRjBzaFNhNnpM?=
+ =?utf-8?B?NDNjNEJnVmtlSGxSd05BYlI1WHJuVC9NOWpwdndwUlpTdmhtT002R0dMRnVR?=
+ =?utf-8?B?NENVaWxIVzJWZGorcnhLMnRkZ1hrUXlSVVF2d2dibTM2b292RGZSenJFSmln?=
+ =?utf-8?B?VS9mclJrWkRJYUExaS9ISm94ME1kMVpiYkpFSTJPM3YvWGVDR3czTDhPaE9l?=
+ =?utf-8?B?eWRtdGl3cEJhWFNjYU9SUytmaVFNTkswdTRVeXhpSHNvOW02ZHpTODNSK2Jh?=
+ =?utf-8?Q?sfPmagmEcEYPU84PygXwZswSnU0PgUI9lQqtj5lkSuCT?=
+X-OriginatorOrg: kunbus.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d930aba1-4660-46a0-4232-08dbe8f2dc74
+X-MS-Exchange-CrossTenant-AuthSource: VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Nov 2023 11:29:58.6139
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: aaa4d814-e659-4b0a-9698-1c671f11520b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: eV2C1C7sztmUDgEK4ed97WIHODYy1mx1DfVrh/+V7LuqpBvI9s5+wylvkofE8G5JWL4qpmzpp/zPe6w5WdEH2Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8P193MB1060
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
-
-On 15.11.23 03:50, Brenda Streiff wrote:
-
->
-> Documentation/driver-api/serial/serial-rs485.rst could also use an updat=
-e,
-> since it doesn't mention your new flag at all.
->
-> The documentation as it is also doesn't give a very good idea of what fl=
-ags
-> userspace might need to set for RS-232 vs RS-422 vs RS-485 (2- or 4-wire=
-).
->
-> If I compare this to your original patch set [1] for your hardware, then
-> your proposed flag would be used in the following ways, correct?
->
-> RS-232:                       rs485->flags =3D 0
-> RS-422:                       rs485->flags =3D SER_RS485_ENABLED|SER_RS4=
-85_MODE_RS422
-> RS-485 (2-wire half-duplex):  rs485->flags =3D SER_RS485_ENABLED
-> RS-485 (4-wire full-duplex):  rs485->flags =3D SER_RS485_ENABLED|SER_RS4=
-85_RX_DURING_TX
->
-> In iot2040_rs485_config in 8250_exar.c [2] we already seem to have:
-> RS-232:                       rs485->flags =3D 0
-> RS-422:                       rs485->flags =3D SER_RS485_ENABLED|SER_RS4=
-85_RX_DURING_TX
-> RS-485 (2-wire half-duplex?): rs485->flags =3D SER_RS485_ENABLED
->
-> This would seem to create an inconsistency in this API.
->
-
-We can adjust 8250_exar later to also honor SER_RS485_MODE_RS422.
-But yes, we have to also keep the current logic (i.e. set the RS422 mode i=
-f
-SER_RS485_ENABLED|SER_RS485_RX_DURING_TX is set) for backward compatibilit=
-y.
-
-Regards,
-Lino
-
+Q2hhbmdlcyBpbiB2NDoKCi0gYWRkIGNvbW1lbnQgZm9yIGZ1bmN0aW9uIHVhcnRfc2V0X3JzNDg1
+X2dwaW9zIGFmdGVyIGhpbnQgZnJvbSBIdWdvCi0gY29ycmVjdCBjb21taXQgbWVzc2FnZSBhcyBw
+b2ludGVkIG91dCBieSBIdWdvCi0gcmVwaHJhc2UgY29tbWl0IG1lc3NhZ2VzCi0gYWRkIHBhdGNo
+IDcgYWZ0ZXIgZGlzY3Vzc2lvbiB3aXRoIElscG8KCkNoYW5nZXMgaW4gdjMKLSBEcm9wIHBhdGNo
+ICJHZXQgcmlkIG9mIHVzZWxlc3Mgd3JhcHBlciBwbDAxMV9nZXRfcnM0ODVfbW9kZSgpIiBhcwog
+IHJlcXVlc3RlZCBieSBHcmVnCgpDaGFuZ2VzIGluIHYyOgotIGFkZCBtaXNzaW5nICdGaXhlcycg
+dGFncyBhcyByZXF1ZXN0ZWQgYnkgR3JlZwotIGNvcnJlY3RlZCBhIHR5cG8gYXMgcG9pbnRlZCBv
+dXQgYnkgSHVnbwotIGZpeCBpc3N1ZSBpbiBpbXggZHJpdmVyIGluIHRoZSBzZXJpYWwgY29yZSBh
+cyBzdWdnZXN0ZWQgYnkgVXdlCi0gcGFydGx5IHJlcGhyYXNlIHNvbWUgY29tbWl0IG1lc3NhZ2Vz
+Ci0gYWRkIHBhdGNoIDcKCkxpbm8gU2FuZmlsaXBwbyAoNyk6CiAgc2VyaWFsOiBEbyBub3QgaG9s
+ZCB0aGUgcG9ydCBsb2NrIHdoZW4gc2V0dGluZyByeC1kdXJpbmctdHggR1BJTwogIHNlcmlhbDog
+Y29yZTogc2V0IG1pc3Npbmcgc3VwcG9ydGVkIGZsYWcgZm9yIFJYIGR1cmluZyBUWCBHUElPCiAg
+c2VyaWFsOiBjb3JlOiBmaXggc2FuaXRpemluZyBjaGVjayBmb3IgUlRTIHNldHRpbmdzCiAgc2Vy
+aWFsOiBjb3JlOiBtYWtlIHN1cmUgUlM0ODUgY2Fubm90IGJlIGVuYWJsZWQgd2hlbiBpdCBpcyBu
+b3QKICAgIHN1cHBvcnRlZAogIHNlcmlhbDogY29yZSwgaW14OiBkbyBub3Qgc2V0IFJTNDg1IGVu
+YWJsZWQgaWYgaXQgaXMgbm90IHN1cHBvcnRlZAogIHNlcmlhbDogb21hcDogZG8gbm90IG92ZXJy
+aWRlIHNldHRpbmdzIGZvciBSUzQ4NSBzdXBwb3J0CiAgc2VyaWFsOiA4MjUwX2V4YXI6IFNldCBt
+aXNzaW5nIHJzNDg1X3N1cHBvcnRlZCBmbGFnCgogZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1
+MF9leGFyLmMgfCAgNSArLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyAgICAgICAgICAgIHwg
+IDggLS0tLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC9vbWFwLXNlcmlhbC5jICAgIHwgIDggKystLS0K
+IGRyaXZlcnMvdHR5L3NlcmlhbC9zZXJpYWxfY29yZS5jICAgIHwgNTMgKysrKysrKysrKysrKysr
+KysrKysrLS0tLS0tLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC9zdG0zMi11c2FydC5jICAgIHwgIDUg
+Ky0tCiA1IGZpbGVzIGNoYW5nZWQsIDQ2IGluc2VydGlvbnMoKyksIDMzIGRlbGV0aW9ucygtKQoK
+CmJhc2UtY29tbWl0OiBiODVlYTk1ZDA4NjQ3MWFmYjRhZDA2MjAxMmE0ZDczY2QzMjhmYTg2Ci0t
+IAoyLjQyLjAKCg==
