@@ -2,110 +2,184 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D75AC54FB9
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Nov 2023 07:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 258EDC54E76
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Nov 2023 08:05:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231948AbjKTHvR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Nov 2023 02:51:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37202 "EHLO
+        id S232073AbjKTIF2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Nov 2023 03:05:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbjKTHvQ (ORCPT
+        with ESMTP id S231961AbjKTIF1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Nov 2023 02:51:16 -0500
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A2EB9
-        for <linux-serial@vger.kernel.org>; Sun, 19 Nov 2023 23:51:13 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1r4z3l-0000XT-FS; Mon, 20 Nov 2023 08:51:09 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1r4z3k-00AIfC-Pq; Mon, 20 Nov 2023 08:51:08 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1r4z3k-004A3n-GZ; Mon, 20 Nov 2023 08:51:08 +0100
-Date:   Mon, 20 Nov 2023 08:51:08 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michal Simek <michal.simek@amd.com>,
-        linux-serial@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH] serial: xilinx_uartps: Fix kernel doc about .remove()'s
- return code
-Message-ID: <20231120075108.jvrabyv7a6izgbgd@pengutronix.de>
-References: <20231117101236.878008-1-u.kleine-koenig@pengutronix.de>
- <dfc69d21-1c09-4cff-ac11-21857278f6e0@kernel.org>
+        Mon, 20 Nov 2023 03:05:27 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65E13B9
+        for <linux-serial@vger.kernel.org>; Mon, 20 Nov 2023 00:05:20 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-4081ccf69dcso7698225e9.0
+        for <linux-serial@vger.kernel.org>; Mon, 20 Nov 2023 00:05:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google; t=1700467519; x=1701072319; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=k/r7/AHUvU5h9gmXC8cWkhPHDiuLCW3OhU5H88ffb6E=;
+        b=c5Urs6HK+5R4uRglqHsTWMmz7EK2bzhvxoO7ZXc+L52FHnIC+MwZUzSvMhxllQNneG
+         5tJjWdX4AworNkTtJwRXdJC/Ex4VVoKeuOUpfugx+7i0kcddwkv0wym4YHO8VRNrPDQk
+         3DGtpB9hO0UJ+cq5P8ArLMqIaU4PTrbVfiRMNwPJ2EjqI/V28o7DxyvoAFTZCZj339rC
+         NfiVcqFl8oyFNrGsRBjEjkdv7/jIakwr/+KRHqiRDtrG/DZgdSgCSzdJAPRuZP+67//i
+         xcKwZ4KArv1JPpj84GuaNCJ6MSQK7FWpn9X6u0bK5MAFhWBmAvgS21J+5+sjaiAP9iVl
+         5nHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700467519; x=1701072319;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=k/r7/AHUvU5h9gmXC8cWkhPHDiuLCW3OhU5H88ffb6E=;
+        b=G3QSOjefkNAUn7XgBQ0eCNsWEa6kqVYM1EDXxd41wqiw7Ub49oENCgV5J04dAPHogc
+         2rdxCJefGYBmlP0K0akQq5zjO9T95iCtf/yXM2i1vx8Lg5gSSqB0dpkL3NHSaYXkNuBU
+         urlKsgCk0Qws7ekgI/X5nhomPiCWoNE3QdjDmbUfgFa7UTPDb9Bgih8Qb4uayEG+bSwv
+         vmQVPsQDvvnR6R9vq2x7MIuDSpXueeiHbP4ywISDHSeWSWui+FQgRKoS/2HWHV/elCgb
+         rwNsob4EPma5rJVTO2fZ1Px7VL67xr3mzocdhy5SBGJaqw2AovJHIdDzSS5lTh5fnyPA
+         o+TQ==
+X-Gm-Message-State: AOJu0YxqR4gLWFXkxzg2+XuEsH/4bjjhBKd6O3XlOkwgjlFOE4o9lD+g
+        2mpOI7ijLWt2fLawKJN4PMwq3Q==
+X-Google-Smtp-Source: AGHT+IFN4nwCSr0/wD+U66vM10GQFv+Nri9nZ939m/NOfkfbpyvhNkhO8KxhTxplHCfzLfcHQj8ulg==
+X-Received: by 2002:a05:600c:6001:b0:408:33ba:569a with SMTP id az1-20020a05600c600100b0040833ba569amr10872487wmb.8.1700467518744;
+        Mon, 20 Nov 2023 00:05:18 -0800 (PST)
+Received: from localhost (cst2-173-16.cust.vodafone.cz. [31.30.173.16])
+        by smtp.gmail.com with ESMTPSA id j7-20020a05600c190700b004064cd71aa8sm12586581wmq.34.2023.11.20.00.05.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Nov 2023 00:05:18 -0800 (PST)
+Date:   Mon, 20 Nov 2023 09:05:17 +0100
+From:   Andrew Jones <ajones@ventanamicro.com>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Conor Dooley <conor@kernel.org>,
+        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/5] RISC-V: Add SBI debug console helper routines
+Message-ID: <20231120-639982716fbfd33a6fc144d6@orel>
+References: <20231118033859.726692-1-apatel@ventanamicro.com>
+ <20231118033859.726692-3-apatel@ventanamicro.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="agr2mntupn2nnz73"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <dfc69d21-1c09-4cff-ac11-21857278f6e0@kernel.org>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+In-Reply-To: <20231118033859.726692-3-apatel@ventanamicro.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Sat, Nov 18, 2023 at 09:08:56AM +0530, Anup Patel wrote:
+> Let us provide SBI debug console helper routines which can be
+> shared by serial/earlycon-riscv-sbi.c and hvc/hvc_riscv_sbi.c.
+> 
+> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> ---
+>  arch/riscv/include/asm/sbi.h |  5 +++++
+>  arch/riscv/kernel/sbi.c      | 43 ++++++++++++++++++++++++++++++++++++
+>  2 files changed, 48 insertions(+)
+> 
+> diff --git a/arch/riscv/include/asm/sbi.h b/arch/riscv/include/asm/sbi.h
+> index 66f3933c14f6..ee7aef5f6233 100644
+> --- a/arch/riscv/include/asm/sbi.h
+> +++ b/arch/riscv/include/asm/sbi.h
+> @@ -334,6 +334,11 @@ static inline unsigned long sbi_mk_version(unsigned long major,
+>  }
+>  
+>  int sbi_err_map_linux_errno(int err);
+> +
+> +extern bool sbi_debug_console_available;
+> +int sbi_debug_console_write(unsigned int num_bytes, phys_addr_t base_addr);
+> +int sbi_debug_console_read(unsigned int num_bytes, phys_addr_t base_addr);
+> +
+>  #else /* CONFIG_RISCV_SBI */
+>  static inline int sbi_remote_fence_i(const struct cpumask *cpu_mask) { return -1; }
+>  static inline void sbi_init(void) {}
+> diff --git a/arch/riscv/kernel/sbi.c b/arch/riscv/kernel/sbi.c
+> index 5a62ed1da453..73a9c22c3945 100644
+> --- a/arch/riscv/kernel/sbi.c
+> +++ b/arch/riscv/kernel/sbi.c
+> @@ -571,6 +571,44 @@ long sbi_get_mimpid(void)
+>  }
+>  EXPORT_SYMBOL_GPL(sbi_get_mimpid);
+>  
+> +bool sbi_debug_console_available;
+> +
+> +int sbi_debug_console_write(unsigned int num_bytes, phys_addr_t base_addr)
+> +{
+> +	struct sbiret ret;
+> +
+> +	if (!sbi_debug_console_available)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (IS_ENABLED(CONFIG_32BIT))
+> +		ret = sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE,
+> +				num_bytes, lower_32_bits(base_addr),
+> +				upper_32_bits(base_addr), 0, 0, 0);
+> +	else
+> +		ret = sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_WRITE,
+> +				num_bytes, base_addr, 0, 0, 0, 0);
+> +
+> +	return ret.error ? sbi_err_map_linux_errno(ret.error) : ret.value;
 
---agr2mntupn2nnz73
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+We can't get perfect mappings, but I wonder if we can do better than
+returning ENOTSUPP for "Failed to write the byte due to I/O errors."
 
-Hey Jiri,
+How about
 
-On Mon, Nov 20, 2023 at 08:27:12AM +0100, Jiri Slaby wrote:
-> On 17. 11. 23, 11:12, Uwe Kleine-K=F6nig wrote:
-> > Since the driver was converted to use .remove_new() the return function
-> > doesn't return a value any more. So remove the obsolete documentation
-> > about the return value.
-> >=20
-> > Reported-by: Michal Simek <michal.simek@amd.com>
-> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > ---
-> > Hello,
-> >=20
-> > the patch converting to .remove_new is not yet applied, so I didn't
-> > reference its commit id. It's available at
-> >=20
-> > 	https://lore.kernel.org/linux-serial/20231110152927.70601-53-u.kleine-=
-koenig@pengutronix.de
-> >=20
-> > and obviously this patch dropping the comment should get applied after
-> > the conversion to void.
->=20
-> So perhaps you squash and resend :)?
+ if (ret.error == SBI_ERR_FAILURE)
+     return -EIO;
 
-Sending an follow-up patch was what Greg requested in
-https://lore.kernel.org/linux-serial/2023111330-tigress-suffering-e329@greg=
-kh/
+ return ret.error ? sbi_err_map_linux_errno(ret.error) : ret.value;
 
-Best regards
-Uwe
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+> +}
+> +
+> +int sbi_debug_console_read(unsigned int num_bytes, phys_addr_t base_addr)
+> +{
+> +	struct sbiret ret;
+> +
+> +	if (!sbi_debug_console_available)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (IS_ENABLED(CONFIG_32BIT))
+> +		ret = sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_READ,
+> +				num_bytes, lower_32_bits(base_addr),
+> +				upper_32_bits(base_addr), 0, 0, 0);
+> +	else
+> +		ret = sbi_ecall(SBI_EXT_DBCN, SBI_EXT_DBCN_CONSOLE_READ,
+> +				num_bytes, base_addr, 0, 0, 0, 0);
+> +
+> +	return ret.error ? sbi_err_map_linux_errno(ret.error) : ret.value;
 
---agr2mntupn2nnz73
-Content-Type: application/pgp-signature; name="signature.asc"
+Same comment as above.
 
------BEGIN PGP SIGNATURE-----
+> +}
+> +
+>  void __init sbi_init(void)
+>  {
+>  	int ret;
+> @@ -612,6 +650,11 @@ void __init sbi_init(void)
+>  			sbi_srst_reboot_nb.priority = 192;
+>  			register_restart_handler(&sbi_srst_reboot_nb);
+>  		}
+> +		if ((sbi_spec_version >= sbi_mk_version(2, 0)) &&
+> +		    (sbi_probe_extension(SBI_EXT_DBCN) > 0)) {
+> +			pr_info("SBI DBCN extension detected\n");
+> +			sbi_debug_console_available = true;
+> +		}
+>  	} else {
+>  		__sbi_set_timer = __sbi_set_timer_v01;
+>  		__sbi_send_ipi	= __sbi_send_ipi_v01;
+> -- 
+> 2.34.1
+>
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmVbD+sACgkQj4D7WH0S
-/k4M/Qf/dfAUC9yPH7gGW18tXzxngnAj2z3nfmiXCogkUj6hv4iAQA3Z5vZ1HnuP
-Bz2Vk7uBC1BXA6hQgxqvkkk2XYpWB3j5hY83HvmGBSUDqe7AgPxHsg4mCK2OMikb
-fLNHm5khlE+xi+8bFanR3Jzu3gvTYPG2MMOY3yeU7A22+ZQAnvfKBTd4Sepo51oL
-VN0g/2ZLeXfUUDjQckaoNsOqi9Dnm2RNAQUtki+MNjwWpU0YHykcLLEndpqE6pLs
-+XRAncn0I1PBEP9EQ3dONyHd2dcP8enqoDNQEYHa/vIgioNRUCkOE4Jj/9KuLICp
-AlUpJYPNyUdu8LC2iQF3yMOecgWI/w==
-=fJuk
------END PGP SIGNATURE-----
+Otherwise,
 
---agr2mntupn2nnz73--
+Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
+
+Thanks,
+drew
