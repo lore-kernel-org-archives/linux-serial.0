@@ -2,58 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10866C54FB9
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Nov 2023 07:28:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 185F3C197A0
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Nov 2023 07:45:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232016AbjKTH2z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Nov 2023 02:28:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57890 "EHLO
+        id S229635AbjKTHpo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Nov 2023 02:45:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232013AbjKTH2y (ORCPT
+        with ESMTP id S229483AbjKTHpo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Nov 2023 02:28:54 -0500
+        Mon, 20 Nov 2023 02:45:44 -0500
 Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF46AB4;
-        Sun, 19 Nov 2023 23:28:50 -0800 (PST)
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-407da05f05aso11642105e9.3;
-        Sun, 19 Nov 2023 23:28:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C962FB4;
+        Sun, 19 Nov 2023 23:45:40 -0800 (PST)
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-40806e4106dso8115265e9.1;
+        Sun, 19 Nov 2023 23:45:40 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700465329; x=1701070129;
+        d=1e100.net; s=20230601; t=1700466339; x=1701071139;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KZNqz+wBWBJJ12rVukCOXqUb3qX7quzJeNS99ufTTW4=;
-        b=BTXF+2XQOKkYRXjARokJdUPgC8Miu2a0FLSwJgySAzlM96kWdck0Eal6/7MyLysCkF
-         eE9OfPli31+S8+2W1krBlSVDFoJR5jWn3eJWdb309ztcs8pau1yrnaYzVhI9QB3PV5XH
-         dh19SdAyv53IziKQAsMscf92+uF/Q4Kvdv2R6vU7GgRwYgTsDT+JI94x66NoapZzJgY+
-         wNRZdv5KlXsk3yHVE8DsdjQ3UznfkNECB4UvJLtThrFsxv4VDdzJceqSPCuUcAl9+y4J
-         1mHCIJ8mhE6DPmZSQokZkvt3cx4mVFV/5/FDwxbybg4TVJDw8pBf+AVCORKigV+Yvq1z
-         aDsQ==
-X-Gm-Message-State: AOJu0YwlXnn6jXGM7etUiUezrvEqi5FlzfKZ1gkYQ3MH2MpW2gSGcK/e
-        NjmHF8WCuY6y8eWSKI26UFLoINLmihZDsEJX
-X-Google-Smtp-Source: AGHT+IEm6nqX7KtI9/Ld7FC7T839/2AIJXptQZ9wd5HFqWPONqmZl0yeYpuG/qJsv5VIPqcBNc7msQ==
-X-Received: by 2002:a05:600c:5251:b0:401:bd2e:49fc with SMTP id fc17-20020a05600c525100b00401bd2e49fcmr5075723wmb.24.1700465329018;
-        Sun, 19 Nov 2023 23:28:49 -0800 (PST)
+        bh=9iPG+meBGpkxceVS3F6vB/et8ulW4BgxlRlyOQXry5Q=;
+        b=nk/4fzzcs6GRrk/XPRfrR6RO0VFeVwZG292XikSrET4Ehw/PDnRG9h8j4zotN7+A7Q
+         7Hmjb5+4vnqNC/s6YcA13e3yb2YgKBvtt4wAAMJQQZ2EtSKKTTEfgKA9hW1lNsbwDY2/
+         WHfbqQ42FNtSgmqjDqMG42WgQee61n3vTMZXhBFtuf9VE/QVXrohGXwc7jRw+AudTL9F
+         wzQDf8bHSkbDJ27q6nfLvxDFC/4sMJdcbgtj85ICQTUC5vAag7JHYin53Eyj0phBbnTo
+         +thS4WvWaaORd8oqn6Ve3CO4BQq1v5qUjL40zzu/yJz1TfHZBxs83GF1Op2o3My+FmsV
+         HSmQ==
+X-Gm-Message-State: AOJu0YxAx/bw4NvD7zbb6dNZb2bjmoTL8a9zBXg7g1nisHOY60+dooPe
+        6xEiA1LLNCoJnUBf4owzq4cAQ64EbyFiMReN
+X-Google-Smtp-Source: AGHT+IHT99AR1RGMDQ+ZFVlEXH1nxQplz8gq1lUq/FR53BOU9Z0fL5Xea7tdAsHEyz1ovK1egmchrw==
+X-Received: by 2002:a05:600c:1d18:b0:403:c70b:b688 with SMTP id l24-20020a05600c1d1800b00403c70bb688mr5163267wms.6.1700466338978;
+        Sun, 19 Nov 2023 23:45:38 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id x18-20020a05600c421200b00406443c8b4fsm16411683wmh.19.2023.11.19.23.28.48
+        by smtp.gmail.com with ESMTPSA id r5-20020a05600c458500b003fefaf299b6sm12561119wmo.38.2023.11.19.23.45.38
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 19 Nov 2023 23:28:48 -0800 (PST)
-Message-ID: <b4342c49-e1c4-459e-bbd0-fd63108a6754@kernel.org>
-Date:   Mon, 20 Nov 2023 08:28:47 +0100
+        Sun, 19 Nov 2023 23:45:38 -0800 (PST)
+Message-ID: <ea2fd8b3-95cf-4d50-8fc7-f1391b23a433@kernel.org>
+Date:   Mon, 20 Nov 2023 08:45:37 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dt-bindings: serial: fsl-linflexuart: change the
- maintainer email address
+Subject: Re: [PATCH v9] /proc/sysrq-trigger: accept multiple keys at once
 Content-Language: en-US
-To:     Chester Lin <clin@suse.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, Chester Lin <chester62515@gmail.com>,
-        NXP S32 Linux Team <s32@nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>
-References: <20231115235732.13633-1-clin@suse.com>
+To:     Tomas Mudrunka <tomas.mudrunka@gmail.com>
+Cc:     corbet@lwn.net, gregkh@linuxfoundation.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, rdunlap@infradead.org
+References: <670993bf-a8ef-4561-8213-6a37d0598d83@kernel.org>
+ <20231115103408.193561-1-tomas.mudrunka@gmail.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -97,20 +93,49 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20231115235732.13633-1-clin@suse.com>
+In-Reply-To: <20231115103408.193561-1-tomas.mudrunka@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 16. 11. 23, 0:57, Chester Lin wrote:
-> I am leaving SUSE so the current email address <clin@suse.com> will be
-> disabled soon. <chester62515@gmail.com> will be my new address for handling
-> emails, patches and pull requests from upstream and communities.
+On 15. 11. 23, 11:34, Tomas Mudrunka wrote:
+> Just for convenience.
+> This way we can do:
+> `echo _reisub > /proc/sysrq-trigger`
+> Instead of:
+> `for i in r e i s u b; do echo "$i" > /proc/sysrq-trigger; done;`
+> 
+> This can be very useful when trying to execute sysrq combo remotely
+> or from userspace. When sending keys in multiple separate writes,
+> userspace can be killed before whole combo is completed.
+> Therefore putting all keys in single write is more robust approach.
+> 
+> Signed-off-by: Tomas Mudrunka <tomas.mudrunka@gmail.com>
+> ---
+> V8 -> V9: Fixed english bit more
 
-Maybe add an entry to /.mailmap too?
+Please check my comments to v6 more carefully once again. Plus:
 
+> --- a/drivers/tty/sysrq.c
+> +++ b/drivers/tty/sysrq.c
+> @@ -1150,16 +1150,28 @@ EXPORT_SYMBOL(unregister_sysrq_key);
+>   #ifdef CONFIG_PROC_FS
+>   /*
+>    * writing 'C' to /proc/sysrq-trigger is like sysrq-C
+> + * Normally only the first character written is processed.
+
+Normally, <-- comma
+
+> + * If first character is underscore, all characters are processed.
+
+the first
+an underscore
+
+Maybe it would make sense to prepend "However, " to this very sentence?
+
+thanks,
 -- 
 js
 suse labs
