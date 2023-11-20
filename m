@@ -2,110 +2,67 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A740CC197A0
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Nov 2023 13:54:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A01C197A0
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Nov 2023 14:30:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233462AbjKTNyU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Nov 2023 08:54:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56522 "EHLO
+        id S233353AbjKTOar (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Nov 2023 09:30:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233538AbjKTNyI (ORCPT
+        with ESMTP id S233653AbjKTOaq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Nov 2023 08:54:08 -0500
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45D6A126;
-        Mon, 20 Nov 2023 05:53:21 -0800 (PST)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 11D731BF211;
-        Mon, 20 Nov 2023 13:53:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1700488400;
+        Mon, 20 Nov 2023 09:30:46 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2108136;
+        Mon, 20 Nov 2023 06:30:42 -0800 (PST)
+Date:   Mon, 20 Nov 2023 15:30:39 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1700490640;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=SBP5SEZ8e/heB3zUSBMQAlAbFxbFwRsOqsSWGhUKau4=;
-        b=CEd0dS2x4graR9O7oHTHHQP+korRq84mVAOxufTY4KIloqv230PxRAQzbXhl1L+CcWKjwS
-        jqjNpSUGpq2Fov+6LklflCXvhz7b0pOB24daWTPZYg/DLlSwfxlLt4UVFa53sgn91Ajmbh
-        SRjLQWaNWaP8DDKl7ff48C/qv+co/3/HJQX0/kZ9ucczQns/foDB8JW9o401ySgEHQC5fm
-        m4BGHAkbt0Q+IODgTrJi/A5cMC+KkEXLeo57TNyn5G7t2F/NVIRlMBxioi2y09DuJN+M2a
-        oOpPi7nEknfsx2pYdBVctkB7mVqWbzVFp0w9tmMcLpCcctPm0mbIgO91LlTcbQ==
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date:   Mon, 20 Nov 2023 14:53:19 +0100
-Subject: Re: [PATCH v3 6/6] tty: serial: amba-pl011: factor QDF2400 SoC
- erratum 44 out of probe
-Cc:     "Russell King" <linux@armlinux.org.uk>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Jiri Slaby" <jirislaby@kernel.org>,
-        "LKML" <linux-kernel@vger.kernel.org>,
-        "linux-serial" <linux-serial@vger.kernel.org>,
-        "Linus Walleij" <linus.walleij@linaro.org>,
-        =?utf-8?q?Gr=C3=A9gory_Clement?= <gregory.clement@bootlin.com>,
-        "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
-        "Thomas Petazzoni" <thomas.petazzoni@bootlin.com>,
-        "Vladimir Kondratiev" <vladimir.kondratiev@mobileye.com>,
-        "Tawfik Bayouk" <tawfik.bayouk@mobileye.com>
-To:     =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-From:   =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
-Message-Id: <CX3OTU62O1C4.1XI8WONTYYFU1@tleb-bootlin-xps13-01>
-X-Mailer: aerc 0.15.2
-References: <20231120-mbly-uart-v3-0-07ae35979f1f@bootlin.com>
- <20231120-mbly-uart-v3-6-07ae35979f1f@bootlin.com>
- <5c10e247-3fe-7455-a13-fde4c3cb0b4@linux.intel.com>
-In-Reply-To: <5c10e247-3fe-7455-a13-fde4c3cb0b4@linux.intel.com>
-X-GND-Sasl: theo.lebrun@bootlin.com
+        bh=pzHlHnI4SFnhkGX3Kin1WzRbq9IYRqP2MnYzoUAaEKI=;
+        b=n+fIfGfZPUT6M5QKQE1AvyjiYdgDNROHEOMoqYVQDqSWlTVGf8c+hCpeEvPYQII+vROy4H
+        UCyUspWnYDhs9jAJ/DQMOf6IBTBOKik1VbqvPkHmVDEnaYoy0RGKuh10rnf9PKibhjdhOI
+        x0dImiE3CAYVImJ+UFNHNVOaj6VXNn4+OYAC15zPQTF0kY1jOlnGHLNUMklqbpPJaiDkq+
+        hUbp0NgPh38H/91Jsa/HFM/1WW9tkqKVgZdBppc7p6xPsHikXqIz8UGnUc8CoSBH+hP/hL
+        aNMTt2xuaLKvKcRpoeD23+xM9NGgiBU5+8Dvi12zlnSLrT5F8uKM2Fx2vKo0xw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1700490640;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pzHlHnI4SFnhkGX3Kin1WzRbq9IYRqP2MnYzoUAaEKI=;
+        b=5/kzGng8ya+jY75vHP7fb2OixYhDJ/zjc6Q5INIdUJ9WDiHs3wHPTRiI53zK5Gz41N9VVi
+        Ucst14fkHxRZ5rAA==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     kernel test robot <oliver.sang@intel.com>
+Cc:     oe-lkp@lists.linux.dev, lkp@intel.com,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rcu@vger.kernel.org
+Subject: Re: [rt-devel:linux-6.6.y-rt] [printk]  78f4b59c6f:
+ BUG:kernel_failed_in_early-boot_stage,last_printk:early_console_in_setup_code
+Message-ID: <20231120143039.HvK0o_uj@linutronix.de>
+References: <202311161555.3ee16fc9-oliver.sang@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <202311161555.3ee16fc9-oliver.sang@intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+On 2023-11-16 15:43:38 [+0800], kernel test robot wrote:
+> Hello,
+Hi,
 
-On Mon Nov 20, 2023 at 10:55 AM CET, Ilpo J=C3=A4rvinen wrote:
-> On Mon, 20 Nov 2023, Th=C3=A9o Lebrun wrote:
->
-> > On this platform, different vendor data is used. That requires a
-> > compile-time check as we access (1) a global boolean & (2) our local
-> > vendor data. Both symbols are accessible only when
-> > CONFIG_ACPI_SPCR_TABLE is enabled.
-> >=20
-> > Factor the vendor data overriding to a separate function that is empty
-> > when CONFIG_ACPI_SPCR_TABLE is not defined.
-> >=20
-> > Suggested-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
-> > Signed-off-by: Th=C3=A9o Lebrun <theo.lebrun@bootlin.com>
-> > ---
-> >  drivers/tty/serial/amba-pl011.c | 25 ++++++++++++++++++-------
-> >  1 file changed, 18 insertions(+), 7 deletions(-)
-> >=20
-> > diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-=
-pl011.c
-> > index 4185d6fd243b..e08a32eb0ed1 100644
-> > --- a/drivers/tty/serial/amba-pl011.c
-> > +++ b/drivers/tty/serial/amba-pl011.c
-> > @@ -2874,6 +2874,22 @@ static int pl011_resume(struct device *dev)
-> > =20
-> >  static SIMPLE_DEV_PM_OPS(pl011_dev_pm_ops, pl011_suspend, pl011_resume=
-);
-> > =20
-> > +#ifdef CONFIG_ACPI_SPCR_TABLE
-> > +static void qpdf2400_erratum44_workaround(struct device *dev,
-> > +					  struct uart_amba_port *uap)
-> > +{
-> > +	if (qdf2400_e44_present)
->
-> This should be !qdf2400_e44_present.
+> kernel test robot noticed "BUG:kernel_failed_in_early-boot_stage,last_printk:early_console_in_setup_code" on:
+> 
+> commit: 78f4b59c6faa7afe24b973210151d4a82b5669eb ("printk: Update the printk series.")
+> https://git.kernel.org/cgit/linux/kernel/git/rt/linux-rt-devel.git linux-6.6.y-rt
 
-Completely right! I reversed the if-logic to see how it looked & I
-forgot negating the condition when going back to the current shape.
-I've got the fix ready for a v4. You've got some good eyes, thanks.
+as in the previous report, it is the 32bit printk issue. Will be fixed
+in next update.
+Thank you.
 
-I'll wait a bit to see if there are any other review & avoid spamming
-the maintainers.
-
-Thanks,
-
---
-Th=C3=A9o Lebrun, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Sebastian
