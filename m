@@ -2,54 +2,58 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35FFEC54FB9
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Nov 2023 07:27:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10866C54FB9
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Nov 2023 07:28:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231997AbjKTH1T (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Nov 2023 02:27:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54520 "EHLO
+        id S232016AbjKTH2z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Nov 2023 02:28:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232016AbjKTH1S (ORCPT
+        with ESMTP id S232013AbjKTH2y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Nov 2023 02:27:18 -0500
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148CBB4
-        for <linux-serial@vger.kernel.org>; Sun, 19 Nov 2023 23:27:15 -0800 (PST)
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4079ed65471so14589055e9.1
-        for <linux-serial@vger.kernel.org>; Sun, 19 Nov 2023 23:27:15 -0800 (PST)
+        Mon, 20 Nov 2023 02:28:54 -0500
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF46AB4;
+        Sun, 19 Nov 2023 23:28:50 -0800 (PST)
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-407da05f05aso11642105e9.3;
+        Sun, 19 Nov 2023 23:28:50 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700465233; x=1701070033;
+        d=1e100.net; s=20230601; t=1700465329; x=1701070129;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mdYoEppPl5Jmz+NQ5h8LTrpieX3q1UfcjS/z0GXvjBo=;
-        b=uo3ioHhmY42GlX0k7Pom6jBeY8ZB3/OvmJBqDWzezKd336iC97D6sglCZ5PEcX0uuQ
-         ijgAIaD1Q5jLafHkN9hXBWj/HV/V+hjuXUn4vBSVLDyMfyd/O0iLtCt4DPDwOyOIKkVV
-         BOkZaNnHmzktwAMdRqQ2dVO/gMiU9y2gn8/p81eQhn7dw++mO++BTFkVMx69107+g5XN
-         67yteWhAJ65KhmoY7Ds7iJ/rHkEe2tA06hWxrO25kgRMivQSMgUdQypAw1H7rEbsh7vK
-         373S13OAElng5RRpqIGBS/qzitz+GaYKGg6aS1sTK9e/+SXWvDQBjqg69iNSQ3LMcXT0
-         vx/Q==
-X-Gm-Message-State: AOJu0YxDLxfg39MyeQnACrMi5vdMM4eCuztfcAQO62gtAJovVoMD9kMb
-        NzxW04T/prq/wJ5MxpDhVyU=
-X-Google-Smtp-Source: AGHT+IG3SX6At7MD8do7fLdwnVUcv9bHo6ye0Fhe5Fn7P/SML7Txsz/nFkkflWe6OHEXVCw+hI94Bg==
-X-Received: by 2002:a05:600c:358d:b0:406:849f:f3cd with SMTP id p13-20020a05600c358d00b00406849ff3cdmr5733153wmq.29.1700465233181;
-        Sun, 19 Nov 2023 23:27:13 -0800 (PST)
+        bh=KZNqz+wBWBJJ12rVukCOXqUb3qX7quzJeNS99ufTTW4=;
+        b=BTXF+2XQOKkYRXjARokJdUPgC8Miu2a0FLSwJgySAzlM96kWdck0Eal6/7MyLysCkF
+         eE9OfPli31+S8+2W1krBlSVDFoJR5jWn3eJWdb309ztcs8pau1yrnaYzVhI9QB3PV5XH
+         dh19SdAyv53IziKQAsMscf92+uF/Q4Kvdv2R6vU7GgRwYgTsDT+JI94x66NoapZzJgY+
+         wNRZdv5KlXsk3yHVE8DsdjQ3UznfkNECB4UvJLtThrFsxv4VDdzJceqSPCuUcAl9+y4J
+         1mHCIJ8mhE6DPmZSQokZkvt3cx4mVFV/5/FDwxbybg4TVJDw8pBf+AVCORKigV+Yvq1z
+         aDsQ==
+X-Gm-Message-State: AOJu0YwlXnn6jXGM7etUiUezrvEqi5FlzfKZ1gkYQ3MH2MpW2gSGcK/e
+        NjmHF8WCuY6y8eWSKI26UFLoINLmihZDsEJX
+X-Google-Smtp-Source: AGHT+IEm6nqX7KtI9/Ld7FC7T839/2AIJXptQZ9wd5HFqWPONqmZl0yeYpuG/qJsv5VIPqcBNc7msQ==
+X-Received: by 2002:a05:600c:5251:b0:401:bd2e:49fc with SMTP id fc17-20020a05600c525100b00401bd2e49fcmr5075723wmb.24.1700465329018;
+        Sun, 19 Nov 2023 23:28:49 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id x18-20020a05600c421200b00406443c8b4fsm16411683wmh.19.2023.11.19.23.27.12
+        by smtp.gmail.com with ESMTPSA id x18-20020a05600c421200b00406443c8b4fsm16411683wmh.19.2023.11.19.23.28.48
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 19 Nov 2023 23:27:12 -0800 (PST)
-Message-ID: <dfc69d21-1c09-4cff-ac11-21857278f6e0@kernel.org>
-Date:   Mon, 20 Nov 2023 08:27:12 +0100
+        Sun, 19 Nov 2023 23:28:48 -0800 (PST)
+Message-ID: <b4342c49-e1c4-459e-bbd0-fd63108a6754@kernel.org>
+Date:   Mon, 20 Nov 2023 08:28:47 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: xilinx_uartps: Fix kernel doc about .remove()'s
- return code
+Subject: Re: [PATCH] dt-bindings: serial: fsl-linflexuart: change the
+ maintainer email address
 Content-Language: en-US
-To:     =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Michal Simek <michal.simek@amd.com>, kernel@pengutronix.de,
-        linux-serial@vger.kernel.org
-References: <20231117101236.878008-1-u.kleine-koenig@pengutronix.de>
+To:     Chester Lin <clin@suse.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, Chester Lin <chester62515@gmail.com>,
+        NXP S32 Linux Team <s32@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>
+References: <20231115235732.13633-1-clin@suse.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -93,34 +97,20 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20231117101236.878008-1-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20231115235732.13633-1-clin@suse.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 17. 11. 23, 11:12, Uwe Kleine-König wrote:
-> Since the driver was converted to use .remove_new() the return function
-> doesn't return a value any more. So remove the obsolete documentation
-> about the return value.
-> 
-> Reported-by: Michal Simek <michal.simek@amd.com>
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> ---
-> Hello,
-> 
-> the patch converting to .remove_new is not yet applied, so I didn't
-> reference its commit id. It's available at
-> 
-> 	https://lore.kernel.org/linux-serial/20231110152927.70601-53-u.kleine-koenig@pengutronix.de
-> 
-> and obviously this patch dropping the comment should get applied after
-> the conversion to void.
+On 16. 11. 23, 0:57, Chester Lin wrote:
+> I am leaving SUSE so the current email address <clin@suse.com> will be
+> disabled soon. <chester62515@gmail.com> will be my new address for handling
+> emails, patches and pull requests from upstream and communities.
 
-So perhaps you squash and resend :)?
+Maybe add an entry to /.mailmap too?
 
-thanks,
 -- 
 js
 suse labs
