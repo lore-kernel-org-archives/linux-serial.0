@@ -2,54 +2,53 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB3A6C54E76
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Nov 2023 11:32:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2100DC197A0
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Nov 2023 11:35:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233132AbjKTLcr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Nov 2023 06:32:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37000 "EHLO
+        id S232953AbjKTLfh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Nov 2023 06:35:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232649AbjKTLcq (ORCPT
+        with ESMTP id S233257AbjKTLfR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Nov 2023 06:32:46 -0500
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF4E7A0;
-        Mon, 20 Nov 2023 03:32:41 -0800 (PST)
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-40859c466efso15020045e9.3;
-        Mon, 20 Nov 2023 03:32:41 -0800 (PST)
+        Mon, 20 Nov 2023 06:35:17 -0500
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B61A210E7
+        for <linux-serial@vger.kernel.org>; Mon, 20 Nov 2023 03:35:12 -0800 (PST)
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-50aab0ca90aso1568617e87.0
+        for <linux-serial@vger.kernel.org>; Mon, 20 Nov 2023 03:35:12 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700479960; x=1701084760;
+        d=1e100.net; s=20230601; t=1700480111; x=1701084911;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vuwKK9zbBGA1j3WJbpa0jMyRPFba9Ryze3r5vf0g4Cs=;
-        b=BPJn4DYFql8OLZ56jlnSiFkCB5U51W4EuHly4FXZWlNhhKP05R4GOaTYs8R5kkYu4U
-         G2NLMalZHAChA1hUSsCABBzOEefGp/1yLb5g7uu5ZY94qevOIFoAMW5G+EJV0aI4XrcD
-         +CIaSNbvgoJqSRxMh2/VTUSQ3zyGM2Dr8PfUNqYhjQLi5teMzxQPLewtJpBwpv4MYMSE
-         0ZCXmK+ZnAcx+/Tmgvub4uifANfi7i9yTRzvyjSbFvUIvrD1/vaZP6JY/UWB8FVEcwdb
-         EbIeaoWa+Iu3rDXa6oIv2GDcX3Ve6Zs3p7a/lWmkGUctoSmrjB8SwNokAM+X8xNmoQUr
-         O0NQ==
-X-Gm-Message-State: AOJu0Yw8YGuCVk0hYsbVAWBpfGBPfMWLtqJZC1+e/FjK3rltVu3FRaQ1
-        YLxdsfdEwSKCh+QFwiqa2pE=
-X-Google-Smtp-Source: AGHT+IHOGZbApI3IGgTIFSL6AeS/rDS2qM+xHSC+L2OP+kJ7Q4lcu0O8TsbevwEw9mUw+FtLFpP++w==
-X-Received: by 2002:a05:600c:4f01:b0:40a:5b3c:403 with SMTP id l1-20020a05600c4f0100b0040a5b3c0403mr5720572wmq.14.1700479959991;
-        Mon, 20 Nov 2023 03:32:39 -0800 (PST)
+        bh=H5ps5LajbJMW9798OKQjb5lnjbZNVP4xDrAoAw6Uu58=;
+        b=kF4o2SUJpz/gxE/ZBHWEuXZe/+V9dm2Ic92T4dTzQwEDqzr14TSiPJPZpVWOr5EmHf
+         pFr42Kcrq1g5JoKpjYHHPQr6Bs7i+t5I+7gTqOYZtwCngJIUX56Aqdmpr86iLhvhpzlD
+         twej4EInb2sM0+fs47+UJI+q33s6jB6h6du3Dc+OzIXYMrMN7mWxW/64BAN33myE7MeE
+         q2XsvZzkIWzkBRTLEtVIAGbB1y1Mx7ZxYPUywDyAdwMB4vGGacdoZ1sGVIaCdjYg5tF9
+         mU6ZEqLoAK6JKOB/Bm8rAxhIuCDl117W4LCPSx2NfyTsxgujBSv/+wi3RW/JXcjlPKE9
+         ixVQ==
+X-Gm-Message-State: AOJu0YyWL7J4O3/gV33Hn6l7OKWV2pfFOpgK/7xU7yaepKpNcSjd50Nf
+        bGpYbqO4CHumVvUY9u9NAYQ=
+X-Google-Smtp-Source: AGHT+IHEeoFMG2Ee/4ZuKLkXO6apoEy6REAmns6lNR67HRbaQIuwAetfcozv8BKBQrmWwDDIpRB6EA==
+X-Received: by 2002:a05:651c:2209:b0:2c8:87fe:2f4e with SMTP id y9-20020a05651c220900b002c887fe2f4emr148631ljq.8.1700480110606;
+        Mon, 20 Nov 2023 03:35:10 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id fc16-20020a05600c525000b004054dcbf92asm13067803wmb.20.2023.11.20.03.32.39
+        by smtp.gmail.com with ESMTPSA id n23-20020a7bcbd7000000b004064ac107cfsm12999941wmi.39.2023.11.20.03.35.10
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Nov 2023 03:32:39 -0800 (PST)
-Message-ID: <1974a5bb-cd08-4e8c-b1f5-ea0a4aaf8247@kernel.org>
-Date:   Mon, 20 Nov 2023 12:32:38 +0100
+        Mon, 20 Nov 2023 03:35:10 -0800 (PST)
+Message-ID: <a4df43c6-82a7-4fca-a049-ffe72aa7ce2a@kernel.org>
+Date:   Mon, 20 Nov 2023 12:35:09 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v10] /proc/sysrq-trigger: accept multiple keys at once
+Subject: Re: [PATCH v2] tty: serial: uartlite: Fix kernel doc warning
 Content-Language: en-US
-To:     Tomas Mudrunka <tomas.mudrunka@gmail.com>
-Cc:     corbet@lwn.net, gregkh@linuxfoundation.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, rdunlap@infradead.org
-References: <ea2fd8b3-95cf-4d50-8fc7-f1391b23a433@kernel.org>
- <20231120111451.527952-1-tomas.mudrunka@gmail.com>
+To:     Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>,
+        linux-serial@vger.kernel.org
+Cc:     jacmet@sunsite.dk, gregkh@linuxfoundation.org,
+        sean.anderson@seco.com
+References: <20231120090905.24222-1-shubhrajyoti.datta@amd.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -93,25 +92,32 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20231120111451.527952-1-tomas.mudrunka@gmail.com>
+In-Reply-To: <20231120090905.24222-1-shubhrajyoti.datta@amd.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 20. 11. 23, 12:14, Tomas Mudrunka wrote:
-> This way we can do:
-> `echo _reisub > /proc/sysrq-trigger`
-> Instead of:
-> `for i in r e i s u b; do echo "$i" > /proc/sysrq-trigger; done;`
+On 20. 11. 23, 10:09, Shubhrajyoti Datta wrote:
+> Fix the below warning
+> drivers/tty/serial/uartlite.c:79: warning: Function parameter or member 'reg_ops' not described in 'uartlite_data'
+> drivers/tty/serial/uartlite.c:79: warning: Function parameter or member 'clk' not described in 'uartlite_data'
+> drivers/tty/serial/uartlite.c:79: warning: Function parameter or member 'baud' not described in 'uartlite_data'
+> drivers/tty/serial/uartlite.c:79: warning: Function parameter or member 'cflags' not described in 'uartlite_data'
 > 
-> This can be very useful when trying to execute sysrq combo remotely
-> or from userspace. When sending keys in multiple separate writes,
-> userspace (eg. bash or ssh) can be killed before whole combo is completed.
-> Therefore putting all keys in single write is more robust approach.
+> Reported-by: kernel test robot <yujie.liu@intel.com>
+> Closes: https://lore.kernel.org/r/202311061059.NUeUar9b-lkp@intel.com/
+> Fixes: ea017f5853e9 ("tty: serial: uartlite: Prevent changing fixed parameters")
+> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
 > 
-> Signed-off-by: Tomas Mudrunka <tomas.mudrunka@gmail.com>
+> ---
+> 
+> Changes in v2:
+> Update doc for uartlite_data
+
+Despite I don't understand this comment, I see you fixed what I asked 
+for, so:
 
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
