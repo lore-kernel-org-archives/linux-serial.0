@@ -2,41 +2,41 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF8B3C197A0
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Nov 2023 09:48:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0044C5AE5C
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Nov 2023 09:48:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232558AbjKTJsn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S232566AbjKTJsn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Mon, 20 Nov 2023 04:48:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44722 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232537AbjKTJsm (ORCPT
+        with ESMTP id S232538AbjKTJsm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Mon, 20 Nov 2023 04:48:42 -0500
 Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A92A7;
-        Mon, 20 Nov 2023 01:48:36 -0800 (PST)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 8DDBD20010;
-        Mon, 20 Nov 2023 09:48:34 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C85CA;
+        Mon, 20 Nov 2023 01:48:37 -0800 (PST)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id D27F72001B;
+        Mon, 20 Nov 2023 09:48:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1700473715;
+        t=1700473716;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=AyPrjizUA7AoOK79nBkVWN1DIDJ98is+DWqbKYc4P3M=;
-        b=hFlT3k7DB3UoJmcfiHmAXAjuOA9aoEVSm8n++hKgqS2yksAMBGY0P2IZwwlzZnxoB9D16y
-        akH3/UkG8RnV2NEUFwA3Z02mhG+ijZ38Dp7BF1yJwwwaWnPOdBHu11Y8ZvXqkOmSkCeiii
-        dEgMEO9TGNmUNZAtvw6RBYtfCDGuNDXLmpHT89Doj6ThYjKI0vKz55Y0S3bDrqdi/D8CsA
-        53Q+CE+bb54YBT8c1TezIomr9tZIvPAH29uZwigJTO3QOmLFRWjS21DRnHBPeHvcTXu51u
-        FxtmYwWL0QcZc86esMLI9dwVA9rP0M3dw5epMUpNEXsWMWCFIIHd+YLUJKxqOQ==
+        bh=17GEQHKW3hft8e8aie/LHPht5WTW7K+RQAvTRzHMMlw=;
+        b=pHwSSmE1349uTt5g8lkn888ohC+eL1IRMaWGZ5cvdU8VP9yWC4kNpbTvpsb46mnkkfb9o/
+        ZNtCslgwO0cLDP2/11sNHD5k+F08Nkd2KpIc78c9X/BoQO+LTvowg44ZjbxqOR919jTRhL
+        GFrtSq0Sy+z7ZXgpvlPc9Ad0+xFLZWNKh257plmC5slzNaJDRpOk+u7+3m8fMqcrZLO+mL
+        Gm4MWqg3zD+8v0AaCdA6CA+hsmK596JackRJKc/PMUvtgI9yX7ov85k3edLEMD1d97RsbD
+        bS/dBAwYEg1pmKoOeye41DUqM5pp6pjkB9HxvCGviKKaAy49AuxQtEu23uKQCw==
 From:   =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
-Date:   Mon, 20 Nov 2023 10:48:25 +0100
-Subject: [PATCH v3 2/6] tty: serial: amba: Use linux/bits.h macros for
- constant declarations
+Date:   Mon, 20 Nov 2023 10:48:27 +0100
+Subject: [PATCH v3 4/6] tty: serial: amba-pl011: replace TIOCMBIT macros by
+ static functions
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20231120-mbly-uart-v3-2-07ae35979f1f@bootlin.com>
+Message-Id: <20231120-mbly-uart-v3-4-07ae35979f1f@bootlin.com>
 References: <20231120-mbly-uart-v3-0-07ae35979f1f@bootlin.com>
 In-Reply-To: <20231120-mbly-uart-v3-0-07ae35979f1f@bootlin.com>
 To:     Russell King <linux@armlinux.org.uk>,
@@ -57,293 +57,101 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The driver uses bit shifts and hexadecimal expressions to declare
-constants. Replace that with the BIT() & FIELD_PREP_CONST() macros to
-clarify intent.
+The driver uses two TIOCMBIT macros inside pl011_{get,set}_mctrl to
+simplify the logic. Those look scary to checkpatch because they contain
+ifs without do-while loops.
+
+Avoid the macros by creating small equivalent static functions; that
+lets the compiler do its type checking & avoids checkpatch errors.
+
+For the second instance __assign_bit is not usable because it deals with
+unsigned long pointers whereas we have an unsigned int in
+pl011_set_mctrl.
 
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 Signed-off-by: Théo Lebrun <theo.lebrun@bootlin.com>
 ---
- include/linux/amba/serial.h | 247 ++++++++++++++++++++++----------------------
- 1 file changed, 126 insertions(+), 121 deletions(-)
+ drivers/tty/serial/amba-pl011.c | 45 ++++++++++++++++++++++-------------------
+ 1 file changed, 24 insertions(+), 21 deletions(-)
 
-diff --git a/include/linux/amba/serial.h b/include/linux/amba/serial.h
-index 27003ec52114..d179f7161110 100644
---- a/include/linux/amba/serial.h
-+++ b/include/linux/amba/serial.h
-@@ -10,6 +10,7 @@
- #ifndef ASM_ARM_HARDWARE_SERIAL_AMBA_H
- #define ASM_ARM_HARDWARE_SERIAL_AMBA_H
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 3beac358909f..cf9aefe2fd28 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1594,6 +1594,12 @@ static unsigned int pl011_tx_empty(struct uart_port *port)
+ 							0 : TIOCSER_TEMT;
+ }
  
-+#include <linux/bits.h>
- #include <linux/types.h>
++static void pl011_maybe_set_bit(bool cond, unsigned int *ptr, unsigned int mask)
++{
++	if (cond)
++		*ptr |= mask;
++}
++
+ static unsigned int pl011_get_mctrl(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap =
+@@ -1601,18 +1607,22 @@ static unsigned int pl011_get_mctrl(struct uart_port *port)
+ 	unsigned int result = 0;
+ 	unsigned int status = pl011_read(uap, REG_FR);
  
- /* -------------------------------------------------------------------------------
-@@ -70,138 +71,142 @@
- #define ZX_UART011_ICR		0x4c
- #define ZX_UART011_DMACR	0x50
+-#define TIOCMBIT(uartbit, tiocmbit)	\
+-	if (status & uartbit)		\
+-		result |= tiocmbit
++	pl011_maybe_set_bit(status & UART01x_FR_DCD, &result, TIOCM_CAR);
++	pl011_maybe_set_bit(status & uap->vendor->fr_dsr, &result, TIOCM_DSR);
++	pl011_maybe_set_bit(status & uap->vendor->fr_cts, &result, TIOCM_CTS);
++	pl011_maybe_set_bit(status & uap->vendor->fr_ri, &result, TIOCM_RNG);
  
--#define UART011_DR_OE		(1 << 11)
--#define UART011_DR_BE		(1 << 10)
--#define UART011_DR_PE		(1 << 9)
--#define UART011_DR_FE		(1 << 8)
--
--#define UART01x_RSR_OE		0x08
--#define UART01x_RSR_BE		0x04
--#define UART01x_RSR_PE		0x02
--#define UART01x_RSR_FE		0x01
--
--#define UART011_FR_RI		0x100
--#define UART011_FR_TXFE		0x080
--#define UART011_FR_RXFF		0x040
--#define UART01x_FR_TXFF		0x020
--#define UART01x_FR_RXFE		0x010
--#define UART01x_FR_BUSY		0x008
--#define UART01x_FR_DCD		0x004
--#define UART01x_FR_DSR		0x002
--#define UART01x_FR_CTS		0x001
-+#define UART011_DR_OE		BIT(11)
-+#define UART011_DR_BE		BIT(10)
-+#define UART011_DR_PE		BIT(9)
-+#define UART011_DR_FE		BIT(8)
-+
-+#define UART01x_RSR_OE		BIT(3)
-+#define UART01x_RSR_BE		BIT(2)
-+#define UART01x_RSR_PE		BIT(1)
-+#define UART01x_RSR_FE		BIT(0)
-+
-+#define UART011_FR_RI		BIT(8)
-+#define UART011_FR_TXFE		BIT(7)
-+#define UART011_FR_RXFF		BIT(6)
-+#define UART01x_FR_TXFF		BIT(5)
-+#define UART01x_FR_RXFE		BIT(4)
-+#define UART01x_FR_BUSY		BIT(3)
-+#define UART01x_FR_DCD		BIT(2)
-+#define UART01x_FR_DSR		BIT(1)
-+#define UART01x_FR_CTS		BIT(0)
- #define UART01x_FR_TMSK		(UART01x_FR_TXFF + UART01x_FR_BUSY)
+-	TIOCMBIT(UART01x_FR_DCD, TIOCM_CAR);
+-	TIOCMBIT(uap->vendor->fr_dsr, TIOCM_DSR);
+-	TIOCMBIT(uap->vendor->fr_cts, TIOCM_CTS);
+-	TIOCMBIT(uap->vendor->fr_ri, TIOCM_RNG);
+-#undef TIOCMBIT
+ 	return result;
+ }
  
- /*
-  * Some bits of Flag Register on ZTE device have different position from
-  * standard ones.
-  */
--#define ZX_UART01x_FR_BUSY	0x100
--#define ZX_UART01x_FR_DSR	0x008
--#define ZX_UART01x_FR_CTS	0x002
--#define ZX_UART011_FR_RI	0x001
--
--#define UART011_CR_CTSEN	0x8000	/* CTS hardware flow control */
--#define UART011_CR_RTSEN	0x4000	/* RTS hardware flow control */
--#define UART011_CR_OUT2		0x2000	/* OUT2 */
--#define UART011_CR_OUT1		0x1000	/* OUT1 */
--#define UART011_CR_RTS		0x0800	/* RTS */
--#define UART011_CR_DTR		0x0400	/* DTR */
--#define UART011_CR_RXE		0x0200	/* receive enable */
--#define UART011_CR_TXE		0x0100	/* transmit enable */
--#define UART011_CR_LBE		0x0080	/* loopback enable */
--#define UART010_CR_RTIE		0x0040
--#define UART010_CR_TIE		0x0020
--#define UART010_CR_RIE		0x0010
--#define UART010_CR_MSIE		0x0008
--#define ST_UART011_CR_OVSFACT	0x0008	/* Oversampling factor */
--#define UART01x_CR_IIRLP	0x0004	/* SIR low power mode */
--#define UART01x_CR_SIREN	0x0002	/* SIR enable */
--#define UART01x_CR_UARTEN	0x0001	/* UART enable */
--
--#define UART011_LCRH_SPS	0x80
-+#define ZX_UART01x_FR_BUSY	BIT(8)
-+#define ZX_UART01x_FR_DSR	BIT(3)
-+#define ZX_UART01x_FR_CTS	BIT(1)
-+#define ZX_UART011_FR_RI	BIT(0)
++static void pl011_assign_bit(bool cond, unsigned int *ptr, unsigned int mask)
++{
++	if (cond)
++		*ptr |= mask;
++	else
++		*ptr &= ~mask;
++}
 +
-+#define UART011_CR_CTSEN	BIT(15)	/* CTS hardware flow control */
-+#define UART011_CR_RTSEN	BIT(14)	/* RTS hardware flow control */
-+#define UART011_CR_OUT2		BIT(13)	/* OUT2 */
-+#define UART011_CR_OUT1		BIT(12)	/* OUT1 */
-+#define UART011_CR_RTS		BIT(11)	/* RTS */
-+#define UART011_CR_DTR		BIT(10)	/* DTR */
-+#define UART011_CR_RXE		BIT(9)	/* receive enable */
-+#define UART011_CR_TXE		BIT(8)	/* transmit enable */
-+#define UART011_CR_LBE		BIT(7)	/* loopback enable */
-+#define UART010_CR_RTIE		BIT(6)
-+#define UART010_CR_TIE		BIT(5)
-+#define UART010_CR_RIE		BIT(4)
-+#define UART010_CR_MSIE		BIT(3)
-+#define ST_UART011_CR_OVSFACT	BIT(3)	/* Oversampling factor */
-+#define UART01x_CR_IIRLP	BIT(2)	/* SIR low power mode */
-+#define UART01x_CR_SIREN	BIT(1)	/* SIR enable */
-+#define UART01x_CR_UARTEN	BIT(0)	/* UART enable */
-+
-+#define UART011_LCRH_SPS	BIT(7)
- #define UART01x_LCRH_WLEN_8	0x60
- #define UART01x_LCRH_WLEN_7	0x40
- #define UART01x_LCRH_WLEN_6	0x20
- #define UART01x_LCRH_WLEN_5	0x00
--#define UART01x_LCRH_FEN	0x10
--#define UART01x_LCRH_STP2	0x08
--#define UART01x_LCRH_EPS	0x04
--#define UART01x_LCRH_PEN	0x02
--#define UART01x_LCRH_BRK	0x01
--
--#define ST_UART011_DMAWM_RX_1	(0 << 3)
--#define ST_UART011_DMAWM_RX_2	(1 << 3)
--#define ST_UART011_DMAWM_RX_4	(2 << 3)
--#define ST_UART011_DMAWM_RX_8	(3 << 3)
--#define ST_UART011_DMAWM_RX_16	(4 << 3)
--#define ST_UART011_DMAWM_RX_32	(5 << 3)
--#define ST_UART011_DMAWM_RX_48	(6 << 3)
--#define ST_UART011_DMAWM_TX_1	0
--#define ST_UART011_DMAWM_TX_2	1
--#define ST_UART011_DMAWM_TX_4	2
--#define ST_UART011_DMAWM_TX_8	3
--#define ST_UART011_DMAWM_TX_16	4
--#define ST_UART011_DMAWM_TX_32	5
--#define ST_UART011_DMAWM_TX_48	6
--
--#define UART010_IIR_RTIS	0x08
--#define UART010_IIR_TIS		0x04
--#define UART010_IIR_RIS		0x02
--#define UART010_IIR_MIS		0x01
--
--#define UART011_IFLS_RX1_8	(0 << 3)
--#define UART011_IFLS_RX2_8	(1 << 3)
--#define UART011_IFLS_RX4_8	(2 << 3)
--#define UART011_IFLS_RX6_8	(3 << 3)
--#define UART011_IFLS_RX7_8	(4 << 3)
--#define UART011_IFLS_TX1_8	(0 << 0)
--#define UART011_IFLS_TX2_8	(1 << 0)
--#define UART011_IFLS_TX4_8	(2 << 0)
--#define UART011_IFLS_TX6_8	(3 << 0)
--#define UART011_IFLS_TX7_8	(4 << 0)
-+#define UART01x_LCRH_FEN	BIT(4)
-+#define UART01x_LCRH_STP2	BIT(3)
-+#define UART01x_LCRH_EPS	BIT(2)
-+#define UART01x_LCRH_PEN	BIT(1)
-+#define UART01x_LCRH_BRK	BIT(0)
-+
-+#define ST_UART011_DMAWM_RX	GENMASK(5, 3)
-+#define ST_UART011_DMAWM_RX_1	FIELD_PREP_CONST(ST_UART011_DMAWM_RX, 0)
-+#define ST_UART011_DMAWM_RX_2	FIELD_PREP_CONST(ST_UART011_DMAWM_RX, 1)
-+#define ST_UART011_DMAWM_RX_4	FIELD_PREP_CONST(ST_UART011_DMAWM_RX, 2)
-+#define ST_UART011_DMAWM_RX_8	FIELD_PREP_CONST(ST_UART011_DMAWM_RX, 3)
-+#define ST_UART011_DMAWM_RX_16	FIELD_PREP_CONST(ST_UART011_DMAWM_RX, 4)
-+#define ST_UART011_DMAWM_RX_32	FIELD_PREP_CONST(ST_UART011_DMAWM_RX, 5)
-+#define ST_UART011_DMAWM_RX_48	FIELD_PREP_CONST(ST_UART011_DMAWM_RX, 6)
-+#define ST_UART011_DMAWM_TX	GENMASK(2, 0)
-+#define ST_UART011_DMAWM_TX_1	FIELD_PREP_CONST(ST_UART011_DMAWM_TX, 0)
-+#define ST_UART011_DMAWM_TX_2	FIELD_PREP_CONST(ST_UART011_DMAWM_TX, 1)
-+#define ST_UART011_DMAWM_TX_4	FIELD_PREP_CONST(ST_UART011_DMAWM_TX, 2)
-+#define ST_UART011_DMAWM_TX_8	FIELD_PREP_CONST(ST_UART011_DMAWM_TX, 3)
-+#define ST_UART011_DMAWM_TX_16	FIELD_PREP_CONST(ST_UART011_DMAWM_TX, 4)
-+#define ST_UART011_DMAWM_TX_32	FIELD_PREP_CONST(ST_UART011_DMAWM_TX, 5)
-+#define ST_UART011_DMAWM_TX_48	FIELD_PREP_CONST(ST_UART011_DMAWM_TX, 6)
-+
-+#define UART010_IIR_RTIS	BIT(3)
-+#define UART010_IIR_TIS		BIT(2)
-+#define UART010_IIR_RIS		BIT(1)
-+#define UART010_IIR_MIS		BIT(0)
-+
-+#define UART011_IFLS_RXIFLSEL	GENMASK(5, 3)
-+#define UART011_IFLS_RX1_8	FIELD_PREP_CONST(UART011_IFLS_RXIFLSEL, 0)
-+#define UART011_IFLS_RX2_8	FIELD_PREP_CONST(UART011_IFLS_RXIFLSEL, 1)
-+#define UART011_IFLS_RX4_8	FIELD_PREP_CONST(UART011_IFLS_RXIFLSEL, 2)
-+#define UART011_IFLS_RX6_8	FIELD_PREP_CONST(UART011_IFLS_RXIFLSEL, 3)
-+#define UART011_IFLS_RX7_8	FIELD_PREP_CONST(UART011_IFLS_RXIFLSEL, 4)
-+#define UART011_IFLS_TXIFLSEL	GENMASK(2, 0)
-+#define UART011_IFLS_TX1_8	FIELD_PREP_CONST(UART011_IFLS_TXIFLSEL, 0)
-+#define UART011_IFLS_TX2_8	FIELD_PREP_CONST(UART011_IFLS_TXIFLSEL, 1)
-+#define UART011_IFLS_TX4_8	FIELD_PREP_CONST(UART011_IFLS_TXIFLSEL, 2)
-+#define UART011_IFLS_TX6_8	FIELD_PREP_CONST(UART011_IFLS_TXIFLSEL, 3)
-+#define UART011_IFLS_TX7_8	FIELD_PREP_CONST(UART011_IFLS_TXIFLSEL, 4)
- /* special values for ST vendor with deeper fifo */
--#define UART011_IFLS_RX_HALF	(5 << 3)
--#define UART011_IFLS_TX_HALF	(5 << 0)
--
--#define UART011_OEIM		(1 << 10)	/* overrun error interrupt mask */
--#define UART011_BEIM		(1 << 9)	/* break error interrupt mask */
--#define UART011_PEIM		(1 << 8)	/* parity error interrupt mask */
--#define UART011_FEIM		(1 << 7)	/* framing error interrupt mask */
--#define UART011_RTIM		(1 << 6)	/* receive timeout interrupt mask */
--#define UART011_TXIM		(1 << 5)	/* transmit interrupt mask */
--#define UART011_RXIM		(1 << 4)	/* receive interrupt mask */
--#define UART011_DSRMIM		(1 << 3)	/* DSR interrupt mask */
--#define UART011_DCDMIM		(1 << 2)	/* DCD interrupt mask */
--#define UART011_CTSMIM		(1 << 1)	/* CTS interrupt mask */
--#define UART011_RIMIM		(1 << 0)	/* RI interrupt mask */
--
--#define UART011_OEIS		(1 << 10)	/* overrun error interrupt status */
--#define UART011_BEIS		(1 << 9)	/* break error interrupt status */
--#define UART011_PEIS		(1 << 8)	/* parity error interrupt status */
--#define UART011_FEIS		(1 << 7)	/* framing error interrupt status */
--#define UART011_RTIS		(1 << 6)	/* receive timeout interrupt status */
--#define UART011_TXIS		(1 << 5)	/* transmit interrupt status */
--#define UART011_RXIS		(1 << 4)	/* receive interrupt status */
--#define UART011_DSRMIS		(1 << 3)	/* DSR interrupt status */
--#define UART011_DCDMIS		(1 << 2)	/* DCD interrupt status */
--#define UART011_CTSMIS		(1 << 1)	/* CTS interrupt status */
--#define UART011_RIMIS		(1 << 0)	/* RI interrupt status */
--
--#define UART011_OEIC		(1 << 10)	/* overrun error interrupt clear */
--#define UART011_BEIC		(1 << 9)	/* break error interrupt clear */
--#define UART011_PEIC		(1 << 8)	/* parity error interrupt clear */
--#define UART011_FEIC		(1 << 7)	/* framing error interrupt clear */
--#define UART011_RTIC		(1 << 6)	/* receive timeout interrupt clear */
--#define UART011_TXIC		(1 << 5)	/* transmit interrupt clear */
--#define UART011_RXIC		(1 << 4)	/* receive interrupt clear */
--#define UART011_DSRMIC		(1 << 3)	/* DSR interrupt clear */
--#define UART011_DCDMIC		(1 << 2)	/* DCD interrupt clear */
--#define UART011_CTSMIC		(1 << 1)	/* CTS interrupt clear */
--#define UART011_RIMIC		(1 << 0)	/* RI interrupt clear */
--
--#define UART011_DMAONERR	(1 << 2)	/* disable dma on error */
--#define UART011_TXDMAE		(1 << 1)	/* enable transmit dma */
--#define UART011_RXDMAE		(1 << 0)	/* enable receive dma */
-+#define UART011_IFLS_RX_HALF	FIELD_PREP_CONST(UART011_IFLS_RXIFLSEL, 5)
-+#define UART011_IFLS_TX_HALF	FIELD_PREP_CONST(UART011_IFLS_TXIFLSEL, 5)
-+
-+#define UART011_OEIM		BIT(10)	/* overrun error interrupt mask */
-+#define UART011_BEIM		BIT(9)	/* break error interrupt mask */
-+#define UART011_PEIM		BIT(8)	/* parity error interrupt mask */
-+#define UART011_FEIM		BIT(7)	/* framing error interrupt mask */
-+#define UART011_RTIM		BIT(6)	/* receive timeout interrupt mask */
-+#define UART011_TXIM		BIT(5)	/* transmit interrupt mask */
-+#define UART011_RXIM		BIT(4)	/* receive interrupt mask */
-+#define UART011_DSRMIM		BIT(3)	/* DSR interrupt mask */
-+#define UART011_DCDMIM		BIT(2)	/* DCD interrupt mask */
-+#define UART011_CTSMIM		BIT(1)	/* CTS interrupt mask */
-+#define UART011_RIMIM		BIT(0)	/* RI interrupt mask */
-+
-+#define UART011_OEIS		BIT(10)	/* overrun error interrupt status */
-+#define UART011_BEIS		BIT(9)	/* break error interrupt status */
-+#define UART011_PEIS		BIT(8)	/* parity error interrupt status */
-+#define UART011_FEIS		BIT(7)	/* framing error interrupt status */
-+#define UART011_RTIS		BIT(6)	/* receive timeout interrupt status */
-+#define UART011_TXIS		BIT(5)	/* transmit interrupt status */
-+#define UART011_RXIS		BIT(4)	/* receive interrupt status */
-+#define UART011_DSRMIS		BIT(3)	/* DSR interrupt status */
-+#define UART011_DCDMIS		BIT(2)	/* DCD interrupt status */
-+#define UART011_CTSMIS		BIT(1)	/* CTS interrupt status */
-+#define UART011_RIMIS		BIT(0)	/* RI interrupt status */
-+
-+#define UART011_OEIC		BIT(10)	/* overrun error interrupt clear */
-+#define UART011_BEIC		BIT(9)	/* break error interrupt clear */
-+#define UART011_PEIC		BIT(8)	/* parity error interrupt clear */
-+#define UART011_FEIC		BIT(7)	/* framing error interrupt clear */
-+#define UART011_RTIC		BIT(6)	/* receive timeout interrupt clear */
-+#define UART011_TXIC		BIT(5)	/* transmit interrupt clear */
-+#define UART011_RXIC		BIT(4)	/* receive interrupt clear */
-+#define UART011_DSRMIC		BIT(3)	/* DSR interrupt clear */
-+#define UART011_DCDMIC		BIT(2)	/* DCD interrupt clear */
-+#define UART011_CTSMIC		BIT(1)	/* CTS interrupt clear */
-+#define UART011_RIMIC		BIT(0)	/* RI interrupt clear */
-+
-+#define UART011_DMAONERR	BIT(2)	/* disable dma on error */
-+#define UART011_TXDMAE		BIT(1)	/* enable transmit dma */
-+#define UART011_RXDMAE		BIT(0)	/* enable receive dma */
+ static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+ 	struct uart_amba_port *uap =
+@@ -1621,23 +1631,16 @@ static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
  
- #define UART01x_RSR_ANY		(UART01x_RSR_OE | UART01x_RSR_BE | UART01x_RSR_PE | UART01x_RSR_FE)
- #define UART01x_FR_MODEM_ANY	(UART01x_FR_DCD | UART01x_FR_DSR | UART01x_FR_CTS)
+ 	cr = pl011_read(uap, REG_CR);
+ 
+-#define	TIOCMBIT(tiocmbit, uartbit)		\
+-	if (mctrl & tiocmbit)		\
+-		cr |= uartbit;		\
+-	else				\
+-		cr &= ~uartbit
+-
+-	TIOCMBIT(TIOCM_RTS, UART011_CR_RTS);
+-	TIOCMBIT(TIOCM_DTR, UART011_CR_DTR);
+-	TIOCMBIT(TIOCM_OUT1, UART011_CR_OUT1);
+-	TIOCMBIT(TIOCM_OUT2, UART011_CR_OUT2);
+-	TIOCMBIT(TIOCM_LOOP, UART011_CR_LBE);
++	pl011_assign_bit(mctrl & TIOCM_RTS, &cr, UART011_CR_RTS);
++	pl011_assign_bit(mctrl & TIOCM_DTR, &cr, UART011_CR_DTR);
++	pl011_assign_bit(mctrl & TIOCM_OUT1, &cr, UART011_CR_OUT1);
++	pl011_assign_bit(mctrl & TIOCM_OUT2, &cr, UART011_CR_OUT2);
++	pl011_assign_bit(mctrl & TIOCM_LOOP, &cr, UART011_CR_LBE);
+ 
+ 	if (port->status & UPSTAT_AUTORTS) {
+ 		/* We need to disable auto-RTS if we want to turn RTS off */
+-		TIOCMBIT(TIOCM_RTS, UART011_CR_RTSEN);
++		pl011_assign_bit(mctrl & TIOCM_RTS, &cr, UART011_CR_RTSEN);
+ 	}
+-#undef TIOCMBIT
+ 
+ 	pl011_write(cr, uap, REG_CR);
+ }
 
 -- 
 2.42.0
