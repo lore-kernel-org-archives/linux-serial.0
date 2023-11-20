@@ -2,49 +2,51 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3E50C197A0
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Nov 2023 07:04:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A85DC54FB9
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Nov 2023 07:07:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231987AbjKTHEq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Nov 2023 02:04:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49484 "EHLO
+        id S229865AbjKTHHW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Nov 2023 02:07:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231948AbjKTHEp (ORCPT
+        with ESMTP id S229562AbjKTHHU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Nov 2023 02:04:45 -0500
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 876D8A0;
-        Sun, 19 Nov 2023 23:04:41 -0800 (PST)
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-40838915cecso13406915e9.2;
-        Sun, 19 Nov 2023 23:04:41 -0800 (PST)
+        Mon, 20 Nov 2023 02:07:20 -0500
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C32F90;
+        Sun, 19 Nov 2023 23:07:17 -0800 (PST)
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-32f7c44f6a7so2643454f8f.1;
+        Sun, 19 Nov 2023 23:07:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700463880; x=1701068680;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=IIphv9VW11zFXMl7jsmw1P7l0i8fED+G62bM1MMQeZk=;
-        b=E9a9saTqF03IM+YSMNeYcTSBBVdRMgvKxJV4xJLAskYQEeue8b44jXErdDXs2z95Wc
-         7ZdkRYzQ0cyWqbAgqmoaWVx1v3+0pQkHgTeNSR9LGm7milL5POzxO7St1lHimwL/9Uef
-         A8zFQmYgErEgbLx+46VYsaWhqY203ByaK7SwndwIoCwfFkAR8HgCtCkZipxni1gaFrTL
-         l8Mp79Uju2EDFd7zGEmUGQUQ08Pc94foniGzDJVa+Q2Rmj2W07fkOoseEXoLiA7moK71
-         iXJwyykuvfelSLxr2SyVrAE+H6UODnerhJVPb9I3JNlKFw7WLt9GHTYxTdpTMbZXQCVm
-         lpFg==
-X-Gm-Message-State: AOJu0YzFxQtzRMVda1k++D6q7Z43nfADzIKkOW5VnFKQJySfoefTxz/k
-        ekw0LGSGwf85CUUPYlOC1ck=
-X-Google-Smtp-Source: AGHT+IFcVoxJeRIIgCPicTFMYNjDo8coLgaUP5Zq1kZrkiWRXewFhKywF68ad8b+ZVJRW2toigihww==
-X-Received: by 2002:a05:600c:35d3:b0:40a:4609:9cbd with SMTP id r19-20020a05600c35d300b0040a46099cbdmr4592814wmq.13.1700463879323;
-        Sun, 19 Nov 2023 23:04:39 -0800 (PST)
+        d=1e100.net; s=20230601; t=1700464036; x=1701068836;
+        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
+         :from:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=At9mfSqIqmJBrpM/gBvtllLDYOVkmAm8yF/CW7d4K48=;
+        b=ATWrpt7fR9oWHcIJl6olrOic7X4MWHFk1MLCg8gitvGa5OjcBl9bRwD093bnRcYiHv
+         3sbp9YQW6RlfsycX3pY2rZO1lKZWPvirXrNmuKVTJnlAyPul8S5J55K7zEOG2RBkVR54
+         l0C9LI/vgzeqyQWxEegmSey1yarUwmYBbIh4trwlyAFgp8C8bnPca8u89UpOfNHsnes3
+         Z6Fjz0RiHfcdpKuUpQqzur/9Aqzy0xoFjJkg4cCIw8ghUrzp5LjaILxRsmCy+Hm2gI7e
+         cltOCwvWoKHwitJJfS7F88PsEJNCUQRGAbQ3Oh36yNoPiz6VWIU11CIRlPfpQBUxt9Zy
+         zexQ==
+X-Gm-Message-State: AOJu0YwtZs8Dicbcb9ismw89FWFYgeGAOVj9x21teq0FCgkzz74+IO17
+        EFM24lK87knNBSt4MVMKgZ4=
+X-Google-Smtp-Source: AGHT+IGZVj/uauGH2dLP99OwhsDVHIXN5d12uWZ0paHmsRZVLmpA16My7/YRHuCTjthLCSv/od2j0A==
+X-Received: by 2002:a05:6000:10c1:b0:32d:9e4f:718f with SMTP id b1-20020a05600010c100b0032d9e4f718fmr4355007wrx.44.1700464035729;
+        Sun, 19 Nov 2023 23:07:15 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id c7-20020adffb47000000b00332c0aace23sm5316117wrs.105.2023.11.19.23.04.38
+        by smtp.gmail.com with ESMTPSA id dm15-20020a0560000bcf00b0032d81837433sm10173288wrb.30.2023.11.19.23.07.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 19 Nov 2023 23:04:38 -0800 (PST)
-Message-ID: <5c2ec2ff-459e-4bb7-b287-8a06005c86f5@kernel.org>
-Date:   Mon, 20 Nov 2023 08:04:37 +0100
+        Sun, 19 Nov 2023 23:07:15 -0800 (PST)
+Message-ID: <1ef0622b-9192-42a8-ab19-18151094f5ee@kernel.org>
+Date:   Mon, 20 Nov 2023 08:07:14 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v2] serial: atmel: convert not to use
  dma_request_slave_channel()
+Content-Language: en-US
+From:   Jiri Slaby <jirislaby@kernel.org>
 To:     claudiu beznea <claudiu.beznea@tuxon.dev>,
         Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Richard Genoud <richard.genoud@gmail.com>,
@@ -55,8 +57,7 @@ Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
         linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 References: <f2e9790d8b49aeba8b43ce018d30a35b837ac1eb.1700409299.git.christophe.jaillet@wanadoo.fr>
  <ccfcf2a5-c04b-4781-8658-d63044b9b9c6@tuxon.dev>
-Content-Language: en-US
-From:   Jiri Slaby <jirislaby@kernel.org>
+ <5c2ec2ff-459e-4bb7-b287-8a06005c86f5@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
  rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
@@ -99,47 +100,57 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <ccfcf2a5-c04b-4781-8658-d63044b9b9c6@tuxon.dev>
+In-Reply-To: <5c2ec2ff-459e-4bb7-b287-8a06005c86f5@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 20. 11. 23, 7:14, claudiu beznea wrote:
-> Hi, Christophe,
+On 20. 11. 23, 8:04, Jiri Slaby wrote:
+> On 20. 11. 23, 7:14, claudiu beznea wrote:
+>> Hi, Christophe,
+>>
+>> On 19.11.2023 17:55, Christophe JAILLET wrote:
+>>> dma_request_slave_channel() is deprecated. dma_request_chan() should
+>>> be used directly instead.
+>>>
+>>> Switch to the preferred function and update the error handling 
+>>> accordingly.
+>>>
+>>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>>> ---
+>>> v2: Also update atmel_prepare_rx_dma()
+>>> ---
+>>>   drivers/tty/serial/atmel_serial.c | 16 ++++++++++++----
+>>>   1 file changed, 12 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/drivers/tty/serial/atmel_serial.c 
+>>> b/drivers/tty/serial/atmel_serial.c
+>>> index 1946fafc3f3e..6aeb4648843b 100644
+>>> --- a/drivers/tty/serial/atmel_serial.c
+>>> +++ b/drivers/tty/serial/atmel_serial.c
+>>> @@ -1013,14 +1013,18 @@ static int atmel_prepare_tx_dma(struct 
+>>> uart_port *port)
+>>>       struct device *mfd_dev = port->dev->parent;
+>>>       dma_cap_mask_t        mask;
+>>>       struct dma_slave_config config;
+>>> +    struct dma_chan *chan;
+>>
+>> There is no need for this.
 > 
-> On 19.11.2023 17:55, Christophe JAILLET wrote:
->> dma_request_slave_channel() is deprecated. dma_request_chan() should
->> be used directly instead.
->>
->> Switch to the preferred function and update the error handling accordingly.
->>
->> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
->> ---
->> v2: Also update atmel_prepare_rx_dma()
->> ---
->>   drivers/tty/serial/atmel_serial.c | 16 ++++++++++++----
->>   1 file changed, 12 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
->> index 1946fafc3f3e..6aeb4648843b 100644
->> --- a/drivers/tty/serial/atmel_serial.c
->> +++ b/drivers/tty/serial/atmel_serial.c
->> @@ -1013,14 +1013,18 @@ static int atmel_prepare_tx_dma(struct uart_port *port)
->>   	struct device *mfd_dev = port->dev->parent;
->>   	dma_cap_mask_t		mask;
->>   	struct dma_slave_config config;
->> +	struct dma_chan *chan;
-> 
-> There is no need for this.
+> How'd you avoid crash in here then:
+>          if (atmel_port->chan_tx)
+>                  atmel_release_tx_dma(port);
+> ?
 
-How'd you avoid crash in here then:
-         if (atmel_port->chan_tx)
-                 atmel_release_tx_dma(port);
-?
+I will answer myself: easily. As there is
+   atmel_port->chan_tx = NULL;
+which I overlooked at first.
 
-thanks,
+
+> thanks,
+
 -- 
 js
 suse labs
