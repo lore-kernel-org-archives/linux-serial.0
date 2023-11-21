@@ -1,25 +1,25 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.de header.i=eberhard.stoll@gmx.de header.b="LvxxKD3u"
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5FD188;
-	Tue, 21 Nov 2023 12:49:23 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmx.de header.i=eberhard.stoll@gmx.de header.b="ftOfFLSK"
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FB6919E;
+	Tue, 21 Nov 2023 12:59:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-	t=1700599742; x=1701204542; i=eberhard.stoll@gmx.de;
-	bh=8aPOGl19QCVqTRibBIYihLBxePif4DIGtlLN/m0HxrU=;
-	h=X-UI-Sender-Class:Date:To:Cc:References:Subject:From:
+	t=1700600360; x=1701205160; i=eberhard.stoll@gmx.de;
+	bh=ht3lyZWYQxo1DULkRSGST5LLzTeidHvVO5reRkjwvzA=;
+	h=X-UI-Sender-Class:Date:To:Cc:References:Subject:Reply-To:From:
 	 In-Reply-To;
-	b=LvxxKD3uSx6gX6/FnPZDVBw1dfYLHpTH9s14qB3t0Ui+dp/8Css/+OhsnTiApgIU
-	 Oj3moNN9RRVjZ9JIK6I91JGY8+TR3iIVlrpW0m3gKW6j6DLDxlOv7ie7UvPYaXWEp
-	 LzihxGU4oRWSUAQGLE/xSEYhDtDXDkUAk4QAq27/BZZvVxUnWz0iweDBT1ybl7o9+
-	 JPtwTqi2J4d63kw0YYIyHaQTfgEgdyDYzMdm/A5x1OHKiPJqDKIwMolGTgkuSAZcU
-	 MTRfeMXrsXuUoI5vcAOOD5qMvAvVW2DKFefCb/RFTg0z6lAJqgojohIdL+KO8fQuo
-	 iZ9GEqR+S/SC4WCqNA==
+	b=ftOfFLSKgWtA8F9WeUaEv7wo3xHDnxV5vqYkVsfcNPEDTBLArE/aOWe6CR1PtS3k
+	 OC+MaPSt7hiZ75XbsOIauY7d0a+hGGBTv2KsrClT7FCP7XJGs4LbgL8z+yBK5i1wL
+	 lu6NI4PzN73JBaVhYUVa6zm2qDk1uGA7x3C6lsJW9uFkDHXzi3E/2T7SweaRa6m7J
+	 HtNOaCddCFb56jy4csekQSM36vRkLo2qGM3WNIC3B9ihIzXQAgXxMQV2VFVFCx2Yb
+	 DMYgc4iFyhzCB4oCJTJL7KQSOs583QIcxtPeHDLZzhGJzPkbXJhasYCQK/AYK7ft9
+	 t4B3K3NdSNcWOowgow==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.200.6] ([77.246.119.226]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MXGrE-1qpgIq0iWE-00YePW; Tue, 21
- Nov 2023 21:49:02 +0100
-Message-ID: <dbe5959d-2b68-4f16-89ee-32538aab4f34@gmx.de>
-Date: Tue, 21 Nov 2023 21:49:01 +0100
+Received: from [192.168.200.6] ([77.246.119.226]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MuUnA-1rNtlq17uU-00rVco; Tue, 21
+ Nov 2023 21:59:20 +0100
+Message-ID: <0dc938c5-0d11-4d21-940f-9be1f771b7df@gmx.de>
+Date: Tue, 21 Nov 2023 21:59:19 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -27,39 +27,40 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-To: sherry.sun@nxp.com
+To: rasmus.villemoes@prevas.dk
 Cc: festevam@gmail.com, gregkh@linuxfoundation.org, jirislaby@kernel.org,
  kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org,
  linux-imx@nxp.com, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, rasmus.villemoes@prevas.dk,
- s.hauer@pengutronix.de, shawnguo@kernel.org, eberhard.stoll@kontron.de
-References: <AS8PR04MB8404D066C247F5B2979CBD1F92BBA@AS8PR04MB8404.eurprd04.prod.outlook.com>
-Subject: RE: [PATCH] serial: imx: also enable Transmit Complete interrupt in
+ linux-serial@vger.kernel.org, s.hauer@pengutronix.de, shawnguo@kernel.org,
+ eberhard.stoll@kontron.de
+References: <20231120132256.136625-1-rasmus.villemoes@prevas.dk>
+Subject: Re: [PATCH] serial: imx: also enable Transmit Complete interrupt in
  rs232 mode
 Content-Language: en-US
+Reply-To: 20231120132256.136625-1-rasmus.villemoes@prevas.dk
 From: Eberhard Stoll <eberhard.stoll@gmx.de>
-In-Reply-To: <AS8PR04MB8404D066C247F5B2979CBD1F92BBA@AS8PR04MB8404.eurprd04.prod.outlook.com>
+In-Reply-To: <20231120132256.136625-1-rasmus.villemoes@prevas.dk>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:qGWan7ZoV8MP1GoTYr8Lcgg3mF3VmtF05afc6cL52D/ASAQAstL
- 8ekD1YdoWzSSo53mqxF3yTz2WFPJnFJqo9Hbjm6TUXyDGUggaOqixnno8f4n+OQhwpVAHlm
- HMBCLFbr0XyL9WRPrMwvx+5TVTmbo0yW48bhuDGtybl5mqGwkMZ7f8bZbTZ7Ze83S42NwtZ
- 8mnpLVPqeb4VbbZubAHsg==
-UI-OutboundReport: notjunk:1;M01:P0:dcBJgA+KZ6s=;vXF1LbhEFjHoTELQPVDO66apRJD
- bQrbbjT4Sxdy/iWw51b6t5HjZj2HGYUpgZt0ywoDdlSizwKspTPRdXZ7ITibbHfPKv6sVmsaY
- Fg/GOhUuO9zJiaVJl+jM7PgexGXCdBJocWXNvQeBrk8+u7L3dyPkPn6TyB5khM7m9pWolspXW
- MaV9TCH7dGYKXj+9RjTYnjtduV9hlp+sbctzUTCovxQ7oDyBrxzCNufgaK8jR5JmECwcF1svM
- FpmTCMo8CYJmVpMxOB46jTTqYK1LKh7DBUL1mqYGaDwcSbsQaQOxN0SnwLT8J2s5t/ycl5Kwt
- Je3d3cDyE998KgvhcfSoStFBe3LzRUoZIgG736pcybRxrZpQZL+WHX5TSpw/7YmfczjjhN07x
- 7ZO9jOOAREWel+xnHwBfQVpj2Eh2mPrfsoEytzJRvW8Jh0VuI7QrnIa03zfGiS2QvnbqoKsa8
- 9N965MRQVw6PtfdViDCmlVjtO2/3nxHkwB46+mfp2mgyR5XbXTmaZdhZCmX5jy3Y1OHYnWl4+
- zyL79EVJXM9ZunCzKn4mDs3HFziF4h+BY3NBeBHtzHcUrTLTOUx0E+aUH067FnGvyE+K4r1uR
- 6rdIpfZcA0AdsycWYKfYi9yEgRFSsVyFRyj6s/VxB1uGMSDz2lSuJ6blTfXVAMY5CDWYztbZS
- UWBjE8CB/hLOmjzxYRN9ISalJcQWjURWMIa702KNNfqmheSqcyn7mTP5UnHSXJ5BAkxgr3wlk
- eLG6orNVjtjP1F7CUIUfEIzRR1ZIIJ4ikbrk43DxK1vSHZ9AVkQcPzMXqbP4QMb0sLwIrR5jr
- PJm4DaictPdsy7nfgn0NvniJIBQOSXAd7J2Dph9XmGRMP7WuOS+M68ps4YHSlso32BZraPno3
- og3MwdV6mpcPl/qV9K4zv8umUSuzvZ+e1fkho8JU3GUctfIH6ELUYR0XqZYXObDYS8rsZZJzl
- F8Z4ASLfMhwXW69rPtsELnlMQXo=
+X-Provags-ID: V03:K1:/8nmmdp4YuAZhHN/9C+w15sDJWilERK8BhvYMh2pZa1zOg7XMQc
+ 6+GbNEREoxas9d4zmRRKBe7uUMzavVmDWYahcHwdrY2OvVWfDQViXLYwzzU2R/Vn7MEHzFn
+ hpE3AxcKCfepqjD3ypsgyC63y/CIu+JnmCtb9zdvi5ROcwW1cMxlF9uCnlfTEWbDHISB7IA
+ Gy+wUimx/5kWqtqX9hKrg==
+UI-OutboundReport: notjunk:1;M01:P0:BgAN6uwDOgs=;hsIWdYFI98CUuNKvydg0Nq5bLw6
+ /xCvmWSBadBaOZfQM45O5PvFANvyRchS+VTATIEUosgt+ZSa1huD1IUAvGhdyexoXjOiglczB
+ 3YY8LlJiuBAIgqqssr7ft9jJPHU90oSe8MeNHt1uvFfKv662pYePH60m0HO1LlsHirCVB5Qti
+ YAD2TdCFHzKDWsGRCmCWCq8kX9LLjwFTWkBFdSVtpLfYZu+u9yMmYrEOrmc91UQR4wNNIPZG3
+ P84c1agS1Uu9LOE+YX0I8ItGH9it/yq/qTp8uCm2PROF7g169D0ruIG0E8Pfkm+W9tUqg0gJC
+ kejToIkikLI2KzYjRr8I0g9SZPXzmfB3GPQ/c2vRsQWhyBwqybBEqOmaWBFvOsXeWJE887uPU
+ 1/awyqz1g8ERDv4KCHuMrk3DtQoW1D9Qy82XkSlZOSvC4EWQLGCH2QoOxosEkG/sw3MAZB1cX
+ gRUeeYwzMsAFCePEsUttSeo3Zdx6Rmz+v6ngVTUyO0EDRo7NaP36uRe/qnt8udIr+MpR4SeqI
+ G+Sm0tzVRkilAqjtGMIR2S9SHabWhmFU5QpMeOTB7Iucobh8NGUA27P6RNZ7RnOCro9O6cg1w
+ wzVaVEwcTQFK9Jjuevrp0mTt8ApOHV/+b7PfZ3PJZ5D+UF28tt4v5bymUzcT54E/Mp7cn1zIg
+ nrm2APzbeIoMkcjD7H/NL6B38vKtV2LCissZadNG2GVbPzO+sAYk+nkCnd0s24QA2N2Y0kHqh
+ hwftrPVzY1d/rQh9UV8GalxedUnq3OK0/9PuCjUmxIMZDUBIE1Nn9FCfHl5Oq/tkpoTp68nfy
+ 6m1uOgSgCqZvNMekagEmbjoHo06gQYkb6Um8WrhKc4TIUWLFTXbED35lRL7531lY0OTBuOVbn
+ FsTiH7Ig+AR0380P19zRVGpG0Ri9F4Y5rtkbia7GtFkfW6muvfpCP31iDNF7ki/1ep6VMCPKx
+ io0fEJyoHk6fsgwt7XGLNfBmopY=
 
 > Currently, if one switches to rs232 mode, writes something to the
 > device, and then switches to rs485 mode, the imx_port's ->tx_state is
@@ -90,7 +91,6 @@ UI-OutboundReport: notjunk:1;M01:P0:dcBJgA+KZ6s=;vXF1LbhEFjHoTELQPVDO66apRJD
 > on rs485 mode, simply add "sport->tx_state =3D OFF;".
 >
 > If someone has a better suggestion, I'm all ears.
-
 
 Hello Rasmus,
 
@@ -131,3 +131,4 @@ I'd appreciate someone with more experience could review or revise it
 
 Best Regards
 Eberhard
+
