@@ -1,102 +1,113 @@
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642ABDD;
-	Tue, 21 Nov 2023 07:16:35 -0800 (PST)
-Received: by mail-il1-f176.google.com with SMTP id e9e14a558f8ab-359343e399fso15592825ab.0;
-        Tue, 21 Nov 2023 07:16:35 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700579794; x=1701184594;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MHBJbcTYAJFzd8BQozdA+OUJ8WFFDeZmUm9glBYXWMY=;
-        b=XMFfMNWGezswcSMFIRgJPHxeTNGDRVREXwioKmCOZ8Uv8cmK+eeL5p11X/TGPwzHLV
-         LsWq8njDA0khhQUO7BGMjPQBR+iBfwh5ZXdrep8yd+y5yIke9/Sf9PyY8ox4pBogimC6
-         rPUem/RO2jAlwICWzfg4MTqoJDEtpSgnoXVeVVxq4ICyD1p6HnpbuMYfvS2Ve0c4A0UD
-         0jv1PCU0pM3TfnTugL6PXbH9gCjhFcEjz/W/Jmh1keJfItofz3JmdeGF1NNI2/YhmXfB
-         M2m6hkUjYbqc2c2Jd8IgP9NrR3VrXOSuu4Gvyhrl+Q0sUTKD/E9/pYH9rKkn4Ahz/GpZ
-         ZBDw==
-X-Gm-Message-State: AOJu0Yx4K+G+7pVmdGGpkSl+2kTELWIw3aH9SJy19zk3gsOggsAzxRQ9
-	c7joqsBzdASgkUPPDyI7Jw==
-X-Google-Smtp-Source: AGHT+IGs+KFHExCqkcg3K0j2WE48eh5fwSy6aeVyBcCWydv816/PY/81hpz3b4X9rc/LANFLxc7uYA==
-X-Received: by 2002:a92:c90e:0:b0:35b:4b9:7883 with SMTP id t14-20020a92c90e000000b0035b04b97883mr6859544ilp.25.1700579794614;
-        Tue, 21 Nov 2023 07:16:34 -0800 (PST)
-Received: from herring.priv ([64.188.179.252])
-        by smtp.gmail.com with ESMTPSA id s16-20020a02cf30000000b0046676167055sm170383jar.129.2023.11.21.07.16.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Nov 2023 07:16:33 -0800 (PST)
-Received: (nullmailer pid 1791730 invoked by uid 1000);
-	Tue, 21 Nov 2023 15:16:30 -0000
-Date: Tue, 21 Nov 2023 08:16:30 -0700
-From: Rob Herring <robh@kernel.org>
-To: Peter Griffin <peter.griffin@linaro.org>
-Cc: krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org, tomasz.figa@gmail.com, s.nawrocki@samsung.com, linus.walleij@linaro.org, wim@linux-watchdog.org, linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org, jirislaby@kernel.org, cw00.choi@samsung.com, alim.akhtar@samsung.com, tudor.ambarus@linaro.org, andre.draszik@linaro.org, semen.protsenko@linaro.org, saravanak@google.com, willmcvicker@google.com, soc@kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org, kernel-team@android.com, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4 09/19] dt-bindings: serial: samsung: Make
- samsung,uart-fifosize required property
-Message-ID: <20231121151630.GA1692178-robh@kernel.org>
-References: <20231120212037.911774-1-peter.griffin@linaro.org>
- <20231120212037.911774-10-peter.griffin@linaro.org>
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WtyyA6kN"
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFAD0DD;
+	Tue, 21 Nov 2023 07:21:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700580099; x=1732116099;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=WijYm8vuHC5ZmFA7w1CK+dl8BooW+FtnuyTe351N948=;
+  b=WtyyA6kNJIK487iSa7UupuvmGmO8r9D/q99CuTjJ9QEzhdPyiuZhWtkU
+   udmB5THW4tBjcSDTDujfQYsmVY19tUX5EE9+zJpWkh+lA720Q84blYhU2
+   GFef7izJl4bquPdWb8UadCdKgj48Sj73mtd6Le8SHi1xF6FqKfOIDskN6
+   54PmnZ9Bude7ciL2zHKyC0Er3y7o9LIaP8JuyVBqT7avQlLJMHH8qifEX
+   h7wYl/0SHFvh/t7VoHyorQrzLhYLO12GBP9tHkr9PAKoSoVEFyPuse364
+   ztG3+rHwbrcz/FzGxHwgrCJINBtDwq4KHeDX0OIKQVksv8yvyT/LLN2If
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="13404500"
+X-IronPort-AV: E=Sophos;i="6.04,215,1695711600"; 
+   d="scan'208";a="13404500"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2023 07:21:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="795824207"
+X-IronPort-AV: E=Sophos;i="6.04,215,1695711600"; 
+   d="scan'208";a="795824207"
+Received: from azanetti-mobl.ger.corp.intel.com ([10.249.46.144])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2023 07:21:35 -0800
+Date: Tue, 21 Nov 2023 17:21:32 +0200 (EET)
+From: =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>, 
+    Richard Henderson <richard.henderson@linaro.org>, 
+    Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
+    Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Subject: Re: [PATCH 14/17] tty: srmcons: use 'count' directly in
+ srmcons_do_write()
+In-Reply-To: <20231121092258.9334-15-jirislaby@kernel.org>
+Message-ID: <4f0db52-6430-9122-1ecc-86e337644944@linux.intel.com>
+References: <20231121092258.9334-1-jirislaby@kernel.org> <20231121092258.9334-15-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231120212037.911774-10-peter.griffin@linaro.org>
+Content-Type: text/plain; charset=US-ASCII
 
-On Mon, Nov 20, 2023 at 09:20:27PM +0000, Peter Griffin wrote:
-> Specifying samsung,uart-fifosize in both DT and driver static data is error
-> prone and relies on driver probe order and dt aliases to be correct.
-> 
-> Additionally on many Exynos platforms these are (USI) universal serial
-> interfaces which can be uart, spi or i2c, so it can change per board.
-> 
-> For google,gs101-uart and exynosautov9-uart make samsung,uart-fifosize a
-> required property. For these platforms fifosize now *only* comes from DT.
-> 
-> It is hoped other Exynos platforms will also switch over time.
+On Tue, 21 Nov 2023, Jiri Slaby (SUSE) wrote:
 
-Then allow the property on them.
-
+> Similarly to 'buf' in the previous patch, there is no need to have a
+> separate counter ('remaining') in srmcons_do_write(). 'count' can be
+> used directly which simplifies the code a bit.
 > 
-> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> Note that the type of the current count ('c') is changed from 'long' to
+> 'size_t' so that:
+> 1) it is prepared for the upcoming change of 'count's type, and
+> 2) is unsigned.
+> 
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Cc: Richard Henderson <richard.henderson@linaro.org>
+> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> Cc: Matt Turner <mattst88@gmail.com>
+> Cc: linux-alpha@vger.kernel.org
 > ---
->  .../bindings/serial/samsung_uart.yaml           | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
+>  arch/alpha/kernel/srmcons.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> index ccc3626779d9..22a1edadc4fe 100644
-> --- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> @@ -133,6 +133,23 @@ allOf:
->              - const: uart
->              - const: clk_uart_baud0
+> diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
+> index b68c5af083cd..8025e2a882ed 100644
+> --- a/arch/alpha/kernel/srmcons.c
+> +++ b/arch/alpha/kernel/srmcons.c
+> @@ -92,24 +92,24 @@ static int
+>  srmcons_do_write(struct tty_port *port, const char *buf, int count)
+>  {
+>  	static char str_cr[1] = "\r";
+> -	long c, remaining = count;
+> +	size_t c;
+>  	srmcons_result result;
+>  	int need_cr;
 >  
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - google,gs101-uart
-> +              - samsung,exynosautov9-uart
-> +    then:
-> +      properties:
-> +        samsung,uart-fifosize:
-> +          description: The fifo size supported by the UART channel.
-> +          $ref: /schemas/types.yaml#/definitions/uint32
-> +          enum: [16, 64, 256]
+> -	while (remaining > 0) {
+> +	while (count > 0) {
+>  		need_cr = 0;
+>  		/* 
+>  		 * Break it up into reasonable size chunks to allow a chance
+>  		 * for input to get in
+>  		 */
+> -		for (c = 0; c < min_t(long, 128L, remaining) && !need_cr; c++)
+> +		for (c = 0; c < min_t(size_t, 128U, count) && !need_cr; c++)
+>  			if (buf[c] == '\n')
+>  				need_cr = 1;
+>  		
+>  		while (c > 0) {
+>  			result.as_long = callback_puts(0, buf, c);
+>  			c -= result.bits.c;
+> -			remaining -= result.bits.c;
+> +			count -= result.bits.c;
+>  			buf += result.bits.c;
+>  
+>  			/*
+> 
 
-We already have 'fifo-size' in several drivers. Use that. Please move 
-its type/description definitions to serial.yaml and make drivers just do 
-'fifo-size: true' if they use it.
+The patches in the series are in pretty odd order and it was not told 
+anywhere here that the return value is unused by the callers. I'd just 
+reorder the patches.
 
-> +
-> +      required:
-> +       - samsung,uart-fifosize
+-- 
+ i.
 
-A new required property is an ABI break. Please explain why that is okay 
-in the commit message.
-
-Rob
