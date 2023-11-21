@@ -1,106 +1,153 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="dI1JuA/s"
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF241A2;
-	Tue, 21 Nov 2023 08:39:22 -0800 (PST)
-Received: from pps.filterd (m0353724.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3ALFcRdU004331;
-	Tue, 21 Nov 2023 16:39:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=pp1; bh=KmKbwEJplODev9WCG+a3bZzneO7c5WCbVoBpxNQbPFg=;
- b=dI1JuA/s5eXZsBHO4ylYEOoViGAfRVKTvm7ZDwjI00DytALhK27B+jygls9RjLxHLlUE
- TqcD8GIAEA9DDqPfq/WQzZ0u8VxBFx+kzD/KtE7lLfNxNfg4j0+I1NiCW4hhV5+5KT7C
- W6P7GKUw2ZpXsfwoHUUmtuR9i9QdaB/tXY1ZRrHJNhpmlB0ouU1GjLWMGmcvu6oBZdln
- MN1PKna2HZ6ZMXf6PxuaeUYhhuB8fGe8+a0S6uNQj4UndhKVk4PWNQLVmjDp3LK+/ClT
- RxwL3NNd8hiBvFn49Zpo5Rgpbv4r9Fudh1gBJkhBDGkKISVfmK46zuK1+DOCUJQ43udC tw== 
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ugy44kpnq-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 21 Nov 2023 16:39:18 +0000
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3ALGIu0O007851;
-	Tue, 21 Nov 2023 16:39:17 GMT
-Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 3ufaa21d5s-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 21 Nov 2023 16:39:17 +0000
-Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
-	by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 3ALGdEaK20775492
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 21 Nov 2023 16:39:14 GMT
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 8881620040;
-	Tue, 21 Nov 2023 16:39:14 +0000 (GMT)
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 4B8982004D;
-	Tue, 21 Nov 2023 16:39:14 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-	Tue, 21 Nov 2023 16:39:14 +0000 (GMT)
-Date: Tue, 21 Nov 2023 17:39:13 +0100
-From: Alexander Gordeev <agordeev@linux.ibm.com>
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>, linux-s390@vger.kernel.org
-Subject: Re: [PATCH 1/6] tty: con3215: drop raw3215_info::ubuffer
-Message-ID: <ZVzdMWawUScUTUM3@tuxmaker.boeblingen.de.ibm.com>
-References: <20231121103626.17772-1-jirislaby@kernel.org>
- <20231121103626.17772-2-jirislaby@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231121103626.17772-2-jirislaby@kernel.org>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: edxa4Ci-Wph6lN6y2f6gym2vAPhCG9Jj
-X-Proofpoint-ORIG-GUID: edxa4Ci-Wph6lN6y2f6gym2vAPhCG9Jj
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JkJZIIwl"
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13EC1AA
+	for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 09:15:54 -0800 (PST)
+Received: by mail-ot1-x32b.google.com with SMTP id 46e09a7af769-6d648679605so3108094a34.1
+        for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 09:15:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1700586954; x=1701191754; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=wYvL1f6qyMgF9ZLkQm7l0/EVu68jtasrXI+WCiFQL18=;
+        b=JkJZIIwlJLGcST/3MOrJehs9ttmqnNyViL5GOOaKM6TFfvs00iwIqFia/W6pnU38o2
+         Nvb0+TSm39OyoIdeWPqf40cOHk3rb47YAlS42uq4mD3RCMji5seP0rlZEmBp4StPA2tU
+         1klr15Im50/btN0thcoNO1pM52OXDWUCMiu/qKyuLji7Lyr0VLY/r0d0i/jnqz3fZCf0
+         ZhbbvCmV8pwzyE7sT6NZ9pk6e6qWzMNVwMOW6V2hpKz0roq/6R6fFRGZ0VFWUAkklAji
+         tc2ClALHXnvm6VuJ5I068xkooIz2+UUaKQmtaTrMaTtlzLhKszkaezGNt97vGojQ4Atf
+         4lmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700586954; x=1701191754;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wYvL1f6qyMgF9ZLkQm7l0/EVu68jtasrXI+WCiFQL18=;
+        b=aUhlCf2R2LSb2EKov/9sMSFdw4ii1XqHouy7xWrOtxb+63YUkur6Eb2Gnqk6MdSrid
+         JWB0zI22l/9V2p858NlFHQn/2gmUAsOiAaNIAJ5DZaP3vwTkMKiJt59GTzyVxr+gBa13
+         Ru0AYFBVrzn6IYyE3s3dAdcUrRrJ6O8jaq6Rm88Sg2tpWAvjj0aPG6SHtfLCksVHgqyS
+         rjEyK3KxlLybwA/cWpH3SIMYp5wCkeWVlyhlWFyIUZMOuHXTX7rSzxqkX8i/gAMIGDhO
+         vQ2IGKPo1ipVaXT8mVEMJhy2dR19tHXBjoYE0+8/5nWmcHOntSyJJQssMpN77zVnjOin
+         y9vQ==
+X-Gm-Message-State: AOJu0YzMw3yZtRKw8eolEyryF2MTbiCfPRMPOo4XtJMmRqwefp09PGfA
+	kDC+9qS7rdCQLo99cU3yCIHmCeL7iGKc42dfcI9dWw==
+X-Google-Smtp-Source: AGHT+IE1Yjlr5gsSZr73YBwrAm/JguEA+8gBotneRznXIDcM0Spz8+slB43K4KERP5aFOuw7iXwJdfOtIrJBVa4sOBQ=
+X-Received: by 2002:a05:6830:1da4:b0:6b8:807b:b50 with SMTP id
+ z4-20020a0568301da400b006b8807b0b50mr13016366oti.22.1700586954278; Tue, 21
+ Nov 2023 09:15:54 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-11-21_09,2023-11-21_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 spamscore=0 bulkscore=0 clxscore=1011 phishscore=0
- mlxscore=0 mlxlogscore=572 suspectscore=0 adultscore=0 lowpriorityscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2311060000 definitions=main-2311210129
+References: <20231120212037.911774-1-peter.griffin@linaro.org>
+ <20231120212037.911774-10-peter.griffin@linaro.org> <20231121151630.GA1692178-robh@kernel.org>
+In-Reply-To: <20231121151630.GA1692178-robh@kernel.org>
+From: Peter Griffin <peter.griffin@linaro.org>
+Date: Tue, 21 Nov 2023 17:15:42 +0000
+Message-ID: <CADrjBPo4qw4eJLuGsv7aK4V7QjGR_n_MQ+W-Rrq92iATSLFHZQ@mail.gmail.com>
+Subject: Re: [PATCH v4 09/19] dt-bindings: serial: samsung: Make
+ samsung,uart-fifosize required property
+To: Rob Herring <robh@kernel.org>
+Cc: krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com, 
+	conor+dt@kernel.org, sboyd@kernel.org, tomasz.figa@gmail.com, 
+	s.nawrocki@samsung.com, linus.walleij@linaro.org, wim@linux-watchdog.org, 
+	linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, 
+	olof@lixom.net, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	cw00.choi@samsung.com, alim.akhtar@samsung.com, tudor.ambarus@linaro.org, 
+	andre.draszik@linaro.org, semen.protsenko@linaro.org, saravanak@google.com, 
+	willmcvicker@google.com, soc@kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-watchdog@vger.kernel.org, kernel-team@android.com, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Nov 21, 2023 at 11:36:21AM +0100, Jiri Slaby (SUSE) wrote:
-> clang-struct [1] found raw3215_info::ubuffer unused.
-> 
-> It's actually not used since 2004 when we switched to kernel buffers.
-> 
-> [1] https://github.com/jirislaby/clang-struct
-> 
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Cc: Heiko Carstens <hca@linux.ibm.com>
-> Cc: Vasily Gorbik <gor@linux.ibm.com>
-> Cc: Alexander Gordeev <agordeev@linux.ibm.com>
-> Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
-> Cc: Sven Schnelle <svens@linux.ibm.com>
-> Cc: linux-s390@vger.kernel.org
-> ---
->  drivers/s390/char/con3215.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/s390/char/con3215.c b/drivers/s390/char/con3215.c
-> index 99361618c31f..34bc343dcfcc 100644
-> --- a/drivers/s390/char/con3215.c
-> +++ b/drivers/s390/char/con3215.c
-> @@ -89,7 +89,6 @@ struct raw3215_info {
->  	wait_queue_head_t empty_wait; /* wait queue for flushing */
->  	struct timer_list timer;      /* timer for delayed output */
->  	int line_pos;		      /* position on the line (for tabs) */
-> -	char ubuffer[80];	      /* copy_from_user buffer */
->  };
->  
->  /* array of 3215 devices structures */
+Hi Rob,
 
-Acked-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Thanks for your review.
+
+On Tue, 21 Nov 2023 at 15:16, Rob Herring <robh@kernel.org> wrote:
+>
+> On Mon, Nov 20, 2023 at 09:20:27PM +0000, Peter Griffin wrote:
+> > Specifying samsung,uart-fifosize in both DT and driver static data is error
+> > prone and relies on driver probe order and dt aliases to be correct.
+> >
+> > Additionally on many Exynos platforms these are (USI) universal serial
+> > interfaces which can be uart, spi or i2c, so it can change per board.
+> >
+> > For google,gs101-uart and exynosautov9-uart make samsung,uart-fifosize a
+> > required property. For these platforms fifosize now *only* comes from DT.
+> >
+> > It is hoped other Exynos platforms will also switch over time.
+>
+> Then allow the property on them.
+
+Not sure I fully understand your comment. Can you elaborate? Do you
+mean leave the 'samsung,uart-fifosize' as an optional property like it
+is currently even for the platforms that now require it to be present
+to function correctly?
+
+I deliberately restricted the yaml change to only require this
+property for the SoCs that already set the 'samsung,uart-fifosize'  dt
+property. As setting the property and having the driver use what is
+specified in DT also requires a corresponding driver update (otherwise
+fifosize gets overwritten by the driver static data, and then becomes
+dependent on probe order, dt aliases etc). The rationale was drivers
+'opt in' and add themselves to the compatibles in this patch as they
+migrate away from obtaining fifo size from driver static data to
+obtaining it from DT.
+
+>
+> >
+> > Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> > ---
+> >  .../bindings/serial/samsung_uart.yaml           | 17 +++++++++++++++++
+> >  1 file changed, 17 insertions(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> > index ccc3626779d9..22a1edadc4fe 100644
+> > --- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> > +++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> > @@ -133,6 +133,23 @@ allOf:
+> >              - const: uart
+> >              - const: clk_uart_baud0
+> >
+> > +  - if:
+> > +      properties:
+> > +        compatible:
+> > +          contains:
+> > +            enum:
+> > +              - google,gs101-uart
+> > +              - samsung,exynosautov9-uart
+> > +    then:
+> > +      properties:
+> > +        samsung,uart-fifosize:
+> > +          description: The fifo size supported by the UART channel.
+> > +          $ref: /schemas/types.yaml#/definitions/uint32
+> > +          enum: [16, 64, 256]
+>
+> We already have 'fifo-size' in several drivers. Use that. Please move
+> its type/description definitions to serial.yaml and make drivers just do
+> 'fifo-size: true' if they use it.
+
+What do you suggest we do for the samsung,uart-fifosize property that
+is being used upstream?
+
+>
+> > +
+> > +      required:
+> > +       - samsung,uart-fifosize
+>
+> A new required property is an ABI break. Please explain why that is okay
+> in the commit message.
+>
+
+I can update the commit message to make clear there is an ABI break.
+As mentioned above the platforms where this is now required are either
+already setting the property or are new in this series. Is that
+sufficient justification?
+
+regards,
+
+Peter
