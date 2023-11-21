@@ -1,96 +1,189 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="RSU8gWck"
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FBF612A
-	for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 09:52:13 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id d9443c01a7336-1cf6af8588fso12600855ad.0
-        for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 09:52:13 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="q+9e2Isq"
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A675918E
+	for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 09:52:47 -0800 (PST)
+Received: by mail-pg1-x534.google.com with SMTP id 41be03b00d2f7-53fbf2c42bfso4489333a12.3
+        for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 09:52:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1700589133; x=1701193933; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=QB47EGfsEp2zY8aVpZ1yVDhEkhsejg57h9CxYIF9pMY=;
-        b=RSU8gWck77NXCZny7Jlx/NGb4kecJIYRWEcnVjBCM/uqXAEoJdHhUR9mc+3fd+3N1+
-         4RwXD+FketwnKRl+XE8iQbO7mIRu6fWQYVpKYyHla02fUrAk1gKVCW6D+nBilzQEjlme
-         7cx9q0Zx7lRwYlfoPSnUxxlLPnCXR+aUde+b5glcJGWvxgYSbRtLrQLhIglyiJr6EZX6
-         T49TaOQSYYzN7PcQ53SeoUfR0rfPInnLNbUOWT8MsZKb98HadmV6Cf0mcUA5YrYiusgZ
-         r5ha3+rgR3CXJPtxty45laJGgi7HA7Wh3+MiCfUL9ZIc055H1QL8pjN3BtQcySHANkU4
-         7GHQ==
+        d=linaro.org; s=google; t=1700589167; x=1701193967; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8wpqGVbIK3WplCROjVemwcSWLjI6+dgvA3XaSrJo6hc=;
+        b=q+9e2Isqnn7/iG9+bmRD1I1gZK5To2KQfV63Legm//cSS3PBgUm4/apoJWkn/FUUvG
+         43R7RBI/NS1eEPNCu7LsZR44jvBy1KliSTCuqIJc/TAgtaYIC8/MUr9sxITcTOMUkD4F
+         g6vX3jLo72yPoSJlPPkLqG9rRbmO3PJU+38h44xbmfi5Az1/KAb/eU26d+cfNupZWt/f
+         c+ajD4IC2NoHdFp65jl+sG/MaDggQ7F6YCczx7MVWPxauNQAnt1+kunkYgqbtB8URqIq
+         v+L/y5XU8jJt1EEbq6CV5LkbSB2VoQSgd/d5Aa8jyqJSdnwWMVD1mZ1tpfkIkvx1kmZ7
+         UnDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700589133; x=1701193933;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QB47EGfsEp2zY8aVpZ1yVDhEkhsejg57h9CxYIF9pMY=;
-        b=DRYY0SPQ76u4VUNNxETIA3SOJBnp3XG2jVexfggJuLKYbKDg11bEUJaOfS6rC9jans
-         c+CcfrF6pxhS2AACeKtvX90MkHSozPr9N4kLZcAGYwoagZSc8GrYB58BTizFLSecoc7j
-         UALcZnivR4thsLMij+fMmv6eRhHRer81J0HZKy8YqXhVfgcuhz7GPrBOUDHZHJr10+jB
-         W8Sd+VASPXWT3cRGxD+JiCPO+NEPOK2AQ4f/shj75GrKl2XHTWgQq2ztTc61MhwGSRVJ
-         dG1Sqlwangi3HtLyUTabeXzW3uKqMbHAGVA13ISG57MW2KoHrSFLHlFSd603FtGTGcCS
-         3bAQ==
-X-Gm-Message-State: AOJu0YyZ+U1jxJKndjDlK/xU/Z1fou//E7GmMMSbg2hnWJwzyWkhxau+
-	tbJjpY0ju/CRZbJHNHxmmR8JbA==
-X-Google-Smtp-Source: AGHT+IFWYeTkevTsKJFuxiA1n9NmJm/3ZFZkrXCfs5QmtKQPONxovvZR+2Zqk+21Ud++2IVfWkz2tg==
-X-Received: by 2002:a17:903:1205:b0:1bb:598a:14e5 with SMTP id l5-20020a170903120500b001bb598a14e5mr14104285plh.43.1700589132895;
-        Tue, 21 Nov 2023 09:52:12 -0800 (PST)
-Received: from [172.20.7.39] ([187.217.227.247])
-        by smtp.gmail.com with ESMTPSA id ju4-20020a170903428400b001cc3875e658sm8267124plb.303.2023.11.21.09.52.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Nov 2023 09:52:12 -0800 (PST)
-Message-ID: <6c37708e-c345-4cad-b002-7cc18c9cb7ed@linaro.org>
-Date: Tue, 21 Nov 2023 11:52:09 -0600
+        d=1e100.net; s=20230601; t=1700589167; x=1701193967;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=8wpqGVbIK3WplCROjVemwcSWLjI6+dgvA3XaSrJo6hc=;
+        b=elGvgP/XJJyJTUcowQ17FTiLIT/z24s0M1LWoNKDDhwi8u8EwEtXWlFals2xP60Z3O
+         spz6qBvIB/0MnAqVIoQIQ53AgnKIgYz+S382ybcpUkgNDSO1GNttNKVSFACejqyqQ2kO
+         CB4GMBreoK4Y6CcjW+zPDz58OYreohdqYnPedEHAiR3StLtHZIyuE67fwwf+23ybF3TQ
+         k5qbqNdLccomx4dRIJUeasDkguQjxD/i8UbLpIrMCUtueXfUa3UryGV85mB3bETHEDv+
+         gyTMkLYG88RhmCYi5W4eWHVoExQxkq//91MFMTab8g8q/OIsR5u6+dLfZbSU273/Cynt
+         dptw==
+X-Gm-Message-State: AOJu0YzKkC9EfGSqXgBgt/Kz2FnrX2kcweFdrasHzK9OrgRyrCtiao+N
+	T4cyseOWS7EK7OJ0JrzvwSecCvXfZ2xWya7+Fq+FKQ==
+X-Google-Smtp-Source: AGHT+IEdZp5NTxf9oR3LSlmESZBZSQbkEXjEj7cCwEl5eMeZY9Ha2tcsIk9FWPcD9OV0TPHekxd5b3NDVOKW++TOaBw=
+X-Received: by 2002:a17:90b:1c83:b0:27d:b3d:5c33 with SMTP id
+ oo3-20020a17090b1c8300b0027d0b3d5c33mr13567253pjb.28.1700589167121; Tue, 21
+ Nov 2023 09:52:47 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 17/17] tty: srmcons: make 'str_cr' const and non-array
-Content-Language: en-US
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>, gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
- <mattst88@gmail.com>, linux-alpha@vger.kernel.org
-References: <20231121092258.9334-1-jirislaby@kernel.org>
- <20231121092258.9334-18-jirislaby@kernel.org>
-From: Richard Henderson <richard.henderson@linaro.org>
-In-Reply-To: <20231121092258.9334-18-jirislaby@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Level: *
+References: <20231120212037.911774-1-peter.griffin@linaro.org> <20231120212037.911774-16-peter.griffin@linaro.org>
+In-Reply-To: <20231120212037.911774-16-peter.griffin@linaro.org>
+From: Sam Protsenko <semen.protsenko@linaro.org>
+Date: Tue, 21 Nov 2023 11:52:36 -0600
+Message-ID: <CAPLW+4m+vG62V++izkycRYEhcTpoT+G=g+3Y4j8vqEpeX2uEPw@mail.gmail.com>
+Subject: Re: [PATCH v4 15/19] watchdog: s3c2410_wdt: Add support for WTCON
+ register DBGACK_MASK bit
+To: Peter Griffin <peter.griffin@linaro.org>
+Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, 
+	mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org, 
+	tomasz.figa@gmail.com, s.nawrocki@samsung.com, linus.walleij@linaro.org, 
+	wim@linux-watchdog.org, linux@roeck-us.net, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org, 
+	jirislaby@kernel.org, cw00.choi@samsung.com, alim.akhtar@samsung.com, 
+	tudor.ambarus@linaro.org, andre.draszik@linaro.org, saravanak@google.com, 
+	willmcvicker@google.com, soc@kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-watchdog@vger.kernel.org, kernel-team@android.com, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 11/21/23 03:22, Jiri Slaby (SUSE) wrote:
-> 'str_cr' contains a single character: \n. There is no need to declare it
-
-\r
-
-> as array. Declare it as a variable, make it const and pass a pointer to
-> it to callback_puts().
-> 
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Cc: Richard Henderson <richard.henderson@linaro.org>
-> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> Cc: Matt Turner <mattst88@gmail.com>
-> Cc: linux-alpha@vger.kernel.org
+On Mon, Nov 20, 2023 at 3:21=E2=80=AFPM Peter Griffin <peter.griffin@linaro=
+.org> wrote:
+>
+> The WDT uses the CPU core signal DBGACK to determine whether the SoC
+> is running in debug mode or not. If the DBGACK signal is asserted and
+> DBGACK_MASK is enabled, then WDT output and interrupt is masked.
+>
+> Presence of the DBGACK_MASK bit is determined by adding a new
+> QUIRK_HAS_DBGACK_BIT quirk. Currently only gs101 SoC is known to have
+> the DBGACK_MASK bit so add the quirk to drv_data_gs101_cl1 and
+> drv_data_gs101_cl1 quirks.
+>
+> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
 > ---
->   arch/alpha/kernel/srmcons.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
-> index c6b821afbfd3..a6cff61706b5 100644
-> --- a/arch/alpha/kernel/srmcons.c
-> +++ b/arch/alpha/kernel/srmcons.c
-> @@ -91,7 +91,7 @@ srmcons_receive_chars(struct timer_list *t)
->   static void
->   srmcons_do_write(struct tty_port *port, const char *buf, int count)
->   {
-> -	static char str_cr[1] = "\r";
-> +	static const char str_cr = '\r';
+>  drivers/watchdog/s3c2410_wdt.c | 32 +++++++++++++++++++++++++++-----
+>  1 file changed, 27 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/watchdog/s3c2410_wdt.c b/drivers/watchdog/s3c2410_wd=
+t.c
+> index 08b8c57dd812..ed561deeeed9 100644
+> --- a/drivers/watchdog/s3c2410_wdt.c
+> +++ b/drivers/watchdog/s3c2410_wdt.c
+> @@ -34,9 +34,10 @@
+>
+>  #define S3C2410_WTCNT_MAXCNT   0xffff
+>
+> -#define S3C2410_WTCON_RSTEN    (1 << 0)
+> -#define S3C2410_WTCON_INTEN    (1 << 2)
+> -#define S3C2410_WTCON_ENABLE   (1 << 5)
+> +#define S3C2410_WTCON_RSTEN            (1 << 0)
+> +#define S3C2410_WTCON_INTEN            (1 << 2)
+> +#define S3C2410_WTCON_ENABLE           (1 << 5)
+> +#define S3C2410_WTCON_DBGACK_MASK      (1 << 16)
+>
+>  #define S3C2410_WTCON_DIV16    (0 << 3)
+>  #define S3C2410_WTCON_DIV32    (1 << 3)
+> @@ -107,12 +108,16 @@
+>   * %QUIRK_HAS_PMU_CNT_EN: PMU block has some register (e.g. CLUSTERx_NON=
+CPU_OUT)
+>   * with "watchdog counter enable" bit. That bit should be set to make wa=
+tchdog
+>   * counter running.
+> + *
+> + * %QUIRK_HAS_DBGACK_BIT: WTCON register has DBGACK_MASK bit. Enables ma=
+sking
+> + * WDT interrupt and reset request according to CPU core DBGACK signal.
+>   */
+>  #define QUIRK_HAS_WTCLRINT_REG                 (1 << 0)
+>  #define QUIRK_HAS_PMU_MASK_RESET               (1 << 1)
+>  #define QUIRK_HAS_PMU_RST_STAT                 (1 << 2)
+>  #define QUIRK_HAS_PMU_AUTO_DISABLE             (1 << 3)
+>  #define QUIRK_HAS_PMU_CNT_EN                   (1 << 4)
+> +#define QUIRK_HAS_DBGACK_BIT                   (1 << 5)
+>
+>  /* These quirks require that we have a PMU register map */
+>  #define QUIRKS_HAVE_PMUREG \
+> @@ -279,7 +284,7 @@ static const struct s3c2410_wdt_variant drv_data_gs10=
+1_cl0 =3D {
+>         .cnt_en_reg =3D GS_CLUSTER0_NONCPU_OUT,
+>         .cnt_en_bit =3D 8,
+>         .quirks =3D QUIRK_HAS_PMU_RST_STAT | QUIRK_HAS_PMU_MASK_RESET | Q=
+UIRK_HAS_PMU_CNT_EN |
+> -                 QUIRK_HAS_WTCLRINT_REG,
+> +                 QUIRK_HAS_WTCLRINT_REG | QUIRK_HAS_DBGACK_BIT,
+>  };
+>
+>  static const struct s3c2410_wdt_variant drv_data_gs101_cl1 =3D {
+> @@ -291,7 +296,7 @@ static const struct s3c2410_wdt_variant drv_data_gs10=
+1_cl1 =3D {
+>         .cnt_en_reg =3D GS_CLUSTER1_NONCPU_OUT,
+>         .cnt_en_bit =3D 7,
+>         .quirks =3D QUIRK_HAS_PMU_RST_STAT | QUIRK_HAS_PMU_MASK_RESET | Q=
+UIRK_HAS_PMU_CNT_EN |
+> -                 QUIRK_HAS_WTCLRINT_REG,
+> +                 QUIRK_HAS_WTCLRINT_REG | QUIRK_HAS_DBGACK_BIT,
+>  };
+>
 
-An array of one element is fine -- what's wrong with that?
-Adding const is an improvement though.
+This patch states it's adding the feature, but in fact it's also
+enabling this feature for gs101. Suggest moving this patch before the
+one enabling gs101 wdt. This way, one patch will only add the feature,
+and another patch will enable gs101 entirely (with this feature used).
+At least it seems like more atomic approach to me.
 
-
-r~
+>  static const struct of_device_id s3c2410_wdt_match[] =3D {
+> @@ -408,6 +413,21 @@ static int s3c2410wdt_enable(struct s3c2410_wdt *wdt=
+, bool en)
+>         return 0;
+>  }
+>
+> +static void s3c2410wdt_mask_dbgack(struct s3c2410_wdt *wdt, bool mask)
+> +{
+> +       unsigned long wtcon;
+> +
+> +       if (!(wdt->drv_data->quirks & QUIRK_HAS_DBGACK_BIT))
+> +               return;
+> +
+> +       wtcon =3D readl(wdt->reg_base + S3C2410_WTCON);
+> +       if (mask)
+> +               wtcon |=3D S3C2410_WTCON_DBGACK_MASK;
+> +       else
+> +               wtcon &=3D ~S3C2410_WTCON_DBGACK_MASK;
+> +       writel(wtcon, wdt->reg_base + S3C2410_WTCON);
+> +}
+> +
+>  static int s3c2410wdt_keepalive(struct watchdog_device *wdd)
+>  {
+>         struct s3c2410_wdt *wdt =3D watchdog_get_drvdata(wdd);
+> @@ -737,6 +757,8 @@ static int s3c2410wdt_probe(struct platform_device *p=
+dev)
+>         wdt->wdt_device.bootstatus =3D s3c2410wdt_get_bootstatus(wdt);
+>         wdt->wdt_device.parent =3D dev;
+>
+> +       s3c2410wdt_mask_dbgack(wdt, true);
+> +
+>         /*
+>          * If "tmr_atboot" param is non-zero, start the watchdog right no=
+w. Also
+>          * set WDOG_HW_RUNNING bit, so that watchdog core can kick the wa=
+tchdog.
+> --
+> 2.43.0.rc1.413.gea7ed67945-goog
+>
