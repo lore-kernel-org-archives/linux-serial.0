@@ -1,56 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NN+/OPC7"
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA53418E;
-	Tue, 21 Nov 2023 09:53:22 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dhszuT5b"
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0962F18E;
+	Tue, 21 Nov 2023 09:56:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1700589202; x=1732125202;
+  t=1700589407; x=1732125407;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=wbvLSSVCATMX1TnkhVx4rea6C+nVCD+ipXsQ0+QGSkU=;
-  b=NN+/OPC7wBIFzVoxQcgyhjMomsTjnOzR112V6lw2bvqytupC0W7DLe9y
-   rZg5IgIzgCVhkXQN1hftvhUxnlr9XLSEiKjbe+ib9IZj5aoaQ56klRvKs
-   DVr1FEAQAZuwoqo3lnS5rwDwW0ATwyGaXeRIOxLMio6K1AI/wg4574yol
-   G2BzoRY9Pi8HS680b35hoFWGGpmZRwRftfQd8lrrqnktsZo/L2f3gyEeY
-   AX1nAtZnBURnzzhXRPxCZFDlN+Qw25GClm/NWbzyxSAfZZujq2U6dqNX7
-   QGB0vTlo6CxQzxnYzcuyKkkE8+63jWadW+FlUHqYv/52nOGarfO9UXiK9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="395816145"
+  bh=2/r5O9ktbRjHHos+aJ5yv6QP/Ema933SZY47PqTAdhM=;
+  b=dhszuT5bveA8GlC+AZJUPYnOFeuWaFObdzngxxxnYCo/gqi6CJdO61fN
+   Pheux+uRRM58BsBL987var1Pi4PSQEhdpdZeIH/RmEj8JJhAiK1smxLdM
+   aoj44Rc6heylnevq2dcjFDuss98fFzMb8yrYHnodryU7Ww03OzpGSI4TB
+   2kP7vAyGmc36Lled+LiprSaXUBm5sbI4JqL4iY93XMmIxeXBjCEFAZkJ1
+   ZYvVwnTAPTmJOttvJuPxO+gBCoesq607m8j+6NeBR3oLfyClAWyJ/E/wE
+   fwm4hstnLTvglkwtrCVGPmr19YL8Zb9Hl+SfbpQ7PZy/DYLq5HQm1kC4J
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="382289970"
 X-IronPort-AV: E=Sophos;i="6.04,216,1695711600"; 
-   d="scan'208";a="395816145"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2023 09:53:22 -0800
+   d="scan'208";a="382289970"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2023 09:56:46 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="743124922"
+X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="766716011"
 X-IronPort-AV: E=Sophos;i="6.04,216,1695711600"; 
-   d="scan'208";a="743124922"
+   d="scan'208";a="766716011"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2023 09:53:18 -0800
+  by orsmga002.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2023 09:56:42 -0800
 Received: from andy by smile.fi.intel.com with local (Exim 4.97)
 	(envelope-from <andriy.shevchenko@intel.com>)
-	id 1r5Uvz-0000000FsgA-03lj;
-	Tue, 21 Nov 2023 19:53:15 +0200
-Date: Tue, 21 Nov 2023 19:53:14 +0200
+	id 1r5UzH-0000000Fshq-0kmd;
+	Tue, 21 Nov 2023 19:56:39 +0200
+Date: Tue, 21 Nov 2023 19:56:38 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Tony Lindgren <tony@atomide.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
 	"David S . Miller" <davem@davemloft.net>,
-	Dhruva Gole <d-gole@ti.com>,
+	Petr Mladek <pmladek@suse.com>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>, Dhruva Gole <d-gole@ti.com>,
 	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	John Ogness <john.ogness@linutronix.de>,
 	Johan Hovold <johan@kernel.org>,
 	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
 	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] printk: Save console options for
- add_preferred_console_match()
-Message-ID: <ZVzuih3Aw3hdfj2s@smile.fi.intel.com>
+Subject: Re: [PATCH v3 2/3] serial: core: Add support for DEVNAME:0.0 style
+ naming for kernel console
+Message-ID: <ZVzvVpuMrWqjnqUC@smile.fi.intel.com>
 References: <20231121113203.61341-1-tony@atomide.com>
- <20231121113203.61341-2-tony@atomide.com>
+ <20231121113203.61341-3-tony@atomide.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -59,70 +59,70 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231121113203.61341-2-tony@atomide.com>
+In-Reply-To: <20231121113203.61341-3-tony@atomide.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Tue, Nov 21, 2023 at 01:31:55PM +0200, Tony Lindgren wrote:
-> Driver subsystems may need to translate the preferred console name to the
-> character device name used. We already do some of this in console_setup()
-> with a few hardcoded names, but that does not scale well.
+On Tue, Nov 21, 2023 at 01:31:56PM +0200, Tony Lindgren wrote:
+> We can now add hardware based addressing for serial ports. Starting with
+> commit 84a9582fd203 ("serial: core: Start managing serial controllers to
+> enable runtime PM"), and all the related fixes to this commit, the serial
+> core now knows to which serial port controller the ports are connected.
 > 
-> The console options are parsed early in console_setup(), and the consoles
-> are added with __add_preferred_console(). At this point we don't know much
-> about the character device names and device drivers getting probed.
+> The serial ports can be addressed with DEVNAME:0.0 style naming. The names
+> are something like 00:04:0.0 for a serial port on qemu, and something like
+> 2800000.serial:0.0 on platform device using systems like ARM64 for example.
 > 
-> To allow drivers subsystems to set up a preferred console, let's save the
-> kernel command line console options. To add a preferred console, let's add
-> a new function add_preferred_console_match().
+> The DEVNAME is the unique serial port hardware controller device name, AKA
+> the name for port->dev. The 0.0 are the serial core controller id and port
+> id.
 > 
-> This allows the serial core layer to support console=DEVNAME:0.0 style
-> hardware based addressing in addition to the current console=ttyS0 style
-> naming. And we can start moving console_setup() character device parsing
-> to the driver subsystem specific code.
+> Typically 0.0 are used for each controller and port instance unless the
+> serial port hardware controller has multiple controllers or ports.
 > 
-> We use a separate array from the console_cmdline array as the character
-> device name and index may be unknown at the console_setup() time. And we do
-> not want to call __add_preferred_console() until the character device name
-> and index are known.
+> Using DEVNAME:0.0 style naming actually solves two long term issues for
+> addressing the serial ports:
 > 
-> Adding the console name in addition to the character device name, and a
-> flag for an added console, could be added to the struct console_cmdline.
-> And the console_cmdline array handling modified accordingly. But that
-> complicates things compared saving the console options, and then adding
-> the consoles when the subsystems handling the consoles are ready.
+> 1. According to Andy Shevchenko, using DEVNAME:0.0 style naming fixes an
+>    issue where depending on the BIOS settings, the kernel serial port ttyS
+>    instance number may change if HSUART is enabled
+> 
+> 2. Device tree using architectures no longer necessarily need to specify
+>    aliases to find a specific serial port, and we can just allocate the
+>    ttyS instance numbers dynamically in whatever probe order
+> 
+> To do this, let's match the hardware addressing style console name to
+> the character device name used, and add a preferred console using the
+> character device device name.
 
 ...
 
-> +#include <linux/console.h>
+> +int serial_base_add_preferred_console(struct uart_driver *drv,
+> +				      struct uart_port *port)
+> +{
+> +	const char *port_match __free(kfree);
+> +	int ret;
+> +
+> +	port_match = kasprintf(GFP_KERNEL, "%s:%i.%i", dev_name(port->dev),
+> +			       port->ctrl_id, port->port_id);
+> +	if (!port_match)
+> +		return -ENOMEM;
+> +
+> +	/* Translate a hardware addressing style console=DEVNAME:0.0 */
+> +	ret = add_preferred_console_match(port_match, drv->dev_name, port->line);
+> +	if (ret && ret != -ENOENT)
+> +		return ret;
+> +
+> +	return 0;
 
-> +#include <linux/kernel.h>
+Maybe
 
-I think instead of kernel.h you may want to see these:
+	ret = add_preferred_console_match(port_match, drv->dev_name, port->line);
+	if (ret == -ENOENT)
+		return 0;
 
-linux/init.h
-linux/string.h
+	return ret;
 
-asm/errno.h
-
-> +#include "console_cmdline.h"
-
-...
-
-> +/**
-> + * console_opt_save - Saves kernel command line console option for driver use
-> + * @str: Kernel command line console name and option
-> + *
-> + * Saves a kernel command line console option for driver subsystems to use for
-> + * adding a preferred console during init. Called from console_setup() only.
-
-	scripts/kernel-doc -v -none -Wall ...
-
-most likely will complain (no Return section).
-
-> + */
-> +int __init console_opt_save(char *str)
-
-str is not const? Hmm...
+> +}
 
 -- 
 With Best Regards,
