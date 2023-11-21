@@ -1,189 +1,131 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="q+9e2Isq"
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A675918E
-	for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 09:52:47 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id 41be03b00d2f7-53fbf2c42bfso4489333a12.3
-        for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 09:52:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1700589167; x=1701193967; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8wpqGVbIK3WplCROjVemwcSWLjI6+dgvA3XaSrJo6hc=;
-        b=q+9e2Isqnn7/iG9+bmRD1I1gZK5To2KQfV63Legm//cSS3PBgUm4/apoJWkn/FUUvG
-         43R7RBI/NS1eEPNCu7LsZR44jvBy1KliSTCuqIJc/TAgtaYIC8/MUr9sxITcTOMUkD4F
-         g6vX3jLo72yPoSJlPPkLqG9rRbmO3PJU+38h44xbmfi5Az1/KAb/eU26d+cfNupZWt/f
-         c+ajD4IC2NoHdFp65jl+sG/MaDggQ7F6YCczx7MVWPxauNQAnt1+kunkYgqbtB8URqIq
-         v+L/y5XU8jJt1EEbq6CV5LkbSB2VoQSgd/d5Aa8jyqJSdnwWMVD1mZ1tpfkIkvx1kmZ7
-         UnDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700589167; x=1701193967;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8wpqGVbIK3WplCROjVemwcSWLjI6+dgvA3XaSrJo6hc=;
-        b=elGvgP/XJJyJTUcowQ17FTiLIT/z24s0M1LWoNKDDhwi8u8EwEtXWlFals2xP60Z3O
-         spz6qBvIB/0MnAqVIoQIQ53AgnKIgYz+S382ybcpUkgNDSO1GNttNKVSFACejqyqQ2kO
-         CB4GMBreoK4Y6CcjW+zPDz58OYreohdqYnPedEHAiR3StLtHZIyuE67fwwf+23ybF3TQ
-         k5qbqNdLccomx4dRIJUeasDkguQjxD/i8UbLpIrMCUtueXfUa3UryGV85mB3bETHEDv+
-         gyTMkLYG88RhmCYi5W4eWHVoExQxkq//91MFMTab8g8q/OIsR5u6+dLfZbSU273/Cynt
-         dptw==
-X-Gm-Message-State: AOJu0YzKkC9EfGSqXgBgt/Kz2FnrX2kcweFdrasHzK9OrgRyrCtiao+N
-	T4cyseOWS7EK7OJ0JrzvwSecCvXfZ2xWya7+Fq+FKQ==
-X-Google-Smtp-Source: AGHT+IEdZp5NTxf9oR3LSlmESZBZSQbkEXjEj7cCwEl5eMeZY9Ha2tcsIk9FWPcD9OV0TPHekxd5b3NDVOKW++TOaBw=
-X-Received: by 2002:a17:90b:1c83:b0:27d:b3d:5c33 with SMTP id
- oo3-20020a17090b1c8300b0027d0b3d5c33mr13567253pjb.28.1700589167121; Tue, 21
- Nov 2023 09:52:47 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NN+/OPC7"
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA53418E;
+	Tue, 21 Nov 2023 09:53:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700589202; x=1732125202;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=wbvLSSVCATMX1TnkhVx4rea6C+nVCD+ipXsQ0+QGSkU=;
+  b=NN+/OPC7wBIFzVoxQcgyhjMomsTjnOzR112V6lw2bvqytupC0W7DLe9y
+   rZg5IgIzgCVhkXQN1hftvhUxnlr9XLSEiKjbe+ib9IZj5aoaQ56klRvKs
+   DVr1FEAQAZuwoqo3lnS5rwDwW0ATwyGaXeRIOxLMio6K1AI/wg4574yol
+   G2BzoRY9Pi8HS680b35hoFWGGpmZRwRftfQd8lrrqnktsZo/L2f3gyEeY
+   AX1nAtZnBURnzzhXRPxCZFDlN+Qw25GClm/NWbzyxSAfZZujq2U6dqNX7
+   QGB0vTlo6CxQzxnYzcuyKkkE8+63jWadW+FlUHqYv/52nOGarfO9UXiK9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="395816145"
+X-IronPort-AV: E=Sophos;i="6.04,216,1695711600"; 
+   d="scan'208";a="395816145"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2023 09:53:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="743124922"
+X-IronPort-AV: E=Sophos;i="6.04,216,1695711600"; 
+   d="scan'208";a="743124922"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2023 09:53:18 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@intel.com>)
+	id 1r5Uvz-0000000FsgA-03lj;
+	Tue, 21 Nov 2023 19:53:15 +0200
+Date: Tue, 21 Nov 2023 19:53:14 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Tony Lindgren <tony@atomide.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	"David S . Miller" <davem@davemloft.net>,
+	Dhruva Gole <d-gole@ti.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3 1/3] printk: Save console options for
+ add_preferred_console_match()
+Message-ID: <ZVzuih3Aw3hdfj2s@smile.fi.intel.com>
+References: <20231121113203.61341-1-tony@atomide.com>
+ <20231121113203.61341-2-tony@atomide.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20231120212037.911774-1-peter.griffin@linaro.org> <20231120212037.911774-16-peter.griffin@linaro.org>
-In-Reply-To: <20231120212037.911774-16-peter.griffin@linaro.org>
-From: Sam Protsenko <semen.protsenko@linaro.org>
-Date: Tue, 21 Nov 2023 11:52:36 -0600
-Message-ID: <CAPLW+4m+vG62V++izkycRYEhcTpoT+G=g+3Y4j8vqEpeX2uEPw@mail.gmail.com>
-Subject: Re: [PATCH v4 15/19] watchdog: s3c2410_wdt: Add support for WTCON
- register DBGACK_MASK bit
-To: Peter Griffin <peter.griffin@linaro.org>
-Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, 
-	mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org, 
-	tomasz.figa@gmail.com, s.nawrocki@samsung.com, linus.walleij@linaro.org, 
-	wim@linux-watchdog.org, linux@roeck-us.net, catalin.marinas@arm.com, 
-	will@kernel.org, arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org, 
-	jirislaby@kernel.org, cw00.choi@samsung.com, alim.akhtar@samsung.com, 
-	tudor.ambarus@linaro.org, andre.draszik@linaro.org, saravanak@google.com, 
-	willmcvicker@google.com, soc@kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
-	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-watchdog@vger.kernel.org, kernel-team@android.com, 
-	linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231121113203.61341-2-tony@atomide.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Mon, Nov 20, 2023 at 3:21=E2=80=AFPM Peter Griffin <peter.griffin@linaro=
-.org> wrote:
->
-> The WDT uses the CPU core signal DBGACK to determine whether the SoC
-> is running in debug mode or not. If the DBGACK signal is asserted and
-> DBGACK_MASK is enabled, then WDT output and interrupt is masked.
->
-> Presence of the DBGACK_MASK bit is determined by adding a new
-> QUIRK_HAS_DBGACK_BIT quirk. Currently only gs101 SoC is known to have
-> the DBGACK_MASK bit so add the quirk to drv_data_gs101_cl1 and
-> drv_data_gs101_cl1 quirks.
->
-> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
-> ---
->  drivers/watchdog/s3c2410_wdt.c | 32 +++++++++++++++++++++++++++-----
->  1 file changed, 27 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/watchdog/s3c2410_wdt.c b/drivers/watchdog/s3c2410_wd=
-t.c
-> index 08b8c57dd812..ed561deeeed9 100644
-> --- a/drivers/watchdog/s3c2410_wdt.c
-> +++ b/drivers/watchdog/s3c2410_wdt.c
-> @@ -34,9 +34,10 @@
->
->  #define S3C2410_WTCNT_MAXCNT   0xffff
->
-> -#define S3C2410_WTCON_RSTEN    (1 << 0)
-> -#define S3C2410_WTCON_INTEN    (1 << 2)
-> -#define S3C2410_WTCON_ENABLE   (1 << 5)
-> +#define S3C2410_WTCON_RSTEN            (1 << 0)
-> +#define S3C2410_WTCON_INTEN            (1 << 2)
-> +#define S3C2410_WTCON_ENABLE           (1 << 5)
-> +#define S3C2410_WTCON_DBGACK_MASK      (1 << 16)
->
->  #define S3C2410_WTCON_DIV16    (0 << 3)
->  #define S3C2410_WTCON_DIV32    (1 << 3)
-> @@ -107,12 +108,16 @@
->   * %QUIRK_HAS_PMU_CNT_EN: PMU block has some register (e.g. CLUSTERx_NON=
-CPU_OUT)
->   * with "watchdog counter enable" bit. That bit should be set to make wa=
-tchdog
->   * counter running.
+On Tue, Nov 21, 2023 at 01:31:55PM +0200, Tony Lindgren wrote:
+> Driver subsystems may need to translate the preferred console name to the
+> character device name used. We already do some of this in console_setup()
+> with a few hardcoded names, but that does not scale well.
+> 
+> The console options are parsed early in console_setup(), and the consoles
+> are added with __add_preferred_console(). At this point we don't know much
+> about the character device names and device drivers getting probed.
+> 
+> To allow drivers subsystems to set up a preferred console, let's save the
+> kernel command line console options. To add a preferred console, let's add
+> a new function add_preferred_console_match().
+> 
+> This allows the serial core layer to support console=DEVNAME:0.0 style
+> hardware based addressing in addition to the current console=ttyS0 style
+> naming. And we can start moving console_setup() character device parsing
+> to the driver subsystem specific code.
+> 
+> We use a separate array from the console_cmdline array as the character
+> device name and index may be unknown at the console_setup() time. And we do
+> not want to call __add_preferred_console() until the character device name
+> and index are known.
+> 
+> Adding the console name in addition to the character device name, and a
+> flag for an added console, could be added to the struct console_cmdline.
+> And the console_cmdline array handling modified accordingly. But that
+> complicates things compared saving the console options, and then adding
+> the consoles when the subsystems handling the consoles are ready.
+
+...
+
+> +#include <linux/console.h>
+
+> +#include <linux/kernel.h>
+
+I think instead of kernel.h you may want to see these:
+
+linux/init.h
+linux/string.h
+
+asm/errno.h
+
+> +#include "console_cmdline.h"
+
+...
+
+> +/**
+> + * console_opt_save - Saves kernel command line console option for driver use
+> + * @str: Kernel command line console name and option
 > + *
-> + * %QUIRK_HAS_DBGACK_BIT: WTCON register has DBGACK_MASK bit. Enables ma=
-sking
-> + * WDT interrupt and reset request according to CPU core DBGACK signal.
->   */
->  #define QUIRK_HAS_WTCLRINT_REG                 (1 << 0)
->  #define QUIRK_HAS_PMU_MASK_RESET               (1 << 1)
->  #define QUIRK_HAS_PMU_RST_STAT                 (1 << 2)
->  #define QUIRK_HAS_PMU_AUTO_DISABLE             (1 << 3)
->  #define QUIRK_HAS_PMU_CNT_EN                   (1 << 4)
-> +#define QUIRK_HAS_DBGACK_BIT                   (1 << 5)
->
->  /* These quirks require that we have a PMU register map */
->  #define QUIRKS_HAVE_PMUREG \
-> @@ -279,7 +284,7 @@ static const struct s3c2410_wdt_variant drv_data_gs10=
-1_cl0 =3D {
->         .cnt_en_reg =3D GS_CLUSTER0_NONCPU_OUT,
->         .cnt_en_bit =3D 8,
->         .quirks =3D QUIRK_HAS_PMU_RST_STAT | QUIRK_HAS_PMU_MASK_RESET | Q=
-UIRK_HAS_PMU_CNT_EN |
-> -                 QUIRK_HAS_WTCLRINT_REG,
-> +                 QUIRK_HAS_WTCLRINT_REG | QUIRK_HAS_DBGACK_BIT,
->  };
->
->  static const struct s3c2410_wdt_variant drv_data_gs101_cl1 =3D {
-> @@ -291,7 +296,7 @@ static const struct s3c2410_wdt_variant drv_data_gs10=
-1_cl1 =3D {
->         .cnt_en_reg =3D GS_CLUSTER1_NONCPU_OUT,
->         .cnt_en_bit =3D 7,
->         .quirks =3D QUIRK_HAS_PMU_RST_STAT | QUIRK_HAS_PMU_MASK_RESET | Q=
-UIRK_HAS_PMU_CNT_EN |
-> -                 QUIRK_HAS_WTCLRINT_REG,
-> +                 QUIRK_HAS_WTCLRINT_REG | QUIRK_HAS_DBGACK_BIT,
->  };
->
+> + * Saves a kernel command line console option for driver subsystems to use for
+> + * adding a preferred console during init. Called from console_setup() only.
 
-This patch states it's adding the feature, but in fact it's also
-enabling this feature for gs101. Suggest moving this patch before the
-one enabling gs101 wdt. This way, one patch will only add the feature,
-and another patch will enable gs101 entirely (with this feature used).
-At least it seems like more atomic approach to me.
+	scripts/kernel-doc -v -none -Wall ...
 
->  static const struct of_device_id s3c2410_wdt_match[] =3D {
-> @@ -408,6 +413,21 @@ static int s3c2410wdt_enable(struct s3c2410_wdt *wdt=
-, bool en)
->         return 0;
->  }
->
-> +static void s3c2410wdt_mask_dbgack(struct s3c2410_wdt *wdt, bool mask)
-> +{
-> +       unsigned long wtcon;
-> +
-> +       if (!(wdt->drv_data->quirks & QUIRK_HAS_DBGACK_BIT))
-> +               return;
-> +
-> +       wtcon =3D readl(wdt->reg_base + S3C2410_WTCON);
-> +       if (mask)
-> +               wtcon |=3D S3C2410_WTCON_DBGACK_MASK;
-> +       else
-> +               wtcon &=3D ~S3C2410_WTCON_DBGACK_MASK;
-> +       writel(wtcon, wdt->reg_base + S3C2410_WTCON);
-> +}
-> +
->  static int s3c2410wdt_keepalive(struct watchdog_device *wdd)
->  {
->         struct s3c2410_wdt *wdt =3D watchdog_get_drvdata(wdd);
-> @@ -737,6 +757,8 @@ static int s3c2410wdt_probe(struct platform_device *p=
-dev)
->         wdt->wdt_device.bootstatus =3D s3c2410wdt_get_bootstatus(wdt);
->         wdt->wdt_device.parent =3D dev;
->
-> +       s3c2410wdt_mask_dbgack(wdt, true);
-> +
->         /*
->          * If "tmr_atboot" param is non-zero, start the watchdog right no=
-w. Also
->          * set WDOG_HW_RUNNING bit, so that watchdog core can kick the wa=
-tchdog.
-> --
-> 2.43.0.rc1.413.gea7ed67945-goog
->
+most likely will complain (no Return section).
+
+> + */
+> +int __init console_opt_save(char *str)
+
+str is not const? Hmm...
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
