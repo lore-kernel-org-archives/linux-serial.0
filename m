@@ -1,52 +1,41 @@
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="kJI22AIu";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="yDveSRTO"
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE28D69;
-	Tue, 21 Nov 2023 06:41:19 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id BB4461F8B8;
-	Tue, 21 Nov 2023 14:41:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1700577677; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=NSc7dP9JzioiJiPzKQCkXwUEPBhmaH4jbrYRamLVKsQ=;
-	b=kJI22AIuRUb3nVsA+UJE6w2U9+rrfphlpRFyqA9z71oNPm7LVaJntV8vddvAtR2AHlmWj1
-	3zlWa5/ljsCcbJyqP6XJ9afEvEZpRbA+TrMfPsZ49E3KmkkJf62uSLARhUwRhS70mUwVqj
-	UlFCWY6twxUQLILMfHpa4V1PO2JNj9A=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1700577677;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=NSc7dP9JzioiJiPzKQCkXwUEPBhmaH4jbrYRamLVKsQ=;
-	b=yDveSRTOubmCcQmsntdchqyzuNwmHSc04CB6N/AqUXqbkxdWpKedjuaiLf5arcrx4RJjDv
-	jobwcrw/OzS66dCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B1C39138E3;
-	Tue, 21 Nov 2023 14:41:17 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-	by imap2.suse-dmz.suse.de with ESMTPSA
-	id P8BXK43BXGXnWgAAMHmgww
-	(envelope-from <jack@suse.cz>); Tue, 21 Nov 2023 14:41:17 +0000
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-	id F2478A07D9; Tue, 21 Nov 2023 15:41:16 +0100 (CET)
-Date: Tue, 21 Nov 2023 15:41:16 +0100
-From: Jan Kara <jack@suse.cz>
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Jan Kara <jack@suse.com>
-Subject: Re: [PATCH 01/17] tty: deprecate tty_write_message()
-Message-ID: <20231121144116.4kvwinm2vjevmqcy@quack3>
-References: <20231121092258.9334-1-jirislaby@kernel.org>
- <20231121092258.9334-2-jirislaby@kernel.org>
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642ABDD;
+	Tue, 21 Nov 2023 07:16:35 -0800 (PST)
+Received: by mail-il1-f176.google.com with SMTP id e9e14a558f8ab-359343e399fso15592825ab.0;
+        Tue, 21 Nov 2023 07:16:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700579794; x=1701184594;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MHBJbcTYAJFzd8BQozdA+OUJ8WFFDeZmUm9glBYXWMY=;
+        b=XMFfMNWGezswcSMFIRgJPHxeTNGDRVREXwioKmCOZ8Uv8cmK+eeL5p11X/TGPwzHLV
+         LsWq8njDA0khhQUO7BGMjPQBR+iBfwh5ZXdrep8yd+y5yIke9/Sf9PyY8ox4pBogimC6
+         rPUem/RO2jAlwICWzfg4MTqoJDEtpSgnoXVeVVxq4ICyD1p6HnpbuMYfvS2Ve0c4A0UD
+         0jv1PCU0pM3TfnTugL6PXbH9gCjhFcEjz/W/Jmh1keJfItofz3JmdeGF1NNI2/YhmXfB
+         M2m6hkUjYbqc2c2Jd8IgP9NrR3VrXOSuu4Gvyhrl+Q0sUTKD/E9/pYH9rKkn4Ahz/GpZ
+         ZBDw==
+X-Gm-Message-State: AOJu0Yx4K+G+7pVmdGGpkSl+2kTELWIw3aH9SJy19zk3gsOggsAzxRQ9
+	c7joqsBzdASgkUPPDyI7Jw==
+X-Google-Smtp-Source: AGHT+IGs+KFHExCqkcg3K0j2WE48eh5fwSy6aeVyBcCWydv816/PY/81hpz3b4X9rc/LANFLxc7uYA==
+X-Received: by 2002:a92:c90e:0:b0:35b:4b9:7883 with SMTP id t14-20020a92c90e000000b0035b04b97883mr6859544ilp.25.1700579794614;
+        Tue, 21 Nov 2023 07:16:34 -0800 (PST)
+Received: from herring.priv ([64.188.179.252])
+        by smtp.gmail.com with ESMTPSA id s16-20020a02cf30000000b0046676167055sm170383jar.129.2023.11.21.07.16.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Nov 2023 07:16:33 -0800 (PST)
+Received: (nullmailer pid 1791730 invoked by uid 1000);
+	Tue, 21 Nov 2023 15:16:30 -0000
+Date: Tue, 21 Nov 2023 08:16:30 -0700
+From: Rob Herring <robh@kernel.org>
+To: Peter Griffin <peter.griffin@linaro.org>
+Cc: krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org, tomasz.figa@gmail.com, s.nawrocki@samsung.com, linus.walleij@linaro.org, wim@linux-watchdog.org, linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org, jirislaby@kernel.org, cw00.choi@samsung.com, alim.akhtar@samsung.com, tudor.ambarus@linaro.org, andre.draszik@linaro.org, semen.protsenko@linaro.org, saravanak@google.com, willmcvicker@google.com, soc@kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org, kernel-team@android.com, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v4 09/19] dt-bindings: serial: samsung: Make
+ samsung,uart-fifosize required property
+Message-ID: <20231121151630.GA1692178-robh@kernel.org>
+References: <20231120212037.911774-1-peter.griffin@linaro.org>
+ <20231120212037.911774-10-peter.griffin@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -55,85 +44,59 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231121092258.9334-2-jirislaby@kernel.org>
-Authentication-Results: smtp-out2.suse.de;
-	none
-X-Spam-Level: 
-X-Spam-Score: -5.01
-X-Spamd-Result: default: False [-5.01 / 50.00];
-	 ARC_NA(0.00)[];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 TO_MATCH_ENVRCPT_ALL(0.00)[];
-	 NEURAL_HAM_LONG(-1.00)[-1.000];
-	 MIME_GOOD(-0.10)[text/plain];
-	 REPLY(-4.00)[];
-	 RCPT_COUNT_FIVE(0.00)[5];
-	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 NEURAL_HAM_SHORT(-0.20)[-1.000];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 MID_RHS_NOT_FQDN(0.50)[];
-	 RCVD_COUNT_TWO(0.00)[2];
-	 RCVD_TLS_ALL(0.00)[];
-	 BAYES_HAM(-0.21)[71.76%]
+In-Reply-To: <20231120212037.911774-10-peter.griffin@linaro.org>
 
-On Tue 21-11-23 10:22:42, Jiri Slaby (SUSE) wrote:
-> tty_write_message() has only one user: quotas. In particular, there the
-> use depends on CONFIG_PRINT_QUOTA_WARNING. And that is deprecated and
-> marked as BROKEN already too.
+On Mon, Nov 20, 2023 at 09:20:27PM +0000, Peter Griffin wrote:
+> Specifying samsung,uart-fifosize in both DT and driver static data is error
+> prone and relies on driver probe order and dt aliases to be correct.
 > 
-> So make tty_write_message() dependent on that very config option. This
-> action in fact drops tty_write_message() from the vmlinux binary. Good
-> riddance.
+> Additionally on many Exynos platforms these are (USI) universal serial
+> interfaces which can be uart, spi or i2c, so it can change per board.
 > 
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Cc: Jan Kara <jack@suse.com>
+> For google,gs101-uart and exynosautov9-uart make samsung,uart-fifosize a
+> required property. For these platforms fifosize now *only* comes from DT.
+> 
+> It is hoped other Exynos platforms will also switch over time.
 
-Sure, that was indeed a hack. Feel free to add:
+Then allow the property on them.
 
-Acked-by: Jan Kara <jack@suse.cz>
-
-								Honza
-
+> 
+> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
 > ---
->  drivers/tty/tty_io.c | 4 ++++
->  1 file changed, 4 insertions(+)
+>  .../bindings/serial/samsung_uart.yaml           | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
 > 
-> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-> index 06414e43e0b5..ee5a90f9adb5 100644
-> --- a/drivers/tty/tty_io.c
-> +++ b/drivers/tty/tty_io.c
-> @@ -1047,6 +1047,7 @@ static ssize_t iterate_tty_write(struct tty_ldisc *ld, struct tty_struct *tty,
->  	return ret;
->  }
+> diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> index ccc3626779d9..22a1edadc4fe 100644
+> --- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> @@ -133,6 +133,23 @@ allOf:
+>              - const: uart
+>              - const: clk_uart_baud0
 >  
-> +#ifdef CONFIG_PRINT_QUOTA_WARNING
->  /**
->   * tty_write_message - write a message to a certain tty, not just the console.
->   * @tty: the destination tty_struct
-> @@ -1057,6 +1058,8 @@ static ssize_t iterate_tty_write(struct tty_ldisc *ld, struct tty_struct *tty,
->   * needed.
->   *
->   * We must still hold the BTM and test the CLOSING flag for the moment.
-> + *
-> + * This function is DEPRECATED, do not use in new code.
->   */
->  void tty_write_message(struct tty_struct *tty, char *msg)
->  {
-> @@ -1069,6 +1072,7 @@ void tty_write_message(struct tty_struct *tty, char *msg)
->  		tty_write_unlock(tty);
->  	}
->  }
-> +#endif
->  
->  static ssize_t file_tty_write(struct file *file, struct kiocb *iocb, struct iov_iter *from)
->  {
-> -- 
-> 2.42.1
-> 
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - google,gs101-uart
+> +              - samsung,exynosautov9-uart
+> +    then:
+> +      properties:
+> +        samsung,uart-fifosize:
+> +          description: The fifo size supported by the UART channel.
+> +          $ref: /schemas/types.yaml#/definitions/uint32
+> +          enum: [16, 64, 256]
+
+We already have 'fifo-size' in several drivers. Use that. Please move 
+its type/description definitions to serial.yaml and make drivers just do 
+'fifo-size: true' if they use it.
+
+> +
+> +      required:
+> +       - samsung,uart-fifosize
+
+A new required property is an ABI break. Please explain why that is okay 
+in the commit message.
+
+Rob
