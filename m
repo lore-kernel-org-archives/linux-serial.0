@@ -1,131 +1,108 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dhszuT5b"
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0962F18E;
-	Tue, 21 Nov 2023 09:56:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1700589407; x=1732125407;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2/r5O9ktbRjHHos+aJ5yv6QP/Ema933SZY47PqTAdhM=;
-  b=dhszuT5bveA8GlC+AZJUPYnOFeuWaFObdzngxxxnYCo/gqi6CJdO61fN
-   Pheux+uRRM58BsBL987var1Pi4PSQEhdpdZeIH/RmEj8JJhAiK1smxLdM
-   aoj44Rc6heylnevq2dcjFDuss98fFzMb8yrYHnodryU7Ww03OzpGSI4TB
-   2kP7vAyGmc36Lled+LiprSaXUBm5sbI4JqL4iY93XMmIxeXBjCEFAZkJ1
-   ZYvVwnTAPTmJOttvJuPxO+gBCoesq607m8j+6NeBR3oLfyClAWyJ/E/wE
-   fwm4hstnLTvglkwtrCVGPmr19YL8Zb9Hl+SfbpQ7PZy/DYLq5HQm1kC4J
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="382289970"
-X-IronPort-AV: E=Sophos;i="6.04,216,1695711600"; 
-   d="scan'208";a="382289970"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2023 09:56:46 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="766716011"
-X-IronPort-AV: E=Sophos;i="6.04,216,1695711600"; 
-   d="scan'208";a="766716011"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga002.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2023 09:56:42 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@intel.com>)
-	id 1r5UzH-0000000Fshq-0kmd;
-	Tue, 21 Nov 2023 19:56:39 +0200
-Date: Tue, 21 Nov 2023 19:56:38 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Tony Lindgren <tony@atomide.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	"David S . Miller" <davem@davemloft.net>,
-	Petr Mladek <pmladek@suse.com>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>, Dhruva Gole <d-gole@ti.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Johan Hovold <johan@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] serial: core: Add support for DEVNAME:0.0 style
- naming for kernel console
-Message-ID: <ZVzvVpuMrWqjnqUC@smile.fi.intel.com>
-References: <20231121113203.61341-1-tony@atomide.com>
- <20231121113203.61341-3-tony@atomide.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="C/ZEMiJF"
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603D512C
+	for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 09:58:31 -0800 (PST)
+Received: by mail-ot1-x331.google.com with SMTP id 46e09a7af769-6cd1918afb2so3862242a34.0
+        for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 09:58:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1700589510; x=1701194310; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=77qERLs0OaQrBVtVqKqY8REeDJgJr05nxeZrsBFakuY=;
+        b=C/ZEMiJFlpYDHxuW1leUupyS6vNzdkfSumXePhGeFDhDCLK1cdurDgDjkbAhPXNUdR
+         qkMPqpti0sv8HqkMMkuHCSYzgNvFI0Ov90tBF4Nv6cg5+5OqPKZXvlTRuq9K+WbzYN5k
+         WMvrVAd5hyRH07yloQ5Oy095mdEMhN2JY5mXdGF9lG4G9LABX5tSNMEsaz38TfU7Sh9J
+         5cbpvt0c92/hkvgReLQ9ijmal1MfBpcJEVdZP89dgqYwOHpNzxNhrva/oCM8Zk9zYnoO
+         zBoqtlosoI7ovoSMcVOjXLZNV6ag4AhMV/oE/HzcRuLUAhMhWr7Th3SZ2Dqq+Mst6+wy
+         +q7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700589510; x=1701194310;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=77qERLs0OaQrBVtVqKqY8REeDJgJr05nxeZrsBFakuY=;
+        b=VMrJsGsGOnubyVElCEE4o68c/ldP6e8/NHMoeJ40fzNhPGasDovK+8EfLcRGrpTGKQ
+         11OStO17ciAiy+cwr6Xqg30cYsz93sn0jQF217oh6GTbB0UTsJ+Zx2acBkG1oNMVIatO
+         BHhZrpvKVihusZmdQNenZp7/tM07mlDccKZ6Reu5Pe0uhd0CVpfQnDLhPYohBjyozHyN
+         jXgWAz4A51BJQ9Q/02jwGdS46TUa6ey4wjKLh/mU508uYBk9HtBzE46DeeYUIGlQpofV
+         RGeDf/yKsEYbGXdBeqOd9MHpPghMhT0Jfyr8vnOic5MtvR1pmowExVayZFOSnyHihGi0
+         o1Xg==
+X-Gm-Message-State: AOJu0Yz9CWKJrQDQV+ah9TXQtSssRt/fHz3FWZMHDRSJrTAZjXbPr6gN
+	OnW+wpCRDbBWGV+TzYg0KjKdjA==
+X-Google-Smtp-Source: AGHT+IH2kHEJhg1L+w3IKpHNOng3FayS3H19pAQ9FtKcBKGQIPjhcoraxZrC/R/qsT/fQHVTmFyF/Q==
+X-Received: by 2002:a05:6870:46a9:b0:1e9:b0fa:de48 with SMTP id a41-20020a05687046a900b001e9b0fade48mr7101338oap.47.1700589510707;
+        Tue, 21 Nov 2023 09:58:30 -0800 (PST)
+Received: from [172.20.7.39] ([187.217.227.247])
+        by smtp.gmail.com with ESMTPSA id j25-20020a9d7699000000b006b74bea76c0sm1648610otl.47.2023.11.21.09.58.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Nov 2023 09:58:30 -0800 (PST)
+Message-ID: <885063ee-b0da-42cc-b836-da2117d4d3aa@linaro.org>
+Date: Tue, 21 Nov 2023 11:58:27 -0600
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231121113203.61341-3-tony@atomide.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 17/17] tty: srmcons: make 'str_cr' const and non-array
+Content-Language: en-US
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>, gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
+ <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+References: <20231121092258.9334-1-jirislaby@kernel.org>
+ <20231121092258.9334-18-jirislaby@kernel.org>
+From: Richard Henderson <richard.henderson@linaro.org>
+In-Reply-To: <20231121092258.9334-18-jirislaby@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Level: *
 
-On Tue, Nov 21, 2023 at 01:31:56PM +0200, Tony Lindgren wrote:
-> We can now add hardware based addressing for serial ports. Starting with
-> commit 84a9582fd203 ("serial: core: Start managing serial controllers to
-> enable runtime PM"), and all the related fixes to this commit, the serial
-> core now knows to which serial port controller the ports are connected.
+On 11/21/23 03:22, Jiri Slaby (SUSE) wrote:
+> 'str_cr' contains a single character: \n. There is no need to declare it
+> as array. Declare it as a variable, make it const and pass a pointer to
+> it to callback_puts().
 > 
-> The serial ports can be addressed with DEVNAME:0.0 style naming. The names
-> are something like 00:04:0.0 for a serial port on qemu, and something like
-> 2800000.serial:0.0 on platform device using systems like ARM64 for example.
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Cc: Richard Henderson <richard.henderson@linaro.org>
+> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> Cc: Matt Turner <mattst88@gmail.com>
+> Cc: linux-alpha@vger.kernel.org
+> ---
+>   arch/alpha/kernel/srmcons.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> The DEVNAME is the unique serial port hardware controller device name, AKA
-> the name for port->dev. The 0.0 are the serial core controller id and port
-> id.
-> 
-> Typically 0.0 are used for each controller and port instance unless the
-> serial port hardware controller has multiple controllers or ports.
-> 
-> Using DEVNAME:0.0 style naming actually solves two long term issues for
-> addressing the serial ports:
-> 
-> 1. According to Andy Shevchenko, using DEVNAME:0.0 style naming fixes an
->    issue where depending on the BIOS settings, the kernel serial port ttyS
->    instance number may change if HSUART is enabled
-> 
-> 2. Device tree using architectures no longer necessarily need to specify
->    aliases to find a specific serial port, and we can just allocate the
->    ttyS instance numbers dynamically in whatever probe order
-> 
-> To do this, let's match the hardware addressing style console name to
-> the character device name used, and add a preferred console using the
-> character device device name.
+> diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
+> index c6b821afbfd3..a6cff61706b5 100644
+> --- a/arch/alpha/kernel/srmcons.c
+> +++ b/arch/alpha/kernel/srmcons.c
+> @@ -91,7 +91,7 @@ srmcons_receive_chars(struct timer_list *t)
+>   static void
+>   srmcons_do_write(struct tty_port *port, const char *buf, int count)
+>   {
+> -	static char str_cr[1] = "\r";
+> +	static const char str_cr = '\r';
 
-...
+Best to remove this entirely...
 
-> +int serial_base_add_preferred_console(struct uart_driver *drv,
-> +				      struct uart_port *port)
-> +{
-> +	const char *port_match __free(kfree);
-> +	int ret;
-> +
-> +	port_match = kasprintf(GFP_KERNEL, "%s:%i.%i", dev_name(port->dev),
-> +			       port->ctrl_id, port->port_id);
-> +	if (!port_match)
-> +		return -ENOMEM;
-> +
-> +	/* Translate a hardware addressing style console=DEVNAME:0.0 */
-> +	ret = add_preferred_console_match(port_match, drv->dev_name, port->line);
-> +	if (ret && ret != -ENOENT)
-> +		return ret;
-> +
-> +	return 0;
+>   	size_t c;
+>   	srmcons_result result;
+>   
+> @@ -119,7 +119,7 @@ srmcons_do_write(struct tty_port *port, const char *buf, int count)
+>   		}
+>   
+>   		while (need_cr) {
+> -			result.as_long = callback_puts(0, str_cr, 1);
+> +			result.as_long = callback_puts(0, &str_cr, 1);
 
-Maybe
+... and simply use "\r" here.
 
-	ret = add_preferred_console_match(port_match, drv->dev_name, port->line);
-	if (ret == -ENOENT)
-		return 0;
-
-	return ret;
-
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
+Logically it adds one '\0' of const data, but it is virtually certain that even more bytes 
+of padding are present anyway.  As a string literal it will be placed into .rodata.str1.1 
+and packed with other strings.
 
 
+r~
