@@ -1,118 +1,147 @@
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A978894
-	for <linux-serial@vger.kernel.org>; Mon, 20 Nov 2023 23:35:14 -0800 (PST)
-Received: from [127.0.0.1] (helo=localhost)
-	by relay.expurgate.net with smtp (Exim 4.92)
-	(envelope-from <prvs=0703440f32=fe@dev.tdt.de>)
-	id 1r5LHs-00Eicc-WB
-	for linux-serial@vger.kernel.org; Tue, 21 Nov 2023 08:35:13 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-	by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <fe@dev.tdt.de>)
-	id 1r5LHs-00GH8g-KH
-	for linux-serial@vger.kernel.org; Tue, 21 Nov 2023 08:35:12 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-	by securemail.tdt.de (Postfix) with ESMTP id 5A7A9240049
-	for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 08:35:12 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-	by securemail.tdt.de (Postfix) with ESMTP id 18521240040;
-	Tue, 21 Nov 2023 08:35:12 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-	by mail.dev.tdt.de (Postfix) with ESMTP id 9BDCA33A3D;
-	Tue, 21 Nov 2023 08:35:11 +0100 (CET)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="EbYZ4CIm"
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98B1D18C
+	for <linux-serial@vger.kernel.org>; Mon, 20 Nov 2023 23:52:47 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id 5b1f17b1804b1-40b29776977so2181235e9.2
+        for <linux-serial@vger.kernel.org>; Mon, 20 Nov 2023 23:52:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1700553166; x=1701157966; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=lMQnC3xxg9nQ5CSTjwvq51bb7r2ejM99AkN20ZO+64s=;
+        b=EbYZ4CImBjR2CjdScCJ3awinvZgxmOkVMbmuUylQFcA9Qk6XJVMY5UI/f01d9umvIs
+         JvFF5J8ZtsXSxkbOYHJPxazs0x2LwGQyqOKJnrxGdl0G+9ehI5MtoD9MCHWOkXmaIecB
+         rBCIc8EC+/nAeOgsOKAb+8TA8GTCoKivz3SrbaTKcN0GolfUfqWnaQ21yB6h2x5d2A6K
+         Gp3g4O1JZsWfZXMcPG2EV5pkRkFYR9rO5J2yXGnruWm5UoDqjsdUeGIn4SBAqaGewjbG
+         fM+UJ69lEDuIcg6lzAK1th1TrV3OvwbmTuVC2x1f+qarKFD1DSwSGUFMQtMxvkQ+hNuy
+         Dtpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700553166; x=1701157966;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=lMQnC3xxg9nQ5CSTjwvq51bb7r2ejM99AkN20ZO+64s=;
+        b=o3sUR/IPIG5xwBGFZ7t49o041Dtm4422Saf/l0hbNIYtTjMb1YU4BLgBfQRuWrPc6P
+         VAiLP52mlvTjezrc2OcHfR8LIcCGHyOtSdnIbqQolFiHZ215/gonE3ScNm3IgsShW0tZ
+         4/kkNEosHVIONsnfJ1WUlYVODCVD7maZM4cRBrAqf/EoEeCUxysF/NCnHYpG8lsaNsuy
+         Dghm/fEPEmF1A2kesDvEbQ6PGhpjQOtf7uiB0+pMPplB9MF9buj/JzPV1dXMAu54YW0m
+         D9W8tjqyyKC4kK1Rjp6NkoODllwLBm7ULkGCZ+u5d2sT244LyoD2HoD+wuglnDMdgw3e
+         teMQ==
+X-Gm-Message-State: AOJu0YxWshHCxzz5/p3vL+8Aj+7JynsqpZbHih/DrnF4Kq+VJZO3yWXf
+	8g/VBUZkiviLc2r3pOjuVsqNzw==
+X-Google-Smtp-Source: AGHT+IFlv8Gki/6iGvonloO6yPcdXlSi7yxiLX2s6UvaEAWagNoxRhDOduZ86eiYaD5oX9rtWjAmmA==
+X-Received: by 2002:a05:600c:468f:b0:405:9666:5242 with SMTP id p15-20020a05600c468f00b0040596665242mr7362444wmo.31.1700553165829;
+        Mon, 20 Nov 2023 23:52:45 -0800 (PST)
+Received: from [192.168.1.20] ([178.197.222.11])
+        by smtp.gmail.com with ESMTPSA id p19-20020a05600c05d300b004081a011c0esm19865857wmd.12.2023.11.20.23.52.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Nov 2023 23:52:45 -0800 (PST)
+Message-ID: <fd5c7d9f-a52b-4abb-a0d4-f5bdf2a669de@linaro.org>
+Date: Tue, 21 Nov 2023 08:52:43 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
+ binding
+Content-Language: en-US
+To: Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>
+Cc: devicetree@vger.kernel.org,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Lukas Wunner <lukas@wunner.de>, Rob Herring <robh@kernel.org>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
+ <20231120151056.148450-2-linux@rasmusvillemoes.dk>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <20231120151056.148450-2-linux@rasmusvillemoes.dk>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Date: Tue, 21 Nov 2023 08:35:11 +0100
-From: Florian Eckert <fe@dev.tdt.de>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org, pavel@ucw.cz,
- lee@kernel.org, kabel@kernel.org, u.kleine-koenig@pengutronix.de,
- m.brock@vanmierlo.com, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: Re: [Patch v8 1/6] tty: add new helper function tty_get_tiocm
-In-Reply-To: <1b89d7df-2511-4b3e-ab35-071734fb413c@kernel.org>
-References: <20231109085038.371977-1-fe@dev.tdt.de>
- <20231109085038.371977-2-fe@dev.tdt.de>
- <1b89d7df-2511-4b3e-ab35-071734fb413c@kernel.org>
-Message-ID: <ac57ff244b252df3c70387c61d34884d@dev.tdt.de>
-X-Sender: fe@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.17
-X-purgate-ID: 151534::1700552112-99EDBDE9-B38BB8AB/0/0
-X-purgate: clean
-X-purgate-type: clean
 
-
-
-On 2023-11-20 08:21, Jiri Slaby wrote:
-> On 09. 11. 23, 9:50, Florian Eckert wrote:
->> There is no in-kernel function to get the status register of a tty 
->> device
->> like the TIOCMGET ioctl returns to userspace. Create a new function,
->> tty_get_tiocm(), to obtain the status register that other portions of 
->> the
->> kernel can call if they need this information, and move the existing
->> internal tty_tiocmget() function to use this interface.
->> 
->> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
->> ---
->>   drivers/tty/tty_io.c | 28 ++++++++++++++++++++++------
->>   include/linux/tty.h  |  1 +
->>   2 files changed, 23 insertions(+), 6 deletions(-)
->> 
->> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
->> index 06414e43e0b5..e2e93404133e 100644
->> --- a/drivers/tty/tty_io.c
->> +++ b/drivers/tty/tty_io.c
->> @@ -2498,6 +2498,24 @@ static int send_break(struct tty_struct *tty, 
->> unsigned int duration)
->>   	return retval;
->>   }
->>   +/**
->> + * tty_get_tiocm - get tiocm status register
->> + * @tty: tty device
->> + *
->> + * Obtain the modem status bits from the tty driver if the feature
->> + * is supported.
->> + */
->> +int tty_get_tiocm(struct tty_struct *tty)
->> +{
->> +	int retval = -ENOTTY;
->> +
->> +	if (tty->ops->tiocmget)
->> +		retval = tty->ops->tiocmget(tty);
->> +
->> +	return retval;
+On 20/11/2023 16:10, Rasmus Villemoes wrote:
+> Some boards are capable of both rs232 and rs485, and control which
+> external terminals are active via a gpio-controlled mux. Allow
+> describing that gpio in DT so that the kernel can transparently handle
+> the proper setting when the uart is switched between rs232 and rs485
+> modes.
 > 
-> Why not simply:
-
-I just did it this way because it is also done this way in other 
-functions
-in this file.
-
-> {
->  if (tty->ops->tiocmget)
->     return tty->ops->tiocmget(tty);
+> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> ---
+>  Documentation/devicetree/bindings/serial/rs485.yaml | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
->  return -ENOTTY;
-> }
+> diff --git a/Documentation/devicetree/bindings/serial/rs485.yaml b/Documentation/devicetree/bindings/serial/rs485.yaml
+> index 9418fd66a8e9..e8136c7d22ed 100644
+> --- a/Documentation/devicetree/bindings/serial/rs485.yaml
+> +++ b/Documentation/devicetree/bindings/serial/rs485.yaml
+> @@ -61,6 +61,11 @@ properties:
+>        the active state enables RX during TX.
+>      maxItems: 1
+>  
+> +  rs485-mux-gpios:
+> +    description: GPIO pin to control muxing of the SOC signals to the RS485
+> +      transceiver.
+> +    maxItems: 1
 
-Of course, we could also do it this way. If this is the C style for the 
-kernel,
-then I will change it. Please give me a short feedback whether I should 
-change it
-and send a v9, or whether it is just a comment from you.
+Aren't you duplicating
+https://lore.kernel.org/all/3Nk.ZZrp.5w3Yn0Ecy5C.1bMzDp@seznam.cz/ ?
 
-Best regards
+Anyway, similar comments: this does not look like generic RS485
+property. Are you saying that standard defines such GPIO?
 
-Florian
+
+Best regards,
+Krzysztof
 
