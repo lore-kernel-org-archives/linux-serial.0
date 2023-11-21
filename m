@@ -1,107 +1,114 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="IjYYjr5V"
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39168E3
-	for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 00:21:24 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id 2adb3069b0e04-507ad511315so7447980e87.0
-        for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 00:21:24 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="RXoBwfeh"
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255A0F4
+	for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 00:27:06 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id 38308e7fff4ca-2c50305c5c4so71168201fa.1
+        for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 00:27:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1700554882; x=1701159682; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=eigScL5e5mup7Z3+ShdJXrR842NJQMOChPfOYWt/3l8=;
-        b=IjYYjr5Vl5E3DOL2HyuIX+VwEXG6draJ5yuU5PW9KxDFqWZhdD+Gh1R3uMRa0bnRlP
-         jWkm+lnxJB4G4LF8EhrMob8Egl7r9jTKKolO0uITUhzJEn1KfFkTYi+EyqdaAF+3DIKF
-         ufxzLoTNr6obSLde4UUuLj9V6RF81SIx/VteuBVQU+CH4yxTzOoalHijeCMpTMRruu49
-         ZNevJMUtD1ZqrQUee0PASQ/y5eWK+X3vQOQnmK/2lz03950jl3K+b8REcGcAlgv512Q5
-         JU6w2DJ6Os3YHAlNVqmuRLYmY/83AmlENnrPPNGRl7s5flUTpEUvVGMCrXsq1JAUNWit
-         BSig==
+        d=rasmusvillemoes.dk; s=google; t=1700555224; x=1701160024; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=mqky3k19T0P2MCRPH6CIBr7V91/rccfoXJK3y1NnIu8=;
+        b=RXoBwfehoJeAAb/T8P5AZOycCs9u/0JqoVsUak2sN+0067mnfQ1AfKWpPoA0h2H/Wm
+         Gvqyv3IyRTjhWIzM+gyO3nnHGti4jUUqtPlXs6db13IBlyDO8kBVTooXalGTarVC3Wtm
+         OzV47uDPgoZ7NUNZQMEvbkRHZNr0TdGXtnwZI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700554882; x=1701159682;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=eigScL5e5mup7Z3+ShdJXrR842NJQMOChPfOYWt/3l8=;
-        b=PR2pauxzKnijxjs0fLTEWbjoRAeScLQNx+9fsv4AXxoBc0cF0fFYxsZSNEKbPZ/rFn
-         ckFTBA2q55YTe9X04Yh5mlM+UNHRwEvR/sEh4oLMcCTLGzQEniGrEZwupC/B/xCxEC9F
-         cjtJNnAtkMGXJTAK6xeYfRLCNaDtRVDPgtlE85k21zLmdeiIOGu/vAKJaIEaRu5aT5kD
-         OIQrlV9tpIQ8wzKj9jc8HbaVEKf92xnTOwndRT0IrSpqS7F6Ya05rv9e/XwIuYD52Dtn
-         jU/QCVJOlMcimxMGX2qwch+FOKrDg7hNhWPea1R/Vi1efa4AGmGZW5BTbkC4MXi2zjWj
-         +skg==
-X-Gm-Message-State: AOJu0YyiWYQYKTEX4o3JpruVN4lQnJBrdHpVBzmdRW9HeKbJ0cK6gMHx
-	q1FYTr/Y9e4U4+sb/fHbWyN6frHiEfhbYUDtMY+/JA==
-X-Google-Smtp-Source: AGHT+IGbr2XYSRwYN9sWNDSkKbTgz7fmIbWZKQo/3+nZwrm2DQiOQ819Z3adb6Rl/lF0tqkEzzFHe3gA2gKk/dP5AMM=
-X-Received: by 2002:a05:6512:398c:b0:50a:aa8d:1a60 with SMTP id
- j12-20020a056512398c00b0050aaa8d1a60mr6848280lfu.48.1700554882341; Tue, 21
- Nov 2023 00:21:22 -0800 (PST)
+        d=1e100.net; s=20230601; t=1700555224; x=1701160024;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mqky3k19T0P2MCRPH6CIBr7V91/rccfoXJK3y1NnIu8=;
+        b=Qgg0W041ZiLPCMJfSrUP1kxbWsBKEAfK7wMiDVUle0/GUEUF/LCVJlqSHIWyZVW8Wv
+         dLV9G7oy2P/5GuMZ7Nh9rSG+PTQekEmu7gq2eLwsFw8KID8bcu0ggymbW+0jpnDIsO1l
+         Ua8ZwgdUr/zVVp2O2Ydx7CA+dh5CEu8P1+5iZXANFjJwtMEEE5LC9RL6wAYDUt8LKf93
+         UFGB5hkNqvNKZhxvpOWoG9WFnvGlsGWJGNnYrl2V53GqjZ6IpMCQi0Me1KhQjmt4Hr2T
+         bmh5CAXehBohypCw194Q8VF23gynPmSIhJVj1HjmC9z0bX/D4eaZT1IhfYHsZrwhvxbh
+         L05A==
+X-Gm-Message-State: AOJu0YystD4WDS6WFhaU/7QJIMeCxprcQGIHJOqJ+ZzxRG9YDvQU2e16
+	wOQEVSxnrzLzrWF9R2G6dH9UxQ==
+X-Google-Smtp-Source: AGHT+IG7PzEFDvOVbc3ydtu7vTECnzCAornzVcTrO06lZCCYRpGCSSlBQv14R0Tk5YeOTa04wIdxgQ==
+X-Received: by 2002:a19:f60d:0:b0:50a:5df2:f322 with SMTP id x13-20020a19f60d000000b0050a5df2f322mr7380823lfe.13.1700555224253;
+        Tue, 21 Nov 2023 00:27:04 -0800 (PST)
+Received: from [172.16.11.116] ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id fc14-20020a056512138e00b0050aa8602e7dsm970575lfb.181.2023.11.21.00.27.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Nov 2023 00:27:03 -0800 (PST)
+Message-ID: <1c016987-da88-47f2-bc1b-fcbe4c71a5c9@rasmusvillemoes.dk>
+Date: Tue, 21 Nov 2023 09:27:03 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20231118033859.726692-1-apatel@ventanamicro.com>
- <20231118033859.726692-5-apatel@ventanamicro.com> <1dd7f7b4-d2ba-4216-ac3f-3552c2bee24b@kernel.org>
-In-Reply-To: <1dd7f7b4-d2ba-4216-ac3f-3552c2bee24b@kernel.org>
-From: Atish Kumar Patra <atishp@rivosinc.com>
-Date: Tue, 21 Nov 2023 00:21:11 -0800
-Message-ID: <CAHBxVyG-DK9cDqPedJcR2W2=LQFumQQ_0Z0UUdbbzgju7BaAtg@mail.gmail.com>
-Subject: Re: [PATCH v4 4/5] tty: Add SBI debug console support to HVC SBI driver
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Anup Patel <apatel@ventanamicro.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Paul Walmsley <paul.walmsley@sifive.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Conor Dooley <conor@kernel.org>, Andrew Jones <ajones@ventanamicro.com>, 
-	linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
+ binding
+Content-Language: en-US, da
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>
+Cc: devicetree@vger.kernel.org,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Lukas Wunner <lukas@wunner.de>, Rob Herring <robh@kernel.org>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
+ <20231120151056.148450-2-linux@rasmusvillemoes.dk>
+ <fd5c7d9f-a52b-4abb-a0d4-f5bdf2a669de@linaro.org>
+From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+In-Reply-To: <fd5c7d9f-a52b-4abb-a0d4-f5bdf2a669de@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sun, Nov 19, 2023 at 11:16=E2=80=AFPM Jiri Slaby <jirislaby@kernel.org> =
-wrote:
->
-> On 18. 11. 23, 4:38, Anup Patel wrote:
-> > diff --git a/drivers/tty/hvc/hvc_riscv_sbi.c b/drivers/tty/hvc/hvc_risc=
-v_sbi.c
-> > index 31f53fa77e4a..697c981221b5 100644
-> > --- a/drivers/tty/hvc/hvc_riscv_sbi.c
-> > +++ b/drivers/tty/hvc/hvc_riscv_sbi.c
-> ...
-> > -static int __init hvc_sbi_console_init(void)
-> > +static int hvc_sbi_dbcn_tty_get(uint32_t vtermno, char *buf, int count=
-)
-> >   {
-> > -     hvc_instantiate(0, 0, &hvc_sbi_ops);
-> > +     phys_addr_t pa;
-> > +
-> > +     if (is_vmalloc_addr(buf)) {
->
-> I wonder, where does this buf come from, so that you have to check for
-> vmalloc?
->
+On 21/11/2023 08.52, Krzysztof Kozlowski wrote:
+> On 20/11/2023 16:10, Rasmus Villemoes wrote:
+>> Some boards are capable of both rs232 and rs485, and control which
+>> external terminals are active via a gpio-controlled mux. Allow
+>> describing that gpio in DT so that the kernel can transparently handle
+>> the proper setting when the uart is switched between rs232 and rs485
+>> modes.
+>>
+>> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+>> ---
+>>  Documentation/devicetree/bindings/serial/rs485.yaml | 5 +++++
+>>  1 file changed, 5 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/serial/rs485.yaml b/Documentation/devicetree/bindings/serial/rs485.yaml
+>> index 9418fd66a8e9..e8136c7d22ed 100644
+>> --- a/Documentation/devicetree/bindings/serial/rs485.yaml
+>> +++ b/Documentation/devicetree/bindings/serial/rs485.yaml
+>> @@ -61,6 +61,11 @@ properties:
+>>        the active state enables RX during TX.
+>>      maxItems: 1
+>>  
+>> +  rs485-mux-gpios:
+>> +    description: GPIO pin to control muxing of the SOC signals to the RS485
+>> +      transceiver.
+>> +    maxItems: 1
+> 
+> Aren't you duplicating
+> https://lore.kernel.org/all/3Nk.ZZrp.5w3Yn0Ecy5C.1bMzDp@seznam.cz/ ?
 
-When VMAP_STCK is enabled, stack allocation depends on the vmalloc.
-That's why we have to if the buf is allocated using vmalloc.
+Hadn't seen that, but no, this is not at all the same. That patch seems
+to define an input pin to tell whether to enable rs485 mode or not (sort
+of early run-time version of the linux,rs485-enabled-at-boot-time).
 
-> > +             pa =3D page_to_phys(vmalloc_to_page(buf)) + offset_in_pag=
-e(buf);
-> > +             if (PAGE_SIZE < (offset_in_page(buf) + count))
->
-> Am I the only one who would prefer:
->    if (count + offset_in_page(buf) > PAGE_SIZE)
-> ?
->
-> > +                     count =3D PAGE_SIZE - offset_in_page(buf);
-> > +     } else {
-> > +             pa =3D __pa(buf);
-> > +     }
-> > +
-> > +     return sbi_debug_console_read(count, pa);
-> > +}
->
->
-> thanks,
-> --
-> js
-> suse labs
->
+> Anyway, similar comments: this does not look like generic RS485
+> property. Are you saying that standard defines such GPIO?
+
+No, I'm saying that several boards that exist in the wild have the
+RX/TX/CTS etc. pins routed to a multiplexer, which in turn routes those
+signals to either a rs485 transceiver or an rs232 driver (and those in
+turn are connected to different screw terminals). So no, it's not a
+property of the rs485 protocol itself, but very much related to making
+use of rs485 (and rs232, though of course not simultaneously) on such
+boards.
+
+Would a link to a schematic help?
+
+Rasmus
+
