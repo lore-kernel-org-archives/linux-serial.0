@@ -1,24 +1,24 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88B971CF9A;
-	Tue, 21 Nov 2023 07:02:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BFE81CFBE;
+	Tue, 21 Nov 2023 07:04:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="neyTmLY2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07AFFC433C8;
-	Tue, 21 Nov 2023 07:02:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="q8WuL0yP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79ADDC433C8;
+	Tue, 21 Nov 2023 07:04:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1700550154;
-	bh=KzNMS+B/zL6G8aJlSrl8TvD74+1Xw2w2vkLu6WarSNU=;
+	s=k20201202; t=1700550249;
+	bh=0+g5ok4ZLqmf5bYYeX8ngcURNsmtW4ch0VMGj/fHqMU=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=neyTmLY20PIe8i2cb/MWH+xBF1sOshuSaYBN3QNZy0XF8yvwN9G3Rh0cGIDjDEx4S
-	 bZk4y6ggiZJrJItFVPaC4jIW2oM1EgdwEpdgigo15Qj9QMhXCHDrZWlgsc0cMvdnKk
-	 AtnAGjhfeckCVnDSvBjq65W36027ckrlUHSEo5RXy3TTHHo7e/MpW3eEqx+ZbsXrGR
-	 kg+uvllZvEr6UGSdTg2zNbQTnllLv8CB130qqQQR9zE5I5VVsY9x7E6uiPeHPHeUEl
-	 FGSIIc/S5mbU/nipV97ljo1HIQ1YmebQyYkAMISgAY35UOPuyRUJvUa4LchD/7MvRN
-	 YE6zPlnndM0vQ==
-Message-ID: <fbdcaca9-85c6-42e2-ac10-646a9ce51757@kernel.org>
-Date: Tue, 21 Nov 2023 08:02:31 +0100
+	b=q8WuL0yPaK6Zkyq98Q1P5Y0oQw0J4rNuJ3jxRQd2284PJKP74+iTvHQ/PQWMBXRYn
+	 APoiX7Ok9EPxWWLUz1Qvq/TvBbPPN7Fz71UPnob6huSe72shxZZVU5quUEgSiKacPE
+	 mqN47GHsmbYOOU72RyI0lp5xn1u0q2EUDrp0cOXo0/Pl3Gr1Nt8VGK/gXTbwNVjszh
+	 /DzZbryJ/zyLi7SJVM4WaKULxUGG7WIFq17dXReH9PlGtdccYeRS4Cn1i+XZ9SGVTQ
+	 haU/b4Ni8j2MSMTkvvCt2ZeCynjpkvKhZZGPrL3+g+Yne+/feK1G7aK9pkf+TVTC/n
+	 IEnMClYrUlz/w==
+Message-ID: <abaea407-c5ea-49fe-8161-51774f0be274@kernel.org>
+Date: Tue, 21 Nov 2023 08:04:05 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -26,8 +26,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/2] serial: core: Add option to enable RS485 mode via
- GPIO
+Subject: Re: [PATCH v3 2/2] dt-bindings: serial: Add option to enable RS485
+ mode via GPIO
 Content-Language: en-US
 To: Tomas Paukrt <tomaspaukrt@email.cz>, Rob Herring <robh+dt@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>,
@@ -39,7 +39,7 @@ References: <VY.ZZnz.2Km1cHBSh2}.1bLIJa@seznam.cz>
  <476876ca-806f-a5ad-1eeb-435c8a3111a2@gmx.de>
  <2cZ.ZZqF.1YADr1CLFoQ.1bMn3d@seznam.cz>
  <5a0321ac-e1e6-45e9-9faf-153db8d34980@kernel.org>
- <3Nj.ZZr}.5RaPRe7D8AB.1bMzDm@seznam.cz>
+ <3Nk.ZZrp.5w3Yn0Ecy5C.1bMzDp@seznam.cz>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Autocrypt: addr=krzk@kernel.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -84,20 +84,33 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
  7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
  5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <3Nj.ZZr}.5RaPRe7D8AB.1bMzDm@seznam.cz>
+In-Reply-To: <3Nk.ZZrp.5w3Yn0Ecy5C.1bMzDp@seznam.cz>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 20/11/2023 22:45, Tomas Paukrt wrote:
-> Add an option to enable the RS485 mode at boot time based on
-> the state of a GPIO pin (DIP switch or configuration jumper).
-> The GPIO is defined by the device tree property "rs485-mode-gpio".
+> Add the device tree property "rs485-mode-gpio".
 > 
 > Signed-off-by: Tomas Paukrt <tomaspaukrt@email.cz>
 > ---
->  drivers/tty/serial/serial_core.c | 12 ++++++++++++
+>  Documentation/devicetree/bindings/serial/rs485.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/rs485.yaml b/Documentation/devicetree/bindings/serial/rs485.yaml
+> index 9418fd6..7a72f37 100644
+> --- a/Documentation/devicetree/bindings/serial/rs485.yaml
+> +++ b/Documentation/devicetree/bindings/serial/rs485.yaml
+> @@ -47,6 +47,10 @@ properties:
+>        later with proper ioctl.
+>      $ref: /schemas/types.yaml#/definitions/flag
+>  
+> +  rs485-mode-gpio:
+> +    description: GPIO pin to enable RS485 mode at boot time.
+> +    maxItems: 1
+> +
 
-Why the subject is "Re:"? Please send each patchset as independent thread.
+This does not look like generic RS485 property. Commit msg also does not
+help to understand the context.
 
 Best regards,
 Krzysztof
