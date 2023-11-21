@@ -1,196 +1,134 @@
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from muru.com (muru.com [72.249.23.125])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5187511A;
-	Tue, 21 Nov 2023 03:33:04 -0800 (PST)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-	by muru.com (Postfix) with ESMTP id 6933880CC;
-	Tue, 21 Nov 2023 11:33:01 +0000 (UTC)
-From: Tony Lindgren <tony@atomide.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BOe3qK+O"
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B28138;
+	Tue, 21 Nov 2023 04:13:38 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id 2adb3069b0e04-50aaaf6e58fso3495614e87.2;
+        Tue, 21 Nov 2023 04:13:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1700568816; x=1701173616; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=q7UfF03aFW8pU9c+r1UvFEE/P/vOUgmToy8+7mpAO2k=;
+        b=BOe3qK+OURUfxk+pG8tnVir81R1J/o93J0FngHdvhFPLTtzgOyS2FWIvqb1aotTqqh
+         I/AAFuPv1wcaYP+1geiV97fkQooQMAHaaVA0Z3tj+gJ8AvM+a2ehj2/Q3wq9jaZqcXsy
+         0fU0M7UWpxf/Bf/TxoKUbq6jP5B1g78lyOvdXlWMjhOHCykUZ6g+mz750oiGxfny9o6c
+         6OL8z21APtVDY6fQ+Gqrx+wFQsnZvCnAqxLw70L2zbmF0ZGCtagbEMnVrv8ZX10TDqEU
+         jVmmqt5SlcKELkdn14qlp7sfjSr0543Kn+/b6v0eFdtNpw8oZf019mFlb8B7TjTPob+U
+         njzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700568816; x=1701173616;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=q7UfF03aFW8pU9c+r1UvFEE/P/vOUgmToy8+7mpAO2k=;
+        b=g9OYJSPclphWyccJ7X4DlU4Mhi1brV4s3U6qqH5rXs030ktzJfjjdFBnvRdNiQofAx
+         jj9seHgMLOQKAuma2Ar6DSYvW2HFk6nHbDyPgLqS+3gibtjbT74mseea7AugyoDgSoYS
+         W8+saU9EP2PfX8vsiiz83sBUwketPnJOh5hbNzuFlnyDln/ru3iv6kgfaruGzfq9MW90
+         LBLwsG/sGi1xV3/20DbACIz3A0Xh6mn43KZ5jMD//ePPwq1zUP07XUMNnvEuMV4GxpR5
+         qAscxOaa3kP9tFOo4+bC7TG2vfAz/7grqvId9B2cx/xtLMXIKd533pCS1WZ8bvw/cagj
+         zpkg==
+X-Gm-Message-State: AOJu0YxVMEMyCbl1N6m71cz4XDH0vmjv3CI04hqV315jhXSZkDikvTMv
+	WBKFEt+0kx3XHgM0oOiS9hU=
+X-Google-Smtp-Source: AGHT+IHnzRgG6T/vXqZ5Z5y+FyUQGY6HyIWa6ogjFbkYgNzu1OMiyW1eeI2ple/rNNjzvWioLFK1Tw==
+X-Received: by 2002:ac2:4919:0:b0:50a:9652:31d4 with SMTP id n25-20020ac24919000000b0050a965231d4mr7301177lfi.22.1700568816393;
+        Tue, 21 Nov 2023 04:13:36 -0800 (PST)
+Received: from localhost.lan (031011218106.poznan.vectranet.pl. [31.11.218.106])
+        by smtp.gmail.com with ESMTPSA id z15-20020ac2418f000000b005079ff02b36sm1491509lfh.131.2023.11.21.04.13.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Nov 2023 04:13:36 -0800 (PST)
+From: =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To: Florian Fainelli <florian.fainelli@broadcom.com>,
+	William Zhang <william.zhang@broadcom.com>,
+	Anand Gore <anand.gore@broadcom.com>,
+	Kursad Oney <kursad.oney@broadcom.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc: "David S . Miller" <davem@davemloft.net>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Dhruva Gole <d-gole@ti.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Vignesh Raghavendra <vigneshr@ti.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH v3 3/3] serial: core: Move console character device handling from printk
-Date: Tue, 21 Nov 2023 13:31:57 +0200
-Message-ID: <20231121113203.61341-4-tony@atomide.com>
-X-Mailer: git-send-email 2.42.1
-In-Reply-To: <20231121113203.61341-1-tony@atomide.com>
-References: <20231121113203.61341-1-tony@atomide.com>
+	Andre Przywara <andre.przywara@arm.com>,
+	Alexandre TORGUE <alexandre.torgue@st.com>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	bcm-kernel-feedback-list@broadcom.com,
+	=?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH 1/2] dt-bindings: serial: add Broadcom's BCM63138 High Speed UART
+Date: Tue, 21 Nov 2023 13:13:23 +0100
+Message-Id: <20231121121324.23268-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.35.3
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-There's no need for console_setup() to try to figure out the console
-character device name for serial ports early on before uart_add_one_port()
-has been called. And for early debug console we have earlycon.
+From: Rafał Miłecki <rafal@milecki.pl>
 
-Let's handle the serial port specific commandline options in the serial
-core subsystem and drop the handling from printk. The serial core
-subsystem can just call add_preferred_console() when the serial port is
-getting initialized.
+It's an UART controller that first appeared on BCM63138 SoC and then was
+reused on other bcmbca familiy chipsets.
 
-Note that eventually we may want to set up driver specific console quirk
-handling for the serial port device drivers to use. But we need to figure
-out which driver(s) need to call the quirk. So for now, we just move the
-sparc quirk and handle it directly.
-
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 ---
- drivers/tty/serial/serial_base_bus.c | 66 ++++++++++++++++++++++++++++
- kernel/printk/printk.c               | 30 +------------
- 2 files changed, 67 insertions(+), 29 deletions(-)
+ .../serial/brcm,bcm63138-hs-uart.yaml         | 44 +++++++++++++++++++
+ 1 file changed, 44 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/brcm,bcm63138-hs-uart.yaml
 
-diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
---- a/drivers/tty/serial/serial_base_bus.c
-+++ b/drivers/tty/serial/serial_base_bus.c
-@@ -206,6 +206,43 @@ void serial_base_port_device_remove(struct serial_port_device *port_dev)
- 
- #ifdef CONFIG_SERIAL_CORE_CONSOLE
- 
-+#ifdef __sparc__
+diff --git a/Documentation/devicetree/bindings/serial/brcm,bcm63138-hs-uart.yaml b/Documentation/devicetree/bindings/serial/brcm,bcm63138-hs-uart.yaml
+new file mode 100644
+index 000000000000..91a7e945be39
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/brcm,bcm63138-hs-uart.yaml
+@@ -0,0 +1,44 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/brcm,bcm63138-hs-uart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+/* Handle Sparc ttya and ttyb options as done in console_setup() */
-+static int serial_base_add_sparc_console(struct uart_driver *drv,
-+					 struct uart_port *port)
-+{
-+	const char *name = NULL;
-+	int ret;
++title: Broadcom's BCM63138 High Speed UART
 +
-+	switch (port->line) {
-+	case 0:
-+		name = "ttya";
-+		break;
-+	case 1:
-+		name = "ttyb";
-+		break;
-+	default:
-+		return 0;
-+	}
++description:
++  High speed serial port controller that was designed to handle Bluetooth
++  devices communication. It supports sending custom frames that need to be
++  processed by a host system.
 +
-+	ret = add_preferred_console_match(name, drv->dev_name, port->line);
-+	if (ret && ret != -ENOENT)
-+		return ret;
++maintainers:
++  - Rafał Miłecki <rafal@milecki.pl>
 +
-+	return 0;
-+}
++allOf:
++  - $ref: serial.yaml#
 +
-+#else
++properties:
++  compatible:
++    const: brcm,bcm63138-hs-uart
 +
-+static inline int serial_base_add_sparc_console(struct uart_driver *drv,
-+						struct uart_port *port)
-+{
-+	return 0;
-+}
++  reg:
++    maxItems: 1
 +
-+#endif
++  interrupts:
++    maxItems: 1
 +
- /*
-  * serial_base_add_preferred_console - Adds a preferred console
-  * @drv: Serial port device driver
-@@ -225,6 +262,8 @@ int serial_base_add_preferred_console(struct uart_driver *drv,
- 				      struct uart_port *port)
- {
- 	const char *port_match __free(kfree);
-+	const char *char_match __free(kfree);
-+	const char *nmbr_match __free(kfree);
- 	int ret;
- 
- 	port_match = kasprintf(GFP_KERNEL, "%s:%i.%i", dev_name(port->dev),
-@@ -232,6 +271,33 @@ int serial_base_add_preferred_console(struct uart_driver *drv,
- 	if (!port_match)
- 		return -ENOMEM;
- 
-+	char_match = kasprintf(GFP_KERNEL, "%s%i", drv->dev_name, port->line);
-+	if (!char_match)
-+		return -ENOMEM;
++required:
++  - reg
++  - interrupts
 +
-+	/* Handle ttyS specific options */
-+	if (!strncmp(drv->dev_name, "ttyS", 4)) {
-+		/* No name, just a number */
-+		nmbr_match = kasprintf(GFP_KERNEL, "%i", port->line);
-+		if (!nmbr_match)
-+			return -ENODEV;
++unevaluatedProperties: false
 +
-+		ret = add_preferred_console_match(nmbr_match, drv->dev_name,
-+						  port->line);
-+		if (ret && ret != -ENOENT)
-+			return ret;
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
 +
-+		/* Sparc ttya and ttyb */
-+		ret = serial_base_add_sparc_console(drv, port);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	/* Handle the traditional character device name style console=ttyS0 */
-+	ret = add_preferred_console_match(char_match, drv->dev_name, port->line);
-+	if (ret && ret != -ENOENT)
-+		return ret;
-+
- 	/* Translate a hardware addressing style console=DEVNAME:0.0 */
- 	ret = add_preferred_console_match(port_match, drv->dev_name, port->line);
- 	if (ret && ret != -ENOENT)
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -2438,9 +2438,7 @@ __setup("console_msg_format=", console_msg_format_setup);
-  */
- static int __init console_setup(char *str)
- {
--	char buf[sizeof(console_cmdline[0].name) + 4]; /* 4 for "ttyS" */
--	char *s, *options, *brl_options = NULL;
--	int idx;
-+	char *brl_options = NULL;
- 
- 	/*
- 	 * Save the console for possible driver subsystem use. Bail out early
-@@ -2463,32 +2461,6 @@ static int __init console_setup(char *str)
- 	if (_braille_console_setup(&str, &brl_options))
- 		return 1;
- 
--	/*
--	 * Decode str into name, index, options.
--	 */
--	if (str[0] >= '0' && str[0] <= '9') {
--		strcpy(buf, "ttyS");
--		strncpy(buf + 4, str, sizeof(buf) - 5);
--	} else {
--		strncpy(buf, str, sizeof(buf) - 1);
--	}
--	buf[sizeof(buf) - 1] = 0;
--	options = strchr(str, ',');
--	if (options)
--		*(options++) = 0;
--#ifdef __sparc__
--	if (!strcmp(str, "ttya"))
--		strcpy(buf, "ttyS0");
--	if (!strcmp(str, "ttyb"))
--		strcpy(buf, "ttyS1");
--#endif
--	for (s = buf; *s; s++)
--		if (isdigit(*s) || *s == ',')
--			break;
--	idx = simple_strtoul(s, NULL, 10);
--	*s = 0;
--
--	__add_preferred_console(buf, idx, options, brl_options, true);
- 	return 1;
- }
- __setup("console=", console_setup);
++    serial@fffec400 {
++        compatible = "brcm,bcm63138-hs-uart";
++        reg = <0xfffec400 0x1e0>;
++        interrupts = <GIC_SPI 34 IRQ_TYPE_LEVEL_HIGH>;
++    };
 -- 
-2.42.1
+2.35.3
+
