@@ -1,43 +1,66 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66F6D1C03
-	for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 01:06:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="jBGjblu3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A06F5C433C8;
-	Tue, 21 Nov 2023 01:06:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1700528777;
-	bh=WydedWHI5hgSzmjYaAgFcEvQrWisnvd0Tah1sl3VwoE=;
-	h=Date:From:To:Subject:From;
-	b=jBGjblu3qk1lrdPkx59RMSYuiY8P5AzRs0mYBoqbpigGFxSif6/z2yn5GaIkfD+4W
-	 ctUJF3hwg7iIJDIDDshoKBWgwufEtcVce6kLgp1Si3AnKddRR9LMRYX2xBJeD5NQ6k
-	 wITe0VH3P8hGFucOxCaMI3/l+hhfTjE1WnTxhFfc=
-Date: Mon, 20 Nov 2023 20:06:16 -0500
-From: Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-To: linux-serial@vger.kernel.org
-Subject: PSA: this list has moved to new vger infra (no action required)
-Message-ID: <20231120-sly-thankful-lyrebird-cd52b7@nitro>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FpCbXpl3"
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B522FDC;
+	Mon, 20 Nov 2023 20:46:10 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id 2adb3069b0e04-507a3b8b113so7325103e87.0;
+        Mon, 20 Nov 2023 20:46:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1700541969; x=1701146769; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=caEKODLYD8G56ZBu+Ji81b5D6XsHS3BHDDu1vj7HIIk=;
+        b=FpCbXpl3Ny9Cd9b7d7Nxx2gUr0n3BrVd+SguUUkA+9kkZ02/8P6abmxGPD+GQgNoZ0
+         cvUjjSVePg5EP8mLv2+sWxAM6Muf4yJb3s2unEVZm7fkr47kikS7Um5DUlTvkdMvMGal
+         EK/IiBcjKv4NNWCNh7l1scX3Pcs8dVBQtgF4hzxvTizWIh+katcE42s+Hi+kWcUXftZ8
+         erDYk/PCJl/QUqrl3OLLoprZrb0tbPBCPY36xTbH2IYx43TIgvKPnUOnDvW+8bfc59qm
+         h/+hGTj9RFKZX3oOtIfvr1fRD0JlxfgF3zIXpMOASHGA8e7JNS5cIVCsc+OAHoSDXbAp
+         03cQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700541969; x=1701146769;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=caEKODLYD8G56ZBu+Ji81b5D6XsHS3BHDDu1vj7HIIk=;
+        b=bFxxNNYIK2rz82US8sH9Mky+iMmR2M2hKKdfetQa7xVRjhoWDhN8XIBrJ/EQnNv8O/
+         OOrqD7KanAri6y1i1dB9znyT+xalbIvR9M9mj6f0Lda1a8hYdWhx1RyFIOEwx1zo6Gmj
+         cr081OR+uc7GMlJgBVgH/zJK1MgZxx6HVs7c9QyETEpj/sh/F9GXpybP2QpFo4XCDoHT
+         f7nG9Gmod449Yia5GzFc9/NJwxF0e1XrsTxD2hpY4CExWw3PLnRLw/DqnmdgHUisKaIM
+         ksXWVeekwUxEXG947k9Q+5GtTzddKtA3LDWeYzUhXnd5RCbxzVGX58ZdXvkUy/6v/Uro
+         55OA==
+X-Gm-Message-State: AOJu0YyhTXesSLy5ddYRBebKrpsJUvSBBgQCr9CWREiRh2L0jj0MpXH5
+	4lKObCn1xJxL6WbzO9LIdn/AVnfXDhaDT0cacAs=
+X-Google-Smtp-Source: AGHT+IE8RnabTJxxdEhNU0aOmrkKMzryDkJQy163sLFdLj3j2itVGDLUp8RoRvYMJ/E3cYf9Lr2i6uguoD1OIvOodkY=
+X-Received: by 2002:ac2:43a5:0:b0:501:c406:c296 with SMTP id
+ t5-20020ac243a5000000b00501c406c296mr6562165lfl.31.1700541968641; Mon, 20 Nov
+ 2023 20:46:08 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+References: <20231106152428.3641883-1-sean.anderson@seco.com>
+In-Reply-To: <20231106152428.3641883-1-sean.anderson@seco.com>
+From: Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>
+Date: Tue, 21 Nov 2023 10:15:56 +0530
+Message-ID: <CAKfKVtEqNn77K5JwOmc5B3+-fj0P0LtjcpUpN03hht7Pj75zYw@mail.gmail.com>
+Subject: Re: [PATCH] tty: serial: uartlite: Document uartlite_data in
+ kernel-doc style
+To: Sean Anderson <sean.anderson@seco.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Peter Korsgaard <jacmet@sunsite.dk>, kernel test robot <yujie.liu@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hello, all:
+On Mon, Nov 6, 2023 at 8:55=E2=80=AFPM Sean Anderson <sean.anderson@seco.co=
+m> wrote:
+>
+> Use @ and - to conform with kernel-doc style.
+>
+> Reported-by: kernel test robot <yujie.liu@intel.com>
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 
-This list has been migrated to new vger infrastructure. No action is required
-on your part and there should be no change in how you interact with this list.
-
-This message acts as a verification test that the archives are properly
-updating.
-
-If something isn't working or looking right, please reach out to
-helpdesk@kernel.org.
-
-Best regards,
--K
+Reviewed-by: Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
