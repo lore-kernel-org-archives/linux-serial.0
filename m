@@ -1,106 +1,377 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ayNQNmg+"
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B3A092;
-	Wed, 22 Nov 2023 07:52:21 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id 2adb3069b0e04-50abb83866bso989523e87.3;
-        Wed, 22 Nov 2023 07:52:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1700668340; x=1701273140; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6HLdFWqjzgmADZk5za43c1oAHTKMJ5+QxapNhDsCkgU=;
-        b=ayNQNmg+7GyUfLhmA2AGYTMNbjuRaOwLhSDvT6DAK+sLBWXrjAdRUQ9lr+JliSL8pe
-         yPKhc2ykhuz8ER/xWpkrAZwU6TsXNv1mhJIH6lqjCoCIhhnAF1zh6IFjarJjEyJd/yXP
-         MoSuYImxo6QFIfEeEVsQLx+BO24WS6TlbS16JqDu+gqvfGw5jRLXzDTZCOiJ2jKYunQH
-         qC3GpjoWEYz3WyihZ94J5qarIYGMOazbVLNdojrEHlC1PZ+nsujjaY7BRsIKvIiAgo6k
-         HBPrItoDGwHWHZ7/JriHnZKVA8Avi7rd+p8BZSk5+PHh047UD1TSxg15/k0yTlIq7JBs
-         crzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700668340; x=1701273140;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6HLdFWqjzgmADZk5za43c1oAHTKMJ5+QxapNhDsCkgU=;
-        b=RlSy82xHWE2iWPXTin0NrsAWZ6r1xfIgHGaSvCdiViyzRyiPT4tc+OoHmPjqPd4jdR
-         Cnc9DjlrUwc5UznuA7KqgDnLLLvROrlSl2UtRIqh45/ciKzJC4U42rf2iOdfG82h7anj
-         GCtf9odvK2yTgEtGTCXjc/kBTBDJmfd+yYw0+Az2bfn58ag33PA56yiFIPSNX1p6j5yp
-         8NCY50oZPJ5CeOdj8UPeBg9OYva76oFF1wxSccrSEgDEDTJR/Tpjd+007nuEDm6n/21Z
-         j4h1EOCOWPwlWIfv1CQrop24SsZSNZr4nfdswMVvi3rO7HZRj3NabUq/o4bsdekZNQp5
-         GgIQ==
-X-Gm-Message-State: AOJu0YwEUtD9kB784RbR0R3eCvctHVH98ilM/RYcq4poI1hN1hP4IDkt
-	hpWjHyYLk0o58ju9sjuntXo=
-X-Google-Smtp-Source: AGHT+IFz8bHL5A9409Qb8y8YTBVeAHkgSDyqr67fzO1oNMQAhenPxUbUY/ZUHzL9iZDvBODsm9MveQ==
-X-Received: by 2002:a05:6512:1256:b0:507:96c7:eb1a with SMTP id fb22-20020a056512125600b0050796c7eb1amr2724201lfb.54.1700668339546;
-        Wed, 22 Nov 2023 07:52:19 -0800 (PST)
-Received: from [192.168.26.149] (031011218106.poznan.vectranet.pl. [31.11.218.106])
-        by smtp.googlemail.com with ESMTPSA id g11-20020aa7d1cb000000b005488703d13fsm4726431edp.82.2023.11.22.07.52.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Nov 2023 07:52:19 -0800 (PST)
-Message-ID: <03ad42c0-1648-43e1-bbd0-9ed02bdf4073@gmail.com>
-Date: Wed, 22 Nov 2023 16:52:17 +0100
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="WC9nMPi9"
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4439E83
+	for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 09:15:11 -0800 (PST)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id EEE13C000D;
+	Wed, 22 Nov 2023 17:15:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1700673309;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=uN5XCXXGgkNi60p/YeZfLV8z5/9GzWwXU0fg8z/t/KE=;
+	b=WC9nMPi91k4aTBDTh+n34jSQ8ngdYVkA02tpqKktF3rVIJHqMTbxJ5KM8Pz0QBSQ7n7+/6
+	p4wasLzh/W50mlLUl068HSFr72m2x7Wm/YCCBaXNg7Nj4mz/dmFx7QtWV1CsPbW19u3Yw9
+	ARBcefISesmN9/mqziANGIL4UnEPiU3sb87Hh54SlKJUAGBZzQoLrM/nvdL8Iu0/WPwD9e
+	7aT1UtVLwODKezz6FNVFBvnRNgAAhoJozKgBD3bJDRnpeEFa4XWSOLQuWm5OXjW0hFUOWo
+	2jNpsNIoqp6LjODhvUnPPnDXVtcZ8yJmgwaksDaJ3soN4+wOaiGpA6hb1B6g+g==
+From: Gregory CLEMENT <gregory.clement@bootlin.com>
+To: Russell King <linux@armlinux.org.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jslaby@suse.com>,
+	linux-serial@vger.kernel.org,
+	Linus Walleij <linus.walleij@linaro.org>
+Cc: Vladimir  Kondratiev <vladimir.kondratiev@mobileye.com>,
+	Tawfik Bayouk <tawfik.bayouk@mobileye.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	=?UTF-8?q?Th=C3=A9o=20Lebrun?= <theo.lebrun@bootlin.com>,
+	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Gregory CLEMENT <gregory.clement@bootlin.com>
+Subject: [PATCH v2] ARM: PL011: Fix DMA support
+Date: Wed, 22 Nov 2023 18:15:03 +0100
+Message-ID: <20231122171503.235649-1-gregory.clement@bootlin.com>
+X-Mailer: git-send-email 2.42.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V2 1/2] dt-bindings: serial: add Broadcom's BCMBCA family
- High Speed UART
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Florian Fainelli <florian.fainelli@broadcom.com>,
- William Zhang <william.zhang@broadcom.com>,
- Anand Gore <anand.gore@broadcom.com>, Kursad Oney
- <kursad.oney@broadcom.com>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Andre Przywara <andre.przywara@arm.com>,
- Alexandre TORGUE <alexandre.torgue@st.com>,
- Neil Armstrong <neil.armstrong@linaro.org>, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- bcm-kernel-feedback-list@broadcom.com, =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?=
- <rafal@milecki.pl>
-References: <20231122144208.21114-1-zajec5@gmail.com>
- <66c4b54b-7631-484a-9f7d-31542284e620@linaro.org>
- <08fcb328-fe4b-40c7-a01e-8a0b527b1c71@gmail.com>
- <758114a7-0b18-44e8-b3d8-b5aabd244279@linaro.org>
- <cac6aa8a-1515-4062-8922-4d1e31e9216e@gmail.com>
- <ff32cd00-e26b-4ba6-bb08-a89c702895c9@linaro.org>
- <57a77c9d-684e-4f5e-977a-4586e15f7c3e@gmail.com>
- <141deca9-6017-4e3f-a237-8dacc67662de@linaro.org>
-Content-Language: en-US
-From: =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-In-Reply-To: <141deca9-6017-4e3f-a237-8dacc67662de@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-GND-Sasl: gregory.clement@bootlin.com
 
-On 22.11.2023 16:50, Krzysztof Kozlowski wrote:
-> On 22/11/2023 16:49, Rafał Miłecki wrote:
->>>> For example a year ago I added binding for BCMBCA SoC timer without
->>>> actual driver, see e112f2de151b ("dt-bindings: timer: Add Broadcom's
->>>> BCMBCA timers").
->>>>
->>>> I'm not sure if we're going to agree on this, but personally I like
->>>> describing hardware as much as I can. So it's well documented /
->>>> understood and people may eventually write drivers for it. Maybe it's
->>>> partially because I come from Broadcom's world that isn't well known
->>>> for upstream efforts in general.
->>>
->>> The problem is that "brcm,bcmbca-hs-uart" is not describing hardware. It
->>> is saying that all these devices have similar (compatible) programming
->>> model, so the OS can use just one compatible. This goes away from pure
->>> hardware description into interpretation.
->>>
->>> Rob already commented on such non-SoC compatibles multiple times. I do
->>> not see any reason here to not use specific compatible as fallback.
->>
->> Do I get it right we should rather have some base specific compatible
->> like: "brcm,bcm63138-hs-uart" and then if anything use fallback to it
->> like: "brcm,bcm4908-hs-uart", "brcm,bcm63138-hs-uart"; ?
-> 
-> Yes, or the other way around, depends which is probably the oldest.
+From: Arnd Bergmann <arnd@arndb.de>
 
-Thank you for helping me on that!
+Since there is no guarantee that the memory returned by
+dma_alloc_coherent() is associated with a 'struct page', using the
+architecture specific phys_to_page() is wrong, but using
+virt_to_page() would be as well.
+
+Stop using sg lists altogether and just use the *_single() functions
+instead. This also simplifies the code a bit since the scatterlists in
+this driver always have only one entry anyway.
+
+gc: Add a commit log from the initial thread:
+https://lore.kernel.org/lkml/86db0fe5-930d-4cbb-bd7d-03367da38951@app.fastmail.com/
+    Use consistent names for dma buffers
+Fixes: cb06ff102e2d7 ("ARM: PL011: Add support for Rx DMA buffer polling.")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Tested-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+---
+Changelog:
+
+ v1 -> v2:
+
+  Use consistent names for dma buffers parameters, variables and
+  structures, as suggested by Linus Walleij
+
+ drivers/tty/serial/amba-pl011.c | 112 +++++++++++++++-----------------
+ 1 file changed, 54 insertions(+), 58 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 61cc24cd90e4b..b7635363373e2 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -218,17 +218,18 @@ static struct vendor_data vendor_st = {
+ 
+ /* Deals with DMA transactions */
+ 
+-struct pl011_sgbuf {
+-	struct scatterlist sg;
+-	char *buf;
++struct pl011_dmabuf {
++	dma_addr_t		dma;
++	size_t			len;
++	char			*buf;
+ };
+ 
+ struct pl011_dmarx_data {
+ 	struct dma_chan		*chan;
+ 	struct completion	complete;
+ 	bool			use_buf_b;
+-	struct pl011_sgbuf	sgbuf_a;
+-	struct pl011_sgbuf	sgbuf_b;
++	struct pl011_dmabuf	dbuf_a;
++	struct pl011_dmabuf	dbuf_b;
+ 	dma_cookie_t		cookie;
+ 	bool			running;
+ 	struct timer_list	timer;
+@@ -241,7 +242,8 @@ struct pl011_dmarx_data {
+ 
+ struct pl011_dmatx_data {
+ 	struct dma_chan		*chan;
+-	struct scatterlist	sg;
++	dma_addr_t		dma;
++	size_t			len;
+ 	char			*buf;
+ 	bool			queued;
+ };
+@@ -366,32 +368,24 @@ static int pl011_fifo_to_tty(struct uart_amba_port *uap)
+ 
+ #define PL011_DMA_BUFFER_SIZE PAGE_SIZE
+ 
+-static int pl011_sgbuf_init(struct dma_chan *chan, struct pl011_sgbuf *sg,
++static int pl011_dmabuf_init(struct dma_chan *chan, struct pl011_dmabuf *db,
+ 	enum dma_data_direction dir)
+ {
+-	dma_addr_t dma_addr;
+-
+-	sg->buf = dma_alloc_coherent(chan->device->dev,
+-		PL011_DMA_BUFFER_SIZE, &dma_addr, GFP_KERNEL);
+-	if (!sg->buf)
++	db->buf = dma_alloc_coherent(chan->device->dev, PL011_DMA_BUFFER_SIZE,
++				     &db->dma, GFP_KERNEL);
++	if (!db->buf)
+ 		return -ENOMEM;
+-
+-	sg_init_table(&sg->sg, 1);
+-	sg_set_page(&sg->sg, phys_to_page(dma_addr),
+-		PL011_DMA_BUFFER_SIZE, offset_in_page(dma_addr));
+-	sg_dma_address(&sg->sg) = dma_addr;
+-	sg_dma_len(&sg->sg) = PL011_DMA_BUFFER_SIZE;
++	db->len = PL011_DMA_BUFFER_SIZE;
+ 
+ 	return 0;
+ }
+ 
+-static void pl011_sgbuf_free(struct dma_chan *chan, struct pl011_sgbuf *sg,
++static void pl011_dmabuf_free(struct dma_chan *chan, struct pl011_dmabuf *db,
+ 	enum dma_data_direction dir)
+ {
+-	if (sg->buf) {
++	if (db->buf) {
+ 		dma_free_coherent(chan->device->dev,
+-			PL011_DMA_BUFFER_SIZE, sg->buf,
+-			sg_dma_address(&sg->sg));
++				  PL011_DMA_BUFFER_SIZE, db->buf, db->dma);
+ 	}
+ }
+ 
+@@ -552,8 +546,8 @@ static void pl011_dma_tx_callback(void *data)
+ 
+ 	uart_port_lock_irqsave(&uap->port, &flags);
+ 	if (uap->dmatx.queued)
+-		dma_unmap_sg(dmatx->chan->device->dev, &dmatx->sg, 1,
+-			     DMA_TO_DEVICE);
++		dma_unmap_single(dmatx->chan->device->dev, dmatx->dma,
++				dmatx->len, DMA_TO_DEVICE);
+ 
+ 	dmacr = uap->dmacr;
+ 	uap->dmacr = dmacr & ~UART011_TXDMAE;
+@@ -639,18 +633,19 @@ static int pl011_dma_tx_refill(struct uart_amba_port *uap)
+ 			memcpy(&dmatx->buf[first], &xmit->buf[0], second);
+ 	}
+ 
+-	dmatx->sg.length = count;
+-
+-	if (dma_map_sg(dma_dev->dev, &dmatx->sg, 1, DMA_TO_DEVICE) != 1) {
++	dmatx->len = count;
++	dmatx->dma = dma_map_single(dma_dev->dev, dmatx->buf, count,
++				    DMA_TO_DEVICE);
++	if (dmatx->dma == DMA_MAPPING_ERROR) {
+ 		uap->dmatx.queued = false;
+ 		dev_dbg(uap->port.dev, "unable to map TX DMA\n");
+ 		return -EBUSY;
+ 	}
+ 
+-	desc = dmaengine_prep_slave_sg(chan, &dmatx->sg, 1, DMA_MEM_TO_DEV,
++	desc = dmaengine_prep_slave_single(chan, dmatx->dma, dmatx->len, DMA_MEM_TO_DEV,
+ 					     DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+ 	if (!desc) {
+-		dma_unmap_sg(dma_dev->dev, &dmatx->sg, 1, DMA_TO_DEVICE);
++		dma_unmap_single(dma_dev->dev, dmatx->dma, dmatx->len, DMA_TO_DEVICE);
+ 		uap->dmatx.queued = false;
+ 		/*
+ 		 * If DMA cannot be used right now, we complete this
+@@ -813,8 +808,8 @@ __acquires(&uap->port.lock)
+ 	dmaengine_terminate_async(uap->dmatx.chan);
+ 
+ 	if (uap->dmatx.queued) {
+-		dma_unmap_sg(uap->dmatx.chan->device->dev, &uap->dmatx.sg, 1,
+-			     DMA_TO_DEVICE);
++		dma_unmap_single(uap->dmatx.chan->device->dev, uap->dmatx.dma,
++				 uap->dmatx.len, DMA_TO_DEVICE);
+ 		uap->dmatx.queued = false;
+ 		uap->dmacr &= ~UART011_TXDMAE;
+ 		pl011_write(uap->dmacr, uap, REG_DMACR);
+@@ -828,15 +823,15 @@ static int pl011_dma_rx_trigger_dma(struct uart_amba_port *uap)
+ 	struct dma_chan *rxchan = uap->dmarx.chan;
+ 	struct pl011_dmarx_data *dmarx = &uap->dmarx;
+ 	struct dma_async_tx_descriptor *desc;
+-	struct pl011_sgbuf *sgbuf;
++	struct pl011_dmabuf *dbuf;
+ 
+ 	if (!rxchan)
+ 		return -EIO;
+ 
+ 	/* Start the RX DMA job */
+-	sgbuf = uap->dmarx.use_buf_b ?
+-		&uap->dmarx.sgbuf_b : &uap->dmarx.sgbuf_a;
+-	desc = dmaengine_prep_slave_sg(rxchan, &sgbuf->sg, 1,
++	dbuf = uap->dmarx.use_buf_b ?
++		&uap->dmarx.dbuf_b : &uap->dmarx.dbuf_a;
++	desc = dmaengine_prep_slave_single(rxchan, dbuf->dma, dbuf->len,
+ 					DMA_DEV_TO_MEM,
+ 					DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+ 	/*
+@@ -876,8 +871,8 @@ static void pl011_dma_rx_chars(struct uart_amba_port *uap,
+ 			       bool readfifo)
+ {
+ 	struct tty_port *port = &uap->port.state->port;
+-	struct pl011_sgbuf *sgbuf = use_buf_b ?
+-		&uap->dmarx.sgbuf_b : &uap->dmarx.sgbuf_a;
++	struct pl011_dmabuf *dbuf = use_buf_b ?
++		&uap->dmarx.dbuf_b : &uap->dmarx.dbuf_a;
+ 	int dma_count = 0;
+ 	u32 fifotaken = 0; /* only used for vdbg() */
+ 
+@@ -886,7 +881,7 @@ static void pl011_dma_rx_chars(struct uart_amba_port *uap,
+ 
+ 	if (uap->dmarx.poll_rate) {
+ 		/* The data can be taken by polling */
+-		dmataken = sgbuf->sg.length - dmarx->last_residue;
++		dmataken = dbuf->len - dmarx->last_residue;
+ 		/* Recalculate the pending size */
+ 		if (pending >= dmataken)
+ 			pending -= dmataken;
+@@ -900,7 +895,7 @@ static void pl011_dma_rx_chars(struct uart_amba_port *uap,
+ 		 * Note that tty_insert_flip_buf() tries to take as many chars
+ 		 * as it can.
+ 		 */
+-		dma_count = tty_insert_flip_string(port, sgbuf->buf + dmataken,
++		dma_count = tty_insert_flip_string(port, dbuf->buf + dmataken,
+ 				pending);
+ 
+ 		uap->port.icount.rx += dma_count;
+@@ -911,7 +906,7 @@ static void pl011_dma_rx_chars(struct uart_amba_port *uap,
+ 
+ 	/* Reset the last_residue for Rx DMA poll */
+ 	if (uap->dmarx.poll_rate)
+-		dmarx->last_residue = sgbuf->sg.length;
++		dmarx->last_residue = dbuf->len;
+ 
+ 	/*
+ 	 * Only continue with trying to read the FIFO if all DMA chars have
+@@ -946,8 +941,8 @@ static void pl011_dma_rx_irq(struct uart_amba_port *uap)
+ {
+ 	struct pl011_dmarx_data *dmarx = &uap->dmarx;
+ 	struct dma_chan *rxchan = dmarx->chan;
+-	struct pl011_sgbuf *sgbuf = dmarx->use_buf_b ?
+-		&dmarx->sgbuf_b : &dmarx->sgbuf_a;
++	struct pl011_dmabuf *dbuf = dmarx->use_buf_b ?
++		&dmarx->dbuf_b : &dmarx->dbuf_a;
+ 	size_t pending;
+ 	struct dma_tx_state state;
+ 	enum dma_status dmastat;
+@@ -969,7 +964,7 @@ static void pl011_dma_rx_irq(struct uart_amba_port *uap)
+ 	pl011_write(uap->dmacr, uap, REG_DMACR);
+ 	uap->dmarx.running = false;
+ 
+-	pending = sgbuf->sg.length - state.residue;
++	pending = dbuf->len - state.residue;
+ 	BUG_ON(pending > PL011_DMA_BUFFER_SIZE);
+ 	/* Then we terminate the transfer - we now know our residue */
+ 	dmaengine_terminate_all(rxchan);
+@@ -996,8 +991,8 @@ static void pl011_dma_rx_callback(void *data)
+ 	struct pl011_dmarx_data *dmarx = &uap->dmarx;
+ 	struct dma_chan *rxchan = dmarx->chan;
+ 	bool lastbuf = dmarx->use_buf_b;
+-	struct pl011_sgbuf *sgbuf = dmarx->use_buf_b ?
+-		&dmarx->sgbuf_b : &dmarx->sgbuf_a;
++	struct pl011_dmabuf *dbuf = dmarx->use_buf_b ?
++		&dmarx->dbuf_b : &dmarx->dbuf_a;
+ 	size_t pending;
+ 	struct dma_tx_state state;
+ 	int ret;
+@@ -1015,7 +1010,7 @@ static void pl011_dma_rx_callback(void *data)
+ 	 * the DMA irq handler. So we check the residue here.
+ 	 */
+ 	rxchan->device->device_tx_status(rxchan, dmarx->cookie, &state);
+-	pending = sgbuf->sg.length - state.residue;
++	pending = dbuf->len - state.residue;
+ 	BUG_ON(pending > PL011_DMA_BUFFER_SIZE);
+ 	/* Then we terminate the transfer - we now know our residue */
+ 	dmaengine_terminate_all(rxchan);
+@@ -1067,16 +1062,16 @@ static void pl011_dma_rx_poll(struct timer_list *t)
+ 	unsigned long flags;
+ 	unsigned int dmataken = 0;
+ 	unsigned int size = 0;
+-	struct pl011_sgbuf *sgbuf;
++	struct pl011_dmabuf *dbuf;
+ 	int dma_count;
+ 	struct dma_tx_state state;
+ 
+-	sgbuf = dmarx->use_buf_b ? &uap->dmarx.sgbuf_b : &uap->dmarx.sgbuf_a;
++	dbuf = dmarx->use_buf_b ? &uap->dmarx.dbuf_b : &uap->dmarx.dbuf_a;
+ 	rxchan->device->device_tx_status(rxchan, dmarx->cookie, &state);
+ 	if (likely(state.residue < dmarx->last_residue)) {
+-		dmataken = sgbuf->sg.length - dmarx->last_residue;
++		dmataken = dbuf->len - dmarx->last_residue;
+ 		size = dmarx->last_residue - state.residue;
+-		dma_count = tty_insert_flip_string(port, sgbuf->buf + dmataken,
++		dma_count = tty_insert_flip_string(port, dbuf->buf + dmataken,
+ 				size);
+ 		if (dma_count == size)
+ 			dmarx->last_residue =  state.residue;
+@@ -1123,7 +1118,7 @@ static void pl011_dma_startup(struct uart_amba_port *uap)
+ 		return;
+ 	}
+ 
+-	sg_init_one(&uap->dmatx.sg, uap->dmatx.buf, PL011_DMA_BUFFER_SIZE);
++	uap->dmatx.len = PL011_DMA_BUFFER_SIZE;
+ 
+ 	/* The DMA buffer is now the FIFO the TTY subsystem can use */
+ 	uap->port.fifosize = PL011_DMA_BUFFER_SIZE;
+@@ -1133,7 +1128,7 @@ static void pl011_dma_startup(struct uart_amba_port *uap)
+ 		goto skip_rx;
+ 
+ 	/* Allocate and map DMA RX buffers */
+-	ret = pl011_sgbuf_init(uap->dmarx.chan, &uap->dmarx.sgbuf_a,
++	ret = pl011_dmabuf_init(uap->dmarx.chan, &uap->dmarx.dbuf_a,
+ 			       DMA_FROM_DEVICE);
+ 	if (ret) {
+ 		dev_err(uap->port.dev, "failed to init DMA %s: %d\n",
+@@ -1141,12 +1136,12 @@ static void pl011_dma_startup(struct uart_amba_port *uap)
+ 		goto skip_rx;
+ 	}
+ 
+-	ret = pl011_sgbuf_init(uap->dmarx.chan, &uap->dmarx.sgbuf_b,
++	ret = pl011_dmabuf_init(uap->dmarx.chan, &uap->dmarx.dbuf_b,
+ 			       DMA_FROM_DEVICE);
+ 	if (ret) {
+ 		dev_err(uap->port.dev, "failed to init DMA %s: %d\n",
+ 			"RX buffer B", ret);
+-		pl011_sgbuf_free(uap->dmarx.chan, &uap->dmarx.sgbuf_a,
++		pl011_dmabuf_free(uap->dmarx.chan, &uap->dmarx.dbuf_a,
+ 				 DMA_FROM_DEVICE);
+ 		goto skip_rx;
+ 	}
+@@ -1200,8 +1195,9 @@ static void pl011_dma_shutdown(struct uart_amba_port *uap)
+ 		/* In theory, this should already be done by pl011_dma_flush_buffer */
+ 		dmaengine_terminate_all(uap->dmatx.chan);
+ 		if (uap->dmatx.queued) {
+-			dma_unmap_sg(uap->dmatx.chan->device->dev, &uap->dmatx.sg, 1,
+-				     DMA_TO_DEVICE);
++			dma_unmap_single(uap->dmatx.chan->device->dev,
++					 uap->dmatx.dma, uap->dmatx.len,
++					 DMA_TO_DEVICE);
+ 			uap->dmatx.queued = false;
+ 		}
+ 
+@@ -1212,8 +1208,8 @@ static void pl011_dma_shutdown(struct uart_amba_port *uap)
+ 	if (uap->using_rx_dma) {
+ 		dmaengine_terminate_all(uap->dmarx.chan);
+ 		/* Clean up the RX DMA */
+-		pl011_sgbuf_free(uap->dmarx.chan, &uap->dmarx.sgbuf_a, DMA_FROM_DEVICE);
+-		pl011_sgbuf_free(uap->dmarx.chan, &uap->dmarx.sgbuf_b, DMA_FROM_DEVICE);
++		pl011_dmabuf_free(uap->dmarx.chan, &uap->dmarx.dbuf_a, DMA_FROM_DEVICE);
++		pl011_dmabuf_free(uap->dmarx.chan, &uap->dmarx.dbuf_b, DMA_FROM_DEVICE);
+ 		if (uap->dmarx.poll_rate)
+ 			del_timer_sync(&uap->dmarx.timer);
+ 		uap->using_rx_dma = false;
+-- 
+2.42.0
+
