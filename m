@@ -1,32 +1,32 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11750F9;
-	Tue, 21 Nov 2023 22:32:50 -0800 (PST)
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-33139ecdca7so3865147f8f.0;
-        Tue, 21 Nov 2023 22:32:49 -0800 (PST)
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF7AB9;
+	Tue, 21 Nov 2023 22:46:00 -0800 (PST)
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-40b2c8e91afso6874025e9.3;
+        Tue, 21 Nov 2023 22:46:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700634768; x=1701239568;
+        d=1e100.net; s=20230601; t=1700635559; x=1701240359;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wkk6KghEqaVy/lgbXkgW4CUMwyYkn5lqU65OmhfEyfQ=;
-        b=bo1u/iSK7d72ce7j3mja+LZnfIritsunda9yvwxLRY01E6DZx4+A1D0OuiXFYp0cza
-         ahj8xkqS7dSOi0AjduOt1hoPLV31u7T0XyQgHutSTQs0XMevb3a842eiKoQqQnGiBKSp
-         xDBrIgoAhKYJTNilPo1Y//zKFWOwdTTIoOWTBDWhDjHnK2gM5CwCXRONHLa0CiLFsr7R
-         F/IakkKdkDHNO9YqwM6VHs4N+BIdBoO4+oBzRJzgh76NaVkMwEl9h2rfJEAS3gGqDu+K
-         RepcaYJ8SL63bbJ3DAVtR1A3LxHBgeGWHvErs1wb82KMQkiQK3kxu3VK7pC6dqOjYrv1
-         JkcA==
-X-Gm-Message-State: AOJu0YxdFXXqOvV6uaVK0pJL+j5Wk7M58bajwDjW6cKEiNQ9Kruzb/NK
-	ekexZsmI5hBiHt8/Ky13Sb4=
-X-Google-Smtp-Source: AGHT+IHl22GB4GxegJR9cctDTSSDLawoC62gI9HyDGtC5vgN76oJjbFdFSAuon55H7hgEo9x3wD68g==
-X-Received: by 2002:a05:6000:4f:b0:32d:9d6b:ac99 with SMTP id k15-20020a056000004f00b0032d9d6bac99mr799661wrx.31.1700634768283;
-        Tue, 21 Nov 2023 22:32:48 -0800 (PST)
+        bh=PPnxx0byxt3tXtr2JcO8E9m9VK2GynHDBhdzhLaN4sc=;
+        b=ihYvogfIPbuMUOYuVqbzrJVmOHPxmB6FE9G+6RCy5SNYDkzTVPSI5wy0jaakbf57zT
+         ozuG8Xqxorao0eNeKAhRh4/pnfhCLd64H30s5Kd/NzlzNE9bXxtVh2KUy6IvLlJrOgWz
+         sD4rNNOa1FRgflKo1d56CHe/LSVjwhwOML57p0KVU+Zn8rJz7FqhGlWZnXlMLN1mdnVM
+         TJkyYRHeyLh5R7f3TyvAP5F5PpAvCUjL5bO0ZZqAuTO8ZR6fBfrDCD+EuA7fId28M9cV
+         X1D4iAxxwhkc6g1Rej1LS6lvtbgwvJLC56rjwmC0U7zHzVk0e96qlyXUPHAcnKAsdQWg
+         sEqw==
+X-Gm-Message-State: AOJu0Yy2aQSSYlzdLVsOv40Pz39Cb0/gpYhZMUClEBimI2YLZU9rPaQz
+	MZKXDwJFTLJss8agQfg0VnjTjvpFEfs=
+X-Google-Smtp-Source: AGHT+IGsTYuQ0oGE7bQ2Fvw1chQAwfoE9QWj4l4vIisWi+Bl3gqpJaJ6HJJdO1dceiXcYjhyDpu06w==
+X-Received: by 2002:a05:600c:4ed0:b0:405:95ae:4a94 with SMTP id g16-20020a05600c4ed000b0040595ae4a94mr755336wmq.5.1700635558948;
+        Tue, 21 Nov 2023 22:45:58 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id n4-20020a5d4004000000b003316b3d69b3sm15418910wrp.46.2023.11.21.22.32.47
+        by smtp.gmail.com with ESMTPSA id g6-20020a05600c4ec600b0040b303d0dcfsm1080307wmq.36.2023.11.21.22.45.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Nov 2023 22:32:47 -0800 (PST)
-Message-ID: <268cb513-5b17-4bd5-81b7-ed730c895e41@kernel.org>
-Date: Wed, 22 Nov 2023 07:32:47 +0100
+        Tue, 21 Nov 2023 22:45:58 -0800 (PST)
+Message-ID: <bdb4cd62-2d17-4d19-b429-1232ec863456@kernel.org>
+Date: Wed, 22 Nov 2023 07:45:58 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -34,18 +34,16 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 17/17] tty: srmcons: make 'str_cr' const and non-array
+Subject: Re: [PATCH 04/17] tty: move locking docs out of Returns for functions
+ in tty.h
 Content-Language: en-US
 To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  linux-serial <linux-serial@vger.kernel.org>,
- LKML <linux-kernel@vger.kernel.org>,
- Richard Henderson <richard.henderson@linaro.org>,
- Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
- <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+ LKML <linux-kernel@vger.kernel.org>
 References: <20231121092258.9334-1-jirislaby@kernel.org>
- <20231121092258.9334-18-jirislaby@kernel.org>
- <82caf538-cee5-1420-4944-b26b627ef145@linux.intel.com>
+ <20231121092258.9334-5-jirislaby@kernel.org>
+ <e74f4dfb-55f2-f997-6a70-a1b7edd11016@linux.intel.com>
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -89,28 +87,45 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <82caf538-cee5-1420-4944-b26b627ef145@linux.intel.com>
+In-Reply-To: <e74f4dfb-55f2-f997-6a70-a1b7edd11016@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 21. 11. 23, 16:28, Ilpo Järvinen wrote:
+On 21. 11. 23, 10:48, Ilpo Järvinen wrote:
 > On Tue, 21 Nov 2023, Jiri Slaby (SUSE) wrote:
 > 
->> 'str_cr' contains a single character: \n. There is no need to declare it
+>> Both tty_kref_get() and tty_get_baud_rate() note about locking in their
+>> Return kernel-doc clause. Extract this info into a separate "Locking"
+>> paragraph -- the same as we do for other tty functions.
+>>
+>> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+>> Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+>> ---
+>>   include/linux/tty.h | 12 +++++++-----
+>>   1 file changed, 7 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/include/linux/tty.h b/include/linux/tty.h
+>> index 4b6340ac2af2..7625fc98fef3 100644
+>> --- a/include/linux/tty.h
+>> +++ b/include/linux/tty.h
+...
+>> @@ -436,10 +438,10 @@ void tty_encode_baud_rate(struct tty_struct *tty, speed_t ibaud,
+>>    * tty_get_baud_rate - get tty bit rates
+>>    * @tty: tty to query
+>>    *
+>> - * Returns: the baud rate as an integer for this terminal. The termios lock
+>> - * must be held by the caller and the terminal bit flags may be updated.
+>> + * Returns: the baud rate as an integer for this terminal
+>>    *
+>> - * Locking: none
+>> + * Locking: The termios lock must be held by the caller and the terminal bit
+>> + * flags may be updated.
 > 
-> Aren't \r and \n different characters?
+> I don't think the second part about the flags really belongs here, I'd
+> keep it the description.
 
-Definitely, this is a thinko -- I didn't remember properly what it 
-contains when writing the log. Fixed.
-
-> 
->> -	static char str_cr[1] = "\r";
->> +	static const char str_cr = '\r';
-> 
-> Thanks for making these cleanups.
-> 
-> I've reviewed all the patches in this series, so if I didn't comment a
-> patch or when you address my remarks, feel free to add:
+Any idea what does the part says in fact? I had not been thinking about 
+the content and now I don't understand it.
 
 thanks,
 -- 
