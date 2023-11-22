@@ -1,22 +1,22 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="iluFk+PP"
+	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="RY7AHEEi"
 Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65F3BB;
-	Tue, 21 Nov 2023 22:22:12 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E20CBB;
+	Tue, 21 Nov 2023 22:23:37 -0800 (PST)
 Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id 530B060852;
-	Wed, 22 Nov 2023 06:21:40 +0000 (UTC)
+	by mail5.25mail.st (Postfix) with ESMTPSA id 9B64560852;
+	Wed, 22 Nov 2023 06:23:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1700634132;
-	bh=IzPNJc1JTuqWO45Rxq17COGNEUpGUDxnGho6xDUJ+xg=;
+	s=25mailst; t=1700634216;
+	bh=7l8RYfSv+Xt+pXcLeRVZNV78n1VkGJsOJq4cyIHNZ2E=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=iluFk+PPWWXytS2xsj6IFeEAF0d3poODgAFNhyUdnh5cBXFUZJeQs6F98rCPaKd/t
-	 1DZc8N13h9WuIsLgza/COJTwTaAOqT5Z/6kc1+vqy9mQylJs2W78sfWfVMwMUVXgrU
-	 x7oQvxK5zbGZaVNIHDZ2jMBNZqPelr0JzaLq+4YA3JrQLUgqQ/70hMnA0M2VjpB9X2
-	 qAVNwBgxYH8Y7qMNG1IEblbe84+mDPprjjeZzDb3soZr1invzcyaSV2sXnKfBUbNBo
-	 fQ6Sbc12ghN2wzpd+jrozrvxdrDoaTV/kuBoZzprC5hKoMKAPPrMbarZe4dTZTtuxr
-	 LnBaY/S83yLOw==
-Date: Wed, 22 Nov 2023 08:21:38 +0200
+	b=RY7AHEEi03COXU08D3dl1hmNCiQVZwbml+LgwDKpjXDS9wMpcP61T3e9Yl2mf75GC
+	 sc/Q5HDOGd3hZXskcWgkbE+Lm0B0v09qXFzitE9iUsd0py3fVqAsCf25q23n7e5aVO
+	 KhqLryduelrBTbaclcOFlDnculfmIaHWpvn1aCblCRQldP8ahViBVnykG6wax7eJck
+	 YuPV9B+468z4/a6gIg3KvWn+bf4WZ5KJWjfwGPZtebcBZJQ6V04ytJ5nmSmu9cGF1g
+	 kBsqBxiGkbwAigoFVLLoaW2Gbp+rfHhc6XM8QiiqgpBSd5pEzBeJK1joHrydsZZCxN
+	 QntdvDAEje7sw==
+Date: Wed, 22 Nov 2023 08:23:04 +0200
 From: Tony Lindgren <tony@atomide.com>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -31,13 +31,12 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
 	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] printk: Save console options for
- add_preferred_console_match()
-Message-ID: <20231122062138.GD5169@atomide.com>
+Subject: Re: [PATCH v3 3/3] serial: core: Move console character device
+ handling from printk
+Message-ID: <20231122062304.GE5169@atomide.com>
 References: <20231121113203.61341-1-tony@atomide.com>
- <20231121113203.61341-2-tony@atomide.com>
- <ZVzuih3Aw3hdfj2s@smile.fi.intel.com>
- <20231122061800.GC5169@atomide.com>
+ <20231121113203.61341-4-tony@atomide.com>
+ <ZVzwKeALJ4swIdj0@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -46,18 +45,31 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231122061800.GC5169@atomide.com>
+In-Reply-To: <ZVzwKeALJ4swIdj0@smile.fi.intel.com>
 
-* Tony Lindgren <tony@atomide.com> [231122 08:18]:
-> * Andy Shevchenko <andriy.shevchenko@intel.com> [231121 17:53]:
-> > On Tue, Nov 21, 2023 at 01:31:55PM +0200, Tony Lindgren wrote:
-> > > +int __init console_opt_save(char *str)
-> > 
-> > str is not const? Hmm...
+* Andy Shevchenko <andriy.shevchenko@intel.com> [231121 18:00]:
+> On Tue, Nov 21, 2023 at 01:31:57PM +0200, Tony Lindgren wrote:
+> > +	ret = add_preferred_console_match(name, drv->dev_name, port->line);
+> > +	if (ret && ret != -ENOENT)
+> > +		return ret;
+> > +
+> > +	return 0;
 > 
-> Nice yes it can be const char *str here. Hmm maybe with the third patch
-> also console_setup() can use const char * now.. Will check.
+> 2nd time and so on, perhaps deserves a helper?
+> 
+> static inline int add_preferred_console...(...)
+> {
+> 	int ret;
+> 
+> 	ret = add_preferred_console_match(name, drv->dev_name, port->line);
+> 	if (ret == -ENOENT)
+> 		return 0;
+> 	return ret;
+> 
+> }
+> 
+> ?
 
-Nah console_setup() uses __setup().
+Yes good idea, thanks.
 
 Tony
