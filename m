@@ -1,139 +1,105 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="mRehwylA"
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526C81990;
-	Wed, 22 Nov 2023 11:37:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=nnReJhtIcwOcFZeVn/VC0p9TnG4qk2MuKVj6f7dJ0tA=; b=mRehwylAmHADJsSc6Nrnp3zhM1
-	DhODm3bYwDRmtW/qcPicRA61nZAqpl1+4aC/kpuyf3rIZYMk6JQkZTBR3nLvFei6ZdzEe4RU9RS6Z
-	58RBi9eszvdPxgg1dJvTJMUmr9b7uzwZ5AVGprmKT7lNHDZZx8beZNjHmZmJekMYYb0A=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:39316 helo=pettiford)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1r5t21-0001bL-T2; Wed, 22 Nov 2023 14:37:07 -0500
-Date: Wed, 22 Nov 2023 14:37:05 -0500
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Daniel Mack <daniel@zonque.org>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
- lech.perczak@camlingroup.com, u.kleine-koenig@pengutronix.de,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Maxim Popov
- <maxim.snafu@gmail.com>, stable@vger.kernel.org
-Message-Id: <20231122143705.ecb6cd9a9ff6dcca7a3397ed@hugovil.com>
-In-Reply-To: <20231122073541.1200457-1-daniel@zonque.org>
-References: <20231122073541.1200457-1-daniel@zonque.org>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bf5Nk4oJ"
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9ABC11F;
+	Wed, 22 Nov 2023 15:23:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700695422; x=1732231422;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=wLu90c2ONU3nwRPuECsbNVwdI6Y/3s1bCFsGjUjQWds=;
+  b=bf5Nk4oJ25NpqPjcgoH0qyyZwaybM8J+HOuiEmIO+HYRtQc7HJtYqal7
+   Xs6igblHASFh/Y92xTaxgbiG4V3iH0btRpQW8ZIkVrC5Fijb+x6nfUubX
+   kmDfCySXX0xtVXGnB2zosltPyG8fEZmZdgr0egi+j+szfzdU1V1u19SnK
+   B0K0ta1uZwmDnPK+ye3IU6hZVH4wdaN/LF8wPNHFd0jtn1LdujloI3HCd
+   3x5oYtSHQvxUN/dL2QoZVyznAo+5s2Y0cnuuL4oPJt15WKo60XkD73Osx
+   jBZj8XLvkvmJAw82wWq7HTfR3tshGqVD80KOiVry0/Kpqyp39vNQYt9So
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10902"; a="391935051"
+X-IronPort-AV: E=Sophos;i="6.04,219,1695711600"; 
+   d="scan'208";a="391935051"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2023 15:23:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10902"; a="760507612"
+X-IronPort-AV: E=Sophos;i="6.04,219,1695711600"; 
+   d="scan'208";a="760507612"
+Received: from amongesa-mobl.ger.corp.intel.com (HELO intel.com) ([10.252.57.132])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2023 15:23:31 -0800
+Date: Thu, 23 Nov 2023 00:23:28 +0100
+From: Andi Shyti <andi.shyti@linux.intel.com>
+To: Uwe =?iso-8859-15?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Joel Stanley <joel@jms.id.au>,
+	Andrew Jeffery <andrew@codeconstruct.com.au>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+	Al Cooper <alcooperx@gmail.com>,
+	Ilpo =?iso-8859-15?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Paul Cercueil <paul@crapouillou.net>,
+	Vladimir Zapolskiy <vz@mleia.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Tony Lindgren <tony@atomide.com>, Petr Mladek <pmladek@suse.com>,
+	Biju Das <biju.das.jz@bp.renesas.com>,
+	Johan Hovold <johan@kernel.org>, Chen-Yu Tsai <wenst@chromium.org>,
+	Andi Shyti <andi.shyti@linux.intel.com>,
+	Thomas Richard <thomas.richard@bootlin.com>,
+	Rob Herring <robh@kernel.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Duje =?utf-8?Q?Mihanovi=C4=87?= <duje.mihanovic@skole.hr>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Jacob Keller <jacob.e.keller@intel.com>,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+	kernel@pengutronix.de, linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org,
+	linux-rpi-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+	linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH 03/52] serial: 8250: Convert to platform remove callback
+ returning void
+Message-ID: <ZV6NcAXBUcj5wYx8@ashyti-mobl2.lan>
+References: <20231110152927.70601-1-u.kleine-koenig@pengutronix.de>
+ <20231110152927.70601-4-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-Subject: Re: [PATCH v4] serial: sc16is7xx: address RX timeout interrupt
- errata
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20231110152927.70601-4-u.kleine-koenig@pengutronix.de>
 
-On Wed, 22 Nov 2023 08:35:41 +0100
-Daniel Mack <daniel@zonque.org> wrote:
+Hi Uwe,
 
-> This device has a silicon bug that makes it report a timeout interrupt
-> but no data in the FIFO.
+On Fri, Nov 10, 2023 at 04:29:31PM +0100, Uwe Kleine-König wrote:
+> The .remove() callback for a platform driver returns an int which makes
+> many driver authors wrongly assume it's possible to do error handling by
+> returning an error code. However the value returned is ignored (apart
+> from emitting a warning) and this typically results in resource leaks.
 > 
-> The datasheet states the following in the errata section 18.1.4:
+> To improve here there is a quest to make the remove callback return
+> void. In the first step of this quest all drivers are converted to
+> .remove_new(), which already returns void. Eventually after all drivers
+> are converted, .remove_new() will be renamed to .remove().
 > 
->   "If the host reads the receive FIFO at the same time as a
->   time-out interrupt condition happens, the host might read 0xCC
->   (time-out) in the Interrupt Indication Register (IIR), but bit 0
->   of the Line Status Register (LSR) is not set (means there is no
->   data in the receive FIFO)."
+> Trivially convert this driver from always returning zero in the remove
+> callback to the void returning variant.
 > 
-> The errata doesn't explicitly mention that, but tests have shown
-> and the vendor has confirmed that the RXLVL register is equally
-> affected.
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-Hi Daniel,
-thank you for the feedback from NXP.
+Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
 
-I would suggest to replace this paragraph with something like this:
-
-------
-The errata description seems to indicate it affects only polled mode of
-operation when reading bit 0 of the LSR register. But when using
-interrupt mode (IRQ) like this driver does, reading RXLVL gives a value
-of zero even if there is data in the Rx FIFO (confirmed by tests and
-NXP).
-------
-
-> This bug has hit us on production units and when it does, sc16is7xx_irq()
-> would spin forever because sc16is7xx_port_irq() keeps seeing an
-> interrupt in the IIR register that is not cleared because the driver
-> does not call into sc16is7xx_handle_rx() unless the RXLVL register
-> reports at least one byte in the FIFO.
-> 
-> Fix this by always reading one byte when this condition is detected
-
-Change "reading one byte" to "reading one byte from the Rx FIFO".
-
-
-> in order to clear the interrupt. This approach was confirmed to be
-> correct by NXP through their support channels.
-> 
-> Signed-off-by: Daniel Mack <daniel@zonque.org>
-> Co-Developed-by: Maxim Popov <maxim.snafu@gmail.com>
-> Cc: stable@vger.kernel.org
-
-I tested your patch for the last few days, and I was not able to
-reproduce the problem (I put a trace to detect the condition). But
-at the same time, it has not caused any regressions.
-
-With the above changes, feel free to add:
-
-Tested by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-
-Hugo.
-
-
-> ---
-> Meanwhile, NXP has confirmed this fix to be correct.
-> 
-> v4: NXP has confirmed the fix; update the commit log accordingly
-> v3: re-added the additional Co-Developed-by and stable@ tags
-> v2: reworded the commit log a bit for more context.
-> 
->  drivers/tty/serial/sc16is7xx.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> index 289ca7d4e566..76f76e510ed1 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -765,6 +765,18 @@ static bool sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
->  		case SC16IS7XX_IIR_RTOI_SRC:
->  		case SC16IS7XX_IIR_XOFFI_SRC:
->  			rxlen = sc16is7xx_port_read(port, SC16IS7XX_RXLVL_REG);
-> +
-> +			/*
-> +			 * There is a silicon bug that makes the chip report a
-> +			 * time-out interrupt but no data in the FIFO. This is
-> +			 * described in errata section 18.1.4.
-> +			 *
-> +			 * When this happens, read one byte from the FIFO to
-> +			 * clear the interrupt.
-> +			 */
-> +			if (iir == SC16IS7XX_IIR_RTOI_SRC && !rxlen)
-> +				rxlen = 1;
-> +
->  			if (rxlen)
->  				sc16is7xx_handle_rx(port, rxlen, iir);
->  			break;
-> -- 
-> 2.41.0
-> 
-> 
+Thanks,
+Andi
