@@ -1,168 +1,148 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="NB/GO3FT"
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD9419D
-	for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 06:46:57 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id 5b1f17b1804b1-4083f613275so34651055e9.2
-        for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 06:46:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1700664415; x=1701269215; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=hT4gwDbs3O7BYvQXCc9YUYVeI1kWDO4jgcz26m3HltU=;
-        b=NB/GO3FTj8eocNGoCJZsrq4ooKJ4sKVKBiHEDSrrb8LP4tPDjn+gNeY5NRshD/3AAD
-         bFfy+9QrWDZRc7LQdgYkf8au6uxVAsRdkq54NuQTLPK2z9SyS5ix2nd++j+82rTw528e
-         Nexog23V/nhDdDLJE4rCx4qbnds7cpniiYHdT7qXKmkjXpfmhUKZk+UZ7SQsD5OSu94e
-         18BT9Y5YY1qbsq2oxmDPbpVw7697kCi6DEHo5P72Ehjd2UzdzOwXT3oo+yUMTbfl58Hn
-         JNqxh8sHp0tFVJOR0f7KjzIaCAkD3+VbEuzxFX9GGZPcRTfvO1K3BOcZVokzb1QvS4e9
-         1glg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700664415; x=1701269215;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hT4gwDbs3O7BYvQXCc9YUYVeI1kWDO4jgcz26m3HltU=;
-        b=dyN/Nj4oH72cXuxT6d/tV5ZnndMDnK2YA9PZH8qyXR5cVUvRvsRHSBZzR8CrB6Ojd/
-         F+XIkL2hm+NIUNmtCOdpmBXriz/itycA/wQMphtWOwF28CGRqEG6gujMOi4H94DLBbGO
-         G10Tq09i+l0NUcKYfiWIJzI9CoGtHmHXMIQuq71GXxD0PYetMVFZEmZIc4PLzJZ4KNRI
-         LovuQI+x58MwOA/wiom+UodDZ4nzOiUMKCHjODLkP8ctNpL6cWR4jqPscgQaK4kF+k1S
-         avrBfBGiN0imQCoca5V+o34lwlvgj1JtOf9I0esusW44in56BwWCavbxdq4gp7f3zyld
-         d4QA==
-X-Gm-Message-State: AOJu0YxlOblPYWi9lxo9/6T5+Xb8XOcWYo7aW4JKsefkAEOfYTMPNnl2
-	rws/VeBFLq6PmkXJipvAJykXaA==
-X-Google-Smtp-Source: AGHT+IHydvoBEeVASsaJa1LJeEqmfweGZEyyteKBKCBmWenH4DK67q10WlOv+uBVYydKtjwndew4HA==
-X-Received: by 2002:a05:600c:3510:b0:408:2b:3ae with SMTP id h16-20020a05600c351000b00408002b03aemr1527793wmq.6.1700664415452;
-        Wed, 22 Nov 2023 06:46:55 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.218.100])
-        by smtp.gmail.com with ESMTPSA id bg36-20020a05600c3ca400b00406443c8b4fsm2426918wmb.19.2023.11.22.06.46.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Nov 2023 06:46:55 -0800 (PST)
-Message-ID: <66c4b54b-7631-484a-9f7d-31542284e620@linaro.org>
-Date: Wed, 22 Nov 2023 15:46:52 +0100
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="ZfV+KUxs"
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D47FC1
+	for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 06:47:19 -0800 (PST)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id E7AB9C000C;
+	Wed, 22 Nov 2023 14:47:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1700664437;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=RChDF0hQ+fd2wEyvYztJ025TvP/Yb4lGLcnjoT4C4bc=;
+	b=ZfV+KUxsuFNuSIsHwqhpPfokW24VcaNfDlzp53hqKNPP3Eb8C++QUk704IKOHvglTW7Oaw
+	OgfR9+meIKaJ1GuE4GWZ03ENyA2tJuyVOSbYmkljygI5umYlKhEkaezoWS03LGdm/pN29b
+	2n+FU1Upzyhkhz+nfOimw3XqXquTdeNTJ/EuEeyMGk+WCa4UCZ/bp36r+t4scZNwW0Vrgn
+	EFiAUn3eczGyWR77BTvc4TMs9cIczf5MIBXp0aPqgbqNGPRmvrhSjyHdemTVprlG8T5bPx
+	3WGsVU41eXGs4cJSYrISe5Agl2IAsJvlXIco8sKlx5bYrH3h9mMEjD7Oh/M1mw==
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V2 1/2] dt-bindings: serial: add Broadcom's BCMBCA family
- High Speed UART
-To: =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
- Florian Fainelli <florian.fainelli@broadcom.com>,
- William Zhang <william.zhang@broadcom.com>,
- Anand Gore <anand.gore@broadcom.com>, Kursad Oney
- <kursad.oney@broadcom.com>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Andre Przywara <andre.przywara@arm.com>,
- Alexandre TORGUE <alexandre.torgue@st.com>,
- Neil Armstrong <neil.armstrong@linaro.org>, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- bcm-kernel-feedback-list@broadcom.com, =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?=
- <rafal@milecki.pl>
-References: <20231122144208.21114-1-zajec5@gmail.com>
-Content-Language: en-US
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20231122144208.21114-1-zajec5@gmail.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Date: Wed, 22 Nov 2023 15:47:16 +0100
+Message-Id: <CX5F88JLWFUW.Z36KQB2PX554@tleb-bootlin-xps13-01>
+Cc: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+ <linux-serial@vger.kernel.org>, <gregory.clement@bootlin.com>,
+ <u-kumar1@ti.com>, <d-gole@ti.com>, <thomas.petazzoni@bootlin.com>
+To: "Kevin Hilman" <khilman@kernel.org>, "Tony Lindgren" <tony@atomide.com>,
+ "Thomas Richard" <thomas.richard@bootlin.com>
+From: =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
+Subject: Re: [PATCH] serial: 8250_omap: Set the console genpd always on if
+ no console suspend
+X-Mailer: aerc 0.15.2
+References: <20231017130540.1149721-1-thomas.richard@bootlin.com>
+ <7hfs213u0r.fsf@baylibre.com> <20231024045109.GT27774@atomide.com>
+ <7hjzrbj29t.fsf@baylibre.com> <20231025064131.GZ27774@atomide.com>
+ <75b6cda8-c809-409b-8be9-ad8a4db63c14@bootlin.com>
+ <20231031105247.GC57044@atomide.com> <7h34xqitl0.fsf@baylibre.com>
+In-Reply-To: <7h34xqitl0.fsf@baylibre.com>
+X-GND-Sasl: theo.lebrun@bootlin.com
 
-On 22/11/2023 15:42, Rafał Miłecki wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
-> 
-> It's an UART controller that first appeared on BCM63138 SoC and then was
-> reused on other bcmbca familiy chipsets.
+Hi Kevin Hilman, Tony Lindgren & Thomas Richard,
 
-If there is going to be a new version, typo: family
+On Tue Oct 31, 2023 at 6:34 PM CET, Kevin Hilman wrote:
+> Tony Lindgren <tony@atomide.com> writes:
+> > * Thomas Richard <thomas.richard@bootlin.com> [231031 10:15]:
+> >> Please find below the logs of the test you asked me.
+> >
+> > OK great thanks!
+> >
+> >> I added the call of pm_runtime_get_usage_count at the end of the suspe=
+nd
+> >> function.
+> >> The console is attached on 2800000.serial, it has usage_count=3D4.
+> >> Other serial has usage_count=3D3.
+> >
+> > So as suspected, it seems the power domain gets force suspended
+> > somewhere despite the usage_count.
+>
+> I think the only way this could happen (excluding any bugs, of course)
+> would be for pm_runtime_force_suspend() to be getting called somewhere,
+> but I thought the earlier patch made that call conditional, so maybe
+> there is another path where that is getting called?
 
-> 
-> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
-> ---
-> V2: Extend "compatible" and rename YAML file accordingly
-> 
-> Krzysztof: since I reworked "compatible" I didn't want to carry on your
-> Reviewed in case there is sth wrong with the updated schema.
+I'm coming back on this topic as the upstream fix is less than ideal, as
+everyone here was agreeing.
 
-Thanks for letting me know.
+I've had a look at the genpd code & power-domains get powered-off at
+suspend_noirq without caring about runtime PM refcounting. See
+genpd_suspend_noirq & genpd_finish_suspend.
 
-> +
-> +maintainers:
-> +  - Rafał Miłecki <rafal@milecki.pl>
-> +
-> +allOf:
-> +  - $ref: serial.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - brcm,bcm4908-hs-uart
-> +          - brcm,bcm4912-hs-uart
-> +          - brcm,bcm6756-hs-uart
-> +          - brcm,bcm6813-hs-uart
-> +          - brcm,bcm6846-hs-uart
-> +          - brcm,bcm6855-hs-uart
-> +          - brcm,bcm6856-hs-uart
-> +          - brcm,bcm6858-hs-uart
-> +          - brcm,bcm6878-hs-uart
-> +          - brcm,bcm47622-hs-uart
-> +          - brcm,bcm63138-hs-uart
-> +          - brcm,bcm63146-hs-uart
-> +          - brcm,bcm63158-hs-uart
-> +          - brcm,bcm63178-hs-uart
-> +      - const: brcm,bcmbca-hs-uart
+Behavior is:
 
-git grep did not find driver for this compatible. Is it in separate
-patchset?
+ - In all cases, call suspend_noirq on the underlying device.
+ - Stop now if device is in wakeup path & PD has the
+   GENPD_FLAG_ACTIVE_WAKEUP flag.
+ - If the PD has start & stop callbacks & is not runtime suspended, call
+   the stop callback on the device.
+ - Increment the count of suspended devices on this PD.
+ - If PD is already off or always on, stop.
+ - If this is the last device on this PD (and some other checks), then
+   do the PD power off (and maybe parent PDs).
 
-Best regards,
-Krzysztof
+The current patch sets the PD as always on at suspend. That would not
+work if our PD driver registered start/stop callbacks as those would
+get called.
 
+The right solution to avoid getting the PD cut would be to mark the
+serials we want to keep alive as on the wakeup path using
+device_set_wakeup_path(dev) at suspend. That also requires the PD to be
+marked using the GENPD_FLAG_ACTIVE_WAKEUP flag, which is currently not
+the case.
+
+That last aspect is what I'm unsure of: should we add this flag to all
+power-domains created by ti_sci_pm_domains? Should we pass something
+from devicetree? I don't see the reason for not enabling this behavior
+by default?
+
+I've tested this approach & it works. See below for diff.
+
+Regards,
+
+--
+Th=C3=A9o Lebrun, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+8< -------------------------------
+
+diff --git a/drivers/pmdomain/ti/ti_sci_pm_domains.c b/drivers/pmdomain/ti/=
+ti_sci_pm_domains.c
+index c091d569ecd5..b0d473776278 100644
+--- a/drivers/pmdomain/ti/ti_sci_pm_domains.c
++++ b/drivers/pmdomain/ti/ti_sci_pm_domains.c
+@@ -168,6 +168,7 @@ static int ti_sci_pm_domain_probe(struct platform_devic=
+e *pdev)
+
+            pd->pd.power_off =3D ti_sci_pd_power_off;
+            pd->pd.power_on =3D ti_sci_pd_power_on;
++           pd->pd.flags |=3D GENPD_FLAG_ACTIVE_WAKEUP;
+            pd->idx =3D args.args[0];
+            pd->parent =3D pd_provider;
+
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/=
+8250_omap.c
+index 4b33f4529aed..ab2f8b7927c3 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1633,8 +1633,12 @@ static int omap8250_suspend(struct device *dev)
+   if (!device_may_wakeup(dev))
+      priv->wer =3D 0;
+   serial_out(up, UART_OMAP_WER, priv->wer);
+-  if (uart_console(&up->port) && console_suspend_enabled)
+-     err =3D pm_runtime_force_suspend(dev);
++  if (uart_console(&up->port)) {
++     if (console_suspend_enabled)
++        err =3D pm_runtime_force_suspend(dev);
++     else
++        device_set_wakeup_path(dev);
++  }
+   flush_work(&priv->qos_work);
+
+   return err;
