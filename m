@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="EF0u/8wD"
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62D0CB9
-	for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 14:48:10 -0800 (PST)
-Received: by mail-io1-xd2b.google.com with SMTP id ca18e2360f4ac-7a9857c14c5so210629039f.3
-        for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 14:48:10 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fcuML4ag"
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5ADD19E;
+	Tue, 21 Nov 2023 22:17:48 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id a640c23a62f3a-a00d5b0ec44so295975066b.0;
+        Tue, 21 Nov 2023 22:17:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1700606890; x=1701211690; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=gmail.com; s=20230601; t=1700633867; x=1701238667; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=ha2zL2RliN6J5b2kLDdhsZ6GbGCv9fZnJqsfyqkrjz4=;
-        b=EF0u/8wDYnDq/mzYotbx4SZuvWtpVHtc0ek0+++Sx9lKALxa2HhcfhftDPGHItrgYP
-         mOvbWORLeqEA4gheTOrDU7tAbjmmJgVSFXLo8XgzgmBetIRdzViMesogDTINvoMJRq17
-         W88e7rT6ODkMZDtlTPEzuDmKe+KiQlN7EHAEJ4biPGDWCRCXUmwCOHEMiZpnjM75WkfF
-         pitJfwviqcoJZnV1EM8B892CvTA7p+eoRGbUE3wSGlOHtlB5F7TxMdaRkw3d/LswvwGw
-         ahQD1ZFaYgy7OCnp8wjaWc/Ge3FUSpLYbAuCwUNrKJsFEUUrXFM9PvaTkOIaCeulf3dO
-         xonA==
+        bh=rZWHrDJjBzioVxFvVfoOYSDud+iYI4PeTh/okXrEDYQ=;
+        b=fcuML4agBBAmp50EXoo3YItZA2E1kxRFpvPxnyhrVOhrQkTcWtIp7C0p0fUMQEnzr1
+         FnMtrZgJ//UQhJbsSoigS8lqZxpyI34G2mu1eEmoRat5rwDpd8zBYNfNktPsevxUijqF
+         NBTHL8FVk/KZFxvCNWnAtrP4SJl+ucIsNYDmxLddsTS4BXtg3AS0u7D6TBFprTX18eHK
+         O4d6mTxUFzQRtctHskvBPI4ZrXQIr404V+RH7wrll8fGfGf/WU0p6rXB4ZPmJBYWN3FI
+         cDxcZpQOmPpQEJPkzAt4IHaEh5z2YIFd3ZZ9fcf0XwacgTJEphAOLVw7/tf202P/b+x4
+         CpIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700606890; x=1701211690;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1700633867; x=1701238667;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ha2zL2RliN6J5b2kLDdhsZ6GbGCv9fZnJqsfyqkrjz4=;
-        b=fRMiuiu1Xa3rbsYnGJzftRxkfseETQtc/XvB9dCnczuk7gn1fT0GNErWMKrqQs2TVp
-         2tmA8SHoh3BVxv1IZDwdO5BZRXr5v9+gxp8qpqfWpHdlrH/LD3AHHORvKbkN/HaXYQ3n
-         c4qBkRbubKM5OCONY/N5rY/+M8M1Fgc4Ih/LhZSKLpfFAAQhCR2TnUgL5qH4XyECUOOr
-         ccxKvcCUangzPil3Swa+cV7CyvT+Y9fXERCa5w4FSi4ul7+xV81vkE58Xon7ciJ6aCD7
-         SzlREjKMxqphkhJnbmgNLnk/vvyP/g4ZD+vk1rLAraNFU4jbkpTV2sudrg7pK9mQF3qT
-         ftvA==
-X-Gm-Message-State: AOJu0YyMjj/O0oR6oU7xMxODud3LgWO7LUdZ/+9MJvUSXBMLmzEz3OAa
-	gFbFc0zfLtvVxaoLrata/4facw==
-X-Google-Smtp-Source: AGHT+IEqopk3WpneTwAJdQEga6tdFjb3hMHKJSSM4AtmRyuOtlB2pSKEyHj6RtL8C3xrT6bMg/cE5g==
-X-Received: by 2002:a05:6602:c08:b0:7aa:125a:b0c4 with SMTP id fn8-20020a0566020c0800b007aa125ab0c4mr437169iob.5.1700606889842;
-        Tue, 21 Nov 2023 14:48:09 -0800 (PST)
-Received: from ?IPV6:2605:a601:adae:4500:3d43:c8e2:1496:e620? ([2605:a601:adae:4500:3d43:c8e2:1496:e620])
-        by smtp.gmail.com with ESMTPSA id fj34-20020a056638636200b004290fd3a68dsm2835154jab.1.2023.11.21.14.48.08
+        bh=rZWHrDJjBzioVxFvVfoOYSDud+iYI4PeTh/okXrEDYQ=;
+        b=OkzkXfL8ffx8rIbXYY9PF+GGgLy/QpQIX7lERSOVV2Y7Bu36D14HTDoKwh7zaSVSIZ
+         xaLEFIOCL/4slvYkNDooRXsOixtfBX2qg+Jrx0+SX9Qz3J27UzjW4tB8gZPK+gK78xKR
+         fAG2SWFKNVMmKR/AL1gIiCDoZFPeyRFHS++qmwT5aDbscww3cLNfhxXaZNhfcMrCMqKS
+         iRcSLjcz4Odl3DrT/fx0bauJ/GlUIhEaYqaHSdM/S762+QE7wXQvessqacpGRihEZj7D
+         qRKvufy6fJqhGMWq13Vj8AJudiZsRw43bui/gBhH/Osf1wtnFt28CPO1qDnCbh9BqC2D
+         YgiA==
+X-Gm-Message-State: AOJu0YxnyQe7hdi2J4/yESPKOs3pSEyxJDAD2wbQDoc8t8L7OqKKzvUz
+	CPV4ArT+arbw3HR7XS5Ny6g=
+X-Google-Smtp-Source: AGHT+IHpvXGS9IdYCdbZLW1SmZLzFO3i8foSwxeGk8BDZ1Smoa1wL9buHBST+Spf2HSZ+/fNH57xHg==
+X-Received: by 2002:a17:907:20d8:b0:a03:69e:f616 with SMTP id qq24-20020a17090720d800b00a03069ef616mr775457ejb.57.1700633867123;
+        Tue, 21 Nov 2023 22:17:47 -0800 (PST)
+Received: from [192.168.26.149] (031011218106.poznan.vectranet.pl. [31.11.218.106])
+        by smtp.googlemail.com with ESMTPSA id gx20-20020a170906f1d400b00a0290da4a50sm1451042ejb.186.2023.11.21.22.17.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Nov 2023 14:48:09 -0800 (PST)
-Message-ID: <fb72e212-711e-4be9-9b92-89b2dc121476@sifive.com>
-Date: Tue, 21 Nov 2023 16:48:08 -0600
+        Tue, 21 Nov 2023 22:17:46 -0800 (PST)
+Message-ID: <3a2880a4-cdf5-4032-9cae-be2916237d29@gmail.com>
+Date: Wed, 22 Nov 2023 07:17:44 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -47,64 +47,64 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 5/5] RISC-V: Enable SBI based earlycon support
+Subject: Re: [PATCH 1/2] dt-bindings: serial: add Broadcom's BCM63138 High
+ Speed UART
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Florian Fainelli <florian.fainelli@broadcom.com>,
+ William Zhang <william.zhang@broadcom.com>,
+ Anand Gore <anand.gore@broadcom.com>, Kursad Oney
+ <kursad.oney@broadcom.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Andre Przywara <andre.przywara@arm.com>,
+ Alexandre TORGUE <alexandre.torgue@st.com>,
+ Neil Armstrong <neil.armstrong@linaro.org>, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ bcm-kernel-feedback-list@broadcom.com, =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?=
+ <rafal@milecki.pl>
+References: <20231121121324.23268-1-zajec5@gmail.com>
+ <26d71302-ebb0-4b2b-802e-0b3ebf75d68f@linaro.org>
 Content-Language: en-US
-To: Anup Patel <apatel@ventanamicro.com>
-Cc: Conor Dooley <conor@kernel.org>, Andrew Jones <ajones@ventanamicro.com>,
- linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
- Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley
- <paul.walmsley@sifive.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>
-References: <20231118033859.726692-1-apatel@ventanamicro.com>
- <20231118033859.726692-6-apatel@ventanamicro.com>
-From: Samuel Holland <samuel.holland@sifive.com>
-In-Reply-To: <20231118033859.726692-6-apatel@ventanamicro.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From: =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+In-Reply-To: <26d71302-ebb0-4b2b-802e-0b3ebf75d68f@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Anup,
-
-On 2023-11-17 9:38 PM, Anup Patel wrote:
-> Let us enable SBI based earlycon support in defconfigs for both RV32
-> and RV64 so that "earlycon=sbi" can be used again.
+On 21.11.2023 23:38, Krzysztof Kozlowski wrote:
+> On 21/11/2023 13:13, Rafał Miłecki wrote:
+>> From: Rafał Miłecki <rafal@milecki.pl>
+>>
 > 
-> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
-> ---
->  arch/riscv/configs/defconfig      | 1 +
->  arch/riscv/configs/rv32_defconfig | 1 +
->  2 files changed, 2 insertions(+)
+> Thank you for your patch. There is something to discuss/improve.
 > 
-> diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-> index 905881282a7c..eaf34e871e30 100644
-> --- a/arch/riscv/configs/defconfig
-> +++ b/arch/riscv/configs/defconfig
-> @@ -149,6 +149,7 @@ CONFIG_SERIAL_8250_CONSOLE=y
->  CONFIG_SERIAL_8250_DW=y
->  CONFIG_SERIAL_OF_PLATFORM=y
->  CONFIG_SERIAL_SH_SCI=y
-> +CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
->  CONFIG_VIRTIO_CONSOLE=y
->  CONFIG_HW_RANDOM=y
->  CONFIG_HW_RANDOM_VIRTIO=y
-> diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
-> index 89b601e253a6..5721af39afd1 100644
-> --- a/arch/riscv/configs/rv32_defconfig
-> +++ b/arch/riscv/configs/rv32_defconfig
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: brcm,bcm63138-hs-uart
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  interrupts:
+>> +    maxItems: 1
+>> +
+>> +required:
+> 
+> Missing compatible.
 
-This file isn't used anymore since 72f045d19f25 ("riscv: Fixup difference with
-defconfig"), so there's no need to update it. I'll send a patch deleting it.
+I stopped putting "compatible" in "required" in schemas back in 2020 :O
 
-Regards,
-Samuel
+Back then I received a comment from Rob [0] in discussion on
+[PATCH] dt-bindings: mtd: convert "fixed-partitions" to the json-schema
+telling to drop it:
 
-> @@ -66,6 +66,7 @@ CONFIG_INPUT_MOUSEDEV=y
->  CONFIG_SERIAL_8250=y
->  CONFIG_SERIAL_8250_CONSOLE=y
->  CONFIG_SERIAL_OF_PLATFORM=y
-> +CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
->  CONFIG_VIRTIO_CONSOLE=y
->  CONFIG_HW_RANDOM=y
->  CONFIG_HW_RANDOM_VIRTIO=y
+On 10.12.2020 03:48, Rob Herring wrote:
+ > And drop 'compatible' as required. It's redundant anyways because the
+ > schema will only be applied if compatible matches.
 
+So I'll need some help here please. Should I start including
+"compatible" in "required" after all? Or is that situation specific
+(could you explain what does it depend on)?
+
+[0] https://lore.kernel.org/linux-devicetree/20201210024840.GA1510718@robh.at.kernel.org/
