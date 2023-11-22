@@ -1,32 +1,33 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF7AB9;
-	Tue, 21 Nov 2023 22:46:00 -0800 (PST)
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-40b2c8e91afso6874025e9.3;
-        Tue, 21 Nov 2023 22:46:00 -0800 (PST)
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5579819D;
+	Tue, 21 Nov 2023 22:53:44 -0800 (PST)
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-40b2fa4ec5eso3871135e9.2;
+        Tue, 21 Nov 2023 22:53:44 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700635559; x=1701240359;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=PPnxx0byxt3tXtr2JcO8E9m9VK2GynHDBhdzhLaN4sc=;
-        b=ihYvogfIPbuMUOYuVqbzrJVmOHPxmB6FE9G+6RCy5SNYDkzTVPSI5wy0jaakbf57zT
-         ozuG8Xqxorao0eNeKAhRh4/pnfhCLd64H30s5Kd/NzlzNE9bXxtVh2KUy6IvLlJrOgWz
-         sD4rNNOa1FRgflKo1d56CHe/LSVjwhwOML57p0KVU+Zn8rJz7FqhGlWZnXlMLN1mdnVM
-         TJkyYRHeyLh5R7f3TyvAP5F5PpAvCUjL5bO0ZZqAuTO8ZR6fBfrDCD+EuA7fId28M9cV
-         X1D4iAxxwhkc6g1Rej1LS6lvtbgwvJLC56rjwmC0U7zHzVk0e96qlyXUPHAcnKAsdQWg
-         sEqw==
-X-Gm-Message-State: AOJu0Yy2aQSSYlzdLVsOv40Pz39Cb0/gpYhZMUClEBimI2YLZU9rPaQz
-	MZKXDwJFTLJss8agQfg0VnjTjvpFEfs=
-X-Google-Smtp-Source: AGHT+IGsTYuQ0oGE7bQ2Fvw1chQAwfoE9QWj4l4vIisWi+Bl3gqpJaJ6HJJdO1dceiXcYjhyDpu06w==
-X-Received: by 2002:a05:600c:4ed0:b0:405:95ae:4a94 with SMTP id g16-20020a05600c4ed000b0040595ae4a94mr755336wmq.5.1700635558948;
-        Tue, 21 Nov 2023 22:45:58 -0800 (PST)
+        d=1e100.net; s=20230601; t=1700636023; x=1701240823;
+        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
+         :from:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=FyW7IEyoOxPI6zVC/onRZuSNEa7WQLhyWprKMNjU5kk=;
+        b=cp+DmzGzjYdGTyfBIpf6TQrJa7y+GKGpXM8ftVpaBZerciEok1bmTNdJzoGnPZDC7i
+         NCQF6o3vIUr0Pyd+n1PqXLdMsjF80goXWEuN/V39LyG1cdlW4PevgiSxlaJCwhr/fI94
+         ZMXiGUyQaIj94524A6dAhsbmaNGQFXbYmhCPzcf8gGuxvkK3ezdmeDqNomiMk6u5CZmd
+         qc8BhCfk3vc0dyQkMxi3nAXbZi6NCXQY6M4CXAL+0rxzXHP28MZ0YMIDgiLxzfIlbplt
+         9SeQa3ohZHZKcEeB8pn5q2Gtfbcfr3dDn1Xf9JdT2VMEAeQ5yJAWM5riSdvT2IE7CNJz
+         J+0w==
+X-Gm-Message-State: AOJu0Yxqmi2IFvPfoO8XUG6k8ZNunDiZbDae2hiNDWy7pOLW2iCf3zzK
+	8+vEY5/uK3LSlHAwkTYdVc4=
+X-Google-Smtp-Source: AGHT+IE3QuqVBr4aCJMDYyvYKHw+JyLDzrnor+iGfuIQ6ebrfAt4WLqaJcccbSgsDEcrLm5MvtD2gA==
+X-Received: by 2002:a05:600c:4f86:b0:40a:44aa:bf3a with SMTP id n6-20020a05600c4f8600b0040a44aabf3amr998607wmq.23.1700636022378;
+        Tue, 21 Nov 2023 22:53:42 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id g6-20020a05600c4ec600b0040b303d0dcfsm1080307wmq.36.2023.11.21.22.45.58
+        by smtp.gmail.com with ESMTPSA id i9-20020a5d5849000000b00332c6f1beccsm8550295wrf.66.2023.11.21.22.53.41
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Nov 2023 22:45:58 -0800 (PST)
-Message-ID: <bdb4cd62-2d17-4d19-b429-1232ec863456@kernel.org>
-Date: Wed, 22 Nov 2023 07:45:58 +0100
+        Tue, 21 Nov 2023 22:53:42 -0800 (PST)
+Message-ID: <ce8e5446-9fcf-4692-90e5-1c5fa75a880f@kernel.org>
+Date: Wed, 22 Nov 2023 07:53:41 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -37,6 +38,7 @@ User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH 04/17] tty: move locking docs out of Returns for functions
  in tty.h
 Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
 To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  linux-serial <linux-serial@vger.kernel.org>,
@@ -44,7 +46,7 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 References: <20231121092258.9334-1-jirislaby@kernel.org>
  <20231121092258.9334-5-jirislaby@kernel.org>
  <e74f4dfb-55f2-f997-6a70-a1b7edd11016@linux.intel.com>
-From: Jiri Slaby <jirislaby@kernel.org>
+ <bdb4cd62-2d17-4d19-b429-1232ec863456@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
  rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
@@ -87,47 +89,65 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <e74f4dfb-55f2-f997-6a70-a1b7edd11016@linux.intel.com>
+In-Reply-To: <bdb4cd62-2d17-4d19-b429-1232ec863456@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 21. 11. 23, 10:48, Ilpo Järvinen wrote:
-> On Tue, 21 Nov 2023, Jiri Slaby (SUSE) wrote:
-> 
->> Both tty_kref_get() and tty_get_baud_rate() note about locking in their
->> Return kernel-doc clause. Extract this info into a separate "Locking"
->> paragraph -- the same as we do for other tty functions.
+On 22. 11. 23, 7:45, Jiri Slaby wrote:
+> On 21. 11. 23, 10:48, Ilpo Järvinen wrote:
+>> On Tue, 21 Nov 2023, Jiri Slaby (SUSE) wrote:
 >>
->> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
->> Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
->> ---
->>   include/linux/tty.h | 12 +++++++-----
->>   1 file changed, 7 insertions(+), 5 deletions(-)
+>>> Both tty_kref_get() and tty_get_baud_rate() note about locking in their
+>>> Return kernel-doc clause. Extract this info into a separate "Locking"
+>>> paragraph -- the same as we do for other tty functions.
+>>>
+>>> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+>>> Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+>>> ---
+>>>   include/linux/tty.h | 12 +++++++-----
+>>>   1 file changed, 7 insertions(+), 5 deletions(-)
+>>>
+>>> diff --git a/include/linux/tty.h b/include/linux/tty.h
+>>> index 4b6340ac2af2..7625fc98fef3 100644
+>>> --- a/include/linux/tty.h
+>>> +++ b/include/linux/tty.h
+> ...
+>>> @@ -436,10 +438,10 @@ void tty_encode_baud_rate(struct tty_struct 
+>>> *tty, speed_t ibaud,
+>>>    * tty_get_baud_rate - get tty bit rates
+>>>    * @tty: tty to query
+>>>    *
+>>> - * Returns: the baud rate as an integer for this terminal. The 
+>>> termios lock
+>>> - * must be held by the caller and the terminal bit flags may be 
+>>> updated.
+>>> + * Returns: the baud rate as an integer for this terminal
+>>>    *
+>>> - * Locking: none
+>>> + * Locking: The termios lock must be held by the caller and the 
+>>> terminal bit
+>>> + * flags may be updated.
 >>
->> diff --git a/include/linux/tty.h b/include/linux/tty.h
->> index 4b6340ac2af2..7625fc98fef3 100644
->> --- a/include/linux/tty.h
->> +++ b/include/linux/tty.h
-...
->> @@ -436,10 +438,10 @@ void tty_encode_baud_rate(struct tty_struct *tty, speed_t ibaud,
->>    * tty_get_baud_rate - get tty bit rates
->>    * @tty: tty to query
->>    *
->> - * Returns: the baud rate as an integer for this terminal. The termios lock
->> - * must be held by the caller and the terminal bit flags may be updated.
->> + * Returns: the baud rate as an integer for this terminal
->>    *
->> - * Locking: none
->> + * Locking: The termios lock must be held by the caller and the terminal bit
->> + * flags may be updated.
+>> I don't think the second part about the flags really belongs here, I'd
+>> keep it the description.
 > 
-> I don't think the second part about the flags really belongs here, I'd
-> keep it the description.
+> Any idea what does the part says in fact? I had not been thinking about 
+> the content and now I don't understand it.
 
-Any idea what does the part says in fact? I had not been thinking about 
-the content and now I don't understand it.
+Maybe before:
+commit 6865ff222ccab371c04afce17aec1f7d70b17dbc
+Author: Jiri Slaby <jirislaby@kernel.org>
+Date:   Thu Mar 7 13:12:27 2013 +0100
 
-thanks,
+     TTY: do not warn about setting speed via SPD_*
+
+
+tty->warned was "the terminal bit".
+
+Let's drop that part. And we can make tty const there too.
+
+> thanks,
+
 -- 
 js
 suse labs
