@@ -1,249 +1,219 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="BxhD410S"
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4072B2
-	for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 23:47:05 -0800 (PST)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 40F652000B;
-	Wed, 22 Nov 2023 07:47:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1700639224;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=bw9eQHXICnZa9WS4MUK/n25wTrPCu4UW2be93dq6pP8=;
-	b=BxhD410SGcmQIQiDeuS5nCLQBSd0qlor582NffObG6r8cB761IybqhvnZYGP3XMexcEbHo
-	Zb6Pm0v6QDhvcYRQ0OajGxNC2OxhF8YumeW2fOgCmH+LoYuvP4ubWtSNv6+fjJFQtF6DQP
-	1u96W1ZRHdrOiTi8wTgT2zGBM+EUwrrZRMqy/fKO2pRaURgRlaenxfqcV/LUg51K+4VCHO
-	mLwmIzrlppG2NWNXWsZ3uROq8PDzhZZglLOwvyAJCZJ5+S1uQlMI9UavheAN5nyX7iJi3O
-	jpmD7mPNCI3QCKAF3jKgE1NoM4Ea1imUlyl2lqp9Ilx0gt8Sd3TVhQ52Aenz5Q==
-From: Gregory CLEMENT <gregory.clement@bootlin.com>
-To: Russell King <linux@armlinux.org.uk>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jslaby@suse.com>,
-	linux-serial@vger.kernel.org,
-	Linus Walleij <linus.walleij@linaro.org>
-Cc: Vladimir  Kondratiev <vladimir.kondratiev@mobileye.com>,
-	Tawfik Bayouk <tawfik.bayouk@mobileye.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	=?UTF-8?q?Th=C3=A9o=20Lebrun?= <theo.lebrun@bootlin.com>,
-	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Gregory CLEMENT <gregory.clement@bootlin.com>
-Subject: [PATCH] ARM: PL011: Fix DMA support
-Date: Wed, 22 Nov 2023 08:45:35 +0100
-Message-ID: <20231122074535.184384-1-gregory.clement@bootlin.com>
-X-Mailer: git-send-email 2.42.0
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="d3X+8ThW"
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E4AA9D
+	for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 23:49:50 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id a640c23a62f3a-9ff26d7c0a6so389886966b.2
+        for <linux-serial@vger.kernel.org>; Tue, 21 Nov 2023 23:49:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1700639389; x=1701244189; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tA93eCFLSfnhMv8UdjAyC+zZ7+4dyfaA0Xw2zTteOig=;
+        b=d3X+8ThWFydM2AXS5hj/F+orhp0lU70Y5J+MNByVF53CfGZMmcNAUnwoa1Kx/yjNSS
+         bE5IG0mq+FAdd7PDkQayNyDo420urd9zlgyK68hSoxqkSH+XcEbfEgR5SwtmHCI5asRI
+         /sHNP2taQZxLUKlWN6Dw7iZ6ZNbefXwUamfG+IkNraW++8lV+tV8qgDJMLUY8/dxubI7
+         jYr02k2XBZFQFv297kaTl/OSkCChAqNsXJIOAMNkRMuKfUAshoBCyMDwas7WoAFtlejW
+         Qtu4rFfOff4aVDYsLjpKrH7bFPAaLtBVW43qdKFGfoff5SnvoS6oT4ITC8GRxVRF5OSK
+         /S4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700639389; x=1701244189;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=tA93eCFLSfnhMv8UdjAyC+zZ7+4dyfaA0Xw2zTteOig=;
+        b=T1a2MhGY58ovjK0vey0a0pGRvzjNoLYUeTi/rCfqwwKYHq8v+L5AY/O7K0ecrLXESr
+         2Q1UtuuT7H1DvuFjk3dd7QseoYgm1/voPM9Dn/W+Jz/Pf+MUONOIuqHKhsbR0LBjCWpN
+         XMsQS3ATk2+EKaT8f5L9dC03WsBAZh9EOKSbZaRuSs5ETxmS04c94VJgnGs5m3LOdaId
+         EtObEPHE1eBeoP4BRbFXfgQNL1Gu6l2TX6dukbsiOOovkfMG1tr3KGYu6CSpOtoRi+sn
+         Gyct9+egpo496pSY2x11mnTjIvCg/bg1WfsA537CpGCR6T7XPTDBLOnjVXLKVy9LbA57
+         RBUA==
+X-Gm-Message-State: AOJu0Yy6nXdBUQfmqZ5tZB5fwZRIzWRs57clrTwrFdCnP7RGknYOmpGr
+	hfyLeP/IcEl1PkzTVJCdcosrYg==
+X-Google-Smtp-Source: AGHT+IGLb9wZbJRJ1P2bvfJCf4gFjriONNwbkuU1fWwQ1XFrJzHgcrBULnkRPu2iTXoFZHalECh3dQ==
+X-Received: by 2002:a17:906:cc:b0:9fe:43a0:4ac0 with SMTP id 12-20020a17090600cc00b009fe43a04ac0mr836991eji.24.1700639388592;
+        Tue, 21 Nov 2023 23:49:48 -0800 (PST)
+Received: from [192.168.1.20] ([178.197.218.100])
+        by smtp.gmail.com with ESMTPSA id i9-20020a170906250900b009ca522853ecsm6237228ejb.58.2023.11.21.23.49.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Nov 2023 23:49:48 -0800 (PST)
+Message-ID: <35990cd2-a4d3-473e-893e-aa16c1c63289@linaro.org>
+Date: Wed, 22 Nov 2023 08:49:44 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-GND-Sasl: gregory.clement@bootlin.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 09/19] dt-bindings: serial: samsung: Make
+ samsung,uart-fifosize required property
+Content-Language: en-US
+To: Peter Griffin <peter.griffin@linaro.org>, Rob Herring <robh@kernel.org>
+Cc: krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+ conor+dt@kernel.org, sboyd@kernel.org, tomasz.figa@gmail.com,
+ s.nawrocki@samsung.com, linus.walleij@linaro.org, wim@linux-watchdog.org,
+ linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+ olof@lixom.net, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ cw00.choi@samsung.com, alim.akhtar@samsung.com, tudor.ambarus@linaro.org,
+ andre.draszik@linaro.org, semen.protsenko@linaro.org, saravanak@google.com,
+ willmcvicker@google.com, soc@kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-watchdog@vger.kernel.org, kernel-team@android.com,
+ linux-serial@vger.kernel.org
+References: <20231120212037.911774-1-peter.griffin@linaro.org>
+ <20231120212037.911774-10-peter.griffin@linaro.org>
+ <20231121151630.GA1692178-robh@kernel.org>
+ <CADrjBPo4qw4eJLuGsv7aK4V7QjGR_n_MQ+W-Rrq92iATSLFHZQ@mail.gmail.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <CADrjBPo4qw4eJLuGsv7aK4V7QjGR_n_MQ+W-Rrq92iATSLFHZQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: Arnd Bergmann <arnd@arndb.de>
+On 21/11/2023 18:15, Peter Griffin wrote:
+> Hi Rob,
+> 
+> Thanks for your review.
+> 
+> On Tue, 21 Nov 2023 at 15:16, Rob Herring <robh@kernel.org> wrote:
+>>
+>> On Mon, Nov 20, 2023 at 09:20:27PM +0000, Peter Griffin wrote:
+>>> Specifying samsung,uart-fifosize in both DT and driver static data is error
+>>> prone and relies on driver probe order and dt aliases to be correct.
+>>>
+>>> Additionally on many Exynos platforms these are (USI) universal serial
+>>> interfaces which can be uart, spi or i2c, so it can change per board.
+>>>
+>>> For google,gs101-uart and exynosautov9-uart make samsung,uart-fifosize a
+>>> required property. For these platforms fifosize now *only* comes from DT.
+>>>
+>>> It is hoped other Exynos platforms will also switch over time.
+>>
+>> Then allow the property on them.
+> 
+> Not sure I fully understand your comment. Can you elaborate? Do you
+> mean leave the 'samsung,uart-fifosize' as an optional property like it
+> is currently even for the platforms that now require it to be present
+> to function correctly?
+> 
+> I deliberately restricted the yaml change to only require this
+> property for the SoCs that already set the 'samsung,uart-fifosize'  dt
+> property. As setting the property and having the driver use what is
+> specified in DT also requires a corresponding driver update (otherwise
+> fifosize gets overwritten by the driver static data, and then becomes
+> dependent on probe order, dt aliases etc). The rationale was drivers
+> 'opt in' and add themselves to the compatibles in this patch as they
+> migrate away from obtaining fifo size from driver static data to
+> obtaining it from DT.
 
-Since there is no guarantee that the memory returned by
-dma_alloc_coherent() is associated with a 'struct page', using the
-architecture specific phys_to_page() is wrong, but using
-virt_to_page() would be as well.
+Your code diff looks like you are adding the property only to these models.
 
-Stop using sg lists altogether and just use the *_single() functions
-instead. This also simplifies the code a bit since the scatterlists in
-this driver always have only one entry anyway.
+> 
+>>
+>>>
+>>> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+>>> ---
+>>>  .../bindings/serial/samsung_uart.yaml           | 17 +++++++++++++++++
+>>>  1 file changed, 17 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+>>> index ccc3626779d9..22a1edadc4fe 100644
+>>> --- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+>>> +++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+>>> @@ -133,6 +133,23 @@ allOf:
+>>>              - const: uart
+>>>              - const: clk_uart_baud0
+>>>
+>>> +  - if:
+>>> +      properties:
+>>> +        compatible:
+>>> +          contains:
+>>> +            enum:
+>>> +              - google,gs101-uart
+>>> +              - samsung,exynosautov9-uart
+>>> +    then:
+>>> +      properties:
+>>> +        samsung,uart-fifosize:
+>>> +          description: The fifo size supported by the UART channel.
+>>> +          $ref: /schemas/types.yaml#/definitions/uint32
+>>> +          enum: [16, 64, 256]
+>>
+>> We already have 'fifo-size' in several drivers. Use that. Please move
+>> its type/description definitions to serial.yaml and make drivers just do
+>> 'fifo-size: true' if they use it.
+> 
+> What do you suggest we do for the samsung,uart-fifosize property that
+> is being used upstream?
 
-gcl: Add a commit log from the initial thread:
-https://lore.kernel.org/lkml/86db0fe5-930d-4cbb-bd7d-03367da38951@app.fastmail.com/
+Nothing, your diff is just wrong. Or at least nothing needed. Just drop
+all this properties: here and only make it required for Google GS101.
 
-Fixes: cb06ff102e2d7 ("ARM: PL011: Add support for Rx DMA buffer polling.")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Tested-by: Gregory CLEMENT <gregory.clement@bootlin.com>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
----
- drivers/tty/serial/amba-pl011.c | 62 +++++++++++++++------------------
- 1 file changed, 29 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 61cc24cd90e4b..73a1c40148c25 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -219,8 +219,9 @@ static struct vendor_data vendor_st = {
- /* Deals with DMA transactions */
- 
- struct pl011_sgbuf {
--	struct scatterlist sg;
--	char *buf;
-+	dma_addr_t		dma;
-+	size_t			len;
-+	char			*buf;
- };
- 
- struct pl011_dmarx_data {
-@@ -241,7 +242,8 @@ struct pl011_dmarx_data {
- 
- struct pl011_dmatx_data {
- 	struct dma_chan		*chan;
--	struct scatterlist	sg;
-+	dma_addr_t		dma;
-+	size_t			len;
- 	char			*buf;
- 	bool			queued;
- };
-@@ -369,18 +371,11 @@ static int pl011_fifo_to_tty(struct uart_amba_port *uap)
- static int pl011_sgbuf_init(struct dma_chan *chan, struct pl011_sgbuf *sg,
- 	enum dma_data_direction dir)
- {
--	dma_addr_t dma_addr;
--
--	sg->buf = dma_alloc_coherent(chan->device->dev,
--		PL011_DMA_BUFFER_SIZE, &dma_addr, GFP_KERNEL);
-+	sg->buf = dma_alloc_coherent(chan->device->dev, PL011_DMA_BUFFER_SIZE,
-+				     &sg->dma, GFP_KERNEL);
- 	if (!sg->buf)
- 		return -ENOMEM;
--
--	sg_init_table(&sg->sg, 1);
--	sg_set_page(&sg->sg, phys_to_page(dma_addr),
--		PL011_DMA_BUFFER_SIZE, offset_in_page(dma_addr));
--	sg_dma_address(&sg->sg) = dma_addr;
--	sg_dma_len(&sg->sg) = PL011_DMA_BUFFER_SIZE;
-+	sg->len = PL011_DMA_BUFFER_SIZE;
- 
- 	return 0;
- }
-@@ -390,8 +385,7 @@ static void pl011_sgbuf_free(struct dma_chan *chan, struct pl011_sgbuf *sg,
- {
- 	if (sg->buf) {
- 		dma_free_coherent(chan->device->dev,
--			PL011_DMA_BUFFER_SIZE, sg->buf,
--			sg_dma_address(&sg->sg));
-+				  PL011_DMA_BUFFER_SIZE, sg->buf, sg->dma);
- 	}
- }
- 
-@@ -552,8 +546,8 @@ static void pl011_dma_tx_callback(void *data)
- 
- 	uart_port_lock_irqsave(&uap->port, &flags);
- 	if (uap->dmatx.queued)
--		dma_unmap_sg(dmatx->chan->device->dev, &dmatx->sg, 1,
--			     DMA_TO_DEVICE);
-+		dma_unmap_single(dmatx->chan->device->dev, dmatx->dma,
-+				dmatx->len, DMA_TO_DEVICE);
- 
- 	dmacr = uap->dmacr;
- 	uap->dmacr = dmacr & ~UART011_TXDMAE;
-@@ -639,18 +633,19 @@ static int pl011_dma_tx_refill(struct uart_amba_port *uap)
- 			memcpy(&dmatx->buf[first], &xmit->buf[0], second);
- 	}
- 
--	dmatx->sg.length = count;
--
--	if (dma_map_sg(dma_dev->dev, &dmatx->sg, 1, DMA_TO_DEVICE) != 1) {
-+	dmatx->len = count;
-+	dmatx->dma = dma_map_single(dma_dev->dev, dmatx->buf, count,
-+				    DMA_TO_DEVICE);
-+	if (dmatx->dma == DMA_MAPPING_ERROR) {
- 		uap->dmatx.queued = false;
- 		dev_dbg(uap->port.dev, "unable to map TX DMA\n");
- 		return -EBUSY;
- 	}
- 
--	desc = dmaengine_prep_slave_sg(chan, &dmatx->sg, 1, DMA_MEM_TO_DEV,
-+	desc = dmaengine_prep_slave_single(chan, dmatx->dma, dmatx->len, DMA_MEM_TO_DEV,
- 					     DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
- 	if (!desc) {
--		dma_unmap_sg(dma_dev->dev, &dmatx->sg, 1, DMA_TO_DEVICE);
-+		dma_unmap_single(dma_dev->dev, dmatx->dma, dmatx->len, DMA_TO_DEVICE);
- 		uap->dmatx.queued = false;
- 		/*
- 		 * If DMA cannot be used right now, we complete this
-@@ -813,8 +808,8 @@ __acquires(&uap->port.lock)
- 	dmaengine_terminate_async(uap->dmatx.chan);
- 
- 	if (uap->dmatx.queued) {
--		dma_unmap_sg(uap->dmatx.chan->device->dev, &uap->dmatx.sg, 1,
--			     DMA_TO_DEVICE);
-+		dma_unmap_single(uap->dmatx.chan->device->dev, uap->dmatx.dma,
-+				 uap->dmatx.len, DMA_TO_DEVICE);
- 		uap->dmatx.queued = false;
- 		uap->dmacr &= ~UART011_TXDMAE;
- 		pl011_write(uap->dmacr, uap, REG_DMACR);
-@@ -836,7 +831,7 @@ static int pl011_dma_rx_trigger_dma(struct uart_amba_port *uap)
- 	/* Start the RX DMA job */
- 	sgbuf = uap->dmarx.use_buf_b ?
- 		&uap->dmarx.sgbuf_b : &uap->dmarx.sgbuf_a;
--	desc = dmaengine_prep_slave_sg(rxchan, &sgbuf->sg, 1,
-+	desc = dmaengine_prep_slave_single(rxchan, sgbuf->dma, sgbuf->len,
- 					DMA_DEV_TO_MEM,
- 					DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
- 	/*
-@@ -886,7 +881,7 @@ static void pl011_dma_rx_chars(struct uart_amba_port *uap,
- 
- 	if (uap->dmarx.poll_rate) {
- 		/* The data can be taken by polling */
--		dmataken = sgbuf->sg.length - dmarx->last_residue;
-+		dmataken = sgbuf->len - dmarx->last_residue;
- 		/* Recalculate the pending size */
- 		if (pending >= dmataken)
- 			pending -= dmataken;
-@@ -911,7 +906,7 @@ static void pl011_dma_rx_chars(struct uart_amba_port *uap,
- 
- 	/* Reset the last_residue for Rx DMA poll */
- 	if (uap->dmarx.poll_rate)
--		dmarx->last_residue = sgbuf->sg.length;
-+		dmarx->last_residue = sgbuf->len;
- 
- 	/*
- 	 * Only continue with trying to read the FIFO if all DMA chars have
-@@ -969,7 +964,7 @@ static void pl011_dma_rx_irq(struct uart_amba_port *uap)
- 	pl011_write(uap->dmacr, uap, REG_DMACR);
- 	uap->dmarx.running = false;
- 
--	pending = sgbuf->sg.length - state.residue;
-+	pending = sgbuf->len - state.residue;
- 	BUG_ON(pending > PL011_DMA_BUFFER_SIZE);
- 	/* Then we terminate the transfer - we now know our residue */
- 	dmaengine_terminate_all(rxchan);
-@@ -1015,7 +1010,7 @@ static void pl011_dma_rx_callback(void *data)
- 	 * the DMA irq handler. So we check the residue here.
- 	 */
- 	rxchan->device->device_tx_status(rxchan, dmarx->cookie, &state);
--	pending = sgbuf->sg.length - state.residue;
-+	pending = sgbuf->len - state.residue;
- 	BUG_ON(pending > PL011_DMA_BUFFER_SIZE);
- 	/* Then we terminate the transfer - we now know our residue */
- 	dmaengine_terminate_all(rxchan);
-@@ -1074,7 +1069,7 @@ static void pl011_dma_rx_poll(struct timer_list *t)
- 	sgbuf = dmarx->use_buf_b ? &uap->dmarx.sgbuf_b : &uap->dmarx.sgbuf_a;
- 	rxchan->device->device_tx_status(rxchan, dmarx->cookie, &state);
- 	if (likely(state.residue < dmarx->last_residue)) {
--		dmataken = sgbuf->sg.length - dmarx->last_residue;
-+		dmataken = sgbuf->len - dmarx->last_residue;
- 		size = dmarx->last_residue - state.residue;
- 		dma_count = tty_insert_flip_string(port, sgbuf->buf + dmataken,
- 				size);
-@@ -1123,7 +1118,7 @@ static void pl011_dma_startup(struct uart_amba_port *uap)
- 		return;
- 	}
- 
--	sg_init_one(&uap->dmatx.sg, uap->dmatx.buf, PL011_DMA_BUFFER_SIZE);
-+	uap->dmatx.len = PL011_DMA_BUFFER_SIZE;
- 
- 	/* The DMA buffer is now the FIFO the TTY subsystem can use */
- 	uap->port.fifosize = PL011_DMA_BUFFER_SIZE;
-@@ -1200,8 +1195,9 @@ static void pl011_dma_shutdown(struct uart_amba_port *uap)
- 		/* In theory, this should already be done by pl011_dma_flush_buffer */
- 		dmaengine_terminate_all(uap->dmatx.chan);
- 		if (uap->dmatx.queued) {
--			dma_unmap_sg(uap->dmatx.chan->device->dev, &uap->dmatx.sg, 1,
--				     DMA_TO_DEVICE);
-+			dma_unmap_single(uap->dmatx.chan->device->dev,
-+					 uap->dmatx.dma, uap->dmatx.len,
-+					 DMA_TO_DEVICE);
- 			uap->dmatx.queued = false;
- 		}
- 
--- 
-2.42.0
+> 
+>>
+>>> +
+>>> +      required:
+>>> +       - samsung,uart-fifosize
+>>
+>> A new required property is an ABI break. Please explain why that is okay
+>> in the commit message.
+>>
+> 
+> I can update the commit message to make clear there is an ABI break.
+> As mentioned above the platforms where this is now required are either
+> already setting the property or are new in this series. Is that
+> sufficient justification?
+Yes, but only first case. You need to order your patches correctly -
+first is ABI break expecting ExynopsAutov9 to provide FIFO size in DTS
+with its explanation. Second commit is adding GS101 where there is no
+ABI break.
+
+Best regards,
+Krzysztof
 
