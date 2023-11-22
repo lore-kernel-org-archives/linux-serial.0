@@ -1,45 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="N7N1HcD1"
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A92F8197
-	for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 10:46:31 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id 5b1f17b1804b1-4083dbc43cfso344825e9.3
-        for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 10:46:31 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="EOQDwwDq"
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9114D71
+	for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 10:56:55 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id 2adb3069b0e04-507962561adso59381e87.0
+        for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 10:56:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1700678790; x=1701283590; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=RtyoQ6tEQBZednx24d8GSJgiJVQWnTTyIcyivWAktmo=;
-        b=N7N1HcD15odifOq8Gr5dCQx3Q6i7c6uJH267JSJE8GL+MQzi/V8mkU9GOKq5VJtPDC
-         M//90IHn4a8FcquSXuO2jR74NobuS2Qouszl2lqS52S/k+83viJp+cXg2lHgap59s9JU
-         sQrDp4W81MljbpNqqQIISPeJDt73df33/ijG5X8yq5KFoh6rmoth69tWb+W6INY/6JHF
-         mOa7ynCokvKyaBFSWs7/RAlC4znI4OJf8WzFilmYSx/2MOmObKXY3RoNktBOkYo1WYPJ
-         sMm7y9ia0NSB0CcN3HS7V7n/bKaiG4N/70/ehMcIV5t3KBK2wAGVL+8m3LIHoWDSiBcN
-         Ym2g==
+        d=linaro.org; s=google; t=1700679413; x=1701284213; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
+         :from:content-language:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=tr9r1c9XFgs9kvTIWKz7TcniXu3vcjGbwpow4yF+RSw=;
+        b=EOQDwwDqk/RBjdOP3o0KXxxqGpe9v9RB7mbalbyCkC1slz/fTjyB7kuQqtN7XserT7
+         DKEWfK6FSxO8+l1NLi6/RPDqNsZMBTj90sSAIA8HYrAE3zXKg5UfKyctg21uiE01enL8
+         XclolCNp95Qq0KWOIZU83Xj5olkvD5Q9kMzrIrbSZOY1dnUL9e9L4zcNzhAQjAqR0J2r
+         qNPn1rerbahDQ3X5ah02V5dhHJFnWePnoPlnhk0cxapPnQe4ZndC5KbU2S2uPU/Z4Pyi
+         0rw4joXVvhFrC84m/wbxntL1aGuVFHcg55T863rjgVdqdLAyKdzbiR7J2fT21NPRkS6w
+         9yOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700678790; x=1701283590;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=RtyoQ6tEQBZednx24d8GSJgiJVQWnTTyIcyivWAktmo=;
-        b=jHZR2zOA8tCP9EbzLBWmndXmHlK2BweKAJscUO9RGPVZh+yfvDj3LuO/L1sBkj2d/1
-         Bwa/yXm54E7hxbngkUxe81zZdzsuho41fAAg3Tbz8xR+fUQHRmwWo910jJIej2jYoSBR
-         dF9WQG5T79zmXlL90SD2R4lVDV4qBCYZCAc+kwQ+kVgj77lnQyOd6QS7nkW9tqwDJ/la
-         UZxYZKgmOgV1F+MFAvQkmhnBGR3mtv7TwX3jogVT8RVUEax/E1pXLSEK/cisDSz9Ok0H
-         PKHMYIOtvbOCFPooKXkmPhWMtvKKIsgn3/zAnBenkDQ6o026t/h94MaACtVOx7Y/jBIH
-         v/zg==
-X-Gm-Message-State: AOJu0YwgbXGY9bjSqD+ayrlbi+DkkEc3NBQwnHsd1Z8f7wugotIYqHKU
-	/Sm2QCJi+bfu91Z7juP6/DkbnA==
-X-Google-Smtp-Source: AGHT+IFpdR2363d91ltLEnwpK9h9MMShOgLkMBwkuwkDbC+MeegQ1KnreOUEhLB4i38e3ST7jRbz1Q==
-X-Received: by 2002:a05:600c:5493:b0:405:7b92:453e with SMTP id iv19-20020a05600c549300b004057b92453emr2537592wmb.37.1700678790040;
-        Wed, 22 Nov 2023 10:46:30 -0800 (PST)
+        d=1e100.net; s=20230601; t=1700679413; x=1701284213;
+        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
+         :from:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=tr9r1c9XFgs9kvTIWKz7TcniXu3vcjGbwpow4yF+RSw=;
+        b=MPd1ISN6E2/IfEXhd4s2AlZwecjjaCJtlseSzwvTn34L4ArpVun8tYLHM6LDyAlqR0
+         1dK2QKEMb0MoUpOfuhxOKlACLpt9ET44enV2kWAnk6LJSWEBhDsVmpxEgV/eMKPP9OiP
+         v4zy2hAMe6QHrdKQumQRyVzlJBo8ntGCzv/0TKUOQAu9n+XjHHvfGaGUUe4+kKS3y4f6
+         d0e1rK3i2oPKIR8+oeWVO8IDJN2UcXcq7u5lrSIVdfeD/MwMK1K89YIl7dZCEnZwUnJo
+         TrYnh41VUszUhvgjvajao29QisTb9CVOJ74X6e8XkKz7cECuc6CqbGkExZep3gduE+sl
+         hwMA==
+X-Gm-Message-State: AOJu0YzKd9xKlyAtxhNIqp34pVZTtITWec7jdciXDFlByiCptnSot9ZA
+	ZGdfHhSlacpBv8KMaZO5jRHNrg==
+X-Google-Smtp-Source: AGHT+IGxqEokOzmQMyoXRleNx0VMxngpMq1rnpfyyIJ19Obola3ulQ2F8YqVCFUwO9wFsOWpizTgbA==
+X-Received: by 2002:a19:5519:0:b0:504:4165:54ab with SMTP id n25-20020a195519000000b00504416554abmr897803lfe.56.1700679413539;
+        Wed, 22 Nov 2023 10:56:53 -0800 (PST)
 Received: from [192.168.1.20] ([178.197.218.100])
-        by smtp.gmail.com with ESMTPSA id f5-20020a5d64c5000000b00332ce0d7300sm71471wri.92.2023.11.22.10.46.27
+        by smtp.gmail.com with ESMTPSA id n28-20020a05600c3b9c00b0040772934b12sm334465wms.7.2023.11.22.10.56.51
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Nov 2023 10:46:29 -0800 (PST)
-Message-ID: <525384ca-f84e-471c-bc82-0029db6ccb77@linaro.org>
-Date: Wed, 22 Nov 2023 19:46:26 +0100
+        Wed, 22 Nov 2023 10:56:53 -0800 (PST)
+Message-ID: <0321dad4-e94c-4eb8-96ae-4eaae62b3b29@linaro.org>
+Date: Wed, 22 Nov 2023 19:56:50 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -50,6 +51,7 @@ User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH V2 1/2] dt-bindings: serial: add Broadcom's BCMBCA family
  High Speed UART
 Content-Language: en-US
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To: William Zhang <william.zhang@broadcom.com>,
  =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
  Florian Fainelli <florian.fainelli@broadcom.com>,
@@ -74,7 +76,7 @@ References: <20231122144208.21114-1-zajec5@gmail.com>
  <141deca9-6017-4e3f-a237-8dacc67662de@linaro.org>
  <03ad42c0-1648-43e1-bbd0-9ed02bdf4073@gmail.com>
  <b1f06f81-9248-73f3-b586-24e29bb9ab32@broadcom.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+ <525384ca-f84e-471c-bc82-0029db6ccb77@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
  cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
@@ -119,57 +121,71 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <b1f06f81-9248-73f3-b586-24e29bb9ab32@broadcom.com>
+In-Reply-To: <525384ca-f84e-471c-bc82-0029db6ccb77@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 22/11/2023 19:39, William Zhang wrote:
-> Hi,
-> 
-> On 11/22/2023 07:52 AM, Rafał Miłecki wrote:
->> On 22.11.2023 16:50, Krzysztof Kozlowski wrote:
->>> On 22/11/2023 16:49, Rafał Miłecki wrote:
->>>>>> For example a year ago I added binding for BCMBCA SoC timer without
->>>>>> actual driver, see e112f2de151b ("dt-bindings: timer: Add Broadcom's
->>>>>> BCMBCA timers").
+On 22/11/2023 19:46, Krzysztof Kozlowski wrote:
+> On 22/11/2023 19:39, William Zhang wrote:
+>> Hi,
+>>
+>> On 11/22/2023 07:52 AM, Rafał Miłecki wrote:
+>>> On 22.11.2023 16:50, Krzysztof Kozlowski wrote:
+>>>> On 22/11/2023 16:49, Rafał Miłecki wrote:
+>>>>>>> For example a year ago I added binding for BCMBCA SoC timer without
+>>>>>>> actual driver, see e112f2de151b ("dt-bindings: timer: Add Broadcom's
+>>>>>>> BCMBCA timers").
+>>>>>>>
+>>>>>>> I'm not sure if we're going to agree on this, but personally I like
+>>>>>>> describing hardware as much as I can. So it's well documented /
+>>>>>>> understood and people may eventually write drivers for it. Maybe it's
+>>>>>>> partially because I come from Broadcom's world that isn't well known
+>>>>>>> for upstream efforts in general.
 >>>>>>
->>>>>> I'm not sure if we're going to agree on this, but personally I like
->>>>>> describing hardware as much as I can. So it's well documented /
->>>>>> understood and people may eventually write drivers for it. Maybe it's
->>>>>> partially because I come from Broadcom's world that isn't well known
->>>>>> for upstream efforts in general.
+>>>>>> The problem is that "brcm,bcmbca-hs-uart" is not describing 
+>>>>>> hardware. It
+>>>>>> is saying that all these devices have similar (compatible) programming
+>>>>>> model, so the OS can use just one compatible. This goes away from pure
+>>>>>> hardware description into interpretation.
+>>>>>>
+>> It is the same hardware IP block used in bcmbca SoCs.  To me, it 
+>> perfectly describe the hardware IP block and it does not need fallback 
+>> because there is no fallback.  We did that for SPI controller although 
+>> it has two revisions of that IP block so we have brcm,bcmbca-hsspi-v1.0 
+>> and 1.1
+>>
+>>>>>> Rob already commented on such non-SoC compatibles multiple times. I do
+>>>>>> not see any reason here to not use specific compatible as fallback.
 >>>>>
->>>>> The problem is that "brcm,bcmbca-hs-uart" is not describing 
->>>>> hardware. It
->>>>> is saying that all these devices have similar (compatible) programming
->>>>> model, so the OS can use just one compatible. This goes away from pure
->>>>> hardware description into interpretation.
->>>>>
-> It is the same hardware IP block used in bcmbca SoCs.  To me, it 
-> perfectly describe the hardware IP block and it does not need fallback 
-> because there is no fallback.  We did that for SPI controller although 
-> it has two revisions of that IP block so we have brcm,bcmbca-hsspi-v1.0 
-> and 1.1
-> 
->>>>> Rob already commented on such non-SoC compatibles multiple times. I do
->>>>> not see any reason here to not use specific compatible as fallback.
+>> Sorry I missed Rob's comments.  If we have any new rule or notes about 
+>> this, I would like to check it out.
+>>
+>>>>> Do I get it right we should rather have some base specific compatible
+>>>>> like: "brcm,bcm63138-hs-uart" and then if anything use fallback to it
+>>>>> like: "brcm,bcm4908-hs-uart", "brcm,bcm63138-hs-uart"; ?
 >>>>
-> Sorry I missed Rob's comments.  If we have any new rule or notes about 
-> this, I would like to check it out.
+>>>> Yes, or the other way around, depends which is probably the oldest.
+>> If we absolutely can not use bcmbca-hs-uart, I would suggest to use 
 > 
->>>> Do I get it right we should rather have some base specific compatible
->>>> like: "brcm,bcm63138-hs-uart" and then if anything use fallback to it
->>>> like: "brcm,bcm4908-hs-uart", "brcm,bcm63138-hs-uart"; ?
->>>
->>> Yes, or the other way around, depends which is probably the oldest.
-> If we absolutely can not use bcmbca-hs-uart, I would suggest to use 
+> We can, but I am surprised that you want without any driver. What's the
+> point of generic compatible?
+> 
+>> bcm63xx-hs-uart to be more soc specific and in fact the oldest SoC have 
+> 
+> What is xx? Wildcard? I mean... ehhh...
 
-We can, but I am surprised that you want without any driver. What's the
-point of generic compatible?
+OK, it's not worth my time. Neither Rafał's.
 
-> bcm63xx-hs-uart to be more soc specific and in fact the oldest SoC have 
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-What is xx? Wildcard? I mean... ehhh...
+I can go to Embedded OSS every year and give the same speech every year
+and still people will on:
+1. insist on generic fallback compatible,
+2. wildcards
+3. families
+
+I will keep this email and use it to justify the same, third speech next
+year. Which won't be listened to, so I will go in 2025 fourth time. :)
 
 Best regards,
 Krzysztof
