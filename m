@@ -1,148 +1,278 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="ZfV+KUxs"
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D47FC1
-	for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 06:47:19 -0800 (PST)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id E7AB9C000C;
-	Wed, 22 Nov 2023 14:47:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="IdkqEEuo"
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C67C1
+	for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 06:48:11 -0800 (PST)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 545C9FF806;
+	Wed, 22 Nov 2023 14:48:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1700664437;
+	t=1700664490;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=RChDF0hQ+fd2wEyvYztJ025TvP/Yb4lGLcnjoT4C4bc=;
-	b=ZfV+KUxsuFNuSIsHwqhpPfokW24VcaNfDlzp53hqKNPP3Eb8C++QUk704IKOHvglTW7Oaw
-	OgfR9+meIKaJ1GuE4GWZ03ENyA2tJuyVOSbYmkljygI5umYlKhEkaezoWS03LGdm/pN29b
-	2n+FU1Upzyhkhz+nfOimw3XqXquTdeNTJ/EuEeyMGk+WCa4UCZ/bp36r+t4scZNwW0Vrgn
-	EFiAUn3eczGyWR77BTvc4TMs9cIczf5MIBXp0aPqgbqNGPRmvrhSjyHdemTVprlG8T5bPx
-	3WGsVU41eXGs4cJSYrISe5Agl2IAsJvlXIco8sKlx5bYrH3h9mMEjD7Oh/M1mw==
+	bh=ih9qrdIODXhIQYuSHcYNw9ME4GQmQU/rsIEE8STfvMI=;
+	b=IdkqEEuoFieWahXCvC028KDMgQ+UUPDkwM4hX63OIgAGk5rsrdxSUWUZTNHIJxewyGRiH7
+	TX/2CwG7Im4TOi8gQrM1jo1l1DCTWwyHrKDbVlhoYrrEmQbQ7R36TeWhBWlSbtyRw7SVGD
+	tHVjzRf3iB5JDS6TeJr28xTlkSdF9PIAP8Y5rABQr/YMUxoq8opz96jQqwvzUYf6XcT5Ej
+	7MlGmyO76IYamMbJxYWHpS19oWDNaDMPnRUW2+EwiQ4fvZ8q2u84q7NOHbE/YulThIkTvC
+	ygRGVWWUjUPaxOcC8ufPGNphrQzNLN+ifclw2VKQMBge51O5e/U8cbiVpoGlKA==
+From: Gregory CLEMENT <gregory.clement@bootlin.com>
+To: Ilpo =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Russell King <linux@armlinux.org.uk>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial
+ <linux-serial@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
+ Vladimir  Kondratiev <vladimir.kondratiev@mobileye.com>, Tawfik Bayouk
+ <tawfik.bayouk@mobileye.com>, Alexandre Belloni
+ <alexandre.belloni@bootlin.com>, =?utf-8?Q?Th=C3=A9o?= Lebrun
+ <theo.lebrun@bootlin.com>,
+ Thomas Petazzoni <thomas.petazzoni@bootlin.com>, Arnd Bergmann
+ <arnd@arndb.de>
+Subject: Re: [PATCH] ARM: PL011: Fix DMA support
+In-Reply-To: <19b79c17-030-c1ef-1477-937e862a1f78@linux.intel.com>
+References: <20231122074535.184384-1-gregory.clement@bootlin.com>
+ <19b79c17-030-c1ef-1477-937e862a1f78@linux.intel.com>
+Date: Wed, 22 Nov 2023 15:48:08 +0100
+Message-ID: <875y1thmjb.fsf@BL-laptop>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Wed, 22 Nov 2023 15:47:16 +0100
-Message-Id: <CX5F88JLWFUW.Z36KQB2PX554@tleb-bootlin-xps13-01>
-Cc: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
- <linux-serial@vger.kernel.org>, <gregory.clement@bootlin.com>,
- <u-kumar1@ti.com>, <d-gole@ti.com>, <thomas.petazzoni@bootlin.com>
-To: "Kevin Hilman" <khilman@kernel.org>, "Tony Lindgren" <tony@atomide.com>,
- "Thomas Richard" <thomas.richard@bootlin.com>
-From: =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
-Subject: Re: [PATCH] serial: 8250_omap: Set the console genpd always on if
- no console suspend
-X-Mailer: aerc 0.15.2
-References: <20231017130540.1149721-1-thomas.richard@bootlin.com>
- <7hfs213u0r.fsf@baylibre.com> <20231024045109.GT27774@atomide.com>
- <7hjzrbj29t.fsf@baylibre.com> <20231025064131.GZ27774@atomide.com>
- <75b6cda8-c809-409b-8be9-ad8a4db63c14@bootlin.com>
- <20231031105247.GC57044@atomide.com> <7h34xqitl0.fsf@baylibre.com>
-In-Reply-To: <7h34xqitl0.fsf@baylibre.com>
-X-GND-Sasl: theo.lebrun@bootlin.com
+MIME-Version: 1.0
+Content-Type: text/plain
+X-GND-Sasl: gregory.clement@bootlin.com
 
-Hi Kevin Hilman, Tony Lindgren & Thomas Richard,
+Hello Ilpo,
 
-On Tue Oct 31, 2023 at 6:34 PM CET, Kevin Hilman wrote:
-> Tony Lindgren <tony@atomide.com> writes:
-> > * Thomas Richard <thomas.richard@bootlin.com> [231031 10:15]:
-> >> Please find below the logs of the test you asked me.
-> >
-> > OK great thanks!
-> >
-> >> I added the call of pm_runtime_get_usage_count at the end of the suspe=
-nd
-> >> function.
-> >> The console is attached on 2800000.serial, it has usage_count=3D4.
-> >> Other serial has usage_count=3D3.
-> >
-> > So as suspected, it seems the power domain gets force suspended
-> > somewhere despite the usage_count.
+> On Wed, 22 Nov 2023, Gregory CLEMENT wrote:
 >
-> I think the only way this could happen (excluding any bugs, of course)
-> would be for pm_runtime_force_suspend() to be getting called somewhere,
-> but I thought the earlier patch made that call conditional, so maybe
-> there is another path where that is getting called?
+>> From: Arnd Bergmann <arnd@arndb.de>
+>> 
+>> Since there is no guarantee that the memory returned by
+>> dma_alloc_coherent() is associated with a 'struct page', using the
+>> architecture specific phys_to_page() is wrong, but using
+>> virt_to_page() would be as well.
+>> 
+>> Stop using sg lists altogether and just use the *_single() functions
+>> instead. This also simplifies the code a bit since the scatterlists in
+>> this driver always have only one entry anyway.
+>
+> Is that actually a HW limitation? Because it would be nice to get rid of 
+> those memcpy()s and use sg with two entries which is the general 
+> direction serial doing DMA Tx should be moving towards (IMO).
 
-I'm coming back on this topic as the upstream fix is less than ideal, as
-everyone here was agreeing.
+Actually I can't answer this. On our platform we don't use DMA. The need
+for this fix came initially because it triggered a compilation error
+when doing an an ARM specific call on a MIPS architecture (see the link below).
 
-I've had a look at the genpd code & power-domains get powered-off at
-suspend_noirq without caring about runtime PM refcounting. See
-genpd_suspend_noirq & genpd_finish_suspend.
+With this patch, I managed to build a kernel image without any error and
+I didn't see any regression at runtime.
 
-Behavior is:
+>
+> -- 
+>  i.
+>
+>> gcl: Add a commit log from the initial thread:
 
- - In all cases, call suspend_noirq on the underlying device.
- - Stop now if device is in wakeup path & PD has the
-   GENPD_FLAG_ACTIVE_WAKEUP flag.
- - If the PD has start & stop callbacks & is not runtime suspended, call
-   the stop callback on the device.
- - Increment the count of suspended devices on this PD.
- - If PD is already off or always on, stop.
- - If this is the last device on this PD (and some other checks), then
-   do the PD power off (and maybe parent PDs).
-
-The current patch sets the PD as always on at suspend. That would not
-work if our PD driver registered start/stop callbacks as those would
-get called.
-
-The right solution to avoid getting the PD cut would be to mark the
-serials we want to keep alive as on the wakeup path using
-device_set_wakeup_path(dev) at suspend. That also requires the PD to be
-marked using the GENPD_FLAG_ACTIVE_WAKEUP flag, which is currently not
-the case.
-
-That last aspect is what I'm unsure of: should we add this flag to all
-power-domains created by ti_sci_pm_domains? Should we pass something
-from devicetree? I don't see the reason for not enabling this behavior
-by default?
-
-I've tested this approach & it works. See below for diff.
+For the contecte, all came from the following thread:
+>> https://lore.kernel.org/lkml/86db0fe5-930d-4cbb-bd7d-03367da38951@app.fastmail.com/
+>> 
 
 Regards,
 
---
-Th=C3=A9o Lebrun, Bootlin
+Gregory
+
+>> Fixes: cb06ff102e2d7 ("ARM: PL011: Add support for Rx DMA buffer polling.")
+>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+>> Tested-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+>> Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+>> ---
+>>  drivers/tty/serial/amba-pl011.c | 62 +++++++++++++++------------------
+>>  1 file changed, 29 insertions(+), 33 deletions(-)
+>> 
+>> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+>> index 61cc24cd90e4b..73a1c40148c25 100644
+>> --- a/drivers/tty/serial/amba-pl011.c
+>> +++ b/drivers/tty/serial/amba-pl011.c
+>> @@ -219,8 +219,9 @@ static struct vendor_data vendor_st = {
+>>  /* Deals with DMA transactions */
+>>  
+>>  struct pl011_sgbuf {
+>> -	struct scatterlist sg;
+>> -	char *buf;
+>> +	dma_addr_t		dma;
+>> +	size_t			len;
+>> +	char			*buf;
+>>  };
+>>  
+>>  struct pl011_dmarx_data {
+>> @@ -241,7 +242,8 @@ struct pl011_dmarx_data {
+>>  
+>>  struct pl011_dmatx_data {
+>>  	struct dma_chan		*chan;
+>> -	struct scatterlist	sg;
+>> +	dma_addr_t		dma;
+>> +	size_t			len;
+>>  	char			*buf;
+>>  	bool			queued;
+>>  };
+>> @@ -369,18 +371,11 @@ static int pl011_fifo_to_tty(struct uart_amba_port *uap)
+>>  static int pl011_sgbuf_init(struct dma_chan *chan, struct pl011_sgbuf *sg,
+>>  	enum dma_data_direction dir)
+>>  {
+>> -	dma_addr_t dma_addr;
+>> -
+>> -	sg->buf = dma_alloc_coherent(chan->device->dev,
+>> -		PL011_DMA_BUFFER_SIZE, &dma_addr, GFP_KERNEL);
+>> +	sg->buf = dma_alloc_coherent(chan->device->dev, PL011_DMA_BUFFER_SIZE,
+>> +				     &sg->dma, GFP_KERNEL);
+>>  	if (!sg->buf)
+>>  		return -ENOMEM;
+>> -
+>> -	sg_init_table(&sg->sg, 1);
+>> -	sg_set_page(&sg->sg, phys_to_page(dma_addr),
+>> -		PL011_DMA_BUFFER_SIZE, offset_in_page(dma_addr));
+>> -	sg_dma_address(&sg->sg) = dma_addr;
+>> -	sg_dma_len(&sg->sg) = PL011_DMA_BUFFER_SIZE;
+>> +	sg->len = PL011_DMA_BUFFER_SIZE;
+>>  
+>>  	return 0;
+>>  }
+>> @@ -390,8 +385,7 @@ static void pl011_sgbuf_free(struct dma_chan *chan, struct pl011_sgbuf *sg,
+>>  {
+>>  	if (sg->buf) {
+>>  		dma_free_coherent(chan->device->dev,
+>> -			PL011_DMA_BUFFER_SIZE, sg->buf,
+>> -			sg_dma_address(&sg->sg));
+>> +				  PL011_DMA_BUFFER_SIZE, sg->buf, sg->dma);
+>>  	}
+>>  }
+>>  
+>> @@ -552,8 +546,8 @@ static void pl011_dma_tx_callback(void *data)
+>>  
+>>  	uart_port_lock_irqsave(&uap->port, &flags);
+>>  	if (uap->dmatx.queued)
+>> -		dma_unmap_sg(dmatx->chan->device->dev, &dmatx->sg, 1,
+>> -			     DMA_TO_DEVICE);
+>> +		dma_unmap_single(dmatx->chan->device->dev, dmatx->dma,
+>> +				dmatx->len, DMA_TO_DEVICE);
+>>  
+>>  	dmacr = uap->dmacr;
+>>  	uap->dmacr = dmacr & ~UART011_TXDMAE;
+>> @@ -639,18 +633,19 @@ static int pl011_dma_tx_refill(struct uart_amba_port *uap)
+>>  			memcpy(&dmatx->buf[first], &xmit->buf[0], second);
+>>  	}
+>>  
+>> -	dmatx->sg.length = count;
+>> -
+>> -	if (dma_map_sg(dma_dev->dev, &dmatx->sg, 1, DMA_TO_DEVICE) != 1) {
+>> +	dmatx->len = count;
+>> +	dmatx->dma = dma_map_single(dma_dev->dev, dmatx->buf, count,
+>> +				    DMA_TO_DEVICE);
+>> +	if (dmatx->dma == DMA_MAPPING_ERROR) {
+>>  		uap->dmatx.queued = false;
+>>  		dev_dbg(uap->port.dev, "unable to map TX DMA\n");
+>>  		return -EBUSY;
+>>  	}
+>>  
+>> -	desc = dmaengine_prep_slave_sg(chan, &dmatx->sg, 1, DMA_MEM_TO_DEV,
+>> +	desc = dmaengine_prep_slave_single(chan, dmatx->dma, dmatx->len, DMA_MEM_TO_DEV,
+>>  					     DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+>>  	if (!desc) {
+>> -		dma_unmap_sg(dma_dev->dev, &dmatx->sg, 1, DMA_TO_DEVICE);
+>> +		dma_unmap_single(dma_dev->dev, dmatx->dma, dmatx->len, DMA_TO_DEVICE);
+>>  		uap->dmatx.queued = false;
+>>  		/*
+>>  		 * If DMA cannot be used right now, we complete this
+>> @@ -813,8 +808,8 @@ __acquires(&uap->port.lock)
+>>  	dmaengine_terminate_async(uap->dmatx.chan);
+>>  
+>>  	if (uap->dmatx.queued) {
+>> -		dma_unmap_sg(uap->dmatx.chan->device->dev, &uap->dmatx.sg, 1,
+>> -			     DMA_TO_DEVICE);
+>> +		dma_unmap_single(uap->dmatx.chan->device->dev, uap->dmatx.dma,
+>> +				 uap->dmatx.len, DMA_TO_DEVICE);
+>>  		uap->dmatx.queued = false;
+>>  		uap->dmacr &= ~UART011_TXDMAE;
+>>  		pl011_write(uap->dmacr, uap, REG_DMACR);
+>> @@ -836,7 +831,7 @@ static int pl011_dma_rx_trigger_dma(struct uart_amba_port *uap)
+>>  	/* Start the RX DMA job */
+>>  	sgbuf = uap->dmarx.use_buf_b ?
+>>  		&uap->dmarx.sgbuf_b : &uap->dmarx.sgbuf_a;
+>> -	desc = dmaengine_prep_slave_sg(rxchan, &sgbuf->sg, 1,
+>> +	desc = dmaengine_prep_slave_single(rxchan, sgbuf->dma, sgbuf->len,
+>>  					DMA_DEV_TO_MEM,
+>>  					DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+>>  	/*
+>> @@ -886,7 +881,7 @@ static void pl011_dma_rx_chars(struct uart_amba_port *uap,
+>>  
+>>  	if (uap->dmarx.poll_rate) {
+>>  		/* The data can be taken by polling */
+>> -		dmataken = sgbuf->sg.length - dmarx->last_residue;
+>> +		dmataken = sgbuf->len - dmarx->last_residue;
+>>  		/* Recalculate the pending size */
+>>  		if (pending >= dmataken)
+>>  			pending -= dmataken;
+>> @@ -911,7 +906,7 @@ static void pl011_dma_rx_chars(struct uart_amba_port *uap,
+>>  
+>>  	/* Reset the last_residue for Rx DMA poll */
+>>  	if (uap->dmarx.poll_rate)
+>> -		dmarx->last_residue = sgbuf->sg.length;
+>> +		dmarx->last_residue = sgbuf->len;
+>>  
+>>  	/*
+>>  	 * Only continue with trying to read the FIFO if all DMA chars have
+>> @@ -969,7 +964,7 @@ static void pl011_dma_rx_irq(struct uart_amba_port *uap)
+>>  	pl011_write(uap->dmacr, uap, REG_DMACR);
+>>  	uap->dmarx.running = false;
+>>  
+>> -	pending = sgbuf->sg.length - state.residue;
+>> +	pending = sgbuf->len - state.residue;
+>>  	BUG_ON(pending > PL011_DMA_BUFFER_SIZE);
+>>  	/* Then we terminate the transfer - we now know our residue */
+>>  	dmaengine_terminate_all(rxchan);
+>> @@ -1015,7 +1010,7 @@ static void pl011_dma_rx_callback(void *data)
+>>  	 * the DMA irq handler. So we check the residue here.
+>>  	 */
+>>  	rxchan->device->device_tx_status(rxchan, dmarx->cookie, &state);
+>> -	pending = sgbuf->sg.length - state.residue;
+>> +	pending = sgbuf->len - state.residue;
+>>  	BUG_ON(pending > PL011_DMA_BUFFER_SIZE);
+>>  	/* Then we terminate the transfer - we now know our residue */
+>>  	dmaengine_terminate_all(rxchan);
+>> @@ -1074,7 +1069,7 @@ static void pl011_dma_rx_poll(struct timer_list *t)
+>>  	sgbuf = dmarx->use_buf_b ? &uap->dmarx.sgbuf_b : &uap->dmarx.sgbuf_a;
+>>  	rxchan->device->device_tx_status(rxchan, dmarx->cookie, &state);
+>>  	if (likely(state.residue < dmarx->last_residue)) {
+>> -		dmataken = sgbuf->sg.length - dmarx->last_residue;
+>> +		dmataken = sgbuf->len - dmarx->last_residue;
+>>  		size = dmarx->last_residue - state.residue;
+>>  		dma_count = tty_insert_flip_string(port, sgbuf->buf + dmataken,
+>>  				size);
+>> @@ -1123,7 +1118,7 @@ static void pl011_dma_startup(struct uart_amba_port *uap)
+>>  		return;
+>>  	}
+>>  
+>> -	sg_init_one(&uap->dmatx.sg, uap->dmatx.buf, PL011_DMA_BUFFER_SIZE);
+>> +	uap->dmatx.len = PL011_DMA_BUFFER_SIZE;
+>>  
+>>  	/* The DMA buffer is now the FIFO the TTY subsystem can use */
+>>  	uap->port.fifosize = PL011_DMA_BUFFER_SIZE;
+>> @@ -1200,8 +1195,9 @@ static void pl011_dma_shutdown(struct uart_amba_port *uap)
+>>  		/* In theory, this should already be done by pl011_dma_flush_buffer */
+>>  		dmaengine_terminate_all(uap->dmatx.chan);
+>>  		if (uap->dmatx.queued) {
+>> -			dma_unmap_sg(uap->dmatx.chan->device->dev, &uap->dmatx.sg, 1,
+>> -				     DMA_TO_DEVICE);
+>> +			dma_unmap_single(uap->dmatx.chan->device->dev,
+>> +					 uap->dmatx.dma, uap->dmatx.len,
+>> +					 DMA_TO_DEVICE);
+>>  			uap->dmatx.queued = false;
+>>  		}
+>>  
+>> 
+
+-- 
+Gregory Clement, Bootlin
 Embedded Linux and Kernel engineering
-https://bootlin.com
-
-8< -------------------------------
-
-diff --git a/drivers/pmdomain/ti/ti_sci_pm_domains.c b/drivers/pmdomain/ti/=
-ti_sci_pm_domains.c
-index c091d569ecd5..b0d473776278 100644
---- a/drivers/pmdomain/ti/ti_sci_pm_domains.c
-+++ b/drivers/pmdomain/ti/ti_sci_pm_domains.c
-@@ -168,6 +168,7 @@ static int ti_sci_pm_domain_probe(struct platform_devic=
-e *pdev)
-
-            pd->pd.power_off =3D ti_sci_pd_power_off;
-            pd->pd.power_on =3D ti_sci_pd_power_on;
-+           pd->pd.flags |=3D GENPD_FLAG_ACTIVE_WAKEUP;
-            pd->idx =3D args.args[0];
-            pd->parent =3D pd_provider;
-
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/=
-8250_omap.c
-index 4b33f4529aed..ab2f8b7927c3 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -1633,8 +1633,12 @@ static int omap8250_suspend(struct device *dev)
-   if (!device_may_wakeup(dev))
-      priv->wer =3D 0;
-   serial_out(up, UART_OMAP_WER, priv->wer);
--  if (uart_console(&up->port) && console_suspend_enabled)
--     err =3D pm_runtime_force_suspend(dev);
-+  if (uart_console(&up->port)) {
-+     if (console_suspend_enabled)
-+        err =3D pm_runtime_force_suspend(dev);
-+     else
-+        device_set_wakeup_path(dev);
-+  }
-   flush_work(&priv->qos_work);
-
-   return err;
+http://bootlin.com
