@@ -1,184 +1,112 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="pOb7ge+y"
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDDD5B9
-	for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 00:42:50 -0800 (PST)
-Received: by mail-qv1-xf35.google.com with SMTP id 6a1803df08f44-678013cc22bso24997366d6.2
-        for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 00:42:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1700642570; x=1701247370; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=xJJJ00lRDiFcS8bTCcGfNaw9iOLVdZbPikVW1utuBzM=;
-        b=pOb7ge+ywADMyIl8ockp0/0pynZQ1sVBaimjIE8076IWRN7QyE5g2BjrCqLYJ50CAr
-         kZ76L46uKbP7DOtn6EEdJsmyXGNJgSAqghyZTycAZsLMThvPfacnMdtrJ3opq4B7DPC0
-         q82xh3EyZXkwNHV9JSMDR25dBz78dCfp/3QsT1aomxNPd/5ka6PKxunW8g94vYuxouxT
-         NAMjIlLVt0dI+NiK1/mjxxX2XBjI+pDGLP3qnbI7SOgOupJWWPpaWN/hhIjerZViGRXS
-         EhsYqx4TkoyZx5Zhd08/PNeJsPzxJLp9Vt6i4yA6LnWYaq+BhadXjbvbEvCouPosNuTz
-         7lHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700642570; x=1701247370;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=xJJJ00lRDiFcS8bTCcGfNaw9iOLVdZbPikVW1utuBzM=;
-        b=e8IeUOlR1fhJzR1i5/L8DacNWmjXCjZ1eqNKhJQ38eZyF48u1+AHywDB9xv67xtl3a
-         HEkLZBoxPN0UO/biwikZ8UGkuKVVd3NrzIXB2Bp8j3WaPu6ZSrFysWVykVJdUeLX12Ru
-         S3VYrJW94F4CiA7AOvL+Sf3LDGhEv0dLLp+/NTVB5syBZQc1CA04aG1YdXHBQ4ujT72T
-         un9Q4QAxJvrb+RyBSFBLesq9qIC1T+RMNPwJEX/0xuHBRVcroUpkQdBUQXYPJ3MnbMa3
-         29Yktgo8RCZbV3yI6TuHW2y4xcC5Ong9XzIr+DakpZd79kqgJOyp6szHVjzOLiasa+B5
-         ufqg==
-X-Gm-Message-State: AOJu0YzfWzGZ2SD4813eVlQcgO2bGwimMXSw9G20vSvJrkPJmox2o/y8
-	KmT/iltxx6iNwnjJon8kxtEZ9f30fIuj6tWpEksdAQ==
-X-Google-Smtp-Source: AGHT+IGuE4s7BTtl86J4aY1Nuyr+QChlQ+/ghmDxMJ+Qpji0VOMTRWww7BDliDBXUH4jhsBEXFzcxCwrF5hxCi4U9KY=
-X-Received: by 2002:a05:6214:f6c:b0:64f:92af:9080 with SMTP id
- iy12-20020a0562140f6c00b0064f92af9080mr1950970qvb.21.1700642569839; Wed, 22
- Nov 2023 00:42:49 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmx.de header.i=eberhard.stoll@gmx.de header.b="TWRd0vfy"
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D975BD;
+	Wed, 22 Nov 2023 01:32:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
+	t=1700645514; x=1701250314; i=eberhard.stoll@gmx.de;
+	bh=uT3DiWkYEoghSYBnj8WpEqr9P/dHXYjlSbrLs5e+oE4=;
+	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
+	 In-Reply-To;
+	b=TWRd0vfyuYd2jSITc+E6A4Bjav6lNPOHup/oMQ+Qr2YdakjGJLhq6FNJ8HEJiyZe
+	 +njO2CRANJLEAjnHhEIB6jGiVQRkYBtDoASmySE4Acso7vFVU86n0y8JfCuSgMX2W
+	 /noA+ZPGsB0E0R9q4qKDYejOOG+CkfrLHsL6IjJxe5OQKIrsjaXYbC3GWr/ff7iuL
+	 Is2VSaDJJY/bgBbTEcjDLQHrPtnYo4rIfu312un6AMqAon4UbZ2Jv3xRCszOLMerW
+	 oHCkereCcFzL8rF8pM9gN4kqGebgKRRMpOPdQPb9VMKOPxKXlfZv2E8NUtsUHLcto
+	 pwe07YW9R0TecMFSqA==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.200.6] ([77.246.119.226]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mz9Ux-1rJ1BJ03Fb-00wBcq; Wed, 22
+ Nov 2023 10:31:54 +0100
+Message-ID: <1e9ac484-5764-496d-ab00-9690d9042c91@gmx.de>
+Date: Wed, 22 Nov 2023 10:31:53 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20231120212037.911774-1-peter.griffin@linaro.org>
- <20231120212037.911774-10-peter.griffin@linaro.org> <20231121151630.GA1692178-robh@kernel.org>
- <CADrjBPo4qw4eJLuGsv7aK4V7QjGR_n_MQ+W-Rrq92iATSLFHZQ@mail.gmail.com> <35990cd2-a4d3-473e-893e-aa16c1c63289@linaro.org>
-In-Reply-To: <35990cd2-a4d3-473e-893e-aa16c1c63289@linaro.org>
-From: Peter Griffin <peter.griffin@linaro.org>
-Date: Wed, 22 Nov 2023 08:42:37 +0000
-Message-ID: <CADrjBPr6t16Ypdg-M-r73PNiGe0XAdeCPs6Tk=iHsU3pPA9=4w@mail.gmail.com>
-Subject: Re: [PATCH v4 09/19] dt-bindings: serial: samsung: Make
- samsung,uart-fifosize required property
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Rob Herring <robh@kernel.org>, krzysztof.kozlowski+dt@linaro.org, 
-	mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org, 
-	tomasz.figa@gmail.com, s.nawrocki@samsung.com, linus.walleij@linaro.org, 
-	wim@linux-watchdog.org, linux@roeck-us.net, catalin.marinas@arm.com, 
-	will@kernel.org, arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org, 
-	jirislaby@kernel.org, cw00.choi@samsung.com, alim.akhtar@samsung.com, 
-	tudor.ambarus@linaro.org, andre.draszik@linaro.org, 
-	semen.protsenko@linaro.org, saravanak@google.com, willmcvicker@google.com, 
-	soc@kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
-	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-watchdog@vger.kernel.org, kernel-team@android.com, 
-	linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: imx: also enable Transmit Complete interrupt in
+ rs232 mode
+To: Rasmus Villemoes <rasmus.villemoes@prevas.dk>, sherry.sun@nxp.com
+Cc: festevam@gmail.com, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org,
+ linux-imx@nxp.com, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, s.hauer@pengutronix.de, shawnguo@kernel.org,
+ eberhard.stoll@kontron.de
+References: <AS8PR04MB8404D066C247F5B2979CBD1F92BBA@AS8PR04MB8404.eurprd04.prod.outlook.com>
+ <dbe5959d-2b68-4f16-89ee-32538aab4f34@gmx.de>
+ <5ad44085-c90b-4a88-bb7b-8ddc2b612793@prevas.dk>
+Content-Language: en-US
+From: Eberhard Stoll <eberhard.stoll@gmx.de>
+In-Reply-To: <5ad44085-c90b-4a88-bb7b-8ddc2b612793@prevas.dk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:urUipIHyWMNiNkozepuEn0gj24xVRoz68Bw0r3vm3ItKmKIcEyx
+ RFPnhakqYTySES2PeacPlo0pJ4e1tF/PFSb9B5toU5BWGMYcPNRz6o/ZgY1REqxPfnVum/x
+ iZvONmE5clELydTltLybodcPe6lenRP/+74G/OVImtGZLT2j3Hy6yXKuhHfudVHN3A80vII
+ IcZw84D0lTOJqWOHWIeOQ==
+UI-OutboundReport: notjunk:1;M01:P0:Xok3tUOxw2c=;3lXZGwwkRvCGRTyJEdEPP0+gM7G
+ W4N+ft0emvZQMWVag/hBsaeuiovcL7FBRwrnWCi50LwWPi/tWAMhop46aCwnuUdPfFWK3tNGA
+ Ql2AiICpN3cWF9grab30mgvq80Hed/23DFMJl5SqsRsW10GOTNsGmxF3mZF2PCp/3efq4ja2A
+ V/4ckNgjH4XkS6P18oBa90BpitLNnqocraA9LxnO+8qJ8l2bDJOu/XZPBzJrYw+2vaYGtQLQv
+ jsF5W/a425xSzBixFgtCQlSGyn3VejVUW/S6557DzQdDb7i/vNwO+wfDvGcxVx/h8THIjAs7e
+ Ssv9+VgyBaJ2BCVSVkydcctt5v3VsIaR3ce0r+yKwGkVoZG+xxbmcMqT2MNGHWeKVzxSRXkm7
+ Cynb6vrHByLC2uk8wdoSfLLhMg+mN50PLS2VTTLtJiSn0ZjZVlqowSem3G9mWJqW+nWEVOiWZ
+ yvOYTRm2jRSkcWNWZ7tPRjCyxxb0qx8tbBWyjVVvlo7qEV1h6u0wmzo0D8w11FNDnqDqQY/oC
+ mSlw7X5TLUg6rS466p5A9tgptVxwBD7Adva+Wbaq/vhMa/O2GpjwuaFgWipkfBqLWd7YxvW4E
+ ncTF7bLcQSl13axaBP15+dgEmDCc99Y0xQQJA+QIeI/8wyxHIxXOu46T9aCo5Z8xqKakcilhX
+ hAT5rhDJYfKwtrznixn3nVKLB+eMZa797FLWMhDPm3ostKh5b+Uz2h94wDkQ6RoA1WzSfjwqh
+ TjawZxr+mSS4byC1sGmORxL0Bhnw1TQZry1KZXqhbfhenDXvPRm2U3DHWwwOobqMZ3kR91ejA
+ rZNoQ7Oi11kexeUfkI97hG0ryPJZrjEEC0Um6Rp9rERmqOSO1cfJ3cfGCSKtRB2ODWV2ejsuR
+ AFQeUwOHDOijaFhUXuNsBj885IO6cUdcLPkXTiCZo25qytZ1DfH+5XKw9PvC0m8QO+z2yS1/N
+ qMRjl3y7PA1UyUl3ghS2Shcj+jQ=
 
-Hi Krzysztof,
 
-On Wed, 22 Nov 2023 at 07:49, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
+>> i can observe a very similar situation, but with a litte different
+>> configuration. This is how i can trigger the situation very quickly:
+>>
+>>  =C2=A0 1) open the port
+>>  =C2=A0 2) send 1 byte out
+>>  =C2=A0 3) close the port
 >
-> On 21/11/2023 18:15, Peter Griffin wrote:
-> > Hi Rob,
-> >
-> > Thanks for your review.
-> >
-> > On Tue, 21 Nov 2023 at 15:16, Rob Herring <robh@kernel.org> wrote:
-> >>
-> >> On Mon, Nov 20, 2023 at 09:20:27PM +0000, Peter Griffin wrote:
-> >>> Specifying samsung,uart-fifosize in both DT and driver static data is error
-> >>> prone and relies on driver probe order and dt aliases to be correct.
-> >>>
-> >>> Additionally on many Exynos platforms these are (USI) universal serial
-> >>> interfaces which can be uart, spi or i2c, so it can change per board.
-> >>>
-> >>> For google,gs101-uart and exynosautov9-uart make samsung,uart-fifosize a
-> >>> required property. For these platforms fifosize now *only* comes from DT.
-> >>>
-> >>> It is hoped other Exynos platforms will also switch over time.
-> >>
-> >> Then allow the property on them.
-> >
-> > Not sure I fully understand your comment. Can you elaborate? Do you
-> > mean leave the 'samsung,uart-fifosize' as an optional property like it
-> > is currently even for the platforms that now require it to be present
-> > to function correctly?
-> >
-> > I deliberately restricted the yaml change to only require this
-> > property for the SoCs that already set the 'samsung,uart-fifosize'  dt
-> > property. As setting the property and having the driver use what is
-> > specified in DT also requires a corresponding driver update (otherwise
-> > fifosize gets overwritten by the driver static data, and then becomes
-> > dependent on probe order, dt aliases etc). The rationale was drivers
-> > 'opt in' and add themselves to the compatibles in this patch as they
-> > migrate away from obtaining fifo size from driver static data to
-> > obtaining it from DT.
+> Hi Eberhard
 >
-> Your code diff looks like you are adding the property only to these models.
+> Thanks for chiming in. I assume this is all in rs485 mode, no switching
+> to rs232 and back involved?
 
-OK, I intended to only make it a required DT property for these
-models. Presumably there is a better way to achieve that.
+Yes, no mode switching is involved here. Only rs485 mode.
 
+>> Setting ->tx_state =3D SEND in imx_uart_shutdown() helps for my issue
+>> (and should be ok IMHO).
 >
-> >
-> >>
-> >>>
-> >>> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
-> >>> ---
-> >>>  .../bindings/serial/samsung_uart.yaml           | 17 +++++++++++++++++
-> >>>  1 file changed, 17 insertions(+)
-> >>>
-> >>> diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> >>> index ccc3626779d9..22a1edadc4fe 100644
-> >>> --- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> >>> +++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> >>> @@ -133,6 +133,23 @@ allOf:
-> >>>              - const: uart
-> >>>              - const: clk_uart_baud0
-> >>>
-> >>> +  - if:
-> >>> +      properties:
-> >>> +        compatible:
-> >>> +          contains:
-> >>> +            enum:
-> >>> +              - google,gs101-uart
-> >>> +              - samsung,exynosautov9-uart
-> >>> +    then:
-> >>> +      properties:
-> >>> +        samsung,uart-fifosize:
-> >>> +          description: The fifo size supported by the UART channel.
-> >>> +          $ref: /schemas/types.yaml#/definitions/uint32
-> >>> +          enum: [16, 64, 256]
-> >>
-> >> We already have 'fifo-size' in several drivers. Use that. Please move
-> >> its type/description definitions to serial.yaml and make drivers just do
-> >> 'fifo-size: true' if they use it.
-> >
-> > What do you suggest we do for the samsung,uart-fifosize property that
-> > is being used upstream?
+> [I assume you mean tx_state =3D OFF]. Yes, I suppose doing that would be=
+ > ok, but I'm not sure it's a complete fix. In my simple test cast, I hav=
+e
+
+Oh, yes, sorry my mistake!
+I really meant ->tx_state =3D OFF as you expected in your comment
+
+> separate programs invoked to do the I/O and do the mode switch, but in a
+> real scenario, I'd expect the application itself to just open the device
+> once, and then do I/O and mode switching as appropriate for the
+> application logic, and I don't think uart_shutdown would then ever get
+> called.
+
+Switching between rs232 mode and rs485 mode on an open port is a special
+use case in my experience. But it's valid and introduces some extra
+complexity. As you stated, for this use case setting ->tx_state =3D OFF in
+imx_uart_shutdown() does not really help.
+
+> Indeed, that's an extra complication. Adding two hrtimer_try_to_cancel()
+> in shutdown would probably not hurt, along with setting tx_state OFF.
 >
-> Nothing, your diff is just wrong. Or at least nothing needed. Just drop
-> all this properties: here and only make it required for Google GS101.
+> I wonder if at least mode switching should simply be disallowed (-EBUSY)
+> if tx_state is anything but OFF.
 
-OK, so your happy with the approach just not the implementation/patch
-and you don't want it updated to use fifo-size instead of
-samsung,uart-fifosize
+Seems there are various issues in ->tx_state handling and transmitter
+timing in this driver!
 
->
->
-> >
-> >>
-> >>> +
-> >>> +      required:
-> >>> +       - samsung,uart-fifosize
-> >>
-> >> A new required property is an ABI break. Please explain why that is okay
-> >> in the commit message.
-> >>
-> >
-> > I can update the commit message to make clear there is an ABI break.
-> > As mentioned above the platforms where this is now required are either
-> > already setting the property or are new in this series. Is that
-> > sufficient justification?
-> Yes, but only first case. You need to order your patches correctly -
-> first is ABI break expecting ExynopsAutov9 to provide FIFO size in DTS
-> with its explanation. Second commit is adding GS101 where there is no
-> ABI break.
-
-OK, I'll drop the ExynopsAutov9 part then. I don't want to complicate
-this series by introducing an ABI breakage on some other unrelated
-Exynos platform.
-
-Peter
+Best Regards
+Eberhard
