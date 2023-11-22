@@ -1,32 +1,32 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA0AB9;
-	Tue, 21 Nov 2023 22:26:25 -0800 (PST)
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-332c7d4a6a7so1713495f8f.2;
-        Tue, 21 Nov 2023 22:26:25 -0800 (PST)
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11750F9;
+	Tue, 21 Nov 2023 22:32:50 -0800 (PST)
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-33139ecdca7so3865147f8f.0;
+        Tue, 21 Nov 2023 22:32:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700634384; x=1701239184;
+        d=1e100.net; s=20230601; t=1700634768; x=1701239568;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=s8UXXM9XsNdfqTY9fWi2gO/4uVBR4veDhKM7OdvDlfU=;
-        b=GW0puSHmBBGZHRBEblMt95mGE2axsuAsRWktW7+uUUDdAf+c5hP7zxBlt+8KbMIG7Z
-         LN6M0Q+Vrg2MG7sRuUX3kzE/nFIpUY1lRRujz1pslaWIQV5chAOTfqbPArL03V+OGESN
-         zDyK/CqRR+r7RUGeRhYm+7YgpJomMAi4TxovYLihP6aCdIBLpamVl9GZhTT2af1pV6ma
-         A7y8MQrQRY+p9yRBBGGQEm6RtoXX5+b2dGdLRLgYMiKRtQwMw16nd0UbRi75V2oGQVct
-         Nbg46Zb3thAQkC6EM38hOJ+85q6918eLDpmVi/q+8zb9cPDtXfPrX1C4Ar+eGBBpMggb
-         aXhQ==
-X-Gm-Message-State: AOJu0YxsZTZ2GLLuXVedAWERJXjlUE0p+SYF2NobwCsizPgwLq6C0BZn
-	p9RmzQhdE7kkM3oD7l2Duxo=
-X-Google-Smtp-Source: AGHT+IFOwT201SguVNh37eWo5CL7l9+JjCP1VxJx9chGtI8ifLlxmGA3Y523msK1A2l4o5ENiICodg==
-X-Received: by 2002:adf:d1c7:0:b0:32f:8024:64f1 with SMTP id b7-20020adfd1c7000000b0032f802464f1mr962845wrd.2.1700634383493;
-        Tue, 21 Nov 2023 22:26:23 -0800 (PST)
+        bh=wkk6KghEqaVy/lgbXkgW4CUMwyYkn5lqU65OmhfEyfQ=;
+        b=bo1u/iSK7d72ce7j3mja+LZnfIritsunda9yvwxLRY01E6DZx4+A1D0OuiXFYp0cza
+         ahj8xkqS7dSOi0AjduOt1hoPLV31u7T0XyQgHutSTQs0XMevb3a842eiKoQqQnGiBKSp
+         xDBrIgoAhKYJTNilPo1Y//zKFWOwdTTIoOWTBDWhDjHnK2gM5CwCXRONHLa0CiLFsr7R
+         F/IakkKdkDHNO9YqwM6VHs4N+BIdBoO4+oBzRJzgh76NaVkMwEl9h2rfJEAS3gGqDu+K
+         RepcaYJ8SL63bbJ3DAVtR1A3LxHBgeGWHvErs1wb82KMQkiQK3kxu3VK7pC6dqOjYrv1
+         JkcA==
+X-Gm-Message-State: AOJu0YxdFXXqOvV6uaVK0pJL+j5Wk7M58bajwDjW6cKEiNQ9Kruzb/NK
+	ekexZsmI5hBiHt8/Ky13Sb4=
+X-Google-Smtp-Source: AGHT+IHl22GB4GxegJR9cctDTSSDLawoC62gI9HyDGtC5vgN76oJjbFdFSAuon55H7hgEo9x3wD68g==
+X-Received: by 2002:a05:6000:4f:b0:32d:9d6b:ac99 with SMTP id k15-20020a056000004f00b0032d9d6bac99mr799661wrx.31.1700634768283;
+        Tue, 21 Nov 2023 22:32:48 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id p9-20020a5d6389000000b00332cc3e0817sm5010371wru.39.2023.11.21.22.26.22
+        by smtp.gmail.com with ESMTPSA id n4-20020a5d4004000000b003316b3d69b3sm15418910wrp.46.2023.11.21.22.32.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Nov 2023 22:26:23 -0800 (PST)
-Message-ID: <4e195719-fb7d-48b8-8d92-8905f47a92dd@kernel.org>
-Date: Wed, 22 Nov 2023 07:26:22 +0100
+        Tue, 21 Nov 2023 22:32:47 -0800 (PST)
+Message-ID: <268cb513-5b17-4bd5-81b7-ed730c895e41@kernel.org>
+Date: Wed, 22 Nov 2023 07:32:47 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -34,20 +34,18 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 14/17] tty: srmcons: use 'count' directly in
- srmcons_do_write()
+Subject: Re: [PATCH 17/17] tty: srmcons: make 'str_cr' const and non-array
 Content-Language: en-US
-To: Richard Henderson <richard.henderson@linaro.org>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  linux-serial <linux-serial@vger.kernel.org>,
  LKML <linux-kernel@vger.kernel.org>,
+ Richard Henderson <richard.henderson@linaro.org>,
  Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
  <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 References: <20231121092258.9334-1-jirislaby@kernel.org>
- <20231121092258.9334-15-jirislaby@kernel.org>
- <4f0db52-6430-9122-1ecc-86e337644944@linux.intel.com>
- <f4babac1-8366-45a2-94c2-838cacb4a006@linaro.org>
+ <20231121092258.9334-18-jirislaby@kernel.org>
+ <82caf538-cee5-1420-4944-b26b627ef145@linux.intel.com>
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -91,74 +89,28 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <f4babac1-8366-45a2-94c2-838cacb4a006@linaro.org>
+In-Reply-To: <82caf538-cee5-1420-4944-b26b627ef145@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 21. 11. 23, 18:48, Richard Henderson wrote:
-> On 11/21/23 09:21, Ilpo Järvinen wrote:
->> On Tue, 21 Nov 2023, Jiri Slaby (SUSE) wrote:
->>
->>> Similarly to 'buf' in the previous patch, there is no need to have a
->>> separate counter ('remaining') in srmcons_do_write(). 'count' can be
->>> used directly which simplifies the code a bit.
->>>
->>> Note that the type of the current count ('c') is changed from 'long' to
->>> 'size_t' so that:
->>> 1) it is prepared for the upcoming change of 'count's type, and
->>> 2) is unsigned.
->>>
->>> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
->>> Cc: Richard Henderson <richard.henderson@linaro.org>
->>> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
->>> Cc: Matt Turner <mattst88@gmail.com>
->>> Cc: linux-alpha@vger.kernel.org
->>> ---
->>>   arch/alpha/kernel/srmcons.c | 8 ++++----
->>>   1 file changed, 4 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
->>> index b68c5af083cd..8025e2a882ed 100644
->>> --- a/arch/alpha/kernel/srmcons.c
->>> +++ b/arch/alpha/kernel/srmcons.c
->>> @@ -92,24 +92,24 @@ static int
->>>   srmcons_do_write(struct tty_port *port, const char *buf, int count)
->>>   {
->>>       static char str_cr[1] = "\r";
->>> -    long c, remaining = count;
->>> +    size_t c;
->>>       srmcons_result result;
->>>       int need_cr;
->>> -    while (remaining > 0) {
->>> +    while (count > 0) {
->>>           need_cr = 0;
->>>           /*
->>>            * Break it up into reasonable size chunks to allow a chance
->>>            * for input to get in
->>>            */
->>> -        for (c = 0; c < min_t(long, 128L, remaining) && !need_cr; c++)
->>> +        for (c = 0; c < min_t(size_t, 128U, count) && !need_cr; c++)
->>>               if (buf[c] == '\n')
->>>                   need_cr = 1;
->>>
->>>           while (c > 0) {
->>>               result.as_long = callback_puts(0, buf, c);
->>>               c -= result.bits.c;
->>> -            remaining -= result.bits.c;
->>> +            count -= result.bits.c;
->>>               buf += result.bits.c;
->>>               /*
->>>
->>
->> The patches in the series are in pretty odd order and it was not told
->> anywhere here that the return value is unused by the callers. I'd just
->> reorder the patches.
->>
+On 21. 11. 23, 16:28, Ilpo Järvinen wrote:
+> On Tue, 21 Nov 2023, Jiri Slaby (SUSE) wrote:
 > 
-> Agreed, patch 15 needs to be before patch 14.  With that,
+>> 'str_cr' contains a single character: \n. There is no need to declare it
+> 
+> Aren't \r and \n different characters?
 
-Ah, sure, I reordered the three to have buf and count changes close to 
-each other, but didn't realize this.
+Definitely, this is a thinko -- I didn't remember properly what it 
+contains when writing the log. Fixed.
+
+> 
+>> -	static char str_cr[1] = "\r";
+>> +	static const char str_cr = '\r';
+> 
+> Thanks for making these cleanups.
+> 
+> I've reviewed all the patches in this series, so if I didn't comment a
+> patch or when you address my remarks, feel free to add:
 
 thanks,
 -- 
