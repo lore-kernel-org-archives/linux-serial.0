@@ -1,179 +1,168 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 469FC1863E;
-	Wed, 22 Nov 2023 11:28:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hOKzSTbB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DAD6C433C8;
-	Wed, 22 Nov 2023 11:28:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1700652489;
-	bh=NHKa/vsYdWoic3tnDG4NhIrwxU9ejnwncYNv1XBIf+s=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=hOKzSTbBYo09L0g7JzNNnmRkY5XZl2INwwN3NJ8liLcs3zH7xNW9YcExKAzR7yniW
-	 kE7/mG0zekuBD2Oa0KwVd8wiutHPmQ+M9iNTBXslU7+mh+bbxhNQNqV0KOwpdBF36h
-	 oUGYx38J41CXVS/sW3xMghpyHZ+K/Z8O0quSMM+AUC5HYrkNnsmVpiWMVy2DASl5Bq
-	 TuYWAoxFbA29ZrZQrMK/ZnQ7ItqKoOhbPrA1NhFQGxUVC1cK/amCnHtiagNRQNaNko
-	 RfmP1C2s1rc1DM6uPwx2fjcvez4qgC322E+diID8oAnkoPf4zL9HbwHjke3b8IBTxx
-	 qcAg1iJ4pbJLA==
-Date: Wed, 22 Nov 2023 11:28:03 +0000
-From: Lee Jones <lee@kernel.org>
-To: Florian Eckert <fe@dev.tdt.de>
-Cc: m.brock@vanmierlo.com, Eckert.Florian@googlemail.com,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, pavel@ucw.cz,
-	kabel@kernel.org, u.kleine-koenig@pengutronix.de,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-leds@vger.kernel.org
-Subject: Re: [Patch v8 6/6] leds: ledtrig-tty: add additional line state
- evaluation
-Message-ID: <20231122112803.GG173820@google.com>
-References: <20231109085038.371977-1-fe@dev.tdt.de>
- <20231109085038.371977-7-fe@dev.tdt.de>
- <39e7c892299c74821b1105a0967063ca@vanmierlo.com>
- <20231117121253.GB137434@google.com>
- <bc369f8759778c2c3b8be3a5d755064a@dev.tdt.de>
- <20231121152336.GC173820@google.com>
- <c8635ad8fd369283f33e1f9b7e4ee66d@dev.tdt.de>
+	dkim=pass (1024-bit key) header.d=kunbus.com header.i=@kunbus.com header.b="D8eTDCkU"
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2069.outbound.protection.outlook.com [40.107.22.69])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82D2E91;
+	Wed, 22 Nov 2023 03:55:55 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ea5DxXu7/gjxXBfTJsc1GiiNDAVu1dtSIATgT0diITRcHQKFoaOU8MVzpnOTIxW2EcePzVuhPk9bwRUYMsNu07+tuHvp04zEi7RNdeko4Yf/rh9KL86Fy+Yn/izkIz5+EIiYqLFaFpUurOJ4kEz4XZWUc2QQhFrqXPABnETZ1ry3kmWpwNITE0MPqkvhsJ3TvgFPloLOrafe90q4zz8S8NDtVFJXhXgv2zvhiAM2VsQyL+xTBADRPbdH9J5+e4BlOl/dlYyMkZZSj/jpj+Nw71Od9kUJoQDwE4vw2ATaf/Qnw/mOPQovRa19nUe7N/jWv7HNE+5dWAxwnUHq7KjWZQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DAZq1lqs0/i5JHU3+iZ2xT/hO6JGh13xOAcVSTw8Va4=;
+ b=KNF+TU5Iw/bBU9EVXX6bxA8a6a0M1MIMaWvc39AUJhqsgYrGjIoRZsde5FH0d+F/Zmfq/q8+YONeTqRYZP7M0thZ98mdmcBzlW+s6RnBDThrM1QKn5DcJFTaRduaZjUQUFKfX8Tz2jPruPozFg9653z5t7NVC4PzFBmguxj6vTUuwJ6L8Y0qZDnsQ2/AZeZ5q2jY/sBSrxLDzsndewxIveL/KqAayfWT94QDrc0LyKmlk4Onc/N4a99rva4MlBm6aw/Tplri9ZSEjphjhq9q6wNjGHBL/TaBTnlEJIxa3mLLjkDbc9LuQtfxM8jW9ZON0rUzPUa0vztHPPxHdASF8g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=kunbus.com; dmarc=pass action=none header.from=kunbus.com;
+ dkim=pass header.d=kunbus.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kunbus.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DAZq1lqs0/i5JHU3+iZ2xT/hO6JGh13xOAcVSTw8Va4=;
+ b=D8eTDCkUM8m297oQsylbjrxzMCXZZuqXEjwiIwi2vkybgDBjesWmoN1nFdqmG1LOUQhAwHk1lkqGzzUeNZvFRKAtFYxynpp7dIT2LFWpIzPQiX3P7jMUpGRNOqx42xV7IirsuEFOud+02+Azx4gXCtNNNrG8btMRxiVhCV5wbWw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=kunbus.com;
+Received: from VI1P193MB0413.EURP193.PROD.OUTLOOK.COM (2603:10a6:803:4e::14)
+ by PAXP193MB1904.EURP193.PROD.OUTLOOK.COM (2603:10a6:102:1c8::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7025.19; Wed, 22 Nov
+ 2023 11:55:52 +0000
+Received: from VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
+ ([fe80::653f:d0f3:e7f6:8c06]) by VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
+ ([fe80::653f:d0f3:e7f6:8c06%5]) with mapi id 15.20.7025.019; Wed, 22 Nov 2023
+ 11:55:52 +0000
+Message-ID: <a2b54b76-01ce-4aa2-a00b-e65e123ba7e9@kunbus.com>
+Date: Wed, 22 Nov 2023 12:55:49 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RESEND PATCH v4 1/7] serial: Do not hold the port lock when
+ setting rx-during-tx GPIO
+Content-Language: en-US
+To: Lino Sanfilippo <l.sanfilippo@kunbus.com>, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
+Cc: u.kleine-koenig@pengutronix.de, shawnguo@kernel.org,
+ s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com,
+ alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, lukas@wunner.de,
+ p.rosenberger@kunbus.com, stable@vger.kernel.org,
+ Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+ Hugo Villeneuve <hugo@hugovil.com>
+References: <20231119112856.11587-1-l.sanfilippo@kunbus.com>
+ <20231119112856.11587-2-l.sanfilippo@kunbus.com>
+From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+In-Reply-To: <20231119112856.11587-2-l.sanfilippo@kunbus.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR4P281CA0319.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:eb::17) To VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
+ (2603:10a6:803:4e::14)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <c8635ad8fd369283f33e1f9b7e4ee66d@dev.tdt.de>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1P193MB0413:EE_|PAXP193MB1904:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3198fe32-ef41-45c1-0acf-08dbeb51f9d6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	fTcgNzWOFz6neVuyNSKqs+kvjHE3oe5fPKFls8yWPXMpMrvDBRkOcYKfCTG2DTJYO5emVLfHWJ5eGO9Q8Jlk7r+DQbcBsPYKbXnM1vsVW/vPSafbRqhQU2cbNU8AwN3hn5fC2hrlMf+QFDRVc06lr1+N+/D9473hpqAER+wFlU5YfqsP8hIYNiIPorm90q9pdwD8l6Ao+WyZBQeawIwS0EPpA5JqC8w9iUpADWPW9KiR/RSv6GFrzoGeEWfn2oKx+E2QDyJdHr+MdyYZxJC74ml2hFeU0R3mSKJKUTKPWlNH7G+qyLhRoYS7PEUV6/yVwptlZgpzO65InQ9mwcvVDkOBTWumN+f/JnBllAyMuXA5v7Bt2zmphJBQGiY/yFfWhs1BT0nrqEoeCd9OGPeAuj+xsBmdL2vUE+myrsV/x+yvhyGVwqsgr/TJXglkSS/T/+UeyM5ORsluMcE62HHovGraRWGQvWyqoYbdfganv/cHdH0AQbwzPjprKjM+mGO9Jyk7AcAxDHUSz3Wgw8xj2FRsSTaain658SeA7L0tuXniYvZnDIoD6uphWQHN31VPyKAJkLm2/OxuJQQjFIunnKPP8CPux008si6DM8fa5z6SxjoCSCnhqqOfv4JQ4noyRcJtVXAqi8YNmz94gI7c0A==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P193MB0413.EURP193.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(366004)(346002)(396003)(39840400004)(136003)(376002)(230922051799003)(451199024)(186009)(64100799003)(1800799012)(2616005)(6512007)(6666004)(53546011)(52116002)(6506007)(83380400001)(478600001)(7416002)(2906002)(5660300002)(41300700001)(966005)(6486002)(4326008)(8676002)(8936002)(54906003)(66476007)(66556008)(66946007)(316002)(38100700002)(36756003)(31696002)(86362001)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?bmVUUi84ajRnSWNIWktQSEo3MUNBOWd4M1l1eEtlRkVQRDA1L3JIN1dLQy9B?=
+ =?utf-8?B?WTY3WGI1K3Y4T2ZhTWJpZWRERi92QXAxZEtTWmN4SkNQSy81VEpMMERWazRm?=
+ =?utf-8?B?K0RlbkhNZEMyTzR5ZUtIakM2d0hlWUYvUFZ2eHNWOTluN0JZelNmSXdQSnJZ?=
+ =?utf-8?B?WHg3c2JIbXVQdUdOc2dEeEN6WE1zcnRvME9BY2NEQWhaUmp0SWNGb0prWS9i?=
+ =?utf-8?B?b0JCK0RQU1I2T2Yvb1VXdjJJbHFQa05yNm80b2J6NldoVk0reXJXK1Mwbjhv?=
+ =?utf-8?B?akxncFZmRDlqbEJ1bVlzMWYzbFhMZ1FTYmhXRS90dmg2ZzN5K21BYUZFbFBK?=
+ =?utf-8?B?dXp4eTNxQkhQM040NzVXK0ZCN1dVY2graTU0LzA2clpwQjFvTWkyR1VQNDd4?=
+ =?utf-8?B?RGFiYU5ld0NSK0VVdjYwd2JTUlloNlIvSHNhdFR3RFUzajBEb2I4Wmx3dVpJ?=
+ =?utf-8?B?RjI3WmFuWjhjREdjTG1ERW5yaThQWkM3Ky91NE5WYURhNUJBWTdmOGJyYXBF?=
+ =?utf-8?B?ZDA3WGliOU1RS1hhQTFOUEVzSEJTZEFOSnZnd2VsQmNtYktxV2NmbHdvK3hC?=
+ =?utf-8?B?aXM4U3JQRythcjZvZVNEazI1ZlNQOENVMHJyRUU0TFI0ZFB0bElYaVRVdzl6?=
+ =?utf-8?B?WlAwOXYwWXk3N1lsOHM4MS9FeWJsMGR6STNtc1hoTXY0RUd4MVVmTlRaS09i?=
+ =?utf-8?B?Q01PRmtCY2xWZnp4dzhpV2R4emlOMUx0RSt5eUhOY0g1eWgvNk9Jck1vd1Jn?=
+ =?utf-8?B?T2JDUG5jWkR1SEtuNjlBcnRoRmtsaHNPWW9RSjlSZWpDNHJLYWVVV0FSM1da?=
+ =?utf-8?B?TURtZVpiTDlVNFg4TFJkdGFtNk11Y3FCMDBNYkw5TVUyRlhuY2d6Ti9iM1pv?=
+ =?utf-8?B?V002elczSzVvOUZXSWYrMnBFam0wYlE3MHVWUjdzUGw1NTd6MFExWDMrM1gz?=
+ =?utf-8?B?aXhNWW1YM29ndjlnckRUTVYxWFA4RUpFWFVpcm56K1QwcjNtUXUwdkhnNWF6?=
+ =?utf-8?B?VHZMVXZhbVRUVUpYaWp4OWNNWmx0Nk56OGI2T0JUek5vbkQwMmJCNG9JZ3pT?=
+ =?utf-8?B?OVJ4cFFoRXdXYWxLdWNmNjk4R0ZxYjBrUWtYUHYyYjhRc1RIZyt5NDkwMEcv?=
+ =?utf-8?B?dXUrd0hQMzZnRmJ5ZHI5ekFySkNFNFhOYTFmcDZOVWxqcDB0NG43cEM2L1Jw?=
+ =?utf-8?B?NkNYKzdlK1doeDJiM3pTWGhBeXdWeC9qeENlY2ViOWJwVmFiN1lXMTZ2ZWFI?=
+ =?utf-8?B?NzhEaEtTNkpKaksvWmZYZXNKOFZGczJNdjgyRk90U3N2RzFkM0dNWTgzQ1V4?=
+ =?utf-8?B?SElZbjRUR3Y4c25NL3VFbjZ6NE1jSS9BdHRMbjREdSsycUN0cjdZVlEwNHMr?=
+ =?utf-8?B?ejlldlVPZVl0anBqKzdnb3psYUxveUMwckJBZjJTZGp3S0xYN3huMSt0N2xq?=
+ =?utf-8?B?YlQ0OFhGSlFNRy9BYUZTanA4bjRONGlMcmZRUUtmWXNYazN1ditlbWVLWTc4?=
+ =?utf-8?B?a2dUWmEzeGZlOVhSQkw2cmg5M1dHRUpneDVHOWt6NXMra3ExNkNVd1NmcE5F?=
+ =?utf-8?B?Q1BGU1BGTDhYWHdXN2NLL0NBb1hqczQ0TUo2QTg0cVhaa0xhL3Y2SFh5aE1G?=
+ =?utf-8?B?WXNmTkN5TkdPUjBSRGRMV05lY3FkTkg3N1VRTUEzK1VZZU9MNzFnZHZpTHMw?=
+ =?utf-8?B?dUMrNmNUVmd6YzN6MTJnQi9mSWxqbkR1engzd2FKRUhrdDlxVGRyUDlpK01L?=
+ =?utf-8?B?dlpqVGRYMkdERHFMSnBQTy9UaGR3dzFYa0VackM2UWdXYWRmR2g5OER6Vytn?=
+ =?utf-8?B?ZXVFeEF4QjA1YlNacFRYaFBOZjd3OU1kVWpiMFZuS3Z2ckJ3TlNPcHlnek1M?=
+ =?utf-8?B?NmtJa1BXU21TTjAyUUdLTlRiRFY5ckU0TldkUUp6TXhLc24xYk9NeXZQMHdK?=
+ =?utf-8?B?M1RQbmY5Q0lWN2VHVSsvNGNSRWpqLzB6VWw2VWlwRUM1ZTY0SUZmMVRuT2xS?=
+ =?utf-8?B?ZWpnTnM5aEJVRjloamFKRWRvN0hyZHcyZnVnSG8wamNGTXU2RDAwdHRwOVZk?=
+ =?utf-8?B?LzJYTlpGcW1WbGprTjdqNHQ2YTBGaGtpaDZFZDhzbWcwNkFUbmV6dVRNbUhU?=
+ =?utf-8?B?THMyL3hYSVNnbFVXdHBOckJYQmZRaWVwMUxrczlsYkwyTmRULzdkdVVORW4v?=
+ =?utf-8?Q?nElebTolCb05y027JlSNR+2PlLt+s475tRaZNxx5FVyc?=
+X-OriginatorOrg: kunbus.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3198fe32-ef41-45c1-0acf-08dbeb51f9d6
+X-MS-Exchange-CrossTenant-AuthSource: VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Nov 2023 11:55:52.1313
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: aaa4d814-e659-4b0a-9698-1c671f11520b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yFKH903Erm6MHz98StTZEyK1yCGHIaGpsfKunYuhlZ0EI/boCpX9/UCJ/2feEHJscf8lz1a9Sbt5rX6taa8vMQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXP193MB1904
 
-On Wed, 22 Nov 2023, Florian Eckert wrote:
 
-> 
-> 
-> On 2023-11-21 16:23, Lee Jones wrote:
-> > On Mon, 20 Nov 2023, Florian Eckert wrote:
-> > 
-> > > 
-> > > 
-> > > On 2023-11-17 13:12, Lee Jones wrote:
-> > > > On Thu, 09 Nov 2023, m.brock@vanmierlo.com wrote:
-> > > >
-> > > > > Florian Eckert schreef op 2023-11-09 09:50:
-> > > > > > The serial tty interface also supports additional input signals, that
-> > > > > > can also be evaluated within this trigger. This change is adding the
-> > > > > > following additional input sources, which could be controlled
-> > > > > > via the '/sys/class/<leds>/' sysfs interface.
-> > > > > >
-> > > > > > Explanation:
-> > > > > > DCE = Data Communication Equipment (Modem)
-> > > > > > DTE = Data Terminal Equipment (Computer)
-> > > > > >
-> > > > > > - cts:
-> > > > > >   DCE is ready to accept data from the DTE (CTS = Clear To Send). If
-> > > > > >   the line state is detected, the LED is switched on.
-> > > > > >   If set to 0 (default), the LED will not evaluate CTS.
-> > > > > >   If set to 1, the LED will evaluate CTS.
-> > > > > >
-> > > > > > - dsr:
-> > > > > >   DCE is ready to receive and send data (DSR = Data Set Ready). If the
-> > > > > >   line state is detected, the LED is switched on.
-> > > > > >   If set to 0 (default), the LED will not evaluate DSR.
-> > > > > >   If set to 1, the LED will evaluate DSR.
-> > > > > >
-> > > > > > - dcd:
-> > > > > >   DTE is receiving a carrier from the DCE (DCD = Data Carrier Detect).
-> > > > > >   If the line state is detected, the LED is switched on.
-> > > > > >   If set to 0 (default), the LED will not evaluate DCD.
-> > > > > >   If set to 1, the LED will evaluate DCD.
-> > > > > >
-> > > > > > - rng:
-> > > > > >   DCE has detected an incoming ring signal on the telephone line
-> > > > > >   (RNG = Ring Indicator). If the line state is detected, the LED is
-> > > > > >   switched on.
-> > > > > >   If set to 0 (default), the LED will not evaluate RNG.
-> > > > > >   If set to 1, the LED will evaluate RNG.
-> > > > > >
-> > > > > > Also add an invert flag on LED blink, so that the LED blinks in the
-> > > > > > correct order.
-> > > > > >
-> > > > > > * If one off the new enabled input signals are evaluatet as 'enabled',
-> > > > > >   and data are transmitted, then the LED should first blink 'off' and
-> > > > > >   then 'on' (invert).
-> > > > > > * If all the new enabled input signals are evaluatet as 'disabled',
-> > > > > >   and data are transmitted, then the LED should first blink 'on' and
-> > > > > >   then 'off'.
-> > > > > >
-> > > > > > Signed-off-by: Florian Eckert <fe@dev.tdt.de>
-> > > > > > ---
-> > > > > >  .../ABI/testing/sysfs-class-led-trigger-tty   | 40 ++++++++++
-> > > > > >  drivers/leds/trigger/ledtrig-tty.c            | 77 ++++++++++++++++++-
-> > > > > >  2 files changed, 116 insertions(+), 1 deletion(-)
-> > > >
-> > > > [...]
-> > > >
-> > > > > Reviewed-by: Maarten Brock <m.brock@vanmierlo.com>
-> > > >
-> > > > Please snip your replies.
-> > > 
-> > > Is there anything I can do? Or do I have to do something? Please
-> > > give me
-> > > more detailed instructions
-> > 
-> > That instruction wasn't for you.
-> > 
-> > This patch is still on my INCOMING list.
-> > 
-> > Do you have Greg's blessing yet?
-> 
-> The summary of my v8:
-> 
-> The changes for the tty layer on v5 in 'drivers/tty/tty_io.c' got an
-> 'Acked-by: Greg Kroah-Hartman' [1].
-> I have always added his 'Acked-by' to the following patch series.
-> And I did not made changes to this. So I think I have his blessing
-> for this changes in his maintained tty layer.
-> 
-> The Memory leak patch I send during v7 [2] got a comment
-> from Greg, that I have to send this also to 'linux-kernel@vger-kernel.org'
-> So this should go into the stable branch [3]. This got an
-> 'Reviewed-by: Uwe Kleine-König' [4]. I add this to v8 [5].
-> So far I don't know if this has already been merged into
-> the master and then backported into the stable branches?.
-> 
-> For the changes in the ledtrig-tty driver I am still waiting for an
-> complete 'ACK' or 'NOK' whether I should change something.
-> I have added all of Greg's requested changes in v5 [6]:
-> * split this series
-> * Add the requested change
-> * Switch the driver to use completion for 'sysfs'
-> 
-> As I understand it, he handed over the review to the LED subsystem team [7].
-> 
-> I then added a few more changes that came from Maarten in v7 [8].
-> I got his 'Reviewed-by: Maarten Brock' for v8 on patch 6/6.
-> 
-> The patches 4/6 and 5/6 of the v8 still waiting for review?
 
-Thanks for the update Florian.
+On 19.11.23 12:28, Lino Sanfilippo wrote:
+> Both the imx and stm32 driver set the rx-during-tx GPIO in rs485_config().
+> Since this function is called with the port lock held, this can be an
+> problem in case that setting the GPIO line can sleep (e.g. if a GPIO
+> expander is used which is connected via SPI or I2C).
+> 
+> Avoid this issue by moving the GPIO setting outside of the port lock into
+> the serial core and thus making it a generic feature.
+> 
+> Since both setting the term and the rx-during-tx GPIO is done at the same
+> code place, move it into a common function.
 
-Sounds like you're waiting on me and/or Pavel.
+> -				       const struct serial_rs485 *rs485)
+> +/*
+> + * Set optional RS485 GPIOs for bus termination and data reception during
+> + * transmission. These GPIOs are controlled by the serial core independently
+> + * from the UART driver.
+> + */
+> +static void uart_set_rs485_gpios(struct uart_port *port,
+> +				 const struct serial_rs485 *rs485)
+>  {
+>  	if (!(rs485->flags & SER_RS485_ENABLED))
+>  		return;
+>  
+>  	gpiod_set_value_cansleep(port->rs485_term_gpio,
+>  				 !!(rs485->flags & SER_RS485_TERMINATE_BUS));
+> +	gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio,
+> +				 !!(rs485->flags & SER_RS485_RX_DURING_TX));
+>  }
+>  
 
-You're in the pile.  I'll get around to you shortly.
+Rasmus is about to add support for another RS485 related GPIO (see 
+https://lore.kernel.org/all/20231120151056.148450-3-linux@rasmusvillemoes.dk/ )
+which has to be configured both before and after port->rs485_config(). This
+does not fit very well with the idea of handling all these GPIOs in
+one function. 
 
-> [1]
-> https://lore.kernel.org/linux-leds/2023102327-rename-kosher-bf03@gregkh/#t
-> [2]
-> https://lore.kernel.org/linux-leds/2023110629-scenic-rounding-905f@gregkh/
-> [3]
-> https://lore.kernel.org/linux-leds/20231106141205.3376954-1-fe@dev.tdt.de/
-> [4] https://lore.kernel.org/linux-leds/20231106144914.bflq2jxejdxs6zjb@pengutronix.de/
-> [5] https://lore.kernel.org/linux-leds/20231109085038.371977-1-fe@dev.tdt.de/T/#m1f0c4680749812f1a933667128f73995efe66bca
-> [6]
-> https://lore.kernel.org/linux-leds/2023102341-jogger-matching-dded@gregkh/
-> [7]
-> https://lore.kernel.org/linux-leds/2023102333-skewer-reclining-8d04@gregkh/
-> [8] https://lore.kernel.org/linux-leds/bc94f31e965be6f640c286f8c8a2cf38@vanmierlo.com/
-> [9] https://lore.kernel.org/linux-leds/39e7c892299c74821b1105a0967063ca@vanmierlo.com/
+So I would like to revise this patch and send an updated version in a v5
+of this series in which the suggestion from Hugo
+(see https://lore.kernel.org/all/20231011183656.5111ba32ec0c9d43171662a1@hugovil.com/)
+is implemented to use separate functions for the GPIO configurations.
 
--- 
-Lee Jones [李琼斯]
+Regards,
+Lino
