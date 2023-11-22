@@ -1,168 +1,215 @@
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A25BC13F;
+	Wed, 22 Nov 2023 12:23:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=kunbus.com header.i=@kunbus.com header.b="D8eTDCkU"
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2069.outbound.protection.outlook.com [40.107.22.69])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82D2E91;
-	Wed, 22 Nov 2023 03:55:55 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ea5DxXu7/gjxXBfTJsc1GiiNDAVu1dtSIATgT0diITRcHQKFoaOU8MVzpnOTIxW2EcePzVuhPk9bwRUYMsNu07+tuHvp04zEi7RNdeko4Yf/rh9KL86Fy+Yn/izkIz5+EIiYqLFaFpUurOJ4kEz4XZWUc2QQhFrqXPABnETZ1ry3kmWpwNITE0MPqkvhsJ3TvgFPloLOrafe90q4zz8S8NDtVFJXhXgv2zvhiAM2VsQyL+xTBADRPbdH9J5+e4BlOl/dlYyMkZZSj/jpj+Nw71Od9kUJoQDwE4vw2ATaf/Qnw/mOPQovRa19nUe7N/jWv7HNE+5dWAxwnUHq7KjWZQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DAZq1lqs0/i5JHU3+iZ2xT/hO6JGh13xOAcVSTw8Va4=;
- b=KNF+TU5Iw/bBU9EVXX6bxA8a6a0M1MIMaWvc39AUJhqsgYrGjIoRZsde5FH0d+F/Zmfq/q8+YONeTqRYZP7M0thZ98mdmcBzlW+s6RnBDThrM1QKn5DcJFTaRduaZjUQUFKfX8Tz2jPruPozFg9653z5t7NVC4PzFBmguxj6vTUuwJ6L8Y0qZDnsQ2/AZeZ5q2jY/sBSrxLDzsndewxIveL/KqAayfWT94QDrc0LyKmlk4Onc/N4a99rva4MlBm6aw/Tplri9ZSEjphjhq9q6wNjGHBL/TaBTnlEJIxa3mLLjkDbc9LuQtfxM8jW9ZON0rUzPUa0vztHPPxHdASF8g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=kunbus.com; dmarc=pass action=none header.from=kunbus.com;
- dkim=pass header.d=kunbus.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kunbus.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DAZq1lqs0/i5JHU3+iZ2xT/hO6JGh13xOAcVSTw8Va4=;
- b=D8eTDCkUM8m297oQsylbjrxzMCXZZuqXEjwiIwi2vkybgDBjesWmoN1nFdqmG1LOUQhAwHk1lkqGzzUeNZvFRKAtFYxynpp7dIT2LFWpIzPQiX3P7jMUpGRNOqx42xV7IirsuEFOud+02+Azx4gXCtNNNrG8btMRxiVhCV5wbWw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=kunbus.com;
-Received: from VI1P193MB0413.EURP193.PROD.OUTLOOK.COM (2603:10a6:803:4e::14)
- by PAXP193MB1904.EURP193.PROD.OUTLOOK.COM (2603:10a6:102:1c8::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7025.19; Wed, 22 Nov
- 2023 11:55:52 +0000
-Received: from VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
- ([fe80::653f:d0f3:e7f6:8c06]) by VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
- ([fe80::653f:d0f3:e7f6:8c06%5]) with mapi id 15.20.7025.019; Wed, 22 Nov 2023
- 11:55:52 +0000
-Message-ID: <a2b54b76-01ce-4aa2-a00b-e65e123ba7e9@kunbus.com>
-Date: Wed, 22 Nov 2023 12:55:49 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RESEND PATCH v4 1/7] serial: Do not hold the port lock when
- setting rx-during-tx GPIO
-Content-Language: en-US
-To: Lino Sanfilippo <l.sanfilippo@kunbus.com>, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
-Cc: u.kleine-koenig@pengutronix.de, shawnguo@kernel.org,
- s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com,
- alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, lukas@wunner.de,
- p.rosenberger@kunbus.com, stable@vger.kernel.org,
- Rasmus Villemoes <linux@rasmusvillemoes.dk>,
- Hugo Villeneuve <hugo@hugovil.com>
-References: <20231119112856.11587-1-l.sanfilippo@kunbus.com>
- <20231119112856.11587-2-l.sanfilippo@kunbus.com>
-From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-In-Reply-To: <20231119112856.11587-2-l.sanfilippo@kunbus.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR4P281CA0319.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:eb::17) To VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
- (2603:10a6:803:4e::14)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PsHuEKgs"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B255C433C7;
+	Wed, 22 Nov 2023 12:22:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1700655780;
+	bh=6S2477i1eBrWi6MdXtHpYcNgUIbufoSnif77dzfTWyk=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=PsHuEKgss+IP6NdSdts7W9nwVVimGzqCAt0Amtf3T/GnYWgSfi+oMymO7ViH5LR8Z
+	 yQhqhFtmbM6R7YxLbcL+IQ+zQLh7ciJmRk4kVSDcPjN+Q/3vb+VCQNE66hMM+ZU1BY
+	 TFdkG4Ad5Kes9f+Cvoh0MDv5jm8y/LKgsDAQVpwnOzkrWQnCHn/7OYKgH6eQEQ+9OR
+	 fwsxmvroxShojZhQs7VhPRXgB+/jNUD5wsaIe8eO3sA6FYyb2v+wJ/UH5x+JkwC9qi
+	 HQY+8yiVVttoX9CP8C4C4UfGYBu50shQqtxZivV3NM4XvxneF9qRWRBm3DEzFA9ds4
+	 7IWWFHa3te4EQ==
+From: =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
+To: Sunil V L <sunilvl@ventanamicro.com>, Bjorn Helgaas <helgaas@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
+ linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, Catalin Marinas
+ <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Paul Walmsley
+ <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou
+ <aou@eecs.berkeley.edu>, "Rafael J . Wysocki" <rafael@kernel.org>, Len
+ Brown <lenb@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Anup Patel
+ <anup@brainfault.org>, Thomas Gleixner <tglx@linutronix.de>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Conor Dooley <conor.dooley@microchip.com>, Andrew
+ Jones <ajones@ventanamicro.com>, Atish Kumar Patra <atishp@rivosinc.com>,
+ Haibo Xu <haibo1.xu@intel.com>, Marc Zyngier <maz@kernel.org>
+Subject: Re: [RFC PATCH v2 06/21] RISC-V: Kconfig: Select deferred GSI probe
+ for ACPI systems
+In-Reply-To: <ZUtailOcozI9xIou@sunil-laptop>
+References: <ZTuzJ1nsicZYp+uh@sunil-laptop>
+ <20231106221606.GA264641@bhelgaas> <ZUtailOcozI9xIou@sunil-laptop>
+Date: Wed, 22 Nov 2023 13:22:56 +0100
+Message-ID: <87a5r6rn8f.fsf@all.your.base.are.belong.to.us>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1P193MB0413:EE_|PAXP193MB1904:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3198fe32-ef41-45c1-0acf-08dbeb51f9d6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	fTcgNzWOFz6neVuyNSKqs+kvjHE3oe5fPKFls8yWPXMpMrvDBRkOcYKfCTG2DTJYO5emVLfHWJ5eGO9Q8Jlk7r+DQbcBsPYKbXnM1vsVW/vPSafbRqhQU2cbNU8AwN3hn5fC2hrlMf+QFDRVc06lr1+N+/D9473hpqAER+wFlU5YfqsP8hIYNiIPorm90q9pdwD8l6Ao+WyZBQeawIwS0EPpA5JqC8w9iUpADWPW9KiR/RSv6GFrzoGeEWfn2oKx+E2QDyJdHr+MdyYZxJC74ml2hFeU0R3mSKJKUTKPWlNH7G+qyLhRoYS7PEUV6/yVwptlZgpzO65InQ9mwcvVDkOBTWumN+f/JnBllAyMuXA5v7Bt2zmphJBQGiY/yFfWhs1BT0nrqEoeCd9OGPeAuj+xsBmdL2vUE+myrsV/x+yvhyGVwqsgr/TJXglkSS/T/+UeyM5ORsluMcE62HHovGraRWGQvWyqoYbdfganv/cHdH0AQbwzPjprKjM+mGO9Jyk7AcAxDHUSz3Wgw8xj2FRsSTaain658SeA7L0tuXniYvZnDIoD6uphWQHN31VPyKAJkLm2/OxuJQQjFIunnKPP8CPux008si6DM8fa5z6SxjoCSCnhqqOfv4JQ4noyRcJtVXAqi8YNmz94gI7c0A==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P193MB0413.EURP193.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(366004)(346002)(396003)(39840400004)(136003)(376002)(230922051799003)(451199024)(186009)(64100799003)(1800799012)(2616005)(6512007)(6666004)(53546011)(52116002)(6506007)(83380400001)(478600001)(7416002)(2906002)(5660300002)(41300700001)(966005)(6486002)(4326008)(8676002)(8936002)(54906003)(66476007)(66556008)(66946007)(316002)(38100700002)(36756003)(31696002)(86362001)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?bmVUUi84ajRnSWNIWktQSEo3MUNBOWd4M1l1eEtlRkVQRDA1L3JIN1dLQy9B?=
- =?utf-8?B?WTY3WGI1K3Y4T2ZhTWJpZWRERi92QXAxZEtTWmN4SkNQSy81VEpMMERWazRm?=
- =?utf-8?B?K0RlbkhNZEMyTzR5ZUtIakM2d0hlWUYvUFZ2eHNWOTluN0JZelNmSXdQSnJZ?=
- =?utf-8?B?WHg3c2JIbXVQdUdOc2dEeEN6WE1zcnRvME9BY2NEQWhaUmp0SWNGb0prWS9i?=
- =?utf-8?B?b0JCK0RQU1I2T2Yvb1VXdjJJbHFQa05yNm80b2J6NldoVk0reXJXK1Mwbjhv?=
- =?utf-8?B?akxncFZmRDlqbEJ1bVlzMWYzbFhMZ1FTYmhXRS90dmg2ZzN5K21BYUZFbFBK?=
- =?utf-8?B?dXp4eTNxQkhQM040NzVXK0ZCN1dVY2graTU0LzA2clpwQjFvTWkyR1VQNDd4?=
- =?utf-8?B?RGFiYU5ld0NSK0VVdjYwd2JTUlloNlIvSHNhdFR3RFUzajBEb2I4Wmx3dVpJ?=
- =?utf-8?B?RjI3WmFuWjhjREdjTG1ERW5yaThQWkM3Ky91NE5WYURhNUJBWTdmOGJyYXBF?=
- =?utf-8?B?ZDA3WGliOU1RS1hhQTFOUEVzSEJTZEFOSnZnd2VsQmNtYktxV2NmbHdvK3hC?=
- =?utf-8?B?aXM4U3JQRythcjZvZVNEazI1ZlNQOENVMHJyRUU0TFI0ZFB0bElYaVRVdzl6?=
- =?utf-8?B?WlAwOXYwWXk3N1lsOHM4MS9FeWJsMGR6STNtc1hoTXY0RUd4MVVmTlRaS09i?=
- =?utf-8?B?Q01PRmtCY2xWZnp4dzhpV2R4emlOMUx0RSt5eUhOY0g1eWgvNk9Jck1vd1Jn?=
- =?utf-8?B?T2JDUG5jWkR1SEtuNjlBcnRoRmtsaHNPWW9RSjlSZWpDNHJLYWVVV0FSM1da?=
- =?utf-8?B?TURtZVpiTDlVNFg4TFJkdGFtNk11Y3FCMDBNYkw5TVUyRlhuY2d6Ti9iM1pv?=
- =?utf-8?B?V002elczSzVvOUZXSWYrMnBFam0wYlE3MHVWUjdzUGw1NTd6MFExWDMrM1gz?=
- =?utf-8?B?aXhNWW1YM29ndjlnckRUTVYxWFA4RUpFWFVpcm56K1QwcjNtUXUwdkhnNWF6?=
- =?utf-8?B?VHZMVXZhbVRUVUpYaWp4OWNNWmx0Nk56OGI2T0JUek5vbkQwMmJCNG9JZ3pT?=
- =?utf-8?B?OVJ4cFFoRXdXYWxLdWNmNjk4R0ZxYjBrUWtYUHYyYjhRc1RIZyt5NDkwMEcv?=
- =?utf-8?B?dXUrd0hQMzZnRmJ5ZHI5ekFySkNFNFhOYTFmcDZOVWxqcDB0NG43cEM2L1Jw?=
- =?utf-8?B?NkNYKzdlK1doeDJiM3pTWGhBeXdWeC9qeENlY2ViOWJwVmFiN1lXMTZ2ZWFI?=
- =?utf-8?B?NzhEaEtTNkpKaksvWmZYZXNKOFZGczJNdjgyRk90U3N2RzFkM0dNWTgzQ1V4?=
- =?utf-8?B?SElZbjRUR3Y4c25NL3VFbjZ6NE1jSS9BdHRMbjREdSsycUN0cjdZVlEwNHMr?=
- =?utf-8?B?ejlldlVPZVl0anBqKzdnb3psYUxveUMwckJBZjJTZGp3S0xYN3huMSt0N2xq?=
- =?utf-8?B?YlQ0OFhGSlFNRy9BYUZTanA4bjRONGlMcmZRUUtmWXNYazN1ditlbWVLWTc4?=
- =?utf-8?B?a2dUWmEzeGZlOVhSQkw2cmg5M1dHRUpneDVHOWt6NXMra3ExNkNVd1NmcE5F?=
- =?utf-8?B?Q1BGU1BGTDhYWHdXN2NLL0NBb1hqczQ0TUo2QTg0cVhaa0xhL3Y2SFh5aE1G?=
- =?utf-8?B?WXNmTkN5TkdPUjBSRGRMV05lY3FkTkg3N1VRTUEzK1VZZU9MNzFnZHZpTHMw?=
- =?utf-8?B?dUMrNmNUVmd6YzN6MTJnQi9mSWxqbkR1engzd2FKRUhrdDlxVGRyUDlpK01L?=
- =?utf-8?B?dlpqVGRYMkdERHFMSnBQTy9UaGR3dzFYa0VackM2UWdXYWRmR2g5OER6Vytn?=
- =?utf-8?B?ZXVFeEF4QjA1YlNacFRYaFBOZjd3OU1kVWpiMFZuS3Z2ckJ3TlNPcHlnek1M?=
- =?utf-8?B?NmtJa1BXU21TTjAyUUdLTlRiRFY5ckU0TldkUUp6TXhLc24xYk9NeXZQMHdK?=
- =?utf-8?B?M1RQbmY5Q0lWN2VHVSsvNGNSRWpqLzB6VWw2VWlwRUM1ZTY0SUZmMVRuT2xS?=
- =?utf-8?B?ZWpnTnM5aEJVRjloamFKRWRvN0hyZHcyZnVnSG8wamNGTXU2RDAwdHRwOVZk?=
- =?utf-8?B?LzJYTlpGcW1WbGprTjdqNHQ2YTBGaGtpaDZFZDhzbWcwNkFUbmV6dVRNbUhU?=
- =?utf-8?B?THMyL3hYSVNnbFVXdHBOckJYQmZRaWVwMUxrczlsYkwyTmRULzdkdVVORW4v?=
- =?utf-8?Q?nElebTolCb05y027JlSNR+2PlLt+s475tRaZNxx5FVyc?=
-X-OriginatorOrg: kunbus.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3198fe32-ef41-45c1-0acf-08dbeb51f9d6
-X-MS-Exchange-CrossTenant-AuthSource: VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Nov 2023 11:55:52.1313
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: aaa4d814-e659-4b0a-9698-1c671f11520b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yFKH903Erm6MHz98StTZEyK1yCGHIaGpsfKunYuhlZ0EI/boCpX9/UCJ/2feEHJscf8lz1a9Sbt5rX6taa8vMQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXP193MB1904
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hi Sunil!
+
+I'm trying to decipher this thread, so apologies in advance for the
+stupid questions! :-P
+
+Sunil V L <sunilvl@ventanamicro.com> writes:
+
+> Hi Bjorn,
+>
+> On Mon, Nov 06, 2023 at 04:16:06PM -0600, Bjorn Helgaas wrote:
+>> On Fri, Oct 27, 2023 at 06:25:03PM +0530, Sunil V L wrote:
+>> > On Thu, Oct 26, 2023 at 12:04:08PM -0500, Bjorn Helgaas wrote:
+>> > > On Thu, Oct 26, 2023 at 01:53:29AM +0530, Sunil V L wrote:
+>> > > > On RISC-V platforms, apart from root interrupt controllers (which
+>> > > > provide local interrupts and IPI), other interrupt controllers in =
+the
+>> > > > hierarchy are probed late. Enable this select this CONFIG option f=
+or
+>> > > > RISC-V platforms so that device drivers which connect to deferred
+>> > > > interrupt controllers can take appropriate action.
+>> > >=20
+>> > > Quite a bit of this series seems related to the question of interrupt
+>> > > controllers being probed "late".
+>> > >=20
+>> > > I don't see anything specific about *how* late this might be, but fr=
+om
+>> > > the use of -EPROBE_DEFER in individual drivers (8250_pnp explicitly,
+>> > > and acpi_register_gsi() and pnp_irq() and acpi_pci_irq_enable(), whi=
+ch
+>> > > are called from driver .probe() paths) it seems like interrupt
+>> > > controllers might be detected even after devices that use them.
+>> > >=20
+>> > > That seems like a fairly invasive change to the driver probe flow.
+>> > > If we really need to do that, I think it might merit a little more
+>> > > background as justification since we haven't had to do it for any
+>> > > other arch yet.
+>> >=20
+>> > In RISC-V, the APLIC can be a converter from wired (GSI) to MSI interr=
+upts.
+>> > Hence, especially in this mode, it has to be a platform device to use
+>> > device MSI domain. Also, according to Marc Zyngier there is no reason =
+to
+>> > probe interrupt controllers early apart from root controller. So, the
+>> > device drivers which use wired interrupts need to be probed after APLI=
+C.
+>> >=20
+>> > The PNP devices and PCI INTx GSI links use either
+>> > acpi_dev_resource_interrupt() (PNP) or acpi_register_gsi() directly
+>> > (PCI). The approach taken here is to follow the example of
+>> > acpi_irq_get() which is enhanced to return EPROBE_DEFER and several
+>> > platform device drivers which use platform_get_irq() seem to be handli=
+ng
+>> > this already.
+>>=20
+>> This series (patch 04/21 "ACPI: irq: Add support for deferred probe in
+>> acpi_register_gsi()" [1]) makes acpi_register_gsi() return
+>> -EPROBE_DEFER, which percolates up through pci_enable_device().
+>>=20
+>> Maybe that's ok, but this affects *all* PCI drivers, and it's a new
+>> case that did not occur before.  Many drivers emit warning or error
+>> messages for any pci_enable_device() failure, which you probably don't
+>> want in this case, since -EPROBE_DEFER is not really a "failure";
+>> IIUC, it just means "probe again later."
+>>
+> Yeah, I think all the drivers which need to be supported on RISC-V
+> ACPI based systems will have to support deferred probe with this scheme.
+>
+>> > Using ResourceSource dependency (mbigen uses) in the namespace as part=
+ of
+>> > Extended Interrupt Descriptor will not ensure the order since PNP/INTx
+>> > GSI devices don't work with that.
+>>=20
+>> Are these PNP/INTx GSI devices described in ACPI?  In the namespace?
+>> Or in a static table?
+>>=20
+> Yes, these are standard devices in the namespace. For ex: PNP0501(16550)
+> or PNP0C0F (PCI interrupt link devices) are in the namespace.
+>
+>> > Is there any other better way to create dependency between IO devices
+>> > and the interrupt controllers when interrupt controller itself is a
+>> > platform device? While using core_initcall() for interrupt controllers
+>> > seem to work which forces the interrupt controller to be probed first,
+>> > Marc is not in favor of that approach since it is fragile.
+>>=20
+>> I guess PCI interrupts from the PCI host bridges (PNP0A03 devices)
+>> feed into the APLIC?  And APLIC is described via MADT?  Based on this
+>> series, it looks like this:
+>>=20
+>>     acpi_init
+>>   +   acpi_riscv_init
+>>   +     riscv_acpi_aplic_platform_init
+>>   +       acpi_table_parse_madt(ACPI_MADT_TYPE_APLIC, aplic_parse_madt, =
+0)
+>>       acpi_scan_init
+>>         acpi_pci_root_init
+>>         acpi_pci_link_init
+>> 	acpi_bus_scan             # add PCI host bridges, etc
+>>=20
+>> If that's the sequence, it looks like aplic_parse_madt() should be
+>> called before the PCI host bridges are added.
+>>=20
+>> Or maybe this isn't how the APLICs are enumerated?
+>>=20
+> That's partly correct. APLIC platform devices are created prior to PCI
+> host bridges added. But the actual APLIC driver which creates the
+> irqdomain will be probed as a regular platform driver for the APLIC
+> device. The platform driver probe will happen using DD framework and
+> devices don't have any dependency on APLIC which can cause device probe
+> prior to APLIC driver probe.
+>
+> DT supports fw_devlink framework which makes it easier for IRQ devices
+> to use regular platform drivers and produces-consumers are probed in the
+> order without requiring drivers to do deferred probe. But I don't see
+> that supported for ACPI framework.  Also, the way PNP devices get added
+> there is an assumption that interrupt controller is already setup fully.
+
+AFAIU, the -EPROBE_DEFER changes are needed for GSIs (and the way the
+IMSIC/APLIC irqchip series is structured), right?
+
+There's a couple of separate pieces in play here:
+1. IMSIC-IPI (MADT init)
+2. IMSIC-MSI (MADT init, imsic_platform_acpi_probe() patch 14)
+3. APLIC-wired (platform)
+4. APLIC-MSI-bridge (platform)
+
+APLIC-MSI-bridge is pretty much a RISC-V mbigen.
+
+Some devices do not have ResourceSource parsing implemented yet. The PNP
+devices that cannot use ResourceSource (you mention PNP0501 (16550) and
+PNP0C0F (PCI interrupt link devices), do we really need to care about
+them for the RISC-V platforms using ACPI? If that would change, the
+kernel drivers can be adjusted (d44fa3d46079 ("ACPI: Add support for
+ResourceSource/IRQ domain mapping"))?
+
+I guess my question is we need to care about GSIs w/o explicit
+ResourceSource, so that APLIC-MSI-bridge can be used.
+
+GED works nicely with ResourceSource, and covers a lot of the GSI
+use-cases, no?
+
+And if we do care, then *both* 3 and 4 would need at MADT scan
+point/init, and not be a platform device (late init).
+
+From my, probably naive perspective, it's a bit weird *not* to create
+the irq domains at MADT scan time.
+
+> With this new use case in RISC-V, here are the alternatives I am aware of.
+>
+> 1) Use core_initcall() in the APLIC drivers which makes APLIC driver to
+> be probed prior to PNP or PCI INTx devices. But this was ruled out in
+> the context of DT from Marc.
+>
+> 2) Like the approach tried in this series, add support for deferred
+> probe in drivers. This will be invasive change requiring many drivers to
+> change like you pointed.
+
+Again is this only for GSIs? Patch 14 moves the IMSIC-MSI init to MADT
+for PCIe devices (which is different from DT), so it's not for PCIe
+devices. I wonder if it's a lot of churn for something that will not be
+used for RISC-V ACPI systems...
+
+A quick look at what Arm's GICv3 does, all irq domains are created at
+MADT init.
 
 
-
-On 19.11.23 12:28, Lino Sanfilippo wrote:
-> Both the imx and stm32 driver set the rx-during-tx GPIO in rs485_config().
-> Since this function is called with the port lock held, this can be an
-> problem in case that setting the GPIO line can sleep (e.g. if a GPIO
-> expander is used which is connected via SPI or I2C).
-> 
-> Avoid this issue by moving the GPIO setting outside of the port lock into
-> the serial core and thus making it a generic feature.
-> 
-> Since both setting the term and the rx-during-tx GPIO is done at the same
-> code place, move it into a common function.
-
-> -				       const struct serial_rs485 *rs485)
-> +/*
-> + * Set optional RS485 GPIOs for bus termination and data reception during
-> + * transmission. These GPIOs are controlled by the serial core independently
-> + * from the UART driver.
-> + */
-> +static void uart_set_rs485_gpios(struct uart_port *port,
-> +				 const struct serial_rs485 *rs485)
->  {
->  	if (!(rs485->flags & SER_RS485_ENABLED))
->  		return;
->  
->  	gpiod_set_value_cansleep(port->rs485_term_gpio,
->  				 !!(rs485->flags & SER_RS485_TERMINATE_BUS));
-> +	gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio,
-> +				 !!(rs485->flags & SER_RS485_RX_DURING_TX));
->  }
->  
-
-Rasmus is about to add support for another RS485 related GPIO (see 
-https://lore.kernel.org/all/20231120151056.148450-3-linux@rasmusvillemoes.dk/ )
-which has to be configured both before and after port->rs485_config(). This
-does not fit very well with the idea of handling all these GPIOs in
-one function. 
-
-So I would like to revise this patch and send an updated version in a v5
-of this series in which the suggestion from Hugo
-(see https://lore.kernel.org/all/20231011183656.5111ba32ec0c9d43171662a1@hugovil.com/)
-is implemented to use separate functions for the GPIO configurations.
-
-Regards,
-Lino
+Bj=C3=B6rn (no, not PCI-Bjorn ;-))
