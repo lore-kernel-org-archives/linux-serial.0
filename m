@@ -1,26 +1,26 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="NRAK1wIg"
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E78CD49;
-	Thu, 23 Nov 2023 05:42:49 -0800 (PST)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 58A5D20007;
-	Thu, 23 Nov 2023 13:42:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="Sl+3KmbI"
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91480D41;
+	Thu, 23 Nov 2023 05:42:48 -0800 (PST)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id BFB9920013;
+	Thu, 23 Nov 2023 13:42:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
 	t=1700746967;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=CVBDCS1NTDb3ab3cFjXMUr783QzZPSiK8Mrwk5FgGVk=;
-	b=NRAK1wIgVmhdjMNjKWvEyu+zXOcx+/cQ7TRdPSsMRujvRiMpre+IHWlYH70bj1OWEgfWuf
-	LX7cwaRXkncLiZLjfknzSmBQMlgBjoS7RlPWuqtR24GKk2rxnCTa2YPtyjNjnQLgVKBsDy
-	UP4p14COSaKs8f98niq3z+XvevTn1a7/PPguFX7hoBsoTKVjn5F6tN0DHuDd96J6ax1HX9
-	mkIS25+RS6I973GJVb2bDd+tyrIwqoASaTc3HB6mOr2r+qOHBWqug+w5gLJs6rA4VcGRMY
-	G43ylCTHCeq/R9IAtcnY8fdbtzouQE09xgUB89woDmAd+/iqUlEjZwTOhjizOA==
+	bh=Axpf3/ym3riiBLvwrKRQW22UpcQG/DDMdTP47PTMwFk=;
+	b=Sl+3KmbIFIPbuoAbyEPAZJ7bkeFwMWoGDhKagTp1l+FB/2BsVDGSyz2MqLbLUY99XAo0pu
+	gSzKSI5nk8vcf3TYBpBLDMcReKL7yAecVe8LbFJZ92I0LpXFUoUgYcUdNt9PT9/1WXmmXi
+	LIJ69jIYUCCsoHwF4QNyi/G3D7nNE/bKyDs5yn8i+br+ORMA1vin4MXGabe8m3dZwCy8+9
+	jmALJsAtT6clJ0ITl2928+jydoSuo/249jcvvPqYZ/vDptoJ7kD0h1Oga4EexnX0qfWYtg
+	AQUHXU3RczmE9lp6HzWpWLlf70tRfUdvh1re8XeRqxR6GbzhGHbwpXmxm1vBnA==
 From: =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
-Date: Thu, 23 Nov 2023 14:42:44 +0100
-Subject: [PATCH v4 6/6] tty: serial: amba-pl011: factor QDF2400 SoC erratum
- 44 out of probe
+Date: Thu, 23 Nov 2023 14:42:43 +0100
+Subject: [PATCH v4 5/6] tty: serial: amba-pl011: unindent
+ pl011_console_get_options function body
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -29,7 +29,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20231123-mbly-uart-v4-6-7f913a74ff89@bootlin.com>
+Message-Id: <20231123-mbly-uart-v4-5-7f913a74ff89@bootlin.com>
 References: <20231123-mbly-uart-v4-0-7f913a74ff89@bootlin.com>
 In-Reply-To: <20231123-mbly-uart-v4-0-7f913a74ff89@bootlin.com>
 To: Russell King <linux@armlinux.org.uk>, 
@@ -47,63 +47,79 @@ Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
 X-Mailer: b4 0.12.3
 X-GND-Sasl: theo.lebrun@bootlin.com
 
-On this platform, different vendor data is used. That requires a
-compile-time check as we access (1) a global boolean & (2) our local
-vendor data. Both symbols are accessible only when
-CONFIG_ACPI_SPCR_TABLE is enabled.
+The whole function body is encapsulated inside an if-condition. Reverse
+the if logic and early return to remove one indentation level.
 
-Factor the vendor data overriding to a separate function that is empty
-when CONFIG_ACPI_SPCR_TABLE is not defined.
+Also turn two nested ifs into a single one at the end of the function.
 
-Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 Signed-off-by: Théo Lebrun <theo.lebrun@bootlin.com>
 ---
- drivers/tty/serial/amba-pl011.c | 25 ++++++++++++++++++-------
- 1 file changed, 18 insertions(+), 7 deletions(-)
+ drivers/tty/serial/amba-pl011.c | 43 ++++++++++++++++++++---------------------
+ 1 file changed, 21 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 4185d6fd243b..f42f4a94c239 100644
+index cf9aefe2fd28..4185d6fd243b 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -2874,6 +2874,22 @@ static int pl011_resume(struct device *dev)
- 
- static SIMPLE_DEV_PM_OPS(pl011_dev_pm_ops, pl011_suspend, pl011_resume);
- 
-+#ifdef CONFIG_ACPI_SPCR_TABLE
-+static void qpdf2400_erratum44_workaround(struct device *dev,
-+					  struct uart_amba_port *uap)
-+{
-+	if (!qdf2400_e44_present)
-+		return;
-+
-+	dev_info(dev, "working around QDF2400 SoC erratum 44\n");
-+	uap->vendor = &vendor_qdt_qdf2400_e44;
-+}
-+#else
-+static void qpdf2400_erratum44_workaround(struct device *dev,
-+					  struct uart_amba_port *uap)
-+{ /* empty */ }
-+#endif
-+
- static int sbsa_uart_probe(struct platform_device *pdev)
+@@ -2369,35 +2369,34 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
+ static void pl011_console_get_options(struct uart_amba_port *uap, int *baud,
+ 				      int *parity, int *bits)
  {
- 	struct uart_amba_port *uap;
-@@ -2909,13 +2925,8 @@ static int sbsa_uart_probe(struct platform_device *pdev)
- 		return ret;
- 	uap->port.irq	= ret;
+-	if (pl011_read(uap, REG_CR) & UART01x_CR_UARTEN) {
+-		unsigned int lcr_h, ibrd, fbrd;
++	unsigned int lcr_h, ibrd, fbrd;
  
--#ifdef CONFIG_ACPI_SPCR_TABLE
--	if (qdf2400_e44_present) {
--		dev_info(&pdev->dev, "working around QDF2400 SoC erratum 44\n");
--		uap->vendor = &vendor_qdt_qdf2400_e44;
--	} else
--#endif
--		uap->vendor = &vendor_sbsa;
-+	uap->vendor = &vendor_sbsa;
-+	qpdf2400_erratum44_workaround(&pdev->dev, uap);
+-		lcr_h = pl011_read(uap, REG_LCRH_TX);
++	if (!(pl011_read(uap, REG_CR) & UART01x_CR_UARTEN))
++		return;
  
- 	uap->reg_offset	= uap->vendor->reg_offset;
- 	uap->fifosize	= 32;
+-		*parity = 'n';
+-		if (lcr_h & UART01x_LCRH_PEN) {
+-			if (lcr_h & UART01x_LCRH_EPS)
+-				*parity = 'e';
+-			else
+-				*parity = 'o';
+-		}
++	lcr_h = pl011_read(uap, REG_LCRH_TX);
+ 
+-		if ((lcr_h & 0x60) == UART01x_LCRH_WLEN_7)
+-			*bits = 7;
++	*parity = 'n';
++	if (lcr_h & UART01x_LCRH_PEN) {
++		if (lcr_h & UART01x_LCRH_EPS)
++			*parity = 'e';
+ 		else
+-			*bits = 8;
++			*parity = 'o';
++	}
+ 
+-		ibrd = pl011_read(uap, REG_IBRD);
+-		fbrd = pl011_read(uap, REG_FBRD);
++	if ((lcr_h & 0x60) == UART01x_LCRH_WLEN_7)
++		*bits = 7;
++	else
++		*bits = 8;
+ 
+-		*baud = uap->port.uartclk * 4 / (64 * ibrd + fbrd);
++	ibrd = pl011_read(uap, REG_IBRD);
++	fbrd = pl011_read(uap, REG_FBRD);
+ 
+-		if (uap->vendor->oversampling) {
+-			if (pl011_read(uap, REG_CR)
+-				  & ST_UART011_CR_OVSFACT)
+-				*baud *= 2;
+-		}
+-	}
++	*baud = uap->port.uartclk * 4 / (64 * ibrd + fbrd);
++
++	if (uap->vendor->oversampling &&
++	    (pl011_read(uap, REG_CR) & ST_UART011_CR_OVSFACT))
++		*baud *= 2;
+ }
+ 
+ static int pl011_console_setup(struct console *co, char *options)
 
 -- 
 2.42.0
