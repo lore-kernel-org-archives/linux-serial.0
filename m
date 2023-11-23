@@ -1,40 +1,40 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="aOKUW6W3"
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDC9D44
-	for <linux-serial@vger.kernel.org>; Thu, 23 Nov 2023 02:38:49 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id d2e1a72fcca58-6c39ad730aaso634737b3a.0
-        for <linux-serial@vger.kernel.org>; Thu, 23 Nov 2023 02:38:49 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="V19SrVhh"
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27DB61BE
+	for <linux-serial@vger.kernel.org>; Thu, 23 Nov 2023 02:39:45 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id 41be03b00d2f7-5bddf66ed63so531496a12.1
+        for <linux-serial@vger.kernel.org>; Thu, 23 Nov 2023 02:39:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1700735929; x=1701340729; darn=vger.kernel.org;
+        d=ventanamicro.com; s=google; t=1700735984; x=1701340784; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=JtWJos9eJonIZMcnZ3qHTztIEX4OrKTTJCiVLASavc8=;
-        b=aOKUW6W3A21AW5tgv3wI8uMaVtT978Cb3hBUE9XwGdR/FgGQDXCGGbT7xmqkcAMz+G
-         ho5YICq+hTXHgZqv6rKyFcGuDgnXx/lx2OhbPDOsK94KqOgnLwSTy21fjeNoCcfymiHv
-         IJ5q7QNg5r52oom0EjOUx27RgbKV2FFSYkjRR0Lcxqa9t5yNK28QI17tqCfNk373VhEY
-         ZUqVoYG5BttKcNqO2zlegzryfaSeNKjLxyeuE18fsoQkYoeJhqRY/fB/nQvqJOLPfcW8
-         I7ZUg+a2MhdH19owXHXPNrXjQfMnpemB13BY65+Ep5gc5S6lyQ3ZzqU/HCGwowrAZpqS
-         xQQg==
+        bh=FQ5cHR9g9Ex7S7K/JEODWQbh9BgcOaeTZEBwA4kKzCg=;
+        b=V19SrVhhpEqFvV+Amp8RUVdhnT1zkmIZsAEd24PdNeQRX420Dntqw5VMraaikgflFM
+         T38pE2KhtV3Jjjzd2m4jA71yPAdsyMya+d33Wvy+hPIjIQ5FjwgiHSTZuSjVfXbraz9O
+         MFoT16P8OBNSMT2JCbeP2DaKCXt0fghEwnM59MUsR54s4KtfIwIzTcEkZbVmBKTvJB/+
+         pulUz9f9NfMbmfnRLsPeZA/1uR8Kh7bSIZRtFwvX7vc1r4AVfJnYYUBA1e82IHZ4o0LR
+         PXOqp8IsI3u5OQgTe/GoJlsQfDQzMKpTXOz0R7yzA+u5HDyi+VJvuUhSgE6aL/vmbJsO
+         G5Ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700735929; x=1701340729;
+        d=1e100.net; s=20230601; t=1700735984; x=1701340784;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=JtWJos9eJonIZMcnZ3qHTztIEX4OrKTTJCiVLASavc8=;
-        b=sor3NYcTty+s7koEhG1in1wMCL+Pcui0+orrOVaB85BVc1XsflASbT8UhgisMl14g5
-         AeRXojTSAtZ4N2fOtjr7Wutxq1lrzmII+9RXvOqFDqDHHeFBeXpw8Rx4VWi0LwCW6mr0
-         3REyDbKX92v2IqxZP7GodSqvTWTdEToU8MTa43gqht5Yn4iEQzU6bw9zPRbMD6frhyd3
-         kL9kEro38wkTaFw9QOtknJ43YHIy6wqU54a8/sfxRXjxy3nruHi9M44hGjqq75uFhUwY
-         KgPPK6LBKEro5c3giiQDuiWNgFKg7ASdVxY17FH2jAtDXzSTTNDuX2/Lfxa4LwlA5n13
-         jQiQ==
-X-Gm-Message-State: AOJu0YyPZmKhdbCS6Et7yhMzSlkSVZkOxbRDYWgRTnHA9jAtOSxXKXwf
-	8auid+eEkjd+aytZ2SWDvJf+s5/pzNORCmS3YMTlKw==
-X-Google-Smtp-Source: AGHT+IHvryOzXWmfb9qEZWfYxLmtqn4CX5rtr/8r6s4TMLtNZgUWu2Uht2WYKwskvoiWScCKfk/YfcsxnyZ6UyDhj40=
-X-Received: by 2002:a05:6a20:be9c:b0:187:200a:713f with SMTP id
- gf28-20020a056a20be9c00b00187200a713fmr3721171pzb.23.1700735928664; Thu, 23
- Nov 2023 02:38:48 -0800 (PST)
+        bh=FQ5cHR9g9Ex7S7K/JEODWQbh9BgcOaeTZEBwA4kKzCg=;
+        b=MAqR44LfnLT1H8rOs5+OuyuNZpYnUvj9ZimH/93F4DJy6gTV6s1RB1yEX06VSAHgOP
+         hLB04ih1o9SB+mRMC2/IZRdMQwk0Tbkv33CQEUJH4mufXHibAYz2ymsOKPWA5RcPCAkJ
+         pKX2mJ1BBIQ9D+vap0lN3VEYTv+HdpNbGhoDXSrES1guhdXLkHYlDTxewajJC+NOAt7k
+         tKc3vClDJkvPUt98k1ufci2UXXD2pK+SxJNNfTmX7UGshfQDfAWvTk/1Yo+BpUQfYGk4
+         tNdVMwynQG9NwXPDMGcpiFKP9ZDRuG3bgU+COQXd+/XT3rlQLML5r6NAtt+t0SJ1WzDc
+         FWhw==
+X-Gm-Message-State: AOJu0YwjmWITCjbYaXHcWqT7OcONbWzSMh9/J0u+DNx7B4iRGxGHpsoh
+	bbkpTc3GccuqyIf1vimkaoVHr8e21hqUJusL3bygDK9Gk1sCWx6w
+X-Google-Smtp-Source: AGHT+IG99YAMevSp0jGufV7mXYc4HBJFz0NMYVlrsS8HZwf7nEtTjYohwnzETeJL+MEJrNZlmD9vq5lOCr8swdpaVqw=
+X-Received: by 2002:a17:90a:bf0b:b0:280:47ba:767a with SMTP id
+ c11-20020a17090abf0b00b0028047ba767amr3176568pjs.16.1700735984411; Thu, 23
+ Nov 2023 02:39:44 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -42,12 +42,12 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20231118033859.726692-1-apatel@ventanamicro.com>
- <20231118033859.726692-2-apatel@ventanamicro.com> <70ff59ea-378c-4d53-899a-eafffcad22fd@sifive.com>
-In-Reply-To: <70ff59ea-378c-4d53-899a-eafffcad22fd@sifive.com>
+ <20231118033859.726692-6-apatel@ventanamicro.com> <fb72e212-711e-4be9-9b92-89b2dc121476@sifive.com>
+In-Reply-To: <fb72e212-711e-4be9-9b92-89b2dc121476@sifive.com>
 From: Anup Patel <apatel@ventanamicro.com>
-Date: Thu, 23 Nov 2023 16:08:36 +0530
-Message-ID: <CAK9=C2U9aJDDd0JUhRqyLCF3dfyY5QBUrgyH+PKsT+pUKiB1xQ@mail.gmail.com>
-Subject: Re: [PATCH v4 1/5] RISC-V: Add stubs for sbi_console_putchar/getchar()
+Date: Thu, 23 Nov 2023 16:09:32 +0530
+Message-ID: <CAK9=C2W+Rb85Dm+sN=PXgN3wpbJFrvctBvC-Coi1Q_TsvthWYA@mail.gmail.com>
+Subject: Re: [PATCH v4 5/5] RISC-V: Enable SBI based earlycon support
 To: Samuel Holland <samuel.holland@sifive.com>
 Cc: Conor Dooley <conor@kernel.org>, Andrew Jones <ajones@ventanamicro.com>, 
 	linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org, 
@@ -57,57 +57,60 @@ Cc: Conor Dooley <conor@kernel.org>, Andrew Jones <ajones@ventanamicro.com>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Nov 22, 2023 at 4:06=E2=80=AFAM Samuel Holland
+On Wed, Nov 22, 2023 at 4:18=E2=80=AFAM Samuel Holland
 <samuel.holland@sifive.com> wrote:
 >
 > Hi Anup,
 >
 > On 2023-11-17 9:38 PM, Anup Patel wrote:
-> > The functions sbi_console_putchar() and sbi_console_getchar() are
-> > not defined when CONFIG_RISCV_SBI_V01 is disabled so let us add
-> > stub of these functions to avoid "#ifdef" on user side.
+> > Let us enable SBI based earlycon support in defconfigs for both RV32
+> > and RV64 so that "earlycon=3Dsbi" can be used again.
 > >
 > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
 > > Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
 > > ---
-> >  arch/riscv/include/asm/sbi.h | 5 +++++
-> >  1 file changed, 5 insertions(+)
+> >  arch/riscv/configs/defconfig      | 1 +
+> >  arch/riscv/configs/rv32_defconfig | 1 +
+> >  2 files changed, 2 insertions(+)
 > >
-> > diff --git a/arch/riscv/include/asm/sbi.h b/arch/riscv/include/asm/sbi.=
-h
-> > index 0892f4421bc4..66f3933c14f6 100644
-> > --- a/arch/riscv/include/asm/sbi.h
-> > +++ b/arch/riscv/include/asm/sbi.h
-> > @@ -271,8 +271,13 @@ struct sbiret sbi_ecall(int ext, int fid, unsigned=
- long arg0,
-> >                       unsigned long arg3, unsigned long arg4,
-> >                       unsigned long arg5);
-> >
-> > +#ifdef CONFIG_RISCV_SBI_V01
-> >  void sbi_console_putchar(int ch);
-> >  int sbi_console_getchar(void);
-> > +#else
-> > +static inline void sbi_console_putchar(int ch) { }
-> > +static inline int sbi_console_getchar(void) { return -ENOENT; }
+> > diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfi=
+g
+> > index 905881282a7c..eaf34e871e30 100644
+> > --- a/arch/riscv/configs/defconfig
+> > +++ b/arch/riscv/configs/defconfig
+> > @@ -149,6 +149,7 @@ CONFIG_SERIAL_8250_CONSOLE=3Dy
+> >  CONFIG_SERIAL_8250_DW=3Dy
+> >  CONFIG_SERIAL_OF_PLATFORM=3Dy
+> >  CONFIG_SERIAL_SH_SCI=3Dy
+> > +CONFIG_SERIAL_EARLYCON_RISCV_SBI=3Dy
+> >  CONFIG_VIRTIO_CONSOLE=3Dy
+> >  CONFIG_HW_RANDOM=3Dy
+> >  CONFIG_HW_RANDOM_VIRTIO=3Dy
+> > diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv3=
+2_defconfig
+> > index 89b601e253a6..5721af39afd1 100644
+> > --- a/arch/riscv/configs/rv32_defconfig
+> > +++ b/arch/riscv/configs/rv32_defconfig
 >
-> "The SBI call returns the byte on success, or -1 for failure."
->
-> So -ENOENT is not really an appropriate value to return here.
+> This file isn't used anymore since 72f045d19f25 ("riscv: Fixup difference=
+ with
+> defconfig"), so there's no need to update it. I'll send a patch deleting =
+it.
 
-Actually, I had -1 over here previously but based on GregKH's
-suggestion, we are now returning proper Linux error code here.
-
-Also, all users of sbi_console_getchar() onlyl expect a negative
-value upon error so better to return proper Linux error code.
+Okay, I will drop the changes in rv32_defconfig.
 
 >
 > Regards,
 > Samuel
 >
-> > +#endif
-> >  long sbi_get_mvendorid(void);
-> >  long sbi_get_marchid(void);
-> >  long sbi_get_mimpid(void);
+> > @@ -66,6 +66,7 @@ CONFIG_INPUT_MOUSEDEV=3Dy
+> >  CONFIG_SERIAL_8250=3Dy
+> >  CONFIG_SERIAL_8250_CONSOLE=3Dy
+> >  CONFIG_SERIAL_OF_PLATFORM=3Dy
+> > +CONFIG_SERIAL_EARLYCON_RISCV_SBI=3Dy
+> >  CONFIG_VIRTIO_CONSOLE=3Dy
+> >  CONFIG_HW_RANDOM=3Dy
+> >  CONFIG_HW_RANDOM_VIRTIO=3Dy
 >
 
 Regards,
