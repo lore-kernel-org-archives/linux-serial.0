@@ -1,74 +1,114 @@
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5f64:0])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49631BF;
-	Thu, 23 Nov 2023 02:38:04 -0800 (PST)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
-	(Client CN "*.hostsharing.net", Issuer "RapidSSL Global TLS RSA4096 SHA256 2022 CA1" (verified OK))
-	by bmailout1.hostsharing.net (Postfix) with ESMTPS id C2F8730000D0B;
-	Thu, 23 Nov 2023 11:38:02 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-	id B3F4C3E732; Thu, 23 Nov 2023 11:38:02 +0100 (CET)
-Date: Thu, 23 Nov 2023 11:38:02 +0100
-From: Lukas Wunner <lukas@wunner.de>
-To: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
-	Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: Re: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
- binding
-Message-ID: <20231123103802.GA30056@wunner.de>
-References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
- <20231120151056.148450-2-linux@rasmusvillemoes.dk>
- <20231122145344.GA18949@wunner.de>
- <e731c0a9-7a5c-41c3-87aa-d6937b99d01a@rasmusvillemoes.dk>
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="aOKUW6W3"
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDC9D44
+	for <linux-serial@vger.kernel.org>; Thu, 23 Nov 2023 02:38:49 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id d2e1a72fcca58-6c39ad730aaso634737b3a.0
+        for <linux-serial@vger.kernel.org>; Thu, 23 Nov 2023 02:38:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google; t=1700735929; x=1701340729; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=JtWJos9eJonIZMcnZ3qHTztIEX4OrKTTJCiVLASavc8=;
+        b=aOKUW6W3A21AW5tgv3wI8uMaVtT978Cb3hBUE9XwGdR/FgGQDXCGGbT7xmqkcAMz+G
+         ho5YICq+hTXHgZqv6rKyFcGuDgnXx/lx2OhbPDOsK94KqOgnLwSTy21fjeNoCcfymiHv
+         IJ5q7QNg5r52oom0EjOUx27RgbKV2FFSYkjRR0Lcxqa9t5yNK28QI17tqCfNk373VhEY
+         ZUqVoYG5BttKcNqO2zlegzryfaSeNKjLxyeuE18fsoQkYoeJhqRY/fB/nQvqJOLPfcW8
+         I7ZUg+a2MhdH19owXHXPNrXjQfMnpemB13BY65+Ep5gc5S6lyQ3ZzqU/HCGwowrAZpqS
+         xQQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700735929; x=1701340729;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=JtWJos9eJonIZMcnZ3qHTztIEX4OrKTTJCiVLASavc8=;
+        b=sor3NYcTty+s7koEhG1in1wMCL+Pcui0+orrOVaB85BVc1XsflASbT8UhgisMl14g5
+         AeRXojTSAtZ4N2fOtjr7Wutxq1lrzmII+9RXvOqFDqDHHeFBeXpw8Rx4VWi0LwCW6mr0
+         3REyDbKX92v2IqxZP7GodSqvTWTdEToU8MTa43gqht5Yn4iEQzU6bw9zPRbMD6frhyd3
+         kL9kEro38wkTaFw9QOtknJ43YHIy6wqU54a8/sfxRXjxy3nruHi9M44hGjqq75uFhUwY
+         KgPPK6LBKEro5c3giiQDuiWNgFKg7ASdVxY17FH2jAtDXzSTTNDuX2/Lfxa4LwlA5n13
+         jQiQ==
+X-Gm-Message-State: AOJu0YyPZmKhdbCS6Et7yhMzSlkSVZkOxbRDYWgRTnHA9jAtOSxXKXwf
+	8auid+eEkjd+aytZ2SWDvJf+s5/pzNORCmS3YMTlKw==
+X-Google-Smtp-Source: AGHT+IHvryOzXWmfb9qEZWfYxLmtqn4CX5rtr/8r6s4TMLtNZgUWu2Uht2WYKwskvoiWScCKfk/YfcsxnyZ6UyDhj40=
+X-Received: by 2002:a05:6a20:be9c:b0:187:200a:713f with SMTP id
+ gf28-20020a056a20be9c00b00187200a713fmr3721171pzb.23.1700735928664; Thu, 23
+ Nov 2023 02:38:48 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e731c0a9-7a5c-41c3-87aa-d6937b99d01a@rasmusvillemoes.dk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20231118033859.726692-1-apatel@ventanamicro.com>
+ <20231118033859.726692-2-apatel@ventanamicro.com> <70ff59ea-378c-4d53-899a-eafffcad22fd@sifive.com>
+In-Reply-To: <70ff59ea-378c-4d53-899a-eafffcad22fd@sifive.com>
+From: Anup Patel <apatel@ventanamicro.com>
+Date: Thu, 23 Nov 2023 16:08:36 +0530
+Message-ID: <CAK9=C2U9aJDDd0JUhRqyLCF3dfyY5QBUrgyH+PKsT+pUKiB1xQ@mail.gmail.com>
+Subject: Re: [PATCH v4 1/5] RISC-V: Add stubs for sbi_console_putchar/getchar()
+To: Samuel Holland <samuel.holland@sifive.com>
+Cc: Conor Dooley <conor@kernel.org>, Andrew Jones <ajones@ventanamicro.com>, 
+	linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 23, 2023 at 11:07:16AM +0100, Rasmus Villemoes wrote:
-> On 22/11/2023 15.53, Lukas Wunner wrote:
-> > But if that patch gets accepted, we'd have *three* different modes:
-> > RS-232, RS-485, RS-422.  A single GPIO seems insufficient to handle that.
-> > You'd need at least two GPIOs.
-> 
-> I don't see Crescent introducing any new gpio that needs to be handled.
-> In fact, I can't even see why from the perspective of the software that
-> rs422 isn't just rs232; there's no transmit enable pin that needs to be
-> handled. But maybe the uart driver does something different in rs422
-> mode; I assume he must have some update of some driver, since otherwise
-> the new rs422 bit should be rejected by the core. So I can't really see
-> the whole picture of that rs422 story.
+On Wed, Nov 22, 2023 at 4:06=E2=80=AFAM Samuel Holland
+<samuel.holland@sifive.com> wrote:
+>
+> Hi Anup,
+>
+> On 2023-11-17 9:38 PM, Anup Patel wrote:
+> > The functions sbi_console_putchar() and sbi_console_getchar() are
+> > not defined when CONFIG_RISCV_SBI_V01 is disabled so let us add
+> > stub of these functions to avoid "#ifdef" on user side.
+> >
+> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
+> > ---
+> >  arch/riscv/include/asm/sbi.h | 5 +++++
+> >  1 file changed, 5 insertions(+)
+> >
+> > diff --git a/arch/riscv/include/asm/sbi.h b/arch/riscv/include/asm/sbi.=
+h
+> > index 0892f4421bc4..66f3933c14f6 100644
+> > --- a/arch/riscv/include/asm/sbi.h
+> > +++ b/arch/riscv/include/asm/sbi.h
+> > @@ -271,8 +271,13 @@ struct sbiret sbi_ecall(int ext, int fid, unsigned=
+ long arg0,
+> >                       unsigned long arg3, unsigned long arg4,
+> >                       unsigned long arg5);
+> >
+> > +#ifdef CONFIG_RISCV_SBI_V01
+> >  void sbi_console_putchar(int ch);
+> >  int sbi_console_getchar(void);
+> > +#else
+> > +static inline void sbi_console_putchar(int ch) { }
+> > +static inline int sbi_console_getchar(void) { return -ENOENT; }
+>
+> "The SBI call returns the byte on success, or -1 for failure."
+>
+> So -ENOENT is not really an appropriate value to return here.
 
-The question is, could we conceivably have the need to support
-switching between the three modes RS-232, RS-485, RS-422.
-If yes, then the GPIO mux interface should probably allow for that.
+Actually, I had -1 over here previously but based on GregKH's
+suggestion, we are now returning proper Linux error code here.
 
-As a case in point, the Siemens IOT 2040 has two serial ports
-which can be set to either of those three modes.  The signals
-are routed to the same D-sub socket, but the pins used are
-different.  See page 46 and 47 of this document:
+Also, all users of sbi_console_getchar() onlyl expect a negative
+value upon error so better to return proper Linux error code.
 
-https://cache.industry.siemens.com/dl/files/658/109741658/att_899623/v1/iot2000_operating_instructions_enUS_en-US.pdf
+>
+> Regards,
+> Samuel
+>
+> > +#endif
+> >  long sbi_get_mvendorid(void);
+> >  long sbi_get_marchid(void);
+> >  long sbi_get_mimpid(void);
+>
 
-The driver for this product is 8250_exar.c.  It's an Intel-based
-product, so no devicetree, but it shows that such use cases exist.
-
-Thanks,
-
-Lukas
+Regards,
+Anup
