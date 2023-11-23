@@ -1,118 +1,129 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="EtG8K9nt"
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FB84100
-	for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 23:29:27 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id ffacd0b85a97d-332e3664665so141644f8f.0
-        for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 23:29:27 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="iwnceLNn"
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 100EA10D0
+	for <linux-serial@vger.kernel.org>; Thu, 23 Nov 2023 02:07:21 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id 2adb3069b0e04-50a6ff9881fso956988e87.1
+        for <linux-serial@vger.kernel.org>; Thu, 23 Nov 2023 02:07:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1700724565; x=1701329365; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=2RMBpqwTyjetIh1+BcmGtklvAHmEfyIHGOLxM0IItVk=;
-        b=EtG8K9ntveX2VEBHsUG1HOufFnia7QYjUdoruN8nr8tDcH5l9XZDxutool/mKAS64Q
-         mKxWegRowT288i6rXj+JODbjNIcS3pjgzcOFDE86AAk4nOsOlfFvioKVwH2Y7z9+Kpu6
-         c3a2uXQnWT2dP9gmf1RlZHcBP6IYHZQmAhZ6Ba9OC6gnh2YGy8NiW5YPYi79UQSojB6Z
-         lLvFWuqt+xcWvsj7hTCLBpAiMAdQoszJNH/SXB2qG6vKTjYSUJhh3Q3Q3uxlppUGMT5s
-         5azkNGg1qoEzc1fRyvmDWUvQjSFLdGhvLHi3CPz8Vbp3eCezPjoTpKqls2dbopB1hTaJ
-         dRtQ==
+        d=rasmusvillemoes.dk; s=google; t=1700734039; x=1701338839; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=SmXvLPzPw+DEwAZx7VriDTykjMFvpksI53NUtYqCnkc=;
+        b=iwnceLNnY/+gvIFj4IJ4gzgyXO1+KoTx7bQXYQOgXIfd3D+240n9InocZrpWqgqmCQ
+         UYAGhy/4pa7FeS1qGQc8nAXySdP5QeWK/uecfFwsMXfEFDbvGvzVNYVV6102XV/jLl6Q
+         H+6yoLHF2C2TVZ9fimeOR5g8cXJX76fVwKpn8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700724565; x=1701329365;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2RMBpqwTyjetIh1+BcmGtklvAHmEfyIHGOLxM0IItVk=;
-        b=oqqftVLMQp8oUgJqK58lpunZ/ov04ZWzWHnGliYTmV6bcsNkQAMXk6nbPfMQ+71Puq
-         /Zw3rMfwvY5yDttSl8QRYLLPNBltCb/dXP/xfO1340w4zJyCFLTA4ozD9tFcRAfgScOB
-         XVt+YHdSehXQubGuDB2E2AsOyYt0xJ4Zq3Jsxc+KvQj2n1EfZozilKU2cnG4qX/cRLIS
-         i7qzC+va3Hf9liSs2aXGYRC9sgfy7ARFB1u/HBu9Y9gfLyVlCXVgdzoPehxH47uZM2/B
-         wnh8clcXTlO4/VTx1Khifrk6IUI0pUpnwyRbqmP+A/Yi2KmbK3YYathFla15YMBPyOKQ
-         Qz+Q==
-X-Gm-Message-State: AOJu0YzByqCFXe8dhfPwtU6EkRZkWUCClKepsrOTLNSOlQ4c+gsVbhJo
-	2RS/SIC7PbVZ/keb8vTTNR1mug==
-X-Google-Smtp-Source: AGHT+IENxZQbFjO4Md44OEoK0FaFECJUVlCSi3Q9vQd2EcjXWEeut/MXhhi5Ahz6fy/w1bE9RdFDaw==
-X-Received: by 2002:a5d:45c1:0:b0:32d:701b:a585 with SMTP id b1-20020a5d45c1000000b0032d701ba585mr2662171wrs.69.1700724565535;
-        Wed, 22 Nov 2023 23:29:25 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id k24-20020a5d5258000000b00332c0aace23sm794300wrc.105.2023.11.22.23.29.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Nov 2023 23:29:25 -0800 (PST)
-Date: Thu, 23 Nov 2023 10:29:22 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: oe-kbuild@lists.linux.dev, Tony Lindgren <tony@atomide.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc: lkp@intel.com, oe-kbuild-all@lists.linux.dev,
-	"David S . Miller" <davem@davemloft.net>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Dhruva Gole <d-gole@ti.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 3/3] serial: core: Move console character device
- handling from printk
-Message-ID: <8a4c0b43-cf63-400d-b33d-d9c447b7e0b9@suswa.mountain>
-References: <20231121113203.61341-4-tony@atomide.com>
- <6933c98f-7f76-4955-ba0f-89ea340b672d@suswa.mountain>
+        d=1e100.net; s=20230601; t=1700734039; x=1701338839;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=SmXvLPzPw+DEwAZx7VriDTykjMFvpksI53NUtYqCnkc=;
+        b=WZPxs0cGo9YY6on5/NTRkPZSZlxkkDFCus/BpUVrV+bA82R0rKqijjJg/+Akj8eZjT
+         plZOLcf5Pbf+nNnchzc5pCL1SL/pEfbIi/nO0g/VrRLRDBmFUVNg31+neaxgcAAbsv4c
+         MD2b9/8wwMK5qEPIDE3/jRsfUlGj1fZJXqguNLAJWuWsd8lR9348sdEUAYbQpE7H7FFP
+         LhwJAWNa+zExTce5TowdUQ4fT53/afH062s1P2ElAyApirMZwsvOV61cxFaj832nhrXv
+         qOKdJWF/AgDypi8iJLWeFSh9iDQTGhiq+lSFEwhtrNDDXn12f7RXLL6yV3ABMgtx5w2V
+         FIuA==
+X-Gm-Message-State: AOJu0YxLLrLORvD7uuI8A/vvx51feK17I6z5iuz5SK4cYFvCkU5zgT4S
+	w6MWo3k8/eW05YLp4qkAQALM9A==
+X-Google-Smtp-Source: AGHT+IFP1CDX33ugDyxbihJtdfr48gqh31qpKq2fPD9a+2KIHJNpdkp3yd0K2LQKWo1VGhaYFEBEOw==
+X-Received: by 2002:a05:6512:2385:b0:504:3c1f:cbd1 with SMTP id c5-20020a056512238500b005043c1fcbd1mr2496310lfv.12.1700734039096;
+        Thu, 23 Nov 2023 02:07:19 -0800 (PST)
+Received: from [172.16.11.116] ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id e6-20020a196906000000b0050a5f6b5b46sm146397lfc.225.2023.11.23.02.07.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Nov 2023 02:07:18 -0800 (PST)
+Message-ID: <e731c0a9-7a5c-41c3-87aa-d6937b99d01a@rasmusvillemoes.dk>
+Date: Thu, 23 Nov 2023 11:07:16 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6933c98f-7f76-4955-ba0f-89ea340b672d@suswa.mountain>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
+ binding
+Content-Language: en-US, da
+To: Lukas Wunner <lukas@wunner.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
+ Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
+ <20231120151056.148450-2-linux@rasmusvillemoes.dk>
+ <20231122145344.GA18949@wunner.de>
+From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+In-Reply-To: <20231122145344.GA18949@wunner.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Nov 23, 2023 at 10:24:24AM +0300, Dan Carpenter wrote:
-> Hi Tony,
+On 22/11/2023 15.53, Lukas Wunner wrote:
+> On Mon, Nov 20, 2023 at 04:10:54PM +0100, Rasmus Villemoes wrote:
+>> Some boards are capable of both rs232 and rs485, and control which
+>> external terminals are active via a gpio-controlled mux. Allow
+>> describing that gpio in DT so that the kernel can transparently handle
+>> the proper setting when the uart is switched between rs232 and rs485
+>> modes.
 > 
-> kernel test robot noticed the following build warnings:
+> Crescent CY Hsieh (+cc) is in parallel trying to add an RS-422 mode bit
+> to struct serial_rs485:
 > 
-> https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> https://lore.kernel.org/all/20231121095122.15948-1-crescentcy.hsieh@moxa.com/
 > 
-> url:    https://github.com/intel-lab-lkp/linux/commits/Tony-Lindgren/printk-Save-console-options-for-add_preferred_console_match/20231121-193809
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
-> patch link:    https://lore.kernel.org/r/20231121113203.61341-4-tony%40atomide.com
-> patch subject: [PATCH v3 3/3] serial: core: Move console character device handling from printk
-> config: parisc-randconfig-r081-20231122 (https://download.01.org/0day-ci/archive/20231122/202311221437.5Gil0Pml-lkp@intel.com/config)
-> compiler: hppa-linux-gcc (GCC) 13.2.0
-> reproduce: (https://download.01.org/0day-ci/archive/20231122/202311221437.5Gil0Pml-lkp@intel.com/reproduce)
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Reported-by: Dan Carpenter <error27@gmail.com>
-> | Closes: https://lore.kernel.org/r/202311221437.5Gil0Pml-lkp@intel.com/
-> 
-> smatch warnings:
-> drivers/tty/serial/serial_base_bus.c:266 serial_base_add_preferred_console() error: uninitialized symbol 'nmbr_match'.
-> drivers/tty/serial/serial_base_bus.c:265 serial_base_add_preferred_console() error: uninitialized symbol 'char_match'.
-> 
-> vim +/nmbr_match +266 drivers/tty/serial/serial_base_bus.c
-> 
-> e4ebdcd790e0f3 Tony Lindgren 2023-11-21  261  int serial_base_add_preferred_console(struct uart_driver *drv,
-> e4ebdcd790e0f3 Tony Lindgren 2023-11-21  262  				      struct uart_port *port)
-> e4ebdcd790e0f3 Tony Lindgren 2023-11-21  263  {
-> e4ebdcd790e0f3 Tony Lindgren 2023-11-21  264  	const char *port_match __free(kfree);
-> b1b8726ec3f40b Tony Lindgren 2023-11-21 @265  	const char *char_match __free(kfree);
-> b1b8726ec3f40b Tony Lindgren 2023-11-21 @266  	const char *nmbr_match __free(kfree);
-> 
-> These need to be initialized to NULL.
-> 
-> 	const char *char_match __free(kfree) = NULL;
-> 
+> I don't know whether that makes sense at all (I had thought RS-422 is
+> the same as RS-485 with full-duplex, i.e. SER_RS485_ENABLED plus
+> SER_RS485_RX_DURING_TX).
 
-Let's add a todo to make checkpatch warn about this.
+No, that latter case is as I understand it usually called "4-wire
+rs485", while rs-422 is an entirely different animal, and the wiring is
+in some sense actually closer to rs-232. rs-422 is full-duplex, with all
+the slave device's tx-lines connected to the master's rx, and the
+master's tx connected to the slaves' rx (ok, it uses differential
+signalling, so there are four wires involved and not two as in rs-232).
+But I'm no expert, and there doesn't seem to be entirely consistent
+terminology.
 
-KTODO: make checkpatch warn about __free() functions without an initializer
+> 
+> But if that patch gets accepted, we'd have *three* different modes:
+> RS-232, RS-485, RS-422.  A single GPIO seems insufficient to handle that.
+> You'd need at least two GPIOs.
 
-regards,
-dan carpenter
+I don't see Crescent introducing any new gpio that needs to be handled.
+In fact, I can't even see why from the perspective of the software that
+rs422 isn't just rs232; there's no transmit enable pin that needs to be
+handled. But maybe the uart driver does something different in rs422
+mode; I assume he must have some update of some driver, since otherwise
+the new rs422 bit should be rejected by the core. So I can't really see
+the whole picture of that rs422 story.
 
+>> --- a/Documentation/devicetree/bindings/serial/rs485.yaml
+>> +++ b/Documentation/devicetree/bindings/serial/rs485.yaml
+>> @@ -61,6 +61,11 @@ properties:
+>>        the active state enables RX during TX.
+>>      maxItems: 1
+>>  
+>> +  rs485-mux-gpios:
+>> +    description: GPIO pin to control muxing of the SOC signals to the RS485
+>> +      transceiver.
+>> +    maxItems: 1
+> 
+> The description doesn't really add much to the name "rs485-mux-gpios".
+> 
+> Suggestion:
+> 
+>     description: selects whether the UART is connect to an RS-232 driver (low)
+>       or an RS-485 transceiver (high)
+
+Indeed, I wasn't really able to come up with a good description. Thanks,
+that's much better.
+
+Rasmus
 
