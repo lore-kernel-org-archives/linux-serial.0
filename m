@@ -1,114 +1,74 @@
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EBB53FE28;
+	Thu, 23 Nov 2023 17:22:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="lTPit1XT"
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099F8D5A
-	for <linux-serial@vger.kernel.org>; Thu, 23 Nov 2023 06:45:17 -0800 (PST)
-Received: by mail-il1-x132.google.com with SMTP id e9e14a558f8ab-359c22c44d6so3276705ab.2
-        for <linux-serial@vger.kernel.org>; Thu, 23 Nov 2023 06:45:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1700750716; x=1701355516; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kuvt9r8KOWX1BiAT/c30zg7sLb0Byjj11/nVghaWWms=;
-        b=lTPit1XT2HPqY99IpgW4zsjpbwYHf/Zug/4mebpjf2E+kTgsUo+53jFl4ThIo3CAQP
-         IQheI+Q7o7JH8qAJtqSq2+KkdmzpyAU8Jw4fhMuChHoRJjI1PeN2xMKUvw2n02Kiu727
-         HpiytbvdCGbzfbep0y5hKZbLFEhwjgAHNkXBNGiTv1BMi+JTDDSbV6vJOoGT26Lw5ePd
-         1anxAif/020seGyo7abiSeIo6U3Jbrf7dRStSZQQcXbH9UVU8+vpbmPliP9tFuSGeeuX
-         qgZLOb5SwzwvrxV6ANM3cHDpSre2XID0uAlgU4B3WHJEoXDaGx1xheMtBHzZ/t+9SrAH
-         9wEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700750716; x=1701355516;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kuvt9r8KOWX1BiAT/c30zg7sLb0Byjj11/nVghaWWms=;
-        b=qHigDIlQR4NQo7L5xpXVh0nGJ2WHLhBreCZyq90o2u5+c1EzlCfU1iZ6CtOwd6GrJT
-         X3qXnC88Hy1FQH8xQbfUTmukfDvKcghxmcSKWDa5DqGIar3KtI0x9cJvyeS5B6OdOApY
-         /Ll4Q9DS60j5WR5OtWjOoLI6RNAfKwUCC0Zq5UabDGgBo2Vg01r4IgEGhzSB5JnH9LJI
-         N1iEkpN0Pyts5q6DxE0D28gI/iR2/AHclvXgWT87jy35Azgx/30r7MOx0mVQAb+5/xjj
-         y8D5rlioL+DYA2xfm2ryggQhqP5HGO0y+DxZROa6u05PcWxkl16U96nik+VOYXmNNyl+
-         H6ZQ==
-X-Gm-Message-State: AOJu0YyBsZwNHy0C0ji3HlOQeIXUbwdgBeN64ElX9uT+CajxSfgwpiSc
-	Q2+vg29PFAbLYQvvn329+VxBiA==
-X-Google-Smtp-Source: AGHT+IE6CculVp3F9Rtnr1OLtgszPmbMIieHBv875RrP/HPj2Ga5BLKHDujelRLOHcuKwZeQTRYzTQ==
-X-Received: by 2002:a05:6e02:1285:b0:34f:70ec:d4cf with SMTP id y5-20020a056e02128500b0034f70ecd4cfmr5459643ilq.8.1700750716253;
-        Thu, 23 Nov 2023 06:45:16 -0800 (PST)
-Received: from ?IPV6:2605:a601:adae:4500:8976:165c:1b8d:1b61? ([2605:a601:adae:4500:8976:165c:1b8d:1b61])
-        by smtp.gmail.com with ESMTPSA id s2-20020a056e021a0200b0035aeaed5112sm391231ild.84.2023.11.23.06.45.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Nov 2023 06:45:16 -0800 (PST)
-Message-ID: <313e9a3e-0fe5-45e1-a164-1d55fb52898a@sifive.com>
-Date: Thu, 23 Nov 2023 08:45:13 -0600
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="yJCoIenX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 459C1C433CA;
+	Thu, 23 Nov 2023 17:22:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1700760161;
+	bh=szWvQ2xaG1q7ZyMfdMxvBZfMaG124AsSH+NxXcXWP/Y=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=yJCoIenXapRryyBsrj7fHwYAWpve/XSh6zQAf5HyOB1XR7sqqlrA6eU+aW0x/ZwjK
+	 9UHpSoQTTnhcZCeIS/YYi5YKHyv/6o1LzL7vmUzRcwRg23nZvD8+V+iZNR8BnmL/34
+	 kdFqX6LRECw7of24oaiOZLRkh/YsJWb2lROOoNP0=
+Date: Thu, 23 Nov 2023 14:06:28 +0000
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Florian Eckert <fe@dev.tdt.de>
+Cc: Eckert.Florian@googlemail.com, jirislaby@kernel.org, pavel@ucw.cz,
+	lee@kernel.org, kabel@kernel.org, u.kleine-koenig@pengutronix.de,
+	m.brock@vanmierlo.com, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [Patch v8 2/6] leds: ledtrig-tty: free allocated ttyname buffer
+ on deactivate
+Message-ID: <2023112356-amount-undertook-cdb2@gregkh>
+References: <20231109085038.371977-1-fe@dev.tdt.de>
+ <20231109085038.371977-3-fe@dev.tdt.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 1/5] RISC-V: Add stubs for
- sbi_console_putchar/getchar()
-Content-Language: en-US
-To: Anup Patel <apatel@ventanamicro.com>
-Cc: Conor Dooley <conor@kernel.org>, Andrew Jones <ajones@ventanamicro.com>,
- linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
- Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley
- <paul.walmsley@sifive.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>
-References: <20231118033859.726692-1-apatel@ventanamicro.com>
- <20231118033859.726692-2-apatel@ventanamicro.com>
- <70ff59ea-378c-4d53-899a-eafffcad22fd@sifive.com>
- <CAK9=C2U9aJDDd0JUhRqyLCF3dfyY5QBUrgyH+PKsT+pUKiB1xQ@mail.gmail.com>
-From: Samuel Holland <samuel.holland@sifive.com>
-In-Reply-To: <CAK9=C2U9aJDDd0JUhRqyLCF3dfyY5QBUrgyH+PKsT+pUKiB1xQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20231109085038.371977-3-fe@dev.tdt.de>
 
-Hi Anup,
-
-On 2023-11-23 4:38 AM, Anup Patel wrote:
-> On Wed, Nov 22, 2023 at 4:06â€¯AM Samuel Holland
-> <samuel.holland@sifive.com> wrote:
->> On 2023-11-17 9:38 PM, Anup Patel wrote:
->>> The functions sbi_console_putchar() and sbi_console_getchar() are
->>> not defined when CONFIG_RISCV_SBI_V01 is disabled so let us add
->>> stub of these functions to avoid "#ifdef" on user side.
->>>
->>> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
->>> Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
->>> ---
->>>  arch/riscv/include/asm/sbi.h | 5 +++++
->>>  1 file changed, 5 insertions(+)
->>>
->>> diff --git a/arch/riscv/include/asm/sbi.h b/arch/riscv/include/asm/sbi.h
->>> index 0892f4421bc4..66f3933c14f6 100644
->>> --- a/arch/riscv/include/asm/sbi.h
->>> +++ b/arch/riscv/include/asm/sbi.h
->>> @@ -271,8 +271,13 @@ struct sbiret sbi_ecall(int ext, int fid, unsigned long arg0,
->>>                       unsigned long arg3, unsigned long arg4,
->>>                       unsigned long arg5);
->>>
->>> +#ifdef CONFIG_RISCV_SBI_V01
->>>  void sbi_console_putchar(int ch);
->>>  int sbi_console_getchar(void);
->>> +#else
->>> +static inline void sbi_console_putchar(int ch) { }
->>> +static inline int sbi_console_getchar(void) { return -ENOENT; }
->>
->> "The SBI call returns the byte on success, or -1 for failure."
->>
->> So -ENOENT is not really an appropriate value to return here.
+On Thu, Nov 09, 2023 at 09:50:34AM +0100, Florian Eckert wrote:
+> The ttyname buffer for the ledtrig_tty_data struct is allocated in the
+> sysfs ttyname_store() function. This buffer must be released on trigger
+> deactivation. This was missing and is thus a memory leak.
 > 
-> Actually, I had -1 over here previously but based on GregKH's
-> suggestion, we are now returning proper Linux error code here.
+> While we are at it, the tty handler in the ledtrig_tty_data struct should
+> also be returned in case of the trigger deactivation call.
 > 
-> Also, all users of sbi_console_getchar() onlyl expect a negative
-> value upon error so better to return proper Linux error code.
+> Fixes: fd4a641ac88f ("leds: trigger: implement a tty trigger")
+> Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
+> ---
+>  drivers/leds/trigger/ledtrig-tty.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/leds/trigger/ledtrig-tty.c b/drivers/leds/trigger/ledtrig-tty.c
+> index 8ae0d2d284af..3e69a7bde928 100644
+> --- a/drivers/leds/trigger/ledtrig-tty.c
+> +++ b/drivers/leds/trigger/ledtrig-tty.c
+> @@ -168,6 +168,10 @@ static void ledtrig_tty_deactivate(struct led_classdev *led_cdev)
+>  
+>  	cancel_delayed_work_sync(&trigger_data->dwork);
+>  
+> +	kfree(trigger_data->ttyname);
+> +	tty_kref_put(trigger_data->tty);
+> +	trigger_data->tty = NULL;
+> +
 
-Alright, makes sense to me.
+This should be a stand-alone patch with a proper cc: stable tag added as
+well so that it can be accepted now, as it is independent of this new
+feature you are adding.
 
-Regards,
-Samuel
+thanks,
 
+greg k-h
