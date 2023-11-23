@@ -1,201 +1,157 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Ht+Cbf1i"
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CD23D43
-	for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 22:25:38 -0800 (PST)
-Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
-	by mailout3.samsung.com (KnoxPortal) with ESMTP id 20231123062535epoutp0389c5afc583a244ece9559d39518f7bfe~aLH_IaV3z2651226512epoutp03W
-	for <linux-serial@vger.kernel.org>; Thu, 23 Nov 2023 06:25:35 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20231123062535epoutp0389c5afc583a244ece9559d39518f7bfe~aLH_IaV3z2651226512epoutp03W
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1700720735;
-	bh=GJrAs6iFIsJav6Xylce3kT+oM93Qos0V4uOMkTsSCdA=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=Ht+Cbf1iKdsmQaLbD7RXNn7W3cUgIasWpnot6p4mxK/5oc18Og0YWHb8YfQdZgTiN
-	 XpbGr8J9bJ4Rs5bMZJsqajLY8weB7WMP78YNHHzg5Gjq0KbuLXKeAQs2cQLWB5MgGt
-	 CY9jbr+WvrpMoXPIU3j7DY1HfSI3mJ5QCUp2Tw48=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-	epcas2p4.samsung.com (KnoxPortal) with ESMTP id
-	20231123062534epcas2p422dbbbed9578619788f36e5a0efffc59~aLH9bCXFg2378423784epcas2p4o;
-	Thu, 23 Nov 2023 06:25:34 +0000 (GMT)
-Received: from epsmges2p1.samsung.com (unknown [182.195.36.88]) by
-	epsnrtp4.localdomain (Postfix) with ESMTP id 4SbSly3PCKz4x9QD; Thu, 23 Nov
-	2023 06:25:34 +0000 (GMT)
-Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
-	epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
-	5C.BB.10006.E50FE556; Thu, 23 Nov 2023 15:25:34 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-	epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
-	20231123062533epcas2p3e00ede8234985d615fce4f8b45885baa~aLH8l9aD80915409154epcas2p34;
-	Thu, 23 Nov 2023 06:25:33 +0000 (GMT)
-Received: from epsmgms1p2new.samsung.com (unknown [182.195.42.42]) by
-	epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-	20231123062533epsmtrp1928ccc5fd83dee38d191caa3ab27b711~aLH8k5CLi3275132751epsmtrp1n;
-	Thu, 23 Nov 2023 06:25:33 +0000 (GMT)
-X-AuditID: b6c32a45-179ff70000002716-ee-655ef05eed1a
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-	epsmgms1p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-	0E.33.08817.D50FE556; Thu, 23 Nov 2023 15:25:33 +0900 (KST)
-Received: from [10.229.8.168] (unknown [10.229.8.168]) by
-	epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20231123062533epsmtip160917009d955fe1deb7cb493968c99e3~aLH8PutH70841408414epsmtip15;
-	Thu, 23 Nov 2023 06:25:33 +0000 (GMT)
-Message-ID: <f49b77f8-a30d-0923-feba-07c8945f334e@samsung.com>
-Date: Thu, 23 Nov 2023 15:22:45 +0900
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="VotlnwEU"
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7C74D42
+	for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 23:24:29 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id ffacd0b85a97d-32dff08bbdbso344406f8f.2
+        for <linux-serial@vger.kernel.org>; Wed, 22 Nov 2023 23:24:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1700724268; x=1701329068; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
+         :to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=glDIJBHGxZ+W4YAgV26CnXbvxUmxQYnGxfvLbwvG8mM=;
+        b=VotlnwEUPAPSNrVce9L9AVGLf5SFJvWaMvTA2E2JCOUHeckgiC3XFRljojkbyVGVip
+         TkVTJolTvWm20eZG2/88munaQ11lJDRVUhpjbEupzc6MlsO6sIhKGriEdHEjv9IR81JW
+         V+8zOiM1+gDr0XvI3DSZLPuxKljpyOBsGJOn89YqpNd8hlFkeIpKmhDKxEiIrRVoTCQ3
+         OuhdeH27Jrgm6v03216SCWCI/wOPSXKdc7nOxYyl8ZO0SP34S3yrpHju10EK7u+xVqRu
+         LFEWRAQSQYEgwQ+Zt2JfSWy6uUf30p5Sp9U5O8tdQAmKndMUCMjsgRArNvLqdop8mdIU
+         zMyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700724268; x=1701329068;
+        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
+         :to:date:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=glDIJBHGxZ+W4YAgV26CnXbvxUmxQYnGxfvLbwvG8mM=;
+        b=M2VR4lscQCjXMkvfU+pUZoEpw0unlo9orgChEhRva2Y2Sf6jdrkNh+7FrVcSGxrTgG
+         Dv0ry+qepgPD7QuPpw7HHGk7Rbugt4i1QoRdi5oJa35957MuIbnEGh5poNtR2lOKT2Q6
+         0XAJ11VNhb/CqFComi/mdGrMXOBLhiE9olgINOkR6Usp62kn34dIvKKcIQDbz5hx+OEC
+         hM3xvl08AIYIa7fJmBf1bSuTRkbqTEkQrqeKFd5f47bHiznYI1y+iLL0j06i7XvpDRSv
+         Yr5J2rl7fjY0cqMPvbVmgWbXbfNUNTFoqk+nvtBVd62SLtuEEoV52TQB37PEzHVEbpKG
+         rG4A==
+X-Gm-Message-State: AOJu0YwfqkfGO1lXNBZUvGFQIDoMoUbvy1TCV6XpMkbrYqGTM1xCkEWi
+	Jv/pxyhiovdjLhl49lYLBZxXzA==
+X-Google-Smtp-Source: AGHT+IEKgSAvwU+quZwntLL8CoIH9KhcpaTa8/JJZaDNw1Vw3y6oWRpa7BZZ0Za9QkIuhpqBWf+L6Q==
+X-Received: by 2002:a5d:5885:0:b0:332:d504:c138 with SMTP id n5-20020a5d5885000000b00332d504c138mr2189978wrf.1.1700724268131;
+        Wed, 22 Nov 2023 23:24:28 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id e11-20020a5d500b000000b0032d2489a399sm778289wrt.49.2023.11.22.23.24.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Nov 2023 23:24:27 -0800 (PST)
+From: Dan Carpenter <dan.carpenter@linaro.org>
+X-Google-Original-From: Dan Carpenter <dan.carpenter@oracle.com>
+Date: Thu, 23 Nov 2023 10:24:24 +0300
+To: oe-kbuild@lists.linux.dev, Tony Lindgren <tony@atomide.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>
+Cc: lkp@intel.com, oe-kbuild-all@lists.linux.dev,
+	"David S . Miller" <davem@davemloft.net>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Dhruva Gole <d-gole@ti.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] serial: core: Move console character device
+ handling from printk
+Message-ID: <6933c98f-7f76-4955-ba0f-89ea340b672d@suswa.mountain>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
-	Thunderbird/102.11.0
-Subject: Re: [PATCH v2 10/12] pinctrl: samsung: add exynosautov920 pinctrl
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Alim Akhtar
-	<alim.akhtar@samsung.com>, Rob Herring <robh+dt@kernel.org>, Conor Dooley
-	<conor+dt@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Sylwester
-	Nawrocki <s.nawrocki@samsung.com>, Linus Walleij <linus.walleij@linaro.org>,
-	Thierry Reding <thierry.reding@gmail.com>, Uwe Kleine-K?nig
-	<u.kleine-koenig@pengutronix.de>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Content-Language: en-US
-From: Jaewon Kim <jaewon02.kim@samsung.com>
-In-Reply-To: <8d4e3fcb-2e4a-4580-9aa2-5acbed961c3f@linaro.org>
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrFJsWRmVeSWpSXmKPExsWy7bCmuW7ch7hUgyc9EhYP5m1js1iz9xyT
-	xfwj51gtmhevZ7N4N1fGYu/rrewWU/4sZ7LY9Pgaq8Xm+X8YLS7vmsNmcffuKkaLGef3MVmc
-	WdzLbtG69wi7xeE37awWP3fNY7FYtQuo7vbEyYwOQh47Z91l99i0qpPN4861PWwe++euYffY
-	vKTeo/+vgUffllWMHp83yQVwRGXbZKQmpqQWKaTmJeenZOal2yp5B8c7x5uaGRjqGlpamCsp
-	5CXmptoqufgE6Lpl5gB9oqRQlphTChQKSCwuVtK3synKLy1JVcjILy6xVUotSMkpMC/QK07M
-	LS7NS9fLSy2xMjQwMDIFKkzIzti0+x57wT6BinvzH7I0MH7i6WLk5JAQMJHYMnsfWxcjF4eQ
-	wA5Giearr5kgnE+MEu3nrkI53xglns1fwAzT0rjlGTtEYi+jxOKNB5khnNeMEj3vehlBqngF
-	7CQufQCZxcnBIqAqsWfLLmaIuKDEyZlPWEBsUYFoidZl99lAbGEBL4lTO/ewgtgiAveZJV63
-	VYMMZRZ4wCgx99xXsKHMAuISt57MBxvKJqAt8X39YqAGDg5OoGU3pthBlMhLNG+dDXaQhMAb
-	Doknj26yQ5ztIrFl83kmCFtY4tXxLVBxKYmX/W1QdrZE+/Q/rBB2hcTFDbPZIGxjiVnP2hlB
-	djELaEqs36UPYkoIKEscucUCsZZPouPwX3aIMK9ER5sQRKOaxP2p56CGyEhMOrIS6gAPiebJ
-	09kmMCrOQgqUWUh+nIXkmVkIexcwsqxiFEstKM5NTy02KjCER3Zyfu4mRnAi13LdwTj57Qe9
-	Q4xMHIyHGCU4mJVEeLewx6QK8aYkVlalFuXHF5XmpBYfYjQFRs1EZinR5HxgLskriTc0sTQw
-	MTMzNDcyNTBXEue91zo3RUggPbEkNTs1tSC1CKaPiYNTqoEpptzhwovlbj8NQ78VvpjVwG7i
-	/H6hqfyvZVMC2DZe/Xj7gU8Dcwh/87pY523P/9W58vJVLmzecE9C5ZSna8Chiv0tQTxeM84p
-	97+Ovnhy0waHHOEHZsqBbfXqsbx+Fkqf/0W6+e/5dGBOqXmk+MG/B2ex109VlnZ+9CD/3oLT
-	UTGbLp/mub46pviL1WuuTftcN+y+yliQ2p3Unn/c1DHJ2cV5l++k/v/HtuoVXpDynbL26OZF
-	28o2rZ7j3mm9fpN1IVe5x0+Vkp+MDzoyOK3d+Ar31St9YFzHc7RrR5HwyQUvPl185Oe69/Ws
-	OI7rpefDjzzdF5Vn+sbbv7nzvuivcxrzU1zmPhGeMv3/u8/rlFiKMxINtZiLihMBr0wwjW0E
-	AAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrDIsWRmVeSWpSXmKPExsWy7bCSnG7sh7hUg+7fuhYP5m1js1iz9xyT
-	xfwj51gtmhevZ7N4N1fGYu/rrewWU/4sZ7LY9Pgaq8Xm+X8YLS7vmsNmcffuKkaLGef3MVmc
-	WdzLbtG69wi7xeE37awWP3fNY7FYtQuo7vbEyYwOQh47Z91l99i0qpPN4861PWwe++euYffY
-	vKTeo/+vgUffllWMHp83yQVwRHHZpKTmZJalFunbJXBlbNp9j71gn0DFvfkPWRoYP/F0MXJy
-	SAiYSDRuecbexcjFISSwm1Hi6owzjBAJGYnlz/rYIGxhifstR1ghil4yShxYf4gFJMErYCdx
-	6cNrJhCbRUBVYs+WXcwQcUGJkzOfgNWICkRLrP58gRXEFhbwkji1cw/YIBGBx8wSD6f+ZwZx
-	mAUeMEosn/QIasVWFonJF7aD3cEsIC5x68l8sBVsAtoS39cvBiri4OAEWn1jih1EiZlE19Yu
-	qHJ5ieats5knMArNQnLILCSTZiFpmYWkZQEjyypGydSC4tz03GLDAqO81HK94sTc4tK8dL3k
-	/NxNjOAI1tLawbhn1Qe9Q4xMHIyHGCU4mJVEeLewx6QK8aYkVlalFuXHF5XmpBYfYpTmYFES
-	5/32ujdFSCA9sSQ1OzW1ILUIJsvEwSnVwOTAzLfy2O0zdnNtn1efzJtzzkLIb4WN9x+5Aw2f
-	r3N/S1v94B5v+aHtH/8d9swVPnmm3lrxxqUtdzwtqxmP1VtFlIbGe2+8YixjIzp9261N+pNf
-	Off4q+1eH71ptdDSPAcBN+mHH45MiukSyd5aMJ/dRih/5+VJz7VeO9We0vPi2vZgitWf7zPz
-	y9TXqjD/nCy576njcfGjYisnqXNzhi91r7Sw14rsZPFkyl3588a6sFMqsXsVUn0qijJY9Wdd
-	kX298CH//b6VFTWZHP3pBauNJOJ9tKZ4rq3RYNLx5Jv42DhZrSRgmt3jzoqJ9v5zhb6wr+L4
-	IHLszo3E/r8Mpe29xwTr7Fekp90/uepBthJLcUaioRZzUXEiACeeSixPAwAA
-X-CMS-MailID: 20231123062533epcas2p3e00ede8234985d615fce4f8b45885baa
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20231115095856epcas2p1c3ee85750828bec2ee4ab0adeaeaff28
-References: <20231115095609.39883-1-jaewon02.kim@samsung.com>
-	<CGME20231115095856epcas2p1c3ee85750828bec2ee4ab0adeaeaff28@epcas2p1.samsung.com>
-	<20231115095609.39883-11-jaewon02.kim@samsung.com>
-	<62b7176d-f99c-49f6-a287-17a6b3604c1c@linaro.org>
-	<f0f6a7af-2170-89a2-1eea-dfb9d8440321@samsung.com>
-	<6a5610e0-e60d-4ab7-8708-6f77a38527b7@linaro.org>
-	<926ea5c5-20ac-5e63-16ea-6f0c20e2db0a@samsung.com>
-	<0fdb7bec-9ea4-454f-a0fb-d450f27ebc6b@linaro.org>
-	<ab17d61e-f645-9b76-962c-4ba2849c5f42@samsung.com>
-	<8d4e3fcb-2e4a-4580-9aa2-5acbed961c3f@linaro.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231121113203.61341-4-tony@atomide.com>
 
+Hi Tony,
 
-On 23. 11. 21. 22:51, Krzysztof Kozlowski wrote:
-> On 18/11/2023 08:43, Jaewon Kim wrote:
->> On 23. 11. 17. 19:48, Krzysztof Kozlowski wrote:
->>> On 17/11/2023 08:36, Jaewon Kim wrote:
->>>>>> The reason why I chose variable name 'combine' is that EINT registers was
->>>>>> separated from gpio control address. However, in exynosautov920 EINT
->>>>>> registers combined with GPx group. So I chose "combine" word.
->>>>> What does it mean "the GPx group"? Combined means the same place, the
->>>>> same register. I could imagine offset is 0x4, what I wrote last time.
->>>>>
->>>>> Is the offset 0x4?
->> If you are asking about the offset of GPIO control register and EINT
->> control register, 0x4 is correct.
->>
->> There is no empty space between the two register.
->>
->>
->> 0x0 CON
->>
->> 0x4 DAT
->>
->> 0x8 PUD
->>
->> 0xc DRV
->>
->> 0x10 CONPDN
->>
->> 0x14 PUDPDN
->>
->> 0x18 EINT_CON
->>
->> 0x1c EINT_FLTCON
->>
->> 0x20 or 0x24 EINT_MASK (The size of FLTCON register depending on the
->> number of gpio)
->>
->> 0x24 or 0x28 EINT_PEND
->>
->>
->>>>>
->>>>>> Is another reasonable word, I will change it.
->>>>> Why you cannot store the offset?
->>>>>
->>>>>> EINT registers related to the entire group(e.g SVC) were at the end of
->>>>>> the GPIO block and are now moved to 0xf000.
->>>>> So not in the same register, not combined?
->>>>>
->>>> Okay,
->>>>
->>>> Instead of the word combine, I will think of a better word in next version.
->>> I want to know answer to:
->>>
->>> "Why you cannot store the offset?"
->>>
->> I did not understand exactly what you said, but if i guess,,
->>
->> you want to get rid of the offs because the value of the offs is always
->> the same?
->>
->> #define EXYNOSV920_PIN_BANK_EINTG(pins, reg, id, offs, mask_offs, pend_offs)
-> I meant that it looks possible to store the offset and use it directly,
-> instead of storing bool telling that offset is different.
+kernel test robot noticed the following build warnings:
 
-Thanks for your feedback. We can use offset instead of bool.
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-I will make v3 patch using new variable 'eint_con_offset' instead of 
-'combine'.
+url:    https://github.com/intel-lab-lkp/linux/commits/Tony-Lindgren/printk-Save-console-options-for-add_preferred_console_match/20231121-193809
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
+patch link:    https://lore.kernel.org/r/20231121113203.61341-4-tony%40atomide.com
+patch subject: [PATCH v3 3/3] serial: core: Move console character device handling from printk
+config: parisc-randconfig-r081-20231122 (https://download.01.org/0day-ci/archive/20231122/202311221437.5Gil0Pml-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 13.2.0
+reproduce: (https://download.01.org/0day-ci/archive/20231122/202311221437.5Gil0Pml-lkp@intel.com/reproduce)
 
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Reported-by: Dan Carpenter <error27@gmail.com>
+| Closes: https://lore.kernel.org/r/202311221437.5Gil0Pml-lkp@intel.com/
 
-Thanks
+smatch warnings:
+drivers/tty/serial/serial_base_bus.c:266 serial_base_add_preferred_console() error: uninitialized symbol 'nmbr_match'.
+drivers/tty/serial/serial_base_bus.c:265 serial_base_add_preferred_console() error: uninitialized symbol 'char_match'.
 
-Jaewon Kim
+vim +/nmbr_match +266 drivers/tty/serial/serial_base_bus.c
 
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  261  int serial_base_add_preferred_console(struct uart_driver *drv,
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  262  				      struct uart_port *port)
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  263  {
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  264  	const char *port_match __free(kfree);
+b1b8726ec3f40b Tony Lindgren 2023-11-21 @265  	const char *char_match __free(kfree);
+b1b8726ec3f40b Tony Lindgren 2023-11-21 @266  	const char *nmbr_match __free(kfree);
 
+These need to be initialized to NULL.
 
+	const char *char_match __free(kfree) = NULL;
 
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  267  	int ret;
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  268  
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  269  	port_match = kasprintf(GFP_KERNEL, "%s:%i.%i", dev_name(port->dev),
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  270  			       port->ctrl_id, port->port_id);
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  271  	if (!port_match)
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  272  		return -ENOMEM;
 
+Otherwise in this error path we'll call kfree(char_match) and
+kfree(nmbr_match) when the haven't been initialized.
+
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  273  
+b1b8726ec3f40b Tony Lindgren 2023-11-21  274  	char_match = kasprintf(GFP_KERNEL, "%s%i", drv->dev_name, port->line);
+b1b8726ec3f40b Tony Lindgren 2023-11-21  275  	if (!char_match)
+b1b8726ec3f40b Tony Lindgren 2023-11-21  276  		return -ENOMEM;
+b1b8726ec3f40b Tony Lindgren 2023-11-21  277  
+b1b8726ec3f40b Tony Lindgren 2023-11-21  278  	/* Handle ttyS specific options */
+b1b8726ec3f40b Tony Lindgren 2023-11-21  279  	if (!strncmp(drv->dev_name, "ttyS", 4)) {
+b1b8726ec3f40b Tony Lindgren 2023-11-21  280  		/* No name, just a number */
+b1b8726ec3f40b Tony Lindgren 2023-11-21  281  		nmbr_match = kasprintf(GFP_KERNEL, "%i", port->line);
+b1b8726ec3f40b Tony Lindgren 2023-11-21  282  		if (!nmbr_match)
+b1b8726ec3f40b Tony Lindgren 2023-11-21  283  			return -ENODEV;
+b1b8726ec3f40b Tony Lindgren 2023-11-21  284  
+b1b8726ec3f40b Tony Lindgren 2023-11-21  285  		ret = add_preferred_console_match(nmbr_match, drv->dev_name,
+b1b8726ec3f40b Tony Lindgren 2023-11-21  286  						  port->line);
+b1b8726ec3f40b Tony Lindgren 2023-11-21  287  		if (ret && ret != -ENOENT)
+b1b8726ec3f40b Tony Lindgren 2023-11-21  288  			return ret;
+b1b8726ec3f40b Tony Lindgren 2023-11-21  289  
+b1b8726ec3f40b Tony Lindgren 2023-11-21  290  		/* Sparc ttya and ttyb */
+b1b8726ec3f40b Tony Lindgren 2023-11-21  291  		ret = serial_base_add_sparc_console(drv, port);
+b1b8726ec3f40b Tony Lindgren 2023-11-21  292  		if (ret)
+b1b8726ec3f40b Tony Lindgren 2023-11-21  293  			return ret;
+b1b8726ec3f40b Tony Lindgren 2023-11-21  294  	}
+b1b8726ec3f40b Tony Lindgren 2023-11-21  295  
+b1b8726ec3f40b Tony Lindgren 2023-11-21  296  	/* Handle the traditional character device name style console=ttyS0 */
+b1b8726ec3f40b Tony Lindgren 2023-11-21  297  	ret = add_preferred_console_match(char_match, drv->dev_name, port->line);
+b1b8726ec3f40b Tony Lindgren 2023-11-21  298  	if (ret && ret != -ENOENT)
+b1b8726ec3f40b Tony Lindgren 2023-11-21  299  		return ret;
+b1b8726ec3f40b Tony Lindgren 2023-11-21  300  
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  301  	/* Translate a hardware addressing style console=DEVNAME:0.0 */
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  302  	ret = add_preferred_console_match(port_match, drv->dev_name, port->line);
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  303  	if (ret && ret != -ENOENT)
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  304  		return ret;
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  305  
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  306  	return 0;
+e4ebdcd790e0f3 Tony Lindgren 2023-11-21  307  }
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
