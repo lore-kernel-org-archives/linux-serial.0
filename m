@@ -1,101 +1,133 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="fOyeZFM3"
-Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D330591;
-	Thu, 23 Nov 2023 22:32:51 -0800 (PST)
-Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id 1DB30603EE;
-	Fri, 24 Nov 2023 06:32:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1700807571;
-	bh=+gS/X74h4UfVNPZhsitLFhRKfvXbk2HaAi+3m9/w4LA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=fOyeZFM3XB/N1+TWPkAPihd+noaGWJronK71K0i3yOCY4UcLBv1uy0Mq2MrhaW5sw
-	 L4fWQqlSnNwNM4oVau/CDo1e6vK0+H9Sa1Qnal8PBAV9kQ1REiOgueHKoHaCb/3t2t
-	 yZntys8VgzYz07KKMJVtaV+czADccc7zutPFMiv2U1IAdF5JP2BH8MMUmHXvQ3WtHX
-	 NXIe/acjhZKOzAA2QpDnySk9I7tLMJYuaJmMh0hsENtiUIIBnGFACcoG4S3WXHXI2R
-	 H4BmW0ylNun2MKKfpeTN6NzDcA5hxRPfwA+u0B6d1pQF2SkROP87ijITBwdeXHIC+n
-	 xAapRrmmE8Viw==
-Date: Fri, 24 Nov 2023 08:32:10 +0200
-From: Tony Lindgren <tony@atomide.com>
-To: Dan Carpenter <dan.carpenter@linaro.org>
-Cc: oe-kbuild@lists.linux.dev,
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="AYsLJoeK"
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FED4D6E
+	for <linux-serial@vger.kernel.org>; Thu, 23 Nov 2023 23:10:25 -0800 (PST)
+Received: by mail-ot1-x336.google.com with SMTP id 46e09a7af769-6cd0963c61cso886117a34.0
+        for <linux-serial@vger.kernel.org>; Thu, 23 Nov 2023 23:10:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google; t=1700809824; x=1701414624; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=O91wfSpN9ObCdaEwiURAAaoPifbKQnuX2UDqzMk/9EE=;
+        b=AYsLJoeKp/VeCaPKIAsqEeGRNi1EXuiCRdE4pVMDxJ6B/TXmQou42eJ+FTRMhNpdnd
+         sFuKbaeEReP4bKRRo6CyvkVoKprhlpDx2zx70YKSZLMqK/pM8YdLoYy7vVPx55si3cwd
+         +BHk+GRqfjWiA/CiWu5xVNTwzv4UofcWvYHv4DLGksU9dgA8m6ZA86W3C2kBPstgYvGq
+         C3HDN5hJhfWEydJcE+A4lEzpyxI8bEjX2zZFta1QC9sLiRa+tfnCdcUmlV9gkqgAPn4V
+         36L5/VNZt4XjaErD9yP/duGhGFEOksXfIfMZHsHB0ZL+/5LP0yX+iUAuDGXBm8KY1qrI
+         9eNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700809824; x=1701414624;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=O91wfSpN9ObCdaEwiURAAaoPifbKQnuX2UDqzMk/9EE=;
+        b=LMAP/hYCaAyYij3fPU4pXLlmklw9NyuQFbswo2SalyrloiA57K7x6J8cjTOmciCLm+
+         h+EKVkvda0qcKCBbC+m2tpr+kGD2X/E/jdbzabmyfmemFBneMWzZdEgvQ8eTZsIoJ8Oy
+         tmCOtc9eokjt++ZSyTXVlsxuHWkSyVa8fBYAQ2B1Y26nOa1hVQrWngglwtXDpi2Kq7PF
+         z2uQgTTs1B9nZudve/TVfNyY319wIzpgwY20KKnhfhbpAVfX6xyDLzHg4VAK8JBg88b7
+         bDV7WW58G0axHadfLA7IytHDWuoEkEVXqY27Xd6muKsInGkZpkJ1kCNmmSL23bQy3S7G
+         HCnA==
+X-Gm-Message-State: AOJu0YxZaUcMZY6FmJ444iu2YLUkTumtg7vhHLsIHKsacXAnMa6tu+U+
+	d/KKbg43hY7q7kT87aN00BMiBw==
+X-Google-Smtp-Source: AGHT+IHoAk7libxxmoEnwyG+ICVQkzzI6uc6joEaMVEQl0m28dbDgLSf9VQd9ACWrQm5vBhlWCIngw==
+X-Received: by 2002:a05:6830:603:b0:6d7:f66d:b0ae with SMTP id w3-20020a056830060300b006d7f66db0aemr1910766oti.5.1700809824530;
+        Thu, 23 Nov 2023 23:10:24 -0800 (PST)
+Received: from localhost.localdomain ([106.51.83.242])
+        by smtp.gmail.com with ESMTPSA id e5-20020a9d7305000000b006c61c098d38sm435532otk.21.2023.11.23.23.10.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Nov 2023 23:10:24 -0800 (PST)
+From: Anup Patel <apatel@ventanamicro.com>
+To: Palmer Dabbelt <palmer@dabbelt.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>, lkp@intel.com,
-	oe-kbuild-all@lists.linux.dev,
-	"David S . Miller" <davem@davemloft.net>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Dhruva Gole <d-gole@ti.com>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 3/3] serial: core: Move console character device
- handling from printk
-Message-ID: <20231124063210.GI5169@atomide.com>
-References: <20231121113203.61341-4-tony@atomide.com>
- <6933c98f-7f76-4955-ba0f-89ea340b672d@suswa.mountain>
- <8a4c0b43-cf63-400d-b33d-d9c447b7e0b9@suswa.mountain>
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Conor Dooley <conor@kernel.org>,
+	Andrew Jones <ajones@ventanamicro.com>,
+	linux-riscv@lists.infradead.org,
+	linux-serial@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	linux-kernel@vger.kernel.org,
+	Anup Patel <apatel@ventanamicro.com>
+Subject: [PATCH v5 0/5] RISC-V SBI debug console extension support
+Date: Fri, 24 Nov 2023 12:39:00 +0530
+Message-Id: <20231124070905.1043092-1-apatel@ventanamicro.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8a4c0b43-cf63-400d-b33d-d9c447b7e0b9@suswa.mountain>
+Content-Transfer-Encoding: 8bit
 
-* Dan Carpenter <dan.carpenter@linaro.org> [231123 07:29]:
-> On Thu, Nov 23, 2023 at 10:24:24AM +0300, Dan Carpenter wrote:
-> > Hi Tony,
-> > 
-> > kernel test robot noticed the following build warnings:
-> > 
-> > https://git-scm.com/docs/git-format-patch#_base_tree_information]
-> > 
-> > url:    https://github.com/intel-lab-lkp/linux/commits/Tony-Lindgren/printk-Save-console-options-for-add_preferred_console_match/20231121-193809
-> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
-> > patch link:    https://lore.kernel.org/r/20231121113203.61341-4-tony%40atomide.com
-> > patch subject: [PATCH v3 3/3] serial: core: Move console character device handling from printk
-> > config: parisc-randconfig-r081-20231122 (https://download.01.org/0day-ci/archive/20231122/202311221437.5Gil0Pml-lkp@intel.com/config)
-> > compiler: hppa-linux-gcc (GCC) 13.2.0
-> > reproduce: (https://download.01.org/0day-ci/archive/20231122/202311221437.5Gil0Pml-lkp@intel.com/reproduce)
-> > 
-> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <lkp@intel.com>
-> > | Reported-by: Dan Carpenter <error27@gmail.com>
-> > | Closes: https://lore.kernel.org/r/202311221437.5Gil0Pml-lkp@intel.com/
-> > 
-> > smatch warnings:
-> > drivers/tty/serial/serial_base_bus.c:266 serial_base_add_preferred_console() error: uninitialized symbol 'nmbr_match'.
-> > drivers/tty/serial/serial_base_bus.c:265 serial_base_add_preferred_console() error: uninitialized symbol 'char_match'.
-> > 
-> > vim +/nmbr_match +266 drivers/tty/serial/serial_base_bus.c
-> > 
-> > e4ebdcd790e0f3 Tony Lindgren 2023-11-21  261  int serial_base_add_preferred_console(struct uart_driver *drv,
-> > e4ebdcd790e0f3 Tony Lindgren 2023-11-21  262  				      struct uart_port *port)
-> > e4ebdcd790e0f3 Tony Lindgren 2023-11-21  263  {
-> > e4ebdcd790e0f3 Tony Lindgren 2023-11-21  264  	const char *port_match __free(kfree);
-> > b1b8726ec3f40b Tony Lindgren 2023-11-21 @265  	const char *char_match __free(kfree);
-> > b1b8726ec3f40b Tony Lindgren 2023-11-21 @266  	const char *nmbr_match __free(kfree);
-> > 
-> > These need to be initialized to NULL.
-> > 
-> > 	const char *char_match __free(kfree) = NULL;
-> > 
-> 
-> Let's add a todo to make checkpatch warn about this.
-> 
-> KTODO: make checkpatch warn about __free() functions without an initializer
+The SBI v2.0 specification is now frozen. The SBI v2.0 specification defines
+SBI debug console (DBCN) extension which replaces the legacy SBI v0.1
+functions sbi_console_putchar() and sbi_console_getchar().
+(Refer v2.0-rc5 at https://github.com/riscv-non-isa/riscv-sbi-doc/releases)
 
-Yes good idea.
+This series adds support for SBI debug console (DBCN) extension in
+Linux RISC-V.
 
-Thanks,
+To try these patches with KVM RISC-V, use KVMTOOL from the
+riscv_zbx_zicntr_smstateen_condops_v1 branch at:
+https://github.com/avpatel/kvmtool.git
 
-Tony
+These patches can also be found in the riscv_sbi_dbcn_v5 branch at:
+https://github.com/avpatel/linux.git
+
+Changes since v4:
+ - Rebased on Linux-6.7-rc2
+ - Addressed Drew's comments in PATCH2
+ - Improved sbi_debug_console_write/read() to directly take virtual
+   address of data so that virtual address to physical address
+   conversion can be shared between tty/serial/earlycon-riscv-sbi.c
+   and tty/hvc/hvc_riscv_sbi.c
+ - Addressed Samuel's comments in PATCH3 and PATCH4
+
+Changes since v3:
+ - Rebased on Linux-6.7-rc1
+ - Dropped PATCH1 to PATCH5 of v3 series since these were merged through
+   KVM RISC-V tree for Linux-6.7
+ - Used proper error code in PATCH1
+ - Added new PATCH2 which add common SBI debug console helper functions
+ - Updated PATCH3 and PATCH4 to use SBI debug console helper functions
+
+Changes since v2:
+ - Rebased on Linux-6.6-rc5
+ - Handled page-crossing in PATCH7 of v2 series
+ - Addressed Drew's comment in PATCH3 of v2 series
+ - Added new PATCH5 to make get-reg-list test aware of SBI DBCN extension
+
+Changes since v1:
+ - Remove use of #ifdef from PATCH4 and PATCH5 of the v1 series
+ - Improved commit description of PATCH3 in v1 series
+ - Introduced new PATCH3 in this series to allow some SBI extensions
+   (such as SBI DBCN) do to disabled by default so that older KVM user space
+   work fine and newer KVM user space have to explicitly opt-in for emulating
+   SBI DBCN.
+ - Introduced new PATCH5 in this series which adds inline version of
+   sbi_console_getchar() and sbi_console_putchar() for the case where
+   CONFIG_RISCV_SBI_V01 is disabled.
+
+Anup Patel (4):
+  RISC-V: Add stubs for sbi_console_putchar/getchar()
+  RISC-V: Add SBI debug console helper routines
+  tty/serial: Add RISC-V SBI debug console based earlycon
+  RISC-V: Enable SBI based earlycon support
+
+Atish Patra (1):
+  tty: Add SBI debug console support to HVC SBI driver
+
+ arch/riscv/configs/defconfig            |  1 +
+ arch/riscv/include/asm/sbi.h            | 10 ++++
+ arch/riscv/kernel/sbi.c                 | 66 +++++++++++++++++++++++++
+ drivers/tty/hvc/Kconfig                 |  2 +-
+ drivers/tty/hvc/hvc_riscv_sbi.c         | 37 +++++++++++---
+ drivers/tty/serial/Kconfig              |  2 +-
+ drivers/tty/serial/earlycon-riscv-sbi.c | 27 ++++++++--
+ 7 files changed, 133 insertions(+), 12 deletions(-)
+
+-- 
+2.34.1
+
