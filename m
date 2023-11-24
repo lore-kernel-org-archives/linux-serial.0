@@ -1,90 +1,156 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="R68KGrbI"
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E336810D9
-	for <linux-serial@vger.kernel.org>; Thu, 23 Nov 2023 23:10:45 -0800 (PST)
-Received: by mail-ot1-x335.google.com with SMTP id 46e09a7af769-6ce2cf67be2so831190a34.2
-        for <linux-serial@vger.kernel.org>; Thu, 23 Nov 2023 23:10:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1700809845; x=1701414645; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9bsP20n9g/LbbgzyTFqfc2H9X3ZVkLkHm6HS5kmWZpw=;
-        b=R68KGrbIaJYIomN32UdqqUn6UGU+BEMrtCUfuRHxXdoUKL2fMqMf9znVGzX5FLsrEh
-         Fne0BMUwWty2fL9+gL5NtXSPWQhCaY5jmmzKo08l41f5YFlDgcb9dZJCH/4xUxgcPSSa
-         0o3z0Kiwkexmbb+uLKr9OpZH5RIOlfs7WiJiVYbMp3ockTRLnPP+0sU23dQASxpaIiJc
-         6W+GeYgZtbxK5cCw7F3JBcoG1aDSdb7/qFciMrHgXui8NWCHhiiaEVePSfSM9LLxj0f7
-         gEgDBttK3v2BUWIgzXD+MDirlFkOC7brQG/Mz/JCpJPD3RIgYKG2Q1q5IfwmN0IuYVHH
-         6j3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700809845; x=1701414645;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9bsP20n9g/LbbgzyTFqfc2H9X3ZVkLkHm6HS5kmWZpw=;
-        b=Y9MQGCQJ5EcgR4j3/7Z0nm1ubh6DirTXuPS0KAGLUDo80pBth+3vfUXeukkqu/a7lF
-         L4vU9lipnKK3ENVcekLaLaeGOaIqEO1an5AbiuVGTIjYIay0cejDvlLG524rvW/VxFz5
-         HmGksttMuAIvCJ9cwFXKRnsk9bPyQ4uAHNZGVbG4F66W8kcGTJ9iHaeCmkSZ/3m6RTAx
-         CjNe+NdE+fRCZueFluEWCl1vLTi2NGMGdfkOMgbNZOJhZL3DymT/52H5fDlXPSe6WUyJ
-         qeyXjAcXvecDpRdLwu2kOM/BEv7kuvYf9GLBICSw+vlSzYcdsoUbDaxLNEeclR1WjiPd
-         5/vw==
-X-Gm-Message-State: AOJu0Ywp+FQQLZFOMM2TmJLWLWnQOUAwCrUzdAK29JG9q2EeohF32Qlg
-	Fm/RtKGn5U9bt8YaBkhj9etd/g==
-X-Google-Smtp-Source: AGHT+IGGDyExhQ3zRmOy5VYh2TdS7wOyXrHh9UCot+XT8qVfR5TFj+v/PJ24bsMRy6r+bIsB3Xrfng==
-X-Received: by 2002:a05:6830:18f1:b0:6ce:4035:b801 with SMTP id d17-20020a05683018f100b006ce4035b801mr2096169otf.13.1700809844751;
-        Thu, 23 Nov 2023 23:10:44 -0800 (PST)
-Received: from localhost.localdomain ([106.51.83.242])
-        by smtp.gmail.com with ESMTPSA id e5-20020a9d7305000000b006c61c098d38sm435532otk.21.2023.11.23.23.10.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Nov 2023 23:10:44 -0800 (PST)
-From: Anup Patel <apatel@ventanamicro.com>
-To: Palmer Dabbelt <palmer@dabbelt.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Conor Dooley <conor@kernel.org>,
-	Andrew Jones <ajones@ventanamicro.com>,
-	linux-riscv@lists.infradead.org,
-	linux-serial@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	linux-kernel@vger.kernel.org,
-	Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH v5 5/5] RISC-V: Enable SBI based earlycon support
-Date: Fri, 24 Nov 2023 12:39:05 +0530
-Message-Id: <20231124070905.1043092-6-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20231124070905.1043092-1-apatel@ventanamicro.com>
-References: <20231124070905.1043092-1-apatel@ventanamicro.com>
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="ZN3dThfj"
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E39441AE
+	for <linux-serial@vger.kernel.org>; Fri, 24 Nov 2023 02:39:09 -0800 (PST)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id D0791E0003;
+	Fri, 24 Nov 2023 10:39:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1700822348;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=435VCEZZFNFae7GnKZxuus26Zn/+jvuEWowGAG/GuU4=;
+	b=ZN3dThfjtz2rLPTcM2bfZ1MKHUPgfUnP/SemkwhmKrd9x7TaPX8NVQZDLp5Q+/VTQ9J+vR
+	cjW4jJnGWmQZfr0gdTUgSyypLqq8u42+zKSbuKXFshfTYzGBztBZkVfaRuFEPeyPaw2XHk
+	zd7TEB0oUawUYOxYKFSwmzGsiT+5ITSASaG9cM+2lhzg8dtz8Ps73sHc/f3ZjE61C1GIgx
+	Vn0TjhYgJVtQgsMVoSYFSsU+dqzZX1MUWGFNfee3Au9Dh+oQXNUrapjK5QnGNlnKd+YueC
+	W97zw5BnqdXqAp9Zi92RC8nKOPHUTJ3bQoUE/bE9boKACztXE3RlS1XuGg5wGg==
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Fri, 24 Nov 2023 11:39:07 +0100
+Message-Id: <CX6Z7BRRRECO.3I32FB3Y8Z21G@tleb-bootlin-xps13-01>
+To: "Tony Lindgren" <tony@atomide.com>
+From: =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
+Subject: Re: [PATCH] serial: 8250_omap: Set the console genpd always on if
+ no console suspend
+Cc: "Kevin Hilman" <khilman@kernel.org>, "Thomas Richard"
+ <thomas.richard@bootlin.com>, <gregkh@linuxfoundation.org>,
+ <jirislaby@kernel.org>, <linux-serial@vger.kernel.org>,
+ <gregory.clement@bootlin.com>, <u-kumar1@ti.com>, <d-gole@ti.com>,
+ <thomas.petazzoni@bootlin.com>
+X-Mailer: aerc 0.15.2
+References: <20231017130540.1149721-1-thomas.richard@bootlin.com>
+ <7hfs213u0r.fsf@baylibre.com> <20231024045109.GT27774@atomide.com>
+ <7hjzrbj29t.fsf@baylibre.com> <20231025064131.GZ27774@atomide.com>
+ <75b6cda8-c809-409b-8be9-ad8a4db63c14@bootlin.com>
+ <20231031105247.GC57044@atomide.com> <7h34xqitl0.fsf@baylibre.com>
+ <CX5F88JLWFUW.Z36KQB2PX554@tleb-bootlin-xps13-01>
+ <20231124053727.GU5166@atomide.com>
+In-Reply-To: <20231124053727.GU5166@atomide.com>
+X-GND-Sasl: theo.lebrun@bootlin.com
 
-Let us enable SBI based earlycon support in defconfig for both RV32
-and RV64 so that "earlycon=sbi" can be used again.
+Hello,
 
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
----
- arch/riscv/configs/defconfig | 1 +
- 1 file changed, 1 insertion(+)
+On Fri Nov 24, 2023 at 6:37 AM CET, Tony Lindgren wrote:
+> * Th=C3=A9o Lebrun <theo.lebrun@bootlin.com> [231122 14:47]:
+> > Hi Kevin Hilman, Tony Lindgren & Thomas Richard,
+> >=20
+> > On Tue Oct 31, 2023 at 6:34 PM CET, Kevin Hilman wrote:
+> > > Tony Lindgren <tony@atomide.com> writes:
+> > > > * Thomas Richard <thomas.richard@bootlin.com> [231031 10:15]:
+> > > >> Please find below the logs of the test you asked me.
+> > > >
+> > > > OK great thanks!
+> > > >
+> > > >> I added the call of pm_runtime_get_usage_count at the end of the s=
+uspend
+> > > >> function.
+> > > >> The console is attached on 2800000.serial, it has usage_count=3D4.
+> > > >> Other serial has usage_count=3D3.
+> > > >
+> > > > So as suspected, it seems the power domain gets force suspended
+> > > > somewhere despite the usage_count.
+> > >
+> > > I think the only way this could happen (excluding any bugs, of course=
+)
+> > > would be for pm_runtime_force_suspend() to be getting called somewher=
+e,
+> > > but I thought the earlier patch made that call conditional, so maybe
+> > > there is another path where that is getting called?
+> >=20
+> > I'm coming back on this topic as the upstream fix is less than ideal, a=
+s
+> > everyone here was agreeing.
+>
+> Thanks for looking into it.
+>
+> > I've had a look at the genpd code & power-domains get powered-off at
+> > suspend_noirq without caring about runtime PM refcounting. See
+> > genpd_suspend_noirq & genpd_finish_suspend.
+> >=20
+> > Behavior is:
+> >=20
+> >  - In all cases, call suspend_noirq on the underlying device.
+> >  - Stop now if device is in wakeup path & PD has the
+> >    GENPD_FLAG_ACTIVE_WAKEUP flag.
+> >  - If the PD has start & stop callbacks & is not runtime suspended, cal=
+l
+> >    the stop callback on the device.
+> >  - Increment the count of suspended devices on this PD.
+> >  - If PD is already off or always on, stop.
+> >  - If this is the last device on this PD (and some other checks), then
+> >    do the PD power off (and maybe parent PDs).
+> >=20
+> > The current patch sets the PD as always on at suspend. That would not
+> > work if our PD driver registered start/stop callbacks as those would
+> > get called.
+> >=20
+> > The right solution to avoid getting the PD cut would be to mark the
+> > serials we want to keep alive as on the wakeup path using
+> > device_set_wakeup_path(dev) at suspend. That also requires the PD to be
+> > marked using the GENPD_FLAG_ACTIVE_WAKEUP flag, which is currently not
+> > the case.
+>
+> Not sure if we unconditionally want to set GENPD_FLAG_ACTIVE_WAKEUP as
+> the pm_domain.h describes it with "Instructs genpd to keep the PM domain
+> powered". The power domain should not force suspend automatically if ther=
+e
+> are active runtime PM users even without that flag..
 
-diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-index 905881282a7c..eaf34e871e30 100644
---- a/arch/riscv/configs/defconfig
-+++ b/arch/riscv/configs/defconfig
-@@ -149,6 +149,7 @@ CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_8250_DW=y
- CONFIG_SERIAL_OF_PLATFORM=y
- CONFIG_SERIAL_SH_SCI=y
-+CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
- CONFIG_VIRTIO_CONSOLE=y
- CONFIG_HW_RANDOM=y
- CONFIG_HW_RANDOM_VIRTIO=y
--- 
-2.34.1
+Hey don't forgot the important part!
 
+> Instructs genpd to keep the PM domain powered on, in case any of its
+> attached devices is used in the wakeup path to serve system wakeups.
+
+Checking the code confirms this behavior. Grep for the macro
+genpd_is_active_wakeup rather than GENPD_FLAG_ACTIVE_WAKEUP. It gets
+used twice (suspend & resume), both in the same manner:
+
+   if (device_wakeup_path(dev) && genpd_is_active_wakeup(genpd))
+
+This means this flag won't have any impact on runtime PM handling of
+power-domains. By the way, other users of the flag enable it at PD
+registration & don't touch it afterwards.
+
+> > That last aspect is what I'm unsure of: should we add this flag to all
+> > power-domains created by ti_sci_pm_domains? Should we pass something
+> > from devicetree? I don't see the reason for not enabling this behavior
+> > by default?
+>
+> To me this still seems like a workaround because of the active runtime
+> PM usage count in the consumer driver :)
+>
+> And GENPD_FLAG_ACTIVE_WAKEUP should not need to be configured separately
+> from the runtime PM usage count in this case. Sure there may be other
+> cases where GENPD_FLAG_ACTIVE_WAKEUP needs to be set dynamically, but
+> we should understand why the power domain code thinks it's OK to shut
+> down the domain if it has active users.
+
+There is currently nothing that links the runtime PM refcount to whether
+or not the power-domains get powered-off at suspend_noirq. Should that
+change? Maybe, but it would be a big behavioral change.
+
+Regards,
+
+--
+Th=C3=A9o Lebrun, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
