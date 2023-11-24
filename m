@@ -1,124 +1,86 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="ju3QMJlQ"
+	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="CgmlAdYV"
 Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36FFD6C
-	for <linux-serial@vger.kernel.org>; Thu, 23 Nov 2023 21:37:51 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24CD6189;
+	Thu, 23 Nov 2023 21:57:17 -0800 (PST)
 Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id 0F85260B1C;
-	Fri, 24 Nov 2023 05:37:29 +0000 (UTC)
+	by mail5.25mail.st (Postfix) with ESMTPSA id 3A38B60B1C;
+	Fri, 24 Nov 2023 05:56:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1700804270;
-	bh=4ppk+YEhzs9h0xg0LKz2d3DT24ELcLb2X0cy7NsFrnQ=;
+	s=25mailst; t=1700805436;
+	bh=D+5OJtIXXHhQ4jFCNY71lo60Nt7F5l8pHOuTGGgUjUs=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ju3QMJlQY+adTHE2rnCWTK5E42OQSUG5hEDogj/4tVFkxDBzPZRu6dsc39Eijltvt
-	 uKPbmmyy6ongePUKA8CHXYweYOCZpjAE0xiTEJtzUvOIzoVKqT53X+5cw7+d9cERp6
-	 CNGbkocWnqWQAiVOCdP5eaPWZhAX96vS5eXruF5RraGi8lUQRM+axjFyPQIwUtBxaw
-	 0sFrAz/zdcpEY7yRxZl1Fr5kqLEEoYyBQQ8MLZ+Vtb5if/rPjfmvU6cfjyw7x8sgNt
-	 ndH9gorJ/DNxQ3A4iFBttfISotvUD5THLTRlxukd6wIcakAUVqhJcd/x1hrWY4RZrz
-	 dq8nal966S5hA==
-Date: Fri, 24 Nov 2023 07:37:27 +0200
+	b=CgmlAdYVqncyCUSzoeA/3qdXsRIFmTqgdm2efS+e3q8k+zjjcNuNJkDR9CkXfZYje
+	 dOc2SYOtgA9VDPqZxWhUf4nt2ywLzLPYgEbySct6hYIW4ce3iN7W6EJW0zVTzzEbw8
+	 M7LRhCCant9aj5L3wzZUjanaRiNlc1KCJXJEfzflEj57FOcocmADfNTBRMQFecPbvO
+	 ffT3gHtTzJw+++Rx8SIuxr60bkI6nlInfYGpKLoamMDCr7+L08XfSUjYydYK8K043u
+	 njjx5bFbgKysdVNWgCocxRudQ7lbrRUFMPo6WNg+kEarkMPNGo27mCgc9tw9A3ZUPA
+	 IOnmnkfcdF3xQ==
+Date: Fri, 24 Nov 2023 07:56:43 +0200
 From: Tony Lindgren <tony@atomide.com>
-To: =?utf-8?B?VGjDqW8=?= Lebrun <theo.lebrun@bootlin.com>
-Cc: Kevin Hilman <khilman@kernel.org>,
-	Thomas Richard <thomas.richard@bootlin.com>,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	linux-serial@vger.kernel.org, gregory.clement@bootlin.com,
-	u-kumar1@ti.com, d-gole@ti.com, thomas.petazzoni@bootlin.com
-Subject: Re: [PATCH] serial: 8250_omap: Set the console genpd always on if no
- console suspend
-Message-ID: <20231124053727.GU5166@atomide.com>
-References: <20231017130540.1149721-1-thomas.richard@bootlin.com>
- <7hfs213u0r.fsf@baylibre.com>
- <20231024045109.GT27774@atomide.com>
- <7hjzrbj29t.fsf@baylibre.com>
- <20231025064131.GZ27774@atomide.com>
- <75b6cda8-c809-409b-8be9-ad8a4db63c14@bootlin.com>
- <20231031105247.GC57044@atomide.com>
- <7h34xqitl0.fsf@baylibre.com>
- <CX5F88JLWFUW.Z36KQB2PX554@tleb-bootlin-xps13-01>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>
+Cc: "David S . Miller" <davem@davemloft.net>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Dhruva Gole <d-gole@ti.com>,
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] serial: core: Move console character device
+ handling from printk
+Message-ID: <20231124055643.GH5169@atomide.com>
+References: <20231121113203.61341-1-tony@atomide.com>
+ <20231121113203.61341-4-tony@atomide.com>
+ <20231122070353.GF5169@atomide.com>
+ <20231122081554.GG5169@atomide.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CX5F88JLWFUW.Z36KQB2PX554@tleb-bootlin-xps13-01>
+In-Reply-To: <20231122081554.GG5169@atomide.com>
 
-* Théo Lebrun <theo.lebrun@bootlin.com> [231122 14:47]:
-> Hi Kevin Hilman, Tony Lindgren & Thomas Richard,
+* Tony Lindgren <tony@atomide.com> [231122 10:16]:
+> * Tony Lindgren <tony@atomide.com> [231122 09:04]:
+> > * Tony Lindgren <tony@atomide.com> [700101 02:00]:
+> > > -	__add_preferred_console(buf, idx, options, brl_options, true);
+> > >  	return 1;
+> > 
+> > Looks like this can't be dropped yet. We need to keep it for the
+> > brl_options. I'll change it to return early if brl_options is NULL.
 > 
-> On Tue Oct 31, 2023 at 6:34 PM CET, Kevin Hilman wrote:
-> > Tony Lindgren <tony@atomide.com> writes:
-> > > * Thomas Richard <thomas.richard@bootlin.com> [231031 10:15]:
-> > >> Please find below the logs of the test you asked me.
-> > >
-> > > OK great thanks!
-> > >
-> > >> I added the call of pm_runtime_get_usage_count at the end of the suspend
-> > >> function.
-> > >> The console is attached on 2800000.serial, it has usage_count=4.
-> > >> Other serial has usage_count=3.
-> > >
-> > > So as suspected, it seems the power domain gets force suspended
-> > > somewhere despite the usage_count.
-> >
-> > I think the only way this could happen (excluding any bugs, of course)
-> > would be for pm_runtime_force_suspend() to be getting called somewhere,
-> > but I thought the earlier patch made that call conditional, so maybe
-> > there is another path where that is getting called?
-> 
-> I'm coming back on this topic as the upstream fix is less than ideal, as
-> everyone here was agreeing.
+> Looks like we can drop the parsing from printk :) In console_setup()
+> we can call console_opt_save() after _braille_console_setup(), and
+> then save also the brl_options for the port.
 
-Thanks for looking into it.
+I noticed we have more issues remaining trying to drop the console
+parsing completely from console_setup().
 
-> I've had a look at the genpd code & power-domains get powered-off at
-> suspend_noirq without caring about runtime PM refcounting. See
-> genpd_suspend_noirq & genpd_finish_suspend.
-> 
-> Behavior is:
-> 
->  - In all cases, call suspend_noirq on the underlying device.
->  - Stop now if device is in wakeup path & PD has the
->    GENPD_FLAG_ACTIVE_WAKEUP flag.
->  - If the PD has start & stop callbacks & is not runtime suspended, call
->    the stop callback on the device.
->  - Increment the count of suspended devices on this PD.
->  - If PD is already off or always on, stop.
->  - If this is the last device on this PD (and some other checks), then
->    do the PD power off (and maybe parent PDs).
-> 
-> The current patch sets the PD as always on at suspend. That would not
-> work if our PD driver registered start/stop callbacks as those would
-> get called.
-> 
-> The right solution to avoid getting the PD cut would be to mark the
-> serials we want to keep alive as on the wakeup path using
-> device_set_wakeup_path(dev) at suspend. That also requires the PD to be
-> marked using the GENPD_FLAG_ACTIVE_WAKEUP flag, which is currently not
-> the case.
+If add_preferred_console() gets called later, register_console() can
+try to call try_enable_default_console() before we get around to call
+try_enable_preferred_console(), and that may lead to no serial console.
 
-Not sure if we unconditionally want to set GENPD_FLAG_ACTIVE_WAKEUP as
-the pm_domain.h describes it with "Instructs genpd to keep the PM domain
-powered". The power domain should not force suspend automatically if there
-are active runtime PM users even without that flag..
+To avoid that, setting console_set_on_cmdline = 1 in console_setup(),
+and patching register_console() console to check for the flag helps.
+But looks like that leads to bootconsole not getting disabled and
+more patching for that is needed.. And of course we'd need to check
+the other register_console() callers too, not just 8250..
 
-> That last aspect is what I'm unsure of: should we add this flag to all
-> power-domains created by ti_sci_pm_domains? Should we pass something
-> from devicetree? I don't see the reason for not enabling this behavior
-> by default?
+So I think for now, it's best to just drop the 8250 and sparc quirks
+from console_setup(), that already simplifies things in printk a bit :)
 
-To me this still seems like a workaround because of the active runtime
-PM usage count in the consumer driver :)
-
-And GENPD_FLAG_ACTIVE_WAKEUP should not need to be configured separately
-from the runtime PM usage count in this case. Sure there may be other
-cases where GENPD_FLAG_ACTIVE_WAKEUP needs to be set dynamically, but
-we should understand why the power domain code thinks it's OK to shut
-down the domain if it has active users.
+And for 8250, we should have serial8250_isa_init_ports() call
+add_preferred_console_match() to avoid console getting registered
+later on when the hardware specific driver takes over for x86, m68k,
+and alpha that define SERIAL_PORT_DFNS.
 
 Regards,
 
