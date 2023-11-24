@@ -1,81 +1,123 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="AgZOpVTL"
-Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B031AE
-	for <linux-serial@vger.kernel.org>; Fri, 24 Nov 2023 02:55:18 -0800 (PST)
-Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id 4CDE6604D9;
-	Fri, 24 Nov 2023 10:54:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1700823318;
-	bh=kiRpKQMbZsjEgHPGBPorOr6YPA74A7kYlC4tOzf7IYs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=AgZOpVTLhf/DvBDB/u5qVeUyZ0TseonjUP54c2Gd49ktBnuD/PyPChOTDSfp9FADS
-	 /EWMxFVZfhjv07Y5m3jo3uKf4HftgY5sIqJEkV/58t8b3yj7dYm/E+puw1XD+rOaa1
-	 Oyv218IC3qW8SMCjtJdv3YTwttI79DY4tJTfBmwCn3/V+kBmtJx7jRNtK6SCU2LIEZ
-	 E/qR8KlLOQGAjr3UnlEwjSOXDS3TQxiSSbsclT7mBhCxYisGdhuPi415wc4kOP02a6
-	 Gv2uRhx8U6cJ0ewo8Dn7uwggBL0bzQY3OoRiwOEHCka+12SXD1TVLitNfj8VZSnFbX
-	 AcVYTJpHvWj6Q==
-Date: Fri, 24 Nov 2023 12:54:55 +0200
-From: Tony Lindgren <tony@atomide.com>
-To: =?utf-8?B?VGjDqW8=?= Lebrun <theo.lebrun@bootlin.com>
-Cc: Kevin Hilman <khilman@kernel.org>,
-	Thomas Richard <thomas.richard@bootlin.com>,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	linux-serial@vger.kernel.org, gregory.clement@bootlin.com,
-	u-kumar1@ti.com, d-gole@ti.com, thomas.petazzoni@bootlin.com
-Subject: Re: [PATCH] serial: 8250_omap: Set the console genpd always on if no
- console suspend
-Message-ID: <20231124105455.GV5166@atomide.com>
-References: <7hfs213u0r.fsf@baylibre.com>
- <20231024045109.GT27774@atomide.com>
- <7hjzrbj29t.fsf@baylibre.com>
- <20231025064131.GZ27774@atomide.com>
- <75b6cda8-c809-409b-8be9-ad8a4db63c14@bootlin.com>
- <20231031105247.GC57044@atomide.com>
- <7h34xqitl0.fsf@baylibre.com>
- <CX5F88JLWFUW.Z36KQB2PX554@tleb-bootlin-xps13-01>
- <20231124053727.GU5166@atomide.com>
- <CX6Z7BRRRECO.3I32FB3Y8Z21G@tleb-bootlin-xps13-01>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aj7g/DL6"
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D93EB10D7;
+	Fri, 24 Nov 2023 03:22:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700824964; x=1732360964;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=NkIA0FKFLlcC69DWDl71RDdxGe5F/FY5m+uFFak1rb4=;
+  b=aj7g/DL6CUqXN6hPALkwteejOQ+ZBgoYgb/VPa+wP1pCj1fLLj5jSvvZ
+   IEdhSKJLBUGtZU1bVXycUnvlQkDKN+E3L0NWXuafiGz4OhV8Bn0sfpk7S
+   yfi5lHy76PfIX0xpuHPJ6E5b+sL1QPhr/SDUzLw1V8MHrSFRV6thZEyL9
+   7xDeQ57VPMPNqoPsrNI+VBA0TjcVgzmtU64xylVba9M6ofQcUoIdrntnD
+   jRrr59n94NTROFpzOswZtcnnsxh31zgzEABKhZbQVQK6yswvWC9DhFjF3
+   2MNW4PKERFY2hGgTayR3Aw5w6U66Um9rAPyOmujfznkb6hNh6627AL+kS
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10902"; a="5628040"
+X-IronPort-AV: E=Sophos;i="6.04,223,1695711600"; 
+   d="scan'208";a="5628040"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2023 03:22:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10902"; a="833670573"
+X-IronPort-AV: E=Sophos;i="6.04,223,1695711600"; 
+   d="scan'208";a="833670573"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2023 03:22:39 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@intel.com>)
+	id 1r6UGa-0000000GhMj-2SIa;
+	Fri, 24 Nov 2023 13:22:36 +0200
+Date: Fri, 24 Nov 2023 13:22:36 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, lech.perczak@camlingroup.com,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] serial: sc16is7xx: improve regmap debugfs by using one
+ regmap per port
+Message-ID: <ZWCHfGmAmSpGh2e1@smile.fi.intel.com>
+References: <20231030211447.974779-1-hugo@hugovil.com>
+ <ZV_GHRhqCdeCHV_a@smile.fi.intel.com>
+ <20231124000534.aa8f0c866753c3a9e6844354@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CX6Z7BRRRECO.3I32FB3Y8Z21G@tleb-bootlin-xps13-01>
+In-Reply-To: <20231124000534.aa8f0c866753c3a9e6844354@hugovil.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-* Théo Lebrun <theo.lebrun@bootlin.com> [231124 10:39]:
-> On Fri Nov 24, 2023 at 6:37 AM CET, Tony Lindgren wrote:
-> Checking the code confirms this behavior. Grep for the macro
-> genpd_is_active_wakeup rather than GENPD_FLAG_ACTIVE_WAKEUP. It gets
-> used twice (suspend & resume), both in the same manner:
-> 
->    if (device_wakeup_path(dev) && genpd_is_active_wakeup(genpd))
-> 
-> This means this flag won't have any impact on runtime PM handling of
-> power-domains. By the way, other users of the flag enable it at PD
-> registration & don't touch it afterwards.
+On Fri, Nov 24, 2023 at 12:05:34AM -0500, Hugo Villeneuve wrote:
+> On Thu, 23 Nov 2023 23:37:33 +0200
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > On Mon, Oct 30, 2023 at 05:14:47PM -0400, Hugo Villeneuve wrote:
 
-Setting GENPD_FLAG_ACTIVE_WAKEUP will block deeper idle states for
-the SoC most likely.
-
-> There is currently nothing that links the runtime PM refcount to whether
-> or not the power-domains get powered-off at suspend_noirq. Should that
-> change? Maybe, but it would be a big behavioral change.
-
-For managing GENPD_FLAG_ACTIVE_WAKEUP dynamically, maybe something like:
-
-device_request_wakeup_path(dev)
 ...
-device_free_wakeup_path(dev)
 
-And those would toggle GENPD_FLAG_ACTIVE_WAKEUP for the power domain
-based on some usage count?
+> > This change might be problematic, i.e. ...
 
-Regards,
+...
 
-Tony
+> > >  		regmap_update_bits(
+> > >  			s->regmap,
+> > > -			SC16IS7XX_IOCONTROL_REG << SC16IS7XX_REG_SHIFT,
+> > > +			SC16IS7XX_IOCONTROL_REG,
+> > >  			SC16IS7XX_IOCONTROL_MODEM_A_BIT |
+> > >  			SC16IS7XX_IOCONTROL_MODEM_B_BIT, s->mctrl_mask);
+> > 
+> > ...if this happens inside another regmap operation it might collide with this
+> > as there is no more shared locking (and if driver is going to be converted to
+> > use an external lock, the one in regmap might be disabled). But I haven't
+> > checked anyhow deeply this, so just a heads up for the potential issue.
+> 
+> Hi Andy,
+> are you refering to the above piece of code as the only location where
+> this could be problematic?
+> 
+> If yes, then it is located inside sc16is7xx_setup_mctrl_ports(), which
+> is called only during sc16is7xx_probe(), and I assume it should be ok.
+
+With below it becomes two. Maybe you can point out somewhere in the code
+(in a form of a comment?) that regmap[0] separate access is allowed only
+in probe stage?
+
+Also be aware, that other callbacks shouldn't be called at that time (means
+no port should be made visible / registered to the users).
+
+...
+
+> > > -	ret = regmap_read(regmap,
+> > > -			  SC16IS7XX_LSR_REG << SC16IS7XX_REG_SHIFT, &val);
+> > > +	ret = regmap_read(regmaps[0], SC16IS7XX_LSR_REG, &val);
+> > 
+> > Here is a probe, most likely no issues.
+> 
+> Ok.
+> 
+> > >  	if (ret < 0)
+> > >  		return -EPROBE_DEFER;
+
+...
+
+> > > +	snprintf(buf, sizeof(buf), "port%d", port_id);
+> > 
+> > Should be %u.
+> 
+> Yes. I just noticed that Greg has applied the patch to its tty-testing
+> branch, I assume I should just send a new patch to fix it?
+
+Yes.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
