@@ -1,129 +1,96 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="KkVT0Zuy"
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FFCF19A4;
-	Fri, 24 Nov 2023 13:06:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-	t=1700859980; x=1701464780; i=linosanfilippo@gmx.de;
-	bh=waACyJjsbxli114kJbSpe0nQ+w64SGuqCsiUKQxNS74=;
-	h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:
-	 In-Reply-To;
-	b=KkVT0ZuysgXKX5BSXEzEY5llZYzoChlXc+lh7BelNklX+I701Iw1RujbvhTsK+EZ
-	 Q27dYbou/2liYLZPtwpRG1/9A4UtmLysQNMIEV3bK/jTnSNs5GRyIclUK+E1oDavf
-	 U0Vf5n4kKJQwv3fL3jM1oj+CMY15bCXQBNnEfTiiGXdqEDBHnz5BIOQRoyKTtWwbE
-	 6te1ic98wF0sorlsSzPJanXyP+BUjX3zEpelb5TsWPoUYVh/VnjRSEfBuTJQg+XZU
-	 qzw2hhiq44/gZcZsEKfJXdyA8kk4DzxaZut2ucpuz7+OKNTrx3++GslH3omNWnq1/
-	 Rv6pxhpSxR0piTD4Pw==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.2.37] ([84.180.20.141]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N3KTo-1rGE7K1HqE-010Kfy; Fri, 24
- Nov 2023 22:06:20 +0100
-Subject: Re: [PATCH v5] tty: serial: Add RS422 flag to struct serial_rs485
-To: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20231121095122.15948-1-crescentcy.hsieh@moxa.com>
-From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <aa1f0e1e-1587-592c-7e86-e8f168b71c21@gmx.de>
-Date: Fri, 24 Nov 2023 22:06:19 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+	dkim=pass (2048-bit key) header.d=igalia.com header.i=@igalia.com header.b="jGxtCFew"
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D93173D;
+	Fri, 24 Nov 2023 13:43:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+	s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+	References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=5Op8b0I8io/cQDemiwtxI1Z5ZjO+RqtdJ3vH9IjLNJc=; b=jGxtCFewdD+ATRtqBWnzy5/xU6
+	l0e1EzcPpJQdrGpTLz0wqtsqL8X64FvuDSlyT0bkasNXw6z7dwmtrkOE1rEWheCcyQCEVLJtsM2Ia
+	aZhfpjye5j1Zne9sn+N6S4w/RZYU/BVJV50irOefBUui+d4uCneLRN4WmPXIKUtu5QLRpEICMc6lV
+	xUtSZmMUfletzSrI3znctClNB+D6ePslFfIz6rXT1X2TuM4FtSoWzUZ+v0hVdzXNwqru/bM0CopES
+	L5w2sWlnWGH+o2R+PE1ITW+vsoLSKVv8gL7xEKgINclf9Wn+4GZTKUht4ugPnXDqbGmjW7wk43zRb
+	LZoiyrXA==;
+Received: from 201-92-23-238.dsl.telesp.net.br ([201.92.23.238] helo=[192.168.1.60])
+	by fanzine2.igalia.com with esmtpsa 
+	(Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+	id 1r6dxC-006pom-Bo; Fri, 24 Nov 2023 22:43:14 +0100
+Message-ID: <66ab7a03-6794-28c5-5a92-548c8700ae7c@igalia.com>
+Date: Fri, 24 Nov 2023 18:43:08 -0300
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20231121095122.15948-1-crescentcy.hsieh@moxa.com>
-Content-Type: text/plain; charset=utf-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+Subject: Re: [PATCH 0/5] pstore: add tty frontend and multi-backend
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:a2ecakQEAjk1lc36DACgRA0A6KG9hOr2z2l5D4HevMNiaQNnscc
- Q9JN4fjO6fXMFpFvudTlJLogbXhICqy8vlnh7C1PpY5o/fzGZcbB+YuPgwRI+7Ojp7WpvKE
- vqXsIGPSiA4z+QHMqGVHLqXz9NyT6JBnkJGqhNlhNrnt0xOtIYMsmyoWNOENXw7oYghAxD7
- yohE6c+7QK2z5gfcz+aSA==
-UI-OutboundReport: notjunk:1;M01:P0:37SFlWokMW8=;oEZcXWjPsEKAeb8O0WaKJnGfBAv
- lOHv63ABG9aSH6af+KJwH6eovVDjENt8sU3qUv6SkLDy1XJwo1/oIB/Mcu1UX1xjbIVvWK6ks
- r77SpGEJv+wIh3YBkvMgUg3OuUNJqtApfo3aJ9P3T0koHvOoqThnGFEzMWpp5mBhO6i5945QU
- dB00Nb9idyrhd0NfUfM2SarPvaScsMb3Ucu1TN/wopAsAmOtdLb6UDZ63FTh92NX2Ex/ARPh0
- eRcAhmNrQ/OZZLRRotlionCvQSPksNhNmdCt5jNK3rrpm2WmoC7wex0KUyUFl0Uo0B+N3kQ9z
- d8FOqEnUSpF5pGTb5RgsPgLnbD61opE/BWwwqbOBcF5v1m4z3B4ZkZc9fhzGqc4ydcceqowbq
- dXAOUmOsdzZ0Lb3v5jFhaOhpSa7hWvlOEerewTOFVM3juDB/7ojlnCQn+JFob0gCizXQcqn56
- guTsmahaK1m5hNzPZyxNfdsvKUtlvhQ5ayV9mfeRgCFnZPVFQdCi5aQ9t6uPXP+7QKN9/MggR
- hQjmlCC58HrAPEtgE61eUl6Zk0qCQ454tGgaOLJUS966CXzE/9rWusKm8fC5AYKevyiVerZfd
- Bo6KifOSt0PMAUzmxzq0rZyIUD3EkKdurT93LxN6sQhnBjPSb+gbmZcQ7bntsinjk6q58Y5+u
- g2uIQtY2U7kFA9eAVlCmDnMlPMQUznQzKiIN/+89XoTmJRL11CCNhK5l+IOevSTTkD6AiYCZC
- KqsGLAM6wWXwAXb8t/N5v1Z9b9O4HvJGAUZJbVc3YmzxQa7dai7Sz+TQHk6sBu8tYLLe9tMgm
- J+YFCA10NUTFc5P2TvfFcs00Pjx5E1PrlqCV9C0rt3Pk9g+heETdNcmVWEXAvxh24sPim92y0
- YrneVFg0C5SSwOIHbkS0l+wqh1IMBMDVarsbNLpCHU7H/Kbuky7cvRjDagvW8dCMsUtzNRi54
- QqTElA==
+To: Kees Cook <keescook@chromium.org>, Yuanhe Shu <xiangzao@linux.alibaba.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, tony.luck@intel.com,
+ shuah@kernel.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-hardening@vger.kernel.org,
+ linux-kselftest@vger.kernel.org
+References: <20230928024244.257687-1-xiangzao@linux.alibaba.com>
+ <202309282030.8CE179EBB@keescook>
+From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <202309282030.8CE179EBB@keescook>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On 21.11.23 at 10:51, Crescent CY Hsieh wrote:
-> Add "SER_RS485_MODE_RS422" flag to struct serial_rs485, so that serial
-> port can switch interface into RS422 if supported by using ioctl command
-> "TIOCSRS485".
->
-> By treating RS422 as a mode of RS485, which means while enabling RS422
-> there are two flags need to be set (SER_RS485_ENABLED and
-> SER_RS485_MODE_RS422), it would make things much easier. For example
-> some places that checks for "SER_RS485_ENABLED" won't need to be rewritt=
-en.
->
-> Signed-off-by: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
->
-> ---
-> Changes from v4 to v5:
-> - Revise commit message.
-> - Delete RS422 checks within uart_set_rs485_termination().
->
-> Changes from v3 to v4:
-> - Include 'linux/const.h' header in '/include/uapi/linux/serial.h'
-> - Replace BIT() with _BITUL() which defined in
->   '/include/uapi/linux/const.h'
->
-> Changes from v2 to v3:
-> - Remove "SER_RS422_ENABLED" flag from legacy flags.
-> - Revise "SER_RS422_ENABLED" into "SER_RS485_MODE_RS422".
-> - Remove the code which checks the conflicts between SER_RS485_ENABLED
->   and SER_RS422_ENABLED.
-> - Add return check in uart_set_rs485_termination().
->
-> Changes from v1 to v2:
-> - Revise the logic that checks whether RS422/RS485 are enabled
->   simultaneously.
->
-> v4: https://lore.kernel.org/all/20231113094136.52003-1-crescentcy.hsieh@=
-moxa.com/
-> v3: https://lore.kernel.org/all/20231108060719.11775-1-crescentcy.hsieh@=
-moxa.com/
-> v2: https://lore.kernel.org/all/20231101064404.45711-1-crescentcy.hsieh@=
-moxa.com/
-> v1: https://lore.kernel.org/all/20231030053632.5109-1-crescentcy.hsieh@m=
-oxa.com/
->
-> ---
->  drivers/tty/serial/serial_core.c |  7 +++++++
->  include/uapi/linux/serial.h      | 19 +++++++++++--------
->  2 files changed, 18 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seria=
-l_core.c
-> index 831d03361..db1ebed7f 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1376,6 +1376,13 @@ static void uart_sanitize_serial_rs485(struct uar=
-t_port *port, struct serial_rs4
->  		return;
->  	}
->
-> +	/* Clear other RS485 flags and return if enabling RS422 */
-> +	if (rs485->flags & SER_RS485_MODE_RS422) {
-> +		memset(rs485, 0, sizeof(*rs485));
-> +		rs485->flags |=3D (SER_RS485_ENABLED | SER_RS485_MODE_RS422);
+Hi Yuanhe / Kees.
 
-Does not RS422 also require termination resistors? So what about SER_RS485=
-_TERMINATE_BUS?
+My apologies (and embarrassment) for responding almost 2mo later...
 
-Regards,
-Lino
+
+On 29/09/2023 00:49, Kees Cook wrote:
+> [...]
+>> Another problem is that currently pstore only supports a single backend.
+>> For debugging kdump problems, we hope to save the console logs and tty
+>> logs to the ramoops backend of pstore, as it will not be lost after
+>> rebooting. If the user has enabled another backend, the ramoops backend
+>> will not be registered. To this end, we add the multi-backend function
+>> to support simultaneous registration of multiple backends.
+> 
+> Ah very cool; I really like this idea. I'd wanted to do it for a while
+> just to make testing easier, but I hadn't had time to attempt it.
+
+I found the idea of multi-backend quite interesting, thanks for that!!!
+And to add on what's Kees mentioned, not sure others' opinions but seems
+to me this is a bit more straightforward / path-of-less-resistance than
+the the tty frontend, so I'd suggest split the series and focus first on
+this and once accepted, hook the tty thingy.
+
+Not that the series can't be sent altogether, reviews could work in
+parallel...I just see them as a bit tangential one to the other, personally.
+
+> [...]
+> - The multi-backend will enable _all possible_ backends, and that's a
+>   big change that will do weird things for some pstore users. I would
+>   prefer a pstore option to opt-in to enabling all backends. Perhaps
+>   have "pstore.backend=" be parsed with commas, so a list of backends
+>   can be provided, or "all" for the "all backends" behavior.
+> 
+> - Moving the pstorefs files into a subdirectory will break userspace
+>   immediately (e.g. systemd-pstore expects very specifically named
+>   files). Using subdirectories seems like a good idea, but perhaps
+>   we need hardlinks into the root pstorefs for the "first" backend,
+>   or some other creative solution here.
+>
+
+Big +1 in these two, commas are a very nice idea and changing the sysfs
+current way of exposing pstore logs would break at least kdumpst (the
+Steam Deck/Arch pstore / kdump tool), besides systemd-pstore that was
+already mentioned (and who knows what more tools / scripts out in the
+field).
+
+Overall, thanks a bunch for this work Yuanhe!
+Cheers,
+
+
+Guilherme
