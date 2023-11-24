@@ -1,29 +1,32 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="CgmlAdYV"
+	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="fOyeZFM3"
 Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24CD6189;
-	Thu, 23 Nov 2023 21:57:17 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D330591;
+	Thu, 23 Nov 2023 22:32:51 -0800 (PST)
 Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id 3A38B60B1C;
-	Fri, 24 Nov 2023 05:56:45 +0000 (UTC)
+	by mail5.25mail.st (Postfix) with ESMTPSA id 1DB30603EE;
+	Fri, 24 Nov 2023 06:32:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1700805436;
-	bh=D+5OJtIXXHhQ4jFCNY71lo60Nt7F5l8pHOuTGGgUjUs=;
+	s=25mailst; t=1700807571;
+	bh=+gS/X74h4UfVNPZhsitLFhRKfvXbk2HaAi+3m9/w4LA=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=CgmlAdYVqncyCUSzoeA/3qdXsRIFmTqgdm2efS+e3q8k+zjjcNuNJkDR9CkXfZYje
-	 dOc2SYOtgA9VDPqZxWhUf4nt2ywLzLPYgEbySct6hYIW4ce3iN7W6EJW0zVTzzEbw8
-	 M7LRhCCant9aj5L3wzZUjanaRiNlc1KCJXJEfzflEj57FOcocmADfNTBRMQFecPbvO
-	 ffT3gHtTzJw+++Rx8SIuxr60bkI6nlInfYGpKLoamMDCr7+L08XfSUjYydYK8K043u
-	 njjx5bFbgKysdVNWgCocxRudQ7lbrRUFMPo6WNg+kEarkMPNGo27mCgc9tw9A3ZUPA
-	 IOnmnkfcdF3xQ==
-Date: Fri, 24 Nov 2023 07:56:43 +0200
+	b=fOyeZFM3XB/N1+TWPkAPihd+noaGWJronK71K0i3yOCY4UcLBv1uy0Mq2MrhaW5sw
+	 L4fWQqlSnNwNM4oVau/CDo1e6vK0+H9Sa1Qnal8PBAV9kQ1REiOgueHKoHaCb/3t2t
+	 yZntys8VgzYz07KKMJVtaV+czADccc7zutPFMiv2U1IAdF5JP2BH8MMUmHXvQ3WtHX
+	 NXIe/acjhZKOzAA2QpDnySk9I7tLMJYuaJmMh0hsENtiUIIBnGFACcoG4S3WXHXI2R
+	 H4BmW0ylNun2MKKfpeTN6NzDcA5hxRPfwA+u0B6d1pQF2SkROP87ijITBwdeXHIC+n
+	 xAapRrmmE8Viw==
+Date: Fri, 24 Nov 2023 08:32:10 +0200
 From: Tony Lindgren <tony@atomide.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To: Dan Carpenter <dan.carpenter@linaro.org>
+Cc: oe-kbuild@lists.linux.dev,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
 	Steven Rostedt <rostedt@goodmis.org>,
 	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc: "David S . Miller" <davem@davemloft.net>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>, lkp@intel.com,
+	oe-kbuild-all@lists.linux.dev,
+	"David S . Miller" <davem@davemloft.net>,
 	Andy Shevchenko <andriy.shevchenko@intel.com>,
 	Dhruva Gole <d-gole@ti.com>,
 	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
@@ -33,11 +36,10 @@ Cc: "David S . Miller" <davem@davemloft.net>,
 	linux-serial@vger.kernel.org
 Subject: Re: [PATCH v3 3/3] serial: core: Move console character device
  handling from printk
-Message-ID: <20231124055643.GH5169@atomide.com>
-References: <20231121113203.61341-1-tony@atomide.com>
- <20231121113203.61341-4-tony@atomide.com>
- <20231122070353.GF5169@atomide.com>
- <20231122081554.GG5169@atomide.com>
+Message-ID: <20231124063210.GI5169@atomide.com>
+References: <20231121113203.61341-4-tony@atomide.com>
+ <6933c98f-7f76-4955-ba0f-89ea340b672d@suswa.mountain>
+ <8a4c0b43-cf63-400d-b33d-d9c447b7e0b9@suswa.mountain>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -46,42 +48,54 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231122081554.GG5169@atomide.com>
+In-Reply-To: <8a4c0b43-cf63-400d-b33d-d9c447b7e0b9@suswa.mountain>
 
-* Tony Lindgren <tony@atomide.com> [231122 10:16]:
-> * Tony Lindgren <tony@atomide.com> [231122 09:04]:
-> > * Tony Lindgren <tony@atomide.com> [700101 02:00]:
-> > > -	__add_preferred_console(buf, idx, options, brl_options, true);
-> > >  	return 1;
+* Dan Carpenter <dan.carpenter@linaro.org> [231123 07:29]:
+> On Thu, Nov 23, 2023 at 10:24:24AM +0300, Dan Carpenter wrote:
+> > Hi Tony,
 > > 
-> > Looks like this can't be dropped yet. We need to keep it for the
-> > brl_options. I'll change it to return early if brl_options is NULL.
+> > kernel test robot noticed the following build warnings:
+> > 
+> > https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> > 
+> > url:    https://github.com/intel-lab-lkp/linux/commits/Tony-Lindgren/printk-Save-console-options-for-add_preferred_console_match/20231121-193809
+> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
+> > patch link:    https://lore.kernel.org/r/20231121113203.61341-4-tony%40atomide.com
+> > patch subject: [PATCH v3 3/3] serial: core: Move console character device handling from printk
+> > config: parisc-randconfig-r081-20231122 (https://download.01.org/0day-ci/archive/20231122/202311221437.5Gil0Pml-lkp@intel.com/config)
+> > compiler: hppa-linux-gcc (GCC) 13.2.0
+> > reproduce: (https://download.01.org/0day-ci/archive/20231122/202311221437.5Gil0Pml-lkp@intel.com/reproduce)
+> > 
+> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > the same patch/commit), kindly add following tags
+> > | Reported-by: kernel test robot <lkp@intel.com>
+> > | Reported-by: Dan Carpenter <error27@gmail.com>
+> > | Closes: https://lore.kernel.org/r/202311221437.5Gil0Pml-lkp@intel.com/
+> > 
+> > smatch warnings:
+> > drivers/tty/serial/serial_base_bus.c:266 serial_base_add_preferred_console() error: uninitialized symbol 'nmbr_match'.
+> > drivers/tty/serial/serial_base_bus.c:265 serial_base_add_preferred_console() error: uninitialized symbol 'char_match'.
+> > 
+> > vim +/nmbr_match +266 drivers/tty/serial/serial_base_bus.c
+> > 
+> > e4ebdcd790e0f3 Tony Lindgren 2023-11-21  261  int serial_base_add_preferred_console(struct uart_driver *drv,
+> > e4ebdcd790e0f3 Tony Lindgren 2023-11-21  262  				      struct uart_port *port)
+> > e4ebdcd790e0f3 Tony Lindgren 2023-11-21  263  {
+> > e4ebdcd790e0f3 Tony Lindgren 2023-11-21  264  	const char *port_match __free(kfree);
+> > b1b8726ec3f40b Tony Lindgren 2023-11-21 @265  	const char *char_match __free(kfree);
+> > b1b8726ec3f40b Tony Lindgren 2023-11-21 @266  	const char *nmbr_match __free(kfree);
+> > 
+> > These need to be initialized to NULL.
+> > 
+> > 	const char *char_match __free(kfree) = NULL;
+> > 
 > 
-> Looks like we can drop the parsing from printk :) In console_setup()
-> we can call console_opt_save() after _braille_console_setup(), and
-> then save also the brl_options for the port.
+> Let's add a todo to make checkpatch warn about this.
+> 
+> KTODO: make checkpatch warn about __free() functions without an initializer
 
-I noticed we have more issues remaining trying to drop the console
-parsing completely from console_setup().
+Yes good idea.
 
-If add_preferred_console() gets called later, register_console() can
-try to call try_enable_default_console() before we get around to call
-try_enable_preferred_console(), and that may lead to no serial console.
-
-To avoid that, setting console_set_on_cmdline = 1 in console_setup(),
-and patching register_console() console to check for the flag helps.
-But looks like that leads to bootconsole not getting disabled and
-more patching for that is needed.. And of course we'd need to check
-the other register_console() callers too, not just 8250..
-
-So I think for now, it's best to just drop the 8250 and sparc quirks
-from console_setup(), that already simplifies things in printk a bit :)
-
-And for 8250, we should have serial8250_isa_init_ports() call
-add_preferred_console_match() to avoid console getting registered
-later on when the hardware specific driver takes over for x86, m68k,
-and alpha that define SERIAL_PORT_DFNS.
-
-Regards,
+Thanks,
 
 Tony
