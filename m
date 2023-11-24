@@ -1,55 +1,24 @@
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="WWtK3fD2"
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2420B0
-	for <linux-serial@vger.kernel.org>; Fri, 24 Nov 2023 09:31:35 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id a640c23a62f3a-a049d19b63bso309234366b.2
-        for <linux-serial@vger.kernel.org>; Fri, 24 Nov 2023 09:31:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1700847094; x=1701451894; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=0MmcPyK3mkdrLM52uLYpIt1qXSSFyNhnpJboXxQydAo=;
-        b=WWtK3fD2srRMxzUj0evOlz2xiOCJzmnLbLet49MdiPHVRVpimC8aSIq32N/+QXtle2
-         gNXFSJaq96Zn4LbsK2HIBqqWbROd5+ANpzaQdErGCHVuRW7tH80CPizq65/2IhtVG46V
-         J2XMJkCg1g6375A5y9lgTtdxSGxJZRW5dAm2cnRKxPphWwaeoSpJNzR1xqGfxhl2k2qs
-         gUxlvo8Hs8G6kSPy5yMWUR5humP1gK9hN0+dkfCQ4Am0t+tsOpF3h7HAcKKjasnO6K19
-         lc8fi7qBMZ4kkF+i0q+2TlWnv3dLkC1rCKmGNnuTUENFNRf2Hs/tlrHTAFqej5OrDSrX
-         u0/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700847094; x=1701451894;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0MmcPyK3mkdrLM52uLYpIt1qXSSFyNhnpJboXxQydAo=;
-        b=Nm/uTrYVnlN2l12j0xfKXdwzSvLhCofe/Eun7uLLvVVnyQInL8F7+DGknnOQ3Dq4Wi
-         m38A/kdpZ7VQL0ahoymuUx/PPMTubDw206qMHt22MAr/UxZpwdABCQW2LH5wD3E6fiID
-         xAZlP2j5QlknmMsjFSwU8c5VfA7PRgUes3XoGlYkWBsnbRu9qrxel47jJPxt1JesvEot
-         swyTIWN5a7331MDDAO9fCXoFqTolCry3w4SzjG8Hs6VEOwaGeFyGG9EqS2erpX7b2iv/
-         ViFKG5FkgFTWqWElIpfIGegwzI0Wdoc4YOnFd7fXSNTX1Eg4shMcm1lqE/AmuKOZM2Jz
-         AV5A==
-X-Gm-Message-State: AOJu0YwtQY2I1RDDnnWwehOKBdHEvUz8fRldJpKndDoLBjrLlhAk+JuG
-	hhetMg9uBJUS3fF65V3wlsCyhA==
-X-Google-Smtp-Source: AGHT+IG6CMsfmQV5iDvLoyvWP8dLg5EMoM/S3qrMav9BlUgZwXuqbKVl403ib2zNmITpuo9KrFP3JA==
-X-Received: by 2002:a17:907:2983:b0:9fb:da63:bb2f with SMTP id eu3-20020a170907298300b009fbda63bb2fmr2616757ejc.18.1700847094196;
-        Fri, 24 Nov 2023 09:31:34 -0800 (PST)
-Received: from localhost ([81.19.4.232])
-        by smtp.gmail.com with ESMTPSA id h4-20020a170906398400b009fd541851f4sm2306940eje.198.2023.11.24.09.31.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Nov 2023 09:31:33 -0800 (PST)
-Date: Fri, 24 Nov 2023 18:31:33 +0100
-From: Andrew Jones <ajones@ventanamicro.com>
-To: Anup Patel <apatel@ventanamicro.com>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>, 
-	Paul Walmsley <paul.walmsley@sifive.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Conor Dooley <conor@kernel.org>, linux-riscv@lists.infradead.org, 
-	linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, 
-	Atish Patra <atishp@rivosinc.com>
-Subject: Re: [PATCH v5 4/5] tty: Add SBI debug console support to HVC SBI
- driver
-Message-ID: <20231124-cf60c92a6a7a2b220feab211@orel>
-References: <20231124070905.1043092-1-apatel@ventanamicro.com>
- <20231124070905.1043092-5-apatel@ventanamicro.com>
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from mail11.truemail.it (mail11.truemail.it [IPv6:2001:4b7e:0:8::81])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457291987;
+	Fri, 24 Nov 2023 12:33:16 -0800 (PST)
+Received: from francesco-nb.int.toradex.com (93-49-2-63.ip317.fastwebnet.it [93.49.2.63])
+	by mail11.truemail.it (Postfix) with ESMTPA id 9678720718;
+	Fri, 24 Nov 2023 21:33:13 +0100 (CET)
+Date: Fri, 24 Nov 2023 21:33:09 +0100
+From: Francesco Dolcini <francesco@dolcini.it>
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org,
+	Amitkumar Karwar <amitkumar.karwar@nxp.com>,
+	Neeraj Kale <neeraj.sanjaykale@nxp.com>
+Cc: Rob Herring <robh@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Johan Hedberg <johan.hedberg@gmail.com>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Subject: WARNING around serdev/bt/btnxpuart with 6.7-rc2
+Message-ID: <ZWEIhcUXfutb5SY6@francesco-nb.int.toradex.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -58,94 +27,56 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231124070905.1043092-5-apatel@ventanamicro.com>
 
-On Fri, Nov 24, 2023 at 12:39:04PM +0530, Anup Patel wrote:
-> From: Atish Patra <atishp@rivosinc.com>
-> 
-> RISC-V SBI specification supports advanced debug console
-> support via SBI DBCN extension.
-> 
-> Extend the HVC SBI driver to support it.
-> 
-> Signed-off-by: Atish Patra <atishp@rivosinc.com>
-> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> ---
->  drivers/tty/hvc/Kconfig         |  2 +-
->  drivers/tty/hvc/hvc_riscv_sbi.c | 37 ++++++++++++++++++++++++++-------
->  2 files changed, 31 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/tty/hvc/Kconfig b/drivers/tty/hvc/Kconfig
-> index 4f9264d005c0..6e05c5c7bca1 100644
-> --- a/drivers/tty/hvc/Kconfig
-> +++ b/drivers/tty/hvc/Kconfig
-> @@ -108,7 +108,7 @@ config HVC_DCC_SERIALIZE_SMP
->  
->  config HVC_RISCV_SBI
->  	bool "RISC-V SBI console support"
-> -	depends on RISCV_SBI_V01
-> +	depends on RISCV_SBI
->  	select HVC_DRIVER
->  	help
->  	  This enables support for console output via RISC-V SBI calls, which
-> diff --git a/drivers/tty/hvc/hvc_riscv_sbi.c b/drivers/tty/hvc/hvc_riscv_sbi.c
-> index 31f53fa77e4a..2f3571f17ecd 100644
-> --- a/drivers/tty/hvc/hvc_riscv_sbi.c
-> +++ b/drivers/tty/hvc/hvc_riscv_sbi.c
-> @@ -39,21 +39,44 @@ static int hvc_sbi_tty_get(uint32_t vtermno, char *buf, int count)
->  	return i;
->  }
->  
-> -static const struct hv_ops hvc_sbi_ops = {
-> +static const struct hv_ops hvc_sbi_v01_ops = {
->  	.get_chars = hvc_sbi_tty_get,
->  	.put_chars = hvc_sbi_tty_put,
->  };
->  
-> -static int __init hvc_sbi_init(void)
-> +static int hvc_sbi_dbcn_tty_put(uint32_t vtermno, const char *buf, int count)
->  {
-> -	return PTR_ERR_OR_ZERO(hvc_alloc(0, 0, &hvc_sbi_ops, 16));
-> +	return sbi_debug_console_write(buf, count);
->  }
-> -device_initcall(hvc_sbi_init);
->  
-> -static int __init hvc_sbi_console_init(void)
-> +static int hvc_sbi_dbcn_tty_get(uint32_t vtermno, char *buf, int count)
->  {
-> -	hvc_instantiate(0, 0, &hvc_sbi_ops);
-> +	return sbi_debug_console_read(buf, count);
-> +}
-> +
-> +static const struct hv_ops hvc_sbi_dbcn_ops = {
-> +	.put_chars = hvc_sbi_dbcn_tty_put,
-> +	.get_chars = hvc_sbi_dbcn_tty_get,
-> +};
-> +
-> +static int __init hvc_sbi_init(void)
-> +{
-> +	int err;
-> +
-> +	if (sbi_debug_console_available) {
-> +		err = PTR_ERR_OR_ZERO(hvc_alloc(0, 0, &hvc_sbi_dbcn_ops, 256));
-> +		if (err)
-> +			return err;
-> +		hvc_instantiate(0, 0, &hvc_sbi_dbcn_ops);
-> +	} else if (IS_ENABLED(CONFIG_RISCV_SBI_V01)) {
-> +		err = PTR_ERR_OR_ZERO(hvc_alloc(0, 0, &hvc_sbi_v01_ops, 256));
-> +		if (err)
-> +			return err;
-> +		hvc_instantiate(0, 0, &hvc_sbi_v01_ops);
-> +	} else {
-> +		return -ENODEV;
-> +	}
->  
->  	return 0;
->  }
-> -console_initcall(hvc_sbi_console_init);
-> +device_initcall(hvc_sbi_init);
-> -- 
-> 2.34.1
->
+Hello all,
+while doing some test with current [1] Linux mainline I randomly hit a
+warning. It is not systematic and I cannot really tell when
+it was introduced, posting here to collect some ideas.
 
-Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
+Amitkumar, Neeraj: to me the issue is around the bluetooth/btnxpuart
+driver, however I could also be plain wrong.
+
+The issue was reproduced on a Toradex Verdin AM62 [2] that is based on a TI
+AM625 SOC (arm64) running with a arm64 defconfig and built with GCC 9 [3].
+
+[    9.599027] Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+[    9.962266] Bluetooth: hci0: Frame reassembly failed (-84)
+[    9.972939] ------------[ cut here ]------------
+[    9.977922] serial serial0: receive_buf returns -84 (count = 6)
+[    9.994857] WARNING: CPU: 0 PID: 37 at drivers/tty/serdev/serdev-ttyport.c:37 ttyport_receive_buf+0xd8/0xf8
+[   10.004840] Modules linked in: mwifiex_sdio(+) mwifiex snd_soc_simple_card crct10dif_ce cfg80211 snd_soc_simple_card_utils k3_j72xx_bandgap rti_wdt rtc_ti_k3 btnxpuart bluetooth sa2ul ecdh_generic ecc sha256_generic tidss rfkill libsha256 drm_dma_helper snd_soc_davinci_mcasp authenc omap_mailbox snd_soc_ti_udma snd_soc_ti_edma snd_soc_ti_sdma atmel_mxt_ts ina2xx snd_soc_nau8822 ti_sn65dsi83 tc358768 ti_ads1015 tps65219_pwrbutton at24 m_can_platform industrialio_triggered_buffer drm_kms_helper m_can kfifo_buf rtc_ds1307 lm75 pwm_tiehrpwm can_dev spi_omap2_mcspi panel_lvds pwm_bl libcomposite fuse drm backlight ipv6
+[   10.059984] CPU: 0 PID: 37 Comm: kworker/u4:2 Not tainted 6.7.0-rc2-00147-gf1a09972a45a #1
+[   10.071793] Hardware name: Toradex Verdin AM62 WB on Verdin Development Board (DT)
+[   10.082898] Workqueue: events_unbound flush_to_ldisc
+[   10.091345] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[   10.101820] pc : ttyport_receive_buf+0xd8/0xf8
+[   10.109712] lr : ttyport_receive_buf+0xd8/0xf8
+[   10.117581] sp : ffff800082b9bd20
+[   10.124202] x29: ffff800082b9bd20 x28: ffff00000000ee05 x27: ffff0000002f21c0
+[   10.134735] x26: ffff000002931820 x25: 61c8864680b583eb x24: ffff0000002f21b8
+[   10.145209] x23: ffff00000026e740 x22: ffff0000002f21e0 x21: ffffffffffffffac
+[   10.155686] x20: ffff000000da5c00 x19: 0000000000000006 x18: 0000000000000000
+[   10.166178] x17: ffff7fffbe0e7000 x16: ffff800080000000 x15: 000039966db1c650
+[   10.176564] x14: 000000000000022c x13: 000000000000022c x12: 0000000000000000
+[   10.186979] x11: 000000000000000a x10: 0000000000000a60 x9 : ffff800082b9bb80
+[   10.197352] x8 : ffff00000026f200 x7 : ffff00003fd90080 x6 : 00000000000022e5
+[   10.207680] x5 : 00000000410fd030 x4 : 0000000000c0000e x3 : ffff7fffbe0e7000
+[   10.218051] x2 : 0000000000000002 x1 : 0000000000000000 x0 : 0000000000000000
+[   10.228393] Call trace:
+[   10.233989]  ttyport_receive_buf+0xd8/0xf8
+[   10.241224]  flush_to_ldisc+0xbc/0x1a4
+[   10.248117]  process_scheduled_works+0x16c/0x28c
+[   10.255851]  worker_thread+0x16c/0x2e0
+[   10.262673]  kthread+0x11c/0x128
+[   10.268953]  ret_from_fork+0x10/0x20
+[   10.275460] ---[ end trace 0000000000000000 ]---
+[   10.294674] Bluetooth: hci0: Frame reassembly failed (-84)
+[   10.461657] Bluetooth: hci0: Frame reassembly failed (-84)
+[   10.472025] Bluetooth: hci0: Frame reassembly failed (-84)
+
+Francesco
+
+[1] git sha f1a09972a45a
+[2] arch/arm64/boot/dts/ti/k3-am625-verdin-wifi-dev.dts
+[3] aarch64-linux-gnu-gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0
+
