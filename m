@@ -1,82 +1,251 @@
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from mail11.truemail.it (mail11.truemail.it [IPv6:2001:4b7e:0:8::81])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457291987;
-	Fri, 24 Nov 2023 12:33:16 -0800 (PST)
-Received: from francesco-nb.int.toradex.com (93-49-2-63.ip317.fastwebnet.it [93.49.2.63])
-	by mail11.truemail.it (Postfix) with ESMTPA id 9678720718;
-	Fri, 24 Nov 2023 21:33:13 +0100 (CET)
-Date: Fri, 24 Nov 2023 21:33:09 +0100
-From: Francesco Dolcini <francesco@dolcini.it>
-To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org,
-	Amitkumar Karwar <amitkumar.karwar@nxp.com>,
-	Neeraj Kale <neeraj.sanjaykale@nxp.com>
-Cc: Rob Herring <robh@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Johan Hedberg <johan.hedberg@gmail.com>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Subject: WARNING around serdev/bt/btnxpuart with 6.7-rc2
-Message-ID: <ZWEIhcUXfutb5SY6@francesco-nb.int.toradex.com>
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m/oFuBKM"
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F3212B
+	for <linux-serial@vger.kernel.org>; Fri, 24 Nov 2023 12:55:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700859318; x=1732395318;
+  h=date:from:to:cc:subject:message-id;
+  bh=kvkBoL6EJBcdQh0GSjdGYWLXzfLrFgl+xSe0bTvw+Ps=;
+  b=m/oFuBKMirTFazMfdWd7z9MP9dcjEA6M2X2gAVPvxI2m/I4Nxw/1YNAs
+   m1M29HIKZUM2s0og/QbjitKO2EwbGMLhyNHmTYwtVVmR8CQKRjzQbCTDB
+   4dmX7CKj1kBKWvgKEZiVp/cDMBiZ3i2aXitOdpVXFSysj06gb4/BUiXRh
+   vHiyBBjyhvR7WKDS2ppiMSj88Tz6tzZznwzv1zP3DmOytaFTTXne+UqqI
+   AIf6XUtli5aWKkWaxJU5bXHR7QgN0+WQzr3tHklRFXflG2WF8X0rL2QHN
+   FNgdS7RGGxWWqP1RTEy4PazC8fZsy2G7e+J1APrdwWOFlTkMHdLWsIBCx
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10904"; a="382867135"
+X-IronPort-AV: E=Sophos;i="6.04,224,1695711600"; 
+   d="scan'208";a="382867135"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2023 12:55:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.04,224,1695711600"; 
+   d="scan'208";a="9061341"
+Received: from lkp-server01.sh.intel.com (HELO d584ee6ebdcc) ([10.239.97.150])
+  by orviesa002.jf.intel.com with ESMTP; 24 Nov 2023 12:55:17 -0800
+Received: from kbuild by d584ee6ebdcc with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1r6dCk-0003Gw-1a;
+	Fri, 24 Nov 2023 20:55:14 +0000
+Date: Sat, 25 Nov 2023 04:54:15 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD REGRESSION
+ 53d40bb0f146410c58d791da5bd66451513e96ec
+Message-ID: <202311250412.4NYKOlgM-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-Hello all,
-while doing some test with current [1] Linux mainline I randomly hit a
-warning. It is not systematic and I cannot really tell when
-it was introduced, posting here to collect some ideas.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 53d40bb0f146410c58d791da5bd66451513e96ec  tty: srmcons: use 'buf' directly in srmcons_do_write()
 
-Amitkumar, Neeraj: to me the issue is around the bluetooth/btnxpuart
-driver, however I could also be plain wrong.
+Error/Warning reports:
 
-The issue was reproduced on a Toradex Verdin AM62 [2] that is based on a TI
-AM625 SOC (arm64) running with a arm64 defconfig and built with GCC 9 [3].
+https://lore.kernel.org/oe-kbuild-all/202311241341.8QD0WOgN-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202311241523.IZ8ifBRi-lkp@intel.com
 
-[    9.599027] Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
-[    9.962266] Bluetooth: hci0: Frame reassembly failed (-84)
-[    9.972939] ------------[ cut here ]------------
-[    9.977922] serial serial0: receive_buf returns -84 (count = 6)
-[    9.994857] WARNING: CPU: 0 PID: 37 at drivers/tty/serdev/serdev-ttyport.c:37 ttyport_receive_buf+0xd8/0xf8
-[   10.004840] Modules linked in: mwifiex_sdio(+) mwifiex snd_soc_simple_card crct10dif_ce cfg80211 snd_soc_simple_card_utils k3_j72xx_bandgap rti_wdt rtc_ti_k3 btnxpuart bluetooth sa2ul ecdh_generic ecc sha256_generic tidss rfkill libsha256 drm_dma_helper snd_soc_davinci_mcasp authenc omap_mailbox snd_soc_ti_udma snd_soc_ti_edma snd_soc_ti_sdma atmel_mxt_ts ina2xx snd_soc_nau8822 ti_sn65dsi83 tc358768 ti_ads1015 tps65219_pwrbutton at24 m_can_platform industrialio_triggered_buffer drm_kms_helper m_can kfifo_buf rtc_ds1307 lm75 pwm_tiehrpwm can_dev spi_omap2_mcspi panel_lvds pwm_bl libcomposite fuse drm backlight ipv6
-[   10.059984] CPU: 0 PID: 37 Comm: kworker/u4:2 Not tainted 6.7.0-rc2-00147-gf1a09972a45a #1
-[   10.071793] Hardware name: Toradex Verdin AM62 WB on Verdin Development Board (DT)
-[   10.082898] Workqueue: events_unbound flush_to_ldisc
-[   10.091345] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   10.101820] pc : ttyport_receive_buf+0xd8/0xf8
-[   10.109712] lr : ttyport_receive_buf+0xd8/0xf8
-[   10.117581] sp : ffff800082b9bd20
-[   10.124202] x29: ffff800082b9bd20 x28: ffff00000000ee05 x27: ffff0000002f21c0
-[   10.134735] x26: ffff000002931820 x25: 61c8864680b583eb x24: ffff0000002f21b8
-[   10.145209] x23: ffff00000026e740 x22: ffff0000002f21e0 x21: ffffffffffffffac
-[   10.155686] x20: ffff000000da5c00 x19: 0000000000000006 x18: 0000000000000000
-[   10.166178] x17: ffff7fffbe0e7000 x16: ffff800080000000 x15: 000039966db1c650
-[   10.176564] x14: 000000000000022c x13: 000000000000022c x12: 0000000000000000
-[   10.186979] x11: 000000000000000a x10: 0000000000000a60 x9 : ffff800082b9bb80
-[   10.197352] x8 : ffff00000026f200 x7 : ffff00003fd90080 x6 : 00000000000022e5
-[   10.207680] x5 : 00000000410fd030 x4 : 0000000000c0000e x3 : ffff7fffbe0e7000
-[   10.218051] x2 : 0000000000000002 x1 : 0000000000000000 x0 : 0000000000000000
-[   10.228393] Call trace:
-[   10.233989]  ttyport_receive_buf+0xd8/0xf8
-[   10.241224]  flush_to_ldisc+0xbc/0x1a4
-[   10.248117]  process_scheduled_works+0x16c/0x28c
-[   10.255851]  worker_thread+0x16c/0x2e0
-[   10.262673]  kthread+0x11c/0x128
-[   10.268953]  ret_from_fork+0x10/0x20
-[   10.275460] ---[ end trace 0000000000000000 ]---
-[   10.294674] Bluetooth: hci0: Frame reassembly failed (-84)
-[   10.461657] Bluetooth: hci0: Frame reassembly failed (-84)
-[   10.472025] Bluetooth: hci0: Frame reassembly failed (-84)
+Error/Warning: (recently discovered and may have been fixed)
 
-Francesco
+drivers/tty/serial/amba-pl011.c:128:12: error: call to undeclared function 'FIELD_PREP_CONST'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+drivers/tty/serial/amba-pl011.c:128:12: error: implicit declaration of function 'FIELD_PREP_CONST' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+drivers/tty/serial/amba-pl011.c:128:12: error: initializer element is not a compile-time constant
+include/linux/amba/serial.h:158:33: error: implicit declaration of function 'FIELD_PREP_CONST' [-Werror=implicit-function-declaration]
+include/linux/amba/serial.h:158:33: error: initializer element is not constant
 
-[1] git sha f1a09972a45a
-[2] arch/arm64/boot/dts/ti/k3-am625-verdin-wifi-dev.dts
-[3] aarch64-linux-gnu-gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0
+Error/Warning ids grouped by kconfigs:
 
+gcc_recent_errors
+`-- arm-allmodconfig
+    |-- include-linux-amba-serial.h:error:implicit-declaration-of-function-FIELD_PREP_CONST
+    `-- include-linux-amba-serial.h:error:initializer-element-is-not-constant
+clang_recent_errors
+|-- arm-defconfig
+|   `-- drivers-tty-serial-amba-pl011.c:error:implicit-declaration-of-function-FIELD_PREP_CONST-is-invalid-in-C99-Werror-Wimplicit-function-declaration
+|-- arm-randconfig-001-20231124
+|   `-- drivers-tty-serial-amba-pl011.c:error:implicit-declaration-of-function-FIELD_PREP_CONST-is-invalid-in-C99-Werror-Wimplicit-function-declaration
+|-- arm-randconfig-003-20231124
+|   |-- drivers-tty-serial-amba-pl011.c:error:call-to-undeclared-function-FIELD_PREP_CONST-ISO-C99-and-later-do-not-support-implicit-function-declarations
+|   `-- drivers-tty-serial-amba-pl011.c:error:initializer-element-is-not-a-compile-time-constant
+`-- arm-randconfig-r131-20231124
+    |-- drivers-tty-serial-amba-pl011.c:error:call-to-undeclared-function-FIELD_PREP_CONST-ISO-C99-and-later-do-not-support-implicit-function-declarations
+    `-- drivers-tty-serial-amba-pl011.c:error:initializer-element-is-not-a-compile-time-constant
+
+elapsed time: 1446m
+
+configs tested: 162
+configs skipped: 2
+
+tested configs:
+alpha                             allnoconfig   gcc  
+alpha                            allyesconfig   gcc  
+alpha                               defconfig   gcc  
+arc                              allmodconfig   gcc  
+arc                               allnoconfig   gcc  
+arc                              allyesconfig   gcc  
+arc                          axs103_defconfig   gcc  
+arc                                 defconfig   gcc  
+arc                   randconfig-001-20231124   gcc  
+arc                   randconfig-002-20231124   gcc  
+arc                    vdk_hs38_smp_defconfig   gcc  
+arm                              allmodconfig   gcc  
+arm                               allnoconfig   gcc  
+arm                              allyesconfig   gcc  
+arm                                 defconfig   clang
+arm                      integrator_defconfig   gcc  
+arm64                            allmodconfig   clang
+arm64                             allnoconfig   gcc  
+arm64                               defconfig   gcc  
+csky                             allmodconfig   gcc  
+csky                              allnoconfig   gcc  
+csky                             allyesconfig   gcc  
+csky                                defconfig   gcc  
+csky                  randconfig-001-20231124   gcc  
+csky                  randconfig-002-20231124   gcc  
+hexagon                          allmodconfig   clang
+hexagon                           allnoconfig   clang
+hexagon                          allyesconfig   clang
+hexagon                             defconfig   clang
+i386                             allmodconfig   clang
+i386                              allnoconfig   clang
+i386                             allyesconfig   clang
+i386                                defconfig   gcc  
+i386                  randconfig-011-20231124   gcc  
+i386                  randconfig-012-20231124   gcc  
+i386                  randconfig-013-20231124   gcc  
+i386                  randconfig-014-20231124   gcc  
+i386                  randconfig-015-20231124   gcc  
+i386                  randconfig-016-20231124   gcc  
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                        allyesconfig   gcc  
+loongarch                           defconfig   gcc  
+loongarch             randconfig-001-20231124   gcc  
+loongarch             randconfig-002-20231124   gcc  
+m68k                             allmodconfig   gcc  
+m68k                              allnoconfig   gcc  
+m68k                             allyesconfig   gcc  
+m68k                          amiga_defconfig   gcc  
+m68k                                defconfig   gcc  
+m68k                        m5272c3_defconfig   gcc  
+m68k                       m5275evb_defconfig   gcc  
+m68k                            mac_defconfig   gcc  
+m68k                          sun3x_defconfig   gcc  
+microblaze                       allmodconfig   gcc  
+microblaze                        allnoconfig   gcc  
+microblaze                       allyesconfig   gcc  
+microblaze                          defconfig   gcc  
+mips                             allmodconfig   gcc  
+mips                              allnoconfig   clang
+mips                             allyesconfig   gcc  
+mips                        bcm47xx_defconfig   gcc  
+mips                         cobalt_defconfig   gcc  
+mips                           jazz_defconfig   gcc  
+mips                      maltasmvp_defconfig   gcc  
+mips                  maltasmvp_eva_defconfig   gcc  
+nios2                            allmodconfig   gcc  
+nios2                             allnoconfig   gcc  
+nios2                            allyesconfig   gcc  
+nios2                               defconfig   gcc  
+nios2                 randconfig-001-20231124   gcc  
+nios2                 randconfig-002-20231124   gcc  
+openrisc                         allmodconfig   gcc  
+openrisc                          allnoconfig   gcc  
+openrisc                         allyesconfig   gcc  
+openrisc                            defconfig   gcc  
+parisc                           allmodconfig   gcc  
+parisc                            allnoconfig   gcc  
+parisc                           allyesconfig   gcc  
+parisc                              defconfig   gcc  
+parisc                generic-64bit_defconfig   gcc  
+parisc                randconfig-001-20231124   gcc  
+parisc                randconfig-002-20231124   gcc  
+parisc64                            defconfig   gcc  
+powerpc                          allmodconfig   clang
+powerpc                           allnoconfig   gcc  
+powerpc                          allyesconfig   clang
+powerpc                        cell_defconfig   gcc  
+powerpc                       maple_defconfig   gcc  
+powerpc                      ppc40x_defconfig   gcc  
+powerpc                         ps3_defconfig   gcc  
+riscv                            allmodconfig   gcc  
+riscv                             allnoconfig   clang
+riscv                            allyesconfig   gcc  
+riscv                               defconfig   gcc  
+riscv                          rv32_defconfig   clang
+s390                             allmodconfig   gcc  
+s390                              allnoconfig   gcc  
+s390                             allyesconfig   gcc  
+s390                                defconfig   gcc  
+s390                  randconfig-001-20231124   gcc  
+s390                  randconfig-002-20231124   gcc  
+sh                               allmodconfig   gcc  
+sh                                allnoconfig   gcc  
+sh                               allyesconfig   gcc  
+sh                        apsh4ad0a_defconfig   gcc  
+sh                                  defconfig   gcc  
+sh                    randconfig-001-20231124   gcc  
+sh                    randconfig-002-20231124   gcc  
+sh                   rts7751r2dplus_defconfig   gcc  
+sh                           se7705_defconfig   gcc  
+sh                           se7712_defconfig   gcc  
+sh                   secureedge5410_defconfig   gcc  
+sh                   sh7770_generic_defconfig   gcc  
+sh                  sh7785lcr_32bit_defconfig   gcc  
+sh                            shmin_defconfig   gcc  
+sparc                            allmodconfig   gcc  
+sparc                            allyesconfig   gcc  
+sparc64                          allmodconfig   gcc  
+sparc64                          allyesconfig   gcc  
+sparc64                             defconfig   gcc  
+sparc64               randconfig-001-20231124   gcc  
+sparc64               randconfig-002-20231124   gcc  
+um                               alldefconfig   gcc  
+um                               allmodconfig   clang
+um                                allnoconfig   clang
+um                               allyesconfig   clang
+um                                  defconfig   gcc  
+um                             i386_defconfig   gcc  
+um                           x86_64_defconfig   gcc  
+x86_64                            allnoconfig   gcc  
+x86_64                           allyesconfig   clang
+x86_64       buildonly-randconfig-001-20231124   clang
+x86_64       buildonly-randconfig-002-20231124   clang
+x86_64       buildonly-randconfig-003-20231124   clang
+x86_64       buildonly-randconfig-004-20231124   clang
+x86_64       buildonly-randconfig-005-20231124   clang
+x86_64       buildonly-randconfig-006-20231124   clang
+x86_64                              defconfig   gcc  
+x86_64                                  kexec   gcc  
+x86_64                randconfig-011-20231124   clang
+x86_64                randconfig-012-20231124   clang
+x86_64                randconfig-013-20231124   clang
+x86_64                randconfig-014-20231124   clang
+x86_64                randconfig-015-20231124   clang
+x86_64                randconfig-016-20231124   clang
+x86_64                randconfig-071-20231124   clang
+x86_64                randconfig-072-20231124   clang
+x86_64                randconfig-073-20231124   clang
+x86_64                randconfig-074-20231124   clang
+x86_64                randconfig-075-20231124   clang
+x86_64                randconfig-076-20231124   clang
+x86_64                          rhel-8.3-rust   clang
+x86_64                               rhel-8.3   gcc  
+xtensa                            allnoconfig   gcc  
+xtensa                           allyesconfig   gcc  
+xtensa                generic_kc705_defconfig   gcc  
+xtensa                          iss_defconfig   gcc  
+xtensa                  nommu_kc705_defconfig   gcc  
+xtensa                randconfig-001-20231124   gcc  
+xtensa                randconfig-002-20231124   gcc  
+xtensa                    smp_lx200_defconfig   gcc  
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
