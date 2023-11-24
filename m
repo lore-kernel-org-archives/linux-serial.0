@@ -1,143 +1,112 @@
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03olkn2022.outbound.protection.outlook.com [40.92.58.22])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E79FD43;
-	Fri, 24 Nov 2023 04:39:26 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e67Bpc9+Qsj2Cnd6LW7BiSsiXr8QGtfOR/pMBq2rxWXWUdug/qCo4mk1bz/K2lswr/AJtYRylOdvuF5DNNUlbWONsk5n+FWWdTo+6WLxXGST5oWdmr5QdKwSpL94rgLpiImi33YHUzyY8XHTEa2j+LqWueQAawx9qgHsBomMaA3Y9Dx4WbmutJH22TqX13tvxIPtKaWh6FpVOX6AOF/bSw0O3ta4ykPPE6XTe/ao3PNQ6Ks3Fpt0EVMR5uCii35Ggw98EQkL9RNQctVlFVrCdIqjT2UBRT+JRxp8YlFCE/FbiKuuGDyBTinNY+7Bpc/nN257RTQY7cEDxd8CHur+2Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BCym2pgNGtRNpLvmYYpqu7UHj3p9cxqFEEKhS/Q4UoY=;
- b=VTiJtjtdnRxqPw/5SMhKj5fvSISIFvK+ZQzfLhp3ccccnt0618Zr5loy231aBStiKRRPQCjmc8XXSpZJZsixPb9RRPZ5ESC3ys2ZC5FRFo0ZRVq2cnY7VMAusMRlTaTdqLBHMt+R662HeegvVebfWdVdIK5RCimGMsvl9v8Y+IzhJLOFD0rtq35FyGFP6sKd5atrHUaVNFJw7Vi/NsYUEE58ZCUS1t83B9XuV9c/fymyyvRB3not0VkEfqb/Eujqt1W0PnwUhkFY73ixVnitdIr8M8c3NIPGydc2pF9AhTCdWhv/PvUYtjxEClPozZefFNUOg+Iy5FlCM5MncQMHAQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from AM0PR09MB2675.eurprd09.prod.outlook.com (2603:10a6:208:d3::24)
- by AM0PR09MB4084.eurprd09.prod.outlook.com (2603:10a6:208:19b::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7025.21; Fri, 24 Nov
- 2023 12:39:24 +0000
-Received: from AM0PR09MB2675.eurprd09.prod.outlook.com
- ([fe80::279b:7d4f:cf90:e9c9]) by AM0PR09MB2675.eurprd09.prod.outlook.com
- ([fe80::279b:7d4f:cf90:e9c9%3]) with mapi id 15.20.7025.020; Fri, 24 Nov 2023
- 12:39:24 +0000
-From: Paul Geurts <paul_geurts@live.nl>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	shawnguo@kernel.org,
-	s.hauer@pengutronix.de,
-	kernel@pengutronix.de,
-	festevam@gmail.com,
-	linux-imx@nxp.com,
-	u.kleine-koenig@pengutronix.de,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Cc: Paul Geurts <paul_geurts@live.nl>
-Subject: [PATCH v2] serial: imx: fix tx statemachine deadlock
-Date: Fri, 24 Nov 2023 13:38:39 +0100
-Message-ID:
- <AM0PR09MB26751EFD9552DE4ED1B150A795B8A@AM0PR09MB2675.eurprd09.prod.outlook.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <2023100450-charger-disregard-9683@gregkh>
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1864168B4
+	for <linux-serial@vger.kernel.org>; Fri, 24 Nov 2023 12:45:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="KLmvsSKX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B422C433CA;
+	Fri, 24 Nov 2023 12:45:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1700829936;
+	bh=HRayAKSlzDs5i112aYEw5QttU3Neh5+nZmBU4rEPlww=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=KLmvsSKXtRFmm6LnuDFzkymf7c+o1kIroc5WqidVhhHwaCbm2aWp6HJSLTd6Hrjbj
+	 DjcE94go5kTPZVMJaATTGshD2VxZTDZWbG7AtAIATJZdGBNh5obzDdTk/ITbLr8BFJ
+	 /Amp6nhB56Z+iMwWI0QniN8nRXD4J2wCQzwninnQ=
+Date: Fri, 24 Nov 2023 12:45:34 +0000
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Paul Geurts <paul_geurts@live.nl>
+Cc: jirislaby@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+	kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+	u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2] serial: imx: fix tx statemachine deadlock
+Message-ID: <2023112416-rind-gnat-cc80@gregkh>
 References: <2023100450-charger-disregard-9683@gregkh>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-TMN: [tNXReewPVNfurAdwigmvcOoH8u0S2/S9QG74d5vLPiER6Z+/MNTtLLvt0eeGfa0K]
-X-ClientProxiedBy: AM0PR10CA0006.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:17c::16) To AM0PR09MB2675.eurprd09.prod.outlook.com
- (2603:10a6:208:d3::24)
-X-Microsoft-Original-Message-ID: <20231124123840.5303-1-paul_geurts@live.nl>
+ <AM0PR09MB26751EFD9552DE4ED1B150A795B8A@AM0PR09MB2675.eurprd09.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR09MB2675:EE_|AM0PR09MB4084:EE_
-X-MS-Office365-Filtering-Correlation-Id: f099ee7c-d814-4a2b-f4aa-08dbecea62f1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	Cr0J/Md0PGnRegiBK3VZyBCtaaqnmwi6Nl/u4YavlT79V7FtoWxL0IAiG3eUMwAzcxJ6ldYM4qMvacsAFvUlwEwXGJXeawt296Ow0TXLUudE9OAHO9T0MUvQdXPXWxQrj/TuYSmnwXZUFA7t8COczIO9AIviFW7PzFLvZqcVRvMNotmhUuu8PcawqGaB/jSS9Jyss9lOLjFQcnQBv4Gr+Ha+pVWmDDXYVtI/nkX5bYUMka/IXkL8/jJo5hNbqzieY3Kkb2YohaUIiYvVPrZ6L3AAaewJydwhFcBIivJRtO2Z3FhJarkTCgh5MlxfT5Gnr//XQw0lMq/5hTCBEkfVU3Sv2MvGr/swdcldkH5i0pFA9mPY2oTnuxAJiY3HcrlsVB9YfFXzYU/h3LqwI4DC4CJwcEpfmer+gUmRUMmmuU2s6w/bv+u+Upw/6y2H1nH8c5NRHE/guWexGTPvPrNEoOBpPiW1vXLWHF7gPGUd7WYNcdYM6Crp6sFhfPkjP3UYsoj3g4HZa/6Tn1YmjbQzIm+/e0bUDPoSiljLQ8aFar4C+7rTg4dsZK7NNJgUBQAod7sdZx2lmmaEQSsk0A6VkzQ1PXPGb5X/ckaVZpLVGpO+lEUYZG5SKun0kQh9Oc5M
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?P7NPeHp7GojrKkqBgkLOrLJ9hW5sO4QSEPrL5JKuetzhNiF0t8TlnJEbpJYy?=
- =?us-ascii?Q?I+6ro4GRqz3vEcCcxbMTi3sC5cEfa097zWZvK9QQMEZv7najSOG1rEXP1uqI?=
- =?us-ascii?Q?PVA5VDt5o3Skgi4OuTrqZO8ij8hJ5XInxVw3tlohgy4tyOR4DFdM4ugehKZB?=
- =?us-ascii?Q?qV9EUW/1Te0PhL2a3VsdRTOpT6j/WQfLuS+KoD8156lOIkDTTNjqtr0xCIwT?=
- =?us-ascii?Q?mCcf1e0s70qu0lV2HCVDTIkCpXipq3LzE5j44wJtXmErkJeDkwlPBcyhZ2x2?=
- =?us-ascii?Q?17oamJK/CNuae3VHrVPrkeXIG1OJocMV5rD7tUeu6KIxGm20VVuS+WwWx3lf?=
- =?us-ascii?Q?60PQIfCZC3cnLVNXdch6F9ouCtgCxQwmk0qbMio4QhMSjuYbJ11k4EdQTG7W?=
- =?us-ascii?Q?rPyxvADHmCLLGOtlXJMpp+CT0JjDolooUOnhbyyIRYW0xrfgOLGJq9M36yU5?=
- =?us-ascii?Q?8tTiJyUA63g9nvz36qBykAes0nmC0m7GWXrGRaZraA6fp8VqTa/QpwjHei3S?=
- =?us-ascii?Q?x3RwRBmj9iGhYEc5b0bavwMWCThtrFhXXbniRIfAh0nfTlXqRH2Sz0AH1yO7?=
- =?us-ascii?Q?WJpuBEc0RQXeN+pw2qyhd+H3b5wM4Nx4DvMeRX5vDiXDENITZzS4PHiN0cRX?=
- =?us-ascii?Q?Fpg+hC6yDIGbueMU+8MFvXQ+3DPYynxOkkBlZEEoPahTl0u4s3mx16wTMf6z?=
- =?us-ascii?Q?m0hffWR+8LJMHE5ywB+GfZc4HAQ/ifYlwWyjGt864kn+1moOwtDdiLlKDNjd?=
- =?us-ascii?Q?kCx9ZJacdFqUTGo89ROJUFLdblM3EW32LLodMPvuaBEmrokhVrPtlOcmenC2?=
- =?us-ascii?Q?SF8CVpd7O5KC2GVYO+4+X6Nar2RT/MsSjT7+UxDuh46gMeNjSC9YUG0DJqg/?=
- =?us-ascii?Q?ibzpWH3cVDSkZuVuQQ7H4neICkk0M0Sw9te/br4wTTxaHerrXj235fOmhPyO?=
- =?us-ascii?Q?AZOFyIRpb0x+XDZskzwx6jIQRQJWp9PRc/9GM0y/iXjjwDtC9+CWpXMpLcMa?=
- =?us-ascii?Q?WA2dH3cEJ0EjDROURRjui9DgolYm4nMx4eGkj+zj72pc6bwsKQlamZUVGzRI?=
- =?us-ascii?Q?3/rhyrF4ka4ZD6DOkFQ8J024KSgJXoT/CU9zQ3TdFLSXcIBZgFy24Ua10J+p?=
- =?us-ascii?Q?f52Hw9u5JAZUKkPLuiCk3QRqtzXjwn4mIE/5H7cI1aq6z/Kd9Ve7Us14T5jD?=
- =?us-ascii?Q?ESTdynPQnPwIr4101aLKLHowtce7KRZPCmLH+evoC8WlHpZq055B1dp5eoKl?=
- =?us-ascii?Q?uDsaecAu6b5Us9Aj4iAcNcE+Pg9Ulg/Ll1rLCS5LMA=3D=3D?=
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-64da6.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: f099ee7c-d814-4a2b-f4aa-08dbecea62f1
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR09MB2675.eurprd09.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2023 12:39:24.1449
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR09MB4084
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AM0PR09MB26751EFD9552DE4ED1B150A795B8A@AM0PR09MB2675.eurprd09.prod.outlook.com>
 
-When using the serial port as RS485 port, the tx statemachine is used to
-control the RTS pin to drive the RS485 transceiver TX_EN pin. When the
-TTY port is closed in the middle of a transmission (for instance during
-userland application crash), imx_uart_shutdown disables the interface
-and disables the Transmission Complete interrupt. afer that,
-imx_uart_stop_tx bails on an incomplete transmission, to be retriggered
-by the TC interrupt. This interrupt is disabled and therefore the tx
-statemachine never transitions out of SEND. The statemachine is in
-deadlock now, and the TX_EN remains low, making the interface useless.
+On Fri, Nov 24, 2023 at 01:38:39PM +0100, Paul Geurts wrote:
+> When using the serial port as RS485 port, the tx statemachine is used to
+> control the RTS pin to drive the RS485 transceiver TX_EN pin. When the
+> TTY port is closed in the middle of a transmission (for instance during
+> userland application crash), imx_uart_shutdown disables the interface
+> and disables the Transmission Complete interrupt. afer that,
+> imx_uart_stop_tx bails on an incomplete transmission, to be retriggered
+> by the TC interrupt. This interrupt is disabled and therefore the tx
+> statemachine never transitions out of SEND. The statemachine is in
+> deadlock now, and the TX_EN remains low, making the interface useless.
+> 
+> imx_uart_stop_tx now checks for incomplete transmission AND whether TC
+> interrupts are enabled before bailing to be retriggered. This makes sure
+> the state machine handling is reached, and is properly set to
+> WAIT_AFTER_SEND.
+> 
+> Fixes: cb1a60923609 serial: imx: implement rts delaying for rs485
+> 
+> Signed-off-by: Paul Geurts <paul_geurts@live.nl>
+> ---
+>  drivers/tty/serial/imx.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 708b9852a575..ad36c49c7898 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -415,13 +415,13 @@ static void imx_uart_stop_tx(struct uart_port *port)
+>  	ucr1 = imx_uart_readl(sport, UCR1);
+>  	imx_uart_writel(sport, ucr1 & ~UCR1_TRDYEN, UCR1);
+>  
+> +	ucr4 = imx_uart_readl(sport, UCR4);
+>  	usr2 = imx_uart_readl(sport, USR2);
+> -	if (!(usr2 & USR2_TXDC)) {
+> +	if ((!(usr2 & USR2_TXDC)) && (ucr4 & UCR4_TCEN)) {
+>  		/* The shifter is still busy, so retry once TC triggers */
+>  		return;
+>  	}
+>  
+> -	ucr4 = imx_uart_readl(sport, UCR4);
+>  	ucr4 &= ~UCR4_TCEN;
+>  	imx_uart_writel(sport, ucr4, UCR4);
+>  
+> -- 
+> 2.20.1
+> 
+> 
 
-imx_uart_stop_tx now checks for incomplete transmission AND whether TC
-interrupts are enabled before bailing to be retriggered. This makes sure
-the state machine handling is reached, and is properly set to
-WAIT_AFTER_SEND.
+Hi,
 
-Fixes: cb1a60923609 serial: imx: implement rts delaying for rs485
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-Signed-off-by: Paul Geurts <paul_geurts@live.nl>
----
- drivers/tty/serial/imx.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+You are receiving this message because of the following common error(s)
+as indicated below:
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 708b9852a575..ad36c49c7898 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -415,13 +415,13 @@ static void imx_uart_stop_tx(struct uart_port *port)
- 	ucr1 = imx_uart_readl(sport, UCR1);
- 	imx_uart_writel(sport, ucr1 & ~UCR1_TRDYEN, UCR1);
- 
-+	ucr4 = imx_uart_readl(sport, UCR4);
- 	usr2 = imx_uart_readl(sport, USR2);
--	if (!(usr2 & USR2_TXDC)) {
-+	if ((!(usr2 & USR2_TXDC)) && (ucr4 & UCR4_TCEN)) {
- 		/* The shifter is still busy, so retry once TC triggers */
- 		return;
- 	}
- 
--	ucr4 = imx_uart_readl(sport, UCR4);
- 	ucr4 &= ~UCR4_TCEN;
- 	imx_uart_writel(sport, ucr4, UCR4);
- 
--- 
-2.20.1
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/process/submitting-patches.rst for what
+  needs to be done here to properly describe this.
 
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
