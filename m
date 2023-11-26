@@ -1,82 +1,113 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GRO67tQO"
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C72C92;
-	Sun, 26 Nov 2023 06:51:39 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id 41be03b00d2f7-5aa481d53e5so2264856a12.1;
-        Sun, 26 Nov 2023 06:51:39 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="qxpCeGJL"
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995AD101
+	for <linux-serial@vger.kernel.org>; Sun, 26 Nov 2023 08:04:27 -0800 (PST)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-5ce16bc121aso27186727b3.1
+        for <linux-serial@vger.kernel.org>; Sun, 26 Nov 2023 08:04:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1701010299; x=1701615099; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VXhDuz/8Ck1SbDSn8m2Zz8T6Djo4LTnE5DIdLUDgM+I=;
-        b=GRO67tQObqYTlMlr91bWIYHK3QclirjCGlIpGwnnyB0q4OoKdQ7ixXYyeYghDwgzNl
-         /iSiA9vwQ+CZvTqaI6nh2XwCvHtgm9+Hm/mL8Y95f4m4YVqXOJiHwTc7yYMEwF0ZtWhD
-         rbrBrguEJ+WKHGFRIj6WEiun0BdGKIdlgtV9Kqtz56fGEZgTew0LHKaOuZoDr7MZ362i
-         EnOanD0DCqXaK/XU9b9kUYxgnN4VprbJAdrkxqABf4DSpt/7R1Dg3bxiViVo7hrZg+Zr
-         UvsyQFpnKH/IaRz5sgwePdr6s/XGMYUqPcgEkGhxDxN4Zk7dCXU7q0WUSkO5sqSVlXMh
-         gYMQ==
+        d=google.com; s=20230601; t=1701014667; x=1701619467; darn=vger.kernel.org;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=jAcVnKA6iADA9vLnhJjfNDjx1x+ezMFBfqAWXzVOUug=;
+        b=qxpCeGJLfF1BCtxowMWAsfvRVIv/6qZrnIrK/Xl5809mDWHNzkIX7uE999sOckKP79
+         DN2Purd3BvPqXnrl6nFdfvZ6cWbSFnbAzz6T1SLRYaOqrv/LSKAdNO2Z7SqVe5aN8KEO
+         TWLG6Wo0k4O7deHKhrgrhWmdq65QJwd0Kqotz6lDgxZXs4dwrDRierRwYIQNEGQGInuq
+         YGYjpssDOzVLRN7U1LYM0ZRfIZiYLQbu8jAtqoc2qFzaG7+oOTdSYNIseyyqLUlxvZfr
+         TjvQOSxdZ1hxh9pznfRok2ZZ65iTbpznhZ4QTcKvo0Pjjbja3Ivzolj9OI87B0yP4coL
+         GU/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701010299; x=1701615099;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VXhDuz/8Ck1SbDSn8m2Zz8T6Djo4LTnE5DIdLUDgM+I=;
-        b=novSK+We4grHn69z5CAwMq4Bb0cuhuqClm8Yd4Kr2ydoBjmC2sKnO76jkCOblVWKwj
-         FkeCLAdSfMVCYZktbnrapmL7p2VVn9ymsj/Rw/4vgtAWxeNDrWmvOrrr8JWQcqeuaIK+
-         LXToYmCReRHxTcp6TNGA2We/GyWTbb10OKnwO+33hSQ+Nj7Iwrodb9mgiH4Dso5cL5d/
-         Lq/RVLHGJgBzXWRSg+cC2421aKpZjUhb75BAKskd29As6mfzKVrDA3Bd66DPzn0f9njR
-         7v+t+VADY2ImxFfoLoO0ahHwPPLrGn1+EVq0bDpvHthm4wUdI3uRJQHc/TfF1Upo0BTh
-         NNbA==
-X-Gm-Message-State: AOJu0YxDHyhr66otmR+a7SguP2/IQN9oxlWbzhXs3tjI02hyAoXsjrpe
-	1Dk0cGNKf3iu7LIDgNxU/7w=
-X-Google-Smtp-Source: AGHT+IEpYvlmT5972piVTAR7DuqSKYsJ4nMGG01b+ZGp1T99G3j+XcRI2OEUOv7lb0JPSY386Jj/RA==
-X-Received: by 2002:a17:90b:4c91:b0:285:bd52:32df with SMTP id my17-20020a17090b4c9100b00285bd5232dfmr658222pjb.30.1701010298508;
-        Sun, 26 Nov 2023 06:51:38 -0800 (PST)
-Received: from linux-8mug (1-162-45-22.dynamic-ip.hinet.net. [1.162.45.22])
-        by smtp.gmail.com with ESMTPSA id hg18-20020a17090b301200b002836c720713sm5770319pjb.24.2023.11.26.06.51.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Nov 2023 06:51:38 -0800 (PST)
-Date: Sun, 26 Nov 2023 22:51:24 +0800
-From: Chester Lin <chester62515@gmail.com>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org, NXP S32 Linux Team <s32@nxp.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Subject: Re: [PATCH] dt-bindings: serial: fsl-linflexuart: change the
- maintainer email address
-Message-ID: <ZWNbOPIs2DjFbipH@linux-8mug>
-References: <20231115235732.13633-1-clin@suse.com>
- <b4342c49-e1c4-459e-bbd0-fd63108a6754@kernel.org>
+        d=1e100.net; s=20230601; t=1701014667; x=1701619467;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=jAcVnKA6iADA9vLnhJjfNDjx1x+ezMFBfqAWXzVOUug=;
+        b=VGYia3oMryCR6JtnFiv5B5wGP2npEhx96ibuWWCUKI5XBHVUsVMDvq5zGjngYGM+zw
+         Cr/4jFdo2rZyBgyYSbOPNz9NLve6ASbUnJrB64Rdwm17v+2sNKKWLxj54UERtF/h5mpV
+         /lFefckfYcLxq8msN1PAjtupP/sbfzy/UvEa1JoW/Ed9BQ1cChmuh2RC4pcEC4LNvqMD
+         BtJagZ2q/dopUKK7YTNxPYq/uhQ7kcXf2x8bwh9oEcMd1PKAzMTgfHPF1WfMaMvr7K1b
+         iHAUHCbUqpq9p2nvFtxsuDmYlDlH0WJJRJaVmztGy3XrJvKWQ8r9CyQfXiFFj/rzO6Wj
+         4ajw==
+X-Gm-Message-State: AOJu0Yxr532ekVT+A1ntdHWKgOOTLWB5Qrbfcosi2eA1B1aPGilyBaIC
+	GoUf9hiHL+L9IqMqpfv9Inhdgdi6Pb5icPtJYiRZ
+X-Google-Smtp-Source: AGHT+IH7cSvAl+dD9EIaxrdjmVvg/Xxrak/8orkiMKrBN+wcdRVvxz+40ZTE5uo29YN8WI2xwKeM0LN6CAvXzZhldwne
+X-Received: from vamshig51.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:70c])
+ (user=vamshigajjela job=sendgmr) by 2002:a81:9b10:0:b0:5ca:5fcd:7063 with
+ SMTP id s16-20020a819b10000000b005ca5fcd7063mr318515ywg.3.1701014666758; Sun,
+ 26 Nov 2023 08:04:26 -0800 (PST)
+Date: Sun, 26 Nov 2023 21:34:20 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b4342c49-e1c4-459e-bbd0-fd63108a6754@kernel.org>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.43.0.rc1.413.gea7ed67945-goog
+Message-ID: <20231126160420.2442330-1-vamshigajjela@google.com>
+Subject: [PATCH] serial: 8250_dw: Decouple DLF register check from UCV
+From: Vamshi Gajjela <vamshigajjela@google.com>
+To: Jiri Slaby <jirislaby@kernel.org>, ilpo.jarvinen@linux.intel.com, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, manugautam@google.com, 
+	Subhash Jadavani <sjadavani@google.com>, Vamshi Gajjela <vamshigajjela@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Jiri,
+Designware UART has an optional feature to enable Fractional Baud Rate
+Divisor (DLF) through the FRACTIONAL_BAUD_DIVISOR_EN configuration
+parameter, and it is not dependent on ADDITIONAL_FEATURES.
 
-On Mon, Nov 20, 2023 at 08:28:47AM +0100, Jiri Slaby wrote:
-> On 16. 11. 23, 0:57, Chester Lin wrote:
-> > I am leaving SUSE so the current email address <clin@suse.com> will be
-> > disabled soon. <chester62515@gmail.com> will be my new address for handling
-> > emails, patches and pull requests from upstream and communities.
-> 
-> Maybe add an entry to /.mailmap too?
-> 
+dw8250_setup_port() checks DLF to determine dlf_size only when UART
+Component Version (UCV) is non-zero. As mentioned above DLF and UCV are
+independent features. Move the logic corresponding to DLF size
+calculation ahead of the UCV check to prevent early return. Otherwise,
+dlf_size will be zero and driver will not be able to use the
+controller's fractional baud rate divisor (DLF) feature.
 
-Yes, it has been updated as well.
+Signed-off-by: Vamshi Gajjela <vamshigajjela@google.com>
+---
+ drivers/tty/serial/8250/8250_dwlib.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-Chester
+diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
+index 84843e204a5e..136ad093c5b6 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.c
++++ b/drivers/tty/serial/8250/8250_dwlib.c
+@@ -259,17 +259,6 @@ void dw8250_setup_port(struct uart_port *p)
+ 	}
+ 	up->capabilities |= UART_CAP_NOTEMT;
+ 
+-	/*
+-	 * If the Component Version Register returns zero, we know that
+-	 * ADDITIONAL_FEATURES are not enabled. No need to go any further.
+-	 */
+-	reg = dw8250_readl_ext(p, DW_UART_UCV);
+-	if (!reg)
+-		return;
+-
+-	dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
+-		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
+-
+ 	/* Preserve value written by firmware or bootloader  */
+ 	old_dlf = dw8250_readl_ext(p, DW_UART_DLF);
+ 	dw8250_writel_ext(p, DW_UART_DLF, ~0U);
+@@ -282,6 +271,17 @@ void dw8250_setup_port(struct uart_port *p)
+ 		p->set_divisor = dw8250_set_divisor;
+ 	}
+ 
++	/*
++	 * If the Component Version Register returns zero, we know that
++	 * ADDITIONAL_FEATURES are not enabled. No need to go any further.
++	 */
++	reg = dw8250_readl_ext(p, DW_UART_UCV);
++	if (!reg)
++		return;
++
++	dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
++		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
++
+ 	reg = dw8250_readl_ext(p, DW_UART_CPR);
+ 	if (!reg) {
+ 		reg = data->pdata->cpr_val;
+-- 
+2.43.0.rc1.413.gea7ed67945-goog
 
-> -- 
-> js
-> suse labs
-> 
