@@ -1,154 +1,149 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="qw17kMSq"
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20ACEB8
-	for <linux-serial@vger.kernel.org>; Mon, 27 Nov 2023 03:22:49 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id 2adb3069b0e04-50aa698b384so12300e87.0
-        for <linux-serial@vger.kernel.org>; Mon, 27 Nov 2023 03:22:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1701084167; x=1701688967; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xwT5hJLuzH/vmwnhunH0w6f2oqAqqH8JJnk36sG1iqo=;
-        b=qw17kMSq0+41I6HkKUB2gM8SOtfDiMExK0MDZl3o4kNaMG+9I+SdjVKK7FQ3zDMgLM
-         XHlI2rY+Sqp+AxXueWTUzcY4Ax8CydfjLUq+1BN/7B7pu9NhI5KCc0Gw5z968zTqP98e
-         O5XxENgttWvQMlfS+SgcAuNA860t+wLNnEn1hYzEO+I6M0w+oYTSWPn8xofgvS+tow31
-         Vs7rVqELRxhV6SM5cFBF1buarHN6mhs0NPQO5rK/F2lERGuDW7rgbvp/Yn/Cjw/6n4ze
-         D+MagvM1SEzJxI37j2CYMPTFDn3TniYMDJaBiOjmfGEF48t7Co23JiSU6b2PCjXEZfPR
-         YoBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701084167; x=1701688967;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xwT5hJLuzH/vmwnhunH0w6f2oqAqqH8JJnk36sG1iqo=;
-        b=nDOAtZF0eEp+5OsO1Igy5djrbdwwGGLh7eJJoH3UbSTYi25vtZElK8Lu8n9nfWU8eK
-         h0BDLolweOK9EU6eJ85KClInDK6FScTZe1IY3SUerV05h5Fuahb8LsK0YAHOe94XUmsu
-         julZCz2pU1yT4wX9f1G7Q6llRaVLvGHvN8QBmkc0YynBEV/27qnEYEBzGJEez2p6QQ7t
-         pwFdLhm0EwBYOMzDzf6ScWD2LZRxb/qC53HNh5wNIx4RM0PI00C3ul+NdRKtGTmGTDaI
-         HRZcmgRBxOdrT6QWXb6PmNPyXhyabUre8c86shIBwB/VKO7pQ/p1rIEiEzwJc+5dQciV
-         Sohg==
-X-Gm-Message-State: AOJu0YxnwCw6Mm2G0xod3WDvehXGVQ9UTCuCY07KCaW2mBJWFgzzir69
-	bA8aBKJjfPq5TqvHcISIG13lJeQA7uqWKvQaG7e42w==
-X-Google-Smtp-Source: AGHT+IEycF56nqnX17lIBUm7g7PxQL5cBbulIaMHhdTBCYUhQe71hH0Gr0zy95XzzQC5hMfQFeXJZiQHitZEVvCv7GM=
-X-Received: by 2002:a05:6512:3b0b:b0:505:6e12:9e70 with SMTP id
- f11-20020a0565123b0b00b005056e129e70mr445087lfv.6.1701084167106; Mon, 27 Nov
- 2023 03:22:47 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="U8Fz3CBf"
+X-Greylist: delayed 317 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 27 Nov 2023 04:20:45 PST
+Received: from mx3.securetransport.de (mx3.securetransport.de [116.203.31.6])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70300191;
+	Mon, 27 Nov 2023 04:20:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
+	s=dhelectronicscom; t=1701087257;
+	bh=vz9BHoBHoO5ZtSpjTwYyjwqn8UMnay1tmwhleAtdPwQ=;
+	h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+	b=U8Fz3CBfHGyXeGr8oZhNEWkdI7MP7LUWEoa5SUw6PBbGdUfwlfX6N9uifzkc/1zHh
+	 CzH8r4IHFuX8hKlil2VZSfjSyLpVuNKtOydtuNsl+9v+fVQTgQhbnsVx5VmSIdtKqD
+	 7x9manomwQYqJcIdrTrzeI18/mp4n97NbOLTm/up4czoTRMKwtrwgfZZ5Cy4pl3wl1
+	 vwABEVfk/P8P8LQikfvIVTHgtUPLDk6GiJdjnHiYY5bMvWKXvTjGbRX+gYmklzcYgx
+	 u+GuQHVF9I4biYRb94PKcpKuS0AOmRlfjpgUKdhbcYLsAlNI/UDC+MLYQYfgGEWp8w
+	 IjqucM2B1s2TQ==
+X-secureTransport-forwarded: yes
+From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Complaints-To: abuse@cubewerk.de
+To: Lino Sanfilippo <LinoSanfilippo@gmx.de>, Lukas Wunner <lukas@wunner.de>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>
+CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+	<jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Andy Shevchenko
+	<andriy.shevchenko@linux.intel.com>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>, =?utf-8?B?SWxwbyBKw6RydmluZW4=?=
+	<ilpo.jarvinen@linux.intel.com>, "brenda.streiff@ni.com"
+	<brenda.streiff@ni.com>, Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
+	"Tomas Paukrt" <tomaspaukrt@email.cz>
+Subject: RE: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
+ binding
+Thread-Topic: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
+ binding
+Thread-Index: AQHaH/jBESSZN4JU2UOxi81YCMKNnLCN1MYg
+Date: Mon, 27 Nov 2023 12:14:06 +0000
+Message-ID: <ec66d25162de4cbc92720df1e7008fe8@dh-electronics.com>
+References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
+ <20231120151056.148450-2-linux@rasmusvillemoes.dk>
+ <20231122145344.GA18949@wunner.de>
+ <3b8548b1-b8a9-0c9e-4040-5cfda06a85c6@gmx.de>
+In-Reply-To: <3b8548b1-b8a9-0c9e-4040-5cfda06a85c6@gmx.de>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20231017130540.1149721-1-thomas.richard@bootlin.com>
-In-Reply-To: <20231017130540.1149721-1-thomas.richard@bootlin.com>
-From: VAMSHI GAJJELA <vamshigajjela@google.com>
-Date: Mon, 27 Nov 2023 16:52:34 +0530
-Message-ID: <CAMTSyjpto7_Keq6-wz9OC475f1EUT0kQfYLnRFsTNVwGS9mACg@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_omap: Set the console genpd always on if no
- console suspend
-To: Thomas Richard <thomas.richard@bootlin.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, tony@atomide.com, 
-	linux-serial@vger.kernel.org, gregory.clement@bootlin.com, u-kumar1@ti.com, 
-	d-gole@ti.com, thomas.petazzoni@bootlin.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 17, 2023 at 6:35=E2=80=AFPM Thomas Richard
-<thomas.richard@bootlin.com> wrote:
->
-> If the console suspend is disabled, the genpd of the console shall not
-> be powered-off during suspend.
-> Set the flag GENPD_FLAG_ALWAYS_ON to the corresponding genpd during
-> suspend, and restore the original value during the resume.
->
-> Signed-off-by: Thomas Richard <thomas.richard@bootlin.com>
-> ---
->  drivers/tty/serial/8250/8250_omap.c | 33 ++++++++++++++++++++++++-----
->  1 file changed, 28 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/825=
-0/8250_omap.c
-> index ca972fd37725..91a483dc460c 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -27,6 +27,7 @@
->  #include <linux/pm_wakeirq.h>
->  #include <linux/dma-mapping.h>
->  #include <linux/sys_soc.h>
-> +#include <linux/pm_domain.h>
->
->  #include "8250.h"
->
-> @@ -114,6 +115,12 @@
->  /* RX FIFO occupancy indicator */
->  #define UART_OMAP_RX_LVL               0x19
->
-> +/*
-> + * Copy of the genpd flags for the console.
-> + * Only used if console suspend is disabled
-> + */
-> +static unsigned int genpd_flags_console;
-> +
->  struct omap8250_priv {
->         void __iomem *membase;
->         int line;
-> @@ -1617,6 +1624,7 @@ static int omap8250_suspend(struct device *dev)
->  {
->         struct omap8250_priv *priv =3D dev_get_drvdata(dev);
->         struct uart_8250_port *up =3D serial8250_get_port(priv->line);
-> +       struct generic_pm_domain *genpd =3D pd_to_genpd(dev->pm_domain);
->         int err =3D 0;
->
->         serial8250_suspend_port(priv->line);
-> @@ -1627,8 +1635,19 @@ static int omap8250_suspend(struct device *dev)
->         if (!device_may_wakeup(dev))
->                 priv->wer =3D 0;
->         serial_out(up, UART_OMAP_WER, priv->wer);
-> -       if (uart_console(&up->port) && console_suspend_enabled)
-> -               err =3D pm_runtime_force_suspend(dev);
-> +       if (uart_console(&up->port)) {
-> +               if (console_suspend_enabled)
-What is best way for adding a check here, either using
-`uport->suspended` or `console_suspend_enabled`
-> +                       err =3D pm_runtime_force_suspend(dev);
-> +               else {
-> +                       /*
-> +                        * The pd shall not be powered-off (no console su=
-spend).
-> +                        * Make copy of genpd flags before to set it alwa=
-ys on.
-> +                        * The original value is restored during the resu=
-me.
-> +                        */
-> +                       genpd_flags_console =3D genpd->flags;
-> +                       genpd->flags |=3D GENPD_FLAG_ALWAYS_ON;
-> +               }
-> +       }
->         flush_work(&priv->qos_work);
->
->         return err;
-> @@ -1638,12 +1657,16 @@ static int omap8250_resume(struct device *dev)
->  {
->         struct omap8250_priv *priv =3D dev_get_drvdata(dev);
->         struct uart_8250_port *up =3D serial8250_get_port(priv->line);
-> +       struct generic_pm_domain *genpd =3D pd_to_genpd(dev->pm_domain);
->         int err;
->
->         if (uart_console(&up->port) && console_suspend_enabled) {
-> -               err =3D pm_runtime_force_resume(dev);
-> -               if (err)
-> -                       return err;
-> +               if (console_suspend_enabled) {
-> +                       err =3D pm_runtime_force_resume(dev);
-> +                       if (err)
-> +                               return err;
-> +               } else
-> +                       genpd->flags =3D genpd_flags_console;
->         }
->
->         serial8250_resume_port(priv->line);
-> --
-> 2.39.2
->
+RnJvbTogTGlubyBTYW5maWxpcHBvIFttYWlsdG86TGlub1NhbmZpbGlwcG9AZ214LmRlXQ0KU2Vu
+dDogU3VuZGF5LCBOb3ZlbWJlciAyNiwgMjAyMyAxMjo0MCBBTQ0KDQpIaSwgDQoNCj4gT24gMjIu
+MTEuMjMgYXQgMTU6NTMsIEx1a2FzIFd1bm5lciB3cm90ZToNCj4+IE9uIE1vbiwgTm92IDIwLCAy
+MDIzIGF0IDA0OjEwOjU0UE0gKzAxMDAsIFJhc211cyBWaWxsZW1vZXMgd3JvdGU6DQo+Pj4gU29t
+ZSBib2FyZHMgYXJlIGNhcGFibGUgb2YgYm90aCByczIzMiBhbmQgcnM0ODUsIGFuZCBjb250cm9s
+IHdoaWNoDQo+Pj4gZXh0ZXJuYWwgdGVybWluYWxzIGFyZSBhY3RpdmUgdmlhIGEgZ3Bpby1jb250
+cm9sbGVkIG11eC4gQWxsb3cNCj4+PiBkZXNjcmliaW5nIHRoYXQgZ3BpbyBpbiBEVCBzbyB0aGF0
+IHRoZSBrZXJuZWwgY2FuIHRyYW5zcGFyZW50bHkgaGFuZGxlDQo+Pj4gdGhlIHByb3BlciBzZXR0
+aW5nIHdoZW4gdGhlIHVhcnQgaXMgc3dpdGNoZWQgYmV0d2VlbiByczIzMiBhbmQgcnM0ODUNCj4+
+PiBtb2Rlcy4NCj4+DQo+PiBDcmVzY2VudCBDWSBIc2llaCAoK2NjKSBpcyBpbiBwYXJhbGxlbCB0
+cnlpbmcgdG8gYWRkIGFuIFJTLTQyMiBtb2RlIGJpdA0KPj4gdG8gc3RydWN0IHNlcmlhbF9yczQ4
+NToNCj4+DQo+PiBodHRwczovL2xvcmUua2VybmVsLm9yZy9hbGwvMjAyMzExMjEwOTUxMjIuMTU5
+NDgtMS1jcmVzY2VudGN5LmhzaWVoQG1veGEuY29tLw0KPj4NCj4gDQo+IFRoYXQgbmV3IGZsYWcg
+d2FzIHN1Z2dlc3RlZCBieSBtZSBpbnN0ZWFkIG9mIHVzaW5nIFNFUl9SUzQyMl9FTkFCTEVELCB3
+aGljaA0KPiB3b3VsZCBtb3N0bHkgYmUgcmVkdW5kYW50IHRvIFNFUl9SUzQ4NV9FTkFCTEVELg0K
+PiBJIGRvbnQga25vdyBpZiBpdCBpcyBhIGdvb2QgY2hvaWNlIGluIHRoZSBsb25nIHRlcm0gdG8g
+aGFuZGxlIGJvdGggbW9kZXMgd2l0aGluDQo+IHRoZSBSUzQ4NSBjb25maWd1cmF0aW9uLiBJdCB3
+b3VsZCBiZSBjbGVhbmVyIHRvIGhhdmUgYW4gb3duIFJTNDIyIHN0cnVjdHVyZSB3aXRoDQo+IGl0
+cyBvd24gZmxhZ3MgYW5kIHByb3BlcnRpZXMuIEFuZCB1bnRpbCBub3cgdGhlIG9ubHkgZmxhZyB0
+aGF0IHNlZW1zIHRvIG1ha2Ugc2Vuc2UNCj4gZm9yIGJvdGggUlM0MjIgYW5kIFJTNDg1IGlzIEFG
+QUlDUyBTRVJfUlM0ODVfVEVSTUlOQVRFX0JVUy4NCj4gDQo+IE9uIHRoZSBvdGhlciBoYW5kIHRo
+ZSBidXMgdGVybWluYXRpb24gaXMgYXQgbGVhc3QgYSBwcm9wZXJ0eSB0aGF0IGJvdGggbW9kZXMg
+aGF2ZQ0KPiBpbiBjb21tb24uIEFuZCBoYW5kbGluZyBSUzQyMiBpbiBpdHMgb3duIHN0cnVjdHVy
+ZSB3b3VsZCByZXF1aXJlIGFub3RoZXIgaW9jdGwNCj4gdG8gc2V0IGFuZCBnZXQgdGhlIHRoZSBS
+UzQyMiBzZXR0aW5ncy4NCj4gDQo+IEJ1dCBtYXliZSB0aGVyZSBhcmUgbW9yZSBvciBiZXR0ZXIg
+cG9zc2liaWxpdGllcyB0byBoYW5kbGUgUlM0ODIyIHN1cHBvcnQuIEkgd291bGQgbGlrZSB0bw0K
+PiBoZWFyIG90aGVyIGlkZWFzLg0KPiANCj4gDQo+IA0KPj4gSSBkb24ndCBrbm93IHdoZXRoZXIg
+dGhhdCBtYWtlcyBzZW5zZSBhdCBhbGwgKEkgaGFkIHRob3VnaHQgUlMtNDIyIGlzDQo+PiB0aGUg
+c2FtZSBhcyBSUy00ODUgd2l0aCBmdWxsLWR1cGxleCwgaS5lLiBTRVJfUlM0ODVfRU5BQkxFRCBw
+bHVzDQo+PiBTRVJfUlM0ODVfUlhfRFVSSU5HX1RYKQ0KDQpXaXRoIFJTLTQ4NSBmdWxsIGR1cGxl
+eCwgU0VSX1JTNDg1X1JYX0RVUklOR19UWCBtYWtlcyBubyBzZW5zZSB0byBtZS4NClNlZSBiZWxv
+dy4NCg0KPj4NCj4+IEJ1dCBpZiB0aGF0IHBhdGNoIGdldHMgYWNjZXB0ZWQsIHdlJ2QgaGF2ZSAq
+dGhyZWUqIGRpZmZlcmVudCBtb2RlczoNCj4+IFJTLTIzMiwgUlMtNDg1LCBSUy00MjIuDQo+IA0K
+PiBBY3R1YWxseSB3ZSB3b3VsZCBoYXZlIGZvdXIgKGFzIEJyZW5kYSBhbHJlYWR5IHdyb3RlLA0K
+PiBzZWUgaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvYWxsL2M2ZWE5MTJmLWQ1YWItNDc2MS04MTNk
+LTNiNmI2YmUxNDFjYkBuaS5jb20vKSwNCj4gYW5kIHdpdGggdGhlIHByb3Bvc2UgU0VSX1JTNDg1
+X01PREVfUlM0MjIgZmxhZyB0aGVzZSBtb2RlcyB3b3VsZCBiZSB1c2VkIGxpa2UNCj4gDQo+IFJT
+LTIzMjogICAgICAgICAgICAgICAgICAgICAgIHJzNDg1LT5mbGFncyA9IDANCj4gUlMtNDIyOiAg
+ICAgICAgICAgICAgICAgICAgICAgcnM0ODUtPmZsYWdzID0gU0VSX1JTNDg1X0VOQUJMRUR8U0VS
+X1JTNDg1X01PREVfUlM0MjINCj4gUlMtNDg1ICgyLXdpcmUgaGFsZi1kdXBsZXgpOiAgcnM0ODUt
+PmZsYWdzID0gU0VSX1JTNDg1X0VOQUJMRUQNCj4gUlMtNDg1ICg0LXdpcmUgZnVsbC1kdXBsZXgp
+OiAgcnM0ODUtPmZsYWdzID0gU0VSX1JTNDg1X0VOQUJMRUR8U0VSX1JTNDg1X1JYX0RVUklOR19U
+WA0KDQpJbiBteSBwb2ludCBvZiB2aWV3IHRoZXJlIGFyZSBhbHNvIHR3byBkaWZmZXJlbnQgbW9k
+ZXMgZm9yIHRoZSBSUy00ODUgMi13aXJlDQpoYWxmLWR1cGxleCBidXMgZGVwZW5kaW5nIG9uIHRo
+ZSBmbGFnIFNFUl9SUzQ4NV9SWF9EVVJJTkdfVFguDQotIFNFUl9SUzQ4NV9SWF9EVVJJTkdfVFgg
+aXMgbm90IHNldDogVGhlIGRldmljZSBkb2Vzbid0IHNlZSB0aGUgYnVzIGR1cmluZyBzZW5kaW5n
+DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKFJYIGlzIG9mZiBkdXJpbmcg
+c2VuZGluZykuIA0KLSBTRVJfUlM0ODVfUlhfRFVSSU5HX1RYIGlzIHNldDogICAgIFRoZSBkZXZp
+Y2Ugc2VlIHdhbnQgaXMgb24gYnVzIGR1cmluZyBzZW5kaW5nDQogICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgKFJYIGlzIGFsc28gb24gZHVyaW5nIHNlbmRpbmcpLCBzbyB5b3Ug
+Y2FuDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc2VlIHlvdXIgdHJhbnNt
+aXNzaW9uIGFuZCBhbHNvIGlmIGFub3RoZXIgYnVzDQogICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgZGV2aWNlIGlzIHRyYW5zbWl0dGluZyBhdCB0aGUgc2FtZSB0aW1lLg0KDQpP
+biBSUy00ODUgNC13aXJlIFRYIGFuZCBSWCBhcmUgc2VwYXJhdGVkIGJ5IHdpcmVzLiBTbyB0aGUg
+ZGVmaW5pdGlvbiBvZg0KU0VSX1JTNDg1X1JYX0RVUklOR19UWCBhYm92ZSBtYWtlcyBubyBzZW5z
+ZSwgYmVjYXVzZSB5b3UgY2FuIHJlY2VpdmUgYWxsIHRoZSB0aW1lDQp3aXRob3V0IHdvcnJ5aW5n
+IGFib3V0IFRYLiBPbiB0aGUgc29mdHdhcmUgc2lkZSBSUy00ODUgNC13aXJlIGZ1bGwgZHVwbGV4
+IGl0IGJlaGF2ZXMNCmxpa2UgUlMtMjMyLiBTbyB3ZSBkb24ndCBuZWVkIHRyYW5zY2VpdmVyIGNv
+bnRyb2xsaW5nIGJ5IHRoZSBSVFMgcGluLg0KDQpCYXNpY2FsbHkgZm9yIG1lIHRoZSBTRVJfUlM0
+ODVfRU5BQkxFRCBmbGFnIGlzIHRvIGVuYWJsZSB0aGUgUlRTIGNvbnRyb2wgZm9yIHRoZQ0KdHJh
+bnNjZWl2ZXIuIE1heWJlIG9uIHNvZnR3YXJlIHNpZGUgd2UgY2FuIGRpc3Rpbmd1aXNoIGJldHdl
+ZW4gaGFsZiBhbmQgZnVsbCBkdXBsZXgNCm1vZGUgYW5kIHdoZXRoZXIgUlggaXMgZW5hYmxlZCBk
+dXJpbmcgc2VuZGluZyBieSB0aGUgZmxhZyBTRVJfUlM0ODVfUlhfRFVSSU5HX1RYOg0KUlMtMjMy
+OiAgICAgICAgICAgICAgICAgICAgICAgICAgcnM0ODUtPmZsYWdzID0gMA0KUlMtNDIyIC8gUlMt
+NDg1ICg0LXdpcmUpOiAgICAgICAgcnM0ODUtPmZsYWdzID0gU0VSX1JTNDg1X0VOQUJMRUR8U0VS
+X1JTNDg1X01PREVfRlVMTF9EVVBMRVgNClJTLTQ4NSAoMi13aXJlIE5PIFJYX0RVUklOR19UWCk6
+IHJzNDg1LT5mbGFncyA9IFNFUl9SUzQ4NV9FTkFCTEVEfFNFUl9SUzQ4NV9NT0RFX0hBTEZfRFVQ
+TEVYDQpSUy00ODUgKDItd2lyZSBSWF9EVVJJTkdfVFgpOiAgICByczQ4NS0+ZmxhZ3MgPSBTRVJf
+UlM0ODVfRU5BQkxFRHxTRVJfUlM0ODVfTU9ERV9IQUxGX0RVUExFWHxTRVJfUlM0ODVfUlhfRFVS
+SU5HX1RYDQoNClNFUl9SUzQ4NV9NT0RFX0ZVTExfRFVQTEVYIGFuZCBTRVJfUlM0ODVfTU9ERV9I
+QUxGX0RVUExFWCBjYW4gYmUgZGVmaW5lZCBhdCB0aGUNCnNhbWUgYml0LiBJZiBTRVJfUlM0ODVf
+TU9ERV9IQUxGX0RVUExFWCB3aWxsIGJlIGRlZmluZWQgYXMgMCBpdCBicmVha3Mgbm90aGluZy4N
+CldpdGggU0VSX1JTNDg1X01PREVfRlVMTF9EVVBMRVgsIHRoZSBSVFMgcGluIGRvZXMgbm90IG5l
+ZWQgdG8gYmUgY29udHJvbGxlZC4NCg0KPiANCj4+ICBBIHNpbmdsZSBHUElPIHNlZW1zIGluc3Vm
+ZmljaWVudCB0byBoYW5kbGUgdGhhdC4NCj4gDQo+IEdQSU9zIGZvciBSUzQ4NSBpcyBhbm90aGVy
+IHRoaW5nLg0KPiANCj4gSSBtZWFuLCBjdXJyZW50bHkgd2UgaGF2ZSBhIEdQSU8gZm9yIFJTNDg1
+IHRlcm1pbmF0aW9uIChJIGludHJvZHVjZWQgaXQgd2l0aCBjb21taXQNCj4gNDRiMjdhZWM5ZDk2
+ODA4NzUpLg0KPiBDaHJpc3RvcGggaW50cm9kdWNlZCBzdXBwb3J0IGZvciBhIHJ4LWR1cmluZy10
+eCBHUElPIChzZWUgY29tbWl0IDE2M2YwODBlYjcxNykuIFRvbWFzDQo+IGludGVuZHMNCj4gdG8g
+YWRkIGEgR1BJTyB3aGljaCBlbmFibGVzIFJTNDg1IGlmIGFzc2VydGVkDQo+IChzZWUgaHR0cHM6
+Ly9sb3JlLmtlcm5lbC5vcmcvYWxsLzNaYS5aWnMlN0QubmRYSThDTWVlNC4xYk42ZVFAc2V6bmFt
+LmN6LykgYW5kIHdpdGggUmFzbXVzDQo+IHBhdGNoZXMNCj4gd2UgYXJlIGFib3V0IHRvIGFkZCBh
+IE1VWC1HUElPIHdoaWNoIGlzIHRvIGJlIGFzc2VydGVkIGlmIFJTNDg1IGlzIGVuYWJsZWQuDQo+
+IA0KPiBJIHdvbmRlciB3aGVyZSB0aGlzIHdpbGwgZW5kIGFuZCBpZiB3ZSByZWFsbHkgaGF2ZSB0
+byBzdXBwb3J0IGV2ZXJ5IHBvc3NpYmxlIEdQSU8NCj4gaW4gdGhlIHNlcmlhbCBjb3JlLg0KDQpJ
+IHRoaW5rIHRoZSBHUElPcyByZWZsZWN0IHRoZSBmbGFnIHN0YXRlcyBhbmQgYXJlIG1lYW5pbmdm
+dWw6DQotIFNFUl9SUzQ4NV9URVJNSU5BVEVfQlVTOiBTd2l0Y2ggYnVzIHRlcm1pbmF0aW9uIG9u
+L29mZiBieSBHUElPDQotIFNFUl9SUzQ4NV9SWF9EVVJJTkdfVFg6ICBVc2VkIHRvIHN0b3AgUlgg
+ZHVyaW5nIFRYIGluIGhhcmR3YXJlIGJ5IEdQSU8gKGZvciAyLXdpcmUpDQotIFNFUl9SUzQ4NV9F
+TkFCTEVEOiAgICAgICBNdXhpbmcgYmV0d2VlbiBSUy0yMzIgYW5kIFJTLTQ4NSBieSBHUElPDQoN
+ClN3aXRjaGluZyBSUy00ODUgb24gZHVyaW5nIGJvb3QgY291bGQgYWxzbyBiZSBoYW5kbGVkIGJ5
+IGEgZGV2aWNldHJlZSBvdmVybGF5LiBFdmFsdWF0ZSB0aGUNCkdQSU8gYW5kIGxvYWQgYSBEVE8g
+YWNjb3JkaW5nbHkgYmVmb3JlIGJvb3RpbmcuDQoNCg0KUmVnYXJkcw0KQ2hyaXN0b3BoDQo=
