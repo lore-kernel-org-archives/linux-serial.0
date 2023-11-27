@@ -1,126 +1,110 @@
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lNoji0S4"
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DA6611B;
-	Sun, 26 Nov 2023 18:07:05 -0800 (PST)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-1f9e6a8b00aso1767214fac.3;
-        Sun, 26 Nov 2023 18:07:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1701050824; x=1701655624; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=asGQFlJbseALxVoUAFeWJFbzNriZ6/364BUepF32tlM=;
-        b=lNoji0S4rwNe9DRxZ4ItMsTg6Ml/Qv1OKI7geFXk26/fkU8Rw2Mb37B6qHxaTQQEYC
-         vbeMCnMOQCfTwh9D7JBDvMoAWNisW4BZO3M40rm7/XudCp/6juIjJMaXBT8YspQ+4/Tj
-         /OOnWLhTK0ER32dVpSbnVfQkHmLViK7WdLc9KtSTylSwBLjovb+B/ad8PhcRqkrwYvYd
-         2HR1ISNVZjdPiduqnuWVM6UoscefGuTCv6JPtXmGe0UN1QZ0ZQo+hd2FxnVdh8wqN3ao
-         X0SO22miSjxTm6y1LP4F+jDHWv3a5THZCHqqCay7lK4ajjwUqSJpLynQH81FxR8az1b8
-         sCVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701050824; x=1701655624;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=asGQFlJbseALxVoUAFeWJFbzNriZ6/364BUepF32tlM=;
-        b=aNWXpnLxf+xc/XOkZyCo0fhBMR23Iu8T9aJfrKH01haQ1fgeBhzI3oc7TV3JlmncXZ
-         PDG2E1Tpghu9cSxmvcMzMsYMOGJEg8xDBs+/20cj5yzH2ukX7IO1PM1xWpHAd+mXdmgw
-         2ADdQjFuX8cRIqsUdXRRLwmHP0teUp2ezwV82U4cLw/M8AhAI8WnVBLP7QEe47zalYbG
-         y4NwSPr+Jy+7dQq2erJS5lxsmVLY2DZ/hA9B5dMjzx1Jd64UddmTO7Yz+yLg8mkw1e3s
-         gAKEY3kfSw0GpnVpUyXL36pQkhD0CQKgGNJtS9Ebv8ABAcA5e5S1RGNVrcNgBWMiNsAJ
-         OUsQ==
-X-Gm-Message-State: AOJu0YzjI2ZepFQoH8rvnXZ+sUInWwnTuRvV2hU0FSTduzJtkuH9jIjF
-	o/9JrdASY2WpVkN79LJoN1Cg1vQyB4fIZGIazOU=
-X-Google-Smtp-Source: AGHT+IEz1/FpIU1hEmciAxvSiSkJb68dGD3xv9+tvEeMRcIlKNgGSZzlMhUVvU28GhIFsDnGpWrZRn2xSrrvcuu6KPA=
-X-Received: by 2002:a05:6870:5d93:b0:1f0:656b:5b99 with SMTP id
- fu19-20020a0568705d9300b001f0656b5b99mr16069972oab.11.1701050824197; Sun, 26
- Nov 2023 18:07:04 -0800 (PST)
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [91.198.224.70])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A8C1137
+	for <linux-serial@vger.kernel.org>; Sun, 26 Nov 2023 23:13:18 -0800 (PST)
+Received: from [127.0.0.1] (helo=localhost)
+	by relay.expurgate.net with smtp (Exim 4.92)
+	(envelope-from <prvs=1709d64187=fe@dev.tdt.de>)
+	id 1r7Vnw-007BZB-By
+	for linux-serial@vger.kernel.org; Mon, 27 Nov 2023 08:13:16 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+	by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <fe@dev.tdt.de>)
+	id 1r7Vnv-00GDY3-C6
+	for linux-serial@vger.kernel.org; Mon, 27 Nov 2023 08:13:15 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+	by securemail.tdt.de (Postfix) with ESMTP id 00845240049
+	for <linux-serial@vger.kernel.org>; Mon, 27 Nov 2023 08:13:14 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+	by securemail.tdt.de (Postfix) with ESMTP id AE144240040;
+	Mon, 27 Nov 2023 08:13:14 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+	by mail.dev.tdt.de (Postfix) with ESMTP id F187133D23;
+	Mon, 27 Nov 2023 08:13:13 +0100 (CET)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20231124122258.1050-1-xuewen.yan@unisoc.com> <87il5o32w9.fsf@jogness.linutronix.de>
-In-Reply-To: <87il5o32w9.fsf@jogness.linutronix.de>
-From: Xuewen Yan <xuewen.yan94@gmail.com>
-Date: Mon, 27 Nov 2023 10:06:53 +0800
-Message-ID: <CAB8ipk8==8PTZPsY_VjQFgcJ0sOfQomgybkPB1sWPiGNWGB=Jw@mail.gmail.com>
-Subject: Re: [RFC PATCH] serial: core: Use pm_runtime_get_sync() in uart_start()
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Xuewen Yan <xuewen.yan@unisoc.com>, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	ilpo.jarvinen@linux.intel.com, tony@atomide.com, tglx@linutronix.de, 
-	andriy.shevchenko@linux.intel.com, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, ke.wang@unisoc.com, 
-	Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
-	Steven Rostedt <rostedt@goodmis.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Date: Mon, 27 Nov 2023 08:13:13 +0100
+From: Florian Eckert <fe@dev.tdt.de>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Eckert.Florian@googlemail.com, jirislaby@kernel.org, pavel@ucw.cz,
+ lee@kernel.org, kabel@kernel.org, u.kleine-koenig@pengutronix.de,
+ m.brock@vanmierlo.com, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [Patch v8 2/6] leds: ledtrig-tty: free allocated ttyname buffer
+ on deactivate
+In-Reply-To: <2023112356-amount-undertook-cdb2@gregkh>
+References: <20231109085038.371977-1-fe@dev.tdt.de>
+ <20231109085038.371977-3-fe@dev.tdt.de>
+ <2023112356-amount-undertook-cdb2@gregkh>
+Message-ID: <71eeb0fad7c6d2c4a407df34facee232@dev.tdt.de>
+X-Sender: fe@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.17
 Content-Transfer-Encoding: quoted-printable
+X-purgate: clean
+X-purgate-ID: 151534::1701069195-DCB7D1F7-6AB2CF68/0/0
+X-purgate-type: clean
 
-Hi John
 
-On Mon, Nov 27, 2023 at 12:17=E2=80=AFAM John Ogness <john.ogness@linutroni=
-x.de> wrote:
->
-> [Added printk maintainers CC.]
->
-> On 2023-11-24, Xuewen Yan <xuewen.yan@unisoc.com> wrote:
-> > The commit 84a9582fd203("serial: core: Start managing serial
-> > controllers to enable runtime PM") use the pm_runtime_get() after
-> > uart_port_lock() which would close the irq and disable preement.  At
-> > this time, pm_runtime_get may cause the following two problems:
-> >
-> > (1) deadlock in try_to_wake_up:
-> >
-> > uart_write()
-> > uart_port_lock() <<< get lock
-> > __uart_start
-> > __pm_runtime_resume
-> > rpm_resume
-> > queue_work_on
-> > try_to_wake_up
-> > _printk
-> > uart_console_write
-> > ...
-> > uart_port_lock() <<< wait forever
->
-> I suppose you got this because of the lockdep message generated by
-> #2. It probably would make sense to call __printk_safe_enter() inside
-> uart_port_lock(). This would allow printk() to automatically defer the
-> printing for that CPU until the port lock is released.
 
-Thanks for the suggestion, I would use printk_deferred in our tree to
-retest the case.
+On 2023-11-23 15:06, Greg KH wrote:
+> On Thu, Nov 09, 2023 at 09:50:34AM +0100, Florian Eckert wrote:
+>> The ttyname buffer for the ledtrig_tty_data struct is allocated in the
+>> sysfs ttyname_store() function. This buffer must be released on=20
+>> trigger
+>> deactivation. This was missing and is thus a memory leak.
+>>=20
+>> While we are at it, the tty handler in the ledtrig_tty_data struct=20
+>> should
+>> also be returned in case of the trigger deactivation call.
+>>=20
+>> Fixes: fd4a641ac88f ("leds: trigger: implement a tty trigger")
+>> Reviewed-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+>> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
+>> ---
+>>  drivers/leds/trigger/ledtrig-tty.c | 4 ++++
+>>  1 file changed, 4 insertions(+)
+>>=20
+>> diff --git a/drivers/leds/trigger/ledtrig-tty.c=20
+>> b/drivers/leds/trigger/ledtrig-tty.c
+>> index 8ae0d2d284af..3e69a7bde928 100644
+>> --- a/drivers/leds/trigger/ledtrig-tty.c
+>> +++ b/drivers/leds/trigger/ledtrig-tty.c
+>> @@ -168,6 +168,10 @@ static void ledtrig_tty_deactivate(struct=20
+>> led_classdev *led_cdev)
+>>=20
+>>  	cancel_delayed_work_sync(&trigger_data->dwork);
+>>=20
+>> +	kfree(trigger_data->ttyname);
+>> +	tty_kref_put(trigger_data->tty);
+>> +	trigger_data->tty =3D NULL;
+>> +
+>=20
+> This should be a stand-alone patch with a proper cc: stable tag added=20
+> as
+> well so that it can be accepted now, as it is independent of this new
+> feature you are adding.
 
-And I also notice the warning was reported by syzbot:
-https://lore.kernel.org/all/0000000000006f01f00608a16cea@google.com/
-https://lore.kernel.org/all/000000000000e7765006072e9591@google.com/
+I already send this to stable@vger.kernel.org [1].
+The patch already got an 'Reviewed-by:' from Uwe [2].
+I hope I did everything right and it only slipped through?
 
->
-> > (2) scheduling while atomic:
-> > uart_write()
-> > uart_port_lock() <<< get lock
-> > __uart_start
-> > __pm_runtime_resume
-> > rpm_resume
-> > schedule() << sleep
->
-> rpm_resume() is a fascinating function. It requires the caller to hold a
-> spin_lock (dev->power.lock) with interrupts disabled. But it seems to
-> believe that this is the *only* spin_lock held so that it can
-> temporarily spin_unlock and call might_sleep() functions. In the case of
-> uart_write(), it certainly is not the only spin_lock held.
->
-> I do not know enough about the internals of RPM to suggest a proper
-> solution. But it looks like rpm_resume() cannot assume dev->power.lock
-> is the only spin_lock held by the caller.
+I will omit the patch from the v9 patchset of 'ledtrig-tty'.
+This patch set will come later today with your requested changes.
 
-I would also be very grateful if could give us more suggestions.
+Links;
+[1]=20
+https://lore.kernel.org/stable/20231106141205.3376954-1-fe@dev.tdt.de/
+[2]=20
+https://lore.kernel.org/stable/20231106144914.bflq2jxejdxs6zjb@pengutroni=
+x.de/
 
-Thanks!
+Best regards
 
-BR
----
-xuewen
->
-> John Ogness
+Florian
