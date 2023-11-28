@@ -1,80 +1,80 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1174B8;
-	Mon, 27 Nov 2023 12:01:25 -0800 (PST)
-Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-6d7ed2c143eso3123990a34.3;
-        Mon, 27 Nov 2023 12:01:25 -0800 (PST)
+Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC00C1
+	for <linux-serial@vger.kernel.org>; Mon, 27 Nov 2023 20:05:46 -0800 (PST)
+Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-6cb74a527ceso4015541b3a.2
+        for <linux-serial@vger.kernel.org>; Mon, 27 Nov 2023 20:05:46 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701115285; x=1701720085;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=K/1Bukk4BZ7q2jm9cQ+nh+Ew1x1vbMAH5xhvy5k7R8M=;
-        b=lSFG6pA5wKjns0zTlvVkLibyiQp4j9V0Stsxxe/QKIZ3Du9I1HEAnMdqHp5FfKPK4I
-         ULVtDmQ9+8hNjmi4DWHDedhd//qGNR48PvmmDUXJPN70gbXBNHf+YD5+Vk5PJKmZB5U/
-         2iE2lcTE7eJiEm2M2JW2qOBL0p6hZwCfDMzUp321WEnpZlqctgzMG67WtGF8zCiey3QI
-         LXWxlJ2Aue8rPNyYPD+Dldfc1zXFb+r0QrlfeCdZ55vZjcWm6Ep9T42PZ46z1qTZ2Kxt
-         lzPJiVi62hq7xhBq+0NFCAeu5lm9k6VZ3Yve26YHj6y13hcmxVF4JEj4YEoIA9ME0iCU
-         keGA==
-X-Gm-Message-State: AOJu0Yw53vRUdrhho9opBV+zDSDnMfDQ2LXM03me4M35wbH/l4JnhvoO
-	G2HKWXmtIkNqY2F6Iio65Q==
-X-Google-Smtp-Source: AGHT+IGpGZwUOq3P4IPSr4NBY/hO/zlRPqa0tzUESZae2bUTULaZ08r0lrc/X6YYWp6GU5CPIonPNg==
-X-Received: by 2002:a05:6871:7292:b0:1fa:cbf:88a3 with SMTP id mm18-20020a056871729200b001fa0cbf88a3mr15764884oac.26.1701115285170;
-        Mon, 27 Nov 2023 12:01:25 -0800 (PST)
-Received: from herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id l7-20020a05683016c700b006d812c49f21sm805272otr.17.2023.11.27.12.01.23
+        d=1e100.net; s=20230601; t=1701144345; x=1701749145;
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6OmNmMuC2LHspV3qtZBS9daUrDJWG+4/vESTs9o4TP4=;
+        b=C1mzDo60tORrZKQ8LOrVzv+V4dWXHKZLTewDGaB/v1C79wbRtPGWmBB2LtVwFtD3YM
+         DeVEj8RWgXmEO7Lh/NL4bMuJb+My8UrCHxcVbCgILgQ68GA8+59a7wzvTGctJu95tB1T
+         ZeS8agSeM3IObmFvAuYGhXh0LZaoLufPJwtvUHy3+ALfcV8YBA2clYVVV/hR4g9Gv/pf
+         zFeIwTZeNIf4ueoRnez0N/GSRLkM00kChhxoGGncvVy2p4FuuZ9AzLiZ5gEqr8IVVTbM
+         LkhX4UxNIpgzgbkzyIH919BxUGuPBAYy+4vM5EdKXFNQ+CbJWYSScfhp6dFV221R3xS1
+         vulw==
+X-Gm-Message-State: AOJu0Yy9Gn+CTo9U/PvhT/4EKuSmb56CiZBQGbhzpgPiXFk++YGa08Td
+	7Yecz7OsR2oxAC8BLPIP4lCLPr7AP8Ho/cuHuA/C0A==
+X-Google-Smtp-Source: AGHT+IGQJx+/AoXm295VG+JjvFKKpj/lhKfEcuZUlAPOE886esxRq0lnoBpSbYDU6yK9xq1Po9H9Hw==
+X-Received: by 2002:a05:6a00:2d1b:b0:6c6:1648:5ac6 with SMTP id fa27-20020a056a002d1b00b006c616485ac6mr14632469pfb.5.1701144345432;
+        Mon, 27 Nov 2023 20:05:45 -0800 (PST)
+Received: from localhost (75-172-121-199.tukw.qwest.net. [75.172.121.199])
+        by smtp.gmail.com with ESMTPSA id a2-20020a63d402000000b005b96b42f7ccsm8284109pgh.82.2023.11.27.20.05.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Nov 2023 12:01:24 -0800 (PST)
-Received: (nullmailer pid 2911558 invoked by uid 1000);
-	Mon, 27 Nov 2023 20:01:23 -0000
-Date: Mon, 27 Nov 2023 14:01:23 -0600
-From: Rob Herring <robh@kernel.org>
-To: Tomas Paukrt <tomaspaukrt@email.cz>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] dt-bindings: serial: Add support for enabling
- RS485 mode via GPIO at boot time
-Message-ID: <20231127200123.GA2896702-robh@kernel.org>
-References: <3Zb.ZZsn.wkax8K4so6.1bN6eS@seznam.cz>
+        Mon, 27 Nov 2023 20:05:44 -0800 (PST)
+From: Kevin Hilman <khilman@kernel.org>
+To: Tony Lindgren <tony@atomide.com>, =?utf-8?Q?Th=C3=A9o?= Lebrun
+ <theo.lebrun@bootlin.com>
+Cc: Thomas Richard <thomas.richard@bootlin.com>, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, linux-serial@vger.kernel.org,
+ gregory.clement@bootlin.com, u-kumar1@ti.com, d-gole@ti.com,
+ thomas.petazzoni@bootlin.com
+Subject: Re: [PATCH] serial: 8250_omap: Set the console genpd always on if
+ no console suspend
+In-Reply-To: <20231124105455.GV5166@atomide.com>
+References: <7hfs213u0r.fsf@baylibre.com>
+ <20231024045109.GT27774@atomide.com> <7hjzrbj29t.fsf@baylibre.com>
+ <20231025064131.GZ27774@atomide.com>
+ <75b6cda8-c809-409b-8be9-ad8a4db63c14@bootlin.com>
+ <20231031105247.GC57044@atomide.com> <7h34xqitl0.fsf@baylibre.com>
+ <CX5F88JLWFUW.Z36KQB2PX554@tleb-bootlin-xps13-01>
+ <20231124053727.GU5166@atomide.com>
+ <CX6Z7BRRRECO.3I32FB3Y8Z21G@tleb-bootlin-xps13-01>
+ <20231124105455.GV5166@atomide.com>
+Date: Mon, 27 Nov 2023 20:05:44 -0800
+Message-ID: <7hfs0qed47.fsf@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3Zb.ZZsn.wkax8K4so6.1bN6eS@seznam.cz>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 21, 2023 at 09:28:12AM +0100, Tomas Paukrt wrote:
-> Add an option to enable the RS485 mode at boot time based on
-> the state of a GPIO pin (DIP switch or configuration jumper).
-> The GPIO is defined by the device tree property "linux,rs485-mode-gpio".
-> 
-> Signed-off-by: Tomas Paukrt <tomaspaukrt@email.cz>
-> ---
->  Documentation/devicetree/bindings/serial/rs485.yaml | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/rs485.yaml b/Documentation/devicetree/bindings/serial/rs485.yaml
-> index 9418fd6..7a72f37 100644
-> --- a/Documentation/devicetree/bindings/serial/rs485.yaml
-> +++ b/Documentation/devicetree/bindings/serial/rs485.yaml
-> @@ -47,6 +47,10 @@ properties:
->        later with proper ioctl.
->      $ref: /schemas/types.yaml#/definitions/flag
-> 
-> +  linux,rs485-mode-gpio:
+Tony Lindgren <tony@atomide.com> writes:
 
-This has little to do with Linux, so no need for linux prefix.
+> * Th=C3=A9o Lebrun <theo.lebrun@bootlin.com> [231124 10:39]:
+>> On Fri Nov 24, 2023 at 6:37 AM CET, Tony Lindgren wrote:
+>> Checking the code confirms this behavior. Grep for the macro
+>> genpd_is_active_wakeup rather than GENPD_FLAG_ACTIVE_WAKEUP. It gets
+>> used twice (suspend & resume), both in the same manner:
+>>=20
+>>    if (device_wakeup_path(dev) && genpd_is_active_wakeup(genpd))
+>>=20
+>> This means this flag won't have any impact on runtime PM handling of
+>> power-domains. By the way, other users of the flag enable it at PD
+>> registration & don't touch it afterwards.
+>
+> Setting GENPD_FLAG_ACTIVE_WAKEUP will block deeper idle states for
+> the SoC most likely.
 
-The preferred form is always plural '-gpios'.
+It doesn't affect idle states.  It only affects suspend states.
 
-> +    description: GPIO pin to enable RS485 mode at boot time.
-> +    maxItems: 1
-> +
->    rs485-rx-during-tx:
->      description: enables the receiving of data even while sending data.
->      $ref: /schemas/types.yaml#/definitions/flag
-> --
-> 2.7.4
-> 
+As Th=C3=A9o pointed out, system-wide suspend will ignores runtime PM
+refcounts, so IMO, using this flag is the right approach.
+
+Kevin
