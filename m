@@ -1,95 +1,125 @@
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="T5ZoprE+"
-Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9941A1
-	for <linux-serial@vger.kernel.org>; Mon, 27 Nov 2023 21:05:36 -0800 (PST)
-Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id 9D62F60850;
-	Tue, 28 Nov 2023 05:05:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1701147935;
-	bh=XCWDrtWhKMx4WDYpLfcfCiUgU740qVl9jmolKz6JSHw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=T5ZoprE+xfW8McS7YnXLmuWUZxcNXo9WrvQfs6gSRKhvF7VIvscWQdKIDXAvtePns
-	 5y8/vuxjQMLRNPTRysliIvVQtox+joDhrR57W1XPjmoAiexga8rv2mVwpsYa9lVadv
-	 WnvW42d2IGX1ydqjne6ypvsWTW/DZD+CR0mlrahHdnI3Qtq5BmSlcQy+cD04n4diM3
-	 EJ6sZmfihd2tUWCjeRXKKY/u5E8rdOevxLq2LEzJkGw38dwunnyLByzbV8Ewq6Vx/o
-	 zUAgtBlZ5HB8UtJiUprtwxUw82Tk91Nqnuc0HSD6XwlERKZg528nLYjtGIXE5wJ6ZN
-	 h4+m4OuQF0vPw==
-Date: Tue, 28 Nov 2023 07:05:13 +0200
-From: Tony Lindgren <tony@atomide.com>
-To: Kevin Hilman <khilman@kernel.org>
-Cc: =?utf-8?B?VGjDqW8=?= Lebrun <theo.lebrun@bootlin.com>,
-	Thomas Richard <thomas.richard@bootlin.com>,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	linux-serial@vger.kernel.org, gregory.clement@bootlin.com,
-	u-kumar1@ti.com, d-gole@ti.com, thomas.petazzoni@bootlin.com
-Subject: Re: [PATCH] serial: 8250_omap: Set the console genpd always on if no
- console suspend
-Message-ID: <20231128050513.GJ5166@atomide.com>
-References: <75b6cda8-c809-409b-8be9-ad8a4db63c14@bootlin.com>
- <20231031105247.GC57044@atomide.com>
- <7h34xqitl0.fsf@baylibre.com>
- <CX5F88JLWFUW.Z36KQB2PX554@tleb-bootlin-xps13-01>
- <20231124053727.GU5166@atomide.com>
- <CX6Z7BRRRECO.3I32FB3Y8Z21G@tleb-bootlin-xps13-01>
- <20231124105455.GV5166@atomide.com>
- <7hfs0qed47.fsf@baylibre.com>
- <20231128041134.GI5166@atomide.com>
- <7hbkbeeayw.fsf@baylibre.com>
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9DA194;
+	Mon, 27 Nov 2023 21:17:55 -0800 (PST)
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-54a945861c6so6913379a12.3;
+        Mon, 27 Nov 2023 21:17:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701148673; x=1701753473;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SKeicnPR0lJ4OWc/qdP0Ppo8oLduWAkxTgoi6LPMexw=;
+        b=pkFmzl5zOpjCDajgWQy1OLDxMU2qHkYFWoFUUz5uKDlwyBo/8DX8E7L4Q3zYqhNQi7
+         O9+ntpkrot436hN+HClekLc1HHWMZgmVxlMTan+2r9nXKDwym3ZtoVn8pq03B3O36h7b
+         cds/h4KD1nZeEvgsLQh8TqX31cwxEKY36wKBwWMo7EGvIZWJXI6nZy8UjEnTAIfKnGqZ
+         1kBEPZlZhxmTmB6kXB2+7mRivVVkLXRF7OgL2Q72C51nw8Z50lPSw/oLmEiQ8BjBkbOr
+         MgMhVJQ3ybBsdkR8i2r8Aw6Jj7ArR6f3D3Aj9Ir/gNof8+AENSSpmQ6dUT+D6HP/lizs
+         wnUg==
+X-Gm-Message-State: AOJu0Yx0b68JZHsBvuJaAaHKEnGMGMC6BHvj5VOwXCfZVKrxkvb2PpaD
+	t8l5NhWFmhI3yRC7XaeVsrA=
+X-Google-Smtp-Source: AGHT+IF2aq7BqB8lzgkHWMVpEgQCDNI80j/eF4PPI2zg4SIToeo0oY/meXgGQxWW2Mj2x9f15pParw==
+X-Received: by 2002:aa7:c551:0:b0:54a:ed3c:f4f3 with SMTP id s17-20020aa7c551000000b0054aed3cf4f3mr9448861edr.25.1701148673468;
+        Mon, 27 Nov 2023 21:17:53 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id x21-20020a05640226d500b0054b2bc67225sm3309195edd.10.2023.11.27.21.17.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Nov 2023 21:17:53 -0800 (PST)
+Message-ID: <a637b8ad-6a2a-4408-9700-1851d25197dc@kernel.org>
+Date: Tue, 28 Nov 2023 06:17:51 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <7hbkbeeayw.fsf@baylibre.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 0/3] Bluetooth: fix recv_buf() return value
+To: Francesco Dolcini <francesco@dolcini.it>
+Cc: Sean Wang <sean.wang@mediatek.com>, Marcel Holtmann
+ <marcel@holtmann.org>, Johan Hedberg <johan.hedberg@gmail.com>,
+ Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Amitkumar Karwar <amitkumar.karwar@nxp.com>,
+ Neeraj Kale <neeraj.sanjaykale@nxp.com>,
+ Francesco Dolcini <francesco.dolcini@toradex.com>,
+ linux-bluetooth@vger.kernel.org, linux-mediatek@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-serial@vger.kernel.org
+References: <20231127191409.151254-1-francesco@dolcini.it>
+ <ZWTsoot/kAprNFz0@francesco-nb.int.toradex.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <ZWTsoot/kAprNFz0@francesco-nb.int.toradex.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-* Kevin Hilman <khilman@kernel.org> [231128 04:52]:
-> Tony Lindgren <tony@atomide.com> writes:
+Hi,
+
+On 27. 11. 23, 20:23, Francesco Dolcini wrote:
+> On Mon, Nov 27, 2023 at 08:14:05PM +0100, Francesco Dolcini wrote:
+>> From: Francesco Dolcini <francesco.dolcini@toradex.com>
+>>
+>> Serdev recv_buf() callback is supposed to return the amount of bytes
+>> consumed, therefore an int in between 0 and count.
 > 
-> > * Kevin Hilman <khilman@kernel.org> [231128 04:05]:
-> >> Tony Lindgren <tony@atomide.com> writes:
-> >> 
-> >> > * Théo Lebrun <theo.lebrun@bootlin.com> [231124 10:39]:
-> >> >> On Fri Nov 24, 2023 at 6:37 AM CET, Tony Lindgren wrote:
-> >> >> Checking the code confirms this behavior. Grep for the macro
-> >> >> genpd_is_active_wakeup rather than GENPD_FLAG_ACTIVE_WAKEUP. It gets
-> >> >> used twice (suspend & resume), both in the same manner:
-> >> >> 
-> >> >>    if (device_wakeup_path(dev) && genpd_is_active_wakeup(genpd))
-> >> >> 
-> >> >> This means this flag won't have any impact on runtime PM handling of
-> >> >> power-domains. By the way, other users of the flag enable it at PD
-> >> >> registration & don't touch it afterwards.
-> >> >
-> >> > Setting GENPD_FLAG_ACTIVE_WAKEUP will block deeper idle states for
-> >> > the SoC most likely.
-> >> 
-> >> It doesn't affect idle states.  It only affects suspend states.
-> >> 
-> >> As Théo pointed out, system-wide suspend will ignores runtime PM
-> >> refcounts, so IMO, using this flag is the right approach.
-> >
-> > But it still blocks the deeper SoC suspend states if set, right?
-> >
-> > If so, it should be dynamically toggled depending on the console_suspend
-> > flag.
+> I have also a patch ready to convert the return value of serdev
+> recv_buf() from int to size_t.
 > 
-> Agreed, and that's what I think Théo proposed earlier in this thread[1].
-> 
-> Since the deeper suspend states are prevented only when this flag is
-> present *and* the wakeup path is set, Théo's example just toggles the
-> wakeup path set based on console_suspend_enabled.
+> I would be inclined to wait for this series to go though first, given
+> that these are fixes, while the change from int to size_t is just a
+> cleanup to prevent future mistakes. Do you agree of would you do it
+> differently?
 
-Ah it's the *and* part I was missing! Yes great, that sounds good to
-me.
+Fine by me either way. You can include it in this series at the end. 
+Fixes can be picked up by stable too, the rest would go to mainline only.
 
-Thanks,
+thanks,
+-- 
+js
+suse labs
 
-Tony
-
-> [1] https://lore.kernel.org/r/CX5F88JLWFUW.Z36KQB2PX554@tleb-bootlin-xps13-01
