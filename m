@@ -1,140 +1,133 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="V8CA9agm"
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0042B192
-	for <linux-serial@vger.kernel.org>; Tue, 28 Nov 2023 00:58:56 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id 4fb4d7f45d1cf-5441305cbd1so6741049a12.2
-        for <linux-serial@vger.kernel.org>; Tue, 28 Nov 2023 00:58:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701161935; x=1701766735; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=UGpYHJ/5KU9x0FpSQk/2EgeAQ9Rghpf69obPvi4FEEU=;
-        b=V8CA9agmL0Hyu8jgbSQ0UJaPzKtQp7xDvWMt9/4l7csZuy/ullzTPVvFjZHIpOji0E
-         yeIha9MrjdLcQIxDr9vYRtyanQEXErGYCD03tQiet/WNonNaqe7c7E8ejaHjZ0omSw2k
-         Zp7QkKcRzKU+dZaRv5q2tBGVoxmyhejdwP/Az374HNGmwZRAKoBsirYak0d9af1NatVR
-         Y7PmM3YFvrXcTQTC8si37nUj6mSVEeBdt6QRREJB2ITJE3nCWjUxHVaSgFKHBjxAG20P
-         oRNHFV6QjV76bkLTEFgcCW1xGj3Ev7tq/xgKrR2r+HEv/QWBtZd4g5jefd0nbJNhpFYp
-         Hvag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701161935; x=1701766735;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UGpYHJ/5KU9x0FpSQk/2EgeAQ9Rghpf69obPvi4FEEU=;
-        b=T7EtF7K9kSujngKnMNrckd3USjAhJfNLr+riaf5sqWVzc+Ae6OoPz25RMLgdNQcJAn
-         qb5enYtmA8dKZI/E5xjvLhTYxMaEuMySNGGsM4VRo1y2WjFlHCBD1WUiuHB1hf69cCue
-         bRhrlNUk2vpwdcisUBRQWHXw1m5LM8Z/fyVjqV8NQEOn6tB0qHUFCIXZkj1UG3rH/EZt
-         Hk5ep2cHg92FLRuivhD3amDClss/KTAy01HpXQ8nDTzvY3kDj463V/3UhwgOzscw34kA
-         Ip188/XZFSKIcoZfvjL4MhwXfRMx+Aa17ro6W/nd5AGk1TCcvKBwRnQy2zeRz61I80Rn
-         G+hw==
-X-Gm-Message-State: AOJu0Yx3UYtc7Yzi40iQnS72sFrS5aWvms6HjPCfPTvGFdMpgg+o4R60
-	heSmGB6hjnvgqhPKkvd8RvZncg==
-X-Google-Smtp-Source: AGHT+IEgIsNU+8Ga6PP5Ysj5x1L7yrm45es5mMmhnSW4AxcFkCQuqBZ1rC+ew3qIYRmtnJ4t+2BItw==
-X-Received: by 2002:a50:9312:0:b0:53e:3b8f:8a58 with SMTP id m18-20020a509312000000b0053e3b8f8a58mr11821123eda.11.1701161935368;
-        Tue, 28 Nov 2023 00:58:55 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.223.109])
-        by smtp.gmail.com with ESMTPSA id bt16-20020a0564020a5000b00548e4c5220csm6113884edb.26.2023.11.28.00.58.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Nov 2023 00:58:54 -0800 (PST)
-Message-ID: <f23ff6a1-0130-45a4-809c-efa82c1e3c6c@linaro.org>
-Date: Tue, 28 Nov 2023 09:58:51 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FqgFC6gQ"
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9C051BC2
+	for <linux-serial@vger.kernel.org>; Tue, 28 Nov 2023 02:13:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1701166410; x=1732702410;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=+ZDIfNVeTWS2cwEGFjUJ1pM8fK01DrleOVyr1h2YLMI=;
+  b=FqgFC6gQTWoh2VosyzXaxBABUe3EcEjjSmyEOdjcGIO7HlBEhIZSVUX2
+   Ic0VyqbxS9ydPX2hOBx0QRzKuUtVGBgfLdxS8k6ZegY3vARAjhoIQ2ir9
+   Kv2qjeO6LzYgsmRFK7bijizPInkBQKlJbL3FmAQWmHAmq7o4OrfPdGNru
+   Dj0dSno6Dxk3UErx6IL1b1pBy0FjznCczPsPuRFBuCexRBG3zHb0aGMsD
+   XKs66EuNvdfQfJmsO5416tilRRfPGU5yVuKev6pPfPwv4VSgbi9sCHj1i
+   Vl3mpxNOtGBbyxeEp9b9V+Qq8hfyfjvC5kJsm7L7VqXGOQiAdIBKC8RiJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10907"; a="396797373"
+X-IronPort-AV: E=Sophos;i="6.04,233,1695711600"; 
+   d="scan'208";a="396797373"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2023 02:13:30 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10907"; a="859381490"
+X-IronPort-AV: E=Sophos;i="6.04,233,1695711600"; 
+   d="scan'208";a="859381490"
+Received: from haslam-mobl1.ger.corp.intel.com ([10.252.43.79])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2023 02:13:28 -0800
+Date: Tue, 28 Nov 2023 12:13:26 +0200 (EET)
+From: =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To: Christina Quast <contact@christina-quast.de>
+cc: Greg KH <gregkh@linuxfoundation.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    Daniel Beer <daniel.beer@igorinstitute.com>
+Subject: Re: [PATCH v3 RESEND] hid-ft260: Add serial driver
+In-Reply-To: <0fb134f7-f72e-4742-9c2d-c68f83b67975@christina-quast.de>
+Message-ID: <aa99b5f-6f6e-47c7-5956-5034c681d0d7@linux.intel.com>
+References: <20231122094004.95399-1-contact@christina-quast.de> <2023112205-explore-frequency-40a6@gregkh> <0fb134f7-f72e-4742-9c2d-c68f83b67975@christina-quast.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 17/20] arm64: dts: google: Add initial Google gs101 SoC
- support
-Content-Language: en-US
-To: Peter Griffin <peter.griffin@linaro.org>
-Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
- mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
- tomasz.figa@gmail.com, s.nawrocki@samsung.com, linus.walleij@linaro.org,
- wim@linux-watchdog.org, linux@roeck-us.net, catalin.marinas@arm.com,
- will@kernel.org, arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org,
- cw00.choi@samsung.com, tudor.ambarus@linaro.org, andre.draszik@linaro.org,
- semen.protsenko@linaro.org, saravanak@google.com, willmcvicker@google.com,
- soc@kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
- linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-watchdog@vger.kernel.org, kernel-team@android.com,
- linux-serial@vger.kernel.org
-References: <20231011184823.443959-1-peter.griffin@linaro.org>
- <20231011184823.443959-18-peter.griffin@linaro.org>
- <33fe3e2e-9d09-42ee-9472-25d3be09baf4@linaro.org>
- <CADrjBPrh19YzB45hM4xaELn67uf3iBQo++T-8+2Uenq6-fDzKg@mail.gmail.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <CADrjBPrh19YzB45hM4xaELn67uf3iBQo++T-8+2Uenq6-fDzKg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 
-On 25/11/2023 00:22, Peter Griffin wrote:
->>> +
->>> +     /* bootloader requires ect node */
->>> +     ect {
->>
->> This needs bindings.
+On Sun, 26 Nov 2023, Christina Quast wrote:
+
+> Hi Greg!
 > 
-> I experimented a bit more and the minimum I need is an empty dt node
-> called ect, otherwise the bootloader will boot loop and we can't boot
-> the kernel
-> [   2.977870] [E] [BOOT] fdt /ect path not found -1
+> Thanks for the comments!
 > 
-> Apart from a comment indicating that the bootloader requires this
-> empty ect dt node, what other bindings documentation would you like to
-> see? Something in google.yaml?
+> On 11/22/23 11:15, Greg KH wrote:
+> > On Wed, Nov 22, 2023 at 10:40:03AM +0100, Christina Quast wrote:
+> > > This commit adds a serial interface /dev/FTx which implements the tty
+> > > serial driver ops, so that it is possible to set the baudrate, send
+> > > and receive data, etc.
+> > Why is this a serial device?  What type of device is it?
+> > 
+> > And why "FTx"?  Where did that name come from?  That's not a "normal"
+> > tty name.
+> I meant /dev/ttyFTx. Since it's a hid device providing a serial interface, in
+> theory you could also call it /dev/ttySx or /dev/ttyUSBx, but both feel wrong.
+> It's an FTDI device, that functions as a USB to UART / I2C Master. Do you have
+> a better name in mind?
 
-Yes, it would be enough.
+> > > +struct ft260_uart_write_request_report {
+> > > +	u8 report;		/* FT260_UART_REPORT */
+> > > +	u8 length;		/* data payload length */
+> > > +	u8 data[];		/* data payload */
+> > Shouldn't this be marked as counted by length?
+> Do you mean in the comment?
+
+No, try:
+
+git grep __counted_by
+
+> > > +		req.data_bit = FT260_CFG_DATA_BITS_8;
+> > > +		termios->c_cflag &= ~CSIZE;
+> > > +		termios->c_cflag |= CS8;
+> > > +		break;
+> > > +	default:
+> > > +	case CS8:
+> > > +		req.data_bit = FT260_CFG_DATA_BITS_8;
+> > > +		break;
+> > > +	}
+> > > +
+> > > +	req.stop_bit = (termios->c_cflag & CSTOPB) ?
+> > > +		FT260_CFG_STOP_TWO_BIT : FT260_CFG_STOP_ONE_BIT;
+> > > +
+> > > +	if (termios->c_cflag & PARENB) {
+> > > +		req.parity = (termios->c_cflag & PARODD) ?
+> > > +			FT260_CFG_PAR_ODD : FT260_CFG_PAR_EVEN;
+> > > +	} else {
+> > > +		req.parity = FT260_CFG_PAR_NO;
+> > > +	}
+> > > +
+> > > +	baud = tty_termios_baud_rate(termios);
+> > > +	if (baud == 0 || baud < FT260_CFG_BAUD_MIN || baud >
+> > > FT260_CFG_BAUD_MAX) {
+> > > +		struct tty_struct *tty = tty_port_tty_get(&port->port);
+> > Blank line needed here.
+> > 
+> > > +		hid_err(hdev, "Invalid baud rate %d\n", baud);
+> > Again, debug error?  And why not report an error instead of just setting
+> > it to 9600?
+> > 
+> > And why 9600?
+> 
+> This is a default setting used in the FT260 documentation as default value, so
+> it seemed like a sensible value.
+> 
+> The ft260_uart_change_speed function is called in set_termios, which has a
+> void return type. So even if I returned an error, that would not be propagated
+> to userspace. It looks like the userspace is meant to check what values were
+> actually set with a subsequent ioctl call.
+
+Setting termios does not propagate errors (legacy feature, I don't know
+the reason).
+
+However, every set termios handling function should ensure if any value 
+from the input termios is changed because the HW cannot do what has been 
+requested, the changes should be reflected in the termios so that 
+userspace knows about them (could check but I don't know if any userspace 
+application actually does that, and I'm quite skeptical they would).
+
+IIRC, termios is returned also from the setting call.
 
 
-Best regards,
-Krzysztof
+-- 
+ i.
 
