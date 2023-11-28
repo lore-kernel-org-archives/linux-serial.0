@@ -1,144 +1,97 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernkonzept.com header.i=@kernkonzept.com header.b="W3O6YEh3"
-Received: from mx.kernkonzept.com (serv1.kernkonzept.com [IPv6:2a01:4f8:1c1c:b490::2])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61CD4DE
-	for <linux-serial@vger.kernel.org>; Tue, 28 Nov 2023 02:16:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=kernkonzept.com; s=mx1; h=Cc:To:In-Reply-To:References:Message-Id:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Subject:Date:From:
-	Reply-To:Content-ID:Content-Description;
-	bh=GjQ22P+oFYyA7vy5m4Ea/60ju9n2QPtg1X1479aEht8=; b=W3O6YEh3bTw4DKC7ZJpbBcYyxv
-	2tZrbqjlwRBSgE2O0V1e3GyIqb2yO/2ZNytCSoyjS6hsyLg64u3cx0MCkbgFtpeA2YdZMh70AJ/xO
-	3JgVY3HJkLpjy6c2OCM859TWMTzanLEcTi/XiqrGYvcecY6mmcoGns7fY+haIc7sOTYn/5djyGtoo
-	opiandhH6j42aDImRc2Qys4osvdAU7TKADQukEwSOdKCKWN1yeiXeYu9u4Dr4aFCdrN3W1tvlq2Af
-	t6dGhWSGWQUj5uK0F3tsVUDXTHMJPGvvUPZd5zQOul4nDGhShtnB6DuFWAp6abjkIN9yjWjKNyBRH
-	UECpp/Iw==;
-Received: from [10.22.3.24] (helo=serv1.dd1.int.kernkonzept.com)
-	by mx.kernkonzept.com with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim 4.96)
-	id 1r7ud2-008PbT-17;
-	Tue, 28 Nov 2023 10:43:40 +0100
-From: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-Date: Tue, 28 Nov 2023 10:43:33 +0100
-Subject: [PATCH 2/2] serial: msm: Use OPP table for DVFS support
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="a7wFYM5C"
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5281DE6;
+	Tue, 28 Nov 2023 02:20:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1701166824; x=1732702824;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=pRg4A/1XNn/gV9f7Su5nwFL58C3OXhlWqDX8A+9UGt8=;
+  b=a7wFYM5C+9kTgry+S3j4t9yuw/8GHGyAaAL7VVystUaWxMTETzGhFf7K
+   fSroiWkt4KvFK7uzdxKJeRevuImOCGqqnEXbBdxuFWjYlqgkMI0W0vUgZ
+   xpbA30Zt/DoAjm6WgtL55h4cpLzXS35l79L2uGWSDmQQ1Ss7/ZaxbZPZr
+   sREUO2NIOI0QXM3AQxKU5J6AZbnI7qUWeGrxJjgpxQkvmwF7SdgQ+nYAc
+   JqpLVJE1Qmh3OZVaUVuNgv3t40xjM3qio6fIHJFcaKE44cixAiRTjgMhY
+   NyGgn+0gJOiypDS5tg9U2rNBsfWwxkRvuEQCaE69lkwYLkZAfG4xPsT5K
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10907"; a="383278090"
+X-IronPort-AV: E=Sophos;i="6.04,233,1695711600"; 
+   d="scan'208";a="383278090"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2023 02:20:23 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10907"; a="941868474"
+X-IronPort-AV: E=Sophos;i="6.04,233,1695711600"; 
+   d="scan'208";a="941868474"
+Received: from haslam-mobl1.ger.corp.intel.com ([10.252.43.79])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2023 02:20:22 -0800
+Date: Tue, 28 Nov 2023 12:20:19 +0200 (EET)
+From: =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/5] tty: make tty const in tty_get_baud_rate()
+In-Reply-To: <20231127123713.14504-1-jirislaby@kernel.org>
+Message-ID: <acdbb083-997f-b9ee-a4a8-3815c54f1f17@linux.intel.com>
+References: <20231127123713.14504-1-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20231128-serial-msm-dvfs-v1-2-4f290d20a4be@kernkonzept.com>
-References: <20231128-serial-msm-dvfs-v1-0-4f290d20a4be@kernkonzept.com>
-In-Reply-To: <20231128-serial-msm-dvfs-v1-0-4f290d20a4be@kernkonzept.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
- Konrad Dybcio <konrad.dybcio@linaro.org>, Jiri Slaby <jirislaby@kernel.org>, 
- Rob Herring <robh+dt@kernel.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
- Conor Dooley <conor+dt@kernel.org>, linux-arm-msm@vger.kernel.org, 
- linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, 
- Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-X-Mailer: b4 0.12.4
+Content-Type: multipart/mixed; boundary="8323329-2114108693-1701166823=:1797"
 
-Parse the OPP table from the device tree and use dev_pm_opp_set_rate()
-instead of clk_set_rate() to allow making performance state votes
-specified in the OPP table (e.g. for power domains and interconnects).
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Without an OPP table in the device tree this will behave just as before
-this patch.
+--8323329-2114108693-1701166823=:1797
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
----
- drivers/tty/serial/msm_serial.c | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+On Mon, 27 Nov 2023, Jiri Slaby (SUSE) wrote:
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 7fc8f0b16aef..e24204ad35de 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -24,6 +24,7 @@
- #include <linux/slab.h>
- #include <linux/clk.h>
- #include <linux/platform_device.h>
-+#include <linux/pm_opp.h>
- #include <linux/delay.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-@@ -1131,7 +1132,7 @@ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud,
- 	uart_port_unlock_irqrestore(port, flags);
- 
- 	entry = msm_find_best_baud(port, baud, &rate);
--	clk_set_rate(msm_port->clk, rate);
-+	dev_pm_opp_set_rate(port->dev, rate);
- 	baud = rate / 16 / entry->divisor;
- 
- 	uart_port_lock_irqsave(port, &flags);
-@@ -1186,6 +1187,7 @@ static void msm_init_clock(struct uart_port *port)
- {
- 	struct msm_port *msm_port = to_msm_port(port);
- 
-+	dev_pm_opp_set_rate(port->dev, port->uartclk);
- 	clk_prepare_enable(msm_port->clk);
- 	clk_prepare_enable(msm_port->pclk);
- 	msm_serial_set_mnd_regs(port);
-@@ -1239,6 +1241,7 @@ static int msm_startup(struct uart_port *port)
- 
- 	clk_disable_unprepare(msm_port->pclk);
- 	clk_disable_unprepare(msm_port->clk);
-+	dev_pm_opp_set_rate(port->dev, 0);
- 
- 	return ret;
- }
-@@ -1254,6 +1257,7 @@ static void msm_shutdown(struct uart_port *port)
- 		msm_release_dma(msm_port);
- 
- 	clk_disable_unprepare(msm_port->clk);
-+	dev_pm_opp_set_rate(port->dev, 0);
- 
- 	free_irq(port->irq, port);
- }
-@@ -1419,11 +1423,13 @@ static void msm_power(struct uart_port *port, unsigned int state,
- 
- 	switch (state) {
- 	case 0:
-+		dev_pm_opp_set_rate(port->dev, port->uartclk);
- 		clk_prepare_enable(msm_port->clk);
- 		clk_prepare_enable(msm_port->pclk);
- 		break;
- 	case 3:
- 		clk_disable_unprepare(msm_port->clk);
-+		dev_pm_opp_set_rate(port->dev, 0);
- 		clk_disable_unprepare(msm_port->pclk);
- 		break;
- 	default:
-@@ -1789,7 +1795,7 @@ static int msm_serial_probe(struct platform_device *pdev)
- 	struct resource *resource;
- 	struct uart_port *port;
- 	const struct of_device_id *id;
--	int irq, line;
-+	int irq, line, ret;
- 
- 	if (pdev->dev.of_node)
- 		line = of_alias_get_id(pdev->dev.of_node, "serial");
-@@ -1824,6 +1830,15 @@ static int msm_serial_probe(struct platform_device *pdev)
- 			return PTR_ERR(msm_port->pclk);
- 	}
- 
-+	ret = devm_pm_opp_set_clkname(&pdev->dev, "core");
-+	if (ret)
-+		return ret;
-+
-+	/* OPP table is optional */
-+	ret = devm_pm_opp_of_add_table(&pdev->dev);
-+	if (ret && ret != -ENODEV)
-+		return dev_err_probe(&pdev->dev, ret, "invalid OPP table\n");
-+
- 	port->uartclk = clk_get_rate(msm_port->clk);
- 	dev_info(&pdev->dev, "uartclk = %d\n", port->uartclk);
- 
+> After commit 87888fb9ac0c ("tty: Remove baudrate dead code & make
+> ktermios params const"), the 'tty' parameter is only read in
+> tty_get_baud_rate(). Therefore, we can make 'tty' accepted in the
+> function 'const' for clarity.
+> 
+> The "the terminal bit flags may be updated." part of the
+> tty_get_baud_rate()'s kernel-doc is dropped as it is no longer true.
+> Because of the same commit above. And it was misplaced anyway.
+> 
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Cc: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  include/linux/tty.h | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/linux/tty.h b/include/linux/tty.h
+> index 7625fc98fef3..e96c85f4f91e 100644
+> --- a/include/linux/tty.h
+> +++ b/include/linux/tty.h
+> @@ -440,10 +440,9 @@ void tty_encode_baud_rate(struct tty_struct *tty, speed_t ibaud,
+>   *
+>   * Returns: the baud rate as an integer for this terminal
+>   *
+> - * Locking: The termios lock must be held by the caller and the terminal bit
+> - * flags may be updated.
+> + * Locking: The termios lock must be held by the caller.
+>   */
+> -static inline speed_t tty_get_baud_rate(struct tty_struct *tty)
+> +static inline speed_t tty_get_baud_rate(const struct tty_struct *tty)
+>  {
+>  	return tty_termios_baud_rate(&tty->termios);
+>  }
+
+Thanks,
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
 -- 
-2.39.2
+ i.
 
+--8323329-2114108693-1701166823=:1797--
