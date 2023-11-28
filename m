@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zet3gGPZ"
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CAAD182
-	for <linux-serial@vger.kernel.org>; Tue, 28 Nov 2023 00:50:38 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-543456dbd7bso11648878a12.1
-        for <linux-serial@vger.kernel.org>; Tue, 28 Nov 2023 00:50:38 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="V8CA9agm"
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0042B192
+	for <linux-serial@vger.kernel.org>; Tue, 28 Nov 2023 00:58:56 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id 4fb4d7f45d1cf-5441305cbd1so6741049a12.2
+        for <linux-serial@vger.kernel.org>; Tue, 28 Nov 2023 00:58:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701161437; x=1701766237; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1701161935; x=1701766735; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=vd3h7KJoH+UrokQZUnHSFyQcZXKlYpYOZS/upJb1QzE=;
-        b=zet3gGPZjNa1o1GrPNmwzCnE3knqmoL7/+oKzefH1LdAqrcY+2KwaIkvPDKq7SgaTk
-         FVyRSZgPs27gDQWw2Hm/sAZ/hkGPbksxrd5FinPieQ9DaEPBWnfsI/+l5ZtvI362GeS0
-         9/pBh+bxJlIe+o5lqVLe98a42v3o6ZGpEXgu7uCnA7Z7YFd9DQLzBuweR4LBO9BIU1az
-         Sd0CPxv2wvTpndVUZJpnmqas4JLKa0oVymRAv1YnNE8YT2TkF9L6xn2u3ePV8C/kx7BM
-         J9rX+0ldQlnhlXVwU4+j9qT22FTGoHCEVSVOolG74aqD6s2nayiTH7WugV33LyGRER8v
-         mn0g==
+        bh=UGpYHJ/5KU9x0FpSQk/2EgeAQ9Rghpf69obPvi4FEEU=;
+        b=V8CA9agmL0Hyu8jgbSQ0UJaPzKtQp7xDvWMt9/4l7csZuy/ullzTPVvFjZHIpOji0E
+         yeIha9MrjdLcQIxDr9vYRtyanQEXErGYCD03tQiet/WNonNaqe7c7E8ejaHjZ0omSw2k
+         Zp7QkKcRzKU+dZaRv5q2tBGVoxmyhejdwP/Az374HNGmwZRAKoBsirYak0d9af1NatVR
+         Y7PmM3YFvrXcTQTC8si37nUj6mSVEeBdt6QRREJB2ITJE3nCWjUxHVaSgFKHBjxAG20P
+         oRNHFV6QjV76bkLTEFgcCW1xGj3Ev7tq/xgKrR2r+HEv/QWBtZd4g5jefd0nbJNhpFYp
+         Hvag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701161437; x=1701766237;
+        d=1e100.net; s=20230601; t=1701161935; x=1701766735;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vd3h7KJoH+UrokQZUnHSFyQcZXKlYpYOZS/upJb1QzE=;
-        b=V4K3BtnTuNhr/e9Tse+iQVNa1e8Z31axit5v2IEenr7RjMJzxr6PRL7BZ5oU4zvYmZ
-         5ywN9aSBw9ETcOJRXPbHvN2uE8SsFgbGMiAzZ251q71LYU3vtilL3TAGHtRTfyg/JSms
-         +qS8+1Be/IY566psCpjaZfqL4LwRHj/9wb91bdE41bSrjXet1r2tnuE5GYUQkxySORPV
-         W6MtA0MzXf7WjXhnuvQwtZY4KCZCnl1Myx8Szzj/Hbqu6cAa7sSIkcMz1GDU/7J+7L7t
-         GTKFQoImCx7sWgfg6XlA2sB6zOKyIa51ydZKY1DqDTaQXlFXC7htRAjhB2y3W0/XqDoq
-         e+TQ==
-X-Gm-Message-State: AOJu0Yx29OS3M98LSSTICbI/OYS0IqTSJqwd0yr3rGl4un2skxg7m+lh
-	2LB+8fieFaZs2uRiP9d+UzqSMA==
-X-Google-Smtp-Source: AGHT+IGRXbfxkSp5ZfomC1KAnFlGWFtQLsR+LoBRbJT3prOwyN6zVNz4RF+KoanlFZECOFbT/K3uNA==
-X-Received: by 2002:a17:906:8f:b0:9f4:53d9:2d66 with SMTP id 15-20020a170906008f00b009f453d92d66mr13992129ejc.5.1701161436759;
-        Tue, 28 Nov 2023 00:50:36 -0800 (PST)
+        bh=UGpYHJ/5KU9x0FpSQk/2EgeAQ9Rghpf69obPvi4FEEU=;
+        b=T7EtF7K9kSujngKnMNrckd3USjAhJfNLr+riaf5sqWVzc+Ae6OoPz25RMLgdNQcJAn
+         qb5enYtmA8dKZI/E5xjvLhTYxMaEuMySNGGsM4VRo1y2WjFlHCBD1WUiuHB1hf69cCue
+         bRhrlNUk2vpwdcisUBRQWHXw1m5LM8Z/fyVjqV8NQEOn6tB0qHUFCIXZkj1UG3rH/EZt
+         Hk5ep2cHg92FLRuivhD3amDClss/KTAy01HpXQ8nDTzvY3kDj463V/3UhwgOzscw34kA
+         Ip188/XZFSKIcoZfvjL4MhwXfRMx+Aa17ro6W/nd5AGk1TCcvKBwRnQy2zeRz61I80Rn
+         G+hw==
+X-Gm-Message-State: AOJu0Yx3UYtc7Yzi40iQnS72sFrS5aWvms6HjPCfPTvGFdMpgg+o4R60
+	heSmGB6hjnvgqhPKkvd8RvZncg==
+X-Google-Smtp-Source: AGHT+IEgIsNU+8Ga6PP5Ysj5x1L7yrm45es5mMmhnSW4AxcFkCQuqBZ1rC+ew3qIYRmtnJ4t+2BItw==
+X-Received: by 2002:a50:9312:0:b0:53e:3b8f:8a58 with SMTP id m18-20020a509312000000b0053e3b8f8a58mr11821123eda.11.1701161935368;
+        Tue, 28 Nov 2023 00:58:55 -0800 (PST)
 Received: from [192.168.1.20] ([178.197.223.109])
-        by smtp.gmail.com with ESMTPSA id z13-20020a170906074d00b00a0c3b122a1esm3700643ejb.63.2023.11.28.00.50.35
+        by smtp.gmail.com with ESMTPSA id bt16-20020a0564020a5000b00548e4c5220csm6113884edb.26.2023.11.28.00.58.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Nov 2023 00:50:36 -0800 (PST)
-Message-ID: <64d46933-865f-49e9-8798-f9ae411afeb4@linaro.org>
-Date: Tue, 28 Nov 2023 09:50:34 +0100
+        Tue, 28 Nov 2023 00:58:54 -0800 (PST)
+Message-ID: <f23ff6a1-0130-45a4-809c-efa82c1e3c6c@linaro.org>
+Date: Tue, 28 Nov 2023 09:58:51 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -47,20 +47,26 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dt-bindings: serial: add assigned-clock-parents and
- assigned-clocks properties
+Subject: Re: [PATCH v3 17/20] arm64: dts: google: Add initial Google gs101 SoC
+ support
 Content-Language: en-US
-To: Roland Hieber <rhi@pengutronix.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
- Pengutronix Kernel Team <kernel@pengutronix.de>,
- Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- Philipp Zabel <p.zabel@pengutronix.de>
-References: <20231127-b4-dt-bindings-serial-v1-1-422a198fd91a@pengutronix.de>
+To: Peter Griffin <peter.griffin@linaro.org>
+Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+ mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
+ tomasz.figa@gmail.com, s.nawrocki@samsung.com, linus.walleij@linaro.org,
+ wim@linux-watchdog.org, linux@roeck-us.net, catalin.marinas@arm.com,
+ will@kernel.org, arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org,
+ cw00.choi@samsung.com, tudor.ambarus@linaro.org, andre.draszik@linaro.org,
+ semen.protsenko@linaro.org, saravanak@google.com, willmcvicker@google.com,
+ soc@kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-watchdog@vger.kernel.org, kernel-team@android.com,
+ linux-serial@vger.kernel.org
+References: <20231011184823.443959-1-peter.griffin@linaro.org>
+ <20231011184823.443959-18-peter.griffin@linaro.org>
+ <33fe3e2e-9d09-42ee-9472-25d3be09baf4@linaro.org>
+ <CADrjBPrh19YzB45hM4xaELn67uf3iBQo++T-8+2Uenq6-fDzKg@mail.gmail.com>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -106,19 +112,28 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20231127-b4-dt-bindings-serial-v1-1-422a198fd91a@pengutronix.de>
+In-Reply-To: <CADrjBPrh19YzB45hM4xaELn67uf3iBQo++T-8+2Uenq6-fDzKg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 27/11/2023 16:24, Roland Hieber wrote:
-> From: Philipp Zabel <p.zabel@pengutronix.de>
+On 25/11/2023 00:22, Peter Griffin wrote:
+>>> +
+>>> +     /* bootloader requires ect node */
+>>> +     ect {
+>>
+>> This needs bindings.
 > 
-> Add the "assigned-clock-parents" and "assigned-clocks" properties used
-> by board device trees to set the UART root clock source.
+> I experimented a bit more and the minimum I need is an empty dt node
+> called ect, otherwise the bootloader will boot loop and we can't boot
+> the kernel
+> [   2.977870] [E] [BOOT] fdt /ect path not found -1
 > 
+> Apart from a comment indicating that the bootloader requires this
+> empty ect dt node, what other bindings documentation would you like to
+> see? Something in google.yaml?
 
-Why? Commit msg should explain it, especially if this is not obvious
-(and it is not obvious because you do not need these in the bindings)
+Yes, it would be enough.
+
 
 Best regards,
 Krzysztof
