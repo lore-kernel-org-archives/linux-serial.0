@@ -1,69 +1,182 @@
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35881A3;
-	Wed, 29 Nov 2023 06:58:48 -0800 (PST)
-Received: by mail-oi1-f170.google.com with SMTP id 5614622812f47-3b843fea0dfso3900458b6e.3;
-        Wed, 29 Nov 2023 06:58:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701269927; x=1701874727;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Om8QH0PgH6JybOzR4agW39ICVCA3hclLDw5NauxCXtE=;
-        b=E8fa01i4+bCx9eNPeg/8VKnLnO4NlrdbNy4FqndnldSJ69C5ZbGiEk4RoZ3SJvVQ5D
-         9y3FDnpYHr+oPaYZ+O9B5uZk0B/mlprV92zZ+RSDWok8wLcwi5xQFAsgcWXfbYSlpoKG
-         FxczfgNKBWEqorjRCrXSCaRl6ppYRhWcQHIs4Uq/LRatZYFV3Vu8dR19rKES9NpBmWMK
-         3vaJQ4UUV4fvQDBudoOxEy5Ph+1fxCoda70LXu0u/6MBh7z8JP1GTo0DvA/J5f1vswfG
-         KGbPuDqMkx63QlZWgrfcD6weFC3/S9p/OG59HqfzExYU3cVDbJeKg3O6bPwMdcDYDGtr
-         Eawg==
-X-Gm-Message-State: AOJu0Yyi7VczYE8oAVKDnrlR74j0HhhpGtpoIupgfa0AYak7x+LKq9Gn
-	7POZG+FAHTJzAFOwwBFZaQ==
-X-Google-Smtp-Source: AGHT+IFaDKlAMO0TTBe2DgTuEmwhSM1mq/2uExerm3hYow5K6ag6Zf/td6nyVFVGAKaudl9+l3aL7g==
-X-Received: by 2002:a05:6808:34c:b0:3a7:1e86:e83f with SMTP id j12-20020a056808034c00b003a71e86e83fmr19018621oie.51.1701269927374;
-        Wed, 29 Nov 2023 06:58:47 -0800 (PST)
-Received: from herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id m23-20020a056808025700b003b29c2f50f0sm2248202oie.18.2023.11.29.06.58.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Nov 2023 06:58:46 -0800 (PST)
-Received: (nullmailer pid 2464542 invoked by uid 1000);
-	Wed, 29 Nov 2023 14:58:45 -0000
-Date: Wed, 29 Nov 2023 08:58:45 -0600
-From: Rob Herring <robh@kernel.org>
-To: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konrad.dybcio@linaro.org>, Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: serial: qcom,msm-uartdm: Vote for
- shared resources
-Message-ID: <20231129145845.GA2459716-robh@kernel.org>
-References: <20231128-serial-msm-dvfs-v1-0-4f290d20a4be@kernkonzept.com>
- <20231128-serial-msm-dvfs-v1-1-4f290d20a4be@kernkonzept.com>
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AwMIsPi5"
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63634112
+	for <linux-serial@vger.kernel.org>; Wed, 29 Nov 2023 14:47:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1701298073; x=1732834073;
+  h=date:from:to:cc:subject:message-id;
+  bh=WUeNAy+CKCBwlkHE0Er9reCpj2yy7UYXs28XNeG3g3o=;
+  b=AwMIsPi5SymdLdCvekMgaPodL8lZvw5/EdgiG/DWgxo2N7nI52t1jBBE
+   yRBqdifU0zZo+qyD//m9dpzKt+Yuh3rh5Pds80PPhTvzWLhcoGX1DUNB2
+   jm0tzJC7jcpdqhwkFizKnZn5KooLr4hyQWBY9tXKiSf+9Ns+EB1ZrKfwJ
+   rJVxLGfpQwjMi6yKmEZkqj0CNcrHH5TrB5csDoJbGnucbk1hvwBjIm78b
+   l+ir/12IH6N6IiCKVRQHc2B/e0CUJSfXW2FAhxZdVIzjv3ZcJ4s4EUrMj
+   AzQrhO309tU2kySZX0/ddmt2FvMFlGOIUOtI687lYE3ce1/9NaCcuQuee
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10909"; a="373421401"
+X-IronPort-AV: E=Sophos;i="6.04,237,1695711600"; 
+   d="scan'208";a="373421401"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2023 14:47:53 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10909"; a="718894851"
+X-IronPort-AV: E=Sophos;i="6.04,237,1695711600"; 
+   d="scan'208";a="718894851"
+Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 29 Nov 2023 14:47:51 -0800
+Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1r8TLQ-00012G-1Y;
+	Wed, 29 Nov 2023 22:47:48 +0000
+Date: Thu, 30 Nov 2023 06:47:26 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 068ab2135b3fe0d8957f099a5b860117457825ec
+Message-ID: <202311300624.MpTz0EKY-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231128-serial-msm-dvfs-v1-1-4f290d20a4be@kernkonzept.com>
 
-On Tue, Nov 28, 2023 at 10:43:32AM +0100, Stephan Gerhold wrote:
-> Document power-domains, operating-points-v2 and interconnects to allow
-> making performance state votes for certain clock frequencies of the UART
-> DM controller. The interconnect path to DRAM is needed when UART DM is
-> used together with a DMA engine.
-> 
-> Voting for these shared resources is necessary to guarantee performance
-> with power management enabled. Otherwise these resources might run at
-> minimal performance state which is not sufficient for certain UART
-> baud rates.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 068ab2135b3fe0d8957f099a5b860117457825ec  tty: srmcons: remove 'str_cr' and use string directly
 
-I find the subject a bit strange because voting is a QCom term/concept 
-and somewhat outside the scope of the binding. The justification is 
-really just that the h/w has these resources. In any case,
+elapsed time: 1533m
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+configs tested: 120
+configs skipped: 2
 
-> Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-> ---
->  .../devicetree/bindings/serial/qcom,msm-uartdm.yaml         | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+tested configs:
+alpha                             allnoconfig   gcc  
+alpha                            allyesconfig   gcc  
+alpha                               defconfig   gcc  
+arc                              allmodconfig   gcc  
+arc                               allnoconfig   gcc  
+arc                              allyesconfig   gcc  
+arc                          axs101_defconfig   gcc  
+arc                                 defconfig   gcc  
+arm                              allmodconfig   gcc  
+arm                               allnoconfig   gcc  
+arm                              allyesconfig   gcc  
+arm                       aspeed_g5_defconfig   gcc  
+arm                                 defconfig   clang
+arm                        realview_defconfig   gcc  
+arm64                            allmodconfig   clang
+arm64                             allnoconfig   gcc  
+arm64                               defconfig   gcc  
+csky                             allmodconfig   gcc  
+csky                              allnoconfig   gcc  
+csky                             allyesconfig   gcc  
+csky                                defconfig   gcc  
+hexagon                          allmodconfig   clang
+hexagon                           allnoconfig   clang
+hexagon                          allyesconfig   clang
+hexagon                             defconfig   clang
+i386                             allmodconfig   clang
+i386                              allnoconfig   clang
+i386                             allyesconfig   clang
+i386                                defconfig   gcc  
+i386                  randconfig-011-20231130   clang
+i386                  randconfig-012-20231130   clang
+i386                  randconfig-013-20231130   clang
+i386                  randconfig-014-20231130   clang
+i386                  randconfig-015-20231130   clang
+i386                  randconfig-016-20231130   clang
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                           defconfig   gcc  
+m68k                             allmodconfig   gcc  
+m68k                              allnoconfig   gcc  
+m68k                             allyesconfig   gcc  
+m68k                         amcore_defconfig   gcc  
+m68k                       bvme6000_defconfig   gcc  
+m68k                                defconfig   gcc  
+m68k                        m5407c3_defconfig   gcc  
+microblaze                       allmodconfig   gcc  
+microblaze                        allnoconfig   gcc  
+microblaze                       allyesconfig   gcc  
+microblaze                          defconfig   gcc  
+mips                              allnoconfig   clang
+mips                             allyesconfig   gcc  
+mips                      loongson3_defconfig   gcc  
+nios2                            allmodconfig   gcc  
+nios2                             allnoconfig   gcc  
+nios2                            allyesconfig   gcc  
+nios2                               defconfig   gcc  
+openrisc                          allnoconfig   gcc  
+openrisc                         allyesconfig   gcc  
+openrisc                            defconfig   gcc  
+parisc                           allmodconfig   gcc  
+parisc                            allnoconfig   gcc  
+parisc                           allyesconfig   gcc  
+parisc                              defconfig   gcc  
+parisc64                            defconfig   gcc  
+powerpc                          allmodconfig   clang
+powerpc                           allnoconfig   gcc  
+powerpc                          allyesconfig   clang
+powerpc                     ep8248e_defconfig   gcc  
+powerpc                    klondike_defconfig   gcc  
+powerpc                     mpc83xx_defconfig   gcc  
+riscv                            allmodconfig   gcc  
+riscv                             allnoconfig   clang
+riscv                            allyesconfig   gcc  
+riscv                               defconfig   gcc  
+riscv                    nommu_k210_defconfig   gcc  
+riscv                          rv32_defconfig   clang
+s390                             allmodconfig   gcc  
+s390                              allnoconfig   gcc  
+s390                             allyesconfig   gcc  
+s390                                defconfig   gcc  
+sh                               allmodconfig   gcc  
+sh                                allnoconfig   gcc  
+sh                               allyesconfig   gcc  
+sh                                  defconfig   gcc  
+sparc                            allmodconfig   gcc  
+sparc64                          allmodconfig   gcc  
+sparc64                          allyesconfig   gcc  
+sparc64                             defconfig   gcc  
+um                               allmodconfig   clang
+um                                allnoconfig   clang
+um                               allyesconfig   clang
+um                                  defconfig   gcc  
+um                             i386_defconfig   gcc  
+um                           x86_64_defconfig   gcc  
+x86_64                            allnoconfig   gcc  
+x86_64                           allyesconfig   clang
+x86_64       buildonly-randconfig-001-20231130   gcc  
+x86_64       buildonly-randconfig-002-20231130   gcc  
+x86_64       buildonly-randconfig-003-20231130   gcc  
+x86_64       buildonly-randconfig-004-20231130   gcc  
+x86_64       buildonly-randconfig-005-20231130   gcc  
+x86_64       buildonly-randconfig-006-20231130   gcc  
+x86_64                              defconfig   gcc  
+x86_64                                  kexec   gcc  
+x86_64                randconfig-011-20231130   gcc  
+x86_64                randconfig-012-20231130   gcc  
+x86_64                randconfig-013-20231130   gcc  
+x86_64                randconfig-014-20231130   gcc  
+x86_64                randconfig-015-20231130   gcc  
+x86_64                randconfig-016-20231130   gcc  
+x86_64                randconfig-071-20231130   gcc  
+x86_64                randconfig-072-20231130   gcc  
+x86_64                randconfig-073-20231130   gcc  
+x86_64                randconfig-074-20231130   gcc  
+x86_64                randconfig-075-20231130   gcc  
+x86_64                randconfig-076-20231130   gcc  
+x86_64                          rhel-8.3-rust   clang
+x86_64                               rhel-8.3   gcc  
+xtensa                            allnoconfig   gcc  
+xtensa                  cadence_csp_defconfig   gcc  
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
