@@ -1,109 +1,69 @@
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="SOdosZYZ"
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD5A519A;
-	Wed, 29 Nov 2023 06:41:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=v3XBnwWqTB4BFxU3kOY5BV2b0FffPByfQZdgq4L6Dmo=; b=SOdosZYZQiCBIaZosJXsHTSyhZ
-	LNDwv9F+BLoSTWxjKgdSDvIbmW4/vdMU148o0Wi1sXHfC+Lnuzm4/KxWZRqZUQ0L6DZBlcz3bC++p
-	1VQ1hHAAU3fI4RVptkUZ8Q4XeTcnLBEEYC64xCDa/Gt7cvDeEv1yNQsg852AZU7x9pzM=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:60844 helo=pettiford)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1r8LkG-0005nw-MS; Wed, 29 Nov 2023 09:40:57 -0500
-Date: Wed, 29 Nov 2023 09:40:56 -0500
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Haoran Liu <liuhaoran14@163.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-Id: <20231129094056.62cf23816318e2c19400b94b@hugovil.com>
-In-Reply-To: <20231129115236.33177-1-liuhaoran14@163.com>
-References: <20231129115236.33177-1-liuhaoran14@163.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35881A3;
+	Wed, 29 Nov 2023 06:58:48 -0800 (PST)
+Received: by mail-oi1-f170.google.com with SMTP id 5614622812f47-3b843fea0dfso3900458b6e.3;
+        Wed, 29 Nov 2023 06:58:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701269927; x=1701874727;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Om8QH0PgH6JybOzR4agW39ICVCA3hclLDw5NauxCXtE=;
+        b=E8fa01i4+bCx9eNPeg/8VKnLnO4NlrdbNy4FqndnldSJ69C5ZbGiEk4RoZ3SJvVQ5D
+         9y3FDnpYHr+oPaYZ+O9B5uZk0B/mlprV92zZ+RSDWok8wLcwi5xQFAsgcWXfbYSlpoKG
+         FxczfgNKBWEqorjRCrXSCaRl6ppYRhWcQHIs4Uq/LRatZYFV3Vu8dR19rKES9NpBmWMK
+         3vaJQ4UUV4fvQDBudoOxEy5Ph+1fxCoda70LXu0u/6MBh7z8JP1GTo0DvA/J5f1vswfG
+         KGbPuDqMkx63QlZWgrfcD6weFC3/S9p/OG59HqfzExYU3cVDbJeKg3O6bPwMdcDYDGtr
+         Eawg==
+X-Gm-Message-State: AOJu0Yyi7VczYE8oAVKDnrlR74j0HhhpGtpoIupgfa0AYak7x+LKq9Gn
+	7POZG+FAHTJzAFOwwBFZaQ==
+X-Google-Smtp-Source: AGHT+IFaDKlAMO0TTBe2DgTuEmwhSM1mq/2uExerm3hYow5K6ag6Zf/td6nyVFVGAKaudl9+l3aL7g==
+X-Received: by 2002:a05:6808:34c:b0:3a7:1e86:e83f with SMTP id j12-20020a056808034c00b003a71e86e83fmr19018621oie.51.1701269927374;
+        Wed, 29 Nov 2023 06:58:47 -0800 (PST)
+Received: from herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id m23-20020a056808025700b003b29c2f50f0sm2248202oie.18.2023.11.29.06.58.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Nov 2023 06:58:46 -0800 (PST)
+Received: (nullmailer pid 2464542 invoked by uid 1000);
+	Wed, 29 Nov 2023 14:58:45 -0000
+Date: Wed, 29 Nov 2023 08:58:45 -0600
+From: Rob Herring <robh@kernel.org>
+To: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konrad.dybcio@linaro.org>, Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: serial: qcom,msm-uartdm: Vote for
+ shared resources
+Message-ID: <20231129145845.GA2459716-robh@kernel.org>
+References: <20231128-serial-msm-dvfs-v1-0-4f290d20a4be@kernkonzept.com>
+ <20231128-serial-msm-dvfs-v1-1-4f290d20a4be@kernkonzept.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-Subject: Re: [PATCH] [tty/serial] 8250_acorn: Add error handling in
- serial_card_probe
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231128-serial-msm-dvfs-v1-1-4f290d20a4be@kernkonzept.com>
 
-On Wed, 29 Nov 2023 03:52:36 -0800
-Haoran Liu <liuhaoran14@163.com> wrote:
-
-Hi,
-you should add a proper prefix to your patch, like:
-"serial: 8250_acorn: Add..."
-
-You can use "git log --oneline drivers/tty/serial" to have an idea on
-what prefix to add.
-
-> This patch adds error handling to the serial_card_probe
-> function in drivers/tty/serial/8250/8250_acorn.c. The
-
-You can drop the full path to the file (and also the file itself) in
-your commit log message, as this information is available in the diff.
-
-> serial8250_register_8250_port call within this function
-> previously lacked proper handling for failure scenarios.
+On Tue, Nov 28, 2023 at 10:43:32AM +0100, Stephan Gerhold wrote:
+> Document power-domains, operating-points-v2 and interconnects to allow
+> making performance state votes for certain clock frequencies of the UART
+> DM controller. The interconnect path to DRAM is needed when UART DM is
+> used together with a DMA engine.
 > 
-> Signed-off-by: Haoran Liu <liuhaoran14@163.com>
+> Voting for these shared resources is necessary to guarantee performance
+> with power management enabled. Otherwise these resources might run at
+> minimal performance state which is not sufficient for certain UART
+> baud rates.
+
+I find the subject a bit strange because voting is a QCom term/concept 
+and somewhat outside the scope of the binding. The justification is 
+really just that the h/w has these resources. In any case,
+
+Reviewed-by: Rob Herring <robh@kernel.org>
+
+> Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
 > ---
->  drivers/tty/serial/8250/8250_acorn.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_acorn.c b/drivers/tty/serial/8250/8250_acorn.c
-> index 758c4aa203ab..378ae6936028 100644
-> --- a/drivers/tty/serial/8250/8250_acorn.c
-> +++ b/drivers/tty/serial/8250/8250_acorn.c
-> @@ -43,6 +43,7 @@ serial_card_probe(struct expansion_card *ec, const struct ecard_id *id)
->  	struct uart_8250_port uart;
->  	unsigned long bus_addr;
->  	unsigned int i;
-> +	int ret;
->  
->  	info = kzalloc(sizeof(struct serial_card_info), GFP_KERNEL);
->  	if (!info)
-> @@ -72,6 +73,14 @@ serial_card_probe(struct expansion_card *ec, const struct ecard_id *id)
->  		uart.port.mapbase = bus_addr + type->offset[i];
->  
->  		info->ports[i] = serial8250_register_8250_port(&uart);
-> +		if (IS_ERR(info->ports[i])) {
-> +			ret = PTR_ERR(info->ports[i]);
-> +			while (i--)
-> +				serial8250_unregister_port(info->ports[i]);
-> +
-> +			kfree(info);
-> +			return ret;
-
-I am just wondering if unregistering all ports in case one fails is the
-correct course of action? Looking at other drivers in the same folder
-(8250_exar, 8250_pericom, 8250_pci), they seem to abort registering
-new ports in case of error, but do not unregister previously registered
-ports?
-
-For 8250_pci1xxxx, in case of failure the for/loop still continues...
-
-For 8250_men_mcb however, the probe exit in case of error.
-
-Hugo Villeneuve.
-
-
-> +		}
->  	}
->  
->  	return 0;
-> -- 
-> 2.17.1
-> 
-> 
+>  .../devicetree/bindings/serial/qcom,msm-uartdm.yaml         | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
