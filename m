@@ -1,74 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com [209.85.210.199])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE7E10D4
-	for <linux-serial@vger.kernel.org>; Wed, 29 Nov 2023 05:03:32 -0800 (PST)
-Received: by mail-pf1-f199.google.com with SMTP id d2e1a72fcca58-6cd8b5b2d04so5829892b3a.0
-        for <linux-serial@vger.kernel.org>; Wed, 29 Nov 2023 05:03:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701263011; x=1701867811;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=gmW2ACMtPDHLik/DWZoZDBoHMSRiYxm2B4qOdCuQQHY=;
-        b=aSU+zuPrGMzdT2jmqWvH/B6cjtOc2f5dcbnbdoCpiHgLlFtF9Lgp0c6P62ojQ+IIuD
-         nmwcVJI7Y7Tb7zT5DuMA4N/sLDVIQUBMGf9SII7w6ueABh00Knx+sKeQyNg+XAYdgwfH
-         bhtz0x4U4uHqYlsY523+Tpntx4gccyTMSt+gxpZcVSPSra73VEptRd5hh5ap/kWD7C3e
-         6jcaqlm3VMtq3RVJEvRLIJWowQ7hmmKwPayhrYSNQmlHgWIpW/R8jEmhIYrljZhPQS8K
-         1CyVJ4fFdih+OSxh+6r5514+X/E9AOTeM3SHJngYm+2Ou+BHlzaibqjztgwMGSCd1XEG
-         DFjA==
-X-Gm-Message-State: AOJu0YxSuawAdOKa3bvv4wC9dk/HKTaaKoolsNG2gCFPojspf/VHS9yF
-	wUO/WJhNn2ruF0nT40XP+Mp4CeYfv5aF0CKx56zpgXg/yxTD
-X-Google-Smtp-Source: AGHT+IHOL5bZIyI+KhfytvAZ38+ZEFZkAUr/QorP6+m7Z6lwCZvz8AqNcdYmEgTskQxAxsTtobLCVA4/+AyP03dywbc9yuQr+poJ
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 582BB1D522
+	for <linux-serial@vger.kernel.org>; Wed, 29 Nov 2023 13:34:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="OmD7vWPw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35F60C433B8;
+	Wed, 29 Nov 2023 13:34:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1701264866;
+	bh=XE8B2aAvYDQZ5lRIHf6duHXOwNmaDMOCsJbq1VKxO+A=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=OmD7vWPwKtvk2ybEIK39rFT85EvwKm66G+1FBs+GVPPGoDPYeZ4CsRqOO6m510ANk
+	 OkM5SH1hBgu9updQFY5bgtDS9jkU5TEdySDHijV4g/qgQFHB6pkMqVTMaZLbO5YJZr
+	 Rn3uqXwZHl/roohV3TNfxhVRHRN77t1ckVvl/R8w=
+Date: Wed, 29 Nov 2023 13:34:23 +0000
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Haoran Liu <liuhaoran14@163.com>
+Cc: jirislaby@kernel.org, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] [tty/serial] 8250_acorn: Add error handling in
+ serial_card_probe
+Message-ID: <2023112901-encroach-idealist-2dd7@gregkh>
+References: <20231129115236.33177-1-liuhaoran14@163.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6a00:18a9:b0:6c3:1b4d:309e with SMTP id
- x41-20020a056a0018a900b006c31b4d309emr5245843pfh.0.1701263011648; Wed, 29 Nov
- 2023 05:03:31 -0800 (PST)
-Date: Wed, 29 Nov 2023 05:03:31 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000007a9d62060b4a2964@google.com>
-Subject: [syzbot] Monthly serial report (Nov 2023)
-From: syzbot <syzbot+listbfc701fdf8085a7e825f@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231129115236.33177-1-liuhaoran14@163.com>
 
-Hello serial maintainers/developers,
+On Wed, Nov 29, 2023 at 03:52:36AM -0800, Haoran Liu wrote:
+> This patch adds error handling to the serial_card_probe
+> function in drivers/tty/serial/8250/8250_acorn.c. The
+> serial8250_register_8250_port call within this function
+> previously lacked proper handling for failure scenarios.
 
-This is a 31-day syzbot report for the serial subsystem.
-All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/serial
+You do have 72 columns to use if you want :)
 
-During the period, 0 new issues were detected and 0 were fixed.
-In total, 12 issues are still open and 40 have been fixed so far.
+> 
+> Signed-off-by: Haoran Liu <liuhaoran14@163.com>
+> ---
+>  drivers/tty/serial/8250/8250_acorn.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_acorn.c b/drivers/tty/serial/8250/8250_acorn.c
+> index 758c4aa203ab..378ae6936028 100644
+> --- a/drivers/tty/serial/8250/8250_acorn.c
+> +++ b/drivers/tty/serial/8250/8250_acorn.c
+> @@ -43,6 +43,7 @@ serial_card_probe(struct expansion_card *ec, const struct ecard_id *id)
+>  	struct uart_8250_port uart;
+>  	unsigned long bus_addr;
+>  	unsigned int i;
+> +	int ret;
+>  
+>  	info = kzalloc(sizeof(struct serial_card_info), GFP_KERNEL);
+>  	if (!info)
+> @@ -72,6 +73,14 @@ serial_card_probe(struct expansion_card *ec, const struct ecard_id *id)
+>  		uart.port.mapbase = bus_addr + type->offset[i];
+>  
+>  		info->ports[i] = serial8250_register_8250_port(&uart);
+> +		if (IS_ERR(info->ports[i])) {
+> +			ret = PTR_ERR(info->ports[i]);
+> +			while (i--)
+> +				serial8250_unregister_port(info->ports[i]);
+> +
+> +			kfree(info);
+> +			return ret;
+> +		}
 
-Some of the still happening issues:
+How was this found, and how was it tested?
 
-Ref Crashes Repro Title
-<1> 4231    Yes   BUG: sleeping function called from invalid context in console_lock (2)
-                  https://syzkaller.appspot.com/bug?extid=dbac96d8e73b61aa559c
-<2> 62      Yes   KASAN: stack-out-of-bounds Read in sched_show_task
-                  https://syzkaller.appspot.com/bug?extid=8d2757d62d403b2d9275
-<3> 55      Yes   BUG: soft lockup in tx
-                  https://syzkaller.appspot.com/bug?extid=5e87db90e68fbc4707c6
-<4> 23      Yes   INFO: task can't die in show_free_areas
-                  https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
-<5> 6       Yes   INFO: task hung in paste_selection (2)
-                  https://syzkaller.appspot.com/bug?extid=275e275bd3f536725dd8
+thanks,
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-To disable reminders for individual bugs, reply with the following command:
-#syz set <Ref> no-reminders
-
-To change bug's subsystems, reply with:
-#syz set <Ref> subsystems: new-subsystem
-
-You may send multiple commands in a single email message.
+greg k-h
