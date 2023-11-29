@@ -1,46 +1,61 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 582BB1D522
-	for <linux-serial@vger.kernel.org>; Wed, 29 Nov 2023 13:34:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="OmD7vWPw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35F60C433B8;
-	Wed, 29 Nov 2023 13:34:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1701264866;
-	bh=XE8B2aAvYDQZ5lRIHf6duHXOwNmaDMOCsJbq1VKxO+A=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=OmD7vWPwKtvk2ybEIK39rFT85EvwKm66G+1FBs+GVPPGoDPYeZ4CsRqOO6m510ANk
-	 OkM5SH1hBgu9updQFY5bgtDS9jkU5TEdySDHijV4g/qgQFHB6pkMqVTMaZLbO5YJZr
-	 Rn3uqXwZHl/roohV3TNfxhVRHRN77t1ckVvl/R8w=
-Date: Wed, 29 Nov 2023 13:34:23 +0000
-From: Greg KH <gregkh@linuxfoundation.org>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="SOdosZYZ"
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD5A519A;
+	Wed, 29 Nov 2023 06:41:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=v3XBnwWqTB4BFxU3kOY5BV2b0FffPByfQZdgq4L6Dmo=; b=SOdosZYZQiCBIaZosJXsHTSyhZ
+	LNDwv9F+BLoSTWxjKgdSDvIbmW4/vdMU148o0Wi1sXHfC+Lnuzm4/KxWZRqZUQ0L6DZBlcz3bC++p
+	1VQ1hHAAU3fI4RVptkUZ8Q4XeTcnLBEEYC64xCDa/Gt7cvDeEv1yNQsg852AZU7x9pzM=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:60844 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1r8LkG-0005nw-MS; Wed, 29 Nov 2023 09:40:57 -0500
+Date: Wed, 29 Nov 2023 09:40:56 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
 To: Haoran Liu <liuhaoran14@163.com>
-Cc: jirislaby@kernel.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] [tty/serial] 8250_acorn: Add error handling in
- serial_card_probe
-Message-ID: <2023112901-encroach-idealist-2dd7@gregkh>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <20231129094056.62cf23816318e2c19400b94b@hugovil.com>
+In-Reply-To: <20231129115236.33177-1-liuhaoran14@163.com>
 References: <20231129115236.33177-1-liuhaoran14@163.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231129115236.33177-1-liuhaoran14@163.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+Subject: Re: [PATCH] [tty/serial] 8250_acorn: Add error handling in
+ serial_card_probe
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Wed, Nov 29, 2023 at 03:52:36AM -0800, Haoran Liu wrote:
+On Wed, 29 Nov 2023 03:52:36 -0800
+Haoran Liu <liuhaoran14@163.com> wrote:
+
+Hi,
+you should add a proper prefix to your patch, like:
+"serial: 8250_acorn: Add..."
+
+You can use "git log --oneline drivers/tty/serial" to have an idea on
+what prefix to add.
+
 > This patch adds error handling to the serial_card_probe
 > function in drivers/tty/serial/8250/8250_acorn.c. The
+
+You can drop the full path to the file (and also the file itself) in
+your commit log message, as this information is available in the diff.
+
 > serial8250_register_8250_port call within this function
 > previously lacked proper handling for failure scenarios.
-
-You do have 72 columns to use if you want :)
-
 > 
 > Signed-off-by: Haoran Liu <liuhaoran14@163.com>
 > ---
@@ -70,10 +85,25 @@ You do have 72 columns to use if you want :)
 > +
 > +			kfree(info);
 > +			return ret;
+
+I am just wondering if unregistering all ports in case one fails is the
+correct course of action? Looking at other drivers in the same folder
+(8250_exar, 8250_pericom, 8250_pci), they seem to abort registering
+new ports in case of error, but do not unregister previously registered
+ports?
+
+For 8250_pci1xxxx, in case of failure the for/loop still continues...
+
+For 8250_men_mcb however, the probe exit in case of error.
+
+Hugo Villeneuve.
+
+
 > +		}
-
-How was this found, and how was it tested?
-
-thanks,
-
-greg k-h
+>  	}
+>  
+>  	return 0;
+> -- 
+> 2.17.1
+> 
+> 
