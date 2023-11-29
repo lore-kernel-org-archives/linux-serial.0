@@ -1,76 +1,74 @@
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="IAQKax88"
-Received: from m15.mail.163.com (m15.mail.163.com [45.254.50.219])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2A6681A8;
-	Wed, 29 Nov 2023 03:52:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:Subject:Date:Message-Id; bh=4KSReBDzzeRrqbkauW
-	k2fmkY0a7uOl8FxER0foarfow=; b=IAQKax88RMQZSR24Vm/58+eGq6iiyLyPM7
-	smWCU4doydMDmMZxzZQDN2u0hyh8XGBqXZc6EQ+xkYV3JBYCDFwwgpe0dmEGUlE1
-	rpkMZbwPWBUQWBgGbQmmitVmIct2VO/5A+PR2Fs9xPWPzWDT1qmHYQyhAF4S06b3
-	2apMi2b1E=
-Received: from localhost.localdomain (unknown [39.144.190.126])
-	by zwqz-smtp-mta-g2-0 (Coremail) with SMTP id _____wCXd0YGJmdlsP_8EA--.44253S2;
-	Wed, 29 Nov 2023 19:52:40 +0800 (CST)
-From: Haoran Liu <liuhaoran14@163.com>
-To: gregkh@linuxfoundation.org
-Cc: jirislaby@kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Haoran Liu <liuhaoran14@163.com>
-Subject: [PATCH] [tty/serial] 8250_acorn: Add error handling in serial_card_probe
-Date: Wed, 29 Nov 2023 03:52:36 -0800
-Message-Id: <20231129115236.33177-1-liuhaoran14@163.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID:_____wCXd0YGJmdlsP_8EA--.44253S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7ZrWxZr4UCw47ur4rCryUZFb_yoW8JFy3pF
-	4DKrs0yFWYqF1xu3srXr45ZF1rGay8tF17GrnrG3s5trs8tr9agr4fKa4jyr4jkr95GF1a
-	yF15CrWUCay2yF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zEubk7UUUUU=
-X-CM-SenderInfo: xolxxtxrud0iqu6rljoofrz/1tbiZQY3gl8ZaQ1sNQAAst
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com [209.85.210.199])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE7E10D4
+	for <linux-serial@vger.kernel.org>; Wed, 29 Nov 2023 05:03:32 -0800 (PST)
+Received: by mail-pf1-f199.google.com with SMTP id d2e1a72fcca58-6cd8b5b2d04so5829892b3a.0
+        for <linux-serial@vger.kernel.org>; Wed, 29 Nov 2023 05:03:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701263011; x=1701867811;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gmW2ACMtPDHLik/DWZoZDBoHMSRiYxm2B4qOdCuQQHY=;
+        b=aSU+zuPrGMzdT2jmqWvH/B6cjtOc2f5dcbnbdoCpiHgLlFtF9Lgp0c6P62ojQ+IIuD
+         nmwcVJI7Y7Tb7zT5DuMA4N/sLDVIQUBMGf9SII7w6ueABh00Knx+sKeQyNg+XAYdgwfH
+         bhtz0x4U4uHqYlsY523+Tpntx4gccyTMSt+gxpZcVSPSra73VEptRd5hh5ap/kWD7C3e
+         6jcaqlm3VMtq3RVJEvRLIJWowQ7hmmKwPayhrYSNQmlHgWIpW/R8jEmhIYrljZhPQS8K
+         1CyVJ4fFdih+OSxh+6r5514+X/E9AOTeM3SHJngYm+2Ou+BHlzaibqjztgwMGSCd1XEG
+         DFjA==
+X-Gm-Message-State: AOJu0YxSuawAdOKa3bvv4wC9dk/HKTaaKoolsNG2gCFPojspf/VHS9yF
+	wUO/WJhNn2ruF0nT40XP+Mp4CeYfv5aF0CKx56zpgXg/yxTD
+X-Google-Smtp-Source: AGHT+IHOL5bZIyI+KhfytvAZ38+ZEFZkAUr/QorP6+m7Z6lwCZvz8AqNcdYmEgTskQxAxsTtobLCVA4/+AyP03dywbc9yuQr+poJ
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+X-Received: by 2002:a05:6a00:18a9:b0:6c3:1b4d:309e with SMTP id
+ x41-20020a056a0018a900b006c31b4d309emr5245843pfh.0.1701263011648; Wed, 29 Nov
+ 2023 05:03:31 -0800 (PST)
+Date: Wed, 29 Nov 2023 05:03:31 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007a9d62060b4a2964@google.com>
+Subject: [syzbot] Monthly serial report (Nov 2023)
+From: syzbot <syzbot+listbfc701fdf8085a7e825f@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-This patch adds error handling to the serial_card_probe
-function in drivers/tty/serial/8250/8250_acorn.c. The
-serial8250_register_8250_port call within this function
-previously lacked proper handling for failure scenarios.
+Hello serial maintainers/developers,
 
-Signed-off-by: Haoran Liu <liuhaoran14@163.com>
+This is a 31-day syzbot report for the serial subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/serial
+
+During the period, 0 new issues were detected and 0 were fixed.
+In total, 12 issues are still open and 40 have been fixed so far.
+
+Some of the still happening issues:
+
+Ref Crashes Repro Title
+<1> 4231    Yes   BUG: sleeping function called from invalid context in console_lock (2)
+                  https://syzkaller.appspot.com/bug?extid=dbac96d8e73b61aa559c
+<2> 62      Yes   KASAN: stack-out-of-bounds Read in sched_show_task
+                  https://syzkaller.appspot.com/bug?extid=8d2757d62d403b2d9275
+<3> 55      Yes   BUG: soft lockup in tx
+                  https://syzkaller.appspot.com/bug?extid=5e87db90e68fbc4707c6
+<4> 23      Yes   INFO: task can't die in show_free_areas
+                  https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
+<5> 6       Yes   INFO: task hung in paste_selection (2)
+                  https://syzkaller.appspot.com/bug?extid=275e275bd3f536725dd8
+
 ---
- drivers/tty/serial/8250/8250_acorn.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/tty/serial/8250/8250_acorn.c b/drivers/tty/serial/8250/8250_acorn.c
-index 758c4aa203ab..378ae6936028 100644
---- a/drivers/tty/serial/8250/8250_acorn.c
-+++ b/drivers/tty/serial/8250/8250_acorn.c
-@@ -43,6 +43,7 @@ serial_card_probe(struct expansion_card *ec, const struct ecard_id *id)
- 	struct uart_8250_port uart;
- 	unsigned long bus_addr;
- 	unsigned int i;
-+	int ret;
- 
- 	info = kzalloc(sizeof(struct serial_card_info), GFP_KERNEL);
- 	if (!info)
-@@ -72,6 +73,14 @@ serial_card_probe(struct expansion_card *ec, const struct ecard_id *id)
- 		uart.port.mapbase = bus_addr + type->offset[i];
- 
- 		info->ports[i] = serial8250_register_8250_port(&uart);
-+		if (IS_ERR(info->ports[i])) {
-+			ret = PTR_ERR(info->ports[i]);
-+			while (i--)
-+				serial8250_unregister_port(info->ports[i]);
-+
-+			kfree(info);
-+			return ret;
-+		}
- 	}
- 
- 	return 0;
--- 
-2.17.1
+To disable reminders for individual bugs, reply with the following command:
+#syz set <Ref> no-reminders
 
+To change bug's subsystems, reply with:
+#syz set <Ref> subsystems: new-subsystem
+
+You may send multiple commands in a single email message.
