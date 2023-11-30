@@ -1,121 +1,74 @@
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from mail.someserver.de (mail.someserver.de [116.202.193.223])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E5810F0
-	for <linux-serial@vger.kernel.org>; Thu, 30 Nov 2023 05:38:13 -0800 (PST)
-Received: from [IPV6:2a02:8109:a893:3b00:7bad:dd01:344c:715f] (unknown [IPv6:2a02:8109:a893:3b00:7bad:dd01:344c:715f])
-	by mail.someserver.de (Postfix) with ESMTPSA id C63CEA21A8;
-	Thu, 30 Nov 2023 14:38:10 +0100 (CET)
-Message-ID: <98e6159b-e429-48ae-baa3-1dd87e9e8482@christina-quast.de>
-Date: Thu, 30 Nov 2023 14:38:10 +0100
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92CA8482D2;
+	Thu, 30 Nov 2023 13:48:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="sNsqF9Xd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B7E7C433C8;
+	Thu, 30 Nov 2023 13:48:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1701352107;
+	bh=2tPf+/3N0kX2qKIBtkb8qKUiUuJaNqMh/YALTgoUZoY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=sNsqF9Xd/HHhAgJGyGP5ULvMaIvn9TdkEgBZpxvjpe+f0Fr/QXbnEYhxNGQmylxxC
+	 xFxb9Ah4JurijcsgHid96kmgFj7R90pDrL6aeFewcg+sN6g0Qhv94VhkpguPum/YJT
+	 IHdAeU8SGL6N6VPWpHdpcqJsarLv6/S/9dyEDwTQ=
+Date: Thu, 30 Nov 2023 13:48:24 +0000
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Oliver Neukum <oneukum@suse.com>
+Cc: Johan Hovold <johan@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+	USB list <linux-usb@vger.kernel.org>, linux-serial@vger.kernel.org
+Subject: Re: question on correct error return from break_ctl()
+Message-ID: <2023113055-molecular-backlands-6b3d@gregkh>
+References: <7e649033-0e1d-4c21-a1f3-ceb2de894861@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 RESEND] hid-ft260: Add serial driver
-Content-Language: en-US
-To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>,
- linux-serial <linux-serial@vger.kernel.org>,
- Daniel Beer <daniel.beer@igorinstitute.com>
-References: <20231122094004.95399-1-contact@christina-quast.de>
- <2023112205-explore-frequency-40a6@gregkh>
- <0fb134f7-f72e-4742-9c2d-c68f83b67975@christina-quast.de>
- <aa99b5f-6f6e-47c7-5956-5034c681d0d7@linux.intel.com>
-From: Christina Quast <contact@christina-quast.de>
-In-Reply-To: <aa99b5f-6f6e-47c7-5956-5034c681d0d7@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7e649033-0e1d-4c21-a1f3-ceb2de894861@suse.com>
 
-Hi Ilpo!
+On Thu, Nov 30, 2023 at 02:09:48PM +0100, Oliver Neukum wrote:
+> Hi,
+> 
+> it seems inconsistent. The tty layer
+> in drivers/tty/tty_io.c::send_break()
+> 
+> static int send_break(struct tty_struct *tty, unsigned int duration)
+> {
+>         int retval;
+> 
+>         if (tty->ops->break_ctl == NULL)
+>                 return 0;
+> 
+> not supporting break_ctl() is treated as the operation
+> succeeding. Yet in drivers/usb/serial/usb-serial.c::serial_break()
+> 
+> static int serial_break(struct tty_struct *tty, int break_state)
+> {
+>         struct usb_serial_port *port = tty->driver_data;
+> 
+>         dev_dbg(&port->dev, "%s\n", __func__);
+> 
+>         if (port->serial->type->break_ctl)
+>                 return port->serial->type->break_ctl(tty, break_state);
+> 
+>         return -ENOTTY;
+> }
+> 
+> we are seeing that not supporting break_ctl() leads to returning
+> -ENOTTY, which drivers/tty/tty_io.c::send_break() will return to user space.
+> These reactions are at odds with each other. What is a driver supposed
+> to do?
 
-On 11/28/23 11:13, Ilpo Järvinen wrote:
-> On Sun, 26 Nov 2023, Christina Quast wrote:
->
->> Hi Greg!
->>
->> Thanks for the comments!
->>
->> On 11/22/23 11:15, Greg KH wrote:
->>> On Wed, Nov 22, 2023 at 10:40:03AM +0100, Christina Quast wrote:
->>>> This commit adds a serial interface /dev/FTx which implements the tty
->>>> serial driver ops, so that it is possible to set the baudrate, send
->>>> and receive data, etc.
->>> Why is this a serial device?  What type of device is it?
->>>
->>> And why "FTx"?  Where did that name come from?  That's not a "normal"
->>> tty name.
->> I meant /dev/ttyFTx. Since it's a hid device providing a serial interface, in
->> theory you could also call it /dev/ttySx or /dev/ttyUSBx, but both feel wrong.
->> It's an FTDI device, that functions as a USB to UART / I2C Master. Do you have
->> a better name in mind?
->>>> +struct ft260_uart_write_request_report {
->>>> +	u8 report;		/* FT260_UART_REPORT */
->>>> +	u8 length;		/* data payload length */
->>>> +	u8 data[];		/* data payload */
->>> Shouldn't this be marked as counted by length?
->> Do you mean in the comment?
-> No, try:
->
-> git grep __counted_by
->
->>>> +		req.data_bit = FT260_CFG_DATA_BITS_8;
->>>> +		termios->c_cflag &= ~CSIZE;
->>>> +		termios->c_cflag |= CS8;
->>>> +		break;
->>>> +	default:
->>>> +	case CS8:
->>>> +		req.data_bit = FT260_CFG_DATA_BITS_8;
->>>> +		break;
->>>> +	}
->>>> +
->>>> +	req.stop_bit = (termios->c_cflag & CSTOPB) ?
->>>> +		FT260_CFG_STOP_TWO_BIT : FT260_CFG_STOP_ONE_BIT;
->>>> +
->>>> +	if (termios->c_cflag & PARENB) {
->>>> +		req.parity = (termios->c_cflag & PARODD) ?
->>>> +			FT260_CFG_PAR_ODD : FT260_CFG_PAR_EVEN;
->>>> +	} else {
->>>> +		req.parity = FT260_CFG_PAR_NO;
->>>> +	}
->>>> +
->>>> +	baud = tty_termios_baud_rate(termios);
->>>> +	if (baud == 0 || baud < FT260_CFG_BAUD_MIN || baud >
->>>> FT260_CFG_BAUD_MAX) {
->>>> +		struct tty_struct *tty = tty_port_tty_get(&port->port);
->>> Blank line needed here.
->>>
->>>> +		hid_err(hdev, "Invalid baud rate %d\n", baud);
->>> Again, debug error?  And why not report an error instead of just setting
->>> it to 9600?
->>>
->>> And why 9600?
->> This is a default setting used in the FT260 documentation as default value, so
->> it seemed like a sensible value.
->>
->> The ft260_uart_change_speed function is called in set_termios, which has a
->> void return type. So even if I returned an error, that would not be propagated
->> to userspace. It looks like the userspace is meant to check what values were
->> actually set with a subsequent ioctl call.
-> Setting termios does not propagate errors (legacy feature, I don't know
-> the reason).
->
-> However, every set termios handling function should ensure if any value
-> from the input termios is changed because the HW cannot do what has been
-> requested, the changes should be reflected in the termios so that
-> userspace knows about them (could check but I don't know if any userspace
-> application actually does that, and I'm quite skeptical they would).
->
-> IIRC, termios is returned also from the setting call.
->
-This is also what I understood, for example form this site: 
-https://man.archlinux.org/man/ioctl_tty.2.de. In the C code example, the 
-configure the new serial port settings, and then get the new values 
-again to see what was really configured.
+usb-serial should probably change, but given the fact that no one has
+noticed this in the 20+ years it has been like this, is it really
+needed?  :)
 
---
+thanks,
 
-chrysh
-
+greg k-h
