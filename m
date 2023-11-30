@@ -1,162 +1,267 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=prevas.se header.i=@prevas.se header.b="muEuqKsh"
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2101.outbound.protection.outlook.com [40.107.7.101])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0075B10FC;
-	Thu, 30 Nov 2023 01:10:05 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lbOYgCgFSEn5XXqlzIcH5S8jbCYlLbOWSEhHm6RRadRqDzZiquO0Po2ucMOODkfZk7KSkEpii8bIAwnn8OZZVI4qEWrd2UBdeP2rUfb0pwQQTLMOVDPYzqnkMV4PfmuN4+eK/i2NPIX9UBX0sDoHgRu0mWwMwZWqL1766Ds3Gue5JTpMhTAyR+F/g7PxhQE16FrW+CEgYqEeLff5MmYmBlxG7eG0RZv3/RHwJY1kIEPdnhulvRDX7QzSuqqqQlThzEhoouzT8obM5E2uKWc+9D3Iq1IS9uOQ6bRHyIKPLkLPbJHD1NpRtanMdRn9eOnFCm1SFFsX8ZbSweIarxjfzQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JVhT5IulxZr/RYslgeWI3wWMz6cn+INw4PYMJU6MRYs=;
- b=QCiBfaVwmhuyZpZW3JQ2QHXgeGiDIN3gI/ZElIMOh3vfQM5aZvPdl4OkRRu5SW1jG1fjp5lnRRkWRlPfDrUEhmYsfs1rDp1x0dqtvY7dNsKqE3QHb9k1bUWJVdNrED5NOnuqXZs3MNe/5Dpx8bwEi/gqHEcCofNklEGxWQSL925HEbcBPXhEN/ywCUJzh9KoyYGITjCV9oIz4JwZh7t7I7umrQVMeqjcU0NJhgQL50xslik1nqx22wRa6O6JYgdaCFo1qkKFocSRdtE2fKwyTJk+FZmC7uNNcj+ogsS236+u65udVbpL4OrEDKsPSzYHhvxWyvzrTGE2+h3Uo+cxRg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.se;
- dkim=pass header.d=prevas.se; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.se;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JVhT5IulxZr/RYslgeWI3wWMz6cn+INw4PYMJU6MRYs=;
- b=muEuqKshcTsmZN03SOyGHtZJDqgR/4vNysMAmWQZZU3omGvnaBazRK7lNGYEWcmsh3TgZAEvZgXa4oY11rZasUe2Ekk826sCiuEEWc/H7xgCxIA5f9zNB1vuzScxqeOOu8dYqij/pj52XVpP0D7EqpJ/EfveqtSErJro+MmcF4E=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=prevas.se;
-Received: from DB9PR10MB7100.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:45a::14)
- by VI1PR10MB3471.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:800:13c::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.24; Thu, 30 Nov
- 2023 09:10:00 +0000
-Received: from DB9PR10MB7100.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8bd9:31bc:d048:af15]) by DB9PR10MB7100.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8bd9:31bc:d048:af15%5]) with mapi id 15.20.7046.024; Thu, 30 Nov 2023
- 09:10:00 +0000
-Message-ID: <e770c302-2fef-40ba-b955-dc8c54c8727c@prevas.se>
-Date: Thu, 30 Nov 2023 10:09:58 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] serial: imx: fix tx statemachine deadlock
-Content-Language: en-US, da
-From: Rasmus Villemoes <rasmus.villemoes@prevas.se>
-To: Paul Geurts <paul_geurts@live.nl>, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
- kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
- u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Eberhard Stoll <eberhard.stoll@gmx.de>
-References: <2023112434-winter-embezzle-1b46@gregkh>
- <AM0PR09MB26758F651BC1B742EB45775995B8A@AM0PR09MB2675.eurprd09.prod.outlook.com>
- <a283cb15-d740-4f94-a81e-0147c2035cf7@prevas.dk>
-In-Reply-To: <a283cb15-d740-4f94-a81e-0147c2035cf7@prevas.dk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM4PR07CA0026.eurprd07.prod.outlook.com
- (2603:10a6:205:1::39) To DB9PR10MB7100.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:10:45a::14)
+	dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="VK1reAFc"
+Received: from mail-40134.protonmail.ch (mail-40134.protonmail.ch [185.70.40.134])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72CD4D7F
+	for <linux-serial@vger.kernel.org>; Thu, 30 Nov 2023 01:52:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
+	s=protonmail3; t=1701337952; x=1701597152;
+	bh=gFWZjY2l1exIvazXNe/u4C5YDBm/Kt7NGS/MLKV+rFg=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=VK1reAFcHtIa0iSYQ0WydDXP2GoJkZ65fKwM9+NDecANinX+WSGlX2deiRaoJaWCi
+	 u3eBf3Cli0hVFH/rnAkPsYVxT6efd8ZdNX6pNGanPgT/mmKvgOpbJJn/a7FWZUD2qA
+	 7BXNoW1H1rfBpG/Ec8XDJwT37pEfdmjIrLq1LG3Ai0EBhU4B6wqX+iLTccE6BoQ0IA
+	 6jWgFICxjppmCjkGZAO6kHgDBJiWvjUN9V6BMvk2TD0jaQ4stqkYQ0KIg2Ibb95uD4
+	 sYRszYdQaHk5zg+BUgTKZkx/BBWs5eQQ1E+Oj1B7uQ3LJYI3nUORKMy7TugZd7MVoH
+	 fMTqBGqbWq69w==
+Date: Thu, 30 Nov 2023 09:52:19 +0000
+To: =?utf-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+From: "Michael C. Pratt" <mcpratt@pm.me>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-serial <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Wander Lairson Costa <wander@redhat.com>, Vamshi Gajjela <vamshigajjela@google.com>
+Subject: Re: [PATCH] serial/8250: Set fifo timeout with uart_fifo_timeout()
+Message-ID: <K3H2WOa7QgWaXO0vxUfZ5xkrSQTQ0dGkbXyDUIJMyygCRXENxrhHwuh9sL3pKBVVd0fHH_zT-yaWgAYHjHlqsepWxwZt3IGd5zjcrSrzhIk=@pm.me>
+In-Reply-To: <26d2d26-7ead-b62-4636-bb34da636cf0@linux.intel.com>
+References: <20231125063552.517-1-mcpratt@pm.me> <ZWS-pSDFMh0xx5Bv@smile.fi.intel.com> <HPbnILrnlwSUYDSVm3nL_lHYYxueg4aCdoUL3rHZTk3qLuY05GzBCibJS7GBFolJi7Mr4egmTPxjWYt3TGbQ8N9ate8rRvdq31z9BL04sVY=@pm.me> <26d2d26-7ead-b62-4636-bb34da636cf0@linux.intel.com>
+Feedback-ID: 27397442:user:proton
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB9PR10MB7100:EE_|VI1PR10MB3471:EE_
-X-MS-Office365-Filtering-Correlation-Id: ca85233e-9062-4c95-393a-08dbf184219c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	kWIRBbEgLGcJEmPoJBAj8KhWOdkFHhqIBi4d8jYTSUW7bId3erhzb9LS8aVhm+cogOOYuRlOfGF32rpH8MKsBN0MG5u65+eGYwhhEN76nmUuVo2nYkpQh2JRu+KBCwbuWAUxqHsAD55uFzQ6NwXiADGPjgmAKdQkp2Eqa9vfoifSQwxgy20yLhl38SxcoX+E/X4bgRbWJrRsPuXOBkX+nbNfJk2poE3kDOewjjKeN0JT0BZMs3Bfwg+K4JGrv4+wGuYdyJEWc4+WYzqJ3dPensMHEfgYcdpJSI85dN+izQp3qL2FExC7L0/ZIojzgd52GuPvUxVCj4rXUtM7nMOdEfPHc4VDUl6kgDmpyOBkwBH00juhRCYrMuyucog4CRUTfTEQufeHuvr+ExTvcjcbQzVcl88QKtv+TcYGUCBAnhJyXL3IEocoB6cDNiFJ0BlYWTMs5iyEVbao8vuGO72SJTMc7D9xvcq+OfnReLFpTfLJVKT83T2Qcs6jzrTHgeUBNIQVdvuXMcIRulCpdTJVsjIO87fePMQxL+fuoN06bTwPU/aHpukMRuG0wRq+Q4eGNQqvZKLauTore5dBaykyUe1Yy02x/OQqgUtiQZHo+KEXP0Qu3Puh7HeezwXY2rzME30OOcve/XO2BXMGrLvEzOxv67qfv9hf8WBII4SVVtf04ZPnjO3a9+lRgCUkR0Sgy8Ckvt+qrSuog6AJCVgHBQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR10MB7100.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(39840400004)(136003)(366004)(376002)(396003)(346002)(230922051799003)(1800799012)(186009)(64100799003)(451199024)(42882007)(6506007)(26005)(83380400001)(2616005)(6512007)(44832011)(5660300002)(4326008)(8676002)(8936002)(41300700001)(7416002)(478600001)(2906002)(966005)(6486002)(316002)(66476007)(66556008)(66946007)(202311291699003)(31696002)(36756003)(38100700002)(83170400001)(31686004)(921008)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?djNSaHcvT3FWYzhkTjZ6K2xUZlAwM3JvTkJOZDBkemlrdmRZNEIwMGErek5N?=
- =?utf-8?B?LzZSa3A5RUwrWFpnVWZNUVNCdVJoVGUrZEVQYmdjbWhFenZHSWZxS1VNVDJQ?=
- =?utf-8?B?dmp5ZmNGWWNPTWlIbENHRWFGeDRTTXJhdzgxdEI2dFRpZUpIM3VpeTdkL1lS?=
- =?utf-8?B?NzRMMy9ZZ0F3aThBdnBlOHlKY2d3QWV4OSt0TEZYSG8wNmVzQVBVSHNhL2RO?=
- =?utf-8?B?aENlU3BRMFR6N0p2RjZFamxvSVN5eHpoR1pwQXlBV0xseE0vMVlLa0NRNFJh?=
- =?utf-8?B?QVlwNUt6NzU2Tm9qczhMNzJQLzY4VGo0R283cWdPR2lWdXJCMkNtUlh1MFBs?=
- =?utf-8?B?cCt2YUcydjZYWFVobjRsNnVUNUluNGVlZmFJUnZqSmo2NytqSW9TWkR6Mktn?=
- =?utf-8?B?dm4wYVFNRU1QVVgxUzFXQ09Campwek5YdlNwMXVMbGx3UWhwOWNuak1Wczdn?=
- =?utf-8?B?YWRUYWsvenlhMC84OWNCd3FyWmZkTXNKUmQ0elFsc282NmpEclNkdXN6TGx0?=
- =?utf-8?B?S1RYRzE1V1p0WXlPZmRQZU81RmZQTG1UeGhHT3RzSHZ5anUza2RrTHR5bE9G?=
- =?utf-8?B?TnVKVXhFNWZjaGRjR2ZhK2lCVElraGRFd2tOR0RUckRpeXA4bnMxcmtjaGJN?=
- =?utf-8?B?RVFRTUlsS2ZKWG9iMFdCUDdoekJNalhMRUM1c1V1cC9OUHZWUGRxZnRIeTBD?=
- =?utf-8?B?cHJZMk5KWlNKUU9pb1FsTG11RFVVQllTT2lsVWdSN3JoZDJVT0RhQnFTcG5C?=
- =?utf-8?B?M21nUnRzUWRyMllqUi81dnc3blBrNmRFMjA3L01uOFM3a3hvTlpvdFY2WElL?=
- =?utf-8?B?MU9SN1lLMVAraUNxclJkY2RsdmswQ2syTUZyOThKbWt6TnM1dUxxTnE4bHQ0?=
- =?utf-8?B?dnViZmRlcDlyZ1g2RmRXeTgxaFRmblVUVG5xcTF4RXVNdUNCdDRjWlVvSzIr?=
- =?utf-8?B?Y29vT3AwRTNlRkxsa2hsMDNXVjd1SEhIQUVaeXluQVJTbzMzVnRkbmpzd05W?=
- =?utf-8?B?dDhhdWtrejJIck5VUjJmTHZaa3BEVVh6MEZQY1V2c0JSbWxSeFBncjJWL0ZT?=
- =?utf-8?B?dTRsYWxvQ1NOc2dRb2xJODhqMEhxZFpWSlkxWkpWRjNPQzZLdTBrSjFWWkZO?=
- =?utf-8?B?Smx1QlhKa3d2SWVrUTFMRk0vdERuN3ZtL2dST0ovNU5RQUFiNFFVTmJqWVRw?=
- =?utf-8?B?eXFXUnVqU0lhNkwrU1BCbzVpMGhLTkt1YnQ1S0tmUFF2TUtWbHYvMjhsUEgv?=
- =?utf-8?B?UzdOTXVDSG9UbkVpRVJBT0VoUlR1NEhCQU1EMlZRUlBhNEEyN0t6elE2ZGo3?=
- =?utf-8?B?QUdIbFd0d2F1VFRTTUx0YnlYbFNNNXdaeHJra3BqZ2FITGh6UnhWS0lrYUcy?=
- =?utf-8?B?WnZEZkJKM0E0T1ovbmkxV1VzRDFrWjUwd0J0U2VSRjNUVVVTWFBwTUtUUnRZ?=
- =?utf-8?B?MkVJSnRZWkRyZW1FdWV2RjJlMW1DVGFlYVEra3phRU9SbGZaYkFPMm5sT1ZX?=
- =?utf-8?B?NTlVTG1pWDhLZ2lncGM4WDN6dEdmNEVNT2ZYeFRGd2dVQkF3ejk5M3ZEMm5T?=
- =?utf-8?B?TGZNb05vcDBTSTZKTGhYQ3llMkNhMzZadDdlVUVLeGZRSWdhSXpibUlEazlm?=
- =?utf-8?B?ZHMrVXMxVkJBdUIwRWN3T0lmMDNUekhLdlF1blRDdFU1VjkwUXdYSmppQnpT?=
- =?utf-8?B?dVp6bEkveTlySHpyMkZhQkNWZUh1UlF1ZFRXME91azRVS3NYTjlnbmI0dUhT?=
- =?utf-8?B?L0p2Sk9WYnpKYUdjdXcvRml2b0JxeXBseGhCY0l5Vld0TlZkdTI3N2lCbmt6?=
- =?utf-8?B?eTU1K2VyclgxdnBhYzdObGZuTGR4OWpIZmF5ek11MTRJSlVXWmI1eTIzeGR6?=
- =?utf-8?B?a1lndlNuT0piMnloelZSdk1VLzMwZDJHaHB3UjBUVURpRVNCd2J3YWdFUlVW?=
- =?utf-8?B?Vm1hbFA5aTJxQk16VW5aRUJTd3BCajhJOENTamJJdWtMS1JrUlJtcktVT2hj?=
- =?utf-8?B?SFQrc1RqY0ZHbFhBb0hYRUNuOFV5eU5uVGtMdXo2bi9aWUk3eEYydHZNdk1W?=
- =?utf-8?B?SVc3RVRCbkt0Ri9PUElNb2FUTWhZMDJ3d1ZXZHE1aVFJRGt3eXNyUnlXTVRD?=
- =?utf-8?B?ako0MnhlNlV6MTB5TXRycndWL09razhFdDJiOEhzTkQrMndyU04yMllBSHpF?=
- =?utf-8?B?QXc9PQ==?=
-X-OriginatorOrg: prevas.se
-X-MS-Exchange-CrossTenant-Network-Message-Id: ca85233e-9062-4c95-393a-08dbf184219c
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR10MB7100.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2023 09:10:00.6027
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MMjOUZwU++II4o5f4gf0znsGQLVx+gGRIe7KUVRQi2P7C5PoWqpsKwIxoq3UMXp/tfPwMx5k7XwZM6BSWGOP4uBS1iBGE4WL8GN9zVJ8dUU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB3471
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On 24/11/2023 14.37, Rasmus Villemoes wrote:
-> On 24/11/2023 14.11, Paul Geurts wrote:
->> When using the serial port as RS485 port, the tx statemachine is used to
->> control the RTS pin to drive the RS485 transceiver TX_EN pin. When the
->> TTY port is closed in the middle of a transmission (for instance during
->> userland application crash), imx_uart_shutdown disables the interface
->> and disables the Transmission Complete interrupt. afer that,
->> imx_uart_stop_tx bails on an incomplete transmission, to be retriggered
->> by the TC interrupt. This interrupt is disabled and therefore the tx
->> statemachine never transitions out of SEND. The statemachine is in
->> deadlock now, and the TX_EN remains low, making the interface useless.
->>
->> imx_uart_stop_tx now checks for incomplete transmission AND whether TC
->> interrupts are enabled before bailing to be retriggered. This makes sure
->> the state machine handling is reached, and is properly set to
->> WAIT_AFTER_SEND.
->>
->> Fixes: cb1a60923609 ("serial: imx: implement rts delaying for rs485")
->> Signed-off-by: Paul Geurts <paul_geurts@live.nl>
-> 
-> Hi Paul
-> 
-> Interestingly, both Eberhard (cc'ed) and I have hit similar problems in
-> this driver recently. See the thread
-> https://lore.kernel.org/lkml/20231120132256.136625-1-rasmus.villemoes@prevas.dk/
-> .
-> 
-> It is possible that this also fixes the problems I/we saw, but I can't
-> get around to testing until sometime next week.
 
-This also seems to fix the problem I had when switching to rs232 and
-back to rs485, and I agree that it seems to be a cleaner fix than mine.
+Hi Ilpo,
 
-I also tried reproducing what Eberhard reported, and I think I managed
-to do that, and at least my way of reproducing the tx lockup also seems
-to be fixed by this patch. Eberhard, can you test this patch in your setup?
 
-In any case,
+On Tuesday, November 28th, 2023 at 07:22, Ilpo J=C3=A4rvinen <ilpo.jarvinen=
+@linux.intel.com> wrote:
 
-Tested-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+> On Tue, 28 Nov 2023, mcpratt@pm.me wrote:
+>
+> > On Monday, November 27th, 2023 at 11:07, Andy Shevchenko andriy.shevche=
+nko@linux.intel.com wrote:
+> >
+> > > On Sat, Nov 25, 2023 at 06:36:32AM +0000, Michael Pratt wrote:
+> > >
+> > > > Commit 8f3631f0f6eb ("serial/8250: Use fifo in 8250 console driver"=
+)
+> > > > reworked functions for basic 8250 and 16550 type serial devices
+> > > > in order to enable and use the internal FIFO device for buffering,
+> > > > however the default timeout of 10 ms remained, which is proving
+> > > > to be insufficient for low baud rates like 9600, causing data overr=
+un.
+> > > >
+> > > > Unforunately, that commit was written and accepted just before comm=
+it
+> > > > 31f6bd7fad3b ("serial: Store character timing information to uart_p=
+ort")
+> > > > which introduced the frame_time member of the uart_port struct
+> > > > in order to store the amount of time it takes to send one UART fram=
+e
+> > > > relative to the baud rate and other serial port configuration,
+> > > > and commit f9008285bb69 ("serial: Drop timeout from uart_port")
+> > > > which established function uart_fifo_timeout() in order to
+> > > > calculate a reasonable timeout to wait for all frames
+> > > > in the FIFO device to flush before writing data again
+> > > > using the now stored frame_time value and size of the buffer.
+> > > >
+> > > > Fix this by using the new function to calculate the timeout
+> > > > whenever the buffer is larger than 1 byte (unknown port default).
+> > > >
+> > > > Tested on a MIPS device (ar934x) at baud rates 625, 9600, 115200.
+> > >
+> > > Do we need a Fixed tag?
+> > >
+> > > ...
+> >
+> > Hi Andy,
+> >
+> > I'm not sure whether this qualifies as a "bug fix" or not,
+> > since the proper way to handle it was introduced after the "bad" commit=
+,
+> > and the "bad" commit happens to still work fine for anyone running the
+> > standard 115200 baud or higher.
+>
+>
+> Sometimes the proper way is then backported too to stables, but it needs
+> to be checked how complicated that seems.
+>
+> So basically you'd need 31f6bd7fad3b and at least a part of f9008285bb69?
 
-Rasmus
+Correct, since frame_time is from 31f6bd7fad3b and the function is from f90=
+08285bb69,
+we would need both.
 
+
+> > > > unsigned int status, tmout =3D 10000;
+> > > >
+> > > > - /* Wait up to 10ms for the character(s) to be sent. /
+> > > > + / Wait for a time relative to buffer size and baud */
+> > > > + if (up->port.fifosize > 1)
+> > > > + tmout =3D jiffies_to_usecs(uart_fifo_timeout(&up->port));
+> > >
+> > > Why can't we simply use this one?
+> > >
+> > > unsigned int status, tmout;
+> > >
+> > > tmout =3D jiffies_to_usecs(uart_fifo_timeout(&up->port));
+>
+>
+> I wonder if fifosize is always >=3D 1?
+
+
+From the snippets in 8250_port.c that I have looked at,
+I think it's safe to assume that it is >=3D 1 as long as it is defined,
+and there are several spots that check whether or not it has been defined y=
+et.
+
+If not defined it takes the value from the constant fifo_size which is defi=
+ned
+for each port type to be at least 1, except for one, PORT_8250_CIR,
+which most likely will never use this function anyway,
+it causes many steps to be skipped in serial8250_register_8250_port().
+
+
+> > > > for (;;) {
+> > > > status =3D serial_lsr_in(up);
+> >
+> > Again, I'm not sure which is better for performance, between adding
+> > a conditional check or doing the math for every case.
+> > The 10 ms timeout has been there since the beginning of the git history=
+,
+> > so clearly it is enough for single-frame transfers at any baud.
+> > The new function uart_fifo_timeout() provides a variable timeout, but s=
+tarting out
+> > with an arbitrary 20 ms as a minimum, which I think can be traced back
+> > to some hardware-specific workaround...
+>
+>
+> Would you happen to have a pointer for that 20 msecs is for HW
+> workaround information bit
+>
+> I'd kind of want to lower it and base the extra delay on frame time
+> rather than, like you say, on arbitrary number.
+>
+> --
+> i.
+
+
+When I said "some hardware-specific workaround" that was just a guess.
+
+I decided to take a deep dive into the rabbit hole to find the source:
+
+With the pre-git-history git repo from archive.org, I have traced the=20
+first instance of the comment ".02 seconds of slop" to Linux 2.1.15.
+
+However, it is not the first instance of adding an arbitrary `HZ/50`
+to a delay to make "something" work, that would be in Linux 1.3.88
+for the file net/ipv4/tcp_input.c for use in tcp_send_delayed_ack().
+
+In the 90's, each version came in the form of a single bulk patch of patche=
+s,
+so I went hunting for the original patch.
+
+27 years ago, Theodore T'so sent this patch to Linus and the mailing list:
+(almost as old as me...)
+(I can't find this one on lkml.org !!!)
+https://lkml.iu.edu/hypermail/linux/kernel/9612.0/0501.html
+
+Unfortunately, there's not much comment about the "slop",
+but some talk of POSIX conformance and timing becoming stricter,
+especially the comment which is still in master:
+
+  * Note: we have to use pretty tight timings here to satisfy
+  * the NIST-PCTS.
+
+and
+
+  Wait for the characters to drain based on
+  info->timeout. At low baud rates (50bps), it may take a
+  long time for the FIFO to completely drain out!
+
+This makes me believe that it was added just for extra room in the timeout
+to make sure that an _exact_ value for a timeout would not be too close
+to a real-life absolute minimum that could cause data loss.
+
+I noted that the `HZ/50` also appears in the same patch for defining char_t=
+ime,
+the timeout adds the extra time, and then char_time uses the timeout withou=
+t it.
+
+I went looking for the most recent change to char_time and found your commi=
+t 31f6bd7fad3b
+(so I really went full circle this time...)
+And since port->timeout has been fully replaced and the calculations separa=
+ted,
+there's no issue with removing the extra time from char_time but not the ti=
+meout.
+
+However, it's clear from the inline comments that these lines were added
+at a time when HZ was a constant, whereas now in modern Linux it can be var=
+iable,
+like in the cases in version 2.1.15:
+
+$ git grep 'HZ/50'
+drivers/char/serial.c:=09=09info->timeout +=3D HZ/50;=09=09/* Add .02 secon=
+ds of slop */
+drivers/char/serial.c:=09=09char_time =3D (info->timeout - HZ/50) / info->x=
+mit_fifo_size;
+drivers/net/shaper.h:#define SHAPER_BURST=09(HZ/50)=09=09/* Good for >128K =
+then */
+include/net/route.h:#define RT_REDIRECT_LOAD=09=09(HZ/50) /* 20 msec */
+net/ipv4/tcp_input.c:=09=09if (tp->ato < HZ/50)
+net/ipv4/tcp_input.c:=09=09=09tp->ato =3D HZ/50;
+net/ipv4/tcp_timer.c:=09=09when=3DHZ/50;
+
+
+And in master there are still a few of these...
+
+$ git grep 'seconds of slop'
+drivers/tty/amiserial.c:=09info->timeout +=3D HZ/50;=09=09/* Add .02 second=
+s of slop */
+drivers/tty/mxser.c:=09info->timeout =3D timeout + HZ / 50; /* Add .02 seco=
+nds of slop */
+drivers/tty/synclink_gt.c:=09info->timeout +=3D HZ/50;=09=09/* Add .02 seco=
+nds of slop */
+include/linux/serial_core.h:=09/* Add .02 seconds of slop */
+
+but less of these...
+
+$ git grep 'HZ/50' net drivers/net include/net
+drivers/net/ethernet/dec/tulip/interrupt.c:=09=09=09=09mod_timer(&tp->timer=
+, RUN_AT(HZ/50));
+drivers/net/ethernet/dec/tulip/interrupt.c:=09=09=09mod_timer(&tp->timer, R=
+UN_AT(HZ/50));
+drivers/net/wireless/virtual/mac80211_hwsim.c:=09ieee80211_queue_delayed_wo=
+rk(hw, &hwsim->roc_start, HZ/50);
+
+
+On a side note: in file drivers/tty/amiserial.c
+The "NIST-PCTS" comment is there,
+and char_time is defined using port->timeout and the `HZ/50` still.
+This is harder to find because the function name differs from serial_core.c=
+:
+uart_wait_until_sent() was originally also named rs_wait_until_sent()
+and that was also changed before the mainline git history started...
+
+So in summary, I do believe the `HZ/50` or similar should be replaced
+in all of the cases in drivers/tty, maybe `frame_time * (fifosize + 1)`
+for FIFO, and in the other cases, it might be safe to remove altogether,
+as long as very low baud rates are tested. But also, it might not be a bad =
+idea
+for someone to take a look at the usage of `HZ` throughout the kernel,
+since it is no longer constant and these lines that were originally meant t=
+o be
+an equivalence to seconds still seem to be lingering around in some areas..=
+.
+
+And if you do decide to change/remove it, you can try to CC Theodore
+and maybe he can explain it to us himself. :D
+
+--
+All the best,
+MCP
