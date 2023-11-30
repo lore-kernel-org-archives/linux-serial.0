@@ -1,25 +1,26 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="jiiBmXTx"
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE578D46;
-	Thu, 30 Nov 2023 06:07:34 -0800 (PST)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 623B540007;
-	Thu, 30 Nov 2023 14:07:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="kxrmXO2p"
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6585196;
+	Thu, 30 Nov 2023 06:07:36 -0800 (PST)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 3482C40003;
+	Thu, 30 Nov 2023 14:07:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1701353253;
+	t=1701353255;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=6n5y5Y4ag6lEhCM60JkkPOe9LhwwAQaW6l5XEjQba18=;
-	b=jiiBmXTxD+R0K1mUExooYO3IQW+9FJFg+tOT9rjRayt8ZhNqrwP6xB6YpdpAi69Mw1Sb/G
-	NQr2h8nGRHljYmWDhj6fwlNLYLaHYqpM1b3ZZY1I3tcvW26dCxky5M35rzn4xxLE1TMlvx
-	sBzwOWLihAlJQqkg6teyknxp2+ZdMYQeIvU2Fa8CxXPXvB+dCNJ2GLqpAkoIo7dST+3INU
-	QJsFaEXkOZ9H0yESKKBPCT2wBz+EuwC4BWqlTZt5VIXz7wAdJN/de5upg8CszjttvVtZyy
-	shicLGyppULTXyItSqKl/uzzbVEdr/qJfh83WmfCp4eCus/NwbKoN+IIU3G7IQ==
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Q7vbdl0phWxmXqUNa5odOWDQ5PiPNBLg4EXYyhdyx1Q=;
+	b=kxrmXO2pD/RvqeUbb1b13xx7xVNZXcsWd5lr4hZYIc3cFLhByFdzZeGk0W3c9kRZic0WxJ
+	u3Lck3xl6q8x/O6QtGCnvKisWgZowEWNo5WjPvtUDuXv7hC5luoyjB1TYDC8xOgBQSWgnE
+	fbkpHwZpVjWDibSRCA+L6Z+X6an5Rg9DgO9eGA1tGQEhIpxKOVu+z8nWrhcyEbf4He/QeF
+	doiPogFV51DF3qbIDil3+aO5p1qZqCevLZpTtZBSo4NdYdTtbmUsZJPQFGCvpshavrmgOd
+	q15d6k93uuPTJnnwo0+Dbwm7xkMiNzgbKDTPwtvQQXgO9SHzfsS3diEzhQkUtg==
 From: =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
-Subject: [PATCH v5 0/9] Cleanup AMBA PL011 driver
-Date: Thu, 30 Nov 2023 15:07:12 +0100
-Message-Id: <20231130-mbly-uart-v5-0-6566703a04b5@bootlin.com>
+Date: Thu, 30 Nov 2023 15:07:16 +0100
+Subject: [PATCH v5 4/9] tty: serial: amba-pl011: replace TIOCMBIT macros by
+ static functions
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -28,10 +29,9 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIABCXaGUC/2XPzQoCIRSG4VsJ1xn+jKO26j6ihdo5JdQYziRFz
- L1nQWS0cPGJzws+yAg5wkjWiwfJUOIY01CHWi5IOLrhADTu6yaCCcnroWd/utOryxN1GFzw3ho
- 0ntT3lwwYb+/Wdlf3MY5Tyvd3uvDX7afSN5XCKaNWKAPghNV7ufEpTac4rEI6k1eniK/l/MeKa
- k0vse9VACXYv5WNFay1slqmHUhltUWO/7Zrbfvz0lWr0XLpdIdo7K+d5/kJXPbCQFgBAAA=
+Message-Id: <20231130-mbly-uart-v5-4-6566703a04b5@bootlin.com>
+References: <20231130-mbly-uart-v5-0-6566703a04b5@bootlin.com>
+In-Reply-To: <20231130-mbly-uart-v5-0-6566703a04b5@bootlin.com>
 To: Russell King <linux@armlinux.org.uk>, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
  Jiri Slaby <jirislaby@kernel.org>
@@ -47,71 +47,119 @@ Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
 X-Mailer: b4 0.12.3
 X-GND-Sasl: theo.lebrun@bootlin.com
 
-Hi,
+The driver uses two TIOCMBIT macros inside pl011_{get,set}_mctrl to
+simplify the logic. Those look scary to checkpatch because they contain
+ifs without do-while loops.
 
-While adding upstream support to a new platform (Mobileye EyeQ5[1]) that
-uses the AMBA PL011 driver, I took some time to look at the PL011
-driver and ended up with a few patches that cleanup parts of it. The
-line-diff is big mostly because of the checkpatch-fixing commits.
+Avoid the macros by creating small equivalent static functions; that
+lets the compiler do its type checking & avoids checkpatch errors.
 
-The driver hadn't received any love for quite some time. See commit
-messages for more information.
+For the second instance __assign_bit is not usable because it deals with
+unsigned long pointers whereas we have an unsigned int in
+pl011_set_mctrl.
 
-v5 has been rebased upon v6.7-rc1, with [PATCH v4 3/6] split into many
-small commits and a header include in [PATCH v4 2/6] to fix a kernel
-test robot report.
+This addresses the following checkpatch warnings:
 
-[1]: https://lore.kernel.org/all/202310050726.GDpZbMDO-lkp@intel.com/T/
+    $ ./scripts/checkpatch.pl --strict --file \
+        drivers/tty/serial/amba-pl011.c
 
-Have a nice day,
-Théo Lebrun
+    ERROR: Macros starting with if should be enclosed by a do -
+           while loop to avoid possible if/else logic defects
 
+    CHECK: Macro argument 'uartbit' may be better as '(uartbit)' to
+           avoid precedence issues
+
+    ERROR: Macros starting with if should be enclosed by a do - while
+           loop to avoid possible if/else logic defects
+
+    CHECK: Macro argument 'tiocmbit' may be better as '(tiocmbit)' to
+           avoid precedence issues
+
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Théo Lebrun <theo.lebrun@bootlin.com>
 ---
-Changes in v5:
-- Rebase upon v6.7-rc1.
-- Add #include <linux/bitfield.h> in include/linux/amba/serial.h.
-- Split [PATCH v4 3/6] into 5 manageable commits.
-- Link to v4: https://lore.kernel.org/r/20231123-mbly-uart-v4-0-7f913a74ff89@bootlin.com
+ drivers/tty/serial/amba-pl011.c | 45 ++++++++++++++++++++++-------------------
+ 1 file changed, 24 insertions(+), 21 deletions(-)
 
-Changes in v4:
-- Fix reverse if logic bug in [PATCH V3 6/6].
-- Link to v3: https://lore.kernel.org/r/20231120-mbly-uart-v3-0-07ae35979f1f@bootlin.com
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 7bd0b68ef92f..743dee75c68b 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1589,6 +1589,12 @@ static unsigned int pl011_tx_empty(struct uart_port *port)
+ 							0 : TIOCSER_TEMT;
+ }
+ 
++static void pl011_maybe_set_bit(bool cond, unsigned int *ptr, unsigned int mask)
++{
++	if (cond)
++		*ptr |= mask;
++}
++
+ static unsigned int pl011_get_mctrl(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap =
+@@ -1596,18 +1602,22 @@ static unsigned int pl011_get_mctrl(struct uart_port *port)
+ 	unsigned int result = 0;
+ 	unsigned int status = pl011_read(uap, REG_FR);
+ 
+-#define TIOCMBIT(uartbit, tiocmbit)	\
+-	if (status & uartbit)		\
+-		result |= tiocmbit
++	pl011_maybe_set_bit(status & UART01x_FR_DCD, &result, TIOCM_CAR);
++	pl011_maybe_set_bit(status & uap->vendor->fr_dsr, &result, TIOCM_DSR);
++	pl011_maybe_set_bit(status & uap->vendor->fr_cts, &result, TIOCM_CTS);
++	pl011_maybe_set_bit(status & uap->vendor->fr_ri, &result, TIOCM_RNG);
+ 
+-	TIOCMBIT(UART01x_FR_DCD, TIOCM_CAR);
+-	TIOCMBIT(uap->vendor->fr_dsr, TIOCM_DSR);
+-	TIOCMBIT(uap->vendor->fr_cts, TIOCM_CTS);
+-	TIOCMBIT(uap->vendor->fr_ri, TIOCM_RNG);
+-#undef TIOCMBIT
+ 	return result;
+ }
+ 
++static void pl011_assign_bit(bool cond, unsigned int *ptr, unsigned int mask)
++{
++	if (cond)
++		*ptr |= mask;
++	else
++		*ptr &= ~mask;
++}
++
+ static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+ 	struct uart_amba_port *uap =
+@@ -1616,23 +1626,16 @@ static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 
+ 	cr = pl011_read(uap, REG_CR);
+ 
+-#define	TIOCMBIT(tiocmbit, uartbit)		\
+-	if (mctrl & tiocmbit)		\
+-		cr |= uartbit;		\
+-	else				\
+-		cr &= ~uartbit
+-
+-	TIOCMBIT(TIOCM_RTS, UART011_CR_RTS);
+-	TIOCMBIT(TIOCM_DTR, UART011_CR_DTR);
+-	TIOCMBIT(TIOCM_OUT1, UART011_CR_OUT1);
+-	TIOCMBIT(TIOCM_OUT2, UART011_CR_OUT2);
+-	TIOCMBIT(TIOCM_LOOP, UART011_CR_LBE);
++	pl011_assign_bit(mctrl & TIOCM_RTS, &cr, UART011_CR_RTS);
++	pl011_assign_bit(mctrl & TIOCM_DTR, &cr, UART011_CR_DTR);
++	pl011_assign_bit(mctrl & TIOCM_OUT1, &cr, UART011_CR_OUT1);
++	pl011_assign_bit(mctrl & TIOCM_OUT2, &cr, UART011_CR_OUT2);
++	pl011_assign_bit(mctrl & TIOCM_LOOP, &cr, UART011_CR_LBE);
+ 
+ 	if (port->status & UPSTAT_AUTORTS) {
+ 		/* We need to disable auto-RTS if we want to turn RTS off */
+-		TIOCMBIT(TIOCM_RTS, UART011_CR_RTSEN);
++		pl011_assign_bit(mctrl & TIOCM_RTS, &cr, UART011_CR_RTSEN);
+ 	}
+-#undef TIOCMBIT
+ 
+ 	pl011_write(cr, uap, REG_CR);
+ }
 
-Changes in v3:
-- Replace magic constants in linux/amba/serial.h by FIELD_PREP_CONST calls
-- Refactor QDF2400 SoC erratum 44 handling out of probe in a new patch
-- A nit in "unindent pl011_console_get_options function body"
-- Link to v2: https://lore.kernel.org/r/20231116-mbly-uart-v2-0-863f665ce520@bootlin.com
-
-Changes in v2:
-- [PATCH 2]: add #include <linux/bits.h> in include/linux/amba/serial.h
-  as we use the BIT() macro.
-- Move one whitespace cleanup from [PATCH 4/6] to [PATCH v2 3/5] where
-  it belongs.
-- Drop [PATCH 6/6]: console will never have a word length of 5 or 6.
-- Link to v1: https://lore.kernel.org/r/20231026-mbly-uart-v1-0-9258eea297d3@bootlin.com
-
----
-Théo Lebrun (9):
-      tty: serial: amba: cleanup whitespace
-      tty: serial: amba: Use linux/{bits,bitfield}.h macros
-      tty: serial: amba-pl011: fix whitespace formatting
-      tty: serial: amba-pl011: replace TIOCMBIT macros by static functions
-      tty: serial: amba-pl011: avoid quoted string split across lines
-      tty: serial: amba-pl011: fix formatting of conditions
-      tty: serial: amba-pl011: fix miscellaneous checkpatch warnings
-      tty: serial: amba-pl011: unindent pl011_console_get_options function body
-      tty: serial: amba-pl011: factor QDF2400 SoC erratum 44 out of probe
-
- drivers/tty/serial/amba-pl011.c | 261 +++++++++++++++++++++-------------------
- include/linux/amba/serial.h     | 258 ++++++++++++++++++++-------------------
- 2 files changed, 266 insertions(+), 253 deletions(-)
----
-base-commit: 9e47ce5c186d8364f4de3e879a148121b37e5216
-change-id: 20231023-mbly-uart-afcacbb98f8b
-
-Best regards,
 -- 
-Théo Lebrun <theo.lebrun@bootlin.com>
+2.43.0
 
