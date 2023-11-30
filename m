@@ -1,237 +1,146 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FD743C696;
-	Thu, 30 Nov 2023 11:30:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XtWkDfK5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39501C433C9;
-	Thu, 30 Nov 2023 11:30:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1701343806;
-	bh=9wqXAJVEw+p80c6qcG/8U08Liv8b+fzMW7FHXTNRBlQ=;
-	h=From:To:Cc:Subject:Date:From;
-	b=XtWkDfK5Ujq91qSWGQYSJIxUxo6b+Nhu3g7upiTfRLRpMwsCnnKinL+nHRgO/v8D4
-	 xWBCxkaG1WCwGO0e4j60aX1xZYwIofd7TBEleKTENLYLxltQfiJbow5ULOvJZotIG3
-	 3kEDRh83ICmFGx2H6tIHyGyRQr7PvpnERUNY9ivCjCP+PTSUyKHyr3qqbFTxkqW64Q
-	 MqtfqtZ/VyBHkQTwWy7BGpvG7TaZ14Rrf1nk95YHUk1HncQ3EcJzf5+YdIWn0OBFUi
-	 5A0I1muWePw3VfGR3SRO2rmBqW+XoU/fh8gw7pAD2lGBtS6V59IVhWbmY/gZyhfB9g
-	 QKJ9PWOvv8N7g==
-From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-	Matt Turner <mattst88@gmail.com>,
-	Amit Shah <amit@kernel.org>,
-	Arnd Bergmann <arnd@arndb.de>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	linux-alpha@vger.kernel.org,
-	virtualization@lists.linux.dev
-Subject: [PATCH] tty: virtio: drop virtio_cons_early_init()
-Date: Thu, 30 Nov 2023 12:30:01 +0100
-Message-ID: <20231130113001.29154-1-jirislaby@kernel.org>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="aizQFdJ3"
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2071.outbound.protection.outlook.com [40.107.22.71])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B53A10E3;
+	Thu, 30 Nov 2023 05:09:56 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l0odd57vhph70LwUuspLWUN/AdXzt83Wg6UVxFbHGAEFtXLPjZBGumQR/guzLIKfiX4rXRy4rDs2IQOLFRrjYyQVqEBqpnwt+TF0syc6NZOeEkWfYM+2yPAWYw+7Vmwt+V+6J+566nFME7k7pLH8UGkkOcVEMxa34P3uOOW0OcwkgpM83t8PWhYlgorHGaNiHtnmxSJQwBKuyjGO8pPUuByV+OatcSDjSIGlvXXqY6Gfm7cI0rka5J+63AeHekcu7lJ86JVjWB3iVtFlriKdDIW9C/N/H44DJjJ2siFx7pAjCtA8QvFL3BTGAA+Phjwg+qCNFDz+ufX75I0mJSkF4g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xsOowVwC8UY6zr027r3jolDUsn/mY0YvPbe3bU2RY1c=;
+ b=RifD8kR4ASsDhnRAjCW85drkz68bDtUdx/e8BA5FdNuwPXTGBtj6b31nRBhw39BjoisYi5iGEipRL7lKFYBEWzboRUvx3DF9jo6HaPvRtIhr7sxnKqUMAK2gOZ1POCDF60Y/owCUeKaRVzmsE2AoMRGL3ACsSpBk0lnyJCwPeZgEGTH2h6N+WELzXY/QmpgoSF5XPouYrIzmqolhdO2Kct+c8blMJy7mx6+BSQVmJCC99FZzoVeUTqz5P4nJI9FL7SkadO1jbmVxUhi5fyGbB8b9J4V3p5wbdCmz+q7O3F56KombM/mVgAHy7XbRaMgVFkvY6mMWygO/QM7y8AFVjA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xsOowVwC8UY6zr027r3jolDUsn/mY0YvPbe3bU2RY1c=;
+ b=aizQFdJ3hinwnJFoPQuJPPo+mt0N4Uilm1eZpRcJyfR1zN4p+zeVcNDG5OYUVQfOW4t5IpmF4qfWoAewoWJkch9M5gS/OaKT+HBdYmNvaAuWlQAzWrBtMVJjYa+pejrUJCP4zf2sKfyMLeCBlqgsP6EA78NSPiT3vFw5CTHFmDGDh8DfdAwkTTxlsODgyXeNInzEfhkjSOP7i7SIbu5mdTHNQj+l40UvBikWsYmYHQfZZR+ZVC/oRHcIxoySl9TYx5OXFSwButBoorHwT3uqzbq2uUZwN3iGuA4aD1iFwpnmkXfTdH4HSAZT12tFgeKmvUm/1vK7ZwE+GBf7H2W5vA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from AM0PR04MB6467.eurprd04.prod.outlook.com (2603:10a6:208:16c::20)
+ by DB9PR04MB9356.eurprd04.prod.outlook.com (2603:10a6:10:36a::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.11; Thu, 30 Nov
+ 2023 13:09:51 +0000
+Received: from AM0PR04MB6467.eurprd04.prod.outlook.com
+ ([fe80::5c46:ada1:fcf3:68e6]) by AM0PR04MB6467.eurprd04.prod.outlook.com
+ ([fe80::5c46:ada1:fcf3:68e6%7]) with mapi id 15.20.7046.023; Thu, 30 Nov 2023
+ 13:09:51 +0000
+Message-ID: <7e649033-0e1d-4c21-a1f3-ceb2de894861@suse.com>
+Date: Thu, 30 Nov 2023 14:09:48 +0100
+User-Agent: Mozilla Thunderbird
+Content-Language: en-US
+To: Johan Hovold <johan@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, USB list <linux-usb@vger.kernel.org>,
+ linux-serial@vger.kernel.org
+From: Oliver Neukum <oneukum@suse.com>
+Subject: question on correct error return from break_ctl()
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR4P281CA0386.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:f7::14) To AM0PR04MB6467.eurprd04.prod.outlook.com
+ (2603:10a6:208:16c::20)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6467:EE_|DB9PR04MB9356:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5f862ec5-fa9d-413c-6260-08dbf1a5a2f7
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	CRBaGE4rSqR1yV+pR5lmi7/wwBbUIBbKuSYH0nU3AvEatmdjBAhkn6bntuI5H9pxCbpVjxq/QqdtZARHRYCiW3OFg79rdJnmSvmFdPkE5txfj44EDCvBrrL05Gq6Y0EAK+0xwI5nMz9y4YkSLFDPT97sciEvoJiJh/hs1+9W+yRIE/6/QInaq40/uPmuGs51uYzWHDo9U8pVkf1Gxy7plu4umZ1IBwgGbWwAr0jMoWMUNWTJSdysKS4sVfJUsoqswGKzJilLaM6XH70ItQCnrnf+T1Q3/R846U3wKK2/bh312af0MAJKIX0HWaQvYilAZq/nYxAfNwceHzBxeJ22yHZR5PXMfmfIc9mxj5Majl73rDnnoAnuHEenF4Jjcak9DQJuy8MLAfiRaSiY8xLF0BiJFryJBOAI9WJFHtVEcsutyye1ysRmxlbq3I3lNKsMPqbwXSYvWSGCmNVZY6X9DIzf2wezZqoLPilb2rhLEOD+0nbRuxR+GeIXqor6f3u1M1rRtNRPKBaSBcTDWh25wPFfagmKPbjNmFWHlQgKCUgEgA2RzDaMXYKOO0lc3IrBrvqNG4MdUH0ZRkL2LNApWr1FRrF+iF4Nm0/H/jGiVbpxICguAkZJvEa4BrgmBQck6AQt3Tzj7vSA0grVtudxfQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6467.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(396003)(39860400002)(136003)(346002)(376002)(230922051799003)(64100799003)(451199024)(1800799012)(186009)(38100700002)(5660300002)(6506007)(2616005)(6916009)(6512007)(4744005)(2906002)(66556008)(66946007)(66476007)(478600001)(4326008)(54906003)(6666004)(316002)(6486002)(8676002)(8936002)(36756003)(86362001)(31696002)(41300700001)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?U0dCYkpEV0lOQmJkK05GYUtmOHQ4eE05SW42cG1SMVk0dm81clRWeUkwM0R1?=
+ =?utf-8?B?Zzl6eVUzM1dzYkt6NDNMY1lBL3k1OHVLSEpUTGNpLzJ6UXJBN3hTalVtMHRE?=
+ =?utf-8?B?dytPZEF3bldUM0F5WkxRZ0twN05GbHdaZ1B2YjVHdSt2Y3dBTFVtVVg5ZGNW?=
+ =?utf-8?B?WnJVOFpSU2pvRXFJYk12YXFsbnpyUWdDM0R2TFEwaTRMWEhKVzVLakVGUXF2?=
+ =?utf-8?B?cDZHaUgzV2ZBTmx4a1VzYlNuR0V5ZjM2eGR4VmFlM1dWYTNMTklSUHFHb1FY?=
+ =?utf-8?B?L1NkdDVxY2VxQ3lLR3VzQUpkWXg1YXg0UnIxakxyRVBCUHRQdzZkT0lXbGRs?=
+ =?utf-8?B?R1RKcjNZdlB5S2dXNC9HZ1lyYXhyZ3ZwZ2xQeDBvRis5VTByQU10aStHeVZl?=
+ =?utf-8?B?ZGdWdE9BdndZdHF6MDFSeEcxOUowNTZJeHRQbklDNytLb240QWI1Mk1kRElq?=
+ =?utf-8?B?aGdUYnVJUktMQmlWSzRFcW5rQ3lWUXY3TmhrK01iYnVxSmxrL0c3Um9VbGJ4?=
+ =?utf-8?B?MU94V1FYaHZ6WjZJL2doZkp6THU0RkdBZ29xVDBibTZpUHRFbDJwT1IvVXU2?=
+ =?utf-8?B?a0JIVm1WR0VtRWZrYzBIZVpjM1oybG1UOEJCNHQwdEh5emF1eVJIcHRLTUEz?=
+ =?utf-8?B?b2loTE5hMHhNalgxbDZqZXJkNVA5OFpjUEVjTW5Xd2haYlJFZUF4QlZKMHgv?=
+ =?utf-8?B?WmNPbVQxNXlEUnlQS0xmU01qNlVCZkw4alRSN2NiYm9Kb25MQWtvQ2NHVnRk?=
+ =?utf-8?B?WDIrWElxTldlSWJZbmxxK3BCWXArWlpVbTBiY1JLN0JXTTQyUHp3amFCODJZ?=
+ =?utf-8?B?eWlFMzlzZm5naklhTm1adGNVcHlYSXJxbjBGOXZ4cXhtdWhQVEp6Qm5TWFE3?=
+ =?utf-8?B?WkpNdUFCMC9seTNRenluOEdJNDdYRnZOTWFkNHdmQ0d3ZVcvaHM2aFJsNDBo?=
+ =?utf-8?B?TnhTZVdiZWsrM0NDUGJDeHp5dm1NdkR1NHY2S1VPbTFRT3lNeEtOOTZ5ODBn?=
+ =?utf-8?B?b3NXRkNTZVdyWnJmQllMSnpOVHYvNDh4aDB6ZmtsVlA1bFgvdE1yNVM5cmF4?=
+ =?utf-8?B?L2hxVFJLcy9zcERDWFdhVWM3NG1JTDlUNlFqSE5xT0ovWE16TjQ4Qm5oeXBM?=
+ =?utf-8?B?d0diUlVUK2lsMnhlME5GdG95R2RuNkYxcmpRZTJDcGNzRDdWTVVKR1RDMlVl?=
+ =?utf-8?B?bGxjSEJMbFBoK3lLZDJYWVZ6dGpWRTA4bFJQRUwrNmJ1dXJJU3MyQWlZMlpG?=
+ =?utf-8?B?YzF4RkcwM2VoeG53d2NwSmJZSDhBbkVFYW5xbTNkbkthSXVXMjFVM1ZzTWp3?=
+ =?utf-8?B?MzZXQWV1QzNtZzczM2I2aEgwSVZPSm5mcmd0ZW1uU2krbGtTV21MOEVyOVVw?=
+ =?utf-8?B?TEFYNlVCQmxKaEpZUU1qYXZKL1pFbGRRQ2UwK2twa1hqdlBoWjlUSUJ3Vnk5?=
+ =?utf-8?B?b29vY0pNTjNXQWZpUTJqcXpMYzR1MVJ3NS9KMVVoKzkzcWF2SDA5V09JZTIv?=
+ =?utf-8?B?Y0wzVEZMYVkvZlJUSFNqQUhrR3lnN3FnQnVkdnlkb2YyRnh0UzFCVFpuTHIx?=
+ =?utf-8?B?NDk3SndGWGJidkQ2VlNZb3ArMW5CU1VuKzJoY2tCWTh4dUNqV092cE45OXRQ?=
+ =?utf-8?B?dTcvaUtrMGcyRnpDbTRLYVlGK28rd0pSYW82VVBlMjc4TWJRSW1velk2Tjgz?=
+ =?utf-8?B?WmN4ZHRGaVZPVFRlSmxqczN2Z1FlaXBvSDVKNXA4dFkyeXI2cThNTFBodXcv?=
+ =?utf-8?B?ZDVxalRjeDRzUlF0YW9mcTg2QTdCSGN1SXZScVhSWmhJUzNZMkZMc241RHp6?=
+ =?utf-8?B?akorTUFxNnZZWlBCdjNaUDNneVZwMzVvUGJrTC9TaUlOMG40RjBkVlBkUFdX?=
+ =?utf-8?B?bnRZVUwrRmIrK3FrVkdvS2k1MlBTNENOVEVhNXdIeUtEajdyckRBbmhDbnZF?=
+ =?utf-8?B?M3V4ZzdSb0k1QkNLcnJWWXZvNC9nU2ozV3g2YkxGNDBCWFBadVpzTHlSLzlm?=
+ =?utf-8?B?NHpsUHh5ZVhZWHM0ZEpyU0xsSXJzUU5wREtySUdzdkVRV0paOGNrSFNrQkps?=
+ =?utf-8?B?MlEwcmszNlYzMW0xaWVpTG5vanExcWc2aFMyUkdwWnhUL1pETnRhZG9TQzl2?=
+ =?utf-8?B?dHJHQnhMMlUrdldyakU5YVZ1Y29rT3kxdG9uODVCNEx1WmFRWjNUaDZKaEFT?=
+ =?utf-8?Q?oEsI4TmQAeFW1fZIwhvvzge4B6DVW+fJQ+2b8l+LxCYc?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5f862ec5-fa9d-413c-6260-08dbf1a5a2f7
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6467.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2023 13:09:51.0499
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cvm043RQDl3sQZvNrRcpmiyWN8fuPG10a0+ik2E2jm4nQx1tv4TgnSHloFrOQRF27NHWwo/E01a+3j5wdvM8gw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB9356
 
-The last user of virtio_cons_early_init() was dropped in commit
-7fb2b2d51244 ("s390/virtio: remove the old KVM virtio transport").
+Hi,
 
-So now, drop virtio_cons_early_init() and the logic and headers behind
-too.
+it seems inconsistent. The tty layer
+in drivers/tty/tty_io.c::send_break()
 
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Richard Henderson <richard.henderson@linaro.org>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Amit Shah <amit@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc: linux-alpha@vger.kernel.org
-Cc: virtualization@lists.linux.dev
----
- MAINTAINERS                    |  1 -
- drivers/char/virtio_console.c  | 48 ----------------------------------
- include/linux/virtio_console.h | 38 ---------------------------
- 3 files changed, 87 deletions(-)
- delete mode 100644 include/linux/virtio_console.h
+static int send_break(struct tty_struct *tty, unsigned int duration)
+{
+         int retval;
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index b81da7a36a36..345797d89e11 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -23055,7 +23055,6 @@ M:	Amit Shah <amit@kernel.org>
- L:	virtualization@lists.linux.dev
- S:	Maintained
- F:	drivers/char/virtio_console.c
--F:	include/linux/virtio_console.h
- F:	include/uapi/linux/virtio_console.h
- 
- VIRTIO CORE AND NET DRIVERS
-diff --git a/drivers/char/virtio_console.c b/drivers/char/virtio_console.c
-index 431e9e5bf9c1..8abe599c1c07 100644
---- a/drivers/char/virtio_console.c
-+++ b/drivers/char/virtio_console.c
-@@ -230,9 +230,6 @@ struct port {
- 	bool guest_connected;
- };
- 
--/* This is the very early arch-specified put chars function. */
--static int (*early_put_chars)(u32, const char *, int);
--
- static struct port *find_port_by_vtermno(u32 vtermno)
- {
- 	struct port *port;
-@@ -1114,9 +1111,6 @@ static int put_chars(u32 vtermno, const char *buf, int count)
- 	void *data;
- 	int ret;
- 
--	if (unlikely(early_put_chars))
--		return early_put_chars(vtermno, buf, count);
--
- 	port = find_port_by_vtermno(vtermno);
- 	if (!port)
- 		return -EPIPE;
-@@ -1142,10 +1136,6 @@ static int get_chars(u32 vtermno, char *buf, int count)
- {
- 	struct port *port;
- 
--	/* If we've not set up the port yet, we have no input to give. */
--	if (unlikely(early_put_chars))
--		return 0;
--
- 	port = find_port_by_vtermno(vtermno);
- 	if (!port)
- 		return -EPIPE;
-@@ -1201,21 +1191,6 @@ static const struct hv_ops hv_ops = {
- 	.notifier_hangup = notifier_del_vio,
- };
- 
--/*
-- * Console drivers are initialized very early so boot messages can go
-- * out, so we do things slightly differently from the generic virtio
-- * initialization of the net and block drivers.
-- *
-- * At this stage, the console is output-only.  It's too early to set
-- * up a virtqueue, so we let the drivers do some boutique early-output
-- * thing.
-- */
--int __init virtio_cons_early_init(int (*put_chars)(u32, const char *, int))
--{
--	early_put_chars = put_chars;
--	return hvc_instantiate(0, 0, &hv_ops);
--}
--
- static int init_port_console(struct port *port)
- {
- 	int ret;
-@@ -1256,13 +1231,6 @@ static int init_port_console(struct port *port)
- 	spin_unlock_irq(&pdrvdata_lock);
- 	port->guest_connected = true;
- 
--	/*
--	 * Start using the new console output if this is the first
--	 * console to come up.
--	 */
--	if (early_put_chars)
--		early_put_chars = NULL;
--
- 	/* Notify host of port being opened */
- 	send_control_msg(port, VIRTIO_CONSOLE_PORT_OPEN, 1);
- 
-@@ -1999,7 +1967,6 @@ static int virtcons_probe(struct virtio_device *vdev)
- 	struct ports_device *portdev;
- 	int err;
- 	bool multiport;
--	bool early = early_put_chars != NULL;
- 
- 	/* We only need a config space if features are offered */
- 	if (!vdev->config->get &&
-@@ -2010,9 +1977,6 @@ static int virtcons_probe(struct virtio_device *vdev)
- 		return -EINVAL;
- 	}
- 
--	/* Ensure to read early_put_chars now */
--	barrier();
--
- 	portdev = kmalloc(sizeof(*portdev), GFP_KERNEL);
- 	if (!portdev) {
- 		err = -ENOMEM;
-@@ -2100,18 +2064,6 @@ static int virtcons_probe(struct virtio_device *vdev)
- 	__send_control_msg(portdev, VIRTIO_CONSOLE_BAD_ID,
- 			   VIRTIO_CONSOLE_DEVICE_READY, 1);
- 
--	/*
--	 * If there was an early virtio console, assume that there are no
--	 * other consoles. We need to wait until the hvc_alloc matches the
--	 * hvc_instantiate, otherwise tty_open will complain, resulting in
--	 * a "Warning: unable to open an initial console" boot failure.
--	 * Without multiport this is done in add_port above. With multiport
--	 * this might take some host<->guest communication - thus we have to
--	 * wait.
--	 */
--	if (multiport && early)
--		wait_for_completion(&early_console_added);
--
- 	return 0;
- 
- free_chrdev:
-diff --git a/include/linux/virtio_console.h b/include/linux/virtio_console.h
-deleted file mode 100644
-index d2e2785af602..000000000000
---- a/include/linux/virtio_console.h
-+++ /dev/null
-@@ -1,38 +0,0 @@
--/*
-- * This header, excluding the #ifdef __KERNEL__ part, is BSD licensed so
-- * anyone can use the definitions to implement compatible drivers/servers:
-- *
-- *
-- * Redistribution and use in source and binary forms, with or without
-- * modification, are permitted provided that the following conditions
-- * are met:
-- * 1. Redistributions of source code must retain the above copyright
-- *    notice, this list of conditions and the following disclaimer.
-- * 2. Redistributions in binary form must reproduce the above copyright
-- *    notice, this list of conditions and the following disclaimer in the
-- *    documentation and/or other materials provided with the distribution.
-- * 3. Neither the name of IBM nor the names of its contributors
-- *    may be used to endorse or promote products derived from this software
-- *    without specific prior written permission.
-- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS'' AND
-- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-- * ARE DISCLAIMED.  IN NO EVENT SHALL IBM OR CONTRIBUTORS BE LIABLE
-- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-- * SUCH DAMAGE.
-- *
-- * Copyright (C) Red Hat, Inc., 2009, 2010, 2011
-- * Copyright (C) Amit Shah <amit.shah@redhat.com>, 2009, 2010, 2011
-- */
--#ifndef _LINUX_VIRTIO_CONSOLE_H
--#define _LINUX_VIRTIO_CONSOLE_H
--
--#include <uapi/linux/virtio_console.h>
--
--int __init virtio_cons_early_init(int (*put_chars)(u32, const char *, int));
--#endif /* _LINUX_VIRTIO_CONSOLE_H */
--- 
-2.43.0
+         if (tty->ops->break_ctl == NULL)
+                 return 0;
 
+not supporting break_ctl() is treated as the operation
+succeeding. Yet in drivers/usb/serial/usb-serial.c::serial_break()
+
+static int serial_break(struct tty_struct *tty, int break_state)
+{
+         struct usb_serial_port *port = tty->driver_data;
+
+         dev_dbg(&port->dev, "%s\n", __func__);
+
+         if (port->serial->type->break_ctl)
+                 return port->serial->type->break_ctl(tty, break_state);
+
+         return -ENOTTY;
+}
+
+we are seeing that not supporting break_ctl() leads to returning
+-ENOTTY, which drivers/tty/tty_io.c::send_break() will return to user space.
+These reactions are at odds with each other. What is a driver supposed
+to do?
+
+	Regards
+		Oliver
