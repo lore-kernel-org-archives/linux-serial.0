@@ -1,79 +1,83 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FBB731A6D;
-	Thu, 30 Nov 2023 15:11:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pjwpb1hi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79237C433C8;
-	Thu, 30 Nov 2023 15:11:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1701357093;
-	bh=O8vlZdRzHuB/ofC7NHp0ch34OjJjZxcFddRF5G34Fys=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Pjwpb1higZRwmJCySttJXVnzJzQuOOvgRslChW/0g03ssWIr2HJwiV1czzenqEnOX
-	 DY4eJ+9QpFXwqKlTxKu8RbMddHOYZJfUQxiwU+7R9GUP4zFndkdN/i15SSxjKKDuFk
-	 dSLaLdatbTDXvcLG/gu0HBhqWBTx8gPGXAGGhH/Ou6ngsQrkjOKGYyQLUTR4nnDZNJ
-	 7iJHy/45Y9EooDB4dNP9bRRoBpGj3paOIul/JBG5ytH2gFyMpP0scdN5V+GheotahP
-	 ZIRPLt8JmInYHpRvHVZvfzU6tgdRDRQifQtQwycfVwqjVj3pec515aPOoqRskNGnoV
-	 XxKx1fTHx+fxw==
-Received: from johan by xi.lan with local (Exim 4.96.2)
-	(envelope-from <johan@kernel.org>)
-	id 1r8ihx-0000u5-2R;
-	Thu, 30 Nov 2023 16:12:06 +0100
-Date: Thu, 30 Nov 2023 16:12:05 +0100
-From: Johan Hovold <johan@kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Oliver Neukum <oneukum@suse.com>, Jiri Slaby <jirislaby@kernel.org>,
-	USB list <linux-usb@vger.kernel.org>, linux-serial@vger.kernel.org
-Subject: Re: question on correct error return from break_ctl()
-Message-ID: <ZWimRdaCVvPjLsTL@hovoldconsulting.com>
-References: <7e649033-0e1d-4c21-a1f3-ceb2de894861@suse.com>
- <2023113055-molecular-backlands-6b3d@gregkh>
- <0dd783e9-1cd2-467f-a90d-e63fec88350c@suse.com>
- <2023113053-oxidize-observant-9fb8@gregkh>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="kvA5k2X3"
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E1F10E3;
+	Thu, 30 Nov 2023 11:10:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
+	:From:subject:date:message-id:reply-to;
+	bh=UV2kGcH6+Z9wP1X2LMycZ5WrcrpzIA4/73bs01XpTXc=; b=kvA5k2X3IwFPR0P1qwEjDsEXQ8
+	Y1p2OChsIKWnH8b/F0jO72LJDSBgz7bgDuaRdQtXof5LuW0w89Xan6TvtKcBN7zD3Sa8gBxHMi8zm
+	Ubd8Q0Xqa0judaGvubS9LJ7OGWFz0+uMhsx7yezFe3I275bm6NK/MfWr/Mz7IFJXMejM=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:48272 helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1r8mR3-0003sb-07; Thu, 30 Nov 2023 14:10:54 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	hvilleneuve@dimonoff.com
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	hugo@hugovil.com
+Date: Thu, 30 Nov 2023 14:10:42 -0500
+Message-Id: <20231130191050.3165862-1-hugo@hugovil.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2023113053-oxidize-observant-9fb8@gregkh>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+Subject: [PATCH 0/7] serial: sc16is7xx and max310x: regmap fixes and improvements
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Thu, Nov 30, 2023 at 02:42:20PM +0000, Greg Kroah-Hartman wrote:
-> On Thu, Nov 30, 2023 at 03:36:21PM +0100, Oliver Neukum wrote:
-> > On 30.11.23 14:48, Greg Kroah-Hartman wrote:
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-> > I am afraid I need to point out that usb-serial has been changed _this_ _year_
-> > to return -ENOTTY. CDC-ACM being also in this situation unfortunately
-> > I need to decide between one of the alternatives.
-> 
-> Ah, oops, then it should probably be changed back.  Unless Johan, any
-> specific reason this was changed?
+Hello,
+this patch series brings fixes and improvements related to regmap access
+for sc16is7xx and max310x drivers.
 
-Had to go back to lore to see why I changed this:
+They are related to commit 3837a0379533 ("serial: sc16is7xx: improve regmap debugfs by using one regmap per port").
 
-	https://lore.kernel.org/all/20230604123505.4661-1-johan@kernel.org/
+Patches 1 and 2 address some comments formulated during review of the
+source patch listed above.
 
-IIRC we had a user that was not expecting break signalling to only work
-with one of the two ports of a Silabs device without user space being
-notified about it.
+Patch 3 removes a structure member made obsolete.
 
-In the cover letter I mention that the intent of "commit 9e98966c7bb9
-("tty: rework break handling") from 2008 appears to be to allow missing
-support to be reported to user space".
+Patches 4 and 5 are improvements for code readability.
 
-Reporting back an error also avoids waiting for the break period when a
-subdriver does not support break (i.e. as when a tty driver does not
-support break).
+Patches 6 and 7 port improvements from patches 4 and 5 of the sc16is7xx
+driver over to the max310x driver.
 
-The inconsistency was discussed and if this turns out to be an issue we
-can have the tty layer turn that -ENOTTY into 0 before returning:
+I have tested the changes on a custom board with two SC16IS752 DUART over
+a SPI interface using a Variscite IMX8MN NANO SOM. The four UARTs are
+configured in RS-485 mode.
 
-	https://lore.kernel.org/all/ZH8a12ZYtA2RzEK_@hovoldconsulting.com/
+Thank you.
 
-I haven't heard from anyone noticing any issues so far though.
+Hugo Villeneuve (7):
+  serial: sc16is7xx: fix snprintf format specifier in
+    sc16is7xx_regmap_name()
+  serial: sc16is7xx: remove global regmap from struct sc16is7xx_port
+  serial: sc16is7xx: remove unused line structure member
+  serial: sc16is7xx: add macro for max number of UART ports
+  serial: sc16is7xx: improve sc16is7xx_regmap_name() buffer size
+    computation
+  serial: max310x: add macro for max number of ports
+  serial: max310x: use separate regmap name for each port
 
-Johan
+ drivers/tty/serial/max310x.c   | 19 +++++++++++++++++--
+ drivers/tty/serial/sc16is7xx.c | 32 ++++++++++++++++++--------------
+ 2 files changed, 35 insertions(+), 16 deletions(-)
+
+
+base-commit: d804987153e7bedf503f8e4ba649afe52cfd7f6d
+-- 
+2.39.2
+
