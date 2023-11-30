@@ -1,67 +1,139 @@
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-X-Greylist: delayed 440 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Nov 2023 06:03:12 PST
-Received: from mail.someserver.de (mail.someserver.de [116.202.193.223])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE4CB9
-	for <linux-serial@vger.kernel.org>; Thu, 30 Nov 2023 06:03:12 -0800 (PST)
-Received: from [IPV6:2a02:8109:a893:3b00:7bad:dd01:344c:715f] (unknown [IPv6:2a02:8109:a893:3b00:7bad:dd01:344c:715f])
-	by mail.someserver.de (Postfix) with ESMTPSA id 1634AA0BF2;
-	Thu, 30 Nov 2023 14:55:48 +0100 (CET)
-Message-ID: <37a7a59b-70a8-41fb-b919-9fff8c44f349@christina-quast.de>
-Date: Thu, 30 Nov 2023 14:55:47 +0100
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="SPzjaORR"
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8230DD50;
+	Thu, 30 Nov 2023 06:07:35 -0800 (PST)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 748EC40008;
+	Thu, 30 Nov 2023 14:07:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1701353253;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=btBGN3+J5ZkMtDnGCS4FlzRphXXYxo6S5GjZ3HYhehg=;
+	b=SPzjaORR6qeXdRxDGKfpPZZtAHdr2yj+hbfEpD9tRchrlIlXRPGskDss47YxI8+lMqN5Zt
+	eBP4bkqH0KjY5n6J4lziiffcZMxxLcNJ/sGjPzfd523e99VYG/77EMWzVuBi676DQQV4LA
+	4tUgZwZ3Bv7GdIIFFRt+YR4/K2WccJNlfPnQpJ0SYwCeoZ7vjGUfYx376QUihQeTYUgSyg
+	NDW2qzTPDuEhW+mR3ur3lgGHwH9fZ0hTOuF92/c9lPvHI5Yidzysx5eW5m/6m1kkdyucD2
+	4N/bo90+HpIA7AVo8TkwVSpMjqgofubqtOFvuXNnjwQle6AhpGQIjm1BAf86PA==
+From: =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
+Date: Thu, 30 Nov 2023 15:07:13 +0100
+Subject: [PATCH v5 1/9] tty: serial: amba: cleanup whitespace
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 RESEND] hid-ft260: Add serial driver
-Content-Language: en-US
-To: Greg KH <gregkh@linuxfoundation.org>,
- Christina Quast <contact@christina-quast.de>
-Cc: linux-serial@vger.kernel.org, Daniel Beer
- <daniel.beer@igorinstitute.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-References: <20231122094004.95399-1-contact@christina-quast.de>
- <2023112205-explore-frequency-40a6@gregkh>
- <0fb134f7-f72e-4742-9c2d-c68f83b67975@christina-quast.de>
- <2023112831-pacifist-lure-428a@gregkh>
-From: Christina Quast <chrysh@christina-quast.de>
-In-Reply-To: <2023112831-pacifist-lure-428a@gregkh>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20231130-mbly-uart-v5-1-6566703a04b5@bootlin.com>
+References: <20231130-mbly-uart-v5-0-6566703a04b5@bootlin.com>
+In-Reply-To: <20231130-mbly-uart-v5-0-6566703a04b5@bootlin.com>
+To: Russell King <linux@armlinux.org.uk>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ Linus Walleij <linus.walleij@linaro.org>, 
+ =?utf-8?q?Gr=C3=A9gory_Clement?= <gregory.clement@bootlin.com>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Thomas Petazzoni <thomas.petazzoni@bootlin.com>, 
+ Vladimir Kondratiev <vladimir.kondratiev@mobileye.com>, 
+ Tawfik Bayouk <tawfik.bayouk@mobileye.com>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
+X-Mailer: b4 0.12.3
+X-GND-Sasl: theo.lebrun@bootlin.com
 
-Hi Greg!
+Fix whitespace in include/linux/amba/serial.h to match current kernel
+coding standards. Fixes about:
 
-I searched around and many devices seem to configure their own device 
-names (ttyPZ, ttyGF, ttySDIO, ttyMX, ttyMI, ttyIPWp, ...), so I think 
-ttyFT for all the FTDI devices fits well as a name. I explained it 
-better in the commit message in the next patchset I will be sending.
+ - CHECK: spaces preferred around that '|' (ctx:VxV)
+ - ERROR: code indent should use tabs where possible
+ - WARNING: Unnecessary space before function pointer arguments
+ - WARNING: please, no spaces at the start of a line
 
-On 11/28/23 11:29, Greg KH wrote:
-> On Sun, Nov 26, 2023 at 10:53:18AM +0100, Christina Quast wrote:
->> Hi Greg!
->>
->> Thanks for the comments!
->>
->> On 11/22/23 11:15, Greg KH wrote:
->>> On Wed, Nov 22, 2023 at 10:40:03AM +0100, Christina Quast wrote:
->>>> This commit adds a serial interface /dev/FTx which implements the tty
->>>> serial driver ops, so that it is possible to set the baudrate, send
->>>> and receive data, etc.
->>> Why is this a serial device?  What type of device is it?
->>>
->>> And why "FTx"?  Where did that name come from?  That's not a "normal"
->>> tty name.
->> I meant /dev/ttyFTx. Since it's a hid device providing a serial interface,
->> in theory you could also call it /dev/ttySx or /dev/ttyUSBx, but both feel
->> wrong. It's an FTDI device, that functions as a USB to UART / I2C Master. Do
->> you have a better name in mind?
-> I thought we had a HID tty device name already, perhaps dig around for
-> that and tie into that interface?  If not, sure, youcan use ttyFTx, but
-> it needs to be documented somewhere (and the correct wording here in the
-> changelog as well.)
->
-> thanks,
->
-> greg k-h
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Signed-off-by: Théo Lebrun <theo.lebrun@bootlin.com>
+---
+ include/linux/amba/serial.h | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/include/linux/amba/serial.h b/include/linux/amba/serial.h
+index a1307b58cc2c..27003ec52114 100644
+--- a/include/linux/amba/serial.h
++++ b/include/linux/amba/serial.h
+@@ -75,10 +75,10 @@
+ #define UART011_DR_PE		(1 << 9)
+ #define UART011_DR_FE		(1 << 8)
+ 
+-#define UART01x_RSR_OE 		0x08
+-#define UART01x_RSR_BE 		0x04
+-#define UART01x_RSR_PE 		0x02
+-#define UART01x_RSR_FE 		0x01
++#define UART01x_RSR_OE		0x08
++#define UART01x_RSR_BE		0x04
++#define UART01x_RSR_PE		0x02
++#define UART01x_RSR_FE		0x01
+ 
+ #define UART011_FR_RI		0x100
+ #define UART011_FR_TXFE		0x080
+@@ -86,9 +86,9 @@
+ #define UART01x_FR_TXFF		0x020
+ #define UART01x_FR_RXFE		0x010
+ #define UART01x_FR_BUSY		0x008
+-#define UART01x_FR_DCD 		0x004
+-#define UART01x_FR_DSR 		0x002
+-#define UART01x_FR_CTS 		0x001
++#define UART01x_FR_DCD		0x004
++#define UART01x_FR_DSR		0x002
++#define UART01x_FR_CTS		0x001
+ #define UART01x_FR_TMSK		(UART01x_FR_TXFF + UART01x_FR_BUSY)
+ 
+ /*
+@@ -110,14 +110,14 @@
+ #define UART011_CR_TXE		0x0100	/* transmit enable */
+ #define UART011_CR_LBE		0x0080	/* loopback enable */
+ #define UART010_CR_RTIE		0x0040
+-#define UART010_CR_TIE 		0x0020
+-#define UART010_CR_RIE 		0x0010
++#define UART010_CR_TIE		0x0020
++#define UART010_CR_RIE		0x0010
+ #define UART010_CR_MSIE		0x0008
+ #define ST_UART011_CR_OVSFACT	0x0008	/* Oversampling factor */
+ #define UART01x_CR_IIRLP	0x0004	/* SIR low power mode */
+ #define UART01x_CR_SIREN	0x0002	/* SIR enable */
+ #define UART01x_CR_UARTEN	0x0001	/* UART enable */
+- 
++
+ #define UART011_LCRH_SPS	0x80
+ #define UART01x_LCRH_WLEN_8	0x60
+ #define UART01x_LCRH_WLEN_7	0x40
+@@ -203,8 +203,8 @@
+ #define UART011_TXDMAE		(1 << 1)	/* enable transmit dma */
+ #define UART011_RXDMAE		(1 << 0)	/* enable receive dma */
+ 
+-#define UART01x_RSR_ANY		(UART01x_RSR_OE|UART01x_RSR_BE|UART01x_RSR_PE|UART01x_RSR_FE)
+-#define UART01x_FR_MODEM_ANY	(UART01x_FR_DCD|UART01x_FR_DSR|UART01x_FR_CTS)
++#define UART01x_RSR_ANY		(UART01x_RSR_OE | UART01x_RSR_BE | UART01x_RSR_PE | UART01x_RSR_FE)
++#define UART01x_FR_MODEM_ANY	(UART01x_FR_DCD | UART01x_FR_DSR | UART01x_FR_CTS)
+ 
+ #ifndef __ASSEMBLY__
+ struct amba_device; /* in uncompress this is included but amba/bus.h is not */
+@@ -220,8 +220,8 @@ struct amba_pl011_data {
+ 	bool dma_rx_poll_enable;
+ 	unsigned int dma_rx_poll_rate;
+ 	unsigned int dma_rx_poll_timeout;
+-        void (*init) (void);
+-	void (*exit) (void);
++	void (*init)(void);
++	void (*exit)(void);
+ };
+ #endif
+ 
+
+-- 
+2.43.0
+
