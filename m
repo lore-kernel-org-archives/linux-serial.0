@@ -1,267 +1,282 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="VK1reAFc"
-Received: from mail-40134.protonmail.ch (mail-40134.protonmail.ch [185.70.40.134])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72CD4D7F
-	for <linux-serial@vger.kernel.org>; Thu, 30 Nov 2023 01:52:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
-	s=protonmail3; t=1701337952; x=1701597152;
-	bh=gFWZjY2l1exIvazXNe/u4C5YDBm/Kt7NGS/MLKV+rFg=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=VK1reAFcHtIa0iSYQ0WydDXP2GoJkZ65fKwM9+NDecANinX+WSGlX2deiRaoJaWCi
-	 u3eBf3Cli0hVFH/rnAkPsYVxT6efd8ZdNX6pNGanPgT/mmKvgOpbJJn/a7FWZUD2qA
-	 7BXNoW1H1rfBpG/Ec8XDJwT37pEfdmjIrLq1LG3Ai0EBhU4B6wqX+iLTccE6BoQ0IA
-	 6jWgFICxjppmCjkGZAO6kHgDBJiWvjUN9V6BMvk2TD0jaQ4stqkYQ0KIg2Ibb95uD4
-	 sYRszYdQaHk5zg+BUgTKZkx/BBWs5eQQ1E+Oj1B7uQ3LJYI3nUORKMy7TugZd7MVoH
-	 fMTqBGqbWq69w==
-Date: Thu, 30 Nov 2023 09:52:19 +0000
-To: =?utf-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-From: "Michael C. Pratt" <mcpratt@pm.me>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-serial <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Wander Lairson Costa <wander@redhat.com>, Vamshi Gajjela <vamshigajjela@google.com>
-Subject: Re: [PATCH] serial/8250: Set fifo timeout with uart_fifo_timeout()
-Message-ID: <K3H2WOa7QgWaXO0vxUfZ5xkrSQTQ0dGkbXyDUIJMyygCRXENxrhHwuh9sL3pKBVVd0fHH_zT-yaWgAYHjHlqsepWxwZt3IGd5zjcrSrzhIk=@pm.me>
-In-Reply-To: <26d2d26-7ead-b62-4636-bb34da636cf0@linux.intel.com>
-References: <20231125063552.517-1-mcpratt@pm.me> <ZWS-pSDFMh0xx5Bv@smile.fi.intel.com> <HPbnILrnlwSUYDSVm3nL_lHYYxueg4aCdoUL3rHZTk3qLuY05GzBCibJS7GBFolJi7Mr4egmTPxjWYt3TGbQ8N9ate8rRvdq31z9BL04sVY=@pm.me> <26d2d26-7ead-b62-4636-bb34da636cf0@linux.intel.com>
-Feedback-ID: 27397442:user:proton
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Vf72haQc"
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4985410D0
+	for <linux-serial@vger.kernel.org>; Thu, 30 Nov 2023 02:19:45 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id 2adb3069b0e04-50943ccbbaeso1107637e87.2
+        for <linux-serial@vger.kernel.org>; Thu, 30 Nov 2023 02:19:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1701339583; x=1701944383; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:cc:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=k8UQb25ZCpcw6Z79V6XyuEVHM1dfOywe6SGyX+g3qNY=;
+        b=Vf72haQcFOQ2a9O6O4MLGFrWRKrLtq0w8AlNdb9+qIk7vUSsVeqctbXcywgI8mOxJ8
+         8FtafobjRqrhQOc0Dm0tfVnyh5Gam2J4IbQQFKwcWyqh3Cfbh/a6Ha7M0nMkjpBQuykG
+         WCLORM3CIKRPDT9O7o4N+tbRpDkK4z6LErNRp+skRdE/x3Y2+ClGHfdEMj5uc0qZV5Z5
+         PSlHUFg+3OG3WqQ33SCODRy6T2px2vSkaUN88P2KjJalU/LufQPk5yFss/i9Us1YoRxJ
+         fRzvTmOEL+hf4J89q5yVo2p7Y+sIwySWXkUMHJyMmgBW9YDOoEtI3VleWjSrxgfhEQN7
+         V2Jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701339583; x=1701944383;
+        h=content-transfer-encoding:in-reply-to:from:cc:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=k8UQb25ZCpcw6Z79V6XyuEVHM1dfOywe6SGyX+g3qNY=;
+        b=WUOhiDiF5NuosT9Oj2FfWlWW3Q4a37cqBDoS+3PJbp+OPnt5IEoh7H7C+Ww8jPDMdG
+         HOsH1NhOsPOmxQ2kByB8JaZ0RyRfBnzIKCt1CSynU/c38BWbfZxF2mGHkq850TSzVG4j
+         eAWyZ0epg0OTMLxMzeLWmZ0tRh49eJB9mPJtNL8xuky2XmYyEwh3ZTBUqoVlbHTbAMZf
+         tEQxApUvYXbkqUA7Ut9/E4nLloI37YoYVSr4y5fnN4pdrLZOCzDBOLiuSlu7Z+M8dIUY
+         FCLymtdoK4dZN/6JvlAczUowjoijsUfzbzrkTgI0Hlrig41B5PC5xVgmI8cjCcaMe390
+         WlNA==
+X-Gm-Message-State: AOJu0Yz/ldYK1T//9AEJBjHSVx7cKskX7QKKvZVIHztCEllWb6uOoMHv
+	vD3oOErlhjZXuulP0yd1/2KOkw==
+X-Google-Smtp-Source: AGHT+IFicDS5nZRdVyEjLR/yDXZjHP6zAHJnWPPNMwUq5JEBOXe2iFZJ/RCR5kwlmJeqdFPrc6ZorA==
+X-Received: by 2002:a05:6512:3b87:b0:50b:c6c7:1e60 with SMTP id g7-20020a0565123b8700b0050bc6c71e60mr3769644lfv.29.1701339583276;
+        Thu, 30 Nov 2023 02:19:43 -0800 (PST)
+Received: from [192.168.2.107] ([79.115.63.75])
+        by smtp.gmail.com with ESMTPSA id m40-20020a05600c3b2800b004042dbb8925sm5190871wms.38.2023.11.30.02.19.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Nov 2023 02:19:42 -0800 (PST)
+Message-ID: <3e3a39eb-edb5-4d5d-bd30-d447e7605049@linaro.org>
+Date: Thu, 30 Nov 2023 10:19:40 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v10 3/3] tty: samsung_tty: 32-bit access for TX/RX hold
+ registers
+Content-Language: en-US
+To: Hyunki Koo <hyunki00.koo@samsung.com>, Kukjin Kim <kgene@kernel.org>,
+ Krzysztof Kozlowski <krzk@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, sbeom.choi@samsung.com
+References: <20200506080242.18623-1-hyunki00.koo@samsung.com>
+ <CGME20200506080258epcas2p4f242fb66a2145f76b0e108014ee351fb@epcas2p4.samsung.com>
+ <20200506080242.18623-3-hyunki00.koo@samsung.com>
+Cc: Peter Griffin <peter.griffin@linaro.org>,
+ =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
+ willmcvicker@google.com
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
+In-Reply-To: <20200506080242.18623-3-hyunki00.koo@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+I'm trying my luck on a 3 year old patch, fingers crossed :).
 
-Hi Ilpo,
+On 5/6/20 09:02, Hyunki Koo wrote:
 
+Hi, Hyunki!
 
-On Tuesday, November 28th, 2023 at 07:22, Ilpo J=C3=A4rvinen <ilpo.jarvinen=
-@linux.intel.com> wrote:
+> Support 32-bit access for the TX/RX hold registers UTXH and URXH.
+> 
+> This is required for some newer SoCs.
 
-> On Tue, 28 Nov 2023, mcpratt@pm.me wrote:
->
-> > On Monday, November 27th, 2023 at 11:07, Andy Shevchenko andriy.shevche=
-nko@linux.intel.com wrote:
-> >
-> > > On Sat, Nov 25, 2023 at 06:36:32AM +0000, Michael Pratt wrote:
-> > >
-> > > > Commit 8f3631f0f6eb ("serial/8250: Use fifo in 8250 console driver"=
-)
-> > > > reworked functions for basic 8250 and 16550 type serial devices
-> > > > in order to enable and use the internal FIFO device for buffering,
-> > > > however the default timeout of 10 ms remained, which is proving
-> > > > to be insufficient for low baud rates like 9600, causing data overr=
-un.
-> > > >
-> > > > Unforunately, that commit was written and accepted just before comm=
-it
-> > > > 31f6bd7fad3b ("serial: Store character timing information to uart_p=
-ort")
-> > > > which introduced the frame_time member of the uart_port struct
-> > > > in order to store the amount of time it takes to send one UART fram=
-e
-> > > > relative to the baud rate and other serial port configuration,
-> > > > and commit f9008285bb69 ("serial: Drop timeout from uart_port")
-> > > > which established function uart_fifo_timeout() in order to
-> > > > calculate a reasonable timeout to wait for all frames
-> > > > in the FIFO device to flush before writing data again
-> > > > using the now stored frame_time value and size of the buffer.
-> > > >
-> > > > Fix this by using the new function to calculate the timeout
-> > > > whenever the buffer is larger than 1 byte (unknown port default).
-> > > >
-> > > > Tested on a MIPS device (ar934x) at baud rates 625, 9600, 115200.
-> > >
-> > > Do we need a Fixed tag?
-> > >
-> > > ...
-> >
-> > Hi Andy,
-> >
-> > I'm not sure whether this qualifies as a "bug fix" or not,
-> > since the proper way to handle it was introduced after the "bad" commit=
-,
-> > and the "bad" commit happens to still work fine for anyone running the
-> > standard 115200 baud or higher.
->
->
-> Sometimes the proper way is then backported too to stables, but it needs
-> to be checked how complicated that seems.
->
-> So basically you'd need 31f6bd7fad3b and at least a part of f9008285bb69?
+Is the 32-bit access mandatory for the newer SoCs? I'm asking because I
+see a SError Interrupt when using 8-bit accesses on gs101 (pixel6). Can
+you confirm if gs101 USI UART is restricted to only 32 bit data width
+accesses?
 
-Correct, since frame_time is from 31f6bd7fad3b and the function is from f90=
-08285bb69,
-we would need both.
+If 32-bit accesses are mandatory, we should impose this restriction so
+that we avoid crashing the kernel on wrong user configuration. I have
+some patches ready, waiting just for a confirmation.
 
+Below is the crash that I see. Thanks!
 
-> > > > unsigned int status, tmout =3D 10000;
-> > > >
-> > > > - /* Wait up to 10ms for the character(s) to be sent. /
-> > > > + / Wait for a time relative to buffer size and baud */
-> > > > + if (up->port.fifosize > 1)
-> > > > + tmout =3D jiffies_to_usecs(uart_fifo_timeout(&up->port));
-> > >
-> > > Why can't we simply use this one?
-> > >
-> > > unsigned int status, tmout;
-> > >
-> > > tmout =3D jiffies_to_usecs(uart_fifo_timeout(&up->port));
->
->
-> I wonder if fifosize is always >=3D 1?
-
-
-From the snippets in 8250_port.c that I have looked at,
-I think it's safe to assume that it is >=3D 1 as long as it is defined,
-and there are several spots that check whether or not it has been defined y=
-et.
-
-If not defined it takes the value from the constant fifo_size which is defi=
-ned
-for each port type to be at least 1, except for one, PORT_8250_CIR,
-which most likely will never use this function anyway,
-it causes many steps to be skipped in serial8250_register_8250_port().
-
-
-> > > > for (;;) {
-> > > > status =3D serial_lsr_in(up);
-> >
-> > Again, I'm not sure which is better for performance, between adding
-> > a conditional check or doing the math for every case.
-> > The 10 ms timeout has been there since the beginning of the git history=
-,
-> > so clearly it is enough for single-frame transfers at any baud.
-> > The new function uart_fifo_timeout() provides a variable timeout, but s=
-tarting out
-> > with an arbitrary 20 ms as a minimum, which I think can be traced back
-> > to some hardware-specific workaround...
->
->
-> Would you happen to have a pointer for that 20 msecs is for HW
-> workaround information bit
->
-> I'd kind of want to lower it and base the extra delay on frame time
-> rather than, like you say, on arbitrary number.
->
-> --
-> i.
-
-
-When I said "some hardware-specific workaround" that was just a guess.
-
-I decided to take a deep dive into the rabbit hole to find the source:
-
-With the pre-git-history git repo from archive.org, I have traced the=20
-first instance of the comment ".02 seconds of slop" to Linux 2.1.15.
-
-However, it is not the first instance of adding an arbitrary `HZ/50`
-to a delay to make "something" work, that would be in Linux 1.3.88
-for the file net/ipv4/tcp_input.c for use in tcp_send_delayed_ack().
-
-In the 90's, each version came in the form of a single bulk patch of patche=
-s,
-so I went hunting for the original patch.
-
-27 years ago, Theodore T'so sent this patch to Linus and the mailing list:
-(almost as old as me...)
-(I can't find this one on lkml.org !!!)
-https://lkml.iu.edu/hypermail/linux/kernel/9612.0/0501.html
-
-Unfortunately, there's not much comment about the "slop",
-but some talk of POSIX conformance and timing becoming stricter,
-especially the comment which is still in master:
-
-  * Note: we have to use pretty tight timings here to satisfy
-  * the NIST-PCTS.
-
-and
-
-  Wait for the characters to drain based on
-  info->timeout. At low baud rates (50bps), it may take a
-  long time for the FIFO to completely drain out!
-
-This makes me believe that it was added just for extra room in the timeout
-to make sure that an _exact_ value for a timeout would not be too close
-to a real-life absolute minimum that could cause data loss.
-
-I noted that the `HZ/50` also appears in the same patch for defining char_t=
-ime,
-the timeout adds the extra time, and then char_time uses the timeout withou=
-t it.
-
-I went looking for the most recent change to char_time and found your commi=
-t 31f6bd7fad3b
-(so I really went full circle this time...)
-And since port->timeout has been fully replaced and the calculations separa=
-ted,
-there's no issue with removing the extra time from char_time but not the ti=
-meout.
-
-However, it's clear from the inline comments that these lines were added
-at a time when HZ was a constant, whereas now in modern Linux it can be var=
-iable,
-like in the cases in version 2.1.15:
-
-$ git grep 'HZ/50'
-drivers/char/serial.c:=09=09info->timeout +=3D HZ/50;=09=09/* Add .02 secon=
-ds of slop */
-drivers/char/serial.c:=09=09char_time =3D (info->timeout - HZ/50) / info->x=
-mit_fifo_size;
-drivers/net/shaper.h:#define SHAPER_BURST=09(HZ/50)=09=09/* Good for >128K =
-then */
-include/net/route.h:#define RT_REDIRECT_LOAD=09=09(HZ/50) /* 20 msec */
-net/ipv4/tcp_input.c:=09=09if (tp->ato < HZ/50)
-net/ipv4/tcp_input.c:=09=09=09tp->ato =3D HZ/50;
-net/ipv4/tcp_timer.c:=09=09when=3DHZ/50;
-
-
-And in master there are still a few of these...
-
-$ git grep 'seconds of slop'
-drivers/tty/amiserial.c:=09info->timeout +=3D HZ/50;=09=09/* Add .02 second=
-s of slop */
-drivers/tty/mxser.c:=09info->timeout =3D timeout + HZ / 50; /* Add .02 seco=
-nds of slop */
-drivers/tty/synclink_gt.c:=09info->timeout +=3D HZ/50;=09=09/* Add .02 seco=
-nds of slop */
-include/linux/serial_core.h:=09/* Add .02 seconds of slop */
-
-but less of these...
-
-$ git grep 'HZ/50' net drivers/net include/net
-drivers/net/ethernet/dec/tulip/interrupt.c:=09=09=09=09mod_timer(&tp->timer=
-, RUN_AT(HZ/50));
-drivers/net/ethernet/dec/tulip/interrupt.c:=09=09=09mod_timer(&tp->timer, R=
-UN_AT(HZ/50));
-drivers/net/wireless/virtual/mac80211_hwsim.c:=09ieee80211_queue_delayed_wo=
-rk(hw, &hwsim->roc_start, HZ/50);
-
-
-On a side note: in file drivers/tty/amiserial.c
-The "NIST-PCTS" comment is there,
-and char_time is defined using port->timeout and the `HZ/50` still.
-This is harder to find because the function name differs from serial_core.c=
-:
-uart_wait_until_sent() was originally also named rs_wait_until_sent()
-and that was also changed before the mainline git history started...
-
-So in summary, I do believe the `HZ/50` or similar should be replaced
-in all of the cases in drivers/tty, maybe `frame_time * (fifosize + 1)`
-for FIFO, and in the other cases, it might be safe to remove altogether,
-as long as very low baud rates are tested. But also, it might not be a bad =
-idea
-for someone to take a look at the usage of `HZ` throughout the kernel,
-since it is no longer constant and these lines that were originally meant t=
-o be
-an equivalence to seconds still seem to be lingering around in some areas..=
-.
-
-And if you do decide to change/remove it, you can try to CC Theodore
-and maybe he can explain it to us himself. :D
-
---
-All the best,
-MCP
+[    1.215459] SError Interrupt on CPU6, code 0x00000000be000411 -- SError
+[    1.215464] CPU: 6 PID: 1 Comm: swapper/0 Not tainted
+6.6.0-rc1-00021-g31831088e862-dirty #88
+[    1.215468] Hardware name: Oriole DVT (DT)
+[    1.215470] pstate: 204000c5 (nzCv daIF +PAN -UAO -TCO -DIT -SSBS
+BTYPE=--)
+[    1.215473] pc : s3c24xx_serial_console_putchar+0x1c/0x90
+[    1.215487] lr : uart_console_write+0x50/0x6c
+[    1.215491] sp : ffff80008007b6c0
+[    1.215492] x29: ffff80008007b6c0 x28: 0000000000000000 x27:
+ffffc0ec2c855900
+[    1.215498] x26: ffffc0ec2bdee008 x25: 0000000000000000 x24:
+ffffc0ec2c529a40
+[    1.215501] x23: ffff80008007b830 x22: ffffc0ec2c9578b9 x21:
+ffffc0ec2c9b8330
+[    1.215504] x20: ffffc0ec2aa0d684 x19: ffffc0ec2c95788a x18:
+0000000000000006
+[    1.215507] x17: 0000000000000000 x16: 0000000000000001 x15:
+ffff80008007b460
+[    1.215510] x14: 0000000000000000 x13: 64656c62616e6520 x12:
+5d30434153797474
+[    1.215513] x11: 5b20656c6f736e6f x10: 63203a6b746e6972 x9 :
+656c62616e65205d
+[    1.215515] x8 : 304341537974745b x7 : 205d303534353132 x6 :
+322e31202020205b
+[    1.215518] x5 : ffffc0ec2c9b82f0 x4 : ffffc0ec2b5bc1c0 x3 :
+ffff800080061000
+[    1.215521] x2 : 0000000000000111 x1 : 0000000000000020 x0 :
+ffffc0ec2c9b8330
+[    1.215526] Kernel panic - not syncing: Asynchronous SError Interrupt
+[    1.215528] CPU: 6 PID: 1 Comm: swapper/0 Not tainted
+6.6.0-rc1-00021-g31831088e862-dirty #88
+[    1.215531] Hardware name: Oriole DVT (DT)
+[    1.215532] Call trace:
+[    1.215533]  dump_backtrace+0x90/0xe8
+[    1.215542]  show_stack+0x18/0x24
+[    1.215547]  dump_stack_lvl+0x48/0x60
+[    1.215555]  dump_stack+0x18/0x24
+[    1.215559]  panic+0x31c/0x378
+[    1.215565]  nmi_panic+0x8c/0x90
+[    1.215569]  arm64_serror_panic+0x6c/0x78
+[    1.215571]  do_serror+0x3c/0x70
+[    1.215574]  el1h_64_error_handler+0x30/0x48
+[    1.215581]  el1h_64_error+0x64/0x68
+[    1.215583]  s3c24xx_serial_console_putchar+0x1c/0x90
+[    1.215588]  s3c24xx_serial_console_write+0xb8/0xfc
+[    1.215593]  console_flush_all.isra.0+0x168/0x3ac
+[    1.215600]  console_unlock+0x58/0xdc
+[    1.215604]  vprintk_emit+0x1a8/0x2b0
+[    1.215608]  vprintk_default+0x38/0x44
+[    1.215613]  vprintk+0xbc/0xd0
+[    1.215617]  _printk+0x5c/0x84
+[    1.215621]  register_console+0x2a0/0x400
+[    1.215625]  serial_core_register_port+0x61c/0x658
+[    1.215630]  serial_ctrl_register_port+0x10/0x1c
+[    1.215634]  uart_add_one_port+0x10/0x1c
+[    1.215639]  s3c24xx_serial_probe+0x360/0x6fc
+[    1.215644]  platform_probe+0x68/0xc8
+[    1.215650]  really_probe+0x148/0x2b0
+[    1.215653]  __driver_probe_device+0x78/0x12c
+[    1.215656]  driver_probe_device+0x3c/0x15c
+[    1.215658]  __driver_attach+0x90/0x19c
+[    1.215661]  bus_for_each_dev+0x78/0xd4
+[    1.215668]  driver_attach+0x24/0x30
+[    1.215670]  bus_add_driver+0xe8/0x1f8
+[    1.215672]  driver_register+0x5c/0x124
+[    1.215675]  __platform_driver_register+0x28/0x34
+[    1.215678]  samsung_serial_init+0x30/0x8c
+[    1.215687]  do_one_initcall+0x7c/0x1c0
+[    1.215689]  kernel_init_freeable+0x1bc/0x284
+[    1.215695]  kernel_init+0x24/0x1dc
+[    1.215697]  ret_from_fork+0x10/0x20
+[    1.215701] SMP: stopping secondary CPUs
+[    1.215708] Kernel Offset: 0x40ebaa200000 from 0xffff800080000000
+[    1.215710] PHYS_OFFSET: 0xffffc18980000000
+[    1.215711] CPU features: 0xc0000001,70020143,1000720b
+[    1.215714] Memory Limit: none
+> 
+> Signed-off-by: Hyunki Koo <hyunki00.koo@samsung.com>
+> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+> Tested on Odroid HC1 (Exynos5422):
+> Tested-by: Krzysztof Kozlowski <krzk@kernel.org>
+> ---
+>  drivers/tty/serial/samsung_tty.c | 62 ++++++++++++++++++++++++++++++++++++----
+>  1 file changed, 57 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+> index 326b0164609c..6ef614d8648c 100644
+> --- a/drivers/tty/serial/samsung_tty.c
+> +++ b/drivers/tty/serial/samsung_tty.c
+> @@ -154,10 +154,33 @@ struct s3c24xx_uart_port {
+>  #define portaddrl(port, reg) \
+>  	((unsigned long *)(unsigned long)((port)->membase + (reg)))
+>  
+> -#define rd_reg(port, reg) (readb_relaxed(portaddr(port, reg)))
+> +static u32 rd_reg(struct uart_port *port, u32 reg)
+> +{
+> +	switch (port->iotype) {
+> +	case UPIO_MEM:
+> +		return readb_relaxed(portaddr(port, reg));
+> +	case UPIO_MEM32:
+> +		return readl_relaxed(portaddr(port, reg));
+> +	default:
+> +		return 0;
+> +	}
+> +	return 0;
+> +}
+> +
+>  #define rd_regl(port, reg) (readl_relaxed(portaddr(port, reg)))
+>  
+> -#define wr_reg(port, reg, val) writeb_relaxed(val, portaddr(port, reg))
+> +static void wr_reg(struct uart_port *port, u32 reg, u32 val)
+> +{
+> +	switch (port->iotype) {
+> +	case UPIO_MEM:
+> +		writeb_relaxed(val, portaddr(port, reg));
+> +		break;
+> +	case UPIO_MEM32:
+> +		writel_relaxed(val, portaddr(port, reg));
+> +		break;
+> +	}
+> +}
+> +
+>  #define wr_regl(port, reg, val) writel_relaxed(val, portaddr(port, reg))
+>  
+>  /* Byte-order aware bit setting/clearing functions. */
+> @@ -1974,7 +1997,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+>  	struct device_node *np = pdev->dev.of_node;
+>  	struct s3c24xx_uart_port *ourport;
+>  	int index = probe_index;
+> -	int ret;
+> +	int ret, prop = 0;
+>  
+>  	if (np) {
+>  		ret = of_alias_get_id(np, "serial");
+> @@ -2000,10 +2023,27 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+>  			dev_get_platdata(&pdev->dev) :
+>  			ourport->drv_data->def_cfg;
+>  
+> -	if (np)
+> +	if (np) {
+>  		of_property_read_u32(np,
+>  			"samsung,uart-fifosize", &ourport->port.fifosize);
+>  
+> +		if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
+> +			switch (prop) {
+> +			case 1:
+> +				ourport->port.iotype = UPIO_MEM;
+> +				break;
+> +			case 4:
+> +				ourport->port.iotype = UPIO_MEM32;
+> +				break;
+> +			default:
+> +				dev_warn(&pdev->dev, "unsupported reg-io-width (%d)\n",
+> +						prop);
+> +				ret = -EINVAL;
+> +				break;
+> +			}
+> +		}
+> +	}
+> +
+>  	if (ourport->drv_data->fifosize[index])
+>  		ourport->port.fifosize = ourport->drv_data->fifosize[index];
+>  	else if (ourport->info->fifosize)
+> @@ -2587,6 +2627,18 @@ module_platform_driver(samsung_serial_driver);
+>   * Early console.
+>   */
+>  
+> +static void wr_reg_barrier(struct uart_port *port, u32 reg, u32 val)
+> +{
+> +	switch (port->iotype) {
+> +	case UPIO_MEM:
+> +		writeb(val, portaddr(port, reg));
+> +		break;
+> +	case UPIO_MEM32:
+> +		writel(val, portaddr(port, reg));
+> +		break;
+> +	}
+> +}
+> +
+>  struct samsung_early_console_data {
+>  	u32 txfull_mask;
+>  };
+> @@ -2612,7 +2664,7 @@ static void samsung_early_putc(struct uart_port *port, int c)
+>  	else
+>  		samsung_early_busyuart(port);
+>  
+> -	writeb(c, port->membase + S3C2410_UTXH);
+> +	wr_reg_barrier(port, S3C2410_UTXH, c);
+>  }
+>  
+>  static void samsung_early_write(struct console *con, const char *s,
