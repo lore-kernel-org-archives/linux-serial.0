@@ -1,74 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C35F74205E
-	for <linux-serial@vger.kernel.org>; Fri,  1 Dec 2023 16:23:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zn6nBJb8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57517C433C9;
-	Fri,  1 Dec 2023 16:23:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1701447790;
-	bh=VqD6tqAKvBli0h35Lj6ytxi1kUwFp8UhPyDk4jHxCVY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Zn6nBJb88f438PDuNJ2l8qSmfontxShAiF6h1RwXvJ7Q60gMerp/4QmQpqNNvmFEd
-	 q+r5m4IAcYgnodZUUIzO+PcIpEBlO5smp4dS0GGGlJWLVBvwzkXinFTHV4nxkGyRch
-	 iwD0lTtYmlZ0PwvJR4+QnDXMnkwa/OSY0rgSR3qMDH42od2ijJrvUxvBn/kdMQ8aaE
-	 bj0IeTRCjS4+0ABevO6F//NRmMI1vr71mF97PLV2ezUnBcDxU52nCrQc8+JVT79LTg
-	 IYNKXxCNW8GMZcXDq7Sx4MaLfckZMjGRFRUeMlci0jQTB3jFnLelcp+5z5iSFiBR3I
-	 0TxAdNDAAW4+w==
-Date: Fri, 1 Dec 2023 16:23:06 +0000
-From: Mark Brown <broonie@kernel.org>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Jan =?iso-8859-1?Q?Kundr=E1t?= <jan.kundrat@cesnet.cz>,
-	Cosmin Tanislav <cosmin.tanislav@analog.com>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: max310x: work around regmap->regcache data
- corruption
-Message-ID: <6986fb70-bc99-4210-a622-16f0d0303d27@sirena.org.uk>
-References: <bd91db46c50615bc1d1d62beb659fa7f62386446.1701446070.git.jan.kundrat@cesnet.cz>
- <CAHp75VcRQ6UaBbS4fWZhShEdFyd2NL1qWszkgrXBC-APJmg8tw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="Y6JEdGCp";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="quqkS7zf"
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2BC6171F;
+	Fri,  1 Dec 2023 08:39:55 -0800 (PST)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailout.nyi.internal (Postfix) with ESMTP id B20975C00E3;
+	Fri,  1 Dec 2023 11:39:54 -0500 (EST)
+Received: from imap51 ([10.202.2.101])
+  by compute5.internal (MEProxy); Fri, 01 Dec 2023 11:39:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm3; t=1701448794; x=1701535194; bh=7Y
+	bpojJ95x+YivzTGtWaCT+gyLnu9JP8SfZ7cnDnPXI=; b=Y6JEdGCpnR0RWMt0CR
+	OpDqTKiG88nOaZg6uwk9nk8gWCqID9cftr8FSmUtaALyb6daCt6bWD5eh3ZXeE5r
+	KMGieoLH8ji6Bjy81JpGzNgYl5g6pNzt23fIwmtlXecmPtISffQueRQgK2640cih
+	PtTMmOognnyrEJraAJ0efGcybFhjuMEdWqWf9fd1oecu+VVbbqVKOBSth12KSltR
+	eCKQmdwTLt0R9mu09OtkhGbWyVAonn3kTGFwF9j3OvIyC5NYEiudYnC8kdVGWnRg
+	yP79Qyw71pssnCP4n31Sv5SyhK+Qf/MOBv9KYAUH3IVhOd5tQU0/CPdFDXPB/9gK
+	UC2A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm1; t=1701448794; x=1701535194; bh=7YbpojJ95x+Yi
+	vzTGtWaCT+gyLnu9JP8SfZ7cnDnPXI=; b=quqkS7zfXJILrSwueJwn0ouQTbnaT
+	/d85z0RfpaEGiDPrFSZBclh2fzPpl7ogafJxVtQLCEiHCF8zooEeWKSIpJIFjTsJ
+	59QPx/++KvuBX9rvLTq2iKTkqRqi05wE74TYeoNoHZFIeIdPGso2MejxLDdfy8+6
+	6xvM1Pch4l7GvA3zOat/4gGDrXjdtPVYwKbVlwH/p9wJoSSBzTIgSEZGkL3r+gqm
+	iEZZhAihGVJhxJFTWr9GDUcdI1Ao7p6QP7G2gPBw1j3AldGLTv0YG1BaxRTICQI0
+	qhSRDSHHZV3n8vLPYau6N+LQ16CLuUKrv8sDhPZCwNbpMCtMI/a/m9q4Q==
+X-ME-Sender: <xms:WgxqZQjdYvtkFmOnrZGhTZRlOhAH7Ockwra5_VmnOgoEpg-cQDSPYA>
+    <xme:WgxqZZBoA9fCaKgaFOoWPNNYnpnaukHrIprwceWSus_tm49fD4dy0VjUMTJYKS7kc
+    13oGH1Ie66Cv7m6_Og>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrudeiledgledvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
+    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
+    hrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:WgxqZYE9hdgetETy7F7lELEk2ATIInlprLvr7cZKRxkP8PyHZIzr8g>
+    <xmx:WgxqZRSCzLtX5L_pG9oFUP-ruARmv8IK1rMrsoErxbfVPESV5PgyJw>
+    <xmx:WgxqZdwepTGKY7GsUvMADoPPqrKcT6Hs0qp-VjENNkGDkw3s2JUmzQ>
+    <xmx:WgxqZTr_akoA1F9cnW6M8OPa20Q3s9JKEwsRSR5d_CAI7bEq705u8Q>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 06D16B6008F; Fri,  1 Dec 2023 11:39:54 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-1178-geeaf0069a7-fm-20231114.001-geeaf0069
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="qdnQx0uLPm9zl6Yh"
-Content-Disposition: inline
-In-Reply-To: <CAHp75VcRQ6UaBbS4fWZhShEdFyd2NL1qWszkgrXBC-APJmg8tw@mail.gmail.com>
-X-Cookie: The early worm gets the late bird.
+Message-Id: <59b949a0-5aeb-4f01-8789-cb305513b626@app.fastmail.com>
+In-Reply-To: <20231201160925.3136868-10-peter.griffin@linaro.org>
+References: <20231201160925.3136868-1-peter.griffin@linaro.org>
+ <20231201160925.3136868-10-peter.griffin@linaro.org>
+Date: Fri, 01 Dec 2023 17:39:33 +0100
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Peter Griffin" <peter.griffin@linaro.org>,
+ "Rob Herring" <robh+dt@kernel.org>, krzysztof.kozlowski+dt@linaro.org,
+ "Michael Turquette" <mturquette@baylibre.com>,
+ "Conor Dooley" <conor+dt@kernel.org>, "Stephen Boyd" <sboyd@kernel.org>,
+ "Tomasz Figa" <tomasz.figa@gmail.com>,
+ "Sylwester Nawrocki" <s.nawrocki@samsung.com>,
+ "Linus Walleij" <linus.walleij@linaro.org>,
+ "Wim Van Sebroeck" <wim@linux-watchdog.org>,
+ "Guenter Roeck" <linux@roeck-us.net>,
+ "Catalin Marinas" <catalin.marinas@arm.com>, "Will Deacon" <will@kernel.org>,
+ "Olof Johansson" <olof@lixom.net>,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jiri Slaby" <jirislaby@kernel.org>, "Chanwoo Choi" <cw00.choi@samsung.com>,
+ "Alim Akhtar" <alim.akhtar@samsung.com>
+Cc: "Tudor Ambarus" <tudor.ambarus@linaro.org>,
+ =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
+ "Sam Protsenko" <semen.protsenko@linaro.org>, saravanak@google.com,
+ "William McVicker" <willmcvicker@google.com>, soc@kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ linux-watchdog@vger.kernel.org, kernel-team@android.com,
+ linux-serial@vger.kernel.org
+Subject: Re: [PATCH v5 09/20] dt-bindings: serial: samsung: Make samsung,uart-fifosize
+ required property
+Content-Type: text/plain
 
+On Fri, Dec 1, 2023, at 17:09, Peter Griffin wrote:
+> 
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - google,gs101-uart
+> +    then:
+> +      required:
+> +        - samsung,uart-fifosize
+> +
 
---qdnQx0uLPm9zl6Yh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Is there a way to reverse the list and make the property
+required for anything that is not explicitly enumerated?
 
-On Fri, Dec 01, 2023 at 06:14:02PM +0200, Andy Shevchenko wrote:
-
-> > +       };
-> > +       spi_sync_transfer(to_spi_device(port->dev), xfer, ARRAY_SIZE(xfer));
-
-> Can you add a comment like FIXME explaining why regmap is not used
-> here, otherwise I will expect some clever guy to "fix" this again.
-
-Or just do the fix in the right place rather than throwing a bodge
-about...
-
---qdnQx0uLPm9zl6Yh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmVqCGkACgkQJNaLcl1U
-h9Dtqwf/T8oP4v0AyPIKO1zvOA+lyfyHC9EWOqm1zbfbKYha19ktbkao6KGFdodN
-61bbwqOhNGeQ0JdyStJZsYAep4253CjTZ1yfTI5KhB17w1+JGVCxio7wAibun4le
-TTNJ3WsJvFBZMw9IsFfycyzUBm5YJ63jZefVmoBXyW7o48XYJw3YlhRY5BSxENYZ
-+xROEb9n/gEOcmSdL6Cwts2AkBnBgi2bMsVFJ0oBSXus8SwjzsEReWjtSlwTFI7S
-YuaAgciYaqPIbbfM4Lo5DWJ1vUfmK4DgN9Dxc2q9gIROidRekmvaU8D1BvKoPmz4
-P2HHb61PkD301vrZ2Nza0Wn7qW/5Cg==
-=0qNi
------END PGP SIGNATURE-----
-
---qdnQx0uLPm9zl6Yh--
+      Arnd
