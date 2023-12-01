@@ -1,196 +1,94 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="b9K6IHou"
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C65F3;
-	Fri,  1 Dec 2023 06:36:39 -0800 (PST)
-Received: from relay2.suse.de (unknown [149.44.160.134])
-	by smtp-out1.suse.de (Postfix) with ESMTP id 59BAF21C98;
-	Fri,  1 Dec 2023 14:36:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1701441398; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=pReC4R8b5GqDVY3afS0evrMQ1O4RS3OjnRhpunQOyuo=;
-	b=b9K6IHouq7sqO3BPBSWsaMyBuzrAnMVFKHmtN2I5WlywedInMvXxtoezaTsCqYpvDYMTY1
-	Kb00E2kyC+f5H1IesoFNm4g+10HMhGk/GT5tHhqjY/mGBCclCJAeFNwuBxcbeZkVludk1m
-	X0pAgPvG/X+bNZe3JQXT2KdzdkbAG0s=
-Received: from suse.cz (pmladek.tcp.ovpn2.prg.suse.de [10.100.208.146])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass (2048-bit key) header.d=cesnet.cz header.i=@cesnet.cz header.b="RYHXQIaP"
+X-Greylist: delayed 185 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 01 Dec 2023 07:59:19 PST
+Received: from office2.cesnet.cz (office2.cesnet.cz [IPv6:2001:718:ff05:10b::237])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2404E10D0;
+	Fri,  1 Dec 2023 07:59:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cesnet.cz;
+	s=office2-2020; t=1701446356;
+	bh=NlYWjLxPgga+B6qXor9bK7J/rZPEyiB4nWhkpLB9Hb0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=RYHXQIaPlyRkFm3RtNjmTLNaa5JBy9v13O/VPSc73TOp/6/bCFbKcKd2ky739Qlrz
+	 CLtd0DeqZJTC/2Agn62NB8AjKrjhvIKUtJY9C+cIdhwwnE66tCxh2AdtzpFNUaOWo4
+	 xMpe4X5pZ4A+ztXIPvYQnubcvMGk3JYgR2TefPg50O1BGCfXOc/vv7KvFcovUSAuOp
+	 G2O4mx5na+mIFTmI8SVgyuoXcQtlJhIkr5NQtk1MVhM2pYLHuK7ZDcq7lG4jLYj4MI
+	 JDDAed2RuhS15e6r9nHEdQUwtp+2V+/UGeSoiDQ8MaKDTON+CQ/NvKvUH086q5VYf+
+	 RuQ25/QwcSeqQ==
+Received: from localhost (tlha232.cesnet.cz [IPv6:2001:718:1:6::134:232])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by relay2.suse.de (Postfix) with ESMTPS id B4F2E2C143;
-	Fri,  1 Dec 2023 14:36:35 +0000 (UTC)
-Date: Fri, 1 Dec 2023 15:36:35 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: Tony Lindgren <tony@atomide.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	"David S . Miller" <davem@davemloft.net>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Dhruva Gole <d-gole@ti.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Johan Hovold <johan@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 0/3] Add support for DEVNAME:0.0 style hardware based
- addressing
-Message-ID: <ZWnvc6-LnXdjOQLY@alley>
-References: <20231121113203.61341-1-tony@atomide.com>
+	by office2.cesnet.cz (Postfix) with ESMTPSA id 62624118007E;
+	Fri,  1 Dec 2023 16:59:12 +0100 (CET)
+From: =?iso-8859-1?Q?Jan_Kundr=E1t?= <jan.kundrat@cesnet.cz>
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: <gregkh@linuxfoundation.org>,
+ <jirislaby@kernel.org>,
+ <hvilleneuve@dimonoff.com>,
+ <linux-kernel@vger.kernel.org>,
+ <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH 6/7] serial: max310x: add macro for max number of ports
+Date: Fri, 01 Dec 2023 16:59:12 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231121113203.61341-1-tony@atomide.com>
-X-Spamd-Bar: +++++++++++++++++++++++++++
-Authentication-Results: smtp-out1.suse.de;
-	dkim=none;
-	dmarc=fail reason="No valid SPF, No valid DKIM" header.from=suse.com (policy=quarantine);
-	spf=fail (smtp-out1.suse.de: domain of pmladek@suse.com does not designate 149.44.160.134 as permitted sender) smtp.mailfrom=pmladek@suse.com
-X-Rspamd-Server: rspamd2
-X-Spamd-Result: default: False [27.10 / 50.00];
-	 RDNS_NONE(1.00)[];
-	 BAYES_SPAM(5.10)[100.00%];
-	 SPAMHAUS_XBL(0.00)[149.44.160.134:from];
-	 TO_DN_SOME(0.00)[];
-	 RWL_MAILSPIKE_GOOD(-1.00)[149.44.160.134:from];
-	 HFILTER_HELO_IP_A(1.00)[relay2.suse.de];
-	 HFILTER_HELO_NORES_A_OR_MX(0.30)[relay2.suse.de];
-	 MX_GOOD(-0.01)[];
-	 RCVD_NO_TLS_LAST(0.10)[];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 R_DKIM_NA(2.20)[];
-	 MIME_TRACE(0.00)[0:+];
-	 RDNS_DNSFAIL(0.00)[];
-	 ARC_NA(0.00)[];
-	 R_SPF_FAIL(1.00)[-all];
-	 FROM_HAS_DN(0.00)[];
-	 DMARC_POLICY_QUARANTINE(1.50)[suse.com : No valid SPF, No valid DKIM,quarantine];
-	 TO_MATCH_ENVRCPT_ALL(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 DKIM_SIGNED(0.00)[suse.com:s=susede1];
-	 VIOLATED_DIRECT_SPF(3.50)[];
-	 NEURAL_SPAM_LONG(3.50)[1.000];
-	 RCPT_COUNT_TWELVE(0.00)[15];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 MID_RHS_NOT_FQDN(0.50)[];
-	 RCVD_COUNT_TWO(0.00)[2];
-	 HFILTER_HOSTNAME_UNKNOWN(2.50)[]
-X-Spam-Score: 27.10
-X-Rspamd-Queue-Id: 59BAF21C98
+Message-ID: <ddbc67dd-f8a3-4a6a-954a-bee49260ecab@cesnet.cz>
+In-Reply-To: <20231130191050.3165862-7-hugo@hugovil.com>
+References: <20231130191050.3165862-1-hugo@hugovil.com>
+ <20231130191050.3165862-7-hugo@hugovil.com>
+Organization: CESNET
+User-Agent: Trojita/unstable-2022-08-22; Qt/5.15.10; wayland; Linux; 
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-On Tue 2023-11-21 13:31:54, Tony Lindgren wrote:
-> Hi all,
-> 
-> With the recent serial core changes, we can now add DEVNAME:0.0 style
-> addressing for the serial ports. When using DEVNAME:0.0 naming, we don't
-> need to care which ttyS instance number is allocated depending on HSUART
-> settings or if the devicetree has added aliases for all the ports.
-> 
-> This also allows us to also drop the old console_setup() parsing for
-> character device names.
-> 
-> Tony Lindgren (3):
->   printk: Save console options for add_preferred_console_match()
->   serial: core: Add support for DEVNAME:0.0 style naming for kernel
->     console
->   serial: core: Move console character device handling from printk
+On =C4=8Dtvrtek 30. listopadu 2023 20:10:48 CET, Hugo Villeneuve wrote:
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+>
+> Add macro to hold the maximum number of UART ports per IC/device.
+>
+> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-First, I appreciate the effort to match aliases to the same console.
+Reviewed-by: Jan Kundr=C3=A1t <jan.kundrat@cesnet.cz>
+Tested-by: Jan Kundr=C3=A1t <jan.kundrat@cesnet.cz>
 
-Well, my understanding is that it solves the problem only for the newly
-added console=DEVICENAME:0.0 format. But it does not handle the
-existing problems with matching console names passed via earlycon=
-and console= parameters. Am I right?
+> ---
+>  drivers/tty/serial/max310x.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+> index f3a99daebdaa..58dd5cc62014 100644
+> --- a/drivers/tty/serial/max310x.c
+> +++ b/drivers/tty/serial/max310x.c
+> @@ -30,6 +30,7 @@
+>  #define MAX310X_MAJOR=09=09=09204
+>  #define MAX310X_MINOR=09=09=09209
+>  #define MAX310X_UART_NRMAX=09=0916
+> +#define MAX310X_MAX_PORTS=09=094 /* Maximum number of UART ports per IC. *=
+/
+> =20
+>  /* MAX310X register definitions */
+>  #define MAX310X_RHR_REG=09=09=09(0x00) /* RX FIFO */
+> @@ -1502,7 +1503,7 @@ static const struct max310x_if_cfg=20
+> __maybe_unused max310x_spi_if_cfg =3D {
+>  static int max310x_spi_probe(struct spi_device *spi)
+>  {
+>  =09const struct max310x_devtype *devtype;
+> -=09struct regmap *regmaps[4];
+> +=09struct regmap *regmaps[MAX310X_MAX_PORTS];
+>  =09unsigned int i;
+>  =09int ret;
+> =20
+> @@ -1605,7 +1606,7 @@ static int max310x_i2c_probe(struct=20
+> i2c_client *client)
+>  =09const struct max310x_devtype *devtype =3D
+>  =09=09=09device_get_match_data(&client->dev);
+>  =09struct i2c_client *port_client;
+> -=09struct regmap *regmaps[4];
+> +=09struct regmap *regmaps[MAX310X_MAX_PORTS];
+>  =09unsigned int i;
+>  =09u8 port_addr;
+> =20
 
-Now, the bad news. This patchset causes regressions which are
-not acceptable. I have found two so far but there might be more.
-
-I used the following kernel command line:
-
-   earlycon=uart8250,io,0x3f8,115200 console=ttyS0,115200 console=tty0 ignore_loglevel log_buf_len=1M
-
-
-1. The patchset caused that /dev/console became associated with
-   ttyS0 instead of tty0, see the "C" flag:
-
-	original # cat /proc/consoles
-	tty0                 -WU (EC    )    4:1
-	ttyS0                -W- (E  p a)    4:64
-
-   vs.
-
-	patched # cat /proc/consoles
-	ttyS0                -W- (EC p a)    4:64
-	tty0                 -WU (E     )    4:1
-
-   This is most likely caused by the different ordering of
-   __add_preferred_console() calls.
-
-   The ordering is important because it defines which console
-   will get associated with /dev/console. It is a so called
-   preferred console defined by the last console= parameter.
-
-   Unfortunately also the ordering of the other parameters
-   is important when a console defined by the last console=
-   parameter is not registered at all. In this case,
-   /dev/console gets associated with the first console
-   with tty binding according to the order on the command line.
-
-   If you think that it is weird behavior then I agree.
-   But it is a historical mess. It is how people used it
-   when the various features were added. Many changes
-   in this code caused regressions and had to be reverted.
-
-   See the following to get the picture:
-
-       + commit c6c7d83b9c9e6a8 ("Revert "console: don't
-	 prefer first registered if DT specifies stdout-path")
-
-       + commit dac8bbbae1d0ccb ("Revert "printk: fix double
-	 printing with earlycon"").
-
-
-2. The serial console gets registered much later with this
-   patchset:
-
-	original # dmesg | grep printk:
-	[    0.000000] printk: legacy bootconsole [uart8250] enabled
-	[    0.000000] printk: debug: ignoring loglevel setting.
-	[    0.016859] printk: log_buf_len: 1048576 bytes
-	[    0.017324] printk: early log buf free: 259624(99%)
-	[    0.141859] printk: legacy console [tty0] enabled
-	[    0.142399] printk: legacy bootconsole [uart8250] disabled
-	[    0.143032] printk: legacy console [ttyS0] enabled
-
-   vs.
-
-	patched # dmesg | grep printk:
-	[    0.000000] printk: legacy bootconsole [uart8250] enabled
-	[    0.000000] printk: debug: ignoring loglevel setting.
-	[    0.018142] printk: log_buf_len: 1048576 bytes
-	[    0.018757] printk: early log buf free: 259624(99%)
-	[    0.160706] printk: legacy console [tty0] enabled
-	[    0.161213] printk: legacy bootconsole [uart8250] disabled
-	[    1.592929] printk: legacy console [ttyS0] enabled
-
-   This is pretty bad because it would complicate or even prevent
-   debugging of the boot stage via serial console.
-
-   The graphical console is not usable when the system dies. Also
-   finding the right arguments for the earlycon= parameter is
-   tricky so that people enable it only when they have to debug
-   very early messages.
-
-
-I am going to look at the patches more closely to see if I could
-provide some hints.
-
-Best Regards,
-Petr
