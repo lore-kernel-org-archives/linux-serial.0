@@ -1,106 +1,72 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="caIlE7gz"
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 282BFFC
-	for <linux-serial@vger.kernel.org>; Fri,  1 Dec 2023 12:39:37 -0800 (PST)
-Received: by mail-pg1-x52e.google.com with SMTP id 41be03b00d2f7-5bdb0be3591so769221a12.2
-        for <linux-serial@vger.kernel.org>; Fri, 01 Dec 2023 12:39:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701463176; x=1702067976; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TIkFSFKTNqG5pJgN73rHGp3fFqpS3rYpv0qft22FsBI=;
-        b=caIlE7gzEG4OAJ9T7SGopsu/lu6cTxbYRn0DW7gbc+AcEA8fgMx8t2BQ6oKjSl/tCp
-         1OZ0il81UJWD7ErElR+h5wjycd9/QaAZyADkA5sxl6wTu/V7li149/BTZUWAtEvVtejm
-         yFhs1vD559e4aIccusEly+rxEsGXZtffOnbj5Ekr8ysBKEp07gG3YM0eZY6FC1dvMgXA
-         vm/noNhMY5adArffYxjaZKXkrzdQnmd9d0Y4L/JAwDPsY6xsAwc4eyU90anee7l7xgzb
-         TsY5uu262DbUQZqSXt72Lm9ipJD7H1TI6m86Zs50d4K64wBYHVOUa1W/oFYOEohIls3n
-         RLTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701463176; x=1702067976;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=TIkFSFKTNqG5pJgN73rHGp3fFqpS3rYpv0qft22FsBI=;
-        b=iDedA6KETQonpcwSzXHXqNTuehLU/FRfH+HM6a7b22n4aRCTV0jYwKLMn/8I87Pi3x
-         pHJ6gulncvQ280FlqEcd0szC1mD9h6KUI51nviqTmS0k1i9JmmkvKQRz5up2YsviGzK+
-         djPZt+vdPTJQMYUdEkxQM5b8qtpRilGnnslZoSS499ZdYmCSoH/9xU4lNv/9qwA6eh35
-         /E1SkxdoDglVkjd2xB70Z5DAYHg/q66qrUsa8bCV7fsZ7kgWYa/Y0Cm7HzlR8zbewM7M
-         eAp5a2of/BAkuwafG4SdKpltD2vCM8oXjwGSrvkf0AXlVI9R08mzv7wWbprLIoDR1/5b
-         bTjQ==
-X-Gm-Message-State: AOJu0YyMoLsNeLFIeNvd5LukdKJl26cQHpkj4gNlnOJmhjwdlIbO7lMk
-	C0fp5I6sny22fikg4g6APeXbD+Us6may3DDpGOkA3Q==
-X-Google-Smtp-Source: AGHT+IH43vrh31UX2rertdGqcGoKOrUcSkFAhN2ABa2Tjpy7c4Re8Gr5gHANOJcx9cdbUKLq+BVtXmQ/7DBOMK7M+mo=
-X-Received: by 2002:a17:90a:de90:b0:286:6cc1:3f24 with SMTP id
- n16-20020a17090ade9000b002866cc13f24mr75683pjv.91.1701463176618; Fri, 01 Dec
- 2023 12:39:36 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="L9H9um3k"
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B22FE6;
+	Fri,  1 Dec 2023 13:38:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=r/q53G/cSiatCOhG7xswwAt/NMI7k5B5sYhHKO2N/yc=; b=L9H9um3kspw8xuVxBmJgV6W9OF
+	Zg8JDQBgcX+fISjS2Y9J8XJn+nSdn8psC7q6Jw3han8nDEF5Vi8K1KDmNWnGr6bi7PIuYmcR7aWr5
+	jPbowOuOSO37kF2ggLPd2F2h8dZKeEf9hjijFmj/DTLKIqdNJPRjFdo3kxLM5K6GAFDs=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:41064 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1r9BDj-0006T2-Fk; Fri, 01 Dec 2023 16:38:47 -0500
+Date: Fri, 1 Dec 2023 16:38:46 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Mark Brown <broonie@kernel.org>
+Cc: Jan =?ISO-8859-1?Q?Kundr=E1t?= <jan.kundrat@cesnet.cz>, Cosmin Tanislav
+ <cosmin.tanislav@analog.com>, linux-serial@vger.kernel.org, Andy Shevchenko
+ <andy.shevchenko@gmail.com>, linux-kernel@vger.kernel.org
+Message-Id: <20231201163846.a7c1d79daca7c6a2e1416a70@hugovil.com>
+In-Reply-To: <ce3eaa82-66e9-404b-9062-0f628dc6164f@sirena.org.uk>
+References: <bd91db46c50615bc1d1d62beb659fa7f62386446.1701446070.git.jan.kundrat@cesnet.cz>
+	<20231201132736.65cb0e2bff88fba85121c44a@hugovil.com>
+	<ce3eaa82-66e9-404b-9062-0f628dc6164f@sirena.org.uk>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20231201160925.3136868-1-peter.griffin@linaro.org> <20231201160925.3136868-11-peter.griffin@linaro.org>
-In-Reply-To: <20231201160925.3136868-11-peter.griffin@linaro.org>
-From: Sam Protsenko <semen.protsenko@linaro.org>
-Date: Fri, 1 Dec 2023 14:39:25 -0600
-Message-ID: <CAPLW+4n+Gg6yzFeKVw+p5M-Lxznt8X-jrNQ9NoJojdDhvjiFHQ@mail.gmail.com>
-Subject: Re: [PATCH v5 10/20] dt-bindings: soc: samsung: usi: add
- google,gs101-usi compatible
-To: Peter Griffin <peter.griffin@linaro.org>, krzysztof.kozlowski+dt@linaro.org
-Cc: robh+dt@kernel.org, mturquette@baylibre.com, conor+dt@kernel.org, 
-	sboyd@kernel.org, tomasz.figa@gmail.com, s.nawrocki@samsung.com, 
-	linus.walleij@linaro.org, wim@linux-watchdog.org, linux@roeck-us.net, 
-	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, olof@lixom.net, 
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, cw00.choi@samsung.com, 
-	alim.akhtar@samsung.com, tudor.ambarus@linaro.org, andre.draszik@linaro.org, 
-	saravanak@google.com, willmcvicker@google.com, soc@kernel.org, 
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, linux-watchdog@vger.kernel.org, 
-	kernel-team@android.com, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+Subject: Re: [PATCH] tty: max310x: work around regmap->regcache data
+ corruption
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Fri, Dec 1, 2023 at 10:11=E2=80=AFAM Peter Griffin <peter.griffin@linaro=
-.org> wrote:
->
-> From: Tudor Ambarus <tudor.ambarus@linaro.org>
->
-> Add google,gs101-usi dedicated compatible for representing USI of Google
-> GS101 SoC.
->
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
-> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
-> ---
+On Fri, 1 Dec 2023 18:34:38 +0000
+Mark Brown <broonie@kernel.org> wrote:
 
-Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
+> On Fri, Dec 01, 2023 at 01:27:36PM -0500, Hugo Villeneuve wrote:
+> 
+> > it is funny, as I am preparing to send a patch for the sc16is7xx driver
+> > to convert FIFO R/W to use the _noinc_ versions of regmap functions,
+> > inspired by your patch 3f42b142ea11 ("serial: max310x: fix IO data
+> > corruption in batched operations").
+> 
+> If you're working on that driver it'd also be good to update the current
+> use of cache bypass for the enhanced features/interrupt identification
+> register (and anything else in there, that did seem to be the only one)
+> to use regmap ranges instead - that'd remove the need for the efr_lock
+> and be a much more sensible/idiomatic use of the regmap APIs.
 
->  Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yam=
-l b/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
-> index 61be1f2ddbe7..a10a438d89f0 100644
-> --- a/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
-> +++ b/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
-> @@ -28,6 +28,9 @@ properties:
->                - samsung,exynosautov9-usi
->                - samsung,exynosautov920-usi
->            - const: samsung,exynos850-usi
-> +      - items:
-> +          - const: google,gs101-usi
-> +          - const: samsung,exynos850-usi
->        - enum:
->            - samsung,exynos850-usi
+Hi Mark,
+agreed, and I have already removed all cache bypass code (after some
+fix for volatile registers)...
 
-Krzysztof, Peter: can you please point me out the doc which explains
-the need to have all those enums/consts here repeating for exynos850?
-I kinda forgot why it's needed, can't find any documentation, and now
-it just looks confusing to me.
+I will also look to remove the efr_lock, altough it has more
+implications since this ship has some registers that share a common
+address, and selected by bits in other registers, and I think this
+is why there is this efr_lock.
 
->
-> --
-> 2.43.0.rc2.451.g8631bc7472-goog
->
+I need to run more tests to make sure everything is ok, but so far
+so good, and I should be submitting some of these patches soon.
+
+Hugo Villeneuve.
