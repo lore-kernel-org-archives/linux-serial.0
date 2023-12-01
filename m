@@ -1,72 +1,75 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C80AB20B20;
-	Fri,  1 Dec 2023 10:40:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UzpYq/eF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4292C433C7;
-	Fri,  1 Dec 2023 10:40:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1701427241;
-	bh=coe4HPytXXikBmxRXD89EWbUr+6HRrfFw+tus7gam/Y=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-	b=UzpYq/eFuk3rit5uhu9SRPzNMXFWDiwZqUtyB60JxgJQpR5S/zYGKl+nPDJb0GWyy
-	 Og+mGMgIsLREDCAbkKFbDDDlZ71xUVLWqzx9xvywQTxAcOvcdKPsi80ZO0dkn66qEg
-	 PBCI85xt8sWvTeOcn0IV1YIBjoR9aDPTs/6EzcBBXS5M3fOambqPqhl8pBNx9d2mKC
-	 cPYpVbhVwz06lrTYBwMXMNzo58R07Syta+VQygfvOXNFISk3ggl8r6JTSK42L6nWED
-	 mr+12vwyW2f/4/NYGMrEgMOXedYKEPxUQXSFN4dq7ddxYxMUgQ8kgq8qSm+rdCndU9
-	 R1Wh4AH/xStTw==
-From: Lee Jones <lee@kernel.org>
-To: Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org, 
- jirislaby@kernel.org, pavel@ucw.cz, lee@kernel.org, kabel@kernel.org, 
- u.kleine-koenig@pengutronix.de, m.brock@vanmierlo.com, 
- Florian Eckert <fe@dev.tdt.de>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- linux-leds@vger.kernel.org
-In-Reply-To: <20231109085038.371977-1-fe@dev.tdt.de>
-References: <20231109085038.371977-1-fe@dev.tdt.de>
-Subject: Re: [Patch v8 0/6] ledtrig-tty: add additional tty state
- evaluation
-Message-Id: <170142723852.3350831.6373465907279189004.b4-ty@kernel.org>
-Date: Fri, 01 Dec 2023 10:40:38 +0000
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="aknrodqp"
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A502AD48;
+	Fri,  1 Dec 2023 03:59:09 -0800 (PST)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id D652FE000A;
+	Fri,  1 Dec 2023 11:59:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1701431948;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=qo1HW2RbWjsXr4I+NcN2RIgPr28kFzpwIsFkOjIb1/c=;
+	b=aknrodqpRG28RyGgGka+xHoWLNUVL0+VgCHlH3dl8FAyFZ4vciFVq5dxSMV8DE6pj6Yg4N
+	67gm8OISrrdTcXYKjI3Mvo9GQo+dIu89iK6JJwA7HFtKmS0uhGQ/35nkgJBfREPcFQHUGE
+	NbX+2R73R2fuUYLP2zkoFL4VeJcy7z8c7eD8Evik1rI+C3KPcOjIycS9qkEAkeC4i20W2T
+	AkL+F14wiuquY3YC660bGdvSCx3HtkT0uwAt8cZA8unonCahx4l7nWPqSK0m8/fwj+snm3
+	8RVzvODTGH4NSO1P7g0IfPWwV6yo2PWQ6UbrcbOGsKxmE3QI5GCUxBSlcaXxkQ==
+Date: Fri, 1 Dec 2023 12:59:04 +0100
+From: Miquel Raynal <miquel.raynal@bootlin.com>
+To: Frank Li <Frank.Li@nxp.com>
+Cc: alexandre.belloni@bootlin.com, conor.culhane@silvaco.com,
+ imx@lists.linux.dev, joe@perches.com, linux-i3c@lists.infradead.org,
+ linux-kernel@vger.kernel.org, zbigniew.lukwinski@linux.intel.com,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ linux-serial@vger.kernel.org
+Subject: Re: [PATCH v5 7/7] tty: i3c: add TTY over I3C master support
+Message-ID: <20231201125904.6c8128b1@xps-13>
+In-Reply-To: <20231130224408.3591288-8-Frank.Li@nxp.com>
+References: <20231130224408.3591288-1-Frank.Li@nxp.com>
+	<20231130224408.3591288-8-Frank.Li@nxp.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.12.3
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-GND-Sasl: miquel.raynal@bootlin.com
 
-On Thu, 09 Nov 2023 09:50:32 +0100, Florian Eckert wrote:
-> Changes in v8:
-> ==============
-> - As requested by greg k-h [6], I have send the patch 2/7 of this series
->   about the memory leak also to stable.vger.kernel.org [7]. This has
->   already received a 'Reviewed-by' from Uwe [8].
-> - As requested by Maarten, I have adopted his suggestion to invert the LED
->   blink, so that I do not have to save the 'state' in the tty data
->   struct [9].
-> 
-> [...]
+Hi Frank,
 
-Applied, thanks!
+Frank.Li@nxp.com wrote on Thu, 30 Nov 2023 17:44:08 -0500:
 
-[1/6] tty: add new helper function tty_get_tiocm
-      commit: 5d11a4709f552fa139c2439fead05daeb064a6f4
-[2/6] leds: ledtrig-tty: free allocated ttyname buffer on deactivate
-      (no commit info)
-[3/6] leds: ledtrig-tty: change logging if get icount failed
-      (no commit info)
-[4/6] leds: ledtrig-tty: replace mutex with completion
-      (no commit info)
-[5/6] leds: ledtrig-tty: make rx tx activitate configurable
-      (no commit info)
-[6/6] leds: ledtrig-tty: add additional line state evaluation
-      (no commit info)
+> In typical embedded Linux systems, UART consoles require at least two pin=
+s,
+> TX and RX. In scenarios where I2C/I3C devices like sensors or PMICs are
+> present, we can save these two pins by using this driver. Pins is crucial
+> resources, especially in small chip packages.
+>=20
+> This introduces support for using the I3C bus to transfer console tty dat=
+a,
+> effectively replacing the need for dedicated UART pins. This not only
+> conserves valuable pin resources but also facilitates testing of I3C's
+> advanced features, including early termination, in-band interrupt (IBI)
+> support, and the creation of more complex data patterns. Additionally,
+> it aids in identifying and addressing issues within the I3C controller
+> driver.
+>=20
+> Signed-off-by: Frank Li <Frank.Li@nxp.com>
+> ---
+>=20
+> Notes:
+>     Change from v4 to v5
+>     - send in i3c improvememtn patches.
 
---
-Lee Jones [李琼斯]
+This is not what I said, I believe this patch and the previous patch
+should be sent separately.
 
+Thanks,
+Miqu=C3=A8l
