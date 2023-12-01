@@ -1,130 +1,86 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=cesnet.cz header.i=@cesnet.cz header.b="Z8pcG1mD"
-Received: from office2.cesnet.cz (office2.cesnet.cz [IPv6:2001:718:ff05:10b::237])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0BF019E;
-	Fri,  1 Dec 2023 08:00:35 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=cesnet.cz header.i=@cesnet.cz header.b="Tqq3yAcI"
+X-Greylist: delayed 492 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 01 Dec 2023 08:04:22 PST
+Received: from office2.cesnet.cz (office2.cesnet.cz [78.128.248.237])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3625A10D0;
+	Fri,  1 Dec 2023 08:04:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cesnet.cz;
-	s=office2-2020; t=1701446433;
-	bh=LRobM5gphSx+0LDN8LfiPwDMnavqYci9YHClgfmAcCE=;
+	s=office2-2020; t=1701446660;
+	bh=Uyp2Fb4Zn3ZB6NGD6IROczrgrgscb7OSUvgqaCDohCs=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Z8pcG1mDeQevUIfttZttXOyVVCPpOwwbU6lodX+c7l/LIqF8dOI8h/4u99Wwk2fMO
-	 a+63ORMzWFugroaiwi49M+BKiZDPrk6OQzoD6XuodSYMv8v1WGByZO6VVdOucHHSDe
-	 BCB8J5uX0Wqymai2Byx0V9AjVhUSe0NZTs4eilUHkGMc4kRk0o700NTfRhvPCrDXZk
-	 Pj06ELKIALPdO5Mu1dKcSY6/F5Qlh9DJ9GZ+EPO4y0Kwq850gjX9B5jSJotkE0XW2T
-	 TjUVExX9xib++HjRudpmZ6wHkUWDBAb8zQYAp1roczT5Tk8gwxAp9GkNtCywU/dNfT
-	 shViphMRmEEbg==
+	b=Tqq3yAcIv4KzR4ypIqS9gU3N79tbQQZ0LiSegwdkq5E7JScw/hyoESbFiDZnHb3p9
+	 BZkHochj41Fw1ouwuhEiU/qm9PMYKXSd2oP9Aqod81FqG+GnwjBxjOUGZKl9pUcOkB
+	 ACA3XQDcXe2k1Iq0J2v4hwYPnL9wR83v0Ck3im7nU1A/vimvAC7VQeJLWC0lf6tXq3
+	 Yd86vqXvcCGaxKLlOJWnmF0WtWN545to+gOpbSzKbHro2TiQzaBPu9gjgB+r3sLrlc
+	 o3ZUy3LuGr3JAaWypPbI4Wi0EXGYO3lU4EMBCHdPiJKc+VYQHN8sHEAr8ccvdRoQ4C
+	 odc3Sduo4LvgA==
 Received: from localhost (tlha232.cesnet.cz [IPv6:2001:718:1:6::134:232])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by office2.cesnet.cz (Postfix) with ESMTPSA id 366FF118007E;
-	Fri,  1 Dec 2023 17:00:30 +0100 (CET)
+	by office2.cesnet.cz (Postfix) with ESMTPSA id 94023118007E;
+	Fri,  1 Dec 2023 17:04:15 +0100 (CET)
 From: =?iso-8859-1?Q?Jan_Kundr=E1t?= <jan.kundrat@cesnet.cz>
 To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: <gregkh@linuxfoundation.org>,
- <jirislaby@kernel.org>,
- <hvilleneuve@dimonoff.com>,
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>,
+ Hugo Villeneuve <hvilleneuve@dimonoff.com>,
  <linux-kernel@vger.kernel.org>,
  <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH 7/7] serial: max310x: use separate regmap name for each =?iso-8859-1?Q?port?=
-Date: Fri, 01 Dec 2023 17:00:30 +0100
+Subject: Re: [PATCH] serial: max310x: change confusing comment about Tx FIFO
+Date: Fri, 01 Dec 2023 17:04:15 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-ID: <77f101f1-897d-4e6d-a8fd-27b818caf768@cesnet.cz>
-In-Reply-To: <20231130191050.3165862-8-hugo@hugovil.com>
-References: <20231130191050.3165862-1-hugo@hugovil.com>
- <20231130191050.3165862-8-hugo@hugovil.com>
+Message-ID: <f6e44cd7-4b25-48de-a57c-96497bf9da6a@cesnet.cz>
+In-Reply-To: <20231122175957.3875102-1-hugo@hugovil.com>
+References: <20231122175957.3875102-1-hugo@hugovil.com>
 Organization: CESNET
 User-Agent: Trojita/unstable-2022-08-22; Qt/5.15.10; wayland; Linux; 
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
-On =C4=8Dtvrtek 30. listopadu 2023 20:10:49 CET, Hugo Villeneuve wrote:
+On st=C5=99eda 22. listopadu 2023 18:59:56 CET, Hugo Villeneuve wrote:
 > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 >
-> Use a separate regmap name for each port so that each port can have its own=
+> The comment wording can be confusing, as txlen will return the number of
+> bytes available in the FIFO, which can be less than the maximum theoretical=
 
-> debugfs entry, allowing to access each port registers independently.
+> Tx FIFO size.
+
+This (commit) message is confusing, too, IMHO, because `txlen` is the=20
+number of bytes that are currently waiting in the TX FIFO. So that number=20
+is "available" for the HW UART to pick up and send, but it's not a number=20
+of bytes that's "available" in the FIFO for host to push more bytes to. I=20
+guess you might want to tweak that description here.
+
+Cheers,
+Jan
+
 >
-> For example, a four channels/ports device like the MAX14830 will have four
-> entries in its regmap debugfs:
->
-> $ find /sys/kernel/debug/regmap -type d | grep spi0.0
-> /sys/kernel/debug/regmap/spi0.0-port0
-> /sys/kernel/debug/regmap/spi0.0-port1
-> /sys/kernel/debug/regmap/spi0.0-port2
-> /sys/kernel/debug/regmap/spi0.0-port3
+> Change the comment so that it is unambiguous.
 >
 > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-
-I was carrying a similar patch locally, and this one works for me as well.
-
-Reviewed-by: Jan Kundr=C3=A1t <jan.kundrat@cesnet.cz>
-Tested-by: Jan Kundr=C3=A1t <jan.kundrat@cesnet.cz>
-
 > ---
->  drivers/tty/serial/max310x.c | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
+>  drivers/tty/serial/max310x.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
 > diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-> index 58dd5cc62014..d2eca05a6966 100644
+> index 97e4965b73d4..f3a99daebdaa 100644
 > --- a/drivers/tty/serial/max310x.c
 > +++ b/drivers/tty/serial/max310x.c
-> @@ -27,6 +27,7 @@
->  #include <linux/uaccess.h>
-> =20
->  #define MAX310X_NAME=09=09=09"max310x"
-> +#define MAX310X_PORT_NAME_SUFFIX=09"port"
->  #define MAX310X_MAJOR=09=09=09204
->  #define MAX310X_MINOR=09=09=09209
->  #define MAX310X_UART_NRMAX=09=0916
-> @@ -1486,6 +1487,15 @@ static struct regmap_config regcfg =3D {
->  =09.max_raw_write =3D MAX310X_FIFO_SIZE,
->  };
-> =20
-> +static const char *max310x_regmap_name(unsigned int port_id)
-> +{
-> +=09static char buf[sizeof(MAX310X_PORT_NAME_SUFFIX=20
-> __stringify(MAX310X_MAX_PORTS))];
-> +
-> +=09snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
-> +
-> +=09return buf;
-> +}
-> +
->  #ifdef CONFIG_SPI_MASTER
->  static int max310x_spi_extended_reg_enable(struct device *dev, bool enable=
-)
->  {
-> @@ -1521,6 +1531,8 @@ static int max310x_spi_probe(struct spi_device *spi)
-> =20
->  =09for (i =3D 0; i < devtype->nr; i++) {
->  =09=09u8 port_mask =3D i * 0x20;
-> +
-> +=09=09regcfg.name =3D max310x_regmap_name(i);
->  =09=09regcfg.read_flag_mask =3D port_mask;
->  =09=09regcfg.write_flag_mask =3D port_mask | MAX310X_WRITE_BIT;
->  =09=09regmaps[i] =3D devm_regmap_init_spi(spi, &regcfg);
-> @@ -1617,6 +1629,7 @@ static int max310x_i2c_probe(struct=20
-> i2c_client *client)
->  =09=09=09=09     client->addr, devtype->slave_addr.min,
->  =09=09=09=09     devtype->slave_addr.max);
-> =20
-> +=09regcfg_i2c.name =3D max310x_regmap_name(0);
->  =09regmaps[0] =3D devm_regmap_init_i2c(client, &regcfg_i2c);
-> =20
->  =09for (i =3D 1; i < devtype->nr; i++) {
-> @@ -1625,6 +1638,7 @@ static int max310x_i2c_probe(struct=20
-> i2c_client *client)
->  =09=09=09=09=09=09=09client->adapter,
->  =09=09=09=09=09=09=09port_addr);
-> =20
-> +=09=09regcfg_i2c.name =3D max310x_regmap_name(i);
->  =09=09regmaps[i] =3D devm_regmap_init_i2c(port_client, &regcfg_i2c);
->  =09}
-> =20
+> @@ -780,7 +780,7 @@ static void max310x_handle_tx(struct uart_port *port)
+>  =09to_send =3D uart_circ_chars_pending(xmit);
+>  =09until_end =3D CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
+>  =09if (likely(to_send)) {
+> -=09=09/* Limit to size of TX FIFO */
+> +=09=09/* Limit to space available in TX FIFO */
+>  =09=09txlen =3D max310x_port_read(port, MAX310X_TXFIFOLVL_REG);
+>  =09=09txlen =3D port->fifosize - txlen;
+>  =09=09to_send =3D (to_send > txlen) ? txlen : to_send;
+>
+> base-commit: 98b1cc82c4affc16f5598d4fa14b1858671b2263
 
