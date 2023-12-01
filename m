@@ -1,124 +1,80 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.de header.i=eberhard.stoll@gmx.de header.b="WxlHU6yj"
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81530103;
-	Fri,  1 Dec 2023 08:55:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-	t=1701449719; x=1702054519; i=eberhard.stoll@gmx.de;
-	bh=0jjOyskWrTtZzzIWvSKOAEYVWsKiIQdx9scG4AhdcjA=;
-	h=X-UI-Sender-Class:Date:Subject:To:References:From:In-Reply-To;
-	b=WxlHU6yj8bCkIrnscZiwLIW1vR3Y+bcbdAHrIvDPIci7G9ZUJ9Bke7uBpsFUQt4S
-	 BAC3GVFW0WOp33+4nU3sBegn1DNCohsGgnKd1y/cn9+C+5gDLZdAP1JGg2oIXr9b5
-	 kS3/fvwAChOHf+V3FWakaM/53wxZNy4OaKR1NhLLNhrIdRnZBzQYZtRedBPoDONkp
-	 Vf0PI2O7rzGQbTZ9e6cSmWbacchmfYVJXDdYf0kEsbxPTwt9fOKytwi8O1p0R3WZj
-	 XYHXKsXqr5+o7epzIT9wCEWmMFO7crccFQiGmid5QexYUvjEflfl6N6/Bn/glV/s3
-	 EQXTGhwUTbtOXfa8NQ==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.2.126] ([87.122.194.157]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1M3DJl-1r8Gmg1wwX-003eZg; Fri, 01
- Dec 2023 17:55:19 +0100
-Message-ID: <a9c6d8e7-a014-4e04-9c6a-617235130c7b@gmx.de>
-Date: Fri, 1 Dec 2023 17:55:18 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m2D7pzVc"
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79F5133;
+	Fri,  1 Dec 2023 09:03:09 -0800 (PST)
+Received: by mail-qv1-xf33.google.com with SMTP id 6a1803df08f44-67a9be1407aso3180156d6.0;
+        Fri, 01 Dec 2023 09:03:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1701450189; x=1702054989; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=c3Y5WlluNSG52Oh+RdmatqU/FPHpilvW0wo2a8wMtzM=;
+        b=m2D7pzVcoi24CicR2Lxu4tdcTFdL5+xS/neCTf8HxqbnvHwAcdEC9enE73iP0wn1ji
+         wsP/14ZxYoUmNtoFf59Q7CfhlhmBvYmLIX95X1OInym4dFzszozSGjEEWipDY5n1QwQE
+         5oK+b3t3xyC6RYaK5saQNJqjmaGY0EbdCvGNK38Pys9W9uOPFdQXTYDEmrSWdU1hN7IY
+         IKd7e02vVMihfrBBfhsIHuhtaYAKDlfpzfKYbd0zMdUbXI4AP5CmAat7l8r1iO8u9OrV
+         KoB4Fe+61GJrot+i3MQGYy5HjfZumgAvlNeHoM+COORByt7KQs7yayP7BdkQ3YRgtgiD
+         s38w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701450189; x=1702054989;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=c3Y5WlluNSG52Oh+RdmatqU/FPHpilvW0wo2a8wMtzM=;
+        b=ogBfUJjRf2tYZENyqZM6TqNgFt3MA3vZ13PJ4JlQ4JoDcYOPw7zplIXMd5W+YdYNVt
+         VVdSX9JLG7CTTr+MhX+EM+VxbnEOBft5zBkPDo9OJnOrwwCNzySZgrgD4MtbFGiNBudx
+         kGnCHLwb/XYv68eUkKUrEjPYTec76mqKOvHy4OtMM9oTj311tPgg20ZPNnXJdEDMBwWS
+         a6hVAcLl4Y5LpsBzt02qEFOb6zA70DeZK3dT3uOQXrzWgbFRqn0ZCq8eXHGpYlcpyd1M
+         jWrvxRvdTi9vAm8XJnPgjaJvzdMPQGXdgwLb/mgwvG1TpHWXK3uuKfqgWjkj24hYWMSI
+         SqzA==
+X-Gm-Message-State: AOJu0YzxTTdCLibjfVtzPLj1lq36lJ50E2SVgI8r7vbAmwrRYYL6XB1l
+	hYjnmyN9f/GC2WxTMkZXrfpvePJShE7+Xee7BNR/XwCB9Sfs4A==
+X-Google-Smtp-Source: AGHT+IHkW94Rn0OtDnloPqiS5e/fIK1HP8bF4z4jorVnA1687IcHdprRTtd2wRxkyZd1fh+ZAKtEAnx09pPNZ6JeQZA=
+X-Received: by 2002:a0c:ed52:0:b0:67a:1e8d:6f89 with SMTP id
+ v18-20020a0ced52000000b0067a1e8d6f89mr26121941qvq.44.1701450188706; Fri, 01
+ Dec 2023 09:03:08 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] serial: imx: fix tx statemachine deadlock
-To: Rasmus Villemoes <rasmus.villemoes@prevas.se>,
- Paul Geurts <paul_geurts@live.nl>, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
- kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
- u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <2023112434-winter-embezzle-1b46@gregkh>
- <AM0PR09MB26758F651BC1B742EB45775995B8A@AM0PR09MB2675.eurprd09.prod.outlook.com>
- <a283cb15-d740-4f94-a81e-0147c2035cf7@prevas.dk>
- <e770c302-2fef-40ba-b955-dc8c54c8727c@prevas.se>
-Content-Language: en-US
-From: Eberhard Stoll <eberhard.stoll@gmx.de>
-In-Reply-To: <e770c302-2fef-40ba-b955-dc8c54c8727c@prevas.se>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <bd91db46c50615bc1d1d62beb659fa7f62386446.1701446070.git.jan.kundrat@cesnet.cz>
+ <f66cf0a3-4d63-4548-8648-e93a1ef995e2@sirena.org.uk>
+In-Reply-To: <f66cf0a3-4d63-4548-8648-e93a1ef995e2@sirena.org.uk>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Fri, 1 Dec 2023 19:02:32 +0200
+Message-ID: <CAHp75Vc4tB_CuT-e+gofanWK=mss-k_A-mqPo-8+Rv-aQ8tu_w@mail.gmail.com>
+Subject: Re: [PATCH] tty: max310x: work around regmap->regcache data corruption
+To: Mark Brown <broonie@kernel.org>
+Cc: =?UTF-8?B?SmFuIEt1bmRyw6F0?= <jan.kundrat@cesnet.cz>, 
+	Cosmin Tanislav <cosmin.tanislav@analog.com>, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:gHtwEHppOHKCoBAjke6fuy3AVIjVbK56gCiHgPy4cAt0kKKVbnp
- VNY9QNI/kfnD9Q5UHMlAM7KudUUHbomYJf4HvjFwsktyQHxJmZtierqwWmjY3DaVhdmhSU8
- W2NhgO/Uri+AyOhfkgjbo33w7whMPwA9nZl7GgHbB6iM7LtSwMe3s2qEI7liOUKo2x5CW7Q
- wytgZufFBsauQufXvaYPQ==
-UI-OutboundReport: notjunk:1;M01:P0:+SJaVTKirck=;jNUiqEylytKupCSA+lzaE5loEAk
- NKARH8ziCRrbalw/h4pQUlPV8ifcBCQdseBSR2UcSiFXHl7UWUIFtoFVTl490lf/KiLcUE3JM
- kYHktpsjfKXYyyHA4LYx2hjNIlIvPIywG90Gfu8swm/yV9SUplzS8drpmDsgDbeV94GhwE+mN
- tSHLHRDqgOlvdoQxPK+Mbj/jQ6u0z43u76+ZsIafqqcYqOW6F+q60RlDXVigg1/WWA56pRE7U
- asRL6o7nJgK00OeJRZ4zPxHbzJFiLjT25rqe3VGUOwxSibDmT5miPJaxYQxgUOToDCKZ1DwQN
- 4ccTTfDRjhyGWJSkNXZs2iTpPHq03oXQzFegSjfhseId0XlO2ujewGE3FaL08Pf1GB7Bp+bni
- 6h9AxKZOTITIoUT92H98iWOddslzib/E2QB/XGqttiDFAp7D2d0OFZVmfK3qY4yu5uxk4BUOd
- UocfdSZ9zJmiBWdJBkIdye1PV+M1kQkvwJMkNYg+bX8aN35AMZdUsege6mLBVpmjGHdKA/73+
- haVwVX80moM4voL5eKGEH1BmlskHD2CgLaYjsu3nVtSpBQrWloabeLEjPKPRjtUzbO5UIuxIL
- emUkoEf6I6Cp80DhOlfGKgd3PMzc/koo1o+tAp5MgOiPCWWhM3KLnl5MQMdBTc673CW/ye6ad
- ZVTIOnqlO//0XVS9GetE0A28llEIJpeSoWgPOQsvPXQZsJsIUplwr2NZSQOhoHFpSE+fsXu5M
- c0btEGtAuvY0Pqt0oimmXAAiAv4O96ZRogQS3+E9zXMBMYqECBfwKKXdDSif8Dn4+CKMmixQ0
- nR7eAlL68RE06Eu9ok8E5w0dBWFYegltqcTsyDoYNvVITnqOjSoq1t10g6C2IiYed3OEojfyT
- lKH/r9PJOGikizeleyg1QI4byLPNa3ZYeXEn8yoOPfgl+5InGCyvTaC3zrdAZ1JCBkuJ+glL7
- olBqgt1k+TQ4p355eGQkJC8AjMA=
 
-
-
-On 30.11.23 10:09, Rasmus Villemoes wrote:
-> On 24/11/2023 14.37, Rasmus Villemoes wrote:
->> On 24/11/2023 14.11, Paul Geurts wrote:
->>> When using the serial port as RS485 port, the tx statemachine is used =
-to
->>> control the RTS pin to drive the RS485 transceiver TX_EN pin. When the
->>> TTY port is closed in the middle of a transmission (for instance durin=
-g
->>> userland application crash), imx_uart_shutdown disables the interface
->>> and disables the Transmission Complete interrupt. afer that,
->>> imx_uart_stop_tx bails on an incomplete transmission, to be retriggere=
-d
->>> by the TC interrupt. This interrupt is disabled and therefore the tx
->>> statemachine never transitions out of SEND. The statemachine is in
->>> deadlock now, and the TX_EN remains low, making the interface useless.
->>>
->>> imx_uart_stop_tx now checks for incomplete transmission AND whether TC
->>> interrupts are enabled before bailing to be retriggered. This makes su=
-re
->>> the state machine handling is reached, and is properly set to
->>> WAIT_AFTER_SEND.
->>>
->>> Fixes: cb1a60923609 ("serial: imx: implement rts delaying for rs485")
->>> Signed-off-by: Paul Geurts <paul_geurts@live.nl>
->>
->> Hi Paul
->>
->> Interestingly, both Eberhard (cc'ed) and I have hit similar problems in
->> this driver recently. See the thread
->> https://lore.kernel.org/lkml/20231120132256.136625-1-rasmus.villemoes@p=
-revas.dk/
->> .
->>
->> It is possible that this also fixes the problems I/we saw, but I can't
->> get around to testing until sometime next week.
+On Fri, Dec 1, 2023 at 6:21=E2=80=AFPM Mark Brown <broonie@kernel.org> wrot=
+e:
+> On Fri, Dec 01, 2023 at 03:51:51PM +0100, Jan Kundr=C3=A1t wrote:
 >
-> This also seems to fix the problem I had when switching to rs232 and
-> back to rs485, and I agree that it seems to be a cleaner fix than mine.
+> > The TL;DR summary is that the regmap_noinc_write spills over the data
+> > that are correctly written to the HW also to the following registers in
+> > the regcache. As a result, regcache then contains user-controlled
+> > garbage which will be used later for bit updates on unrelated registers=
+.
 >
-> I also tried reproducing what Eberhard reported, and I think I managed
-> to do that, and at least my way of reproducing the tx lockup also seems
-> to be fixed by this patch. Eberhard, can you test this patch in your set=
-up?
+> > I was investigating a regression that happened somewhere between 5.12.4
+> > (plus 14 of our patches) and v6.5.9 (plus 7 of our patches). Our
 >
-> In any case,
->
-> Tested-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
->
-> Rasmus
->
+> Can you reproduce this with current kernels?  That's not even an up to
+> date v6.5 - we're up to v6.5.13 now from the looks of things including
+> one upstream fix that looks potentially relevant.
 
-Yes, it also works for my test setup!
+Indeed, the 984a4afdc87a ("regmap: prevent noinc writes from
+clobbering cache") seems quite relevant.
 
-Tested-by: Eberhard Stoll <eberhard.stoll@gmx.de>
-
-Best regards
-Eberhard
-
+--=20
+With Best Regards,
+Andy Shevchenko
