@@ -1,39 +1,39 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="dGb8DE/H"
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150FED0
-	for <linux-serial@vger.kernel.org>; Sun,  3 Dec 2023 13:31:54 -0800 (PST)
-Received: by mail-qt1-x833.google.com with SMTP id d75a77b69052e-423a459d616so28123951cf.1
-        for <linux-serial@vger.kernel.org>; Sun, 03 Dec 2023 13:31:54 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="N5L7AweH"
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5458FC4
+	for <linux-serial@vger.kernel.org>; Sun,  3 Dec 2023 13:39:55 -0800 (PST)
+Received: by mail-qv1-xf2e.google.com with SMTP id 6a1803df08f44-67a51d80a02so26947246d6.2
+        for <linux-serial@vger.kernel.org>; Sun, 03 Dec 2023 13:39:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701639113; x=1702243913; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1701639594; x=1702244394; darn=vger.kernel.org;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=G02u0sdxnFAEWbNN9nRUil1ZtXJaIE05IGNFhr9iJSA=;
-        b=dGb8DE/Ha8y2tMZKwY7e55pB2iCbFw6dKq1sGjeeyTxWnjOt6BEfH8I4g9JbOLrPL8
-         ENLnaHInyTQiEFGPyIAd3PFkC5HgzVzscJ0X7epy+NW4beYxO5LwaictflB/ipOWZD+H
-         MDcsU15rDyA7WAke96kbhUoWzqRSvkCLgspQyFHC4vAIxizQc2k4ANgxjflwvtQ+V3kQ
-         FWOj9fWlUZztxf0EiZrQFK8DyzdX3n4Z4n6YAfWdruGbimif1N30TcqPuQ+h4rlCk7YG
-         r3qc17C9GcXp9Z9w3ux34NJkLUjuR861mAyRJKIvp8pjGlSwqnZ2fr68ktIW4uSqR3N3
-         c66Q==
+        bh=7gO8de0lce7HaKv0/P/qdh9+Js5noC/xSOjvtz3e/WM=;
+        b=N5L7AweHBYhyJpgx6fgGw3aIrBLFOzeVEu3xxmSMt+OkZY/WQLPG6/SZ1PtvvquNPO
+         DAgQmu7nqLc9pzD4GF4X+Us6KppvuMh76rIOa5puv8WAk5lBqru+2x+rhV269rfqBpsP
+         afSCFGYwSfth18SQA59kBvmBvhlqXOKE2c4bZu9coSn8Yqof2c/XbsBatJw2Xb1rQ88i
+         XZuxXxA0NKFDaSmfK6PufcA9vABx22hUNOpEkXyQN5I45Uth/hy6Xz2pkXrIcJ5aRrGU
+         WAgtLd7juIiMtZTJUWvwzpIHk+oltqJpN7yRm39NMC/iGU9H+HuSVVRPeHOMDTiuD9Y6
+         n8rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701639113; x=1702243913;
+        d=1e100.net; s=20230601; t=1701639594; x=1702244394;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=G02u0sdxnFAEWbNN9nRUil1ZtXJaIE05IGNFhr9iJSA=;
-        b=RIUP9lZdjrsv7whrn2CiLyakbcculIh8CKOv9t7uphcBBg2JPxJBOEqO0afoOKXLrO
-         +lWJxIoOCGU0LlSLujkj+lb4eaHxUcqEqyRS7cDqvJpbkVwQOwOMaUoUdjZ/s1l0dM+u
-         /WgfLvVdqcQDaUEipMNssBy1+cHp7FRsK438xxCqRd1HPi+U+F2ESwwaMLbRndWiTh44
-         aorlzfWS+AkNNUIBHkU+fbZfE6KQL6lBSI+fJJGR6vJN8IGbrXK9/R+jI0Rsf1LFMV7V
-         KtVVCsPd9ve+qJ6q0WHSHnSQCwd0aSQ+EBHr7DYn54ZuHqqw2mEz8cfluwOEJjNxkLpc
-         4lRg==
-X-Gm-Message-State: AOJu0Yxb07liqDedrlAqdiWgqpbCu1wtslZHfbuP8GzCse2M1R+91yMG
-	b1y826oDRPq9J4ap3xmcch0luNqwVGtIGmadvkTj3A==
-X-Google-Smtp-Source: AGHT+IGNohdhuUx6qw41RjMk55NiBYO1sgpsNCtd4DXi5RmzCel7FKuFM65wkoSHPpohcTc4yi+ZokTYRVrg0YEEWT8=
-X-Received: by 2002:a0c:f7d0:0:b0:67a:bb7f:ebd7 with SMTP id
- f16-20020a0cf7d0000000b0067abb7febd7mr1547835qvo.61.1701639113122; Sun, 03
- Dec 2023 13:31:53 -0800 (PST)
+        bh=7gO8de0lce7HaKv0/P/qdh9+Js5noC/xSOjvtz3e/WM=;
+        b=AHdAZTKrlNtagbbi41pNX+2/SixGd6My/mISVTJ+CLdiWOMAb5zfl3YgL/b1F0xgX7
+         BJOGpSDmU8wNRtNdWfAWN4IVzFtjL1oLGBFjSh6+RAXnG6VR/tzmBvUDI/CwhPxON8KX
+         POrU2Q66wKKP09UnR9fFKOENSthqJ+sXs7dj+taSXpk/pvwCgYzGnrOrMykmgpsvWLbc
+         1+yj+KYgLfGsXqwC203SsI2TTK6xnUaW4LtqXNNr2JWqnSIwKf+UeefPQad7ESE6FgEg
+         ZZShjtkRqvKq3OeFNy4hdKfILnT2MeKjPZnpH89d/rgdJZzv+Nnkumt4QNpkgkYNhybV
+         y7pQ==
+X-Gm-Message-State: AOJu0Yx7vz0UzLsGu+EnEJl4jrpEqHzImigo50JY1GPgx9Z8JMt4rOFB
+	HzM1nccYJeUIxIoOfED6EQs97TUA3X+TTq9Lrh3Qvg==
+X-Google-Smtp-Source: AGHT+IGU7r7x9r9+baipwfFC2Z6LHKfOwxTcuFhaimGYhCIcueT+DijNUTVWF4dXUB1M1ZX2RA1n39vU5/gLge1bopA=
+X-Received: by 2002:a0c:e94b:0:b0:67a:a394:e20c with SMTP id
+ n11-20020a0ce94b000000b0067aa394e20cmr4222616qvo.38.1701639594412; Sun, 03
+ Dec 2023 13:39:54 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,37 +41,67 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20231201160925.3136868-1-peter.griffin@linaro.org>
- <20231201160925.3136868-10-peter.griffin@linaro.org> <59b949a0-5aeb-4f01-8789-cb305513b626@app.fastmail.com>
-In-Reply-To: <59b949a0-5aeb-4f01-8789-cb305513b626@app.fastmail.com>
+ <20231201160925.3136868-10-peter.griffin@linaro.org> <b4e710c0-dddb-4217-9979-21bdc20ee302@linaro.org>
+In-Reply-To: <b4e710c0-dddb-4217-9979-21bdc20ee302@linaro.org>
 From: Peter Griffin <peter.griffin@linaro.org>
-Date: Sun, 3 Dec 2023 21:31:41 +0000
-Message-ID: <CADrjBPoeLLcoDuLdkVhO4C_8qFAvFSu2igNPP09RXagiJpPsig@mail.gmail.com>
+Date: Sun, 3 Dec 2023 21:39:43 +0000
+Message-ID: <CADrjBPpcknRifds+WpuwmdzGxxFq-osLf7_Rn1ENjoRcXwCRxw@mail.gmail.com>
 Subject: Re: [PATCH v5 09/20] dt-bindings: serial: samsung: Make
  samsung,uart-fifosize required property
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Rob Herring <robh+dt@kernel.org>, krzysztof.kozlowski+dt@linaro.org, 
-	Michael Turquette <mturquette@baylibre.com>, Conor Dooley <conor+dt@kernel.org>, 
-	Stephen Boyd <sboyd@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, 
-	Sylwester Nawrocki <s.nawrocki@samsung.com>, Linus Walleij <linus.walleij@linaro.org>, 
-	Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
-	Olof Johansson <olof@lixom.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Chanwoo Choi <cw00.choi@samsung.com>, 
-	Alim Akhtar <alim.akhtar@samsung.com>, Tudor Ambarus <tudor.ambarus@linaro.org>, 
-	=?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>, 
-	Sam Protsenko <semen.protsenko@linaro.org>, saravanak@google.com, 
-	William McVicker <willmcvicker@google.com>, soc@kernel.org, devicetree@vger.kernel.org, 
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, 
+	mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org, 
+	tomasz.figa@gmail.com, s.nawrocki@samsung.com, linus.walleij@linaro.org, 
+	wim@linux-watchdog.org, linux@roeck-us.net, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org, 
+	jirislaby@kernel.org, cw00.choi@samsung.com, alim.akhtar@samsung.com, 
+	tudor.ambarus@linaro.org, andre.draszik@linaro.org, 
+	semen.protsenko@linaro.org, saravanak@google.com, willmcvicker@google.com, 
+	soc@kernel.org, devicetree@vger.kernel.org, 
 	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
-	linux-clk@vger.kernel.org, 
-	"open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-watchdog@vger.kernel.org, 
-	kernel-team@android.com, linux-serial@vger.kernel.org
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-watchdog@vger.kernel.org, kernel-team@android.com, 
+	linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-Hi Arnd,
+Hi Krzysztof,
 
-On Fri, 1 Dec 2023 at 16:39, Arnd Bergmann <arnd@arndb.de> wrote:
+On Sun, 3 Dec 2023 at 15:11, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
 >
-> On Fri, Dec 1, 2023, at 17:09, Peter Griffin wrote:
+> On 01/12/2023 17:09, Peter Griffin wrote:
+> > Specifying samsung,uart-fifosize in both DT and driver static data is error
+> > prone and relies on driver probe order and dt aliases to be correct.
+> >
+> > Additionally on many Exynos platforms these are (USI) universal serial
+> > interfaces which can be uart, spi or i2c, so it can change per board.
+> >
+> > For google,gs101-uart and exynosautov9-uart make samsung,uart-fifosize a
+> > required property. For these platforms fifosize now *only* comes from DT.
+>
+> I don't see ExynosAutov9 compatible in your patch.
+
+I dropped exynosautov9-uart compatible from this patch due to the ABI
+breakage. It seems I forgot to update the commit wording though. Will
+fix.
+
+Peter.
+>
+> >
+> > It is hoped other Exynos platforms will also switch over time.
+> >
+> > Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> > ---
+> >  .../devicetree/bindings/serial/samsung_uart.yaml       | 10 ++++++++++
+> >  1 file changed, 10 insertions(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> > index ccc3626779d9..65d5d361e8f4 100644
+> > --- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> > +++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> > @@ -133,6 +133,16 @@ allOf:
+> >              - const: uart
+> >              - const: clk_uart_baud0
 > >
 > > +  - if:
 > > +      properties:
@@ -79,24 +109,6 @@ On Fri, 1 Dec 2023 at 16:39, Arnd Bergmann <arnd@arndb.de> wrote:
 > > +          contains:
 > > +            enum:
 > > +              - google,gs101-uart
-> > +    then:
-> > +      required:
-> > +        - samsung,uart-fifosize
-> > +
+> Best regards,
+> Krzysztof
 >
-> Is there a way to reverse the list and make the property
-> required for anything that is not explicitly enumerated?
-
-I'm not aware of a way to do that, but I'm by no means an expert with
-json schema. Krzysztof or Rob may know of a way.
-
-I presume your rationale is any newly added platform would get a DTC
-warning if they didn't add the samsung,uart-fifosize property?
-
-Krzysztof and Rob also had concerns in the previous series about ABI
-breakage on existing platforms, which is why this was only made
-required for google,gs101-uart.
-
-regards,
-
-Peter
