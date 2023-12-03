@@ -1,74 +1,145 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=cesnet.cz header.i=@cesnet.cz header.b="LIwdbBCV"
-Received: from office2.cesnet.cz (office2.cesnet.cz [78.128.248.237])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C692E123;
-	Sat,  2 Dec 2023 02:29:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cesnet.cz;
-	s=office2-2020; t=1701512962;
-	bh=k7wQyfXjBWCfgfOP7iiTpi3ek+GXI8y10Nph3yJx0EM=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=LIwdbBCV3Ews72MJCQrg6JO3vGiq+olmtvV84gXu3T+sUTimhNAF/yszB0n6X+mcU
-	 1ORPYXr1EQ0vSXz3jyN5UlPRW1ykNM7mgHIynvJgwxUxTWCnWQkjQESoM6rbYrx0W+
-	 TyMb2KJlJWukHaHffQXAtIZ87YA6I9ufYOzAaGZCFM5HK2sAID+zq9m+AfYKmYkgIK
-	 bLRn++uZLi0yW7r0gt8edTG3z2oGb6CVasP0I+ClMD9ofmwD9+jxHia18xjeecSkYn
-	 Yi0WQkfdSRuDRqNMFkXPMPDM4gGWKNtGEk1HOwPVIkKyr9zwWBwBVbDh/KNdc4q5nT
-	 HJFwvcDCwu/KA==
-Received: from localhost (unknown [IPv6:2a07:b241:1002:701:7aa5:598:fd89:7240])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by office2.cesnet.cz (Postfix) with ESMTPSA id 198171180072;
-	Sat,  2 Dec 2023 11:29:18 +0100 (CET)
-From: =?iso-8859-1?Q?Jan_Kundr=E1t?= <jan.kundrat@cesnet.cz>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>,
- Mark Brown <broonie@kernel.org>
-Cc: Cosmin Tanislav <cosmin.tanislav@analog.com>,
- <linux-serial@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] tty: max310x: work around regmap->regcache data =?iso-8859-1?Q?corruption?=
-Date: Sat, 02 Dec 2023 11:29:15 +0100
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="idXsJTWF"
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254CEF0
+	for <linux-serial@vger.kernel.org>; Sun,  3 Dec 2023 07:10:04 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id 4fb4d7f45d1cf-54bfa9b3ffaso4714815a12.1
+        for <linux-serial@vger.kernel.org>; Sun, 03 Dec 2023 07:10:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1701616202; x=1702221002; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=jGB7/4Pq9xLu62LbNXXLS+atvDTK++BhtQFi4zPFcRU=;
+        b=idXsJTWFHxPPkqTnnKs/5zPDJCRLdWagXbHTPM+cfeDtKBZhtx4PVwnmG+rmS+g7UU
+         /8sxJ5/GWol57B+/hKMAxn/pg3WkcQEJ41JxXzIkBDBbaWgKTvPL8TUF+mrCOMg0btLZ
+         aOjXdu0hTDHzsUXrrSmhN3WLpQY4SHp12Dn/6qXHQeYfW1bB8NGNmlVnFQKtprc2U9MP
+         IyMOVsVLXWkUCSBzdyT+yPHUwQmM+mylorDJ5t3jvx/Ng5ryHTQDUL9KjYoyuOSthCDG
+         t8vCDaKyY5LMj9V9i+6yuH6K/p6PgKlEonAZN4q78i9fnZzufz2irdDwiqmev+kt5doL
+         +SFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701616202; x=1702221002;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jGB7/4Pq9xLu62LbNXXLS+atvDTK++BhtQFi4zPFcRU=;
+        b=Qvq6G6l07AyRci+vjaLeras/zl+5cFEZ81B6vuMI6o2fqdVQhPQuoIfavr+RxSgsmY
+         NcE5y4uxRu7R/ZJvw8IC6hTxi/iEwMjeuMkValqPovHVAZDEqFv0bTYmDeT7Xi3yvKQi
+         hf35DtHEgKOqiFSd+hS30e7rdVreIYiOAyIrLcQNak1/08sPXJcDkkQ7/d6tFE9yEGSx
+         oeyGeh9kIjHTEPXtI6g8dYlvtN5G4JrxxF7XskLE3H1maAi8rNL3UriTkd1jDnc3t+ec
+         8DNzaLM4lr8XwrQHW56+R9gT/bXLA9uzzPgQ6NFfBcyREd/3PFtFKweEemWkNxkuPyvN
+         FwpA==
+X-Gm-Message-State: AOJu0YzC+hyPHO0lXjgk1aCyRR73ZRiS33JooP76HUdiIhOPDiADeKGN
+	gdj8FIsHIFcq5vy/2l2FFjb5Dw==
+X-Google-Smtp-Source: AGHT+IHW7znHwy3UiTaFioppqZ7lRoPvFI2q3fuEaMrHtiiZ7ZARoiioG27gvjXmuFmlcOOp4RoODQ==
+X-Received: by 2002:a17:906:d8:b0:a19:53d9:b365 with SMTP id 24-20020a17090600d800b00a1953d9b365mr2097931eji.57.1701616202198;
+        Sun, 03 Dec 2023 07:10:02 -0800 (PST)
+Received: from [192.168.1.20] ([178.197.223.109])
+        by smtp.gmail.com with ESMTPSA id di16-20020a170906731000b00a1b6d503e7esm492044ejc.157.2023.12.03.07.09.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 03 Dec 2023 07:09:40 -0800 (PST)
+Message-ID: <2854a9b5-d6c8-454c-bc3b-79744e613686@linaro.org>
+Date: Sun, 3 Dec 2023 16:09:37 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-ID: <430727d2-7e88-4de2-97ab-e841656d7915@cesnet.cz>
-In-Reply-To: <CAHp75Vc4tB_CuT-e+gofanWK=mss-k_A-mqPo-8+Rv-aQ8tu_w@mail.gmail.com>
-References: <bd91db46c50615bc1d1d62beb659fa7f62386446.1701446070.git.jan.kundrat@cesnet.cz>
- <f66cf0a3-4d63-4548-8648-e93a1ef995e2@sirena.org.uk>
- <CAHp75Vc4tB_CuT-e+gofanWK=mss-k_A-mqPo-8+Rv-aQ8tu_w@mail.gmail.com>
-Organization: CESNET
-User-Agent: Trojita/unstable-2022-08-22; Qt/5.15.10; wayland; Linux; 
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 10/20] dt-bindings: soc: samsung: usi: add
+ google,gs101-usi compatible
+Content-Language: en-US
+To: Peter Griffin <peter.griffin@linaro.org>, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+ conor+dt@kernel.org, sboyd@kernel.org, tomasz.figa@gmail.com,
+ s.nawrocki@samsung.com, linus.walleij@linaro.org, wim@linux-watchdog.org,
+ linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+ olof@lixom.net, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ cw00.choi@samsung.com, alim.akhtar@samsung.com
+Cc: tudor.ambarus@linaro.org, andre.draszik@linaro.org,
+ semen.protsenko@linaro.org, saravanak@google.com, willmcvicker@google.com,
+ soc@kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-watchdog@vger.kernel.org, kernel-team@android.com,
+ linux-serial@vger.kernel.org
+References: <20231201160925.3136868-1-peter.griffin@linaro.org>
+ <20231201160925.3136868-11-peter.griffin@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <20231201160925.3136868-11-peter.griffin@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On p=C3=A1tek 1. prosince 2023 18:02:32 CET, Andy Shevchenko wrote:
-> On Fri, Dec 1, 2023 at 6:21=E2=80=AFPM Mark Brown <broonie@kernel.org> wrot=
-e:
->> On Fri, Dec 01, 2023 at 03:51:51PM +0100, Jan Kundr=C3=A1t wrote:
->>=20
->>> The TL;DR summary is that the regmap_noinc_write spills over the data
->>> that are correctly written to the HW also to the following registers in
->>> the regcache. As a result, regcache then contains user-controlled
->>> garbage which will be used later for bit updates on unrelated registers.
->>=20
->>> I was investigating a regression that happened somewhere between 5.12.4
->>> (plus 14 of our patches) and v6.5.9 (plus 7 of our patches). Our
->>=20
->> Can you reproduce this with current kernels?  That's not even an up to
->> date v6.5 - we're up to v6.5.13 now from the looks of things including
->> one upstream fix that looks potentially relevant.
->
-> Indeed, the 984a4afdc87a ("regmap: prevent noinc writes from
-> clobbering cache") seems quite relevant.
+On 01/12/2023 17:09, Peter Griffin wrote:
+> From: Tudor Ambarus <tudor.ambarus@linaro.org>
+> 
+> Add google,gs101-usi dedicated compatible for representing USI of Google
+> GS101 SoC.
+> 
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml b/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
+> index 61be1f2ddbe7..a10a438d89f0 100644
+> --- a/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
+> +++ b/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
+> @@ -28,6 +28,9 @@ properties:
+>                - samsung,exynosautov9-usi
+>                - samsung,exynosautov920-usi
+>            - const: samsung,exynos850-usi
+> +      - items:
+> +          - const: google,gs101-usi
 
-Thank you, Andy, this is indeed the real fix.
+This should be part of previous enum.
 
-Sorry that I missed it, Mark. I spent many days on this one over a longer=20
-period of time, so I haven't noticed that a fix was merged in the=20
-meanwhile. I was just very happy that I debugged something which looked=20
-like a real puzzle at the beginning :).
+Best regards,
+Krzysztof
 
-Cheers,
-Jan
