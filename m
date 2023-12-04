@@ -1,116 +1,165 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fRdzqUSJ"
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B990F2
-	for <linux-serial@vger.kernel.org>; Sun,  3 Dec 2023 21:00:37 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-40c09f4bea8so7177585e9.1
-        for <linux-serial@vger.kernel.org>; Sun, 03 Dec 2023 21:00:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701666033; x=1702270833; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=ru/NPj09V1ASiEGDCszqcY2Rb4Q+L/jQQ4h1Ot3L8XU=;
-        b=fRdzqUSJVk+LuT3rPfr+CyqFGUuBdjbJEEFxA7UYPRFGyC2T/gygOCQaMdghvXA02g
-         QFsz1TmxxBIb4oCN71Y4W2xl+LImsXA5mXBZYkoQ0UjHaSpcKvv4z8mn1AYK6VwpY0pp
-         SfTKIDwpaJxNl6EU5XtX5aLhfXMqxjkG7iMdNPDFHLjZM7lBeEpuc9HmOhCFW7wc0OSL
-         Vuv5QfBigVJxsHuESIwPNefyFiWSu3tBWBMiumMCKCHg5aOl37n5w9gdOEXfhkDCwUDf
-         5yLA7WRAgGpD+hcOBAo0jOOIvLvzHc/27yqIrB5PDpkq1yVyj1c/1E3dFVXKnzkfgNcq
-         Z2Ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701666033; x=1702270833;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ru/NPj09V1ASiEGDCszqcY2Rb4Q+L/jQQ4h1Ot3L8XU=;
-        b=ANcFdLNcGqAvvIEdFJvHeeK5X2meWAUtblZFLmkab/y1WVOwFAFg80Up0wntLBLGmn
-         nT4oBhuS8aFgzlk2Olcesbv0UwiXqpWEu3TGfHirUdAQ2Tc9J7SFm/MwGZemvfAkDkQ8
-         j/RglgTuR4cqohIynHxgLAfEghOWk6uN82XcsPs4Z1XU6euchewcHoFc69JhQogipK+z
-         SR+ANPkIYr000rT8ZlApYDy7f/iBiWUz+dFMJyvEEPe5EySzG8INuXdB0UDG1EKBd0UE
-         e02qlgQexArJzWbktf/MznHw7HdfUHQexHehrMFkBrkgFocG+xPQh4X+y0jAwTsLG+oi
-         phOA==
-X-Gm-Message-State: AOJu0Yx8kF0cu+mzVTkc/TIun/r7yZZE0zsPYpOtY+Di07jvMiPiLHj1
-	DQXHveIDqL9GZx43eeizWJRtDQ==
-X-Google-Smtp-Source: AGHT+IEkXJrUkXJJogule3Vldy+8qcSDhRA/unZzuiLtfHzdZ3i9H6s6WVRZBg9D6M0qgUEnPEOnng==
-X-Received: by 2002:a7b:ce8b:0:b0:40b:5e59:daa3 with SMTP id q11-20020a7bce8b000000b0040b5e59daa3mr1958418wmj.182.1701666033441;
-        Sun, 03 Dec 2023 21:00:33 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id o15-20020a05600c510f00b004064cd71aa8sm12143279wms.34.2023.12.03.21.00.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Dec 2023 21:00:32 -0800 (PST)
-Date: Mon, 4 Dec 2023 08:00:29 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: oe-kbuild@lists.linux.dev, Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: lkp@intel.com, oe-kbuild-all@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 2/2] serial: core: implement support for rs485-mux-gpios
-Message-ID: <bb7376cd-27b9-4585-9c98-140a29808b0f@suswa.mountain>
+	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="P+bely7r"
+Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3BAAF0;
+	Sun,  3 Dec 2023 23:52:04 -0800 (PST)
+Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
+	by mail5.25mail.st (Postfix) with ESMTPSA id 96BD36049B;
+	Mon,  4 Dec 2023 07:51:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
+	s=25mailst; t=1701676323;
+	bh=XWo9gVPTMw/Jq0RjiBpbhpIaqutznCtnJEvdD0CoMg4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=P+bely7rNEVVgt2juKTgYntibbAPc4QjgIoWYc2/D4hZNw1OMxX1DmvuLTHKDujdO
+	 eUpE7S7GNk6PTaLFtdNfq4QKQoQoDCqcFsBAuquHxq+NQVzf1bQGCw7Wqec/0GSaKp
+	 TtVeEB308gFErEL+thsLamtqaKl9jI6GmYC/0ncvHTaqx+yGK3PB2iLwlcUcb2oddD
+	 Tj7SykeS9eQKqMEOAQ6cXuwSQW5gOw9U33L63lIrrcIkWolbjIFsAfw14GNhp0r/j4
+	 4Z9JkCUc+UX6iviCMwKRNVFZuHtEeQ+lLxkHdPwDNVKssLmlb7qrOfOPrIsJPtg4wE
+	 fueDCrerrQ2gw==
+Date: Mon, 4 Dec 2023 09:51:31 +0200
+From: Tony Lindgren <tony@atomide.com>
+To: Petr Mladek <pmladek@suse.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	"David S . Miller" <davem@davemloft.net>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Dhruva Gole <d-gole@ti.com>,
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	Johan Hovold <johan@kernel.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3 0/3] Add support for DEVNAME:0.0 style hardware based
+ addressing
+Message-ID: <20231204075131.GK5169@atomide.com>
+References: <20231121113203.61341-1-tony@atomide.com>
+ <ZWnvc6-LnXdjOQLY@alley>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20231120151056.148450-3-linux@rasmusvillemoes.dk>
+In-Reply-To: <ZWnvc6-LnXdjOQLY@alley>
 
-Hi Rasmus,
+* Petr Mladek <pmladek@suse.com> [231201 14:36]:
+> Well, my understanding is that it solves the problem only for the newly
+> added console=DEVICENAME:0.0 format. But it does not handle the
+> existing problems with matching console names passed via earlycon=
+> and console= parameters. Am I right?
 
-kernel test robot noticed the following build warnings:
+Yes that's where the remaining problems are.
 
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> Now, the bad news. This patchset causes regressions which are
+> not acceptable. I have found two so far but there might be more.
+> 
+> I used the following kernel command line:
+> 
+>    earlycon=uart8250,io,0x3f8,115200 console=ttyS0,115200 console=tty0 ignore_loglevel log_buf_len=1M
+> 
+> 
+> 1. The patchset caused that /dev/console became associated with
+>    ttyS0 instead of tty0, see the "C" flag:
+> 
+> 	original # cat /proc/consoles
+> 	tty0                 -WU (EC    )    4:1
+> 	ttyS0                -W- (E  p a)    4:64
+> 
+>    vs.
+> 
+> 	patched # cat /proc/consoles
+> 	ttyS0                -W- (EC p a)    4:64
+> 	tty0                 -WU (E     )    4:1
+> 
+>    This is most likely caused by the different ordering of
+>    __add_preferred_console() calls.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Rasmus-Villemoes/dt-bindings-serial-rs485-add-rs485-mux-gpios-binding/20231120-231551
-base:   v6.7-rc2
-patch link:    https://lore.kernel.org/r/20231120151056.148450-3-linux%40rasmusvillemoes.dk
-patch subject: [PATCH 2/2] serial: core: implement support for rs485-mux-gpios
-config: hexagon-randconfig-r071-20231121 (https://download.01.org/0day-ci/archive/20231203/202312031811.pmLZJIf5-lkp@intel.com/config)
-compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project.git 4a5ac14ee968ff0ad5d2cc1ffa0299048db4c88a)
-reproduce: (https://download.01.org/0day-ci/archive/20231203/202312031811.pmLZJIf5-lkp@intel.com/reproduce)
+Yes I noticed that too. We can't drop the console parsing from
+console_setup() until we have some solution for flagging
+register_console() that we do have a console specified on the
+kernel command line and try_enable_default_console() should not
+be called. It seems some changes to the console_set_on_cmdline
+handling might do the trick here.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
-| Closes: https://lore.kernel.org/r/202312031811.pmLZJIf5-lkp@intel.com/
+>    The ordering is important because it defines which console
+>    will get associated with /dev/console. It is a so called
+>    preferred console defined by the last console= parameter.
+> 
+>    Unfortunately also the ordering of the other parameters
+>    is important when a console defined by the last console=
+>    parameter is not registered at all. In this case,
+>    /dev/console gets associated with the first console
+>    with tty binding according to the order on the command line.
+> 
+>    If you think that it is weird behavior then I agree.
+>    But it is a historical mess. It is how people used it
+>    when the various features were added. Many changes
+>    in this code caused regressions and had to be reverted.
 
-New smatch warnings:
-drivers/tty/serial/serial_core.c:3651 uart_get_rs485_mode() warn: passing zero to 'PTR_ERR'
+Yeah agreed it's a mess :)
 
-Old smatch warnings:
-drivers/tty/serial/serial_core.c:2996 iomem_base_show() warn: argument 3 to %lX specifier is cast from pointer
+>    See the following to get the picture:
+> 
+>        + commit c6c7d83b9c9e6a8 ("Revert "console: don't
+> 	 prefer first registered if DT specifies stdout-path")
+> 
+>        + commit dac8bbbae1d0ccb ("Revert "printk: fix double
+> 	 printing with earlycon"").
 
-vim +/PTR_ERR +3651 drivers/tty/serial/serial_core.c
+OK thanks.
 
-7cda0b9eb6eb9e Andy Shevchenko       2023-10-03  3641  	dflags = (rs485conf->flags & SER_RS485_RX_DURING_TX) ?
-163f080eb717d2 Christoph Niedermaier 2022-12-02  3642  		 GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
-7cda0b9eb6eb9e Andy Shevchenko       2023-10-03  3643  	desc = devm_gpiod_get_optional(dev, "rs485-rx-during-tx", dflags);
-7cda0b9eb6eb9e Andy Shevchenko       2023-10-03  3644  	if (IS_ERR(desc))
-7cda0b9eb6eb9e Andy Shevchenko       2023-10-03  3645  		return dev_err_probe(dev, PTR_ERR(desc), "Cannot get rs485-rx-during-tx-gpios\n");
-7cda0b9eb6eb9e Andy Shevchenko       2023-10-03  3646  	port->rs485_rx_during_tx_gpio = desc;
-163f080eb717d2 Christoph Niedermaier 2022-12-02  3647  
-da0ccd117da1e4 Rasmus Villemoes      2023-11-20  3648  	dflags = (rs485conf->flags & SER_RS485_ENABLED) ? GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
-da0ccd117da1e4 Rasmus Villemoes      2023-11-20  3649  	desc = devm_gpiod_get_optional(dev, "rs485-mux", dflags);
-da0ccd117da1e4 Rasmus Villemoes      2023-11-20  3650  	if (IS_ERR(desc))
-da0ccd117da1e4 Rasmus Villemoes      2023-11-20 @3651  		return dev_err_probe(dev, PTR_ERR(port->rs485_mux_gpio),
-                                                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-s/port->rs485_mux_gpio/desc/
+> 2. The serial console gets registered much later with this
+>    patchset:
+> 
+> 	original # dmesg | grep printk:
+> 	[    0.000000] printk: legacy bootconsole [uart8250] enabled
+> 	[    0.000000] printk: debug: ignoring loglevel setting.
+> 	[    0.016859] printk: log_buf_len: 1048576 bytes
+> 	[    0.017324] printk: early log buf free: 259624(99%)
+> 	[    0.141859] printk: legacy console [tty0] enabled
+> 	[    0.142399] printk: legacy bootconsole [uart8250] disabled
+> 	[    0.143032] printk: legacy console [ttyS0] enabled
+> 
+>    vs.
+> 
+> 	patched # dmesg | grep printk:
+> 	[    0.000000] printk: legacy bootconsole [uart8250] enabled
+> 	[    0.000000] printk: debug: ignoring loglevel setting.
+> 	[    0.018142] printk: log_buf_len: 1048576 bytes
+> 	[    0.018757] printk: early log buf free: 259624(99%)
+> 	[    0.160706] printk: legacy console [tty0] enabled
+> 	[    0.161213] printk: legacy bootconsole [uart8250] disabled
+> 	[    1.592929] printk: legacy console [ttyS0] enabled
+> 
+>    This is pretty bad because it would complicate or even prevent
+>    debugging of the boot stage via serial console.
 
-da0ccd117da1e4 Rasmus Villemoes      2023-11-20  3652  				     "Cannot get rs485-mux-gpios\n");
-da0ccd117da1e4 Rasmus Villemoes      2023-11-20  3653  	port->rs485_mux_gpio = desc;
-da0ccd117da1e4 Rasmus Villemoes      2023-11-20  3654  
-c150c0f362c1e5 Lukas Wunner          2020-05-12  3655  	return 0;
-ef838a81dd4de1 Uwe Kleine-König      2017-09-13  3656  }
+I think I have a patch coming for 8250 isa ports for that issue.
+This issue should go away if we call add_preferred_console_match()
+from serial8250_isa_init_ports() with options for the port like
+"ttyS0", "ttyS", 0.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+>    The graphical console is not usable when the system dies. Also
+>    finding the right arguments for the earlycon= parameter is
+>    tricky so that people enable it only when they have to debug
+>    very early messages.
+> 
+> 
+> I am going to look at the patches more closely to see if I could
+> provide some hints.
 
+Great, help with the early console handling is much appreciated.
+
+I'll post an updated patchset this week that does not touch
+console_setup() beyond saving the console options. And then we
+hopefully have something that avoids the regressions and can be
+used for further changes later on.
+
+Regards,
+
+Tony
