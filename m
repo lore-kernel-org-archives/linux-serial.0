@@ -1,89 +1,96 @@
-X-Greylist: delayed 923 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 04 Dec 2023 08:53:51 PST
-Received: from 3.mo560.mail-out.ovh.net (3.mo560.mail-out.ovh.net [46.105.58.226])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B2CBB
-	for <linux-serial@vger.kernel.org>; Mon,  4 Dec 2023 08:53:51 -0800 (PST)
-Received: from director2.ghost.mail-out.ovh.net (unknown [10.109.146.53])
-	by mo560.mail-out.ovh.net (Postfix) with ESMTP id 48D9428B2B
-	for <linux-serial@vger.kernel.org>; Mon,  4 Dec 2023 16:38:26 +0000 (UTC)
-Received: from ghost-submission-6684bf9d7b-jf6x6 (unknown [10.110.103.36])
-	by director2.ghost.mail-out.ovh.net (Postfix) with ESMTPS id 49EEA1FDAC;
-	Mon,  4 Dec 2023 16:38:24 +0000 (UTC)
-Received: from etezian.org ([37.59.142.101])
-	by ghost-submission-6684bf9d7b-jf6x6 with ESMTPSA
-	id 1L9OGoAAbmU3HQEAUZVF/w
-	(envelope-from <andi@etezian.org>); Mon, 04 Dec 2023 16:38:24 +0000
-Authentication-Results:garm.ovh; auth=pass (GARM-101G004ca7d984c-7908-45d8-8a25-20e6dd06602f,
-                    728393C84468B0D913C64D460E7D07E4521566EB) smtp.auth=andi@etezian.org
-X-OVh-ClientIp:178.238.172.4
-From: Andi Shyti <andi.shyti@kernel.org>
-To: Jacky Huang <ychuang3@nuvoton.com>,
-	Shan-Chun Hung <schung@nuvoton.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org,
-	Andi Shyti <andi.shyti@kernel.org>
-Subject: [PATCH 1/2] serial: ma35d1: Validate console index before assignment
-Date: Mon,  4 Dec 2023 17:38:03 +0100
-Message-ID: <20231204163804.1331415-2-andi.shyti@kernel.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20231204163804.1331415-1-andi.shyti@kernel.org>
-References: <20231204163804.1331415-1-andi.shyti@kernel.org>
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="ypCor5Gb"
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F1BBB;
+	Mon,  4 Dec 2023 09:01:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=jFinU3a3qG2DIAHPN+wRDTPp5jnN9KCTz2fM5tJeXus=; b=ypCor5Gb96rVureQ536eUhvxia
+	23EwB+OsjdIxxKWEeTP5YRmO661ZADgbeX49QVe4SrtPsqEYA5Pr3ON2R7GwTtPFYoCpJAh4ApaRl
+	/bGAv8ODv3LxbeNKVX8nAped5RGWE6oRFfh8gUkQX7/aAKJ6FhO0cjzUpb9PrSdlipOU=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:43898 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1rACKO-0008Ob-4E; Mon, 04 Dec 2023 12:01:52 -0500
+Date: Mon, 4 Dec 2023 12:01:51 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Mark Brown <broonie@kernel.org>
+Cc: Jan =?ISO-8859-1?Q?Kundr=E1t?= <jan.kundrat@cesnet.cz>, Cosmin Tanislav
+ <cosmin.tanislav@analog.com>, linux-serial@vger.kernel.org, Andy Shevchenko
+ <andy.shevchenko@gmail.com>, linux-kernel@vger.kernel.org
+Message-Id: <20231204120151.f0afbee2ebc69e93e7977547@hugovil.com>
+In-Reply-To: <06fa462c-5b48-410e-8656-4d0dbdbfa142@sirena.org.uk>
+References: <bd91db46c50615bc1d1d62beb659fa7f62386446.1701446070.git.jan.kundrat@cesnet.cz>
+	<20231201132736.65cb0e2bff88fba85121c44a@hugovil.com>
+	<ce3eaa82-66e9-404b-9062-0f628dc6164f@sirena.org.uk>
+	<20231201163846.a7c1d79daca7c6a2e1416a70@hugovil.com>
+	<f5277458-635a-4eca-a37d-c3b2e83eb4b9@sirena.org.uk>
+	<20231201171644.6f7ade89d4c2f744fa3556b7@hugovil.com>
+	<20231204112905.e58cf1b7bf94440f49188390@hugovil.com>
+	<06fa462c-5b48-410e-8656-4d0dbdbfa142@sirena.org.uk>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 36591748781640263
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvkedrudejiedgledvucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomheptehnughiucfuhhihthhiuceorghnughirdhshhihthhisehkvghrnhgvlhdrohhrgheqnecuggftrfgrthhtvghrnhepgfduveejteegteelhfetueetheegfeehhfektddvleehtefhheevkeduleeuueevnecukfhppeduvdejrddtrddtrddupddujeekrddvfeekrddujedvrdegpdefjedrheelrddugedvrddutddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepuddvjedrtddrtddruddpmhgrihhlfhhrohhmpeeorghnughisegvthgviihirghnrdhorhhgqedpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhsvghrihgrlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheeitddpmhhouggvpehsmhhtphhouhht
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+Subject: Re: [PATCH] tty: max310x: work around regmap->regcache data
+ corruption
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-The console is immediately assigned to the ma35d1 port without
-checking its index. This oversight can lead to out-of-bounds
-errors when the index falls outside the valid '0' to
-MA35_UART_NR range. Such scenario trigges ran error like the
-following:
+On Mon, 4 Dec 2023 16:35:30 +0000
+Mark Brown <broonie@kernel.org> wrote:
 
- UBSAN: array-index-out-of-bounds in drivers/tty/serial/ma35d1_serial.c:555:51
- index -1 is out of range for type 'uart_ma35d1_port [17]
+> On Mon, Dec 04, 2023 at 11:29:05AM -0500, Hugo Villeneuve wrote:
+> 
+> > Do you have an example of a driver which is using regmap ranges like it
+> > should be done in this driver, that is using the exact same address for
+> > two or more registers? I found an example, but it doesn't seem
+> > applicable to the sc16is7xx driver because the two registers do not
+> > share a common address, for example they have addresses like 0x01 and
+> > 0x81, even though with the proper page selection, they finally map to
+> > address 0x01.
+> 
+> I don't understand what you mean here - you say that the addresses both
+> have addresses 0x1 and 0x81 but map to address 0x1.  What does the 0x81
+> refer to?  The comments in the driver seemed to indicate that there was
+> a single address which mapped to multiple underlying registers...
 
-Check the index before using it and bail out with a warning.
+Hi,
+I was referring to an example in da9063-i2c.c where they have
+these two registers:
 
-Fixes: 930cbf92db01 ("tty: serial: Add Nuvoton ma35d1 serial driver support")
-Signed-off-by: Andi Shyti <andi.shyti@kernel.org>
-Cc: Jacky Huang <ychuang3@nuvoton.com>
-Cc: <stable@vger.kernel.org> # v6.5+
----
- drivers/tty/serial/ma35d1_serial.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+#define	DA9063_REG_STATUS_A		0x01
+#define	DA9063_REG_SEQ			0x81
 
-diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
-index a6a7c405892e8..21b574f78b861 100644
---- a/drivers/tty/serial/ma35d1_serial.c
-+++ b/drivers/tty/serial/ma35d1_serial.c
-@@ -552,11 +552,19 @@ static void ma35d1serial_console_putchar(struct uart_port *port, unsigned char c
-  */
- static void ma35d1serial_console_write(struct console *co, const char *s, u32 count)
- {
--	struct uart_ma35d1_port *up = &ma35d1serial_ports[co->index];
-+	struct uart_ma35d1_port *up;
- 	unsigned long flags;
- 	int locked = 1;
- 	u32 ier;
- 
-+	if ((co->index < 0) || (co->index >= MA35_UART_NR)) {
-+		pr_warn("Failed to write on ononsole port %x, out of range\n",
-+			co->index);
-+		return;
-+	}
-+
-+	up = &ma35d1serial_ports[co->index];
-+
- 	if (up->port.sysrq)
- 		locked = 0;
- 	else if (oops_in_progress)
--- 
-2.43.0
+To access one or the other, you must select page 0 or 1 in page config
+selection register at address 0x00. It makes sense to me for this case.
 
+But for the sc16is7xx, for example you have these two
+independent registers, sharing the exact same address:
+
+#define SC16IS7XX_IIR_REG		(0x02) /* Interrupt Identification */
+#define SC16IS7XX_FCR_REG		(0x02) /* FIFO control */
+
+I am not sure if regmap range can be used with this configuration.
+Assuming regmap range would be properly setup, when we call
+regmap_read(regmap, SC16IS7XX_IIR_REG, &val), how does regmap would
+know that we want to access SC16IS7XX_IIR_REG and not SC16IS7XX_FCR_REG?
+
+> Searching for struct regmap_range_cfg should show a lot of users in
+> mainline.
+
+Yes, I am trying to find a good example but I must download and read the
+datasheet for each one. If you could point to an IC/driver that uses
+regmap_range similar to IC sc16is7xx, it would really help.
+
+Thank you
+Hugo Villeneuve
