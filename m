@@ -1,93 +1,92 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TTu/2Mi0"
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED15F1985;
-	Mon,  4 Dec 2023 05:29:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701696580; x=1733232580;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=WoWMFgig9uBFYI9AMo/dQVD9UIUxJBVY04YdMlNiXMI=;
-  b=TTu/2Mi083EJ/MyyWeuORnhiw/hRtos2vaMm11HRZfkO4UWJtVTFLDGW
-   8tz7LTFbvAbDzSIRNq0+v0zpzWxKA5ixd6RtMriMGG59TAijs4O53lUvf
-   xmJrVZOJnK4iigCyS0TKJaqyaZWBA1B4Y6TYMsgE49qFNoy2+77NfpF7t
-   FoZpFAyZMGFtFMYbV/c1WU0MeAIzkMt1U3X8nKN+gLxJk+lC5Pg5TFtjn
-   xQ/3MzA6VOprzK2hATeUYNVmAjd5lnNI+9ixKArV6xXS49GzJR4Gdh0KK
-   LsErjkiV8mznDwdLxJHjh/AjosOteQXRDlhbu5fsK4UN0wpc6Mv+61Av7
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10913"; a="390890360"
-X-IronPort-AV: E=Sophos;i="6.04,249,1695711600"; 
-   d="scan'208";a="390890360"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2023 05:29:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10913"; a="836583187"
-X-IronPort-AV: E=Sophos;i="6.04,249,1695711600"; 
-   d="scan'208";a="836583187"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2023 05:29:38 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rA90x-00000001lAf-1yEw;
-	Mon, 04 Dec 2023 15:29:35 +0200
-Date: Mon, 4 Dec 2023 15:29:35 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Dawei Li <dawei.li@shingroup.cn>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, jszhang@kernel.org,
-	LKML <linux-kernel@vger.kernel.org>,
-	linux-serial <linux-serial@vger.kernel.org>, set_pte_at@outlook.com,
-	stable@kernel.org
-Subject: Re: [PATCH] serial: dw8250: Make DLF feature independent of
- ADDITIONAL_FEATURE
-Message-ID: <ZW3UP8hfI7_-TsVl@smile.fi.intel.com>
-References: <20231204130820.2823688-1-dawei.li@shingroup.cn>
- <48f6fcce-4b5-a7c0-2fc0-989b9a2fba8@linux.intel.com>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="jR6Vi1by"
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A519195;
+	Mon,  4 Dec 2023 08:29:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=wGtsBteNQqaSCK4EDE+x10UvfaU6Z2WzVNRFRs3sZQ0=; b=jR6Vi1byfKj4eEfDp2We+QPSLh
+	UFAyOexoNSlfHvl0g0BPwhYUERxVte5s/JZGzRqs5Vch4quYzPZRqQ5fiQ/SUuEMst8NAkjk1Lsj8
+	KYMl1CxgPiOchAoGzXFHbDIHKrAWUrWMcuXYDh2+nY0qsEP4DQ45u6DwwUu9vFPycUoE=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:32824 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1rABog-0008Ca-4H; Mon, 04 Dec 2023 11:29:06 -0500
+Date: Mon, 4 Dec 2023 11:29:05 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: Mark Brown <broonie@kernel.org>, Jan =?ISO-8859-1?Q?Kundr=E1t?=
+ <jan.kundrat@cesnet.cz>, Cosmin Tanislav <cosmin.tanislav@analog.com>,
+ linux-serial@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>,
+ linux-kernel@vger.kernel.org
+Message-Id: <20231204112905.e58cf1b7bf94440f49188390@hugovil.com>
+In-Reply-To: <20231201171644.6f7ade89d4c2f744fa3556b7@hugovil.com>
+References: <bd91db46c50615bc1d1d62beb659fa7f62386446.1701446070.git.jan.kundrat@cesnet.cz>
+	<20231201132736.65cb0e2bff88fba85121c44a@hugovil.com>
+	<ce3eaa82-66e9-404b-9062-0f628dc6164f@sirena.org.uk>
+	<20231201163846.a7c1d79daca7c6a2e1416a70@hugovil.com>
+	<f5277458-635a-4eca-a37d-c3b2e83eb4b9@sirena.org.uk>
+	<20231201171644.6f7ade89d4c2f744fa3556b7@hugovil.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <48f6fcce-4b5-a7c0-2fc0-989b9a2fba8@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+Subject: Re: [PATCH] tty: max310x: work around regmap->regcache data
+ corruption
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Mon, Dec 04, 2023 at 03:20:09PM +0200, Ilpo Järvinen wrote:
-> On Mon, 4 Dec 2023, Dawei Li wrote:
+On Fri, 1 Dec 2023 17:16:44 -0500
+Hugo Villeneuve <hugo@hugovil.com> wrote:
+
+> On Fri, 1 Dec 2023 21:41:48 +0000
+> Mark Brown <broonie@kernel.org> wrote:
 > 
-> > DW apb uart databook defines couples of configuration parameters of
+> > On Fri, Dec 01, 2023 at 04:38:46PM -0500, Hugo Villeneuve wrote:
+> > > Mark Brown <broonie@kernel.org> wrote:
+> > 
+> > > > If you're working on that driver it'd also be good to update the current
+> > > > use of cache bypass for the enhanced features/interrupt identification
+> > > > register (and anything else in there, that did seem to be the only one)
+> > > > to use regmap ranges instead - that'd remove the need for the efr_lock
+> > > > and be a much more sensible/idiomatic use of the regmap APIs.
+> > 
+> > > I will also look to remove the efr_lock, altough it has more
+> > > implications since this ship has some registers that share a common
+> > > address, and selected by bits in other registers, and I think this
+> > > is why there is this efr_lock.
+> > 
+> > Right, the registers sharing a common address with the register selected
+> > by bits in another register is what regmap ranges support - the less
+> > creative use of this is banked blocks of registers with a selector
+> > register which picks which page bank is in use, that's moderately common
+> > especially for TI.
+> 
+> Hi Mark,
+> thanks for the info, I was not aware of that, and will look into it.
+> 
+> Hugo Villeneuve.
 
-DW_apb_uart (as it's part of file name, or spell this fully).
+Hi Mark,
+I am having a hard time finding documentation on how regmap ranges
+work.
 
-> > dw8250 IP, among which there are 2 of them:
+Do you have an example of a driver which is using regmap ranges like it
+should be done in this driver, that is using the exact same address for
+two or more registers? I found an example, but it doesn't seem
+applicable to the sc16is7xx driver because the two registers do not
+share a common address, for example they have addresses like 0x01 and
+0x81, even though with the proper page selection, they finally map to
+address 0x01.
 
-DesignWare 8250 IP
-
-...
-
-> > The bug was hit when we are bringing up dw8250 IP on our hardware
-
-Ditto.
-
-> > platform, in which parameters are configured in such combination:
-> > - ADDTIONAL_FEATURE disabled;
-> > - FRACTIONAL_BAUD_DIVISOR_EN enabled;
-
-...
-
-> The very same code change is already in tty-next (from another author).
-
-For your convenience:
-
-d804987153e7 ("serial: 8250_dw: Decouple DLF register check from UCV")
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thank you,
+Hugo Villeneuve
