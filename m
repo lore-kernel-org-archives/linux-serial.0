@@ -1,125 +1,145 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83973171D9
-	for <linux-serial@vger.kernel.org>; Mon,  4 Dec 2023 17:19:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hlnmlK8Q"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E78D1C433C7;
-	Mon,  4 Dec 2023 17:19:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1701710370;
-	bh=piGSs7julioqnQBr/YqINs6yEzw8UVwQTU1V8jB7+ro=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=hlnmlK8QXwx4pGkRklXWR62xKFJg1B3GRuUALc6WCzRJZfcq/+XaZbPDT5Cca41Kg
-	 2Y7NO1DsF0F28+WgUwxjv5fSF4j23IvstkrLHkfssbR/d8v/GR7JvJOg7ygNYtNKae
-	 DzdCRGz8Y9YyzTaDyIKaolnwqPOhklnxfZMph17KOaEXW9khP60Xj55pLW/2hWpIkU
-	 EkNCHl88N1UeIOf2lIHVUhJNWFbRIAIpYlifzeDzTbXUjmJft0UCvo1OpOFH6+PFT1
-	 kuEdb/M6VGj/Z80g7/I6DjIDck/EDJh+zsfxUkb40mRmtfXpYG3T5MtqAbUA/3nH1c
-	 6NB9Jp7TY2hzQ==
-Date: Mon, 4 Dec 2023 17:19:25 +0000
-From: Mark Brown <broonie@kernel.org>
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: Jan =?iso-8859-1?Q?Kundr=E1t?= <jan.kundrat@cesnet.cz>,
-	Cosmin Tanislav <cosmin.tanislav@analog.com>,
-	linux-serial@vger.kernel.org,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: max310x: work around regmap->regcache data
- corruption
-Message-ID: <50b24985-cb30-4a75-a15d-9c165a276f1d@sirena.org.uk>
-References: <bd91db46c50615bc1d1d62beb659fa7f62386446.1701446070.git.jan.kundrat@cesnet.cz>
- <20231201132736.65cb0e2bff88fba85121c44a@hugovil.com>
- <ce3eaa82-66e9-404b-9062-0f628dc6164f@sirena.org.uk>
- <20231201163846.a7c1d79daca7c6a2e1416a70@hugovil.com>
- <f5277458-635a-4eca-a37d-c3b2e83eb4b9@sirena.org.uk>
- <20231201171644.6f7ade89d4c2f744fa3556b7@hugovil.com>
- <20231204112905.e58cf1b7bf94440f49188390@hugovil.com>
- <06fa462c-5b48-410e-8656-4d0dbdbfa142@sirena.org.uk>
- <20231204120151.f0afbee2ebc69e93e7977547@hugovil.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="eWvMOGEu"
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4418113
+	for <linux-serial@vger.kernel.org>; Mon,  4 Dec 2023 09:51:47 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id 5b1f17b1804b1-40c08af319cso19176755e9.2
+        for <linux-serial@vger.kernel.org>; Mon, 04 Dec 2023 09:51:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1701712306; x=1702317106; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=0xgC+ecJ/aYtY2CvVGurydBuFpa6kzX9Y0C6MFp5IkI=;
+        b=eWvMOGEudiafOX/lUDK0Cp7kzPnaQUBQSUkzISJLBEFQEOITgBRJXCeShENLgqRcwX
+         iNELsPNVTx2I1F8/lvE7sAgifmAbzu2MOaPJV5eKCkF8OxDoWukCpfpchUK2f888X9QO
+         TLXJomtduvblUgRg6JW5wzKhL7s60epsYiXtIZFVk+Viea5iErOcvAgrsGEUB5f2f00T
+         kcdXr6WYIzyqjwJMkNrMdeFoYI2v22ylO4MtOqtNGD9IuIYJyuREkxlAAeC4Rk9x/XTC
+         QRf9lvrglZ8PYTO6TNzhZd6Af8n5a5cV7a6Uduck5xe+Pc3zG/fE00RF+2mkquBzjg35
+         gbfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701712306; x=1702317106;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=0xgC+ecJ/aYtY2CvVGurydBuFpa6kzX9Y0C6MFp5IkI=;
+        b=idn0vzpRwt5VKYAIYz8wZsjyr/mZmGsHfZEGCEWjIyL7xb7SyvMWRbHg3kWLnLZjo/
+         TDxlRjDRVsnLdCBr0lZL033n/tI+rqKGVw+1OCGQirwjOId8aZYrwZEEJpOO6nrKPKcY
+         kcXPxCzqbU8mDrJOdujkDv++pmfdvGEsv23Sg9d7lsYKFUI8YKtVvWrsQn1l9zZRt+VY
+         Fw5iR6Y3jrMPQWmZPK4u1cMbLmakgtWWdyYravnxdJVRuF6g333DHOtOIX4Zlc0qsFVI
+         Ifadc5AT3s47m03bH9bBed9/Wxa/9AUx0z45nhIlJoZSjT4r7vGuo4RN+X4mHp13IR8g
+         r/lA==
+X-Gm-Message-State: AOJu0Ywa6s9cghP3sFgydncrqkOPwAu+BuuJb9xvlXjIa6Nos4K+jIsI
+	iwBH4lGzHIWs41lPdnryKQ2DyA==
+X-Google-Smtp-Source: AGHT+IHg/7kveHuWDixjU8ouQ7zKYnDBAtnudtwu6W88VoQ8XBhhZ2T41NB6zJGoDZ53CE5QrdWRqQ==
+X-Received: by 2002:a7b:cd07:0:b0:40b:5e59:ea0b with SMTP id f7-20020a7bcd07000000b0040b5e59ea0bmr2920644wmj.170.1701712306207;
+        Mon, 04 Dec 2023 09:51:46 -0800 (PST)
+Received: from draszik.lan ([80.111.64.44])
+        by smtp.gmail.com with ESMTPSA id f18-20020a05600c155200b004094d4292aesm15918570wmg.18.2023.12.04.09.51.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Dec 2023 09:51:45 -0800 (PST)
+Message-ID: <20bf05b9d9ccc5c11ef17500ac7a97c46dd46a9a.camel@linaro.org>
+Subject: Re: [PATCH v5 12/20] clk: samsung: clk-gs101: Add cmu_top, cmu_misc
+ and cmu_apm support
+From: =?ISO-8859-1?Q?Andr=E9?= Draszik <andre.draszik@linaro.org>
+To: Peter Griffin <peter.griffin@linaro.org>, robh+dt@kernel.org, 
+ krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+ conor+dt@kernel.org,  sboyd@kernel.org, tomasz.figa@gmail.com,
+ s.nawrocki@samsung.com,  linus.walleij@linaro.org, wim@linux-watchdog.org,
+ linux@roeck-us.net,  catalin.marinas@arm.com, will@kernel.org,
+ arnd@arndb.de, olof@lixom.net,  gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, cw00.choi@samsung.com,  alim.akhtar@samsung.com
+Cc: tudor.ambarus@linaro.org, semen.protsenko@linaro.org,
+ saravanak@google.com,  willmcvicker@google.com, soc@kernel.org,
+ devicetree@vger.kernel.org,  linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org,  linux-clk@vger.kernel.org,
+ linux-gpio@vger.kernel.org,  linux-watchdog@vger.kernel.org,
+ kernel-team@android.com,  linux-serial@vger.kernel.org
+Date: Mon, 04 Dec 2023 17:51:43 +0000
+In-Reply-To: <20231201160925.3136868-13-peter.griffin@linaro.org>
+References: <20231201160925.3136868-1-peter.griffin@linaro.org>
+	 <20231201160925.3136868-13-peter.griffin@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.49.2-3 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="Wl9IAOT+dlowaaOQ"
-Content-Disposition: inline
-In-Reply-To: <20231204120151.f0afbee2ebc69e93e7977547@hugovil.com>
-X-Cookie: For office use only.
+
+On Fri, 2023-12-01 at 16:09 +0000, Peter Griffin wrote:
+> cmu_top is the top level clock management unit which contains PLLs, muxes=
+,
+> dividers and gates that feed the other clock management units.
+>=20
+> cmu_misc clocks IPs such as Watchdog and cmu_apm clocks ips part of the
+> APM module.
+>=20
+> Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
+> Tested-by: Will McVicker <willmcvicker@google.com>
+> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> ---
+> =C2=A0drivers/clk/samsung/Makefile=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=A0 =
+1 +
+> =C2=A0drivers/clk/samsung/clk-gs101.c | 2495 ++++++++++++++++++++++++++++=
++++
+> =C2=A02 files changed, 2496 insertions(+)
+> =C2=A0create mode 100644 drivers/clk/samsung/clk-gs101.c
+>=20
+> diff --git a/drivers/clk/samsung/Makefile b/drivers/clk/samsung/Makefile
+> index ebbeacabe88f..3056944a5a54 100644
+> --- a/drivers/clk/samsung/Makefile
+> +++ b/drivers/clk/samsung/Makefile
+> @@ -21,6 +21,7 @@ obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)	+=3D clk-exynos7.=
+o
+> =C2=A0obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)	+=3D clk-exynos7885.o
+> =C2=A0obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)	+=3D clk-exynos850.o
+> =C2=A0obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)	+=3D clk-exynosautov9.o
+> +obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)	+=3D clk-gs101.o
+> =C2=A0obj-$(CONFIG_S3C64XX_COMMON_CLK)	+=3D clk-s3c64xx.o
+> =C2=A0obj-$(CONFIG_S5PV210_COMMON_CLK)	+=3D clk-s5pv210.o clk-s5pv210-aud=
+ss.o
+> =C2=A0obj-$(CONFIG_TESLA_FSD_COMMON_CLK)	+=3D clk-fsd.o
+> diff --git a/drivers/clk/samsung/clk-gs101.c b/drivers/clk/samsung/clk-gs=
+101.c
+> new file mode 100644
+> index 000000000000..6bd233a7ab63
+> --- /dev/null
+> +++ b/drivers/clk/samsung/clk-gs101.c
+> @@ -0,0 +1,2495 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (C) 2023 Linaro Ltd.
+> + * Author: Peter Griffin <peter.griffin@linaro.org>
+> + *
+> + * Common Clock Framework support for GS101.
+> + */
+> [...]
+> +
+> +/* List of parent clocks for Muxes in CMU_TOP: for CMU_HSI0 */
+> +PNAME(mout_cmu_hsi0_usb31drd_p)	=3D { "oscclk", "dout_shared2_div2" };
+> +
+> +PNAME(mout_cmu_hsi0_bus_p)	=3D { "dout_shared0_div4", "dout_shared1_div4=
+",
+> +				=C2=A0=C2=A0=C2=A0 "dout_shared2_div2", "dout_shared3_div2",
+> +				=C2=A0=C2=A0=C2=A0 "fout_spare_pll" };
+
+This should also be updated....
+=20
+> [...]
+> +	MUX(CLK_MOUT_HSI0_BUS, "mout_cmu_hsi0_bus", mout_cmu_hsi0_bus_p,
+> +	=C2=A0=C2=A0=C2=A0 CLK_CON_MUX_MUX_CLKCMU_HSI0_BUS, 0, 3),
+
+...because we have 8 possibilities now.
+
+(I didn't check the other parents, but you mentioned you updated field widt=
+hs
+in other registers, too, so maybe need to double check the parent strings a=
+s well)
 
 
---Wl9IAOT+dlowaaOQ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Cheers,
+Andre'
 
-On Mon, Dec 04, 2023 at 12:01:51PM -0500, Hugo Villeneuve wrote:
-> Mark Brown <broonie@kernel.org> wrote:
-
-> > I don't understand what you mean here - you say that the addresses both
-> > have addresses 0x1 and 0x81 but map to address 0x1.  What does the 0x81
-> > refer to?  The comments in the driver seemed to indicate that there was
-> > a single address which mapped to multiple underlying registers...
-
-> I was referring to an example in da9063-i2c.c where they have
-> these two registers:
-
-> #define	DA9063_REG_STATUS_A		0x01
-> #define	DA9063_REG_SEQ			0x81
-
-> To access one or the other, you must select page 0 or 1 in page config
-> selection register at address 0x00. It makes sense to me for this case.
-
-That appears to be a bit confused in that they've mapped the window
-through which you view the paged registers on top of the physical
-register map - I suppose that will work but more through luck than
-design.  The window is the physical address range through which the
-actual registers can be accessed, the range is the virtual register
-numbers through which users access the regmap.  It'll make things
-clearer if they don't overlap.
-
-> But for the sc16is7xx, for example you have these two
-> independent registers, sharing the exact same address:
-
-> #define SC16IS7XX_IIR_REG		(0x02) /* Interrupt Identification */
-> #define SC16IS7XX_FCR_REG		(0x02) /* FIFO control */
-
-> I am not sure if regmap range can be used with this configuration.
-> Assuming regmap range would be properly setup, when we call
-> regmap_read(regmap, SC16IS7XX_IIR_REG, &val), how does regmap would
-> know that we want to access SC16IS7XX_IIR_REG and not SC16IS7XX_FCR_REG?
-
-This is the exact situation this feature is supposed to handle, your
-window is address 2 and then you should pick some random non-physical
-numbers to map the two registers to for access by users.  The core will
-then do appropriate physical accesses transparently to manage the
-window.  The whole point here is to assign new, virtual addresses to the
-two registers you're trying to access.
-
-> > Searching for struct regmap_range_cfg should show a lot of users in
-> > mainline.
-
-> Yes, I am trying to find a good example but I must download and read the
-> datasheet for each one. If you could point to an IC/driver that uses
-> regmap_range similar to IC sc16is7xx, it would really help.
-
-Essentially all of them should be fine. =20
-
---Wl9IAOT+dlowaaOQ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmVuCh0ACgkQJNaLcl1U
-h9DRjgf9Hh3YIqpPEccxP8qX7luoZ0Vnp8uh5H0fP++gtgRwfacZp/MU5uqheehn
-BtMabDTouwS6+uwC0ROD7854XyFJNolqT7cMCozH/QUT1m2BSanlPHHzCjAD1/xG
-CSWnDKvh17/cReyxDaXNggmAN+hHxBX2kwo+qjpdbdYJiaDURBDurWYx9Z7cN5su
-EuiA+91ROz6wsHLEElsEMFlh7cUchMKUwhzP9Vv00l+zig0Xfwv8t4KSbs//Co6t
-/eUD0973d6l036TVZT4GBZj475qPSR4Q7YjQDv+MHL4Cr0giAY9gQ6IRIR5rY/yu
-dAdqEGwZq7g+xRXCrBbdz+3Es7D/Hw==
-=mSsM
------END PGP SIGNATURE-----
-
---Wl9IAOT+dlowaaOQ--
