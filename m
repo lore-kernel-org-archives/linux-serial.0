@@ -1,58 +1,150 @@
-X-Greylist: delayed 6600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 04 Dec 2023 11:07:55 PST
-Received: from 20.mo582.mail-out.ovh.net (20.mo582.mail-out.ovh.net [178.32.124.17])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF82188
-	for <linux-serial@vger.kernel.org>; Mon,  4 Dec 2023 11:07:55 -0800 (PST)
-Received: from director4.ghost.mail-out.ovh.net (unknown [10.108.20.107])
-	by mo582.mail-out.ovh.net (Postfix) with ESMTP id D23AD25051
-	for <linux-serial@vger.kernel.org>; Mon,  4 Dec 2023 16:38:19 +0000 (UTC)
-Received: from ghost-submission-6684bf9d7b-9k8qw (unknown [10.109.138.60])
-	by director4.ghost.mail-out.ovh.net (Postfix) with ESMTPS id C50471FDDB;
-	Mon,  4 Dec 2023 16:38:16 +0000 (UTC)
-Received: from etezian.org ([37.59.142.102])
-	by ghost-submission-6684bf9d7b-9k8qw with ESMTPSA
-	id oPzWM3gAbmUIfgAA3fLkWg
-	(envelope-from <andi@etezian.org>); Mon, 04 Dec 2023 16:38:16 +0000
-Authentication-Results:garm.ovh; auth=pass (GARM-102R00487f7c05c-cd1b-45e6-a84e-d0be2fe0901c,
-                    728393C84468B0D913C64D460E7D07E4521566EB) smtp.auth=andi@etezian.org
-X-OVh-ClientIp:178.238.172.4
-From: Andi Shyti <andi.shyti@kernel.org>
-To: Jacky Huang <ychuang3@nuvoton.com>,
-	Shan-Chun Hung <schung@nuvoton.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3A7E30F9D
+	for <linux-serial@vger.kernel.org>; Mon,  4 Dec 2023 19:17:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kfbrSAec"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA600C433C8;
+	Mon,  4 Dec 2023 19:17:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1701717422;
+	bh=KpfOnvTL3knkuMpE6adDfUI+NY+fIk8AM9x5Gak3Hco=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=kfbrSAecxVkKRtOr/497Qus9viOkx7eEyf+wNjxCRI00UiQZCO/tatsxo0Uk+Hkwh
+	 eDkWTu8YKxsITFB/T1GKgMUDeJGEy8xKwX6nIj/+c26Z9GPRuSlgikMF1lsa+jzWI4
+	 Ck/h/PBKOkbmhbespSrIZdvb6qRoMFDE4JPFAKzbYojvsiqc8tDgXAeqSJqhNFAvHq
+	 0TC5naYn7SssteJLA96q4afb8sEsLoNbbspHrIt6CsFR1Dwsd1WX0VV6q+DL5XNP6h
+	 wEw9Q5T/0jamtg5E/Nk0gqNr5rlDzfHCqioY8YnnnkbD2S7izVrjrwkHRn11uGE4Em
+	 tlpTyjWdIfazg==
+Date: Mon, 4 Dec 2023 19:16:57 +0000
+From: Mark Brown <broonie@kernel.org>
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: Jan =?iso-8859-1?Q?Kundr=E1t?= <jan.kundrat@cesnet.cz>,
+	Cosmin Tanislav <cosmin.tanislav@analog.com>,
 	linux-serial@vger.kernel.org,
-	Andi Shyti <andi.shyti@kernel.org>
-Subject: [PATCH 0/2] serial ma35d1 imrpovements
-Date: Mon,  4 Dec 2023 17:38:02 +0100
-Message-ID: <20231204163804.1331415-1-andi.shyti@kernel.org>
-X-Mailer: git-send-email 2.43.0
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] tty: max310x: work around regmap->regcache data
+ corruption
+Message-ID: <66946666-eb33-431d-9870-7046c39ffb4e@sirena.org.uk>
+References: <20231201132736.65cb0e2bff88fba85121c44a@hugovil.com>
+ <ce3eaa82-66e9-404b-9062-0f628dc6164f@sirena.org.uk>
+ <20231201163846.a7c1d79daca7c6a2e1416a70@hugovil.com>
+ <f5277458-635a-4eca-a37d-c3b2e83eb4b9@sirena.org.uk>
+ <20231201171644.6f7ade89d4c2f744fa3556b7@hugovil.com>
+ <20231204112905.e58cf1b7bf94440f49188390@hugovil.com>
+ <06fa462c-5b48-410e-8656-4d0dbdbfa142@sirena.org.uk>
+ <20231204120151.f0afbee2ebc69e93e7977547@hugovil.com>
+ <50b24985-cb30-4a75-a15d-9c165a276f1d@sirena.org.uk>
+ <20231204135922.0355f030945920086d21b8b6@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 34621422958217799
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvkedrudejiedgledvucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomheptehnughiucfuhhihthhiuceorghnughirdhshhihthhisehkvghrnhgvlhdrohhrgheqnecuggftrfgrthhtvghrnheptdevueeiheeftedujefhheelieejvdevteelfefhheeutdelkedtveejudejgfdvnecukfhppeduvdejrddtrddtrddupddujeekrddvfeekrddujedvrdegpdefjedrheelrddugedvrddutddvnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepuddvjedrtddrtddruddpmhgrihhlfhhrohhmpeeorghnughisegvthgviihirghnrdhorhhgqedpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhsvghrihgrlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekvddpmhhouggvpehsmhhtphhouhht
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="xVSy1rfpuORusGPL"
+Content-Disposition: inline
+In-Reply-To: <20231204135922.0355f030945920086d21b8b6@hugovil.com>
+X-Cookie: For office use only.
 
-Hi,
 
-Just a couple of improvements after running through a failure
-for the serial ma35d1 driver.
+--xVSy1rfpuORusGPL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks,
-Andi
+On Mon, Dec 04, 2023 at 01:59:22PM -0500, Hugo Villeneuve wrote:
 
-Andi Shyti (2):
-  serial: ma35d1: Validate console index before assignment
-  serial: ma35d1: Improve logging for out-of-bound console setup
+> Based on tas2770.c, I am assuming I could redefine the code to look
+> like this:
 
- drivers/tty/serial/ma35d1_serial.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+> /* SC16IS7XX register definitions */
+> #define SC16IS7XX_REG(page, reg)        ((page * 128) + reg)
+>=20
+> #define SC16IS7XX_RHR_REG	SC16IS7XX_REG(0, 0x00) /* RX FIFO */
+> #define SC16IS7XX_THR_REG	SC16IS7XX_REG(0, 0x00) /* TX FIFO */
+> #define SC16IS7XX_IER_REG	SC16IS7XX_REG(0, 0x01) /* Interrupt enable */
+> #define SC16IS7XX_IIR_REG	SC16IS7XX_REG(0, 0x02) /* Interrupt Identificat=
+ion (read) */
+> #define SC16IS7XX_FCR_REG	SC16IS7XX_REG(0, 0x02) /* FIFO control (write) =
+*/
+> #define SC16IS7XX_MCR_REG	SC16IS7XX_REG(0, 0x04) /* Modem Control */
+> #define SC16IS7XX_LSR_REG	SC16IS7XX_REG(0, 0x05) /* Line Status */
+> #define SC16IS7XX_MSR_REG	SC16IS7XX_REG(0, 0x06) /* Modem Status */
+> #define SC16IS7XX_SPR_REG	SC16IS7XX_REG(0, 0x07) /* Scratch Pad */
+> ...
+> #define SC16IS7XX_EFR_REG	SC16IS7XX_REG(1, 0x02) /* Enhanced Features */
+> #define SC16IS7XX_XON1_REG	SC16IS7XX_REG(1, 0x04) /* Xon1 word */
+> #define SC16IS7XX_XON2_REG	SC16IS7XX_REG(1, 0x05) /* Xon2 word */
+> #define SC16IS7XX_XOFF1_REG	SC16IS7XX_REG(1, 0x06) /* Xoff1 word */
+> #define SC16IS7XX_XOFF2_REG	SC16IS7XX_REG(1, 0x07) /* Xoff2 word */
 
--- 
-2.43.0
+> static const struct regmap_range_cfg sc16is7xx_regmap_ranges[] =3D {
+> 	{
+> 		.range_min =3D 0,
+> 		.range_max =3D 1 * 128,
+> 		.selector_reg =3D SC16IS7XX_LCR_REG,
+> 		.selector_mask =3D 0xff,
+> 		.selector_shift =3D 0,
+> 		.window_start =3D 0,
+> 		.window_len =3D 128,
+> 	},
+> };
 
+That looks plausible - I'd tend to make the range just completely
+non-physical (eg, start at some unrepresentable value) so there's no
+possible ambiguity with a physical address.  I'm also not clear why
+you've made the window be 128 registers wide if it's just this range
+=66rom 2-7 that gets switched around, I'd do something more like
+
+#define SC16IS7XX_RANGE_BASE 0x1000
+#define SC16IS7XX_WINDOW_LEN 6
+#define SC16IS7XX_PAGED_REG(page, reg) \
+	(SC16IS7XX_RANGE_BASE + (SC16IS7XX_WINDOW_LEN * page) + reg)
+
+	.range_min =3D SC16IS7XX_RANGE_BASE,
+	.range_max =3D SC16IS7XX_RANGE_BASE + (2 * SC16IS7XX_WINDOW_LEN),
+	.window_start =3D 2,
+	.window_len =3D SC16IS7XX_WINDOW_LEN,
+
+You could apply a - 2 offset to reg as well to make the defines for the
+registers clearer.  The above means that any untranslated register you
+see in I/O traces should be immediately obvious (and more likely to trip
+up error handling and tell you about it if it goes wrong) and hopefully
+also makes it easier to reason about what's going on.
+
+> But here, selecting the proper "page" is not obvious,
+> because to select page 1, we need to write a fixed value of 0xBF to
+> the LCR register.
+
+> And when selecting page 0, we must write the previous value that was
+> in LCR _before_ we made the switch to page 1...
+
+> How do we do that?
+
+That's one reason why having the range cover all the registers gets
+confusing.  That said the code does have special casing for a selector
+register in the middle of the range since there were some devices that
+just put the paging register in the middle of the range it controls for
+some innovative region, the core will notice that this is a selector
+register and not do any paging for that register.
+
+--xVSy1rfpuORusGPL
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmVuJagACgkQJNaLcl1U
+h9BNawf+P7Lra21foVyX6Ny6bWIKe7vXq/LDIa80vV7X7bX9etQJaNNIjOK8te3k
+B3qNX/yHvnF2FXOQXDqKNGXZrhAtkl6kj6BJc9uoiob4RizUdleOoFJqJ7Twq0Em
+D36+VM2Fhs/JGRMj28BVLUCk65toBTLBPS7zg7KVE0ZGwMMOIKPYgDiyCPfj6EmE
+g0VW2RMI9H9yzFOk6pt5TsOcFAq1P68UiyIrZv+z3louzlynLtJbvNsENJp+xPwS
+laYPS9Y6SvH9OB25C4kiTHJjzyDY3cAAMQXVMPZQ6XY8S+ko3kCbGrKiSYfx0VCa
+8OHQO4ZM55O2rurwulkc8YAGM9+4QA==
+=b/zt
+-----END PGP SIGNATURE-----
+
+--xVSy1rfpuORusGPL--
