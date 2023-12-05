@@ -1,9 +1,9 @@
 Received: from sakura.ysato.name (ik1-413-38519.vs.sakura.ne.jp [153.127.30.23])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 73BA79E;
-	Tue,  5 Dec 2023 01:55:35 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36193135;
+	Tue,  5 Dec 2023 01:55:36 -0800 (PST)
 Received: from SIOS1075.ysato.name (ZM005235.ppp.dion.ne.jp [222.8.5.235])
-	by sakura.ysato.name (Postfix) with ESMTPSA id 4CCF91C05B8;
-	Tue,  5 Dec 2023 18:46:27 +0900 (JST)
+	by sakura.ysato.name (Postfix) with ESMTPSA id C45C01C05EE;
+	Tue,  5 Dec 2023 18:46:35 +0900 (JST)
 From: Yoshinori Sato <ysato@users.sourceforge.jp>
 To: linux-sh@vger.kernel.org
 Cc: Yoshinori Sato <ysato@users.sourceforge.jp>,
@@ -70,9 +70,9 @@ Cc: Yoshinori Sato <ysato@users.sourceforge.jp>,
 	linux-pci@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	linux-fbdev@vger.kernel.org
-Subject: [DO NOT MERGE v5 13/37] dt-bindings: clock: sh7750-cpg: Add renesas,sh7750-cpg header.
-Date: Tue,  5 Dec 2023 18:45:32 +0900
-Message-Id: <ad0f5da442a9f4f32fecb4f2d2a6be1bdac6e896.1701768028.git.ysato@users.sourceforge.jp>
+Subject: [DO NOT MERGE v5 17/37] dt-bindings: interrupt-controller: renesas,sh7751-intc: Add json-schema
+Date: Tue,  5 Dec 2023 18:45:36 +0900
+Message-Id: <1fafcf1c70ee4e38847bac1379bcb4555a237505.1701768028.git.ysato@users.sourceforge.jp>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1701768028.git.ysato@users.sourceforge.jp>
 References: <cover.1701768028.git.ysato@users.sourceforge.jp>
@@ -84,157 +84,125 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-SH7750 CPG Clock output define.
+Renesas SH7751 INTC json-schema.
 
 Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
 ---
- .../bindings/clock/renesas,sh7750-cpg.yaml    | 103 ++++++++++++++++++
- include/dt-bindings/clock/sh7750-cpg.h        |  26 +++++
- 2 files changed, 129 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/clock/renesas,sh7750-cpg.yaml
- create mode 100644 include/dt-bindings/clock/sh7750-cpg.h
+ .../renesas,sh7751-intc.yaml                  | 105 ++++++++++++++++++
+ 1 file changed, 105 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/interrupt-controller/renesas,sh7751-intc.yaml
 
-diff --git a/Documentation/devicetree/bindings/clock/renesas,sh7750-cpg.yaml b/Documentation/devicetree/bindings/clock/renesas,sh7750-cpg.yaml
+diff --git a/Documentation/devicetree/bindings/interrupt-controller/renesas,sh7751-intc.yaml b/Documentation/devicetree/bindings/interrupt-controller/renesas,sh7751-intc.yaml
 new file mode 100644
-index 000000000000..da0b837c1123
+index 000000000000..9d05c10f5c32
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/clock/renesas,sh7750-cpg.yaml
-@@ -0,0 +1,103 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++++ b/Documentation/devicetree/bindings/interrupt-controller/renesas,sh7751-intc.yaml
+@@ -0,0 +1,105 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/clock/renesas,sh7750-cpg.yaml#
++$id: http://devicetree.org/schemas/interrupt-controller/renesas,sh7751-intc.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Renesas SH7750/7751 Clock Pulse Generator (CPG)
++title: Renesas SH7751 Interrupt Controller
 +
 +maintainers:
 +  - Yoshinori Sato <ysato@users.sourceforge.jp>
 +
-+description:
-+  The Clock Pulse Generator (CPG) generates core clocks for the SoC.  It
-+  includes PLLs, and variable ratio dividers.
-+
-+  The CPG may also provide a Clock Domain for SoC devices, in combination with
-+  the CPG Module Stop (MSTP) Clocks.
-+
 +properties:
 +  compatible:
-+    enum:
-+      - renesas,sh7750-cpg             # SH7750
-+      - renesas,sh7750s-cpg            # SH775S
-+      - renesas,sh7750r-cpg            # SH7750R
-+      - renesas,sh7751-cpg             # SH7751
-+      - renesas,sh7751r-cpg            # SH7751R
++    items:
++      - const: renesas,sh7751-intc
 +
-+  reg: true
-+
-+  reg-names: true
-+
-+  clocks: true
-+
-+  clock-names: true
-+
-+  '#clock-cells':
++  '#interrupt-cells':
 +    const: 1
 +
-+  renesas,mode:
-+    description: Board-specific settings of the MD[0-2] pins on SoC
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    minimum: 0
-+    maximum: 6
++  interrupt-controller: true
 +
-+  '#power-domain-cells':
-+    const: 0
++  reg:
++    maxItems: 2
++
++  reg-names:
++    items:
++      - const: ICR
++      - const: INTPRI00
++
++  renesas,icr-irlm:
++    type: boolean
++    description: If true ICR.IRLM=1
++
++  renesas,ipr-map:
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    description: |
++      IRQ to IPR mapping definition.
++      1st - INTEVT
++      2nd - Register
++      3rd - bit index
 +
 +required:
 +  - compatible
++  - '#interrupt-cells'
++  - interrupt-controller
 +  - reg
 +  - reg-names
-+  - clocks
-+  - clock-names
-+  - '#clock-cells'
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - renesas,sh7750-cpg
-+              - renesas,sh7750s-cpg
-+    then:
-+      properties:
-+        reg:
-+          maxItems: 1
-+        reg-names:
-+          items:
-+            - const: FRQCR
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - renesas,sh7750r-cpg
-+              - renesas,sh7751-cpg
-+              - renesas,sh7751r-cpg
-+    then:
-+      properties:
-+        reg:
-+          maxItems: 2
-+        reg-names:
-+          items:
-+            - const: FRQCR
-+            - const: CLKSTP00
++  - renesas,ipr-map
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    #include <dt-bindings/clock/sh7750-cpg.h>
-+    cpg: clock-controller@ffc00000 {
-+        #clock-cells = <1>;
-+        #power-domain-cells = <0>;
-+        compatible = "renesas,sh7751r-cpg";
-+        clocks = <&xtal>;
-+        clock-names = "xtal";
-+        reg = <0xffc00000 20>, <0xfe0a0000 16>;
-+        reg-names = "FRQCR", "CLKSTP00";
-+        renesas,mode = <0>;
++    #include <dt-bindings/interrupt-controller/sh_intc.h>
++    shintc: interrupt-controller@ffd00000 {
++            compatible = "renesas,sh7751-intc";
++            #interrupt-cells = <1>;
++            interrupt-controller;
++            reg = <0xffd00000 14>, <0xfe080000 128>;
++            reg-names = "ICR", "INTPRI00";
++            renesas,ipr-map = <0x240 IPRD IPR_B12>, /* IRL0 */
++                              <0x2a0 IPRD IPR_B8>,  /* IRL1 */
++                              <0x300 IPRD IPR_B4>,  /* IRL2 */
++                              <0x360 IPRD IPR_B0>,  /* IRL3 */
++                              <0x400 IPRA IPR_B12>, /* TMU0 */
++                              <0x420 IPRA IPR_B8>,  /* TMU1 */
++                              <0x440 IPRA IPR_B4>,  /* TMU2 TNUI */
++                              <0x460 IPRA IPR_B4>,  /* TMU2 TICPI */
++                              <0x480 IPRA IPR_B0>,  /* RTC ATI */
++                              <0x4a0 IPRA IPR_B0>,  /* RTC PRI */
++                              <0x4c0 IPRA IPR_B0>,  /* RTC CUI */
++                              <0x4e0 IPRB IPR_B4>,  /* SCI ERI */
++                              <0x500 IPRB IPR_B4>,  /* SCI RXI */
++                              <0x520 IPRB IPR_B4>,  /* SCI TXI */
++                              <0x540 IPRB IPR_B4>,  /* SCI TEI */
++                              <0x560 IPRB IPR_B12>, /* WDT */
++                              <0x580 IPRB IPR_B8>,  /* REF RCMI */
++                              <0x5a0 IPRB IPR_B4>,  /* REF ROVI */
++                              <0x600 IPRC IPR_B0>,  /* H-UDI */
++                              <0x620 IPRC IPR_B12>, /* GPIO */
++                              <0x640 IPRC IPR_B8>,  /* DMAC DMTE0 */
++                              <0x660 IPRC IPR_B8>,  /* DMAC DMTE1 */
++                              <0x680 IPRC IPR_B8>,  /* DMAC DMTE2 */
++                              <0x6a0 IPRC IPR_B8>,  /* DMAC DMTE3 */
++                              <0x6c0 IPRC IPR_B8>,  /* DMAC DMAE */
++                              <0x700 IPRC IPR_B4>,  /* SCIF ERI */
++                              <0x720 IPRC IPR_B4>,  /* SCIF RXI */
++                              <0x740 IPRC IPR_B4>,  /* SCIF BRI */
++                              <0x760 IPRC IPR_B4>,  /* SCIF TXI */
++                              <0x780 IPRC IPR_B8>,  /* DMAC DMTE4 */
++                              <0x7a0 IPRC IPR_B8>,  /* DMAC DMTE5 */
++                              <0x7c0 IPRC IPR_B8>,  /* DMAC DMTE6 */
++                              <0x7e0 IPRC IPR_B8>,  /* DMAC DMTE7 */
++                              <0xa00 INTPRI00 IPR_B0>,      /* PCIC PCISERR */
++                              <0xa20 INTPRI00 IPR_B4>,      /* PCIC PCIDMA3 */
++                              <0xa40 INTPRI00 IPR_B4>,      /* PCIC PCIDMA2 */
++                              <0xa60 INTPRI00 IPR_B4>,      /* PCIC PCIDMA1 */
++                              <0xa80 INTPRI00 IPR_B4>,      /* PCIC PCIDMA0 */
++                              <0xaa0 INTPRI00 IPR_B4>,      /* PCIC PCIPWON */
++                              <0xac0 INTPRI00 IPR_B4>,      /* PCIC PCIPWDWN */
++                              <0xae0 INTPRI00 IPR_B4>,      /* PCIC PCIERR */
++                              <0xb00 INTPRI00 IPR_B8>,      /* TMU3 */
++                              <0xb80 INTPRI00 IPR_B12>;     /* TMU4 */
 +    };
-diff --git a/include/dt-bindings/clock/sh7750-cpg.h b/include/dt-bindings/clock/sh7750-cpg.h
-new file mode 100644
-index 000000000000..17d5a8076aac
---- /dev/null
-+++ b/include/dt-bindings/clock/sh7750-cpg.h
-@@ -0,0 +1,26 @@
-+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+ *
-+ * Copyright 2023 Yoshinori Sato
-+ */
-+
-+#ifndef __DT_BINDINGS_CLOCK_SH7750_H__
-+#define __DT_BINDINGS_CLOCK_SH7750_H__
-+
-+#define SH7750_CPG_PLLOUT	0
-+
-+#define SH7750_CPG_FCK		1
-+#define SH7750_CPG_BCK		2
-+#define SH7750_CPG_ICK		3
-+
-+#define SH7750_MSTP_SCI		4
-+#define SH7750_MSTP_RTC		5
-+#define SH7750_MSTP_TMU012	6
-+#define SH7750_MSTP_SCIF	7
-+#define SH7750_MSTP_DMAC	8
-+#define SH7750_MSTP_UBC		9
-+#define SH7750_MSTP_SQ		10
-+#define SH7750_CSTP_INTC	11
-+#define SH7750_CSTP_TMU34	12
-+#define SH7750_CSTP_PCIC	13
-+
-+#endif
++...
 -- 
 2.39.2
 
