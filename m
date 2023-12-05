@@ -1,102 +1,116 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="H3JM/E9/"
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 962C6A5;
-	Tue,  5 Dec 2023 13:35:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701812155; x=1733348155;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=NVTEi0xQy+3/V4ZhmZDOqyaynz26at0iHc609karX6U=;
-  b=H3JM/E9/bcT41sGpsZ4TnZtFiYBfVE8UVYppPNCR5aWMiNXx+dQZLE7R
-   XoSnvcQTqDL5sXCu/ThVhnvbU/wyti9w+bVBse5n93UbKkiGqSZFotZpy
-   6F5SvA9xQ6ToNvco285DfhZ4njZGkP8CkqgVGHeJ4a6WljSeuGJpQ+HDd
-   6++BVgUl+ERuIODb/Swvc8R5SGWmYCQorJL9cFzZu35LckhHK8HjzmX4O
-   hho28x5vLHXeRQn43pwc2smp7hOXEWPpnHdLityh5koXN4MSANuVmmRac
-   Cj0+xSUPSUkUU4wOT9SSNJuGoEf1ZNfnxixBWtfq+yklN1IYdTJIjkO4y
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10915"; a="391128794"
-X-IronPort-AV: E=Sophos;i="6.04,253,1695711600"; 
-   d="scan'208";a="391128794"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2023 13:35:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10915"; a="837084267"
-X-IronPort-AV: E=Sophos;i="6.04,253,1695711600"; 
-   d="scan'208";a="837084267"
-Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 05 Dec 2023 13:35:53 -0800
-Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rAd55-0009lG-0v;
-	Tue, 05 Dec 2023 21:35:51 +0000
-Date: Wed, 6 Dec 2023 05:35:26 +0800
-From: kernel test robot <lkp@intel.com>
-To: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-Subject: Re: [RESEND PATCH] tty: serial: 8250: Fix MOXA RS422/RS485 PCIe
- boards not work by default
-Message-ID: <202312060523.Kmstf65q-lkp@intel.com>
-References: <20231201074055.259207-1-crescentcy.hsieh@moxa.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="vcx1QLG6"
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C911B9
+	for <linux-serial@vger.kernel.org>; Tue,  5 Dec 2023 13:48:53 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id 3f1490d57ef6-db632fef2dcso4437342276.1
+        for <linux-serial@vger.kernel.org>; Tue, 05 Dec 2023 13:48:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1701812932; x=1702417732; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5eP0uI2tmZM9ZtqjfsWxJwWzFVr6JH04FbBdTmyNv/w=;
+        b=vcx1QLG6WwxECp6bKqCg4qzU+3z0twyYAm/fKxldOfbA0WT56rifsYRjs4CMIYCITy
+         aCAuzONwK7DCLR79+Wq9XgzHQiJt5eyvZuKwUHgqqP2BVud0kuHKDyCUvYuAJ0zJmV7b
+         U47iSy0ilrmbYL+Ig3V7i06FYB4fsP0hA5kxYxGpOSHVmSo4Mxz9u0AdYe8mWtTIsVXJ
+         2e/UlpJMgTltzCcqk818OWNmMQPdEVbjojQQoSI8FmevbYke5EDsmrPD4AbgfVI8FEzG
+         6mzfV/A3hV5n40HIiA0Xf8gYZD8L9E1rdzo4m353KTeFLzqEp627WSWrPzsrT1mZPnvX
+         ns4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701812932; x=1702417732;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5eP0uI2tmZM9ZtqjfsWxJwWzFVr6JH04FbBdTmyNv/w=;
+        b=j8wayKCAb2QahBA4CNaw6GiQ9RiX2CbpzJDWTzBoopiKWC3WNxYCq7RcvmjpKAgc2l
+         Lepv/zQ6hMA0qCoY9B7Jy0b507LPb0/qmUDaPc8EvuK6ZJGMw8rSFH+BygNODJENVfTy
+         GCQqL0aOnSAwWo1jzStqwt4sXLjGKlT7NBgM1r/lIPVX/pCs+c+kX9WeEM5M5TmHAbBm
+         iD/WcOLCstyl/cdZxVoT7InwLocXOSRzBuD0WquiorpDMH4cliyhuM+H+f/G4cBLq6od
+         5mXOFCti13jY0wqPsg6Vs8auJJwdSRxIT406QO+KJqJj+gj6XRA5ysIQom4b8vYbtHO1
+         CA8g==
+X-Gm-Message-State: AOJu0YyS9+M9mYh4OROfE4d2VyogSSMMs1Jhvvto4LlWTQE8PkS0+gVO
+	gaCn+3ODu7S++GcVPcSbkMpm6EGJ2wuNHXbfSV1GrQ==
+X-Google-Smtp-Source: AGHT+IEC7pNshX6Y57af6XTx4hp1z/Y9MEpMHk/hv4YF7sUJybFapw88Qbjz6GB2s4WrIdgZn+IiEoCY/A4u2lTVAiA=
+X-Received: by 2002:a25:aac2:0:b0:db7:dacf:59d1 with SMTP id
+ t60-20020a25aac2000000b00db7dacf59d1mr4535677ybi.69.1701812932200; Tue, 05
+ Dec 2023 13:48:52 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231201074055.259207-1-crescentcy.hsieh@moxa.com>
+References: <cover.1701768028.git.ysato@users.sourceforge.jp>
+ <602e1ba4f02489fcbc47e8f9904f3c1db1c9f14a.1701768028.git.ysato@users.sourceforge.jp>
+ <2ef81211-9525-4f96-a6b2-3fcfbed0c6e5@app.fastmail.com>
+In-Reply-To: <2ef81211-9525-4f96-a6b2-3fcfbed0c6e5@app.fastmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Tue, 5 Dec 2023 22:48:41 +0100
+Message-ID: <CACRpkdZUAMXJ4YM9+xW2Snzt0Dx5mxWjcwHZifsXPJH9ozL5bg@mail.gmail.com>
+Subject: Re: [DO NOT MERGE v5 11/37] pci: pci-sh7751: Add SH7751 PCI driver
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Yoshinori Sato <ysato@users.sourceforge.jp>, linux-sh@vger.kernel.org, 
+	Damien Le Moal <dlemoal@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, Michael Turquette <mturquette@baylibre.com>, 
+	Stephen Boyd <sboyd@kernel.org>, Dave Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, Thomas Gleixner <tglx@linutronix.de>, 
+	Lorenzo Pieralisi <lpieralisi@kernel.org>, =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, 
+	Daniel Lezcano <daniel.lezcano@linaro.org>, Rich Felker <dalias@libc.org>, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Lee Jones <lee@kernel.org>, 
+	Helge Deller <deller@gmx.de>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>, 
+	Jernej Skrabec <jernej.skrabec@gmail.com>, Chris Morgan <macromorgan@hotmail.com>, 
+	Randy Dunlap <rdunlap@infradead.org>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, 
+	David Rientjes <rientjes@google.com>, Vlastimil Babka <vbabka@suse.cz>, Baoquan He <bhe@redhat.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, 
+	Stephen Rothwell <sfr@canb.auug.org.au>, guoren <guoren@kernel.org>, 
+	Javier Martinez Canillas <javierm@redhat.com>, Azeem Shaikh <azeemshaikh38@gmail.com>, 
+	Palmer Dabbelt <palmer@rivosinc.com>, Bin Meng <bmeng@tinylab.org>, 
+	Max Filippov <jcmvbkbc@gmail.com>, Tom Rix <trix@redhat.com>, 
+	Herve Codina <herve.codina@bootlin.com>, Jacky Huang <ychuang3@nuvoton.com>, 
+	Lukas Bulwahn <lukas.bulwahn@gmail.com>, Jonathan Corbet <corbet@lwn.net>, 
+	Biju Das <biju.das.jz@bp.renesas.com>, 
+	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
+	Sam Ravnborg <sam@ravnborg.org>, Michael Karcher <kernel@mkarcher.dialup.fu-berlin.de>, 
+	Sergey Shtylyov <s.shtylyov@omp.ru>, 
+	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-ide@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Linux-Renesas <linux-renesas-soc@vger.kernel.org>, linux-clk@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linux-pci@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Crescent,
+On Tue, Dec 5, 2023 at 2:26=E2=80=AFPM Arnd Bergmann <arnd@arndb.de> wrote:
+> On Tue, Dec 5, 2023, at 10:45, Yoshinori Sato wrote:
 
-kernel test robot noticed the following build warnings:
+> > +     if (of_property_read_u32_array(pdev->dev.of_node,
+> > +                                    "renesas,memory", memory, 2) < 0) =
+{
+> > +             /*
+> > +              * If no memory range is specified,
+> > +              *  the entire main memory will be targeted for DMA.
+> > +              */
+> > +             memory[0] =3D memory_start;
+> > +             memory[1] =3D memory_end - memory_start;
+> > +     }
+>
+> There is a generic "dma-ranges" proerty for describing
+> which memory is visible by a bus.
 
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.7-rc4 next-20231205]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+It's really a headache to use, so I put a bit of documentation here:
+https://elinux.org/Device_Tree_Usage#PCI_DMA_Address_Translation
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Crescent-CY-Hsieh/tty-serial-8250-Fix-MOXA-RS422-RS485-PCIe-boards-not-work-by-default/20231201-154322
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20231201074055.259207-1-crescentcy.hsieh%40moxa.com
-patch subject: [RESEND PATCH] tty: serial: 8250: Fix MOXA RS422/RS485 PCIe boards not work by default
-config: x86_64-randconfig-122-20231202 (https://download.01.org/0day-ci/archive/20231206/202312060523.Kmstf65q-lkp@intel.com/config)
-compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231206/202312060523.Kmstf65q-lkp@intel.com/reproduce)
+Yoshinoro, you can look at these bindings and drivers that use
+dma-ranges for help:
+Documentation/devicetree/bindings/pci/intel,ixp4xx-pci.yaml
+drivers/pci/controller/pci-ixp4xx.c
+Documentation/devicetree/bindings/pci/faraday,ftpci100.yaml
+drivers/pci/controller/pci-ftpci100.c
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202312060523.Kmstf65q-lkp@intel.com/
-
-sparse warnings: (new ones prefixed by >>)
->> drivers/tty/serial/8250/8250_pci.c:2001:5: sparse: sparse: symbol 'pci_moxa_supported_rs' was not declared. Should it be static?
-
-vim +/pci_moxa_supported_rs +2001 drivers/tty/serial/8250/8250_pci.c
-
-  2000	
-> 2001	u32 pci_moxa_supported_rs(struct pci_dev *dev)
-  2002	{
-  2003		switch (dev->device & 0x0F00) {
-  2004		case 0x0000:
-  2005		case 0x0600:
-  2006			return MOXA_SUPP_RS232;
-  2007		case 0x0100:
-  2008			return MOXA_SUPP_RS232 | MOXA_SUPP_RS422 | MOXA_SUPP_RS485;
-  2009		case 0x0300:
-  2010			return MOXA_SUPP_RS422 | MOXA_SUPP_RS485;
-  2011		}
-  2012		return 0;
-  2013	}
-  2014	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Yours,
+Linus Walleij
