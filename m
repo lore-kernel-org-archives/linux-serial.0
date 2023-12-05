@@ -1,195 +1,174 @@
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="qJEun988";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="kzomfXtM"
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF4141AB;
-	Tue,  5 Dec 2023 05:37:15 -0800 (PST)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-	by mailout.nyi.internal (Postfix) with ESMTP id 3B5CC5C0073;
-	Tue,  5 Dec 2023 08:37:15 -0500 (EST)
-Received: from imap51 ([10.202.2.101])
-  by compute5.internal (MEProxy); Tue, 05 Dec 2023 08:37:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:sender
-	:subject:subject:to:to; s=fm3; t=1701783435; x=1701869835; bh=MS
-	o40/DzILPmk4fVztq26tP1UcAt4IZ5edthROYfIeQ=; b=qJEun988LPpJTneK4B
-	iOm8MG4rNWEJ2M9ylmnOyL8l6IwefIw3g+/fCxBQAzyJ7hYdhL0/vWbPNpuzsUFh
-	3rJnLmNXViDWxshFEt8CsL6vb4PkVF+BORWHrbr3H58yGuLoV7d7VhDamFjpQhcT
-	U/u+M5I1drvoNI3dxxKiGfFRUhtB2Ve3C1g31EZOupjooD8zk4+Mo+IjzVNeit2A
-	xrIqpr9SYwC2iP4Gd4vV3r7M8WNNp6iK/T8nTedZd/kkRg34bxzcsBoYntKliqtf
-	rWt81QWBmEKAovmrUW9mB6GfVJnBfIPPZu0EVRiRyoy+3Hv5hrUNpSjlpotMCzoZ
-	Tfwg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm1; t=1701783435; x=1701869835; bh=MSo40/DzILPmk
-	4fVztq26tP1UcAt4IZ5edthROYfIeQ=; b=kzomfXtMU0QNVW1G9ASuu30rLAGos
-	brOM5jegxaM9w5e0E+Mx0NaBvK7yKRLW7QEFi70l9E13SQcdbmlVehN4FL8GG+v3
-	7RsF2zI2Nyv6dHAMGGHfT47Lx9dGZC/A9N679EkNRrcIR+iFfssYQHIRL1Npjkbk
-	eBYMVft4X3MdNIlB9Zj8bhY3LknHONoh7BVL83Nvp2HHAnfut73c+YWszU2OV3K/
-	6zMPitTGR7BZjpWbzVUNxULgkm1Gk00Wy3GqEXLYAsGzKmGbotT7+uN4YvG5UW9z
-	iuXVOurc69aA6dcmz84gY6uMYS+XnL6znE2Xy2uInouwlGoH3ug5OPSsw==
-X-ME-Sender: <xms:iidvZSzxzQt9c1fSV60YcizLeTJiBllKOkZaAoH87W9KXaB9-0jiKg>
-    <xme:iidvZeRT49Fh7djkd5qgQf2NCRjlrWgdztUMf8L5b0qdI-EFZGp5EXBPiTBQ73rXl
-    eg3yUbr-dA7ideEfis>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrudejkedgheegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
-    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
-    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
-    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
-    hrnhgusegrrhhnuggsrdguvg
-X-ME-Proxy: <xmx:iidvZUXouaBsV59xnbNVHKF_uXZMwp2q_wCdiiHs5wsWMnd_ACMcKw>
-    <xmx:iidvZYhPVbBEyaGydQt8CbxNo52xULx8foRb9eVwP_9xGKxILkcQRA>
-    <xmx:iidvZUDRajflv2u1GEbjLptgtHm7CwStnkYNNuqBvb20vTp0-pEA4g>
-    <xmx:iydvZdKP1SM2yKZ3zCKMv0fokHE2VVWKyjYuf1Spzjczx5f7DTcEfA>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-	id 2D405B60089; Tue,  5 Dec 2023 08:37:13 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-1178-geeaf0069a7-fm-20231114.001-geeaf0069
+X-Greylist: delayed 1989 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Dec 2023 05:50:10 PST
+Received: from pegase1.c-s.fr (pegase1.c-s.fr [93.17.236.30])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8336018B
+	for <linux-serial@vger.kernel.org>; Tue,  5 Dec 2023 05:50:10 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [192.168.12.233])
+	by localhost (Postfix) with ESMTP id 4Sl1K76KdLz9v7D;
+	Tue,  5 Dec 2023 14:16:59 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+	by localhost (pegase1.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id XSTOM1woJZj9; Tue,  5 Dec 2023 14:16:59 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+	by pegase1.c-s.fr (Postfix) with ESMTP id 4Sl1K75h5sz9v73;
+	Tue,  5 Dec 2023 14:16:59 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id BEF238B773;
+	Tue,  5 Dec 2023 14:16:59 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+	by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+	with ESMTP id ZmudtaQvGfeJ; Tue,  5 Dec 2023 14:16:59 +0100 (CET)
+Received: from PO20335.idsi0.si.c-s.fr (unknown [192.168.232.140])
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id 435AE8B763;
+	Tue,  5 Dec 2023 14:16:59 +0100 (CET)
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
+To: Timur Tabi <timur@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Christophe Leroy <christophe.leroy@csgroup.eu>,
+	linux-kernel@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	linux-serial@vger.kernel.org,
+	kernel test robot <lkp@intel.com>
+Subject: [PATCH] serial: ucc_uart: Fix multiple address space type errors
+Date: Tue,  5 Dec 2023 14:16:43 +0100
+Message-ID: <e49deeb079391ff7273ec32f5563df94cf70bc95.1701781976.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.41.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-Id: <2a5ce0d0-ad0a-49d7-84a6-055c4b729eec@app.fastmail.com>
-In-Reply-To: 
- <f671beae8a8ebfd361f4c903bccce713135a169f.1701768028.git.ysato@users.sourceforge.jp>
-References: <cover.1701768028.git.ysato@users.sourceforge.jp>
- <f671beae8a8ebfd361f4c903bccce713135a169f.1701768028.git.ysato@users.sourceforge.jp>
-Date: Tue, 05 Dec 2023 14:36:53 +0100
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Yoshinori Sato" <ysato@users.sourceforge.jp>, linux-sh@vger.kernel.org
-Cc: "Damien Le Moal" <dlemoal@kernel.org>,
- "Rob Herring" <robh+dt@kernel.org>,
- "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
- "Conor Dooley" <conor+dt@kernel.org>,
- "Geert Uytterhoeven" <geert+renesas@glider.be>,
- "Michael Turquette" <mturquette@baylibre.com>,
- "Stephen Boyd" <sboyd@kernel.org>, "Dave Airlie" <airlied@gmail.com>,
- "Daniel Vetter" <daniel@ffwll.ch>,
- "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>,
- "Maxime Ripard" <mripard@kernel.org>,
- "Thomas Zimmermann" <tzimmermann@suse.de>,
- "Thomas Gleixner" <tglx@linutronix.de>,
- "Lorenzo Pieralisi" <lpieralisi@kernel.org>,
- =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
- "Bjorn Helgaas" <bhelgaas@google.com>,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Jiri Slaby" <jirislaby@kernel.org>,
- "Magnus Damm" <magnus.damm@gmail.com>,
- "Daniel Lezcano" <daniel.lezcano@linaro.org>,
- "Rich Felker" <dalias@libc.org>,
- "John Paul Adrian Glaubitz" <glaubitz@physik.fu-berlin.de>,
- "Lee Jones" <lee@kernel.org>, "Helge Deller" <deller@gmx.de>,
- =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
- "Jernej Skrabec" <jernej.skrabec@gmail.com>,
- "Chris Morgan" <macromorgan@hotmail.com>,
- "Linus Walleij" <linus.walleij@linaro.org>,
- "Randy Dunlap" <rdunlap@infradead.org>,
- "Hyeonggon Yoo" <42.hyeyoo@gmail.com>,
- "David Rientjes" <rientjes@google.com>,
- "Vlastimil Babka" <vbabka@suse.cz>, "Baoquan He" <bhe@redhat.com>,
- "Andrew Morton" <akpm@linux-foundation.org>,
- "Guenter Roeck" <linux@roeck-us.net>,
- "Stephen Rothwell" <sfr@canb.auug.org.au>, guoren <guoren@kernel.org>,
- "Javier Martinez Canillas" <javierm@redhat.com>,
- "Azeem Shaikh" <azeemshaikh38@gmail.com>,
- "Palmer Dabbelt" <palmer@rivosinc.com>, "Bin Meng" <bmeng@tinylab.org>,
- "Max Filippov" <jcmvbkbc@gmail.com>, "Tom Rix" <trix@redhat.com>,
- "Herve Codina" <herve.codina@bootlin.com>,
- "Jacky Huang" <ychuang3@nuvoton.com>,
- "Lukas Bulwahn" <lukas.bulwahn@gmail.com>,
- "Jonathan Corbet" <corbet@lwn.net>,
- "Biju Das" <biju.das.jz@bp.renesas.com>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
- "Sam Ravnborg" <sam@ravnborg.org>,
- "Michael Karcher" <kernel@mkarcher.dialup.fu-berlin.de>,
- "Sergey Shtylyov" <s.shtylyov@omp.ru>,
- "Laurent Pinchart" <laurent.pinchart+renesas@ideasonboard.com>,
- linux-ide@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
- linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-fbdev@vger.kernel.org
-Subject: Re: [DO NOT MERGE v5 22/37] dt-bindings: display: smi,sm501: SMI SM501 binding
- json-schema
-Content-Type: text/plain
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1701782202; l=4378; i=christophe.leroy@csgroup.eu; s=20211009; h=from:subject:message-id; bh=7BbyDEsSN9lKWutzAJVNg1p+8y1zmI8jKsAum4TfjD4=; b=/415lG8SKvaAfW7b6eXqylnoXLy2KmYateqRHnTPn7UHwcQHwh+OrBjzFBzzGRrcVvbVNC5B8 AGNFI4BZiltDqxeBEOXRfCxMK/1KN6/dn7E9ypsAwcT4yUIMnfPW7ng
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 
-On Tue, Dec 5, 2023, at 10:45, Yoshinori Sato wrote:
-> Define SM501 functions and modes.
->
-> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
-> ---
->  .../bindings/display/smi,sm501.yaml           | 134 ++++++++++++++++++
->  include/dt-bindings/display/sm501.h           |  25 ++++
+sparse reports multiple problems with address space type.
 
-It looks like we already have a binding at
-Documentation/devicetree/bindings/display/sm501fb.txt
+Most problems are linked to missing __iomem qualifier.
 
-> +  little-endian:
-> +    $ref: /schemas/types.yaml#/definitions/flag
-> +    description: available on big endian systems, to set different 
-> foreign endian.
-> +  big-endian:
-> +    $ref: /schemas/types.yaml#/definitions/flag
-> +    description: available on little endian systems, to set different 
-> foreign endian.
-> +
-> +  swap-fb-endian:
-> +    $ref: /schemas/types.yaml#/definitions/flag
-> +    description: swap framebuffer byteorder.
+Others are caused by dereferencing __iomem addresses.
 
-Why do you need both the "swap" and the specific little/big
-properties?
+Fix all this by adding missing __iomem and using ioread32be().
 
-> +  crt:
-> +    description: CRT output control
-> +
-> +  panel:
-> +    description: Panel output control
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202312050412.zN2PKArS-lkp@intel.com/
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ drivers/tty/serial/ucc_uart.c | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
-What type are these?
+diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
+index ed7a6bb5596a..25903d492023 100644
+--- a/drivers/tty/serial/ucc_uart.c
++++ b/drivers/tty/serial/ucc_uart.c
+@@ -189,10 +189,10 @@ struct uart_qe_port {
+ 	u16 tx_fifosize;
+ 	int wait_closing;
+ 	u32 flags;
+-	struct qe_bd *rx_bd_base;
+-	struct qe_bd *rx_cur;
+-	struct qe_bd *tx_bd_base;
+-	struct qe_bd *tx_cur;
++	struct qe_bd __iomem *rx_bd_base;
++	struct qe_bd __iomem *rx_cur;
++	struct qe_bd __iomem *tx_bd_base;
++	struct qe_bd __iomem *tx_cur;
+ 	unsigned char *tx_buf;
+ 	unsigned char *rx_buf;
+ 	void *bd_virt;  	/* virtual address of the BD buffers */
+@@ -258,7 +258,7 @@ static unsigned int qe_uart_tx_empty(struct uart_port *port)
+ {
+ 	struct uart_qe_port *qe_port =
+ 		container_of(port, struct uart_qe_port, port);
+-	struct qe_bd *bdp = qe_port->tx_bd_base;
++	struct qe_bd __iomem *bdp = qe_port->tx_bd_base;
+ 
+ 	while (1) {
+ 		if (ioread16be(&bdp->status) & BD_SC_READY)
+@@ -330,7 +330,7 @@ static void qe_uart_stop_tx(struct uart_port *port)
+  */
+ static int qe_uart_tx_pump(struct uart_qe_port *qe_port)
+ {
+-	struct qe_bd *bdp;
++	struct qe_bd __iomem *bdp;
+ 	unsigned char *p;
+ 	unsigned int count;
+ 	struct uart_port *port = &qe_port->port;
+@@ -341,7 +341,7 @@ static int qe_uart_tx_pump(struct uart_qe_port *qe_port)
+ 		/* Pick next descriptor and fill from buffer */
+ 		bdp = qe_port->tx_cur;
+ 
+-		p = qe2cpu_addr(be32_to_cpu(bdp->buf), qe_port);
++		p = qe2cpu_addr(ioread32be(&bdp->buf), qe_port);
+ 
+ 		*p++ = port->x_char;
+ 		iowrite16be(1, &bdp->length);
+@@ -368,7 +368,7 @@ static int qe_uart_tx_pump(struct uart_qe_port *qe_port)
+ 
+ 	while (!(ioread16be(&bdp->status) & BD_SC_READY) && !uart_circ_empty(xmit)) {
+ 		count = 0;
+-		p = qe2cpu_addr(be32_to_cpu(bdp->buf), qe_port);
++		p = qe2cpu_addr(ioread32be(&bdp->buf), qe_port);
+ 		while (count < qe_port->tx_fifosize) {
+ 			*p++ = xmit->buf[xmit->tail];
+ 			uart_xmit_advance(port, 1);
+@@ -460,7 +460,7 @@ static void qe_uart_int_rx(struct uart_qe_port *qe_port)
+ 	unsigned char ch, *cp;
+ 	struct uart_port *port = &qe_port->port;
+ 	struct tty_port *tport = &port->state->port;
+-	struct qe_bd *bdp;
++	struct qe_bd __iomem *bdp;
+ 	u16 status;
+ 	unsigned int flg;
+ 
+@@ -487,7 +487,7 @@ static void qe_uart_int_rx(struct uart_qe_port *qe_port)
+ 		}
+ 
+ 		/* get pointer */
+-		cp = qe2cpu_addr(be32_to_cpu(bdp->buf), qe_port);
++		cp = qe2cpu_addr(ioread32be(&bdp->buf), qe_port);
+ 
+ 		/* loop through the buffer */
+ 		while (i-- > 0) {
+@@ -590,7 +590,7 @@ static void qe_uart_initbd(struct uart_qe_port *qe_port)
+ {
+ 	int i;
+ 	void *bd_virt;
+-	struct qe_bd *bdp;
++	struct qe_bd __iomem *bdp;
+ 
+ 	/* Set the physical address of the host memory buffers in the buffer
+ 	 * descriptors, and the virtual address for us to work with.
+@@ -648,7 +648,7 @@ static void qe_uart_init_ucc(struct uart_qe_port *qe_port)
+ {
+ 	u32 cecr_subblock;
+ 	struct ucc_slow __iomem *uccp = qe_port->uccp;
+-	struct ucc_uart_pram *uccup = qe_port->uccup;
++	struct ucc_uart_pram __iomem *uccup = qe_port->uccup;
+ 
+ 	unsigned int i;
+ 
+@@ -983,7 +983,7 @@ static int qe_uart_request_port(struct uart_port *port)
+ 
+ 	qe_port->us_private = uccs;
+ 	qe_port->uccp = uccs->us_regs;
+-	qe_port->uccup = (struct ucc_uart_pram *) uccs->us_pram;
++	qe_port->uccup = (struct ucc_uart_pram __iomem *)uccs->us_pram;
+ 	qe_port->rx_bd_base = uccs->rx_bd;
+ 	qe_port->tx_bd_base = uccs->tx_bd;
+ 
+@@ -1156,7 +1156,7 @@ static void uart_firmware_cont(const struct firmware *fw, void *context)
+ 
+ 	firmware = (struct qe_firmware *) fw->data;
+ 
+-	if (firmware->header.length != fw->size) {
++	if (be32_to_cpu(firmware->header.length) != fw->size) {
+ 		dev_err(dev, "invalid firmware\n");
+ 		goto out;
+ 	}
+-- 
+2.41.0
 
-> +  smi,misc-timing:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: Miscellaneous Timing reg value.
-> +
-> +  smi,misc-control:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: Miscellaneous Control reg value.
-> +
-> +  smi,gpio-low:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: GPIO0 to 31 Control reg value.
-> +
-> +  smi,gpio-high:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: GPIO32 to 63 Control reg value.
-
-Register values should generally not go into DT
-
-
-> +
-> +  smi,gpio-i2c:
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> +    minItems: 5
-> +    description: |
-> +      GPIO I2C bus number
-> +      1st field - I2C bus number
-> +      2nd Field - GPIO SDA
-> +      3rd Field - GPIO SCL
-> +      4th Field - Timeout
-> +      5th Field - udelay
-
-Instead of a bus number and other fields, I think
-this should reference an i2c device.
-
-      Arnd
