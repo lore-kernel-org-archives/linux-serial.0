@@ -1,53 +1,53 @@
-Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9081AB;
-	Tue,  5 Dec 2023 06:21:56 -0800 (PST)
-Received: by mail-il1-f176.google.com with SMTP id e9e14a558f8ab-35d6c5f9579so7259825ab.0;
-        Tue, 05 Dec 2023 06:21:56 -0800 (PST)
+Received: from mail-yb1-f196.google.com (mail-yb1-f196.google.com [209.85.219.196])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F221129;
+	Tue,  5 Dec 2023 06:57:52 -0800 (PST)
+Received: by mail-yb1-f196.google.com with SMTP id 3f1490d57ef6-db3a09e96daso4253926276.3;
+        Tue, 05 Dec 2023 06:57:52 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701786115; x=1702390915;
+        d=1e100.net; s=20230601; t=1701788271; x=1702393071;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=wjEDTZbGLWl0kPzOEjqjXQ57XT0xydUQvJCUY6FowqA=;
-        b=sVt1M6Tprvh5CcP1CA6V7cgPHTd5SEzTyA8LkIczss03OChTZp0Ij4BBuXXQR6kvBN
-         ZHDbZ7h1Hy6tUFw9+NUa+rJt0NcqdRrmf31+NVZuUVI+q8xtR4VhtV/QOtgMyiICCk4i
-         onNQoosikS5VrHQQ5iGTzTU10XqHrKtApOa33S9BlMPgpw9zOpnaEMtSuwIXLcYKrmcw
-         WCg4nsRfkozywtj4gdwgtiy8CeTcReGEub9mrpNarnpRy9oZ3F1OrFi99FKPqYrkBCBY
-         fFZbMOebDko6KkqWoy24aVdNw13u/sFHlAOFCniXgxr75yvkwpFTjVoXXZd+j/tQC1sZ
-         D71A==
-X-Gm-Message-State: AOJu0YzL0nAXJ0lRS2bnc7aqEQiCX8FwA39WO+lC+gKtqVoNo4aS18pR
-	bWVeY9ZCnKVB+xr1hLxWMl9PzkCzPRmhdw==
-X-Google-Smtp-Source: AGHT+IHiJ8ijq3rDLHlUKDIUoapWhxOdwFwIlkcpCJkHcU69YH7LK0vxP4cObCv99jQmSEB1+zHIIA==
-X-Received: by 2002:a92:d292:0:b0:35d:482d:d5b3 with SMTP id p18-20020a92d292000000b0035d482dd5b3mr5821385ilp.10.1701786115219;
-        Tue, 05 Dec 2023 06:21:55 -0800 (PST)
-Received: from mail-il1-f181.google.com (mail-il1-f181.google.com. [209.85.166.181])
-        by smtp.gmail.com with ESMTPSA id l2-20020a056e0205c200b0035b0ad262e2sm615130ils.47.2023.12.05.06.21.55
+        bh=2OSy1fkE1VPCMMZW3HW28WvB6VxFaRMTrE1La3jBwPw=;
+        b=H5EsiOalP3wPRYTrmCyX7LM5E6IlxQEl5ZpKo7uk0EnaN1FCXHYBwLP3t2tNe0aS9m
+         DaFQp/om0wB97vG4+Xt00c7JfkCCaP+dqgDlRt+/dQB1vPMWiuLzk8mJ6Rlk++syoBa5
+         xRJQuroejthMcN/RBYGCb3Rim9K9+jMZduxdrUybACWV5rsD3+pmKWjegcuXH0fXA2Wu
+         z8P1RGlOy+dgtlPt99vhS/a0wy8428UNF507D153SjNB3tay1PR48FbVqdD1nJFYdyZc
+         N5Zz7yGtK5SJex4ZppZ8tGOywv6ZTdWwXZeGqA68T2bwjmRpeFRbaSLbmeYVnh7yoSzx
+         WJGg==
+X-Gm-Message-State: AOJu0Yy0nOCHbpCu0qhu7ax/zxs3oBJkkUccKlMzNulBeGMwEXK3ZjXQ
+	0Ig6I/17nVYPnvMOq8iO5+wMFX/w00RVCyGx
+X-Google-Smtp-Source: AGHT+IFLodowK5y27eVR6eQAnJr24kgV1N0rDxhSnfD+dOfoslVZNjUyIGOONG4pfS50TELYBsRXoA==
+X-Received: by 2002:a25:8543:0:b0:db8:357:f032 with SMTP id f3-20020a258543000000b00db80357f032mr3405933ybn.89.1701788271716;
+        Tue, 05 Dec 2023 06:57:51 -0800 (PST)
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
+        by smtp.gmail.com with ESMTPSA id p82-20020a254255000000b00db3fdaaa4fasm3155660yba.1.2023.12.05.06.57.51
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Dec 2023 06:21:55 -0800 (PST)
-Received: by mail-il1-f181.google.com with SMTP id e9e14a558f8ab-35d699ec3caso8281205ab.3;
-        Tue, 05 Dec 2023 06:21:55 -0800 (PST)
-X-Received: by 2002:a81:ee0b:0:b0:5d7:1941:a9a with SMTP id
- l11-20020a81ee0b000000b005d719410a9amr4666145ywm.53.1701785702584; Tue, 05
- Dec 2023 06:15:02 -0800 (PST)
+        Tue, 05 Dec 2023 06:57:51 -0800 (PST)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-5d279bcce64so64342657b3.3;
+        Tue, 05 Dec 2023 06:57:51 -0800 (PST)
+X-Received: by 2002:a05:690c:c9d:b0:5d7:1941:2c27 with SMTP id
+ cm29-20020a05690c0c9d00b005d719412c27mr4909480ywb.84.1701788271024; Tue, 05
+ Dec 2023 06:57:51 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1701768028.git.ysato@users.sourceforge.jp> <ca3122511b201a0da0a3f930c0f894bf11954423.1701768028.git.ysato@users.sourceforge.jp>
-In-Reply-To: <ca3122511b201a0da0a3f930c0f894bf11954423.1701768028.git.ysato@users.sourceforge.jp>
+References: <cover.1701768028.git.ysato@users.sourceforge.jp> <9f1485220fbfaba9b30bf2d9352640f988f35b04.1701768028.git.ysato@users.sourceforge.jp>
+In-Reply-To: <9f1485220fbfaba9b30bf2d9352640f988f35b04.1701768028.git.ysato@users.sourceforge.jp>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 5 Dec 2023 15:14:50 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUY1aduN=6kaHFyfT=U3J3K3NPZDK2mCct8vS9XaMfaiA@mail.gmail.com>
-Message-ID: <CAMuHMdUY1aduN=6kaHFyfT=U3J3K3NPZDK2mCct8vS9XaMfaiA@mail.gmail.com>
-Subject: Re: [DO NOT MERGE v5 12/37] dt-bindings: pci: pci-sh7751: Add SH7751 PCI
+Date: Tue, 5 Dec 2023 15:57:39 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWsBOs0Y7CkzhxkMYWWzyBpp1MesiCHc728FoTMNQs+qA@mail.gmail.com>
+Message-ID: <CAMuHMdWsBOs0Y7CkzhxkMYWWzyBpp1MesiCHc728FoTMNQs+qA@mail.gmail.com>
+Subject: Re: [DO NOT MERGE v5 21/37] dt-bindings: serial: renesas,scif: Add scif-sh7751.
 To: Yoshinori Sato <ysato@users.sourceforge.jp>
 Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>, 
 	Rob Herring <robh+dt@kernel.org>, 
 	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
-	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, Michael Turquette <mturquette@baylibre.com>, 
+	Stephen Boyd <sboyd@kernel.org>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
 	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
 	Thomas Zimmermann <tzimmermann@suse.de>, Thomas Gleixner <tglx@linutronix.de>, 
 	Lorenzo Pieralisi <lpieralisi@kernel.org>, =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, 
@@ -83,115 +83,31 @@ Hi Sato-san,
 
 On Tue, Dec 5, 2023 at 10:46=E2=80=AFAM Yoshinori Sato
 <ysato@users.sourceforge.jp> wrote:
-> Renesas SH7751 PCI Controller json-schema.
+> Add Renesas SH7751 SCIF.
 >
 > Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
 
 Thanks for your patch!
 
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pci/renesas,sh7751-pci.yaml
-> @@ -0,0 +1,128 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pci/renesas,sh7751-pci.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Renesas SH7751 PCI Host controller
-> +
-> +maintainers:
-> +  - Yoshinori Sato <ysato@users.sourceforge.jp>
-> +
-> +allOf:
-> +  - $ref: /schemas/pci/pci-bus.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - renesas,sh7751-pci
-> +
-> +  reg:
-> +    minItems: 2
-> +    maxItems: 2
+> --- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+> +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+> @@ -17,6 +17,7 @@ properties:
+>      oneOf:
+>        - items:
+>            - enum:
+> +              - renesas,scif-sh7751       # SH7751
 
-Please add "reg-names", as there is more than one entry.
-If that is not sufficient to document what each entry means, please add
-"description"s, too.
+Please preserve alphabetical sort order.
+The actual compatible value LGTM.
 
-> +  renesas,memory:
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> +    description: |
-> +      PCI BMDMA src/dst memory area.
-
-Isn't that the purpose of the "dma-ranges" property?
-
-> +
-> +  renesas,bcr1:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: |
-> +      SH7751 PCIC PCIBCR1 value. This value makes add the value of BSC's=
- BCR1.
-
-What does this mean?
-
-> +
-> +  renesas,mcrmask:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: |
-> +      SH7751 PCIC PCIMCR value. This value makes clear bit in the value =
-of BSC's MCR.
-
-What does this mean?
-
-> +
-> +  renesas,intm:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: |
-> +      SH7751 PCIC PCIINTM value.
-> +
-> +  renesas,aintm:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: |
-> +      SH7751 PCIC PCIIANTM value.
-> +
-> +  renesas,lsr:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: |
-> +      SH7751 PCIC PCILSR0 and PCILSR1 values.
-> +      First word is PCILSR0, Second word is PCILSR1.
-> +
-> +  renesas,lar:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: |
-> +      SH7751 PCIC PCILSA0 and PCILAR1 values.
-> +      First word is PCILAR0, Second word is PCILAR1.
-> +
-> +  renesas,dmabt:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: |
-> +      SH7751 PCIC PCIDMABT value.
-> +
-> +  renesas,pintm:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: |
-> +      SH7751 PCIC PCIPINTM value.
-> +
-> +  renesas,config:
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> +    description: |
-> +      SH7751 PCIC PCICONFIG values array. Register Number and value pair=
- list.
-
-Several of these properties look like pure hardware programming.
-Can these values be derived from other (standard) DT properties?
+>                - renesas,scif-r7s72100     # RZ/A1H
+>            - const: renesas,scif           # generic SCIF compatible UART
 
 Gr{oetje,eeting}s,
 
                         Geert
 
---
+--=20
 Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
 .org
 
