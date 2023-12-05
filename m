@@ -1,37 +1,37 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RDf1bIBp"
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66FE9B0;
-	Tue,  5 Dec 2023 10:08:15 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lxij1JtB"
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E5FAC;
+	Tue,  5 Dec 2023 10:30:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701799695; x=1733335695;
+  t=1701801018; x=1733337018;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=UVuUvArRESXqCywNPybRu1bVUdQbkthn/g4C9P7URvI=;
-  b=RDf1bIBp2wNyb70QVv/6Pcg+uA1rqkKnN4Fpf+9nkrb6bb5TaWv28xkN
-   kEqdGAAMg1rDSF9qtoImBv31jcX4DC5UCgM8AzV5/PRUwp7ZWAZriYgnb
-   dnpl2EupJLs9bao2hLiavA67hXKL/nn68trJS0YH8z7/qeP6tWI+ezBJ/
-   2QEi9+dmtiEeWqTuUoTPFeVluqR/o30LIBDc+U/gWj4etT+Fd+AtNM5y8
-   2QHGCv6+acOk6RDi+5TjHuRlUvImBaJuFXM84Vj+8Zx1AL6Qodm5meBZL
-   CwioVECmEvHtczL6KXi6W0vDnDhwMGSKU0QfggWZ0ENSH69hGTAkNzd3J
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10915"; a="391100984"
-X-IronPort-AV: E=Sophos;i="6.04,252,1695711600"; 
-   d="scan'208";a="391100984"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2023 10:08:15 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10915"; a="889024127"
+  bh=Zz7EFTXIoG/cqIxk5/CEZFwnhwoZiqUADJITyhN0vUE=;
+  b=lxij1JtBRLni95lEXPYixEk91lm6RS+/jwZAkrwQHwqU3F2rrOvBv3p3
+   HpEe4NlMq3+zh62y1ET8O2CpYK6KUwcQoX+tbCBIurz9pAzwD5MmEosYr
+   2uL27GS1x7lpe6dkFpaGCt7Ef5fu32D8X/YVTaY5IAQLU0cfbXP/MP6pC
+   XxQW6MLrzY5UhflMbRjjxKHG9PqVbBQkXLLJBaKiN27Zgna1ymj21P34S
+   GjxT1cW7y3uxLaniybYPDAzvwosirxz1L+JhIypZbfxOccjhbTPfsaAfP
+   MMkp3U5IICoycUVZylZfg2MqhRFq0HuH0xJ+eN13J0DegbSZisfj5108R
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10915"; a="396730845"
 X-IronPort-AV: E=Sophos;i="6.04,253,1695711600"; 
-   d="scan'208";a="889024127"
+   d="scan'208";a="396730845"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2023 10:30:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10915"; a="894462843"
+X-IronPort-AV: E=Sophos;i="6.04,253,1695711600"; 
+   d="scan'208";a="894462843"
 Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
-  by fmsmga002.fm.intel.com with ESMTP; 05 Dec 2023 10:08:10 -0800
+  by orsmga004.jf.intel.com with ESMTP; 05 Dec 2023 10:30:13 -0800
 Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1rAZq3-0009Vd-2B;
-	Tue, 05 Dec 2023 18:08:07 +0000
-Date: Wed, 6 Dec 2023 02:07:39 +0800
+	id 1rAaBO-0009Xo-2s;
+	Tue, 05 Dec 2023 18:30:10 +0000
+Date: Wed, 6 Dec 2023 02:29:28 +0800
 From: kernel test robot <lkp@intel.com>
 To: Tony Lindgren <tony@atomide.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -49,7 +49,7 @@ Cc: oe-kbuild-all@lists.linux.dev, "David S . Miller" <davem@davemloft.net>,
 	linux-serial@vger.kernel.org
 Subject: Re: [PATCH v4 4/4] serial: 8250: Add preferred console in
  serial8250_isa_init_ports()
-Message-ID: <202312060101.o6nb55MI-lkp@intel.com>
+Message-ID: <202312060232.s0uWr7z9-lkp@intel.com>
 References: <20231205073255.20562-5-tony@atomide.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -75,27 +75,35 @@ url:    https://github.com/intel-lab-lkp/linux/commits/Tony-Lindgren/printk-Save
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
 patch link:    https://lore.kernel.org/r/20231205073255.20562-5-tony%40atomide.com
 patch subject: [PATCH v4 4/4] serial: 8250: Add preferred console in serial8250_isa_init_ports()
-config: powerpc-randconfig-r081-20231205 (https://download.01.org/0day-ci/archive/20231206/202312060101.o6nb55MI-lkp@intel.com/config)
-compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project.git 4a5ac14ee968ff0ad5d2cc1ffa0299048db4c88a)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231206/202312060101.o6nb55MI-lkp@intel.com/reproduce)
+config: m68k-randconfig-r071-20231205 (https://download.01.org/0day-ci/archive/20231206/202312060232.s0uWr7z9-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 13.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231206/202312060232.s0uWr7z9-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202312060101.o6nb55MI-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202312060232.s0uWr7z9-lkp@intel.com/
 
-All errors (new ones prefixed by >>):
+All error/warnings (new ones prefixed by >>):
 
->> drivers/tty/serial/8250/8250_core.c:597:42: error: too few arguments to function call, expected 2, have 1
+   drivers/tty/serial/8250/8250_core.c: In function 'serial8250_isa_init_ports':
+>> drivers/tty/serial/8250/8250_core.c:597:55: warning: passing argument 1 of 'serial8250_isa_init_preferred_console' makes pointer from integer without a cast [-Wint-conversion]
      597 |                 serial8250_isa_init_preferred_console(i);
-         |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  ^
-   drivers/tty/serial/8250/8250_core.c:543:20: note: 'serial8250_isa_init_preferred_console' declared here
+         |                                                       ^
+         |                                                       |
+         |                                                       int
+   drivers/tty/serial/8250/8250_core.c:543:76: note: expected 'struct uart_port *' but argument is of type 'int'
      543 | static inline void serial8250_isa_init_preferred_console(struct uart_port *port,
-         |                    ^
-   1 error generated.
+         |                                                          ~~~~~~~~~~~~~~~~~~^~~~
+>> drivers/tty/serial/8250/8250_core.c:597:17: error: too few arguments to function 'serial8250_isa_init_preferred_console'
+     597 |                 serial8250_isa_init_preferred_console(i);
+         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/tty/serial/8250/8250_core.c:543:20: note: declared here
+     543 | static inline void serial8250_isa_init_preferred_console(struct uart_port *port,
+         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-vim +597 drivers/tty/serial/8250/8250_core.c
+vim +/serial8250_isa_init_preferred_console +597 drivers/tty/serial/8250/8250_core.c
 
    549	
    550	static void __init serial8250_isa_init_ports(void)
