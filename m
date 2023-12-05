@@ -1,124 +1,161 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="XBJQwVQt"
-Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C43CA;
-	Mon,  4 Dec 2023 23:46:30 -0800 (PST)
-Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id 4FB4160354;
-	Tue,  5 Dec 2023 07:45:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1701762390;
-	bh=rT0e7HunZB9SC79QqVKxOFK0aB1vcmVtURjGalaiBlc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=XBJQwVQt5H27jqp5h0AMKs9ZtsUXCzVY7sCy5tAZUBZ82KR5Sz6FyqL/rFxkvTaIE
-	 hJIdG86UKYPt4Nz4wdacDHN5MXY9ODDUKZOM9M7r71Q0LXOZKZL1uLs6vG+aZPggbo
-	 w+LFuUsxTQZg68JCMf8UGvui8BvWHElcuqqv7ka1zRhg6hvSnnutAY4Dd/XjcPfVsl
-	 mSIhJu9JkgHHmdOfV8h0zf2b4ml3NOlC/LAQWuIuSsi4Jn+0l6BKtj+rdUe4x7+qri
-	 Mpqw9B4jotbyiabAd3PVztZK4hhrdSmn9Xm3evuUb68o118jz0yeerZ68qkgDYPi9V
-	 +WZ2rZkFyXCjA==
-Date: Tue, 5 Dec 2023 09:45:57 +0200
-From: Tony Lindgren <tony@atomide.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc: "David S . Miller" <davem@davemloft.net>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Dhruva Gole <d-gole@ti.com>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4 0/4] Add support for DEVNAME:0.0 style hardware based
- addressing
-Message-ID: <20231205074557.GM5169@atomide.com>
-References: <20231205073255.20562-1-tony@atomide.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="An6VN3FL"
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B181B111
+	for <linux-serial@vger.kernel.org>; Mon,  4 Dec 2023 23:52:26 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id a640c23a62f3a-a1b68ae40efso257286366b.0
+        for <linux-serial@vger.kernel.org>; Mon, 04 Dec 2023 23:52:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1701762745; x=1702367545; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=HE/x2HX9YSFYGtjbEwzCNCIFrX4hXFWClA1p9cANaOA=;
+        b=An6VN3FL8YTngmvQIVKPM66F6MZ0eQLnLIfwi/xsxWsKpZ0Umowx3CtBCd5PB3sFOq
+         R5wY6vFHJxi6IyWlSt2i4gvAjHxYERxOid4sKqaV3qerONi20rldtIgVjNF3SzrsmAyj
+         sAzBOJvcx7QghwDi9S5VQd6pTPciUPs9e5+vi3VnQRBDwCvRQeAY5bBP3tab1IBXzxSL
+         993YBlUErRRYBjBSLBVIi5RyO6Bz3tMVMV/AO6Y9rMIpQdQbew5AwVc/0XeNHK5LB7Cz
+         BnUeZ7nedzQfJyLFZwkCoutFzQ1lo9jEK8IUmrdtSHXWtFW3XHMKyhJEMFGf7WIFzYrE
+         +ELw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701762745; x=1702367545;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=HE/x2HX9YSFYGtjbEwzCNCIFrX4hXFWClA1p9cANaOA=;
+        b=JqqoPHTAm3qi7Nlfu1fzkaXLBKJbJE2H8qzpj+nTLzZei21spIWQoqgMLiruxPhkxf
+         BHmS9jYwnGIT5C8FDLnMbJekzTaBKfdh+HKzS+BFjaWSGS/2tqIrHN2RAau8mCNfASth
+         jW7bMh3YYM/NK5oXEjaJ+/iKlDmmZMx7RdGZ9pcRS6FC0U1ZjxYg/x3rwlOsz/9TKvM2
+         XMb16AO7lmueXnUDhC2Jfzsveb/qh+2jUdW80epFx7xgu/Eda2qOFjKdJhxpPMfPr6p3
+         zkTotEQ16x1tdW5Tag4VqOWySzapT6tSUvUZa4tqJsjfjz6pAno+3PwRM2tswiVS8w+F
+         zdjQ==
+X-Gm-Message-State: AOJu0Yx9Zv9fHhwpbpsH6ZXQ5JwDcZkXXFLE2pAT19uSl1AbJBxFqNBk
+	fv9pcmFsrWMi5Xyy8blknXPlcQ==
+X-Google-Smtp-Source: AGHT+IHbV8OwzZcl7l/X03ZGEbDkrVRvPZ9VTnKnRZqff4x1iAUtK7Aml/g+lGmSKaItydhkWAvUeg==
+X-Received: by 2002:a17:906:4a98:b0:a1c:9738:2235 with SMTP id x24-20020a1709064a9800b00a1c97382235mr148783eju.118.1701762745098;
+        Mon, 04 Dec 2023 23:52:25 -0800 (PST)
+Received: from [10.1.1.118] ([80.111.64.44])
+        by smtp.gmail.com with ESMTPSA id lt12-20020a170906fa8c00b00a0290da4a50sm6213248ejb.186.2023.12.04.23.52.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Dec 2023 23:52:24 -0800 (PST)
+Message-ID: <5e9c0b1c5885775a7bc32ef59cb09a2a93d4cbe1.camel@linaro.org>
+Subject: Re: [PATCH v5 12/20] clk: samsung: clk-gs101: Add cmu_top, cmu_misc
+ and cmu_apm support
+From: =?ISO-8859-1?Q?Andr=E9?= Draszik <andre.draszik@linaro.org>
+To: Peter Griffin <peter.griffin@linaro.org>, robh+dt@kernel.org, 
+ krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+ conor+dt@kernel.org,  sboyd@kernel.org, tomasz.figa@gmail.com,
+ s.nawrocki@samsung.com,  linus.walleij@linaro.org, wim@linux-watchdog.org,
+ linux@roeck-us.net,  catalin.marinas@arm.com, will@kernel.org,
+ arnd@arndb.de, olof@lixom.net,  gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, cw00.choi@samsung.com,  alim.akhtar@samsung.com
+Cc: tudor.ambarus@linaro.org, semen.protsenko@linaro.org,
+ saravanak@google.com,  willmcvicker@google.com, soc@kernel.org,
+ devicetree@vger.kernel.org,  linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org,  linux-clk@vger.kernel.org,
+ linux-gpio@vger.kernel.org,  linux-watchdog@vger.kernel.org,
+ kernel-team@android.com,  linux-serial@vger.kernel.org
+Date: Tue, 05 Dec 2023 07:52:22 +0000
+In-Reply-To: <20231201160925.3136868-13-peter.griffin@linaro.org>
+References: <20231201160925.3136868-1-peter.griffin@linaro.org>
+	 <20231201160925.3136868-13-peter.griffin@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.49.2-3 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231205073255.20562-1-tony@atomide.com>
 
-* Tony Lindgren <tony@atomide.com> [700101 02:00]:
-> We also prepare the serial core to handle the ttyS related quirks done
-> in console_setup() to prepare things for eventually dropping the parsing
-> from console_setup(). This can only happen after further changes to
-> register_console().
+Hi Pete,
 
-Petr FYI, so for dropping the console_setup() parsing, below is a hack
-patch to see what goes wrong in register_console() if you have some ideas
-on how to handle this.
+On Fri, 2023-12-01 at 16:09 +0000, Peter Griffin wrote:
+> cmu_top is the top level clock management unit which contains PLLs, muxes=
+,
+> dividers and gates that feed the other clock management units.
+>=20
+> cmu_misc clocks IPs such as Watchdog and cmu_apm clocks ips part of the
+> APM module.
+>=20
+> Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
+> Tested-by: Will McVicker <willmcvicker@google.com>
+> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> ---
+> =C2=A0drivers/clk/samsung/Makefile=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=A0 =
+1 +
+> =C2=A0drivers/clk/samsung/clk-gs101.c | 2495 ++++++++++++++++++++++++++++=
++++
+> =C2=A02 files changed, 2496 insertions(+)
+> =C2=A0create mode 100644 drivers/clk/samsung/clk-gs101.c
+>=20
+> diff --git a/drivers/clk/samsung/Makefile b/drivers/clk/samsung/Makefile
+> index ebbeacabe88f..3056944a5a54 100644
+> --- a/drivers/clk/samsung/Makefile
+> +++ b/drivers/clk/samsung/Makefile
+> @@ -21,6 +21,7 @@ obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)	+=3D clk-exynos7.=
+o
+> =C2=A0obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)	+=3D clk-exynos7885.o
+> =C2=A0obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)	+=3D clk-exynos850.o
+> =C2=A0obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)	+=3D clk-exynosautov9.o
+> +obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)	+=3D clk-gs101.o
+> =C2=A0obj-$(CONFIG_S3C64XX_COMMON_CLK)	+=3D clk-s3c64xx.o
+> =C2=A0obj-$(CONFIG_S5PV210_COMMON_CLK)	+=3D clk-s5pv210.o clk-s5pv210-aud=
+ss.o
+> =C2=A0obj-$(CONFIG_TESLA_FSD_COMMON_CLK)	+=3D clk-fsd.o
+> diff --git a/drivers/clk/samsung/clk-gs101.c b/drivers/clk/samsung/clk-gs=
+101.c
+> new file mode 100644
+> index 000000000000..6bd233a7ab63
+> --- /dev/null
+> +++ b/drivers/clk/samsung/clk-gs101.c
+> @@ -0,0 +1,2495 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (C) 2023 Linaro Ltd.
+> + * Author: Peter Griffin <peter.griffin@linaro.org>
+> + *
+> + * Common Clock Framework support for GS101.
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/clk-provider.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +
+> +#include <dt-bindings/clock/google,gs101.h>
+> +
+> +#include "clk.h"
+> +#include "clk-exynos-arm64.h"
+> +
+> +/* NOTE: Must be equal to the last clock ID increased by one */
+> +#define TOP_NR_CLK	(CLK_GOUT_TPU_UART + 1)
+> +#define APM_NR_CLK	(CLK_APM_PLL_DIV16_APM + 1)
+> +#define MISC_NR_CLK	(CLK_GOUT_MISC_XIU_D_MISC_IPCLKPORT_ACLK + 1)
+> +
+> +/* ---- CMU_TOP --------------------------------------------------------=
+----- */
+> +
+> [...]
+> +
+> +/* ---- CMU_APM --------------------------------------------------------=
+----- */
+> [..]
+> +
+> +/* ---- CMU_MISC -------------------------------------------------------=
+------ */
 
-We end up with the console device backed up seria8250 instead of ttyS0,
-and earlycon won't get properly disabled. And of course other consoles
-beyond ttyS need to be also considered.
+nit - the CMU_MISC comment here is an outlier.
 
-Regards,
+> [..]
+> +
+> +/* ---- platform_driver ------------------------------------------------=
+----- */
+> +
+> [...]
 
-Tony
+Cheers,
+Andre'
 
-8< ----------------------
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -2438,9 +2438,7 @@ __setup("console_msg_format=", console_msg_format_setup);
-  */
- static int __init console_setup(char *str)
- {
--	char buf[sizeof(console_cmdline[0].name) + 4]; /* 4 for "ttyS" */
--	char *s, *options, *brl_options = NULL;
--	int idx;
-+	char *brl_options = NULL;
- 
- 	/*
- 	 * console="" or console=null have been suggested as a way to
-@@ -2459,32 +2457,9 @@ static int __init console_setup(char *str)
- 	if (console_opt_save(str, brl_options))
- 		return 1;
- 
--	/*
--	 * Decode str into name, index, options.
--	 */
--	if (str[0] >= '0' && str[0] <= '9') {
--		strcpy(buf, "ttyS");
--		strncpy(buf + 4, str, sizeof(buf) - 5);
--	} else {
--		strncpy(buf, str, sizeof(buf) - 1);
--	}
--	buf[sizeof(buf) - 1] = 0;
--	options = strchr(str, ',');
--	if (options)
--		*(options++) = 0;
--#ifdef __sparc__
--	if (!strcmp(str, "ttya"))
--		strcpy(buf, "ttyS0");
--	if (!strcmp(str, "ttyb"))
--		strcpy(buf, "ttyS1");
--#endif
--	for (s = buf; *s; s++)
--		if (isdigit(*s) || *s == ',')
--			break;
--	idx = simple_strtoul(s, NULL, 10);
--	*s = 0;
-+	/* Indicate register_console() a console was specified */
-+	console_set_on_cmdline = 1;
- 
--	__add_preferred_console(buf, idx, options, brl_options, true);
- 	return 1;
- }
- __setup("console=", console_setup);
-@@ -3476,7 +3451,7 @@ void register_console(struct console *newcon)
- 	 * Note that a console with tty binding will have CON_CONSDEV
- 	 * flag set and will be first in the list.
- 	 */
--	if (preferred_console < 0) {
-+	if (preferred_console < 0 && !console_set_on_cmdline) {
- 		if (hlist_empty(&console_list) || !console_first()->device ||
- 		    console_first()->flags & CON_BOOT) {
- 			try_enable_default_console(newcon);
