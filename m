@@ -1,94 +1,144 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF1362377C
-	for <linux-serial@vger.kernel.org>; Mon,  4 Dec 2023 22:09:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mb9PhsVK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CD97C433C8;
-	Mon,  4 Dec 2023 22:09:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1701727789;
-	bh=PZdKYgteRXQG7u/EvbdA+FWt1apI/KIe+HMcfOKH5vU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=mb9PhsVKnePwJFmD2sdP/1C7zlcmt1BjE9MU72qkhHdZlhoVdu2LNwVD1N+MqoLP+
-	 YCQWe6vfigdh5Zxi1wCYWLLWCE/HsR7ogxOU3MRHTI5/nEvCu11AYoVYPhSe05Yc8F
-	 BuDAWJtpdkcfFZSclP4ZnexZ3Uy+qCLubUKEQdzJNC2FjDRUteIL3Hzq0/TBCz1ATK
-	 2wmD7wXSd+hD9GK1eaJC3NNVcGc71lEf5lv0DsHU9DsY6X/Bd2RjjO4c6L+I7FL2qb
-	 bey/gLhNmEgJHzjP7Vsb/PGWJIjPkrNR5zoa7rT3LBwF3TchfC8356Nafph3aUCVM+
-	 U+JgpKIJxjPOA==
-Date: Mon, 4 Dec 2023 22:09:45 +0000
-From: Mark Brown <broonie@kernel.org>
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: Jan =?iso-8859-1?Q?Kundr=E1t?= <jan.kundrat@cesnet.cz>,
-	Cosmin Tanislav <cosmin.tanislav@analog.com>,
-	linux-serial@vger.kernel.org,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: max310x: work around regmap->regcache data
- corruption
-Message-ID: <26710a0a-4390-4056-8734-812480346b6c@sirena.org.uk>
-References: <20231201171644.6f7ade89d4c2f744fa3556b7@hugovil.com>
- <20231204112905.e58cf1b7bf94440f49188390@hugovil.com>
- <06fa462c-5b48-410e-8656-4d0dbdbfa142@sirena.org.uk>
- <20231204120151.f0afbee2ebc69e93e7977547@hugovil.com>
- <50b24985-cb30-4a75-a15d-9c165a276f1d@sirena.org.uk>
- <20231204135922.0355f030945920086d21b8b6@hugovil.com>
- <66946666-eb33-431d-9870-7046c39ffb4e@sirena.org.uk>
- <20231204144136.89fec6da9be49e3db96994e0@hugovil.com>
- <f6e93e9c-1c7a-424e-afe0-425b24b99e5c@sirena.org.uk>
- <20231204150224.add8b07a59bf737edb0b5c1c@hugovil.com>
+	dkim=pass (2048-bit key) header.d=denx.de header.i=@denx.de header.b="HvaqQjcg"
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91797101
+	for <linux-serial@vger.kernel.org>; Mon,  4 Dec 2023 16:51:23 -0800 (PST)
+Received: from tr.lan (ip-86-49-120-218.bb.vodafone.cz [86.49.120.218])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+	(No client certificate requested)
+	(Authenticated sender: marex@denx.de)
+	by phobos.denx.de (Postfix) with ESMTPSA id 153B887239;
+	Tue,  5 Dec 2023 01:51:20 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+	s=phobos-20191101; t=1701737480;
+	bh=5v8+9UPXzKTD4EbtZS10D+tczM83LXSeK3tSgL2cKbw=;
+	h=From:To:Cc:Subject:Date:From;
+	b=HvaqQjcgHH9ZVjG9FQJ/jmw615LGV4OrfCeSBlFfrQUcj+/Mjgc47/4KQTy3Od+l5
+	 9KxLAzJxxddD0DVSxaM4xiNvNDjHRQhIS9nZXGnjRgeFUHPJxjGe6s820yAABTyZkA
+	 OYsGIj6l2LSn9yLiR0TD49CvftaBtofbYAnpAt/Zkn7B8vuw+HWxizaoO5CoEs+m8i
+	 IDAvMb0P3c86TRyI3JMHMOTvWPk2e47Ys7PMoNIpiSyZp0ZlY4jJY4XqFY3sVf+1Yb
+	 8CFiW3wgprrNaQiKGS3C6C3uKPMHxhAEi6kPXLx3Ng9ur3luhqhCWqnvvHsx+2IEWR
+	 C7OoBv3/MtIjA==
+From: Marek Vasut <marex@denx.de>
+To: linux-serial@vger.kernel.org
+Cc: Marek Vasut <marex@denx.de>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	NXP Linux Team <linux-imx@nxp.com>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Rob Herring <robh@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Sergey Organov <sorganov@gmail.com>,
+	Shawn Guo <shawnguo@kernel.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Tom Rix <trix@redhat.com>,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] serial: imx: Fix clock imbalance
+Date: Tue,  5 Dec 2023 01:50:57 +0100
+Message-ID: <20231205005108.79782-1-marex@denx.de>
+X-Mailer: git-send-email 2.42.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="EVdV5P8BE7EA9jWc"
-Content-Disposition: inline
-In-Reply-To: <20231204150224.add8b07a59bf737edb0b5c1c@hugovil.com>
-X-Cookie: For office use only.
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
+X-Virus-Status: Clean
 
+Disable and unprepare the clock on every exit from probe function
+after the clock were prepared and enabled to avoid enable/disable
+imbalance.
 
---EVdV5P8BE7EA9jWc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Marek Vasut <marex@denx.de>
+---
+Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
+Cc: "Uwe Kleine-König" <u.kleine-koenig@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Rob Herring <robh@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Sergey Organov <sorganov@gmail.com>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Tom Rix <trix@redhat.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/imx.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-On Mon, Dec 04, 2023 at 03:02:24PM -0500, Hugo Villeneuve wrote:
-> Mark Brown <broonie@kernel.org> wrote:
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 52dd8a6b87603..1cce66e5d05d8 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -2332,10 +2332,8 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	ret = uart_get_rs485_mode(&sport->port);
+-	if (ret) {
+-		clk_disable_unprepare(sport->clk_ipg);
+-		return ret;
+-	}
++	if (ret)
++		goto err_clk;
+ 
+ 	if (sport->port.rs485.flags & SER_RS485_ENABLED &&
+ 	    (!sport->have_rtscts && !sport->have_rtsgpio))
+@@ -2436,7 +2434,7 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 		if (ret) {
+ 			dev_err(&pdev->dev, "failed to request rx irq: %d\n",
+ 				ret);
+-			return ret;
++			goto err_clk;
+ 		}
+ 
+ 		ret = devm_request_irq(&pdev->dev, txirq, imx_uart_txint, 0,
+@@ -2444,7 +2442,7 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 		if (ret) {
+ 			dev_err(&pdev->dev, "failed to request tx irq: %d\n",
+ 				ret);
+-			return ret;
++			goto err_clk;
+ 		}
+ 
+ 		ret = devm_request_irq(&pdev->dev, rtsirq, imx_uart_rtsint, 0,
+@@ -2452,14 +2450,14 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 		if (ret) {
+ 			dev_err(&pdev->dev, "failed to request rts irq: %d\n",
+ 				ret);
+-			return ret;
++			goto err_clk;
+ 		}
+ 	} else {
+ 		ret = devm_request_irq(&pdev->dev, rxirq, imx_uart_int, 0,
+ 				       dev_name(&pdev->dev), sport);
+ 		if (ret) {
+ 			dev_err(&pdev->dev, "failed to request irq: %d\n", ret);
+-			return ret;
++			goto err_clk;
+ 		}
+ 	}
+ 
+@@ -2468,6 +2466,10 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 	platform_set_drvdata(pdev, sport);
+ 
+ 	return uart_add_one_port(&imx_uart_uart_driver, &sport->port);
++
++err_clk:
++	clk_disable_unprepare(sport->clk_ipg);
++	return ret;
+ }
+ 
+ static void imx_uart_remove(struct platform_device *pdev)
+-- 
+2.42.0
 
-> > This is truly innovative hardware,...
-
-> Well, I would not say innovative, but more "crappy" hardware design :)
-
-I didn't say it was *good* innovation.
-
-> >  You'd need to extend the core
-> > so that it knows about this quirk, right now that's not possible and
-> > we'll just leave the window pointing at whatever was last accessed.
-
-> Ok. I am not sure that adding support for it would make sense, since I
-> do not know of other ICs that could reuse this very specific and
-> particular method for switching "paged" registers.
-
-Yeah, I'm drawing a blank there.  The thing that springs to mind is
-optimisation with wanting to always be on a particular page for fast
-interrupt handling or something but that feels rather thin.
-
---EVdV5P8BE7EA9jWc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmVuTigACgkQJNaLcl1U
-h9BROAgAhI9t64zxEMrM1wLApkfngKVB6u40SuVQrGZo1euGjw+A325QoAySSJ3O
-Ul+YUTbNHN/5cueUh+xfifIe3xbacmc35Ws8X57JnWfXILCUFv1/scl+TLw5kcbr
-gNa6f+00BRjLoBKh3yrZ0d3uXTn8ZhFavtEQbhFyPcrnoLbHnp1qC7rWexGVupeB
-/ioqukeOySGZbfX55Y4UTuvEA/ok3vWLz9XDIUOLdAbsej0JGkfP/YEmF3/GJpHq
-9TuWL5Yo2OTye9bS94iQDUmoDn4U7VwIIAHwJ2WTpvWWJ2WhlEVmevBQz3ED1rqV
-AYiE6/aZG5JahtTH4yc51aTAelp3lg==
-=4Rkn
------END PGP SIGNATURE-----
-
---EVdV5P8BE7EA9jWc--
