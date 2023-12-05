@@ -1,9 +1,9 @@
 Received: from sakura.ysato.name (ik1-413-38519.vs.sakura.ne.jp [153.127.30.23])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97CC2D3;
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97E33FA;
 	Tue,  5 Dec 2023 01:55:34 -0800 (PST)
 Received: from SIOS1075.ysato.name (ZM005235.ppp.dion.ne.jp [222.8.5.235])
-	by sakura.ysato.name (Postfix) with ESMTPSA id 605131C069C;
-	Tue,  5 Dec 2023 18:46:54 +0900 (JST)
+	by sakura.ysato.name (Postfix) with ESMTPSA id 0714B1C0527;
+	Tue,  5 Dec 2023 18:46:44 +0900 (JST)
 From: Yoshinori Sato <ysato@users.sourceforge.jp>
 To: linux-sh@vger.kernel.org
 Cc: Yoshinori Sato <ysato@users.sourceforge.jp>,
@@ -70,9 +70,9 @@ Cc: Yoshinori Sato <ysato@users.sourceforge.jp>,
 	linux-pci@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	linux-fbdev@vger.kernel.org
-Subject: [DO NOT MERGE v5 26/37] dt-bindings: vendor-prefixes:  Add smi
-Date: Tue,  5 Dec 2023 18:45:45 +0900
-Message-Id: <2dc1fcd6596f78de4197aea04a26252f5f365595.1701768028.git.ysato@users.sourceforge.jp>
+Subject: [DO NOT MERGE v5 21/37] dt-bindings: serial: renesas,scif: Add scif-sh7751.
+Date: Tue,  5 Dec 2023 18:45:40 +0900
+Message-Id: <9f1485220fbfaba9b30bf2d9352640f988f35b04.1701768028.git.ysato@users.sourceforge.jp>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1701768028.git.ysato@users.sourceforge.jp>
 References: <cover.1701768028.git.ysato@users.sourceforge.jp>
@@ -84,27 +84,25 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add Silicon Mortion Technology Corporation
-https://www.siliconmotion.com/
+Add Renesas SH7751 SCIF.
 
 Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
 ---
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/devicetree/bindings/serial/renesas,scif.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index 94ed63d9f7de..a338bdd743ab 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -1283,6 +1283,8 @@ patternProperties:
-     description: Skyworks Solutions, Inc.
-   "^smartlabs,.*":
-     description: SmartLabs LLC
-+  "^smi,.*":
-+    description: Silicon Motion Technology Corporation
-   "^smsc,.*":
-     description: Standard Microsystems Corporation
-   "^snps,.*":
+diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+index 4610a5bd580c..a774f16400c2 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+@@ -17,6 +17,7 @@ properties:
+     oneOf:
+       - items:
+           - enum:
++              - renesas,scif-sh7751       # SH7751
+               - renesas,scif-r7s72100     # RZ/A1H
+           - const: renesas,scif           # generic SCIF compatible UART
+ 
 -- 
 2.39.2
 
