@@ -1,9 +1,9 @@
 Received: from sakura.ysato.name (ik1-413-38519.vs.sakura.ne.jp [153.127.30.23])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36193135;
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 652FB182;
 	Tue,  5 Dec 2023 01:55:36 -0800 (PST)
 Received: from SIOS1075.ysato.name (ZM005235.ppp.dion.ne.jp [222.8.5.235])
-	by sakura.ysato.name (Postfix) with ESMTPSA id C45C01C05EE;
-	Tue,  5 Dec 2023 18:46:35 +0900 (JST)
+	by sakura.ysato.name (Postfix) with ESMTPSA id CF91B1C01B1;
+	Tue,  5 Dec 2023 18:46:02 +0900 (JST)
 From: Yoshinori Sato <ysato@users.sourceforge.jp>
 To: linux-sh@vger.kernel.org
 Cc: Yoshinori Sato <ysato@users.sourceforge.jp>,
@@ -70,9 +70,9 @@ Cc: Yoshinori Sato <ysato@users.sourceforge.jp>,
 	linux-pci@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	linux-fbdev@vger.kernel.org
-Subject: [DO NOT MERGE v5 17/37] dt-bindings: interrupt-controller: renesas,sh7751-intc: Add json-schema
-Date: Tue,  5 Dec 2023 18:45:36 +0900
-Message-Id: <1fafcf1c70ee4e38847bac1379bcb4555a237505.1701768028.git.ysato@users.sourceforge.jp>
+Subject: [DO NOT MERGE v5 01/37] sh: passing FDT address to kernel startup.
+Date: Tue,  5 Dec 2023 18:45:20 +0900
+Message-Id: <edd42bb5aa30ac3eb26a9e08b1dc6fc9041aa3b1.1701768028.git.ysato@users.sourceforge.jp>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1701768028.git.ysato@users.sourceforge.jp>
 References: <cover.1701768028.git.ysato@users.sourceforge.jp>
@@ -84,125 +84,37 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Renesas SH7751 INTC json-schema.
+R4 is caller saved in SH ABI.
+Save it so it doesn't get corrupted until it's needed for initialization.
 
 Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
 ---
- .../renesas,sh7751-intc.yaml                  | 105 ++++++++++++++++++
- 1 file changed, 105 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/interrupt-controller/renesas,sh7751-intc.yaml
+ arch/sh/boot/compressed/head_32.S | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/renesas,sh7751-intc.yaml b/Documentation/devicetree/bindings/interrupt-controller/renesas,sh7751-intc.yaml
-new file mode 100644
-index 000000000000..9d05c10f5c32
---- /dev/null
-+++ b/Documentation/devicetree/bindings/interrupt-controller/renesas,sh7751-intc.yaml
-@@ -0,0 +1,105 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/interrupt-controller/renesas,sh7751-intc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Renesas SH7751 Interrupt Controller
-+
-+maintainers:
-+  - Yoshinori Sato <ysato@users.sourceforge.jp>
-+
-+properties:
-+  compatible:
-+    items:
-+      - const: renesas,sh7751-intc
-+
-+  '#interrupt-cells':
-+    const: 1
-+
-+  interrupt-controller: true
-+
-+  reg:
-+    maxItems: 2
-+
-+  reg-names:
-+    items:
-+      - const: ICR
-+      - const: INTPRI00
-+
-+  renesas,icr-irlm:
-+    type: boolean
-+    description: If true ICR.IRLM=1
-+
-+  renesas,ipr-map:
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    description: |
-+      IRQ to IPR mapping definition.
-+      1st - INTEVT
-+      2nd - Register
-+      3rd - bit index
-+
-+required:
-+  - compatible
-+  - '#interrupt-cells'
-+  - interrupt-controller
-+  - reg
-+  - reg-names
-+  - renesas,ipr-map
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/sh_intc.h>
-+    shintc: interrupt-controller@ffd00000 {
-+            compatible = "renesas,sh7751-intc";
-+            #interrupt-cells = <1>;
-+            interrupt-controller;
-+            reg = <0xffd00000 14>, <0xfe080000 128>;
-+            reg-names = "ICR", "INTPRI00";
-+            renesas,ipr-map = <0x240 IPRD IPR_B12>, /* IRL0 */
-+                              <0x2a0 IPRD IPR_B8>,  /* IRL1 */
-+                              <0x300 IPRD IPR_B4>,  /* IRL2 */
-+                              <0x360 IPRD IPR_B0>,  /* IRL3 */
-+                              <0x400 IPRA IPR_B12>, /* TMU0 */
-+                              <0x420 IPRA IPR_B8>,  /* TMU1 */
-+                              <0x440 IPRA IPR_B4>,  /* TMU2 TNUI */
-+                              <0x460 IPRA IPR_B4>,  /* TMU2 TICPI */
-+                              <0x480 IPRA IPR_B0>,  /* RTC ATI */
-+                              <0x4a0 IPRA IPR_B0>,  /* RTC PRI */
-+                              <0x4c0 IPRA IPR_B0>,  /* RTC CUI */
-+                              <0x4e0 IPRB IPR_B4>,  /* SCI ERI */
-+                              <0x500 IPRB IPR_B4>,  /* SCI RXI */
-+                              <0x520 IPRB IPR_B4>,  /* SCI TXI */
-+                              <0x540 IPRB IPR_B4>,  /* SCI TEI */
-+                              <0x560 IPRB IPR_B12>, /* WDT */
-+                              <0x580 IPRB IPR_B8>,  /* REF RCMI */
-+                              <0x5a0 IPRB IPR_B4>,  /* REF ROVI */
-+                              <0x600 IPRC IPR_B0>,  /* H-UDI */
-+                              <0x620 IPRC IPR_B12>, /* GPIO */
-+                              <0x640 IPRC IPR_B8>,  /* DMAC DMTE0 */
-+                              <0x660 IPRC IPR_B8>,  /* DMAC DMTE1 */
-+                              <0x680 IPRC IPR_B8>,  /* DMAC DMTE2 */
-+                              <0x6a0 IPRC IPR_B8>,  /* DMAC DMTE3 */
-+                              <0x6c0 IPRC IPR_B8>,  /* DMAC DMAE */
-+                              <0x700 IPRC IPR_B4>,  /* SCIF ERI */
-+                              <0x720 IPRC IPR_B4>,  /* SCIF RXI */
-+                              <0x740 IPRC IPR_B4>,  /* SCIF BRI */
-+                              <0x760 IPRC IPR_B4>,  /* SCIF TXI */
-+                              <0x780 IPRC IPR_B8>,  /* DMAC DMTE4 */
-+                              <0x7a0 IPRC IPR_B8>,  /* DMAC DMTE5 */
-+                              <0x7c0 IPRC IPR_B8>,  /* DMAC DMTE6 */
-+                              <0x7e0 IPRC IPR_B8>,  /* DMAC DMTE7 */
-+                              <0xa00 INTPRI00 IPR_B0>,      /* PCIC PCISERR */
-+                              <0xa20 INTPRI00 IPR_B4>,      /* PCIC PCIDMA3 */
-+                              <0xa40 INTPRI00 IPR_B4>,      /* PCIC PCIDMA2 */
-+                              <0xa60 INTPRI00 IPR_B4>,      /* PCIC PCIDMA1 */
-+                              <0xa80 INTPRI00 IPR_B4>,      /* PCIC PCIDMA0 */
-+                              <0xaa0 INTPRI00 IPR_B4>,      /* PCIC PCIPWON */
-+                              <0xac0 INTPRI00 IPR_B4>,      /* PCIC PCIPWDWN */
-+                              <0xae0 INTPRI00 IPR_B4>,      /* PCIC PCIERR */
-+                              <0xb00 INTPRI00 IPR_B8>,      /* TMU3 */
-+                              <0xb80 INTPRI00 IPR_B12>;     /* TMU4 */
-+    };
-+...
+diff --git a/arch/sh/boot/compressed/head_32.S b/arch/sh/boot/compressed/head_32.S
+index 7bb168133dbb..6be59851122e 100644
+--- a/arch/sh/boot/compressed/head_32.S
++++ b/arch/sh/boot/compressed/head_32.S
+@@ -15,7 +15,8 @@ startup:
+ 	/* Load initial status register */
+ 	mov.l   init_sr, r1
+ 	ldc     r1, sr
+-
++	/* Save FDT address */
++	mov	r4, r13
+ 	/* Move myself to proper location if necessary */
+ 	mova	1f, r0
+ 	mov.l	1f, r2
+@@ -84,7 +85,7 @@ l1:
+ 	/* Jump to the start of the decompressed kernel */
+ 	mov.l	kernel_start_addr, r0
+ 	jmp	@r0
+-	nop
++	 mov	r13, r4
+ 	
+ 	.align	2
+ bss_start_addr:
 -- 
 2.39.2
 
