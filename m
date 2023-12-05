@@ -1,72 +1,220 @@
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D9kXV+tf"
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B81183
-	for <linux-serial@vger.kernel.org>; Tue,  5 Dec 2023 12:22:21 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id 98e67ed59e1d1-2867ea3abedso737880a91.1
-        for <linux-serial@vger.kernel.org>; Tue, 05 Dec 2023 12:22:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1701807740; x=1702412540; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=d1Tz+Zhu6CykN3s0r0dZsVml2EIMKxIKO2MhquO/qGc=;
-        b=D9kXV+tfM4L7w8d7CWEntA3piGwlMXMm4HiqXHUYakYXNne0K2w1KtfebwiW0NwHfU
-         25u6u2adM+BQGj8CLW76z3R2Oj4fEy4PxscxKs9YgdbPVWAMrCgIDCoag351sX6PKYlR
-         wuvXDke2FIoLJWanIzO7wVEEMiEEvlyCs1VQC5VMj7PTz3wTEjQUhTgqEYPLiSxULVM+
-         rZZAGFU1DPCjYAzD6umznBImflfh1U5cPolWURWZ5oNjnWGBYw0X90Zuh7UB8S1QXztL
-         cetyfrMNVOupY7e0ysgkXNLRc0Ha7tkYERyLBTG9Cpt9m8JqOmSFVViEvEKFVpCuFKs/
-         LQLw==
+Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F62188;
+	Tue,  5 Dec 2023 13:02:03 -0800 (PST)
+Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-58e30de3933so2124922eaf.3;
+        Tue, 05 Dec 2023 13:02:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701807740; x=1702412540;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=d1Tz+Zhu6CykN3s0r0dZsVml2EIMKxIKO2MhquO/qGc=;
-        b=XAdIgQr4FhBKqUTt8c9CkeVBrlS5Vqiu9btrkCuWS4U1rgjvm43U7lv5/ZddIOZyeo
-         9sTr3yMVkN0mFAp8cD1L9+d40C8qowFJ0GWBSw8/lvpawhh6sfGsSFOQ+bJtRsNLHTg8
-         Mk8wqD4WQKOqBtbUELGhyYOFRWikkk0H9432O4dgjm8+FDYqLgt1n4iAYgk70fiJJpDg
-         aFE21lBgJ9UX9tg1XNdyUHLCaV4g42ZS22M8C26KpsZKn9/C4KN2t8yNIqONNnsM6c70
-         LdkzybDi+Ay9B6abU27yyYyfpj7AAnzuyEfbKwGYSaz+jJjzk+vVbeyvg/szROdLHhf4
-         8eqg==
-X-Gm-Message-State: AOJu0YywZBbBxRvRkZ1bRtRL2yJtv5S6E6sFynUhhpn9D4ccltNMYZHX
-	PMBQ2YR+VTHNJ6il8BgfokXNjeZakRDJ/YH0np8=
-X-Google-Smtp-Source: AGHT+IEz4JosIjEBEt18VO0mFDLU5iQcK5oLQ97ZQOc85crWavGEDEn7/iazArIQHGfN7m9094T11Rk0wvW9WzxzD/0=
-X-Received: by 2002:a17:90a:2f46:b0:286:6ad8:5d15 with SMTP id
- s64-20020a17090a2f4600b002866ad85d15mr10531700pjd.2.1701807740501; Tue, 05
- Dec 2023 12:22:20 -0800 (PST)
+        d=1e100.net; s=20230601; t=1701810122; x=1702414922;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IdYRNh7Vlob6vHvVQj3FqYlHUzVIZf5EcZbK3xhngEg=;
+        b=bmC304Ybt/lLceVWsw9hKVUQc4tT6c/EXo7VyB5kCoSkYY0yZjwiSp4NnPrF3DcVkq
+         FgzKQWcJzl5meVCTC5gWPcrCLLu4UXYOug+FP9Z4IW6V8DiBGcxkRuZPBOgloLh0NFwG
+         tbm/EccMFRZubUff9J/Ld8m5NI34i9Uhs2fTOXVeEZQEEwUmBXR/wO3BKzP6ZIvChgL2
+         8Qm2WURSfz2w8UHNltYlX2GYG5gPSk5nj0hFgvX2XzKSuH5TMsYBKw+gNJ2ZKTByGqBs
+         2VKCDlxhwtcb7SDpG5L/keprKM9Y1s8IkFGhu8G8Zde8UB8wmUL4IELj11KDuGxWCl+R
+         wF7w==
+X-Gm-Message-State: AOJu0Yx3jMCB6MTfbiz6YoxNEFiflpptJw8OVrDild9hhu+Qx1YWL02C
+	1gISSb38dpxlUmw/K98hrQ==
+X-Google-Smtp-Source: AGHT+IEELo2vI+di+qlC0rsG6Gdv4w/6prGhHS2OYuIkz413JcirnWVw4QzKEsB7bi8jrOvnQ/zU7Q==
+X-Received: by 2002:a05:6870:b50e:b0:1fb:75c:3feb with SMTP id v14-20020a056870b50e00b001fb075c3febmr7677773oap.75.1701810122176;
+        Tue, 05 Dec 2023 13:02:02 -0800 (PST)
+Received: from herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id ps14-20020a0568709e0e00b001fb4aaf261csm1037762oab.32.2023.12.05.13.01.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Dec 2023 13:02:01 -0800 (PST)
+Received: (nullmailer pid 3792495 invoked by uid 1000);
+	Tue, 05 Dec 2023 21:01:58 -0000
+Date: Tue, 5 Dec 2023 15:01:58 -0600
+From: Rob Herring <robh@kernel.org>
+To: Yoshinori Sato <ysato@users.sourceforge.jp>
+Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, Michael Turquette <mturquette@baylibre.com>, 
+	Stephen Boyd <sboyd@kernel.org>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, Thomas Gleixner <tglx@linutronix.de>, 
+	Lorenzo Pieralisi <lpieralisi@kernel.org>, =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, 
+	Daniel Lezcano <daniel.lezcano@linaro.org>, Rich Felker <dalias@libc.org>, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Lee Jones <lee@kernel.org>, 
+	Helge Deller <deller@gmx.de>, Heiko Stuebner <heiko@sntech.de>, 
+	Jernej Skrabec <jernej.skrabec@gmail.com>, Chris Morgan <macromorgan@hotmail.com>, 
+	Linus Walleij <linus.walleij@linaro.org>, Randy Dunlap <rdunlap@infradead.org>, 
+	Arnd Bergmann <arnd@arndb.de>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, 
+	David Rientjes <rientjes@google.com>, Vlastimil Babka <vbabka@suse.cz>, Baoquan He <bhe@redhat.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, 
+	Stephen Rothwell <sfr@canb.auug.org.au>, Guo Ren <guoren@kernel.org>, 
+	Javier Martinez Canillas <javierm@redhat.com>, Azeem Shaikh <azeemshaikh38@gmail.com>, 
+	Palmer Dabbelt <palmer@rivosinc.com>, Bin Meng <bmeng@tinylab.org>, 
+	Max Filippov <jcmvbkbc@gmail.com>, Tom Rix <trix@redhat.com>, 
+	Herve Codina <herve.codina@bootlin.com>, Jacky Huang <ychuang3@nuvoton.com>, 
+	Lukas Bulwahn <lukas.bulwahn@gmail.com>, Jonathan Corbet <corbet@lwn.net>, 
+	Biju Das <biju.das.jz@bp.renesas.com>, 
+	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
+	Sam Ravnborg <sam@ravnborg.org>, Michael Karcher <kernel@mkarcher.dialup.fu-berlin.de>, 
+	Sergey Shtylyov <s.shtylyov@omp.ru>, 
+	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-ide@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linux-pci@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
+Subject: Re: [DO NOT MERGE v5 19/37] dt-bindings: interrupt-controller:
+ renesas,sh7751-irl-ext: Add json-schema
+Message-ID: <20231205210158.GA3774253-robh@kernel.org>
+References: <cover.1701768028.git.ysato@users.sourceforge.jp>
+ <1623383c89532994218795cd3755c37819be426b.1701768028.git.ysato@users.sourceforge.jp>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20231205005108.79782-1-marex@denx.de>
-In-Reply-To: <20231205005108.79782-1-marex@denx.de>
-From: Fabio Estevam <festevam@gmail.com>
-Date: Tue, 5 Dec 2023 17:22:08 -0300
-Message-ID: <CAOMZO5Asw8O_=RCrku65ovGb+MARLRtamn05Bw5LaQHFsT2YpQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: imx: Fix clock imbalance
-To: Marek Vasut <marex@denx.de>
-Cc: linux-serial@vger.kernel.org, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, Rob Herring <robh@kernel.org>, 
-	Sascha Hauer <s.hauer@pengutronix.de>, Sergey Organov <sorganov@gmail.com>, 
-	Shawn Guo <shawnguo@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Tom Rix <trix@redhat.com>, 
-	linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1623383c89532994218795cd3755c37819be426b.1701768028.git.ysato@users.sourceforge.jp>
 
-Hi Marek,
+On Tue, Dec 05, 2023 at 06:45:38PM +0900, Yoshinori Sato wrote:
+> Renesas SH7751 external interrupt encoder json-schema.
+> 
+> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
+> ---
+>  .../renesas,sh7751-irl-ext.yaml               | 83 +++++++++++++++++++
+>  1 file changed, 83 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/interrupt-controller/renesas,sh7751-irl-ext.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/interrupt-controller/renesas,sh7751-irl-ext.yaml b/Documentation/devicetree/bindings/interrupt-controller/renesas,sh7751-irl-ext.yaml
+> new file mode 100644
+> index 000000000000..ba4fe2e4d749
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/interrupt-controller/renesas,sh7751-irl-ext.yaml
+> @@ -0,0 +1,83 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/interrupt-controller/renesas,sh7751-irl-ext.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Renesas SH7751 IRL external encoder with enable regs.
 
-On Mon, Dec 4, 2023 at 9:51=E2=80=AFPM Marek Vasut <marex@denx.de> wrote:
->
-> Disable and unprepare the clock on every exit from probe function
-> after the clock were prepared and enabled to avoid enable/disable
-> imbalance.
->
-> Signed-off-by: Marek Vasut <marex@denx.de>
+IRL? In Real Life?
 
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
+> +
+> +maintainers:
+> +  - Yoshinori Sato <ysato@users.sourceforge.jp>
+> +
+> +description: |
+
+Don't need '|' if no formatting to preserve.
+
+> +  This is the generally used external interrupt encoder on SH7751 based boards.
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - const: renesas,sh7751-irl-ext
+> +
+> +  reg:
+> +    minItems: 1
+
+maxItems: 1
+
+> +
+> +  interrupt-controller: true
+> +
+> +  '#interrupt-cells':
+> +    const: 1
+> +
+> +  '#address-cells':
+> +    const: 0
+> +
+> +  '#size-cells':
+> +    const: 0
+
+Don't need #size-cells.
+
+> +
+> +  renesas,width:
+> +    description: Enable register width
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [8, 16, 32]
+
+reg-io-width is the standard property for this purpose.
+
+> +
+> +  renesas,set-to-disable:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description: Setting this flag to 1 disables it.
+
+You can't set a boolean to 1. What is 'it' here? 
+
+> +
+> +  renesas,enable-bit:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+
+You've described a 2 entry matrix, not an array.
+
+> +    description: |
+> +      IRL enable register bit mapping
+> +      1st word IRL
+> +      2nd word bit index of enable register
+
+Needs a better description of what this is for. If it is per SoC then it 
+should be implied from the compatible string.
+
+
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupt-controller
+> +  - '#interrupt-cells'
+> +  - renesas,width
+> +  - renesas,enable-bit
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    r2dintc: sh7751irl_encoder@a4000000 {
+
+interrupt-controller@...
+
+Drop unused labels.
+
+> +        compatible = "renesas,sh7751-irl-ext";
+> +        reg = <0xa4000000 0x02>;
+> +        interrupt-controller;
+> +        #address-cells = <0>;
+> +        #size-cells = <0>;
+> +        #interrupt-cells = <1>;
+> +        renesas,width = <16>;
+> +        renesas,enable-bit = <0 11>,            /* PCI INTD */
+> +                             <1 9>,             /* CF IDE */
+> +                             <2 8>,             /* CF CD */
+> +                             <3 12>,            /* PCI INTC */
+> +                             <4 10>,            /* SM501 */
+> +                             <5 6>,             /* KEY */
+> +                             <6 5>,             /* RTC ALARM */
+> +                             <7 4>,             /* RTC T */
+> +                             <8 7>,             /* SDCARD */
+> +                             <9 14>,            /* PCI INTA */
+> +                             <10 13>,           /* PCI INTB */
+> +                             <11 0>,            /* EXT */
+> +                             <12 15>;           /* TP */
+
+Looks like the first value is just the index of the entry, so drop it 
+and use the index.
+
+But better yet, these are all per interrupt values. Put them into the 
+interrupt cell values instead. For example the RTC would have something 
+like:
+
+interrupts = <6 5>, <7 4>;
+
+Though I do wonder if you really need the first value, or that was just 
+interrupt numbers you made up and then created this mapping?
+
+Rob
