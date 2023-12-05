@@ -1,9 +1,9 @@
 Received: from sakura.ysato.name (ik1-413-38519.vs.sakura.ne.jp [153.127.30.23])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id E5413120;
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97EA910F;
 	Tue,  5 Dec 2023 01:55:34 -0800 (PST)
 Received: from SIOS1075.ysato.name (ZM005235.ppp.dion.ne.jp [222.8.5.235])
-	by sakura.ysato.name (Postfix) with ESMTPSA id 4097D1C051F;
-	Tue,  5 Dec 2023 18:46:17 +0900 (JST)
+	by sakura.ysato.name (Postfix) with ESMTPSA id 8CF331C05D3;
+	Tue,  5 Dec 2023 18:46:29 +0900 (JST)
 From: Yoshinori Sato <ysato@users.sourceforge.jp>
 To: linux-sh@vger.kernel.org
 Cc: Yoshinori Sato <ysato@users.sourceforge.jp>,
@@ -70,9 +70,9 @@ Cc: Yoshinori Sato <ysato@users.sourceforge.jp>,
 	linux-pci@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	linux-fbdev@vger.kernel.org
-Subject: [DO NOT MERGE v5 08/37] clocksource: sh_tmu: CLOCKSOURCE support.
-Date: Tue,  5 Dec 2023 18:45:27 +0900
-Message-Id: <a67098b7f8cefbbce3fe9ee24d27093e5faa5248.1701768028.git.ysato@users.sourceforge.jp>
+Subject: [DO NOT MERGE v5 14/37] clk: Compatible with narrow registers
+Date: Tue,  5 Dec 2023 18:45:33 +0900
+Message-Id: <e27ae1458bd2caabef5423e4ed79fe49813e13b1.1701768028.git.ysato@users.sourceforge.jp>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1701768028.git.ysato@users.sourceforge.jp>
 References: <cover.1701768028.git.ysato@users.sourceforge.jp>
@@ -84,397 +84,319 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Allows initialization as CLOCKSOURCE.
+divider and gate only support 32-bit registers.
+Older hardware uses narrower registers, so I want to be able to handle
+8-bit and 16-bit wide registers.
 
 Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
 ---
- drivers/clocksource/sh_tmu.c | 161 +++++++++++++++++++++++------------
- 1 file changed, 106 insertions(+), 55 deletions(-)
+ drivers/clk/clk-divider.c    | 56 ++++++++++++++++++++++++------------
+ drivers/clk/clk-gate.c       | 56 +++++++++++++++++++++++++++---------
+ include/linux/clk-provider.h | 22 ++++++++++----
+ 3 files changed, 97 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/clocksource/sh_tmu.c b/drivers/clocksource/sh_tmu.c
-index beffff81c00f..e4ae83c9f7d4 100644
---- a/drivers/clocksource/sh_tmu.c
-+++ b/drivers/clocksource/sh_tmu.c
-@@ -17,6 +17,8 @@
- #include <linux/irq.h>
- #include <linux/module.h>
- #include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_irq.h>
- #include <linux/platform_device.h>
- #include <linux/pm_domain.h>
- #include <linux/pm_runtime.h>
-@@ -65,6 +67,7 @@ struct sh_tmu_device {
+diff --git a/drivers/clk/clk-divider.c b/drivers/clk/clk-divider.c
+index a2c2b5203b0a..a1b5187cd63d 100644
+--- a/drivers/clk/clk-divider.c
++++ b/drivers/clk/clk-divider.c
+@@ -26,20 +26,38 @@
+  * parent - fixed parent.  No clk_set_parent support
+  */
  
- 	bool has_clockevent;
- 	bool has_clocksource;
-+	const char *name;
+-static inline u32 clk_div_readl(struct clk_divider *divider)
+-{
+-	if (divider->flags & CLK_DIVIDER_BIG_ENDIAN)
+-		return ioread32be(divider->reg);
+-
+-	return readl(divider->reg);
++static inline u32 clk_div_read(struct clk_divider *divider)
++{
++	if (divider->flags & CLK_DIVIDER_REG_8BIT)
++		return readb(divider->reg);
++	else if (divider->flags & CLK_DIVIDER_REG_16BIT) {
++		if (divider->flags & CLK_DIVIDER_BIG_ENDIAN)
++			return ioread16be(divider->reg);
++		else
++			return readw(divider->reg);
++	} else {
++		if (divider->flags & CLK_DIVIDER_BIG_ENDIAN)
++			return ioread32be(divider->reg);
++		else
++			return readl(divider->reg);
++	}
+ }
+ 
+-static inline void clk_div_writel(struct clk_divider *divider, u32 val)
++static inline void clk_div_write(struct clk_divider *divider, u32 val)
+ {
+-	if (divider->flags & CLK_DIVIDER_BIG_ENDIAN)
+-		iowrite32be(val, divider->reg);
+-	else
+-		writel(val, divider->reg);
++	if (divider->flags & CLK_DIVIDER_REG_8BIT)
++		writeb(val, divider->reg);
++	else if (divider->flags & CLK_DIVIDER_REG_16BIT) {
++		if (divider->flags & CLK_DIVIDER_BIG_ENDIAN)
++			iowrite16be(val, divider->reg);
++		else
++			writew(val, divider->reg);
++	} else {
++		if (divider->flags & CLK_DIVIDER_BIG_ENDIAN)
++			iowrite32be(val, divider->reg);
++		else
++			writel(val, divider->reg);
++	}
+ }
+ 
+ static unsigned int _get_table_maxdiv(const struct clk_div_table *table,
+@@ -152,7 +170,7 @@ static unsigned long clk_divider_recalc_rate(struct clk_hw *hw,
+ 	struct clk_divider *divider = to_clk_divider(hw);
+ 	unsigned int val;
+ 
+-	val = clk_div_readl(divider) >> divider->shift;
++	val = clk_div_read(divider) >> divider->shift;
+ 	val &= clk_div_mask(divider->width);
+ 
+ 	return divider_recalc_rate(hw, parent_rate, val, divider->table,
+@@ -434,7 +452,7 @@ static long clk_divider_round_rate(struct clk_hw *hw, unsigned long rate,
+ 	if (divider->flags & CLK_DIVIDER_READ_ONLY) {
+ 		u32 val;
+ 
+-		val = clk_div_readl(divider) >> divider->shift;
++		val = clk_div_read(divider) >> divider->shift;
+ 		val &= clk_div_mask(divider->width);
+ 
+ 		return divider_ro_round_rate(hw, rate, prate, divider->table,
+@@ -455,7 +473,7 @@ static int clk_divider_determine_rate(struct clk_hw *hw,
+ 	if (divider->flags & CLK_DIVIDER_READ_ONLY) {
+ 		u32 val;
+ 
+-		val = clk_div_readl(divider) >> divider->shift;
++		val = clk_div_read(divider) >> divider->shift;
+ 		val &= clk_div_mask(divider->width);
+ 
+ 		return divider_ro_determine_rate(hw, req, divider->table,
+@@ -505,11 +523,11 @@ static int clk_divider_set_rate(struct clk_hw *hw, unsigned long rate,
+ 	if (divider->flags & CLK_DIVIDER_HIWORD_MASK) {
+ 		val = clk_div_mask(divider->width) << (divider->shift + 16);
+ 	} else {
+-		val = clk_div_readl(divider);
++		val = clk_div_read(divider);
+ 		val &= ~(clk_div_mask(divider->width) << divider->shift);
+ 	}
+ 	val |= (u32)value << divider->shift;
+-	clk_div_writel(divider, val);
++	clk_div_write(divider, val);
+ 
+ 	if (divider->lock)
+ 		spin_unlock_irqrestore(divider->lock, flags);
+@@ -538,7 +556,7 @@ struct clk_hw *__clk_hw_register_divider(struct device *dev,
+ 		struct device_node *np, const char *name,
+ 		const char *parent_name, const struct clk_hw *parent_hw,
+ 		const struct clk_parent_data *parent_data, unsigned long flags,
+-		void __iomem *reg, u8 shift, u8 width, u8 clk_divider_flags,
++		void __iomem *reg, u8 shift, u8 width, u32 clk_divider_flags,
+ 		const struct clk_div_table *table, spinlock_t *lock)
+ {
+ 	struct clk_divider *div;
+@@ -610,7 +628,7 @@ EXPORT_SYMBOL_GPL(__clk_hw_register_divider);
+ struct clk *clk_register_divider_table(struct device *dev, const char *name,
+ 		const char *parent_name, unsigned long flags,
+ 		void __iomem *reg, u8 shift, u8 width,
+-		u8 clk_divider_flags, const struct clk_div_table *table,
++		u32 clk_divider_flags, const struct clk_div_table *table,
+ 		spinlock_t *lock)
+ {
+ 	struct clk_hw *hw;
+@@ -664,7 +682,7 @@ struct clk_hw *__devm_clk_hw_register_divider(struct device *dev,
+ 		struct device_node *np, const char *name,
+ 		const char *parent_name, const struct clk_hw *parent_hw,
+ 		const struct clk_parent_data *parent_data, unsigned long flags,
+-		void __iomem *reg, u8 shift, u8 width, u8 clk_divider_flags,
++		void __iomem *reg, u8 shift, u8 width, u32 clk_divider_flags,
+ 		const struct clk_div_table *table, spinlock_t *lock)
+ {
+ 	struct clk_hw **ptr, *hw;
+diff --git a/drivers/clk/clk-gate.c b/drivers/clk/clk-gate.c
+index 68e585a02fd9..8a7e97e8dc73 100644
+--- a/drivers/clk/clk-gate.c
++++ b/drivers/clk/clk-gate.c
+@@ -24,20 +24,38 @@
+  * parent - fixed parent.  No clk_set_parent support
+  */
+ 
+-static inline u32 clk_gate_readl(struct clk_gate *gate)
++static inline u32 clk_gate_read(struct clk_gate *gate)
+ {
+-	if (gate->flags & CLK_GATE_BIG_ENDIAN)
+-		return ioread32be(gate->reg);
+-
+-	return readl(gate->reg);
++	if (gate->flags & CLK_GATE_REG_8BIT)
++		return readb(gate->reg);
++	else if (gate->flags & CLK_GATE_REG_16BIT) {
++		if (gate->flags & CLK_GATE_BIG_ENDIAN)
++			return ioread16be(gate->reg);
++		else
++			return readw(gate->reg);
++	} else {
++		if (gate->flags & CLK_GATE_BIG_ENDIAN)
++			return ioread32be(gate->reg);
++		else
++			return readl(gate->reg);
++	}
+ }
+ 
+-static inline void clk_gate_writel(struct clk_gate *gate, u32 val)
++static inline void clk_gate_write(struct clk_gate *gate, u32 val)
+ {
+-	if (gate->flags & CLK_GATE_BIG_ENDIAN)
+-		iowrite32be(val, gate->reg);
+-	else
+-		writel(val, gate->reg);
++	if (gate->flags & CLK_GATE_REG_8BIT)
++		writeb(val, gate->reg);
++	else if (gate->flags & CLK_GATE_REG_16BIT) {
++		if (gate->flags & CLK_GATE_BIG_ENDIAN)
++			iowrite16be(val, gate->reg);
++		else
++			writew(val, gate->reg);
++	} else {
++		if (gate->flags & CLK_GATE_BIG_ENDIAN)
++			iowrite32be(val, gate->reg);
++		else
++			writel(val, gate->reg);
++	}
+ }
+ 
+ /*
+@@ -72,7 +90,7 @@ static void clk_gate_endisable(struct clk_hw *hw, int enable)
+ 		if (set)
+ 			reg |= BIT(gate->bit_idx);
+ 	} else {
+-		reg = clk_gate_readl(gate);
++		reg = clk_gate_read(gate);
+ 
+ 		if (set)
+ 			reg |= BIT(gate->bit_idx);
+@@ -80,7 +98,7 @@ static void clk_gate_endisable(struct clk_hw *hw, int enable)
+ 			reg &= ~BIT(gate->bit_idx);
+ 	}
+ 
+-	clk_gate_writel(gate, reg);
++	clk_gate_write(gate, reg);
+ 
+ 	if (gate->lock)
+ 		spin_unlock_irqrestore(gate->lock, flags);
+@@ -105,7 +123,7 @@ int clk_gate_is_enabled(struct clk_hw *hw)
+ 	u32 reg;
+ 	struct clk_gate *gate = to_clk_gate(hw);
+ 
+-	reg = clk_gate_readl(gate);
++	reg = clk_gate_read(gate);
+ 
+ 	/* if a set bit disables this clk, flip it before masking */
+ 	if (gate->flags & CLK_GATE_SET_TO_DISABLE)
+@@ -143,6 +161,18 @@ struct clk_hw *__clk_hw_register_gate(struct device *dev,
+ 			return ERR_PTR(-EINVAL);
+ 		}
+ 	}
++	if (clk_gate_flags & CLK_GATE_REG_16BIT) {
++		if (bit_idx > 15) {
++			pr_err("gate bit exceeds 16 bits\n");
++			return ERR_PTR(-EINVAL);
++		}
++	}
++	if (clk_gate_flags & CLK_GATE_REG_8BIT) {
++		if (bit_idx > 7) {
++			pr_err("gate bit exceeds 8 bits\n");
++			return ERR_PTR(-EINVAL);
++		}
++	}
+ 
+ 	/* allocate the gate */
+ 	gate = kzalloc(sizeof(*gate), GFP_KERNEL);
+diff --git a/include/linux/clk-provider.h b/include/linux/clk-provider.h
+index ace3a4ce2fc9..d9ae66caa3b7 100644
+--- a/include/linux/clk-provider.h
++++ b/include/linux/clk-provider.h
+@@ -508,12 +508,16 @@ void of_fixed_clk_setup(struct device_node *np);
+  * CLK_GATE_BIG_ENDIAN - by default little endian register accesses are used for
+  *	the gate register.  Setting this flag makes the register accesses big
+  *	endian.
++ * CLK_GATE_REG_8BIT - by default 32bit register accesses are used for
++ *	the gate register.  Setting this flag makes the register accesses 8bit.
++ * CLK_GATE_REG_16BIT - by default 32bit register accesses are used for
++ *	the gate register.  Setting this flag makes the register accesses 16bit.
+  */
+ struct clk_gate {
+ 	struct clk_hw hw;
+ 	void __iomem	*reg;
+ 	u8		bit_idx;
+-	u8		flags;
++	u32		flags;
+ 	spinlock_t	*lock;
  };
  
- #define TSTR -1 /* shared register */
-@@ -148,8 +151,8 @@ static int __sh_tmu_enable(struct sh_tmu_channel *ch)
- 	/* enable clock */
- 	ret = clk_enable(ch->tmu->clk);
- 	if (ret) {
--		dev_err(&ch->tmu->pdev->dev, "ch%u: cannot enable clock\n",
--			ch->index);
-+		pr_err("%s ch%u: cannot enable clock\n",
-+		       ch->tmu->name, ch->index);
- 		return ret;
- 	}
+@@ -522,6 +526,8 @@ struct clk_gate {
+ #define CLK_GATE_SET_TO_DISABLE		BIT(0)
+ #define CLK_GATE_HIWORD_MASK		BIT(1)
+ #define CLK_GATE_BIG_ENDIAN		BIT(2)
++#define CLK_GATE_REG_8BIT		BIT(3)
++#define CLK_GATE_REG_16BIT		BIT(4)
  
-@@ -174,9 +177,10 @@ static int sh_tmu_enable(struct sh_tmu_channel *ch)
- 	if (ch->enable_count++ > 0)
- 		return 0;
+ extern const struct clk_ops clk_gate_ops;
+ struct clk_hw *__clk_hw_register_gate(struct device *dev,
+@@ -675,13 +681,17 @@ struct clk_div_table {
+  * CLK_DIVIDER_BIG_ENDIAN - By default little endian register accesses are used
+  *	for the divider register.  Setting this flag makes the register accesses
+  *	big endian.
++ * CLK_DIVIDER_REG_8BIT - by default 32bit register accesses are used for
++ *	the gate register.  Setting this flag makes the register accesses 8bit.
++ * CLK_DIVIDER_REG_16BIT - by default 32bit register accesses are used for
++ *	the gate register.  Setting this flag makes the register accesses 16bit.
+  */
+ struct clk_divider {
+ 	struct clk_hw	hw;
+ 	void __iomem	*reg;
+ 	u8		shift;
+ 	u8		width;
+-	u8		flags;
++	u32		flags;
+ 	const struct clk_div_table	*table;
+ 	spinlock_t	*lock;
+ };
+@@ -697,6 +707,8 @@ struct clk_divider {
+ #define CLK_DIVIDER_READ_ONLY		BIT(5)
+ #define CLK_DIVIDER_MAX_AT_ZERO		BIT(6)
+ #define CLK_DIVIDER_BIG_ENDIAN		BIT(7)
++#define CLK_DIVIDER_REG_8BIT		BIT(8)
++#define CLK_DIVIDER_REG_16BIT		BIT(9)
  
--	pm_runtime_get_sync(&ch->tmu->pdev->dev);
--	dev_pm_syscore_device(&ch->tmu->pdev->dev, true);
--
-+	if (ch->tmu->pdev) {
-+		pm_runtime_get_sync(&ch->tmu->pdev->dev);
-+		dev_pm_syscore_device(&ch->tmu->pdev->dev, true);
-+	}
- 	return __sh_tmu_enable(ch);
- }
- 
-@@ -202,8 +206,10 @@ static void sh_tmu_disable(struct sh_tmu_channel *ch)
- 
- 	__sh_tmu_disable(ch);
- 
--	dev_pm_syscore_device(&ch->tmu->pdev->dev, false);
--	pm_runtime_put(&ch->tmu->pdev->dev);
-+	if (ch->tmu->pdev) {
-+		dev_pm_syscore_device(&ch->tmu->pdev->dev, false);
-+		pm_runtime_put(&ch->tmu->pdev->dev);
-+	}
- }
- 
- static void sh_tmu_set_next(struct sh_tmu_channel *ch, unsigned long delta,
-@@ -245,7 +251,7 @@ static irqreturn_t sh_tmu_interrupt(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
--static struct sh_tmu_channel *cs_to_sh_tmu(struct clocksource *cs)
-+static inline struct sh_tmu_channel *cs_to_sh_tmu(struct clocksource *cs)
- {
- 	return container_of(cs, struct sh_tmu_channel, cs);
- }
-@@ -292,7 +298,8 @@ static void sh_tmu_clocksource_suspend(struct clocksource *cs)
- 
- 	if (--ch->enable_count == 0) {
- 		__sh_tmu_disable(ch);
--		dev_pm_genpd_suspend(&ch->tmu->pdev->dev);
-+		if (ch->tmu->pdev)
-+			dev_pm_genpd_suspend(&ch->tmu->pdev->dev);
- 	}
- }
- 
-@@ -304,7 +311,8 @@ static void sh_tmu_clocksource_resume(struct clocksource *cs)
- 		return;
- 
- 	if (ch->enable_count++ == 0) {
--		dev_pm_genpd_resume(&ch->tmu->pdev->dev);
-+		if (ch->tmu->pdev)
-+			dev_pm_genpd_resume(&ch->tmu->pdev->dev);
- 		__sh_tmu_enable(ch);
- 	}
- }
-@@ -324,14 +332,14 @@ static int sh_tmu_register_clocksource(struct sh_tmu_channel *ch,
- 	cs->mask = CLOCKSOURCE_MASK(32);
- 	cs->flags = CLOCK_SOURCE_IS_CONTINUOUS;
- 
--	dev_info(&ch->tmu->pdev->dev, "ch%u: used as clock source\n",
--		 ch->index);
-+	pr_info("%s ch%u: used as clock source\n",
-+		ch->tmu->name, ch->index);
- 
- 	clocksource_register_hz(cs, ch->tmu->rate);
- 	return 0;
- }
- 
--static struct sh_tmu_channel *ced_to_sh_tmu(struct clock_event_device *ced)
-+static inline struct sh_tmu_channel *ced_to_sh_tmu(struct clock_event_device *ced)
- {
- 	return container_of(ced, struct sh_tmu_channel, ced);
- }
-@@ -364,8 +372,8 @@ static int sh_tmu_clock_event_set_state(struct clock_event_device *ced,
- 	if (clockevent_state_oneshot(ced) || clockevent_state_periodic(ced))
- 		sh_tmu_disable(ch);
- 
--	dev_info(&ch->tmu->pdev->dev, "ch%u: used for %s clock events\n",
--		 ch->index, periodic ? "periodic" : "oneshot");
-+	pr_info("%s ch%u: used for %s clock events\n",
-+		ch->tmu->name, ch->index, periodic ? "periodic" : "oneshot");
- 	sh_tmu_clock_event_start(ch, periodic);
- 	return 0;
- }
-@@ -403,7 +411,8 @@ static void sh_tmu_clock_event_resume(struct clock_event_device *ced)
- }
- 
- static void sh_tmu_register_clockevent(struct sh_tmu_channel *ch,
--				       const char *name)
-+				       const char *name,
-+				       struct device_node *np)
- {
- 	struct clock_event_device *ced = &ch->ced;
- 	int ret;
-@@ -417,30 +426,32 @@ static void sh_tmu_register_clockevent(struct sh_tmu_channel *ch,
- 	ced->set_state_shutdown = sh_tmu_clock_event_shutdown;
- 	ced->set_state_periodic = sh_tmu_clock_event_set_periodic;
- 	ced->set_state_oneshot = sh_tmu_clock_event_set_oneshot;
--	ced->suspend = sh_tmu_clock_event_suspend;
--	ced->resume = sh_tmu_clock_event_resume;
--
--	dev_info(&ch->tmu->pdev->dev, "ch%u: used for clock events\n",
--		 ch->index);
-+	if (ch->tmu->pdev) {
-+		ced->suspend = sh_tmu_clock_event_suspend;
-+		ced->resume = sh_tmu_clock_event_resume;
-+	}
-+	pr_info("%s ch%u: used for clock events\n",
-+		ch->tmu->name, ch->index);
- 
- 	clockevents_config_and_register(ced, ch->tmu->rate, 0x300, 0xffffffff);
- 
- 	ret = request_irq(ch->irq, sh_tmu_interrupt,
- 			  IRQF_TIMER | IRQF_IRQPOLL | IRQF_NOBALANCING,
--			  dev_name(&ch->tmu->pdev->dev), ch);
-+			  ch->tmu->name, ch);
- 	if (ret) {
--		dev_err(&ch->tmu->pdev->dev, "ch%u: failed to request irq %d\n",
--			ch->index, ch->irq);
-+		pr_err("%s ch%u: failed to request irq %d\n",
-+		       ch->tmu->name, ch->index, ch->irq);
- 		return;
- 	}
- }
- 
- static int sh_tmu_register(struct sh_tmu_channel *ch, const char *name,
-+			   struct device_node *np,
- 			   bool clockevent, bool clocksource)
- {
- 	if (clockevent) {
- 		ch->tmu->has_clockevent = true;
--		sh_tmu_register_clockevent(ch, name);
-+		sh_tmu_register_clockevent(ch, name, np);
- 	} else if (clocksource) {
- 		ch->tmu->has_clocksource = true;
- 		sh_tmu_register_clocksource(ch, name);
-@@ -451,7 +462,8 @@ static int sh_tmu_register(struct sh_tmu_channel *ch, const char *name,
- 
- static int sh_tmu_channel_setup(struct sh_tmu_channel *ch, unsigned int index,
- 				bool clockevent, bool clocksource,
--				struct sh_tmu_device *tmu)
-+				struct sh_tmu_device *tmu,
-+				struct device_node *np)
- {
- 	/* Skip unused channels. */
- 	if (!clockevent && !clocksource)
-@@ -465,53 +477,59 @@ static int sh_tmu_channel_setup(struct sh_tmu_channel *ch, unsigned int index,
- 	else
- 		ch->base = tmu->mapbase + 8 + ch->index * 12;
- 
--	ch->irq = platform_get_irq(tmu->pdev, index);
-+	if (tmu->pdev)
-+		ch->irq = platform_get_irq(tmu->pdev, index);
-+	else
-+		ch->irq = of_irq_get(np, index);
- 	if (ch->irq < 0)
- 		return ch->irq;
- 
- 	ch->cs_enabled = false;
- 	ch->enable_count = 0;
- 
--	return sh_tmu_register(ch, dev_name(&tmu->pdev->dev),
-+	return sh_tmu_register(ch, tmu->name, np,
- 			       clockevent, clocksource);
- }
- 
--static int sh_tmu_map_memory(struct sh_tmu_device *tmu)
-+static int sh_tmu_map_memory(struct sh_tmu_device *tmu, struct device_node *np)
- {
- 	struct resource *res;
- 
--	res = platform_get_resource(tmu->pdev, IORESOURCE_MEM, 0);
--	if (!res) {
--		dev_err(&tmu->pdev->dev, "failed to get I/O memory\n");
--		return -ENXIO;
--	}
-+	if (tmu->pdev) {
-+		res = platform_get_resource(tmu->pdev, IORESOURCE_MEM, 0);
-+		if (!res) {
-+			pr_err("sh_tmu failed to get I/O memory\n");
-+			return -ENXIO;
-+		}
-+
-+		tmu->mapbase = ioremap(res->start, resource_size(res));
-+	} else
-+		tmu->mapbase = of_iomap(np, 0);
- 
--	tmu->mapbase = ioremap(res->start, resource_size(res));
- 	if (tmu->mapbase == NULL)
- 		return -ENXIO;
- 
- 	return 0;
- }
- 
--static int sh_tmu_parse_dt(struct sh_tmu_device *tmu)
-+static int sh_tmu_parse_dt(struct sh_tmu_device *tmu, struct device_node *np)
- {
--	struct device_node *np = tmu->pdev->dev.of_node;
--
- 	tmu->model = SH_TMU;
- 	tmu->num_channels = 3;
- 
- 	of_property_read_u32(np, "#renesas,channels", &tmu->num_channels);
- 
- 	if (tmu->num_channels != 2 && tmu->num_channels != 3) {
--		dev_err(&tmu->pdev->dev, "invalid number of channels %u\n",
--			tmu->num_channels);
-+		pr_err("%s: invalid number of channels %u\n",
-+		       tmu->name, tmu->num_channels);
- 		return -EINVAL;
- 	}
- 
- 	return 0;
- }
- 
--static int sh_tmu_setup(struct sh_tmu_device *tmu, struct platform_device *pdev)
-+static int sh_tmu_setup(struct sh_tmu_device *tmu,
-+			struct platform_device *pdev, struct device_node *np)
- {
- 	unsigned int i;
- 	int ret;
-@@ -520,8 +538,13 @@ static int sh_tmu_setup(struct sh_tmu_device *tmu, struct platform_device *pdev)
- 
- 	raw_spin_lock_init(&tmu->lock);
- 
--	if (IS_ENABLED(CONFIG_OF) && pdev->dev.of_node) {
--		ret = sh_tmu_parse_dt(tmu);
-+	if (pdev)
-+		tmu->name = dev_name(&pdev->dev);
-+	else
-+		tmu->name = of_node_full_name(np);
-+
-+	if (IS_ENABLED(CONFIG_OF) && np) {
-+		ret = sh_tmu_parse_dt(tmu, np);
- 		if (ret < 0)
- 			return ret;
- 	} else if (pdev->dev.platform_data) {
-@@ -531,14 +554,17 @@ static int sh_tmu_setup(struct sh_tmu_device *tmu, struct platform_device *pdev)
- 		tmu->model = id->driver_data;
- 		tmu->num_channels = hweight8(cfg->channels_mask);
- 	} else {
--		dev_err(&tmu->pdev->dev, "missing platform data\n");
-+		pr_err("%s missing platform data\n", tmu->name);
- 		return -ENXIO;
- 	}
- 
- 	/* Get hold of clock. */
--	tmu->clk = clk_get(&tmu->pdev->dev, "fck");
-+	if (pdev)
-+		tmu->clk = clk_get(&tmu->pdev->dev, "fck");
-+	else
-+		tmu->clk = of_clk_get(np, 0);
- 	if (IS_ERR(tmu->clk)) {
--		dev_err(&tmu->pdev->dev, "cannot get clock\n");
-+		pr_err("%s: cannot get clock\n", tmu->name);
- 		return PTR_ERR(tmu->clk);
- 	}
- 
-@@ -555,9 +581,9 @@ static int sh_tmu_setup(struct sh_tmu_device *tmu, struct platform_device *pdev)
- 	clk_disable(tmu->clk);
- 
- 	/* Map the memory resource. */
--	ret = sh_tmu_map_memory(tmu);
-+	ret = sh_tmu_map_memory(tmu, np);
- 	if (ret < 0) {
--		dev_err(&tmu->pdev->dev, "failed to remap I/O memory\n");
-+		pr_err("%s: failed to remap I/O memory\n", tmu->name);
- 		goto err_clk_unprepare;
- 	}
- 
-@@ -575,12 +601,12 @@ static int sh_tmu_setup(struct sh_tmu_device *tmu, struct platform_device *pdev)
- 	 */
- 	for (i = 0; i < tmu->num_channels; ++i) {
- 		ret = sh_tmu_channel_setup(&tmu->channels[i], i,
--					   i == 0, i == 1, tmu);
-+					   i == 0, i == 1, tmu, np);
- 		if (ret < 0)
- 			goto err_unmap;
- 	}
--
--	platform_set_drvdata(pdev, tmu);
-+	if (pdev)
-+		platform_set_drvdata(pdev, tmu);
- 
- 	return 0;
- 
-@@ -594,6 +620,7 @@ static int sh_tmu_setup(struct sh_tmu_device *tmu, struct platform_device *pdev)
- 	return ret;
- }
- 
-+#ifndef CONFIG_SH_DEVICE_TREE
- static int sh_tmu_probe(struct platform_device *pdev)
- {
- 	struct sh_tmu_device *tmu = platform_get_drvdata(pdev);
-@@ -613,7 +640,7 @@ static int sh_tmu_probe(struct platform_device *pdev)
- 	if (tmu == NULL)
- 		return -ENOMEM;
- 
--	ret = sh_tmu_setup(tmu, pdev);
-+	ret = sh_tmu_setup(tmu, pdev, pdev->dev.of_node);
- 	if (ret) {
- 		kfree(tmu);
- 		pm_runtime_idle(&pdev->dev);
-@@ -631,7 +658,26 @@ static int sh_tmu_probe(struct platform_device *pdev)
- 
- 	return 0;
- }
-+#else
-+static int __init sh_tmu_of_register(struct device_node *np)
-+{
-+	struct sh_tmu_device *tmu;
-+	int ret;
-+
-+	tmu = kzalloc(sizeof(*tmu), GFP_KERNEL);
-+	if (tmu == NULL)
-+		return -ENOMEM;
-+
-+	ret = sh_tmu_setup(tmu, NULL, np);
-+	if (ret) {
-+		kfree(tmu);
-+		pr_warn("%pOF: Timer register failed (%d)", np, ret);
-+	}
-+	return ret;
-+}
-+#endif
- 
-+#ifndef CONFIG_SH_DEVICE_TREE
- static const struct platform_device_id sh_tmu_id_table[] = {
- 	{ "sh-tmu", SH_TMU },
- 	{ "sh-tmu-sh3", SH_TMU_SH3 },
-@@ -665,12 +711,17 @@ static void __exit sh_tmu_exit(void)
- 	platform_driver_unregister(&sh_tmu_device_driver);
- }
- 
-+subsys_initcall(sh_tmu_init);
-+module_exit(sh_tmu_exit);
-+#endif
-+
- #ifdef CONFIG_SUPERH
-+#ifdef CONFIG_SH_DEVICE_TREE
-+TIMER_OF_DECLARE(sh_tmu, "renesas,tmu", sh_tmu_of_register);
-+#else
- sh_early_platform_init("earlytimer", &sh_tmu_device_driver);
- #endif
--
--subsys_initcall(sh_tmu_init);
--module_exit(sh_tmu_exit);
-+#endif
- 
- MODULE_AUTHOR("Magnus Damm");
- MODULE_DESCRIPTION("SuperH TMU Timer Driver");
+ extern const struct clk_ops clk_divider_ops;
+ extern const struct clk_ops clk_divider_ro_ops;
+@@ -726,18 +738,18 @@ struct clk_hw *__clk_hw_register_divider(struct device *dev,
+ 		struct device_node *np, const char *name,
+ 		const char *parent_name, const struct clk_hw *parent_hw,
+ 		const struct clk_parent_data *parent_data, unsigned long flags,
+-		void __iomem *reg, u8 shift, u8 width, u8 clk_divider_flags,
++		void __iomem *reg, u8 shift, u8 width, u32 clk_divider_flags,
+ 		const struct clk_div_table *table, spinlock_t *lock);
+ struct clk_hw *__devm_clk_hw_register_divider(struct device *dev,
+ 		struct device_node *np, const char *name,
+ 		const char *parent_name, const struct clk_hw *parent_hw,
+ 		const struct clk_parent_data *parent_data, unsigned long flags,
+-		void __iomem *reg, u8 shift, u8 width, u8 clk_divider_flags,
++		void __iomem *reg, u8 shift, u8 width, u32 clk_divider_flags,
+ 		const struct clk_div_table *table, spinlock_t *lock);
+ struct clk *clk_register_divider_table(struct device *dev, const char *name,
+ 		const char *parent_name, unsigned long flags,
+ 		void __iomem *reg, u8 shift, u8 width,
+-		u8 clk_divider_flags, const struct clk_div_table *table,
++		u32 clk_divider_flags, const struct clk_div_table *table,
+ 		spinlock_t *lock);
+ /**
+  * clk_register_divider - register a divider clock with the clock framework
 -- 
 2.39.2
 
