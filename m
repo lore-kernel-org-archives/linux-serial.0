@@ -1,9 +1,9 @@
 Received: from sakura.ysato.name (ik1-413-38519.vs.sakura.ne.jp [153.127.30.23])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id E5527124;
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5EF6BBA;
 	Tue,  5 Dec 2023 01:55:34 -0800 (PST)
 Received: from SIOS1075.ysato.name (ZM005235.ppp.dion.ne.jp [222.8.5.235])
-	by sakura.ysato.name (Postfix) with ESMTPSA id 0C17A1C056D;
-	Tue,  5 Dec 2023 18:46:42 +0900 (JST)
+	by sakura.ysato.name (Postfix) with ESMTPSA id 8A2C81C0868;
+	Tue,  5 Dec 2023 18:47:02 +0900 (JST)
 From: Yoshinori Sato <ysato@users.sourceforge.jp>
 To: linux-sh@vger.kernel.org
 Cc: Yoshinori Sato <ysato@users.sourceforge.jp>,
@@ -70,9 +70,9 @@ Cc: Yoshinori Sato <ysato@users.sourceforge.jp>,
 	linux-pci@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	linux-fbdev@vger.kernel.org
-Subject: [DO NOT MERGE v5 20/37] serial: sh-sci: fix SH4 OF support.
-Date: Tue,  5 Dec 2023 18:45:39 +0900
-Message-Id: <e147fd6dd7aba44a6f408c3a42076b207be862fb.1701768028.git.ysato@users.sourceforge.jp>
+Subject: [DO NOT MERGE v5 30/37] sh: add RTS7751R2D Plus DTS
+Date: Tue,  5 Dec 2023 18:45:49 +0900
+Message-Id: <9a32654249d357d3147e824a8c56321b7a486326.1701768028.git.ysato@users.sourceforge.jp>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1701768028.git.ysato@users.sourceforge.jp>
 References: <cover.1701768028.git.ysato@users.sourceforge.jp>
@@ -84,52 +84,177 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-- fix earlycon name.
-- fix earlyprintk hung (NULL pointer reference).
+Renesas RTS7751R2D Plus devicetree.
 
 Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
 ---
- drivers/tty/serial/Kconfig  | 2 +-
- drivers/tty/serial/sh-sci.c | 6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ arch/sh/boot/dts/rts7751r2dplus.dts | 157 ++++++++++++++++++++++++++++
+ 1 file changed, 157 insertions(+)
+ create mode 100644 arch/sh/boot/dts/rts7751r2dplus.dts
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 732c893c8d16..56d635371fd3 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -658,7 +658,7 @@ config SERIAL_SH_SCI_EARLYCON
- 	depends on SERIAL_SH_SCI=y
- 	select SERIAL_CORE_CONSOLE
- 	select SERIAL_EARLYCON
--	default ARCH_RENESAS
-+	default ARCH_RENESAS || SUPERH
- 
- config SERIAL_SH_SCI_DMA
- 	bool "DMA support" if EXPERT
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 84ab434c94ba..0a33581be08b 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2720,7 +2720,7 @@ static int sci_remap_port(struct uart_port *port)
- 	if (port->membase)
- 		return 0;
- 
--	if (port->dev->of_node || (port->flags & UPF_IOREMAP)) {
-+	if ((port->dev && port->dev->of_node) || (port->flags & UPF_IOREMAP)) {
- 		port->membase = ioremap(port->mapbase, sport->reg_size);
- 		if (unlikely(!port->membase)) {
- 			dev_err(port->dev, "can't remap port#%d\n", port->line);
-@@ -3555,8 +3555,8 @@ static int __init hscif_early_console_setup(struct earlycon_device *device,
- 
- OF_EARLYCON_DECLARE(sci, "renesas,sci", sci_early_console_setup);
- OF_EARLYCON_DECLARE(scif, "renesas,scif", scif_early_console_setup);
--OF_EARLYCON_DECLARE(scif, "renesas,scif-r7s9210", rzscifa_early_console_setup);
--OF_EARLYCON_DECLARE(scif, "renesas,scif-r9a07g044", rzscifa_early_console_setup);
-+OF_EARLYCON_DECLARE(rzscifa, "renesas,scif-r7s9210", rzscifa_early_console_setup);
-+OF_EARLYCON_DECLARE(rzscifa, "renesas,scif-r9a07g044", rzscifa_early_console_setup);
- OF_EARLYCON_DECLARE(scifa, "renesas,scifa", scifa_early_console_setup);
- OF_EARLYCON_DECLARE(scifb, "renesas,scifb", scifb_early_console_setup);
- OF_EARLYCON_DECLARE(hscif, "renesas,hscif", hscif_early_console_setup);
+diff --git a/arch/sh/boot/dts/rts7751r2dplus.dts b/arch/sh/boot/dts/rts7751r2dplus.dts
+new file mode 100644
+index 000000000000..4fb75e814615
+--- /dev/null
++++ b/arch/sh/boot/dts/rts7751r2dplus.dts
+@@ -0,0 +1,157 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Device Tree Source for the Renesas RTS7751R2D Plus
++ */
++
++/dts-v1/;
++
++#include "sh7751r.dtsi"
++#include <dt-bindings/display/sm501.h>
++
++/ {
++	model = "Renesas RTS7715R2D Plus";
++	compatible = "renesas,rts7751r2d", "renesas,sh7751r";
++
++	aliases {
++		serial0 = &scif1;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	memory@c000000 {
++		device_type = "memory";
++		reg = <0x0c000000 0x4000000>;
++	};
++
++	r2dintc: interrupt_controller@a4000000 {
++		compatible = "renesas,sh7751-irl-ext";
++		reg = <0xa4000000 0x02>;
++		interrupt-controller;
++		#address-cells = <0>;
++		#size-cells = <0>;
++		#interrupt-cells = <1>;
++		renesas,width = <16>;
++		renesas,enable-bit = <0 11>,		/* PCI INTD */
++				     <1 9>,		/* CF IDE */
++				     <2 8>,		/* CF CD */
++				     <3 12>,		/* PCI INTC */
++				     <4 10>,		/* SM501 */
++				     <5 6>,		/* KEY */
++				     <6 5>,		/* RTC ALARM */
++				     <7 4>,		/* RTC T */
++				     <8 7>,		/* SDCARD */
++				     <9 14>,		/* PCI INTA */
++				     <10 13>,		/* PCI INTB */
++				     <11 0>,		/* EXT */
++				     <12 15>;		/* TP */
++	};
++
++	display@0 {
++		compatible = "smi,sm501";
++		reg = <0x10000000 0x03e00000
++		       0x13e00000 0x00200000>;
++		interrupt-parent = <&r2dintc>;
++		interrupts = <4>;
++		mode = "640x480-16@60";
++		little-endian;
++		smi,devices = <(SM501_USE_USB_HOST | SM501_USE_UART0)>;
++		interrupt-name = "sm501";
++		swap-fb-endian;
++
++		crt {
++			smi,flags = <(SM501FB_FLAG_USE_INIT_MODE |
++				      SM501FB_FLAG_DISABLE_AT_EXIT |
++				      SM501FB_FLAG_USE_HWCURSOR |
++				      SM501FB_FLAG_USE_HWACCEL)>;
++		};
++
++		panel {
++			bpp = <16>;
++			edid = [00 ff ff ff ff ff ff 00 00 00 00 00 00 00 00 00
++				00 00 01 04 00 00 00 00 00 00 00 00 00 00 00 00
++				00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
++				00 00 00 00 00 00 f0 0a 80 fb 20 e0 25 10 32 60
++				02 00 00 00 00 00 00 06 00 00 00 00 00 00 00 00
++				00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
++				00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
++				00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 bd];
++			smi,flags = <(SM501FB_FLAG_USE_INIT_MODE |
++				      SM501FB_FLAG_DISABLE_AT_EXIT |
++				      SM501FB_FLAG_USE_HWCURSOR |
++				      SM501FB_FLAG_USE_HWACCEL)>;
++		};
++	};
++
++	compact-flash@b4001000 {
++		compatible = "renesas,rts7751r2d-ata", "ata-generic";
++		reg = <0xb4001000 0x0e>, <0xb400080c 2>;
++		reg-shift = <1>;
++		interrupt-parent = <&r2dintc>;
++		interrupts = <1>;
++	};
++
++	flash@0 {
++		compatible = "cfi-flash";
++		reg = <0x00000000 0x02000000>;
++		device-width = <2>;
++		#address-cells = <1>;
++		#size-cells = <1>;
++
++		partition@0 {
++			label = "U-Boot";
++			reg = <0x00000000 0x00040000>;
++		};
++
++		partition@1 {
++			label = "Environemt";
++			reg = <0x00040000 0x00040000>;
++		};
++
++		partition@2 {
++			label = "Kernel";
++			reg = <0x00080000 0x001c0000>;
++		};
++
++		partition@3 {
++			label = "Flash_FS";
++			reg = <0x00240000 0x00dc0000>;
++		};
++	};
++};
++
++&xtal {
++	clock-frequency = <22222222>;
++};
++
++&cpg {
++	renesas,mode = <5>;
++};
++
++&scif1 {
++	status = "okay";
++};
++
++&pcic {
++	renesas,bcr1 = <0x40080000>;
++	renesas,intm = <0x0000c3ff>;
++	renesas,aintm = <0x0000380f>;
++	renesas,config = <1 0xfb900047>, <4 0xab000001>;
++	renesas,mcrmask = <0x40000004>;
++
++	interrupt-map = <0x0000 0 0 1 &r2dintc 9>,
++			<0x0000 0 0 2 &r2dintc 10>,
++			<0x0000 0 0 3 &r2dintc 3>,
++			<0x0000 0 0 4 &r2dintc 0>,
++			<0x0800 0 0 1 &r2dintc 10>,
++			<0x0800 0 0 2 &r2dintc 3>,
++			<0x0800 0 0 3 &r2dintc 0>,
++			<0x0800 0 0 4 &r2dintc 9>,
++			<0x1000 0 0 1 &r2dintc 3>,
++			<0x1000 0 0 2 &r2dintc 0>,
++			<0x1000 0 0 3 &r2dintc 9>,
++			<0x1000 0 0 4 &r2dintc 10>;
++			interrupt-map-mask = <0x1800 0 0 7>;
++	status = "okay";
++};
 -- 
 2.39.2
 
