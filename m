@@ -1,163 +1,519 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lxij1JtB"
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E5FAC;
-	Tue,  5 Dec 2023 10:30:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701801018; x=1733337018;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Zz7EFTXIoG/cqIxk5/CEZFwnhwoZiqUADJITyhN0vUE=;
-  b=lxij1JtBRLni95lEXPYixEk91lm6RS+/jwZAkrwQHwqU3F2rrOvBv3p3
-   HpEe4NlMq3+zh62y1ET8O2CpYK6KUwcQoX+tbCBIurz9pAzwD5MmEosYr
-   2uL27GS1x7lpe6dkFpaGCt7Ef5fu32D8X/YVTaY5IAQLU0cfbXP/MP6pC
-   XxQW6MLrzY5UhflMbRjjxKHG9PqVbBQkXLLJBaKiN27Zgna1ymj21P34S
-   GjxT1cW7y3uxLaniybYPDAzvwosirxz1L+JhIypZbfxOccjhbTPfsaAfP
-   MMkp3U5IICoycUVZylZfg2MqhRFq0HuH0xJ+eN13J0DegbSZisfj5108R
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10915"; a="396730845"
-X-IronPort-AV: E=Sophos;i="6.04,253,1695711600"; 
-   d="scan'208";a="396730845"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2023 10:30:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10915"; a="894462843"
-X-IronPort-AV: E=Sophos;i="6.04,253,1695711600"; 
-   d="scan'208";a="894462843"
-Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 05 Dec 2023 10:30:13 -0800
-Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rAaBO-0009Xo-2s;
-	Tue, 05 Dec 2023 18:30:10 +0000
-Date: Wed, 6 Dec 2023 02:29:28 +0800
-From: kernel test robot <lkp@intel.com>
-To: Tony Lindgren <tony@atomide.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc: oe-kbuild-all@lists.linux.dev, "David S . Miller" <davem@davemloft.net>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Dhruva Gole <d-gole@ti.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4 4/4] serial: 8250: Add preferred console in
- serial8250_isa_init_ports()
-Message-ID: <202312060232.s0uWr7z9-lkp@intel.com>
-References: <20231205073255.20562-5-tony@atomide.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Cdv3dx/v"
+Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A41183
+	for <linux-serial@vger.kernel.org>; Tue,  5 Dec 2023 11:10:50 -0800 (PST)
+Received: by mail-oo1-xc33.google.com with SMTP id 006d021491bc7-58d18c224c7so3640761eaf.2
+        for <linux-serial@vger.kernel.org>; Tue, 05 Dec 2023 11:10:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1701803450; x=1702408250; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xjRq0YQceCfiBc3DP2n6+Qtso7OISCbbcS5kthjj0o8=;
+        b=Cdv3dx/vPsfngzgOqMWEHSgbn7b4LFXfYr2tJBV9qJ1SyWT2wA5BbHIiKdc5yMhapm
+         xQEr7x7Yu3CnJnop0tAQX+dqIdyvlr9BdvaMxNBwLTk4VOcZIwflAjuKD/25HajhDtis
+         hmEbira92OzRYIU6KyRLRz7TSLdIdIGD4MsFm9c7BVj8KyJMUYS8aPSi4kKyI/NtFjBh
+         Hh83bZPtgxj/8TKN3Xfo+uJQy2IBG84GChKp1+VlPXduJkhQUOo+gLWvg+V6ZHDajmbj
+         nTIo0DkGmdhStAQOd2pNghDpjTh20jhwxfp4e8bD40Hxwx9vo6NTa0Y0Yh16zku1vAGc
+         eh1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701803450; x=1702408250;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=xjRq0YQceCfiBc3DP2n6+Qtso7OISCbbcS5kthjj0o8=;
+        b=vPalerXyK13JBn9VjzhkEMDpf2Z7UZ2DoBtllKn5K7xFtIBRh76D0xUzhXcvuyusm2
+         7ah95cRbu7iWsTMXZMqY/W6mJ+UJl/MxgSnXu8BLvWrnq59tTTx88HER1ZxjqR16eVfe
+         IQDQpvGkVgufamGUA3exXaI1A8RD3czq8UQCRoPbWZi7amvnZyrzw6ai/azLLcn0F8QN
+         KEJOVely+5DRQXEeGYXhkYWc6HvUkyKQb7j1vMzHulnp4TC61kUwr42QB7p53TPMTPcp
+         4fnlKAMws67qoCMRN458oYS+1kIRnh1biULW/aMX0w2DFvsAy/pgzap1NJuUjvZknpe0
+         eSoA==
+X-Gm-Message-State: AOJu0YwpDEpsbCzsM/06g2CA17nojQCDZPIWg369NcWJ9Tv8vrivztvQ
+	yAmgyxqyZKslzDFwBWrhSiIg6QTQ34oET9M+cnOrrA==
+X-Google-Smtp-Source: AGHT+IHIjnsSOUQFeqok2YoC5481YIqj2LTtj0w/jHgelGVWX7P31gM/PbTQLJrBonqNKVPrUBKHNiZfiwkaZfd/jrk=
+X-Received: by 2002:a05:6358:419f:b0:16b:c467:695f with SMTP id
+ w31-20020a056358419f00b0016bc467695fmr4156981rwc.9.1701803450050; Tue, 05 Dec
+ 2023 11:10:50 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231205073255.20562-5-tony@atomide.com>
+References: <20231201160925.3136868-1-peter.griffin@linaro.org>
+ <20231201160925.3136868-14-peter.griffin@linaro.org> <CAPLW+4nJCabQhyGrTKZhKG40Z9ysRq7Zms413JrhZKzeYzad5w@mail.gmail.com>
+ <CADrjBPrq_CTzZsP+5cqpNkkyVYHu9Yey0AF+m4VxcSEz+Z+wrQ@mail.gmail.com>
+In-Reply-To: <CADrjBPrq_CTzZsP+5cqpNkkyVYHu9Yey0AF+m4VxcSEz+Z+wrQ@mail.gmail.com>
+From: Peter Griffin <peter.griffin@linaro.org>
+Date: Tue, 5 Dec 2023 19:10:37 +0000
+Message-ID: <CADrjBPoJ4E4cLS9sVDnu4PmgLuGGybPwg+u3fQefjuUz-60Y5w@mail.gmail.com>
+Subject: Re: [PATCH v5 13/20] pinctrl: samsung: Add filter selection support
+ for alive banks
+To: Sam Protsenko <semen.protsenko@linaro.org>
+Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, 
+	mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org, 
+	tomasz.figa@gmail.com, s.nawrocki@samsung.com, linus.walleij@linaro.org, 
+	wim@linux-watchdog.org, linux@roeck-us.net, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org, 
+	jirislaby@kernel.org, cw00.choi@samsung.com, alim.akhtar@samsung.com, 
+	tudor.ambarus@linaro.org, andre.draszik@linaro.org, saravanak@google.com, 
+	willmcvicker@google.com, soc@kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-watchdog@vger.kernel.org, kernel-team@android.com, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Tony,
+Hi Sam,
 
-kernel test robot noticed the following build errors:
+On Tue, 5 Dec 2023 at 11:34, Peter Griffin <peter.griffin@linaro.org> wrote=
+:
+>
+> Hi Sam,
+>
+> Thanks for your review.
+>
+> On Sat, 2 Dec 2023 at 00:22, Sam Protsenko <semen.protsenko@linaro.org> w=
+rote:
+> >
+> > On Fri, Dec 1, 2023 at 10:11=E2=80=AFAM Peter Griffin <peter.griffin@li=
+naro.org> wrote:
+> > >
+> > > Newer Exynos SoCs have a filter selection register on alive bank pins=
+.
+> > > This allows the selection of a digital or delay filter for each pin. =
+If
+> > > the filter selection register is not available then the default filte=
+r
+> > > (digital) is applied.
+> > >
+> > > On suspend we apply the analog filter to all pins in the bank (as the
+> > > digital filter relies on a clock). On resume the digital filter is
+> > > reapplied to all pins in the bank. The digital filter is working via
+> > > clock and has an adjustable filter delay register bitfield, whereas
+> > > the analog filter uses a fixed delay.
+> > >
+> > > The filter determines to what extent signal fluctuations received thr=
+ough
+> > > the pad are considered glitches.
+> > >
+> > > The code path can be exercised using
+> > > echo mem > /sys/power/state
+> > > And then wake the device using a eint gpio
+> >
+> > Period.
+>
+> Will fix
+>
+> >
+> > >
+> > > Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> > > ---
+> > >  drivers/pinctrl/samsung/pinctrl-exynos.c  | 89 +++++++++++++++++++++=
++-
+> > >  drivers/pinctrl/samsung/pinctrl-exynos.h  |  7 ++
+> > >  drivers/pinctrl/samsung/pinctrl-samsung.c |  2 +
+> > >  drivers/pinctrl/samsung/pinctrl-samsung.h | 22 ++++++
+> > >  4 files changed, 119 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/pinctrl/samsung/pinctrl-exynos.c b/drivers/pinct=
+rl/samsung/pinctrl-exynos.c
+> > > index 6b58ec84e34b..56fc11a1fe2f 100644
+> > > --- a/drivers/pinctrl/samsung/pinctrl-exynos.c
+> > > +++ b/drivers/pinctrl/samsung/pinctrl-exynos.c
+> > > @@ -269,6 +269,71 @@ struct exynos_eint_gpio_save {
+> > >         u32 eint_mask;
+> > >  };
+> > >
+> > > +/*
+> > > + * Set the desired filter (digital or analog delay) to every pin in
+> > > + * the bank. Note the filter selection bitfield is only found on ali=
+ve
+> > > + * banks. The filter determines to what extent signal fluctuations
+> > > + * received through the pad are considered glitches.
+> > > + */
+> > > +static void exynos_eint_flt_config(struct samsung_pinctrl_drv_data *=
+d,
+> > > +                                  struct samsung_pin_bank *bank, int=
+ filter)
+> > > +{
+> > > +       unsigned int flt_reg, flt_con =3D 0;
+> > > +       unsigned int val, shift;
+> > > +       int i;
+> > > +       int loop_cnt;
+> > > +
+> > > +       /*
+> > > +        * The FLTCON register has the following layout
+> > > +        *
+> > > +        * BitfieldName[PinNum][Bit:Bit]
+> > > +        * FLT_EN[3][31] FLT_SEL[3][30] FLT_WIDTH[3][29:24]
+> > > +        * FLT_EN[2][23] FLT_SEL[2][22] FLT_WIDTH[2][21:16]
+> > > +        * FLT_EN[1][15] FLT_SEL[1][14] FLT_WIDTH[1][13:8]
+> > > +        * FLT_EN[0][7]  FLT_SEL[0][6]  FLT_WIDTH[0][5:0]
+> > > +        *
+> > > +        * FLT_EN       0x0 =3D Disable, 0x1=3DEnable
+> > > +        * FLT_SEL      0x0 =3D Delay filter, 0x1 Digital filter
+> > > +        * FLT_WIDTH    Filtering width. Valid when FLT_SEL is 0x1
+> > > +        */
+> > > +
+> > > +       flt_con |=3D EXYNOS9_FLTCON_EN;
+> > > +
+> > > +       if (filter)
+> > > +               flt_con |=3D EXYNOS9_FLTCON_DIGITAL;
+> > > +
+> > > +       flt_reg =3D EXYNOS_GPIO_EFLTCON_OFFSET + bank->fltcon_offset;
+> > > +
+> > > +       /*
+> > > +        * If nr_pins > 4, we should set FLTCON0 register fully.
+> > > +        * (pin0 ~ 3). So loop 4 times in case of FLTCON0.
+> > > +        */
+> > > +       if (bank->nr_pins > EXYNOS9_FLTCON_NR_PIN)
+> > > +               loop_cnt =3D EXYNOS9_FLTCON_NR_PIN;
+> > > +       else
+> > > +               loop_cnt =3D bank->nr_pins;
+> > > +
+> > > +       val =3D readl(d->virt_base + flt_reg);
+> > > +       for (i =3D 0; i < loop_cnt; i++) {
+> > > +               shift =3D i * EXYNOS9_FLTCON_LEN;
+> > > +               val &=3D ~(EXYNOS9_FLTCON_MASK << shift);
+> > > +               val |=3D (flt_con << shift);
+> > > +       }
+> > > +       writel(val, d->virt_base + flt_reg);
+> > > +
+> > > +       /* Loop for FLTCON1 pin 4 ~ 7 */
+> > > +       if (bank->nr_pins > EXYNOS9_FLTCON_NR_PIN) {
+> > > +               loop_cnt =3D (bank->nr_pins - EXYNOS9_FLTCON_NR_PIN);
+> > > +               val =3D readl(d->virt_base + flt_reg + 0x4);
+> > > +               for (i =3D 0; i < loop_cnt; i++) {
+> > > +                       shift =3D i * EXYNOS9_FLTCON_LEN;
+> > > +                       val &=3D ~(EXYNOS9_FLTCON_MASK << shift);
+> > > +                       val |=3D (flt_con << shift);
+> > > +               }
+> > > +               writel(val, d->virt_base + flt_reg + 0x4);
+> > > +       }
+> > > +}
+> > > +
+> >
+> > This whole function needs a refactoring. Do you think below code looks =
+better?
+>
+> Yes it does!
+> >
+> > 8<----------------------------------------------------------------->8
+> > static void exynos_eint_update_flt_reg(void __iomem *reg, int cnt, int =
+con)
+> > {
+> >     unsigned int val, shift;
+> >     int i;
+> >
+> >     val =3D readl(reg);
+> >     for (i =3D 0; i < cnt; i++) {
+> >         shift =3D i * EXYNOS9_FLTCON_LEN;
+> >         val &=3D ~(EXYNOS9_FLTCON_MASK << shift);
+> >         val |=3D con << shift;
+> >     }
+> >     writel(val, reg);
+> > }
+> >
+> > /*
+> >  * Set the desired filter (digital or analog delay) to every pin in the=
+ bank.
+> >  * Note the filter selection bitfield is only found on alive banks. The=
+ filter
+> >  * determines to what extent signal fluctuations received through the p=
+ad are
+> >  * considered glitches.
+> >  *
+> >  * The FLTCON register has the following layout:
+> >  *
+> >  *     BitfieldName[PinNum][Bit:Bit]
+> >  *     FLT_EN[3][31] FLT_SEL[3][30] FLT_WIDTH[3][29:24]
+> >  *     FLT_EN[2][23] FLT_SEL[2][22] FLT_WIDTH[2][21:16]
+> >  *     FLT_EN[1][15] FLT_SEL[1][14] FLT_WIDTH[1][13:8]
+> >  *     FLT_EN[0][7]  FLT_SEL[0][6]  FLT_WIDTH[0][5:0]
+> >  *
+> >  * FLT_EN    0x0 =3D Disable, 0x1 =3D Enable
+> >  * FLT_SEL    0x0 =3D Delay filter, 0x1 =3D Digital filter
+> >  * FLT_WIDTH    Filtering width. Valid when FLT_SEL is 0x1
+> >  */
+> > static void exynos_eint_flt_config(struct samsung_pinctrl_drv_data *d,
+> >                    struct samsung_pin_bank *bank, int filter)
+> > {
+> >     unsigned int off =3D EXYNOS_GPIO_EFLTCON_OFFSET + bank->fltcon_offs=
+et;
+> >     unsigned int con =3D EXYNOS9_FLTCON_EN | filter;
+> >     void __iomem *reg =3D d->virt_base + off;
+> >     u8 n =3D bank->nr_pins;
+> >
+> >     if (bank->fltcon_type =3D=3D FLT_DEFAULT)
+> >         return;
+> >
+> >     /*
+> >      * If nr_pins > 4, we should set FLTCON0 register fully (pin0~3).
+> >      * So loop 4 times in case of FLTCON0. Loop for FLTCON1 pin4~7.
+> >      */
+> >     if (n <=3D 4) {
+> >         exynos_eint_update_flt_reg(reg, n, con);
+> >     } else {
+> >         exynos_eint_update_flt_reg(reg, 4, con);
+> >         exynos_eint_update_flt_reg(reg + 0x4, n - 4, con);
+> >     }
+> > }
+> > 8<----------------------------------------------------------------->8
+> >
+> > (the code is only to illustrate the idea, I never tested it).
+>
+> I can refactor it along those lines.
+>
+> >
+> > >  /*
+> > >   * exynos_eint_gpio_init() - setup handling of external gpio interru=
+pts.
+> > >   * @d: driver data of samsung pinctrl driver.
+> > > @@ -321,6 +386,10 @@ __init int exynos_eint_gpio_init(struct samsung_=
+pinctrl_drv_data *d)
+> > >                         goto err_domains;
+> > >                 }
+> > >
+> > > +               /* Set Delay Analog Filter */
+> >
+> > The code below looks quite self-explanatory to. Maybe remove all
+> > comments like this? If you don't think exynos_eint_flt_config() is
+> > clear, maybe rename it to exynos_eint_set_filter().
+>
+> Ok, I will update the function name to exynos_eint_set_filter() and
+> remove the comments.
+>
+> >
+> > > +               if (bank->fltcon_type !=3D FLT_DEFAULT)
+> > > +                       exynos_eint_flt_config(d, bank,
+> > > +                                              EXYNOS9_FLTCON_DELAY);
+> >
+> > It fits the previous line just fine, no need to break the line.
+> >
+> > Also, if you use the refactored version of exynos_eint_flt_config() I
+> > mentioned above, you can drop all 'if' conditions like this.
+>
+> Will fix
+>
+> >
+> > >         }
+> > >
+> > >         return 0;
+> > > @@ -555,6 +624,11 @@ __init int exynos_eint_wkup_init(struct samsung_=
+pinctrl_drv_data *d)
+> > >                 if (bank->eint_type !=3D EINT_TYPE_WKUP)
+> > >                         continue;
+> > >
+> > > +               /* Set Digital Filter */
+> > > +               if (bank->fltcon_type !=3D FLT_DEFAULT)
+> > > +                       exynos_eint_flt_config(d, bank,
+> > > +                                              EXYNOS9_FLTCON_DIGITAL=
+);
+> >
+> > Ditto: no need to break the line, remove the comment. If you use the
+> > refactored function, you can drop 'if'.
+>
+> will fix
+>
+> >
+> > > +
+> > >                 bank->irq_chip =3D devm_kmemdup(dev, irq_chip, sizeof=
+(*irq_chip),
+> > >                                               GFP_KERNEL);
+> > >                 if (!bank->irq_chip) {
+> > > @@ -658,6 +732,7 @@ static void exynos_pinctrl_suspend_bank(
+> > >  void exynos_pinctrl_suspend(struct samsung_pinctrl_drv_data *drvdata=
+)
+> > >  {
+> > >         struct samsung_pin_bank *bank =3D drvdata->pin_banks;
+> > > +       struct samsung_pinctrl_drv_data *d =3D bank->drvdata;
+> > >         struct exynos_irq_chip *irq_chip =3D NULL;
+> > >         int i;
+> > >
+> > > @@ -665,6 +740,10 @@ void exynos_pinctrl_suspend(struct samsung_pinct=
+rl_drv_data *drvdata)
+> > >                 if (bank->eint_type =3D=3D EINT_TYPE_GPIO)
+> > >                         exynos_pinctrl_suspend_bank(drvdata, bank);
+> > >                 else if (bank->eint_type =3D=3D EINT_TYPE_WKUP) {
+> > > +                       /* Setting Delay (Analog) Filter */
+> > > +                       if (bank->fltcon_type !=3D FLT_DEFAULT)
+> > > +                               exynos_eint_flt_config(d, bank,
+> > > +                                                      EXYNOS9_FLTCON=
+_DELAY);
+> >
+> > Ditto: no need to break the line, remove the comment. If you use the
+> > refactored function, you can drop 'if'.
+>
+> Will fix
+> >
+> > >                         if (!irq_chip) {
+> > >                                 irq_chip =3D bank->irq_chip;
+> > >                                 irq_chip->set_eint_wakeup_mask(drvdat=
+a,
+> > > @@ -707,11 +786,19 @@ static void exynos_pinctrl_resume_bank(
+> > >  void exynos_pinctrl_resume(struct samsung_pinctrl_drv_data *drvdata)
+> > >  {
+> > >         struct samsung_pin_bank *bank =3D drvdata->pin_banks;
+> > > +       struct samsung_pinctrl_drv_data *d =3D bank->drvdata;
+> > >         int i;
+> > >
+> > >         for (i =3D 0; i < drvdata->nr_banks; ++i, ++bank)
+> > > -               if (bank->eint_type =3D=3D EINT_TYPE_GPIO)
+> > > +               if (bank->eint_type =3D=3D EINT_TYPE_GPIO) {
+> > >                         exynos_pinctrl_resume_bank(drvdata, bank);
+> > > +               } else if (bank->eint_type =3D=3D EINT_TYPE_WKUP ||
+> > > +                          bank->eint_type =3D=3D EINT_TYPE_WKUP_MUX)=
+ {
+> > > +                       /* Set Digital Filter */
+> > > +                       if (bank->fltcon_type !=3D FLT_DEFAULT)
+> > > +                               exynos_eint_flt_config(d, bank,
+> > > +                                                      EXYNOS9_FLTCON=
+_DIGITAL);
+> >
+> > Ditto: remove the comment, and if you use the refactored function, you
+> > can drop 'if'; also there will be no need to break the line.
+>
+> Will fix
+> >
+> > > +               }
+> > >  }
+> > >
+> > >  static void exynos_retention_enable(struct samsung_pinctrl_drv_data =
+*drvdata)
+> > > diff --git a/drivers/pinctrl/samsung/pinctrl-exynos.h b/drivers/pinct=
+rl/samsung/pinctrl-exynos.h
+> > > index 3ac52c2cf998..e2799ff1b5e9 100644
+> > > --- a/drivers/pinctrl/samsung/pinctrl-exynos.h
+> > > +++ b/drivers/pinctrl/samsung/pinctrl-exynos.h
+> > > @@ -50,6 +50,13 @@
+> > >
+> > >  #define EXYNOS_EINT_MAX_PER_BANK       8
+> > >  #define EXYNOS_EINT_NR_WKUP_EINT
+> >
+> > Maybe add an empty line here?
+>
+> Will fix
+> >
+> > > +/* EINT filter configuration */
+> > > +#define EXYNOS9_FLTCON_EN              BIT(7)
+> > > +#define EXYNOS9_FLTCON_DIGITAL         BIT(6)
+> > > +#define EXYNOS9_FLTCON_DELAY           (0 << 6)
+> > > +#define EXYNOS9_FLTCON_MASK            0xff
+> > > +#define EXYNOS9_FLTCON_LEN             8
+> > > +#define EXYNOS9_FLTCON_NR_PIN          4
+> >
+> > I'd say drop this one and just hard-code it where needed?
+>
+> Ok, will drop.
+>
+> >
+> > >
+> > >  #define EXYNOS_PIN_BANK_EINTN(pins, reg, id)           \
+> > >         {                                               \
+> > > diff --git a/drivers/pinctrl/samsung/pinctrl-samsung.c b/drivers/pinc=
+trl/samsung/pinctrl-samsung.c
+> > > index 79babbb39ced..50c360b4753a 100644
+> > > --- a/drivers/pinctrl/samsung/pinctrl-samsung.c
+> > > +++ b/drivers/pinctrl/samsung/pinctrl-samsung.c
+> > > @@ -1105,6 +1105,8 @@ samsung_pinctrl_get_soc_data(struct samsung_pin=
+ctrl_drv_data *d,
+> > >                 bank->eint_func =3D bdata->eint_func;
+> > >                 bank->eint_type =3D bdata->eint_type;
+> > >                 bank->eint_mask =3D bdata->eint_mask;
+> > > +               bank->fltcon_type =3D bdata->fltcon_type;
+> > > +               bank->fltcon_offset =3D bdata->fltcon_offset;
+> > >                 bank->eint_offset =3D bdata->eint_offset;
+> > >                 bank->name =3D bdata->name;
+> > >
+> > > diff --git a/drivers/pinctrl/samsung/pinctrl-samsung.h b/drivers/pinc=
+trl/samsung/pinctrl-samsung.h
+> > > index 9b3db50adef3..5fab3885a7d7 100644
+> > > --- a/drivers/pinctrl/samsung/pinctrl-samsung.h
+> > > +++ b/drivers/pinctrl/samsung/pinctrl-samsung.h
+> > > @@ -82,6 +82,20 @@ enum eint_type {
+> > >         EINT_TYPE_WKUP_MUX,
+> > >  };
+> > >
+> > > +/**
+> > > + * enum fltcon_type - filter selection
+> > > + * @FLT_DEFAULT: filter not selectable, default digital filter
+> > > + * @FLT_SELECT: filter selectable (digital or delay)
+> > > + *
+> > > + * Some banks on newer Exynos based SoCs have a selectable filter on=
+ alive
+> > > + * banks of 'analog/delay' or 'digital'. If the filter selection reg=
+ister is
+> > > + * not available then the default filter is used (digital).
+> > > + */
+> > > +enum fltcon_type {
+> > > +       FLT_DEFAULT,
+> > > +       FLT_SELECTABLE,
+> > > +};
+> >
+> > Is there any benefit of having this enum over replacing it with just a
+> > bool field (e.g. 'bool flt_selectable')?
+>
+> I thought it made it clearer at the callee sites which filter was
+> being set, but I can update to a bool if that's what you prefer.
 
-[auto build test ERROR on tty/tty-testing]
-[also build test ERROR on tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.7-rc4 next-20231205]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Actually that was a previous version. We actually pass
+EXYNOS9_FLTCON_DELAY and EXYNOS9_FLTCON_DIGITAL now so yes enum is no
+longer required.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Tony-Lindgren/printk-Save-console-options-for-add_preferred_console_match/20231205-153731
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20231205073255.20562-5-tony%40atomide.com
-patch subject: [PATCH v4 4/4] serial: 8250: Add preferred console in serial8250_isa_init_ports()
-config: m68k-randconfig-r071-20231205 (https://download.01.org/0day-ci/archive/20231206/202312060232.s0uWr7z9-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 13.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231206/202312060232.s0uWr7z9-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202312060232.s0uWr7z9-lkp@intel.com/
-
-All error/warnings (new ones prefixed by >>):
-
-   drivers/tty/serial/8250/8250_core.c: In function 'serial8250_isa_init_ports':
->> drivers/tty/serial/8250/8250_core.c:597:55: warning: passing argument 1 of 'serial8250_isa_init_preferred_console' makes pointer from integer without a cast [-Wint-conversion]
-     597 |                 serial8250_isa_init_preferred_console(i);
-         |                                                       ^
-         |                                                       |
-         |                                                       int
-   drivers/tty/serial/8250/8250_core.c:543:76: note: expected 'struct uart_port *' but argument is of type 'int'
-     543 | static inline void serial8250_isa_init_preferred_console(struct uart_port *port,
-         |                                                          ~~~~~~~~~~~~~~~~~~^~~~
->> drivers/tty/serial/8250/8250_core.c:597:17: error: too few arguments to function 'serial8250_isa_init_preferred_console'
-     597 |                 serial8250_isa_init_preferred_console(i);
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/tty/serial/8250/8250_core.c:543:20: note: declared here
-     543 | static inline void serial8250_isa_init_preferred_console(struct uart_port *port,
-         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/serial8250_isa_init_preferred_console +597 drivers/tty/serial/8250/8250_core.c
-
-   549	
-   550	static void __init serial8250_isa_init_ports(void)
-   551	{
-   552		struct uart_8250_port *up;
-   553		static int first = 1;
-   554		int i, irqflag = 0;
-   555	
-   556		if (!first)
-   557			return;
-   558		first = 0;
-   559	
-   560		if (nr_uarts > UART_NR)
-   561			nr_uarts = UART_NR;
-   562	
-   563		/*
-   564		 * Set up initial isa ports based on nr_uart module param, or else
-   565		 * default to CONFIG_SERIAL_8250_RUNTIME_UARTS. Note that we do not
-   566		 * need to increase nr_uarts when setting up the initial isa ports.
-   567		 */
-   568		for (i = 0; i < nr_uarts; i++)
-   569			serial8250_setup_port(i);
-   570	
-   571		/* chain base port ops to support Remote Supervisor Adapter */
-   572		univ8250_port_ops = *base_ops;
-   573		univ8250_rsa_support(&univ8250_port_ops);
-   574	
-   575		if (share_irqs)
-   576			irqflag = IRQF_SHARED;
-   577	
-   578		for (i = 0, up = serial8250_ports;
-   579		     i < ARRAY_SIZE(old_serial_port) && i < nr_uarts;
-   580		     i++, up++) {
-   581			struct uart_port *port = &up->port;
-   582	
-   583			port->iobase   = old_serial_port[i].port;
-   584			port->irq      = irq_canonicalize(old_serial_port[i].irq);
-   585			port->irqflags = 0;
-   586			port->uartclk  = old_serial_port[i].baud_base * 16;
-   587			port->flags    = old_serial_port[i].flags;
-   588			port->hub6     = 0;
-   589			port->membase  = old_serial_port[i].iomem_base;
-   590			port->iotype   = old_serial_port[i].io_type;
-   591			port->regshift = old_serial_port[i].iomem_reg_shift;
-   592	
-   593			port->irqflags |= irqflag;
-   594			if (serial8250_isa_config != NULL)
-   595				serial8250_isa_config(i, &up->port, &up->capabilities);
-   596	
- > 597			serial8250_isa_init_preferred_console(i);
-   598		}
-   599	}
-   600	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Peter
+>
+> regards,
+>
+> Peter.
+>
+> >
+> > > +
+> > >  /* maximum length of a pin in pin descriptor (example: "gpa0-0") */
+> > >  #define PIN_NAME_LENGTH        10
+> > >
+> > > @@ -122,6 +136,8 @@ struct samsung_pin_bank_type {
+> > >   * @eint_type: type of the external interrupt supported by the bank.
+> > >   * @eint_mask: bit mask of pins which support EINT function.
+> > >   * @eint_offset: SoC-specific EINT register or interrupt offset of b=
+ank.
+> > > + * @fltcon_type: whether the filter (delay/digital) is selectable
+> > > + * @fltcon_offset: SoC-specific EINT filter control register offset =
+of bank.
+> > >   * @name: name to be prefixed for each pin in this pin bank.
+> > >   */
+> > >  struct samsung_pin_bank_data {
+> > > @@ -133,6 +149,8 @@ struct samsung_pin_bank_data {
+> > >         enum eint_type  eint_type;
+> > >         u32             eint_mask;
+> > >         u32             eint_offset;
+> > > +       enum fltcon_type fltcon_type;
+> > > +       u32             fltcon_offset;
+> > >         const char      *name;
+> > >  };
+> > >
+> > > @@ -147,6 +165,8 @@ struct samsung_pin_bank_data {
+> > >   * @eint_type: type of the external interrupt supported by the bank.
+> > >   * @eint_mask: bit mask of pins which support EINT function.
+> > >   * @eint_offset: SoC-specific EINT register or interrupt offset of b=
+ank.
+> > > + * @fltcon_type: whether the filter (delay/digital) is selectable
+> > > + * @fltcon_offset: SoC-specific EINT filter control register offset =
+of bank.
+> > >   * @name: name to be prefixed for each pin in this pin bank.
+> > >   * @id: id of the bank, propagated to the pin range.
+> > >   * @pin_base: starting pin number of the bank.
+> > > @@ -170,6 +190,8 @@ struct samsung_pin_bank {
+> > >         enum eint_type  eint_type;
+> > >         u32             eint_mask;
+> > >         u32             eint_offset;
+> > > +       enum fltcon_type fltcon_type;
+> > > +       u32             fltcon_offset;
+> > >         const char      *name;
+> > >         u32             id;
+> > >
+> > > --
+> > > 2.43.0.rc2.451.g8631bc7472-goog
+> > >
