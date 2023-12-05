@@ -1,94 +1,155 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87B2765ED5;
-	Tue,  5 Dec 2023 16:41:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="t8r8CH2w"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2540C433C8;
-	Tue,  5 Dec 2023 16:41:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1701794502;
-	bh=7gPvTvewOLYQNm6H9vhHB2NPFfXXl0A8Iq7cfPwQivU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=t8r8CH2wNSFGCbhl+A9QSDbuA2BjoZh332npyGfbLI/Xm9ItOrW8syvIgeDTlZ1q5
-	 wLf7hB/9KqXbzM5nA7Ed4L3Eaxd58OUSMd9V6Owkh/I0PD5JGgcvFnXxdd45TWB45N
-	 dZHNx1v8l2qarIZEqlOvnS6zv92XbrLUBhRP8cnBQ6C8e/tll68GcLBnYDvJHZCBHH
-	 /tITBhqqE/+NntvMtsIVPyI1cRyp88XUnMpeq77USqcR2rq3+I+QZlAtDFZio8240f
-	 MED/YK/ypi+zoWyRR8CJxZSfYIGVO+dV0CfVh28+NT+GbGpdOt5KHr+teW873ceATp
-	 r6/4OwfhZMJvw==
-Date: Tue, 5 Dec 2023 16:41:35 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Andi Shyti <andi.shyti@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RDf1bIBp"
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66FE9B0;
+	Tue,  5 Dec 2023 10:08:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1701799695; x=1733335695;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=UVuUvArRESXqCywNPybRu1bVUdQbkthn/g4C9P7URvI=;
+  b=RDf1bIBp2wNyb70QVv/6Pcg+uA1rqkKnN4Fpf+9nkrb6bb5TaWv28xkN
+   kEqdGAAMg1rDSF9qtoImBv31jcX4DC5UCgM8AzV5/PRUwp7ZWAZriYgnb
+   dnpl2EupJLs9bao2hLiavA67hXKL/nn68trJS0YH8z7/qeP6tWI+ezBJ/
+   2QEi9+dmtiEeWqTuUoTPFeVluqR/o30LIBDc+U/gWj4etT+Fd+AtNM5y8
+   2QHGCv6+acOk6RDi+5TjHuRlUvImBaJuFXM84Vj+8Zx1AL6Qodm5meBZL
+   CwioVECmEvHtczL6KXi6W0vDnDhwMGSKU0QfggWZ0ENSH69hGTAkNzd3J
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10915"; a="391100984"
+X-IronPort-AV: E=Sophos;i="6.04,252,1695711600"; 
+   d="scan'208";a="391100984"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2023 10:08:15 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10915"; a="889024127"
+X-IronPort-AV: E=Sophos;i="6.04,253,1695711600"; 
+   d="scan'208";a="889024127"
+Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
+  by fmsmga002.fm.intel.com with ESMTP; 05 Dec 2023 10:08:10 -0800
+Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rAZq3-0009Vd-2B;
+	Tue, 05 Dec 2023 18:08:07 +0000
+Date: Wed, 6 Dec 2023 02:07:39 +0800
+From: kernel test robot <lkp@intel.com>
+To: Tony Lindgren <tony@atomide.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Wim Van Sebroeck <wim@linux-watchdog.org>,
-	Guenter Roeck <linux@roeck-us.net>, linux-fsd@tesla.com,
-	linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH 0/6] dt-bindings: samsung: continued - add specific
- compatibles for Tesla FSD Hi,
-Message-ID: <20231205-outnumber-yelp-dafb6ace186e@spud>
-References: <20231205092229.19135-1-krzysztof.kozlowski@linaro.org>
+	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>
+Cc: oe-kbuild-all@lists.linux.dev, "David S . Miller" <davem@davemloft.net>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Dhruva Gole <d-gole@ti.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v4 4/4] serial: 8250: Add preferred console in
+ serial8250_isa_init_ports()
+Message-ID: <202312060101.o6nb55MI-lkp@intel.com>
+References: <20231205073255.20562-5-tony@atomide.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="C3JOgYS3s1TAhdme"
-Content-Disposition: inline
-In-Reply-To: <20231205092229.19135-1-krzysztof.kozlowski@linaro.org>
-
-
---C3JOgYS3s1TAhdme
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20231205073255.20562-5-tony@atomide.com>
 
-On Tue, Dec 05, 2023 at 10:22:23AM +0100, Krzysztof Kozlowski wrote:
-> Merging
-> =3D=3D=3D=3D=3D=3D=3D
-> I propose to take entire patchset through my tree (Samsung SoC), because:
-> 1. I already took similar work this cycle:
->    https://lore.kernel.org/all/169997520487.6747.17671551558724027958.b4-=
-ty@linaro.org/
-> 2. Two new SoCs are coming (Google GS101 and ExynosAutov920) and they mig=
-ht
->    touch the same lines.  It is reasonable for me to take the bindings fo=
-r the new
->    SoCs, to have clean `make dtbs_check` on the new DTS.
-> 3. Having it together helps me to have clean `make dtbs_check` within my =
-tree
->    on the existing DTS.
-> 4. No drivers are affected by this change.
->=20
-> If folks agree, please kindly Ack the patches.
+Hi Tony,
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
+kernel test robot noticed the following build errors:
 
-Cheers,
-Conor.
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.7-rc4 next-20231205]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
---C3JOgYS3s1TAhdme
-Content-Type: application/pgp-signature; name="signature.asc"
+url:    https://github.com/intel-lab-lkp/linux/commits/Tony-Lindgren/printk-Save-console-options-for-add_preferred_console_match/20231205-153731
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20231205073255.20562-5-tony%40atomide.com
+patch subject: [PATCH v4 4/4] serial: 8250: Add preferred console in serial8250_isa_init_ports()
+config: powerpc-randconfig-r081-20231205 (https://download.01.org/0day-ci/archive/20231206/202312060101.o6nb55MI-lkp@intel.com/config)
+compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project.git 4a5ac14ee968ff0ad5d2cc1ffa0299048db4c88a)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231206/202312060101.o6nb55MI-lkp@intel.com/reproduce)
 
------BEGIN PGP SIGNATURE-----
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202312060101.o6nb55MI-lkp@intel.com/
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZW9SvwAKCRB4tDGHoIJi
-0rShAP9wrpk6xlyay96Xfkv7prBahXUjkK/0KUi1p6lsWcoq7gEA09NZdE4qyxo8
-SFwP9y3wxxh6dsTeHbeIUJ6yL4EpOgs=
-=wgER
------END PGP SIGNATURE-----
+All errors (new ones prefixed by >>):
 
---C3JOgYS3s1TAhdme--
+>> drivers/tty/serial/8250/8250_core.c:597:42: error: too few arguments to function call, expected 2, have 1
+     597 |                 serial8250_isa_init_preferred_console(i);
+         |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  ^
+   drivers/tty/serial/8250/8250_core.c:543:20: note: 'serial8250_isa_init_preferred_console' declared here
+     543 | static inline void serial8250_isa_init_preferred_console(struct uart_port *port,
+         |                    ^
+   1 error generated.
+
+
+vim +597 drivers/tty/serial/8250/8250_core.c
+
+   549	
+   550	static void __init serial8250_isa_init_ports(void)
+   551	{
+   552		struct uart_8250_port *up;
+   553		static int first = 1;
+   554		int i, irqflag = 0;
+   555	
+   556		if (!first)
+   557			return;
+   558		first = 0;
+   559	
+   560		if (nr_uarts > UART_NR)
+   561			nr_uarts = UART_NR;
+   562	
+   563		/*
+   564		 * Set up initial isa ports based on nr_uart module param, or else
+   565		 * default to CONFIG_SERIAL_8250_RUNTIME_UARTS. Note that we do not
+   566		 * need to increase nr_uarts when setting up the initial isa ports.
+   567		 */
+   568		for (i = 0; i < nr_uarts; i++)
+   569			serial8250_setup_port(i);
+   570	
+   571		/* chain base port ops to support Remote Supervisor Adapter */
+   572		univ8250_port_ops = *base_ops;
+   573		univ8250_rsa_support(&univ8250_port_ops);
+   574	
+   575		if (share_irqs)
+   576			irqflag = IRQF_SHARED;
+   577	
+   578		for (i = 0, up = serial8250_ports;
+   579		     i < ARRAY_SIZE(old_serial_port) && i < nr_uarts;
+   580		     i++, up++) {
+   581			struct uart_port *port = &up->port;
+   582	
+   583			port->iobase   = old_serial_port[i].port;
+   584			port->irq      = irq_canonicalize(old_serial_port[i].irq);
+   585			port->irqflags = 0;
+   586			port->uartclk  = old_serial_port[i].baud_base * 16;
+   587			port->flags    = old_serial_port[i].flags;
+   588			port->hub6     = 0;
+   589			port->membase  = old_serial_port[i].iomem_base;
+   590			port->iotype   = old_serial_port[i].io_type;
+   591			port->regshift = old_serial_port[i].iomem_reg_shift;
+   592	
+   593			port->irqflags |= irqflag;
+   594			if (serial8250_isa_config != NULL)
+   595				serial8250_isa_config(i, &up->port, &up->capabilities);
+   596	
+ > 597			serial8250_isa_init_preferred_console(i);
+   598		}
+   599	}
+   600	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
