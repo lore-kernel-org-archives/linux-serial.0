@@ -1,129 +1,165 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="JqL4nt47"
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 481E5FA;
-	Tue,  5 Dec 2023 04:35:49 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Exn84DqH4NCoAc0TTwhCIvIiRu5dwgyDMifzhxbtHnJwPPXHy3+LGcl5HJsZvPAkTF3od95dE52KO+L55LNzObIjXV/g5lhp9E0MFIKA5lWEgDw5I7zfNUlXFiRjaa/kWNxD/pvxjynnDfG/MV8VHcHMEDpwNyq/tTL3Mza36yhj0GRQ9wo0PqoMBwCDUVFCFhGN80UUCgIFTzj5syd3kbxbuqP0uKp5LLHnavhxSaxWCWJBaww5Q+GuGgT8JgOqilun+keefE7wvDKv2B5kd3gPTA8/Ch5HcqyIh9r8IAj9RjZAX6xmPRHFcxQgGaGU5LNXUNf68k1UAeX/uWJbXg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/uyj/8cp0CE7Vhp/O/0rqRwp1f4z0B5xHlVMVld0lpM=;
- b=SIu70EArJY857kAeV9MvyUrw1wXUEVJF3Tx7AZJ7Gh/vzufjeuBrV6e/jk074nqxCb7f/KRkydUgH4J7SuDR8oCpUyHcoNoiUISa1KCdmFdBM8HKls9LfgeuxeJf2W/RgUTINhqvFcFnBwEotFiWGpNwE0DSCLH6ivWmT3OqgphFmMuIMf5OvCCbIa1aqMjCk7mPGyEiyEn9smlyAl3xQ0NvAu1FIVUxk4iVvxKKH3lnL8blUzwZfbHw0xapYS+YochFN751xKsRGuNlCRrCVSpsW7L/fIQf80dNnfhJOb0r42A0wXMFr8tKj23qFPfyFSHLjMT25PylI6Zy1VF1sA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/uyj/8cp0CE7Vhp/O/0rqRwp1f4z0B5xHlVMVld0lpM=;
- b=JqL4nt47/WRmtEZIuSxCQfV0VB/eHOyY2ufXVwwsAb2htF4Ac73w6f8z6rjEUPvclVrTW7LaBxOwohALqlTee31/kSGVLXoGTH0Bdx8/HJBAH3LR1nRhp7MhkZscfW4HzkGwoGBMptD0Ivk2yYnvkA67k85lKoR/FZrR/iHpMbs=
-Received: from BL0PR02CA0069.namprd02.prod.outlook.com (2603:10b6:207:3d::46)
- by SJ0PR12MB5438.namprd12.prod.outlook.com (2603:10b6:a03:3ba::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.34; Tue, 5 Dec
- 2023 12:35:46 +0000
-Received: from BL6PEPF0001AB74.namprd02.prod.outlook.com
- (2603:10b6:207:3d:cafe::b4) by BL0PR02CA0069.outlook.office365.com
- (2603:10b6:207:3d::46) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.29 via Frontend
- Transport; Tue, 5 Dec 2023 12:35:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- BL6PEPF0001AB74.mail.protection.outlook.com (10.167.242.167) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7068.20 via Frontend Transport; Tue, 5 Dec 2023 12:35:46 +0000
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.34; Tue, 5 Dec
- 2023 06:35:45 -0600
-Received: from xcbayankuma40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server id 15.1.2507.34 via Frontend
- Transport; Tue, 5 Dec 2023 06:35:44 -0600
-From: Ayan Kumar Halder <ayan.kumar.halder@amd.com>
-To: <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-	<ayan.kumar.halder@amd.com>
-CC: <michal.simek@amd.com>, <gregkh@linuxfoundation.org>,
-	<jirislaby@kernel.org>, <stefano.stabellini@amd.com>, <michal.orzel@amd.com>,
-	<julien@xen.org>, <linuxppc-dev@lists.ozlabs.org>
-Subject: [PATCH] tty: hvc: dcc: Check for TXfull condition while setting up early console
-Date: Tue, 5 Dec 2023 12:35:34 +0000
-Message-ID: <20231205123534.3376883-1-ayan.kumar.halder@amd.com>
-X-Mailer: git-send-email 2.25.1
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VfFvdOgq"
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C801A5;
+	Tue,  5 Dec 2023 04:36:09 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id 5b1f17b1804b1-40c09dfd82aso31063675e9.0;
+        Tue, 05 Dec 2023 04:36:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1701779768; x=1702384568; darn=vger.kernel.org;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Vi/+U1S70zCpRCmtolwQMMJpjEnLtDmB7aIF6AJ1vQ4=;
+        b=VfFvdOgq00qRsq2xMcSXTxyqeNGdDJ4MXA7bx8Lncy8x4MH6a4ZkaHW9uG2miWHLBz
+         SJO1zcZCj+ejBfp2ijjBwDMhdZfkn07Zse5u1tdpIYli4mJul83mbChpmo6wLridTU6V
+         lDoZaGfMeYDC0jfGOUvhLxRMzpBMHxHf6hk7gI/hWNtr7rmBepxe3kt0k2RQQU8JKrSP
+         +juKAwkUFIEru4q1t2QEJ5vgiORWFOqXuikJARSr1KftCJL2Mf5+X8QWOr4FcPq3Kibd
+         su/m5ds+2LMEOdXpzWp620ef1iBXBi9KUkMUPGqFEAS4+0XtepApqcFqqONBG+WaCkI1
+         cbiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701779768; x=1702384568;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Vi/+U1S70zCpRCmtolwQMMJpjEnLtDmB7aIF6AJ1vQ4=;
+        b=AH0l64I/0OV8tm5OLHi724nq7uub2NVc3rtQCLEs0XnJXiCr4KD/cgZbUWiTbr80Cr
+         rWli7rhPf7mizG3/gQimvoYFWNSQi766nMWC47FdturbmniMjp+Nm/7dmMfKIHPhUMgm
+         fYPDg1tTnoSmVH24+cYj9pujgvTFpGV4Nk5w5cxLM90RHyWV0e7OriPHzE+JRw3lSyRH
+         0qBN0TxCBEVhDFRQiuqsJRi7zVynY63yHrCzSm3H6I7px68COXk9Ujy7tU/iNZixqQd4
+         ZqsYkjHieCReFL+aTbi5wle5hckT5K5OccK1PokHUbPjYZG7aQ0OZzSBHK0jHaCtZvkc
+         kCXg==
+X-Gm-Message-State: AOJu0YzFeUYPG6/K0+VPLPudXbHqSNLonSQ0TQcycLWHOfL+pDh5m/r9
+	slTlwjsYba45AEVUVEu7lsY=
+X-Google-Smtp-Source: AGHT+IFRXDtzFmX4tYMMU5n5XaYJrLQWKmuFyEOl3CF2puX317iplwOttL32TpsSZhFHKXsaDUn0Zw==
+X-Received: by 2002:a05:600c:3007:b0:40b:5e21:dd2c with SMTP id j7-20020a05600c300700b0040b5e21dd2cmr431012wmh.90.1701779767917;
+        Tue, 05 Dec 2023 04:36:07 -0800 (PST)
+Received: from orome.fritz.box (p200300e41f0fa600f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f0f:a600:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id i21-20020a170906251500b009ff1997ce86sm6715307ejb.149.2023.12.05.04.36.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Dec 2023 04:36:07 -0800 (PST)
+Date: Tue, 5 Dec 2023 13:36:05 +0100
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>, Lee Jones <lee@kernel.org>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	Tomasz Figa <tomasz.figa@gmail.com>,
+	Sylwester Nawrocki <s.nawrocki@samsung.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Jaehoon Chung <jh80.chung@samsung.com>,
+	Sam Protsenko <semen.protsenko@linaro.org>,
+	dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-mmc@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
+	linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
+	alsa-devel@alsa-project.org, linux-sound@vger.kernel.org,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: (subset) [PATCH 00/17] dt-bindings: samsung: add specific
+ compatibles for existing SoC
+Message-ID: <ZW8ZNZ_FJSV8fq-U@orome.fritz.box>
+References: <20231108104343.24192-1-krzysztof.kozlowski@linaro.org>
+ <170119374454.445690.515311393756577368.b4-ty@gmail.com>
+ <20231128205841.al23ra5s34rn3muj@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL6PEPF0001AB74:EE_|SJ0PR12MB5438:EE_
-X-MS-Office365-Filtering-Correlation-Id: ba11229a-7061-4bfa-4413-08dbf58eb44a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	IBNJnSKhizmFbvHPdhCuBgtY2GwyFbSB2xG1XJoSD5vjh9has6Xzipspq2rBdfZMmPPXcJGPBBca2EqndEAa7f5hUB/vM0HIRs9149/+N2vSlF72UC16DYFTHvc4JrsDgScFhJSU+5YZKqSyF14DVKeI/5kEmXIvtkzGDivxq477jqtORnOHqTAmzYrQea1gu898TLeowqHsWjZ2CZNMJ8qCA4b5ZirV3c1fchW8kXqTUHKYvPjJ4b/A2wHKy3Y6poSjhca3sstQGiAMgZYbW12TW/mWIEZBXEohem9OkrrlVyG3ZjlUKeaKHvYkMn0KVlpSHXNIxrhL33pNxjQgUeTG8Yja6fnOg2hjoflm3fs2THhjlC0ZO89+NRGSh4SbfStp3UTdttTxLiW7o7RP/cJxCSmpV0qALkbGvbXvZxZVIsMXF675/pd3npfWCxgfOpet/H6vpy5HWnPesFMSafdjjdc4QLVWiH9709GEccosL8poVXbOl9jFwkGaIPKk4wnwQBKyaMBxLbpvvonKMdZZ8vTL7v0ps81hldo5nTAEP0xQ8Kwxqc/VRAxQYRa62XcWIeWST71KtHvDijLmU+b0NEX6u7mk9vScfTow1Yg+2Cz9/qhSwoOzorzqsG38oITL+O+x7e3WmWJfTVpfeO/286q07yYk54b9theOeDbqXEK+IMxc2DmW5svFxRR7o+8xtP326RHFXi3S8g43jJUxSqehf9Ocv1FxrZuI3zrigEF7I8XzDg6LZTBFqFC73PwRsA41v+zNSvh6CmAk5Q==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(136003)(376002)(396003)(346002)(230922051799003)(186009)(64100799003)(82310400011)(1800799012)(451199024)(36840700001)(46966006)(40470700004)(40480700001)(36860700001)(103116003)(2906002)(110136005)(316002)(54906003)(86362001)(70206006)(8676002)(70586007)(41300700001)(36756003)(4326008)(8936002)(356005)(47076005)(5660300002)(82740400003)(81166007)(7049001)(478600001)(40460700003)(426003)(26005)(1076003)(336012)(6666004)(2616005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Dec 2023 12:35:46.1671
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ba11229a-7061-4bfa-4413-08dbf58eb44a
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL6PEPF0001AB74.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5438
-X-Spam-Level: *
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="Tgq7dxd4jwke8dPo"
+Content-Disposition: inline
+In-Reply-To: <20231128205841.al23ra5s34rn3muj@pengutronix.de>
+User-Agent: Mutt/2.2.12 (2023-09-09)
 
-Refer ARM DDI 0487I.a ID081822, D17.3.8, DBGDTRTX_EL0,
-"If TXfull is set to 1, set DTRRX and DTRTX to UNKNOWN"
 
-Thus one should always check for TXfull condition before hvc can be
-used as an early console. This is similar to what is being done
-today in hvc_dcc_console_init() and hvc_dcc_init().
+--Tgq7dxd4jwke8dPo
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The count 0x4000000 has been obtained from uboot (v2024.01-rc3)
-drivers/serial/arm_dcc.c "TIMEOUT_COUNT".
-It reads the dcc status and waits for 0x4000000  times for the TX Fifo
-to be available before returning an error. Thus, it will prevent DCC
-to be used as early console.
+On Tue, Nov 28, 2023 at 09:58:41PM +0100, Uwe Kleine-K=C3=B6nig wrote:
+> On Tue, Nov 28, 2023 at 06:49:23PM +0100, Thierry Reding wrote:
+> >=20
+> > On Wed, 08 Nov 2023 11:43:26 +0100, Krzysztof Kozlowski wrote:
+> > > Merging
+> > > =3D=3D=3D=3D=3D=3D=3D
+> > > I propose to take entire patchset through my tree (Samsung SoC), beca=
+use:
+>     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>=20
+> > > 1. Next cycle two new SoCs will be coming (Google GS101 and ExynosAut=
+ov920), so
+> > >    they will touch the same lines in some of the DT bindings (not all=
+, though).
+> > >    It is reasonable for me to take the bindings for the new SoCs, to =
+have clean
+> > >    `make dtbs_check` on the new DTS.
+> > > 2. Having it together helps me to have clean `make dtbs_check` within=
+ my tree
+> > >    on the existing DTS.
+> > > 3. No drivers are affected by this change.
+> > > 4. I plan to do the same for Tesla FSD and Exynos ARM32 SoCs, thus ex=
+pect
+> > >    follow up patchsets.
+> > >=20
+> > > [...]
+> >=20
+> > Applied, thanks!
+> >=20
+> > [12/17] dt-bindings: pwm: samsung: add specific compatibles for existin=
+g SoC
+> >         commit: 5d67b8f81b9d598599366214e3b2eb5f84003c9f
+>=20
+> You didn't honor (or even comment) Krzysztof's proposal to take the
+> whole patchset via his tree (marked above). Was there some off-list
+> agreement?
 
-Signed-off-by: Ayan Kumar Halder <ayan.kumar.halder@amd.com>
----
- drivers/tty/hvc/hvc_dcc.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+I had read all that and then looking at patchwork saw that you had
+marked all other patches in the series as "handled-elsewhere" and only
+this one was left as "new", so I assumed that, well, everything else was
+handled elsewhere and I was supposed to pick this one up...
 
-diff --git a/drivers/tty/hvc/hvc_dcc.c b/drivers/tty/hvc/hvc_dcc.c
-index 1751108cf763..136381bec7cd 100644
---- a/drivers/tty/hvc/hvc_dcc.c
-+++ b/drivers/tty/hvc/hvc_dcc.c
-@@ -47,6 +47,14 @@ static void dcc_early_write(struct console *con, const char *s, unsigned n)
- static int __init dcc_early_console_setup(struct earlycon_device *device,
- 					  const char *opt)
- {
-+	unsigned int count = 0x4000000;
-+
-+	while (--count && (__dcc_getstatus() & DCC_STATUS_TX))
-+		cpu_relax();
-+
-+	if (__dcc_getstatus() & DCC_STATUS_TX)
-+		return -ENODEV;
-+
- 	device->con->write = dcc_early_write;
- 
- 	return 0;
--- 
-2.25.1
+I'll drop this one.
 
+Thierry
+
+--Tgq7dxd4jwke8dPo
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmVvGTUACgkQ3SOs138+
+s6FxSg/9GYBUdx6f/ahQ2fBXUlTXv4ykvHBiRJGfUuGbx8MJaPoRIbAl2gcTnwnB
+fRuGMlQD0DbWYLVejy/wzASn//gvqYVp3sjPDSKFuFoUMSVNRBAJJy+DmdHcb7ia
+ZnhU2k/meHpKnCP8Y3im5k1MEbiexQ8OShzyVx8ARU/Y4BXrj2SfODDI/KGVYFa9
+Wfv2b1eoatUBHcDzYbjxow+qyza8E9Ym2b06HRhzQOotMSxLdBF5z1KP/29i4IWj
+WGwsIEbPMmM4rLFmQ45IRWz7GwZL8Fh3afeaUijl2cytKINUgBSkvqPsQPx25FdO
+xKMJHxcPjtERjnHorOGLNpotMNldbw2VRtQDD57QcqqqDBagcqpHfXwsOfuyK6v/
+r9p9gAFCFjF/bpQlKZdwLZ/+khDrkH+UH3cR0OBq/mN1Sb4JcSKbLwv8pGE/F+v6
+NXrlp9Xwx/gIyrRL6yijGCW50TXnE06/w4NDhHwi0tdio//f1BhQTWWYVKOArw0B
+Dpsrq/yDC2xJ7afiBdfKs+nTFuujmcTS1OguA5v+Ww/8a8Bp5bsBJj5p2GkbJa/3
+dChdDhsGy9As2KbUN2WYE+VIYUudcMiXbB8oKf+/kxhgwhSNgP+nirXkV422hKQs
+0w+Dee6JI0kKyL3S8AjiEW3ZmbKqJpV30pgyRVUlSIXRjoljdzA=
+=cbqG
+-----END PGP SIGNATURE-----
+
+--Tgq7dxd4jwke8dPo--
