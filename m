@@ -1,116 +1,188 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="vcx1QLG6"
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C911B9
-	for <linux-serial@vger.kernel.org>; Tue,  5 Dec 2023 13:48:53 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id 3f1490d57ef6-db632fef2dcso4437342276.1
-        for <linux-serial@vger.kernel.org>; Tue, 05 Dec 2023 13:48:53 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="xPh7CNK+"
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7A61B8
+	for <linux-serial@vger.kernel.org>; Tue,  5 Dec 2023 14:04:04 -0800 (PST)
+Received: by mail-qv1-xf34.google.com with SMTP id 6a1803df08f44-67adea83ea6so6622106d6.0
+        for <linux-serial@vger.kernel.org>; Tue, 05 Dec 2023 14:04:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701812932; x=1702417732; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1701813843; x=1702418643; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=5eP0uI2tmZM9ZtqjfsWxJwWzFVr6JH04FbBdTmyNv/w=;
-        b=vcx1QLG6WwxECp6bKqCg4qzU+3z0twyYAm/fKxldOfbA0WT56rifsYRjs4CMIYCITy
-         aCAuzONwK7DCLR79+Wq9XgzHQiJt5eyvZuKwUHgqqP2BVud0kuHKDyCUvYuAJ0zJmV7b
-         U47iSy0ilrmbYL+Ig3V7i06FYB4fsP0hA5kxYxGpOSHVmSo4Mxz9u0AdYe8mWtTIsVXJ
-         2e/UlpJMgTltzCcqk818OWNmMQPdEVbjojQQoSI8FmevbYke5EDsmrPD4AbgfVI8FEzG
-         6mzfV/A3hV5n40HIiA0Xf8gYZD8L9E1rdzo4m353KTeFLzqEp627WSWrPzsrT1mZPnvX
-         ns4g==
+        bh=HLkdwIzSkRdyJvWkuBYBl8NXAPFxbIdD1dlzt6dCueE=;
+        b=xPh7CNK+ZzcmfuafW9Mo8a4nRBb40XecDcWDXBzqHuc4yDmG5Bdf+HRrHwDX2tlUZR
+         PoNRmaV5CZXIkJFbL9piVJ+dCb/T9Y77zciEjGu7aPl/MS88apXEVTwMS9Hhz/Oxp4DW
+         t2T03EYj3CgZhj9knwKfyqfePkoG8IuSbcdGyf3gZYyTORIB3fh4UfjKZalM0wjCE3sP
+         N81fhHQCaHDvwroxmt3v3/VqtbovvuUPIqIohZRPheTyQlSMftuk2c0AUeatnYxDEyf2
+         d35LeuipINFZwlYK7THChOWPdpNPSd8ewR2bGtw8cV0WBfmAc2XqtUfrDXm0ex/QsTMV
+         hPCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701812932; x=1702417732;
+        d=1e100.net; s=20230601; t=1701813843; x=1702418643;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=5eP0uI2tmZM9ZtqjfsWxJwWzFVr6JH04FbBdTmyNv/w=;
-        b=j8wayKCAb2QahBA4CNaw6GiQ9RiX2CbpzJDWTzBoopiKWC3WNxYCq7RcvmjpKAgc2l
-         Lepv/zQ6hMA0qCoY9B7Jy0b507LPb0/qmUDaPc8EvuK6ZJGMw8rSFH+BygNODJENVfTy
-         GCQqL0aOnSAwWo1jzStqwt4sXLjGKlT7NBgM1r/lIPVX/pCs+c+kX9WeEM5M5TmHAbBm
-         iD/WcOLCstyl/cdZxVoT7InwLocXOSRzBuD0WquiorpDMH4cliyhuM+H+f/G4cBLq6od
-         5mXOFCti13jY0wqPsg6Vs8auJJwdSRxIT406QO+KJqJj+gj6XRA5ysIQom4b8vYbtHO1
-         CA8g==
-X-Gm-Message-State: AOJu0YyS9+M9mYh4OROfE4d2VyogSSMMs1Jhvvto4LlWTQE8PkS0+gVO
-	gaCn+3ODu7S++GcVPcSbkMpm6EGJ2wuNHXbfSV1GrQ==
-X-Google-Smtp-Source: AGHT+IEC7pNshX6Y57af6XTx4hp1z/Y9MEpMHk/hv4YF7sUJybFapw88Qbjz6GB2s4WrIdgZn+IiEoCY/A4u2lTVAiA=
-X-Received: by 2002:a25:aac2:0:b0:db7:dacf:59d1 with SMTP id
- t60-20020a25aac2000000b00db7dacf59d1mr4535677ybi.69.1701812932200; Tue, 05
- Dec 2023 13:48:52 -0800 (PST)
+        bh=HLkdwIzSkRdyJvWkuBYBl8NXAPFxbIdD1dlzt6dCueE=;
+        b=PRjb6hX+iRLBfEe30WwmXXXqw5W6KPGQe2l++X+DaTWesgiy7tIy9ndZhnLt0UzWg7
+         choZHHhl1l+BZDV5WbviqUHT+eELmBcxukr/xJpzpjAtBKPu4PORVD592wGLJBWpX/Hm
+         J5MG679bqTN5h6b2qzdjVbqgJA5eefeP8ENsSoAlr4Q3uU+e3jd2NKz4mOfgj7Py9h0m
+         vVy4u11oQDWJcqUkiNeIJFB3l01e6gsJaGkRW1mLz59PFIXgl+fmCfIL7wxkWV6PvtAW
+         mPAi3TAPPuy8XaQeAF9hbigpYGR/NjRZ5cKuiCR1hOWpr+VoO3bihTnILNvhsAkBb8E9
+         WYzg==
+X-Gm-Message-State: AOJu0YzuTgOEdN47Vf6jgzawMceSSs/i4sbZJ6QDIfih+CPtyvOeT6dg
+	gM6SEdveweoeFt5pChzI2qN2lfBQXkV06g3ptzU8zw==
+X-Google-Smtp-Source: AGHT+IErwhru2UO/1eHXtSZq4qe6vdEPU3tHwbbh+WsPhY++retoRNq1NqNHFm94bagQ4+LqS0vzUYQ8jyi5KmPRCa4=
+X-Received: by 2002:a0c:eb46:0:b0:67a:bae1:a48f with SMTP id
+ c6-20020a0ceb46000000b0067abae1a48fmr1886783qvq.103.1701813843342; Tue, 05
+ Dec 2023 14:04:03 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1701768028.git.ysato@users.sourceforge.jp>
- <602e1ba4f02489fcbc47e8f9904f3c1db1c9f14a.1701768028.git.ysato@users.sourceforge.jp>
- <2ef81211-9525-4f96-a6b2-3fcfbed0c6e5@app.fastmail.com>
-In-Reply-To: <2ef81211-9525-4f96-a6b2-3fcfbed0c6e5@app.fastmail.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Tue, 5 Dec 2023 22:48:41 +0100
-Message-ID: <CACRpkdZUAMXJ4YM9+xW2Snzt0Dx5mxWjcwHZifsXPJH9ozL5bg@mail.gmail.com>
-Subject: Re: [DO NOT MERGE v5 11/37] pci: pci-sh7751: Add SH7751 PCI driver
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Yoshinori Sato <ysato@users.sourceforge.jp>, linux-sh@vger.kernel.org, 
-	Damien Le Moal <dlemoal@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Geert Uytterhoeven <geert+renesas@glider.be>, Michael Turquette <mturquette@baylibre.com>, 
-	Stephen Boyd <sboyd@kernel.org>, Dave Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, Thomas Gleixner <tglx@linutronix.de>, 
-	Lorenzo Pieralisi <lpieralisi@kernel.org>, =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, 
-	Bjorn Helgaas <bhelgaas@google.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, 
-	Daniel Lezcano <daniel.lezcano@linaro.org>, Rich Felker <dalias@libc.org>, 
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Lee Jones <lee@kernel.org>, 
-	Helge Deller <deller@gmx.de>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>, 
-	Jernej Skrabec <jernej.skrabec@gmail.com>, Chris Morgan <macromorgan@hotmail.com>, 
-	Randy Dunlap <rdunlap@infradead.org>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, 
-	David Rientjes <rientjes@google.com>, Vlastimil Babka <vbabka@suse.cz>, Baoquan He <bhe@redhat.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, 
-	Stephen Rothwell <sfr@canb.auug.org.au>, guoren <guoren@kernel.org>, 
-	Javier Martinez Canillas <javierm@redhat.com>, Azeem Shaikh <azeemshaikh38@gmail.com>, 
-	Palmer Dabbelt <palmer@rivosinc.com>, Bin Meng <bmeng@tinylab.org>, 
-	Max Filippov <jcmvbkbc@gmail.com>, Tom Rix <trix@redhat.com>, 
-	Herve Codina <herve.codina@bootlin.com>, Jacky Huang <ychuang3@nuvoton.com>, 
-	Lukas Bulwahn <lukas.bulwahn@gmail.com>, Jonathan Corbet <corbet@lwn.net>, 
-	Biju Das <biju.das.jz@bp.renesas.com>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
-	Sam Ravnborg <sam@ravnborg.org>, Michael Karcher <kernel@mkarcher.dialup.fu-berlin.de>, 
-	Sergey Shtylyov <s.shtylyov@omp.ru>, 
-	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-ide@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Linux-Renesas <linux-renesas-soc@vger.kernel.org>, linux-clk@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linux-pci@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
+References: <20231201160925.3136868-1-peter.griffin@linaro.org>
+ <20231201160925.3136868-16-peter.griffin@linaro.org> <CAPLW+4=2aK-XJ69cTBzwhQF8s3E9in-NFkK3h43L7C+oieqyDg@mail.gmail.com>
+In-Reply-To: <CAPLW+4=2aK-XJ69cTBzwhQF8s3E9in-NFkK3h43L7C+oieqyDg@mail.gmail.com>
+From: Peter Griffin <peter.griffin@linaro.org>
+Date: Tue, 5 Dec 2023 22:03:51 +0000
+Message-ID: <CADrjBPreo1uXOksJ15AaiowGS8wf63DV6Q_phDvZzxoinVYjqQ@mail.gmail.com>
+Subject: Re: [PATCH v5 15/20] watchdog: s3c2410_wdt: Add support for WTCON
+ register DBGACK_MASK bit
+To: Sam Protsenko <semen.protsenko@linaro.org>
+Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, 
+	mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org, 
+	tomasz.figa@gmail.com, s.nawrocki@samsung.com, linus.walleij@linaro.org, 
+	wim@linux-watchdog.org, linux@roeck-us.net, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org, 
+	jirislaby@kernel.org, cw00.choi@samsung.com, alim.akhtar@samsung.com, 
+	tudor.ambarus@linaro.org, andre.draszik@linaro.org, saravanak@google.com, 
+	willmcvicker@google.com, soc@kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-watchdog@vger.kernel.org, kernel-team@android.com, 
+	linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 5, 2023 at 2:26=E2=80=AFPM Arnd Bergmann <arnd@arndb.de> wrote:
-> On Tue, Dec 5, 2023, at 10:45, Yoshinori Sato wrote:
+Hi Sam,
 
-> > +     if (of_property_read_u32_array(pdev->dev.of_node,
-> > +                                    "renesas,memory", memory, 2) < 0) =
-{
-> > +             /*
-> > +              * If no memory range is specified,
-> > +              *  the entire main memory will be targeted for DMA.
-> > +              */
-> > +             memory[0] =3D memory_start;
-> > +             memory[1] =3D memory_end - memory_start;
-> > +     }
+On Sat, 2 Dec 2023 at 00:53, Sam Protsenko <semen.protsenko@linaro.org> wro=
+te:
 >
-> There is a generic "dma-ranges" proerty for describing
-> which memory is visible by a bus.
+> On Fri, Dec 1, 2023 at 10:11=E2=80=AFAM Peter Griffin <peter.griffin@lina=
+ro.org> wrote:
+> >
+> > The WDT uses the CPU core signal DBGACK to determine whether the SoC
+> > is running in debug mode or not. If the DBGACK signal is asserted and
+> > DBGACK_MASK bit is enabled, then WDT output and interrupt is masked
+> > (disabled).
+> >
+> > Presence of the DBGACK_MASK bit is determined by adding a new
+> > QUIRK_HAS_DBGACK_BIT quirk.
+> >
+> > Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> > ---
+> >  drivers/watchdog/s3c2410_wdt.c | 27 ++++++++++++++++++++++++---
+> >  1 file changed, 24 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/watchdog/s3c2410_wdt.c b/drivers/watchdog/s3c2410_=
+wdt.c
+> > index 0b4bd883ff28..39f3489e41d6 100644
+> > --- a/drivers/watchdog/s3c2410_wdt.c
+> > +++ b/drivers/watchdog/s3c2410_wdt.c
+> > @@ -34,9 +34,10 @@
+> >
+> >  #define S3C2410_WTCNT_MAXCNT   0xffff
+> >
+> > -#define S3C2410_WTCON_RSTEN    (1 << 0)
+> > -#define S3C2410_WTCON_INTEN    (1 << 2)
+> > -#define S3C2410_WTCON_ENABLE   (1 << 5)
+> > +#define S3C2410_WTCON_RSTEN            (1 << 0)
+> > +#define S3C2410_WTCON_INTEN            (1 << 2)
+> > +#define S3C2410_WTCON_ENABLE           (1 << 5)
+> > +#define S3C2410_WTCON_DBGACK_MASK      (1 << 16)
+>
+> Suggest using BIT() macro. Btw, checkpatch with --strict option
+> suggests it too :)
 
-It's really a headache to use, so I put a bit of documentation here:
-https://elinux.org/Device_Tree_Usage#PCI_DMA_Address_Translation
+Yes indeed. I was somewhat reluctant to include changes that had
+nothing to do with the DBGACK feature but I will update to use the BIT
+macro in v6.
+>
+> >
+> >  #define S3C2410_WTCON_DIV16    (0 << 3)
+> >  #define S3C2410_WTCON_DIV32    (1 << 3)
+> > @@ -100,12 +101,17 @@
+> >   * %QUIRK_HAS_PMU_CNT_EN: PMU block has some register (e.g. CLUSTERx_N=
+ONCPU_OUT)
+> >   * with "watchdog counter enable" bit. That bit should be set to make =
+watchdog
+> >   * counter running.
+> > + *
+> > + * %QUIRK_HAS_DBGACK_BIT: WTCON register has DBGACK_MASK bit. Setting =
+the
+> > + * DBGACK_MASK bit disables the watchdog outputs when the SoC is in de=
+bug mode.
+> > + * Debug mode is determined by the DBGACK CPU signal.
+> >   */
+> >  #define QUIRK_HAS_WTCLRINT_REG                 (1 << 0)
+> >  #define QUIRK_HAS_PMU_MASK_RESET               (1 << 1)
+> >  #define QUIRK_HAS_PMU_RST_STAT                 (1 << 2)
+> >  #define QUIRK_HAS_PMU_AUTO_DISABLE             (1 << 3)
+> >  #define QUIRK_HAS_PMU_CNT_EN                   (1 << 4)
+> > +#define QUIRK_HAS_DBGACK_BIT                   (1 << 5)
+> >
+> >  /* These quirks require that we have a PMU register map */
+> >  #define QUIRKS_HAVE_PMUREG \
+> > @@ -375,6 +381,19 @@ static int s3c2410wdt_enable(struct s3c2410_wdt *w=
+dt, bool en)
+> >         return 0;
+> >  }
+> >
+> > +static void s3c2410wdt_mask_dbgack(struct s3c2410_wdt *wdt)
+> > +{
+> > +       unsigned long wtcon;
+> > +
+> > +       if (!(wdt->drv_data->quirks & QUIRK_HAS_DBGACK_BIT))
+> > +               return;
+> > +
+> > +       /*  disable watchdog outputs if CPU is in debug mode */
+>
+> Double whitespace in the comment. Also, I'd move this comment up to
+> the function declaration.
 
-Yoshinoro, you can look at these bindings and drivers that use
-dma-ranges for help:
-Documentation/devicetree/bindings/pci/intel,ixp4xx-pci.yaml
-drivers/pci/controller/pci-ixp4xx.c
-Documentation/devicetree/bindings/pci/faraday,ftpci100.yaml
-drivers/pci/controller/pci-ftpci100.c
+Will fix
 
-Yours,
-Linus Walleij
+>
+> Other than that:
+>
+> Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
+
+Thanks,
+
+Peter
+>
+> > +       wtcon =3D readl(wdt->reg_base + S3C2410_WTCON);
+> > +       wtcon |=3D S3C2410_WTCON_DBGACK_MASK;
+> > +       writel(wtcon, wdt->reg_base + S3C2410_WTCON);
+> > +}
+> > +
+> >  static int s3c2410wdt_keepalive(struct watchdog_device *wdd)
+> >  {
+> >         struct s3c2410_wdt *wdt =3D watchdog_get_drvdata(wdd);
+> > @@ -700,6 +719,8 @@ static int s3c2410wdt_probe(struct platform_device =
+*pdev)
+> >         wdt->wdt_device.bootstatus =3D s3c2410wdt_get_bootstatus(wdt);
+> >         wdt->wdt_device.parent =3D dev;
+> >
+> > +       s3c2410wdt_mask_dbgack(wdt);
+> > +
+> >         /*
+> >          * If "tmr_atboot" param is non-zero, start the watchdog right =
+now. Also
+> >          * set WDOG_HW_RUNNING bit, so that watchdog core can kick the =
+watchdog.
+> > --
+> > 2.43.0.rc2.451.g8631bc7472-goog
+> >
