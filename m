@@ -1,116 +1,135 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="Dgy66UJo"
-Received: from mx3.securetransport.de (mx3.securetransport.de [116.203.31.6])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A925181
-	for <linux-serial@vger.kernel.org>; Wed,  6 Dec 2023 06:08:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-	s=dhelectronicscom; t=1701871633;
-	bh=M7/Rk8/oEfL7Jbs2IoBgeZqHY43eDAp8kTRQc2bswIo=;
-	h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-	b=Dgy66UJo69I/xmcATv8g363vbsnEUn8esMUo7/kLOkk3MbZ0TtrGFJojtTaSPBaO+
-	 sh51B6zV3s66FKpGXKdh8/J/t+3RZu/PdiNLsqtzj5K7GIEBd9IZirrZJ92SYhf7yF
-	 2PgyrK0qDKd3rVV8kKTqwq/0LWdS8NF+bu3hIV5cNozFs8F7U5FSPawiuceBov6c8C
-	 eVum1ktdT51crGpf4qe43cGmDAaHo5U7TFJ/oQmed6TYUvXvIYv89vN6FCuJfxbgiQ
-	 6Xjaq5LSirKFq0U5Z4XV51FCqmNFHO9Q9lAzZPzUvBKVm37Hy+CtNepLUNYByJZIz6
-	 2OGQT0murjR6g==
-X-secureTransport-forwarded: yes
-From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Complaints-To: abuse@cubewerk.de
-To: Marek Vasut <marex@denx.de>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>
-CC: =?utf-8?B?SWxwbyBKw6RydmluZW4=?= <ilpo.jarvinen@linux.intel.com>,
-	=?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, "Fabio
- Estevam" <festevam@gmail.com>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, "NXP Linux
- Team" <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Rob Herring <robh@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, "Sergey
- Organov" <sorganov@gmail.com>, Shawn Guo <shawnguo@kernel.org>, "Thomas
- Gleixner" <tglx@linutronix.de>, Tom Rix <trix@redhat.com>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Subject: RE: [PATCH] serial: imx: Fix clock imbalance
-Thread-Topic: [PATCH] serial: imx: Fix clock imbalance
-Thread-Index: AQHaJxVHUL44jWWjHkC7yfN2GhtoqLCcS7iA
-Date: Wed, 6 Dec 2023 14:06:56 +0000
-Message-ID: <bd165a300edc44c09d078d1e778ddfe9@dh-electronics.com>
-References: <20231205005108.79782-1-marex@denx.de>
-In-Reply-To: <20231205005108.79782-1-marex@denx.de>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KuMuNc67"
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6462AD4B;
+	Wed,  6 Dec 2023 06:23:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1701872622; x=1733408622;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=pp3OioeXpZho5+76nSTlDa8kUCjyMjUIKd1pp/K2V+4=;
+  b=KuMuNc67gviEh+McSD+gFX+KTHjlwHyHVW6c/3Wh2Jj9izRFe6i8/14k
+   ZT+P91+n8z8iRKVUampmC+q3AKOSE3e28/69mTroMPDtz+JDhiI4weAFs
+   7h399aYLWcOTJG6rbvuQnJssge7IRi1k8lLuzAAEzg/CeUT6/vWYEtNci
+   u3T1Blhl9zGtnyJ8+f0aiGlACgnliQStNkcqpOQXmUFG0rtAOPOx0LVT1
+   zL8kCmtALj5kLgPX8j/5jFGxdC8H8duKDgd/7RdzzFY8qno/7KWd8G9Ia
+   zQ37VZsPR4Qlp3ONDfjE0/nJJE7PAt5XGkTLZJ3ImHgJbixSoHeA8ks/W
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10916"; a="396856497"
+X-IronPort-AV: E=Sophos;i="6.04,255,1695711600"; 
+   d="scan'208";a="396856497"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2023 06:23:42 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.04,255,1695711600"; 
+   d="scan'208";a="19337371"
+Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
+  by orviesa001.jf.intel.com with ESMTP; 06 Dec 2023 06:23:40 -0800
+Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rAsoK-000Auk-0I;
+	Wed, 06 Dec 2023 14:23:36 +0000
+Date: Wed, 6 Dec 2023 22:22:06 +0800
+From: kernel test robot <lkp@intel.com>
+To: Hugo Villeneuve <hugo@hugovil.com>, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, hvilleneuve@dimonoff.com
+Cc: oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, hugo@hugovil.com
+Subject: Re: [PATCH 7/7] serial: max310x: use separate regmap name for each
+ port
+Message-ID: <202312062240.v39k99mQ-lkp@intel.com>
+References: <20231130191050.3165862-8-hugo@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231130191050.3165862-8-hugo@hugovil.com>
 
-RnJvbTogbGludXgtYXJtLWtlcm5lbCBbbWFpbHRvOmxpbnV4LWFybS1rZXJuZWwtYm91bmNlc0Bs
-aXN0cy5pbmZyYWRlYWQub3JnXSBPbiBCZWhhbGYgT2YgTWFyZWsgVmFzdXQNClNlbnQ6IFR1ZXNk
-YXksIERlY2VtYmVyIDUsIDIwMjMgMTo1MSBBTQ0KPiBEaXNhYmxlIGFuZCB1bnByZXBhcmUgdGhl
-IGNsb2NrIG9uIGV2ZXJ5IGV4aXQgZnJvbSBwcm9iZSBmdW5jdGlvbg0KPiBhZnRlciB0aGUgY2xv
-Y2sgd2VyZSBwcmVwYXJlZCBhbmQgZW5hYmxlZCB0byBhdm9pZCBlbmFibGUvZGlzYWJsZQ0KPiBp
-bWJhbGFuY2UuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBNYXJlayBWYXN1dCA8bWFyZXhAZGVueC5k
-ZT4NCj4gLS0tDQo+IENjOiAiSWxwbyBKw6RydmluZW4iIDxpbHBvLmphcnZpbmVuQGxpbnV4Lmlu
-dGVsLmNvbT4NCj4gQ2M6ICJVd2UgS2xlaW5lLUvDtm5pZyIgPHUua2xlaW5lLWtvZW5pZ0BwZW5n
-dXRyb25peC5kZT4NCj4gQ2M6IEZhYmlvIEVzdGV2YW0gPGZlc3RldmFtQGdtYWlsLmNvbT4NCj4g
-Q2M6IEdyZWcgS3JvYWgtSGFydG1hbiA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+DQo+IENj
-OiBKaXJpIFNsYWJ5IDxqaXJpc2xhYnlAa2VybmVsLm9yZz4NCj4gQ2M6IE5YUCBMaW51eCBUZWFt
-IDxsaW51eC1pbXhAbnhwLmNvbT4NCj4gQ2M6IFBlbmd1dHJvbml4IEtlcm5lbCBUZWFtIDxrZXJu
-ZWxAcGVuZ3V0cm9uaXguZGU+DQo+IENjOiBSb2IgSGVycmluZyA8cm9iaEBrZXJuZWwub3JnPg0K
-PiBDYzogU2FzY2hhIEhhdWVyIDxzLmhhdWVyQHBlbmd1dHJvbml4LmRlPg0KPiBDYzogU2VyZ2V5
-IE9yZ2Fub3YgPHNvcmdhbm92QGdtYWlsLmNvbT4NCj4gQ2M6IFNoYXduIEd1byA8c2hhd25ndW9A
-a2VybmVsLm9yZz4NCj4gQ2M6IFRob21hcyBHbGVpeG5lciA8dGdseEBsaW51dHJvbml4LmRlPg0K
-PiBDYzogVG9tIFJpeCA8dHJpeEByZWRoYXQuY29tPg0KPiBDYzogbGludXgtYXJtLWtlcm5lbEBs
-aXN0cy5pbmZyYWRlYWQub3JnDQo+IENjOiBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnDQo+
-IC0tLQ0KPiAgZHJpdmVycy90dHkvc2VyaWFsL2lteC5jIHwgMTggKysrKysrKysrKy0tLS0tLS0t
-DQo+ICAxIGZpbGUgY2hhbmdlZCwgMTAgaW5zZXJ0aW9ucygrKSwgOCBkZWxldGlvbnMoLSkNCj4g
-DQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMgYi9kcml2ZXJzL3R0eS9z
-ZXJpYWwvaW14LmMNCj4gaW5kZXggNTJkZDhhNmI4NzYwMy4uMWNjZTY2ZTVkMDVkOCAxMDA2NDQN
-Cj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jDQo+ICsrKyBiL2RyaXZlcnMvdHR5L3Nl
-cmlhbC9pbXguYw0KPiBAQCAtMjMzMiwxMCArMjMzMiw4IEBAIHN0YXRpYyBpbnQgaW14X3VhcnRf
-cHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCj4gICAgICAgICB9DQo+IA0KPiAg
-ICAgICAgIHJldCA9IHVhcnRfZ2V0X3JzNDg1X21vZGUoJnNwb3J0LT5wb3J0KTsNCj4gLSAgICAg
-ICBpZiAocmV0KSB7DQo+IC0gICAgICAgICAgICAgICBjbGtfZGlzYWJsZV91bnByZXBhcmUoc3Bv
-cnQtPmNsa19pcGcpOw0KPiAtICAgICAgICAgICAgICAgcmV0dXJuIHJldDsNCj4gLSAgICAgICB9
-DQo+ICsgICAgICAgaWYgKHJldCkNCj4gKyAgICAgICAgICAgICAgIGdvdG8gZXJyX2NsazsNCj4g
-DQo+ICAgICAgICAgaWYgKHNwb3J0LT5wb3J0LnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJM
-RUQgJiYNCj4gICAgICAgICAgICAgKCFzcG9ydC0+aGF2ZV9ydHNjdHMgJiYgIXNwb3J0LT5oYXZl
-X3J0c2dwaW8pKQ0KPiBAQCAtMjQzNiw3ICsyNDM0LDcgQEAgc3RhdGljIGludCBpbXhfdWFydF9w
-cm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPiAgICAgICAgICAgICAgICAgaWYg
-KHJldCkgew0KPiAgICAgICAgICAgICAgICAgICAgICAgICBkZXZfZXJyKCZwZGV2LT5kZXYsICJm
-YWlsZWQgdG8gcmVxdWVzdCByeCBpcnE6ICVkXG4iLA0KPiAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgIHJldCk7DQo+IC0gICAgICAgICAgICAgICAgICAgICAgIHJldHVybiByZXQ7DQo+
-ICsgICAgICAgICAgICAgICAgICAgICAgIGdvdG8gZXJyX2NsazsNCj4gICAgICAgICAgICAgICAg
-IH0NCj4gDQo+ICAgICAgICAgICAgICAgICByZXQgPSBkZXZtX3JlcXVlc3RfaXJxKCZwZGV2LT5k
-ZXYsIHR4aXJxLCBpbXhfdWFydF90eGludCwgMCwNCj4gQEAgLTI0NDQsNyArMjQ0Miw3IEBAIHN0
-YXRpYyBpbnQgaW14X3VhcnRfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCj4g
-ICAgICAgICAgICAgICAgIGlmIChyZXQpIHsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgZGV2
-X2VycigmcGRldi0+ZGV2LCAiZmFpbGVkIHRvIHJlcXVlc3QgdHggaXJxOiAlZFxuIiwNCj4gICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICByZXQpOw0KPiAtICAgICAgICAgICAgICAgICAg
-ICAgICByZXR1cm4gcmV0Ow0KPiArICAgICAgICAgICAgICAgICAgICAgICBnb3RvIGVycl9jbGs7
-DQo+ICAgICAgICAgICAgICAgICB9DQo+IA0KPiAgICAgICAgICAgICAgICAgcmV0ID0gZGV2bV9y
-ZXF1ZXN0X2lycSgmcGRldi0+ZGV2LCBydHNpcnEsIGlteF91YXJ0X3J0c2ludCwgMCwNCj4gQEAg
-LTI0NTIsMTQgKzI0NTAsMTQgQEAgc3RhdGljIGludCBpbXhfdWFydF9wcm9iZShzdHJ1Y3QgcGxh
-dGZvcm1fZGV2aWNlICpwZGV2KQ0KPiAgICAgICAgICAgICAgICAgaWYgKHJldCkgew0KPiAgICAg
-ICAgICAgICAgICAgICAgICAgICBkZXZfZXJyKCZwZGV2LT5kZXYsICJmYWlsZWQgdG8gcmVxdWVz
-dCBydHMgaXJxOiAlZFxuIiwNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICByZXQp
-Ow0KPiAtICAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gcmV0Ow0KPiArICAgICAgICAgICAg
-ICAgICAgICAgICBnb3RvIGVycl9jbGs7DQo+ICAgICAgICAgICAgICAgICB9DQo+ICAgICAgICAg
-fSBlbHNlIHsNCj4gICAgICAgICAgICAgICAgIHJldCA9IGRldm1fcmVxdWVzdF9pcnEoJnBkZXYt
-PmRldiwgcnhpcnEsIGlteF91YXJ0X2ludCwgMCwNCj4gICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgZGV2X25hbWUoJnBkZXYtPmRldiksIHNwb3J0KTsNCj4gICAgICAgICAg
-ICAgICAgIGlmIChyZXQpIHsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgZGV2X2VycigmcGRl
-di0+ZGV2LCAiZmFpbGVkIHRvIHJlcXVlc3QgaXJxOiAlZFxuIiwgcmV0KTsNCj4gLSAgICAgICAg
-ICAgICAgICAgICAgICAgcmV0dXJuIHJldDsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgZ290
-byBlcnJfY2xrOw0KPiAgICAgICAgICAgICAgICAgfQ0KPiAgICAgICAgIH0NCj4gDQo+IEBAIC0y
-NDY4LDYgKzI0NjYsMTAgQEAgc3RhdGljIGludCBpbXhfdWFydF9wcm9iZShzdHJ1Y3QgcGxhdGZv
-cm1fZGV2aWNlICpwZGV2KQ0KPiAgICAgICAgIHBsYXRmb3JtX3NldF9kcnZkYXRhKHBkZXYsIHNw
-b3J0KTsNCj4gDQo+ICAgICAgICAgcmV0dXJuIHVhcnRfYWRkX29uZV9wb3J0KCZpbXhfdWFydF91
-YXJ0X2RyaXZlciwgJnNwb3J0LT5wb3J0KTsNCj4gKw0KPiArZXJyX2NsazoNCj4gKyAgICAgICBj
-bGtfZGlzYWJsZV91bnByZXBhcmUoc3BvcnQtPmNsa19pcGcpOw0KPiArICAgICAgIHJldHVybiBy
-ZXQ7DQo+ICB9DQo+IA0KPiAgc3RhdGljIHZvaWQgaW14X3VhcnRfcmVtb3ZlKHN0cnVjdCBwbGF0
-Zm9ybV9kZXZpY2UgKnBkZXYpDQoNClJldmlld2VkLWJ5OiBDaHJpc3RvcGggTmllZGVybWFpZXIg
-PGNuaWVkZXJtYWllckBkaC1lbGVjdHJvbmljcy5jb20+DQoNClJlZ2FyZHMNCkNocmlzdG9waA0K
+Hi Hugo,
+
+kernel test robot noticed the following build warnings:
+
+[auto build test WARNING on d804987153e7bedf503f8e4ba649afe52cfd7f6d]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Hugo-Villeneuve/serial-sc16is7xx-fix-snprintf-format-specifier-in-sc16is7xx_regmap_name/20231201-031413
+base:   d804987153e7bedf503f8e4ba649afe52cfd7f6d
+patch link:    https://lore.kernel.org/r/20231130191050.3165862-8-hugo%40hugovil.com
+patch subject: [PATCH 7/7] serial: max310x: use separate regmap name for each port
+config: arm-randconfig-r081-20231201 (https://download.01.org/0day-ci/archive/20231206/202312062240.v39k99mQ-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 13.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231206/202312062240.v39k99mQ-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202312062240.v39k99mQ-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+   In function 'max310x_regmap_name',
+       inlined from 'max310x_i2c_probe' at drivers/tty/serial/max310x.c:1641:21:
+>> drivers/tty/serial/max310x.c:30:41: warning: '%u' directive output may be truncated writing between 1 and 10 bytes into a region of size 2 [-Wformat-truncation=]
+      30 | #define MAX310X_PORT_NAME_SUFFIX        "port"
+         |                                         ^~~~~~
+   drivers/tty/serial/max310x.c:1494:36: note: in expansion of macro 'MAX310X_PORT_NAME_SUFFIX'
+    1494 |         snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
+         |                                    ^~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/tty/serial/max310x.c: In function 'max310x_i2c_probe':
+   drivers/tty/serial/max310x.c:1494:62: note: format string is defined here
+    1494 |         snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
+         |                                                              ^~
+   In function 'max310x_regmap_name',
+       inlined from 'max310x_i2c_probe' at drivers/tty/serial/max310x.c:1641:21:
+   drivers/tty/serial/max310x.c:30:41: note: directive argument in the range [1, 4294967294]
+      30 | #define MAX310X_PORT_NAME_SUFFIX        "port"
+         |                                         ^~~~~~
+   drivers/tty/serial/max310x.c:1494:36: note: in expansion of macro 'MAX310X_PORT_NAME_SUFFIX'
+    1494 |         snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
+         |                                    ^~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/tty/serial/max310x.c:1494:9: note: 'snprintf' output between 6 and 15 bytes into a destination of size 6
+    1494 |         snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   In function 'max310x_regmap_name',
+       inlined from 'max310x_spi_probe' at drivers/tty/serial/max310x.c:1535:17:
+>> drivers/tty/serial/max310x.c:30:41: warning: '%u' directive output may be truncated writing between 1 and 10 bytes into a region of size 2 [-Wformat-truncation=]
+      30 | #define MAX310X_PORT_NAME_SUFFIX        "port"
+         |                                         ^~~~~~
+   drivers/tty/serial/max310x.c:1494:36: note: in expansion of macro 'MAX310X_PORT_NAME_SUFFIX'
+    1494 |         snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
+         |                                    ^~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/tty/serial/max310x.c: In function 'max310x_spi_probe':
+   drivers/tty/serial/max310x.c:1494:62: note: format string is defined here
+    1494 |         snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
+         |                                                              ^~
+   In function 'max310x_regmap_name',
+       inlined from 'max310x_spi_probe' at drivers/tty/serial/max310x.c:1535:17:
+   drivers/tty/serial/max310x.c:30:41: note: directive argument in the range [0, 4294967294]
+      30 | #define MAX310X_PORT_NAME_SUFFIX        "port"
+         |                                         ^~~~~~
+   drivers/tty/serial/max310x.c:1494:36: note: in expansion of macro 'MAX310X_PORT_NAME_SUFFIX'
+    1494 |         snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
+         |                                    ^~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/tty/serial/max310x.c:1494:9: note: 'snprintf' output between 6 and 15 bytes into a destination of size 6
+    1494 |         snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +30 drivers/tty/serial/max310x.c
+
+    28	
+    29	#define MAX310X_NAME			"max310x"
+  > 30	#define MAX310X_PORT_NAME_SUFFIX	"port"
+    31	#define MAX310X_MAJOR			204
+    32	#define MAX310X_MINOR			209
+    33	#define MAX310X_UART_NRMAX		16
+    34	#define MAX310X_MAX_PORTS		4 /* Maximum number of UART ports per IC. */
+    35	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
