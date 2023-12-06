@@ -1,87 +1,79 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9F713A8C9;
-	Wed,  6 Dec 2023 13:47:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Jd4z+QBc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48689C433C7;
-	Wed,  6 Dec 2023 13:47:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1701870444;
-	bh=pN7ek/mF4Oc2DQGrSxYppSDy2KSxkWe9q08aNujDOf0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Jd4z+QBc8VWOIMuZ7yOWg1WhiF/HO0ejs5m34x9xAZGHeqT9sds1JobDii52CWUNF
-	 K/Uv1RajgOejBlAW/B/n4/jO8ubSb5yP4v8tvLWGiXWX/4FCw40OtqtWKOmEbs8m5m
-	 Ynzs+yYj2LMtjNmlgg64T7JL7rwhkh13fA1b3W5QASdTvD+biyWdLtpehhZJwMywxT
-	 oSpr5j2d/PdYOG2WYdYCJ5x/pD97Ox0/qGeeIsoOBGQ3yN3npZRL+VZbGJ5VfFC1q2
-	 TwdXoVgukkE1CRGIKVEraeXTg/zOpeuq58A/zW0R5K43QHbENJbH9JASGFzZ0crlx9
-	 bLUwMEcTwMd7g==
-Date: Wed, 6 Dec 2023 13:47:19 +0000
-From: Lee Jones <lee@kernel.org>
-To: Florian Eckert <fe@dev.tdt.de>
-Cc: Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, pavel@ucw.cz, kabel@kernel.org,
-	u.kleine-koenig@pengutronix.de, m.brock@vanmierlo.com,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-leds@vger.kernel.org
-Subject: Re: [Patch v8 0/6] ledtrig-tty: add additional tty state evaluation
-Message-ID: <20231206134719.GF3375667@google.com>
-References: <20231109085038.371977-1-fe@dev.tdt.de>
- <170142723852.3350831.6373465907279189004.b4-ty@kernel.org>
- <8acd2694429af4f7205db7d7bb39eab6@dev.tdt.de>
+X-Greylist: delayed 535 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Dec 2023 05:53:10 PST
+Received: from rhlx01.hs-esslingen.de (rhlx01.hs-esslingen.de [129.143.116.10])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6BFC3;
+	Wed,  6 Dec 2023 05:53:10 -0800 (PST)
+Received: from lela.futurama.org (localhost.localdomain [IPv6:::1])
+	by rhlx01.hs-esslingen.de (Postfix) with ESMTP id A63DC28323F0;
+	Wed,  6 Dec 2023 14:44:13 +0100 (CET)
+Received: from dcbf.. (unknown [192.168.1.149])
+	by lela.futurama.org (Postfix) with ESMTP id 96C1E8032518;
+	Wed,  6 Dec 2023 14:44:13 +0100 (CET)
+From: Adrian Reber <areber@redhat.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Christian Brauner <brauner@kernel.org>
+Subject: [PATCH] tty: allow TIOCSLCKTRMIOS with CAP_CHECKPOINT_RESTORE
+Date: Wed,  6 Dec 2023 14:43:40 +0100
+Message-ID: <20231206134340.7093-1-areber@redhat.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <8acd2694429af4f7205db7d7bb39eab6@dev.tdt.de>
 
-On Fri, 01 Dec 2023, Florian Eckert wrote:
+The capability CAP_CHECKPOINT_RESTORE was introduced to allow non-root
+users to checkpoint and restore processes as non-root with CRIU.
 
-> 
-> 
-> On 2023-12-01 11:40, Lee Jones wrote:
-> > On Thu, 09 Nov 2023 09:50:32 +0100, Florian Eckert wrote:
-> > > Changes in v8:
-> > > ==============
-> > > - As requested by greg k-h [6], I have send the patch 2/7 of this
-> > > series
-> > >   about the memory leak also to stable.vger.kernel.org [7]. This has
-> > >   already received a 'Reviewed-by' from Uwe [8].
-> > > - As requested by Maarten, I have adopted his suggestion to invert
-> > > the LED
-> > >   blink, so that I do not have to save the 'state' in the tty data
-> > >   struct [9].
-> > > 
-> > > [...]
-> > 
-> > Applied, thanks!
-> > 
-> > [1/6] tty: add new helper function tty_get_tiocm
-> >       commit: 5d11a4709f552fa139c2439fead05daeb064a6f4
-> > [2/6] leds: ledtrig-tty: free allocated ttyname buffer on deactivate
-> >       (no commit info)
-> > [3/6] leds: ledtrig-tty: change logging if get icount failed
-> >       (no commit info)
-> > [4/6] leds: ledtrig-tty: replace mutex with completion
-> >       (no commit info)
-> > [5/6] leds: ledtrig-tty: make rx tx activitate configurable
-> >       (no commit info)
-> > [6/6] leds: ledtrig-tty: add additional line state evaluation
-> >       (no commit info)
-> 
-> I think that was a mistake? Patchset v9 is the correct patchset [1]?
-> 
-> Thanks for applying v9 [1]
+This change extends CAP_CHECKPOINT_RESTORE to enable the CRIU option
+'--shell-job' as non-root. CRIU's man-page describes the '--shell-job'
+option like this:
 
-It's automated.  Not sure what happened now.
+  Allow one to dump shell jobs. This implies the restored task will
+  inherit session and process group ID from the criu itself. This option
+  also allows to migrate a single external tty connection, to migrate
+  applications like top.
 
-Please check to ensure the correct set was applied.
+TIOCSLCKTRMIOS can only be done if the process has CAP_SYS_ADMIN and
+this change extends it to CAP_SYS_ADMIN or CAP_CHECKPOINT_RESTORE.
 
+With this change it is possible to checkpoint and restore processes
+which have a tty connection as non-root if CAP_CHECKPOINT_RESTORE is
+set.
+
+Signed-off-by: Adrian Reber <areber@redhat.com>
+---
+ drivers/tty/tty_ioctl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+index 4b499301a3db..95d14d7128cc 100644
+--- a/drivers/tty/tty_ioctl.c
++++ b/drivers/tty/tty_ioctl.c
+@@ -844,7 +844,7 @@ int tty_mode_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
+ 			ret = -EFAULT;
+ 		return ret;
+ 	case TIOCSLCKTRMIOS:
+-		if (!capable(CAP_SYS_ADMIN))
++		if (!capable(CAP_SYS_ADMIN) && !capable(CAP_CHECKPOINT_RESTORE))
+ 			return -EPERM;
+ 		copy_termios_locked(real_tty, &kterm);
+ 		if (user_termios_to_kernel_termios(&kterm,
+@@ -861,7 +861,7 @@ int tty_mode_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
+ 			ret = -EFAULT;
+ 		return ret;
+ 	case TIOCSLCKTRMIOS:
+-		if (!capable(CAP_SYS_ADMIN))
++		if (!capable(CAP_SYS_ADMIN) && !capable(CAP_CHECKPOINT_RESTORE))
+ 			return -EPERM;
+ 		copy_termios_locked(real_tty, &kterm);
+ 		if (user_termios_to_kernel_termios_1(&kterm,
+
+base-commit: 98b1cc82c4affc16f5598d4fa14b1858671b2263
 -- 
-Lee Jones [李琼斯]
+2.43.0
+
