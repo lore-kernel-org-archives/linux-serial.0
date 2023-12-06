@@ -1,73 +1,91 @@
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4078B137;
-	Tue,  5 Dec 2023 23:51:40 -0800 (PST)
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-5d40c728fc4so5221417b3.1;
-        Tue, 05 Dec 2023 23:51:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701849099; x=1702453899;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NAg+9BHyrxAyD5/BLtZ2coySzLaaVB1t+5oX942gOa4=;
-        b=nYWJP+dVZBMFq+PT1JWjL3kEn6XBr1VOTtIAkzTTl3NFHc28l4uuuR4Khj1eiRGLzP
-         tkUP8aLYEuDjUhEAKL4EvrBsTIXeY1B+eLydZMkQavxZigmSOfOizXuYJGfPZbBOIPER
-         /FCtW0oZWFcMhAF3eE8UJ3vEFafEMsvDZgXwyTbvmppcRwe2HVKXqOU4c0dH+DvQ0slG
-         Z3ilftm5oT1GlPoH5/3PEVgQvo0mKo46lM4JX777K2YSymGlYaSMi49Subse9jutZEvk
-         aRVZNSmh0jnpaMSAi6+qT2KXLHos5Grysb++QTBO2Or4bhvokekE5nrfSWXRfGPb8RuO
-         hlow==
-X-Gm-Message-State: AOJu0Yz86+N+io7kgn6RoLiq5KkzctXwKH2bmp/axK5GBgGbzeQ2pHeu
-	Z2OIEfJH8x/PlM99WT8o9jDsVlFT8ryA1g==
-X-Google-Smtp-Source: AGHT+IFfvzHO1K/OUOXmq9Uo39/Oh0mcm/9oCYduxSVLB/+ZyeOyIbwA/TkSXE6Esxf+4w30BIsoQA==
-X-Received: by 2002:a05:690c:d83:b0:5d9:3d8e:59e7 with SMTP id da3-20020a05690c0d8300b005d93d8e59e7mr2098726ywb.45.1701849099221;
-        Tue, 05 Dec 2023 23:51:39 -0800 (PST)
-Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
-        by smtp.gmail.com with ESMTPSA id s12-20020a81bf4c000000b005dd004432a3sm118089ywk.137.2023.12.05.23.51.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Dec 2023 23:51:39 -0800 (PST)
-Received: by mail-yb1-f170.google.com with SMTP id 3f1490d57ef6-db548da6e3bso539075276.0;
-        Tue, 05 Dec 2023 23:51:39 -0800 (PST)
-X-Received: by 2002:a25:1846:0:b0:db5:4523:cd1a with SMTP id
- 67-20020a251846000000b00db54523cd1amr327760yby.17.1701849098839; Tue, 05 Dec
- 2023 23:51:38 -0800 (PST)
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7141112E49
+	for <linux-serial@vger.kernel.org>; Wed,  6 Dec 2023 08:09:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V+DDbMBP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0877DC433C8;
+	Wed,  6 Dec 2023 08:08:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1701850140;
+	bh=dbaCGgIHqNo8yZQRScnnf4gBHa499emj86x/EkqbO/w=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=V+DDbMBPoM0fGmXfCIj0JkmfrfPa/SphYYlAmjkW/jxPEzVI5S13EMHbvhHINZMdj
+	 zVgvI/lJdxtYTh7FevhIk3e0Z+9rv7OmwinbmzIi0EHq2fJMyHcRZSBX8NaBQfnEs+
+	 TBAbaam4eFEAXrtOUzBKHIxAD7RcSo1a39zr4igBm1gqJB2CRyR1teBPl04dZcJyTs
+	 era9Iu/qf6H0sRhLAzQ1Wjoqcf6O23/7CA/fpmCuWqgcNKlyOtC4KJLUdOT+wEeVSJ
+	 8Cyl/CaA7vKm7Uf1FzHsFb8zUNwCgbBaxZDfBUDmdsl6WoMnb8t4R0XUXAZuuKgVe7
+	 rGRTNsvTMDYyQ==
+Received: from johan by xi.lan with local (Exim 4.96.2)
+	(envelope-from <johan@kernel.org>)
+	id 1rAmyY-0006ae-28;
+	Wed, 06 Dec 2023 09:09:46 +0100
+Date: Wed, 6 Dec 2023 09:09:46 +0100
+From: Johan Hovold <johan@kernel.org>
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 23/27] tty: serdev: convert to u8 and size_t
+Message-ID: <ZXAsSjFzBaBdqJSg@hovoldconsulting.com>
+References: <20231206073712.17776-1-jirislaby@kernel.org>
+ <20231206073712.17776-24-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20231206073712.17776-1-jirislaby@kernel.org> <20231206073712.17776-15-jirislaby@kernel.org>
-In-Reply-To: <20231206073712.17776-15-jirislaby@kernel.org>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 6 Dec 2023 08:51:27 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWDzGyfOtfhj5-shCZJZmfZAxiTazUk7Ojt1ZvHFbvzDg@mail.gmail.com>
-Message-ID: <CAMuHMdWDzGyfOtfhj5-shCZJZmfZAxiTazUk7Ojt1ZvHFbvzDg@mail.gmail.com>
-Subject: Re: [PATCH 14/27] tty: m68k: nfcon: convert to u8 and size_t
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231206073712.17776-24-jirislaby@kernel.org>
 
-On Wed, Dec 6, 2023 at 8:37=E2=80=AFAM Jiri Slaby (SUSE) <jirislaby@kernel.=
-org> wrote:
+On Wed, Dec 06, 2023 at 08:37:08AM +0100, Jiri Slaby wrote:
 > Switch character types to u8 and sizes to size_t. To conform to
 > characters/sizes in the rest of the tty layer.
 >
+> This patch converts struct serdev_device_ops hooks and its
+> instantiations.
+> 
 > Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Cc: Rob Herring <robh@kernel.org>
+> ---
+  
+> diff --git a/drivers/gnss/serial.c b/drivers/gnss/serial.c
+> index 5d8e9bfb24d0..baa956494e79 100644
+> --- a/drivers/gnss/serial.c
+> +++ b/drivers/gnss/serial.c
+> @@ -80,8 +80,8 @@ static const struct gnss_operations gnss_serial_gnss_ops = {
+>  	.write_raw	= gnss_serial_write_raw,
+>  };
+>  
+> -static int gnss_serial_receive_buf(struct serdev_device *serdev,
+> -					const unsigned char *buf, size_t count)
+> +static ssize_t gnss_serial_receive_buf(struct serdev_device *serdev,
+> +				       const u8 *buf, size_t count)
+>  {
+>  	struct gnss_serial *gserial = serdev_device_get_drvdata(serdev);
+>  	struct gnss_device *gdev = gserial->gdev;
+> diff --git a/drivers/gnss/sirf.c b/drivers/gnss/sirf.c
+> index bcb53ccfee4d..6801a8fb2040 100644
+> --- a/drivers/gnss/sirf.c
+> +++ b/drivers/gnss/sirf.c
+> @@ -160,8 +160,8 @@ static const struct gnss_operations sirf_gnss_ops = {
+>  	.write_raw	= sirf_write_raw,
+>  };
+>  
+> -static int sirf_receive_buf(struct serdev_device *serdev,
+> -				const unsigned char *buf, size_t count)
+> +static ssize_t sirf_receive_buf(struct serdev_device *serdev,
+> +				const u8 *buf, size_t count)
+>  {
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+The gnss subsystem consistently use tabs-only for indentation of
+continuation lines so please don't change the indentation for these
+files.
 
-Gr{oetje,eeting}s,
+With that fixed:
 
-                        Geert
+Acked-by: Johan Hovold <johan@kernel.org>
 
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+Johan
