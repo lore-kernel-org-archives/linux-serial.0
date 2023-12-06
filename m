@@ -1,94 +1,116 @@
-Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3A2C6
-	for <linux-serial@vger.kernel.org>; Wed,  6 Dec 2023 05:57:23 -0800 (PST)
-Received: from [127.0.0.1] (helo=localhost)
-	by relay.expurgate.net with smtp (Exim 4.92)
-	(envelope-from <prvs=1718b185fc=fe@dev.tdt.de>)
-	id 1rAsOw-00BDnO-0D
-	for linux-serial@vger.kernel.org; Wed, 06 Dec 2023 14:57:22 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-	by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <fe@dev.tdt.de>)
-	id 1rAsOv-008UKz-Kc
-	for linux-serial@vger.kernel.org; Wed, 06 Dec 2023 14:57:21 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-	by securemail.tdt.de (Postfix) with ESMTP id 574A8240049
-	for <linux-serial@vger.kernel.org>; Wed,  6 Dec 2023 14:57:21 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-	by securemail.tdt.de (Postfix) with ESMTP id 0FAD2240040;
-	Wed,  6 Dec 2023 14:57:21 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-	by mail.dev.tdt.de (Postfix) with ESMTP id 832A534045;
-	Wed,  6 Dec 2023 14:57:20 +0100 (CET)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="Dgy66UJo"
+Received: from mx3.securetransport.de (mx3.securetransport.de [116.203.31.6])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A925181
+	for <linux-serial@vger.kernel.org>; Wed,  6 Dec 2023 06:08:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
+	s=dhelectronicscom; t=1701871633;
+	bh=M7/Rk8/oEfL7Jbs2IoBgeZqHY43eDAp8kTRQc2bswIo=;
+	h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+	b=Dgy66UJo69I/xmcATv8g363vbsnEUn8esMUo7/kLOkk3MbZ0TtrGFJojtTaSPBaO+
+	 sh51B6zV3s66FKpGXKdh8/J/t+3RZu/PdiNLsqtzj5K7GIEBd9IZirrZJ92SYhf7yF
+	 2PgyrK0qDKd3rVV8kKTqwq/0LWdS8NF+bu3hIV5cNozFs8F7U5FSPawiuceBov6c8C
+	 eVum1ktdT51crGpf4qe43cGmDAaHo5U7TFJ/oQmed6TYUvXvIYv89vN6FCuJfxbgiQ
+	 6Xjaq5LSirKFq0U5Z4XV51FCqmNFHO9Q9lAzZPzUvBKVm37Hy+CtNepLUNYByJZIz6
+	 2OGQT0murjR6g==
+X-secureTransport-forwarded: yes
+From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Complaints-To: abuse@cubewerk.de
+To: Marek Vasut <marex@denx.de>, "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>
+CC: =?utf-8?B?SWxwbyBKw6RydmluZW4=?= <ilpo.jarvinen@linux.intel.com>,
+	=?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, "Fabio
+ Estevam" <festevam@gmail.com>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, "NXP Linux
+ Team" <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Rob Herring <robh@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, "Sergey
+ Organov" <sorganov@gmail.com>, Shawn Guo <shawnguo@kernel.org>, "Thomas
+ Gleixner" <tglx@linutronix.de>, Tom Rix <trix@redhat.com>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Subject: RE: [PATCH] serial: imx: Fix clock imbalance
+Thread-Topic: [PATCH] serial: imx: Fix clock imbalance
+Thread-Index: AQHaJxVHUL44jWWjHkC7yfN2GhtoqLCcS7iA
+Date: Wed, 6 Dec 2023 14:06:56 +0000
+Message-ID: <bd165a300edc44c09d078d1e778ddfe9@dh-electronics.com>
+References: <20231205005108.79782-1-marex@denx.de>
+In-Reply-To: <20231205005108.79782-1-marex@denx.de>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date: Wed, 06 Dec 2023 14:57:20 +0100
-From: Florian Eckert <fe@dev.tdt.de>
-To: Lee Jones <lee@kernel.org>
-Cc: Eckert.Florian@googlemail.com, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, pavel@ucw.cz, kabel@kernel.org,
- u.kleine-koenig@pengutronix.de, m.brock@vanmierlo.com,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-leds@vger.kernel.org
-Subject: Re: [Patch v8 0/6] ledtrig-tty: add additional tty state evaluation
-In-Reply-To: <20231206134719.GF3375667@google.com>
-References: <20231109085038.371977-1-fe@dev.tdt.de>
- <170142723852.3350831.6373465907279189004.b4-ty@kernel.org>
- <8acd2694429af4f7205db7d7bb39eab6@dev.tdt.de>
- <20231206134719.GF3375667@google.com>
-Message-ID: <e69d088b1aedfef330eace35699670c6@dev.tdt.de>
-X-Sender: fe@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.17
-X-purgate: clean
-X-purgate-ID: 151534::1701871041-6D0F3018-9CFB4300/0/0
-X-purgate-type: clean
 
-
-
-On 2023-12-06 14:47, Lee Jones wrote:
-> On Fri, 01 Dec 2023, Florian Eckert wrote:
->> On 2023-12-01 11:40, Lee Jones wrote:
-
->> > Applied, thanks!
->> >
->> > [1/6] tty: add new helper function tty_get_tiocm
->> >       commit: 5d11a4709f552fa139c2439fead05daeb064a6f4
->> > [2/6] leds: ledtrig-tty: free allocated ttyname buffer on deactivate
->> >       (no commit info)
->> > [3/6] leds: ledtrig-tty: change logging if get icount failed
->> >       (no commit info)
->> > [4/6] leds: ledtrig-tty: replace mutex with completion
->> >       (no commit info)
->> > [5/6] leds: ledtrig-tty: make rx tx activitate configurable
->> >       (no commit info)
->> > [6/6] leds: ledtrig-tty: add additional line state evaluation
->> >       (no commit info)
->> 
->> I think that was a mistake? Patchset v9 is the correct patchset [1]?
->> 
->> Thanks for applying v9 [1]
-> 
-> It's automated.  Not sure what happened now.
-> 
-> Please check to ensure the correct set was applied.
-
-I have checked that v9 is appled to the branch for-leds-next [1].
-I can confirm that v9 patchset is applied there.
-
-Thanks
-
-Best regards
-
-Florian
-
-Links:
-[1] 
-https://git.kernel.org/pub/scm/linux/kernel/git/lee/leds.git/log/?h=for-leds-next
+RnJvbTogbGludXgtYXJtLWtlcm5lbCBbbWFpbHRvOmxpbnV4LWFybS1rZXJuZWwtYm91bmNlc0Bs
+aXN0cy5pbmZyYWRlYWQub3JnXSBPbiBCZWhhbGYgT2YgTWFyZWsgVmFzdXQNClNlbnQ6IFR1ZXNk
+YXksIERlY2VtYmVyIDUsIDIwMjMgMTo1MSBBTQ0KPiBEaXNhYmxlIGFuZCB1bnByZXBhcmUgdGhl
+IGNsb2NrIG9uIGV2ZXJ5IGV4aXQgZnJvbSBwcm9iZSBmdW5jdGlvbg0KPiBhZnRlciB0aGUgY2xv
+Y2sgd2VyZSBwcmVwYXJlZCBhbmQgZW5hYmxlZCB0byBhdm9pZCBlbmFibGUvZGlzYWJsZQ0KPiBp
+bWJhbGFuY2UuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBNYXJlayBWYXN1dCA8bWFyZXhAZGVueC5k
+ZT4NCj4gLS0tDQo+IENjOiAiSWxwbyBKw6RydmluZW4iIDxpbHBvLmphcnZpbmVuQGxpbnV4Lmlu
+dGVsLmNvbT4NCj4gQ2M6ICJVd2UgS2xlaW5lLUvDtm5pZyIgPHUua2xlaW5lLWtvZW5pZ0BwZW5n
+dXRyb25peC5kZT4NCj4gQ2M6IEZhYmlvIEVzdGV2YW0gPGZlc3RldmFtQGdtYWlsLmNvbT4NCj4g
+Q2M6IEdyZWcgS3JvYWgtSGFydG1hbiA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+DQo+IENj
+OiBKaXJpIFNsYWJ5IDxqaXJpc2xhYnlAa2VybmVsLm9yZz4NCj4gQ2M6IE5YUCBMaW51eCBUZWFt
+IDxsaW51eC1pbXhAbnhwLmNvbT4NCj4gQ2M6IFBlbmd1dHJvbml4IEtlcm5lbCBUZWFtIDxrZXJu
+ZWxAcGVuZ3V0cm9uaXguZGU+DQo+IENjOiBSb2IgSGVycmluZyA8cm9iaEBrZXJuZWwub3JnPg0K
+PiBDYzogU2FzY2hhIEhhdWVyIDxzLmhhdWVyQHBlbmd1dHJvbml4LmRlPg0KPiBDYzogU2VyZ2V5
+IE9yZ2Fub3YgPHNvcmdhbm92QGdtYWlsLmNvbT4NCj4gQ2M6IFNoYXduIEd1byA8c2hhd25ndW9A
+a2VybmVsLm9yZz4NCj4gQ2M6IFRob21hcyBHbGVpeG5lciA8dGdseEBsaW51dHJvbml4LmRlPg0K
+PiBDYzogVG9tIFJpeCA8dHJpeEByZWRoYXQuY29tPg0KPiBDYzogbGludXgtYXJtLWtlcm5lbEBs
+aXN0cy5pbmZyYWRlYWQub3JnDQo+IENjOiBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnDQo+
+IC0tLQ0KPiAgZHJpdmVycy90dHkvc2VyaWFsL2lteC5jIHwgMTggKysrKysrKysrKy0tLS0tLS0t
+DQo+ICAxIGZpbGUgY2hhbmdlZCwgMTAgaW5zZXJ0aW9ucygrKSwgOCBkZWxldGlvbnMoLSkNCj4g
+DQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMgYi9kcml2ZXJzL3R0eS9z
+ZXJpYWwvaW14LmMNCj4gaW5kZXggNTJkZDhhNmI4NzYwMy4uMWNjZTY2ZTVkMDVkOCAxMDA2NDQN
+Cj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jDQo+ICsrKyBiL2RyaXZlcnMvdHR5L3Nl
+cmlhbC9pbXguYw0KPiBAQCAtMjMzMiwxMCArMjMzMiw4IEBAIHN0YXRpYyBpbnQgaW14X3VhcnRf
+cHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCj4gICAgICAgICB9DQo+IA0KPiAg
+ICAgICAgIHJldCA9IHVhcnRfZ2V0X3JzNDg1X21vZGUoJnNwb3J0LT5wb3J0KTsNCj4gLSAgICAg
+ICBpZiAocmV0KSB7DQo+IC0gICAgICAgICAgICAgICBjbGtfZGlzYWJsZV91bnByZXBhcmUoc3Bv
+cnQtPmNsa19pcGcpOw0KPiAtICAgICAgICAgICAgICAgcmV0dXJuIHJldDsNCj4gLSAgICAgICB9
+DQo+ICsgICAgICAgaWYgKHJldCkNCj4gKyAgICAgICAgICAgICAgIGdvdG8gZXJyX2NsazsNCj4g
+DQo+ICAgICAgICAgaWYgKHNwb3J0LT5wb3J0LnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJM
+RUQgJiYNCj4gICAgICAgICAgICAgKCFzcG9ydC0+aGF2ZV9ydHNjdHMgJiYgIXNwb3J0LT5oYXZl
+X3J0c2dwaW8pKQ0KPiBAQCAtMjQzNiw3ICsyNDM0LDcgQEAgc3RhdGljIGludCBpbXhfdWFydF9w
+cm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPiAgICAgICAgICAgICAgICAgaWYg
+KHJldCkgew0KPiAgICAgICAgICAgICAgICAgICAgICAgICBkZXZfZXJyKCZwZGV2LT5kZXYsICJm
+YWlsZWQgdG8gcmVxdWVzdCByeCBpcnE6ICVkXG4iLA0KPiAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIHJldCk7DQo+IC0gICAgICAgICAgICAgICAgICAgICAgIHJldHVybiByZXQ7DQo+
+ICsgICAgICAgICAgICAgICAgICAgICAgIGdvdG8gZXJyX2NsazsNCj4gICAgICAgICAgICAgICAg
+IH0NCj4gDQo+ICAgICAgICAgICAgICAgICByZXQgPSBkZXZtX3JlcXVlc3RfaXJxKCZwZGV2LT5k
+ZXYsIHR4aXJxLCBpbXhfdWFydF90eGludCwgMCwNCj4gQEAgLTI0NDQsNyArMjQ0Miw3IEBAIHN0
+YXRpYyBpbnQgaW14X3VhcnRfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCj4g
+ICAgICAgICAgICAgICAgIGlmIChyZXQpIHsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgZGV2
+X2VycigmcGRldi0+ZGV2LCAiZmFpbGVkIHRvIHJlcXVlc3QgdHggaXJxOiAlZFxuIiwNCj4gICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICByZXQpOw0KPiAtICAgICAgICAgICAgICAgICAg
+ICAgICByZXR1cm4gcmV0Ow0KPiArICAgICAgICAgICAgICAgICAgICAgICBnb3RvIGVycl9jbGs7
+DQo+ICAgICAgICAgICAgICAgICB9DQo+IA0KPiAgICAgICAgICAgICAgICAgcmV0ID0gZGV2bV9y
+ZXF1ZXN0X2lycSgmcGRldi0+ZGV2LCBydHNpcnEsIGlteF91YXJ0X3J0c2ludCwgMCwNCj4gQEAg
+LTI0NTIsMTQgKzI0NTAsMTQgQEAgc3RhdGljIGludCBpbXhfdWFydF9wcm9iZShzdHJ1Y3QgcGxh
+dGZvcm1fZGV2aWNlICpwZGV2KQ0KPiAgICAgICAgICAgICAgICAgaWYgKHJldCkgew0KPiAgICAg
+ICAgICAgICAgICAgICAgICAgICBkZXZfZXJyKCZwZGV2LT5kZXYsICJmYWlsZWQgdG8gcmVxdWVz
+dCBydHMgaXJxOiAlZFxuIiwNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICByZXQp
+Ow0KPiAtICAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gcmV0Ow0KPiArICAgICAgICAgICAg
+ICAgICAgICAgICBnb3RvIGVycl9jbGs7DQo+ICAgICAgICAgICAgICAgICB9DQo+ICAgICAgICAg
+fSBlbHNlIHsNCj4gICAgICAgICAgICAgICAgIHJldCA9IGRldm1fcmVxdWVzdF9pcnEoJnBkZXYt
+PmRldiwgcnhpcnEsIGlteF91YXJ0X2ludCwgMCwNCj4gICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgZGV2X25hbWUoJnBkZXYtPmRldiksIHNwb3J0KTsNCj4gICAgICAgICAg
+ICAgICAgIGlmIChyZXQpIHsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgZGV2X2VycigmcGRl
+di0+ZGV2LCAiZmFpbGVkIHRvIHJlcXVlc3QgaXJxOiAlZFxuIiwgcmV0KTsNCj4gLSAgICAgICAg
+ICAgICAgICAgICAgICAgcmV0dXJuIHJldDsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgZ290
+byBlcnJfY2xrOw0KPiAgICAgICAgICAgICAgICAgfQ0KPiAgICAgICAgIH0NCj4gDQo+IEBAIC0y
+NDY4LDYgKzI0NjYsMTAgQEAgc3RhdGljIGludCBpbXhfdWFydF9wcm9iZShzdHJ1Y3QgcGxhdGZv
+cm1fZGV2aWNlICpwZGV2KQ0KPiAgICAgICAgIHBsYXRmb3JtX3NldF9kcnZkYXRhKHBkZXYsIHNw
+b3J0KTsNCj4gDQo+ICAgICAgICAgcmV0dXJuIHVhcnRfYWRkX29uZV9wb3J0KCZpbXhfdWFydF91
+YXJ0X2RyaXZlciwgJnNwb3J0LT5wb3J0KTsNCj4gKw0KPiArZXJyX2NsazoNCj4gKyAgICAgICBj
+bGtfZGlzYWJsZV91bnByZXBhcmUoc3BvcnQtPmNsa19pcGcpOw0KPiArICAgICAgIHJldHVybiBy
+ZXQ7DQo+ICB9DQo+IA0KPiAgc3RhdGljIHZvaWQgaW14X3VhcnRfcmVtb3ZlKHN0cnVjdCBwbGF0
+Zm9ybV9kZXZpY2UgKnBkZXYpDQoNClJldmlld2VkLWJ5OiBDaHJpc3RvcGggTmllZGVybWFpZXIg
+PGNuaWVkZXJtYWllckBkaC1lbGVjdHJvbmljcy5jb20+DQoNClJlZ2FyZHMNCkNocmlzdG9waA0K
