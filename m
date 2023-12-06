@@ -1,135 +1,143 @@
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KuMuNc67"
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6462AD4B;
-	Wed,  6 Dec 2023 06:23:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701872622; x=1733408622;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pp3OioeXpZho5+76nSTlDa8kUCjyMjUIKd1pp/K2V+4=;
-  b=KuMuNc67gviEh+McSD+gFX+KTHjlwHyHVW6c/3Wh2Jj9izRFe6i8/14k
-   ZT+P91+n8z8iRKVUampmC+q3AKOSE3e28/69mTroMPDtz+JDhiI4weAFs
-   7h399aYLWcOTJG6rbvuQnJssge7IRi1k8lLuzAAEzg/CeUT6/vWYEtNci
-   u3T1Blhl9zGtnyJ8+f0aiGlACgnliQStNkcqpOQXmUFG0rtAOPOx0LVT1
-   zL8kCmtALj5kLgPX8j/5jFGxdC8H8duKDgd/7RdzzFY8qno/7KWd8G9Ia
-   zQ37VZsPR4Qlp3ONDfjE0/nJJE7PAt5XGkTLZJ3ImHgJbixSoHeA8ks/W
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10916"; a="396856497"
-X-IronPort-AV: E=Sophos;i="6.04,255,1695711600"; 
-   d="scan'208";a="396856497"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2023 06:23:42 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.04,255,1695711600"; 
-   d="scan'208";a="19337371"
-Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
-  by orviesa001.jf.intel.com with ESMTP; 06 Dec 2023 06:23:40 -0800
-Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rAsoK-000Auk-0I;
-	Wed, 06 Dec 2023 14:23:36 +0000
-Date: Wed, 6 Dec 2023 22:22:06 +0800
-From: kernel test robot <lkp@intel.com>
-To: Hugo Villeneuve <hugo@hugovil.com>, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, hvilleneuve@dimonoff.com
-Cc: oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, hugo@hugovil.com
-Subject: Re: [PATCH 7/7] serial: max310x: use separate regmap name for each
- port
-Message-ID: <202312062240.v39k99mQ-lkp@intel.com>
-References: <20231130191050.3165862-8-hugo@hugovil.com>
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0641BD
+	for <linux-serial@vger.kernel.org>; Wed,  6 Dec 2023 06:29:07 -0800 (PST)
+Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
+	by metis.whiteo.stw.pengutronix.de with esmtp (Exim 4.92)
+	(envelope-from <a.fatoum@pengutronix.de>)
+	id 1rAstd-0005zm-Ee; Wed, 06 Dec 2023 15:29:05 +0100
+Message-ID: <243633d4-78b9-4de6-83a9-3d2d4343a24f@pengutronix.de>
+Date: Wed, 6 Dec 2023 15:29:01 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231130191050.3165862-8-hugo@hugovil.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: imx: Fix clock imbalance
+Content-Language: en-US
+To: Marek Vasut <marex@denx.de>, linux-serial@vger.kernel.org
+Cc: Rob Herring <robh@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Sascha Hauer <s.hauer@pengutronix.de>, Tom Rix <trix@redhat.com>,
+ Shawn Guo <shawnguo@kernel.org>, Sergey Organov <sorganov@gmail.com>,
+ NXP Linux Team <linux-imx@nxp.com>,
+ Pengutronix Kernel Team <kernel@pengutronix.de>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Thomas Gleixner <tglx@linutronix.de>, Fabio Estevam <festevam@gmail.com>,
+ linux-arm-kernel@lists.infradead.org
+References: <20231205005108.79782-1-marex@denx.de>
+From: Ahmad Fatoum <a.fatoum@pengutronix.de>
+In-Reply-To: <20231205005108.79782-1-marex@denx.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
+X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 
-Hi Hugo,
+Hello Marek,
 
-kernel test robot noticed the following build warnings:
+On 05.12.23 01:50, Marek Vasut wrote:
+> Disable and unprepare the clock on every exit from probe function
+> after the clock were prepared and enabled to avoid enable/disable
+> imbalance.
 
-[auto build test WARNING on d804987153e7bedf503f8e4ba649afe52cfd7f6d]
+Why not switch the probe function to use devm_clk_get_enabled() instead?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Hugo-Villeneuve/serial-sc16is7xx-fix-snprintf-format-specifier-in-sc16is7xx_regmap_name/20231201-031413
-base:   d804987153e7bedf503f8e4ba649afe52cfd7f6d
-patch link:    https://lore.kernel.org/r/20231130191050.3165862-8-hugo%40hugovil.com
-patch subject: [PATCH 7/7] serial: max310x: use separate regmap name for each port
-config: arm-randconfig-r081-20231201 (https://download.01.org/0day-ci/archive/20231206/202312062240.v39k99mQ-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 13.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231206/202312062240.v39k99mQ-lkp@intel.com/reproduce)
+Cheers,
+Ahmad
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202312062240.v39k99mQ-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
-   In function 'max310x_regmap_name',
-       inlined from 'max310x_i2c_probe' at drivers/tty/serial/max310x.c:1641:21:
->> drivers/tty/serial/max310x.c:30:41: warning: '%u' directive output may be truncated writing between 1 and 10 bytes into a region of size 2 [-Wformat-truncation=]
-      30 | #define MAX310X_PORT_NAME_SUFFIX        "port"
-         |                                         ^~~~~~
-   drivers/tty/serial/max310x.c:1494:36: note: in expansion of macro 'MAX310X_PORT_NAME_SUFFIX'
-    1494 |         snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
-         |                                    ^~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/tty/serial/max310x.c: In function 'max310x_i2c_probe':
-   drivers/tty/serial/max310x.c:1494:62: note: format string is defined here
-    1494 |         snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
-         |                                                              ^~
-   In function 'max310x_regmap_name',
-       inlined from 'max310x_i2c_probe' at drivers/tty/serial/max310x.c:1641:21:
-   drivers/tty/serial/max310x.c:30:41: note: directive argument in the range [1, 4294967294]
-      30 | #define MAX310X_PORT_NAME_SUFFIX        "port"
-         |                                         ^~~~~~
-   drivers/tty/serial/max310x.c:1494:36: note: in expansion of macro 'MAX310X_PORT_NAME_SUFFIX'
-    1494 |         snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
-         |                                    ^~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/tty/serial/max310x.c:1494:9: note: 'snprintf' output between 6 and 15 bytes into a destination of size 6
-    1494 |         snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In function 'max310x_regmap_name',
-       inlined from 'max310x_spi_probe' at drivers/tty/serial/max310x.c:1535:17:
->> drivers/tty/serial/max310x.c:30:41: warning: '%u' directive output may be truncated writing between 1 and 10 bytes into a region of size 2 [-Wformat-truncation=]
-      30 | #define MAX310X_PORT_NAME_SUFFIX        "port"
-         |                                         ^~~~~~
-   drivers/tty/serial/max310x.c:1494:36: note: in expansion of macro 'MAX310X_PORT_NAME_SUFFIX'
-    1494 |         snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
-         |                                    ^~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/tty/serial/max310x.c: In function 'max310x_spi_probe':
-   drivers/tty/serial/max310x.c:1494:62: note: format string is defined here
-    1494 |         snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
-         |                                                              ^~
-   In function 'max310x_regmap_name',
-       inlined from 'max310x_spi_probe' at drivers/tty/serial/max310x.c:1535:17:
-   drivers/tty/serial/max310x.c:30:41: note: directive argument in the range [0, 4294967294]
-      30 | #define MAX310X_PORT_NAME_SUFFIX        "port"
-         |                                         ^~~~~~
-   drivers/tty/serial/max310x.c:1494:36: note: in expansion of macro 'MAX310X_PORT_NAME_SUFFIX'
-    1494 |         snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
-         |                                    ^~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/tty/serial/max310x.c:1494:9: note: 'snprintf' output between 6 and 15 bytes into a destination of size 6
-    1494 |         snprintf(buf, sizeof(buf), MAX310X_PORT_NAME_SUFFIX "%u", port_id);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +30 drivers/tty/serial/max310x.c
-
-    28	
-    29	#define MAX310X_NAME			"max310x"
-  > 30	#define MAX310X_PORT_NAME_SUFFIX	"port"
-    31	#define MAX310X_MAJOR			204
-    32	#define MAX310X_MINOR			209
-    33	#define MAX310X_UART_NRMAX		16
-    34	#define MAX310X_MAX_PORTS		4 /* Maximum number of UART ports per IC. */
-    35	
+> 
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> ---
+> Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
+> Cc: "Uwe Kleine-König" <u.kleine-koenig@pengutronix.de>
+> Cc: Fabio Estevam <festevam@gmail.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jirislaby@kernel.org>
+> Cc: NXP Linux Team <linux-imx@nxp.com>
+> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+> Cc: Rob Herring <robh@kernel.org>
+> Cc: Sascha Hauer <s.hauer@pengutronix.de>
+> Cc: Sergey Organov <sorganov@gmail.com>
+> Cc: Shawn Guo <shawnguo@kernel.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Tom Rix <trix@redhat.com>
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-serial@vger.kernel.org
+> ---
+>  drivers/tty/serial/imx.c | 18 ++++++++++--------
+>  1 file changed, 10 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 52dd8a6b87603..1cce66e5d05d8 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -2332,10 +2332,8 @@ static int imx_uart_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	ret = uart_get_rs485_mode(&sport->port);
+> -	if (ret) {
+> -		clk_disable_unprepare(sport->clk_ipg);
+> -		return ret;
+> -	}
+> +	if (ret)
+> +		goto err_clk;
+>  
+>  	if (sport->port.rs485.flags & SER_RS485_ENABLED &&
+>  	    (!sport->have_rtscts && !sport->have_rtsgpio))
+> @@ -2436,7 +2434,7 @@ static int imx_uart_probe(struct platform_device *pdev)
+>  		if (ret) {
+>  			dev_err(&pdev->dev, "failed to request rx irq: %d\n",
+>  				ret);
+> -			return ret;
+> +			goto err_clk;
+>  		}
+>  
+>  		ret = devm_request_irq(&pdev->dev, txirq, imx_uart_txint, 0,
+> @@ -2444,7 +2442,7 @@ static int imx_uart_probe(struct platform_device *pdev)
+>  		if (ret) {
+>  			dev_err(&pdev->dev, "failed to request tx irq: %d\n",
+>  				ret);
+> -			return ret;
+> +			goto err_clk;
+>  		}
+>  
+>  		ret = devm_request_irq(&pdev->dev, rtsirq, imx_uart_rtsint, 0,
+> @@ -2452,14 +2450,14 @@ static int imx_uart_probe(struct platform_device *pdev)
+>  		if (ret) {
+>  			dev_err(&pdev->dev, "failed to request rts irq: %d\n",
+>  				ret);
+> -			return ret;
+> +			goto err_clk;
+>  		}
+>  	} else {
+>  		ret = devm_request_irq(&pdev->dev, rxirq, imx_uart_int, 0,
+>  				       dev_name(&pdev->dev), sport);
+>  		if (ret) {
+>  			dev_err(&pdev->dev, "failed to request irq: %d\n", ret);
+> -			return ret;
+> +			goto err_clk;
+>  		}
+>  	}
+>  
+> @@ -2468,6 +2466,10 @@ static int imx_uart_probe(struct platform_device *pdev)
+>  	platform_set_drvdata(pdev, sport);
+>  
+>  	return uart_add_one_port(&imx_uart_uart_driver, &sport->port);
+> +
+> +err_clk:
+> +	clk_disable_unprepare(sport->clk_ipg);
+> +	return ret;
+>  }
+>  
+>  static void imx_uart_remove(struct platform_device *pdev)
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
