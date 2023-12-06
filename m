@@ -1,98 +1,89 @@
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF97718D;
-	Wed,  6 Dec 2023 00:27:50 -0800 (PST)
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-5d3758fdd2eso65829367b3.0;
-        Wed, 06 Dec 2023 00:27:50 -0800 (PST)
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5B6AB;
+	Wed,  6 Dec 2023 00:29:11 -0800 (PST)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-5d34f8f211fso69924727b3.0;
+        Wed, 06 Dec 2023 00:29:11 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701851270; x=1702456070;
+        d=1e100.net; s=20230601; t=1701851350; x=1702456150;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=J96bjVl10/YZKpO0+pJdZW7wN1/H6wsxpMA2dwhuCto=;
-        b=XAynB3JCLszm0lxVYNuTjTlEcATT/a2lKcjWUIHgSh2fSrA1SLp6ZsCwPOqktu21Py
-         R78ahdnOX10qTPaB5LAZDlo4VQsvs6zwRCMVkSxb0BZoS6f8uyPZLShWImdPXEQDtzu3
-         zlWPzrw33NohyAWiRFxfHkYB8HlEkJoCMD8qu0DEuGG2ERMwVvYV0oUak7YP/bZkykxV
-         Y/LWEhJbbC64Nle/BVyJb4L8KmMdMgI2hpRym3/5Hx8vaLFta1SIZTIXfJVoYQm4qAvZ
-         cVmiNdwVBugOZqpF8sa5zHHGn3z0Ea6/vHAEdf+dWKXfeVZoT7N8JVmvnBVsQl8bDMmi
-         +5/g==
-X-Gm-Message-State: AOJu0YyXNilsgdZZY08iKrxGrJTBcuH8E5cYffJUqJCfIdp4RhOFzY8H
-	7RUsX9zPIPcudFBUnLIn2lSS9RPQy3C7EA==
-X-Google-Smtp-Source: AGHT+IHneFXRyXNRh2NBYGczFKqTsBrNrAOitW0M+o6QtQRxQ7aPsb+SxUOQZjh/m2xW36UHO2qnEg==
-X-Received: by 2002:a0d:eb0d:0:b0:5d7:1941:3576 with SMTP id u13-20020a0deb0d000000b005d719413576mr457636ywe.93.1701851269662;
-        Wed, 06 Dec 2023 00:27:49 -0800 (PST)
-Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com. [209.85.219.178])
-        by smtp.gmail.com with ESMTPSA id c6-20020a814e06000000b005d364adb887sm4689374ywb.26.2023.12.06.00.27.48
+        bh=QSTEGLqyRD15bhDdDT/pKQ6YzOXQHX8vZxpxtwEw3ng=;
+        b=Im9xdehDYC2ieoOPmyEIkeFSMm0vS+qPi+wndQZm0HZm+Pu5uIepcQFP+Pj8izKYyz
+         e0hzysARAv4pzlbGtpr8ba/zFMZRhx4asdsWxmM0chwr+wsw0ykjnT1b/oQ64Fqq/TQa
+         13JYL/gdZWZUptIYcdJPpEImq3x9GRGcgXvbqnP7m548rzNvPOPfkRziYpHAE2OgQ+Ft
+         VBhKfp2ORKAllrD+45v8CVmqDpVM+xo+C+nNjffo+XjkISQr6anqQaeYSsJs8DOSE8Io
+         pvV/A+4NvCynLka/Lp5TiAM65gfluqCQUkUBkC00kgPpesA+hOxqFUb0Q9pocGjpV8oI
+         4kHw==
+X-Gm-Message-State: AOJu0YzG4C3GF6Skd1fb7U5JWQxVmCRz1E1Wf1PqADAGV72Znl2d7DuC
+	r1s33wg3DpuKSdp9SCRuZtc4yq3IXP7uVA==
+X-Google-Smtp-Source: AGHT+IF+CWhBF7IYQQshhdsRjuCXoK3e3vGq1P2gLL75NMz9RxGuCABZ6ahow4BsdAy7P1weiE7mLA==
+X-Received: by 2002:a81:c909:0:b0:59f:4bc3:3e9 with SMTP id o9-20020a81c909000000b0059f4bc303e9mr399627ywi.46.1701851350291;
+        Wed, 06 Dec 2023 00:29:10 -0800 (PST)
+Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com. [209.85.219.181])
+        by smtp.gmail.com with ESMTPSA id l6-20020a0dc906000000b005add997ae53sm3868842ywd.81.2023.12.06.00.29.09
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Dec 2023 00:27:49 -0800 (PST)
-Received: by mail-yb1-f178.google.com with SMTP id 3f1490d57ef6-da077db5145so4339070276.0;
-        Wed, 06 Dec 2023 00:27:48 -0800 (PST)
-X-Received: by 2002:a25:6607:0:b0:db7:dad0:76ac with SMTP id
- a7-20020a256607000000b00db7dad076acmr407887ybc.72.1701851268359; Wed, 06 Dec
- 2023 00:27:48 -0800 (PST)
+        Wed, 06 Dec 2023 00:29:09 -0800 (PST)
+Received: by mail-yb1-f181.google.com with SMTP id 3f1490d57ef6-da819902678so4625090276.1;
+        Wed, 06 Dec 2023 00:29:09 -0800 (PST)
+X-Received: by 2002:a25:a383:0:b0:db6:1cb0:7754 with SMTP id
+ e3-20020a25a383000000b00db61cb07754mr421927ybi.59.1701851349599; Wed, 06 Dec
+ 2023 00:29:09 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20231206073712.17776-1-jirislaby@kernel.org> <20231206073712.17776-5-jirislaby@kernel.org>
-In-Reply-To: <20231206073712.17776-5-jirislaby@kernel.org>
+References: <20231206073712.17776-1-jirislaby@kernel.org> <20231206073712.17776-7-jirislaby@kernel.org>
+In-Reply-To: <20231206073712.17776-7-jirislaby@kernel.org>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 6 Dec 2023 09:27:36 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdU4_==x7efMMOmxm3L4vZeWGeeWNo2bQ8Pv1wWx7246gQ@mail.gmail.com>
-Message-ID: <CAMuHMdU4_==x7efMMOmxm3L4vZeWGeeWNo2bQ8Pv1wWx7246gQ@mail.gmail.com>
-Subject: Re: [PATCH 04/27] tty: make tty_operations::send_xchar accept u8 char
+Date: Wed, 6 Dec 2023 09:28:58 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVcCpDJcBzf_g21AWfHON7=HtT+yBs--uL34UJpVRAW_Q@mail.gmail.com>
+Message-ID: <CAMuHMdVcCpDJcBzf_g21AWfHON7=HtT+yBs--uL34UJpVRAW_Q@mail.gmail.com>
+Subject: Re: [PATCH 06/27] tty: ami: use u8 for characters and flag
 To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Karsten Keil <isdn@linux-pingi.de>, 
-	Ulf Hansson <ulf.hansson@linaro.org>, Marcel Holtmann <marcel@holtmann.org>, 
-	Johan Hedberg <johan.hedberg@gmail.com>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, netdev@vger.kernel.org, 
-	linux-mmc@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
-	linux-m68k <linux-m68k@lists.linux-m68k.org>
+	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-CC linux-m68k
+Hi Jiri,
 
 On Wed, Dec 6, 2023 at 8:37=E2=80=AFAM Jiri Slaby (SUSE) <jirislaby@kernel.=
 org> wrote:
-> tty_operations::send_xchar is one of the last users of 'char' type for
-> characters in the tty layer. Convert it to u8 now.
+> Switch character types to u8. To conform to characters in the rest of
+> the tty layer.
 >
 > Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 
->  drivers/tty/amiserial.c          | 2 +-
+Thanks for your patch!
 
 Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
 > --- a/drivers/tty/amiserial.c
 > +++ b/drivers/tty/amiserial.c
-> @@ -811,7 +811,7 @@ static void rs_flush_buffer(struct tty_struct *tty)
->   * This function is used to send a high-priority XON/XOFF character to
->   * the device
->   */
-> -static void rs_send_xchar(struct tty_struct *tty, char ch)
-> +static void rs_send_xchar(struct tty_struct *tty, u8 ch)
+> @@ -81,7 +81,7 @@ struct serial_state {
+>         int                     quot;
+>         int                     IER;    /* Interrupt Enable Register */
+>         int                     MCR;    /* Modem control register */
+> -       int                     x_char; /* xon/xoff character */
+> +       u8                      x_char; /* xon/xoff character */
+>  };
+>
+>  static struct tty_driver *serial_driver;
+> @@ -178,7 +178,7 @@ static void receive_chars(struct serial_state *info)
 >  {
->         struct serial_state *info =3D tty->driver_data;
->          unsigned long flags;
+>          int status;
+>         int serdatr;
+> -       unsigned char ch, flag;
+> +       u8 ch, flag;
+>         struct  async_icount *icount;
+>         bool overrun =3D false;
+>
 
-Looks like this might fix an actual (harmless?) bug, if anyone evers
-configures a VSTOP or VSTART character with bit 7 set?
-
-    info->x_char =3D ch; // x_char is int, hence sign-extended
-
-transmit_chars() does:
-
-    amiga_custom.serdat =3D info->x_char | 0x100;
-
-which will inadvertently have all high bits sets, including the bit
-9, which is only used if PARENB is enabled.  But as it looks like
-PARENB handling is broken in amiseral anyway, this doesn't matter
-much...
-
-include/linux/tty.h:#define STOP_CHAR(tty) ((tty)->termios.c_cc[VSTOP])
-include/linux/tty.h:#define START_CHAR(tty) ((tty)->termios.c_cc[VSTART])
+I think it would make sense to fold this into "[PATCH 04/27] tty:
+make tty_operations::send_xchar accept u8 char".
 
 Gr{oetje,eeting}s,
 
