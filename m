@@ -1,32 +1,30 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF94F10A25
-	for <linux-serial@vger.kernel.org>; Wed,  6 Dec 2023 07:37:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 339E610A25
+	for <linux-serial@vger.kernel.org>; Wed,  6 Dec 2023 07:37:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YYRRTJ2E"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2524FC433D9;
-	Wed,  6 Dec 2023 07:37:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BMhtaGNO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02493C433CD;
+	Wed,  6 Dec 2023 07:37:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1701848270;
-	bh=1ogJNRCRUSjNVsxhxIxRKhd/3MM0E+QpvFM4Un0/0KI=;
+	s=k20201202; t=1701848272;
+	bh=ca5oZR3Z/IhdfX0APKb53oRCnzdx5d5CBkRj2hy/ASY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=YYRRTJ2Ex+COXZInEvSuWRBkCj4G2MDfBBEm10lA/6YWME/zUfsKGjeiIcbMF7H7S
-	 VLRXViRHFcM99MJo4maY01ypfdfSRY6mo6b3CKNQ4x2lmjDZYoRVbLGkXL0rz/jBuj
-	 FwqHudifLvhhqB2Zk2yQ1EOEnoezkMg31Z8DvnYSAlfUzN1ulFLoXtSbVyp6m7wb8M
-	 DMJmKjDVFHeRJ7KCAeMMskuXzDs/OKe0aKoT5RFN2aQq14xId7E8M/zJGKEyFkpv51
-	 KIUWiCmI3f2ODm5M2WtjKWEpU4mPQF0ZVCV24Q4raYZuGK4Oo5eScD7UV6qeaesYk8
-	 QbF1R2OmgsiQA==
+	b=BMhtaGNOBrG38TV6foFHCSkoltzMauWUjoUeaDVHPuRG8fMUsJBWAbDf8DxOwYWts
+	 SEjxd9hgOVGcJd9cQQXU+EkIp9JecT14LGBqg49oZ1aQ4nrnjgX2yUkvGhjqEjOyl5
+	 fCEuFl8yJjhobXfbHjZ3T+hdm/l7yePI6kZpUMv8zTc09eMWEtbUZ7Ai/pWm/BZMXH
+	 1uL++wmUkvTq83AWv0WnTpGswnflvG8SSnZQsDxRLOpS6zW1sDrccjAw30SeZRX9p/
+	 xNwQT14M4vLmtx1kayXlmakvhQcYJ1PcqropU7yczRj/Xi9NYDj4unJgGD7veOaCGU
+	 fQ5qCACVPjksQ==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	linux-m68k@lists.linux-m68k.org
-Subject: [PATCH 14/27] tty: m68k: nfcon: convert to u8 and size_t
-Date: Wed,  6 Dec 2023 08:36:59 +0100
-Message-ID: <20231206073712.17776-15-jirislaby@kernel.org>
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Subject: [PATCH 15/27] tty: mips_ejtag_fdc: use u8 for character pointers
+Date: Wed,  6 Dec 2023 08:37:00 +0100
+Message-ID: <20231206073712.17776-16-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20231206073712.17776-1-jirislaby@kernel.org>
 References: <20231206073712.17776-1-jirislaby@kernel.org>
@@ -38,32 +36,49 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Switch character types to u8 and sizes to size_t. To conform to
-characters/sizes in the rest of the tty layer.
+mips_ejtag_fdc_encode() and mips_ejtag_fdc_put_chan() declare arrays of
+pointers to characters. Switch their types from char to u8 to conform
+to the current tty layer types for characters.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: linux-m68k@lists.linux-m68k.org
 ---
- arch/m68k/emu/nfcon.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/mips_ejtag_fdc.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/m68k/emu/nfcon.c b/arch/m68k/emu/nfcon.c
-index 3a74d493eb3e..17b2987c2bf5 100644
---- a/arch/m68k/emu/nfcon.c
-+++ b/arch/m68k/emu/nfcon.c
-@@ -23,9 +23,9 @@ static int stderr_id;
- static struct tty_port nfcon_tty_port;
- static struct tty_driver *nfcon_tty_driver;
+diff --git a/drivers/tty/mips_ejtag_fdc.c b/drivers/tty/mips_ejtag_fdc.c
+index 369ec71c24ef..aac80b69a069 100644
+--- a/drivers/tty/mips_ejtag_fdc.c
++++ b/drivers/tty/mips_ejtag_fdc.c
+@@ -213,16 +213,16 @@ struct fdc_word {
+  */
  
--static void nfputs(const char *str, unsigned int count)
-+static void nfputs(const u8 *str, size_t count)
+ /* ranges >= 1 && sizes[0] >= 1 */
+-static struct fdc_word mips_ejtag_fdc_encode(const char **ptrs,
++static struct fdc_word mips_ejtag_fdc_encode(const u8 **ptrs,
+ 					     unsigned int *sizes,
+ 					     unsigned int ranges)
  {
--	char buf[68];
-+	u8 buf[68];
- 	unsigned long phys = virt_to_phys(buf);
+ 	struct fdc_word word = { 0, 0 };
+-	const char **ptrs_end = ptrs + ranges;
++	const u8 **ptrs_end = ptrs + ranges;
  
- 	buf[64] = 0;
+ 	for (; ptrs < ptrs_end; ++ptrs) {
+-		const char *ptr = *(ptrs++);
+-		const char *end = ptr + *(sizes++);
++		const u8 *ptr = *(ptrs++);
++		const u8 *end = ptr + *(sizes++);
+ 
+ 		for (; ptr < end; ++ptr) {
+ 			word.word |= (u8)*ptr << (8*word.bytes);
+@@ -417,7 +417,7 @@ static unsigned int mips_ejtag_fdc_put_chan(struct mips_ejtag_fdc_tty *priv,
+ {
+ 	struct mips_ejtag_fdc_tty_port *dport;
+ 	struct tty_struct *tty;
+-	const char *ptrs[2];
++	const u8 *ptrs[2];
+ 	unsigned int sizes[2] = { 0 };
+ 	struct fdc_word word = { .bytes = 0 };
+ 	unsigned long flags;
 -- 
 2.43.0
 
