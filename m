@@ -1,105 +1,218 @@
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33FF710A25
+	for <linux-serial@vger.kernel.org>; Wed,  6 Dec 2023 07:37:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EmcHXCHQ"
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 361271A4;
-	Tue,  5 Dec 2023 22:30:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701844232; x=1733380232;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=PHvL8DySQS64lFK/MNrATOz4ftqzzReR7jKUSx0+q9A=;
-  b=EmcHXCHQYDyeF5K1Ozksr7FHYcDDEikWcIEU1YGHAR/8l0umeaFPU2g/
-   CwYUlvUrFUiDnGOMW8LGIunxz5lYzqXnouma9cQqt/7t3hyoheZmvnYqZ
-   1WzU7wvn1V9pSAzv40KyhDQrWOhKc5bxphtCrLIQfjoJeCszTCShq5+zY
-   zCWeguGCqo3khaWIh5Fqm5tvWymf4XEYsxUKfr4Dv2yYiTrtQbxZmYGOT
-   ur43q2HjMJBKBNtM/bBMdcAVxLEfjNLFcabuV2i7D8rlQ0nIRvsFCXTWF
-   VQSiCrrxnARRQaoq0M2v8WkZiDvbVRbrLjlzWxbpJ78Az46YZYEu2m8AE
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10915"; a="15564101"
-X-IronPort-AV: E=Sophos;i="6.04,254,1695711600"; 
-   d="scan'208";a="15564101"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2023 22:30:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10915"; a="944537706"
-X-IronPort-AV: E=Sophos;i="6.04,254,1695711600"; 
-   d="scan'208";a="944537706"
-Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 05 Dec 2023 22:30:28 -0800
-Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rAlQJ-000AOQ-0m;
-	Wed, 06 Dec 2023 06:30:20 +0000
-Date: Wed, 6 Dec 2023 14:29:39 +0800
-From: kernel test robot <lkp@intel.com>
-To: Hugo Villeneuve <hugo@hugovil.com>, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, hvilleneuve@dimonoff.com
-Cc: oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, hugo@hugovil.com,
-	stable@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 1/7] serial: sc16is7xx: fix snprintf format specifier in
- sc16is7xx_regmap_name()
-Message-ID: <202312061443.Cknef7Uq-lkp@intel.com>
-References: <20231130191050.3165862-2-hugo@hugovil.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bu8z34iM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAE83C433C7;
+	Wed,  6 Dec 2023 07:37:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1701848241;
+	bh=4VW8X1jOwmko0gg2sXMWQxFcUR2o/UbpfTeUI9q7Edo=;
+	h=From:To:Cc:Subject:Date:From;
+	b=bu8z34iM5zyJFdBt4mnT5Fe71rAi1pTj3uxvkl7m4It8cG5IPQ5cELCU7Hcyn9bm0
+	 YrPH7+t4kqO++IK8ThPph+TjEI34rKJ1F78saK85cyEmSkhpvlt/MXuM2MexzBGDvc
+	 LsLxprvg/HFtnhazX0pH5FyoIjCKa9mV0mpNSjDjs239qWtZgAdt4zTf5n2o0n6jcu
+	 4NfBuoUBma+NeCmmW1TvUg2oNwowx685wy89kabVlac8zAa2vZSC56u4LOC3aC7Gt4
+	 OX8RdnvhwCgyl2wbllNV/ud4wLPk7k6KK4Q3+ymzQS8XOOuKILOU1aeZovOUVq/0oH
+	 ss5dPs9ljBi8g==
+From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Amit Shah <amit@kernel.org>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Chris Zankel <chris@zankel.net>,
+	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+	Jens Taprogge <jens.taprogge@taprogge.org>,
+	Johan Hedberg <johan.hedberg@gmail.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Karsten Keil <isdn@linux-pingi.de>,
+	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Max Filippov <jcmvbkbc@gmail.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Richard Weinberger <richard@nod.at>,
+	Rob Herring <robh@kernel.org>,
+	Scott Branden <scott.branden@broadcom.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+	Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH 00/27] tty: type unifications -- the last part
+Date: Wed,  6 Dec 2023 08:36:45 +0100
+Message-ID: <20231206073712.17776-1-jirislaby@kernel.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231130191050.3165862-2-hugo@hugovil.com>
+Content-Transfer-Encoding: 8bit
 
-Hi Hugo,
+This is a continuation of the previous cleanups in the tty layer.
+Especially those in the character and size types. As this patchset
+propagates the unified u8 and size_t to most of the drivers, this is the
+last part of this very rework.
 
-kernel test robot noticed the following build warnings:
+If people still see char or unsigned char for a character (or flag),
+please fix. The same holds for signed ints used as sizes.
 
-[auto build test WARNING on d804987153e7bedf503f8e4ba649afe52cfd7f6d]
+Note that the first two patches are mostly preparatory cleanup. The rest
+is switch to u8 and size_t of the tx paths in drivers.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Hugo-Villeneuve/serial-sc16is7xx-fix-snprintf-format-specifier-in-sc16is7xx_regmap_name/20231201-031413
-base:   d804987153e7bedf503f8e4ba649afe52cfd7f6d
-patch link:    https://lore.kernel.org/r/20231130191050.3165862-2-hugo%40hugovil.com
-patch subject: [PATCH 1/7] serial: sc16is7xx: fix snprintf format specifier in sc16is7xx_regmap_name()
-config: x86_64-buildonly-randconfig-001-20231201 (https://download.01.org/0day-ci/archive/20231206/202312061443.Cknef7Uq-lkp@intel.com/config)
-compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231206/202312061443.Cknef7Uq-lkp@intel.com/reproduce)
+Cc: Albert Ou <aou@eecs.berkeley.edu>
+Cc: Alexander Gordeev <agordeev@linux.ibm.com>
+Cc: Amit Shah <amit@kernel.org>
+Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
+Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc: Chris Zankel <chris@zankel.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Jens Taprogge <jens.taprogge@taprogge.org>
+Cc: Johan Hedberg <johan.hedberg@gmail.com>
+Cc: Johannes Berg <johannes@sipsolutions.net>
+Cc: Karsten Keil <isdn@linux-pingi.de>
+Cc: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc: Marcel Holtmann <marcel@holtmann.org>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Max Filippov <jcmvbkbc@gmail.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Nicholas Piggin <npiggin@gmail.com>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Richard Henderson <richard.henderson@linaro.org>
+Cc: Richard Weinberger <richard@nod.at>
+Cc: Rob Herring <robh@kernel.org>
+Cc: Scott Branden <scott.branden@broadcom.com>
+Cc: Sven Schnelle <svens@linux.ibm.com>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Vaibhav Gupta <vaibhavgupta40@gmail.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202312061443.Cknef7Uq-lkp@intel.com/
+Jiri Slaby (SUSE) (27):
+  tty: goldfish: use bool for is_write parameter
+  tty: mmc: sdio_uart: switch sdio_in() to return u8
+  tty: switch tty_port::xmit_* to u8
+  tty: make tty_operations::send_xchar accept u8 char
+  tty: core: the rest to u8
+  tty: ami: use u8 for characters and flag
+  tty: bcm: convert to u8 and size_t
+  tty: con3215: convert to u8 and size_t
+  tty: con3270: convert to u8 and size_t
+  tty: ehv_bytechan: convert to u8 and size_t
+  tty: goldfish: convert to u8 and size_t
+  tty: hvc: convert to u8 and size_t
+  tty: ipoctal: convert to u8 and size_t
+  tty: m68k: nfcon: convert to u8 and size_t
+  tty: mips_ejtag_fdc: use u8 for character pointers
+  tty: mmc: sdio: use u8 for flag
+  tty: moxa: convert to u8 and size_t
+  tty: mxser: convert to u8 and size_t
+  tty: n_gsm: convert to u8 and size_t
+  tty: n_hdlc: convert to u8 and size_t
+  tty: nozomi: convert to u8 and size_t
+  tty: serdev: convert to u8 and size_t in serdev_controller_ops
+  tty: serdev: convert to u8 and size_t
+  tty: srmcons: convert to u8 and size_t
+  tty: ttyprintk: convert to u8 and size_t
+  tty: um: convert to u8/__u8 and size_t
+  tty: xtensa/iss: use u8
 
-All warnings (new ones prefixed by >>):
-
-   drivers/tty/serial/sc16is7xx.c: In function 'sc16is7xx_i2c_probe':
->> drivers/tty/serial/sc16is7xx.c:1703:41: warning: '%u' directive output may be truncated writing between 1 and 10 bytes into a region of size 2 [-Wformat-truncation=]
-    1703 |         snprintf(buf, sizeof(buf), "port%u", port_id);
-         |                                         ^~
-   In function 'sc16is7xx_regmap_name',
-       inlined from 'sc16is7xx_i2c_probe' at drivers/tty/serial/sc16is7xx.c:1805:17:
-   drivers/tty/serial/sc16is7xx.c:1703:36: note: directive argument in the range [0, 4294967294]
-    1703 |         snprintf(buf, sizeof(buf), "port%u", port_id);
-         |                                    ^~~~~~~~
-   drivers/tty/serial/sc16is7xx.c:1703:9: note: 'snprintf' output between 6 and 15 bytes into a destination of size 6
-    1703 |         snprintf(buf, sizeof(buf), "port%u", port_id);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +1703 drivers/tty/serial/sc16is7xx.c
-
-  1698	
-  1699	static const char *sc16is7xx_regmap_name(unsigned int port_id)
-  1700	{
-  1701		static char buf[6];
-  1702	
-> 1703		snprintf(buf, sizeof(buf), "port%u", port_id);
-  1704	
-  1705		return buf;
-  1706	}
-  1707	
+ arch/alpha/kernel/srmcons.c                   |  6 ++---
+ arch/m68k/emu/nfcon.c                         |  4 ++--
+ arch/powerpc/include/asm/hvconsole.h          |  4 ++--
+ arch/powerpc/include/asm/hvsi.h               | 18 +++++++-------
+ arch/powerpc/include/asm/opal.h               |  8 ++++---
+ arch/powerpc/platforms/powernv/opal.c         | 14 ++++++-----
+ arch/powerpc/platforms/pseries/hvconsole.c    |  4 ++--
+ arch/um/drivers/chan.h                        |  2 +-
+ arch/um/drivers/chan_kern.c                   |  9 ++++---
+ arch/um/drivers/chan_user.c                   |  4 ++--
+ arch/um/drivers/chan_user.h                   |  9 +++----
+ arch/um/drivers/line.c                        |  2 +-
+ arch/um/drivers/line.h                        |  6 ++---
+ arch/um/drivers/null.c                        |  2 +-
+ arch/xtensa/platforms/iss/console.c           |  2 +-
+ drivers/bluetooth/btmtkuart.c                 |  4 ++--
+ drivers/bluetooth/btnxpuart.c                 |  4 ++--
+ drivers/bluetooth/hci_serdev.c                |  4 ++--
+ drivers/char/ttyprintk.c                      |  6 ++---
+ drivers/char/virtio_console.c                 | 10 ++++----
+ drivers/gnss/serial.c                         |  4 ++--
+ drivers/gnss/sirf.c                           |  4 ++--
+ drivers/greybus/gb-beagleplay.c               |  5 ++--
+ drivers/iio/chemical/pms7003.c                |  6 ++---
+ drivers/iio/chemical/scd30_serial.c           |  6 ++---
+ drivers/iio/chemical/sps30_serial.c           | 18 +++++++-------
+ drivers/iio/imu/bno055/bno055_ser_core.c      |  6 ++---
+ drivers/ipack/devices/ipoctal.c               | 14 +++++------
+ drivers/isdn/capi/capi.c                      |  4 ++--
+ drivers/mfd/rave-sp.c                         | 10 ++++----
+ drivers/misc/bcm-vk/bcm_vk_tty.c              |  4 ++--
+ drivers/mmc/core/sdio_uart.c                  | 22 +++++++----------
+ drivers/net/ethernet/qualcomm/qca_uart.c      |  5 ++--
+ drivers/nfc/pn533/uart.c                      |  4 ++--
+ drivers/nfc/s3fwrn5/uart.c                    |  5 ++--
+ drivers/platform/chrome/cros_ec_uart.c        |  5 ++--
+ .../platform/surface/aggregator/controller.h  |  4 ++--
+ drivers/platform/surface/aggregator/core.c    |  4 ++--
+ .../surface/aggregator/ssh_packet_layer.c     |  4 ++--
+ .../surface/aggregator/ssh_packet_layer.h     |  2 +-
+ drivers/s390/char/con3215.c                   | 24 +++++++++----------
+ drivers/s390/char/con3270.c                   | 12 +++++-----
+ drivers/tty/amiserial.c                       |  6 ++---
+ drivers/tty/ehv_bytechan.c                    | 11 ++++-----
+ drivers/tty/goldfish.c                        | 20 +++++++---------
+ drivers/tty/hvc/hvc_console.h                 |  4 ++--
+ drivers/tty/hvc/hvc_dcc.c                     | 24 +++++++++----------
+ drivers/tty/hvc/hvc_iucv.c                    | 18 +++++++-------
+ drivers/tty/hvc/hvc_opal.c                    |  5 ++--
+ drivers/tty/hvc/hvc_riscv_sbi.c               |  9 +++----
+ drivers/tty/hvc/hvc_rtas.c                    | 11 +++++----
+ drivers/tty/hvc/hvc_udbg.c                    |  9 +++----
+ drivers/tty/hvc/hvc_vio.c                     | 18 +++++++-------
+ drivers/tty/hvc/hvc_xen.c                     | 23 +++++++++---------
+ drivers/tty/hvc/hvsi_lib.c                    | 20 +++++++++-------
+ drivers/tty/mips_ejtag_fdc.c                  | 10 ++++----
+ drivers/tty/moxa.c                            | 15 ++++++------
+ drivers/tty/mxser.c                           |  8 +++----
+ drivers/tty/n_gsm.c                           | 17 +++++++------
+ drivers/tty/n_hdlc.c                          | 10 ++++----
+ drivers/tty/nozomi.c                          |  9 ++++---
+ drivers/tty/serdev/core.c                     | 12 ++++------
+ drivers/tty/serdev/serdev-ttyport.c           |  2 +-
+ drivers/tty/serial/serial_core.c              |  2 +-
+ drivers/tty/tty_io.c                          | 12 +++++-----
+ drivers/tty/tty_port.c                        |  2 +-
+ include/linux/serdev.h                        | 21 ++++++++--------
+ include/linux/tty.h                           |  6 ++---
+ include/linux/tty_driver.h                    |  4 ++--
+ include/linux/tty_port.h                      |  4 ++--
+ net/bluetooth/rfcomm/tty.c                    |  2 +-
+ sound/drivers/serial-generic.c                |  4 ++--
+ 72 files changed, 306 insertions(+), 306 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.43.0
+
