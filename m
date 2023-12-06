@@ -1,172 +1,202 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=csgroup.eu header.i=@csgroup.eu header.b="mtCVHO/y"
-Received: from FRA01-PR2-obe.outbound.protection.outlook.com (mail-pr2fra01on2059.outbound.protection.outlook.com [40.107.12.59])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E48FCA;
-	Wed,  6 Dec 2023 01:30:49 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KA0Br93S2aYNWnTrImOKoWNpwMCtUJ0zj0Hsr292+z5agIge4srw7tJCIWPC2GYIWIIyyG07WBt7WlYaecxrKVSI1WceNnHNs5potX2DkMFVrJp53FgM0O0eNEckqDY6pRKk4oueyKjnIhb6xsZzbARcphSjhcWb0JjfWt8pt1GAAirhPqQKwfREDjvX9tExVgPyVhJg3VY2sDn5Q/VC4vbSmsggz39+GhczmTryMt4QF/IGobiNyUTlWn9BEgnkImXMNJPWKqo8WBWpaqrKHEDcE9DtWuFrtGnD/0G/gY4lLeicSERcR0TCYi26pxdwxXCY3dpOV/Ug47fMq+Qurg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7Okq+LWVFSdy1yk+MYHdjirVz0zac+Ro81PAs8JF72w=;
- b=WkUa7peH3BP0acyxUWO2ceDA8IJxGVL06DhEsyjzrJVkSqaTMpluwtSUsP724/qSjfrL41xcHzXIgpdZmsp5N90upUD6kHzsDZFJPlmIxT7Z20tRzqKSNJ71Bqnz3iy5INTKV16T7kFVRX/IUsJiydCnAVTlXSVRtLTEVKDG+8gO404AqYqapwRd/BcCQVgl2R7VAJGmPX5uv6x81xnSGwxfLAxNElCPICSHYYMagGwbJ7Oa/0EfxFWo/qwh9MrXxA99KB8f4IYFO3uKBI+xA2QQyGmHhbdjTSaxvXTQYJGGKDPzq1VBcBg7Fk8rxyGGils63IY9a//fD+MedVyyFg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
- dkim=pass header.d=csgroup.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=csgroup.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7Okq+LWVFSdy1yk+MYHdjirVz0zac+Ro81PAs8JF72w=;
- b=mtCVHO/yDiOw231fWh8CPaK94SleU4CmceN6794R90PYXa0tkgwx+ezCZ699w4+iQUNq32SqKLrj08ZQ2GFf5LNpLJGdnt9PW+H3JAtSERDaifap73z6IYAH9Ypn3LgZ16TAHXzw0CvjNPWxrYBGKxgl2wOjS5fBXlxa4RM2RaPBBlY3LC2Mdoe3Gq7JVcSaS+YL00sYn4xiq3TVJDAJLmPfYJvpdZAejFytA6wFRYSXxkdc1X5VIxyZ8KqkXYW4Xq0cJkbyFgehE8zRquL2685EWgdcRoL6dxI0LAbesnVyTTodYlbnIUx6EZNlkSXnJIAiJ6ohKSi3seyXM12TRw==
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
- by MRZP264MB1701.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:f::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.25; Wed, 6 Dec
- 2023 09:30:46 +0000
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::5bfe:e2f2:6d89:8d97]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::5bfe:e2f2:6d89:8d97%3]) with mapi id 15.20.7068.025; Wed, 6 Dec 2023
- 09:30:46 +0000
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>, "gregkh@linuxfoundation.org"
-	<gregkh@linuxfoundation.org>
-CC: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Michael
- Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Amit Shah
-	<amit@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Paul Walmsley
-	<paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou
-	<aou@eecs.berkeley.edu>, "linuxppc-dev@lists.ozlabs.org"
-	<linuxppc-dev@lists.ozlabs.org>, "virtualization@lists.linux.dev"
-	<virtualization@lists.linux.dev>, "linux-riscv@lists.infradead.org"
-	<linux-riscv@lists.infradead.org>
-Subject: Re: [PATCH 12/27] tty: hvc: convert to u8 and size_t
-Thread-Topic: [PATCH 12/27] tty: hvc: convert to u8 and size_t
-Thread-Index: AQHaKBceFfLXTsgZGkKSi8+G3WtYpLCb/ZiA
-Date: Wed, 6 Dec 2023 09:30:46 +0000
-Message-ID: <f0d05148-881b-4973-afc1-31709523560e@csgroup.eu>
-References: <20231206073712.17776-1-jirislaby@kernel.org>
- <20231206073712.17776-13-jirislaby@kernel.org>
-In-Reply-To: <20231206073712.17776-13-jirislaby@kernel.org>
-Accept-Language: fr-FR, en-US
-Content-Language: fr-FR
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-user-agent: Mozilla Thunderbird
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=csgroup.eu;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MRZP264MB2988:EE_|MRZP264MB1701:EE_
-x-ms-office365-filtering-correlation-id: 932b1c25-1d2f-4e6d-9f43-08dbf63e06d3
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- XooLZ2XzalOounorjlV9WH+6wSGYESTJyjwumEViGJD2JBByih6jDtBpZE1WHROGyZHFvUdcUEe7ZsMSZl+eLP37Mgpuu+Fr2eiTzIIbNBegLK2ebchlj30+IvjUHJ7Qz92aMY272sXLMR11jyjZLbovb6NfFzQQIddCKo3pvaGrhdqIVa0pduyEjCZf0F0cc6y7FCffBOGTPdB1nGUD+JwWjkqpVPGvU8j3aWGvYA4abv8YPOHfEvkmQXSdzNacFK5JtpSrrbJYlcuKHoYHNS5EFYXY2FiVnK1c9Aoz5QOIQql16Fo9FeN3cwB2XgCRluTS9+bT4kxTYojJyHi99rfE7xWhTUkv+DtwfzIWK4H0AULEKwko24HYsb5y4UXV3K0t/zKAyyez9X+rX99uD8EtyXavpGZ74dMH06sdXp6SlUVmqHnVRufhSVdz/M1kWE4EceWtfiNgpxou6A8HyE2edG91gK1Jbtx6+unFSpTIDr9PCxOXNvot/oNseL50kra6xZJ7FPIJ7yneU1Dxo5qj9GRwLivwKhTOkyGrA5lAxHEdoc6k/cxDvg+7yzR2+m7+0VrFb4EOyF9tltemqSVYTVMZ3CLRj7iP/yauivQkrOeUvKDOJosutbjczb76yAsUq9ElSzqblitxkFEtGIFe4telnmaIZ5hzUECJF059/XAcoYqUuCQQ3lMIzicU
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(376002)(366004)(396003)(346002)(39850400004)(136003)(230922051799003)(186009)(1800799012)(64100799003)(451199024)(7416002)(2906002)(5660300002)(44832011)(36756003)(41300700001)(122000001)(86362001)(31686004)(4326008)(8936002)(8676002)(316002)(110136005)(76116006)(54906003)(64756008)(66446008)(66476007)(66556008)(66946007)(91956017)(38070700009)(31696002)(38100700002)(6486002)(478600001)(83380400001)(71200400001)(6506007)(26005)(6512007)(2616005)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?bDBlV2lWRzFBd0lJRHdpT1NVcjNhalA0TDIvUXJqUGlzMTY5cHU4MkNiRzdT?=
- =?utf-8?B?KzlOMTIvcDN3NVo4UkdMQ1ZPRkIyNnR4MTVFTDg1dkZkZUFUT0NJVzZpdUtp?=
- =?utf-8?B?UFh0bGlrV2EzK056Z3RSa25HMlZWMWxmeDBYdlZyMG1TWFF5TUhMRjRMcktx?=
- =?utf-8?B?cTlrN1RKaXBGQU9rbDdzaFhtcFRUMFhrVEZYN0wxWnQwZlNLZTFyK2V4eUxY?=
- =?utf-8?B?WGZ3V2p2UVR0emgzUmJoamlLdEtRejg0TWQ4VEJyTEg4WW5tU2tBcHZPbTJU?=
- =?utf-8?B?eXYvUmpIenJjbmFwL2pDNDBCZDB3cGhKalhzQU50STZRSDRST0RpdVA4eFVT?=
- =?utf-8?B?YjA3ODV0TVBKcVFhVnRMdzE1WS9HYzQzb0tOMUk1bmlsS1k1MVBjenJjMlA0?=
- =?utf-8?B?Z1dWTTZhc2xta3JWQXNDbnRKMWRvSHF1bDg1bnBRUlZUeHZGSXV2LzA2QjJv?=
- =?utf-8?B?a3VEWmZMTldOMHhXZnZyT3l5RC9zMTVnUEE5MkliaEoxQkRiUW1FT0sxSTJs?=
- =?utf-8?B?YkEzVXRlVEF0RHZqRjFaWWJNMTE5REwwL0lIeHhUeWFOeVpOcnhSM1VkWFY5?=
- =?utf-8?B?azIrWGFRbERoL09mclNxWmFQV0JNOCt4N09IWklVSGtQeVI4ekJ3RTM2NDBB?=
- =?utf-8?B?YmR5aFFJWGdPWEZQL0VyQ2JHOEovbjlHVXcxQ1lmQkpKNjF0TkpQNzlRS0Vo?=
- =?utf-8?B?Tk80MGdueDFEZDFkRitib21JZGZsT0pMOFk2SXZpblJpRGcxd3U3b0szWXNB?=
- =?utf-8?B?KzZGaFZIS3VNU00yV0lVQXdmMGJhN0UwL2NocXVsZFVuMHBsQnhMclNSMkdn?=
- =?utf-8?B?bzlpeWYrN09yUjdsbXdmVGZpbnFlMFowMUdWdGpVZGViVCtiQ2I5V1RQUXVt?=
- =?utf-8?B?SWNVVU14OFBiTGJXVnZlSC9RNk0rV1F3b2xwWlpmTlhNUzdHc2w5VFFMVDFN?=
- =?utf-8?B?a3hNWGZ0UmRoRzAzWmtFeDlRcWJkS2J6L3o4WEo1TmNpbEQ0cDlsZ2ZUbVJV?=
- =?utf-8?B?b3o3aVBHYkdrbDUyNE12c2s4aTRBakVlcG1KbWlKc2dDZGJEVlBvb3lHS0VY?=
- =?utf-8?B?Mms4VnVyUDJNcWwyTEdzM1dYQmZMVDhla2JlK2FFWEV2UXMyWDA0cjE4R25T?=
- =?utf-8?B?eFdQSFhMUUpLOEpXOXF2eFZyZklyRTVtOFpUdnUzRHJlS1RyZnRrenM4YTFX?=
- =?utf-8?B?bHpWRWVsTFRMOTRMYmpBdCtnREM2V1BMOStNdVVPUFBycEpVa0p4Wnl0bGVP?=
- =?utf-8?B?RDIwSHhVOTNsdlBwSlAvbFYxTkpwK2JEcmJweXBDL3NFZnFzdE9VOStNVlk0?=
- =?utf-8?B?Vmd0aWRYRXg0TkVyVmM4UTJ0SjRXVkJvWjBTL1hLa1p5d1NKQmE0bUpIQ20y?=
- =?utf-8?B?MnVubnNkU3dZZWlDbkRFRWRMNUVoblJnL0N4VUc2T3VXYmNxQVRBODFPYkxx?=
- =?utf-8?B?WTBiWXV3akhZbGJXQ2U2RlE1a0FBeEovRWp0TjJmUDJhdkhac3N0cjRISlJZ?=
- =?utf-8?B?RENUNjMvazZMcDRhT2I2OEM3TGgzcUczUDVKSHFLb1N2cTRlQ2k0NmtSVlFN?=
- =?utf-8?B?WXVHbHVKQUlOV29uRW1HWGE5UjcvYjduSVJReFhubWhtbjU2dCtTOUZQWTJk?=
- =?utf-8?B?OGFkamdkZUN0MFBXQi91MzhCZ1JpZUE5ZTlHNlZUYUJpS0IyNitwbk9sREMv?=
- =?utf-8?B?MjJPZXNNQ1RKSnR1aDBqWXdzeVAxakpKT005TDBwV3FZWnE5bTlrRnQrK3hu?=
- =?utf-8?B?ZlRKbThxYWNnUDRIYnppc2JtZ3JsVXQrNHlhWUJzRkFTdUQ3c1JIRW8xZWNZ?=
- =?utf-8?B?aFNPVkdCcDc4eFFaYzlzTGVxQlZ5TTA5Y1p3WmpXamJuWVhtSGxjNHFQOUZa?=
- =?utf-8?B?TEFuaG5lVmk2dE1jWUNtdUhqZEVUR1craElqZUdBVnFZMmMyN1dkS2RWLzVP?=
- =?utf-8?B?YVBIUUxsVkRwNmFETmFwd1lsVU9BUExNdWhWMzR4MWhvT3FVVnkxQ2pSVzdD?=
- =?utf-8?B?OXNYaVI1ekxkRzgxNEdnb0NqT3NrVitIUnUvQkpDUXFLT2llQ011dUU3bytE?=
- =?utf-8?B?amJJU2pMVVl2UWd6VmZsdGJzdVl2TytZWGNQcEdNN1dBeEw0K01YQlgxK2hk?=
- =?utf-8?Q?Dd/heGRjyZ+1BFpsKXlPBoVRC?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <D78A85787EBC984BB501A2F643C37733@FRAP264.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="YuKaTjKF"
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D17D41
+	for <linux-serial@vger.kernel.org>; Wed,  6 Dec 2023 03:38:19 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id ffacd0b85a97d-3333131e08dso747739f8f.2
+        for <linux-serial@vger.kernel.org>; Wed, 06 Dec 2023 03:38:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1701862697; x=1702467497; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Qm7pCcZmaWCMHPggwY7CXlYkirEJ9BDVaMQ6Qupg/xA=;
+        b=YuKaTjKFzlYvUVmPIlI/jO6J4yUO7idRnUbGMFM133GtOcjFF7QUVxfjDMoJjyTdsR
+         s6c+q+rOATGuPSrM7pgP8qu7m/P8T+BVMjEscgBRzdZJkmCxflHa1AybKVZtmXcTen+u
+         6xmBmi+8aLdA5qtGc2rdoeGzYQXWivBSN5fRV5nXv41tCKDBOZ4ydUznGpF3mpbWgNGy
+         yw8cr8eoc3qI9ReEzh6MMpxmHlbJXu44BS/+n7osFfuLVZX5SfEEYicfZqzu9sJ3Yf38
+         ZGAkvM8ZW41HVwePSHR7ZdaFkrBfAWIqGhS7T6kh6lxI6rP8qxkAAFBfIDHh6rV7Qdkj
+         PxkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701862697; x=1702467497;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Qm7pCcZmaWCMHPggwY7CXlYkirEJ9BDVaMQ6Qupg/xA=;
+        b=PuS8KUjcDglhXVfztXu6kqc2s5tizHgl3E9K/mDZ2VElQAPu3FIUnlAHSrv2ebJxKG
+         /lEPdmVhNgj/Cmwtuq6iAnjao0FS2V4v8+1/+t2Iu9Z6qhTpDfJbv3IyWVygS2jPgHNn
+         XsA9Pb3E0jAla1C8ZIlpx4uHY+flj/CAObGLBKEInEvlhev/04F6IhksmRtLVq7j5CI5
+         y27E1M+xuqOXyGBBMymBqajwpAyMtU3882YGnUPswtZt40TW6e93+0QagoxkvxOC3Fjx
+         dxD8/YCGVUxV2MGqYbbt+AN5MvIBNRMxAChOyGn4CdnsIB1blcflw/ANREtJzoBkXSTW
+         iTUg==
+X-Gm-Message-State: AOJu0YzXH0rtZXFraiJr8HJRPqoPOggHQUioOXUlwRMXCkzl553PxMEz
+	FE27cIafjJQEq0l0+InU3/KuLA==
+X-Google-Smtp-Source: AGHT+IHDl6UGXjkhX+Sh5mNIn+o9ppG/aW6SJEMyI6QLyUYRYrTFnfXaaCrq1qDg++lrAfzAdnteqw==
+X-Received: by 2002:a5d:4fca:0:b0:333:387b:687b with SMTP id h10-20020a5d4fca000000b00333387b687bmr387774wrw.34.1701862697689;
+        Wed, 06 Dec 2023 03:38:17 -0800 (PST)
+Received: from [192.168.1.20] ([178.197.218.27])
+        by smtp.gmail.com with ESMTPSA id f13-20020a5d64cd000000b003334898aafasm8392073wri.11.2023.12.06.03.38.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Dec 2023 03:38:16 -0800 (PST)
+Message-ID: <71972f4f-b5ac-484a-8a09-0b74bd7c623b@linaro.org>
+Date: Wed, 6 Dec 2023 12:38:14 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: csgroup.eu
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 932b1c25-1d2f-4e6d-9f43-08dbf63e06d3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Dec 2023 09:30:46.5879
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: keYyLUHIy8yK/xDdhBVB/8wb0vuVfRk13+mCDlA2JvZOg9kN+l6Mo8RdyylwN47RsfoigDlIjfUfol+qFdu+mC/UdpS/XxUatEsSvLLHbps=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MRZP264MB1701
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 14/20] pinctrl: samsung: Add gs101 SoC pinctrl
+ configuration
+Content-Language: en-US
+To: Alim Akhtar <alim.akhtar@samsung.com>,
+ 'Sam Protsenko' <semen.protsenko@linaro.org>,
+ 'Peter Griffin' <peter.griffin@linaro.org>
+Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+ mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
+ tomasz.figa@gmail.com, s.nawrocki@samsung.com, linus.walleij@linaro.org,
+ wim@linux-watchdog.org, linux@roeck-us.net, catalin.marinas@arm.com,
+ will@kernel.org, arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, cw00.choi@samsung.com, tudor.ambarus@linaro.org,
+ andre.draszik@linaro.org, saravanak@google.com, willmcvicker@google.com,
+ soc@kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-watchdog@vger.kernel.org, kernel-team@android.com,
+ linux-serial@vger.kernel.org
+References: <20231201160925.3136868-1-peter.griffin@linaro.org>
+ <20231201160925.3136868-15-peter.griffin@linaro.org>
+ <CGME20231202004026epcas5p4d3947d7bb99e54f70ca37272cfdc5e55@epcas5p4.samsung.com>
+ <CAPLW+4kBOWFPx3Hr-=UoLWvRxCorzBY9RCOiBhfkKcU0LAa21Q@mail.gmail.com>
+ <000001da24c0$0b83aab0$228b0010$@samsung.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <000001da24c0$0b83aab0$228b0010$@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-DQoNCkxlIDA2LzEyLzIwMjMgw6AgMDg6MzYsIEppcmkgU2xhYnkgKFNVU0UpIGEgw6ljcml0wqA6
-DQo+IFN3aXRjaCBjaGFyYWN0ZXIgdHlwZXMgdG8gdTggYW5kIHNpemVzIHRvIHNpemVfdC4gVG8g
-Y29uZm9ybSB0bw0KPiBjaGFyYWN0ZXJzL3NpemVzIGluIHRoZSByZXN0IG9mIHRoZSB0dHkgbGF5
-ZXIuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBKaXJpIFNsYWJ5IChTVVNFKSA8amlyaXNsYWJ5QGtl
-cm5lbC5vcmc+DQo+IENjOiBNaWNoYWVsIEVsbGVybWFuIDxtcGVAZWxsZXJtYW4uaWQuYXU+DQo+
-IENjOiBOaWNob2xhcyBQaWdnaW4gPG5waWdnaW5AZ21haWwuY29tPg0KPiBDYzogQ2hyaXN0b3Bo
-ZSBMZXJveSA8Y2hyaXN0b3BoZS5sZXJveUBjc2dyb3VwLmV1Pg0KPiBDYzogQW1pdCBTaGFoIDxh
-bWl0QGtlcm5lbC5vcmc+DQo+IENjOiBBcm5kIEJlcmdtYW5uIDxhcm5kQGFybmRiLmRlPg0KPiBD
-YzogUGF1bCBXYWxtc2xleSA8cGF1bC53YWxtc2xleUBzaWZpdmUuY29tPg0KPiBDYzogUGFsbWVy
-IERhYmJlbHQgPHBhbG1lckBkYWJiZWx0LmNvbT4NCj4gQ2M6IEFsYmVydCBPdSA8YW91QGVlY3Mu
-YmVya2VsZXkuZWR1Pg0KPiBDYzogbGludXhwcGMtZGV2QGxpc3RzLm96bGFicy5vcmcNCj4gQ2M6
-IHZpcnR1YWxpemF0aW9uQGxpc3RzLmxpbnV4LmRldg0KPiBDYzogbGludXgtcmlzY3ZAbGlzdHMu
-aW5mcmFkZWFkLm9yZw0KPiAtLS0NCj4gICBhcmNoL3Bvd2VycGMvaW5jbHVkZS9hc20vaHZjb25z
-b2xlLmggICAgICAgfCAgNCArKy0tDQo+ICAgYXJjaC9wb3dlcnBjL2luY2x1ZGUvYXNtL2h2c2ku
-aCAgICAgICAgICAgIHwgMTggKysrKysrKystLS0tLS0tLQ0KPiAgIGFyY2gvcG93ZXJwYy9pbmNs
-dWRlL2FzbS9vcGFsLmggICAgICAgICAgICB8ICA4ICsrKysrLS0tDQo+ICAgYXJjaC9wb3dlcnBj
-L3BsYXRmb3Jtcy9wb3dlcm52L29wYWwuYyAgICAgIHwgMTQgKysrKysrKy0tLS0tLQ0KPiAgIGFy
-Y2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNlcmllcy9odmNvbnNvbGUuYyB8ICA0ICsrLS0NCj4gICBk
-cml2ZXJzL2NoYXIvdmlydGlvX2NvbnNvbGUuYyAgICAgICAgICAgICAgfCAxMCArKysrLS0tLS0N
-Cj4gICBkcml2ZXJzL3R0eS9odmMvaHZjX2NvbnNvbGUuaCAgICAgICAgICAgICAgfCAgNCArKy0t
-DQo+ICAgZHJpdmVycy90dHkvaHZjL2h2Y19kY2MuYyAgICAgICAgICAgICAgICAgIHwgMjQgKysr
-KysrKysrKystLS0tLS0tLS0tLQ0KPiAgIGRyaXZlcnMvdHR5L2h2Yy9odmNfaXVjdi5jICAgICAg
-ICAgICAgICAgICB8IDE4ICsrKysrKysrLS0tLS0tLS0NCj4gICBkcml2ZXJzL3R0eS9odmMvaHZj
-X29wYWwuYyAgICAgICAgICAgICAgICAgfCAgNSArKystLQ0KPiAgIGRyaXZlcnMvdHR5L2h2Yy9o
-dmNfcmlzY3Zfc2JpLmMgICAgICAgICAgICB8ICA5ICsrKystLS0tDQo+ICAgZHJpdmVycy90dHkv
-aHZjL2h2Y19ydGFzLmMgICAgICAgICAgICAgICAgIHwgMTEgKysrKystLS0tLQ0KPiAgIGRyaXZl
-cnMvdHR5L2h2Yy9odmNfdWRiZy5jICAgICAgICAgICAgICAgICB8ICA5ICsrKystLS0tDQo+ICAg
-ZHJpdmVycy90dHkvaHZjL2h2Y192aW8uYyAgICAgICAgICAgICAgICAgIHwgMTggKysrKysrKyst
-LS0tLS0tLQ0KPiAgIGRyaXZlcnMvdHR5L2h2Yy9odmNfeGVuLmMgICAgICAgICAgICAgICAgICB8
-IDIzICsrKysrKysrKysrLS0tLS0tLS0tLQ0KPiAgIGRyaXZlcnMvdHR5L2h2Yy9odnNpX2xpYi5j
-ICAgICAgICAgICAgICAgICB8IDIwICsrKysrKysrKystLS0tLS0tLQ0KPiAgIDE2IGZpbGVzIGNo
-YW5nZWQsIDEwNyBpbnNlcnRpb25zKCspLCA5MiBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1n
-aXQgYS9hcmNoL3Bvd2VycGMvaW5jbHVkZS9hc20vaHZjb25zb2xlLmggYi9hcmNoL3Bvd2VycGMv
-aW5jbHVkZS9hc20vaHZjb25zb2xlLmgNCj4gaW5kZXggY2NiMjAzNDUwNmYwLi5kODQxYTk3MDEw
-YTAgMTAwNjQ0DQo+IC0tLSBhL2FyY2gvcG93ZXJwYy9pbmNsdWRlL2FzbS9odmNvbnNvbGUuaA0K
-PiArKysgYi9hcmNoL3Bvd2VycGMvaW5jbHVkZS9hc20vaHZjb25zb2xlLmgNCj4gQEAgLTIxLDgg
-KzIxLDggQEANCj4gICAgKiBWaW8gZmlybXdhcmUgYWx3YXlzIGF0dGVtcHRzIHRvIGZldGNoIE1B
-WF9WSU9fR0VUX0NIQVJTIGNoYXJzLiAgVGhlICdjb3VudCcNCj4gICAgKiBwYXJtIGlzIGluY2x1
-ZGVkIHRvIGNvbmZvcm0gdG8gcHV0X2NoYXJzKCkgZnVuY3Rpb24gcG9pbnRlciB0ZW1wbGF0ZQ0K
-PiAgICAqLw0KPiAtZXh0ZXJuIGludCBodmNfZ2V0X2NoYXJzKHVpbnQzMl90IHZ0ZXJtbm8sIGNo
-YXIgKmJ1ZiwgaW50IGNvdW50KTsNCj4gLWV4dGVybiBpbnQgaHZjX3B1dF9jaGFycyh1aW50MzJf
-dCB2dGVybW5vLCBjb25zdCBjaGFyICpidWYsIGludCBjb3VudCk7DQo+ICtleHRlcm4gc3NpemVf
-dCBodmNfZ2V0X2NoYXJzKHVpbnQzMl90IHZ0ZXJtbm8sIHU4ICpidWYsIHNpemVfdCBjb3VudCk7
-DQo+ICtleHRlcm4gc3NpemVfdCBodmNfcHV0X2NoYXJzKHVpbnQzMl90IHZ0ZXJtbm8sIGNvbnN0
-IHU4ICpidWYsIHNpemVfdCBjb3VudCk7DQoNCldvdWxkIGJlIGEgZ29vZCBvcHBvcnR1bml0eSB0
-byBkcm9wIHRoaXMgcG9pbnRsZXNzIGRlcHJlY2F0ZWQgJ2V4dGVybicgDQprZXl3b3JkIG9uIGFs
-bCBmdW5jdGlvbiBwcm90b3R5cGVzIHlvdSBhcmUgY2hhbmdpbmcuDQoNCkNocmlzdG9waGUNCg==
+On 02/12/2023 02:36, Alim Akhtar wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Sam Protsenko <semen.protsenko@linaro.org>
+>> Sent: Saturday, December 2, 2023 6:10 AM
+>> To: Peter Griffin <peter.griffin@linaro.org>
+>> Cc: robh+dt@kernel.org; krzysztof.kozlowski+dt@linaro.org;
+>> mturquette@baylibre.com; conor+dt@kernel.org; sboyd@kernel.org;
+>> tomasz.figa@gmail.com; s.nawrocki@samsung.com; linus.walleij@linaro.org;
+>> wim@linux-watchdog.org; linux@roeck-us.net; catalin.marinas@arm.com;
+>> will@kernel.org; arnd@arndb.de; olof@lixom.net;
+>> gregkh@linuxfoundation.org; jirislaby@kernel.org;
+>> cw00.choi@samsung.com; alim.akhtar@samsung.com;
+>> tudor.ambarus@linaro.org; andre.draszik@linaro.org;
+>> saravanak@google.com; willmcvicker@google.com; soc@kernel.org;
+>> devicetree@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-
+>> samsung-soc@vger.kernel.org; linux-clk@vger.kernel.org; linux-
+>> gpio@vger.kernel.org; linux-watchdog@vger.kernel.org; kernel-
+>> team@android.com; linux-serial@vger.kernel.org
+>> Subject: Re: [PATCH v5 14/20] pinctrl: samsung: Add gs101 SoC pinctrl
+>> configuration
+>>
+>> On Fri, Dec 1, 2023 at 10:11 AM Peter Griffin <peter.griffin@linaro.org>
+>> wrote:
+>>>
+>>> Add support for the pin-controller found on the gs101 SoC used in
+>>> Pixel 6 phones.
+>>>
+>>> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+>>> ---
+>>>  .../pinctrl/samsung/pinctrl-exynos-arm64.c    | 159 ++++++++++++++++++
+>>>  drivers/pinctrl/samsung/pinctrl-exynos.c      |   2 +
+>>>  drivers/pinctrl/samsung/pinctrl-exynos.h      |  34 ++++
+>>>  drivers/pinctrl/samsung/pinctrl-samsung.c     |   2 +
+>>>  drivers/pinctrl/samsung/pinctrl-samsung.h     |   1 +
+>>>  5 files changed, 198 insertions(+)
+>>>
+>>> diff --git a/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+>>> b/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+>>> index cb965cf93705..e1a0668ecb16 100644
+>>> --- a/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+>>> +++ b/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+>>> @@ -796,3 +796,162 @@ const struct samsung_pinctrl_of_match_data
+>> fsd_of_data __initconst = {
+>>>         .ctrl           = fsd_pin_ctrl,
+>>>         .num_ctrl       = ARRAY_SIZE(fsd_pin_ctrl),
+>>>  };
+>>> +
+>>> +/*
+>>> + * bank type for non-alive type
+>>> + * (CON bit field: 4, DAT bit field: 1, PUD bit field: 4, DRV bit
+>>> +field: 4)
+>>> + * (CONPDN bit field: 2, PUDPDN bit field: 4)  */ static struct
+>>> +samsung_pin_bank_type gs101_bank_type_off  = {
+>>> +       .fld_width = { 4, 1, 4, 4, 2, 4, },
+>>> +       .reg_offset = { 0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, }, };
+>>
+>> This is just the same as exynos850_bank_type_off (100% duplication).
+>> Here is what I suggest. Now that it's obvious there is some common platform
+>> for moder Exynos SoCs, and it's probably Exynos9, I'd suggest next course of
+>> action (if maintainers agree):
+>>   1. Remove this one
+>>   2. Rename exynos850_bank_type_off to exynos9_bank_type_off
+>>   3. Use it for both gs101 and exynos850
+>>
+>> Does it make sense?
+>>
+> My opinion is to reuse exynos850 for gs101 (wherever applicable), same philosophy was historically followed in this file.
+> That way (using exynos850 for gs101) things will be simple. 
+> Adding exynos9_* is not adding any benefit, rather it create confusion.
+
+I don't see much value in renaming exynos850 bank type to exynos9
+considering:
+1. We don't really know the bank types for all of Exynos9xxx SoCs,
+2. Exynos7885 also uses Exynos850 bank types. Exynos7885 was much
+earlier than Exynos9xxx family.
+
+Best regards,
+Krzysztof
+
