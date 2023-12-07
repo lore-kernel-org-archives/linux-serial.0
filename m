@@ -1,123 +1,122 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="RThyG6yn"
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98BA2170C;
-	Thu,  7 Dec 2023 09:52:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=zG2UGPXCv4/FgbLJTXPGX3Nf8DqXr0h+L8Zc4YpOnTg=; b=RThyG6ynxjFruIcj+Fjw17JpTZ
-	9Xlpp4UZrDFthSmK3pDHBqY5AHfVWp12rkbHjOKkuO7YeVb47/IpVphxP8OZHbED7+45vEsnAj7b2
-	+z4JeO/Lbt6egcVkjiaMEkDmTdrwVuILKEq9PbcLYKM+vHdhc0KUUrY+tHqcRW29k6Hk=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:57946 helo=pettiford)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1rBIYG-0007oa-0U; Thu, 07 Dec 2023 12:52:45 -0500
-Date: Thu, 7 Dec 2023 12:52:43 -0500
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: kernel test robot <lkp@intel.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
- hvilleneuve@dimonoff.com, oe-kbuild-all@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- stable@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>
-Message-Id: <20231207125243.c056d5cd0f875ea6dfdfa194@hugovil.com>
-In-Reply-To: <202312061443.Cknef7Uq-lkp@intel.com>
-References: <20231130191050.3165862-2-hugo@hugovil.com>
-	<202312061443.Cknef7Uq-lkp@intel.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="QweOYOmu"
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF4610E6;
+	Thu,  7 Dec 2023 09:56:24 -0800 (PST)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 336B8E0008;
+	Thu,  7 Dec 2023 17:56:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1701971782;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=f7QhMvDMdDHwd2i4TN/STlvk7XqwuOQIbGdCqZZY83g=;
+	b=QweOYOmu+F9nkC+quKa+cSKIKyscbTlEO3s86r3h+qjAkMZhswNLuy5xnEpOnQK83nblDi
+	ehD8zpOHHfS0sy0PuJIr1SSjhzWmPp+RTgzI8rNdO1U+1Gx3K1dTqLzTWihV6u3yR/0M6D
+	tcUXU5dlymQMjrQzY4dBdXTbxoCd8GpvJmPJYIsh4f32DxpF6qwMJKWsTYWehKV21A1Yg5
+	hnnapGHUaUDrCpuSb0DVeCfax6bS65h7RtYC0TitZhvGi7Zt0c7VqYM+/8PHXRFgeKZYLF
+	aS7q1uJHbq35IQHMZN1pzNuSOHY5/kZV2kvp21oNppiGCi3HDiWiFepWirMRag==
+From: =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
+Subject: [PATCH v6 0/8] Cleanup AMBA PL011 driver
+Date: Thu, 07 Dec 2023 18:56:05 +0100
+Message-Id: <20231207-mbly-uart-v6-0-e384afa5e78c@bootlin.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-Subject: Re: [PATCH 1/7] serial: sc16is7xx: fix snprintf format specifier in
- sc16is7xx_regmap_name()
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
-
-On Wed, 6 Dec 2023 14:29:39 +0800
-kernel test robot <lkp@intel.com> wrote:
-
-> Hi Hugo,
-> 
-> kernel test robot noticed the following build warnings:
-> 
-> [auto build test WARNING on d804987153e7bedf503f8e4ba649afe52cfd7f6d]
-> 
-> url:    https://github.com/intel-lab-lkp/linux/commits/Hugo-Villeneuve/serial-sc16is7xx-fix-snprintf-format-specifier-in-sc16is7xx_regmap_name/20231201-031413
-> base:   d804987153e7bedf503f8e4ba649afe52cfd7f6d
-> patch link:    https://lore.kernel.org/r/20231130191050.3165862-2-hugo%40hugovil.com
-> patch subject: [PATCH 1/7] serial: sc16is7xx: fix snprintf format specifier in sc16is7xx_regmap_name()
-> config: x86_64-buildonly-randconfig-001-20231201 (https://download.01.org/0day-ci/archive/20231206/202312061443.Cknef7Uq-lkp@intel.com/config)
-> compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-> reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231206/202312061443.Cknef7Uq-lkp@intel.com/reproduce)
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Closes: https://lore.kernel.org/oe-kbuild-all/202312061443.Cknef7Uq-lkp@intel.com/
-> 
-> All warnings (new ones prefixed by >>):
-> 
->    drivers/tty/serial/sc16is7xx.c: In function 'sc16is7xx_i2c_probe':
-> >> drivers/tty/serial/sc16is7xx.c:1703:41: warning: '%u' directive output may be truncated writing between 1 and 10 bytes into a region of size 2 [-Wformat-truncation=]
->     1703 |         snprintf(buf, sizeof(buf), "port%u", port_id);
->          |                                         ^~
->    In function 'sc16is7xx_regmap_name',
->        inlined from 'sc16is7xx_i2c_probe' at drivers/tty/serial/sc16is7xx.c:1805:17:
->    drivers/tty/serial/sc16is7xx.c:1703:36: note: directive argument in the range [0, 4294967294]
->     1703 |         snprintf(buf, sizeof(buf), "port%u", port_id);
->          |                                    ^~~~~~~~
->    drivers/tty/serial/sc16is7xx.c:1703:9: note: 'snprintf' output between 6 and 15 bytes into a destination of size 6
->     1703 |         snprintf(buf, sizeof(buf), "port%u", port_id);
->          |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIADUHcmUC/2XPz2oDIRAG8FcJnmNQZ/3XU9+j9KBGEyFZg7uVh
+ rDv3kmgxGUPHj6Z3zfMg0yx5jiRj92D1NjylMuIQe13JJzdeIo0HzETwQRwfPTqL3f64+pMXQo
+ ueG9NMp7g/K3GlH9fXV/fmM95mku9v6obf/7+t6iupXHKqBXSxOiE1Uf49KXMlzweQrmSZ08Tb
+ 8v5ygq0RkFSSoYoBdta6KxgvQW0TLsI0mqbeNraobf95W1Aq5Pl4PSQkrFbKzsLq70SrZJKaQa
+ ODV6u7bIsf6zhzDeUAQAA
+To: Russell King <linux@armlinux.org.uk>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ Linus Walleij <linus.walleij@linaro.org>, 
+ =?utf-8?q?Gr=C3=A9gory_Clement?= <gregory.clement@bootlin.com>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Thomas Petazzoni <thomas.petazzoni@bootlin.com>, 
+ Vladimir Kondratiev <vladimir.kondratiev@mobileye.com>, 
+ Tawfik Bayouk <tawfik.bayouk@mobileye.com>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
+X-Mailer: b4 0.12.4
+X-GND-Sasl: theo.lebrun@bootlin.com
 
 Hi,
-the only solution I could find is to add this line just before snprintf:
 
-    BUG_ON(port_id > MAX310X_MAX_PORTS);
+While adding upstream support to a new platform (Mobileye EyeQ5[1]) that
+uses the AMBA PL011 driver, I took some time to look at the PL011
+driver and ended up with a few patches that cleanup parts of it. The
+line-diff is big mostly because of the checkpatch-fixing commits.
 
-it allows us to have the smallest buffer size possible.
+The driver hadn't received any love for quite some time. See commit
+messages for more information.
 
-One other solution would be to change port_id from "unsigned int"
-to "u8", and increase the buffer by an additional 2 bytes to silence
-the warning, but then wasting 2 bytes for each channel, like so:
+v6 drops [PATCH v5 1/9] as it has been applied by Greg KH. It also fixes
+[PATCH v5 2/9] that broke on ARCH=arm ep93xx_defconfig because the header file
+is included from assembly.
 
-static const char *max310x_regmap_name(u8 port_id)
-{
-    static char buf[
-        sizeof(MAX310X_PORT_NAME_SUFFIX __stringify(UCHAR_MAX))];
+[1]: https://lore.kernel.org/all/202310050726.GDpZbMDO-lkp@intel.com/T/
 
-I prefer solution 1, unless there is another solution that I am
-unaware of.
+Have a nice day,
+Théo Lebrun
 
-Hugo.
+Signed-off-by: Théo Lebrun <theo.lebrun@bootlin.com>
+---
+Changes in v6:
+- Address kernel test robot failure; amba/serial.h is included from assembly.
+- Drop [PATCH v5 1/9] as it has been applied by Greg KH.
+- Link to v5: https://lore.kernel.org/r/20231130-mbly-uart-v5-0-6566703a04b5@bootlin.com
 
+Changes in v5:
+- Rebase upon v6.7-rc1.
+- Add #include <linux/bitfield.h> in include/linux/amba/serial.h.
+- Split [PATCH v4 3/6] into 5 manageable commits.
+- Link to v4: https://lore.kernel.org/r/20231123-mbly-uart-v4-0-7f913a74ff89@bootlin.com
 
-> vim +1703 drivers/tty/serial/sc16is7xx.c
-> 
->   1698	
->   1699	static const char *sc16is7xx_regmap_name(unsigned int port_id)
->   1700	{
->   1701		static char buf[6];
->   1702	
-> > 1703		snprintf(buf, sizeof(buf), "port%u", port_id);
->   1704	
->   1705		return buf;
->   1706	}
->   1707	
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
-> 
+Changes in v4:
+- Fix reverse if logic bug in [PATCH V3 6/6].
+- Link to v3: https://lore.kernel.org/r/20231120-mbly-uart-v3-0-07ae35979f1f@bootlin.com
 
+Changes in v3:
+- Replace magic constants in linux/amba/serial.h by FIELD_PREP_CONST calls
+- Refactor QDF2400 SoC erratum 44 handling out of probe in a new patch
+- A nit in "unindent pl011_console_get_options function body"
+- Link to v2: https://lore.kernel.org/r/20231116-mbly-uart-v2-0-863f665ce520@bootlin.com
 
+Changes in v2:
+- [PATCH 2]: add #include <linux/bits.h> in include/linux/amba/serial.h
+  as we use the BIT() macro.
+- Move one whitespace cleanup from [PATCH 4/6] to [PATCH v2 3/5] where
+  it belongs.
+- Drop [PATCH 6/6]: console will never have a word length of 5 or 6.
+- Link to v1: https://lore.kernel.org/r/20231026-mbly-uart-v1-0-9258eea297d3@bootlin.com
+
+---
+Théo Lebrun (8):
+      tty: serial: amba: Use linux/{bits,bitfield}.h macros
+      tty: serial: amba-pl011: fix whitespace formatting
+      tty: serial: amba-pl011: replace TIOCMBIT macros by static functions
+      tty: serial: amba-pl011: avoid quoted string split across lines
+      tty: serial: amba-pl011: fix formatting of conditions
+      tty: serial: amba-pl011: fix miscellaneous checkpatch warnings
+      tty: serial: amba-pl011: unindent pl011_console_get_options function body
+      tty: serial: amba-pl011: factor QDF2400 SoC erratum 44 out of probe
+
+ drivers/tty/serial/amba-pl011.c | 261 +++++++++++++++++++++-------------------
+ include/linux/amba/serial.h     | 251 +++++++++++++++++++-------------------
+ 2 files changed, 264 insertions(+), 248 deletions(-)
+---
+base-commit: bfc1fa3f077a32febb518c1df54e1ee922eee05d
+change-id: 20231023-mbly-uart-afcacbb98f8b
+
+Best regards,
 -- 
-Hugo Villeneuve
+Théo Lebrun <theo.lebrun@bootlin.com>
+
