@@ -1,40 +1,30 @@
-Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED6BAD7D;
-	Wed,  6 Dec 2023 14:05:22 -0800 (PST)
-Received: by mail-oo1-f44.google.com with SMTP id 006d021491bc7-58cf894544cso1285eaf.3;
-        Wed, 06 Dec 2023 14:05:22 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701900322; x=1702505122;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vbd5B8BVVpRHLAAm9f1h8aNytsZytNMI1lzIKFManeQ=;
-        b=pMxC2nOv9Eu5z315m6/BLH3Tr7emveEAdtWuOH6hXD7TYe61Uy6N5Ipe1uCZSVRJkQ
-         it6h3Bgi9KuLmFBEa8hqjelaC4FdINkXGH4tuIV8xD6+F7YL+eQlYfDzho76uuwL6Jwm
-         +rMWEYdGnL9ElPP/6f9Fv5F3hn6SCLdzMXyZXYRFfIbBDpSJRxHct5MljgdvmbzfQW97
-         TyXGhbYJX2w4yZuQf5P25cC16/mvfVr9uQwVhb7eQuIGsgkmUUoZhBV80abHWmbGBul7
-         au3/TBR+2kYgIBlFNJrTMsT6tJfHLJnS7yQPIbGInhM2r2PMx2jkMgmPTZeNcHyeihOJ
-         8+gg==
-X-Gm-Message-State: AOJu0YyWo34P2QWrvp09VLfcjMP2++KdX1CWu1aClGwYSrYAPU+TJQrX
-	BlfpM0fSAwG6T/hYZ7rgBA==
-X-Google-Smtp-Source: AGHT+IGje1u2DNEW9pSR9hih68DS0uYGwmFBGf37482odpdjRd1Z0Zs32LrlmDgot+tSfKBspUxDvQ==
-X-Received: by 2002:a4a:251b:0:b0:58e:80e2:93b7 with SMTP id g27-20020a4a251b000000b0058e80e293b7mr1466627ooa.0.1701900322055;
-        Wed, 06 Dec 2023 14:05:22 -0800 (PST)
-Received: from herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id d24-20020a4a9198000000b0057b6ac3922esm803ooh.18.2023.12.06.14.05.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Dec 2023 14:05:21 -0800 (PST)
-Received: (nullmailer pid 3423211 invoked by uid 1000);
-	Wed, 06 Dec 2023 22:05:20 -0000
-Date: Wed, 6 Dec 2023 16:05:20 -0600
-From: Rob Herring <robh@kernel.org>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: linux-serial@vger.kernel.org, Wim Van Sebroeck <wim@linux-watchdog.org>, Jiri Slaby <jirislaby@kernel.org>, linux-i2c@vger.kernel.org, Alim Akhtar <alim.akhtar@samsung.com>, linux-fsd@tesla.com, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, linux-samsung-soc@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck <linux@roeck-us.net>, linux-watchdog@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org, Andi Shyti <andi.shyti@kernel.org>
-Subject: Re: [PATCH 5/6] dt-bindings: watchdog: samsung: add specific
- compatible for Tesla FSD
-Message-ID: <170190031995.3423149.13499134597119767259.robh@kernel.org>
-References: <20231205092229.19135-1-krzysztof.kozlowski@linaro.org>
- <20231205092229.19135-6-krzysztof.kozlowski@linaro.org>
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50C7410A00
+	for <linux-serial@vger.kernel.org>; Thu,  7 Dec 2023 06:50:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="to17iC5L"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78BA5C433C7;
+	Thu,  7 Dec 2023 06:50:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1701931831;
+	bh=vqgmxvtHdH524IT5OoMaM15bH8qpnsIkh6S4xu+XSxI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=to17iC5LcWb0i2pmWujxZYbaGuiujJ9OFrtiYvhYHQGvFbnKFIui3x0oCPZg/13Sp
+	 yX3QhHnj98dbh48AdjNfHaabqXzI9Dli1CP22PFAz2iWd8ZtnWdAcCeUwanmWqyZEp
+	 V5yv20LWOSvdnz8PoKjOXYo3BWiwIYsJzS7DIF90=
+Date: Thu, 7 Dec 2023 10:33:16 +0900
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [RESEND PATCH] tty: serial: 8250: Fix MOXA RS422/RS485 PCIe
+ boards not work by default
+Message-ID: <2023120755-dance-request-8293@gregkh>
+References: <20231201074055.259207-1-crescentcy.hsieh@moxa.com>
+ <2023120146-pyramid-salsa-d8cd@gregkh>
+ <ZWmhKS+quI3dmOND@moxa-ThinkCentre-M90t>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -43,30 +33,38 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231205092229.19135-6-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <ZWmhKS+quI3dmOND@moxa-ThinkCentre-M90t>
 
+On Fri, Dec 01, 2023 at 05:02:33PM +0800, Crescent CY Hsieh wrote:
+> On Fri, Dec 01, 2023 at 08:27:05AM +0000, Greg Kroah-Hartman wrote:
+> > On Fri, Dec 01, 2023 at 03:40:55PM +0800, Crescent CY Hsieh wrote:
+> > > MOXA PCIe RS422/RS485 boards will not function by default because of the
+> > > initial default serial interface of all MOXA PCIe boards is set to
+> > > RS232.
+> > > 
+> > > This patch fixes the problem above by setting the initial default serial
+> > > interface to RS422 for those MOXA RS422/RS485 PCIe boards.
+> > > 
+> > > Signed-off-by: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+> > > Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+> > > ---
+> > >  drivers/tty/serial/8250/8250_pci.c | 58 +++++++++++++++++++++++++++++-
+> > >  1 file changed, 57 insertions(+), 1 deletion(-)
+> > 
+> > Why is this a RESEND?  What happened to the first attempt, did I miss it
+> > somewhere?
+> 
+> This RESEND patch is the first patch of this patch series [1], Jiri
+> reviewed the first patch and suggested to split the second patch, so I
+> split the second patch and sent it as a new patch.
+> 
+> However, the first patch seems to be overlooked, so I resend it.
+> 
+> [1] https://lore.kernel.org/all/20231027062440.7749-1-crescentcy.hsieh@moxa.com/
 
-On Tue, 05 Dec 2023 10:22:28 +0100, Krzysztof Kozlowski wrote:
-> Tesla FSD is a derivative of Samsung Exynos SoC, thus just like the
-> others it reuses several devices from older designs.  Historically we
-> kept the old (block's) compatible only.  This works fine and there is no
-> bug here, however guidelines expressed in
-> Documentation/devicetree/bindings/writing-bindings.rst state that:
-> 1. Compatibles should be specific.
-> 2. We should add new compatibles in case of bugs or features.
-> 
-> Add Tesla FSD compatible specific to be used with an existing fallback.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
-> 
-> I propose to take the patch through Samsung SoC (me). See cover letter
-> for explanation.
-> ---
->  .../bindings/watchdog/samsung-wdt.yaml        | 21 ++++++++++++-------
->  1 file changed, 13 insertions(+), 8 deletions(-)
-> 
+Looks like 0-day had a problem with it, please fix that up and resend a
+new version.
 
-Acked-by: Rob Herring <robh@kernel.org>
+thanks,
 
+greg k-h
