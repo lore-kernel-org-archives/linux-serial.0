@@ -1,106 +1,206 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="d29IBFFj"
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98CC410CB
-	for <linux-serial@vger.kernel.org>; Thu,  7 Dec 2023 05:33:45 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id ffacd0b85a97d-33330a5617fso951147f8f.2
-        for <linux-serial@vger.kernel.org>; Thu, 07 Dec 2023 05:33:45 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fnZ4NFJ9"
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 866DA10F4
+	for <linux-serial@vger.kernel.org>; Thu,  7 Dec 2023 06:09:57 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id 3f1490d57ef6-db5e5647c24so1816562276.1
+        for <linux-serial@vger.kernel.org>; Thu, 07 Dec 2023 06:09:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701956024; x=1702560824; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:date:message-id:subject
-         :references:in-reply-to:to:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=wOjuvQ1knDsOf99mi3hFggOSmu3Whc7MN8Fp35NQ1P8=;
-        b=d29IBFFja8GOlr7TD5iaQ1dAGpzoPVT7meFpiFFPx5MK6N0VwJIBYd7EB+PxJDc4pF
-         KqAW9oPgnS5BRlOTVP6BpR9rDYzETzBB3J3qJdKM82fGOqjTg6fX7zYraeUaT7GxCQUa
-         QK1y2zxxynWuBEXYANutgdLUoYXl/KudC4/RzdKEa0ogZcmlZgdVIoZxv4gfzunrl/8h
-         6vKlMYQbYEhjdtxzAOT2c/KPpQSCytYetG7RIMk51cs+t55oMXUl3zMh+sBgkh2RwbpU
-         tFxP3IuZ0GcxY8NvvPHpNzR1H60k1+enzOjvj7bpyz0E7P+SpI9fnZMxcE/1LMN/FFWD
-         0xZA==
+        d=linaro.org; s=google; t=1701958197; x=1702562997; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=5qgF3sSIvHz1zfLicY+6TVgFqCZEC8QJz84mVPu4JT0=;
+        b=fnZ4NFJ9NmR/qCxRU79NGewBCmU7WI2JOWueNsfu/tGjssI98afaJBefSldy5rTbjA
+         I6dt3qLGEfi5JZJOHJvNhdjzYesH1X9AZqJ833az11x/7zhV0vVMFKu6TYogMeM50u9g
+         MdWDBLOkD58SigGjVLyno5hvFxq3wLLFOTf4O9CYd1WcqVwhYJvSvtZiDg3obQGjm7Pk
+         MzitHMFWByZOQNz7S278KiKOjmImUw+AmwYEeUd71kSNvnGLWTJBkXveNZRbeflhp17e
+         3QjW0g3dxQY905+3Ke3tC4qsoSHDQKPmUVSqSsY8WumxOzMxvT1OOgFbv/kxAI/QX6sm
+         /AHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701956024; x=1702560824;
-        h=content-transfer-encoding:mime-version:date:message-id:subject
-         :references:in-reply-to:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=wOjuvQ1knDsOf99mi3hFggOSmu3Whc7MN8Fp35NQ1P8=;
-        b=dlVB2O7Ij/M1LgKs1HrP6KWF8ZuNDF7f5l5Punt4o4Um61fQMLjljG1H1R3UgZlI2X
-         yJJk/wA450CABT2a2L9/UwK8Os8qX3vzvwiwF06GwDCMW4CRXt/7IajZZrwZ4x+mMsNA
-         JIq0/Mp3FvdLxkwMNyegpO1o8UXKKo7IcrbL0vp2DbvbwD/P1X5KNb6GoWytH//FtHkJ
-         eHavVeOzHCvFAClCTnWlhlod3WhlZlZnnWuQ5hOqXSoO5HiBzkHWyBBvlHQr6taUiDw+
-         cKSJewnDxPDfx/lOC6OzkhRBlKrraN1v1buTmXAzLEshlCKfgV7hki3GFDPN39qsDFnl
-         wHkg==
-X-Gm-Message-State: AOJu0Yxjh7Jx3PjKFinAQ1iGt7jUPh51yt1o3CLo1AqSulfUggpjcsH4
-	EuA1bN5Uwffi/gZCdnSEUXptOw==
-X-Google-Smtp-Source: AGHT+IEl9KbxTbmb8n+WvISyxYm/HTeQm70dDUbz9cfV9RUKa1Wk27SjB9FMgD9xanu+1rN8Jo3LOw==
-X-Received: by 2002:adf:ec0c:0:b0:333:2fd2:5d30 with SMTP id x12-20020adfec0c000000b003332fd25d30mr1678939wrn.98.1701956024085;
-        Thu, 07 Dec 2023 05:33:44 -0800 (PST)
-Received: from [127.0.1.1] ([178.197.218.27])
-        by smtp.gmail.com with ESMTPSA id p6-20020adfcc86000000b00333371c7382sm1471548wrj.72.2023.12.07.05.33.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Dec 2023 05:33:43 -0800 (PST)
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To: Andi Shyti <andi.shyti@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
- Conor Dooley <conor+dt@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>, 
- Thierry Reding <thierry.reding@gmail.com>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, 
- Wim Van Sebroeck <wim@linux-watchdog.org>, 
- Guenter Roeck <linux@roeck-us.net>, linux-fsd@tesla.com, 
- linux-i2c@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, 
- linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20231205092229.19135-1-krzysztof.kozlowski@linaro.org>
-References: <20231205092229.19135-1-krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH 0/6] dt-bindings: samsung: continued - add specific
- compatibles for Tesla FSD Hi,
-Message-Id: <170195602173.92721.14927713507913101589.b4-ty@linaro.org>
-Date: Thu, 07 Dec 2023 14:33:41 +0100
+        d=1e100.net; s=20230601; t=1701958197; x=1702562997;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=5qgF3sSIvHz1zfLicY+6TVgFqCZEC8QJz84mVPu4JT0=;
+        b=aubfT5svtDe6HuFx6Xeh2f5MOTOqHDv0ucpDk43cJojnn7XEtROp+56h4amF5YXHS1
+         1IUInkcYqADVB6CJl1Av7sf+YTRk94A+GxYY2GzOjCrR9nn1DOiYWgpa5FGfRSOCtT7s
+         b0sdVglXwcbRLioMjbdNHMXIgh7iDjIM+dNsaKo7LHSrSMqUG39faeCV4Q6JGui6suEb
+         BdDVFFjgOjl1jUsX2HajDoFc86Er4+P3z23rMfL8E3DMVX0cYuv24aJcRl27Kl6Dr3zs
+         MBQ1x7wt0q4TCXTEwW5V3F29YWBGhu+T1v8GbSXv+CSB7QOc4nvqWDZbPClsnNDLTVpX
+         2nPA==
+X-Gm-Message-State: AOJu0YwH03tlzrPbkSpV9AzGAEL2wiCuq5TdzzA5lGrkQyMXBcEEq8vY
+	7IklcVYmvyauyGkMGiEZvws/o09xCkEqlHwMufTNQQ==
+X-Google-Smtp-Source: AGHT+IHVRH9O+e/jlUGrQAx9xh4VLn2kxitHRh22/vDYDil0LX+cgDdw2m9RceCZ/RhFJs4fR36Mbayjmu8hE8wtVMY=
+X-Received: by 2002:a25:da49:0:b0:db4:5cdd:f6b4 with SMTP id
+ n70-20020a25da49000000b00db45cddf6b4mr3336991ybf.14.1701958196710; Thu, 07
+ Dec 2023 06:09:56 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.12.3
+References: <20231206073712.17776-1-jirislaby@kernel.org> <20231206073712.17776-5-jirislaby@kernel.org>
+In-Reply-To: <20231206073712.17776-5-jirislaby@kernel.org>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Thu, 7 Dec 2023 15:09:21 +0100
+Message-ID: <CAPDyKFo=X+ESxuYov1TDvLEWk1XCSU2o98=+5Y8LvHWr2nKF6Q@mail.gmail.com>
+Subject: Re: [PATCH 04/27] tty: make tty_operations::send_xchar accept u8 char
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Karsten Keil <isdn@linux-pingi.de>, 
+	Marcel Holtmann <marcel@holtmann.org>, Johan Hedberg <johan.hedberg@gmail.com>, 
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>, netdev@vger.kernel.org, linux-mmc@vger.kernel.org, 
+	linux-bluetooth@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
+On Wed, 6 Dec 2023 at 08:37, Jiri Slaby (SUSE) <jirislaby@kernel.org> wrote:
+>
+> tty_operations::send_xchar is one of the last users of 'char' type for
+> characters in the tty layer. Convert it to u8 now.
+>
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Cc: Karsten Keil <isdn@linux-pingi.de>
+> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Cc: Marcel Holtmann <marcel@holtmann.org>
+> Cc: Johan Hedberg <johan.hedberg@gmail.com>
+> Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+> Cc: netdev@vger.kernel.org
+> Cc: linux-mmc@vger.kernel.org
+> Cc: linux-bluetooth@vger.kernel.org
 
-On Tue, 05 Dec 2023 10:22:23 +0100, Krzysztof Kozlowski wrote:
-> Merging
-> =======
-> I propose to take entire patchset through my tree (Samsung SoC), because:
-> 1. I already took similar work this cycle:
->    https://lore.kernel.org/all/169997520487.6747.17671551558724027958.b4-ty@linaro.org/
-> 2. Two new SoCs are coming (Google GS101 and ExynosAutov920) and they might
->    touch the same lines.  It is reasonable for me to take the bindings for the new
->    SoCs, to have clean `make dtbs_check` on the new DTS.
-> 3. Having it together helps me to have clean `make dtbs_check` within my tree
->    on the existing DTS.
-> 4. No drivers are affected by this change.
-> 
-> [...]
+Acked-by: Ulf Hansson <ulf.hansson@linaro.org> # For MMC
 
-Applied, thanks!
+Kind regards
+Uffe
 
-[1/6] dt-bindings: i2c: exynos5: add specific compatible for Tesla FSD
-      https://git.kernel.org/krzk/linux/c/7677fdbc036b93a882f660ca2484a6807e72f0be
-[2/6] dt-bindings: pwm: samsung: add specific compatible for Tesla FSD
-      https://git.kernel.org/krzk/linux/c/edb32ec3cea79b518e6af841ecb01c839818f562
-[3/6] dt-bindings: serial: samsung: add specific compatible for Tesla FSD
-      https://git.kernel.org/krzk/linux/c/921f4f1db7f5bf6798349db8a4382c032f144b98
-[4/6] dt-bindings: samsung: exynos-pmu: add specific compatible for Tesla FSD
-      https://git.kernel.org/krzk/linux/c/54772f1d61cd99ea1ed0febd4187bf24ef63bccd
-[5/6] dt-bindings: watchdog: samsung: add specific compatible for Tesla FSD
-      https://git.kernel.org/krzk/linux/c/bf1e24c5330af06b2f7f1a166a1011d8d48e8651
-[6/6] arm64: dts: fsd: add specific compatibles for Tesla FSD
-      https://git.kernel.org/krzk/linux/c/5f257922c5948c58669346d5cda371632108f266
-
-Best regards,
--- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
+> ---
+>  drivers/isdn/capi/capi.c         | 4 ++--
+>  drivers/mmc/core/sdio_uart.c     | 2 +-
+>  drivers/tty/amiserial.c          | 2 +-
+>  drivers/tty/serial/serial_core.c | 2 +-
+>  drivers/tty/tty_io.c             | 2 +-
+>  include/linux/tty.h              | 2 +-
+>  include/linux/tty_driver.h       | 4 ++--
+>  net/bluetooth/rfcomm/tty.c       | 2 +-
+>  8 files changed, 10 insertions(+), 10 deletions(-)
+>
+> diff --git a/drivers/isdn/capi/capi.c b/drivers/isdn/capi/capi.c
+> index 2f3789515445..6e80d7bd3c4d 100644
+> --- a/drivers/isdn/capi/capi.c
+> +++ b/drivers/isdn/capi/capi.c
+> @@ -1231,9 +1231,9 @@ static void capinc_tty_hangup(struct tty_struct *tty)
+>         tty_port_hangup(&mp->port);
+>  }
+>
+> -static void capinc_tty_send_xchar(struct tty_struct *tty, char ch)
+> +static void capinc_tty_send_xchar(struct tty_struct *tty, u8 ch)
+>  {
+> -       pr_debug("capinc_tty_send_xchar(%d)\n", ch);
+> +       pr_debug("capinc_tty_send_xchar(%u)\n", ch);
+>  }
+>
+>  static const struct tty_operations capinc_ops = {
+> diff --git a/drivers/mmc/core/sdio_uart.c b/drivers/mmc/core/sdio_uart.c
+> index a05322f15771..370fadf1d6d1 100644
+> --- a/drivers/mmc/core/sdio_uart.c
+> +++ b/drivers/mmc/core/sdio_uart.c
+> @@ -792,7 +792,7 @@ static unsigned int sdio_uart_chars_in_buffer(struct tty_struct *tty)
+>         return kfifo_len(&port->xmit_fifo);
+>  }
+>
+> -static void sdio_uart_send_xchar(struct tty_struct *tty, char ch)
+> +static void sdio_uart_send_xchar(struct tty_struct *tty, u8 ch)
+>  {
+>         struct sdio_uart_port *port = tty->driver_data;
+>
+> diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
+> index a80f059f77bf..a30dc054ffbf 100644
+> --- a/drivers/tty/amiserial.c
+> +++ b/drivers/tty/amiserial.c
+> @@ -811,7 +811,7 @@ static void rs_flush_buffer(struct tty_struct *tty)
+>   * This function is used to send a high-priority XON/XOFF character to
+>   * the device
+>   */
+> -static void rs_send_xchar(struct tty_struct *tty, char ch)
+> +static void rs_send_xchar(struct tty_struct *tty, u8 ch)
+>  {
+>         struct serial_state *info = tty->driver_data;
+>          unsigned long flags;
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 0393853b9947..80085b151b34 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -687,7 +687,7 @@ EXPORT_SYMBOL_GPL(uart_xchar_out);
+>   * This function is used to send a high-priority XON/XOFF character to
+>   * the device
+>   */
+> -static void uart_send_xchar(struct tty_struct *tty, char ch)
+> +static void uart_send_xchar(struct tty_struct *tty, u8 ch)
+>  {
+>         struct uart_state *state = tty->driver_data;
+>         struct uart_port *port;
+> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+> index 005d91c63707..6a502110da61 100644
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+> @@ -1149,7 +1149,7 @@ ssize_t redirected_tty_write(struct kiocb *iocb, struct iov_iter *iter)
+>   *
+>   * Locking: none for xchar method, write ordering for write method.
+>   */
+> -int tty_send_xchar(struct tty_struct *tty, char ch)
+> +int tty_send_xchar(struct tty_struct *tty, u8 ch)
+>  {
+>         bool was_stopped = tty->flow.stopped;
+>
+> diff --git a/include/linux/tty.h b/include/linux/tty.h
+> index e96c85f4f91e..d3bedcc08738 100644
+> --- a/include/linux/tty.h
+> +++ b/include/linux/tty.h
+> @@ -410,7 +410,7 @@ void tty_wait_until_sent(struct tty_struct *tty, long timeout);
+>  void stop_tty(struct tty_struct *tty);
+>  void start_tty(struct tty_struct *tty);
+>  void tty_write_message(struct tty_struct *tty, char *msg);
+> -int tty_send_xchar(struct tty_struct *tty, char ch);
+> +int tty_send_xchar(struct tty_struct *tty, u8 ch);
+>  int tty_put_char(struct tty_struct *tty, unsigned char c);
+>  unsigned int tty_chars_in_buffer(struct tty_struct *tty);
+>  unsigned int tty_write_room(struct tty_struct *tty);
+> diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
+> index f428c1b784a2..7372124fbf90 100644
+> --- a/include/linux/tty_driver.h
+> +++ b/include/linux/tty_driver.h
+> @@ -242,7 +242,7 @@ struct serial_struct;
+>   *     Optional: If not provided, the device is assumed to have no FIFO.
+>   *     Usually correct to invoke via tty_wait_until_sent(). May sleep.
+>   *
+> - * @send_xchar: ``void ()(struct tty_struct *tty, char ch)``
+> + * @send_xchar: ``void ()(struct tty_struct *tty, u8 ch)``
+>   *
+>   *     This routine is used to send a high-priority XON/XOFF character (@ch)
+>   *     to the @tty device.
+> @@ -374,7 +374,7 @@ struct tty_operations {
+>         void (*flush_buffer)(struct tty_struct *tty);
+>         void (*set_ldisc)(struct tty_struct *tty);
+>         void (*wait_until_sent)(struct tty_struct *tty, int timeout);
+> -       void (*send_xchar)(struct tty_struct *tty, char ch);
+> +       void (*send_xchar)(struct tty_struct *tty, u8 ch);
+>         int (*tiocmget)(struct tty_struct *tty);
+>         int (*tiocmset)(struct tty_struct *tty,
+>                         unsigned int set, unsigned int clear);
+> diff --git a/net/bluetooth/rfcomm/tty.c b/net/bluetooth/rfcomm/tty.c
+> index 94ec913dfb76..69c75c041fe1 100644
+> --- a/net/bluetooth/rfcomm/tty.c
+> +++ b/net/bluetooth/rfcomm/tty.c
+> @@ -1041,7 +1041,7 @@ static void rfcomm_tty_flush_buffer(struct tty_struct *tty)
+>         tty_wakeup(tty);
+>  }
+>
+> -static void rfcomm_tty_send_xchar(struct tty_struct *tty, char ch)
+> +static void rfcomm_tty_send_xchar(struct tty_struct *tty, u8 ch)
+>  {
+>         BT_DBG("tty %p ch %c", tty, ch);
+>  }
+> --
+> 2.43.0
+>
