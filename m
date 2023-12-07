@@ -1,32 +1,62 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20EAA35287
-	for <linux-serial@vger.kernel.org>; Thu,  7 Dec 2023 10:09:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Ge6SijUt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24870C433C8;
-	Thu,  7 Dec 2023 10:09:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1701943786;
-	bh=mlf+E9uAxcA9DH2IJGNsrr3vRH7MvPzIWWShzXKzrW0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Ge6SijUtS4LpfTcbDkYt4hdfhyhH6LxLfzLBBGN0w130qSSsTAyIk+lLkVfpKJdLw
-	 Jl/xlWAzKIxRe0GBt4HKzG6tnRFm3IgO+WxIlcR1dFcL2dIxOk7DwH344DOAve4MWB
-	 w7tonU+Nf7szhNxH2YJytPPdlrEIPr0ExzRZhA/Y=
-Date: Thu, 7 Dec 2023 11:09:42 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Johan Hovold <johan@kernel.org>
-Cc: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 23/27] tty: serdev: convert to u8 and size_t
-Message-ID: <2023120709-revise-retaliate-3796@gregkh>
-References: <20231206073712.17776-1-jirislaby@kernel.org>
- <20231206073712.17776-24-jirislaby@kernel.org>
- <ZXAsSjFzBaBdqJSg@hovoldconsulting.com>
- <2023120736-bullpen-edgy-3c02@gregkh>
- <ZXGAEThOendGmjb4@hovoldconsulting.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LGDczdMO"
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBBA510EC;
+	Thu,  7 Dec 2023 04:35:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1701952533; x=1733488533;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=AxuJODfeSyZXtb5X5FLkqlPIc2Wt4J6QcOdZzYwKh/Y=;
+  b=LGDczdMOyHE4VcOk81Aeg7E3So6POyeAatZJ3xZ2V/HiPJNS+jRubBS4
+   QqXPRIELVHGJruhv0IYD+muPo275WUR/x2cQL+FrwIOYUEzRPyJjiB2Gy
+   IVDbvm6+KuV/jnPBuZnZfbXqtKajeA2T0z6PmziL3buCq5zm6ai0rZyHv
+   V25LA0oLy2tw8f6NaaFZgvIT2m4VW/oVqXSqdP3oRsJK2+w+W6EHvpzki
+   eHquABXyDQWsS8+UcdFJU+ZHfxU9kq5hWZSiiDyEWNAz7ympX/PhzMNhR
+   3sxF1UpraWQ1bXOyik8vM5HB4MjpPpwzbNucczDaXRWLAqRWZ3pTJl65p
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10916"; a="460711669"
+X-IronPort-AV: E=Sophos;i="6.04,256,1695711600"; 
+   d="scan'208";a="460711669"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2023 04:35:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10916"; a="747950280"
+X-IronPort-AV: E=Sophos;i="6.04,256,1695711600"; 
+   d="scan'208";a="747950280"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2023 04:35:28 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rBDbA-00000002bBU-3Czz;
+	Thu, 07 Dec 2023 14:35:24 +0200
+Date: Thu, 7 Dec 2023 14:35:24 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc: Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	"brenda.streiff@ni.com" <brenda.streiff@ni.com>,
+	Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
+	Tomas Paukrt <tomaspaukrt@email.cz>
+Subject: Re: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
+ binding
+Message-ID: <ZXG8DI8diij72fBR@smile.fi.intel.com>
+References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
+ <20231120151056.148450-2-linux@rasmusvillemoes.dk>
+ <20231122145344.GA18949@wunner.de>
+ <3b8548b1-b8a9-0c9e-4040-5cfda06a85c6@gmx.de>
+ <ec66d25162de4cbc92720df1e7008fe8@dh-electronics.com>
+ <5c140498-69e3-4187-8703-db0c41e7ca89@gmx.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,45 +65,29 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZXGAEThOendGmjb4@hovoldconsulting.com>
+In-Reply-To: <5c140498-69e3-4187-8703-db0c41e7ca89@gmx.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu, Dec 07, 2023 at 09:19:29AM +0100, Johan Hovold wrote:
-> On Thu, Dec 07, 2023 at 10:47:18AM +0900, Greg Kroah-Hartman wrote:
-> > On Wed, Dec 06, 2023 at 09:09:46AM +0100, Johan Hovold wrote:
-> > > On Wed, Dec 06, 2023 at 08:37:08AM +0100, Jiri Slaby wrote:
-> 
-> > > > diff --git a/drivers/gnss/serial.c b/drivers/gnss/serial.c
-> > > > index 5d8e9bfb24d0..baa956494e79 100644
-> > > > --- a/drivers/gnss/serial.c
-> > > > +++ b/drivers/gnss/serial.c
-> > > > @@ -80,8 +80,8 @@ static const struct gnss_operations gnss_serial_gnss_ops = {
-> > > >  	.write_raw	= gnss_serial_write_raw,
-> > > >  };
-> > > >  
-> > > > -static int gnss_serial_receive_buf(struct serdev_device *serdev,
-> > > > -					const unsigned char *buf, size_t count)
-> > > > +static ssize_t gnss_serial_receive_buf(struct serdev_device *serdev,
-> > > > +				       const u8 *buf, size_t count)
-> 
-> > > The gnss subsystem consistently use tabs-only for indentation of
-> > > continuation lines so please don't change the indentation for these
-> > > files.
-> > 
-> > That's going to drive checkpatch.pl crazy, please don't inist on it as
-> > that is not going to work well over time as we would all have to
-> > remember that just for this one subsystem :(
-> 
-> Open-parenthesis alignment is not part of the coding standard and is
-> hidden behind the checkpatch.pl --strict option along with other (often
-> excessive) checks that are not generally agreed upon.
-> 
-> Only staging and networking enable that option by default and I think
-> checkpatch.pl handles that transparently.
+On Wed, Dec 06, 2023 at 04:42:53PM +0100, Lino Sanfilippo wrote:
+> On 27.11.23 13:14, Christoph Niedermaier wrote:
+> > From: Lino Sanfilippo [mailto:LinoSanfilippo@gmx.de]
+> > Sent: Sunday, November 26, 2023 12:40 AM
 
-Ah, didn't realize this was a staging-only thing, sorry.  As that's what
-I get loads of checkpatch fixes for, I figured it was what everyone
-should be using :)
+...
 
-thanks,
+> > RS-485 (2-wire NO RX_DURING_TX): rs485->flags = SER_RS485_ENABLED|SER_RS485_MODE_HALF_DUPLEX
+> > RS-485 (2-wire RX_DURING_TX):    rs485->flags = SER_RS485_ENABLED|SER_RS485_MODE_HALF_DUPLEX|SER_RS485_RX_DURING_TX
+> 
+> I think we can omit the SER_RS485_MODE_HALF_DUPLEX flag if we assume that
+> a missing SER_RS485_MODE_FULL_DUPLEX means half duplex (i.e. controlling
+> the RTS line).
 
-greg k-h
+You should be very careful on these assumptions, i.e. one must to check _all_
+existing user space tools (at least that are in use / supplied by main distros)
+on how they behave.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
