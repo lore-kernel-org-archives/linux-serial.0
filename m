@@ -1,85 +1,123 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80ADA1DA34
-	for <linux-serial@vger.kernel.org>; Thu,  7 Dec 2023 08:18:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VIFjf6k4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0D50C433C8;
-	Thu,  7 Dec 2023 08:18:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1701937121;
-	bh=c1IibyTEeI1rZhj66cRp9B60N7vFGETPlS+Ga10AvM8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=VIFjf6k4YcQnN7KNTaegjYJlwtyp/redptAppn34XT9apIriJ4nG3ot52aLD9Dp2P
-	 dbWcF8klMd5p07ZmFllcFXdqP+WgFgyAKhvnj2uq3dGKGoaahZg9d09OBcASofm3VR
-	 zg3L4YD6iTxFD2nFXGazaz8wliaww7T7lTmg+rSvF2qh0AAeH6e+uENFazzZ/khpdu
-	 S8LB+whRi3Kqzx9ZD/qPZeQsBzXB5F1/8JXZxH8f1TqFf5bwSXTfR7ZjHrydUAkHQI
-	 ozlggiQIZK2sWD1ckysDrUOjgtafuCaluIAhLlRRSEwWzax6ndTg3OLfIyNEQJCo1o
-	 817XYArcD+Pnw==
-Received: from johan by xi.lan with local (Exim 4.96.2)
-	(envelope-from <johan@kernel.org>)
-	id 1rB9bV-0007kD-2e;
-	Thu, 07 Dec 2023 09:19:30 +0100
-Date: Thu, 7 Dec 2023 09:19:29 +0100
-From: Johan Hovold <johan@kernel.org>
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 23/27] tty: serdev: convert to u8 and size_t
-Message-ID: <ZXGAEThOendGmjb4@hovoldconsulting.com>
-References: <20231206073712.17776-1-jirislaby@kernel.org>
- <20231206073712.17776-24-jirislaby@kernel.org>
- <ZXAsSjFzBaBdqJSg@hovoldconsulting.com>
- <2023120736-bullpen-edgy-3c02@gregkh>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="f10oyLmb"
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF164C6
+	for <linux-serial@vger.kernel.org>; Thu,  7 Dec 2023 00:31:33 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id 5b1f17b1804b1-40c09f4bea8so7556955e9.1
+        for <linux-serial@vger.kernel.org>; Thu, 07 Dec 2023 00:31:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1701937892; x=1702542692; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Mify/VU5KCQbnFhxVgp4wIC4+Rif/22iFObnI3ZfwK8=;
+        b=f10oyLmboMft7XjgtbwOkWppm2yF3Yq4hmdOF0xvnIoSTS06p6OQbDRVshFle0BhTa
+         ajogD9PIlXYPCz7oYlm3lPHTIfvdq1b2aLI2QbjsbjJn+ZPgkWwe198Dhu34AbeE03vs
+         /Q2d9DrWvobCV7cHwx4kIANHlwW91vHX47AemKOigQH2Yz6XqUFXFlgprPIX+efnW6IU
+         YkMkVd4MfJU/3GT9bTMst66zU5UOtI2NzVUOCDJGFVmXZGgTdgLanQxlsH1NwqhrGz+D
+         3Yx7r1I1nDio57WkoO1G5aOKgLwdlychKkgzBzizKuzYEI2z6Uol1CQSpOZoNrhkLHaY
+         h1vA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701937892; x=1702542692;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Mify/VU5KCQbnFhxVgp4wIC4+Rif/22iFObnI3ZfwK8=;
+        b=nWwqHwrvzNxnOVbDP1DfLXYLobaSsGB0tPcOmOv3o/vrmyoPjRXkgYCC1jWEfvuulZ
+         5nyjCliaFygPKyAJ+mjYlBbVig3RtERV5NGUXntBFZPVatbhkPmZYhQr6UrCtIcOK6aY
+         WjMzu6/wpEnhWnim9NgZKOMwTHDk7DWEyD2cO72OdwOY6SnCIaS36/f+J4VDj+EdXwLI
+         FDGQKe9QVUR740OnwIJvONjqVikSCB8HeZBmDJ/9lrhsPssk27YzE1OZGE4psQjG8Zf7
+         a/RbiAeZ8CaUH4NlItNAGNPZpjeUO+PPK+24sUNKEtIa9Jpig8C4zVso6FYnX4SFc+5s
+         JMyg==
+X-Gm-Message-State: AOJu0YxREPOeZEaOOuGLkcHdjcEMbkUOw9Eutl5mQ1mkra9rvlhHZx/Z
+	SCDYJbEMt3BIe44dPPwqg90Jqg==
+X-Google-Smtp-Source: AGHT+IEX9cNIiRtgJaVRhOo0ASgm009uBiFRzUYlDOIuMog6xIZIk09Xh7ILeBtyJIV/g8XvnSr9mQ==
+X-Received: by 2002:a05:600c:474c:b0:40b:5e59:da8c with SMTP id w12-20020a05600c474c00b0040b5e59da8cmr1266858wmo.159.1701937892511;
+        Thu, 07 Dec 2023 00:31:32 -0800 (PST)
+Received: from [192.168.1.20] ([178.197.218.27])
+        by smtp.gmail.com with ESMTPSA id ek10-20020a05600c3eca00b0040b3d33ab55sm1149728wmb.47.2023.12.07.00.31.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Dec 2023 00:31:32 -0800 (PST)
+Message-ID: <fc4820bf-39bf-4caf-ade4-7d4ec071e1ac@linaro.org>
+Date: Thu, 7 Dec 2023 09:31:31 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2023120736-bullpen-edgy-3c02@gregkh>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dt-bindings: serial: imx: Properly describe the i.MX1
+ interrupts
+Content-Language: en-US
+To: Fabio Estevam <festevam@gmail.com>, gregkh@linuxfoundation.org
+Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+ conor+dt@kernel.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org, Fabio Estevam <festevam@denx.de>
+References: <20231206162841.2326201-1-festevam@gmail.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <20231206162841.2326201-1-festevam@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Dec 07, 2023 at 10:47:18AM +0900, Greg Kroah-Hartman wrote:
-> On Wed, Dec 06, 2023 at 09:09:46AM +0100, Johan Hovold wrote:
-> > On Wed, Dec 06, 2023 at 08:37:08AM +0100, Jiri Slaby wrote:
-
-> > > diff --git a/drivers/gnss/serial.c b/drivers/gnss/serial.c
-> > > index 5d8e9bfb24d0..baa956494e79 100644
-> > > --- a/drivers/gnss/serial.c
-> > > +++ b/drivers/gnss/serial.c
-> > > @@ -80,8 +80,8 @@ static const struct gnss_operations gnss_serial_gnss_ops = {
-> > >  	.write_raw	= gnss_serial_write_raw,
-> > >  };
-> > >  
-> > > -static int gnss_serial_receive_buf(struct serdev_device *serdev,
-> > > -					const unsigned char *buf, size_t count)
-> > > +static ssize_t gnss_serial_receive_buf(struct serdev_device *serdev,
-> > > +				       const u8 *buf, size_t count)
-
-> > The gnss subsystem consistently use tabs-only for indentation of
-> > continuation lines so please don't change the indentation for these
-> > files.
+On 06/12/2023 17:28, Fabio Estevam wrote:
+> From: Fabio Estevam <festevam@denx.de>
 > 
-> That's going to drive checkpatch.pl crazy, please don't inist on it as
-> that is not going to work well over time as we would all have to
-> remember that just for this one subsystem :(
+> i.MX1 has three UART interrupts instead of a single one like other
+> i.MX devices.
+> 
+> Take this into account for properly describing the i.MX1 UART
+> interrupts.
+> 
+> This fixes the following dt-schema warning:
+> 
 
-Open-parenthesis alignment is not part of the coding standard and is
-hidden behind the checkpatch.pl --strict option along with other (often
-excessive) checks that are not generally agreed upon.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Only staging and networking enable that option by default and I think
-checkpatch.pl handles that transparently.
+Best regards,
+Krzysztof
 
-So this should not be an issue unless you're trying to enforce the
-contentious checks tree wide (i.e. just drop the --strict option).
-
-That said, as this only affects one function (the other one happened to
-align while still only using tabs) I can fix that up later unless Jiri
-is resending for some other reason.
-
-Johan
