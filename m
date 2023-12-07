@@ -1,92 +1,73 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="NXQ5OSNO"
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 947C710F8
-	for <linux-serial@vger.kernel.org>; Thu,  7 Dec 2023 06:11:01 -0800 (PST)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-5d77a1163faso5908907b3.0
-        for <linux-serial@vger.kernel.org>; Thu, 07 Dec 2023 06:11:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701958261; x=1702563061; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=4c23Qqi3a2Hf5J7gfxXHXb1GanE4tjJ0ZroI12SpwMs=;
-        b=NXQ5OSNOnqA77nlisp9QyvczrnhUlBDnnrCuklXZdo1xqSlkZg4KCMWQfVzcJWgTVu
-         jasb1iQBzcgsDbpcEzrwBlJ/El9QpO43rFhXWBZC5lmRN1oLeWIB9nvx6IqlhmbLRMCO
-         Y9ziWMTOHCTgUATkd2S8t3PTIs3AU13RT4dPHALnXIJKx5DqY8QuojSN7ZiuzzpJ7C15
-         9lEhnqgTXxh7hmOzvTkfbsM0yoUce7SgDjZIUXaxeuMXMH8KUk3oMI9gXFjeUbqbSbbO
-         IUA6jkxFZ+7qWoAzgCnM5vnnYfN1PSbiI2ba3KHshTv2aGHWyo465ARgHISze2V/+9dj
-         J7/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701958261; x=1702563061;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=4c23Qqi3a2Hf5J7gfxXHXb1GanE4tjJ0ZroI12SpwMs=;
-        b=YITIlMjP23/QWM72wM1IaBOTTgUTjZCKAUanne4KHH2p6H+BCdAG1DjiJ08l1yRSWd
-         CMSSEMED+8mMyZ5SPPCBmN0QNT3Jt3YPv6+3u1Bapj9OHPdqewCA7zy2uhOsul/XXEyF
-         hlLpChYYo8e9BZOIWelq8mrP7enuXHS6zD+WQJAo2U1WD/OfBWZrDbLP0TubxjV84MtL
-         7IldXGIZRMQDzqYIxMJBxluEmcCbsZVBilYvXFkmQiDwkZdO5nD2yH/ZiLuhghcVjJT/
-         cC2vQKQ56er8NBiqBENP87lCroYsdzAtTrskuxJ6uaz9n/bSrR7HBBPPtvfilqKU/ydE
-         orCQ==
-X-Gm-Message-State: AOJu0Yz1FmmDDTxv8xvgGd3FUqxPj6RPNVz36Ds+Q8+yfnhUFuisjQMb
-	ANc/SMzzNLtnsvb5FRJOwwr0UkX3ObDqZ0Wlthx0Ww==
-X-Google-Smtp-Source: AGHT+IHfZOsvWx7k5rwa8TLVbgwGAOeipHp5OxEj3mr89LZ/jCXwE4d7P8+lZhGKK91ejVX5+Ylua/a48gfeqRdku6s=
-X-Received: by 2002:a0d:df15:0:b0:5d7:f0fe:2258 with SMTP id
- i21-20020a0ddf15000000b005d7f0fe2258mr3385408ywe.39.1701958260622; Thu, 07
- Dec 2023 06:11:00 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="zj6odPv7"
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F39610C3;
+	Thu,  7 Dec 2023 08:02:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=9hxmOxzlmeubWF8MZL43e5U0xtVhFBe0Cobz79lxqI8=; b=zj6odPv7rjZuL72UE9JehHSORQ
+	QGDf+Gm9uILicHxNCMYwWZdj0pTcqxXhKJfWWM9FU7fS0pX9lLjuY704AGlZcYh+0+UdcdBMDJaik
+	+wURkW151BOqGGrGSUh12VRg/eaHcr5/uHYKEuthIFHWlbg33Bafz4Peqtxz8/CasyZE=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:52566 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1rBGpw-00072a-QE; Thu, 07 Dec 2023 11:02:53 -0500
+Date: Thu, 7 Dec 2023 11:02:52 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: jirislaby@kernel.org, hvilleneuve@dimonoff.com,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ stable@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>
+Message-Id: <20231207110252.1c7dfd46c0c5772edda9a770@hugovil.com>
+In-Reply-To: <2023120748-swimming-precinct-722c@gregkh>
+References: <20231130191050.3165862-1-hugo@hugovil.com>
+	<20231130191050.3165862-2-hugo@hugovil.com>
+	<2023120748-swimming-precinct-722c@gregkh>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20231206073712.17776-1-jirislaby@kernel.org> <20231206073712.17776-17-jirislaby@kernel.org>
-In-Reply-To: <20231206073712.17776-17-jirislaby@kernel.org>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Thu, 7 Dec 2023 15:10:24 +0100
-Message-ID: <CAPDyKFo2TPVqd_1_SvQL0xiqgn8ipUq4Z1txxo5nFNsYYk4CZg@mail.gmail.com>
-Subject: Re: [PATCH 16/27] tty: mmc: sdio: use u8 for flag
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+Subject: Re: [PATCH 1/7] serial: sc16is7xx: fix snprintf format specifier in
+ sc16is7xx_regmap_name()
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Wed, 6 Dec 2023 at 08:37, Jiri Slaby (SUSE) <jirislaby@kernel.org> wrote:
->
-> Switch character types to u8. To conform to characters in the rest of
-> the tty layer.
->
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> Cc: linux-mmc@vger.kernel.org
+On Thu, 7 Dec 2023 10:44:33 +0900
+Greg KH <gregkh@linuxfoundation.org> wrote:
 
-Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
+> On Thu, Nov 30, 2023 at 02:10:43PM -0500, Hugo Villeneuve wrote:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > 
+> > Change snprint format specifier from %d to %u since port_id is unsigned.
+> > 
+> > Fixes: 3837a0379533 ("serial: sc16is7xx: improve regmap debugfs by using one regmap per port")
+> > Cc: stable@vger.kernel.org # 6.1.x: 3837a03 serial: sc16is7xx: improve regmap debugfs by using one regmap per port
+> > Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > ---
+> > I did not originally add a "Cc: stable" tag for commit 3837a0379533 ("serial: sc16is7xx: improve regmap debugfs by using one regmap per port")
+> > as it was intended only to improve debugging using debugfs. But
+> > since then, I have been able to confirm that it also fixes a long standing
+> > bug in our system where the Tx interrupt are no longer enabled at some
+> > point when transmitting large RS-485 paquets (> 64 bytes, which is the size
+> > of the FIFO). I have been investigating why, but so far I haven't found the
+> > exact cause, altough I suspect it has something to do with regmap caching.
+> > Therefore, I have added it as a prerequisite for this patch so that it is
+> > automatically added to the stable kernels.
+> 
+> Looks like the 0-day test bot found problems with this, so I'll hold off
+> on taking this patch and the rest of the series until that's fixed up
+> with a new version of this series.
 
-Kind regards
-Uffe
+No problem, I am on it.
 
-> ---
->  drivers/mmc/core/sdio_uart.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/drivers/mmc/core/sdio_uart.c b/drivers/mmc/core/sdio_uart.c
-> index 370fadf1d6d1..575ebbce378e 100644
-> --- a/drivers/mmc/core/sdio_uart.c
-> +++ b/drivers/mmc/core/sdio_uart.c
-> @@ -354,12 +354,11 @@ static void sdio_uart_stop_rx(struct sdio_uart_port *port)
->
->  static void sdio_uart_receive_chars(struct sdio_uart_port *port, u8 *status)
->  {
-> -       unsigned int flag;
->         int max_count = 256;
->
->         do {
->                 u8 ch = sdio_in(port, UART_RX);
-> -               flag = TTY_NORMAL;
-> +               u8 flag = TTY_NORMAL;
->                 port->icount.rx++;
->
->                 if (unlikely(*status & (UART_LSR_BI | UART_LSR_PE |
-> --
-> 2.43.0
->
+Hugo
