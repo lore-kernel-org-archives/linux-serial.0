@@ -1,102 +1,120 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="BPvuM+nE"
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5911A173A;
-	Thu,  7 Dec 2023 09:58:25 -0800 (PST)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 50ED81BF20D;
-	Thu,  7 Dec 2023 17:58:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1701971903;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Ztrqr2r+NdGGR17MQHZJfBYqrLR90ks+eNJU1UUR484=;
-	b=BPvuM+nEK1j7qHnJ+Jq4urfc+MAFM7wsIQRL9vOmCGapoIbcgM3x6O4ttn155bCQoAFsB2
-	e2wUr9Alq0uET6He5daVB/IHufexQwpI0MkJopgOc4OvovUHTETfP0kPasGmxDN8+S0dNI
-	OKPS+bv5gbtpxkcn8EWHcpbbAfz4IsL2wPSKdJ9g8NNylm8fCJ43e9c0xFWykY52tocyIL
-	5+LFGLc1G7vU6By0RqUlVfU74saXZH31nJgxJRllWqQASxk7F8mXHuN83zjvF2Fhng/ogj
-	I8mVfFMS5As3J5EOr1217b7pV7WrSm6EVU768zWgEobD7sia8vIj/VCT7ci4kw==
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TGvZ7tai"
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB432E0;
+	Thu,  7 Dec 2023 10:25:22 -0800 (PST)
+Received: by mail-qv1-xf2f.google.com with SMTP id 6a1803df08f44-67a948922aaso6703396d6.3;
+        Thu, 07 Dec 2023 10:25:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1701973522; x=1702578322; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5JdtSkhV/uZ+qgTv5nm/tjN7XRjVnjCUJ7V0n44iPxI=;
+        b=TGvZ7taiAXsoQ7SnBTc3PwpC7eY1mDVqhoFpJZX5Ev0IAic+4r0YZzytAemj5zG02m
+         8ogr+N6YU0y/1rNN5yREzrYvZkZgEIQyN80+Y6lSAroCLxXFo44s7tzHVz+7nqC6GycU
+         0QMiLMnQwpzbMgjQuL2wdOYzoQfXfJVd4eLX5/U7FKK+iUtkGRLYK4Mul/K8PgH836r6
+         Zy08SIRENtqBYYszroaeIuxEdF+dSZk5f7r0Xv83iLRXrO9FfUeF9p29bo2ZfoTRbk3b
+         UZ8KkWlxaYjRE/npllHi9Yl/hWVxikq2FE4jfDkbl633CTZ/R0FstFztOcDWNHXRMW6b
+         kS3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701973522; x=1702578322;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5JdtSkhV/uZ+qgTv5nm/tjN7XRjVnjCUJ7V0n44iPxI=;
+        b=jXfkOSJkRUUniTCX1dWlL9ChldJ4ZgyqqxtYdGYxlHuCbUJYi0Dxwfgb74f3BRCzwL
+         NJV5EbW3vWeWaVJ2JwQiuLPu1h6d/3LdnpEZCp064TrgLeFClIqj3XeMVu3mQzbGy1IK
+         khkomampIS6gi3Xpe3z6zqvNs8MQZ3cjFDFMEs/HkH1ntQvszwQyMg+du1j1x5Cr06bq
+         /cXnsKCRcLDMq1wsmEPvce5byZMZSg1T7pMPCH2E+LWGZ/gRNI13mdCEB4SK8Rs/C7mu
+         gVeWuuhMQLR1yF1t4JMs0Ycegmes5MhYCI/C8DyLVeAv+rV9Uo1EpPnkiCIKrIXmqzlO
+         KJbg==
+X-Gm-Message-State: AOJu0YyBpECXUsuHmRjr1qxFhnC1NTk4hO7PgUwgs3Gm/sl5QhJR7Sm+
+	Jj1XPsXE+lFFee9xJXlf+r+/Ep/+n1xhqKTWBBo=
+X-Google-Smtp-Source: AGHT+IHY+s/sc69Wv6rSKgC8GVl9b1PBrwAVNxIVr9rnmx1+q5QlZJy/UldZI2uZtz7PpgeFAYDI2UwljpPqDCLnd6Y=
+X-Received: by 2002:ad4:4f11:0:b0:67a:a721:e140 with SMTP id
+ fb17-20020ad44f11000000b0067aa721e140mr3126459qvb.109.1701973521839; Thu, 07
+ Dec 2023 10:25:21 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
+MIME-Version: 1.0
+References: <20231130191050.3165862-2-hugo@hugovil.com> <202312061443.Cknef7Uq-lkp@intel.com>
+ <20231207125243.c056d5cd0f875ea6dfdfa194@hugovil.com>
+In-Reply-To: <20231207125243.c056d5cd0f875ea6dfdfa194@hugovil.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Thu, 7 Dec 2023 20:24:45 +0200
+Message-ID: <CAHp75VebCZckUrNraYQj9k=Mrn2kbYs1Lx26f5-8rKJ3RXeh-w@mail.gmail.com>
+Subject: Re: [PATCH 1/7] serial: sc16is7xx: fix snprintf format specifier in sc16is7xx_regmap_name()
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: kernel test robot <lkp@intel.com>, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	hvilleneuve@dimonoff.com, oe-kbuild-all@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Thu, 07 Dec 2023 18:58:12 +0100
-Message-Id: <CXIAOLFK6TFO.1J0V4C5I03Q5F@bootlin.com>
-Cc: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, "Russell King"
- <linux@armlinux.org.uk>, "Jiri Slaby" <jirislaby@kernel.org>, "LKML"
- <linux-kernel@vger.kernel.org>, "linux-serial"
- <linux-serial@vger.kernel.org>, "Linus Walleij" <linus.walleij@linaro.org>,
- =?utf-8?q?Gr=C3=A9gory_Clement?= <gregory.clement@bootlin.com>, "Alexandre
- Belloni" <alexandre.belloni@bootlin.com>, "Thomas Petazzoni"
- <thomas.petazzoni@bootlin.com>, "Vladimir Kondratiev"
- <vladimir.kondratiev@mobileye.com>, "Tawfik Bayouk"
- <tawfik.bayouk@mobileye.com>
-To: =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-From: =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
-Subject: Re: [PATCH v5 2/9] tty: serial: amba: Use linux/{bits,bitfield}.h
- macros
-X-Mailer: aerc 0.15.2
-References: <20231130-mbly-uart-v5-0-6566703a04b5@bootlin.com>
- <20231130-mbly-uart-v5-2-6566703a04b5@bootlin.com>
- <2023120742-argue-slighting-6120@gregkh>
- <CXHZXP7XVD0T.24N3YDLX7I929@bootlin.com>
- <42e8faf-5293-18e4-3877-25e4d094f1d@linux.intel.com>
-In-Reply-To: <42e8faf-5293-18e4-3877-25e4d094f1d@linux.intel.com>
-X-GND-Sasl: theo.lebrun@bootlin.com
 
-Hello,
+On Thu, Dec 7, 2023 at 7:52=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.com> w=
+rote:
+> On Wed, 6 Dec 2023 14:29:39 +0800
+> kernel test robot <lkp@intel.com> wrote:
 
-On Thu Dec 7, 2023 at 10:56 AM CET, Ilpo J=C3=A4rvinen wrote:
-> On Thu, 7 Dec 2023, Th=C3=A9o Lebrun wrote:
-> > On Thu Dec 7, 2023 at 2:37 AM CET, Greg Kroah-Hartman wrote:
-> > > On Thu, Nov 30, 2023 at 03:07:14PM +0100, Th=C3=A9o Lebrun wrote:
-> > > > The driver uses bit shifts and hexadecimal expressions to declare
-> > > > constants. Replace that with the BIT(), GENMASK() & FIELD_PREP_CONS=
-T()
-> > > > macros to clarify intent.
-> > > >=20
-> > > > Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> > > > Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
-> > > > Signed-off-by: Th=C3=A9o Lebrun <theo.lebrun@bootlin.com>
-> > > > ---
-> > > >  include/linux/amba/serial.h | 248 +++++++++++++++++++++++---------=
-------------
-> > > >  1 file changed, 127 insertions(+), 121 deletions(-)
-> > >
-> > > As 0-day had a problem with this patch, I've applied only patch 1 of
-> > > this series.  Can you fix it up and rebase and resend the rest again
-> > > (while adding the collected reviewed-by that some patches in this ser=
-ies
-> > > had)?
-> >=20
-> > So the issue is this: the header file gets included in
-> > arch/arm/include/debug/pl01x.S that gets included in arch/arm/kernel/de=
-bug.S
-> > (see #include CONFIG_DEBUG_LL_INCLUDE).
-> >=20
-> > I don't see any easy way out of this, so I guess it means the patch mus=
-t be
-> > dropped. If someone confirms that there are indeed no solution to have =
-BIT(),
-> > GENMASK() & FIELD_PREP_CONST() accessible from assembly, I'll send the =
-next
-> > version.
+...
+
+> >    drivers/tty/serial/sc16is7xx.c: In function 'sc16is7xx_i2c_probe':
+> > >> drivers/tty/serial/sc16is7xx.c:1703:41: warning: '%u' directive outp=
+ut may be truncated writing between 1 and 10 bytes into a region of size 2 =
+[-Wformat-truncation=3D]
+> >     1703 |         snprintf(buf, sizeof(buf), "port%u", port_id);
+> >          |                                         ^~
+> >    In function 'sc16is7xx_regmap_name',
+> >        inlined from 'sc16is7xx_i2c_probe' at drivers/tty/serial/sc16is7=
+xx.c:1805:17:
+> >    drivers/tty/serial/sc16is7xx.c:1703:36: note: directive argument in =
+the range [0, 4294967294]
+> >     1703 |         snprintf(buf, sizeof(buf), "port%u", port_id);
+> >          |                                    ^~~~~~~~
+> >    drivers/tty/serial/sc16is7xx.c:1703:9: note: 'snprintf' output betwe=
+en 6 and 15 bytes into a destination of size 6
+> >     1703 |         snprintf(buf, sizeof(buf), "port%u", port_id);
+> >          |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 >
-> Yeah, it seems to require UART01x_FR_TXFF and UART01x_FR_BUSY, plus=20
-> UART01x_DR and UART01x_FR that are not touched by your patch.
+> Hi,
+> the only solution I could find is to add this line just before snprintf:
 >
-> I suppose the rest might be convertable though..
+>     BUG_ON(port_id > MAX310X_MAX_PORTS);
+>
+> it allows us to have the smallest buffer size possible.
+>
+> One other solution would be to change port_id from "unsigned int"
+> to "u8", and increase the buffer by an additional 2 bytes to silence
+> the warning, but then wasting 2 bytes for each channel, like so:
 
-Thanks Greg and Ilpo! v6 has been sent.
+I didn't get this. It's a buffer that is rewritten on each port (why
+is it even static?). Just make sure it's enough for any given number
+and drop the static.
 
-Regards,
+...
+
+While at it, can you look at the following items to improve?
+- sc16is7xx_alloc_line() can be updated to use IDA framework
+- move return xxx; to the default cases in a few functions
+- if (div > 0xffff) { --> if (div >=3D BIT(16)) { as it better shows why
+the limit is that (we have only 16 bits for the divider)
+- do {} while (0) in the sc16is7xx_port_irq, WTH?!
+- while (1) { -- do { } while (keep_polling); in sc16is7xx_irq()
+- use in_range() in sc16is7xx_setup_mctrl_ports() ? (maybe not, dunno)
+- for (i--; i >=3D 0; i--) { --> while (i--) {
+- use spi_get_device_match_data() and i2c_get_match_data()
+- 15000000 --> 15 * HZ_PER_MHZ ?
+- dropping MODULE_ALIAS (and fix the ID tables, _if_ needed)
+- split the code to the core / main + SPI + I2C glue drivers
+
+* These just come on the first glance at the code, perhaps there is
+more room to improve.
 
 --
-Th=C3=A9o Lebrun, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+With Best Regards,
+Andy Shevchenko
