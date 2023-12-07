@@ -1,30 +1,30 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6765910A00;
-	Thu,  7 Dec 2023 06:50:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F19D10A00
+	for <linux-serial@vger.kernel.org>; Thu,  7 Dec 2023 06:51:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="CcR4zYOr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C665C433CC;
-	Thu,  7 Dec 2023 06:50:57 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="pXUTXGVw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A65CC433CB;
+	Thu,  7 Dec 2023 06:51:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1701931857;
-	bh=5rq84evr5Sp4/RH4eXvLAxgnsQiE23jaVtXpmghA1G0=;
+	s=korg; t=1701931860;
+	bh=oc2cpH+WqLqG0cbZP0JpCz4crm5mTOCZxYrQjBHv1Hg=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=CcR4zYOrTjlo6Y9j0vouEKHP+t3UfzxX0klqYQd02P6/nycMBXSx4jDA1ys1O7l//
-	 jEn30fvBRo2lOihnjQ5AG2LzYlSBB48wiMoO3w1eNt16E9Rc2GwEnS7F6VniJeUYu+
-	 pA5Nr5e/CozwpXpbYkitpAYnB67qETBIb7FhElCM=
-Date: Thu, 7 Dec 2023 10:45:48 +0900
+	b=pXUTXGVwaB50gZJbzGdiUiKpfRUpT5nOLgNBT5c1XzJwOuQod0wW5v79gkuqYTL0L
+	 4F5Vza4Ka+RsCAAivzay2a76lPNv1qOl1ot5wZyR++L8Khsmk0Gy4NUVxNZTXv+20m
+	 Jzao1+zYqXEQuUwHuJmMnbfey6WrxSviY+BbHoWg=
+Date: Thu, 7 Dec 2023 10:47:18 +0900
 From: Greg KH <gregkh@linuxfoundation.org>
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: jirislaby@kernel.org, hvilleneuve@dimonoff.com,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	stable@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 1/7] serial: sc16is7xx: fix snprintf format specifier in
- sc16is7xx_regmap_name()
-Message-ID: <2023120748-macaroni-gaining-335f@gregkh>
-References: <20231130191050.3165862-1-hugo@hugovil.com>
- <20231130191050.3165862-2-hugo@hugovil.com>
+To: Johan Hovold <johan@kernel.org>
+Cc: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 23/27] tty: serdev: convert to u8 and size_t
+Message-ID: <2023120736-bullpen-edgy-3c02@gregkh>
+References: <20231206073712.17776-1-jirislaby@kernel.org>
+ <20231206073712.17776-24-jirislaby@kernel.org>
+ <ZXAsSjFzBaBdqJSg@hovoldconsulting.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -33,33 +33,56 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231130191050.3165862-2-hugo@hugovil.com>
+In-Reply-To: <ZXAsSjFzBaBdqJSg@hovoldconsulting.com>
 
-On Thu, Nov 30, 2023 at 02:10:43PM -0500, Hugo Villeneuve wrote:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Wed, Dec 06, 2023 at 09:09:46AM +0100, Johan Hovold wrote:
+> On Wed, Dec 06, 2023 at 08:37:08AM +0100, Jiri Slaby wrote:
+> > Switch character types to u8 and sizes to size_t. To conform to
+> > characters/sizes in the rest of the tty layer.
+> >
+> > This patch converts struct serdev_device_ops hooks and its
+> > instantiations.
+> > 
+> > Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> > Cc: Rob Herring <robh@kernel.org>
+> > ---
+>   
+> > diff --git a/drivers/gnss/serial.c b/drivers/gnss/serial.c
+> > index 5d8e9bfb24d0..baa956494e79 100644
+> > --- a/drivers/gnss/serial.c
+> > +++ b/drivers/gnss/serial.c
+> > @@ -80,8 +80,8 @@ static const struct gnss_operations gnss_serial_gnss_ops = {
+> >  	.write_raw	= gnss_serial_write_raw,
+> >  };
+> >  
+> > -static int gnss_serial_receive_buf(struct serdev_device *serdev,
+> > -					const unsigned char *buf, size_t count)
+> > +static ssize_t gnss_serial_receive_buf(struct serdev_device *serdev,
+> > +				       const u8 *buf, size_t count)
+> >  {
+> >  	struct gnss_serial *gserial = serdev_device_get_drvdata(serdev);
+> >  	struct gnss_device *gdev = gserial->gdev;
+> > diff --git a/drivers/gnss/sirf.c b/drivers/gnss/sirf.c
+> > index bcb53ccfee4d..6801a8fb2040 100644
+> > --- a/drivers/gnss/sirf.c
+> > +++ b/drivers/gnss/sirf.c
+> > @@ -160,8 +160,8 @@ static const struct gnss_operations sirf_gnss_ops = {
+> >  	.write_raw	= sirf_write_raw,
+> >  };
+> >  
+> > -static int sirf_receive_buf(struct serdev_device *serdev,
+> > -				const unsigned char *buf, size_t count)
+> > +static ssize_t sirf_receive_buf(struct serdev_device *serdev,
+> > +				const u8 *buf, size_t count)
+> >  {
 > 
-> Change snprint format specifier from %d to %u since port_id is unsigned.
-> 
-> Fixes: 3837a0379533 ("serial: sc16is7xx: improve regmap debugfs by using one regmap per port")
-> Cc: stable@vger.kernel.org # 6.1.x: 3837a03 serial: sc16is7xx: improve regmap debugfs by using one regmap per port
-> Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> ---
-> I did not originally add a "Cc: stable" tag for commit 3837a0379533 ("serial: sc16is7xx: improve regmap debugfs by using one regmap per port")
-> as it was intended only to improve debugging using debugfs. But
-> since then, I have been able to confirm that it also fixes a long standing
-> bug in our system where the Tx interrupt are no longer enabled at some
-> point when transmitting large RS-485 paquets (> 64 bytes, which is the size
-> of the FIFO). I have been investigating why, but so far I haven't found the
-> exact cause, altough I suspect it has something to do with regmap caching.
-> Therefore, I have added it as a prerequisite for this patch so that it is
-> automatically added to the stable kernels.
+> The gnss subsystem consistently use tabs-only for indentation of
+> continuation lines so please don't change the indentation for these
+> files.
 
-As you are splitting fixes from non-fixes in this series, please resend
-this as 2 different series, one that I can apply now to my tty-linus
-branch to get merged for 6.7-final, and one that can go into tty-next
-for 6.8-rc1.  Mixing them up here just ensures that they all would get
-applied to tty-next.
+That's going to drive checkpatch.pl crazy, please don't inist on it as
+that is not going to work well over time as we would all have to
+remember that just for this one subsystem :(
 
 thanks,
 
