@@ -1,96 +1,106 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VfZ22qTY"
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A208010C4;
-	Thu,  7 Dec 2023 04:51:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701953464; x=1733489464;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=qZHsWoDGythR+xpoV3du0UBWiGRf3tb4+oh+E8eq000=;
-  b=VfZ22qTYIByY9zYexwiRhypIN8L7O+OfFiLQJNlzx70FtMbYHW3UXUYF
-   r+yxv1h1Dy1O7lMqOcseRwDZnIrJ1b698v1aRW9ueoZhagetnhv9uh75o
-   kV2QTmrYb9RZLBAb0h/H98MQ/5/MGsMhJc2+uxoB105xl/GkfhVLdO+Lf
-   Yz0Abg6HIqn3gDYhNblIt4I1guKWjDRm5c8R/1UjxQnt+7rbl3AEVF3Ow
-   Ul1BUJMlGnqp50LULap0lXNw3k07DOghXF6WEaFn32Quaov/Hxes8q5Dy
-   SfCl1+l6+7g9nY/rfOuMGOjmrnnpRdgO4/Dxmhrg6X9ETyWXGBN5+tGwp
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10916"; a="1092104"
-X-IronPort-AV: E=Sophos;i="6.04,256,1695711600"; 
-   d="scan'208";a="1092104"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2023 04:51:03 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10916"; a="915567795"
-X-IronPort-AV: E=Sophos;i="6.04,256,1695711600"; 
-   d="scan'208";a="915567795"
-Received: from dkrupnov-mobl3.ger.corp.intel.com ([10.249.34.6])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2023 04:51:01 -0800
-Date: Thu, 7 Dec 2023 14:50:59 +0200 (EET)
-From: =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 21/27] tty: nozomi: convert to u8 and size_t
-In-Reply-To: <20231206073712.17776-22-jirislaby@kernel.org>
-Message-ID: <9246bc67-518a-72b9-beaf-3204a4a977@linux.intel.com>
-References: <20231206073712.17776-1-jirislaby@kernel.org> <20231206073712.17776-22-jirislaby@kernel.org>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="d29IBFFj"
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98CC410CB
+	for <linux-serial@vger.kernel.org>; Thu,  7 Dec 2023 05:33:45 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id ffacd0b85a97d-33330a5617fso951147f8f.2
+        for <linux-serial@vger.kernel.org>; Thu, 07 Dec 2023 05:33:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1701956024; x=1702560824; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:date:message-id:subject
+         :references:in-reply-to:to:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wOjuvQ1knDsOf99mi3hFggOSmu3Whc7MN8Fp35NQ1P8=;
+        b=d29IBFFja8GOlr7TD5iaQ1dAGpzoPVT7meFpiFFPx5MK6N0VwJIBYd7EB+PxJDc4pF
+         KqAW9oPgnS5BRlOTVP6BpR9rDYzETzBB3J3qJdKM82fGOqjTg6fX7zYraeUaT7GxCQUa
+         QK1y2zxxynWuBEXYANutgdLUoYXl/KudC4/RzdKEa0ogZcmlZgdVIoZxv4gfzunrl/8h
+         6vKlMYQbYEhjdtxzAOT2c/KPpQSCytYetG7RIMk51cs+t55oMXUl3zMh+sBgkh2RwbpU
+         tFxP3IuZ0GcxY8NvvPHpNzR1H60k1+enzOjvj7bpyz0E7P+SpI9fnZMxcE/1LMN/FFWD
+         0xZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701956024; x=1702560824;
+        h=content-transfer-encoding:mime-version:date:message-id:subject
+         :references:in-reply-to:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=wOjuvQ1knDsOf99mi3hFggOSmu3Whc7MN8Fp35NQ1P8=;
+        b=dlVB2O7Ij/M1LgKs1HrP6KWF8ZuNDF7f5l5Punt4o4Um61fQMLjljG1H1R3UgZlI2X
+         yJJk/wA450CABT2a2L9/UwK8Os8qX3vzvwiwF06GwDCMW4CRXt/7IajZZrwZ4x+mMsNA
+         JIq0/Mp3FvdLxkwMNyegpO1o8UXKKo7IcrbL0vp2DbvbwD/P1X5KNb6GoWytH//FtHkJ
+         eHavVeOzHCvFAClCTnWlhlod3WhlZlZnnWuQ5hOqXSoO5HiBzkHWyBBvlHQr6taUiDw+
+         cKSJewnDxPDfx/lOC6OzkhRBlKrraN1v1buTmXAzLEshlCKfgV7hki3GFDPN39qsDFnl
+         wHkg==
+X-Gm-Message-State: AOJu0Yxjh7Jx3PjKFinAQ1iGt7jUPh51yt1o3CLo1AqSulfUggpjcsH4
+	EuA1bN5Uwffi/gZCdnSEUXptOw==
+X-Google-Smtp-Source: AGHT+IEl9KbxTbmb8n+WvISyxYm/HTeQm70dDUbz9cfV9RUKa1Wk27SjB9FMgD9xanu+1rN8Jo3LOw==
+X-Received: by 2002:adf:ec0c:0:b0:333:2fd2:5d30 with SMTP id x12-20020adfec0c000000b003332fd25d30mr1678939wrn.98.1701956024085;
+        Thu, 07 Dec 2023 05:33:44 -0800 (PST)
+Received: from [127.0.1.1] ([178.197.218.27])
+        by smtp.gmail.com with ESMTPSA id p6-20020adfcc86000000b00333371c7382sm1471548wrj.72.2023.12.07.05.33.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Dec 2023 05:33:43 -0800 (PST)
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To: Andi Shyti <andi.shyti@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>, 
+ Thierry Reding <thierry.reding@gmail.com>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ Wim Van Sebroeck <wim@linux-watchdog.org>, 
+ Guenter Roeck <linux@roeck-us.net>, linux-fsd@tesla.com, 
+ linux-i2c@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, 
+ linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20231205092229.19135-1-krzysztof.kozlowski@linaro.org>
+References: <20231205092229.19135-1-krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH 0/6] dt-bindings: samsung: continued - add specific
+ compatibles for Tesla FSD Hi,
+Message-Id: <170195602173.92721.14927713507913101589.b4-ty@linaro.org>
+Date: Thu, 07 Dec 2023 14:33:41 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: b4 0.12.3
 
-On Wed, 6 Dec 2023, Jiri Slaby (SUSE) wrote:
 
-> Switch character types to u8 and sizes to size_t. To conform to
-> characters/sizes in the rest of the tty layer.
+On Tue, 05 Dec 2023 10:22:23 +0100, Krzysztof Kozlowski wrote:
+> Merging
+> =======
+> I propose to take entire patchset through my tree (Samsung SoC), because:
+> 1. I already took similar work this cycle:
+>    https://lore.kernel.org/all/169997520487.6747.17671551558724027958.b4-ty@linaro.org/
+> 2. Two new SoCs are coming (Google GS101 and ExynosAutov920) and they might
+>    touch the same lines.  It is reasonable for me to take the bindings for the new
+>    SoCs, to have clean `make dtbs_check` on the new DTS.
+> 3. Having it together helps me to have clean `make dtbs_check` within my tree
+>    on the existing DTS.
+> 4. No drivers are affected by this change.
 > 
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> ---
->  drivers/tty/nozomi.c | 9 ++++-----
->  1 file changed, 4 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/tty/nozomi.c b/drivers/tty/nozomi.c
-> index b247341bd12f..e28a921c1637 100644
-> --- a/drivers/tty/nozomi.c
-> +++ b/drivers/tty/nozomi.c
-> @@ -783,11 +783,10 @@ static int receive_data(enum port_type index, struct nozomi *dc)
->  			tty_insert_flip_char(&port->port, buf[0], TTY_NORMAL);
->  			size = 0;
->  		} else if (size < RECEIVE_BUF_MAX) {
-> -			size -= tty_insert_flip_string(&port->port,
-> -					(char *)buf, size);
-> +			size -= tty_insert_flip_string(&port->port, buf, size);
->  		} else {
-> -			i = tty_insert_flip_string(&port->port,
-> -					(char *)buf, RECEIVE_BUF_MAX);
-> +			i = tty_insert_flip_string(&port->port, buf,
-> +						   RECEIVE_BUF_MAX);
->  			size -= i;
->  			offset += i;
->  		}
-> @@ -1584,10 +1583,10 @@ static void ntty_hangup(struct tty_struct *tty)
->  static ssize_t ntty_write(struct tty_struct *tty, const u8 *buffer,
->  			  size_t count)
->  {
-> -	int rval = -EINVAL;
->  	struct nozomi *dc = get_dc_by_tty(tty);
->  	struct port *port = tty->driver_data;
->  	unsigned long flags;
-> +	size_t rval;
->  
->  	if (!dc || !port)
->  		return -ENODEV;
-> 
+> [...]
 
-It wouldn't hurt to mention in the commit message that -EINVAL 
-initialization is unnecessary.
+Applied, thanks!
 
+[1/6] dt-bindings: i2c: exynos5: add specific compatible for Tesla FSD
+      https://git.kernel.org/krzk/linux/c/7677fdbc036b93a882f660ca2484a6807e72f0be
+[2/6] dt-bindings: pwm: samsung: add specific compatible for Tesla FSD
+      https://git.kernel.org/krzk/linux/c/edb32ec3cea79b518e6af841ecb01c839818f562
+[3/6] dt-bindings: serial: samsung: add specific compatible for Tesla FSD
+      https://git.kernel.org/krzk/linux/c/921f4f1db7f5bf6798349db8a4382c032f144b98
+[4/6] dt-bindings: samsung: exynos-pmu: add specific compatible for Tesla FSD
+      https://git.kernel.org/krzk/linux/c/54772f1d61cd99ea1ed0febd4187bf24ef63bccd
+[5/6] dt-bindings: watchdog: samsung: add specific compatible for Tesla FSD
+      https://git.kernel.org/krzk/linux/c/bf1e24c5330af06b2f7f1a166a1011d8d48e8651
+[6/6] arm64: dts: fsd: add specific compatibles for Tesla FSD
+      https://git.kernel.org/krzk/linux/c/5f257922c5948c58669346d5cda371632108f266
+
+Best regards,
 -- 
- i.
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
