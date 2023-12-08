@@ -1,91 +1,194 @@
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="oGW1PtS6"
-Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6922E171C;
-	Fri,  8 Dec 2023 00:29:06 -0800 (PST)
-Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id 0C73A6035A;
-	Fri,  8 Dec 2023 08:28:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1702024145;
-	bh=UvyfqdbltEMmT/d4QMm8n0gCUuXIl0RJbtpBTH/Mcu8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=oGW1PtS6877xWlAfkBFPmmyYoff9/sIjB+d6vgZ8zAhDPDvGeggkaP5A+OfwLrn/q
-	 AcnjVRARcAnAY5XGpe2nGf09IwhQQQEvSRLMsJvhTZLrdh8T56xQiGl2C1adE6kEM5
-	 BwVTunrjXlLfbFV6KQHgIryBfytNac4bnG6BYfndlxxB4BVmxgiO0IdMLq/PHXqayY
-	 UK2PRnzRMMefRAPWhIWmP+SNAomc4s/6ezb3feFqnqhwgvE0y+3FlZC7CamnHEMxw5
-	 8ppI/8NDGW2yXdRvzipG+x9ZXdEinJSJnjbUP4unG5nP/AFnFB2It0bhNBIB2Ro+s1
-	 mG92ERpGo7HCw==
-Date: Fri, 8 Dec 2023 10:28:32 +0200
-From: Tony Lindgren <tony@atomide.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc: "David S . Miller" <davem@davemloft.net>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Dhruva Gole <d-gole@ti.com>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4 0/4] Add support for DEVNAME:0.0 style hardware based
- addressing
-Message-ID: <20231208082832.GV5169@atomide.com>
-References: <20231205073255.20562-1-tony@atomide.com>
- <20231205074557.GM5169@atomide.com>
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CD9110F1
+	for <linux-serial@vger.kernel.org>; Fri,  8 Dec 2023 01:02:25 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rBWkJ-0003GX-Cl; Fri, 08 Dec 2023 10:02:07 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rBWkH-00ENT4-HR; Fri, 08 Dec 2023 10:02:05 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rBWkH-00GLAI-7q; Fri, 08 Dec 2023 10:02:05 +0100
+Date: Fri, 8 Dec 2023 10:02:05 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Sebastian Reichel <sebastian.reichel@collabora.com>,
+	linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+	Fabio Estevam <festevam@gmail.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>, linux-kernel@vger.kernel.org,
+	Ian Ray <ian.ray@ge.com>, NXP Linux Team <linux-imx@nxp.com>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	kernel@collabora.com, Shawn Guo <shawnguo@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCHv4] serial: imx: Add DMA buffer configuration via sysfs
+Message-ID: <20231208090205.ioc76sych3snjiwb@pengutronix.de>
+References: <20210305115058.92284-1-sebastian.reichel@collabora.com>
+ <YEIetFdcuYZU98s/@kroah.com>
+ <20210305124252.c3ffgca6wjqpkn45@earth.universe>
+ <20210405214446.zhidvtvahcfp4wxa@earth.universe>
+ <YGwKAOmlHRgEVh20@kroah.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="ff53tonb2aszag6u"
 Content-Disposition: inline
-In-Reply-To: <20231205074557.GM5169@atomide.com>
+In-Reply-To: <YGwKAOmlHRgEVh20@kroah.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 
-* Tony Lindgren <tony@atomide.com> [700101 02:00]:
-> * Tony Lindgren <tony@atomide.com> [700101 02:00]:
-> > We also prepare the serial core to handle the ttyS related quirks done
-> > in console_setup() to prepare things for eventually dropping the parsing
-> > from console_setup(). This can only happen after further changes to
-> > register_console().
-> 
-> Petr FYI, so for dropping the console_setup() parsing, below is a hack
-> patch to see what goes wrong in register_console() if you have some ideas
-> on how to handle this.
-> 
-> We end up with the console device backed up seria8250 instead of ttyS0,
-> and earlycon won't get properly disabled. And of course other consoles
-> beyond ttyS need to be also considered.
 
-Hmm so the following extra patch seems to fix the issues based on light
-testing. But is it safe to assume that if CON_PRINTBUFFER is set we can
-disable the bootconsole?
+--ff53tonb2aszag6u
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I also noticed that the bootconsole not getting disabled issue is there
-also for console=DEVNAME:0.0 usage even before we start dropping handling
-in console_setup().
+Hello Greg,
 
-Regards,
+[Cc +=3D dt maintainers]
 
-Tony
+On Tue, Apr 06, 2021 at 09:13:04AM +0200, Greg Kroah-Hartman wrote:
+> On Mon, Apr 05, 2021 at 11:44:46PM +0200, Sebastian Reichel wrote:
+> > On Fri, Mar 05, 2021 at 01:42:52PM +0100, Sebastian Reichel wrote:
+> > > On Fri, Mar 05, 2021 at 01:06:12PM +0100, Greg Kroah-Hartman wrote:
+> > > > On Fri, Mar 05, 2021 at 12:50:58PM +0100, Sebastian Reichel wrote:
+> > > > > From: Fabien Lahoudere <fabien.lahoudere@collabora.com>
+> > > > >=20
+> > > > > In order to optimize serial communication (performance/throughput=
+ VS
+> > > > > latency), we may need to tweak DMA period number and size. This a=
+dds
+> > > > > sysfs attributes to configure those values before initialising DM=
+A.
+> > > > > The defaults will stay the same as before (16 buffers with a size=
+ of
+> > > > > 1024 bytes). Afterwards the values can be read/write with the
+> > > > > following sysfs files:
+> > > > >=20
+> > > > > /sys/class/tty/ttymxc*/dma_buffer_size
+> > > > > /sys/class/tty/ttymxc*/dma_buffer_count
+> > > >=20
+> > > > Ick no.  Custom sysfs attributes for things like serial ports are c=
+razy.
+> > > >=20
+> > > > > This is mainly needed for GEHC CS ONE (arch/arm/boot/dts/imx53-pp=
+d.dts),
+> > > > > which has multiple microcontrollers connected via UART controllin=
+g. One
+> > > > > of the UARTs is connected to an on-board microcontroller at 19200=
+ baud,
+> > > > > which constantly pushes critical data (so aging character detect
+> > > > > interrupt will never trigger). This data must be processed at 50-=
+200 Hz,
+> > > > > so UART should return data in less than 5-20ms. With 1024 byte DMA
+> > > > > buffer (and a constant data stream) the read operation instead ne=
+eds
+> > > > > 1024 byte / 19200 baud =3D 53.333ms, which is way too long (note:=
+ Worst
+> > > > > Case would be remote processor sending data with short pauses <=
+=3D 7
+> > > > > characters, which would further increase this number). The current
+> > > > > downstream kernel instead configures 24 bytes resulting in 1.25ms,
+> > > > > but that is obviously not sensible for normal UART use cases and =
+cannot
+> > > > > be used as new default.
+> > > >=20
+> > > > Why can't this be a device tree attribute? Why does this have to be=
+ a
+> > > > sysfs thing that no one will know how to tune and set over time.  T=
+his
+> > > > hardware should not force a user to manually tune it to get it to w=
+ork
+> > > > properly, this isn't the 1990's anymore :(
+> > > >=20
+> > > > Please never force a user to choose stuff like this, they never will
+> > > > know what to do.
+> > >=20
+> > > This used to be a DT attribute in PATCHv1. It has been moved over to
+> > > sysfs since PATCHv2, since it does not describe the hardware, but
+> > > configuration. Unfortunately lore.kernel.org does not have the full
+> > > thread, but this is the discussion:
+> > >=20
+> > > https://lore.kernel.org/linux-serial/20170629182618.jpahpmuq364ldcv2@=
+pengutronix.de/
+> > >=20
+> > > From downstream POV this can be done either by adding a DT property
+> > > to the UART node, or by adding a udev rule.
+> > >=20
+> > > From my POV there is not a huge difference. In both cases we will
+> > > be bound by an ABI afterwards, in both cases people will usually
+> > > stick to the default value and in both cases people that do deviate
+> > > from the default probably ran into problems and started to look
+> > > for a solution.
+> >=20
+> > ping? It's not very nice to get a rejected in cycles :(
+>=20
+> I recommend working with the DT people here, as custom sysfs attributes
+> for things like this that are really just describing the hardware is
+> crazy.
 
-8< ----------------------
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -3549,7 +3549,8 @@ void register_console(struct console *newcon)
- 	 */
- 	con_printk(KERN_INFO, newcon, "enabled\n");
- 	if (bootcon_registered &&
--	    ((newcon->flags & (CON_CONSDEV | CON_BOOT)) == CON_CONSDEV) &&
-+	    !(newcon->flags & CON_BOOT) &&
-+	    (newcon->flags & (CON_CONSDEV | CON_PRINTBUFFER)) &&
- 	    !keep_bootcon) {
- 		struct hlist_node *tmp;
- 
--- 
-2.43.0
+I was one who expressed concerns in the earlier rounds that dt isn't the
+right place for this. dt is about hardware description, but choosing
+a good value for the dma buffer size is driver tuning and depends on the
+individual requirements. (latency, throughput, memory consumption,
+robustness under system load). I can even imagine use cases where the
+settings should be changed dynamically, which cannot (easily) be done
+using dt.
+
+While I see your point that a driver specific sysfs property is
+unusual/strange/whatever every downside you mentioned also applies to a
+dt property (or a custom ioctl).
+
+Among the solutions I can imagine, my preference order is:
+
+ - automatic tuning
+ - sysfs property
+ - further discussion
+ - dt property
+ - custom ioctl
+
+I wonder if there is a sensible way to implement a automatic tuning. In
+the use case mentioned in the commit log, Sebastian's need is low
+latency for a constantly sending microcontroller on the other side. Is
+it sensible to make the used dma buffers smaller if we have a certain
+throughput? Or is that too magic and doomed to fail covering most use
+cases? If that doesn't work, I support Sebastian's approach to do that
+in a sysfs property.
+
+Sebastian, have you evaluated just not using dma for these UARTs?
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--ff53tonb2aszag6u
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmVy24wACgkQj4D7WH0S
+/k7+ggf+Mcv56tDH2NcnNQ7qncn8ZtwodtWIarYf4MDerc7cZntyFdkGOLbJ8CdE
+cCulj6BnK1Yjl9nCz4tYqd6XY0SoDIR5mFdudhQU5ViQTTt9ohYT6pjqeL1F2dVc
+ozhSFoFasBucM1QVIoZR5sgXWQR0mUoPWpY11YFYbjNzC4ZGA4R9Ill3P8iFLMQR
+d7e/M2jBKIR+0XlHO+m4s3zy/oTxh7ZXj4IcBQqhlnfaz+A8vUJutMZ/kDCcVAvH
+k4AhpafOEU3IeH3OJEXPs9Q9MfUzCBGfgCNCI7YX5qrzx3tmGNQg/EWw2V7P2npz
+9nWpionkSNv4oKH2RT7cjG2Ad+JljA==
+=iVEI
+-----END PGP SIGNATURE-----
+
+--ff53tonb2aszag6u--
