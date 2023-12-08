@@ -1,125 +1,236 @@
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D3AD1719
-	for <linux-serial@vger.kernel.org>; Thu,  7 Dec 2023 11:46:13 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-216-Lg-bH7P_MLmKxgoy-bEtjA-1; Thu, 07 Dec 2023 19:46:10 +0000
-X-MC-Unique: Lg-bH7P_MLmKxgoy-bEtjA-1
-Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
- (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Thu, 7 Dec
- 2023 19:45:55 +0000
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.048; Thu, 7 Dec 2023 19:45:55 +0000
-From: David Laight <David.Laight@ACULAB.COM>
-To: 'Hugo Villeneuve' <hugo@hugovil.com>, kernel test robot <lkp@intel.com>
-CC: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-	"jirislaby@kernel.org" <jirislaby@kernel.org>, "hvilleneuve@dimonoff.com"
-	<hvilleneuve@dimonoff.com>, "oe-kbuild-all@lists.linux.dev"
-	<oe-kbuild-all@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>, "stable@vger.kernel.org"
-	<stable@vger.kernel.org>, Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: RE: [PATCH 1/7] serial: sc16is7xx: fix snprintf format specifier in
- sc16is7xx_regmap_name()
-Thread-Topic: [PATCH 1/7] serial: sc16is7xx: fix snprintf format specifier in
- sc16is7xx_regmap_name()
-Thread-Index: AQHaKTY2EJh7ggNIk0GV0BoNbt/4DLCeM6bg
-Date: Thu, 7 Dec 2023 19:45:55 +0000
-Message-ID: <16093ec23ca34085824987456eac8f2a@AcuMS.aculab.com>
-References: <20231130191050.3165862-2-hugo@hugovil.com>
-	<202312061443.Cknef7Uq-lkp@intel.com>
- <20231207125243.c056d5cd0f875ea6dfdfa194@hugovil.com>
-In-Reply-To: <20231207125243.c056d5cd0f875ea6dfdfa194@hugovil.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="sw0Sd/TK"
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3813F1712
+	for <linux-serial@vger.kernel.org>; Thu,  7 Dec 2023 23:50:24 -0800 (PST)
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+	by mailout2.samsung.com (KnoxPortal) with ESMTP id 20231208075021epoutp02a12e606f47916a5e28c32ae6af3c6bf2~ey9RS0ZdP2181021810epoutp02A
+	for <linux-serial@vger.kernel.org>; Fri,  8 Dec 2023 07:50:21 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20231208075021epoutp02a12e606f47916a5e28c32ae6af3c6bf2~ey9RS0ZdP2181021810epoutp02A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1702021822;
+	bh=jf0IfkFwZ1DhJlD4BeDhp4v+pYjblUlZQuCAeIU8Emk=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=sw0Sd/TKON/kIqyIQcganc19fVD+0cAsONMslfJMYIESnJhuP3Gg1fFr2Dxnlq1PI
+	 eRfm606WoF4W4HIY3IYsD3ifB6w9W5pGopZ9o0im3KDy3Mtqh248FqKnwe47/z80wN
+	 /v5e2EBIT49UJkLlDus6R5lUCnvfO0cTHgdDylC4=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+	epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+	20231208075021epcas2p384030ade76947fd563d54d1b9731ca12~ey9QpPT0x0598705987epcas2p3j;
+	Fri,  8 Dec 2023 07:50:21 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.36.100]) by
+	epsnrtp2.localdomain (Postfix) with ESMTP id 4Smjwr4m6Jz4x9Q7; Fri,  8 Dec
+	2023 07:50:20 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+	epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+	44.D3.10006.CBAC2756; Fri,  8 Dec 2023 16:50:20 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+	epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
+	20231208075020epcas2p30e46ea65e921664930b337510461892f~ey9Pqwdgm1398013980epcas2p3H;
+	Fri,  8 Dec 2023 07:50:20 +0000 (GMT)
+Received: from epsmgmcp1.samsung.com (unknown [182.195.42.82]) by
+	epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20231208075020epsmtrp121750879f0952f633efe0c28ae518131~ey9PppGt70202202022epsmtrp1z;
+	Fri,  8 Dec 2023 07:50:20 +0000 (GMT)
+X-AuditID: b6c32a45-179ff70000002716-7a-6572cabc8c6b
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+	epsmgmcp1.samsung.com (Symantec Messaging Gateway) with SMTP id
+	7D.40.18939.CBAC2756; Fri,  8 Dec 2023 16:50:20 +0900 (KST)
+Received: from localhost.localdomain (unknown [10.229.9.55]) by
+	epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20231208075019epsmtip22aa869371b7b30fef6916db6cafcccc5~ey9PVDIMi1340013400epsmtip2n;
+	Fri,  8 Dec 2023 07:50:19 +0000 (GMT)
+From: Jaewon Kim <jaewon02.kim@samsung.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Alim Akhtar
+	<alim.akhtar@samsung.com>, Rob Herring <robh+dt@kernel.org>, Conor Dooley
+	<conor+dt@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>, Sylwester
+	Nawrocki <s.nawrocki@samsung.com>, Linus Walleij <linus.walleij@linaro.org>,
+	Thierry Reding <thierry.reding@gmail.com>, Uwe Kleine-K?nig
+	<u.kleine-koenig@pengutronix.de>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
+	linux-serial@vger.kernel.org, Jaewon Kim <jaewon02.kim@samsung.com>
+Subject: [PATCH v3 2/4] arm64: dts: exynos: add minimal support for
+ exynosautov920 sadk board
+Date: Fri,  8 Dec 2023 16:45:25 +0900
+Message-ID: <20231208074527.50840-3-jaewon02.kim@samsung.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20231208074527.50840-1-jaewon02.kim@samsung.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrMJsWRmVeSWpSXmKPExsWy7bCmhe6eU0WpBl8OqFg8mLeNzWLN3nNM
+	FvOPnGO1aF68ns1iR8MRVot3c2Us9r7eym4x5c9yJotNj6+xWmye/4fR4vKuOWwWd++uYrSY
+	cX4fk8WZxb3sFq17j7BbHH7Tzmrxc9c8FotVu4Dqbk+czOgg7LFz1l12j02rOtk87lzbw+ax
+	f+4ado/NS+o9+v8aePRtWcXo8XmTXABHVLZNRmpiSmqRQmpecn5KZl66rZJ3cLxzvKmZgaGu
+	oaWFuZJCXmJuqq2Si0+ArltmDtA7SgpliTmlQKGAxOJiJX07m6L80pJUhYz84hJbpdSClJwC
+	8wK94sTc4tK8dL281BIrQwMDI1OgwoTsjI/9B9gKbopXdLw9xt7AOF+4i5GTQ0LAROLu9C2s
+	XYxcHEICOxglji7ayg7hfGKUmPShhRnOOXLlADtMy6ftkxlBbCGBnYwSDw5yQBR9ZJS4P3s6
+	WIJNQFvi+/rFrCC2iMB9ZonXbdUgRcwC7UwS8769ZAFJCAvES8xe9hHMZhFQlXjw8y/QOg4O
+	XgFbidcP7SGWyUss3rGcGcTmFLCTWNC7A8zmFRCUODnzCVgrM1BN89bZYJdKCJzhkJjy7Qwz
+	RLOLxPmX91ghbGGJV8e3QH0gJfGyvw3Kzpdou3IGyq6R2LjgEiOEbS8x6zcoYDiAFmhKrN+l
+	D2JKCChLHLkFtZZPouPwX3aIMK9ER5sQRKOaxP2p59ggbBmJSUdWMkHYHhJPfi5igwTVREaJ
+	15sPskxgVJiF5JtZSL6ZhbB4ASPzKkax1ILi3PTUYqMCQ3gEJ+fnbmIEp24t1x2Mk99+0DvE
+	yMTBeIhRgoNZSYQ353x+qhBvSmJlVWpRfnxRaU5q8SFGU2BQT2SWEk3OB2aPvJJ4QxNLAxMz
+	M0NzI1MDcyVx3nutc1OEBNITS1KzU1MLUotg+pg4OKUamFjkXcv+KZu2zzwQWWmbuthOJj/9
+	tcIKm9+X8+48mXc/mC/JLlff3T4w9//GppvSn+8dT7+y9IW38j/7qcYv9Qp+bXtz/MP+1n8e
+	U19ovmNYGzc3nUeiT7z32ZmCnfUfP96oPz5LSOyCn/j5Vfmf+nt+3NTWS1qdXNPWqFMovXe2
+	SPyMGZ8TWffvtk1f6bI2/olXZGhzb3J/QOaMP/+03TdP0EpnEQuo8GS+qf8pwP9OQNS1FYYd
+	jva73LfahjGfmek3OamvW2+a9UTZ1suvJlybJXlbNn7S8XOzTrsaLjuyIvrizPLDSca5elsU
+	b0v/lLp6seBgbY9t5I2q20li4aYv93XLnDmzWjiq7kKmvRJLcUaioRZzUXEiAM80zBJmBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupikeLIzCtJLcpLzFFi42LZdlhJXnfPqaJUg7ZPzBYP5m1js1iz9xyT
+	xfwj51gtmhevZ7PY0XCE1eLdXBmLva+3sltM+bOcyWLT42usFpvn/2G0uLxrDpvF3burGC1m
+	nN/HZHFmcS+7ReveI+wWh9+0s1r83DWPxWLVLqC62xMnMzoIe+ycdZfdY9OqTjaPO9f2sHns
+	n7uG3WPzknqP/r8GHn1bVjF6fN4kF8ARxWWTkpqTWZZapG+XwJXxsf8AW8FN8YqOt8fYGxjn
+	C3cxcnJICJhIfNo+mRHEFhLYzijRcyseIi4jsfxZHxuELSxxv+UIaxcjF1DNe0aJl2fOgyXY
+	BLQlvq9fDJYQEXjOLHH2zyNmkASzQD+TxPVNCSC2sECsRPuGF2AbWARUJR78/AtUw8HBK2Ar
+	8fqhPcQCeYnFO5aDtXIK2Eks6N3BDHGQrcSarR3sIDavgKDEyZlPWCDGy0s0b53NPIFRYBaS
+	1CwkqQWMTKsYRVMLinPTc5MLDPWKE3OLS/PS9ZLzczcxgqNLK2gH47L1f/UOMTJxMB5ilOBg
+	VhLhzTmfnyrEm5JYWZValB9fVJqTWnyIUZqDRUmcVzmnM0VIID2xJDU7NbUgtQgmy8TBKdXA
+	FD0xq1DxPo/Gp4LF9w8xzxcwdld5xd3n+9T+svBDJrZWSetIoWebP1q6HTNUW/dA9/yT865J
+	qhEv+pwVrVxFbwXpvHrSFL3bbd2fsr7ie2siVeQFnjlJzn1Yuz9jvdlOBi2x1wd1TvTGls9Z
+	P5vPPe9AxpYarpXv4lM/ffF7KrckUuiN3H4pwxWZP//mnrzF7bdgWd2XTQ8N7+/VnWK9RUby
+	GPfK5BObupvjd/3ktY88d5HxnuxJL5f3zkctPsxY0OFxuNHD77OSQ5NL0YyqC68boi9+jVA4
+	++L9igXt81l1nTUUNxny21sZi6yqO8Mk4nTW9zXLsWsrv87n1nd4JSL8NKbTJWRn3YsGFZYX
+	SizFGYmGWsxFxYkAOCExrx0DAAA=
+X-CMS-MailID: 20231208075020epcas2p30e46ea65e921664930b337510461892f
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20231208075020epcas2p30e46ea65e921664930b337510461892f
+References: <20231208074527.50840-1-jaewon02.kim@samsung.com>
+	<CGME20231208075020epcas2p30e46ea65e921664930b337510461892f@epcas2p3.samsung.com>
 
-From: Hugo Villeneuve
-> Sent: 07 December 2023 17:53
-...
-> > kernel test robot noticed the following build warnings:
-> >
-> > [auto build test WARNING on d804987153e7bedf503f8e4ba649afe52cfd7f6d]
-> >
-> > url:    https://github.com/intel-lab-lkp/linux/commits/Hugo-Villeneuve/=
-serial-sc16is7xx-fix-
-> snprintf-format-specifier-in-sc16is7xx_regmap_name/20231201-031413
-> > base:   d804987153e7bedf503f8e4ba649afe52cfd7f6d
-> > patch link:    https://lore.kernel.org/r/20231130191050.3165862-2-hugo%=
-40hugovil.com
-> > patch subject: [PATCH 1/7] serial: sc16is7xx: fix snprintf format speci=
-fier in
-> sc16is7xx_regmap_name()
-> > config: x86_64-buildonly-randconfig-001-20231201 (https://download.01.o=
-rg/0day-
-> ci/archive/20231206/202312061443.Cknef7Uq-lkp@intel.com/config)
-> > compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-> > reproduce (this is a W=3D1 build): (https://download.01.org/0day-
-> ci/archive/20231206/202312061443.Cknef7Uq-lkp@intel.com/reproduce)
-> >
-> > If you fix the issue in a separate patch/commit (i.e. not just a new ve=
-rsion of
-> > the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <lkp@intel.com>
-> > | Closes: https://lore.kernel.org/oe-kbuild-all/202312061443.Cknef7Uq-l=
-kp@intel.com/
-> >
-> > All warnings (new ones prefixed by >>):
-> >
-> >    drivers/tty/serial/sc16is7xx.c: In function 'sc16is7xx_i2c_probe':
-> > >> drivers/tty/serial/sc16is7xx.c:1703:41: warning: '%u' directive outp=
-ut may be truncated writing
-> between 1 and 10 bytes into a region of size 2 [-Wformat-truncation=3D]
-> >     1703 |         snprintf(buf, sizeof(buf), "port%u", port_id);
-> >          |                                         ^~
-> >    In function 'sc16is7xx_regmap_name',
-> >        inlined from 'sc16is7xx_i2c_probe' at drivers/tty/serial/sc16is7=
-xx.c:1805:17:
-> >    drivers/tty/serial/sc16is7xx.c:1703:36: note: directive argument in =
-the range [0, 4294967294]
-> >     1703 |         snprintf(buf, sizeof(buf), "port%u", port_id);
-> >          |                                    ^~~~~~~~
-> >    drivers/tty/serial/sc16is7xx.c:1703:9: note: 'snprintf' output betwe=
-en 6 and 15 bytes into a
-> destination of size 6
-> >     1703 |         snprintf(buf, sizeof(buf), "port%u", port_id);
-> >          |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->=20
-> Hi,
-> the only solution I could find is to add this line just before snprintf:
->=20
->     BUG_ON(port_id > MAX310X_MAX_PORTS);
->=20
-> it allows us to have the smallest buffer size possible.
+ExynosAutov920 SADK is ExynosAutov920 SoC based SADK(Samsung Automotive
+Development Kit) board. It has 16GB(8GB + 8GB) LPDDR5 RAM and 256GB
+(128GB + 128GB) UFS.
 
-Or "port%c", '0' + port_id);
+This is minimal support board device-tree.
+ * Serial console
+ * GPIO Key
+ * PWM FAN
 
-Or maybe:
-=09size_t buflen =3D sizeof (buf);
-=09OPTIMIZER_HIDE_VAR(buflen);
-=09snprintf(buf, buflen, fmt, args);
+Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
+---
+ arch/arm64/boot/dts/exynos/Makefile           |  3 +-
+ .../boot/dts/exynos/exynosautov920-sadk.dts   | 88 +++++++++++++++++++
+ 2 files changed, 90 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm64/boot/dts/exynos/exynosautov920-sadk.dts
 
-See https://godbolt.org/z/Wjz3xG5c4
-
-Maybe there should be snprintf_may_truncate() (etc) in one of the headers.
-
-=09David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1=
-PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/arch/arm64/boot/dts/exynos/Makefile b/arch/arm64/boot/dts/exynos/Makefile
+index 6e4ba69268e5..da06e1a9456c 100644
+--- a/arch/arm64/boot/dts/exynos/Makefile
++++ b/arch/arm64/boot/dts/exynos/Makefile
+@@ -5,4 +5,5 @@ dtb-$(CONFIG_ARCH_EXYNOS) += \
+ 	exynos7-espresso.dtb		\
+ 	exynos7885-jackpotlte.dtb	\
+ 	exynos850-e850-96.dtb		\
+-	exynosautov9-sadk.dtb
++	exynosautov9-sadk.dtb		\
++	exynosautov920-sadk.dtb
+diff --git a/arch/arm64/boot/dts/exynos/exynosautov920-sadk.dts b/arch/arm64/boot/dts/exynos/exynosautov920-sadk.dts
+new file mode 100644
+index 000000000000..e250b5594b58
+--- /dev/null
++++ b/arch/arm64/boot/dts/exynos/exynosautov920-sadk.dts
+@@ -0,0 +1,88 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Samsung's ExynosAutov920 SADK board device tree source
++ *
++ * Copyright (c) 2023 Samsung Electronics Co., Ltd.
++ *
++ */
++
++/dts-v1/;
++#include "exynosautov920.dtsi"
++#include "exynos-pinctrl.h"
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++
++/ {
++	model = "Samsung ExynosAutov920 SADK board";
++	compatible = "samsung,exynosautov920-sadk", "samsung,exynosautov920";
++
++	#address-cells = <2>;
++	#size-cells = <2>;
++
++	aliases {
++		serial0 = &serial_0;
++	};
++
++	chosen {
++		stdout-path = &serial_0;
++	};
++
++	memory@80000000 {
++		device_type = "memory";
++		reg = <0x0 0x80000000 0x0 0x70000000>,
++		      <0x8 0x80000000 0x1 0xfba00000>,
++		      <0xa 0x00000000 0x2 0x00000000>;
++	};
++
++	gpio-keys {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&key_wakeup &key_back>;
++
++		key-wakeup {
++			label = "KEY_WAKEUP";
++			linux,code = <KEY_WAKEUP>;
++			gpios = <&gpa0 0 GPIO_ACTIVE_LOW>;
++			wakeup-source;
++		};
++
++		key-back {
++			label = "KEY_BACK";
++			linux,code = <KEY_BACK>;
++			gpios = <&gpp6 3 GPIO_ACTIVE_LOW>;
++		};
++	};
++};
++
++&pinctrl_alive {
++	key_wakeup: key-wakeup-pins {
++		samsung,pins = "gpa0-0";
++		samsung,pin-function = <EXYNOS_PIN_FUNC_EINT>;
++	};
++};
++
++&pinctrl_peric1 {
++	key_back: key-back-pins {
++		samsung,pins = "gpp6-3";
++		samsung,pin-function = <EXYNOS_PIN_FUNC_EINT>;
++	};
++};
++
++&pwm {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pwm_tout0>;
++	status = "okay";
++};
++
++&serial_0 {
++	status = "okay";
++};
++
++&usi_0 {
++	samsung,clkreq-on; /* needed for UART mode */
++	status = "okay";
++};
++
++&xtcxo {
++	clock-frequency = <38400000>;
++};
+-- 
+2.43.0
 
