@@ -1,84 +1,58 @@
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A84B19BAE;
+	Fri,  8 Dec 2023 10:32:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UVLR28wv"
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731A61706;
-	Fri,  8 Dec 2023 02:23:34 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id 5b1f17b1804b1-40b5155e154so22850215e9.3;
-        Fri, 08 Dec 2023 02:23:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1702031013; x=1702635813; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=qAGg9UeNXryzT3QbGGLxwGOXJOdstDFVfB+aigcAG/A=;
-        b=UVLR28wvH/rmkXBQmAKlF9SGGeQ2SUIjXnAdNA5LBTN8nlZwJVNX8kjl6fCsNunw2y
-         l4sXyjZhqIVqEzGAFLiE8tfSrcNBOpqhKpDlAV/lH+WtU5jWy79ulelxcSREq8rYHacT
-         D53Pu9mejTeqjInOmjUGUWcAISlOy79JGChiu4cvivs0jxlkSLaNI29NH6mgXyTWXkvp
-         59c5L037wy9ev+2N6kYUxURFcP2qKvMmy7N6gLYLZO2AISbmH6n0ymFBVDbw1njdI5ya
-         X3l/DEy/ErQ+5DNn67is5B+8JpqpZQlfqobg6wNJqL9CGENtyuQEDkM1+I19wIxhKoRV
-         FHoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702031013; x=1702635813;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=qAGg9UeNXryzT3QbGGLxwGOXJOdstDFVfB+aigcAG/A=;
-        b=lDgTGBsFLA0o04eaCDj3EzyNu8lzSME9+AXY8cdiSHFMK3wmRUK/R+xdkr3bJQDnsl
-         hbKsWauEvYrqYrO4MXB77QMOZNOMVdLyEdsqAtTFpNX8vVGAbvLkYIELvE5c2udKYSeL
-         9t6HNOI4dJlGV0QlZCQuu7h9FVcPtIo9rCUQ7hkiaxn4QtM5lsFGrwwkXk7/OASWtWyY
-         bcvFFKkhZEXhlXuxXDhN1K5W1IZY0fcOs20fpepImHHNnyLC+o91Ac2CqiK+h2OGlgOF
-         sis+f9XQ+X+fiMPavNcYPLv1YjHivWDawWMUwne+mwL0QW/hh8j3/qs7BI2h+L24dC9F
-         P3uQ==
-X-Gm-Message-State: AOJu0YxHIhDP8AkwgCleRlfecoX2hATPu+GTsW+gr/VWGxPjdE8/WJbE
-	Lblo3LPn/NL0o2RO7trd9Ds=
-X-Google-Smtp-Source: AGHT+IFS7ZHwRE9UbnYNBEtbQTHICdnWfcjDSaEjcDUJIT+5c6ZgwUH0wA4GCjPPgFfshvyqb0RD4w==
-X-Received: by 2002:a05:600c:4f91:b0:401:b6f6:d90c with SMTP id n17-20020a05600c4f9100b00401b6f6d90cmr2335319wmq.35.1702031012515;
-        Fri, 08 Dec 2023 02:23:32 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id n19-20020a05600c3b9300b0040b4b66110csm2402840wms.22.2023.12.08.02.23.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Dec 2023 02:23:32 -0800 (PST)
-From: Colin Ian King <colin.i.king@gmail.com>
-To: Jacky Huang <ychuang3@nuvoton.com>,
-	Shan-Chun Hung <schung@nuvoton.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="2kYfjQhC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B0DEC433C7;
+	Fri,  8 Dec 2023 10:32:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1702031528;
+	bh=yZ0ArCVZudWIJRxf5rXx4mNCVgyBX4eaw15oShBLaj0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=2kYfjQhCxHl1hqoP+X9utK90pgdDIZNrPx/DP75cUl1gjWVOtlC3o5pt5gf6mzH0z
+	 F9iRt3vUy7/em+JQda3xeG7X7OHH0Dw6RU/lcLAnShDjxSUchH4obGtDqNr9ucLQKa
+	 sYmzyN+eWIYYdCf9KWrAhVuJywNPT2lKG/dwKJHM=
+Date: Fri, 8 Dec 2023 11:32:05 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Sebastian Reichel <sebastian.reichel@collabora.com>,
+	Rob Herring <robh@kernel.org>, linux-serial@vger.kernel.org,
 	Jiri Slaby <jirislaby@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-serial@vger.kernel.org
-Cc: kernel-janitors@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH][next] serial: ma35d1: Fix spelling mistake "ononsole" -> "console"
-Date: Fri,  8 Dec 2023 10:23:31 +0000
-Message-Id: <20231208102331.3267192-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.39.2
+	Fabio Estevam <festevam@gmail.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>, linux-kernel@vger.kernel.org,
+	Ian Ray <ian.ray@ge.com>, NXP Linux Team <linux-imx@nxp.com>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	kernel@collabora.com, Shawn Guo <shawnguo@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCHv5 0/2] Fix imx53-ppd UART configuration
+Message-ID: <2023120821-sandstone-lavender-7487@gregkh>
+References: <20210430175038.103226-1-sebastian.reichel@collabora.com>
+ <20231208090754.fn3bddlum3t7kakn@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20231208090754.fn3bddlum3t7kakn@pengutronix.de>
 
-There is a spelling mistake in a pr_warn message. Fix it.
+On Fri, Dec 08, 2023 at 10:07:54AM +0100, Uwe Kleine-König wrote:
+> [Cc += dt maintainers]
+> 
+> On Fri, Apr 30, 2021 at 07:50:36PM +0200, Sebastian Reichel wrote:
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/tty/serial/ma35d1_serial.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+You are responding to a message from 2021???
 
-diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
-index b4dcbd0c95bf..19f0a305cc43 100644
---- a/drivers/tty/serial/ma35d1_serial.c
-+++ b/drivers/tty/serial/ma35d1_serial.c
-@@ -558,7 +558,7 @@ static void ma35d1serial_console_write(struct console *co, const char *s, u32 co
- 	u32 ier;
- 
- 	if ((co->index < 0) || (co->index >= MA35_UART_NR)) {
--		pr_warn("Failed to write on ononsole port %x, out of range\n",
-+		pr_warn("Failed to write on console port %x, out of range\n",
- 			co->index);
- 		return;
- 	}
--- 
-2.39.2
+I can't remember what I wrote in an email last week, let alone years
+ago, are you sure any of this is relevant still?
 
+thanks,
+
+greg k-h
