@@ -1,94 +1,84 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 725B610F1
-	for <linux-serial@vger.kernel.org>; Fri,  8 Dec 2023 01:08:10 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rBWpx-0005lS-NY; Fri, 08 Dec 2023 10:07:57 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rBWpv-00ENVi-0n; Fri, 08 Dec 2023 10:07:55 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rBWpu-00GLG5-NU; Fri, 08 Dec 2023 10:07:54 +0100
-Date: Fri, 8 Dec 2023 10:07:54 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Sebastian Reichel <sebastian.reichel@collabora.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh@kernel.org>, linux-serial@vger.kernel.org,
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UVLR28wv"
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731A61706;
+	Fri,  8 Dec 2023 02:23:34 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id 5b1f17b1804b1-40b5155e154so22850215e9.3;
+        Fri, 08 Dec 2023 02:23:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1702031013; x=1702635813; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=qAGg9UeNXryzT3QbGGLxwGOXJOdstDFVfB+aigcAG/A=;
+        b=UVLR28wvH/rmkXBQmAKlF9SGGeQ2SUIjXnAdNA5LBTN8nlZwJVNX8kjl6fCsNunw2y
+         l4sXyjZhqIVqEzGAFLiE8tfSrcNBOpqhKpDlAV/lH+WtU5jWy79ulelxcSREq8rYHacT
+         D53Pu9mejTeqjInOmjUGUWcAISlOy79JGChiu4cvivs0jxlkSLaNI29NH6mgXyTWXkvp
+         59c5L037wy9ev+2N6kYUxURFcP2qKvMmy7N6gLYLZO2AISbmH6n0ymFBVDbw1njdI5ya
+         X3l/DEy/ErQ+5DNn67is5B+8JpqpZQlfqobg6wNJqL9CGENtyuQEDkM1+I19wIxhKoRV
+         FHoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702031013; x=1702635813;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=qAGg9UeNXryzT3QbGGLxwGOXJOdstDFVfB+aigcAG/A=;
+        b=lDgTGBsFLA0o04eaCDj3EzyNu8lzSME9+AXY8cdiSHFMK3wmRUK/R+xdkr3bJQDnsl
+         hbKsWauEvYrqYrO4MXB77QMOZNOMVdLyEdsqAtTFpNX8vVGAbvLkYIELvE5c2udKYSeL
+         9t6HNOI4dJlGV0QlZCQuu7h9FVcPtIo9rCUQ7hkiaxn4QtM5lsFGrwwkXk7/OASWtWyY
+         bcvFFKkhZEXhlXuxXDhN1K5W1IZY0fcOs20fpepImHHNnyLC+o91Ac2CqiK+h2OGlgOF
+         sis+f9XQ+X+fiMPavNcYPLv1YjHivWDawWMUwne+mwL0QW/hh8j3/qs7BI2h+L24dC9F
+         P3uQ==
+X-Gm-Message-State: AOJu0YxHIhDP8AkwgCleRlfecoX2hATPu+GTsW+gr/VWGxPjdE8/WJbE
+	Lblo3LPn/NL0o2RO7trd9Ds=
+X-Google-Smtp-Source: AGHT+IFS7ZHwRE9UbnYNBEtbQTHICdnWfcjDSaEjcDUJIT+5c6ZgwUH0wA4GCjPPgFfshvyqb0RD4w==
+X-Received: by 2002:a05:600c:4f91:b0:401:b6f6:d90c with SMTP id n17-20020a05600c4f9100b00401b6f6d90cmr2335319wmq.35.1702031012515;
+        Fri, 08 Dec 2023 02:23:32 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id n19-20020a05600c3b9300b0040b4b66110csm2402840wms.22.2023.12.08.02.23.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Dec 2023 02:23:32 -0800 (PST)
+From: Colin Ian King <colin.i.king@gmail.com>
+To: Jacky Huang <ychuang3@nuvoton.com>,
+	Shan-Chun Hung <schung@nuvoton.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Fabio Estevam <festevam@gmail.com>,
-	Sascha Hauer <s.hauer@pengutronix.de>, linux-kernel@vger.kernel.org,
-	Ian Ray <ian.ray@ge.com>, NXP Linux Team <linux-imx@nxp.com>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	kernel@collabora.com, Shawn Guo <shawnguo@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org
-Subject: Re: [PATCHv5 0/2] Fix imx53-ppd UART configuration
-Message-ID: <20231208090754.fn3bddlum3t7kakn@pengutronix.de>
-References: <20210430175038.103226-1-sebastian.reichel@collabora.com>
+	linux-arm-kernel@lists.infradead.org,
+	linux-serial@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH][next] serial: ma35d1: Fix spelling mistake "ononsole" -> "console"
+Date: Fri,  8 Dec 2023 10:23:31 +0000
+Message-Id: <20231208102331.3267192-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="rhppgyqd7t7ywrip"
-Content-Disposition: inline
-In-Reply-To: <20210430175038.103226-1-sebastian.reichel@collabora.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
+There is a spelling mistake in a pr_warn message. Fix it.
 
---rhppgyqd7t7ywrip
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/tty/serial/ma35d1_serial.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[Cc +=3D dt maintainers]
+diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
+index b4dcbd0c95bf..19f0a305cc43 100644
+--- a/drivers/tty/serial/ma35d1_serial.c
++++ b/drivers/tty/serial/ma35d1_serial.c
+@@ -558,7 +558,7 @@ static void ma35d1serial_console_write(struct console *co, const char *s, u32 co
+ 	u32 ier;
+ 
+ 	if ((co->index < 0) || (co->index >= MA35_UART_NR)) {
+-		pr_warn("Failed to write on ononsole port %x, out of range\n",
++		pr_warn("Failed to write on console port %x, out of range\n",
+ 			co->index);
+ 		return;
+ 	}
+-- 
+2.39.2
 
-On Fri, Apr 30, 2021 at 07:50:36PM +0200, Sebastian Reichel wrote:
-> IMHO PATCHv4 was better, but in the end I don't have strong feelings
-> about this. Btw. I think this patchset is a good demonstration of
-> frustrating upstream kernel development can be considering PATCHv5
-> is basically the same as PATCHv1. Thanks for making us go in
-> circles :(
-
-I still like v4 better than v1/v5. I'm sorry for the frustration this
-created on your side.=20
-
-I'd ask Greg to reconsider given that dt is less flexible than a sysfs
-knob and otherwise shares all downsides of sysfs (people don't want to
-have to tune that, so a useful default for most cases is important; you
-have to consult documentation to understand how to tune it).
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---rhppgyqd7t7ywrip
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmVy3OkACgkQj4D7WH0S
-/k6ZMAf/bJ6Do/+Ap+RHZnbjCMELrpCx+6h7f7pnGXD8hqftIz+Ysir0aF+kBCFH
-GdEtc/ct9nQi9SYsT1u18+UFG/roD/WoNLQ72Elr46CopNsRnHBNKmDA/VgS0xW/
-um8qYbF+aEFkyZgS2NKT0bzkjpMSDnNYu2IZQr2keCLmQQAbLOp8bELi3oX2JuJT
-fjHusoMT3abd0ZQm3kY+CUVJ+ROkUl/8yi7TZTnLN0NTH8JSudB1euakrEV0bhOc
-KW6GMif04RK75PWPUunvlrxyPD2Pje2I9G3K6vsp8mXDIffeI5GyhH51wD3YKOe7
-mIaJ6GBw0+ASbVw7fErVyzxIf5SzdQ==
-=BHUP
------END PGP SIGNATURE-----
-
---rhppgyqd7t7ywrip--
