@@ -1,42 +1,42 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OY2EMj/g"
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9D831725
-	for <linux-serial@vger.kernel.org>; Fri,  8 Dec 2023 00:07:41 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lOs0qbtA"
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F9671712
+	for <linux-serial@vger.kernel.org>; Fri,  8 Dec 2023 00:10:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702022861; x=1733558861;
+  t=1702023059; x=1733559059;
   h=date:from:to:cc:subject:message-id;
-  bh=wS5XSrLKISjIlJZOfrXrGYUSBE7D5jjr0WKAUKUWV5Q=;
-  b=OY2EMj/gow6R6s1syH20Z/e0Gm6ueOcWC3ETFeATVBebSz74vwxq1IB7
-   lPt11ysQVK0ksYqqwkg8OiOBiEoEfpXiueHhJVYWpxGZIBt/4MlXUBR4j
-   sxAveaMtJSmndlJBy3nFjjMuZuq/TkTJ3tIFqPiN1JtlecGnm0RwPLkZL
-   Ac9GBilP5iKxEVl+HCX8zG+gtmK13yS4Z8bWUNEhZKIqosocg1YLtmAzI
-   yolvafrRxCzw6DdU2J82XhaSA5WqtaRrLKYz6pkfBLZdBdpp3ALUuQH8f
-   uxDvRDWXfBstmn1IfhTCxyPsaP0HP+elMXUtl3sKSOSl/CuviLI3pCHrh
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10917"; a="1253719"
+  bh=xwPlAflH5mIFIOi4xZ3tVJLvY6XacgDbQCizYrZDZjg=;
+  b=lOs0qbtAelMhGX5r3xpcVgLy8ZBymbHq2ZHXOD5JWVEFeKr80kqaynIt
+   QDWKcLEvWEVBZIkL3LnRYv6StFOjgbcWH4HAAVhLlLwRS63asyJlBoWAe
+   WYnfRIWKuy4ip8qNUQH1bcYhtVbHk+PDw4UU2vCPFu3MyuLK+DPDL+5UJ
+   N63aXM8UUYRK3wmYOSrrfYbrTMtXDfLLEjQTa8Fniq/rGYyg3m+HBTwkG
+   mMDtrE3xnRH8itokGfa/SNFmmN9uEjBBhlfwBDFtwvLIEI+E9fP5atvEO
+   oNLceggSxX0Qoywj0eqdDXiGlYdXHoQ9VLWlw7BIsJU+xGnPrXHDuWvbM
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10917"; a="1456724"
 X-IronPort-AV: E=Sophos;i="6.04,260,1695711600"; 
-   d="scan'208";a="1253719"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2023 00:07:41 -0800
+   d="scan'208";a="1456724"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2023 00:10:58 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10917"; a="775720538"
+X-IronPort-AV: E=McAfee;i="6600,9927,10917"; a="1103485439"
 X-IronPort-AV: E=Sophos;i="6.04,260,1695711600"; 
-   d="scan'208";a="775720538"
+   d="scan'208";a="1103485439"
 Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
-  by fmsmga007.fm.intel.com with ESMTP; 08 Dec 2023 00:07:40 -0800
+  by fmsmga005.fm.intel.com with ESMTP; 08 Dec 2023 00:09:40 -0800
 Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1rBVta-000DTD-1A;
-	Fri, 08 Dec 2023 08:07:38 +0000
-Date: Fri, 08 Dec 2023 16:07:35 +0800
+	id 1rBVvW-000DTb-1n;
+	Fri, 08 Dec 2023 08:09:38 +0000
+Date: Fri, 08 Dec 2023 16:09:16 +0800
 From: kernel test robot <lkp@intel.com>
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- ff16c54aa85101955638d09434169897474e073c
-Message-ID: <202312081632.jYJudfZp-lkp@intel.com>
+Subject: [tty:tty-linus] BUILD SUCCESS
+ e92fad024929c79460403acf946bc9c09ce5c3a9
+Message-ID: <202312081613.oY4Xp0d0-lkp@intel.com>
 User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -44,10 +44,10 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: ff16c54aa85101955638d09434169897474e073c  serial: msm: Use OPP table for DVFS support
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+branch HEAD: e92fad024929c79460403acf946bc9c09ce5c3a9  serial: 8250_dw: Add ACPI ID for Granite Rapids-D UART
 
-elapsed time: 1475m
+elapsed time: 1477m
 
 configs tested: 214
 configs skipped: 1
