@@ -1,148 +1,159 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="rlXBLWSJ"
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55EEB1724;
-	Fri,  8 Dec 2023 05:23:07 -0800 (PST)
-Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3B8DMwuB025638;
-	Fri, 8 Dec 2023 13:23:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=VpMyP+5lKWc2TeAM094ZGRRxASyLksi3vhPSZU1DasA=;
- b=rlXBLWSJS+/d+xR2I9SYpFby6+Ate/Ae1f+9SSmdlV1OndjfK7ffpuP6Etfc7yBozs//
- B5DBdogp4eu5460C8rAofDIQXJ+AMMooan4SnpKBURXONfLTnJ3EdKBoZIBHtlKlo30/
- 4yaoKm6qRoD7aaZkgWTBnDoypNgMkiicCU1j3Uxz6jh3kwxQoZXgi/0/g2BRQJ5DWrL7
- 0w91SZoBSc1kaKD6GmzIfQ3Y/i63FWJv67deQFVkuEW2zciI6+YUHOvtPvcviheilf1E
- M+PX9Zaa82lls8+ZMr0DXmU3USu6dKlHWIxgGdU2QUFu4SyT9/bM8z0AjVJIApXKavoY Mg== 
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3uv3191ubx-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 08 Dec 2023 13:22:57 +0000
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3B8A38fU027003;
-	Fri, 8 Dec 2023 13:19:54 GMT
-Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 3utav39nu4-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 08 Dec 2023 13:19:54 +0000
-Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
-	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 3B8DJpEv5571210
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 8 Dec 2023 13:19:51 GMT
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 67FA52004B;
-	Fri,  8 Dec 2023 13:19:51 +0000 (GMT)
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 6D5BD20043;
-	Fri,  8 Dec 2023 13:19:50 +0000 (GMT)
-Received: from li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com (unknown [9.171.66.245])
-	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-	Fri,  8 Dec 2023 13:19:50 +0000 (GMT)
-Date: Fri, 8 Dec 2023 14:19:48 +0100
-From: Alexander Gordeev <agordeev@linux.ibm.com>
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>, linux-s390@vger.kernel.org
-Subject: Re: [PATCH 09/27] tty: con3270: convert to u8 and size_t
-Message-ID: <ZXMX9AmWwR6hPSMr@li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com>
-References: <20231206073712.17776-1-jirislaby@kernel.org>
- <20231206073712.17776-10-jirislaby@kernel.org>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="AcKxEqDW"
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85321198D
+	for <linux-serial@vger.kernel.org>; Fri,  8 Dec 2023 06:27:56 -0800 (PST)
+Received: by mail-qt1-x832.google.com with SMTP id d75a77b69052e-4254cde7506so13175131cf.0
+        for <linux-serial@vger.kernel.org>; Fri, 08 Dec 2023 06:27:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1702045675; x=1702650475; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Y6tktGOmflBDjrD9owZW8jUp+CHgDfz/rbbtd4HS0Vg=;
+        b=AcKxEqDWB30LUoTaGIxcjeHFnrqK0ABDkGOsbov3A8vTm7Yu0yQN4qekM/aJ3VZCTE
+         nLWAGgtMYfDRmp7PU6nIwXuMxNejq7Hfg7LcbWjUXy9v3SnN4oeh6MsrFkxMTFiEQOup
+         AL5QxcW08YlnSsJo9Px8vfcIcnigzDTGsCNdxrw5PzVjlcO4IC+LdDs63y+Wnb59j7jP
+         FrEGejWh+Ywqw9qu/8UU5G62cN6+Sm+jDrU+LIEBik8tIDucfg7YXChDmYlaJKN1fYsZ
+         D1E0HKOOQfN+giKLigY/J6X7KozqnbF7hwSR1JgDKI+RjdRr6OnGCJezZ5X6xFIlxUeb
+         Wjfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702045675; x=1702650475;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Y6tktGOmflBDjrD9owZW8jUp+CHgDfz/rbbtd4HS0Vg=;
+        b=TvldMi78qNM7hHRROgQ5GT+i6O7A2h4EMyLsnvulUHA1vJFO+OI1einU/j5Idt/Oqm
+         pgfXCbfPCCqszUS2Grv/AitxoXQw+PqCKGNYbANUAvmwnB9Wm+lLnHELtC027iJaMWnP
+         5tx/KjiW/4Ka0ou6UPvEdm/NYmv4XZldSljQgWjhj1SEHxp0X0ndEkg50A0rU7B6u3I0
+         0c67ek/dNZCAfNeyfx9CuDz7Ngpidnj3Zha7D93MH0q1LlqbbDPNpHQZH+TNhI9tPYIn
+         U9tbTCZVUbu20mX42ni1eZ+u2gJwm/kMm0Yu/QDo/2gMyR75JGeKVSCPiIKYlu3J0tOi
+         NIvw==
+X-Gm-Message-State: AOJu0YwZRup3ijQsolgtfu7hrNHDMgtdM/+yABdl1QPrdEIhHk0nbKHu
+	tS5kgyhD4WhBOu8yTQykA9i6c4AAZEHKsXGyiKT96A==
+X-Google-Smtp-Source: AGHT+IGbiA6FsS80GfwV+c82tNjaevxVqMuJe5EJncnQTyRiVvDHSd4AgX2BqsQb6YkJ2YjyEjuCQy/avC/S0mz+amg=
+X-Received: by 2002:ad4:5695:0:b0:67a:a721:e150 with SMTP id
+ bd21-20020ad45695000000b0067aa721e150mr16777qvb.125.1702045675625; Fri, 08
+ Dec 2023 06:27:55 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231206073712.17776-10-jirislaby@kernel.org>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: v-Y6C-375jqxig-9iiMhvuQKEK9RLMiX
-X-Proofpoint-ORIG-GUID: v-Y6C-375jqxig-9iiMhvuQKEK9RLMiX
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-12-08_08,2023-12-07_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
- adultscore=0 bulkscore=0 clxscore=1015 lowpriorityscore=0 malwarescore=0
- spamscore=0 mlxlogscore=999 impostorscore=0 priorityscore=1501
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2311290000 definitions=main-2312080111
+References: <20231201160925.3136868-1-peter.griffin@linaro.org>
+ <20231201160925.3136868-13-peter.griffin@linaro.org> <20bf05b9d9ccc5c11ef17500ac7a97c46dd46a9a.camel@linaro.org>
+In-Reply-To: <20bf05b9d9ccc5c11ef17500ac7a97c46dd46a9a.camel@linaro.org>
+From: Peter Griffin <peter.griffin@linaro.org>
+Date: Fri, 8 Dec 2023 14:27:44 +0000
+Message-ID: <CADrjBPr_sv29Dc3F-4wVvH_N+qU6509kvHqkyZG==Q1RRpi5gA@mail.gmail.com>
+Subject: Re: [PATCH v5 12/20] clk: samsung: clk-gs101: Add cmu_top, cmu_misc
+ and cmu_apm support
+To: =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>
+Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, 
+	mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org, 
+	tomasz.figa@gmail.com, s.nawrocki@samsung.com, linus.walleij@linaro.org, 
+	wim@linux-watchdog.org, linux@roeck-us.net, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org, 
+	jirislaby@kernel.org, cw00.choi@samsung.com, alim.akhtar@samsung.com, 
+	tudor.ambarus@linaro.org, semen.protsenko@linaro.org, saravanak@google.com, 
+	willmcvicker@google.com, soc@kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-watchdog@vger.kernel.org, kernel-team@android.com, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Dec 06, 2023 at 08:36:54AM +0100, Jiri Slaby (SUSE) wrote:
-> Switch character types to u8 and sizes to size_t. To conform to
-> characters/sizes in the rest of the tty layer.
-> 
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Cc: Heiko Carstens <hca@linux.ibm.com>
-> Cc: Vasily Gorbik <gor@linux.ibm.com>
-> Cc: Alexander Gordeev <agordeev@linux.ibm.com>
-> Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
-> Cc: Sven Schnelle <svens@linux.ibm.com>
-> Cc: linux-s390@vger.kernel.org
-> ---
->  drivers/s390/char/con3270.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/s390/char/con3270.c b/drivers/s390/char/con3270.c
-> index 363315fa1666..251d2a1c3eef 100644
-> --- a/drivers/s390/char/con3270.c
-> +++ b/drivers/s390/char/con3270.c
-> @@ -54,7 +54,7 @@ struct tty3270_attribute {
->  };
->  
->  struct tty3270_cell {
-> -	unsigned char character;
-> +	u8 character;
->  	struct tty3270_attribute attributes;
->  };
->  
-> @@ -123,7 +123,7 @@ struct tty3270 {
->  
->  	/* Character array for put_char/flush_chars. */
->  	unsigned int char_count;
-> -	char char_buf[TTY3270_CHAR_BUF_SIZE];
-> +	u8 char_buf[TTY3270_CHAR_BUF_SIZE];
->  };
->  
->  /* tty3270->update_flags. See tty3270_update for details. */
-> @@ -1255,7 +1255,7 @@ static unsigned int tty3270_write_room(struct tty_struct *tty)
->   * Insert character into the screen at the current position with the
->   * current color and highlight. This function does NOT do cursor movement.
->   */
-> -static void tty3270_put_character(struct tty3270 *tp, char ch)
-> +static void tty3270_put_character(struct tty3270 *tp, u8 ch)
->  {
->  	struct tty3270_line *line;
->  	struct tty3270_cell *cell;
-> @@ -1561,7 +1561,7 @@ static void tty3270_goto_xy(struct tty3270 *tp, int cx, int cy)
->   *  Pn is a numeric parameter, a string of zero or more decimal digits.
->   *  Ps is a selective parameter.
->   */
-> -static void tty3270_escape_sequence(struct tty3270 *tp, char ch)
-> +static void tty3270_escape_sequence(struct tty3270 *tp, u8 ch)
->  {
->  	enum { ES_NORMAL, ES_ESC, ES_SQUARE, ES_PAREN, ES_GETPARS };
->  
-> @@ -1726,7 +1726,7 @@ static void tty3270_escape_sequence(struct tty3270 *tp, char ch)
->   * String write routine for 3270 ttys
->   */
->  static void tty3270_do_write(struct tty3270 *tp, struct tty_struct *tty,
-> -			     const unsigned char *buf, int count)
-> +			     const u8 *buf, size_t count)
->  {
->  	int i_msg, i;
->  
-> @@ -2052,7 +2052,7 @@ con3270_write(struct console *co, const char *str, unsigned int count)
->  {
->  	struct tty3270 *tp = co->data;
->  	unsigned long flags;
-> -	char c;
-> +	u8 c;
->  
->  	spin_lock_irqsave(&tp->view.lock, flags);
->  	while (count--) {
+Hi Andr=C3=A9,
 
-Acked-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Thanks for the review
+
+On Mon, 4 Dec 2023 at 17:51, Andr=C3=A9 Draszik <andre.draszik@linaro.org> =
+wrote:
+>
+> On Fri, 2023-12-01 at 16:09 +0000, Peter Griffin wrote:
+> > cmu_top is the top level clock management unit which contains PLLs, mux=
+es,
+> > dividers and gates that feed the other clock management units.
+> >
+> > cmu_misc clocks IPs such as Watchdog and cmu_apm clocks ips part of the
+> > APM module.
+> >
+> > Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
+> > Tested-by: Will McVicker <willmcvicker@google.com>
+> > Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> > ---
+> >  drivers/clk/samsung/Makefile    |    1 +
+> >  drivers/clk/samsung/clk-gs101.c | 2495 +++++++++++++++++++++++++++++++
+> >  2 files changed, 2496 insertions(+)
+> >  create mode 100644 drivers/clk/samsung/clk-gs101.c
+> >
+> > diff --git a/drivers/clk/samsung/Makefile b/drivers/clk/samsung/Makefil=
+e
+> > index ebbeacabe88f..3056944a5a54 100644
+> > --- a/drivers/clk/samsung/Makefile
+> > +++ b/drivers/clk/samsung/Makefile
+> > @@ -21,6 +21,7 @@ obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)       +=3D clk-=
+exynos7.o
+> >  obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)        +=3D clk-exynos7885.o
+> >  obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)        +=3D clk-exynos850.o
+> >  obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)        +=3D clk-exynosautov9.o
+> > +obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)        +=3D clk-gs101.o
+> >  obj-$(CONFIG_S3C64XX_COMMON_CLK)     +=3D clk-s3c64xx.o
+> >  obj-$(CONFIG_S5PV210_COMMON_CLK)     +=3D clk-s5pv210.o clk-s5pv210-au=
+dss.o
+> >  obj-$(CONFIG_TESLA_FSD_COMMON_CLK)   +=3D clk-fsd.o
+> > diff --git a/drivers/clk/samsung/clk-gs101.c b/drivers/clk/samsung/clk-=
+gs101.c
+> > new file mode 100644
+> > index 000000000000..6bd233a7ab63
+> > --- /dev/null
+> > +++ b/drivers/clk/samsung/clk-gs101.c
+> > @@ -0,0 +1,2495 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> > +/*
+> > + * Copyright (C) 2023 Linaro Ltd.
+> > + * Author: Peter Griffin <peter.griffin@linaro.org>
+> > + *
+> > + * Common Clock Framework support for GS101.
+> > + */
+> > [...]
+> > +
+> > +/* List of parent clocks for Muxes in CMU_TOP: for CMU_HSI0 */
+> > +PNAME(mout_cmu_hsi0_usb31drd_p)      =3D { "oscclk", "dout_shared2_div=
+2" };
+> > +
+> > +PNAME(mout_cmu_hsi0_bus_p)   =3D { "dout_shared0_div4", "dout_shared1_=
+div4",
+> > +                                 "dout_shared2_div2", "dout_shared3_di=
+v2",
+> > +                                 "fout_spare_pll" };
+>
+> This should also be updated....
+>
+> > [...]
+> > +     MUX(CLK_MOUT_HSI0_BUS, "mout_cmu_hsi0_bus", mout_cmu_hsi0_bus_p,
+> > +         CLK_CON_MUX_MUX_CLKCMU_HSI0_BUS, 0, 3),
+>
+> ...because we have 8 possibilities now.
+
+Interesting, unfortunately there is some discrepancy between the
+documentation again :( All the cmu_top clock parents were authored
+using the cmu_diagrams which only shows the 5 parents listed above.
+Checking the mux register definition it lists 5-7 as being oscclk
+5=3Dosclk
+6=3Dosclk
+7=3Doscclk
+
+Downstream clock implementation lists these oscclk 5-7 as well, so I
+guess we should add them...sigh
+
+> (I didn't check the other parents, but you mentioned you updated field wi=
+dths
+> in other registers, too, so maybe need to double check the parent strings=
+ as well)
+
+Yes I will go through and re-check these parent names again.
+
+Peter
