@@ -1,25 +1,25 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="ab2hKpIA"
+	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="OyTUA1WX"
 Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A6D0E7;
-	Sat,  9 Dec 2023 03:25:17 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72DE6F1;
+	Sat,  9 Dec 2023 03:48:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-	t=1702121091; x=1702725891; i=linosanfilippo@gmx.de;
-	bh=85evGRCJ3tCE0nbUckGUxFOChy15m1jRdB9q8Rfhw7U=;
-	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
+	t=1702122470; x=1702727270; i=linosanfilippo@gmx.de;
+	bh=1UF6FDdhmJ4WxT0YV5JeVePLp1zU4VEaSmjDTTuAp70=;
+	h=X-UI-Sender-Class:Date:Subject:From:To:Cc:References:
 	 In-Reply-To;
-	b=ab2hKpIALjqpW1/N6A3JhJrfll/qcmALE0stPvLHiOAt9HnTo6YO22Y2aShbbJ4a
-	 Hhjx6MqgwcpYCjaacCNOx0IZtR5Q5gekwsl/wJqfK6OT77Xt0qbfRQfzh8gSDR3+h
-	 ArKxyItqZptHfufLmr1gW5gpBG40pOmAO1ZBy+H7aOrMDhgNqttiQ7LBM/iKcZLuj
-	 xKOwY5oit7wYKhsaqq60KirKCs1vg54pjeMj/6wL0SBot+NF1wyQx8L7qRaZXMFjc
-	 9dsP9mhAvkvkq1/+Y2EI1P+G1ypmZjbOXLJmSse9tIbr4blCVzgCJTxhmIokWQVEu
-	 fsNb5gpDWvGCIR9rfQ==
+	b=OyTUA1WX5/d7+mEig8rVLrCnlQdSN7S6sfv7mH+W7cPclf7wOroPmAH+MXRo+c+B
+	 pOzWybX/hWMH+BmEHcBQidsgapRVms31Kta0IQgP50Uys2Wg6BIAL6lNtBKQkD3kT
+	 roGLno+RtO0zRYXI+fx1xXsKoYyC6LAk3A+EkoUDMw5cA36MlrVT5hBDXTjIWOBs/
+	 eTjyau0AboXzj/zsDEJq4T7ODlHdy51FSZIBzqaYvi4jAhjhcblXaww55SYy58rg4
+	 pJwBdBxGquIhdTyqcRT3+B2nHABLwsSqvPOlEZf4/l+a9G/6CFAbiXruSWuJtu7ZB
+	 biqrUyuaNfpdu32TDQ==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.2.42] ([84.180.3.177]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1Mlf0K-1rd2jw43BC-00inxw; Sat, 09
- Dec 2023 12:24:51 +0100
-Message-ID: <f03be8c2-4aef-4949-8797-3998cc7081ec@gmx.de>
-Date: Sat, 9 Dec 2023 12:24:48 +0100
+Received: from [192.168.2.42] ([84.180.3.177]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1N6KUd-1rItm03Kyv-016d0u; Sat, 09
+ Dec 2023 12:47:49 +0100
+Message-ID: <fe28eb93-daa1-41af-a005-f21aa87e1984@gmx.de>
+Date: Sat, 9 Dec 2023 12:47:47 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -30,87 +30,86 @@ User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
  binding
 Content-Language: en-US
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Christoph Niedermaier <cniedermaier@dh-electronics.com>,
- Lukas Wunner <lukas@wunner.de>, Rasmus Villemoes <linux@rasmusvillemoes.dk>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To: Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+ Lukas Wunner <lukas@wunner.de>, Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
  Conor Dooley <conor+dt@kernel.org>,
  "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
  "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
  =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
  "brenda.streiff@ni.com" <brenda.streiff@ni.com>,
  Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
- Tomas Paukrt <tomaspaukrt@email.cz>
+ Tomas Paukrt <tomaspaukrt@email.cz>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
  <20231120151056.148450-2-linux@rasmusvillemoes.dk>
  <20231122145344.GA18949@wunner.de>
  <3b8548b1-b8a9-0c9e-4040-5cfda06a85c6@gmx.de>
  <ec66d25162de4cbc92720df1e7008fe8@dh-electronics.com>
  <5c140498-69e3-4187-8703-db0c41e7ca89@gmx.de>
- <ZXG8DI8diij72fBR@smile.fi.intel.com>
-From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <ZXG8DI8diij72fBR@smile.fi.intel.com>
+In-Reply-To: <5c140498-69e3-4187-8703-db0c41e7ca89@gmx.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:BlNMhKf4hOn8nZ5VNdviNti3SIQY3MKvaRGu+LAugRLCx7QQqMT
- FFnqifRU8Kg2D9NDyUAGq5jkD0KCI9PlanSp/Jx0e3SoULmPRa8ER43IqXMCh/zadPNrwwk
- urE6NNOTrdD6s4k61J0eMU+LOtsSwbIAIkzSH9NpAZgY/4wGwDMmziLeI2CpMIc/ik7XQkd
- FEvSd+N9SqtfH6jhI+NPA==
-UI-OutboundReport: notjunk:1;M01:P0:v1c/O4aGaHQ=;zEVAzSrV+86469QKPHUQro+41JV
- /qoyx8SjuPwLqfJyP6x90+CMDemY2FAq0ESg+srcF7Dgitf3/dVynlwyT6rU9SYfQfCvMTCd4
- VekXifIwSdvGU8G6mxD2MwpjH6EESwy4KECLfeWy5cRexsnVCfjRtFDHwmwgo7o4v4mLDXz/4
- RbcCmNhHZ42XhYFc+IRHcHlvXisSZHZZ2lwxQqFE439M8/rZs+6s9/ryNNkTDG+z95G89ET5G
- BdSzOAM3vl595lH7FcHhEuhQEZ2T0ziGNzYdx9Iw0RpugAMzTju+zHD+PBSBRX1L0AXUnZCpq
- cHhvT+yThbrL35RGvVQZBVw4rR8xYN0AH1dKSIDBu8QXKne6EBj+vC3G1Q/gWu2odF33rqXmb
- txPsGqS87bVtgmKUtdpsKuv4fQFw1wpEmnaQtb/wdhDLvYvUylplfLgZDHHSZcO/FKwXfzvu0
- 6ElximgXokwcd1lqijAWVHosMnSpTl8OJv4P1/rSA+VuvwmyfUL3q/sPrFLZpkZZ/Jr7+o6+d
- +r8GN0pxz8PLAfWlscKq/iC1u4aJnHRH1nGXb/OE0+FN2wmbtUpow/XMFvDWEWquUvu1Cvrgh
- Ln5xPC2UT04sMJFrVmlnpGdbjj2m2J5bpKa5JViOJhSfox4lbdNHUnm1O/hJAvYcFlVSArtF/
- xYXXS/lMFCEAqWF7R8fveABYZOUQpJgJFVnUJbQv+DLGAcU4wFPYRMP0LesLJWCjv5t6ZeO55
- k/gSe3+GWU3VWq6qAKD7ZfjVKtjuVYh5di1y68WmdbxVOL2mZxYs6btYw3hxnp1jlLUogN/yy
- 5kbNJVIET6sAkK0nGoFUHgwRm3lH4tWBTrv8rELqqvAfeb8xWDzG2F11Eb1dO8NeaLyelTt9B
- A1nxEtC1yAUSABKG7kMsqRCdE0xt8Wdtvoz/GhYi/ahUU0/YA72+fWXvGIaCO1YY2Y3JoOSHw
- 6sfiEovtkyv1dmgC8LUdhGWCjSk=
+X-Provags-ID: V03:K1:0XbavJOj6kPYHuY2oqtdIJRTO4bm7RpNZrWc4dxKAl/SToIlDiD
+ etgjnvuTWY5NbDj6DCIjpfVQfL7o/Ejo2gwKvCQC0afFcjZVUntHTqwLBQ4SbNhlA0JDUAT
+ hTrz4QF9NRuO6y8mnPh+k+j38zoaX8kfa2psegY//i8Qh/QPOE3QfVRNOr2i8kFeiv5h4jW
+ oHWqvSsY8NGlCeczOxYKw==
+UI-OutboundReport: notjunk:1;M01:P0:0oeAITP1Ax0=;PFdM72vaTGu0XG/wGErDFlODzYO
+ PzT9UFQ9grUckTuGOMBCD0ba7EtDJnP4DB4D2aE8EtUyBn9RER+tv1uLQgf1o6cbMR5PZ0Y9u
+ yo90fe4LIrj9lzlGfACRxF1LKrC8YyVszew2PZ4C01BRoTRKie0TvZPRsh0ZTEO0tFtWwAWky
+ 57DNGAF2WgsBG9PnxkU0BI+L7vvfJHnLNxQrJ5rRb6ZWP7euAC904jqT6vVaSW7e9TZna9e/V
+ tEj3YD7Bfq76G4X9botSlhbfVpZNd7zFooPFU9We3WId9KVvbzG44j3ogH02VHm6k5r/F2jX9
+ 0uDd3EAuc4dWtc7hU7x+uR8vVgpagnhjcBRJmSB5f8QBD9pVvupNZ3RoHpIxKBPb+qkUbsrLA
+ 4+KNmS9oGAv6HZIVAORwqPXiVuEK3ndK8I3F078ojstL7AL/7MfwCmTkuxC96s06wcNpWjS+D
+ DkLjkUQTsFxJGbQqQ4OnnRQYEg81f2B8pvHzKM8cZp1fyydphuOuaZQI26xk2RBEpqnv9dppv
+ XzzpyzPr8LQcJexLZV0OWEzmUbJTPxynLfl4lrT5u58xTIuzBfWmSqvO5rG4fVMx/QYF+9p/I
+ JzBZHhf7NslomSHoDAnGpJr8On6OJiW30MDQrTZtA7kyXP0HcK28tHbfaoXMpq+jDZgtGJePJ
+ VqrPHdeO9R7e4HH2PBwLPx8Ja9XPuu7Tnfx44FswZIRFAvIncBNkwHdaIPOX1LUV2o8zIkkmE
+ KRYoE+YtPCfLxwFkeqJZRmSD9Cptq5BPZkIMU9vKtpOmd6Gos2Jx520kJEcLrGLR1J9EC7vMV
+ Q8LcZ2JH3XFxey8fnJO3+8AJdRB5t874tJQI/HNTWxldkPbvS7iJG6D8+9yN0MHVF31h7BuhN
+ 6aaA8TtbWgpXv72CspBewdC6OE6h1+ZjrguVchD7AJkOwFG9h2zOalEvtb+Pm0rn2L1P2dW9p
+ g2EeDtA0oIc/URFH5/LeSirppt0=
 
-Hi Andy,
 
-On 07.12.23 13:35, Andy Shevchenko wrote:
-> On Wed, Dec 06, 2023 at 04:42:53PM +0100, Lino Sanfilippo wrote:
->> On 27.11.23 13:14, Christoph Niedermaier wrote:
->>> From: Lino Sanfilippo [mailto:LinoSanfilippo@gmx.de]
->>> Sent: Sunday, November 26, 2023 12:40 AM
->
-> ...
->
->>> RS-485 (2-wire NO RX_DURING_TX): rs485->flags =3D SER_RS485_ENABLED|SE=
-R_RS485_MODE_HALF_DUPLEX
->>> RS-485 (2-wire RX_DURING_TX):    rs485->flags =3D SER_RS485_ENABLED|SE=
-R_RS485_MODE_HALF_DUPLEX|SER_RS485_RX_DURING_TX
->>
->> I think we can omit the SER_RS485_MODE_HALF_DUPLEX flag if we assume th=
-at
->> a missing SER_RS485_MODE_FULL_DUPLEX means half duplex (i.e. controllin=
-g
->> the RTS line).
->
-> You should be very careful on these assumptions, i.e. one must to check =
-_all_
-> existing user space tools (at least that are in use / supplied by main d=
-istros)
-> on how they behave.
+
+On 06.12.23 16:42, Lino Sanfilippo wrote:
 >
 
-Until now the DUPLEX flags do not yet exist, so existing userspace applica=
-tions are not
-concerned. Christoph suggested to introduce two flags to distinguish betwe=
-en
-a FULL duplex and a half duplex RS485 mode. My point was that we  do not n=
-eed the flag
-for half duplex, since this would be the default.
+>>>>
+>>>> Crescent CY Hsieh (+cc) is in parallel trying to add an RS-422 mode b=
+it
+>>>> to struct serial_rs485:
+>>>>
+>>>> https://lore.kernel.org/all/20231121095122.15948-1-crescentcy.hsieh@m=
+oxa.com/
+>>>>
+>>>
+>>> That new flag was suggested by me instead of using SER_RS422_ENABLED, =
+which
+>>> would mostly be redundant to SER_RS485_ENABLED.
 
-BR,
+A cleaner solution would probably be to not handle RS422 with the RS485 se=
+ttings at
+all, but to introduce another set of ioctls to set and read it.
+
+An own RS422 structure like
+
+struct serial_rs422 {
+	__u32	flags;
+#define SER_RS422_ENABLED		(1 << 0)
+#define SER_RS422_TERMINATE_BUS		(1 << 1)
+};
+
+
+could be used as the parameter for these new ioctls.
+
+Any comments on this?
+
+
+Regards,
 Lino
-
