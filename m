@@ -1,43 +1,43 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="KO97+Trr"
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB50810E0
-	for <linux-serial@vger.kernel.org>; Sat,  9 Dec 2023 15:31:40 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id ffacd0b85a97d-3333a3a599fso2268345f8f.0
-        for <linux-serial@vger.kernel.org>; Sat, 09 Dec 2023 15:31:40 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="s5juPEp9"
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F242A1986
+	for <linux-serial@vger.kernel.org>; Sat,  9 Dec 2023 15:31:46 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id 5b1f17b1804b1-40c38de1ee4so14485475e9.0
+        for <linux-serial@vger.kernel.org>; Sat, 09 Dec 2023 15:31:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702164699; x=1702769499; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1702164705; x=1702769505; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=sKjdEgpEXrW+Vxxavwk/sAmHZPIPjACT3GXQf40mCiU=;
-        b=KO97+TrrWpEUZk8GU0JlQh1YR0FEkkiotZsGDJBF14QjuAqLfbkM/4ZtqJzDDB3yKc
-         /meiHorWmtCGNNgiV+CUtfSVYuVArWycqa+SaqAqk+RM1aBhW13B3xE7jr/BHb96CKqU
-         +eWMcB3vSeya20jK+Lib+8rU9p7f5Pe9R6FAqQqrzcEK+WHtXwiQHbrFbC88+xsoP2pU
-         PEicupJEXsy6dEVgf2iO9X7Y5UtXAKhuEAtdbOHzhqj1uSSYoz8N5HIjODivG5p72tzb
-         JYsZrqiH980JSGmk9tL5jPznaowhHLKBAx/WeiA9sqsRMG1yH00OkGCNV4Lc1KSXdHGT
-         vAIQ==
+        bh=JvDVwBTixWipZmxB22MbupuPU8/bAZmmQsaKZWMqwMg=;
+        b=s5juPEp93J3a43MCuBqwwklxa7LHFFwZ1UfibeZ9o7iE55ojUG3qY788TYy7XWYRbM
+         5tuR/DgndTvBCc43V1X9cTSyxAMnBcjF4mXxpazm9Mrx64lo9OKH/dKsm27sfS06LLCp
+         Lu9Ne/eFsrIIiYokVtZC0v7RpzwAsG56RsjX5Rd6Se/ocmE3Y16q+IM/vNxIiOVY26Di
+         mg9jdP7hI1tC8BVcpIW8SY1yoey+cMudl0nu6SWScikwGCpAt3h0rhRSNEjJlhOuxtJZ
+         IyQCiC0Our2ywE2MYahIEtiIxrQcoN0ko8rR/AyJaHjoF6qN7QRyjO9Sa1h6jHlBTYmR
+         2/RQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702164699; x=1702769499;
+        d=1e100.net; s=20230601; t=1702164705; x=1702769505;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=sKjdEgpEXrW+Vxxavwk/sAmHZPIPjACT3GXQf40mCiU=;
-        b=QWiM4rvfMy1OCWY22wBx3nTShTf11vBipWpJQoRAejDs2Uaeym/Qsnxer5g3TINgCp
-         xvF32niNCnQMXLRtB5ytcgqN21ZXJCwLV7aMVm9A0upzTzgl71ewpMrNNudQ8CzIL3/R
-         NYVLiYBB0SOcnxvDHXM+iIpJvxKxcNc248A8LT5zXcr+3f6npolZpSQINmxIPARyr8Cm
-         GxjVB0WGjHaVI91eqVwHI9LPdVRY6kJskvCvefvPcVn916Di8zKO91zSU8FPJw2jjM5M
-         Ec6/1agJLnzKX+9ONj18XqrVFflo1/EZy0irG/ngzyzQxO36P+m30TcCEdGncYEIIzLH
-         eTyw==
-X-Gm-Message-State: AOJu0Yzsq9OEYaC1FQK11ImU29yyHEqgExGVJK65Flo0kCxPnfbsBmrb
-	m4vbNzv8kRgpAGGbzOnM+9EE9g==
-X-Google-Smtp-Source: AGHT+IHG0h9fWeJZoWe96F9odEDDHNPogAVg5BKBSqAOmxsv2w9oH2Z31W4Ae/TWa8jV2Dp1VpIp3w==
-X-Received: by 2002:a05:600c:45cd:b0:40b:5e56:7b6c with SMTP id s13-20020a05600c45cd00b0040b5e567b6cmr997863wmo.181.1702164699187;
-        Sat, 09 Dec 2023 15:31:39 -0800 (PST)
+        bh=JvDVwBTixWipZmxB22MbupuPU8/bAZmmQsaKZWMqwMg=;
+        b=H2DiVePY8cHH5TmtJEd4c6qU602FLdVxDSWLSUTFDX/zw+G4yZHmoHb84T56UuzZ9W
+         LIOPZlSimTK4CqnvLAZn1YZpJ/bRsZCm3bGT8ZQcGU6m9jJj/uRqNhqXSVO8pii+NGE3
+         HB3zGV8txHnlX4MFjNIWKWYrqBL/K+m9szC6bmsA7TE0intXHkJf8lGcql6EoMt/84vO
+         syIRkAefq6/+QsXTJpvnWuPQAARqrk/zzhJIyLNRj+H+mKiff0IIH+/G7arqCnN4kEtR
+         QzvjEoJe/118Lz5iMkLIyA3vrjDbSt1DnPHY6ojzAFJZEHpXVqE+vUDt+qRfBS+ROxKs
+         rnsQ==
+X-Gm-Message-State: AOJu0YytMVDSJuiAHearWPXTgNE/XrX2fK9j5ofE0Zyf/OI5zJJRBtOX
+	IW7HAkqxLX2T8patCy8AVDSzEw==
+X-Google-Smtp-Source: AGHT+IHM7LcYLG9aTshmuTPPsWSbLkc5xOgZRK+Kqu3DOn6BTP3f96X3RQ4aTdS3JSlcWsHq4lukDg==
+X-Received: by 2002:a7b:c390:0:b0:40b:5e59:e9fa with SMTP id s16-20020a7bc390000000b0040b5e59e9famr1058010wmj.153.1702164705459;
+        Sat, 09 Dec 2023 15:31:45 -0800 (PST)
 Received: from gpeter-l.lan (host-92-23-61-173.as13285.net. [92.23.61.173])
-        by smtp.gmail.com with ESMTPSA id n9-20020a05600c4f8900b0040c41846923sm1875277wmq.26.2023.12.09.15.31.37
+        by smtp.gmail.com with ESMTPSA id n9-20020a05600c4f8900b0040c41846923sm1875277wmq.26.2023.12.09.15.31.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Dec 2023 15:31:38 -0800 (PST)
+        Sat, 09 Dec 2023 15:31:44 -0800 (PST)
 From: Peter Griffin <peter.griffin@linaro.org>
 To: robh+dt@kernel.org,
 	krzysztof.kozlowski+dt@linaro.org,
@@ -72,9 +72,9 @@ Cc: peter.griffin@linaro.org,
 	linux-watchdog@vger.kernel.org,
 	kernel-team@android.com,
 	linux-serial@vger.kernel.org
-Subject: [PATCH v6 16/20] watchdog: s3c2410_wdt: Add support for Google gs101 SoC
-Date: Sat,  9 Dec 2023 23:31:02 +0000
-Message-ID: <20231209233106.147416-17-peter.griffin@linaro.org>
+Subject: [PATCH v6 20/20] MAINTAINERS: add entry for Google Tensor SoC
+Date: Sat,  9 Dec 2023 23:31:06 +0000
+Message-ID: <20231209233106.147416-21-peter.griffin@linaro.org>
 X-Mailer: git-send-email 2.43.0.472.g3155946c3a-goog
 In-Reply-To: <20231209233106.147416-1-peter.griffin@linaro.org>
 References: <20231209233106.147416-1-peter.griffin@linaro.org>
@@ -86,111 +86,36 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This patch adds the compatibles and drvdata for the Google
-gs101 SoC found in Pixel 6, Pixel 6a & Pixel 6 pro phones.
+Add maintainers entry for the Google tensor SoC based
+platforms.
 
-Similar to Exynos850 it has two watchdog instances, one for
-each cluster and has some control bits in PMU registers.
-
-gs101 also has the dbgack_mask bit in wtcon register, so
-we also enable QUIRK_HAS_DBGACK_BIT.
-
-Tested-by: Will McVicker <willmcvicker@google.com>
 Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
 Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
 ---
- drivers/watchdog/s3c2410_wdt.c | 49 ++++++++++++++++++++++++++++++----
- 1 file changed, 44 insertions(+), 5 deletions(-)
+ MAINTAINERS | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/watchdog/s3c2410_wdt.c b/drivers/watchdog/s3c2410_wdt.c
-index b7a03668f743..ae4457a39c77 100644
---- a/drivers/watchdog/s3c2410_wdt.c
-+++ b/drivers/watchdog/s3c2410_wdt.c
-@@ -69,6 +69,13 @@
- #define EXYNOSAUTOV9_CLUSTER0_WDTRESET_BIT	25
- #define EXYNOSAUTOV9_CLUSTER1_WDTRESET_BIT	24
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 36f6e76170e6..a3bd682c9e32 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9032,6 +9032,16 @@ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/chrome-platform/linux.git
+ F:	drivers/firmware/google/
  
-+#define GS_CLUSTER0_NONCPU_OUT			0x1220
-+#define GS_CLUSTER1_NONCPU_OUT			0x1420
-+#define GS_CLUSTER0_NONCPU_INT_EN		0x1244
-+#define GS_CLUSTER1_NONCPU_INT_EN		0x1444
-+#define GS_CLUSTER2_NONCPU_INT_EN		0x1644
-+#define GS_RST_STAT_REG_OFFSET			0x3B44
++GOOGLE TENSOR SoC SUPPORT
++M:	Peter Griffin <peter.griffin@linaro.org>
++L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
++L:	linux-samsung-soc@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/clock/google,gs101-clock.yaml
++F:	arch/arm64/boot/dts/exynos/google/
++F:	drivers/clk/samsung/clk-gs101.c
++F:	include/dt-bindings/clock/google,clk-gs101.h
 +
- /**
-  * DOC: Quirk flags for different Samsung watchdog IP-cores
-  *
-@@ -270,6 +277,32 @@ static const struct s3c2410_wdt_variant drv_data_exynosautov9_cl1 = {
- 		  QUIRK_HAS_PMU_RST_STAT | QUIRK_HAS_PMU_CNT_EN,
- };
- 
-+static const struct s3c2410_wdt_variant drv_data_gs101_cl0 = {
-+	.mask_reset_reg = GS_CLUSTER0_NONCPU_INT_EN,
-+	.mask_bit = 2,
-+	.mask_reset_inv = true,
-+	.rst_stat_reg = GS_RST_STAT_REG_OFFSET,
-+	.rst_stat_bit = 0,
-+	.cnt_en_reg = GS_CLUSTER0_NONCPU_OUT,
-+	.cnt_en_bit = 8,
-+	.quirks = QUIRK_HAS_PMU_RST_STAT | QUIRK_HAS_PMU_MASK_RESET |
-+		  QUIRK_HAS_PMU_CNT_EN | QUIRK_HAS_WTCLRINT_REG |
-+		  QUIRK_HAS_DBGACK_BIT,
-+};
-+
-+static const struct s3c2410_wdt_variant drv_data_gs101_cl1 = {
-+	.mask_reset_reg = GS_CLUSTER1_NONCPU_INT_EN,
-+	.mask_bit = 2,
-+	.mask_reset_inv = true,
-+	.rst_stat_reg = GS_RST_STAT_REG_OFFSET,
-+	.rst_stat_bit = 1,
-+	.cnt_en_reg = GS_CLUSTER1_NONCPU_OUT,
-+	.cnt_en_bit = 7,
-+	.quirks = QUIRK_HAS_PMU_RST_STAT | QUIRK_HAS_PMU_MASK_RESET |
-+		  QUIRK_HAS_PMU_CNT_EN | QUIRK_HAS_WTCLRINT_REG |
-+		  QUIRK_HAS_DBGACK_BIT,
-+};
-+
- static const struct of_device_id s3c2410_wdt_match[] = {
- 	{ .compatible = "samsung,s3c2410-wdt",
- 	  .data = &drv_data_s3c2410 },
-@@ -285,6 +318,8 @@ static const struct of_device_id s3c2410_wdt_match[] = {
- 	  .data = &drv_data_exynos850_cl0 },
- 	{ .compatible = "samsung,exynosautov9-wdt",
- 	  .data = &drv_data_exynosautov9_cl0 },
-+	{ .compatible = "google,gs101-wdt",
-+	  .data = &drv_data_gs101_cl0 },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, s3c2410_wdt_match);
-@@ -605,9 +640,10 @@ s3c2410_get_wdt_drv_data(struct platform_device *pdev, struct s3c2410_wdt *wdt)
- 	}
- 
- #ifdef CONFIG_OF
--	/* Choose Exynos850/ExynosAutov9 driver data w.r.t. cluster index */
-+	/* Choose Exynos9 SoC family driver data w.r.t. cluster index */
- 	if (variant == &drv_data_exynos850_cl0 ||
--	    variant == &drv_data_exynosautov9_cl0) {
-+	    variant == &drv_data_exynosautov9_cl0 ||
-+	    variant == &drv_data_gs101_cl0) {
- 		u32 index;
- 		int err;
- 
-@@ -620,9 +656,12 @@ s3c2410_get_wdt_drv_data(struct platform_device *pdev, struct s3c2410_wdt *wdt)
- 		case 0:
- 			break;
- 		case 1:
--			variant = (variant == &drv_data_exynos850_cl0) ?
--				&drv_data_exynos850_cl1 :
--				&drv_data_exynosautov9_cl1;
-+			if (variant == &drv_data_exynos850_cl0)
-+				variant = &drv_data_exynos850_cl1;
-+			else if (variant == &drv_data_exynosautov9_cl0)
-+				variant = &drv_data_exynosautov9_cl1;
-+			else if (variant == &drv_data_gs101_cl0)
-+				variant = &drv_data_gs101_cl1;
- 			break;
- 		default:
- 			return dev_err_probe(dev, -EINVAL, "wrong cluster index: %u\n", index);
+ GPD POCKET FAN DRIVER
+ M:	Hans de Goede <hdegoede@redhat.com>
+ L:	platform-driver-x86@vger.kernel.org
 -- 
 2.43.0.472.g3155946c3a-goog
 
