@@ -1,43 +1,43 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tgW+AdJF"
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C53010CF
-	for <linux-serial@vger.kernel.org>; Sat,  9 Dec 2023 15:31:45 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id 5b1f17b1804b1-40c3f68b79aso8030435e9.0
-        for <linux-serial@vger.kernel.org>; Sat, 09 Dec 2023 15:31:45 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="KO97+Trr"
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB50810E0
+	for <linux-serial@vger.kernel.org>; Sat,  9 Dec 2023 15:31:40 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id ffacd0b85a97d-3333a3a599fso2268345f8f.0
+        for <linux-serial@vger.kernel.org>; Sat, 09 Dec 2023 15:31:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702164704; x=1702769504; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1702164699; x=1702769499; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EAFdW67HYd3Bb2Hwf4KYbLMCw5f3bVCl5OXFClJ7A/Y=;
-        b=tgW+AdJF4K/vl40eDcFF9QOruWB23uOYtchJUgQECTzklcH9FK1nW6Gx5L3j1eR/e/
-         yIylAQW9zz/t1ViVCz37A07Uy0YX4gulSj1zJ1J7Lr9qQMxVuKdN1fgj88Pwe3KhniGW
-         IIyK61UKtpVIm2i0gQrZpQQnG05nXBf9h/jH69yQ/zNPhjpvjl4aPppOuvl3rfai3fFS
-         S1XNnMX2ASHigg9K5cCzXtJrRz+svX++NGhHWKULsSVPzRZqHn14JwCTNSQfZ8nI4KBj
-         CXh29FuALJIknOim/2l1Yz2TT7pJPmCAKwqs9b1UbgtQM13lhPMXA4u40niEXLQrnexv
-         kiNw==
+        bh=sKjdEgpEXrW+Vxxavwk/sAmHZPIPjACT3GXQf40mCiU=;
+        b=KO97+TrrWpEUZk8GU0JlQh1YR0FEkkiotZsGDJBF14QjuAqLfbkM/4ZtqJzDDB3yKc
+         /meiHorWmtCGNNgiV+CUtfSVYuVArWycqa+SaqAqk+RM1aBhW13B3xE7jr/BHb96CKqU
+         +eWMcB3vSeya20jK+Lib+8rU9p7f5Pe9R6FAqQqrzcEK+WHtXwiQHbrFbC88+xsoP2pU
+         PEicupJEXsy6dEVgf2iO9X7Y5UtXAKhuEAtdbOHzhqj1uSSYoz8N5HIjODivG5p72tzb
+         JYsZrqiH980JSGmk9tL5jPznaowhHLKBAx/WeiA9sqsRMG1yH00OkGCNV4Lc1KSXdHGT
+         vAIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702164704; x=1702769504;
+        d=1e100.net; s=20230601; t=1702164699; x=1702769499;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=EAFdW67HYd3Bb2Hwf4KYbLMCw5f3bVCl5OXFClJ7A/Y=;
-        b=iaDNOIB00gT92BubA7Hyuus6Ez7tz3fxntKd0Y9zKtxV7obfK5S8idU9vvvEaxH3Jp
-         mqDC9/BovizQ6LSdEm4bNAXpMCp/KRVMuwnZ8Bk06QZf++ynZxN/XcrBekvmUN47JLau
-         FRAeYql2duP977ek5NubBxCEl/mz7HsZcF8hxi+3LBH+mQXyjOjC5SzpPB1fsNeKwhOO
-         NNuqe1LIV25z2U7zhfR0hKTKxMI4osqmRmSq4d+uuGuZiViuBLjgYkBZYN2XRxAdD4IE
-         /ZuEvMaLoZv8ujdQJy2y1MQ0UMvhgi4rE/AnLSD2jPFYNuGwTHk2bLXQBCODdP/q2avX
-         INFg==
-X-Gm-Message-State: AOJu0YyuNsyhh8r4QvBUdO1mf02VpfPGJuLTBlFajLWDI007e0GrV+4G
-	sUTjAfG40HEkJDr9JDy1O+HS/g==
-X-Google-Smtp-Source: AGHT+IGsMNfWWZYt//plT1q2eosUu1d2fNrrD6nxOtqlsx/fDB3WWNn9uayy8DtAVH92M7WKy9TjFg==
-X-Received: by 2002:a05:600c:4507:b0:40c:2ace:5f01 with SMTP id t7-20020a05600c450700b0040c2ace5f01mr1156000wmo.163.1702164703912;
-        Sat, 09 Dec 2023 15:31:43 -0800 (PST)
+        bh=sKjdEgpEXrW+Vxxavwk/sAmHZPIPjACT3GXQf40mCiU=;
+        b=QWiM4rvfMy1OCWY22wBx3nTShTf11vBipWpJQoRAejDs2Uaeym/Qsnxer5g3TINgCp
+         xvF32niNCnQMXLRtB5ytcgqN21ZXJCwLV7aMVm9A0upzTzgl71ewpMrNNudQ8CzIL3/R
+         NYVLiYBB0SOcnxvDHXM+iIpJvxKxcNc248A8LT5zXcr+3f6npolZpSQINmxIPARyr8Cm
+         GxjVB0WGjHaVI91eqVwHI9LPdVRY6kJskvCvefvPcVn916Di8zKO91zSU8FPJw2jjM5M
+         Ec6/1agJLnzKX+9ONj18XqrVFflo1/EZy0irG/ngzyzQxO36P+m30TcCEdGncYEIIzLH
+         eTyw==
+X-Gm-Message-State: AOJu0Yzsq9OEYaC1FQK11ImU29yyHEqgExGVJK65Flo0kCxPnfbsBmrb
+	m4vbNzv8kRgpAGGbzOnM+9EE9g==
+X-Google-Smtp-Source: AGHT+IHG0h9fWeJZoWe96F9odEDDHNPogAVg5BKBSqAOmxsv2w9oH2Z31W4Ae/TWa8jV2Dp1VpIp3w==
+X-Received: by 2002:a05:600c:45cd:b0:40b:5e56:7b6c with SMTP id s13-20020a05600c45cd00b0040b5e567b6cmr997863wmo.181.1702164699187;
+        Sat, 09 Dec 2023 15:31:39 -0800 (PST)
 Received: from gpeter-l.lan (host-92-23-61-173.as13285.net. [92.23.61.173])
-        by smtp.gmail.com with ESMTPSA id n9-20020a05600c4f8900b0040c41846923sm1875277wmq.26.2023.12.09.15.31.42
+        by smtp.gmail.com with ESMTPSA id n9-20020a05600c4f8900b0040c41846923sm1875277wmq.26.2023.12.09.15.31.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Dec 2023 15:31:43 -0800 (PST)
+        Sat, 09 Dec 2023 15:31:38 -0800 (PST)
 From: Peter Griffin <peter.griffin@linaro.org>
 To: robh+dt@kernel.org,
 	krzysztof.kozlowski+dt@linaro.org,
@@ -72,9 +72,9 @@ Cc: peter.griffin@linaro.org,
 	linux-watchdog@vger.kernel.org,
 	kernel-team@android.com,
 	linux-serial@vger.kernel.org
-Subject: [PATCH v6 19/20] arm64: dts: exynos: google: Add initial Oriole/pixel 6 board support
-Date: Sat,  9 Dec 2023 23:31:05 +0000
-Message-ID: <20231209233106.147416-20-peter.griffin@linaro.org>
+Subject: [PATCH v6 16/20] watchdog: s3c2410_wdt: Add support for Google gs101 SoC
+Date: Sat,  9 Dec 2023 23:31:02 +0000
+Message-ID: <20231209233106.147416-17-peter.griffin@linaro.org>
 X-Mailer: git-send-email 2.43.0.472.g3155946c3a-goog
 In-Reply-To: <20231209233106.147416-1-peter.griffin@linaro.org>
 References: <20231209233106.147416-1-peter.griffin@linaro.org>
@@ -86,152 +86,111 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add initial board support for the Pixel 6 phone code named Oriole. This
-has been tested with a minimal busybox initramfs and boots to a shell.
+This patch adds the compatibles and drvdata for the Google
+gs101 SoC found in Pixel 6, Pixel 6a & Pixel 6 pro phones.
+
+Similar to Exynos850 it has two watchdog instances, one for
+each cluster and has some control bits in PMU registers.
+
+gs101 also has the dbgack_mask bit in wtcon register, so
+we also enable QUIRK_HAS_DBGACK_BIT.
 
 Tested-by: Will McVicker <willmcvicker@google.com>
 Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
 Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
 ---
- arch/arm64/boot/dts/exynos/Makefile           |   2 +
- arch/arm64/boot/dts/exynos/google/Makefile    |   4 +
- .../boot/dts/exynos/google/gs101-oriole.dts   | 105 ++++++++++++++++++
- 3 files changed, 111 insertions(+)
- create mode 100644 arch/arm64/boot/dts/exynos/google/Makefile
- create mode 100644 arch/arm64/boot/dts/exynos/google/gs101-oriole.dts
+ drivers/watchdog/s3c2410_wdt.c | 49 ++++++++++++++++++++++++++++++----
+ 1 file changed, 44 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/exynos/Makefile b/arch/arm64/boot/dts/exynos/Makefile
-index 6e4ba69268e5..44c24a8ad9e1 100644
---- a/arch/arm64/boot/dts/exynos/Makefile
-+++ b/arch/arm64/boot/dts/exynos/Makefile
-@@ -1,4 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0
-+subdir-y += google
+diff --git a/drivers/watchdog/s3c2410_wdt.c b/drivers/watchdog/s3c2410_wdt.c
+index b7a03668f743..ae4457a39c77 100644
+--- a/drivers/watchdog/s3c2410_wdt.c
++++ b/drivers/watchdog/s3c2410_wdt.c
+@@ -69,6 +69,13 @@
+ #define EXYNOSAUTOV9_CLUSTER0_WDTRESET_BIT	25
+ #define EXYNOSAUTOV9_CLUSTER1_WDTRESET_BIT	24
+ 
++#define GS_CLUSTER0_NONCPU_OUT			0x1220
++#define GS_CLUSTER1_NONCPU_OUT			0x1420
++#define GS_CLUSTER0_NONCPU_INT_EN		0x1244
++#define GS_CLUSTER1_NONCPU_INT_EN		0x1444
++#define GS_CLUSTER2_NONCPU_INT_EN		0x1644
++#define GS_RST_STAT_REG_OFFSET			0x3B44
 +
- dtb-$(CONFIG_ARCH_EXYNOS) += \
- 	exynos5433-tm2.dtb		\
- 	exynos5433-tm2e.dtb		\
-diff --git a/arch/arm64/boot/dts/exynos/google/Makefile b/arch/arm64/boot/dts/exynos/google/Makefile
-new file mode 100644
-index 000000000000..0a6d5e1fe4ee
---- /dev/null
-+++ b/arch/arm64/boot/dts/exynos/google/Makefile
-@@ -0,0 +1,4 @@
-+# SPDX-License-Identifier: GPL-2.0
-+
-+dtb-$(CONFIG_ARCH_EXYNOS) += \
-+	gs101-oriole.dtb \
-diff --git a/arch/arm64/boot/dts/exynos/google/gs101-oriole.dts b/arch/arm64/boot/dts/exynos/google/gs101-oriole.dts
-new file mode 100644
-index 000000000000..ce087ee1fd4d
---- /dev/null
-+++ b/arch/arm64/boot/dts/exynos/google/gs101-oriole.dts
-@@ -0,0 +1,105 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Oriole Device Tree
-+ *
-+ * Copyright 2021-2023 Google LLC
-+ * Copyright 2023 Linaro Ltd - <peter.griffin@linaro.org>
-+ */
-+
-+/dts-v1/;
-+
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/input/input.h>
-+#include "gs101-pinctrl.h"
-+#include "gs101.dtsi"
-+
-+/ {
-+	model = "Oriole";
-+	compatible = "google,gs101-oriole", "google,gs101";
-+
-+	aliases {
-+		serial0 = &serial_0;
-+	};
-+
-+	chosen {
-+		/* Bootloader expects bootargs specified otherwise it crashes */
-+		bootargs = "";
-+		stdout-path = &serial_0;
-+	};
-+
-+	gpio-keys {
-+		compatible = "gpio-keys";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&key_voldown>, <&key_volup>, <&key_power>;
-+
-+		button-vol-down {
-+			label = "KEY_VOLUMEDOWN";
-+			linux,code = <KEY_VOLUMEDOWN>;
-+			gpios = <&gpa7 3 GPIO_ACTIVE_LOW>;
-+			wakeup-source;
-+		};
-+
-+		button-vol-up {
-+			label = "KEY_VOLUMEUP";
-+			linux,code = <KEY_VOLUMEUP>;
-+			gpios = <&gpa8 1 GPIO_ACTIVE_LOW>;
-+			wakeup-source;
-+		};
-+
-+		button-power {
-+			label = "KEY_POWER";
-+			linux,code = <KEY_POWER>;
-+			gpios = <&gpa10 1 GPIO_ACTIVE_LOW>;
-+			wakeup-source;
-+		};
-+	};
+ /**
+  * DOC: Quirk flags for different Samsung watchdog IP-cores
+  *
+@@ -270,6 +277,32 @@ static const struct s3c2410_wdt_variant drv_data_exynosautov9_cl1 = {
+ 		  QUIRK_HAS_PMU_RST_STAT | QUIRK_HAS_PMU_CNT_EN,
+ };
+ 
++static const struct s3c2410_wdt_variant drv_data_gs101_cl0 = {
++	.mask_reset_reg = GS_CLUSTER0_NONCPU_INT_EN,
++	.mask_bit = 2,
++	.mask_reset_inv = true,
++	.rst_stat_reg = GS_RST_STAT_REG_OFFSET,
++	.rst_stat_bit = 0,
++	.cnt_en_reg = GS_CLUSTER0_NONCPU_OUT,
++	.cnt_en_bit = 8,
++	.quirks = QUIRK_HAS_PMU_RST_STAT | QUIRK_HAS_PMU_MASK_RESET |
++		  QUIRK_HAS_PMU_CNT_EN | QUIRK_HAS_WTCLRINT_REG |
++		  QUIRK_HAS_DBGACK_BIT,
 +};
 +
-+&ext_24_5m {
-+	clock-frequency = <24576000>;
++static const struct s3c2410_wdt_variant drv_data_gs101_cl1 = {
++	.mask_reset_reg = GS_CLUSTER1_NONCPU_INT_EN,
++	.mask_bit = 2,
++	.mask_reset_inv = true,
++	.rst_stat_reg = GS_RST_STAT_REG_OFFSET,
++	.rst_stat_bit = 1,
++	.cnt_en_reg = GS_CLUSTER1_NONCPU_OUT,
++	.cnt_en_bit = 7,
++	.quirks = QUIRK_HAS_PMU_RST_STAT | QUIRK_HAS_PMU_MASK_RESET |
++		  QUIRK_HAS_PMU_CNT_EN | QUIRK_HAS_WTCLRINT_REG |
++		  QUIRK_HAS_DBGACK_BIT,
 +};
 +
-+&ext_200m {
-+	clock-frequency = <200000000>;
-+};
-+
-+&pinctrl_far_alive {
-+	key_voldown: key-voldown-pins {
-+		samsung,pins = "gpa7-3";
-+		samsung,pin-function = <GS101_PIN_FUNC_EINT>;
-+		samsung,pin-pud = <GS101_PIN_PULL_NONE>;
-+		samsung,pin-drv = <GS101_PIN_DRV_2_5_MA>;
-+	};
-+
-+	key_volup: key-volup-pins {
-+		samsung,pins = "gpa8-1";
-+		samsung,pin-function = <GS101_PIN_FUNC_EINT>;
-+		samsung,pin-pud = <GS101_PIN_PULL_NONE>;
-+		samsung,pin-drv = <GS101_PIN_DRV_2_5_MA>;
-+	};
-+};
-+
-+&pinctrl_gpio_alive {
-+	key_power: key-power-pins {
-+		samsung,pins = "gpa10-1";
-+		samsung,pin-function = <GS101_PIN_FUNC_EINT>;
-+		samsung,pin-pud = <GS101_PIN_PULL_NONE>;
-+		samsung,pin-drv = <GS101_PIN_DRV_2_5_MA>;
-+	};
-+};
-+
-+&serial_0 {
-+	status = "okay";
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&uart0_bus>;
-+};
-+
-+&usi_uart {
-+	status = "okay";
-+	samsung,clkreq-on; /* needed for UART mode */
-+};
-+
-+&watchdog_cl0 {
-+	timeout-sec = <30>;
-+	status = "okay";
-+};
+ static const struct of_device_id s3c2410_wdt_match[] = {
+ 	{ .compatible = "samsung,s3c2410-wdt",
+ 	  .data = &drv_data_s3c2410 },
+@@ -285,6 +318,8 @@ static const struct of_device_id s3c2410_wdt_match[] = {
+ 	  .data = &drv_data_exynos850_cl0 },
+ 	{ .compatible = "samsung,exynosautov9-wdt",
+ 	  .data = &drv_data_exynosautov9_cl0 },
++	{ .compatible = "google,gs101-wdt",
++	  .data = &drv_data_gs101_cl0 },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, s3c2410_wdt_match);
+@@ -605,9 +640,10 @@ s3c2410_get_wdt_drv_data(struct platform_device *pdev, struct s3c2410_wdt *wdt)
+ 	}
+ 
+ #ifdef CONFIG_OF
+-	/* Choose Exynos850/ExynosAutov9 driver data w.r.t. cluster index */
++	/* Choose Exynos9 SoC family driver data w.r.t. cluster index */
+ 	if (variant == &drv_data_exynos850_cl0 ||
+-	    variant == &drv_data_exynosautov9_cl0) {
++	    variant == &drv_data_exynosautov9_cl0 ||
++	    variant == &drv_data_gs101_cl0) {
+ 		u32 index;
+ 		int err;
+ 
+@@ -620,9 +656,12 @@ s3c2410_get_wdt_drv_data(struct platform_device *pdev, struct s3c2410_wdt *wdt)
+ 		case 0:
+ 			break;
+ 		case 1:
+-			variant = (variant == &drv_data_exynos850_cl0) ?
+-				&drv_data_exynos850_cl1 :
+-				&drv_data_exynosautov9_cl1;
++			if (variant == &drv_data_exynos850_cl0)
++				variant = &drv_data_exynos850_cl1;
++			else if (variant == &drv_data_exynosautov9_cl0)
++				variant = &drv_data_exynosautov9_cl1;
++			else if (variant == &drv_data_gs101_cl0)
++				variant = &drv_data_gs101_cl1;
+ 			break;
+ 		default:
+ 			return dev_err_probe(dev, -EINVAL, "wrong cluster index: %u\n", index);
 -- 
 2.43.0.472.g3155946c3a-goog
 
