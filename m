@@ -1,283 +1,116 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="HVuErclE"
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B610E1710
-	for <linux-serial@vger.kernel.org>; Fri,  8 Dec 2023 17:01:05 -0800 (PST)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-5d34f8f211fso26065337b3.0
-        for <linux-serial@vger.kernel.org>; Fri, 08 Dec 2023 17:01:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702083665; x=1702688465; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ElaXcfV6dmgzWzzP1M0WxFihXPQM8C12PJOBL/Tp0sE=;
-        b=HVuErclElmHD/KgnB6aCiA2Y9l9gvaSgPN1y7qasGlO+vUaGqUXjVKVNwHC+CdLAuR
-         RjJGtpjNQDUeIeL4HLL9CSDQ0pLgjE/c2vBtH2sZfFL/2NCQaxM+IAmkMWQcedrzFdbJ
-         udeffoMiSLBPuCMQIpbmayzM0el+7Qu+9zRwvgBQMDgx+Jtq/kjSEyCfT1eWlfPTHNUt
-         mTcyQqkGiVTIbrN/NQvnRpyqfN8QTcaBk9SrhhTXE/tBe8kEKHXSBqfFJN5xuDBi7m9g
-         p/04gPTodWNdBRhhk9re3Y+PfgM+PIrCMITdT6LCYt9B0kqdjsrxJVvUzuA05BGNxnKV
-         JRrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702083665; x=1702688465;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ElaXcfV6dmgzWzzP1M0WxFihXPQM8C12PJOBL/Tp0sE=;
-        b=qB2iOIxXoQKb+LcGD/3IER4K3x5PqiiBCYo5pfJ2KBxqml9e9pJ/331D4Xd2Gx/o1w
-         9owaithkCWRNkIVwKdwLSc9ddjDgGce+1YGLBX8NadoZ82yvYN/qPGOXUJ3dwlqgbnDU
-         fr2w3swXUnwjtIoe4Dd2jbEsDsX06zKPXrNIHZ3TeQsCfHAGbOjxWIvIuCQ/rkgCO9YL
-         3QPYEZcPONVT0yVAfZ8eR8IGVDEZSma1GJtTsjoMUQAD+ZAAAQGRUsiJ0tDRlS021cBD
-         BGXFeIjKORl7pMTZB9N595r0qnOKR2J4Bpn5fUX5LZOiCg70d2/xbhMISP/WmKippIuv
-         VJ7w==
-X-Gm-Message-State: AOJu0Yy0sRDs1WPHkjeFSnldnqIf38aGB+39JxVgmYBo9BL+TzWp85iO
-	TPAOZyyiTPfsJoQMaQ0gLxOd9SYUC7RQC7KkXZ1Ubw==
-X-Google-Smtp-Source: AGHT+IH5c7drT+7MHmk+IZXb9MS8muJJAtPfMa/43napxTl9DXzmHgSvTulnvFbF7nfeWXmR3prdtkp8JfQyLi6/3nE=
-X-Received: by 2002:a0d:eb02:0:b0:5d4:1a53:861f with SMTP id
- u2-20020a0deb02000000b005d41a53861fmr925367ywe.1.1702083664866; Fri, 08 Dec
- 2023 17:01:04 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="ab2hKpIA"
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A6D0E7;
+	Sat,  9 Dec 2023 03:25:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
+	t=1702121091; x=1702725891; i=linosanfilippo@gmx.de;
+	bh=85evGRCJ3tCE0nbUckGUxFOChy15m1jRdB9q8Rfhw7U=;
+	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
+	 In-Reply-To;
+	b=ab2hKpIALjqpW1/N6A3JhJrfll/qcmALE0stPvLHiOAt9HnTo6YO22Y2aShbbJ4a
+	 Hhjx6MqgwcpYCjaacCNOx0IZtR5Q5gekwsl/wJqfK6OT77Xt0qbfRQfzh8gSDR3+h
+	 ArKxyItqZptHfufLmr1gW5gpBG40pOmAO1ZBy+H7aOrMDhgNqttiQ7LBM/iKcZLuj
+	 xKOwY5oit7wYKhsaqq60KirKCs1vg54pjeMj/6wL0SBot+NF1wyQx8L7qRaZXMFjc
+	 9dsP9mhAvkvkq1/+Y2EI1P+G1ypmZjbOXLJmSse9tIbr4blCVzgCJTxhmIokWQVEu
+	 fsNb5gpDWvGCIR9rfQ==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.2.42] ([84.180.3.177]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1Mlf0K-1rd2jw43BC-00inxw; Sat, 09
+ Dec 2023 12:24:51 +0100
+Message-ID: <f03be8c2-4aef-4949-8797-3998cc7081ec@gmx.de>
+Date: Sat, 9 Dec 2023 12:24:48 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20231201160925.3136868-1-peter.griffin@linaro.org>
- <20231201160925.3136868-19-peter.griffin@linaro.org> <CAPLW+4ki_GUAnor4sTanXFLzKrAB9JpxK98PED1fUY-MLCzUdA@mail.gmail.com>
-In-Reply-To: <CAPLW+4ki_GUAnor4sTanXFLzKrAB9JpxK98PED1fUY-MLCzUdA@mail.gmail.com>
-From: Peter Griffin <peter.griffin@linaro.org>
-Date: Sat, 9 Dec 2023 01:00:53 +0000
-Message-ID: <CADrjBPq-MLBVrW0ju64JdXia+QnDSsKR9+DSi==rkZXokMzt+g@mail.gmail.com>
-Subject: Re: [PATCH v5 18/20] arm64: dts: exynos: google: Add initial Google
- gs101 SoC support
-To: Sam Protsenko <semen.protsenko@linaro.org>
-Cc: krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org, 
-	mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org, 
-	tomasz.figa@gmail.com, s.nawrocki@samsung.com, linus.walleij@linaro.org, 
-	wim@linux-watchdog.org, linux@roeck-us.net, catalin.marinas@arm.com, 
-	will@kernel.org, arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org, 
-	jirislaby@kernel.org, cw00.choi@samsung.com, alim.akhtar@samsung.com, 
-	tudor.ambarus@linaro.org, andre.draszik@linaro.org, saravanak@google.com, 
-	willmcvicker@google.com, soc@kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
-	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-watchdog@vger.kernel.org, kernel-team@android.com, 
-	linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
+ binding
+Content-Language: en-US
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+ Lukas Wunner <lukas@wunner.de>, Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ "brenda.streiff@ni.com" <brenda.streiff@ni.com>,
+ Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
+ Tomas Paukrt <tomaspaukrt@email.cz>
+References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
+ <20231120151056.148450-2-linux@rasmusvillemoes.dk>
+ <20231122145344.GA18949@wunner.de>
+ <3b8548b1-b8a9-0c9e-4040-5cfda06a85c6@gmx.de>
+ <ec66d25162de4cbc92720df1e7008fe8@dh-electronics.com>
+ <5c140498-69e3-4187-8703-db0c41e7ca89@gmx.de>
+ <ZXG8DI8diij72fBR@smile.fi.intel.com>
+From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+In-Reply-To: <ZXG8DI8diij72fBR@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:BlNMhKf4hOn8nZ5VNdviNti3SIQY3MKvaRGu+LAugRLCx7QQqMT
+ FFnqifRU8Kg2D9NDyUAGq5jkD0KCI9PlanSp/Jx0e3SoULmPRa8ER43IqXMCh/zadPNrwwk
+ urE6NNOTrdD6s4k61J0eMU+LOtsSwbIAIkzSH9NpAZgY/4wGwDMmziLeI2CpMIc/ik7XQkd
+ FEvSd+N9SqtfH6jhI+NPA==
+UI-OutboundReport: notjunk:1;M01:P0:v1c/O4aGaHQ=;zEVAzSrV+86469QKPHUQro+41JV
+ /qoyx8SjuPwLqfJyP6x90+CMDemY2FAq0ESg+srcF7Dgitf3/dVynlwyT6rU9SYfQfCvMTCd4
+ VekXifIwSdvGU8G6mxD2MwpjH6EESwy4KECLfeWy5cRexsnVCfjRtFDHwmwgo7o4v4mLDXz/4
+ RbcCmNhHZ42XhYFc+IRHcHlvXisSZHZZ2lwxQqFE439M8/rZs+6s9/ryNNkTDG+z95G89ET5G
+ BdSzOAM3vl595lH7FcHhEuhQEZ2T0ziGNzYdx9Iw0RpugAMzTju+zHD+PBSBRX1L0AXUnZCpq
+ cHhvT+yThbrL35RGvVQZBVw4rR8xYN0AH1dKSIDBu8QXKne6EBj+vC3G1Q/gWu2odF33rqXmb
+ txPsGqS87bVtgmKUtdpsKuv4fQFw1wpEmnaQtb/wdhDLvYvUylplfLgZDHHSZcO/FKwXfzvu0
+ 6ElximgXokwcd1lqijAWVHosMnSpTl8OJv4P1/rSA+VuvwmyfUL3q/sPrFLZpkZZ/Jr7+o6+d
+ +r8GN0pxz8PLAfWlscKq/iC1u4aJnHRH1nGXb/OE0+FN2wmbtUpow/XMFvDWEWquUvu1Cvrgh
+ Ln5xPC2UT04sMJFrVmlnpGdbjj2m2J5bpKa5JViOJhSfox4lbdNHUnm1O/hJAvYcFlVSArtF/
+ xYXXS/lMFCEAqWF7R8fveABYZOUQpJgJFVnUJbQv+DLGAcU4wFPYRMP0LesLJWCjv5t6ZeO55
+ k/gSe3+GWU3VWq6qAKD7ZfjVKtjuVYh5di1y68WmdbxVOL2mZxYs6btYw3hxnp1jlLUogN/yy
+ 5kbNJVIET6sAkK0nGoFUHgwRm3lH4tWBTrv8rELqqvAfeb8xWDzG2F11Eb1dO8NeaLyelTt9B
+ A1nxEtC1yAUSABKG7kMsqRCdE0xt8Wdtvoz/GhYi/ahUU0/YA72+fWXvGIaCO1YY2Y3JoOSHw
+ 6sfiEovtkyv1dmgC8LUdhGWCjSk=
 
-Hi Sam,
+Hi Andy,
 
-On Sat, 2 Dec 2023 at 01:54, Sam Protsenko <semen.protsenko@linaro.org> wro=
-te:
+On 07.12.23 13:35, Andy Shevchenko wrote:
+> On Wed, Dec 06, 2023 at 04:42:53PM +0100, Lino Sanfilippo wrote:
+>> On 27.11.23 13:14, Christoph Niedermaier wrote:
+>>> From: Lino Sanfilippo [mailto:LinoSanfilippo@gmx.de]
+>>> Sent: Sunday, November 26, 2023 12:40 AM
 >
-> On Fri, Dec 1, 2023 at 10:11=E2=80=AFAM Peter Griffin <peter.griffin@lina=
-ro.org> wrote:
-> >
-> > Google gs101 SoC is ARMv8 mobile SoC found in the Pixel 6,
-> > (oriole) Pixel 6a (bluejay) and Pixel 6 pro (raven) mobile
-> > phones. It features:
-> > * 4xA55 little cluster
-> > * 2xA76 Mid cluster
-> > * 2xX1 Big cluster
-> >
-> > This commit adds the basic device tree for gs101 (SoC).
-> > Further platform support will be added over time.
-
-[cut]
-
-> > +       spi0_cs_func: spi0-cs-func-pins {
-> > +               samsung,pins =3D "gpp20-3";
-> > +               samsung,pin-function =3D <GS101_PIN_FUNC_3>;
-> > +               samsung,pin-pud =3D <GS101_PIN_PULL_NONE>;
-> > +               samsung,pin-drv =3D <GS101_PIN_DRV_2_5_MA>;
-> > +       };
-> > +};
-> > +
+> ...
 >
-> Nitpick: this empty line is not needed.
-
-Ok will fix
-
-[cut]
-
-> > +
-> > +       aliases {
-> > +               pinctrl0 =3D &pinctrl_gpio_alive;
-> > +               pinctrl1 =3D &pinctrl_far_alive;
-> > +               pinctrl2 =3D &pinctrl_gsacore;
-> > +               pinctrl3 =3D &pinctrl_gsactrl;
-> > +               pinctrl4 =3D &pinctrl_peric0;
-> > +               pinctrl5 =3D &pinctrl_peric1;
-> > +               pinctrl6 =3D &pinctrl_hsi1;
-> > +               pinctrl7 =3D &pinctrl_hsi2;
-> > +               serial0 =3D &serial_0;
+>>> RS-485 (2-wire NO RX_DURING_TX): rs485->flags =3D SER_RS485_ENABLED|SE=
+R_RS485_MODE_HALF_DUPLEX
+>>> RS-485 (2-wire RX_DURING_TX):    rs485->flags =3D SER_RS485_ENABLED|SE=
+R_RS485_MODE_HALF_DUPLEX|SER_RS485_RX_DURING_TX
+>>
+>> I think we can omit the SER_RS485_MODE_HALF_DUPLEX flag if we assume th=
+at
+>> a missing SER_RS485_MODE_FULL_DUPLEX means half duplex (i.e. controllin=
+g
+>> the RTS line).
 >
-> Please check commit f4324583cd4d ("arm64: dts: exynos: move aliases to
-> board in Exynos850"). At least for Exynos850 the serial alias was
-> moved to the board dts by Krzysztof.
-
-Ok will fix
-
+> You should be very careful on these assumptions, i.e. one must to check =
+_all_
+> existing user space tools (at least that are in use / supplied by main d=
+istros)
+> on how they behave.
 >
-> > +       };
-> > +
-> > +       pmu-0 {
-> > +               compatible =3D "arm,cortex-a55-pmu";
-> > +               interrupts =3D <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH &ppi_clus=
-ter0>;
-> > +       };
-> > +
-> > +       pmu-1 {
-> > +               compatible =3D "arm,cortex-a76-pmu";
-> > +               interrupts =3D <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH &ppi_clus=
-ter1>;
-> > +       };
-> > +
-> > +       pmu-2 {
-> > +               compatible =3D "arm,cortex-x1-pmu";
-> > +               interrupts =3D <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH &ppi_clus=
-ter2>;
-> > +       };
-> > +
-> > +       pmu-3 {
-> > +               compatible =3D "arm,dsu-pmu";
-> > +               interrupts =3D <GIC_SPI 257 IRQ_TYPE_LEVEL_HIGH 0>;
-> > +               cpus =3D <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>,
-> > +                      <&cpu4>, <&cpu5>, <&cpu6>, <&cpu7>;
-> > +       };
-> > +
-> > +       /* TODO replace with CCF clock */
-> > +       dummy_clk: oscillator {
-> > +               compatible =3D "fixed-clock";
-> > +               #clock-cells =3D <0>;
-> > +               clock-frequency =3D <12345>;
-> > +               clock-output-names =3D "pclk";
-> > +       };
->
-> Don't you already have real USI/UART clocks implemented in your clock dri=
-ver?
 
-No, not yet, hence the dummy clock.
+Until now the DUPLEX flags do not yet exist, so existing userspace applica=
+tions are not
+concerned. Christoph suggested to introduce two flags to distinguish betwe=
+en
+a FULL duplex and a half duplex RS485 mode. My point was that we  do not n=
+eed the flag
+for half duplex, since this would be the default.
 
-[cut]
+BR,
+Lino
 
-> > +
-> > +               usi_uart: usi@10a000c0 {
-> > +                       compatible =3D "google,gs101-usi",
->
-> I can't see this compatible in USI driver. Does it make sense to add it t=
-here?
-
-It is not required at the moment, as it is compatible with
-samsung,exynos850-usi. I don't want to keep adding more patches to
-this series, and then having an endless cycle of nits.
-
->
-> > +                                    "samsung,exynos850-usi";
-> > +                       reg =3D <0x10a000c0 0x20>;
-> > +                       samsung,sysreg =3D <&sysreg_peric0 0x1020>;
-> > +                       samsung,mode =3D <USI_V2_UART>;
-> > +                       #address-cells =3D <1>;
-> > +                       #size-cells =3D <1>;
-> > +                       ranges;
-> > +                       clocks =3D <&dummy_clk>, <&dummy_clk>;
->
-> The same concern as above. I think I saw those clocks already
-> implemented in gs101 clock driver.
-
-No, these clocks have not been implemented yet, hence the dummy clock.
-There is no support for cmu_peric0 bank yet in the clock driver.
-
->
-> > +                       clock-names =3D "pclk", "ipclk";
-> > +                       status =3D "disabled";
-> > +
-> > +                       serial_0: serial@10a00000 {
-> > +                               compatible =3D "google,gs101-uart";
-> > +                               reg =3D <0x10a00000 0xc0>;
-> > +                               reg-io-width =3D <4>;
-> > +                               samsung,uart-fifosize =3D <256>;
-> > +                               interrupts =3D <GIC_SPI 634
-> > +                                             IRQ_TYPE_LEVEL_HIGH 0>;
-> > +                               clocks =3D <&dummy_clk 0>, <&dummy_clk =
-0>;
->
-> Ditto.
-
-See above
-
->
-> > +                               clock-names =3D "uart", "clk_uart_baud0=
-";
-> > +                               status =3D "disabled";
-> > +                       };
-> > +               };
-> > +
-> > +               pinctrl_peric1: pinctrl@10c40000 {
-> > +                       compatible =3D "google,gs101-pinctrl";
-> > +                       reg =3D <0x10C40000 0x00001000>;
-> > +                       interrupts =3D <GIC_SPI 644 IRQ_TYPE_LEVEL_HIGH=
- 0>;
-> > +               };
-> > +
-> > +               sysreg_peric1: syscon@10c20000 {
-> > +                       compatible =3D "google,gs101-peric1-sysreg", "s=
-yscon";
-> > +                       reg =3D <0x10C20000 0x10000>;
-> > +               };
-> > +
-> > +               pinctrl_hsi1: pinctrl@11840000 {
-> > +                       compatible =3D "google,gs101-pinctrl";
-> > +                       reg =3D <0x11840000 0x00001000>;
-> > +                       interrupts =3D <GIC_SPI 471 IRQ_TYPE_LEVEL_HIGH=
- 0>;
-> > +               };
-> > +
-> > +               pinctrl_hsi2: pinctrl@14440000 {
-> > +                       compatible =3D "google,gs101-pinctrl";
-> > +                       reg =3D <0x14440000 0x00001000>;
-> > +                       interrupts =3D <GIC_SPI 503 IRQ_TYPE_LEVEL_HIGH=
- 0>;
-> > +               };
-> > +
-> > +               cmu_apm: clock-controller@17400000 {
-> > +                       compatible =3D "google,gs101-cmu-apm";
-> > +                       reg =3D <0x17400000 0x8000>;
-> > +                       #clock-cells =3D <1>;
-> > +
-> > +                       clocks =3D <&ext_24_5m>;
-> > +                       clock-names =3D "oscclk";
->
-> Doesn't CMU_APM take any clocks from CMU_TOP?
-
-No it doesn't.
-
->
-> > +               };
-> > +
-> > +               sysreg_apm: syscon@174204e0 {
-> > +                       compatible =3D "google,gs101-apm-sysreg", "sysc=
-on";
-> > +                       reg =3D <0x174204e0 0x1000>;
-> > +               };
-> > +
-> > +               pmu_system_controller: system-controller@17460000 {
-> > +                       compatible =3D "google,gs101-pmu", "syscon";
-> > +                       reg =3D <0x17460000 0x10000>;
-> > +               };
->
-> Just a suggestion: it might be relatively simple to add syscon-reboot
-> node in pmu_system_controller, and it might just work. One more
-> feature for free! :)
-
-Thanks for the suggestion. I tried that previously and it is not
-included here deliberately because it relies on more than that to be
-functional. Although the register offsets are the same, the PMU
-registers are protected from the kernel and are only write accessible
-via SMC call on this platform. I have patches ready to send out as a
-RFC for that once this initial series is merged and we can discuss
-that then.
-
-regards,
-
-Peter.
