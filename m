@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="APyDarcK"
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94A4FE
-	for <linux-serial@vger.kernel.org>; Sun, 10 Dec 2023 06:38:51 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id 2adb3069b0e04-50dfac6c0beso411503e87.2
-        for <linux-serial@vger.kernel.org>; Sun, 10 Dec 2023 06:38:51 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="o/3gNj0T"
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C85FE
+	for <linux-serial@vger.kernel.org>; Sun, 10 Dec 2023 06:39:49 -0800 (PST)
+Received: by mail-wm1-x329.google.com with SMTP id 5b1f17b1804b1-40c2308faedso38973915e9.1
+        for <linux-serial@vger.kernel.org>; Sun, 10 Dec 2023 06:39:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702219130; x=1702823930; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1702219187; x=1702823987; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=yyJdYi3fdIP2jHqfQh7BSt8PlQKi+WyyaN5Zut5Cl2g=;
-        b=APyDarcKlhFSWE8PNMqUqEio4qPP+eFqc7N7HVVEU9MMOLDw/ynKGX+frCEFRjQkll
-         3VSC68qez/N4VzxxaYBYAgSb0nJzSn4lTtQWQ48xzDli8OVyJV/OltN92S7mzS3K6zrF
-         5ot4/1h+D7RiFKBSe73l4x7QWPOq8J3YWFGbDyZQpDGiLMpoyP0KFqptVOPexuyVjyHu
-         ybCkFMbegZOh3NX3Yt1cH+3sTI4K7iDZZXZNLv8bd+2ZoNyYYJ1rXEQpf73RSmNhSJns
-         RdzkwHMu+XoAN9QwYuqlTkbi3XODsN9KhkD8aLu37hJCTmzxO/KdJgtlCZJpqGXRGhoC
-         QQsA==
+        bh=4olIfzv8+CE0T9ZvAYOAuLXm4NQ6WzulwrX04TTGgoA=;
+        b=o/3gNj0TKU5H6RetvJiysIR/LmcQPdzmcKgGSjNJMdtKMgqRlKmz1RhdQKk88k804m
+         PqaRcQCnd+Qif0aRJ5518S4EMixNBMZcWPxFoFDnlIfp1/ZgV/tfXvPIGI1KnWIt5WZS
+         KeC6YHS6Ymd7Dg9j2BIHdR0jwk8W8Vufu4+EvChAyhsFY4cvpbTg99DKputaENvR84gR
+         XbYimIZDjc0WvgEeGg+DoaweJWeY0/v3j6hqzbhdZ7osuuUmVQGbSYr7DhpBxS6G8qXR
+         8UCaMlE63DButxMt0zltJ0u3FiyqtOLLGdhrLOBpNrHrHdIUlGQp7o7MjNsSfNyIiL71
+         ZXfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702219130; x=1702823930;
+        d=1e100.net; s=20230601; t=1702219187; x=1702823987;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=yyJdYi3fdIP2jHqfQh7BSt8PlQKi+WyyaN5Zut5Cl2g=;
-        b=nZwVzo4+cLoFaYkx97HI0ZFpE4Vgf9pUpqN/sFJIwYV+ojyPPhwcI6h6slcLOZWN7a
-         g3KyvzXJWnMrJR5CypnohNvT349m3MB0rFDjIGiIzZ1IAF1+S0VWZ1r6hwVMtIVaPaiM
-         XUeCTviuboTcyv+VW9TQSKbCDSE0S9/51CfzEzYJfmBMor6cYEjWDcCb8uP9STDk+I89
-         PMWi2y5L7l8EvVhqUAISd8m6327DUtUnm9vOsQ35oDIzAHdsFhhXN44QFMlktvpNTh4s
-         zCtShhLQpPeDYwosdSYbMiK4SPSAjs0ZOCbsK5I9CKd1C3SJcD3hVgmLrxzBexdkUkmn
-         JGeQ==
-X-Gm-Message-State: AOJu0Yy+zOlqyxKongza8LoMButqBa8n1O4210PVcUSt93Zjga5sTpvQ
-	pokucDOqvCAydmoCmmTTozCm2g==
-X-Google-Smtp-Source: AGHT+IGkUVZ51LuWOb3UAsY31wjbTlJZUdBF7UIk2Fpqnv63oxH3zS1XwXKYJsJDwmfxP4sBM86BFA==
-X-Received: by 2002:a05:6512:969:b0:50b:fcd4:832d with SMTP id v9-20020a056512096900b0050bfcd4832dmr1091050lft.113.1702219130176;
-        Sun, 10 Dec 2023 06:38:50 -0800 (PST)
+        bh=4olIfzv8+CE0T9ZvAYOAuLXm4NQ6WzulwrX04TTGgoA=;
+        b=r08tD6G2cNBj37KO+ls7IjMcAVPfsKdJeqXfzbJJFSCUwD3cee1Kyvg+Mhp59Qt2/l
+         uLUh7cfRWL1cSTwMKu4rbqIerkElDPTWb6F3HDvyx2EKSfme67hAqy1cJfDTNS/2WRs0
+         bEpUqbZ7dL4phwXVvUdMNHPXmxjD7+sKSi00aDjongVFSywymGMQNSljKLNhaFs06gFN
+         GmNHXnfoPySozaZJvpODSnEm+h8eEWCCRfw9CFK/xGgZB08xp884T5HN2DJ1fFmQCh+q
+         GkLztl8YVWQZEE5OxnlLLPmqUQkjJ/hAfQQWjPSphIoDeQ1GZDnkDiHFhmlgbwNCeZjX
+         sFHw==
+X-Gm-Message-State: AOJu0YymPwwNjsrUI+vSC6cdsa9HJ0pEZ5DyecL1aF5groUtR6EIFJ8v
+	fWjjGN2lpNTcjtSVOPdlPWtxhg==
+X-Google-Smtp-Source: AGHT+IFvybAlZh88008xCYXkZoX9NRRz3zADQ3QP8VGMlgcL+JPxSw79BfNh9WL9LN9LH/95Ww6k1A==
+X-Received: by 2002:a05:600c:3b26:b0:40c:de2:148c with SMTP id m38-20020a05600c3b2600b0040c0de2148cmr1479813wms.47.1702219187415;
+        Sun, 10 Dec 2023 06:39:47 -0800 (PST)
 Received: from [192.168.1.20] ([178.197.218.27])
-        by smtp.gmail.com with ESMTPSA id fm14-20020a05600c0c0e00b00407b93d8085sm12119612wmb.27.2023.12.10.06.38.47
+        by smtp.gmail.com with ESMTPSA id fm14-20020a05600c0c0e00b00407b93d8085sm12119612wmb.27.2023.12.10.06.39.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 10 Dec 2023 06:38:49 -0800 (PST)
-Message-ID: <654def19-ff10-4e9c-a830-e3bab7a153bd@linaro.org>
-Date: Sun, 10 Dec 2023 15:38:47 +0100
+        Sun, 10 Dec 2023 06:39:47 -0800 (PST)
+Message-ID: <03603f37-ec3d-456c-95a4-e543d1df4801@linaro.org>
+Date: Sun, 10 Dec 2023 15:39:45 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -47,8 +47,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 00/20] Add minimal Tensor/GS101 SoC support and
- Oriole/Pixel6 board
+Subject: Re: [PATCH v6 19/20] arm64: dts: exynos: google: Add initial
+ Oriole/pixel 6 board support
 Content-Language: en-US
 To: Peter Griffin <peter.griffin@linaro.org>, robh+dt@kernel.org,
  krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
@@ -65,6 +65,7 @@ Cc: tudor.ambarus@linaro.org, andre.draszik@linaro.org,
  linux-watchdog@vger.kernel.org, kernel-team@android.com,
  linux-serial@vger.kernel.org
 References: <20231209233106.147416-1-peter.griffin@linaro.org>
+ <20231209233106.147416-20-peter.griffin@linaro.org>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -110,21 +111,43 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20231209233106.147416-1-peter.griffin@linaro.org>
+In-Reply-To: <20231209233106.147416-20-peter.griffin@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 10/12/2023 00:30, Peter Griffin wrote:
-> Hi folks,
+On 10/12/2023 00:31, Peter Griffin wrote:
+> Add initial board support for the Pixel 6 phone code named Oriole. This
+> has been tested with a minimal busybox initramfs and boots to a shell.
 > 
-> This series adds initial SoC support for the GS101 SoC and also initial board
-> support for Pixel 6 phone (Oriole).
-> 
+> Tested-by: Will McVicker <willmcvicker@google.com>
+> Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
+> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> ---
+>  arch/arm64/boot/dts/exynos/Makefile           |   2 +
 
-I started applying few reviewed bindings. We are getting close to end of
-merging time for SoC.
+...
 
-Top-level arm/google.yaml needs ack or re-review from Rob.
+> +&serial_0 {
+> +	status = "okay";
+
+Keep status the last
+
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&uart0_bus>;
+> +};
+> +
+> +&usi_uart {
+> +	status = "okay";
+
+Keep status the last
+
+> +	samsung,clkreq-on; /* needed for UART mode */
+> +};
+> +
+> +&watchdog_cl0 {
+> +	timeout-sec = <30>;
+> +	status = "okay";
+> +};
 
 Best regards,
 Krzysztof
