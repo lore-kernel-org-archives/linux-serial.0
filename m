@@ -1,53 +1,53 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="xTUzjKkV"
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3A4EF2
-	for <linux-serial@vger.kernel.org>; Sun, 10 Dec 2023 15:34:42 -0800 (PST)
-Received: by mail-ot1-x32d.google.com with SMTP id 46e09a7af769-6d9dbe224bbso2735431a34.2
-        for <linux-serial@vger.kernel.org>; Sun, 10 Dec 2023 15:34:42 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="lJTndi+i"
+Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B652AF3
+	for <linux-serial@vger.kernel.org>; Sun, 10 Dec 2023 15:36:36 -0800 (PST)
+Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-1faecf57bedso2778207fac.3
+        for <linux-serial@vger.kernel.org>; Sun, 10 Dec 2023 15:36:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702251282; x=1702856082; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1702251396; x=1702856196; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=S0Bc/AKWuuu7ZiMYkuthYcJC3W6VEymZYFDL+Rk6rHQ=;
-        b=xTUzjKkVTWpsr0K3MjgnJZUrFNFVE1BcDzbmdsoygNdQp/Qw8+auRDfOCnbh1bNe1d
-         QgpeT7Lyvwvrzc7X5MN+a5XKs1tUbUNFxn4FIWbXjKnupuM3H6nvFFUASuzBg0t0E2dj
-         MvBJi5ZSBdqKCyJDR1TMdTx30wyzFjVWLzqg9xo6KL4yv+dQstvov8NbUN9vrsCzmeC0
-         49N/mRo5DC+F4K7UMcdypylNSinscu5Rlcgkqt9yGEUV/Y3Mi/oNKULo2R887qXPMvkz
-         7qZrhYC2PtvAK7P5k4BbUe4P9+Pnd9yC8CQrp9qKYe5Xzy1XIi2e7nK6x/kv3rE4pvgN
-         LQTQ==
+        bh=wwhdaI8XBubSIfRfAPI160DRLkTYdL3p80yUVHWP+lE=;
+        b=lJTndi+iTR1mYF+vqJ2971iNv1s0v7W1CsqA33HteKDeGoo1NLcOD/EcI6GMXSMTCe
+         DlSqcLTDBCa0DyX6YM7RxgoF7JldUTXElfAZyM5p/kBCxXUBXuw+sgkhcg86rOO1xILm
+         VQqkJlBxVWw0GNygw3FFXD7UqZ0NqkzP9Jsz3HbC4WqSGZheCwOa/FvWPu/tJCcTfhaS
+         StsNaqRrrMaYC2Vi7e9bvuyGuQT0uw86HB26rSLCcEIbLW93UMuBQfUbVmeobdk5OxCw
+         rn2/m+hVUmV9vb3AIB9Xrjrya5gSnRpjq2DQsMdI+o0I5L13mat5hum5V1C+Ik2HPryD
+         dUJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702251282; x=1702856082;
+        d=1e100.net; s=20230601; t=1702251396; x=1702856196;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=S0Bc/AKWuuu7ZiMYkuthYcJC3W6VEymZYFDL+Rk6rHQ=;
-        b=prYv/6yIyAHljJHU3PDs9iTaAJD3a1XjTatg3bJduTlKmKmp1M0t8RNbVEXsz2W93j
-         /5JcsHH/mewmI9A3MaE4jhAZHS+iTcojX7EYv4RWaIWBm0fNYiov05wZLmGRn+srncWK
-         C6RzQWOf1wqZbHv54SeyHpun6C8mMfYhDTEHoo2/EkoJp534rIoEBuZSkffVgNvEBucv
-         4ZrwjxOG6Jsax2dJDFGrcqI7lUmxNk/xtPDANm0AN+WXwnHlVIktzEXYN2qeHnX7qCK6
-         Bx4r1rRp3K7R+tqxr9L14ezmrh2xTK89mkzTH5p7bmm796idNk1PwcHbQSDKMJr6LApJ
-         xAfA==
-X-Gm-Message-State: AOJu0YxDSoM9TiWylGjYR0rueHkMhqENMx1QNvEZV8Jsjshh/VaPEoOE
-	MXwEP8ljExAn168yzCH1ypwvXhfVzHEZBVDlaJD8Cw==
-X-Google-Smtp-Source: AGHT+IFVEv8jsGoppfiwgaK84rdOj6Eg9outb/gheNsC4CMf28kQ6yJHHDFdVlnIE7iYe3uOxSjPxsRDEjpzjDbk8o0=
-X-Received: by 2002:a9d:4d82:0:b0:6d9:f4c5:eed0 with SMTP id
- u2-20020a9d4d82000000b006d9f4c5eed0mr3726570otk.9.1702251282145; Sun, 10 Dec
- 2023 15:34:42 -0800 (PST)
+        bh=wwhdaI8XBubSIfRfAPI160DRLkTYdL3p80yUVHWP+lE=;
+        b=aLwERovnv/mX6ywSAlnmf6wtifjEyQi9oAbnr2zPsjypeiTMR+8G4p7xyyzoliK2zT
+         tGc49u1Pc5+6SfmPki/z+XHiayFPdyd8kypZdOARwiprkcShxZVyACjqrRvBeWJO4dBa
+         XOaxDl1zhOMOyBhN6GRZh/Tcayrqo3RJV/hNM9E7vk33jcFdPkReL83dgmBZelxHd52v
+         j3aPZeD8UnYUro9+wXH4ZwQBXujGlR8zk1qBC/4koJkD7Cg0maV4w49GqoK6hPvPdx8w
+         yFUyNSRJ1qmEO/BWUVLm+GIb3T79EYFyc/YtgKJ7NB+sl9Un576lRQiqZmjoxvRCdD/d
+         bkKw==
+X-Gm-Message-State: AOJu0YywHtI1OH1wbHti559/U6D3exfZMr/T2aStitpgIEgtPdbTJHaK
+	sk1TiPT8xZezYkjx0I+fhivspgd7vkqTr+8SdGItbA==
+X-Google-Smtp-Source: AGHT+IGBq7mUtyfHbN3TWy9RKPBEUdVZWqEc908zIBJVoQI53SI1IAvfmzEwWNQNMlm9DsxGtd8LX7ARxtptPsEGI7s=
+X-Received: by 2002:a05:6870:4f13:b0:1fb:75a:de7a with SMTP id
+ xi19-20020a0568704f1300b001fb075ade7amr4086371oab.104.1702251395847; Sun, 10
+ Dec 2023 15:36:35 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20231209233106.147416-1-peter.griffin@linaro.org> <20231209233106.147416-11-peter.griffin@linaro.org>
-In-Reply-To: <20231209233106.147416-11-peter.griffin@linaro.org>
+References: <20231209233106.147416-1-peter.griffin@linaro.org> <20231209233106.147416-13-peter.griffin@linaro.org>
+In-Reply-To: <20231209233106.147416-13-peter.griffin@linaro.org>
 From: Sam Protsenko <semen.protsenko@linaro.org>
-Date: Sun, 10 Dec 2023 17:34:31 -0600
-Message-ID: <CAPLW+4k=k9-TTB4YOyT7NyzfNORNLDJMtHBwfLtdZV52CMgxXQ@mail.gmail.com>
-Subject: Re: [PATCH v6 10/20] dt-bindings: soc: samsung: usi: add
- google,gs101-usi compatible
+Date: Sun, 10 Dec 2023 17:36:24 -0600
+Message-ID: <CAPLW+4nuYHbLuLX=HGsDz6WYtZV3P7yBEmhCXbLW2M+dF1asow@mail.gmail.com>
+Subject: Re: [PATCH v6 12/20] clk: samsung: clk-gs101: Add cmu_top, cmu_misc
+ and cmu_apm support
 To: Peter Griffin <peter.griffin@linaro.org>
 Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, 
 	mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org, 
@@ -67,33 +67,18 @@ Content-Transfer-Encoding: quoted-printable
 On Sat, Dec 9, 2023 at 5:31=E2=80=AFPM Peter Griffin <peter.griffin@linaro.=
 org> wrote:
 >
-> From: Tudor Ambarus <tudor.ambarus@linaro.org>
+> cmu_top is the top level clock management unit which contains PLLs, muxes=
+,
+> dividers and gates that feed the other clock management units.
 >
-> Add google,gs101-usi dedicated compatible for representing USI of Google
-> GS101 SoC.
+> cmu_misc clocks IPs such as Watchdog and cmu_apm clocks ips part of the
+> APM module.
 >
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+> Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
+> Tested-by: Will McVicker <willmcvicker@google.com>
 > Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
 > ---
 
 Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
 
->  Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yam=
-l b/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
-> index 61be1f2ddbe7..8b478d6cdc30 100644
-> --- a/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
-> +++ b/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
-> @@ -25,6 +25,7 @@ properties:
->      oneOf:
->        - items:
->            - enum:
-> +              - google,gs101-usi
->                - samsung,exynosautov9-usi
->                - samsung,exynosautov920-usi
->            - const: samsung,exynos850-usi
-> --
-> 2.43.0.472.g3155946c3a-goog
->
+[snip]
