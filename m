@@ -1,93 +1,119 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="U5nxltGu"
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15E239A;
-	Mon, 11 Dec 2023 03:00:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702292429; x=1733828429;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=K2ZRRE7Thip/Geu7ekUKU80Z+uYC8shCVOa2AGk3EYA=;
-  b=U5nxltGuCBMu4JjoCi0OeYxRB3rNm205kJngMw8osuKz9huei59Ngog5
-   t9l6z2FMUWH+dbEINSt1afYQm4xOk5P1wmHnwQk4vooNSFRgDxe1598M6
-   CuFyiojQLsxl3PtPCpfSL62ztJJqxSZBBbYUv3YSzKk5xsnhUliW+unxJ
-   v9C6sIyAB6TVN5FGLnl7UoNR3juoekiCOU/TTa2vwEmI3TdVaoEkkRkmf
-   gajgrO7zSUbYyPkIaJpkCZGix27B775YVbUmP6mBFkB+h1ZvXowNIg5BF
-   dVprYNs1xqZo2Giy+yLv0tQ+3QaaAEq1rXhifAnU77qzp7tSMp0bfZK2M
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10920"; a="458940569"
-X-IronPort-AV: E=Sophos;i="6.04,267,1695711600"; 
-   d="scan'208";a="458940569"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Dec 2023 03:00:28 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.04,267,1695711600"; 
-   d="scan'208";a="14387023"
-Received: from lmckeon-mobl.ger.corp.intel.com (HELO iboscu-mobl2.ger.corp.intel.com) ([10.252.48.111])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Dec 2023 03:00:24 -0800
-Date: Mon, 11 Dec 2023 13:00:22 +0200 (EET)
-From: =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, u.kleine-koenig@pengutronix.de, 
-    shawnguo@kernel.org, s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com, 
-    alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com, 
-    hugo@hugovil.com, LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, LinoSanfilippo@gmx.de, 
-    Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com, 
-    stable@vger.kernel.org
-Subject: Re: [PATCH v5 5/7] serial: core, imx: do not set RS485 enabled if
- it is not supported
-In-Reply-To: <20231209125836.16294-6-l.sanfilippo@kunbus.com>
-Message-ID: <ffdaf03b-65af-731f-992-3e90ca6fca@linux.intel.com>
-References: <20231209125836.16294-1-l.sanfilippo@kunbus.com> <20231209125836.16294-6-l.sanfilippo@kunbus.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="WGGJk1c7"
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CA7D0
+	for <linux-serial@vger.kernel.org>; Mon, 11 Dec 2023 03:35:51 -0800 (PST)
+Received: by mail-ot1-x333.google.com with SMTP id 46e09a7af769-6d9f514f796so2110174a34.3
+        for <linux-serial@vger.kernel.org>; Mon, 11 Dec 2023 03:35:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1702294550; x=1702899350; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=3+ol3M0pI923ab1AudTOkH9Yk0elXff3QjFR/FfpQ+Q=;
+        b=WGGJk1c7M18qvL4n2xbBWmEYa7iFKyV9K3sIYodQ6a71isMqFLgpYdBFi4x01RZoSu
+         2l7lulbF2wqazudhwWOAnV/mf5haM1MRXX3BW3I9sA+71I8d0WPUqfMYFqa5AlIyGCEe
+         2Mh1o9Lc/A4i2l77Yj8kC+sPWbOIhH+aK/u/URcGRAlgP6XLD4cemBb6mvJeDmA0CMqO
+         bGBOzmBKJLdDQK6Utnm2wFNe+DpQeoPnYubq7g1PgOn860D7wNd1JBsQMUlCjyBG8JNN
+         EOqjvimOKNUb2l56uTonbxNDjxn+1dCqyBxbNi57W9i+OgMuRUaBjAUVmBTinb6MjeGp
+         pUdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702294550; x=1702899350;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3+ol3M0pI923ab1AudTOkH9Yk0elXff3QjFR/FfpQ+Q=;
+        b=gNFnjqZG3X4ZJut6w3XJ+FLTRFCn9uOIGyd5c7wIpw39iNwPsLry9sK7xL/jIRmpAV
+         JxHiq3BKQ1WoBRJ8YomsvTQj2T1Ef1dpcJ3URdaD6OCSjzSNv8D49vmVqERCqWqEdu+3
+         shHuoSTlosclG1NuxR+tTzwzzsgJ8FHog8adZfvAgNrXC+cgOrAtWT2csFKbqHAtwlxg
+         pj4JBxbsFTj5aYZwbTDlyJeliuY8TTBHwXFBD88oCw8zMQFNeGqAdB5AOIiLtQ8HJbZK
+         8r6bvE9ehoqOrbKT86KHZBP2NywFfJM1yPlOJA2WvQxGzyO1vU5VQeyUpYe111ye7JT5
+         7eeg==
+X-Gm-Message-State: AOJu0Yy/Y7QZirUbTPoxxvC0FHm7+mpkOq5QDdsED961IPPTZJYwtoFu
+	02PNw9A21r9cA65erjonZ8vtIE2Pk3LyNyBxr1lZLw==
+X-Google-Smtp-Source: AGHT+IHTYmAfw9EOKQEvoYukSWVGhGDG8tJXoV6ZROee3fmhULu+p3ewmCTzn6+wQmwMRXs/CvGuxxavXhD0mKv36pQ=
+X-Received: by 2002:a05:6830:c7:b0:6d8:74e2:7ccc with SMTP id
+ x7-20020a05683000c700b006d874e27cccmr4344434oto.39.1702294550628; Mon, 11 Dec
+ 2023 03:35:50 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1041274839-1702292428=:1867"
+References: <20231209233106.147416-1-peter.griffin@linaro.org>
+ <20231209233106.147416-14-peter.griffin@linaro.org> <46c9c8b4-942d-4f6f-a6cc-00158314d5e5@linaro.org>
+In-Reply-To: <46c9c8b4-942d-4f6f-a6cc-00158314d5e5@linaro.org>
+From: Peter Griffin <peter.griffin@linaro.org>
+Date: Mon, 11 Dec 2023 11:35:39 +0000
+Message-ID: <CADrjBPr6k-j=swq8zJfOjaYQW7hvWCTXj2ZZQT6V+QUtjEYOcg@mail.gmail.com>
+Subject: Re: [PATCH v6 13/20] pinctrl: samsung: Add gs101 SoC pinctrl configuration
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, 
+	mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org, 
+	tomasz.figa@gmail.com, s.nawrocki@samsung.com, linus.walleij@linaro.org, 
+	wim@linux-watchdog.org, linux@roeck-us.net, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org, 
+	jirislaby@kernel.org, cw00.choi@samsung.com, alim.akhtar@samsung.com, 
+	tudor.ambarus@linaro.org, andre.draszik@linaro.org, 
+	semen.protsenko@linaro.org, saravanak@google.com, willmcvicker@google.com, 
+	soc@kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-watchdog@vger.kernel.org, kernel-team@android.com, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi Krzysztof,
 
---8323329-1041274839-1702292428=:1867
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Thanks for the review.
 
-On Sat, 9 Dec 2023, Lino Sanfilippo wrote:
+On Sun, 10 Dec 2023 at 13:56, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 10/12/2023 00:30, Peter Griffin wrote:
+> > Add support for the pin-controller found on the gs101 SoC used in
+> > Pixel 6 phones.
+> >
+> > Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> > ---
+>
+>
+> > diff --git a/drivers/pinctrl/samsung/pinctrl-exynos.c b/drivers/pinctrl/samsung/pinctrl-exynos.c
+> > index 6b58ec84e34b..3834bf953178 100644
+> > --- a/drivers/pinctrl/samsung/pinctrl-exynos.c
+> > +++ b/drivers/pinctrl/samsung/pinctrl-exynos.c
+> > @@ -468,6 +468,8 @@ static const struct of_device_id exynos_wkup_irq_ids[] = {
+> >                       .data = &exynos7_wkup_irq_chip },
+> >       { .compatible = "samsung,exynosautov9-wakeup-eint",
+> >                       .data = &exynos7_wkup_irq_chip },
+> > +     { .compatible = "google,gs101-wakeup-eint",
+> > +                     .data = &exynos7_wkup_irq_chip },
+>
+> You don't need it.
 
-> If the imx driver cannot support RS485 it sets the ports rs485_supported
-> structure to NULL.
+OK will drop
 
-No, an embedded struct inside struct uart_port cannot be set to NULL, 
-it's always there.
+>
+> >       { }
+> >  };
+> >
+> > diff --git a/drivers/pinctrl/samsung/pinctrl-samsung.c b/drivers/pinctrl/samsung/pinctrl-samsung.c
+> > index 79babbb39ced..b8d549fe38cb 100644
+> > --- a/drivers/pinctrl/samsung/pinctrl-samsung.c
+> > +++ b/drivers/pinctrl/samsung/pinctrl-samsung.c
+> > @@ -1321,6 +1321,8 @@ static const struct of_device_id samsung_pinctrl_dt_match[] = {
+> >               .data = &exynosautov9_of_data },
+> >       { .compatible = "tesla,fsd-pinctrl",
+> >               .data = &fsd_of_data },
+> > +     { .compatible = "google,gs101-pinctrl",
+> > +             .data = &gs101_of_data },
+>
+> Place it somewhere alphabetically. Probably before tesla.
 
-Looking into the code, that setting of rs485_supported from imx_no_rs485 
-is actually superfluous as it should be already cleared to zeros on alloc.
+Will fix. FYI I was intending to put it at the top ('g' before 's')
+that also matches the ordering everywhere else e.g. in the YAML docs
+etc.
 
-> But it still calls uart_get_rs485_mode() which may set
-> the RS485_ENABLED flag nevertheless.
-> 
-> This may lead to an attempt to configure RS485 even if it is not supported
-> when the flag is evaluated in uart_configure_port() at port startup.
-> 
-> Avoid this by bailing out of uart_get_rs485_mode() if the RS485_ENABLED
-> flag is not supported by the caller.
-> 
-> With this fix a check for RTS availability is now obsolete in the imx
-> driver, since it can not evaluate to true any more. Remove this check, too.
-> 
-> Fixes: 00d7a00e2a6f ("serial: imx: Fill in rs485_supported")
-> Cc: Shawn Guo <shawnguo@kernel.org>
-> Cc: Sascha Hauer <s.hauer@pengutronix.de>
-> Cc: stable@vger.kernel.org
-> Suggested-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+regards,
 
--- 
- i.
-
---8323329-1041274839-1702292428=:1867--
+Peter
