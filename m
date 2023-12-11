@@ -1,148 +1,219 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="DBS8q8Tb"
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 951C9DB
-	for <linux-serial@vger.kernel.org>; Sun, 10 Dec 2023 23:43:49 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id ffacd0b85a97d-3334a701cbbso4335262f8f.0
-        for <linux-serial@vger.kernel.org>; Sun, 10 Dec 2023 23:43:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702280628; x=1702885428; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
-         :from:content-language:subject:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=KD6JLBEGmK6pNbZtqSJBY+e7RE3d+rewukjVSghCHqU=;
-        b=DBS8q8TbQfs8XB3O6KF00lIM1rZP6RrCAKktJFJP9DxS2oGJJ9MhpQfr9VVICVCUSM
-         itrkBS9DauK6Tn1nIBnX5O4xU5DXWzGz3xAwy+yTsT7af3vtWe4/JL4PZDv0v6uNi6bI
-         XDMIgbRsL4U7tKiZ/T9JPLusBH2bvMpNJrxQLOQkxex+TTnZrTOpMmZd+yjBsS0lJy0t
-         F7X/f1S61ARu1M5eELpapgNMlg4GCeC9UPiTVXl01KCYig2xWjHY2NPIesUhu9sYY1/I
-         42D4TFAJ8oAYAlX6c92DPK7Y29FSqlU4ZwZ0Emas3tF2ugLy/8UIV4wJ0JVaZtjIEkU1
-         q7FA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702280628; x=1702885428;
-        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
-         :from:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=KD6JLBEGmK6pNbZtqSJBY+e7RE3d+rewukjVSghCHqU=;
-        b=mz9sZNOnbWT1w5VBK74X702BU16YyGAAlFsPtrIdUAj2bRcFLw8QdzWLD1G0Snj7fC
-         ZUurp0kEolrh1RyJ7nT66CJSV8FRQa7wKB7n70B9ci/TL5n6/lPsmTzHIhaRSdzZrJf+
-         dhP6U0WfthSDUdB58Y2H1AXQB9JPt+URQkPlLEIQRQQriozXbuMK+nqVzXmHrEe8B8SU
-         gVKPljHyrOqrz/C7ynuKAySei42mmontT6wf3qnONVFvlGETb3FG7SCKErExgKzGNsxy
-         rcJZ8eV+gSEUnil6gtp4O0G1IuwS6V49bdvv+p+HHkkx+ZweW9V8UngEACGAe8PUM6v5
-         G2cA==
-X-Gm-Message-State: AOJu0Yw5T+Pyz3I4c38F7FYfZv6+t1BbLMS+vBb0rmzc2H5kejYHxd0F
-	ccogWk4R+8uvWKxkkHFhEM3GHg==
-X-Google-Smtp-Source: AGHT+IFXaTXZrbSaAu1y3v2m9t6dOe1n+xv6MekjywSqwO6NlUoA/yTQuWAFITneMBCTrT4VLAr0pQ==
-X-Received: by 2002:a5d:5605:0:b0:333:53bd:b1de with SMTP id l5-20020a5d5605000000b0033353bdb1demr1367575wrv.157.1702280628085;
-        Sun, 10 Dec 2023 23:43:48 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.218.27])
-        by smtp.gmail.com with ESMTPSA id o4-20020a5d58c4000000b0033333bee379sm7861152wrf.107.2023.12.10.23.43.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 10 Dec 2023 23:43:47 -0800 (PST)
-Message-ID: <2789e0d3-1770-45b8-be7d-384a758c10b7@linaro.org>
-Date: Mon, 11 Dec 2023 08:43:45 +0100
+	dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b="DhuJvTMs"
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2080.outbound.protection.outlook.com [40.107.215.80])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E103DF;
+	Mon, 11 Dec 2023 01:10:13 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GDifkyvrS8J+vhUMrAiAEBqm/5Tz9xTIKdEOLapztV+mtKMlfzgv3NVHWd/xCUQNhVLlc+9wfxWEPYSbrVwPrdymZ3MEt6L+ak8cN5IuiGwBGt3jZSa9xT+UAajKuiZA1s6n1qV6F7Og/kJtNEc9ZoC7VJ0VUgmlKk31d46/oniDUtY3n9Fsm36YOMMoMNe+tsmaTi68cItl22SMbuNkcxB4fDN3lDHHqGpSryWvF7EHR02dvZA0Cl1zF/NIzfcTAuQ4jDl2tL7IGo6ih58KOdV5TmjeBIOVAhvsD9cKVrF1qrSC7nyPmBgrca+yeGUptm2wTX1AfK6+xO+V87W22g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ClMAF0jFd298T4FXQ70tnDQPzT77s9F3WcG7rjcZZ70=;
+ b=ckEML2T5wbjf4yeHoWXmGlkU0gP6XWOWcD6f21FSIN16in+3qFcJVEgm5nBhP4Ttl/Q0OzfZ5i0qSWWF/DIg8pVTPo6K8H0SgHUWYOgZPM0fzXFM/9hhjaX2QtE5V+Gt4MDDfGwbd+3+OTu8/ZXXi2LkhlB96383ST2ysEIzm3YoiP/7sx37Ybc50m483Qa4+PUinVpKNfmxtvmb1X+zucY1vMkFgMW7SEJ0TNmFx3xwODTPjqJY9kwqzJ2JeZQrsH1dmeIHslA3zJBiZgl8V18vTgQXbK6uNImaGEi/M4P/EbVSIdtvqBlTeyXpDLDsoRkHSppr53Ndnh3ueCb71Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
+ dkim=pass header.d=moxa.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ClMAF0jFd298T4FXQ70tnDQPzT77s9F3WcG7rjcZZ70=;
+ b=DhuJvTMswcAlT5w4yD3unkuoWMka+eGJ5s/xeWsgRbOjn2hiiwuyXkCRe4he4zGqty6Knv3xsJ+oxYNE8cae0i1cSFezum8Aun5dby9h2g3iZoiBlNy1dA493sM5VneLp+d4xCETOoT/gW+AhXwFU5XM6j473F4z6QJPgcI6wTM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=moxa.com;
+Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:115::14) by TYZPR01MB5302.apcprd01.prod.exchangelabs.com
+ (2603:1096:400:336::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.31; Mon, 11 Dec
+ 2023 09:10:09 +0000
+Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ ([fe80::1023:2132:c05e:ea6b]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ ([fe80::1023:2132:c05e:ea6b%2]) with mapi id 15.20.7068.031; Mon, 11 Dec 2023
+ 09:10:09 +0000
+From: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
+	kernel test robot <lkp@intel.com>
+Subject: [PATCH v2] tty: serial: 8250: Fix MOXA RS422/RS485 PCIe boards not work by default
+Date: Mon, 11 Dec 2023 17:09:49 +0800
+Message-Id: <20231211090949.297683-1-crescentcy.hsieh@moxa.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: TYAPR03CA0012.apcprd03.prod.outlook.com
+ (2603:1096:404:14::24) To PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:115::14)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: (subset) [PATCH v3 1/4] arm64: dts: exynos: add initial support
- for exynosautov920 SoC
-Content-Language: en-US
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To: Alim Akhtar <alim.akhtar@samsung.com>, Rob Herring <robh+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>,
- Sylwester Nawrocki <s.nawrocki@samsung.com>,
- Linus Walleij <linus.walleij@linaro.org>,
- Thierry Reding <thierry.reding@gmail.com>,
- Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Jaewon Kim <jaewon02.kim@samsung.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
- linux-serial@vger.kernel.org
-References: <20231208074527.50840-1-jaewon02.kim@samsung.com>
- <CGME20231208075020epcas2p25f18d225f91f185085078461b290cb19@epcas2p2.samsung.com>
- <20231208074527.50840-2-jaewon02.kim@samsung.com>
- <170228052808.12030.1188300498236704832.b4-ty@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <170228052808.12030.1188300498236704832.b4-ty@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|TYZPR01MB5302:EE_
+X-MS-Office365-Filtering-Correlation-Id: 59b5f861-4b57-4be7-8718-08dbfa28f90e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	43Gx3ZaH/E4Vi/AGGqL6heAp+jkOvv+7D9leC4pGjdnWh0CM6GamDrzKwsEKpVeAun3tetNbbgztODgmZIE+CWA/ey3xmBGj3y8awKhbvb7HTwCtEvJX/MByvK97I/ah698tffZ9F8c6bdLc45C5r9PGUR1JbqXfJGTxiTPmOAALMjBKzvEdAilJzzswAUcUpWyw1UVu5Pq435wvIrOgUJXlM5SU3ce3THWs8k4KG4vSvQXbc0IKgTq0R4Uwf9MyJK6RCxsrDZWEYuj2AOVC40I+mAJRaHyQbfjl7aL4Pv4ADpcoCby/FIdwBO+yfIiqR0wyWj59yppiYULvys/WXONG0SgY2i7C9Zxve1c1T+ii024YMoCPXHX9n1pSZKtPeXc3hbJIBBf7x2D6kkhHoTwFD4GUlxWitTa6NuMC1z0L9wSa/XR3X+ZYVkkLSdPKf2dLj20ETy3qoDGCJw2QHiVvnNBhGeHnnu+4Zu3eqkqk3gVMdSF1vXf7GBaad/TfdMQLGX9Ju0sAzWR8sme+R9qg9G12ByKT83Z8o31Qz76Z4+NZmqPYXbdABBgAZNk9H3xBQVcdHVzl6d8j8o7WM+0V/pf89KcWj6C6aMM/fN8=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(376002)(346002)(136003)(396003)(39850400004)(230922051799003)(64100799003)(186009)(1800799012)(451199024)(26005)(1076003)(2616005)(6506007)(6666004)(6512007)(52116002)(83380400001)(5660300002)(41300700001)(2906002)(4326008)(478600001)(966005)(6486002)(8676002)(8936002)(316002)(66946007)(110136005)(66556008)(54906003)(66476007)(86362001)(38100700002)(36756003)(38350700005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?WG+xvTEDJZJmasBQpGIcMgstiXJ7QRNQKXB/3xbRmALZW9bMoCrARfZAhDch?=
+ =?us-ascii?Q?4bH6QhpYF63FOu7ADjOM1TxZmXWtCic+p0+dElRHdEmcI6VlmacguNgmQNtJ?=
+ =?us-ascii?Q?QJnZnNYOKejTTnkFolsuvJHcjC/vMOWqhim6eQVh4ECZRdAaX4eZtnR6TUkS?=
+ =?us-ascii?Q?kUubl++FwbopBtAIwnSWZK+utUWTmdw8trZZuhCW4A+o1kpK6GcHRoMLL6qB?=
+ =?us-ascii?Q?bjs+AoeXfQm+tCmlSGBLk2a9do6fN0h6vJA1fuGNVoo9GeddK6Ue18PXePpB?=
+ =?us-ascii?Q?7Nahj7gutWXrZlt7AczSpfK0CcEWuliD61G7yGt7MA0A8/8cLoKla7/iz/Ti?=
+ =?us-ascii?Q?Qap/dOB2x7d9XdTkqjZZAd0sND2P4JJn8GlybILXeY3OOePGR7tN26vtnhJk?=
+ =?us-ascii?Q?bCkTMJpmjVTD7V7GKV/bpelg/j+cP6B3W5dQhHDnxxlIKfJrVFx1hb3cczI5?=
+ =?us-ascii?Q?dPjiwaX4V97nC9oIA6+24hHk3X3ARYttLEO89x+m9myowsMWSFOL/DeeHIef?=
+ =?us-ascii?Q?n/02yqqe9B3Zzfgz8zY9QOIjTrD9vQOEwsrg6Pvp0ztFo6yFsZ3D8eVjdHmj?=
+ =?us-ascii?Q?3SThceDQ3+vSPniCVIig+TnI11IeI+ATPcCQZ1CH1hPtXxGC9FIbJoD6TMFX?=
+ =?us-ascii?Q?PUwYkhUrHauV8ZmRA0BqxbfG8UAYGfM/gv4r7EZ3hBNfu7Phl3gQTwMOecEE?=
+ =?us-ascii?Q?BUZIYAH22rnSPUx7CDcBPWveHTUkDWsV/5apkw/s560N2a3qk8b1mOJNrLrV?=
+ =?us-ascii?Q?IJTCYaggF01ay7C3JxtPsh1UbOZtl1k1DVi2EDKFPA3YpwzROCh7ORzWN9kZ?=
+ =?us-ascii?Q?8nxo3Vxkc3b2p00q6dwnWWsQmX0iD6BMFwLFo4hC8D06+46NLXb8n255P3fM?=
+ =?us-ascii?Q?HRE+jWzKNKSRnGJwhYiqJSCc7LSC/w7Y2a9O6vi71BhWNheHZq/6Nj+jxEQq?=
+ =?us-ascii?Q?U2QJ+AcVTYFbjAEw5c2TrGbxWQn1q0YhORfLi11nFGM7rOmM/xsF2yJznt76?=
+ =?us-ascii?Q?ia7HO6Oh6dsZfllVMnGpuA3yu6KuQEOsnpyINHLQTlTd5PEJs+po497OvYK1?=
+ =?us-ascii?Q?IYY5V2AMubFCBXPKcYolaPY5IbdSyI95HC4LROMD78KdANg5e3WeJuSaxvbi?=
+ =?us-ascii?Q?PQR54gv5IocWdX7VVyCrzacGeD2shq4qNQztAL5Zs5XaMTJt8uEHddeNcj/u?=
+ =?us-ascii?Q?YbEPcNgHe9mMuUywE2pcTq6125LQ+2XU8rO/BASovu9u7F+jlyVfSwUv4Mih?=
+ =?us-ascii?Q?m7NQdbKZmIi/4yqXVxj2rykeCv10TT+6/ucBohaZaZreiaYm9Dj4tJJSUb9O?=
+ =?us-ascii?Q?0p2PE/CmR+kBv2ZK4g8RzoDu5vvmb0GVBCidxMbXlfAmpVvhv0ji6FYODPQo?=
+ =?us-ascii?Q?ZPCcyEjLeRxqUWoPnrpKzBHmlB1TJVN5nK0dWyu43J8/GGPlZnxY70WZ5z5v?=
+ =?us-ascii?Q?FCzRr5qo5HkWNQRF7olMrI+Ww7ZiY3NM2OalCSgAWcP1MVqZgqIwAQDndGkw?=
+ =?us-ascii?Q?z3qAFHEsENDFVzbntOtRBZ+VY3b11FWXKlT6PzUKHxM4w++HdAYl8oYKCEO7?=
+ =?us-ascii?Q?7WtJ8g5IZBQYATYK54TAw4G0y/AxIyt96fCwOsvaPCcXHDcZX7arzsNG4vM+?=
+ =?us-ascii?Q?xQ=3D=3D?=
+X-OriginatorOrg: moxa.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59b5f861-4b57-4be7-8718-08dbfa28f90e
+X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Dec 2023 09:10:09.2444
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: V0QH47tBPK28H8CxsomACzxx7csAwv7Xxpz7plxmqrRP/Si7/zHrCc1OzeaRLM2/3VFEjCVZl5Y18I4zNE3Sxg+KQm+Q7/RxLWntpwWbxJs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR01MB5302
 
-On 11/12/2023 08:42, Krzysztof Kozlowski wrote:
-> 
-> On Fri, 08 Dec 2023 16:45:24 +0900, Jaewon Kim wrote:
->> Samsung ExynosAutov920 is ARMv8-based automotive-oriented SoC.
->> It has AE(Automotive Enhanced) IPs for safety.
->>  * Cortex-A78AE 10-cores
->>  * GIC-600AE
->>
->> This is minimal support for ExynosAutov920 SoC.
->>  * Enumerate all pinctrl nodes
->>  * Enable Chip-Id
->>  * Serial0 for console
->>  * PWM
->>
->> [...]
-> 
-> Applied, thanks!
-> 
-> [1/4] arm64: dts: exynos: add initial support for exynosautov920 SoC
->       https://git.kernel.org/krzk/linux/c/c96dab1993d247b7b05ba2fdef8f185cbbd5454e
+MOXA PCIe RS422/RS485 boards will not function by default because of the
+initial default serial interface of all MOXA PCIe boards is set to
+RS232.
 
-With changes:
+This patch fixes the problem above by setting the initial default serial
+interface to RS422 for those MOXA RS422/RS485 PCIe boards.
 
-Re-order nodes to match coding style: UFS reset pins,
-gpg/gpp in peric0 and peric1, all nodes in the soc@0;
-drop fallback compatibles from wakeup-interrupt-controller
+Signed-off-by: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202312060523.Kmstf65q-lkp@intel.com/
 
-Best regards,
-Krzysztof
+---
+Changes from v1 to v2:
+- Fix issue reported by kernel test robot
+	- Replace function return type from u32 to static unsigned int
+
+v1: https://lore.kernel.org/all/20231201074055.259207-1-crescentcy.hsieh@moxa.com/
+
+---
+ drivers/tty/serial/8250/8250_pci.c | 58 +++++++++++++++++++++++++++++-
+ 1 file changed, 57 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index b2be3783f..42fbbe89e 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -19,6 +19,7 @@
+ #include <linux/serial_core.h>
+ #include <linux/8250_pci.h>
+ #include <linux/bitops.h>
++#include <linux/bitfield.h>
+ 
+ #include <asm/byteorder.h>
+ #include <asm/io.h>
+@@ -1968,6 +1969,20 @@ pci_sunix_setup(struct serial_private *priv,
+ 
+ #define MOXA_GPIO_PIN2	BIT(2)
+ 
++#define MOXA_RS232	0x00
++#define MOXA_RS422	0x01
++#define MOXA_RS485_4W	0x0B
++#define MOXA_RS485_2W	0x0F
++#define MOXA_UIR_OFFSET	0x04
++#define MOXA_EVEN_RS_MASK	GENMASK(3, 0)
++#define MOXA_ODD_RS_MASK	GENMASK(7, 4)
++
++enum {
++	MOXA_SUPP_RS232 = BIT(0),
++	MOXA_SUPP_RS422 = BIT(1),
++	MOXA_SUPP_RS485 = BIT(2),
++};
++
+ static bool pci_moxa_is_mini_pcie(unsigned short device)
+ {
+ 	if (device == PCI_DEVICE_ID_MOXA_CP102N	||
+@@ -1981,13 +1996,54 @@ static bool pci_moxa_is_mini_pcie(unsigned short device)
+ 	return false;
+ }
+ 
++static unsigned int pci_moxa_supported_rs(struct pci_dev *dev)
++{
++	switch (dev->device & 0x0F00) {
++	case 0x0000:
++	case 0x0600:
++		return MOXA_SUPP_RS232;
++	case 0x0100:
++		return MOXA_SUPP_RS232 | MOXA_SUPP_RS422 | MOXA_SUPP_RS485;
++	case 0x0300:
++		return MOXA_SUPP_RS422 | MOXA_SUPP_RS485;
++	}
++	return 0;
++}
++
++static int pci_moxa_set_interface(const struct pci_dev *dev,
++				  unsigned int port_idx,
++				  u8 mode)
++{
++	resource_size_t iobar_addr = pci_resource_start(dev, 2);
++	resource_size_t UIR_addr = iobar_addr + MOXA_UIR_OFFSET + port_idx / 2;
++	u8 val;
++
++	val = inb(UIR_addr);
++
++	if (port_idx % 2) {
++		val &= ~MOXA_ODD_RS_MASK;
++		val |= FIELD_PREP(MOXA_ODD_RS_MASK, mode);
++	} else {
++		val &= ~MOXA_EVEN_RS_MASK;
++		val |= FIELD_PREP(MOXA_EVEN_RS_MASK, mode);
++	}
++	outb(val, UIR_addr);
++
++	return 0;
++}
++
+ static int pci_moxa_init(struct pci_dev *dev)
+ {
+ 	unsigned short device = dev->device;
+ 	resource_size_t iobar_addr = pci_resource_start(dev, 2);
+-	unsigned int num_ports = (device & 0x00F0) >> 4;
++	unsigned int num_ports = (device & 0x00F0) >> 4, i;
+ 	u8 val;
+ 
++	if (!(pci_moxa_supported_rs(dev) & MOXA_SUPP_RS232)) {
++		for (i = 0; i < num_ports; ++i)
++			pci_moxa_set_interface(dev, i, MOXA_RS422);
++	}
++
+ 	/*
+ 	 * Enable hardware buffer to prevent break signal output when system boots up.
+ 	 * This hardware buffer is only supported on Mini PCIe series.
+-- 
+2.34.1
 
