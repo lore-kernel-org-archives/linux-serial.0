@@ -1,58 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="sAbEa9vS"
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2892F5
-	for <linux-serial@vger.kernel.org>; Mon, 11 Dec 2023 11:46:18 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id 3f1490d57ef6-dbcae1e53bcso694425276.3
-        for <linux-serial@vger.kernel.org>; Mon, 11 Dec 2023 11:46:18 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="P/w7G0Wj"
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80B0D0
+	for <linux-serial@vger.kernel.org>; Mon, 11 Dec 2023 13:02:33 -0800 (PST)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-5e196c128fcso5258687b3.1
+        for <linux-serial@vger.kernel.org>; Mon, 11 Dec 2023 13:02:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702323978; x=1702928778; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1702328553; x=1702933353; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=FTeSUxrSykIw7I7YvDs4Fui8ab3WCE1QDiM2/J6ViGI=;
-        b=sAbEa9vSlobiZVMv4bvdIKju2ekymZrovB9Cr2BmTzbeYTwfbU7lBsETJt9u5SlsEA
-         JabymgWaYWtQrkx8vQ68nxwDwjh1ojpXAxAC6XgSHCY+EHep2ck7t15anjxTnMw0MXrA
-         NJgOSjtm50r0kw4DMHaB/nUR9HQm/WM42An/Nn/1MOAmvnG7ewmmM/XVo98WnTvPbF4L
-         B9LaC3TojYLg+5RnotjCcg6C/V/uRH1K4d2wsIJ4phbaU5WgIPiIchHciokNg4mt7co3
-         DVq5tOh8hdsyCwNE/MNSoFc6DeHc6sA4MqcOUqLX6734h+thJ1+rtLFRQhjK4ryoRI9y
-         uNGg==
+        bh=cZfsZrrRBlZwfErbKCDlnyMZePAWlHxlE0E9UWOYGmQ=;
+        b=P/w7G0WjSFdG4l3M3g02vvLEnBwqml1AyvE2NiC1NCLAynYfl1BMPYI3oV+Ch/cMDk
+         tI9Jb9aSKXXSvTPAJO6QG5J8jHRWZ8kZ0zWUf9Lzgjo7kjeUEyQZo51b+YVri6SqOLUT
+         ZLWZHQWvLskk05QRZsBxBrcHngBOi2nLjxH0dLomEeeHv84Q9IhAcr9kzQlCJ8YFYRoF
+         TNv7sjkbbL0JrrhylrAYlK0u+vEFl5wXqBWMzdgk0KST6a8Wc3aIdro35AcA2Xyx3JW9
+         joFnb7/ESr+prdztc5JC//6ur24+npmd9CDLu3dJzjZ9jyccf2WotzpNsC5k9qrm7F5G
+         gxTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702323978; x=1702928778;
+        d=1e100.net; s=20230601; t=1702328553; x=1702933353;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=FTeSUxrSykIw7I7YvDs4Fui8ab3WCE1QDiM2/J6ViGI=;
-        b=E1nypmvZv3Asq3GepJRvY8IXM2b11liRrXRmaWrbZ+/VPJy8s0OXahWNzLY4bD8jV5
-         aH+QlmoBNfiTvSnrnPYlFj7OGmKph4H0Hqk4SxGnKKxsFtfSobYIiAawpbvJhRmKoX58
-         ELNVkgAS/32Mind1KgXLg+JU44vco4qvGJ3nJY7m5NI3fVNjBPtIZzS0XD8f+/fwYz77
-         wvqQr3NsI0Uo3nWQ0bcOzs4JvwedTfWnGCeixRWuY2GNOw+hMYslBTYymgI/1S4V17ly
-         Yo0i7CZy9sVMffWnLWqpf9wul/KU2Th2Z58TqUMGMqgYFgDco+OhXA/0hkhj+cKShDHC
-         B+nA==
-X-Gm-Message-State: AOJu0YySYxfW5EhQMEFCO4S8M5hQCMG8PUKQ73UYIQVMxjY11PHVL/6x
-	AYiRCYdQeXUK7dlH6/3QNa5h2D+TtjVSgd5dKLzVmg==
-X-Google-Smtp-Source: AGHT+IHswS/zKdRCASUc9ie39QTavfGoVLFXGgY+/DITpsMOqyQNhT0tlQm6Qgrmdxlk1QdkPO5OCc3GD+qSIcfxiqE=
-X-Received: by 2002:a25:ea4a:0:b0:da1:b041:70ac with SMTP id
- o10-20020a25ea4a000000b00da1b04170acmr2938062ybe.10.1702323977703; Mon, 11
- Dec 2023 11:46:17 -0800 (PST)
+        bh=cZfsZrrRBlZwfErbKCDlnyMZePAWlHxlE0E9UWOYGmQ=;
+        b=enxRnioVlJOos/yyUpqzuEi6qP/lUF121Cb6zF5Fpe9m2ZqgSZiTTYZdr2CN7HQcs4
+         4+nkYINUAls5isqe9FkVkv5glhspGdBzgnOcLaWgPrSfLaTEOjBUobqte4R5+bx1VyYq
+         /Xl0E9QJij6GpnjqC80piRIn1DuOvTETdxjyT1rakmeRGTxn9bg54aSw8XTYTfsSgwRd
+         RSJ+YbmQgNU7kh+JUlFB7XiRFGUKbeDRc6T80RQOahP5UV/1PRY5NsYJDpcDep2RPbkc
+         /jg35Igu8vBx3Sqb23y96O/qkSD/vGSls+n1c5NTyWi0lzm+2iQUKb+W9qLnY2uF9z8h
+         tAZw==
+X-Gm-Message-State: AOJu0Yzub/j2qhqIA5QTaloNMlFnOpKJwR2Snu5MWNTGrE79iUWSyQl+
+	/DTEc9ybykoxKalFggQfwEVU8VASTLsl1ZMUQI+FzQ==
+X-Google-Smtp-Source: AGHT+IEx7mNSHR0hv8E+Jx+J+xIQnLDD997azEZuKMXEYCvggtMUMZoyCLaTgxmHG3TvQOqT3+BfMVSbsiM6LZX48/o=
+X-Received: by 2002:a0d:f842:0:b0:5d7:1940:b377 with SMTP id
+ i63-20020a0df842000000b005d71940b377mr3838384ywf.67.1702328552858; Mon, 11
+ Dec 2023 13:02:32 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20231211162331.435900-1-peter.griffin@linaro.org>
- <20231211162331.435900-9-peter.griffin@linaro.org> <CAL_JsqJ_NUajmQs8ZYiE2GpvNxBwtkLRE2jvWDU3hKtztt92Ug@mail.gmail.com>
-In-Reply-To: <CAL_JsqJ_NUajmQs8ZYiE2GpvNxBwtkLRE2jvWDU3hKtztt92Ug@mail.gmail.com>
-From: Peter Griffin <peter.griffin@linaro.org>
-Date: Mon, 11 Dec 2023 19:46:06 +0000
-Message-ID: <CADrjBPrkso2cM8zKq-WU8WC3P3A9YoS6nqX-f6XvSNS-EofK9g@mail.gmail.com>
-Subject: Re: [PATCH v7 08/16] clk: samsung: clk-gs101: Add cmu_top, cmu_misc
- and cmu_apm support
-To: Rob Herring <robh+dt@kernel.org>
-Cc: krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com, 
-	conor+dt@kernel.org, sboyd@kernel.org, tomasz.figa@gmail.com, 
-	s.nawrocki@samsung.com, linus.walleij@linaro.org, wim@linux-watchdog.org, 
+References: <20231211162331.435900-1-peter.griffin@linaro.org> <20231211162331.435900-10-peter.griffin@linaro.org>
+In-Reply-To: <20231211162331.435900-10-peter.griffin@linaro.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Mon, 11 Dec 2023 22:02:21 +0100
+Message-ID: <CACRpkda8LJS+9dPQFqQLFDbj=gvJ9rKSu=ECczDB4QUv+FZgnw@mail.gmail.com>
+Subject: Re: [PATCH v7 09/16] pinctrl: samsung: Add gs101 SoC pinctrl configuration
+To: Peter Griffin <peter.griffin@linaro.org>
+Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, 
+	mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org, 
+	tomasz.figa@gmail.com, s.nawrocki@samsung.com, wim@linux-watchdog.org, 
 	linux@roeck-us.net, catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, 
 	olof@lixom.net, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
 	cw00.choi@samsung.com, alim.akhtar@samsung.com, tudor.ambarus@linaro.org, 
@@ -65,86 +63,20 @@ Cc: krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Rob,
+On Mon, Dec 11, 2023 at 5:24=E2=80=AFPM Peter Griffin <peter.griffin@linaro=
+.org> wrote:
 
-Thanks for your review.
-
-On Mon, 11 Dec 2023 at 16:43, Rob Herring <robh+dt@kernel.org> wrote:
+> Add support for the pin-controller found on the gs101 SoC used in
+> Pixel 6 phones.
 >
-> On Mon, Dec 11, 2023 at 10:24=E2=80=AFAM Peter Griffin <peter.griffin@lin=
-aro.org> wrote:
-> >
-> > cmu_top is the top level clock management unit which contains PLLs, mux=
-es,
-> > dividers and gates that feed the other clock management units.
-> >
-> > cmu_misc clocks IPs such as Watchdog and cmu_apm clocks ips part of the
-> > APM module.
-> >
-> > Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
-> > Reviewed-by: Andr=C3=A9 Draszik <andre.draszik@linaro.org>
-> > Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
-> > Tested-by: Will McVicker <willmcvicker@google.com>
-> > Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
-> > ---
-> >  drivers/clk/samsung/Makefile    |    1 +
-> >  drivers/clk/samsung/clk-gs101.c | 2512 +++++++++++++++++++++++++++++++
-> >  2 files changed, 2513 insertions(+)
-> >  create mode 100644 drivers/clk/samsung/clk-gs101.c
-> >
-> > diff --git a/drivers/clk/samsung/Makefile b/drivers/clk/samsung/Makefil=
-e
-> > index ebbeacabe88f..3056944a5a54 100644
-> > --- a/drivers/clk/samsung/Makefile
-> > +++ b/drivers/clk/samsung/Makefile
-> > @@ -21,6 +21,7 @@ obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK) +=3D clk-exynos=
-7.o
-> >  obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)  +=3D clk-exynos7885.o
-> >  obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)  +=3D clk-exynos850.o
-> >  obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)  +=3D clk-exynosautov9.o
-> > +obj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)  +=3D clk-gs101.o
-> >  obj-$(CONFIG_S3C64XX_COMMON_CLK)       +=3D clk-s3c64xx.o
-> >  obj-$(CONFIG_S5PV210_COMMON_CLK)       +=3D clk-s5pv210.o clk-s5pv210-=
-audss.o
-> >  obj-$(CONFIG_TESLA_FSD_COMMON_CLK)     +=3D clk-fsd.o
-> > diff --git a/drivers/clk/samsung/clk-gs101.c b/drivers/clk/samsung/clk-=
-gs101.c
-> > new file mode 100644
-> > index 000000000000..05361fce3c6f
-> > --- /dev/null
-> > +++ b/drivers/clk/samsung/clk-gs101.c
-> > @@ -0,0 +1,2512 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * Copyright (C) 2023 Linaro Ltd.
-> > + * Author: Peter Griffin <peter.griffin@linaro.org>
-> > + *
-> > + * Common Clock Framework support for GS101.
-> > + */
-> > +
-> > +#include <linux/clk.h>
-> > +#include <linux/clk-provider.h>
-> > +#include <linux/of.h>
-> > +#include <linux/of_device.h>
->
-> You probably don't need this header. Please check.
->
-> > +#include <linux/platform_device.h>
+> Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
+> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
 
-You are correct, this header isn't required. If a new series is
-required I will remove it.
+Looks good to me.
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 
-Whilst you're here I'd like to draw your attention to [PATCH 2/16]
-where I've removed your reviewed-by tag in v7 because I added the ect
-node documentation in google.yaml. The empty ect node is required to
-be present by the bootloader or the device will boot loop. Can you
-re-review that patch?
+I expect Krzysztof to merge this when he feels it is ready and
+send to me by pull request.
 
-The alternative is to remove the empty ect node, and the binding
-documentation for it and add your Reviewed-by tag back again. But then
-an upstream kernel won't boot 'out the box' on a pixel 6 which seems
-less than ideal default behaviour.
-
-regards,
-
-Peter.
+Yours,
+Linus Walleij
