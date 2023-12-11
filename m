@@ -1,109 +1,144 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="f7uMfnvr"
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C3A8C4;
-	Mon, 11 Dec 2023 05:08:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702300088; x=1733836088;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=in3Ml1ewom3HGY0wz6izynRQKJrC6Dqyh0PwUcWn9Uc=;
-  b=f7uMfnvr53n7jcC2+5ny90xOQkZdJa+M55RCeP/ziqZwTd9YJAd7x8i+
-   kjqDQGu692rDYdhVhtuKF047hvoA1wglqYEI6fk1inXjU75oK+EKH/ZZp
-   TughlxiF+nqLSPvIKCG1Aqm1mVzHfWUg08KD+DtQmKvuCGj3El4zPqprY
-   7/RdliaV0jXybz4HwibKTkdIL/wkHXGqwADkERlEQ4R1tFzv4wB6m+Z/V
-   DdcVH3sfqMmas/jFcUjOWmyPkWiSBTk1uZMvy3VxZWMibQOFGogDyMAxz
-   fspyMlK3D7F5NYtBpqE/pNGHSZF0/dyPnku8FKEIQ26Btv4lflyrty/U4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10920"; a="374802667"
-X-IronPort-AV: E=Sophos;i="6.04,267,1695711600"; 
-   d="scan'208";a="374802667"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Dec 2023 05:08:07 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10920"; a="1104469655"
-X-IronPort-AV: E=Sophos;i="6.04,267,1695711600"; 
-   d="scan'208";a="1104469655"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Dec 2023 05:08:03 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rCg0u-00000004mmq-0OoA;
-	Mon, 11 Dec 2023 15:08:00 +0200
-Date: Mon, 11 Dec 2023 15:07:59 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc: Christoph Niedermaier <cniedermaier@dh-electronics.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	"brenda.streiff@ni.com" <brenda.streiff@ni.com>,
-	Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
-	Tomas Paukrt <tomaspaukrt@email.cz>
-Subject: Re: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
- binding
-Message-ID: <ZXcJr4VS_uGr_6TV@smile.fi.intel.com>
-References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
- <20231120151056.148450-2-linux@rasmusvillemoes.dk>
- <20231122145344.GA18949@wunner.de>
- <3b8548b1-b8a9-0c9e-4040-5cfda06a85c6@gmx.de>
- <ec66d25162de4cbc92720df1e7008fe8@dh-electronics.com>
- <5c140498-69e3-4187-8703-db0c41e7ca89@gmx.de>
- <fe28eb93-daa1-41af-a005-f21aa87e1984@gmx.de>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="gsXMqkQA"
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC2D0C3;
+	Mon, 11 Dec 2023 06:50:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=kEmVlye6CMrVPDyTmVFhOQ15lLv0MDG5hDAupVdWbcI=; b=gsXMqkQARmulOgWXmYNgBvmkpk
+	3QX7SSPv47Y/AVWozhPBPlR3/0omDCt9HHk4eqe6vmnzVKA7eVEaC4Koa0om8RkdVuOfFXTorn8uT
+	48s2HbOm9zme/QgYf6307hmA/tZ4eEF9MgEtFDUKBDlmtCuh2eu5hicPLqCCTdnl023w=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:45548 helo=debian-acer)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1rChbI-0002gh-29; Mon, 11 Dec 2023 09:49:40 -0500
+Date: Mon, 11 Dec 2023 09:49:38 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ ilpo.jarvinen@linux.intel.com, u.kleine-koenig@pengutronix.de,
+ shawnguo@kernel.org, s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com,
+ alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ LinoSanfilippo@gmx.de, lukas@wunner.de, p.rosenberger@kunbus.com,
+ stable@vger.kernel.org
+Message-Id: <20231211094938.11c3322b80c2b827b46725c5@hugovil.com>
+In-Reply-To: <20231209125836.16294-2-l.sanfilippo@kunbus.com>
+References: <20231209125836.16294-1-l.sanfilippo@kunbus.com>
+	<20231209125836.16294-2-l.sanfilippo@kunbus.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fe28eb93-daa1-41af-a005-f21aa87e1984@gmx.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 184.161.19.61
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+Subject: Re: [PATCH v5 1/7] serial: Do not hold the port lock when setting
+ rx-during-tx GPIO
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Sat, Dec 09, 2023 at 12:47:47PM +0100, Lino Sanfilippo wrote:
-> On 06.12.23 16:42, Lino Sanfilippo wrote:
+On Sat,  9 Dec 2023 13:58:30 +0100
+Lino Sanfilippo <l.sanfilippo@kunbus.com> wrote:
 
-> >>>> Crescent CY Hsieh (+cc) is in parallel trying to add an RS-422 mode bit
-> >>>> to struct serial_rs485:
-> >>>>
-> >>>> https://lore.kernel.org/all/20231121095122.15948-1-crescentcy.hsieh@moxa.com/
-> >>>>
-> >>>
-> >>> That new flag was suggested by me instead of using SER_RS422_ENABLED, which
-> >>> would mostly be redundant to SER_RS485_ENABLED.
+> Both the imx and stm32 driver set the rx-during-tx GPIO in rs485_config().
+> Since this function is called with the port lock held, this can be an
+> problem in case that setting the GPIO line can sleep (e.g. if a GPIO
+> expander is used which is connected via SPI or I2C).
 > 
-> A cleaner solution would probably be to not handle RS422 with the RS485 settings at
-> all, but to introduce another set of ioctls to set and read it.
+> Avoid this issue by moving the GPIO setting outside of the port lock into
+> the serial core and thus making it a generic feature.
 > 
-> An own RS422 structure like
+> Fixes: c54d48543689 ("serial: stm32: Add support for rs485 RX_DURING_TX output GPIO")
+> Fixes: ca530cfa968c ("serial: imx: Add support for RS485 RX_DURING_TX output GPIO")
+> Cc: Shawn Guo <shawnguo@kernel.org>
+> Cc: Sascha Hauer <s.hauer@pengutronix.de>
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> ---
+>  drivers/tty/serial/imx.c         |  4 ----
+>  drivers/tty/serial/serial_core.c | 12 ++++++++++++
+>  drivers/tty/serial/stm32-usart.c |  5 +----
+>  3 files changed, 13 insertions(+), 8 deletions(-)
 > 
-> struct serial_rs422 {
-> 	__u32	flags;
-> #define SER_RS422_ENABLED		(1 << 0)
-> #define SER_RS422_TERMINATE_BUS		(1 << 1)
-> };
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 708b9852a575..9cffeb23112b 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -1943,10 +1943,6 @@ static int imx_uart_rs485_config(struct uart_port *port, struct ktermios *termio
+>  	    rs485conf->flags & SER_RS485_RX_DURING_TX)
+>  		imx_uart_start_rx(port);
+>  
+> -	if (port->rs485_rx_during_tx_gpio)
+> -		gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio,
+> -					 !!(rs485conf->flags & SER_RS485_RX_DURING_TX));
+> -
+>  	return 0;
+>  }
+>  
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index f1348a509552..a0290a5fe8b3 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1402,6 +1402,16 @@ static void uart_set_rs485_termination(struct uart_port *port,
+>  				 !!(rs485->flags & SER_RS485_TERMINATE_BUS));
+>  }
+>  
+> +static void uart_set_rs485_rx_during_tx(struct uart_port *port,
+> +					const struct serial_rs485 *rs485)
+> +{
+> +	if (!(rs485->flags & SER_RS485_ENABLED))
+> +		return;
+> +
+> +	gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio,
+> +				 !!(rs485->flags & SER_RS485_RX_DURING_TX));
+> +}
+> +
+>  static int uart_rs485_config(struct uart_port *port)
+>  {
+>  	struct serial_rs485 *rs485 = &port->rs485;
+> @@ -1413,6 +1423,7 @@ static int uart_rs485_config(struct uart_port *port)
+>  
+>  	uart_sanitize_serial_rs485(port, rs485);
+>  	uart_set_rs485_termination(port, rs485);
+> +	uart_set_rs485_rx_during_tx(port, rs485);
+>  
+>  	uart_port_lock_irqsave(port, &flags);
+>  	ret = port->rs485_config(port, NULL, rs485);
+> @@ -1457,6 +1468,7 @@ static int uart_set_rs485_config(struct tty_struct *tty, struct uart_port *port,
+>  		return ret;
+>  	uart_sanitize_serial_rs485(port, &rs485);
+>  	uart_set_rs485_termination(port, &rs485);
+> +	uart_set_rs485_rx_during_tx(port, &rs485);
+>  
+>  	uart_port_lock_irqsave(port, &flags);
+>  	ret = port->rs485_config(port, &tty->termios, &rs485);
+> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+> index 3048620315d6..ec9a72a5bea9 100644
+> --- a/drivers/tty/serial/stm32-usart.c
+> +++ b/drivers/tty/serial/stm32-usart.c
+> @@ -226,10 +226,7 @@ static int stm32_usart_config_rs485(struct uart_port *port, struct ktermios *ter
+>  
+>  	stm32_usart_clr_bits(port, ofs->cr1, BIT(cfg->uart_enable_bit));
+>  
+> -	if (port->rs485_rx_during_tx_gpio)
+> -		gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio,
+> -					 !!(rs485conf->flags & SER_RS485_RX_DURING_TX));
+> -	else
+> +	if (!port->rs485_rx_during_tx_gpio)
+>  		rs485conf->flags |= SER_RS485_RX_DURING_TX;
+>  
+>  	if (rs485conf->flags & SER_RS485_ENABLED) {
+> -- 
+> 2.42.0
 > 
-> 
-> could be used as the parameter for these new ioctls.
-> 
-> Any comments on this?
 
-I have (maybe not so constructive) a comment. Please, at all means try to not
-extend the existing serial data structures, we have too many ones with too many
-fields already. For user space, though, one may use unions and flags, but for
-internal ones it might be better ways, I think.
+Reviewed-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Hugo
