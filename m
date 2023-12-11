@@ -1,18 +1,18 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="DUFKQAyL"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="Qgm79yfy"
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE81C4;
-	Mon, 11 Dec 2023 09:14:06 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2834BD;
+	Mon, 11 Dec 2023 09:14:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=4MZPg2i3rujQttpfPCL8eU07qXSR85CK/sdmzfjW7BA=; b=DUFKQAyLz+HfJDVdVEG9kezmd1
-	DA0UHuh7jjvotZvmvN2lncQl85w3Cs6fH26SE4WIdJ+N125wW2QF7oCEi3+NoZ4dXbs42vroZtyfo
-	uH//9auPztSjt3smMtoD7aEVsT2XAIMndYWmo3jVS1Jpv1Ph8LhxZtrsnCwARhD4CdZU=;
+	bh=aaEer9pudS/c8D2BByKXGhQ3YN3/xyWWrP78YkybY7w=; b=Qgm79yfyq7y322Vd2gcF4MfK4v
+	mLJF4PM/q+uGiyL8NpxAYe515C3j8JKzIHgSc3E1gbfNUfv8Ej9jpOi9w/gw2FnS7zzH7HHOSm99c
+	L7mc69O1xHKEWiCZME7gP8JbSRLJR+5tzSEaihh5X/tYBsmNqQXPxXMk5j7NKf55gHak=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:56730 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rCjqy-0003yC-T5; Mon, 11 Dec 2023 12:14:01 -0500
+	id 1rCjqw-0003yC-1y; Mon, 11 Dec 2023 12:13:59 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -21,14 +21,10 @@ To: gregkh@linuxfoundation.org,
 	tomasz.mon@camlingroup.com
 Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	hugo@hugovil.com,
-	stable@vger.kernel.org,
-	Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Mon, 11 Dec 2023 12:13:49 -0500
-Message-Id: <20231211171353.2901416-3-hugo@hugovil.com>
+	hugo@hugovil.com
+Date: Mon, 11 Dec 2023 12:13:47 -0500
+Message-Id: <20231211171353.2901416-1-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20231211171353.2901416-1-hugo@hugovil.com>
-References: <20231211171353.2901416-1-hugo@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -39,93 +35,63 @@ Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 70.80.174.168
 X-SA-Exim-Mail-From: hugo@hugovil.com
 X-Spam-Level: 
-Subject: [PATCH v2 2/6] serial: sc16is7xx: remove global regmap from struct sc16is7xx_port
+Subject: [PATCH v2 0/6] serial: sc16is7xx: regmap fixes and improvements
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Remove global struct regmap so that it is more obvious that this
-regmap is to be used only in the probe function.
+Hello,
+this patch series brings fixes and improvements related to regmap access
+for the sc16is7xx driver.
 
-Also add a comment to that effect in probe function.
+Most of the patches are related to commit 3837a0379533 ("serial: sc16is7xx: improve regmap debugfs by using one regmap per port").
 
-Fixes: 3837a0379533 ("serial: sc16is7xx: improve regmap debugfs by using one regmap per port")
-Cc: stable@vger.kernel.org
-Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
----
- drivers/tty/serial/sc16is7xx.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+I did not originally add a "Cc: stable" tag for the above mentioned commit,
+as it was intended only to improve debugging using debugfs. But since then,
+I have been able to confirm that it also fixes a long standing bug in our
+system where the Tx interrupt are no longer enabled at some point when
+transmitting large RS-485 paquets that completely fill the FIFO and thus
+require multiple and subsequent writes to the FIFO once space in it becomes
+available. I have been investigating why, but so far I haven't found the
+exact cause, altough I suspect it has something to do with regmap caching.
+Therefore, I have added this commit as a prerequisite for some of the
+patches in this series so that it is automatically added to the stable
+kernels.
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 8d1de4982b65..a4ad3ae8cae2 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -334,7 +334,6 @@ struct sc16is7xx_one {
- 
- struct sc16is7xx_port {
- 	const struct sc16is7xx_devtype	*devtype;
--	struct regmap			*regmap;
- 	struct clk			*clk;
- #ifdef CONFIG_GPIOLIB
- 	struct gpio_chip		gpio;
-@@ -1434,7 +1433,8 @@ static void sc16is7xx_setup_irda_ports(struct sc16is7xx_port *s)
- /*
-  * Configure ports designated to operate as modem control lines.
-  */
--static int sc16is7xx_setup_mctrl_ports(struct sc16is7xx_port *s)
-+static int sc16is7xx_setup_mctrl_ports(struct sc16is7xx_port *s,
-+				       struct regmap *regmap)
- {
- 	int i;
- 	int ret;
-@@ -1463,7 +1463,7 @@ static int sc16is7xx_setup_mctrl_ports(struct sc16is7xx_port *s)
- 
- 	if (s->mctrl_mask)
- 		regmap_update_bits(
--			s->regmap,
-+			regmap,
- 			SC16IS7XX_IOCONTROL_REG,
- 			SC16IS7XX_IOCONTROL_MODEM_A_BIT |
- 			SC16IS7XX_IOCONTROL_MODEM_B_BIT, s->mctrl_mask);
-@@ -1495,6 +1495,10 @@ static int sc16is7xx_probe(struct device *dev,
- 	 * This device does not have an identification register that would
- 	 * tell us if we are really connected to the correct device.
- 	 * The best we can do is to check if communication is at all possible.
-+	 *
-+	 * Note: regmap[0] is used in the probe function to access registers
-+	 * common to all channels/ports, as it is guaranteed to be present on
-+	 * all variants.
- 	 */
- 	ret = regmap_read(regmaps[0], SC16IS7XX_LSR_REG, &val);
- 	if (ret < 0)
-@@ -1530,7 +1534,6 @@ static int sc16is7xx_probe(struct device *dev,
- 			return -EINVAL;
- 	}
- 
--	s->regmap = regmaps[0];
- 	s->devtype = devtype;
- 	dev_set_drvdata(dev, s);
- 	mutex_init(&s->efr_lock);
-@@ -1545,7 +1548,7 @@ static int sc16is7xx_probe(struct device *dev,
- 	sched_set_fifo(s->kworker_task);
- 
- 	/* reset device, purging any pending irq / data */
--	regmap_write(s->regmap, SC16IS7XX_IOCONTROL_REG,
-+	regmap_write(regmaps[0], SC16IS7XX_IOCONTROL_REG,
- 		     SC16IS7XX_IOCONTROL_SRESET_BIT);
- 
- 	for (i = 0; i < devtype->nr_uart; ++i) {
-@@ -1616,7 +1619,7 @@ static int sc16is7xx_probe(struct device *dev,
- 
- 	sc16is7xx_setup_irda_ports(s);
- 
--	ret = sc16is7xx_setup_mctrl_ports(s);
-+	ret = sc16is7xx_setup_mctrl_ports(s, regmaps[0]);
- 	if (ret)
- 		goto out_ports;
- 
+I have tested the changes on a custom board with two SC16IS752 DUART over
+a SPI interface using a Variscite IMX8MN NANO SOM. The four UARTs are
+configured in RS-485 mode.
+
+I did not test the change on a SC16is7xx using I2C interface, as my custom
+board is only using SPI.
+
+Thank you.
+
+Link: [v1] https://lore.kernel.org/all/20231130191050.3165862-1-hugo@hugovil.com
+
+Changes for V2:
+ - Refactor patch 1 to avoid a truncation warning when using "%u" in
+   snprintf.
+ - Keep only fixing patches in this series. Non-fixes patches will be
+   resubmitted in a new separate series.
+ - Add 3 new fixing patches (4 to 6).
+
+Hugo Villeneuve (6):
+  serial: sc16is7xx: remove wasteful static buffer in
+    sc16is7xx_regmap_name()
+  serial: sc16is7xx: remove global regmap from struct sc16is7xx_port
+  serial: sc16is7xx: remove unused line structure member
+  serial: sc16is7xx: change EFR lock to operate on each channels
+  serial: sc16is7xx: convert from _raw_ to _noinc_ regmap functions for
+    FIFO
+  serial: sc16is7xx: fix unconditional activation of THRI interrupt
+
+ drivers/tty/serial/sc16is7xx.c | 104 ++++++++++++++++++---------------
+ 1 file changed, 56 insertions(+), 48 deletions(-)
+
+
+base-commit: e045e18dbf3eaac32cdeb2799a5ec84fa694636c
 -- 
 2.39.2
 
