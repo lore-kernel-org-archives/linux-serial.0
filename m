@@ -1,45 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cTt+aow8"
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67191D3
-	for <linux-serial@vger.kernel.org>; Tue, 12 Dec 2023 12:26:56 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id 4fb4d7f45d1cf-55202565d48so26158a12.0
-        for <linux-serial@vger.kernel.org>; Tue, 12 Dec 2023 12:26:56 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bPCUChfG"
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0146EA7;
+	Tue, 12 Dec 2023 13:19:02 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id 98e67ed59e1d1-28ae217726fso13249a91.0;
+        Tue, 12 Dec 2023 13:19:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1702412815; x=1703017615; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=VwW372HIyXXEZbOKIIfkQaQvi+3LIG/VtEtwTWD8RlI=;
-        b=cTt+aow81z/4/6Let5IpuPVYHYFKSpSLiTRfYWOU0aUYpCBVvxPxFInXSwptNXn9HD
-         m2ZiUEg+fNZfoHSK3Fn02C+c+DOgXyCfyBHKJwR9VMN4X8iQ+8rTPC+PSGPzMu96nYBR
-         x89znHNyAgMLO4XZIf2AiNruW8jqV29CGwK2j6TrU+WAe1OdW0JWww9IOnUN9oPsbkX3
-         am9HZI2O9XBblmra0RPi9IRNg9zXxopR9GOy9RrWSFqibWDSUqnIpdCTkGRlEWJCRH3s
-         fhPVLAjfVD3IdQ53A/z58CmBxxmZORD2CyAglKHkR2r7om7boKVHl8U/JRIBkPC7UkT0
-         0DhQ==
+        d=gmail.com; s=20230601; t=1702415942; x=1703020742; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :sender:from:to:cc:subject:date:message-id:reply-to;
+        bh=kMoLJYgn7fDY9nUFDcOY8AQOiuzLi7LcMhALoQeUtF0=;
+        b=bPCUChfG0FKDTVxgu/yKwtFdmX7Eq0U1gtY+AYM+pftBXHrWlC29JVsGY13V9PxqqZ
+         jbmL+wkomWGpLEyikXOYsz+MkIThxoO/P09erhI0Tue3r0Nyu49V36KvDZpoB72+NVoM
+         gDg/Wy7qniAJiIvd0XRt/yMNLdF2CkGluC3k834HqpiUMv0DHFeci4gHrygAfe0uFK2j
+         xN/Pe4gP6YiZRFkP8/9oc+ETs8feg0FnF0mch+bnZeHxuKCcPG7+dg/34VFocDoTNrLc
+         WMF4FEtlcyo4Cgfy/PnTrHdBq5HzrCIucv0E6CnjfB0XqUGPmNIInbaZJjo71b28xMJA
+         17Sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702412815; x=1703017615;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=VwW372HIyXXEZbOKIIfkQaQvi+3LIG/VtEtwTWD8RlI=;
-        b=MKRyumFCSTLcpeM2jcyimkjW3L+67NIs2tuuw/XH7whwxbljmFs0kHCARgxeW3+NfF
-         NPU18+0emwrXdEH1LAuSVNq74NVg0AOFyJQVQnRdwT7EmQ79uLoXZlJtKt/Ixbdw1T+0
-         Hp5J3m2/qqNhmBmTuDRJwfSwJiDhdBGH2jk7XfLtrY888COSzb2thJpuyD3kaUtWZWGn
-         A+iYEeY6vL4t0e60kSeBz5yx/FRl6uHtcu8onyKm03+UObMp47xyzo4IlqCSU84lRDSO
-         jRFAsjXKVMC28ELZWFV+8NzMdg9TRbu4q4mPuwajr0Hbmg03MjUpXYDX5JRSilz5Z3Qh
-         TVrQ==
-X-Gm-Message-State: AOJu0YyrTC4sZ0xrnQiDOhji5AcEBSiJWp/NW49eYsh0BQFBQ+YaouuZ
-	WI8UJt1MOQYDMqZoDSeEGJk=
-X-Google-Smtp-Source: AGHT+IGyhnvYIP84XzNqjR7F2Ls3HfCIKoArmF8mNh4ZUYHtskB6v3FfRxUQrUTwZCrTXUlAqBcJpg==
-X-Received: by 2002:a05:6402:5175:b0:54c:5351:3546 with SMTP id d21-20020a056402517500b0054c53513546mr3957659ede.64.1702412814519;
-        Tue, 12 Dec 2023 12:26:54 -0800 (PST)
-Received: from [192.168.1.2] (ip4-83-240-121-90.cust.nbox.cz. [83.240.121.90])
-        by smtp.gmail.com with ESMTPSA id a4-20020a509e84000000b0054ccc3b2109sm5192317edf.57.2023.12.12.12.26.53
+        d=1e100.net; s=20230601; t=1702415942; x=1703020742;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :sender:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=kMoLJYgn7fDY9nUFDcOY8AQOiuzLi7LcMhALoQeUtF0=;
+        b=lNSUPA/EVFH5bRxaikC0/9Lpy3afdaUWTFvEFA2o0vfO2GFma3RoJaheGCe1OtbH0T
+         +WgwzpOgaleXoSUw5YKPW88yqgXSkK8FN08du4pYiUYqTs/+CK4ErM+o26YVGuN7vH1c
+         ybx+cYAFiCKU0GHIQK/+9Xx+zhhKPwNwvmhQF6/3/9FTE/Wc7B82nGGOD0s+uST8PQ7G
+         11dewikd6gOsoe/dr96m3wt4f+eedRyenCsnNHHJcd7JtPZVYRwj1JYKVdL/ilosY2gP
+         ZM7DKadm3LzRp0BPyHFv7rl5hteH0S1tV1yvBkqaKfseYdb8rJ3yHiszAtpCv3LqZOnH
+         XmPg==
+X-Gm-Message-State: AOJu0YwrLtow1qkXqaf03JmwrIJENvmA9kFKYZvXlcPydICvV7MCitQY
+	+Ml14I7H2qXczYLo+F5YvTc=
+X-Google-Smtp-Source: AGHT+IHfMYA0e5583oScQWydg+DxCkFVtWOC6tsTqs18GNwFIduE95LRcs6hLxnlOHAFU/CgLbOilg==
+X-Received: by 2002:a17:90a:2f43:b0:28a:c61a:5a20 with SMTP id s61-20020a17090a2f4300b0028ac61a5a20mr1162458pjd.1.1702415942317;
+        Tue, 12 Dec 2023 13:19:02 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id px6-20020a17090b270600b002609cadc56esm9605497pjb.11.2023.12.12.13.18.59
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Dec 2023 12:26:54 -0800 (PST)
-Message-ID: <e5e7fd4f-acac-41a0-8a36-1f4f71eb7c18@gmail.com>
-Date: Tue, 12 Dec 2023 21:26:53 +0100
+        Tue, 12 Dec 2023 13:19:01 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <cb84bee8-db33-41b3-b0f3-79b3df494496@roeck-us.net>
+Date: Tue, 12 Dec 2023 13:18:59 -0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -47,112 +49,174 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: [PATCH v3] tty/vt: UTF-8 parsing update according to RFC 3629, modern
- Unicode
-Content-Language: en-US, cs-CZ
-To: Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org
-Cc: linux-serial@vger.kernel.org, roman.zilka@gmail.com
-References: <14027090-ca91-45ca-90d4-75456c0f2c76@gmail.com>
- <2023121201-ecosphere-polyester-8d37@gregkh>
- <834b6344-55dd-4a92-b1db-8d60d2b40a3e@gmail.com>
-From: =?UTF-8?Q?Roman_=C5=BDilka?= <roman.zilka@gmail.com>
-In-Reply-To: <834b6344-55dd-4a92-b1db-8d60d2b40a3e@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v7 12/16] watchdog: s3c2410_wdt: Add support for Google
+ gs101 SoC
+Content-Language: en-US
+To: Peter Griffin <peter.griffin@linaro.org>, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+ conor+dt@kernel.org, sboyd@kernel.org, tomasz.figa@gmail.com,
+ s.nawrocki@samsung.com, linus.walleij@linaro.org, wim@linux-watchdog.org,
+ catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, olof@lixom.net,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, cw00.choi@samsung.com,
+ alim.akhtar@samsung.com
+Cc: tudor.ambarus@linaro.org, andre.draszik@linaro.org,
+ semen.protsenko@linaro.org, saravanak@google.com, willmcvicker@google.com,
+ soc@kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-watchdog@vger.kernel.org, kernel-team@android.com,
+ linux-serial@vger.kernel.org
+References: <20231211162331.435900-1-peter.griffin@linaro.org>
+ <20231211162331.435900-13-peter.griffin@linaro.org>
+From: Guenter Roeck <linux@roeck-us.net>
+Autocrypt: addr=linux@roeck-us.net; keydata=
+ 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
+ mDW4+i+XlNFUPUYMrIKi9joBhu18ssf5i5Q=
+In-Reply-To: <20231211162331.435900-13-peter.griffin@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-vc_translate_unicode() and vc_sanitize_unicode() parse input to the
-UTF-8-enabled console, marking invalid byte sequences and producing Unicode
-codepoints. The current algorithm follows ancient Unicode and may accept
-invalid byte sequences, pass on non-existent codepoints and reject valid
-sequences.
+On 12/11/23 08:23, Peter Griffin wrote:
+> This patch adds the compatibles and drvdata for the Google
+> gs101 SoC found in Pixel 6, Pixel 6a & Pixel 6 pro phones.
+> 
+> Similar to Exynos850 it has two watchdog instances, one for
+> each cluster and has some control bits in PMU registers.
+> 
+> gs101 also has the dbgack_mask bit in wtcon register, so
+> we also enable QUIRK_HAS_DBGACK_BIT.
+> 
+> Tested-by: Will McVicker <willmcvicker@google.com>
+> Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
+> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
 
-The patch restores the functions' compliance with modern Unicode (v15.1 [1]
-+ many previous versions) as well as RFC 3629 [2].
-1. Codepoint space is limited to 0x10FFFF.
-2. "Noncharacters", such as U+FFFE, U+FFFF, are no longer invalid in
-   Unicode and will be accepted. Another option was to complete the set of
-   noncharacters (used to be just those two, now there's more) and preserve
-   the rejection step. This is indeed what Unicode suggests (v15.1, chap.
-   23.7) (not requires), but most codepoints are !iswprint(), so selecting
-   just the noncharacters seemed arbitrary and futile (and unnecessary).
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
-On the side:
-3. Corrected/improved the doc of the two functions (esp. @rescan).
-
-This is not a security patch. I'm not aware of any present security
-implications of the old code.
-
-[1] https://www.unicode.org/versions/Unicode15.1.0
-[2] https://datatracker.ietf.org/doc/html/rfc3629
-
-Signed-off-by: Roman Žilka <roman.zilka@gmail.com>
----
-
-v2: A more elaborate commit msg, e-mail formatting corrections.
-v3: Shortened patch as requested. The gist of it is unchanged. Added links
-    to commit msg. Changed base to current tty-next.
-
- drivers/tty/vt/vt.c | 20 +++++---------------
- 1 file changed, 5 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 156efda7c80d..373f94f55ff2 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -2589,11 +2589,11 @@ static inline int vc_translate_ascii(const struct vc_data *vc, int c)
- 
- /**
-  * vc_sanitize_unicode - Replace invalid Unicode code points with U+FFFD
-- * @c: the received character, or U+FFFD for invalid sequences.
-+ * @c: the received code point
-  */
- static inline int vc_sanitize_unicode(const int c)
- {
--	if ((c >= 0xd800 && c <= 0xdfff) || c == 0xfffe || c == 0xffff)
-+	if (c >= 0xd800 && c <= 0xdfff)
- 		return 0xfffd;
- 
- 	return c;
-@@ -2602,8 +2602,8 @@ static inline int vc_sanitize_unicode(const int c)
- /**
-  * vc_translate_unicode - Combine UTF-8 into Unicode in @vc_utf_char
-  * @vc: virtual console
-- * @c: character to translate
-- * @rescan: we return true if we need more (continuation) data
-+ * @c: UTF-8 byte to translate
-+ * @rescan: true => @c wasn't translated here and needs to be re-processed
-  *
-  * @vc_utf_char is the being-constructed unicode character.
-  * @vc_utf_count is the number of continuation bytes still expected to arrive.
-@@ -2611,10 +2611,7 @@ static inline int vc_sanitize_unicode(const int c)
-  */
- static int vc_translate_unicode(struct vc_data *vc, int c, bool *rescan)
- {
--	static const u32 utf8_length_changes[] = {
--		0x0000007f, 0x000007ff, 0x0000ffff,
--		0x001fffff, 0x03ffffff, 0x7fffffff
--	};
-+	static const u32 utf8_length_changes[] = {0x7f, 0x7ff, 0xffff, 0x10ffff};
- 
- 	/* Continuation byte received */
- 	if ((c & 0xc0) == 0x80) {
-@@ -2660,14 +2657,7 @@ static int vc_translate_unicode(struct vc_data *vc, int c, bool *rescan)
- 	} else if ((c & 0xf8) == 0xf0) {
- 		vc->vc_utf_count = 3;
- 		vc->vc_utf_char = (c & 0x07);
--	} else if ((c & 0xfc) == 0xf8) {
--		vc->vc_utf_count = 4;
--		vc->vc_utf_char = (c & 0x03);
--	} else if ((c & 0xfe) == 0xfc) {
--		vc->vc_utf_count = 5;
--		vc->vc_utf_char = (c & 0x01);
- 	} else {
--		/* 254 and 255 are invalid */
- 		return 0xfffd;
- 	}
- 
-
-base-commit: e045e18dbf3eaac32cdeb2799a5ec84fa694636c
--- 
-2.41.0
+> ---
+>   drivers/watchdog/s3c2410_wdt.c | 49 ++++++++++++++++++++++++++++++----
+>   1 file changed, 44 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/watchdog/s3c2410_wdt.c b/drivers/watchdog/s3c2410_wdt.c
+> index b7a03668f743..c3046610ab5d 100644
+> --- a/drivers/watchdog/s3c2410_wdt.c
+> +++ b/drivers/watchdog/s3c2410_wdt.c
+> @@ -69,6 +69,13 @@
+>   #define EXYNOSAUTOV9_CLUSTER0_WDTRESET_BIT	25
+>   #define EXYNOSAUTOV9_CLUSTER1_WDTRESET_BIT	24
+>   
+> +#define GS_CLUSTER0_NONCPU_OUT			0x1220
+> +#define GS_CLUSTER1_NONCPU_OUT			0x1420
+> +#define GS_CLUSTER0_NONCPU_INT_EN		0x1244
+> +#define GS_CLUSTER1_NONCPU_INT_EN		0x1444
+> +#define GS_CLUSTER2_NONCPU_INT_EN		0x1644
+> +#define GS_RST_STAT_REG_OFFSET			0x3B44
+> +
+>   /**
+>    * DOC: Quirk flags for different Samsung watchdog IP-cores
+>    *
+> @@ -270,7 +277,35 @@ static const struct s3c2410_wdt_variant drv_data_exynosautov9_cl1 = {
+>   		  QUIRK_HAS_PMU_RST_STAT | QUIRK_HAS_PMU_CNT_EN,
+>   };
+>   
+> +static const struct s3c2410_wdt_variant drv_data_gs101_cl0 = {
+> +	.mask_reset_reg = GS_CLUSTER0_NONCPU_INT_EN,
+> +	.mask_bit = 2,
+> +	.mask_reset_inv = true,
+> +	.rst_stat_reg = GS_RST_STAT_REG_OFFSET,
+> +	.rst_stat_bit = 0,
+> +	.cnt_en_reg = GS_CLUSTER0_NONCPU_OUT,
+> +	.cnt_en_bit = 8,
+> +	.quirks = QUIRK_HAS_PMU_RST_STAT | QUIRK_HAS_PMU_MASK_RESET |
+> +		  QUIRK_HAS_PMU_CNT_EN | QUIRK_HAS_WTCLRINT_REG |
+> +		  QUIRK_HAS_DBGACK_BIT,
+> +};
+> +
+> +static const struct s3c2410_wdt_variant drv_data_gs101_cl1 = {
+> +	.mask_reset_reg = GS_CLUSTER1_NONCPU_INT_EN,
+> +	.mask_bit = 2,
+> +	.mask_reset_inv = true,
+> +	.rst_stat_reg = GS_RST_STAT_REG_OFFSET,
+> +	.rst_stat_bit = 1,
+> +	.cnt_en_reg = GS_CLUSTER1_NONCPU_OUT,
+> +	.cnt_en_bit = 7,
+> +	.quirks = QUIRK_HAS_PMU_RST_STAT | QUIRK_HAS_PMU_MASK_RESET |
+> +		  QUIRK_HAS_PMU_CNT_EN | QUIRK_HAS_WTCLRINT_REG |
+> +		  QUIRK_HAS_DBGACK_BIT,
+> +};
+> +
+>   static const struct of_device_id s3c2410_wdt_match[] = {
+> +	{ .compatible = "google,gs101-wdt",
+> +	  .data = &drv_data_gs101_cl0 },
+>   	{ .compatible = "samsung,s3c2410-wdt",
+>   	  .data = &drv_data_s3c2410 },
+>   	{ .compatible = "samsung,s3c6410-wdt",
+> @@ -605,9 +640,10 @@ s3c2410_get_wdt_drv_data(struct platform_device *pdev, struct s3c2410_wdt *wdt)
+>   	}
+>   
+>   #ifdef CONFIG_OF
+> -	/* Choose Exynos850/ExynosAutov9 driver data w.r.t. cluster index */
+> +	/* Choose Exynos9 SoC family driver data w.r.t. cluster index */
+>   	if (variant == &drv_data_exynos850_cl0 ||
+> -	    variant == &drv_data_exynosautov9_cl0) {
+> +	    variant == &drv_data_exynosautov9_cl0 ||
+> +	    variant == &drv_data_gs101_cl0) {
+>   		u32 index;
+>   		int err;
+>   
+> @@ -620,9 +656,12 @@ s3c2410_get_wdt_drv_data(struct platform_device *pdev, struct s3c2410_wdt *wdt)
+>   		case 0:
+>   			break;
+>   		case 1:
+> -			variant = (variant == &drv_data_exynos850_cl0) ?
+> -				&drv_data_exynos850_cl1 :
+> -				&drv_data_exynosautov9_cl1;
+> +			if (variant == &drv_data_exynos850_cl0)
+> +				variant = &drv_data_exynos850_cl1;
+> +			else if (variant == &drv_data_exynosautov9_cl0)
+> +				variant = &drv_data_exynosautov9_cl1;
+> +			else if (variant == &drv_data_gs101_cl0)
+> +				variant = &drv_data_gs101_cl1;
+>   			break;
+>   		default:
+>   			return dev_err_probe(dev, -EINVAL, "wrong cluster index: %u\n", index);
 
