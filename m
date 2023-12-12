@@ -1,109 +1,121 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fK45JuyV"
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1521CDC;
-	Mon, 11 Dec 2023 18:28:38 -0800 (PST)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-5c85e8fdd2dso50587807b3.2;
-        Mon, 11 Dec 2023 18:28:38 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lZ8CIVWQ"
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A46E3
+	for <linux-serial@vger.kernel.org>; Mon, 11 Dec 2023 23:40:53 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id 3f1490d57ef6-dbcbc9c2528so103679276.0
+        for <linux-serial@vger.kernel.org>; Mon, 11 Dec 2023 23:40:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1702348117; x=1702952917; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=IQ2PLGJf5O/y/fYo5hj+s9entphd8dP6/+b2EP37z+g=;
-        b=fK45JuyVji7HIaxL2jT7ItpOqf4xNYhdluBt1WippgC+8ltzMgx452lFW3unig98eM
-         b4TBiySBb1nTJhwuVzodldo9a5gX8aC1+4MV0x8CMPatkgzdvaOcrCgqfhs+kh4igBEX
-         8p6orQwI3+zQ87U2xPfXSsWx77oPfJR5YusUtKHCFrLPKYfgFErm4jIyLxfV5lJwgYGA
-         r2/NeVA6Fj3IoD6XWYQFHcsM8cZo001PXWch5ijWEtz1t7QbOpudZnxWKpwaTEuOsc8L
-         9m3yg37OGJb0COJ9WwZ0grxFrY4YQEGn2t2uUhw/CsVSFRZOyP1XSah/B26kNgXtLz9m
-         246Q==
+        d=gmail.com; s=20230601; t=1702366853; x=1702971653; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=1ChJKkJWtW4TpwHgaD7L5Pa+1OaytgSsk6DVquR34Mk=;
+        b=lZ8CIVWQiQp348+FVryACMMNcnGMAmvkv8gdnC8T4YKIsyqbnlV48my84pRd49/fPI
+         CcDLi2jq7hvv7TU2sV+3u0yl+Zg+/Ul9ALSjuI92jY/CCVJKka1yAUDNMrPEDv6zZsPf
+         8dGEWIHOezuoTwTfQ/qAhc8fHK5nn8CX5OHX3jB4rHm09Ry5oL2eFl9sGJXzSwI9vkVD
+         /3QI8dThps53gaXZYqb+2wVNUvaOQ3VXncmb+pvXZhT2llDy369SJ05/vkEaAIqD0JbI
+         F8e+BPLT5uKcJ57jO6+pfw08gIIpZr0htgDj+W0mC/N4ntrsveB+6zkl5/CzU/D+TO46
+         uIag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702348117; x=1702952917;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=IQ2PLGJf5O/y/fYo5hj+s9entphd8dP6/+b2EP37z+g=;
-        b=ka+10wyBpw247uio6rbsK6bycRN9M/0vmRKR1jvku2aInHLHG9Kixk0u0gDFe4Uj24
-         rGZaROmcHNCW3d9fPSbhoM3Ny7ib58yQWSZw595PX9hgSqqiZJkpRmPFww4UT8CzBhHx
-         hjSZibUJZDvq3eYG9RriaF8VKvNGcOkRrL/gdWZAhwAYvwZLwk6Xf5dKNgskftizcKja
-         als3DEw8EpJ+2fDXoaHxTEtpOb5aqEvij9kIoP7Do6bioMJ3N7VizcI2IkorB1NvgSZT
-         IedmBxjU0QQgz1S3Fo6d0jJseVrgJrs52O70QcCv30dsiodxxqj79gpR0/hTuWcJLyrR
-         o8mQ==
-X-Gm-Message-State: AOJu0Ywn7Cg619s3SgLTB9/I7wX4u3J2Vd4PjVRWMlOvfKh0yVbpoklS
-	JMe4SWvN2QYZ/531F8Fn0ptzZkosayvgUA==
-X-Google-Smtp-Source: AGHT+IFVVkusrEqfGlllJZMJGaQHJxP2yzg9OjmOI/Ze7n3Lz5dErcjkdvmjbGkgcU6bmEuOceHhWA==
-X-Received: by 2002:a81:6cc4:0:b0:5e1:fc32:6f2b with SMTP id h187-20020a816cc4000000b005e1fc326f2bmr58743ywc.17.1702348116699;
-        Mon, 11 Dec 2023 18:28:36 -0800 (PST)
-Received: from localhost ([2601:344:8301:57f0:38aa:1c88:df05:9b73])
-        by smtp.gmail.com with ESMTPSA id j2-20020a0dc702000000b005cf1ce8b96dsm3435640ywd.5.2023.12.11.18.28.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Dec 2023 18:28:35 -0800 (PST)
-From: Yury Norov <yury.norov@gmail.com>
-To: linux-kernel@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Lech Perczak <lech.perczak@camlingroup.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Hui Wang <hui.wang@canonical.com>,
-	Isaac True <isaac.true@canonical.com>,
-	Yury Norov <yury.norov@gmail.com>,
-	linux-serial@vger.kernel.org
-Cc: Jan Kara <jack@suse.cz>,
-	Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>,
-	Matthew Wilcox <willy@infradead.org>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Maxim Kuvyrkov <maxim.kuvyrkov@linaro.org>,
-	Alexey Klimov <klimov.linux@gmail.com>,
-	Bart Van Assche <bvanassche@acm.org>,
-	Sergey Shtylyov <s.shtylyov@omp.ru>
-Subject: [PATCH v3 29/35] serial: sc12is7xx: optimize sc16is7xx_alloc_line()
-Date: Mon, 11 Dec 2023 18:27:43 -0800
-Message-Id: <20231212022749.625238-30-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20231212022749.625238-1-yury.norov@gmail.com>
-References: <20231212022749.625238-1-yury.norov@gmail.com>
+        d=1e100.net; s=20230601; t=1702366853; x=1702971653;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1ChJKkJWtW4TpwHgaD7L5Pa+1OaytgSsk6DVquR34Mk=;
+        b=FXNCptoBpo/3yhb6MXkrtQss8uAAjjNY6Y0P/qVNupF1FEPKGBTPybNVAWkfHYPKAD
+         Jb2zdMHTuPaMJLYIS+QvNCmQN7qVN97Lg6RP6t36BrDHvfOHkubEqN3/3qiD7vkmOe+L
+         9fD3RMtzVjl69pvngI9OBCWA2/YxUGYp3vQnyxErFRrchQhrRHx1xL8qTi/DOsZyH35n
+         koJ0StvpC1l2ZBVM4G8E2uW4voMBRkjqVWc0NvcqONSHSaBhpYw9la8Q6wjhBL3wScro
+         lqnRmTxI/GnbXcezvor8ALn43DjHFbrsxT+/K3MWhFNMsATz3D7JJ0JcqZzpB3nD3moS
+         e6ZA==
+X-Gm-Message-State: AOJu0YyKvaeJCc1+n0YjbZ++MUlS3Z3HuN3aZr5zpQjLOesYI2f1+wpp
+	4XOoYZpNnBKlfEesUnBwkRJzTh9WqmaC5iS3CLo=
+X-Google-Smtp-Source: AGHT+IF5RfyXfot0ti9zCnE0Jr91ypEznBlz8hwDAipDImtMr4IThO9ngCs/b0BoMO+RKHkk3lkEVKjzgCZilOmho+g=
+X-Received: by 2002:a25:395:0:b0:da0:aac9:aa11 with SMTP id
+ 143-20020a250395000000b00da0aac9aa11mr4478773ybd.12.1702366853108; Mon, 11
+ Dec 2023 23:40:53 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Roman Zilka <roman.zilka@gmail.com>
+Date: Tue, 12 Dec 2023 08:40:42 +0100
+Message-ID: <CANZiGuGZn4uPLw7=U95ZQtMFW3pWi4Bw4rrkCdq=X1641KLy9g@mail.gmail.com>
+Subject: [PATCH] tty/vt: UTF-8 parsing update according to RFC 3629, modern Unicode
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc: linux-serial@vger.kernel.org
+Content-Type: multipart/mixed; boundary="0000000000008eacb4060c4b2b67"
 
-Instead of polling every bit in sc16is7xx_lines, use a dedicated
-find_and_set_bit(), and make the function a simple one-liner.
+--0000000000008eacb4060c4b2b67
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
+vc_translate_unicode(), vc_sanitize_unicode():
+1. Limit codepoint space to 0x10FFFF. The old algorithm followed an ancient
+   version of Unicode.
+2. Corrected vc_translate_unicode() doc (@rescan).
+3. "Noncharacters", such as U+FFFE, U+FFFF, are no longer invalid in Unicod=
+e -
+   - accept them. Another option was to complete the set of noncharacters (=
+used
+   to be those two, now there's more) and preserve the substitution. This i=
+s
+   indeed what Unicode suggests (v15.1, chap. 23.7) (not requires), but mos=
+t
+   codepoints are !iswprint(), so substituting just the noncharacters seeme=
+d
+   futile. Also, I've never seen noncharacters treated in a special way.
+4. Moved what remained of vc_sanitize_unicode() into vc_translate_unicode()=
+.
+
+Signed-off-by: Roman =C5=BDilka <roman.zilka@gmail.com>
 ---
- drivers/tty/serial/sc16is7xx.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ drivers/tty/vt/vt.c | 36 +++++++-----------------------------
+ 1 file changed, 7 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index cf0c6120d30e..a7adb6ad0bbd 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -427,15 +427,9 @@ static void sc16is7xx_port_update(struct uart_port *port, u8 reg,
- 
- static int sc16is7xx_alloc_line(void)
- {
--	int i;
--
- 	BUILD_BUG_ON(SC16IS7XX_MAX_DEVS > BITS_PER_LONG);
- 
--	for (i = 0; i < SC16IS7XX_MAX_DEVS; i++)
--		if (!test_and_set_bit(i, &sc16is7xx_lines))
--			break;
--
--	return i;
-+	return find_and_set_bit(&sc16is7xx_lines, SC16IS7XX_MAX_DEVS);
- }
- 
- static void sc16is7xx_power(struct uart_port *port, int on)
--- 
-2.40.1
+base-commit: a39b6ac3781d46ba18193c9dbb2110f31e9bffe9
+--=20
+2.41.0
 
+--0000000000008eacb4060c4b2b67
+Content-Type: application/x-xz; 
+	name="0001-tty-vt-UTF-8-parsing-update-according-to-RFC-3629-mo.patch.xz"
+Content-Disposition: attachment; 
+	filename="0001-tty-vt-UTF-8-parsing-update-according-to-RFC-3629-mo.patch.xz"
+Content-Transfer-Encoding: base64
+Content-ID: <f_lq2173xl0>
+X-Attachment-Id: f_lq2173xl0
+
+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
+oA2cHQAAvW+xwbHEZ/sCAAAAAARZWg==
+--0000000000008eacb4060c4b2b67--
