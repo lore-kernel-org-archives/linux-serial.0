@@ -1,89 +1,103 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="sg+541+8"
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66C4F2
-	for <linux-serial@vger.kernel.org>; Wed, 13 Dec 2023 06:35:10 -0800 (PST)
-Received: by mail-qv1-xf29.google.com with SMTP id 6a1803df08f44-67ad531686eso62716866d6.1
-        for <linux-serial@vger.kernel.org>; Wed, 13 Dec 2023 06:35:10 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XFUcndD6"
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C19221BF9;
+	Wed, 13 Dec 2023 06:44:10 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id 3f1490d57ef6-dbcde128abeso44835276.0;
+        Wed, 13 Dec 2023 06:44:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702478110; x=1703082910; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=KTNi7dR+svtLHr9EuyRcDA6UpdWYvTWzjT4RYlMslAc=;
-        b=sg+541+8zoRqfCoVuuIghcwZCGZAVzR+QvKWoNdUAkV3UR3j2Htv6zggzTw/6BtkZV
-         D6Fz3VvD/wwNPs8TBpH4UCukTtp8g0V+kxNyWaZ79Al9+5szwuxdZsQ2dERr+l7SDXZE
-         umAoyKWkAsuGmNpP7TAGrY7Mqw8hA0XHJRdb7WCjHSbWHWXngUVl0e0N1kfx/u9Sdn6q
-         FL1bT5WFMUJwdjDYcC9+R3ao+LY6xUqMhLknyz9NUaRlNcXjfySly7DZZQRLKX5fCSUx
-         mPwGsVHwFbAFSpNx8m6LRYCXd0ZRQhCVsIMLeUbhfb6BQTtJWlluzRTGfcBllr1rCAv+
-         R+DQ==
+        d=gmail.com; s=20230601; t=1702478647; x=1703083447; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nA9AYgq+Q6lLyujeVI1ujBo0nRXSJrVBxDPsrp2S+R4=;
+        b=XFUcndD633xVr3zIfrRp6M1noCcLqPTRQg4nHl1LjFrRj4TJy8wIyu3WEhCoBrCUw6
+         1F6pcj+WwG4O6sfBb41ymn0U/5JMOAfUj/OSQIpgzxDpKSYJ9EzmTKsShEUYHTnak9Ee
+         m9Ft173+8vPX3mLWJIV1PbKTillX7RiJLV1cxCU3xB3Vdw/XFSePzMNuMiHPlRdwHnCv
+         3NOCxJHJpJQ1qR5lIOaqwN+MxZM83Qi0lIuPRgPsLrLgkhW+2VWfDBspq/uCA65jbGZx
+         V3m64X/KCN+2l/3mHfcm1c2JLfKEavbORnBVXrPY+Li+XQSVw0rNxoLLiJia9XzelISJ
+         0lSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702478110; x=1703082910;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=KTNi7dR+svtLHr9EuyRcDA6UpdWYvTWzjT4RYlMslAc=;
-        b=FE2vuXk7BkKgGMIxkHYpFpLEuZLs+3y4+a+mn/NxCaHd4cX8YgiVGzguYFnLtOTxBq
-         y36nwljFfmGyjS9yWMTv/3UufVZoxGSopi/gKXRp3bJevyC5P+qz5873XEjIjEfWHV1p
-         4hkpNK+SglBYCXef304oOqL+rgRGeSsfKvBykT6WULJZl6dxGic/7O+ods4Uz9cYgsaJ
-         O4LhJQoM1MFCeJ1FQvZObNhK2sWOs7WtO6BAYBNP1VnpWD2eAEhtuS3RXamIpoAMPCGS
-         a/dqde1PBSfoosKdtk/bfSQ7+tD/2CJZBDhyetlSUr0ZSu8y12A3d2sZp29ZIXLJ7rWi
-         eMTQ==
-X-Gm-Message-State: AOJu0YxzHYcDqnnBRMOGrMC60t+t8Y6SEWP+0jVeqoaGCkULwna4dg+L
-	DDJZr4iByN/QjvOKMOHhqnYcXwtB7uLnVSEt5OTJpQ==
-X-Google-Smtp-Source: AGHT+IH6ErSqj4HVtA2uJPaby1dJ9yyZlKr4jTaQrX7sGd+lhiiTWLXuE/j7czQuoLQh4Qis/8Wg8Qzn43NmjP/zrwU=
-X-Received: by 2002:a0c:f992:0:b0:67a:d9f5:19fc with SMTP id
- t18-20020a0cf992000000b0067ad9f519fcmr11200900qvn.28.1702478109905; Wed, 13
- Dec 2023 06:35:09 -0800 (PST)
+        d=1e100.net; s=20230601; t=1702478647; x=1703083447;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=nA9AYgq+Q6lLyujeVI1ujBo0nRXSJrVBxDPsrp2S+R4=;
+        b=perrq45UVy7PPKOBXnu7pwmV3NuB/H2Txo3bpps+SD6lXX6yjlfBLxrTfOV/4axXFg
+         9Qbk4ORELSSp3jKM2oIoL0F5Q6aU9jUnIJ3/nS7yjM2NNWT3pp/yK+B4h9y0e0vZO18q
+         Uu/4c2EVWOgkH/3doEbvWBdQ6KpgVaxmA+/p187EGvKLcWWW2nqDtNLDV8qaeVHqKqT0
+         U1o+BJQx2TjsvaJf+tI+9yYcf8V96dRv+PJxznncnzRZKbJgfLwJ/eV06W4PXuONeunW
+         knCUDZ1K3S4A1nzFwxLQzR5S8T5AYmh09mOLF/cgW9Ao6Ej5Ur75y+FKkzje5OVk8uQl
+         maYw==
+X-Gm-Message-State: AOJu0YyShoz20imV4DARy2zYkHAmGair/2kkxURCJy+1q304fbGYua/Z
+	IG0DzJ5OFVlOVV7TnSwwpPBSXGmJr+DomXd+nfw=
+X-Google-Smtp-Source: AGHT+IEuu9eTC37h0uGuH3d+sHC+1yl29aTiQxb2OyOfh7A8H4bhb370iJVrewUB70HeP25ONnpIil5Z4wLYPKFVIvA=
+X-Received: by 2002:a25:f202:0:b0:dbc:cd3a:aded with SMTP id
+ i2-20020a25f202000000b00dbccd3aadedmr777115ybe.11.1702478647466; Wed, 13 Dec
+ 2023 06:44:07 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20231211162331.435900-1-peter.griffin@linaro.org>
- <20231211162331.435900-3-peter.griffin@linaro.org> <170247795662.1093374.11352509671907840697.robh@kernel.org>
-In-Reply-To: <170247795662.1093374.11352509671907840697.robh@kernel.org>
-From: Peter Griffin <peter.griffin@linaro.org>
-Date: Wed, 13 Dec 2023 14:34:58 +0000
-Message-ID: <CADrjBPqqTtimdR_twqqvvzyMAZ=Z4YoVKm80LT_utqcO6LAgOA@mail.gmail.com>
-Subject: Re: [PATCH v7 02/16] dt-bindings: arm: google: Add bindings for
- Google ARM platforms
-To: Rob Herring <robh@kernel.org>
-Cc: linux-samsung-soc@vger.kernel.org, arnd@arndb.de, catalin.marinas@arm.com, 
-	s.nawrocki@samsung.com, willmcvicker@google.com, gregkh@linuxfoundation.org, 
-	linux@roeck-us.net, linux-arm-kernel@lists.infradead.org, 
-	kernel-team@android.com, olof@lixom.net, linux-watchdog@vger.kernel.org, 
-	linux-clk@vger.kernel.org, alim.akhtar@samsung.com, saravanak@google.com, 
-	will@kernel.org, cw00.choi@samsung.com, tudor.ambarus@linaro.org, 
-	linus.walleij@linaro.org, mturquette@baylibre.com, soc@kernel.org, 
-	conor+dt@kernel.org, wim@linux-watchdog.org, sboyd@kernel.org, 
-	robh+dt@kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, 
-	tomasz.figa@gmail.com, linux-gpio@vger.kernel.org, jirislaby@kernel.org, 
-	semen.protsenko@linaro.org, krzysztof.kozlowski+dt@linaro.org, 
-	andre.draszik@linaro.org
+References: <20231130191050.3165862-2-hugo@hugovil.com> <202312061443.Cknef7Uq-lkp@intel.com>
+ <20231207125243.c056d5cd0f875ea6dfdfa194@hugovil.com> <CAHp75VebCZckUrNraYQj9k=Mrn2kbYs1Lx26f5-8rKJ3RXeh-w@mail.gmail.com>
+ <20231212150302.a9ec5d085a4ba65e89ca41af@hugovil.com>
+In-Reply-To: <20231212150302.a9ec5d085a4ba65e89ca41af@hugovil.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Wed, 13 Dec 2023 16:43:31 +0200
+Message-ID: <CAHp75Vciqaphicuhs8HY3vmfLaLgHR55ebJbOXR3mw7X+HupSg@mail.gmail.com>
+Subject: Re: [PATCH 1/7] serial: sc16is7xx: fix snprintf format specifier in sc16is7xx_regmap_name()
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: kernel test robot <lkp@intel.com>, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	hvilleneuve@dimonoff.com, oe-kbuild-all@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	stable@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 13 Dec 2023 at 14:32, Rob Herring <robh@kernel.org> wrote:
->
->
-> On Mon, 11 Dec 2023 16:23:17 +0000, Peter Griffin wrote:
-> > This introduces bindings and dt-schema for the Google Tensor SoCs.
-> > Currently just gs101 and pixel 6 are supported.
-> >
-> > Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
-> > Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
-> > ---
-> > @RobH I removed your 'Reviewed-by: Rob Herring <robh@kernel.org>' tag
-> > as since you reviewed this I added the empty ect node. Can you please
-> > do the review again?
-> >
-> > x# Please enter the commit message for your changes. Lines starting
-> > ---
-> >  .../devicetree/bindings/arm/google.yaml       | 53 +++++++++++++++++++
-> >  1 file changed, 53 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/arm/google.yaml
-> >
->
-> Reviewed-by: Rob Herring <robh@kernel.org>
+On Tue, Dec 12, 2023 at 10:03=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.com>=
+ wrote:
+> On Thu, 7 Dec 2023 20:24:45 +0200
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > On Thu, Dec 7, 2023 at 7:52=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.co=
+m> wrote:
 
-Thanks Rob :)
+...
+
+> > While at it, can you look at the following items to improve?
+> > - sc16is7xx_alloc_line() can be updated to use IDA framework
+> > - move return xxx; to the default cases in a few functions
+> > - if (div > 0xffff) { --> if (div >=3D BIT(16)) { as it better shows wh=
+y
+> > the limit is that (we have only 16 bits for the divider)
+> > - do {} while (0) in the sc16is7xx_port_irq, WTH?!
+> > - while (1) { -- do { } while (keep_polling); in sc16is7xx_irq()
+> > - use in_range() in sc16is7xx_setup_mctrl_ports() ? (maybe not, dunno)
+> > - for (i--; i >=3D 0; i--) { --> while (i--) {
+> > - use spi_get_device_match_data() and i2c_get_match_data()
+> > - 15000000 --> 15 * HZ_PER_MHZ ?
+> > - dropping MODULE_ALIAS (and fix the ID tables, _if_ needed)
+> > - split the code to the core / main + SPI + I2C glue drivers
+> >
+> > * These just come on the first glance at the code, perhaps there is
+> > more room to improve.
+>
+> Hi Andy,
+> just to let you know that I have implemented almost all of the fixes /
+> improvements. I will submit them once V2 of this current series
+> lands in Greg's next tree.
+
+Hooray!
+
+> However, for sc16is7xx_alloc_line(), I looked at using the IDA framework
+> but it doesn't seem possible because there is no IDA function
+> to search if a bit is set, which is a needed functionality.
+
+It can be done via trying to get it, but probably it's uglier than
+current behaviour. Okay, let's leave it as is for now.
+
+--=20
+With Best Regards,
+Andy Shevchenko
