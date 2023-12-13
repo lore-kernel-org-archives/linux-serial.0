@@ -1,45 +1,25 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="gwDj7eus"
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD630CF
-	for <linux-serial@vger.kernel.org>; Wed, 13 Dec 2023 11:19:13 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id a640c23a62f3a-a1ceae92ab6so974391966b.0
-        for <linux-serial@vger.kernel.org>; Wed, 13 Dec 2023 11:19:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702495152; x=1703099952; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=IyLZK0Q4UUy3edVFbbE5taYf3vBAb4m9JmdYBi1zuXg=;
-        b=gwDj7eusDHBJPbfwk3JFlV8KgGUME4eAaY20GJuvK1aBurBEKc7nBbuSjoxxiNBViP
-         3IiVJZtnhktIJrgCExj26JiGBoD3bq63hZF9nvkmz7n9QeD1HI/01Jn5EZ70KAo3e+zU
-         QV7XRGyZcMlJ3Ztmw9QJomrbeBBiQNu23a/C647Jj/NYL0w4oaY1i4G2/J5dPk66E6Mi
-         idkCmr1Af+8zgMkwEpzqzedT4+r8UR4FtNg6CKUBtXbpo+XtN6jIBSFYPBCozOFFvp1M
-         wrxatzZ7MklWAeH6D++Y4xVROl4aG0EntEZPTtOVnf3nFjPy1okUMN3pQkgm26Q1bOga
-         OU1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702495152; x=1703099952;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=IyLZK0Q4UUy3edVFbbE5taYf3vBAb4m9JmdYBi1zuXg=;
-        b=nKffrYXL3MPWd6N83VmDOhSxjVmhK6VtnKXhchL12gwT9kFMgJq+/7zTAPafAhf5Dl
-         UFMnlThBb0M7wyvON+9VGOQNRioQJ7kQStFTB3LMQHaOqGuz5fWgrObXFZZqiPo8ND6z
-         bO/0tpvmmP3d9aKfp+0w/+/y0JHFvno+s8pXJ1aYaScl2TuaeofPqgdoljfNfW/3awi6
-         x2drZxWDCv0ZjMhE2W+D8Yyof6IIiE9HtGLfOvG1mjBwVwlWHbAv9swHlROQL9VaMmf5
-         jQAZ10MHTu4vCtd5E5amVxJLGVwDSw5p7U3PRCyEoGziX8SIG82T5uKC4zduc76aPNXi
-         vU/A==
-X-Gm-Message-State: AOJu0Yy0uxz8ikXs25aJJwHn3JJ+Rwz9WhvZHqlnD4kWAak+UQczW2oz
-	SswmrSpz1OveULTh+fnR8Wa75Q==
-X-Google-Smtp-Source: AGHT+IHe2oCpE5hoLsQtZOhOSa1CS6LxlkW89vAba1gSe/+elhIewojVPC1i7xpMFADBhxh+BtIu6w==
-X-Received: by 2002:a17:906:5346:b0:a02:a2cc:66b8 with SMTP id j6-20020a170906534600b00a02a2cc66b8mr4165386ejo.14.1702495152178;
-        Wed, 13 Dec 2023 11:19:12 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.218.27])
-        by smtp.gmail.com with ESMTPSA id vq6-20020a170907a4c600b00a19b7362dcfsm8330910ejc.139.2023.12.13.11.19.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Dec 2023 11:19:11 -0800 (PST)
-Message-ID: <8099aabc-a98e-444b-862f-72845e03476d@linaro.org>
-Date: Wed, 13 Dec 2023 20:19:08 +0100
+	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="KTlTE20b"
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B60C4AC;
+	Wed, 13 Dec 2023 14:14:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
+	t=1702505663; x=1703110463; i=linosanfilippo@gmx.de;
+	bh=VD92t9JQp648Z2BNkoulPTRk8jdfCT5rO006AN+QRvs=;
+	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
+	 In-Reply-To;
+	b=KTlTE20beEeIhJ6autpBTl+6pkkXbzaZrpyLfnJDYuxsNtQY7eal/CvkoPKCFn1I
+	 RRttj9oQBue6q+G9M28VyBPB8vZkU5QaI7j0yKBg3EaC0794dzVoBerb9PLElb3Mn
+	 z7HWdHwZchQVN8OrnXb22TF/iKou3qjg3B4tRBCSVdV1RxAndc4J+tFciuORDM7at
+	 K2tewL/KsU02zTqJlgG5YT+ZTUFS3A04F6B1F+9VWmq6qqD8gIKPvNdIUzB8+rtpw
+	 xghaRgu9YMI7uSZlsdQe3GXhndaXsw0iMhgye9i09t6AQgTbYz7/O5hZCrCgkXMd1
+	 /2gLU4SHGtvCmGVO7w==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.2.42] ([84.180.3.177]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1M5wLT-1r6fzw1Kmp-007SSp; Wed, 13
+ Dec 2023 23:14:23 +0100
+Message-ID: <422984bc-897c-45b5-8ac0-639e295a729b@gmx.de>
+Date: Wed, 13 Dec 2023 23:14:20 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -47,123 +27,152 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 11/16] watchdog: s3c2410_wdt: Update QUIRK macros to
- use BIT macro
+Subject: Re: [PATCH v5 1/7] serial: Do not hold the port lock when setting
+ rx-during-tx GPIO
 Content-Language: en-US
-To: Peter Griffin <peter.griffin@linaro.org>,
- Alim Akhtar <alim.akhtar@samsung.com>
-Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
- mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org,
- tomasz.figa@gmail.com, s.nawrocki@samsung.com, linus.walleij@linaro.org,
- wim@linux-watchdog.org, linux@roeck-us.net, catalin.marinas@arm.com,
- will@kernel.org, arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, cw00.choi@samsung.com, tudor.ambarus@linaro.org,
- andre.draszik@linaro.org, semen.protsenko@linaro.org, saravanak@google.com,
- willmcvicker@google.com, soc@kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
- linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-watchdog@vger.kernel.org, kernel-team@android.com,
- linux-serial@vger.kernel.org
-References: <20231211162331.435900-1-peter.griffin@linaro.org>
- <CGME20231211162434epcas5p485e7b2edbb02a1b6ea04ff5cc758f5db@epcas5p4.samsung.com>
- <20231211162331.435900-12-peter.griffin@linaro.org>
- <017401da2de2$400ec6e0$c02c54a0$@samsung.com>
- <CADrjBPoFu8azjZ65RGqae6HSCCoHQuhcBHNO_Fo0nVsE9pYGaA@mail.gmail.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <CADrjBPoFu8azjZ65RGqae6HSCCoHQuhcBHNO_Fo0nVsE9pYGaA@mail.gmail.com>
+To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, u.kleine-koenig@pengutronix.de,
+ shawnguo@kernel.org, s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com,
+ alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com,
+ hugo@hugovil.com, LKML <linux-kernel@vger.kernel.org>,
+ linux-serial <linux-serial@vger.kernel.org>, Lukas Wunner <lukas@wunner.de>,
+ p.rosenberger@kunbus.com, stable@vger.kernel.org
+References: <20231209125836.16294-1-l.sanfilippo@kunbus.com>
+ <20231209125836.16294-2-l.sanfilippo@kunbus.com>
+ <e65d73ed-9d7f-8037-78c9-48c817ea3492@linux.intel.com>
+From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+In-Reply-To: <e65d73ed-9d7f-8037-78c9-48c817ea3492@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:VdkmPdhHd+Q5Mw4KhPwk/5s/309926jL8kYFEFZPuJVod6yL9Xv
+ c/E3PF5DfqrwgPlFqgPPq3z0xyMCp+7lLOjK/EuzKfUsREaAVvQL1ARNvbdCwA18hgKQEQr
+ bWele30U/C12E6kCMo78X5v0p2AyuZ7WZSk5gFM6PIiz1UdL1If5ZEvYjG2JoHxE6XzYAXo
+ MZJKIsKSQGyj+CA3uh7Tg==
+UI-OutboundReport: notjunk:1;M01:P0:6jZAvjpyU2Y=;GRvwOnRBB/3apl3heyZlbMRdJOF
+ PVTFgh3B/x8JjwF+KH/HdRWvGFekTxirpGPJi7FIYm0K5qOeRjf19EhhzhzZHzsXsfkOiPkEG
+ 2ZRIr3CIzgGGc6Afg8+JpJvDWHW0jNGQFF2zud5LhAhLeBJ+q3dnnF/4xZnfqDSN2ifVcjXxC
+ z7Id2tRMR328W9RikJpYTcq2m0WIsVC9lVqsa3IoQEIDcaDGuo+U0DPH0/PGMkYK+TO316Rm7
+ 7FprM2XcQIjQwnfsRFsgsNNLmpskqI6vfDYBWZ4aU1qRX+u1Px6r/8TIm8f5IvVoqve3FCBo9
+ 7iupQIWvu8kbAXh41J7GMgRu+U683yHqoOVECZDw9srILNgEGg8DbAme34et45/wv+UU3grSE
+ +0PKRd59xGqaA1jDvpX5puIc+Nzcod83rCcPKhMStTlU4dN4AQYoTSxRbdzqdAiaC4Z7RMd5V
+ rkQaBPrck515wFgtDSgbAy9y8TlO3E4EZP8ETTuK2ZnOJ/w5eNcHxj0sVoLxyOZKy1SnReVa7
+ m6eLYLnq6aYbCVP1odQHymwnIbXDT2FRyniXd1ZEuO953MvHnyX6h3aemJZ2QOGg7H1gP5l01
+ V/9RX+5r1NhhGUJL+hUTidWgBZeVq7SzITImE1vHFt9p+Ot6VaR5KGY4jYo1bErDF4Goj/9eB
+ chWZvhHRDUGpeF1qFlWsdQYLJRnCdzWgKQ8uhsT7/e9GY7axIgaIeZfYIIz7SO/dkIXl8n1++
+ 85eCEaKqJKm8y1qF94u20PrwMdorPtjzMs7mc1QcbmadHh7ATR8aEgeBitcMsuAGWwrRxZ/ji
+ ZgoSJ+T85X75RjbF25U388zFpcBXo0ifh9EYOy04tp2bOovbBga3Qwb48Y4I4gUApzmf7VTx7
+ dkiO3ibSa43wTmli6kUupf89jCHjpnYkzT+FlGzHsm1mXpsd69iiVtq6zXaU864U7d8HG+9pt
+ co9UOA==
 
-On 13/12/2023 20:13, Peter Griffin wrote:
-> Hi Alim,
-> 
-> Thanks for your reviews.
-> 
-> On Wed, 13 Dec 2023 at 16:34, Alim Akhtar <alim.akhtar@samsung.com> wrote:
+Hi,
+
+On 11.12.23 11:35, Ilpo J=C3=A4rvinen wrote:
+> On Sat, 9 Dec 2023, Lino Sanfilippo wrote:
+>
+>> Both the imx and stm32 driver set the rx-during-tx GPIO in rs485_config=
+().
+>> Since this function is called with the port lock held, this can be an
+>> problem in case that setting the GPIO line can sleep (e.g. if a GPIO
+>> expander is used which is connected via SPI or I2C).
 >>
+>> Avoid this issue by moving the GPIO setting outside of the port lock in=
+to
+>> the serial core and thus making it a generic feature.
 >>
+>> Fixes: c54d48543689 ("serial: stm32: Add support for rs485 RX_DURING_TX=
+ output GPIO")
+>> Fixes: ca530cfa968c ("serial: imx: Add support for RS485 RX_DURING_TX o=
+utput GPIO")
+>> Cc: Shawn Guo <shawnguo@kernel.org>
+>> Cc: Sascha Hauer <s.hauer@pengutronix.de>
+>> Cc: stable@vger.kernel.org
+>> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+>> ---
+>>  drivers/tty/serial/imx.c         |  4 ----
+>>  drivers/tty/serial/serial_core.c | 12 ++++++++++++
+>>  drivers/tty/serial/stm32-usart.c |  5 +----
+>>  3 files changed, 13 insertions(+), 8 deletions(-)
 >>
->>> -----Original Message-----
->>> From: Peter Griffin <peter.griffin@linaro.org>
->>> Sent: Monday, December 11, 2023 9:53 PM
->>> To: robh+dt@kernel.org; krzysztof.kozlowski+dt@linaro.org;
->>> mturquette@baylibre.com; conor+dt@kernel.org; sboyd@kernel.org;
->>> tomasz.figa@gmail.com; s.nawrocki@samsung.com; linus.walleij@linaro.org;
->>> wim@linux-watchdog.org; linux@roeck-us.net; catalin.marinas@arm.com;
->>> will@kernel.org; arnd@arndb.de; olof@lixom.net;
->>> gregkh@linuxfoundation.org; jirislaby@kernel.org;
->>> cw00.choi@samsung.com; alim.akhtar@samsung.com
->>> Cc: peter.griffin@linaro.org; tudor.ambarus@linaro.org;
->>> andre.draszik@linaro.org; semen.protsenko@linaro.org;
->>> saravanak@google.com; willmcvicker@google.com; soc@kernel.org;
->>> devicetree@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-
->>> samsung-soc@vger.kernel.org; linux-clk@vger.kernel.org; linux-
->>> gpio@vger.kernel.org; linux-watchdog@vger.kernel.org; kernel-
->>> team@android.com; linux-serial@vger.kernel.org
->>> Subject: [PATCH v7 11/16] watchdog: s3c2410_wdt: Update QUIRK macros to
->>> use BIT macro
->>>
->>> Update the remaining QUIRK macros to use the BIT macro.
->>>
->> Ah! I see you have change use BIT here, so you can squash this patch to
->> patch 10/16 or
->> Move BIT change from patch 10/16 to this patch. Either way is fine.
-> 
-> I actually kept them separate deliberately to avoid conflating adding
-> of the DBGACK quirk with cleanup of the driver to use BIT macro.
-> 
-> As such one patch adds the QUIRK and only updates the macros that were
-> touched by that patch (to avoid the --strict warnings), and the second
-> patch cleans up the rest of the macros to use BIT macro for
-> consistency.
+>> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+>> index 708b9852a575..9cffeb23112b 100644
+>> --- a/drivers/tty/serial/imx.c
+>> +++ b/drivers/tty/serial/imx.c
+>> @@ -1943,10 +1943,6 @@ static int imx_uart_rs485_config(struct uart_por=
+t *port, struct ktermios *termio
+>>  	    rs485conf->flags & SER_RS485_RX_DURING_TX)
+>>  		imx_uart_start_rx(port);
+>>
+>> -	if (port->rs485_rx_during_tx_gpio)
+>> -		gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio,
+>> -					 !!(rs485conf->flags & SER_RS485_RX_DURING_TX));
+>> -
+>>  	return 0;
+>>  }
+>>
+>> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
+al_core.c
+>> index f1348a509552..a0290a5fe8b3 100644
+>> --- a/drivers/tty/serial/serial_core.c
+>> +++ b/drivers/tty/serial/serial_core.c
+>> @@ -1402,6 +1402,16 @@ static void uart_set_rs485_termination(struct ua=
+rt_port *port,
+>>  				 !!(rs485->flags & SER_RS485_TERMINATE_BUS));
+>>  }
+>>
+>> +static void uart_set_rs485_rx_during_tx(struct uart_port *port,
+>> +					const struct serial_rs485 *rs485)
+>> +{
+>> +	if (!(rs485->flags & SER_RS485_ENABLED))
+>> +		return;
+>> +
+>> +	gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio,
+>> +				 !!(rs485->flags & SER_RS485_RX_DURING_TX));
+>> +}
+>> +
+>>  static int uart_rs485_config(struct uart_port *port)
+>>  {
+>>  	struct serial_rs485 *rs485 =3D &port->rs485;
+>> @@ -1413,6 +1423,7 @@ static int uart_rs485_config(struct uart_port *po=
+rt)
+>>
+>>  	uart_sanitize_serial_rs485(port, rs485);
+>>  	uart_set_rs485_termination(port, rs485);
+>> +	uart_set_rs485_rx_during_tx(port, rs485);
+>>
+>>  	uart_port_lock_irqsave(port, &flags);
+>>  	ret =3D port->rs485_config(port, NULL, rs485);
+>> @@ -1457,6 +1468,7 @@ static int uart_set_rs485_config(struct tty_struc=
+t *tty, struct uart_port *port,
+>>  		return ret;
+>>  	uart_sanitize_serial_rs485(port, &rs485);
+>>  	uart_set_rs485_termination(port, &rs485);
+>> +	uart_set_rs485_rx_during_tx(port, &rs485);
+>>
+>>  	uart_port_lock_irqsave(port, &flags);
+>>  	ret =3D port->rs485_config(port, &tty->termios, &rs485);
+>
+> Also a nice simplification of driver-side code.
+>
+> Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+>
+> Just noting since this is now in core that if ->rs485_config() fails,
+> I suppose it's just normal to not rollback gpiod_set_value_cansleep()
+> (skimming through existing users in tree, it looks it's practically
+> never touched on the error rollback paths so I guess it's the normal
+> practice)?
+>
+> Anyway, since neither of the users currently don't fail in their
+> ->rs485_config() so it doesn't seem a critical issue.
+>
 
-Yeah, the defines are from existing code, so not really related to GS101
-patch. Keeping it as separate cleanup is fine.
+Thats a good point actually. Rolling back is not hard to implement and
+although it may not matter right now since currently no driver returns an =
+error
+code, this can change very soon.
+So I will rework this patch for the next version, thanks!
 
-Best regards,
-Krzysztof
-
+Regards,
+Lino
