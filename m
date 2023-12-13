@@ -1,49 +1,54 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="hWaCamrZ"
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2061.outbound.protection.outlook.com [40.107.93.61])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06C81111;
-	Wed, 13 Dec 2023 05:00:35 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="hnMFG6BH"
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2073.outbound.protection.outlook.com [40.107.237.73])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48671D0;
+	Wed, 13 Dec 2023 05:00:40 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nV6uBGZac56hKDvAzExld8fQSQx7Mde+kRbYIYU98SazNI+Ao0xtf2bBLDfBnoZel65oe6XseLce7apM2jtUvklfi1hAmSYayppv7+Rsx00mq1myvfZfpzAqUzCrpmWdtQGJmkT3N4WDvo+2eBz5xTNIQ1ZRwF3qVGyV2ZiIjHxhpc83f2/qWTuQx/V2OQUyQUE+vRfxBEFZO3IG/O+mDIzMmOQbmUy3l+wYClSOPnOOsayPN+9kztErzEfOIn0irDoyIMuSRTwWIbukCjQ+P1eJfTJE1r/f8/x/69zgOh+RikQvtq7vwLq5EV3DI/CPa2+23TrftEBTJf1ivhWiGA==
+ b=fwdhcR/yW20/Av0XSgSvi0p8h5Hxq3gRyeaQE9OD5G4cAb0MpAzT/3UggRpFhoQl/OggIceHe4fMzDKq2KeKWf+nCyMeInOQNYqhmbRUHUanvk5PrOB262AF0TfHN4sTAU8C/Wzb2cnUv7p/haMebLnWayqy1FJj9gS79yyb/AtXYoK83TLFoPXIoZfXClHpC+ntPA1yW9mi1dylBIxRTS5ZdRLCh1kz0zhJ16RZhFnOi4jGn5aF4yXwi0W6d9i5s1MmFRNq70VSWz+Q62xjKIulkNOt+tPZ8i3mmg/zibIqW1FBWpYfaHVmmCgWdSaIY/zKK9IF5GB1Gn3mjYdp1Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8IjFzzzvWzho3lrTGlNnztCJPd9qCUlvIuKE7281IF0=;
- b=Q7TQfJNnsVSkqiSVJr+FFIBiM71JMcYiMcjEU9aY5J5HHtXTTLrJKnS59GxmULyUU3S6VqyUL+YExTRvL/TyOypkq5hGTuQFE/WTbQfJc8yJocVbqcsdr2vff4LBUNMhiFsmk4Z3UQUUh81I5PfHEZ0EpBxk9N76mse0WY4ptOAXXybC6Cph4Dn2iz5fmYj7mjcqN71YdLP+Ugff3TRHSJP1lr2E7RthWQif3RseEcEHRSH/DxZpDa9HXNPEmVd4xvJIVaZNjpcsWJYmE3+wZuTQ032y2Mug95yyIARf5G2oU1xwfygHhQsDRmrH3IklPj57mGlji+AaOsAu/MTUjA==
+ bh=35jqh8vE1almpzWeYtvjRI5IHuT/PnpdFJaNEJh40Oo=;
+ b=k1nlHx7ZPvr//ab5t3N5C1U8aVXVNT8v0ZwTu78uqD3x/2X3YfU6Sg8FDV8n0ihkVNCaPe2bC9oPo0NWsHU2gL+8SNmJxnh3rrWY21IuUQC9lq1suOGDQxbwBzeT8/paD/f0lptoctwgkrBP6MCWuktDCvriXhUiAJrdalJBgoAIitD4vgtXqeicLFuk8UoUoTMnpiAAxG1m9eTOyxc1z+QCt4Fs8Sg4R5mPPiva5k7z/oVTwskYvNytpk43M/0lZHRcJ9kJABfH++xrsrDFCPKMcvbkKt8j6ty96f7DgokOCJMmJXrBYfF1wdutqXM6pcxLhuoODvTzl5tWPS+Qqg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=linuxfoundation.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8IjFzzzvWzho3lrTGlNnztCJPd9qCUlvIuKE7281IF0=;
- b=hWaCamrZcbctkEk2MpdODRekFbkqR8GSIqJ2V0iwMJpVdiKnA84Cnr2jDBm/Iey0vbRlWgNQRuhshPYvkCr8NWXE0eAq+oBZd7PQHlrZqxcs2wBMvSTlHPMLxIy/0oKCOJ/mnHPh0149VWHNn1ceqGTa45HrGt2aBQFhlcF2w28=
-Received: from CY5PR13CA0034.namprd13.prod.outlook.com (2603:10b6:930:11::19)
- by DM8PR12MB5415.namprd12.prod.outlook.com (2603:10b6:8:25::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7091.26; Wed, 13 Dec 2023 13:00:32 +0000
-Received: from CY4PEPF0000E9CD.namprd03.prod.outlook.com
- (2603:10b6:930:11:cafe::fd) by CY5PR13CA0034.outlook.office365.com
- (2603:10b6:930:11::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7113.8 via Frontend
- Transport; Wed, 13 Dec 2023 13:00:32 +0000
+ bh=35jqh8vE1almpzWeYtvjRI5IHuT/PnpdFJaNEJh40Oo=;
+ b=hnMFG6BHyRvF8RtbUJm+1ksjShBAGbLSAVvpVIBPyj0ieif/ge78BJ5bcLYLoDSpq8WjAt1e/jHx+JFNnz4s6MqfUKLrh4OedJEbOvxNBOa6GIZepwri21j7WzffsIaRRPSdxjSqAqn6BKdeg9XpFSCC4MLpYE3sScUgEvz0y44=
+Received: from MW4PR03CA0009.namprd03.prod.outlook.com (2603:10b6:303:8f::14)
+ by CH0PR12MB5347.namprd12.prod.outlook.com (2603:10b6:610:d6::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.26; Wed, 13 Dec
+ 2023 13:00:37 +0000
+Received: from CO1PEPF000044F5.namprd05.prod.outlook.com
+ (2603:10b6:303:8f:cafe::96) by MW4PR03CA0009.outlook.office365.com
+ (2603:10b6:303:8f::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.26 via Frontend
+ Transport; Wed, 13 Dec 2023 13:00:37 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CY4PEPF0000E9CD.mail.protection.outlook.com (10.167.241.140) with Microsoft
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ CO1PEPF000044F5.mail.protection.outlook.com (10.167.241.75) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7091.26 via Frontend Transport; Wed, 13 Dec 2023 13:00:32 +0000
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.7091.26 via Frontend Transport; Wed, 13 Dec 2023 13:00:36 +0000
+Received: from SATLEXMB05.amd.com (10.181.40.146) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.34; Wed, 13 Dec
- 2023 07:00:29 -0600
+ 2023 07:00:35 -0600
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB05.amd.com
+ (10.181.40.146) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.34; Wed, 13 Dec
+ 2023 07:00:35 -0600
 Received: from xhdsgoud40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server id 15.1.2507.34 via Frontend
- Transport; Wed, 13 Dec 2023 07:00:25 -0600
+ Transport; Wed, 13 Dec 2023 07:00:31 -0600
 From: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
 To: <git@amd.com>, <michal.simek@amd.com>, <gregkh@linuxfoundation.org>,
 	<robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
@@ -53,10 +58,12 @@ To: <git@amd.com>, <michal.simek@amd.com>, <gregkh@linuxfoundation.org>,
 CC: <radhey.shyam.pandey@amd.com>, <srinivas.goud@amd.com>,
 	<shubhrajyoti.datta@amd.com>, <manion05gk@gmail.com>, Manikanta Guntupalli
 	<manikanta.guntupalli@amd.com>
-Subject: [PATCH V5 0/3] Add rs485 support to uartps driver
-Date: Wed, 13 Dec 2023 18:30:20 +0530
-Message-ID: <20231213130023.606486-1-manikanta.guntupalli@amd.com>
+Subject: [PATCH V5 1/3] dt-bindings: Add reference to rs485.yaml
+Date: Wed, 13 Dec 2023 18:30:21 +0530
+Message-ID: <20231213130023.606486-2-manikanta.guntupalli@amd.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20231213130023.606486-1-manikanta.guntupalli@amd.com>
+References: <20231213130023.606486-1-manikanta.guntupalli@amd.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -67,74 +74,61 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9CD:EE_|DM8PR12MB5415:EE_
-X-MS-Office365-Filtering-Correlation-Id: 850b581f-43de-4533-df4a-08dbfbdb7da5
+X-MS-TrafficTypeDiagnostic: CO1PEPF000044F5:EE_|CH0PR12MB5347:EE_
+X-MS-Office365-Filtering-Correlation-Id: 003624ba-8a9a-4049-f5d9-08dbfbdb8037
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	iPZl4MuWh76jUqvT+0H7WAuVD/QAqOQAgcO6rFk4JhTUHTuQkfFj+QxzQ+9Kkklad12mjxOfDGoQM8fAPTW9+P1JYCzRipFkkCgQEtLaFTc4IR6LhZafGuGXG8eQL28mH132zc59dSfE0nEca6H2k9QwQMtChcoy9dvVJwoHgi6d+lpEV3f2zYyHy1LlnzHcpJ4vxMkedGDKtrjN/ykQ9lg8Z+fNAyMCe28Uc1V47ODLdCGct+tlyCjHwZMndjIZyaUeKfr3EwfxiHE2iUxtwJjp21XwFSDLVylTB6fl005Pxhp10I5NLVE5hJB5fol7EZNiTApyIriLAdbPPYGeCLZEh39BLfJH0UjGQvCNm5t+T40yEVDApCkPwyHHCl3gr/cDIddUnKtR5Iz484wRLIyvka+6qpxkjsB6wkF7njvSy7ILSmUuhNWrLhoj1bHwkAg2SwR372obEbUkIIvuf/yDGLVhaL1ZJn9Wy337Z7DH5cGfpigocJ+hmLOcxOc6Lrr52A591xkBBAmVBmfzH/ntYQSyY9+GR+0hlcRUqt0PDZJ0iNdAz+ZKslkSQilFCyrNrqBnGcOmKEs36DZWCOrCG+WYcki2+oi3HLArzqFaRk/1Uj1ATm7y7q16HBzDb2yfJiC4RkGzIYzJp2zjAEzNv7B/zyR8P8ijwadvd1gXntTN0Q8NGg3jvR11fHbIqhNV/yMAEPOiXFBqbPxHn/lxYXO7USfd6rvB1CfHUuouCpGloYFpMohlKHj+G9DeWnj1mPg0xifuMvOyqptd0eosllOAGo9EKMkeBYLGqaQ=
+	JntX/WxlC2zxLIWwVkDS78GvYixWDu6rpijdQfGw+4c7aGik1V6WSAIBgSMo+5wMuYaxJhcNos3tS/R9iWdFdFxWihu3fQYfrRl9d9zfy+TpUWeMN9RZiIZxqQScudZjL8d/mTlRE6xoSPrD8zuwzp7LZiUC4m5bgS4EdJePb0U5nDAVjqlGPovwTQtsE7xBqlgNKkDIWMebFy4J4l7rh9MC1XDigRyWBtbsWS++Pmc+7tWy6IskyIoDflcWekNbZPkntsHFLMSQxv9kqBxNdTdTUmpLyVhk7EEQdWEr4fQHBTaVKmx2FpC8dh84o7oUCSNY7wCpSIQxAOF9/UGEke+Zwp48xtmQUFDbSg/+tqYibFIPB7hY4yT+NbXCdwVeEoUJPPF9HQfhWDcjqrW9f2wYGVd4S7LXuYf+he4c0lpC202DgU2Bye+uLniH9/gxF4fxTQXS2+kKrNLHj2vKEGCTYBPJivffzoP5z2gbQZElGaZTfg6DAzUGqJqelVxR2l+HJyQaM3hhDPNWC0nCZcQc/F6QG6Tg5l3t6ExG4HxYnK6qGxlJdf6ggL5lrG6TMBqkT5xuekzJdmc1l/dWNoZ/FVxR3MxuaIaOdPz4zLt5BU4ILqbgaYM4BqIxmR8ZgxP7VGsEKAAaEVfcRLVt/xcfbdr3EcK5ZMFYhrCVhYfkJESzJPsy9PuV031b7NitcwzApJ+8FvH02d151LgUeF6PJWBIZf3F9frTsdMcoUVwZyQ+D7iD8+aQy9c/85OjRemEFkKinLP4MiPI0iM8H9ELpPQJm9ZNOWKHt+9UNQU=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(136003)(376002)(346002)(39860400002)(396003)(230922051799003)(451199024)(186009)(1800799012)(64100799003)(82310400011)(40470700004)(36840700001)(46966006)(1076003)(426003)(83380400001)(26005)(336012)(6666004)(478600001)(2616005)(40480700001)(4326008)(41300700001)(8936002)(8676002)(5660300002)(7416002)(36756003)(81166007)(44832011)(2906002)(47076005)(82740400003)(356005)(921008)(40460700003)(70206006)(86362001)(70586007)(36860700001)(316002)(54906003)(110136005)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(346002)(136003)(376002)(39860400002)(396003)(230922051799003)(186009)(82310400011)(1800799012)(451199024)(64100799003)(46966006)(40470700004)(36840700001)(921008)(40480700001)(40460700003)(110136005)(70586007)(70206006)(356005)(82740400003)(81166007)(36756003)(86362001)(47076005)(36860700001)(426003)(26005)(336012)(83380400001)(1076003)(2616005)(2906002)(4744005)(7416002)(54906003)(316002)(478600001)(6666004)(5660300002)(8936002)(8676002)(4326008)(44832011)(41300700001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Dec 2023 13:00:32.5770
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Dec 2023 13:00:36.8274
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 850b581f-43de-4533-df4a-08dbfbdb7da5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 003624ba-8a9a-4049-f5d9-08dbfbdb8037
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9CD.namprd03.prod.outlook.com
+	CO1PEPF000044F5.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5415
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5347
 
-Add reference to rs485.yaml.
-Add rs485 support to uartps driver.
+Add reference to rs485.yaml
+
+Signed-off-by: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
 ---
 Changes for V2:
 Modify optional gpio name to xlnx,phy-ctrl-gpios.
 Update commit description.
-Add support for RTS, delay_rts_before_send and delay_rts_after_send in RS485 mode.
 
 Changes for V3:
 Modify optional gpio name to rts-gpios.
 Update commit description.
-Move cdns_uart_tx_empty function to avoid prototype statement.
-Remove assignment of struct serial_rs485 to port->rs485 as
-serial core performs that.
-Switch to native RTS in non GPIO case.
-Handle rs485 during stop tx.
-Remove explicit calls to configure gpio direction and value,
-as devm_gpiod_get_optional performs that by using GPIOD_OUT_LOW argument.
-Update implementation to support configuration of GPIO/RTS value
-based on user configuration of SER_RS485_RTS_ON_SEND and
-SER_RS485_RTS_AFTER_SEND. Move implementation to start_tx from handle_tx.
 
 Changes for V4:
 Update rts-gpios description.
-Create separate patch for cdns_uart_tx_empty relocation.
-Call cdns_rs485_rx_setup() before uart_add_one_port() in probe.
-Update gpio descriptor name to gpiod_rts.
-Instead of cdns_rs485_config_gpio_rts_high() and
-cdns_rs485_config_gpio_rts_low() functions for RTS/GPIO value
-configuration implement cdns_rts_gpio_enable().
-Disable auto rts and call cdns_uart_stop_tx() from cdns_rs485_config.
-Use timer instead of mdelay for delay_rts_before_send and delay_rts_after_send.
-Update cdns_uart_set_mctrl to support GPIO/RTS.
 
 Changes for V5:
 Remove rts-gpios description.
 Update commit message and description.
+---
+ Documentation/devicetree/bindings/serial/cdns,uart.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Manikanta Guntupalli (3):
-  dt-bindings: Add reference to rs485.yaml
-  tty: serial: uartps: Relocate cdns_uart_tx_empty to facilitate rs485
-  tty: serial: uartps: Add rs485 support to uartps driver
-
- .../devicetree/bindings/serial/cdns,uart.yaml |   1 +
- drivers/tty/serial/xilinx_uartps.c            | 244 ++++++++++++++++--
- 2 files changed, 221 insertions(+), 24 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.yaml b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
+index e35ad1109efc..2129247d7c81 100644
+--- a/Documentation/devicetree/bindings/serial/cdns,uart.yaml
++++ b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
+@@ -55,6 +55,7 @@ required:
+ 
+ allOf:
+   - $ref: serial.yaml#
++  - $ref: rs485.yaml#
+   - if:
+       properties:
+         compatible:
 -- 
 2.25.1
 
