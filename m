@@ -1,82 +1,111 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [IPv6:2a0a:edc0:2:b01:1d::104])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B0EDB
-	for <linux-serial@vger.kernel.org>; Wed, 13 Dec 2023 09:43:21 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rDTGR-0005gK-52; Wed, 13 Dec 2023 18:43:19 +0100
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rDTGQ-00FcfT-EO; Wed, 13 Dec 2023 18:43:18 +0100
-Received: from ukl by dude04.red.stw.pengutronix.de with local (Exim 4.96)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rDTGQ-009p0h-1G;
-	Wed, 13 Dec 2023 18:43:18 +0100
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org,
-	kernel@pengutronix.de,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH] serial: 8250-fsl: Only do the break workaround if IIR signals RLSI
-Date: Wed, 13 Dec 2023 18:43:12 +0100
-Message-Id: <20231213174312.2341013-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.39.2
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="E0X+B/ox"
+Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5E8D5
+	for <linux-serial@vger.kernel.org>; Wed, 13 Dec 2023 11:13:42 -0800 (PST)
+Received: by mail-oo1-xc34.google.com with SMTP id 006d021491bc7-58dd3528497so4551139eaf.3
+        for <linux-serial@vger.kernel.org>; Wed, 13 Dec 2023 11:13:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1702494821; x=1703099621; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=eoasIn7ZWnWThH0PLf9u8EiK7T+LlQqn1Vvx2nlonP4=;
+        b=E0X+B/oxPvxfM6DIOvgp5aNszau4clZ7/loIOGUT5vofzEAHDc9jr/rce6YD1UFR1S
+         aK08BgJCmZdSdnoxnQyzdg7XbhYcPzzm/g3S8VDQnvDinID1R74oduw6LM3ohFFuynvg
+         nMZg4blmZWVTf9Jrna2n0WSLU+G25fW3LF5y5vXgqmQ7x3RFLcbIeYnznhHEhKUIORhh
+         urgOOdS2GXt8smq6757k/j+laJK4ssKcmEPqeyf7qpXofuuPzasC4FbGjjk//psPWn29
+         ft9gWLq9EO9UaYr+au4ORGblWx+I2JvMgxf1WzK8sl+XcdrHZlCyoHXrMdbS61ShLhMk
+         L6Dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702494821; x=1703099621;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=eoasIn7ZWnWThH0PLf9u8EiK7T+LlQqn1Vvx2nlonP4=;
+        b=rU+1hWIe0DapM4ZzfoSPNn307dxERh/lbkfgydPAjiu16ziI58uJJc9CpE8BXtLdkL
+         p7/rrJ7MwbOTPFnVTceE+1XW3MynUF+liBGeX4BobgW+D2Tmwv7cu35k7eGqlW/uczxz
+         FNlV7bgex1Wuar0bPIG09eYts9+U1jyGV6nQmqe6kXusLpFpaeu7pcPN1UP3JKTGDvQb
+         Yye/qoJeZ+O78x9ksqXgungH6lp1PMcot7Wp3+YNC7K7BVj8AYxp3H0z7mf4WP9vPrne
+         WQZvogRpJBqIavClQGSzxIgLI6omz6FSwyNLdV+Arqwdnv9ZeiqCbEANoHMaoFWt0gjx
+         MWzw==
+X-Gm-Message-State: AOJu0Yy5V8UqYzqC+KRqE6A9/QZnXjYWw5jzFh/lyIXuebWKKo8PdQSH
+	gDymPknSgDx/F1DGSpsbxOKGz/hLObd3FM/F0qXXgg==
+X-Google-Smtp-Source: AGHT+IH4+myfhe9Yt7eO0yu5pPXNu0R/7YLBoZZEMIElJzsamITcWtE6zUFIGooST9U4bGH3ubAkBPh6S/8Kq9R6VJ8=
+X-Received: by 2002:a05:6358:cb25:b0:170:7dca:9798 with SMTP id
+ gr37-20020a056358cb2500b001707dca9798mr6354481rwb.10.1702494821571; Wed, 13
+ Dec 2023 11:13:41 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+References: <20231211162331.435900-1-peter.griffin@linaro.org>
+ <CGME20231211162434epcas5p485e7b2edbb02a1b6ea04ff5cc758f5db@epcas5p4.samsung.com>
+ <20231211162331.435900-12-peter.griffin@linaro.org> <017401da2de2$400ec6e0$c02c54a0$@samsung.com>
+In-Reply-To: <017401da2de2$400ec6e0$c02c54a0$@samsung.com>
+From: Peter Griffin <peter.griffin@linaro.org>
+Date: Wed, 13 Dec 2023 19:13:30 +0000
+Message-ID: <CADrjBPoFu8azjZ65RGqae6HSCCoHQuhcBHNO_Fo0nVsE9pYGaA@mail.gmail.com>
+Subject: Re: [PATCH v7 11/16] watchdog: s3c2410_wdt: Update QUIRK macros to
+ use BIT macro
+To: Alim Akhtar <alim.akhtar@samsung.com>
+Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, 
+	mturquette@baylibre.com, conor+dt@kernel.org, sboyd@kernel.org, 
+	tomasz.figa@gmail.com, s.nawrocki@samsung.com, linus.walleij@linaro.org, 
+	wim@linux-watchdog.org, linux@roeck-us.net, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, olof@lixom.net, gregkh@linuxfoundation.org, 
+	jirislaby@kernel.org, cw00.choi@samsung.com, tudor.ambarus@linaro.org, 
+	andre.draszik@linaro.org, semen.protsenko@linaro.org, saravanak@google.com, 
+	willmcvicker@google.com, soc@kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-watchdog@vger.kernel.org, kernel-team@android.com, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-It can happen that while a break is received the transmitter gets empty
-and IIR signals a Transmitter holding register empty (THRI) event. In
-this case it's too early for the break workaround. Still doing it then
-results in the THRI event not being rereported which makes the driver
-miss that and e.g. for RS485 half-duplex communication it fails to
-switch back to RX mode.
+Hi Alim,
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/tty/serial/8250/8250_fsl.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Thanks for your reviews.
 
-Hello,
+On Wed, 13 Dec 2023 at 16:34, Alim Akhtar <alim.akhtar@samsung.com> wrote:
+>
+>
+>
+> > -----Original Message-----
+> > From: Peter Griffin <peter.griffin@linaro.org>
+> > Sent: Monday, December 11, 2023 9:53 PM
+> > To: robh+dt@kernel.org; krzysztof.kozlowski+dt@linaro.org;
+> > mturquette@baylibre.com; conor+dt@kernel.org; sboyd@kernel.org;
+> > tomasz.figa@gmail.com; s.nawrocki@samsung.com; linus.walleij@linaro.org;
+> > wim@linux-watchdog.org; linux@roeck-us.net; catalin.marinas@arm.com;
+> > will@kernel.org; arnd@arndb.de; olof@lixom.net;
+> > gregkh@linuxfoundation.org; jirislaby@kernel.org;
+> > cw00.choi@samsung.com; alim.akhtar@samsung.com
+> > Cc: peter.griffin@linaro.org; tudor.ambarus@linaro.org;
+> > andre.draszik@linaro.org; semen.protsenko@linaro.org;
+> > saravanak@google.com; willmcvicker@google.com; soc@kernel.org;
+> > devicetree@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-
+> > samsung-soc@vger.kernel.org; linux-clk@vger.kernel.org; linux-
+> > gpio@vger.kernel.org; linux-watchdog@vger.kernel.org; kernel-
+> > team@android.com; linux-serial@vger.kernel.org
+> > Subject: [PATCH v7 11/16] watchdog: s3c2410_wdt: Update QUIRK macros to
+> > use BIT macro
+> >
+> > Update the remaining QUIRK macros to use the BIT macro.
+> >
+> Ah! I see you have change use BIT here, so you can squash this patch to
+> patch 10/16 or
+> Move BIT change from patch 10/16 to this patch. Either way is fine.
 
-I already sent this patch some time ago in a series with two other
-patches. One of them got negative review feedback (and wasn't applied)
-the other was applied as commit d2d4bd217ccd ("serial: 8250-fsl: Expand
-description of the MPC83xx UART's misbehaviour"). This one didn't
-receive any feedback (and wasn't applied, too).
+I actually kept them separate deliberately to avoid conflating adding
+of the DBGACK quirk with cleanup of the driver to use BIT macro.
 
-So here comes the patch again, rebased to today's next.
-See
-https://lore.kernel.org/linux-serial/20230524122754.481816-4-u.kleine-koenig@pengutronix.de
-for the previous submission.
+As such one patch adds the QUIRK and only updates the macros that were
+touched by that patch (to avoid the --strict warnings), and the second
+patch cleans up the rest of the macros to use BIT macro for
+consistency.
 
-diff --git a/drivers/tty/serial/8250/8250_fsl.c b/drivers/tty/serial/8250/8250_fsl.c
-index 5cf675eadefe..b4ed442082a8 100644
---- a/drivers/tty/serial/8250/8250_fsl.c
-+++ b/drivers/tty/serial/8250/8250_fsl.c
-@@ -51,7 +51,8 @@ int fsl8250_handle_irq(struct uart_port *port)
- 	 * immediately and interrupt the CPU again. The hardware clears LSR.BI
- 	 * when the next valid char is read.)
- 	 */
--	if (unlikely(up->lsr_saved_flags & UART_LSR_BI)) {
-+	if (unlikely((iir & UART_IIR_ID) == UART_IIR_RLSI &&
-+		     (up->lsr_saved_flags & UART_LSR_BI))) {
- 		up->lsr_saved_flags &= ~UART_LSR_BI;
- 		port->serial_in(port, UART_RX);
- 		uart_port_unlock_irqrestore(&up->port, flags);
--- 
-2.39.2
+regards,
 
+Peter
