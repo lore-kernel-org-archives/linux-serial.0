@@ -1,25 +1,25 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="d1lIymFg"
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A55E0;
-	Wed, 13 Dec 2023 14:31:49 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="bCCAkK0l"
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DC2D0;
+	Wed, 13 Dec 2023 14:56:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-	t=1702506675; x=1703111475; i=linosanfilippo@gmx.de;
-	bh=ow0eNzFaApvdODhCrkxtlTs1mvPnhPOnKfYtDQtRAOA=;
+	t=1702508133; x=1703112933; i=linosanfilippo@gmx.de;
+	bh=/y0wEErfQaUWPQ8zqwwuu6OFCzGo6/tXPuv3/jpuNy8=;
 	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
 	 In-Reply-To;
-	b=d1lIymFgQfvd+w/akJljGu/fADS93WUpG59uB+U7JTuTp2OfaGDDkf7pspYNQb7I
-	 2e/XkALu/n1UhgfByTVV3b3vndKQWwYWgoqNrgcNzI0yd1sLkllq1QGvZhQaVl9cs
-	 fTdwL0ciVvLS0Yvc2ksOPtDaxnM/CzkU2XnLY877cUiCxNHF/OYc+UWT/zRH8e+jA
-	 0L2C2c6Td1lZT58V7XKE/uWcpbjOnvidbjH7Y2BfGdzpf/yM6Ltjk0GfcD02vQxBv
-	 Cu9+Pdsd5vIol2vht9vUQWHwRgdGMDIeQ9oacgh8k/xuofdH9ZddjlLsct8SJiccl
-	 5tDGPHLL8VLYhsnvHw==
+	b=bCCAkK0lf9fSZsImv9lKbhuShujBCQcLLR1Jb70gV1zYFcoM5v6/ICL8qlXbVbRN
+	 dvdIvIC9R85PhTXE5n8s/SMVal/g2NhXsFrrLk9a4fW69wfUunhWhD2wiS/Jk8Xdw
+	 2S2QOgmApAH2YhG5HVETl4u9XGHgOWPFxUjqffeh13hb6NxZ2mgh4MSd4tV6DTmEY
+	 An2fnVcUpO+uq122g1GtxKSKcMWF2tFTSyRtjdMQ+hGGFbXbFrS+N4WdJP/xkBVcf
+	 DmvW26doF/yDFgxclctVck2hlouTwk02ua874Q7C8/F6S56Dd0gNvSZJ1n39c8TYs
+	 kORuqBL6dSwnpEyQHw==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
 Received: from [192.168.2.42] ([84.180.3.177]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MFsYx-1qyvxV42kp-00HNfS; Wed, 13
- Dec 2023 23:31:15 +0100
-Message-ID: <9271d88a-52bf-4f3a-9861-fdc5120cfc31@gmx.de>
-Date: Wed, 13 Dec 2023 23:31:12 +0100
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MKbg4-1quvKD12Hk-00KyCf; Wed, 13
+ Dec 2023 23:55:33 +0100
+Message-ID: <e59cf6e9-1f1d-4252-aee2-818fef9c9936@gmx.de>
+Date: Wed, 13 Dec 2023 23:55:31 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -27,8 +27,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 5/7] serial: core, imx: do not set RS485 enabled if it
- is not supported
+Subject: Re: [PATCH v5 6/7] serial: omap: do not override settings for RS485
+ support
 Content-Language: en-US
 To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
  Lino Sanfilippo <l.sanfilippo@kunbus.com>
@@ -40,77 +40,70 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  linux-serial <linux-serial@vger.kernel.org>, Lukas Wunner <lukas@wunner.de>,
  p.rosenberger@kunbus.com, stable@vger.kernel.org
 References: <20231209125836.16294-1-l.sanfilippo@kunbus.com>
- <20231209125836.16294-6-l.sanfilippo@kunbus.com>
- <ffdaf03b-65af-731f-992-3e90ca6fca@linux.intel.com>
+ <20231209125836.16294-7-l.sanfilippo@kunbus.com>
+ <e1e8d86e-2cb-db8d-77a5-dcb5cd3fbb22@linux.intel.com>
 From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <ffdaf03b-65af-731f-992-3e90ca6fca@linux.intel.com>
+In-Reply-To: <e1e8d86e-2cb-db8d-77a5-dcb5cd3fbb22@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:5rOHkfsE4s9ePvnGDmyusjLIj3yIVd2eQPWYbqRlq5CGud6gVIn
- X+I9FPjinXMngbO+6bp8A9/EsEzNaJgNXMwbsS9yvNxF1tRc7PF4xuthVI8ibtPw5QJn+77
- 8EdcfCgDO33pq970SCvijgy82MPA4afZMI33IogmjzNdEIiTeRu92iCYNINYQWb9ficQTRh
- OCpIUYGrGXqh/fEJgtY8A==
-UI-OutboundReport: notjunk:1;M01:P0:Bj+lj047/H8=;lrv2zARKxJtcHPybrCx9es6QyxT
- hVCkvcK3YZbhRR46EF4MBDeYo9szoAvZXOEygZSsw+lXizouvA88I2L+xJUlQH+xMZWyYzLxE
- ZmKx5qFadWtc7A15irJATZV50FyyQw68xcLC3AY32whbSBy58mTfiVQA41UX6lyV6boTd2Ux7
- 86YIh1LzlvEWzCHUnnPH5T2TT6bQjrgYAPtoF2vTdXHBqwImoy4Xbw/Xt7prCjPoWGFDZmyJ+
- WQVW6w9ga6LGWRhs8Tj7cif3uknR19sc8FzJjOA34jS0jaR0U1CvXy45AI8iCouzGhAcZuSPS
- YxrQNa18mL8ZAt04dnZd1MJDb58JRbho32JJcQ8hMGkBixYXfZ/xP6iO7zIjjt/rDZgfOhOGz
- kgwr3jkyRwS3MpmDDZBBC4aeS4c3XX5pljozWaG6q1r/UFPHqb9JXPNQPJO3EZOm/23ouSYgZ
- R4htMtvVqUPA4K55z2KOm1n4x2+jj3xianSdeMMPV+BgAsXdifo4nn1+7VbHyRHoW1PhgozyB
- MFDFryJ7eWR1uFtmtBydegDy8RL/l1G4+4nNWzyydxZBAJ8eVeyXtvuzDJRyUEpX6h1JwvCrN
- RRDnv0nhoImVL4MgUurQ4ZeqDDCob6+pBJeSjxz1XVi+20H36p+Qpaz4VjW2S5IUV4bBp/gMe
- WVjcmJRagp0ZfGJ4QCHpjXy3Zm8OVOeyzvoShT4XTmWWTljADocWW608UK1quEoS37IO/Ja3+
- 7Mx3YcTS0AfCZM5jFtuKUfkW5ouSrJ+0q1yBCQGx/4yILSfK8YTMY7ihLlooTqWasKg/tzn46
- REuH+FVQDTJE8yHpDIeqq+KpKUKhIYBNloHVzEkl9daB7cN0Dot9vcoWTfN0xu4iAIYnRn6kl
- PTE+syDMKPjqOlLwZjnlKIrNO/aIi50incblaOAOW6Bf5oi2JtFL6QG1gUYONev3T+JSuFJ1w
- yzWURA==
+X-Provags-ID: V03:K1:SIgpHmzRjggQCx8l60M5/USwq0CPJwr19UwqrlNnMnZ1m3b83Na
+ HKl5Zl2OI6jeOdSZbucZoVGUMhR9Pk7j4jXtKRpSWj4H3CxSbYwfCtRfURB1PpXRyGgjJ4L
+ aPg9S99Ipg7JliKoiDJGHYbvwJGJsOXxNuPd3Wvmj9kflxalMxED5K3V8OD5zkGJMSSqqjE
+ qQDuBfk6KHNbthMlDRbfw==
+UI-OutboundReport: notjunk:1;M01:P0:lTOLppwMnGU=;j8xm1OPssHUyNtBsIBw//ew0224
+ zudRD/Rjbppd68nYKUmBLkZvTdD4DIeTiSFjjHCcj1lpLc1dKWGRKTwnjsvVfi70lYeq4R76S
+ sa8ExvDX1+XWnxmvVVtFKLH634FV5GsByTDZBD5LrTVY1+4TIEh7joUKTBR5ZqEfvHHg02nZx
+ ZVCUfWwoGpAAM1szFxgd/8gTfSCe3ow/WzqPkP536f47gjUGcoPUubFv9cBaI/uqHxGdsBtJ6
+ KzV90wXaJkGP2kKbD2IdE2BX5QIAtncLsE11y0DztZGvTMrFTsukDavKA19IaFkVcnrZ7tIh7
+ Q/cCB+tV8u5D4Qyzs3Er9RotKpQqYFwIhbWtkyw3m5oh3VQqBLUmxssa7TwL1UpLZaqGUrLfh
+ bo1vAPdeE3/hMnW20i6u4gw5+PvYg55HWO4cu8rh7pvPtWD1P0Kce8bw5oyuSatymwMTg9tbv
+ VsJLbboiwo2MyV74nSbYHC2ka9W8llCGd45r9DVbHqe0+jIJsV++z08bSASsZR7sqk+Ai+71a
+ LP6E6E0+SgFgHDq9Gb1hHm29RqrtMpuR8N70I/s9Ei6bLug8XWKSPeFbtnFVCJV+XuT+iB2R0
+ fg2FTk4FbYneqLwwK6ynpNyzIzwIbxPJxlL5AgXfm2sjSI349NheCf0zwuTIIa/muD6iVXC82
+ 5CCQEAe1ejkg1Iz6mPginHJ2c9nWZF8RrFCdGT9sjtMC318cd2o51p57eO/f34WTJm0JUZYzK
+ Uxczlp7sQkht8eor6fsCZ5GDN+Ic3OJk3ph6xiSBkat+MYY4ugN/nluiiROa+WWZHSiURj4+3
+ jWQR3wv8lNNaK/L2QOV6wGCLc5Y3aZQIAYRgfzA0/dIcOvSGJBZv72UQbzoN6d0E8Hy+muGom
+ jErW9v1rQTu3mwDsF05MXEnRrDYXS+1gXIOitwF/jtMjytRtvVgFdxNkblrVDUIL2xZNJ8wjw
+ ndEj7w==
 
 
-On 11.12.23 12:00, Ilpo J=C3=A4rvinen wrote:
+
+On 13.12.23 11:26, Ilpo J=C3=A4rvinen wrote:
 > On Sat, 9 Dec 2023, Lino Sanfilippo wrote:
 >
->> If the imx driver cannot support RS485 it sets the ports rs485_supporte=
+>> In serial_omap_rs485() RS485 support may be deactivated due to a missin=
+g
+>
+> There's no serial_omap_rs485() function. I assume/know you meant
+> serial_omap_probe_rs485() but please correct.
+>
+
+Right, I meant serial_omap_probe_rs485(). Will fix the misnaming as well a=
+s
+the typos below.
+
+>> RTS GPIO. This is done by nullifying the ports rs485_supported struct.
+>> After that however the serial_omap_rs485_supported struct is assigned t=
+o
+>> the same structure unconditionally, which results in an unintended
+>> reactivation of RS485 support.
+>>
+>> Fix this by callling serial_omap_rs485() after the assignment of
+>
+> callling -> calling.
+>
+> Again, the function name is incorrect.
+>
+
+>> rs485_supported.
+>
+> Wouldn't it be better if all rs485 init/setups would occur in the same
+> place rather than being spread around? That is, move the rs485_config an=
 d
->> structure to NULL.
->
-> No, an embedded struct inside struct uart_port cannot be set to NULL,
-> it's always there.
+> rs485_supported setup into serial_omap_probe_rs485()?
 >
 
-Hmm, ok. What I meant was that the structure is nullified. "set to NULL" i=
-s maybe a bit
-misleading. I will correct this.
+No problem, I can do that. Thanks for the review(s)!
 
-> Looking into the code, that setting of rs485_supported from imx_no_rs485
-> is actually superfluous as it should be already cleared to zeros on allo=
-c.
->
-
-Yes. BTW: Another "no_rs485" configuration setting can be found in the ar9=
-33x driver.
-If we do not want to keep those assignments I can remove the one for the i=
-mx
-driver with the next version of this patch...
-
->> But it still calls uart_get_rs485_mode() which may set
->> the RS485_ENABLED flag nevertheless.
->>
->> This may lead to an attempt to configure RS485 even if it is not suppor=
-ted
->> when the flag is evaluated in uart_configure_port() at port startup.
->>
->> Avoid this by bailing out of uart_get_rs485_mode() if the RS485_ENABLED
->> flag is not supported by the caller.
->>
->> With this fix a check for RTS availability is now obsolete in the imx
->> driver, since it can not evaluate to true any more. Remove this check, =
-too.
->>
->> Fixes: 00d7a00e2a6f ("serial: imx: Fill in rs485_supported")
->> Cc: Shawn Guo <shawnguo@kernel.org>
->> Cc: Sascha Hauer <s.hauer@pengutronix.de>
->> Cc: stable@vger.kernel.org
->> Suggested-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
->> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->
+Regards,
+Lino
