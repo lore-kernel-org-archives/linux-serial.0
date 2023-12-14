@@ -1,41 +1,41 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="hUg91Jw5"
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63320191
-	for <linux-serial@vger.kernel.org>; Thu, 14 Dec 2023 02:52:58 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id 5b1f17b1804b1-40c1e3ea2f2so77614955e9.2
-        for <linux-serial@vger.kernel.org>; Thu, 14 Dec 2023 02:52:58 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="vq+WAAV6"
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4926818A
+	for <linux-serial@vger.kernel.org>; Thu, 14 Dec 2023 02:52:57 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id 5b1f17b1804b1-40c2c5a8150so72594885e9.2
+        for <linux-serial@vger.kernel.org>; Thu, 14 Dec 2023 02:52:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702551176; x=1703155976; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1702551175; x=1703155975; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=/xcopqDHmkhwhZiddcnv/4oqDnf2f2C/EfKwZNlZ0qw=;
-        b=hUg91Jw5utLpyY8E5CDdi/IaLvyeX0Y0EjDQzG/iXoXcPl49mRrpQKxyr1hIszPB90
-         K96OtV50cQ0BFgtgMjFXXvyd9y0PMBTJFqCub65yjlpfaguHH9eptI1C2VHeAUJWGF5g
-         JvDuidXOqpSolEOQu/zGoXqs/NsPiASXms+GYVj/H4rx7efIrkc9y+LgScmkUyTjAndg
-         tmepwkVmlGOSfXqm4T4JDNEHhz2ny7sf48EWaZcznpt+VaXNy/vAWIX0VluNSK/2Jnn+
-         0PtGNRfLvurQlW2YLtcrcb8lAIoJTdZJmHQ0wtPI70QelPCDQ19lyLVuw0MNY4+sdSuC
-         pHgg==
+        bh=5mhn42nkbYNSYbqkCzR8s0q7mu4Kn3hIP/r9MxesLeo=;
+        b=vq+WAAV608iv8HAZrFaxnvrAdTtcbtsPv2IwdjqVJDQvKZBKql6afIRPZ6DtVAkSPK
+         LKUai0WaESB2APfw8jtmxLJcJyJ0LaPQ40mlsNzFPEsOiODOfJEihG6IBgr7XsHB83fL
+         FqOzDIzui+lKvj/QwtydVQsSPhK/vz8KRpllEWTXVeUALx50QFCU11OpEYIozJc34DnH
+         TEI7pHUdzJipJENCVWfLEvz0Oz20HCSn0iNiAkvy7seAMIK2yD3j4MRjEhg620k7cVxk
+         S9gCHWoB9dh9kkeXg9eNIsniDLUBqoK7MTlsuP4gYBRWEr6GhIuUAb4X8D/AmHFYHvp6
+         +GEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702551176; x=1703155976;
+        d=1e100.net; s=20230601; t=1702551175; x=1703155975;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=/xcopqDHmkhwhZiddcnv/4oqDnf2f2C/EfKwZNlZ0qw=;
-        b=aURJJD1BRF7xf8tJrTnY4q0cJx91u4FUJMEv0Okxu1ZxQqXBeUC/9n4aXiz1WqCa0z
-         hr7k07wYo4RmAhCo9JlQn6Q3qlSkid6duXCQwkYtNY1wqZh41Iy5Fi/IZsWWbHGDs9iW
-         q0GQsTGEOL/QXprgN7aKIUBeQZL0lJRQwAWManigAY2bi3i4LcK2jqlon1D8AH02GMe0
-         eSvS/t3I5ykgznw9NO2j1EUnwvZlXmYHz4nAVstUTjby18/Or2aTP4Jct9wC0p2/k3Fm
-         GvW1baFngaXKnwvpWuOTLD1S03On5faoKHLvRAP8TQNxfvQL70nFRiiI0uatGbapORUM
-         W+EA==
-X-Gm-Message-State: AOJu0Yy22BseltHy1daaziMremxnPWor7tTTR61FvmJ3nyamj16L9LHQ
-	qgaLGZjzHWEknEh61W2sk3LgoA==
-X-Google-Smtp-Source: AGHT+IFoOjFMWtrSQgxb2NLW2t0CuX+poAGfnV283P6BxnO1HFB3lfJ/1vp1DW3s4vZF+aaQfp5C7g==
-X-Received: by 2002:a1c:7411:0:b0:40c:30f8:dcf0 with SMTP id p17-20020a1c7411000000b0040c30f8dcf0mr5564669wmc.64.1702551176443;
-        Thu, 14 Dec 2023 02:52:56 -0800 (PST)
+        bh=5mhn42nkbYNSYbqkCzR8s0q7mu4Kn3hIP/r9MxesLeo=;
+        b=TD0mg+nJ6e3hvE8ncp8LeSSoQr09rw17dvY4uunVOnzYRo7DofxU1W+OlveyAtAFNG
+         sD2Zn0PxyjnYhxhAgg1/4o0c3RNkMLOSPaB7ClE1/7KlMOZbUIkVZGGGeUbxfPWLl8Vf
+         QeSqAjFZGXl8EZE4+LOgl3cf5gdz6U/xrrQGR/q2t/D9SdtnInrcdjg0DzjwsbSVdmsD
+         1UVMhA9ktvSVtDK7XBV1hOfK9xvoTSC27BDoqRNkMsZsg4CL3SIUAKETZD3Q2RPl5ywU
+         5htGeFm+V3Nd2EbRTw4UgRPEN+oagz4PDXgpHUERb0Jojj0R5zKtf27igqNEpiO6fy+2
+         gjbw==
+X-Gm-Message-State: AOJu0YyVel0WK2zCtGhxJFnow+aRHJfyqs+us0YR3kRuW8LNUR8733Pd
+	wS1Z6pNSkIc/hFkUopOKKRotwA==
+X-Google-Smtp-Source: AGHT+IFSACgeuqXfGtcq1HirR8WdhU+ZvxZq6/QpHoFhVCpG7A91zn3qv3cTxTqAwHCfaUc78R5niQ==
+X-Received: by 2002:a1c:4b0b:0:b0:40b:5e21:ec37 with SMTP id y11-20020a1c4b0b000000b0040b5e21ec37mr4222759wma.105.1702551175514;
+        Thu, 14 Dec 2023 02:52:55 -0800 (PST)
 Received: from ta2.c.googlers.com.com (216.131.76.34.bc.googleusercontent.com. [34.76.131.216])
-        by smtp.gmail.com with ESMTPSA id p7-20020a05600c468700b0040c420eda48sm17614854wmo.22.2023.12.14.02.52.55
+        by smtp.gmail.com with ESMTPSA id p7-20020a05600c468700b0040c420eda48sm17614854wmo.22.2023.12.14.02.52.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Thu, 14 Dec 2023 02:52:55 -0800 (PST)
 From: Tudor Ambarus <tudor.ambarus@linaro.org>
@@ -67,9 +67,9 @@ Cc: andre.draszik@linaro.org,
 	linux-i2c@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	Tudor Ambarus <tudor.ambarus@linaro.org>
-Subject: [PATCH 05/13] tty: serial: samsung: add gs101 earlycon support
-Date: Thu, 14 Dec 2023 10:52:35 +0000
-Message-ID: <20231214105243.3707730-6-tudor.ambarus@linaro.org>
+Subject: [PATCH 04/13] dt-bindings: serial: samsung: gs101: make reg-io-width required property
+Date: Thu, 14 Dec 2023 10:52:34 +0000
+Message-ID: <20231214105243.3707730-5-tudor.ambarus@linaro.org>
 X-Mailer: git-send-email 2.43.0.472.g3155946c3a-goog
 In-Reply-To: <20231214105243.3707730-1-tudor.ambarus@linaro.org>
 References: <20231214105243.3707730-1-tudor.ambarus@linaro.org>
@@ -81,42 +81,32 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-GS101 only allows 32-bit register accesses. If using 8-bit register
+GS101 only allows 32-bit register accesses. When using 8-bit reg
 accesses on gs101, a SError Interrupt is raised causing the system
 unusable.
 
-Force the reg accesses to MMIO32 regardless of the user's settings.
-This is a common practice for such earlycons (bcm2835aux, uniphier,
-lpuart32), in order to avoid crashing the kernel with a wrong early
-console definition.
+Make reg-io-width a required property and expect for it a value of 4.
 
 Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
 ---
- drivers/tty/serial/samsung_tty.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ Documentation/devicetree/bindings/serial/samsung_uart.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 66bd6c090ace..19cd3e6a9b6e 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -2787,6 +2787,17 @@ OF_EARLYCON_DECLARE(exynos4210, "samsung,exynos4210-uart",
- OF_EARLYCON_DECLARE(artpec8, "axis,artpec8-uart",
- 			s5pv210_early_console_setup);
+diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+index 133259ed3a34..cc896d7e2a3d 100644
+--- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
++++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+@@ -143,6 +143,10 @@ allOf:
+     then:
+       required:
+         - samsung,uart-fifosize
++        - reg-io-width
++      properties:
++        reg-io-width:
++          const: 4
  
-+static int __init gs101_early_console_setup(struct earlycon_device *device,
-+					    const char *opt)
-+{
-+	/* gs101 always expects MMIO32 register accesses. */
-+	device->port.iotype = UPIO_MEM32;
-+
-+	return s5pv210_early_console_setup(device, opt);
-+}
-+
-+OF_EARLYCON_DECLARE(gs101, "google,gs101-uart", gs101_early_console_setup);
-+
- /* Apple S5L */
- static int __init apple_s5l_early_console_setup(struct earlycon_device *device,
- 						const char *opt)
+ unevaluatedProperties: false
+ 
 -- 
 2.43.0.472.g3155946c3a-goog
 
