@@ -1,122 +1,118 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="l+tWKgXG"
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C67311B
-	for <linux-serial@vger.kernel.org>; Thu, 14 Dec 2023 06:09:43 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id a640c23a62f3a-a1c7b20f895so944728566b.2
-        for <linux-serial@vger.kernel.org>; Thu, 14 Dec 2023 06:09:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702562981; x=1703167781; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/3RQuNkLRKG8bKgPIldu8Ku3xY7yfi4XKy/b0IC08t8=;
-        b=l+tWKgXGoq20hunhC7pGAIw0Ef+qDD41fvB2uNYNTNISgK4cq/IjlJUaHRGWSpLAEm
-         loOXKdXf3S8/xmmvyPUTKaGs6i8dYqxYfm/epiMAl0q5LUVIOTjB7IN8WxsO6bxiq2bb
-         G54vt7/xQL6IP/YkrbctQEg4hkY9dNdWSoy4u8Uh8aYbwZQSIH29hxpIUfMX4v7VkJSX
-         ksCmCCqKlXvwRRG6o0GTgyjeoeO8aTGEGcp+sDapYEvcYBervl2GFYrcknfBCV7xycqu
-         1OQY44p/yoq+NbYR+bO1MxCOGhR5K94vpZZ+aXRpRWvSV1v9iuBsGhe72fsVU6iIvOsR
-         6mWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702562981; x=1703167781;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/3RQuNkLRKG8bKgPIldu8Ku3xY7yfi4XKy/b0IC08t8=;
-        b=E+bFbUfS0k2ee262u0My1gmZlOeFPaam7HVPclwkfzPuJiOhkQj1HXnDOdOZrPi7BG
-         39DxfD/5hjRbWFR35K3AvcgmA0axLibiY+B6dAWC+/Gp0OTiAtX8PrC2TEshpJ2A/k+A
-         fIIY0f2LpYxIgMNTReSw3HHWXYEZkUZ8ZTS0sd8wsxQ4/I8T5+jlx3358ZHoyNePx/if
-         Q7u6JFXnujRo+9Bg3c0d+5XL+JTTK999BN8BVb4m3S7eD0/l5VY7PouI+CCQ/LCn+wlR
-         zUBH7HuM8fAbXkQ9+OL4KWuAslbGDilHH1e2Tdyi7Kq1w58nrCh9EAnTcl/7Hp/4JjIs
-         Tm8g==
-X-Gm-Message-State: AOJu0YzYeHH+g6MxboKp+pxhVdtzKLaivI5lx1hOe5gADnRX1EZitmew
-	MzA8cwevqHFB6Kv3DRZlifcRkA==
-X-Google-Smtp-Source: AGHT+IE7Uwl8ErU40fjRiJ15CIiA2TLlXGFMgyYhBgUnAqaz4nDkwt0+SdGL5BjePKkDBG8sk1zFNA==
-X-Received: by 2002:a17:906:d96e:b0:a1c:b4d7:c78a with SMTP id rp14-20020a170906d96e00b00a1cb4d7c78amr4920685ejb.32.1702562981541;
-        Thu, 14 Dec 2023 06:09:41 -0800 (PST)
-Received: from [192.168.2.107] ([79.115.63.202])
-        by smtp.gmail.com with ESMTPSA id rm6-20020a1709076b0600b00a1bec12448csm9393020ejc.150.2023.12.14.06.09.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Dec 2023 06:09:41 -0800 (PST)
-Message-ID: <64e35ae0-a751-40ee-b27f-8034e7817222@linaro.org>
-Date: Thu, 14 Dec 2023 14:09:38 +0000
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="vuFZ2r6r";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="ZvwaDBUW"
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B66479C;
+	Thu, 14 Dec 2023 06:20:07 -0800 (PST)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailout.nyi.internal (Postfix) with ESMTP id 209025C01FE;
+	Thu, 14 Dec 2023 09:20:07 -0500 (EST)
+Received: from imap51 ([10.202.2.101])
+  by compute5.internal (MEProxy); Thu, 14 Dec 2023 09:20:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:subject
+	:subject:to:to; s=fm1; t=1702563607; x=1702650007; bh=9Z4MjfpQ7O
+	jEEXxE9lG6e/W1L5auLJWvyv3COvKdATw=; b=vuFZ2r6rblnm5W314rTfRVKZrM
+	mqrIA3VlnFQPT6KA2yrZknlwtrzv9GkdEOw8ZR8Ua7Xs0ZfrMNqbFZMN4QI3kyiu
+	mhKfWRbzAc8bfCOTmg3zFfPWaq2en4vHsYD0mLN2r79WNt4V1jMG3d1SSlCQJOKo
+	yclAJOhw8GxFIRxHWLECCRlm561Q2GOH5J5wIeLnxoUk5/hjgaV5BbYC2X1KdyBD
+	zD1DhDeCDdjEaIU4JgeHMS714p4nri6tV9doLlQl77a332ithpTSwiKjHg9drGdc
+	VKgtC/fRxXt7QkzjisNxgVHRTomF/PV1hj3oPz5QZv4FER++igcDUUO46JNw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm1; t=1702563607; x=1702650007; bh=9Z4MjfpQ7OjEEXxE9lG6e/W1L5au
+	LJWvyv3COvKdATw=; b=ZvwaDBUWJe69wJRbSrL5vCEbopxk2qz+WIyz/n88kjz2
+	Kw1TBwmNEloQmAjZpwEMcfRTBC+MQ5x/NTjGyufqw9ffLYzckpIHonGciX/4aQO9
+	d+yKh+6+cg11XdEmiZq+0xZaymGrUTNIem62U+gGseG16i4TAlJHRAXWOsflTuh5
+	4mjdiunN3fU8miIJ9Ih2DsHqYQ8X8zEveHCMTb/DwvOB2OpB2k57F8EzI+ZDX/BS
+	rsvwT0ToeLt9Ks2Q5FanummSoagOwTBrs6g63N2pIyzzya138l5rEaS1di+2oa3a
+	+Z+SCRsAd+1ozzFnaEGS0hyHRtkMAs6MoyJSOaofUQ==
+X-ME-Sender: <xms:Fg97Zcbp0_1Ylvak5lI1LjoeFLrM_hO_Qw-z8bGY2RuZx_QNAw6rvw>
+    <xme:Fg97ZXaJwPVWyXHKF3nvC3VpwmBgdHU_JiXBRFpAwLUNl_EEy3QeFeRiJQfEKHBHz
+    ADooBnf3I51dvjcTIw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrudelledgieduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
+    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
+    hrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:Fg97ZW_joqK78W09f3ZbQzsqlOX7WH0SZ5BAwZsa4uaEsx8rSFxERg>
+    <xmx:Fg97ZWr858gD7ICD-t7Jwn62-cVa7rUhmbxpyGD4xlJEAomL9W8MeA>
+    <xmx:Fg97ZXp5idHkXZLrxYoos_Qne5LPJYXxBX07HMuB0f9vlR6Zw1VVLg>
+    <xmx:Fw97ZRYpgxk3_7ThW_J6a8z5VGQQdUowjco_aDeeCL2SjhiNP6n7GQ>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 3133AB6008D; Thu, 14 Dec 2023 09:20:06 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-1283-g327e3ec917-fm-20231207.002-g327e3ec9
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 12/13] arm64: defconfig: sync with savedefconfig
-Content-Language: en-US
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Arnd Bergmann <arnd@arndb.de>, Peter Griffin <peter.griffin@linaro.org>,
- Rob Herring <robh+dt@kernel.org>, krzysztof.kozlowski+dt@linaro.org,
- Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
- <sboyd@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- andi.shyti@kernel.org, Alim Akhtar <alim.akhtar@samsung.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Catalin Marinas
- <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
- Sylwester Nawrocki <s.nawrocki@samsung.com>,
- Tomasz Figa <tomasz.figa@gmail.com>, Chanwoo Choi <cw00.choi@samsung.com>,
- Sam Protsenko <semen.protsenko@linaro.org>
+Message-Id: <6962ac73-2f44-4c9e-8731-152087815454@app.fastmail.com>
+In-Reply-To: <8808ceeb-35dc-4094-aec4-f43c7acd6174@linaro.org>
+References: <20231214105243.3707730-1-tudor.ambarus@linaro.org>
+ <20231214105243.3707730-6-tudor.ambarus@linaro.org>
+ <1938fcf1-eb5d-4723-a6c6-d2fe2c6dd1c0@app.fastmail.com>
+ <8808ceeb-35dc-4094-aec4-f43c7acd6174@linaro.org>
+Date: Thu, 14 Dec 2023 14:19:44 +0000
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Tudor Ambarus" <tudor.ambarus@linaro.org>,
+ "Peter Griffin" <peter.griffin@linaro.org>,
+ "Rob Herring" <robh+dt@kernel.org>, krzysztof.kozlowski+dt@linaro.org,
+ "Michael Turquette" <mturquette@baylibre.com>,
+ "Stephen Boyd" <sboyd@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>,
+ andi.shyti@kernel.org, "Alim Akhtar" <alim.akhtar@samsung.com>,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jiri Slaby" <jirislaby@kernel.org>,
+ "Catalin Marinas" <catalin.marinas@arm.com>, "Will Deacon" <will@kernel.org>,
+ "Sylwester Nawrocki" <s.nawrocki@samsung.com>,
+ "Tomasz Figa" <tomasz.figa@gmail.com>,
+ "Chanwoo Choi" <cw00.choi@samsung.com>,
+ "Sam Protsenko" <semen.protsenko@linaro.org>
 Cc: =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
- saravanak@google.com, William McVicker <willmcvicker@google.com>,
+ saravanak@google.com, "William McVicker" <willmcvicker@google.com>,
  linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
  linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
  linux-serial@vger.kernel.org
-References: <20231214105243.3707730-1-tudor.ambarus@linaro.org>
- <20231214105243.3707730-13-tudor.ambarus@linaro.org>
- <1153987b-a818-454a-a292-57f2b3898771@app.fastmail.com>
- <93969025-606c-4e4c-9cbc-3c8351f95adb@linaro.org>
-From: Tudor Ambarus <tudor.ambarus@linaro.org>
-In-Reply-To: <93969025-606c-4e4c-9cbc-3c8351f95adb@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 05/13] tty: serial: samsung: add gs101 earlycon support
+Content-Type: text/plain
 
-
-
-On 12/14/23 13:19, Krzysztof Kozlowski wrote:
-> On 14/12/2023 13:08, Arnd Bergmann wrote:
-
-Hi, Arnd, Krzysztof,
-
-Thanks for the review!
-
+On Thu, Dec 14, 2023, at 13:52, Tudor Ambarus wrote:
+> On 12/14/23 12:01, Arnd Bergmann wrote:
 >> On Thu, Dec 14, 2023, at 11:52, Tudor Ambarus wrote:
->>> Sync the defconfig with savedefconfig as config options
->>> change/move over time.
->>>
->>> Generated with the following commands:
->>> make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- defconfig
->>> make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- savedefconfig
->>> cp defconfig arch/arm64/configs/defconfig
-> These are obvious. You cannot do it differently.
+>>> +static int __init gs101_early_console_setup(struct earlycon_device *device,
+>> 
+>
+> It works if in device tree one specifies the reg-io-width property and
+> sets it to 4. If the reg-io-width is not specified, the iotype defaults
+> to UPIO_MEM causing the SError interrupt on gs101 which makes the system
+> unusable.
 
-This was just a prerequisite patch for the next, where I made a config
-builtin. Modifying defconfig shall be made in a similar manner, but it
-seems it's not the case (144 line change here), and that's why I
-considered it is worth specifying how I did it.
+In the case of incorrect DT data like a missing reg-io-width property,
+I would expect it to still fail once the regular console or tty takes
+over from earlycon.
 
-> 
->>> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
->>> ---
->>>  arch/arm64/configs/defconfig | 144 +++++++++++++----------------------
->>>  1 file changed, 55 insertions(+), 89 deletions(-)
->> I usually ask for defconfig changes to be merged when someone just
->> adds a single line per patch, but a 144 line change is clearly too
->> big, please split this up.
+> Also, if the earlycon comes specified from the kernel params, the
+> of_setup_earlycon() is no longer called and the earlycon will be set
+> solely based on the kernel params buffer, thus allowing users to crash
+> the kernel on wrong earlycon definitions.
 
-The truth is I didn't think we care what configs get removed after a
-savedefconfig. I see now after Arnd's review that we have a higher goal
-and savedefconfig shall be used to identify misconfiguration.
+But that in turn is the same as specifying any other incorrect earlycon.
 
-> Anyway this should not go via my tree, because of possible conflicts.
-> This commit, so the savedefconfig, must be prepared on linux-next, which
-> should be mentioned in changelog for example. It also is not related to
-> this patchset.
+> If you think the change is fine, I can amend the commit message with the
+> description from above.
 
-Please ignore this patch. Cheers,
-ta
+I'm still not convinced we need a special case here when everything else
+just requires passing the correct data.
+
+     Arnd
