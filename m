@@ -1,25 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="LtUR21Xi"
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078889C;
-	Thu, 14 Dec 2023 06:05:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-	t=1702562668; x=1703167468; i=linosanfilippo@gmx.de;
-	bh=dAalFO3VhKWZpswc6qLS4x3nxxwLUEFecgralPeJfrM=;
-	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
-	 In-Reply-To;
-	b=LtUR21Xi3ZppYxgG9lAv3k1I71ROCcABzxj2puBQD8p31R2i16YWbznbJiz8WACl
-	 xyRBk1f5dWADpByLCMNDYMMPNO2yPsg8BXEK3MU2LNadIK0QzsS6shyLAR5/5XLEt
-	 30fiH4i4dg+XQKavrcD+nhmAkO1UiyZ8N1jtKReVGELQeeAf1o7cRI/5V0ui4hRsU
-	 aIHRa+e8PpiquiGdpuHoduTQL+xmn6DpIS5ueGlU0pvXdbLaJ4/mDyYBKUY0cl76/
-	 3ZOg0b8nmnN7nP69TqJivJiXgBEeF3bkTPy93ioVpDS/1TXvhxG4fqpP11q/gk0ka
-	 PKH7o6dfxULJD8x/lg==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.2.42] ([84.180.26.138]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mel3t-1rnwUQ4BhF-00am5W; Thu, 14
- Dec 2023 15:04:28 +0100
-Message-ID: <ed087928-43ac-42bc-8e4d-d1632db451b9@gmx.de>
-Date: Thu, 14 Dec 2023 15:04:26 +0100
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="l+tWKgXG"
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C67311B
+	for <linux-serial@vger.kernel.org>; Thu, 14 Dec 2023 06:09:43 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id a640c23a62f3a-a1c7b20f895so944728566b.2
+        for <linux-serial@vger.kernel.org>; Thu, 14 Dec 2023 06:09:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1702562981; x=1703167781; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=/3RQuNkLRKG8bKgPIldu8Ku3xY7yfi4XKy/b0IC08t8=;
+        b=l+tWKgXGoq20hunhC7pGAIw0Ef+qDD41fvB2uNYNTNISgK4cq/IjlJUaHRGWSpLAEm
+         loOXKdXf3S8/xmmvyPUTKaGs6i8dYqxYfm/epiMAl0q5LUVIOTjB7IN8WxsO6bxiq2bb
+         G54vt7/xQL6IP/YkrbctQEg4hkY9dNdWSoy4u8Uh8aYbwZQSIH29hxpIUfMX4v7VkJSX
+         ksCmCCqKlXvwRRG6o0GTgyjeoeO8aTGEGcp+sDapYEvcYBervl2GFYrcknfBCV7xycqu
+         1OQY44p/yoq+NbYR+bO1MxCOGhR5K94vpZZ+aXRpRWvSV1v9iuBsGhe72fsVU6iIvOsR
+         6mWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702562981; x=1703167781;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=/3RQuNkLRKG8bKgPIldu8Ku3xY7yfi4XKy/b0IC08t8=;
+        b=E+bFbUfS0k2ee262u0My1gmZlOeFPaam7HVPclwkfzPuJiOhkQj1HXnDOdOZrPi7BG
+         39DxfD/5hjRbWFR35K3AvcgmA0axLibiY+B6dAWC+/Gp0OTiAtX8PrC2TEshpJ2A/k+A
+         fIIY0f2LpYxIgMNTReSw3HHWXYEZkUZ8ZTS0sd8wsxQ4/I8T5+jlx3358ZHoyNePx/if
+         Q7u6JFXnujRo+9Bg3c0d+5XL+JTTK999BN8BVb4m3S7eD0/l5VY7PouI+CCQ/LCn+wlR
+         zUBH7HuM8fAbXkQ9+OL4KWuAslbGDilHH1e2Tdyi7Kq1w58nrCh9EAnTcl/7Hp/4JjIs
+         Tm8g==
+X-Gm-Message-State: AOJu0YzYeHH+g6MxboKp+pxhVdtzKLaivI5lx1hOe5gADnRX1EZitmew
+	MzA8cwevqHFB6Kv3DRZlifcRkA==
+X-Google-Smtp-Source: AGHT+IE7Uwl8ErU40fjRiJ15CIiA2TLlXGFMgyYhBgUnAqaz4nDkwt0+SdGL5BjePKkDBG8sk1zFNA==
+X-Received: by 2002:a17:906:d96e:b0:a1c:b4d7:c78a with SMTP id rp14-20020a170906d96e00b00a1cb4d7c78amr4920685ejb.32.1702562981541;
+        Thu, 14 Dec 2023 06:09:41 -0800 (PST)
+Received: from [192.168.2.107] ([79.115.63.202])
+        by smtp.gmail.com with ESMTPSA id rm6-20020a1709076b0600b00a1bec12448csm9393020ejc.150.2023.12.14.06.09.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Dec 2023 06:09:41 -0800 (PST)
+Message-ID: <64e35ae0-a751-40ee-b27f-8034e7817222@linaro.org>
+Date: Thu, 14 Dec 2023 14:09:38 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -27,209 +47,76 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
- binding
+Subject: Re: [PATCH 12/13] arm64: defconfig: sync with savedefconfig
 Content-Language: en-US
-To: Christoph Niedermaier <cniedermaier@dh-electronics.com>,
- Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Lukas Wunner <lukas@wunner.de>,
- Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Arnd Bergmann <arnd@arndb.de>, Peter Griffin <peter.griffin@linaro.org>,
+ Rob Herring <robh+dt@kernel.org>, krzysztof.kozlowski+dt@linaro.org,
+ Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
+ <sboyd@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ andi.shyti@kernel.org, Alim Akhtar <alim.akhtar@samsung.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- "brenda.streiff@ni.com" <brenda.streiff@ni.com>,
- Tomas Paukrt <tomaspaukrt@email.cz>
-References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
- <20231120151056.148450-2-linux@rasmusvillemoes.dk>
- <20231122145344.GA18949@wunner.de>
- <3b8548b1-b8a9-0c9e-4040-5cfda06a85c6@gmx.de>
- <ec66d25162de4cbc92720df1e7008fe8@dh-electronics.com>
- <5c140498-69e3-4187-8703-db0c41e7ca89@gmx.de>
- <fe28eb93-daa1-41af-a005-f21aa87e1984@gmx.de>
- <ZXcJr4VS_uGr_6TV@smile.fi.intel.com>
- <ZXrX4mQXPLum0jL3@moxa-ThinkCentre-M90t>
- <b35730df8288469fbaf67b5ceae4eece@dh-electronics.com>
-From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <b35730df8288469fbaf67b5ceae4eece@dh-electronics.com>
+ Jiri Slaby <jirislaby@kernel.org>, Catalin Marinas
+ <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ Sylwester Nawrocki <s.nawrocki@samsung.com>,
+ Tomasz Figa <tomasz.figa@gmail.com>, Chanwoo Choi <cw00.choi@samsung.com>,
+ Sam Protsenko <semen.protsenko@linaro.org>
+Cc: =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
+ saravanak@google.com, William McVicker <willmcvicker@google.com>,
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+ linux-serial@vger.kernel.org
+References: <20231214105243.3707730-1-tudor.ambarus@linaro.org>
+ <20231214105243.3707730-13-tudor.ambarus@linaro.org>
+ <1153987b-a818-454a-a292-57f2b3898771@app.fastmail.com>
+ <93969025-606c-4e4c-9cbc-3c8351f95adb@linaro.org>
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
+In-Reply-To: <93969025-606c-4e4c-9cbc-3c8351f95adb@linaro.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:XajtO+TgFw3w4zcM4aW2nykJ72BrrtZqlxyDwiW0z1F4eFBF0ms
- 3WOaMLOaiaKV5w6o3fsxiAcgOuAKoEA/gXx1YWP+l3BdbRV6b5XrgGcAASPYYnyry1zU6zr
- mq1Btvko2CJJVv3yEyjOG/zn0bjxKT5YAaG4D+GTxQn2GdE5faF6n9pIabnSsKzSSyU+Y9U
- zvONFtH43A42I//brEZbQ==
-UI-OutboundReport: notjunk:1;M01:P0:8PC0DGuaGXc=;UDjHXQiHIwzAHNyRQxmBwsl+uhv
- 6kOPjT1rl3JIOjFSWKuNaI2g/F7p6couwsZzqyckVF+vdco1fYSHNmg1pPNa5GE0EX/lYNGx+
- r+KXEE3wkH1FmcRlRD3lOXLIFclWuUWHkgv+cLWFKMEGNdC7+VRsU+LgB/gJsHCED1m/jUjM8
- Ofwg4fdmqvFJM8kcijI9EtLPCSGcb6QBZNKADPnUbFJ+njaKcD8cTQt5C+a62Wr+PR2qtN2Rq
- rH7LPb4Ar2SmpuVSIT0DJa4FOqk0C3VlGTTMleBogkY9TgwtUE2CnF16nWJEXV5XExMCoI1Zq
- kcf8skhBJfdvw6wesonZUWqs36+A/nV1XrYTOqDfCGPx83+2bjYr7Mj77iuPCSKX5ZC3PVef9
- ISw04F6uf2sm4SjXK8Jgx1OJzdQ1y76rbO6Ra2R5hqDCXgEyrOaIlU4JEDL5uaOTlgoM0VWhj
- rUOpX6Uf6J8jLUQiz+85zxKA/1s4iVe4yvuwhIkcaug8PtaEcpyXD1BdicNmiwW3rQwGFWsMR
- /DTSIW5iAAzLd5C2vQUfD0pqpodlSi2AZ3g3YUeUuzMquilDZaGJ+0vJia0xWsUc2yhqeahp0
- i6nx6nkHE8STd4oow6MMHPF0cW11j55Jre8inGrmc9balOd/JAMBLL/lcPK3PlUzUONETJYOz
- NWavm5HNMH/X7RHLM1Sax6uF1R/2uwsNDWdQ1W0tT+LJpZ14BcZdI2XJnGQ2ZvyltHa/2JVeG
- VKlrVYgirwQlKGLVR8DKl5Cv9nxvE2jnaxOk/5yW9WzXP1f5nteMDlofLFQWF4o/BRLR8eUOs
- E3zqkxy2yT00IRA/PqnswulBvWC+r+PjXyqEc4ghDE3gcFxga1f2WzMfB8B3LnPEzEFGO10BV
- SznzdzlE14g90UscnrWD+Hf+p5/2WTEaTW7FK+yla8UJ5+zOPMRJj2h5TGl47cqpdJedLopyy
- hgziSQ==
+Content-Transfer-Encoding: 7bit
 
 
-Hi,
 
-On 14.12.23 14:41, Christoph Niedermaier wrote:
-> From: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-> Sent: Thursday, December 14, 2023 11:25 AM
->> On Mon, Dec 11, 2023 at 03:07:59PM +0200, Andy Shevchenko wrote:
->>> On Sat, Dec 09, 2023 at 12:47:47PM +0100, Lino Sanfilippo wrote:
->>>> On 06.12.23 16:42, Lino Sanfilippo wrote:
+On 12/14/23 13:19, Krzysztof Kozlowski wrote:
+> On 14/12/2023 13:08, Arnd Bergmann wrote:
+
+Hi, Arnd, Krzysztof,
+
+Thanks for the review!
+
+>> On Thu, Dec 14, 2023, at 11:52, Tudor Ambarus wrote:
+>>> Sync the defconfig with savedefconfig as config options
+>>> change/move over time.
 >>>
->>>>>>>> Crescent CY Hsieh (+cc) is in parallel trying to add an RS-422 mo=
-de bit
->>>>>>>> to struct serial_rs485:
->>>>>>>>
->>>>>>>> https://lore.kernel.org/all/20231121095122.15948-1-crescentcy.hsi=
-eh@moxa.com/
->>>>>>>>
->>>>>>>
->>>>>>> That new flag was suggested by me instead of using SER_RS422_ENABL=
-ED, which
->>>>>>> would mostly be redundant to SER_RS485_ENABLED.
->>>>
->>>> A cleaner solution would probably be to not handle RS422 with the RS4=
-85 settings at
->>>> all, but to introduce another set of ioctls to set and read it.
->>>>
->>>> An own RS422 structure like
->>>>
->>>> struct serial_rs422 {
->>>>     __u32   flags;
->>>> #define SER_RS422_ENABLED           (1 << 0)
->>>> #define SER_RS422_TERMINATE_BUS             (1 << 1)
->>>> };
->>>>
->>>>
->>>> could be used as the parameter for these new ioctls.
->>>>
->>>> Any comments on this?
->>>
->>> I have (maybe not so constructive) a comment. Please, at all means try=
- to not
->>> extend the existing serial data structures, we have too many ones with=
- too many
->>> fields already. For user space, though, one may use unions and flags, =
-but for
->>> internal ones it might be better ways, I think.
->>
->> How about revising the name of 'TIOCSRS485' and 'serial_rs485' to a
->> general one, and put RS422 and RS485 configuration flags into that
->> structure?
->>
->> So that in userspace it could set RS422 or RS485 configurations using a
->> single ioctl command and one structure.
->>
->> In this way, it won't be confused in userspace and won't add new data
->> structure internally as well.
->>
->
-> I will summarize the current situation from my point of view, maybe it h=
-elps:
->
-> RS-232:
->   - Full Duplex Point-to-Point connection
->   - No transceiver control with RTS
->   - No termination
->   - No extra struct in use
->
-> RS-422:
->   - Full Duplex Point-to-Point connection
->   - No transceiver control with RTS needed
->   - Termination possible
->   - Extra struct serial_rs485 needed if termination is used
->  =3D> RS-422 can be used in RS-232 operation, but if a termination shoul=
-d be
->     switchable the RS485 flag has to be enabled. But then also transceiv=
-er
->     control will be enabled. Not a very satisfying situation.
->
+>>> Generated with the following commands:
+>>> make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- defconfig
+>>> make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- savedefconfig
+>>> cp defconfig arch/arm64/configs/defconfig
+> These are obvious. You cannot do it differently.
 
-Thats why I vote for a  RS422 mode.
+This was just a prerequisite patch for the next, where I made a config
+builtin. Modifying defconfig shall be made in a similar manner, but it
+seems it's not the case (144 line change here), and that's why I
+considered it is worth specifying how I did it.
 
-> RS-485 (2-wire) very common:
->   - Half Duplex RS-485 bus
->   - Transceiver control with RTS is needed
->   - Termination possible
->   - Extra struct serial_rs485 is needed
->  =3D> RS-485 has to be enabled and configured:
->     - Set SER_RS485_ENABLED
->     - Set SER_RS485_RTS_ON_SEND or SER_RS485_RTS_AFTER_SEND
->     - Set/clear SER_RS485_RX_DURING_TX depending on whether
->       the receiver path should be on or off during sending.
->       If it's set it allows to monitor the sending on the bus
->       and detect whether another bus device is transmitting
->       at the same time.
->     - Set/clear SER_RS485_TERMINATE_BUS for bus termination.
->
-> RS-485 (4-wire) little used:
->   - Full Duplex RS-485 bus
->   - Transceiver control with RTS is needed
->   - Termination possible
->   - Extra struct serial_rs485 is needed
->  =3D> RS-485 has to be enabled and configured:
->     - Set SER_RS485_ENABLED
->     - Set SER_RS485_RTS_ON_SEND or SER_RS485_RTS_AFTER_SEND
->     - Set SER_RS485_RX_DURING_TX, as the receiver should always
->       be enabled independently of TX, because TX and RX are
->       separated from each other by their own wires.
->     - Set/clear SER_RS485_TERMINATE_BUS for bus termination.
+> 
+>>> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+>>> ---
+>>>  arch/arm64/configs/defconfig | 144 +++++++++++++----------------------
+>>>  1 file changed, 55 insertions(+), 89 deletions(-)
+>> I usually ask for defconfig changes to be merged when someone just
+>> adds a single line per patch, but a 144 line change is clearly too
+>> big, please split this up.
 
-How can the driver distinguish between RS485 full duplex and half duplex t=
-hen?
-In full duplex RTS control is not needed AFAIU.
+The truth is I didn't think we care what configs get removed after a
+savedefconfig. I see now after Arnd's review that we have a higher goal
+and savedefconfig shall be used to identify misconfiguration.
 
->
-> I think the GPIOs reflect the flag states and are meaningful:
-> - SER_RS485_TERMINATE_BUS: Switch bus termination on/off by GPIO
-> - SER_RS485_RX_DURING_TX:  Used to enable/disable RX during TX
->                            in hardware by GPIO (for 2-wire)
-> - SER_RS485_ENABLED:       Muxing between RS-232 and RS-485 by GPIO
->
-> Switching RS-485 on during boot could also be handled by a devicetree
-> overlay. Evaluate the GPIO and load a DTO accordingly before booting.
->
-> Please correct me if I have misrepresented something...
->
-> If I looked at it in this new way, I would discard my idea with the
-> FULL_DUPLEX and HALF_DUPLEX. For a better use of RS-422 it would be
-> good to disable transceiver control via RTS. It can be done by clearing
-> the existing flags SER_RS485_RTS_ON_SEND and SER_RS485_RTS_AFTER_SEND
-> at the same time, but I think it is confusing. Better would be a flag
-> for RS-422:
->
-> RS-422:                     Set SER_RS422_MODE for disabling
->                             transceiver control via RTS.
-> RS-485 (2-wire and 4-wire): Clear SER_RS422_MODE for enabling
->                             transceiver control via RTS.
->
-> Finally, at present it is also not possible to distinguish between RS485
-> 2-wire and 4-wire operation. I think it isn't necessary, as different
-> hardware has to be used anyway. The hardware then determines the
-> configuration, see above.
+> Anyway this should not go via my tree, because of possible conflicts.
+> This commit, so the savedefconfig, must be prepared on linux-next, which
+> should be mentioned in changelog for example. It also is not related to
+> this patchset.
 
-But the driver should somehow be informed that there exists a full
-duplex hardware setup, so that it does not need to control the RTS line.
-Maybe by means of a device tree property?
-
-Regards,
-Lino
-
-
->
->
-> Regards
-> Christoph
+Please ignore this patch. Cheers,
+ta
