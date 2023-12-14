@@ -1,117 +1,83 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="B00+lRyE"
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E50510A;
-	Thu, 14 Dec 2023 01:00:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-	t=1702544401; x=1703149201; i=linosanfilippo@gmx.de;
-	bh=i3Hz+ytUFA4jUXYAsPUZy/EuCtWs2rkgtqsGERhQNr8=;
-	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
-	 In-Reply-To;
-	b=B00+lRyETfYe+87IC1S0gO42UrRzj4IDXlh5QSrQaqOPX+XYx5aaj7GX6YkYb9uF
-	 AAykgwveahf/4uyrhpjTWPw8yZ4B4FUNAi7h9iiLE1bLTP/fFDrNMWdMm4L5wWHHu
-	 IH6w26ZKnTf80aTjcEm4n8X9sdoZm1gzArguieF9jFJAeYhY+l8dCPsZ/BT5OOMZh
-	 3513Xpp0mCZEsW1bJWHDP+S9c+m1qn7DyxADCN8hBoYL4P7CkK6S/13rCyznijwzk
-	 aOs7m6cMSfRx7WQdMnjsKWAcwGC4A9rmNRcQ1UkfRHXOpcgLFXs4NO/wX4VkntzAr
-	 /KbF3bwitUGfbnaBmw==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.2.42] ([84.180.3.177]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N7QxB-1rH80a053l-017mQx; Thu, 14
- Dec 2023 10:00:01 +0100
-Message-ID: <e8cf9ed3-e2d3-4764-b1c3-87e38e99b4a5@gmx.de>
-Date: Thu, 14 Dec 2023 10:00:00 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BJEVUfgF"
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2682B7;
+	Thu, 14 Dec 2023 01:27:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1702546045; x=1734082045;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=j+OKMNvYP/TsJ2cZYfFOMvsa6Wp1SnLuZ4Neu5W5W1g=;
+  b=BJEVUfgF4woExtodGFQ/s8AbGf1L9fJZmKij9Df92g4sLiWqZkT9TIG7
+   RNUdIOdv2eGANMqnfo+/tkQ16mWttwu3kU2surBzhwYe5GuTW0+jyJ7f2
+   3S9n80W6jZuVF0KlrnY3FD2hoKOhZhazo+Lqa3EsYmgHoymDs9bUcnjY/
+   SId2RgTwOpiP3tGDjbno/Ebv/uCBlL8YPTslr/Z+zcUECAlxkyyBCeRis
+   EIxaExGhBZILztD6uawqZbG+CvwzHdPnrDbyAH6SJp5QieuNkEK0dzpSu
+   MyUhWUCqoARNQ68kavGHEKN3uPSpYJShqFq64B/xO/8M/O2QdXb8dhG0m
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10923"; a="394840191"
+X-IronPort-AV: E=Sophos;i="6.04,275,1695711600"; 
+   d="scan'208";a="394840191"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2023 01:27:16 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10923"; a="774286358"
+X-IronPort-AV: E=Sophos;i="6.04,275,1695711600"; 
+   d="scan'208";a="774286358"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO ijarvine-mobl2.mshome.net) ([10.237.66.38])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2023 01:27:10 -0800
+Date: Thu, 14 Dec 2023 11:27:03 +0200 (EET)
+From: =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+cc: Lino Sanfilippo <l.sanfilippo@kunbus.com>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, u.kleine-koenig@pengutronix.de, 
+    shawnguo@kernel.org, s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com, 
+    alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com, 
+    hugo@hugovil.com, LKML <linux-kernel@vger.kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com, 
+    stable@vger.kernel.org
+Subject: Re: [PATCH v5 5/7] serial: core, imx: do not set RS485 enabled if
+ it is not supported
+In-Reply-To: <9271d88a-52bf-4f3a-9861-fdc5120cfc31@gmx.de>
+Message-ID: <fb579fd-a5ae-2838-d1b-eefc16ad015@linux.intel.com>
+References: <20231209125836.16294-1-l.sanfilippo@kunbus.com> <20231209125836.16294-6-l.sanfilippo@kunbus.com> <ffdaf03b-65af-731f-992-3e90ca6fca@linux.intel.com> <9271d88a-52bf-4f3a-9861-fdc5120cfc31@gmx.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V5 3/3] tty: serial: uartps: Add rs485 support to uartps
- driver
-Content-Language: en-US
-To: Manikanta Guntupalli <manikanta.guntupalli@amd.com>, git@amd.com,
- michal.simek@amd.com, gregkh@linuxfoundation.org, robh+dt@kernel.org,
- krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
- linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, jirislaby@kernel.org,
- linux-arm-kernel@lists.infradead.org
-Cc: radhey.shyam.pandey@amd.com, srinivas.goud@amd.com,
- shubhrajyoti.datta@amd.com, manion05gk@gmail.com
-References: <20231213130023.606486-1-manikanta.guntupalli@amd.com>
- <20231213130023.606486-4-manikanta.guntupalli@amd.com>
-From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <20231213130023.606486-4-manikanta.guntupalli@amd.com>
+Content-Type: multipart/mixed; boundary="8323329-2144092122-1702546036=:5690"
+
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-2144092122-1702546036=:5690
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:pK8MFRjHp2YaZUknT+LRCDyINjh9i/0Jrq0/enwVR0460Vv8uBG
- jEhoBvjHDZiW26EnG9lgKBjPWoxplSfjGuR22APQXvVrno70BetBrA7LSnxExszo1a/O5gV
- loInpLjPZxRyVQeVsIoD4xa8mR/aqLRKC+QCl58O4a0vJjWQzZEDtjsldDjbI0O+RoaXHfw
- karSL1jB/+wDGZDkoKmaQ==
-UI-OutboundReport: notjunk:1;M01:P0:EI9S+Cq+1aU=;Siw+EKHPttacc+oKnTGnheJocRM
- CF0+vm3a9XnjSROmSR4PRlaHwFYax+mLYqDdXpk0rCt/S7wCBe4kgryA5z7HH1Qk8/jC5qn/k
- argluzBsuic8Xdvl4Zs1namxqEOcbwGCx9UE04NQQBPe6jJXFgAThrLJFU7p8zm/3TiTIHjOb
- 4ooaGAw5Aa96JE/VpnzFZGDCnwTdryMI26wIOHUoNpLavPSwAUAU/9kdP2fK61Z+nt5nfqyqE
- tJWmHOx+x3nfni11q22hBl2ioHVrRr08KEZgs6gyDBIUlCygZ1oo8mGdhXIhecbgSYtnrsK+C
- GowdrnlFFBClau64OgmrHBUrkpH6HlgVldEUo7+wP6ssF9UrmumnMpsXYvSvwZG+L4EgsgYHx
- z/Zrzkd5G8L7IeDJq+8Baic2h+lltxO9vrWzch7XTD6+bpGV/wLLkkrYdcKwKEhKKytu2h+yK
- fUOEYAN//xiWOW89UZb4+NSP9yYDLabHJNmfLMIus8ze0OGfFxy0sTfZpN7f18ULlPQrVmOdb
- oPRBnExJNdMLIObU/l4Ct7CdLBZNcTfHRt3JBv1QAGKoC5IR7DqW2bqEdGoj4xMzRgERlmaez
- LCPoF4+oOTrKmzmzLHCK+mOOCZD6eYq39gsNHwxiPcFX5hT0tCSMVvlbQ6axOerYvqD4+s26M
- jZ9CEX1NV56FLCPNlACfCkNXttel570pUfgPxjZ1TmLyszRp3s3eHytzj/U+E/CXz3xrVW1Eh
- faz1DwqpXE7dXbRKU6VGhjCzSUSc4EvBaG7IodmXhQDlMsJC2Js+EojhOGwCYbl/y/xIB3fzu
- u9d8KsBNlmKugz35thMUdJF4j5QA4SyjINH5RloMTKP69ncSd5nd0Y4NUCtL67qDtmmQm/2FL
- eKE0ub6FS6jeDcZmujL+72KEXKTWbiwr7mb0gMNQlRlsk5tWh2zhksBr53yK7xY1/CrW4H2hl
- cNsGTQ==
+Content-Transfer-Encoding: 8BIT
 
+On Wed, 13 Dec 2023, Lino Sanfilippo wrote:
+> On 11.12.23 12:00, Ilpo Järvinen wrote:
+> > On Sat, 9 Dec 2023, Lino Sanfilippo wrote:
+> 
+> > Looking into the code, that setting of rs485_supported from imx_no_rs485
+> > is actually superfluous as it should be already cleared to zeros on alloc.
+> >
+> 
+> Yes. BTW: Another "no_rs485" configuration setting can be found in the ar933x driver.
+> If we do not want to keep those assignments I can remove the one for the imx
+> driver with the next version of this patch...
 
-Hi,
+I think they can just be dropped as it's normal in Linux code to assume 
+that things are zeroed by default. Those "no"-variants originate from the 
+time when supported_rs485 was not yet embedded but just a pointer to a 
+const struct and I didn't realize I could have removed them when I ended 
+up embedding the struct so it can be altered per port.
 
-On 13.12.23 14:00, Manikanta Guntupalli wrote:
+-- 
+ i.
 
->
-> +/**
-> + * cdns_rs485_rx_callback - Timer rx callback handler for rs485.
-> + * @t: Handle to the timer list structure
-> + */
-> +static void cdns_rs485_rx_callback(struct timer_list *t)
-> +{
-> +	struct cdns_uart *cdns_uart =3D from_timer(cdns_uart, t, timer);
-> +
-> +	/*
-> +	 * Default Rx should be setup, because Rx signaling path
-> +	 * need to enable to receive data.
-> +	 */
-> +	cdns_rs485_rx_setup(cdns_uart);
-> +}
-> +
-> +/**
-> + * cdns_rs485_tx_callback - Timer tx callback handler for rs485.
-> + * @t: Handle to the timer list structure
-> + */
-> +static void cdns_rs485_tx_callback(struct timer_list *t)
-> +{
-> +	struct cdns_uart *cdns_uart =3D from_timer(cdns_uart, t, timer);
-> +
-> +	cdns_uart_handle_tx(cdns_uart->port);
-
-This is called without holding the port lock now. Are you sure the lock is=
- not
-needed? AFAIK the port lock is needed at least for accessing the circular
-buffer.
-
-> +
-> +	/* Enable the TX Empty interrupt */
-> +	writel(CDNS_UART_IXR_TXEMPTY, cdns_uart->port->membase + CDNS_UART_IER=
-);
-> +
-> +	if (uart_circ_empty(&cdns_uart->port->state->xmit) ||
-> +	    uart_tx_stopped(cdns_uart->port)) {
-> +		timer_setup(&cdns_uart->timer, cdns_rs485_rx_callback, 0);
-> +		mod_timer(&cdns_uart->timer, jiffies +
-> +			  msecs_to_jiffies(cdns_uart->port->rs485.delay_rts_after_send));
-> +	}
-> +}
-
-Regards,
-Lino
+--8323329-2144092122-1702546036=:5690--
