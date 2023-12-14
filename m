@@ -1,150 +1,116 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="QkZSWxig"
-X-Greylist: delayed 440 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Dec 2023 05:50:20 PST
-Received: from mx2.securetransport.de (mx2.securetransport.de [188.68.39.254])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37501CF;
-	Thu, 14 Dec 2023 05:50:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-	s=dhelectronicscom; t=1702561312;
-	bh=aA46rQnXWzvf6O7iLbhRK/Kl8C4HBcMLPJSxSkIvRFM=;
-	h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-	b=QkZSWxigv5o3u941gSyWwYWW0H5RGVPtbYbbOWV4fZfBoCmcwIYWSUb42BvfcCLah
-	 grRxCxyYxj9Lck0O75SlGdTbXuKgJTJYPp7GA103w7E5/1+lGnyjCh1A9CoVPEUvjH
-	 qjTCDwyn8yX0avY8Wyg1M7xegbz5ZjyIBYMlNSeEAUqi5PtKrlROcczXAv0f5tNERk
-	 aQ48ySe1P7hqXMho1zQf6cG+b1FFCfNqBcyYgjcbW/GOH9JrZxTJk59drsvNf019zx
-	 /+uk8I9zrBuZQNYphUFSnZK1/A5Lsh1vNJyN+sctLv3zmtp6YkZlT39Ilx5ERx5lIn
-	 I9ZYUyGZt953w==
-X-secureTransport-forwarded: yes
-From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Complaints-To: abuse@cubewerk.de
-To: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>, Andy Shevchenko
-	<andriy.shevchenko@linux.intel.com>, Lino Sanfilippo <LinoSanfilippo@gmx.de>
-CC: Lukas Wunner <lukas@wunner.de>, Rasmus Villemoes
-	<linux@rasmusvillemoes.dk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley
-	<conor+dt@kernel.org>, "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>, =?utf-8?B?SWxwbyBKw6RydmluZW4=?=
-	<ilpo.jarvinen@linux.intel.com>, "brenda.streiff@ni.com"
-	<brenda.streiff@ni.com>, Tomas Paukrt <tomaspaukrt@email.cz>
-Subject: RE: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
- binding
-Thread-Topic: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
- binding
-Thread-Index: AQHaH/jBESSZN4JU2UOxi81YCMKNnLCN1MYggA6QRICABHVPgIADOxKAgASJVgCAABWukA==
-Date: Thu, 14 Dec 2023 13:41:47 +0000
-Message-ID: <b35730df8288469fbaf67b5ceae4eece@dh-electronics.com>
-References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
- <20231120151056.148450-2-linux@rasmusvillemoes.dk>
- <20231122145344.GA18949@wunner.de>
- <3b8548b1-b8a9-0c9e-4040-5cfda06a85c6@gmx.de>
- <ec66d25162de4cbc92720df1e7008fe8@dh-electronics.com>
- <5c140498-69e3-4187-8703-db0c41e7ca89@gmx.de>
- <fe28eb93-daa1-41af-a005-f21aa87e1984@gmx.de>
- <ZXcJr4VS_uGr_6TV@smile.fi.intel.com>
- <ZXrX4mQXPLum0jL3@moxa-ThinkCentre-M90t>
-In-Reply-To: <ZXrX4mQXPLum0jL3@moxa-ThinkCentre-M90t>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="VdUHvjAY"
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E4ECF
+	for <linux-serial@vger.kernel.org>; Thu, 14 Dec 2023 05:52:41 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-40c31f18274so78459745e9.0
+        for <linux-serial@vger.kernel.org>; Thu, 14 Dec 2023 05:52:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1702561959; x=1703166759; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ZG094W4dIVF1EKcUo638joyg5PWzf0NNJBExtH6MdeE=;
+        b=VdUHvjAYm17GgQFNbWiT9C3kGtSC9fO2fbnkgcUk0T5RTlCsREE0jyzWULmLPqhgU+
+         fh39Hl9h6gPHDiVJamBiga32l69U8+tFnhOyMP8+i6J2BwBpbdUFZpc7Bj8ZhhlqZRAy
+         ktzFT928Kc5GeINswMSOySga6WjiGa8en+pQpY2y7VvfA+ArANGXOQdtDsjHlV6C5xIA
+         ANHp5brvSSFkCEoAWHCKMq0wT2CUbeNOTOFgG1sW8l1tziYGx/O3J5gApIvi6w5gIZqZ
+         +qPWIE8a7xP3EhE9zJYtnUAWJIp8zDkm4q9zA39D2jwtVlgvCIZzdrNBfQMobhPk4spB
+         TQSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702561959; x=1703166759;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZG094W4dIVF1EKcUo638joyg5PWzf0NNJBExtH6MdeE=;
+        b=axjGZHP5X3RzoniRjXM+4AgqGihgB/GI8JQd7nVd/UJLOW05EWFGht7zWu9Hw+3VNf
+         hpeOrQ+xIcMtMUOJ5tNXuBqnMUlrRIBtQitg7nTkGUHpn3NsLFTg5RvNROt1u3YiO/jC
+         1RnuU16PHxYZK46jQZfvSaNMS+ZnAo6RjZLRFYtxKtOER+oxU0lEDDIQ/1pqw9CjJ3sd
+         OxQaesVLLW/dd7EHVSUJIpYHNtvITZLVhpCv8phoVK9GCx/+rOfW/v7NEowN53pOB09D
+         bI7MXrSsmq/+o5AP3YucVsHVqFh+IZ6MjBpjqvAznVvubjZupONYmrFrzrLJ0IPDYNxe
+         bckA==
+X-Gm-Message-State: AOJu0YzosMsiMODCMPKypo+LsRtD7WY4Ee/lBC7X/MAJ+6k1Pbo+y70W
+	C7mzjcZOKKEPzfQRNZsmy5RlYw==
+X-Google-Smtp-Source: AGHT+IHZrLMTXyNjcexxbVAiORtydhgsD0STmbd6hhxBV7J4JR7cRSScr8gTPzn4kfe/zjbQxtcR5g==
+X-Received: by 2002:a05:600c:4591:b0:40c:325a:545c with SMTP id r17-20020a05600c459100b0040c325a545cmr4356398wmo.221.1702561959544;
+        Thu, 14 Dec 2023 05:52:39 -0800 (PST)
+Received: from [192.168.2.107] ([79.115.63.202])
+        by smtp.gmail.com with ESMTPSA id tx17-20020a1709078e9100b00a1b75e0e061sm9483197ejc.130.2023.12.14.05.52.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Dec 2023 05:52:38 -0800 (PST)
+Message-ID: <8808ceeb-35dc-4094-aec4-f43c7acd6174@linaro.org>
+Date: Thu, 14 Dec 2023 13:52:35 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 05/13] tty: serial: samsung: add gs101 earlycon support
+Content-Language: en-US
+To: Arnd Bergmann <arnd@arndb.de>, Peter Griffin <peter.griffin@linaro.org>,
+ Rob Herring <robh+dt@kernel.org>, krzysztof.kozlowski+dt@linaro.org,
+ Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
+ <sboyd@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ andi.shyti@kernel.org, Alim Akhtar <alim.akhtar@samsung.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Catalin Marinas
+ <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ Sylwester Nawrocki <s.nawrocki@samsung.com>,
+ Tomasz Figa <tomasz.figa@gmail.com>, Chanwoo Choi <cw00.choi@samsung.com>,
+ Sam Protsenko <semen.protsenko@linaro.org>
+Cc: =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
+ saravanak@google.com, William McVicker <willmcvicker@google.com>,
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+ linux-serial@vger.kernel.org
+References: <20231214105243.3707730-1-tudor.ambarus@linaro.org>
+ <20231214105243.3707730-6-tudor.ambarus@linaro.org>
+ <1938fcf1-eb5d-4723-a6c6-d2fe2c6dd1c0@app.fastmail.com>
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
+In-Reply-To: <1938fcf1-eb5d-4723-a6c6-d2fe2c6dd1c0@app.fastmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-RnJvbTogQ3Jlc2NlbnQgQ1kgSHNpZWggPGNyZXNjZW50Y3kuaHNpZWhAbW94YS5jb20+DQpTZW50
-OiBUaHVyc2RheSwgRGVjZW1iZXIgMTQsIDIwMjMgMTE6MjUgQU0NCj4gT24gTW9uLCBEZWMgMTEs
-IDIwMjMgYXQgMDM6MDc6NTlQTSArMDIwMCwgQW5keSBTaGV2Y2hlbmtvIHdyb3RlOg0KPj4gT24g
-U2F0LCBEZWMgMDksIDIwMjMgYXQgMTI6NDc6NDdQTSArMDEwMCwgTGlubyBTYW5maWxpcHBvIHdy
-b3RlOg0KPj4+IE9uIDA2LjEyLjIzIDE2OjQyLCBMaW5vIFNhbmZpbGlwcG8gd3JvdGU6DQo+Pg0K
-Pj4+Pj4+PiBDcmVzY2VudCBDWSBIc2llaCAoK2NjKSBpcyBpbiBwYXJhbGxlbCB0cnlpbmcgdG8g
-YWRkIGFuIFJTLTQyMiBtb2RlIGJpdA0KPj4+Pj4+PiB0byBzdHJ1Y3Qgc2VyaWFsX3JzNDg1Og0K
-Pj4+Pj4+Pg0KPj4+Pj4+PiBodHRwczovL2xvcmUua2VybmVsLm9yZy9hbGwvMjAyMzExMjEwOTUx
-MjIuMTU5NDgtMS1jcmVzY2VudGN5LmhzaWVoQG1veGEuY29tLw0KPj4+Pj4+Pg0KPj4+Pj4+DQo+
-Pj4+Pj4gVGhhdCBuZXcgZmxhZyB3YXMgc3VnZ2VzdGVkIGJ5IG1lIGluc3RlYWQgb2YgdXNpbmcg
-U0VSX1JTNDIyX0VOQUJMRUQsIHdoaWNoDQo+Pj4+Pj4gd291bGQgbW9zdGx5IGJlIHJlZHVuZGFu
-dCB0byBTRVJfUlM0ODVfRU5BQkxFRC4NCj4+Pg0KPj4+IEEgY2xlYW5lciBzb2x1dGlvbiB3b3Vs
-ZCBwcm9iYWJseSBiZSB0byBub3QgaGFuZGxlIFJTNDIyIHdpdGggdGhlIFJTNDg1IHNldHRpbmdz
-IGF0DQo+Pj4gYWxsLCBidXQgdG8gaW50cm9kdWNlIGFub3RoZXIgc2V0IG9mIGlvY3RscyB0byBz
-ZXQgYW5kIHJlYWQgaXQuDQo+Pj4NCj4+PiBBbiBvd24gUlM0MjIgc3RydWN0dXJlIGxpa2UNCj4+
-Pg0KPj4+IHN0cnVjdCBzZXJpYWxfcnM0MjIgew0KPj4+ICAgICBfX3UzMiAgIGZsYWdzOw0KPj4+
-ICNkZWZpbmUgU0VSX1JTNDIyX0VOQUJMRUQgICAgICAgICAgICgxIDw8IDApDQo+Pj4gI2RlZmlu
-ZSBTRVJfUlM0MjJfVEVSTUlOQVRFX0JVUyAgICAgICAgICAgICAoMSA8PCAxKQ0KPj4+IH07DQo+
-Pj4NCj4+Pg0KPj4+IGNvdWxkIGJlIHVzZWQgYXMgdGhlIHBhcmFtZXRlciBmb3IgdGhlc2UgbmV3
-IGlvY3Rscy4NCj4+Pg0KPj4+IEFueSBjb21tZW50cyBvbiB0aGlzPw0KPj4NCj4+IEkgaGF2ZSAo
-bWF5YmUgbm90IHNvIGNvbnN0cnVjdGl2ZSkgYSBjb21tZW50LiBQbGVhc2UsIGF0IGFsbCBtZWFu
-cyB0cnkgdG8gbm90DQo+PiBleHRlbmQgdGhlIGV4aXN0aW5nIHNlcmlhbCBkYXRhIHN0cnVjdHVy
-ZXMsIHdlIGhhdmUgdG9vIG1hbnkgb25lcyB3aXRoIHRvbyBtYW55DQo+PiBmaWVsZHMgYWxyZWFk
-eS4gRm9yIHVzZXIgc3BhY2UsIHRob3VnaCwgb25lIG1heSB1c2UgdW5pb25zIGFuZCBmbGFncywg
-YnV0IGZvcg0KPj4gaW50ZXJuYWwgb25lcyBpdCBtaWdodCBiZSBiZXR0ZXIgd2F5cywgSSB0aGlu
-ay4NCj4gDQo+IEhvdyBhYm91dCByZXZpc2luZyB0aGUgbmFtZSBvZiAnVElPQ1NSUzQ4NScgYW5k
-ICdzZXJpYWxfcnM0ODUnIHRvIGENCj4gZ2VuZXJhbCBvbmUsIGFuZCBwdXQgUlM0MjIgYW5kIFJT
-NDg1IGNvbmZpZ3VyYXRpb24gZmxhZ3MgaW50byB0aGF0DQo+IHN0cnVjdHVyZT8NCj4gDQo+IFNv
-IHRoYXQgaW4gdXNlcnNwYWNlIGl0IGNvdWxkIHNldCBSUzQyMiBvciBSUzQ4NSBjb25maWd1cmF0
-aW9ucyB1c2luZyBhDQo+IHNpbmdsZSBpb2N0bCBjb21tYW5kIGFuZCBvbmUgc3RydWN0dXJlLg0K
-PiANCj4gSW4gdGhpcyB3YXksIGl0IHdvbid0IGJlIGNvbmZ1c2VkIGluIHVzZXJzcGFjZSBhbmQg
-d29uJ3QgYWRkIG5ldyBkYXRhDQo+IHN0cnVjdHVyZSBpbnRlcm5hbGx5IGFzIHdlbGwuDQo+IA0K
-DQpJIHdpbGwgc3VtbWFyaXplIHRoZSBjdXJyZW50IHNpdHVhdGlvbiBmcm9tIG15IHBvaW50IG9m
-IHZpZXcsIG1heWJlIGl0IGhlbHBzOg0KDQpSUy0yMzI6DQogIC0gRnVsbCBEdXBsZXggUG9pbnQt
-dG8tUG9pbnQgY29ubmVjdGlvbg0KICAtIE5vIHRyYW5zY2VpdmVyIGNvbnRyb2wgd2l0aCBSVFMN
-CiAgLSBObyB0ZXJtaW5hdGlvbg0KICAtIE5vIGV4dHJhIHN0cnVjdCBpbiB1c2UNCg0KUlMtNDIy
-Og0KICAtIEZ1bGwgRHVwbGV4IFBvaW50LXRvLVBvaW50IGNvbm5lY3Rpb24NCiAgLSBObyB0cmFu
-c2NlaXZlciBjb250cm9sIHdpdGggUlRTIG5lZWRlZA0KICAtIFRlcm1pbmF0aW9uIHBvc3NpYmxl
-DQogIC0gRXh0cmEgc3RydWN0IHNlcmlhbF9yczQ4NSBuZWVkZWQgaWYgdGVybWluYXRpb24gaXMg
-dXNlZA0KID0+IFJTLTQyMiBjYW4gYmUgdXNlZCBpbiBSUy0yMzIgb3BlcmF0aW9uLCBidXQgaWYg
-YSB0ZXJtaW5hdGlvbiBzaG91bGQgYmUNCiAgICBzd2l0Y2hhYmxlIHRoZSBSUzQ4NSBmbGFnIGhh
-cyB0byBiZSBlbmFibGVkLiBCdXQgdGhlbiBhbHNvIHRyYW5zY2VpdmVyDQogICAgY29udHJvbCB3
-aWxsIGJlIGVuYWJsZWQuIE5vdCBhIHZlcnkgc2F0aXNmeWluZyBzaXR1YXRpb24uDQoNClJTLTQ4
-NSAoMi13aXJlKSB2ZXJ5IGNvbW1vbjoNCiAgLSBIYWxmIER1cGxleCBSUy00ODUgYnVzDQogIC0g
-VHJhbnNjZWl2ZXIgY29udHJvbCB3aXRoIFJUUyBpcyBuZWVkZWQNCiAgLSBUZXJtaW5hdGlvbiBw
-b3NzaWJsZQ0KICAtIEV4dHJhIHN0cnVjdCBzZXJpYWxfcnM0ODUgaXMgbmVlZGVkDQogPT4gUlMt
-NDg1IGhhcyB0byBiZSBlbmFibGVkIGFuZCBjb25maWd1cmVkOg0KICAgIC0gU2V0IFNFUl9SUzQ4
-NV9FTkFCTEVEIA0KICAgIC0gU2V0IFNFUl9SUzQ4NV9SVFNfT05fU0VORCBvciBTRVJfUlM0ODVf
-UlRTX0FGVEVSX1NFTkQNCiAgICAtIFNldC9jbGVhciBTRVJfUlM0ODVfUlhfRFVSSU5HX1RYIGRl
-cGVuZGluZyBvbiB3aGV0aGVyDQogICAgICB0aGUgcmVjZWl2ZXIgcGF0aCBzaG91bGQgYmUgb24g
-b3Igb2ZmIGR1cmluZyBzZW5kaW5nLg0KICAgICAgSWYgaXQncyBzZXQgaXQgYWxsb3dzIHRvIG1v
-bml0b3IgdGhlIHNlbmRpbmcgb24gdGhlIGJ1cw0KICAgICAgYW5kIGRldGVjdCB3aGV0aGVyIGFu
-b3RoZXIgYnVzIGRldmljZSBpcyB0cmFuc21pdHRpbmcNCiAgICAgIGF0IHRoZSBzYW1lIHRpbWUu
-DQogICAgLSBTZXQvY2xlYXIgU0VSX1JTNDg1X1RFUk1JTkFURV9CVVMgZm9yIGJ1cyB0ZXJtaW5h
-dGlvbi4NCg0KUlMtNDg1ICg0LXdpcmUpIGxpdHRsZSB1c2VkOg0KICAtIEZ1bGwgRHVwbGV4IFJT
-LTQ4NSBidXMNCiAgLSBUcmFuc2NlaXZlciBjb250cm9sIHdpdGggUlRTIGlzIG5lZWRlZA0KICAt
-IFRlcm1pbmF0aW9uIHBvc3NpYmxlDQogIC0gRXh0cmEgc3RydWN0IHNlcmlhbF9yczQ4NSBpcyBu
-ZWVkZWQNCiA9PiBSUy00ODUgaGFzIHRvIGJlIGVuYWJsZWQgYW5kIGNvbmZpZ3VyZWQ6DQogICAg
-LSBTZXQgU0VSX1JTNDg1X0VOQUJMRUQgDQogICAgLSBTZXQgU0VSX1JTNDg1X1JUU19PTl9TRU5E
-IG9yIFNFUl9SUzQ4NV9SVFNfQUZURVJfU0VORA0KICAgIC0gU2V0IFNFUl9SUzQ4NV9SWF9EVVJJ
-TkdfVFgsIGFzIHRoZSByZWNlaXZlciBzaG91bGQgYWx3YXlzDQogICAgICBiZSBlbmFibGVkIGlu
-ZGVwZW5kZW50bHkgb2YgVFgsIGJlY2F1c2UgVFggYW5kIFJYIGFyZQ0KICAgICAgc2VwYXJhdGVk
-IGZyb20gZWFjaCBvdGhlciBieSB0aGVpciBvd24gd2lyZXMuDQogICAgLSBTZXQvY2xlYXIgU0VS
-X1JTNDg1X1RFUk1JTkFURV9CVVMgZm9yIGJ1cyB0ZXJtaW5hdGlvbi4NCg0KSSB0aGluayB0aGUg
-R1BJT3MgcmVmbGVjdCB0aGUgZmxhZyBzdGF0ZXMgYW5kIGFyZSBtZWFuaW5nZnVsOg0KLSBTRVJf
-UlM0ODVfVEVSTUlOQVRFX0JVUzogU3dpdGNoIGJ1cyB0ZXJtaW5hdGlvbiBvbi9vZmYgYnkgR1BJ
-Tw0KLSBTRVJfUlM0ODVfUlhfRFVSSU5HX1RYOiAgVXNlZCB0byBlbmFibGUvZGlzYWJsZSBSWCBk
-dXJpbmcgVFgNCiAgICAgICAgICAgICAgICAgICAgICAgICAgIGluIGhhcmR3YXJlIGJ5IEdQSU8g
-KGZvciAyLXdpcmUpDQotIFNFUl9SUzQ4NV9FTkFCTEVEOiAgICAgICBNdXhpbmcgYmV0d2VlbiBS
-Uy0yMzIgYW5kIFJTLTQ4NSBieSBHUElPDQoNClN3aXRjaGluZyBSUy00ODUgb24gZHVyaW5nIGJv
-b3QgY291bGQgYWxzbyBiZSBoYW5kbGVkIGJ5IGEgZGV2aWNldHJlZQ0Kb3ZlcmxheS4gRXZhbHVh
-dGUgdGhlIEdQSU8gYW5kIGxvYWQgYSBEVE8gYWNjb3JkaW5nbHkgYmVmb3JlIGJvb3RpbmcuDQoN
-ClBsZWFzZSBjb3JyZWN0IG1lIGlmIEkgaGF2ZSBtaXNyZXByZXNlbnRlZCBzb21ldGhpbmcuLi4N
-Cg0KSWYgSSBsb29rZWQgYXQgaXQgaW4gdGhpcyBuZXcgd2F5LCBJIHdvdWxkIGRpc2NhcmQgbXkg
-aWRlYSB3aXRoIHRoZQ0KRlVMTF9EVVBMRVggYW5kIEhBTEZfRFVQTEVYLiBGb3IgYSBiZXR0ZXIg
-dXNlIG9mIFJTLTQyMiBpdCB3b3VsZCBiZQ0KZ29vZCB0byBkaXNhYmxlIHRyYW5zY2VpdmVyIGNv
-bnRyb2wgdmlhIFJUUy4gSXQgY2FuIGJlIGRvbmUgYnkgY2xlYXJpbmcNCnRoZSBleGlzdGluZyBm
-bGFncyBTRVJfUlM0ODVfUlRTX09OX1NFTkQgYW5kIFNFUl9SUzQ4NV9SVFNfQUZURVJfU0VORA0K
-YXQgdGhlIHNhbWUgdGltZSwgYnV0IEkgdGhpbmsgaXQgaXMgY29uZnVzaW5nLiBCZXR0ZXIgd291
-bGQgYmUgYSBmbGFnDQpmb3IgUlMtNDIyOg0KDQpSUy00MjI6ICAgICAgICAgICAgICAgICAgICAg
-U2V0IFNFUl9SUzQyMl9NT0RFIGZvciBkaXNhYmxpbmcNCiAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICB0cmFuc2NlaXZlciBjb250cm9sIHZpYSBSVFMuDQpSUy00ODUgKDItd2lyZSBhbmQgNC13
-aXJlKTogQ2xlYXIgU0VSX1JTNDIyX01PREUgZm9yIGVuYWJsaW5nDQogICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgdHJhbnNjZWl2ZXIgY29udHJvbCB2aWEgUlRTLg0KDQpGaW5hbGx5LCBhdCBw
-cmVzZW50IGl0IGlzIGFsc28gbm90IHBvc3NpYmxlIHRvIGRpc3Rpbmd1aXNoIGJldHdlZW4gUlM0
-ODUNCjItd2lyZSBhbmQgNC13aXJlIG9wZXJhdGlvbi4gSSB0aGluayBpdCBpc24ndCBuZWNlc3Nh
-cnksIGFzIGRpZmZlcmVudA0KaGFyZHdhcmUgaGFzIHRvIGJlIHVzZWQgYW55d2F5LiBUaGUgaGFy
-ZHdhcmUgdGhlbiBkZXRlcm1pbmVzIHRoZQ0KY29uZmlndXJhdGlvbiwgc2VlIGFib3ZlLg0KDQoN
-ClJlZ2FyZHMNCkNocmlzdG9waA0K
+
+
+On 12/14/23 12:01, Arnd Bergmann wrote:
+
+Hi, Arnd,
+
+Thanks for the review!
+
+> On Thu, Dec 14, 2023, at 11:52, Tudor Ambarus wrote:
+>> +static int __init gs101_early_console_setup(struct earlycon_device *device,
+>> +					    const char *opt)
+>> +{
+>> +	/* gs101 always expects MMIO32 register accesses. */
+>> +	device->port.iotype = UPIO_MEM32;
+>> +
+>> +	return s5pv210_early_console_setup(device, opt);
+>> +}
+>> +
+>> +OF_EARLYCON_DECLARE(gs101, "google,gs101-uart", gs101_early_console_setup);
+> 
+> It looks like this is already done by of_setup_earlycon() based on
+> the reg-io-width property. Any idea why it doesn't work with the
+> normal s5pv210_early_console_setup() function?
+> 
+
+It works if in device tree one specifies the reg-io-width property and
+sets it to 4. If the reg-io-width is not specified, the iotype defaults
+to UPIO_MEM causing the SError interrupt on gs101 which makes the system
+unusable.
+
+Also, if the earlycon comes specified from the kernel params, the
+of_setup_earlycon() is no longer called and the earlycon will be set
+solely based on the kernel params buffer, thus allowing users to crash
+the kernel on wrong earlycon definitions.
+
+If you think the change is fine, I can amend the commit message with the
+description from above.
+
+Cheers,
+ta
