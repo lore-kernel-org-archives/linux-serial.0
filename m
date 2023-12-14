@@ -1,25 +1,25 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="rbFh6xG4"
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 129F4A0;
-	Thu, 14 Dec 2023 00:52:39 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="B00+lRyE"
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E50510A;
+	Thu, 14 Dec 2023 01:00:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-	t=1702543935; x=1703148735; i=linosanfilippo@gmx.de;
-	bh=nVGZXwaLHN7v4BUnHdEIrojj3cfgCeXb8jS185agoEo=;
+	t=1702544401; x=1703149201; i=linosanfilippo@gmx.de;
+	bh=i3Hz+ytUFA4jUXYAsPUZy/EuCtWs2rkgtqsGERhQNr8=;
 	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
 	 In-Reply-To;
-	b=rbFh6xG4CahoZaL/sMgl/3if2tf0TOBiPvD5QcPYaPhBQJa7G4E3164qwAP8xTor
-	 lP7SQ9HoO67Y5Yu0Ak6bqCnFm6/yn9aORt4u+Rhx7RXjC7MCAwgD/f9MUY0UBPcIb
-	 DXUomy83R5yO4VFYeTLtPh2Pbz9o4xrWwhPLMQTflGtPQJzjjigN6/qCnKPMm5enH
-	 2BDEDL0c4c2QrWErfGFjJjkhynSJ6iKpukgwwBf0arIjeWN59i9FsRKu2MzSmSgRh
-	 KLcQ3XaxSKNvv0rqYxHQ8t/l4AzN1zjeJPfy3oNQpEHUQ3RBUss3TWLA9f5j2dtt3
-	 BSAAFsYy/3KZBYRWww==
+	b=B00+lRyETfYe+87IC1S0gO42UrRzj4IDXlh5QSrQaqOPX+XYx5aaj7GX6YkYb9uF
+	 AAykgwveahf/4uyrhpjTWPw8yZ4B4FUNAi7h9iiLE1bLTP/fFDrNMWdMm4L5wWHHu
+	 IH6w26ZKnTf80aTjcEm4n8X9sdoZm1gzArguieF9jFJAeYhY+l8dCPsZ/BT5OOMZh
+	 3513Xpp0mCZEsW1bJWHDP+S9c+m1qn7DyxADCN8hBoYL4P7CkK6S/13rCyznijwzk
+	 aOs7m6cMSfRx7WQdMnjsKWAcwGC4A9rmNRcQ1UkfRHXOpcgLFXs4NO/wX4VkntzAr
+	 /KbF3bwitUGfbnaBmw==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
 Received: from [192.168.2.42] ([84.180.3.177]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MKbkC-1quwfz0BTQ-00L1Zg; Thu, 14
- Dec 2023 09:52:15 +0100
-Message-ID: <d4a7ab35-cb81-4681-84bb-703f2d63fe43@gmx.de>
-Date: Thu, 14 Dec 2023 09:52:13 +0100
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N7QxB-1rH80a053l-017mQx; Thu, 14
+ Dec 2023 10:00:01 +0100
+Message-ID: <e8cf9ed3-e2d3-4764-b1c3-87e38e99b4a5@gmx.de>
+Date: Thu, 14 Dec 2023 10:00:00 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -27,107 +27,91 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
- binding
+Subject: Re: [PATCH V5 3/3] tty: serial: uartps: Add rs485 support to uartps
+ driver
 Content-Language: en-US
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Christoph Niedermaier <cniedermaier@dh-electronics.com>,
- Lukas Wunner <lukas@wunner.de>, Rasmus Villemoes <linux@rasmusvillemoes.dk>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- "brenda.streiff@ni.com" <brenda.streiff@ni.com>,
- Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
- Tomas Paukrt <tomaspaukrt@email.cz>
-References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
- <20231120151056.148450-2-linux@rasmusvillemoes.dk>
- <20231122145344.GA18949@wunner.de>
- <3b8548b1-b8a9-0c9e-4040-5cfda06a85c6@gmx.de>
- <ec66d25162de4cbc92720df1e7008fe8@dh-electronics.com>
- <5c140498-69e3-4187-8703-db0c41e7ca89@gmx.de>
- <fe28eb93-daa1-41af-a005-f21aa87e1984@gmx.de>
- <ZXcJr4VS_uGr_6TV@smile.fi.intel.com>
+To: Manikanta Guntupalli <manikanta.guntupalli@amd.com>, git@amd.com,
+ michal.simek@amd.com, gregkh@linuxfoundation.org, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+ linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, jirislaby@kernel.org,
+ linux-arm-kernel@lists.infradead.org
+Cc: radhey.shyam.pandey@amd.com, srinivas.goud@amd.com,
+ shubhrajyoti.datta@amd.com, manion05gk@gmail.com
+References: <20231213130023.606486-1-manikanta.guntupalli@amd.com>
+ <20231213130023.606486-4-manikanta.guntupalli@amd.com>
 From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <ZXcJr4VS_uGr_6TV@smile.fi.intel.com>
+In-Reply-To: <20231213130023.606486-4-manikanta.guntupalli@amd.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Il2EdiqegOFeHXIgLDNacYB57UTBj/2H78z8fR1nAnaR3vju0uW
- 6wIQlPcrsViy5HQGYy5nBtZE5YIwzfm9uh0syGDS8UF/tbVNz101FncwoIKLt9y+fYl49jF
- jkALz49RAkvCKi6IseMcXFvMhviTdWBYqX89Id7xPh8IuYgOLSqI76R3OSd8xwuE08X/wJt
- /0YA6Iu5jc7vowk6NxGrQ==
-UI-OutboundReport: notjunk:1;M01:P0:y73/cztHYiE=;pUtBUjJgBrX8akDqFkq++QJ48kp
- lHZhpzLI/m7EARbZ02k5hbxdJNasRxaPpK4cgYi46oUmfrNw4oORjpEVHsne8ZzeeZk1wYNHX
- 3sfXXeIWHkRVQL/Cw81l53RRWdYX24hAKERtjrGWOgQO/Ayt/3IPVQJqK3j5WucVHhDuVMekt
- TAF2IxLK8VfI0K8in9whGxhu7jMWdI0brXwvOlREcJILmfPkQxYmQJsgM3+nB7zvGIEdgzNVX
- awv4lAhG4e7AaUBJl0NenNL9SarGKZJnVlrd+klCCmEpIZnBgCDSfdPxwahVTTK50/D1H16aL
- F1y0nXJg0qI5S5Ftan6vdagZZ56rbWsCotVwIW35ieADZ6NGmyUeLgq7tFsC3ziRYUy+xh2ID
- 2EtipEkI3eeJb2bbwxyOXzvHLeXQxGYybyQ7FnYKBno3uzCJIb7KWIDCR1nwVoFM4jvjuhjMY
- +4k39lJV2d/qTcB3p+FDIXNO6HRUpfl3ku5KpgHNt9zHQUYrqfuHt2mszowujOApFvRMfQSRK
- 1PUX+FAW0QZuEyrd8i+XCjjBe7uFjNT80SiiDAaQCP9bPaxLy9j4nMNswfq+OQoXNiP0ZlDeS
- QVnRUuI509Tx+6BXDQb5yyWkXuEhCPnLLQ4EX2vzIEX3ofb0HpsyDaXnR6SODZehirtdjU8wP
- O6KVayLdnwg20/7gBLC59v7Ir6f9WSFcSQowWDVQXg0RMEfdkpsdK1pz9x0KoyExyppqtsebs
- LMVzDpqrWnUasRZKW9bI1QFPbAkV+UY/GmwR07yP3U6AHuMLrNQW0xvnxWLjFXKaEcwvjf43g
- Xenn/MLgq9Gvz6iP+scHKpIS0WR7JiXooUk7zRm6eqSRUfzkz+XqCpSI8gKGOLkWc20HKf3VG
- zipRw7ljepD9JEZlgZi5DG6dVpg3C4T+GovEo1+aQIkQ34B1X7yMnp5cJWe1Uy/tvDUo3vCy4
- rYNq+VTcnrqCXvTjEX0SZKlWjL8=
+X-Provags-ID: V03:K1:pK8MFRjHp2YaZUknT+LRCDyINjh9i/0Jrq0/enwVR0460Vv8uBG
+ jEhoBvjHDZiW26EnG9lgKBjPWoxplSfjGuR22APQXvVrno70BetBrA7LSnxExszo1a/O5gV
+ loInpLjPZxRyVQeVsIoD4xa8mR/aqLRKC+QCl58O4a0vJjWQzZEDtjsldDjbI0O+RoaXHfw
+ karSL1jB/+wDGZDkoKmaQ==
+UI-OutboundReport: notjunk:1;M01:P0:EI9S+Cq+1aU=;Siw+EKHPttacc+oKnTGnheJocRM
+ CF0+vm3a9XnjSROmSR4PRlaHwFYax+mLYqDdXpk0rCt/S7wCBe4kgryA5z7HH1Qk8/jC5qn/k
+ argluzBsuic8Xdvl4Zs1namxqEOcbwGCx9UE04NQQBPe6jJXFgAThrLJFU7p8zm/3TiTIHjOb
+ 4ooaGAw5Aa96JE/VpnzFZGDCnwTdryMI26wIOHUoNpLavPSwAUAU/9kdP2fK61Z+nt5nfqyqE
+ tJWmHOx+x3nfni11q22hBl2ioHVrRr08KEZgs6gyDBIUlCygZ1oo8mGdhXIhecbgSYtnrsK+C
+ GowdrnlFFBClau64OgmrHBUrkpH6HlgVldEUo7+wP6ssF9UrmumnMpsXYvSvwZG+L4EgsgYHx
+ z/Zrzkd5G8L7IeDJq+8Baic2h+lltxO9vrWzch7XTD6+bpGV/wLLkkrYdcKwKEhKKytu2h+yK
+ fUOEYAN//xiWOW89UZb4+NSP9yYDLabHJNmfLMIus8ze0OGfFxy0sTfZpN7f18ULlPQrVmOdb
+ oPRBnExJNdMLIObU/l4Ct7CdLBZNcTfHRt3JBv1QAGKoC5IR7DqW2bqEdGoj4xMzRgERlmaez
+ LCPoF4+oOTrKmzmzLHCK+mOOCZD6eYq39gsNHwxiPcFX5hT0tCSMVvlbQ6axOerYvqD4+s26M
+ jZ9CEX1NV56FLCPNlACfCkNXttel570pUfgPxjZ1TmLyszRp3s3eHytzj/U+E/CXz3xrVW1Eh
+ faz1DwqpXE7dXbRKU6VGhjCzSUSc4EvBaG7IodmXhQDlMsJC2Js+EojhOGwCYbl/y/xIB3fzu
+ u9d8KsBNlmKugz35thMUdJF4j5QA4SyjINH5RloMTKP69ncSd5nd0Y4NUCtL67qDtmmQm/2FL
+ eKE0ub6FS6jeDcZmujL+72KEXKTWbiwr7mb0gMNQlRlsk5tWh2zhksBr53yK7xY1/CrW4H2hl
+ cNsGTQ==
+
 
 Hi,
 
-On 11.12.23 14:07, Andy Shevchenko wrote:
-> On Sat, Dec 09, 2023 at 12:47:47PM +0100, Lino Sanfilippo wrote:
->> On 06.12.23 16:42, Lino Sanfilippo wrote:
->
->>>>>> Crescent CY Hsieh (+cc) is in parallel trying to add an RS-422 mode=
- bit
->>>>>> to struct serial_rs485:
->>>>>>
->>>>>> https://lore.kernel.org/all/20231121095122.15948-1-crescentcy.hsieh=
-@moxa.com/
->>>>>>
->>>>>
->>>>> That new flag was suggested by me instead of using SER_RS422_ENABLED=
-, which
->>>>> would mostly be redundant to SER_RS485_ENABLED.
->>
->> A cleaner solution would probably be to not handle RS422 with the RS485=
- settings at
->> all, but to introduce another set of ioctls to set and read it.
->>
->> An own RS422 structure like
->>
->> struct serial_rs422 {
->> 	__u32	flags;
->> #define SER_RS422_ENABLED		(1 << 0)
->> #define SER_RS422_TERMINATE_BUS		(1 << 1)
->> };
->>
->>
->> could be used as the parameter for these new ioctls.
->>
->> Any comments on this?
->
-> I have (maybe not so constructive) a comment. Please, at all means try t=
-o not
-> extend the existing serial data structures, we have too many ones with t=
-oo many
-> fields already. For user space, though, one may use unions and flags, bu=
-t for
-> internal ones it might be better ways, I think.
->
+On 13.12.23 14:00, Manikanta Guntupalli wrote:
 
-Ok, thanks. This is still a valuable information. So what if the above str=
-ucture (serial_rs422)
-is only used as a parameter of a new TIOCSRS422 ioctl and only internally =
-we set a SER_RS485_MODE_RS422
-flag in the serial_rs485 struct?
-So we do not have to add something new to uart_port but also do not expose=
- the mixture of RS485 and RS422
-settings within the serial_rs485 structure to userspace.
+>
+> +/**
+> + * cdns_rs485_rx_callback - Timer rx callback handler for rs485.
+> + * @t: Handle to the timer list structure
+> + */
+> +static void cdns_rs485_rx_callback(struct timer_list *t)
+> +{
+> +	struct cdns_uart *cdns_uart =3D from_timer(cdns_uart, t, timer);
+> +
+> +	/*
+> +	 * Default Rx should be setup, because Rx signaling path
+> +	 * need to enable to receive data.
+> +	 */
+> +	cdns_rs485_rx_setup(cdns_uart);
+> +}
+> +
+> +/**
+> + * cdns_rs485_tx_callback - Timer tx callback handler for rs485.
+> + * @t: Handle to the timer list structure
+> + */
+> +static void cdns_rs485_tx_callback(struct timer_list *t)
+> +{
+> +	struct cdns_uart *cdns_uart =3D from_timer(cdns_uart, t, timer);
+> +
+> +	cdns_uart_handle_tx(cdns_uart->port);
+
+This is called without holding the port lock now. Are you sure the lock is=
+ not
+needed? AFAIK the port lock is needed at least for accessing the circular
+buffer.
+
+> +
+> +	/* Enable the TX Empty interrupt */
+> +	writel(CDNS_UART_IXR_TXEMPTY, cdns_uart->port->membase + CDNS_UART_IER=
+);
+> +
+> +	if (uart_circ_empty(&cdns_uart->port->state->xmit) ||
+> +	    uart_tx_stopped(cdns_uart->port)) {
+> +		timer_setup(&cdns_uart->timer, cdns_rs485_rx_callback, 0);
+> +		mod_timer(&cdns_uart->timer, jiffies +
+> +			  msecs_to_jiffies(cdns_uart->port->rs485.delay_rts_after_send));
+> +	}
+> +}
 
 Regards,
 Lino
