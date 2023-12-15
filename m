@@ -1,156 +1,87 @@
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFD1418AFB
-	for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 08:13:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A21413AF6
+	for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 08:29:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="wT195kW4"
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-a1ef2f5ed01so51298866b.0
-        for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 00:13:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702627989; x=1703232789; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ILpb399KBc7xku4G86HO79HarvWPrsSYOqAB7Tb9moI=;
-        b=wT195kW49l9JbUtUGceYzrm7T4UYfScwA4+JHOBmZrPWTUqvQGjfTNtydqgjOBfFHD
-         i9q+aczzUAXj7Q2IvltmTSlQNf6x+oPEIEVtgAW64W/RljMYWc3nzAeMGu2EVP+ba35y
-         MLVFZ3YxjaJymDZdkD8DLrhtKq+FbepzDQoGnG5y0VYZ0GoMgvTuA/EEq1qcBONGmx/Y
-         XLGlJlFXNX5R6etDB0DZVa3uO5/AX9e2QzulQNiUruQGrF5jauwBjXTgHcwizcvJyd91
-         rELDMhxsMXOVkXmAdXHvAOyxvfJdqphbr/NbLr105UfhF73HBHXa8GoJUsV8FhzfSquX
-         REXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702627989; x=1703232789;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ILpb399KBc7xku4G86HO79HarvWPrsSYOqAB7Tb9moI=;
-        b=ZZMhG2owMpXA+Qf/HLyiae12svd7XASpdi/J7D8Pw+kkLP3NV7Y7CD7M15kYWKV7Py
-         NCasIcBATaDi0FUMzcHhE+b8DZX9s8GIIIdpIIyVLLYjoVBXKBl+DxsT1WsZ4Z8fgEUg
-         tVHJ7huOZM9YTfgc5j+vTz0+aKQYb5t8IhLk1/Vq6Z6jSEOwTzo6wovx2A+0gw7eycoA
-         ++U7P7QIpOrqiHexIeFs17Fc6ycd27RP2Z6u1ZFg33FJY0/K3JXnLsYSjVNVSnQIvHnb
-         RKAWoXfVxW3D/+MUnd4k3HDs8GZMlNEt88yyDX1zZULZMfvg8quQNo4Z93kBYbLwrBYi
-         wG3w==
-X-Gm-Message-State: AOJu0YwvkaH28u9+FbIlYLejb+Mu/7ZfqFjI5561tNpb2hI+cwhE9uU1
-	8GixoeSv9CzaMVO+PghvhheRtw==
-X-Google-Smtp-Source: AGHT+IHcwknaM/Q732cnvsj1kKBQ0GT/Nn0G9d2fNgqvxggtfEusc3r4hih1+hWX4SWqCsZJWbzmmg==
-X-Received: by 2002:a17:906:24e:b0:a1c:d52f:e242 with SMTP id 14-20020a170906024e00b00a1cd52fe242mr2552499ejl.271.1702627989027;
-        Fri, 15 Dec 2023 00:13:09 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.218.27])
-        by smtp.gmail.com with ESMTPSA id ts4-20020a170907c5c400b00a1cc1be1158sm10462701ejc.165.2023.12.15.00.13.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Dec 2023 00:13:08 -0800 (PST)
-Message-ID: <050c3119-0431-4400-9052-7a9c0ec67918@linaro.org>
-Date: Fri, 15 Dec 2023 09:13:05 +0100
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="mG9mf3hD"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 3BF4j8ch030663;
+	Fri, 15 Dec 2023 08:29:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	from:to:cc:subject:date:message-id:mime-version:content-type; s=
+	qcppdkim1; bh=Rtq7pLXxCJVqYoA9YX3KTEKSSu5SyO6189Mebf3INIw=; b=mG
+	9mf3hDD2WartwAMNlBOujxExwztU0gBEd/V/6/aSK9qeeZyebYlNVv+Yq2AP3zjZ
+	VUTcgGhkPOS5zg4TjS8QjGRegRCtBQ4k9oYs7xw0Kefm8KRsnCVznyoYrqSramAr
+	HnIlZ6/+S1HKRXDz3nj58QNHsotmAVetPSI5hSOK0eEAZRhKMwmVkXW92L0GHZpl
+	/7uQMCIxGQXXXW4iJyEXgdOAkvpY+8AZJ88XopskZpWMc6nJIfu6+h+vNndiNH0R
+	bD7HjlZaqKBk37EkVuHQ/jZuH2wja1IepmFnntDpbV+ReJkky/vxzvGltWFUe1Mj
+	fDWKwc/P+hdLDSLGX/aw==
+Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3v0a37hh2a-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 15 Dec 2023 08:29:09 +0000 (GMT)
+Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
+	by NASANPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3BF8T8xk003234
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 15 Dec 2023 08:29:08 GMT
+Received: from zijuhu-gv.qualcomm.com (10.80.80.8) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.40; Fri, 15 Dec 2023 00:29:04 -0800
+From: Zijun Hu <quic_zijuhu@quicinc.com>
+To: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
+CC: <quic_zijuhu@quicinc.com>, <linux-serial@vger.kernel.org>
+Subject: [PATCH v1] tty: Fix a security issue related to tty-ldisc module loading
+Date: Fri, 15 Dec 2023 16:28:53 +0800
+Message-ID: <1702628933-6070-1-git-send-email-quic_zijuhu@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 01/13] dt-bindings: clock: google,gs101: fix CMU_TOP gate
- clock names
-Content-Language: en-US
-To: Tudor Ambarus <tudor.ambarus@linaro.org>, peter.griffin@linaro.org,
- robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
- mturquette@baylibre.com, sboyd@kernel.org, conor+dt@kernel.org,
- andi.shyti@kernel.org, alim.akhtar@samsung.com, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, catalin.marinas@arm.com, will@kernel.org,
- s.nawrocki@samsung.com, tomasz.figa@gmail.com, cw00.choi@samsung.com,
- arnd@arndb.de, semen.protsenko@linaro.org
-Cc: andre.draszik@linaro.org, saravanak@google.com, willmcvicker@google.com,
- linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
- linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
- linux-serial@vger.kernel.org
-References: <20231214105243.3707730-1-tudor.ambarus@linaro.org>
- <20231214105243.3707730-2-tudor.ambarus@linaro.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20231214105243.3707730-2-tudor.ambarus@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: TTqsO6pgmQIeuW8KEuoWOVoQTJ12Bpmw
+X-Proofpoint-ORIG-GUID: TTqsO6pgmQIeuW8KEuoWOVoQTJ12Bpmw
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-12-09_01,2023-12-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ malwarescore=0 clxscore=1011 bulkscore=0 adultscore=0 mlxlogscore=999
+ spamscore=0 phishscore=0 impostorscore=0 lowpriorityscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2311290000 definitions=main-2312150052
 
-On 14/12/2023 11:52, Tudor Ambarus wrote:
-> The gs101 clock names are derived from the clock register names under
-> some certain rules. In particular, for the gate clocks the following is
-> documented and expected in the gs101 clock driver:
-> 
->   Replace CLK_CON_GAT_CLKCMU      with CLK_GOUT_CMU and gout_cmu
->   Replace CLK_CON_GAT_GATE_CLKCMU with CLK_GOUT_CMU and gout_cmu
-> 
->   For gates remove _UID _BLK _IPCLKPORT and _RSTNSYNC
+Function tty_ldisc_get() has a simple logical error and may cause tty-ldisc
+module to be loaded by a user without CAP_SYS_MODULE, this security issue
+is fixed by correcting the logical error.
 
-I don't understand what it has to do with the bindings.
+Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+---
+ drivers/tty/tty_ldisc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
-> The CMU TOP gate clock names missed to include the required "CMU"
-> differentiator which will cause name collisions with the gate clock names
-> of other clock units. Fix the TOP gate clock names and include "CMU" in
-> their name.
-
-Neither here. Clock names are not related to defines.
-
-> 
-> Fixes: 0a910f160638 ("dt-bindings: clock: Add Google gs101 clock management unit bindings")
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
-> ---
->  drivers/clk/samsung/clk-gs101.c          | 167 ++++++++++++-----------
->  include/dt-bindings/clock/google,gs101.h | 144 +++++++++----------
-
-I miss the point why bindings must be changed with driver.
-
-Really, guys, we are milling the first GS101 patches for entire cycle.
-Almost 3 months. The moment I merge bindings you tell me they are wrong.
-Few days after merging them.
-
-
-Best regards,
-Krzysztof
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index 3f68e213df1f..b490c0adf00f 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -150,7 +150,7 @@ static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
+ 	 */
+ 	ldops = get_ldops(disc);
+ 	if (IS_ERR(ldops)) {
+-		if (!capable(CAP_SYS_MODULE) && !tty_ldisc_autoload)
++		if (!capable(CAP_SYS_MODULE) || !tty_ldisc_autoload)
+ 			return ERR_PTR(-EPERM);
+ 		request_module("tty-ldisc-%d", disc);
+ 		ldops = get_ldops(disc);
+-- 
+The Qualcomm Innovation Center
 
