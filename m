@@ -1,49 +1,49 @@
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3C561A713
-	for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 10:34:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A76171A716
+	for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 10:34:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="h8hvKdis"
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-a22f59c6aeaso60428766b.2
-        for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 02:34:16 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Su18MySc"
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-a1f653e3c3dso65935266b.2
+        for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 02:34:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702636455; x=1703241255; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1702636472; x=1703241272; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=WGZztFNtyQMrkAWnFa3qCndVDwm8eWj6KVWu9evzn0I=;
-        b=h8hvKdisGjwC4Ji8vYoqFk5n9AhIKBI8uv8ctKbkGc9vIk5yd0Z9Nc4eUnOYrDryhJ
-         etYGAho20sGjbdJjzLnZXTuBfdam+Ms54SlMv0RgJK4yWFjVSRnUCqawK/MbdIslRu+t
-         b9opalwFpZKfRn6ARnAsccE+A5OMUn09KoELU/UBv5XWN3qVjk1tNWBxPVmKpdTt1tju
-         SuUOw628qyWvXvzi1/pICglQIxR0DsoVfww7h4gARed3Q6JOmoOFyBPBCMa6F4c6hLwd
-         VaiB/U8g3+PzqYbIxRkkRirQi3xQn7oPaAXZmwQjNKfUhI8f8tGjO2u8OF12AaPIVJVc
-         sh4A==
+        bh=LlOsU9VBV99o91FTCfcNrA5gtK5LyJG3B6lny+h8GtI=;
+        b=Su18MyScOlq5XDFLL+C91gvG7BE1S5yXiCWWUFZphUGaheQd6cWCiRgjikWzx2L4QD
+         TQMUpatMWtnrWoEWqoJLjUL1U8gjH/2I673q7PdtXY8opUGbAaQIkHbBnDStaMtKrMF9
+         s+P9TsDHABkULkq5w7/oEMGpaIb5Wy3UMhURefaF4pDyYBLe1T64IBZ3sjuFhot94Ohj
+         LZo7vVoS9RIS4h2xlQ1aRKEmCKWh1tQsOyk5moZyHdtxu0tikU8cytboPvqz49j/AYoo
+         bga4QCDwgF7m64nXzwAh+VhbJXGTl+fG/0CsW0rA466B2YsqLfUl+kjmZIYix0zDVMO1
+         R9tA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702636455; x=1703241255;
+        d=1e100.net; s=20230601; t=1702636472; x=1703241272;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WGZztFNtyQMrkAWnFa3qCndVDwm8eWj6KVWu9evzn0I=;
-        b=lwA18Z5vVrVO0K56imBC4sxjEfrjxc5k+g2SmzDn5kwfiVv7X0QUpp0QWK60NMptLv
-         OAk//zw11uxEtdXjNirjslKTm1uM7w/HC595QKdbLxT2/L5pcUSGRyTOSQ6TVQKYEEl1
-         C6fyEO+x0TCLTwK7vlQ6C/pnIkrh+aTS+qVNx0IvmYvbXO+Rbd4bM5RSX8GQLMQt8bvW
-         MlVgb+u2J9p8zSrSlKXJeBYEx4fF8AdL/4ERN6Fr35N9rZO51PQZ3V7E5jw7UTT7hPwk
-         QblL1lTTaS+PI+Lpi2zxdBkNZ3w0dFqKn6lEM4Hv3pYWPKXdy3Up/ThVEFKDzacaNfT8
-         rGjA==
-X-Gm-Message-State: AOJu0Ywy6hIJKHD3c7pSJmPeF0vxs95T3AKbIvO9tU2ouoNRRGld1SgG
-	QY1zqgm9HDTslUfpQMp0Vv45mQ==
-X-Google-Smtp-Source: AGHT+IGiAEsceIH40ZUtIEZccrrZAHRlf8uew/1vcFulFRMjphR02+14kKY3fYXGvRYhN84Cua6f0g==
-X-Received: by 2002:a17:906:3f0a:b0:9dc:2215:1593 with SMTP id c10-20020a1709063f0a00b009dc22151593mr5423903ejj.25.1702636455129;
-        Fri, 15 Dec 2023 02:34:15 -0800 (PST)
+        bh=LlOsU9VBV99o91FTCfcNrA5gtK5LyJG3B6lny+h8GtI=;
+        b=Rlw7r4p9Xa0JOAaPIIgGGBmVy36r5iqO/37tW7M6rCqS0ve8y7R7wKCvaPW8rmVuBO
+         AepEAkK9DQpvA895DSGp0T0uibufAsfD98qbrcIXGid+c0gdMvbEmzJBdm/NgLtGdL1m
+         gofmfFWsW35L5aVD0LZuSF2SZfdG5r3doGNat/8n0VqetJ1Tnwahd7X2kymHsFuF5Vu9
+         W3ERR8JprpAz611zw95acyWrYPSHuk7w//l/3mGVfy3e0u1S7sdkdxtu/ndXtQEiszlL
+         Zyu9AUU1iS+BrtdEXCqtBikdSjkfLZmMFBflwddFRi5rI+QewDx0fyS03bSqA6bZX9cp
+         0Z7w==
+X-Gm-Message-State: AOJu0Yxh82/dU1YyrGPDc0kYPrBk7gnMoSSNiOpglvEZzngdOLIG0VYh
+	r2l1uZ5+Ypd1iu5Pvy0gaYk1Rw==
+X-Google-Smtp-Source: AGHT+IFPNtnXPUD3E9WA3d7JS3n7LNlQwBmst7Ex8GgiPbUznuxbd7MT+s9p4ZQb3/TPBpLjcrcPbw==
+X-Received: by 2002:a17:906:739a:b0:a1f:a0f1:ec58 with SMTP id f26-20020a170906739a00b00a1fa0f1ec58mr2279482ejl.51.1702636471936;
+        Fri, 15 Dec 2023 02:34:31 -0800 (PST)
 Received: from [192.168.1.20] ([178.197.218.27])
-        by smtp.gmail.com with ESMTPSA id un5-20020a170907cb8500b009ff77c2e1dasm10496826ejc.167.2023.12.15.02.34.13
+        by smtp.gmail.com with ESMTPSA id un5-20020a170907cb8500b009ff77c2e1dasm10496826ejc.167.2023.12.15.02.34.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Dec 2023 02:34:14 -0800 (PST)
-Message-ID: <d4aad08a-ac3b-4a34-a48a-5e413225f0de@linaro.org>
-Date: Fri, 15 Dec 2023 11:34:12 +0100
+        Fri, 15 Dec 2023 02:34:31 -0800 (PST)
+Message-ID: <47cf8280-8b0c-4f9e-9bf2-8ba18e12feb3@linaro.org>
+Date: Fri, 15 Dec 2023 11:34:29 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -51,7 +51,7 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/4] dt-bindings: arm: Add compatible strings for Unisoc's
+Subject: Re: [PATCH 3/4] dt-bindings: serial: Add a new compatible string for
  UMS9620
 Content-Language: en-US
 To: Chunyan Zhang <chunyan.zhang@unisoc.com>, Rob Herring
@@ -63,7 +63,7 @@ Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
  <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
  LKML <linux-kernel@vger.kernel.org>
 References: <20231215085630.984892-1-chunyan.zhang@unisoc.com>
- <20231215085630.984892-3-chunyan.zhang@unisoc.com>
+ <20231215085630.984892-4-chunyan.zhang@unisoc.com>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -109,12 +109,12 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20231215085630.984892-3-chunyan.zhang@unisoc.com>
+In-Reply-To: <20231215085630.984892-4-chunyan.zhang@unisoc.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 15/12/2023 09:56, Chunyan Zhang wrote:
-> Added bindings for Unisoc's UMS9620-2H10 board and UMS9620 SoC.
+> The UMS9620 also uses the same serial device with SC9836.
 > 
 > Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
 > ---
