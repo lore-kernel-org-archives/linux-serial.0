@@ -1,49 +1,49 @@
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6678510A17
-	for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 08:04:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78ED312E6E
+	for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 08:07:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="RscA19C6"
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-a1e2ded3d9fso44222866b.0
-        for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 00:04:37 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="IkuL8gdH"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-54c4f95e27fso302746a12.1
+        for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 00:07:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702627476; x=1703232276; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1702627660; x=1703232460; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=d5odTxpWTtMiHyNqN3Yk0tN+p5CPTI+frNjcQBN0fCk=;
-        b=RscA19C6oQP1wKydCCPjRP9wZ9ZHk2rQ7rvJNuLp95tzdB2/oPC6BJpgn0HcXonEzZ
-         MhpWZd+yRoy6aPgmuaB3ok+Q/PztBMHxItoVxqpxnIeZ4hJZB11AWSTqAG19RYK6FmTh
-         0KeAUihgSokFTLRnYGEfmcBt18jrrKhrirz5Adh/FcYTJCVBQyE0Ht30/z52dUgXQ3Jq
-         aJl9MweKMnQbWq9jPKTv8bhk3bIvbf7+1pDdBOjSOyFNl3sUlYJw/2tCcXyeTIKHgL4L
-         CampXtz8s3CN3VjGe74Im+dXpyCCjR0LwLjjL+25pt8arP0+e7T7VkmFKM5P5UCxx6iY
-         +aVw==
+        bh=IxD/VahC2ClQ2iwWPMIUIAj7e4n1LQ8i/xcl4ceScZo=;
+        b=IkuL8gdHsOo1ykReLEththA0/6QdJYv2FQ3Vh0EpOYL2CJbiqIe7xIFHVa5CgtVkjo
+         yl8ha9Kf+XLzj/7lcPR0ezFH8XfobYwyboPL0UthyW0ITd+dgJXa9BRukjVeZCOLI0SB
+         hS9e7rQ8oGPQh0NcyZQQo9G6dv/OjSLD5kO+KbFG3ZxWnJeBNBZISS6ICFYeftiBB/np
+         yNMUv2vgW5cNPXTBvHwVbY5i4CQv5/ux5667GS8h9z6Q7UR3U3jfeZQChgaE1Le989Kl
+         AdS+/MrU8gviCRvhV+TQU9CsGZSwsrov/8TXbkL26S4ECLD+5uQb/yZ2/8a20U17Uan4
+         K5Gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702627476; x=1703232276;
+        d=1e100.net; s=20230601; t=1702627660; x=1703232460;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=d5odTxpWTtMiHyNqN3Yk0tN+p5CPTI+frNjcQBN0fCk=;
-        b=dMUp4uEH0yEVJNo2M4Vkmb7AXXGbQKCp5KU0I18vD1iDS119xPickLzaX46tuFj18/
-         U8F7WRcBKMKwROhFHqkV+zhabvAA2ym0nELzxKdEq6SwpicyxcSFjS2hQCFk35/UFVLp
-         wNp3WJefdngDzjyxDsh59udE2wDRQoMV6YNMl3uRFoSz5uvbFpki1eHBtX5ORgnj2RV0
-         JLDv94hMgG6pVHl1dLatRVS0sAbBHoOr/5ypUs00nWn7mRVzYpPwV9Gtvgt6pF8NDqya
-         YqinQjEE3YY2h7efQIwLCnuHp5O20AS+sjC4uJ8farDS0CyBfoGnbDS59W+LIhNrigo6
-         jAjA==
-X-Gm-Message-State: AOJu0Yz/KXKG0TDBcT0/yImCaFNF+2xo7vP+0Vwu3KJ44WPYndLgA0wr
-	KlD9hPDkMBz3hehs2CNfxbNU/Q==
-X-Google-Smtp-Source: AGHT+IEiNmfziBFibpn4DGoUgzd/sG0L66sXw3f1VXDnmtdXdO6SvBtlKuq7k3Q64D3FJRqu4V62TA==
-X-Received: by 2002:a17:907:bcf:b0:a19:a19b:789f with SMTP id ez15-20020a1709070bcf00b00a19a19b789fmr4900945ejc.98.1702627475694;
-        Fri, 15 Dec 2023 00:04:35 -0800 (PST)
+        bh=IxD/VahC2ClQ2iwWPMIUIAj7e4n1LQ8i/xcl4ceScZo=;
+        b=fjweJ9ON0ghAk2sZPrjmv1Pbl8vkxz7kxApC5qMLd0FEKkP/WAOmBK5AkPWzn0Djh2
+         Wc14YE0PSKl1dcXfSIY2rtcqWIPeiT2cdNpFGgGWxRCfVHM+B31hbh9/REHciLb79ZMR
+         cBwEmxQrjE7hSnz7sXklJSoTyuDBssv9rzvmQzeeAL84DqvWLosNEfacMRWPimRHbmt4
+         v7uUVjt9vJe4dYieurj1VEYlf99GtnwyKOwMX/1Nvz2xVCj2q3wJL7ivPpK3ZFP67dpp
+         l8tgHiw2/0zt0FxcViqRXzIFgNZcor/+XOS1mJunG+FECrCs0gg6ZQeEW5Zx/c+Ibtzp
+         UdxQ==
+X-Gm-Message-State: AOJu0Yz3NiM0hwQLEHjzPQbn1w10CUCvZLB5cBUqOPOz0LgiQwNtf1tb
+	y/kf2h0nKmrPtRBZdTMBUNT7fw==
+X-Google-Smtp-Source: AGHT+IG9zEccBZFl5aP7IPpua8AKal9WySqOFWhLPSJEM7vjbmxr8qqS4iZT8fVNI6vEv60xIpQjmg==
+X-Received: by 2002:a50:d50b:0:b0:552:72cf:1cf6 with SMTP id u11-20020a50d50b000000b0055272cf1cf6mr1157693edi.27.1702627659874;
+        Fri, 15 Dec 2023 00:07:39 -0800 (PST)
 Received: from [192.168.1.20] ([178.197.218.27])
-        by smtp.gmail.com with ESMTPSA id tk7-20020a170907c28700b00a1d1ebc2206sm10465696ejc.72.2023.12.15.00.04.33
+        by smtp.gmail.com with ESMTPSA id s28-20020a50ab1c000000b0054c6b50df3asm7881111edc.92.2023.12.15.00.07.37
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Dec 2023 00:04:35 -0800 (PST)
-Message-ID: <11b4e79c-3d39-4924-877d-0f741e5904a8@linaro.org>
-Date: Fri, 15 Dec 2023 09:04:32 +0100
+        Fri, 15 Dec 2023 00:07:39 -0800 (PST)
+Message-ID: <c9ea0e9f-05d8-4def-8c68-6604c22763b9@linaro.org>
+Date: Fri, 15 Dec 2023 09:07:36 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -51,23 +51,24 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 10/13] arm64: dts: exynos: gs101: define USI8 with I2C
- configuration
+Subject: Re: [PATCH 11/13] arm64: dts: exynos: gs101: enable eeprom on
+ gs101-oriole
 Content-Language: en-US
-To: Tudor Ambarus <tudor.ambarus@linaro.org>, peter.griffin@linaro.org,
- robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
- mturquette@baylibre.com, sboyd@kernel.org, conor+dt@kernel.org,
- andi.shyti@kernel.org, alim.akhtar@samsung.com, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, catalin.marinas@arm.com, will@kernel.org,
- s.nawrocki@samsung.com, tomasz.figa@gmail.com, cw00.choi@samsung.com,
- arnd@arndb.de, semen.protsenko@linaro.org
-Cc: andre.draszik@linaro.org, saravanak@google.com, willmcvicker@google.com,
+To: Sam Protsenko <semen.protsenko@linaro.org>,
+ Tudor Ambarus <tudor.ambarus@linaro.org>, krzysztof.kozlowski+dt@linaro.org
+Cc: peter.griffin@linaro.org, robh+dt@kernel.org, mturquette@baylibre.com,
+ sboyd@kernel.org, conor+dt@kernel.org, andi.shyti@kernel.org,
+ alim.akhtar@samsung.com, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ catalin.marinas@arm.com, will@kernel.org, s.nawrocki@samsung.com,
+ tomasz.figa@gmail.com, cw00.choi@samsung.com, arnd@arndb.de,
+ andre.draszik@linaro.org, saravanak@google.com, willmcvicker@google.com,
  linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
  linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
  linux-serial@vger.kernel.org
 References: <20231214105243.3707730-1-tudor.ambarus@linaro.org>
- <20231214105243.3707730-11-tudor.ambarus@linaro.org>
+ <20231214105243.3707730-12-tudor.ambarus@linaro.org>
+ <CAPLW+4nTgam4jZ+s5m5E05jWO_kfSy=fMS0Ywp3yQEEn-UESbg@mail.gmail.com>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -113,55 +114,44 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20231214105243.3707730-11-tudor.ambarus@linaro.org>
+In-Reply-To: <CAPLW+4nTgam4jZ+s5m5E05jWO_kfSy=fMS0Ywp3yQEEn-UESbg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 14/12/2023 11:52, Tudor Ambarus wrote:
-> USI8 I2C is used to communicate with an eeprom found on the battery
-> connector. Define USI8 in I2C configuration.
+On 14/12/2023 16:55, Sam Protsenko wrote:
+> On Thu, Dec 14, 2023 at 4:53 AM Tudor Ambarus <tudor.ambarus@linaro.org> wrote:
+>>
+>> Enable the eeprom found on the battery connector.
+>>
+>> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+>> ---
+>>  .../boot/dts/exynos/google/gs101-oriole.dts    | 18 ++++++++++++++++++
+>>  1 file changed, 18 insertions(+)
+>>
+>> diff --git a/arch/arm64/boot/dts/exynos/google/gs101-oriole.dts b/arch/arm64/boot/dts/exynos/google/gs101-oriole.dts
+>> index 4a71f752200d..11b299d21c5d 100644
+>> --- a/arch/arm64/boot/dts/exynos/google/gs101-oriole.dts
+>> +++ b/arch/arm64/boot/dts/exynos/google/gs101-oriole.dts
+>> @@ -63,6 +63,19 @@ &ext_200m {
+>>         clock-frequency = <200000000>;
+>>  };
+>>
+>> +&hsi2c_8 {
+>> +       pinctrl-names = "default";
+>> +       pinctrl-0 = <&hsi2c8_bus>;
+>> +       #address-cells = <1>;
+>> +       #size-cells = <0>;
 > 
-> USI8 CONFIG register comes with a 0x0 reset value, meaning that USI8
-> doesn't have a default protocol (I2C, SPI, UART) at reset. Thus the
-> selection of the protocol is intentionally left for the board dtsi file.
-> 
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
-> ---
->  arch/arm64/boot/dts/exynos/google/gs101.dtsi | 26 ++++++++++++++++++++
->  1 file changed, 26 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/exynos/google/gs101.dtsi b/arch/arm64/boot/dts/exynos/google/gs101.dtsi
-> index ffb7b4d89a8c..4ea1b180cd0a 100644
-> --- a/arch/arm64/boot/dts/exynos/google/gs101.dtsi
-> +++ b/arch/arm64/boot/dts/exynos/google/gs101.dtsi
-> @@ -354,6 +354,32 @@ pinctrl_peric0: pinctrl@10840000 {
->  			interrupts = <GIC_SPI 625 IRQ_TYPE_LEVEL_HIGH 0>;
->  		};
->  
-> +		usi8: usi@109700c0 {
-> +			compatible = "google,gs101-usi",
-> +				     "samsung,exynos850-usi";
-> +			reg = <0x109700c0 0x20>;
-> +			ranges;
-> +			#address-cells = <1>;
-> +			#size-cells = <1>;
-> +			clocks = <&cmu_peric0 CLK_DOUT_PERIC0_USI8_USI>,
-> +				 <&cmu_peric0 CLK_GOUT_PERIC0_CLK_PERIC0_USI8_USI_CLK>;
-> +			clock-names = "pclk", "ipclk";
-> +			samsung,sysreg = <&sysreg_peric0 0x101c>;
-> +			status = "disabled";
-> +
-> +			hsi2c_8: i2c@10970000 {
-> +				compatible = "google,gs101-hsi2c",
-> +					     "samsung,exynosautov9-hsi2c";
-> +				reg = <0x10970000 0xc0>;
-> +				interrupts = <GIC_SPI 642
-> +					      IRQ_TYPE_LEVEL_HIGH 0>;
+> Not sure if those 4 above properties belong in board's dts or in SoC's
+> dtsi. Krzysztof, what do you think?
 
-This can be in one line. Limit of 80 is not a hard-limit. It can be
-violated if it improves readability. Especially if is about 1 character
-only.
+The cells should be in DTSI, because you cannot have an enabled i2c bus
+without nodes in normal cases. The not-normal case is incomplete
+description, which does not happen here.
 
+The pinctrls I guess as well in DTSI, because you do not customize the
+pins in the DTS. IOW, if the pinctrl nodes are coming from shared
+pinctrl.DTSI, then pinctrl-0/names stay in DTSI as well.
 
 
 Best regards,
