@@ -1,198 +1,125 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08663405FB;
-	Fri, 15 Dec 2023 15:14:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3E853BB25;
+	Fri, 15 Dec 2023 16:18:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="EFoV7NEp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1702653246; x=1734189246;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=feg3wYP3Qi/hSMSiQ+43nA6SDwvIyFsSh3WcC1SXaHg=;
-  b=EFoV7NEpVtcLDdRhVihCReH4Q3t8issK19YVdZHIxIT6gdFOmyvPZiLt
-   LsSObscq42Ao8czp+FZDYUJCqeFRY+pp6JhEV5iIcETl9cyEDNFe7Azzf
-   vH/y3lbJ8XwkIQA4/7DcjeBvSKuPyRSpF8YwyklIvD176LK0Jh+ROEUxR
-   fw3MZziXpiyTa5SxXjP31isAYbw/bBCisFJsmhbGahc7jIdRvcUGjY5g7
-   USZwKJV7rTapH860SwbSWKF0TQHRTCkoOQSUPZL0x/21wY34q5wJTxKMJ
-   tZnJRGkA0GPdIzKZ1Xy+qLNK6AsKSf3veqAfFvSEy4o0q908zNbI3gIfh
-   w==;
-X-CSE-ConnectionGUID: /L4ES2eBSEOMitxzIzm9kg==
-X-CSE-MsgGUID: VDSYNS+9SUOiPlegNtIkIA==
-X-ThreatScanner-Verdict: Negative
-X-IronPort-AV: E=Sophos;i="6.04,279,1695711600"; 
-   d="scan'208";a="13359832"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 15 Dec 2023 08:14:04 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 15 Dec 2023 08:13:20 -0700
-Received: from che-dk-ungapp03lx.microchip.com (10.10.85.11) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.35 via Frontend Transport; Fri, 15 Dec 2023 08:13:17 -0700
-From: Rengarajan S <rengarajan.s@microchip.com>
-To: <kumaravel.thiagarajan@microchip.com>,
-	<tharunkumar.pasumarthi@microchip.com>, <gregkh@linuxfoundation.org>,
-	<jirislaby@kernel.org>, <keescook@chromium.org>, <gustavoars@kernel.org>,
-	<linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-hardening@vger.kernel.org>
-CC: <unglinuxdriver@microchip.com>
-Subject: [PATCH v1 tty-next 2/4] 8250: microchip: pci1xxxx: Add Syslock support for reading UART system registers
-Date: Fri, 15 Dec 2023 20:41:21 +0530
-Message-ID: <20231215151123.41812-3-rengarajan.s@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20231215151123.41812-1-rengarajan.s@microchip.com>
-References: <20231215151123.41812-1-rengarajan.s@microchip.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K7dm0Ddl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46FC0C433C7;
+	Fri, 15 Dec 2023 16:18:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1702657137;
+	bh=YlcNrdt+0bdBjEoeknJhdd+iUZGMaHxrfBZN/74+PSM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=K7dm0Ddli65bXnpIe+H/ttDbslFE9q2kMgBadq97OkKtouXQIbEiyY2q9JXScuDsv
+	 C1TjFxiht6mfl4VICqLkzK7PUWl+CGRGnU6fYOYPcX8M4yYc9TnjF9ZXpkWsSySLmw
+	 CyyhNm54GFYsWjy2rItDi4vwFE9/ZhlLtsFlUG5+pOmeb3j63lrLaKJ7ABlRzd4YHf
+	 FIPEL5mBy+6x1p0RKnf9kDaMW13b61pXy/Df0JjpQnoeYrO6LSmIPopfjK9+e6we66
+	 XhmZW3p8qy6Nb89ngBM4O2Sk//rED3kWw0q23oLG3uetyunnmSGJbQZLPq0L+Kbm4x
+	 OaRnvmY/t7uxg==
+Received: from johan by xi.lan with local (Exim 4.96.2)
+	(envelope-from <johan@kernel.org>)
+	id 1rEAto-0000VW-1C;
+	Fri, 15 Dec 2023 17:18:52 +0100
+Date: Fri, 15 Dec 2023 17:18:52 +0100
+From: Johan Hovold <johan@kernel.org>
+To: Francesco Dolcini <francesco@dolcini.it>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-bluetooth@vger.kernel.org,
+	linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, greybus-dev@lists.linaro.org,
+	linux-iio@vger.kernel.org, netdev@vger.kernel.org,
+	chrome-platform@lists.linux.dev,
+	platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-sound@vger.kernel.org,
+	Francesco Dolcini <francesco.dolcini@toradex.com>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Alex Elder <elder@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Lee Jones <lee@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Hans de Goede <hdegoede@redhat.com>,
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+	Benson Leung <bleung@chromium.org>,
+	Tzung-Bi Shih <tzungbi@kernel.org>, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v1] treewide, serdev: change receive_buf() return type to
+ size_t
+Message-ID: <ZXx8bCVyxJ9Ddvqm@hovoldconsulting.com>
+References: <20231214170146.641783-1-francesco@dolcini.it>
+ <ZXxWX-Fw1InID2ax@hovoldconsulting.com>
+ <ZXxa7yzKzG6048vw@francesco-nb.int.toradex.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZXxa7yzKzG6048vw@francesco-nb.int.toradex.com>
 
-Different Host drivers can attempt to access system registers
-simultaneously from different memory spaces at the same time. The
-syslock mechanism provides a safe option for reading UART system
-registers and prevents conflicts by serializing access. Added
-three padding bytes in the structure for memory alignment.
+On Fri, Dec 15, 2023 at 02:55:59PM +0100, Francesco Dolcini wrote:
+> On Fri, Dec 15, 2023 at 02:36:31PM +0100, Johan Hovold wrote:
+> > On Thu, Dec 14, 2023 at 06:01:46PM +0100, Francesco Dolcini wrote:
+> > > From: Francesco Dolcini <francesco.dolcini@toradex.com>
+> > > 
+> > > receive_buf() is called from ttyport_receive_buf() that expects values
+> > > ">= 0" from serdev_controller_receive_buf(), change its return type from
+> > > ssize_t to size_t.
 
-Signed-off-by: Rengarajan S <rengarajan.s@microchip.com>
----
- drivers/tty/serial/8250/8250_pci1xxxx.c | 63 +++++++++++++++++++++++++
- 1 file changed, 63 insertions(+)
+> > > -int gnss_insert_raw(struct gnss_device *gdev, const unsigned char *buf,
+> > > -				size_t count)
+> > > +size_t gnss_insert_raw(struct gnss_device *gdev, const unsigned char *buf,
+> > > +		       size_t count)
+> > >  {
+> > > -	int ret;
+> > > +	size_t ret;
+> > >  
+> > >  	ret = kfifo_in(&gdev->read_fifo, buf, count);
+> > >  
+> > 
+> > Why are you changing this function? This is part of the GNSS interface
+> > and has nothing to do with the rest of this patch.
+> 
+> good point, thanks for looking into that.
+> 
+> from my understanding kfifo_in() already return an unsigned, both
+> __kfifo_in and __kfifo_in_r return unsigned.
 
-diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
-index 48bd2f3a287d..6b6f3731307f 100644
---- a/drivers/tty/serial/8250/8250_pci1xxxx.c
-+++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
-@@ -9,15 +9,21 @@
- 
- #include <linux/bitfield.h>
- #include <linux/bitops.h>
-+#include <linux/delay.h>
- #include <linux/io.h>
-+#include <linux/iopoll.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/pci.h>
- #include <linux/serial_core.h>
-+#include <linux/serial_reg.h>
-+#include <linux/serial_8250.h>
- #include <linux/slab.h>
- #include <linux/string.h>
- #include <linux/units.h>
- #include <linux/tty.h>
-+#include <linux/tty_flip.h>
-+#include <linux/8250_pci.h>
- 
- #include <asm/byteorder.h>
- 
-@@ -52,6 +58,14 @@
- #define PCI_SUBDEVICE_ID_EFAR_PCI11400		PCI_DEVICE_ID_EFAR_PCI11400
- #define PCI_SUBDEVICE_ID_EFAR_PCI11414		PCI_DEVICE_ID_EFAR_PCI11414
- 
-+#define UART_SYSTEM_ADDR_BASE			0x1000
-+#define UART_DEV_REV_REG			(UART_SYSTEM_ADDR_BASE + 0x00)
-+#define UART_DEV_REV_MASK			GENMASK(7, 0)
-+#define UART_SYSLOCK_REG			(UART_SYSTEM_ADDR_BASE + 0xA0)
-+#define UART_SYSLOCK				BIT(2)
-+#define SYSLOCK_SLEEP_TIMEOUT			100
-+#define SYSLOCK_RETRY_CNT			1000
-+
- #define UART_ACTV_REG				0x11
- #define UART_BLOCK_SET_ACTIVE			BIT(0)
- 
-@@ -87,6 +101,8 @@
- 
- struct pci1xxxx_8250 {
- 	unsigned int nr;
-+	u8 dev_rev;
-+	u8 pad[3];
- 	void __iomem *membase;
- 	int line[] __counted_by(nr);
- };
-@@ -98,6 +114,27 @@ static const struct serial_rs485 pci1xxxx_rs485_supported = {
- 	/* Delay RTS before send is not supported */
- };
- 
-+static int pci1xxxx_set_sys_lock(struct pci1xxxx_8250 *port)
-+{
-+	writel(UART_SYSLOCK, port->membase + UART_SYSLOCK_REG);
-+	return readl(port->membase + UART_SYSLOCK_REG);
-+}
-+
-+static int pci1xxxx_acquire_sys_lock(struct pci1xxxx_8250 *port)
-+{
-+	u32 regval;
-+
-+	return readx_poll_timeout(pci1xxxx_set_sys_lock, port, regval,
-+				  (regval & UART_SYSLOCK),
-+				  SYSLOCK_SLEEP_TIMEOUT,
-+				  SYSLOCK_RETRY_CNT * SYSLOCK_SLEEP_TIMEOUT);
-+}
-+
-+static void pci1xxxx_release_sys_lock(struct pci1xxxx_8250 *port)
-+{
-+	writel(0x0, port->membase + UART_SYSLOCK_REG);
-+}
-+
- static const int logical_to_physical_port_idx[][MAX_PORTS] = {
- 	{0,  1,  2,  3}, /* PCI12000, PCI11010, PCI11101, PCI11400, PCI11414 */
- 	{0,  1,  2,  3}, /* PCI4p */
-@@ -370,6 +407,27 @@ static int pci1xxxx_logical_to_physical_port_translate(int subsys_dev, int port)
- 	return logical_to_physical_port_idx[0][port];
- }
- 
-+static int pci1xxxx_get_device_revision(struct pci1xxxx_8250 *priv)
-+{
-+	u32 regval;
-+	int ret;
-+
-+	/*
-+	 * DEV REV is a system register, HW Syslock bit
-+	 * should be acquired before accessing the register
-+	 */
-+	ret = pci1xxxx_acquire_sys_lock(priv);
-+	if (ret)
-+		return ret;
-+
-+	regval = readl(priv->membase + UART_DEV_REV_REG);
-+	priv->dev_rev = regval & UART_DEV_REV_MASK;
-+
-+	pci1xxxx_release_sys_lock(priv);
-+
-+	return 0;
-+}
-+
- static int pci1xxxx_serial_probe(struct pci_dev *pdev,
- 				 const struct pci_device_id *id)
- {
-@@ -381,6 +439,7 @@ static int pci1xxxx_serial_probe(struct pci_dev *pdev,
- 	int num_vectors;
- 	int subsys_dev;
- 	int port_idx;
-+	int ret;
- 	int rc;
- 
- 	rc = pcim_enable_device(pdev);
-@@ -397,6 +456,10 @@ static int pci1xxxx_serial_probe(struct pci_dev *pdev,
- 	if (!priv->membase)
- 		return -ENOMEM;
- 
-+	ret = pci1xxxx_get_device_revision(priv);
-+	if (ret)
-+		return ret;
-+
- 	pci_set_master(pdev);
- 
- 	priv->nr = nr_ports;
--- 
-2.25.1
+Correct.
 
+> With that said this is used by 3 drivers:
+> 
+> = drivers/gnss/sirf.c:
+> = drivers/gnss/serial.c:
+> 
+> The driver just use it into the actual receive_buf callback.
+> 
+> = drivers/gnss/usb.c
+> 
+> This driver does nothing with a negative return value (that is never the
+> less not possible), it just check that the whole buffer was inserted.
+
+That driver also knows it will never be negative.
+
+And you forgot about
+
+	drivers/net/ethernet/intel/ice/ice_gnss.c
+
+> To me the change is correct, with that said probably this should have
+> been explicitly mentioned in the commit message or a separate
+> preparation patch.
+
+It's a separate change and should not be hidden away in a tree-wide
+change that goes through a different maintainer.
+
+Please drop this change from this patch and resubmit it separately to me
+if you want and I'll review when I have the time.
+
+And when doing tree-wide changes, please try to follow the style of the
+driver you are changing (e.g. do not introduce inconsistencies by
+changing to open parenthesis alignment of continuation lines in code
+that do not use it).
+
+Johan
