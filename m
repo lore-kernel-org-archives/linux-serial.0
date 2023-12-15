@@ -1,40 +1,40 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06AB83C6A3;
-	Fri, 15 Dec 2023 15:13:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DC823FB15;
+	Fri, 15 Dec 2023 15:13:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="p7olcrbW"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="xiQ7qHKo"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1702653210; x=1734189210;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ybPCAvLgR8sMS4w/W/i9x0ElPfV/wtar3ypvuVot4nU=;
-  b=p7olcrbWmAfiBHRdt0+dn1nEllp2wdqxhxxeEeycsvTnTJZmD2L3sked
-   y96zHgRlGOp8321g7LKGLGLAqRjBoB5rwze5Qa0zk+e2p7li1h7zANWkF
-   zixNrLesZ2GyEyAcjVZDIfM8SzGjdJUPdvjjdRCUzGVXmr/IO9LfVbJJf
-   gJpQr8gF69ZwDrYuvScY5r90wBSc5mEam2FU8cvGcQ8Tzh2dAg2NB5VZQ
-   RxtnoTOkZKCG/NvGMxgJaR6l7fsAIJdjHyZzO2EbkuDcUB4NEdfzcaAHw
-   oxYz+5LvfNmeOPhrBu3k3FRcyYnP8hAICJDi5EA1H8lwF87RSC5t6kAgb
-   g==;
-X-CSE-ConnectionGUID: ZSd0znorTjqGetiYJCobuQ==
-X-CSE-MsgGUID: JZz+o+VzS/2pohpxO5iIMQ==
+  t=1702653233; x=1734189233;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=s5idXhmEOPHM3MCEEcLriHfCWCN1qs4CTulDZLbtAuI=;
+  b=xiQ7qHKoQLn3d9uzyyV6dI/1Zuty05tnR9TL4YB9TycAhHf4Cp/PMex4
+   BTwOnTkfr+E0vXxM3VEMtdsRpCKMyGkZqndRCVH12FmH19BmsuX7ZXOAY
+   Y/FHsOeEKL88M637WjgUFKLZZNz9UXnMzRn66kKnbYxOoUIqtulxYbMju
+   Y3Yzd7EIQVbdhuk19uNG1ZMQ5YTwmNPUNuftys1oW58BNyyZhFex3K7+l
+   cGQt5GkYd0U7SmSIrM8c4Kv8CBYBz41qi7Wqtw/PRlYaQTbTEYo8qajyi
+   PHLBcD+jbR4cgRr24pBB7s4jXxsKBGzWMFvrWXTsMY665HPLcmKWR+dhd
+   w==;
+X-CSE-ConnectionGUID: qwhyNkqhRvWQqhblyCRvoA==
+X-CSE-MsgGUID: hSitPxS4SUyiyih87HIsxQ==
 X-ThreatScanner-Verdict: Negative
 X-IronPort-AV: E=Sophos;i="6.04,279,1695711600"; 
-   d="scan'208";a="180577318"
+   d="scan'208";a="14326541"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 15 Dec 2023 08:13:20 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 15 Dec 2023 08:13:51 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 15 Dec 2023 08:13:09 -0700
+ 15.1.2507.35; Fri, 15 Dec 2023 08:13:32 -0700
 Received: from che-dk-ungapp03lx.microchip.com (10.10.85.11) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.35 via Frontend Transport; Fri, 15 Dec 2023 08:13:06 -0700
+ 15.1.2507.35 via Frontend Transport; Fri, 15 Dec 2023 08:13:28 -0700
 From: Rengarajan S <rengarajan.s@microchip.com>
 To: <kumaravel.thiagarajan@microchip.com>,
 	<tharunkumar.pasumarthi@microchip.com>, <gregkh@linuxfoundation.org>,
@@ -42,10 +42,12 @@ To: <kumaravel.thiagarajan@microchip.com>,
 	<linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-hardening@vger.kernel.org>
 CC: <unglinuxdriver@microchip.com>
-Subject: [PATCH v1 tty-next 0/4] 8250: microchip: Burst Mode Support for PCI1XXXX
-Date: Fri, 15 Dec 2023 20:41:19 +0530
-Message-ID: <20231215151123.41812-1-rengarajan.s@microchip.com>
+Subject: [PATCH v1 tty-next 4/4] 8250: microchip: pci1xxxx: Add Burst mode transmission support in uart driver for reading from FIFO
+Date: Fri, 15 Dec 2023 20:41:23 +0530
+Message-ID: <20231215151123.41812-5-rengarajan.s@microchip.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20231215151123.41812-1-rengarajan.s@microchip.com>
+References: <20231215151123.41812-1-rengarajan.s@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -55,26 +57,166 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-This patch series improves the UART performance in PCI1XXXX from C0 rev
-using burst mode operation. Each transaction processes DWORDs at a time
-and the remaining bytes are handled byte-by-byte. With burst mode access
-the baud rate support is extended from 1.5 Mbps to 3.9 Mbps.
+pci1xxxx_handle_irq reads the burst status and checks if the FIFO
+is empty and is ready to accept the incoming data. The handling is
+done in pci1xxxx_tx_burst where each transaction processes data in
+block of DWORDs, while any remaining bytes are processed individually,
+one byte at a time.
 
-v1
-Initial Submission for review
+Signed-off-by: Rengarajan S <rengarajan.s@microchip.com>
+---
+ drivers/tty/serial/8250/8250_pci1xxxx.c | 103 ++++++++++++++++++++++++
+ 1 file changed, 103 insertions(+)
 
-Rengarajan S (4):
-  8250: microchip: pci1xxxx: Rearranging the structure declarations
-  8250: microchip: pci1xxxx: Add Syslock support for reading UART system
-    registers
-  8250: microchip: pci1xxxx: Add Burst mode reception support in uart
-    driver for writing into FIFO
-  8250: microchip: pci1xxxx: Add Burst mode transmission support in uart
-    driver for reading from FIFO
-
- drivers/tty/serial/8250/8250_pci1xxxx.c | 313 ++++++++++++++++++++++--
- 1 file changed, 299 insertions(+), 14 deletions(-)
-
+diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
+index 558c4c7f3104..ebe793bf6431 100644
+--- a/drivers/tty/serial/8250/8250_pci1xxxx.c
++++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
+@@ -67,6 +67,7 @@
+ #define SYSLOCK_RETRY_CNT			1000
+ 
+ #define UART_RX_BYTE_FIFO			0x00
++#define UART_TX_BYTE_FIFO			0x00
+ #define UART_FIFO_CTL				0x02
+ 
+ #define UART_ACTV_REG				0x11
+@@ -100,6 +101,7 @@
+ #define UART_RESET_D3_RESET_DISABLE		BIT(16)
+ 
+ #define UART_BURST_STATUS_REG			0x9C
++#define UART_TX_BURST_FIFO			0xA0
+ #define UART_RX_BURST_FIFO			0xA4
+ 
+ #define MAX_PORTS				4
+@@ -109,6 +111,7 @@
+ #define UART_BURST_SIZE				4
+ 
+ #define UART_BST_STAT_RX_COUNT_MASK		0x00FF
++#define UART_BST_STAT_TX_COUNT_MASK		0xFF00
+ #define UART_BST_STAT_IIR_INT_PEND		0x100000
+ #define UART_LSR_OVERRUN_ERR_CLR		0x43
+ #define UART_BST_STAT_LSR_RX_MASK		0x9F000000
+@@ -116,6 +119,7 @@
+ #define UART_BST_STAT_LSR_OVERRUN_ERR		0x2000000
+ #define UART_BST_STAT_LSR_PARITY_ERR		0x4000000
+ #define UART_BST_STAT_LSR_FRAME_ERR		0x8000000
++#define UART_BST_STAT_LSR_THRE			0x20000000
+ 
+ struct pci1xxxx_8250 {
+ 	unsigned int nr;
+@@ -344,6 +348,102 @@ static void pci1xxxx_rx_burst(struct uart_port *port, u32 uart_status)
+ 	}
+ }
+ 
++static void pci1xxxx_process_write_data(struct uart_port *port,
++					struct circ_buf *xmit,
++					int *data_empty_count,
++					u32 *valid_byte_count)
++{
++	u32 valid_burst_count = *valid_byte_count / UART_BURST_SIZE;
++
++	/*
++	 * Each transaction transfers data in DWORDs. If there are less than
++	 * four remaining valid_byte_count to transfer or if the circular
++	 * buffer has insufficient space for a DWORD, the data is transferred
++	 * one byte at a time.
++	 */
++	while (valid_burst_count--) {
++		if (*data_empty_count - UART_BURST_SIZE < 0)
++			break;
++		if (xmit->tail > (UART_XMIT_SIZE - UART_BURST_SIZE))
++			break;
++		writel(*(unsigned int *)&xmit->buf[xmit->tail],
++		       port->membase + UART_TX_BURST_FIFO);
++		*valid_byte_count -= UART_BURST_SIZE;
++		*data_empty_count -= UART_BURST_SIZE;
++		xmit->tail = (xmit->tail + UART_BURST_SIZE) &
++			     (UART_XMIT_SIZE - 1);
++	}
++
++	while (*valid_byte_count--) {
++		if (*data_empty_count - UART_BYTE_SIZE < 0)
++			break;
++		writeb(xmit->buf[xmit->tail], port->membase +
++		       UART_TX_BYTE_FIFO);
++		*data_empty_count -= UART_BYTE_SIZE;
++
++		/*
++		 * When the tail of the circular buffer is reached, the next
++		 * byte is transferred to the beginning of the buffer.
++		 */
++		xmit->tail = (xmit->tail + UART_BYTE_SIZE) &
++			     (UART_XMIT_SIZE - 1);
++
++		/*
++		 * If there are any pending burst count, data is handled by
++		 * transmitting DWORDs at a time.
++		 */
++		if (valid_burst_count && (xmit->tail <
++		   (UART_XMIT_SIZE - UART_BURST_SIZE)))
++			break;
++	}
++}
++
++static void pci1xxxx_tx_burst(struct uart_port *port, u32 uart_status)
++{
++	struct uart_8250_port *up = up_to_u8250p(port);
++	u32 valid_byte_count;
++	int data_empty_count;
++	struct circ_buf *xmit;
++
++	xmit = &port->state->xmit;
++
++	if (port->x_char) {
++		writeb(port->x_char, port->membase + UART_TX);
++		port->icount.tx++;
++		port->x_char = 0;
++		return;
++	}
++
++	if ((uart_tx_stopped(port)) || (uart_circ_empty(xmit))) {
++		port->ops->stop_tx(port);
++	} else {
++		data_empty_count = (pci1xxxx_read_burst_status(port) &
++				    UART_BST_STAT_TX_COUNT_MASK) >> 8;
++		do {
++			valid_byte_count = uart_circ_chars_pending(xmit);
++
++			pci1xxxx_process_write_data(port, xmit,
++						    &data_empty_count,
++						    &valid_byte_count);
++
++			port->icount.tx++;
++			if (uart_circ_empty(xmit))
++				break;
++		} while (data_empty_count && valid_byte_count);
++	}
++
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++		uart_write_wakeup(port);
++
++	 /*
++	  * With RPM enabled, we have to wait until the FIFO is empty before
++	  * the HW can go idle. So we get here once again with empty FIFO and
++	  * disable the interrupt and RPM in __stop_tx()
++	  */
++	if (uart_circ_empty(xmit) && !(up->capabilities & UART_CAP_RPM))
++		port->ops->stop_tx(port);
++}
++
+ static int pci1xxxx_handle_irq(struct uart_port *port)
+ {
+ 	unsigned long flags;
+@@ -359,6 +459,9 @@ static int pci1xxxx_handle_irq(struct uart_port *port)
+ 	if (status & UART_BST_STAT_LSR_RX_MASK)
+ 		pci1xxxx_rx_burst(port, status);
+ 
++	if (status & UART_BST_STAT_LSR_THRE)
++		pci1xxxx_tx_burst(port, status);
++
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 	return 1;
 -- 
 2.25.1
 
