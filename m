@@ -1,99 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 889CB2DB85;
-	Fri, 15 Dec 2023 13:36:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E679F3032F;
+	Fri, 15 Dec 2023 13:41:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Tud6o92I"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04C1FC433C8;
-	Fri, 15 Dec 2023 13:36:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1702647397;
-	bh=subHRTKMwmMr0u+Qf2RNzCSmCaDcHEzfdzarxtD8z/U=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Tud6o92I0jvVdrQ08FGKjdwhC80aUmMEmOH08YZYA7JMT2nqm5k4KKn6vBcUbxJjP
-	 VmpYMMCDc/VLLrETSfv2FpWhSRRti1nAMypE+MNbCK/UR8mamGdHErStfqAZXkgaKC
-	 qBv5XaksNxAOX6jipIaq1IbmkhKayDCxE6KAcyXAv3QSDdh51sfDh1IcgQiy2tAttY
-	 WXgcpMVNiCj3RxJHmQEXR/hTQbtqjFGwwlG5b3BHtjTFBOyuVjwGH1S6sM6UqultwY
-	 zXpxq3Nw1vqu3UFHQsvlUnunnipIRRlxvKbgttSUVa1ufg21iJkPpOgtx6sbhdvg9A
-	 kjq2BdKV10YQg==
-Received: from johan by xi.lan with local (Exim 4.96.2)
-	(envelope-from <johan@kernel.org>)
-	id 1rE8Mh-0008LA-2Z;
-	Fri, 15 Dec 2023 14:36:31 +0100
-Date: Fri, 15 Dec 2023 14:36:31 +0100
-From: Johan Hovold <johan@kernel.org>
-To: Francesco Dolcini <francesco@dolcini.it>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-bluetooth@vger.kernel.org,
-	linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, greybus-dev@lists.linaro.org,
-	linux-iio@vger.kernel.org, netdev@vger.kernel.org,
-	chrome-platform@lists.linux.dev,
-	platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-sound@vger.kernel.org,
-	Francesco Dolcini <francesco.dolcini@toradex.com>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Alex Elder <elder@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-	Lee Jones <lee@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Hans de Goede <hdegoede@redhat.com>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	Benson Leung <bleung@chromium.org>,
-	Tzung-Bi Shih <tzungbi@kernel.org>, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v1] treewide, serdev: change receive_buf() return type to
- size_t
-Message-ID: <ZXxWX-Fw1InID2ax@hovoldconsulting.com>
-References: <20231214170146.641783-1-francesco@dolcini.it>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="FsTmMLgU"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 3BFCdb3H003660;
+	Fri, 15 Dec 2023 13:41:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	from:to:cc:subject:date:message-id:in-reply-to:references
+	:mime-version:content-type; s=qcppdkim1; bh=e1V6io6xw+X48KEN9Lw2
+	Dc3hZe8mKdB3X54mQjBDkM8=; b=FsTmMLgU25BqlcNKNv2Bw1vGxWR8+puV6EOb
+	ti1wCeWUkeiTtee8vutviBW8uy0RsL9nTIHUPH9efX53HongFJ0Qpv2AUGmyO7gc
+	XS96RiO4kfWuowNQUzl3vupqMhZEZ8cdKNtucCNLQ50s55I/hx11rjJ0WjtkxvHr
+	KbGGUfEFBL9lv+eUMlfNjVNkAJqvWMjjucrckJHmzalYi86I0OvjLUqobbXAg2cg
+	14CF2ZR8HK2lHG0MUfdAAsRZhZMWWnmtNigzwf1ea/lcFLBJ7xtrD/Wyd3th+THO
+	zVc92t7wIbZo0LsUtkBrul2Gru1cZe1dyBDvPFNh78fyq3bVEg==
+Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3v0hb013sx-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 15 Dec 2023 13:41:38 +0000 (GMT)
+Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
+	by NASANPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3BFDfb33008769
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 15 Dec 2023 13:41:37 GMT
+Received: from zijuhu-gv.qualcomm.com (10.80.80.8) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.40; Fri, 15 Dec 2023 05:41:34 -0800
+From: Zijun Hu <quic_zijuhu@quicinc.com>
+To: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <quic_qiancai@quicinc.com>, <quic_arandive@quicinc.com>,
+        <quic_saipraka@quicinc.com>, <quic_vnivarth@quicinc.com>,
+        <quic_eberman@quicinc.com>
+CC: <quic_zijuhu@quicinc.com>, <linux-serial@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2] tty: Add comments for tty-ldisc module loading logic
+Date: Fri, 15 Dec 2023 21:41:30 +0800
+Message-ID: <1702647690-6787-1-git-send-email-quic_zijuhu@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1702640236-22824-1-git-send-email-quic_zijuhu@quicinc.com>
+References: <1702640236-22824-1-git-send-email-quic_zijuhu@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231214170146.641783-1-francesco@dolcini.it>
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: 7dD9jupRyBhKhkRsDBa3w_rjy5WQsO-X
+X-Proofpoint-GUID: 7dD9jupRyBhKhkRsDBa3w_rjy5WQsO-X
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-12-09_01,2023-12-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
+ priorityscore=1501 impostorscore=0 spamscore=0 mlxlogscore=999
+ clxscore=1011 lowpriorityscore=0 bulkscore=0 suspectscore=0 adultscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2311290000 definitions=main-2312150092
 
-On Thu, Dec 14, 2023 at 06:01:46PM +0100, Francesco Dolcini wrote:
-> From: Francesco Dolcini <francesco.dolcini@toradex.com>
-> 
-> receive_buf() is called from ttyport_receive_buf() that expects values
-> ">= 0" from serdev_controller_receive_buf(), change its return type from
-> ssize_t to size_t.
-> 
-> Suggested-by: Jiri Slaby <jirislaby@kernel.org>
-> Link: https://lore.kernel.org/all/087be419-ec6b-47ad-851a-5e1e3ea5cfcc@kernel.org/
-> Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
-> ---
->  drivers/gnss/core.c                        |  6 +++---
->  drivers/gnss/serial.c                      |  4 ++--
->  drivers/gnss/sirf.c                        |  6 +++---
+Current tty-ldisc module loading logic within tty_ldisc_get()
+is prone to mislead beginner that the module is able to be loaded
+by a user without capability CAP_SYS_MODULE, add comments to make
+the logic easy to undertand.
 
-> diff --git a/drivers/gnss/core.c b/drivers/gnss/core.c
-> index 48f2ee0f78c4..9b8a0605ec76 100644
-> --- a/drivers/gnss/core.c
-> +++ b/drivers/gnss/core.c
-> @@ -317,10 +317,10 @@ EXPORT_SYMBOL_GPL(gnss_deregister_device);
->   *
->   * Must not be called for a closed device.
->   */
-> -int gnss_insert_raw(struct gnss_device *gdev, const unsigned char *buf,
-> -				size_t count)
-> +size_t gnss_insert_raw(struct gnss_device *gdev, const unsigned char *buf,
-> +		       size_t count)
->  {
-> -	int ret;
-> +	size_t ret;
->  
->  	ret = kfifo_in(&gdev->read_fifo, buf, count);
->  
+Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+---
+Changes in v2:
+- Remove condition checking changes
 
-Why are you changing this function? This is part of the GNSS interface
-and has nothing to do with the rest of this patch.
+ drivers/tty/tty_ldisc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Greg, please drop this one again until this has been resolved.
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index 3f68e213df1f..34526ffaccbc 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -150,6 +150,10 @@ static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
+ 	 */
+ 	ldops = get_ldops(disc);
+ 	if (IS_ERR(ldops)) {
++		/*
++		 * Always request tty-ldisc module regardless of user's
++		 * CAP_SYS_MODULE if autoload is enabled.
++		 */
+ 		if (!capable(CAP_SYS_MODULE) && !tty_ldisc_autoload)
+ 			return ERR_PTR(-EPERM);
+ 		request_module("tty-ldisc-%d", disc);
+-- 
+The Qualcomm Innovation Center
 
-Johan
