@@ -1,49 +1,50 @@
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 488B43FE43
-	for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 19:24:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC2253FE3F
+	for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 19:26:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="g1Y2IM6G"
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-a1e7971db2aso114177266b.3
-        for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 11:24:36 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Fc4XncjT"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-40c68c1990dso11161515e9.0
+        for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 11:26:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702668274; x=1703273074; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=PoN0LEVREm4hvWDMcEGCq2IUdNzkUqW2PflUkybCDik=;
-        b=g1Y2IM6Gtu/if6TyU+mLOP6RFJczuSqnjtU7kmVFVN1RvjcfQQHp5Rly2TBLJ+E8kt
-         ykS1OJygdMyaYl+CHrV177FZzX2VjFeBBOLiFN5b1At6C6TCk2PkQBjHMoXRQYzWb7NC
-         qJsF27li+qRxJGtfOamqRnurOAxgfQnBPpO+J1teLd3SnYQFfGeq3dgEucVJbQvtMnr3
-         e2qqLhnehyWy3IzjxDCUYvwn2/i8UECc8lHpcFMhfy8y4zdtkrejY1acZIHKVaomi8Aq
-         Lo6+Av1wPydrB7qIbbayoZ+/wSQ5HbDWgYwH/CKmUzDhgKTCO1vak8er4JPHtzAmKzwI
-         tQ5Q==
+        d=linaro.org; s=google; t=1702668360; x=1703273160; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
+         :from:content-language:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=2i5HjC75fKF2cOyp9U8mOf9VDtn1Lz/xP1cl8618fS8=;
+        b=Fc4XncjTAeMLyU7bPT6MYpKm1KWxWzpoCwMFm6z1m0nbIuOJS2fj+yHwug7xwOn/sT
+         TF5qke/wpW/63aP/m58mVbaXSAtx1jyZmU/P2O0FsFhrs1fDq/8D2KaSLPWHERkVh9zy
+         DS1/OtgXEVanOldB+vkSokUYPGSqkAtcvsDw4Mmh6/sZhnOu9rZwEAhOAWLA40kO1Psx
+         VBNx5dIO2rD/EnfXnmUdgNoCKZ1WcJPmxdnhcd9T64ZXYnDnZIeDXOcfiRsxynN93K8I
+         wsP2UkgWQFSFjkyRA7UtQgvXIQ2x+HyilV+OURt1gxX4n22UGD0Pv39yhV3Nc+83r3OD
+         uxlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702668274; x=1703273074;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=PoN0LEVREm4hvWDMcEGCq2IUdNzkUqW2PflUkybCDik=;
-        b=rXK+THg1oK++2jp3BxOdXgoUntrqIOh7s7vAZMo7uPMYXMfoK/5dzW8a1sQrBu4UWe
-         QMNh9DSocdfSP4uz08FuoQ+BvhzX/oi1r8liVBUf3t6L4L3eOBGwNtOEM9DBXqujLO23
-         1DPF0Dhp+AfBwAuDyfCrP0tTK8GIMRDcnraeK3skXTVul3FxM3NBCfrtvBpWBB4mtk9i
-         BP00cfEoFonNcN09ITp7MpFbV5VzmJFj/k/tX4V8OfgW+G/jt5jNu4+anYpalYnSdmhO
-         2eSE671m+Iyq5XeEKw+INDFghvTXFyqPHRUCVaZMBEnU7GJKo7tw/2TjzmkkqoccBVu7
-         URqQ==
-X-Gm-Message-State: AOJu0Ywt4xvWML8bT7GdLVUCbaCw3d4PlTYqK6F2hGw75E6dLcFQx5qL
-	xYvgvY3qLdRxQW24g9CBNCW0Nw==
-X-Google-Smtp-Source: AGHT+IFtk5TyMdBQwNglocR5LnfgDGANECd/edeCze0GKlaunERfcr6PTnGsnjZTfowah/1ShijVmA==
-X-Received: by 2002:a17:906:10ce:b0:a19:a19a:ea9c with SMTP id v14-20020a17090610ce00b00a19a19aea9cmr6806544ejv.85.1702668274637;
-        Fri, 15 Dec 2023 11:24:34 -0800 (PST)
+        d=1e100.net; s=20230601; t=1702668360; x=1703273160;
+        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
+         :from:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=2i5HjC75fKF2cOyp9U8mOf9VDtn1Lz/xP1cl8618fS8=;
+        b=dFxkoWBD2DRMdU7BsCXIuc07oltCtyIe9i4f2vbkmM2kT8ej56ndTgPbOb29zIjsaR
+         u1P5ub8Ghr/m5KwVfAhuH56HD8Q+sC/7pQI5gfPrfwcMr8SG9DWfeBXiGPUdYXtMX7Dk
+         s91O8CALsTw5QzX56de164E08FqO1fZhHTM6kERymqEM3dZSJx3rkeTc+gVqSbZZ73sl
+         jEUZfHtVA1dIlYLitJFhkMIM+x/ddetbO0yDSrO3qf3AzoOpHRHSjw2rpGbxDtrrlFmp
+         b8IVimIUIm0Vjy8BdVhWTnxlwbSASB+Irr0opPJobNDKI4MwomgsciOjNMi1NK4BZgc6
+         WLFg==
+X-Gm-Message-State: AOJu0YxSGbmYKMxcZhpEUU54SRCl9EA6xO96AeuyNdHoX2bAEgEBp+jp
+	LynFBXuCEZN24ZMYqRNuAr7FFQ==
+X-Google-Smtp-Source: AGHT+IE4G/yK1d2SHMNojQtqWZ6OCcgBD8KzOq9N9qT+hmJcXQ/vEmd5c8U3e9Y+vZb5l23j/cicVA==
+X-Received: by 2002:a05:600c:35d4:b0:40c:7043:63c1 with SMTP id r20-20020a05600c35d400b0040c704363c1mr9439wmq.195.1702668360284;
+        Fri, 15 Dec 2023 11:26:00 -0800 (PST)
 Received: from [192.168.1.20] ([178.197.218.27])
-        by smtp.gmail.com with ESMTPSA id tp25-20020a170907c49900b00a1f7c502736sm9814135ejc.164.2023.12.15.11.24.32
+        by smtp.gmail.com with ESMTPSA id tp25-20020a170907c49900b00a1f7c502736sm9814135ejc.164.2023.12.15.11.25.57
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Dec 2023 11:24:34 -0800 (PST)
-Message-ID: <9eedae99-cc9a-4c8f-9a09-789b686cd456@linaro.org>
-Date: Fri, 15 Dec 2023 20:24:31 +0100
+        Fri, 15 Dec 2023 11:25:59 -0800 (PST)
+Message-ID: <7163718b-0a92-4383-b475-aac52354489d@linaro.org>
+Date: Fri, 15 Dec 2023 20:25:57 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -54,6 +55,7 @@ User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH 01/13] dt-bindings: clock: google,gs101: fix CMU_TOP gate
  clock names
 Content-Language: en-US
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To: Tudor Ambarus <tudor.ambarus@linaro.org>, peter.griffin@linaro.org,
  robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
  mturquette@baylibre.com, sboyd@kernel.org, conor+dt@kernel.org,
@@ -70,7 +72,7 @@ References: <20231214105243.3707730-1-tudor.ambarus@linaro.org>
  <20231214105243.3707730-2-tudor.ambarus@linaro.org>
  <050c3119-0431-4400-9052-7a9c0ec67918@linaro.org>
  <5e454300-f1ef-435c-8c4c-16561502196a@linaro.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+ <9eedae99-cc9a-4c8f-9a09-789b686cd456@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
  cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
@@ -115,43 +117,46 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <5e454300-f1ef-435c-8c4c-16561502196a@linaro.org>
+In-Reply-To: <9eedae99-cc9a-4c8f-9a09-789b686cd456@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 15/12/2023 11:23, Tudor Ambarus wrote:
-> Hi, Krzysztof,
+On 15/12/2023 20:24, Krzysztof Kozlowski wrote:
+> On 15/12/2023 11:23, Tudor Ambarus wrote:
+>> Hi, Krzysztof,
+>>
+>> On 12/15/23 08:13, Krzysztof Kozlowski wrote:
+>>> On 14/12/2023 11:52, Tudor Ambarus wrote:
+>>>> The gs101 clock names are derived from the clock register names under
+>>>> some certain rules. In particular, for the gate clocks the following is
+>>>> documented and expected in the gs101 clock driver:
+>>>>
+>>>>   Replace CLK_CON_GAT_CLKCMU      with CLK_GOUT_CMU and gout_cmu
+>>>>   Replace CLK_CON_GAT_GATE_CLKCMU with CLK_GOUT_CMU and gout_cmu
+>>>>
+>>>>   For gates remove _UID _BLK _IPCLKPORT and _RSTNSYNC
+>>>
+>>> I don't understand what it has to do with the bindings.
+>>>
+>>>>
+>>>> The CMU TOP gate clock names missed to include the required "CMU"
+>>>> differentiator which will cause name collisions with the gate clock names
+>>>> of other clock units. Fix the TOP gate clock names and include "CMU" in
+>>>> their name.
+>>>
+>>> Neither here. Clock names are not related to defines.
+>>>
+>>
+>> When saying "clock names" I meant the clock symbolic names that are
+>> defined in the bindings, the _id passed in GATE(_id, ) if you want.
 > 
-> On 12/15/23 08:13, Krzysztof Kozlowski wrote:
->> On 14/12/2023 11:52, Tudor Ambarus wrote:
->>> The gs101 clock names are derived from the clock register names under
->>> some certain rules. In particular, for the gate clocks the following is
->>> documented and expected in the gs101 clock driver:
->>>
->>>   Replace CLK_CON_GAT_CLKCMU      with CLK_GOUT_CMU and gout_cmu
->>>   Replace CLK_CON_GAT_GATE_CLKCMU with CLK_GOUT_CMU and gout_cmu
->>>
->>>   For gates remove _UID _BLK _IPCLKPORT and _RSTNSYNC
->>
->> I don't understand what it has to do with the bindings.
->>
->>>
->>> The CMU TOP gate clock names missed to include the required "CMU"
->>> differentiator which will cause name collisions with the gate clock names
->>> of other clock units. Fix the TOP gate clock names and include "CMU" in
->>> their name.
->>
->> Neither here. Clock names are not related to defines.
->>
-> 
-> When saying "clock names" I meant the clock symbolic names that are
-> defined in the bindings, the _id passed in GATE(_id, ) if you want.
+> Please re-phrase the commit message to say that you need to rename the
+> defines in the bindings headers. If you change anything else, like clock
+> names, then it should be separate patch.
 
-Please re-phrase the commit message to say that you need to rename the
-defines in the bindings headers. If you change anything else, like clock
-names, then it should be separate patch.
-
-
+I forgot:
+You can also respin this patch separately, as soon as possible, because
+it has to go this cycle.
 
 Best regards,
 Krzysztof
