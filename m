@@ -1,91 +1,121 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B23B9364A4;
-	Fri, 15 Dec 2023 14:58:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A51E1374E9;
+	Fri, 15 Dec 2023 15:13:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="dFZawHbc"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 3BFDwLHD014411;
-	Fri, 15 Dec 2023 14:58:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	message-id:date:mime-version:subject:to:cc:references:from
-	:in-reply-to:content-type:content-transfer-encoding; s=
-	qcppdkim1; bh=1jwi2TaNw/idM6KvASCJXOcLUllXiF0b2T6DLjX2GXs=; b=dF
-	ZawHbc8lkkd+IaIBuCV3RvswsfFPO4VYY0JL6V/1MjixsFbV0Waadzt0t2T8iZIA
-	BFoMNjun/gJA36p5r/ARWBeWMMci37E5b8FQZCts2wRtjC7/gbjNPt7EvggrYKio
-	RtIJDyPvNgfsWvCR+dPokQ5vj1nAz/Poz5d5hQP+OPL3eZDczHWdW0YTefpaiC4f
-	gG1sX2TrhoFSb4MZUB6EbbBA6pJ7coEqI3ncmaZigOWgDSr4kGjcinwBJcs66An+
-	ZdijJmS6C1MYN6+WntQpRYW9u5h9MJwFHYl268JVGYRHYZs0pPweUSN74TIuvslO
-	oBWpgUzhCCxV34NAH04w==
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3v0a37jc7g-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 15 Dec 2023 14:58:52 +0000 (GMT)
-Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3BFEwpR5032091
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 15 Dec 2023 14:58:51 GMT
-Received: from [10.253.38.198] (10.80.80.8) by nasanex01a.na.qualcomm.com
- (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Fri, 15 Dec
- 2023 06:58:48 -0800
-Message-ID: <de5b8bf1-8c5f-4673-9036-3f50aedd5785@quicinc.com>
-Date: Fri, 15 Dec 2023 22:58:45 +0800
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="JzQggL4l"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1702653207; x=1734189207;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=7FkxHPKCkGpKFOZSD5EQ8Rk+gyt82kYlBUNX8Qhpy1U=;
+  b=JzQggL4l+Luguc0u1irfLzkM+uMngdBvXeMlByxX5MHegZ5pjVH1zGIC
+   MVTMEm1rsh3snUgGMJvyYptwSgd2S8IX0th/gLIWcDo6jEdqP2V4TzH6W
+   5eC7JJchRlgyR4db9EyzjZGL7ZDrQBftnhOWxswvGJOfvlSPSIsweeg29
+   m9agNXOA1yusvTlUA/rAMnoNI4+l2SYLxsM7jwSMlsBl2tcshrKmlYEp6
+   wVOnls87GHcsnHVC88YSCJZzAvf8em5xGFli5M/T/t7IuvonXy/tvGNnN
+   lHLv0GoEF4FV/Qagn6RIbSVgAHpmV42yjvIghgezdnkhcvTPvhbH985wc
+   w==;
+X-CSE-ConnectionGUID: /Moh9OXQQmOyPN9c02EGlg==
+X-CSE-MsgGUID: EkXUut2XSam2/OWku67UOg==
+X-ThreatScanner-Verdict: Negative
+X-IronPort-AV: E=Sophos;i="6.04,279,1695711600"; 
+   d="scan'208";a="180577316"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 15 Dec 2023 08:13:20 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Fri, 15 Dec 2023 08:13:15 -0700
+Received: from che-dk-ungapp03lx.microchip.com (10.10.85.11) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.35 via Frontend Transport; Fri, 15 Dec 2023 08:13:11 -0700
+From: Rengarajan S <rengarajan.s@microchip.com>
+To: <kumaravel.thiagarajan@microchip.com>,
+	<tharunkumar.pasumarthi@microchip.com>, <gregkh@linuxfoundation.org>,
+	<jirislaby@kernel.org>, <keescook@chromium.org>, <gustavoars@kernel.org>,
+	<linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-hardening@vger.kernel.org>
+CC: <unglinuxdriver@microchip.com>
+Subject: [PATCH v1 tty-next 1/4] 8250: microchip: pci1xxxx: Rearranging the structure declarations
+Date: Fri, 15 Dec 2023 20:41:20 +0530
+Message-ID: <20231215151123.41812-2-rengarajan.s@microchip.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20231215151123.41812-1-rengarajan.s@microchip.com>
+References: <20231215151123.41812-1-rengarajan.s@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] tty: Add comments for tty-ldisc module loading logic
-Content-Language: en-US
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: <jirislaby@kernel.org>, <quic_qiancai@quicinc.com>,
-        <quic_arandive@quicinc.com>, <quic_saipraka@quicinc.com>,
-        <quic_vnivarth@quicinc.com>, <quic_eberman@quicinc.com>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1702640236-22824-1-git-send-email-quic_zijuhu@quicinc.com>
- <1702647690-6787-1-git-send-email-quic_zijuhu@quicinc.com>
- <2023121523-cadillac-prologue-a81d@gregkh>
-From: quic_zijuhu <quic_zijuhu@quicinc.com>
-In-Reply-To: <2023121523-cadillac-prologue-a81d@gregkh>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: SucUcQ_HXS0ojCxNosUzLJ2XMtSXV622
-X-Proofpoint-ORIG-GUID: SucUcQ_HXS0ojCxNosUzLJ2XMtSXV622
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-12-09_01,2023-12-07_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
- malwarescore=0 clxscore=1015 bulkscore=0 adultscore=0 mlxlogscore=946
- spamscore=0 phishscore=0 impostorscore=0 lowpriorityscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2311290000 definitions=main-2312150103
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-On 12/15/2023 10:12 PM, Greg KH wrote:
-> On Fri, Dec 15, 2023 at 09:41:30PM +0800, Zijun Hu wrote:
->> Current tty-ldisc module loading logic within tty_ldisc_get()
->> is prone to mislead beginner that the module is able to be loaded
->> by a user without capability CAP_SYS_MODULE, add comments to make
->> the logic easy to undertand.
->>
->> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
->> ---
->> Changes in v2:
->> - Remove condition checking changes
-> 
-> As I asked for before, please get other, more experienced developers,
-> from your company, to review and sign-off on this patch before sending
-> it out again.  I can't take this as-is, sorry.
-> 
-okay
-> greg k-h
+Structure declarations in 8250_pci1xxxx.c have been moved above
+the functions for code readability.
+
+Signed-off-by: Rengarajan S <rengarajan.s@microchip.com>
+---
+ drivers/tty/serial/8250/8250_pci1xxxx.c | 26 ++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
+index 9f9e21981929..48bd2f3a287d 100644
+--- a/drivers/tty/serial/8250/8250_pci1xxxx.c
++++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
+@@ -85,6 +85,19 @@
+ #define MAX_PORTS				4
+ #define PORT_OFFSET				0x100
+ 
++struct pci1xxxx_8250 {
++	unsigned int nr;
++	void __iomem *membase;
++	int line[] __counted_by(nr);
++};
++
++static const struct serial_rs485 pci1xxxx_rs485_supported = {
++	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND |
++		 SER_RS485_RTS_AFTER_SEND,
++	.delay_rts_after_send = 1,
++	/* Delay RTS before send is not supported */
++};
++
+ static const int logical_to_physical_port_idx[][MAX_PORTS] = {
+ 	{0,  1,  2,  3}, /* PCI12000, PCI11010, PCI11101, PCI11400, PCI11414 */
+ 	{0,  1,  2,  3}, /* PCI4p */
+@@ -104,12 +117,6 @@ static const int logical_to_physical_port_idx[][MAX_PORTS] = {
+ 	{3, -1, -1, -1}, /* PCI1p3 */
+ };
+ 
+-struct pci1xxxx_8250 {
+-	unsigned int nr;
+-	void __iomem *membase;
+-	int line[] __counted_by(nr);
+-};
+-
+ static int pci1xxxx_get_num_ports(struct pci_dev *dev)
+ {
+ 	switch (dev->subsystem_device) {
+@@ -205,13 +212,6 @@ static int pci1xxxx_rs485_config(struct uart_port *port,
+ 	return 0;
+ }
+ 
+-static const struct serial_rs485 pci1xxxx_rs485_supported = {
+-	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND |
+-		 SER_RS485_RTS_AFTER_SEND,
+-	.delay_rts_after_send = 1,
+-	/* Delay RTS before send is not supported */
+-};
+-
+ static bool pci1xxxx_port_suspend(int line)
+ {
+ 	struct uart_8250_port *up = serial8250_get_port(line);
+-- 
+2.25.1
 
