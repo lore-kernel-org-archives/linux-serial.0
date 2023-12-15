@@ -1,90 +1,70 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from SHSQR01.spreadtrum.com (mx1.unisoc.com [222.66.158.135])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8872511CAE
-	for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 08:44:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="T3RF40kj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7BE6C433C8;
-	Fri, 15 Dec 2023 08:44:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1702629845;
-	bh=Zz8x/KehBvqbLFt42xqXDxlCDNTajxU4Q7eSn03r2JI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=T3RF40kjZ7CaFhr95/ceMBh738VqNThe5cNTwulkSKFip2U28W1sS+aEjh5HyV1vb
-	 zL6ic6YkeSeiP1fTzv6HFIqC72SI8+pQ6ohz5nWky42h1I3A2dsi9uAEptp62OIseM
-	 s/qZv8gWzHUrFf3f9Rxxh6iG9F+NkhFF6MGu36cc=
-Date: Fri, 15 Dec 2023 09:43:59 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Zijun Hu <quic_zijuhu@quicinc.com>
-Cc: jirislaby@kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v1] tty: Fix a security issue related to tty-ldisc module
- loading
-Message-ID: <2023121530-crept-unisexual-de76@gregkh>
-References: <1702628933-6070-1-git-send-email-quic_zijuhu@quicinc.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8DF91A70E;
+	Fri, 15 Dec 2023 08:57:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unisoc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=unisoc.com
+Received: from dlp.unisoc.com ([10.29.3.86])
+	by SHSQR01.spreadtrum.com with ESMTP id 3BF8uafa026141;
+	Fri, 15 Dec 2023 16:56:36 +0800 (+08)
+	(envelope-from Chunyan.Zhang@unisoc.com)
+Received: from SHDLP.spreadtrum.com (bjmbx02.spreadtrum.com [10.0.64.8])
+	by dlp.unisoc.com (SkyGuard) with ESMTPS id 4Ss2x308ffz2PfFhY;
+	Fri, 15 Dec 2023 16:50:30 +0800 (CST)
+Received: from ubt.spreadtrum.com (10.0.73.88) by BJMBX02.spreadtrum.com
+ (10.0.64.8) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Fri, 15 Dec
+ 2023 16:56:34 +0800
+From: Chunyan Zhang <chunyan.zhang@unisoc.com>
+To: Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>, Lee
+ Jones <lee@kernel.org>
+CC: <devicetree@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        Baolin Wang
+	<baolin.wang@linux.alibaba.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Chunyan
+ Zhang <zhang.lyra@gmail.com>,
+        Chunyan Zhang <chunyan.zhang@unisoc.com>,
+        LKML
+	<linux-kernel@vger.kernel.org>
+Subject: [PATCH 0/4] Add DTS and bindings for Unisoc's UMS9620
+Date: Fri, 15 Dec 2023 16:56:26 +0800
+Message-ID: <20231215085630.984892-1-chunyan.zhang@unisoc.com>
+X-Mailer: git-send-email 2.41.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1702628933-6070-1-git-send-email-quic_zijuhu@quicinc.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SHCAS03.spreadtrum.com (10.0.1.207) To
+ BJMBX02.spreadtrum.com (10.0.64.8)
+X-MAIL:SHSQR01.spreadtrum.com 3BF8uafa026141
 
-On Fri, Dec 15, 2023 at 04:28:53PM +0800, Zijun Hu wrote:
-> Function tty_ldisc_get() has a simple logical error and may cause tty-ldisc
-> module to be loaded by a user without CAP_SYS_MODULE, this security issue
-> is fixed by correcting the logical error.
+Add a basic DTS for UMS9620 SoC and UMS9620-2H10 board, with this patchset
+the board can run into console.
 
-What specific security issue are you referring to here?
+Chunyan Zhang (4):
+  dt-bindings: mfd: sprd: Add support for UMS9620
+  dt-bindings: arm: Add compatible strings for Unisoc's UMS9620
+  dt-bindings: serial: Add a new compatible string for UMS9620
+  arm64: dts: sprd: Add support for Unisoc's UMS9620
 
-> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
-> ---
->  drivers/tty/tty_ldisc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-> index 3f68e213df1f..b490c0adf00f 100644
-> --- a/drivers/tty/tty_ldisc.c
-> +++ b/drivers/tty/tty_ldisc.c
-> @@ -150,7 +150,7 @@ static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
->  	 */
->  	ldops = get_ldops(disc);
->  	if (IS_ERR(ldops)) {
-> -		if (!capable(CAP_SYS_MODULE) && !tty_ldisc_autoload)
-> +		if (!capable(CAP_SYS_MODULE) || !tty_ldisc_autoload)
+ .../devicetree/bindings/arm/sprd/sprd.yaml    |   5 +
+ .../bindings/mfd/sprd,ums512-glbreg.yaml      |   4 +-
+ .../devicetree/bindings/serial/sprd-uart.yaml |   1 +
+ arch/arm64/boot/dts/sprd/Makefile             |   3 +-
+ arch/arm64/boot/dts/sprd/ums9620-2h10.dts     |  38 +++
+ arch/arm64/boot/dts/sprd/ums9620.dtsi         | 247 ++++++++++++++++++
+ 6 files changed, 296 insertions(+), 2 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/sprd/ums9620-2h10.dts
+ create mode 100644 arch/arm64/boot/dts/sprd/ums9620.dtsi
 
-I'm missing something, why change this?
+-- 
+2.41.0
 
-Remember if tty_ldisc_autoload is enabled, then any user can auto-load a
-tty ldisc, permissions are not needed.
-
-as it's confusing to read, let me break this down to see if the original
-code is correct or not:
-	If you do NOT have CAP_SYS_MODULE AND you do NOT have
-	tty_ldisc_autoload enabled, then the kernel will NOT call
-	request_module
-
-	If you do have CAP_SYS_MODULE enabled then the kernel will call
-	request_module()
-
-	If you do have tty_ldisc_autoload enabled, then you can autoload
-	a module.
-
-Is this not the correct functionality?
-
-You are changing this to:
-	If you do NOT have CAP_SYS_MODULE enabled, then no matter what,
-	do NOT call request_module()
-
-	If you do NOT have tty_ldisc_autoload enabled, then no matter
-	what, do NOT call request_module()
-
-Are you sure that's what you want to change this to?
-
-What am I missing here?
-
-confused,
-
-greg "boolean logic is hard" k-h
