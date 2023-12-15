@@ -1,22 +1,30 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69E6B2E842;
-	Fri, 15 Dec 2023 13:26:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 889CB2DB85;
+	Fri, 15 Dec 2023 13:36:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="1Yo+W8pt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36AADC433C7;
-	Fri, 15 Dec 2023 13:26:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1702646810;
-	bh=00ZkD0cu7HBjZVGkRek2lsYzXAxF35Yjjr+hicSHu5Y=;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Tud6o92I"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04C1FC433C8;
+	Fri, 15 Dec 2023 13:36:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1702647397;
+	bh=subHRTKMwmMr0u+Qf2RNzCSmCaDcHEzfdzarxtD8z/U=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=1Yo+W8ptX+67SOYAVONFRcrHI+q2aCFD7vEjWVSvPiznqrNEBN0RX7AuxQA8Fq9o3
-	 JJ3FNRJdXfsJ1lSkc+ATqb8/6/Ogg1HVpfhKJNCDv8PhCin6QqABrwy3PGC7WSyanW
-	 q3/sJsi8ph1KA5HU1TJgqgS1QPZxq8wiwlyCJz+Q=
-Date: Fri, 15 Dec 2023 14:26:48 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Francesco Dolcini <francesco@dolcini.it>
+	b=Tud6o92I0jvVdrQ08FGKjdwhC80aUmMEmOH08YZYA7JMT2nqm5k4KKn6vBcUbxJjP
+	 VmpYMMCDc/VLLrETSfv2FpWhSRRti1nAMypE+MNbCK/UR8mamGdHErStfqAZXkgaKC
+	 qBv5XaksNxAOX6jipIaq1IbmkhKayDCxE6KAcyXAv3QSDdh51sfDh1IcgQiy2tAttY
+	 WXgcpMVNiCj3RxJHmQEXR/hTQbtqjFGwwlG5b3BHtjTFBOyuVjwGH1S6sM6UqultwY
+	 zXpxq3Nw1vqu3UFHQsvlUnunnipIRRlxvKbgttSUVa1ufg21iJkPpOgtx6sbhdvg9A
+	 kjq2BdKV10YQg==
+Received: from johan by xi.lan with local (Exim 4.96.2)
+	(envelope-from <johan@kernel.org>)
+	id 1rE8Mh-0008LA-2Z;
+	Fri, 15 Dec 2023 14:36:31 +0100
+Date: Fri, 15 Dec 2023 14:36:31 +0100
+From: Johan Hovold <johan@kernel.org>
+To: Francesco Dolcini <francesco@dolcini.it>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>, linux-bluetooth@vger.kernel.org,
 	linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org, greybus-dev@lists.linaro.org,
@@ -26,21 +34,19 @@ Cc: Jiri Slaby <jirislaby@kernel.org>, linux-bluetooth@vger.kernel.org,
 	linux-sound@vger.kernel.org,
 	Francesco Dolcini <francesco.dolcini@toradex.com>,
 	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>, Lee Jones <lee@kernel.org>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Eric Dumazet <edumazet@google.com>,
+	Alex Elder <elder@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Lee Jones <lee@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>,
 	"David S. Miller" <davem@davemloft.net>,
 	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
 	Hans de Goede <hdegoede@redhat.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
 	Benson Leung <bleung@chromium.org>,
 	Tzung-Bi Shih <tzungbi@kernel.org>, Rob Herring <robh@kernel.org>
 Subject: Re: [PATCH v1] treewide, serdev: change receive_buf() return type to
  size_t
-Message-ID: <2023121535-coveting-destruct-f567@gregkh>
+Message-ID: <ZXxWX-Fw1InID2ax@hovoldconsulting.com>
 References: <20231214170146.641783-1-francesco@dolcini.it>
- <ZXs94Mf1eOMCmGpT@francesco-nb.int.toradex.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -49,42 +55,45 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZXs94Mf1eOMCmGpT@francesco-nb.int.toradex.com>
+In-Reply-To: <20231214170146.641783-1-francesco@dolcini.it>
 
-On Thu, Dec 14, 2023 at 06:39:44PM +0100, Francesco Dolcini wrote:
-> On Thu, Dec 14, 2023 at 06:01:46PM +0100, Francesco Dolcini wrote:
-> > From: Francesco Dolcini <francesco.dolcini@toradex.com>
-> > 
-> > receive_buf() is called from ttyport_receive_buf() that expects values
-> > ">= 0" from serdev_controller_receive_buf(), change its return type from
-> > ssize_t to size_t.
-> > 
-> > Suggested-by: Jiri Slaby <jirislaby@kernel.org>
-> > Link: https://lore.kernel.org/all/087be419-ec6b-47ad-851a-5e1e3ea5cfcc@kernel.org/
-> > Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
-> > ---
-> > hello,
-> > patch is based on current linux next.
-> > 
-> > It has an obvious problem, it touches files from multiple subsystem in a single
-> > patch that is complicated to review and eventually merge, just splitting this
-> > would however not work, it will break bisectability and the build.
-> > 
-> > I am looking for advise on the best way to move forward.
-> > 
-> > I see the following options:
-> >  - keep it as it is
-> >  - break it down with a patch with each subsystem, and squash before applying
-> >    from a single (tty?) subsystem
-> >  - go for a multi stage approach, defining a new callback, move to it and in
-> >    the end remove the original one, likewise it was done for i2c lately
+On Thu, Dec 14, 2023 at 06:01:46PM +0100, Francesco Dolcini wrote:
+> From: Francesco Dolcini <francesco.dolcini@toradex.com>
 > 
-> whoops. I just noticed Greg applied commit 475fc6e2de6f ("tty: serdev:
-> convert to u8 and size_t") that touch the exact same files without much
-> of an issue.
+> receive_buf() is called from ttyport_receive_buf() that expects values
+> ">= 0" from serdev_controller_receive_buf(), change its return type from
+> ssize_t to size_t.
 > 
-> Probably the "keep it as it is" is just the way to go.
+> Suggested-by: Jiri Slaby <jirislaby@kernel.org>
+> Link: https://lore.kernel.org/all/087be419-ec6b-47ad-851a-5e1e3ea5cfcc@kernel.org/
+> Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+> ---
+>  drivers/gnss/core.c                        |  6 +++---
+>  drivers/gnss/serial.c                      |  4 ++--
+>  drivers/gnss/sirf.c                        |  6 +++---
 
-Yeah, looks good to me, now queued up, thanks!
+> diff --git a/drivers/gnss/core.c b/drivers/gnss/core.c
+> index 48f2ee0f78c4..9b8a0605ec76 100644
+> --- a/drivers/gnss/core.c
+> +++ b/drivers/gnss/core.c
+> @@ -317,10 +317,10 @@ EXPORT_SYMBOL_GPL(gnss_deregister_device);
+>   *
+>   * Must not be called for a closed device.
+>   */
+> -int gnss_insert_raw(struct gnss_device *gdev, const unsigned char *buf,
+> -				size_t count)
+> +size_t gnss_insert_raw(struct gnss_device *gdev, const unsigned char *buf,
+> +		       size_t count)
+>  {
+> -	int ret;
+> +	size_t ret;
+>  
+>  	ret = kfifo_in(&gdev->read_fifo, buf, count);
+>  
 
-greg k-h
+Why are you changing this function? This is part of the GNSS interface
+and has nothing to do with the rest of this patch.
+
+Greg, please drop this one again until this has been resolved.
+
+Johan
