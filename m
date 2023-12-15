@@ -1,39 +1,49 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43B3D30116;
-	Fri, 15 Dec 2023 17:51:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 488B43FE43
+	for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 19:24:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="h7l6IAz9"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 3BFERTtf024580;
-	Fri, 15 Dec 2023 17:51:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	message-id:date:mime-version:subject:to:cc:references:from
-	:in-reply-to:content-type:content-transfer-encoding; s=
-	qcppdkim1; bh=36Al+miGLrdB9/hSzVxp15OWW+dtzN9WjkaQxb3yweA=; b=h7
-	l6IAz9dvXrOvEGnjq6qJ3IX9Y9VoPQWXLAM9TuyMY0VOsVXDtfbRKk/A+MvGpRz/
-	vaidWxZdg/rS7FJ5yXSAmYntxPg9MSXEm5G8sM+Ht/p2iFt6qA9c2GV2QnVsP8JH
-	v4+VAvpP79Rrvy/uUDW+3mDveHMOx42Ic+vwqm2eVSVaSdtBeDAi4qaNMMkmFPQh
-	fQIp+nHyxf+1+f1+iIhOUS3+wFIvwoyX+FVKBFik/A/qw4n0iWCSUgMV2vt7idzh
-	s4cE5PA2AnMnEQfBsFOlzgN4MVI4Y8Chz/N4QeuOP+btdyJwIkT8zsFBPJJVaBaz
-	O3n4Lc0AntpSrLA+Y9qg==
-Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3v0hqchpqy-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 15 Dec 2023 17:51:11 +0000 (GMT)
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3BFHpB80025241
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 15 Dec 2023 17:51:11 GMT
-Received: from [10.110.27.143] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Fri, 15 Dec
- 2023 09:51:10 -0800
-Message-ID: <e83d29b8-5022-466a-b2ee-61fa5dd1c9ae@quicinc.com>
-Date: Fri, 15 Dec 2023 09:51:09 -0800
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="g1Y2IM6G"
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-a1e7971db2aso114177266b.3
+        for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 11:24:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1702668274; x=1703273074; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=PoN0LEVREm4hvWDMcEGCq2IUdNzkUqW2PflUkybCDik=;
+        b=g1Y2IM6Gtu/if6TyU+mLOP6RFJczuSqnjtU7kmVFVN1RvjcfQQHp5Rly2TBLJ+E8kt
+         ykS1OJygdMyaYl+CHrV177FZzX2VjFeBBOLiFN5b1At6C6TCk2PkQBjHMoXRQYzWb7NC
+         qJsF27li+qRxJGtfOamqRnurOAxgfQnBPpO+J1teLd3SnYQFfGeq3dgEucVJbQvtMnr3
+         e2qqLhnehyWy3IzjxDCUYvwn2/i8UECc8lHpcFMhfy8y4zdtkrejY1acZIHKVaomi8Aq
+         Lo6+Av1wPydrB7qIbbayoZ+/wSQ5HbDWgYwH/CKmUzDhgKTCO1vak8er4JPHtzAmKzwI
+         tQ5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702668274; x=1703273074;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=PoN0LEVREm4hvWDMcEGCq2IUdNzkUqW2PflUkybCDik=;
+        b=rXK+THg1oK++2jp3BxOdXgoUntrqIOh7s7vAZMo7uPMYXMfoK/5dzW8a1sQrBu4UWe
+         QMNh9DSocdfSP4uz08FuoQ+BvhzX/oi1r8liVBUf3t6L4L3eOBGwNtOEM9DBXqujLO23
+         1DPF0Dhp+AfBwAuDyfCrP0tTK8GIMRDcnraeK3skXTVul3FxM3NBCfrtvBpWBB4mtk9i
+         BP00cfEoFonNcN09ITp7MpFbV5VzmJFj/k/tX4V8OfgW+G/jt5jNu4+anYpalYnSdmhO
+         2eSE671m+Iyq5XeEKw+INDFghvTXFyqPHRUCVaZMBEnU7GJKo7tw/2TjzmkkqoccBVu7
+         URqQ==
+X-Gm-Message-State: AOJu0Ywt4xvWML8bT7GdLVUCbaCw3d4PlTYqK6F2hGw75E6dLcFQx5qL
+	xYvgvY3qLdRxQW24g9CBNCW0Nw==
+X-Google-Smtp-Source: AGHT+IFtk5TyMdBQwNglocR5LnfgDGANECd/edeCze0GKlaunERfcr6PTnGsnjZTfowah/1ShijVmA==
+X-Received: by 2002:a17:906:10ce:b0:a19:a19a:ea9c with SMTP id v14-20020a17090610ce00b00a19a19aea9cmr6806544ejv.85.1702668274637;
+        Fri, 15 Dec 2023 11:24:34 -0800 (PST)
+Received: from [192.168.1.20] ([178.197.218.27])
+        by smtp.gmail.com with ESMTPSA id tp25-20020a170907c49900b00a1f7c502736sm9814135ejc.164.2023.12.15.11.24.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Dec 2023 11:24:34 -0800 (PST)
+Message-ID: <9eedae99-cc9a-4c8f-9a09-789b686cd456@linaro.org>
+Date: Fri, 15 Dec 2023 20:24:31 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,115 +51,108 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] tty: Add comments for tty-ldisc module loading logic
+Subject: Re: [PATCH 01/13] dt-bindings: clock: google,gs101: fix CMU_TOP gate
+ clock names
 Content-Language: en-US
-To: Jiri Slaby <jirislaby@kernel.org>,
-        Vijaya Krishna Nivarthi
-	<quic_vnivarth@quicinc.com>,
-        Zijun Hu <quic_zijuhu@quicinc.com>, <gregkh@linuxfoundation.org>,
-        <quic_qiancai@quicinc.com>, <quic_arandive@quicinc.com>,
-        <quic_saipraka@quicinc.com>
-CC: <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1702640236-22824-1-git-send-email-quic_zijuhu@quicinc.com>
- <1702647690-6787-1-git-send-email-quic_zijuhu@quicinc.com>
- <de1181fe-a948-a1e2-04c8-dcd88085f1df@quicinc.com>
- <6401ff24-c82d-4d69-9aaf-b219af9d4db9@kernel.org>
-From: Elliot Berman <quic_eberman@quicinc.com>
-In-Reply-To: <6401ff24-c82d-4d69-9aaf-b219af9d4db9@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: CfessXSuprFdEV-b3anYUGYyHhFFnXK0
-X-Proofpoint-GUID: CfessXSuprFdEV-b3anYUGYyHhFFnXK0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-12-09_01,2023-12-07_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 mlxscore=0
- phishscore=0 adultscore=0 priorityscore=1501 impostorscore=0
- lowpriorityscore=0 mlxlogscore=999 clxscore=1011 suspectscore=0
- spamscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2311290000 definitions=main-2312150125
+To: Tudor Ambarus <tudor.ambarus@linaro.org>, peter.griffin@linaro.org,
+ robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+ mturquette@baylibre.com, sboyd@kernel.org, conor+dt@kernel.org,
+ andi.shyti@kernel.org, alim.akhtar@samsung.com, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, catalin.marinas@arm.com, will@kernel.org,
+ s.nawrocki@samsung.com, tomasz.figa@gmail.com, cw00.choi@samsung.com,
+ arnd@arndb.de, semen.protsenko@linaro.org
+Cc: andre.draszik@linaro.org, saravanak@google.com, willmcvicker@google.com,
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+ linux-serial@vger.kernel.org
+References: <20231214105243.3707730-1-tudor.ambarus@linaro.org>
+ <20231214105243.3707730-2-tudor.ambarus@linaro.org>
+ <050c3119-0431-4400-9052-7a9c0ec67918@linaro.org>
+ <5e454300-f1ef-435c-8c4c-16561502196a@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <5e454300-f1ef-435c-8c4c-16561502196a@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-
-
-On 12/15/2023 9:26 AM, Jiri Slaby wrote:
-> On 15. 12. 23, 15:19, Vijaya Krishna Nivarthi wrote:
->> Hi,
->>
->>
->> On 12/15/2023 7:11 PM, Zijun Hu wrote:
->>> Current tty-ldisc module loading logic within tty_ldisc_get()
->>> is prone to mislead beginner that the module is able to be loaded
->>> by a user without capability CAP_SYS_MODULE, add comments to make
->>> the logic easy to undertand.
+On 15/12/2023 11:23, Tudor Ambarus wrote:
+> Hi, Krzysztof,
+> 
+> On 12/15/23 08:13, Krzysztof Kozlowski wrote:
+>> On 14/12/2023 11:52, Tudor Ambarus wrote:
+>>> The gs101 clock names are derived from the clock register names under
+>>> some certain rules. In particular, for the gate clocks the following is
+>>> documented and expected in the gs101 clock driver:
 >>>
->>> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
->>> ---
->>> Changes in v2:
->>> - Remove condition checking changes
+>>>   Replace CLK_CON_GAT_CLKCMU      with CLK_GOUT_CMU and gout_cmu
+>>>   Replace CLK_CON_GAT_GATE_CLKCMU with CLK_GOUT_CMU and gout_cmu
 >>>
->>>   drivers/tty/tty_ldisc.c | 4 ++++
->>>   1 file changed, 4 insertions(+)
+>>>   For gates remove _UID _BLK _IPCLKPORT and _RSTNSYNC
+>>
+>> I don't understand what it has to do with the bindings.
+>>
 >>>
->>> diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
->>> index 3f68e213df1f..34526ffaccbc 100644
->>> --- a/drivers/tty/tty_ldisc.c
->>> +++ b/drivers/tty/tty_ldisc.c
->>> @@ -150,6 +150,10 @@ static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
->>>        */
->>>       ldops = get_ldops(disc);
->>>       if (IS_ERR(ldops)) {
->>> +        /*
->>> +         * Always request tty-ldisc module regardless of user's
->>> +         * CAP_SYS_MODULE if autoload is enabled.
->>> +         */
-
-The added comment confused me more :-)
-
-"Request tty-ldisc if process has CAP_SYS_MODULE or autoload is enabled"
-
+>>> The CMU TOP gate clock names missed to include the required "CMU"
+>>> differentiator which will cause name collisions with the gate clock names
+>>> of other clock units. Fix the TOP gate clock names and include "CMU" in
+>>> their name.
 >>
->> Without much knowledge of this file...
+>> Neither here. Clock names are not related to defines.
 >>
->>
->> What the if condition below accomplishes is evident,
 > 
-> After a bit of thinking, sure.
-> 
->> it probably doesn't require a comment.
-> 
-> I would not add a comment there at all. I would rewrite the code so it is obvious to everyone. Like:
-> 
-> static inline bool tty_ldisc_can_autoload(void)
-> {
->   return capable(CAP_SYS_MODULE) || tty_ldisc_autoload;
-> }
-> 
-> And then:
-> if (!tty_ldisc_can_autoload())
->   return ERR_PTR(-EPERM);
-> 
->> A more useful comment would be why it does so?
-> 
-> From an insider, the reason is obvious. But maybe not so much for newcomers. Well, one could document the new inline above. Like:
-> ""
-> We allow loads for capable users or when autoloading is explicitly enabled.
-> ""
-> or alike...
+> When saying "clock names" I meant the clock symbolic names that are
+> defined in the bindings, the _id passed in GATE(_id, ) if you want.
 
-I agree with Vijaya that it seems evident after a few moments of analysis, but we're
-also maybe used to reading kernel code more. I don't think we should be opposed
-to changes that make code easier to grok, even if they're trivial.
+Please re-phrase the commit message to say that you need to rename the
+defines in the bindings headers. If you change anything else, like clock
+names, then it should be separate patch.
 
-If we want to make it clearer, I like Jiri's suggestion. One other thing I'd add
-is to give a reference to read config LDISC_AUTOLOAD's help text.
 
-Zijun,
 
-Please send future revisions of the patch to our internal pre-submit review list
-before sending to kernel.org. Qualcommers can visit go/upstream.
+Best regards,
+Krzysztof
 
-- Elliot
