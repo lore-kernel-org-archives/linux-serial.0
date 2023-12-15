@@ -1,39 +1,49 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CC19179B1
-	for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 09:33:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5456A19469
+	for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 10:23:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="dHAN5rcY"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 3BF6CZuA014241;
-	Fri, 15 Dec 2023 09:32:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	message-id:date:mime-version:subject:to:cc:references:from
-	:in-reply-to:content-type:content-transfer-encoding; s=
-	qcppdkim1; bh=XhResauZEweuAEBMBEQ6WZcyzzau/j+35SbDPITUGhg=; b=dH
-	AN5rcYB0sBos6opq/W1KfyAGBIE9iMZVKdXc8guxh5On1EruPHVB7E8Wcs1+rWj7
-	HgItdggHkogeLSmM8YZbI11fmezBYJroiB2Ds2/4kaFgeRGk8K+GqQ9hgnBC7z7t
-	OIVHAD5S4LQOlXCZc5qYCq157W2Ne7KqBJRM5r/0kbkFQsQUk1Nmal11d/Dh5yoL
-	Jj8tsK7sqIDB+yZAmg6WyvR0J9ZSBmAtMhXtTTv6cTUQWMv1vTQ+f1L+452cM9wz
-	odbazHudrL0V8n5CvnHNOOCbx7YfOzZCVNKQp3U+sVP51GuLCuoee4TaN+0Ez1lB
-	4+MKs99hVQ0HPN9kKnEw==
-Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3v0hb00kaq-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 15 Dec 2023 09:32:57 +0000 (GMT)
-Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3BF9WuKH027892
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 15 Dec 2023 09:32:56 GMT
-Received: from [10.253.77.113] (10.80.80.8) by nasanex01a.na.qualcomm.com
- (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Fri, 15 Dec
- 2023 01:32:55 -0800
-Message-ID: <38ca1fa8-5631-4511-8962-31c8948e19b8@quicinc.com>
-Date: Fri, 15 Dec 2023 17:32:52 +0800
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="eRWotJ23"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-40c29f7b068so5407135e9.0
+        for <linux-serial@vger.kernel.org>; Fri, 15 Dec 2023 02:23:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1702635836; x=1703240636; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=yS+Astco5Bh8/oc41ujRmjEsBCKo5wFUS+A13l4o33Y=;
+        b=eRWotJ23Lg58plC5QVSmTCOVCi/HG2B8Xb3NveC21vJdMk2JPknPsApCsbKSrHrOrd
+         ul0tCXS8hjyUgsQMXoQjfA8+ZNYo7+Hud+bFA8O3u9VsgIumwOkrjzjUHoQB9MLYdE2F
+         PO38bqWBAUcY+7t+PJEy2O78KjG283mteM1NvA3xaQO6us7ZXQVDsv+ASwJJHcD7PMyb
+         25o/OwgJA/w/ii2KxyUw7ISppBRWMt7nyTwTBtxNh40uCX5CJhr7TL86QmIdjskl32qd
+         aq3tzkcL8aaLLHoOA4V6tMsM1eDYBJHMSF6yBVPzyAIanuhuBDKqUte/8egFc59dt3Fz
+         RZAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702635836; x=1703240636;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=yS+Astco5Bh8/oc41ujRmjEsBCKo5wFUS+A13l4o33Y=;
+        b=PnnOvLfxBkOwphSTq6dYHxqdMMDcKylK43919J0DBx8YRpsyAfhilmm38XxtW6qjZ2
+         RN5mbkInW6hl7CU+5tb6IU8TCS22kjZfpZH6VEmv52mZc4qjB2uBFhQeW8G9a2ZfrTgc
+         jO4VO1BcHj33kvyW+SOvhDAeBshOBAhfQwydBtrYpQYlEkX3hG7JxVrniJq4/tiR/GZ4
+         aGXCPQo5unOLqKv3GpsuOTpVgBHZLHeo6imnj6bcxFzunWJnD7tI7H+at10qU4X9FwE+
+         jrzwyYAWLHbt5iRv/gdhcExdqSzwo/J0Djjw+fGN7s1QCXiOgZU0E3ndOkwEWZQcAeIs
+         CYrg==
+X-Gm-Message-State: AOJu0Yw9DhJjKEx7YyS/IBRJnYYtZ+7smdJ6sZpuA3cyMcO2vE7O6Yim
+	KJUd07ZFMAlB0qT7qDs1vokEnw==
+X-Google-Smtp-Source: AGHT+IFji3CPmOm1EiJAz9SOQ55L5S6jb323+mQyesxrwYedW1RG8Pkebp4R1SXKe07O1gvfI7ziOw==
+X-Received: by 2002:a05:600c:444c:b0:40c:3831:27ee with SMTP id v12-20020a05600c444c00b0040c383127eemr5814657wmn.59.1702635836594;
+        Fri, 15 Dec 2023 02:23:56 -0800 (PST)
+Received: from [192.168.2.107] ([79.115.63.202])
+        by smtp.gmail.com with ESMTPSA id s18-20020a5d4ed2000000b00336421f1818sm5937758wrv.112.2023.12.15.02.23.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Dec 2023 02:23:55 -0800 (PST)
+Message-ID: <5e454300-f1ef-435c-8c4c-16561502196a@linaro.org>
+Date: Fri, 15 Dec 2023 10:23:53 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,110 +51,80 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1] tty: Fix a security issue related to tty-ldisc module
- loading
+Subject: Re: [PATCH 01/13] dt-bindings: clock: google,gs101: fix CMU_TOP gate
+ clock names
 Content-Language: en-US
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: <jirislaby@kernel.org>, <linux-serial@vger.kernel.org>
-References: <1702628933-6070-1-git-send-email-quic_zijuhu@quicinc.com>
- <2023121530-crept-unisexual-de76@gregkh>
-From: quic_zijuhu <quic_zijuhu@quicinc.com>
-In-Reply-To: <2023121530-crept-unisexual-de76@gregkh>
-Content-Type: text/plain; charset="UTF-8"
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ peter.griffin@linaro.org, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+ sboyd@kernel.org, conor+dt@kernel.org, andi.shyti@kernel.org,
+ alim.akhtar@samsung.com, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ catalin.marinas@arm.com, will@kernel.org, s.nawrocki@samsung.com,
+ tomasz.figa@gmail.com, cw00.choi@samsung.com, arnd@arndb.de,
+ semen.protsenko@linaro.org
+Cc: andre.draszik@linaro.org, saravanak@google.com, willmcvicker@google.com,
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+ linux-serial@vger.kernel.org
+References: <20231214105243.3707730-1-tudor.ambarus@linaro.org>
+ <20231214105243.3707730-2-tudor.ambarus@linaro.org>
+ <050c3119-0431-4400-9052-7a9c0ec67918@linaro.org>
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
+In-Reply-To: <050c3119-0431-4400-9052-7a9c0ec67918@linaro.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: EKR4muVXbUKPmQjjXPXc91LJwey-X_9v
-X-Proofpoint-GUID: EKR4muVXbUKPmQjjXPXc91LJwey-X_9v
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-12-09_01,2023-12-07_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
- priorityscore=1501 impostorscore=0 spamscore=0 mlxlogscore=999
- clxscore=1015 lowpriorityscore=0 bulkscore=0 suspectscore=0 adultscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2311290000 definitions=main-2312150063
 
-On 12/15/2023 4:43 PM, Greg KH wrote:
-> On Fri, Dec 15, 2023 at 04:28:53PM +0800, Zijun Hu wrote:
->> Function tty_ldisc_get() has a simple logical error and may cause tty-ldisc
->> module to be loaded by a user without CAP_SYS_MODULE, this security issue
->> is fixed by correcting the logical error.
-> 
-> What specific security issue are you referring to here?
-module tty-ldisc is able to be loaded by a user who don't have relevant permission CAP_SYS_MODULE to load module.
+Hi, Krzysztof,
 
-current logical is weird and it confuse me as a tty driver beginner since the intuitive checking is shown by my change.
-
-when you want to load a module, check by the following sequences:
-1) if you have relevant permission CAP_SYS_MODULE to do it. do NOT do it and return if you don't have permission.
-2) then check if we need to do it based on configuration tty_ldisc_autoload, if not configure to do it, do NOT it and return.
-3) then do it if PASS previous 2 checks.
-> 
->> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
->> ---
->>  drivers/tty/tty_ldisc.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
+On 12/15/23 08:13, Krzysztof Kozlowski wrote:
+> On 14/12/2023 11:52, Tudor Ambarus wrote:
+>> The gs101 clock names are derived from the clock register names under
+>> some certain rules. In particular, for the gate clocks the following is
+>> documented and expected in the gs101 clock driver:
 >>
->> diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
->> index 3f68e213df1f..b490c0adf00f 100644
->> --- a/drivers/tty/tty_ldisc.c
->> +++ b/drivers/tty/tty_ldisc.c
->> @@ -150,7 +150,7 @@ static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
->>  	 */
->>  	ldops = get_ldops(disc);
->>  	if (IS_ERR(ldops)) {
->> -		if (!capable(CAP_SYS_MODULE) && !tty_ldisc_autoload)
->> +		if (!capable(CAP_SYS_MODULE) || !tty_ldisc_autoload)
+>>   Replace CLK_CON_GAT_CLKCMU      with CLK_GOUT_CMU and gout_cmu
+>>   Replace CLK_CON_GAT_GATE_CLKCMU with CLK_GOUT_CMU and gout_cmu
+>>
+>>   For gates remove _UID _BLK _IPCLKPORT and _RSTNSYNC
 > 
-> I'm missing something, why change this?
+> I don't understand what it has to do with the bindings.
 > 
-make it follow normal checking logic as mentioned for your 1st question.
+>>
+>> The CMU TOP gate clock names missed to include the required "CMU"
+>> differentiator which will cause name collisions with the gate clock names
+>> of other clock units. Fix the TOP gate clock names and include "CMU" in
+>> their name.
+> 
+> Neither here. Clock names are not related to defines.
+> 
 
-> Remember if tty_ldisc_autoload is enabled, then any user can auto-load a
-> tty ldisc, permissions are not needed.
-> 
-it so, it is good to add some comments or optimize checking logic and make it easy to understand.
+When saying "clock names" I meant the clock symbolic names that are
+defined in the bindings, the _id passed in GATE(_id, ) if you want.
 
-> as it's confusing to read, let me break this down to see if the original
-> code is correct or not:
-> 	If you do NOT have CAP_SYS_MODULE AND you do NOT have
-> 	tty_ldisc_autoload enabled, then the kernel will NOT call
-> 	request_module
+>>
+>> Fixes: 0a910f160638 ("dt-bindings: clock: Add Google gs101 clock management unit bindings")
+>> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+>> ---
+>>  drivers/clk/samsung/clk-gs101.c          | 167 ++++++++++++-----------
+>>  include/dt-bindings/clock/google,gs101.h | 144 +++++++++----------
 > 
-> 	If you do have CAP_SYS_MODULE enabled then the kernel will call
-> 	request_module()
-> 
-> 	If you do have tty_ldisc_autoload enabled, then you can autoload
-> 	a module.
-> 
-> Is this not the correct functionality?
-> not sure what is the expected functionality when wrote current checking logic.
-it seems kernel checks here for a user (perhaps user space process) should load tty-ldisc module.
+> I miss the point why bindings must be changed with driver.
 
-what are expected actions when wrote current checkings.what is expected actions for below combine conditions?
+The clock symbolic names that are defined in the bindings file are used
+as IDs in the clock driver. Having the changes split per file will
+result in compilation errors breaking bisect.
+> 
+> Really, guys, we are milling the first GS101 patches for entire cycle.
+> Almost 3 months. The moment I merge bindings you tell me they are wrong.
+> Few days after merging them.
 
-//user do NOT have permission to load module    autoloaded disabled.          what is expected action? load or unload the module.
-CAP_SYS_MODULE = no, 				tty_ldisc_autoload = no,       		?
-CAP_SYS_MODULE = no,  				tty_ldisc_autoload = yes, 		? 
-CAP_SYS_MODULE = yes, 				 tty_ldisc_autoload = no,     		?
-CAP_SYS_MODULE = yes,  				tty_ldisc_autoload = yes,    		? 
-> You are changing this to:
-> 	If you do NOT have CAP_SYS_MODULE enabled, then no matter what,
-> 	do NOT call request_module()
-> 
-> 	If you do NOT have tty_ldisc_autoload enabled, then no matter
-> 	what, do NOT call request_module()
-> 
-> Are you sure that's what you want to change this to?
-> 
-yes.
-> What am I missing here?
-> 
-nothing.
-> confused,
-> 
-> greg "boolean logic is hard" k-h
+I apologize. It happens when we work in parallel. The clock symbolic
+names were mangled just in v6. It was considered that the clock names
+used in the datasheet are too long and the dt becomes unreadable. I just
+recently updated the peric0 clock symbolic names according to the clock
+symbolic name mangling strategy, that's why we spot the inconsistency
+and the symbolic name collision so late.
 
+Cheers,
+ta
