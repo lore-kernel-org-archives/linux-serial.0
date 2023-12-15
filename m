@@ -1,53 +1,118 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 324272F50D;
-	Fri, 15 Dec 2023 14:12:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7662E315AD;
+	Fri, 15 Dec 2023 14:22:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="0MotMeYv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D862C433C8;
-	Fri, 15 Dec 2023 14:12:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1702649577;
-	bh=/pGqmw3qNACcmX+OGPYUWwmz/jwxkgn8vuBVL7PppPU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=0MotMeYv/FNRZNLr28gUy6rYyxXaF+f98p9Gz1L87tGawr1vTD0sXIDvHVDC0PSfq
-	 PFU0kmV72RYO1GuhX49y6v4I8ReofiQ+t8bG8K9AJC//uY+fNVLKYrncGTqUk6VmWS
-	 qjFWzNVzwitYhKOhau4DLGFh80KdKz0mMzxfdUSs=
-Date: Fri, 15 Dec 2023 15:12:54 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Zijun Hu <quic_zijuhu@quicinc.com>
-Cc: jirislaby@kernel.org, quic_qiancai@quicinc.com,
-	quic_arandive@quicinc.com, quic_saipraka@quicinc.com,
-	quic_vnivarth@quicinc.com, quic_eberman@quicinc.com,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] tty: Add comments for tty-ldisc module loading logic
-Message-ID: <2023121523-cadillac-prologue-a81d@gregkh>
-References: <1702640236-22824-1-git-send-email-quic_zijuhu@quicinc.com>
- <1702647690-6787-1-git-send-email-quic_zijuhu@quicinc.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="R1ZuomwB"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 3BFCTfXJ010194;
+	Fri, 15 Dec 2023 14:22:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	qcppdkim1; bh=oRRArLvECVGH55PpYZXpIucjWY4MTvMDV/T4hZ4cdvQ=; b=R1
+	ZuomwBwZwiFQKCEqhwVy3LKiOvdaLGGeAmE4KjQ4yiOiFf7IDdb/0T9bDQb36bRX
+	B/5UICe7M0Wh/cj7SL6HnwiJv78nLOHs7sXs+tbiXKLMX+NPXKjAVLKNAlmvzKHe
+	2sBctIM7vBWDLurqwmkAAHM2PDIidZUvwUk4JyGlhqjteuIj2Ne9akqGlkIHEF4w
+	4AHlDzFGDmfXDS/kbq6jLPgef14owFndVQoc63eLN8Nlrix2o97kMV0tZlT6y7zi
+	9kvh0AxwsgmXtq0NWwcdMvS0nDP+n7OVjvafRF8/GX0AHPzKggCpz3oVRP6L/6zj
+	JodtXB78ePysFTdSCGGw==
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3v0hqch58d-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 15 Dec 2023 14:22:45 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3BFEMjVq002341
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 15 Dec 2023 14:22:45 GMT
+Received: from [10.218.15.57] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Fri, 15 Dec
+ 2023 06:22:42 -0800
+Message-ID: <de1181fe-a948-a1e2-04c8-dcd88085f1df@quicinc.com>
+Date: Fri, 15 Dec 2023 19:49:34 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2] tty: Add comments for tty-ldisc module loading logic
+Content-Language: en-CA
+To: Zijun Hu <quic_zijuhu@quicinc.com>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <quic_qiancai@quicinc.com>,
+        <quic_arandive@quicinc.com>, <quic_saipraka@quicinc.com>,
+        <quic_eberman@quicinc.com>
+CC: <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <1702640236-22824-1-git-send-email-quic_zijuhu@quicinc.com>
+ <1702647690-6787-1-git-send-email-quic_zijuhu@quicinc.com>
+From: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
 In-Reply-To: <1702647690-6787-1-git-send-email-quic_zijuhu@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: S3hyn1q1ttcdaf_ODB0WyucHyIpk_vD6
+X-Proofpoint-GUID: S3hyn1q1ttcdaf_ODB0WyucHyIpk_vD6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-12-09_01,2023-12-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 mlxscore=0
+ phishscore=0 adultscore=0 priorityscore=1501 impostorscore=0
+ lowpriorityscore=0 mlxlogscore=999 clxscore=1011 suspectscore=0
+ spamscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2311290000 definitions=main-2312150098
 
-On Fri, Dec 15, 2023 at 09:41:30PM +0800, Zijun Hu wrote:
+Hi,
+
+
+On 12/15/2023 7:11 PM, Zijun Hu wrote:
 > Current tty-ldisc module loading logic within tty_ldisc_get()
 > is prone to mislead beginner that the module is able to be loaded
 > by a user without capability CAP_SYS_MODULE, add comments to make
 > the logic easy to undertand.
-> 
+>
 > Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
 > ---
 > Changes in v2:
 > - Remove condition checking changes
+>
+>   drivers/tty/tty_ldisc.c | 4 ++++
+>   1 file changed, 4 insertions(+)
+>
+> diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+> index 3f68e213df1f..34526ffaccbc 100644
+> --- a/drivers/tty/tty_ldisc.c
+> +++ b/drivers/tty/tty_ldisc.c
+> @@ -150,6 +150,10 @@ static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
+>   	 */
+>   	ldops = get_ldops(disc);
+>   	if (IS_ERR(ldops)) {
+> +		/*
+> +		 * Always request tty-ldisc module regardless of user's
+> +		 * CAP_SYS_MODULE if autoload is enabled.
+> +		 */
 
-As I asked for before, please get other, more experienced developers,
-from your company, to review and sign-off on this patch before sending
-it out again.  I can't take this as-is, sorry.
+Without much knowledge of this file...
 
-greg k-h
+
+What the if condition below accomplishes is evident, it probably doesn't 
+require a comment.
+
+A more useful comment would be why it does so?
+
+Thank you...
+
+-Vijay/
+
+
+>   		if (!capable(CAP_SYS_MODULE) && !tty_ldisc_autoload)
+>   			return ERR_PTR(-EPERM);
+>   		request_module("tty-ldisc-%d", disc);
