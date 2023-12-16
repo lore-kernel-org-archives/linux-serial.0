@@ -1,162 +1,261 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DC5B30CFC
-	for <linux-serial@vger.kernel.org>; Sat, 16 Dec 2023 17:34:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=amarulasolutions.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amarulasolutions.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0274F35291;
+	Sat, 16 Dec 2023 21:48:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amarulasolutions.com header.i=@amarulasolutions.com header.b="ZugbDB4/"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-3364d0b1a20so1317076f8f.3
-        for <linux-serial@vger.kernel.org>; Sat, 16 Dec 2023 09:34:15 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Q7RglJ/t"
+Received: by mail-oi1-f173.google.com with SMTP id 5614622812f47-3ba3cf9aa13so1434628b6e.2;
+        Sat, 16 Dec 2023 13:48:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google; t=1702748054; x=1703352854; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LcNKbo+ErH20rVL2cPgRZ8ez+d9bV/DiPHkp7E+gUxc=;
-        b=ZugbDB4/bxYHVvtkuVu7xvBaxs642sz4xxaeUCwWKO3BvvhwIPNbHhRjBWjxqsNyYP
-         Yzvrl9M+fUarGq4WYmkfMDoTD+npFt+uby4unl6yV98K+wv0Qj9ks/3YlbAkAqLN9BTL
-         ycEWOjrIueaBKuLIhdzzo6oaYAf0W+u+wJkR8=
+        d=gmail.com; s=20230601; t=1702763300; x=1703368100; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=NUQpZPD/c05+/8BhIN1J/cQeLxUmIOzSz7QCay9VzCE=;
+        b=Q7RglJ/tHxE1i6ClcuY+szeRsD1QYSEKFzW0gxpAhFNqtVH3MT7BnY0e38GKQmyqtl
+         xLs0tLzcixBDTvcTLJh45nZ1mwkpxLv4SjBJAJ02mOx1dXKZclEa2hfBgCaKOSoBv09Q
+         gtkwUvpq6KmgMCt2MbaJaS8YIS7cTVyM+ZYkt7Xm+Cnj3Nw3iMTOvxQbc+5uNVhfH6IV
+         PSH1AKpRU2+7bp4pmEf/m+4axbCGeo8tNoORuxPywslSWZtxid8foaxHa0czWGdwKPHJ
+         Bp61j5YeGumGVFtkVvNljQ+PtW1uBfBpY6kNUP1pjqrqNUrC6cz9yMSRq6lefTsXCEzM
+         6QEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702748054; x=1703352854;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=LcNKbo+ErH20rVL2cPgRZ8ez+d9bV/DiPHkp7E+gUxc=;
-        b=MELK6Gyzj9u+f4QuK0KwdgnPgoP/haq3LWNKe65RNpx65MmCyPSExjRlLiw410LExf
-         XGN0jJmqOT8DXjScnG3X4ZnZQCA97L/BReDptSwqpWbwftDs96wjJnhGRScyzQ3ruZLX
-         uRdI3wPtLdc7BJzikhpoNEr36VYRybwAu77K2WEhq4HY20vzVIYRFZ3UjA8/BRfSYdlc
-         1Iu+yM2VlYrxtZ8hCLNI834cXobrBISQNE2jn2RFya4m0bZJzBGusOOSSMPD/8f1CQPm
-         Sh69HcYVEbrbHCFk0VOJyy6aczJhRsrYBsXBZT4V21TKpCCj3uRsvA73flaSjubC249b
-         c4Ig==
-X-Gm-Message-State: AOJu0YxSlhRnzcCS1kMfSJln65Rqbs74BDdL6s/JHIAjPaUbir074ktW
-	LgOAOXiM2kJ2vd0jUKIqNok0CQ==
-X-Google-Smtp-Source: AGHT+IHq3H6OGMJVaIZIpP6diKAW2HYqaT5XUdbPkD58wkXQjJ0cnr7zH+XWbSPmTKbH9CWAIbG0wQ==
-X-Received: by 2002:adf:f551:0:b0:336:5e1d:bac0 with SMTP id j17-20020adff551000000b003365e1dbac0mr723165wrp.4.1702748053546;
-        Sat, 16 Dec 2023 09:34:13 -0800 (PST)
-Received: from panicking.QSD (net-91-81-8-146.cust.vodafonedsl.it. [91.81.8.146])
-        by smtp.gmail.com with ESMTPSA id u17-20020a5d5151000000b003365e685102sm2082491wrt.29.2023.12.16.09.34.12
+        d=1e100.net; s=20230601; t=1702763300; x=1703368100;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NUQpZPD/c05+/8BhIN1J/cQeLxUmIOzSz7QCay9VzCE=;
+        b=Wp3fsbro1PCJ9eqNLaWxlNkary9SH++X+zOf4Y3NJoJ+TnqZX1Wfd3eSjqXzeAY5eD
+         tLlrhWQQPpcShlJDsy6boAocUCeeK419TGSQ6ihZ+KsWItjbrRTZbLD6glNMC502QG0m
+         C696W8e7scpJ6PsmGqLAHzf5okdZnYwVKc9T8SXmz15us+zAI4+HiOm5/avh2dAjA6bH
+         21fhkuiiorjS3iFauE1hZaJGYtV4ioRMod1Un+4nWQnY4ayKQYSthq71jYPbY9ycn3Qn
+         OnL/86Otv02JfNnMVVRgCwbl+bIWrH7eVWmIc+EnsblG/Q8xdIPf4YeQy3w4Wq167Sy7
+         f1Ug==
+X-Gm-Message-State: AOJu0Yzgw4JL5XarvJZV0wgybBIwLyGQ2/YtcbtXPPAAx6wpcFNf/oxx
+	4pSzQvGdRJTzaWZsP5Ov+3C0sHttvzwlkQ==
+X-Google-Smtp-Source: AGHT+IFAZquuH097Av+/ztaIvHAct5BHBdf+5D2NTKxYyfNfNcV2HR26lQ0bCSd6CXKBysIoEd8l8w==
+X-Received: by 2002:a05:6808:1819:b0:3b8:b063:6658 with SMTP id bh25-20020a056808181900b003b8b0636658mr13429212oib.79.1702763299744;
+        Sat, 16 Dec 2023 13:48:19 -0800 (PST)
+Received: from localhost ([2601:344:8301:57f0:4a5e:2f67:f6d1:4a98])
+        by smtp.gmail.com with ESMTPSA id l6-20020a25bcc6000000b00dbd22a3eb4fsm60955ybm.51.2023.12.16.13.48.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Dec 2023 09:34:13 -0800 (PST)
-From: Michael Trimarchi <michael@amarulasolutions.com>
-To: michael@amarulasolutions.com
-Cc: daniel.thompson@linaro.org,
-	dianders@chromium.org,
-	gregkh@linuxfoundation.org,
-	jason.wessel@windriver.com,
-	jirislaby@kernel.org,
-	kgdb-bugreport@lists.sourceforge.net,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH] tty: serial: kgdboc: Fix 8250_* kgd over serial
-Date: Sat, 16 Dec 2023 18:34:09 +0100
-Message-Id: <20231216173409.1264655-1-michael@amarulasolutions.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20231208212845.1679621-1-michael@amarulasolutions.com>
-References: <20231208212845.1679621-1-michael@amarulasolutions.com>
+        Sat, 16 Dec 2023 13:48:19 -0800 (PST)
+Date: Sat, 16 Dec 2023 13:48:18 -0800
+From: Yury Norov <yury.norov@gmail.com>
+To: linux-kernel@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	"James E.J. Bottomley" <jejb@linux.ibm.com>,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	"Md. Haris Iqbal" <haris.iqbal@ionos.com>,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Borislav Petkov <bp@alien8.de>, Chaitanya Kulkarni <kch@nvidia.com>,
+	Christian Brauner <brauner@kernel.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	David Disseldorp <ddiss@suse.de>,
+	Edward Cree <ecree.xilinx@gmail.com>,
+	Eric Dumazet <edumazet@google.com>,
+	Fenghua Yu <fenghua.yu@intel.com>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Gregory Greenman <gregory.greenman@intel.com>,
+	Hans Verkuil <hverkuil@xs4all.nl>,
+	Hans de Goede <hdegoede@redhat.com>,
+	Hugh Dickins <hughd@google.com>, Ingo Molnar <mingo@redhat.com>,
+	Jakub Kicinski <kuba@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+	Jiri Pirko <jiri@resnulli.us>, Jiri Slaby <jirislaby@kernel.org>,
+	Kalle Valo <kvalo@kernel.org>, Karsten Graul <kgraul@linux.ibm.com>,
+	Karsten Keil <isdn@linux-pingi.de>,
+	Kees Cook <keescook@chromium.org>,
+	Leon Romanovsky <leon@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Martin Habets <habetsm.xilinx@gmail.com>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Michal Simek <monstr@monstr.eu>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Oliver Neukum <oneukum@suse.com>, Paolo Abeni <pabeni@redhat.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Ping-Ke Shih <pkshih@realtek.com>, Rich Felker <dalias@libc.org>,
+	Rob Herring <robh@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Sean Christopherson <seanjc@google.com>,
+	Shuai Xue <xueshuai@linux.alibaba.com>,
+	Stanislaw Gruszka <stf_xl@wp.pl>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Valentin Schneider <vschneid@redhat.com>,
+	Vitaly Kuznetsov <vkuznets@redhat.com>,
+	Wenjia Zhang <wenjia@linux.ibm.com>, Will Deacon <will@kernel.org>,
+	Yoshinori Sato <ysato@users.sourceforge.jp>,
+	GR-QLogic-Storage-Upstream@marvell.com, alsa-devel@alsa-project.org,
+	ath10k@lists.infradead.org, dmaengine@vger.kernel.org,
+	iommu@lists.linux.dev, kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+	linux-hyperv@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+	linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
+	linux-net-drivers@amd.com, linux-pci@vger.kernel.org,
+	linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
+	linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-sh@vger.kernel.org, linux-sound@vger.kernel.org,
+	linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, mpi3mr-linuxdrv.pdl@broadcom.com,
+	netdev@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org
+Cc: Jan Kara <jack@suse.cz>,
+	Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>,
+	Matthew Wilcox <willy@infradead.org>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Maxim Kuvyrkov <maxim.kuvyrkov@linaro.org>,
+	Alexey Klimov <klimov.linux@gmail.com>,
+	Bart Van Assche <bvanassche@acm.org>,
+	Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: Re: [PATCH v3 00/35] bitops: add atomic find_bit() operations
+Message-ID: <ZX4bIisLzpW8c4WM@yury-ThinkPad>
+References: <20231212022749.625238-1-yury.norov@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231212022749.625238-1-yury.norov@gmail.com>
 
-Check if port type is not PORT_UNKNOWN in the serial driver.
-The kgdboc calls the tty_find_polling_driver that check
-if the serial is able to use poll_init. The poll_init calls
-the uart uart_poll_init that try to configure the uart with the
-selected parameters. The uart must be ready and we can check it
-using type as in other tty_io functions.
-
-The crash happen for instance in am62x architecture where the 8250
-register the platform driver after the 8250 core is initialized.
-
-As shown by kdbg the iobase and membase is not configured
-
-Thread 2 received signal SIGSEGV, Segmentation fault.
-[Switching to Thread 1]
-_outb (addr=<optimized out>, value=<optimized out>) at ./include/asm-generic/io.h:584
-584		__raw_writeb(value, PCI_IOBASE + addr);
-(gdb) bt
-
-This section of the code is too early because in this case
-the omap serial is not probed
-
-Thread 2 received signal SIGSEGV, Segmentation fault.
-[Switching to Thread 1]
-_outb (addr=<optimized out>, value=<optimized out>) at ./include/asm-generic/io.h:584
-584		__raw_writeb(value, PCI_IOBASE + addr);
-(gdb) bt
-
-Thread 2 received signal SIGSEGV, Segmentation fault.
-[Switching to Thread 1]
-_outb (addr=<optimized out>, value=<optimized out>) at ./include/asm-generic/io.h:584
-584		__raw_writeb(value, PCI_IOBASE + addr);
-(gdb) bt
-0  _outb (addr=<optimized out>, value=<optimized out>) at ./include/asm-generic/io.h:584
-1  logic_outb (value=0 '\000', addr=18446739675637874689) at lib/logic_pio.c:299
-2  0xffff80008082dfcc in io_serial_out (p=0x0, offset=16760830, value=0) at drivers/tty/serial/8250/8250_port.c:416
-3  0xffff80008082fe34 in serial_port_out (value=<optimized out>, offset=<optimized out>, up=<optimized out>)
-    at ./include/linux/serial_core.h:677
-4  serial8250_do_set_termios (port=0xffff8000828ee940 <serial8250_ports+1568>, termios=0xffff80008292b93c, old=0x0)
-    at drivers/tty/serial/8250/8250_port.c:2860
-5  0xffff800080830064 in serial8250_set_termios (port=0xfffffbfffe800000, termios=0xffbffe, old=0x0)
-    at drivers/tty/serial/8250/8250_port.c:2912
-6  0xffff80008082571c in uart_set_options (port=0xffff8000828ee940 <serial8250_ports+1568>, co=0x0, baud=115200, parity=110, bits=8, flow=110)
-    at drivers/tty/serial/serial_core.c:2285
-7  0xffff800080828434 in uart_poll_init (driver=0xfffffbfffe800000, line=16760830, options=0xffff8000828f7506 <config+6> "115200n8")
-    at drivers/tty/serial/serial_core.c:2656
-8  0xffff800080801690 in tty_find_polling_driver (name=0xffff8000828f7500 <config> "ttyS2,115200n8", line=0xffff80008292ba90)
-    at drivers/tty/tty_io.c:410
-9  0xffff80008086c0b0 in configure_kgdboc () at drivers/tty/serial/kgdboc.c:194
-10 0xffff80008086c1ec in kgdboc_probe (pdev=0xfffffbfffe800000) at drivers/tty/serial/kgdboc.c:249
-11 0xffff8000808b399c in platform_probe (_dev=0xffff000000ebb810) at drivers/base/platform.c:1404
-12 0xffff8000808b0b44 in call_driver_probe (drv=<optimized out>, dev=<optimized out>) at drivers/base/dd.c:579
-13 really_probe (dev=0xffff000000ebb810, drv=0xffff80008277f138 <kgdboc_platform_driver+48>) at drivers/base/dd.c:658
-14 0xffff8000808b0d2c in __driver_probe_device (drv=0xffff80008277f138 <kgdboc_platform_driver+48>, dev=0xffff000000ebb810)
-    at drivers/base/dd.c:800
-15 0xffff8000808b0eb8 in driver_probe_device (drv=0xfffffbfffe800000, dev=0xffff000000ebb810) at drivers/base/dd.c:830
-16 0xffff8000808b0ff4 in __device_attach_driver (drv=0xffff80008277f138 <kgdboc_platform_driver+48>, _data=0xffff80008292bc48)
-    at drivers/base/dd.c:958
-17 0xffff8000808ae970 in bus_for_each_drv (bus=0xfffffbfffe800000, start=0x0, data=0xffff80008292bc48,
-    fn=0xffff8000808b0f3c <__device_attach_driver>) at drivers/base/bus.c:457
-18 0xffff8000808b1408 in __device_attach (dev=0xffff000000ebb810, allow_async=true) at drivers/base/dd.c:1030
-19 0xffff8000808b16d8 in device_initial_probe (dev=0xfffffbfffe800000) at drivers/base/dd.c:1079
-20 0xffff8000808af9f4 in bus_probe_device (dev=0xffff000000ebb810) at drivers/base/bus.c:532
-21 0xffff8000808ac77c in device_add (dev=0xfffffbfffe800000) at drivers/base/core.c:3625
-22 0xffff8000808b3428 in platform_device_add (pdev=0xffff000000ebb800) at drivers/base/platform.c:716
-23 0xffff800081b5dc0c in init_kgdboc () at drivers/tty/serial/kgdboc.c:292
-24 0xffff800080014db0 in do_one_initcall (fn=0xffff800081b5dba4 <init_kgdboc>) at init/main.c:1236
-25 0xffff800081b0114c in do_initcall_level (command_line=<optimized out>, level=<optimized out>) at init/main.c:1298
-26 do_initcalls () at init/main.c:1314
-27 do_basic_setup () at init/main.c:1333
-28 kernel_init_freeable () at init/main.c:1551
-29 0xffff8000810271ec in kernel_init (unused=0xfffffbfffe800000) at init/main.c:1441
-30 0xffff800080015e80 in ret_from_fork () at arch/arm64/kernel/entry.S:857
-
-Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
----
-RFC -> v1:
-	- refuse uart that has type PORT_UNKNOWN
----
- drivers/tty/serial/serial_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index f1348a509552..aa07eb894a6e 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2633,7 +2633,7 @@ static int uart_poll_init(struct tty_driver *driver, int line, char *options)
- 	mutex_lock(&tport->mutex);
+On Mon, Dec 11, 2023 at 06:27:14PM -0800, Yury Norov wrote:
+> Add helpers around test_and_{set,clear}_bit() that allow to search for
+> clear or set bits and flip them atomically.
+> 
+> The target patterns may look like this:
+> 
+> 	for (idx = 0; idx < nbits; idx++)
+> 		if (test_and_clear_bit(idx, bitmap))
+> 			do_something(idx);
+> 
+> Or like this:
+> 
+> 	do {
+> 		bit = find_first_bit(bitmap, nbits);
+> 		if (bit >= nbits)
+> 			return nbits;
+> 	} while (!test_and_clear_bit(bit, bitmap));
+> 	return bit;
+> 
+> In both cases, the opencoded loop may be converted to a single function
+> or iterator call. Correspondingly:
+> 
+> 	for_each_test_and_clear_bit(idx, bitmap, nbits)
+> 		do_something(idx);
+> 
+> Or:
+> 	return find_and_clear_bit(bitmap, nbits);
+> 
+> Obviously, the less routine code people have to write themself, the
+> less probability to make a mistake.
+> 
+> Those are not only handy helpers but also resolve a non-trivial
+> issue of using non-atomic find_bit() together with atomic
+> test_and_{set,clear)_bit().
+> 
+> The trick is that find_bit() implies that the bitmap is a regular
+> non-volatile piece of memory, and compiler is allowed to use such
+> optimization techniques like re-fetching memory instead of caching it.
+> 
+> For example, find_first_bit() is implemented like this:
+> 
+>       for (idx = 0; idx * BITS_PER_LONG < sz; idx++) {
+>               val = addr[idx];
+>               if (val) {
+>                       sz = min(idx * BITS_PER_LONG + __ffs(val), sz);
+>                       break;
+>               }
+>       }
+> 
+> On register-memory architectures, like x86, compiler may decide to
+> access memory twice - first time to compare against 0, and second time
+> to fetch its value to pass it to __ffs().
+> 
+> When running find_first_bit() on volatile memory, the memory may get
+> changed in-between, and for instance, it may lead to passing 0 to
+> __ffs(), which is undefined. This is a potentially dangerous call.
+> 
+> find_and_clear_bit() as a wrapper around test_and_clear_bit()
+> naturally treats underlying bitmap as a volatile memory and prevents
+> compiler from such optimizations.
+> 
+> Now that KCSAN is catching exactly this type of situations and warns on
+> undercover memory modifications. We can use it to reveal improper usage
+> of find_bit(), and convert it to atomic find_and_*_bit() as appropriate.
+> 
+> In some cases concurrent operations with plain find_bit() are acceptable.
+> For example:
+> 
+>  - two threads running find_*_bit(): safe wrt ffs(0) and returns correct
+>    value, because underlying bitmap is unchanged;
+>  - find_next_bit() in parallel with set or clear_bit(), when modifying
+>    a bit prior to the start bit to search: safe and correct;
+>  - find_first_bit() in parallel with set_bit(): safe, but may return wrong
+>    bit number;
+>  - find_first_zero_bit() in parallel with clear_bit(): same as above.
+> 
+> In last 2 cases find_bit() may not return a correct bit number, but
+> it may be OK if caller requires any (not exactly the first) set or clear
+> bit, correspondingly.
+> 
+> In such cases, KCSAN may be safely silenced with data_race(). But in most
+> cases where KCSAN detects concurrency people should carefully review their
+> code and likely protect critical sections or switch to atomic
+> find_and_bit(), as appropriate.
+> 
+> The 1st patch of the series adds the following atomic primitives:
+> 
+> 	find_and_set_bit(addr, nbits);
+> 	find_and_set_next_bit(addr, nbits, start);
+> 	...
+> 
+> Here find_and_{set,clear} part refers to the corresponding
+> test_and_{set,clear}_bit function. Suffixes like _wrap or _lock
+> derive their semantics from corresponding find() or test() functions.
+> 
+> For brevity, the naming omits the fact that we search for zero bit in
+> find_and_set, and correspondingly search for set bit in find_and_clear
+> functions.
+> 
+> The patch also adds iterators with atomic semantics, like
+> for_each_test_and_set_bit(). Here, the naming rule is to simply prefix
+> corresponding atomic operation with 'for_each'.
+> 
+> In [1] Jan reported 2% slowdown in a single-thread search test when
+> switching find_bit() function to treat bitmaps as volatile arrays. On
+> the other hand, kernel robot in the same thread reported +3.7% to the
+> performance of will-it-scale.per_thread_ops test.
+> 
+> Assuming that our compilers are sane and generate better code against
+> properly annotated data, the above discrepancy doesn't look weird. When
+> running on non-volatile bitmaps, plain find_bit() outperforms atomic
+> find_and_bit(), and vice-versa.
+> 
+> So, all users of find_bit() API, where heavy concurrency is expected,
+> are encouraged to switch to atomic find_and_bit() as appropriate.
+> 
+> The 1st patch of this series adds atomic find_and_bit() API, 2nd adds
+> a basic test for new API, and all the following patches spread it over
+> the kernel.
+> 
+> They can be applied separately from each other on per-subsystems basis,
+> or I can pull them in bitmap tree, as appropriate.
+> 
+> [1] https://lore.kernel.org/lkml/634f5fdf-e236-42cf-be8d-48a581c21660@alu.unizg.hr/T/#m3e7341eb3571753f3acf8fe166f3fb5b2c12e615
  
- 	port = uart_port_check(state);
--	if (!port || !(port->ops->poll_get_char && port->ops->poll_put_char)) {
-+	if (!port || port->type = PORT_UNKNOWN || !(port->ops->poll_get_char && port->ops->poll_put_char)) {
- 		ret = -1;
- 		goto out;
- 	}
--- 
-2.40.1
+Thank you all for reviews and comments. Now moving the series to
+bitmap-for-next for testing.
 
+Thanks,
+Yury
