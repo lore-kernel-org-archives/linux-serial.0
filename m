@@ -1,104 +1,172 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E4A41FDA;
-	Sat, 16 Dec 2023 03:18:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7677010947;
+	Sat, 16 Dec 2023 04:04:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UzR69Fbn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702696682; x=1734232682;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=wyWUUzZO259IedYMAoIcGOmFoX5vdeINYbm46xHknGw=;
-  b=UzR69FbnQWZe8la8WoiiNLC6+HPbeoaNHuQPKyqw/hsaM1wcFO4TLwel
-   nvuQisy0TCO+vyHFzgiN5Dl6KM+/xLVSzSN/lpY+db92iGY4tBjjfw+JB
-   Pka15SLF0XO029ha0PoWtVV03UbJVBLhTVN/0rCEIzLFjzfiEbnf0ZDJl
-   Jg91hRcx1RQL5kfhsOH2vcuZUmenYC9PU+b7/6ENb3n2drz3dorzeWwBV
-   Z68bCy1H86Rn5eaNsdx37DBayzI39exVnbWUKXeAHj2gevVr44751Wcf+
-   Sfl5FPgX36mI/3wgNz3YRgMDr9h6C7Dnk25+oeMbZUnU46IHR+Tyhy1p+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10925"; a="461812251"
-X-IronPort-AV: E=Sophos;i="6.04,280,1695711600"; 
-   d="scan'208";a="461812251"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2023 19:18:01 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10925"; a="724650666"
-X-IronPort-AV: E=Sophos;i="6.04,280,1695711600"; 
-   d="scan'208";a="724650666"
-Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 15 Dec 2023 19:17:58 -0800
-Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rELBc-00015w-2Q;
-	Sat, 16 Dec 2023 03:17:56 +0000
-Date: Sat, 16 Dec 2023 11:16:57 +0800
-From: kernel test robot <lkp@intel.com>
-To: Chunyan Zhang <chunyan.zhang@unisoc.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Lee Jones <lee@kernel.org>
-Cc: oe-kbuild-all@lists.linux.dev, devicetree@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 4/4] arm64: dts: sprd: Add support for Unisoc's UMS9620
-Message-ID: <202312161154.pVCPezKU-lkp@intel.com>
-References: <20231215085630.984892-5-chunyan.zhang@unisoc.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="DXR4OkHA"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 3BG3tC8N020385;
+	Sat, 16 Dec 2023 04:04:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	qcppdkim1; bh=76ER6ivhVeqySEtNL0JNcPoe4X6jm6/wigfWskWuCkU=; b=DX
+	R4OkHAiN0+ftLFbOP1kzrbk7DlgeU+uePG8ELo/9cJfZAIGHf28+e4oxQwsmyZVx
+	naLg/grBwtscQDdL2aL1ws9HPZSSmB6nZ6Pbr6UtfL3rASj/6QmooV/R3ptCI5qg
+	B4WAjn/2M3l5CsD0Blk4E26Gj4EM1wYSmQNUDyz80Q4W381EiFtFicWaswBp1jDA
+	+I78OLcf7ZKpb9+wN977W06j03KcgSkGu9UNPnjJfa6H/oFSIlL2awpeQZHPO6Ph
+	ria+GrqSR3N41tCc0hP+8NYEgzVz6i+BCfx+ojUuEmEOFE/X3l7m9S+nvxvrnQO/
+	kUd4Z+YOTu4p2h9Pdirw==
+Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3v137x03dn-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 16 Dec 2023 04:04:54 +0000 (GMT)
+Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
+	by NASANPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3BG44sbV016332
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 16 Dec 2023 04:04:54 GMT
+Received: from [10.253.38.198] (10.80.80.8) by nasanex01a.na.qualcomm.com
+ (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Fri, 15 Dec
+ 2023 20:04:51 -0800
+Message-ID: <132a5c10-99ee-4893-a30b-407fdd81cf8c@quicinc.com>
+Date: Sat, 16 Dec 2023 12:04:48 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231215085630.984892-5-chunyan.zhang@unisoc.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] tty: Add comments for tty-ldisc module loading logic
+Content-Language: en-US
+To: Elliot Berman <quic_eberman@quicinc.com>,
+        Jiri Slaby
+	<jirislaby@kernel.org>,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        <gregkh@linuxfoundation.org>, <quic_qiancai@quicinc.com>,
+        <quic_arandive@quicinc.com>, <quic_saipraka@quicinc.com>
+CC: <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <1702640236-22824-1-git-send-email-quic_zijuhu@quicinc.com>
+ <1702647690-6787-1-git-send-email-quic_zijuhu@quicinc.com>
+ <de1181fe-a948-a1e2-04c8-dcd88085f1df@quicinc.com>
+ <6401ff24-c82d-4d69-9aaf-b219af9d4db9@kernel.org>
+ <e83d29b8-5022-466a-b2ee-61fa5dd1c9ae@quicinc.com>
+From: quic_zijuhu <quic_zijuhu@quicinc.com>
+In-Reply-To: <e83d29b8-5022-466a-b2ee-61fa5dd1c9ae@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: sa5nCLPIykPdti488U3_CIlAgxYDOgz8
+X-Proofpoint-ORIG-GUID: sa5nCLPIykPdti488U3_CIlAgxYDOgz8
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-12-09_02,2023-12-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ adultscore=0 spamscore=0 lowpriorityscore=0 suspectscore=0 malwarescore=0
+ impostorscore=0 mlxlogscore=999 clxscore=1015 bulkscore=0 phishscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2311290000 definitions=main-2312160027
 
-Hi Chunyan,
+On 12/16/2023 1:51 AM, Elliot Berman wrote:
+> 
+> 
+> On 12/15/2023 9:26 AM, Jiri Slaby wrote:
+>> On 15. 12. 23, 15:19, Vijaya Krishna Nivarthi wrote:
+>>> Hi,
+>>>
+>>>
+>>> On 12/15/2023 7:11 PM, Zijun Hu wrote:
+>>>> Current tty-ldisc module loading logic within tty_ldisc_get()
+>>>> is prone to mislead beginner that the module is able to be loaded
+>>>> by a user without capability CAP_SYS_MODULE, add comments to make
+>>>> the logic easy to undertand.
+>>>>
+>>>> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+>>>> ---
+>>>> Changes in v2:
+>>>> - Remove condition checking changes
+>>>>
+>>>>   drivers/tty/tty_ldisc.c | 4 ++++
+>>>>   1 file changed, 4 insertions(+)
+>>>>
+>>>> diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+>>>> index 3f68e213df1f..34526ffaccbc 100644
+>>>> --- a/drivers/tty/tty_ldisc.c
+>>>> +++ b/drivers/tty/tty_ldisc.c
+>>>> @@ -150,6 +150,10 @@ static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
+>>>>        */
+>>>>       ldops = get_ldops(disc);
+>>>>       if (IS_ERR(ldops)) {
+>>>> +        /*
+>>>> +         * Always request tty-ldisc module regardless of user's
+>>>> +         * CAP_SYS_MODULE if autoload is enabled.
+>>>> +         */
+> 
+> The added comment confused me more :-)
+> 
+> "Request tty-ldisc if process has CAP_SYS_MODULE or autoload is enabled"
+> 
+got it, please ignore my comments and changes.
+>>>
+>>> Without much knowledge of this file...
+>>>
+>>>
+>>> What the if condition below accomplishes is evident,
+>>
+>> After a bit of thinking, sure.
+>>
+>>> it probably doesn't require a comment.
+>>
+>> I would not add a comment there at all. I would rewrite the code so it is obvious to everyone. Like:
+>>
+>> static inline bool tty_ldisc_can_autoload(void)
+>> {
+>>   return capable(CAP_SYS_MODULE) || tty_ldisc_autoload;
+>> }
+>>
+>> And then:
+>> if (!tty_ldisc_can_autoload())
+>>   return ERR_PTR(-EPERM);
+>>
+if you want to remain current logic, suggest think about below question:
 
-kernel test robot noticed the following build errors:
+for a user without module loading permission CAP_SYS_MODULE, kernel should not allow module to be loaded for the user,
+even if kernel calls request_module() to load a module for the user, the loading operation will be refused by permission
+checking triggered by request_module(). right?
 
-[auto build test ERROR on robh/for-next]
-[also build test ERROR on lee-mfd/for-mfd-next tty/tty-next tty/tty-linus krzk/for-next krzk-mem-ctrl/for-next linus/master v6.7-rc5 next-20231215]
-[cannot apply to tty/tty-testing lee-mfd/for-mfd-fixes]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+i have no concern about current design if your answer is NO.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Chunyan-Zhang/dt-bindings-mfd-sprd-Add-support-for-UMS9620/20231215-165956
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-patch link:    https://lore.kernel.org/r/20231215085630.984892-5-chunyan.zhang%40unisoc.com
-patch subject: [PATCH 4/4] arm64: dts: sprd: Add support for Unisoc's UMS9620
-config: arm64-defconfig (https://download.01.org/0day-ci/archive/20231216/202312161154.pVCPezKU-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 13.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231216/202312161154.pVCPezKU-lkp@intel.com/reproduce)
+it maybe be worth double checking current logic introduced by below commit if your answer is YES
+7c0cca7c847e "tty: ldisc: add sysctl to prevent autoloading of ldiscs"
+i also don't understand why above commit will introduce extra capable(CAP_SYS_MODULE) checking.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202312161154.pVCPezKU-lkp@intel.com/
+>>> A more useful comment would be why it does so?
+>>
+>> From an insider, the reason is obvious. But maybe not so much for newcomers. Well, one could document the new inline above. Like:
+>> ""
+>> We allow loads for capable users or when autoloading is explicitly enabled.
+>> ""
+>> or alike...
+> 
+> I agree with Vijaya that it seems evident after a few moments of analysis, but we're
+> also maybe used to reading kernel code more. I don't think we should be opposed
+> to changes that make code easier to grok, even if they're trivial.
+> 
+> If we want to make it clearer, I like Jiri's suggestion. One other thing I'd add
+> is to give a reference to read config LDISC_AUTOLOAD's help text.
+> 
+> Zijun,
+> 
+> Please send future revisions of the patch to our internal pre-submit review list
+> before sending to kernel.org. Qualcommers can visit go/upstream.
+> 
+got it, will follow go/upstream for further patch upstream.
+> - Elliot
 
-All errors (new ones prefixed by >>):
-
-   In file included from arch/arm64/boot/dts/sprd/ums9620-2h10.dts:10:
->> arch/arm64/boot/dts/sprd/ums9620.dtsi:8:10: fatal error: dt-bindings/clock/sprd,ums9620-clk.h: No such file or directory
-       8 | #include <dt-bindings/clock/sprd,ums9620-clk.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
-
-
-vim +8 arch/arm64/boot/dts/sprd/ums9620.dtsi
-
-   > 8	#include <dt-bindings/clock/sprd,ums9620-clk.h>
-     9	#include <dt-bindings/interrupt-controller/arm-gic.h>
-    10	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
