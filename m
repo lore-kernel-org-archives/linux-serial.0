@@ -1,237 +1,209 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F3652D623
-	for <linux-serial@vger.kernel.org>; Sat, 16 Dec 2023 14:48:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1F882E3F8
+	for <linux-serial@vger.kernel.org>; Sat, 16 Dec 2023 16:20:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=amarulasolutions.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amarulasolutions.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gwBQk/me"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702738100; x=1734274100;
-  h=date:from:to:cc:subject:message-id;
-  bh=UB1csilETl2EXPhYk83OhnctftAaChbHHPjAHBd2Niw=;
-  b=gwBQk/meZEycOTNIOe/cLbSPOGXQ6jETspDyKm4lJ0S9kJX1YHi2vKte
-   FGD+MgFTt8WwVTIe3ww4YfHO1kXwY7mFJUuuF/MIp0Xm8WKkdzJR0L/qF
-   0+/7tV7b7crPQ2BKqjl40lPN+G4Ssey5DEc3dgd8Tx2NHsZeqfykU9yV/
-   YofFdYs/8Iy41Blxv/gnsbd4SWW2mWn0VRWTEkvRqrGoXNzAkKX/cyKYP
-   ay/+v31OLgsH5knveg5vRoHAzvUEK54YhwRWEIyDgjmamwXoVCWCqassj
-   sZUrGBvJo25tnYBRgjABEO+2m4YNGpW8tirak1o/TOr4JhFaleUujeXUZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10926"; a="398163275"
-X-IronPort-AV: E=Sophos;i="6.04,281,1695711600"; 
-   d="scan'208";a="398163275"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2023 06:48:19 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10926"; a="898452736"
-X-IronPort-AV: E=Sophos;i="6.04,281,1695711600"; 
-   d="scan'208";a="898452736"
-Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 16 Dec 2023 06:48:18 -0800
-Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rEVxg-0001lI-0p;
-	Sat, 16 Dec 2023 14:48:16 +0000
-Date: Sat, 16 Dec 2023 22:47:29 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD REGRESSION
- 43f012df3c1e979966524f79b5371fde6545488a
-Message-ID: <202312162226.gF3n954y-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+	dkim=pass (1024-bit key) header.d=amarulasolutions.com header.i=@amarulasolutions.com header.b="cqrAmxKT"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-a22f2a28c16so206241966b.0
+        for <linux-serial@vger.kernel.org>; Sat, 16 Dec 2023 08:20:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google; t=1702743656; x=1703348456; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7CS7KA2gLSeCNiZW3GKISJfWPIn3uo8dgVC5eGHNM90=;
+        b=cqrAmxKT8Ez0Jmbzn+Ah1rnLGzUaIMiTNsbsp9wyZU/lYZ3avuxIu65Pdff03zrlLl
+         k7kh2kszUjv6fLutoPeqAxP+BE9ImX5h3MiOBLeDM7ZEeFdp83OnYNu7vpviUdjWxFuT
+         Yjk2/IFyjG++aGad6f5AelDP41AYi8SwscRYM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702743656; x=1703348456;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=7CS7KA2gLSeCNiZW3GKISJfWPIn3uo8dgVC5eGHNM90=;
+        b=opOVOXF3/fjyphP/NY/GURDaKlp5rYIeQYZX6Pe5cqq7MFbEGZzy8oY4qAdBMeudXB
+         jeimN12uz7A/f+x+4MJtk0pz0Hyw13lKyM9Lx+vBpAOlZyxh1ZEYAPLwA72KJAWuciXL
+         kJwTdXEsBtqEwPXeA6r/ldApIEoVAeB4pGglLCneiWsC7JLuDB6KpNvvxC4KtMAmX+7a
+         l5Mo+CuW68oORNqyj8vlQn+/GePHkQF1Za6UkJiPM9E6nFkV8TtiwQW/juAmbZlj0YAr
+         ro0RuhBK5vlLJBRxbxRowYycZ3inJPWv1i5QiG88aZ4hCsyDT+MjrawXjrvQO4P4EMWu
+         OD5w==
+X-Gm-Message-State: AOJu0YyA/ockWrVEM3U80845zdktRK3aGyi3rUkFliyTzdAlJ/5r9h4J
+	2GXlXZeXdNmCmK67n21u8bCtyjbajzD4ebiXz5Sxzw==
+X-Google-Smtp-Source: AGHT+IEIO8Wqo3CheMl1kMfShPLFv9nb1Hcs8aH/BQwHSkOslvvi8KFpgHUPCCNDrrx5DZ7bwH/g7efkia/9pJsM3zY=
+X-Received: by 2002:a17:906:590:b0:a23:3829:9e2 with SMTP id
+ 16-20020a170906059000b00a23382909e2mr56209ejn.141.1702743655722; Sat, 16 Dec
+ 2023 08:20:55 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+References: <20231208212845.1679621-1-michael@amarulasolutions.com>
+ <CAD=FV=WthrukuM5e6VH4wKH0CQ5k08A_g_Ehpo-NsouxxCiibw@mail.gmail.com>
+ <CAOf5uwmT3uFQhyTOkNDMana5na5jcKm81tdyeann2UnFwaQp5w@mail.gmail.com>
+ <CAD=FV=WrBg9PuDW__pZbo5YNuWct17gcK4FF-xKeyxEOsw6Qag@mail.gmail.com>
+ <CAOf5uw=6=zNmtVU7cOWv6xTaCghvX9j8pA9ijJxEqYpzikGdcg@mail.gmail.com> <CAOf5uwmTg_T+vHsZwMtkPbxqQdQx4VucMni+f71KtGZY_XdgcA@mail.gmail.com>
+In-Reply-To: <CAOf5uwmTg_T+vHsZwMtkPbxqQdQx4VucMni+f71KtGZY_XdgcA@mail.gmail.com>
+From: Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
+Date: Sat, 16 Dec 2023 17:20:44 +0100
+Message-ID: <CAOf5uwmvHWCLhh3iAf69D+r_KRZKY6fP0NK5Xtz6tHoAAgYayw@mail.gmail.com>
+Subject: Re: [RFC PATCH] tty: serial: kgdboc: Fix 8250_* kgd over serial
+To: Doug Anderson <dianders@chromium.org>
+Cc: Jason Wessel <jason.wessel@windriver.com>, 
+	Daniel Thompson <daniel.thompson@linaro.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 43f012df3c1e979966524f79b5371fde6545488a  tty: serial: 8250: Set RS422 interface by default to fix Moxa RS422/RS485 PCIe boards
+Hi
 
-Error/Warning ids grouped by kconfigs:
+On Sat, Dec 16, 2023 at 2:45=E2=80=AFPM Michael Nazzareno Trimarchi
+<michael@amarulasolutions.com> wrote:
+>
+> Hi Doug
+>
+> On Tue, Dec 12, 2023 at 9:54=E2=80=AFAM Michael Nazzareno Trimarchi
+> <michael@amarulasolutions.com> wrote:
+> >
+> > Hi Doug
+> >
+> > On Mon, Dec 11, 2023 at 11:00=E2=80=AFPM Doug Anderson <dianders@chromi=
+um.org> wrote:
+> > >
+> > > Hi,
+> > >
+> > > On Mon, Dec 11, 2023 at 1:42=E2=80=AFPM Michael Nazzareno Trimarchi
+> > > <michael@amarulasolutions.com> wrote:
+> > > >
+> > > > > 1. init_kgdboc() runs and registers the singleton kgdb "platform =
+driver".
+> > > > >
+> > > > > 2. The platform driver's probe function, kgdboc_probe(), runs and
+> > > > > checks to see if the console is ready by looking at the return va=
+lue
+> > > > > of configure_kgdboc(). If it's ready then we're good to go. If it=
+'s
+> > > > > not ready then we defer.
+> > > > >
+> > > > > So I think the bug here is that somehow the console looks "ready"
+> > > > > (because tty_find_polling_driver() can find it) but it isn't actu=
+ally
+> > > > > ready yet (because it crashes). That's what you need to fix.
+> > > > >
+> > > >
+> > > > The polling driver look for uart and uart8250_core is registered an=
+d 4 fake uart
+> > > > are there but there are not still replaced by platform driver that =
+can
+> > > > come later.
+> > > > The try_polling find it but it's the isa-8250 driver. It means that
+> > > > add_uart 8250 is
+> > > > not still happen
+> > >
+> > > The 8250 driver is always a maze, so you might need to do a bunch of
+> > > digging. ...but it sure sounds like the console shouldn't be
+> > > registered until the correct ops are in place. That either means
+> > > getting the ops put in place earlier or deferring when the console is
+> > > registered...
+> > >
+> >
+> > Your point is pretty clear and my initial idea was to find a real fix.
+> > This come to avoid
+> > breaking existing setup but anyway I will dig in it more
+> >
+> > Michael
+>
+> What about this?
+>
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+> @@ -385,6 +385,7 @@ struct tty_driver *tty_find_polling_driver(char
+> *name, int *line)
+>         int tty_line =3D 0;
+>         int len;
+>         char *str, *stp;
+> +       int index;
+>
+>         for (str =3D name; *str; str++)
+>                 if ((*str >=3D '0' && *str <=3D '9') || *str =3D=3D ',')
+> @@ -406,7 +407,7 @@ struct tty_driver *tty_find_polling_driver(char
+> *name, int *line)
+>                 if (*stp =3D=3D '\0')
+>                         stp =3D NULL;
+>
+> -               if (tty_line >=3D 0 && tty_line < p->num && p->ops &&
+> +               if (tty_line >=3D 0 && tty_line < p->num && p->ops &&
+> console_device(&index) =3D=3D p &&
+>                     p->ops->poll_init && !p->ops->poll_init(p, tty_line, =
+stp)) {
+>                         res =3D tty_driver_kref_get(p);
+>                         *line =3D tty_line;
+>
+> I will send proper patch
+>
+> [   18.885348] printk: legacy console [ttyS2] disabled
+> [   18.890821] 2800000.serial: ttyS2 at MMIO 0x2800000 (irq =3D 283,
+> base_baud =3D 3000000) is a 8250
+> [   18.899727] printk: legacy console [ttyS2] enabled
+> [   18.909440] printk: legacy bootconsole [ns16550a0] disabled
+> [   18.923263] omap8250_probe: register uart 2800000.serial
 
-gcc_recent_errors
-|-- microblaze-allmodconfig
-|   `-- arch-microblaze-kernel-entry.S:Error:unknown-opcode-suspend
-`-- microblaze-allyesconfig
-    `-- arch-microblaze-kernel-entry.S:Error:unknown-opcode-suspend
+I read better the documentation is this can not work, because the
+requirement can be any uart and not the console one
 
-elapsed time: 1469m
+Micahel
+>
+> Michael
+> >
+> > > -Doug
+> >
+> >
+> >
+> > --
+> > Michael Nazzareno Trimarchi
+> > Co-Founder & Chief Executive Officer
+> > M. +39 347 913 2170
+> > michael@amarulasolutions.com
+> > __________________________________
+> >
+> > Amarula Solutions BV
+> > Joop Geesinkweg 125, 1114 AB, Amsterdam, NL
+> > T. +31 (0)85 111 9172
+> > info@amarulasolutions.com
+> > www.amarulasolutions.com
+>
+>
+>
+> --
+> Michael Nazzareno Trimarchi
+> Co-Founder & Chief Executive Officer
+> M. +39 347 913 2170
+> michael@amarulasolutions.com
+> __________________________________
+>
+> Amarula Solutions BV
+> Joop Geesinkweg 125, 1114 AB, Amsterdam, NL
+> T. +31 (0)85 111 9172
+> info@amarulasolutions.com
+> www.amarulasolutions.com
 
-configs tested: 166
-configs skipped: 2
 
-tested configs:
-alpha                             allnoconfig   gcc  
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-arc                              allmodconfig   gcc  
-arc                               allnoconfig   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arc                   randconfig-001-20231216   gcc  
-arc                   randconfig-002-20231216   gcc  
-arc                           tb10x_defconfig   gcc  
-arc                        vdk_hs38_defconfig   gcc  
-arm                              allmodconfig   gcc  
-arm                               allnoconfig   gcc  
-arm                              allyesconfig   gcc  
-arm                                 defconfig   clang
-arm                            hisi_defconfig   gcc  
-arm                        keystone_defconfig   gcc  
-arm                   randconfig-001-20231216   gcc  
-arm                   randconfig-002-20231216   gcc  
-arm                   randconfig-003-20231216   gcc  
-arm                   randconfig-004-20231216   gcc  
-arm                          sp7021_defconfig   clang
-arm                           spitz_defconfig   clang
-arm64                             allnoconfig   gcc  
-arm64                               defconfig   gcc  
-arm64                 randconfig-001-20231216   gcc  
-arm64                 randconfig-002-20231216   gcc  
-arm64                 randconfig-003-20231216   gcc  
-arm64                 randconfig-004-20231216   gcc  
-csky                              allnoconfig   gcc  
-csky                                defconfig   gcc  
-csky                  randconfig-001-20231216   gcc  
-csky                  randconfig-002-20231216   gcc  
-hexagon                           allnoconfig   clang
-hexagon                             defconfig   clang
-hexagon               randconfig-001-20231216   clang
-hexagon               randconfig-002-20231216   clang
-i386                             allmodconfig   clang
-i386                              allnoconfig   clang
-i386                             allyesconfig   clang
-i386         buildonly-randconfig-001-20231216   gcc  
-i386         buildonly-randconfig-002-20231216   gcc  
-i386         buildonly-randconfig-003-20231216   gcc  
-i386         buildonly-randconfig-004-20231216   gcc  
-i386         buildonly-randconfig-005-20231216   gcc  
-i386         buildonly-randconfig-006-20231216   gcc  
-i386                                defconfig   gcc  
-i386                  randconfig-001-20231216   gcc  
-i386                  randconfig-002-20231216   gcc  
-i386                  randconfig-003-20231216   gcc  
-i386                  randconfig-004-20231216   gcc  
-i386                  randconfig-005-20231216   gcc  
-i386                  randconfig-006-20231216   gcc  
-i386                  randconfig-011-20231216   clang
-i386                  randconfig-012-20231216   clang
-i386                  randconfig-013-20231216   clang
-i386                  randconfig-014-20231216   clang
-i386                  randconfig-015-20231216   clang
-i386                  randconfig-016-20231216   clang
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                           defconfig   gcc  
-loongarch             randconfig-001-20231216   gcc  
-loongarch             randconfig-002-20231216   gcc  
-m68k                             allmodconfig   gcc  
-m68k                              allnoconfig   gcc  
-m68k                             allyesconfig   gcc  
-m68k                                defconfig   gcc  
-m68k                        mvme16x_defconfig   gcc  
-microblaze                       allmodconfig   gcc  
-microblaze                        allnoconfig   gcc  
-microblaze                       allyesconfig   gcc  
-microblaze                          defconfig   gcc  
-mips                              allnoconfig   clang
-mips                             allyesconfig   gcc  
-mips                       bmips_be_defconfig   gcc  
-mips                        vocore2_defconfig   gcc  
-nios2                            allmodconfig   gcc  
-nios2                             allnoconfig   gcc  
-nios2                            allyesconfig   gcc  
-nios2                               defconfig   gcc  
-nios2                 randconfig-001-20231216   gcc  
-nios2                 randconfig-002-20231216   gcc  
-openrisc                          allnoconfig   gcc  
-openrisc                         allyesconfig   gcc  
-openrisc                            defconfig   gcc  
-parisc                           allmodconfig   gcc  
-parisc                            allnoconfig   gcc  
-parisc                           allyesconfig   gcc  
-parisc                              defconfig   gcc  
-parisc                randconfig-001-20231216   gcc  
-parisc                randconfig-002-20231216   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   clang
-powerpc                           allnoconfig   gcc  
-powerpc                          allyesconfig   clang
-powerpc               randconfig-001-20231216   gcc  
-powerpc               randconfig-002-20231216   gcc  
-powerpc               randconfig-003-20231216   gcc  
-powerpc64             randconfig-001-20231216   gcc  
-powerpc64             randconfig-002-20231216   gcc  
-powerpc64             randconfig-003-20231216   gcc  
-riscv                            allmodconfig   gcc  
-riscv                             allnoconfig   clang
-riscv                            allyesconfig   gcc  
-riscv                               defconfig   gcc  
-riscv                 randconfig-001-20231216   gcc  
-riscv                 randconfig-002-20231216   gcc  
-riscv                          rv32_defconfig   clang
-s390                             allmodconfig   gcc  
-s390                              allnoconfig   gcc  
-s390                             allyesconfig   gcc  
-s390                                defconfig   gcc  
-s390                  randconfig-001-20231216   clang
-s390                  randconfig-002-20231216   clang
-sh                               allmodconfig   gcc  
-sh                                allnoconfig   gcc  
-sh                               allyesconfig   gcc  
-sh                                  defconfig   gcc  
-sh                    randconfig-001-20231216   gcc  
-sh                    randconfig-002-20231216   gcc  
-sparc                            allmodconfig   gcc  
-sparc64                          allmodconfig   gcc  
-sparc64                          allyesconfig   gcc  
-sparc64                             defconfig   gcc  
-sparc64               randconfig-001-20231216   gcc  
-sparc64               randconfig-002-20231216   gcc  
-um                               allmodconfig   clang
-um                                allnoconfig   clang
-um                               allyesconfig   clang
-um                                  defconfig   gcc  
-um                             i386_defconfig   gcc  
-um                    randconfig-001-20231216   gcc  
-um                    randconfig-002-20231216   gcc  
-um                           x86_64_defconfig   gcc  
-x86_64                            allnoconfig   gcc  
-x86_64                           allyesconfig   clang
-x86_64       buildonly-randconfig-001-20231216   gcc  
-x86_64       buildonly-randconfig-002-20231216   gcc  
-x86_64       buildonly-randconfig-003-20231216   gcc  
-x86_64       buildonly-randconfig-004-20231216   gcc  
-x86_64       buildonly-randconfig-005-20231216   gcc  
-x86_64       buildonly-randconfig-006-20231216   gcc  
-x86_64                              defconfig   gcc  
-x86_64                randconfig-001-20231216   clang
-x86_64                randconfig-002-20231216   clang
-x86_64                randconfig-003-20231216   clang
-x86_64                randconfig-004-20231216   clang
-x86_64                randconfig-005-20231216   clang
-x86_64                randconfig-006-20231216   clang
-x86_64                randconfig-011-20231216   gcc  
-x86_64                randconfig-012-20231216   gcc  
-x86_64                randconfig-013-20231216   gcc  
-x86_64                randconfig-014-20231216   gcc  
-x86_64                randconfig-015-20231216   gcc  
-x86_64                randconfig-016-20231216   gcc  
-x86_64                randconfig-071-20231216   gcc  
-x86_64                randconfig-072-20231216   gcc  
-x86_64                randconfig-073-20231216   gcc  
-x86_64                randconfig-074-20231216   gcc  
-x86_64                randconfig-075-20231216   gcc  
-x86_64                randconfig-076-20231216   gcc  
-x86_64                          rhel-8.3-rust   clang
-xtensa                            allnoconfig   gcc  
-xtensa                randconfig-001-20231216   gcc  
-xtensa                randconfig-002-20231216   gcc  
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+--=20
+Michael Nazzareno Trimarchi
+Co-Founder & Chief Executive Officer
+M. +39 347 913 2170
+michael@amarulasolutions.com
+__________________________________
+
+Amarula Solutions BV
+Joop Geesinkweg 125, 1114 AB, Amsterdam, NL
+T. +31 (0)85 111 9172
+info@amarulasolutions.com
+www.amarulasolutions.com
