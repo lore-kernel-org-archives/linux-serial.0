@@ -1,119 +1,104 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25F5E18EC1;
-	Fri, 15 Dec 2023 22:14:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E4A41FDA;
+	Sat, 16 Dec 2023 03:18:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="hXhOymDR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-	t=1702678425; x=1703283225; i=linosanfilippo@gmx.de;
-	bh=C06XXkJK7IZiZ0MT6MWFhD5Flfb1WACPBxOdMeCa4xw=;
-	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
-	 In-Reply-To;
-	b=hXhOymDR1W83ZjnKPjT5KlB+DYtmkxBITeBaeFrNw3mHr6qzH3Khl0+cqN8CKApY
-	 eICFT/Hfydvt+M1uJ3vEi7gBLY71ttn2QuglHIIjmcF6hX431d5a342M+79Sb1TF5
-	 CuiFiLq1jyobFh6a3pbM4oNPn13q9DUYGo2lxLfVfuAGNnI44den2Ixyk5UmNy/Fe
-	 Z3wRSvfdYM5xj6LNZPP9aE1SQDqZfXzOXU+pkj1JLQrspU/1dhhzOo4/86E1iLb+t
-	 2vr24ANbuDwTkJ6tVh6mU3PVCeF29Rfr8MZ2cDbLmtIcLcjS43ldAwUehhaIdKTRB
-	 jzmmtOPj+D92jfuG/w==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.2.42] ([84.162.1.150]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N0oBr-1rQRZ60MAH-00wlzn; Fri, 15
- Dec 2023 23:13:45 +0100
-Message-ID: <1b0af20c-8a2c-46ba-ab2e-d598b65fd0c1@gmx.de>
-Date: Fri, 15 Dec 2023 23:13:41 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UzR69Fbn"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1702696682; x=1734232682;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=wyWUUzZO259IedYMAoIcGOmFoX5vdeINYbm46xHknGw=;
+  b=UzR69FbnQWZe8la8WoiiNLC6+HPbeoaNHuQPKyqw/hsaM1wcFO4TLwel
+   nvuQisy0TCO+vyHFzgiN5Dl6KM+/xLVSzSN/lpY+db92iGY4tBjjfw+JB
+   Pka15SLF0XO029ha0PoWtVV03UbJVBLhTVN/0rCEIzLFjzfiEbnf0ZDJl
+   Jg91hRcx1RQL5kfhsOH2vcuZUmenYC9PU+b7/6ENb3n2drz3dorzeWwBV
+   Z68bCy1H86Rn5eaNsdx37DBayzI39exVnbWUKXeAHj2gevVr44751Wcf+
+   Sfl5FPgX36mI/3wgNz3YRgMDr9h6C7Dnk25+oeMbZUnU46IHR+Tyhy1p+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10925"; a="461812251"
+X-IronPort-AV: E=Sophos;i="6.04,280,1695711600"; 
+   d="scan'208";a="461812251"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2023 19:18:01 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10925"; a="724650666"
+X-IronPort-AV: E=Sophos;i="6.04,280,1695711600"; 
+   d="scan'208";a="724650666"
+Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 15 Dec 2023 19:17:58 -0800
+Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rELBc-00015w-2Q;
+	Sat, 16 Dec 2023 03:17:56 +0000
+Date: Sat, 16 Dec 2023 11:16:57 +0800
+From: kernel test robot <lkp@intel.com>
+To: Chunyan Zhang <chunyan.zhang@unisoc.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Lee Jones <lee@kernel.org>
+Cc: oe-kbuild-all@lists.linux.dev, devicetree@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 4/4] arm64: dts: sprd: Add support for Unisoc's UMS9620
+Message-ID: <202312161154.pVCPezKU-lkp@intel.com>
+References: <20231215085630.984892-5-chunyan.zhang@unisoc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
- binding
-Content-Language: en-US
-To: Christoph Niedermaier <cniedermaier@dh-electronics.com>,
- Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Lukas Wunner <lukas@wunner.de>,
- Rasmus Villemoes <linux@rasmusvillemoes.dk>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- "brenda.streiff@ni.com" <brenda.streiff@ni.com>,
- Tomas Paukrt <tomaspaukrt@email.cz>
-References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
- <20231120151056.148450-2-linux@rasmusvillemoes.dk>
- <20231122145344.GA18949@wunner.de>
- <3b8548b1-b8a9-0c9e-4040-5cfda06a85c6@gmx.de>
- <ec66d25162de4cbc92720df1e7008fe8@dh-electronics.com>
- <5c140498-69e3-4187-8703-db0c41e7ca89@gmx.de>
- <fe28eb93-daa1-41af-a005-f21aa87e1984@gmx.de>
- <ZXcJr4VS_uGr_6TV@smile.fi.intel.com>
- <ZXrX4mQXPLum0jL3@moxa-ThinkCentre-M90t>
- <b35730df8288469fbaf67b5ceae4eece@dh-electronics.com>
- <ed087928-43ac-42bc-8e4d-d1632db451b9@gmx.de>
- <cc59c5bb16574073ba8b2bf9bc59bc7c@dh-electronics.com>
-From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <cc59c5bb16574073ba8b2bf9bc59bc7c@dh-electronics.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:DPmv0J/k0HzTMbwTgxlSJfkOv4Ktn/RCfR7VD9yMFQAhDj2mM7o
- uxQHhjhrdmjTZh75hXxE0RbAq9ucl7RIgehxEi6jO72FJUTlYyA/nHRfX3gshPGfjFdE0zl
- RdO9rHODzl6delVvUFGVCVwZtTAygSdqXQCv4OnDp3K2RVrH5MfscljgRxE3StmFRzStyNZ
- qtsuUKm0S1QJ2VQS7lhJQ==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:oiUTxF7LW/I=;01gP3CrURX/RACgl6u/hm4kcUjB
- hahsEkwwPDj+bL+6RFpCqdSOUCMivMkVRTBxjBXCIpVDk1YnsY+Qjxcy//vsoC+Fuyuqjyg+v
- qys9FiGDbQ89zVmGl1KNGvYJPEvh5RZg5vYP0H7Nsey1UEc1HlBBYjoS05d3ZdIc52hyElBcV
- F5mFo2FWQrG46ObwtdsfjyLUIlrwH7TezyA571sUx9KGzIezsqUaA9YYjynVF1GyEI3YINU7b
- AC6J9RN2XGw4VKmwucifG5nRw5f0UUrLD1hjxx4HSY+CsEhu2VNKzhM54ibNLHdLlGrrPhdKE
- MRxNxhw2RbHzm+/AT6w6PpoqqMu7qXXdzbyCVm+R5SsrU8jQGtff3+YWXEPin8wk6oP3OlmcE
- J4QesO1qu3rXpFfJrSiOLrQ5bCLwDFNdHQgpmCdJUQLHUCqolHoLVM1QdfJ0DABd6htQAu3cW
- zhOxhcoPwIPTNIjmz/6xeAyN2z3l+m6DwalMwJOgPB+CBuToATIWQnX27UzTFssebTyZUjxx2
- 16GkjF0VJoJd3xds1LamQOO2IsMBZbUzNNnSP+TG9p+WornZE4JROYNx5MmcnCZPfr9+TDV+U
- irRGE0Fhnq7Wh0HzB/qBsTopr0QuD2TGrr4HMoLF5XLsciKf6HGfi0XOSo9nocpLhWPo99wwA
- E/OpdfmVOv9lbVZXHCW6oqQuzJZEZGR/4YKDK+ey1m0pDCVwxEkc1bI8bp1y4mGHv/nAupOMJ
- qx0Lh7VhUH6cdjXVj/v9+MBwCj4eiVJvX9OoNbNciq8YitBz9C2bIPVgAh8vCmzRAxPIKmGIu
- nol3VT+rJrVGUJww/OC5nUxPZc14pR1ptI/0c/C8JXWSKHPv8LzElce8R/ZsivwvNbiQEQCty
- 5lcomLZeIUOkfD1ESG549A9alZgv7lPHXJN0Qx86feWx88VXOIELXqVyGCE7HmWivFT4tTq0y
- ji57uA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231215085630.984892-5-chunyan.zhang@unisoc.com>
 
-Hi Christoph,
+Hi Chunyan,
 
-On 14.12.23 15:50, Christoph Niedermaier wrote:
+kernel test robot noticed the following build errors:
 
->
-> I think we don't need to distinguish, because for a full duplex RS-485
-> transceiver also needs RTS control. For example look at the full duplex
-> RS-485 transceiver ADM3491E [1]. It's a full duplex transceiver (A/B and=
- Z/Y)
-> that has DE (Driver enable) and DI (Driver Input) pins for controlling T=
-X. I
-> think the RS-485 master doesn't need it. The DE pin could also be set
-> permanently high. But if we have more than one RS-485 slaves it's needed=
- to
-> avoid blocking of each other on the receiving wires of the RS-485 master=
-.
->
+[auto build test ERROR on robh/for-next]
+[also build test ERROR on lee-mfd/for-mfd-next tty/tty-next tty/tty-linus krzk/for-next krzk-mem-ctrl/for-next linus/master v6.7-rc5 next-20231215]
+[cannot apply to tty/tty-testing lee-mfd/for-mfd-fixes]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Thanks for the explanation. So while still needed for the slaves, in case =
-of the
-RS485 master the RTS control is not needed, right? Is this something that =
-userspace
-should be able to configure? It could be set by clearing both the RTS_ON_S=
-END and
-RTS_AFTER_SEND flag (only if the driver supports this special RS485 mode, =
-of course).
+url:    https://github.com/intel-lab-lkp/linux/commits/Chunyan-Zhang/dt-bindings-mfd-sprd-Add-support-for-UMS9620/20231215-165956
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+patch link:    https://lore.kernel.org/r/20231215085630.984892-5-chunyan.zhang%40unisoc.com
+patch subject: [PATCH 4/4] arm64: dts: sprd: Add support for Unisoc's UMS9620
+config: arm64-defconfig (https://download.01.org/0day-ci/archive/20231216/202312161154.pVCPezKU-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 13.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231216/202312161154.pVCPezKU-lkp@intel.com/reproduce)
 
-Regards,
-Lino
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202312161154.pVCPezKU-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+   In file included from arch/arm64/boot/dts/sprd/ums9620-2h10.dts:10:
+>> arch/arm64/boot/dts/sprd/ums9620.dtsi:8:10: fatal error: dt-bindings/clock/sprd,ums9620-clk.h: No such file or directory
+       8 | #include <dt-bindings/clock/sprd,ums9620-clk.h>
+         |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   compilation terminated.
 
 
+vim +8 arch/arm64/boot/dts/sprd/ums9620.dtsi
+
+   > 8	#include <dt-bindings/clock/sprd,ums9620-clk.h>
+     9	#include <dt-bindings/interrupt-controller/arm-gic.h>
+    10	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
