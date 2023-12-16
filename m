@@ -1,114 +1,182 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD63018EA1;
-	Sat, 16 Dec 2023 12:38:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6C7E2E3F7
+	for <linux-serial@vger.kernel.org>; Sat, 16 Dec 2023 13:46:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=amarulasolutions.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amarulasolutions.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="og+i9SxN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24DA1C433C7;
-	Sat, 16 Dec 2023 12:38:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1702730285;
-	bh=gKEWEFJ/Nxaa3FAFUPIIzzOo4+o3xPfpL5RFJuC7WbA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=og+i9SxNdM3gNZwBGi1eEC+NhBzvIiAkjNe0d9nYp/cqMaYsRW0zoK0FXlAyn7Wjs
-	 c1E8vqDoJwOSf2nDG9tl3Xf15Q6t3S4ZBRVsZ4/jzmkfBlXo2TXX+VuW2ZWR0IG54y
-	 S6fykalyUmZYdFg3ykHI8uzGzsggfB0WVzZDRC3ZlxHSPOhQWvxezxlwhdyxHtfWbV
-	 kS8+GyOgQqmUj2PQ/m2II3kIVmlGNfwElhXUC6Q+hMWJCEu/zNjOHFD6ouCsQHpeEE
-	 VlNwyqoomOUPTKo3FkKZV39OYT69hhXDLVXo2EVVOpB3drwxX6D7Q1ed/hEEx31Y4k
-	 KnwW72bg2bFYg==
-Date: Sat, 16 Dec 2023 12:37:59 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
-Cc: git@amd.com, michal.simek@amd.com, gregkh@linuxfoundation.org,
-	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-	conor+dt@kernel.org, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	jirislaby@kernel.org, linux-arm-kernel@lists.infradead.org,
-	radhey.shyam.pandey@amd.com, srinivas.goud@amd.com,
-	shubhrajyoti.datta@amd.com, manion05gk@gmail.com
-Subject: Re: [PATCH V6 1/3] dt-bindings: Add reference to rs485.yaml
-Message-ID: <20231216-unbalance-ferry-50fa828a4d48@spud>
-References: <20231215125627.1691573-1-manikanta.guntupalli@amd.com>
- <20231215125627.1691573-2-manikanta.guntupalli@amd.com>
+	dkim=pass (1024-bit key) header.d=amarulasolutions.com header.i=@amarulasolutions.com header.b="Zqrsm8+H"
+Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-a1e2ded3d9fso183605966b.0
+        for <linux-serial@vger.kernel.org>; Sat, 16 Dec 2023 05:46:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google; t=1702734367; x=1703339167; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=G8xT25O20RU+TsLhM6aVYkQaH5ZlroXWhbUjiAE2DMs=;
+        b=Zqrsm8+H4W5J9fHiS696MyqgqwHs0+9bKK7RByDZbgF/XGEL0OuYe/4WbmzMGHLaaf
+         8dW9hN1HuIIs6NzuP2T9KlGdB52MvNHUUEp6xgfp4pHwe60It/welbLRD03K18H80ISj
+         2OX1ycesbAfaKQlYxQPwKQNXlgumRPQOqIyDs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702734367; x=1703339167;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=G8xT25O20RU+TsLhM6aVYkQaH5ZlroXWhbUjiAE2DMs=;
+        b=IG5/aZHGYxieh8l/X1xGz0NYkwTI/rxH+Tuaxh0SNb/Ry6BRuCpkIjiuwIklnn6rak
+         Lt/HxarTBU9uOT5FDXz7qEy8Ouaaxs6iS4KQ8TjtyWWBXRthI8a/zPtliTV5AfdI/G0m
+         nHI6VdycM4pXfA/RFBhFDIOL6PbB0DDtUfwfdNrNnSyBQPSC9SAi5W4o57PuWOkcDbyd
+         CejkCEOlHeicwBZfZPF8RLHxRXfhEBGFgWQdO9sxIIa8DAEi4CqnFeQAefuNzDi5ySbS
+         FGY4JSoVEurnHPzqSnvmphe3O+y/fScAWglM1bh/dRKCbnBsxeI28YwVJ2HXubT26UE2
+         5mag==
+X-Gm-Message-State: AOJu0YxTH4KQLCgWOzE10gu/vtsAZtS44A9B3n5Ebh2nTmOkSJsWv0zl
+	rSTRi5pTuG0AQsrS+kuAcbUvpupnrUmvkGx7PYuZoQ==
+X-Google-Smtp-Source: AGHT+IEGVShzeDISEpnOUlXp42zimt0iY+0zTMh1tw4G8p95d4s+OpBxkDGkAsrjOVGesf/2pqiTkO/QZvE6MGAMtPg=
+X-Received: by 2002:a17:906:142:b0:a22:faf0:3bbc with SMTP id
+ 2-20020a170906014200b00a22faf03bbcmr3599797ejh.139.1702734367105; Sat, 16 Dec
+ 2023 05:46:07 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="Ntrmpl8a/hyi8QD7"
-Content-Disposition: inline
-In-Reply-To: <20231215125627.1691573-2-manikanta.guntupalli@amd.com>
-
-
---Ntrmpl8a/hyi8QD7
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20231208212845.1679621-1-michael@amarulasolutions.com>
+ <CAD=FV=WthrukuM5e6VH4wKH0CQ5k08A_g_Ehpo-NsouxxCiibw@mail.gmail.com>
+ <CAOf5uwmT3uFQhyTOkNDMana5na5jcKm81tdyeann2UnFwaQp5w@mail.gmail.com>
+ <CAD=FV=WrBg9PuDW__pZbo5YNuWct17gcK4FF-xKeyxEOsw6Qag@mail.gmail.com> <CAOf5uw=6=zNmtVU7cOWv6xTaCghvX9j8pA9ijJxEqYpzikGdcg@mail.gmail.com>
+In-Reply-To: <CAOf5uw=6=zNmtVU7cOWv6xTaCghvX9j8pA9ijJxEqYpzikGdcg@mail.gmail.com>
+From: Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
+Date: Sat, 16 Dec 2023 14:45:55 +0100
+Message-ID: <CAOf5uwmTg_T+vHsZwMtkPbxqQdQx4VucMni+f71KtGZY_XdgcA@mail.gmail.com>
+Subject: Re: [RFC PATCH] tty: serial: kgdboc: Fix 8250_* kgd over serial
+To: Doug Anderson <dianders@chromium.org>
+Cc: Jason Wessel <jason.wessel@windriver.com>, 
+	Daniel Thompson <daniel.thompson@linaro.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Dec 15, 2023 at 06:26:25PM +0530, Manikanta Guntupalli wrote:
-> Add rs485 support to uartps driver and Xilinx/AMD Kria SOM KD240
-> board have rs485 support.
+Hi Doug
 
-Please remove mention of drivers from commit messages for bindings.
-Otherwise,
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
+On Tue, Dec 12, 2023 at 9:54=E2=80=AFAM Michael Nazzareno Trimarchi
+<michael@amarulasolutions.com> wrote:
+>
+> Hi Doug
+>
+> On Mon, Dec 11, 2023 at 11:00=E2=80=AFPM Doug Anderson <dianders@chromium=
+.org> wrote:
+> >
+> > Hi,
+> >
+> > On Mon, Dec 11, 2023 at 1:42=E2=80=AFPM Michael Nazzareno Trimarchi
+> > <michael@amarulasolutions.com> wrote:
+> > >
+> > > > 1. init_kgdboc() runs and registers the singleton kgdb "platform dr=
+iver".
+> > > >
+> > > > 2. The platform driver's probe function, kgdboc_probe(), runs and
+> > > > checks to see if the console is ready by looking at the return valu=
+e
+> > > > of configure_kgdboc(). If it's ready then we're good to go. If it's
+> > > > not ready then we defer.
+> > > >
+> > > > So I think the bug here is that somehow the console looks "ready"
+> > > > (because tty_find_polling_driver() can find it) but it isn't actual=
+ly
+> > > > ready yet (because it crashes). That's what you need to fix.
+> > > >
+> > >
+> > > The polling driver look for uart and uart8250_core is registered and =
+4 fake uart
+> > > are there but there are not still replaced by platform driver that ca=
+n
+> > > come later.
+> > > The try_polling find it but it's the isa-8250 driver. It means that
+> > > add_uart 8250 is
+> > > not still happen
+> >
+> > The 8250 driver is always a maze, so you might need to do a bunch of
+> > digging. ...but it sure sounds like the console shouldn't be
+> > registered until the correct ops are in place. That either means
+> > getting the ops put in place earlier or deferring when the console is
+> > registered...
+> >
+>
+> Your point is pretty clear and my initial idea was to find a real fix.
+> This come to avoid
+> breaking existing setup but anyway I will dig in it more
+>
+> Michael
 
-Cheers,
-Conor.
+What about this?
 
->=20
-> Signed-off-by: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
-> ---
-> Changes for V2:
-> Modify optional gpio name to xlnx,phy-ctrl-gpios.
-> Update commit description.
->=20
-> Changes for V3:
-> Modify optional gpio name to rts-gpios.
-> Update commit description.
->=20
-> Changes for V4:
-> Update rts-gpios description.
->=20
-> Changes for V5:
-> Remove rts-gpios description.
-> Update commit message and description.
->=20
-> Changes for V6:
-> Update commit description.
-> ---
->  Documentation/devicetree/bindings/serial/cdns,uart.yaml | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.yaml b/Do=
-cumentation/devicetree/bindings/serial/cdns,uart.yaml
-> index e35ad1109efc..2129247d7c81 100644
-> --- a/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-> @@ -55,6 +55,7 @@ required:
-> =20
->  allOf:
->    - $ref: serial.yaml#
-> +  - $ref: rs485.yaml#
->    - if:
->        properties:
->          compatible:
-> --=20
-> 2.25.1
->=20
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -385,6 +385,7 @@ struct tty_driver *tty_find_polling_driver(char
+*name, int *line)
+        int tty_line =3D 0;
+        int len;
+        char *str, *stp;
++       int index;
 
---Ntrmpl8a/hyi8QD7
-Content-Type: application/pgp-signature; name="signature.asc"
+        for (str =3D name; *str; str++)
+                if ((*str >=3D '0' && *str <=3D '9') || *str =3D=3D ',')
+@@ -406,7 +407,7 @@ struct tty_driver *tty_find_polling_driver(char
+*name, int *line)
+                if (*stp =3D=3D '\0')
+                        stp =3D NULL;
 
------BEGIN PGP SIGNATURE-----
+-               if (tty_line >=3D 0 && tty_line < p->num && p->ops &&
++               if (tty_line >=3D 0 && tty_line < p->num && p->ops &&
+console_device(&index) =3D=3D p &&
+                    p->ops->poll_init && !p->ops->poll_init(p, tty_line, st=
+p)) {
+                        res =3D tty_driver_kref_get(p);
+                        *line =3D tty_line;
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZX2aJwAKCRB4tDGHoIJi
-0nYyAQD3YwA39zu9z7/P3d7KUHk+SPPbApAdckiCR0tGFv+9+QEA3/DK0+H8K+Ou
-wIVay3Q2NCrMCLFt8TV5WDXUAIHdzAM=
-=HBAl
------END PGP SIGNATURE-----
+I will send proper patch
 
---Ntrmpl8a/hyi8QD7--
+[   18.885348] printk: legacy console [ttyS2] disabled
+[   18.890821] 2800000.serial: ttyS2 at MMIO 0x2800000 (irq =3D 283,
+base_baud =3D 3000000) is a 8250
+[   18.899727] printk: legacy console [ttyS2] enabled
+[   18.909440] printk: legacy bootconsole [ns16550a0] disabled
+[   18.923263] omap8250_probe: register uart 2800000.serial
+
+Michael
+>
+> > -Doug
+>
+>
+>
+> --
+> Michael Nazzareno Trimarchi
+> Co-Founder & Chief Executive Officer
+> M. +39 347 913 2170
+> michael@amarulasolutions.com
+> __________________________________
+>
+> Amarula Solutions BV
+> Joop Geesinkweg 125, 1114 AB, Amsterdam, NL
+> T. +31 (0)85 111 9172
+> info@amarulasolutions.com
+> www.amarulasolutions.com
+
+
+
+--=20
+Michael Nazzareno Trimarchi
+Co-Founder & Chief Executive Officer
+M. +39 347 913 2170
+michael@amarulasolutions.com
+__________________________________
+
+Amarula Solutions BV
+Joop Geesinkweg 125, 1114 AB, Amsterdam, NL
+T. +31 (0)85 111 9172
+info@amarulasolutions.com
+www.amarulasolutions.com
