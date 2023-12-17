@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B62FD1374;
-	Sun, 17 Dec 2023 05:18:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77BC8184F;
+	Sun, 17 Dec 2023 06:43:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RkmC4l+X"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="O7MCZsrB"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702790305; x=1734326305;
+  t=1702795415; x=1734331415;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=PPSkO0bQFhCKhK6lVott3/8pp9aqVOo3T+bZ0TjgAp4=;
-  b=RkmC4l+XBKfMPnr0LjOVPhwxlhQLV+FiCOY3+hqxez5vwxUwLkJaG2Tu
-   q+km+IPr0UkGtt0ktVe4wRLmxVvOQlQ6OWowbhbktfcuNsP4wPfP9rMvn
-   uQbTb0JxdotDXXbvq9KmVrHGjeV/Ppa9lieYQef6d9guQObEyVgeST4Jn
-   uC9RY/A5Q/NskKkkMRdXKuipHMnBA71FoOtScgVaPx/TPaXK49ROjjjGE
-   hNF4MmmaIw+ciaWPftER8928CBcDXqntLn9BRYEwYqmFw74zqBIqc+w98
-   JE/Zjuhc7ncQAnL6aHFT0O1PZS2140puf2oCjm0Rk4P+WpWAa9wsNf3Bk
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10926"; a="2240103"
+  bh=5JlpsvbWOqFLfck4pPpsmwWV8XlbmxCzw6ZMnROIL8c=;
+  b=O7MCZsrBUdbFpKOZn5f3MVLezqplKXtkQfn9l9GlCwrXw/ivQUa+XyxP
+   9Vp1emaLhE2AvvwI5PQWNLUBIVXy+Z2fZ+ky7dww6wwlt6ZZnbNlZFXWU
+   culzqHo7nU0sngmHiGoDg4ZJUsxYI+zZ0CHbjJOzKFWm31sVKhRLByiv8
+   0nNWN2POPZ7Gv3elGWJKNkN+eR5oD0edqN8c+spwlJvDNKpJaiUDNITKB
+   TI8junveoeAKH0Q8Ouw4DQUqlKHkIf7lYzK+lzyb/BPeg21uPKSplm2ku
+   uLtyYcKb6pkbHwayLvdilNLMHJ8JHDo3hu+gZTuAspTBBS+ZSFh/FOV3N
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10926"; a="8827571"
 X-IronPort-AV: E=Sophos;i="6.04,282,1695711600"; 
-   d="scan'208";a="2240103"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2023 21:18:25 -0800
+   d="scan'208";a="8827571"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2023 22:43:35 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10926"; a="804157025"
+X-IronPort-AV: E=McAfee;i="6600,9927,10926"; a="948412847"
 X-IronPort-AV: E=Sophos;i="6.04,282,1695711600"; 
-   d="scan'208";a="804157025"
+   d="scan'208";a="948412847"
 Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 16 Dec 2023 21:18:21 -0800
+  by orsmga005.jf.intel.com with ESMTP; 16 Dec 2023 22:43:31 -0800
 Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1rEjXe-0002gc-2Q;
-	Sun, 17 Dec 2023 05:18:18 +0000
-Date: Sun, 17 Dec 2023 13:17:50 +0800
+	id 1rEks5-0002lD-1l;
+	Sun, 17 Dec 2023 06:43:29 +0000
+Date: Sun, 17 Dec 2023 14:43:02 +0800
 From: kernel test robot <lkp@intel.com>
 To: Michael Trimarchi <michael@amarulasolutions.com>
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	daniel.thompson@linaro.org, dianders@chromium.org,
-	gregkh@linuxfoundation.org, jason.wessel@windriver.com,
-	jirislaby@kernel.org, kgdb-bugreport@lists.sourceforge.net,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, daniel.thompson@linaro.org,
+	dianders@chromium.org, gregkh@linuxfoundation.org,
+	jason.wessel@windriver.com, jirislaby@kernel.org,
+	kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
 Subject: Re: [PATCH] tty: serial: kgdboc: Fix 8250_* kgd over serial
-Message-ID: <202312171302.vjOAqLOI-lkp@intel.com>
+Message-ID: <202312171453.mT4pH4uH-lkp@intel.com>
 References: <20231216173409.1264655-1-michael@amarulasolutions.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -70,21 +70,21 @@ url:    https://github.com/intel-lab-lkp/linux/commits/Michael-Trimarchi/tty-ser
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
 patch link:    https://lore.kernel.org/r/20231216173409.1264655-1-michael%40amarulasolutions.com
 patch subject: [PATCH] tty: serial: kgdboc: Fix 8250_* kgd over serial
-config: i386-buildonly-randconfig-003-20231217 (https://download.01.org/0day-ci/archive/20231217/202312171302.vjOAqLOI-lkp@intel.com/config)
-compiler: clang version 16.0.4 (https://github.com/llvm/llvm-project.git ae42196bc493ffe877a7e3dff8be32035dea4d07)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231217/202312171302.vjOAqLOI-lkp@intel.com/reproduce)
+config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20231217/202312171453.mT4pH4uH-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 13.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231217/202312171453.mT4pH4uH-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202312171302.vjOAqLOI-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202312171453.mT4pH4uH-lkp@intel.com/
 
 All errors (new ones prefixed by >>):
 
->> drivers/tty/serial/serial_core.c:2636:26: error: expression is not assignable
-           if (!port || port->type = PORT_UNKNOWN || !(port->ops->poll_get_char && port->ops->poll_put_char)) {
-               ~~~~~~~~~~~~~~~~~~~ ^
-   1 error generated.
+   drivers/tty/serial/serial_core.c: In function 'uart_poll_init':
+>> drivers/tty/serial/serial_core.c:2636:33: error: lvalue required as left operand of assignment
+    2636 |         if (!port || port->type = PORT_UNKNOWN || !(port->ops->poll_get_char && port->ops->poll_put_char)) {
+         |                                 ^
 
 
 vim +2636 drivers/tty/serial/serial_core.c
