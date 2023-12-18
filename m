@@ -1,77 +1,113 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 669033789E;
-	Mon, 18 Dec 2023 12:53:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17FD83A1C7;
+	Mon, 18 Dec 2023 15:10:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AKhGPq3B"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-40d190044c5so8785965e9.2;
-        Mon, 18 Dec 2023 04:53:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1702904007; x=1703508807; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Zk7VwvCkv/REjWb5Mkx7cR0feqBstB82gntTyFAKcZQ=;
-        b=AKhGPq3BcnqHhaAxKRl6Kw+9z/KCj4nm/Y6c3BqWh193sm8InAetKLi61HgKqHqGEc
-         1+VA8pnopJCVhKkf4MWSUYQEwPo98YtVXHYX805j2WpLEqWYfTJTT6/IYu/++GWap572
-         chfF0PsB7DI/GaiU46FD42aDxTwZKHQDE6WNkXYYdd/Gzr2VnLGoJFoTXK3pgww146um
-         POi56FmXwfP9fAC5Xd35LWOLwcszle9f1/zne5liiKXLucHGiKtifcY6G9pQx5OE5WrJ
-         t4Afanc8OZ6Ctw6vDBGVwrIDakJUy9w72+FkmbjWlLynFHsSSi9ykXYIuIPtqNWxflcu
-         XNag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702904007; x=1703508807;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Zk7VwvCkv/REjWb5Mkx7cR0feqBstB82gntTyFAKcZQ=;
-        b=ikR0TTLrCjZQBEO5fPHoQNrc7/mi5o76B8xNf5gu4BidOnMGs1a2W/uM04dfdTBBXR
-         4dVr8jRR2+2Y9oowvtzRy/Oj7m3Ys0bK1QfviweuR7I0LdacULKyo886j2sGeljnOhzm
-         vF7D0z5QotiUu891WBBeQwkHVh+nI4pBWFUTTbX5oZ819z4Rwd0yDugXybjIhF9cuMbm
-         9W85y6dJPw9jfqnqmvE2lwxcvq1RkPGGM1odplYkiuol0Plxnu6ESrP7eczJjvOfjOvX
-         b/NDsF3iPdXPke9WHXV/SkGJXYI28rhAkbNJYWhz1DwRVRDAUpNJbUNC+JLpeTr4tH8f
-         peYw==
-X-Gm-Message-State: AOJu0YzOBcpASbapYfsfsBoMg9STt/Wg1U/DSjsEy6SDu3jMA77V5Du5
-	6ELR/fu4fY6dD5hxCpRWhZtDN2HLApZRtWHy3LPXe5IE8A==
-X-Google-Smtp-Source: AGHT+IH4P/pa/XE7Dbmoi0Vq1JMUyCieCQChtYE/NkSc01lbxr3nwZDSMxNt0rxJT1KPgJiHbuKlRPEFALGgf3loX7w=
-X-Received: by 2002:a05:600c:3b8a:b0:40b:35aa:bfdd with SMTP id
- n10-20020a05600c3b8a00b0040b35aabfddmr7444701wms.27.1702904007367; Mon, 18
- Dec 2023 04:53:27 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FCeuPAZQ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1702912203; x=1734448203;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=H2JiMZF2Ij39VAVR9TnJ4A+j9YTlsOjpmC1hsIFWk04=;
+  b=FCeuPAZQXo6EDHVAwk6JCXJV49ZKDukliJ15s4RuAwlsX/NwLC2h6uf8
+   eNfToHwPPKk0ew9ELhGgAK0eRq4QhNNVf8ZlkpqhdapBGuaLlhJ9YfG64
+   o3ZZamaLrFGoN+0yP0i1qo/7ViwxwBSb+CRtD2B4cd6VUGGbVf9Nwv1PG
+   PAPkM9J6hOUQ7Bwci6ezN+I1ig4KtntJUYtRuQJf2Ckc72/54/5Hs3gHk
+   MTNu6+kJBbZH07+UvTMYUxiaEKNTCyi9ZGZZ9cI/APYtbGLYOyVF6Ygx0
+   PWC8QCxjpvd0wLlk10KSovu11+n+47a5fWUgOIyIh9sOE7GKUnWyCbfBS
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10928"; a="14203970"
+X-IronPort-AV: E=Sophos;i="6.04,285,1695711600"; 
+   d="scan'208";a="14203970"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Dec 2023 07:10:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10928"; a="1106975744"
+X-IronPort-AV: E=Sophos;i="6.04,285,1695711600"; 
+   d="scan'208";a="1106975744"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Dec 2023 07:09:57 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@intel.com>)
+	id 1rFFFh-00000006yC9-47z3;
+	Mon, 18 Dec 2023 17:09:53 +0200
+Date: Mon, 18 Dec 2023 17:09:53 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Tony Lindgren <tony@atomide.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	"David S . Miller" <davem@davemloft.net>,
+	Dhruva Gole <d-gole@ti.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [RFC PATCH v5 1/6] printk: Save console options for
+ add_preferred_console_match()
+Message-ID: <ZYBgwbYmF5WsFVic@smile.fi.intel.com>
+References: <20231218071020.21805-1-tony@atomide.com>
+ <20231218071020.21805-2-tony@atomide.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20231218114222.283705-1-tomas.mudrunka@gmail.com>
- <c22997c9-6d99-4e1f-9015-b7f80be2a720@kernel.org> <CAH2-hcJe40e7LhrmQb5XjGpRfrUEp3RukqWUqn1p8UQSNkpisg@mail.gmail.com>
- <2023121858-aground-consent-cfe3@gregkh> <CAH2-hc+BO=oxt2faSqy4AJS6qPdjC+cAc+ONZrvYnCPJT1H61Q@mail.gmail.com>
- <2023121858-detonator-deepness-0135@gregkh>
-In-Reply-To: <2023121858-detonator-deepness-0135@gregkh>
-From: =?UTF-8?B?VG9tw6HFoSBNdWRydcWIa2E=?= <tomas.mudrunka@gmail.com>
-Date: Mon, 18 Dec 2023 13:53:16 +0100
-Message-ID: <CAH2-hc+OeJw6mZbekqCLF33GPY5wCHRMhS7auGMmR=dFazwG+w@mail.gmail.com>
-Subject: Re: [PATCH] /proc/sysrq-trigger can now pause processing for one second
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231218071020.21805-2-tony@atomide.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-> Add pauses and soon you will want loops and then it's turing complete :)
->
-> Why not have a bpf script that does this instead?  :)
+On Mon, Dec 18, 2023 at 09:09:48AM +0200, Tony Lindgren wrote:
+> Driver subsystems may need to translate the preferred console name to the
+> character device name used. We already do some of this in console_setup()
+> with a few hardcoded names, but that does not scale well.
+> 
+> The console options are parsed early in console_setup(), and the consoles
+> are added with __add_preferred_console(). At this point we don't know much
+> about the character device names and device drivers getting probed.
+> 
+> To allow driver subsystems to set up a preferred console, let's save the
+> kernel command line console options. To add a preferred console from a
+> driver subsystem with optional character device name translation, let's
+> add a new function add_preferred_console_match().
+> 
+> This allows the serial core layer to support console=DEVNAME:0.0 style
+> hardware based addressing in addition to the current console=ttyS0 style
+> naming. And we can start moving console_setup() character device parsing
+> to the driver subsystem specific code.
+> 
+> We use a separate array from the console_cmdline array as the character
+> device name and index may be unknown at the console_setup() time. And
+> eventually there's no need to call __add_preferred_console() until the
+> subsystem is ready to handle the console.
+> 
+> Adding the console name in addition to the character device name, and a
+> flag for an added console, could be added to the struct console_cmdline.
+> And the console_cmdline array handling could be modified accordingly. But
+> that complicates things compared saving the console options, and then
+> adding the consoles when the subsystems handling the consoles are ready.
 
-Funny you mention this. For a moment i've actually thought someone
-would come with this idea sooner or later. :-)
-But i think we will all agree that there are several reasons why this
-would be quite terrible idea...
+...
 
-Anyway for me the sysrq-trigger is about giving kernel linear
-instructions on how to shutdown/reboot ASAP with minimal chance for
-data corruption and least amount of userspace involvement possible. I
-just want to kill everything more or less cleanly and safely reboot
-without having to give control back to userspace script, because there
-might be something wrong with userspace at the time.
+> +#include <linux/console.h>
+> +#include <linux/init.h>
+> +#include <linux/string.h>
 
-Tom
+A nit: uXX require types.h.
+
+> +#include <asm/errno.h>
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
