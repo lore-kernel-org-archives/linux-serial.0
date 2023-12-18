@@ -1,40 +1,26 @@
-Received: from SHSQR01.spreadtrum.com (mx1.unisoc.com [222.66.158.135])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from harvie.cz (harvie.cz [77.87.242.242])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 278972230D
+	for <linux-serial@vger.kernel.org>; Mon, 18 Dec 2023 11:42:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
+Received: from anemophobia.amit.cz (unknown [31.30.84.130])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28DFA134DA;
-	Mon, 18 Dec 2023 10:04:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unisoc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=unisoc.com
-Received: from dlp.unisoc.com ([10.29.3.86])
-	by SHSQR01.spreadtrum.com with ESMTP id 3BIA3Opp071197;
-	Mon, 18 Dec 2023 18:03:24 +0800 (+08)
-	(envelope-from Chunyan.Zhang@unisoc.com)
-Received: from SHDLP.spreadtrum.com (bjmbx02.spreadtrum.com [10.0.64.8])
-	by dlp.unisoc.com (SkyGuard) with ESMTPS id 4StwGd3Fqmz2Pj8FL;
-	Mon, 18 Dec 2023 17:57:13 +0800 (CST)
-Received: from ubt.spreadtrum.com (10.0.73.88) by BJMBX02.spreadtrum.com
- (10.0.64.8) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Mon, 18 Dec
- 2023 18:03:22 +0800
-From: Chunyan Zhang <chunyan.zhang@unisoc.com>
-To: Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>, Lee
- Jones <lee@kernel.org>
-CC: <devicetree@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        Baolin Wang
-	<baolin.wang@linux.alibaba.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Chunyan
- Zhang <chunyan.zhang@unisoc.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Chunyan Zhang <zhang.lyra@gmail.com>
-Subject: [PATCH V2 3/3] arm64: dts: sprd: Add support for Unisoc's UMS9620
-Date: Mon, 18 Dec 2023 18:02:34 +0800
-Message-ID: <20231218100234.1102916-4-chunyan.zhang@unisoc.com>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20231218100234.1102916-1-chunyan.zhang@unisoc.com>
-References: <20231218100234.1102916-1-chunyan.zhang@unisoc.com>
+	by harvie.cz (Postfix) with ESMTPSA id 18BC01801AE;
+	Mon, 18 Dec 2023 12:42:40 +0100 (CET)
+From: Tomas Mudrunka <tomas.mudrunka@gmail.com>
+To: Jonathan Corbet <corbet@lwn.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Tomas Mudrunka <tomas.mudrunka@gmail.com>,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH] /proc/sysrq-trigger can now pause processing for one second
+Date: Mon, 18 Dec 2023 12:42:20 +0100
+Message-ID: <20231218114222.283705-1-tomas.mudrunka@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -42,329 +28,88 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SHCAS03.spreadtrum.com (10.0.1.207) To
- BJMBX02.spreadtrum.com (10.0.64.8)
-X-MAIL:SHSQR01.spreadtrum.com 3BIA3Opp071197
 
-Add basic support for Unisoc's UMS9620, with this patch,
-the board ums9620-2h10 can run into console.
+Writing ',' to /proc/sysrq-trigger now causes processing to
+pause for one second.
 
-Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+This is useful, because recently accepted patch allows
+to write multiple keys at once to /proc/sysrq-trigger.
+But it might be desirable to add slight delay between actions.
+
+Eg. between (e)TERM and (i)KILL it makes sense to put slight delay,
+so processes have chance to run TERM handlers before being KILLed.
+
+Now we can send TERM, wait for two seconds and KILL like this:
+
+echo _e,,i > /proc/sysrq-trigger
+
+Originaly i've tested doing this as handler registered in
+sysrq_key_table[], but that would cause delay to occur while
+holding sysrq rcu lock in __handle_sysrq(), therefore i've decided
+to implement this in write_sysrq_trigger() instead to allow
+proper use of msleep() instead of mdelay() in locked context.
+
+This means it will only be possible to invoke the delay using
+/proc/sysrq-trigger, but there is little point in doing that
+interactively using keyboard anyway.
+
+Depends-on: /proc/sysrq-trigger: accept multiple keys at once
+
+Signed-off-by: Tomas Mudrunka <tomas.mudrunka@gmail.com>
 ---
- arch/arm64/boot/dts/sprd/Makefile         |   3 +-
- arch/arm64/boot/dts/sprd/ums9620-2h10.dts |  38 ++++
- arch/arm64/boot/dts/sprd/ums9620.dtsi     | 245 ++++++++++++++++++++++
- 3 files changed, 285 insertions(+), 1 deletion(-)
- create mode 100644 arch/arm64/boot/dts/sprd/ums9620-2h10.dts
- create mode 100644 arch/arm64/boot/dts/sprd/ums9620.dtsi
+ Documentation/admin-guide/sysrq.rst |  2 ++
+ drivers/tty/sysrq.c                 | 16 ++++++++++++++--
+ 2 files changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/sprd/Makefile b/arch/arm64/boot/dts/sprd/Makefile
-index 97522fb0bf66..3ce81ad7116f 100644
---- a/arch/arm64/boot/dts/sprd/Makefile
-+++ b/arch/arm64/boot/dts/sprd/Makefile
-@@ -2,4 +2,5 @@
- dtb-$(CONFIG_ARCH_SPRD) += sc9836-openphone.dtb \
- 			sp9860g-1h10.dtb	\
- 			sp9863a-1h10.dtb	\
--			ums512-1h10.dtb
-+			ums512-1h10.dtb		\
-+			ums9620-2h10.dtb
-diff --git a/arch/arm64/boot/dts/sprd/ums9620-2h10.dts b/arch/arm64/boot/dts/sprd/ums9620-2h10.dts
-new file mode 100644
-index 000000000000..b35671192a72
---- /dev/null
-+++ b/arch/arm64/boot/dts/sprd/ums9620-2h10.dts
-@@ -0,0 +1,38 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Unisoc UMS9620-2h10 board DTS file
-+ *
-+ * Copyright (C) 2023, Unisoc Inc.
-+ */
+diff --git a/Documentation/admin-guide/sysrq.rst b/Documentation/admin-guide/sysrq.rst
+index 2f2e5bd44..b798a2695 100644
+--- a/Documentation/admin-guide/sysrq.rst
++++ b/Documentation/admin-guide/sysrq.rst
+@@ -161,6 +161,8 @@ Command	    Function
+             will be printed to your console. (``0``, for example would make
+             it so that only emergency messages like PANICs or OOPSes would
+             make it to your console.)
 +
-+/dts-v1/;
++``,``	    Wait for one second (only for use with /proc/sysrq-trigger batch)
+ =========== ===================================================================
+ 
+ Okay, so what can I use them for?
+diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+index 02217e3c9..a19ce0865 100644
+--- a/drivers/tty/sysrq.c
++++ b/drivers/tty/sysrq.c
+@@ -51,6 +51,7 @@
+ #include <linux/syscalls.h>
+ #include <linux/of.h>
+ #include <linux/rcupdate.h>
++#include <linux/delay.h>
+ 
+ #include <asm/ptrace.h>
+ #include <asm/irq_regs.h>
+@@ -1166,10 +1167,21 @@ static ssize_t write_sysrq_trigger(struct file *file, const char __user *buf,
+ 		if (get_user(c, buf + i))
+ 			return -EFAULT;
+ 
+-		if (c == '_')
++		switch (c) {
 +
-+#include "ums9620.dtsi"
++		case '_':
+ 			bulk = true;
+-		else
++			break;
 +
-+/ {
-+	model = "Unisoc UMS9620-2H10 Board";
++		case ',':
++			msleep(1000);
++			break;
 +
-+	compatible = "sprd,ums9620-2h10", "sprd,ums9620";
++		default:
+ 			__handle_sysrq(c, false);
++			break;
 +
-+	aliases {
-+		serial0 = &uart0;
-+		serial1 = &uart1;
-+	};
-+
-+	memory@80000000 {
-+		device_type = "memory";
-+		reg = <0x0 0x80000000 0x2 0x00000000>;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial1:921600n8";
-+	};
-+};
-+
-+&uart0 {
-+	status = "okay";
-+};
-+
-+&uart1 {
-+	status = "okay";
-+};
-diff --git a/arch/arm64/boot/dts/sprd/ums9620.dtsi b/arch/arm64/boot/dts/sprd/ums9620.dtsi
-new file mode 100644
-index 000000000000..2191f0a4811b
---- /dev/null
-+++ b/arch/arm64/boot/dts/sprd/ums9620.dtsi
-@@ -0,0 +1,245 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Unisoc UMS9620 DTS file
-+ *
-+ * Copyright (C) 2023, Unisoc Inc.
-+ */
-+
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+/ {
-+	interrupt-parent = <&gic>;
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	cpus {
-+		#address-cells = <2>;
-+		#size-cells = <0>;
-+
-+		cpu-map {
-+			cluster0 {
-+				core0 {
-+					cpu = <&CPU0>;
-+				};
-+				core1 {
-+					cpu = <&CPU1>;
-+				};
-+				core2 {
-+					cpu = <&CPU2>;
-+				};
-+				core3 {
-+					cpu = <&CPU3>;
-+				};
-+				core4 {
-+					cpu = <&CPU4>;
-+				};
-+				core5 {
-+					cpu = <&CPU5>;
-+				};
-+				core6 {
-+					cpu = <&CPU6>;
-+				};
-+				core7 {
-+					cpu = <&CPU7>;
-+				};
-+			};
-+		};
-+
-+		CPU0: cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55";
-+			reg = <0x0 0x0>;
-+			enable-method = "psci";
-+			cpu-idle-states = <&LIT_CORE_PD>;
-+		};
-+
-+		CPU1: cpu@100 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55";
-+			reg = <0x0 0x100>;
-+			enable-method = "psci";
-+			cpu-idle-states = <&LIT_CORE_PD>;
-+		};
-+
-+		CPU2: cpu@200 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55";
-+			reg = <0x0 0x200>;
-+			enable-method = "psci";
-+			cpu-idle-states = <&LIT_CORE_PD>;
-+		};
-+
-+		CPU3: cpu@300 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55";
-+			reg = <0x0 0x300>;
-+			enable-method = "psci";
-+			cpu-idle-states = <&LIT_CORE_PD>;
-+		};
-+
-+		CPU4: cpu@400 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a76";
-+			reg = <0x0 0x400>;
-+			enable-method = "psci";
-+			cpu-idle-states = <&BIG_CORE_PD>;
-+		};
-+
-+		CPU5: cpu@500 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a76";
-+			reg = <0x0 0x500>;
-+			enable-method = "psci";
-+			cpu-idle-states = <&BIG_CORE_PD>;
-+		};
-+
-+		CPU6: cpu@600 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a76";
-+			reg = <0x0 0x600>;
-+			enable-method = "psci";
-+			cpu-idle-states = <&BIG_CORE_PD>;
-+		};
-+
-+		CPU7: cpu@700 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a76";
-+			reg = <0x0 0x700>;
-+			enable-method = "psci";
-+			cpu-idle-states = <&BIG_CORE_PD>;
-+		};
-+	};
-+
-+	idle-states {
-+		entry-method = "psci";
-+		LIT_CORE_PD: cpu-pd-lit {
-+			compatible = "arm,idle-state";
-+			entry-latency-us = <1000>;
-+			exit-latency-us = <500>;
-+			min-residency-us = <2500>;
-+			local-timer-stop;
-+			arm,psci-suspend-param = <0x00010000>;
-+		};
-+
-+		BIG_CORE_PD: cpu-pd-big {
-+			compatible = "arm,idle-state";
-+			entry-latency-us = <4000>;
-+			exit-latency-us = <4000>;
-+			min-residency-us = <10000>;
-+			local-timer-stop;
-+			arm,psci-suspend-param = <0x00010000>;
-+		};
-+	};
-+
-+	psci {
-+		compatible = "arm,psci-0.2";
-+		method = "smc";
-+	};
-+
-+	timer {
-+		compatible = "arm,armv8-timer";
-+		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_HIGH>, /* Physical Secure PPI */
-+			     <GIC_PPI 14 IRQ_TYPE_LEVEL_HIGH>, /* Physical Non-Secure PPI */
-+			     <GIC_PPI 11 IRQ_TYPE_LEVEL_HIGH>, /* Virtual PPI */
-+			     <GIC_PPI 10 IRQ_TYPE_LEVEL_HIGH>; /* Hipervisor PPI */
-+	};
-+
-+	pmu {
-+		compatible = "arm,armv8-pmuv3";
-+		interrupts = <GIC_SPI 177 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 178 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 179 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 180 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 181 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 182 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 183 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 184 IRQ_TYPE_LEVEL_HIGH>;
-+	};
-+
-+	soc: soc {
-+		compatible = "simple-bus";
-+		ranges;
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+
-+		gic: interrupt-controller@12000000 {
-+			compatible = "arm,gic-v3";
-+			reg = <0x0 0x12000000 0 0x20000>,	/* GICD */
-+			      <0x0 0x12040000 0 0x100000>;	/* GICR */
-+			#interrupt-cells = <3>;
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			redistributor-stride = <0x0 0x20000>;	/* 128KB stride */
-+			#redistributor-regions = <1>;
-+			interrupt-controller;
-+			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
-+		};
-+
-+		apb@20200000 {
-+			compatible = "simple-bus";
-+			ranges = <0 0 0x20200000 0x100000>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+
-+			uart0: serial@0 {
-+				compatible = "sprd,ums9620-uart",
-+					     "sprd,sc9836-uart";
-+				reg = <0 0x100>;
-+				interrupts = <GIC_SPI 196 IRQ_TYPE_LEVEL_HIGH>;
-+				clocks = <&ext_26m>;
-+				status = "disabled";
-+			};
-+
-+			uart1: serial@10000 {
-+				compatible = "sprd,ums9620-uart",
-+					     "sprd,sc9836-uart";
-+				reg = <0x10000 0x100>;
-+				interrupts = <GIC_SPI 195 IRQ_TYPE_LEVEL_HIGH>;
-+				clocks = <&ext_26m>;
-+				status = "disabled";
-+			};
-+		};
-+	};
-+
-+	ext_26m: clk-26m {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <26000000>;
-+		clock-output-names = "ext-26m";
-+	};
-+
-+	ext_4m: clk-4m {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <4000000>;
-+		clock-output-names = "ext-4m";
-+	};
-+
-+	ext_32k: clk-32k {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <32768>;
-+		clock-output-names = "ext-32k";
-+	};
-+
-+	rco_100m: clk-100m {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <100000000>;
-+		clock-output-names = "rco-100m";
-+	};
-+
-+	dphy_312m5: dphy-312m5 {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <312500000>;
-+		clock-output-names = "dphy-312m5";
-+	};
-+
-+	dphy_416m7: dphy-416m7 {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <416700000>;
-+		clock-output-names = "dphy-416m7";
-+	};
-+};
++		}
+ 
+ 		if (!bulk)
+ 			break;
 -- 
-2.41.0
+2.43.0
 
