@@ -1,167 +1,99 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx4.securetransport.de (mx4.securetransport.de [178.254.6.145])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39AF4125A6
-	for <linux-serial@vger.kernel.org>; Mon, 18 Dec 2023 09:17:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8D73125AD;
+	Mon, 18 Dec 2023 09:17:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dh-electronics.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="uabIJB/I"
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a2343c31c4bso117490566b.1
-        for <linux-serial@vger.kernel.org>; Mon, 18 Dec 2023 01:17:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702891037; x=1703495837; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=WHPhLQNQAm+GiB2ZbhInDHh2iTZPzeOb81ASyh331/E=;
-        b=uabIJB/I7w5b/9p/lHthcXUUrNxqE2n7KLjvB5Fijic/WVQ28NCSBLTVLKen6gQuW8
-         kyDJpEFixsVPFbStQdH2ohnaCg6rCSYeGNoqa7iRs/AFKVdwvTndE/QQlhNDkpdSG1a2
-         Z/KGB0MtEyi0kLBt74rbyuUKtHWPBsomD5Mz57R5cPfHjj1vj0bF/7t5xwuGl2nN6dwP
-         Go9tKfULv0wPi71VcgCUArwEsR4BVmfImocSUCmvgvTnbjoCTWw+OZ87iwLLmpYcOUmO
-         5MoVP05MoNGP4GMAwF+NFOehi1300pO4QQdHgxyz263nfMwTFfaaNoMkIIwKIoHlN4VL
-         esgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702891037; x=1703495837;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WHPhLQNQAm+GiB2ZbhInDHh2iTZPzeOb81ASyh331/E=;
-        b=YCNpm07m2AoEcRdeKd0cSrUCNv7i3VBSFch4URlJQGa1AQuoZ5V46I/wARmlso0K1p
-         KziQ+W6Rq6dma1XS0mRamjjcJvu7qy2BR37GiA3QLe9W1Pp1INcAkXnMhe2qQpgp0E/8
-         3hNRPjQE4/AdxWx2XZA8j9Ro/QKXmp0CdePFfK1uLZXc1gfqZA+gTvnTKG2gYOTiAoGn
-         WvZSXMbH0KzWrF4huXyjAgdwfz5BEnsMLQlcLXeoBeya0YpGCbXPFVtOQF60yOBmHAd8
-         30C5gjnU8tRfpql23z4/X7gGwwHiBQjgLfYsFDeYrvmjValOWAi5JVs5qqUkVPfsInx7
-         WrCw==
-X-Gm-Message-State: AOJu0Yz83UvOL5bRYVGGAMqQCXLIwinizrBBLdSUjV0/6lzh4JuA0QxD
-	V36qtgSVV4NRUxSyt3p+14N8cQ==
-X-Google-Smtp-Source: AGHT+IH+LbJ2gkbeAgA69U667+1y/bGVZAJl9hgbsPQMYt+Cyz8ertbQURI3D8hR3M+VgHfq34mCHw==
-X-Received: by 2002:a17:907:9251:b0:a23:526e:4425 with SMTP id kb17-20020a170907925100b00a23526e4425mr370307ejb.66.1702891037534;
-        Mon, 18 Dec 2023 01:17:17 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.218.27])
-        by smtp.gmail.com with ESMTPSA id vh9-20020a170907d38900b00a1d18c142eesm13905971ejc.59.2023.12.18.01.17.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Dec 2023 01:17:17 -0800 (PST)
-Message-ID: <e3f62e46-16f8-4ca5-a8e6-67c116f6ede3@linaro.org>
-Date: Mon, 18 Dec 2023 10:17:15 +0100
+	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="frV8VxJ3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
+	s=dhelectronicscom; t=1702890503;
+	bh=m7qO1p3j1oxEbL5lO2X431Gjyt9cwIdJN9kwQp3mg1M=;
+	h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+	b=frV8VxJ3ZGHZfPeSxqzTK6U5fS94u1Gt57rDs2HonTcK1VPv+E6TjbldwLXqtLQU5
+	 fZJF4lu2owDrhMvf9ypSdOXVQY9IhTawVhSnRt1VKTSktLnqIrs7hzOadcaQXNsphA
+	 BxRGuGWagC5GpAHArbiOXBhxvI5hs88kj2G7j4Onobt5TQfAhiXQh+gzTjcxAFkClW
+	 CBH7OcAjWou2vrnC8/UoWkS8DZRKU332WviF6K4iDxCzPb8R9+JOuKVC/bt95jeWPA
+	 YRjY/rLJrIxq9jOcqftj0nwliUhYKscXUrZF4m0hg7SuXVsnzz8K2ZhluItnWIVxp4
+	 3LfHdoJRQyUqA==
+X-secureTransport-forwarded: yes
+From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Complaints-To: abuse@cubewerk.de
+To: Lino Sanfilippo <LinoSanfilippo@gmx.de>, Crescent CY Hsieh
+	<crescentcy.hsieh@moxa.com>, Andy Shevchenko
+	<andriy.shevchenko@linux.intel.com>
+CC: Lukas Wunner <lukas@wunner.de>, Rasmus Villemoes
+	<linux@rasmusvillemoes.dk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley
+	<conor+dt@kernel.org>, "devicetree@vger.kernel.org"
+	<devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>, =?utf-8?B?SWxwbyBKw6RydmluZW4=?=
+	<ilpo.jarvinen@linux.intel.com>, "brenda.streiff@ni.com"
+	<brenda.streiff@ni.com>, Tomas Paukrt <tomaspaukrt@email.cz>
+Subject: RE: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
+ binding
+Thread-Topic: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
+ binding
+Thread-Index: AQHaH/jBESSZN4JU2UOxi81YCMKNnLCN1MYggA6QRICABHVPgIADOxKAgASJVgCAABWukIAAJ8AAgAASapCAAgidgIAD4XiA
+Date: Mon, 18 Dec 2023 09:08:15 +0000
+Message-ID: <ca3374724da24e38b611c24fb4fd57d1@dh-electronics.com>
+References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
+ <20231120151056.148450-2-linux@rasmusvillemoes.dk>
+ <20231122145344.GA18949@wunner.de>
+ <3b8548b1-b8a9-0c9e-4040-5cfda06a85c6@gmx.de>
+ <ec66d25162de4cbc92720df1e7008fe8@dh-electronics.com>
+ <5c140498-69e3-4187-8703-db0c41e7ca89@gmx.de>
+ <fe28eb93-daa1-41af-a005-f21aa87e1984@gmx.de>
+ <ZXcJr4VS_uGr_6TV@smile.fi.intel.com>
+ <ZXrX4mQXPLum0jL3@moxa-ThinkCentre-M90t>
+ <b35730df8288469fbaf67b5ceae4eece@dh-electronics.com>
+ <ed087928-43ac-42bc-8e4d-d1632db451b9@gmx.de>
+ <cc59c5bb16574073ba8b2bf9bc59bc7c@dh-electronics.com>
+ <1b0af20c-8a2c-46ba-ab2e-d598b65fd0c1@gmx.de>
+In-Reply-To: <1b0af20c-8a2c-46ba-ab2e-d598b65fd0c1@gmx.de>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/4] arm64: dts: sprd: Add support for Unisoc's UMS9620
-Content-Language: en-US
-To: Chunyan Zhang <zhang.lyra@gmail.com>
-Cc: Chunyan Zhang <chunyan.zhang@unisoc.com>, Rob Herring
- <robh+dt@kernel.org>, Krzysztof Kozlowski
- <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>,
- Lee Jones <lee@kernel.org>, devicetree@vger.kernel.org,
- linux-serial@vger.kernel.org, Baolin Wang <baolin.wang@linux.alibaba.com>,
- Orson Zhai <orsonzhai@gmail.com>, LKML <linux-kernel@vger.kernel.org>
-References: <20231215085630.984892-1-chunyan.zhang@unisoc.com>
- <20231215085630.984892-5-chunyan.zhang@unisoc.com>
- <fd927698-6aa3-4a6b-988c-fc82663235ca@linaro.org>
- <CAAfSe-tTvxLCAdSCCgEw8HMFaVVfOytoowY_Fb2F0H-vo+cCmA@mail.gmail.com>
- <4faf78f5-5e57-44a1-8fdd-7b6a33b0bd19@linaro.org>
- <CAAfSe-teE0RnC9fNtEP4dW3d94ud7pxF4wAB71FLik65HjatNQ@mail.gmail.com>
- <7ea2e47a-59fe-43ff-89ae-4a870c754e2f@linaro.org>
- <CAAfSe-uAczP0AmQFF3=LmfhtZZ45h-BS1BJrPkNu0MgZkSGLBw@mail.gmail.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
- cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
- JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
- gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
- J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
- NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
- BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
- vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
- Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
- TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzTRLcnp5c3p0b2Yg
- S296bG93c2tpIDxrcnp5c3p0b2Yua296bG93c2tpQGxpbmFyby5vcmc+wsGUBBMBCgA+FiEE
- m9B+DgxR+NWWd7dUG5NDfTtBYpsFAmI+BxMCGwMFCRRfreEFCwkIBwIGFQoJCAsCBBYCAwEC
- HgECF4AACgkQG5NDfTtBYptgbhAAjAGunRoOTduBeC7V6GGOQMYIT5n3OuDSzG1oZyM4kyvO
- XeodvvYv49/ng473E8ZFhXfrre+c1olbr1A8pnz9vKVQs9JGVa6wwr/6ddH7/yvcaCQnHRPK
- mnXyP2BViBlyDWQ71UC3N12YCoHE2cVmfrn4JeyK/gHCvcW3hUW4i5rMd5M5WZAeiJj3rvYh
- v8WMKDJOtZFXxwaYGbvFJNDdvdTHc2x2fGaWwmXMJn2xs1ZyFAeHQvrp49mS6PBQZzcx0XL5
- cU9ZjhzOZDn6Apv45/C/lUJvPc3lo/pr5cmlOvPq1AsP6/xRXsEFX/SdvdxJ8w9KtGaxdJuf
- rpzLQ8Ht+H0lY2On1duYhmro8WglOypHy+TusYrDEry2qDNlc/bApQKtd9uqyDZ+rx8bGxyY
- qBP6bvsQx5YACI4p8R0J43tSqWwJTP/R5oPRQW2O1Ye1DEcdeyzZfifrQz58aoZrVQq+innR
- aDwu8qDB5UgmMQ7cjDSeAQABdghq7pqrA4P8lkA7qTG+aw8Z21OoAyZdUNm8NWJoQy8m4nUP
- gmeeQPRc0vjp5JkYPgTqwf08cluqO6vQuYL2YmwVBIbO7cE7LNGkPDA3RYMu+zPY9UUi/ln5
- dcKuEStFZ5eqVyqVoZ9eu3RTCGIXAHe1NcfcMT9HT0DPp3+ieTxFx6RjY3kYTGLOwU0EVUNc
- NAEQAM2StBhJERQvgPcbCzjokShn0cRA4q2SvCOvOXD+0KapXMRFE+/PZeDyfv4dEKuCqeh0
- hihSHlaxTzg3TcqUu54w2xYskG8Fq5tg3gm4kh1Gvh1LijIXX99ABA8eHxOGmLPRIBkXHqJY
- oHtCvPc6sYKNM9xbp6I4yF56xVLmHGJ61KaWKf5KKWYgA9kfHufbja7qR0c6H79LIsiYqf92
- H1HNq1WlQpu/fh4/XAAaV1axHFt/dY/2kU05tLMj8GjeQDz1fHas7augL4argt4e+jum3Nwt
- yupodQBxncKAUbzwKcDrPqUFmfRbJ7ARw8491xQHZDsP82JRj4cOJX32sBg8nO2N5OsFJOcd
- 5IE9v6qfllkZDAh1Rb1h6DFYq9dcdPAHl4zOj9EHq99/CpyccOh7SrtWDNFFknCmLpowhct9
- 5ZnlavBrDbOV0W47gO33WkXMFI4il4y1+Bv89979rVYn8aBohEgET41SpyQz7fMkcaZU+ok/
- +HYjC/qfDxT7tjKXqBQEscVODaFicsUkjheOD4BfWEcVUqa+XdUEciwG/SgNyxBZepj41oVq
- FPSVE+Ni2tNrW/e16b8mgXNngHSnbsr6pAIXZH3qFW+4TKPMGZ2rZ6zITrMip+12jgw4mGjy
- 5y06JZvA02rZT2k9aa7i9dUUFggaanI09jNGbRA/ABEBAAHCwXwEGAEKACYCGwwWIQSb0H4O
- DFH41ZZ3t1Qbk0N9O0FimwUCYDzvagUJFF+UtgAKCRAbk0N9O0Fim9JzD/0auoGtUu4mgnna
- oEEpQEOjgT7l9TVuO3Qa/SeH+E0m55y5Fjpp6ZToc481za3xAcxK/BtIX5Wn1mQ6+szfrJQ6
- 59y2io437BeuWIRjQniSxHz1kgtFECiV30yHRgOoQlzUea7FgsnuWdstgfWi6LxstswEzxLZ
- Sj1EqpXYZE4uLjh6dW292sO+j4LEqPYr53hyV4I2LPmptPE9Rb9yCTAbSUlzgjiyyjuXhcwM
- qf3lzsm02y7Ooq+ERVKiJzlvLd9tSe4jRx6Z6LMXhB21fa5DGs/tHAcUF35hSJrvMJzPT/+u
- /oVmYDFZkbLlqs2XpWaVCo2jv8+iHxZZ9FL7F6AHFzqEFdqGnJQqmEApiRqH6b4jRBOgJ+cY
- qc+rJggwMQcJL9F+oDm3wX47nr6jIsEB5ZftdybIzpMZ5V9v45lUwmdnMrSzZVgC4jRGXzsU
- EViBQt2CopXtHtYfPAO5nAkIvKSNp3jmGxZw4aTc5xoAZBLo0OV+Ezo71pg3AYvq0a3/oGRG
- KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
- fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <CAAfSe-uAczP0AmQFF3=LmfhtZZ45h-BS1BJrPkNu0MgZkSGLBw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 
-On 18/12/2023 08:37, Chunyan Zhang wrote:
-> On Mon, 18 Dec 2023 at 15:31, Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
->>
->> On 18/12/2023 08:18, Chunyan Zhang wrote:
->>> On Mon, 18 Dec 2023 at 15:00, Krzysztof Kozlowski
->>> <krzysztof.kozlowski@linaro.org> wrote:
->>>>
->>>> On 18/12/2023 03:31, Chunyan Zhang wrote:
->>>>> On Fri, 15 Dec 2023 at 18:36, Krzysztof Kozlowski
->>>>> <krzysztof.kozlowski@linaro.org> wrote:
->>>>>>
->>>>>> On 15/12/2023 09:56, Chunyan Zhang wrote:
->>>>>>> Add basic support for Unisoc's UMS9620, with this patch,
->>>>>>> the board ums9620-2h10 can run into console.
->>>>>>>
->>>>>>
->>>>>> ...
->>>>>>
->>>>>>> +
->>>>>>> +     soc: soc {
->>>>>>
->>>>>> Are you sure you do not have here W=1 warnings?
->>>>>
->>>>> Do you mean warnings generated by running "make W=1"? I tried just now
->>>>> and didn't see warnings on this dts.
->>>>
->>>> No, I meant `dtbs_check W=1` or W=1 coming from dtc (dtbs).
->>>
->>> Yes, I just run "make W=1 dtbs",  also have tried `dtbs_check W=1`,
->>> didn't see warnings on ums9620-2h10.dtb
->>
->> Ah, because it does not even compile!
-> 
-> The patch was generated from a middle commit (that was my mistake of course).
-> 
-> But I've fixed the issue. I ran the command just now according to your
-> comments, and didn't see the warnings on this dtb.
-> 
-> If I'm missing something, please correct me.
-
-You don't have unit address for soc node, but could be fine if
-address/size cells match. Don't remember, but also cannot verify because
-it does not build. :(
-
-Best regards,
-Krzysztof
-
+RnJvbTogTGlubyBTYW5maWxpcHBvIFttYWlsdG86TGlub1NhbmZpbGlwcG9AZ214LmRlXQ0KU2Vu
+dDogRnJpZGF5LCBEZWNlbWJlciAxNSwgMjAyMyAxMToxNCBQTQ0KPiANCj4gSGkgQ2hyaXN0b3Bo
+LA0KPiANCg0KSGkgTGlubywNCg0KPiBPbiAxNC4xMi4yMyAxNTo1MCwgQ2hyaXN0b3BoIE5pZWRl
+cm1haWVyIHdyb3RlOg0KPiANCj4+DQo+PiBJIHRoaW5rIHdlIGRvbid0IG5lZWQgdG8gZGlzdGlu
+Z3Vpc2gsIGJlY2F1c2UgZm9yIGEgZnVsbCBkdXBsZXggUlMtNDg1DQo+PiB0cmFuc2NlaXZlciBh
+bHNvIG5lZWRzIFJUUyBjb250cm9sLiBGb3IgZXhhbXBsZSBsb29rIGF0IHRoZSBmdWxsIGR1cGxl
+eA0KPj4gUlMtNDg1IHRyYW5zY2VpdmVyIEFETTM0OTFFIFsxXS4gSXQncyBhIGZ1bGwgZHVwbGV4
+IHRyYW5zY2VpdmVyIChBL0IgYW5kIFovWSkNCj4+IHRoYXQgaGFzIERFIChEcml2ZXIgZW5hYmxl
+KSBhbmQgREkgKERyaXZlciBJbnB1dCkgcGlucyBmb3IgY29udHJvbGxpbmcgVFguIEkNCj4+IHRo
+aW5rIHRoZSBSUy00ODUgbWFzdGVyIGRvZXNuJ3QgbmVlZCBpdC4gVGhlIERFIHBpbiBjb3VsZCBh
+bHNvIGJlIHNldA0KPj4gcGVybWFuZW50bHkgaGlnaC4gQnV0IGlmIHdlIGhhdmUgbW9yZSB0aGFu
+IG9uZSBSUy00ODUgc2xhdmVzIGl0J3MgbmVlZGVkIHRvDQo+PiBhdm9pZCBibG9ja2luZyBvZiBl
+YWNoIG90aGVyIG9uIHRoZSByZWNlaXZpbmcgd2lyZXMgb2YgdGhlIFJTLTQ4NSBtYXN0ZXIuDQo+
+Pg0KPiANCj4gVGhhbmtzIGZvciB0aGUgZXhwbGFuYXRpb24uIFNvIHdoaWxlIHN0aWxsIG5lZWRl
+ZCBmb3IgdGhlIHNsYXZlcywgaW4gY2FzZSBvZiB0aGUNCj4gUlM0ODUgbWFzdGVyIHRoZSBSVFMg
+Y29udHJvbCBpcyBub3QgbmVlZGVkLCByaWdodD8NCg0KWWVzLCBmb3IgdGhlIFJTLTQ4NSAoNC13
+aXJlKSBtYXN0ZXIgaXQgaXNuJ3QgbmVlZGVkLCBidXQgSSB0aGluayBvbiB0aGUgZHJpdmVyDQps
+ZXZlbCBpdCBpcyBiZXR0ZXIgbm90IHRvIGRpc3Rpbmd1aXNoIGJldHdlZW4gbWFzdGVyIGFuZCBz
+YWx2ZS4gU28gdXNlIGFsc28gUlRTDQpjb250cm9sIGZvciBlbmFibGluZyBzZW5kaW5nIG9uIGEg
+UlMtNDg1ICg0LXdpcmUpIG1hc3RlciBkZXZpY2UuDQoNCj4gSXMgdGhpcyBzb21ldGhpbmcgdGhh
+dCB1c2Vyc3BhY2Ugc2hvdWxkIGJlIGFibGUgdG8gY29uZmlndXJlPyBJdCBjb3VsZCBiZSBzZXQN
+Cj4gYnkgY2xlYXJpbmcgYm90aCB0aGUgUlRTX09OX1NFTkQgYW5kIFJUU19BRlRFUl9TRU5EIGZs
+YWcgKG9ubHkgaWYgdGhlIGRyaXZlcg0KPiBzdXBwb3J0cyB0aGlzIHNwZWNpYWwgUlM0ODUgbW9k
+ZSwgb2YgY291cnNlKS4NCg0KTm8sIEkgdGhpbmsgaXQgc2hvdWxkbid0IGNvbmZpZ3VyZSBpbiB1
+c2Vyc3BhY2UuIFRyZWF0aW5nIGEgUlMtNDg1ICg0LXdpcmUpIG1hc3Rlcg0KZGV2aWNlIGluIHRo
+ZSBkcml2ZXIgYXMgYSBzbGF2ZSAod2l0aCBSVFMgY29udHJvbCkgaGFzIHRoZSBmb2xsb3dpbmcg
+YWR2YW50YWdlczoNCi0gTGVzcyBjb25mdXNpb24gaW4gdXNlciBzcGFjZSAobm8gYWRkaXRpb25h
+bCBzZXR0aW5nIGF2YWlsYWJsZSkuDQotIE9ubHkgYnVzIHRvcG9sb2d5IGRldGVybWluZXMgd2hv
+IGlzIG1hc3RlciBhbmQgc2FsdmUuDQotIFNhdmUgZW5lcmd5LCBiZWNhdXNlIERFIGlzIG9ubHkg
+ZHJpdmVuIGR1cmluZyBzZW5kaW5nLg0KDQoNClJlZ2FyZHMNCkNocmlzdG9waA0K
