@@ -1,49 +1,49 @@
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EECB3D26B
-	for <linux-serial@vger.kernel.org>; Mon, 18 Dec 2023 07:31:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98E4B79F8
+	for <linux-serial@vger.kernel.org>; Mon, 18 Dec 2023 07:33:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="arhB13OT"
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-50e3c6f1c10so301808e87.1
-        for <linux-serial@vger.kernel.org>; Sun, 17 Dec 2023 23:31:50 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="uexwGawI"
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-54c77e0835bso3178494a12.2
+        for <linux-serial@vger.kernel.org>; Sun, 17 Dec 2023 23:33:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702884709; x=1703489509; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1702884795; x=1703489595; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=yBwdPWqcTKBElzhgdRRdv0i5FIzvRhmZEQbdFF/25NE=;
-        b=arhB13OTfwfUrAAnRts4xISZQuhNoV5zNQ1kkgfS+aM6ybeQiHhjj+gZayxwTG65V/
-         hXWlh3XcJM4Q1YYc7sn+zGfUnVN7KIAMoIcfz8h/oTPA5099AaTKMGQRR5Pmq22QLhdi
-         BkSh6vA8aatcOr7R0lkA3OI/13pdBGGoKvX97ERev5Cw0OYo8iLb6OUc52+msV4JFuoo
-         UV/8gnaqg6umW43cphLIsaCibLB98lC3I4OBhE6EL0s5MDapaW6GDCtWuG1I4qiwmF/M
-         NnpcYetKig72iarvEQBwL78OzVmTLBP2VX5wbMZLjw6Ra8eSctlLChXmquLFN9pZ8Ds1
-         lsqA==
+        bh=Rphfm1orlEP9f+gtS1hXYi9pK8ccTsSPaPCdCV026H4=;
+        b=uexwGawIg4WVzSrPwq/GwSz2iwlrJHqTAKxWd8R2K5WauAlWoSsGpsAj3U1KzGmBim
+         rSPX0Zc7TSVZx/oG0OGgPuKHs6ib3vWEqIUFFnPR8PkDf78zCDDBWauOM4UUO6SQUcnW
+         83l4BcM3jTlTdILK2eqai+KBB202ESsbg9xnsmGy/ZARdhDL1XEfQGiGw4SEwglgAPna
+         RWLmhIQu6aDd8QAL37Iqun6rGeTPQwpS6Z/y0hMC36BbtIV5g6sTugsYcSmjZglXFZLX
+         Z/yLRs4PrB8xIuTWjp92NzYFkU02bBLg63HuyYArksgRRHLDd9gtU+CMDlyDqTgqWr0K
+         1tlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702884709; x=1703489509;
+        d=1e100.net; s=20230601; t=1702884795; x=1703489595;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=yBwdPWqcTKBElzhgdRRdv0i5FIzvRhmZEQbdFF/25NE=;
-        b=kGVIfxo3WlLFT/gajz5kRzh2j3nXe4Tfsu+FnhdTOYSyzhVcB6etnkCbRTPfVo4KAR
-         WMDj8hMajNnhBK6khVkUV0VufvtRfjg1DqpgC0eWV7M1t5EtRW4jT6ZAr7x9HeZpczTE
-         0FM3FeES9irLiNNLyZhhSFldjkWd9r4/Kw2knezBKD0KJoxTgGpdTPdbaRg6M3QzHWMY
-         mbAVP45o8pGPMQrAvWYobzrCoCam9R/1QK9GMo239KzhmY/4+hknDxjhF61Nb3227RRo
-         Mc+5hVtj6jE4QDjXjZIJP8o6nnAJqp7654HncmdhccA3Th5Y0w/6QClRpkAyJ8LgvE5S
-         eV0A==
-X-Gm-Message-State: AOJu0YxijX5zeiVFrifi1YyOIF/17azmOE5Cjo34eTkJ4IuOrT450AsS
-	teBB4sKAhNBnvrhzTusibk+pag==
-X-Google-Smtp-Source: AGHT+IFwd0aBXMfS4tLFFGWWhRny9uOuy4K40Kg7MSMOK/R06V12KHQiJN7mfk2DL/NgMoOBme4+lA==
-X-Received: by 2002:a2e:b80d:0:b0:2cc:3f53:c9cd with SMTP id u13-20020a2eb80d000000b002cc3f53c9cdmr1120892ljo.128.1702884708994;
-        Sun, 17 Dec 2023 23:31:48 -0800 (PST)
+        bh=Rphfm1orlEP9f+gtS1hXYi9pK8ccTsSPaPCdCV026H4=;
+        b=QDJpXbuFt4WL5z0gBtoQPEdKnULOcmMrOTuPCveMqRYbvtkxueu/ryAEAxd6tK/8+a
+         bgweqsk4cu9TIy0r67sVO2HKh9KReMBwpqnIJq8cy7W+9eRGtiAFhWJjgdZTzd5tmFhr
+         nO8dTTolD6D8IQ9VNKHly+UEWnrxIVKp63Yiuomtnnrc0dQCLETmYaFprFE+ibTYSHLJ
+         H7LgN7nNceRRF/WZ0gPcYeJi9Yfi1Kynp0MENcMFOuC/jvNRWe1v43VB++DKF2r9YPUE
+         PYa643K3xP7+TB5CNWaonq43Ayg+Ygms9YxkvCMD00XNO5rxJMuY7KNxV9LOHZkEvN9b
+         aojQ==
+X-Gm-Message-State: AOJu0YyRO1oa+mawdq13JJ0W8QkP3qYQPo+fyhHAx4Jl3h8KVnhzeyTm
+	T8RjrTObXFpjddjAhjesQIajRg==
+X-Google-Smtp-Source: AGHT+IEAAi+t9n0lMb85+N+MYAjPdSFUyd+HGBn6iJdQkVfc72ZDBhQXsCpv3FB8y4gcqgQNYM12Og==
+X-Received: by 2002:a50:cc99:0:b0:553:1681:2ad0 with SMTP id q25-20020a50cc99000000b0055316812ad0mr1733346edi.25.1702884794887;
+        Sun, 17 Dec 2023 23:33:14 -0800 (PST)
 Received: from [192.168.1.20] ([178.197.218.27])
-        by smtp.gmail.com with ESMTPSA id g6-20020a056402320600b00553463827a8sm911434eda.87.2023.12.17.23.31.47
+        by smtp.gmail.com with ESMTPSA id g6-20020a056402320600b00553463827a8sm911434eda.87.2023.12.17.23.33.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 17 Dec 2023 23:31:48 -0800 (PST)
-Message-ID: <7ea2e47a-59fe-43ff-89ae-4a870c754e2f@linaro.org>
-Date: Mon, 18 Dec 2023 08:31:46 +0100
+        Sun, 17 Dec 2023 23:33:13 -0800 (PST)
+Message-ID: <80857879-dd3c-4abb-a479-6b703fb53080@linaro.org>
+Date: Mon, 18 Dec 2023 08:33:12 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -51,21 +51,17 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/4] arm64: dts: sprd: Add support for Unisoc's UMS9620
+Subject: Re: [PATCH 0/4] Add DTS and bindings for Unisoc's UMS9620
 Content-Language: en-US
-To: Chunyan Zhang <zhang.lyra@gmail.com>
-Cc: Chunyan Zhang <chunyan.zhang@unisoc.com>, Rob Herring
+To: Chunyan Zhang <chunyan.zhang@unisoc.com>, Rob Herring
  <robh+dt@kernel.org>, Krzysztof Kozlowski
  <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>,
- Lee Jones <lee@kernel.org>, devicetree@vger.kernel.org,
- linux-serial@vger.kernel.org, Baolin Wang <baolin.wang@linux.alibaba.com>,
- Orson Zhai <orsonzhai@gmail.com>, LKML <linux-kernel@vger.kernel.org>
+ Lee Jones <lee@kernel.org>
+Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+ Baolin Wang <baolin.wang@linux.alibaba.com>, Orson Zhai
+ <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
+ LKML <linux-kernel@vger.kernel.org>
 References: <20231215085630.984892-1-chunyan.zhang@unisoc.com>
- <20231215085630.984892-5-chunyan.zhang@unisoc.com>
- <fd927698-6aa3-4a6b-988c-fc82663235ca@linaro.org>
- <CAAfSe-tTvxLCAdSCCgEw8HMFaVVfOytoowY_Fb2F0H-vo+cCmA@mail.gmail.com>
- <4faf78f5-5e57-44a1-8fdd-7b6a33b0bd19@linaro.org>
- <CAAfSe-teE0RnC9fNtEP4dW3d94ud7pxF4wAB71FLik65HjatNQ@mail.gmail.com>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -111,43 +107,17 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <CAAfSe-teE0RnC9fNtEP4dW3d94ud7pxF4wAB71FLik65HjatNQ@mail.gmail.com>
+In-Reply-To: <20231215085630.984892-1-chunyan.zhang@unisoc.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 18/12/2023 08:18, Chunyan Zhang wrote:
-> On Mon, 18 Dec 2023 at 15:00, Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
->>
->> On 18/12/2023 03:31, Chunyan Zhang wrote:
->>> On Fri, 15 Dec 2023 at 18:36, Krzysztof Kozlowski
->>> <krzysztof.kozlowski@linaro.org> wrote:
->>>>
->>>> On 15/12/2023 09:56, Chunyan Zhang wrote:
->>>>> Add basic support for Unisoc's UMS9620, with this patch,
->>>>> the board ums9620-2h10 can run into console.
->>>>>
->>>>
->>>> ...
->>>>
->>>>> +
->>>>> +     soc: soc {
->>>>
->>>> Are you sure you do not have here W=1 warnings?
->>>
->>> Do you mean warnings generated by running "make W=1"? I tried just now
->>> and didn't see warnings on this dts.
->>
->> No, I meant `dtbs_check W=1` or W=1 coming from dtc (dtbs).
+On 15/12/2023 09:56, Chunyan Zhang wrote:
+> Add a basic DTS for UMS9620 SoC and UMS9620-2H10 board, with this patchset
+> the board can run into console.
 > 
-> Yes, I just run "make W=1 dtbs",  also have tried `dtbs_check W=1`,
-> didn't see warnings on ums9620-2h10.dtb
 
-Ah, because it does not even compile!
-
-ums9620.dtsi:8:10: fatal error: dt-bindings/clock/sprd,ums9620-clk.h: No
-such file or directory
-
+This was never tested and never built on the upstream kernel. Please
+work on upstream, not on downstream fork.
 
 Best regards,
 Krzysztof
