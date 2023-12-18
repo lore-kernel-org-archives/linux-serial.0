@@ -1,20 +1,20 @@
 Received: from SHSQR01.spreadtrum.com (mx1.unisoc.com [222.66.158.135])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A4E3134B6;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45890134C1;
 	Mon, 18 Dec 2023 10:04:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unisoc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=unisoc.com
 Received: from dlp.unisoc.com ([10.29.3.86])
-	by SHSQR01.spreadtrum.com with ESMTP id 3BIA3LuS071052;
-	Mon, 18 Dec 2023 18:03:21 +0800 (+08)
+	by SHSQR01.spreadtrum.com with ESMTP id 3BIA3Mj0071114;
+	Mon, 18 Dec 2023 18:03:22 +0800 (+08)
 	(envelope-from Chunyan.Zhang@unisoc.com)
 Received: from SHDLP.spreadtrum.com (bjmbx02.spreadtrum.com [10.0.64.8])
-	by dlp.unisoc.com (SkyGuard) with ESMTPS id 4StwGZ03Pwz2Pj8Dm;
-	Mon, 18 Dec 2023 17:57:09 +0800 (CST)
+	by dlp.unisoc.com (SkyGuard) with ESMTPS id 4StwGb0q0Jz2Pj8FH;
+	Mon, 18 Dec 2023 17:57:11 +0800 (CST)
 Received: from ubt.spreadtrum.com (10.0.73.88) by BJMBX02.spreadtrum.com
  (10.0.64.8) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Mon, 18 Dec
- 2023 18:03:19 +0800
+ 2023 18:03:20 +0800
 From: Chunyan Zhang <chunyan.zhang@unisoc.com>
 To: Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski
@@ -29,10 +29,12 @@ CC: <devicetree@vger.kernel.org>, <linux-serial@vger.kernel.org>,
  Zhang <chunyan.zhang@unisoc.com>,
         LKML <linux-kernel@vger.kernel.org>,
         Chunyan Zhang <zhang.lyra@gmail.com>
-Subject: [PATCH V2 0/3] Add DTS and bindings for Unisoc's UMS9620
-Date: Mon, 18 Dec 2023 18:02:31 +0800
-Message-ID: <20231218100234.1102916-1-chunyan.zhang@unisoc.com>
+Subject: [PATCH V2 1/3] dt-bindings: mfd: sprd: Add support for UMS9620
+Date: Mon, 18 Dec 2023 18:02:32 +0800
+Message-ID: <20231218100234.1102916-2-chunyan.zhang@unisoc.com>
 X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20231218100234.1102916-1-chunyan.zhang@unisoc.com>
+References: <20231218100234.1102916-1-chunyan.zhang@unisoc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -43,31 +45,32 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: SHCAS03.spreadtrum.com (10.0.1.207) To
  BJMBX02.spreadtrum.com (10.0.64.8)
-X-MAIL:SHSQR01.spreadtrum.com 3BIA3LuS071052
+X-MAIL:SHSQR01.spreadtrum.com 3BIA3Mj0071114
 
-Add a basic DTS for UMS9620 SoC and UMS9620-2H10 board, with this patchset
-the board can run into console.
+Add bindings for Unisoc UMS9620 system global registers which provide
+register maps for clocks.
 
-V2:
-- Added Acked-by from Krzysztof Kozlowski for patch 1-2;
-- Fixed compile error reported by kernel test robot;
-- Moved 'ranges' up to following the compatible string for 'soc' and 'apb' nodes;
-- Removed 'ranges' from 'gic' node, since it seems not used for now.
+Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Chunyan Zhang (3):
-  dt-bindings: mfd: sprd: Add support for UMS9620
-  dt-bindings: arm: Add compatible strings for Unisoc's UMS9620
-  arm64: dts: sprd: Add support for Unisoc's UMS9620
-
- .../devicetree/bindings/arm/sprd/sprd.yaml    |   5 +
- .../bindings/mfd/sprd,ums512-glbreg.yaml      |   4 +-
- arch/arm64/boot/dts/sprd/Makefile             |   3 +-
- arch/arm64/boot/dts/sprd/ums9620-2h10.dts     |  38 +++
- arch/arm64/boot/dts/sprd/ums9620.dtsi         | 245 ++++++++++++++++++
- 5 files changed, 293 insertions(+), 2 deletions(-)
- create mode 100644 arch/arm64/boot/dts/sprd/ums9620-2h10.dts
- create mode 100644 arch/arm64/boot/dts/sprd/ums9620.dtsi
-
+diff --git a/Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml b/Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml
+index 996bd4a17ca3..a750fa23d7e7 100644
+--- a/Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml
++++ b/Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml
+@@ -19,7 +19,9 @@ description:
+ properties:
+   compatible:
+     items:
+-      - const: sprd,ums512-glbregs
++      - enum:
++          - sprd,ums512-glbregs
++          - sprd,ums9620-glbregs
+       - const: syscon
+       - const: simple-mfd
+ 
 -- 
 2.41.0
 
