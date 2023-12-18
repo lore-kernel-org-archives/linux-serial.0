@@ -1,155 +1,88 @@
-Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5B3CF9C1;
-	Mon, 18 Dec 2023 07:14:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=atomide.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3B7879D9;
+	Mon, 18 Dec 2023 07:19:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="ndXogUuI"
-Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id D2F55603E6;
-	Mon, 18 Dec 2023 07:14:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1702883696;
-	bh=uFBmtVSwmPLt0wPwCU7cDBhUtKLWh7AsC+S0n1T9l/Y=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ndXogUuI9gQ7MSv6nnSm1nCRDOfn6//M3fDHZ9Es31/TLhdgyzB+yBP6CQCIZkIu+
-	 XBth8x4UXUpkjKSP7L8cIqrasBtGg4Lq4j4sPBBeHkCb3v9QDJNQQcH4+0cUxAla0T
-	 roX1oaGQTsKMmAj684PhtrcVk6PyqNC0W7j0HEnvQVRS5axIPycRcev3wMw1W8CGVw
-	 q7/zLsBaAq8+fJ6o9vKHvVJDZxhnpO+HJoN/Bz+xpgRwmJOAnb9fnhUGk/avqMzrjb
-	 bCZtBNopPhwfWTqLwHvKOgtS6nomMifunZQLFHgT5Z6dJPPnMLGflp3Pu6NP2J7V24
-	 3x8UttRCCFxFQ==
-From: Tony Lindgren <tony@atomide.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc: "David S . Miller" <davem@davemloft.net>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Dhruva Gole <d-gole@ti.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Vignesh Raghavendra <vigneshr@ti.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [RFC PATCH v5 6/6] serial: 8250: Add preferred console in serial8250_isa_init_ports()
-Date: Mon, 18 Dec 2023 09:09:53 +0200
-Message-ID: <20231218071020.21805-7-tony@atomide.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20231218071020.21805-1-tony@atomide.com>
-References: <20231218071020.21805-1-tony@atomide.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JHiUM5Wg"
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-203d93b660aso33347fac.2;
+        Sun, 17 Dec 2023 23:19:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1702883952; x=1703488752; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=3psRlmXcavUjlawnzU62rR1l9UyH9mO8Qc/nCsa+TC4=;
+        b=JHiUM5WglmgYZ/VMBmZDWfd1RKeqHtWM+C2X36sPXDbXywINZyHGl9H7yUyisZgis3
+         Y1L88aG7wLzjoeA3Sf0IAlnfKb+WxslSOiFBmpoL5MJDkQvLmc/ADNosFRTnmS8mhU9g
+         p8jPDs6WMYuobILDIcIuMnqPwSjGJ0Yx+ZDjox9OvyR8VewC4cpO4YF08CQzNzAueqhL
+         yTgZ82msm2WgPqSWgOmGp2Xv5HPNR9NBHx1SLI1cAogXRTB2Cs87iw/0s+g7Y4BDOtqy
+         qvxxE+n8LPt99xcR7V9LzTxCvO3+NRZog1QnGa3lRcKsJOy5KxK94FV88Dv7LdlXlHu3
+         UvQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702883952; x=1703488752;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3psRlmXcavUjlawnzU62rR1l9UyH9mO8Qc/nCsa+TC4=;
+        b=ihVPDolYhaQDBPyh5uLsX5Lk4dyuu+h4KEz5PIALM6I4lopUloUiA5pEN9lXHTzVsJ
+         3M8IKRry1f4x8HnZW6dsjTm667zqlmUal9cV6e+eKc9di3Qqj7hZOivjdzUv8/HxGneO
+         PutWvGgX/OYCCgXWSXYEqibaa/NfcIsuqNyM9es5PJtzI5Vqux37z3msrTweQ5Pcp0Ie
+         cB+1xw8K2x5lokxzIrweBrBCzwu+hWAbs0UH1o1R20FE4CdYmBLAQLELz2AM4eN3oJvz
+         6uvwuaOxXexHzLgZPxeVlErkUslGggpPqT7Q7nGljdHnYRPBULq6XkDaltuDH6L2DMLC
+         FH9w==
+X-Gm-Message-State: AOJu0Yxz1e54xIKzvcbi2aG5SGj8ZfFL755ziZ5N7RKF02urdeKOLSrb
+	uIRtugKRM3KKtmXguKrG1cEAiA0cv4AC8+/fD4qAknitheM=
+X-Google-Smtp-Source: AGHT+IHti2eGyJH4puKkOt7wvA/AKXJF3FpMvcLaivZ9rYJ7DdoRzEecd7zK8SGMMIjEj2JJuOHgbrlidVWxswhLuRs=
+X-Received: by 2002:a05:6871:5a05:b0:1fb:75a:77bb with SMTP id
+ on5-20020a0568715a0500b001fb075a77bbmr15703452oac.108.1702883952076; Sun, 17
+ Dec 2023 23:19:12 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20231215085630.984892-1-chunyan.zhang@unisoc.com>
+ <20231215085630.984892-5-chunyan.zhang@unisoc.com> <fd927698-6aa3-4a6b-988c-fc82663235ca@linaro.org>
+ <CAAfSe-tTvxLCAdSCCgEw8HMFaVVfOytoowY_Fb2F0H-vo+cCmA@mail.gmail.com> <4faf78f5-5e57-44a1-8fdd-7b6a33b0bd19@linaro.org>
+In-Reply-To: <4faf78f5-5e57-44a1-8fdd-7b6a33b0bd19@linaro.org>
+From: Chunyan Zhang <zhang.lyra@gmail.com>
+Date: Mon, 18 Dec 2023 15:18:35 +0800
+Message-ID: <CAAfSe-teE0RnC9fNtEP4dW3d94ud7pxF4wAB71FLik65HjatNQ@mail.gmail.com>
+Subject: Re: [PATCH 4/4] arm64: dts: sprd: Add support for Unisoc's UMS9620
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Chunyan Zhang <chunyan.zhang@unisoc.com>, Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Lee Jones <lee@kernel.org>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, 
+	Baolin Wang <baolin.wang@linux.alibaba.com>, Orson Zhai <orsonzhai@gmail.com>, 
+	LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-Prepare 8250 ISA ports to drop kernel command line serial console
-handling from console_setup().
+On Mon, 18 Dec 2023 at 15:00, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 18/12/2023 03:31, Chunyan Zhang wrote:
+> > On Fri, 15 Dec 2023 at 18:36, Krzysztof Kozlowski
+> > <krzysztof.kozlowski@linaro.org> wrote:
+> >>
+> >> On 15/12/2023 09:56, Chunyan Zhang wrote:
+> >>> Add basic support for Unisoc's UMS9620, with this patch,
+> >>> the board ums9620-2h10 can run into console.
+> >>>
+> >>
+> >> ...
+> >>
+> >>> +
+> >>> +     soc: soc {
+> >>
+> >> Are you sure you do not have here W=1 warnings?
+> >
+> > Do you mean warnings generated by running "make W=1"? I tried just now
+> > and didn't see warnings on this dts.
+>
+> No, I meant `dtbs_check W=1` or W=1 coming from dtc (dtbs).
 
-We need to set the preferred console in serial8250_isa_init_ports()
-to drop a dependency to setup_console() handling the ttyS related
-quirks. Otherwise when console_setup() handles the ttyS related
-options, console gets enabled only at driver probe time.
-
-Note that this mostly affects x86 as this happens based on define
-SERIAL_PORT_DFNS.
-
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/serial/8250/8250_core.c  |  5 +++++
- drivers/tty/serial/serial_base.h     |  8 ++++++++
- drivers/tty/serial/serial_base_bus.c | 21 +++++++++++++++++++++
- 3 files changed, 34 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -15,6 +15,7 @@
-  */
- 
- #include <linux/acpi.h>
-+#include <linux/cleanup.h>
- #include <linux/module.h>
- #include <linux/moduleparam.h>
- #include <linux/ioport.h>
-@@ -41,6 +42,8 @@
- 
- #include <asm/irq.h>
- 
-+#include "../serial_base.h"	/* For serial_base_add_isa_preferred_console() */
-+
- #include "8250.h"
- 
- /*
-@@ -563,6 +566,8 @@ static void __init serial8250_isa_init_ports(void)
- 		port->irqflags |= irqflag;
- 		if (serial8250_isa_config != NULL)
- 			serial8250_isa_config(i, &up->port, &up->capabilities);
-+
-+		serial_base_add_isa_preferred_console(serial8250_reg.dev_name, i);
- 	}
- }
- 
-diff --git a/drivers/tty/serial/serial_base.h b/drivers/tty/serial/serial_base.h
---- a/drivers/tty/serial/serial_base.h
-+++ b/drivers/tty/serial/serial_base.h
-@@ -51,6 +51,8 @@ void serial_core_unregister_port(struct uart_driver *drv, struct uart_port *port
- int serial_base_add_preferred_console(struct uart_driver *drv,
- 				      struct uart_port *port);
- 
-+int serial_base_add_isa_preferred_console(const char *name, int idx);
-+
- #else
- 
- static inline
-@@ -60,4 +62,10 @@ int serial_base_add_preferred_console(struct uart_driver *drv,
- 	return 0;
- }
- 
-+static inline
-+int serial_base_add_isa_preferred_console(const char *name, int idx)
-+{
-+	return 0;
-+}
-+
- #endif
-diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
---- a/drivers/tty/serial/serial_base_bus.c
-+++ b/drivers/tty/serial/serial_base_bus.c
-@@ -317,6 +317,27 @@ int serial_base_add_preferred_console(struct uart_driver *drv,
- 	return serial_base_add_one_prefcon(port_match, drv->dev_name, port->line);
- }
- 
-+#ifdef CONFIG_SERIAL_8250_CONSOLE
-+
-+/*
-+ * Early ISA ports initialize the console before there is no struct device.
-+ * This should be only called from serial8250_isa_init_preferred_console(),
-+ * other callers are likely wrong and should rely on earlycon instead.
-+ */
-+int serial_base_add_isa_preferred_console(const char *name, int idx)
-+{
-+	return serial_base_add_prefcon(name, idx);
-+}
-+
-+#else
-+
-+int serial_base_add_isa_preferred_console(const char *name, int idx)
-+{
-+	return 0;
-+}
-+
-+#endif
-+
- #endif
- 
- static int serial_base_init(void)
--- 
-2.43.0
+Yes, I just run "make W=1 dtbs",  also have tried `dtbs_check W=1`,
+didn't see warnings on ums9620-2h10.dtb
