@@ -1,168 +1,106 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3288A8473
-	for <linux-serial@vger.kernel.org>; Mon, 18 Dec 2023 07:34:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=amarulasolutions.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amarulasolutions.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC33A846E;
+	Mon, 18 Dec 2023 07:38:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amarulasolutions.com header.i=@amarulasolutions.com header.b="AgvoPYHr"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-40c39e936b4so30880325e9.1
-        for <linux-serial@vger.kernel.org>; Sun, 17 Dec 2023 23:34:11 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jl0cXgaq"
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-2035a859803so1520989fac.3;
+        Sun, 17 Dec 2023 23:38:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google; t=1702884850; x=1703489650; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=olULgM359/ngO2eLxqKPg4Bd8lNvjNS8Vgzy23+KEiE=;
-        b=AgvoPYHrHZ1vwVPdVvS6UCVHUpZLXfiMiO91VM1whJH428dEaey1kDI8UttJLpVDF8
-         pJFVPvRG6zKThT4wK+pDeWPV2uyjtHITEFtVQAgWGuZIxUc86A3CiEH+2lzyqQYXtz9f
-         M/VcVfs1QR0BJGvGkxFpjlW66FQR8hZnbr7Cw=
+        d=gmail.com; s=20230601; t=1702885098; x=1703489898; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=aXLGxOatVHCtqRMm8lcqO/1yuZWSRr6aLnE/LcBt2pY=;
+        b=Jl0cXgaqbi0CrFc+FUm/czcfc7rqu5gtfEvU5YiKA2yMf4+99gdt6CNVcjhPbJhyVI
+         +m3iZHxSsRCJCQ2mObJjdv31tlSQ9/CM4hIel7/+7yjOwf58YRL0JczSHjwhTdc/8tuO
+         LZ8r4r+qDcpPjFtNZ5SPYiR6LoBxfTYSq91uN9D6iHQ3Lf4lkKC8ao1Nk8/7gp2rpz/Q
+         bjvDNbqnAIVxrgxqJcK/Z5qVJgl6Sz4TMNi68VmAPh/l/DZbNxmsOMlKkssQB5l4b1XO
+         x2/VHOY64tPsXakt4UyPo2tzJuhsIFtwP1V3KOCL4qPsPVVDdxSH4A+Jgejb0NlOLWdK
+         zk+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702884850; x=1703489650;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=olULgM359/ngO2eLxqKPg4Bd8lNvjNS8Vgzy23+KEiE=;
-        b=Ab4g+r5q0aO58WoGDW61KkZHIKKreOI2JU5hHI6KiD3xIU3qy7rlSMHsuInAqttNkF
-         Vy2u32gqkHquzBCKfLTnISk+vdjoWoiNFq1XY0nVhFiTR8OSfn3ps1bl/3M72R3fewdi
-         LkerzKH3Jz0gN5zaugEl0iObvrk7EWS1Do4JhO4Yfu4XgRQgO/uCZ9vwEmpJP2rM/atv
-         baaVAuvOJ3OvWTMVdlbm3PD/hLAR8kJp4yfR4FyD3EFtXw/KQHrmSFSlvnonznDRaoN2
-         i+mLjihUTePnLE0xecykqVdjLYqdS56iaGaTNh4ZMenz45g6vN3mZZ98MWSEF5NBLdex
-         0ucg==
-X-Gm-Message-State: AOJu0Ywn4LJGdvlQfeZYd+aYRI6v8eJvv9N/6IvbzSukvvndoMBcpII7
-	FNsYIRPD2jhdzrBts8XpFqmKxsorr2CSA3vDgMaJp1ss
-X-Google-Smtp-Source: AGHT+IHC5jYHllOjb186unx3YfcDbKt7AIbFqpN8EjgWqZvjfYR4lwv1hDUQzlnE34dKvK9KzZNUBw==
-X-Received: by 2002:a7b:ca54:0:b0:40c:2db0:c803 with SMTP id m20-20020a7bca54000000b0040c2db0c803mr4103238wml.92.1702884850242;
-        Sun, 17 Dec 2023 23:34:10 -0800 (PST)
-Received: from panicking.QSD (net-91-81-8-146.cust.vodafonedsl.it. [91.81.8.146])
-        by smtp.gmail.com with ESMTPSA id iv19-20020a05600c549300b0040b397787d3sm37153199wmb.24.2023.12.17.23.34.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Dec 2023 23:34:09 -0800 (PST)
-From: Michael Trimarchi <michael@amarulasolutions.com>
-To: michael@amarulasolutions.com
-Cc: daniel.thompson@linaro.org,
-	dianders@chromium.org,
-	gregkh@linuxfoundation.org,
-	jason.wessel@windriver.com,
-	jirislaby@kernel.org,
-	kgdb-bugreport@lists.sourceforge.net,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH V2] tty: serial: kgdboc: Fix 8250_* kgd over serial
-Date: Mon, 18 Dec 2023 08:34:07 +0100
-Message-Id: <20231218073407.300982-1-michael@amarulasolutions.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20231216173409.1264655-1-michael@amarulasolutions.com>
-References: <20231216173409.1264655-1-michael@amarulasolutions.com>
+        d=1e100.net; s=20230601; t=1702885098; x=1703489898;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=aXLGxOatVHCtqRMm8lcqO/1yuZWSRr6aLnE/LcBt2pY=;
+        b=RFGk5CHH/B4IB4O69o1AKO7y5Y3SADK0tybLp9S7ntiaz8jed2mNHRsED6jNJdEV5N
+         YQyv+fxbaZiNnD3FDeMknjoAOs7n1NVECaU+pBSJNfeqjoAfENPuoWI3qwwKM83N28En
+         h5LPudHtTXNeabIYWvlkI79BjjfJbLMzVaj8p9+hWuKS5vHITpkBlYr6l1qQWDnVpIK6
+         kLbIv+Y3noV5SG5UK4hQKA3/qtr4iQmCsDlxOuS5JIJcH35K2iEUMpGK6xm566iOcSHq
+         VmHj9KVMs0hoCnXSjxmXdEFpN3cFRXt09Z5ldHD7Y6chXZzp8ybypYoF6dkYL09+a34T
+         47Pg==
+X-Gm-Message-State: AOJu0YxlXnBAd4d5RTOm8jtr4miLPMhBQ261AYZu81K7KfwMOx6YWr3x
+	sgw/wLMfgZmeWywjhPureijha6BEh5GiX9s9ev4=
+X-Google-Smtp-Source: AGHT+IEtCzylacwE+6dDhg45zIb7YKNnZO/L6m6ignluS9ypdbXWJm2hmwHaOOYBqj46JvGlzmn9HeOu56671/5FYSI=
+X-Received: by 2002:a05:6870:6714:b0:203:7923:bf6 with SMTP id
+ gb20-20020a056870671400b0020379230bf6mr5169547oab.14.1702885098038; Sun, 17
+ Dec 2023 23:38:18 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20231215085630.984892-1-chunyan.zhang@unisoc.com>
+ <20231215085630.984892-5-chunyan.zhang@unisoc.com> <fd927698-6aa3-4a6b-988c-fc82663235ca@linaro.org>
+ <CAAfSe-tTvxLCAdSCCgEw8HMFaVVfOytoowY_Fb2F0H-vo+cCmA@mail.gmail.com>
+ <4faf78f5-5e57-44a1-8fdd-7b6a33b0bd19@linaro.org> <CAAfSe-teE0RnC9fNtEP4dW3d94ud7pxF4wAB71FLik65HjatNQ@mail.gmail.com>
+ <7ea2e47a-59fe-43ff-89ae-4a870c754e2f@linaro.org>
+In-Reply-To: <7ea2e47a-59fe-43ff-89ae-4a870c754e2f@linaro.org>
+From: Chunyan Zhang <zhang.lyra@gmail.com>
+Date: Mon, 18 Dec 2023 15:37:41 +0800
+Message-ID: <CAAfSe-uAczP0AmQFF3=LmfhtZZ45h-BS1BJrPkNu0MgZkSGLBw@mail.gmail.com>
+Subject: Re: [PATCH 4/4] arm64: dts: sprd: Add support for Unisoc's UMS9620
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Chunyan Zhang <chunyan.zhang@unisoc.com>, Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Lee Jones <lee@kernel.org>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, 
+	Baolin Wang <baolin.wang@linux.alibaba.com>, Orson Zhai <orsonzhai@gmail.com>, 
+	LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-Check if port type is not PORT_UNKNOWN during poll_init.
-The kgdboc calls the tty_find_polling_driver that check
-if the serial is able to use poll_init. The poll_init calls
-the uart uart_poll_init that try to configure the uart with the
-selected boot parameters. The uart must be ready before setting
-parameters. Seems that PORT_UNKNOWN is already used by other
-functions in serial_core to detect uart status, so use the same
-to avoid to use it in invalid state.
+On Mon, 18 Dec 2023 at 15:31, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 18/12/2023 08:18, Chunyan Zhang wrote:
+> > On Mon, 18 Dec 2023 at 15:00, Krzysztof Kozlowski
+> > <krzysztof.kozlowski@linaro.org> wrote:
+> >>
+> >> On 18/12/2023 03:31, Chunyan Zhang wrote:
+> >>> On Fri, 15 Dec 2023 at 18:36, Krzysztof Kozlowski
+> >>> <krzysztof.kozlowski@linaro.org> wrote:
+> >>>>
+> >>>> On 15/12/2023 09:56, Chunyan Zhang wrote:
+> >>>>> Add basic support for Unisoc's UMS9620, with this patch,
+> >>>>> the board ums9620-2h10 can run into console.
+> >>>>>
+> >>>>
+> >>>> ...
+> >>>>
+> >>>>> +
+> >>>>> +     soc: soc {
+> >>>>
+> >>>> Are you sure you do not have here W=1 warnings?
+> >>>
+> >>> Do you mean warnings generated by running "make W=1"? I tried just now
+> >>> and didn't see warnings on this dts.
+> >>
+> >> No, I meant `dtbs_check W=1` or W=1 coming from dtc (dtbs).
+> >
+> > Yes, I just run "make W=1 dtbs",  also have tried `dtbs_check W=1`,
+> > didn't see warnings on ums9620-2h10.dtb
+>
+> Ah, because it does not even compile!
 
-The crash happen for instance in am62x architecture where the 8250
-register the platform driver after the 8250 core is initialized.
+The patch was generated from a middle commit (that was my mistake of course).
 
-Follow the report crash coming from KGDB
+But I've fixed the issue. I ran the command just now according to your
+comments, and didn't see the warnings on this dtb.
 
-Thread 2 received signal SIGSEGV, Segmentation fault.
-[Switching to Thread 1]
-_outb (addr=<optimized out>, value=<optimized out>) at ./include/asm-generic/io.h:584
-584		__raw_writeb(value, PCI_IOBASE + addr);
-(gdb) bt
+If I'm missing something, please correct me.
 
-This section of the code is too early because in this case
-the omap serial is not probed
-
-Thread 2 received signal SIGSEGV, Segmentation fault.
-[Switching to Thread 1]
-_outb (addr=<optimized out>, value=<optimized out>) at ./include/asm-generic/io.h:584
-584		__raw_writeb(value, PCI_IOBASE + addr);
-(gdb) bt
-
-Thread 2 received signal SIGSEGV, Segmentation fault.
-[Switching to Thread 1]
-_outb (addr=<optimized out>, value=<optimized out>) at ./include/asm-generic/io.h:584
-584		__raw_writeb(value, PCI_IOBASE + addr);
-(gdb) bt
-0  _outb (addr=<optimized out>, value=<optimized out>) at ./include/asm-generic/io.h:584
-1  logic_outb (value=0 '\000', addr=18446739675637874689) at lib/logic_pio.c:299
-2  0xffff80008082dfcc in io_serial_out (p=0x0, offset=16760830, value=0) at drivers/tty/serial/8250/8250_port.c:416
-3  0xffff80008082fe34 in serial_port_out (value=<optimized out>, offset=<optimized out>, up=<optimized out>)
-    at ./include/linux/serial_core.h:677
-4  serial8250_do_set_termios (port=0xffff8000828ee940 <serial8250_ports+1568>, termios=0xffff80008292b93c, old=0x0)
-    at drivers/tty/serial/8250/8250_port.c:2860
-5  0xffff800080830064 in serial8250_set_termios (port=0xfffffbfffe800000, termios=0xffbffe, old=0x0)
-    at drivers/tty/serial/8250/8250_port.c:2912
-6  0xffff80008082571c in uart_set_options (port=0xffff8000828ee940 <serial8250_ports+1568>, co=0x0, baud=115200, parity=110, bits=8, flow=110)
-    at drivers/tty/serial/serial_core.c:2285
-7  0xffff800080828434 in uart_poll_init (driver=0xfffffbfffe800000, line=16760830, options=0xffff8000828f7506 <config+6> "115200n8")
-    at drivers/tty/serial/serial_core.c:2656
-8  0xffff800080801690 in tty_find_polling_driver (name=0xffff8000828f7500 <config> "ttyS2,115200n8", line=0xffff80008292ba90)
-    at drivers/tty/tty_io.c:410
-9  0xffff80008086c0b0 in configure_kgdboc () at drivers/tty/serial/kgdboc.c:194
-10 0xffff80008086c1ec in kgdboc_probe (pdev=0xfffffbfffe800000) at drivers/tty/serial/kgdboc.c:249
-11 0xffff8000808b399c in platform_probe (_dev=0xffff000000ebb810) at drivers/base/platform.c:1404
-12 0xffff8000808b0b44 in call_driver_probe (drv=<optimized out>, dev=<optimized out>) at drivers/base/dd.c:579
-13 really_probe (dev=0xffff000000ebb810, drv=0xffff80008277f138 <kgdboc_platform_driver+48>) at drivers/base/dd.c:658
-14 0xffff8000808b0d2c in __driver_probe_device (drv=0xffff80008277f138 <kgdboc_platform_driver+48>, dev=0xffff000000ebb810)
-    at drivers/base/dd.c:800
-15 0xffff8000808b0eb8 in driver_probe_device (drv=0xfffffbfffe800000, dev=0xffff000000ebb810) at drivers/base/dd.c:830
-16 0xffff8000808b0ff4 in __device_attach_driver (drv=0xffff80008277f138 <kgdboc_platform_driver+48>, _data=0xffff80008292bc48)
-    at drivers/base/dd.c:958
-17 0xffff8000808ae970 in bus_for_each_drv (bus=0xfffffbfffe800000, start=0x0, data=0xffff80008292bc48,
-    fn=0xffff8000808b0f3c <__device_attach_driver>) at drivers/base/bus.c:457
-18 0xffff8000808b1408 in __device_attach (dev=0xffff000000ebb810, allow_async=true) at drivers/base/dd.c:1030
-19 0xffff8000808b16d8 in device_initial_probe (dev=0xfffffbfffe800000) at drivers/base/dd.c:1079
-20 0xffff8000808af9f4 in bus_probe_device (dev=0xffff000000ebb810) at drivers/base/bus.c:532
-21 0xffff8000808ac77c in device_add (dev=0xfffffbfffe800000) at drivers/base/core.c:3625
-22 0xffff8000808b3428 in platform_device_add (pdev=0xffff000000ebb800) at drivers/base/platform.c:716
-23 0xffff800081b5dc0c in init_kgdboc () at drivers/tty/serial/kgdboc.c:292
-24 0xffff800080014db0 in do_one_initcall (fn=0xffff800081b5dba4 <init_kgdboc>) at init/main.c:1236
-25 0xffff800081b0114c in do_initcall_level (command_line=<optimized out>, level=<optimized out>) at init/main.c:1298
-26 do_initcalls () at init/main.c:1314
-27 do_basic_setup () at init/main.c:1333
-28 kernel_init_freeable () at init/main.c:1551
-29 0xffff8000810271ec in kernel_init (unused=0xfffffbfffe800000) at init/main.c:1441
-30 0xffff800080015e80 in ret_from_fork () at arch/arm64/kernel/entry.S:857
-
-Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
----
-v1 -> v2:
-	- fix if condition during submission
-	- improve a bit the commit message
-RFC -> v1:
-        - refuse uart that has type PORT_UNKNOWN
-
----
- drivers/tty/serial/serial_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index f1348a509552..9b7ed4aac77a 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2633,7 +2633,7 @@ static int uart_poll_init(struct tty_driver *driver, int line, char *options)
- 	mutex_lock(&tport->mutex);
- 
- 	port = uart_port_check(state);
--	if (!port || !(port->ops->poll_get_char && port->ops->poll_put_char)) {
-+	if (!port || port->type == PORT_UNKNOWN || !(port->ops->poll_get_char && port->ops->poll_put_char)) {
- 		ret = -1;
- 		goto out;
- 	}
--- 
-2.40.1
-
+Thanks,
+Chunyan
