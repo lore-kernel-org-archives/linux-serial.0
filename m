@@ -1,97 +1,81 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27404481A0;
-	Sun, 17 Dec 2023 19:55:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEA083C0D;
+	Mon, 18 Dec 2023 02:32:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VL929++I"
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-50e389473fcso251559e87.2;
-        Sun, 17 Dec 2023 11:55:57 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WrncG6P/"
+Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-6da5250357fso2011402a34.2;
+        Sun, 17 Dec 2023 18:32:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1702842956; x=1703447756; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=YqwD9ZP1yBAmVRI8A0HzSQfZ9nKesVuzEsxqwxMz5Lw=;
-        b=VL929++IYGIMwrLkJpPskQUar2rs7SOE7A4p8pls1vCp8aHTg366+wwwdTINMXNpGP
-         ogOL8Z20azdHrbMIywp4X4Rf40JHwHau4rp6yKKyo9mmTZ8aGV5baR7eKCBjZXAsA5Yo
-         tDbxBK37QcGWoix3cBNiuw7ymVXpggRlNhJk0gatKUIWhxACNNTHLaiAo3Ys8jq1cTHu
-         F35p+Zu/YLr+n1O3jRkhgl/nz0V0KmDoF0/EJKxtYk/seWBx8GKldckZDkxWDUronhg/
-         Idv5yEfUYltY8kq8klVuicCTgUIhlsLZVj/zQLyjGUIpxgcg6JdRru6J3McBj6Dv3V9t
-         HcQQ==
+        d=gmail.com; s=20230601; t=1702866730; x=1703471530; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=7iDfR9gqFIKBbwdorWXDs6zFQNPE6rkq2OxXyUMYp7M=;
+        b=WrncG6P/Rest1mGeNd4zZtfe99ZDu1ot77FuOxU8rKR8Ho3gFlFO+8oixILet+SPRO
+         KmPAX6ZiI4DmpxJXSzyNmI+RL7YwLgOMmyDMSrnkiXCGpn3bvWrXOdocAu0+9nSBzb73
+         Vdd+UaA7ZF1/BKvliPYDb12E8M+XJfvJeilCaHcbcasl59Ezoco+xbYenOEfIsCAYu9M
+         ES7DNR1/nqM+AZLo8qQK0Bn00CjGz10p05u9KSYe88ZsJci48ZyxLN8cyeGpX0wUR4UM
+         Fig36NjmFsH3PuL4Y36uOc/JxhtYTq714UYjgH5PVj5EXx7tKfYTB+i3ztq/ci0SBPKO
+         AlHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702842956; x=1703447756;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20230601; t=1702866730; x=1703471530;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=YqwD9ZP1yBAmVRI8A0HzSQfZ9nKesVuzEsxqwxMz5Lw=;
-        b=AiQnsNiU9NVbcUT9Yo8Aby/xuP7wzpzzTG6zzPY54jPtmL1TvS8W7Oto1BJRnOndef
-         8mrQwR2cNG1tfBJTqdMhbd23dGrytoJ4dvYeJaPLTZ9l0ECzca9D1o4ZFjj3r/kx8ZTp
-         UPM8NtxJmYAZ/wKD98R+fcTJgyc7RAg0khNucBzWbq+PPIk/UzoDgnW2YD/xyQo/o8A9
-         TiEJKsDkIBF+c95PjsLEVFM1sKd+b/PYv8E+xd4ryNoLQQw2opDt96bL+UxI8T5jmQ2C
-         kyIlVfNhtR4MzbLOYafY7ZxaxjSpzcuKMHOiAmcK6cXUD0GV7xzhtsx2vOdlT9R0DVfd
-         gCHw==
-X-Gm-Message-State: AOJu0YyPCfdNKeKFVOFdqWRU2Ua0CAN2Eqlm51degeLBff+VHKoL499h
-	tg3zKuHPQN6sk+OFCsNuZSwFj28OZW0=
-X-Google-Smtp-Source: AGHT+IEVfKEALqPMNDPPxJZC/BFAW8UVFhZbPGl2/HFfv/89yQnH02j5RYLgyu6+BJ2fs2KUeepdyw==
-X-Received: by 2002:a05:6512:33c7:b0:50e:1ed9:cb41 with SMTP id d7-20020a05651233c700b0050e1ed9cb41mr2098057lfg.35.1702842955932;
-        Sun, 17 Dec 2023 11:55:55 -0800 (PST)
-Received: from cinco.. (109-252-3-142.nat.spd-mgts.ru. [109.252.3.142])
-        by smtp.gmail.com with ESMTPSA id o11-20020ac24bcb000000b0050d1672f104sm2630426lfq.173.2023.12.17.11.55.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Dec 2023 11:55:55 -0800 (PST)
-From: Antony Pavlov <antonynpavlov@gmail.com>
-To: Tobias Klauser <tklauser@distanz.ch>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Antony Pavlov <antonynpavlov@gmail.com>
-Subject: [PATCH] tty/serial: altera_uart: use more informative labels in /proc/interrupts
-Date: Sun, 17 Dec 2023 22:56:01 +0300
-Message-Id: <20231217195601.236002-1-antonynpavlov@gmail.com>
-X-Mailer: git-send-email 2.39.0
+        bh=7iDfR9gqFIKBbwdorWXDs6zFQNPE6rkq2OxXyUMYp7M=;
+        b=HnkxBLCkJm5g7zUT+ONoCr0sOUgx42e7CdSJmRE2BwxChDN58nOsqxr71NbhjoR4w7
+         sGCDWJWkGeiiI3ga+YUt5JmHamMSDipzZGOCWryq1kxUa9odLP0KXHcYUKd5/Wra2ErB
+         mLhMzwkHnEufUE/qIynqYpWidz/O2nTjZUdV+AOpFhYExVAbz2W746Ei9P8oGW4eOMCf
+         lRvbN63ilixtBT3A0BFQeW18I/rUsK7lS3i05lQv+0f/Eso76SP+dVhOUjiUICvM+V4F
+         ixDIPHc/6HKvNTGwX2pMDfziQ+CuhHzhodcTrGVKu9PuWEmBi2Z27dlwPjNc1+q9HndS
+         kDng==
+X-Gm-Message-State: AOJu0YzaFMJl86m+pnAR7JKaYbLKdIKD/ED8kiAEr10uD1PBGsxNxb4i
+	E/5u0+4AWCYziMmq4z4Gov/0Xpds7e8L6e6wPss=
+X-Google-Smtp-Source: AGHT+IG5XXaO//tvIR0OZSVEnw/470w5MK5XqgQhMl5oKfv07MK3HF1Zmh0u+AwTIrnDSA3v9WKJcQBK94g6Am/kMMk=
+X-Received: by 2002:a05:6870:c18c:b0:203:56b9:7eba with SMTP id
+ h12-20020a056870c18c00b0020356b97ebamr7866919oad.36.1702866730099; Sun, 17
+ Dec 2023 18:32:10 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20231215085630.984892-1-chunyan.zhang@unisoc.com>
+ <20231215085630.984892-5-chunyan.zhang@unisoc.com> <fd927698-6aa3-4a6b-988c-fc82663235ca@linaro.org>
+In-Reply-To: <fd927698-6aa3-4a6b-988c-fc82663235ca@linaro.org>
+From: Chunyan Zhang <zhang.lyra@gmail.com>
+Date: Mon, 18 Dec 2023 10:31:33 +0800
+Message-ID: <CAAfSe-tTvxLCAdSCCgEw8HMFaVVfOytoowY_Fb2F0H-vo+cCmA@mail.gmail.com>
+Subject: Re: [PATCH 4/4] arm64: dts: sprd: Add support for Unisoc's UMS9620
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Chunyan Zhang <chunyan.zhang@unisoc.com>, Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Lee Jones <lee@kernel.org>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, 
+	Baolin Wang <baolin.wang@linux.alibaba.com>, Orson Zhai <orsonzhai@gmail.com>, 
+	LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-Prior to this patch:
+On Fri, 15 Dec 2023 at 18:36, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 15/12/2023 09:56, Chunyan Zhang wrote:
+> > Add basic support for Unisoc's UMS9620, with this patch,
+> > the board ums9620-2h10 can run into console.
+> >
+>
+> ...
+>
+> > +
+> > +     soc: soc {
+>
+> Are you sure you do not have here W=1 warnings?
 
-~# cat /proc/interrupts
-...
- 40:        123          0     GIC-0  72 Level     altera_uart
- 41:          9          0     GIC-0  73 Level     altera_uart
+Do you mean warnings generated by running "make W=1"? I tried just now
+and didn't see warnings on this dts.
 
-After this patch:
-
-~# cat /proc/interrupts
-...
- 40:          6          0     GIC-0  72 Level     ff200100.fpga-uart0
- 41:         28          0     GIC-0  73 Level     ff200200.fpga-uart1
-
-Signed-off-by: Antony Pavlov <antonynpavlov@gmail.com>
----
- drivers/tty/serial/altera_uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
-index 77835ac68df26..7e28928e58787 100644
---- a/drivers/tty/serial/altera_uart.c
-+++ b/drivers/tty/serial/altera_uart.c
-@@ -305,7 +305,7 @@ static int altera_uart_startup(struct uart_port *port)
- 		int ret;
- 
- 		ret = request_irq(port->irq, altera_uart_interrupt, 0,
--				DRV_NAME, port);
-+				dev_name(port->dev), port);
- 		if (ret) {
- 			pr_err(DRV_NAME ": unable to attach Altera UART %d "
- 			       "interrupt vector=%d\n", port->line, port->irq);
--- 
-2.39.0
-
+Thanks,
+Chunyan
