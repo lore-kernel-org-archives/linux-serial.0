@@ -1,22 +1,22 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AE98374C8;
-	Tue, 19 Dec 2023 17:19:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E980221364;
+	Tue, 19 Dec 2023 17:19:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="m1RSSwty"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="BeZkUDmS"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=nLa/JOHCB+NVf/gTGPWED+N7sittkLrVaca+Po1a3K0=; b=m1RSSwtyeAOGky3TxFfrc8rLA+
-	K5+uM+NJIpBbnGXzBzZj4mCBq399To/bKfEmq+fsRq9TlOOUlfs55JhZp3OBkCiAFyrWEYw5/ex7O
-	Stubz5czDs9H+wtPhaMONys+sZtN1LhhEo+kUNg6okf8enQiLuznpul5GFgEDkWFX0W4=;
+	bh=KcYNp1sWTrGWiUqu1nyxva4KTAsY45l/5TWJVZ84DbE=; b=BeZkUDmS0Qlg0Xyvi2r+RDaD9N
+	GfZJ7MuTv4qhQJwQpz+ywqURzyObSUnrDTmKZzJwjjkoASxaFny29IIrF2XrHRXAV3PQmHJ66TLtD
+	7HqLnLjfVu0bxFD/5k4ax4Ot23PNzrdHRMLj1IapmfMJafO+wlXEk2Jju+fbPhPQVmos=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:40128 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rFdkZ-0007Ao-8V; Tue, 19 Dec 2023 12:19:23 -0500
+	id 1rFdkb-0007Ao-Qt; Tue, 19 Dec 2023 12:19:26 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -28,8 +28,8 @@ Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	hugo@hugovil.com,
 	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Date: Tue, 19 Dec 2023 12:19:00 -0500
-Message-Id: <20231219171903.3530985-17-hugo@hugovil.com>
+Date: Tue, 19 Dec 2023 12:19:02 -0500
+Message-Id: <20231219171903.3530985-19-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20231219171903.3530985-1-hugo@hugovil.com>
 References: <20231219171903.3530985-1-hugo@hugovil.com>
@@ -46,125 +46,32 @@ X-Spam-Level:
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-Subject: [PATCH 16/18] serial: sc16is7xx: reorder code to remove prototype declarations
+Subject: [PATCH 18/18] serial: sc16is7xx: fix whitespace in sc16is7xx_startup() comments
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Move/reorder some functions to remove sc16is7xx_ier_set() and
-sc16is7xx_stop_tx() prototypes declarations.
-
-No functional change.
-
-sc16is7xx_ier_set() was introduced in
-commit cc4c1d05eb10 ("sc16is7xx: Properly resume TX after stop")
+Add missing space at end of comments.
 
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
- drivers/tty/serial/sc16is7xx.c | 75 ++++++++++++++++------------------
- 1 file changed, 36 insertions(+), 39 deletions(-)
+ drivers/tty/serial/sc16is7xx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 3322507ab18e..9154fd75134a 100644
+index ab68ee346ec6..a8a78d8f7fcf 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -358,9 +358,6 @@ static struct uart_driver sc16is7xx_uart = {
- 	.nr		= SC16IS7XX_MAX_DEVS,
- };
+@@ -1139,7 +1139,7 @@ static int sc16is7xx_startup(struct uart_port *port)
  
--static void sc16is7xx_ier_set(struct uart_port *port, u8 bit);
--static void sc16is7xx_stop_tx(struct uart_port *port);
--
- #define to_sc16is7xx_one(p,e)	((container_of((p), struct sc16is7xx_one, e)))
+ 	sc16is7xx_power(port, 1);
  
- static u8 sc16is7xx_port_read(struct uart_port *port, u8 reg)
-@@ -416,6 +413,42 @@ static void sc16is7xx_power(struct uart_port *port, int on)
- 			      on ? 0 : SC16IS7XX_IER_SLEEP_BIT);
- }
- 
-+static void sc16is7xx_ier_clear(struct uart_port *port, u8 bit)
-+{
-+	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
-+	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
-+
-+	lockdep_assert_held_once(&port->lock);
-+
-+	one->config.flags |= SC16IS7XX_RECONF_IER;
-+	one->config.ier_mask |= bit;
-+	one->config.ier_val &= ~bit;
-+	kthread_queue_work(&s->kworker, &one->reg_work);
-+}
-+
-+static void sc16is7xx_ier_set(struct uart_port *port, u8 bit)
-+{
-+	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
-+	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
-+
-+	lockdep_assert_held_once(&port->lock);
-+
-+	one->config.flags |= SC16IS7XX_RECONF_IER;
-+	one->config.ier_mask |= bit;
-+	one->config.ier_val |= bit;
-+	kthread_queue_work(&s->kworker, &one->reg_work);
-+}
-+
-+static void sc16is7xx_stop_tx(struct uart_port *port)
-+{
-+	sc16is7xx_ier_clear(port, SC16IS7XX_IER_THRI_BIT);
-+}
-+
-+static void sc16is7xx_stop_rx(struct uart_port *port)
-+{
-+	sc16is7xx_ier_clear(port, SC16IS7XX_IER_RDI_BIT);
-+}
-+
- static const struct sc16is7xx_devtype sc16is74x_devtype = {
- 	.name		= "SC16IS74X",
- 	.nr_gpio	= 0,
-@@ -867,42 +900,6 @@ static void sc16is7xx_reg_proc(struct kthread_work *ws)
- 		sc16is7xx_reconf_rs485(&one->port);
- }
- 
--static void sc16is7xx_ier_clear(struct uart_port *port, u8 bit)
--{
--	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
--	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
--
--	lockdep_assert_held_once(&port->lock);
--
--	one->config.flags |= SC16IS7XX_RECONF_IER;
--	one->config.ier_mask |= bit;
--	one->config.ier_val &= ~bit;
--	kthread_queue_work(&s->kworker, &one->reg_work);
--}
--
--static void sc16is7xx_ier_set(struct uart_port *port, u8 bit)
--{
--	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
--	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
--
--	lockdep_assert_held_once(&port->lock);
--
--	one->config.flags |= SC16IS7XX_RECONF_IER;
--	one->config.ier_mask |= bit;
--	one->config.ier_val |= bit;
--	kthread_queue_work(&s->kworker, &one->reg_work);
--}
--
--static void sc16is7xx_stop_tx(struct uart_port *port)
--{
--	sc16is7xx_ier_clear(port, SC16IS7XX_IER_THRI_BIT);
--}
--
--static void sc16is7xx_stop_rx(struct uart_port *port)
--{
--	sc16is7xx_ier_clear(port, SC16IS7XX_IER_RDI_BIT);
--}
--
- static void sc16is7xx_ms_proc(struct kthread_work *ws)
- {
- 	struct sc16is7xx_one *one = to_sc16is7xx_one(ws, ms_work.work);
+-	/* Reset FIFOs*/
++	/* Reset FIFOs */
+ 	val = SC16IS7XX_FCR_RXRESET_BIT | SC16IS7XX_FCR_TXRESET_BIT;
+ 	sc16is7xx_port_write(port, SC16IS7XX_FCR_REG, val);
+ 	udelay(5);
 -- 
 2.39.2
 
