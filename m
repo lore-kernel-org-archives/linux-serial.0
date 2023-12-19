@@ -1,22 +1,22 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A5B63714B;
-	Tue, 19 Dec 2023 17:19:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE6D136AEA;
+	Tue, 19 Dec 2023 17:19:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="M23ZXpdK"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="BRM1bdus"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=dhOqiUDo6hWsxc+Eqa46nTmCA1Ktb3a/vQZ2WSiGGX4=; b=M23ZXpdKMsedpAYQeE1rlM1NqN
-	eNC/VKIIK9P391JSVFHBlDFSDlvRY8Iyaw/hiGb2GJT8n6ROJIyv15xlet510U4EKkq/hKvLuIpx7
-	0yzhvZ4aLmxNQ5YoprkkXtMfX/j7LNJN8Kf1Bwl9C4+jWRrS/un1Wfen9CbIqyF6MMWk=;
+	bh=vtaUMnMT8EggKRdVVV4aSCElIVRE59twHxnKq4mL2OA=; b=BRM1bdusNTuln/ySzvTXmFKOSo
+	9z6XZgBwU9Xf0XVHKmHLt720y0NWn6X8yAPxzEmcMw3iA5cXwcZFsUEas5Anu7T0375scNgSSDLxS
+	bzn6zxZiv4FSQ0md7r9VsTGrk2NXQasVTPfejHhytnSOi/FEh6MCtjUGnqRxgtIgWTwM=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:40128 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rFdkJ-0007Ao-AQ; Tue, 19 Dec 2023 12:19:07 -0500
+	id 1rFdkN-0007Ao-Pj; Tue, 19 Dec 2023 12:19:12 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -27,10 +27,9 @@ To: gregkh@linuxfoundation.org,
 Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	hugo@hugovil.com,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	stable@vger.kernel.org
-Date: Tue, 19 Dec 2023 12:18:45 -0500
-Message-Id: <20231219171903.3530985-2-hugo@hugovil.com>
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Date: Tue, 19 Dec 2023 12:18:49 -0500
+Message-Id: <20231219171903.3530985-6-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20231219171903.3530985-1-hugo@hugovil.com>
 References: <20231219171903.3530985-1-hugo@hugovil.com>
@@ -47,65 +46,76 @@ X-Spam-Level:
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-Subject: [PATCH 01/18] serial: sc16is7xx: fix segfault when removing driver
+Subject: [PATCH 05/18] serial: sc16is7xx: use DECLARE_BITMAP for sc16is7xx_lines bitfield
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-If a problem with a device occurs during probing, and we subsequently
-try to remove the driver, we get the following error:
+Replace the explicit sc16is7xx_lines bitfield declaration with the generic
+macro DECLARE_BITMAP() to reserve just enough memory to contain all
+required bits.
 
-$ rmmod sc16is7xx
-[   62.783166] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000040
-[   62.994226] Call trace:
-[   62.996672]  serial_core_unregister_port+0x58/0x2b0
-[   63.001558]  serial_ctrl_unregister_port+0x18/0x30
-[   63.006354]  uart_remove_one_port+0x18/0x30
-[   63.010542]  sc16is7xx_spi_remove+0xc0/0x190 [sc16is7xx]
-Segmentation fault
+This also improves code self-documentation by showing the maximum number
+of bits required.
 
-Tested on a custom board with two SC16IS742 ICs, and by simulating a fault
-when probing channel (port) B of the second device.
+This conversion now makes sc16is7xx_lines an array, so drop the "&" before
+sc16is7xx_lines in all bit access functions.
 
-The reason is that uart_remove_one_port() has already been called during
-probe in the out_ports: error path, and is called again in
-sc16is7xx_remove().
-
-Fix the problem by clearing the device drvdata in probe error path to
-indicate that all resources have been deallocated. And only deallocate
-resources in sc16is7xx_remove() if device drvdata is non-null.
-
-Fixes: dfeae619d781 ("serial: sc16is7xx")
-Cc: stable@vger.kernel.org
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
- drivers/tty/serial/sc16is7xx.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/tty/serial/sc16is7xx.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index e40e4a99277e..b585663c1e6e 100644
+index 8a038a9be09e..597280a5d0f3 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1663,6 +1663,8 @@ static int sc16is7xx_probe(struct device *dev,
- out_clk:
- 	clk_disable_unprepare(s->clk);
+@@ -346,7 +346,7 @@ struct sc16is7xx_port {
+ 	struct sc16is7xx_one		p[];
+ };
  
-+	dev_set_drvdata(dev, NULL);
-+
- 	return ret;
- }
+-static unsigned long sc16is7xx_lines;
++static DECLARE_BITMAP(sc16is7xx_lines, SC16IS7XX_MAX_DEVS);
  
-@@ -1671,6 +1673,9 @@ static void sc16is7xx_remove(struct device *dev)
- 	struct sc16is7xx_port *s = dev_get_drvdata(dev);
- 	int i;
+ static struct uart_driver sc16is7xx_uart = {
+ 	.owner		= THIS_MODULE,
+@@ -1534,7 +1534,7 @@ static int sc16is7xx_probe(struct device *dev,
+ 		     SC16IS7XX_IOCONTROL_SRESET_BIT);
  
-+	if (!s)
-+		return;
-+
- #ifdef CONFIG_GPIOLIB
- 	if (s->gpio_valid_mask)
- 		gpiochip_remove(&s->gpio);
+ 	for (i = 0; i < devtype->nr_uart; ++i) {
+-		s->p[i].port.line = find_first_zero_bit(&sc16is7xx_lines,
++		s->p[i].port.line = find_first_zero_bit(sc16is7xx_lines,
+ 							SC16IS7XX_MAX_DEVS);
+ 		if (s->p[i].port.line >= SC16IS7XX_MAX_DEVS) {
+ 			ret = -ERANGE;
+@@ -1585,7 +1585,7 @@ static int sc16is7xx_probe(struct device *dev,
+ 		if (ret)
+ 			goto out_ports;
+ 
+-		set_bit(s->p[i].port.line, &sc16is7xx_lines);
++		set_bit(s->p[i].port.line, sc16is7xx_lines);
+ 
+ 		/* Enable EFR */
+ 		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_LCR_REG,
+@@ -1644,7 +1644,7 @@ static int sc16is7xx_probe(struct device *dev,
+ 
+ out_ports:
+ 	for (i = 0; i < devtype->nr_uart; i++)
+-		if (test_and_clear_bit(s->p[i].port.line, &sc16is7xx_lines))
++		if (test_and_clear_bit(s->p[i].port.line, sc16is7xx_lines))
+ 			uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
+ 
+ 	kthread_stop(s->kworker_task);
+@@ -1672,7 +1672,7 @@ static void sc16is7xx_remove(struct device *dev)
+ 
+ 	for (i = 0; i < s->devtype->nr_uart; i++) {
+ 		kthread_cancel_delayed_work_sync(&s->p[i].ms_work);
+-		if (test_and_clear_bit(s->p[i].port.line, &sc16is7xx_lines))
++		if (test_and_clear_bit(s->p[i].port.line, sc16is7xx_lines))
+ 			uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
+ 		sc16is7xx_power(&s->p[i].port, 0);
+ 	}
 -- 
 2.39.2
 
