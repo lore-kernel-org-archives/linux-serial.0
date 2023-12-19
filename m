@@ -1,22 +1,22 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E980221364;
-	Tue, 19 Dec 2023 17:19:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02D3B3717E;
+	Tue, 19 Dec 2023 17:19:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="BeZkUDmS"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="Es1tOgue"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=KcYNp1sWTrGWiUqu1nyxva4KTAsY45l/5TWJVZ84DbE=; b=BeZkUDmS0Qlg0Xyvi2r+RDaD9N
-	GfZJ7MuTv4qhQJwQpz+ywqURzyObSUnrDTmKZzJwjjkoASxaFny29IIrF2XrHRXAV3PQmHJ66TLtD
-	7HqLnLjfVu0bxFD/5k4ax4Ot23PNzrdHRMLj1IapmfMJafO+wlXEk2Jju+fbPhPQVmos=;
+	bh=s/yWW4Vy76vXSiHl0gv7O0Csm0Ex/rL0yRa8UtQ/IPg=; b=Es1tOgueRS7EWff0ucpzQMT/2F
+	ynxAniJZI5jETkempKC8oIKdGZVd/qzbspc6QMaPmxCkvgFG8AZX2Dw/IIwHtzAuVxeij9tTtZPtZ
+	fZVDY8dgmNcTWMRIt4XoNNJ0Zugu7rudi5acE9ot7GdWzJaoT2nMqoOmfYX3ZHq7OAt0=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:40128 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rFdkb-0007Ao-Qt; Tue, 19 Dec 2023 12:19:26 -0500
+	id 1rFdkT-0007Ao-PK; Tue, 19 Dec 2023 12:19:18 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -27,9 +27,10 @@ To: gregkh@linuxfoundation.org,
 Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	hugo@hugovil.com,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Date: Tue, 19 Dec 2023 12:19:02 -0500
-Message-Id: <20231219171903.3530985-19-hugo@hugovil.com>
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Tue, 19 Dec 2023 12:18:55 -0500
+Message-Id: <20231219171903.3530985-12-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20231219171903.3530985-1-hugo@hugovil.com>
 References: <20231219171903.3530985-1-hugo@hugovil.com>
@@ -46,32 +47,49 @@ X-Spam-Level:
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-Subject: [PATCH 18/18] serial: sc16is7xx: fix whitespace in sc16is7xx_startup() comments
+Subject: [PATCH 11/18] serial: sc16is7xx: add explicit return for some switch default cases
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Add missing space at end of comments.
+Allows to simplify code by removing the break statement in the default
+switch/case in some functions.
 
+Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
- drivers/tty/serial/sc16is7xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/sc16is7xx.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index ab68ee346ec6..a8a78d8f7fcf 100644
+index 7d5eec2d0e94..feb50d9271ac 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1139,7 +1139,7 @@ static int sc16is7xx_startup(struct uart_port *port)
+@@ -460,10 +460,8 @@ static bool sc16is7xx_regmap_volatile(struct device *dev, unsigned int reg)
+ 	case SC16IS7XX_IOCONTROL_REG:
+ 		return true;
+ 	default:
+-		break;
++		return false;
+ 	}
+-
+-	return false;
+ }
  
- 	sc16is7xx_power(port, 1);
+ static bool sc16is7xx_regmap_precious(struct device *dev, unsigned int reg)
+@@ -472,10 +470,8 @@ static bool sc16is7xx_regmap_precious(struct device *dev, unsigned int reg)
+ 	case SC16IS7XX_RHR_REG:
+ 		return true;
+ 	default:
+-		break;
++		return false;
+ 	}
+-
+-	return false;
+ }
  
--	/* Reset FIFOs*/
-+	/* Reset FIFOs */
- 	val = SC16IS7XX_FCR_RXRESET_BIT | SC16IS7XX_FCR_TXRESET_BIT;
- 	sc16is7xx_port_write(port, SC16IS7XX_FCR_REG, val);
- 	udelay(5);
+ static bool sc16is7xx_regmap_noinc(struct device *dev, unsigned int reg)
 -- 
 2.39.2
 
