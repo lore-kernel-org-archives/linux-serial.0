@@ -1,22 +1,22 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0154436B05;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E90BD36B03;
 	Tue, 19 Dec 2023 17:19:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="TP8HLyeo"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="esjkA65/"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=pCFiEl099gN+IaylTnT0hoDSq03Y5bym/mkoj8GjOYI=; b=TP8HLyeol5TfMC88pf3h1hOSLC
-	yEkaZd4yEfGOhmzwIyuRi+z0hb5vv7YXuVdrc6AhmLa2X+GOHEZEE1iB0v7FBP0PxUVq/VDnsvGPQ
-	L8ja3zYXACIDVEhUy7YN5fT2JWrr042x+f3ELPiva32fXV8TxZaQ29dkVXpLijHFpGpM=;
+	bh=Ng6Fc+vttD9IX1hHO2+obVGdw8TgMe6tqqaoAqIoRYw=; b=esjkA65/TYm961Gks1fT1j/EmM
+	JdOLrbB8B7ejSclm/C798avi5fat/bu8Ui/mVa4Wgaak1uDvTYadzd3Svckg8p73n4B8Rr4zZy8dV
+	KKXveG1WcRolyDwOPiaYMNvEqkpsD10KWjNcXReZVuMDfBqdxHeItTBsxH47eyVLswgE=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:40128 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rFdkX-0007Ao-3F; Tue, 19 Dec 2023 12:19:21 -0500
+	id 1rFdkI-0007Ao-7m; Tue, 19 Dec 2023 12:19:06 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -27,13 +27,10 @@ To: gregkh@linuxfoundation.org,
 Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	hugo@hugovil.com,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Tue, 19 Dec 2023 12:18:58 -0500
-Message-Id: <20231219171903.3530985-15-hugo@hugovil.com>
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Date: Tue, 19 Dec 2023 12:18:44 -0500
+Message-Id: <20231219171903.3530985-1-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20231219171903.3530985-1-hugo@hugovil.com>
-References: <20231219171903.3530985-1-hugo@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -47,34 +44,56 @@ X-Spam-Level:
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-Subject: [PATCH 14/18] serial: sc16is7xx: drop unneeded MODULE_ALIAS
+Subject: [PATCH 00/18] serial: sc16is7xx: fixes, cleanups and improvements
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-The MODULE_DEVICE_TABLE already creates the proper aliases for the
-SPI driver.
+Hello,
+this patch series brings a few fixes, clean-ups and improvements to the
+sc16is7xx driver.
 
-Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
----
- drivers/tty/serial/sc16is7xx.c | 2 --
- 1 file changed, 2 deletions(-)
+Some of the patches have been suggested by Andy Shevchenko following this
+dicussion:
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 29089b11f6f1..a9e44e5ef713 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1793,8 +1793,6 @@ static struct spi_driver sc16is7xx_spi_uart_driver = {
- 	.remove		= sc16is7xx_spi_remove,
- 	.id_table	= sc16is7xx_spi_id_table,
- };
--
--MODULE_ALIAS("spi:sc16is7xx");
- #endif
- 
- #ifdef CONFIG_SERIAL_SC16IS7XX_I2C
+Link: https://lore.kernel.org/all/CAHp75VebCZckUrNraYQj9k=Mrn2kbYs1Lx26f5-8rKJ3RXeh-w@mail.gmail.com/
+
+I have tested the changes on a custom board with two SC16IS752 DUART over
+a SPI interface using a Variscite IMX8MN NANO SOM. The four UARTs are
+configured in RS-485 mode.
+
+I did not test the change on a SC16is7xx using I2C interface, as my custom
+board is only using SPI.
+
+Thank you.
+
+Hugo Villeneuve (18):
+  serial: sc16is7xx: fix segfault when removing driver
+  serial: sc16is7xx: fix invalid sc16is7xx_lines bitfield in case of
+    probe error
+  serial: sc16is7xx: remove obsolete loop in sc16is7xx_port_irq()
+  serial: sc16is7xx: improve do/while loop in sc16is7xx_irq()
+  serial: sc16is7xx: use DECLARE_BITMAP for sc16is7xx_lines bitfield
+  serial: sc16is7xx: use spi_get_device_match_data()
+  serial: sc16is7xx: use i2c_get_match_data()
+  serial: sc16is7xx: add driver name to struct uart_driver
+  serial: sc16is7xx: add macro for max number of UART ports
+  serial: sc16is7xx: use HZ_PER_MHZ macro to improve readability
+  serial: sc16is7xx: add explicit return for some switch default cases
+  serial: sc16is7xx: replace hardcoded divisor value with BIT() macro
+  serial: sc16is7xx: use in_range() for DT properties bound checks
+  serial: sc16is7xx: drop unneeded MODULE_ALIAS
+  serial: sc16is7xx: pass R/W buffer in FIFO functions
+  serial: sc16is7xx: reorder code to remove prototype declarations
+  serial: sc16is7xx: refactor EFR lock
+  serial: sc16is7xx: fix whitespace in sc16is7xx_startup() comments
+
+ drivers/tty/serial/sc16is7xx.c | 392 ++++++++++++++++-----------------
+ 1 file changed, 191 insertions(+), 201 deletions(-)
+
+
+base-commit: 43f012df3c1e979966524f79b5371fde6545488a
 -- 
 2.39.2
 
