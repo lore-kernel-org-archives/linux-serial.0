@@ -1,22 +1,22 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F4C037148;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A5B63714B;
 	Tue, 19 Dec 2023 17:19:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="p0TX8kFA"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="M23ZXpdK"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=ZsiNmlD3MHHl+wojDLWkdnOLAS+GCC2vUU+7h86+VQw=; b=p0TX8kFAxruNP3Fxt7QzvLJggc
-	Lv5YSnGE42ufgm/ALsF5KQyLjJPa1YXhC+ChSNueIcxL8U0Gdw868Z7FZXWMXcPvAIDMSPy//vRGK
-	T4ejEPFbKwevFPxeHaRPsW7Hh/QCbns6muG5tI+LV3DU9PYPIcwMRt+qeSgmZiH6d8Uk=;
+	bh=dhOqiUDo6hWsxc+Eqa46nTmCA1Ktb3a/vQZ2WSiGGX4=; b=M23ZXpdKMsedpAYQeE1rlM1NqN
+	eNC/VKIIK9P391JSVFHBlDFSDlvRY8Iyaw/hiGb2GJT8n6ROJIyv15xlet510U4EKkq/hKvLuIpx7
+	0yzhvZ4aLmxNQ5YoprkkXtMfX/j7LNJN8Kf1Bwl9C4+jWRrS/un1Wfen9CbIqyF6MMWk=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:40128 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rFdkQ-0007Ao-O6; Tue, 19 Dec 2023 12:19:15 -0500
+	id 1rFdkJ-0007Ao-AQ; Tue, 19 Dec 2023 12:19:07 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -27,9 +27,10 @@ To: gregkh@linuxfoundation.org,
 Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	hugo@hugovil.com,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Date: Tue, 19 Dec 2023 12:18:52 -0500
-Message-Id: <20231219171903.3530985-9-hugo@hugovil.com>
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	stable@vger.kernel.org
+Date: Tue, 19 Dec 2023 12:18:45 -0500
+Message-Id: <20231219171903.3530985-2-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20231219171903.3530985-1-hugo@hugovil.com>
 References: <20231219171903.3530985-1-hugo@hugovil.com>
@@ -46,40 +47,65 @@ X-Spam-Level:
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-Subject: [PATCH 08/18] serial: sc16is7xx: add driver name to struct uart_driver
+Subject: [PATCH 01/18] serial: sc16is7xx: fix segfault when removing driver
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Make sure that the driver name is displayed instead of "unknown" when
-displaying the driver infos:
+If a problem with a device occurs during probing, and we subsequently
+try to remove the driver, we get the following error:
 
-Before:
-    cat /proc/tty/drivers | grep ttySC
-    unknown              /dev/ttySC    243 0-7 serial
+$ rmmod sc16is7xx
+[   62.783166] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000040
+[   62.994226] Call trace:
+[   62.996672]  serial_core_unregister_port+0x58/0x2b0
+[   63.001558]  serial_ctrl_unregister_port+0x18/0x30
+[   63.006354]  uart_remove_one_port+0x18/0x30
+[   63.010542]  sc16is7xx_spi_remove+0xc0/0x190 [sc16is7xx]
+Segmentation fault
 
-After:
-    cat /proc/tty/drivers | grep ttySC
-    sc16is7xx            /dev/ttySC    243 0-7 serial
+Tested on a custom board with two SC16IS742 ICs, and by simulating a fault
+when probing channel (port) B of the second device.
 
+The reason is that uart_remove_one_port() has already been called during
+probe in the out_ports: error path, and is called again in
+sc16is7xx_remove().
+
+Fix the problem by clearing the device drvdata in probe error path to
+indicate that all resources have been deallocated. And only deallocate
+resources in sc16is7xx_remove() if device drvdata is non-null.
+
+Fixes: dfeae619d781 ("serial: sc16is7xx")
+Cc: stable@vger.kernel.org
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
- drivers/tty/serial/sc16is7xx.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/sc16is7xx.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 97a97a4bd71a..3fb99b6929f3 100644
+index e40e4a99277e..b585663c1e6e 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -350,6 +350,7 @@ static DECLARE_BITMAP(sc16is7xx_lines, SC16IS7XX_MAX_DEVS);
+@@ -1663,6 +1663,8 @@ static int sc16is7xx_probe(struct device *dev,
+ out_clk:
+ 	clk_disable_unprepare(s->clk);
  
- static struct uart_driver sc16is7xx_uart = {
- 	.owner		= THIS_MODULE,
-+	.driver_name    = SC16IS7XX_NAME,
- 	.dev_name	= "ttySC",
- 	.nr		= SC16IS7XX_MAX_DEVS,
- };
++	dev_set_drvdata(dev, NULL);
++
+ 	return ret;
+ }
+ 
+@@ -1671,6 +1673,9 @@ static void sc16is7xx_remove(struct device *dev)
+ 	struct sc16is7xx_port *s = dev_get_drvdata(dev);
+ 	int i;
+ 
++	if (!s)
++		return;
++
+ #ifdef CONFIG_GPIOLIB
+ 	if (s->gpio_valid_mask)
+ 		gpiochip_remove(&s->gpio);
 -- 
 2.39.2
 
