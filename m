@@ -1,22 +1,22 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE6D136AEA;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0154436B05;
 	Tue, 19 Dec 2023 17:19:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="BRM1bdus"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="TP8HLyeo"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=vtaUMnMT8EggKRdVVV4aSCElIVRE59twHxnKq4mL2OA=; b=BRM1bdusNTuln/ySzvTXmFKOSo
-	9z6XZgBwU9Xf0XVHKmHLt720y0NWn6X8yAPxzEmcMw3iA5cXwcZFsUEas5Anu7T0375scNgSSDLxS
-	bzn6zxZiv4FSQ0md7r9VsTGrk2NXQasVTPfejHhytnSOi/FEh6MCtjUGnqRxgtIgWTwM=;
+	bh=pCFiEl099gN+IaylTnT0hoDSq03Y5bym/mkoj8GjOYI=; b=TP8HLyeol5TfMC88pf3h1hOSLC
+	yEkaZd4yEfGOhmzwIyuRi+z0hb5vv7YXuVdrc6AhmLa2X+GOHEZEE1iB0v7FBP0PxUVq/VDnsvGPQ
+	L8ja3zYXACIDVEhUy7YN5fT2JWrr042x+f3ELPiva32fXV8TxZaQ29dkVXpLijHFpGpM=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:40128 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rFdkN-0007Ao-Pj; Tue, 19 Dec 2023 12:19:12 -0500
+	id 1rFdkX-0007Ao-3F; Tue, 19 Dec 2023 12:19:21 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -27,9 +27,10 @@ To: gregkh@linuxfoundation.org,
 Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	hugo@hugovil.com,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Date: Tue, 19 Dec 2023 12:18:49 -0500
-Message-Id: <20231219171903.3530985-6-hugo@hugovil.com>
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Tue, 19 Dec 2023 12:18:58 -0500
+Message-Id: <20231219171903.3530985-15-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20231219171903.3530985-1-hugo@hugovil.com>
 References: <20231219171903.3530985-1-hugo@hugovil.com>
@@ -46,76 +47,34 @@ X-Spam-Level:
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-Subject: [PATCH 05/18] serial: sc16is7xx: use DECLARE_BITMAP for sc16is7xx_lines bitfield
+Subject: [PATCH 14/18] serial: sc16is7xx: drop unneeded MODULE_ALIAS
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Replace the explicit sc16is7xx_lines bitfield declaration with the generic
-macro DECLARE_BITMAP() to reserve just enough memory to contain all
-required bits.
+The MODULE_DEVICE_TABLE already creates the proper aliases for the
+SPI driver.
 
-This also improves code self-documentation by showing the maximum number
-of bits required.
-
-This conversion now makes sc16is7xx_lines an array, so drop the "&" before
-sc16is7xx_lines in all bit access functions.
-
+Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
- drivers/tty/serial/sc16is7xx.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/tty/serial/sc16is7xx.c | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 8a038a9be09e..597280a5d0f3 100644
+index 29089b11f6f1..a9e44e5ef713 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -346,7 +346,7 @@ struct sc16is7xx_port {
- 	struct sc16is7xx_one		p[];
+@@ -1793,8 +1793,6 @@ static struct spi_driver sc16is7xx_spi_uart_driver = {
+ 	.remove		= sc16is7xx_spi_remove,
+ 	.id_table	= sc16is7xx_spi_id_table,
  };
+-
+-MODULE_ALIAS("spi:sc16is7xx");
+ #endif
  
--static unsigned long sc16is7xx_lines;
-+static DECLARE_BITMAP(sc16is7xx_lines, SC16IS7XX_MAX_DEVS);
- 
- static struct uart_driver sc16is7xx_uart = {
- 	.owner		= THIS_MODULE,
-@@ -1534,7 +1534,7 @@ static int sc16is7xx_probe(struct device *dev,
- 		     SC16IS7XX_IOCONTROL_SRESET_BIT);
- 
- 	for (i = 0; i < devtype->nr_uart; ++i) {
--		s->p[i].port.line = find_first_zero_bit(&sc16is7xx_lines,
-+		s->p[i].port.line = find_first_zero_bit(sc16is7xx_lines,
- 							SC16IS7XX_MAX_DEVS);
- 		if (s->p[i].port.line >= SC16IS7XX_MAX_DEVS) {
- 			ret = -ERANGE;
-@@ -1585,7 +1585,7 @@ static int sc16is7xx_probe(struct device *dev,
- 		if (ret)
- 			goto out_ports;
- 
--		set_bit(s->p[i].port.line, &sc16is7xx_lines);
-+		set_bit(s->p[i].port.line, sc16is7xx_lines);
- 
- 		/* Enable EFR */
- 		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_LCR_REG,
-@@ -1644,7 +1644,7 @@ static int sc16is7xx_probe(struct device *dev,
- 
- out_ports:
- 	for (i = 0; i < devtype->nr_uart; i++)
--		if (test_and_clear_bit(s->p[i].port.line, &sc16is7xx_lines))
-+		if (test_and_clear_bit(s->p[i].port.line, sc16is7xx_lines))
- 			uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
- 
- 	kthread_stop(s->kworker_task);
-@@ -1672,7 +1672,7 @@ static void sc16is7xx_remove(struct device *dev)
- 
- 	for (i = 0; i < s->devtype->nr_uart; i++) {
- 		kthread_cancel_delayed_work_sync(&s->p[i].ms_work);
--		if (test_and_clear_bit(s->p[i].port.line, &sc16is7xx_lines))
-+		if (test_and_clear_bit(s->p[i].port.line, sc16is7xx_lines))
- 			uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
- 		sc16is7xx_power(&s->p[i].port, 0);
- 	}
+ #ifdef CONFIG_SERIAL_SC16IS7XX_I2C
 -- 
 2.39.2
 
