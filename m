@@ -1,22 +1,22 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E90BD36B03;
-	Tue, 19 Dec 2023 17:19:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7DD237173;
+	Tue, 19 Dec 2023 17:19:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="esjkA65/"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="EYi+AuJ7"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=Ng6Fc+vttD9IX1hHO2+obVGdw8TgMe6tqqaoAqIoRYw=; b=esjkA65/TYm961Gks1fT1j/EmM
-	JdOLrbB8B7ejSclm/C798avi5fat/bu8Ui/mVa4Wgaak1uDvTYadzd3Svckg8p73n4B8Rr4zZy8dV
-	KKXveG1WcRolyDwOPiaYMNvEqkpsD10KWjNcXReZVuMDfBqdxHeItTBsxH47eyVLswgE=;
+	bh=cw/24HY4C5acblk8eliNCiZBV+lvTJ+0DUIF2TU1lJQ=; b=EYi+AuJ7sy0TuMj/AGsWiYqOKy
+	pJeatye9iSP5hmCO7cWlO0Zi+0JIxROIkdm6Y1tfrfjLeQH8p2NXvLet1bJ1/3Bub478g9JLiBMe+
+	6R24eaeBzY5FQh/rnhm5RYvTFWLMtHgirIuvpSPBt3v+OnPgWlPJReQeExq34jL2bAeo=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:40128 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rFdkI-0007Ao-7m; Tue, 19 Dec 2023 12:19:06 -0500
+	id 1rFdkY-0007Ao-56; Tue, 19 Dec 2023 12:19:22 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -27,10 +27,13 @@ To: gregkh@linuxfoundation.org,
 Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	hugo@hugovil.com,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Date: Tue, 19 Dec 2023 12:18:44 -0500
-Message-Id: <20231219171903.3530985-1-hugo@hugovil.com>
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	stable@vger.kernel.org
+Date: Tue, 19 Dec 2023 12:18:59 -0500
+Message-Id: <20231219171903.3530985-16-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20231219171903.3530985-1-hugo@hugovil.com>
+References: <20231219171903.3530985-1-hugo@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -44,56 +47,77 @@ X-Spam-Level:
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-Subject: [PATCH 00/18] serial: sc16is7xx: fixes, cleanups and improvements
+Subject: [PATCH 15/18] serial: sc16is7xx: pass R/W buffer in FIFO functions
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Hello,
-this patch series brings a few fixes, clean-ups and improvements to the
-sc16is7xx driver.
+To simplify function by avoiding cast.
 
-Some of the patches have been suggested by Andy Shevchenko following this
-dicussion:
+This is similar to what is done in max310x driver.
 
-Link: https://lore.kernel.org/all/CAHp75VebCZckUrNraYQj9k=Mrn2kbYs1Lx26f5-8rKJ3RXeh-w@mail.gmail.com/
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+---
+If deemed appropriate for stable kernel backporting:
+Fixes: dec273ecc116 ("sc16is7xx: fix FIFO address of secondary UART")
+Cc: stable@vger.kernel.org
+---
+ drivers/tty/serial/sc16is7xx.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-I have tested the changes on a custom board with two SC16IS752 DUART over
-a SPI interface using a Variscite IMX8MN NANO SOM. The four UARTs are
-configured in RS-485 mode.
-
-I did not test the change on a SC16is7xx using I2C interface, as my custom
-board is only using SPI.
-
-Thank you.
-
-Hugo Villeneuve (18):
-  serial: sc16is7xx: fix segfault when removing driver
-  serial: sc16is7xx: fix invalid sc16is7xx_lines bitfield in case of
-    probe error
-  serial: sc16is7xx: remove obsolete loop in sc16is7xx_port_irq()
-  serial: sc16is7xx: improve do/while loop in sc16is7xx_irq()
-  serial: sc16is7xx: use DECLARE_BITMAP for sc16is7xx_lines bitfield
-  serial: sc16is7xx: use spi_get_device_match_data()
-  serial: sc16is7xx: use i2c_get_match_data()
-  serial: sc16is7xx: add driver name to struct uart_driver
-  serial: sc16is7xx: add macro for max number of UART ports
-  serial: sc16is7xx: use HZ_PER_MHZ macro to improve readability
-  serial: sc16is7xx: add explicit return for some switch default cases
-  serial: sc16is7xx: replace hardcoded divisor value with BIT() macro
-  serial: sc16is7xx: use in_range() for DT properties bound checks
-  serial: sc16is7xx: drop unneeded MODULE_ALIAS
-  serial: sc16is7xx: pass R/W buffer in FIFO functions
-  serial: sc16is7xx: reorder code to remove prototype declarations
-  serial: sc16is7xx: refactor EFR lock
-  serial: sc16is7xx: fix whitespace in sc16is7xx_startup() comments
-
- drivers/tty/serial/sc16is7xx.c | 392 ++++++++++++++++-----------------
- 1 file changed, 191 insertions(+), 201 deletions(-)
-
-
-base-commit: 43f012df3c1e979966524f79b5371fde6545488a
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index a9e44e5ef713..3322507ab18e 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -380,17 +380,15 @@ static void sc16is7xx_port_write(struct uart_port *port, u8 reg, u8 val)
+ 	regmap_write(one->regmap, reg, val);
+ }
+ 
+-static void sc16is7xx_fifo_read(struct uart_port *port, unsigned int rxlen)
++static void sc16is7xx_fifo_read(struct uart_port *port, u8 *rxbuf, unsigned int rxlen)
+ {
+-	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
+ 	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
+ 
+-	regmap_noinc_read(one->regmap, SC16IS7XX_RHR_REG, s->buf, rxlen);
++	regmap_noinc_read(one->regmap, SC16IS7XX_RHR_REG, rxbuf, rxlen);
+ }
+ 
+-static void sc16is7xx_fifo_write(struct uart_port *port, u8 to_send)
++static void sc16is7xx_fifo_write(struct uart_port *port, u8 *txbuf, u8 to_send)
+ {
+-	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
+ 	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
+ 
+ 	/*
+@@ -400,7 +398,7 @@ static void sc16is7xx_fifo_write(struct uart_port *port, u8 to_send)
+ 	if (unlikely(!to_send))
+ 		return;
+ 
+-	regmap_noinc_write(one->regmap, SC16IS7XX_THR_REG, s->buf, to_send);
++	regmap_noinc_write(one->regmap, SC16IS7XX_THR_REG, txbuf, to_send);
+ }
+ 
+ static void sc16is7xx_port_update(struct uart_port *port, u8 reg,
+@@ -576,7 +574,7 @@ static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
+ 			s->buf[0] = sc16is7xx_port_read(port, SC16IS7XX_RHR_REG);
+ 			bytes_read = 1;
+ 		} else {
+-			sc16is7xx_fifo_read(port, rxlen);
++			sc16is7xx_fifo_read(port, s->buf, rxlen);
+ 			bytes_read = rxlen;
+ 		}
+ 
+@@ -665,7 +663,7 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
+ 			uart_xmit_advance(port, 1);
+ 		}
+ 
+-		sc16is7xx_fifo_write(port, to_send);
++		sc16is7xx_fifo_write(port, s->buf, to_send);
+ 	}
+ 
+ 	uart_port_lock_irqsave(port, &flags);
 -- 
 2.39.2
 
