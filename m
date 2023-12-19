@@ -1,22 +1,22 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1CE337178;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AE98374C8;
 	Tue, 19 Dec 2023 17:19:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="So/GFKJp"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="m1RSSwty"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=wpxONzVdPDOBmeZf3AvhDTOhsPLl8o7m9pBKKhTUjcU=; b=So/GFKJprQ3l/iO+UzDe0ddOtI
-	DlyMEhRL+z38g6fjAfX+No4dwSQ6iPQTBJydcy8Co3pBx5BxpU/iK86h6SKDrdTUnBKfjuV3cPss1
-	UbZQErZihBwTW6m69yTCXpQ7Z9QVkC/S6d9EE6ZgAySbKcGk2BgcWCT1+IegB79AmseY=;
+	bh=nLa/JOHCB+NVf/gTGPWED+N7sittkLrVaca+Po1a3K0=; b=m1RSSwtyeAOGky3TxFfrc8rLA+
+	K5+uM+NJIpBbnGXzBzZj4mCBq399To/bKfEmq+fsRq9TlOOUlfs55JhZp3OBkCiAFyrWEYw5/ex7O
+	Stubz5czDs9H+wtPhaMONys+sZtN1LhhEo+kUNg6okf8enQiLuznpul5GFgEDkWFX0W4=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:40128 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rFdkP-0007Ao-P9; Tue, 19 Dec 2023 12:19:14 -0500
+	id 1rFdkZ-0007Ao-8V; Tue, 19 Dec 2023 12:19:23 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -27,10 +27,9 @@ To: gregkh@linuxfoundation.org,
 Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	hugo@hugovil.com,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Tue, 19 Dec 2023 12:18:51 -0500
-Message-Id: <20231219171903.3530985-8-hugo@hugovil.com>
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Date: Tue, 19 Dec 2023 12:19:00 -0500
+Message-Id: <20231219171903.3530985-17-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20231219171903.3530985-1-hugo@hugovil.com>
 References: <20231219171903.3530985-1-hugo@hugovil.com>
@@ -47,47 +46,125 @@ X-Spam-Level:
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-Subject: [PATCH 07/18] serial: sc16is7xx: use i2c_get_match_data()
+Subject: [PATCH 16/18] serial: sc16is7xx: reorder code to remove prototype declarations
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Use preferred i2c_get_match_data() instead of device_get_match_data()
-and i2c_client_get_device_id() to get the driver match data.
+Move/reorder some functions to remove sc16is7xx_ier_set() and
+sc16is7xx_stop_tx() prototypes declarations.
 
-Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+No functional change.
+
+sc16is7xx_ier_set() was introduced in
+commit cc4c1d05eb10 ("sc16is7xx: Properly resume TX after stop")
+
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
- drivers/tty/serial/sc16is7xx.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ drivers/tty/serial/sc16is7xx.c | 75 ++++++++++++++++------------------
+ 1 file changed, 36 insertions(+), 39 deletions(-)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 8cbf54d0a16c..97a97a4bd71a 100644
+index 3322507ab18e..9154fd75134a 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1798,17 +1798,14 @@ MODULE_ALIAS("spi:sc16is7xx");
- #ifdef CONFIG_SERIAL_SC16IS7XX_I2C
- static int sc16is7xx_i2c_probe(struct i2c_client *i2c)
+@@ -358,9 +358,6 @@ static struct uart_driver sc16is7xx_uart = {
+ 	.nr		= SC16IS7XX_MAX_DEVS,
+ };
+ 
+-static void sc16is7xx_ier_set(struct uart_port *port, u8 bit);
+-static void sc16is7xx_stop_tx(struct uart_port *port);
+-
+ #define to_sc16is7xx_one(p,e)	((container_of((p), struct sc16is7xx_one, e)))
+ 
+ static u8 sc16is7xx_port_read(struct uart_port *port, u8 reg)
+@@ -416,6 +413,42 @@ static void sc16is7xx_power(struct uart_port *port, int on)
+ 			      on ? 0 : SC16IS7XX_IER_SLEEP_BIT);
+ }
+ 
++static void sc16is7xx_ier_clear(struct uart_port *port, u8 bit)
++{
++	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
++	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
++
++	lockdep_assert_held_once(&port->lock);
++
++	one->config.flags |= SC16IS7XX_RECONF_IER;
++	one->config.ier_mask |= bit;
++	one->config.ier_val &= ~bit;
++	kthread_queue_work(&s->kworker, &one->reg_work);
++}
++
++static void sc16is7xx_ier_set(struct uart_port *port, u8 bit)
++{
++	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
++	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
++
++	lockdep_assert_held_once(&port->lock);
++
++	one->config.flags |= SC16IS7XX_RECONF_IER;
++	one->config.ier_mask |= bit;
++	one->config.ier_val |= bit;
++	kthread_queue_work(&s->kworker, &one->reg_work);
++}
++
++static void sc16is7xx_stop_tx(struct uart_port *port)
++{
++	sc16is7xx_ier_clear(port, SC16IS7XX_IER_THRI_BIT);
++}
++
++static void sc16is7xx_stop_rx(struct uart_port *port)
++{
++	sc16is7xx_ier_clear(port, SC16IS7XX_IER_RDI_BIT);
++}
++
+ static const struct sc16is7xx_devtype sc16is74x_devtype = {
+ 	.name		= "SC16IS74X",
+ 	.nr_gpio	= 0,
+@@ -867,42 +900,6 @@ static void sc16is7xx_reg_proc(struct kthread_work *ws)
+ 		sc16is7xx_reconf_rs485(&one->port);
+ }
+ 
+-static void sc16is7xx_ier_clear(struct uart_port *port, u8 bit)
+-{
+-	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
+-	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
+-
+-	lockdep_assert_held_once(&port->lock);
+-
+-	one->config.flags |= SC16IS7XX_RECONF_IER;
+-	one->config.ier_mask |= bit;
+-	one->config.ier_val &= ~bit;
+-	kthread_queue_work(&s->kworker, &one->reg_work);
+-}
+-
+-static void sc16is7xx_ier_set(struct uart_port *port, u8 bit)
+-{
+-	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
+-	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
+-
+-	lockdep_assert_held_once(&port->lock);
+-
+-	one->config.flags |= SC16IS7XX_RECONF_IER;
+-	one->config.ier_mask |= bit;
+-	one->config.ier_val |= bit;
+-	kthread_queue_work(&s->kworker, &one->reg_work);
+-}
+-
+-static void sc16is7xx_stop_tx(struct uart_port *port)
+-{
+-	sc16is7xx_ier_clear(port, SC16IS7XX_IER_THRI_BIT);
+-}
+-
+-static void sc16is7xx_stop_rx(struct uart_port *port)
+-{
+-	sc16is7xx_ier_clear(port, SC16IS7XX_IER_RDI_BIT);
+-}
+-
+ static void sc16is7xx_ms_proc(struct kthread_work *ws)
  {
--	const struct i2c_device_id *id = i2c_client_get_device_id(i2c);
- 	const struct sc16is7xx_devtype *devtype;
- 	struct regmap *regmaps[2];
- 	unsigned int i;
- 
--	if (i2c->dev.of_node) {
--		devtype = device_get_match_data(&i2c->dev);
--		if (!devtype)
--			return -ENODEV;
--	} else {
--		devtype = (struct sc16is7xx_devtype *)id->driver_data;
-+	devtype = (struct sc16is7xx_devtype *)i2c_get_match_data(i2c);
-+	if (!devtype) {
-+		dev_err(&i2c->dev, "Failed to match device\n");
-+		return -ENODEV;
- 	}
- 
- 	for (i = 0; i < devtype->nr_uart; i++) {
+ 	struct sc16is7xx_one *one = to_sc16is7xx_one(ws, ms_work.work);
 -- 
 2.39.2
 
