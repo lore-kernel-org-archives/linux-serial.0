@@ -1,81 +1,86 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D798F481A1;
-	Wed, 20 Dec 2023 16:06:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15F7A495EC;
+	Wed, 20 Dec 2023 16:11:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MxXSCy0r"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1703088397; x=1734624397;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=XYPJJPL5clzH4NBZgsCRD+JOT9e5OWBGHYD09Rhmisk=;
-  b=MxXSCy0r5qtLIN21a8ChvukFYzHxh0QSombJ+BUoR2/Q3gy/I4w7yDcP
-   PrsvO+KMq2V8jrTKziC3VxYVl/NDDh3AQVTUXmQBGhqEHklycCzNsHe05
-   bEr6q7wFkn8zubYgZUba9PGdhs/xupU8HX9pOEBun7SnfkEjhKjAnkiPD
-   2mCzJTnG0Ha0CLKVlfDSEOzL+Vz2w4XKrtkzi5J2yxR9wc0TeZs2bt6EK
-   9Inuqsgy+kDAusRnTwlJhpr9cMmA0j6xGF/hm98pmVKN49ShpcDq5q14v
-   N8o0OKAsvxafgZlQyEQcf7Nq/j/CZu6xF8frgjeqgMgyAwcCETUG5Zg6d
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10930"; a="2674467"
-X-IronPort-AV: E=Sophos;i="6.04,291,1695711600"; 
-   d="scan'208";a="2674467"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2023 08:06:36 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10930"; a="776385088"
-X-IronPort-AV: E=Sophos;i="6.04,291,1695711600"; 
-   d="scan'208";a="776385088"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga002.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2023 08:06:33 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@intel.com>)
-	id 1rFz5a-00000007b03-0esJ;
-	Wed, 20 Dec 2023 18:06:30 +0200
-Date: Wed, 20 Dec 2023 18:06:29 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Hugo Villeneuve <hugo@hugovil.com>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="D0QMdRem"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=h3wCD3ROBeekL2LK2cv12WSp+pxJN7ZdSftlsllgyzY=; b=D0QMdRemHB0wsSBXdXjXzIm8i3
+	aKAf+aFX5FnlC6JikhEJrV2K/0SbFN/HcdrKf6SQ9LQSpmF/yvFv3QQNPJLIRXd59idGPjf8VKbR1
+	V49dJh+QY4msOQOXHBhXmSCEvSjMt0GfDRCaYMW3cB69nJ/0pnWwTXnVc0/NkGVd+suw=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:39702 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1rFzAY-0006uu-5a; Wed, 20 Dec 2023 11:11:38 -0500
+Date: Wed, 20 Dec 2023 11:11:36 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, jringle@gridpoint.com,
-	kubakici@wp.pl, phil@raspberrypi.org, bo.svangard@embeddedart.se,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Subject: Re: [PATCH 00/18] serial: sc16is7xx: fixes, cleanups and improvements
-Message-ID: <ZYMRBbPEwIa8K4NI@smile.fi.intel.com>
+ kubakici@wp.pl, phil@raspberrypi.org, bo.svangard@embeddedart.se,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>
+Message-Id: <20231220111136.99315587e832190a528f7630@hugovil.com>
+In-Reply-To: <ZYMMs5A758h12AEM@smile.fi.intel.com>
 References: <20231219171903.3530985-1-hugo@hugovil.com>
+	<20231219171903.3530985-9-hugo@hugovil.com>
+	<ZYMMs5A758h12AEM@smile.fi.intel.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20231219171903.3530985-1-hugo@hugovil.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
+	* -1.4 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH 08/18] serial: sc16is7xx: add driver name to struct
+ uart_driver
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Tue, Dec 19, 2023 at 12:18:44PM -0500, Hugo Villeneuve wrote:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Wed, 20 Dec 2023 17:48:03 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+
+> On Tue, Dec 19, 2023 at 12:18:52PM -0500, Hugo Villeneuve wrote:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > 
+> > Make sure that the driver name is displayed instead of "unknown" when
+> > displaying the driver infos:
+> > 
+> > Before:
+> >     cat /proc/tty/drivers | grep ttySC
+> >     unknown              /dev/ttySC    243 0-7 serial
+> > 
+> > After:
+> >     cat /proc/tty/drivers | grep ttySC
+> >     sc16is7xx            /dev/ttySC    243 0-7 serial
 > 
-> Hello,
-> this patch series brings a few fixes, clean-ups and improvements to the
-> sc16is7xx driver.
+> "Useless use of cat" (you can google for this phrase, it's famous).
 > 
-> Some of the patches have been suggested by Andy Shevchenko following this
-> dicussion:
+> 	grep ... /proc/...
 > 
-> Link: https://lore.kernel.org/all/CAHp75VebCZckUrNraYQj9k=Mrn2kbYs1Lx26f5-8rKJ3RXeh-w@mail.gmail.com/
+> will work :-)
+> 
+> Otherwise LGTM!
 
-Thanks, good series (need a bit of additional work, though).
-What I really miss is the proper split of the driver. See
-0f04a81784fe ("pinctrl: mcp23s08: Split to three parts: core, I²C, SPI")
-as an example of a such.
+Old habits die hard :)
 
--- 
-With Best Regards,
-Andy Shevchenko
+Interesting read!
 
+Will modify commit message in V2.
 
+Thank you.
+
+Hugo Villeneuve
