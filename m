@@ -1,34 +1,34 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A501B3FE33;
-	Wed, 20 Dec 2023 16:24:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11FC037869;
+	Wed, 20 Dec 2023 16:30:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="kXyIUuPV"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="fticxRyy"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
 	:Date:subject:date:message-id:reply-to;
-	bh=U8rZjAmGtLQfE0RJ8Rx+OYUGCIvs1G9q060d7jcwYcQ=; b=kXyIUuPViEi5Ah6aW+Hz6fnm5V
-	qbg//jvoS4+FE70y2JdkCEWJ7UoNow6zbkgFG+9xm+4O57C7I6Cu1y88Uko8r+KXzEYv+QSwhUd3d
-	ahUO6MMhWXgCwjXI1qpkZpQpBZ9SUKq09Xg/jvFZVMS41MKHZFAK9T04/s5Ir/WNoZPc=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:39880 helo=pettiford)
+	bh=bzJ4EnCvZqQsZfO+pv4OGbyLedjWTc2W50qS42BS5Jc=; b=fticxRyyvM1O3XKb+WoaOoifSw
+	Yc8URZL5JoiYFQjffx0UV+1hC0eQU3rwpqDZkwJV3wB/qSRslrhu91JHRrWM57DNdga4E0y/1W2y5
+	yIgNddsTQqlKgkaCGHiNCU/6btpYjVomn/vFAo5peGNCMIUWJjS/qyXjh5xi2kk7LCXs=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:41850 helo=pettiford)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rFzMj-000734-TX; Wed, 20 Dec 2023 11:24:14 -0500
-Date: Wed, 20 Dec 2023 11:24:13 -0500
+	id 1rFzSS-00077N-8c; Wed, 20 Dec 2023 11:30:08 -0500
+Date: Wed, 20 Dec 2023 11:30:07 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, jringle@gridpoint.com,
  kubakici@wp.pl, phil@raspberrypi.org, bo.svangard@embeddedart.se,
  linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hugo Villeneuve
  <hvilleneuve@dimonoff.com>
-Message-Id: <20231220112413.c6f96dbb438df63a5e5f08a0@hugovil.com>
-In-Reply-To: <ZYMOH2VFRJ1npR7L@smile.fi.intel.com>
+Message-Id: <20231220113007.c52b01fb215e38f5d2e75086@hugovil.com>
+In-Reply-To: <ZYMPMK2NqGByJnRa@smile.fi.intel.com>
 References: <20231219171903.3530985-1-hugo@hugovil.com>
-	<20231219171903.3530985-14-hugo@hugovil.com>
-	<ZYMOH2VFRJ1npR7L@smile.fi.intel.com>
+	<20231219171903.3530985-17-hugo@hugovil.com>
+	<ZYMPMK2NqGByJnRa@smile.fi.intel.com>
 X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -45,30 +45,30 @@ X-Spam-Report:
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
 	* -1.4 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH 13/18] serial: sc16is7xx: use in_range() for DT
- properties bound checks
+Subject: Re: [PATCH 16/18] serial: sc16is7xx: reorder code to remove
+ prototype declarations
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Wed, 20 Dec 2023 17:54:07 +0200
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+On Wed, 20 Dec 2023 17:58:40 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Tue, Dec 19, 2023 at 12:18:57PM -0500, Hugo Villeneuve wrote:
+> On Tue, Dec 19, 2023 at 12:19:00PM -0500, Hugo Villeneuve wrote:
 > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > > 
-> > Improve code readability and efficiency by using in_range() when checking
-> > device tree properties bound.
+> > Move/reorder some functions to remove sc16is7xx_ier_set() and
+> > sc16is7xx_stop_tx() prototypes declarations.
+> > 
+> > No functional change.
+> > 
+> > sc16is7xx_ier_set() was introduced in
+> > commit cc4c1d05eb10 ("sc16is7xx: Properly resume TX after stop")
 > 
-> ...
-> 
-> >  	count = device_property_count_u32(dev, "irda-mode-ports");
-> > -	if (count < 0 || count > SC16IS7XX_MAX_PORTS)
-> > +	if (!in_range(count, 0, SC16IS7XX_MAX_PORTS + 1))
-> >  		return;
-> 
-> Okay, looking at this, it becomes uglier than initial code,
-> means my suggestion was not good. Please, drop this patch.
+> Missing period after ). Otherwise LGTM.
 
-Ok, will drop it for V2.
+Will add it for V2.
+
+By the way, when you say LGTM, would you suggest that I add your
+"Acked-by" or "Reviewed-by" tag, after having fixed what you mentioned?
 
 Hugo Villeneuve
