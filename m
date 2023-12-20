@@ -1,86 +1,120 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A0CA4645B;
-	Wed, 20 Dec 2023 16:00:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FBF44653F;
+	Wed, 20 Dec 2023 16:03:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="se9WbNYU"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=+NldyuY/BxdtLBEewyvEtWy6UnYa/M2HSy8eSghzyg4=; b=se9WbNYUaP7keWhf5ITLLV+TdY
-	t3zov8YrpzqXyIk+OnFT/y9nmgTTttlnN9kvZp+ocOP/iNDvEHlftX35Tm3+SRKN+jw+xgE+1+dRY
-	mc1mcG9jAEkUg4f7xeXUYip7v36IBAFpHH0Q2iythyfWJ1f9sh81QcdCOSnfjwF1iF30=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:51650 helo=pettiford)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1rFyzy-0006jy-Bc; Wed, 20 Dec 2023 11:00:42 -0500
-Date: Wed, 20 Dec 2023 11:00:41 -0500
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mwgtyHG2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1703088224; x=1734624224;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=dQj8luOfgwemBks3bxIO9yysVkYQT4TKDMg0qFGRAFI=;
+  b=mwgtyHG2p1sHvmTOin3zuqdS2NQrnFy3QYv749nYuXPJLK9W+XR18AJ0
+   prmhp3IpY9bipLAuaIbd4hKHujD1ZcU+GofQ+uo8R82SR+FHY1uZ+KWZq
+   7h2crQVDSwBtqaprT/f5tfa3XE+hSVw1sRUSN392NbAZvoKUHyLWoeOL1
+   dkvwXy/fiT6GwJ06XPcJWitBIYa69KOCwUqxxFm1qK58+vTCKr0Dg+1T7
+   Fwtkj+PHItRdc5uamzWtPeaoWZ5WLJ1uPcNvrHcIHXWD3MYIjfBr0Rk9i
+   byoSsjZHQTLxpu3s+XX9K8YvV8dLkLyRTplChl9iWu590els71nNBp2Lo
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10930"; a="395560553"
+X-IronPort-AV: E=Sophos;i="6.04,291,1695711600"; 
+   d="scan'208";a="395560553"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2023 08:03:24 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10930"; a="842321276"
+X-IronPort-AV: E=Sophos;i="6.04,291,1695711600"; 
+   d="scan'208";a="842321276"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2023 08:03:22 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@intel.com>)
+	id 1rFz2U-00000007axk-3Ads;
+	Wed, 20 Dec 2023 18:03:18 +0200
+Date: Wed, 20 Dec 2023 18:03:18 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Hugo Villeneuve <hugo@hugovil.com>
 Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, jringle@gridpoint.com,
- kubakici@wp.pl, phil@raspberrypi.org, bo.svangard@embeddedart.se,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>, stable@vger.kernel.org
-Message-Id: <20231220110041.23ed3c4e97a61d102c6b1e24@hugovil.com>
-In-Reply-To: <ZYMLciH4y_Y5ewiL@smile.fi.intel.com>
+	kubakici@wp.pl, phil@raspberrypi.org, bo.svangard@embeddedart.se,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Subject: Re: [PATCH 17/18] serial: sc16is7xx: refactor EFR lock
+Message-ID: <ZYMQRv1Td7FjH5Mh@smile.fi.intel.com>
 References: <20231219171903.3530985-1-hugo@hugovil.com>
-	<20231219171903.3530985-5-hugo@hugovil.com>
-	<ZYMLciH4y_Y5ewiL@smile.fi.intel.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+ <20231219171903.3530985-18-hugo@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-	* -1.4 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH 04/18] serial: sc16is7xx: improve do/while loop in
- sc16is7xx_irq()
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231219171903.3530985-18-hugo@hugovil.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Wed, 20 Dec 2023 17:42:42 +0200
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-
-> On Tue, Dec 19, 2023 at 12:18:48PM -0500, Hugo Villeneuve wrote:
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > 
-> > Simplify and improve readability by replacing while(1) loop with
-> > do {} while, and by using the keep_polling variable as the exit
-> > condition, making it more explicit.
+On Tue, Dec 19, 2023 at 12:19:01PM -0500, Hugo Villeneuve wrote:
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > 
-> ...
-> 
-> > +	bool keep_polling;
-> 
-> > +
-> 
-> Stray blank line. Otherwise LGTM.
+> Move common code for EFR lock/unlock of mutex into functions for code reuse
+> and clarity.
 
-Yes, and I just realized I should also change:
+...
 
-    do {
-        keep_polling = false;
-        int i;
-        ...
+> @@ -333,6 +333,7 @@ struct sc16is7xx_one {
+>  	struct sc16is7xx_one_config	config;
+>  	bool				irda_mode;
+>  	unsigned int			old_mctrl;
+> +	u8				old_lcr; /* Value before EFR access. */
+>  };
 
-to:
+Have you run `pahole`?
+I believe with
 
-    do {
-        int i;
+	unsigned int			old_mctrl;
+	u8				old_lcr; /* Value before EFR access. */
+	bool				irda_mode;
 
-        keep_polling = false;
-        ...
+layout it will take less memory.
 
-Hugo Villeneuve
+...
+
+> +/* In an amazing feat of design, the Enhanced Features Register (EFR)
+
+/*
+ * This is NOT the style we use for multi-line
+ * comments in the serial subsystem. On contrary
+ * this comment can be used as a proper example.
+ * (Yes, I noticed it's an old comment, but take
+ *  a chance to fix it.)
+ */
+
+> + * shares the address of the Interrupt Identification Register (IIR).
+> + * Access to EFR is switched on by writing a magic value (0xbf) to the
+> + * Line Control Register (LCR). Any interrupt firing during this time will
+> + * see the EFR where it expects the IIR to be, leading to
+> + * "Unexpected interrupt" messages.
+> + *
+> + * Prevent this possibility by claiming a mutex while accessing the EFR,
+> + * and claiming the same mutex from within the interrupt handler. This is
+> + * similar to disabling the interrupt, but that doesn't work because the
+> + * bulk of the interrupt processing is run as a workqueue job in thread
+> + * context.
+> + */
+
+...
+
+> +	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG,
+> +			     SC16IS7XX_LCR_CONF_MODE_B);
+
+One line. (Yes, 81 character, but readability is as good as before.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
