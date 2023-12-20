@@ -1,34 +1,34 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E896D495EC;
-	Wed, 20 Dec 2023 21:38:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F1124A984;
+	Wed, 20 Dec 2023 22:10:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="uYCZ3KNG"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="z06PS5AE"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
 	:Date:subject:date:message-id:reply-to;
-	bh=wIWDMjkfub9nTTJ5JI74/K00hMgRE/kdEk8xa9Y7LW0=; b=uYCZ3KNG9utyPrLOQFCRgBF6Nl
-	/vkLFPPGzZu4iOSDQKwsx9kGJD7FMpBWrI9XxlegwaUE3iaeSlBGPPAxzAV51jnMqIvo0I201/wtR
-	1aL5j4WX9noqJjeATTXuVYICtmfyutP384rd9vxKV5lI9eI4rPXAgxpi/h54/vjCWj4U=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:57326 helo=pettiford)
+	bh=gGhivGWuZJFEJNuLOFHDwrv7/AKHko0IOcoRRvuYkZc=; b=z06PS5AETwf3oQlBySaanxAS9L
+	4sr6cQsoOE3JOzjYQtVAv8DATN5g6wM2e3FTP3fYQ2mDi4ak/8FnY6s0JuWp2Mbdf9rCFRf6yzVBi
+	pNhh+eTzlTbL61t5oup9L28FFj0/DWM+KQiASXwTfquptBekYOflxCW3GGxcCsB2C8w4=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:55480 helo=pettiford)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rG4Gk-0002Rp-RU; Wed, 20 Dec 2023 16:38:23 -0500
-Date: Wed, 20 Dec 2023 16:38:22 -0500
+	id 1rG4lD-0002wK-D5; Wed, 20 Dec 2023 17:09:51 -0500
+Date: Wed, 20 Dec 2023 17:09:50 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, jringle@gridpoint.com,
  kubakici@wp.pl, phil@raspberrypi.org, bo.svangard@embeddedart.se,
  linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>
-Message-Id: <20231220163822.ce1d3893735d3334ae2d04e2@hugovil.com>
-In-Reply-To: <ZYMQRv1Td7FjH5Mh@smile.fi.intel.com>
+ <hvilleneuve@dimonoff.com>, stable@vger.kernel.org
+Message-Id: <20231220170950.88980abb0764442d77398675@hugovil.com>
+In-Reply-To: <ZYMLK1yXFCsGlzoP@smile.fi.intel.com>
 References: <20231219171903.3530985-1-hugo@hugovil.com>
-	<20231219171903.3530985-18-hugo@hugovil.com>
-	<ZYMQRv1Td7FjH5Mh@smile.fi.intel.com>
+	<20231219171903.3530985-4-hugo@hugovil.com>
+	<ZYMLK1yXFCsGlzoP@smile.fi.intel.com>
 X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -45,89 +45,30 @@ X-Spam-Report:
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
 	* -1.4 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH 17/18] serial: sc16is7xx: refactor EFR lock
+Subject: Re: [PATCH 03/18] serial: sc16is7xx: remove obsolete loop in
+ sc16is7xx_port_irq()
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Wed, 20 Dec 2023 18:03:18 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Wed, 20 Dec 2023 17:41:31 +0200
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-> On Tue, Dec 19, 2023 at 12:19:01PM -0500, Hugo Villeneuve wrote:
+> On Tue, Dec 19, 2023 at 12:18:47PM -0500, Hugo Villeneuve wrote:
 > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > > 
-> > Move common code for EFR lock/unlock of mutex into functions for code reuse
-> > and clarity.
+> > Commit 834449872105 ("sc16is7xx: Fix for multi-channel stall") changed
+> > sc16is7xx_port_irq() from looping multiple times when there was still
+> > interrupts to serve. It simply changed the do {} while(1) loop to a
+> > do {} while(0) loop, which makes the loop itself now obsolete.
+> > 
+> > Clean the code by removing this obsolete do {} while(0) loop.
 > 
-> ...
-> 
-> > @@ -333,6 +333,7 @@ struct sc16is7xx_one {
-> >  	struct sc16is7xx_one_config	config;
-> >  	bool				irda_mode;
-> >  	unsigned int			old_mctrl;
-> > +	u8				old_lcr; /* Value before EFR access. */
-> >  };
-> 
-> Have you run `pahole`?
-> I believe with
-> 
-> 	unsigned int			old_mctrl;
-> 	u8				old_lcr; /* Value before EFR access. */
-> 	bool				irda_mode;
-> 
-> layout it will take less memory.
+> I'm just wondering if you used --histogram diff algo when prepared the patches.
+> If no, use that by default.
 
 Hi,
-I did not know about this tool, nice.
+I did not, and effectively it makes the patch easier to follow.
 
-$ pahole -C sc16is7xx_one drivers/tty/serial/sc16is7xx.o
+I will use it as default from now on.
 
-Before:
-    /* size: 752, cachelines: 12, members: 10 */
-
-With your proposed change:
-    /* size: 744, cachelines: 12, members: 10 */
-
-Will add this modification for V2, as well as other issues
-noted below.
-
-Thank you,
-Hugo
-
-
-> > +/* In an amazing feat of design, the Enhanced Features Register (EFR)
-> 
-> /*
->  * This is NOT the style we use for multi-line
->  * comments in the serial subsystem. On contrary
->  * this comment can be used as a proper example.
->  * (Yes, I noticed it's an old comment, but take
->  *  a chance to fix it.)
->  */
-> 
-> > + * shares the address of the Interrupt Identification Register (IIR).
-> > + * Access to EFR is switched on by writing a magic value (0xbf) to the
-> > + * Line Control Register (LCR). Any interrupt firing during this time will
-> > + * see the EFR where it expects the IIR to be, leading to
-> > + * "Unexpected interrupt" messages.
-> > + *
-> > + * Prevent this possibility by claiming a mutex while accessing the EFR,
-> > + * and claiming the same mutex from within the interrupt handler. This is
-> > + * similar to disabling the interrupt, but that doesn't work because the
-> > + * bulk of the interrupt processing is run as a workqueue job in thread
-> > + * context.
-> > + */
-> 
-> ...
-> 
-> > +	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG,
-> > +			     SC16IS7XX_LCR_CONF_MODE_B);
-> 
-> One line. (Yes, 81 character, but readability is as good as before.
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
-> 
-> 
+Hugo Villeneuve
