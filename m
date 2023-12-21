@@ -1,22 +1,22 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39C8F78E9D;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B861078E8F;
 	Thu, 21 Dec 2023 23:18:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="ZgEVfGWd"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="YZmyiQCH"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=9vLSuwSuinaGR58m/VQBBtnfS0zJHnLEOqbKnjl2e+8=; b=ZgEVfGWdU24hPBZ+fO6NHWHieT
-	XR4mtREvX2wJSgur4UyWZ+FFq73SyAPse3C83iW8UrJd1WUebwKpg1FvxB7hbXty516y3s4EvdOvP
-	KEgHVISHsGrI6LAVcxGmxx4GHar12ASqI7O68PpFBZurzwD4PIsruIIZWWyXPibxhlUY=;
+	bh=zFCvSODRlDhyfhkyYaxqYDprC5OQrJQqCGo9MKePm3A=; b=YZmyiQCHE5e0ItphwBphKivjgL
+	nVggYMT39w3kM1I/N43fofJjfKo4DXFbuQjJgZEqHiBEJ4R+CfdrCY8onz3tqcghDErcE0V5v1LWs
+	lAlxUVMKR3FmJgkdZ4qcg0kkG+CEe6KmW108t33MEu3/gUzf7wmfZNfKiajkRFYHmni0=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:52484 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rGSJQ-00025W-5C; Thu, 21 Dec 2023 18:18:44 -0500
+	id 1rGSJF-00025W-G7; Thu, 21 Dec 2023 18:18:34 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -26,9 +26,11 @@ To: gregkh@linuxfoundation.org,
 Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	hugo@hugovil.com,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Date: Thu, 21 Dec 2023 18:18:17 -0500
-Message-Id: <20231221231823.2327894-11-hugo@hugovil.com>
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	stable@vger.kernel.org,
+	Yury Norov <yury.norov@gmail.com>
+Date: Thu, 21 Dec 2023 18:18:08 -0500
+Message-Id: <20231221231823.2327894-2-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20231221231823.2327894-1-hugo@hugovil.com>
 References: <20231221231823.2327894-1-hugo@hugovil.com>
@@ -45,67 +47,131 @@ X-Spam-Level:
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-Subject: [PATCH v2 10/16] serial: sc16is7xx: add macro for max number of UART ports
+Subject: [PATCH v2 01/16] serial: sc16is7xx: fix invalid sc16is7xx_lines bitfield in case of probe error
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Add macro to hold the maximum number of UART ports per IC/device.
+If an error occurs during probing, the sc16is7xx_lines bitfield may be left
+in a state that doesn't represent the correct state of lines allocation.
 
+For example, in a system with two SC16 devices, if an error occurs only
+during probing of channel (port) B of the second device, sc16is7xx_lines
+final state will be 00001011b instead of the expected 00000011b.
+
+This is caused in part because of the "i--" in the for/loop located in
+the out_ports: error path.
+
+Fix this by checking the return value of uart_add_one_port() and set line
+allocation bit only if this was successful. This allows the refactor of
+the obfuscated for(i--...) loop in the error path, and properly call
+uart_remove_one_port() only when needed, and properly unset line allocation
+bits.
+
+Also use same mechanism in remove() when calling uart_remove_one_port().
+
+Fixes: c64349722d14 ("sc16is7xx: support multiple devices")
+Cc: stable@vger.kernel.org
+Cc: Yury Norov <yury.norov@gmail.com>
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
- drivers/tty/serial/sc16is7xx.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/tty/serial/sc16is7xx.c | 44 ++++++++++++++--------------------
+ 1 file changed, 18 insertions(+), 26 deletions(-)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index b73fac209f1e..6181cc6f934b 100644
+index e40e4a99277e..17b90f971f96 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -29,6 +29,7 @@
+@@ -407,19 +407,6 @@ static void sc16is7xx_port_update(struct uart_port *port, u8 reg,
+ 	regmap_update_bits(one->regmap, reg, mask, val);
+ }
  
- #define SC16IS7XX_NAME			"sc16is7xx"
- #define SC16IS7XX_MAX_DEVS		8
-+#define SC16IS7XX_MAX_PORTS		2 /* Maximum number of UART ports per IC. */
- 
- /* SC16IS7XX register definitions */
- #define SC16IS7XX_RHR_REG		(0x00) /* RX FIFO */
-@@ -1398,7 +1399,7 @@ static void sc16is7xx_setup_irda_ports(struct sc16is7xx_port *s)
- 	int i;
- 	int ret;
- 	int count;
--	u32 irda_port[2];
-+	u32 irda_port[SC16IS7XX_MAX_PORTS];
- 	struct device *dev = s->p[0].port.dev;
- 
- 	count = device_property_count_u32(dev, "irda-mode-ports");
-@@ -1425,7 +1426,7 @@ static int sc16is7xx_setup_mctrl_ports(struct sc16is7xx_port *s,
- 	int i;
- 	int ret;
- 	int count;
--	u32 mctrl_port[2];
-+	u32 mctrl_port[SC16IS7XX_MAX_PORTS];
- 	struct device *dev = s->p[0].port.dev;
- 
- 	count = device_property_count_u32(dev, "nxp,modem-control-line-ports");
-@@ -1727,7 +1728,7 @@ static unsigned int sc16is7xx_regmap_port_mask(unsigned int port_id)
- static int sc16is7xx_spi_probe(struct spi_device *spi)
+-static int sc16is7xx_alloc_line(void)
+-{
+-	int i;
+-
+-	BUILD_BUG_ON(SC16IS7XX_MAX_DEVS > BITS_PER_LONG);
+-
+-	for (i = 0; i < SC16IS7XX_MAX_DEVS; i++)
+-		if (!test_and_set_bit(i, &sc16is7xx_lines))
+-			break;
+-
+-	return i;
+-}
+-
+ static void sc16is7xx_power(struct uart_port *port, int on)
  {
- 	const struct sc16is7xx_devtype *devtype;
--	struct regmap *regmaps[2];
-+	struct regmap *regmaps[SC16IS7XX_MAX_PORTS];
- 	unsigned int i;
- 	int ret;
+ 	sc16is7xx_port_update(port, SC16IS7XX_IER_REG,
+@@ -1550,6 +1537,13 @@ static int sc16is7xx_probe(struct device *dev,
+ 		     SC16IS7XX_IOCONTROL_SRESET_BIT);
  
-@@ -1798,7 +1799,7 @@ MODULE_ALIAS("spi:sc16is7xx");
- static int sc16is7xx_i2c_probe(struct i2c_client *i2c)
- {
- 	const struct sc16is7xx_devtype *devtype;
--	struct regmap *regmaps[2];
-+	struct regmap *regmaps[SC16IS7XX_MAX_PORTS];
- 	unsigned int i;
+ 	for (i = 0; i < devtype->nr_uart; ++i) {
++		s->p[i].port.line = find_first_zero_bit(&sc16is7xx_lines,
++							SC16IS7XX_MAX_DEVS);
++		if (s->p[i].port.line >= SC16IS7XX_MAX_DEVS) {
++			ret = -ERANGE;
++			goto out_ports;
++		}
++
+ 		/* Initialize port data */
+ 		s->p[i].port.dev	= dev;
+ 		s->p[i].port.irq	= irq;
+@@ -1569,14 +1563,8 @@ static int sc16is7xx_probe(struct device *dev,
+ 		s->p[i].port.rs485_supported = sc16is7xx_rs485_supported;
+ 		s->p[i].port.ops	= &sc16is7xx_ops;
+ 		s->p[i].old_mctrl	= 0;
+-		s->p[i].port.line	= sc16is7xx_alloc_line();
+ 		s->p[i].regmap		= regmaps[i];
  
- 	devtype = i2c_get_match_data(i2c);
+-		if (s->p[i].port.line >= SC16IS7XX_MAX_DEVS) {
+-			ret = -ENOMEM;
+-			goto out_ports;
+-		}
+-
+ 		mutex_init(&s->p[i].efr_lock);
+ 
+ 		ret = uart_get_rs485_mode(&s->p[i].port);
+@@ -1594,8 +1582,13 @@ static int sc16is7xx_probe(struct device *dev,
+ 		kthread_init_work(&s->p[i].tx_work, sc16is7xx_tx_proc);
+ 		kthread_init_work(&s->p[i].reg_work, sc16is7xx_reg_proc);
+ 		kthread_init_delayed_work(&s->p[i].ms_work, sc16is7xx_ms_proc);
++
+ 		/* Register port */
+-		uart_add_one_port(&sc16is7xx_uart, &s->p[i].port);
++		ret = uart_add_one_port(&sc16is7xx_uart, &s->p[i].port);
++		if (ret)
++			goto out_ports;
++
++		set_bit(s->p[i].port.line, &sc16is7xx_lines);
+ 
+ 		/* Enable EFR */
+ 		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_LCR_REG,
+@@ -1653,10 +1646,9 @@ static int sc16is7xx_probe(struct device *dev,
+ #endif
+ 
+ out_ports:
+-	for (i--; i >= 0; i--) {
+-		uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
+-		clear_bit(s->p[i].port.line, &sc16is7xx_lines);
+-	}
++	for (i = 0; i < devtype->nr_uart; i++)
++		if (test_and_clear_bit(s->p[i].port.line, &sc16is7xx_lines))
++			uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
+ 
+ 	kthread_stop(s->kworker_task);
+ 
+@@ -1678,8 +1670,8 @@ static void sc16is7xx_remove(struct device *dev)
+ 
+ 	for (i = 0; i < s->devtype->nr_uart; i++) {
+ 		kthread_cancel_delayed_work_sync(&s->p[i].ms_work);
+-		uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
+-		clear_bit(s->p[i].port.line, &sc16is7xx_lines);
++		if (test_and_clear_bit(s->p[i].port.line, &sc16is7xx_lines))
++			uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
+ 		sc16is7xx_power(&s->p[i].port, 0);
+ 	}
+ 
 -- 
 2.39.2
 
