@@ -1,85 +1,59 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14A1A33988;
-	Thu, 21 Dec 2023 19:36:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB4D676DA1;
+	Thu, 21 Dec 2023 21:11:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="pXihLVnJ"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=vPc8thH3C7HWk4KTsdpmJPeYei58JpYABE0eXOWLITk=; b=pXihLVnJV0TtPIGJgQBjxclwAX
-	5Bb/jRQwN2oSZS2a+1T9sC0aWOcHeWzpzTn46B4/Kek2A5ADwbNIvEUY9wwI1Jwd2jacpt2mULHsw
-	jC89PIRAnPmOulL4ayxTfNxdNdJWMPMn5kW3HXc1hGpfA2iDzZZmzv5Euyp/b5oMpgdk=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:51258 helo=pettiford)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1rGOpl-0000GN-VW; Thu, 21 Dec 2023 14:35:54 -0500
-Date: Thu, 21 Dec 2023 14:35:53 -0500
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, jringle@gridpoint.com,
- kubakici@wp.pl, phil@raspberrypi.org, bo.svangard@embeddedart.se,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>, stable@vger.kernel.org
-Message-Id: <20231221143553.57a180880d30b86257ee9b7c@hugovil.com>
-In-Reply-To: <ZYMPBz3BbOzSCEog@smile.fi.intel.com>
-References: <20231219171903.3530985-1-hugo@hugovil.com>
-	<20231219171903.3530985-16-hugo@hugovil.com>
-	<ZYMPBz3BbOzSCEog@smile.fi.intel.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eCAtLF24"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9C37C433C7;
+	Thu, 21 Dec 2023 21:11:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1703193118;
+	bh=njb5ZTTPXp5fHgYk6dh4ZkqF1BltWHZDNwTEvr8ost4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=eCAtLF24Ev0GXMsgBkiA6Y4wELClG2bXexq7pvA38R7mMSDxozs8KWCuBM2h7g0cX
+	 mPTmrWGVIDB7MNVwysFmwwPrPpDNgvXle8XaacCl4DFNYNGtswHSGlqzWL3VGqs6O5
+	 Q+RDH/1KoADirm1BIMKmPa+62LkI20HFhG8QZrhX7pK8bUjXWhzqTdYDoTd1Txg73L
+	 KDMznuA5KnbG5/ev40q3dZtU7Qv5dC8r52gkiPNMRG7zdhdc6ERTDZDS73YM2kKZVC
+	 hOUHWF9pqPiqDPc4Y1EpzJVdGgSrC5E1mW3kikAzr72EWXCGAsEqr3FPk08SlYYGGJ
+	 pqCM0VmW0LSXw==
+Received: (nullmailer pid 101568 invoked by uid 1000);
+	Thu, 21 Dec 2023 21:11:57 -0000
+Date: Thu, 21 Dec 2023 15:11:56 -0600
+From: Rob Herring <robh@kernel.org>
+To: Michal Simek <michal.simek@amd.com>
+Cc: linux-kernel@vger.kernel.org, michal.simek@xilinx.com, Conor Dooley <conor+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org, monstr@monstr.eu, Rob Herring <robh+dt@kernel.org>, git@xilinx.com, devicetree@vger.kernel.org, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Subject: Re: [PATCH] dt-bindings: serial: Describe ARM dcc interface
+Message-ID: <170319311633.101509.1532196763061569676.robh@kernel.org>
+References: <9d7e85914eb1cdb313b28cb019093a84dd9b4773.1703167505.git.michal.simek@amd.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-	* -3.8 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH 15/18] serial: sc16is7xx: pass R/W buffer in FIFO
- functions
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9d7e85914eb1cdb313b28cb019093a84dd9b4773.1703167505.git.michal.simek@amd.com>
 
-On Wed, 20 Dec 2023 17:57:59 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Tue, Dec 19, 2023 at 12:18:59PM -0500, Hugo Villeneuve wrote:
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > 
-> > To simplify function by avoiding cast.
-> > 
-> > This is similar to what is done in max310x driver.
+On Thu, 21 Dec 2023 15:05:09 +0100, Michal Simek wrote:
+> Debug Communication Channel (DCC) provides the way how to pass data between
+> target CPU and host via JTAG interface. Every CPU has own interface for
+> communication via dbgdtrtx_el0 and dbgdtrrx_el0 registers.
 > 
-> ...
+> Signed-off-by: Michal Simek <michal.simek@amd.com>
+> ---
 > 
-> > ---
-> > If deemed appropriate for stable kernel backporting:
+> This communication interface is used for flash programming on Xilinx
+> SOCs from U-Boot.
+> https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/serial/arm_dcc.c
 > 
-> I don't think it's eligible.
-
-No problem.
-
-
-> > ---
+> ---
+>  .../devicetree/bindings/serial/arm,dcc.yaml   | 30 +++++++++++++++++++
+>  1 file changed, 30 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/arm,dcc.yaml
 > 
-> I don't see the necessity of the change, OTOH it's harmless.
-> The problem is that commit message is basically "Yeah, we
-> do cargo cult." Because I haven't seen what casting you are
-> talking about.
 
-I'll try to reword the commit message.
+Reviewed-by: Rob Herring <robh@kernel.org>
 
-And replace cast with something like "... to remove additional struct
-sc16is7xx_port variable..."
-
-Hugo Villeneuve
