@@ -1,22 +1,22 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B864F78E9B;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39C8F78E9D;
 	Thu, 21 Dec 2023 23:18:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="GBb1eiuB"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="ZgEVfGWd"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=A3JAYH++UPopmKfr9YU5rDrgJ9jbknex8l6qeuhRBCw=; b=GBb1eiuB8wx1VRFGn1/vm+Itdz
-	Nt6/GXzoZ518e4gHtXDuK1v1/xgaFAn6k8TwdIO6ZUQwzoDy9v25d4kJlT0yGrGtPuSg8ndT2Ys0G
-	OpRMhencbdjRXmRJRVyC9ps9w+bzCh/92gQDhGi6md8k9FLhH4dRL2dldSwBV+a05j68=;
+	bh=9vLSuwSuinaGR58m/VQBBtnfS0zJHnLEOqbKnjl2e+8=; b=ZgEVfGWdU24hPBZ+fO6NHWHieT
+	XR4mtREvX2wJSgur4UyWZ+FFq73SyAPse3C83iW8UrJd1WUebwKpg1FvxB7hbXty516y3s4EvdOvP
+	KEgHVISHsGrI6LAVcxGmxx4GHar12ASqI7O68PpFBZurzwD4PIsruIIZWWyXPibxhlUY=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:52484 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rGSJE-00025W-BA; Thu, 21 Dec 2023 18:18:32 -0500
+	id 1rGSJQ-00025W-5C; Thu, 21 Dec 2023 18:18:44 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -27,9 +27,11 @@ Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	hugo@hugovil.com,
 	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Date: Thu, 21 Dec 2023 18:18:07 -0500
-Message-Id: <20231221231823.2327894-1-hugo@hugovil.com>
+Date: Thu, 21 Dec 2023 18:18:17 -0500
+Message-Id: <20231221231823.2327894-11-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20231221231823.2327894-1-hugo@hugovil.com>
+References: <20231221231823.2327894-1-hugo@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -43,75 +45,67 @@ X-Spam-Level:
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-Subject: [PATCH v2 00/16] serial: sc16is7xx: fixes, cleanups and improvements
+Subject: [PATCH v2 10/16] serial: sc16is7xx: add macro for max number of UART ports
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Hello,
-this patch series brings a few fixes, clean-ups and improvements to the
-sc16is7xx driver.
+Add macro to hold the maximum number of UART ports per IC/device.
 
-Some of the patches have been suggested by Andy Shevchenko following this
-dicussion:
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+---
+ drivers/tty/serial/sc16is7xx.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-Link: https://lore.kernel.org/all/CAHp75VebCZckUrNraYQj9k=Mrn2kbYs1Lx26f5-8rKJ3RXeh-w@mail.gmail.com/
-
-I have tested the changes on a custom board with two SC16IS752 DUART over
-a SPI interface using a Variscite IMX8MN NANO SOM. The four UARTs are
-configured in RS-485 mode.
-
-I did not test the change on a SC16is7xx using I2C interface, as my custom
-board is only using SPI.
-
-Thank you.
-
-Link: [v1] https://lore.kernel.org/all/20231219171903.3530985-1-hugo@hugovil.com/
-
-Changes for V2:
-- Invert statements in "improve do/while loop in sc16is7xx_irq()".
-- Drop patch "use in_range() for DT properties bound checks" at Andy's
-  suggestion.
-- Drop patch "fix whitespace in sc16is7xx_startup() comments".
-- Drop patch "fix segfault when removing driver".
-- Fix some commit descriptions after reviews.
-- Remove casting in spi_get_device_match_data() and i2c_get_match_data(),
-  and use dev_err_probe().
-- Fix indentation and comments style.
-- Add patch to fix SPI default frequency if unspecified and merge it with
-  patch "use HZ_PER_MHZ macro to improve readability".
-- Add patch to detect wrong SPI mode.
-- Optimize struct sc16is7xx_one based on Andy's comment and running pahole.
-- Use git diff histogram algo when generating patches.
-- Revert to ARRAY_SIZE() macro in "add macro for max number of UART ports"
-  and remove WARN_ON().
-
-Hugo Villeneuve (16):
-  serial: sc16is7xx: fix invalid sc16is7xx_lines bitfield in case of
-    probe error
-  serial: sc16is7xx: add check for unsupported SPI modes during probe
-  serial: sc16is7xx: set safe default SPI clock frequency
-  serial: sc16is7xx: remove obsolete loop in sc16is7xx_port_irq()
-  serial: sc16is7xx: improve do/while loop in sc16is7xx_irq()
-  serial: sc16is7xx: use DECLARE_BITMAP for sc16is7xx_lines bitfield
-  serial: sc16is7xx: use spi_get_device_match_data()
-  serial: sc16is7xx: use i2c_get_match_data()
-  serial: sc16is7xx: add driver name to struct uart_driver
-  serial: sc16is7xx: add macro for max number of UART ports
-  serial: sc16is7xx: add explicit return for some switch default cases
-  serial: sc16is7xx: replace hardcoded divisor value with BIT() macro
-  serial: sc16is7xx: drop unneeded MODULE_ALIAS
-  serial: sc16is7xx: refactor FIFO access functions to increase
-    commonality
-  serial: sc16is7xx: reorder code to remove prototype declarations
-  serial: sc16is7xx: refactor EFR lock
-
- drivers/tty/serial/sc16is7xx.c | 386 ++++++++++++++++-----------------
- 1 file changed, 184 insertions(+), 202 deletions(-)
-
-
-base-commit: 43f012df3c1e979966524f79b5371fde6545488a
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index b73fac209f1e..6181cc6f934b 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -29,6 +29,7 @@
+ 
+ #define SC16IS7XX_NAME			"sc16is7xx"
+ #define SC16IS7XX_MAX_DEVS		8
++#define SC16IS7XX_MAX_PORTS		2 /* Maximum number of UART ports per IC. */
+ 
+ /* SC16IS7XX register definitions */
+ #define SC16IS7XX_RHR_REG		(0x00) /* RX FIFO */
+@@ -1398,7 +1399,7 @@ static void sc16is7xx_setup_irda_ports(struct sc16is7xx_port *s)
+ 	int i;
+ 	int ret;
+ 	int count;
+-	u32 irda_port[2];
++	u32 irda_port[SC16IS7XX_MAX_PORTS];
+ 	struct device *dev = s->p[0].port.dev;
+ 
+ 	count = device_property_count_u32(dev, "irda-mode-ports");
+@@ -1425,7 +1426,7 @@ static int sc16is7xx_setup_mctrl_ports(struct sc16is7xx_port *s,
+ 	int i;
+ 	int ret;
+ 	int count;
+-	u32 mctrl_port[2];
++	u32 mctrl_port[SC16IS7XX_MAX_PORTS];
+ 	struct device *dev = s->p[0].port.dev;
+ 
+ 	count = device_property_count_u32(dev, "nxp,modem-control-line-ports");
+@@ -1727,7 +1728,7 @@ static unsigned int sc16is7xx_regmap_port_mask(unsigned int port_id)
+ static int sc16is7xx_spi_probe(struct spi_device *spi)
+ {
+ 	const struct sc16is7xx_devtype *devtype;
+-	struct regmap *regmaps[2];
++	struct regmap *regmaps[SC16IS7XX_MAX_PORTS];
+ 	unsigned int i;
+ 	int ret;
+ 
+@@ -1798,7 +1799,7 @@ MODULE_ALIAS("spi:sc16is7xx");
+ static int sc16is7xx_i2c_probe(struct i2c_client *i2c)
+ {
+ 	const struct sc16is7xx_devtype *devtype;
+-	struct regmap *regmaps[2];
++	struct regmap *regmaps[SC16IS7XX_MAX_PORTS];
+ 	unsigned int i;
+ 
+ 	devtype = i2c_get_match_data(i2c);
 -- 
 2.39.2
 
