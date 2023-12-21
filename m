@@ -1,88 +1,117 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6407379948;
-	Thu, 21 Dec 2023 23:12:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B864F78E9B;
+	Thu, 21 Dec 2023 23:18:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="J8Gnd+0L"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=ysJ1nRhQ8xLtmwMxQM54I2ikdSeFGYHpjXOSTY91G18=; b=J8Gnd+0L4FdQ46ayKLbY8F1mRr
-	stnhlQXCh44liIcKVvKA+RviYLAg4Pm1mRS11Q+WdWI7W4MT+uictfzcIR4/QKaveSlGhSmbS6ZQt
-	VTxy+JnaQm3o1bHDi0uDT/85SetX4L62gJJ5ZxB/Q6A1k9kIJkH2fx149ZY3zmDWLTUdFDH1FO/2X
-	IVxnjvfbIV6qJLexwrkQZl8Z9U9UnJY0sGDE131rNKnLVaIr4poY6BXIyvA+Ltp1uDNc7mLADGxNl
-	FQ/84Zsd8Gva9Hbd0NqHcR54EmJOAjDIJmohL6jefF2txFePiS5VQX7kdOr7OpAcxZJnkSV4NL/p6
-	ko0Iy1wQ==;
-Received: from [50.53.46.231] (helo=[192.168.254.15])
-	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1rGSDh-004Ous-0x;
-	Thu, 21 Dec 2023 23:12:49 +0000
-Message-ID: <cc5c5ceb-cb07-4fb3-95f0-c114dd12a755@infradead.org>
-Date: Thu, 21 Dec 2023 15:12:46 -0800
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="GBb1eiuB"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
+	:From:subject:date:message-id:reply-to;
+	bh=A3JAYH++UPopmKfr9YU5rDrgJ9jbknex8l6qeuhRBCw=; b=GBb1eiuB8wx1VRFGn1/vm+Itdz
+	Nt6/GXzoZ518e4gHtXDuK1v1/xgaFAn6k8TwdIO6ZUQwzoDy9v25d4kJlT0yGrGtPuSg8ndT2Ys0G
+	OpRMhencbdjRXmRJRVyC9ps9w+bzCh/92gQDhGi6md8k9FLhH4dRL2dldSwBV+a05j68=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:52484 helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1rGSJE-00025W-BA; Thu, 21 Dec 2023 18:18:32 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	kubakici@wp.pl,
+	indrakanti_ram@hotmail.com,
+	phil@raspberrypi.org
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	hugo@hugovil.com,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Date: Thu, 21 Dec 2023 18:18:07 -0500
+Message-Id: <20231221231823.2327894-1-hugo@hugovil.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty/sysrq: Dump kernel ring buffer messages via sysrq
-Content-Language: en-US
-To: Greg KH <gregkh@linuxfoundation.org>,
- Sreenath Vijayan <sreenath.vijayan@sony.com>
-Cc: linux-doc@vger.kernel.org, linux-serial@vger.kernel.org, corbet@lwn.net,
- jirislaby@kernel.org, linux-kernel@vger.kernel.org,
- anandakumar.balasubramaniam@sony.com,
- Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>
-References: <20231221133953.1507021-1-sreenath.vijayan@sony.com>
- <2023122144-enlarged-maggot-493a@gregkh>
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <2023122144-enlarged-maggot-493a@gregkh>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
+Subject: [PATCH v2 00/16] serial: sc16is7xx: fixes, cleanups and improvements
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+
+Hello,
+this patch series brings a few fixes, clean-ups and improvements to the
+sc16is7xx driver.
+
+Some of the patches have been suggested by Andy Shevchenko following this
+dicussion:
+
+Link: https://lore.kernel.org/all/CAHp75VebCZckUrNraYQj9k=Mrn2kbYs1Lx26f5-8rKJ3RXeh-w@mail.gmail.com/
+
+I have tested the changes on a custom board with two SC16IS752 DUART over
+a SPI interface using a Variscite IMX8MN NANO SOM. The four UARTs are
+configured in RS-485 mode.
+
+I did not test the change on a SC16is7xx using I2C interface, as my custom
+board is only using SPI.
+
+Thank you.
+
+Link: [v1] https://lore.kernel.org/all/20231219171903.3530985-1-hugo@hugovil.com/
+
+Changes for V2:
+- Invert statements in "improve do/while loop in sc16is7xx_irq()".
+- Drop patch "use in_range() for DT properties bound checks" at Andy's
+  suggestion.
+- Drop patch "fix whitespace in sc16is7xx_startup() comments".
+- Drop patch "fix segfault when removing driver".
+- Fix some commit descriptions after reviews.
+- Remove casting in spi_get_device_match_data() and i2c_get_match_data(),
+  and use dev_err_probe().
+- Fix indentation and comments style.
+- Add patch to fix SPI default frequency if unspecified and merge it with
+  patch "use HZ_PER_MHZ macro to improve readability".
+- Add patch to detect wrong SPI mode.
+- Optimize struct sc16is7xx_one based on Andy's comment and running pahole.
+- Use git diff histogram algo when generating patches.
+- Revert to ARRAY_SIZE() macro in "add macro for max number of UART ports"
+  and remove WARN_ON().
+
+Hugo Villeneuve (16):
+  serial: sc16is7xx: fix invalid sc16is7xx_lines bitfield in case of
+    probe error
+  serial: sc16is7xx: add check for unsupported SPI modes during probe
+  serial: sc16is7xx: set safe default SPI clock frequency
+  serial: sc16is7xx: remove obsolete loop in sc16is7xx_port_irq()
+  serial: sc16is7xx: improve do/while loop in sc16is7xx_irq()
+  serial: sc16is7xx: use DECLARE_BITMAP for sc16is7xx_lines bitfield
+  serial: sc16is7xx: use spi_get_device_match_data()
+  serial: sc16is7xx: use i2c_get_match_data()
+  serial: sc16is7xx: add driver name to struct uart_driver
+  serial: sc16is7xx: add macro for max number of UART ports
+  serial: sc16is7xx: add explicit return for some switch default cases
+  serial: sc16is7xx: replace hardcoded divisor value with BIT() macro
+  serial: sc16is7xx: drop unneeded MODULE_ALIAS
+  serial: sc16is7xx: refactor FIFO access functions to increase
+    commonality
+  serial: sc16is7xx: reorder code to remove prototype declarations
+  serial: sc16is7xx: refactor EFR lock
+
+ drivers/tty/serial/sc16is7xx.c | 386 ++++++++++++++++-----------------
+ 1 file changed, 184 insertions(+), 202 deletions(-)
 
 
-
-On 12/21/23 08:52, Greg KH wrote:
-> On Thu, Dec 21, 2023 at 07:09:53PM +0530, Sreenath Vijayan wrote:
->> When terminal is unresponsive, one cannot use dmesg to view kernel
->> ring buffer messages. Also, syslog services may be disabled,
->> to check them after a reboot, especially on embedded systems.
->> In this scenario, dump the kernel ring buffer messages via sysrq
->> by pressing sysrq+D.
->>
->> Signed-off-by: Sreenath Vijayan <sreenath.vijayan@sony.com>
->> Signed-off-by: Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>
->> ---
->>  Documentation/admin-guide/sysrq.rst |  2 ++
->>  drivers/tty/sysrq.c                 | 43 ++++++++++++++++++++++++++++-
->>  2 files changed, 44 insertions(+), 1 deletion(-)
->>
->> diff --git a/Documentation/admin-guide/sysrq.rst b/Documentation/admin-guide/sysrq.rst
->> index 2f2e5bd440f9..464c4e138b9d 100644
->> --- a/Documentation/admin-guide/sysrq.rst
->> +++ b/Documentation/admin-guide/sysrq.rst
->> @@ -161,6 +161,8 @@ Command	    Function
->>              will be printed to your console. (``0``, for example would make
->>              it so that only emergency messages like PANICs or OOPSes would
->>              make it to your console.)
->> +
->> +``D``	    Dump the kernel ring buffer
->>  =========== ===================================================================
-> 
-> Nit, this doesn't line up anymore :(
-
-Yes, that will cause a docs build warning.
-
-Also, can you be more explicit about which ring buffer this patch
-is referring to, please.
-
-
+base-commit: 43f012df3c1e979966524f79b5371fde6545488a
 -- 
-#Randy
-https://people.kernel.org/tglx/notes-about-netiquette
-https://subspace.kernel.org/etiquette.html
+2.39.2
+
