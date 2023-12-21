@@ -1,110 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C57258237;
-	Thu, 21 Dec 2023 16:20:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D938F5990C;
+	Thu, 21 Dec 2023 16:41:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XO0qnS8H"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1703175608; x=1734711608;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+LUViFjrhWFYO8ZP8kMqmQZazZVfADjajAChlASICpI=;
-  b=XO0qnS8HmvHOXmpBXWf3stDlBCQR93JVPtK6j35OkKBAZJhw3rkiX5ay
-   2OwFlXF+Fq/ymZ9+JTCZ5gfj6tKbd9pFQGQ7f3cwqme2aCPG3T93cPLDj
-   46TD7yJ9cuERNTCPMnU2O/4Rvdu39GullLtsEet0HMlzZxSzayKOJqAXg
-   xkjFBUGpWdXVdBnXXkxdq3mAuZ9gUSx3iqpmDW0znuk4CXcPDF4owHEDj
-   6RgsfZhMtRgGXsygSRTFNtXA3yY2c/IamMQFMyjNxdqwBMIrmf8FTRxhD
-   N217m6PIRAdaSXXRFxBKfPjKVTZpitWCojTH+nnm/5N76ZlSjTNc7bqJr
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10931"; a="2829595"
-X-IronPort-AV: E=Sophos;i="6.04,293,1695711600"; 
-   d="scan'208";a="2829595"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2023 08:20:08 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10931"; a="805653548"
-X-IronPort-AV: E=Sophos;i="6.04,293,1695711600"; 
-   d="scan'208";a="805653548"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2023 08:20:03 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@intel.com>)
-	id 1rGLiy-00000007tMe-1CxJ;
-	Thu, 21 Dec 2023 18:16:40 +0200
-Date: Thu, 21 Dec 2023 18:16:40 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Hugo Villeneuve <hugo@hugovil.com>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="pgifOCnJ"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=2Q9t7C2SbakvEAyAANdhIwq7Q4HehUia7VOTnZPPwiY=; b=pgifOCnJRKp+1KXkCqOoMeIv9u
+	LcIdf+l31BfdI0vRUkZhsKr7bqtZC3rps8Dx6aYNRki/LvfO6Tp/na2xkN7OfvciIYIISVkruYaOq
+	lOmTU93KEZhVF1BxZs69F79xYWoDyggojQFSOr8T7Lj4rXmj0Gk6RnnGmhx+9LdRsLwc=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:53502 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1rGM6a-0006rz-0Y; Thu, 21 Dec 2023 11:41:05 -0500
+Date: Thu, 21 Dec 2023 11:41:03 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, jringle@gridpoint.com,
-	kubakici@wp.pl, phil@raspberrypi.org, bo.svangard@embeddedart.se,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>, stable@vger.kernel.org,
-	Yury Norov <yury.norov@gmail.com>
-Subject: Re: [PATCH 02/18] serial: sc16is7xx: fix invalid sc16is7xx_lines
- bitfield in case of probe error
-Message-ID: <ZYRk6NpuUJvVEmOZ@smile.fi.intel.com>
+ kubakici@wp.pl, phil@raspberrypi.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Message-Id: <20231221114103.557409e9875a0f2f95eacfb6@hugovil.com>
+In-Reply-To: <ZYMNSqFgAhId-lQ2@smile.fi.intel.com>
 References: <20231219171903.3530985-1-hugo@hugovil.com>
- <20231219171903.3530985-3-hugo@hugovil.com>
- <ZYMK-l03S86Nw19I@smile.fi.intel.com>
- <20231221105639.17910de5e7d7a486834bd856@hugovil.com>
- <20231221111337.2c1af5bbe4920268dac25e8f@hugovil.com>
+	<20231219171903.3530985-10-hugo@hugovil.com>
+	<ZYMNSqFgAhId-lQ2@smile.fi.intel.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231221111337.2c1af5bbe4920268dac25e8f@hugovil.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
+	* -3.8 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH 09/18] serial: sc16is7xx: add macro for max number of
+ UART ports
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Thu, Dec 21, 2023 at 11:13:37AM -0500, Hugo Villeneuve wrote:
-> On Thu, 21 Dec 2023 10:56:39 -0500
-> Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > On Wed, 20 Dec 2023 17:40:42 +0200
-> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Wed, 20 Dec 2023 17:50:34 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-...
-
-> > this will indeed fix the problem described in patch 1.
+> On Tue, Dec 19, 2023 at 12:18:53PM -0500, Hugo Villeneuve wrote:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > > 
-> > However, if I remove patch 1, and I simulate the same probe error as
-> > described in patch 1, now we get stuck forever when trying to 
-> > remove the driver. This is something that I observed before and
-> > that patch 1 also corrected.
-> > 
-> > The problem is caused in sc16is7xx_remove() when calling this function
-> > 
-> >     kthread_flush_worker(&s->kworker);
-> > 
-> > I am not sure how best to handle that without patch 1.
+> > Add macro to hold the maximum number of UART ports per IC/device.
 > 
-> Also, if we manage to get past kthread_flush_worker() and 
-> kthread_stop() (commented out for testing purposes), we get another bug:
-> 
-> # rmmod sc16is7xx
 > ...
-> crystal-duart-24m already disabled
-> WARNING: CPU: 2 PID: 340 at drivers/clk/clk.c:1090
-> clk_core_disable+0x1b0/0x1e0
-> ...
-> Call trace:
-> clk_core_disable+0x1b0/0x1e0
-> clk_disable+0x38/0x60
-> sc16is7xx_remove+0x1e4/0x240 [sc16is7xx]
 > 
-> This one is caused by calling clk_disable_unprepare(). But
-> clk_disable_unprepare() has already been called in probe error handling
-> code. Patch 1 also fixed this...
+> > -	if (count < 0 || count > ARRAY_SIZE(irda_port))
+> > +	if (count < 0 || count > SC16IS7XX_MAX_PORTS)
+> 
+> ARRAY_SIZE() is more robust than this. What if you change to support different
+> devices where this won't be as defined?
 
-Word "fixed" is incorrect. "Papered over" is what it did.
+Hi,
+not sure that I understand your point, because SC16IS7XX_MAX_PORTS is
+the maximum for all devices supported by this driver. The irda_port
+array always has a fixed number of elements set to SC16IS7XX_MAX_PORTS,
+even if the device that we are probing has only one port for example.
 
--- 
-With Best Regards,
-Andy Shevchenko
+But I can change it back to ARRAY_SIZE(irda_port) if you want.
 
+> 
+> >  		return;
+> 
+> ...
+> 
+> > -	if (count < 0 || count > ARRAY_SIZE(mctrl_port))
+> > +	if (count < 0 || count > SC16IS7XX_MAX_PORTS)
+> >  		return 0;
+> 
+> Ditto.
+> 
+> ...
+> 
+> > +	WARN_ON(devtype->nr_uart > SC16IS7XX_MAX_PORTS);
+> 
+> Not sure about this, perhaps it's fine.
 
+This check is only there if we add support for a new device and we
+incorrectly set nr_uart to an incorrect value, which will cause other
+problems anyway, of course :)
+
+This could be removed.
+
+Hugo Villeneuve
