@@ -1,22 +1,22 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5437A79952;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98D0F7996B;
 	Thu, 21 Dec 2023 23:18:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="WxhDJyKs"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="MVQQxVsu"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=HA7+L1TaISt3Svh27a9k0fge85v3P4K87hnDFOUnN00=; b=WxhDJyKs79ADXRdCCozlZ+Oghl
-	RsWh0p/tFIL0ge+aBFqSrQGpWaLE4Uoxv2Pv7b3ajnwylfVPjSsWTJ9q5MXlhcTJKJW2LM303nev4
-	vKANFiPr4La4KHzK1W+lE6nbtqMyUrTHASiiMqKmfj5qDTds9/T7DUr0w3wkK20lMIw8=;
+	bh=1D+dxnnl4V5IiyIxDqSn6oylZMa3p3hHDTTttZBVpxA=; b=MVQQxVsuzFn032/hFu/ov74Tzo
+	VH9rvd/gFqcq2AttJTmrumHZIPspMr5p4GikMwwRdIQ+elrPS5lQ6GAO3zFO7fZh1pwZBQyKlbby5
+	2zvff891t9QTScC+HBqe/mWHcvJMzrlA1ciI4cr3aKLZE3HyuvQGKheio/06TjxHy/UY=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:52484 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rGSJS-00025W-Sg; Thu, 21 Dec 2023 18:18:47 -0500
+	id 1rGSJM-00025W-Ls; Thu, 21 Dec 2023 18:18:40 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -28,8 +28,8 @@ Cc: linux-kernel@vger.kernel.org,
 	hugo@hugovil.com,
 	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
 	Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Thu, 21 Dec 2023 18:18:19 -0500
-Message-Id: <20231221231823.2327894-13-hugo@hugovil.com>
+Date: Thu, 21 Dec 2023 18:18:14 -0500
+Message-Id: <20231221231823.2327894-8-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20231221231823.2327894-1-hugo@hugovil.com>
 References: <20231221231823.2327894-1-hugo@hugovil.com>
@@ -46,35 +46,45 @@ X-Spam-Level:
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-Subject: [PATCH v2 12/16] serial: sc16is7xx: replace hardcoded divisor value with BIT() macro
+Subject: [PATCH v2 07/16] serial: sc16is7xx: use spi_get_device_match_data()
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-To better show why the limit is what it is, since we have only 16 bits for
-the divisor.
+Use preferred spi_get_device_match_data() instead of
+device_get_match_data() and spi_get_device_id() to get the driver match
+data.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
- drivers/tty/serial/sc16is7xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/sc16is7xx.c | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index da862b8efcbe..3d963fe0e78a 100644
+index 42e1b4c70ed6..4161d692df40 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -486,7 +486,7 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- 	u8 prescaler = 0;
- 	unsigned long clk = port->uartclk, div = clk / 16 / baud;
+@@ -1742,15 +1742,9 @@ static int sc16is7xx_spi_probe(struct spi_device *spi)
+ 	if (ret)
+ 		return ret;
  
--	if (div > 0xffff) {
-+	if (div >= BIT(16)) {
- 		prescaler = SC16IS7XX_MCR_CLKSEL_BIT;
- 		div /= 4;
- 	}
+-	if (spi->dev.of_node) {
+-		devtype = device_get_match_data(&spi->dev);
+-		if (!devtype)
+-			return -ENODEV;
+-	} else {
+-		const struct spi_device_id *id_entry = spi_get_device_id(spi);
+-
+-		devtype = (struct sc16is7xx_devtype *)id_entry->driver_data;
+-	}
++	devtype = spi_get_device_match_data(spi);
++	if (!devtype)
++		return dev_err_probe(&spi->dev, -ENODEV, "Failed to match device\n");
+ 
+ 	for (i = 0; i < devtype->nr_uart; i++) {
+ 		regcfg.name = sc16is7xx_regmap_name(i);
 -- 
 2.39.2
 
