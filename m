@@ -1,31 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB4D676DA1;
-	Thu, 21 Dec 2023 21:11:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C713A55E59;
+	Thu, 21 Dec 2023 21:51:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eCAtLF24"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9C37C433C7;
-	Thu, 21 Dec 2023 21:11:57 +0000 (UTC)
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="grvlhMPd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E29B9C433C9;
+	Thu, 21 Dec 2023 21:51:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1703193118;
-	bh=njb5ZTTPXp5fHgYk6dh4ZkqF1BltWHZDNwTEvr8ost4=;
+	s=k20201202; t=1703195502;
+	bh=wVhTpALcMiNCntelNMpcmyS353uCxC0tr69XZxUeP7w=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=eCAtLF24Ev0GXMsgBkiA6Y4wELClG2bXexq7pvA38R7mMSDxozs8KWCuBM2h7g0cX
-	 mPTmrWGVIDB7MNVwysFmwwPrPpDNgvXle8XaacCl4DFNYNGtswHSGlqzWL3VGqs6O5
-	 Q+RDH/1KoADirm1BIMKmPa+62LkI20HFhG8QZrhX7pK8bUjXWhzqTdYDoTd1Txg73L
-	 KDMznuA5KnbG5/ev40q3dZtU7Qv5dC8r52gkiPNMRG7zdhdc6ERTDZDS73YM2kKZVC
-	 hOUHWF9pqPiqDPc4Y1EpzJVdGgSrC5E1mW3kikAzr72EWXCGAsEqr3FPk08SlYYGGJ
-	 pqCM0VmW0LSXw==
-Received: (nullmailer pid 101568 invoked by uid 1000);
-	Thu, 21 Dec 2023 21:11:57 -0000
-Date: Thu, 21 Dec 2023 15:11:56 -0600
+	b=grvlhMPdSPsEsMrM435z6Ee777r4kKrlEfU5VJO4IHAn4V7pnANe2YaPn9yqlGBHg
+	 U7IjIExcXlK1D9VjptD8QyQ+42pMJbqVtaZr9Lh6/W9NcKiHa/4Pi1lg/vqCN4EdnL
+	 6kO0lUSi+dNbPKTQgm7u7+8N5icMjEm+Xx0mdV8DwQ4PENu1D0ga/Kb1YDb+J4XM0f
+	 ANsuXOYE3cY800vWiRTMZq07yWnLPeaBKYK201IO8zMr9PmgVqaDHP5agM0fLCgIzx
+	 SLr/TsqKDLJRLArQCYcVOAdjwxzBrLiXnruS1js2v2YjfWlxH3LNi3VupaDmJHLxBr
+	 igbLYfklcAyjA==
+Received: (nullmailer pid 153686 invoked by uid 1000);
+	Thu, 21 Dec 2023 21:51:38 -0000
+Date: Thu, 21 Dec 2023 15:51:38 -0600
 From: Rob Herring <robh@kernel.org>
-To: Michal Simek <michal.simek@amd.com>
-Cc: linux-kernel@vger.kernel.org, michal.simek@xilinx.com, Conor Dooley <conor+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org, monstr@monstr.eu, Rob Herring <robh+dt@kernel.org>, git@xilinx.com, devicetree@vger.kernel.org, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Subject: Re: [PATCH] dt-bindings: serial: Describe ARM dcc interface
-Message-ID: <170319311633.101509.1532196763061569676.robh@kernel.org>
-References: <9d7e85914eb1cdb313b28cb019093a84dd9b4773.1703167505.git.michal.simek@amd.com>
+To: Gatien Chevallier <gatien.chevallier@foss.st.com>
+Cc: pabeni@redhat.com, netdev@vger.kernel.org, lars@metafoo.de, linux-media@vger.kernel.org, hugues.fruchet@foss.st.com, olivier.moysan@foss.st.com, lee@kernel.org, alexandre.torgue@foss.st.com, catalin.marinas@arm.com, peng.fan@oss.nxp.com, linux-mmc@vger.kernel.org, linux-phy@lists.infradead.org, linux-serial@vger.kernel.org, robh+dt@kernel.org, wg@grandegger.com, arnaud.pouliquen@foss.st.com, alsa-devel@alsa-project.org, linux-iio@vger.kernel.org, vkoul@kernel.org, conor+dt@kernel.org, mkl@pengutronix.de, Frank Rowand <frowand.list@gmail.com>, linux-crypto@vger.kernel.org, edumazet@google.com, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, linux-spi@vger.kernel.org, linux-usb@vger.kernel.org, linux-i2c@vger.kernel.org, Oleksii Moisieiev <oleksii_moisieiev@epam.com>, arnd@kernel.org, linux-stm32@st-md-mailman.stormreply.com, davem@davemloft.net, krzysztof.kozlowski+dt@linaro.org, ulf.hansson@linaro.org, will@kernel.org, rcsekar@samsung.com, linux-arm-kernel@lists.infradea
+ d.org, kuba@kernel.org, mchehab@kernel.org, gregkh@linuxfoundation.org, jic23@kernel.org, devicetree@vger.kernel.org, richardcochran@gmail.com, Oleksii_Moisieiev@epam.com, andi.shyti@kernel.org, herbert@gondor.apana.org.au, fabrice.gasnier@foss.st.com
+Subject: Re: [PATCH v8 01/13] dt-bindings: document generic access controllers
+Message-ID: <170319549389.153568.1692332156021513651.robh@kernel.org>
+References: <20231212152356.345703-1-gatien.chevallier@foss.st.com>
+ <20231212152356.345703-2-gatien.chevallier@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -34,25 +36,46 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9d7e85914eb1cdb313b28cb019093a84dd9b4773.1703167505.git.michal.simek@amd.com>
+In-Reply-To: <20231212152356.345703-2-gatien.chevallier@foss.st.com>
 
 
-On Thu, 21 Dec 2023 15:05:09 +0100, Michal Simek wrote:
-> Debug Communication Channel (DCC) provides the way how to pass data between
-> target CPU and host via JTAG interface. Every CPU has own interface for
-> communication via dbgdtrtx_el0 and dbgdtrrx_el0 registers.
+On Tue, 12 Dec 2023 16:23:44 +0100, Gatien Chevallier wrote:
+> From: Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
 > 
-> Signed-off-by: Michal Simek <michal.simek@amd.com>
+> Introducing of the generic access controllers bindings for the
+> access controller provider and consumer devices. Those bindings are
+> intended to allow a better handling of accesses to resources in a
+> hardware architecture supporting several compartments.
+> 
+> This patch is based on [1]. It is integrated in this patchset as it
+> provides a use-case for it.
+> 
+> Diffs with [1]:
+> 	- Rename feature-domain* properties to access-control* to narrow
+> 	  down the scope of the binding
+> 	- YAML errors and typos corrected.
+> 	- Example updated
+> 	- Some rephrasing in the binding description
+> 
+> [1]: https://lore.kernel.org/lkml/0c0a82bb-18ae-d057-562b
+> 
+> Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
+> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
 > ---
 > 
-> This communication interface is used for flash programming on Xilinx
-> SOCs from U-Boot.
-> https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/serial/arm_dcc.c
+> Changes in V6:
+> 	- Renamed access-controller to access-controllers
+> 	- Example updated
+> 	- Removal of access-control-provider property
 > 
-> ---
->  .../devicetree/bindings/serial/arm,dcc.yaml   | 30 +++++++++++++++++++
->  1 file changed, 30 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/arm,dcc.yaml
+> Changes in V5:
+> 	- Diffs with [1]
+> 	- Discarded the [IGNORE] tag as the patch is now part of the
+> 	  patchset
+> 
+>  .../access-controllers.yaml                   | 84 +++++++++++++++++++
+>  1 file changed, 84 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/access-controllers/access-controllers.yaml
 > 
 
 Reviewed-by: Rob Herring <robh@kernel.org>
