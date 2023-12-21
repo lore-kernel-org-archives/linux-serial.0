@@ -1,63 +1,88 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62EF058224;
-	Thu, 21 Dec 2023 22:01:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6407379948;
+	Thu, 21 Dec 2023 23:12:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S2O8QXVK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83B2EC433C8;
-	Thu, 21 Dec 2023 22:01:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1703196075;
-	bh=Mu966ENzqAzL5zVpXkX0okIrHoGjPvhJ8rqTFtXNsxY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=S2O8QXVKb3ZUGIFC0OpGxRRynfGqmj+gp7FTRV7NaqGkWM4IE05+Gqd4cUFQEQYL4
-	 wG8CTj9V0h17GQd4DGWTQ/ID88OjucDGd4K+yDcA/dII3YbqJZwo8/WEGbw+0/BCww
-	 uvzyeWwpnjNf8BE09DbyfTe4eatwQUCKS88qqoFVuq4Fb0xHA3dCIj/qvA6T9heVw1
-	 XMReR5iaSQzexSnB5wS2XhpBfBxtK/INvsJIBmzcaV4NgQ/FFgNRrpnmVxI9gmQ0P9
-	 68dzeUi++eubqSxVn0qTA5U4n6uBSTfo0lld+kP5+b9rRlCVwpuJxK42akZsycfsTr
-	 Hh/bbpwOTtWRw==
-Received: (nullmailer pid 166032 invoked by uid 1000);
-	Thu, 21 Dec 2023 22:01:11 -0000
-Date: Thu, 21 Dec 2023 16:01:11 -0600
-From: Rob Herring <robh@kernel.org>
-To: Gatien Chevallier <gatien.chevallier@foss.st.com>
-Cc: mchehab@kernel.org, rcsekar@samsung.com, olivier.moysan@foss.st.com, Frank Rowand <frowand.list@gmail.com>, dmaengine@vger.kernel.org, linux-crypto@vger.kernel.org, jic23@kernel.org, lars@metafoo.de, mkl@pengutronix.de, linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org, davem@davemloft.net, conor+dt@kernel.org, fabrice.gasnier@foss.st.com, pabeni@redhat.com, linux-media@vger.kernel.org, catalin.marinas@arm.com, netdev@vger.kernel.org, Oleksii_Moisieiev@epam.com, linux-serial@vger.kernel.org, hugues.fruchet@foss.st.com, linux-usb@vger.kernel.org, linux-mmc@vger.kernel.org, arnd@kernel.org, linux-iio@vger.kernel.org, will@kernel.org, edumazet@google.com, linux-stm32@st-md-mailman.stormreply.com, krzysztof.kozlowski+dt@linaro.org, ulf.hansson@linaro.org, alexandre.torgue@foss.st.com, devicetree@vger.kernel.org, linux-i2c@vger.kernel.org, herbert@gondor.apana.org.au, vkoul@kernel.org, robh+dt@kernel.org, kuba@kernel.org, wg@grandegger.com, lee@kernel.org, peng.fan@oss.nxp.com, 
- linux-phy@lists.infradead.org, arnaud.pouliquen@foss.st.com, gregkh@linuxfoundation.org, richardcochran@gmail.com, linux-arm-kernel@lists.infradead.org, andi.shyti@kernel.org, alsa-devel@alsa-project.org
-Subject: Re: [PATCH v8 06/13] of: property: fw_devlink: Add support for
- "access-controller"
-Message-ID: <170319607084.165973.14576693798188042387.robh@kernel.org>
-References: <20231212152356.345703-1-gatien.chevallier@foss.st.com>
- <20231212152356.345703-7-gatien.chevallier@foss.st.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="J8Gnd+0L"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=ysJ1nRhQ8xLtmwMxQM54I2ikdSeFGYHpjXOSTY91G18=; b=J8Gnd+0L4FdQ46ayKLbY8F1mRr
+	stnhlQXCh44liIcKVvKA+RviYLAg4Pm1mRS11Q+WdWI7W4MT+uictfzcIR4/QKaveSlGhSmbS6ZQt
+	VTxy+JnaQm3o1bHDi0uDT/85SetX4L62gJJ5ZxB/Q6A1k9kIJkH2fx149ZY3zmDWLTUdFDH1FO/2X
+	IVxnjvfbIV6qJLexwrkQZl8Z9U9UnJY0sGDE131rNKnLVaIr4poY6BXIyvA+Ltp1uDNc7mLADGxNl
+	FQ/84Zsd8Gva9Hbd0NqHcR54EmJOAjDIJmohL6jefF2txFePiS5VQX7kdOr7OpAcxZJnkSV4NL/p6
+	ko0Iy1wQ==;
+Received: from [50.53.46.231] (helo=[192.168.254.15])
+	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+	id 1rGSDh-004Ous-0x;
+	Thu, 21 Dec 2023 23:12:49 +0000
+Message-ID: <cc5c5ceb-cb07-4fb3-95f0-c114dd12a755@infradead.org>
+Date: Thu, 21 Dec 2023 15:12:46 -0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231212152356.345703-7-gatien.chevallier@foss.st.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] tty/sysrq: Dump kernel ring buffer messages via sysrq
+Content-Language: en-US
+To: Greg KH <gregkh@linuxfoundation.org>,
+ Sreenath Vijayan <sreenath.vijayan@sony.com>
+Cc: linux-doc@vger.kernel.org, linux-serial@vger.kernel.org, corbet@lwn.net,
+ jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+ anandakumar.balasubramaniam@sony.com,
+ Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>
+References: <20231221133953.1507021-1-sreenath.vijayan@sony.com>
+ <2023122144-enlarged-maggot-493a@gregkh>
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <2023122144-enlarged-maggot-493a@gregkh>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
 
-On Tue, 12 Dec 2023 16:23:49 +0100, Gatien Chevallier wrote:
-> Allows tracking dependencies between devices and their access
-> controller.
-> 
-> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
-> ---
-> 
-> Changes in V6:
->     	- Renamed access-controller to access-controllers
-> 
-> Changes in V5:
-> 	- Rename feature-domain* to access-control*
-> 
-> Patch not present in V1
-> 
->  drivers/of/property.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
 
-Acked-by: Rob Herring <robh@kernel.org>
+On 12/21/23 08:52, Greg KH wrote:
+> On Thu, Dec 21, 2023 at 07:09:53PM +0530, Sreenath Vijayan wrote:
+>> When terminal is unresponsive, one cannot use dmesg to view kernel
+>> ring buffer messages. Also, syslog services may be disabled,
+>> to check them after a reboot, especially on embedded systems.
+>> In this scenario, dump the kernel ring buffer messages via sysrq
+>> by pressing sysrq+D.
+>>
+>> Signed-off-by: Sreenath Vijayan <sreenath.vijayan@sony.com>
+>> Signed-off-by: Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>
+>> ---
+>>  Documentation/admin-guide/sysrq.rst |  2 ++
+>>  drivers/tty/sysrq.c                 | 43 ++++++++++++++++++++++++++++-
+>>  2 files changed, 44 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/admin-guide/sysrq.rst b/Documentation/admin-guide/sysrq.rst
+>> index 2f2e5bd440f9..464c4e138b9d 100644
+>> --- a/Documentation/admin-guide/sysrq.rst
+>> +++ b/Documentation/admin-guide/sysrq.rst
+>> @@ -161,6 +161,8 @@ Command	    Function
+>>              will be printed to your console. (``0``, for example would make
+>>              it so that only emergency messages like PANICs or OOPSes would
+>>              make it to your console.)
+>> +
+>> +``D``	    Dump the kernel ring buffer
+>>  =========== ===================================================================
+> 
+> Nit, this doesn't line up anymore :(
 
+Yes, that will cause a docs build warning.
+
+Also, can you be more explicit about which ring buffer this patch
+is referring to, please.
+
+
+-- 
+#Randy
+https://people.kernel.org/tglx/notes-about-netiquette
+https://subspace.kernel.org/etiquette.html
