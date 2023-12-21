@@ -1,120 +1,95 @@
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [176.9.242.62])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A0BA539FD;
-	Thu, 21 Dec 2023 15:53:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=h08.hostsharing.net
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
-	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
-	by bmailout3.hostsharing.net (Postfix) with ESMTPS id 2F054100B08FA;
-	Thu, 21 Dec 2023 16:53:06 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-	id 009392AE38; Thu, 21 Dec 2023 16:53:05 +0100 (CET)
-Date: Thu, 21 Dec 2023 16:53:05 +0100
-From: Lukas Wunner <lukas@wunner.de>
-To: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Cc: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	"brenda.streiff@ni.com" <brenda.streiff@ni.com>,
-	Tomas Paukrt <tomaspaukrt@email.cz>
-Subject: Re: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
- binding
-Message-ID: <20231221155305.GA13673@wunner.de>
-References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
- <20231120151056.148450-2-linux@rasmusvillemoes.dk>
- <20231122145344.GA18949@wunner.de>
- <3b8548b1-b8a9-0c9e-4040-5cfda06a85c6@gmx.de>
- <ec66d25162de4cbc92720df1e7008fe8@dh-electronics.com>
- <5c140498-69e3-4187-8703-db0c41e7ca89@gmx.de>
- <fe28eb93-daa1-41af-a005-f21aa87e1984@gmx.de>
- <ZXcJr4VS_uGr_6TV@smile.fi.intel.com>
- <ZXrX4mQXPLum0jL3@moxa-ThinkCentre-M90t>
- <b35730df8288469fbaf67b5ceae4eece@dh-electronics.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59B6B539FD;
+	Thu, 21 Dec 2023 15:56:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="p8MjdsOc"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=JCLYMxeRwt5JrQfRfdHodCm2prGrLkM65PPIWmowE3A=; b=p8MjdsOcSA6R1jyYUyjMYwdd1/
+	9tgAI41l716pDbFL0Btga1Klf/Cp9g9+ttKFa2UCs45kM0l7qqWiz3VLtaMgPbPa1N+y1TIZBPeZk
+	9tNo5RX7PiQc5u3PWtxZaca2IBuyF5EAO182otm24gXTcxGqx//pjmQEanincCvqUtpE=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:49388 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1rGLPb-0006IC-LX; Thu, 21 Dec 2023 10:56:40 -0500
+Date: Thu, 21 Dec 2023 10:56:39 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, jringle@gridpoint.com,
+ kubakici@wp.pl, phil@raspberrypi.org, bo.svangard@embeddedart.se,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>, stable@vger.kernel.org, Yury Norov
+ <yury.norov@gmail.com>
+Message-Id: <20231221105639.17910de5e7d7a486834bd856@hugovil.com>
+In-Reply-To: <ZYMK-l03S86Nw19I@smile.fi.intel.com>
+References: <20231219171903.3530985-1-hugo@hugovil.com>
+	<20231219171903.3530985-3-hugo@hugovil.com>
+	<ZYMK-l03S86Nw19I@smile.fi.intel.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b35730df8288469fbaf67b5ceae4eece@dh-electronics.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
+	* -3.8 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH 02/18] serial: sc16is7xx: fix invalid sc16is7xx_lines
+ bitfield in case of probe error
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Thu, Dec 14, 2023 at 01:41:47PM +0000, Christoph Niedermaier wrote:
-> I will summarize the current situation from my point of view, maybe it helps:
+On Wed, 20 Dec 2023 17:40:42 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+
+> On Tue, Dec 19, 2023 at 12:18:46PM -0500, Hugo Villeneuve wrote:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > 
+> > If an error occurs during probing, the sc16is7xx_lines bitfield may be left
+> > in a state that doesn't represent the correct state of lines allocation.
+> > 
+> > For example, in a system with two SC16 devices, if an error occurs only
+> > during probing of channel (port) B of the second device, sc16is7xx_lines
+> > final state will be 00001011b instead of the expected 00000011b.
+> > 
+> > This is caused in part because of the "i--" in the for/loop located in
+> > the out_ports: error path.
+> > 
+> > Fix this by checking the return value of uart_add_one_port() and set line
+> > allocation bit only if this was successful. This allows the refactor of
+> > the obfuscated for(i--...) loop in the error path, and properly call
+> > uart_remove_one_port() only when needed, and properly unset line allocation
+> > bits.
+> > 
+> > Also use same mechanism in remove() when calling uart_remove_one_port().
 > 
-> RS-232:
->   - Full Duplex Point-to-Point connection
->   - No transceiver control with RTS
->   - No termination
->   - No extra struct in use
-> 
-> RS-422:
->   - Full Duplex Point-to-Point connection
->   - No transceiver control with RTS needed
->   - Termination possible
->   - Extra struct serial_rs485 needed if termination is used
->  => RS-422 can be used in RS-232 operation, but if a termination should be
->     switchable the RS485 flag has to be enabled. But then also transceiver
->     control will be enabled. Not a very satisfying situation.
+> Yes, this seems to be the correct one to fix the problem described in
+> the patch 1. I dunno why the patch 1 even exists.
 
-Well why don't we just allow enabling or disabling RS-485 termination
-independently from the SER_RS485_ENABLED bit in struct serial_rs485?
+Hi,
+this will indeed fix the problem described in patch 1.
 
-Just let the user issue a TIOCSRS485 ioctl to toggle termination even
-if in RS-232 mode and use that mode for RS-422.
+However, if I remove patch 1, and I simulate the same probe error as
+described in patch 1, now we get stuck forever when trying to 
+remove the driver. This is something that I observed before and
+that patch 1 also corrected.
 
-Looks like the simplest solution to me.
+The problem is caused in sc16is7xx_remove() when calling this function
 
+    kthread_flush_worker(&s->kworker);
 
-> RS-485 (2-wire) very common:
->   - Half Duplex RS-485 bus
->   - Transceiver control with RTS is needed
->   - Termination possible
->   - Extra struct serial_rs485 is needed
->  => RS-485 has to be enabled and configured:
->     - Set SER_RS485_ENABLED 
->     - Set SER_RS485_RTS_ON_SEND or SER_RS485_RTS_AFTER_SEND
->     - Set/clear SER_RS485_RX_DURING_TX depending on whether
->       the receiver path should be on or off during sending.
->       If it's set it allows to monitor the sending on the bus
->       and detect whether another bus device is transmitting
->       at the same time.
->     - Set/clear SER_RS485_TERMINATE_BUS for bus termination.
-> 
-> RS-485 (4-wire) little used:
->   - Full Duplex RS-485 bus
->   - Transceiver control with RTS is needed
->   - Termination possible
->   - Extra struct serial_rs485 is needed
->  => RS-485 has to be enabled and configured:
->     - Set SER_RS485_ENABLED 
->     - Set SER_RS485_RTS_ON_SEND or SER_RS485_RTS_AFTER_SEND
->     - Set SER_RS485_RX_DURING_TX, as the receiver should always
->       be enabled independently of TX, because TX and RX are
->       separated from each other by their own wires.
->     - Set/clear SER_RS485_TERMINATE_BUS for bus termination.
+I am not sure how best to handle that without patch 1.
 
-Thanks for that overview, I found it very helpful.
-
-One small addendum:  Hardware flow control.  Only possible with
-RS-232.  Doesn't work in any of the other modes, right?
-
-Thanks,
-
-Lukas
+Hugo Villeneuve
