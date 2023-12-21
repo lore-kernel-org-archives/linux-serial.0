@@ -1,59 +1,120 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [176.9.242.62])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65BCA360AD;
-	Thu, 21 Dec 2023 14:56:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HHN1ce4Q"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25831C433C8;
-	Thu, 21 Dec 2023 14:56:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1703170573;
-	bh=oJ3Y2DXjf19FXfTDs0TOYdiw24+AEE+V6ErTf9COcFI=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-	b=HHN1ce4QcQBYZTHygoj+j8SHGWGnHBnMyNfrf1f3CZKvauEi6YzTrXly8ON1/jG2M
-	 NfmvUh9DwdvCYuwtphGqfilTpDDgmu8sId0FUY9hDeBNetb6nhbisfWZVLzHBj4KRk
-	 jnd6dLzxOGmsXRCSMYKTGrH0HMTrhtciIQShHRVIc/PCIq1NAKzRCRm9h8zrirWwIz
-	 RoISTjVo++gXkb2nubiHwNPSTtLINBzX9coNvOoTEnDQQFbokOBkt5Bd6BCrtVc8Oo
-	 Uk99ZyXC/7tr6RFRIqjZIH7lFq5daEb6LKfAqrniJYltg24l0rosXkLHDT3HaZutG7
-	 eKVSQucv/pNxw==
-From: Lee Jones <lee@kernel.org>
-To: Rob Herring <robh+dt@kernel.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
- Conor Dooley <conor+dt@kernel.org>, Lee Jones <lee@kernel.org>, 
- Chunyan Zhang <chunyan.zhang@unisoc.com>
-Cc: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, 
- Baolin Wang <baolin.wang@linux.alibaba.com>, 
- Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>, 
- LKML <linux-kernel@vger.kernel.org>
-In-Reply-To: <20231215085630.984892-2-chunyan.zhang@unisoc.com>
-References: <20231215085630.984892-1-chunyan.zhang@unisoc.com>
- <20231215085630.984892-2-chunyan.zhang@unisoc.com>
-Subject: Re: (subset) [PATCH 1/4] dt-bindings: mfd: sprd: Add support for
- UMS9620
-Message-Id: <170317057088.609072.12273953468254083847.b4-ty@kernel.org>
-Date: Thu, 21 Dec 2023 14:56:10 +0000
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A0BA539FD;
+	Thu, 21 Dec 2023 15:53:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=h08.hostsharing.net
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
+	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
+	by bmailout3.hostsharing.net (Postfix) with ESMTPS id 2F054100B08FA;
+	Thu, 21 Dec 2023 16:53:06 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+	id 009392AE38; Thu, 21 Dec 2023 16:53:05 +0100 (CET)
+Date: Thu, 21 Dec 2023 16:53:05 +0100
+From: Lukas Wunner <lukas@wunner.de>
+To: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Cc: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	"brenda.streiff@ni.com" <brenda.streiff@ni.com>,
+	Tomas Paukrt <tomaspaukrt@email.cz>
+Subject: Re: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
+ binding
+Message-ID: <20231221155305.GA13673@wunner.de>
+References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
+ <20231120151056.148450-2-linux@rasmusvillemoes.dk>
+ <20231122145344.GA18949@wunner.de>
+ <3b8548b1-b8a9-0c9e-4040-5cfda06a85c6@gmx.de>
+ <ec66d25162de4cbc92720df1e7008fe8@dh-electronics.com>
+ <5c140498-69e3-4187-8703-db0c41e7ca89@gmx.de>
+ <fe28eb93-daa1-41af-a005-f21aa87e1984@gmx.de>
+ <ZXcJr4VS_uGr_6TV@smile.fi.intel.com>
+ <ZXrX4mQXPLum0jL3@moxa-ThinkCentre-M90t>
+ <b35730df8288469fbaf67b5ceae4eece@dh-electronics.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.12.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b35730df8288469fbaf67b5ceae4eece@dh-electronics.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Fri, 15 Dec 2023 16:56:27 +0800, Chunyan Zhang wrote:
-> Add bindings for Unisoc UMS9620 system global registers which provide
-> register maps for clocks.
+On Thu, Dec 14, 2023 at 01:41:47PM +0000, Christoph Niedermaier wrote:
+> I will summarize the current situation from my point of view, maybe it helps:
 > 
+> RS-232:
+>   - Full Duplex Point-to-Point connection
+>   - No transceiver control with RTS
+>   - No termination
+>   - No extra struct in use
 > 
+> RS-422:
+>   - Full Duplex Point-to-Point connection
+>   - No transceiver control with RTS needed
+>   - Termination possible
+>   - Extra struct serial_rs485 needed if termination is used
+>  => RS-422 can be used in RS-232 operation, but if a termination should be
+>     switchable the RS485 flag has to be enabled. But then also transceiver
+>     control will be enabled. Not a very satisfying situation.
 
-Applied, thanks!
+Well why don't we just allow enabling or disabling RS-485 termination
+independently from the SER_RS485_ENABLED bit in struct serial_rs485?
 
-[1/4] dt-bindings: mfd: sprd: Add support for UMS9620
-      commit: 5fa295f5cd1e9995e914b75c7d7948808af95ca4
+Just let the user issue a TIOCSRS485 ioctl to toggle termination even
+if in RS-232 mode and use that mode for RS-422.
 
---
-Lee Jones [李琼斯]
+Looks like the simplest solution to me.
 
+
+> RS-485 (2-wire) very common:
+>   - Half Duplex RS-485 bus
+>   - Transceiver control with RTS is needed
+>   - Termination possible
+>   - Extra struct serial_rs485 is needed
+>  => RS-485 has to be enabled and configured:
+>     - Set SER_RS485_ENABLED 
+>     - Set SER_RS485_RTS_ON_SEND or SER_RS485_RTS_AFTER_SEND
+>     - Set/clear SER_RS485_RX_DURING_TX depending on whether
+>       the receiver path should be on or off during sending.
+>       If it's set it allows to monitor the sending on the bus
+>       and detect whether another bus device is transmitting
+>       at the same time.
+>     - Set/clear SER_RS485_TERMINATE_BUS for bus termination.
+> 
+> RS-485 (4-wire) little used:
+>   - Full Duplex RS-485 bus
+>   - Transceiver control with RTS is needed
+>   - Termination possible
+>   - Extra struct serial_rs485 is needed
+>  => RS-485 has to be enabled and configured:
+>     - Set SER_RS485_ENABLED 
+>     - Set SER_RS485_RTS_ON_SEND or SER_RS485_RTS_AFTER_SEND
+>     - Set SER_RS485_RX_DURING_TX, as the receiver should always
+>       be enabled independently of TX, because TX and RX are
+>       separated from each other by their own wires.
+>     - Set/clear SER_RS485_TERMINATE_BUS for bus termination.
+
+Thanks for that overview, I found it very helpful.
+
+One small addendum:  Hardware flow control.  Only possible with
+RS-232.  Doesn't work in any of the other modes, right?
+
+Thanks,
+
+Lukas
