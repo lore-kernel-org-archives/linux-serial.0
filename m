@@ -1,22 +1,22 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5224779476;
-	Thu, 21 Dec 2023 23:18:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F360679466;
+	Thu, 21 Dec 2023 23:18:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="zMCNLWRH"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="or7i1bRJ"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=erjmsDZRhrWnaUKZ8qETR02HqNmxBDRKhVazGRk6Y6c=; b=zMCNLWRH1QBvIOWMSl5ucZv1DI
-	OIr0CLz2DSqWjjJKTKBAzopDz3H+yHH0wybHv9e9wmzSugawY6VGj8ZLH0Z7uFuLfGhJTGfRnxB4A
-	klxmadOeZDUji8CZIc5d5fj+NphUD5SH1cfsCWUUfh2KzbuaWRYAae4h//gUCPRmqlHo=;
+	bh=PjscCF8fBWxjN74AYw6fohco9v/xt8gTMLeyIf2+SXI=; b=or7i1bRJN1qBH+1iXsmJRylBME
+	RQRyLBe8FPE1pn88U8Qwxjfaz7Z5xugDkY2xJNYs9PBmnhlhl8Mpn4yn6O1d9C2FDNAwfZTlzDO0/
+	koH4tvl2Gu8WRv1inFejQW7dhUfZqJ0wLZYs2gMlBVl/QLafoE6XL8LJYzAFDrP5k+hA=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:52484 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rGSJR-00025W-KB; Thu, 21 Dec 2023 18:18:46 -0500
+	id 1rGSJG-00025W-Oi; Thu, 21 Dec 2023 18:18:35 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -27,9 +27,9 @@ Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	hugo@hugovil.com,
 	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Thu, 21 Dec 2023 18:18:18 -0500
-Message-Id: <20231221231823.2327894-12-hugo@hugovil.com>
+	stable@vger.kernel.org
+Date: Thu, 21 Dec 2023 18:18:09 -0500
+Message-Id: <20231221231823.2327894-3-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20231221231823.2327894-1-hugo@hugovil.com>
 References: <20231221231823.2327894-1-hugo@hugovil.com>
@@ -46,50 +46,52 @@ X-Spam-Level:
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-Subject: [PATCH v2 11/16] serial: sc16is7xx: add explicit return for some switch default cases
+Subject: [PATCH v2 02/16] serial: sc16is7xx: add check for unsupported SPI modes during probe
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Allows to simplify code by removing the break statement in the default
-switch/case in some functions.
+The original comment is confusing because it implies that variants other
+than the SC16IS762 supports other SPI modes beside SPI_MODE_0.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Extract from datasheet:
+    The SC16IS762 differs from the SC16IS752 in that it supports SPI clock
+    speeds up to 15 Mbit/s instead of the 4 Mbit/s supported by the
+    SC16IS752... In all other aspects, the SC16IS762 is functionally and
+    electrically the same as the SC16IS752.
+
+The same is also true of the SC16IS760 variant versus the SC16IS740 and
+SC16IS750 variants.
+
+For all variants, only SPI mode 0 is supported.
+
+Change comment and abort probing if the specified SPI mode is not
+SPI_MODE_0.
+
+Fixes: 2c837a8a8f9f ("sc16is7xx: spi interface is added")
+Cc: stable@vger.kernel.org
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
- drivers/tty/serial/sc16is7xx.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/tty/serial/sc16is7xx.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 6181cc6f934b..da862b8efcbe 100644
+index 17b90f971f96..798fa115b28a 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -460,10 +460,8 @@ static bool sc16is7xx_regmap_volatile(struct device *dev, unsigned int reg)
- 	case SC16IS7XX_IOCONTROL_REG:
- 		return true;
- 	default:
--		break;
-+		return false;
- 	}
--
--	return false;
- }
+@@ -1733,7 +1733,10 @@ static int sc16is7xx_spi_probe(struct spi_device *spi)
  
- static bool sc16is7xx_regmap_precious(struct device *dev, unsigned int reg)
-@@ -472,10 +470,8 @@ static bool sc16is7xx_regmap_precious(struct device *dev, unsigned int reg)
- 	case SC16IS7XX_RHR_REG:
- 		return true;
- 	default:
--		break;
-+		return false;
- 	}
--
--	return false;
- }
- 
- static bool sc16is7xx_regmap_noinc(struct device *dev, unsigned int reg)
+ 	/* Setup SPI bus */
+ 	spi->bits_per_word	= 8;
+-	/* only supports mode 0 on SC16IS762 */
++	/* For all variants, only mode 0 is supported */
++	if ((spi->mode & SPI_MODE_X_MASK) != SPI_MODE_0)
++		return dev_err_probe(&spi->dev, -EINVAL, "Unsupported SPI mode\n");
++
+ 	spi->mode		= spi->mode ? : SPI_MODE_0;
+ 	spi->max_speed_hz	= spi->max_speed_hz ? : 15000000;
+ 	ret = spi_setup(spi);
 -- 
 2.39.2
 
