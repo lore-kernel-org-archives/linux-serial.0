@@ -1,45 +1,54 @@
-Received: from mx2.securetransport.de (mx2.securetransport.de [188.68.39.254])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31B09D29E;
-	Sat, 23 Dec 2023 13:00:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dh-electronics.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB910D2F8;
+	Sat, 23 Dec 2023 13:41:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="ber4JF9p"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-	s=dhelectronicscom; t=1703335752;
-	bh=2AL9EkMODIBVJGJbx3Gh0BfWjwQ/b5wCzhm/T5+d5/8=;
-	h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-	b=ber4JF9pWUjwwgv27824vvfyqJ/0PG/uu6DXJdEMji/c//YHrZiUzOgVQxxaUNJtj
-	 dZj3myBmHm4JmPbujggslzrP/oIgXELnBM/ccKqBtmlKreuq0abI06MECT0mA7YXPi
-	 kbIqey0IvR38Zgv8zXl9zBu8BU62Pks2wtKmmcm+0lfiCBLUBK0FJ/0a6EYzBiADJ9
-	 dMZeT9VuZLMD5XlfMH4nFKTSwapXPIpAdZFKQGDCFpu7lvwIePheLgRoHjD/AzB53I
-	 hWDm1p+d7AT8kcd8piWA4yHE9ltsEGTxGaO9jCngCOwY4JGq9LYVHBCc+f4oxgB6TT
-	 LSCwDE/3663Pw==
-X-secureTransport-forwarded: yes
-From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Complaints-To: abuse@cubewerk.de
-To: Lukas Wunner <lukas@wunner.de>
-CC: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>, Andy Shevchenko
-	<andriy.shevchenko@linux.intel.com>, Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Rob Herring
-	<robh+dt@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	=?utf-8?B?SWxwbyBKw6RydmluZW4=?= <ilpo.jarvinen@linux.intel.com>,
-	"brenda.streiff@ni.com" <brenda.streiff@ni.com>, Tomas Paukrt
-	<tomaspaukrt@email.cz>
-Subject: RE: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
+	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="ObBGU/k0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
+	t=1703338861; x=1703943661; i=linosanfilippo@gmx.de;
+	bh=Nx79P5r9ZG4XWH364YUty3qUZDD0HnQKSxhIi0fdzVw=;
+	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
+	 In-Reply-To;
+	b=ObBGU/k0yLfyAmsvhGxGA6b6Z6FZad/JaBqfmGqD7e9cMCG3T3havj6uOd2KGhBa
+	 9FsFtcdjG19AuqBzK9Bhu45DTjcsF2jHvbYjcd5HyfkMDVQqPEKvSQeKRhOmuaDHX
+	 B9izGzWPCnSZ8tcux+fJttbOSsklHkogyiz2QZCeV1oEDjh2Dd6AbzYcMqYa/SeRn
+	 VhUtBDbbGSXoLJzTMntVFzNzOrkhUB4vDOPHadJd90BpCsbEIfFshuMSBRimDWE2g
+	 USo9rMSaZW5MwP+1xCZ1PVvVRmsAP9fH8TxYaGW8FdSlw55zU6fxERMfgJxrmohWt
+	 GR5IC43bHcsbGDOfCw==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.2.42] ([84.162.31.30]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1M6Daq-1rNf1Q34XY-006dXe; Sat, 23
+ Dec 2023 14:41:00 +0100
+Message-ID: <0ec4c423-3d18-4a29-b78e-938366ece117@gmx.de>
+Date: Sat, 23 Dec 2023 14:40:58 +0100
+Precedence: bulk
+X-Mailing-List: linux-serial@vger.kernel.org
+List-Id: <linux-serial.vger.kernel.org>
+List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
+List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
  binding
-Thread-Topic: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
- binding
-Thread-Index: AQHaH/jBESSZN4JU2UOxi81YCMKNnLCN1MYggA6QRICABHVPgIADOxKAgASJVgCAABWukIALRm2AgAAjTdA=
-Date: Sat, 23 Dec 2023 12:49:01 +0000
-Message-ID: <f41f5ddcb52140b6a579043a5abce751@dh-electronics.com>
+Content-Language: en-US
+To: Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+ Lukas Wunner <lukas@wunner.de>
+Cc: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ "brenda.streiff@ni.com" <brenda.streiff@ni.com>,
+ Tomas Paukrt <tomaspaukrt@email.cz>
 References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
  <20231120151056.148450-2-linux@rasmusvillemoes.dk>
  <20231122145344.GA18949@wunner.de>
@@ -51,71 +60,106 @@ References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
  <ZXrX4mQXPLum0jL3@moxa-ThinkCentre-M90t>
  <b35730df8288469fbaf67b5ceae4eece@dh-electronics.com>
  <20231221155305.GA13673@wunner.de>
-In-Reply-To: <20231221155305.GA13673@wunner.de>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Precedence: bulk
-X-Mailing-List: linux-serial@vger.kernel.org
-List-Id: <linux-serial.vger.kernel.org>
-List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
-List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
+ <f41f5ddcb52140b6a579043a5abce751@dh-electronics.com>
+From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+In-Reply-To: <f41f5ddcb52140b6a579043a5abce751@dh-electronics.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:pDuxbI2WkztYdDHTvdtbHa9gMg0Ipu6a+RUE+KnN0eUnEFwvrZz
+ tmCBZhBatoxG2hFNFv63J2fl9h1CGuqKcr5Fz4EpVV3f5JAeGjod4y+A6QPXiOTvpSYbI8H
+ jsJkSEIEIaSoPy8rrkpuIuWfVH+vQCMZ82jVhWCwlYs5nNW1/byjjSKoUOEv+YfvXR1/WOM
+ 907n0Fv35z6j0Xj4f6OUg==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:CQfeTTCeB3M=;7DSS5miEAD5mnX//uy0ojZCR59n
+ zZ5cq5Zy2SEPcDK8m7g8nSs8nC/6sfz/YAd4WKPORlryUE+mgIkaW/3vpmz+n4Jh72WAdHA6s
+ ge/D0R4QTt30vEQ4hjt2yULSMdZAul4Z4T8LOgBV5Cdvlfz1zQ8uY5LSWjFF4jMIcaTh5UCvt
+ 7RXhGm2VaWYYCyWwGOJmV32H2O+bSKMk7aAi/+Qc+hfu6utbRxUUeeIhrdsRIflbWZJw6baQu
+ uyttVQbgtOCMrOYeeAktPrssiKADZBkErmBXQzMHenbpuqMfUnENV6FpNDgqdPcMVOwWEap6k
+ AP/0CHnpJ3clcpuR7e3Sia4qq46FbnE8IfDc0O4t5nNyWNOfp14fXjDhXvdLVJC3/aRU8ARwe
+ 8zoKFMq8WfsoZfSDbGVlie1SanabLVgPlGjdjVO9xFW/naVbA6JBWlBJ/8fKZ32VP3/BsTSJH
+ E5er+RcEwVP66PHgJRClJrB4rMbp4WDRRq7MEiW8QROLBR4l+giU5VWL0Zse/n2Mb9qGhOBwO
+ bVi3HNU5JAcoW660SXneTSjTIK88IV4GR5Z0CEkpW+pqeHQyVaPemFyrtgMX7Xq9Mc5Mn9zQD
+ 083j2edxz135yvf+Alsgr8V03rHCDtSpmdgRBsQLs2hSVIvi9/uREN2KzaTYPlr7n7sJevGIo
+ dfXAL1BrQUG4WqokO3KgoUkw5xp6bEClhCI5RKP/FeCJp7shRx3rMX6ADMFFSox1MPBX+bHKd
+ rHX17jDwvmtmmSPZnkFQjEeJuirq95sz/4YE8gtSKAYEm1uJe61lw0f1w3OV7LNEC9sPRY6TM
+ pl2Ojufbo45lcndQ0SC6rpnOxuvmMYB2my/S6a3DIfjRVnRR+wGipIpNfG/dEtSrnlW1LnSSm
+ z6BRaVfdUY6fwpZlOTWANGmV9bR3/1aKs17sTjySd4OB2YpRxaVGAscxtihmxW2XmspGNwtEp
+ ejNZNg==
 
-RnJvbTogTHVrYXMgV3VubmVyIFttYWlsdG86bHVrYXNAd3VubmVyLmRlXQ0KU2VudDogVGh1cnNk
-YXksIERlY2VtYmVyIDIxLCAyMDIzIDQ6NTMgUE0NCj4gDQo+IE9uIFRodSwgRGVjIDE0LCAyMDIz
-IGF0IDAxOjQxOjQ3UE0gKzAwMDAsIENocmlzdG9waCBOaWVkZXJtYWllciB3cm90ZToNCj4+IEkg
-d2lsbCBzdW1tYXJpemUgdGhlIGN1cnJlbnQgc2l0dWF0aW9uIGZyb20gbXkgcG9pbnQgb2Ygdmll
-dywgbWF5YmUgaXQgaGVscHM6DQo+Pg0KPj4gUlMtMjMyOg0KPj4gICAtIEZ1bGwgRHVwbGV4IFBv
-aW50LXRvLVBvaW50IGNvbm5lY3Rpb24NCj4+ICAgLSBObyB0cmFuc2NlaXZlciBjb250cm9sIHdp
-dGggUlRTDQo+PiAgIC0gTm8gdGVybWluYXRpb24NCj4+ICAgLSBObyBleHRyYSBzdHJ1Y3QgaW4g
-dXNlDQo+Pg0KPj4gUlMtNDIyOg0KPj4gICAtIEZ1bGwgRHVwbGV4IFBvaW50LXRvLVBvaW50IGNv
-bm5lY3Rpb24NCj4+ICAgLSBObyB0cmFuc2NlaXZlciBjb250cm9sIHdpdGggUlRTIG5lZWRlZA0K
-Pj4gICAtIFRlcm1pbmF0aW9uIHBvc3NpYmxlDQo+PiAgIC0gRXh0cmEgc3RydWN0IHNlcmlhbF9y
-czQ4NSBuZWVkZWQgaWYgdGVybWluYXRpb24gaXMgdXNlZA0KPj4gID0+IFJTLTQyMiBjYW4gYmUg
-dXNlZCBpbiBSUy0yMzIgb3BlcmF0aW9uLCBidXQgaWYgYSB0ZXJtaW5hdGlvbiBzaG91bGQgYmUN
-Cj4+ICAgICBzd2l0Y2hhYmxlIHRoZSBSUzQ4NSBmbGFnIGhhcyB0byBiZSBlbmFibGVkLiBCdXQg
-dGhlbiBhbHNvIHRyYW5zY2VpdmVyDQo+PiAgICAgY29udHJvbCB3aWxsIGJlIGVuYWJsZWQuIE5v
-dCBhIHZlcnkgc2F0aXNmeWluZyBzaXR1YXRpb24uDQo+IA0KPiBXZWxsIHdoeSBkb24ndCB3ZSBq
-dXN0IGFsbG93IGVuYWJsaW5nIG9yIGRpc2FibGluZyBSUy00ODUgdGVybWluYXRpb24NCj4gaW5k
-ZXBlbmRlbnRseSBmcm9tIHRoZSBTRVJfUlM0ODVfRU5BQkxFRCBiaXQgaW4gc3RydWN0IHNlcmlh
-bF9yczQ4NT8NCj4gDQo+IEp1c3QgbGV0IHRoZSB1c2VyIGlzc3VlIGEgVElPQ1NSUzQ4NSBpb2N0
-bCB0byB0b2dnbGUgdGVybWluYXRpb24gZXZlbg0KPiBpZiBpbiBSUy0yMzIgbW9kZSBhbmQgdXNl
-IHRoYXQgbW9kZSBmb3IgUlMtNDIyLg0KPiANCj4gTG9va3MgbGlrZSB0aGUgc2ltcGxlc3Qgc29s
-dXRpb24gdG8gbWUuDQoNClNvdW5kcyBub3QgYmFkLiBUaGUgdGVybWluYXRpb24gc2hvdWxkIG9u
-bHkgZGVwZW5kIG9uIHdoZXRoZXIgdGhlIEdQSU8gaXMNCmdpdmVuIG9yIG5vdC4gDQoNCklycmVz
-cGVjdGl2ZSBvZiB0aGlzLCBJIHRoaW5rIHRoZSBMaW5vcyBpZGVhIG9mIGFuIFJTLTQyMiBtb2Rl
-IGlzIG5vdCBiYWQuDQpUaGlzIGFsbG93cyB5b3UgdG8gdGFrZSBjYXJlIG9mIHNwZWNpYWwgZmVh
-dHVyZXMgdGhhdCB3ZXJlIHByZXZpb3VzbHkNCm92ZXJsb29rZWQuIEZvciBleGFtcGxlLCBoYXJk
-d2FyZSBmbG93IGNvbnRyb2wgY2FuIGJlIHN3aXRjaGVkIG9mZiBzbyB0aGF0DQp0aGlzIGRvZXMg
-bm90IGNhdXNlIGFueSBwcm9ibGVtcy4NCg0KPj4gUlMtNDg1ICgyLXdpcmUpIHZlcnkgY29tbW9u
-Og0KPj4gICAtIEhhbGYgRHVwbGV4IFJTLTQ4NSBidXMNCj4+ICAgLSBUcmFuc2NlaXZlciBjb250
-cm9sIHdpdGggUlRTIGlzIG5lZWRlZA0KPj4gICAtIFRlcm1pbmF0aW9uIHBvc3NpYmxlDQo+PiAg
-IC0gRXh0cmEgc3RydWN0IHNlcmlhbF9yczQ4NSBpcyBuZWVkZWQNCj4+ICA9PiBSUy00ODUgaGFz
-IHRvIGJlIGVuYWJsZWQgYW5kIGNvbmZpZ3VyZWQ6DQo+PiAgICAgLSBTZXQgU0VSX1JTNDg1X0VO
-QUJMRUQNCj4+ICAgICAtIFNldCBTRVJfUlM0ODVfUlRTX09OX1NFTkQgb3IgU0VSX1JTNDg1X1JU
-U19BRlRFUl9TRU5EDQo+PiAgICAgLSBTZXQvY2xlYXIgU0VSX1JTNDg1X1JYX0RVUklOR19UWCBk
-ZXBlbmRpbmcgb24gd2hldGhlcg0KPj4gICAgICAgdGhlIHJlY2VpdmVyIHBhdGggc2hvdWxkIGJl
-IG9uIG9yIG9mZiBkdXJpbmcgc2VuZGluZy4NCj4+ICAgICAgIElmIGl0J3Mgc2V0IGl0IGFsbG93
-cyB0byBtb25pdG9yIHRoZSBzZW5kaW5nIG9uIHRoZSBidXMNCj4+ICAgICAgIGFuZCBkZXRlY3Qg
-d2hldGhlciBhbm90aGVyIGJ1cyBkZXZpY2UgaXMgdHJhbnNtaXR0aW5nDQo+PiAgICAgICBhdCB0
-aGUgc2FtZSB0aW1lLg0KPj4gICAgIC0gU2V0L2NsZWFyIFNFUl9SUzQ4NV9URVJNSU5BVEVfQlVT
-IGZvciBidXMgdGVybWluYXRpb24uDQo+Pg0KPj4gUlMtNDg1ICg0LXdpcmUpIGxpdHRsZSB1c2Vk
-Og0KPj4gICAtIEZ1bGwgRHVwbGV4IFJTLTQ4NSBidXMNCj4+ICAgLSBUcmFuc2NlaXZlciBjb250
-cm9sIHdpdGggUlRTIGlzIG5lZWRlZA0KPj4gICAtIFRlcm1pbmF0aW9uIHBvc3NpYmxlDQo+PiAg
-IC0gRXh0cmEgc3RydWN0IHNlcmlhbF9yczQ4NSBpcyBuZWVkZWQNCj4+ICA9PiBSUy00ODUgaGFz
-IHRvIGJlIGVuYWJsZWQgYW5kIGNvbmZpZ3VyZWQ6DQo+PiAgICAgLSBTZXQgU0VSX1JTNDg1X0VO
-QUJMRUQNCj4+ICAgICAtIFNldCBTRVJfUlM0ODVfUlRTX09OX1NFTkQgb3IgU0VSX1JTNDg1X1JU
-U19BRlRFUl9TRU5EDQo+PiAgICAgLSBTZXQgU0VSX1JTNDg1X1JYX0RVUklOR19UWCwgYXMgdGhl
-IHJlY2VpdmVyIHNob3VsZCBhbHdheXMNCj4+ICAgICAgIGJlIGVuYWJsZWQgaW5kZXBlbmRlbnRs
-eSBvZiBUWCwgYmVjYXVzZSBUWCBhbmQgUlggYXJlDQo+PiAgICAgICBzZXBhcmF0ZWQgZnJvbSBl
-YWNoIG90aGVyIGJ5IHRoZWlyIG93biB3aXJlcy4NCj4+ICAgICAtIFNldC9jbGVhciBTRVJfUlM0
-ODVfVEVSTUlOQVRFX0JVUyBmb3IgYnVzIHRlcm1pbmF0aW9uLg0KPiANCj4gVGhhbmtzIGZvciB0
-aGF0IG92ZXJ2aWV3LCBJIGZvdW5kIGl0IHZlcnkgaGVscGZ1bC4NCj4gDQo+IE9uZSBzbWFsbCBh
-ZGRlbmR1bTogIEhhcmR3YXJlIGZsb3cgY29udHJvbC4gIE9ubHkgcG9zc2libGUgd2l0aA0KPiBS
-Uy0yMzIuICBEb2Vzbid0IHdvcmsgaW4gYW55IG9mIHRoZSBvdGhlciBtb2RlcywgcmlnaHQ/DQoN
-CllvdSBhcmUgcmlnaHQgSSBmb3Jnb3QgdG8gbWVudGlvbiBpdC4NCg0KUmVnYXJkcyBhbmQgTWVy
-cnkgQ2hyaXN0bWFzDQpDaHJpc3RvcGgNCg==
+
+
+On 23.12.23 13:49, Christoph Niedermaier wrote:
+> From: Lukas Wunner [mailto:lukas@wunner.de]
+> Sent: Thursday, December 21, 2023 4:53 PM
+>>
+>> On Thu, Dec 14, 2023 at 01:41:47PM +0000, Christoph Niedermaier wrote:
+>>> I will summarize the current situation from my point of view, maybe it=
+ helps:
+>>>
+>>> RS-232:
+>>>   - Full Duplex Point-to-Point connection
+>>>   - No transceiver control with RTS
+>>>   - No termination
+>>>   - No extra struct in use
+>>>
+>>> RS-422:
+>>>   - Full Duplex Point-to-Point connection
+>>>   - No transceiver control with RTS needed
+>>>   - Termination possible
+>>>   - Extra struct serial_rs485 needed if termination is used
+>>>  =3D> RS-422 can be used in RS-232 operation, but if a termination sho=
+uld be
+>>>     switchable the RS485 flag has to be enabled. But then also transce=
+iver
+>>>     control will be enabled. Not a very satisfying situation.
+>>
+>> Well why don't we just allow enabling or disabling RS-485 termination
+>> independently from the SER_RS485_ENABLED bit in struct serial_rs485?
+>>
+>> Just let the user issue a TIOCSRS485 ioctl to toggle termination even
+>> if in RS-232 mode and use that mode for RS-422.
+>>
+>> Looks like the simplest solution to me.
+>
+> Sounds not bad. The termination should only depend on whether the GPIO i=
+s
+> given or not.
+>
+> Irrespective of this, I think the Linos idea of an RS-422 mode is not ba=
+d.
+> This allows you to take care of special features that were previously
+> overlooked. For example, hardware flow control can be switched off so th=
+at
+> this does not cause any problems.
+>
+
+Also note, that RS232 and RS422 may NOT always be the same from driver per=
+spective.
+Take a look at 8250_excar.c for example. That driver has to configure the =
+hardware
+accordingly when switching from RS232 to RS422 (see iot2040_rs485_config()=
+).
+
+While a SER_RS485_MODE_RS422 flag set by userspace could work to switch to=
+ RS422, I
+still think that the cleanest solution would be another ioctl TIOCSRS422 w=
+ith a
+parameter like
+
+struct serial_rs422 {
+       __u32   flags;
+#define SER_RS422_ENABLED              (1 << 0)
+#define SER_RS422_TERMINATE_BUS        (1 << 1)
+	__u32 	padding[7]
+};
+
+The SER_RS485_MODE_RS422 flag could still be used internally as a hint to =
+the driver.
+That solution would also be expandable if needed. I planned to send a patc=
+h that implements this
+as a RFC to the mailing list (maybe in the next few days).
+
+Regards,
+Lino
+
+
