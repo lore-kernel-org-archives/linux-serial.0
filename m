@@ -1,123 +1,166 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
+Received: from connect.vanmierlo.com (fieber.vanmierlo.com [84.243.197.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C68853A0;
-	Sun, 24 Dec 2023 14:23:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UT5IX2m2"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1703427829; x=1734963829;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ryI2ILCT9BZHm98daCtmT5DUgurYrkulnFER/y9ghkE=;
-  b=UT5IX2m28/fLO0of6EeTOOn4P6kacHspor3SQM7wfEuAebC26JUzTv0q
-   XWT6hXN59qE44Tz06uleCXlEuRt1jUpAt/PyQ3uawR2XG3FqHyp1XRH7M
-   OKTTcN1v/0/2+KycoW0mCkS99gqYPotv+md6lOaQIsoAXQxgexTNPHOLe
-   dUvb4HLV/20NlGG59pst3UD+bqdww/xJXvTrQ3OH0O37wIz7oEf4HKSIl
-   53NuGPinPCqWERGdTi0zIJcZy9kQYmZi5FVDb9BaJPqgSmR01S4pzNC5L
-   urajryGsc4NLoY6TMteqyW+OC8AirT0AbgNFFpUIOmBjKv8goQ2ZvuX+s
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10934"; a="482416260"
-X-IronPort-AV: E=Sophos;i="6.04,301,1695711600"; 
-   d="scan'208";a="482416260"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Dec 2023 06:23:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10934"; a="777537126"
-X-IronPort-AV: E=Sophos;i="6.04,301,1695711600"; 
-   d="scan'208";a="777537126"
-Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 24 Dec 2023 06:23:37 -0800
-Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rHPNu-000CKD-1W;
-	Sun, 24 Dec 2023 14:23:30 +0000
-Date: Sun, 24 Dec 2023 22:22:19 +0800
-From: kernel test robot <lkp@intel.com>
-To: Sreenath Vijayan <sreenath.vijayan@sony.com>, linux-doc@vger.kernel.org,
-	linux-serial@vger.kernel.org, corbet@lwn.net,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	linux-kernel@vger.kernel.org, anandakumar.balasubramaniam@sony.com,
-	Sreenath Vijayan <sreenath.vijayan@sony.com>,
-	Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>
-Subject: Re: [PATCH] tty/sysrq: Dump kernel ring buffer messages via sysrq
-Message-ID: <202312242257.5c0xsTqe-lkp@intel.com>
-References: <20231221133953.1507021-1-sreenath.vijayan@sony.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9401FC8C7
+	for <linux-serial@vger.kernel.org>; Sun, 24 Dec 2023 17:09:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=vanmierlo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vanmierlo.com
+X-Footer: dmFubWllcmxvLmNvbQ==
+Received: from roundcube.vanmierlo.com ([192.168.37.37])
+	(authenticated user m.brock@vanmierlo.com)
+	by connect.vanmierlo.com (Kerio Connect 10.0.2 patch 1) with ESMTPA
+	for linux-serial@vger.kernel.org;
+	Sun, 24 Dec 2023 17:39:08 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231221133953.1507021-1-sreenath.vijayan@sony.com>
+Date: Sun, 24 Dec 2023 17:39:08 +0100
+From: m.brock@vanmierlo.com
+To: Linux Serial <linux-serial@vger.kernel.org>
+Subject: Poor documentation of SER_RS485_RTS_ON_SEND and
+ SER_RS485_RTS_AFTER_SEND
+Message-ID: <511f7dcbc6b6c64ffaa246a0148f0d75@vanmierlo.com>
+X-Sender: m.brock@vanmierlo.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Sreenath,
+Hi all,
 
-kernel test robot noticed the following build warnings:
+I have some trouble finding out the meaning of SER_RS485_RTS_ON_SEND and
+SER_RS485_RTS_AFTER_SEND. The documentation says:
 
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on tty/tty-next tty/tty-linus linus/master v6.7-rc7 next-20231222]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+linux/serial.h
+==============
+> * * %SER_RS485_RTS_ON_SEND	- Logical level for RTS pin when sending.
+> * * %SER_RS485_RTS_AFTER_SEND	- Logical level for RTS pin after sent.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Sreenath-Vijayan/tty-sysrq-Dump-kernel-ring-buffer-messages-via-sysrq/20231222-172636
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20231221133953.1507021-1-sreenath.vijayan%40sony.com
-patch subject: [PATCH] tty/sysrq: Dump kernel ring buffer messages via sysrq
-config: arm-defconfig (https://download.01.org/0day-ci/archive/20231224/202312242257.5c0xsTqe-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project.git f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231224/202312242257.5c0xsTqe-lkp@intel.com/reproduce)
+Practically all UART chips have a -RTS, /RTS pin or RTSn pin and no RTS 
+pin.
+And what is the meaning of "Logical level" here? Is it the same as Logic 
+Level?
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202312242257.5c0xsTqe-lkp@intel.com/
+Should I conclude that setting the SER_RS485_RTS_ON_SEND flag should 
+result in
+the logic level on the /RTS pin being high (> 0V) during transmission?
+And similarly that setting the SER_RS485_RTS_AFTER_SEND flag should 
+result in
+the logic level on the /RTS pin being high after transmission?
 
-All warnings (new ones prefixed by >>):
+rs485.yaml
+==========
+>   rs485-rts-active-high:
+>     description: drive RTS high when sending (this is the default).
+>     $ref: /schemas/types.yaml#/definitions/flag
+> 
+>   rs485-rts-active-low:
+>     description: drive RTS low when sending (default is high).
+>     $ref: /schemas/types.yaml#/definitions/flag
 
->> drivers/tty/sysrq.c:455:13: warning: stack frame size (1088) exceeds limit (1024) in 'dmesg_dump_callback' [-Wframe-larger-than]
-   static void dmesg_dump_callback(struct work_struct *work)
-               ^
-   1 warning generated.
+Can I assume that RTS usually means the /RTS pin on the UART chip here.
 
+Looking at the implemented drivers does not make things better.
 
-vim +/dmesg_dump_callback +455 drivers/tty/sysrq.c
+Some drivers think that when the SER_RS485_RTS_ON_SEND flag is set they 
+should
+set the RTS bit in E.g. the MCR register when starting a transmission, 
+which
+results in the /RTS pin going low on E.g. a genuine 8250.
 
-   454	
- > 455	static void dmesg_dump_callback(struct work_struct *work)
-   456	{
-   457		struct kmsg_dump_iter iter;
-   458		size_t len;
-   459		char buf[1024];
-   460		struct console *con;
-   461		int cookie;
-   462	
-   463		kmsg_dump_rewind(&iter);
-   464		while (kmsg_dump_get_line(&iter, 1, buf, sizeof(buf), &len)) {
-   465			/*
-   466			 * Since using printk() or pr_*() will append the message to the
-   467			 * kernel ring buffer, they cannot be used to display the retrieved
-   468			 * message. Hence console_write() of serial drivers is used.
-   469			 */
-   470			console_lock();
-   471			cookie = console_srcu_read_lock();
-   472			for_each_console_srcu(con) {
-   473				if ((console_srcu_read_flags(con) & CON_ENABLED) && con->write)
-   474					con->write(con, buf, len);
-   475			}
-   476			console_srcu_read_unlock(cookie);
-   477			console_unlock();
-   478		}
-   479	}
-   480	
+8250_port.c
+===========
+> /**
+>  * serial8250_em485_start_tx() - generic ->rs485_start_tx() callback
+>  * @up: uart 8250 port
+>  *
+>  * Generic callback usable by 8250 uart drivers to start rs485 
+> transmission.
+>  * Assumes that setting the RTS bit in the MCR register means RTS is 
+> high.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Wow, that's an odd assumption for a generic 8250/16x50 driver!
+
+>  * (Some chips use inverse semantics.)  [...]
+>  */
+> void serial8250_em485_start_tx(struct uart_8250_port *up)
+> {
+> 	unsigned char mcr = serial8250_in_MCR(up);
+> 
+> 	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
+> 		serial8250_stop_rx(&up->port);
+> 
+> 	if (up->port.rs485.flags & SER_RS485_RTS_ON_SEND)
+> 		mcr |= UART_MCR_RTS;
+> 	else
+> 		mcr &= ~UART_MCR_RTS;
+> 	serial8250_out_MCR(up, mcr);
+> }
+
+The next one behaves the same, but makes a different assumption:
+
+8250_omap.c
+===========
+> static int omap8250_rs485_config(struct uart_port *port,
+> 				 struct ktermios *termios,
+> 				 struct serial_rs485 *rs485)
+> {
+> 	[...]
+> 	/*
+> 	 * Retain same polarity semantics as RS485 software emulation,
+> 	 * i.e. SER_RS485_RTS_ON_SEND means driving RTS low on send.
+
+Shouldn't SER_RS485_RTS_ON_SEND mean driving RTS high on send?
+
+> 	 */
+> 	if (rs485->flags & SER_RS485_RTS_ON_SEND)
+> 		priv->mdr3 &= ~UART_OMAP_MDR3_DIR_POL;
+> 	else
+> 		priv->mdr3 |= UART_OMAP_MDR3_DIR_POL;
+> 
+> 	serial_out(up, UART_OMAP_MDR3, priv->mdr3);
+
+Others believe that they should clear the RTS bit in MCR for
+SER_RS485_RTS_ON_SEND when starting a transmission, resulting in the 
+/RTS
+pin going high.
+
+8250_bcm2835aux.c
+=================
+> static void bcm2835aux_rs485_start_tx(struct uart_8250_port *up)
+> {
+> 	[...]
+> 	/*
+> 	 * On the bcm2835aux, the MCR register contains no other
+> 	 * flags besides RTS.  So no need for a read-modify-write.
+> 	 */
+> 	if (up->port.rs485.flags & SER_RS485_RTS_ON_SEND)
+> 		serial8250_out_MCR(up, 0);
+> 	else
+> 		serial8250_out_MCR(up, UART_MCR_RTS);
+> }
+
+Same here:
+
+8250_pci.c
+==========
+> static int pci_fintek_rs485_config(struct uart_port *port, struct 
+> ktermios *termios,
+> 			       struct serial_rs485 *rs485)
+> {
+> 		[...]
+> 		if (rs485->flags & SER_RS485_RTS_ON_SEND) {
+> 			/* RTS driving high on TX */
+> 			setting &= ~FINTEK_RTS_INVERT;
+> 		} else {
+> 			/* RTS driving low on TX */
+> 			setting |= FINTEK_RTS_INVERT;
+> 		}
+
+Can the list shed some light on this and reach a consensus here?
+
+Happy Holidays,
+Maarten
+
