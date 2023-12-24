@@ -1,165 +1,153 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+Received: from tarta.nabijaczleweli.xyz (tarta.nabijaczleweli.xyz [139.28.40.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB910D2F8;
-	Sat, 23 Dec 2023 13:41:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F4D2EC0;
+	Sun, 24 Dec 2023 05:01:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nabijaczleweli.xyz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nabijaczleweli.xyz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="ObBGU/k0"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-	t=1703338861; x=1703943661; i=linosanfilippo@gmx.de;
-	bh=Nx79P5r9ZG4XWH364YUty3qUZDD0HnQKSxhIi0fdzVw=;
-	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
-	 In-Reply-To;
-	b=ObBGU/k0yLfyAmsvhGxGA6b6Z6FZad/JaBqfmGqD7e9cMCG3T3havj6uOd2KGhBa
-	 9FsFtcdjG19AuqBzK9Bhu45DTjcsF2jHvbYjcd5HyfkMDVQqPEKvSQeKRhOmuaDHX
-	 B9izGzWPCnSZ8tcux+fJttbOSsklHkogyiz2QZCeV1oEDjh2Dd6AbzYcMqYa/SeRn
-	 VhUtBDbbGSXoLJzTMntVFzNzOrkhUB4vDOPHadJd90BpCsbEIfFshuMSBRimDWE2g
-	 USo9rMSaZW5MwP+1xCZ1PVvVRmsAP9fH8TxYaGW8FdSlw55zU6fxERMfgJxrmohWt
-	 GR5IC43bHcsbGDOfCw==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.2.42] ([84.162.31.30]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1M6Daq-1rNf1Q34XY-006dXe; Sat, 23
- Dec 2023 14:41:00 +0100
-Message-ID: <0ec4c423-3d18-4a29-b78e-938366ece117@gmx.de>
-Date: Sat, 23 Dec 2023 14:40:58 +0100
+	dkim=pass (2048-bit key) header.d=nabijaczleweli.xyz header.i=@nabijaczleweli.xyz header.b="jHk9hGJB"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nabijaczleweli.xyz;
+	s=202305; t=1703394109;
+	bh=8JqjLYgVpBXyZxmwMpSVDZbE1TJ3MF+mAG3wx6Uw9pQ=;
+	h=Date:From:Cc:Subject:References:In-Reply-To:From;
+	b=jHk9hGJB5O3WI8fjG4cLk3aQJtGC+pfA0r0KZO3OH1sUKU5kWEp0+fh4OVGlfMtMi
+	 K+dlbxT25iY5MS+SPpD5IRmF3TuTU5vo46Y7bjzBts7Gaa2eju425b80QL8d95XKMV
+	 oEuAasy7V3VjGivCeoLyhnKCyfHJg5L4ELNjAlhFJ23qlJyETRTimLl7C3AFplIvhQ
+	 ZThiJDSm9GP4nb092DACHKBbNcYOH2qplLF8TQK1WM0k1TkYiNgSfG8Hqj7z7edvM3
+	 WmaxrW+zaE82xLkdKCiTbbDiYZiIPXeePzmmh2nMnt1e7a0vNaYkPsV1eIHw3+98OC
+	 YyXAX7hZgbESA==
+Received: from tarta.nabijaczleweli.xyz (unknown [192.168.1.250])
+	by tarta.nabijaczleweli.xyz (Postfix) with ESMTPSA id 5AE9E1421C;
+	Sun, 24 Dec 2023 06:01:49 +0100 (CET)
+Date: Sun, 24 Dec 2023 06:01:49 +0100
+From: 
+	Ahelenia =?utf-8?Q?Ziemia=C5=84ska?= <nabijaczleweli@nabijaczleweli.xyz>
+Cc: Jens Axboe <axboe@kernel.dk>, Christian Brauner <brauner@kernel.org>, 
+	Alexander Viro <viro@zeniv.linux.org.uk>, linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH v2 13/11] tty: splice_write: disable
+Message-ID: <fvxufyqixohx65lcusrkkfoxs5cnlsuv7kajv6bnngcoewsodx@tarta.nabijaczleweli.xyz>
+References: <cover.1703126594.git.nabijaczleweli@nabijaczleweli.xyz>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dt-bindings: serial: rs485: add rs485-mux-gpios
- binding
-Content-Language: en-US
-To: Christoph Niedermaier <cniedermaier@dh-electronics.com>,
- Lukas Wunner <lukas@wunner.de>
-Cc: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Rasmus Villemoes <linux@rasmusvillemoes.dk>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- "brenda.streiff@ni.com" <brenda.streiff@ni.com>,
- Tomas Paukrt <tomaspaukrt@email.cz>
-References: <20231120151056.148450-1-linux@rasmusvillemoes.dk>
- <20231120151056.148450-2-linux@rasmusvillemoes.dk>
- <20231122145344.GA18949@wunner.de>
- <3b8548b1-b8a9-0c9e-4040-5cfda06a85c6@gmx.de>
- <ec66d25162de4cbc92720df1e7008fe8@dh-electronics.com>
- <5c140498-69e3-4187-8703-db0c41e7ca89@gmx.de>
- <fe28eb93-daa1-41af-a005-f21aa87e1984@gmx.de>
- <ZXcJr4VS_uGr_6TV@smile.fi.intel.com>
- <ZXrX4mQXPLum0jL3@moxa-ThinkCentre-M90t>
- <b35730df8288469fbaf67b5ceae4eece@dh-electronics.com>
- <20231221155305.GA13673@wunner.de>
- <f41f5ddcb52140b6a579043a5abce751@dh-electronics.com>
-From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <f41f5ddcb52140b6a579043a5abce751@dh-electronics.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="k5qljftky3o4rq3i"
+Content-Disposition: inline
+In-Reply-To: <cover.1703126594.git.nabijaczleweli@nabijaczleweli.xyz>
+User-Agent: NeoMutt/20231103
+
+
+--k5qljftky3o4rq3i
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:pDuxbI2WkztYdDHTvdtbHa9gMg0Ipu6a+RUE+KnN0eUnEFwvrZz
- tmCBZhBatoxG2hFNFv63J2fl9h1CGuqKcr5Fz4EpVV3f5JAeGjod4y+A6QPXiOTvpSYbI8H
- jsJkSEIEIaSoPy8rrkpuIuWfVH+vQCMZ82jVhWCwlYs5nNW1/byjjSKoUOEv+YfvXR1/WOM
- 907n0Fv35z6j0Xj4f6OUg==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:CQfeTTCeB3M=;7DSS5miEAD5mnX//uy0ojZCR59n
- zZ5cq5Zy2SEPcDK8m7g8nSs8nC/6sfz/YAd4WKPORlryUE+mgIkaW/3vpmz+n4Jh72WAdHA6s
- ge/D0R4QTt30vEQ4hjt2yULSMdZAul4Z4T8LOgBV5Cdvlfz1zQ8uY5LSWjFF4jMIcaTh5UCvt
- 7RXhGm2VaWYYCyWwGOJmV32H2O+bSKMk7aAi/+Qc+hfu6utbRxUUeeIhrdsRIflbWZJw6baQu
- uyttVQbgtOCMrOYeeAktPrssiKADZBkErmBXQzMHenbpuqMfUnENV6FpNDgqdPcMVOwWEap6k
- AP/0CHnpJ3clcpuR7e3Sia4qq46FbnE8IfDc0O4t5nNyWNOfp14fXjDhXvdLVJC3/aRU8ARwe
- 8zoKFMq8WfsoZfSDbGVlie1SanabLVgPlGjdjVO9xFW/naVbA6JBWlBJ/8fKZ32VP3/BsTSJH
- E5er+RcEwVP66PHgJRClJrB4rMbp4WDRRq7MEiW8QROLBR4l+giU5VWL0Zse/n2Mb9qGhOBwO
- bVi3HNU5JAcoW660SXneTSjTIK88IV4GR5Z0CEkpW+pqeHQyVaPemFyrtgMX7Xq9Mc5Mn9zQD
- 083j2edxz135yvf+Alsgr8V03rHCDtSpmdgRBsQLs2hSVIvi9/uREN2KzaTYPlr7n7sJevGIo
- dfXAL1BrQUG4WqokO3KgoUkw5xp6bEClhCI5RKP/FeCJp7shRx3rMX6ADMFFSox1MPBX+bHKd
- rHX17jDwvmtmmSPZnkFQjEeJuirq95sz/4YE8gtSKAYEm1uJe61lw0f1w3OV7LNEC9sPRY6TM
- pl2Ojufbo45lcndQ0SC6rpnOxuvmMYB2my/S6a3DIfjRVnRR+wGipIpNfG/dEtSrnlW1LnSSm
- z6BRaVfdUY6fwpZlOTWANGmV9bR3/1aKs17sTjySd4OB2YpRxaVGAscxtihmxW2XmspGNwtEp
- ejNZNg==
 
+Given:
+	cat > ttyW.c <<^D
+	#define _GNU_SOURCE
+	#include <fcntl.h>
+	#include <stdlib.h>
+	int main()
+	{
+		int pt =3D posix_openpt(O_RDWR);
+		grantpt(pt);
+		unlockpt(pt);
+		int cl =3D open(ptsname(pt), O_WRONLY);
+		for (;;)
+			splice(0, 0, cl, 0, 128 * 1024 * 1024, 0);
+	}
+	^D
+	cc ttyW.c -o ttyW
+	mkfifo fifo
+	truncate 32M 32M
+	./ttyW < fifo &
+	cp 32M fifo &
+	sleep 0.1
+	read -r _ < fifo
+ttyW used to sleep in splice and the shell used to enter an
+uninterruptible sleep in open("fifo");
+now the splice returns -EINVAL and the whole program completes.
 
+This is also symmetric with the splice_read removal.
 
-On 23.12.23 13:49, Christoph Niedermaier wrote:
-> From: Lukas Wunner [mailto:lukas@wunner.de]
-> Sent: Thursday, December 21, 2023 4:53 PM
->>
->> On Thu, Dec 14, 2023 at 01:41:47PM +0000, Christoph Niedermaier wrote:
->>> I will summarize the current situation from my point of view, maybe it=
- helps:
->>>
->>> RS-232:
->>>   - Full Duplex Point-to-Point connection
->>>   - No transceiver control with RTS
->>>   - No termination
->>>   - No extra struct in use
->>>
->>> RS-422:
->>>   - Full Duplex Point-to-Point connection
->>>   - No transceiver control with RTS needed
->>>   - Termination possible
->>>   - Extra struct serial_rs485 needed if termination is used
->>>  =3D> RS-422 can be used in RS-232 operation, but if a termination sho=
-uld be
->>>     switchable the RS485 flag has to be enabled. But then also transce=
-iver
->>>     control will be enabled. Not a very satisfying situation.
->>
->> Well why don't we just allow enabling or disabling RS-485 termination
->> independently from the SER_RS485_ENABLED bit in struct serial_rs485?
->>
->> Just let the user issue a TIOCSRS485 ioctl to toggle termination even
->> if in RS-232 mode and use that mode for RS-422.
->>
->> Looks like the simplest solution to me.
->
-> Sounds not bad. The termination should only depend on whether the GPIO i=
-s
-> given or not.
->
-> Irrespective of this, I think the Linos idea of an RS-422 mode is not ba=
-d.
-> This allows you to take care of special features that were previously
-> overlooked. For example, hardware flow control can be switched off so th=
-at
-> this does not cause any problems.
->
+Signed-off-by: Ahelenia Ziemia=C5=84ska <nabijaczleweli@nabijaczleweli.xyz>
+---
+It hit me that I should actually probably exhaustively re-evaluate
+splice_write as well since re-evaluating splice_read went so well.
 
-Also note, that RS232 and RS422 may NOT always be the same from driver per=
-spective.
-Take a look at 8250_excar.c for example. That driver has to configure the =
-hardware
-accordingly when switching from RS232 to RS422 (see iot2040_rs485_config()=
-).
+fs/fuse/dev.c:  .splice_write   =3D fuse_dev_splice_write,
+drivers/char/virtio_console.c:  .splice_write =3D port_fops_splice_write,
+locks, takes some pages, unlocks, writes, so OK
 
-While a SER_RS485_MODE_RS422 flag set by userspace could work to switch to=
- RS422, I
-still think that the cleanest solution would be another ioctl TIOCSRS422 w=
-ith a
-parameter like
+drivers/char/mem.c:	.splice_write	=3D splice_write_null,
+drivers/char/mem.c:	.splice_write	=3D splice_write_zero,
+no-op
 
-struct serial_rs422 {
-       __u32   flags;
-#define SER_RS422_ENABLED              (1 << 0)
-#define SER_RS422_TERMINATE_BUS        (1 << 1)
-	__u32 	padding[7]
-};
+drivers/char/random.c:	.splice_write =3D iter_file_splice_write,
+drivers/char/random.c:	.splice_write =3D iter_file_splice_write,
+AFAICT write_pool_user is okay to invoke like this?
 
-The SER_RS485_MODE_RS422 flag could still be used internally as a hint to =
-the driver.
-That solution would also be expandable if needed. I planned to send a patc=
-h that implements this
-as a RFC to the mailing list (maybe in the next few days).
+net/socket.c:   .splice_write =3D splice_to_socket,
+already dealt with in 11/11
 
-Regards,
-Lino
+drivers/tty/tty_io.c:   .splice_write   =3D iter_file_splice_write,
+drivers/tty/tty_io.c:   .splice_write   =3D iter_file_splice_write,
+they do lock the pipe and try the write with the lock held;
+we already killed splice_read so just kill splice_write for symmetry
+(13/11)
 
+fs/fuse/file.c: .splice_write   =3D iter_file_splice_write,
+same logic as splice_read applies (14/11)
 
+ drivers/tty/tty_io.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 50c2957a9c7f..d931c34ddcbf 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -465,7 +465,6 @@ static const struct file_operations tty_fops =3D {
+ 	.llseek		=3D no_llseek,
+ 	.read_iter	=3D tty_read,
+ 	.write_iter	=3D tty_write,
+-	.splice_write	=3D iter_file_splice_write,
+ 	.poll		=3D tty_poll,
+ 	.unlocked_ioctl	=3D tty_ioctl,
+ 	.compat_ioctl	=3D tty_compat_ioctl,
+@@ -479,7 +478,6 @@ static const struct file_operations console_fops =3D {
+ 	.llseek		=3D no_llseek,
+ 	.read_iter	=3D tty_read,
+ 	.write_iter	=3D redirected_tty_write,
+-	.splice_write	=3D iter_file_splice_write,
+ 	.poll		=3D tty_poll,
+ 	.unlocked_ioctl	=3D tty_ioctl,
+ 	.compat_ioctl	=3D tty_compat_ioctl,
+--=20
+2.39.2
+
+--k5qljftky3o4rq3i
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEfWlHToQCjFzAxEFjvP0LAY0mWPEFAmWHuzoACgkQvP0LAY0m
+WPFo5xAAr2aMvf/GnD9FPas8XlNZIMRIyccAYSzpCdA84vG2bZcAOWYLbp9yhoJ1
+mQIB2TWxX4+uNx260cP/sMqXakJdV0V63yHCn9mkD/YSWMnqedcqDK3V2Ir2YTj1
+x1Aiu/j7UjDUR9GieB5USUWpnJrqJhDUu8We/E0kAFHyct1MRQY4LGVhr/0tjNQQ
+wQKmzBAo7C13UPbZ7qmKFWpo04PTAN5reHIPrJBWy8ca5PjuiyAn6GBpQ3QXvfio
+xNEw9RlzS85nxEkk5T+5HfKEkdXQFh6df+6CIHjNCXeE9T0JChBpQEpm9eca23vE
+IYeZzHCpajLc75SQMqhW3cS5uauDkqdr1WqDQviJ19S+jQk4BqRjpVtgq2KTnCWu
+V0y6EJ41PfKjkt4WWQIOF6uzT/bLzXieEQffk5NtvnCa9gBOlYgNNBEjNQAxD2ur
++yDbgNbejfTvdBIecz5xk1s3nHxsgwifOnUjcBIb9nn7uFghL9H32x511rz7jvbc
+MwgjQaSmoRzM45RDWwPUvVCsNxLUHkIADrdtF1hpDIyoNZxDOlWK8BnPgT+p9PAG
+QOMjJxq7+pc/9I2b49rUFqOnHxoJbSn9A35CUpbEKukyUPd8PIMJRr9mno/NXxYY
+nmcQvapAeQujR15EXMAQfxAbPRZdp2lN2vBXxYvKzBVesMij2b0=
+=ziYk
+-----END PGP SIGNATURE-----
+
+--k5qljftky3o4rq3i--
