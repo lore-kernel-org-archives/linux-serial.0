@@ -1,144 +1,78 @@
-Received: from connect.vanmierlo.com (fieber.vanmierlo.com [84.243.197.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3250D1E481;
-	Mon, 25 Dec 2023 12:31:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=vanmierlo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vanmierlo.com
-X-Footer: dmFubWllcmxvLmNvbQ==
-Received: from roundcube.vanmierlo.com ([192.168.37.37])
-	(authenticated user m.brock@vanmierlo.com)
-	by connect.vanmierlo.com (Kerio Connect 10.0.2 patch 1) with ESMTPA;
-	Mon, 25 Dec 2023 13:31:16 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33D6E524C7;
+	Mon, 25 Dec 2023 21:35:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lqqXi0IA"
+Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-6dbd87b706aso601249a34.0;
+        Mon, 25 Dec 2023 13:35:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1703540133; x=1704144933; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Vk3BrCUhkF8HNi8hqkxjkr1dZsGMp84ddJ6VAzsBSHI=;
+        b=lqqXi0IAgJ51KJw9d8Qsu7KCmXGSyP6cJ4y2ttk9IdKa97NR2pHY2CYdYoR7bWskFg
+         MchvYxhCubWB3uTYJAyxw71QWzRQ108EDae/7Pve3DVY/3CorOJyWJWWNJD5j1NJL2ov
+         GOtDMkj6LRw5wgIdQN/GqIi8Zxa8XbQCAAZk4LXhFhy7d9K+SkXuFZAgRo325v95B2y0
+         VAzP81D85ttRdo7/EQWtp+6tbKUOseFYd/DG37mlanTAlzV35RBzHvqx5RKkvnYUnvB/
+         b8P8CBcnWS+AvxGJ+fsfk5y5oibNGjMxJ8/LOOpgNGM77+C6tZHalcq1sczuVCsUO2JJ
+         83fg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1703540133; x=1704144933;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Vk3BrCUhkF8HNi8hqkxjkr1dZsGMp84ddJ6VAzsBSHI=;
+        b=IBezbnbn1or/Ivft3+ebjtnEIsB0JqwoRXa07Pn9IY9LZAiiTR4LZSpEkqsmUQkydT
+         udGbcc9mfiB0IfL6L19F9Hz92QRVGosdf+ddYHDQfa0LDdhguzokFb+yvR8hpDHi8Ka3
+         Z8IJuFDZtACHxkjjNe4c6TuDP01xCoFkO4uaqrZhpAMCP1eg1WmoQA5ubOvM2oap78Ac
+         7lmIyoJDQWZ8Rq6SSIkjRPrO82a9e8HyPpDc0BF3LN99o88uCy8icvmk3f0X2MaviLuZ
+         bniR1bgr2cfvHEqKbOIWLzwkJHVPlDyywMuIc6L+hzc6J5tBUwGa+s37VuWmXob0uKU0
+         44cw==
+X-Gm-Message-State: AOJu0YyNkbAfbxRoDDiu7s11ThzUfH0fVEqneOlZMA130mVY4t1cyIDf
+	TkIz/TMvlq8aeVLiTZxBQ+yMLk/X1dO0uiqtq6Y=
+X-Google-Smtp-Source: AGHT+IF1ALMcZKnA4llsyBw7rVtGfnYUrZqqpeQaYHATEY6RAt9XEi5JjGL9mAun1x7rCUMA0cgxJM1hWmcGDvIbtRo=
+X-Received: by 2002:a05:6359:c1c:b0:174:ed0f:672e with SMTP id
+ gn28-20020a0563590c1c00b00174ed0f672emr2919571rwb.1.1703540132944; Mon, 25
+ Dec 2023 13:35:32 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Mon, 25 Dec 2023 13:31:16 +0100
-From: Maarten Brock <m.brock@vanmierlo.com>
-To: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
- ilpo.jarvinen@linux.intel.com, u.kleine-koenig@pengutronix.de,
- shawnguo@kernel.org, s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com,
- alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com,
- hugo@hugovil.com, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, LinoSanfilippo@gmx.de, lukas@wunner.de,
- p.rosenberger@kunbus.com, stable@vger.kernel.org, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>
-Subject: Re: [PATCH v6 1/7] serial: Do not hold the port lock when setting
- rx-during-tx GPIO
-In-Reply-To: <20231225113524.8800-2-l.sanfilippo@kunbus.com>
-References: <20231225113524.8800-1-l.sanfilippo@kunbus.com>
- <20231225113524.8800-2-l.sanfilippo@kunbus.com>
-Message-ID: <5177a7aef77a6b77a6e742a2fdd52a0e@vanmierlo.com>
-X-Sender: m.brock@vanmierlo.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+From: Askar Safin <safinaskar@gmail.com>
+Date: Tue, 26 Dec 2023 00:34:44 +0300
+Message-ID: <CAPnZJGCdr7pw80Pq38UacmxsbQAowmasPtFxQVCP+tm6Cj9pUg@mail.gmail.com>
+Subject: Re: Avoid unprivileged splice(file->)/(->socket) pipe exclusion
+To: =?UTF-8?Q?Ahelenia_Ziemia=C5=84ska?= <nabijaczleweli@nabijaczleweli.xyz>
+Cc: linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-man <linux-man@vger.kernel.org>, linux-s390@vger.kernel.org, 
+	linux-serial@vger.kernel.org, netdev@vger.kernel.org, 
+	virtualization@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Lino Sanfilippo wrote on 2023-12-25 12:35:
-> diff --git a/drivers/tty/serial/serial_core.c 
-> b/drivers/tty/serial/serial_core.c
-> index f1348a509552..d155131f221d 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1402,6 +1402,16 @@ static void uart_set_rs485_termination(struct
-> uart_port *port,
->  				 !!(rs485->flags & SER_RS485_TERMINATE_BUS));
->  }
-> 
-> +static void uart_set_rs485_rx_during_tx(struct uart_port *port,
-> +					const struct serial_rs485 *rs485)
-> +{
-> +	if (!(rs485->flags & SER_RS485_ENABLED))
-> +		return;
-> +
+Hi, Ahelenia Ziemia=C5=84ska! Thanks a lot for all this splice-related hard=
+ work!
 
-How about checking port->rs485_rx_during_tx_gpio here against NULL 
-instead of
-before every call?
+In https://lore.kernel.org/lkml/CAHk-=3DwgG_2cmHgZwKjydi7=3DiimyHyN8aessnbM=
+9XQ9ufbaUz9g@mail.gmail.com/
+Linus said:
+> I have grown to pretty much hate
+> splice() over the years, just because it's been a constant source of
+> sorrow in so many ways.
 
-> +	gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio,
-> +				 !!(rs485->flags & SER_RS485_RX_DURING_TX));
-> +}
-> +
->  static int uart_rs485_config(struct uart_port *port)
->  {
->  	struct serial_rs485 *rs485 = &port->rs485;
-> @@ -1413,12 +1423,17 @@ static int uart_rs485_config(struct uart_port 
-> *port)
-> 
->  	uart_sanitize_serial_rs485(port, rs485);
->  	uart_set_rs485_termination(port, rs485);
-> +	uart_set_rs485_rx_during_tx(port, rs485);
-> 
->  	uart_port_lock_irqsave(port, &flags);
->  	ret = port->rs485_config(port, NULL, rs485);
->  	uart_port_unlock_irqrestore(port, flags);
-> -	if (ret)
-> +	if (ret) {
->  		memset(rs485, 0, sizeof(*rs485));
-> +		/* unset GPIOs */
-> +		gpiod_set_value_cansleep(port->rs485_term_gpio, 0);
-> +		gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio, 0);
-> +	}
-> 
->  	return ret;
->  }
-> @@ -1457,6 +1472,7 @@ static int uart_set_rs485_config(struct
-> tty_struct *tty, struct uart_port *port,
->  		return ret;
->  	uart_sanitize_serial_rs485(port, &rs485);
->  	uart_set_rs485_termination(port, &rs485);
-> +	uart_set_rs485_rx_during_tx(port, &rs485);
-> 
->  	uart_port_lock_irqsave(port, &flags);
->  	ret = port->rs485_config(port, &tty->termios, &rs485);
-> @@ -1468,8 +1484,14 @@ static int uart_set_rs485_config(struct
-> tty_struct *tty, struct uart_port *port,
->  			port->ops->set_mctrl(port, port->mctrl);
->  	}
->  	uart_port_unlock_irqrestore(port, flags);
-> -	if (ret)
-> +	if (ret) {
-> +		/* restore old GPIO settings */
-> +		gpiod_set_value_cansleep(port->rs485_term_gpio,
-> +			!!(port->rs485.flags & SER_RS485_TERMINATE_BUS));
-> +		gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio,
-> +			!!(port->rs485.flags & SER_RS485_RX_DURING_TX));
+> It's just that it was never as lovely and as useful as it promised to
+> be. So I'd actually be more than happy to just say "let's decommission
+> splice entirely, just keeping the interfaces alive for backwards
+> compatibility"
 
-This does not look like restoring.
-Further this looks suspiciously like duplicated code.
+So probably we should do this as Linus suggested? I. e. fully remove
+splice by replacing it with trivial read-write?
 
->  		return ret;
-> +	}
-> 
->  	if (copy_to_user(rs485_user, &port->rs485, sizeof(port->rs485)))
->  		return -EFAULT;
-> diff --git a/drivers/tty/serial/stm32-usart.c 
-> b/drivers/tty/serial/stm32-usart.c
-> index 3048620315d6..ec9a72a5bea9 100644
-> --- a/drivers/tty/serial/stm32-usart.c
-> +++ b/drivers/tty/serial/stm32-usart.c
-> @@ -226,10 +226,7 @@ static int stm32_usart_config_rs485(struct
-> uart_port *port, struct ktermios *ter
-> 
->  	stm32_usart_clr_bits(port, ofs->cr1, BIT(cfg->uart_enable_bit));
-> 
-> -	if (port->rs485_rx_during_tx_gpio)
-> -		gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio,
-> -					 !!(rs485conf->flags & SER_RS485_RX_DURING_TX));
-> -	else
-> +	if (!port->rs485_rx_during_tx_gpio)
-
-Should the ! be there?
-
->  		rs485conf->flags |= SER_RS485_RX_DURING_TX;
-> 
->  	if (rs485conf->flags & SER_RS485_ENABLED) {
-
-Kind Regards
-Maarten Brock
-
+--=20
+Askar Safin
