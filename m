@@ -1,112 +1,160 @@
-Received: from tarta.nabijaczleweli.xyz (tarta.nabijaczleweli.xyz [139.28.40.42])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E586A53E19;
-	Mon, 25 Dec 2023 21:50:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nabijaczleweli.xyz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nabijaczleweli.xyz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89ECB1E519;
+	Mon, 25 Dec 2023 22:30:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nabijaczleweli.xyz header.i=@nabijaczleweli.xyz header.b="CzCyLweo"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nabijaczleweli.xyz;
-	s=202305; t=1703541017;
-	bh=MA+tfrS1lXeibluol1bguEI4A96X8uMrK02NpuUsP+E=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=CzCyLweo2a3NR4pzHahCYYWw7UfrdovuCPf4zjosK0ao6fagU2ueJw9nsRfi7DaoG
-	 RCREWnmAQyEZaoj/W1eN/riX2/3BEMnp5MkSmiU410v0bIRW/Au+qs1dIVg/xnp+XJ
-	 XH4tL3Zb1VyYJ8R+/8TJv6ilmH7t0QQiz4soCSgvzL9HTjThl2P243dFFtWASvdXqw
-	 5QJ10w3tI4l2HnJ0PAWk5BTtl8DewuG7EgvdcMuF9mpdeXUl86AY5HiLEZk8Gl5uvJ
-	 7MNyzLycO6+r9owOb5dSZAEAldx7/zZImFzht6WadGe1KlZR8UwdjysO9Ur7NApyuA
-	 3NrmwuRVEJonQ==
-Received: from tarta.nabijaczleweli.xyz (unknown [192.168.1.250])
-	by tarta.nabijaczleweli.xyz (Postfix) with ESMTPSA id A83961448C;
-	Mon, 25 Dec 2023 22:50:17 +0100 (CET)
-Date: Mon, 25 Dec 2023 22:50:17 +0100
-From: 
-	Ahelenia =?utf-8?Q?Ziemia=C5=84ska?= <nabijaczleweli@nabijaczleweli.xyz>
-To: Askar Safin <safinaskar@gmail.com>
-Cc: linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-man <linux-man@vger.kernel.org>, linux-s390@vger.kernel.org, linux-serial@vger.kernel.org, 
-	netdev@vger.kernel.org, virtualization@lists.linux.dev
-Subject: Re: Avoid unprivileged splice(file->)/(->socket) pipe exclusion
-Message-ID: <d4ocnyfwlwqfdthubds6yshbn2xk67rsjh32glhkjtzcvq4x6k@tarta.nabijaczleweli.xyz>
-References: <CAPnZJGCdr7pw80Pq38UacmxsbQAowmasPtFxQVCP+tm6Cj9pUg@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lv6opiQ9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1703543411; x=1735079411;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=VZijdm+s99r/mcXuRKAdDmXlGPgpA23M2I+QEOi/82I=;
+  b=lv6opiQ9lbmID4eGQStOxbJxyrnENgIUAg0rNF+9ucOZ5KNqhSdF9B/V
+   kZyY+y/+SUz5IWb4NFVFm+uBcTzambyiqPTaouXdLTmh4q/ikn+O8Kd8h
+   PtumyBwgjl6b5HxaJTix+qyQqILM4CARdvEFLI1ZVEeFk2bqus1Z6jynD
+   XhkiFQ5sJ4HitM802Jx7Mh4tTMeHiAI6A8syQoUmFpBME/BvqsxjP1nSe
+   ldmX+cnpFu/9/W1KcMKu8nATY5qKAANgGNIcC3PaNePcfiTVtDsHv6WF+
+   UThBN+0dM9LbrBX7NT2WiA+DIZh7VXN3W5E9hV8dUTP32J2nGOrbADsHa
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10934"; a="3137316"
+X-IronPort-AV: E=Sophos;i="6.04,304,1695711600"; 
+   d="scan'208";a="3137316"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Dec 2023 14:30:11 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10934"; a="812108244"
+X-IronPort-AV: E=Sophos;i="6.04,304,1695711600"; 
+   d="scan'208";a="812108244"
+Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 25 Dec 2023 14:30:05 -0800
+Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rHtSV-000Diy-0Z;
+	Mon, 25 Dec 2023 22:30:03 +0000
+Date: Tue, 26 Dec 2023 06:29:55 +0800
+From: kernel test robot <lkp@intel.com>
+To: Lino Sanfilippo <l.sanfilippo@kunbus.com>, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
+Cc: oe-kbuild-all@lists.linux.dev, u.kleine-koenig@pengutronix.de,
+	shawnguo@kernel.org, s.hauer@pengutronix.de,
+	mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
+	cniedermaier@dh-electronics.com, hugo@hugovil.com,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	LinoSanfilippo@gmx.de, lukas@wunner.de, p.rosenberger@kunbus.com,
+	Lino Sanfilippo <l.sanfilippo@kunbus.com>, stable@vger.kernel.org
+Subject: Re: [PATCH v6 6/7] serial: omap: do not override settings for RS485
+ support
+Message-ID: <202312260601.aT9SYjjo-lkp@intel.com>
+References: <20231225113524.8800-7-l.sanfilippo@kunbus.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="elcjl7by3l7zvqng"
-Content-Disposition: inline
-In-Reply-To: <CAPnZJGCdr7pw80Pq38UacmxsbQAowmasPtFxQVCP+tm6Cj9pUg@mail.gmail.com>
-User-Agent: NeoMutt/20231221-2-4202cf-dirty
-
-
---elcjl7by3l7zvqng
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20231225113524.8800-7-l.sanfilippo@kunbus.com>
 
-On Tue, Dec 26, 2023 at 12:34:44AM +0300, Askar Safin wrote:
-> In https://lore.kernel.org/lkml/CAHk-=3DwgG_2cmHgZwKjydi7=3DiimyHyN8aessn=
-bM9XQ9ufbaUz9g@mail.gmail.com/
-> Linus said:
-> > I have grown to pretty much hate
-> > splice() over the years, just because it's been a constant source of
-> > sorrow in so many ways.
->=20
-> > It's just that it was never as lovely and as useful as it promised to
-> > be. So I'd actually be more than happy to just say "let's decommission
-> > splice entirely, just keeping the interfaces alive for backwards
-> > compatibility"
-> So probably we should do this as Linus suggested? I. e. fully remove
-> splice by replacing it with trivial read-write?
-I am doing just like he suggested downthread of my original report, in
-  https://lore.kernel.org/linux-fsdevel/CAHk-=3DwimmqG_wvSRtMiKPeGGDL816n65=
-u=3DMq2+H3-=3DuM2U6FmA@mail.gmail.com/
-> But it is possible that we need to just bite the bullet and say
-> "copy_splice_read() needs to use a non-blocking kiocb for the IO".
+Hi Lino,
 
-I see it post-dates the thing you cited,
-which naturally makes it more valid,
-and it directly references this particular issue,
-instead of an annoying data corruption one.
+kernel test robot noticed the following build errors:
 
-This whole series effectively amounts to three patches
-(delete splice_* form ttys,
- make IPC splice_read  nonblocking when lock is held,
- make IPC splice_write nonblocking when lock is held)
-just the latter two to thirty implementations of the same funxion.
+[auto build test ERROR on ceb6a6f023fd3e8b07761ed900352ef574010bcb]
 
-This is hardly reason to kill an interface that doubles the performance
-of a very common operation IMO.
+url:    https://github.com/intel-lab-lkp/linux/commits/Lino-Sanfilippo/serial-Do-not-hold-the-port-lock-when-setting-rx-during-tx-GPIO/20231225-193833
+base:   ceb6a6f023fd3e8b07761ed900352ef574010bcb
+patch link:    https://lore.kernel.org/r/20231225113524.8800-7-l.sanfilippo%40kunbus.com
+patch subject: [PATCH v6 6/7] serial: omap: do not override settings for RS485 support
+config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20231226/202312260601.aT9SYjjo-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 13.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231226/202312260601.aT9SYjjo-lkp@intel.com/reproduce)
 
-Honestly, no-one would probably run into this in another decade
-if just the splice_* deletion from ttys was implemented;
-this is just thoroughness to a fault since you can spin this as a
-security issue, really.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202312260601.aT9SYjjo-lkp@intel.com/
 
-Best,
+All error/warnings (new ones prefixed by >>):
 
---elcjl7by3l7zvqng
-Content-Type: application/pgp-signature; name="signature.asc"
+   drivers/tty/serial/omap-serial.c: In function 'serial_omap_probe_rs485':
+>> drivers/tty/serial/omap-serial.c:1501:36: error: 'serial_omap_rs485_supported' undeclared (first use in this function); did you mean 'serial_omap_request_port'?
+    1501 |         up->port.rs485_supported = serial_omap_rs485_supported;
+         |                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                                    serial_omap_request_port
+   drivers/tty/serial/omap-serial.c:1501:36: note: each undeclared identifier is reported only once for each function it appears in
+   drivers/tty/serial/omap-serial.c: At top level:
+>> drivers/tty/serial/omap-serial.c:1537:34: warning: 'serial_omap_rs485_supported' defined but not used [-Wunused-const-variable=]
+    1537 | static const struct serial_rs485 serial_omap_rs485_supported = {
+         |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
 
------BEGIN PGP SIGNATURE-----
 
-iQIzBAABCgAdFiEEfWlHToQCjFzAxEFjvP0LAY0mWPEFAmWJ+RcACgkQvP0LAY0m
-WPEPHBAAprjcx1jdgNBsSoj62jLD0KLv+GkwIAVu1KVkI4xzk4wswel3/5uGs/KK
-iyqj+OIxNaJsNUgc3Ro5fYFoK5R+zdLLBXMUujf8xa86XjWGYWYy3PnqpsuR00bJ
-JrJ4ZHygilZU5WwVaz3S9HMV5tjBDLlLuHwkvaoBGuMQRdmfaI09hrrwB3ORbmEX
-NAa0Al21p2raW/YN7SRsOiR49b6zNyK7t7tz3hNaDJiAI9x1rHhcUpoNi/0hyn0C
-5LfBH+0J5hXlPgivvmHGeKggq9H1Y8610WUW9TVSlvxmOMxfOThoVGjV3c6JSzrB
-4sgiqs5KVtB8Q0b7N157551R63FSnYHSmxObXixgQcuwew+e3gJ8HDt76YDm/ujc
-TK/kzSmGrqwpENtSuO9OaBh0UjvI39EArPWQCiDhcHr70ICgxsHV0QWcUkRfWf9c
-p3kNJorU0Lrf04dyS89p6pkA4rDFUj9eColK1CvFNgOLxG2IEyd2LFGqN5S58ZF6
-Z0+6GY/qkJ+i/7qbCVEb0KGpPW9XEmPU0UFwA0PeaAhiAs9yAc+NbUyoIixQWFsu
-HHFBnp4xcAwlLWrBWPgDSxv8nR1vhP0ti90/6FiHQhUtlK1T85YUHVkPJTn02iHD
-1Q3ibe4SIWcc4GScMo9Ypz8i0j3Vc1qWvGM8p/PuxJlOIBCz3k4=
-=y6v1
------END PGP SIGNATURE-----
+vim +1501 drivers/tty/serial/omap-serial.c
 
---elcjl7by3l7zvqng--
+  1485	
+  1486	static int serial_omap_probe_rs485(struct uart_omap_port *up,
+  1487					   struct device *dev)
+  1488	{
+  1489		struct serial_rs485 *rs485conf = &up->port.rs485;
+  1490		struct device_node *np = dev->of_node;
+  1491		enum gpiod_flags gflags;
+  1492		int ret;
+  1493	
+  1494		rs485conf->flags = 0;
+  1495		up->rts_gpiod = NULL;
+  1496	
+  1497		if (!np)
+  1498			return 0;
+  1499	
+  1500		up->port.rs485_config = serial_omap_config_rs485;
+> 1501		up->port.rs485_supported = serial_omap_rs485_supported;
+  1502	
+  1503		ret = uart_get_rs485_mode(&up->port);
+  1504		if (ret)
+  1505			return ret;
+  1506	
+  1507		if (of_property_read_bool(np, "rs485-rts-active-high")) {
+  1508			rs485conf->flags |= SER_RS485_RTS_ON_SEND;
+  1509			rs485conf->flags &= ~SER_RS485_RTS_AFTER_SEND;
+  1510		} else {
+  1511			rs485conf->flags &= ~SER_RS485_RTS_ON_SEND;
+  1512			rs485conf->flags |= SER_RS485_RTS_AFTER_SEND;
+  1513		}
+  1514	
+  1515		/* check for tx enable gpio */
+  1516		gflags = rs485conf->flags & SER_RS485_RTS_AFTER_SEND ?
+  1517			GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
+  1518		up->rts_gpiod = devm_gpiod_get_optional(dev, "rts", gflags);
+  1519		if (IS_ERR(up->rts_gpiod)) {
+  1520			ret = PTR_ERR(up->rts_gpiod);
+  1521		        if (ret == -EPROBE_DEFER)
+  1522				return ret;
+  1523	
+  1524			up->rts_gpiod = NULL;
+  1525			up->port.rs485_supported = (const struct serial_rs485) { };
+  1526			if (rs485conf->flags & SER_RS485_ENABLED) {
+  1527				dev_err(dev, "disabling RS-485 (rts-gpio missing in device tree)\n");
+  1528				memset(rs485conf, 0, sizeof(*rs485conf));
+  1529			}
+  1530		} else {
+  1531			gpiod_set_consumer_name(up->rts_gpiod, "omap-serial");
+  1532		}
+  1533	
+  1534		return 0;
+  1535	}
+  1536	
+> 1537	static const struct serial_rs485 serial_omap_rs485_supported = {
+  1538		.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND |
+  1539			 SER_RS485_RX_DURING_TX,
+  1540		.delay_rts_before_send = 1,
+  1541		.delay_rts_after_send = 1,
+  1542	};
+  1543	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
