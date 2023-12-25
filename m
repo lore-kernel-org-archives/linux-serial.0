@@ -1,163 +1,447 @@
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2052.outbound.protection.outlook.com [40.107.7.52])
+Received: from connect.vanmierlo.com (fieber.vanmierlo.com [84.243.197.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24DD7537FE;
-	Mon, 25 Dec 2023 11:36:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=kunbus.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kunbus.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=kunbus.com header.i=@kunbus.com header.b="ymtlYky5"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aNJRRw5ymkA3Uy05q0jMMQa5CX78MCbwxqk9nm442VexDQuxS4R9IjoBcoxrHx9LkDLlDXlOYFgylXFXj3AaFG+aWQzs0FAqGjMV37QhIcHJJbyQDyFFhZXF635LyOo3jZGQ6buqT1MnkKIXI1736tZAgAOnwNl+qj9uThDO5DvO5alPpG5jZaZFy5PJ5jfoWVjkMVKYDGwXsKhAtC4WV4bYbRuO9A+R5NA5x7vp3W+3ck/EFmYZki+er8xOo8jzy7FmSh8jkcWY1LB/uN38VBeyzHS7qUKgtUR6OYc5C9hnga2WV926RW41k/tgPscsuWrzq3TufqFbzEYX6aG/2w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6BcGoe+ESDzoCivkDyl+SvQ6vxiyAUtVpHN4Fyf7TKI=;
- b=QiOByNnSXuhOU2V7uzwkcQkLBUYUrviqa79k+nrvaZaH0jJUvAcAB4PTEkouJHxYOvo6wU1MZCWsn1rJYBgBtN2jktlVYmi/G0k9bsCfwTVBtoxf/sLkLxBLqYDmAwe6RXmUqjbInKnv6B64XhYbwTCJ2I2j8oJqn2SXqtqgYW58FZvxAW6U3p+8gvjj+OyF+iQv0hFSQBCKlxHQN7AsFtSXvE7tVKB29iWV1VruOOO3CL1VT1SbmXyabuPGQODumjPRBum3vRT3Nnxc+5EwLHtgo6YzYfks3ZlXkNtVdTWgoXGYlmGN+WvKtZwKgTEmRBLHiGZwWeOyvAO11GlfIw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=kunbus.com; dmarc=pass action=none header.from=kunbus.com;
- dkim=pass header.d=kunbus.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kunbus.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6BcGoe+ESDzoCivkDyl+SvQ6vxiyAUtVpHN4Fyf7TKI=;
- b=ymtlYky5Jx7ECUkTPyeLk5uXWVw33reXsylPatPOT9sq3qdhnozvCEUcMkfjdJUTsBKJHcACzEazKwz32GsQhlNewkOuWfaxCAbGl8zOe62tuNhvLE3nXi+C1PnHDOfOLx2Ai9xLec8sKorGhQfvGrgOG01qcbzkNXnUVK91TgA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=kunbus.com;
-Received: from VI1P193MB0413.EURP193.PROD.OUTLOOK.COM (2603:10a6:803:4e::14)
- by AS8P193MB2061.EURP193.PROD.OUTLOOK.COM (2603:10a6:20b:44d::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7113.26; Mon, 25 Dec
- 2023 11:35:56 +0000
-Received: from VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
- ([fe80::653f:d0f3:e7f6:8c06]) by VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
- ([fe80::653f:d0f3:e7f6:8c06%5]) with mapi id 15.20.7113.026; Mon, 25 Dec 2023
- 11:35:56 +0000
-From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	ilpo.jarvinen@linux.intel.com
-Cc: u.kleine-koenig@pengutronix.de,
-	shawnguo@kernel.org,
-	s.hauer@pengutronix.de,
-	mcoquelin.stm32@gmail.com,
-	alexandre.torgue@foss.st.com,
-	cniedermaier@dh-electronics.com,
-	hugo@hugovil.com,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	LinoSanfilippo@gmx.de,
-	lukas@wunner.de,
-	p.rosenberger@kunbus.com,
-	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-	stable@vger.kernel.org
-Subject: [PATCH v6 7/7] serial: 8250_exar: Set missing rs485_supported flag
-Date: Mon, 25 Dec 2023 12:35:23 +0100
-Message-ID: <20231225113524.8800-8-l.sanfilippo@kunbus.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20231225113524.8800-1-l.sanfilippo@kunbus.com>
-References: <20231225113524.8800-1-l.sanfilippo@kunbus.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-ClientProxiedBy: FR5P281CA0055.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:f0::17) To VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
- (2603:10a6:803:4e::14)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 617C651028;
+	Mon, 25 Dec 2023 12:10:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=vanmierlo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vanmierlo.com
+X-Footer: dmFubWllcmxvLmNvbQ==
+Received: from roundcube.vanmierlo.com ([192.168.37.37])
+	(authenticated user m.brock@vanmierlo.com)
+	by connect.vanmierlo.com (Kerio Connect 10.0.2 patch 1) with ESMTPA;
+	Mon, 25 Dec 2023 13:10:09 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1P193MB0413:EE_|AS8P193MB2061:EE_
-X-MS-Office365-Filtering-Correlation-Id: 81315aaf-8be6-4414-619a-08dc053da860
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	v5bPqL66AomTiIOdGfSSBg5v7G/XFizRuF1lz8EvnjVkNkUMD1mFowQaWYTTHpzMF6ZKO2OVB1R4+oV2c56CQGA9Pq1ZbxIgr2N0WenDpAth6N8xhCCTGDywZDQSRc641mklS39T/ErKvpEv17HRdQdXL6QCrn81dKFVUhW3IPk4CeeCeFnPcOOq//vCfbiApxzGITVgus4hci1KJsEjtMSs1HJLfx7EB3kUYikWKYgufnqvDFCY4k8xZHrz4yawVGWEQa4dSDKW+aSgsq+mqUCD73s7yuAj6BiujFoxTxlsFUeuBxuATWx2AanFjyskv2qUy21wfiabdWlBmagOSfoqeesx/biYscINCyEKHC25TTd3oya1qzMNuPALt+PqNbtkMYUI00unaHQFCxpbdJeQg6hBlIzCpreb2aaQ5a6cSnblX9ZOkB1HmCeJdhaqgI075M0ousPzGc+tEzqMsW86q0aBZyBbP/bA101NtzXoC4eACix0NP4NSDlDiutYrxh7rAjjstRsfQkZuDQrHHssaztRr3kkpCTvztth5jBXvGRsa+yw+k/zkTlRo6SWQpk+gAZDTZD3/13iz13JvuwrZtsrAiQdWR19zGRX0ayD48lqzDIQH0XQYHt6bCu3
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P193MB0413.EURP193.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(396003)(39830400003)(366004)(346002)(136003)(376002)(230922051799003)(230273577357003)(230173577357003)(186009)(451199024)(1800799012)(64100799003)(2616005)(6666004)(6486002)(478600001)(2906002)(8676002)(8936002)(5660300002)(36756003)(7416002)(52116002)(6512007)(6506007)(66556008)(66476007)(4326008)(66946007)(316002)(66574015)(83380400001)(86362001)(1076003)(41300700001)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Z1BSOXlObXJVY1BWMVlvNFRDSjFwTjYxODgyNllOMm8vMEJ4VEd2QjNVamZ5?=
- =?utf-8?B?bWRRVzZyTFhuVGJMeEpIcjVCSDg2Z1pUenRBSjBWNHViOEx6K3hwWGNCQmND?=
- =?utf-8?B?WFJsMXJab00rQUNqKy9OMjRIVkorK1pVUTg3SUwzTFIyUUNqUjBINjArZmZy?=
- =?utf-8?B?QzVwcVZsTEVYMG10bk9GbFIzWnZxZWJuKzBYSVU3YTlvV05VNkgwR05DeEls?=
- =?utf-8?B?UXljbmRCSUNVcS95Wm9pTXdXZjNpTDhFbzdoVVdWOXNsZmQxdEJVcG9ZTCt5?=
- =?utf-8?B?ZnRydjJnMDg3dVhyNXlxRzF2cWFkSGRENnZJQjhXdTR3TzROdjltK3N1Tktz?=
- =?utf-8?B?bCtlcFpKMDR2OGVZcmV2YVhzUmVZREdTZUdDaDNqZC9sL1UyUnMxQlpUejJQ?=
- =?utf-8?B?M3JPbzBGYWp3Yk0wU2lsNjQxRktBQkc2U1pYRVQ1NzJISmlabERXaWMvazh2?=
- =?utf-8?B?dmVPL253ZFFZWlN1QTJUeTgzcHZsN2xpNlA1RHBPMGFqTVVzdDhlc2ZQYTR4?=
- =?utf-8?B?NVE1MHY2TytBNURNamZFRGZrQTc0RVVrNWRucCthUTJrN2VHSjVFdjlhL1ha?=
- =?utf-8?B?TGx2bzFlOGhuZkRnQTZma1hWVU03NUc0cnR4TEtoTjRMd1p5VXJWU2hZVUxN?=
- =?utf-8?B?em1hckdzSUxENmgwRExDNEdRYnRQZE9ETWZNb2F2Y3VMMlVIMTFqUjd2NTVX?=
- =?utf-8?B?YVp6Q1R5OVJRM1hzcXlneHZnTDZaekxBTnRBZnpROHFhaHVOQ1BmK3JvSytY?=
- =?utf-8?B?YzVUNlVBZzlRNUpLQnUzQmdsd1d3K2hnSnlzOHltek9JN3E3ZVk0SjQ3djRs?=
- =?utf-8?B?QVZaNDBaN2JaY3B1ODRSdGlsVG9taXZyelUwZE5qdURBZS9IcU1IMWUycTVQ?=
- =?utf-8?B?UDkySEVKVnE4Z3VuUXdkQWcraUZGZnVaZWZjZzMxWVUyNXlpTTEyUEFNOWpv?=
- =?utf-8?B?NWJuQlZyeE9yNEs5TW9HYkN2U3ZKNFh3NElOY1lKb1JzOFZBdWxPQlBEMU5G?=
- =?utf-8?B?S3RLZUJ5cXBYTEZFQUcxc0UvQ0ROazh4TDJoM2hmS0ZncGhVZmNOSG1JSGp1?=
- =?utf-8?B?NDVMSXg2WjBMdW5HaGswYmEwck9BeEVQUm1Qczd4TXAyUWNKYlBnSVByQ08v?=
- =?utf-8?B?UVVvaUJsbFNaNDUxbndsN01FbmE1eXdUNTR0bzRLay9QMHpIUSs5UGRWK0pl?=
- =?utf-8?B?c1RJd0U1MVNZK3BHVWZmOVpWUzZac1NmNkhsSHhkV0M4SC9DMkZHNmhhVGp5?=
- =?utf-8?B?WXFUdk5vTFFHNVZxV2d3UVhhZHZvT3dkeUJWcWM1K0VsQ2VaaTFsVEw5SUJj?=
- =?utf-8?B?SStwb2lqS2dycmpYc3JwdlFuVys5VW01dktpdTlCdDF6dTRNdUszeVczaExW?=
- =?utf-8?B?R3FncTB1MC94anN3aWJVSmc5R1VSNzNTMjd5UUErbzQvWVNWa3VhMzFjTEk3?=
- =?utf-8?B?NENrNUI2a2puNlVwNTFXY3FDS1pnQUFXdmltak9OQmtmeGJxVEZ4SlI0am16?=
- =?utf-8?B?S1BkOFZjTFJycnhXdXJBU2RubFRtbG42Z3BVVElnVXF5bDJjOExmcUpaZ3Av?=
- =?utf-8?B?OW5ybXJOSzd4bmcybmZnc1QwaTFWUGNlcGxmL2ZtTEF3QjdNZjdkV1JxK1ZR?=
- =?utf-8?B?MUE1V0t5YVRoRTZjRHFraTY3eHZyM05JZ2x2RW80cHBIbWJZUWQ4Ymw3KzAy?=
- =?utf-8?B?Z0NpRlh6bjZ4bUF1eXBhTHJZOTh4MWFzZEwxUVlZR2tmZ01EMTdMQWlXdWZT?=
- =?utf-8?B?RFBaWStUM3VQWUZyK0ZkWkZnRnB0SS9Zc2lKN0VIY3dJdjhhK08vdXBRWDNY?=
- =?utf-8?B?eG9xT2ZXUSt3d2FCQmJMNFZuM1h4blQ3bTVCZlN4OVNFazNacGs5enFpMHlt?=
- =?utf-8?B?U3YxNndzcmsxQmxBV2RxQnQxTkdrdkY1aEtuY0h3b1g3Z1FhVkk1NmpUUlZJ?=
- =?utf-8?B?VVRpZEFFbzU1U1RPU3dZb3ZTWEZ5MTB3OTF0MGV5dEoyTFNjQWFhcXRJdHVN?=
- =?utf-8?B?MUhvMXEwNEx2aEZZV2xlN0JZbDc4TWo4VEIwYVJHRmNxVjRnUWZCa3hTb0la?=
- =?utf-8?B?bmhUeENLTjdzaVd0UnNtRFNTRk0zNWEzNkFGTEgvRkh0NUdjYUFLelUxLzIz?=
- =?utf-8?B?MndhU1I1cE1GdUpQYUYySzNJTEZhV1NQRmt5NVRrOHN4N0ZwNUlkVWNWRU5t?=
- =?utf-8?Q?eP3rcRXhxzrlTLoKUBcwhQTj/prB8OVAxOAH8B5wwTa8?=
-X-OriginatorOrg: kunbus.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 81315aaf-8be6-4414-619a-08dc053da860
-X-MS-Exchange-CrossTenant-AuthSource: VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Dec 2023 11:35:55.7011
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: aaa4d814-e659-4b0a-9698-1c671f11520b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: S9PtAv4d1Mr5FjJOCaUd6BWAdu/RCgZDRXN0ZF3JMMESeExq84rhkPQMSsUJzTTn7Muibbgy6ARAcunKNtM8vA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8P193MB2061
+Date: Mon, 25 Dec 2023 13:10:09 +0100
+From: m.brock@vanmierlo.com
+To: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+Cc: git@amd.com, michal.simek@amd.com, gregkh@linuxfoundation.org,
+ robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+ linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, jirislaby@kernel.org,
+ linux-arm-kernel@lists.infradead.org, radhey.shyam.pandey@amd.com,
+ srinivas.goud@amd.com, shubhrajyoti.datta@amd.com, manion05gk@gmail.com
+Subject: Re: [PATCH V7 3/3] tty: serial: uartps: Add rs485 support to uartps
+ driver
+In-Reply-To: <20231218094415.2503672-4-manikanta.guntupalli@amd.com>
+References: <20231218094415.2503672-1-manikanta.guntupalli@amd.com>
+ <20231218094415.2503672-4-manikanta.guntupalli@amd.com>
+Message-ID: <4d8031d25ac3d38ef1807896fe9a6a9f@vanmierlo.com>
+X-Sender: m.brock@vanmierlo.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 
-VGhlIFVBUlQgc3VwcG9ydHMgYW4gYXV0by1SVFMgbW9kZSBpbiB3aGljaCB0aGUgUlRTIHBpbiBp
-cyBhdXRvbWF0aWNhbGx5CmFjdGl2YXRlZCBkdXJpbmcgdHJhbnNtaXNzaW9uLiBTbyBtYXJrIHRo
-aXMgbW9kZSBhcyBiZWluZyBzdXBwb3J0ZWQgZXZlbgppZiBSVFMgaXMgbm90IGNvbnRyb2xsZWQg
-YnkgdGhlIGRyaXZlciBidXQgdGhlIFVBUlQuCgpBbHNvIHRoZSBzZXJpYWwgY29yZSBleHBlY3Rz
-IG5vdyBhdCBsZWFzdCBvbmUgb2YgYm90aCBtb2RlcyBydHMtb24tc2VuZCBvcgpydHMtYWZ0ZXIt
-c2VuZCB0byBiZSBzdXBwb3J0ZWQuIFRoaXMgaXMgc2luY2UgZHVyaW5nIHNhbml0aXphdGlvbgp1
-bnN1cHBvcnRlZCBmbGFncyBhcmUgZGVsZXRlZCBmcm9tIGEgUlM0ODUgY29uZmlndXJhdGlvbiBz
-ZXQgYnkgdXNlcnNwYWNlLgpIb3dldmVyIGlmIHRoZSBjb25maWd1cmF0aW9uIGVuZHMgdXAgd2l0
-aCBib3RoIGZsYWdzIHVuc2V0LCB0aGUgY29yZSBwcmludHMKYSB3YXJuaW5nIHNpbmNlIGl0IGNv
-bnNpZGVycyBzdWNoIGEgY29uZmlndXJhdGlvbiBpbnZhbGlkIChzZWUKdWFydF9zYW5pdGl6ZV9z
-ZXJpYWxfcnM0ODUoKSkuCgpDYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZwpSZXZpZXdlZC1ieTog
-SWxwbyBKw6RydmluZW4gPGlscG8uamFydmluZW5AbGludXguaW50ZWwuY29tPgpTaWduZWQtb2Zm
-LWJ5OiBMaW5vIFNhbmZpbGlwcG8gPGwuc2FuZmlsaXBwb0BrdW5idXMuY29tPgotLS0KIGRyaXZl
-cnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfZXhhci5jIHwgNSArKystLQogMSBmaWxlIGNoYW5nZWQs
-IDMgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0
-eS9zZXJpYWwvODI1MC84MjUwX2V4YXIuYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBf
-ZXhhci5jCmluZGV4IDYwODVkMzU2YWQ4Ni4uMjMzNjZmODY4YWUzIDEwMDY0NAotLS0gYS9kcml2
-ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2V4YXIuYworKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwv
-ODI1MC84MjUwX2V4YXIuYwpAQCAtNDgwLDcgKzQ4MCw3IEBAIHN0YXRpYyBpbnQgc2VhbGV2ZWxf
-cnM0ODVfY29uZmlnKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIHN0cnVjdCBrdGVybWlvcyAqdGVy
-bWlvCiB9CiAKIHN0YXRpYyBjb25zdCBzdHJ1Y3Qgc2VyaWFsX3JzNDg1IGdlbmVyaWNfcnM0ODVf
-c3VwcG9ydGVkID0gewotCS5mbGFncyA9IFNFUl9SUzQ4NV9FTkFCTEVELAorCS5mbGFncyA9IFNF
-Ul9SUzQ4NV9FTkFCTEVEIHwgU0VSX1JTNDg1X1JUU19PTl9TRU5ELAogfTsKIAogc3RhdGljIGNv
-bnN0IHN0cnVjdCBleGFyODI1MF9wbGF0Zm9ybSBleGFyODI1MF9kZWZhdWx0X3BsYXRmb3JtID0g
-ewpAQCAtNTI0LDcgKzUyNCw4IEBAIHN0YXRpYyBpbnQgaW90MjA0MF9yczQ4NV9jb25maWcoc3Ry
-dWN0IHVhcnRfcG9ydCAqcG9ydCwgc3RydWN0IGt0ZXJtaW9zICp0ZXJtaW9zCiB9CiAKIHN0YXRp
-YyBjb25zdCBzdHJ1Y3Qgc2VyaWFsX3JzNDg1IGlvdDIwNDBfcnM0ODVfc3VwcG9ydGVkID0gewot
-CS5mbGFncyA9IFNFUl9SUzQ4NV9FTkFCTEVEIHwgU0VSX1JTNDg1X1JYX0RVUklOR19UWCB8IFNF
-Ul9SUzQ4NV9URVJNSU5BVEVfQlVTLAorCS5mbGFncyA9IFNFUl9SUzQ4NV9FTkFCTEVEIHwgU0VS
-X1JTNDg1X1JUU19PTl9TRU5EIHwKKwkJIFNFUl9SUzQ4NV9SWF9EVVJJTkdfVFggfCBTRVJfUlM0
-ODVfVEVSTUlOQVRFX0JVUywKIH07CiAKIHN0YXRpYyBjb25zdCBzdHJ1Y3QgcHJvcGVydHlfZW50
-cnkgaW90MjA0MF9ncGlvX3Byb3BlcnRpZXNbXSA9IHsKLS0gCjIuNDMuMAoK
+Manikanta Guntupalli wrote on 2023-12-18 10:44:
+>  drivers/tty/serial/xilinx_uartps.c | 222 +++++++++++++++++++++++++++--
+>  1 file changed, 213 insertions(+), 9 deletions(-)
+> 
+> @@ -203,10 +209,22 @@ struct cdns_uart {
+>  	struct notifier_block	clk_rate_change_nb;
+>  	u32			quirks;
+>  	bool cts_override;
+> +	struct gpio_desc	*gpiod_rts;
+> +	bool			rs485_tx_started;
+> +	struct timer_list	timer;
+
+start_tx_timer
+
+> +	struct timer_list	stop_tx_timer;
+
+struct hrtimer maybe?
+
+>  };
+>  struct cdns_platform_data {
+>  	u32 quirks;
+>  };
+> +
+> +struct serial_rs485 cdns_rs485_supported = {
+> +	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND |
+> +		 SER_RS485_RTS_AFTER_SEND,
+> +	.delay_rts_before_send = 1,
+> +	.delay_rts_after_send = 1,
+> +};
+> +
+>  #define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
+>  		clk_rate_change_nb)
+> 
+> @@ -305,6 +323,55 @@ static void cdns_uart_handle_rx(void *dev_id,
+> unsigned int isrstatus)
+>  	tty_flip_buffer_push(&port->state->port);
+>  }
+> 
+> +/**
+> + * cdns_rts_gpio_enable - Configure RTS/GPIO to high/low
+> + * @cdns_uart: Handle to the cdns_uart
+> + * @enable: Value to be set to RTS/GPIO
+> + */
+> +static void cdns_rts_gpio_enable(struct cdns_uart *cdns_uart, bool 
+> enable)
+> +{
+> +	u32 val;
+> +
+> +	if (cdns_uart->gpiod_rts) {
+> +		gpiod_set_value(cdns_uart->gpiod_rts, enable);
+> +	} else {
+> +		val = readl(cdns_uart->port->membase + CDNS_UART_MODEMCR);
+> +		if (enable)
+> +			val &= ~CDNS_UART_MODEMCR_RTS;
+> +		else
+> +			val |= CDNS_UART_MODEMCR_RTS;
+> +		writel(val, cdns_uart->port->membase + CDNS_UART_MODEMCR);
+> +	}
+> +}
+> +
+> +/**
+> + * cdns_rs485_tx_setup - Tx setup specific to rs485
+> + * @cdns_uart: Handle to the cdns_uart
+> + */
+> +static void cdns_rs485_tx_setup(struct cdns_uart *cdns_uart)
+> +{
+> +	if (cdns_uart->port->rs485.flags & SER_RS485_RTS_ON_SEND)
+> +		cdns_rts_gpio_enable(cdns_uart, 1);
+> +	else
+> +		cdns_rts_gpio_enable(cdns_uart, 0);
+
+Maybe simply:
+	bool enable = cdns_uart->port->rs485.flags & SER_RS485_RTS_ON_SEND;
+	cdns_rts_gpio_enable(cdns_uart, enable);
+
+> +
+> +	cdns_uart->rs485_tx_started = true;
+> +}
+> +
+> +/**
+> + * cdns_rs485_rx_setup - Rx setup specific to rs485
+> + * @cdns_uart: Handle to the cdns_uart
+> + */
+> +static void cdns_rs485_rx_setup(struct cdns_uart *cdns_uart)
+> +{
+> +	if (cdns_uart->port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
+> +		cdns_rts_gpio_enable(cdns_uart, 1);
+> +	else
+> +		cdns_rts_gpio_enable(cdns_uart, 0);
+
+Same here
+
+> +
+> +	cdns_uart->rs485_tx_started = false;
+> +}
+> +
+>  /**
+>   * cdns_uart_tx_empty -  Check whether TX is empty
+>   * @port: Handle to the uart port structure
+> @@ -579,6 +646,44 @@ static int cdns_uart_clk_notifier_cb(struct
+> notifier_block *nb,
+>  }
+>  #endif
+> 
+> +/**
+> + * cdns_rs485_rx_callback - Timer rx callback handler for rs485.
+> + * @t: Handle to the timer list structure
+> + */
+> +static void cdns_rs485_rx_callback(struct timer_list *t)
+> +{
+> +	struct cdns_uart *cdns_uart = from_timer(cdns_uart, t, timer);
+> +
+> +	/*
+> +	 * Default Rx should be setup, because Rx signaling path
+> +	 * need to enable to receive data.
+> +	 */
+> +	cdns_rs485_rx_setup(cdns_uart);
+> +}
+> +
+> +/**
+> + * cdns_rs485_tx_callback - Timer tx callback handler for rs485.
+> + * @t: Handle to the timer list structure
+> + */
+> +static void cdns_rs485_tx_callback(struct timer_list *t)
+> +{
+> +	struct cdns_uart *cdns_uart = from_timer(cdns_uart, t, timer);
+> +
+> +	uart_port_lock(cdns_uart->port);
+> +	cdns_uart_handle_tx(cdns_uart->port);
+> +
+> +	/* Enable the TX Empty interrupt */
+> +	writel(CDNS_UART_IXR_TXEMPTY, cdns_uart->port->membase + 
+> CDNS_UART_IER);
+> +	uart_port_unlock(cdns_uart->port);
+> +
+> +	if (uart_circ_empty(&cdns_uart->port->state->xmit) ||
+> +	    uart_tx_stopped(cdns_uart->port)) {
+> +		timer_setup(&cdns_uart->timer, cdns_rs485_rx_callback, 0);
+
+You really should not do this here. This belongs in 
+cdns_uart_handle_tx() which
+is also called from the TXEMPTY handler. And make sure TXEMPTY is true 
+and on
+top you also must account for the time it takes for the last character 
+to leave
+the transmitter including the stopbit.
+
+See also em485 code in 8250_port.c:
+	stop_delay = p->port.frame_time + DIV_ROUND_UP(p->port.frame_time, 7);
+
+> +		mod_timer(&cdns_uart->timer, jiffies +
+> +			  msecs_to_jiffies(cdns_uart->port->rs485.delay_rts_after_send));
+> +	}
+
+Should you not stop the stop_tx_timer in case it is still running when a 
+new
+transmission is requested?
+
+> +}
+> +
+>  /**
+>   * cdns_uart_start_tx -  Start transmitting bytes
+>   * @port: Handle to the uart port structure
+> @@ -586,6 +691,7 @@ static int cdns_uart_clk_notifier_cb(struct
+> notifier_block *nb,
+>  static void cdns_uart_start_tx(struct uart_port *port)
+>  {
+>  	unsigned int status;
+> +	struct cdns_uart *cdns_uart = port->private_data;
+> 
+>  	if (uart_tx_stopped(port))
+>  		return;
+> @@ -604,10 +710,40 @@ static void cdns_uart_start_tx(struct uart_port 
+> *port)
+> 
+>  	writel(CDNS_UART_IXR_TXEMPTY, port->membase + CDNS_UART_ISR);
+> 
+> -	cdns_uart_handle_tx(port);
+> +	if (cdns_uart->port->rs485.flags & SER_RS485_ENABLED) {
+> +		if (!cdns_uart->rs485_tx_started) {
+> +			timer_setup(&cdns_uart->timer,
+> +				    cdns_rs485_tx_callback, 0);
+
+On a single line
+
+> +			cdns_rs485_tx_setup(cdns_uart);
+> +			mod_timer(&cdns_uart->timer, jiffies +
+> +				  msecs_to_jiffies(port->rs485.delay_rts_before_send));
+> +		} else {
+> +			if (!timer_pending(&cdns_uart->timer))
+> +				mod_timer(&cdns_uart->timer, jiffies);
+> +		}
+> +	} else {
+> +		cdns_uart_handle_tx(port);
+> 
+> -	/* Enable the TX Empty interrupt */
+> -	writel(CDNS_UART_IXR_TXEMPTY, port->membase + CDNS_UART_IER);
+> +		/* Enable the TX Empty interrupt */
+> +		writel(CDNS_UART_IXR_TXEMPTY, port->membase + CDNS_UART_IER);
+> +	}
+> +}
+> +
+> +/**
+> + * cdns_rs485_stop_tx_callback - Timer stop tx callback handler for 
+> rs485.
+> + * @t: Handle to the timer list structure
+> + */
+> +static void cdns_rs485_stop_tx_callback(struct timer_list *t)
+> +{
+> +	unsigned int regval;
+> +	struct cdns_uart *cdns_uart = from_timer(cdns_uart, t, 
+> stop_tx_timer);
+> +
+> +	cdns_rs485_rx_setup(cdns_uart);
+> +
+> +	regval = readl(cdns_uart->port->membase + CDNS_UART_CR);
+> +	regval |= CDNS_UART_CR_TX_DIS;
+> +	/* Disable the transmitter */
+
+Why do you want to do this?
+
+> +	writel(regval, cdns_uart->port->membase + CDNS_UART_CR);
+>  }
+> 
+>  /**
+> @@ -617,11 +753,19 @@ static void cdns_uart_start_tx(struct uart_port 
+> *port)
+>  static void cdns_uart_stop_tx(struct uart_port *port)
+>  {
+>  	unsigned int regval;
+> +	struct cdns_uart *cdns_uart = port->private_data;
+> 
+> -	regval = readl(port->membase + CDNS_UART_CR);
+> -	regval |= CDNS_UART_CR_TX_DIS;
+> -	/* Disable the transmitter */
+> -	writel(regval, port->membase + CDNS_UART_CR);
+> +	if ((cdns_uart->port->rs485.flags & SER_RS485_ENABLED) &&
+> +	    !timer_pending(&cdns_uart->stop_tx_timer) &&
+> +	    cdns_uart->rs485_tx_started) {
+> +		mod_timer(&cdns_uart->stop_tx_timer, jiffies +
+> +			  msecs_to_jiffies(cdns_uart->port->rs485.delay_rts_after_send));
+
+Why try to adhere to the rts delay here? The original code doesn't seem 
+to care
+if the fifo is still filled either. Or was it already broken?
+
+I did not yet find out exactly when this struct uart_ops .stop_tx is 
+called.
+
+> +	} else {
+> +		regval = readl(port->membase + CDNS_UART_CR);
+> +		regval |= CDNS_UART_CR_TX_DIS;
+> +		/* Disable the transmitter */
+> +		writel(regval, port->membase + CDNS_UART_CR);
+> +	}
+>  }
+> 
+>  /**
+> @@ -829,6 +973,12 @@ static int cdns_uart_startup(struct uart_port 
+> *port)
+>  		(CDNS_UART_CR_TXRST | CDNS_UART_CR_RXRST))
+>  		cpu_relax();
+> 
+> +	if (cdns_uart->port->rs485.flags & SER_RS485_ENABLED) {
+> +		timer_setup(&cdns_uart->stop_tx_timer,
+> +			    cdns_rs485_stop_tx_callback, 0);
+> +		cdns_rs485_rx_setup(cdns_uart);
+> +	}
+> +
+>  	/*
+>  	 * Clear the RX disable bit and then set the RX enable bit to enable
+>  	 * the receiver.
+> @@ -888,6 +1038,7 @@ static void cdns_uart_shutdown(struct uart_port 
+> *port)
+>  {
+>  	int status;
+>  	unsigned long flags;
+> +	struct cdns_uart *cdns_uart = port->private_data;
+> 
+>  	uart_port_lock_irqsave(port, &flags);
+> 
+> @@ -903,6 +1054,11 @@ static void cdns_uart_shutdown(struct uart_port 
+> *port)
+>  	uart_port_unlock_irqrestore(port, flags);
+> 
+>  	free_irq(port->irq, port);
+> +
+> +	if (cdns_uart->port->rs485.flags & SER_RS485_ENABLED) {
+> +		del_timer_sync(&cdns_uart->timer);
+> +		del_timer_sync(&cdns_uart->stop_tx_timer);
+> +	}
+>  }
+> 
+>  /**
+> @@ -1032,7 +1188,7 @@ static void cdns_uart_set_mctrl(struct uart_port
+> *port, unsigned int mctrl)
+>  	mode_reg &= ~CDNS_UART_MR_CHMODE_MASK;
+> 
+>  	if (mctrl & TIOCM_RTS)
+> -		val |= CDNS_UART_MODEMCR_RTS;
+> +		cdns_rts_gpio_enable(cdns_uart_data, 1);
+
+First passing 1 here is wrong. It should be 0.
+Also there is no call with the opposite value here.
+
+But this call could modify the MODEMCR register however its result is
+immediately overwritten in the lines below with a wrong value in val.
+Keep as-is and maybe add the following instead:
+
++	if (cdns_uart->gpiod_rts)
++		gpiod_set_value(cdns_uart->gpiod_rts, !(mctrl & TIOCM_RTS));
+
+>  	if (mctrl & TIOCM_DTR)
+>  		val |= CDNS_UART_MODEMCR_DTR;
+>  	if (mctrl & TIOCM_LOOP)
+> @@ -1455,6 +1611,37 @@ MODULE_DEVICE_TABLE(of, cdns_uart_of_match);
+>  /* Temporary variable for storing number of instances */
+>  static int instances;
+> 
+> +/**
+> + * cdns_rs485_config - Called when an application calls TIOCSRS485 
+> ioctl.
+> + * @port: Pointer to the uart_port structure
+> + * @termios: Pointer to the ktermios structure
+> + * @rs485: Pointer to the serial_rs485 structure
+> + *
+> + * Return: 0
+> + */
+> +static int cdns_rs485_config(struct uart_port *port, struct ktermios 
+> *termios,
+> +			     struct serial_rs485 *rs485)
+> +{
+> +	u32 val;
+> +	unsigned int ctrl_reg;
+> +
+> +	if (rs485->flags & SER_RS485_ENABLED) {
+> +		dev_dbg(port->dev, "Setting UART to RS485\n");
+> +		/* Make sure auto RTS is disabled */
+> +		val = readl(port->membase + CDNS_UART_MODEMCR);
+> +		val &= ~CDNS_UART_MODEMCR_FCM;
+> +		writel(val, port->membase + CDNS_UART_MODEMCR);
+> +		/* Disable transmitter and make Rx setup*/
+> +		cdns_uart_stop_tx(port);
+> +	} else {
+> +		/* Disable the TX and RX */
+> +		ctrl_reg = readl(port->membase + CDNS_UART_CR);
+> +		ctrl_reg |= CDNS_UART_CR_TX_DIS | CDNS_UART_CR_RX_DIS;
+> +		writel(ctrl_reg, port->membase + CDNS_UART_CR);
+
+Why would you disable the transmitter and receiver here?
+
+> +	}
+> +	return 0;
+> +}
+> +
+>  /**
+>   * cdns_uart_probe - Platform driver probe
+>   * @pdev: Pointer to the platform device structure
+> @@ -1597,9 +1784,23 @@ static int cdns_uart_probe(struct 
+> platform_device *pdev)
+>  	port->private_data = cdns_uart_data;
+>  	port->read_status_mask = CDNS_UART_IXR_TXEMPTY | CDNS_UART_IXR_RXTRIG 
+> |
+>  			CDNS_UART_IXR_OVERRUN | CDNS_UART_IXR_TOUT;
+> +	port->rs485_config = cdns_rs485_config;
+> +	port->rs485_supported = cdns_rs485_supported;
+>  	cdns_uart_data->port = port;
+>  	platform_set_drvdata(pdev, port);
+> 
+> +	rc = uart_get_rs485_mode(port);
+> +	if (rc)
+> +		goto err_out_clk_notifier;
+> +
+> +	cdns_uart_data->gpiod_rts = devm_gpiod_get_optional(&pdev->dev, 
+> "rts",
+> +							    GPIOD_OUT_LOW);
+> +	if (IS_ERR(cdns_uart_data->gpiod_rts)) {
+> +		rc = PTR_ERR(cdns_uart_data->gpiod_rts);
+> +		dev_err(port->dev, "xuartps: devm_gpiod_get_optional failed\n");
+> +		goto err_out_clk_notifier;
+> +	}
+> +
+>  	pm_runtime_use_autosuspend(&pdev->dev);
+>  	pm_runtime_set_autosuspend_delay(&pdev->dev, 
+> UART_AUTOSUSPEND_TIMEOUT);
+>  	pm_runtime_set_active(&pdev->dev);
+> @@ -1618,6 +1819,8 @@ static int cdns_uart_probe(struct platform_device 
+> *pdev)
+>  		console_port = port;
+>  	}
+>  #endif
+> +	if (cdns_uart_data->port->rs485.flags & SER_RS485_ENABLED)
+> +		cdns_rs485_rx_setup(cdns_uart_data);
+> 
+>  	rc = uart_add_one_port(&cdns_uart_uart_driver, port);
+>  	if (rc) {
+> @@ -1646,6 +1849,7 @@ static int cdns_uart_probe(struct platform_device 
+> *pdev)
+>  	pm_runtime_disable(&pdev->dev);
+>  	pm_runtime_set_suspended(&pdev->dev);
+>  	pm_runtime_dont_use_autosuspend(&pdev->dev);
+> +err_out_clk_notifier:
+>  #ifdef CONFIG_COMMON_CLK
+>  	clk_notifier_unregister(cdns_uart_data->uartclk,
+>  			&cdns_uart_data->clk_rate_change_nb);
+
+Kind Regards,
+Maarten Brock
+
