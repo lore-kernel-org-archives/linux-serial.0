@@ -1,148 +1,159 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3BFB1EB37;
-	Mon, 25 Dec 2023 23:31:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Received: from mx3.securetransport.de (mx3.securetransport.de [116.203.31.6])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B92544D59D
+	for <linux-serial@vger.kernel.org>; Tue, 26 Dec 2023 11:40:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dh-electronics.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="K7QWOIU8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1703547076; x=1735083076;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5SMN0AzloiLbP8beEL+tP2MzpuhkZtwKpAax1CA2Udg=;
-  b=K7QWOIU8s9nmwIKUadWNG9iuxqcFRhiLzuX9U9WmVwTG4rm27NZuyLYz
-   JLmv0LUARDgIFvp/dCQfYaX829PKpAwPhbgHjSsR0u1sB3uAKK2FibV1h
-   Cutey/3mFmzn7+hcY20oNylUSJzobIoiicivZ6MA7WFI5L5IeCt8LN785
-   P4Ldro1l4FFpNJfb+rs95RxoCUj00TygqMmiW8zW6xChW3A5mzJsPuUp6
-   hyDbZL/Q3RcUDGLn9MFdmalltVtmTPeKcyloYVYrwJaNwDY2jKml4u3qP
-   ul5qY3oBoMdzuZaz7u71nZC2vflQWiiwSb4P/1/qcmbUpTaz3EljQvbLk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10934"; a="9838291"
-X-IronPort-AV: E=Sophos;i="6.04,304,1695711600"; 
-   d="scan'208";a="9838291"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Dec 2023 15:31:14 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10934"; a="771030390"
-X-IronPort-AV: E=Sophos;i="6.04,304,1695711600"; 
-   d="scan'208";a="771030390"
-Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 25 Dec 2023 15:31:09 -0800
-Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rHuPa-000DmL-2L;
-	Mon, 25 Dec 2023 23:31:06 +0000
-Date: Tue, 26 Dec 2023 07:30:55 +0800
-From: kernel test robot <lkp@intel.com>
-To: Lino Sanfilippo <l.sanfilippo@kunbus.com>, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	u.kleine-koenig@pengutronix.de, shawnguo@kernel.org,
-	s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com,
-	alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com,
-	hugo@hugovil.com, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, LinoSanfilippo@gmx.de,
-	lukas@wunner.de, p.rosenberger@kunbus.com,
-	Lino Sanfilippo <l.sanfilippo@kunbus.com>, stable@vger.kernel.org
-Subject: Re: [PATCH v6 6/7] serial: omap: do not override settings for RS485
- support
-Message-ID: <202312260719.mI12i497-lkp@intel.com>
-References: <20231225113524.8800-7-l.sanfilippo@kunbus.com>
+	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="srbnVsuk"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
+	s=dhelectronicscom; t=1703590697;
+	bh=cTYZnolMy6/vuQX8IJdP7c6GwOYsDzvjJU1D80G9LCM=;
+	h=From:To:CC:Subject:Date:From;
+	b=srbnVsukY8k5t9RmiNa/qzBdNXzZsbrxG2fmNq8DmI/3NlqF1q7ATOuWNOHmUUUIu
+	 ilSaGOjX5m/XyPIDAunx/KGLcBPmjQFOtLV4EuLQ+SX87ZgHwQ3OwkGNIcx0lGlwcC
+	 bPxlNlQQOJiXfvGGOMIHc4Q4oapibmi/71fxUeN738iOq80nVgwjA/gplHyI+Xliv8
+	 RyynAokAzwQ9n93Dmv0aQRYgZegH0gyJ+hIRwD6JFbvjXfbC2wfhZE0TnE7AkhG1a2
+	 NlmM0LESC4sDdMDuLUJMfXZ/EuFBBy24Thq9BE3NQJClaIdjlCIeQp72VIoYOemGUc
+	 cLln+FeX+V2AQ==
+From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+To: <linux-serial@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
+CC: Christoph Niedermaier <cniedermaier@dh-electronics.com>, "Greg
+ Kroah-Hartman" <gregkh@linuxfoundation.org>, Jiri Slaby
+	<jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Marek Vasut
+	<marex@denx.de>, Fabio Estevam <festevam@denx.de>, Sascha Hauer
+	<s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>,
+	NXP Linux Team <linux-imx@nxp.com>, Sergey Organov <sorganov@gmail.com>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, "Rob
+ Herring" <robh@kernel.org>, =?UTF-8?q?Ilpo=20J=C3=A4rvinen?=
+	<ilpo.jarvinen@linux.intel.com>, Tom Rix <trix@redhat.com>, Thomas Gleixner
+	<tglx@linutronix.de>, Lukas Wunner <lukas@wunner.de>
+Subject: [PATCH V2] serial: imx: Ensure that imx_uart_rs485_config() is called with enabled clock
+Date: Tue, 26 Dec 2023 12:36:47 +0100
+Message-ID: <20231226113647.39376-1-cniedermaier@dh-electronics.com>
+X-klartext: yes
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231225113524.8800-7-l.sanfilippo@kunbus.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Hi Lino,
+There are register accesses in the function imx_uart_rs485_config(). The
+clock must be enabled for these accesses. This was ensured by calling it
+via the function uart_rs485_config() in the probe() function within the
+range where the clock is enabled. With the commit 7c7f9bc986e6 ("serial:
+Deassert Transmit Enable on probe in driver-specific way") it was removed
+from the probe() function and is now only called through the function
+uart_add_one_port() which is located at the end of the probe() function.
+But the clock is already switched off in this area. To ensure that the
+clock is enabled during register access, move the disabling of the clock
+to the very end of the probe() function. To avoid leaking enabled clocks
+on error also add an error path for exiting with disabling the clock.
 
-kernel test robot noticed the following build errors:
+Fixes: 7c7f9bc986e6 ("serial: Deassert Transmit Enable on probe in driver-specific way")
+Signed-off-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+---
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Marek Vasut <marex@denx.de>
+Cc: Fabio Estevam <festevam@denx.de>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Cc: Sergey Organov <sorganov@gmail.com>
+Cc: "Uwe Kleine-König" <u.kleine-koenig@pengutronix.de>
+Cc: Rob Herring <robh@kernel.org>
+Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
+Cc: Tom Rix <trix@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Lukas Wunner <lukas@wunner.de>
+To: linux-serial@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+---
+V2: - Avoid leaking enabled clocks on error path
+    - Adapt commit message
+---
+ drivers/tty/serial/imx.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
-[auto build test ERROR on ceb6a6f023fd3e8b07761ed900352ef574010bcb]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Lino-Sanfilippo/serial-Do-not-hold-the-port-lock-when-setting-rx-during-tx-GPIO/20231225-193833
-base:   ceb6a6f023fd3e8b07761ed900352ef574010bcb
-patch link:    https://lore.kernel.org/r/20231225113524.8800-7-l.sanfilippo%40kunbus.com
-patch subject: [PATCH v6 6/7] serial: omap: do not override settings for RS485 support
-config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20231226/202312260719.mI12i497-lkp@intel.com/config)
-compiler: clang version 18.0.0git (https://github.com/llvm/llvm-project d3ef86708241a3bee902615c190dead1638c4e09)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231226/202312260719.mI12i497-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202312260719.mI12i497-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> drivers/tty/serial/omap-serial.c:1501:29: error: use of undeclared identifier 'serial_omap_rs485_supported'
-    1501 |         up->port.rs485_supported = serial_omap_rs485_supported;
-         |                                    ^
-   1 error generated.
-
-
-vim +/serial_omap_rs485_supported +1501 drivers/tty/serial/omap-serial.c
-
-  1485	
-  1486	static int serial_omap_probe_rs485(struct uart_omap_port *up,
-  1487					   struct device *dev)
-  1488	{
-  1489		struct serial_rs485 *rs485conf = &up->port.rs485;
-  1490		struct device_node *np = dev->of_node;
-  1491		enum gpiod_flags gflags;
-  1492		int ret;
-  1493	
-  1494		rs485conf->flags = 0;
-  1495		up->rts_gpiod = NULL;
-  1496	
-  1497		if (!np)
-  1498			return 0;
-  1499	
-  1500		up->port.rs485_config = serial_omap_config_rs485;
-> 1501		up->port.rs485_supported = serial_omap_rs485_supported;
-  1502	
-  1503		ret = uart_get_rs485_mode(&up->port);
-  1504		if (ret)
-  1505			return ret;
-  1506	
-  1507		if (of_property_read_bool(np, "rs485-rts-active-high")) {
-  1508			rs485conf->flags |= SER_RS485_RTS_ON_SEND;
-  1509			rs485conf->flags &= ~SER_RS485_RTS_AFTER_SEND;
-  1510		} else {
-  1511			rs485conf->flags &= ~SER_RS485_RTS_ON_SEND;
-  1512			rs485conf->flags |= SER_RS485_RTS_AFTER_SEND;
-  1513		}
-  1514	
-  1515		/* check for tx enable gpio */
-  1516		gflags = rs485conf->flags & SER_RS485_RTS_AFTER_SEND ?
-  1517			GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
-  1518		up->rts_gpiod = devm_gpiod_get_optional(dev, "rts", gflags);
-  1519		if (IS_ERR(up->rts_gpiod)) {
-  1520			ret = PTR_ERR(up->rts_gpiod);
-  1521		        if (ret == -EPROBE_DEFER)
-  1522				return ret;
-  1523	
-  1524			up->rts_gpiod = NULL;
-  1525			up->port.rs485_supported = (const struct serial_rs485) { };
-  1526			if (rs485conf->flags & SER_RS485_ENABLED) {
-  1527				dev_err(dev, "disabling RS-485 (rts-gpio missing in device tree)\n");
-  1528				memset(rs485conf, 0, sizeof(*rs485conf));
-  1529			}
-  1530		} else {
-  1531			gpiod_set_consumer_name(up->rts_gpiod, "omap-serial");
-  1532		}
-  1533	
-  1534		return 0;
-  1535	}
-  1536	
-
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index e7e952bb7bb8..c2fec44c28e8 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -2332,10 +2332,8 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	ret = uart_get_rs485_mode(&sport->port);
+-	if (ret) {
+-		clk_disable_unprepare(sport->clk_ipg);
+-		return ret;
+-	}
++	if (ret)
++		goto err_clk;
+ 
+ 	if (sport->port.rs485.flags & SER_RS485_ENABLED &&
+ 	    (!sport->have_rtscts && !sport->have_rtsgpio))
+@@ -2419,8 +2417,6 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 		imx_uart_writel(sport, ucr3, UCR3);
+ 	}
+ 
+-	clk_disable_unprepare(sport->clk_ipg);
+-
+ 	hrtimer_init(&sport->trigger_start_tx, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+ 	hrtimer_init(&sport->trigger_stop_tx, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+ 	sport->trigger_start_tx.function = imx_trigger_start_tx;
+@@ -2436,7 +2432,7 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 		if (ret) {
+ 			dev_err(&pdev->dev, "failed to request rx irq: %d\n",
+ 				ret);
+-			return ret;
++			goto err_clk;
+ 		}
+ 
+ 		ret = devm_request_irq(&pdev->dev, txirq, imx_uart_txint, 0,
+@@ -2444,7 +2440,7 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 		if (ret) {
+ 			dev_err(&pdev->dev, "failed to request tx irq: %d\n",
+ 				ret);
+-			return ret;
++			goto err_clk;
+ 		}
+ 
+ 		ret = devm_request_irq(&pdev->dev, rtsirq, imx_uart_rtsint, 0,
+@@ -2452,14 +2448,14 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 		if (ret) {
+ 			dev_err(&pdev->dev, "failed to request rts irq: %d\n",
+ 				ret);
+-			return ret;
++			goto err_clk;
+ 		}
+ 	} else {
+ 		ret = devm_request_irq(&pdev->dev, rxirq, imx_uart_int, 0,
+ 				       dev_name(&pdev->dev), sport);
+ 		if (ret) {
+ 			dev_err(&pdev->dev, "failed to request irq: %d\n", ret);
+-			return ret;
++			goto err_clk;
+ 		}
+ 	}
+ 
+@@ -2467,7 +2463,12 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, sport);
+ 
+-	return uart_add_one_port(&imx_uart_uart_driver, &sport->port);
++	ret = uart_add_one_port(&imx_uart_uart_driver, &sport->port);
++
++err_clk:
++	clk_disable_unprepare(sport->clk_ipg);
++
++	return ret;
+ }
+ 
+ static void imx_uart_remove(struct platform_device *pdev)
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.11.0
+
