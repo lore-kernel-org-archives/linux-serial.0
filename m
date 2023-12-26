@@ -1,159 +1,95 @@
-Received: from mx3.securetransport.de (mx3.securetransport.de [116.203.31.6])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B92544D59D
-	for <linux-serial@vger.kernel.org>; Tue, 26 Dec 2023 11:40:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dh-electronics.com
+Received: from mailrelay3-1.pub.mailoutpod3-cph3.one.com (mailrelay3-1.pub.mailoutpod3-cph3.one.com [46.30.211.242])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9A484E607
+	for <linux-serial@vger.kernel.org>; Tue, 26 Dec 2023 12:17:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ravnborg.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ravnborg.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="srbnVsuk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-	s=dhelectronicscom; t=1703590697;
-	bh=cTYZnolMy6/vuQX8IJdP7c6GwOYsDzvjJU1D80G9LCM=;
-	h=From:To:CC:Subject:Date:From;
-	b=srbnVsukY8k5t9RmiNa/qzBdNXzZsbrxG2fmNq8DmI/3NlqF1q7ATOuWNOHmUUUIu
-	 ilSaGOjX5m/XyPIDAunx/KGLcBPmjQFOtLV4EuLQ+SX87ZgHwQ3OwkGNIcx0lGlwcC
-	 bPxlNlQQOJiXfvGGOMIHc4Q4oapibmi/71fxUeN738iOq80nVgwjA/gplHyI+Xliv8
-	 RyynAokAzwQ9n93Dmv0aQRYgZegH0gyJ+hIRwD6JFbvjXfbC2wfhZE0TnE7AkhG1a2
-	 NlmM0LESC4sDdMDuLUJMfXZ/EuFBBy24Thq9BE3NQJClaIdjlCIeQp72VIoYOemGUc
-	 cLln+FeX+V2AQ==
-From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-To: <linux-serial@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
-CC: Christoph Niedermaier <cniedermaier@dh-electronics.com>, "Greg
- Kroah-Hartman" <gregkh@linuxfoundation.org>, Jiri Slaby
-	<jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Marek Vasut
-	<marex@denx.de>, Fabio Estevam <festevam@denx.de>, Sascha Hauer
-	<s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>,
-	NXP Linux Team <linux-imx@nxp.com>, Sergey Organov <sorganov@gmail.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, "Rob
- Herring" <robh@kernel.org>, =?UTF-8?q?Ilpo=20J=C3=A4rvinen?=
-	<ilpo.jarvinen@linux.intel.com>, Tom Rix <trix@redhat.com>, Thomas Gleixner
-	<tglx@linutronix.de>, Lukas Wunner <lukas@wunner.de>
-Subject: [PATCH V2] serial: imx: Ensure that imx_uart_rs485_config() is called with enabled clock
-Date: Tue, 26 Dec 2023 12:36:47 +0100
-Message-ID: <20231226113647.39376-1-cniedermaier@dh-electronics.com>
-X-klartext: yes
+	dkim=pass (2048-bit key) header.d=ravnborg.org header.i=@ravnborg.org header.b="zFMpPmf/";
+	dkim=permerror (0-bit key) header.d=ravnborg.org header.i=@ravnborg.org header.b="I4yeLQQ5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=ravnborg.org; s=rsa2;
+	h=content-type:mime-version:message-id:subject:cc:to:from:date:from;
+	bh=MbQcNc9JvXsQ+yjx2TrqKUQ/vQcx03BWjjGJcW0+TPo=;
+	b=zFMpPmf/xLsNHMc4hKa88/rR0scLpkJiWt/MHdnLfsGJ7jdZvASjYs4KXMpHlfRuHy+FL0IGTHhiF
+	 MV3Q0DPMQgEhTGkFmu6Wubs4GtPZCKlKtb5JfOzbtIKhYmaazM192jUtkpuz8oJRa/cKS/rNEUdCam
+	 QW1onMwCH7/hLYH9stQgQDmkJgrGXLbrfARYmBe0eC4aKmxXFwPRoifpyAo9lKyzkTBxS+l7O4J3Ly
+	 Gw8sH+kvY8hWPbSfNRYTh5BxeNTwV8s/6gOpzfCuky6viFzP4s6VkRsVkbMb/Cr+ed6K/ZlA1XbOyG
+	 I4JzNmPXDBNP8aYYfv434VFXFMgabng==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
+	d=ravnborg.org; s=ed2;
+	h=content-type:mime-version:message-id:subject:cc:to:from:date:from;
+	bh=MbQcNc9JvXsQ+yjx2TrqKUQ/vQcx03BWjjGJcW0+TPo=;
+	b=I4yeLQQ5znSs5S/RPuVmE2hxPDEE0D2nviuFY/Sk+c+Fq3syKu0WMkuaUar7UKlF9i6oF5OeKzS4V
+	 VP2J9ByBw==
+X-HalOne-ID: 8b56b3d1-a3e8-11ee-8834-85e425223685
+Received: from ravnborg.org (2-105-2-98-cable.dk.customer.tdc.net [2.105.2.98])
+	by mailrelay3 (Halon) with ESMTPSA
+	id 8b56b3d1-a3e8-11ee-8834-85e425223685;
+	Tue, 26 Dec 2023 12:16:08 +0000 (UTC)
+Date: Tue, 26 Dec 2023 13:16:07 +0100
+From: Sam Ravnborg <sam@ravnborg.org>
+To: Andreas Larsson <andreas@gaisler.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org, sparclinux@vger.kernel.org
+Subject: [PATCH] serial: apbuart: fix console prompt on qemu
+Message-ID: <20231226121607.GA2622970@ravnborg.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-There are register accesses in the function imx_uart_rs485_config(). The
-clock must be enabled for these accesses. This was ensured by calling it
-via the function uart_rs485_config() in the probe() function within the
-range where the clock is enabled. With the commit 7c7f9bc986e6 ("serial:
-Deassert Transmit Enable on probe in driver-specific way") it was removed
-from the probe() function and is now only called through the function
-uart_add_one_port() which is located at the end of the probe() function.
-But the clock is already switched off in this area. To ensure that the
-clock is enabled during register access, move the disabling of the clock
-to the very end of the probe() function. To avoid leaking enabled clocks
-on error also add an error path for exiting with disabling the clock.
+When using a leon kernel with qemu there where no console prompt.
+The root cause is the handling of the fifo size in the tx part of the
+apbuart driver.
 
-Fixes: 7c7f9bc986e6 ("serial: Deassert Transmit Enable on probe in driver-specific way")
-Signed-off-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
----
+The qemu uart driver only have a very rudimentary status handling and do
+not report the number of chars queued in the tx fifo in the status register.
+So the driver ends up with a fifo size of 1.
+
+In the tx path the fifo size is divided by 2 - resulting in a fifo
+size of zero.
+
+The original implementation would always try to send one char, but
+after the introduction of uart_port_tx_limited() the fifo size is
+respected even for the first char.
+
+There seems to be no good reason to divide the fifo size with two - so
+remove this. It looks like something copied from the original amba driver.
+
+With qemu we now have a minimum fifo size of one char, so we show
+the prompt.
+
+Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+Fixes: d11cc8c3c4b6 ("tty: serial: use uart_port_tx_limited()")
+Cc: Andreas Larsson <andreas@gaisler.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Marek Vasut <marex@denx.de>
-Cc: Fabio Estevam <festevam@denx.de>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: NXP Linux Team <linux-imx@nxp.com>
-Cc: Sergey Organov <sorganov@gmail.com>
-Cc: "Uwe Kleine-König" <u.kleine-koenig@pengutronix.de>
-Cc: Rob Herring <robh@kernel.org>
-Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
-Cc: Tom Rix <trix@redhat.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Lukas Wunner <lukas@wunner.de>
-To: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
+Cc: linux-serial@vger.kernel.org
+Cc: sparclinux@vger.kernel.org
 ---
-V2: - Avoid leaking enabled clocks on error path
-    - Adapt commit message
----
- drivers/tty/serial/imx.c | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ drivers/tty/serial/apbuart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index e7e952bb7bb8..c2fec44c28e8 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -2332,10 +2332,8 @@ static int imx_uart_probe(struct platform_device *pdev)
- 	}
+diff --git a/drivers/tty/serial/apbuart.c b/drivers/tty/serial/apbuart.c
+index 716cb014c028..364599f256db 100644
+--- a/drivers/tty/serial/apbuart.c
++++ b/drivers/tty/serial/apbuart.c
+@@ -122,7 +122,7 @@ static void apbuart_tx_chars(struct uart_port *port)
+ {
+ 	u8 ch;
  
- 	ret = uart_get_rs485_mode(&sport->port);
--	if (ret) {
--		clk_disable_unprepare(sport->clk_ipg);
--		return ret;
--	}
-+	if (ret)
-+		goto err_clk;
- 
- 	if (sport->port.rs485.flags & SER_RS485_ENABLED &&
- 	    (!sport->have_rtscts && !sport->have_rtsgpio))
-@@ -2419,8 +2417,6 @@ static int imx_uart_probe(struct platform_device *pdev)
- 		imx_uart_writel(sport, ucr3, UCR3);
- 	}
- 
--	clk_disable_unprepare(sport->clk_ipg);
--
- 	hrtimer_init(&sport->trigger_start_tx, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
- 	hrtimer_init(&sport->trigger_stop_tx, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
- 	sport->trigger_start_tx.function = imx_trigger_start_tx;
-@@ -2436,7 +2432,7 @@ static int imx_uart_probe(struct platform_device *pdev)
- 		if (ret) {
- 			dev_err(&pdev->dev, "failed to request rx irq: %d\n",
- 				ret);
--			return ret;
-+			goto err_clk;
- 		}
- 
- 		ret = devm_request_irq(&pdev->dev, txirq, imx_uart_txint, 0,
-@@ -2444,7 +2440,7 @@ static int imx_uart_probe(struct platform_device *pdev)
- 		if (ret) {
- 			dev_err(&pdev->dev, "failed to request tx irq: %d\n",
- 				ret);
--			return ret;
-+			goto err_clk;
- 		}
- 
- 		ret = devm_request_irq(&pdev->dev, rtsirq, imx_uart_rtsint, 0,
-@@ -2452,14 +2448,14 @@ static int imx_uart_probe(struct platform_device *pdev)
- 		if (ret) {
- 			dev_err(&pdev->dev, "failed to request rts irq: %d\n",
- 				ret);
--			return ret;
-+			goto err_clk;
- 		}
- 	} else {
- 		ret = devm_request_irq(&pdev->dev, rxirq, imx_uart_int, 0,
- 				       dev_name(&pdev->dev), sport);
- 		if (ret) {
- 			dev_err(&pdev->dev, "failed to request irq: %d\n", ret);
--			return ret;
-+			goto err_clk;
- 		}
- 	}
- 
-@@ -2467,7 +2463,12 @@ static int imx_uart_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, sport);
- 
--	return uart_add_one_port(&imx_uart_uart_driver, &sport->port);
-+	ret = uart_add_one_port(&imx_uart_uart_driver, &sport->port);
-+
-+err_clk:
-+	clk_disable_unprepare(sport->clk_ipg);
-+
-+	return ret;
- }
- 
- static void imx_uart_remove(struct platform_device *pdev)
+-	uart_port_tx_limited(port, ch, port->fifosize >> 1,
++	uart_port_tx_limited(port, ch, port->fifosize,
+ 		true,
+ 		UART_PUT_CHAR(port, ch),
+ 		({}));
 -- 
-2.11.0
+2.34.1
 
