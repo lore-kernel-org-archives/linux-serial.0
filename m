@@ -1,95 +1,186 @@
-Received: from mailrelay3-1.pub.mailoutpod3-cph3.one.com (mailrelay3-1.pub.mailoutpod3-cph3.one.com [46.30.211.242])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9A484E607
-	for <linux-serial@vger.kernel.org>; Tue, 26 Dec 2023 12:17:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ravnborg.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ravnborg.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93E3E44C62
+	for <linux-serial@vger.kernel.org>; Wed, 27 Dec 2023 12:38:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ravnborg.org header.i=@ravnborg.org header.b="zFMpPmf/";
-	dkim=permerror (0-bit key) header.d=ravnborg.org header.i=@ravnborg.org header.b="I4yeLQQ5"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="oR3Zu7tI"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-336746c7b6dso4690873f8f.0
+        for <linux-serial@vger.kernel.org>; Wed, 27 Dec 2023 04:38:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=ravnborg.org; s=rsa2;
-	h=content-type:mime-version:message-id:subject:cc:to:from:date:from;
-	bh=MbQcNc9JvXsQ+yjx2TrqKUQ/vQcx03BWjjGJcW0+TPo=;
-	b=zFMpPmf/xLsNHMc4hKa88/rR0scLpkJiWt/MHdnLfsGJ7jdZvASjYs4KXMpHlfRuHy+FL0IGTHhiF
-	 MV3Q0DPMQgEhTGkFmu6Wubs4GtPZCKlKtb5JfOzbtIKhYmaazM192jUtkpuz8oJRa/cKS/rNEUdCam
-	 QW1onMwCH7/hLYH9stQgQDmkJgrGXLbrfARYmBe0eC4aKmxXFwPRoifpyAo9lKyzkTBxS+l7O4J3Ly
-	 Gw8sH+kvY8hWPbSfNRYTh5BxeNTwV8s/6gOpzfCuky6viFzP4s6VkRsVkbMb/Cr+ed6K/ZlA1XbOyG
-	 I4JzNmPXDBNP8aYYfv434VFXFMgabng==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
-	d=ravnborg.org; s=ed2;
-	h=content-type:mime-version:message-id:subject:cc:to:from:date:from;
-	bh=MbQcNc9JvXsQ+yjx2TrqKUQ/vQcx03BWjjGJcW0+TPo=;
-	b=I4yeLQQ5znSs5S/RPuVmE2hxPDEE0D2nviuFY/Sk+c+Fq3syKu0WMkuaUar7UKlF9i6oF5OeKzS4V
-	 VP2J9ByBw==
-X-HalOne-ID: 8b56b3d1-a3e8-11ee-8834-85e425223685
-Received: from ravnborg.org (2-105-2-98-cable.dk.customer.tdc.net [2.105.2.98])
-	by mailrelay3 (Halon) with ESMTPSA
-	id 8b56b3d1-a3e8-11ee-8834-85e425223685;
-	Tue, 26 Dec 2023 12:16:08 +0000 (UTC)
-Date: Tue, 26 Dec 2023 13:16:07 +0100
-From: Sam Ravnborg <sam@ravnborg.org>
-To: Andreas Larsson <andreas@gaisler.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org, sparclinux@vger.kernel.org
-Subject: [PATCH] serial: apbuart: fix console prompt on qemu
-Message-ID: <20231226121607.GA2622970@ravnborg.org>
+        d=linaro.org; s=google; t=1703680705; x=1704285505; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=K49GFbJ7QYX/aYXf6WBwayoQ+7LGUrfHPfuMV1wfcM8=;
+        b=oR3Zu7tIRl7Vrvbp9vVfkJItESCIkjgW+bo+/EHyfjXRtxwnVEighhIxS0UqsRWztg
+         e/ei0pz13MGh3F4hrX4Ubx4HDFXNDv993CLVRqS39pwvsNMLqaByg4DLHsUCP6+xVGj5
+         DpecqNpgkNVKBvXH6rQXPSxFIEXfkyGcXnpw3MZzoa2cWn/tR6ladUlrlOSUDsPSXYZ6
+         RA55S700OIoQx4HXN8sK6gP87A/gAJwAI8fy4vSRGqq8Qs54XdAd1fGdpc5oUuLxO1Ww
+         NvC/FG2r+DgJ0cjuuafcnQSaDovXqc3zZ34vkf1p4+TkUFOGaPjGFYdG0A9rdpEpMmIG
+         mJmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1703680705; x=1704285505;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=K49GFbJ7QYX/aYXf6WBwayoQ+7LGUrfHPfuMV1wfcM8=;
+        b=qtaC64gWJAxI5bFW9ql88DcJ6HYZoouy572fb+VzoeoRAOp+In7HPFwhaOZVAgaWTf
+         WjA4e6IRZl5WXARxRiLrjfU2ftPaKhm3Ax9VWMD64fdajCtq4isiVRIKc8RdbyTfcQ4v
+         5OOiU6oA1uQOuqUuxmO1i3TnGWrllp3d5F1GH5p729MFl7AyZZJIe28FunMsM9kw/ux8
+         /MNXLHZguOzac9FjnEw+75uX1qE28QVZDFpkCiRkAy/HdFAUbNpbuMoPdBZLC+rghisU
+         PLrDiyVa92+7VmQkWJ7l1efR83kBBcR5bH2WgclnV8exp5ugzkgJGCOGMc2mJcupbT5D
+         shwA==
+X-Gm-Message-State: AOJu0YztvS+ftxTrdQOHQsMKKxEOV2cfLlLf4fzX8/GHx9HJ/JEFq1R8
+	O0K2KG3xB2xdR7KxhC+dvFV/kGfF5PKy4w==
+X-Google-Smtp-Source: AGHT+IEk8Z5vNZSE+UxA5iIfvuAuQqH01ijY55xsdhRWuCAzSey3tpD2HL7T5Js0WDnprd1CJaMF2w==
+X-Received: by 2002:a5d:5744:0:b0:333:5230:ad12 with SMTP id q4-20020a5d5744000000b003335230ad12mr5438335wrw.72.1703680704864;
+        Wed, 27 Dec 2023 04:38:24 -0800 (PST)
+Received: from [192.168.0.107] ([79.115.63.202])
+        by smtp.gmail.com with ESMTPSA id q28-20020adfab1c000000b0033690139ea5sm12410133wrc.44.2023.12.27.04.38.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Dec 2023 04:38:23 -0800 (PST)
+Message-ID: <425a228e-b2d3-4b19-9bcb-6ee1a90cd2ef@linaro.org>
+Date: Wed, 27 Dec 2023 12:38:21 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 02/13] dt-bindings: clock: google,gs101-clock: add PERIC0
+ clock management unit
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
+To: Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Peter Griffin <peter.griffin@linaro.org>
+Cc: sboyd@kernel.org, conor+dt@kernel.org, andi.shyti@kernel.org,
+ alim.akhtar@samsung.com, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ catalin.marinas@arm.com, will@kernel.org, s.nawrocki@samsung.com,
+ tomasz.figa@gmail.com, cw00.choi@samsung.com, arnd@arndb.de,
+ semen.protsenko@linaro.org, andre.draszik@linaro.org, saravanak@google.com,
+ willmcvicker@google.com, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
+ =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>
+References: <20231214105243.3707730-1-tudor.ambarus@linaro.org>
+ <20231214105243.3707730-3-tudor.ambarus@linaro.org>
+ <20231220150726.GA223267-robh@kernel.org>
+ <173b06ab-2518-49ee-a67f-85256bc5b6a7@linaro.org>
+Content-Language: en-US
+In-Reply-To: <173b06ab-2518-49ee-a67f-85256bc5b6a7@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-When using a leon kernel with qemu there where no console prompt.
-The root cause is the handling of the fifo size in the tx part of the
-apbuart driver.
+Hi, Rob,
 
-The qemu uart driver only have a very rudimentary status handling and do
-not report the number of chars queued in the tx fifo in the status register.
-So the driver ends up with a fifo size of 1.
+On 12/21/23 07:20, Tudor Ambarus wrote:
+> 
+> 
+> On 12/20/23 15:07, Rob Herring wrote:
+>> On Thu, Dec 14, 2023 at 10:52:32AM +0000, Tudor Ambarus wrote:
+>>> Add dt-schema documentation for the Connectivity Peripheral 0 (PERIC0)
+>>> clock management unit.
+>>>
+>>> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+>>> ---
+>>>  .../bindings/clock/google,gs101-clock.yaml    | 25 +++++-
+>>>  include/dt-bindings/clock/google,gs101.h      | 86 +++++++++++++++++++
+>>>  2 files changed, 109 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/clock/google,gs101-clock.yaml b/Documentation/devicetree/bindings/clock/google,gs101-clock.yaml
+>>> index 3eebc03a309b..ba54c13c55bc 100644
+>>> --- a/Documentation/devicetree/bindings/clock/google,gs101-clock.yaml
+>>> +++ b/Documentation/devicetree/bindings/clock/google,gs101-clock.yaml
+>>> @@ -30,14 +30,15 @@ properties:
+>>>        - google,gs101-cmu-top
+>>>        - google,gs101-cmu-apm
+>>>        - google,gs101-cmu-misc
+>>> +      - google,gs101-cmu-peric0
+>>>  
+>>>    clocks:
+>>>      minItems: 1
+>>> -    maxItems: 2
+>>> +    maxItems: 3
+>>>  
+>>>    clock-names:
+>>>      minItems: 1
+>>> -    maxItems: 2
+>>> +    maxItems: 3
+>>>  
+>>>    "#clock-cells":
+>>>      const: 1
+>>> @@ -88,6 +89,26 @@ allOf:
+>>>              - const: dout_cmu_misc_bus
+>>>              - const: dout_cmu_misc_sss
+>>>  
+>>> +  - if:
+>>> +      properties:
+>>> +        compatible:
+>>> +          contains:
+>>> +            const: google,gs101-cmu-peric0
+>>> +
+>>> +    then:
+>>> +      properties:
+>>> +        clocks:
+>>> +          items:
+>>> +            - description: External reference clock (24.576 MHz)
+>>> +            - description: Connectivity Peripheral 0 bus clock (from CMU_TOP)
+>>> +            - description: Connectivity Peripheral 0 IP clock (from CMU_TOP)
+>>> +
+>>> +        clock-names:
+>>> +          items:
+>>> +            - const: oscclk
+>>> +            - const: dout_cmu_peric0_bus
+>>> +            - const: dout_cmu_peric0_ip
+>>
+>> 'bus' and 'ip' are sufficient because naming is local to the module. The 
+>> same is true on 'dout_cmu_misc_bus'. As that has not made a release, 
+>> please fix all of them.
+>>
+> 
+> Ok, will fix them shortly. Thanks, Rob!
 
-In the tx path the fifo size is divided by 2 - resulting in a fifo
-size of zero.
+I tried your suggestion at
+https://lore.kernel.org/linux-arm-kernel/c6cc6e74-6c3d-439b-8dc1-bc50a88a3d8f@linaro.org/
 
-The original implementation would always try to send one char, but
-after the introduction of uart_port_tx_limited() the fifo size is
-respected even for the first char.
+and we noticed that we'd have to update the clock driver as well.
+These CMUs set the DT clock-name of the parent clock in the driver in
+struct samsung_cmu_info::clk_name[]. The driver then tries to enable the
+parent clock based on the clock-name in exynos_arm64_register_cmu().
 
-There seems to be no good reason to divide the fifo size with two - so
-remove this. It looks like something copied from the original amba driver.
+In order to enable the parent clock of the CMU the following would be
+needed in the driver:
 
-With qemu we now have a minimum fifo size of one char, so we show
-the prompt.
+diff --git a/drivers/clk/samsung/clk-gs101.c
+b/drivers/clk/samsung/clk-gs101.c
+index 68a27b78b00b..e91836ea3a98 100644
+--- a/drivers/clk/samsung/clk-gs101.c
++++ b/drivers/clk/samsung/clk-gs101.c
+@@ -2476,7 +2476,7 @@ static const struct samsung_cmu_info misc_cmu_info
+__initconst = {
+        .nr_clk_ids             = CLKS_NR_MISC,
+        .clk_regs               = misc_clk_regs,
+        .nr_clk_regs            = ARRAY_SIZE(misc_clk_regs),
+-       .clk_name               = "dout_cmu_misc_bus",
++       .clk_name               = "bus",
+ };
 
-Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Fixes: d11cc8c3c4b6 ("tty: serial: use uart_port_tx_limited()")
-Cc: Andreas Larsson <andreas@gaisler.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org
-Cc: sparclinux@vger.kernel.org
----
- drivers/tty/serial/apbuart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I think I lean towards keeping the name as it was because it's clearer
+what are the clock dependencies in the driver. "dout_cmu_misc_bus" is
+the clock name used when defining the clock:
+DIV(CLK_DOUT_CMU_MISC_BUS, "dout_cmu_misc_bus", "gout_cmu_misc_bus",
+    CLK_CON_DIV_CLKCMU_MISC_BUS, 0, 4),
+The other exynos clock drivers are using too the driver's clock names
+for the clock-names device tree property. For consistency I'd keep it
+the same.
 
-diff --git a/drivers/tty/serial/apbuart.c b/drivers/tty/serial/apbuart.c
-index 716cb014c028..364599f256db 100644
---- a/drivers/tty/serial/apbuart.c
-+++ b/drivers/tty/serial/apbuart.c
-@@ -122,7 +122,7 @@ static void apbuart_tx_chars(struct uart_port *port)
- {
- 	u8 ch;
- 
--	uart_port_tx_limited(port, ch, port->fifosize >> 1,
-+	uart_port_tx_limited(port, ch, port->fifosize,
- 		true,
- 		UART_PUT_CHAR(port, ch),
- 		({}));
--- 
-2.34.1
+If you have a stronger opinion than mine, please tell and I'll happily
+update the driver.
 
+Thanks,
+ta
