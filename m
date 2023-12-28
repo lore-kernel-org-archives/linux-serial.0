@@ -1,47 +1,47 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 680ED107A7
-	for <linux-serial@vger.kernel.org>; Thu, 28 Dec 2023 12:58:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 279646FCF
+	for <linux-serial@vger.kernel.org>; Thu, 28 Dec 2023 12:58:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="wPYZRAo7"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-336788cb261so5399534f8f.3
-        for <linux-serial@vger.kernel.org>; Thu, 28 Dec 2023 04:58:20 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="rzIo1duA"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-40d5a41143fso20861235e9.3
+        for <linux-serial@vger.kernel.org>; Thu, 28 Dec 2023 04:58:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1703768298; x=1704373098; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1703768300; x=1704373100; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=IfvY3WSeE4VIMFkeLJMaH8OzmsoSjNCK+Nz4eKgeCoc=;
-        b=wPYZRAo7QXUGA/kTIdTnIIR/+lhZF4k7xFRxU97cFJy0DbF59Ajk4knIPTZPZDW+SH
-         R8hVBzclA31K0t0nO6yWsUW5yBdn4g85JqkMwQWcfrEqu0GeCP0+xx98s12iEgJLNCgM
-         bRCa8MPRq8P5GtsGHqwbpPKxalvgBvMxLimtIzRQxMaXjFYo35PQ6hjpTwpVt97bpGgf
-         hIoaJWw1N6ZJW6ElXOfDHKfQpyxCnLcl4T9suyZxApsf59EFQk/BjRGVoSLt4NmXsKvM
-         4TMJCNbPDDjFiiFTlXo7gWy2BP9q8p2ia5moLVHqTZn5R+DCycl8l1erYcYHMmbRtD2o
-         cOPw==
+        bh=fJqndlg00hz3kS0K9Xt/wzcgwz2RWYotM3QsJXJKxvc=;
+        b=rzIo1duAxnP8EkArIztf8NaFeYQyVzaCFyqiOHwzDnvmL4l6j3bX2yfcL1SdwvfuYR
+         R7ccEfhXp0bIyJsnyKRtocDRnhhslmCllhuhCBGgy1R/yIzvD/UX1++KTRo+i5T9HUUg
+         Hc7Wp32lBdo5mJ98/Yga6oazzscaOYXJZq1vYBYi+uVXb+JHaV/6Mg/Q3FAWWcDcrd9Z
+         RW6h6hebPFpTeTLZqLOQLMoH9CthW0n6vOASz7EGpaiABlpz0izIduwluhvNCFFrKJ/F
+         eoweHjqIxIYGzQMqONqa/LAwH7ZqWOIP3QW5SGBmNOpVguvVBcr1dkZCFGglVYOaYKoY
+         v/Jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1703768298; x=1704373098;
+        d=1e100.net; s=20230601; t=1703768300; x=1704373100;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=IfvY3WSeE4VIMFkeLJMaH8OzmsoSjNCK+Nz4eKgeCoc=;
-        b=MYirJjXwVUx5lB2jAdmDEbvOTIF+YMnOcsZ9WQJOi0mltF5wAXRHUtkS2CGklh0FmU
-         5OOkSUUgapWTQHNoIR0/APX7JV+g4k9Xv1aznFLMQowqXs+rAxIXMPifnvvq9B0Gm181
-         vlfH78Kke1gSeG+rNZfBnEajiYuuhWV9WhwzMUjSdrM6QmeLm2JcFS6kihxhBqzP8te1
-         dz2/VPld7YbqItkZgRxnuJsv7WWAH7oiUuoIMrVwvTmdRruUnSBjRe5WkMbVYycPPPTP
-         X3Y7+Ev3KS5gDoLy98hDefePRqBPwDEGF//MXUJFQxlNanrGhi9uj/xl/ugHlhHnCW+F
-         wMnw==
-X-Gm-Message-State: AOJu0YwC+qVAT0pdRhWRy4M/UXZLuEehYhY4ZCx/Syg6RmofEr/hwqth
-	+rNRbhAa8Zu15vWzAezvlLawqpQBzXrZIA==
-X-Google-Smtp-Source: AGHT+IF55NKth7/eb18QsUtA1f9ddrzeSWtvCX/hHhNS9AwuDyV2qkCzAn6X1VS5tp90l5w01R7hBQ==
-X-Received: by 2002:a05:600c:748:b0:40c:53ba:1720 with SMTP id j8-20020a05600c074800b0040c53ba1720mr5454225wmn.76.1703768298710;
-        Thu, 28 Dec 2023 04:58:18 -0800 (PST)
+        bh=fJqndlg00hz3kS0K9Xt/wzcgwz2RWYotM3QsJXJKxvc=;
+        b=GATxwxvTi8rD6VSaa2PNB4wuxmdkutlyRqJqSfMavkF1/WGgQYB7vn+HqRxu2EbUXH
+         jEPC8kUZ9qZtMtHR/vK1zz+FtNqdJpkgaRE44F5cwsdT4tTOPKBAN92T7Q8mWCultBB0
+         PQGi5loJg2JC36b548hpVwIivcRYnfrsI6Qj5xDgDbr5Qfypu4gVgxh7k0RLEl5tScvK
+         KDzz/xgdS374nUFYX4AlA4PDUw074ZbLEt8ohtjpNUc8yIuxC0ziiZV/6V5AefEPn9zK
+         XdphdIXQbKmcLHP8WJvW7GOnKSHIV2G5Td/TVDLgwwmWlp/5upt9i4XUebMbrM9bUrgC
+         aweA==
+X-Gm-Message-State: AOJu0YzYNQFE7s6O0/ncqbxKt7k3fuDhOUzLlpEuavqbqENL16cn/qz8
+	5OXJJybxYSgObRIwTAbpUVr30n1XRib/bQ==
+X-Google-Smtp-Source: AGHT+IHl5TUZZLgMiTlie5qagsHCRsc5xzAp7JZjoJ6yG5wP+nbvBqQhFQDOaktrnm5ijLKALVeCGA==
+X-Received: by 2002:a05:600c:2192:b0:40d:71c1:9985 with SMTP id e18-20020a05600c219200b0040d71c19985mr81689wme.29.1703768300597;
+        Thu, 28 Dec 2023 04:58:20 -0800 (PST)
 Received: from ta2.c.googlers.com.com (216.131.76.34.bc.googleusercontent.com. [34.76.131.216])
-        by smtp.gmail.com with ESMTPSA id h9-20020a05600c350900b0040d5aca25f1sm8615807wmq.17.2023.12.28.04.58.17
+        by smtp.gmail.com with ESMTPSA id h9-20020a05600c350900b0040d5aca25f1sm8615807wmq.17.2023.12.28.04.58.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Dec 2023 04:58:17 -0800 (PST)
+        Thu, 28 Dec 2023 04:58:20 -0800 (PST)
 From: Tudor Ambarus <tudor.ambarus@linaro.org>
 To: peter.griffin@linaro.org,
 	robh+dt@kernel.org,
@@ -70,9 +70,9 @@ Cc: andre.draszik@linaro.org,
 	linux-serial@vger.kernel.org,
 	kernel-team@android.com,
 	Tudor Ambarus <tudor.ambarus@linaro.org>
-Subject: [PATCH v2 08/12] arm64: dts: exynos: gs101: remove reg-io-width from serial
-Date: Thu, 28 Dec 2023 12:58:01 +0000
-Message-ID: <20231228125805.661725-9-tudor.ambarus@linaro.org>
+Subject: [PATCH v2 10/12] arm64: dts: exynos: gs101: update USI UART to use peric0 clocks
+Date: Thu, 28 Dec 2023 12:58:03 +0000
+Message-ID: <20231228125805.661725-11-tudor.ambarus@linaro.org>
 X-Mailer: git-send-email 2.43.0.472.g3155946c3a-goog
 In-Reply-To: <20231228125805.661725-1-tudor.ambarus@linaro.org>
 References: <20231228125805.661725-1-tudor.ambarus@linaro.org>
@@ -84,32 +84,58 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Remove the reg-io-width property in order to comply with the bindings.
+Get rid of the dummy clock and start using the cmu_peric0 clocks
+for the usi_uart and serial_0 nodes.
 
-The entire bus (PERIC) on which the GS101 serial resides only allows
-32-bit register accesses. The reg-io-width dt property is disallowed
-for the "google,gs101-uart" compatible and instead the iotype is
-inferred from the compatible.
+Tested the serial at 115200, 1000000 and 3000000 baudrates,
+everthing went fine.
 
 Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
 ---
-v2: new patch
+v2: identify and use gate clocks instead of divider clocks
 
- arch/arm64/boot/dts/exynos/google/gs101.dtsi | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm64/boot/dts/exynos/google/gs101.dtsi | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/exynos/google/gs101.dtsi b/arch/arm64/boot/dts/exynos/google/gs101.dtsi
-index 9747cb3fa03a..2c27c3cb9237 100644
+index c693791ae584..0e5b1b490b0b 100644
 --- a/arch/arm64/boot/dts/exynos/google/gs101.dtsi
 +++ b/arch/arm64/boot/dts/exynos/google/gs101.dtsi
-@@ -366,7 +366,6 @@ usi_uart: usi@10a000c0 {
- 			serial_0: serial@10a00000 {
- 				compatible = "google,gs101-uart";
+@@ -180,14 +180,6 @@ HERA_CPU_SLEEP: cpu-hera-sleep {
+ 		};
+ 	};
+ 
+-	/* TODO replace with CCF clock */
+-	dummy_clk: clock-3 {
+-		compatible = "fixed-clock";
+-		#clock-cells = <0>;
+-		clock-frequency = <12345>;
+-		clock-output-names = "pclk";
+-	};
+-
+ 	/* ect node is required to be present by bootloader */
+ 	ect {
+ 	};
+@@ -369,7 +361,8 @@ usi_uart: usi@10a000c0 {
+ 			ranges;
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
+-			clocks = <&dummy_clk>, <&dummy_clk>;
++			clocks = <&cmu_peric0 CLK_GOUT_PERIC0_CLK_PERIC0_USI0_UART_CLK>,
++				 <&cmu_peric0 CLK_GOUT_PERIC0_PERIC0_TOP1_IPCLK_0>;
+ 			clock-names = "pclk", "ipclk";
+ 			samsung,sysreg = <&sysreg_peric0 0x1020>;
+ 			samsung,mode = <USI_V2_UART>;
+@@ -380,7 +373,8 @@ serial_0: serial@10a00000 {
  				reg = <0x10a00000 0xc0>;
--				reg-io-width = <4>;
  				interrupts = <GIC_SPI 634
  					      IRQ_TYPE_LEVEL_HIGH 0>;
- 				clocks = <&dummy_clk 0>, <&dummy_clk 0>;
+-				clocks = <&dummy_clk 0>, <&dummy_clk 0>;
++				clocks = <&cmu_peric0 CLK_GOUT_PERIC0_CLK_PERIC0_USI0_UART_CLK>,
++					 <&cmu_peric0 CLK_GOUT_PERIC0_PERIC0_TOP1_IPCLK_0>;
+ 				clock-names = "uart", "clk_uart_baud0";
+ 				samsung,uart-fifosize = <256>;
+ 				status = "disabled";
 -- 
 2.43.0.472.g3155946c3a-goog
 
