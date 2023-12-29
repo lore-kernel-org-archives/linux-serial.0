@@ -1,147 +1,239 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C29311C80
-	for <linux-serial@vger.kernel.org>; Fri, 29 Dec 2023 14:21:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B743411CAE;
+	Fri, 29 Dec 2023 15:05:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="uQmNVloQ"
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-33687627ad0so6391889f8f.2
-        for <linux-serial@vger.kernel.org>; Fri, 29 Dec 2023 06:21:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1703859693; x=1704464493; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=MG3HGnk+BEY3fgKeHZy+ZsbJ2eMQ1iNRXHfdIpsUof4=;
-        b=uQmNVloQiNNo+TC5Z08DEa3UlhrAC5IE39l9ly948vrhIBu8KTylsXYDzweU6XF2n7
-         W9SIom8Octv1Aa8mSL0wleJ9tTcUb97/6KKFxxYJ4XcskN3XDh3ZO2obqm70fIaAxUn4
-         wQKLPeT+vzSpScnRmOF1qPOZ/XnLHpYQsjBNcj00Yr3qXBz7lRV9c/yIFJfClTDbDSNr
-         kb9yz0MvuypR6Os4yvbrzBPwyyzBGK0X9EW492N+FFnjrf0+6eW/8hgXmlqa1WI18rfQ
-         /S3HMVCAe1JkbpwCYbTJSRTGws6xvKxDW72T0sMXYapNVyzP3o/fb7GcP97FOcsMzA5X
-         mOvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1703859693; x=1704464493;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=MG3HGnk+BEY3fgKeHZy+ZsbJ2eMQ1iNRXHfdIpsUof4=;
-        b=NsE4i8hPS+f3yxb6OTO8TM+FXF2RSSKZi1ZA6OfmTfl4hFudcq9NOHfvoSnh8mWnCU
-         s5TGfPzi6CjbKNZkPVDrbIoNHd+XRkGU+Rxk2q1i3IbU8sDWGnOldfQFeHApXEc6z+KK
-         8t/mHpKuTOEA9IR+hPmK1Anyq1ga+suLtoUGVd+x18pOgyILO2DmW9aej48t1CaD1m5A
-         LEPeZQhRwMMa9waiB/E9VrAW0R4egwiqSaIzkp2jzPgZ1XCNWfz6LLgwwnF1H/dDkArZ
-         5+GuWhoIl74AKm8qljxEbuW4BqzKld7w60D+JZ/Zp2duQMiYcA5TmVE/uR0wi1Usj31U
-         s72w==
-X-Gm-Message-State: AOJu0YyuxKCQOSsVKb7dbqCzJV3t5docGQR3+iNNhR2iAxXQGs3YVfv6
-	D7LRTfszUrXoEnORtP94cJXAMfLZn/JBaA==
-X-Google-Smtp-Source: AGHT+IHHSmzI1khJPusslQIOZi/UTnGxpSbZZWIOL6Cyu++MYhCAOXe1NlWHeIFyJUobv1chd8b+aA==
-X-Received: by 2002:adf:e790:0:b0:333:41a0:ef39 with SMTP id n16-20020adfe790000000b0033341a0ef39mr5897583wrm.105.1703859693054;
-        Fri, 29 Dec 2023 06:21:33 -0800 (PST)
-Received: from [192.168.2.107] ([79.115.63.202])
-        by smtp.gmail.com with ESMTPSA id a18-20020a5d5712000000b003368f9ec9e0sm17131785wrv.42.2023.12.29.06.21.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Dec 2023 06:21:32 -0800 (PST)
-Message-ID: <d1b17379-84b0-465b-a30c-1a1e62d3c86a@linaro.org>
-Date: Fri, 29 Dec 2023 14:21:29 +0000
+	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="r2dZZbEa"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
+	t=1703862196; x=1704466996; i=linosanfilippo@gmx.de;
+	bh=AVsyOvF8iyVIZ+y0HTYWiJ5lv/jurTEehXeDcW566s0=;
+	h=X-UI-Sender-Class:From:Subject:To:Cc:References:Date:
+	 In-Reply-To;
+	b=r2dZZbEaWPakyKajbHilP2dnmyJQIb86Rl008O7k9kDpUqJpmZQEZkjI/NXiK8rG
+	 MnvCowJCC5OgZxpapX/fGY8SxDumm/i7qAlZayspO5DABfCL8PdKmD4Y2YnRV09JR
+	 TmR+fpSUNJ1mwUOskIIoBrgZzrLIamEi2adOrQIK19sHEF039vFt+VjnDngfrAuV1
+	 Es9klZjHMmjwV1MA9dqP1NpU34hNI2+tCLoNhxBp/YTY0Dwd0oA6bdrZ7nnw5Y+I/
+	 c+/jpKt9464KyX6IwDzsyj9R/3fyRd7t4v/cdh8jOpnyGG8QyzF1ZwLOTIh6Emml9
+	 aG+lcQpdgMCs2IVwag==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.2.37] ([84.162.15.98]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MVvPJ-1rilU12tdd-00Rsyf; Fri, 29
+ Dec 2023 16:03:16 +0100
+From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: Re: [PATCH v6 1/7] serial: Do not hold the port lock when setting
+ rx-during-tx GPIO
+To: Maarten Brock <m.brock@vanmierlo.com>,
+ Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ ilpo.jarvinen@linux.intel.com, u.kleine-koenig@pengutronix.de,
+ shawnguo@kernel.org, s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com,
+ alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com,
+ hugo@hugovil.com, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, lukas@wunner.de, p.rosenberger@kunbus.com,
+ stable@vger.kernel.org, Hugo Villeneuve <hvilleneuve@dimonoff.com>
+References: <20231225113524.8800-1-l.sanfilippo@kunbus.com>
+ <20231225113524.8800-2-l.sanfilippo@kunbus.com>
+ <5177a7aef77a6b77a6e742a2fdd52a0e@vanmierlo.com>
+Message-ID: <988518d5-0d4f-1362-64f9-8bfeb3e3b700@gmx.de>
+Date: Fri, 29 Dec 2023 16:03:13 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 11/12] arm64: dts: exynos: gs101: define USI8 with I2C
- configuration
-From: Tudor Ambarus <tudor.ambarus@linaro.org>
-To: =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
- peter.griffin@linaro.org, robh+dt@kernel.org,
- krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
- sboyd@kernel.org, conor+dt@kernel.org, andi.shyti@kernel.org,
- alim.akhtar@samsung.com, gregkh@linuxfoundation.org, jirislaby@kernel.org,
- s.nawrocki@samsung.com, tomasz.figa@gmail.com, cw00.choi@samsung.com,
- arnd@arndb.de, semen.protsenko@linaro.org
-Cc: saravanak@google.com, willmcvicker@google.com,
- linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
- linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
- linux-serial@vger.kernel.org, kernel-team@android.com
-References: <20231228125805.661725-1-tudor.ambarus@linaro.org>
- <20231228125805.661725-12-tudor.ambarus@linaro.org>
- <a40b5d0dc3e151fede14aa00bcb853d1eeb8824b.camel@linaro.org>
- <387303b4-d912-480c-a50c-9f9efa386ef3@linaro.org>
+In-Reply-To: <5177a7aef77a6b77a6e742a2fdd52a0e@vanmierlo.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-In-Reply-To: <387303b4-d912-480c-a50c-9f9efa386ef3@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:p+fqf9l7jTjDJGxOH1YnDruj+CgRcfHEjHCkTRBGnhLYpt29OXV
+ R50OBYMIgvUo5aIQm5sh9SxU6sVZXMnlFA0+GDq6udaQo3wcl+rbv34yuG5VN29b2Vlffu6
+ zAvc8CpRqId2jLxcr6nPA9IofjPOvyAU9zamJUHNf+kGZ62cHjoS5DczHJqzwEn8+y+LMaq
+ NrW/B/qTVorJKXXGloH4Q==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:sRL9VqN4ciI=;ndmP7eJWlwKe3/QqbuaaDjEotdN
+ +lfLCMaxTEtl1BV/yENDeJ/gzs8DB07gKzSpOq7e3apLb0V1uvLKw5fsfA7CiBiWNv5ZObq/7
+ rPU+FHhmV1K2wjdRauS9nHBy2nMsCTf+EqiPKv+QWb2VlAq7NgO6FfFXJ/wK6MZrx4l1TyfOW
+ l55S6fF3ugQ6HRdKWHaQktYkNdXy5V6N/tyMmCGHdcwyKFAKdlRW7O7uLW/2e7/abIrr50YMG
+ dwsshviwna+ZcnJTtrWeHAvacFSV4oo2tEzl5rRt51flvQVt4w9qIVHIRXsJ2+Tx6hvIDovoc
+ BrP44nSYLAGYesBd9mnvQiZKbUG0kZrfzm0rYSpcZBTN4PuPVMJJQFfOFjx0+PE1vJdw3v/So
+ tY7FKzrxBWScjjYSPvpu/d0s4LOMrUysgjQaSSYWxQB6GD3rrVlm5ORJta63SKvH2eTYTc5Ln
+ 3d1Mv464qX7tZ2DlaSZdjJ+DYZrkQGwRkwmZDg9yxSr2afb+EJpNJTYefd32S6/9f1G5fsw9s
+ baOA12B2TIhjGQ2c/qmWUCKfwldpDzbIl5dneoOVdVSCGom1LDuO26R9+hjq9p139THl9vNMJ
+ ENKm1w9G6dr0XSVwULfKC2LeeNRAcqeQt5R33JY7DZRyoq7vzVwiwnxK3UMtE6ElwVbmHnetP
+ Sw2mLuMA19evwfCv0RGUDzL+LL9rgX3a58uayTI00t6N9ddNAUHUBgSo6Rl7i3szN3qRqoY5Z
+ A6UjPnok9EKW5Ibb5MxGGf/fksFwC2wECE299A24b6oq2ZPddZXnJVrwV4JvObc6omsE56MO6
+ H6S9R0IDuTTActmzsZdracFUSR9YDUqiNgnFaCVUNNHHl4bJRw/0VDcBXSf93kv96ohSWzZjE
+ bTzLJDBrjHXHql2SCSSO4xgVOUBqimtjRdDNqjFohZT4N6bssbfQgOLgHb2pjQVuYlT/EO6VO
+ jfmI1TOsZ8LrJBmsmJZr1O1y1BQ=
 
 
+Hi,
 
-On 12/29/23 08:04, Tudor Ambarus wrote:
-> 
-> 
-> On 12/28/23 14:04, André Draszik wrote:
->> Hi Tudor,
-> 
-> Hi!
-> 
+On 25.12.23 at 13:31, Maarten Brock wrote:
+> Lino Sanfilippo wrote on 2023-12-25 12:35:
+>> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
+al_core.c
+>> index f1348a509552..d155131f221d 100644
+>> --- a/drivers/tty/serial/serial_core.c
+>> +++ b/drivers/tty/serial/serial_core.c
+>> @@ -1402,6 +1402,16 @@ static void uart_set_rs485_termination(struct
+>> uart_port *port,
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 !!(rs485->flags & SER_RS485_TERMINATE_BU=
+S));
+>> =C2=A0}
 >>
->> On Thu, 2023-12-28 at 12:58 +0000, Tudor Ambarus wrote:
->>> [...]
->>>
->>> diff --git a/arch/arm64/boot/dts/exynos/google/gs101.dtsi b/arch/arm64/boot/dts/exynos/google/gs101.dtsi
->>> index 0e5b1b490b0b..c6ae33016992 100644
->>> --- a/arch/arm64/boot/dts/exynos/google/gs101.dtsi
->>> +++ b/arch/arm64/boot/dts/exynos/google/gs101.dtsi
->>> @@ -354,6 +354,35 @@ pinctrl_peric0: pinctrl@10840000 {
->>>  			interrupts = <GIC_SPI 625 IRQ_TYPE_LEVEL_HIGH 0>;
->>>  		};
->>>  
->>> +		usi8: usi@109700c0 {
->>> +			compatible = "google,gs101-usi",
->>> +				     "samsung,exynos850-usi";
->>> +			reg = <0x109700c0 0x20>;
->>> +			ranges;
->>> +			#address-cells = <1>;
->>> +			#size-cells = <1>;
->>> +			clocks = <&cmu_peric0 CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_7>,
->>> +				 <&cmu_peric0 CLK_GOUT_PERIC0_CLK_PERIC0_USI8_USI_CLK>;
->>> +			clock-names = "pclk", "ipclk";
->>
->> Given the clock-names, shouldn't the clock indices be the other way around? Also see below.
-> 
-> You're right, they should have been the other way around! Didn't make
-> any difference at testing because the usi driver uses
-> clk_bulk_prepare_enable(), what matters is the order of clocks in the
-> i2c node, and those are fine.
-> 
->>
->>> +			samsung,sysreg = <&sysreg_peric0 0x101c>;
->>> +			status = "disabled";
->>> +
->>> +			hsi2c_8: i2c@10970000 {
->>> +				compatible = "google,gs101-hsi2c",
->>> +					     "samsung,exynosautov9-hsi2c";
->>> +				reg = <0x10970000 0xc0>;
->>> +				interrupts = <GIC_SPI 642 IRQ_TYPE_LEVEL_HIGH 0>;
->>> +				#address-cells = <1>;
->>> +				#size-cells = <0>;
->>> +				pinctrl-names = "default";
->>> +				pinctrl-0 = <&hsi2c8_bus>;
->>> +				clocks = <&cmu_peric0 CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_7>,
->>> +					 <&cmu_peric0 CLK_GOUT_PERIC0_CLK_PERIC0_USI8_USI_CLK>;
->>> +				clock-names = "hsi2c", "hsi2c_pclk";
->>
->> Here, pclk == CLK_GOUT_PERIC0_CLK_PERIC0_USI8_USI_CLK (which is correct, I believe), whereas
->> above pclk == CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_7
->>
-> 
-> Indeed, I'll reverse the order for the USI clocks and do some more
-> testing. Thanks!
+>> +static void uart_set_rs485_rx_during_tx(struct uart_port *port,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const struct serial_rs485 *r=
+s485)
+>> +{
+>> +=C2=A0=C2=A0=C2=A0 if (!(rs485->flags & SER_RS485_ENABLED))
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return;
+>> +
+>
+> How about checking port->rs485_rx_during_tx_gpio here against NULL inste=
+ad of
+> before every call?
+>
 
-FYI, I reversed the order of the USI clocks, tested again with the
-eeprom at 100 KHz and 10KHz, everything went fine. I'll wait for some
-other feedback and probably submit a v3 next week.
+gpiod_set_value_cansleep() already checks for a NULL pointer, so doing thi=
+s check
+in the caller is not needed.
 
-Cheers,
-ta
+>> +=C2=A0=C2=A0=C2=A0 gpiod_set_value_cansleep(port->rs485_rx_during_tx_g=
+pio,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 !!(rs485->flags & SER_RS485_RX_DURING_TX));
+>> +}
+>> +
+>> =C2=A0static int uart_rs485_config(struct uart_port *port)
+>> =C2=A0{
+>> =C2=A0=C2=A0=C2=A0=C2=A0 struct serial_rs485 *rs485 =3D &port->rs485;
+>> @@ -1413,12 +1423,17 @@ static int uart_rs485_config(struct uart_port *=
+port)
+>>
+>> =C2=A0=C2=A0=C2=A0=C2=A0 uart_sanitize_serial_rs485(port, rs485);
+>> =C2=A0=C2=A0=C2=A0=C2=A0 uart_set_rs485_termination(port, rs485);
+>> +=C2=A0=C2=A0=C2=A0 uart_set_rs485_rx_during_tx(port, rs485);
+>>
+>> =C2=A0=C2=A0=C2=A0=C2=A0 uart_port_lock_irqsave(port, &flags);
+>> =C2=A0=C2=A0=C2=A0=C2=A0 ret =3D port->rs485_config(port, NULL, rs485);
+>> =C2=A0=C2=A0=C2=A0=C2=A0 uart_port_unlock_irqrestore(port, flags);
+>> -=C2=A0=C2=A0=C2=A0 if (ret)
+>> +=C2=A0=C2=A0=C2=A0 if (ret) {
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 memset(rs485, 0, sizeo=
+f(*rs485));
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* unset GPIOs */
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 gpiod_set_value_cansleep(po=
+rt->rs485_term_gpio, 0);
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 gpiod_set_value_cansleep(po=
+rt->rs485_rx_during_tx_gpio, 0);
+>> +=C2=A0=C2=A0=C2=A0 }
+>>
+>> =C2=A0=C2=A0=C2=A0=C2=A0 return ret;
+>> =C2=A0}
+>> @@ -1457,6 +1472,7 @@ static int uart_set_rs485_config(struct
+>> tty_struct *tty, struct uart_port *port,
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ret;
+>> =C2=A0=C2=A0=C2=A0=C2=A0 uart_sanitize_serial_rs485(port, &rs485);
+>> =C2=A0=C2=A0=C2=A0=C2=A0 uart_set_rs485_termination(port, &rs485);
+>> +=C2=A0=C2=A0=C2=A0 uart_set_rs485_rx_during_tx(port, &rs485);
+>>
+>> =C2=A0=C2=A0=C2=A0=C2=A0 uart_port_lock_irqsave(port, &flags);
+>> =C2=A0=C2=A0=C2=A0=C2=A0 ret =3D port->rs485_config(port, &tty->termios=
+, &rs485);
+>> @@ -1468,8 +1484,14 @@ static int uart_set_rs485_config(struct
+>> tty_struct *tty, struct uart_port *port,
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 port->ops->set_mctrl(port, port->mctrl);
+>> =C2=A0=C2=A0=C2=A0=C2=A0 }
+>> =C2=A0=C2=A0=C2=A0=C2=A0 uart_port_unlock_irqrestore(port, flags);
+>> -=C2=A0=C2=A0=C2=A0 if (ret)
+>> +=C2=A0=C2=A0=C2=A0 if (ret) {
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* restore old GPIO setting=
+s */
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 gpiod_set_value_cansleep(po=
+rt->rs485_term_gpio,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 !!(=
+port->rs485.flags & SER_RS485_TERMINATE_BUS));
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 gpiod_set_value_cansleep(po=
+rt->rs485_rx_during_tx_gpio,
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 !!(=
+port->rs485.flags & SER_RS485_RX_DURING_TX));
+>
+> This does not look like restoring.
+
+
+Hmm. The rx-during-tx and terminate-bus GPIOs may have changed before the
+drivers rs485_config() was called. If that function fails, the GPIOs
+are set back to the values they had before (i.e what is still stored in
+the ports serial_rs485 struct). So what is wrong with the term "restore"?
+
+> Further this looks suspiciously like duplicated code
+
+Since the added code consists of two one-liners I am not sure how to
+decrease code duplication in this case. We could introduce wrapper functio=
+ns (the only
+ones we have so far to set the GPIOs are uart_set_rs485_termination() and
+uart_set_rs485_rx_during_tx() which cannot be used here due to the initial
+check for SER_RS485_ENABLED). But would that really help?
+
+
+>
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ret;
+>> +=C2=A0=C2=A0=C2=A0 }
+>>
+>> =C2=A0=C2=A0=C2=A0=C2=A0 if (copy_to_user(rs485_user, &port->rs485, siz=
+eof(port->rs485)))
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -EFAULT;
+>> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm3=
+2-usart.c
+>> index 3048620315d6..ec9a72a5bea9 100644
+>> --- a/drivers/tty/serial/stm32-usart.c
+>> +++ b/drivers/tty/serial/stm32-usart.c
+>> @@ -226,10 +226,7 @@ static int stm32_usart_config_rs485(struct
+>> uart_port *port, struct ktermios *ter
+>>
+>> =C2=A0=C2=A0=C2=A0=C2=A0 stm32_usart_clr_bits(port, ofs->cr1, BIT(cfg->=
+uart_enable_bit));
+>>
+>> -=C2=A0=C2=A0=C2=A0 if (port->rs485_rx_during_tx_gpio)
+>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 gpiod_set_value_cansleep(po=
+rt->rs485_rx_during_tx_gpio,
+>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 !!(rs485conf->flags & =
+SER_RS485_RX_DURING_TX));
+>> -=C2=A0=C2=A0=C2=A0 else
+>> +=C2=A0=C2=A0=C2=A0 if (!port->rs485_rx_during_tx_gpio)
+>
+> Should the ! be there?
+>
+
+Thats a good point, the "else" seems indeed to be wrong. It has been intro=
+duced
+with the code that added the GPIO support (c54d48543689 "serial: stm32: Ad=
+d support for rs485 RX_DURING_TX output GPIO")
+
+I will fix it in the next version of this patch, thanks.
+
+
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 rs485conf->flags |=3D =
+SER_RS485_RX_DURING_TX;
+>>
+>> =C2=A0=C2=A0=C2=A0=C2=A0 if (rs485conf->flags & SER_RS485_ENABLED) {
+>
+> Kind Regards
+> Maarten Brock
+>
+
+Thanks a lot for the review.
+
+BR,
+Lino
