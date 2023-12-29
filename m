@@ -1,49 +1,49 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C8EA749C
-	for <linux-serial@vger.kernel.org>; Fri, 29 Dec 2023 08:26:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C29311C80
+	for <linux-serial@vger.kernel.org>; Fri, 29 Dec 2023 14:21:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="aOqXoKGX"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-40d5336986cso54692345e9.1
-        for <linux-serial@vger.kernel.org>; Fri, 29 Dec 2023 00:26:10 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="uQmNVloQ"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-33687627ad0so6391889f8f.2
+        for <linux-serial@vger.kernel.org>; Fri, 29 Dec 2023 06:21:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1703838369; x=1704443169; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6Zy9HLDIospVcZEEywZ1tjMTB2/rn+P2RmUKOnwfON4=;
-        b=aOqXoKGXiZIKKoX7HpGyi1+em3uB8mMKv4v8FBMhj+Y/F2a5+YwWrJSpKpI+u8qUTS
-         BG3BXVBjVCLMoUHCu8EsJsDGq/Huz2xV9bYlqn3j7rLXFNbfvbVdYoPB59HJMeuaxr5g
-         jy6oZ4KdGNynk58HY7reRW/gwEZK0SuxXlu4xgoEzWcFCvtcmXN33F+5xTDqJawwO4PF
-         AldMVyeYkyhswBjFEraNeR5YyqD5cUep3kKZl/ctHnwtCkgwcxCYgrFZUPQVvzY4zrco
-         Cdz0kL9+FJhdBw7/AFrA8/Z77mLQZ3T3O6vGAt/UFJ5X07awfjgfEVSg2xxH7xyQfYbV
-         YNiQ==
+        d=linaro.org; s=google; t=1703859693; x=1704464493; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=MG3HGnk+BEY3fgKeHZy+ZsbJ2eMQ1iNRXHfdIpsUof4=;
+        b=uQmNVloQiNNo+TC5Z08DEa3UlhrAC5IE39l9ly948vrhIBu8KTylsXYDzweU6XF2n7
+         W9SIom8Octv1Aa8mSL0wleJ9tTcUb97/6KKFxxYJ4XcskN3XDh3ZO2obqm70fIaAxUn4
+         wQKLPeT+vzSpScnRmOF1qPOZ/XnLHpYQsjBNcj00Yr3qXBz7lRV9c/yIFJfClTDbDSNr
+         kb9yz0MvuypR6Os4yvbrzBPwyyzBGK0X9EW492N+FFnjrf0+6eW/8hgXmlqa1WI18rfQ
+         /S3HMVCAe1JkbpwCYbTJSRTGws6xvKxDW72T0sMXYapNVyzP3o/fb7GcP97FOcsMzA5X
+         mOvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1703838369; x=1704443169;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1703859693; x=1704464493;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6Zy9HLDIospVcZEEywZ1tjMTB2/rn+P2RmUKOnwfON4=;
-        b=l/iIHjzztAD2Wsaq6dEPQcThs41Vg9wxw60SLb0M+kSOtREGMnapVWYoIKCiWk2EQk
-         Pvlm41nruJFtLNNGIkSjyPQUU1kH0F5rGcuB4MHuF4YmTUriZRsODCxRa7oiUBJvrmem
-         XAxqlZQa6TrDfdzsvm0isMymHjsOuh1QO0uIcmt3+7botraFTWrJOKFHCyXb9/M8JLsU
-         bBHH8jStxkcNxojVChSWrlRjVk35XRdqtsjqye9wvuWbu7DaCNki7OFjv2fEwfyj4D7Y
-         IpSGoKZRYtvmDKQYMPoKhfEXMMH2qnui7xAxnZDC+jRgn+bdaNmHU65RhRF8KVtEk8y/
-         MhOw==
-X-Gm-Message-State: AOJu0YytqTOtmV50eJR1A+s4s3zyG00PxM6STY0z7Lh1Ma3hTrTpZMWC
-	ItIlVygnQ8o4b73UWJMSX1fJs30cuheK6Q==
-X-Google-Smtp-Source: AGHT+IHUUK0DYjVoqdFnCE/Ca7a7REuYr/m8pBSbIhjRBEfKIGIhU+OZS45L2KONb6SjsiDMFSlbRQ==
-X-Received: by 2002:a05:600c:4f09:b0:40d:5ae9:6935 with SMTP id l9-20020a05600c4f0900b0040d5ae96935mr2420383wmq.137.1703838369389;
-        Fri, 29 Dec 2023 00:26:09 -0800 (PST)
+        bh=MG3HGnk+BEY3fgKeHZy+ZsbJ2eMQ1iNRXHfdIpsUof4=;
+        b=NsE4i8hPS+f3yxb6OTO8TM+FXF2RSSKZi1ZA6OfmTfl4hFudcq9NOHfvoSnh8mWnCU
+         s5TGfPzi6CjbKNZkPVDrbIoNHd+XRkGU+Rxk2q1i3IbU8sDWGnOldfQFeHApXEc6z+KK
+         8t/mHpKuTOEA9IR+hPmK1Anyq1ga+suLtoUGVd+x18pOgyILO2DmW9aej48t1CaD1m5A
+         LEPeZQhRwMMa9waiB/E9VrAW0R4egwiqSaIzkp2jzPgZ1XCNWfz6LLgwwnF1H/dDkArZ
+         5+GuWhoIl74AKm8qljxEbuW4BqzKld7w60D+JZ/Zp2duQMiYcA5TmVE/uR0wi1Usj31U
+         s72w==
+X-Gm-Message-State: AOJu0YyuxKCQOSsVKb7dbqCzJV3t5docGQR3+iNNhR2iAxXQGs3YVfv6
+	D7LRTfszUrXoEnORtP94cJXAMfLZn/JBaA==
+X-Google-Smtp-Source: AGHT+IHHSmzI1khJPusslQIOZi/UTnGxpSbZZWIOL6Cyu++MYhCAOXe1NlWHeIFyJUobv1chd8b+aA==
+X-Received: by 2002:adf:e790:0:b0:333:41a0:ef39 with SMTP id n16-20020adfe790000000b0033341a0ef39mr5897583wrm.105.1703859693054;
+        Fri, 29 Dec 2023 06:21:33 -0800 (PST)
 Received: from [192.168.2.107] ([79.115.63.202])
-        by smtp.gmail.com with ESMTPSA id iw13-20020a05600c54cd00b0040d5d6de328sm8617370wmb.7.2023.12.29.00.26.06
+        by smtp.gmail.com with ESMTPSA id a18-20020a5d5712000000b003368f9ec9e0sm17131785wrv.42.2023.12.29.06.21.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Dec 2023 00:26:08 -0800 (PST)
-Message-ID: <0c288847-b495-44e4-a5c5-5e7a4e83a444@linaro.org>
-Date: Fri, 29 Dec 2023 08:26:06 +0000
+        Fri, 29 Dec 2023 06:21:32 -0800 (PST)
+Message-ID: <d1b17379-84b0-465b-a30c-1a1e62d3c86a@linaro.org>
+Date: Fri, 29 Dec 2023 14:21:29 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -51,9 +51,9 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 10/12] arm64: dts: exynos: gs101: update USI UART to
- use peric0 clocks
-Content-Language: en-US
+Subject: Re: [PATCH v2 11/12] arm64: dts: exynos: gs101: define USI8 with I2C
+ configuration
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
 To: =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
  peter.griffin@linaro.org, robh+dt@kernel.org,
  krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
@@ -67,46 +67,81 @@ Cc: saravanak@google.com, willmcvicker@google.com,
  linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
  linux-serial@vger.kernel.org, kernel-team@android.com
 References: <20231228125805.661725-1-tudor.ambarus@linaro.org>
- <20231228125805.661725-11-tudor.ambarus@linaro.org>
- <5a961a6992d7661e6c7589496438cad7b68d4f5a.camel@linaro.org>
-From: Tudor Ambarus <tudor.ambarus@linaro.org>
-In-Reply-To: <5a961a6992d7661e6c7589496438cad7b68d4f5a.camel@linaro.org>
+ <20231228125805.661725-12-tudor.ambarus@linaro.org>
+ <a40b5d0dc3e151fede14aa00bcb853d1eeb8824b.camel@linaro.org>
+ <387303b4-d912-480c-a50c-9f9efa386ef3@linaro.org>
+Content-Language: en-US
+In-Reply-To: <387303b4-d912-480c-a50c-9f9efa386ef3@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 
 
-On 12/28/23 14:22, André Draszik wrote:
-> Hi Tudor,
-
-Hi, Andre'!
+On 12/29/23 08:04, Tudor Ambarus wrote:
 > 
-> On Thu, 2023-12-28 at 12:58 +0000, Tudor Ambarus wrote:
+> 
+> On 12/28/23 14:04, André Draszik wrote:
+>> Hi Tudor,
+> 
+> Hi!
+> 
 >>
->> diff --git a/arch/arm64/boot/dts/exynos/google/gs101.dtsi b/arch/arm64/boot/dts/exynos/google/gs101.dtsi
->> [...]
->> @@ -380,7 +373,8 @@ serial_0: serial@10a00000 {
->>  				reg = <0x10a00000 0xc0>;
->>  				interrupts = <GIC_SPI 634
->>  					      IRQ_TYPE_LEVEL_HIGH 0>;
->> -				clocks = <&dummy_clk 0>, <&dummy_clk 0>;
->> +				clocks = <&cmu_peric0 CLK_GOUT_PERIC0_CLK_PERIC0_USI0_UART_CLK>,
->> +					 <&cmu_peric0 CLK_GOUT_PERIC0_PERIC0_TOP1_IPCLK_0>;
+>> On Thu, 2023-12-28 at 12:58 +0000, Tudor Ambarus wrote:
+>>> [...]
+>>>
+>>> diff --git a/arch/arm64/boot/dts/exynos/google/gs101.dtsi b/arch/arm64/boot/dts/exynos/google/gs101.dtsi
+>>> index 0e5b1b490b0b..c6ae33016992 100644
+>>> --- a/arch/arm64/boot/dts/exynos/google/gs101.dtsi
+>>> +++ b/arch/arm64/boot/dts/exynos/google/gs101.dtsi
+>>> @@ -354,6 +354,35 @@ pinctrl_peric0: pinctrl@10840000 {
+>>>  			interrupts = <GIC_SPI 625 IRQ_TYPE_LEVEL_HIGH 0>;
+>>>  		};
+>>>  
+>>> +		usi8: usi@109700c0 {
+>>> +			compatible = "google,gs101-usi",
+>>> +				     "samsung,exynos850-usi";
+>>> +			reg = <0x109700c0 0x20>;
+>>> +			ranges;
+>>> +			#address-cells = <1>;
+>>> +			#size-cells = <1>;
+>>> +			clocks = <&cmu_peric0 CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_7>,
+>>> +				 <&cmu_peric0 CLK_GOUT_PERIC0_CLK_PERIC0_USI8_USI_CLK>;
+>>> +			clock-names = "pclk", "ipclk";
+>>
+>> Given the clock-names, shouldn't the clock indices be the other way around? Also see below.
 > 
-> I suspect these two should be the other way around, given the clock-names below?
+> You're right, they should have been the other way around! Didn't make
+> any difference at testing because the usi driver uses
+> clk_bulk_prepare_enable(), what matters is the order of clocks in the
+> i2c node, and those are fine.
+> 
+>>
+>>> +			samsung,sysreg = <&sysreg_peric0 0x101c>;
+>>> +			status = "disabled";
+>>> +
+>>> +			hsi2c_8: i2c@10970000 {
+>>> +				compatible = "google,gs101-hsi2c",
+>>> +					     "samsung,exynosautov9-hsi2c";
+>>> +				reg = <0x10970000 0xc0>;
+>>> +				interrupts = <GIC_SPI 642 IRQ_TYPE_LEVEL_HIGH 0>;
+>>> +				#address-cells = <1>;
+>>> +				#size-cells = <0>;
+>>> +				pinctrl-names = "default";
+>>> +				pinctrl-0 = <&hsi2c8_bus>;
+>>> +				clocks = <&cmu_peric0 CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_7>,
+>>> +					 <&cmu_peric0 CLK_GOUT_PERIC0_CLK_PERIC0_USI8_USI_CLK>;
+>>> +				clock-names = "hsi2c", "hsi2c_pclk";
+>>
+>> Here, pclk == CLK_GOUT_PERIC0_CLK_PERIC0_USI8_USI_CLK (which is correct, I believe), whereas
+>> above pclk == CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_7
+>>
+> 
+> Indeed, I'll reverse the order for the USI clocks and do some more
+> testing. Thanks!
 
-These ones look sane to me. The clocks on the USI parent as well. USI
-datasheet says that IPCLK is the protocol operating clock and PCLK the
-APB clock. In the serial driver clk_uart_baud0 (IPCLK) is used as the
-operating clock, all fine here.
+FYI, I reversed the order of the USI clocks, tested again with the
+eeprom at 100 KHz and 10KHz, everything went fine. I'll wait for some
+other feedback and probably submit a v3 next week.
 
-Tell if you still think otherwise. Thanks!
+Cheers,
 ta
-
-> 
->>  				clock-names = "uart", "clk_uart_baud0";
->>  				samsung,uart-fifosize = <256>;
->>  				status = "disabled";
-> 
-> Cheers,
-> A.
