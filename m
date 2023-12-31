@@ -1,239 +1,106 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B743411CAE;
-	Fri, 29 Dec 2023 15:05:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29C2E9442
+	for <linux-serial@vger.kernel.org>; Sun, 31 Dec 2023 18:29:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--vamshigajjela.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="r2dZZbEa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-	t=1703862196; x=1704466996; i=linosanfilippo@gmx.de;
-	bh=AVsyOvF8iyVIZ+y0HTYWiJ5lv/jurTEehXeDcW566s0=;
-	h=X-UI-Sender-Class:From:Subject:To:Cc:References:Date:
-	 In-Reply-To;
-	b=r2dZZbEaWPakyKajbHilP2dnmyJQIb86Rl008O7k9kDpUqJpmZQEZkjI/NXiK8rG
-	 MnvCowJCC5OgZxpapX/fGY8SxDumm/i7qAlZayspO5DABfCL8PdKmD4Y2YnRV09JR
-	 TmR+fpSUNJ1mwUOskIIoBrgZzrLIamEi2adOrQIK19sHEF039vFt+VjnDngfrAuV1
-	 Es9klZjHMmjwV1MA9dqP1NpU34hNI2+tCLoNhxBp/YTY0Dwd0oA6bdrZ7nnw5Y+I/
-	 c+/jpKt9464KyX6IwDzsyj9R/3fyRd7t4v/cdh8jOpnyGG8QyzF1ZwLOTIh6Emml9
-	 aG+lcQpdgMCs2IVwag==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.2.37] ([84.162.15.98]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MVvPJ-1rilU12tdd-00Rsyf; Fri, 29
- Dec 2023 16:03:16 +0100
-From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: Re: [PATCH v6 1/7] serial: Do not hold the port lock when setting
- rx-during-tx GPIO
-To: Maarten Brock <m.brock@vanmierlo.com>,
- Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
- ilpo.jarvinen@linux.intel.com, u.kleine-koenig@pengutronix.de,
- shawnguo@kernel.org, s.hauer@pengutronix.de, mcoquelin.stm32@gmail.com,
- alexandre.torgue@foss.st.com, cniedermaier@dh-electronics.com,
- hugo@hugovil.com, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, lukas@wunner.de, p.rosenberger@kunbus.com,
- stable@vger.kernel.org, Hugo Villeneuve <hvilleneuve@dimonoff.com>
-References: <20231225113524.8800-1-l.sanfilippo@kunbus.com>
- <20231225113524.8800-2-l.sanfilippo@kunbus.com>
- <5177a7aef77a6b77a6e742a2fdd52a0e@vanmierlo.com>
-Message-ID: <988518d5-0d4f-1362-64f9-8bfeb3e3b700@gmx.de>
-Date: Fri, 29 Dec 2023 16:03:13 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="arNfgIfm"
+Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-5e7ac088580so132227197b3.1
+        for <linux-serial@vger.kernel.org>; Sun, 31 Dec 2023 10:29:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1704047398; x=1704652198; darn=vger.kernel.org;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=uMZVz/UW8puWfXdgiZf80krGZeVv7b49r1xaHw6OLh8=;
+        b=arNfgIfm9fkWd0ejpTGVDw0Kx0hy9DrnPCRk/+7MGupRfHCBdUxLMwCGqy7NPeK+As
+         rFhiswAoF9Urs2tOFa2TzNGVIaDjl6fwm/FMg8T4Up4iIqQQZhmKzXvxKXWLe8OAR4fV
+         lCYhwm4HTcJoD1ZHoM/ZKc+IEAyzoQ/jH5BVHe4c705HqUG4A8lVDRnk6wGOnilAhtB8
+         zEMwBUaoRUwf8vAXTizvkfNGfPbWJg8zmxzCc6gi+cWrQClHGuN15XOS+7+xryOxMJu/
+         GdDEY70RIZdoHuE4pjDQRwlCegDf+1pP6KMVyBM2t/Bfyc5Uyepu0l1m3P3PHlWgGF5q
+         Tftg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1704047398; x=1704652198;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=uMZVz/UW8puWfXdgiZf80krGZeVv7b49r1xaHw6OLh8=;
+        b=O1S7l3gKBA+x030U+coSuYBy03GxbJ8WsgHQxgXqR8HDwF3Rn5oor3bOYwjwE49sIs
+         loXZcsbBJoU+SW/MGEZimgGfq3k2zaLu68E9+M9Nji3mggiUqVB63xyRHCfpHfg9u9Qe
+         XssN0uIYRDlvSJPBvmJgqyKeeSAA+hiyGNjuEebNtFYgsbDJ4AmEWYCosvMuuJbfHfTf
+         5VxbnTDksgyUEk6eW3DG4wKZl06Zxmj65jCa5q4883JWBCW+96opOurpmYjSUvDt7ErQ
+         B74Y2TJpUwARrOnYiZcDKV5NV5MfirovzYTjIvVd7yNN7+3+7hV9rDYHRULc1Z2EO7m/
+         NYHA==
+X-Gm-Message-State: AOJu0YwBYENO85hxP2T6mUn4Zzr6xFnG0BQP3KzMg3jg/DY56/Thm+/n
+	RGi8ar1dVSJWkw8ZNHs9Cu99nJlotlHgPYSoFHxPSt8RwqM=
+X-Google-Smtp-Source: AGHT+IEnE32X76P7Izi1WqjwmXwc8RSLGP5pb3wwKbUQr/o9QMgvchl1KpiYQMWEwjUlPqvx/isabCmpM+96eTNAJ8GA
+X-Received: from vamshig51.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:70c])
+ (user=vamshigajjela job=sendgmr) by 2002:a05:690c:3509:b0:5e8:bea4:4d37 with
+ SMTP id fq9-20020a05690c350900b005e8bea44d37mr7440280ywb.7.1704047398192;
+ Sun, 31 Dec 2023 10:29:58 -0800 (PST)
+Date: Sun, 31 Dec 2023 23:59:51 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <5177a7aef77a6b77a6e742a2fdd52a0e@vanmierlo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:p+fqf9l7jTjDJGxOH1YnDruj+CgRcfHEjHCkTRBGnhLYpt29OXV
- R50OBYMIgvUo5aIQm5sh9SxU6sVZXMnlFA0+GDq6udaQo3wcl+rbv34yuG5VN29b2Vlffu6
- zAvc8CpRqId2jLxcr6nPA9IofjPOvyAU9zamJUHNf+kGZ62cHjoS5DczHJqzwEn8+y+LMaq
- NrW/B/qTVorJKXXGloH4Q==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:sRL9VqN4ciI=;ndmP7eJWlwKe3/QqbuaaDjEotdN
- +lfLCMaxTEtl1BV/yENDeJ/gzs8DB07gKzSpOq7e3apLb0V1uvLKw5fsfA7CiBiWNv5ZObq/7
- rPU+FHhmV1K2wjdRauS9nHBy2nMsCTf+EqiPKv+QWb2VlAq7NgO6FfFXJ/wK6MZrx4l1TyfOW
- l55S6fF3ugQ6HRdKWHaQktYkNdXy5V6N/tyMmCGHdcwyKFAKdlRW7O7uLW/2e7/abIrr50YMG
- dwsshviwna+ZcnJTtrWeHAvacFSV4oo2tEzl5rRt51flvQVt4w9qIVHIRXsJ2+Tx6hvIDovoc
- BrP44nSYLAGYesBd9mnvQiZKbUG0kZrfzm0rYSpcZBTN4PuPVMJJQFfOFjx0+PE1vJdw3v/So
- tY7FKzrxBWScjjYSPvpu/d0s4LOMrUysgjQaSSYWxQB6GD3rrVlm5ORJta63SKvH2eTYTc5Ln
- 3d1Mv464qX7tZ2DlaSZdjJ+DYZrkQGwRkwmZDg9yxSr2afb+EJpNJTYefd32S6/9f1G5fsw9s
- baOA12B2TIhjGQ2c/qmWUCKfwldpDzbIl5dneoOVdVSCGom1LDuO26R9+hjq9p139THl9vNMJ
- ENKm1w9G6dr0XSVwULfKC2LeeNRAcqeQt5R33JY7DZRyoq7vzVwiwnxK3UMtE6ElwVbmHnetP
- Sw2mLuMA19evwfCv0RGUDzL+LL9rgX3a58uayTI00t6N9ddNAUHUBgSo6Rl7i3szN3qRqoY5Z
- A6UjPnok9EKW5Ibb5MxGGf/fksFwC2wECE299A24b6oq2ZPddZXnJVrwV4JvObc6omsE56MO6
- H6S9R0IDuTTActmzsZdracFUSR9YDUqiNgnFaCVUNNHHl4bJRw/0VDcBXSf93kv96ohSWzZjE
- bTzLJDBrjHXHql2SCSSO4xgVOUBqimtjRdDNqjFohZT4N6bssbfQgOLgHb2pjQVuYlT/EO6VO
- jfmI1TOsZ8LrJBmsmJZr1O1y1BQ=
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.43.0.472.g3155946c3a-goog
+Message-ID: <20231231182951.877805-1-vamshigajjela@google.com>
+Subject: [PATCH] serial: 8250_dw: Do not bailout on UCV read returning zero
+From: Vamshi Gajjela <vamshigajjela@google.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	ilpo.jarvinen@linux.intel.com, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	manugautam@google.com, Vamshi Gajjela <vamshigajjela@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
+Designware UART has optional feature FIFO_MODE to implement FIFO.
+Encoding FIFO capabilities through Component Parameter Register CPR is
+optional and it can be enabled using parameter UART_ADD_ENCODED_PARAMS.
 
-Hi,
+Driver can exercise fifo capabilities by decoding CPR if implemented
+or from cpr_val provided from the dw8250_platform_data otherwise.
 
-On 25.12.23 at 13:31, Maarten Brock wrote:
-> Lino Sanfilippo wrote on 2023-12-25 12:35:
->> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
-al_core.c
->> index f1348a509552..d155131f221d 100644
->> --- a/drivers/tty/serial/serial_core.c
->> +++ b/drivers/tty/serial/serial_core.c
->> @@ -1402,6 +1402,16 @@ static void uart_set_rs485_termination(struct
->> uart_port *port,
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 !!(rs485->flags & SER_RS485_TERMINATE_BU=
-S));
->> =C2=A0}
->>
->> +static void uart_set_rs485_rx_during_tx(struct uart_port *port,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const struct serial_rs485 *r=
-s485)
->> +{
->> +=C2=A0=C2=A0=C2=A0 if (!(rs485->flags & SER_RS485_ENABLED))
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return;
->> +
->
-> How about checking port->rs485_rx_during_tx_gpio here against NULL inste=
-ad of
-> before every call?
->
+dw8250_setup_port() checks for CPR or cpr_val to determine FIFO size
+only when Component Version (UCV) is non-zero. Bailing out early on UCV
+read returning zero will leave fifosize as zero and !UART_CAP_FIFO,
+hence prevent early return and continue to process CPR or cpr_val for
+the driver to utilize FIFO.
 
-gpiod_set_value_cansleep() already checks for a NULL pointer, so doing thi=
-s check
-in the caller is not needed.
+Non-zero UCV implies ADDITIONAL_FEATURES=1, preventing early return
+will not be an overhead here.
 
->> +=C2=A0=C2=A0=C2=A0 gpiod_set_value_cansleep(port->rs485_rx_during_tx_g=
-pio,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0 !!(rs485->flags & SER_RS485_RX_DURING_TX));
->> +}
->> +
->> =C2=A0static int uart_rs485_config(struct uart_port *port)
->> =C2=A0{
->> =C2=A0=C2=A0=C2=A0=C2=A0 struct serial_rs485 *rs485 =3D &port->rs485;
->> @@ -1413,12 +1423,17 @@ static int uart_rs485_config(struct uart_port *=
-port)
->>
->> =C2=A0=C2=A0=C2=A0=C2=A0 uart_sanitize_serial_rs485(port, rs485);
->> =C2=A0=C2=A0=C2=A0=C2=A0 uart_set_rs485_termination(port, rs485);
->> +=C2=A0=C2=A0=C2=A0 uart_set_rs485_rx_during_tx(port, rs485);
->>
->> =C2=A0=C2=A0=C2=A0=C2=A0 uart_port_lock_irqsave(port, &flags);
->> =C2=A0=C2=A0=C2=A0=C2=A0 ret =3D port->rs485_config(port, NULL, rs485);
->> =C2=A0=C2=A0=C2=A0=C2=A0 uart_port_unlock_irqrestore(port, flags);
->> -=C2=A0=C2=A0=C2=A0 if (ret)
->> +=C2=A0=C2=A0=C2=A0 if (ret) {
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 memset(rs485, 0, sizeo=
-f(*rs485));
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* unset GPIOs */
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 gpiod_set_value_cansleep(po=
-rt->rs485_term_gpio, 0);
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 gpiod_set_value_cansleep(po=
-rt->rs485_rx_during_tx_gpio, 0);
->> +=C2=A0=C2=A0=C2=A0 }
->>
->> =C2=A0=C2=A0=C2=A0=C2=A0 return ret;
->> =C2=A0}
->> @@ -1457,6 +1472,7 @@ static int uart_set_rs485_config(struct
->> tty_struct *tty, struct uart_port *port,
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ret;
->> =C2=A0=C2=A0=C2=A0=C2=A0 uart_sanitize_serial_rs485(port, &rs485);
->> =C2=A0=C2=A0=C2=A0=C2=A0 uart_set_rs485_termination(port, &rs485);
->> +=C2=A0=C2=A0=C2=A0 uart_set_rs485_rx_during_tx(port, &rs485);
->>
->> =C2=A0=C2=A0=C2=A0=C2=A0 uart_port_lock_irqsave(port, &flags);
->> =C2=A0=C2=A0=C2=A0=C2=A0 ret =3D port->rs485_config(port, &tty->termios=
-, &rs485);
->> @@ -1468,8 +1484,14 @@ static int uart_set_rs485_config(struct
->> tty_struct *tty, struct uart_port *port,
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0 port->ops->set_mctrl(port, port->mctrl);
->> =C2=A0=C2=A0=C2=A0=C2=A0 }
->> =C2=A0=C2=A0=C2=A0=C2=A0 uart_port_unlock_irqrestore(port, flags);
->> -=C2=A0=C2=A0=C2=A0 if (ret)
->> +=C2=A0=C2=A0=C2=A0 if (ret) {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* restore old GPIO setting=
-s */
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 gpiod_set_value_cansleep(po=
-rt->rs485_term_gpio,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 !!(=
-port->rs485.flags & SER_RS485_TERMINATE_BUS));
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 gpiod_set_value_cansleep(po=
-rt->rs485_rx_during_tx_gpio,
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 !!(=
-port->rs485.flags & SER_RS485_RX_DURING_TX));
->
-> This does not look like restoring.
+Signed-off-by: Vamshi Gajjela <vamshigajjela@google.com>
+---
+ drivers/tty/serial/8250/8250_dwlib.c | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
 
+diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
+index 136ad093c5b6..3e33ddf7bc80 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.c
++++ b/drivers/tty/serial/8250/8250_dwlib.c
+@@ -271,16 +271,10 @@ void dw8250_setup_port(struct uart_port *p)
+ 		p->set_divisor = dw8250_set_divisor;
+ 	}
+ 
+-	/*
+-	 * If the Component Version Register returns zero, we know that
+-	 * ADDITIONAL_FEATURES are not enabled. No need to go any further.
+-	 */
+ 	reg = dw8250_readl_ext(p, DW_UART_UCV);
+-	if (!reg)
+-		return;
+-
+-	dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
+-		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
++	if (reg)
++		dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
++			(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
+ 
+ 	reg = dw8250_readl_ext(p, DW_UART_CPR);
+ 	if (!reg) {
+-- 
+2.43.0.472.g3155946c3a-goog
 
-Hmm. The rx-during-tx and terminate-bus GPIOs may have changed before the
-drivers rs485_config() was called. If that function fails, the GPIOs
-are set back to the values they had before (i.e what is still stored in
-the ports serial_rs485 struct). So what is wrong with the term "restore"?
-
-> Further this looks suspiciously like duplicated code
-
-Since the added code consists of two one-liners I am not sure how to
-decrease code duplication in this case. We could introduce wrapper functio=
-ns (the only
-ones we have so far to set the GPIOs are uart_set_rs485_termination() and
-uart_set_rs485_rx_during_tx() which cannot be used here due to the initial
-check for SER_RS485_ENABLED). But would that really help?
-
-
->
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ret;
->> +=C2=A0=C2=A0=C2=A0 }
->>
->> =C2=A0=C2=A0=C2=A0=C2=A0 if (copy_to_user(rs485_user, &port->rs485, siz=
-eof(port->rs485)))
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -EFAULT;
->> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm3=
-2-usart.c
->> index 3048620315d6..ec9a72a5bea9 100644
->> --- a/drivers/tty/serial/stm32-usart.c
->> +++ b/drivers/tty/serial/stm32-usart.c
->> @@ -226,10 +226,7 @@ static int stm32_usart_config_rs485(struct
->> uart_port *port, struct ktermios *ter
->>
->> =C2=A0=C2=A0=C2=A0=C2=A0 stm32_usart_clr_bits(port, ofs->cr1, BIT(cfg->=
-uart_enable_bit));
->>
->> -=C2=A0=C2=A0=C2=A0 if (port->rs485_rx_during_tx_gpio)
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 gpiod_set_value_cansleep(po=
-rt->rs485_rx_during_tx_gpio,
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 !!(rs485conf->flags & =
-SER_RS485_RX_DURING_TX));
->> -=C2=A0=C2=A0=C2=A0 else
->> +=C2=A0=C2=A0=C2=A0 if (!port->rs485_rx_during_tx_gpio)
->
-> Should the ! be there?
->
-
-Thats a good point, the "else" seems indeed to be wrong. It has been intro=
-duced
-with the code that added the GPIO support (c54d48543689 "serial: stm32: Ad=
-d support for rs485 RX_DURING_TX output GPIO")
-
-I will fix it in the next version of this patch, thanks.
-
-
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 rs485conf->flags |=3D =
-SER_RS485_RX_DURING_TX;
->>
->> =C2=A0=C2=A0=C2=A0=C2=A0 if (rs485conf->flags & SER_RS485_ENABLED) {
->
-> Kind Regards
-> Maarten Brock
->
-
-Thanks a lot for the review.
-
-BR,
-Lino
