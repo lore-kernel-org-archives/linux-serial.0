@@ -1,102 +1,66 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from cstnet.cn (smtp37.cstnet.cn [159.226.251.37])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D1B6DF53;
-	Tue,  2 Jan 2024 10:33:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iVOxUp91"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1704191637; x=1735727637;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=vB30yYGhwiF7Ge0e4dg2cDuBshxg1ewUhro0i0ydFFU=;
-  b=iVOxUp91TQXjYjY47NtLVioGFkpXbDOkX0EBeeBd0sTPZMLrb+BE2CtU
-   NvUndqlBndhkeYG2kMTjbo4Q5aW2cNLpiH0LRVFd6mr5CILO0fZZWrFcF
-   6ScPp2RJ+ik01OzBjAAM6vsNQhF29EUyww4YObn8kXA0m7xHGZc9gt5H+
-   nuqP0XUeNF5A4rosGDiSifrAj7iXfNXuzIHiNu9fykb9Gff5KbU5Ez+Xh
-   Q4sZxykWFCXLihuWKT/D8U42ZwwXA5veG/x7gGT/XSly0R5GqhZnXv7yO
-   Ceevf+VnSywk0c5I1ignVFGgHEWxWDKULWe5+PnSh/T2jzgVHVhBuiLV3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10940"; a="483049338"
-X-IronPort-AV: E=Sophos;i="6.04,324,1695711600"; 
-   d="scan'208";a="483049338"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jan 2024 02:33:56 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10940"; a="898486157"
-X-IronPort-AV: E=Sophos;i="6.04,324,1695711600"; 
-   d="scan'208";a="898486157"
-Received: from mandrei-mobl.ger.corp.intel.com ([10.251.210.252])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jan 2024 02:33:54 -0800
-Date: Tue, 2 Jan 2024 12:33:48 +0200 (EET)
-From: =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To: Raag Jadav <raag.jadav@intel.com>
-cc: Mika Westerberg <mika.westerberg@linux.intel.com>, 
-    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v1] serial: 8250_lpss: copy dma_param using
- devm_kmemdup()
-In-Reply-To: <20240102055006.27256-1-raag.jadav@intel.com>
-Message-ID: <a676fff0-1c44-57a7-f7fe-899530c08bc7@linux.intel.com>
-References: <20240102055006.27256-1-raag.jadav@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE70FEAD3;
+	Tue,  2 Jan 2024 11:46:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iie.ac.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iie.ac.cn
+Received: from mengjingzi$iie.ac.cn ( [121.195.114.118] ) by
+ ajax-webmail-APP-12 (Coremail) ; Tue, 2 Jan 2024 19:38:31 +0800 (GMT+08:00)
+Date: Tue, 2 Jan 2024 19:38:31 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From: =?UTF-8?B?5a2f5pWs5ae/?= <mengjingzi@iie.ac.cn>
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: inappropriate capability checks in tty_ioctl()
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.15 build 20230921(8ad33efc)
+ Copyright (c) 2002-2024 www.mailtech.cn cnic.cn
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-934630736-1704191636=:2225"
+Message-ID: <19ed91a4.10d80.18cc9f7d2ea.Coremail.mengjingzi@iie.ac.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:tgCowADXTs+39ZNlWUMCAA--.21635W
+X-CM-SenderInfo: pphqwyxlqj6xo6llvhldfou0/1tbiBwAEE2WTyAWMFwAAsw
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VW3Jw
+	CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+	daVFxhVjvjDU=
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-934630736-1704191636=:2225
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-
-On Tue, 2 Jan 2024, Raag Jadav wrote:
-
-> Use devm_kmemdup() helper to copy dma_param instead of doing it manually.
-> 
-> Signed-off-by: Raag Jadav <raag.jadav@intel.com>
-> ---
->  drivers/tty/serial/8250/8250_lpss.c | 7 ++-----
->  1 file changed, 2 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-> index 0e43bdfb7459..776ec1ef29d6 100644
-> --- a/drivers/tty/serial/8250/8250_lpss.c
-> +++ b/drivers/tty/serial/8250/8250_lpss.c
-> @@ -287,17 +287,14 @@ static int lpss8250_dma_setup(struct lpss8250 *lpss, struct uart_8250_port *port
->  		return 0;
->  	}
->  
-> -	rx_param = devm_kzalloc(dev, sizeof(*rx_param), GFP_KERNEL);
-> +	rx_param = devm_kmemdup(dev, &lpss->dma_param, sizeof(*rx_param), GFP_KERNEL);
->  	if (!rx_param)
->  		return -ENOMEM;
->  
-> -	tx_param = devm_kzalloc(dev, sizeof(*tx_param), GFP_KERNEL);
-> +	tx_param = devm_kmemdup(dev, &lpss->dma_param, sizeof(*tx_param), GFP_KERNEL);
->  	if (!tx_param)
->  		return -ENOMEM;
->  
-> -	*rx_param = lpss->dma_param;
-> -	*tx_param = lpss->dma_param;
-> -
->  	dma->fn = lpss8250_dma_filter;
->  	dma->rx_param = rx_param;
->  	dma->tx_param = tx_param;
-> 
-
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
--- 
- i.
-
---8323329-934630736-1704191636=:2225--
+SGkhCgpXZSB3b3VsZCBsaWtlIHRvIHByb3Bvc2UgYW4gYWRqdXN0bWVudCB0byB0aGUgY2FwYWJp
+bGl0eSBjaGVja3MgaW4gdGhlIHR0eV9pb2N0bCgpIGZ1bmN0aW9uLiBDdXJyZW50bHksIHRoZSBm
+dW5jdGlvbiB1c2VzIENBUF9TWVNfQURNSU4gdG8gcHJvdGVjdCB0aHJlZSBzdWJjb21tYW5kczog
+VElPQ0NPTlMsIFRJT0NTVEkgYW5kIFRJT0NWSEFOR1VQLiBXZSBwcm9wb3NlIHVwZGF0aW5nIHRo
+aXMgdG8gdXNlIENBUF9TWVNfVFRZX0NPTkZJRyBpbnN0ZWFkIGZvciB0aGUgZm9sbG93aW5nIHJl
+YXNvbnM6CgooMSkgQ0FQX1NZU19UVFlfQ09ORklHIGlzIG1vcmUgcmVsZXZhbnQgdG8gdGhlIGZ1
+bmN0aW9uczogVGhlIHRocmVlIHN1YmNvbW1hbmRzIGFyZSByZXNwb25zaWJsZSBmb3IgdHR5LXJl
+bGF0ZWQgZnVuY3Rpb25zOiByZWRpcmVjdGluZyBjb25zb2xlIG91dHB1dCAoVElPQ0NPTlMpLCBm
+YWtpbmcgaW5wdXQgdG8gYSB0ZXJtaW5hbCAoVElPQ1NUSSksIGFuZCBtYWtpbmcgdGhlIHRlcm1p
+bmFsIGJlIGh1bmcgdXAgKFRJT0NWSEFOR1VQKS4gQXMgdGhlIGRlZmluaXRpb25zIGluIHRoZSBj
+YXBhYmlsaXR5IG1hbnVhbCBwYWdlWzFdLCBDQVBfU1lTX1RUWV9DT05GSUcgaXMgc3BlY2lmaWNh
+bGx5IGRlc2lnbmVkIGZvciAiZW1wbG95aW5nIHZhcmlvdXMgcHJpdmlsZWdlZCBpb2N0bCgyKSBv
+cGVyYXRpb25zIG9uIHZpcnR1YWwgdGVybWluYWxzLiIgVGhpcyBhbGlnbnMgbW9yZSBjbG9zZWx5
+IHdpdGggdGhlIGludGVuZGVkIHVzYWdlIHNjZW5hcmlvIGNvbXBhcmVkIHRvIENBUF9TWVNfQURN
+SU4uCgooMikgQ29uc2lzdGVuY3k6IENBUF9TWVNfVFRZX0NPTkZJRyBpcyBhbHJlYWR5IGVtcGxv
+eWVkIGluIG90aGVyIHBhcnRzIG9mIHRoZSBrZXJuZWwgdG8gcHJvdGVjdCBUSU9DVkhBTkdVUC1s
+aWtlIGZ1bmN0aW9uYWxpdHkuIEZvciBpbnN0YW5jZSwgaW4gdHR5X2lvY3RsKCkgQ0FQX1NZU19B
+RE1JTiBpcyB1c2VkIGJlZm9yZSB0dHlfdmhhbmd1cCgpLCB3aGlsZSBpbiBTWVNDQUxMX0RFRklO
+RTAodmhhbmd1cCksIHdoaWNoIGxvY2F0ZWQgaW4gZnMvb3Blbi5jLCB0aGUgY2hlY2sgaXMgZG9u
+ZSB3aXRoIENBUF9TWVNfVFRZX0NPTkZJRyBiZWZvcmUgdHR5X3ZoYW5ndXAoKS4KCigzKSBNYWlu
+dGFpbmluZyBMZWFzdCBQcml2aWxlZ2U6IENBUF9TWVNfQVNNSU4gaXMgYWxyZWFkeSBvdmVybG9h
+ZGVkIGFuZCBrbm93biBhcyB0aGUgbmV3ICJyb290IlsyXS4gQWNjb3JkaW5nIHRvIHRoZSBtYW51
+YWwgcGFnZVsxXSDigJxkb24ndCBjaG9vc2UgQ0FQX1NZU19BRE1JTiBpZiB5b3UgY2FuIHBvc3Np
+Ymx5IGF2b2lkIGl04oCdLCBzd2l0Y2hpbmcgdG8gQ0FQX1NZU19UVFlfQ09ORklHIGNvdWxkIGJl
+IGhlbHBmdWwgZm9yIHN0YW5kYXJkaXppbmcgdGhlIHVzZSBvZiBjYXBhYmlsaXRpZXMgYW5kIGlt
+cGxlbWVudGluZyBsZWFzdCBwcml2aWxlZ2VzLiAKClRoaXMgaXNzdWUgZXhpc3RzIGluIHNldmVy
+YWwga2VybmVsIHZlcnNpb25zIGFuZCB3ZSBoYXZlIGNoZWNrZWQgaXQgb24gdGhlIGxhdGVzdCBz
+dGFibGUgcmVsZWFzZShMaW51eCA2LjYuOSkuIFdlIHdvdWxkIGFwcHJlY2lhdGUgeW91ciB0aG91
+Z2h0cyBhbmQgZmVlZGJhY2sgb24gdGhpcyBwcm9wb3NhbC4gVGhhbmsgeW91IGZvciB5b3VyIHRp
+bWUgYW5kIGNvbnNpZGVyYXRpb24uCgpCZXN0IHJlZ2FyZHMsCkppbmd6aQoKcmVmZXJlbmNlOgpb
+MV0gaHR0cHM6Ly93d3cubWFuNy5vcmcvbGludXgvbWFuLXBhZ2VzL21hbjcvY2FwYWJpbGl0aWVz
+LjcuaHRtbApbMl0gaHR0cHM6Ly9sd24ubmV0L0FydGljbGVzLzQ4NjMwNi8K
