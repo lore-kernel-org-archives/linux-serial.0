@@ -1,144 +1,142 @@
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2057.outbound.protection.outlook.com [40.107.117.57])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D76F3C37
-	for <linux-serial@vger.kernel.org>; Mon,  1 Jan 2024 13:38:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-35ff23275b8so76795835ab.2
-        for <linux-serial@vger.kernel.org>; Mon, 01 Jan 2024 05:38:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704116304; x=1704721104;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=NYigNoNiYcJW8lpNM8A0iW7CoCGomXRo8vhk3B0bsJw=;
-        b=ByBXHqdiKqnc4nXM+m1/CG2IOxAQvxulUCpVIWvZYH5e9LfBDMlp00uUaBiZEubIk4
-         +d3UV9VasSywSM7IKR4wKJLANi+5fyiAAqDo4Mcb5U0lxMn09lf7X/cYBsGGQP1Cscwx
-         fVvG3EAWy/p+osFo/lHYIiftJPxYPkxCfdsiX8i0qd0VGJz+U60EqeZwMihcfU7TvH3V
-         9Giq16Dy2aLFtyEcttdt6+vGyEAFJijQgr9LT6IugIeUj6ggsZGAVbHmrsIRgGZTMfCC
-         nVuXJtXSw6fZYEBkNvP7nYdOcK7ti6Y/yvYpXb2sWyB7N0LCzfNy1W1QGFNyeJT8ECrO
-         U/ug==
-X-Gm-Message-State: AOJu0Ywh6EDBq6emuE2KxkQKDpEsKc8twuJ5miOp7goM9UZctQi0YX8r
-	50UJy/SwXQdN3QAvIDrEp50l7xVnyrU20YYlmtQn4UCtFbQ+
-X-Google-Smtp-Source: AGHT+IHoEOB1jBgykoDzepXcDtry3JNwUTq524emldkzi5oSyqgMts0LeftvvC6OyEZ6lrMWiK41Faf332fAUULVnTBH/+Se+S/k
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CF4310E1;
+	Tue,  2 Jan 2024 05:31:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=moxa.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b="f/RdV6sS"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=esQf0wxnpqqfWq3xCEwgjyhnexl/kilkLB2aryUEIyXCktppTqxv6i4k9oJND5XzpG4+Mx/ZJxLArmHL+luIOFH5FwU0YTkg5fPW+HjH9lmDm3V4AVNrF6dHMO86tQmVfv4cbJr/80wHkZo1VPy2n3E4Fxe1bh91n07Qop100JSLhtV1tt9nyfq8MB7sYvTaj0UnmikQm89JLS/sesmKN6t4NVGHLyNfUzM8NJr00ZtH+jwZRkgI+kxxdr1HyD+LHZGrrbqW+Zn80cYGhzxKCS53CyqLjt1V4JFXlVi5iVdf4IOUjtJLLYqNSwKRN4gDPtA5EV569QjzsdJKT/wJZA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OVabQsMq5V3nbSVJMY+zDD6yHUidUIOIb0s34QMjpRM=;
+ b=OzFaYSRDGSaBwpo48DkszUj1ZqqkR3MnoxOL2Sj1Rc9zQu12JgKs7g/SWxSl4DT6VzJokpZVbZFRISwHRLx6pcTO6TWJLmovmeAJU6nKl7eCY7DpH8DGAsB2FsD/bf2M1lZW0Wrd0Gu4L9uHJ+LXXgXd1R20GMeiDkupEgR3Q0YLUzikHzREgQQ0SRFddxPteabY4fPlI0peI6KuCLf4f+mkebxC3++9mSoITGE44e1dzdNo19VfJJlYgjl9L37yHwB5KxpalErFB67ETHSSPJeYVHH4YD9DpNgqpGUNRqzVlNb70utjTkhX26XVV/5ZJbFBXS4RfgNd9EAFvON6sg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
+ dkim=pass header.d=moxa.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OVabQsMq5V3nbSVJMY+zDD6yHUidUIOIb0s34QMjpRM=;
+ b=f/RdV6sSIiCw1UGzm1+uMtAYPmywzRb5cx89vgPFhmLbRc6dIMM3IyiLKg7e3biHh15IDiVfrjgn7FVYknwnsKbOnPCuxc/BKUtzMHqrAMKRzTc2Z3aAR9tZq5ynXIldOINejs8aMq7Ni4Xpv6w4TCT3QLLfw0hRFj2ZfaxjcrQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=moxa.com;
+Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:115::14) by TYZPR01MB3806.apcprd01.prod.exchangelabs.com
+ (2603:1096:400:3f::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7135.25; Tue, 2 Jan
+ 2024 05:31:55 +0000
+Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ ([fe80::1023:2132:c05e:ea6b]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ ([fe80::1023:2132:c05e:ea6b%2]) with mapi id 15.20.7135.023; Tue, 2 Jan 2024
+ 05:31:55 +0000
+From: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+Subject: [PATCH] tty: serial: 8250: Set RS232 as default for Moxa PCIe board initialization
+Date: Tue,  2 Jan 2024 13:31:33 +0800
+Message-Id: <20240102053133.9795-1-crescentcy.hsieh@moxa.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: TYCP301CA0019.JPNP301.PROD.OUTLOOK.COM
+ (2603:1096:400:381::6) To PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:115::14)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:3202:b0:360:134:54b1 with SMTP id
- cd2-20020a056e02320200b00360013454b1mr1255226ilb.0.1704116304778; Mon, 01 Jan
- 2024 05:38:24 -0800 (PST)
-Date: Mon, 01 Jan 2024 05:38:24 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000009d27060de27f0a@google.com>
-Subject: [syzbot] [serial?] KMSAN: uninit-value in n_tty_receive_buf_standard
-From: syzbot <syzbot+559c7fe4b8bac56d38c2@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|TYZPR01MB3806:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3d6d7644-68f7-4bee-c149-08dc0b5421f2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	F+GtFYhIj+OoBSc5F9EwSditsEHT7SSxtN8HolU2vHux0lRf0pJgHAQv543bIdQMmZ0Z6BrucObOT/oxYwn1bgLgS4avzGr4YNsoXJ4Vl+BPb1/2BUHbEzhebl/x7FBcprYcncCuSe74fRsn57zx0svV+4kK/Bd61qsweWxAAGpeerhsXNEug8hfGtKRVX2GKLN0ZyzITmYV6+dMcZ891i89Wi0XNizPQzJmsZJoIqECi+rxbWXwCEh5FmYpZIXzvCrHQdV6aeKepi415OQfifM0jcvnEtMkYaLlv+oO0eeGcG/3YlMufmEO+msW/Hc/0vU1A0/KFO1GyslEzIen24YP8vQ4UvKZEutAbijNUnzxX69ps/QwscXeJ33yjEIcusHKMQ5K7WQGMQHn2FePL+wChpI2CNYZtL8hqe51JqGoFWf6+Sd/etk6daMzwhmfbfjyjx0CPn5j9Hchv4iCW2i8X1Bji4pv7vTqiJ8EqPsdfiqyncNM6G7KTtroJckbHLkHhOCXAAihixxVKDGsMejfc7WTLOz8E1S+pe+okawIrqUYZIE8B7V+Nwr3CLm9+HFlbAcguaagPAQfQ1yMsYbcIVwzZ/7gLUeufJi0iUtGxjKxNkMp+oiOwKAr+res
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(346002)(396003)(366004)(376002)(39850400004)(230922051799003)(451199024)(1800799012)(186009)(64100799003)(2616005)(107886003)(26005)(1076003)(83380400001)(38100700002)(41300700001)(8676002)(5660300002)(8936002)(316002)(110136005)(4326008)(2906002)(6666004)(6506007)(6512007)(52116002)(66476007)(66946007)(6486002)(478600001)(66556008)(38350700005)(86362001)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?/Y8UvGIADKRfdco8ZNmiR2wYmFyAFweyzwUKfZpIVWMH1nH1HKEqC+fkBq/t?=
+ =?us-ascii?Q?sv9Jeyw13FFiHw71W9BbKslj5cHaWlWaCHY16qeSPvCJio1TFZr3TjUG0ijH?=
+ =?us-ascii?Q?VfjM+Fkhvt8EULqMBZJxb3upTxb8w5SNXIBSH0MnAf+YQM3FBdFSZ1HA1bpD?=
+ =?us-ascii?Q?bPumkpVnVOKtwGARPtzyQTj+QqeK8NeojM2JJ2bGz8ZGz6U0ApHr8ekr1XMj?=
+ =?us-ascii?Q?p2TzZU2Y/tSbHztcrSwpDxrjH7TbMgL+j/cJP9NFx3MRiRmf7UUJmEr9Hogm?=
+ =?us-ascii?Q?WhegIAK84qjyhHObw+73yVE6bBSBlqAiRneJpM4xvygmAkA9rA+ZX7c+uglE?=
+ =?us-ascii?Q?UECMIujccUIDJKCIyRNHqyM51xaqQEdYRsGvniero44VGj5Wh8JjJnC3AL0E?=
+ =?us-ascii?Q?2XIwHSLOlmkwnugvh9Wpy1UIqEWbjy5wXigxcpTkNEXcqCSCqW6ZELlscd6A?=
+ =?us-ascii?Q?T0+2IMSkCiIOLfQ/V05YI9oeX6ivAklVSucy0tJA1kvufVsQxZ16NuihKp0W?=
+ =?us-ascii?Q?/aLHWtzHWskAHB3INPGQ0xhlr2XKJfhF2wsO1WP9vEhpcfaTCX5BVDw+BUGZ?=
+ =?us-ascii?Q?6uFxbgbxBPZ82xK4cqQ9Zngq0cUxfKrRrdmjo9VlQVZprR7cSiEZumXhnsDT?=
+ =?us-ascii?Q?IWRDYamYZ1JNZcUv1sg9alUm7FFTeJheq6VDUxfMvtYLLe+Z43VHNS6WRtKt?=
+ =?us-ascii?Q?yi+MH/9+2HeQzrDw0YE8wasJEbu7HfnYQKgw7TvnOE4Eshn38EKSHJ6yRx+x?=
+ =?us-ascii?Q?VFVf5PM+5JDJlRBtpBoYcItgo2gTmwA65JfRJYOu+9y0bW5EuaZoriNz03hm?=
+ =?us-ascii?Q?+W5i4HkpH2GxmDnjK3Wpzd6+brRLd1MFkt8Vjk57nPTyN40Qg758ZJ7LzAyA?=
+ =?us-ascii?Q?1UY7VSOcCzxX2fzH09Ackqo0uqsYQkIQsOL3fPguGIZfuQUVAA63g97Mucrp?=
+ =?us-ascii?Q?qCdzloUBZ3mDQk2NPqavx+d2Oc/4twIIOrBHG3fVx3ZtWkzhnMCVOMbIVWNB?=
+ =?us-ascii?Q?lDV7i8JCBJkaQicTnquHZZ36zCbyriPsKXbq8wWaoAOisOf61YWhnDO8jHz5?=
+ =?us-ascii?Q?PSjsJGVDtwiIhBg2zREjtKwJcrTNKYTF9oF4jdVpS0vmqIRnR5xDIoljNIeA?=
+ =?us-ascii?Q?7u9g75NWOQ2Y/VtRslhgZ1qRd6SUfLckkK/jJNVXqU60fAg0v2R3NeY8Odse?=
+ =?us-ascii?Q?sWWjFUJ5T5uZEeg4rUMvNTp2G3V+sEEByCLmymtfXFyKjIMyaDR97LnRJw4l?=
+ =?us-ascii?Q?JDSWBfqwu905y9EdWa05A6MPjrt+KfaIxpubW4Ri/2IwaatBWpFqQ9fzNt/j?=
+ =?us-ascii?Q?JI+4WSxfoCn/l/5z7NZ1xJHfu0KdTLJFu5sxTpRy6yJ4iebbMLoyT9cvmaEo?=
+ =?us-ascii?Q?eFCOvtyazvOQvfGHrfXcK/wklCraQju+UO+BQ7I6YAX3dKLF/G6CMoPpAk+P?=
+ =?us-ascii?Q?BRzMDrg0y4Hr2BHx37tt4egclWIt7Lrp8NmzFGpwx3beF3Ohy1jstrjqY+EO?=
+ =?us-ascii?Q?29TTq1cMDaaoOGuaFNfWEDx0D8jhFsy+7FKaZ8NfMcUpHOGkXOgvnI6Q12wA?=
+ =?us-ascii?Q?c6XkALpebTjwCKGwIcEzuFflIgxPbaBocnJMUY11/ncyerFi1aM2lIAXw8eT?=
+ =?us-ascii?Q?wA=3D=3D?=
+X-OriginatorOrg: moxa.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3d6d7644-68f7-4bee-c149-08dc0b5421f2
+X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jan 2024 05:31:55.6556
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZhTZJq2b4LbJExI7RwCL46Kq1XZONc1uOYzNlEaUVn1PCOKDS/lk8/sRUwB3U/ZumgyWiEkQXLOuie/qWO6huCqvuLgxkxdvrn80Nv3LdJc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR01MB3806
 
-Hello,
+After switching the serial interface of the Moxa RS232 PCIe boards, it
+fails to reset to RS232 when attempting to reload 8250_pci driver.
 
-syzbot found the following issue on:
+This patch set RS232 as the default setting during the initialization of
+Moxa PCIe board.
 
-HEAD commit:    994d5c58e50e Merge tag 'hardening-v6.7-rc4' of git://git.k..
-git tree:       upstream
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=15042a8ce80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f711bc2a7eb1db25
-dashboard link: https://syzkaller.appspot.com/bug?extid=559c7fe4b8bac56d38c2
-compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1168e128e80000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14eebdaae80000
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/ca8936129fcd/disk-994d5c58.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/ce1c8de0e20b/vmlinux-994d5c58.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/89ceb1dd4d79/bzImage-994d5c58.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+559c7fe4b8bac56d38c2@syzkaller.appspotmail.com
-
-=====================================================
-BUG: KMSAN: uninit-value in variable_test_bit arch/x86/include/asm/bitops.h:227 [inline]
-BUG: KMSAN: uninit-value in arch_test_bit arch/x86/include/asm/bitops.h:239 [inline]
-BUG: KMSAN: uninit-value in _test_bit include/asm-generic/bitops/instrumented-non-atomic.h:142 [inline]
-BUG: KMSAN: uninit-value in n_tty_receive_buf_standard+0xc58/0x9230 drivers/tty/n_tty.c:1603
- variable_test_bit arch/x86/include/asm/bitops.h:227 [inline]
- arch_test_bit arch/x86/include/asm/bitops.h:239 [inline]
- _test_bit include/asm-generic/bitops/instrumented-non-atomic.h:142 [inline]
- n_tty_receive_buf_standard+0xc58/0x9230 drivers/tty/n_tty.c:1603
- __receive_buf drivers/tty/n_tty.c:1630 [inline]
- n_tty_receive_buf_common+0x178e/0x2310 drivers/tty/n_tty.c:1729
- n_tty_receive_buf2+0x4c/0x60 drivers/tty/n_tty.c:1775
- tty_ldisc_receive_buf+0xce/0x270 drivers/tty/tty_buffer.c:386
- tty_port_default_receive_buf+0xdf/0x190 drivers/tty/tty_port.c:37
- receive_buf drivers/tty/tty_buffer.c:444 [inline]
- flush_to_ldisc+0x4b7/0xdc0 drivers/tty/tty_buffer.c:494
- process_one_work kernel/workqueue.c:2630 [inline]
- process_scheduled_works+0x104e/0x1e70 kernel/workqueue.c:2703
- worker_thread+0xf45/0x1490 kernel/workqueue.c:2784
- kthread+0x3ed/0x540 kernel/kthread.c:388
- ret_from_fork+0x66/0x80 arch/x86/kernel/process.c:147
- ret_from_fork_asm+0x11/0x20 arch/x86/entry/entry_64.S:242
-
-Uninit was created at:
- slab_post_alloc_hook+0x129/0xa70 mm/slab.h:768
- slab_alloc_node mm/slub.c:3478 [inline]
- __kmem_cache_alloc_node+0x5c9/0x970 mm/slub.c:3517
- __do_kmalloc_node mm/slab_common.c:1006 [inline]
- __kmalloc+0x121/0x3c0 mm/slab_common.c:1020
- kmalloc include/linux/slab.h:604 [inline]
- tty_buffer_alloc drivers/tty/tty_buffer.c:179 [inline]
- __tty_buffer_request_room+0x36e/0x6c0 drivers/tty/tty_buffer.c:272
- __tty_insert_flip_string_flags+0x140/0x560 drivers/tty/tty_buffer.c:308
- tty_insert_flip_char include/linux/tty_flip.h:77 [inline]
- uart_insert_char+0x39e/0xa00 drivers/tty/serial/serial_core.c:3494
- serial8250_read_char+0x1a2/0x5d0 drivers/tty/serial/8250/8250_port.c:1760
- serial8250_rx_chars drivers/tty/serial/8250/8250_port.c:1777 [inline]
- serial8250_handle_irq+0x77b/0xb30 drivers/tty/serial/8250/8250_port.c:1937
- serial8250_default_handle_irq+0x11a/0x2a0 drivers/tty/serial/8250/8250_port.c:1962
- serial8250_interrupt+0xc0/0x350 drivers/tty/serial/8250/8250_core.c:127
- __handle_irq_event_percpu+0x113/0xc90 kernel/irq/handle.c:158
- handle_irq_event_percpu kernel/irq/handle.c:193 [inline]
- handle_irq_event+0xef/0x2c0 kernel/irq/handle.c:210
- handle_edge_irq+0x341/0xf90 kernel/irq/chip.c:831
- generic_handle_irq_desc include/linux/irqdesc.h:161 [inline]
- handle_irq arch/x86/kernel/irq.c:238 [inline]
- __common_interrupt+0x94/0x1f0 arch/x86/kernel/irq.c:257
- common_interrupt+0x89/0xa0 arch/x86/kernel/irq.c:247
- asm_common_interrupt+0x2b/0x40 arch/x86/include/asm/idtentry.h:636
-
-CPU: 0 PID: 3894 Comm: kworker/u4:23 Not tainted 6.7.0-rc3-syzkaller-00134-g994d5c58e50e #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 11/10/2023
-Workqueue: events_unbound flush_to_ldisc
-=====================================================
-
-
+Signed-off-by: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/tty/serial/8250/8250_pci.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 8ccf691935b7..0d35c77fad9e 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -2039,12 +2039,13 @@ static int pci_moxa_init(struct pci_dev *dev)
+ 	unsigned short device = dev->device;
+ 	resource_size_t iobar_addr = pci_resource_start(dev, 2);
+ 	unsigned int num_ports = (device & 0x00F0) >> 4, i;
+-	u8 val;
++	u8 val, init_mode = MOXA_RS232;
+ 
+ 	if (!(pci_moxa_supported_rs(dev) & MOXA_SUPP_RS232)) {
+-		for (i = 0; i < num_ports; ++i)
+-			pci_moxa_set_interface(dev, i, MOXA_RS422);
++		init_mode = MOXA_RS422;
+ 	}
++	for (i = 0; i < num_ports; ++i)
++		pci_moxa_set_interface(dev, i, init_mode);
+ 
+ 	/*
+ 	 * Enable hardware buffer to prevent break signal output when system boots up.
+-- 
+2.34.1
 
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
-
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
