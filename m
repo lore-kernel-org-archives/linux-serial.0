@@ -1,134 +1,151 @@
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B312B10A0C
-	for <linux-serial@vger.kernel.org>; Tue,  2 Jan 2024 13:55:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f197.google.com with SMTP id e9e14a558f8ab-35ff5a2f9c0so86934335ab.3
-        for <linux-serial@vger.kernel.org>; Tue, 02 Jan 2024 05:55:18 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6C111401B
+	for <linux-serial@vger.kernel.org>; Tue,  2 Jan 2024 14:06:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="PF8S3tHk"
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-336c8ab0b20so6221291f8f.1
+        for <linux-serial@vger.kernel.org>; Tue, 02 Jan 2024 06:06:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1704204384; x=1704809184; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
+         :to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=GeuSBJ4NRsOQvgljA4+5PVaR3yqbK0REG/oik1vcoTs=;
+        b=PF8S3tHkC6HADuMN/KiSJXOsSXRgp8SV7YozcCcQPZuSYeY3ihHRGSq8uBEFuTzJWZ
+         PciNd1040t1kL/F5pJsg1Su68tzDodYM0gG6vGOuQgYWy8TfwqzIyaaStH2jFhHer3O1
+         7OThcFSGanOlPQYSQO74Oc2zZPppEF9qKBXTLVGfvqYDxnUzyPBhUfF1A14pzEbDu7R9
+         qCMBlkIyeSc3yzBva9qFadRvVj5PE1rFSTVh4OoQp/3RI9tDzRvms/nHYPAO24kQGry7
+         XBIWxRKr9+134OyjnXAo9gs2oOK7x0NtntGSL67A7BTQ07a/+ajcBBZUy4sq55fY5q/R
+         G3mA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704203718; x=1704808518;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=olo0b/zVW4WxDws/AUxXP78jNeI3Up++qS04lhSS2JU=;
-        b=cCoSMuY2z8OwEFdQmLgibda11ZXoUQUJwyZj9Tx4MXJ6wPYxRPOunU3975X7L2Fnce
-         iwCFPch7+b/7eQIUIT9o+fdk8GbIGbkrgmeH+8vluDdGinM+SZiG//PsK5CL8H1mZG/z
-         7e+S3PFwTx8ANv/FerYN9Qt7HQOyEmAbIMqG7No4e7AWI94rFR/alnNkvkIPheSW6CgA
-         Cs/AkUsYTjDxhxvftHU9A38Exd+zoScGTs7YFrOpVQbkkvIoi/LO4uxA9iMMFvdPXCU9
-         GQDX6xFAY5lZBpmZ5Ys0RSGIa7iJ9ETvae25rMRP7doQ2Bka+ukzPH2YYIyPjzgq9U0Z
-         17aQ==
-X-Gm-Message-State: AOJu0YyTyCqKO8Z95AH1jeZ/7L/CQpFuGiuV8dSfoPJvKnHAPYtBEKAv
-	X/YSjbMXOCSqhXjS83DfmiIzsn+5qwcJQi8v+o2hj/GFrnBw
-X-Google-Smtp-Source: AGHT+IGwaiF696/fugUcQ+frCCdcLxPfa+wT4kFsyCxDysUMPWNv6jFB4f7xvJihpTDNrxAzZFtiU2fkZnNwaiNn09Wnj+Pnyibm
+        d=1e100.net; s=20230601; t=1704204384; x=1704809184;
+        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
+         :to:from:date:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=GeuSBJ4NRsOQvgljA4+5PVaR3yqbK0REG/oik1vcoTs=;
+        b=rBRPVVreqZ2ZeCcIJzcdlHjFcKWNyU8EBFBjkiuYWIRScZyJ8UdWaGMPQXPSCu5uzH
+         Et8rnHwWB7GXYVYa+P2GdxCcMO7JeiDMp/fNLfZ/cpl7Qm3bOh1uArl0CR98ICR+8+gc
+         I8xNQiJI6Swo39Nw9zN8VBqGT+zIgw67Bj0ZUrvXeU6BI1bhjDwFCXNvCmhT9fZ5axJa
+         hclLd2aheNZxjaKfRU5OmsMkrf95NesgTOnlJzti4EbC8bBITRdJjxyE+goobFiFZ3BC
+         eb/IMUKYkLe3XpgiUkmrJUjVrSNXmxGQJeYRNgWepnnavCF8HwHuyREWW7JkX8bETQWQ
+         ppyA==
+X-Gm-Message-State: AOJu0YyLnw7+tDcM1MIVVt/VVtvHSXreMHGLw8ArZipMMrqsH9yJvHTu
+	LrS9i5zh1Ed3X/+smHhLY225a/YsIxTxOA==
+X-Google-Smtp-Source: AGHT+IGk6b7xxbrOOdBOhoJZTfY5o2MxcgOf7EHNUFLzzXCVFaBSNQcBJgEQ81jRR1EiHtDu86iDWQ==
+X-Received: by 2002:a5d:4bd0:0:b0:336:7790:6a36 with SMTP id l16-20020a5d4bd0000000b0033677906a36mr9667662wrt.129.1704204383955;
+        Tue, 02 Jan 2024 06:06:23 -0800 (PST)
+Received: from localhost ([102.140.209.237])
+        by smtp.gmail.com with ESMTPSA id a7-20020a5d4d47000000b00333404e9935sm28651254wru.54.2024.01.02.06.06.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Jan 2024 06:06:23 -0800 (PST)
+Date: Tue, 2 Jan 2024 17:06:16 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: oe-kbuild@lists.linux.dev, Rengarajan S <rengarajan.s@microchip.com>,
+	kumaravel.thiagarajan@microchip.com,
+	tharunkumar.pasumarthi@microchip.com, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, keescook@chromium.org, gustavoars@kernel.org,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-hardening@vger.kernel.org
+Cc: lkp@intel.com, oe-kbuild-all@lists.linux.dev,
+	unglinuxdriver@microchip.com
+Subject: Re: [PATCH v1 tty-next 4/4] 8250: microchip: pci1xxxx: Add Burst
+ mode transmission support in uart driver for reading from FIFO
+Message-ID: <5d46ad8f-6537-4c53-8a81-85dca7bfbd9e@suswa.mountain>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1d0c:b0:35f:c8aa:b526 with SMTP id
- i12-20020a056e021d0c00b0035fc8aab526mr2639641ila.2.1704203717979; Tue, 02 Jan
- 2024 05:55:17 -0800 (PST)
-Date: Tue, 02 Jan 2024 05:55:17 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003c3614060df6d965@google.com>
-Subject: [syzbot] [serial?] KMSAN: uninit-value in n_tty_lookahead_flow_ctrl
-From: syzbot <syzbot+0015c7d1e68e7f61621d@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231215151123.41812-5-rengarajan.s@microchip.com>
 
-Hello,
+Hi Rengarajan,
 
-syzbot found the following issue on:
+kernel test robot noticed the following build warnings:
 
-HEAD commit:    d3fa86b1a7b4 Merge tag 'net-6.7-rc3' of git://git.kernel.o..
-git tree:       upstream
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=10c3bcd8e80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e32016b84cf917ca
-dashboard link: https://syzkaller.appspot.com/bug?extid=0015c7d1e68e7f61621d
-compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12abdea4e80000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=173b1c94e80000
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/c785fb3c059b/disk-d3fa86b1.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/142addbb8256/vmlinux-d3fa86b1.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/8e6d7e1c7b24/bzImage-d3fa86b1.xz
+url:    https://github.com/intel-lab-lkp/linux/commits/Rengarajan-S/8250-microchip-pci1xxxx-Rearranging-the-structure-declarations/20231215-234606
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20231215151123.41812-5-rengarajan.s%40microchip.com
+patch subject: [PATCH v1 tty-next 4/4] 8250: microchip: pci1xxxx: Add Burst mode transmission support in uart driver for reading from FIFO
+config: i386-randconfig-141-20231216 (https://download.01.org/0day-ci/archive/20231216/202312161205.f6EpLZln-lkp@intel.com/config)
+compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+0015c7d1e68e7f61621d@syzkaller.appspotmail.com
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
+| Closes: https://lore.kernel.org/r/202312161205.f6EpLZln-lkp@intel.com/
 
-=====================================================
-BUG: KMSAN: uninit-value in n_tty_lookahead_flow_ctrl+0x2cd/0x2f0 drivers/tty/n_tty.c:1516
- n_tty_lookahead_flow_ctrl+0x2cd/0x2f0 drivers/tty/n_tty.c:1516
- tty_port_default_lookahead_buf+0x142/0x200 drivers/tty/tty_port.c:59
- lookahead_bufs drivers/tty/tty_buffer.c:427 [inline]
- flush_to_ldisc+0x906/0xdc0 drivers/tty/tty_buffer.c:497
- process_one_work kernel/workqueue.c:2630 [inline]
- process_scheduled_works+0x104e/0x1e70 kernel/workqueue.c:2703
- worker_thread+0xf45/0x1490 kernel/workqueue.c:2784
- kthread+0x3ed/0x540 kernel/kthread.c:388
- ret_from_fork+0x66/0x80 arch/x86/kernel/process.c:147
- ret_from_fork_asm+0x11/0x20 arch/x86/entry/entry_64.S:242
+smatch warnings:
+drivers/tty/serial/8250/8250_pci1xxxx.c:395 pci1xxxx_process_write_data() warn: should this be 'valid_burst_count == -1'
 
-Uninit was created at:
- slab_post_alloc_hook+0x129/0xa70 mm/slab.h:768
- slab_alloc_node mm/slub.c:3478 [inline]
- __kmem_cache_alloc_node+0x5c9/0x970 mm/slub.c:3517
- __do_kmalloc_node mm/slab_common.c:1006 [inline]
- __kmalloc+0x121/0x3c0 mm/slab_common.c:1020
- kmalloc include/linux/slab.h:604 [inline]
- tty_buffer_alloc drivers/tty/tty_buffer.c:179 [inline]
- __tty_buffer_request_room+0x36e/0x6c0 drivers/tty/tty_buffer.c:272
- __tty_insert_flip_string_flags+0x140/0x560 drivers/tty/tty_buffer.c:308
- tty_insert_flip_char include/linux/tty_flip.h:77 [inline]
- uart_insert_char+0x39e/0xa00 drivers/tty/serial/serial_core.c:3494
- serial8250_read_char+0x1a2/0x5d0 drivers/tty/serial/8250/8250_port.c:1760
- serial8250_rx_chars drivers/tty/serial/8250/8250_port.c:1777 [inline]
- serial8250_handle_irq+0x77b/0xb30 drivers/tty/serial/8250/8250_port.c:1937
- serial8250_default_handle_irq+0x11a/0x2a0 drivers/tty/serial/8250/8250_port.c:1962
- serial8250_interrupt+0xc0/0x350 drivers/tty/serial/8250/8250_core.c:127
- __handle_irq_event_percpu+0x113/0xc90 kernel/irq/handle.c:158
- handle_irq_event_percpu kernel/irq/handle.c:193 [inline]
- handle_irq_event+0xef/0x2c0 kernel/irq/handle.c:210
- handle_edge_irq+0x341/0xf90 kernel/irq/chip.c:831
- generic_handle_irq_desc include/linux/irqdesc.h:161 [inline]
- handle_irq arch/x86/kernel/irq.c:238 [inline]
- __common_interrupt+0x94/0x1f0 arch/x86/kernel/irq.c:257
- common_interrupt+0x89/0xa0 arch/x86/kernel/irq.c:247
- asm_common_interrupt+0x2b/0x40 arch/x86/include/asm/idtentry.h:636
+vim +395 drivers/tty/serial/8250/8250_pci1xxxx.c
 
-CPU: 0 PID: 1031 Comm: kworker/u4:7 Not tainted 6.7.0-rc2-syzkaller-00095-gd3fa86b1a7b4 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 11/10/2023
-Workqueue: events_unbound flush_to_ldisc
-=====================================================
+eeaa9176002041 Rengarajan S 2023-12-15  351  static void pci1xxxx_process_write_data(struct uart_port *port,
+eeaa9176002041 Rengarajan S 2023-12-15  352  					struct circ_buf *xmit,
+eeaa9176002041 Rengarajan S 2023-12-15  353  					int *data_empty_count,
+eeaa9176002041 Rengarajan S 2023-12-15  354  					u32 *valid_byte_count)
+eeaa9176002041 Rengarajan S 2023-12-15  355  {
+eeaa9176002041 Rengarajan S 2023-12-15  356  	u32 valid_burst_count = *valid_byte_count / UART_BURST_SIZE;
+eeaa9176002041 Rengarajan S 2023-12-15  357  
+eeaa9176002041 Rengarajan S 2023-12-15  358  	/*
+eeaa9176002041 Rengarajan S 2023-12-15  359  	 * Each transaction transfers data in DWORDs. If there are less than
+eeaa9176002041 Rengarajan S 2023-12-15  360  	 * four remaining valid_byte_count to transfer or if the circular
+eeaa9176002041 Rengarajan S 2023-12-15  361  	 * buffer has insufficient space for a DWORD, the data is transferred
+eeaa9176002041 Rengarajan S 2023-12-15  362  	 * one byte at a time.
+eeaa9176002041 Rengarajan S 2023-12-15  363  	 */
+eeaa9176002041 Rengarajan S 2023-12-15  364  	while (valid_burst_count--) {
 
+This loop ends with valid_burst_count set to -1.  (Post operation).
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+eeaa9176002041 Rengarajan S 2023-12-15  365  		if (*data_empty_count - UART_BURST_SIZE < 0)
+eeaa9176002041 Rengarajan S 2023-12-15  366  			break;
+eeaa9176002041 Rengarajan S 2023-12-15  367  		if (xmit->tail > (UART_XMIT_SIZE - UART_BURST_SIZE))
+eeaa9176002041 Rengarajan S 2023-12-15  368  			break;
+eeaa9176002041 Rengarajan S 2023-12-15  369  		writel(*(unsigned int *)&xmit->buf[xmit->tail],
+eeaa9176002041 Rengarajan S 2023-12-15  370  		       port->membase + UART_TX_BURST_FIFO);
+eeaa9176002041 Rengarajan S 2023-12-15  371  		*valid_byte_count -= UART_BURST_SIZE;
+eeaa9176002041 Rengarajan S 2023-12-15  372  		*data_empty_count -= UART_BURST_SIZE;
+eeaa9176002041 Rengarajan S 2023-12-15  373  		xmit->tail = (xmit->tail + UART_BURST_SIZE) &
+eeaa9176002041 Rengarajan S 2023-12-15  374  			     (UART_XMIT_SIZE - 1);
+eeaa9176002041 Rengarajan S 2023-12-15  375  	}
+eeaa9176002041 Rengarajan S 2023-12-15  376  
+eeaa9176002041 Rengarajan S 2023-12-15  377  	while (*valid_byte_count--) {
+eeaa9176002041 Rengarajan S 2023-12-15  378  		if (*data_empty_count - UART_BYTE_SIZE < 0)
+eeaa9176002041 Rengarajan S 2023-12-15  379  			break;
+eeaa9176002041 Rengarajan S 2023-12-15  380  		writeb(xmit->buf[xmit->tail], port->membase +
+eeaa9176002041 Rengarajan S 2023-12-15  381  		       UART_TX_BYTE_FIFO);
+eeaa9176002041 Rengarajan S 2023-12-15  382  		*data_empty_count -= UART_BYTE_SIZE;
+eeaa9176002041 Rengarajan S 2023-12-15  383  
+eeaa9176002041 Rengarajan S 2023-12-15  384  		/*
+eeaa9176002041 Rengarajan S 2023-12-15  385  		 * When the tail of the circular buffer is reached, the next
+eeaa9176002041 Rengarajan S 2023-12-15  386  		 * byte is transferred to the beginning of the buffer.
+eeaa9176002041 Rengarajan S 2023-12-15  387  		 */
+eeaa9176002041 Rengarajan S 2023-12-15  388  		xmit->tail = (xmit->tail + UART_BYTE_SIZE) &
+eeaa9176002041 Rengarajan S 2023-12-15  389  			     (UART_XMIT_SIZE - 1);
+eeaa9176002041 Rengarajan S 2023-12-15  390  
+eeaa9176002041 Rengarajan S 2023-12-15  391  		/*
+eeaa9176002041 Rengarajan S 2023-12-15  392  		 * If there are any pending burst count, data is handled by
+eeaa9176002041 Rengarajan S 2023-12-15  393  		 * transmitting DWORDs at a time.
+eeaa9176002041 Rengarajan S 2023-12-15  394  		 */
+eeaa9176002041 Rengarajan S 2023-12-15 @395  		if (valid_burst_count && (xmit->tail <
+                                                            ^^^^^^^^^^^^^^^^^
+So this test should be if valid_burst_count != -1.  Or if
+valid_burst_count != UINT_MAX because it's unsigned...
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+eeaa9176002041 Rengarajan S 2023-12-15  396  		   (UART_XMIT_SIZE - UART_BURST_SIZE)))
+eeaa9176002041 Rengarajan S 2023-12-15  397  			break;
+eeaa9176002041 Rengarajan S 2023-12-15  398  	}
+eeaa9176002041 Rengarajan S 2023-12-15  399  }
 
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
-
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
