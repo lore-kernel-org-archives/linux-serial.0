@@ -1,99 +1,83 @@
-Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 134D41DA4F;
-	Wed,  3 Jan 2024 21:34:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0B221DA28
+	for <linux-serial@vger.kernel.org>; Wed,  3 Jan 2024 21:57:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C2xdHhwi"
-Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-6d9bc8939d0so2988002b3a.0;
-        Wed, 03 Jan 2024 13:34:31 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="PYexyR7V"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-556aa7fe765so1912637a12.2
+        for <linux-serial@vger.kernel.org>; Wed, 03 Jan 2024 13:57:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1704317671; x=1704922471; darn=vger.kernel.org;
-        h=mime-version:references:in-reply-to:message-id:cc:to:subject:from
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+cVjY5Pt++Oml7k46uXFJ0gcfn/CPEiqKh/TxTDxjTQ=;
-        b=C2xdHhwi3WIhl6+q9SmtcsJD9RNe1So9YmjKwEWZx/JQdjnijrvwldRnfmzWYhF2YX
-         Os7LiKVBx4+r1k+P10a6LN3R9SLa3oOaD1YxQ/TxwfHKyiiYZuX8BH12MSmpRjWF00oT
-         oE8iAQPAA6aq/bypusIErbFUvW1h5JIli4nYUrEJKar7lbQUAvG4MO+NiTg/oh0U9Yox
-         6Q/45BbFMhQ/J/BAzQPoZVNpflR0XrOKhV2rDHjvnJP5rYMI+qIvyU+deGu6MGvaGiba
-         nKAbG8G3vnN/KwHd747QNuTlJdkMQK1njV+cEUb75+qA42e9CnfIoRIg1TaXYvgwK8GT
-         R0fg==
+        d=linux-foundation.org; s=google; t=1704319069; x=1704923869; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=B48exi/vSSjCNhOi4YzTWDyLBVxd7y5kwoUyxHuxs+c=;
+        b=PYexyR7Vs88C4ZS1mySK/GGGhratC6m+WmCjSxHuoTCpciRkv8zZrNbLLgOlzQuJ0/
+         zDdKKqXMaW+xYvHcX6Rq8vUWY+eBF4hLR81e+ruo3CwmpBo0kkGIwT4fOEAX/h8b8krr
+         mKXlhoceK71iHUM0wRdJqe8qzZAOHAlBEvqFI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704317671; x=1704922471;
-        h=mime-version:references:in-reply-to:message-id:cc:to:subject:from
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+cVjY5Pt++Oml7k46uXFJ0gcfn/CPEiqKh/TxTDxjTQ=;
-        b=Nn1L4nKZb6jufd2K0+68Ur8kh1IUH+rtgnMitfTraatL9NPqsgWznCmweRj5IJ/Qea
-         O+Ou+uo6N0z+JLID2/6k1ct73TeDQKN8hIVnNc0mf0qOFz7IUe7YPa12fRAu7HpfMxXJ
-         v19wU9zIJAh7gjWqSB7F9ZOh2J1XlvYhQQuhAg3ja/fTLBs7Oc1j5xBLaxn6egFEpP/a
-         3Rs4PP1Ia7dAXaOr3ZSf1G2CZJNwnhw+kOTzyG05tY8kGoONtery6kk0EPb7WkZpL6H9
-         tKGAwTOxFpIH7JyweetyLo8hFZ1RD+KWoTYWWudwRIZMHC6uCUUKMy/v838yNXsExuG/
-         y14Q==
-X-Gm-Message-State: AOJu0YxSYhr+X1WIjdgYpGYBnMuahtQ9ig+zSdx4pxbzO62vsS+I1J3i
-	9OyDvy+EfZx4kko/ExvktoWJYrkVYVk=
-X-Google-Smtp-Source: AGHT+IH9nZVFLiGQx1dtVzf7cyH5HQ9gCnfyFQQwfiAq1rIgzN39tHS6Ync8unOzhVg7BWamte8Adg==
-X-Received: by 2002:a05:6a20:72ac:b0:197:587:aecd with SMTP id o44-20020a056a2072ac00b001970587aecdmr2916093pzk.7.1704317671128;
-        Wed, 03 Jan 2024 13:34:31 -0800 (PST)
-Received: from [192.168.1.135] ([103.77.5.247])
-        by smtp.gmail.com with ESMTPSA id le6-20020a056a004fc600b006da0f15b31csm12649452pfb.97.2024.01.03.13.34.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jan 2024 13:34:30 -0800 (PST)
-Date: Thu, 04 Jan 2024 10:34:14 +1300
-From: Oliver Giles <ohw.giles@gmail.com>
-Subject: Re: [PATCH v2 08/11] tty: splice_read: disable
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Ahelenia =?iso-8859-2?q?Ziemia=F1ska?=
-	<nabijaczleweli@nabijaczleweli.xyz>, Jens Axboe <axboe@kernel.dk>,
-	Christian Brauner <brauner@kernel.org>, Alexander Viro
-	<viro@zeniv.linux.org.uk>, linux-fsdevel@vger.kernel.org, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Message-Id: <2XFP6S.GINKQ8IKAA1W1@gmail.com>
-In-Reply-To: <CAHk-=wgLZXULo7pg=nwUMFLsKNUe+1_X=Fk7+f-J0735Oir97w@mail.gmail.com>
-References: <cover.1703126594.git.nabijaczleweli@nabijaczleweli.xyz>
-	<4dec932dcd027aa5836d70a6d6bedd55914c84c2.1703126594.git.nabijaczleweli@nabijaczleweli.xyz>
-	<6c3fc5e9-f8cf-4b42-9317-8ce9669160c2@kernel.org>
-	<CAHk-=wgLZXULo7pg=nwUMFLsKNUe+1_X=Fk7+f-J0735Oir97w@mail.gmail.com>
-X-Mailer: geary/44.1
+        d=1e100.net; s=20230601; t=1704319069; x=1704923869;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=B48exi/vSSjCNhOi4YzTWDyLBVxd7y5kwoUyxHuxs+c=;
+        b=QDwMgA+9oBjuNMhLyD7MIsbSBJArEIfp94joHfR+E9jo1mWEBISd+qyHz6VXkIri2k
+         h2aLM/DLmn+iWsz7eINNng936ApE6XzL7AQFlGmrbSABAB6sDFpKdyR9RTdaV3nigPQX
+         8q+LjoggUKEKrsFzGK3j+dmGv2xdmvEbl6OAOKvh+m8G7GNo0IH7WDa7euHLt/I7jfjx
+         MoqJmP/BMQjcXXzpMQp/76R9oo3H2U4mn1iBYs2npWbn+6AvuayzofUjVFDpExZqol4d
+         VqY14y2mnd5jByBl5ErvpqRox3/bZhIHIU0/qfYyR8ljj+ism5jv2mb+KEK11kou6ktG
+         Z8Pg==
+X-Gm-Message-State: AOJu0YxfZJz5X03wGxWE/Hs55/IIFFvDCjXr5wUw/dIIzm8Gp7OvZYwY
+	0AB+kr79kQ9yQ5UloB/LYFkYkbHoAWCwiapN3/+ZeDiD4ppvOENZ
+X-Google-Smtp-Source: AGHT+IH1b2uQUrGV1LA78qAj+FMJtHVXAbFFzf9CFu2rw+go0jE1UTjtes+D2ao1OsC+OsLxN3HEsA==
+X-Received: by 2002:a17:906:348c:b0:a23:6493:7211 with SMTP id g12-20020a170906348c00b00a2364937211mr8466666ejb.114.1704319068873;
+        Wed, 03 Jan 2024 13:57:48 -0800 (PST)
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
+        by smtp.gmail.com with ESMTPSA id ad21-20020a170907259500b00a26af11a335sm7806004ejc.2.2024.01.03.13.57.47
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Jan 2024 13:57:47 -0800 (PST)
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-336f2c88361so6324054f8f.3
+        for <linux-serial@vger.kernel.org>; Wed, 03 Jan 2024 13:57:47 -0800 (PST)
+X-Received: by 2002:a7b:c405:0:b0:40d:6299:3b6d with SMTP id
+ k5-20020a7bc405000000b0040d62993b6dmr5498997wmi.212.1704319067258; Wed, 03
+ Jan 2024 13:57:47 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+References: <cover.1703126594.git.nabijaczleweli@nabijaczleweli.xyz>
+ <4dec932dcd027aa5836d70a6d6bedd55914c84c2.1703126594.git.nabijaczleweli@nabijaczleweli.xyz>
+ <6c3fc5e9-f8cf-4b42-9317-8ce9669160c2@kernel.org> <CAHk-=wgLZXULo7pg=nwUMFLsKNUe+1_X=Fk7+f-J0735Oir97w@mail.gmail.com>
+ <2XFP6S.GINKQ8IKAA1W1@gmail.com>
+In-Reply-To: <2XFP6S.GINKQ8IKAA1W1@gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Wed, 3 Jan 2024 13:57:30 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wjGfiJS692Gh1sRkqGpZ87Ra-Rvg46EciSU3fUDD3HDug@mail.gmail.com>
+Message-ID: <CAHk-=wjGfiJS692Gh1sRkqGpZ87Ra-Rvg46EciSU3fUDD3HDug@mail.gmail.com>
+Subject: Re: [PATCH v2 08/11] tty: splice_read: disable
+To: Oliver Giles <ohw.giles@gmail.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, 
+	=?UTF-8?Q?Ahelenia_Ziemia=C5=84ska?= <nabijaczleweli@nabijaczleweli.xyz>, 
+	Jens Axboe <axboe@kernel.dk>, Christian Brauner <brauner@kernel.org>, 
+	Alexander Viro <viro@zeniv.linux.org.uk>, linux-fsdevel@vger.kernel.org, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
+On Wed, 3 Jan 2024 at 13:34, Oliver Giles <ohw.giles@gmail.com> wrote:
+>
+> I'm happy to report that that particular SSL VPN tool is no longer
+> around.
 
-On Wed, Jan 3 2024 at 11:14:59 -08:00:00, Linus Torvalds 
-<torvalds@linux-foundation.org> wrote:
-> 
-> It's some annoying SSL VPN thing that splices to pppd:
-> 
->    https://lore.kernel.org/all/C8KER7U60WXE.25UFD8RE6QZQK@oguc/
+Ahh, well that simplifies things and we can then just remove the tty
+splice support again.
 
-I'm happy to report that that particular SSL VPN tool is no longer 
-around.
-And it had anyway grown a fall-back-to-read/write in case splice() 
-fails.
-So at least from my perspective, no objections to splice-to-tty going 
-away
-altogether.
+Of course, maybe then somebody else will report on some other odd
+user, but ... fingers crossed.
 
-> and I'd be happy to try to limit splice to tty's to maybe just the one
-> case that pppd uses.
-
-To be exact, pppd is just providing a pty with which other (now all 
-extinct?)
-applications can do nefarious things.
-
-> Maybe that VPN thing already has the pty in non-blocking mode, for
-> example, and we could make the tty splicing fail for any blocking op?
-
-FWIW, the SSL VPN tool did indeed have the pty in non-blocking mode.
-
-Oliver
-
-
-
+                Linus
