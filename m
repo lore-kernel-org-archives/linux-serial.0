@@ -1,91 +1,123 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9373D1CA8B
-	for <linux-serial@vger.kernel.org>; Wed,  3 Jan 2024 19:15:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AE441DA50;
+	Wed,  3 Jan 2024 20:23:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="TLG34ZUR"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-556cd81163fso1036071a12.1
-        for <linux-serial@vger.kernel.org>; Wed, 03 Jan 2024 11:15:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1704309316; x=1704914116; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=VqpWt6ocefEfDXK+KnHNKXoEM0IL+DB/QDp9HBirG1E=;
-        b=TLG34ZUR43Zp8VgaC7Wq+g5+jPAFGjJK0YLdKWHzonNeK5953mQKAqs3zzd/QsWcY0
-         o65coPCiMQko2q3DT6t9gp5eYutuxCvMuNOpIYb1wzhv55As3pzUJXxN72jGHG+XxDTB
-         r7vveancDPtf0b+ceWCgAdfc7qVa9NUnSd/UM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704309316; x=1704914116;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=VqpWt6ocefEfDXK+KnHNKXoEM0IL+DB/QDp9HBirG1E=;
-        b=vMcfmGgkXNH9heJ7FpNMYHyUBRZh0cyyH+22wVUyx0dAgrOxXacRfQTCf8nxtXGolm
-         8UFlugZKHGoQauxMuwOGUz1ByZbqx9HKACmQZrk38D7zev3hT3meTJaWzBGVtnby1I7g
-         DqYtzPK53PNA7JZQi5oYnXzY7yIsmpWAzyALhF61eSLhmyWK6m81NbaTpMuL/dJPyIxW
-         tELOYmv1+IL+II30DXUa3nwKI2OyOV92m6o35IiNPkVTIkBDDFIWUaDTpEY+EeqpEw1h
-         5qjhZkxEa6PyId59pGCOw3c/IeXvangs4YkXoPInQLHZoQHxwces8aD0NAv/2Gu2zgom
-         Hznw==
-X-Gm-Message-State: AOJu0YypN0vFDxKnSSkpjubJe8L/Y8jvrODSHE7UiSsTdEFQCzIf9fQ1
-	xvR9qrk7qm3dU+jtgrOq13iuRWeHl54TNyfOc75NWiUfBlFqu1mv
-X-Google-Smtp-Source: AGHT+IF22liLqBr5Q2olgYVpXzIVI0sBryTb2anon5Woa75giKFiw0ARL6FCInzUXKlZ+Dso83I6JQ==
-X-Received: by 2002:a50:8747:0:b0:556:38f6:484d with SMTP id 7-20020a508747000000b0055638f6484dmr2071695edv.112.1704309316799;
-        Wed, 03 Jan 2024 11:15:16 -0800 (PST)
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com. [209.85.208.50])
-        by smtp.gmail.com with ESMTPSA id ek20-20020a056402371400b00555f49e7080sm6367421edb.56.2024.01.03.11.15.15
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Jan 2024 11:15:15 -0800 (PST)
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-55559e26ccfso6881133a12.3
-        for <linux-serial@vger.kernel.org>; Wed, 03 Jan 2024 11:15:15 -0800 (PST)
-X-Received: by 2002:a17:906:ef0c:b0:a27:6fbc:ce3 with SMTP id
- f12-20020a170906ef0c00b00a276fbc0ce3mr3854440ejs.42.1704309315585; Wed, 03
- Jan 2024 11:15:15 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BLH2wcCX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF902C433C7;
+	Wed,  3 Jan 2024 20:23:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1704313388;
+	bh=/1wi2elESu3qA3ymnpBhXxm3Cm+EGVj4BLX3l9jDeR4=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=BLH2wcCXsSl2DovBkC7X1OYo1n2t+AVRmYKhft/A+OqHrwxapT4fJZm2g5gGobnQe
+	 uO5JM6ufEggqRjmBTKVvIxwG5XLviwmeZ/AZLV9AMtIVPxNZwE2g6JXG9P+1EQfaTU
+	 IFRHlrkoEv2QUfQeASwRkwcfM4QqEklPW1/Lhw/SkKSJEuwTO5ObThdkYq2gRG3Gw8
+	 ua0kVLNPAn9E67u+OUEhegv69kgs47HPCj35fqOQCZIrT0BFTl/Xz9T9buqi3pzXMU
+	 8tIyCNLx/F+7CSNWOKpFKjeXFH/lBNvgXJZreUupf4tUc0Z82iD0N8+GY+fVRJlcLJ
+	 iQahrI1SeoUsA==
+Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-2cca5e7b390so110391391fa.3;
+        Wed, 03 Jan 2024 12:23:07 -0800 (PST)
+X-Gm-Message-State: AOJu0YyYfXwCsecXYbmxrP6O1PG+yYuuWdQIa847aQt9wIY5okSU2RWf
+	yP1Ei/uq/ZAZ7auRD90h8cxOMYOcOX8t+3+B6g==
+X-Google-Smtp-Source: AGHT+IEuSajsLar5BZfyKxFsEncrEL3hHHCChs5bYkTvb/M8kfLvaIglHefhLNG4QxD4FygqIsE6WgfNNyRsASBkyD0=
+X-Received: by 2002:a2e:9684:0:b0:2cc:7d41:548c with SMTP id
+ q4-20020a2e9684000000b002cc7d41548cmr8632506lji.54.1704313386193; Wed, 03 Jan
+ 2024 12:23:06 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1703126594.git.nabijaczleweli@nabijaczleweli.xyz>
- <4dec932dcd027aa5836d70a6d6bedd55914c84c2.1703126594.git.nabijaczleweli@nabijaczleweli.xyz>
- <6c3fc5e9-f8cf-4b42-9317-8ce9669160c2@kernel.org>
-In-Reply-To: <6c3fc5e9-f8cf-4b42-9317-8ce9669160c2@kernel.org>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Wed, 3 Jan 2024 11:14:59 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wgLZXULo7pg=nwUMFLsKNUe+1_X=Fk7+f-J0735Oir97w@mail.gmail.com>
-Message-ID: <CAHk-=wgLZXULo7pg=nwUMFLsKNUe+1_X=Fk7+f-J0735Oir97w@mail.gmail.com>
-Subject: Re: [PATCH v2 08/11] tty: splice_read: disable
-To: Jiri Slaby <jirislaby@kernel.org>, Oliver Giles <ohw.giles@gmail.com>
-Cc: =?UTF-8?Q?Ahelenia_Ziemia=C5=84ska?= <nabijaczleweli@nabijaczleweli.xyz>, 
-	Jens Axboe <axboe@kernel.dk>, Christian Brauner <brauner@kernel.org>, 
-	Alexander Viro <viro@zeniv.linux.org.uk>, linux-fsdevel@vger.kernel.org, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, 
+References: <9d7e85914eb1cdb313b28cb019093a84dd9b4773.1703167505.git.michal.simek@amd.com>
+ <de6370c5-5cd1-409a-8716-99dd7738d30d@linaro.org> <08546f36-9f88-4fd9-ba4e-5d6ee21cd60f@amd.com>
+In-Reply-To: <08546f36-9f88-4fd9-ba4e-5d6ee21cd60f@amd.com>
+From: Rob Herring <robh+dt@kernel.org>
+Date: Wed, 3 Jan 2024 13:22:43 -0700
+X-Gmail-Original-Message-ID: <CAL_Jsq+yPHT3VRVzNh1NY03KUoKvN41zzQKtqYvxxGjvv754Zw@mail.gmail.com>
+Message-ID: <CAL_Jsq+yPHT3VRVzNh1NY03KUoKvN41zzQKtqYvxxGjvv754Zw@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: serial: Describe ARM dcc interface
+To: Michal Simek <michal.simek@amd.com>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, linux-kernel@vger.kernel.org, 
+	monstr@monstr.eu, michal.simek@xilinx.com, git@xilinx.com, 
+	Conor Dooley <conor+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, devicetree@vger.kernel.org, 
 	linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 3 Jan 2024 at 03:36, Jiri Slaby <jirislaby@kernel.org> wrote:
+On Tue, Jan 2, 2024 at 8:32=E2=80=AFAM Michal Simek <michal.simek@amd.com> =
+wrote:
 >
-> What are those "things" doing that "splice to tty", I don't recall and
-> the commit message above ^^^ does not spell that out. Linus?
+>
+>
+> On 12/22/23 09:20, Krzysztof Kozlowski wrote:
+> > On 21/12/2023 15:05, Michal Simek wrote:
+> >> Debug Communication Channel (DCC) provides the way how to pass data be=
+tween
+> >> target CPU and host via JTAG interface. Every CPU has own interface fo=
+r
+> >> communication via dbgdtrtx_el0 and dbgdtrrx_el0 registers.
+> >>
+> >> Signed-off-by: Michal Simek <michal.simek@amd.com>
+> >> ---
+> >>
+> >> This communication interface is used for flash programming on Xilinx
+> >> SOCs from U-Boot.
+> >> https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/serial/arm_=
+dcc.c
+> >>
+> >> ---
+> >>   .../devicetree/bindings/serial/arm,dcc.yaml   | 30 +++++++++++++++++=
+++
+> >>   1 file changed, 30 insertions(+)
+> >>   create mode 100644 Documentation/devicetree/bindings/serial/arm,dcc.=
+yaml
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/serial/arm,dcc.yaml b/D=
+ocumentation/devicetree/bindings/serial/arm,dcc.yaml
+> >> new file mode 100644
+> >> index 000000000000..fd0589356617
+> >> --- /dev/null
+> >> +++ b/Documentation/devicetree/bindings/serial/arm,dcc.yaml
+> >> @@ -0,0 +1,30 @@
+> >> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> >> +%YAML 1.2
+> >> +---
+> >> +$id: http://devicetree.org/schemas/serial/arm,dcc.yaml#
+> >> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >> +
+> >> +title: ARM DCC (Data communication channel) serial emulation
+> >> +
+> >> +maintainers:
+> >> +  - Michal Simek <michal.simek@amd.com>
+> >> +
+> >> +description: |
+> >> +  ARM DCC (Data communication channel) serial emulation interface ava=
+ilable
+> >> +  via JTAG can be also used as one of serial line tightly coupled wit=
+h every
+> >> +  ARM CPU available in the system.
+> >> +
+> >> +properties:
+> >> +  compatible:
+> >> +    const: arm,dcc
+> >> +
+> >> +required:
+> >> +  - compatible
+> >
+> > no allOf: with $ref to serial.yaml? Does it differ somehow?
+>
+> Valid one could be only nodename format and maybe label.
+> Others are not relevant. But if that's fine I can also add it.
 
-It's some annoying SSL VPN thing that splices to pppd:
+Yeah, I think serial.yaml mostly doesn't apply here. Not really worth
+including for just the node name.
 
-   https://lore.kernel.org/all/C8KER7U60WXE.25UFD8RE6QZQK@oguc/
+Greg may have already processed this, so you might want to resend. Or
+wait a few days and I'll just apply it.
 
-and I'd be happy to try to limit splice to tty's to maybe just the one
-case that pppd uses.
-
-So I don't think we should remove splice_write for tty's entirely, but
-maybe we can limit it to only the case that the VPN thing used.
-
-I never saw the original issue personally, and I think only Oliver
-reported it, so cc'ing Oliver.
-
-Maybe that VPN thing already has the pty in non-blocking mode, for
-example, and we could make the tty splicing fail for any blocking op?
-
-                Linus
+Rob
