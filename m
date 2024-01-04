@@ -1,104 +1,75 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAAEE249E8;
-	Thu,  4 Jan 2024 15:23:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B86FC2377E
+	for <linux-serial@vger.kernel.org>; Thu,  4 Jan 2024 15:28:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="oNblqvl2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCC8CC433C8;
-	Thu,  4 Jan 2024 15:23:55 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="FEN1/Imo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA3E0C433C7;
+	Thu,  4 Jan 2024 15:28:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1704381836;
-	bh=ntsB/zO+V8LcScJNpkXqCsZ4Rc4wuSVE8XfPym0CPPg=;
-	h=Subject:To:From:Date:From;
-	b=oNblqvl2jVDn0iX9Y0/qYKriZRbdIBYdUTa+B4MyT/sv1BxAw+a8k0eR7GOg5VVgz
-	 eSPdWs+rw4fnbiVSyGlLQD5Y+iNf/bS90oGyMkQaZJmqotsLOlCGEm4/uM7f5pQjyI
-	 TuLa+X+41pZKVCpmzS1PcClDBYu5QLI+e5w5cNEk=
-Subject: patch "serial: apbuart: fix console prompt on qemu" added to tty-testing
-To: sam@ravnborg.org,andreas@gaisler.com,gregkh@linuxfoundation.org,jirislaby@kernel.org,linux-serial@vger.kernel.org,sparclinux@vger.kernel.org
-From: <gregkh@linuxfoundation.org>
-Date: Thu, 04 Jan 2024 16:23:39 +0100
-Message-ID: <2024010439-elaborate-upstream-dd50@gregkh>
+	s=korg; t=1704382130;
+	bh=5t7HoWJgCA0PUHnWWgq5gi+IsJNLSMShTrPioWBQprA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=FEN1/ImoxSJHa6C4HLbuyGi+eYmFSGzJ7Tz8T2aZP7jRx2PWmlAfQdzUgRqUtNd/I
+	 9Mmi7s3MOf7mAaLwuCqpnwjPZpv0jyD4QvULVHvWPKl92ult+egJX4kLJrKmpqDDFR
+	 tI8CbgTGjdl1w4g0AECjEJdxe7IuAMwqdLQgvC4Y=
+Date: Thu, 4 Jan 2024 16:28:47 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Roman =?utf-8?B?xb1pbGth?= <roman.zilka@gmail.com>
+Cc: jirislaby@kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3] tty/vt: UTF-8 parsing update according to RFC 3629,
+ modern Unicode
+Message-ID: <2024010413-quickly-crinkly-6c5b@gregkh>
+References: <14027090-ca91-45ca-90d4-75456c0f2c76@gmail.com>
+ <2023121201-ecosphere-polyester-8d37@gregkh>
+ <834b6344-55dd-4a92-b1db-8d60d2b40a3e@gmail.com>
+ <e5e7fd4f-acac-41a0-8a36-1f4f71eb7c18@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ANSI_X3.4-1968
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <e5e7fd4f-acac-41a0-8a36-1f4f71eb7c18@gmail.com>
 
+On Tue, Dec 12, 2023 at 09:26:53PM +0100, Roman Žilka wrote:
+> vc_translate_unicode() and vc_sanitize_unicode() parse input to the
+> UTF-8-enabled console, marking invalid byte sequences and producing Unicode
+> codepoints. The current algorithm follows ancient Unicode and may accept
+> invalid byte sequences, pass on non-existent codepoints and reject valid
+> sequences.
+> 
+> The patch restores the functions' compliance with modern Unicode (v15.1 [1]
+> + many previous versions) as well as RFC 3629 [2].
+> 1. Codepoint space is limited to 0x10FFFF.
 
-This is a note to let you know that I've just added the patch titled
+Wait, why?  And shouldn't this be an individual patch on it's own?  What
+is wrong with the checking we currently have.
 
-    serial: apbuart: fix console prompt on qemu
+> 2. "Noncharacters", such as U+FFFE, U+FFFF, are no longer invalid in
+>    Unicode and will be accepted.
 
-to my tty git tree which can be found at
-    git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
-in the tty-testing branch.
+Accepted when?
 
-The patch will show up in the next release of the linux-next tree
-(usually sometime within the next 24 hours during the week.)
+> Another option was to complete the set of
+>    noncharacters (used to be just those two, now there's more) and preserve
+>    the rejection step. This is indeed what Unicode suggests (v15.1, chap.
+>    23.7) (not requires), but most codepoints are !iswprint(), so selecting
+>    just the noncharacters seemed arbitrary and futile (and unnecessary).
 
-The patch will be merged to the tty-next branch sometime soon,
-after it passes testing, and the merge window is open.
+What is this change going to break with existing systems that were
+thinking these were invalid characters?
 
-If you have any questions about this process, please let me know.
+> On the side:
+> 3. Corrected/improved the doc of the two functions (esp. @rescan).
 
+Again, a separate commit.  When you have to list the changes out, that
+is a huge hint it needs to be broken up into smaller pieces.
 
-From c6dcd8050fb7c2efec6946ae9c49bc186b0a7475 Mon Sep 17 00:00:00 2001
-From: Sam Ravnborg <sam@ravnborg.org>
-Date: Tue, 26 Dec 2023 13:16:07 +0100
-Subject: serial: apbuart: fix console prompt on qemu
+thanks,
 
-When using a leon kernel with qemu there where no console prompt.
-The root cause is the handling of the fifo size in the tx part of the
-apbuart driver.
-
-The qemu uart driver only have a very rudimentary status handling and do
-not report the number of chars queued in the tx fifo in the status register.
-So the driver ends up with a fifo size of 1.
-
-In the tx path the fifo size is divided by 2 - resulting in a fifo
-size of zero.
-
-The original implementation would always try to send one char, but
-after the introduction of uart_port_tx_limited() the fifo size is
-respected even for the first char.
-
-There seems to be no good reason to divide the fifo size with two - so
-remove this. It looks like something copied from the original amba driver.
-
-With qemu we now have a minimum fifo size of one char, so we show
-the prompt.
-
-Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Fixes: d11cc8c3c4b6 ("tty: serial: use uart_port_tx_limited()")
-Cc: Andreas Larsson <andreas@gaisler.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc:  <linux-serial@vger.kernel.org>
-Cc:  <sparclinux@vger.kernel.org>
-Link: https://lore.kernel.org/r/20231226121607.GA2622970@ravnborg.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/serial/apbuart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/apbuart.c b/drivers/tty/serial/apbuart.c
-index 716cb014c028..364599f256db 100644
---- a/drivers/tty/serial/apbuart.c
-+++ b/drivers/tty/serial/apbuart.c
-@@ -122,7 +122,7 @@ static void apbuart_tx_chars(struct uart_port *port)
- {
- 	u8 ch;
- 
--	uart_port_tx_limited(port, ch, port->fifosize >> 1,
-+	uart_port_tx_limited(port, ch, port->fifosize,
- 		true,
- 		UART_PUT_CHAR(port, ch),
- 		({}));
--- 
-2.43.0
-
-
+greg k-h
