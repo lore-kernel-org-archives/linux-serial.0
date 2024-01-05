@@ -1,102 +1,169 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C8FD249F9;
-	Thu,  4 Jan 2024 15:56:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99ABA20DC8;
+	Fri,  5 Jan 2024 08:20:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="VYm7NWQH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47D65C433C7;
-	Thu,  4 Jan 2024 15:56:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1704383791;
-	bh=tQ2xGVztCOGERqBGQC3sZSgIZHy0WBG63Eyy/oqqK5o=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=VYm7NWQHeSJTLlYxDfvefYiyhsrSrrguHmZ7Ex8ulp4rxKmhF0DqPijDwGz81qVQf
-	 f4iW4/kO00i1xHwbs0tPV8RT7yeOPPkWN9UJ+9M0yt7iJJs1oW4n8vu5cbQI4tm9Yr
-	 GxAvQ1cKZrq6lxpI8yeyo7iYMlrK4/ogZ3EEnzeM=
-Date: Thu, 4 Jan 2024 16:56:24 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Tudor Ambarus <tudor.ambarus@linaro.org>
-Cc: peter.griffin@linaro.org, robh+dt@kernel.org,
-	krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
-	sboyd@kernel.org, conor+dt@kernel.org, andi.shyti@kernel.org,
-	alim.akhtar@samsung.com, jirislaby@kernel.org,
-	s.nawrocki@samsung.com, tomasz.figa@gmail.com,
-	cw00.choi@samsung.com, arnd@arndb.de, semen.protsenko@linaro.org,
-	andre.draszik@linaro.org, saravanak@google.com,
-	willmcvicker@google.com, linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
-	kernel-team@android.com
-Subject: Re: [PATCH v2 04/12] tty: serial: samsung: prepare for different IO
- types
-Message-ID: <2024010450-heritage-variety-d72d@gregkh>
-References: <20231228125805.661725-1-tudor.ambarus@linaro.org>
- <20231228125805.661725-5-tudor.ambarus@linaro.org>
- <2024010432-taco-moneyless-53e2@gregkh>
- <a3a9df6a-4270-4076-9e9b-ce2fc7284d54@linaro.org>
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="tT6cNXeG"
+Received: from pps.filterd (m0369458.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.17.1.22/8.17.1.22) with ESMTP id 4052tkx3028984;
+	Fri, 5 Jan 2024 09:19:56 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	selector1; bh=gxrbGKGX0buop+PvuAmG2IkLu4G/QjEo0CpiUPjSvQ4=; b=tT
+	6cNXeGAKaJftgTWYQ4btXPz25NJkoN6rwQ97Z+A70hxVGPC2EACwY9KlFCdwin7x
+	T0eGIn7cyZvSTfTKL9FDgLEXwhSfQvbd3x/0RqhDxui/1vUCSEUHuwwZr9vaSZe9
+	VdlGf5MOsb+NyVQ6ko42YO9d1nlPanGwO/RF/J4coZ/A/Hk91SlDoU+TcPWpChjc
+	VMqXebLXrELMYSyaqHnkwRK2oyoxdP/Ov8ew4yZ4CDuu4GeqUPTeGL0AxMTR94Qn
+	lXgr3Z1OrXzqkGP1ijFxHO1uxSOuRA4iapRhe6ZvvoZRpbUBJFP4zW8Cc7oNPSVD
+	QPxxMGTmlyF9GBQaTcIw==
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3ve9dss0v4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 05 Jan 2024 09:19:56 +0100 (CET)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+	by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 086FC10002A;
+	Fri,  5 Jan 2024 09:19:52 +0100 (CET)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id C8B17210587;
+	Fri,  5 Jan 2024 09:19:52 +0100 (CET)
+Received: from [10.201.20.32] (10.201.20.32) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Fri, 5 Jan
+ 2024 09:19:50 +0100
+Message-ID: <9b66bc71-08de-43bd-b7e1-4e7c9defd400@foss.st.com>
+Date: Fri, 5 Jan 2024 09:19:47 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a3a9df6a-4270-4076-9e9b-ce2fc7284d54@linaro.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 03/13] dt-bindings: bus: document RIFSC
+To: Rob Herring <robh@kernel.org>
+CC: <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <alexandre.torgue@foss.st.com>, <vkoul@kernel.org>, <jic23@kernel.org>,
+        <olivier.moysan@foss.st.com>, <arnaud.pouliquen@foss.st.com>,
+        <mchehab@kernel.org>, <fabrice.gasnier@foss.st.com>,
+        <andi.shyti@kernel.org>, <ulf.hansson@linaro.org>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <hugues.fruchet@foss.st.com>, <lee@kernel.org>, <will@kernel.org>,
+        <catalin.marinas@arm.com>, <arnd@kernel.org>,
+        <richardcochran@gmail.com>, Frank Rowand <frowand.list@gmail.com>,
+        <peng.fan@oss.nxp.com>, <lars@metafoo.de>, <rcsekar@samsung.com>,
+        <wg@grandegger.com>, <mkl@pengutronix.de>,
+        <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <dmaengine@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <linux-medi.a@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-phy@lists.infradead.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>
+References: <20231212152356.345703-1-gatien.chevallier@foss.st.com>
+ <20231212152356.345703-4-gatien.chevallier@foss.st.com>
+ <20231221215316.GA155023-robh@kernel.org>
+Content-Language: en-US
+From: Gatien CHEVALLIER <gatien.chevallier@foss.st.com>
+In-Reply-To: <20231221215316.GA155023-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-01-05_04,2024-01-05_01,2023-05-22_02
 
-On Thu, Jan 04, 2024 at 03:41:28PM +0000, Tudor Ambarus wrote:
+Hi Rob,
+
+On 12/21/23 22:53, Rob Herring wrote:
+> On Tue, Dec 12, 2023 at 04:23:46PM +0100, Gatien Chevallier wrote:
+>> Document RIFSC (RIF security controller). RIFSC is a firewall controller
+>> composed of different kinds of hardware resources.
+>>
+>> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
+>> ---
+>>
+>> Changes in V6:
+>> 	- Renamed access-controller to access-controllers
+>> 	- Removal of access-control-provider property
+>> 	- Removal of access-controller and access-controller-names
+>> 	  declaration in the patternProperties field. Add
+>> 	  additionalProperties: true in this field.
+>>
+>> Changes in V5:
+>> 	- Renamed feature-domain* to access-control*
+>>
+>> Changes in V2:
+>> 	- Corrected errors highlighted by Rob's robot
+>> 	- No longer define the maxItems for the "feature-domains"
+>> 	  property
+>> 	- Fix example (node name, status)
+>> 	- Declare "feature-domain-names" as an optional
+>> 	  property for child nodes
+>> 	- Fix description of "feature-domains" property
+>>
+>>   .../bindings/bus/st,stm32mp25-rifsc.yaml      | 96 +++++++++++++++++++
+>>   1 file changed, 96 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/bus/st,stm32mp25-rifsc.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/bus/st,stm32mp25-rifsc.yaml b/Documentation/devicetree/bindings/bus/st,stm32mp25-rifsc.yaml
+>> new file mode 100644
+>> index 000000000000..95aa7f04c739
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/bus/st,stm32mp25-rifsc.yaml
+>> @@ -0,0 +1,96 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/bus/st,stm32mp25-rifsc.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: STM32 Resource isolation framework security controller
+>> +
+>> +maintainers:
+>> +  - Gatien Chevallier <gatien.chevallier@foss.st.com>
+>> +
+>> +description: |
+>> +  Resource isolation framework (RIF) is a comprehensive set of hardware blocks
+>> +  designed to enforce and manage isolation of STM32 hardware resources like
+>> +  memory and peripherals.
+>> +
+>> +  The RIFSC (RIF security controller) is composed of three sets of registers,
+>> +  each managing a specific set of hardware resources:
+>> +    - RISC registers associated with RISUP logic (resource isolation device unit
+>> +      for peripherals), assign all non-RIF aware peripherals to zero, one or
+>> +      any security domains (secure, privilege, compartment).
+>> +    - RIMC registers: associated with RIMU logic (resource isolation master
+>> +      unit), assign all non RIF-aware bus master to one security domain by
+>> +      setting secure, privileged and compartment information on the system bus.
+>> +      Alternatively, the RISUP logic controlling the device port access to a
+>> +      peripheral can assign target bus attributes to this peripheral master port
+>> +      (supported attribute: CID).
+>> +    - RISC registers associated with RISAL logic (resource isolation device unit
+>> +      for address space - Lite version), assign address space subregions to one
+>> +      security domains (secure, privilege, compartment).
+>> +
+>> +properties:
+>> +  compatible:
+>> +    contains:
+>> +      const: st,stm32mp25-rifsc
 > 
+> This needs to be exact and include 'simple-bus'. You'll need a custom
+> 'select' with the above to avoid matching all other 'simple-bus' cases.
 > 
-> On 1/4/24 15:32, Greg KH wrote:
-> > On Thu, Dec 28, 2023 at 12:57:57PM +0000, Tudor Ambarus wrote:
-> >> GS101's Connectivity Peripheral blocks (peric0/1 blocks) which
-> >> include the I3C and USI (I2C, SPI, UART) only allow 32-bit
-> >> register accesses. If using 8-bit register accesses, a SError
-> >> Interrupt is raised causing the system unusable.
-> >>
-> >> Instead of specifying the reg-io-width = 4 everywhere, for each node,
-> >> the requirement should be deduced from the compatible.
-> >>
-> >> Prepare the samsung tty driver to allow IO types different than
-> >> UPIO_MEM. ``struct uart_port::iotype`` is an unsigned char where all
-> >> its 8 bits are exposed to uapi. We can't make NULL checks on it to
-> >> verify if it's set, thus always set it from the driver's data.
-> >>
-> >> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
-> >> ---
-> >> v2: new patch
-> >>
-> >>  drivers/tty/serial/samsung_tty.c | 9 ++++++++-
-> >>  1 file changed, 8 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> >> index 66bd6c090ace..97ce4b2424af 100644
-> >> --- a/drivers/tty/serial/samsung_tty.c
-> >> +++ b/drivers/tty/serial/samsung_tty.c
-> >> @@ -72,6 +72,7 @@ struct s3c24xx_uart_info {
-> >>  	const char		*name;
-> >>  	enum s3c24xx_port_type	type;
-> >>  	unsigned int		port_type;
-> >> +	unsigned char		iotype;
-> >>  	unsigned int		fifosize;
-> >>  	unsigned long		rx_fifomask;
-> >>  	unsigned long		rx_fifoshift;
-> > 
-> > Is there a reason you are trying to add unused memory spaces to this
-> > structure for no valid reason?  I don't think you could have picked a
-> > more incorrect place in there to add this :)
-> > 
-> > Please fix.
-> > 
+> With that,
 > 
-> Will put it after "const char *name".
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
-If you do, spend some time with the tool, pahole, and see if that's
-really the best place for it or not.  Might be, might not be, but you
-should verify it please.
+Thank you for the review,
+I'll update this for the next version whilst applying your tag
 
-thanks,
-
-greg k-h
+Gatien
