@@ -1,104 +1,183 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D2D3249F3;
-	Fri,  5 Jan 2024 09:21:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B0D528E08
+	for <linux-serial@vger.kernel.org>; Fri,  5 Jan 2024 10:22:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="jC0TsOWJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23A0EC433C8;
-	Fri,  5 Jan 2024 09:21:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1704446512;
-	bh=2KSxEcP5EDrV4lu8VHhBbdAukOvaEgpynNjsnX+n/9s=;
-	h=Subject:To:From:Date:From;
-	b=jC0TsOWJMc6ACkELrz1QvhK+3ajVxG6CL9xkEoS3uT/gwfuQGX3oo6ugkGsJ3JZrv
-	 KV4CYvTkdZzx7+OuU0qIafZR3wLSjDC20uRkryI+cViRTD8rPSHAgbNATA2H2si6v4
-	 ijfpkG5OyV8UTwdY6HO6MyfCJhASFUtQXOlkK/dE=
-Subject: patch "serial: apbuart: fix console prompt on qemu" added to tty-next
-To: sam@ravnborg.org,andreas@gaisler.com,gregkh@linuxfoundation.org,jirislaby@kernel.org,linux-serial@vger.kernel.org,sparclinux@vger.kernel.org
-From: <gregkh@linuxfoundation.org>
-Date: Fri, 05 Jan 2024 10:21:38 +0100
-Message-ID: <2024010538-legged-species-457d@gregkh>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="dOFAPwkS"
+Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-2ccbded5aa4so16974621fa.1
+        for <linux-serial@vger.kernel.org>; Fri, 05 Jan 2024 02:22:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1704450169; x=1705054969; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Otn9loBBsw/UzqwebEZy3Ooa0CujzEAcJwFz8Zj1BXs=;
+        b=dOFAPwkSAsJq5YJUiju4J4fVJz0ZZ0Ky14HRIGt40H8EG8j+SXQVMFUUPmE1PGDfsd
+         wmGVc9s2cytmOHs83v1AY5GlxQqu4zXrB7ic70u71nFRkU5wVSkMRLUBpVbzM2ZHfcRy
+         gMDDroO+8usoVtxCxb9xQV/9H/Ky2W1tSOfAXxoBlX4/MrfkCmESsjnLj/NicbL8sVV4
+         cl7pgnGN63tNP8A78galhMAh9rZsobnRg1PjqGZaUp3mRMOmNOV+//cQbbmhZlledYCh
+         r1lB1AXZZDON/hnwU/8ZRrhwGGqnS33FfxNsZaxgPL7TCzXlZ0LrxoAkMxCEU90Y1F8B
+         uwKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1704450169; x=1705054969;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Otn9loBBsw/UzqwebEZy3Ooa0CujzEAcJwFz8Zj1BXs=;
+        b=pNyFSRogVI6iOZfCKCwzwO/r2Z3yDX2MafC6w2OZaiGSCZUnHjSivv0RTr1JkSkD1U
+         400/5pfvAl76chI2tEkTLHiGOfxN5TvmEHtA1I5oEKvTmuYD0Nwu0PPWNX3pbVXe/2LY
+         IviL04KI7P5Tg8ATtSwVoKOJHlOzJXdRMnGVda7XvgL2/TtUjmUnKeg756b6eVVqHjHh
+         4g7dv1M+/3tQ/1OeRtYVFTgN1dg5EXcCPE+UR+6e1VwUedtYUno0f0SBSnuteli/iJyP
+         zWuHQIaFCSTRG1aiB7mPHRqkW65DhgEBitLf7RGzSuJlDtvr6ZGwb5Cxdieez9VV6WdH
+         j8+A==
+X-Gm-Message-State: AOJu0YzAZwbmfmwCpU2XqDKV+3Sa546VfwvDUCPgvzXKTZMhpu+iI7T0
+	C81l9g+lsvoIKMmGT0ZAPxlswuLVjI8MzQ==
+X-Google-Smtp-Source: AGHT+IE2UecOtUprnsE+wTP7UJCkRZPB7fx0sJ/qDDVGHx8WV3NGtKzjOZu+swh/2+L77+HG7FmkwQ==
+X-Received: by 2002:a2e:a9a2:0:b0:2cc:6bf6:cdc6 with SMTP id x34-20020a2ea9a2000000b002cc6bf6cdc6mr1295046ljq.7.1704450169091;
+        Fri, 05 Jan 2024 02:22:49 -0800 (PST)
+Received: from [192.168.2.107] ([79.115.63.202])
+        by smtp.gmail.com with ESMTPSA id ek21-20020a056402371500b0055732bd1fc0sm474638edb.82.2024.01.05.02.22.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 05 Jan 2024 02:22:48 -0800 (PST)
+Message-ID: <19746c85-6eff-4f63-9370-9592ad73f22c@linaro.org>
+Date: Fri, 5 Jan 2024 10:22:46 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ANSI_X3.4-1968
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 04/12] tty: serial: samsung: prepare for different IO
+ types
+Content-Language: en-US
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: peter.griffin@linaro.org, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+ sboyd@kernel.org, conor+dt@kernel.org, andi.shyti@kernel.org,
+ alim.akhtar@samsung.com, jirislaby@kernel.org, s.nawrocki@samsung.com,
+ tomasz.figa@gmail.com, cw00.choi@samsung.com, arnd@arndb.de,
+ semen.protsenko@linaro.org, andre.draszik@linaro.org, saravanak@google.com,
+ willmcvicker@google.com, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
+ kernel-team@android.com
+References: <20231228125805.661725-1-tudor.ambarus@linaro.org>
+ <20231228125805.661725-5-tudor.ambarus@linaro.org>
+ <2024010432-taco-moneyless-53e2@gregkh>
+ <a3a9df6a-4270-4076-9e9b-ce2fc7284d54@linaro.org>
+ <2024010450-heritage-variety-d72d@gregkh>
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
+In-Reply-To: <2024010450-heritage-variety-d72d@gregkh>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
 
-This is a note to let you know that I've just added the patch titled
 
-    serial: apbuart: fix console prompt on qemu
+On 1/4/24 15:56, Greg KH wrote:
+> On Thu, Jan 04, 2024 at 03:41:28PM +0000, Tudor Ambarus wrote:
+>>
+>>
+>> On 1/4/24 15:32, Greg KH wrote:
+>>> On Thu, Dec 28, 2023 at 12:57:57PM +0000, Tudor Ambarus wrote:
+>>>> GS101's Connectivity Peripheral blocks (peric0/1 blocks) which
+>>>> include the I3C and USI (I2C, SPI, UART) only allow 32-bit
+>>>> register accesses. If using 8-bit register accesses, a SError
+>>>> Interrupt is raised causing the system unusable.
+>>>>
+>>>> Instead of specifying the reg-io-width = 4 everywhere, for each node,
+>>>> the requirement should be deduced from the compatible.
+>>>>
+>>>> Prepare the samsung tty driver to allow IO types different than
+>>>> UPIO_MEM. ``struct uart_port::iotype`` is an unsigned char where all
+>>>> its 8 bits are exposed to uapi. We can't make NULL checks on it to
+>>>> verify if it's set, thus always set it from the driver's data.
+>>>>
+>>>> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+>>>> ---
+>>>> v2: new patch
+>>>>
+>>>>  drivers/tty/serial/samsung_tty.c | 9 ++++++++-
+>>>>  1 file changed, 8 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+>>>> index 66bd6c090ace..97ce4b2424af 100644
+>>>> --- a/drivers/tty/serial/samsung_tty.c
+>>>> +++ b/drivers/tty/serial/samsung_tty.c
+>>>> @@ -72,6 +72,7 @@ struct s3c24xx_uart_info {
+>>>>  	const char		*name;
+>>>>  	enum s3c24xx_port_type	type;
+>>>>  	unsigned int		port_type;
+>>>> +	unsigned char		iotype;
+>>>>  	unsigned int		fifosize;
+>>>>  	unsigned long		rx_fifomask;
+>>>>  	unsigned long		rx_fifoshift;
+>>>
+>>> Is there a reason you are trying to add unused memory spaces to this
+>>> structure for no valid reason?  I don't think you could have picked a
+>>> more incorrect place in there to add this :)
+>>>
+>>> Please fix.
+>>>
+>>
+>> Will put it after "const char *name".
+> 
+> If you do, spend some time with the tool, pahole, and see if that's
+> really the best place for it or not.  Might be, might not be, but you
+> should verify it please.
+> 
 
-to my tty git tree which can be found at
-    git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
-in the tty-next branch.
+Thanks!
 
-The patch will show up in the next release of the linux-next tree
-(usually sometime within the next 24 hours during the week.)
+I played with pahole a bit. For arm32 this struct is not as bad defined
+as for arm64, all members fit in the same cacheline. There are some
+holes though and 2 cachelines for arm64 where this struct needs some
+love. The best and minimum invasive change for my iotype member would be
+to put it before the "has_divslot" member, as the has_divslot bitfield
+will be combined with the previous field.
 
-The patch will also be merged in the next major kernel release
-during the merge window.
+But I think the entire struct has to be reworked and the driver
+butchered a bit so that we get to a better memory footprint and a single
+cacheline. I volunteer to do this in a separate patch set so that we
+don't block this series. I think the final struct can look as following:
 
-If you have any questions about this process, please let me know.
+struct s3c24xx_uart_info {
+	const char  *              name;                 /*     0     8 */
+	enum s3c24xx_port_type     type;                 /*     8     4 */
+	unsigned int               port_type;            /*    12     4 */
+	unsigned int               fifosize;             /*    16     4 */
+	u32                        rx_fifomask;          /*    20     4 */
+	u32                        rx_fifoshift;         /*    24     4 */
+	u32                        rx_fifofull;          /*    28     4 */
+	u32                        tx_fifomask;          /*    32     4 */
+	u32                        tx_fifoshift;         /*    36     4 */
+	u32                        tx_fifofull;          /*    40     4 */
+	u32                        clksel_mask;          /*    44     4 */
+	u32                        clksel_shift;         /*    48     4 */
+	u32                        ucon_mask;            /*    52     4 */
+	u8                         def_clk_sel;          /*    56     1 */
+	u8                         num_clks;             /*    57     1 */
+	u8                         iotype;               /*    58     1 */
+	u8                         has_divslot:1;        /*    59: 0  1 */
 
-
-From c6dcd8050fb7c2efec6946ae9c49bc186b0a7475 Mon Sep 17 00:00:00 2001
-From: Sam Ravnborg <sam@ravnborg.org>
-Date: Tue, 26 Dec 2023 13:16:07 +0100
-Subject: serial: apbuart: fix console prompt on qemu
-
-When using a leon kernel with qemu there where no console prompt.
-The root cause is the handling of the fifo size in the tx part of the
-apbuart driver.
-
-The qemu uart driver only have a very rudimentary status handling and do
-not report the number of chars queued in the tx fifo in the status register.
-So the driver ends up with a fifo size of 1.
-
-In the tx path the fifo size is divided by 2 - resulting in a fifo
-size of zero.
-
-The original implementation would always try to send one char, but
-after the introduction of uart_port_tx_limited() the fifo size is
-respected even for the first char.
-
-There seems to be no good reason to divide the fifo size with two - so
-remove this. It looks like something copied from the original amba driver.
-
-With qemu we now have a minimum fifo size of one char, so we show
-the prompt.
-
-Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Fixes: d11cc8c3c4b6 ("tty: serial: use uart_port_tx_limited()")
-Cc: Andreas Larsson <andreas@gaisler.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc:  <linux-serial@vger.kernel.org>
-Cc:  <sparclinux@vger.kernel.org>
-Link: https://lore.kernel.org/r/20231226121607.GA2622970@ravnborg.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/serial/apbuart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/apbuart.c b/drivers/tty/serial/apbuart.c
-index 716cb014c028..364599f256db 100644
---- a/drivers/tty/serial/apbuart.c
-+++ b/drivers/tty/serial/apbuart.c
-@@ -122,7 +122,7 @@ static void apbuart_tx_chars(struct uart_port *port)
- {
- 	u8 ch;
- 
--	uart_port_tx_limited(port, ch, port->fifosize >> 1,
-+	uart_port_tx_limited(port, ch, port->fifosize,
- 		true,
- 		UART_PUT_CHAR(port, ch),
- 		({}));
--- 
-2.43.0
+	/* size: 64, cachelines: 1, members: 17 */
+	/* padding: 4 */
+	/* bit_padding: 7 bits */
+};
 
 
+This looks a lot better than what we have now:
+	/* size: 120, cachelines: 2, members: 17 */
+	/* sum members: 105, holes: 2, sum holes: 8 */
+	/* sum bitfield members: 1 bits (0 bytes) */
+	/* padding: 4 */
+	/* bit_padding: 23 bits */
+	/* last cacheline: 56 bytes */
+
+I'll put iotype before has_divslot and then follow up with a patch set
+to clean the driver. Cheers,
+ta
