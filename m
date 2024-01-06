@@ -1,144 +1,105 @@
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3AA5C12F
-	for <linux-serial@vger.kernel.org>; Sat,  6 Jan 2024 16:56:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C68BC8D2;
+	Sat,  6 Jan 2024 17:57:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="MyEtwTUw"
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-a277339dcf4so50813166b.2
-        for <linux-serial@vger.kernel.org>; Sat, 06 Jan 2024 08:56:38 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="logIENqj"
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-a29058bb2ceso57242066b.0;
+        Sat, 06 Jan 2024 09:57:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1704560197; x=1705164997; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=m3RK8M7nZjmwg4vSv0KVTgjny+F4gwHfQQ0/FeMDQeg=;
-        b=MyEtwTUwH2dcipUNbcbijO46yviikphZBrzSQle+/s/xEXp5b0QFP4smrkEktpyny3
-         R+/IE8zaIJu1QtmxqYuZ3zwXOpol7+7hoAcBIS+sGuLilKvu0i34mRmGr+9cyBxnUJML
-         LjYIYgSHabDekVkN4Zoc5oVHx4BNjuezPD/2AdN+e2M8wDoU/34XEumNf5z0fADjZnWY
-         VyJ5PVlLzoSwhtWDDlnJJYtIKT5YSIbN8zNBeYgulY8Ad4PgtcElU+CfQTPbnELJ6bo5
-         vpDAB9Nf7oSIdoBSCabQAA2bxWqdz0gxVermQD0V04xvAB5y1x2rbgv70ZNHwcnLfoR8
-         E1Kw==
+        d=gmail.com; s=20230601; t=1704563830; x=1705168630; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ayftTtZ8YCt/OAxuOOsBAiLw6iK2Sj5mQxrpX9AKLaw=;
+        b=logIENqjSge78w2n9nhFL2HY/0fcCuYsu6Uen0sIjr8/T93q7dLaDTE8Gprdl1kcb5
+         yoluJaoObH9w4gk9dfh8fCy4ImIdWKCNyWsRfXKYAqUCGi/1dtnh9LNVfgxDoHA/+aK9
+         e+cq840AaLJ6Dh4IKGLwVD4eea2IB/WdwUXwDdYrbQtBwSt86KMYUg/G+YUyf1qDT5Jk
+         inq2zKxztAom4AqP2wSxQRLguHv5eep2CKAOuYM/ecqU/ob4xnH5tomMT9ojPcdWTejV
+         1Zv9AbBmtvgRYVktblnO2AxlYqPUfhkg2lvb7p5fluBOEPFkgKaUx5jSUjjNKqC4YNVR
+         jR5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704560197; x=1705164997;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=m3RK8M7nZjmwg4vSv0KVTgjny+F4gwHfQQ0/FeMDQeg=;
-        b=n13eW1O/Zs2UwIDxRWC0UtxX5dtzmn7LgG8rU5qRzkcCxbsVRO7o+Wm761F8wvss8F
-         hv1LY8mxl2b62nNl+RaH+PffUQIOcDcsB3cXpskvmg1pDSHAmk3gf3KaC28QbPLPkoek
-         1gVK4SdsWwCHm4+8SQ6FB5YDX27Ep0JWU5bwooh63dJrrATZa+fBqBQZr7WAmn4Zk8mb
-         cGKF0axTA8mMMKiiD+gyevZDyHX0FjGNDALUpSKOG9QVsq2R0xe+l5U/r7aPdQFGqzaD
-         eJk4C9/22hzy4XD6+moWsRg8bCjx2GZrErtWUgPwE5Q7pwuSHOIc5/HdHr6ZjQpEPpxX
-         vhwA==
-X-Gm-Message-State: AOJu0Yyjx8o2GqlXaSXRq29hpt6V76/Q7K0MQYqZUCL2bGKxPHGnEZCr
-	eDblu60mD+vn4iCbaQXkmmmJY3g6g/WxkQ==
-X-Google-Smtp-Source: AGHT+IECPwnKhvzCjYKxro2ZGhjfoCUP5QqyjBZ1p68pC+adiLkXI8Us/3oeeLjqqbaLrpWfvQXqeQ==
-X-Received: by 2002:a17:907:c902:b0:a23:8a00:cfbe with SMTP id ui2-20020a170907c90200b00a238a00cfbemr411822ejc.132.1704560197092;
-        Sat, 06 Jan 2024 08:56:37 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.223.112])
-        by smtp.gmail.com with ESMTPSA id v26-20020a1709064e9a00b00a26a061ae1esm2135066eju.97.2024.01.06.08.56.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 06 Jan 2024 08:56:36 -0800 (PST)
-Message-ID: <1aeff309-6867-4296-8983-a60e8fd31614@linaro.org>
-Date: Sat, 6 Jan 2024 17:56:34 +0100
+        d=1e100.net; s=20230601; t=1704563830; x=1705168630;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ayftTtZ8YCt/OAxuOOsBAiLw6iK2Sj5mQxrpX9AKLaw=;
+        b=TWxOTSKANaF4SW2KmG/TtkKAT0zDWlZ1u89nyuaOJXOxDck/wGoSwAdE+ir6jO4eho
+         /AIKhYwcfgWUMeKhxnhoyKpeUyGpHje3E0irhZOoHRLNXRtrF9hggZS2uU0yXTwko3If
+         c0xGhIAlkyZ8R+044pvHV0NfGAGBwLBDAf33PWTNDdzvEUJGJ5NW+EtdRDnU1ciT0jpJ
+         +6CCSLlBUwuaKEFOmrlLLjl0yKCDGgr9wwbbcFgrYtxWVe0rFiQydPqYprYWVlNSGwM3
+         3NzdKSBoQL78JhopibZGRY/aEGiGbrPq2ZmSyb8MnJDKO2NjfDc5BD0QUQTBNiQcRdm+
+         UtdQ==
+X-Gm-Message-State: AOJu0Yzt6PkPfRk0pCdGtK0G9AFwkmMCBPKkRfBoJ63V9HWkYxgJiwJM
+	UxaYVzyDqaJt5HWakIVVA+Q=
+X-Google-Smtp-Source: AGHT+IE0uN+TM2n9f/3lN6P/+RkP08uWhdbyAD7eRYSJ5p0Rqs2uEymo7ubCJiBUdy9bgfh0fTTKdQ==
+X-Received: by 2002:a17:907:bd1:b0:a29:1cb8:46fe with SMTP id ez17-20020a1709070bd100b00a291cb846femr280946ejc.5.1704563830130;
+        Sat, 06 Jan 2024 09:57:10 -0800 (PST)
+Received: from cjw-notebook (2a02-8388-0502-f480-6c32-186a-368b-d6a9.cable.dynamic.v6.surfer.at. [2a02:8388:502:f480:6c32:186a:368b:d6a9])
+        by smtp.gmail.com with ESMTPSA id m21-20020a1709061ed500b00a236378a43fsm2179351ejj.62.2024.01.06.09.57.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 Jan 2024 09:57:09 -0800 (PST)
+Date: Sat, 6 Jan 2024 18:57:06 +0100
+From: Christoph Winklhofer <cj.winklhofer@gmail.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Rob Herring <robh+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Jonathan Corbet <corbet@lwn.net>, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCH v4 0/3] w1: add UART w1 bus driver
+Message-ID: <ZZmUcr7Ct7g42PD2@cjw-notebook>
+References: <20240106-w1-uart-v4-0-7fe1378a8b3e@gmail.com>
+ <1aeff309-6867-4296-8983-a60e8fd31614@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 0/3] w1: add UART w1 bus driver
-Content-Language: en-US
-To: cj.winklhofer@gmail.com, Rob Herring <robh+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Rob Herring <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Jonathan Corbet <corbet@lwn.net>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-doc@vger.kernel.org
-References: <20240106-w1-uart-v4-0-7fe1378a8b3e@gmail.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20240106-w1-uart-v4-0-7fe1378a8b3e@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1aeff309-6867-4296-8983-a60e8fd31614@linaro.org>
 
-On 06/01/2024 17:02, Christoph Winklhofer via B4 Relay wrote:
-> Hello!
+On Sat, Jan 06, 2024 at 05:56:34PM +0100, Krzysztof Kozlowski wrote:
+> On 06/01/2024 17:02, Christoph Winklhofer via B4 Relay wrote:
+> > Hello!
+> > 
+> > This patch contains a driver for a 1-Wire bus over UART. The driver
+> > utilizes the UART interface via the Serial Device Bus to create the
+> > 1-Wire timing patterns.
+> > 
+> > Changes in v4:
+> > - rework baud-rate configuration: also check max bit-time, support higher
+> >   baud-rates by adding a delay to complete 1-Wire cycle.
+> > - dt-binding w1-uart: specify baud-rates for 1-Wire operations
+> > - Link to v3: https://lore.kernel.org/r/20240105-w1-uart-v3-0-8687093b2e76@gmail.com
+> > 
 > 
-> This patch contains a driver for a 1-Wire bus over UART. The driver
-> utilizes the UART interface via the Serial Device Bus to create the
-> 1-Wire timing patterns.
+> You can slow down a bit. You sent v2 too late to be applied. Then you
+> sent v3 and next day v4.
 > 
-> Changes in v4:
-> - rework baud-rate configuration: also check max bit-time, support higher
->   baud-rates by adding a delay to complete 1-Wire cycle.
-> - dt-binding w1-uart: specify baud-rates for 1-Wire operations
-> - Link to v3: https://lore.kernel.org/r/20240105-w1-uart-v3-0-8687093b2e76@gmail.com
+> While I like approach to release early, release often, it does not
+> necessarily apply to the bindings. Bindings should be complete, which
+> means they should describe the hardware as fully as possible.
+> 
+> About the driver, you can develop it incrementally, it is a good idea,
+> however since ~rc6 my w1 tree is closed. It will remain closed till next
+> rc1 is released (merge window finished). Nothing will get applied during
+> that time, so if you intend to add new features, better to send v5 after
+> the merge window (instead v4 now, v5 tomorrow, v6 next week and then v7
+> after rc1).
+> 
+> Best regards,
+> Krzysztof
 > 
 
-You can slow down a bit. You sent v2 too late to be applied. Then you
-sent v3 and next day v4.
+Ok sorry, understood - thank you for the clarification.
 
-While I like approach to release early, release often, it does not
-necessarily apply to the bindings. Bindings should be complete, which
-means they should describe the hardware as fully as possible.
-
-About the driver, you can develop it incrementally, it is a good idea,
-however since ~rc6 my w1 tree is closed. It will remain closed till next
-rc1 is released (merge window finished). Nothing will get applied during
-that time, so if you intend to add new features, better to send v5 after
-the merge window (instead v4 now, v5 tomorrow, v6 next week and then v7
-after rc1).
-
-Best regards,
-Krzysztof
-
+Kind regards,
+Christoph
