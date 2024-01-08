@@ -1,293 +1,209 @@
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A018079C2;
-	Mon,  8 Jan 2024 06:18:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EFD944C89;
+	Mon,  8 Jan 2024 13:41:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-a28d61ba65eso141977066b.3;
-        Sun, 07 Jan 2024 22:18:38 -0800 (PST)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UfdbhMYu"
+Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-557bfc7f7b4so1006930a12.0;
+        Mon, 08 Jan 2024 05:41:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1704721265; x=1705326065; darn=vger.kernel.org;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3r6g5z9Mx4IxtW42MMxxjM9D6NLe62syXKXuO2xxI40=;
+        b=UfdbhMYuz7Slksf7KjAEI3fNe+TuJvFAfDX6WyqgMQvjUSyuurAdWtLm62fryPbS5W
+         LAetMQObo4ihXyubJQaHTLMVHMFEDZJf0AsPgJv6FjEdm+oF2tE/08ARAC1URlQEviHl
+         wYiqlGkuc2WQL8sce2ALwlcN8X+WjKcmZV5qieIjg1DCsdD+7J7k44q4yzrPjCJyqQR7
+         AhJ+V1DGHolE/AzvTovns2qFtkqxwBCPUgP+N9AgBAkwP1IYkP12vAdIa0mbLAGl7wh4
+         XayWqm3W4PUcaPyqYBwTiZ3qmPUaBTCo4XMiWUzdi3vQbzloVJdxDOL4awJyoq86pT89
+         Ewow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704694717; x=1705299517;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=JxKWZ0iFvolfQySmIZiVviFxg2q/+Ns/Cenq1wSZJho=;
-        b=gdxQB2+Q9VoolFW97n58rOvf38dqBjg6aKqWFWSS517gmtfbDvacYCLLqcjgT1a9J6
-         R4jOeUCh4CZVeFTU7Ve8wWnAytzv6Xy1yVCaSoTYdAOFX8MxkzFtMLVK+Yxw9oVDzuNF
-         Q54f6w4JqwjAp2mhFFPde8nlYM/jdQpBO3gDKmpe+J1tPFI6MpJGnOo4mu2WLyCs2SVJ
-         SHdoy6o6YVoI0r2wKro+onQzjxLYG+QNCspHA/qblf5/VbC4bXyjrkku0d3N5K4HnQV/
-         F+w0GmH2w7nrCKiZJA8MN5J7lR+5k6eWDFRuEvLMtjnwvjWhe2sWviLkpwAJUw2mCYIS
-         49fg==
-X-Gm-Message-State: AOJu0YySFNvM1QFFAetVw/LG/MYCK0LlnQsy6cyvHCoRoPFV9GROsBaB
-	xQE9123Qmfs3CgF8Lffdal4=
-X-Google-Smtp-Source: AGHT+IFeqtsrG2JhlBgein+Rw5XTWn/lKs4vnN4bvJMQevNx/oK+r3H1HNZrWhEAjCpUj4ErahUCVw==
-X-Received: by 2002:a17:906:4f:b0:a28:aa08:200b with SMTP id 15-20020a170906004f00b00a28aa08200bmr744741ejg.140.1704694712800;
-        Sun, 07 Jan 2024 22:18:32 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id d11-20020a170906640b00b00a26f1f36708sm3624821ejm.78.2024.01.07.22.18.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Jan 2024 22:18:32 -0800 (PST)
-Message-ID: <5ff1d706-9f06-4eb6-bc86-75f933e54118@kernel.org>
-Date: Mon, 8 Jan 2024 07:18:31 +0100
+        d=1e100.net; s=20230601; t=1704721265; x=1705326065;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3r6g5z9Mx4IxtW42MMxxjM9D6NLe62syXKXuO2xxI40=;
+        b=qryFBt/Sd0ydDO1rgO0FZicpd83H6aFc6SwV0iprbEg7kXG9vsEb9BkwjtiaciM4nB
+         wLjkeWGoZ9NbZ/GDLWDDQMwP5Kt60Ld0i2sUKjnY6Vsa3LDOCOpLHHrMXkzbeAsOSS8h
+         ncCWubdYKNInOVKFB6pjF2UCJvCaVWlm5KccE2GmboZuy9vrCdGpSQ+Cp1+pislnS5qt
+         lS9HjnuJYv26rl+7e45gdmnguHMJkjrTN9zcpK12M8bWgsh9o3/vRoBfq11m1uI+ejMa
+         KpoA5ioowVraITMt26n06dsBdIJnOFQFIKeM/FsqMnCOXAH8TWf9NoFFw5KNxMeiKMSP
+         uiJg==
+X-Gm-Message-State: AOJu0Yxbf1b8bUbQ0NDluszmNl4N2Bd8qxl9/1S81y2I7ggxTvSjwOa4
+	RQSWt0NrxM3hEbWvXYlz1pY=
+X-Google-Smtp-Source: AGHT+IHsSgTUHLYbaiUv5IWw6W2ekoAhScEgfGZkpNW1wQrT2vNPo2yxBdPLVFG/wdZpaBKadwDpqw==
+X-Received: by 2002:a17:906:2c53:b0:a27:fdc1:59c6 with SMTP id f19-20020a1709062c5300b00a27fdc159c6mr5492095ejh.26.1704721265272;
+        Mon, 08 Jan 2024 05:41:05 -0800 (PST)
+Received: from felia.fritz.box ([2a02:810d:7e40:14b0:a060:7056:782e:5e26])
+        by smtp.gmail.com with ESMTPSA id b1-20020a170906490100b00a26b36311ecsm4017896ejq.146.2024.01.08.05.41.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Jan 2024 05:41:04 -0800 (PST)
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	linux-serial@vger.kernel.org
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Helge Deller <deller@gmx.de>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-input@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org,
+	linux-fbdev@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	kernel-janitors@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] vt: remove superfluous CONFIG_HW_CONSOLE
+Date: Mon,  8 Jan 2024 14:41:02 +0100
+Message-Id: <20240108134102.601-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 3/3] w1: add UART w1 bus driver
-Content-Language: en-US
-To: cj.winklhofer@gmail.com,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Rob Herring <robh+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- Rob Herring <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Jonathan Corbet <corbet@lwn.net>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-doc@vger.kernel.org
-References: <20240106-w1-uart-v4-0-7fe1378a8b3e@gmail.com>
- <20240106-w1-uart-v4-3-7fe1378a8b3e@gmail.com>
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20240106-w1-uart-v4-3-7fe1378a8b3e@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 
-On 06. 01. 24, 17:02, Christoph Winklhofer via B4 Relay wrote:
-> From: Christoph Winklhofer <cj.winklhofer@gmail.com>
-> 
-> Add a UART 1-Wire bus driver. The driver utilizes the UART interface via
-> the Serial Device Bus to create the 1-Wire timing patterns. The driver
-> was tested on a "Raspberry Pi 3B" with a DS18B20 and on a "Variscite
-> DART-6UL" with a DS18S20 temperature sensor.
-> 
-> The 1-Wire timing pattern and the corresponding UART baud-rate with the
-> interpretation of the transferred bytes are described in the document:
-> 
-> Link: https://www.analog.com/en/technical-articles/using-a-uart-to-implement-a-1wire-bus-master.html
-> 
-> In short, the UART peripheral must support full-duplex and operate in
-> open-drain mode. The timing patterns are generated by a specific
-> combination of baud-rate and transmitted byte, which corresponds to a
-> 1-Wire read bit, write bit or reset.
-...
-> --- /dev/null
-> +++ b/drivers/w1/masters/w1-uart.c
-> @@ -0,0 +1,398 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/*
-> + * w1-uart - UART 1-Wire bus driver
-> + *
-> + * Uses the UART interface (via Serial Device Bus) to create the 1-Wire
-> + * timing patterns. Implements the following 1-Wire master interface:
-> + *
-> + * - reset_bus: requests baud-rate 9600
-> + *
-> + * - touch_bit: requests baud-rate 115200
-> + *
-> + * Author: Christoph Winklhofer <cj.winklhofer@gmail.com>
-> + */
-> +
-> +#include <linux/completion.h>
-> +#include <linux/delay.h>
-> +#include <linux/jiffies.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/of.h>
-> +#include <linux/serdev.h>
-> +#include <linux/w1.h>
-> +
-> +#define W1_UART_TIMEOUT msecs_to_jiffies(500)
-> +
-> +/*
-> + * struct w1_uart_config - configuration for 1-Wire operation
-> + *
-> + * @baudrate: baud-rate returned from serdev
-> + * @delay_us: delay to complete a 1-Wire cycle (in us)
-> + * @tx_byte: byte to generate 1-Wire timing pattern
-> + */
-> +struct w1_uart_config {
-> +	unsigned int baudrate;
-> +	unsigned int delay_us;
-> +	unsigned char tx_byte;
+The config HW_CONSOLE is always identical to the config VT and is not
+visible in the kernel's build menuconfig. So, CONFIG_HW_CONSOLE is
+redundant.
 
-If it is a "byte", it should be u8.
+Replace all references to CONFIG_HW_CONSOLE with CONFIG_VT and remove
+CONFIG_HW_CONSOLE.
 
-> +};
-> +
-> +struct w1_uart_device {
-> +	struct serdev_device *serdev;
-> +	struct w1_bus_master bus;
-> +
-> +	struct w1_uart_config cfg_reset;
-> +	struct w1_uart_config cfg_touch_0;
-> +	struct w1_uart_config cfg_touch_1;
-> +
-> +	struct completion rx_byte_received;
-> +	unsigned char rx_byte;
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+I think this patch is best picked up by Greg rather than splitting it
+in smaller pieces for m68k, amiga keyboard, fbdev etc.
 
-The same here.
+Greg, if that is fine, could you pick this for the next merge window?
 
-> +	int rx_err;
-> +
-> +	struct mutex mutex;
-> +};
-> +
-> +/*
-> + * struct w1_uart_limits - limits for 1-Wire operations
-> + *
-> + * @baudrate: Requested baud-rate to create 1-Wire timing pattern
-> + * @bit_min_us: minimum time for a bit (in us)
-> + * @bit_max_us: maximum time for a bit (in us)
-> + * @sample_us: timespan to sample 1-Wire response
-> + * @cycle_us: duration of the 1-Wire cycle
-> + */
-> +struct w1_uart_limits {
-> +	unsigned int baudrate;
-> +	unsigned int bit_min_us;
-> +	unsigned int bit_max_us;
-> +	unsigned int sample_us;
-> +	unsigned int cycle_us;
-> +};
-> +
-> +static inline unsigned int baud_to_bit_ns(unsigned int baud)
-> +{
-> +	return 1000000000 / baud;
+I was also considering to rename config VT_HW_CONSOLE_BINDING to
+VT_CONSOLE_BINDING, as the dependency is on VT, not HW_CONSOLE, but
+at the moment, that seemed more churn than value of clarification.
 
-NSEC_PER_SEC
+ arch/m68k/amiga/config.c        | 2 +-
+ drivers/input/keyboard/amikbd.c | 6 +++---
+ drivers/tty/Kconfig             | 7 +------
+ drivers/tty/vt/Makefile         | 4 ++--
+ drivers/video/fbdev/tgafb.c     | 2 +-
+ include/linux/console.h         | 2 +-
+ lib/Kconfig.kgdb                | 2 +-
+ 7 files changed, 10 insertions(+), 15 deletions(-)
 
-> +}
-> +
-> +static inline unsigned int to_ns(unsigned int us)
-> +{
-> +	return us * 1000;
-
-NSEC_PER_USEC
-
-> +}
-> +
-> +/*
-> + * Set baud-rate, delay and tx-byte to create a 1-Wire pulse and adapt
-> + * the tx-byte according to the actual baud-rate.
-> + *
-> + * Reject when:
-> + * - time for a bit outside min/max range
-> + * - a 1-Wire response is not detectable for sent byte
-> + */
-> +static int w1_uart_set_config(struct serdev_device *serdev,
-> +			      const struct w1_uart_limits *limits,
-> +			      struct w1_uart_config *w1cfg)
-> +{
-> +	unsigned int bits_low;
-> +	unsigned int bit_ns;
-> +	unsigned int low_ns;
-> +
-> +	w1cfg->baudrate = serdev_device_set_baudrate(serdev, limits->baudrate);
-> +	if (w1cfg->baudrate == 0)
-> +		return -EINVAL;
-> +
-> +	/* Compute in nanoseconds for accuracy */
-> +	bit_ns = baud_to_bit_ns(w1cfg->baudrate);
-> +	bits_low = to_ns(limits->bit_min_us) / bit_ns;
-> +	/* start bit is always low */
-> +	low_ns = bit_ns * (bits_low + 1);
-> +
-> +	if (low_ns < to_ns(limits->bit_min_us))
-> +		return -EINVAL;
-> +
-> +	if (low_ns > to_ns(limits->bit_max_us))
-> +		return -EINVAL;
-> +
-> +	/* 1-Wire response detectable for sent byte */
-> +	if (limits->sample_us > 0 &&
-> +	    bit_ns * 8 < low_ns + to_ns(limits->sample_us))
-
-BITS_PER_BYTE
-
-> +		return -EINVAL;
-> +
-> +	/* delay to complete 1-Wire cycle, include start and stop-bit */
-> +	w1cfg->delay_us = 0;
-> +	if (bit_ns * 10 < to_ns(limits->cycle_us))
-
-What is this 10? Dub it.
-
-> +		w1cfg->delay_us =
-> +			(to_ns(limits->cycle_us) - bit_ns * 10) / 1000;
-
-And this 10?
-
-The end: / NSEC_PER_USEC
-
-> +
-> +	/* byte to create 1-Wire pulse */
-> +	w1cfg->tx_byte = 0xff << bits_low;
-> +
-> +	return 0;
-> +}
-...
-
-> +static int w1_uart_serdev_tx_rx(struct w1_uart_device *w1dev,
-> +				const struct w1_uart_config *w1cfg,
-> +				unsigned char *rx_byte)
-
-u8 *
-
-> +{
-...
-> +}
-> +
-> +static int w1_uart_serdev_receive_buf(struct serdev_device *serdev,
-> +				      const unsigned char *buf, size_t count)
-
-serdev already uses u8 * here. You are basing on the top of some old tree.
-
-regards,
+diff --git a/arch/m68k/amiga/config.c b/arch/m68k/amiga/config.c
+index 7791673e547b..99718f3dc686 100644
+--- a/arch/m68k/amiga/config.c
++++ b/arch/m68k/amiga/config.c
+@@ -846,6 +846,6 @@ static void amiga_get_hardware_list(struct seq_file *m)
+  * The Amiga keyboard driver needs key_maps, but we cannot export it in
+  * drivers/char/defkeymap.c, as it is autogenerated
+  */
+-#ifdef CONFIG_HW_CONSOLE
++#ifdef CONFIG_VT
+ EXPORT_SYMBOL_GPL(key_maps);
+ #endif
+diff --git a/drivers/input/keyboard/amikbd.c b/drivers/input/keyboard/amikbd.c
+index e305c44cd0aa..ecfae0b0b6aa 100644
+--- a/drivers/input/keyboard/amikbd.c
++++ b/drivers/input/keyboard/amikbd.c
+@@ -26,7 +26,7 @@ MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>");
+ MODULE_DESCRIPTION("Amiga keyboard driver");
+ MODULE_LICENSE("GPL");
+ 
+-#ifdef CONFIG_HW_CONSOLE
++#ifdef CONFIG_VT
+ static unsigned char amikbd_keycode[0x78] __initdata = {
+ 	[0]	 = KEY_GRAVE,
+ 	[1]	 = KEY_1,
+@@ -148,9 +148,9 @@ static void __init amikbd_init_console_keymaps(void)
+ 		memcpy(key_maps[i], temp_map, sizeof(temp_map));
+ 	}
+ }
+-#else /* !CONFIG_HW_CONSOLE */
++#else /* !CONFIG_VT */
+ static inline void amikbd_init_console_keymaps(void) {}
+-#endif /* !CONFIG_HW_CONSOLE */
++#endif /* !CONFIG_VT */
+ 
+ static const char *amikbd_messages[8] = {
+ 	[0] = KERN_ALERT "amikbd: Ctrl-Amiga-Amiga reset warning!!\n",
+diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
+index 5646dc6242cd..a45d423ad10f 100644
+--- a/drivers/tty/Kconfig
++++ b/drivers/tty/Kconfig
+@@ -75,14 +75,9 @@ config VT_CONSOLE_SLEEP
+ 	def_bool y
+ 	depends on VT_CONSOLE && PM_SLEEP
+ 
+-config HW_CONSOLE
+-	bool
+-	depends on VT
+-	default y
+-
+ config VT_HW_CONSOLE_BINDING
+ 	bool "Support for binding and unbinding console drivers"
+-	depends on HW_CONSOLE
++	depends on VT
+ 	help
+ 	  The virtual terminal is the device that interacts with the physical
+ 	  terminal through console drivers. On these systems, at least one
+diff --git a/drivers/tty/vt/Makefile b/drivers/tty/vt/Makefile
+index b3dfe9d5717e..2c8ce8b592ed 100644
+--- a/drivers/tty/vt/Makefile
++++ b/drivers/tty/vt/Makefile
+@@ -5,9 +5,9 @@
+ FONTMAPFILE = cp437.uni
+ 
+ obj-$(CONFIG_VT)			+= vt_ioctl.o vc_screen.o \
+-					   selection.o keyboard.o
++					   selection.o keyboard.o \
++					   vt.o defkeymap.o
+ obj-$(CONFIG_CONSOLE_TRANSLATIONS)	+= consolemap.o consolemap_deftbl.o
+-obj-$(CONFIG_HW_CONSOLE)		+= vt.o defkeymap.o
+ 
+ # Files generated that shall be removed upon make clean
+ clean-files := consolemap_deftbl.c defkeymap.c
+diff --git a/drivers/video/fbdev/tgafb.c b/drivers/video/fbdev/tgafb.c
+index ca43774f3156..dccfc38cfbd5 100644
+--- a/drivers/video/fbdev/tgafb.c
++++ b/drivers/video/fbdev/tgafb.c
+@@ -380,7 +380,7 @@ tgafb_set_par(struct fb_info *info)
+ 		BT463_LOAD_ADDR(par, 0x0000);
+ 		TGA_WRITE_REG(par, BT463_PALETTE << 2, TGA_RAMDAC_SETUP_REG);
+ 
+-#ifdef CONFIG_HW_CONSOLE
++#ifdef CONFIG_VT
+ 		for (i = 0; i < 16; i++) {
+ 			int j = color_table[i];
+ 
+diff --git a/include/linux/console.h b/include/linux/console.h
+index 779d388af8a0..c129e4173dec 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -112,7 +112,7 @@ int con_is_bound(const struct consw *csw);
+ int do_unregister_con_driver(const struct consw *csw);
+ int do_take_over_console(const struct consw *sw, int first, int last, int deflt);
+ void give_up_console(const struct consw *sw);
+-#ifdef CONFIG_HW_CONSOLE
++#ifdef CONFIG_VT
+ int con_debug_enter(struct vc_data *vc);
+ int con_debug_leave(void);
+ #else
+diff --git a/lib/Kconfig.kgdb b/lib/Kconfig.kgdb
+index 3b9a44008433..b5c0e6576749 100644
+--- a/lib/Kconfig.kgdb
++++ b/lib/Kconfig.kgdb
+@@ -43,7 +43,7 @@ config KGDB_SERIAL_CONSOLE
+ 	tristate "KGDB: use kgdb over the serial console"
+ 	select CONSOLE_POLL
+ 	select MAGIC_SYSRQ
+-	depends on TTY && HW_CONSOLE
++	depends on TTY && VT
+ 	default y
+ 	help
+ 	  Share a serial console with kgdb. Sysrq-g must be used
 -- 
-js
-suse labs
+2.17.1
 
