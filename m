@@ -1,98 +1,106 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD96445BF6
-	for <linux-serial@vger.kernel.org>; Mon,  8 Jan 2024 14:15:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D09D247775
+	for <linux-serial@vger.kernel.org>; Mon,  8 Jan 2024 14:18:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="JtfHFxws"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1704723348;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=YxB4hJGUskiSNKv+s1TrmZMXKolMvHe6Ob3/kfn7C0U=;
-	b=JtfHFxwsBorPL1DuTmZoZ05J9ZJ7Wxmhk75bYECW4cT0PGBiWw8z+UbKhTgILm2XlU39Hn
-	8oQSyR4YhXBITbZpLZxhP6pL4Rc0BlDZMJX74n+s2KBRSozAmjMK7+WzBg8S2AdxW82HYl
-	VagwU1kbc3qVPKzSL1uN/fseQftGbl8=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-145-5GBpG0Q0Mhu05jEpSJoD_w-1; Mon, 08 Jan 2024 09:15:46 -0500
-X-MC-Unique: 5GBpG0Q0Mhu05jEpSJoD_w-1
-Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-3374e909bf0so1325080f8f.0
-        for <linux-serial@vger.kernel.org>; Mon, 08 Jan 2024 06:15:46 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="y7q0+JSg"
+Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-680b12e5d42so16346126d6.3
+        for <linux-serial@vger.kernel.org>; Mon, 08 Jan 2024 06:18:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1704723514; x=1705328314; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=5Ezznyb8/vx5+hfZyfj88KqUcvTty4zUAzZJ+hlesbo=;
+        b=y7q0+JSglky8dwbo7fPHUAJZrkmcEW3YVv3Rqu0PrY+7plPdrqp/9eTiGoaMVdhvOh
+         QL/EjqH84hKdZ7UuRJZztsY+YMjLeiXfj82UpPSJWi1mrdGljvKaC6xu2bZtJaFOEKhP
+         kQmoZMqrXAV5COSZOL3cAT0Jb56G1loyJF+6aQyCHpCLH/gJP3E5l9tGeqNZsp2PeDSH
+         Xrlii1D0+vn9aXLJ2p3LSp/PncI5p4XoA18K3hNg3Kap3Lvknzz8EYjToXB1XT8jlVC2
+         5HJnFSugmbo68qKZjuT7zbYWDNptfuM33oznYKMZlVDWoSV5e+Rl0NSog4G/YYwW2L0v
+         8fLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704723345; x=1705328145;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=YxB4hJGUskiSNKv+s1TrmZMXKolMvHe6Ob3/kfn7C0U=;
-        b=orgETfPJhphSxFPyKBgO/80klLpxSUMqwxJU/YdRzMG8iLEMHhf1rWNoS6FTnECWN6
-         3Llp+s7vEy6LjUj50+pj2GGXlqwV7EZGpi9nxZ3/P0pDB7SiZQxlURFerpX/wCrhZqal
-         uUTRo5G9ZUDJAX07iiioDne0jeXoyfNlmFLJ2oLwRlfIEfZzhkoki3D1M5HcfDvMQAra
-         qdvKl/aHpI7IZ0J0X2R5DULvcv/r5ePX9KZ9sAfkOvwaSuQ9fUctu1nTTVxYHdW1rmgm
-         TUaGre0uCoOCe1zoZPNy+jizryeRFlOWGr/kxcMUnBb7UEscfVmOJJ6fobYutpv6v1rk
-         8dtA==
-X-Gm-Message-State: AOJu0YxqTzK5z273jbhqIBHFPRPEUYOPnW3hg1P/Gy9KQoL1cVIDx6+Y
-	ZMEaqVDPKuKfJMk0hr85HuhnZ7Jz65v9UJ2I/t52mUHZ+sQ4i5x08zn8Mf7EqGWd8NqXneCGZFY
-	Q+vqpOMgCrjySC8E4Of17E7bhz9qwP3/7
-X-Received: by 2002:a1c:4b10:0:b0:40e:48b5:3349 with SMTP id y16-20020a1c4b10000000b0040e48b53349mr432186wma.25.1704723345536;
-        Mon, 08 Jan 2024 06:15:45 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IH6B2nGNQDVdFDm3USpj0QhZ27T8ggPZi0nN4hlsNXsc4GJ1RmAnYI10aMq5+7l7vGing5psw==
-X-Received: by 2002:a1c:4b10:0:b0:40e:48b5:3349 with SMTP id y16-20020a1c4b10000000b0040e48b53349mr432170wma.25.1704723344860;
-        Mon, 08 Jan 2024 06:15:44 -0800 (PST)
-Received: from localhost (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id v10-20020a05600c470a00b0040d5c58c41dsm11210711wmo.24.2024.01.08.06.15.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jan 2024 06:15:44 -0800 (PST)
-From: Javier Martinez Canillas <javierm@redhat.com>
-To: Lukas Bulwahn <lukas.bulwahn@gmail.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>,
- linux-serial@vger.kernel.org
-Cc: linux-fbdev@vger.kernel.org, Helge Deller <deller@gmx.de>, Dmitry
- Torokhov <dmitry.torokhov@gmail.com>, kernel-janitors@vger.kernel.org,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linux-m68k@lists.linux-m68k.org, Geert Uytterhoeven
- <geert@linux-m68k.org>, linux-input@vger.kernel.org, Lukas Bulwahn
- <lukas.bulwahn@gmail.com>, Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] vt: remove superfluous CONFIG_HW_CONSOLE
-In-Reply-To: <20240108134102.601-1-lukas.bulwahn@gmail.com>
-References: <20240108134102.601-1-lukas.bulwahn@gmail.com>
-Date: Mon, 08 Jan 2024 15:15:43 +0100
-Message-ID: <87y1czdi7k.fsf@minerva.mail-host-address-is-not-set>
+        d=1e100.net; s=20230601; t=1704723514; x=1705328314;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=5Ezznyb8/vx5+hfZyfj88KqUcvTty4zUAzZJ+hlesbo=;
+        b=WDGAFBic2WEGkVTUrQ29SLlGk6QF32H2/j1Ox/BCRHNY5pJcTFvasPlaA2r8VYfAhB
+         gTLrJXf78m/Sw5WBlslnvgnouNgfFJ9+ImkhKK53VdzMhDErUlHbNTZtpAKC7cYISjoF
+         FP8/Z5xrIud1/PUvO8Bc9yQ3xNSsTXnvezscKWykeijxBFoYHl7bobUUdGkK3J/0c/f1
+         Kh+D2OHt+QTdS1pYoOKyX1hbG/vch4aA+gVo4gxbG0ZG4Q59wNNJAmG1FPOfBcWTfgZG
+         9jpZmAJVoLOgNn/UwnRFY4FsLsKdutOX5RvLLBEVdWqSLqu+yJOEsQ37fsTE05nTfSlq
+         L08A==
+X-Gm-Message-State: AOJu0YzlM4TOu/cW1G9x5biSDPI94OUgCpG2zRF6PyjwjT9eOmY6cMQ7
+	B6NbaBwLS5UY1m0XGoS6vyXr3QNUGEyQxNQ1sr+wHALKrYhU3Q==
+X-Google-Smtp-Source: AGHT+IGPjgYTxHMolIfwDbJJoI+7GNHNxr913C1/eJoHLVLrZVJqXMfjkqYykrGmoMDgJma1CoSyQSccprDC0VfOBi8=
+X-Received: by 2002:a05:6214:29e4:b0:67a:a721:7837 with SMTP id
+ jv4-20020a05621429e400b0067aa7217837mr4866809qvb.92.1704723513781; Mon, 08
+ Jan 2024 06:18:33 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain
+References: <20231228125805.661725-1-tudor.ambarus@linaro.org> <20231228125805.661725-2-tudor.ambarus@linaro.org>
+In-Reply-To: <20231228125805.661725-2-tudor.ambarus@linaro.org>
+From: Peter Griffin <peter.griffin@linaro.org>
+Date: Mon, 8 Jan 2024 14:18:21 +0000
+Message-ID: <CADrjBPo8tARhHjpBJMABV3dqrd6AqhPVASTK5+3rSmoDA8eStw@mail.gmail.com>
+Subject: Re: [PATCH v2 01/12] dt-bindings: clock: google,gs101-clock: add
+ PERIC0 clock management unit
+To: Tudor Ambarus <tudor.ambarus@linaro.org>
+Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, 
+	mturquette@baylibre.com, sboyd@kernel.org, conor+dt@kernel.org, 
+	andi.shyti@kernel.org, alim.akhtar@samsung.com, gregkh@linuxfoundation.org, 
+	jirislaby@kernel.org, s.nawrocki@samsung.com, tomasz.figa@gmail.com, 
+	cw00.choi@samsung.com, arnd@arndb.de, semen.protsenko@linaro.org, 
+	andre.draszik@linaro.org, saravanak@google.com, willmcvicker@google.com, 
+	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+	linux-clk@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, 
+	linux-serial@vger.kernel.org, kernel-team@android.com
+Content-Type: text/plain; charset="UTF-8"
 
-Lukas Bulwahn <lukas.bulwahn@gmail.com> writes:
+Hi Tudor,
 
-Hello Lukas,
-
-> The config HW_CONSOLE is always identical to the config VT and is not
-> visible in the kernel's build menuconfig. So, CONFIG_HW_CONSOLE is
-> redundant.
+On Thu, 28 Dec 2023 at 12:58, Tudor Ambarus <tudor.ambarus@linaro.org> wrote:
 >
-> Replace all references to CONFIG_HW_CONSOLE with CONFIG_VT and remove
-> CONFIG_HW_CONSOLE.
+> Add dt-schema documentation for the Connectivity Peripheral 0 (PERIC0)
+> clock management unit.
 >
-> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
 > ---
+> v2:
+> - fix comments as per Sam's suggestion and collect his R-b tag
+> - Rob's suggestion of renaming the clock-names to just "bus" and "ip"
+>   was not implemented as I felt it affects readability in the driver
+>   and consistency with other exynos clock drivers. I will happily update
+>   the names in the -rc phase if someone else has a stronger opinion than
+>   mine.
+>
 
-Makes sense to me.
+It would be good to get Krzysztof and Robs view on whether they agree
+with the above rationale or whether they would still like to see the
+names updated.
 
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Personally I like the consistency, grepability and the fact the
+current name encodes whether it is a gate, divider into the name.
+Seeing 'sss' or 'ip' as a clock name in the driver code doesn't tell
+you a lot without having to then cross reference with the dts.
 
--- 
-Best regards,
+Is there some rationale and/or benefit behind having the shorter
+names? The only thing I could think of is trying to partially re-use
+this file on future SoCs like gs201 which might be clocked
+differently, but then these exynos clock drivers seem to be SoC
+specific anyway.
 
-Javier Martinez Canillas
-Core Platforms
-Red Hat
+Anyways apart from that:
+Reviewed-by: Peter Griffin <peter.griffin@linaro.org>
 
+kind regards,
+
+Peter
