@@ -1,210 +1,172 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2112.outbound.protection.outlook.com [40.107.101.112])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B05EC56B7E;
-	Mon,  8 Jan 2024 18:03:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6615A54F83
+	for <linux-serial@vger.kernel.org>; Mon,  8 Jan 2024 19:08:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cornelisnetworks.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cornelisnetworks.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N3uVa8IM"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-40d88fff7faso22778155e9.3;
-        Mon, 08 Jan 2024 10:03:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1704737005; x=1705341805; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rohZ4h41q1Lpjm2ASdq6poviREEB3sYbV11ylcmnrRo=;
-        b=N3uVa8IMyLgXdkEmHblcT69e+gKttFNHMx1RHzpIdkG9w1vk6KxnAwArBqVu8DSn4v
-         U/Gw2gagh5tBfjmBTgHCuX9yn/7MfrVrZFzE49LHIIZrM8db5ZWtoBAqJV/oQajIjpMi
-         ncMQOXD71MnM3geAxCKrTUqNy8hBZC25QS7+kMAZScfnSBjzwAaPZSe6bo1vc2qO8meC
-         Yf1OAW+JgrvUpbA4KaY4RT1YGh52B9g1c6zLarXkunA7Fn85IVRonomKa/JQ0CRc4Qpr
-         Imz5B1FsVXO7SJurBiKLiTZ+8bM5dTb9xsUO8emmpzWnK4GTW27jLtVNAPirpJJM/PFy
-         M/oA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704737005; x=1705341805;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rohZ4h41q1Lpjm2ASdq6poviREEB3sYbV11ylcmnrRo=;
-        b=P46s8gYzNlahMqdI5IQLh1v63htk56lCdywAajV+FDTtxHcdd0sv9hfRsWc1xMJNd6
-         tMCaa5oVHhE4QGNPvsY6xwp8+E0dhZF0rLuZd7PtFzEWlF6JCnptpdSbXZB5cPWxH71z
-         jJzBVe2utG5MXWOwdJH1gutxTuwFdOLP21dn6iBpvhsKqP/Eb4mto4dFQJhqXBgmBgke
-         BQBHTKAWXxfem5RnoorZIl2jkYPO2kSHSe7V6+suSIZE0YtKv82GAthKc7gUYbwLDQlD
-         Ir6/CXwVmjO6DYhgdm1Wbi5xwOB45SPf6B16tsLmQS74tz/jltmZsD1BA38Rb1BGm9qv
-         SToQ==
-X-Gm-Message-State: AOJu0Yw4Jws4w+DBvsX0D1ysXgMQeMeIOAbTfhPSfFpw7f4boEmPinFb
-	RPzkUu6IcHIWt7HYYH9B/pU=
-X-Google-Smtp-Source: AGHT+IGL9HaOHI1pA66TfIvcnThcrsucMoJsUN9XCN/3vveKsO6ydakuBqm/MjZ2YbGaQxNUJ599Jg==
-X-Received: by 2002:a05:600c:1c9f:b0:40d:70c0:b50d with SMTP id k31-20020a05600c1c9f00b0040d70c0b50dmr1171249wms.8.1704737004722;
-        Mon, 08 Jan 2024 10:03:24 -0800 (PST)
-Received: from cjw-notebook (2a02-8388-0502-f480-6c32-186a-368b-d6a9.cable.dynamic.v6.surfer.at. [2a02:8388:502:f480:6c32:186a:368b:d6a9])
-        by smtp.gmail.com with ESMTPSA id ay26-20020a05600c1e1a00b0040e4a8c2d47sm1726250wmb.43.2024.01.08.10.03.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jan 2024 10:03:24 -0800 (PST)
-Date: Mon, 8 Jan 2024 19:03:21 +0100
-From: Christoph Winklhofer <cj.winklhofer@gmail.com>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Rob Herring <robh@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Jonathan Corbet <corbet@lwn.net>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-doc@vger.kernel.org
-Subject: Re: [PATCH v4 3/3] w1: add UART w1 bus driver
-Message-ID: <ZZw46ZQ5JoxlWflG@cjw-notebook>
-References: <20240106-w1-uart-v4-0-7fe1378a8b3e@gmail.com>
- <20240106-w1-uart-v4-3-7fe1378a8b3e@gmail.com>
- <5ff1d706-9f06-4eb6-bc86-75f933e54118@kernel.org>
+	dkim=pass (2048-bit key) header.d=cornelisnetworks.com header.i=@cornelisnetworks.com header.b="a8ndnx3z"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fnLLxkKuiLNihl0zUHiZN1VOQjYbS4D6W49pK7meAZy+rY5znxjCRDl6fInW4Lnx23MKCjjVknz0ZKqJiylK8NV3DuE915eQD+aIA036oF3gMMk7zvAEhIRRT+bWlI4UnJeQZCAmunienD7VwR2rlph65YtMBgIUFjG0FMDxQRKZ7fevZGQdy+JKj+QHU9xUJgQWRUHV6KnGW3ke5yrO3Dc1EWha4td54aZm/K9HiCxCmxa7Etm6GQCTikpQUF8scxNhae3W16Yae0+sIa0GaUlzZbWYxF8zGWCRiYfhM9PbkG8VzJ6vOAqboC/ToByi1f/Ixiv+Hj8cklqpxDj8Jw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=etZzBbBt5HjEal/APW09QF0uCzwHxU7RTfRFTFYExaE=;
+ b=LDKHJS0de1zbyzL3Y7w23gNNAwO7WViMbuDVvncovhvuyjAFiuA3KLjQG3QAU66pmcUDTWckukVdEIBfHY6GRgICXwPu0OFGPBDkaJC4gwtuzyFAHwTYIx34vbDzLV6c6mAMh+H415y6aJtC/ll5L0YueCg4fwtKJAMG3IQIEaBUJHBENPl80VMpxQO+jnbm9M060AqpJK5l0gSVKFt36xA66Ce3InRuiB0VZrMrHI3WJGQgeP0Q6n2c909uILENJichm+vBAcysta/gQOhLBdkSv+PUSPDwRneEJL4DlvO8R7E/07Eeyy7AKoEv3EQUQ73hAfz1gCHHM6v4Gqc3Pw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=cornelisnetworks.com; dmarc=pass action=none
+ header.from=cornelisnetworks.com; dkim=pass header.d=cornelisnetworks.com;
+ arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cornelisnetworks.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=etZzBbBt5HjEal/APW09QF0uCzwHxU7RTfRFTFYExaE=;
+ b=a8ndnx3zjzXa9ZABoq16V1UYsoWww4ue3duCpO0HIS2gEIrNk8QG0JLy5caSxzvGzqsBacXluJPB6S9LMM2Y6gN9tODwJLEA5HBH3Ri/2IrdIKOez/m2PcT/LBPtxN2xjYrbkd6RHQjj3CDNxnqM0QXd/KzPvK5e5CsYyTTmWS4Jx35Rn01KG5hvaYPKb1/WT0evZQ2Lrf+DYlKWY6PrW1rTgiuZ33h+reSmTr0T1kcGxCo2X1vTvzPrn0CqmJrCllY8p89hhD4xFwPm6GZAC0jLiR9MHfZqa53l4vBKyPbAmzAu5or0lU+sLMVpA9db4/QLLFen2l3yGHYs+UTqzQ==
+Received: from DM4PR01MB7595.prod.exchangelabs.com (2603:10b6:8:5e::22) by
+ PH0PR01MB8118.prod.exchangelabs.com (2603:10b6:510:29c::19) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7159.21; Mon, 8 Jan 2024 19:08:08 +0000
+Received: from DM4PR01MB7595.prod.exchangelabs.com
+ ([fe80::6878:c4a4:24f7:4e5d]) by DM4PR01MB7595.prod.exchangelabs.com
+ ([fe80::6878:c4a4:24f7:4e5d%5]) with mapi id 15.20.7159.020; Mon, 8 Jan 2024
+ 19:08:08 +0000
+From: "Srinivasan, Usha" <usha.srinivasan@cornelisnetworks.com>
+To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Subject: max14830 irq
+Thread-Topic: max14830 irq
+Thread-Index: AdpCZgM5EpVKR9TvQJaVhp41Fise0g==
+Date: Mon, 8 Jan 2024 19:08:08 +0000
+Message-ID:
+ <DM4PR01MB75952BAB0B535CF832C89AD99E6B2@DM4PR01MB7595.prod.exchangelabs.com>
+Reply-To: "Srinivasan, Usha" <usha.srinivasan@cornelisnetworks.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=cornelisnetworks.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM4PR01MB7595:EE_|PH0PR01MB8118:EE_
+x-ms-office365-filtering-correlation-id: e1751acd-a46a-4fe4-c347-08dc107d267a
+x-ms-exchange-atpmessageproperties: SA
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ whSK6w4eZ64Ycm4EKst9Yomsu99WVWY8q0PHm14agxJqXnsmFOEkhGmuCO8Y4EIOy9V9tl4ugPf0U8E4ovHTNOFFyD2rPhO+bmC0MB/mZto6toxtWLjlS8Hc+5KE7rZk1bwnWN7LjaQ4kWZty8tbEGRJugbdm+1jD7WRkzqcZ7F9agSuaNWTxJ+nCVgSQXJ6e6X4TgJPrGexqjYwEqv/aczA/1G4SMD/alpWg0mO27rziw2J3+fvF+I2xmZff0IaBAtwamN1eJwJEWP54g7bqhe07/1XRNBKly0m8AvPiK3CzzRA+dBgGoyfgTF7SeeLcLqxRYyuDCi8DADCQfY/Aih8SoCQnKtBGwtBh+gqLUz9VmXOLMI7JMjuIRcUovBuvvYoPivhVtt2qT1Slq2BpMk8kSpECblU76a8dyRyqKoQL/f2yVGzhljsPy4utgiwV3Q2RWLXFFe/jbiy5SdmXlDx8mv9nux8yWhmeSf9EMlGdxfcqii0CnIPZoddMx9yDMH5esyzxBA5XKndWtQkqQJFCwoLlXY8NUTxolZHZVHb3EXTFkXFq0xnLVb5M1JNP4GIC2/od0CPvvg2kPgBpQmVGHMS9rKMDRqgLF6uWw26f5ox2tKG7Rn07T7RagTkSBEvFtptCGXsaCpJqKGAA3E9aCoo0Vs/xrZYxwkA9kQ=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR01MB7595.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230031)(39830400003)(376002)(396003)(136003)(346002)(366004)(230273577357003)(230173577357003)(1800799012)(451199024)(186009)(64100799003)(6506007)(9686003)(478600001)(71200400001)(7696005)(5660300002)(66476007)(66946007)(83380400001)(41300700001)(7116003)(2906002)(316002)(76116006)(6916009)(3450700001)(52536014)(8936002)(66556008)(8676002)(64756008)(66446008)(38070700009)(38100700002)(86362001)(122000001)(33656002)(55016003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?+KEEndjdpEhR/Cwwzao35FQA2aVM7EBuGS1Gc5OD9sN9VtW344VBjPOyKDxX?=
+ =?us-ascii?Q?0vQV+G4fKUBsm9EwiotnARJJXipg1XyRyOSKFs0oEfT+TfY3OQmt6tQrSpNh?=
+ =?us-ascii?Q?oL+vvdMi1KhSSoLl0/mA0vLd/PopZClp4qMNuMYfOZJLkeIfnfSiIsi8HmD/?=
+ =?us-ascii?Q?8Zj36IxpdkG3ZgGOYRYWrkMqKotEOF1l1EOyOJmNt+MgvKkQkqtUT2quTmic?=
+ =?us-ascii?Q?OYrq1Lko762HtcygC4DAZlqkW6+wP/8C/My5zjxJZiRNFlJhTF7+m/PmsfCh?=
+ =?us-ascii?Q?b6gZbQS9YLeEG4tKwcSkvIS5t5dYEh05jjr7U0KX88avBR5khfljDJy0J3Q7?=
+ =?us-ascii?Q?waNJwMSecA2BGSlftK79dyYaZZXNATJfCAtwbEDFZppkExcgm68rqF/Sfv6p?=
+ =?us-ascii?Q?aJGn6DQGRL4S5tAQc7W9yJSfEE8SpShtyAN7LF9skKlWSz06c2EZHSRjxLiT?=
+ =?us-ascii?Q?QAo61TJfnhj5//wB0wVcYNKn29bQ1RziBtErg4adMWPbBoILR6+Rogu0mqIn?=
+ =?us-ascii?Q?J/3m7+X1p7eR7XLBSsvOTxGN4imPNZrgvxokF8zgjusyFOwLn96BZ1P8HDjY?=
+ =?us-ascii?Q?LTj0aG31kMdZJxvP4eBjS9TC5QxiP78daLsWjAZ1Yb1rjIes1zuYoeZHQfX4?=
+ =?us-ascii?Q?IiXW6bjk2zq0tZltsuLyU/0lUYqvZfsTBbUWSCJIduTmpvXaxioQFxwgrROM?=
+ =?us-ascii?Q?yWB2yBnKPN3rqCUSVpe5b2oKZYBycf27mZf3pjSO+lzU8V1lj8va+j7gd7jB?=
+ =?us-ascii?Q?PZZBcPLBzuUYS10rHHVl5gKc5HFt8jDyRuXwuA+bDqiwWzSYHHB6mO9PIcPz?=
+ =?us-ascii?Q?YqcoV/nh6cSdHGiZwY3YA+7UuUgRbUQGbSdXeMMD3uNtUy3SLXyQh9avaPhP?=
+ =?us-ascii?Q?ty2XhqghKXwL5sjhUOrW6LI9fWbeHjEqKXq2XidwQorq2IQ9FzQNMIsBtGQh?=
+ =?us-ascii?Q?3twyXElgzHmNOsvO0NBNo7KXwT0ck3+zapOLkZcGqQPdKhz/XEVUVQ3Uu1j3?=
+ =?us-ascii?Q?yoFT7AMZS2a6kPrwzjxi+jdn+ugCHMy04dv4gMiWqhvDbSGAGTZHoYVx+WEt?=
+ =?us-ascii?Q?V1iezQWQQQTp+bvMSj2ZVA8NInF6ixV8QNWL43vARRaArEvIzop63dDLklT/?=
+ =?us-ascii?Q?5mEQ52xVF/YWUCtrFD1zqjUawZTqJHLggQOPY2v48rhEmXvXvlN1ckb60csk?=
+ =?us-ascii?Q?ROniHe4yY7goFzZP6q4wwDUi0vPNyC8DBiyw3erJS9KBAWHKHSeAHYflohIL?=
+ =?us-ascii?Q?6kaT8BwAsu6OwhBeLqhGXMvcj7SjafNtK65dyOSURRrwa4M0QaUEMkoDSFOS?=
+ =?us-ascii?Q?EUr7ZcNhwWf4HPtoczOG6cFB2n/Tfg6maMAO1gIXsS5bFlbXHnA7QXf+kFRh?=
+ =?us-ascii?Q?LzGXlO7F2ULH9GMcuOHNu2ev6RcWa86CbPdJ+P9hv+ouk1o+77QJHa3/7v2c?=
+ =?us-ascii?Q?qXUGvNKF0LKJD4BCIbwDPXfBoBBtxWvUXjWpRJg2lKJ1F+R0aytavCkOCN2q?=
+ =?us-ascii?Q?n6QfO60rWuCiad46JrPvHFxKvOgtD+pb6qiib5fBqzPxmigAbkfmsuhZ9XuA?=
+ =?us-ascii?Q?RXI3IF2QRokSdiMfkZ9S0fSULfpa3CbNayM4oX2vSLhae53fxLOJU7yu9JBT?=
+ =?us-ascii?Q?FrUFV6yPp76YPk6VJmo7rU7kXiIdvM+OFgPjZWmmqjSRsewAHcgjuoebzmjC?=
+ =?us-ascii?Q?xHl4cg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5ff1d706-9f06-4eb6-bc86-75f933e54118@kernel.org>
+X-OriginatorOrg: cornelisnetworks.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR01MB7595.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e1751acd-a46a-4fe4-c347-08dc107d267a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jan 2024 19:08:08.1992
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4dbdb7da-74ee-4b45-8747-ef5ce5ebe68a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: aqKqORMK0oN7cCnnjk2kt64TnolevkwtjuLbvnGe8AHEcfCR0lI6nsoJVkXkBtBzsSU4+9hgM7+PxZZnNMUrsRRQSRxnkeSEcT5J2ay+fuyNHFQvUToV3JIhVKkOUu/i
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR01MB8118
 
-On Mon, Jan 08, 2024 at 07:18:31AM +0100, Jiri Slaby wrote:
-> On 06. 01. 24, 17:02, Christoph Winklhofer via B4 Relay wrote:
-> > From: Christoph Winklhofer <cj.winklhofer@gmail.com>
-> > 
-> > Add a UART 1-Wire bus driver. The driver utilizes the UART interface via
-> > the Serial Device Bus to create the 1-Wire timing patterns. The driver
-> > was tested on a "Raspberry Pi 3B" with a DS18B20 and on a "Variscite
-> > DART-6UL" with a DS18S20 temperature sensor.
-> > 
-> > The 1-Wire timing pattern and the corresponding UART baud-rate with the
-> > interpretation of the transferred bytes are described in the document:
-> > 
-> > Link: https://www.analog.com/en/technical-articles/using-a-uart-to-implement-a-1wire-bus-master.html
-> > 
-> > In short, the UART peripheral must support full-duplex and operate in
-> > open-drain mode. The timing patterns are generated by a specific
-> > combination of baud-rate and transmitted byte, which corresponds to a
-> > 1-Wire read bit, write bit or reset.
-> ...
-> > --- /dev/null
-> > +++ b/drivers/w1/masters/w1-uart.c
-> > @@ -0,0 +1,398 @@
-> > +// SPDX-License-Identifier: GPL-2.0-or-later
-> > +/*
-> > + * w1-uart - UART 1-Wire bus driver
-> > + *
-> > + * Uses the UART interface (via Serial Device Bus) to create the 1-Wire
-> > + * timing patterns. Implements the following 1-Wire master interface:
-> > + *
-> > + * - reset_bus: requests baud-rate 9600
-> > + *
-> > + * - touch_bit: requests baud-rate 115200
-> > + *
-> > + * Author: Christoph Winklhofer <cj.winklhofer@gmail.com>
-> > + */
-> > +
-> > +#include <linux/completion.h>
-> > +#include <linux/delay.h>
-> > +#include <linux/jiffies.h>
-> > +#include <linux/module.h>
-> > +#include <linux/mutex.h>
-> > +#include <linux/of.h>
-> > +#include <linux/serdev.h>
-> > +#include <linux/w1.h>
-> > +
-> > +#define W1_UART_TIMEOUT msecs_to_jiffies(500)
-> > +
-> > +/*
-> > + * struct w1_uart_config - configuration for 1-Wire operation
-> > + *
-> > + * @baudrate: baud-rate returned from serdev
-> > + * @delay_us: delay to complete a 1-Wire cycle (in us)
-> > + * @tx_byte: byte to generate 1-Wire timing pattern
-> > + */
-> > +struct w1_uart_config {
-> > +	unsigned int baudrate;
-> > +	unsigned int delay_us;
-> > +	unsigned char tx_byte;
-> 
-> If it is a "byte", it should be u8.
-> 
-will change this and all others to u8.
+Hello,
+I am trying to get max14830 working on our platform and I'm seeing a stack =
+trace for each of the UARTs in my device tree.  I'm not sure what the fix i=
+s.  I'm running 6.1.15-580639a (OpenBMC 2.14.0) on ASPEED ast2600.  Any hel=
+p appreciated.
+[    2.608620] max310x 11-006c: clock is not stable yet
+[    2.614933] 11-006c: ttyMAX0 at I/O 0x0 (irq =3D 57, base_baud =3D 37500=
+00) is a MAX14830
+[    2.625532] 11-006c: ttyMAX1 at I/O 0x1 (irq =3D 57, base_baud =3D 37500=
+00) is a MAX14830
+[    2.636061] 11-006c: ttyMAX2 at I/O 0x2 (irq =3D 57, base_baud =3D 37500=
+00) is a MAX14830
+[    2.646513] 11-006c: ttyMAX3 at I/O 0x3 (irq =3D 57, base_baud =3D 37500=
+00) is a MAX14830
+And,
+[   88.430219] irq 57: nobody cared (try booting with the "irqpoll" option)
+[   88.437720] CPU: 0 PID: 65 Comm: irq/57-11-006c Not tainted 6.1.15-58063=
+9a #1
+[   88.445687] Hardware name: Generic DT based system
+[   88.451046]  unwind_backtrace from show_stack+0x18/0x1c
+[   88.456906]  show_stack from dump_stack_lvl+0x40/0x4c
+[   88.462556]  dump_stack_lvl from __report_bad_irq+0x44/0xc8
+[   88.468784]  __report_bad_irq from note_interrupt+0x2c8/0x314
+[   88.475208]  note_interrupt from handle_irq_event+0x90/0x94
+[   88.481436]  handle_irq_event from handle_level_irq+0xbc/0x1b4
+[   88.487952]  handle_level_irq from generic_handle_domain_irq+0x30/0x40
+[   88.495253]  generic_handle_domain_irq from aspeed_gpio_irq_handler+0xac=
+/0x158
+[   88.503326]  aspeed_gpio_irq_handler from generic_handle_domain_irq+0x30=
+/0x40
+[   88.511305]  generic_handle_domain_irq from gic_handle_irq+0x6c/0x80
+[   88.518411]  gic_handle_irq from generic_handle_arch_irq+0x34/0x44
+[   88.525316]  generic_handle_arch_irq from call_with_stack+0x18/0x20
+[   88.532328]  call_with_stack from __irq_svc+0x98/0xb0
+[   88.537973] Exception stack(0xbf925eb0 to 0xbf925ef8)
+[   88.543614] 5ea0:                                     45854088 00000003 =
+00000001 00000000
+[   88.552742] 5ec0: 00000000 4184ee80 45854088 00000000 45854000 41a64140 =
+00000000 00000000
+[   88.561870] 5ee0: 00000000 bf925f00 4016bb7c 4016bac0 600f0013 ffffffff
+[   88.569252]  __irq_svc from __wake_up_common_lock+0x1c/0xb8
+[   88.575483]  __wake_up_common_lock from __wake_up+0x20/0x28
+[   88.581714]  __wake_up from irq_thread+0x118/0x1ec
+[   88.587070]  irq_thread from kthread+0xd8/0xf4
+[   88.592040]  kthread from ret_from_fork+0x14/0x2c
+[   88.597288] Exception stack(0xbf925fb0 to 0xbf925ff8)
+[   88.602923] 5fa0:                                     00000000 00000000 =
+00000000 00000000
+[   88.612053] 5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 =
+00000000 00000000
+[   88.621179] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+[   88.628559] handlers:
+[   88.631088] [<4f379e2c>] irq_default_primary_handler threaded [<26199d83=
+>] max310x_ist
+[   88.639952] Disabling IRQ #57
 
-...
-> > +
-> > +static inline unsigned int baud_to_bit_ns(unsigned int baud)
-> > +{
-> > +	return 1000000000 / baud;
-> 
-> NSEC_PER_SEC
-> 
-> > +}
-> > +
-> > +static inline unsigned int to_ns(unsigned int us)
-> > +{
-> > +	return us * 1000;
-> 
-> NSEC_PER_USEC
-> 
-and use the correct constants.
+__________________________
+Usha Srinivasan
 
-...
-> > +}
-> > +
-> > +/*
-> > + * Set baud-rate, delay and tx-byte to create a 1-Wire pulse and adapt
-> > + * the tx-byte according to the actual baud-rate.
-> > + *
-> > + * Reject when:
-> > + * - time for a bit outside min/max range
-> > + * - a 1-Wire response is not detectable for sent byte
-> > + */
-> > +static int w1_uart_set_config(struct serdev_device *serdev,
-> > +			      const struct w1_uart_limits *limits,
-> > +			      struct w1_uart_config *w1cfg)
-> > +{
-...
-> > +	/* 1-Wire response detectable for sent byte */
-> > +	if (limits->sample_us > 0 &&
-> > +	    bit_ns * 8 < low_ns + to_ns(limits->sample_us))
-> 
-> BITS_PER_BYTE
-> 
-ok, change it (it is the time for the UART data-frame).
-> > +		return -EINVAL;
-> > +
-> > +	/* delay to complete 1-Wire cycle, include start and stop-bit */
-> > +	w1cfg->delay_us = 0;
-> > +	if (bit_ns * 10 < to_ns(limits->cycle_us))
-> 
-> What is this 10? Dub it.
-> 
-> > +		w1cfg->delay_us =
-> > +			(to_ns(limits->cycle_us) - bit_ns * 10) / 1000;
-> 
-> And this 10?
-> 
-> The end: / NSEC_PER_USEC
-> 
-will be more explicit (it is the time for the UART packet:
-BITS_PER_BYTE + 2 (start and stop-bit).
 
-...
-> > +static int w1_uart_serdev_receive_buf(struct serdev_device *serdev,
-> > +				      const unsigned char *buf, size_t count)
-> 
-> serdev already uses u8 * here. You are basing on the top of some old tree.
-Yes, this patch is based on the w1-next branch of
-  git://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux-w1.git
-was not sure from where to start. I guess that this change is probably in
-the w1-tree after the next stable release.
-> 
-> regards,
-> -- 
-> js
-> suse labs
-> 
-Thanks Jiri for the review!
 
-Kind regards,
-Christoph
+External recipient
