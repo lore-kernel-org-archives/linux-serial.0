@@ -1,141 +1,119 @@
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E819946541
-	for <linux-serial@vger.kernel.org>; Mon,  8 Jan 2024 19:30:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E50B56464
+	for <linux-serial@vger.kernel.org>; Mon,  8 Jan 2024 22:29:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="boh5onHu"
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-557f4fd1278so77659a12.3
-        for <linux-serial@vger.kernel.org>; Mon, 08 Jan 2024 11:30:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1704742199; x=1705346999; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=fQIGvC3B84QK5cy6jpGTUHpfklayyMVGJTSNMpLqXZU=;
-        b=boh5onHu4tQDLYH3f7Z2hFYQX4G/njtR0zBB7iVYd2gZDuAWKZ3D7epRmnya9sdFGr
-         OFO2sIn9pecuwSkSOdmdGDJywaw+gvDfkLCgbcv/6vX/NDtzMT4KqRXrrERNUw6neQO5
-         lEBW0IS/BA+8M9Rg1SmourwTV4nMO8OSakjZHrFi9DED5GyYd8BtCIDtuVIQTjklmeWT
-         q7Vku0LmqHKNo+T+pe8tH4hOcMptt+nNWkHpQAkfcusMTpiJ8tCSgXjNxLic3oZ/zr5g
-         qPwbVvO53Ik9vkm8dAs+gptZgOWQqySLZ3jkukJtlaQWwUatIPqiHv+YCW4Zgv1gexej
-         8eOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704742199; x=1705346999;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=fQIGvC3B84QK5cy6jpGTUHpfklayyMVGJTSNMpLqXZU=;
-        b=Is9SYrahiSgoliIJXTF7BHc9bIFdyl3vQr8r4TnfRng7j6u+dL0tsmdt+GUh3GmBfQ
-         ZMkFDul8rqL0t9B9aIZ/qcKIDVOlEnjgQ8lBe6r9ZPmxeTxyM1/9R0b7kon1VWEQ+Acd
-         Bhe/A0uM3QfJckfTKXH6b+7IaKm9kjkhKGlKrV+PipxKYonf9iQh9nD3YjMGFIKB8SfE
-         JrLchJdTyP/T11IRBwRraQsJCqQtHdwoh/jYjK6HfY5t0HLaClE1crN8l1PgFo/oJWPc
-         VDnTZLsI2PX02c52JZjG9fol6yEU9pdjkuqAbDjs4vKm9hOncdmj6RGUIQVx/mcJE6Ra
-         vwaw==
-X-Gm-Message-State: AOJu0Yz4oW+8Vthqrz2AIT9GK5IKqEkPHo33LfYtW6cGTBpTWbfIoyDx
-	PcMSO6tGakDsKtdhTyalGR9FseuCABRSGg==
-X-Google-Smtp-Source: AGHT+IFtYHpiHrDCzL3b/pxXTojRttl/1NKDVZalEwcDBEluD0lppIhmhbQA9MVn5L1T46+2HjV5eQ==
-X-Received: by 2002:a50:d59a:0:b0:554:5ab4:85a0 with SMTP id v26-20020a50d59a000000b005545ab485a0mr2715915edi.81.1704742199074;
-        Mon, 08 Jan 2024 11:29:59 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.223.112])
-        by smtp.gmail.com with ESMTPSA id e11-20020a056402104b00b0055534d5e75csm148417edu.6.2024.01.08.11.29.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Jan 2024 11:29:58 -0800 (PST)
-Message-ID: <069b44ce-5d95-4d39-91f0-5167a5d941b1@linaro.org>
-Date: Mon, 8 Jan 2024 20:29:57 +0100
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="EaOQRS8p"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=+UuliXU6ewd+cd73WUnbjl+RAbfXjyT70ruAPOiWb08=; b=EaOQRS8plPizQin1ai5PgJt3XL
+	cjHa0WICfNC7QdJsQw7CHyJAsgoazTFkh+UsKGwrQ5NNTfN/qq7zUFqZihlsBEh1t09pMX6KbbvHS
+	vPg4dZBEeUVcsudB4KzBohOB2BotOo+jju8VgwkyXW8FazwfL4CY2WTYT70eeYcUwt4s=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:36638 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1rMy7i-0006QR-U0; Mon, 08 Jan 2024 17:29:36 -0500
+Date: Mon, 8 Jan 2024 17:29:34 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: "Srinivasan, Usha" <usha.srinivasan@cornelisnetworks.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Message-Id: <20240108172934.c457ca06b6543f868d32de46@hugovil.com>
+In-Reply-To: <DM4PR01MB75952BAB0B535CF832C89AD99E6B2@DM4PR01MB7595.prod.exchangelabs.com>
+References: <DM4PR01MB75952BAB0B535CF832C89AD99E6B2@DM4PR01MB7595.prod.exchangelabs.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 3/3] w1: add UART w1 bus driver
-Content-Language: en-US
-To: Christoph Winklhofer <cj.winklhofer@gmail.com>,
- Jiri Slaby <jirislaby@kernel.org>
-Cc: Rob Herring <robh+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- Rob Herring <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Jonathan Corbet <corbet@lwn.net>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-doc@vger.kernel.org
-References: <20240106-w1-uart-v4-0-7fe1378a8b3e@gmail.com>
- <20240106-w1-uart-v4-3-7fe1378a8b3e@gmail.com>
- <5ff1d706-9f06-4eb6-bc86-75f933e54118@kernel.org>
- <ZZw46ZQ5JoxlWflG@cjw-notebook>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <ZZw46ZQ5JoxlWflG@cjw-notebook>
-Content-Type: text/plain; charset=UTF-8
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
+	* -1.4 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: max14830 irq
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On 08/01/2024 19:03, Christoph Winklhofer wrote:
-> ...
->>> +static int w1_uart_serdev_receive_buf(struct serdev_device *serdev,
->>> +				      const unsigned char *buf, size_t count)
->>
->> serdev already uses u8 * here. You are basing on the top of some old tree.
+On Mon, 8 Jan 2024 19:08:08 +0000
+"Srinivasan, Usha" <usha.srinivasan@cornelisnetworks.com> wrote:
 
-Old? Your change came for v6.8 and this was sent when all trees were
-based on v6.7-rc1. What newer tree could have this been?
+> Hello,
+> I am trying to get max14830 working on our platform and I'm seeing a stack trace for each of the UARTs in my device tree.  I'm not sure what the fix is.  I'm running 6.1.15-580639a (OpenBMC 2.14.0) on ASPEED ast2600.  Any help appreciated.
+> [    2.608620] max310x 11-006c: clock is not stable yet
+> [    2.614933] 11-006c: ttyMAX0 at I/O 0x0 (irq = 57, base_baud = 3750000) is a MAX14830
+> [    2.625532] 11-006c: ttyMAX1 at I/O 0x1 (irq = 57, base_baud = 3750000) is a MAX14830
+> [    2.636061] 11-006c: ttyMAX2 at I/O 0x2 (irq = 57, base_baud = 3750000) is a MAX14830
+> [    2.646513] 11-006c: ttyMAX3 at I/O 0x3 (irq = 57, base_baud = 3750000) is a MAX14830
 
-> Yes, this patch is based on the w1-next branch of
->   git://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux-w1.git
-> was not sure from where to start. I guess that this change is probably in
-> the w1-tree after the next stable release.
+Hi,
+it seems you have I2C communication with your device and the ID
+register was read correctly in the probe() function. If it was not the
+case, you would have an error message about that.
 
-That's a timing issue. For that particular case, where this was
-targeting next-next cycle, you should have based this on linux-next. In
-other cases this would require cross-tree merging due to dependencies
-which none of us were aware, so no harm.
+> And,
+> [   88.430219] irq 57: nobody cared (try booting with the "irqpoll" option)
+
+This is probalbly happening because max310x_ist() was called, but when
+it exited the interrupt line was still active, so that it was not
+handled properly.
+
+Can you make sure you have the following two patches in your kernel
+version:
+
+984a4afdc87a ("regmap: prevent noinc writes from clobbering cache")
+c94e5baa989f ("serial: max310x: fix IO data corruption in batched
+operations")
+
+I do not have hardware to test it, and this is a wild guess, but they
+may be relevant to your problem because they enable the FIFOs to be
+read/written properly. If Rx FIFO for example cannot be read, the
+source of the interrupt cannot be cleared, and could potentially
+explain your problem.
+
+Hugo Villeneuve
 
 
-Best regards,
-Krzysztof
-
+> [   88.437720] CPU: 0 PID: 65 Comm: irq/57-11-006c Not tainted 6.1.15-580639a #1
+> [   88.445687] Hardware name: Generic DT based system
+> [   88.451046]  unwind_backtrace from show_stack+0x18/0x1c
+> [   88.456906]  show_stack from dump_stack_lvl+0x40/0x4c
+> [   88.462556]  dump_stack_lvl from __report_bad_irq+0x44/0xc8
+> [   88.468784]  __report_bad_irq from note_interrupt+0x2c8/0x314
+> [   88.475208]  note_interrupt from handle_irq_event+0x90/0x94
+> [   88.481436]  handle_irq_event from handle_level_irq+0xbc/0x1b4
+> [   88.487952]  handle_level_irq from generic_handle_domain_irq+0x30/0x40
+> [   88.495253]  generic_handle_domain_irq from aspeed_gpio_irq_handler+0xac/0x158
+> [   88.503326]  aspeed_gpio_irq_handler from generic_handle_domain_irq+0x30/0x40
+> [   88.511305]  generic_handle_domain_irq from gic_handle_irq+0x6c/0x80
+> [   88.518411]  gic_handle_irq from generic_handle_arch_irq+0x34/0x44
+> [   88.525316]  generic_handle_arch_irq from call_with_stack+0x18/0x20
+> [   88.532328]  call_with_stack from __irq_svc+0x98/0xb0
+> [   88.537973] Exception stack(0xbf925eb0 to 0xbf925ef8)
+> [   88.543614] 5ea0:                                     45854088 00000003 00000001 00000000
+> [   88.552742] 5ec0: 00000000 4184ee80 45854088 00000000 45854000 41a64140 00000000 00000000
+> [   88.561870] 5ee0: 00000000 bf925f00 4016bb7c 4016bac0 600f0013 ffffffff
+> [   88.569252]  __irq_svc from __wake_up_common_lock+0x1c/0xb8
+> [   88.575483]  __wake_up_common_lock from __wake_up+0x20/0x28
+> [   88.581714]  __wake_up from irq_thread+0x118/0x1ec
+> [   88.587070]  irq_thread from kthread+0xd8/0xf4
+> [   88.592040]  kthread from ret_from_fork+0x14/0x2c
+> [   88.597288] Exception stack(0xbf925fb0 to 0xbf925ff8)
+> [   88.602923] 5fa0:                                     00000000 00000000 00000000 00000000
+> [   88.612053] 5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> [   88.621179] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+> [   88.628559] handlers:
+> [   88.631088] [<4f379e2c>] irq_default_primary_handler threaded [<26199d83>] max310x_ist
+> [   88.639952] Disabling IRQ #57
+> 
+> __________________________
+> Usha Srinivasan
