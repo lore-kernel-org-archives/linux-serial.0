@@ -1,49 +1,49 @@
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E404E364B9
-	for <linux-serial@vger.kernel.org>; Tue,  9 Jan 2024 10:43:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A506E37162
+	for <linux-serial@vger.kernel.org>; Tue,  9 Jan 2024 11:09:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BEJPd3X1"
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-5537dd673e5so2372373a12.0
-        for <linux-serial@vger.kernel.org>; Tue, 09 Jan 2024 02:43:49 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="q+hb/9II"
+Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-50e7af5f618so2992456e87.1
+        for <linux-serial@vger.kernel.org>; Tue, 09 Jan 2024 03:09:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1704797028; x=1705401828; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=linaro.org; s=google; t=1704798553; x=1705403353; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=HcmeoD2bJyWOf7IQDedH3O4hl0wwNrcGm20KYO0O+1A=;
-        b=BEJPd3X1ZD+SsQR2jygF6SztWcrt2Z5mVswkZFJtY+9fkl7ylLYjmn7vjhHSDCUDRg
-         AqKIsyQidaF+Dr1s1xZpI7Kya0N+vGV6oQPd+7pD+LbjYbR4vyVrkplOpu9QEyy8Tr0n
-         nN0H3qE8tQm+evoea1UomIyMm/2u1XE/WtXltxG1nPALCais93S9+feY4PKaprCQ7xYJ
-         J6vH6JH+2x7/mLmjADDBteXb5nAsoqjk9jSFMw0EEYliUrVGr7IwfFbPdPxmuGjjZnAC
-         9W28VC9qoSHLNdqRPTxZVte3GLJ1unTvMRNsrJwsP/zWiRkV3d667ruQhEHr5gbn+wiN
-         upRg==
+        bh=tVyhlPMNNztnphTqNPinffmF/KoMF9raOCME5ozNVVI=;
+        b=q+hb/9IISkpA500GNq81nk1b0MRBy0qqj02P81ZsPglze5etpBUKpxtHNmeh7+GCE7
+         0ixoISR7a1OTDKWe8o1LGbgbLk+kLTacCxpwHYhiNIHx9zC2rnVSuAPOougV341CGIXP
+         1hpORel4ujQDll5QZc6otA1gPf5pL7WSc8lLSaTYW27oT7x2XR5VJXV+vztu/NchaFza
+         hBl+6KTt6SJ7RRSo3TcC3aCZHO8FHNrDnoHXDIaH1hXK/stlkskZA4Vt9oIpEZqxE+6h
+         8AuagH0a8DiT59mTuE2A6KR4PEv1pQavp+ZJ8gVEc4Xo1rw2yscWhrXUtn5EvmscCW72
+         jMzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704797028; x=1705401828;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1704798553; x=1705403353;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HcmeoD2bJyWOf7IQDedH3O4hl0wwNrcGm20KYO0O+1A=;
-        b=o8V/CvVrFSWZ/y9uLk5KXdyfkQhuSdeMdQHYb8wYDlYRf9dR0TPdSBHqloe9w/HzpQ
-         sE0NV9qMQqc2/dticmZOrtkz6+acWXK7+kkGUoyZUb4aRE/EwNxPaZRgiMV9+bVDvQ4J
-         gVL/aaPGir7UzQL8GH46bKHuSdDc3onVZ9VaMSgOeEADqhJ9Bty1Xt9Hs9Ix0bqFy6g9
-         5qcZwgEc0/rLEATTnikFmJMvXtfm5ez/ym0veTvEvXCVPbci08CuC9JAO4uJP74PU2io
-         nakDRysALmMk2F+jQxDjw0VbpoWK912ycEgVQCiKgoC88pmVZbdMiKwPNZovphl7+eAX
-         +wkA==
-X-Gm-Message-State: AOJu0YwVz4pi3XcTRrWDqgu0IOQqfbwca5hT8cHkpfsCeNsmxgFLJdFN
-	K55IIfnRDC0mzjIPZ/BEoCM=
-X-Google-Smtp-Source: AGHT+IFhW9tG28oYinC8x3ZP208EX7BmIi/dgQ/XdSAQoM6jXrBFu4Ih1oXzLW4gaZyFaVJgmWKdng==
-X-Received: by 2002:a50:a68b:0:b0:557:1006:40a8 with SMTP id e11-20020a50a68b000000b00557100640a8mr2993861edc.5.1704797027831;
-        Tue, 09 Jan 2024 02:43:47 -0800 (PST)
-Received: from [192.168.1.2] (ip4-83-240-121-90.cust.nbox.cz. [83.240.121.90])
-        by smtp.gmail.com with ESMTPSA id p16-20020a056402075000b00554753ec02fsm815020edy.86.2024.01.09.02.43.47
+        bh=tVyhlPMNNztnphTqNPinffmF/KoMF9raOCME5ozNVVI=;
+        b=CiE5oEjIjkXY8/Bd7Rrvde7jnpQnvUpF2PdfR0W3mcyPxRC4f0ySJnHJRiyLF4OrBW
+         1DyxeAgb/joZf+TXuwrYIYrbPZJYru8ICeZgf11K8XTgae0s/92wkk5Is7NftVae4D6G
+         CUqzC/ofWDBW1ERO7Vc3SNDTpadqR80cg1TZ+6l8XfaglZbyyqoBcpeMO7CvOMQNYjg6
+         zI7lcoZEWRdNAHGIvqcWFF2E5iGsTCq+ok8nI/8adgA6e9UTxwOyLDCv/iu4moBubuEb
+         WbMrp1K63sN2P0tOtMiYtaMgFD4NBosL3hJ/lluUcg9EFUi4lOTvHm3sicgWKZYUEEv5
+         4nkw==
+X-Gm-Message-State: AOJu0YxYITWKWsfhmXp+8dvvs2mJP+Uv0H+M52n6TX3Q6uX8LpdR6X7M
+	a4FEQvQXoRxG0e5AEj42sLagKsBBjNKwhA==
+X-Google-Smtp-Source: AGHT+IEMXwuVfnrfhqc30q1sEquNfFHyWBcdjFypOjlmguwW2ul/zE4eKjU7MchxGopuP+yU9J3huw==
+X-Received: by 2002:a05:6512:e81:b0:50e:9570:b34b with SMTP id bi1-20020a0565120e8100b0050e9570b34bmr2092906lfb.90.1704798552690;
+        Tue, 09 Jan 2024 03:09:12 -0800 (PST)
+Received: from [192.168.1.20] ([178.197.223.112])
+        by smtp.gmail.com with ESMTPSA id v22-20020a1709062f1600b00a1e4558e450sm916712eji.156.2024.01.09.03.09.10
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Jan 2024 02:43:47 -0800 (PST)
-Message-ID: <598ab459-6ba9-4a17-b4a1-08f26a356fc0@gmail.com>
-Date: Tue, 9 Jan 2024 11:43:46 +0100
+        Tue, 09 Jan 2024 03:09:12 -0800 (PST)
+Message-ID: <f695f2c0-2d4e-484c-9faa-7d8b28362541@linaro.org>
+Date: Tue, 9 Jan 2024 12:09:09 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -51,97 +51,93 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: [PATCH v4] tty/vt: UTF-8 parsing update according to RFC 3629, modern
- Unicode
-Content-Language: en-US, cs-CZ
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jirislaby@kernel.org, linux-serial@vger.kernel.org, roman.zilka@gmail.com
-References: <14027090-ca91-45ca-90d4-75456c0f2c76@gmail.com>
- <2023121201-ecosphere-polyester-8d37@gregkh>
- <834b6344-55dd-4a92-b1db-8d60d2b40a3e@gmail.com>
- <e5e7fd4f-acac-41a0-8a36-1f4f71eb7c18@gmail.com>
- <2024010413-quickly-crinkly-6c5b@gregkh>
-From: =?UTF-8?Q?Roman_=C5=BDilka?= <roman.zilka@gmail.com>
-In-Reply-To: <2024010413-quickly-crinkly-6c5b@gregkh>
+Subject: Re: [PATCH v2 01/12] dt-bindings: clock: google,gs101-clock: add
+ PERIC0 clock management unit
+Content-Language: en-US
+To: Rob Herring <robh@kernel.org>, Tudor Ambarus <tudor.ambarus@linaro.org>
+Cc: peter.griffin@linaro.org, krzysztof.kozlowski+dt@linaro.org,
+ mturquette@baylibre.com, sboyd@kernel.org, conor+dt@kernel.org,
+ andi.shyti@kernel.org, alim.akhtar@samsung.com, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, s.nawrocki@samsung.com, tomasz.figa@gmail.com,
+ cw00.choi@samsung.com, arnd@arndb.de, semen.protsenko@linaro.org,
+ andre.draszik@linaro.org, saravanak@google.com, willmcvicker@google.com,
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+ linux-serial@vger.kernel.org, kernel-team@android.com
+References: <20231228125805.661725-1-tudor.ambarus@linaro.org>
+ <20231228125805.661725-2-tudor.ambarus@linaro.org>
+ <20240109040315.GA2619804-robh@kernel.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <20240109040315.GA2619804-robh@kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-vc_translate_unicode() and vc_sanitize_unicode() parse input to the
-UTF-8-enabled console, marking invalid byte sequences and producing Unicode
-codepoints. The current algorithm follows ancient Unicode and may accept
-invalid byte sequences, pass on non-existent codepoints and reject valid
-sequences.
+On 09/01/2024 05:03, Rob Herring wrote:
+> On Thu, Dec 28, 2023 at 12:57:54PM +0000, Tudor Ambarus wrote:
+>> Add dt-schema documentation for the Connectivity Peripheral 0 (PERIC0)
+>> clock management unit.
+>>
+>> Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
+>> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+>> ---
+>> v2:
+>> - fix comments as per Sam's suggestion and collect his R-b tag
+>> - Rob's suggestion of renaming the clock-names to just "bus" and "ip"
+>>   was not implemented as I felt it affects readability in the driver
+>>   and consistency with other exynos clock drivers. I will happily update
+>>   the names in the -rc phase if someone else has a stronger opinion than
+>>   mine. 
+> 
+> I'll defer to Krzysztof.
 
-The patch restores the functions' compliance with modern Unicode (v15.1 [1]
-+ many previous versions) as well as RFC 3629 [2].
-1. Codepoint space is limited to 0x10FFFF.
-2. "Noncharacters", such as U+FFFE, U+FFFF, are no longer invalid in
-   Unicode and will be accepted. Another option was to complete the set of
-   noncharacters (used to be just those two, now there's more) and preserve
-   the rejection step. This is indeed what Unicode suggests ([1] chap.
-   23.7) (not requires), but most codepoints are !iswprint(), so selecting
-   just the noncharacters seemed arbitrary and futile (and unnecessary).
+I miss the point why clock-names cannot be fixed now. This is the name
+of property, not the input clock name.
 
-This is not a security patch. I'm not aware of any present security
-implications of the old code.
-
-[1] https://www.unicode.org/versions/Unicode15.1.0
-[2] https://datatracker.ietf.org/doc/html/rfc3629
-
-Signed-off-by: Roman Žilka <roman.zilka@gmail.com>
----
-
-v2: A more elaborate commit msg, e-mail formatting corrections.
-v3: Shortened patch as requested. The gist of it is unchanged. Added links
-    to commit msg. Changed base to current tty-next.
-v4: Removed func doc correction as requested. Updated base to current
-    tty-next.
-
- drivers/tty/vt/vt.c | 14 ++------------
- 1 file changed, 2 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 156efda7c80d..35c2ab8c5280 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -2593,7 +2593,7 @@ static inline int vc_translate_ascii(const struct vc_data *vc, int c)
-  */
- static inline int vc_sanitize_unicode(const int c)
- {
--	if ((c >= 0xd800 && c <= 0xdfff) || c == 0xfffe || c == 0xffff)
-+	if (c >= 0xd800 && c <= 0xdfff)
- 		return 0xfffd;
- 
- 	return c;
-@@ -2611,10 +2611,7 @@ static inline int vc_sanitize_unicode(const int c)
-  */
- static int vc_translate_unicode(struct vc_data *vc, int c, bool *rescan)
- {
--	static const u32 utf8_length_changes[] = {
--		0x0000007f, 0x000007ff, 0x0000ffff,
--		0x001fffff, 0x03ffffff, 0x7fffffff
--	};
-+	static const u32 utf8_length_changes[] = {0x7f, 0x7ff, 0xffff, 0x10ffff};
- 
- 	/* Continuation byte received */
- 	if ((c & 0xc0) == 0x80) {
-@@ -2660,14 +2657,7 @@ static int vc_translate_unicode(struct vc_data *vc, int c, bool *rescan)
- 	} else if ((c & 0xf8) == 0xf0) {
- 		vc->vc_utf_count = 3;
- 		vc->vc_utf_char = (c & 0x07);
--	} else if ((c & 0xfc) == 0xf8) {
--		vc->vc_utf_count = 4;
--		vc->vc_utf_char = (c & 0x03);
--	} else if ((c & 0xfe) == 0xfc) {
--		vc->vc_utf_count = 5;
--		vc->vc_utf_char = (c & 0x01);
- 	} else {
--		/* 254 and 255 are invalid */
- 		return 0xfffd;
- 	}
- 
-
-base-commit: 0c84bea0cabc4e2b98a3de88eeb4ff798931f056
--- 
-2.41.0
+Best regards,
+Krzysztof
 
