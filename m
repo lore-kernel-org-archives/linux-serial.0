@@ -1,83 +1,70 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2E88539F;
-	Tue,  9 Jan 2024 04:08:24 +0000 (UTC)
+Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.214])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5C6ED631;
+	Tue,  9 Jan 2024 04:37:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WX+OQrBQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7E27C433C7;
-	Tue,  9 Jan 2024 04:08:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1704773304;
-	bh=vxop1P25YkHwxNMZhEWdRl+DWP4xO/rIKADXrQ5Hngo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=WX+OQrBQS/WTPVQ3qaPUBruOwgpd5pTj3QZw4+gnvxMJk/4UsT8fs/A4wmq36KwhF
-	 Odo7nBB7DDouyGwDMXNzgB8HFk/f6dC4od4zdqQLnjjVy4HzCOz4C2Led8B0/2zp4v
-	 8sB3Twr4VGKfnVPTce5JRDSyH2rJjwYPm5Zt3+AA5OZWR4xJfcLa9CDnX57EaP8CUv
-	 kNoxgteqMU3krWxw2vTRCAZaES5adyTLGAWFym5YU6dXC5WnAvRMUrTI4d7tVr+DE8
-	 0VzUPLINE6wSA5Y8suH/TbIRah9IpGJTOH5ekd5Fz8CXRHX4BpmDbtFwhfgtoy8ui8
-	 62pRsMrhFNufg==
-Received: (nullmailer pid 2627564 invoked by uid 1000);
-	Tue, 09 Jan 2024 04:08:22 -0000
-Date: Mon, 8 Jan 2024 21:08:22 -0700
-From: Rob Herring <robh@kernel.org>
-To: Peter Griffin <peter.griffin@linaro.org>
-Cc: Tudor Ambarus <tudor.ambarus@linaro.org>, krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com, sboyd@kernel.org, conor+dt@kernel.org, andi.shyti@kernel.org, alim.akhtar@samsung.com, gregkh@linuxfoundation.org, jirislaby@kernel.org, s.nawrocki@samsung.com, tomasz.figa@gmail.com, cw00.choi@samsung.com, arnd@arndb.de, semen.protsenko@linaro.org, andre.draszik@linaro.org, saravanak@google.com, willmcvicker@google.com, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, kernel-team@android.com
-Subject: Re: [PATCH v2 01/12] dt-bindings: clock: google,gs101-clock: add
- PERIC0 clock management unit
-Message-ID: <20240109040822.GB2619804-robh@kernel.org>
-References: <20231228125805.661725-1-tudor.ambarus@linaro.org>
- <20231228125805.661725-2-tudor.ambarus@linaro.org>
- <CADrjBPo8tARhHjpBJMABV3dqrd6AqhPVASTK5+3rSmoDA8eStw@mail.gmail.com>
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="f/lME9AY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=1ad9S
+	/a41A/LWp7yf1wRRo/sXfgTHOJJT+GW2z8tQnc=; b=f/lME9AY8QI34XICOeuMK
+	iwXotmKIBoMS0H/UBTsms8PlfBXrJTjcRz3J975yCiWUp7a75G4xtTFz9fn0LUTH
+	N/D2HrIBmKChsbfoHHKro9hO0b1K8kl/0k9GgeCzUk3sxz+kzYkI71cxLPrUhCOz
+	5jQb4cv5v9Lo8+05d+yrcA=
+Received: from localhost.localdomain (unknown [114.105.142.232])
+	by zwqz-smtp-mta-g4-2 (Coremail) with SMTP id _____wDnt4zUzJxl+6msAg--.14805S4;
+	Tue, 09 Jan 2024 12:35:14 +0800 (CST)
+From: Lizhe <sensor1010@163.com>
+To: ilpo.jarvinen@linux.intel.com,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	u.kleine-koenig@pengutronix.de,
+	robh@kernel.org,
+	john.ogness@linutronix.de,
+	tglx@linutronix.de,
+	frank.li@vivo.com,
+	zhang_shurong@foxmail.com
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Lizhe <sensor1010@163.com>
+Subject: [PATCH v7] serial: linflexuart: Remove redundant uart type assignment
+Date: Mon,  8 Jan 2024 20:34:26 -0800
+Message-Id: <20240109043426.3756-1-sensor1010@163.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CADrjBPo8tARhHjpBJMABV3dqrd6AqhPVASTK5+3rSmoDA8eStw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:_____wDnt4zUzJxl+6msAg--.14805S4
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtw4rAw13Wr13Jw43Cr1kAFb_yoWxKwb_uF
+	1DC347ur10kFWakFnrXFWYkrySganYvF48ZF10q3saq3yDZw4rXryIqrZru39rG3yUZrZr
+	WwsrWr12yrsrXjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRNvtCUUUUUU==
+X-CM-SenderInfo: 5vhq20jurqiii6rwjhhfrp/1tbiWANfq2VOA4+1OwACsE
 
-On Mon, Jan 08, 2024 at 02:18:21PM +0000, Peter Griffin wrote:
-> Hi Tudor,
-> 
-> On Thu, 28 Dec 2023 at 12:58, Tudor Ambarus <tudor.ambarus@linaro.org> wrote:
-> >
-> > Add dt-schema documentation for the Connectivity Peripheral 0 (PERIC0)
-> > clock management unit.
-> >
-> > Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
-> > Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
-> > ---
-> > v2:
-> > - fix comments as per Sam's suggestion and collect his R-b tag
-> > - Rob's suggestion of renaming the clock-names to just "bus" and "ip"
-> >   was not implemented as I felt it affects readability in the driver
-> >   and consistency with other exynos clock drivers. I will happily update
-> >   the names in the -rc phase if someone else has a stronger opinion than
-> >   mine.
-> >
-> 
-> It would be good to get Krzysztof and Robs view on whether they agree
-> with the above rationale or whether they would still like to see the
-> names updated.
-> 
-> Personally I like the consistency, grepability and the fact the
-> current name encodes whether it is a gate, divider into the name.
-> Seeing 'sss' or 'ip' as a clock name in the driver code doesn't tell
-> you a lot without having to then cross reference with the dts.
-> 
-> Is there some rationale and/or benefit behind having the shorter
-> names? The only thing I could think of is trying to partially re-use
-> this file on future SoCs like gs201 which might be clocked
-> differently, but then these exynos clock drivers seem to be SoC
-> specific anyway.
+in linflex_config_port() the member variable type will be
+assigned again. see linflex_connfig_port()
 
-The point of -names is to identify one entry from another in the list. 
-Having the name of the block is just redundant.
+Signed-off-by: Lizhe <sensor1010@163.com>
+---
+ drivers/tty/serial/fsl_linflexuart.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-I like consistency, but not when it's a pattern we don't want.
-
-Rob
+diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_linflexuart.c
+index 3bdaf1ddc309..c5a04a168c15 100644
+--- a/drivers/tty/serial/fsl_linflexuart.c
++++ b/drivers/tty/serial/fsl_linflexuart.c
+@@ -837,7 +837,6 @@ static int linflex_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	sport->dev = &pdev->dev;
+-	sport->type = PORT_LINFLEXUART;
+ 	sport->iotype = UPIO_MEM;
+ 	sport->irq = ret;
+ 	sport->ops = &linflex_pops;
+-- 
+2.25.1
 
