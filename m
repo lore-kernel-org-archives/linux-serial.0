@@ -1,129 +1,79 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D3923A1AA
-	for <linux-serial@vger.kernel.org>; Tue,  9 Jan 2024 16:12:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4322B3A1C2;
+	Tue,  9 Jan 2024 16:29:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="moYAk1aW"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-40e461c1f5bso24967035e9.3
-        for <linux-serial@vger.kernel.org>; Tue, 09 Jan 2024 08:12:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1704816765; x=1705421565; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=QLuwkV3YqBM7cDd6d4I1FcvjfJRMJpmS9TLQKnHh3LA=;
-        b=moYAk1aWEGU0e8vAsJW8p6tr3Pu3tFN1GgQ3d9dEVFjVhBeCHaDokjiYn2BhKUlyPf
-         3iRyD1fs3Q4O2xnXTEMy3bXHFRpZC6IUmZlTrej3NVPTsapUOhCNtUzy63gFTPFmOW3Q
-         Eh3BGgpXQJ5wcOkG64Fh+cPM5CZQkK0eOuJmK+ErNwFobl3XY/iSnRRtY7JSjrt+ujxS
-         dsfAISc+YydQIUhYZHiF62tXmlygb6OhUUCMJ6ht5igjYz6RUtWUHeVrZVjAYRZvByOy
-         x0ukRHA5AoY0VIVFtXObDSkhZZqXn5QVJGkR63whs9JoPZASAIJHCXLoRIN8DX4HHPF1
-         IxKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704816765; x=1705421565;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QLuwkV3YqBM7cDd6d4I1FcvjfJRMJpmS9TLQKnHh3LA=;
-        b=IxL74ciF+F2OfTHxE0a5HxLUWcRDrsKoQVVicHzeiKYXIdv87Ru2xbbWvhRkBwDaSU
-         rVeJIoM38NptJaGstziJQ3feb8kheQPcN5gIns6LVu/ex2hZOWo7kOaN6I+aT89sUR4T
-         t8CudLZZeT4nAKBRDAORJYS+3MUwdeOsciGLP/qf5hRKOO5G1U38hFS6os7SeVF+3vaS
-         LOe3oMJXuFQcM+B9vjLfd8vDS10Ukgfd3cvtvbOqlNxEaxWuI91WEywVoKPPQ9OFSooQ
-         0HYOxImC0oAq9rog7HbizVWuvIU6F/sz1qcQ7FNSV/9k26yH19/LhP85O0h/uwPycQfc
-         lnGg==
-X-Gm-Message-State: AOJu0Yz9hd9lDG0qrv2IeEJdYCv0CHXUQ0hN75jdNGoY87DGLWZPNEXi
-	gz/1un61YgdWV0PUVCfTUOZqnyb73mSrYA==
-X-Google-Smtp-Source: AGHT+IE+jtYqbzFOWQJKYy4Sd1zW2XS5XwcHZK4TTZRMLsCeki8cy1luWp6DEum2EBB3JZlw2mRT8A==
-X-Received: by 2002:a05:600c:ccd:b0:40e:52cf:3c2c with SMTP id fk13-20020a05600c0ccd00b0040e52cf3c2cmr313625wmb.73.1704816764893;
-        Tue, 09 Jan 2024 08:12:44 -0800 (PST)
-Received: from [192.168.2.107] ([79.115.63.202])
-        by smtp.gmail.com with ESMTPSA id p6-20020a05600c1d8600b0040e4c1dade4sm4205471wms.36.2024.01.09.08.12.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Jan 2024 08:12:44 -0800 (PST)
-Message-ID: <38523622-4963-44a5-a5d6-64896ae47e09@linaro.org>
-Date: Tue, 9 Jan 2024 16:12:42 +0000
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tO+b64eZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C550C433F1;
+	Tue,  9 Jan 2024 16:29:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1704817760;
+	bh=QgGwzoys5P2Z/fVPtiI4dBsiCdvR2utj2/6oG20yU8I=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+	b=tO+b64eZxpE1divDNhiYoF0w5a3carVLU5isQEfJzuMYC7Ujt9cl6FuZJzvfO9gr1
+	 Ek0j32D8E/N9c2ZpF+PncLfrZNjSd2FQgZM+2kYC1xQ0R+Xw89F0O8GkPasA+zPqnY
+	 TcYSEBqUo3329T9TvIcblHnRX7YTBlcAzLppVXfT+gjgWnlfrh3lHQivbfFi5DVqOs
+	 NCuJm5Oov75+0QrXdipVIqhgi8A78rfcgtBFmqiKhzLN2tiQbha10SmTHO2tg+2hlK
+	 KJIWok0gjAPrbvRkttADcxAFt9q9KFQiLJklVJrdqh95LQs5enmxfTrdEwYXxWbA4Y
+	 gcZfH0x+RS8yg==
+Received: (nullmailer pid 2713715 invoked by uid 1000);
+	Tue, 09 Jan 2024 16:29:14 -0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 01/12] dt-bindings: clock: google,gs101-clock: add
- PERIC0 clock management unit
-Content-Language: en-US
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Rob Herring <robh@kernel.org>
-Cc: peter.griffin@linaro.org, krzysztof.kozlowski+dt@linaro.org,
- mturquette@baylibre.com, sboyd@kernel.org, conor+dt@kernel.org,
- andi.shyti@kernel.org, alim.akhtar@samsung.com, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, s.nawrocki@samsung.com, tomasz.figa@gmail.com,
- cw00.choi@samsung.com, arnd@arndb.de, semen.protsenko@linaro.org,
- andre.draszik@linaro.org, saravanak@google.com, willmcvicker@google.com,
- linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
- linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
- linux-serial@vger.kernel.org, kernel-team@android.com
-References: <20231228125805.661725-1-tudor.ambarus@linaro.org>
- <20231228125805.661725-2-tudor.ambarus@linaro.org>
- <20240109040315.GA2619804-robh@kernel.org>
- <f695f2c0-2d4e-484c-9faa-7d8b28362541@linaro.org>
- <8a55e1d9-c102-4cdf-8f23-edc40889cf6d@linaro.org>
- <ea02d7ca-62e2-4d46-8495-ed6e515625a1@linaro.org>
-From: Tudor Ambarus <tudor.ambarus@linaro.org>
-In-Reply-To: <ea02d7ca-62e2-4d46-8495-ed6e515625a1@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From: Rob Herring <robh@kernel.org>
+To: Yoshinori Sato <ysato@users.sourceforge.jp>
+Cc: Michael Karcher <kernel@mkarcher.dialup.fu-berlin.de>, Geert Uytterhoeven <geert+renesas@glider.be>, Randy Dunlap <rdunlap@infradead.org>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Jiri Slaby <jirislaby@kernel.org>, dri-devel@lists.freedesktop.org, Thomas Gleixner <tglx@linutronix.de>, Sam Ravnborg <sam@ravnborg.org>, Azeem Shaikh <azeemshaikh38@gmail.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Daniel Vetter <daniel@ffwll.ch>, linux-ide@vger.kernel.org, Helge Deller <deller@gmx.de>, Michael Turquette <mturquette@baylibre.com>, Yang Xiwen <forbidden405@foxmail.com>, Linus Walleij <linus.walleij@linaro.org>, Conor Dooley <conor+dt@kernel.org>, David Rientjes <rientjes@google.com>, Bin Meng <bmeng@tinylab.org>, Vlastimil Babka <vbabka@suse.cz>, Sergey Shtylyov <s.shtylyov@omp.ru>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, Biju Das <biju.das.jz@bp.renesas.com>, Damien Le Moal <dlemoal@kernel.org>, Krzysztof Kozlowski <krzyszto
+ f.kozlowski+dt@linaro.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, Chris Morgan <macromorgan@hotmail.com>, linux-renesas-soc@vger.kernel.org, Rich Felker <dalias@libc.org>, Stephen Boyd <sboyd@kernel.org>, linux-pci@vger.kernel.org, Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, =?utf-8?q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Heiko Stuebner <heiko@sntech.de>, Stephen Rothwell <sfr@canb.auug.org.au>, devicetree@vger.kernel.org, Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, Andrew Morton <akpm@linux-foundation.org>, Rob Herring <robh+dt@kernel.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Lorenzo Pieralisi <lpieralisi@kernel.org>, David Airlie <airlied@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Javier Martinez 
+ Canillas <javierm@redhat.com>, Jacky Huang <ychuang3@nuvoton.com>, Lee Jones <lee@kernel.org>, Baoquan He <bhe@redhat.com>, Guenter Roeck <linux@roeck-us.net>, Max Filippov <jcmvbkbc@gmail.com>, Palmer Dabbelt <palmer@rivosinc.com>, Lukas Bulwahn <lukas.bulwahn@gmail.com>, linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-fbdev@vger.kernel.org
+In-Reply-To: <a801115c277e65341da079c318a1b970f8d9e671.1704788539.git.ysato@users.sourceforge.jp>
+References: <cover.1704788539.git.ysato@users.sourceforge.jp>
+ <a801115c277e65341da079c318a1b970f8d9e671.1704788539.git.ysato@users.sourceforge.jp>
+Message-Id: <170481775440.2713680.11814908609719501949.robh@kernel.org>
+Subject: Re: [DO NOT MERGE v6 19/37] dt-bindings: interrupt-controller:
+ renesas,sh7751-irl-ext: Add json-schema
+Date: Tue, 09 Jan 2024 09:29:14 -0700
 
 
-
-On 1/9/24 15:01, Krzysztof Kozlowski wrote:
-> On 09/01/2024 12:58, Tudor Ambarus wrote:
->>
->>
->> On 1/9/24 11:09, Krzysztof Kozlowski wrote:
->>> On 09/01/2024 05:03, Rob Herring wrote:
->>>> On Thu, Dec 28, 2023 at 12:57:54PM +0000, Tudor Ambarus wrote:
->>>>> Add dt-schema documentation for the Connectivity Peripheral 0 (PERIC0)
->>>>> clock management unit.
->>>>>
->>>>> Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
->>>>> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
->>>>> ---
->>>>> v2:
->>>>> - fix comments as per Sam's suggestion and collect his R-b tag
->>>>> - Rob's suggestion of renaming the clock-names to just "bus" and "ip"
->>>>>   was not implemented as I felt it affects readability in the driver
->>>>>   and consistency with other exynos clock drivers. I will happily update
->>>>>   the names in the -rc phase if someone else has a stronger opinion than
->>>>>   mine. 
->>>>
->>>> I'll defer to Krzysztof.
->>>
->>> I miss the point why clock-names cannot be fixed now. This is the name
->>> of property, not the input clock name.
->>
->> They can be fixed now. I've just aired the fixes at:
->> https://lore.kernel.org/linux-arm-kernel/20240109114908.3623645-1-tudor.ambarus@linaro.org/
->>
->> Preparing v3 for this patch set to include the updated names here too.
+On Tue, 09 Jan 2024 17:23:16 +0900, Yoshinori Sato wrote:
+> Renesas SH7751 external interrupt encoder json-schema.
 > 
-> I think I was not that clear enough. I did not get your current patchset
-> - so PERIC0 clock controller - cannot use new naming.
+> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
+> ---
+>  .../renesas,sh7751-irl-ext.yaml               | 72 +++++++++++++++++++
+>  1 file changed, 72 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/interrupt-controller/renesas,sh7751-irl-ext.yaml
 > 
 
-Ok, I understand that the fixes from
-https://lore.kernel.org/linux-arm-kernel/20240109114908.3623645-1-tudor.ambarus@linaro.org/
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-are NACK-ed and I shall use the full clock-names in this patch set as
-well, thus "dout_cmu_peric0_bus", and "dout_cmu_peric0_ip". I don't mind
-changing them back, will send a v4 using the full clock names.
+yamllint warnings/errors:
 
-Out of curiosity, why can't we change the names? All gs101 patches are
-for v6.8, thus they haven't made a release yet. We still have the -rc
-phase where we can fix things.
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/interrupt-controller/renesas,sh7751-irl-ext.example.dtb: sh7751irl_encoder@a4000000: '#size-cells' does not match any of the regexes: 'pinctrl-[0-9]+'
+	from schema $id: http://devicetree.org/schemas/interrupt-controller/renesas,sh7751-irl-ext.yaml#
 
-Thanks for the guidance.
-ta
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/a801115c277e65341da079c318a1b970f8d9e671.1704788539.git.ysato@users.sourceforge.jp
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
+
