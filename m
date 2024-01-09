@@ -1,50 +1,49 @@
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 004103C088
-	for <linux-serial@vger.kernel.org>; Tue,  9 Jan 2024 18:39:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BED63C499
+	for <linux-serial@vger.kernel.org>; Tue,  9 Jan 2024 18:41:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="k7C13vRk"
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-a277339dcf4so359242366b.2
-        for <linux-serial@vger.kernel.org>; Tue, 09 Jan 2024 10:39:01 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Q+co3ngm"
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-50eaaf2c7deso3451770e87.2
+        for <linux-serial@vger.kernel.org>; Tue, 09 Jan 2024 10:41:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1704825540; x=1705430340; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=xWMnZYLmBfzNCS7tCYTR50/IYbDDleSQcKnB4iWLl3w=;
-        b=k7C13vRkDcY0puSH/eYizYMjl8sHLaipBJPAVdgFoxoyB2OMKO2FFJoIk+wOdQuO1E
-         yfLf/WQaDRGIJSrxHEvjuMFns8ZcNbilakivKGcX5w017N/AGjruwOqlIJHzVBJUoOzC
-         nptHLd6DjxMyFeAY/f4qeuqQEZahGclrMVf9z6z92Tc4Z4iAKOeccQuMYBTWFGrn4rtL
-         Y740Gi/xUQ9eFbMvf9yIXNzIsTlU9naaW80BNNXrSqYSGP3YV2d/9zdKXC3SLkkHz4oe
-         CM37c9fnG4MCjPX3xhvgUZosVVGnDPuMBhGL/CzQBi+VXhfAM2zEYeVURUPpmNoR8HYZ
-         JP3w==
+        d=linaro.org; s=google; t=1704825712; x=1705430512; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=b3kY/sI+OewHLdAt8Sws7SovwxQjp4vZRhkHLuCSn/w=;
+        b=Q+co3ngm3QhNnSMVf1JtEQ9xRL+T6OdBUTkuBEfGHJ2TAHdIay644/+v4NxIXEw/R/
+         AWLhihcEiHGz+ay8oUrm4TN7Un39mw91e2TiQI2kCF6bVmwDBpqN2KPeBhmrusOGu9/j
+         D7pv5K3fswNu6IZynF0LyNIydwgPi4c/l4cPoggH1HzMLGxEkBEj2gsnGBpREKW7uZfO
+         XEPYEge8MNe5g0RnNsvfGdqBzyGD/AjD4lEuRnxopgOEV4G6a3H8cKOQHuJ/FR2M0JzN
+         Hkl41HY0GZW1ScZOzqDrEysoiEiPWGurVHDxQWAz6s5iF6Py6nKQJxKm5P8Z8W1jUjo4
+         jGTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704825540; x=1705430340;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xWMnZYLmBfzNCS7tCYTR50/IYbDDleSQcKnB4iWLl3w=;
-        b=BdS0iCcrUsWGWMyhntHnQ8hzeMlNGZ6yByxusXaQI+9IP+HouwlEvyqCSfpoejkTL1
-         jd8GMYnrilbk9vLKMAoYTONCNrtW/DP3x9iC2FSuuz4g5ZgMCd60A3Hj8USM2JNW3D4Q
-         LKhTsXi5xs+I0Euhrp1mZW3JQaaM3vVSRqz2b43IS07yNiVew4gtPxJS9NkUt1hAuNPh
-         +DQ+rNEQtR61Xw+dodop/TnscjUMRpBsoO52GEH5FLklaa5vKNYoMspblLkB/efFqWQw
-         h5OLfaQ5P+V0G8hdag3nkKB3w3X0ShRQAd1/g405HeX8pM/1vND2SC35RgKPb2uFkjky
-         JiXg==
-X-Gm-Message-State: AOJu0YyOHAZT8df1JqjrqLSL4WDLsHkjSU82hlNcTrTwRKaxozdOCEjO
-	JZIdIIpSwxV3tiYuXaU2m+3BqaAtiFuWfw==
-X-Google-Smtp-Source: AGHT+IEIh4HS+duMVRV9ASXLLmyfVTxjsJsJDphoxw3Ee34vR9nfgfG5Ih8P/GMcWU6kmfQPtq3Xkg==
-X-Received: by 2002:a17:907:b025:b0:a2b:2e02:583d with SMTP id fu37-20020a170907b02500b00a2b2e02583dmr646369ejc.113.1704825540196;
-        Tue, 09 Jan 2024 10:39:00 -0800 (PST)
+        d=1e100.net; s=20230601; t=1704825712; x=1705430512;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=b3kY/sI+OewHLdAt8Sws7SovwxQjp4vZRhkHLuCSn/w=;
+        b=oJY3uVbiagdnkO8QmIW+MbfoQHv2rrit00fW3mndmTusvu1nZNeaBJnLwtaTmIscUf
+         3ff+fbJOJFT0I3VNOq63Fban1okL5UUz6OkmeyLWGCHHPXkFaSi7yqdER3SvpCNRv7of
+         dzSek/ZeaDUk3X8GvknYopXT2wahhF/zICcP4UzDeQ8cT8ODRYuGFFmdyEpNlS3fL+Bp
+         cGhJu0wAVdCBW45WHjdqfYsWzk9QeJfeFIndiG6K3dgL3WtZAOL5l6fmC75pyLxrBMyy
+         gmBS4HvNRI73S/Bx6Se//e6KC2/rN4EGWKZvNxXz5vMJafUlYKEYu5y7EzNmxoH2FQuQ
+         m7SQ==
+X-Gm-Message-State: AOJu0YwykLpXkJNy6AboFMhFGXcR2VyTRSLIvkitfddGDhdwnQQR+bFa
+	Yuov08I5P8LyitG3gcXwD9TB7plrRJPLnA==
+X-Google-Smtp-Source: AGHT+IEIf5y9iCXRqGeQfwB4wQA61OuNMht8Vp0eJHsbfT3YBU5W1VDHv2z3upGwadxw7MEo4SYUBA==
+X-Received: by 2002:a19:8c0a:0:b0:50e:7c08:4350 with SMTP id o10-20020a198c0a000000b0050e7c084350mr2353230lfd.42.1704825711996;
+        Tue, 09 Jan 2024 10:41:51 -0800 (PST)
 Received: from [192.168.1.20] ([178.197.223.112])
-        by smtp.gmail.com with ESMTPSA id h21-20020a170906399500b00a26af2e4d58sm1310590eje.1.2024.01.09.10.38.56
+        by smtp.gmail.com with ESMTPSA id h22-20020a170906719600b00a2b9a6f1e9dsm242124ejk.10.2024.01.09.10.41.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Jan 2024 10:38:58 -0800 (PST)
-Message-ID: <ddd31326-8901-476f-949f-2d1291ba07a0@linaro.org>
-Date: Tue, 9 Jan 2024 19:38:56 +0100
+        Tue, 09 Jan 2024 10:41:51 -0800 (PST)
+Message-ID: <3666744f-0d34-477e-83bf-737ed7a4c230@linaro.org>
+Date: Tue, 9 Jan 2024 19:41:47 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -52,27 +51,53 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 01/12] dt-bindings: clock: google,gs101-clock: add
- PERIC0 clock management unit
-To: Tudor Ambarus <tudor.ambarus@linaro.org>, Rob Herring <robh@kernel.org>
-Cc: peter.griffin@linaro.org, krzysztof.kozlowski+dt@linaro.org,
- mturquette@baylibre.com, sboyd@kernel.org, conor+dt@kernel.org,
- andi.shyti@kernel.org, alim.akhtar@samsung.com, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, s.nawrocki@samsung.com, tomasz.figa@gmail.com,
- cw00.choi@samsung.com, arnd@arndb.de, semen.protsenko@linaro.org,
- andre.draszik@linaro.org, saravanak@google.com, willmcvicker@google.com,
- linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
- linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
- linux-serial@vger.kernel.org, kernel-team@android.com
-References: <20231228125805.661725-1-tudor.ambarus@linaro.org>
- <20231228125805.661725-2-tudor.ambarus@linaro.org>
- <20240109040315.GA2619804-robh@kernel.org>
- <f695f2c0-2d4e-484c-9faa-7d8b28362541@linaro.org>
- <8a55e1d9-c102-4cdf-8f23-edc40889cf6d@linaro.org>
- <ea02d7ca-62e2-4d46-8495-ed6e515625a1@linaro.org>
- <38523622-4963-44a5-a5d6-64896ae47e09@linaro.org>
+Subject: Re: [DO NOT MERGE v6 04/37] dt-bindings: interrupt-controller: Add
+ header for Renesas SH3/4 INTC.
 Content-Language: en-US
+To: Yoshinori Sato <ysato@users.sourceforge.jp>, linux-sh@vger.kernel.org
+Cc: Damien Le Moal <dlemoal@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Geert Uytterhoeven <geert+renesas@glider.be>,
+ Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
+ <sboyd@kernel.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+ Bjorn Helgaas <bhelgaas@google.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Magnus Damm <magnus.damm@gmail.com>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>, Rich Felker <dalias@libc.org>,
+ John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+ Lee Jones <lee@kernel.org>, Helge Deller <deller@gmx.de>,
+ Heiko Stuebner <heiko@sntech.de>, Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Chris Morgan <macromorgan@hotmail.com>, Yang Xiwen
+ <forbidden405@foxmail.com>, Sebastian Reichel <sre@kernel.org>,
+ Linus Walleij <linus.walleij@linaro.org>,
+ Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>,
+ Vlastimil Babka <vbabka@suse.cz>, Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+ David Rientjes <rientjes@google.com>, Baoquan He <bhe@redhat.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck
+ <linux@roeck-us.net>, Stephen Rothwell <sfr@canb.auug.org.au>,
+ Azeem Shaikh <azeemshaikh38@gmail.com>,
+ Javier Martinez Canillas <javierm@redhat.com>,
+ Max Filippov <jcmvbkbc@gmail.com>, Palmer Dabbelt <palmer@rivosinc.com>,
+ Bin Meng <bmeng@tinylab.org>, Jonathan Corbet <corbet@lwn.net>,
+ Jacky Huang <ychuang3@nuvoton.com>, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+ Biju Das <biju.das.jz@bp.renesas.com>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+ Sam Ravnborg <sam@ravnborg.org>, Sergey Shtylyov <s.shtylyov@omp.ru>,
+ Michael Karcher <kernel@mkarcher.dialup.fu-berlin.de>,
+ Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+ linux-ide@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+ linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-fbdev@vger.kernel.org
+References: <cover.1704788539.git.ysato@users.sourceforge.jp>
+ <b9cea5b530a6d68ea921174fbbda60afb8dd4432.1704788539.git.ysato@users.sourceforge.jp>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -118,68 +143,21 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <38523622-4963-44a5-a5d6-64896ae47e09@linaro.org>
+In-Reply-To: <b9cea5b530a6d68ea921174fbbda60afb8dd4432.1704788539.git.ysato@users.sourceforge.jp>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 09/01/2024 17:12, Tudor Ambarus wrote:
+On 09/01/2024 09:23, Yoshinori Sato wrote:
+> Renesas SH7751 Interrupt controller priority register define.
 > 
-> 
-> On 1/9/24 15:01, Krzysztof Kozlowski wrote:
->> On 09/01/2024 12:58, Tudor Ambarus wrote:
->>>
->>>
->>> On 1/9/24 11:09, Krzysztof Kozlowski wrote:
->>>> On 09/01/2024 05:03, Rob Herring wrote:
->>>>> On Thu, Dec 28, 2023 at 12:57:54PM +0000, Tudor Ambarus wrote:
->>>>>> Add dt-schema documentation for the Connectivity Peripheral 0 (PERIC0)
->>>>>> clock management unit.
->>>>>>
->>>>>> Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
->>>>>> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
->>>>>> ---
->>>>>> v2:
->>>>>> - fix comments as per Sam's suggestion and collect his R-b tag
->>>>>> - Rob's suggestion of renaming the clock-names to just "bus" and "ip"
->>>>>>   was not implemented as I felt it affects readability in the driver
->>>>>>   and consistency with other exynos clock drivers. I will happily update
->>>>>>   the names in the -rc phase if someone else has a stronger opinion than
->>>>>>   mine. 
->>>>>
->>>>> I'll defer to Krzysztof.
->>>>
->>>> I miss the point why clock-names cannot be fixed now. This is the name
->>>> of property, not the input clock name.
->>>
->>> They can be fixed now. I've just aired the fixes at:
->>> https://lore.kernel.org/linux-arm-kernel/20240109114908.3623645-1-tudor.ambarus@linaro.org/
->>>
->>> Preparing v3 for this patch set to include the updated names here too.
->>
->> I think I was not that clear enough. I did not get your current patchset
->> - so PERIC0 clock controller - cannot use new naming.
->>
-> 
-> Ok, I understand that the fixes from
-> https://lore.kernel.org/linux-arm-kernel/20240109114908.3623645-1-tudor.ambarus@linaro.org/
-> 
-> are NACK-ed and I shall use the full clock-names in this patch set as
-> well, thus "dout_cmu_peric0_bus", and "dout_cmu_peric0_ip". I don't mind
-> changing them back, will send a v4 using the full clock names.
 
-They are not rejected, it is just independent thing. At least looks like
-independent.
+Still not a binding.
 
-> Out of curiosity, why can't we change the names? All gs101 patches are
-> for v6.8, thus they haven't made a release yet. We still have the -rc
-> phase where we can fix things.
+Some parts of my comments are implemented, others are just ignored
+(dropping the file, fixing full stop in commit msg). This is confusing.
+I don't know. Shall I just NAK it to make it clear?
 
-We can change. I would not bother that much with doing that, because I
-sent already them to arm-soc. That means I need to consider this as
-fixes and I just did not want to deal with it.
-
-The question is quite different for a new clock controller - peric0.
-What parts of driver readability is affected by using "bus" name?
+NAK
 
 Best regards,
 Krzysztof
