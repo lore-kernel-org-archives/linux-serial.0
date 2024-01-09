@@ -1,57 +1,56 @@
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B634381D4
-	for <linux-serial@vger.kernel.org>; Tue,  9 Jan 2024 12:30:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58F31364A8
+	for <linux-serial@vger.kernel.org>; Tue,  9 Jan 2024 12:43:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="chSnIHus"
-Received: by mail-yb1-f171.google.com with SMTP id 3f1490d57ef6-dbed179f0faso2369823276.1
-        for <linux-serial@vger.kernel.org>; Tue, 09 Jan 2024 04:30:47 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QeIOoMPx"
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-5f15a1052b3so24167287b3.1
+        for <linux-serial@vger.kernel.org>; Tue, 09 Jan 2024 04:43:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1704803446; x=1705408246; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1704804184; x=1705408984; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=W6bnxa+GSR1FpCAvVqbsQV97G8p0dAq+kFC9sgXphqE=;
-        b=chSnIHusUnwn3XCrUTGLl/woFUhegzPC+/qykv4jRfXUGqRo//F7oY6CKp7Ssy6iYA
-         b1HGiRoyj77jg3J4ZSuJcQ1U0aAgpZogjKM5C1Kue04YzIfW0IpaPvdifHezeC9XfmJr
-         L/ViysLijTicR+FY22YHpCtiDyUtFbNy2rcFlivO2XUDLv8kFRUrak8LOI23rPqypVVT
-         tz/letFnoDyMKLsj5Ise4CkaJS1Lgg/ZEMwxpz7LzKtZmdV5QiiXcqiSb6XH+jD/eQ54
-         ZWLSkP+EMLHhGSdFvbG6h+dEvmx5/BqryPukhdMNFGmTgwHfBZTpJmCzWYe38ZS+/X1o
-         2s/Q==
+        bh=YRdzfj7JEW1eBQjWfVgccO0cPj0nGjhcrGXH3osu83E=;
+        b=QeIOoMPxJmnP7J6Ahz9RoFYBBAyFE1JBl58mDEbiOpjOXlXa4xctkyQ4nrjf58hZKM
+         UXAqgSfKfhBETJo7a6hI3NqYN/e/itjolyWBN7FXOOc1GVl4LoyzphSDupJkrBa6CcUx
+         uhg8+zb05cg3wX8odOqH1lntKqpAMgurMrtZCrBQHowdaKJVPOJ+e0AXNkXtdjlgelGx
+         e+KH88M4t756B0qSvZN4tKYQFQflFf4mg2QDBHbjdVtjW53sR3LDi55rkiBQ0f84/fuJ
+         bjjACC4hup/9yntLNcJlH8FzrZr8+C15ucKIwwVU8w2GBCAXJrzU3XiImhpFHY+eE/Ve
+         zvaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704803446; x=1705408246;
+        d=1e100.net; s=20230601; t=1704804184; x=1705408984;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=W6bnxa+GSR1FpCAvVqbsQV97G8p0dAq+kFC9sgXphqE=;
-        b=bXKd51hi95uPsfr1R18LKPbKAfK4vDNWKCtTjqzFpVqcX5JDg6E/kMHA1J+HbWUClh
-         MDi+UnVHdxKhd6VIOxAyU1FuNBCEwEmZtQ4GMyfxDy79vhGFGiD2NV/n+ETvY68zVlBg
-         xHV/lLKHxZz4SLiP05hWxnr15UoPzT25OPAg3+AdsqFlUWArFNQ3dgoCN1/c4rW89EnI
-         AKXyRgmbfjbglhRnnb9T099hKXatCWgJ1QF9BAzbbpeCzZHo2LaBABzn8rb/9wKNMWIJ
-         h+6BrBZpsJgJ39ZZygJlPPa4Fgr8K0EPBt0sxRmVU1JTInfRTTcO+kitEjOOOFNPy2JB
-         ZuLw==
-X-Gm-Message-State: AOJu0Yz9mVUkUtV6SWvRNcQQTw7HawtBow1O2muFRhV6GdRTEh2FG2FF
-	v25jNBT9UacLCPD15KA4Z9vBZPqWKoSR0EAs7l5XdAzjVj49hQ==
-X-Google-Smtp-Source: AGHT+IH/VCIVPEpFPTboTJrdPUTfNhyfiSowrYT19rYtTyqugjFXBvGgie/pxBxc7jOwlQ5dtHwAfNwOTFIHyTrVnOY=
-X-Received: by 2002:a25:1908:0:b0:dbc:ed55:dd7b with SMTP id
- 8-20020a251908000000b00dbced55dd7bmr248450ybz.36.1704803446144; Tue, 09 Jan
- 2024 04:30:46 -0800 (PST)
+        bh=YRdzfj7JEW1eBQjWfVgccO0cPj0nGjhcrGXH3osu83E=;
+        b=DMJB20Pgi87t1kMYs8PYR9dEZEZO8u2pviQm1iO598CNbTRVaenWzh79GzFL6MWKbe
+         2gqa1Wxeh/Nak2MCC6g4u48gr1L5o2YH2b0d6jUrzRGbIMkGm7io5sf8DvDYp3eoK7Ln
+         B38XSy4BRTbKlxDltLo/b8YyXzzP+gQirJSN7c7/DhCaUth3YinHY73Ci0nv1yJc6279
+         fHlumgQywRZ7rd5XrdnVq7x+lvg6QfZ9+bkPrEb4lO7EYncA2PAJMzLop0RXMuTCfRyR
+         rXqofc00hlE5J3SC2amwEMLLgtC66bvkEOz0rgY7I16+YT0l/+qJTNGGWhFWsuw6ZWfS
+         lBOQ==
+X-Gm-Message-State: AOJu0YyVDrcbqT+pCsUFt9CYwb9oJQGFbr3X40kKosB6MziEMxviPS4Z
+	uHYzI8YLSstj8rWGxgwatesFN44m0Ta1dBn9HawHT375AGyZPw==
+X-Google-Smtp-Source: AGHT+IGP2TpOD/2aQljjLpEh7rgxkZ1rPK7JLdhb+SJI4gzWB4npHJxZY6IBNmQ0p0RFR21+Q3sEEaYhEw7pDx3EeW0=
+X-Received: by 2002:a0d:cb85:0:b0:5f1:7189:b9d with SMTP id
+ n127-20020a0dcb85000000b005f171890b9dmr2932736ywd.82.1704804184379; Tue, 09
+ Jan 2024 04:43:04 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1704788539.git.ysato@users.sourceforge.jp> <bc794e2165244bd0cee81bc0106f1e2d1bef1613.1704788539.git.ysato@users.sourceforge.jp>
-In-Reply-To: <bc794e2165244bd0cee81bc0106f1e2d1bef1613.1704788539.git.ysato@users.sourceforge.jp>
+References: <cover.1704788539.git.ysato@users.sourceforge.jp> <160ee086771703c951c5522d997662aeac122a28.1704788539.git.ysato@users.sourceforge.jp>
+In-Reply-To: <160ee086771703c951c5522d997662aeac122a28.1704788539.git.ysato@users.sourceforge.jp>
 From: Linus Walleij <linus.walleij@linaro.org>
-Date: Tue, 9 Jan 2024 13:30:34 +0100
-Message-ID: <CACRpkdYLsf-uWdMCTpieji7u1-H3oTGojvC4xm7Erox97XJ6RQ@mail.gmail.com>
-Subject: Re: [DO NOT MERGE v6 17/37] dt-bindings: interrupt-controller:
- renesas,sh7751-intc: Add json-schema
+Date: Tue, 9 Jan 2024 13:42:53 +0100
+Message-ID: <CACRpkdZMkyJdkFt_x-6iubLZ-KzewvmT0zi4HAas0Xy9DpPn3g@mail.gmail.com>
+Subject: Re: [DO NOT MERGE v6 12/37] dt-bindings: pci: pci-sh7751: Add SH7751 PCI
 To: Yoshinori Sato <ysato@users.sourceforge.jp>
 Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>, 
 	Rob Herring <robh+dt@kernel.org>, 
@@ -95,36 +94,106 @@ thanks for your patch!
 On Tue, Jan 9, 2024 at 9:24=E2=80=AFAM Yoshinori Sato
 <ysato@users.sourceforge.jp> wrote:
 
-> +  renesas,icr-irlm:
+> Renesas SH7751 PCI Controller json-schema.
+>
+> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
+(...)
+> +  renesas,bus-arbit-round-robin:
 > +    $ref: /schemas/types.yaml#/definitions/flag
-> +    description: If true four independent interrupt requests mode (ICR.I=
-RLM is 1).
-> +
-> +  renesas,ipr-map:
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
 > +    description: |
-> +      IRQ to IPR mapping definition.
-> +      1st - INTEVT code
-> +      2nd - Register
-> +      3rd - bit index
+> +      Set DMA bus arbitration to round robin.
+> +
+> +  pci-command-reg-fast-back-to-back:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description: |
+> +      Set for PCI command register Fast Back-to-Back enable bit.
+> +
+> +  pci-command-reg-serr:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description: |
+> +      Set for PCI command register SERR# enable.
+> +
+> +  pci-command-reg-wait-cycle-control:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description: |
+> +      Set for PCI command register Wait cycle control bit.
+> +
+> +  pci-command-reg-parity-error-response:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description: |
+> +      Set for PCI Command register Parity error response bit.
+> +
+> +  pci-command-reg-vga-snoop:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description: |
+> +      Set for PCI Command register VGA palette snoop bit.
+> +
+> +  pci-command-reg-write-invalidate:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description: |
+> +      Set for PCI Command register Memory write and invaldate enable bit=
+.
+> +
+> +  pci-command-reg-special-cycle:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description: |
+> +      Set for PCI Command register Special cycle bit.
+> +
+> +  pci-command-reg-bus-master:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description: |
+> +      Set for PCI Command register Bus master bit.
+> +
+> +  pci-command-reg-memory-space:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description: |
+> +      Set for PCI Command register Memory space bit.
+> +
+> +  pci-command-reg-io-space:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description: |
+> +      Set for PCI Command register I/O space bit.
 
-(...)
+Do you really need to configure all these things? It seems they are
+just set to default values anyway?
 
-> +            renesas,ipr-map =3D <0x240 IPRD IPR_B12>, /* IRL0 */
-> +                              <0x2a0 IPRD IPR_B8>,  /* IRL1 */
-> +                              <0x300 IPRD IPR_B4>,  /* IRL2 */
-> +                              <0x360 IPRD IPR_B0>,  /* IRL3 */
-(...)
+Can't you just look at the compatible "renesas,sh7751-pci" and
+set it to the values you know are needed for that compatible?
 
-Is it really necessary to have all this in the device tree?
+> +  pci-bar:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-matrix
+> +    description: Overwrite to  PCI CONFIG Base Address Registers value.
+> +    items:
+> +      items:
+> +        - description: BAR register number
+> +        - description: BAR register value
+> +    minItems: 1
+> +    maxItems: 6
 
-You know from the compatible that this is "renesas,sh7751-intc"
-and I bet this table will be the same for any sh7751 right?
+Same with this, isn't this always the same (hardcoded) values
+for "renesas,sh7751-pci" if used?
 
-Then just put it in a table in the driver instead and skip this from
-the device tree and bindings. If more interrupt controllers need
-to be supported by the driver, you can simply look up the table from
-the compatible string.
+> +            interrupt-map =3D <0x0000 0 0 1 &julianintc 5>,
+> +                            <0x0000 0 0 2 &julianintc 6>,
+> +                            <0x0000 0 0 3 &julianintc 7>,
+> +                            <0x0000 0 0 4 &julianintc 8>,
+> +                            <0x0800 0 0 1 &julianintc 6>,
+> +                            <0x0800 0 0 2 &julianintc 7>,
+> +                            <0x0800 0 0 3 &julianintc 8>,
+> +                            <0x0800 0 0 4 &julianintc 5>,
+> +                            <0x1000 0 0 1 &julianintc 7>,
+> +                            <0x1000 0 0 2 &julianintc 8>,
+> +                            <0x1000 0 0 3 &julianintc 5>,
+> +                            <0x1000 0 0 4 &julianintc 6>;
+
+This interrupt-map looks very strange, usually the last cell is the polarit=
+y
+flag and here it is omitted? I would expect something like:
+
+<0x0000 0 0 1 &julianintc 5 IRQ_TYPE_LEVEL_LOW>, (...)
+
+The interrupt-map schema in dtschema isn't really looking at this
+so it is easy to get it wrong.
 
 Yours,
 Linus Walleij
