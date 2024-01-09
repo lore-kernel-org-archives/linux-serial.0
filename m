@@ -1,108 +1,130 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBA05374F5
-	for <linux-serial@vger.kernel.org>; Tue,  9 Jan 2024 11:58:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B634381D4
+	for <linux-serial@vger.kernel.org>; Tue,  9 Jan 2024 12:30:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="LOJ5hNV3"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-40e4d64a431so7663885e9.0
-        for <linux-serial@vger.kernel.org>; Tue, 09 Jan 2024 03:58:15 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="chSnIHus"
+Received: by mail-yb1-f171.google.com with SMTP id 3f1490d57ef6-dbed179f0faso2369823276.1
+        for <linux-serial@vger.kernel.org>; Tue, 09 Jan 2024 04:30:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1704801494; x=1705406294; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=JDqHqkYWCvXcpyV9Kf2FI0tycX3cK2Ybt1CYEwNoFFU=;
-        b=LOJ5hNV3TCDSATXaG9YO10Nqmi5PVa/CYqAvYC7/CHL4ZvXIBQJkJyAsnr+O9KzGzE
-         mOZYFi659zT2hU6wtdWGQ6ryBeIMv0XXO7g96i29nGJI23AlL2H+Xg+S/AL4S7Ytqd5h
-         KKPgrkNYSvi8OyJgZAMEH34QnkpNiAbRKIxzGOQW7KOFVZzDEUuD2aUY1ZWRY01FF6ca
-         VgVnyhxJTzm+XOKxKUqJnqPJoqJ5tDNiWOkIl5LXmZ2r7SBQdFkSr4+RePaxtTpAChxx
-         eq+4uwZLAR5R1onej5BmjUq5+tWpSVfkBpruK1aOhpUUvYi+m6xTz5EUdbAsj4wb3fG1
-         Khzg==
+        d=linaro.org; s=google; t=1704803446; x=1705408246; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=W6bnxa+GSR1FpCAvVqbsQV97G8p0dAq+kFC9sgXphqE=;
+        b=chSnIHusUnwn3XCrUTGLl/woFUhegzPC+/qykv4jRfXUGqRo//F7oY6CKp7Ssy6iYA
+         b1HGiRoyj77jg3J4ZSuJcQ1U0aAgpZogjKM5C1Kue04YzIfW0IpaPvdifHezeC9XfmJr
+         L/ViysLijTicR+FY22YHpCtiDyUtFbNy2rcFlivO2XUDLv8kFRUrak8LOI23rPqypVVT
+         tz/letFnoDyMKLsj5Ise4CkaJS1Lgg/ZEMwxpz7LzKtZmdV5QiiXcqiSb6XH+jD/eQ54
+         ZWLSkP+EMLHhGSdFvbG6h+dEvmx5/BqryPukhdMNFGmTgwHfBZTpJmCzWYe38ZS+/X1o
+         2s/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704801494; x=1705406294;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=JDqHqkYWCvXcpyV9Kf2FI0tycX3cK2Ybt1CYEwNoFFU=;
-        b=h8dmqjNmH6UE85QcL/0Tk6tsK19gsGs5beW63YtWx2bpC91R4rv+CsTlbGqFP/qhU1
-         e1Nt4o1kw3byN8ALRPx7/T5n7c+LtjcaNik3MK2RSMHz2vPGEUOZSwVGvE3t++B7WvX9
-         I43laQgDDGZLJw943tAMHQIwUvu3Gfecz9ayB0x2CKtHb5ZGRB8feb7RrnJIYerp236J
-         BDiKTkVocQbqoxbKU0SwQH2ucAlDVL4Bdrp4pIoxYswGx4SNt3DbQxi7ocF22LFzLAd5
-         N4qpHHLPERJ+A63pypyb0UTrVKByaIQ6bfi6fcJBYN78zAVK0cWuvBoBSZ55y7ZgsDNI
-         u06A==
-X-Gm-Message-State: AOJu0YxYZK7tupOM9/IX5KFmu9UTPghRmp/0UBzOsL8HWO+DVN/wfAzK
-	2gX4OB21RBYcxVpZpL8Lt4b7SJf2UPkoJA==
-X-Google-Smtp-Source: AGHT+IGwQMwWl3QXQnxhw1gxOyXaO9axzsxS2FGRFYoTx/J99yyyVOFhY+bi6PDQfHiyjIPTO1B/UA==
-X-Received: by 2002:a05:600c:458d:b0:40d:5b7b:8f18 with SMTP id r13-20020a05600c458d00b0040d5b7b8f18mr2812086wmo.81.1704801494275;
-        Tue, 09 Jan 2024 03:58:14 -0800 (PST)
-Received: from [192.168.2.107] ([79.115.63.202])
-        by smtp.gmail.com with ESMTPSA id h4-20020a05600c314400b0040d7c3d5454sm14454520wmo.3.2024.01.09.03.58.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Jan 2024 03:58:13 -0800 (PST)
-Message-ID: <8a55e1d9-c102-4cdf-8f23-edc40889cf6d@linaro.org>
-Date: Tue, 9 Jan 2024 11:58:11 +0000
+        d=1e100.net; s=20230601; t=1704803446; x=1705408246;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=W6bnxa+GSR1FpCAvVqbsQV97G8p0dAq+kFC9sgXphqE=;
+        b=bXKd51hi95uPsfr1R18LKPbKAfK4vDNWKCtTjqzFpVqcX5JDg6E/kMHA1J+HbWUClh
+         MDi+UnVHdxKhd6VIOxAyU1FuNBCEwEmZtQ4GMyfxDy79vhGFGiD2NV/n+ETvY68zVlBg
+         xHV/lLKHxZz4SLiP05hWxnr15UoPzT25OPAg3+AdsqFlUWArFNQ3dgoCN1/c4rW89EnI
+         AKXyRgmbfjbglhRnnb9T099hKXatCWgJ1QF9BAzbbpeCzZHo2LaBABzn8rb/9wKNMWIJ
+         h+6BrBZpsJgJ39ZZygJlPPa4Fgr8K0EPBt0sxRmVU1JTInfRTTcO+kitEjOOOFNPy2JB
+         ZuLw==
+X-Gm-Message-State: AOJu0Yz9mVUkUtV6SWvRNcQQTw7HawtBow1O2muFRhV6GdRTEh2FG2FF
+	v25jNBT9UacLCPD15KA4Z9vBZPqWKoSR0EAs7l5XdAzjVj49hQ==
+X-Google-Smtp-Source: AGHT+IH/VCIVPEpFPTboTJrdPUTfNhyfiSowrYT19rYtTyqugjFXBvGgie/pxBxc7jOwlQ5dtHwAfNwOTFIHyTrVnOY=
+X-Received: by 2002:a25:1908:0:b0:dbc:ed55:dd7b with SMTP id
+ 8-20020a251908000000b00dbced55dd7bmr248450ybz.36.1704803446144; Tue, 09 Jan
+ 2024 04:30:46 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 01/12] dt-bindings: clock: google,gs101-clock: add
- PERIC0 clock management unit
-Content-Language: en-US
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Rob Herring <robh@kernel.org>
-Cc: peter.griffin@linaro.org, krzysztof.kozlowski+dt@linaro.org,
- mturquette@baylibre.com, sboyd@kernel.org, conor+dt@kernel.org,
- andi.shyti@kernel.org, alim.akhtar@samsung.com, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, s.nawrocki@samsung.com, tomasz.figa@gmail.com,
- cw00.choi@samsung.com, arnd@arndb.de, semen.protsenko@linaro.org,
- andre.draszik@linaro.org, saravanak@google.com, willmcvicker@google.com,
- linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
- linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
- linux-serial@vger.kernel.org, kernel-team@android.com
-References: <20231228125805.661725-1-tudor.ambarus@linaro.org>
- <20231228125805.661725-2-tudor.ambarus@linaro.org>
- <20240109040315.GA2619804-robh@kernel.org>
- <f695f2c0-2d4e-484c-9faa-7d8b28362541@linaro.org>
-From: Tudor Ambarus <tudor.ambarus@linaro.org>
-In-Reply-To: <f695f2c0-2d4e-484c-9faa-7d8b28362541@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <cover.1704788539.git.ysato@users.sourceforge.jp> <bc794e2165244bd0cee81bc0106f1e2d1bef1613.1704788539.git.ysato@users.sourceforge.jp>
+In-Reply-To: <bc794e2165244bd0cee81bc0106f1e2d1bef1613.1704788539.git.ysato@users.sourceforge.jp>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Tue, 9 Jan 2024 13:30:34 +0100
+Message-ID: <CACRpkdYLsf-uWdMCTpieji7u1-H3oTGojvC4xm7Erox97XJ6RQ@mail.gmail.com>
+Subject: Re: [DO NOT MERGE v6 17/37] dt-bindings: interrupt-controller:
+ renesas,sh7751-intc: Add json-schema
+To: Yoshinori Sato <ysato@users.sourceforge.jp>
+Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>, 
+	Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, Michael Turquette <mturquette@baylibre.com>, 
+	Stephen Boyd <sboyd@kernel.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	Thomas Gleixner <tglx@linutronix.de>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	=?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, 
+	Daniel Lezcano <daniel.lezcano@linaro.org>, Rich Felker <dalias@libc.org>, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Lee Jones <lee@kernel.org>, 
+	Helge Deller <deller@gmx.de>, Heiko Stuebner <heiko@sntech.de>, 
+	Jernej Skrabec <jernej.skrabec@gmail.com>, Chris Morgan <macromorgan@hotmail.com>, 
+	Yang Xiwen <forbidden405@foxmail.com>, Sebastian Reichel <sre@kernel.org>, 
+	Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Vlastimil Babka <vbabka@suse.cz>, 
+	Hyeonggon Yoo <42.hyeyoo@gmail.com>, David Rientjes <rientjes@google.com>, Baoquan He <bhe@redhat.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, 
+	Stephen Rothwell <sfr@canb.auug.org.au>, Azeem Shaikh <azeemshaikh38@gmail.com>, 
+	Javier Martinez Canillas <javierm@redhat.com>, Max Filippov <jcmvbkbc@gmail.com>, 
+	Palmer Dabbelt <palmer@rivosinc.com>, Bin Meng <bmeng@tinylab.org>, 
+	Jonathan Corbet <corbet@lwn.net>, Jacky Huang <ychuang3@nuvoton.com>, 
+	Lukas Bulwahn <lukas.bulwahn@gmail.com>, Biju Das <biju.das.jz@bp.renesas.com>, 
+	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
+	Sam Ravnborg <sam@ravnborg.org>, Sergey Shtylyov <s.shtylyov@omp.ru>, 
+	Michael Karcher <kernel@mkarcher.dialup.fu-berlin.de>, 
+	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-ide@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linux-pci@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+Hi Yoshinori,
 
+thanks for your patch!
 
-On 1/9/24 11:09, Krzysztof Kozlowski wrote:
-> On 09/01/2024 05:03, Rob Herring wrote:
->> On Thu, Dec 28, 2023 at 12:57:54PM +0000, Tudor Ambarus wrote:
->>> Add dt-schema documentation for the Connectivity Peripheral 0 (PERIC0)
->>> clock management unit.
->>>
->>> Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
->>> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
->>> ---
->>> v2:
->>> - fix comments as per Sam's suggestion and collect his R-b tag
->>> - Rob's suggestion of renaming the clock-names to just "bus" and "ip"
->>>   was not implemented as I felt it affects readability in the driver
->>>   and consistency with other exynos clock drivers. I will happily update
->>>   the names in the -rc phase if someone else has a stronger opinion than
->>>   mine. 
->>
->> I'll defer to Krzysztof.
-> 
-> I miss the point why clock-names cannot be fixed now. This is the name
-> of property, not the input clock name.
+On Tue, Jan 9, 2024 at 9:24=E2=80=AFAM Yoshinori Sato
+<ysato@users.sourceforge.jp> wrote:
 
-They can be fixed now. I've just aired the fixes at:
-https://lore.kernel.org/linux-arm-kernel/20240109114908.3623645-1-tudor.ambarus@linaro.org/
+> +  renesas,icr-irlm:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description: If true four independent interrupt requests mode (ICR.I=
+RLM is 1).
+> +
+> +  renesas,ipr-map:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> +    description: |
+> +      IRQ to IPR mapping definition.
+> +      1st - INTEVT code
+> +      2nd - Register
+> +      3rd - bit index
 
-Preparing v3 for this patch set to include the updated names here too.
+(...)
 
-Thanks,
-ta
+> +            renesas,ipr-map =3D <0x240 IPRD IPR_B12>, /* IRL0 */
+> +                              <0x2a0 IPRD IPR_B8>,  /* IRL1 */
+> +                              <0x300 IPRD IPR_B4>,  /* IRL2 */
+> +                              <0x360 IPRD IPR_B0>,  /* IRL3 */
+(...)
+
+Is it really necessary to have all this in the device tree?
+
+You know from the compatible that this is "renesas,sh7751-intc"
+and I bet this table will be the same for any sh7751 right?
+
+Then just put it in a table in the driver instead and skip this from
+the device tree and bindings. If more interrupt controllers need
+to be supported by the driver, you can simply look up the table from
+the compatible string.
+
+Yours,
+Linus Walleij
