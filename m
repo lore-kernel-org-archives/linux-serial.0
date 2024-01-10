@@ -1,101 +1,119 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AE4E3B18C
-	for <linux-serial@vger.kernel.org>; Wed, 10 Jan 2024 09:04:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41A0F405D0;
+	Wed, 10 Jan 2024 10:20:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="hqvnyL/t"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-3368ac0f74dso2854242f8f.0
-        for <linux-serial@vger.kernel.org>; Wed, 10 Jan 2024 01:04:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1704877478; x=1705482278; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=9ENsgunoGMbZfgvfEWJ+ROzlMs04fiRcUoBPATIiU24=;
-        b=hqvnyL/tBS0TlBEYRYtcX/s2PRQstLiA5MRdZX+Iw0SYA+1MnyfsqVk5pmuLqbLq9b
-         5NQyN4LkRzJcqRUBZg/W91WVrw/d0ya6YPn2+6I2DwBCRiAU/S6KBnQ6A2bK5m980TJh
-         g/SpbEkiwobk+Wb7QEncVtZCI61Mpnpu0FKUDc6UyuwuWXytrmLRPwJ/uB2XhhukR4bb
-         hoA16KxMS4mvfHC8DSDdHW5kIVPrCB0fF5IdBIIqFT+kbrqJkhbgkWZjvdgR08X5hd8e
-         1IGhBwNTX6Zi94vcBw16P//lFnsAMO3Me6Qjlin8RHYbFT1jk8IkpcnX+Dmdc7BNSz01
-         EbdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704877478; x=1705482278;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=9ENsgunoGMbZfgvfEWJ+ROzlMs04fiRcUoBPATIiU24=;
-        b=Al3Exvm70tnw3cGHCxouAo4OAIKssi9oojgpNaaKCpVz6sHyO15Y+LhQ0u8Q0QD278
-         8V8+bkaLfVLMuhs7O7hUK2QCsX0nq3+Rl5Rf075xyrVBVBKDRP9FNNstwWAb9XnZ8ZAz
-         nunydGp5luyrgjnfDHFeg7qgGAqa90KEYEUPVt+CcbuzgWpoImGPz3+iVyycyixJP+NO
-         gxx/G1bBi4i13zU/5ZAeoHldLwuXOtfz6TDVFh7qFEYZ7iHh6pBQo/sxUKVkNO2FCRfK
-         EZVZ6sPF3oT3Ce7Tp8069Jhroe4idlQcPFZccRoJ3sYQ/DdKk9wHqEHaqYikA211IOrd
-         vJEw==
-X-Gm-Message-State: AOJu0Yzefm214pfTPpLsaNqdCMqoR5+uaVxOQh/MM0AYBIYE3KD0eh2x
-	S8GvLcrq/IXXVHvnOIhE1Habm2PV7vmGVw==
-X-Google-Smtp-Source: AGHT+IGmH7obDcrHPPh8+GTeUn69iyrivY7YHG42CJn+av2pD9yAeNWytG456eVVXSfxMThA2UVowA==
-X-Received: by 2002:a5d:6a01:0:b0:336:66f0:e8b8 with SMTP id m1-20020a5d6a01000000b0033666f0e8b8mr342757wru.89.1704877477728;
-        Wed, 10 Jan 2024 01:04:37 -0800 (PST)
-Received: from [192.168.2.107] ([79.115.63.202])
-        by smtp.gmail.com with ESMTPSA id e8-20020a5d5008000000b00336e6014263sm4339124wrt.98.2024.01.10.01.04.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Jan 2024 01:04:37 -0800 (PST)
-Message-ID: <aeee178d-f4ea-4732-98f4-fa28fcf2990f@linaro.org>
-Date: Wed, 10 Jan 2024 09:04:35 +0000
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="jI4R0W4W";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="hqY4IDiK"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1704882048;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=7RufLAkoxzZoArcRqZDUJRVRYSejYvMj2QfFs/COrt4=;
+	b=jI4R0W4W8BjVrn3dTewNrF8jXerGbePZQxIRZdeu+eS+r2dF/I65u0BnoCkhD3pLtixIOg
+	r5MX4DsJ8yWzLzThoVcDFpTbVD8Up67buN/UHegbDU8W1xTofM6aaFPmjinC5tFe9X745k
+	KbeVfQYYGzady/0rx70+fu94+pECF4+hBzzxLUo0oRPc17veluEiA/MCPXwm8PWioSF22y
+	lNDGdlPPnpruSGNAg1mCuin5jYoghVdYgfR/SvkjXbk1rXjsyQhdKejd+Ea8n96JU4H5tJ
+	Xr9kCvAhdNMlvZa1EV2QfDVEoReC1fpFXlbDkZW0vr4IPnXpsE+lyly629VrBg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1704882048;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=7RufLAkoxzZoArcRqZDUJRVRYSejYvMj2QfFs/COrt4=;
+	b=hqY4IDiKDeChNoVtN4UC+Jj6Iwjs4Gif/KPAkeGUDokbyJ8iHARwXs2LN7JV1zcV1v9QsT
+	W5r1ZGsjdb4TBcDA==
+To: Sreenath Vijayan <sreenath.vijayan@sony.com>, sreenath.vijayan@sony.com,
+ rdunlap@infradead.org
+Cc: anandakumar.balasubramaniam@sony.com, taichi.shimoyashiki@sony.com,
+	pmladek@suse.com, corbet@lwn.net, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        senozhatsky@chromium.org, rostedt@goodmis.org
+Subject: Re: [PATCH v2] tty/sysrq: Dump printk ring buffer messages via sysrq
+In-Reply-To: <20240110155634.1685656-1-sreenath.vijayan@sony.com>
+References: <20231221133953.1507021-1-sreenath.vijayan@sony.com>
+ <20240110155634.1685656-1-sreenath.vijayan@sony.com>
+Date: Wed, 10 Jan 2024 11:26:45 +0106
+Message-ID: <874jfllcaq.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 03/12] dt-bindings: serial: samsung: do not allow
- reg-io-width for gs101
-Content-Language: en-US
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- peter.griffin@linaro.org, krzysztof.kozlowski+dt@linaro.org,
- gregkh@linuxfoundation.org
-Cc: mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
- conor+dt@kernel.org, andi.shyti@kernel.org, alim.akhtar@samsung.com,
- jirislaby@kernel.org, s.nawrocki@samsung.com, tomasz.figa@gmail.com,
- cw00.choi@samsung.com, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
- andre.draszik@linaro.org, kernel-team@android.com, willmcvicker@google.com
-References: <20240109125814.3691033-1-tudor.ambarus@linaro.org>
- <20240109125814.3691033-4-tudor.ambarus@linaro.org>
- <5d24a5da-e4cd-4d32-ba2b-8e91cfc7dced@linaro.org>
-From: Tudor Ambarus <tudor.ambarus@linaro.org>
-In-Reply-To: <5d24a5da-e4cd-4d32-ba2b-8e91cfc7dced@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
+On 2024-01-10, Sreenath Vijayan <sreenath.vijayan@sony.com> wrote:
+> When terminal is unresponsive, one cannot use dmesg to view printk
+> ring buffer messages. Also, syslog services may be disabled,
+> to check them after a reboot, especially on embedded systems.
+> In this scenario, dump the printk ring buffer messages via sysrq
+> by pressing sysrq+D.
 
+Generally speaking, I like this idea. I also like that you do not
+re-flood the kernel buffers and instead just print directly to the
+consoles. (I wish sysrq+z with ftrace did that as well.)
 
-On 1/10/24 08:06, Krzysztof Kozlowski wrote:
-> On 09/01/2024 13:58, Tudor Ambarus wrote:
->> All gs101 serial ports are restricted to 32-bit register accesses.
->> This requirement will be inferred from the compatible. Do not allow
->> the reg-io-width property for the google,gs101-uart compatible.
->>
->> Suggested-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> Reviewed-by: Peter Griffin <peter.griffin@linaro.org>
->> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
->> ---
->> v3: collect Peter's R-b tag
->> v2: new patch
->>
-> 
-> 
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> Please split the serial patches into separate patchset and send them
-> usual way, so Greg can pick them up. GS101 was merged, thus this is not
-> initial submission anymore.
-> 
+Relying on a workqueue will really limit the usefulness of this
+feature. Safe efforts could be made to print directly from the interrupt
+context. But maybe this approach can be accepted for now as being
+"better than nothing", which can be improved upon in the future (for
+example, when atomic consoles are available).
 
-Got it, will do. Thanks.
-ta
+Some more comments from me below...
+
+> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+> index 02217e3c916b..62b3911f03b5 100644
+> --- a/drivers/tty/sysrq.c
+> +++ b/drivers/tty/sysrq.c
+> @@ -450,6 +452,51 @@ static const struct sysrq_key_op sysrq_unrt_op = {
+>  	.enable_mask	= SYSRQ_ENABLE_RTNICE,
+>  };
+>  
+> +static void dmesg_dump_callback(struct work_struct *work)
+> +{
+> +	struct kmsg_dump_iter iter;
+> +	size_t len;
+> +	char *buf;
+> +	struct console *con;
+> +	int cookie;
+> +
+> +	/* Size to be updated if PRINTK_MESSAGE_MAX changes */
+> +	buf = kzalloc(2048, GFP_KERNEL);
+> +	if (!buf)
+> +		return;
+> +
+> +	kmsg_dump_rewind(&iter);
+> +	while (kmsg_dump_get_line(&iter, 1, buf, 2048, &len)) {
+> +		/*
+> +		 * Since using printk() or pr_*() will append the message to the
+> +		 * printk ring buffer, they cannot be used to display the retrieved
+> +		 * message. Hence console_write() of serial drivers is used.
+> +		 */
+> +		console_lock();
+> +		cookie = console_srcu_read_lock();
+> +		for_each_console_srcu(con) {
+> +			if ((console_srcu_read_flags(con) & CON_ENABLED) && con->write)
+> +				con->write(con, buf, len);
+> +		}
+> +		console_srcu_read_unlock(cookie);
+> +		console_unlock();
+> +	}
+> +	kfree(buf);
+> +}
+
+Rather than implementing all this in drivers/tty/sysrq.c it would
+probably be better to just call a new function that is implemented in
+kernel/printk/printk.c. Then you would have access to printk-private
+items (such as the PRINTK_MESSAGE_MAX macro).
+
+For example, sysrq+z just calls ftrace_dump(), which is implemented in
+kernel/trace/trace.c.
+
+John Ogness
