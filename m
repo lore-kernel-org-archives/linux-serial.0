@@ -1,79 +1,101 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A9E1317C6;
-	Wed, 10 Jan 2024 00:02:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 14BDBDA7;
-	Tue,  9 Jan 2024 16:02:50 -0800 (PST)
-Received: from [192.168.20.13] (unknown [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E9CEC3F5A1;
-	Tue,  9 Jan 2024 16:02:00 -0800 (PST)
-Message-ID: <1b0de096-101a-9764-0396-d8b86878badf@arm.com>
-Date: Tue, 9 Jan 2024 18:01:58 -0600
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B55C21376;
+	Wed, 10 Jan 2024 02:06:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hEUsXdPE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18AEAC433F1;
+	Wed, 10 Jan 2024 02:06:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1704852375;
+	bh=K20e8jhxQctdn0EQe0a64CVvGFTYjmTc3LS7asQogyo=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=hEUsXdPExgJ/6tyvorNMmv2xbbnN/ksrlzf9XWoz4XzMSpDxk/Su9jRai8A6JmPqT
+	 CROg9vyX/uPgMa6hC3+dIv1+9VwRJuYOHwCZqh4PPAT20xe0N58/U93+wqZ4eMep+N
+	 C9Y9/Yl2ILJOSVXmlxmhAbkx+aAbO4RSpzEDkemhkakgnE8rlLiL7DE1D79+kIKw62
+	 c5+A6TL8g0sDmmmyWP6zXo51r4mcIw9+uHa66sJvr6wGG+GkGqe1ewkKXIi+ONI0Fz
+	 xX64W1DE45sKKqohJS8CPYy6lPEmA17vOTByyqBIbrhq4wLzLuEHnHNC1j3EhDfzcF
+	 aA908fHMhDbXQ==
+Message-ID: <c2f88d7b-cded-42ab-bc5c-3d9a723daa1f@kernel.org>
+Date: Wed, 10 Jan 2024 11:06:06 +0900
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [PATCH] serial: 8250_bcm2835aux: Restore clock error handling
+User-Agent: Mozilla Thunderbird
+Subject: Re: [DO NOT MERGE v6 27/37] dt-bindings: ata: ata-generic: Add new
+ targets
 Content-Language: en-US
-To: Stefan Wahren <wahrenst@gmx.net>,
+To: Yoshinori Sato <ysato@users.sourceforge.jp>, linux-sh@vger.kernel.org
+Cc: Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Geert Uytterhoeven <geert+renesas@glider.be>,
+ Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
+ <sboyd@kernel.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+ Bjorn Helgaas <bhelgaas@google.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- Florian Fainelli <florian.fainelli@broadcom.com>
-Cc: Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
- Adrien Thierry <athierry@redhat.com>, linux-serial@vger.kernel.org,
- bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
-References: <20231220114334.4712-1-wahrenst@gmx.net>
-From: Jeremy Linton <jeremy.linton@arm.com>
-In-Reply-To: <20231220114334.4712-1-wahrenst@gmx.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+ Jiri Slaby <jirislaby@kernel.org>, Magnus Damm <magnus.damm@gmail.com>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>, Rich Felker <dalias@libc.org>,
+ John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+ Lee Jones <lee@kernel.org>, Helge Deller <deller@gmx.de>,
+ Heiko Stuebner <heiko@sntech.de>, Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Chris Morgan <macromorgan@hotmail.com>, Yang Xiwen
+ <forbidden405@foxmail.com>, Sebastian Reichel <sre@kernel.org>,
+ Linus Walleij <linus.walleij@linaro.org>,
+ Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>,
+ Vlastimil Babka <vbabka@suse.cz>, Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+ David Rientjes <rientjes@google.com>, Baoquan He <bhe@redhat.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck
+ <linux@roeck-us.net>, Stephen Rothwell <sfr@canb.auug.org.au>,
+ Azeem Shaikh <azeemshaikh38@gmail.com>,
+ Javier Martinez Canillas <javierm@redhat.com>,
+ Max Filippov <jcmvbkbc@gmail.com>, Palmer Dabbelt <palmer@rivosinc.com>,
+ Bin Meng <bmeng@tinylab.org>, Jonathan Corbet <corbet@lwn.net>,
+ Jacky Huang <ychuang3@nuvoton.com>, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+ Biju Das <biju.das.jz@bp.renesas.com>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+ Sam Ravnborg <sam@ravnborg.org>, Sergey Shtylyov <s.shtylyov@omp.ru>,
+ Michael Karcher <kernel@mkarcher.dialup.fu-berlin.de>,
+ Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+ linux-ide@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+ linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-fbdev@vger.kernel.org
+References: <cover.1704788539.git.ysato@users.sourceforge.jp>
+ <06fdb2cf7927681acf3099b826390ef75ba321af.1704788539.git.ysato@users.sourceforge.jp>
+From: Damien Le Moal <dlemoal@kernel.org>
+Organization: Western Digital Research
+In-Reply-To: <06fdb2cf7927681acf3099b826390ef75ba321af.1704788539.git.ysato@users.sourceforge.jp>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-Hi,
-
-
-On 12/20/23 05:43, Stefan Wahren wrote:
-> The commit fcc446c8aa63 ("serial: 8250_bcm2835aux: Add ACPI support")
-> dropped the error handling for clock acquiring. But even an optional
-> clock needs this.
-
-Right, the call was changed to _optional() during review but the error 
-handling didn't get put back.
-
+On 1/9/24 17:23, Yoshinori Sato wrote:
+> Added new ata-generic target.
+> - iodata,usl-5p-ata
+> - renesas,rts7751r2d-ata
 > 
-> Fixes: fcc446c8aa63 ("serial: 8250_bcm2835aux: Add ACPI support")
-> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-> ---
->   drivers/tty/serial/8250/8250_bcm2835aux.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
-> index 15a2387a5b25..4f4502fb5454 100644
-> --- a/drivers/tty/serial/8250/8250_bcm2835aux.c
-> +++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
-> @@ -119,6 +119,8 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
-> 
->   	/* get the clock - this also enables the HW */
->   	data->clk = devm_clk_get_optional(&pdev->dev, NULL);
-> +	if (IS_ERR(data->clk))
-> +		return dev_err_probe(&pdev->dev, PTR_ERR(data->clk), "could not get clk\n");
-> 
->   	/* get the interrupt */
->   	ret = platform_get_irq(pdev, 0);
-> --
+> Each boards have simple IDE Interface. Use ATA generic driver.
 
-And on ACPI machines it returns NULL, which passes the error check now, 
-so it works on an ACPI based pi.
+This looks OK to me, so feel free to add:
 
-Thanks!
+Acked-by: Damien Le Moal <dlemoal@kernel.org>
 
-Reviewed-by: Jeremy Linton <jeremy.linton@arm.com>
-Tested-by: Jeremy Linton <jeremy.linton@arm.com>
+Note: The "DO NOT MERGE" patch prefix almost got me to immediately delete this
+37 patches in my inbox... If you wish to get this work merged after review,
+please use the regular "PATCH" prefix. No worries, the series will not be merged
+until is is reviewed :)
 
+-- 
+Damien Le Moal
+Western Digital Research
 
