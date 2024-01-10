@@ -1,29 +1,49 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4F5B2E846;
-	Wed, 10 Jan 2024 08:49:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AE4E3B18C
+	for <linux-serial@vger.kernel.org>; Wed, 10 Jan 2024 09:04:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="Fq5zqGJp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-	s=s31663417; t=1704876557; x=1705481357; i=wahrenst@gmx.net;
-	bh=JrxtgNBm17lkzeJK0VyXKPOipQio/lM15hZrD/6LL7Q=;
-	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
-	 In-Reply-To;
-	b=Fq5zqGJpM4otaxcM7t6mml3UaRN5tobVBoya0vmzzYJvxG/VHvGMYZ1A4h7ONm6K
-	 qzovPGaiGIdme1BEyoR/72JjQc850jDJmmUoQ8elmPySYpMN/terfrnPnfvThbifO
-	 Oq9a2pqpRPBlw3ch7KmTi5oQyEVWkKH4uybaoAfhkVMDBUwdN7g8QZjHquqEBFFpd
-	 45Y2r6G0s4fqdrFqEiqX0M0SAHXZJ/iKRZFYrUzs8JEzQRGdXuKvNIuzjlg9F8F/N
-	 3kbKGPbxD8SSkHY85SErFIYlUdmZe4SGErOqjuuUjU/g0V1b+8gDUwpk/TmfJxKaK
-	 p4rL3/9Vs7CC5ztvWA==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.1.167] ([37.4.248.43]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1M9Wuk-1rHyUz2hMa-005bwq; Wed, 10
- Jan 2024 09:49:17 +0100
-Message-ID: <3794475b-8478-47f0-91e4-ef493876a2e3@gmx.net>
-Date: Wed, 10 Jan 2024 09:49:16 +0100
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="hqvnyL/t"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-3368ac0f74dso2854242f8f.0
+        for <linux-serial@vger.kernel.org>; Wed, 10 Jan 2024 01:04:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1704877478; x=1705482278; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=9ENsgunoGMbZfgvfEWJ+ROzlMs04fiRcUoBPATIiU24=;
+        b=hqvnyL/tBS0TlBEYRYtcX/s2PRQstLiA5MRdZX+Iw0SYA+1MnyfsqVk5pmuLqbLq9b
+         5NQyN4LkRzJcqRUBZg/W91WVrw/d0ya6YPn2+6I2DwBCRiAU/S6KBnQ6A2bK5m980TJh
+         g/SpbEkiwobk+Wb7QEncVtZCI61Mpnpu0FKUDc6UyuwuWXytrmLRPwJ/uB2XhhukR4bb
+         hoA16KxMS4mvfHC8DSDdHW5kIVPrCB0fF5IdBIIqFT+kbrqJkhbgkWZjvdgR08X5hd8e
+         1IGhBwNTX6Zi94vcBw16P//lFnsAMO3Me6Qjlin8RHYbFT1jk8IkpcnX+Dmdc7BNSz01
+         EbdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1704877478; x=1705482278;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9ENsgunoGMbZfgvfEWJ+ROzlMs04fiRcUoBPATIiU24=;
+        b=Al3Exvm70tnw3cGHCxouAo4OAIKssi9oojgpNaaKCpVz6sHyO15Y+LhQ0u8Q0QD278
+         8V8+bkaLfVLMuhs7O7hUK2QCsX0nq3+Rl5Rf075xyrVBVBKDRP9FNNstwWAb9XnZ8ZAz
+         nunydGp5luyrgjnfDHFeg7qgGAqa90KEYEUPVt+CcbuzgWpoImGPz3+iVyycyixJP+NO
+         gxx/G1bBi4i13zU/5ZAeoHldLwuXOtfz6TDVFh7qFEYZ7iHh6pBQo/sxUKVkNO2FCRfK
+         EZVZ6sPF3oT3Ce7Tp8069Jhroe4idlQcPFZccRoJ3sYQ/DdKk9wHqEHaqYikA211IOrd
+         vJEw==
+X-Gm-Message-State: AOJu0Yzefm214pfTPpLsaNqdCMqoR5+uaVxOQh/MM0AYBIYE3KD0eh2x
+	S8GvLcrq/IXXVHvnOIhE1Habm2PV7vmGVw==
+X-Google-Smtp-Source: AGHT+IGmH7obDcrHPPh8+GTeUn69iyrivY7YHG42CJn+av2pD9yAeNWytG456eVVXSfxMThA2UVowA==
+X-Received: by 2002:a5d:6a01:0:b0:336:66f0:e8b8 with SMTP id m1-20020a5d6a01000000b0033666f0e8b8mr342757wru.89.1704877477728;
+        Wed, 10 Jan 2024 01:04:37 -0800 (PST)
+Received: from [192.168.2.107] ([79.115.63.202])
+        by smtp.gmail.com with ESMTPSA id e8-20020a5d5008000000b00336e6014263sm4339124wrt.98.2024.01.10.01.04.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Jan 2024 01:04:37 -0800 (PST)
+Message-ID: <aeee178d-f4ea-4732-98f4-fa28fcf2990f@linaro.org>
+Date: Wed, 10 Jan 2024 09:04:35 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -31,93 +51,51 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: 8250_bcm2835aux: Restore clock error handling
-To: Jeremy Linton <jeremy.linton@arm.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- Florian Fainelli <florian.fainelli@broadcom.com>
-Cc: Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
- Adrien Thierry <athierry@redhat.com>, linux-serial@vger.kernel.org,
- bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
-References: <20231220114334.4712-1-wahrenst@gmx.net>
- <1b0de096-101a-9764-0396-d8b86878badf@arm.com>
+Subject: Re: [PATCH v3 03/12] dt-bindings: serial: samsung: do not allow
+ reg-io-width for gs101
 Content-Language: en-US
-From: Stefan Wahren <wahrenst@gmx.net>
-In-Reply-To: <1b0de096-101a-9764-0396-d8b86878badf@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:e2zavpBeluNK2KF0ytcSIarq8mJ83OJ3weeoWxTyrXHQZi8NwMG
- uThqdzdqw3oT+fJ2Q50kVt5l0gAspPnPNOop3pfTRtplfLlfYDIPQTjDixbzWzgXJjEDRbT
- eqODyP9U/Fv5hMehLGyebdjQR2FYtw3OyhKss6RCiLv/RGwp+wHhmMTNwIe6hn90A+YOc8i
- Rv9Ke6I7108+h00dJjk3w==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:fP5lHLrN6wU=;n6VAKI+CAS+mBnl+UmFnP5q+9Pr
- FYOxDBcqkWO2Zd9vRJe99JFze4jPTeALRCRMelnc3shgUWDuWHANvNX5R/kxkKp0nxjbZgxPL
- +xXlbJSErbaO0lP+iigXzLtmEeL4x42NLxP9LSqAyEgkxJ2U8UGVfC7EhOjAM7NWSuBCmqNP4
- zLKvSQDZ38hiX75/ESLFfyu+cY1Ax+cdDbJWgizqLr2e/q+dbNpWrRIIEmehO7Ujsojfd1pL2
- MZH8WMdX8EE/4vCNRtgzdGgoLUC9SCpF81OsNLvOE79knc2AyvVSONySYncZd9CgwL74v8Vmr
- qu/6W/UoONuuaa4dbCw16GoEDGbVtxFuYrOsoWoFRe8iVxwzk58b7SNT33vDG1F1LfUmCfBKR
- IxcVUx6najOEpv3ApfNpgII3WABMipXUt35k7VcQAGwkIJSnfhIRYsTtTwNWlXD6khqJjCcQ7
- 7dbvm4orATr62nhLBdURyaZ8+9xndPsPipNtxSexSpu2K4qXNN216bJZAgZ8aLrJoAt8/ttdA
- QkeQGgjL71h6EMToL2GR6wm6J/C+7Cr6MOJp3u27jXRj9RfBCNbccTww8bZKKWyw4zZ0qN/E7
- x3FTkc44swB5KrtJAZXHzTAGgI1XPtd0GSDT49f1fka94Fd2i/9dqRRFMXBMj9b3LH7GhPhP9
- 5yHU2jboanFOQtF4ub6uu+sn7CmVXbq75rVVJTSW2i8Sijd6Z8iAxn0KPPJM/FEvG7JLVTBlP
- p9//nFC0m4tngInUvElFkE0Mt0+IFQqaYhaekKf+CF46A8Hfku601nKJPGnmaN+x/526v1PCG
- 4ajPZmeuOdV+Dp65AhYY5qbxn4IRmjIV5M9JHPmVGlNheRtuYAbN45+9YkZaX4ZumLFxfQgjl
- OtNPsFExI7NRC67ktoukLsw46uj/HEis67TbWsyu3QbnjshG7WL36YRyvR1s5kIvV6n6ZmmXf
- cHROKg0Pb2k6ghSELkNnei+0nwY=
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ peter.griffin@linaro.org, krzysztof.kozlowski+dt@linaro.org,
+ gregkh@linuxfoundation.org
+Cc: mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+ conor+dt@kernel.org, andi.shyti@kernel.org, alim.akhtar@samsung.com,
+ jirislaby@kernel.org, s.nawrocki@samsung.com, tomasz.figa@gmail.com,
+ cw00.choi@samsung.com, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
+ andre.draszik@linaro.org, kernel-team@android.com, willmcvicker@google.com
+References: <20240109125814.3691033-1-tudor.ambarus@linaro.org>
+ <20240109125814.3691033-4-tudor.ambarus@linaro.org>
+ <5d24a5da-e4cd-4d32-ba2b-8e91cfc7dced@linaro.org>
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
+In-Reply-To: <5d24a5da-e4cd-4d32-ba2b-8e91cfc7dced@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi Jeremy,
 
-Am 10.01.24 um 01:01 schrieb Jeremy Linton:
-> Hi,
->
->
-> On 12/20/23 05:43, Stefan Wahren wrote:
->> The commit fcc446c8aa63 ("serial: 8250_bcm2835aux: Add ACPI support")
->> dropped the error handling for clock acquiring. But even an optional
->> clock needs this.
->
-> Right, the call was changed to _optional() during review but the error
-> handling didn't get put back.
->
+
+On 1/10/24 08:06, Krzysztof Kozlowski wrote:
+> On 09/01/2024 13:58, Tudor Ambarus wrote:
+>> All gs101 serial ports are restricted to 32-bit register accesses.
+>> This requirement will be inferred from the compatible. Do not allow
+>> the reg-io-width property for the google,gs101-uart compatible.
 >>
->> Fixes: fcc446c8aa63 ("serial: 8250_bcm2835aux: Add ACPI support")
->> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+>> Suggested-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> Reviewed-by: Peter Griffin <peter.griffin@linaro.org>
+>> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
 >> ---
->> =C2=A0 drivers/tty/serial/8250/8250_bcm2835aux.c | 2 ++
->> =C2=A0 1 file changed, 2 insertions(+)
+>> v3: collect Peter's R-b tag
+>> v2: new patch
 >>
->> diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c
->> b/drivers/tty/serial/8250/8250_bcm2835aux.c
->> index 15a2387a5b25..4f4502fb5454 100644
->> --- a/drivers/tty/serial/8250/8250_bcm2835aux.c
->> +++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
->> @@ -119,6 +119,8 @@ static int bcm2835aux_serial_probe(struct
->> platform_device *pdev)
->>
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* get the clock - this also enables the=
- HW */
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->clk =3D devm_clk_get_optional(&pde=
-v->dev, NULL);
->> +=C2=A0=C2=A0=C2=A0 if (IS_ERR(data->clk))
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return dev_err_probe(&pdev-=
->dev, PTR_ERR(data->clk), "could
->> not get clk\n");
->>
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* get the interrupt */
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D platform_get_irq(pdev, 0);
->> --
->
-> And on ACPI machines it returns NULL, which passes the error check
-> now, so it works on an ACPI based pi.
->
-> Thanks!
->
-> Reviewed-by: Jeremy Linton <jeremy.linton@arm.com>
-> Tested-by: Jeremy Linton <jeremy.linton@arm.com>
+> 
+> 
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> Please split the serial patches into separate patchset and send them
+> usual way, so Greg can pick them up. GS101 was merged, thus this is not
+> initial submission anymore.
+> 
 
-thanks for testing. The patch is already in linux-next.
-
-Regards
+Got it, will do. Thanks.
+ta
