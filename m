@@ -1,44 +1,45 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 408D53FE24
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6E2F3FE27
 	for <linux-serial@vger.kernel.org>; Wed, 10 Jan 2024 10:21:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="LhZJ7IOS"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-40e4f692d06so9989665e9.1
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="EHa+QY2i"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-40e5770d34fso3220335e9.3
         for <linux-serial@vger.kernel.org>; Wed, 10 Jan 2024 02:21:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1704882067; x=1705486867; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=SGwLRfnub8dBApg/XxzYvJOVSVtHxB8WxqDRuK8mr/U=;
-        b=LhZJ7IOSwCP8ZfxaEPeFYVHqmYwVosuGXWr0k7YTHY4kIKLGsajoway9afbP2cTfaB
-         eOgeWmgk39Cq5kWcQSEH9aes/SdXL5VSMOqRwlNVJoeqHtxY+/UfoTOoFG9hYBDM/MUD
-         KbO+YkmBQ79MMko8ioRR669XdOsKK2zhoscJDI8wnzCEUS1QC0A/yXF6hYp0X0Sp8Cp6
-         8Dnh4h7Mehm8ptte5EB+XnXPhGTYOXRcnBTxyuG9q4OHeJrZQtU/z4vQELaSVXOiLKA6
-         JuOXFLEC6EfU4dTscekL/Osa404g3oxJwa0wu/pv9mluG5ssCq4MGj7TBzjsLGhDoTn4
-         g0oQ==
+        d=linaro.org; s=google; t=1704882068; x=1705486868; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=a/c7oDT8RKSeNrIFhGqJZw8sJoinUsXp+DaHWK6w1PA=;
+        b=EHa+QY2iDGVWuOoQ/ys4OLVXFb/zbFRuQLlei825OF66EBStNyLjLXASYbhFPByzKw
+         /5+o+cWIr5j9NULiMVgvlmdoIZxOOkBc1M+PXAQ4tOxOsRV/eTeBzLBa1bFI3bxUlp0s
+         cR4aoavbQ6F/ol6DVoRc8ZtLW+gFGA1ArXl4tm90CmDU9q1WZuzOWbH9JD+Q4KXgk6pU
+         pCgns/lCMXAji7MoRo45BAYTD4K8DDQdhnvb0fdeIpkwyx9xUz9HCT3g0BnoE+26hLMt
+         Nw337rppyUK02tUyE5imJgAt/uFUj4+MV3XDQQxZqqpirBXogBbQQCRuyN8iOGYktrZY
+         lj2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704882067; x=1705486867;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=SGwLRfnub8dBApg/XxzYvJOVSVtHxB8WxqDRuK8mr/U=;
-        b=uyJOcfQczHzHPhX6JL+DsNZnEyHVKEjEnciCRNMkM3qZM+dexU9dNpvJcjdH7wQaha
-         2NSfXLhyjsdL3CnLdQ/erI1dpYJN8yhzyk6fXqG77Iyh7mZH9O5aPpEs/WZRiexLTHfA
-         dEV7rcgY8235QjbEXmq7dSo0wo398SNSj8QMjXlvvgjRXzXuIL3Hz2TWh+i8FsbLn/88
-         YHwoa4Q/pkslstfukmiFYhP613KSPmo5ul6UfnmsIhUGPAUbtx3bpXRS3eNw0f+Pfrty
-         +EWCCcKHMkgrQ9jNryRnTbCtoMFRVNT9IBUdJGLPDznVK/Rcjahia3F5vQExlfJieDER
-         +cFw==
-X-Gm-Message-State: AOJu0YwFbuiVF5Xe2ughVmtuKghP5BujiUMdndeuNIqjl1YbfHfZQxtY
-	Mz2/MjuKyzKTDRCqiIOoMcbWgplgTc9HfA==
-X-Google-Smtp-Source: AGHT+IEA2VFjnUEp2T4A6S/3sZBR/HF7hcmBKXShhvjGuqHQQ1485DLikAWJcE2CeJ4oVie5t/D82w==
-X-Received: by 2002:a05:600c:a0a:b0:40e:52c1:116b with SMTP id z10-20020a05600c0a0a00b0040e52c1116bmr438067wmp.142.1704882067569;
-        Wed, 10 Jan 2024 02:21:07 -0800 (PST)
+        d=1e100.net; s=20230601; t=1704882068; x=1705486868;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=a/c7oDT8RKSeNrIFhGqJZw8sJoinUsXp+DaHWK6w1PA=;
+        b=TivxMTgB0o+kO03T9pL/Ux7h3loPOpMYd26IFZXYfMOp9NRr/VBS0sR2NLaqowQ8WC
+         o+2DsAb+PVyMkecN2n5pvHR9GDzWubdy2KRofveYwzgAAf21tgAQPeW8lb3fUpP31LFu
+         /pqjGvZIVJ8ylupH4/z+kmUowxU5r4v6xvEY5iQ8h5ZUkLyWJpRuQCQ2W2kMHtsFbcON
+         /jCAYOwuG9Y3if9k3efBEDqlMR3/jaPdYvfW0VIL7o0touSkyColectcKwxU3MFl4lbs
+         Yyf5glmGDMrBZZJjiltaLZ9ljNi9HkT2SZ/TxA4ycMza1vEwThou9ViKVulwWU8dNIYw
+         Z3hw==
+X-Gm-Message-State: AOJu0YzEAJSdEu9nMoqaR7Q3zpzVpRSARiZ0596da/fEGy9DAMkNPyz8
+	9oCqPF5XRIceTym8exnPWx5ipmmhmi+7lQ==
+X-Google-Smtp-Source: AGHT+IEQmAz/yRZ4JQb4KH0cdGwc6wBVKJX8n66A4HzKVJGrDTgM6umRzceJA14m6Bo9F2DGOz85Jw==
+X-Received: by 2002:a05:600c:b88:b0:40e:4cc6:9ff5 with SMTP id fl8-20020a05600c0b8800b0040e4cc69ff5mr406137wmb.100.1704882068122;
+        Wed, 10 Jan 2024 02:21:08 -0800 (PST)
 Received: from ta2.c.googlers.com.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
-        by smtp.gmail.com with ESMTPSA id j7-20020a05600c190700b0040e52cac976sm1625302wmq.29.2024.01.10.02.21.06
+        by smtp.gmail.com with ESMTPSA id j7-20020a05600c190700b0040e52cac976sm1625302wmq.29.2024.01.10.02.21.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 10 Jan 2024 02:21:07 -0800 (PST)
 From: Tudor Ambarus <tudor.ambarus@linaro.org>
@@ -55,10 +56,12 @@ Cc: linux-arm-kernel@lists.infradead.org,
 	kernel-team@android.com,
 	willmcvicker@google.com,
 	Tudor Ambarus <tudor.ambarus@linaro.org>
-Subject: [PATCH 00/18] serial: samsung: gs101 updates and winter cleanup
-Date: Wed, 10 Jan 2024 10:20:44 +0000
-Message-ID: <20240110102102.61587-1-tudor.ambarus@linaro.org>
+Subject: [PATCH 01/18] tty: serial: samsung: prepare for different IO types
+Date: Wed, 10 Jan 2024 10:20:45 +0000
+Message-ID: <20240110102102.61587-2-tudor.ambarus@linaro.org>
 X-Mailer: git-send-email 2.43.0.472.g3155946c3a-goog
+In-Reply-To: <20240110102102.61587-1-tudor.ambarus@linaro.org>
+References: <20240110102102.61587-1-tudor.ambarus@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -67,118 +70,96 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi,
+GS101's Connectivity Peripheral blocks (peric0/1 blocks) which
+include the I3C and USI (I2C, SPI, UART) only allow 32-bit
+register accesses. If using 8-bit register accesses, a SError
+Interrupt is raised causing the system unusable.
 
-The patch set is intended for v6.9 and is expected to be queued through
-Greg's tty tree.
+Instead of specifying the reg-io-width = 4 everywhere, for each node,
+the requirement should be deduced from the compatible.
 
-The patch set includes updates for GS101 so that we infer the IO type
-from the compatible. This is because the GS101 Peripheral Blocks, which
-include the serial, only allow 32-bit register accesses. So instead of
-specifying the reg-io-width = 4 property everywhere, deduce the iotype
-from the compatible. The GS101 patches were previously proposed at:
-Link: https://lore.kernel.org/linux-arm-kernel/20240109125814.3691033-1-tudor.ambarus@linaro.org/
+Prepare the samsung tty driver to allow IO types different than
+UPIO_MEM. ``struct uart_port::iotype`` is an unsigned char where all
+its 8 bits are exposed to uapi. We can't make NULL checks on it to
+verify if it's set, thus always set it from the driver's data.
+Use u8 for the ``iotype`` member of ``struct s3c24xx_uart_info`` to
+emphasize that the iotype is an 8 bit mask.
 
-The patch set then includes some cleanup changes that started as a
-consequence of trying to reduce the memory footprint of the
-``struct s3c24xx_uart_info``. For arm32 the struct was not as bad
-defined as for arm64, because all its members could fit in the same
-cacheline. But for arm64 we started from:
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+---
+ drivers/tty/serial/samsung_tty.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-struct s3c24xx_uart_info {
-	const char  *              name;                 /*     0     8 */
-	enum s3c24xx_port_type     type;                 /*     8     4 */
-	unsigned int               port_type;            /*    12     4 */
-	unsigned int               fifosize;             /*    16     4 */
-
-	/* XXX 4 bytes hole, try to pack */
-
-	long unsigned int          rx_fifomask;          /*    24     8 */
-	long unsigned int          rx_fifoshift;         /*    32     8 */
-	long unsigned int          rx_fifofull;          /*    40     8 */
-	long unsigned int          tx_fifomask;          /*    48     8 */
-	long unsigned int          tx_fifoshift;         /*    56     8 */
-	/* --- cacheline 1 boundary (64 bytes) --- */
-	long unsigned int          tx_fifofull;          /*    64     8 */
-	unsigned int               def_clk_sel;          /*    72     4 */
-
-	/* XXX 4 bytes hole, try to pack */
-
-	long unsigned int          num_clks;             /*    80     8 */
-	long unsigned int          clksel_mask;          /*    88     8 */
-	long unsigned int          clksel_shift;         /*    96     8 */
-	long unsigned int          ucon_mask;            /*   104     8 */
-	unsigned int               has_divslot:1;        /*   112: 0  4 */
-
-	/* size: 120, cachelines: 2, members: 16 */
-	/* sum members: 104, holes: 2, sum holes: 8 */
-	/* sum bitfield members: 1 bits (0 bytes) */
-	/* padding: 4 */
-	/* bit_padding: 31 bits */
-	/* last cacheline: 56 bytes */
-};
-
-and after the cleaning we get to:
-
-    struct s3c24xx_uart_info {
-            const char  *              name;                 /*     0     8 */
-            enum s3c24xx_port_type     type;                 /*     8     4 */
-            unsigned int               port_type;            /*    12     4 */
-            unsigned int               fifosize;             /*    16     4 */
-            u32                        rx_fifomask;          /*    20     4 */
-            u32                        rx_fifoshift;         /*    24     4 */
-            u32                        rx_fifofull;          /*    28     4 */
-            u32                        tx_fifomask;          /*    32     4 */
-            u32                        tx_fifoshift;         /*    36     4 */
-            u32                        tx_fifofull;          /*    40     4 */
-            u32                        clksel_mask;          /*    44     4 */
-            u32                        clksel_shift;         /*    48     4 */
-            u32                        ucon_mask;            /*    52     4 */
-            u8                         def_clk_sel;          /*    56     1 */
-            u8                         num_clks;             /*    57     1 */
-            u8                         iotype;               /*    58     1 */
-            u8                         has_divslot:1;        /*    59: 0  1 */
-    
-            /* size: 64, cachelines: 1, members: 17 */
-            /* padding: 4 */
-            /* bit_padding: 7 bits */
-    };
-
-Also note that sorting the include files in alphabetic order in the
-driver revealed some problems that were fixed with the following
-patches:
-Link: https://lore.kernel.org/linux-arm-kernel/20240110074007.4020016-1-tudor.ambarus@linaro.org/
-Link: https://lore.kernel.org/linux-kernel/20240109141045.3704627-1-tudor.ambarus@linaro.org/
-
-Cheers,
-ta
-
-Tudor Ambarus (18):
-  tty: serial: samsung: prepare for different IO types
-  tty: serial: samsung: set UPIO_MEM32 iotype for gs101
-  tty: serial: samsung: add gs101 earlycon support
-  tty: serial: samsung: sort headers alphabetically
-  tty: serial: samsung: explicitly include <linux/types.h>
-  tty: serial: samsung: use u32 for register interactions
-  tty: serial: samsung: remove braces on single statement block
-  tty: serial: samsung: move open brace '{' on the next line
-  tty: serial: samsung: drop superfluous comment
-  tty: serial: samsung: make max_count unsigned int
-  tty: serial: samsung: don't compare with zero an if (bitwise
-    expression)
-  tty: serial: samsung: use TIOCSER_TEMT for tx_empty()
-  tty: serial: samsung: return bool for s3c24xx_serial_txempty_nofifo()
-  tty: serial: samsung: return bool for s3c24xx_serial_console_txrdy()
-  tty: serial: samsung: change return type for
-    s3c24xx_serial_rx_fifocnt()
-  tty: serial: samsung: shrink the clock selection to 8 clocks
-  tty: serial: samsung: shrink port feature flags to u8
-  tty: serial: samsung: shrink memory footprint of ``struct
-    s3c24xx_uart_info``
-
- drivers/tty/serial/samsung_tty.c | 239 ++++++++++++++++++-------------
- 1 file changed, 136 insertions(+), 103 deletions(-)
-
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 71d17d804fda..b8fe9df20202 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -84,6 +84,7 @@ struct s3c24xx_uart_info {
+ 	unsigned long		clksel_mask;
+ 	unsigned long		clksel_shift;
+ 	unsigned long		ucon_mask;
++	u8			iotype;
+ 
+ 	/* uart port features */
+ 
+@@ -1742,7 +1743,6 @@ static void s3c24xx_serial_init_port_default(int index) {
+ 
+ 	spin_lock_init(&port->lock);
+ 
+-	port->iotype = UPIO_MEM;
+ 	port->uartclk = 0;
+ 	port->fifosize = 16;
+ 	port->flags = UPF_BOOT_AUTOCONF;
+@@ -1989,6 +1989,8 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+ 		break;
+ 	}
+ 
++	ourport->port.iotype = ourport->info->iotype;
++
+ 	if (np) {
+ 		of_property_read_u32(np,
+ 			"samsung,uart-fifosize", &ourport->port.fifosize);
+@@ -2399,6 +2401,7 @@ static const struct s3c24xx_serial_drv_data s3c6400_serial_drv_data = {
+ 		.name		= "Samsung S3C6400 UART",
+ 		.type		= TYPE_S3C6400,
+ 		.port_type	= PORT_S3C6400,
++		.iotype		= UPIO_MEM,
+ 		.fifosize	= 64,
+ 		.has_divslot	= 1,
+ 		.rx_fifomask	= S3C2440_UFSTAT_RXMASK,
+@@ -2428,6 +2431,7 @@ static const struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+ 		.name		= "Samsung S5PV210 UART",
+ 		.type		= TYPE_S3C6400,
+ 		.port_type	= PORT_S3C6400,
++		.iotype		= UPIO_MEM,
+ 		.has_divslot	= 1,
+ 		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,
+ 		.rx_fifoshift	= S5PV210_UFSTAT_RXSHIFT,
+@@ -2457,6 +2461,7 @@ static const struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+ 		.name		= "Samsung Exynos UART",	\
+ 		.type		= TYPE_S3C6400,			\
+ 		.port_type	= PORT_S3C6400,			\
++		.iotype		= UPIO_MEM,			\
+ 		.has_divslot	= 1,				\
+ 		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,	\
+ 		.rx_fifoshift	= S5PV210_UFSTAT_RXSHIFT,	\
+@@ -2517,6 +2522,7 @@ static const struct s3c24xx_serial_drv_data s5l_serial_drv_data = {
+ 		.name		= "Apple S5L UART",
+ 		.type		= TYPE_APPLE_S5L,
+ 		.port_type	= PORT_8250,
++		.iotype		= UPIO_MEM,
+ 		.fifosize	= 16,
+ 		.rx_fifomask	= S3C2410_UFSTAT_RXMASK,
+ 		.rx_fifoshift	= S3C2410_UFSTAT_RXSHIFT,
+@@ -2546,6 +2552,7 @@ static const struct s3c24xx_serial_drv_data artpec8_serial_drv_data = {
+ 		.name		= "Axis ARTPEC-8 UART",
+ 		.type		= TYPE_S3C6400,
+ 		.port_type	= PORT_S3C6400,
++		.iotype		= UPIO_MEM,
+ 		.fifosize	= 64,
+ 		.has_divslot	= 1,
+ 		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,
 -- 
 2.43.0.472.g3155946c3a-goog
 
