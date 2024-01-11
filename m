@@ -1,105 +1,88 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from mail-4322.protonmail.ch (mail-4322.protonmail.ch [185.70.43.22])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A5AC4F8AB;
-	Wed, 10 Jan 2024 22:41:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B8B2814
+	for <linux-serial@vger.kernel.org>; Thu, 11 Jan 2024 00:27:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pm.me
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="Oy0kMQ1S"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=jQkbXT4Xowi1pUvDT3eJyshgYO6r+Y/l3CsarSMIz3E=; b=Oy0kMQ1SLcT7pvbxS7wqM7uk5p
-	Qq7t8743wKI5BIdoPu/TLDlXenb/DniQt7AMa+5LjVUDE2XvXHgrPUx+5o/N4enh4YE8Lq9C8x0L+
-	m81XcR/ifiaSAWAq1fq+QtYn7ZFbMHmnR2L54W1hfvBb5e7B1GLRLe94uW2I5sMIIk6w=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:39930 helo=pettiford)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1rNhGI-0001iS-NK; Wed, 10 Jan 2024 17:41:27 -0500
-Date: Wed, 10 Jan 2024 17:41:26 -0500
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Dan Carpenter <dan.carpenter@linaro.org>
-Cc: Rengarajan S <rengarajan.s@microchip.com>, Kumaravel Thiagarajan
- <kumaravel.thiagarajan@microchip.com>, Tharun Kumar P
- <tharunkumar.pasumarthi@microchip.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- kernel-janitors@vger.kernel.org
-Message-Id: <20240110174126.a8beefee0e871d61de363018@hugovil.com>
-In-Reply-To: <05465217-174e-4888-a6ab-6251f4a9920b@moroto.mountain>
-References: <ZZ7vIfj7Jgh-pJn8@moroto>
-	<20240110144605.2a8813d4bfaff1a55edb9938@hugovil.com>
-	<05465217-174e-4888-a6ab-6251f4a9920b@moroto.mountain>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="kiRmVSS0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
+	s=protonmail3; t=1704932851; x=1705192051;
+	bh=OkijiJRSxRVwfQmNOQyfPf4G65ZauMEV3546lKD1NdU=;
+	h=Date:To:From:Cc:Subject:Message-ID:Feedback-ID:From:To:Cc:Date:
+	 Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=kiRmVSS0MAP+lN1koA8/H2LWxs1U6Ao4PB1IJbe/EplLh6vONLTNFLVlJa6PQjaPB
+	 4x/yEMwxQI2ncMZ+BHf+Ll86FabImYyBg9/cOtsqCP+RM4lSykT/2mpuLxu7LkvYlj
+	 sClfb9ALClDG0zpVJQvYBrEY8ZaTM/ou2gVNZCKuLz2wQ8KzRhpzKKPZx6sxk/05/m
+	 n3a86uJV6To79UNz6SOrZ+SnHYAiBOGWKBtjcH4DxzJeoETTFg7QEwFlUPCR7j4AOS
+	 h9kAOArObmTyHFkLITab9Xe1z+VCHQ+97ccDJGl6BzexljvS/5MMtIdwWA5evK6y0l
+	 CYF72fbQHS2mg==
+Date: Thu, 11 Jan 2024 00:27:07 +0000
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+From: Michael Pratt <mcpratt@pm.me>
+Cc: Wander Lairson Costa <wander@redhat.com>, =?utf-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Michael Pratt <mcpratt@pm.me>
+Subject: [PATCH v1 RESEND] serial: 8250: Set fifo timeout with uart_fifo_timeout()
+Message-ID: <20240111002056.28205-1-mcpratt@pm.me>
+Feedback-ID: 27397442:user:proton
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-	* -3.1 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH v2] serial: 8250_pci1xxxx: fix off by one in
- pci1xxxx_process_read_data()
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 10 Jan 2024 23:19:28 +0300
-Dan Carpenter <dan.carpenter@linaro.org> wrote:
+Commit 8f3631f0f6eb ("serial/8250: Use fifo in 8250 console driver")
+reworked functions for basic 8250 and 16550 type serial devices
+in order to enable and use the internal FIFO device for buffering,
+however the default timeout of 10 ms remained, which is proving
+to be insufficient for low baud rates like 9600, causing data overrun.
 
-> On Wed, Jan 10, 2024 at 02:46:05PM -0500, Hugo Villeneuve wrote:
-> > Hi,
-> > it is not simply a matter of adding "fix" to the title.
-> > 
-> > You must explain what and why vs. how.
-> > 
-> > Please see:
-> >   https://cbea.ms/git-commit/#why-not-how
-> > 
-> > for some guidelines on writing a good commit message.
-> > 
-> 
-> If you can't understand why a buffer overflow is bad then I honestly
-> don't know what to say...
+Unforunately, that commit was written and accepted just before commit
+31f6bd7fad3b ("serial: Store character timing information to uart_port")
+which introduced the frame_time member of the uart_port struct
+in order to store the amount of time it takes to send one UART frame
+relative to the baud rate and other serial port configuration,
+and commit f9008285bb69 ("serial: Drop timeout from uart_port")
+which established function uart_fifo_timeout() in order to
+calculate a reasonable timeout to wait for all frames
+in the FIFO device to flush before writing data again
+using the now stored frame_time value and size of the buffer.
 
-Hi Dan,
-I am also an old quirky guy, and pretty much know why a buffer overflow
-is bad :)
+Fix this by using the new function to calculate the timeout
+whenever the buffer is larger than 1 byte (unknown port default).
 
-My whole point was only related to the title of the commit
-message, not the body of the commit message, which explained well
-enough the problem and the solution, or the code fix itself.
+Tested on a MIPS device (ar934x) at baud rates 625, 9600, 115200.
 
-Regards,
-Hugo Villeneuve
+Signed-off-by: Michael Pratt <mcpratt@pm.me>
+---
+v1 thread: https://lore.kernel.org/linux-serial/20231125063552.517-1-mcprat=
+t@pm.me/
+
+ drivers/tty/serial/8250/8250_port.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/=
+8250_port.c
+index 8ca061d3bbb9..777b61a79c5e 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2076,7 +2076,10 @@ static void wait_for_lsr(struct uart_8250_port *up, =
+int bits)
+ {
+ =09unsigned int status, tmout =3D 10000;
+=20
+-=09/* Wait up to 10ms for the character(s) to be sent. */
++=09/* Wait for a time relative to buffer size and baud */
++=09if (up->port.fifosize > 1)
++=09=09tmout =3D jiffies_to_usecs(uart_fifo_timeout(&up->port));
++
+ =09for (;;) {
+ =09=09status =3D serial_lsr_in(up);
+=20
+--=20
+2.30.2
 
 
-> When I was a newbie, I encountered a driver which was written in
-> terrible style.  And I thought why do people allow it???  This is
-> garbage and it's messing up the Linux kernel with its bad style.
-> 
-> But after I got older, I realized that he was the only person with that
-> hardware and the only person who cared about it.   If I started fighting
-> with him about style then he would leave.  He was a quirky guy with bad
-> taste but he was still making useful contributions so it was better to
-> tolerate him.
-> 
-> These days I'm the old quirky guy.  If you want to fight with me about
-> commit messages, that's fine.  I can easily just add you to my list of
-> subsystems which only receive bug reports instead of patches.  (I think
-> only BPF is on the list currently because it's annoying to track the
-> bpf vs bpf-next tree).
-> 
-> Feel free to re-write this patch however you want and give me
-> Reported-by credit.
-> 
-> regards,
-> dan carpenter
