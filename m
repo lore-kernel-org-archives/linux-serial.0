@@ -1,31 +1,60 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A16995382;
-	Thu, 11 Jan 2024 06:52:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EDD1D27A;
+	Thu, 11 Jan 2024 07:21:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="NGvG5Scy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEC21C433F1;
-	Thu, 11 Jan 2024 06:52:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1704955961;
-	bh=xODAJt+RpoPJsO1LiIGKxZkDf5NGLa+gJ+Rp4TBoiSo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=NGvG5Scy2oHu4RjRhn1DooJi/oby9fU1wUT8C/miebL+QfF1a7sx6/bdVrPlGHAsB
-	 tBhO9Fvb91ySI920IiZ6n2VdGLlROSdvkQZlWzpWSvk9pj8odtmearkVcKkeOS3xSk
-	 z6uZy/1xiehw7QgVXhsfcTKktwA5BACgrXA6NcxE=
-Date: Thu, 11 Jan 2024 07:52:37 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Michael Pratt <mcpratt@pm.me>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Wander Lairson Costa <wander@redhat.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v1 RESEND] serial: 8250: Set fifo timeout with
- uart_fifo_timeout()
-Message-ID: <2024011125-stiffness-mutilated-75bb@gregkh>
-References: <20240111002056.28205-1-mcpratt@pm.me>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dMOXAgc3"
+Received: by mail-oi1-f172.google.com with SMTP id 5614622812f47-3bbbc6e51d0so3481149b6e.3;
+        Wed, 10 Jan 2024 23:21:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1704957696; x=1705562496; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=yy2lzqaTFfa02W+7q6UCYddcpHLmZArhRiq65UjnToc=;
+        b=dMOXAgc3yiR0rThuCvyuP5/NLE+vuWibffhVpBiszUHFe5wZSMWoXz1kHGb58nZtaF
+         sbQdcCLPn55TJnELM+EtsZFS+UtFbaBlWYrvL+1EhL+y5KxPoe31mCrzTlk3WISfVbDN
+         cVIvbzSRXJhLmV/DohN5LvVq8pe7XSI6nqYqWlivmieGiaP5JTaeCD9u0blkLASUwyC1
+         9CsI+zi+iyLUuslgC8zUeydzEAOZ+fKXVDX9xWPlBzapfRu/03PY7bSQX5AEs3EIcvtE
+         F93UIJUkVolifPa60tTFHnGA75H4e4mSAd0Glue5sFh4yEQBzXbof88Zk++o9aLdieah
+         tsKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1704957696; x=1705562496;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yy2lzqaTFfa02W+7q6UCYddcpHLmZArhRiq65UjnToc=;
+        b=qZ9oh8i/l1+xlKKTxzhkDWs3pz0KPpZPYtLCMLAEfCSItlZTun8Mgo6I2auK5Iexdh
+         UckBFooHBDY4r0YfIVKC4tuAdmLfEXEmE1vvD8F+fi3WwJ/YhNd4lrjnI0gVVHkvJVP2
+         wnHBHIkoNwRES0K/jK+tHmho1VkDm4CTiFT+Xe3g4XK+qfDtzV4erkq1te7UVEv+BvFc
+         60KeD5QtyROVE2k/ksyi7KVW2mdXvx8MY4X9JvzIV9pnpcpypBApdS2QU9IuafeTalUf
+         h4qp9yhRjCRNLnoDuaPwV5Xw+GtE/ZkkTdmsNdTI1fLzb5W6Gm/czyWbhf5Cw5CH/vPI
+         H//g==
+X-Gm-Message-State: AOJu0Yygt1rwajjL3l+bJkdZrNnqEutpGPNXhZ0zn+UHu/Fr/0iqMmEA
+	H7q1KdaC1RVDfeO7rPUGcwI=
+X-Google-Smtp-Source: AGHT+IEd95KMby+FaKu8/bxssdUJwSuxQqijxRBzUkA6Qa5Imunn62jJCrDzhGREmY0J6EUzJfPCKg==
+X-Received: by 2002:a05:6808:1411:b0:3bb:c599:e3ed with SMTP id w17-20020a056808141100b003bbc599e3edmr867056oiv.17.1704957696423;
+        Wed, 10 Jan 2024 23:21:36 -0800 (PST)
+Received: from google.com ([2620:15c:9d:2:70e2:a0a5:5166:fbbf])
+        by smtp.gmail.com with ESMTPSA id u2-20020a056a00098200b006d99056c4edsm464983pfg.187.2024.01.10.23.21.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Jan 2024 23:21:36 -0800 (PST)
+Date: Wed, 10 Jan 2024 23:21:33 -0800
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Helge Deller <deller@gmx.de>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-input@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+	linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vt: remove superfluous CONFIG_HW_CONSOLE
+Message-ID: <ZZ-W_WAmGuOU-Bbg@google.com>
+References: <20240108134102.601-1-lukas.bulwahn@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -34,37 +63,33 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240111002056.28205-1-mcpratt@pm.me>
+In-Reply-To: <20240108134102.601-1-lukas.bulwahn@gmail.com>
 
-On Thu, Jan 11, 2024 at 12:27:07AM +0000, Michael Pratt wrote:
-> Commit 8f3631f0f6eb ("serial/8250: Use fifo in 8250 console driver")
-> reworked functions for basic 8250 and 16550 type serial devices
-> in order to enable and use the internal FIFO device for buffering,
-> however the default timeout of 10 ms remained, which is proving
-> to be insufficient for low baud rates like 9600, causing data overrun.
+On Mon, Jan 08, 2024 at 02:41:02PM +0100, Lukas Bulwahn wrote:
+> The config HW_CONSOLE is always identical to the config VT and is not
+> visible in the kernel's build menuconfig. So, CONFIG_HW_CONSOLE is
+> redundant.
 > 
-> Unforunately, that commit was written and accepted just before commit
-> 31f6bd7fad3b ("serial: Store character timing information to uart_port")
-> which introduced the frame_time member of the uart_port struct
-> in order to store the amount of time it takes to send one UART frame
-> relative to the baud rate and other serial port configuration,
-> and commit f9008285bb69 ("serial: Drop timeout from uart_port")
-> which established function uart_fifo_timeout() in order to
-> calculate a reasonable timeout to wait for all frames
-> in the FIFO device to flush before writing data again
-> using the now stored frame_time value and size of the buffer.
+> Replace all references to CONFIG_HW_CONSOLE with CONFIG_VT and remove
+> CONFIG_HW_CONSOLE.
 > 
-> Fix this by using the new function to calculate the timeout
-> whenever the buffer is larger than 1 byte (unknown port default).
-> 
-> Tested on a MIPS device (ar934x) at baud rates 625, 9600, 115200.
-> 
-> Signed-off-by: Michael Pratt <mcpratt@pm.me>
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 > ---
-> v1 thread: https://lore.kernel.org/linux-serial/20231125063552.517-1-mcpratt@pm.me/
+> I think this patch is best picked up by Greg rather than splitting it
+> in smaller pieces for m68k, amiga keyboard, fbdev etc.
+> 
+> Greg, if that is fine, could you pick this for the next merge window?
+> 
+> I was also considering to rename config VT_HW_CONSOLE_BINDING to
+> VT_CONSOLE_BINDING, as the dependency is on VT, not HW_CONSOLE, but
+> at the moment, that seemed more churn than value of clarification.
+> 
+>  arch/m68k/amiga/config.c        | 2 +-
+>  drivers/input/keyboard/amikbd.c | 6 +++---
 
-What commit id does this fix?
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-thanks,
+Thanks.
 
-greg k-h
+-- 
+Dmitry
