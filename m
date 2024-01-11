@@ -1,122 +1,204 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A2A0156C8;
-	Thu, 11 Jan 2024 11:38:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6432632C8E;
+	Thu, 11 Jan 2024 13:50:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ug8d0jJ9"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XlCmgUxy"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1704973092; x=1736509092;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=Z1ttDXrYTv+Sve/f2vZWawOKbHHb4+tnEe1pfr93vWw=;
-  b=Ug8d0jJ9XHd1lRGtVWDI3ilJKPxx6DZHW0tqEeVbjnMSDw8lXF2ArJ20
-   oaV/fe2AjhfUA8tFFkHDCQvCYn1I/H+Jvuzq5Bdzo/IcFEdbXCV2VLx0Q
-   Dqyy3DehdxKCd1t6b7hQ4tqqI4aBvmHMSduwnv2Pi/1SCcEBSjI1hI6jn
-   F8XQBtem4+TdJiMq4gwHx6SR9PuCNy16OYnecPBPeKqEOCwu6WSftYH+x
-   in6ERmt59PVSeFMFg3j6v1ADErCHA1E4VufqI6Gv9GSUJ+f2R4K/orLCC
-   qz6yJyJNi/br9NFNzeKyzQH/6SxoNBs2y2R2eUZ6t+oMcGz3G7XUj3cWs
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10949"; a="395965665"
+  t=1704981017; x=1736517017;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=df3bhwFei4ovFhoesxHUexUNJ8++z5Jxwlx+x83xoIQ=;
+  b=XlCmgUxyV6MhvXdzP36tl35Wb5Tt1MyOJfE5mDi5qccbhFVEEmYiZNlE
+   QZe67pmFuF7BWWsTKdsIyV447fn/xZObIKvE6CIvHttm4XTZOUqJG0M/6
+   WwF2VAp5xEqrMu02/Uipu00nC5dNbR1zcSrmqxdZezzWR6+4lP242rXIh
+   VFxp2Z18CveAILnGtvvXWngxpZvoAuyMqA1UkHHh4LMliEsKDD2CzblmW
+   recfvAMxozGy5VOFdZ9QSBIGQkg+AohsMkbfBOGJLln7fP4O4ohxXtKbR
+   AQzLKy5VcSr2qIV8SLJXM8OOflLqOUQ3RgPkTjx6uRLbmE377a1hCdNFR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10950"; a="5929644"
 X-IronPort-AV: E=Sophos;i="6.04,186,1695711600"; 
-   d="scan'208";a="395965665"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2024 03:38:11 -0800
+   d="scan'208";a="5929644"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2024 05:50:17 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10949"; a="1029514569"
+X-IronPort-AV: E=McAfee;i="6600,9927,10950"; a="926018931"
 X-IronPort-AV: E=Sophos;i="6.04,186,1695711600"; 
-   d="scan'208";a="1029514569"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.246.32.201])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2024 03:38:09 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Thu, 11 Jan 2024 13:38:04 +0200 (EET)
-To: Michael Pratt <mcpratt@pm.me>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, 
-    Wander Lairson Costa <wander@redhat.com>, 
-    Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v1 RESEND] serial: 8250: Set fifo timeout with
- uart_fifo_timeout()
-In-Reply-To: <sxGlnHaZVt4mMgmwzplgzx0bwPOv0MaG8us_UlJg2n6QajwaUgqi876d6ctZZrpkAQBLv7iJ2h2sQ4VOdOk16QHDp_D5AJCYpxPXKbBKrFA=@pm.me>
-Message-ID: <d096c04d-581e-2216-4b1d-b4fd1f659a64@linux.intel.com>
-References: <20240111002056.28205-1-mcpratt@pm.me> <2024011125-stiffness-mutilated-75bb@gregkh> <sxGlnHaZVt4mMgmwzplgzx0bwPOv0MaG8us_UlJg2n6QajwaUgqi876d6ctZZrpkAQBLv7iJ2h2sQ4VOdOk16QHDp_D5AJCYpxPXKbBKrFA=@pm.me>
+   d="scan'208";a="926018931"
+Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 11 Jan 2024 05:50:11 -0800
+Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rNvRh-0008Jd-2N;
+	Thu, 11 Jan 2024 13:50:09 +0000
+Date: Thu, 11 Jan 2024 21:49:22 +0800
+From: kernel test robot <lkp@intel.com>
+To: Frank Li <Frank.Li@nxp.com>, robh@kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	alexandre.belloni@bootlin.com, conor.culhane@silvaco.com,
+	gregkh@linuxfoundation.org, imx@lists.linux.dev,
+	jirislaby@kernel.org, joe@perches.com,
+	linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, miquel.raynal@bootlin.com,
+	zbigniew.lukwinski@linux.intel.com, devicetree@vger.kernel.org,
+	krzysztof.kozlowski+dt@linaro.org, krzysztof.kozlowski@linaro.org
+Subject: Re: [PATCH v2 4/7] i3c: target: add svc target controller support
+Message-ID: <202401112149.TbWJpRfM-lkp@intel.com>
+References: <20240110175221.2335480-5-Frank.Li@nxp.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240110175221.2335480-5-Frank.Li@nxp.com>
 
-On Thu, 11 Jan 2024, Michael Pratt wrote:
+Hi Frank,
 
-> 
-> 
-> On Thursday, January 11th, 2024 at 01:52, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> 
-> > On Thu, Jan 11, 2024 at 12:27:07AM +0000, Michael Pratt wrote:
-> > 
-> > > Commit 8f3631f0f6eb ("serial/8250: Use fifo in 8250 console driver")
-> 
-> This is the commit that made the issue present itself.
-> 
-> I'm not sure whether it's right to say that this "fixes" that commit
-> since it only caused the issue indirectly, and the diff for this patch
-> doesn't touch any lines that the other commit touched, and the method
-> I'm using to fix the issue was not available at the time, and also that
-> for high baud rates like 115200 everything is still fine...
-> (the 10 ms timeout is as old as the tree)
-> 
-> If that's enough for a "Fixes" tag then go ahead (or tell me to add it),
-> but maybe a "Ref" tag would be enough?
-> 
-> You can see the other thread linked for more discussion on that point if you like...
+kernel test robot noticed the following build warnings:
 
-Besides Fixes tags, you can add dependency information for stable folks 
-with Cc tag using the format described in 
-Documentation/process/stable-kernel-rules.rst
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on tty/tty-next tty/tty-linus robh/for-next linus/master v6.7 next-20240111]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Frank-Li/i3c-add-target-mode-support/20240111-015711
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20240110175221.2335480-5-Frank.Li%40nxp.com
+patch subject: [PATCH v2 4/7] i3c: target: add svc target controller support
+config: x86_64-allmodconfig (https://download.01.org/0day-ci/archive/20240111/202401112149.TbWJpRfM-lkp@intel.com/config)
+compiler: ClangBuiltLinux clang version 17.0.6 (https://github.com/llvm/llvm-project 6009708b4367171ccdbf4b5905cb6a803753fe18)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240111/202401112149.TbWJpRfM-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202401112149.TbWJpRfM-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/i3c/target/svc-i3c-target.c:211:40: warning: no previous prototype for function 'svc_i3c_get_features' [-Wmissing-prototypes]
+     211 | const struct i3c_target_ctrl_features *svc_i3c_get_features(struct i3c_target_ctrl *ctrl)
+         |                                        ^
+   drivers/i3c/target/svc-i3c-target.c:211:7: note: declare 'static' if the function is not intended to be used outside of this translation unit
+     211 | const struct i3c_target_ctrl_features *svc_i3c_get_features(struct i3c_target_ctrl *ctrl)
+         |       ^
+         | static 
+>> drivers/i3c/target/svc-i3c-target.c:268:63: warning: omitting the parameter name in a function definition is a C2x extension [-Wc2x-extensions]
+     268 | static int svc_i3c_target_queue(struct i3c_request *req, gfp_t)
+         |                                                               ^
+>> drivers/i3c/target/svc-i3c-target.c:666:5: warning: no previous prototype for function 'svc_i3c_fifo_status' [-Wmissing-prototypes]
+     666 | int svc_i3c_fifo_status(struct i3c_target_ctrl *ctrl, bool tx)
+         |     ^
+   drivers/i3c/target/svc-i3c-target.c:666:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+     666 | int svc_i3c_fifo_status(struct i3c_target_ctrl *ctrl, bool tx)
+         | ^
+         | static 
+   3 warnings generated.
+
+
+vim +/svc_i3c_get_features +211 drivers/i3c/target/svc-i3c-target.c
+
+   210	
+ > 211	const struct i3c_target_ctrl_features *svc_i3c_get_features(struct i3c_target_ctrl *ctrl)
+   212	{
+   213		struct svc_i3c_target *svc;
+   214	
+   215		svc = dev_get_drvdata(&ctrl->dev);
+   216	
+   217		if (!svc)
+   218			return NULL;
+   219	
+   220		return &svc->features;
+   221	}
+   222	
+   223	static void svc_i3c_queue_complete(struct svc_i3c_target *svc, struct i3c_request *complete)
+   224	{
+   225		unsigned long flags;
+   226	
+   227		spin_lock_irqsave(&svc->cq_lock, flags);
+   228		list_add_tail(&complete->list, &svc->cq);
+   229		spin_unlock_irqrestore(&svc->cq_lock, flags);
+   230		queue_work(svc->workqueue, &svc->work);
+   231	}
+   232	
+   233	static void svc_i3c_fill_txfifo(struct svc_i3c_target *svc)
+   234	{
+   235		struct i3c_request *req, *complete = NULL;
+   236		unsigned long flags;
+   237		int val;
+   238	
+   239		spin_lock_irqsave(&svc->txq_lock, flags);
+   240		while ((!!(req = list_first_entry_or_null(&svc->txq, struct i3c_request, list))) &&
+   241		       !((readl_relaxed(svc->regs + I3C_SDATACTRL) & I3C_SDATACTRL_TXFULL_MASK))) {
+   242			while (!(readl_relaxed(svc->regs + I3C_SDATACTRL)
+   243						& I3C_SDATACTRL_TXFULL_MASK)) {
+   244				val = *(u8 *)(req->buf + req->actual);
+   245	
+   246				if (req->actual + 1 == req->length)
+   247					writel_relaxed(val, svc->regs + I3C_SWDATAE);
+   248				else
+   249					writel_relaxed(val, svc->regs + I3C_SWDATAB);
+   250	
+   251				req->actual++;
+   252	
+   253				if (req->actual == req->length) {
+   254					list_del(&req->list);
+   255					complete = req;
+   256					spin_unlock_irqrestore(&svc->txq_lock, flags);
+   257	
+   258					svc_i3c_queue_complete(svc, complete);
+   259	
+   260					spin_lock_irqsave(&svc->txq_lock, flags);
+   261					break;
+   262				}
+   263			}
+   264		}
+   265		spin_unlock_irqrestore(&svc->txq_lock, flags);
+   266	}
+   267	
+ > 268	static int svc_i3c_target_queue(struct i3c_request *req, gfp_t)
+   269	{
+   270		struct svc_i3c_target *svc;
+   271		struct list_head *q;
+   272		unsigned long flags;
+   273		spinlock_t *lk;
+   274	
+   275		svc = dev_get_drvdata(&req->ctrl->dev);
+   276		if (!svc)
+   277			return -EINVAL;
+   278	
+   279		if (req->tx) {
+   280			q = &svc->txq;
+   281			lk = &svc->txq_lock;
+   282		} else {
+   283			q = &svc->rxq;
+   284			lk = &svc->rxq_lock;
+   285		}
+   286	
+   287		spin_lock_irqsave(lk, flags);
+   288		list_add_tail(&req->list, q);
+   289		spin_unlock_irqrestore(lk, flags);
+   290	
+   291		if (req->tx)
+   292			svc_i3c_fill_txfifo(svc);
+   293	
+   294		if (req->tx)
+   295			writel_relaxed(I3C_SINT_TXSEND, svc->regs + I3C_SINTSET);
+   296		else
+   297			writel_relaxed(I3C_SINT_RXPEND, svc->regs + I3C_SINTSET);
+   298	
+   299		return 0;
+   300	}
+   301	
 
 -- 
- i.
-
-
-> > > reworked functions for basic 8250 and 16550 type serial devices
-> > > in order to enable and use the internal FIFO device for buffering,
-> > > however the default timeout of 10 ms remained, which is proving
-> > > to be insufficient for low baud rates like 9600, causing data overrun.
-> > > 
-> > > Unforunately, that commit was written and accepted just before commit
-> > > 31f6bd7fad3b ("serial: Store character timing information to uart_port")
-> > > which introduced the frame_time member of the uart_port struct
-> > > in order to store the amount of time it takes to send one UART frame
-> > > relative to the baud rate and other serial port configuration,
-> > > and commit f9008285bb69 ("serial: Drop timeout from uart_port")
-> > > which established function uart_fifo_timeout() in order to
-> > > calculate a reasonable timeout to wait for all frames
-> > > in the FIFO device to flush before writing data again
-> > > using the now stored frame_time value and size of the buffer.
-> > > 
-> > > Fix this by using the new function to calculate the timeout
-> > > whenever the buffer is larger than 1 byte (unknown port default).
-> > > 
-> > > Tested on a MIPS device (ar934x) at baud rates 625, 9600, 115200.
-> > > 
-> > > Signed-off-by: Michael Pratt mcpratt@pm.me
-> > > ---
-> > > v1 thread: https://lore.kernel.org/linux-serial/20231125063552.517-1-mcpratt@pm.me/
-> > 
-> > 
-> > What commit id does this fix?
-> > 
-> > thanks,
-> > 
-> > greg k-h
-> 
-> --
-> MCP
-> 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
