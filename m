@@ -1,134 +1,141 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6F7A5D8E0;
-	Fri, 12 Jan 2024 07:57:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98D5029D19;
+	Fri, 12 Jan 2024 09:30:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VJ4VUlhU"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-1d3e416f303so26204095ad.0;
-        Thu, 11 Jan 2024 23:57:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1705046272; x=1705651072; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=1zgSO6gdbHTTWvN7qp5pJTd1aLnPZ/lO5bfOXL9xEyU=;
-        b=VJ4VUlhU9TyiNT5zC6TewmmfeL/bpvtO3pviO7z14701Z3m/mtMFPeHRCPbrTj+tsL
-         qat8Pj8eYuKvNytFVfHXMUm4uP1Ml17zHoY/eupe0QR8S6EIROsCsBJBM/wIIOUmy0HI
-         Jxr0Q958BaZxmbz9HjVsuUqKgTTwTFU8GUwbJ3YDFnSONkbwyQlR6Dixh/ZAHvMLrJHF
-         Tk8Pl31G3lKBqLDhAW9scJIev++jXuIBmTFdLXSRrSFu4toa9GcgU+paaZj6IBiqgarK
-         dUXjxYba93YGwwO2O8ufkt4WjNccBeGmjiMJ9t14aKce+eFjxgfYHQzCuzb3ZOW62E3m
-         iC2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705046272; x=1705651072;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1zgSO6gdbHTTWvN7qp5pJTd1aLnPZ/lO5bfOXL9xEyU=;
-        b=mjVAA5ujWv8qEUvOAdfe5XWIG0lwMe20VlzwVR9lYfINq1dA40HzpkCAEk8IE3pbUC
-         Kw5VnBlla7MZlDeIOKHxFVg4bKXTTmMgk0O01o6ARpZuhvhHjKf2SzLNiPT5XtVUGqEm
-         rOI/lcX4dYYL28BnFmIU1eU7zhV21PV4GhCXc6pbnOSERmRhLFxl38aqQSXiHGoIcNQ6
-         hSIhg+oayNPMVpjdgs+v/33e5zUOW+ciOGle0zDc0ceX21krwMhQc3FplMRossHwmORH
-         xWg2nX9H9TIsRxRkiIh2anbmH93q9agCJTzhEkdjvwPp/6bTh0ysktQi6vMWwVDA6nHM
-         yNew==
-X-Gm-Message-State: AOJu0YzIgjThc9ajuLsR0n2UaHwNVWVgYnC5CWf8+QpEuyJTjEpUVYgH
-	G1zMhrEZhBCX+WYy5liJop0=
-X-Google-Smtp-Source: AGHT+IHe33Y/uheKihjZM9nRKDUPf7PYrG/DOFV1Ag5i+kukZ3cQlRtp0Ayv6V3BBWOjwgLBz/v8cQ==
-X-Received: by 2002:a17:902:c18d:b0:1d4:9c06:1815 with SMTP id d13-20020a170902c18d00b001d49c061815mr434195pld.59.1705046272109;
-        Thu, 11 Jan 2024 23:57:52 -0800 (PST)
-Received: from g2039B650.. ([2001:da8:203:a502:f7b6:d9a7:52f2:e69c])
-        by smtp.gmail.com with ESMTPSA id lo13-20020a170903434d00b001d3a371cd24sm2496117plb.53.2024.01.11.23.57.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jan 2024 23:57:51 -0800 (PST)
-From: Gui-Dong Han <2045gemini@gmail.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	ilpo.jarvinen@linux.intel.com,
-	tony@atomide.com,
-	l.sanfilippo@kunbus.com,
-	john.ogness@linutronix.de,
-	tglx@linutronix.de,
-	andriy.shevchenko@linux.intel.com
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	baijiaju1990@outlook.com,
-	Gui-Dong Han <2045gemini@gmail.com>,
-	stable@vger.kernel.org
-Subject: [PATCH] serial: core: Fix atomicity violation in uart_tiocmget
-Date: Fri, 12 Jan 2024 15:57:32 +0800
-Message-Id: <20240112075732.16730-1-2045gemini@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="rydvb3T5";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="AEzFwmBq"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1705051831;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=zsJm0Dt+4QCHLYUugRSs3pkknp/phG3zkBZz27KM1Ig=;
+	b=rydvb3T58EelH6LUAXLox4lkS/WS5IsTwEEusnGX+SWwCLZ51Eec7pJAfq4Grk8JdmkHgp
+	LgKkuRWo6plqO5nMW277n1ExH6J1RKWVnWtM4rENOzv0aYC0Qb3pktYHy2A+aQZkY2FwnS
+	Bd6zo8MhgXCe/RP2beH9XhgUia2vcfLJ4WU/uCUiFXqzV7jWFZB3kzfvSwc8YuXKhpECiZ
+	TLM/1SZw0X+Z27jBOCZvzss7Lm0wJ51QrEs5AqRPn2UNcwg3qSSmcvTZ9Qbw27QaT/nr81
+	+XGgAKml+/WE9CG++WoixwX4cL2Fh/EtbUf0kF3vtm2OPeMUNQEbPMQaFUuJYw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1705051831;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=zsJm0Dt+4QCHLYUugRSs3pkknp/phG3zkBZz27KM1Ig=;
+	b=AEzFwmBqZVFmDXROhQRHd2DtOUtsRCHylHkcLx9B3dwCWC23fTYvUj4bhWi/IdNqm6LJpJ
+	AwQB6rbxrYtw/lCg==
+To: Gui-Dong Han <2045gemini@gmail.com>, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com, tony@atomide.com,
+ l.sanfilippo@kunbus.com, tglx@linutronix.de,
+ andriy.shevchenko@linux.intel.com
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ baijiaju1990@outlook.com, Gui-Dong Han <2045gemini@gmail.com>,
+ stable@vger.kernel.org
+Subject: Re: [PATCH] serial: core: Fix atomicity violation in uart_tiocmget
+In-Reply-To: <20240112075732.16730-1-2045gemini@gmail.com>
+References: <20240112075732.16730-1-2045gemini@gmail.com>
+Date: Fri, 12 Jan 2024 10:36:29 +0106
+Message-ID: <87msta7vbe.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-In uart_tiocmget():
-    result = uport->mctrl;
-    uart_port_lock_irq(uport);
-    result |= uport->ops->get_mctrl(uport);
-    uart_port_unlock_irq(uport);
-    ...
-    return result;
+On 2024-01-12, Gui-Dong Han <2045gemini@gmail.com> wrote:
+> In uart_tiocmget():
+>     result = uport->mctrl;
+>     uart_port_lock_irq(uport);
+>     result |= uport->ops->get_mctrl(uport);
+>     uart_port_unlock_irq(uport);
+>     ...
+>     return result;
+>
+> In uart_update_mctrl():
+>     uart_port_lock_irqsave(port, &flags);
+>     ...
+>     port->mctrl = (old & ~clear) | set;
+>     ...
+>     uart_port_unlock_irqrestore(port, flags);
+>
+> An atomicity violation is identified due to the concurrent execution of
+> uart_tiocmget() and uart_update_mctrl(). After assigning
+> result = uport->mctrl, the mctrl value may change in uart_update_mctrl(),
+> leading to a mismatch between the value returned by
+> uport->ops->get_mctrl(uport) and the mctrl value previously read.
+> This can result in uart_tiocmget() returning an incorrect value.
+>
+> This possible bug is found by an experimental static analysis tool
+> developed by our team, BassCheck[1]. This tool analyzes the locking APIs
+> to extract function pairs that can be concurrently executed, and then
+> analyzes the instructions in the paired functions to identify possible
+> concurrency bugs including data races and atomicity violations. The above
+> possible bug is reported when our tool analyzes the source code of
+> Linux 5.17.
+>
+> To address this issue, it is suggested to move the line
+> result = uport->mctrl inside the uart_port_lock block to ensure atomicity
+> and prevent the mctrl value from being altered during the execution of
+> uart_tiocmget(). With this patch applied, our tool no longer reports the
+> bug, with the kernel configuration allyesconfig for x86_64. Due to the
+> absence of the requisite hardware, we are unable to conduct runtime
+> testing of the patch. Therefore, our verification is solely based on code
+> logic analysis.
+>
+> [1] https://sites.google.com/view/basscheck/
+>
+> Fixes: 559c7ff4e324 ("serial: core: Use port lock wrappers")
 
-In uart_update_mctrl():
-    uart_port_lock_irqsave(port, &flags);
-    ...
-    port->mctrl = (old & ~clear) | set;
-    ...
-    uart_port_unlock_irqrestore(port, flags);
+It fixes c5f4644e6c8b ("[PATCH] Serial: Adjust serial locking").
 
-An atomicity violation is identified due to the concurrent execution of
-uart_tiocmget() and uart_update_mctrl(). After assigning
-result = uport->mctrl, the mctrl value may change in uart_update_mctrl(),
-leading to a mismatch between the value returned by
-uport->ops->get_mctrl(uport) and the mctrl value previously read.
-This can result in uart_tiocmget() returning an incorrect value.
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Gui-Dong Han <2045gemini@gmail.com>
+> ---
+>  drivers/tty/serial/serial_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 80085b151b34..a9e39416d877 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1085,8 +1085,8 @@ static int uart_tiocmget(struct tty_struct *tty)
+>  		goto out;
+>  
+>  	if (!tty_io_error(tty)) {
+> -		result = uport->mctrl;
+>  		uart_port_lock_irq(uport);
+> +		result = uport->mctrl;
+>  		result |= uport->ops->get_mctrl(uport);
+>  		uart_port_unlock_irq(uport);
+>  	}
 
-This possible bug is found by an experimental static analysis tool
-developed by our team, BassCheck[1]. This tool analyzes the locking APIs
-to extract function pairs that can be concurrently executed, and then
-analyzes the instructions in the paired functions to identify possible
-concurrency bugs including data races and atomicity violations. The above
-possible bug is reported when our tool analyzes the source code of
-Linux 5.17.
+Looking over the RMW accesses to @mctrl, I expect you will also need
+this hunk:
 
-To address this issue, it is suggested to move the line
-result = uport->mctrl inside the uart_port_lock block to ensure atomicity
-and prevent the mctrl value from being altered during the execution of
-uart_tiocmget(). With this patch applied, our tool no longer reports the
-bug, with the kernel configuration allyesconfig for x86_64. Due to the
-absence of the requisite hardware, we are unable to conduct runtime
-testing of the patch. Therefore, our verification is solely based on code
-logic analysis.
-
-[1] https://sites.google.com/view/basscheck/
-
-Fixes: 559c7ff4e324 ("serial: core: Use port lock wrappers")
-Cc: stable@vger.kernel.org
-Signed-off-by: Gui-Dong Han <2045gemini@gmail.com>
----
- drivers/tty/serial/serial_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 80085b151b34..a9e39416d877 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1085,8 +1085,8 @@ static int uart_tiocmget(struct tty_struct *tty)
- 		goto out;
+@@ -2242,6 +2242,7 @@ uart_set_options(struct uart_port *port, struct console *co,
+ {
+ 	struct ktermios termios;
+ 	static struct ktermios dummy;
++	unsigned long flags;
  
- 	if (!tty_io_error(tty)) {
--		result = uport->mctrl;
- 		uart_port_lock_irq(uport);
-+		result = uport->mctrl;
- 		result |= uport->ops->get_mctrl(uport);
- 		uart_port_unlock_irq(uport);
- 	}
--- 
-2.34.1
+ 	/*
+ 	 * Ensure that the serial-console lock is initialised early.
+@@ -2279,7 +2280,9 @@ uart_set_options(struct uart_port *port, struct console *co,
+ 	 * some uarts on other side don't support no flow control.
+ 	 * So we set * DTR in host uart to make them happy
+ 	 */
++	uart_port_lock_irqsave(port, &flags);
+ 	port->mctrl |= TIOCM_DTR;
++	uart_port_unlock_irqrestore(port, flags);
+ 
+ 	port->ops->set_termios(port, &termios, &dummy);
+ 	/*
 
+FWIW,
+Reviewed-by: John Ogness <john.ogness@linutronix.de>
