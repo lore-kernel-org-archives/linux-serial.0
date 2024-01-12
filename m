@@ -1,160 +1,134 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CDEE5D727
-	for <linux-serial@vger.kernel.org>; Fri, 12 Jan 2024 07:38:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6F7A5D8E0;
+	Fri, 12 Jan 2024 07:57:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="V+x2yjxW"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-40e60e137aaso13911305e9.0
-        for <linux-serial@vger.kernel.org>; Thu, 11 Jan 2024 23:38:42 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VJ4VUlhU"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-1d3e416f303so26204095ad.0;
+        Thu, 11 Jan 2024 23:57:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1705045121; x=1705649921; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=iDp8DOinr9gJiQ2caAeolBWLcVUyNvP+wqwEKaD3vBg=;
-        b=V+x2yjxW1x81RaK7jn0GLICumotl1ZEaO+3uooC0TUYV2H3yc10kjvIKt3NaV90DHA
-         WSjIxEYv/CASi1G0QMROkTaAjnEpXcMke0/Lx6PUCdnR0sgq1TuRmTUMxi13DLKyf/wX
-         rhT4sztojhtuU26XpeKQ2mX8DjnbaXm3miJSwcMPM3rIT0xE0bhxLHZuRwh86lmsOdir
-         1bCCDTMQLNN5FpHLpeLSexH36VDNKKTRfABMijwjkPatN9sRsn8hqL6rvnEg5n1e4Ovn
-         L1c6kOxD8MqEHZRF4luIeWWJ/QbsQS0c8Jh41cuhDh59vrv1iLSQ5mY0THAYt2o5WO+/
-         LGwg==
+        d=gmail.com; s=20230601; t=1705046272; x=1705651072; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=1zgSO6gdbHTTWvN7qp5pJTd1aLnPZ/lO5bfOXL9xEyU=;
+        b=VJ4VUlhU9TyiNT5zC6TewmmfeL/bpvtO3pviO7z14701Z3m/mtMFPeHRCPbrTj+tsL
+         qat8Pj8eYuKvNytFVfHXMUm4uP1Ml17zHoY/eupe0QR8S6EIROsCsBJBM/wIIOUmy0HI
+         Jxr0Q958BaZxmbz9HjVsuUqKgTTwTFU8GUwbJ3YDFnSONkbwyQlR6Dixh/ZAHvMLrJHF
+         Tk8Pl31G3lKBqLDhAW9scJIev++jXuIBmTFdLXSRrSFu4toa9GcgU+paaZj6IBiqgarK
+         dUXjxYba93YGwwO2O8ufkt4WjNccBeGmjiMJ9t14aKce+eFjxgfYHQzCuzb3ZOW62E3m
+         iC2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705045121; x=1705649921;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=iDp8DOinr9gJiQ2caAeolBWLcVUyNvP+wqwEKaD3vBg=;
-        b=t96Naog8GM3A9evBFXItyzBq8anIYcJbA3+E645Axsfo7YoD84fl1G2z6iiQ4vRQZf
-         gVSbOrdIrK//4hIFczFsz7K40UE666IzDLthWoFNNlF8Ea9Tuqg8gtei7alr5BYPqkhw
-         tVR6JwlWc11+EDdotNWM+L1nZhtJnOXvIiLWTrRiZ5ntEg6PeJG5U5JyrZwHTaA6aTgx
-         YqEMXr4afGDjwArkyV0QXlKKHTUu3Bc1mK9R1WQuqmVeHlv16JSUVB6aO4/bieRnWTzZ
-         m+qpt7iiAwxCZqld4rh1NaVvc2y4I7LWN6L78mDNH1b6Id5zqpiAr1BadAceXJSjZZHZ
-         SUYg==
-X-Gm-Message-State: AOJu0Yx0+WL9iigIt79DFt2EtI6Yvn0mtosQ8qVRwwsYHHM5YeLHHny5
-	wRg0kSuSrTk0jjTnfMK+MlxtaQcwPBBzmA==
-X-Google-Smtp-Source: AGHT+IFNScRG8y28Q84hdUVIzxVba8kAQufG74CduMidAqwTiwiDmYzWuDabEwi6C9HDdadF49leKQ==
-X-Received: by 2002:a05:600c:332a:b0:40e:42e7:4c42 with SMTP id q42-20020a05600c332a00b0040e42e74c42mr472136wmp.60.1705045121265;
-        Thu, 11 Jan 2024 23:38:41 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.223.112])
-        by smtp.gmail.com with ESMTPSA id u6-20020a05600c138600b0040d5a9d6b68sm8713498wmf.6.2024.01.11.23.38.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Jan 2024 23:38:40 -0800 (PST)
-Message-ID: <3c0be658-e7a6-4231-b206-86ffb47e0cb2@linaro.org>
-Date: Fri, 12 Jan 2024 08:38:39 +0100
+        d=1e100.net; s=20230601; t=1705046272; x=1705651072;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1zgSO6gdbHTTWvN7qp5pJTd1aLnPZ/lO5bfOXL9xEyU=;
+        b=mjVAA5ujWv8qEUvOAdfe5XWIG0lwMe20VlzwVR9lYfINq1dA40HzpkCAEk8IE3pbUC
+         Kw5VnBlla7MZlDeIOKHxFVg4bKXTTmMgk0O01o6ARpZuhvhHjKf2SzLNiPT5XtVUGqEm
+         rOI/lcX4dYYL28BnFmIU1eU7zhV21PV4GhCXc6pbnOSERmRhLFxl38aqQSXiHGoIcNQ6
+         hSIhg+oayNPMVpjdgs+v/33e5zUOW+ciOGle0zDc0ceX21krwMhQc3FplMRossHwmORH
+         xWg2nX9H9TIsRxRkiIh2anbmH93q9agCJTzhEkdjvwPp/6bTh0ysktQi6vMWwVDA6nHM
+         yNew==
+X-Gm-Message-State: AOJu0YzIgjThc9ajuLsR0n2UaHwNVWVgYnC5CWf8+QpEuyJTjEpUVYgH
+	G1zMhrEZhBCX+WYy5liJop0=
+X-Google-Smtp-Source: AGHT+IHe33Y/uheKihjZM9nRKDUPf7PYrG/DOFV1Ag5i+kukZ3cQlRtp0Ayv6V3BBWOjwgLBz/v8cQ==
+X-Received: by 2002:a17:902:c18d:b0:1d4:9c06:1815 with SMTP id d13-20020a170902c18d00b001d49c061815mr434195pld.59.1705046272109;
+        Thu, 11 Jan 2024 23:57:52 -0800 (PST)
+Received: from g2039B650.. ([2001:da8:203:a502:f7b6:d9a7:52f2:e69c])
+        by smtp.gmail.com with ESMTPSA id lo13-20020a170903434d00b001d3a371cd24sm2496117plb.53.2024.01.11.23.57.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Jan 2024 23:57:51 -0800 (PST)
+From: Gui-Dong Han <2045gemini@gmail.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	ilpo.jarvinen@linux.intel.com,
+	tony@atomide.com,
+	l.sanfilippo@kunbus.com,
+	john.ogness@linutronix.de,
+	tglx@linutronix.de,
+	andriy.shevchenko@linux.intel.com
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	baijiaju1990@outlook.com,
+	Gui-Dong Han <2045gemini@gmail.com>,
+	stable@vger.kernel.org
+Subject: [PATCH] serial: core: Fix atomicity violation in uart_tiocmget
+Date: Fri, 12 Jan 2024 15:57:32 +0800
+Message-Id: <20240112075732.16730-1-2045gemini@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/7] dt-bindings: i3c: svc: add compatible string i3c:
- silvaco,i3c-target-v1
-Content-Language: en-US
-To: Frank Li <Frank.Li@nxp.com>, robh@kernel.org
-Cc: alexandre.belloni@bootlin.com, conor.culhane@silvaco.com,
- gregkh@linuxfoundation.org, imx@lists.linux.dev, jirislaby@kernel.org,
- joe@perches.com, linux-i3c@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- miquel.raynal@bootlin.com, zbigniew.lukwinski@linux.intel.com,
- devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org
-References: <20240110175221.2335480-1-Frank.Li@nxp.com>
- <20240110175221.2335480-3-Frank.Li@nxp.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20240110175221.2335480-3-Frank.Li@nxp.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 10/01/2024 18:52, Frank Li wrote:
-> Add compatible string 'silvaco,i3c-target-v1' for target mode.
+In uart_tiocmget():
+    result = uport->mctrl;
+    uart_port_lock_irq(uport);
+    result |= uport->ops->get_mctrl(uport);
+    uart_port_unlock_irq(uport);
+    ...
+    return result;
 
-Your subject has some multiple prefixes? Why there is one more ":"?
-Just: add XYZ device
+In uart_update_mctrl():
+    uart_port_lock_irqsave(port, &flags);
+    ...
+    port->mctrl = (old & ~clear) | set;
+    ...
+    uart_port_unlock_irqrestore(port, flags);
 
+An atomicity violation is identified due to the concurrent execution of
+uart_tiocmget() and uart_update_mctrl(). After assigning
+result = uport->mctrl, the mctrl value may change in uart_update_mctrl(),
+leading to a mismatch between the value returned by
+uport->ops->get_mctrl(uport) and the mctrl value previously read.
+This can result in uart_tiocmget() returning an incorrect value.
 
-> 
-> Signed-off-by: Frank Li <Frank.Li@nxp.com>
-> ---
->  .../devicetree/bindings/i3c/silvaco,i3c-master.yaml        | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/i3c/silvaco,i3c-master.yaml b/Documentation/devicetree/bindings/i3c/silvaco,i3c-master.yaml
-> index 133855f11b4f5..17849c91d4d2b 100644
-> --- a/Documentation/devicetree/bindings/i3c/silvaco,i3c-master.yaml
-> +++ b/Documentation/devicetree/bindings/i3c/silvaco,i3c-master.yaml
-> @@ -4,7 +4,7 @@
->  $id: http://devicetree.org/schemas/i3c/silvaco,i3c-master.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
->  
-> -title: Silvaco I3C master
-> +title: Silvaco I3C master/target
->  
->  maintainers:
->    - Conor Culhane <conor.culhane@silvaco.com>
-> @@ -14,8 +14,9 @@ allOf:
->  
->  properties:
->    compatible:
-> -    const: silvaco,i3c-master-v1
+This possible bug is found by an experimental static analysis tool
+developed by our team, BassCheck[1]. This tool analyzes the locking APIs
+to extract function pairs that can be concurrently executed, and then
+analyzes the instructions in the paired functions to identify possible
+concurrency bugs including data races and atomicity violations. The above
+possible bug is reported when our tool analyzes the source code of
+Linux 5.17.
 
-NAK, you got comment, didn't you? Why did you ignore it? It's like third
-time you try to push it ignoring what we keep asking. Pushing the same
-without resolving anything in previous discussion is not acceptable and
-it feels like waste of my time.
+To address this issue, it is suggested to move the line
+result = uport->mctrl inside the uart_port_lock block to ensure atomicity
+and prevent the mctrl value from being altered during the execution of
+uart_tiocmget(). With this patch applied, our tool no longer reports the
+bug, with the kernel configuration allyesconfig for x86_64. Due to the
+absence of the requisite hardware, we are unable to conduct runtime
+testing of the patch. Therefore, our verification is solely based on code
+logic analysis.
 
+[1] https://sites.google.com/view/basscheck/
 
-> -
+Fixes: 559c7ff4e324 ("serial: core: Use port lock wrappers")
+Cc: stable@vger.kernel.org
+Signed-off-by: Gui-Dong Han <2045gemini@gmail.com>
+---
+ drivers/tty/serial/serial_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Why are you removing the blank line?
-
-
-Best regards,
-Krzysztof
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 80085b151b34..a9e39416d877 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1085,8 +1085,8 @@ static int uart_tiocmget(struct tty_struct *tty)
+ 		goto out;
+ 
+ 	if (!tty_io_error(tty)) {
+-		result = uport->mctrl;
+ 		uart_port_lock_irq(uport);
++		result = uport->mctrl;
+ 		result |= uport->ops->get_mctrl(uport);
+ 		uart_port_unlock_irq(uport);
+ 	}
+-- 
+2.34.1
 
