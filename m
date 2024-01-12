@@ -1,78 +1,87 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 267BB15E8E;
-	Fri, 12 Jan 2024 18:53:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06E2218C25
+	for <linux-serial@vger.kernel.org>; Fri, 12 Jan 2024 23:04:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GuvMqsp0"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-1d5a7954b8bso5533235ad.1;
-        Fri, 12 Jan 2024 10:53:18 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="efRdDqm8"
+Received: by mail-oi1-f170.google.com with SMTP id 5614622812f47-3bbb4806f67so4850459b6e.3
+        for <linux-serial@vger.kernel.org>; Fri, 12 Jan 2024 15:04:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1705085598; x=1705690398; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=84k2E/jFHGmRPt2TX0Wfbqb1lV5t099ixH2DWzPbXTY=;
-        b=GuvMqsp0gsZwDL+b8Ce2D5inphp3ylxd+i1QfmBu2DEum+5B1YnDb1cbj+LEXhdQA5
-         VC+GEZb8g9yo5UcBuaZeYz403A8h/wBoFCcFsWLSOKjoKOKzfNIXJp2DsWQDmxVc2TBc
-         x6PZtPZrm/qjzl9zvdt4shHP9lEO9Wa3EjrguH7V1zqw/8bk61jljcHyW+JTBhyDj5mG
-         7HwhWzmBU7XkVJ8itVsCXNUkh76z1FPRp5l1YKSiqNi1A7IEnaYUXTMsVSX4Gl0YLQOU
-         Q3uUinvyIkfR0Q19uui091DF76raMi2m23aS76dqVqvyFA1oShzu0LSAAfr4CQK2fGRC
-         XwsQ==
+        d=chromium.org; s=google; t=1705100649; x=1705705449; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=D7qtz6QdtoP8S0o7HHWZE03iwDGuSX/EUMpLPmn8nUU=;
+        b=efRdDqm8ITgMXTBV/AA0+gowby9kmqDhSlr1LU5GuNXarsSYI5sy6rCFk/zupLTH0w
+         SiG5xxSgWMcDs4lEnjorhskTc0nkX9omH5gTiACB/I5cSkM2AOG7TGbXXS6BWNP0/XbR
+         D8r54Oz8HAkPANifzlNG8NT3OWy2KHBYI1uvk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705085598; x=1705690398;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20230601; t=1705100649; x=1705705449;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=84k2E/jFHGmRPt2TX0Wfbqb1lV5t099ixH2DWzPbXTY=;
-        b=iaAz0unmrBqtbgw6Cyld1pCRrHvXpamXp8r/MnIdqTACSC7hWmfpLPQliAMQz6vXgU
-         bHSeSqjVOjNDHY9VlOe+9tPupI6GX7JMTk9G+In5QZdE8JefIygR2SFT54534hRGUXNx
-         DZslleWmJymZ6w0RWKO+cdLtkunZoLqx/ju1BYFegr33yD1wHL2RLCgGu+vn7Am0IFVB
-         lA+wSEoBJvcMSI9Up4JWpkTIdp4FaPFbB50wYVL7H0NpqGeSmdiSPFYWEyLDkhG3Trvj
-         I2HS5iddCtzzDhQW6o9xBfS5d96JgqNaY/0/moexmkFYJv5jHYHs814TXz6gaxx2KjKQ
-         RMuQ==
-X-Gm-Message-State: AOJu0Yyy648FcHKb1xXhJvelrzFTBfilvY7SMP+sGHSe9em5PE7EyY+6
-	A/WqNWEt7x7/ACQuQ/0t4uHFoLp9mW3iyiSs71Y=
-X-Google-Smtp-Source: AGHT+IFg4NCjR9gKqEIPMZ/TQOXnEfnqmDJRUIJiD4cqo5huuacha57jJ6vQS/BvEejG+/wUOygIp+m6gQLapXDoa7U=
-X-Received: by 2002:a17:90a:eb0a:b0:28e:1eff:241d with SMTP id
- j10-20020a17090aeb0a00b0028e1eff241dmr369026pjz.67.1705085598366; Fri, 12 Jan
- 2024 10:53:18 -0800 (PST)
+        bh=D7qtz6QdtoP8S0o7HHWZE03iwDGuSX/EUMpLPmn8nUU=;
+        b=goK1H9YJvDq1B3EdQTmoJBzHGfZhbbSgxlMIr6IQQJJGWvEUzNHR9a/+jrk4yyI03v
+         DoNLVK1FAEVBtPr0NDLO6Ux5U7yEGZqwcDddE3Yl+huePzcpaqxI5dSv/MycTB7tajAb
+         Kj0aUiaCC7YYPv41D50drHsb+iaoaqoAgfdC3FJv7BQOQ3IaFqTOhOcHFuQv9uWgkan4
+         iFWSL3miTcoHyqR8JDt5y0B9dGL8Mar7o4XfCDvyrNk9pAwucGs1PYfsB6Y3/ubGW4iL
+         dj8QaHqfufulGnExHxjl8XhrU7ekcSpzSrlxQU2ovh9BoFcmuiqijLoqUORm+onG8HI0
+         ZFKw==
+X-Gm-Message-State: AOJu0Yy9uCX8F5NULxZhZho0oVB2pB7UEdDNRx+7ZMv6yqfueba3M5PV
+	il9w6hFqQJsyWS9EU5gq+Ho6Xq3YIgii
+X-Google-Smtp-Source: AGHT+IEjZrhsp27LYHk0t8+/pkaBORsXAC1es0/wqI168axSz0VmgPaj73/RXKG9OcZI7hRPFyq8Kw==
+X-Received: by 2002:a05:6808:221a:b0:3bc:2a41:953 with SMTP id bd26-20020a056808221a00b003bc2a410953mr2203254oib.83.1705100649177;
+        Fri, 12 Jan 2024 15:04:09 -0800 (PST)
+Received: from dianders.sjc.corp.google.com ([2620:15c:9d:2:3e64:3a29:441b:e07e])
+        by smtp.gmail.com with ESMTPSA id fd41-20020a056a002ea900b006d49ed3eff2sm3678612pfb.75.2024.01.12.15.04.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Jan 2024 15:04:08 -0800 (PST)
+From: Douglas Anderson <dianders@chromium.org>
+To: Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-arm-kernel@lists.infradead.org,
+	Stephen Boyd <swboyd@chromium.org>,
+	linux-serial@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] soc: qcom: geni-se: Add M_TX_FIFO_NOT_EMPTY bit definition
+Date: Fri, 12 Jan 2024 15:03:07 -0800
+Message-ID: <20240112150307.1.I7dc0993c1e758a1efedd651e7e1670deb1b430fb@changeid>
+X-Mailer: git-send-email 2.43.0.275.g3460e3d667-goog
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240112121844.17580-1-2045gemini@gmail.com> <3bbabf34-1eba-8983-439e-f23e811e80a8@linux.intel.com>
-In-Reply-To: <3bbabf34-1eba-8983-439e-f23e811e80a8@linux.intel.com>
-From: Gui-Dong Han <2045gemini@gmail.com>
-Date: Sat, 13 Jan 2024 02:52:42 +0800
-Message-ID: <CAOPYjvZYAxo=-H2eeJ8mHjx4af=TetbtZ_54-iX2cokzEHFeaA@mail.gmail.com>
-Subject: Re: [PATCH] serial: core: Fix double fetch in uart_throttle/uart_unthrottle
-To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Tony Lindgren <tony@atomide.com>, l.sanfilippo@kunbus.com, john.ogness@linutronix.de, 
-	tglx@linutronix.de, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	LKML <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, 
-	baijiaju1990@outlook.com, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Hi
+According to the docs I have, bit 21 of the status register is
+asserted when the FIFO is _not_ empty. Add the definition.
 
-I apologize for any issues and lack of clarity in my previous patch.
-In patch v2, I've revised the fix to use local variables instead of
-locks and improved the description to clearly explain the harm and
-potential for concurrency.
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+---
 
-The patch was developed and tested on linux-next, not Linux 5.17. My
-reference to 5.17 was due to a project I'm working on, which involves
-kernel static analysis and a comparison with earlier studies that
-support up to Linux 5.17. Therefore, I initially ran my tool on 5.17
-to filter potential bugs that are still unaddressed in the upstream.
-Then I worked on linux-next to develop and test the patch. I
-understand this might have caused misunderstandings, and I'll aim for
-clearer communication in future submissions.
+ include/linux/soc/qcom/geni-se.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thanks,
-Han
+diff --git a/include/linux/soc/qcom/geni-se.h b/include/linux/soc/qcom/geni-se.h
+index 29e06905bc1f..0f038a1a0330 100644
+--- a/include/linux/soc/qcom/geni-se.h
++++ b/include/linux/soc/qcom/geni-se.h
+@@ -178,6 +178,7 @@ struct geni_se {
+ #define M_GP_IRQ_3_EN			BIT(12)
+ #define M_GP_IRQ_4_EN			BIT(13)
+ #define M_GP_IRQ_5_EN			BIT(14)
++#define M_TX_FIFO_NOT_EMPTY_EN		BIT(21)
+ #define M_IO_DATA_DEASSERT_EN		BIT(22)
+ #define M_IO_DATA_ASSERT_EN		BIT(23)
+ #define M_RX_FIFO_RD_ERR_EN		BIT(24)
+-- 
+2.43.0.275.g3460e3d667-goog
+
