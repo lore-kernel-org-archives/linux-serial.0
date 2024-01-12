@@ -1,49 +1,50 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E89816EB6E
-	for <linux-serial@vger.kernel.org>; Fri, 12 Jan 2024 15:50:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 226576EB75
+	for <linux-serial@vger.kernel.org>; Fri, 12 Jan 2024 16:00:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="iRhTdv1v"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-40e68dc8c2fso2809745e9.2
-        for <linux-serial@vger.kernel.org>; Fri, 12 Jan 2024 07:50:30 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="VdXz1stN"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-3374c693f92so4771638f8f.1
+        for <linux-serial@vger.kernel.org>; Fri, 12 Jan 2024 08:00:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1705074629; x=1705679429; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=cp/H85Lwsjf3tcgZ0u/DpAjCJttqwMqWLJoD2uHpj3M=;
-        b=iRhTdv1vE6LMndJIIPZZ9i11Uo2drCUONgkFF6uf5pXKb+8KGB3QmS7wyrAV1nVJF9
-         lzEC4vvCrDUMSW49QFSCX1DMoV3WzQJozpL1JDlJMuQd9STtPIX8LlHOfxEnmEwoxXVB
-         WPGgiFmZsAcH2R+Fs6r5vZWMqSlWXGaPAWhZqaj6av9p8FV1PClyh/07lTZl1FTV73WN
-         uLLO141bSGHqO2t70JRBW8KPstNZL7KK2aHyfarQeJsnwsUKnI8Z9rhMRYlvJeK4hB2t
-         WZWqZ9lKPYLFUr+jJvXNVQmLgiDkbULz4lU/09IXZCagPy7ZrqRGRemVtUCa1mMUmMVK
-         9Wow==
+        d=linaro.org; s=google; t=1705075221; x=1705680021; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
+         :from:content-language:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=KNSnE31mUWTtAu62zxte7+wGFbNxIAXcVNWvFpXarq8=;
+        b=VdXz1stNKCLwLQ/mnKJ4pCKXFCH2R3W95NvhAsG3UaYzV7EeVoYvLCMSkLeUPUpe8C
+         C8pt35XbrgtcDkRqxKon/pPVakcqHyn57h8vje1CoCajstWaf1zGl6ffSj/ufN8H+4gi
+         gPfeOX5VYVYSvyRTwyj4fomIrhEVdvYOA5hLoIW24fzi452kYyLBt9wXdUfIgSwARHL5
+         61Z5fhHJMQo30SvnjT8CjJfehVXmdjU+0VAzSjyMd16nxFMyR1n9v4tmIAP+rJTxvZTH
+         KyiZA/MCVr4ZFtGyHxEKXp/4X2GErFjvGefCwiY3svGWBrQipu2nF+PfebB4j6By+k7O
+         btsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705074629; x=1705679429;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cp/H85Lwsjf3tcgZ0u/DpAjCJttqwMqWLJoD2uHpj3M=;
-        b=IDFqpoQCHg7U6wM6DvDk7y7gaZPP+vH0+FHjWUqTsh0zgRKhizjHPHNKpE/ij5NoLH
-         i/jRFUbV1k+0VrG0nX2jQ+juTH8EBEwMGHo3UeOeUh/jXM4qwCG3o+KbVwYdo7HZkKbT
-         so5Oi//BLc/g/KD5LAYi5Ef0nIMYSpReu9YbEvtFtcP4qtX2nvVEje00rSI/7lFg88rc
-         IKvlhrOk08ZZzwLY6sp5XLaKAuTQ4qsffNZNl8HDO5nOIyLrO9wcVHLSLClGznIyb3Zr
-         Cr2+2pZrQlpYeNVq24quxV3MJckg9ioamngXtbrF6CHCQkkw1RTVZSHT8JoBa6AHwbaa
-         kDtQ==
-X-Gm-Message-State: AOJu0YxGqOFwqgC2MjUHJweFaw8a3nT/FuaSoNu+OtA7KXNHr/TPLXDf
-	BU6/6MzV1Yz/SN1+ndP1aWqErfIiPpjUHw==
-X-Google-Smtp-Source: AGHT+IFQ0wwxHMbsO7rImvKNPCgXFNMyq7s9NR+qP7VR8oYOcMMCyggi1J6yPwwHHWIU8T46Tj7ARQ==
-X-Received: by 2002:a05:600c:3549:b0:40e:6208:21f6 with SMTP id i9-20020a05600c354900b0040e620821f6mr850989wmq.9.1705074629119;
-        Fri, 12 Jan 2024 07:50:29 -0800 (PST)
+        d=1e100.net; s=20230601; t=1705075221; x=1705680021;
+        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
+         :from:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=KNSnE31mUWTtAu62zxte7+wGFbNxIAXcVNWvFpXarq8=;
+        b=e95HuC2Yot8qpvDCDPFXGx3Ociozh+D36SauLtVw5JM+99YsiJW6hJspZEnQTarDBx
+         yYlfPD8aUgwnsGRS31ms0IBxy2LaKK7cVmAc35tqJIEAEWaB4nNQ1E2IPJNOse7QwdYL
+         DBrPCRzAwEAFJC5h1oRj5sSSRH9Hz7QXCP8izWughkBs6fDFGHzKJFxClkLgw3Ug3D4i
+         p4SUIjLI5/6q/KL+vQpb9DDwbJHPQNLOawItwHB+29kClYEU2uzPhXWE8ScB/nZ81z9P
+         SRN6NiWXW0JdBkTY3R90jn+iebOSrMbQPrlU0iNtOo2TEjc4EwowAXv526E3nz6SzmIx
+         41bA==
+X-Gm-Message-State: AOJu0Yw9cjrtMy1Z5/uV+2FVxP34H8Rl4qP3iB9oRZNE0WH2Y4IfxE4G
+	rU3dCdwB5OQCDmQ28Fo2B34SArfuV/uktw==
+X-Google-Smtp-Source: AGHT+IG0t8vwy4/T+jnfap/4JzmpTGUHJHK3NjF9tz0RjHW21dsfZTqkn2BSN+XKUADqV25rHt7bjA==
+X-Received: by 2002:adf:e8c6:0:b0:336:1182:6475 with SMTP id k6-20020adfe8c6000000b0033611826475mr875372wrn.34.1705075221351;
+        Fri, 12 Jan 2024 08:00:21 -0800 (PST)
 Received: from [192.168.1.20] ([178.197.223.112])
-        by smtp.gmail.com with ESMTPSA id z10-20020a05600c0a0a00b0040e486bc0dfsm10223362wmp.27.2024.01.12.07.50.26
+        by smtp.gmail.com with ESMTPSA id b6-20020adfee86000000b00337478efa4fsm4200905wro.60.2024.01.12.08.00.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Jan 2024 07:50:27 -0800 (PST)
-Message-ID: <e3b9aa63-25a5-41cc-9eb7-6e7d1eacb136@linaro.org>
-Date: Fri, 12 Jan 2024 16:50:25 +0100
+        Fri, 12 Jan 2024 08:00:20 -0800 (PST)
+Message-ID: <a1e673be-9c4e-4bbc-abe6-56466f8a01ad@linaro.org>
+Date: Fri, 12 Jan 2024 17:00:18 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -54,6 +55,7 @@ User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v2 2/7] dt-bindings: i3c: svc: add compatible string i3c:
  silvaco,i3c-target-v1
 Content-Language: en-US
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To: Frank Li <Frank.li@nxp.com>
 Cc: robh@kernel.org, alexandre.belloni@bootlin.com,
  conor.culhane@silvaco.com, gregkh@linuxfoundation.org, imx@lists.linux.dev,
@@ -65,7 +67,7 @@ References: <20240110175221.2335480-1-Frank.Li@nxp.com>
  <20240110175221.2335480-3-Frank.Li@nxp.com>
  <3c0be658-e7a6-4231-b206-86ffb47e0cb2@linaro.org>
  <ZaFbbeQrC7o2dchO@lizhi-Precision-Tower-5810>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+ <e3b9aa63-25a5-41cc-9eb7-6e7d1eacb136@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
  cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
@@ -110,48 +112,53 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <ZaFbbeQrC7o2dchO@lizhi-Precision-Tower-5810>
+In-Reply-To: <e3b9aa63-25a5-41cc-9eb7-6e7d1eacb136@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 12/01/2024 16:31, Frank Li wrote:
-> I review previous comments. The previous RFC patches and I just want I3C
-> expert review to check if there are comments about whole software
-> architecture. Of course, thank you for your comments about "slave".
+On 12/01/2024 16:50, Krzysztof Kozlowski wrote:
+> On 12/01/2024 16:31, Frank Li wrote:
+>> I review previous comments. The previous RFC patches and I just want I3C
+>> expert review to check if there are comments about whole software
+>> architecture. Of course, thank you for your comments about "slave".
+>>
+>> Go back this binding doc problem. 
+>>
+>>   "No, it's the same device.
+>>
+>>    Anyway, this was not tested.
+>>
+>>    Please use scripts/get_maintainers.pl to get a list of necessary people
+>>    and lists to CC. It might happen, that command when run on an older
+>>    kernel, gives you outdated entries. Therefore please be sure you base
+>>    your patches on recent Linux kernel.
+>>
+>>    You missed at least devicetree list (maybe more), so this won't be
+>>    tested by automated tooling. Performing review on untested code might be
+>>    a waste of time, thus I will skip this patch entirely till you follow
+>>    the process allowing the patch to be tested.
+>>
+>>    Please kindly resend and include all necessary To/Cc entries.
+>>    "
+>>
+>> It is the same devices, work at difference mode (master  and target).
+>> what's do you want to change to?
+>>
+>> Copy to new file like pci/pci-ep? all context is the same, except for
+>> compatible string. 
+>>
 > 
-> Go back this binding doc problem. 
+> Apologies, I mixed up a bit patches, so this was not obvious. I meant
+> this comment:
 > 
->   "No, it's the same device.
+> https://lore.kernel.org/all/20231017201404.GA2570433-robh@kernel.org/
 > 
->    Anyway, this was not tested.
-> 
->    Please use scripts/get_maintainers.pl to get a list of necessary people
->    and lists to CC. It might happen, that command when run on an older
->    kernel, gives you outdated entries. Therefore please be sure you base
->    your patches on recent Linux kernel.
-> 
->    You missed at least devicetree list (maybe more), so this won't be
->    tested by automated tooling. Performing review on untested code might be
->    a waste of time, thus I will skip this patch entirely till you follow
->    the process allowing the patch to be tested.
-> 
->    Please kindly resend and include all necessary To/Cc entries.
->    "
-> 
-> It is the same devices, work at difference mode (master  and target).
-> what's do you want to change to?
-> 
-> Copy to new file like pci/pci-ep? all context is the same, except for
-> compatible string. 
-> 
+> There is no indication in your commit msg that these concerns were
+> addressed.
 
-Apologies, I mixed up a bit patches, so this was not obvious. I meant
-this comment:
+And here:
 
-https://lore.kernel.org/all/20231017201404.GA2570433-robh@kernel.org/
-
-There is no indication in your commit msg that these concerns were
-addressed.
+https://lore.kernel.org/all/6110c58a-8003-4889-9a4b-6a7d1821c00e@linaro.org/
 
 Best regards,
 Krzysztof
