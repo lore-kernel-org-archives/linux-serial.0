@@ -1,85 +1,97 @@
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66B245FEE9;
-	Fri, 12 Jan 2024 09:53:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0EDB5D905;
+	Fri, 12 Jan 2024 11:23:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="Fd9Bw38w"
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-	by mx07-00178001.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 40C8bHhU007737;
-	Fri, 12 Jan 2024 10:53:24 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-	from:to:cc:subject:date:message-id:mime-version
-	:content-transfer-encoding:content-type; s=selector1; bh=o+HB9MM
-	1kq6YyqCwu/Y2zli6EEym4Kd+0JVjoN0IbRo=; b=Fd9Bw38w+ixsNKMfkhmHgB8
-	ucmEcU5fcjEiqTKOOOBNZvxQP3hsWM9nQOAV0uirntTUEA/b+wZFNMeRBg7Tk6a4
-	zV41nEjKwAEGAW0E9weI3LyHzb/hYVsCaPbg4yOYpSzA4MkKxSqVdvyM3BFYghin
-	4DQAc5xBHcPYYSfTSN7DbNPr59y/6txdVh6t09fX4kBDiolJxTNE1YAs4JQQhuf7
-	CpNFMYUzBxAYpwww8R+nX0MhFjnnueSvvVNjj3StJAG+IunIHtrVH7KGR4UTQwk1
-	s/Cw2UJ0WDP2wGROrfwKY5vP25Dudp3qeHo1HQJmR/Re2u4FZTFz5QB3sNJrUcA=
-	=
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3vk22v8bed-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 12 Jan 2024 10:53:24 +0100 (CET)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-	by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C5BA410002A;
-	Fri, 12 Jan 2024 10:53:23 +0100 (CET)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 64641208D4E;
-	Fri, 12 Jan 2024 10:53:23 +0100 (CET)
-Received: from localhost (10.201.21.102) by SHFDAG1NODE1.st.com (10.75.129.69)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Fri, 12 Jan
- 2024 10:53:23 +0100
-From: Valentin Caron <valentin.caron@foss.st.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby
-	<jirislaby@kernel.org>
-CC: Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Valentin Caron
-	<valentin.caron@foss.st.com>
-Subject: [PATCH v2 0/4] serial: stm32: improve driver for stm32mp25
-Date: Fri, 12 Jan 2024 10:52:56 +0100
-Message-ID: <20240112095300.2004878-1-valentin.caron@foss.st.com>
-X-Mailer: git-send-email 2.25.1
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EAh+8zBT"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-1d3e6c86868so53334245ad.1;
+        Fri, 12 Jan 2024 03:23:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1705058603; x=1705663403; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8svh4pfQOjLe6OwUzI4aKaVoJeRMFzcZfH1Er2Cd4io=;
+        b=EAh+8zBT4D1JM0CqsIdWHRuvNtG1xKDNDHTyawUaSy9zvPoZMqe+s4xb51MOZQMHGY
+         WA6LeChRkDuqRW8H30/yKGEGcHcTGaIb+p2dP7RmFU4zUyOruR2bWKxT4WqDtHJ5m/d5
+         2gyEO4QMla3XrTONFuCj8ZkcRvldx+p+RvDDnBsTT1YOpVA71HWmGztcox/qaQ/y7dJ2
+         frN83PgqsfCO+wgnfg78Ct1dAWmkCrCFZiHPDBb/3JyyIgCsr17XEbvU/zCC9tmjDUur
+         H1Kjn78nJyvXBgVN9SskFEM1cx6BJAjc2dLf4/CyGGWBhLaMm05SYXLjXnB6vSSmYh5e
+         UeXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705058603; x=1705663403;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=8svh4pfQOjLe6OwUzI4aKaVoJeRMFzcZfH1Er2Cd4io=;
+        b=tQ+SO64D+gMHAfsG9qDcJy+72KjXEd0OtckZbJeBPxRiOAZpt8ypeKiUEDemmMhkDI
+         KWefWVVHI5Lx7ns4tU6PILEWfiEQ2bHOlOXPRQCDjgnh5bodk0faXxNhb4v+j6VUqgZB
+         xBNuZcrLj0kDWwIgCEpVYbYEpbvbApws0gRPEMUVACfd5IhRmyIpda0I3+pDKk17fHmr
+         6kjwHIQcUZx9w9j1sxDc7v9TdjeSX2kb9jK3m/5PXexXWqQJODskM4PgqFHWRHLyKZhN
+         tv24oSk9kTOVGXZMAdPiP01wFBHERLz4BPly5ii4G6XEaNo/07cV6sRILtMqcVyDo+Ef
+         71vA==
+X-Gm-Message-State: AOJu0Yw+6o7WlaBCAu/+74HD/E66pFNEctdQn1TFAPvVJHhoK4a9Misd
+	3y1HX3jg8wJyZzBq2gTOYhs=
+X-Google-Smtp-Source: AGHT+IEc9DhkJgFchpWYcM9yxJH6Ny5hAE9JXDddeR+bkGx9zvNjwNVn/SZFIgVZzQkM2tRvvrmZ1A==
+X-Received: by 2002:a17:903:1cc:b0:1d4:cca4:7e81 with SMTP id e12-20020a17090301cc00b001d4cca47e81mr868787plh.64.1705058602869;
+        Fri, 12 Jan 2024 03:23:22 -0800 (PST)
+Received: from ?IPV6:2001:250:206:d960:3c0f:44ea:933a:2c8f? ([2001:250:206:d960:3c0f:44ea:933a:2c8f])
+        by smtp.gmail.com with ESMTPSA id iw10-20020a170903044a00b001d494f3d9cesm2904645plb.128.2024.01.12.03.23.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Jan 2024 03:23:22 -0800 (PST)
+Message-ID: <060d729a-259c-4cfd-b785-17986e3e735f@gmail.com>
+Date: Fri, 12 Jan 2024 19:23:17 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: EQNCAS1NODE4.st.com (10.75.129.82) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-01-05_08,2024-01-05_01,2023-05-22_02
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: core: Fix atomicity violation in uart_tiocmget
+To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ John Ogness <john.ogness@linutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Tony Lindgren <tony@atomide.com>,
+ l.sanfilippo@kunbus.com, tglx@linutronix.de,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ LKML <linux-kernel@vger.kernel.org>,
+ linux-serial <linux-serial@vger.kernel.org>, baijiaju1990@outlook.com,
+ stable@vger.kernel.org
+References: <20240112075732.16730-1-2045gemini@gmail.com>
+ <87msta7vbe.fsf@jogness.linutronix.de>
+ <4a52df23-71c3-59c7-fee4-e7cde526d249@linux.intel.com>
+From: Gui-Dong Han <2045gemini@gmail.com>
+In-Reply-To: <4a52df23-71c3-59c7-fee4-e7cde526d249@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-STM32MP25 got the same serial hardware block as STM32MP1x but with two improvements:
- - TX and RX FIFO have been extended to 64 bytes.
- - one instance more than in STM32MP1x series.
- 
-Since v1:
- - Correct include issue reported by kernel test robot:
-   https://lore.kernel.org/oe-kbuild-all/202401121426.pnTJrQes-lkp@intel.com/
+Hi,
 
-Valentin Caron (4):
-  serial: stm32: implement prescaler tuning to compute low baudrate
-  serial: stm32: extend max number of U(S)ART to 9
-  serial: stm32: change register's offset type from u8 to u16
-  serial: stm32: get FIFO size from hwcfg register
+You are correct about the 'Fixes' tag. It should indeed be c5f4644e6c8b 
+("[PATCH] Serial: Adjust serial locking"). I will update this in the 
+patch v2.
 
- drivers/tty/serial/stm32-usart.c | 223 +++++++++++++++++++------------
- drivers/tty/serial/stm32-usart.h |  38 ++++--
- 2 files changed, 160 insertions(+), 101 deletions(-)
 
--- 
-2.25.1
+Regarding the issue found in Linux 5.17, I mistakenly used git blame 
+which led to the incorrect identification of commit 559c7ff4e324. The 
+issue indeed exists in Linux 5.17 and I acknowledge the error in tracing 
+the commit.
+
+In uart_tiocmget(), the result variable is stable. However, there's a 
+risk of inconsistency due to the updates in uart_update_mctrl(). 
+Consider a scenario where uart_tiocmget() reads uport->mctrl into result 
+before entering the critical section. If uart_update_mctrl() updates 
+port->mctrl and calls set_mctrl concurrently, the subsequent execution 
+of result |= uport->ops->get_mctrl(uport); in uart_tiocmget() might 
+yield an inaccurate result. This happens because result contains the old 
+value of port->mctrl, which no longer matches the updated state 
+retrieved by get_mctrl.
+
+Thanks,
+
+Han
 
