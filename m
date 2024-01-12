@@ -1,343 +1,160 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F2B65C8FB;
-	Fri, 12 Jan 2024 06:58:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CDEE5D727
+	for <linux-serial@vger.kernel.org>; Fri, 12 Jan 2024 07:38:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BXtCjcXR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1705042704; x=1736578704;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RxopEEXq8tLKCTAQnpCOKagq0iDIMTEIuHW2p9tul5I=;
-  b=BXtCjcXRnrv+9634+WNWtw7hPNjq6WwulKPGKPZvzpPqgkT8S/EWiwsH
-   GVWUEsdhOThSQ1M+X+dZwIGShvAONln6nYKHHbGT6cFRw44SHle5z2WE+
-   3vZ9/Jj4wh+uK0mFe01DYyZa9LpuFem1HyD9J1EUZjwTFHkq+cbKY3fDp
-   g1gZGU9IgGmHd6l6JRagL0T+UpkFevFYBB3pdOuwt+XjvZoWeTDcdBK2/
-   X04V7FvtV1FiM7eL31Zi8RzRb4rTtL3GKd6xLj3eKngWDIWpcXBM9UKOK
-   +lDbP0st7/DcXv1htoa8/wkY9t/KhCLfOdhw9sbr9PfCpyAioEZkgwDqV
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10950"; a="12456509"
-X-IronPort-AV: E=Sophos;i="6.04,188,1695711600"; 
-   d="scan'208";a="12456509"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2024 22:58:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10950"; a="1114131787"
-X-IronPort-AV: E=Sophos;i="6.04,188,1695711600"; 
-   d="scan'208";a="1114131787"
-Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 11 Jan 2024 22:58:19 -0800
-Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rOBUe-0009B8-2C;
-	Fri, 12 Jan 2024 06:58:16 +0000
-Date: Fri, 12 Jan 2024 14:57:57 +0800
-From: kernel test robot <lkp@intel.com>
-To: Valentin Caron <valentin.caron@foss.st.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org,
-	Valentin Caron <valentin.caron@foss.st.com>
-Subject: Re: [PATCH 1/4] serial: stm32: implement prescaler tuning to compute
- low baudrate
-Message-ID: <202401121426.pnTJrQes-lkp@intel.com>
-References: <20240111152712.1842790-2-valentin.caron@foss.st.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="V+x2yjxW"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-40e60e137aaso13911305e9.0
+        for <linux-serial@vger.kernel.org>; Thu, 11 Jan 2024 23:38:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1705045121; x=1705649921; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=iDp8DOinr9gJiQ2caAeolBWLcVUyNvP+wqwEKaD3vBg=;
+        b=V+x2yjxW1x81RaK7jn0GLICumotl1ZEaO+3uooC0TUYV2H3yc10kjvIKt3NaV90DHA
+         WSjIxEYv/CASi1G0QMROkTaAjnEpXcMke0/Lx6PUCdnR0sgq1TuRmTUMxi13DLKyf/wX
+         rhT4sztojhtuU26XpeKQ2mX8DjnbaXm3miJSwcMPM3rIT0xE0bhxLHZuRwh86lmsOdir
+         1bCCDTMQLNN5FpHLpeLSexH36VDNKKTRfABMijwjkPatN9sRsn8hqL6rvnEg5n1e4Ovn
+         L1c6kOxD8MqEHZRF4luIeWWJ/QbsQS0c8Jh41cuhDh59vrv1iLSQ5mY0THAYt2o5WO+/
+         LGwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705045121; x=1705649921;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=iDp8DOinr9gJiQ2caAeolBWLcVUyNvP+wqwEKaD3vBg=;
+        b=t96Naog8GM3A9evBFXItyzBq8anIYcJbA3+E645Axsfo7YoD84fl1G2z6iiQ4vRQZf
+         gVSbOrdIrK//4hIFczFsz7K40UE666IzDLthWoFNNlF8Ea9Tuqg8gtei7alr5BYPqkhw
+         tVR6JwlWc11+EDdotNWM+L1nZhtJnOXvIiLWTrRiZ5ntEg6PeJG5U5JyrZwHTaA6aTgx
+         YqEMXr4afGDjwArkyV0QXlKKHTUu3Bc1mK9R1WQuqmVeHlv16JSUVB6aO4/bieRnWTzZ
+         m+qpt7iiAwxCZqld4rh1NaVvc2y4I7LWN6L78mDNH1b6Id5zqpiAr1BadAceXJSjZZHZ
+         SUYg==
+X-Gm-Message-State: AOJu0Yx0+WL9iigIt79DFt2EtI6Yvn0mtosQ8qVRwwsYHHM5YeLHHny5
+	wRg0kSuSrTk0jjTnfMK+MlxtaQcwPBBzmA==
+X-Google-Smtp-Source: AGHT+IFNScRG8y28Q84hdUVIzxVba8kAQufG74CduMidAqwTiwiDmYzWuDabEwi6C9HDdadF49leKQ==
+X-Received: by 2002:a05:600c:332a:b0:40e:42e7:4c42 with SMTP id q42-20020a05600c332a00b0040e42e74c42mr472136wmp.60.1705045121265;
+        Thu, 11 Jan 2024 23:38:41 -0800 (PST)
+Received: from [192.168.1.20] ([178.197.223.112])
+        by smtp.gmail.com with ESMTPSA id u6-20020a05600c138600b0040d5a9d6b68sm8713498wmf.6.2024.01.11.23.38.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Jan 2024 23:38:40 -0800 (PST)
+Message-ID: <3c0be658-e7a6-4231-b206-86ffb47e0cb2@linaro.org>
+Date: Fri, 12 Jan 2024 08:38:39 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240111152712.1842790-2-valentin.caron@foss.st.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/7] dt-bindings: i3c: svc: add compatible string i3c:
+ silvaco,i3c-target-v1
+Content-Language: en-US
+To: Frank Li <Frank.Li@nxp.com>, robh@kernel.org
+Cc: alexandre.belloni@bootlin.com, conor.culhane@silvaco.com,
+ gregkh@linuxfoundation.org, imx@lists.linux.dev, jirislaby@kernel.org,
+ joe@perches.com, linux-i3c@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ miquel.raynal@bootlin.com, zbigniew.lukwinski@linux.intel.com,
+ devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org
+References: <20240110175221.2335480-1-Frank.Li@nxp.com>
+ <20240110175221.2335480-3-Frank.Li@nxp.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <20240110175221.2335480-3-Frank.Li@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi Valentin,
+On 10/01/2024 18:52, Frank Li wrote:
+> Add compatible string 'silvaco,i3c-target-v1' for target mode.
 
-kernel test robot noticed the following build errors:
-
-[auto build test ERROR on atorgue-stm32/stm32-next]
-[also build test ERROR on tty/tty-testing tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.7 next-20240111]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Valentin-Caron/serial-stm32-implement-prescaler-tuning-to-compute-low-baudrate/20240111-233406
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/atorgue/stm32.git stm32-next
-patch link:    https://lore.kernel.org/r/20240111152712.1842790-2-valentin.caron%40foss.st.com
-patch subject: [PATCH 1/4] serial: stm32: implement prescaler tuning to compute low baudrate
-config: i386-buildonly-randconfig-003-20240112 (https://download.01.org/0day-ci/archive/20240112/202401121426.pnTJrQes-lkp@intel.com/config)
-compiler: ClangBuiltLinux clang version 17.0.6 (https://github.com/llvm/llvm-project 6009708b4367171ccdbf4b5905cb6a803753fe18)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240112/202401121426.pnTJrQes-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202401121426.pnTJrQes-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> drivers/tty/serial/stm32-usart.c:1303:7: error: call to undeclared function 'FIELD_FIT'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-    1303 |                 if (FIELD_FIT(USART_BRR_MASK, brr)) {
-         |                     ^
-   1 error generated.
+Your subject has some multiple prefixes? Why there is one more ":"?
+Just: add XYZ device
 
 
-vim +/FIELD_FIT +1303 drivers/tty/serial/stm32-usart.c
+> 
+> Signed-off-by: Frank Li <Frank.Li@nxp.com>
+> ---
+>  .../devicetree/bindings/i3c/silvaco,i3c-master.yaml        | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/i3c/silvaco,i3c-master.yaml b/Documentation/devicetree/bindings/i3c/silvaco,i3c-master.yaml
+> index 133855f11b4f5..17849c91d4d2b 100644
+> --- a/Documentation/devicetree/bindings/i3c/silvaco,i3c-master.yaml
+> +++ b/Documentation/devicetree/bindings/i3c/silvaco,i3c-master.yaml
+> @@ -4,7 +4,7 @@
+>  $id: http://devicetree.org/schemas/i3c/silvaco,i3c-master.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  
+> -title: Silvaco I3C master
+> +title: Silvaco I3C master/target
+>  
+>  maintainers:
+>    - Conor Culhane <conor.culhane@silvaco.com>
+> @@ -14,8 +14,9 @@ allOf:
+>  
+>  properties:
+>    compatible:
+> -    const: silvaco,i3c-master-v1
 
-  1156	
-  1157	static void stm32_usart_set_termios(struct uart_port *port,
-  1158					    struct ktermios *termios,
-  1159					    const struct ktermios *old)
-  1160	{
-  1161		struct stm32_port *stm32_port = to_stm32_port(port);
-  1162		const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
-  1163		const struct stm32_usart_config *cfg = &stm32_port->info->cfg;
-  1164		struct serial_rs485 *rs485conf = &port->rs485;
-  1165		unsigned int baud, bits, uart_clk, uart_clk_pres;
-  1166		u32 usartdiv, mantissa, fraction, oversampling;
-  1167		tcflag_t cflag = termios->c_cflag;
-  1168		u32 cr1, cr2, cr3, isr, brr, presc;
-  1169		unsigned long flags;
-  1170		int ret;
-  1171	
-  1172		if (!stm32_port->hw_flow_control)
-  1173			cflag &= ~CRTSCTS;
-  1174	
-  1175		uart_clk = clk_get_rate(stm32_port->clk);
-  1176	
-  1177		baud = uart_get_baud_rate(port, termios, old, 0, uart_clk / 8);
-  1178	
-  1179		uart_port_lock_irqsave(port, &flags);
-  1180	
-  1181		ret = readl_relaxed_poll_timeout_atomic(port->membase + ofs->isr,
-  1182							isr,
-  1183							(isr & USART_SR_TC),
-  1184							10, 100000);
-  1185	
-  1186		/* Send the TC error message only when ISR_TC is not set. */
-  1187		if (ret)
-  1188			dev_err(port->dev, "Transmission is not complete\n");
-  1189	
-  1190		/* Stop serial port and reset value */
-  1191		writel_relaxed(0, port->membase + ofs->cr1);
-  1192	
-  1193		/* flush RX & TX FIFO */
-  1194		if (ofs->rqr != UNDEF_REG)
-  1195			writel_relaxed(USART_RQR_TXFRQ | USART_RQR_RXFRQ,
-  1196				       port->membase + ofs->rqr);
-  1197	
-  1198		cr1 = USART_CR1_TE | USART_CR1_RE;
-  1199		if (stm32_port->fifoen)
-  1200			cr1 |= USART_CR1_FIFOEN;
-  1201		cr2 = stm32_port->swap ? USART_CR2_SWAP : 0;
-  1202	
-  1203		/* Tx and RX FIFO configuration */
-  1204		cr3 = readl_relaxed(port->membase + ofs->cr3);
-  1205		cr3 &= USART_CR3_TXFTIE | USART_CR3_RXFTIE;
-  1206		if (stm32_port->fifoen) {
-  1207			if (stm32_port->txftcfg >= 0)
-  1208				cr3 |= stm32_port->txftcfg << USART_CR3_TXFTCFG_SHIFT;
-  1209			if (stm32_port->rxftcfg >= 0)
-  1210				cr3 |= stm32_port->rxftcfg << USART_CR3_RXFTCFG_SHIFT;
-  1211		}
-  1212	
-  1213		if (cflag & CSTOPB)
-  1214			cr2 |= USART_CR2_STOP_2B;
-  1215	
-  1216		bits = tty_get_char_size(cflag);
-  1217		stm32_port->rdr_mask = (BIT(bits) - 1);
-  1218	
-  1219		if (cflag & PARENB) {
-  1220			bits++;
-  1221			cr1 |= USART_CR1_PCE;
-  1222		}
-  1223	
-  1224		/*
-  1225		 * Word length configuration:
-  1226		 * CS8 + parity, 9 bits word aka [M1:M0] = 0b01
-  1227		 * CS7 or (CS6 + parity), 7 bits word aka [M1:M0] = 0b10
-  1228		 * CS8 or (CS7 + parity), 8 bits word aka [M1:M0] = 0b00
-  1229		 * M0 and M1 already cleared by cr1 initialization.
-  1230		 */
-  1231		if (bits == 9) {
-  1232			cr1 |= USART_CR1_M0;
-  1233		} else if ((bits == 7) && cfg->has_7bits_data) {
-  1234			cr1 |= USART_CR1_M1;
-  1235		} else if (bits != 8) {
-  1236			dev_dbg(port->dev, "Unsupported data bits config: %u bits\n"
-  1237				, bits);
-  1238			cflag &= ~CSIZE;
-  1239			cflag |= CS8;
-  1240			termios->c_cflag = cflag;
-  1241			bits = 8;
-  1242			if (cflag & PARENB) {
-  1243				bits++;
-  1244				cr1 |= USART_CR1_M0;
-  1245			}
-  1246		}
-  1247	
-  1248		if (ofs->rtor != UNDEF_REG && (stm32_port->rx_ch ||
-  1249					       (stm32_port->fifoen &&
-  1250						stm32_port->rxftcfg >= 0))) {
-  1251			if (cflag & CSTOPB)
-  1252				bits = bits + 3; /* 1 start bit + 2 stop bits */
-  1253			else
-  1254				bits = bits + 2; /* 1 start bit + 1 stop bit */
-  1255	
-  1256			/* RX timeout irq to occur after last stop bit + bits */
-  1257			stm32_port->cr1_irq = USART_CR1_RTOIE;
-  1258			writel_relaxed(bits, port->membase + ofs->rtor);
-  1259			cr2 |= USART_CR2_RTOEN;
-  1260			/*
-  1261			 * Enable fifo threshold irq in two cases, either when there is no DMA, or when
-  1262			 * wake up over usart, from low power until the DMA gets re-enabled by resume.
-  1263			 */
-  1264			stm32_port->cr3_irq =  USART_CR3_RXFTIE;
-  1265		}
-  1266	
-  1267		cr1 |= stm32_port->cr1_irq;
-  1268		cr3 |= stm32_port->cr3_irq;
-  1269	
-  1270		if (cflag & PARODD)
-  1271			cr1 |= USART_CR1_PS;
-  1272	
-  1273		port->status &= ~(UPSTAT_AUTOCTS | UPSTAT_AUTORTS);
-  1274		if (cflag & CRTSCTS) {
-  1275			port->status |= UPSTAT_AUTOCTS | UPSTAT_AUTORTS;
-  1276			cr3 |= USART_CR3_CTSE | USART_CR3_RTSE;
-  1277		}
-  1278	
-  1279		for (presc = 0; presc <= USART_PRESC_MAX; presc++) {
-  1280			uart_clk_pres = DIV_ROUND_CLOSEST(uart_clk, stm32_usart_presc_val[presc]);
-  1281			usartdiv = DIV_ROUND_CLOSEST(uart_clk_pres, baud);
-  1282	
-  1283			/*
-  1284			 * The USART supports 16 or 8 times oversampling.
-  1285			 * By default we prefer 16 times oversampling, so that the receiver
-  1286			 * has a better tolerance to clock deviations.
-  1287			 * 8 times oversampling is only used to achieve higher speeds.
-  1288			 */
-  1289			if (usartdiv < 16) {
-  1290				oversampling = 8;
-  1291				cr1 |= USART_CR1_OVER8;
-  1292				stm32_usart_set_bits(port, ofs->cr1, USART_CR1_OVER8);
-  1293			} else {
-  1294				oversampling = 16;
-  1295				cr1 &= ~USART_CR1_OVER8;
-  1296				stm32_usart_clr_bits(port, ofs->cr1, USART_CR1_OVER8);
-  1297			}
-  1298	
-  1299			mantissa = (usartdiv / oversampling) << USART_BRR_DIV_M_SHIFT;
-  1300			fraction = usartdiv % oversampling;
-  1301			brr = mantissa | fraction;
-  1302	
-> 1303			if (FIELD_FIT(USART_BRR_MASK, brr)) {
-  1304				if (ofs->presc != UNDEF_REG) {
-  1305					port->uartclk = uart_clk_pres;
-  1306					writel_relaxed(presc, port->membase + ofs->presc);
-  1307				} else if (presc) {
-  1308					/* We need a prescaler but we don't have it (STM32F4, STM32F7) */
-  1309					dev_err(port->dev,
-  1310						"unable to set baudrate, input clock is too high");
-  1311				}
-  1312				break;
-  1313			} else if (presc == USART_PRESC_MAX) {
-  1314				/* Even with prescaler and brr at max value we can't set baudrate */
-  1315				dev_err(port->dev, "unable to set baudrate, input clock is too high");
-  1316				break;
-  1317			}
-  1318		}
-  1319	
-  1320		writel_relaxed(brr, port->membase + ofs->brr);
-  1321	
-  1322		uart_update_timeout(port, cflag, baud);
-  1323	
-  1324		port->read_status_mask = USART_SR_ORE;
-  1325		if (termios->c_iflag & INPCK)
-  1326			port->read_status_mask |= USART_SR_PE | USART_SR_FE;
-  1327		if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
-  1328			port->read_status_mask |= USART_SR_FE;
-  1329	
-  1330		/* Characters to ignore */
-  1331		port->ignore_status_mask = 0;
-  1332		if (termios->c_iflag & IGNPAR)
-  1333			port->ignore_status_mask = USART_SR_PE | USART_SR_FE;
-  1334		if (termios->c_iflag & IGNBRK) {
-  1335			port->ignore_status_mask |= USART_SR_FE;
-  1336			/*
-  1337			 * If we're ignoring parity and break indicators,
-  1338			 * ignore overruns too (for real raw support).
-  1339			 */
-  1340			if (termios->c_iflag & IGNPAR)
-  1341				port->ignore_status_mask |= USART_SR_ORE;
-  1342		}
-  1343	
-  1344		/* Ignore all characters if CREAD is not set */
-  1345		if ((termios->c_cflag & CREAD) == 0)
-  1346			port->ignore_status_mask |= USART_SR_DUMMY_RX;
-  1347	
-  1348		if (stm32_port->rx_ch) {
-  1349			/*
-  1350			 * Setup DMA to collect only valid data and enable error irqs.
-  1351			 * This also enables break reception when using DMA.
-  1352			 */
-  1353			cr1 |= USART_CR1_PEIE;
-  1354			cr3 |= USART_CR3_EIE;
-  1355			cr3 |= USART_CR3_DMAR;
-  1356			cr3 |= USART_CR3_DDRE;
-  1357		}
-  1358	
-  1359		if (stm32_port->tx_ch)
-  1360			cr3 |= USART_CR3_DMAT;
-  1361	
-  1362		if (rs485conf->flags & SER_RS485_ENABLED) {
-  1363			stm32_usart_config_reg_rs485(&cr1, &cr3,
-  1364						     rs485conf->delay_rts_before_send,
-  1365						     rs485conf->delay_rts_after_send,
-  1366						     baud);
-  1367			if (rs485conf->flags & SER_RS485_RTS_ON_SEND) {
-  1368				cr3 &= ~USART_CR3_DEP;
-  1369				rs485conf->flags &= ~SER_RS485_RTS_AFTER_SEND;
-  1370			} else {
-  1371				cr3 |= USART_CR3_DEP;
-  1372				rs485conf->flags |= SER_RS485_RTS_AFTER_SEND;
-  1373			}
-  1374	
-  1375		} else {
-  1376			cr3 &= ~(USART_CR3_DEM | USART_CR3_DEP);
-  1377			cr1 &= ~(USART_CR1_DEDT_MASK | USART_CR1_DEAT_MASK);
-  1378		}
-  1379	
-  1380		/* Configure wake up from low power on start bit detection */
-  1381		if (stm32_port->wakeup_src) {
-  1382			cr3 &= ~USART_CR3_WUS_MASK;
-  1383			cr3 |= USART_CR3_WUS_START_BIT;
-  1384		}
-  1385	
-  1386		writel_relaxed(cr3, port->membase + ofs->cr3);
-  1387		writel_relaxed(cr2, port->membase + ofs->cr2);
-  1388		writel_relaxed(cr1, port->membase + ofs->cr1);
-  1389	
-  1390		stm32_usart_set_bits(port, ofs->cr1, BIT(cfg->uart_enable_bit));
-  1391		uart_port_unlock_irqrestore(port, flags);
-  1392	
-  1393		/* Handle modem control interrupts */
-  1394		if (UART_ENABLE_MS(port, termios->c_cflag))
-  1395			stm32_usart_enable_ms(port);
-  1396		else
-  1397			stm32_usart_disable_ms(port);
-  1398	}
-  1399	
+NAK, you got comment, didn't you? Why did you ignore it? It's like third
+time you try to push it ignoring what we keep asking. Pushing the same
+without resolving anything in previous discussion is not acceptable and
+it feels like waste of my time.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+
+> -
+
+Why are you removing the blank line?
+
+
+Best regards,
+Krzysztof
+
