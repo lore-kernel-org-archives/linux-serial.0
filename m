@@ -1,115 +1,129 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C84419452
-	for <linux-serial@vger.kernel.org>; Fri, 12 Jan 2024 23:21:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E81212E65;
+	Sat, 13 Jan 2024 01:39:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="FKcOP0gA"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-40e60e137aaso21826205e9.0
-        for <linux-serial@vger.kernel.org>; Fri, 12 Jan 2024 15:21:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1705101712; x=1705706512; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=IC8mtm1TlFW9DFESezgL/8iynrL8GjEwcVQmn91Rdks=;
-        b=FKcOP0gAtqtlISM9MgV24bEjZu63LoZt62x39Ig5XJfMZVRhCdhnZNd0sqzKF+jPJa
-         zgC/g8PR64DdMLvwKSWG10QuJjXF/iMJ2hkOEmEeNRzLzgvGiwxoXNb8wOPX1HwkQ157
-         sOSf+lHTgHWrWwWz2+47dzOShFOr4Zb4I1C7dlGXKYm6iM0hWAs+2shxOK/gly0fneCX
-         7osy9ECBj+0NNDqE/IW/Hj8+OOl/nftlK4i1cal8WV2ZPKFLzn+WYYAiU0oMxhlvw1KK
-         Bo1VQCIoD7KohJOxynOJmSW23cFJqsXEnHEiXOhrebzlqyT7eoRygmZtDC90wW7yZ6eC
-         Pr7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705101712; x=1705706512;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=IC8mtm1TlFW9DFESezgL/8iynrL8GjEwcVQmn91Rdks=;
-        b=RDb7tFiG4C2qNOcVWAcO7wa8ePvKZf8uUsMNJmnQFHwzKMdcj8w5paNI2/OG76iCTx
-         j80DM2XGDNv0r8K7sxEao5vKNqTLNfebfTf5hbUP/dUS/PBjdMMs0F2i9xPYoS/HYiO5
-         JBFUSFTr/B/u2x6z7VvwV70in61H9+R5I1VHXeTfMIr0WOpysMDozHn2sfxp8Ski13+s
-         JLyfpdjbDDRSrTs1uGtYWLAsSHoa+OSyzUoJS5CFy4An+eFP3iWz0JaIc8/4l2zrLOcc
-         FDY+mMb0mwW/kDLnZbK9W9dOa2GB+rcV0okuCyW1HUy578u9q+htJb+EWrKSiDRb0lZm
-         mZmQ==
-X-Gm-Message-State: AOJu0YyYRztSLj9+D4tSFLyLYAFD/zXO7mLyiVCIyoMTynUOGXGe0Kr9
-	PukQEJqYSGv9kP9H0xPQObKLyeASEdmVEA==
-X-Google-Smtp-Source: AGHT+IGIJIeLRHLW9oe50D2fPwgY8ABdpkgxLo1DwyCB8mIAi+38N4kmqLDbIoxRtUwB9ItoQr2SSw==
-X-Received: by 2002:a05:600c:5385:b0:40e:46d9:cb52 with SMTP id hg5-20020a05600c538500b0040e46d9cb52mr1037169wmb.19.1705101712547;
-        Fri, 12 Jan 2024 15:21:52 -0800 (PST)
-Received: from [192.168.174.25] (178235179017.dynamic-4-waw-k-1-3-0.vectranet.pl. [178.235.179.17])
-        by smtp.gmail.com with ESMTPSA id p16-20020aa7cc90000000b00558a7d36956sm2063226edt.0.2024.01.12.15.21.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Jan 2024 15:21:52 -0800 (PST)
-Message-ID: <45e9b5aa-13ec-44c0-8cf8-a4d24d470928@linaro.org>
-Date: Sat, 13 Jan 2024 00:21:50 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iOKbQ0TN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EA86C433F1;
+	Sat, 13 Jan 2024 01:39:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1705109959;
+	bh=f+z+aCoBo/R1LCbcJ/n9MFR1O7qF/679Gxl5cb/3qHg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=iOKbQ0TNrYHcl5QI2C8ytgTBbYZICCBxplvkmGjmc1SM07yILLF980Ljta5Zubsze
+	 Dhag6XvXmcIREpCusq3qVaqlC/OBITak58S+ICjWxG0N9TrgyNHpLkZsY3eoOP6N4Q
+	 QRickthm8JPRvfXeoffubHSVucXtyxlwaMTflMIZnpm2XznavfAnk0QPX0K4Nv6Zr8
+	 xpfpTlEBfxYb8qH23h6lY3tgAYyNoXL91IkXDh0bm67NuUOVCjyi1j0l3F6q03xXn+
+	 fqaJz+aE9r2cpqoH1ABqsHNEQ0ZsCMTOfASUFM4K+xrOIqHYNcOo8wrD0YsFTWc1vj
+	 ItCDSd/fDh/yA==
+Date: Fri, 12 Jan 2024 19:39:17 -0600
+From: Rob Herring <robh@kernel.org>
+To: Christoph Winklhofer <cj.winklhofer@gmail.com>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Jonathan Corbet <corbet@lwn.net>, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCH v4 1/3] dt-bindings: w1: UART 1-Wire bus
+Message-ID: <20240113013917.GA3795949-robh@kernel.org>
+References: <20240106-w1-uart-v4-0-7fe1378a8b3e@gmail.com>
+ <20240106-w1-uart-v4-1-7fe1378a8b3e@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] soc: qcom: geni-se: Add M_TX_FIFO_NOT_EMPTY bit
- definition
-Content-Language: en-US
-To: Douglas Anderson <dianders@chromium.org>,
- Bjorn Andersson <andersson@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-kernel@lists.infradead.org, Stephen Boyd <swboyd@chromium.org>,
- linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
-References: <20240112150307.1.I7dc0993c1e758a1efedd651e7e1670deb1b430fb@changeid>
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
- 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
- izWDgYvmBE8=
-In-Reply-To: <20240112150307.1.I7dc0993c1e758a1efedd651e7e1670deb1b430fb@changeid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240106-w1-uart-v4-1-7fe1378a8b3e@gmail.com>
 
-On 13.01.2024 00:03, Douglas Anderson wrote:
-> According to the docs I have, bit 21 of the status register is
-> asserted when the FIFO is _not_ empty. Add the definition.
+On Sat, Jan 06, 2024 at 05:02:24PM +0100, Christoph Winklhofer wrote:
+> Add device tree binding for UART 1-Wire bus.
 > 
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> Signed-off-by: Christoph Winklhofer <cj.winklhofer@gmail.com>
 > ---
+>  Documentation/devicetree/bindings/w1/w1-uart.yaml | 62 +++++++++++++++++++++++
+>  1 file changed, 62 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/w1/w1-uart.yaml b/Documentation/devicetree/bindings/w1/w1-uart.yaml
+> new file mode 100644
+> index 000000000000..6b90693b2ca0
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/w1/w1-uart.yaml
+> @@ -0,0 +1,62 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/w1/w1-uart.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: UART 1-Wire Bus
+> +
+> +maintainers:
+> +  - Christoph Winklhofer <cj.winklhofer@gmail.com>
+> +
+> +description: |
+> +  UART 1-wire bus. Utilizes the UART interface via the Serial Device Bus
+> +  to create the 1-Wire timing patterns.
+> +
+> +  The UART peripheral must support full-duplex and operate in open-drain
+> +  mode. The timing patterns are generated by a specific combination of
+> +  baud-rate and transmitted byte, which corresponds to a 1-Wire read bit,
+> +  write bit or reset pulse.
+> +
+> +  The default baud-rate for reset and presence detection is 9600 and for
+> +  a 1-Wire read or write operation 115200. In case the actual baud-rate
+> +  is different from the requested one, the transmitted byte is adapted
+> +  to generate the 1-Wire timing patterns.
+> +
+> +  https://www.analog.com/en/technical-articles/using-a-uart-to-implement-a-1wire-bus-master.html
+> +
+> +
+> +properties:
+> +  compatible:
+> +    const: w1-uart
+> +
+> +  reset-speed:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    default: 9600
+> +    description: |
 
-Looks like.
+Don't need '|' if no formatting
 
-Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> +      The baud rate for the 1-Wire reset and presence detect.
+> +
+> +  touch_0-speed:
 
-Konrad
+Don't use '_' in property names.
+
+I'm somewhat familar with 1-wire, but I don't get what 'touch' means 
+here. I assume these are low and high times which are a function of the 
+baudrate.
+
+
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    default: 115200
+> +    description: |
+> +      The baud rate for the 1-Wire write-0 cycle (touch bit 0).
+> +
+> +  touch_1-speed:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    default: 115200
+> +    description: |
+> +      The baud rate for the 1-Wire write-1 and read cycle (touch bit 1).
+> +
+> +required:
+> +  - compatible
+> +
+> +additionalProperties: false
+
+w1.txt says there can be a child node for the 1-wire device. You need 
+'type: object'. Or w1.txt needs to be converted to schema and referenced 
+here (along with using unevaluatedProperties here instead).
+
+Rob
