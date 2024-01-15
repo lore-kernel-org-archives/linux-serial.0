@@ -1,251 +1,79 @@
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from cstnet.cn (smtp20.cstnet.cn [159.226.251.20])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54944FC11;
-	Mon, 15 Jan 2024 09:52:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-5e76948cda7so77666167b3.3;
-        Mon, 15 Jan 2024 01:52:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705312368; x=1705917168;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=wsMhOFSC0mxjAJYvrikbFmAm65pBG0U6QI3j9yJqaic=;
-        b=NqW2mCDtcUyTwgZFAA/rkTMwmahWtBYNzWc32YZPKxNlkm0yMW0+8HOjveMxShuxBy
-         CQcHx+Msh/CWIuQxKxaPkIPXMN/G+5Z2e8g8ISXK/Yjc4+w8vNr3nUS9fgey+uTk+fK2
-         oZzyLlN2CaMWRWehm60qBBYaXqBTu1GEtBVOQH0QeL96x1EN+koc3aPHVxdo6atY5h3R
-         LRf/i8kG84+bhDXyaHj+Lu81cV0ZSKJV8bSKDsaOSjH7n/TWEOtQPeuM8nTNKWhFKvGX
-         Zo7uJl/lwyrGDQzCIk5PIReijBY10X23ny24PH0mO2I69pGmfNF7H7iMjU1mI4muKq8b
-         i7qA==
-X-Gm-Message-State: AOJu0YyjDcFNHqPCE7Bn5PhldVqqWrg8jbyb6Z/+i9fnqy8Rf+XHhjUe
-	lVw2vQYIGyA0BD9THlzr3wSSNvnngfGL5A==
-X-Google-Smtp-Source: AGHT+IEX6uvZVQqpdyFdUkuf26ZeiFhzlynOzPs10JRGhXeNHWRABsgvivhCcxnO9Zwq6nEck/W7MQ==
-X-Received: by 2002:a81:7613:0:b0:5f7:b18e:9298 with SMTP id r19-20020a817613000000b005f7b18e9298mr3674121ywc.67.1705312368108;
-        Mon, 15 Jan 2024 01:52:48 -0800 (PST)
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com. [209.85.128.169])
-        by smtp.gmail.com with ESMTPSA id l6-20020a0de206000000b005ff3b4a89a8sm271889ywe.107.2024.01.15.01.52.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Jan 2024 01:52:47 -0800 (PST)
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-5e76948cda7so77665967b3.3;
-        Mon, 15 Jan 2024 01:52:47 -0800 (PST)
-X-Received: by 2002:a81:6d41:0:b0:5f6:46b:b0be with SMTP id
- i62-20020a816d41000000b005f6046bb0bemr2963784ywc.61.1705312367679; Mon, 15
- Jan 2024 01:52:47 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52D98EAFB;
+	Mon, 15 Jan 2024 10:00:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iie.ac.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iie.ac.cn
+Received: from mengjingzi$iie.ac.cn ( [121.195.114.118] ) by
+ ajax-webmail-APP-10 (Coremail) ; Mon, 15 Jan 2024 17:55:22 +0800
+ (GMT+08:00)
+Date: Mon, 15 Jan 2024 17:55:22 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From: =?UTF-8?B?5a2f5pWs5ae/?= <mengjingzi@iie.ac.cn>
+To: "Greg KH" <gregkh@linuxfoundation.org>
+Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH] tty: change the privilege required for tty operarions
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.15 build 20230921(8ad33efc)
+ Copyright (c) 2002-2024 www.mailtech.cn cnic.cn
+In-Reply-To: <2024011523-lifter-narrow-fed3@gregkh>
+References: <2024010247-polio-brittle-1b23@gregkh>
+ <20240115082420.13372-1-mengjingzi@iie.ac.cn>
+ <2024011523-lifter-narrow-fed3@gregkh>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1704788539.git.ysato@users.sourceforge.jp> <9c3a9caaa1e2fc7e515cac67f07a20af071bd1be.1704788539.git.ysato@users.sourceforge.jp>
-In-Reply-To: <9c3a9caaa1e2fc7e515cac67f07a20af071bd1be.1704788539.git.ysato@users.sourceforge.jp>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 15 Jan 2024 10:52:36 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWSR3ikL7VZYkNOb1Y8mPU5LaUnc8+WLj-Ec99EOWxs_w@mail.gmail.com>
-Message-ID: <CAMuHMdWSR3ikL7VZYkNOb1Y8mPU5LaUnc8+WLj-Ec99EOWxs_w@mail.gmail.com>
-Subject: Re: [DO NOT MERGE v6 22/37] dt-bindings: display: smi,sm501: SMI
- SM501 binding json-schema
-To: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>, 
-	Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
-	Thomas Gleixner <tglx@linutronix.de>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
-	=?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, 
-	Bjorn Helgaas <bhelgaas@google.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, 
-	Daniel Lezcano <daniel.lezcano@linaro.org>, Rich Felker <dalias@libc.org>, 
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Lee Jones <lee@kernel.org>, 
-	Helge Deller <deller@gmx.de>, Heiko Stuebner <heiko@sntech.de>, 
-	Jernej Skrabec <jernej.skrabec@gmail.com>, Chris Morgan <macromorgan@hotmail.com>, 
-	Yang Xiwen <forbidden405@foxmail.com>, Sebastian Reichel <sre@kernel.org>, 
-	Linus Walleij <linus.walleij@linaro.org>, Randy Dunlap <rdunlap@infradead.org>, 
-	Arnd Bergmann <arnd@arndb.de>, Vlastimil Babka <vbabka@suse.cz>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, 
-	David Rientjes <rientjes@google.com>, Baoquan He <bhe@redhat.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, 
-	Stephen Rothwell <sfr@canb.auug.org.au>, Azeem Shaikh <azeemshaikh38@gmail.com>, 
-	Javier Martinez Canillas <javierm@redhat.com>, Max Filippov <jcmvbkbc@gmail.com>, 
-	Palmer Dabbelt <palmer@rivosinc.com>, Bin Meng <bmeng@tinylab.org>, 
-	Jonathan Corbet <corbet@lwn.net>, Jacky Huang <ychuang3@nuvoton.com>, 
-	Lukas Bulwahn <lukas.bulwahn@gmail.com>, Biju Das <biju.das.jz@bp.renesas.com>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
-	Sam Ravnborg <sam@ravnborg.org>, Sergey Shtylyov <s.shtylyov@omp.ru>, 
-	Michael Karcher <kernel@mkarcher.dialup.fu-berlin.de>, 
-	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-ide@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linux-pci@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <2fed8f4.8c4.18d0c8c1269.Coremail.mengjingzi@iie.ac.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:tACowADnPoALAaVlM2wFAA--.59155W
+X-CM-SenderInfo: pphqwyxlqj6xo6llvhldfou0/1tbiDAgRE2Wk5CJVSAAAsc
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWkKw
+	CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+	daVFxhVjvjDU=
 
-Hi Sato-san,
-
-On Tue, Jan 9, 2024 at 9:24=E2=80=AFAM Yoshinori Sato
-<ysato@users.sourceforge.jp> wrote:
-> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
-
-Thanks for your patch!
-
-> ---
->  .../bindings/display/smi,sm501.yaml           | 417 ++++++++++++++++++
->  1 file changed, 417 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/display/smi,sm501.y=
-aml
-
-Surely Documentation/devicetree/bindings/display/sm501fb.txt should
-be removed, too?
-
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/display/smi,sm501.yaml
-
-> +  crt:
-> +    type: object
-> +    description: CRT output control
-> +    properties:
-> +      edid:
-> +        $ref: /schemas/types.yaml#/definitions/uint8-array
-> +        description: |
-> +          verbatim EDID data block describing attached display.
-> +          Data from the detailed timing descriptor will be used to
-> +          program the display controller.
-> +
-> +      smi,flags:
-> +        $ref: /schemas/types.yaml#/definitions/string-array
-> +        description: Display control flags.
-> +        items:
-> +          anyOf:
-> +            - const: use-init-done
-> +            - const: disable-at-exit
-> +            - const: use-hwcursor
-> +            - const: use-hwaccel
-
-The "use-*" flags look like software policy, not hardware description,
-and thus do not belong in DT?
-
-> +            - const: panel-no-fpen
-> +            - const: panel-no-vbiasen
-> +            - const: panel-inv-fpen
-> +            - const: panel-inv-vbiasen
-> +        maxItems: 8
-> +
-> +      bpp:
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        description: Color depth
-> +
-> +  panel:
-> +    type: object
-> +    description: Panel output control
-> +    properties:
-> +      edid:
-> +        $ref: /schemas/types.yaml#/definitions/uint8-array
-> +        description: |
-> +          verbatim EDID data block describing attached display.
-> +          Data from the detailed timing descriptor will be used to
-> +          program the display controller.
-> +
-> +      smi,flags:
-> +        $ref: /schemas/types.yaml#/definitions/string-array
-> +        description: Display control flags.
-> +        items:
-> +          anyOf:
-> +            - const: use-init-done
-> +            - const: disable-at-exit
-> +            - const: use-hwcursor
-> +            - const: use-hwaccel
-
-The "use-*" flags look like software policy, not hardware description,
-and thus do not belong in DT?
-
-> +            - const: panel-no-fpen
-> +            - const: panel-no-vbiasen
-> +            - const: panel-inv-fpen
-> +            - const: panel-inv-vbiasen
-> +        maxItems: 8
-> +
-> +      bpp:
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        description: Color depth
-> +
-> +  smi,devices:
-> +    $ref: /schemas/types.yaml#/definitions/string-array
-> +    description: Select SM501 device functions.
-> +    items:
-> +      anyOf:
-> +        - const: usb-host
-> +        - const: usb-slave
-> +        - const: ssp0
-> +        - const: ssp1
-> +        - const: uart0
-> +        - const: uart1
-> +        - const: fbaccel
-> +        - const: ac97
-> +        - const: i2s
-> +        - const: gpio
-> +    minItems: 1
-> +    maxItems: 10
-
-I think it would be better to have individual subnodes for the sub devices,
-with status =3D "ok"/"disabled".
-
-If you go that route, you do need some fallback code to handle the lack
-of subnodes in the existing user in arch/powerpc/boot/dts/charon.dts.
-
-BTW, why can sm501_pci_initdata get away with setting ".devices
-=3D SM501_USE_ALL"?  Or, would it hurt to enable all subdevices
-unconditionally?
-
-> +
-> +  smi,mclk:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: mclk frequency.
-> +
-> +  smi,m1xclk:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: m1xclk frequency.
-
-These two should be clock specifiers (i.e. phandles pointing to clock
-nodes + optional clock indices).
-
-> +
-> +  misc-timing:
-> +    type: object
-> +    description: Miscellaneous Timing register values.
-> +    properties:
-> +      ex:
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        description: Extend bus holding time.
-> +        enum: [0, 16, 32, 48, 64, 80, 96, 112, 128, 144, 160, 176, 192, =
-208, 224, 240]
-> +
-> +      xc:
-> +        $ref: /schemas/types.yaml#/definitions/string
-> +        description: Xscale clock input select.
-> +        items:
-> +          enum:
-> +            - internal-pll
-> +            - hclk
-> +            - gpio33
-
-Software policy instead of hardware description again?
-
-I am not familiar with how the SM501 works, so I cannot comment on
-the other properties, but several of them look like they need rework.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+Jmd0OyBUZXN0ZWQgaG93PyAgCgpGaXJzdCBvZiBhbGwsIHRoaXMgY2hhbmdlIGlzIG5vdCBhYm91
+dCBmdW5jdGlvbmFsaXR5LCBvbmx5IGFib3V0IHBlcm1pc3Npb25zLiAKSSB3cm90ZSAzIHRlc3Rj
+YXNlcyB3aGljaCBjYWxscyBpb2N0bCgpIHdpdGggVElPQ1NUSSwgVElPQ0NPTlMsIFRJT0NWSEFO
+R1VQIApyZXNwZWN0aXZlbHkuIFRoZW4gZXhlY3V0ZSB0aGVtIG9uIHRoZSBvcmlnaW4ga2VybmVs
+IGFuZCBwYXRjaGVkIGtlcm5lbC4gClJ1bm5pbmcgaXQgb24gYm90aCBzZXRzIG9mIGtlcm5lbHMg
+Z2l2ZXMgdGhlIHNhbWUgcmVzdWx0LiBIb3dldmVyLCB0aHJvdWdoCnRoZSBzeXN0ZW0gZXJyb3Ig
+bWVzc2FnZSwgYW5kIHRoZSBrZXJuZWwgbG9nIG91dHB1dCBJIGFkZGVkLCBJIGNvbmZpcm1lZCAK
+dGhhdCB0aGUgcmVsZXZhbnQgZnVuY3Rpb25hbGl0eSB1bmRlciB0aGUgb3JpZ2luIGtlcm5lbCBy
+ZXF1aXJlcyBzeXNfYWRtaW4sIAphbmQgdW5kZXIgdGhlIHBhdGNoZWQga2VybmVsIHJlcXVpcmVz
+IHN5c190dHlfY29uZmlnLgoKSW5kZWVkLCBpdCBkb2Vzbid0IGhhdmUgbXVjaCB0byBkbyB3aXRo
+IHRoZSBkaXN0cm8gZWl0aGVyLCBJIGp1c3QgdGVzdGVkIGl0IApvbiBEZWJpYW4sIGFuZCBzaW1p
+bGFyIHRlc3RzIGNhbiBiZSBkb25lIG9uIG90aGVyIGRpc3Ryb3MuCgoKJmd0OyBXaHkgZGlkIHlv
+dSBqdXN0IGNoYW5nZSB0aGVzZSAzIHVzYWdlcywgYW5kIG5vdCBhbGwgb2YgdGhlbT8gIFdoeSBh
+cmUKJmd0OyB0aGVzZSAic2FmZSIgYnV0IHRoZSBvdGhlcnMgbm90PwoKVGhlcmUgYXJlIDUgY2Fw
+YWJpbGl0eSBjaGVja3MgaW4gdGhpcyBmaWxlLCBhbGwgdXNpbmcgc3lzX2FkbWluLiBUaGUgZmly
+c3QgCm9uZSBpcyBpbiB0aGUgdGlvY3N0aSBmdW5jdGlvbiwgaW4gY29tbWl0IDY5MGM4YjgwNGFk
+MiAoIlRJT0NTVEk6IGFsd2F5cyAKZW5hYmxlIGZvciBDQVBfU1lTX0FETUlOIiksIHN5c19hZG1p
+biB3YXMgaW50cm9kdWNlZCBmb3IgYSBzcGVjaWFsIAphcHBsaWNhdGlvbiBCUkxUVFksIHNvIEkg
+aGVzaXRhdGVkIHRvIGNoYW5nZSBpdC4gSW4gZmFjdCwgQlJMVFRZIGhhcyBib3RoIApzeXNfYWRt
+aW4gYW5kIHN5c190dHlfY29uZmlnLCBzbyBtb2RpZnkgdGhlIGtlcm5lbCdzIHBlcm1pc3Npb24g
+Y2hlY2ssIHdpbGwgCm5vdCBhZmZlY3QgQlJMVFRZJ3MgZnVuY3Rpb24uIFRoZSBvdGhlciBwZXJt
+aXNzaW9uIGNoZWNrIGlzIGxvY2F0ZWQgaW4gYSAKZGlmZmVyZW50IGZ1bmN0aW9uLCBub3QgdHJp
+Z2dlcmVkIGJ5IGlvY3RsLCBzbyBpdCdzIG5vdCB3cml0dGVuIHRvZ2V0aGVyLgoKJmd0OyBBbmQg
+bW9zdCBpbXBvcnRhbnRseSBvZiBhbGwsIHdoeSBtYWtlIHRoaXMgY2hhbmdlIGF0IGFsbD8gIFdo
+byBpcyB1c2luZwomZ3Q7IGNhcGFiaWxpdGllcyB0aGVzZSBkYXlzIGluIGEgZmluZS1ncmFpbmVk
+IHdheSB0byB3YXJyZW50IHRoaXMgdHlwZSBvZgomZ3Q7IG1vZGlmaWNhdGlvbj8KCkkgZ3Vlc3Mg
+eW91IGFyZSByaWdodCwgdGhlcmUncyBub3QgYSBsb3Qgb2YgcGVvcGxlIHVzaW5nIGNhcGFiaWxp
+dGllcy4gCkJ1dCB0aGUgaWRlYSBvZiBhIGxlYXN0IHByaXZpbGVnZSBkZXNpZ24gaXMgc3RpbGwg
+dGVtcHRpbmcgZnJvbSBhIApzZWN1cml0eSBwb2ludCBvZiB2aWV3LiBUaGUgc2NhcmNlIHVzZSBv
+ZiBjYXBhYmlsaXRpZXMgaXMgcmVsYXRlZCB0byAKaXRzIHByb2JsZW1hdGljIGltcGxlbWVudGF0
+aW9uLCBhbmQgd2UgaG9wZSB0byBwcm9tb3RlIGl0cyB1c2UgYnkgCmltcHJvdmluZyBpdHMgaW1w
+bGVtZW50YXRpb24uIHN5c19hZG1pbiBpcyBhIHJlbGF0aXZlbHkgbGFyZ2UgcHJpdmlsZWdlLCAK
+d2hpY2ggbWF5IHBvc2UgYSByaXNrIHRvIHRoZSBzeXN0ZW0g77yIY2hlY2sgdGhlIGN2ZSBsaXN0
+OgpodHRwczovL2N2ZS5taXRyZS5vcmcvY2dpLWJpbi9jdmVrZXkuY2dpP2tleXdvcmQ9Q0FQX1NZ
+U19BRE1JTiApLCBhbmQgYnkgCnJlZHVjaW5nIHRoZSB1bm5lY2Vzc2FyeSB1c2Ugb2Ygc3lzX2Fk
+bWluLCB3ZSBjYW4gYXZvaWQgc29tZSBvZiB0aGUgcmlza3MuIApJbiBwYXJ0aWN1bGFyLCB0aGUg
+bGludXggY2FwYWJpbGl0eSBoYXMgYmVlbiBkZXNpZ25lZCB3aXRoIHN5c190dHlfY29uZmlnLCAK
+c28gaXQgc2hvdWxkIHRha2Ugb3ZlciB0aGUgcHJpdmlsZWdlcyBvcmlnaW5hbGx5IG1hbmFnZWQg
+Ynkgc3lzX2FkbWluIApyZWxhdGVkIHRvIFRUWS4KCkJlc3QgcmVnYXJkcywKSmluZ3ppCg==
