@@ -1,109 +1,100 @@
-Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AB0E17584;
-	Mon, 15 Jan 2024 14:09:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ot1-f47.google.com with SMTP id 46e09a7af769-6ddf1e88e51so3758154a34.0;
-        Mon, 15 Jan 2024 06:09:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705327748; x=1705932548;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=I77TmnyBV7p1SE2Y2oqkytZuiHCFq9qru4QC+6Q3tDs=;
-        b=U9uViIBqH/AD4sbOTMV4ejA7ZX48hzG2GZFhd3N9cyB1saPhD1AMagV8rvq8mmFon6
-         uffWvqTWQ1Jj701Ne24vHN7Z5l9sMieIl7CChOOEjwFp6xohyXagu3pPBkbU/oljpWXo
-         BktDfjEbVaDzx8J1vIJKEJkETen+XJAOyoPmMA3LL+zUb7pKNZdBGs3jLw6kzdptPQGj
-         7lSyc1rREr2Tdr440cx+8etRAJ8ziyPy9myQkaeL1vcZV1Z5rNGwK+1yqA02zMHKhzSH
-         NVnU0NrXQ9bj4d25PuIi9JaFH+QT/HR9JwrE6r5cVf78ICP90k+61KPc5UphkIF8GhOi
-         vrcQ==
-X-Gm-Message-State: AOJu0YxSjoeYcjX8phln59nx8gSkG/Mr4l/EOE6qxLlHg9xqPaE+Yl25
-	eAPTTggoUURnAoaTRQUYWkvm/K5jYKIzyQ==
-X-Google-Smtp-Source: AGHT+IGUhcozFviZ+UpZqAISh6crRPgTFd8RXsYdibuZdgCpNvHjXlQTJgtyNeXSh97xjtJwlnqQWA==
-X-Received: by 2002:a05:6870:c085:b0:1fb:75a:de6f with SMTP id c5-20020a056870c08500b001fb075ade6fmr7377850oad.93.1705327748372;
-        Mon, 15 Jan 2024 06:09:08 -0800 (PST)
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com. [209.85.160.48])
-        by smtp.gmail.com with ESMTPSA id so11-20020a056871818b00b001fb42001fa7sm2478078oab.36.2024.01.15.06.09.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Jan 2024 06:09:08 -0800 (PST)
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-2044ecf7035so6013496fac.0;
-        Mon, 15 Jan 2024 06:09:08 -0800 (PST)
-X-Received: by 2002:a81:410d:0:b0:5f4:a5ab:4105 with SMTP id
- o13-20020a81410d000000b005f4a5ab4105mr2813928ywa.8.1705327425927; Mon, 15 Jan
- 2024 06:03:45 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B70C17980;
+	Mon, 15 Jan 2024 15:34:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="lwQ8LtpP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E5BEC433F1;
+	Mon, 15 Jan 2024 15:34:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1705332845;
+	bh=GqeW8XFU0wr6W83/qQL3PqOyONODN3AZrhkX/pLrilQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=lwQ8LtpPqlmLuJMoprhcFoXM3+Cps/V3xxCEw8khijNXyQKFVTMppLUOGRTggzMkL
+	 ylP4U2kaDVBFuC1vqUnsmSOzWKQPQ7cUKM69B/RrJ5HifJYy38bILtZbdpk4ToyN+R
+	 JHbrtaHt8CSJhHdaRkJDFCYJF3Am0u6bPRzIxlC8=
+Date: Mon, 15 Jan 2024 16:34:02 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: =?utf-8?B?5a2f5pWs5ae/?= <mengjingzi@iie.ac.cn>
+Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH] tty: change the privilege required for tty operarions
+Message-ID: <2024011556-barbecue-tackiness-78be@gregkh>
+References: <2024010247-polio-brittle-1b23@gregkh>
+ <20240115082420.13372-1-mengjingzi@iie.ac.cn>
+ <2024011523-lifter-narrow-fed3@gregkh>
+ <a47cd6e2-571f-4146-961f-758a51c52550@iie.ac.cn>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1704788539.git.ysato@users.sourceforge.jp> <edd42bb5aa30ac3eb26a9e08b1dc6fc9041aa3b1.1704788539.git.ysato@users.sourceforge.jp>
-In-Reply-To: <edd42bb5aa30ac3eb26a9e08b1dc6fc9041aa3b1.1704788539.git.ysato@users.sourceforge.jp>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 15 Jan 2024 15:03:34 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdU=CZVSc16FeVDc6YmTKw=xa71RUzOE3bappLwH2W8Z4w@mail.gmail.com>
-Message-ID: <CAMuHMdU=CZVSc16FeVDc6YmTKw=xa71RUzOE3bappLwH2W8Z4w@mail.gmail.com>
-Subject: Re: [DO NOT MERGE v6 01/37] sh: passing FDT address to kernel startup.
-To: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>, 
-	Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Geert Uytterhoeven <geert+renesas@glider.be>, Michael Turquette <mturquette@baylibre.com>, 
-	Stephen Boyd <sboyd@kernel.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
-	Thomas Gleixner <tglx@linutronix.de>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
-	=?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, 
-	Bjorn Helgaas <bhelgaas@google.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, 
-	Daniel Lezcano <daniel.lezcano@linaro.org>, Rich Felker <dalias@libc.org>, 
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Lee Jones <lee@kernel.org>, 
-	Helge Deller <deller@gmx.de>, Heiko Stuebner <heiko@sntech.de>, 
-	Jernej Skrabec <jernej.skrabec@gmail.com>, Chris Morgan <macromorgan@hotmail.com>, 
-	Yang Xiwen <forbidden405@foxmail.com>, Sebastian Reichel <sre@kernel.org>, 
-	Linus Walleij <linus.walleij@linaro.org>, Randy Dunlap <rdunlap@infradead.org>, 
-	Arnd Bergmann <arnd@arndb.de>, Vlastimil Babka <vbabka@suse.cz>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, 
-	David Rientjes <rientjes@google.com>, Baoquan He <bhe@redhat.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, 
-	Stephen Rothwell <sfr@canb.auug.org.au>, Azeem Shaikh <azeemshaikh38@gmail.com>, 
-	Javier Martinez Canillas <javierm@redhat.com>, Max Filippov <jcmvbkbc@gmail.com>, 
-	Palmer Dabbelt <palmer@rivosinc.com>, Bin Meng <bmeng@tinylab.org>, 
-	Jonathan Corbet <corbet@lwn.net>, Jacky Huang <ychuang3@nuvoton.com>, 
-	Lukas Bulwahn <lukas.bulwahn@gmail.com>, Biju Das <biju.das.jz@bp.renesas.com>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
-	Sam Ravnborg <sam@ravnborg.org>, Sergey Shtylyov <s.shtylyov@omp.ru>, 
-	Michael Karcher <kernel@mkarcher.dialup.fu-berlin.de>, 
-	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-ide@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linux-pci@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a47cd6e2-571f-4146-961f-758a51c52550@iie.ac.cn>
 
-On Tue, Jan 9, 2024 at 9:23=E2=80=AFAM Yoshinori Sato
-<ysato@users.sourceforge.jp> wrote:
-> R4 is caller saved in SH ABI.
-> Save it so it doesn't get corrupted until it's needed for initialization.
->
-> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
+On Mon, Jan 15, 2024 at 11:10:29PM +0800, 孟敬姿 wrote:
+> 
+> 在 2024-1-15 16:35, Greg KH 写道:
+> > On Mon, Jan 15, 2024 at 04:24:20PM +0800, Jingzi Meng wrote:
+> > > Currently, CAP_SYS_ADMIN is responsible for tty-related functions in
+> > > tty_ioctl(): TIOCSTI, TIOCCONS, TIOCVHANGUP. CAP_SYS_ADMIN is already
+> > > overloaded, change it to CAP_SYS_TTY_CONFIG for a more fine-grained
+> > > and accurate access control.
+> > > 
+> > > Signed-off-by: Jingzi Meng<mengjingzi@iie.ac.cn>
+> > > ---
+> > > 
+> > > The userland api affected by this change is the ioctl system call,
+> > > especially when the second argument is TIOCSTI, TIOCCONS, TIOCVHANGUP,
+> > > which now requires sys_tty_config instead of sys_admin. Tested on Debian
+> > > with kernel 6.7.0-rc5.
+> > Tested how?  You are changing the permissions of a kernel operation,
+> > which is arguably, going to break userspace in lots of interesting ways
+> > unless you can prove that this is functionally the same as the existing
+> > code.
+> > 
+> > And not all the world is Debian (although lots of it is, yes.)  But
+> > actually running programs that exercise this kernel codepath is going to
+> > be the key, did you do that?
+> > 
+> First of all, this change is not about functionality, only about permissions.
 
-My
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-on v3 is still valid.
+I'm confused, permissions dictate functionality.
 
-Gr{oetje,eeting}s,
+If I do not have permissions to do something, the functionality is
+suddenly not there.  That's what you are doing here, you are changing
+the requirement of previously one capability was required to achive a
+function in the kernel, to a different capability.
 
-                        Geert
+So it is ALL ABOUT functionality here.
 
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
+> I wrote 3 testcases which calls ioctl() with TIOCSTI, TIOCCONS, TIOCVHANGUP
+> respectively. Then execute them on the origin kernel and patched kernel.
+> Running it on both sets of kernels gives the same result. However, through
+> the system error message, and the kernel log output I added, I confirmed
+> that the relevant functionality under the origin kernel requires sys_admin,
+> and under the patched kernel requires sys_tty_config.
 
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+I'm referring to existing programs that are not modified to have the new
+capability that you are now requiring.  Who is going to do that work?
+Where are they?  How have you searched to find them?
+
+> Indeed, it doesn't have much to do with the distro either, I just tested it
+> on Debian, and similar tests can be done on other distros.
+
+That's not the issue, the issue is "what existing software is going to
+break with this change in permission handling."
+
+That needs to be answered first, and I suggest some research into how we
+HAVE TO keep backwards compability and can not break it.
+
+Without some more proof, this type of change can never be accepted, nor
+would you want it to be.
+
+good luck!
+
+greg k-h
