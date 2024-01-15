@@ -1,100 +1,147 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B70C17980;
-	Mon, 15 Jan 2024 15:34:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A14028F72;
+	Mon, 15 Jan 2024 17:36:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="lwQ8LtpP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E5BEC433F1;
-	Mon, 15 Jan 2024 15:34:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1705332845;
-	bh=GqeW8XFU0wr6W83/qQL3PqOyONODN3AZrhkX/pLrilQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=lwQ8LtpPqlmLuJMoprhcFoXM3+Cps/V3xxCEw8khijNXyQKFVTMppLUOGRTggzMkL
-	 ylP4U2kaDVBFuC1vqUnsmSOzWKQPQ7cUKM69B/RrJ5HifJYy38bILtZbdpk4ToyN+R
-	 JHbrtaHt8CSJhHdaRkJDFCYJF3Am0u6bPRzIxlC8=
-Date: Mon, 15 Jan 2024 16:34:02 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: =?utf-8?B?5a2f5pWs5ae/?= <mengjingzi@iie.ac.cn>
-Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH] tty: change the privilege required for tty operarions
-Message-ID: <2024011556-barbecue-tackiness-78be@gregkh>
-References: <2024010247-polio-brittle-1b23@gregkh>
- <20240115082420.13372-1-mengjingzi@iie.ac.cn>
- <2024011523-lifter-narrow-fed3@gregkh>
- <a47cd6e2-571f-4146-961f-758a51c52550@iie.ac.cn>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NOPt/Hn/"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-3376ead25e1so7007680f8f.3;
+        Mon, 15 Jan 2024 09:36:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1705340218; x=1705945018; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Kx0olFuw+rWfaGw9tfp+XkjX2b+u9ESGzSxY7G46xRE=;
+        b=NOPt/Hn/TuX3gy7qE3WsnKLi1wh58fYxKwBtNAZm/pvCYoBvtzZeerq/XPXgNBBHMh
+         HYuv/OMNzbD5qpt3PUnX0ARMcDL+8cKyUQfAoRQqBmovXww76Vg7hqeSn6jDji8dU0BO
+         7fsLhLIxLw0czLF0hFa0hkhLGLXqJjthxRQosjYY/kfZparoR8FbAYrBb7v4xPHQwbPo
+         eq2X2a91enACoeMjRg9Kv/1dye6E66vBpmkeC7F5kglLUscv5SpHbiDdYI4Jw2w0k9w0
+         cL9ppm5jIJytySf1evdB55c72tzI69SO7kZrdOtld9tWYtH/TUwxMgMLAXrGggT60nkM
+         9hYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705340218; x=1705945018;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Kx0olFuw+rWfaGw9tfp+XkjX2b+u9ESGzSxY7G46xRE=;
+        b=xINWuTYHA+LV2z43Y+1rtH5834LztrTXSULISb3DSYExKg+5bS2Vt6RKAKPk/jKAo0
+         3yL7SMBN9AfF2kInQQHgG0eJ63OwtQ8KtD39gY+qYqIfH/yX2F4l5nMFvMUSDBdRQij7
+         3ftezXe0YM46tP5+//3omD2+GYE9kjJUWLL/aNN3luBkldOZxeB6PW04bgiXwivA6JPf
+         xLHcj0O19/taAESPmtQKda1vp+iZEezS8pzaYL6jbjtCTjnOUMW7ZDbdp2UheYomKyBL
+         GB8iXkymaUQjnyMVHLfe0+lZe+4hPFarnW/4YwooXiE8VekEfwS0tCUXv35pOpzcnjv8
+         IoCQ==
+X-Gm-Message-State: AOJu0YzFzwDJzd2xk04/CfyTPD3SM4rUFr7pAVqgXQpppALAgfvnnmAd
+	gNUsvdDiIdTibLUOLbYW+/Q=
+X-Google-Smtp-Source: AGHT+IFmNxeS6EDVKe79tQhOTctYIXVnIx901GrCRPbT56iCqzf+VsIghY08iUphbcf6YPfnxEQdzQ==
+X-Received: by 2002:a05:600c:190c:b0:40e:6009:94ae with SMTP id j12-20020a05600c190c00b0040e600994aemr3188249wmq.186.1705340217724;
+        Mon, 15 Jan 2024 09:36:57 -0800 (PST)
+Received: from cjw-notebook (2a02-8388-0502-f480-6c32-186a-368b-d6a9.cable.dynamic.v6.surfer.at. [2a02:8388:502:f480:6c32:186a:368b:d6a9])
+        by smtp.gmail.com with ESMTPSA id je14-20020a05600c1f8e00b0040e3635ca65sm20525173wmb.2.2024.01.15.09.36.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Jan 2024 09:36:57 -0800 (PST)
+Date: Mon, 15 Jan 2024 18:36:54 +0100
+From: Christoph Winklhofer <cj.winklhofer@gmail.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Jonathan Corbet <corbet@lwn.net>, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCH v4 1/3] dt-bindings: w1: UART 1-Wire bus
+Message-ID: <ZaVtNmvRjPAn9bph@cjw-notebook>
+References: <20240106-w1-uart-v4-0-7fe1378a8b3e@gmail.com>
+ <20240106-w1-uart-v4-1-7fe1378a8b3e@gmail.com>
+ <20240113013917.GA3795949-robh@kernel.org>
+ <ZaLQxGjjmA_iKOv2@cjw-notebook>
+ <81c79939-56cc-4d78-9552-56568999df09@linaro.org>
+ <ZaP0CoCYLQxrT3VD@cjw-notebook>
+ <1b8cb3ba-6727-45ab-acaa-c727a0a7ad85@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a47cd6e2-571f-4146-961f-758a51c52550@iie.ac.cn>
+In-Reply-To: <1b8cb3ba-6727-45ab-acaa-c727a0a7ad85@linaro.org>
 
-On Mon, Jan 15, 2024 at 11:10:29PM +0800, 孟敬姿 wrote:
+On Sun, Jan 14, 2024 at 04:55:42PM +0100, Krzysztof Kozlowski wrote:
+> On 14/01/2024 15:47, Christoph Winklhofer wrote:
+> > On Sun, Jan 14, 2024 at 11:54:48AM +0100, Krzysztof Kozlowski wrote:
+> >> On 13/01/2024 19:04, Christoph Winklhofer wrote:
+> >>> On Fri, Jan 12, 2024 at 07:39:17PM -0600, Rob Herring wrote:
+> >>>> On Sat, Jan 06, 2024 at 05:02:24PM +0100, Christoph Winklhofer wrote:
+> >>>>> Add device tree binding for UART 1-Wire bus.
+> >>>>>
+> >>>>> Signed-off-by: Christoph Winklhofer <cj.winklhofer@gmail.com>
+> >>>>> ---
+> >>>>>  Documentation/devicetree/bindings/w1/w1-uart.yaml | 62 +++++++++++++++++++++++
+> >>>>>  1 file changed, 62 insertions(+)
+> >>>>>
+> >>>>> diff --git a/Documentation/devicetree/bindings/w1/w1-uart.yaml b/Documentation/devicetree/bindings/w1/w1-uart.yaml
+> >>>>> new file mode 100644
+> >>>>> index 000000000000..6b90693b2ca0
+> >>>>> --- /dev/null
+> >>>>> +++ b/Documentation/devicetree/bindings/w1/w1-uart.yaml
+> >>>>> @@ -0,0 +1,62 @@
+> >>>>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> >>>>> +%YAML 1.2
+> >>>>> +---
+> >>>>> +$id: http://devicetree.org/schemas/w1/w1-uart.yaml#
+> >>>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >>> ...
+> >>>>> +properties:
+> >>>>> +  compatible:
+> >>>>> +    const: w1-uart
+> >>>>> +
+> >>>>> +  reset-speed:
+> >>>>> +    $ref: /schemas/types.yaml#/definitions/uint32
+> >>>>> +    default: 9600
+> >>>>> +    description: |
+> >>>>
+> >>>> Don't need '|' if no formatting
+> >>>>
+> >>>
+> >>> Ok.
+> >>>
+> >>>>> +      The baud rate for the 1-Wire reset and presence detect.
+> >>>>> +
+> >>>>> +  touch_0-speed:
+> >>>>
+> >>>> Don't use '_' in property names.
+> >>>>
+> >>>> I'm somewhat familar with 1-wire, but I don't get what 'touch' means 
+> >>>> here. I assume these are low and high times which are a function of the 
+> >>>> baudrate.
+> >>>>
+> >>>
+> >>> I change the name to 'write-0-speed' and 'write-1-speed'. The function
+> >>> in the w1-framework is named 'touch_bit' - therefore the previous
+> >>> naming. 
+> >>>
+> >>> It is the baud-rate used in the 1-Wire cycle to write a 0-Bit
+> >>> (write-0-speed) and to perform a 1-Wire cycle that writes a 1-Bit and
+> >>> reads a 0-Bit or 1-Bit (write-1-speed).
+> >>
+> >>
+> >> Then probably -bps:
+> >> https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/property-units.yaml
+> > 
+> > The serial.yaml uses prefix -speed for the baud rate but I can change it
+> > to -bps.
 > 
-> 在 2024-1-15 16:35, Greg KH 写道:
-> > On Mon, Jan 15, 2024 at 04:24:20PM +0800, Jingzi Meng wrote:
-> > > Currently, CAP_SYS_ADMIN is responsible for tty-related functions in
-> > > tty_ioctl(): TIOCSTI, TIOCCONS, TIOCVHANGUP. CAP_SYS_ADMIN is already
-> > > overloaded, change it to CAP_SYS_TTY_CONFIG for a more fine-grained
-> > > and accurate access control.
-> > > 
-> > > Signed-off-by: Jingzi Meng<mengjingzi@iie.ac.cn>
-> > > ---
-> > > 
-> > > The userland api affected by this change is the ioctl system call,
-> > > especially when the second argument is TIOCSTI, TIOCCONS, TIOCVHANGUP,
-> > > which now requires sys_tty_config instead of sys_admin. Tested on Debian
-> > > with kernel 6.7.0-rc5.
-> > Tested how?  You are changing the permissions of a kernel operation,
-> > which is arguably, going to break userspace in lots of interesting ways
-> > unless you can prove that this is functionally the same as the existing
-> > code.
-> > 
-> > And not all the world is Debian (although lots of it is, yes.)  But
-> > actually running programs that exercise this kernel codepath is going to
-> > be the key, did you do that?
-> > 
-> First of all, this change is not about functionality, only about permissions.
+> Do you reference serial.yaml?
+> 
 
-I'm confused, permissions dictate functionality.
+No, serial.yaml is not referenced but 'onewire' will be a child-node of
+a serial-device which already defines baud rate related properties
+with -speed (e.g. max-speed although not used in w1-uart). Hence, I
+thought -speed is typically used for baud rates.
 
-If I do not have permissions to do something, the functionality is
-suddenly not there.  That's what you are doing here, you are changing
-the requirement of previously one capability was required to achive a
-function in the kernel, to a different capability.
-
-So it is ALL ABOUT functionality here.
-
-> I wrote 3 testcases which calls ioctl() with TIOCSTI, TIOCCONS, TIOCVHANGUP
-> respectively. Then execute them on the origin kernel and patched kernel.
-> Running it on both sets of kernels gives the same result. However, through
-> the system error message, and the kernel log output I added, I confirmed
-> that the relevant functionality under the origin kernel requires sys_admin,
-> and under the patched kernel requires sys_tty_config.
-
-I'm referring to existing programs that are not modified to have the new
-capability that you are now requiring.  Who is going to do that work?
-Where are they?  How have you searched to find them?
-
-> Indeed, it doesn't have much to do with the distro either, I just tested it
-> on Debian, and similar tests can be done on other distros.
-
-That's not the issue, the issue is "what existing software is going to
-break with this change in permission handling."
-
-That needs to be answered first, and I suggest some research into how we
-HAVE TO keep backwards compability and can not break it.
-
-Without some more proof, this type of change can never be accepted, nor
-would you want it to be.
-
-good luck!
-
-greg k-h
+Thanks,
+Christoph
