@@ -1,123 +1,96 @@
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFEBD1097D
-	for <linux-serial@vger.kernel.org>; Sun, 14 Jan 2024 19:43:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mit.edu
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b="N01dN+PV"
-Received: from cwcc.thunk.org (pool-173-48-115-247.bstnma.fios.verizon.net [173.48.115.247])
-	(authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-	by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 40EJh2ka006080
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sun, 14 Jan 2024 14:43:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-	t=1705261384; bh=a75MRiqS9CjUQICmsOz6vLm4VvbBzhVgndG6jX7qNGk=;
-	h=Date:From:Subject:Message-ID:MIME-Version:Content-Type;
-	b=N01dN+PVpl/brM0NjN29+9kPca7ppSxnfjf60nGIVY9NprZlJwjxjxKKMVC/nNp2+
-	 B0rjauTe60PGS6437w0vG/rduGC6fSKZTnwckmKszNMq+KVTzJ4NCzHFnkz7DOgYeF
-	 bN6wT8RRl+pMMlnGhXPiiHqn1MMSOPqBOpg0/aDm4889x+vEuGyXKVCjkN1Lf1SsYP
-	 PFNxyT+dylCS77yrA1iJasIrTUW6/qYG7po3nnX9O+KAz2R6HcNUiMp199c4ClN++z
-	 IbX7KGnnQwMllq7FfbHfeyfFefhCywSpBXJdLPFg5pWAHecZNgF9kuZkEm5LRyXgTn
-	 WKLhstsa4HUtA==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-	id 170EB15C0278; Sun, 14 Jan 2024 14:43:02 -0500 (EST)
-Date: Sun, 14 Jan 2024 14:43:02 -0500
-From: "Theodore Ts'o" <tytso@mit.edu>
-To: Gui-Dong Han <2045gemini@gmail.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        baijiaju1990@outlook.com, stable@vger.kernel.org
-Subject: Re: [PATCH] tty: fix atomicity violation in n_tty_read
-Message-ID: <20240114194302.GC911245@mit.edu>
-References: <20240112125801.2650-1-2045gemini@gmail.com>
- <2024011212-disbelief-respect-5230@gregkh>
- <CAOPYjvZYdPSiZ+jX4vhwPQ3AKRvW15XT1znAa8vd9a6DVoor5w@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 348E180A;
+	Mon, 15 Jan 2024 08:31:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iie.ac.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iie.ac.cn
+Received: from localhost.localdomain (unknown [159.226.43.30])
+	by APP-01 (Coremail) with SMTP id qwCowACXnraT6qRlgmlRBw--.48870S2;
+	Mon, 15 Jan 2024 16:19:32 +0800 (CST)
+From: Jingzi Meng <mengjingzi@iie.ac.cn>
+To: gregkh@linuxfoundation.org
+Cc: jirislaby@kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH] tty: change the privilege required for tty operarions
+Date: Mon, 15 Jan 2024 16:24:20 +0800
+Message-Id: <20240115082420.13372-1-mengjingzi@iie.ac.cn>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <2024010247-polio-brittle-1b23@gregkh>
+References: <2024010247-polio-brittle-1b23@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAOPYjvZYdPSiZ+jX4vhwPQ3AKRvW15XT1znAa8vd9a6DVoor5w@mail.gmail.com>
+X-CM-TRANSID:qwCowACXnraT6qRlgmlRBw--.48870S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7ur4rCrW3Gr1rZF15tF47Arb_yoW8AF1kpa
+	1rCw4jyw45trW7GFn2ya9a9FyrXFZayF9rKa4rKayavFn8C34jk3s5Aryj9F1rJr4xGrnx
+	A34q9Fy5X3ZFvwUanT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUk0b7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I2
+	0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+	A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xII
+	jxv20xvEc7CjxVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4
+	A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IE
+	w4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r4j6F4UMc
+	vjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCY02Avz4vE14v_GFyl42xK82IY
+	c2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s
+	026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF
+	0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0x
+	vE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv
+	6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxUy_WFUUUUU
+X-CM-SenderInfo: pphqwyxlqj6xo6llvhldfou0/1tbiDAYRE2Wk5CIZfAAAsq
 
-On Sat, Jan 13, 2024 at 12:59:11AM +0800, Gui-Dong Han wrote:
-> 
-> I apologize for any confusion caused by my reference to Linux 5.17 in
-> the patch description. I'm currently working on a project involving
-> kernel static analysis to identify atomicity violations, and part of
-> this work involves comparison with a previous study that supports up
-> to Linux 5.17. Therefore, I initially ran my tool on 5.17 to filter
-> potential bugs that are still unaddressed in the upstream. I want to
-> clarify that the patch was developed and tested on linux-next. I
-> realize now that this may have led to misunderstandings, and I will
-> ensure clearer communication in future submissions.
-> My experience with Linux kernel contributions is still growing, and I
-> acknowledge that my recent submission might have been hasty and lacked
-> thorough consideration, especially regarding the critical nature of
-> n_tty_read and the potential impacts of the patch, like performance
-> concerns. I will take more care in future assessments before
-> submitting patches and continue to familiarize myself with the rules
-> and practices of the Linux kernel community.
+Currently, CAP_SYS_ADMIN is responsible for tty-related functions in
+tty_ioctl(): TIOCSTI, TIOCCONS, TIOCVHANGUP. CAP_SYS_ADMIN is already
+overloaded, change it to CAP_SYS_TTY_CONFIG for a more fine-grained
+and accurate access control.
 
-In general, static analysis tools need to be supplemented by an
-attempt to understand what the code is trying to do.  This code is
-related to the packet mode, which is related to pseudo-tty's --- *not*
-the linux serial driver.
+Signed-off-by: Jingzi Meng <mengjingzi@iie.ac.cn>
+---
 
-From the man page for tty_ioctl:
+The userland api affected by this change is the ioctl system call,
+especially when the second argument is TIOCSTI, TIOCCONS, TIOCVHANGUP,
+which now requires sys_tty_config instead of sys_admin. Tested on Debian
+with kernel 6.7.0-rc5.
 
-       TIOCPKT
-              Argument: const int *argp
+ drivers/tty/tty_io.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-              Enable (when *argp is nonzero) or disable packet mode.
-              Can be applied to the master side of a pseudoterminal
-              only (and will return ENOTTY otherwise).  In packet
-              mode, each subsequent read(2) will return a packet that
-              either contains a single nonzero control byte, or has a
-              single byte containing zero ('\0') followed by data
-              written on the slave side of the pseudoterminal.  If the
-              first byte is not TI‐ OCPKT_DATA (0), it is an OR of one
-              or more of the following bits:
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index f3ca2105b66d..c81479366317 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -2286,7 +2286,7 @@ static int tiocsti(struct tty_struct *tty, u8 __user *p)
+ 	if (!tty_legacy_tiocsti && !capable(CAP_SYS_ADMIN))
+ 		return -EIO;
+ 
+-	if ((current->signal->tty != tty) && !capable(CAP_SYS_ADMIN))
++	if ((current->signal->tty != tty) && !capable(CAP_SYS_TTY_CONFIG))
+ 		return -EPERM;
+ 	if (get_user(ch, p))
+ 		return -EFAULT;
+@@ -2390,7 +2390,7 @@ static int tiocswinsz(struct tty_struct *tty, struct winsize __user *arg)
+  */
+ static int tioccons(struct file *file)
+ {
+-	if (!capable(CAP_SYS_ADMIN))
++	if (!capable(CAP_SYS_TTY_CONFIG))
+ 		return -EPERM;
+ 	if (file->f_op->write_iter == redirected_tty_write) {
+ 		struct file *f;
+@@ -2719,7 +2719,7 @@ long tty_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 	case TIOCSETD:
+ 		return tiocsetd(tty, p);
+ 	case TIOCVHANGUP:
+-		if (!capable(CAP_SYS_ADMIN))
++		if (!capable(CAP_SYS_TTY_CONFIG))
+ 			return -EPERM;
+ 		tty_vhangup(tty);
+ 		return 0;
+-- 
+2.20.1
 
-              TIOCPKT_FLUSHREAD    The read queue for the terminal is flushed.
-              TIOCPKT_FLUSHWRITE   The write queue for the terminal is flushed.
-              TIOCPKT_STOP         Output to the terminal is stopped.
-              TIOCPKT_START        Output to the terminal is restarted.
-              TIOCPKT_DOSTOP       The start and stop characters are ^S/^Q.
-
-              TIOCPKT_NOSTOP       The start and stop characters are not ^S/^Q.
-
-              While  packet  mode is in use, the presence of control status informa‐
-              tion to be read from the master side may be detected  by  a  select(2)
-              for exceptional conditions or a poll(2) for the POLLPRI event.
-
-              This  mode  is used by rlogin(1) and rlogind(8) to implement a remote-
-              echoed, locally ^S/^Q flow-controlled remote login.
-
-The n_tty_read() function is called by the userspace program on the
-master side of the pty pair.  This is not, strictly speaking a hot
-path; it's not on the interrupt service path of the serial driver, for
-example.  So it's unliklely that "fixing" this problem is going to
-result an measurable performance impact.
-
-It's also the case that not taking the spinlock before checking the
-packet mode is not necessarily going to be disastrous.  Yes, it might
-mean that when the user types ^S, sshd might not stop sending
-characters to the client right away, and the status report about the
-status of the pty gets delayed by a millisecond or two.
-
-So it's actually *not* a big deal.  Now, if you want to make the
-argument that it would be nice if these sorts of "false positives" are
-suppressed so that it's easier to find real bugs, that's one thing.
-But if you're looking at proof that your static checker is actually
-fixing Real Bugs (tm), this is probably not the best example.
-
-Cheers,
-
-					- Ted
