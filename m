@@ -1,203 +1,145 @@
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2128.outbound.protection.outlook.com [40.107.94.128])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41537182BE
-	for <linux-serial@vger.kernel.org>; Mon, 15 Jan 2024 18:03:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C878C18AE1
+	for <linux-serial@vger.kernel.org>; Mon, 15 Jan 2024 19:07:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cornelisnetworks.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cornelisnetworks.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JKAzJTOF"
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-556c3f0d6c5so10898270a12.2
-        for <linux-serial@vger.kernel.org>; Mon, 15 Jan 2024 10:03:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1705341779; x=1705946579; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=MqzAPvsOsW3WIKxe5N0hrRAxSr5WJEJ2bNXdcxOPEsM=;
-        b=JKAzJTOFbMadqk027who7GKCl/PRsqUDk2SYqQrYkOc5ByJDKtnKdR/19KLot/4B88
-         hyWGZSSapC24EK7FaktxVbAf7rn2qfozFn+XNohsD5ShlsW4/QWsy70+/emZLv8S9RSh
-         uuo0lqC4STMxHqm9l3WsnReQ8IwI14MYcQ5Nf+IvFpcG4osj/P+HPt8WklewvoeTRMWW
-         YihWdxUcApZuUS+gkLuM8YWJGw2onlHXCFAe1nhk++cVkFb7p99KZYm/Ii1oQVmrAynK
-         A6QDX+BA1ffYikpRa+bxcnJZs1I+6svUXvm/Ga5sx9Smf8m2i4tWYFtdIG8n+3USAEKm
-         8q2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705341779; x=1705946579;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=MqzAPvsOsW3WIKxe5N0hrRAxSr5WJEJ2bNXdcxOPEsM=;
-        b=YY92rj5RPZPhAazm+Uih/P+2yIzSM10i+SsIGrTuMPfaIR9KO1zxOUO7LRAMGC4F9n
-         XGIQjqS/SVOx9GlbwDZpyElajjhSVrtVwdeJEWk4jaE7KC0MwalkL8NOT4WMOjswgeWj
-         qpOlk32pyaD6eV6XVTf1SczBV/le/tNthkRM3sVTPO3aBMxxgxP9o8ia4/fAnHiYgpF2
-         TNrMzMucTR3FROEeaPAJheAxz47y9dH9Hwa/aekCXUPj/wiua00/9Ger/5FtWW8GekyX
-         NX1cmL7pXo3ZQmzEG2PCUQegFf1PN/pvnTuqGoOH1gb9UnJbje5d32Gm45+avlpaM2PF
-         wiQQ==
-X-Gm-Message-State: AOJu0YzsnZoPyzpHmkBOU9Pxrc0N9IeURL7qRUcglECEEssM7gcJ5JTN
-	K8bat8SUpK9zpHVN3XBrIaR+RsU+IoAYfw==
-X-Google-Smtp-Source: AGHT+IG9G1GkeAeA6ad1nzmDuCqRg+12HdfgfYRJSKGljcFZ2UgaPYxviAFXZFNSo3E0KreGWJJK1A==
-X-Received: by 2002:aa7:c418:0:b0:555:13c9:5f88 with SMTP id j24-20020aa7c418000000b0055513c95f88mr2016362edq.118.1705341779560;
-        Mon, 15 Jan 2024 10:02:59 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.215.66])
-        by smtp.gmail.com with ESMTPSA id fe1-20020a056402390100b005592d70c31esm2241652edb.17.2024.01.15.10.02.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Jan 2024 10:02:59 -0800 (PST)
-Message-ID: <7035daa6-e654-4e77-be55-60f8e8c6639f@linaro.org>
-Date: Mon, 15 Jan 2024 19:02:55 +0100
+	dkim=pass (2048-bit key) header.d=cornelisnetworks.com header.i=@cornelisnetworks.com header.b="Ex7UsO5g"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hSp5rG46VWnVDrC9knGHeWj6b/sk6PTzfp3BIpv4wzNmsK7Ja8XCWsOLnQbnqf/Irt8DNiAfmulQ7Hq9afbc09Tc8AJDs16yHgnW1QAEML+C5LJy4gJmLgdHphyz1Uul7Y0JsJaxkQcizs0QgKsPl+lcXHfua73GmkuffJS/Iwm2CKgKzdpqUuT24t+JfccvdV34r74Mxn8/njV+4imOSXgeNQRdleJ6u0aqSIDrMQOSoV4u6nChs2509lZD7UCzRAS3Lh++mF3kDCzQfIdskW5N8NL64I4j8a60oJyWcIjjm81MCkxIIENRR8VGXZe0EyAE3/V8YL+9UTJhKHgS/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dddn34Nxc8vqJHE7CSWmKSjZrVhYtizTHPpa4o7woZo=;
+ b=ccsNecgc+l3BhtpYmutAu3I6Y7J6vnmF5AIBed6/kyjhgYOLgm4/GQApz0+mzlaTy4fNcyR0Ews01BNZpDRHnTd5lpi3PLn71GD8ldhYYm7svNCs7Dr+dYN0nvyQhStzME/KpLJtFNGnFptci+pisN76lytrJ6Rif0tBuxwT94m9aWzKNexG+aB4/LV1sfricVI5m6cY+m7J9evFkwQCPs5HwtS+VTIBNj5DztYduCo4XRqIAiCxRSeUGD0IZBHCtMsU7qnr5jLDW2S5QhYDOMlLTenqo7Ol4k1dm55bP2tx9UGmdSg0NDmPS4vhVWiROxSLw3iNGkUR2KxLl4ymaw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=cornelisnetworks.com; dmarc=pass action=none
+ header.from=cornelisnetworks.com; dkim=pass header.d=cornelisnetworks.com;
+ arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cornelisnetworks.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dddn34Nxc8vqJHE7CSWmKSjZrVhYtizTHPpa4o7woZo=;
+ b=Ex7UsO5g5GHaUBp4dZXnqBvBXG0H7jpytDA3R3PD5GT1wccBGJE3NSbXrV5dQs1RZzfhSoQWwwq6dzEPe/+9uHQk8pfwSU9rlWfUbpzD29wZv2pv06u2KP8zSscVM15VQoVOghHg9JiunD6bf+yGVPbR+s1qjJ+BRZEtbbyloxWMg1Nwf3w73at20foVY3cGWZxW/RdlRmuNuu8ZdxdsrLvS/XOvUPZA3Yi36kKIXs06mtGWsQ1hYPD4jy1soQ0uBpWH4EyWZ29Dg5W3WbYQHN73B8O0N87+JFGLegIbC7AxX87tKUSmC2GxdEut2E1pnh1mdXjCThrBFsKw3SLFXA==
+Received: from BY5PR01MB5635.prod.exchangelabs.com (2603:10b6:a03:1a9::29) by
+ BY3PR01MB6785.prod.exchangelabs.com (2603:10b6:a03:365::20) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7181.23; Mon, 15 Jan 2024 19:07:31 +0000
+Received: from BY5PR01MB5635.prod.exchangelabs.com
+ ([fe80::46d2:6053:23de:c858]) by BY5PR01MB5635.prod.exchangelabs.com
+ ([fe80::46d2:6053:23de:c858%3]) with mapi id 15.20.7181.019; Mon, 15 Jan 2024
+ 19:07:30 +0000
+From: "Srinivasan, Usha" <usha.srinivasan@cornelisnetworks.com>
+To: Hugo Villeneuve <hugo@hugovil.com>
+CC: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Subject: max14830 nobody cared Disbling IRQ issue
+Thread-Topic: max14830 nobody cared Disbling IRQ issue
+Thread-Index: AQHaR+YWx8arCI/v3UGtuO9AmL25TQ==
+Date: Mon, 15 Jan 2024 19:07:30 +0000
+Message-ID:
+ <BY5PR01MB5635C11E9BE2B105FB7B87A09E6C2@BY5PR01MB5635.prod.exchangelabs.com>
+References:
+ <DM4PR01MB75952BAB0B535CF832C89AD99E6B2@DM4PR01MB7595.prod.exchangelabs.com>
+	<20240108172934.c457ca06b6543f868d32de46@hugovil.com>
+	<DM4PR01MB75959DD41CC90B1B704A05D29E6A2@DM4PR01MB7595.prod.exchangelabs.com>
+	<20240110174015.6f20195fde08e5c9e64e5675@hugovil.com>
+	<BY5PR01MB5635A9264220404AA6EA5C089E682@BY5PR01MB5635.prod.exchangelabs.com>
+	<20240111115239.63d408a688b1b8783de3064f@hugovil.com>
+	<BY5PR01MB56351BA462070C585273B3909E682@BY5PR01MB5635.prod.exchangelabs.com>
+ <20240111140833.4d312e7e4ae11f1770df8968@hugovil.com>
+In-Reply-To: <20240111140833.4d312e7e4ae11f1770df8968@hugovil.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=cornelisnetworks.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BY5PR01MB5635:EE_|BY3PR01MB6785:EE_
+x-ms-office365-filtering-correlation-id: c6196230-3524-4863-3148-08dc15fd38f2
+x-ms-exchange-atpmessageproperties: SA
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ MfQqrg35M/EoelPGbNjSRWLtudALAAevlqWOB2ugCEX7elpk6Jf6U1PNZhpdjG732WlcHHrd7rVKfgeQL0WpERN2NFKBncooS6DG6tohqq8N6Z7KDKmEYYHYaCkN8+6RNtzejBk/yiSrFLBxnETg04avuW7Q7idlCUql//iNTfAmM1xvGJN2E1jjTa7+vagVNfaokxta4f2FHGN7GbnPTUnilmJZ3gZli4FLlnDxIX4cjZ2kpjae1a00Mu6tvP4G6AVglfrynSpRZAbJVjvrZcXPrCfkJbe4jrkF6tKayOKYwe4Pc8OvtXY5fTToNjF4ROQGMJgnY2ty7oLAP/QLCWGTFdgrKUA8KgHp9eaLHv5EFb/1YXgdbwMdQG1alXIHMSNxzCRolUnRDYrft+SS0GPBHK7A/vnqdsPSLGTsW+bR/9Rj7I60kY7AR5c855cByoo1rtgkmefRqXXPALzOA9nSNFlPcDzzbU/bNPnQYFhCUeMn+9XZdAKKow2X4aEo/aG4c5LjpVOgSraylYTvUs+Ej654vTkrDY43IoMP9MeoMmxKYv86oGBvm8dp7Djr3DwjCmZidq4esAypGYeH7pNsy6SbRfl22aoqDhy1Ayj6XFsOzjZCBjUIYbgtwHSiL3WKR3qHnS7KFw1vQokEXi7UvSmALW/V7u0GCA762OY=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR01MB5635.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230031)(39840400004)(376002)(396003)(366004)(136003)(346002)(230273577357003)(230173577357003)(64100799003)(186009)(1800799012)(451199024)(6916009)(55016003)(2906002)(4744005)(5660300002)(8676002)(66946007)(71200400001)(316002)(8936002)(41300700001)(66476007)(66556008)(4326008)(52536014)(76116006)(66446008)(64756008)(86362001)(38070700009)(38100700002)(122000001)(33656002)(26005)(478600001)(83380400001)(6506007)(9686003)(7696005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?R66v17v69huFpTVP7kKBryjPKqz937a02ZK+plP6vDZAy2u9u0Kz+kGgG1jo?=
+ =?us-ascii?Q?VjW+cMNkVwe8OYEgOnIR1sxagl5wymMnNsV9NsrJ9PXGXoT6lww4kCQcymNO?=
+ =?us-ascii?Q?RcWrREMDIKn4ymVJeMMjOmp3hwPQ1QHFgnJgPJEhElbFXNj2IO0o5/6H+cIY?=
+ =?us-ascii?Q?k/aN4kn3bHrDfqQwN1mxNzlkfVjQsIms3cSP6h5wyXC2YfscdnkjvUlVRB47?=
+ =?us-ascii?Q?V2xKC19lvSB5sn2ovttZ/Lh1J4buH6M9wTq2RsdZorLu0X9pH0+Vn6YjYeEc?=
+ =?us-ascii?Q?q3X4A0eTYncMb8+3yNJWh0gZpkQFBFSObfVsK4sc2CkoghPYf/8sDMMIle+K?=
+ =?us-ascii?Q?YQppkFlho3NJqwd5zo0TLfcb2jKG9L2t+ejV20SczksdNFSkqTvvVmViCEzW?=
+ =?us-ascii?Q?/pwjkP/dz3KQW5nrz8O6bPqqBuaet68CimzG5Uv/PdIh0J0pLXMh50a9aAlQ?=
+ =?us-ascii?Q?BwUkkmeDb90QDUcSvHafZrjmFyLJhEXWOa1u/7lN/Msgp69pb73y98uWSl8s?=
+ =?us-ascii?Q?s4t3rHCFUomh0uM0uilNAUVt51hy675M3HefbjLiIsmrXojhLLx0ciL39V3v?=
+ =?us-ascii?Q?31zh4gEmT0Rw5jBYb2wwV81R9/EpecAl+1D02osjLMIfbK993QrjLhp82W7t?=
+ =?us-ascii?Q?/oMzTwnSXcNm8SGFEX4b1MjEtxf3Nfyd2FAEW2wVobqLYRm2JFzNml7JmGLs?=
+ =?us-ascii?Q?Y5gl41tGDKHPpPFYxAyrnAEeDO401ixA+D7G8ANtqq3CsscTa7ONvEdTTA7V?=
+ =?us-ascii?Q?qS98aWRmx03UKbQXoPROF6Geu+WiGrcyqBkDnsjrCTdPmSn5osJ7Y7sa854s?=
+ =?us-ascii?Q?qA0qIQe/JBciZSagELq4FzQMOpv5R0InPbxD8L5OXBNBTMXhaoSnzn5lUhdV?=
+ =?us-ascii?Q?Z1VCeTcfeyU8tI8MH8tAMQ3ZChu7qde23NcnRc+kyHJlLKvXZGbL/6H+U1PY?=
+ =?us-ascii?Q?kthDOibiU/ADnlKi87BALeMLTU9mA+vRqZL9c4PrS/lp2IJt1is6QjeG5RyH?=
+ =?us-ascii?Q?ZqNWGTLGfwqEGmOURYkbgipnPxrTMO8YtKN91ULC/WAH/hyjOCqX2s5/D6rg?=
+ =?us-ascii?Q?HW0ukTHj57WHLLL/a5t2Cvqzw77jluBQzRNhsq6e/A4P8sXiLYs52Qb2cEz0?=
+ =?us-ascii?Q?Aqe38kQK3xL71D2Ply90sbGhj9r49YfmAowXy9fWwzD3Xdu2sIit9CpwaUaB?=
+ =?us-ascii?Q?pYcH608/fD5q/+4avdeE6N1JjW84hCQ3WXykArhvEp0btFkRpc9z8QQo7v3+?=
+ =?us-ascii?Q?epMONysRD8qN7CfbaUDbxR3RTMPFdcvTCYtcbL5NA7KhLCcz79cJMOwjvmHV?=
+ =?us-ascii?Q?k3bOlJneu3F155Fq3r333INDSAaMte+rqOdre7/3gRMk+U30FMmFLOqKs/ZN?=
+ =?us-ascii?Q?kk+In7gY0DPuzeM4lSELP6UA53Lkrhhq1bdq0KtPQ7/A9ddXwPbcI2zcPsm5?=
+ =?us-ascii?Q?ltqoRA/ByRHgzE6YjibT+sDwLq8trmKf6ZQ8J8aNoIm0z0vuphKN2//XBrrB?=
+ =?us-ascii?Q?BfYPz0Six/vw5g64tZG/l5VZ+rGawxhn3lqhx+wLEdC1CfA/UYAtOiXV2JH7?=
+ =?us-ascii?Q?d8j9Tk4QYZ9SH70jKONHDnJXQtd1Z8APhELB2zFtdI+d+KjFAAxrgLdDHoMA?=
+ =?us-ascii?Q?Qg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 1/3] dt-bindings: w1: UART 1-Wire bus
-Content-Language: en-US
-To: Christoph Winklhofer <cj.winklhofer@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Jonathan Corbet <corbet@lwn.net>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-doc@vger.kernel.org
-References: <20240106-w1-uart-v4-0-7fe1378a8b3e@gmail.com>
- <20240106-w1-uart-v4-1-7fe1378a8b3e@gmail.com>
- <20240113013917.GA3795949-robh@kernel.org> <ZaLQxGjjmA_iKOv2@cjw-notebook>
- <81c79939-56cc-4d78-9552-56568999df09@linaro.org>
- <ZaP0CoCYLQxrT3VD@cjw-notebook>
- <1b8cb3ba-6727-45ab-acaa-c727a0a7ad85@linaro.org>
- <ZaVtNmvRjPAn9bph@cjw-notebook>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <ZaVtNmvRjPAn9bph@cjw-notebook>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: cornelisnetworks.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR01MB5635.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c6196230-3524-4863-3148-08dc15fd38f2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jan 2024 19:07:30.5795
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4dbdb7da-74ee-4b45-8747-ef5ce5ebe68a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: In4oVsZMxoyUeqesedeUB5dwybf6CL+yWWbz2//5SPGLS7f0pdvdhI8zQh/SnVjMuDpXADzDCb0lbn7fCeVEtj56Ngspv5D8vrq6yo+dJz5Bkq2+E8YuDotV7JFYZVsS
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY3PR01MB6785
 
-On 15/01/2024 18:36, Christoph Winklhofer wrote:
-> On Sun, Jan 14, 2024 at 04:55:42PM +0100, Krzysztof Kozlowski wrote:
->> On 14/01/2024 15:47, Christoph Winklhofer wrote:
->>> On Sun, Jan 14, 2024 at 11:54:48AM +0100, Krzysztof Kozlowski wrote:
->>>> On 13/01/2024 19:04, Christoph Winklhofer wrote:
->>>>> On Fri, Jan 12, 2024 at 07:39:17PM -0600, Rob Herring wrote:
->>>>>> On Sat, Jan 06, 2024 at 05:02:24PM +0100, Christoph Winklhofer wrote:
->>>>>>> Add device tree binding for UART 1-Wire bus.
->>>>>>>
->>>>>>> Signed-off-by: Christoph Winklhofer <cj.winklhofer@gmail.com>
->>>>>>> ---
->>>>>>>  Documentation/devicetree/bindings/w1/w1-uart.yaml | 62 +++++++++++++++++++++++
->>>>>>>  1 file changed, 62 insertions(+)
->>>>>>>
->>>>>>> diff --git a/Documentation/devicetree/bindings/w1/w1-uart.yaml b/Documentation/devicetree/bindings/w1/w1-uart.yaml
->>>>>>> new file mode 100644
->>>>>>> index 000000000000..6b90693b2ca0
->>>>>>> --- /dev/null
->>>>>>> +++ b/Documentation/devicetree/bindings/w1/w1-uart.yaml
->>>>>>> @@ -0,0 +1,62 @@
->>>>>>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
->>>>>>> +%YAML 1.2
->>>>>>> +---
->>>>>>> +$id: http://devicetree.org/schemas/w1/w1-uart.yaml#
->>>>>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>>>> ...
->>>>>>> +properties:
->>>>>>> +  compatible:
->>>>>>> +    const: w1-uart
->>>>>>> +
->>>>>>> +  reset-speed:
->>>>>>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>>>>>> +    default: 9600
->>>>>>> +    description: |
->>>>>>
->>>>>> Don't need '|' if no formatting
->>>>>>
->>>>>
->>>>> Ok.
->>>>>
->>>>>>> +      The baud rate for the 1-Wire reset and presence detect.
->>>>>>> +
->>>>>>> +  touch_0-speed:
->>>>>>
->>>>>> Don't use '_' in property names.
->>>>>>
->>>>>> I'm somewhat familar with 1-wire, but I don't get what 'touch' means 
->>>>>> here. I assume these are low and high times which are a function of the 
->>>>>> baudrate.
->>>>>>
->>>>>
->>>>> I change the name to 'write-0-speed' and 'write-1-speed'. The function
->>>>> in the w1-framework is named 'touch_bit' - therefore the previous
->>>>> naming. 
->>>>>
->>>>> It is the baud-rate used in the 1-Wire cycle to write a 0-Bit
->>>>> (write-0-speed) and to perform a 1-Wire cycle that writes a 1-Bit and
->>>>> reads a 0-Bit or 1-Bit (write-1-speed).
->>>>
->>>>
->>>> Then probably -bps:
->>>> https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/property-units.yaml
->>>
->>> The serial.yaml uses prefix -speed for the baud rate but I can change it
->>> to -bps.
->>
->> Do you reference serial.yaml?
->>
-> 
-> No, serial.yaml is not referenced but 'onewire' will be a child-node of
-> a serial-device which already defines baud rate related properties
-> with -speed (e.g. max-speed although not used in w1-uart). Hence, I
-> thought -speed is typically used for baud rates.
+Hi, Hugo.
+We fixed our clock issue in the platform; and you were right, I need to bum=
+p the delay to 100 in addition. I pulled in the latest version of max310x.c=
+ from torvals linux and I still get the "nobody cared" stack traces & the i=
+nterrupts get disabled.  I'm hoping you can help me get beyond this.
 
-Ah, it defines max-speed for childre, so for onewire. Re-using that
-property would make sense, but since you are defining completely new
-properties, let's use proper (-bps) naming.
+57:     100001          0 1e780000.gpio 152 Level     11-006c
+ 58:     500001          0 1e780000.gpio 153 Level     11-0061
+ 59:     100001          0 1e780000.gpio 154 Level     11-0062
+ 60:     100001          0 1e780000.gpio 155 Level     11-0064
+[   88.832861] [<da8c4f2b>] irq_default_primary_handler threaded [<ac7ce979=
+>] max310x_ist
+[   88.841725] Disabling IRQ #57
+[  175.370303] [<da8c4f2b>] irq_default_primary_handler threaded [<ac7ce979=
+>] max310x_ist
+[  175.379166] Disabling IRQ #59
+[  262.242889] [<da8c4f2b>] irq_default_primary_handler threaded [<ac7ce979=
+>] max310x_ist
+[  262.251752] Disabling IRQ #60
+[  369.903466] [<da8c4f2b>] irq_default_primary_handler threaded [<ac7ce979=
+>] max310x_ist
+[  369.912332] Disabling IRQ #58
 
-I still wonder, why would you use different baud rates for these three
-different operations?
-
-Best regards,
-Krzysztof
-
+Thank you.
+Usha
+External recipient
