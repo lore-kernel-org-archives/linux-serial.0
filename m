@@ -1,113 +1,147 @@
-Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F86C1CD29
-	for <linux-serial@vger.kernel.org>; Tue, 16 Jan 2024 18:21:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63DBC1D520;
+	Tue, 16 Jan 2024 18:23:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705429298; cv=none; b=cNvhVDVZTqd39xo17frYRWknqpKKvSgay/yeBEzGL8ro8yaoGqUEHuHnCrz5y8BzY9Yg4LpNHnLg0ucK1fjER/MOWlDy6xqfJiBTUDpjE1T7r75aD8EiEmTInzAw6POCQ2Vl+dlHFmBc58YCvzgGvv02Vveg/BDPfeyluilO99M=
+	t=1705429395; cv=none; b=pUNgiuf2QUZxIT1RT4CPBZ3g/nRLqMh2VFaGtaShrlqOd8XXo93JNv2VEPlf7CxygtlZr7eyoF5psx9lYHnfbtyi8k0Sqi8TNlZdBZpn0ST5m2r6QOJ6Q2dEYBLQS/tr+S6Bd+3xU4+5LypP+K02B08rFDkVNZM4jgHSssHjIYw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705429298; c=relaxed/simple;
-	bh=iGtilefM/gHGUZFo8PnOopvTKNySbPwZh2/Qz7KBUmA=;
-	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:MIME-Version:
-	 References:In-Reply-To:From:Date:Message-ID:Subject:To:Cc:
-	 Content-Type:Content-Transfer-Encoding; b=ZrzX5tgKmsIpzJ7TTWJnOYOZfGGp8YEOir1h4HPTXQnSMqs5caEhpgsCijMIdq0+XSIoAjNybTnh+/Vw+rJvFDu2ydp7aovZ0mzznZ1rdFv3V5TAqp++1axeVsOu+qbZuqMSf2Wb3aI8N+gjTJvo2+fjDMjZ3vhK39nAAtWG6aw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=TQ6sLM2u; arc=none smtp.client-ip=209.85.216.49
+	s=arc-20240116; t=1705429395; c=relaxed/simple;
+	bh=BZZrwB54NzVpdIKnJH5IBEBJlnxfuCsPO9zMgTYYx0Q=;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:
+	 In-Reply-To; b=N0hxUpELg5L2X2//+ejvosvbr9dBvyyjQ4uOtsj81niFzVHV5JSd4aL3CIBv9U1tvvWMsXhE3Yi/CMP/94O5h5BOEotijm+9GHzJtb555/HE0uHK/x1ro6G3l6vSmZ0+L+I5Jyd/WZOaBA+k3bO0GYcXVDuXvg11B+ZatFwDtFM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=udPD62db; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="TQ6sLM2u"
-Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-28e724d9c47so644930a91.2
-        for <linux-serial@vger.kernel.org>; Tue, 16 Jan 2024 10:21:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1705429297; x=1706034097; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XJipabZ4zYazV9lmvPELaW28mg+mGYQPV3OWXJ3l8Lg=;
-        b=TQ6sLM2uV/PtTURW4b5q+1sq0c8VHyX0LyJC/8bqwJmaO7dbxAYGctcl0Hu+Lp6AHq
-         rgL/WQeVkGbL7MHjCYPb8jsQXGlckhtMXRQMH7UffadiN1essyf/AMnissPDyJvK+X7J
-         tklzASBDvFEOLgNbfit72lUKYpftxmKjI6QkyivkLvtQ9n2b57+W4cBWSuHBfP9wfBXI
-         86c1fTgJua8pPh2dBSwNsJ245NvIUs4OTUyKAZyxyV1S6v5FHnxYrGdSLErYOJ+Yq+2T
-         zTDXeiszorLzW18N6o8JeR4OTu9/IxjtbCAGydwz/cJB6qJVrVC+cuKaV0XdeqUBemxm
-         s2ZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705429297; x=1706034097;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=XJipabZ4zYazV9lmvPELaW28mg+mGYQPV3OWXJ3l8Lg=;
-        b=ncW+VHA2BOIpz0OFpEfpOF1wvF56daRqUw/7c4P8zGqKrcqApK2AC9Fv+yTD0Ku1V1
-         TTKTG0JPjNLyH0cwhUIwY5J4JLS5UbIEZtKREH1XPM9jYmZ4l3RSq5SO5pUB+Y5FHuZ/
-         qQ7YAkJDqsYpYhRWj3u8HhdgwHIrtSnhVIN+zht5P2pVgJNjSsnxV39LOc5xZ/c1ql/4
-         hvHoV2tLKyO5Za/OXYAPa1u6acO+18wlHE72wfpV4Gb17GSLIK75L04R3jh3/w5mbjQv
-         8YfOxhP24z2ATZxBTDRrkF9ObHDs8GwRLTgZ0B6Mw7jHneCCGV/oO9nAXcwDS1vcUcqy
-         eNHg==
-X-Gm-Message-State: AOJu0Yw9i+/9zMdAt8NK032Uo1pVTVIhuCvaDZYpH5sj3ksVZiGtppEM
-	KbD4f1BOvflL9v4TUdV/veTmj9nzEcSlxW397tMJZdkV+GrUzA==
-X-Google-Smtp-Source: AGHT+IGD45n2Kmp+42UAAvN1CntcTMHyFOTUd0Yzi86RjPsn4J8yQSUWK55vtqIj7sCnDXiqs0FpmeClEfHPtw8H6Y4=
-X-Received: by 2002:a17:90a:d193:b0:28e:79ea:924d with SMTP id
- fu19-20020a17090ad19300b0028e79ea924dmr948652pjb.92.1705429296877; Tue, 16
- Jan 2024 10:21:36 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="udPD62db"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9565AC433F1;
+	Tue, 16 Jan 2024 18:23:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1705429394;
+	bh=BZZrwB54NzVpdIKnJH5IBEBJlnxfuCsPO9zMgTYYx0Q=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=udPD62dbadhMBLT6wXnbk/PYsrCAhEDzjxtawZJ9t1xIzxa7qfbeCQZOMjoea3fNW
+	 ny+vVTuIADQ7GD+7sSRh8UkwpzCq8tRLvoVD1YVU3y8RlPNrvhJaPpGtGNVQ7KuO22
+	 UY8nTAwYCb42cZNy+jP21tJ/QioS8vTLwiEwsExq/qag4FgJ8znilhvRbhZm7y66b1
+	 tRzF0R/qHyskJBWBYZfiOHQgcKgDt0IAHFQ8cv33ftqROoOt7W8C7TJgl137N72wn6
+	 VFHO8HARbFh3IEiUgbMNiIv+izNcblv8i63ErRkDoKK+o68aALBny2lm8lYFeq9y9Y
+	 QWDaX98aExH2A==
+Date: Tue, 16 Jan 2024 18:23:09 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Frank Li <Frank.li@nxp.com>
+Cc: Conor Dooley <conor.dooley@microchip.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	robh@kernel.org, alexandre.belloni@bootlin.com,
+	conor.culhane@silvaco.com, gregkh@linuxfoundation.org,
+	imx@lists.linux.dev, jirislaby@kernel.org, joe@perches.com,
+	linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, miquel.raynal@bootlin.com,
+	zbigniew.lukwinski@linux.intel.com, devicetree@vger.kernel.org,
+	krzysztof.kozlowski+dt@linaro.org
+Subject: Re: [PATCH v2 2/7] dt-bindings: i3c: svc: add compatible string i3c:
+ silvaco,i3c-target-v1
+Message-ID: <20240116-retract-conclude-c47a7fc8cb21@spud>
+References: <e3b9aa63-25a5-41cc-9eb7-6e7d1eacb136@linaro.org>
+ <ZaFjaWCA6k+tiCSJ@lizhi-Precision-Tower-5810>
+ <ZaWLCrWJEMtFx8cR@lizhi-Precision-Tower-5810>
+ <1b628901-7f71-4c97-9a16-723912988417@linaro.org>
+ <ZaXqCoCHPWER94Hh@lizhi-Precision-Tower-5810>
+ <d45e31c4-914e-4cea-a145-9775b6f516ab@linaro.org>
+ <20240116-bleach-herbicide-48d636967134@wendy>
+ <3199c245-3d2d-49e8-951e-2b059de4d683@linaro.org>
+ <20240116-achiness-thievish-10a12b3c08cd@wendy>
+ <Zaa+cLGVVDSB5MYr@lizhi-Precision-Tower-5810>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240110102102.61587-1-tudor.ambarus@linaro.org> <20240110102102.61587-11-tudor.ambarus@linaro.org>
-In-Reply-To: <20240110102102.61587-11-tudor.ambarus@linaro.org>
-From: Sam Protsenko <semen.protsenko@linaro.org>
-Date: Tue, 16 Jan 2024 12:21:25 -0600
-Message-ID: <CAPLW+4=YYdUSaaLcsdEyPswC4s6onxuSh24vSfw4xys=sPZG_Q@mail.gmail.com>
-Subject: Re: [PATCH 10/18] tty: serial: samsung: make max_count unsigned int
-To: Tudor Ambarus <tudor.ambarus@linaro.org>
-Cc: krzysztof.kozlowski@linaro.org, alim.akhtar@samsung.com, 
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	andre.draszik@linaro.org, peter.griffin@linaro.org, kernel-team@android.com, 
-	willmcvicker@google.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="qdmJxKjtdyHy6e/u"
+Content-Disposition: inline
+In-Reply-To: <Zaa+cLGVVDSB5MYr@lizhi-Precision-Tower-5810>
+
+
+--qdmJxKjtdyHy6e/u
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jan 10, 2024 at 4:23=E2=80=AFAM Tudor Ambarus <tudor.ambarus@linaro=
-.org> wrote:
->
-> ``max_count`` negative values are not used. Since ``port->fifosize``
-> is an unsigned int, make ``max_count`` the same.
->
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
-> ---
->  drivers/tty/serial/samsung_tty.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsun=
-g_tty.c
-> index 90c49197efc7..dbbe6b8e3ceb 100644
-> --- a/drivers/tty/serial/samsung_tty.c
-> +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -760,8 +760,8 @@ static irqreturn_t s3c24xx_serial_rx_chars_dma(void *=
-dev_id)
->  static void s3c24xx_serial_rx_drain_fifo(struct s3c24xx_uart_port *ourpo=
-rt)
->  {
->         struct uart_port *port =3D &ourport->port;
-> +       unsigned int max_count =3D port->fifosize;
+On Tue, Jan 16, 2024 at 12:35:44PM -0500, Frank Li wrote:
+> On Tue, Jan 16, 2024 at 09:48:08AM +0000, Conor Dooley wrote:
+> > On Tue, Jan 16, 2024 at 10:33:48AM +0100, Krzysztof Kozlowski wrote:
+> > > On 16/01/2024 10:30, Conor Dooley wrote:
+> > > > On Tue, Jan 16, 2024 at 08:24:20AM +0100, Krzysztof Kozlowski wrote:
+> > > >> On 16/01/2024 03:29, Frank Li wrote:
+> > > >>>>> 	Patches were accepted after discussion, what you ponit to. So I
+> > > >>>>> think everyone agree on the name 'silvaco,i3c-master-v1'.
+> > > >>>>> 	I plan send next version to fix auto build error. Any addition=
+al
+> > > >>>>> comments about this?
+> > > >>>>
+> > > >>>> I still do not see how did you address Rob's comment and his poi=
+nt is
+> > > >>>> valid. You just did not reply to it.
+> > > >>>
+> > > >>> See https://lore.kernel.org/imx/ZXCiaKfMYYShoiXK@lizhi-Precision-=
+Tower-5810/
+> > > >>
+> > > >> First of all, that's not the answer to Rob's email, but some other
+> > > >> thread which is 99% ignored by Rob (unless he has filters for
+> > > >> "@Rob"...). Therefore no, it does not count as valid answer.
+> > > >>
+> > > >> Second, explanation does not make sense. There is no argument gran=
+ting
+> > > >> you exception from SoC specific compatibles.
+> > > >=20
+> > > > The patch could have been applied two months ago had Frank done as
+> > > > was requested (multiple times). I don't understand the resistance
+> > > > towards doing so given the process has taken way way longer as a re=
+sult.
+> > >=20
+> > > I think that Rob's comment was just skipped and original master bindi=
+ng
+> > > was merged without addressing it. I don't want to repeat the same
+> > > process for the "target". Indeed I could point this earlier... if I o=
+nly
+> > > knew that Rob pointed out that issue.
+> >=20
+> > Oh I think I got confused here. The context for this mail led me to
+> > think that this was still trying to push the i3c-master-v1 stuff through
+> > and I was commenting on my frustration with the resistance to applying
+> > the feedback received. I didn't realise that this was for another
+> > patch adding a target.
+> >=20
+> > I think you already said it, but NAK to adding any more compatibles here
+> > until the soc-specific compatible that was asked for for the imx93 is
+> > added.
+>=20
+> Is it okay for 'silvaco,i3c-target-imx93'?
 
-What if port->fifosize is 0? Then this code below:
+I don't know. Is the device in question capable of also operating in
+master mode? I have no idea from the commit message since it contains
+zero information on the hardware.
+If the exact same controller can operate in master and target mode,
+having two compatibles for the same device does not seem okay to me.
 
-    while (max_count-- > 0) {
+Also, "silvaco" does not make the imx93 so that is not a suitable vendor
+prefix. If the imx93 only supports i3c IPs in target mode, I would call
+it "<vendorofimx>,imx93-i3c" with "silvaco,i3c-target-v1" as a fallback.
 
-would cause int overflow, if max_count is unsigned?
+Thanks,
+Conor.
 
->         unsigned int fifocnt =3D 0;
-> -       int max_count =3D port->fifosize;
->         u32 ufcon, ufstat, uerstat;
->         u8 ch, flag;
->
-> --
-> 2.43.0.472.g3155946c3a-goog
->
->
+--qdmJxKjtdyHy6e/u
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZabJjQAKCRB4tDGHoIJi
+0oBVAQDDSQszcWBHPjv+zzPJ4Jwf5F3zvlWOZOaPQSVALMBS1AEAjehMKKMgybnn
+hKiuBGxe+C7CLnu7Tf0NAw78Xj6lcQY=
+=fPBb
+-----END PGP SIGNATURE-----
+
+--qdmJxKjtdyHy6e/u--
