@@ -1,76 +1,53 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA8E81BF53;
-	Tue, 16 Jan 2024 15:50:04 +0000 (UTC)
+Received: from mx3.securetransport.de (mx3.securetransport.de [116.203.31.6])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CE14C1C294;
+	Tue, 16 Jan 2024 16:07:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dh-electronics.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D7hkVFcF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FCBBC433C7;
-	Tue, 16 Jan 2024 15:50:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1705420204;
-	bh=i3khedQ+kiQ0f7qWV61kvzfkthuUNxWpEynNOJvz5Ak=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=D7hkVFcFHNtDHPtRPUO+psut8uD4XDQ6J6Z1j1aS25VcpxgYMF04nRcp021DwdSuU
-	 blLjX3+dH65ZlAXHYHJP1NrqwAxhuMgbD1rG5IRXwiXmUA8epSC/TYjopWZggSd7Z0
-	 LvTJ6v8QKqnmqA1f/yD2zFgtNpOcRxehzcVV1Q/zyInUErQNUo/aMEr2lVAg9bPyJs
-	 uqnU1XsKgJUNFx9JcDsP6Mt5VSCwTGpBJG4Yshf0Swzg2I8uFVndetcfiGcwpch+Dd
-	 SBQgciWT8/tKGvHdFkMLWjCHNOxapWZw4qPWi3e2JtPeJM2DsR973TyY3f4pqj2qS/
-	 kWeSsW7GjwAJw==
-Date: Tue, 16 Jan 2024 09:50:02 -0600
-From: Rob Herring <robh@kernel.org>
-To: Tudor Ambarus <tudor.ambarus@linaro.org>
-Cc: cw00.choi@samsung.com, willmcvicker@google.com, andi.shyti@kernel.org,
-	gregkh@linuxfoundation.org, linux-samsung-soc@vger.kernel.org,
-	tomasz.figa@gmail.com, Sam Protsenko <semen.protsenko@linaro.org>,
-	peter.griffin@linaro.org, s.nawrocki@samsung.com,
-	andre.draszik@linaro.org, linux-serial@vger.kernel.org,
-	linux-clk@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-	jirislaby@kernel.org, linux-i2c@vger.kernel.org,
-	alim.akhtar@samsung.com, linux-arm-kernel@lists.infradead.org,
-	robh+dt@kernel.org, sboyd@kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, kernel-team@android.com,
-	mturquette@baylibre.com, conor+dt@kernel.org
-Subject: Re: [PATCH v3 01/12] dt-bindings: clock: google,gs101-clock: add
- PERIC0 clock management unit
-Message-ID: <170542020157.4185440.8965772370823681119.robh@kernel.org>
-References: <20240109125814.3691033-1-tudor.ambarus@linaro.org>
- <20240109125814.3691033-2-tudor.ambarus@linaro.org>
+	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="jHJ4XdzE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
+	s=dhelectronicscom; t=1705420776;
+	bh=EK7VBFYYbMk8kVgMxZTPj1kGRPSKxlDAK/5fbH1kX1c=;
+	h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+	b=jHJ4XdzEPAClJe0sDxzOefJFMXvpEQASvespCnWnasQdHKgEibs52ExZl0ym+I8Dh
+	 ES8VaUMg2zxhJ437cZcLgnbZAkzgVOdjpFGovezFvsy2B/bBXbVQqYypqk7l9Qji8z
+	 gvIN+UkMy4fQoq8BQXJn0TUE/WaH79VyQjP2RTUTKnIVrabtF8O5Y5B8NTD45MaLgQ
+	 KeWv6bqz0rehkQOE++mUgFGnSxxwlElYd5e/NXOOJ9pPjIfT+DF2Jr7V3qppyyKMgQ
+	 NIuQkc+UXOJ+gOQzpN3M64l9+JZ9/u/wxdH+G0sCvNddFpW0xiyFq1uLev8C9vPzRi
+	 x/4ahyBohQWCA==
+From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+To: <crescentcy.hsieh@moxa.com>
+CC: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+	<cniedermaier@dh-electronics.com>, <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v6 1/2] tty: serial: Cleanup the bit shift with macro
+Date: Tue, 16 Jan 2024 16:58:29 +0100
+Message-ID: <20231201071554.258607-2-crescentcy.hsieh@moxa.com>
+X-klartext: yes
+In-Reply-To: <20231201071554.258607-2-crescentcy.hsieh@moxa.com>
+References: <20231201071554.258607-2-crescentcy.hsieh@moxa.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240109125814.3691033-2-tudor.ambarus@linaro.org>
+Content-Type: text/plain
+Message-ID: <20240116155829.xujroYp6NXO3vHp7eh46lP1rZsOvSxrXTUTHa4y9m4s@z>
 
+In the old definition (1 << 3) wasn't used.
 
-On Tue, 09 Jan 2024 12:58:03 +0000, Tudor Ambarus wrote:
-> Add dt-schema documentation for the Connectivity Peripheral 0 (PERIC0)
-> clock management unit.
-> 
-> Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
-> Reviewed-by: Peter Griffin <peter.griffin@linaro.org>
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
-> ---
-> v3:
-> - rename the clock names to just "bus" and "ip" as per Rob's suggestion
-> - collect Peter's R-b tag
-> 
-> v2:
-> - fix comments as per Sam's suggestion and collect his R-b tag
-> - Rob's suggestion of renaming the clock-names to just "bus" and "ip"
->   was not implemented as I felt it affects readability in the driver
->   and consistency with other exynos clock drivers. I will happily update
->   the names in the -rc phase if someone else has a stronger opinion than
->   mine.
-> 
->  .../bindings/clock/google,gs101-clock.yaml    | 25 +++++-
->  include/dt-bindings/clock/google,gs101.h      | 81 +++++++++++++++++++
->  2 files changed, 104 insertions(+), 2 deletions(-)
-> 
+> -#define SER_RS485_RX_DURING_TX		(1 << 4)
+> -#define SER_RS485_TERMINATE_BUS		(1 << 5)
+> -#define SER_RS485_ADDRB			(1 << 6)
+> -#define SER_RS485_ADDR_RECV		(1 << 7)
+> -#define SER_RS485_ADDR_DEST		(1 << 8)
+> +#define SER_RS485_ENABLED		_BITUL(0)
+> +#define SER_RS485_RTS_ON_SEND		_BITUL(1)
+> +#define SER_RS485_RTS_AFTER_SEND	_BITUL(2)
+> +#define SER_RS485_RX_DURING_TX		_BITUL(3)
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Isn't it a break if number 3 isn't skipped here as well?
 
+Regards
+Christoph
