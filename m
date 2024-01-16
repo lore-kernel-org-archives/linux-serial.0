@@ -1,157 +1,148 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5F1B11181
-	for <linux-serial@vger.kernel.org>; Tue, 16 Jan 2024 07:38:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="fs+wz5Gv"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1705390721;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=EfBFl2eOx6dzP8++zlyYwBxQmYQ5RCeNDtKgTlcPQsc=;
-	b=fs+wz5GvNF9czjwZpeMl56+kK4cMeSJ3iGoFCcd3FU/PjiPcIEVlCtSw2Yd+vEeKsvjXmD
-	t5B+suYgu0n7GjhB6mvkEVl/j1wK6ePuscA0Ckw0ddMBb4lpeiLjf4TGwbUskteAmf2Zdn
-	AFLGXhDs38BsNWFf4TTNi19l9AoR8Lc=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-101-A5T5TWzFMJC88rNOftyKWA-1; Tue, 16 Jan 2024 02:38:40 -0500
-X-MC-Unique: A5T5TWzFMJC88rNOftyKWA-1
-Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-7816e45f957so1470650585a.1
-        for <linux-serial@vger.kernel.org>; Mon, 15 Jan 2024 23:38:40 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 832DF11181;
+	Tue, 16 Jan 2024 07:49:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-337b976773fso255205f8f.0;
+        Mon, 15 Jan 2024 23:49:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705390720; x=1705995520;
-        h=content-transfer-encoding:content-disposition:mime-version
-         :references:in-reply-to:message-id:date:subject:cc:to:from
+        d=1e100.net; s=20230601; t=1705391356; x=1705996156;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=EfBFl2eOx6dzP8++zlyYwBxQmYQ5RCeNDtKgTlcPQsc=;
-        b=xVDHDSplX9HrLg/rrhCcDHgelieDZrY71IVDF8drMShGNlfZus80q/QBY09WkIGVYz
-         we8cJDXkwvOIdAafHnnGNHNWxGJEE7IGJcdGhuzi16lgiOt6D8jg+V4Djn402D3ej+lL
-         E6raxxPyIuhUxdSKB/+g9uDePJtt3/4TxLx+z4J7aoTqKhVK9JwIZsdMwwZaVH7vmy58
-         y0xXPeHqajGJs5UxdcRtRfGy1z1At5IkFfPlARH47y1AULZdBNMS7epDefKAKiIuRYcK
-         0Dx0zchDlAlk/dn6Qqo9uWw9qf4/to2m1RlVhVRRmhbLQag/RJQIuFzGalJcLoK1yLGU
-         qJpw==
-X-Gm-Message-State: AOJu0YyyVtRMVMI7BnbEkQtgGskHH2rL+og3e0f7ISy30gUDRxDyl5Rq
-	M3VuurjxOf37Zb9IrwMLj1JI0yJ0yqI3X7/9lmSs5fEy/nI+JzcdV2ee8ml4wMb5tXJh+s2Q6TT
-	WZ9v8QqDSUdFdBECs+lE12tNLBAwM678E
-X-Received: by 2002:ae9:e70c:0:b0:77d:9d58:5467 with SMTP id m12-20020ae9e70c000000b0077d9d585467mr7714863qka.29.1705390720220;
-        Mon, 15 Jan 2024 23:38:40 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IFFWqf/DygCnGdiywzz4XsNxJmOIjslN7QxsPszTwWbtfzwY8dVLHuuYSFixUOAnf4MwkJmRg==
-X-Received: by 2002:ae9:e70c:0:b0:77d:9d58:5467 with SMTP id m12-20020ae9e70c000000b0077d9d585467mr7714855qka.29.1705390719971;
-        Mon, 15 Jan 2024 23:38:39 -0800 (PST)
-Received: from LeoBras.redhat.com ([2804:1b3:a803:64aa:6db9:6544:60c:9e16])
-        by smtp.gmail.com with ESMTPSA id vr28-20020a05620a55bc00b0078199077d0asm3516021qkn.125.2024.01.15.23.38.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Jan 2024 23:38:39 -0800 (PST)
-From: Leonardo Bras <leobras@redhat.com>
-To: Leonardo Bras <leobras@redhat.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Tony Lindgren <tony@atomide.com>,
-	Marcelo Tosatti <mtosatti@redhat.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [RFC PATCH v1 0/2] Fix serial console for PREEMPT_RT
-Date: Tue, 16 Jan 2024 04:38:35 -0300
-Message-ID: <ZaYye6YU4mV4SYUV@LeoBras>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240116073234.2355850-2-leobras@redhat.com>
-References: <20240116073234.2355850-2-leobras@redhat.com>
+        bh=bMFfua79vsNO5VMfysSZXzOkQtkiDmf25dFKcIPKIxo=;
+        b=dv9BGTAG/d1KopuTciFELCtTbbxeZ+KUItyVPZiyDw+Y2SHcvc6h/V1J0a113+PaxY
+         8P2ffdZT4qFokd5zM5cA3Bl87ajV4l01EivxzSWamfdJyf9I9zDapOSlHh0Njdqw9c+r
+         IH4ciwUHTmMZCRzisHv3T55K7L9prCd8JDyUt7s7OjnTozIhdo/pYeWysf19y25lMlZ+
+         9BtQz43M+83buS4u1+XfyHeHZv0d1kqkZQHtbP5wfitu5eXSRadFZBGruz07kp8DHndS
+         uvuVoNx6PteOfEjC1TcoC04/TmCjlyfcVC9zgbYVl2RqAqB0R0VKegwLsxz/+ykCO56V
+         aGrw==
+X-Gm-Message-State: AOJu0YyuJDmfpX034u/u79T0vgwLxTzvKvO49cuK/z/1xWCzIVutYoP/
+	xNOjBdPn3mN+cttYgYdATcU=
+X-Google-Smtp-Source: AGHT+IGCiPUAlhxyP9f5dCzZ7GZMeYZ2ztaVnrYDeqyB6adKJEYODerKwBVGMr3j01KY4mOkkOxHrQ==
+X-Received: by 2002:a5d:6e90:0:b0:333:2e15:632c with SMTP id k16-20020a5d6e90000000b003332e15632cmr3705374wrz.10.1705391355593;
+        Mon, 15 Jan 2024 23:49:15 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id q2-20020a056000136200b003373fe3d345sm13786900wrz.65.2024.01.15.23.49.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Jan 2024 23:49:15 -0800 (PST)
+Message-ID: <dd85dd1c-1352-4136-9a06-00066435a1ba@kernel.org>
+Date: Tue, 16 Jan 2024 08:49:14 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH v1 2/2] serial/8250: Avoid getting lock in RT atomic
+ context
+Content-Language: en-US
+To: Leonardo Bras <leobras@redhat.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Florian Fainelli <f.fainelli@gmail.com>,
+ John Ogness <john.ogness@linutronix.de>, Tony Lindgren <tony@atomide.com>,
+ Marcelo Tosatti <mtosatti@redhat.com>, Steven Rostedt <rostedt@goodmis.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20240116073234.2355850-2-leobras@redhat.com>
+ <20240116073234.2355850-4-leobras@redhat.com>
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20240116073234.2355850-4-leobras@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jan 16, 2024 at 04:32:31AM -0300, Leonardo Bras wrote:
-> While dealing with a bug that breaks the serial console from qemu (8250)
-> after printing a lot of data, I found some issues on this driver on RT
-> as well as spurious IRQ behaviors that don't seem to be adeqate for RT.
+On 16. 01. 24, 8:32, Leonardo Bras wrote:
+> With PREEMPT_RT enabled, a spin_lock_irqsave() becomes a possibly sleeping
+> spin_lock(), without preempt_disable() or irq_disable().
 > 
-> Comments:
-> Patch #1:
-> I found out this driver get an IRQ request for every tx byte, but the
-> handler is able to deal with sending multiple bytes per "thread wake up". 
+> This allows a task T1 to get preempted or interrupted while holding the
+> port->lock. If the preempting task T2 need the lock, spin_lock() code
+> will schedule T1 back until it finishes using the lock, and then go back to
+> T2.
 > 
-> Since the irqs_unhandled keep growing, and theads_handled don't change
-> as often, after some intense load (tx ~300kBytes) the serial will 
-> disable the IRQ line for this driver, which ultimately breaks the console.
+> There is an issue if a T1 holding port->lock is interrupted by an
+> IRQ, and this IRQ handler needs to get port->lock for writting (printk):
+> spin_lock() code will try to reschedule the interrupt handler, which is in
+> atomic context, causing a BUG() for trying to reschedule/sleep in atomic
+> context.
 > 
-> My fist solution kept track of how many requests given handler dealt with,
-> which got added to theads_handled. On note_interrupt I got the diff from
-> theads_handled_last and subtracted that diff from irqs_unhandled.
-> 
-> This solution required a change in the irqreturn_t typedef and a bunch of
-> helpers and defines, as well as adapting the 8250 driver. 
-> At the end seemed like a overcomplicated solution for the issue, but it
-> can be an alternative if the current solution is considered imprecise.
-> 
-> Mu cyrrent solution on patch #1 is much simpler, just keeping the
-> IRQ enabled as long as the irq_thread deal with any IRQ request before
-> irqs_unhandled hitting the limit value.
-> 
-> Patch #2:
-> In RT, the 8250 driver has an issue if it's interrupted while holding the
-> port->lock. If the interruption needs to printk() anything, it
-> will try to get the port->lock, which is busy, so spin_lock() will try
-> to reschedule the interruption, which is in atomic context, and will 
-> trigger a bug.
-> 
-> This bug reproduces quite often, like in 50% of tests I did. 
-> 
-> The only thing I could think of for fixing this is using in_atomic()
-> when PREEMPT_RT=y, so it makes use of the same mechanism as for
-> oops_in_progress to avoid getting the lock if it's busy. It's working
-> just fine.
-> 
-> Yeah, I got the warning in checkpath:
-> "ERROR: do not use in_atomic in drivers"
-> 
-> So I need some feedback on what to do to avoid this bug, if not 
-> by using in_atomic() at this driver.
-> 
-> Since this one is linked to the console, any printk will try to get
-> this drivers port->lock, and so it's kind of hard to avoid this accesses.
-> 
-> I though on doing an interface for spin_lock_only_if_can_sleep() but
-> it seemed overkill.
-> 
-> Please provide comments / feedback.
-> 
-> Thanks!
-> Leo
-> 
-> 
-> Leonardo Bras (2):
->   irq/spurious: Reset irqs_unhandled if an irq_thread handles one IRQ
->     request
->   serial/8250: Avoid getting lock in RT atomic context
-> 
->  drivers/tty/serial/8250/8250_port.c | 2 +-
->  kernel/irq/spurious.c               | 8 ++++++++
->  2 files changed, 9 insertions(+), 1 deletion(-)
-> 
-> 
-> base-commit: 052d534373b7ed33712a63d5e17b2b6cdbce84fd
-> -- 
-> 2.43.0
-> 
+> So for the case (PREEMPT_RT && in_atomic()) try to get the lock, and if it
+> fails proceed anyway, just like it's done in oops_in_progress case.
 
-Resent this one with the correct order / patches.
+Hmm, that appears incorrect to me.
+
+Perhaps we need a raw spin lock? Or maybe I am totally off, as my RT 
+knowledge is close to zero.
+
+This needs advices from RT folks...
+
+> Signed-off-by: Leonardo Bras <leobras@redhat.com>
+> ---
+>   drivers/tty/serial/8250/8250_port.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 8ca061d3bbb92..8480832846319 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -3397,7 +3397,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+>   
+>   	touch_nmi_watchdog();
+>   
+> -	if (oops_in_progress)
+> +	if (oops_in_progress || (IS_ENABLED(CONFIG_PREEMPT_RT) && in_atomic())
+>   		locked = uart_port_trylock_irqsave(port, &flags);
+>   	else
+>   		uart_port_lock_irqsave(port, &flags);
+
+-- 
+js
+suse labs
 
