@@ -1,67 +1,67 @@
-Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
+Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5D901CAA2
-	for <linux-serial@vger.kernel.org>; Tue, 16 Jan 2024 18:52:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30CE91CF89
+	for <linux-serial@vger.kernel.org>; Tue, 16 Jan 2024 18:54:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705431135; cv=none; b=eMdAi2wut82iGy0RZTGR7Ach9IQIk859JJqXUbseUra1vDk6U2oPRgXDsJP1LZ1DBl6kIwa6++a3bFYh/D63uQgZiAPDuFIebaC3115P9wTSJXlA1qsOQrOI8yEIjV0f9K9ex2ghsdelfbAvWKnW3vJGX+hbnIULXj9MHwfOcQQ=
+	t=1705431299; cv=none; b=pYQzcRV6LVcVnqN2otgmrnpRgPjCoZojQc9EAmth3oCT6mYTXLV7rEkp1mEmQJZsIeQI7kwCmyq5Xs9EBXE/rK3QTPyw6zfkio9dTFAvUpBB9nu4tHwVO8LBVRjL7Umw/fgdmaqCZJPfQS/FKWNeYQe8Bx3mP/izXdF4/YbjeIc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705431135; c=relaxed/simple;
-	bh=/K8VPhKa0ZQLIT4I+YaGXUtaKJqi701MWyn53qqVPWI=;
+	s=arc-20240116; t=1705431299; c=relaxed/simple;
+	bh=AcaArvIGHBhawjXJC5ECINtq4Y4+SY0odW2qhBtPErc=;
 	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:MIME-Version:
 	 References:In-Reply-To:From:Date:Message-ID:Subject:To:Cc:
-	 Content-Type:Content-Transfer-Encoding; b=l257tn9fvL81WeKxyJN72h5aCc5yn6fp6CNF/q5y8ssTs8vmhw5QTmzJr5vvKht18v37uGv8hejy3pN/M2t3o+V3Jmm0FpEd9F/muyKBtzrGeBwbjvoJrtjYXVXe5ABO0Jwo4lGojv1n4cvnYUhgv3E002IKNny9+cq3zZx/nsg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=wrMwwuI8; arc=none smtp.client-ip=209.85.216.48
+	 Content-Type:Content-Transfer-Encoding; b=LKbsoz478apmflYT5/FT3AsxCJ1bWFSaEtE17WPS0XkZsEvPjG06a/C1Q09+YTENl5VGMMHkIDDOnPvshhBFGQQ0WjMJndujngc9jw0epdV+kGwmpOH+I6On+IJJwdxy2QTWSGclF+mRgiZq20P01v2LMQbIBVLEljX6xwrJwCI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=LPW1C0Gj; arc=none smtp.client-ip=209.85.216.52
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="wrMwwuI8"
-Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-28e73631189so567585a91.3
-        for <linux-serial@vger.kernel.org>; Tue, 16 Jan 2024 10:52:13 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="LPW1C0Gj"
+Received: by mail-pj1-f52.google.com with SMTP id 98e67ed59e1d1-28b6218d102so8285994a91.0
+        for <linux-serial@vger.kernel.org>; Tue, 16 Jan 2024 10:54:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1705431133; x=1706035933; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1705431296; x=1706036096; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=eiEq2TIzBLf+TCDCHFATauUGuzABkkErqxkgwaaXJeo=;
-        b=wrMwwuI8RUIcnh2KTX+ByqhOEme8pcHVUEQKYlWJEqsff7GajcuwNwrbXhfPCPxJo7
-         /PuSDq77CszFQbJqHbRY3GxcXoe4tECLjt3H/9mIHsOS3DEWh3l1wxxe9dtTlpObdV0+
-         QObr6NiqMoBF+t/suN072uTchOYXyrxRNk6o1NqZi/w2j5fCk53NApT/COKe9CAujkSE
-         GjOq2Tks2WoCDSes9Q46OGtE/kvjOgdD8i4OYver09B+C11jDYbG3+5/MgOw9S70wcuN
-         79puRRMGPLDNQO15uH4A2s9I5Atc+IuTpZJ0OR4dY1aITVEsOVvisjghfKKt1xIF4Zga
-         s2Dg==
+        bh=SKWI3GBw8XVmkGMp4kp5cBnwP168mn/eNzlkwz0VmsY=;
+        b=LPW1C0GjQTtRBXCTSL8vE54wbRZcUF2FCm90doXtgvTocIfBhx8nuai4B2e+JaoUZL
+         3OpOvfyQD+yHxNDECrJ2fNg0i8uzvC0tkdgyO6AEhyyqitrWIqNcsNi0ChuGhR98poom
+         5CMy4AkPP8fCMU3EJ1lNmKVpObw0D3i5pquVN4/ZznWjccaxss7lCadAA6tRrYOJvxHA
+         CmKf6mqWGhPTuVb+fOLJDZYGIaLWwIHf7jQuxoRDY8NzmRGbS1lzCEfGbMYQj5EHias3
+         C+e4xhI/zZmERz0G2RXhGEkJJszvKQ4iluCoFTWBdQ2dDEAaZjYEwY22dcCpSSOQoFWx
+         /Zng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705431133; x=1706035933;
+        d=1e100.net; s=20230601; t=1705431296; x=1706036096;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=eiEq2TIzBLf+TCDCHFATauUGuzABkkErqxkgwaaXJeo=;
-        b=o2yvgcFpzSRBUoDMH9MpNkQWTnntBb2p1Xaxox2iV+S9j+bdRopcNhvVwAQu06+sqF
-         Lg64Jf7k381U2XD5xVMUG1Qjch1CVG/DicmC89y78dpw+Jy5AKDzgv0rp1zrY60Vf40p
-         3T5zqCLb0ZM/MziObM1LXhI+A3S0DHii3YQWuVrjBpHX+lmB6+jUY6VNHYEaitCOWMRY
-         MpOrLzAExlNo5uErceZIq5A3m+BpeKggXgwz1mhq/R6vuN24UuQfKXc00gP/f9RjOvKj
-         WS+ZmS+I61YTTvJt+IWpx0sOqJS2Uq5t3NpqniNdjVDFiEKS1Hi4R25V2zYIqBfptfnB
-         mrVw==
-X-Gm-Message-State: AOJu0YzYEYAM/Yx/tn1Ck8pw+mXCLqCd59AmuRODYh/EEg4WDV1BN47k
-	hNJ+YLhVqKnsGbx7aB+FlowwwZqGYvvonNuDiGJV2SrapvpHdw==
-X-Google-Smtp-Source: AGHT+IHdCZd4ZqNmemGEvDzjokCVj4WZXw4hl6Tiw1c8DaYEhSVVgr3R/qzrTboYQEsCXmc7zuHIs6OPQiFIH8Yn004=
-X-Received: by 2002:a17:90a:fb8a:b0:28b:187:2db with SMTP id
- cp10-20020a17090afb8a00b0028b018702dbmr4403962pjb.82.1705431133288; Tue, 16
- Jan 2024 10:52:13 -0800 (PST)
+        bh=SKWI3GBw8XVmkGMp4kp5cBnwP168mn/eNzlkwz0VmsY=;
+        b=KAqCFAS846qWXQZPyR85/b5TWvW4AxZ1+iNaJKalzLGzlnugR65lhlp88zxfgpuiHF
+         zRj1FJrxHwbhbFNjnh/k79Kl3ZQzcCHKdCxpp6epHnbysqyiFIixhgw1q2PyZ3kcRPzV
+         vlBaajZkJ0/FfgbuBOkCcKlmY4y3RjHpmAVyFpithr0QDVXKI38oiqlIGjR2WSilMfJc
+         L/luxeMVyHesRISxC8Jzd6ctWt1mTWdBdUqqJPTzfcTseMfcOr9AeAcQq3QEx3Ap1lwW
+         eb2raXRqJVx7gzZwNLVlj6t/2FBzpkQ811nRkJAuKbyFlnQGbODpm2j8mBpVccpeh1kq
+         eCOg==
+X-Gm-Message-State: AOJu0YzYsSlTBrh+/JaAVOXk8wU7B75t9jmo6clmdbv/oJEmnek8pRBH
+	hlZjsA14A6R8YUqYmYPieVjaYxAloIp91Yf1ligs/txemCed1w==
+X-Google-Smtp-Source: AGHT+IEFtoFGlnGt6DKWSN181qFbFfM7zhz4boriHOhF5W2AqSgVEM830AlQr0zgGUviJ0so7F2IEofXyY64Nwjuneo=
+X-Received: by 2002:a17:90a:3484:b0:28e:79a4:979c with SMTP id
+ p4-20020a17090a348400b0028e79a4979cmr982068pjb.58.1705431296571; Tue, 16 Jan
+ 2024 10:54:56 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240110102102.61587-1-tudor.ambarus@linaro.org> <20240110102102.61587-14-tudor.ambarus@linaro.org>
-In-Reply-To: <20240110102102.61587-14-tudor.ambarus@linaro.org>
+References: <20240110102102.61587-1-tudor.ambarus@linaro.org> <20240110102102.61587-15-tudor.ambarus@linaro.org>
+In-Reply-To: <20240110102102.61587-15-tudor.ambarus@linaro.org>
 From: Sam Protsenko <semen.protsenko@linaro.org>
-Date: Tue, 16 Jan 2024 12:52:02 -0600
-Message-ID: <CAPLW+4nH0o4fsKTBwO6XwynK2DYCiMLMkmK7LgYepHc87jHJ5g@mail.gmail.com>
-Subject: Re: [PATCH 13/18] tty: serial: samsung: return bool for s3c24xx_serial_txempty_nofifo()
+Date: Tue, 16 Jan 2024 12:54:45 -0600
+Message-ID: <CAPLW+4=O2OaDsC7KNeLPt4UC-OLjD3_VVL1xL6PnrOBPUmcDrw@mail.gmail.com>
+Subject: Re: [PATCH 14/18] tty: serial: samsung: return bool for s3c24xx_serial_console_txrdy()
 To: Tudor Ambarus <tudor.ambarus@linaro.org>
 Cc: krzysztof.kozlowski@linaro.org, alim.akhtar@samsung.com, 
 	gregkh@linuxfoundation.org, jirislaby@kernel.org, 
@@ -72,12 +72,11 @@ Cc: krzysztof.kozlowski@linaro.org, alim.akhtar@samsung.com,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jan 10, 2024 at 4:24=E2=80=AFAM Tudor Ambarus <tudor.ambarus@linaro=
+On Wed, Jan 10, 2024 at 4:25=E2=80=AFAM Tudor Ambarus <tudor.ambarus@linaro=
 .org> wrote:
 >
-> s3c24xx_serial_txempty_nofifo() returned either 0 or BIT(2), which is
-> counterintuitive. Make the method return bool, and return true when TX
-> is empty and false otherwise.
+> s3c24xx_serial_console_txrdy() returned just 0 or 1 to indicate whether
+> the TX is empty or not. Change its return type to bool.
 >
 > Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
 > ---
@@ -86,38 +85,44 @@ On Wed, Jan 10, 2024 at 4:24=E2=80=AFAM Tudor Ambarus <tudor.ambarus@linaro=
 >
 > diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsun=
 g_tty.c
-> index 46fba70f3d77..63e993bed296 100644
+> index 63e993bed296..37c0ba2a122c 100644
 > --- a/drivers/tty/serial/samsung_tty.c
 > +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -236,9 +236,9 @@ static inline const char *s3c24xx_serial_portname(con=
-st struct uart_port *port)
->         return to_platform_device(port->dev)->name;
->  }
+> @@ -2183,7 +2183,7 @@ static const struct dev_pm_ops s3c24xx_serial_pm_op=
+s =3D {
 >
-> -static int s3c24xx_serial_txempty_nofifo(const struct uart_port *port)
-> +static bool s3c24xx_serial_txempty_nofifo(const struct uart_port *port)
+>  static struct uart_port *cons_uart;
+>
+> -static int
+> +static bool
+>  s3c24xx_serial_console_txrdy(struct uart_port *port, u32 ufcon)
 >  {
-> -       return rd_regl(port, S3C2410_UTRSTAT) & S3C2410_UTRSTAT_TXE;
-> +       return !!(rd_regl(port, S3C2410_UTRSTAT) & S3C2410_UTRSTAT_TXE);
+>         const struct s3c24xx_uart_info *info =3D s3c24xx_port_to_info(por=
+t);
+> @@ -2193,13 +2193,13 @@ s3c24xx_serial_console_txrdy(struct uart_port *po=
+rt, u32 ufcon)
+>                 /* fifo mode - check amount of data in fifo registers... =
+*/
+>
+>                 ufstat =3D rd_regl(port, S3C2410_UFSTAT);
+> -               return (ufstat & info->tx_fifofull) ? 0 : 1;
+> +               return !(ufstat & info->tx_fifofull);
+>         }
+>
+>         /* in non-fifo mode, we go and use the tx buffer empty */
+>
+>         utrstat =3D rd_regl(port, S3C2410_UTRSTAT);
+> -       return (utrstat & S3C2410_UTRSTAT_TXE) ? 1 : 0;
+> +       return !!(utrstat & S3C2410_UTRSTAT_TXE);
 
-If the function already returns bool, I'm not sure doing !! is
-necessary. But I don't mind.
+Again, personally I think !! is just clutters the code here, as the
+function already returns bool. Other than that:
 
 Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
 
 >  }
 >
->  static void s3c24xx_serial_rx_enable(struct uart_port *port)
-> @@ -782,7 +782,7 @@ static void s3c24xx_serial_rx_drain_fifo(struct s3c24=
-xx_uart_port *ourport)
->                 ch =3D rd_reg(port, S3C2410_URXH);
->
->                 if (port->flags & UPF_CONS_FLOW) {
-> -                       int txe =3D s3c24xx_serial_txempty_nofifo(port);
-> +                       bool txe =3D s3c24xx_serial_txempty_nofifo(port);
->
->                         if (ourport->rx_enabled) {
->                                 if (!txe) {
+>  static bool
 > --
 > 2.43.0.472.g3155946c3a-goog
 >
