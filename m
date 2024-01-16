@@ -1,102 +1,113 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 048BB125A3;
-	Tue, 16 Jan 2024 08:48:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 176B212E42;
+	Tue, 16 Jan 2024 09:31:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CHQrNaXK"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="IvdmDo/9"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1705394934; x=1736930934;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=B6rzE15E+3r6Gl6rpOFZgLwTO62J00BCuGerH7lFMtQ=;
-  b=CHQrNaXKvK33ncsD9gr14V1ruRe1pUat5akt1iLne48evhsBvx84RSMf
-   6GRQTyNQTYY2XBauJEXdAK/ClKIhdaM8PmLA7FTwPFIC3KWlcMynIHVi8
-   4W6kXdnv22GArdjAT/NBdbdQSt+7E1K/5povy9wlDKWdGTeDN5kg7MTFd
-   Rsxb9Ky5DkOes7i94O/VBUbTm9zljpBUbj8Eg+6LYh4M1RQOVTMPeqdeH
-   QRPC/WYClargpioRZ+nMP1GmF81ZRmBBCSBZUkCdO9Q23YGDhPRWXIoV7
-   toJu6bduG4QMllquvbJsuIawWYFEF1VHhqrokcY8mNr/DeDsaCnwcebuv
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10954"; a="390246229"
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1705397484; x=1736933484;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+e6Ln558idTWadRn1DXntGL0wDIyCZpJMPP2MxyNkHo=;
+  b=IvdmDo/9x2r0RyR0dBmM+vU1fA4M8UhHYFIF5ZGW9Hr/ngzBKvFWaMkK
+   v5cojJ5uf8zg0+5a4WXHL2Ju1L2CfPgFl8hrxUSc6hLaeCL3WAh/d9dE/
+   i0yKxWvMwp1rYGTzpk8KYBQQ5evfNLpCO41MWzxMs3VQ1BwGRd9zGADHm
+   ACbabhXgYI6Eh3dAFTYSdJcs/6vLV3MANX5uCTdkTGw/I5e+MKvrxbMsV
+   3vbo8PYtQDtS2dQPW5ALj9KNL3EXZMr+OaqLD3G/Xd1WNiUu3hDLCzFNS
+   qoj55trBOXJ2vqaY+kmRfyLP/5q46zJVmF2Dug4Hr2ng2iarUwHpSEHG2
+   w==;
+X-CSE-ConnectionGUID: WayHWkw8Q7O2gJ+Gskrx3A==
+X-CSE-MsgGUID: 0aICPRxpQsWlKp7G71Bc1A==
 X-IronPort-AV: E=Sophos;i="6.04,198,1695711600"; 
-   d="scan'208";a="390246229"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2024 00:48:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10954"; a="854281511"
-X-IronPort-AV: E=Sophos;i="6.04,198,1695711600"; 
-   d="scan'208";a="854281511"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.246.35.68])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2024 00:48:48 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Tue, 16 Jan 2024 10:48:44 +0200 (EET)
-To: Leonardo Bras <leobras@redhat.com>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, 
-    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    Florian Fainelli <f.fainelli@gmail.com>, 
-    John Ogness <john.ogness@linutronix.de>, Tony Lindgren <tony@atomide.com>, 
-    Marcelo Tosatti <mtosatti@redhat.com>, LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [RESEND RFC PATCH v1 2/2] serial/8250: Avoid getting lock in RT
- atomic context
-In-Reply-To: <20240116073701.2356171-3-leobras@redhat.com>
-Message-ID: <75a39f0a-8f79-eacf-4a35-5de512a3cbed@linux.intel.com>
-References: <20240116073701.2356171-1-leobras@redhat.com> <20240116073701.2356171-3-leobras@redhat.com>
+   d="asc'?scan'208";a="15990500"
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 Jan 2024 02:31:22 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Tue, 16 Jan 2024 02:31:04 -0700
+Received: from wendy (10.10.85.11) by chn-vm-ex02.mchp-main.com (10.10.85.144)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35 via Frontend
+ Transport; Tue, 16 Jan 2024 02:31:01 -0700
+Date: Tue, 16 Jan 2024 09:30:25 +0000
+From: Conor Dooley <conor.dooley@microchip.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC: Frank Li <Frank.li@nxp.com>, <robh@kernel.org>,
+	<alexandre.belloni@bootlin.com>, <conor.culhane@silvaco.com>,
+	<gregkh@linuxfoundation.org>, <imx@lists.linux.dev>, <jirislaby@kernel.org>,
+	<joe@perches.com>, <linux-i3c@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+	<miquel.raynal@bootlin.com>, <zbigniew.lukwinski@linux.intel.com>,
+	<devicetree@vger.kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
+Subject: Re: [PATCH v2 2/7] dt-bindings: i3c: svc: add compatible string i3c:
+ silvaco,i3c-target-v1
+Message-ID: <20240116-bleach-herbicide-48d636967134@wendy>
+References: <20240110175221.2335480-1-Frank.Li@nxp.com>
+ <20240110175221.2335480-3-Frank.Li@nxp.com>
+ <3c0be658-e7a6-4231-b206-86ffb47e0cb2@linaro.org>
+ <ZaFbbeQrC7o2dchO@lizhi-Precision-Tower-5810>
+ <e3b9aa63-25a5-41cc-9eb7-6e7d1eacb136@linaro.org>
+ <ZaFjaWCA6k+tiCSJ@lizhi-Precision-Tower-5810>
+ <ZaWLCrWJEMtFx8cR@lizhi-Precision-Tower-5810>
+ <1b628901-7f71-4c97-9a16-723912988417@linaro.org>
+ <ZaXqCoCHPWER94Hh@lizhi-Precision-Tower-5810>
+ <d45e31c4-914e-4cea-a145-9775b6f516ab@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="tU9usgt5JDc4MslD"
+Content-Disposition: inline
+In-Reply-To: <d45e31c4-914e-4cea-a145-9775b6f516ab@linaro.org>
 
-On Tue, 16 Jan 2024, Leonardo Bras wrote:
+--tU9usgt5JDc4MslD
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> With PREEMPT_RT enabled, a spin_lock_irqsave() becomes a possibly sleeping
-> spin_lock(), without preempt_disable() or irq_disable().
-> 
-> This allows a task T1 to get preempted or interrupted while holding the
-> port->lock. If the preempting task T2 need the lock, spin_lock() code
-> will schedule T1 back until it finishes using the lock, and then go back to
-> T2.
-> 
-> There is an issue if a T1 holding port->lock is interrupted by an
-> IRQ, and this IRQ handler needs to get port->lock for writting (printk):
-> spin_lock() code will try to reschedule the interrupt handler, which is in
-> atomic context, causing a BUG() for trying to reschedule/sleep in atomic
-> context.
+On Tue, Jan 16, 2024 at 08:24:20AM +0100, Krzysztof Kozlowski wrote:
+> On 16/01/2024 03:29, Frank Li wrote:
+> >>> 	Patches were accepted after discussion, what you ponit to. So I
+> >>> think everyone agree on the name 'silvaco,i3c-master-v1'.
+> >>> 	I plan send next version to fix auto build error. Any additional
+> >>> comments about this?
+> >>
+> >> I still do not see how did you address Rob's comment and his point is
+> >> valid. You just did not reply to it.
+> >=20
+> > See https://lore.kernel.org/imx/ZXCiaKfMYYShoiXK@lizhi-Precision-Tower-=
+5810/
+>=20
+> First of all, that's not the answer to Rob's email, but some other
+> thread which is 99% ignored by Rob (unless he has filters for
+> "@Rob"...). Therefore no, it does not count as valid answer.
+>=20
+> Second, explanation does not make sense. There is no argument granting
+> you exception from SoC specific compatibles.
 
-I thought that the printk side was supposed to be become aware when it's 
-not safe to write to serial side so the printing can be deferred... Has 
-that plan changed?
+The patch could have been applied two months ago had Frank done as
+was requested (multiple times). I don't understand the resistance
+towards doing so given the process has taken way way longer as a result.
 
--- 
- i.
+--tU9usgt5JDc4MslD
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> So for the case (PREEMPT_RT && in_atomic()) try to get the lock, and if it
-> fails proceed anyway, just like it's done in oops_in_progress case.
-> 
-> Signed-off-by: Leonardo Bras <leobras@redhat.com>
-> ---
->  drivers/tty/serial/8250/8250_port.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 8ca061d3bbb92..8480832846319 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -3397,7 +3397,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
->  
->  	touch_nmi_watchdog();
->  
-> -	if (oops_in_progress)
-> +	if (oops_in_progress || (IS_ENABLED(CONFIG_PREEMPT_RT) && in_atomic())
->  		locked = uart_port_trylock_irqsave(port, &flags);
->  	else
->  		uart_port_lock_irqsave(port, &flags);
-> 
+-----BEGIN PGP SIGNATURE-----
 
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZaZMsQAKCRB4tDGHoIJi
+0oXjAQD+n2/ohO6suxsrwD5Ou5eVTuKiCJW4yn6SzYminXj4UQEA5Z7Y5G8MfUrU
+u49KfI9asa8Tjp9X2y7YIiNSAtP1Qg0=
+=nQni
+-----END PGP SIGNATURE-----
+
+--tU9usgt5JDc4MslD--
