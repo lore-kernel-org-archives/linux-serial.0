@@ -1,154 +1,135 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65B071CD2A
-	for <linux-serial@vger.kernel.org>; Tue, 16 Jan 2024 18:24:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D1CC1CA8C
+	for <linux-serial@vger.kernel.org>; Tue, 16 Jan 2024 18:38:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705429463; cv=none; b=CVu3WjeU59lC14tTJ5/N5HerrSCTgpmOptYsqReg2XsBwPm1/5tR6Yx0IEt5n8IQDq7Dx/VxrxGEgtNLh7xjW4U8V/B68vV//KwT30MvffbOF0XqHU4YCHNq7ayFxjmoWR375rbHeeIe58OEqsfyvHo+aDCPxa/EsZJEWBdReYM=
+	t=1705430296; cv=none; b=VfFHFZitdg1xWzsRDcWSzE3rmh3R75G9BX/0TNML92IEqtVzD3QxYEFG4yWNQO1VyUbOh96SPA4bSgUGc29kjWsSziR9h4AKD9x5xo1YMwbfldkypYHll4vCbRebi9UEkqb3sdyDsFyNif0AlAk1Ufy/7VlprGWWFtPydw09gWE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705429463; c=relaxed/simple;
-	bh=C4NW4/xdipV3PZIsEE1qEeN40hdxEeW+JyPTTrGqC7g=;
-	h=DKIM-Signature:Received:X-MC-Unique:Received:
-	 X-Google-DKIM-Signature:X-Gm-Message-State:X-Received:
-	 X-Google-Smtp-Source:X-Received:Received:From:To:Cc:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 X-Mimecast-Spam-Score:X-Mimecast-Originator:Content-Type:
-	 Content-Disposition:Content-Transfer-Encoding; b=qhCggTsUbJeMMBjZGiF7EPDsxWLBph+axZS3SKHNFOZxlHnwOlnwovj4p9DWRAgGLYnHYgY1ejR1pNaEDOFmHQs/4NPdxKMKWrAo8JbxR7Z8AJ7j0TE0gtRkZwj+hLbnCGu5Bxr64Jj29jUVtBfmWa6VuXf8eAJS9mvRPBr7LtU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=SHb6yyaf; arc=none smtp.client-ip=170.10.133.124
+	s=arc-20240116; t=1705430296; c=relaxed/simple;
+	bh=TB6bL0w3hLWUcnDcaIay8oWyOu6RzNDf0O17kPM6VXw=;
+	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:MIME-Version:
+	 References:In-Reply-To:From:Date:Message-ID:Subject:To:Cc:
+	 Content-Type:Content-Transfer-Encoding; b=NIhcH//SRSBVObaXzYdEXDgZZwooOVU2HtY1gmslRJRRD1Sr00qt5lJg48PAap5MVJUxvj+QX8iRWVMfOVZzQHmER6EcmAOvrnGa4gX0kRqokm04P9gJq5ycXmDkDzWDIgQ9oijf0yLRSNk7lWXDfi3Zx/U/vgujPTNP/fCndXE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=oGxH89Dd; arc=none smtp.client-ip=209.85.215.182
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="SHb6yyaf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1705429461;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=jZXROdG3HVxdOQP6p836Pie8H/kxnzXhwaCBYdybx0o=;
-	b=SHb6yyafI5MJ1KD2QOkx9/6nj0Z6961EjFVhLZERhUiR7w6F3ZnHg9eFczN07znTogmTqt
-	mdCTH3KgZcVitYOqmt/jyHWL6BO+fLTZ657t/hgzlSin80pzfnR1lqtXD9aHZ0QeQIao5z
-	G5r+bgmNTxOlNmZHWAuXLQEob3o9fkE=
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
- [209.85.167.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-178-OX0fr9BoMnSVw_PMhkjzsA-1; Tue, 16 Jan 2024 13:24:15 -0500
-X-MC-Unique: OX0fr9BoMnSVw_PMhkjzsA-1
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-3bbacb61978so7614507b6e.3
-        for <linux-serial@vger.kernel.org>; Tue, 16 Jan 2024 10:24:15 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="oGxH89Dd"
+Received: by mail-pg1-f182.google.com with SMTP id 41be03b00d2f7-5cdf76cde78so5138068a12.1
+        for <linux-serial@vger.kernel.org>; Tue, 16 Jan 2024 10:38:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1705430293; x=1706035093; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0jDglbZBWktYfWTPUcusyZr2j2GiYOxnIQXGiD8Doo4=;
+        b=oGxH89DdczRxZnF4aohIqsU78Z+Srdlzge3Ji/jgAa6Fb6Spd1BEJNiI8rE4hG1goZ
+         rlKPoeg/ln2gFfGQPZB38Qs5lb9u8CxAn4Pi/gwVDwaucUSYrgOYh58f3dE7YbUIvlXm
+         MdGi78pL3TYyVpYjiogoopMxxTZBPDgBp6V4OnE6AI0vIx67m6zyPegIvLot2gsbej3p
+         NBH3Ne1vIxD5CVXV4SoJd3wRu59Lnu5euQWMLxYtQVKNhR2fnBneTI7/nlysuybv2OtG
+         qgGTDdu1PGCb6za71j3MyI9uvJIEO2OLdqN7txZgHNVo4W86zdiMEqWse5auX4MTpjeP
+         pJ8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705429454; x=1706034254;
-        h=content-transfer-encoding:content-disposition:mime-version
-         :references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=jZXROdG3HVxdOQP6p836Pie8H/kxnzXhwaCBYdybx0o=;
-        b=mDocEGuYzzqGyA1pv0y9vGorLA8Edbi3MoH78xgEb9SIBWsze5KT6SZ/YQdifAUEN4
-         4ZqCClx8HlFUu0nS8Vq92wVwJiUQq4B+qmbyL6OzbPbTzQJN5PDYR99AaqEp1QVTPwwc
-         WTfeq9foRDOW9/KMLi6W5pNlqmdrLX64urNUR80sLDNq1ZbSehkauasusI6xq3N3L2bV
-         UuDTVwXKcPNM1hq5tZF4o7tGC33SN68ROpXi5KGGv1aIFq2nDZTJ+G59I2Z70cVAhwe+
-         WqjCTUuVhz3nrGuItc8rDHOZJOzJLHIojJGeFZPiJT28BLr0xIg2DJfrGFDuM/CRzZzk
-         Y1hA==
-X-Gm-Message-State: AOJu0YyHc/vlZP7e/gXYTPpEPZFgQP0EkQNvm4p5fEkzSBxmiHGsBCac
-	QTsJSIRYPteIqFZZ6hyM3s/mRrdqfMAvl4iULXuctf5FhvJdydsb6t8xerlBZYfALXs7sNR00MD
-	QvRHMm/ZpBTzbsiuW5zBJyxKI7T1zUOzX
-X-Received: by 2002:a05:6808:3991:b0:3bd:7224:cfac with SMTP id gq17-20020a056808399100b003bd7224cfacmr4190179oib.63.1705429454779;
-        Tue, 16 Jan 2024 10:24:14 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IFcammen5njJpgCvLKraAue9v8Z+qwiJCQA1k3kV0EMgCf1JohJ2KGTo9HzNr5pLcHunHsLqQ==
-X-Received: by 2002:a05:6808:3991:b0:3bd:7224:cfac with SMTP id gq17-20020a056808399100b003bd7224cfacmr4190162oib.63.1705429454497;
-        Tue, 16 Jan 2024 10:24:14 -0800 (PST)
-Received: from LeoBras.redhat.com ([2804:1b3:a803:64aa:6db9:6544:60c:9e16])
-        by smtp.gmail.com with ESMTPSA id u13-20020a05622a010d00b00429ff82eb74sm1116364qtw.82.2024.01.16.10.24.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jan 2024 10:24:14 -0800 (PST)
-From: Leonardo Bras <leobras@redhat.com>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Leonardo Bras <leobras@redhat.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Tony Lindgren <tony@atomide.com>,
-	Marcelo Tosatti <mtosatti@redhat.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [RFC PATCH v1 2/2] serial/8250: Avoid getting lock in RT atomic context
-Date: Tue, 16 Jan 2024 15:24:10 -0300
-Message-ID: <ZabJyq_y28tN1kuT@LeoBras>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <dd85dd1c-1352-4136-9a06-00066435a1ba@kernel.org>
-References: <20240116073234.2355850-2-leobras@redhat.com> <20240116073234.2355850-4-leobras@redhat.com> <dd85dd1c-1352-4136-9a06-00066435a1ba@kernel.org>
+        d=1e100.net; s=20230601; t=1705430293; x=1706035093;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=0jDglbZBWktYfWTPUcusyZr2j2GiYOxnIQXGiD8Doo4=;
+        b=gO8FQJAcYIHaVtLkt6Hy9yEhQ1b3Zc/BHVcHv7CUB0jGwGT7bqqU3Mq00rhwp5uISS
+         ze1X5V246vU35oywVInhKSqoyXjnGgN2CjGx/p2jfoCvPAQ0WPyHxnNZkwI5GmFQqU+L
+         KjKtv6fiVE7GOML6mLmCrPx8HnAyXNWuFDoELpKZ9pDaqL4mdCbEeUfIII5q74RYnfon
+         E52r5Ihnnp7Eq9X36785pj0PM/3+sGv5nUm5Nw97TbMHSpOM/rL8vwq3Y2fCOYRDOvk1
+         5MhbeHpMlOip36Y5Wir7AGADcVxcfw8y8VBe76ZkRX7Uv3uRNa++MKhdR8BYAKb/r7UP
+         BxeA==
+X-Gm-Message-State: AOJu0Yy0vK9k/+PXrz9hJQvjd5VhcDb1awrIaCtGeaR57igM2dYG8acT
+	HC+47HDLKrYOnsXf6OP07Dg/JBF+TA3CVGiZgQtI+goJY0Ycew==
+X-Google-Smtp-Source: AGHT+IF1E60nyMxp0rq+piEAJAls/q3iuzPDrclS7edvISLFAbWxO/l+vo81dtOlaSnpPsalLHC1RtyIGgPAaFAsaDo=
+X-Received: by 2002:a17:90a:d913:b0:28e:1d1e:f2eb with SMTP id
+ c19-20020a17090ad91300b0028e1d1ef2ebmr2701244pjv.90.1705430293457; Tue, 16
+ Jan 2024 10:38:13 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20240110102102.61587-1-tudor.ambarus@linaro.org> <20240110102102.61587-12-tudor.ambarus@linaro.org>
+In-Reply-To: <20240110102102.61587-12-tudor.ambarus@linaro.org>
+From: Sam Protsenko <semen.protsenko@linaro.org>
+Date: Tue, 16 Jan 2024 12:38:02 -0600
+Message-ID: <CAPLW+4mKBwsc9VLrGTd2k6d0n-K9TZAjH6M8trcK3Av8TQ2Ngg@mail.gmail.com>
+Subject: Re: [PATCH 11/18] tty: serial: samsung: don't compare with zero an if
+ (bitwise expression)
+To: Tudor Ambarus <tudor.ambarus@linaro.org>
+Cc: krzysztof.kozlowski@linaro.org, alim.akhtar@samsung.com, 
+	gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	andre.draszik@linaro.org, peter.griffin@linaro.org, kernel-team@android.com, 
+	willmcvicker@google.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jan 16, 2024 at 08:49:14AM +0100, Jiri Slaby wrote:
-> On 16. 01. 24, 8:32, Leonardo Bras wrote:
-> > With PREEMPT_RT enabled, a spin_lock_irqsave() becomes a possibly sleeping
-> > spin_lock(), without preempt_disable() or irq_disable().
-> > 
-> > This allows a task T1 to get preempted or interrupted while holding the
-> > port->lock. If the preempting task T2 need the lock, spin_lock() code
-> > will schedule T1 back until it finishes using the lock, and then go back to
-> > T2.
-> > 
-> > There is an issue if a T1 holding port->lock is interrupted by an
-> > IRQ, and this IRQ handler needs to get port->lock for writting (printk):
-> > spin_lock() code will try to reschedule the interrupt handler, which is in
-> > atomic context, causing a BUG() for trying to reschedule/sleep in atomic
-> > context.
-> > 
-> > So for the case (PREEMPT_RT && in_atomic()) try to get the lock, and if it
-> > fails proceed anyway, just like it's done in oops_in_progress case.
-> 
-> Hmm, that appears incorrect to me.
-> 
-> Perhaps we need a raw spin lock? Or maybe I am totally off, as my RT
-> knowledge is close to zero.
+On Wed, Jan 10, 2024 at 4:24=E2=80=AFAM Tudor Ambarus <tudor.ambarus@linaro=
+.org> wrote:
+>
+> Since an if tests the numeric value of an expression, certain coding
+> shortcuts can be used. The most obvious one is writing
+>     if (expression)
+> instead of
+>     if (expression !=3D 0)
+>
+> Since our case is a bitwise expression, it's more natural and clear to
+> use the ``if (expression)`` shortcut.
 
-If we have a raw_spin_lock_irqsave() here, it would hurt RT by a lot since 
-disabling interrupts is usually bad at the RT kernel, and serial console 
-can be used a lot.
+Maybe the author of this code:
 
-> 
-> This needs advices from RT folks...
+    (ufstat & info->tx_fifomask) !=3D 0
 
-Agree. All help is welcome in this case!
+just wanted to outline (logically) that the result of this bitwise
+operation produces FIFO length, which he checks to have non-zero
+length? Mechanically of course it doesn't matter much, and I guess
+everyone can understand what's going on there even without '!=3D 0'
+part. But it looks quite intentional to me, because in the same 'if'
+block the author uses this as well:
 
-Thanks!
-Leo
+    (ufstat & info->tx_fifofull)
 
-> 
-> > Signed-off-by: Leonardo Bras <leobras@redhat.com>
-> > ---
-> >   drivers/tty/serial/8250/8250_port.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> > index 8ca061d3bbb92..8480832846319 100644
-> > --- a/drivers/tty/serial/8250/8250_port.c
-> > +++ b/drivers/tty/serial/8250/8250_port.c
-> > @@ -3397,7 +3397,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
-> >   	touch_nmi_watchdog();
-> > -	if (oops_in_progress)
-> > +	if (oops_in_progress || (IS_ENABLED(CONFIG_PREEMPT_RT) && in_atomic())
-> >   		locked = uart_port_trylock_irqsave(port, &flags);
-> >   	else
-> >   		uart_port_lock_irqsave(port, &flags);
-> 
-> -- 
-> js
-> suse labs
-> 
+without any comparison operators.
 
+>
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+> ---
+>  drivers/tty/serial/samsung_tty.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>
+> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsun=
+g_tty.c
+> index dbbe6b8e3ceb..f2413da14b1d 100644
+> --- a/drivers/tty/serial/samsung_tty.c
+> +++ b/drivers/tty/serial/samsung_tty.c
+> @@ -988,8 +988,7 @@ static unsigned int s3c24xx_serial_tx_empty(struct ua=
+rt_port *port)
+>         u32 ufcon =3D rd_regl(port, S3C2410_UFCON);
+>
+>         if (ufcon & S3C2410_UFCON_FIFOMODE) {
+> -               if ((ufstat & info->tx_fifomask) !=3D 0 ||
+> -                   (ufstat & info->tx_fifofull))
+> +               if ((ufstat & info->tx_fifomask) || (ufstat & info->tx_fi=
+fofull))
+
+Does this line fit into 80 characters? If no, please rework it so it
+does. I guess it's also possible to get rid of superfluous braces
+there, but then the code might look confusing, and I'm not sure if
+checkpatch would be ok with that.
+
+>                         return 0;
+>
+>                 return 1;
+> --
+> 2.43.0.472.g3155946c3a-goog
+>
+>
