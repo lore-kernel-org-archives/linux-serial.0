@@ -1,196 +1,880 @@
-Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2055.outbound.protection.outlook.com [40.107.249.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2B4E1CA87;
-	Tue, 16 Jan 2024 17:35:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.249.55
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705426558; cv=fail; b=X+Z3Ap2vWG5NNi3tBNglfgDJXs8mGGWW1aVeVe2hVE59dDUdRJdtUYDCVSU36Kq9GBC51d85KGRDd0cm2arPmFTZouzv+DeETKkD+xixjZLuseGBjxeeOfHZBhCfQW8Z3Cc1V8Szg9/orBfeYf1dmOgFiot52zMRIo3OsOf4K7A=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705426558; c=relaxed/simple;
-	bh=HaPbqvpYYBlBYWkDWYnmGFqNJ5xc31c0nxzSpehpKJQ=;
-	h=ARC-Message-Signature:ARC-Authentication-Results:DKIM-Signature:
-	 Received:Received:Date:From:To:Cc:Subject:Message-ID:References:
-	 Content-Type:Content-Disposition:In-Reply-To:X-ClientProxiedBy:
-	 MIME-Version:X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:
-	 X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped; b=WS5AWo0ozjgHPMnGp4ev/4lZG+Z6yLxX5GdP2riwGY25bbjcTYj3Ok1Uj7fNQAE4BKcS5/A2nM8Lae0T3teAp09XeC7KmSjm5fFrtHxd9PBHvxtzTm2g1jHMx2c7NBDDHuv/8eSmmgfUlStoi5gkxRgi+KS7BFP9V+bEeKInurc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b=e8/BB7xk; arc=fail smtp.client-ip=40.107.249.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 308A41CD04
+	for <linux-serial@vger.kernel.org>; Tue, 16 Jan 2024 17:43:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1705426992; cv=none; b=ggiAKzJlqdcyWB1+gOug7EYkYXtsAWOKe099GLzzr3xxzcrovDrnLxuGEiWTprJcNje2xjWWkx7fZk7f+hM/KKf/tE2Ljy9ZEFzJHUq4di9f1huygsD8Uk1aO3/IASo3JJCUWMXnLjpWi+0OLfvJ4/neDNrFaBseOVnUdSqrQMM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1705426992; c=relaxed/simple;
+	bh=tU1G2fSsXqApBhWFs3rw+GrbYZ6Mz8OepJA7vwe2nZw=;
+	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:MIME-Version:
+	 References:In-Reply-To:From:Date:Message-ID:Subject:To:Cc:
+	 Content-Type:Content-Transfer-Encoding; b=QnxDnG9hF3EwUaltU8hiDKPKysqquvbkfNpR3fwxA44IkpYhLfZ7YXmIZmznrAZDM+e8TPgFL1omGNrElfmOqOGRM/NjfyuDTZFPMnLn2YzHMjjAuizaeihNXGwtFrH/wpUUZILBp0TOuUNs7rFv5rionIAZvoLMQPpXZ/KAerQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=vNT86cgS; arc=none smtp.client-ip=209.85.215.182
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="e8/BB7xk"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nHnEtTw6cAY/mBih8cVVzHFWrNiYUky6oocbi9BQq0E4v2Hctqo5z+Cq38PUx54a6dqQ9N51MHBSvPvImVsZxpODTu8dbFaG6LYiJQPjR7k9f3TLAef5GN7UTJfbSGPvI5nA0C2zAAyfDIQU+65nM0t9l4GPD6CshmTjEdnSZunD/ob/aumoG9/NOZG+Y+4uENjL8HY8nDifIagy9lSOTCVS2SaQqzTJacSSwDP5va3CnOOa8O2h7Hptz/ehO68NdQtezg+IzLNMhXOrXr3DJRV0liLFyAdDvrqRbPAcgTkjNjtZOrA51dhAD2CvMcafBN6mulTy+wIcYqHctpw2kw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EoB55nFJJ22tVRqlTkj3q8yBoFSfhXTtnKX01pIY2iI=;
- b=h2/XDwvWuqKzWQwNkysRrM9C37sbHhMhWxlN1ETiIokilQ7r94g6H9DhTYxM3K9AkBtC5DR+uXMZqSkbReZ5SFic/UodFm4vmbWJeLyARfBvsmojTP4AVUlBB4Tj8GEMai0VQmP/Vdjxk1Sf0Fzeyb90YZg0PYfgTJmUn7yTyFBVApn106Mk1BKf5WyHIQGvjNV7cONOakkBkwezjyGJAJxRC6+PV2mDNDhy3jtmh4GHdH2uZQ2bgsGOjyxGCh8mChclvcvj4nQBY18UtbWqkzyLQdxcKLEB+r3wXIgESM9CUa/GKzUp8qeucsskxdkSJe1SOCPrjiUKC6SAKHcBEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EoB55nFJJ22tVRqlTkj3q8yBoFSfhXTtnKX01pIY2iI=;
- b=e8/BB7xkO3aaI/j32u2LMNrCP4i1YyMFxzoMhM8uQSS0PNDz905ra+ba3G7BaX/Or2Pc5CTQWpDaX+SsKmspsmWBOr2tgoHMM+tOzUi7rHVUh8sSmMSY3LJC9LhjhIfeCzipqWTa90sDPDuJGhUK6Dbu2X34f6m7de4k/PSWO9A=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from PAXPR04MB9642.eurprd04.prod.outlook.com (2603:10a6:102:240::14)
- by PA4PR04MB9440.eurprd04.prod.outlook.com (2603:10a6:102:2ac::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7181.18; Tue, 16 Jan
- 2024 17:35:53 +0000
-Received: from PAXPR04MB9642.eurprd04.prod.outlook.com
- ([fe80::b8af:bfe5:dffd:59a9]) by PAXPR04MB9642.eurprd04.prod.outlook.com
- ([fe80::b8af:bfe5:dffd:59a9%4]) with mapi id 15.20.7181.019; Tue, 16 Jan 2024
- 17:35:52 +0000
-Date: Tue, 16 Jan 2024 12:35:44 -0500
-From: Frank Li <Frank.li@nxp.com>
-To: Conor Dooley <conor.dooley@microchip.com>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, robh@kernel.org,
-	alexandre.belloni@bootlin.com, conor.culhane@silvaco.com,
-	gregkh@linuxfoundation.org, imx@lists.linux.dev,
-	jirislaby@kernel.org, joe@perches.com,
-	linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, miquel.raynal@bootlin.com,
-	zbigniew.lukwinski@linux.intel.com, devicetree@vger.kernel.org,
-	krzysztof.kozlowski+dt@linaro.org
-Subject: Re: [PATCH v2 2/7] dt-bindings: i3c: svc: add compatible string i3c:
- silvaco,i3c-target-v1
-Message-ID: <Zaa+cLGVVDSB5MYr@lizhi-Precision-Tower-5810>
-References: <ZaFbbeQrC7o2dchO@lizhi-Precision-Tower-5810>
- <e3b9aa63-25a5-41cc-9eb7-6e7d1eacb136@linaro.org>
- <ZaFjaWCA6k+tiCSJ@lizhi-Precision-Tower-5810>
- <ZaWLCrWJEMtFx8cR@lizhi-Precision-Tower-5810>
- <1b628901-7f71-4c97-9a16-723912988417@linaro.org>
- <ZaXqCoCHPWER94Hh@lizhi-Precision-Tower-5810>
- <d45e31c4-914e-4cea-a145-9775b6f516ab@linaro.org>
- <20240116-bleach-herbicide-48d636967134@wendy>
- <3199c245-3d2d-49e8-951e-2b059de4d683@linaro.org>
- <20240116-achiness-thievish-10a12b3c08cd@wendy>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240116-achiness-thievish-10a12b3c08cd@wendy>
-X-ClientProxiedBy: BYAPR06CA0026.namprd06.prod.outlook.com
- (2603:10b6:a03:d4::39) To PAXPR04MB9642.eurprd04.prod.outlook.com
- (2603:10a6:102:240::14)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="vNT86cgS"
+Received: by mail-pg1-f182.google.com with SMTP id 41be03b00d2f7-5ce2aada130so5255789a12.1
+        for <linux-serial@vger.kernel.org>; Tue, 16 Jan 2024 09:43:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1705426989; x=1706031789; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=oOvUEuJsPyEoFI20c56wPfAlPPRSnKOXJPA7LwehsD0=;
+        b=vNT86cgSilYQ9x0KoLTAgH6RZDpWApv3ZRCgFpZujYXdRpfc18tt1mOmCEH+QvxNmx
+         ZGsMXhXx2iyItXGvAFdsKtXpQlLMG1JManQDtOqW5xV4OfIhI/XMCbsD63xO14Z9t5ZC
+         Dpa0v9kPTZsQFF6NnGBshPeSG2HW2hLwGdArv1/kHaGdrQtau9+1ZqGe+O93s+gx28Qg
+         BKHrm7SOL7iLV3xCCA/5UKiX3axlaZ77nJALl0F72JTLlB8po33B3ZqZUjOVaT8h0K7k
+         YhZ8ONDcl5h+oJ24COH9jh7lcuitcYNyVRdiR63qhzCRWWKtwIf/ggHpjbRMwi8LMqK3
+         +RLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705426989; x=1706031789;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=oOvUEuJsPyEoFI20c56wPfAlPPRSnKOXJPA7LwehsD0=;
+        b=hvHzXhNEkMqWVcAKHSr3yb7kEqU0iGkq2sRXLI3oALrP5EWMLzChKwPwZgn7pNN8M1
+         uRvO1JAt8Cw/iRV3xGzkILrtWKZ/cEoGJG786E/zerrkrY/JN27jfeiWScEeH2UOw5RH
+         kOmo6pAqjbS6fXFb5FhuCPHtigVGSbOF2XnpSbkycUi4cjkHD8ULdwnDK0BZKmr2kTi6
+         kG9IRB1Pew/kDvZ8omk4RM06u944nTvN5q9tHJ7qxwlHDNP8PjUtyAOlDSdJsUKbql4A
+         tEXp6y6qhoODvw5w667uw2J+pi6+ZhAppeF8ZqjyJGIc0D7Td1DQ3OKFyT0jRB1BJOtJ
+         vWRg==
+X-Gm-Message-State: AOJu0YzMjr41cZzNlqpz1SDd8miQafsraTTr94hrWWa6ImdvdsDsU3KL
+	F+dFuYA9FoBIF3YM3mb7/k6mT2i4/fuF5wp55M3Ji19Z+jOJnA==
+X-Google-Smtp-Source: AGHT+IFfnXzJ6QqROHdB6Xj2zyJPupV82WougEqlSzxhgXZig7gJHVdKVMRD8x6fbMZ56pdGEOlN5hyeMC/53sv3C8s=
+X-Received: by 2002:a05:6a21:3416:b0:19b:4a38:5a43 with SMTP id
+ yn22-20020a056a21341600b0019b4a385a43mr689217pzb.106.1705426989432; Tue, 16
+ Jan 2024 09:43:09 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PAXPR04MB9642:EE_|PA4PR04MB9440:EE_
-X-MS-Office365-Filtering-Correlation-Id: 37a208ce-afd9-45bb-606a-08dc16b99658
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	Nbt00daaLQYSsXNYweRdfyOrb6zcNMyXEZ5BShDIpNCsA8xUJDX/Maf3EUrmLHV+J3gfUlA679MRUqOI9Mf271Bq5YnSWj5JAcAf9aFFZTAec+jlSNX0Y/oFzm3WbAs8txyppUN9X+r0XqnLA2MBPqnaMi3UYhh3QWQ3R5r2OkjWsHgy/PrX6n7EUuoUJjzBq44h11KPD223ePLePxUnFqrinzbDd/ELpdSc+sLIwAA0uUYDznR0gzsbuOSwbMkOqDSwxBi8ZvgqAZajGlyVPfEShzFz4Befjlh43mW4Qr26USfMsv3/oYDpqIHDQsyb+yN+TIYkylK4Odv/i+cqv4tmwiJR4/aokbx5tGSzIUu9beMX6JMOl0o2idW1x/G4GBYQS/mRJ2cRe4Zd8Al9ynz7Fq50VXlkyKTTtRcuAL5R1vT2EpJVnJXnPxTrjYvxb6KMySjJWZeH5gtwiirKkj2MFdHXa0iPYc5Cr8s/VVv+OlKIoGxqLGyAHyXNjpIRRa9rrW/gzWHjIYTZ7UOnaarZZndWuKXaSeFi8mPghFU9nwyvO5bwuXawdGghNQ7tBfAC5txymx4yNQ2H2ZZE+zMJIpSikr70FqJLJ92YhWjAdGVLmRP98GdPmYcDgLl5
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9642.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(376002)(366004)(136003)(39860400002)(396003)(346002)(230922051799003)(186009)(451199024)(1800799012)(64100799003)(38100700002)(38350700005)(33716001)(86362001)(41300700001)(6916009)(4326008)(8936002)(6506007)(8676002)(9686003)(316002)(66946007)(66476007)(26005)(66556008)(53546011)(6666004)(52116002)(6512007)(478600001)(5660300002)(7416002)(2906002)(83380400001)(966005)(6486002)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?DEm/g4SpXWWuHIVI6GGzDn7MWPNyhNpBLakn364C704TyCP7qpH5G8zPKHKd?=
- =?us-ascii?Q?PnWt3eTkpslbKsnYpt6YXmzI9PyhU0Q8k2PuUu6YOq7ycdDNjEnzDiSLKejZ?=
- =?us-ascii?Q?VSD52P7gBhGZ68kr+wq2rNFRWLZjO5X39tArn2I/V4gxT+7nlUMgkth1i0Ig?=
- =?us-ascii?Q?wf0wgeaQV5MrVPZLMr/cn14/0Mx9/ULR7J4GR2I+XG2/cvpXjd+JAMJvGhBv?=
- =?us-ascii?Q?vv+JnNH/TnCuMqe2T0O3lNqiTxdbH8V6lIca8mOVCOQKxcVO60UcBiAhedk0?=
- =?us-ascii?Q?Z23lY3Qbh8K3UXbVyaXZj4ijHQzqM6X1Z6YCJ05KndI4QAGINbxXY4Tcz1lw?=
- =?us-ascii?Q?r5/yvH5KYO58nTah3vxCFWs98dkiAfFufpv+bh7AlIC8qLfION5IsbxXURe2?=
- =?us-ascii?Q?nkYkS+McF1nz6JOvqetUw879kww7D+4XnwG13R/1KFbMUtYU3izfRDOFU3rB?=
- =?us-ascii?Q?ptG5OufaS9nEtYF7LgkIJHlPAKqgXk6EWSuDuo/aErQuJmlGYJmG5N6Xfgfm?=
- =?us-ascii?Q?ccD5u3ouCVIcl79U4q5vxmrinIkwVMBEhQ/ji5I5oKwES0j/38J1oDuAfp57?=
- =?us-ascii?Q?TrFGlxcxoC7Yp3I9ersFkTnfCfMJ1qFpDbxgnOcuZG2u4vGivG+wAX71aArs?=
- =?us-ascii?Q?bRRY7oHo6l2qW8onSONqlDwYYMx4rY1dnN61WjWmhoB3KFGX5hwsLUQO+ueG?=
- =?us-ascii?Q?zZ7YOrDE3C8SR+JluKxjsc6ivfeB+tBAYETT0GuzNCC6dpkOPRT6kpJH+nEp?=
- =?us-ascii?Q?zPIptn2N6M/xlwJVyXx3vOtid8sHlYjbK04pyqrySWL48jOT3OanAGAwsk0y?=
- =?us-ascii?Q?QqaH46Q+By8iq1aLqlmoEmdIeVXDHdwhEm8iOCOcS681fzU0HjQF14K/s65E?=
- =?us-ascii?Q?TbZyDV3pddf9VAjBC4UB978KByMwyK6sm3TiGVHMvmyOmR9W8usY+Qne8UMz?=
- =?us-ascii?Q?v0xaSQAMXrG08EdPMOHAsXYQCOOVyeMNVeBOLaEXyD+yCUbU1ukslGdZ8HOa?=
- =?us-ascii?Q?yYiOzvxLduseyk1WnbqdgXPQRxXzb3WoFRhPNR79BNPzkvakJJWVDaoYW43S?=
- =?us-ascii?Q?eRYw4sqTQnv8zNg9yrYBw3NPLsKFS5IGusjtU30T3ejcXM6e8GyTOoZsDJCC?=
- =?us-ascii?Q?nTnb2evkp5lHU1kYvDcmaM8vGX0iXo7k868KNIIxrbDdzVMKs2bS2K6EKjMP?=
- =?us-ascii?Q?ivNlmxH/0iEaJqFrQh2OFxw4997en5ulYpsIhmXWSRp/bdUOBzUTOeydy0QA?=
- =?us-ascii?Q?0EnGsfn8fCaDXLAqhzjOlh2YjHhDYAiUSigPUhRlHEHiQrIRf+9LH1IS8OUT?=
- =?us-ascii?Q?Kko1kpcWGrTUkakrqLkDNgkOt/c85LqaIxYM1yzV40P5f+Nyc8gnXPe/oaRc?=
- =?us-ascii?Q?rX2Qtne8KgWv5twh1xV3pr2F5CEX+sKVbP9RiMIp8Wo8spEVZsFysVWJuDc+?=
- =?us-ascii?Q?NB90Il+oNvQzmDobTGsLii/QCQQQ2knyUuGzLGOxXSP/OjfvceCUSQ2aFGP3?=
- =?us-ascii?Q?bTFGwPLkdt6ONsA7x20EGzzVOzreuEiDo1q0rHwJOloDCLoV2a9l2TQ4dF/O?=
- =?us-ascii?Q?rN0cerXEDHXB4tGjzig=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 37a208ce-afd9-45bb-606a-08dc16b99658
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9642.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jan 2024 17:35:52.8643
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fgA3tmAY1BLQfiNAHrUNBgFcBict0iCFlJBxTTMtXsd9Zb5Y9jCEFPX/v5oD0QlGO6cgY5NyxhWWlyGeDGI2TQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB9440
+References: <20240109125814.3691033-1-tudor.ambarus@linaro.org> <20240109125814.3691033-8-tudor.ambarus@linaro.org>
+In-Reply-To: <20240109125814.3691033-8-tudor.ambarus@linaro.org>
+From: Sam Protsenko <semen.protsenko@linaro.org>
+Date: Tue, 16 Jan 2024 11:42:58 -0600
+Message-ID: <CAPLW+4=y12fBf47v_HKfBdHTsQJfWo2cwBuFosUKo3xPBqcKJw@mail.gmail.com>
+Subject: Re: [PATCH v3 07/12] clk: samsung: gs101: add support for cmu_peric0
+To: Tudor Ambarus <tudor.ambarus@linaro.org>
+Cc: peter.griffin@linaro.org, krzysztof.kozlowski+dt@linaro.org, 
+	gregkh@linuxfoundation.org, mturquette@baylibre.com, sboyd@kernel.org, 
+	robh+dt@kernel.org, conor+dt@kernel.org, andi.shyti@kernel.org, 
+	alim.akhtar@samsung.com, jirislaby@kernel.org, s.nawrocki@samsung.com, 
+	tomasz.figa@gmail.com, cw00.choi@samsung.com, 
+	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+	linux-clk@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, 
+	linux-serial@vger.kernel.org, andre.draszik@linaro.org, 
+	kernel-team@android.com, willmcvicker@google.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jan 16, 2024 at 09:48:08AM +0000, Conor Dooley wrote:
-> On Tue, Jan 16, 2024 at 10:33:48AM +0100, Krzysztof Kozlowski wrote:
-> > On 16/01/2024 10:30, Conor Dooley wrote:
-> > > On Tue, Jan 16, 2024 at 08:24:20AM +0100, Krzysztof Kozlowski wrote:
-> > >> On 16/01/2024 03:29, Frank Li wrote:
-> > >>>>> 	Patches were accepted after discussion, what you ponit to. So I
-> > >>>>> think everyone agree on the name 'silvaco,i3c-master-v1'.
-> > >>>>> 	I plan send next version to fix auto build error. Any additional
-> > >>>>> comments about this?
-> > >>>>
-> > >>>> I still do not see how did you address Rob's comment and his point is
-> > >>>> valid. You just did not reply to it.
-> > >>>
-> > >>> See https://lore.kernel.org/imx/ZXCiaKfMYYShoiXK@lizhi-Precision-Tower-5810/
-> > >>
-> > >> First of all, that's not the answer to Rob's email, but some other
-> > >> thread which is 99% ignored by Rob (unless he has filters for
-> > >> "@Rob"...). Therefore no, it does not count as valid answer.
-> > >>
-> > >> Second, explanation does not make sense. There is no argument granting
-> > >> you exception from SoC specific compatibles.
-> > > 
-> > > The patch could have been applied two months ago had Frank done as
-> > > was requested (multiple times). I don't understand the resistance
-> > > towards doing so given the process has taken way way longer as a result.
-> > 
-> > I think that Rob's comment was just skipped and original master binding
-> > was merged without addressing it. I don't want to repeat the same
-> > process for the "target". Indeed I could point this earlier... if I only
-> > knew that Rob pointed out that issue.
-> 
-> Oh I think I got confused here. The context for this mail led me to
-> think that this was still trying to push the i3c-master-v1 stuff through
-> and I was commenting on my frustration with the resistance to applying
-> the feedback received. I didn't realise that this was for another
-> patch adding a target.
-> 
-> I think you already said it, but NAK to adding any more compatibles here
-> until the soc-specific compatible that was asked for for the imx93 is
-> added.
+On Tue, Jan 9, 2024 at 7:00=E2=80=AFAM Tudor Ambarus <tudor.ambarus@linaro.=
+org> wrote:
+>
+> CMU_PERIC0 is the clock management unit used for the peric0 block which
+> is used for USI and I3C. Add support for all cmu_peric0 clocks but
+> CLK_GOUT_PERIC0_IP (not enough info in the datasheet).
+>
+> Few clocks are marked as critical because when either of them is
+> disabled, the system hangs even if their clock parents are enabled.
+>
+> Reviewed-by: Peter Griffin <peter.griffin@linaro.org>
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+> ---
+> v3:
+> - comply with the renamed cmu_peric0 clock name: "bus"
+> - collect Peter's R-b tag
+> v2:
+> - update commit message
+> - identify and mark critical clocks
+>
+>  drivers/clk/samsung/clk-gs101.c | 583 ++++++++++++++++++++++++++++++++
+>  1 file changed, 583 insertions(+)
+>
+> diff --git a/drivers/clk/samsung/clk-gs101.c b/drivers/clk/samsung/clk-gs=
+101.c
+> index 782993951fff..f3f0f5feb28d 100644
+> --- a/drivers/clk/samsung/clk-gs101.c
+> +++ b/drivers/clk/samsung/clk-gs101.c
+> @@ -20,6 +20,7 @@
+>  #define CLKS_NR_TOP    (CLK_GOUT_CMU_TPU_UART + 1)
+>  #define CLKS_NR_APM    (CLK_APM_PLL_DIV16_APM + 1)
+>  #define CLKS_NR_MISC   (CLK_GOUT_MISC_XIU_D_MISC_ACLK + 1)
+> +#define CLKS_NR_PERIC0 (CLK_GOUT_PERIC0_SYSREG_PERIC0_PCLK + 1)
+>
+>  /* ---- CMU_TOP --------------------------------------------------------=
+----- */
+>
+> @@ -2478,6 +2479,585 @@ static const struct samsung_cmu_info misc_cmu_inf=
+o __initconst =3D {
+>         .clk_name               =3D "bus",
+>  };
+>
+> +/* ---- CMU_PERIC0 -----------------------------------------------------=
+----- */
+> +
+> +/* Register Offset definitions for CMU_PERIC0 (0x10800000) */
+> +#define PLL_CON0_MUX_CLKCMU_PERIC0_BUS_USER            0x0600
+> +#define PLL_CON1_MUX_CLKCMU_PERIC0_BUS_USER            0x0604
+> +#define PLL_CON0_MUX_CLKCMU_PERIC0_I3C_USER            0x0610
+> +#define PLL_CON1_MUX_CLKCMU_PERIC0_I3C_USER            0x0614
+> +#define PLL_CON0_MUX_CLKCMU_PERIC0_USI0_UART_USER      0x0620
+> +#define PLL_CON1_MUX_CLKCMU_PERIC0_USI0_UART_USER      0x0624
+> +#define PLL_CON0_MUX_CLKCMU_PERIC0_USI14_USI_USER      0x0640
+> +#define PLL_CON1_MUX_CLKCMU_PERIC0_USI14_USI_USER      0x0644
+> +#define PLL_CON0_MUX_CLKCMU_PERIC0_USI1_USI_USER       0x0650
+> +#define PLL_CON1_MUX_CLKCMU_PERIC0_USI1_USI_USER       0x0654
+> +#define PLL_CON0_MUX_CLKCMU_PERIC0_USI2_USI_USER       0x0660
+> +#define PLL_CON1_MUX_CLKCMU_PERIC0_USI2_USI_USER       0x0664
+> +#define PLL_CON0_MUX_CLKCMU_PERIC0_USI3_USI_USER       0x0670
+> +#define PLL_CON1_MUX_CLKCMU_PERIC0_USI3_USI_USER       0x0674
+> +#define PLL_CON0_MUX_CLKCMU_PERIC0_USI4_USI_USER       0x0680
+> +#define PLL_CON1_MUX_CLKCMU_PERIC0_USI4_USI_USER       0x0684
+> +#define PLL_CON0_MUX_CLKCMU_PERIC0_USI5_USI_USER       0x0690
+> +#define PLL_CON1_MUX_CLKCMU_PERIC0_USI5_USI_USER       0x0694
+> +#define PLL_CON0_MUX_CLKCMU_PERIC0_USI6_USI_USER       0x06a0
+> +#define PLL_CON1_MUX_CLKCMU_PERIC0_USI6_USI_USER       0x06a4
+> +#define PLL_CON0_MUX_CLKCMU_PERIC0_USI7_USI_USER       0x06b0
+> +#define PLL_CON1_MUX_CLKCMU_PERIC0_USI7_USI_USER       0x06b4
+> +#define PLL_CON0_MUX_CLKCMU_PERIC0_USI8_USI_USER       0x06c0
+> +#define PLL_CON1_MUX_CLKCMU_PERIC0_USI8_USI_USER       0x06c4
+> +#define PERIC0_CMU_PERIC0_CONTROLLER_OPTION            0x0800
+> +#define CLKOUT_CON_BLK_PERIC0_CMU_PERIC0_CLKOUT0       0x0810
+> +#define CLK_CON_DIV_DIV_CLK_PERIC0_I3C                 0x1800
+> +#define CLK_CON_DIV_DIV_CLK_PERIC0_USI0_UART           0x1804
+> +#define CLK_CON_DIV_DIV_CLK_PERIC0_USI14_USI           0x180c
+> +#define CLK_CON_DIV_DIV_CLK_PERIC0_USI1_USI            0x1810
+> +#define CLK_CON_DIV_DIV_CLK_PERIC0_USI2_USI            0x1814
+> +#define CLK_CON_DIV_DIV_CLK_PERIC0_USI3_USI            0x1820
+> +#define CLK_CON_DIV_DIV_CLK_PERIC0_USI4_USI            0x1824
+> +#define CLK_CON_DIV_DIV_CLK_PERIC0_USI5_USI            0x1828
+> +#define CLK_CON_DIV_DIV_CLK_PERIC0_USI6_USI            0x182c
+> +#define CLK_CON_DIV_DIV_CLK_PERIC0_USI7_USI            0x1830
+> +#define CLK_CON_DIV_DIV_CLK_PERIC0_USI8_USI            0x1834
+> +#define CLK_CON_BUF_CLKBUF_PERIC0_IP                   0x2000
+> +#define CLK_CON_GAT_CLK_BLK_PERIC0_UID_PERIC0_CMU_PERIC0_IPCLKPORT_PCLK =
+                       0x2004
+> +#define CLK_CON_GAT_CLK_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_OSCCLK_IPCLKP=
+ORT_CLK                0x2008
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_D_TZPC_PERIC0_IPCLKPORT_PCLK    =
+               0x200c
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_GPC_PERIC0_IPCLKPORT_PCLK       =
+               0x2010
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_GPIO_PERIC0_IPCLKPORT_PCLK      =
+               0x2014
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_LHM_AXI_P_PERIC0_IPCLKPORT_I_CLK=
+               0x2018
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_0   =
+               0x201c
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_1   =
+               0x2020
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_10  =
+               0x2024
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_11  =
+               0x2028
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_12  =
+               0x202c
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_13  =
+               0x2030
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_14  =
+               0x2034
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_15  =
+               0x2038
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_2   =
+               0x203c
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_3   =
+               0x2040
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_4   =
+               0x2044
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_5   =
+               0x2048
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_6   =
+               0x204c
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_7   =
+               0x2050
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_8   =
+               0x2054
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_9   =
+               0x2058
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_0    =
+               0x205c
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_1    =
+               0x2060
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_10   =
+               0x2064
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_11   =
+               0x2068
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_12   =
+               0x206c
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_13   =
+               0x2070
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_14   =
+               0x2074
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_15   =
+               0x2078
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_2    =
+               0x207c
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_3    =
+               0x2080
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_4    =
+               0x2084
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_5    =
+               0x2088
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_6    =
+               0x208c
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_7    =
+               0x2090
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_8    =
+               0x2094
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_9    =
+               0x2098
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP1_IPCLKPORT_IPCLK_0   =
+               0x209c
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP1_IPCLKPORT_IPCLK_2   =
+               0x20a4
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP1_IPCLKPORT_PCLK_0    =
+               0x20a8
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP1_IPCLKPORT_PCLK_2    =
+               0x20b0
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_BUSP_IPCLKPO=
+RT_CLK         0x20b4
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_I3C_IPCLKPOR=
+T_CLK          0x20b8
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI0_UART_IP=
+CLKPORT_CLK    0x20bc
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI14_USI_IP=
+CLKPORT_CLK    0x20c4
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI1_USI_IPC=
+LKPORT_CLK     0x20c8
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI2_USI_IPC=
+LKPORT_CLK     0x20cc
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI3_USI_IPC=
+LKPORT_CLK     0x20d0
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI4_USI_IPC=
+LKPORT_CLK     0x20d4
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI5_USI_IPC=
+LKPORT_CLK     0x20d8
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI6_USI_IPC=
+LKPORT_CLK     0x20dc
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI7_USI_IPC=
+LKPORT_CLK     0x20e0
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI8_USI_IPC=
+LKPORT_CLK     0x20e4
+> +#define CLK_CON_GAT_GOUT_BLK_PERIC0_UID_SYSREG_PERIC0_IPCLKPORT_PCLK    =
+               0x20e8
+> +#define DMYQCH_CON_PERIC0_TOP0_QCH_S1                  0x3000
+> +#define DMYQCH_CON_PERIC0_TOP0_QCH_S2                  0x3004
+> +#define DMYQCH_CON_PERIC0_TOP0_QCH_S3                  0x3008
+> +#define DMYQCH_CON_PERIC0_TOP0_QCH_S4                  0x300c
+> +#define DMYQCH_CON_PERIC0_TOP0_QCH_S5                  0x3010
+> +#define DMYQCH_CON_PERIC0_TOP0_QCH_S6                  0x3014
+> +#define DMYQCH_CON_PERIC0_TOP0_QCH_S7                  0x3018
+> +#define DMYQCH_CON_PERIC0_TOP0_QCH_S8                  0x301c
+> +#define PCH_CON_LHM_AXI_P_PERIC0_PCH                   0x3020
+> +#define QCH_CON_D_TZPC_PERIC0_QCH                      0x3024
+> +#define QCH_CON_GPC_PERIC0_QCH                         0x3028
+> +#define QCH_CON_GPIO_PERIC0_QCH                                0x302c
+> +#define QCH_CON_LHM_AXI_P_PERIC0_QCH                   0x3030
+> +#define QCH_CON_PERIC0_CMU_PERIC0_QCH                  0x3034
+> +#define QCH_CON_PERIC0_TOP0_QCH_I3C1                   0x3038
+> +#define QCH_CON_PERIC0_TOP0_QCH_I3C2                   0x303c
+> +#define QCH_CON_PERIC0_TOP0_QCH_I3C3                   0x3040
+> +#define QCH_CON_PERIC0_TOP0_QCH_I3C4                   0x3044
+> +#define QCH_CON_PERIC0_TOP0_QCH_I3C5                   0x3048
+> +#define QCH_CON_PERIC0_TOP0_QCH_I3C6                   0x304c
+> +#define QCH_CON_PERIC0_TOP0_QCH_I3C7                   0x3050
+> +#define QCH_CON_PERIC0_TOP0_QCH_I3C8                   0x3054
+> +#define QCH_CON_PERIC0_TOP0_QCH_USI1_USI               0x3058
+> +#define QCH_CON_PERIC0_TOP0_QCH_USI2_USI               0x305c
+> +#define QCH_CON_PERIC0_TOP0_QCH_USI3_USI               0x3060
+> +#define QCH_CON_PERIC0_TOP0_QCH_USI4_USI               0x3064
+> +#define QCH_CON_PERIC0_TOP0_QCH_USI5_USI               0x3068
+> +#define QCH_CON_PERIC0_TOP0_QCH_USI6_USI               0x306c
+> +#define QCH_CON_PERIC0_TOP0_QCH_USI7_USI               0x3070
+> +#define QCH_CON_PERIC0_TOP0_QCH_USI8_USI               0x3074
+> +#define QCH_CON_PERIC0_TOP1_QCH_USI0_UART              0x3078
+> +#define QCH_CON_PERIC0_TOP1_QCH_USI14_UART             0x307c
+> +#define QCH_CON_SYSREG_PERIC0_QCH                      0x3080
+> +#define QUEUE_CTRL_REG_BLK_PERIC0_CMU_PERIC0           0x3c00
+> +
+> +static const unsigned long peric0_clk_regs[] __initconst =3D {
+> +       PLL_CON0_MUX_CLKCMU_PERIC0_BUS_USER,
+> +       PLL_CON1_MUX_CLKCMU_PERIC0_BUS_USER,
+> +       PLL_CON0_MUX_CLKCMU_PERIC0_I3C_USER,
+> +       PLL_CON1_MUX_CLKCMU_PERIC0_I3C_USER,
+> +       PLL_CON0_MUX_CLKCMU_PERIC0_USI0_UART_USER,
+> +       PLL_CON1_MUX_CLKCMU_PERIC0_USI0_UART_USER,
+> +       PLL_CON0_MUX_CLKCMU_PERIC0_USI14_USI_USER,
+> +       PLL_CON1_MUX_CLKCMU_PERIC0_USI14_USI_USER,
+> +       PLL_CON0_MUX_CLKCMU_PERIC0_USI1_USI_USER,
+> +       PLL_CON1_MUX_CLKCMU_PERIC0_USI1_USI_USER,
+> +       PLL_CON0_MUX_CLKCMU_PERIC0_USI2_USI_USER,
+> +       PLL_CON1_MUX_CLKCMU_PERIC0_USI2_USI_USER,
+> +       PLL_CON0_MUX_CLKCMU_PERIC0_USI3_USI_USER,
+> +       PLL_CON1_MUX_CLKCMU_PERIC0_USI3_USI_USER,
+> +       PLL_CON0_MUX_CLKCMU_PERIC0_USI4_USI_USER,
+> +       PLL_CON1_MUX_CLKCMU_PERIC0_USI4_USI_USER,
+> +       PLL_CON0_MUX_CLKCMU_PERIC0_USI5_USI_USER,
+> +       PLL_CON1_MUX_CLKCMU_PERIC0_USI5_USI_USER,
+> +       PLL_CON0_MUX_CLKCMU_PERIC0_USI6_USI_USER,
+> +       PLL_CON1_MUX_CLKCMU_PERIC0_USI6_USI_USER,
+> +       PLL_CON0_MUX_CLKCMU_PERIC0_USI7_USI_USER,
+> +       PLL_CON1_MUX_CLKCMU_PERIC0_USI7_USI_USER,
+> +       PLL_CON0_MUX_CLKCMU_PERIC0_USI8_USI_USER,
+> +       PLL_CON1_MUX_CLKCMU_PERIC0_USI8_USI_USER,
+> +       PERIC0_CMU_PERIC0_CONTROLLER_OPTION,
+> +       CLKOUT_CON_BLK_PERIC0_CMU_PERIC0_CLKOUT0,
+> +       CLK_CON_DIV_DIV_CLK_PERIC0_I3C,
+> +       CLK_CON_DIV_DIV_CLK_PERIC0_USI0_UART,
+> +       CLK_CON_DIV_DIV_CLK_PERIC0_USI14_USI,
+> +       CLK_CON_DIV_DIV_CLK_PERIC0_USI1_USI,
+> +       CLK_CON_DIV_DIV_CLK_PERIC0_USI2_USI,
+> +       CLK_CON_DIV_DIV_CLK_PERIC0_USI3_USI,
+> +       CLK_CON_DIV_DIV_CLK_PERIC0_USI4_USI,
+> +       CLK_CON_DIV_DIV_CLK_PERIC0_USI5_USI,
+> +       CLK_CON_DIV_DIV_CLK_PERIC0_USI6_USI,
+> +       CLK_CON_DIV_DIV_CLK_PERIC0_USI6_USI,
+> +       CLK_CON_DIV_DIV_CLK_PERIC0_USI8_USI,
+> +       CLK_CON_BUF_CLKBUF_PERIC0_IP,
+> +       CLK_CON_GAT_CLK_BLK_PERIC0_UID_PERIC0_CMU_PERIC0_IPCLKPORT_PCLK,
+> +       CLK_CON_GAT_CLK_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_OSCCLK_IPCLKPO=
+RT_CLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_D_TZPC_PERIC0_IPCLKPORT_PCLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_GPC_PERIC0_IPCLKPORT_PCLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_GPIO_PERIC0_IPCLKPORT_PCLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_LHM_AXI_P_PERIC0_IPCLKPORT_I_CLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_0,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_1,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_10,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_11,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_12,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_13,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_14,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_15,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_2,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_3,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_4,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_5,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_6,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_7,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_8,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_9,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_0,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_1,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_10,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_11,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_12,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_13,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_14,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_15,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_2,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_3,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_4,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_5,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_6,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_7,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_8,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_9,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP1_IPCLKPORT_IPCLK_0,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP1_IPCLKPORT_IPCLK_2,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP1_IPCLKPORT_PCLK_0,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP1_IPCLKPORT_PCLK_2,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_BUSP_IPCLKPOR=
+T_CLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_I3C_IPCLKPORT=
+_CLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI0_UART_IPC=
+LKPORT_CLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI14_USI_IPC=
+LKPORT_CLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI1_USI_IPCL=
+KPORT_CLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI2_USI_IPCL=
+KPORT_CLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI3_USI_IPCL=
+KPORT_CLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI4_USI_IPCL=
+KPORT_CLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI5_USI_IPCL=
+KPORT_CLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI6_USI_IPCL=
+KPORT_CLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI7_USI_IPCL=
+KPORT_CLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI8_USI_IPCL=
+KPORT_CLK,
+> +       CLK_CON_GAT_GOUT_BLK_PERIC0_UID_SYSREG_PERIC0_IPCLKPORT_PCLK,
+> +       DMYQCH_CON_PERIC0_TOP0_QCH_S1,
+> +       DMYQCH_CON_PERIC0_TOP0_QCH_S2,
+> +       DMYQCH_CON_PERIC0_TOP0_QCH_S3,
+> +       DMYQCH_CON_PERIC0_TOP0_QCH_S4,
+> +       DMYQCH_CON_PERIC0_TOP0_QCH_S5,
+> +       DMYQCH_CON_PERIC0_TOP0_QCH_S6,
+> +       DMYQCH_CON_PERIC0_TOP0_QCH_S7,
+> +       DMYQCH_CON_PERIC0_TOP0_QCH_S8,
+> +       PCH_CON_LHM_AXI_P_PERIC0_PCH,
+> +       QCH_CON_D_TZPC_PERIC0_QCH,
+> +       QCH_CON_GPC_PERIC0_QCH,
+> +       QCH_CON_GPIO_PERIC0_QCH,
+> +       QCH_CON_LHM_AXI_P_PERIC0_QCH,
+> +       QCH_CON_PERIC0_CMU_PERIC0_QCH,
+> +       QCH_CON_PERIC0_TOP0_QCH_I3C1,
+> +       QCH_CON_PERIC0_TOP0_QCH_I3C2,
+> +       QCH_CON_PERIC0_TOP0_QCH_I3C3,
+> +       QCH_CON_PERIC0_TOP0_QCH_I3C4,
+> +       QCH_CON_PERIC0_TOP0_QCH_I3C5,
+> +       QCH_CON_PERIC0_TOP0_QCH_I3C6,
+> +       QCH_CON_PERIC0_TOP0_QCH_I3C7,
+> +       QCH_CON_PERIC0_TOP0_QCH_I3C8,
+> +       QCH_CON_PERIC0_TOP0_QCH_USI1_USI,
+> +       QCH_CON_PERIC0_TOP0_QCH_USI2_USI,
+> +       QCH_CON_PERIC0_TOP0_QCH_USI3_USI,
+> +       QCH_CON_PERIC0_TOP0_QCH_USI4_USI,
+> +       QCH_CON_PERIC0_TOP0_QCH_USI5_USI,
+> +       QCH_CON_PERIC0_TOP0_QCH_USI6_USI,
+> +       QCH_CON_PERIC0_TOP0_QCH_USI7_USI,
+> +       QCH_CON_PERIC0_TOP0_QCH_USI8_USI,
+> +       QCH_CON_PERIC0_TOP1_QCH_USI0_UART,
+> +       QCH_CON_PERIC0_TOP1_QCH_USI14_UART,
+> +       QCH_CON_SYSREG_PERIC0_QCH,
+> +       QUEUE_CTRL_REG_BLK_PERIC0_CMU_PERIC0,
+> +};
+> +
+> +/* List of parent clocks for Muxes in CMU_PERIC0 */
+> +PNAME(mout_peric0_bus_user_p)          =3D { "oscclk", "dout_cmu_peric0_=
+bus" };
+> +PNAME(mout_peric0_i3c_user_p)          =3D { "oscclk", "dout_cmu_peric0_=
+ip" };
+> +PNAME(mout_peric0_usi0_uart_user_p)    =3D { "oscclk", "dout_cmu_peric0_=
+ip" };
+> +PNAME(mout_peric0_usi_usi_user_p)      =3D { "oscclk", "dout_cmu_peric0_=
+ip" };
+> +
+> +static const struct samsung_mux_clock peric0_mux_clks[] __initconst =3D =
+{
+> +       MUX(CLK_MOUT_PERIC0_BUS_USER, "mout_peric0_bus_user",
+> +           mout_peric0_bus_user_p, PLL_CON0_MUX_CLKCMU_PERIC0_BUS_USER, =
+4, 1),
+> +       MUX(CLK_MOUT_PERIC0_I3C_USER, "mout_peric0_i3c_user",
+> +           mout_peric0_i3c_user_p, PLL_CON0_MUX_CLKCMU_PERIC0_I3C_USER, =
+4, 1),
+> +       MUX(CLK_MOUT_PERIC0_USI0_UART_USER,
+> +           "mout_peric0_usi0_uart_user", mout_peric0_usi0_uart_user_p,
+> +           PLL_CON0_MUX_CLKCMU_PERIC0_USI0_UART_USER, 4, 1),
+> +       MUX(CLK_MOUT_PERIC0_USI14_USI_USER,
+> +           "mout_peric0_usi14_usi_user", mout_peric0_usi_usi_user_p,
+> +           PLL_CON0_MUX_CLKCMU_PERIC0_USI14_USI_USER, 4, 1),
+> +       MUX(CLK_MOUT_PERIC0_USI1_USI_USER,
+> +           "mout_peric0_usi1_usi_user", mout_peric0_usi_usi_user_p,
+> +           PLL_CON0_MUX_CLKCMU_PERIC0_USI1_USI_USER, 4, 1),
+> +       MUX(CLK_MOUT_PERIC0_USI2_USI_USER,
+> +           "mout_peric0_usi2_usi_user", mout_peric0_usi_usi_user_p,
+> +           PLL_CON0_MUX_CLKCMU_PERIC0_USI2_USI_USER, 4, 1),
+> +       MUX(CLK_MOUT_PERIC0_USI3_USI_USER,
+> +           "mout_peric0_usi3_usi_user", mout_peric0_usi_usi_user_p,
+> +           PLL_CON0_MUX_CLKCMU_PERIC0_USI3_USI_USER, 4, 1),
+> +       MUX(CLK_MOUT_PERIC0_USI4_USI_USER,
+> +           "mout_peric0_usi4_usi_user", mout_peric0_usi_usi_user_p,
+> +           PLL_CON0_MUX_CLKCMU_PERIC0_USI4_USI_USER, 4, 1),
+> +       MUX(CLK_MOUT_PERIC0_USI5_USI_USER,
+> +           "mout_peric0_usi5_usi_user", mout_peric0_usi_usi_user_p,
+> +           PLL_CON0_MUX_CLKCMU_PERIC0_USI5_USI_USER, 4, 1),
+> +       MUX(CLK_MOUT_PERIC0_USI6_USI_USER,
+> +           "mout_peric0_usi6_usi_user", mout_peric0_usi_usi_user_p,
+> +           PLL_CON0_MUX_CLKCMU_PERIC0_USI6_USI_USER, 4, 1),
+> +       MUX(CLK_MOUT_PERIC0_USI7_USI_USER,
+> +           "mout_peric0_usi7_usi_user", mout_peric0_usi_usi_user_p,
+> +           PLL_CON0_MUX_CLKCMU_PERIC0_USI7_USI_USER, 4, 1),
+> +       MUX(CLK_MOUT_PERIC0_USI8_USI_USER,
+> +           "mout_peric0_usi8_usi_user", mout_peric0_usi_usi_user_p,
+> +           PLL_CON0_MUX_CLKCMU_PERIC0_USI8_USI_USER, 4, 1),
+> +};
+> +
+> +static const struct samsung_div_clock peric0_div_clks[] __initconst =3D =
+{
+> +       DIV(CLK_DOUT_PERIC0_I3C, "dout_peric0_i3c", "mout_peric0_i3c_user=
+",
+> +           CLK_CON_DIV_DIV_CLK_PERIC0_I3C, 0, 3),
+> +       DIV(CLK_DOUT_PERIC0_USI0_UART,
+> +           "dout_peric0_usi0_uart", "mout_peric0_usi0_uart_user",
+> +           CLK_CON_DIV_DIV_CLK_PERIC0_USI0_UART, 0, 3),
+> +       DIV(CLK_DOUT_PERIC0_USI14_USI,
+> +           "dout_peric0_usi14_usi", "mout_peric0_usi14_usi_user",
+> +           CLK_CON_DIV_DIV_CLK_PERIC0_USI14_USI, 0, 3),
+> +       DIV(CLK_DOUT_PERIC0_USI1_USI,
+> +           "dout_peric0_usi1_usi", "mout_peric0_usi1_usi_user",
+> +           CLK_CON_DIV_DIV_CLK_PERIC0_USI1_USI, 0, 3),
+> +       DIV(CLK_DOUT_PERIC0_USI2_USI,
+> +           "dout_peric0_usi2_usi", "mout_peric0_usi2_usi_user",
+> +           CLK_CON_DIV_DIV_CLK_PERIC0_USI2_USI, 0, 3),
+> +       DIV(CLK_DOUT_PERIC0_USI3_USI,
+> +           "dout_peric0_usi3_usi", "mout_peric0_usi3_usi_user",
+> +           CLK_CON_DIV_DIV_CLK_PERIC0_USI3_USI, 0, 3),
+> +       DIV(CLK_DOUT_PERIC0_USI4_USI,
+> +           "dout_peric0_usi4_usi", "mout_peric0_usi4_usi_user",
+> +           CLK_CON_DIV_DIV_CLK_PERIC0_USI4_USI, 0, 3),
+> +       DIV(CLK_DOUT_PERIC0_USI5_USI,
+> +           "dout_peric0_usi5_usi", "mout_peric0_usi5_usi_user",
+> +           CLK_CON_DIV_DIV_CLK_PERIC0_USI5_USI, 0, 3),
+> +       DIV(CLK_DOUT_PERIC0_USI6_USI,
+> +           "dout_peric0_usi6_usi", "mout_peric0_usi6_usi_user",
+> +           CLK_CON_DIV_DIV_CLK_PERIC0_USI6_USI, 0, 3),
+> +       DIV(CLK_DOUT_PERIC0_USI7_USI,
+> +           "dout_peric0_usi7_usi", "mout_peric0_usi7_usi_user",
+> +           CLK_CON_DIV_DIV_CLK_PERIC0_USI7_USI, 0, 3),
+> +       DIV(CLK_DOUT_PERIC0_USI8_USI,
+> +           "dout_peric0_usi8_usi", "mout_peric0_usi8_usi_user",
+> +           CLK_CON_DIV_DIV_CLK_PERIC0_USI8_USI, 0, 3),
+> +};
+> +
+> +static const struct samsung_gate_clock peric0_gate_clks[] __initconst =
+=3D {
+> +       /* Disabling this clock makes the system hang. Mark the clock as =
+critical. */
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_CMU_PERIC0_PCLK,
+> +            "gout_peric0_peric0_cmu_peric0_pclk", "mout_peric0_bus_user"=
+,
+> +            CLK_CON_GAT_CLK_BLK_PERIC0_UID_PERIC0_CMU_PERIC0_IPCLKPORT_P=
+CLK,
+> +            21, CLK_IS_CRITICAL, 0),
 
-Is it okay for 'silvaco,i3c-target-imx93'?
+Why not just CLK_IGNORE_UNUSED? As I understand this gate clock can be
+used to disable PCLK (bus clock) provided to the whole CMU_PERIC0.
+Aren't there any valid cases for disabling this clock, like during
+some PM transitions? For Exynos850 clock driver I marked all clocks of
+this kind as CLK_IGNORE_UNUSED and it works fine. In other words: I'd
+say CLK_IS_CRITICAL flag is more "strong" than CLK_IGNORE_UNUSED, and
+requires better and more specific explanation, to make sure we are not
+abusing it. And I'm not sure this is the case.
 
-Frank
+The same goes for the rest of clocks marked as CLK_IS_CRITICAL in this
+patch. Please check if maybe using CLK_IGNORE_UNUSED makes sense for
+any of those as well.
 
-> 
-> Thanks,
-> Conor.
-
-
+> +       GATE(CLK_GOUT_PERIC0_CLK_PERIC0_OSCCLK_CLK,
+> +            "gout_peric0_clk_peric0_oscclk_clk", "oscclk",
+> +            CLK_CON_GAT_CLK_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_OSCCLK_IP=
+CLKPORT_CLK,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_D_TZPC_PERIC0_PCLK,
+> +            "gout_peric0_d_tzpc_peric0_pclk", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_D_TZPC_PERIC0_IPCLKPORT_PCLK=
+,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_GPC_PERIC0_PCLK,
+> +            "gout_peric0_gpc_peric0_pclk", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_GPC_PERIC0_IPCLKPORT_PCLK,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_GPIO_PERIC0_PCLK,
+> +            "gout_peric0_gpio_peric0_pclk", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_GPIO_PERIC0_IPCLKPORT_PCLK,
+> +            21, 0, 0),
+> +       /* Disabling this clock makes the system hang. Mark the clock as =
+critical. */
+> +       GATE(CLK_GOUT_PERIC0_LHM_AXI_P_PERIC0_I_CLK,
+> +            "gout_peric0_lhm_axi_p_peric0_i_clk", "mout_peric0_bus_user"=
+,
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_LHM_AXI_P_PERIC0_IPCLKPORT_I=
+_CLK,
+> +            21, CLK_IS_CRITICAL, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_0,
+> +            "gout_peric0_peric0_top0_ipclk_0", "dout_peric0_usi1_usi",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_=
+0,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_1,
+> +            "gout_peric0_peric0_top0_ipclk_1", "dout_peric0_usi2_usi",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_=
+1,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_10,
+> +            "gout_peric0_peric0_top0_ipclk_10", "dout_peric0_i3c",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_=
+10,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_11,
+> +            "gout_peric0_peric0_top0_ipclk_11", "dout_peric0_i3c",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_=
+11,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_12,
+> +            "gout_peric0_peric0_top0_ipclk_12", "dout_peric0_i3c",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_=
+12,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_13,
+> +            "gout_peric0_peric0_top0_ipclk_13", "dout_peric0_i3c",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_=
+13,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_14,
+> +            "gout_peric0_peric0_top0_ipclk_14", "dout_peric0_i3c",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_=
+14,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_15,
+> +            "gout_peric0_peric0_top0_ipclk_15", "dout_peric0_i3c",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_=
+15,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_2,
+> +            "gout_peric0_peric0_top0_ipclk_2", "dout_peric0_usi3_usi",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_=
+2,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_3,
+> +            "gout_peric0_peric0_top0_ipclk_3", "dout_peric0_usi4_usi",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_=
+3,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_4,
+> +            "gout_peric0_peric0_top0_ipclk_4", "dout_peric0_usi5_usi",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_=
+4,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_5,
+> +            "gout_peric0_peric0_top0_ipclk_5", "dout_peric0_usi6_usi",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_=
+5,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_6,
+> +            "gout_peric0_peric0_top0_ipclk_6", "dout_peric0_usi7_usi",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_=
+6,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_7,
+> +            "gout_peric0_peric0_top0_ipclk_7", "dout_peric0_usi8_usi",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_=
+7,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_8,
+> +            "gout_peric0_peric0_top0_ipclk_8", "dout_peric0_i3c",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_=
+8,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_9,
+> +            "gout_peric0_peric0_top0_ipclk_9", "dout_peric0_i3c",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_=
+9,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_PCLK_0,
+> +            "gout_peric0_peric0_top0_pclk_0", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_0=
+,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_PCLK_1,
+> +            "gout_peric0_peric0_top0_pclk_1", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_1=
+,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_PCLK_10,
+> +            "gout_peric0_peric0_top0_pclk_10", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_1=
+0,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_PCLK_11,
+> +            "gout_peric0_peric0_top0_pclk_11", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_1=
+1,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_PCLK_12,
+> +            "gout_peric0_peric0_top0_pclk_12", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_1=
+2,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_PCLK_13,
+> +            "gout_peric0_peric0_top0_pclk_13", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_1=
+3,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_PCLK_14,
+> +            "gout_peric0_peric0_top0_pclk_14", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_1=
+4,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_PCLK_15,
+> +            "gout_peric0_peric0_top0_pclk_15", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_1=
+5,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_PCLK_2,
+> +            "gout_peric0_peric0_top0_pclk_2", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_2=
+,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_PCLK_3,
+> +            "gout_peric0_peric0_top0_pclk_3", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_3=
+,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_PCLK_4,
+> +            "gout_peric0_peric0_top0_pclk_4", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_4=
+,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_PCLK_5,
+> +            "gout_peric0_peric0_top0_pclk_5", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_5=
+,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_PCLK_6,
+> +            "gout_peric0_peric0_top0_pclk_6", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_6=
+,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_PCLK_7,
+> +            "gout_peric0_peric0_top0_pclk_7", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_7=
+,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_PCLK_8,
+> +            "gout_peric0_peric0_top0_pclk_8", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_8=
+,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP0_PCLK_9,
+> +            "gout_peric0_peric0_top0_pclk_9", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_9=
+,
+> +            21, 0, 0),
+> +       /* Disabling this clock makes the system hang. Mark the clock as =
+critical. */
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP1_IPCLK_0,
+> +            "gout_peric0_peric0_top1_ipclk_0", "dout_peric0_usi0_uart",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP1_IPCLKPORT_IPCLK_=
+0,
+> +            21, CLK_IS_CRITICAL, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP1_IPCLK_2,
+> +            "gout_peric0_peric0_top1_ipclk_2", "dout_peric0_usi14_usi",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP1_IPCLKPORT_IPCLK_=
+2,
+> +            21, 0, 0),
+> +       /* Disabling this clock makes the system hang. Mark the clock as =
+critical. */
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP1_PCLK_0,
+> +            "gout_peric0_peric0_top1_pclk_0", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP1_IPCLKPORT_PCLK_0=
+,
+> +            21, CLK_IS_CRITICAL, 0),
+> +       GATE(CLK_GOUT_PERIC0_PERIC0_TOP1_PCLK_2,
+> +            "gout_peric0_peric0_top1_pclk_2", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP1_IPCLKPORT_PCLK_2=
+,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_CLK_PERIC0_BUSP_CLK,
+> +            "gout_peric0_clk_peric0_busp_clk", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_BUSP_IPC=
+LKPORT_CLK,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_CLK_PERIC0_I3C_CLK,
+> +            "gout_peric0_clk_peric0_i3c_clk", "dout_peric0_i3c",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_I3C_IPCL=
+KPORT_CLK,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_CLK_PERIC0_USI0_UART_CLK,
+> +            "gout_peric0_clk_peric0_usi0_uart_clk", "dout_peric0_usi0_ua=
+rt",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI0_UAR=
+T_IPCLKPORT_CLK,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_CLK_PERIC0_USI14_USI_CLK,
+> +            "gout_peric0_clk_peric0_usi14_usi_clk", "dout_peric0_usi14_u=
+si",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI14_US=
+I_IPCLKPORT_CLK,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_CLK_PERIC0_USI1_USI_CLK,
+> +            "gout_peric0_clk_peric0_usi1_usi_clk", "dout_peric0_usi1_usi=
+",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI1_USI=
+_IPCLKPORT_CLK,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_CLK_PERIC0_USI2_USI_CLK,
+> +            "gout_peric0_clk_peric0_usi2_usi_clk", "dout_peric0_usi2_usi=
+",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI2_USI=
+_IPCLKPORT_CLK,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_CLK_PERIC0_USI3_USI_CLK,
+> +            "gout_peric0_clk_peric0_usi3_usi_clk", "dout_peric0_usi3_usi=
+",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI3_USI=
+_IPCLKPORT_CLK,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_CLK_PERIC0_USI4_USI_CLK,
+> +            "gout_peric0_clk_peric0_usi4_usi_clk", "dout_peric0_usi4_usi=
+",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI4_USI=
+_IPCLKPORT_CLK,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_CLK_PERIC0_USI5_USI_CLK,
+> +            "gout_peric0_clk_peric0_usi5_usi_clk", "dout_peric0_usi5_usi=
+",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI5_USI=
+_IPCLKPORT_CLK,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_CLK_PERIC0_USI6_USI_CLK,
+> +            "gout_peric0_clk_peric0_usi6_usi_clk", "dout_peric0_usi6_usi=
+",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI6_USI=
+_IPCLKPORT_CLK,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_CLK_PERIC0_USI7_USI_CLK,
+> +            "gout_peric0_clk_peric0_usi7_usi_clk", "dout_peric0_usi7_usi=
+",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI7_USI=
+_IPCLKPORT_CLK,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_CLK_PERIC0_USI8_USI_CLK,
+> +            "gout_peric0_clk_peric0_usi8_usi_clk", "dout_peric0_usi8_usi=
+",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_RSTNSYNC_CLK_PERIC0_USI8_USI=
+_IPCLKPORT_CLK,
+> +            21, 0, 0),
+> +       GATE(CLK_GOUT_PERIC0_SYSREG_PERIC0_PCLK,
+> +            "gout_peric0_sysreg_peric0_pclk", "mout_peric0_bus_user",
+> +            CLK_CON_GAT_GOUT_BLK_PERIC0_UID_SYSREG_PERIC0_IPCLKPORT_PCLK=
+,
+> +            21, 0, 0),
+> +};
+> +
+> +static const struct samsung_cmu_info peric0_cmu_info __initconst =3D {
+> +       .mux_clks               =3D peric0_mux_clks,
+> +       .nr_mux_clks            =3D ARRAY_SIZE(peric0_mux_clks),
+> +       .div_clks               =3D peric0_div_clks,
+> +       .nr_div_clks            =3D ARRAY_SIZE(peric0_div_clks),
+> +       .gate_clks              =3D peric0_gate_clks,
+> +       .nr_gate_clks           =3D ARRAY_SIZE(peric0_gate_clks),
+> +       .nr_clk_ids             =3D CLKS_NR_PERIC0,
+> +       .clk_regs               =3D peric0_clk_regs,
+> +       .nr_clk_regs            =3D ARRAY_SIZE(peric0_clk_regs),
+> +       .clk_name               =3D "bus",
+> +};
+> +
+>  /* ---- platform_driver ------------------------------------------------=
+----- */
+>
+>  static int __init gs101_cmu_probe(struct platform_device *pdev)
+> @@ -2498,6 +3078,9 @@ static const struct of_device_id gs101_cmu_of_match=
+[] =3D {
+>         }, {
+>                 .compatible =3D "google,gs101-cmu-misc",
+>                 .data =3D &misc_cmu_info,
+> +       }, {
+> +               .compatible =3D "google,gs101-cmu-peric0",
+> +               .data =3D &peric0_cmu_info,
+>         }, {
+>         },
+>  };
+> --
+> 2.43.0.472.g3155946c3a-goog
+>
+>
