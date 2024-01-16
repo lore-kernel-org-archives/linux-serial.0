@@ -1,147 +1,154 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63DBC1D520;
-	Tue, 16 Jan 2024 18:23:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65B071CD2A
+	for <linux-serial@vger.kernel.org>; Tue, 16 Jan 2024 18:24:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705429395; cv=none; b=pUNgiuf2QUZxIT1RT4CPBZ3g/nRLqMh2VFaGtaShrlqOd8XXo93JNv2VEPlf7CxygtlZr7eyoF5psx9lYHnfbtyi8k0Sqi8TNlZdBZpn0ST5m2r6QOJ6Q2dEYBLQS/tr+S6Bd+3xU4+5LypP+K02B08rFDkVNZM4jgHSssHjIYw=
+	t=1705429463; cv=none; b=CVu3WjeU59lC14tTJ5/N5HerrSCTgpmOptYsqReg2XsBwPm1/5tR6Yx0IEt5n8IQDq7Dx/VxrxGEgtNLh7xjW4U8V/B68vV//KwT30MvffbOF0XqHU4YCHNq7ayFxjmoWR375rbHeeIe58OEqsfyvHo+aDCPxa/EsZJEWBdReYM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705429395; c=relaxed/simple;
-	bh=BZZrwB54NzVpdIKnJH5IBEBJlnxfuCsPO9zMgTYYx0Q=;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:
-	 In-Reply-To; b=N0hxUpELg5L2X2//+ejvosvbr9dBvyyjQ4uOtsj81niFzVHV5JSd4aL3CIBv9U1tvvWMsXhE3Yi/CMP/94O5h5BOEotijm+9GHzJtb555/HE0uHK/x1ro6G3l6vSmZ0+L+I5Jyd/WZOaBA+k3bO0GYcXVDuXvg11B+ZatFwDtFM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=udPD62db; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1705429463; c=relaxed/simple;
+	bh=C4NW4/xdipV3PZIsEE1qEeN40hdxEeW+JyPTTrGqC7g=;
+	h=DKIM-Signature:Received:X-MC-Unique:Received:
+	 X-Google-DKIM-Signature:X-Gm-Message-State:X-Received:
+	 X-Google-Smtp-Source:X-Received:Received:From:To:Cc:Subject:Date:
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 X-Mimecast-Spam-Score:X-Mimecast-Originator:Content-Type:
+	 Content-Disposition:Content-Transfer-Encoding; b=qhCggTsUbJeMMBjZGiF7EPDsxWLBph+axZS3SKHNFOZxlHnwOlnwovj4p9DWRAgGLYnHYgY1ejR1pNaEDOFmHQs/4NPdxKMKWrAo8JbxR7Z8AJ7j0TE0gtRkZwj+hLbnCGu5Bxr64Jj29jUVtBfmWa6VuXf8eAJS9mvRPBr7LtU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=SHb6yyaf; arc=none smtp.client-ip=170.10.133.124
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="udPD62db"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9565AC433F1;
-	Tue, 16 Jan 2024 18:23:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1705429394;
-	bh=BZZrwB54NzVpdIKnJH5IBEBJlnxfuCsPO9zMgTYYx0Q=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=udPD62dbadhMBLT6wXnbk/PYsrCAhEDzjxtawZJ9t1xIzxa7qfbeCQZOMjoea3fNW
-	 ny+vVTuIADQ7GD+7sSRh8UkwpzCq8tRLvoVD1YVU3y8RlPNrvhJaPpGtGNVQ7KuO22
-	 UY8nTAwYCb42cZNy+jP21tJ/QioS8vTLwiEwsExq/qag4FgJ8znilhvRbhZm7y66b1
-	 tRzF0R/qHyskJBWBYZfiOHQgcKgDt0IAHFQ8cv33ftqROoOt7W8C7TJgl137N72wn6
-	 VFHO8HARbFh3IEiUgbMNiIv+izNcblv8i63ErRkDoKK+o68aALBny2lm8lYFeq9y9Y
-	 QWDaX98aExH2A==
-Date: Tue, 16 Jan 2024 18:23:09 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Frank Li <Frank.li@nxp.com>
-Cc: Conor Dooley <conor.dooley@microchip.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	robh@kernel.org, alexandre.belloni@bootlin.com,
-	conor.culhane@silvaco.com, gregkh@linuxfoundation.org,
-	imx@lists.linux.dev, jirislaby@kernel.org, joe@perches.com,
-	linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, miquel.raynal@bootlin.com,
-	zbigniew.lukwinski@linux.intel.com, devicetree@vger.kernel.org,
-	krzysztof.kozlowski+dt@linaro.org
-Subject: Re: [PATCH v2 2/7] dt-bindings: i3c: svc: add compatible string i3c:
- silvaco,i3c-target-v1
-Message-ID: <20240116-retract-conclude-c47a7fc8cb21@spud>
-References: <e3b9aa63-25a5-41cc-9eb7-6e7d1eacb136@linaro.org>
- <ZaFjaWCA6k+tiCSJ@lizhi-Precision-Tower-5810>
- <ZaWLCrWJEMtFx8cR@lizhi-Precision-Tower-5810>
- <1b628901-7f71-4c97-9a16-723912988417@linaro.org>
- <ZaXqCoCHPWER94Hh@lizhi-Precision-Tower-5810>
- <d45e31c4-914e-4cea-a145-9775b6f516ab@linaro.org>
- <20240116-bleach-herbicide-48d636967134@wendy>
- <3199c245-3d2d-49e8-951e-2b059de4d683@linaro.org>
- <20240116-achiness-thievish-10a12b3c08cd@wendy>
- <Zaa+cLGVVDSB5MYr@lizhi-Precision-Tower-5810>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="SHb6yyaf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1705429461;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jZXROdG3HVxdOQP6p836Pie8H/kxnzXhwaCBYdybx0o=;
+	b=SHb6yyafI5MJ1KD2QOkx9/6nj0Z6961EjFVhLZERhUiR7w6F3ZnHg9eFczN07znTogmTqt
+	mdCTH3KgZcVitYOqmt/jyHWL6BO+fLTZ657t/hgzlSin80pzfnR1lqtXD9aHZ0QeQIao5z
+	G5r+bgmNTxOlNmZHWAuXLQEob3o9fkE=
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
+ [209.85.167.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-178-OX0fr9BoMnSVw_PMhkjzsA-1; Tue, 16 Jan 2024 13:24:15 -0500
+X-MC-Unique: OX0fr9BoMnSVw_PMhkjzsA-1
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-3bbacb61978so7614507b6e.3
+        for <linux-serial@vger.kernel.org>; Tue, 16 Jan 2024 10:24:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705429454; x=1706034254;
+        h=content-transfer-encoding:content-disposition:mime-version
+         :references:in-reply-to:message-id:date:subject:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jZXROdG3HVxdOQP6p836Pie8H/kxnzXhwaCBYdybx0o=;
+        b=mDocEGuYzzqGyA1pv0y9vGorLA8Edbi3MoH78xgEb9SIBWsze5KT6SZ/YQdifAUEN4
+         4ZqCClx8HlFUu0nS8Vq92wVwJiUQq4B+qmbyL6OzbPbTzQJN5PDYR99AaqEp1QVTPwwc
+         WTfeq9foRDOW9/KMLi6W5pNlqmdrLX64urNUR80sLDNq1ZbSehkauasusI6xq3N3L2bV
+         UuDTVwXKcPNM1hq5tZF4o7tGC33SN68ROpXi5KGGv1aIFq2nDZTJ+G59I2Z70cVAhwe+
+         WqjCTUuVhz3nrGuItc8rDHOZJOzJLHIojJGeFZPiJT28BLr0xIg2DJfrGFDuM/CRzZzk
+         Y1hA==
+X-Gm-Message-State: AOJu0YyHc/vlZP7e/gXYTPpEPZFgQP0EkQNvm4p5fEkzSBxmiHGsBCac
+	QTsJSIRYPteIqFZZ6hyM3s/mRrdqfMAvl4iULXuctf5FhvJdydsb6t8xerlBZYfALXs7sNR00MD
+	QvRHMm/ZpBTzbsiuW5zBJyxKI7T1zUOzX
+X-Received: by 2002:a05:6808:3991:b0:3bd:7224:cfac with SMTP id gq17-20020a056808399100b003bd7224cfacmr4190179oib.63.1705429454779;
+        Tue, 16 Jan 2024 10:24:14 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IFcammen5njJpgCvLKraAue9v8Z+qwiJCQA1k3kV0EMgCf1JohJ2KGTo9HzNr5pLcHunHsLqQ==
+X-Received: by 2002:a05:6808:3991:b0:3bd:7224:cfac with SMTP id gq17-20020a056808399100b003bd7224cfacmr4190162oib.63.1705429454497;
+        Tue, 16 Jan 2024 10:24:14 -0800 (PST)
+Received: from LeoBras.redhat.com ([2804:1b3:a803:64aa:6db9:6544:60c:9e16])
+        by smtp.gmail.com with ESMTPSA id u13-20020a05622a010d00b00429ff82eb74sm1116364qtw.82.2024.01.16.10.24.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Jan 2024 10:24:14 -0800 (PST)
+From: Leonardo Bras <leobras@redhat.com>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Leonardo Bras <leobras@redhat.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	Tony Lindgren <tony@atomide.com>,
+	Marcelo Tosatti <mtosatti@redhat.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [RFC PATCH v1 2/2] serial/8250: Avoid getting lock in RT atomic context
+Date: Tue, 16 Jan 2024 15:24:10 -0300
+Message-ID: <ZabJyq_y28tN1kuT@LeoBras>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <dd85dd1c-1352-4136-9a06-00066435a1ba@kernel.org>
+References: <20240116073234.2355850-2-leobras@redhat.com> <20240116073234.2355850-4-leobras@redhat.com> <dd85dd1c-1352-4136-9a06-00066435a1ba@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="qdmJxKjtdyHy6e/u"
-Content-Disposition: inline
-In-Reply-To: <Zaa+cLGVVDSB5MYr@lizhi-Precision-Tower-5810>
-
-
---qdmJxKjtdyHy6e/u
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jan 16, 2024 at 12:35:44PM -0500, Frank Li wrote:
-> On Tue, Jan 16, 2024 at 09:48:08AM +0000, Conor Dooley wrote:
-> > On Tue, Jan 16, 2024 at 10:33:48AM +0100, Krzysztof Kozlowski wrote:
-> > > On 16/01/2024 10:30, Conor Dooley wrote:
-> > > > On Tue, Jan 16, 2024 at 08:24:20AM +0100, Krzysztof Kozlowski wrote:
-> > > >> On 16/01/2024 03:29, Frank Li wrote:
-> > > >>>>> 	Patches were accepted after discussion, what you ponit to. So I
-> > > >>>>> think everyone agree on the name 'silvaco,i3c-master-v1'.
-> > > >>>>> 	I plan send next version to fix auto build error. Any addition=
-al
-> > > >>>>> comments about this?
-> > > >>>>
-> > > >>>> I still do not see how did you address Rob's comment and his poi=
-nt is
-> > > >>>> valid. You just did not reply to it.
-> > > >>>
-> > > >>> See https://lore.kernel.org/imx/ZXCiaKfMYYShoiXK@lizhi-Precision-=
-Tower-5810/
-> > > >>
-> > > >> First of all, that's not the answer to Rob's email, but some other
-> > > >> thread which is 99% ignored by Rob (unless he has filters for
-> > > >> "@Rob"...). Therefore no, it does not count as valid answer.
-> > > >>
-> > > >> Second, explanation does not make sense. There is no argument gran=
-ting
-> > > >> you exception from SoC specific compatibles.
-> > > >=20
-> > > > The patch could have been applied two months ago had Frank done as
-> > > > was requested (multiple times). I don't understand the resistance
-> > > > towards doing so given the process has taken way way longer as a re=
-sult.
-> > >=20
-> > > I think that Rob's comment was just skipped and original master bindi=
-ng
-> > > was merged without addressing it. I don't want to repeat the same
-> > > process for the "target". Indeed I could point this earlier... if I o=
-nly
-> > > knew that Rob pointed out that issue.
-> >=20
-> > Oh I think I got confused here. The context for this mail led me to
-> > think that this was still trying to push the i3c-master-v1 stuff through
-> > and I was commenting on my frustration with the resistance to applying
-> > the feedback received. I didn't realise that this was for another
-> > patch adding a target.
-> >=20
-> > I think you already said it, but NAK to adding any more compatibles here
-> > until the soc-specific compatible that was asked for for the imx93 is
-> > added.
->=20
-> Is it okay for 'silvaco,i3c-target-imx93'?
+On Tue, Jan 16, 2024 at 08:49:14AM +0100, Jiri Slaby wrote:
+> On 16. 01. 24, 8:32, Leonardo Bras wrote:
+> > With PREEMPT_RT enabled, a spin_lock_irqsave() becomes a possibly sleeping
+> > spin_lock(), without preempt_disable() or irq_disable().
+> > 
+> > This allows a task T1 to get preempted or interrupted while holding the
+> > port->lock. If the preempting task T2 need the lock, spin_lock() code
+> > will schedule T1 back until it finishes using the lock, and then go back to
+> > T2.
+> > 
+> > There is an issue if a T1 holding port->lock is interrupted by an
+> > IRQ, and this IRQ handler needs to get port->lock for writting (printk):
+> > spin_lock() code will try to reschedule the interrupt handler, which is in
+> > atomic context, causing a BUG() for trying to reschedule/sleep in atomic
+> > context.
+> > 
+> > So for the case (PREEMPT_RT && in_atomic()) try to get the lock, and if it
+> > fails proceed anyway, just like it's done in oops_in_progress case.
+> 
+> Hmm, that appears incorrect to me.
+> 
+> Perhaps we need a raw spin lock? Or maybe I am totally off, as my RT
+> knowledge is close to zero.
 
-I don't know. Is the device in question capable of also operating in
-master mode? I have no idea from the commit message since it contains
-zero information on the hardware.
-If the exact same controller can operate in master and target mode,
-having two compatibles for the same device does not seem okay to me.
+If we have a raw_spin_lock_irqsave() here, it would hurt RT by a lot since 
+disabling interrupts is usually bad at the RT kernel, and serial console 
+can be used a lot.
 
-Also, "silvaco" does not make the imx93 so that is not a suitable vendor
-prefix. If the imx93 only supports i3c IPs in target mode, I would call
-it "<vendorofimx>,imx93-i3c" with "silvaco,i3c-target-v1" as a fallback.
+> 
+> This needs advices from RT folks...
 
-Thanks,
-Conor.
+Agree. All help is welcome in this case!
 
---qdmJxKjtdyHy6e/u
-Content-Type: application/pgp-signature; name="signature.asc"
+Thanks!
+Leo
 
------BEGIN PGP SIGNATURE-----
+> 
+> > Signed-off-by: Leonardo Bras <leobras@redhat.com>
+> > ---
+> >   drivers/tty/serial/8250/8250_port.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> > index 8ca061d3bbb92..8480832846319 100644
+> > --- a/drivers/tty/serial/8250/8250_port.c
+> > +++ b/drivers/tty/serial/8250/8250_port.c
+> > @@ -3397,7 +3397,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+> >   	touch_nmi_watchdog();
+> > -	if (oops_in_progress)
+> > +	if (oops_in_progress || (IS_ENABLED(CONFIG_PREEMPT_RT) && in_atomic())
+> >   		locked = uart_port_trylock_irqsave(port, &flags);
+> >   	else
+> >   		uart_port_lock_irqsave(port, &flags);
+> 
+> -- 
+> js
+> suse labs
+> 
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZabJjQAKCRB4tDGHoIJi
-0oBVAQDDSQszcWBHPjv+zzPJ4Jwf5F3zvlWOZOaPQSVALMBS1AEAjehMKKMgybnn
-hKiuBGxe+C7CLnu7Tf0NAw78Xj6lcQY=
-=fPBb
------END PGP SIGNATURE-----
-
---qdmJxKjtdyHy6e/u--
