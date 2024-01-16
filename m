@@ -1,185 +1,189 @@
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2087.outbound.protection.outlook.com [40.107.8.87])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9619617CE;
-	Tue, 16 Jan 2024 02:29:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFEA111197;
+	Tue, 16 Jan 2024 07:10:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="TiQMnuhi"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MR9AcPCIctv+iZt1i38qPPFK4JDkIgnMeEE4x7soo9Cr+HxVFvTkB4e71AyUNj5GqlvdbslYQFzeLMb1bi26v1pbA9///ri/wwoPc6dkH7ttChLnZQ3wFWZpfTYRTsNWetCCNEhVNcGcqhbeI4ljsiaU0LJxM+8Wl4utKKeHpO1rPIc7UB7Ed12no0fUlyzkILqMufOQk1jX1wwPGJnG4VHabEMYjdMdfuCR736GlmukSVbKLxqGnXvCHZJeMNRzg+9khtFC43gFPuuW0bxh8BJfn4j6cNYC315gRL41b/OdXQHqv3ycBEaTpQIczH7FJ/AJ4MU081jcy+pyHg1LZg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jX4jC3/9yQ8Wxw87AzPi7eoXKdbsFWIv1tY7l2ILugY=;
- b=JTiNKZdsoBfRNVENBR0h5C1UmFUrjz/0nOcS5CFdqkcCi4b9/dC6mG8zgH0xVqozaItTIc1IFT/xg6jee64WrfPwEUm9IlUoU8m6myv1E8X75FXqCg+o5JrImkL3Lo9KBqYYbOKxSwf74wgStYzMPsiKmjbKTg1ODt14nbXdFPkBWj5J7b5bC5F65FYOdRBOwCrw+yRL7TGsHvhaWbt3galA5sLMEn0a+UfVPoUpA09XbM8e03q+8AhJESbN6oQvGDUNWa71xw8XySpxniXIevceoJqgvHVWD/D3LgpIGdPcIGBcCS+d7RblISqXi2mBXpTgt9/hFpzAg910JTLpiA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jX4jC3/9yQ8Wxw87AzPi7eoXKdbsFWIv1tY7l2ILugY=;
- b=TiQMnuhiNC0iXUJTKYxohJeux+tkAgB1Dmig2LAUEQOArsvTxiZMrKvbE59jdCe7tHPCPPdbq1WbTGqjgFciDyV/uzqvTpqXPFckZ2OGG+2DgtxGeEZIVXpTqoAerElEnl9v81MJe5YX3xDUrYyjqEcQh5RDibzF5kmhdP4QD/U=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from PAXPR04MB9642.eurprd04.prod.outlook.com (2603:10a6:102:240::14)
- by DU0PR04MB9418.eurprd04.prod.outlook.com (2603:10a6:10:359::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7181.23; Tue, 16 Jan
- 2024 02:29:39 +0000
-Received: from PAXPR04MB9642.eurprd04.prod.outlook.com
- ([fe80::b8af:bfe5:dffd:59a9]) by PAXPR04MB9642.eurprd04.prod.outlook.com
- ([fe80::b8af:bfe5:dffd:59a9%4]) with mapi id 15.20.7181.019; Tue, 16 Jan 2024
- 02:29:38 +0000
-Date: Mon, 15 Jan 2024 21:29:30 -0500
-From: Frank Li <Frank.li@nxp.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bPN7CH13"
+Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-55818b733f7so8494459a12.3;
+        Mon, 15 Jan 2024 23:10:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1705389042; x=1705993842; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Sx3ONPFhW1k+rJs1ik8VVxCBMTNuNbUGLXWbqa0i6nY=;
+        b=bPN7CH13BCtQaIYt6qv9zYFuOyxGuL3MxPFMEnw1fxOKl2N+2V/err3XljyMr4ORzO
+         eEPG9KppjTkRbET6ff0Kfb4GVyGMrNYfhrcPItvv04fMyLdPPRFKBJXE9ZphapJkZWYD
+         8u73ODyx4t6h7VD/0TEv3l/h0qsLTHkM0418m9vjBVBqhBzNGVZpa/rqUatbPwUyZY/i
+         5NX0z6EnrKUvPJllaCayIg1uzYr8edDrrYNFcA1R+zP7zo27/gyVnwb1ti/fWgejtNQQ
+         l15tfFq1jRXWw2ntGrmIJgQykAPoMueCZSKm5FPfGCc2w6QYx+L4XtfPhxwXXfLbrcDv
+         59LQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705389042; x=1705993842;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Sx3ONPFhW1k+rJs1ik8VVxCBMTNuNbUGLXWbqa0i6nY=;
+        b=Y+LSkn8o8zFVyZqvxMoKnByYaZ3Rk7t9w84fdUGNKQLBSCi9ZmjgAj6rmyk20b9euS
+         9qLscjOL1t01X6yN0+WkqLMcayH1ADsb/Hy3FcJh+mUISC0y9nUAqOrmSeZV4b/SEWW0
+         RuxQPJOBm6z3YyCeZiaWcGLoxGRHn+BY3a2+XwxGkz7au4oF8ZalaGS9HAciLnXDhbHq
+         QX6AK2H5MjbBz4djXZxsw6EHQ858DtFTCEOozXHFMQwys8dC/hL4Xm9xkWwuCit3N8fF
+         eSKBqA/L6KLgK/SRHpvP1M/N88y9BpJL4o70iQ7QnGYlSDFSPCsYfQVSGyjuGbugU4Bg
+         7i/w==
+X-Gm-Message-State: AOJu0YwJtA/zLeHdTlpZTkcB/qBOWX6+ZIkLMllHTMXyPERAxNmkUhn0
+	2V94N0oSIcFXZHOdXfWu2m4=
+X-Google-Smtp-Source: AGHT+IGjntI5qvKBjyx/xSzbYUzMxvRTXUY452vrAD0k/Xd5oD4pdJGB3KF9BprhwfnlYKxX9xbwsg==
+X-Received: by 2002:a05:6402:c90:b0:558:856a:806b with SMTP id cm16-20020a0564020c9000b00558856a806bmr3324595edb.49.1705389041964;
+        Mon, 15 Jan 2024 23:10:41 -0800 (PST)
+Received: from cjw-notebook (2a02-8388-0502-f480-6c32-186a-368b-d6a9.cable.dynamic.v6.surfer.at. [2a02:8388:502:f480:6c32:186a:368b:d6a9])
+        by smtp.gmail.com with ESMTPSA id i16-20020aa7c9d0000000b005582b9d551csm6386033edt.30.2024.01.15.23.10.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Jan 2024 23:10:41 -0800 (PST)
+Date: Tue, 16 Jan 2024 08:10:38 +0100
+From: Christoph Winklhofer <cj.winklhofer@gmail.com>
 To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: robh@kernel.org, alexandre.belloni@bootlin.com,
-	conor.culhane@silvaco.com, gregkh@linuxfoundation.org,
-	imx@lists.linux.dev, jirislaby@kernel.org, joe@perches.com,
-	linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, miquel.raynal@bootlin.com,
-	zbigniew.lukwinski@linux.intel.com, devicetree@vger.kernel.org,
-	krzysztof.kozlowski+dt@linaro.org
-Subject: Re: [PATCH v2 2/7] dt-bindings: i3c: svc: add compatible string i3c:
- silvaco,i3c-target-v1
-Message-ID: <ZaXqCoCHPWER94Hh@lizhi-Precision-Tower-5810>
-References: <20240110175221.2335480-1-Frank.Li@nxp.com>
- <20240110175221.2335480-3-Frank.Li@nxp.com>
- <3c0be658-e7a6-4231-b206-86ffb47e0cb2@linaro.org>
- <ZaFbbeQrC7o2dchO@lizhi-Precision-Tower-5810>
- <e3b9aa63-25a5-41cc-9eb7-6e7d1eacb136@linaro.org>
- <ZaFjaWCA6k+tiCSJ@lizhi-Precision-Tower-5810>
- <ZaWLCrWJEMtFx8cR@lizhi-Precision-Tower-5810>
- <1b628901-7f71-4c97-9a16-723912988417@linaro.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1b628901-7f71-4c97-9a16-723912988417@linaro.org>
-X-ClientProxiedBy: BYAPR07CA0058.namprd07.prod.outlook.com
- (2603:10b6:a03:60::35) To PAXPR04MB9642.eurprd04.prod.outlook.com
- (2603:10a6:102:240::14)
+Cc: Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Jonathan Corbet <corbet@lwn.net>, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCH v4 1/3] dt-bindings: w1: UART 1-Wire bus
+Message-ID: <ZaYr7jdxoKMqjnO1@cjw-notebook>
+References: <20240106-w1-uart-v4-0-7fe1378a8b3e@gmail.com>
+ <20240106-w1-uart-v4-1-7fe1378a8b3e@gmail.com>
+ <20240113013917.GA3795949-robh@kernel.org>
+ <ZaLQxGjjmA_iKOv2@cjw-notebook>
+ <81c79939-56cc-4d78-9552-56568999df09@linaro.org>
+ <ZaP0CoCYLQxrT3VD@cjw-notebook>
+ <1b8cb3ba-6727-45ab-acaa-c727a0a7ad85@linaro.org>
+ <ZaVtNmvRjPAn9bph@cjw-notebook>
+ <7035daa6-e654-4e77-be55-60f8e8c6639f@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PAXPR04MB9642:EE_|DU0PR04MB9418:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7936bdae-6a03-4e5d-5b14-08dc163afcc6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	K4eBhh84ce673aJX4B3SM6lE06Fs7GuAeHh8hRD3euBxSYx35OA6WiQJCBMIZMPBABsqz7ayzt0iRE/Eup6YMnyOLw0+6eGdm+a3ZXYGa8MiulexSJnqLvMC3RIgeVYp+dZO/2yVf6CvYVZ4bm+AMjf+bUylrztI+qe3S4JMUF7H7KenmEv7Oc+zHuLfZ2eRqcms3QbsqpLdkzit0yxRNnMoR67VWDRhsXMmIOvtuU0AxLE5xlt2CgmC3FtX9iw0PbeAD8TcJgIA6fvmakc2jKeArB58wtdU/cEIa/Uwcb7LcVlOo2yv65JVhQLrBMiWxkF07jmvGz7BLIqtnrPCxoSUTulG/3KOKTbH9dK+uXP7vdzohwPVzeEA3jQ2B2vDkVILlt33XuALTcpjMi758hF0BqMXN+bmtZgj9Yq3vRTb349DASWkTf9/38CXfS+sNHuNgqrwxlDqto+FaK5jt1CfErlmPJ19PUZ0EoyPu+sS1UB/lylY6a9VqpFNNx9k9i0y3U+rdxxpiEJMTAgLkLaLIuezPETDWdCBYmOCeN0WuaV+4RF8pYe0DJn4XTJ290TyzLJQb4QNQ1X9kB/1S6cHd716krt1AgFnHGQWVg4=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9642.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(136003)(376002)(366004)(346002)(396003)(39860400002)(230922051799003)(186009)(64100799003)(451199024)(1800799012)(53546011)(26005)(9686003)(52116002)(6666004)(6512007)(86362001)(38350700005)(38100700002)(4326008)(5660300002)(7416002)(66946007)(66556008)(6506007)(6916009)(8676002)(316002)(8936002)(66476007)(2906002)(478600001)(6486002)(41300700001)(966005)(33716001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?v+dg8t4Kze0OtPR/n4PnPnCmSJUMeQirDgNtouUMpJY0Lc5Jru/ok7/fa44V?=
- =?us-ascii?Q?/xujYBNXWKU6Y/nIBkKirCENFW+Z56GhvlKfifScFGOekpc1YMsgvJ54C8F9?=
- =?us-ascii?Q?2ZoT7SPN9SbUo3GlFXxhJvUNxQsUUczmjR3Cj2vPrDDO61QmsHDlOkf9bSW6?=
- =?us-ascii?Q?GNAb5vaZSQMEk3EVIh+JbjLYnavHwbbmqi8S2qNHSOMkFpwQZ3cmUPkA2YRB?=
- =?us-ascii?Q?X+QmcuEnI2DfUuVMWQ7ILpfC7d6kBh0qA5z2vrj4TaCjAIwUAzPjfrE36j6o?=
- =?us-ascii?Q?4O8CxGOCklTINa4X6OcZHEc1WaDrQaSqNC0VLKmLVEAipPG9qHDFysuimwbP?=
- =?us-ascii?Q?iLcKc+WpbIr/EYjboj3wlV/NLq4TU8jFCweYDMW+WDraLnXGsdMnJXOui3Ix?=
- =?us-ascii?Q?SGZDGZFZz/6DRQtRZsk99Df5wGl8ZpsXkocVOhYUvgzcozWbxJppTEGXf4tF?=
- =?us-ascii?Q?fpG5e9hyhAXB6dgeDO+qkV2Vl/JJyIGI5CxN58FfD0bVog84QaBwAbwQIDuv?=
- =?us-ascii?Q?YUVRHMKSrz/EZ+CsnDnC1MSY5513gUc2Q3lzSz0c+3eM9tVj8wuDAnpEJltQ?=
- =?us-ascii?Q?9zRmgfSQcaO1KF16dYupXBQaHS4+BAzkK1utrKtubFXdmk2ctESxX2IWP6um?=
- =?us-ascii?Q?qDKG6BDx2PraDzcL5Edq5Rmf+IsVwwnq32WViVVqkVQx3R5aOd1CILl99BZg?=
- =?us-ascii?Q?2UQK6yTPXLlFc02okyI7MgwVru9Xy4moFZqGMi4EO9JQ3BOcv+07Y9VbqaWc?=
- =?us-ascii?Q?ehLVLST62kxlnPGOSfq+oT9TNZmSCw3SYKxIrCnTKmemOe5vuTeb43NbFKvr?=
- =?us-ascii?Q?SZVvom9kQEKTndQ+6S0i41Pe4WXtqMP37mWo4jOVmZwLRpwX7RMXAKAVZfTt?=
- =?us-ascii?Q?tpG0wnqs3J9kt12BpLU4akgWTxxKaX06b+CHFR+MwfeSQOaQsXla4RwzybHQ?=
- =?us-ascii?Q?2XJD8mM4TPTOqxudFXNEF/iJxcdMVP9A2tOS7l00eUOH5jv/x/7kQx5jOqpk?=
- =?us-ascii?Q?0BQ5LWuw4+uIFJPAYNK8jxDxZR6S1u7EGE/dXlBLV47LW0PgF3thSfnz3zvh?=
- =?us-ascii?Q?qjOPeWS4b3u7kCjx6A0zYzK2HrpazFks/MbOLpFzo/3gROo2VoxtT0RhhOQ2?=
- =?us-ascii?Q?LtPfAr2E+2zTAxqoXYpNXTTLrpQsG1tpflMSHzQ2bYed2bERnSeO0mI6qVYI?=
- =?us-ascii?Q?rsS3hH0O9WrufLn3CJTOtX4sXVLVB6GYZoAHjEr+YIUzp+wHfQ5fltaP7isV?=
- =?us-ascii?Q?VTA5K7R3VW/R6eczAj9yNN/WXhJ3YoEiYes4XIyJc+a1f93njbcJ0pIJZ5G3?=
- =?us-ascii?Q?cpJoB1eq1SWdjFEnl5QcRfKxp5RF3EFa74VtyowEIXtsi9fV7S1GvweX6v1j?=
- =?us-ascii?Q?JztNYAGJGoze5VqhcjqyUPHsP79bGRSlvlKzA3no1pb1D16g7GlqcxheIzmP?=
- =?us-ascii?Q?ni9XvEAqBAA/q5jPKNz1HDzYhUdaxYdF3n9RGM8Fnzdhuu/fd6iRzGmm6E1s?=
- =?us-ascii?Q?2X04ZVRfhRhUG7ACDubsRqTDJxA0fEnxL7eOex/eEW3kZNcJFonBQ0mz+vrJ?=
- =?us-ascii?Q?yFwbVoiC4UHXAyNSPIA=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7936bdae-6a03-4e5d-5b14-08dc163afcc6
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9642.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jan 2024 02:29:38.9107
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NxwbgTsNmMvOxZh2gGrSvCYynThZfPSyd7XQjPvPv4EfGDc775MQm5MxXC2DEJLWU5BYdNtHZEicgREvYkvpTQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR04MB9418
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7035daa6-e654-4e77-be55-60f8e8c6639f@linaro.org>
 
-On Mon, Jan 15, 2024 at 09:38:19PM +0100, Krzysztof Kozlowski wrote:
-> On 15/01/2024 20:44, Frank Li wrote:
-> > On Fri, Jan 12, 2024 at 11:06:01AM -0500, Frank Li wrote:
-> >> On Fri, Jan 12, 2024 at 04:50:25PM +0100, Krzysztof Kozlowski wrote:
-> >>> On 12/01/2024 16:31, Frank Li wrote:
-> >>>> I review previous comments. The previous RFC patches and I just want I3C
-> >>>> expert review to check if there are comments about whole software
-> >>>> architecture. Of course, thank you for your comments about "slave".
+On Mon, Jan 15, 2024 at 07:02:55PM +0100, Krzysztof Kozlowski wrote:
+> On 15/01/2024 18:36, Christoph Winklhofer wrote:
+> > On Sun, Jan 14, 2024 at 04:55:42PM +0100, Krzysztof Kozlowski wrote:
+> >> On 14/01/2024 15:47, Christoph Winklhofer wrote:
+> >>> On Sun, Jan 14, 2024 at 11:54:48AM +0100, Krzysztof Kozlowski wrote:
+> >>>> On 13/01/2024 19:04, Christoph Winklhofer wrote:
+> >>>>> On Fri, Jan 12, 2024 at 07:39:17PM -0600, Rob Herring wrote:
+> >>>>>> On Sat, Jan 06, 2024 at 05:02:24PM +0100, Christoph Winklhofer wrote:
+> >>>>>>> Add device tree binding for UART 1-Wire bus.
+> >>>>>>>
+> >>>>>>> Signed-off-by: Christoph Winklhofer <cj.winklhofer@gmail.com>
+> >>>>>>> ---
+> >>>>>>>  Documentation/devicetree/bindings/w1/w1-uart.yaml | 62 +++++++++++++++++++++++
+> >>>>>>>  1 file changed, 62 insertions(+)
+> >>>>>>>
+> >>>>>>> diff --git a/Documentation/devicetree/bindings/w1/w1-uart.yaml b/Documentation/devicetree/bindings/w1/w1-uart.yaml
+> >>>>>>> new file mode 100644
+> >>>>>>> index 000000000000..6b90693b2ca0
+> >>>>>>> --- /dev/null
+> >>>>>>> +++ b/Documentation/devicetree/bindings/w1/w1-uart.yaml
+> >>>>>>> @@ -0,0 +1,62 @@
+> >>>>>>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> >>>>>>> +%YAML 1.2
+> >>>>>>> +---
+> >>>>>>> +$id: http://devicetree.org/schemas/w1/w1-uart.yaml#
+> >>>>>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >>>>> ...
+> >>>>>>> +properties:
+> >>>>>>> +  compatible:
+> >>>>>>> +    const: w1-uart
+> >>>>>>> +
+> >>>>>>> +  reset-speed:
+> >>>>>>> +    $ref: /schemas/types.yaml#/definitions/uint32
+> >>>>>>> +    default: 9600
+> >>>>>>> +    description: |
+> >>>>>>
+> >>>>>> Don't need '|' if no formatting
+> >>>>>>
+> >>>>>
+> >>>>> Ok.
+> >>>>>
+> >>>>>>> +      The baud rate for the 1-Wire reset and presence detect.
+> >>>>>>> +
+> >>>>>>> +  touch_0-speed:
+> >>>>>>
+> >>>>>> Don't use '_' in property names.
+> >>>>>>
+> >>>>>> I'm somewhat familar with 1-wire, but I don't get what 'touch' means 
+> >>>>>> here. I assume these are low and high times which are a function of the 
+> >>>>>> baudrate.
+> >>>>>>
+> >>>>>
+> >>>>> I change the name to 'write-0-speed' and 'write-1-speed'. The function
+> >>>>> in the w1-framework is named 'touch_bit' - therefore the previous
+> >>>>> naming. 
+> >>>>>
+> >>>>> It is the baud-rate used in the 1-Wire cycle to write a 0-Bit
+> >>>>> (write-0-speed) and to perform a 1-Wire cycle that writes a 1-Bit and
+> >>>>> reads a 0-Bit or 1-Bit (write-1-speed).
 > >>>>
-> >>>> Go back this binding doc problem. 
 > >>>>
-> >>>>   "No, it's the same device.
-> >>>>
-> >>>>    Anyway, this was not tested.
-> >>>>
-> >>>>    Please use scripts/get_maintainers.pl to get a list of necessary people
-> >>>>    and lists to CC. It might happen, that command when run on an older
-> >>>>    kernel, gives you outdated entries. Therefore please be sure you base
-> >>>>    your patches on recent Linux kernel.
-> >>>>
-> >>>>    You missed at least devicetree list (maybe more), so this won't be
-> >>>>    tested by automated tooling. Performing review on untested code might be
-> >>>>    a waste of time, thus I will skip this patch entirely till you follow
-> >>>>    the process allowing the patch to be tested.
-> >>>>
-> >>>>    Please kindly resend and include all necessary To/Cc entries.
-> >>>>    "
-> >>>>
-> >>>> It is the same devices, work at difference mode (master  and target).
-> >>>> what's do you want to change to?
-> >>>>
-> >>>> Copy to new file like pci/pci-ep? all context is the same, except for
-> >>>> compatible string. 
-> >>>>
+> >>>> Then probably -bps:
+> >>>> https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/property-units.yaml
 > >>>
-> >>> Apologies, I mixed up a bit patches, so this was not obvious. I meant
-> >>> this comment:
-> >>>
-> >>> https://lore.kernel.org/all/20231017201404.GA2570433-robh@kernel.org/
-> >>>
-> >>> There is no indication in your commit msg that these concerns were
-> >>> addressed.
+> >>> The serial.yaml uses prefix -speed for the baud rate but I can change it
+> >>> to -bps.
 > >>
-> >> Look like everyone already accecpted 'silvaco,i3c-master-v1'.
+> >> Do you reference serial.yaml?
 > >>
-> >> driver part:
-> >> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=8911eae9c8a947e5c1cc4fcce40473f1f5e475cd
-> >> dts part:
-> >> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=b8ec0f3b42a3498d5115d1fb1490082ab525747b
 > > 
-> > @Krzysztof:
-> > 	Patches were accepted after discussion, what you ponit to. So I
-> > think everyone agree on the name 'silvaco,i3c-master-v1'.
-> > 	I plan send next version to fix auto build error. Any additional
-> > comments about this?
+> > No, serial.yaml is not referenced but 'onewire' will be a child-node of
+> > a serial-device which already defines baud rate related properties
+> > with -speed (e.g. max-speed although not used in w1-uart). Hence, I
+> > thought -speed is typically used for baud rates.
 > 
-> I still do not see how did you address Rob's comment and his point is
-> valid. You just did not reply to it.
-
-See https://lore.kernel.org/imx/ZXCiaKfMYYShoiXK@lizhi-Precision-Tower-5810/
-
-Frank
-
+> Ah, it defines max-speed for childre, so for onewire. Re-using that
+> property would make sense, but since you are defining completely new
+> properties, let's use proper (-bps) naming.
 > 
-> Best regards,
-> Krzysztof
-> 
+
+Ok.
+
+> I still wonder, why would you use different baud rates for these three
+> different operations?
+
+The timing for the pulse on the 1-Wire bus, to perform a 1-Wire reset or
+read/write is too different to use the same baud rate for them. The
+pulse can only be generated with the transmission of a single byte (to
+initiate the operation and to evaluate the response), since every UART
+packet starts low and ends high, only a limited set of baud rates are
+possible.
+
+Read-0/1 and Write-1 have the same low-time and therefore share the same
+baud rate setting, actually this baud could be higher. Otherwise, for
+Write-0 the maximum baud-rate is somewhere near 115200.
+
+The table lists the low-time range for the 1-Wire standard speed
+(overdrive is currently not implemented by the driver):
+
+  Operation | Low-Time (usec) | Baud rate (default)
+  ----------+-----------------+--------------------
+  Reset     | 480 - 640       | 9600
+  Read-0/1  |   5 -  15       | 115200
+  Write-1   |   5 -  15       | 115200
+  Write-0   |  60 - 120       | 115200
+
+I thought it makes sense to have the option to overwrite the default
+baud rates. Alternatively, the driver could probe a fixed set of
+different baud rates that are able to generate the timing patterns.
+Initially, the driver always used 9600 and 115200 - however some UART
+devices may not support these bauds. Now the driver requests a baud rate
+and checks if it can create the timing pattern with the returned one.
+
+Kind regards,
+Christoph
