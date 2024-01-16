@@ -1,139 +1,92 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D014134C1;
-	Tue, 16 Jan 2024 10:24:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B4271BF22
+	for <linux-serial@vger.kernel.org>; Tue, 16 Jan 2024 14:43:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SklX3cVU"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1705400640; x=1736936640;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=YniVLZD2s3E4XeUi3U56nsCA0cbZEvcrCwDUGCUg620=;
-  b=SklX3cVUqlzCqfl6Rpb+SaaYOZ9te08JZHY3fLYzxK3wohb84042IAmP
-   e+Dz3fh/ZTICyxGi9iOjTcKslJEe2Zej9Y6vbg0MO49zloNINv/8YBdhG
-   0IOcWhzNNrIeHSfCkaVmRuBpP8nhTPioO4TACOenMB9i45Uxm4Wyxon/y
-   C6Y262FlqLSxQD0V/h4qa31Y/f/34bJAH50vPEv8R7ew0CeP+1wWJ5God
-   z95z6PtxkrPqPXKz8nZmZVqKzdpk1HSgdCwZdIjFJqbv5zk63C1pfVQyZ
-   Jx9YARFfAiNncavNV4ytTpERCTuuvyayJy5Fg0DOVS6JnTnpE0J4UxOcm
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10954"; a="466194397"
-X-IronPort-AV: E=Sophos;i="6.04,198,1695711600"; 
-   d="scan'208";a="466194397"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2024 02:14:54 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.04,198,1695711600"; 
-   d="scan'208";a="18417568"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.246.35.68])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2024 02:14:51 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Tue, 16 Jan 2024 12:14:47 +0200 (EET)
-To: Gui-Dong Han <2045gemini@gmail.com>
-cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-    linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-    baijiaju1990@outlook.com, stable@vger.kernel.org
-Subject: Re: [PATCH] tty: fix atomicity violation in n_tty_read
-In-Reply-To: <20240112125801.2650-1-2045gemini@gmail.com>
-Message-ID: <7f51ab12-bbfe-0aae-3755-275ee4762f03@linux.intel.com>
-References: <20240112125801.2650-1-2045gemini@gmail.com>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="JqlPwYox"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=bmKar/sLWNSP15I4hLWYBSWPFUWDMycTihcUdLB8Z0g=; b=JqlPwYoxyR2WVsVV0TBtAAZFjt
+	91frFfQNsTBe5RNAFCGiJENK69QRjdZHAF4mYshLqMR6vzMNzWfrvv5p8Ptbr0kqOrXN/4uOma+5S
+	jsCLg6NWd6dLLqNmNi91dyU8xx63gPI5MFbSiIOg3VsCFUeM4cLQlY6rbMMWx1N3neww=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:40528 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1rPkev-0007CV-Ev; Tue, 16 Jan 2024 09:43:22 -0500
+Date: Tue, 16 Jan 2024 09:43:20 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: "Srinivasan, Usha" <usha.srinivasan@cornelisnetworks.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Message-Id: <20240116094320.f09f35e36adc9d27902e9694@hugovil.com>
+In-Reply-To: <BY5PR01MB5635C11E9BE2B105FB7B87A09E6C2@BY5PR01MB5635.prod.exchangelabs.com>
+References: <DM4PR01MB75952BAB0B535CF832C89AD99E6B2@DM4PR01MB7595.prod.exchangelabs.com>
+	<20240108172934.c457ca06b6543f868d32de46@hugovil.com>
+	<DM4PR01MB75959DD41CC90B1B704A05D29E6A2@DM4PR01MB7595.prod.exchangelabs.com>
+	<20240110174015.6f20195fde08e5c9e64e5675@hugovil.com>
+	<BY5PR01MB5635A9264220404AA6EA5C089E682@BY5PR01MB5635.prod.exchangelabs.com>
+	<20240111115239.63d408a688b1b8783de3064f@hugovil.com>
+	<BY5PR01MB56351BA462070C585273B3909E682@BY5PR01MB5635.prod.exchangelabs.com>
+	<20240111140833.4d312e7e4ae11f1770df8968@hugovil.com>
+	<BY5PR01MB5635C11E9BE2B105FB7B87A09E6C2@BY5PR01MB5635.prod.exchangelabs.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
+Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
+	* -1.7 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: max14830 nobody cared Disbling IRQ issue
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Fri, 12 Jan 2024, Gui-Dong Han wrote:
+On Mon, 15 Jan 2024 19:07:30 +0000
+"Srinivasan, Usha" <usha.srinivasan@cornelisnetworks.com> wrote:
 
-> In n_tty_read():
->     if (packet && tty->link->ctrl.pktstatus) {
->     ...
->     spin_lock_irq(&tty->link->ctrl.lock);
->     cs = tty->link->ctrl.pktstatus;
->     tty->link->ctrl.pktstatus = 0;
->     spin_unlock_irq(&tty->link->ctrl.lock);
->     *kb++ = cs;
->     ...
+> Hi, Hugo.
+> We fixed our clock issue in the platform; and you were right, I need to bump the delay to 100 in addition. I pulled in the latest version of max310x.c from torvals linux and I still get the "nobody cared" stack traces & the interrupts get disabled.  I'm hoping you can help me get beyond this.
 > 
-> In n_tty_read() function, there is a potential atomicity violation issue.
-> The tty->link->ctrl.pktstatus might be set to 0 after being checked, which
-> could lead to incorrect values in the kernel space buffer
-> pointer (kb/kbuf). The check if (packet && tty->link->ctrl.pktstatus)
-> occurs outside the spin_lock_irq(&tty->link->ctrl.lock) block. This may
-> lead to tty->link->ctrl.pktstatus being altered between the check and the
-> lock, causing *kb++ = cs; to be assigned with a zero pktstatus value.
+> 57:     100001          0 1e780000.gpio 152 Level     11-006c
+>  58:     500001          0 1e780000.gpio 153 Level     11-0061
+>  59:     100001          0 1e780000.gpio 154 Level     11-0062
+>  60:     100001          0 1e780000.gpio 155 Level     11-0064
+> [   88.832861] [<da8c4f2b>] irq_default_primary_handler threaded [<ac7ce979>] max310x_ist
+> [   88.841725] Disabling IRQ #57
+> [  175.370303] [<da8c4f2b>] irq_default_primary_handler threaded [<ac7ce979>] max310x_ist
+> [  175.379166] Disabling IRQ #59
+> [  262.242889] [<da8c4f2b>] irq_default_primary_handler threaded [<ac7ce979>] max310x_ist
+> [  262.251752] Disabling IRQ #60
+> [  369.903466] [<da8c4f2b>] irq_default_primary_handler threaded [<ac7ce979>] max310x_ist
+> [  369.912332] Disabling IRQ #58
 > 
-> This possible bug is found by an experimental static analysis tool
-> developed by our team, BassCheck[1]. This tool analyzes the locking APIs
-> to extract function pairs that can be concurrently executed, and then
-> analyzes the instructions in the paired functions to identify possible
-> concurrency bugs including data races and atomicity violations. The above
-> possible bug is reported when our tool analyzes the source code of
-> Linux 5.17.
-> 
-> To resolve this atomicity issue, it is suggested to move the condition
-> check if (packet && tty->link->ctrl.pktstatus) inside the spin_lock block.
-> With this patch applied, our tool no longer reports the bug, with the
-> kernel configuration allyesconfig for x86_64. Due to the absence of the
-> requisite hardware, we are unable to conduct runtime testing of the patch.
-> Therefore, our verification is solely based on code logic analysis.
-> 
-> [1] https://sites.google.com/view/basscheck/
-> 
-> Fixes: 64d608db38ff ("tty: cumulate and document tty_struct::ctrl* members")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Gui-Dong Han <2045gemini@gmail.com>
-> ---
->  drivers/tty/n_tty.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-> index f252d0b5a434..df54ab0c4d8c 100644
-> --- a/drivers/tty/n_tty.c
-> +++ b/drivers/tty/n_tty.c
-> @@ -2222,19 +2222,23 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file, u8 *kbuf,
->  	add_wait_queue(&tty->read_wait, &wait);
->  	while (nr) {
->  		/* First test for status change. */
-> +		spin_lock_irq(&tty->link->ctrl.lock);
->  		if (packet && tty->link->ctrl.pktstatus) {
->  			u8 cs;
-> -			if (kb != kbuf)
-> +			if (kb != kbuf) {
-> +				spin_unlock_irq(&tty->link->ctrl.lock);
->  				break;
-> -			spin_lock_irq(&tty->link->ctrl.lock);
-> +			}
->  			cs = tty->link->ctrl.pktstatus;
->  			tty->link->ctrl.pktstatus = 0;
->  			spin_unlock_irq(&tty->link->ctrl.lock);
->  			*kb++ = cs;
->  			nr--;
->  			break;
-> +		} else {
-> +			spin_unlock_irq(&tty->link->ctrl.lock);
+> Thank you.
+> Usha
+> External recipient
 
-This seems way over-engineered. Wouldn't it be much simpler to just test 
-if cs is non-zero after the original critical section to detect if there 
-were any changes into pktstatus before the lock was acquired? That would 
-avoid all this lock dance and enlarging the critical section.
+Hi Usha,
+please respond to the original email thread, so that people can see
+what has been done so far and better help you.
 
->  		}
-> -
-> +
+With your crystal issues solved, do you see the exact same problem as
+before?
 
-Spurious changes like this should not be included into patches.
+Can you confirm with a voltmeter or an oscilloscope that your IRQ pin
+is behaving properly before and after you insert the max310x
+kernel module? Maybe it could help if you shared your DTS configuration.
 
->  		if (!input_available_p(tty, 0)) {
->  			up_read(&tty->termios_rwsem);
->  			tty_buffer_flush_work(tty->port);
-> 
+Also, just to be sure, you should not just pull the max310x source code
+itself, but use the whole tree to compile your kernel.
 
--- 
- i.
-
+Hugo Villeneuve
