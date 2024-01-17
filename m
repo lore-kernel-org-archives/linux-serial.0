@@ -1,34 +1,34 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB8451E87E;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB7BC1E872;
 	Wed, 17 Jan 2024 22:39:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705531158; cv=none; b=rJdo8l+1S1vfNIPI+dop1QWXUWDP0TdTl4gicDGwAIfcxdCNTPHpJ5ecXI/T8jbo3TPv/SFiEEj4DKPs06JOeF/2jx6acotWIxo66HM46fKJ+8x2pULQr8DNr/rWAw7Dsx8EkoWAjqVxFrvEGY2G3DqCPVURbrDAy8K40s7r0iU=
+	t=1705531158; cv=none; b=fLla9aNJkNTGmhJdar6bvawDBI7otRN+W4gjmyZwaVkEoVPvxSeOqbArdA+fQuVxCW0Wlxj8poxm07mgNaub/v84bF3Hrn05N2l1nson5AfA20/0XcsDrk8PFH0/hlrlkb+V1B4N/pXK4JPjAprN5oVyR+ZAy2ppYGeQaE8gfKo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1705531158; c=relaxed/simple;
-	bh=vy0wdEBit3su56RQHlgDgVvvo7neIJRXuqdIwFymyJ4=;
+	bh=+/hwa2MZMP9q/ZGziGZDEDvTu4IP1DgVIC1fIjPp8zU=;
 	h=DKIM-Signature:Received:From:To:Cc:Date:Message-Id:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
-	 X-SA-Exim-Connect-IP:X-SA-Exim-Mail-From:X-Spam-Checker-Version:
-	 X-Spam-Level:X-Spam-Report:X-Spam-Status:Subject:X-SA-Exim-Version:
-	 X-SA-Exim-Scanned; b=TI/2NjlC/C+uNOyihI/Tssh5KUL+wTBFlWqkhRYEnLoMFB74RiWarIcVUuSGA5lFmqRAuiMPr1V6e/HQmw5X3bO0tKfLhAWZKa9ju1v+uT4+jHACy80WZkRLsO5Z4+Q9Yn0QN+XhmyiiFasPH9jPas/8dCoK3eEFYhTlXFM4EZo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=0R/koWjz; arc=none smtp.client-ip=162.243.120.170
+	 In-Reply-To:References:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:X-SA-Exim-Connect-IP:X-SA-Exim-Mail-From:
+	 X-Spam-Checker-Version:X-Spam-Level:X-Spam-Report:X-Spam-Status:
+	 Subject:X-SA-Exim-Version:X-SA-Exim-Scanned; b=WjglRK0SHxkKNe1u64yxlvkShPhcHxxlwLLlAklPS36HDmEKbplWmkeOX8emSMgCcJwgyZBic1nTmg73R1zyQPBYXFLVgiH0NdSa/o5V8HiJxT+VVbvxRpKqlEGwXeS6rBEvCvPvvPCxBz5lOk7i3k/G+OWQtbAHSTgBtIM0YtU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=s5AtkbY+; arc=none smtp.client-ip=162.243.120.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="0R/koWjz"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="s5AtkbY+"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=GFJehYhk/fDFBrjMMskC+wY+GYyn4Kg3SNttyfUxJbM=; b=0R/koWjzs2mNCLnvzoCc12asu7
-	U31h0qkVj2Ai0tPIJ4Ss0WD+H+hozbju9+8EUwdP/ZdTavxMOtN+rumw+XIz6IZUC7pKfsNVsXu5R
-	FcKI0mYDvElrbVTNaQzsTU5/B0vezxwJAKuXwq0sggjyBZQVcsm9M8RQBo+zO9j8Sanc=;
+	bh=imlmTClSb0zhL0U6rNR7n17pPqPnqSl414UjggwqRB8=; b=s5AtkbY+Q00dSQ9jftO4pfzbm3
+	9RW2Ydz66FtcQ8peHRpA5h3wKlcU9QFtiNoJzya9I5Ufmsc1MrG7x0VHXokQGVPJLRtaKKc8k7vRM
+	j4Khjep4cPEpU+iCctEAWtwZ+lN2hmSoKwopE/oGHvmrSMgNaQ5lEtquN3liyK1sAkKc=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:52924 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rQEYr-000155-Dt; Wed, 17 Jan 2024 17:39:05 -0500
+	id 1rQEYx-000155-UH; Wed, 17 Jan 2024 17:39:13 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -38,9 +38,10 @@ To: gregkh@linuxfoundation.org,
 Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	hugo@hugovil.com,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Date: Wed, 17 Jan 2024 17:38:41 -0500
-Message-Id: <20240117223856.2303475-4-hugo@hugovil.com>
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	=?UTF-8?q?Jan=20Kundr=C3=A1t?= <jan.kundrat@cesnet.cz>
+Date: Wed, 17 Jan 2024 17:38:46 -0500
+Message-Id: <20240117223856.2303475-9-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20240117223856.2303475-1-hugo@hugovil.com>
 References: <20240117223856.2303475-1-hugo@hugovil.com>
@@ -50,6 +51,7 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 70.80.174.168
 X-SA-Exim-Mail-From: hugo@hugovil.com
@@ -57,32 +59,84 @@ X-Spam-Level:
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-Subject: [PATCH 03/18] serial: max310x: use i2c_get_match_data()
+Subject: [PATCH 08/18] serial: max310x: use separate regmap name for each port
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Use preferred i2c_get_match_data() instead of device_get_match_data()
-to get the driver match data.
+Use a separate regmap name for each port so they can each have their own
+debugfs entry, allowing to access each port registers independently.
 
+For example, a four channels/ports device like the MAX14830 will have four
+entries in its regmap debugfs:
+
+$ find /sys/kernel/debug/regmap -type d | grep spi0.0
+/sys/kernel/debug/regmap/spi0.0-port0
+/sys/kernel/debug/regmap/spi0.0-port1
+/sys/kernel/debug/regmap/spi0.0-port2
+/sys/kernel/debug/regmap/spi0.0-port3
+
+Cc: Jan Kundrát <jan.kundrat@cesnet.cz>
+Link: https://lore.kernel.org/all/77f101f1-897d-4e6d-a8fd-27b818caf768@cesnet.cz/
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+
 ---
- drivers/tty/serial/max310x.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+
+I didn't put again Jan Kundrát's Reviewed-by and Tested-by tags since this
+version has modifications compared to the original one.
+---
+ drivers/tty/serial/max310x.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
 diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index 053cf2458264..a051bc773c4b 100644
+index 6549eee4f6a6..d6219077d23c 100644
 --- a/drivers/tty/serial/max310x.c
 +++ b/drivers/tty/serial/max310x.c
-@@ -1608,7 +1608,7 @@ static int max310x_i2c_probe(struct i2c_client *client)
- 	unsigned int i;
- 	u8 port_addr;
+@@ -1486,6 +1486,19 @@ static struct regmap_config regcfg = {
+ 	.max_raw_write = MAX310X_FIFO_SIZE,
+ };
  
--	devtype = device_get_match_data(&client->dev);
-+	devtype = i2c_get_match_data(client);
- 	if (!devtype)
- 		return dev_err_probe(&client->dev, -ENODEV, "Failed to match device\n");
++static const char *max310x_regmap_name(u8 port_id)
++{
++	switch (port_id) {
++	case 0:	return "port0";
++	case 1:	return "port1";
++	case 2:	return "port2";
++	case 3:	return "port3";
++	default:
++		WARN_ON(true);
++		return NULL;
++	}
++}
++
+ #ifdef CONFIG_SPI_MASTER
+ static int max310x_spi_extended_reg_enable(struct device *dev, bool enable)
+ {
+@@ -1521,6 +1534,8 @@ static int max310x_spi_probe(struct spi_device *spi)
+ 
+ 	for (i = 0; i < devtype->nr; i++) {
+ 		u8 port_mask = i * 0x20;
++
++		regcfg.name = max310x_regmap_name(i);
+ 		regcfg.read_flag_mask = port_mask;
+ 		regcfg.write_flag_mask = port_mask | MAX310X_WRITE_BIT;
+ 		regmaps[i] = devm_regmap_init_spi(spi, &regcfg);
+@@ -1620,6 +1635,7 @@ static int max310x_i2c_probe(struct i2c_client *client)
+ 				     client->addr, devtype->slave_addr.min,
+ 				     devtype->slave_addr.max);
+ 
++	regcfg_i2c.name = max310x_regmap_name(0);
+ 	regmaps[0] = devm_regmap_init_i2c(client, &regcfg_i2c);
+ 
+ 	for (i = 1; i < devtype->nr; i++) {
+@@ -1628,6 +1644,7 @@ static int max310x_i2c_probe(struct i2c_client *client)
+ 							client->adapter,
+ 							port_addr);
+ 
++		regcfg_i2c.name = max310x_regmap_name(i);
+ 		regmaps[i] = devm_regmap_init_i2c(port_client, &regcfg_i2c);
+ 	}
  
 -- 
 2.39.2
