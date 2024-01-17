@@ -1,206 +1,519 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2100.outbound.protection.outlook.com [40.107.101.100])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46E3114270;
-	Wed, 17 Jan 2024 10:21:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.100
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705486908; cv=fail; b=DMXusaqTBq6lttXnBGVfAd9E1XF++5WN7xiP4b6NSt26GfDeg4R6pZVEWgwXQnpLZHqQotChA8CYhBhXfgHnF+idw7t7RzvYE48lXxxz67sQdqtbs8RRm/VVfdv4HOwvDN13p08TWLg1iaQhW9qotC9eTd8yQ4AhRzv2bCr6n8E=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705486908; c=relaxed/simple;
-	bh=Ip745+jKQOduPpa1h3pQUG6ekwSEArSKen2XXkiJWdQ=;
-	h=ARC-Message-Signature:ARC-Authentication-Results:DKIM-Signature:
-	 Received:Received:X-MS-Exchange-Authentication-Results:
-	 Received-SPF:Received:Received:Received:Received:From:To:Cc:
-	 Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding:X-EOPAttributedMessage:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:Content-Type:
-	 X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:
-	 X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped; b=ToBewa8OWWXfhyqq41jvgZgiOjuVV4RpJfa/iOo1Lp6pk9RUK7hg6aMY1MXXRGdPwxCRub+Z6WxtidZXvmxR/dbM/5B1jIS0TdlHA0mSGrYR7MDZiIrfXukCZQB7NY78m1YhfdFCYvMfz1hknpbQ8aW4GOQxU0a//2drusI4NKQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sony.com; spf=pass smtp.mailfrom=Sony.onmicrosoft.com; dkim=pass (1024-bit key) header.d=Sony.onmicrosoft.com header.i=@Sony.onmicrosoft.com header.b=mIPqLgtV; arc=fail smtp.client-ip=40.107.101.100
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sony.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=Sony.onmicrosoft.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A97611DFC7;
+	Wed, 17 Jan 2024 11:13:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1705490025; cv=none; b=hj9LWE3bX+UxhLCZ/A3JYDXU1eGzJpvP5xRqUsacz6RsjgpLUJp+Z43DiiwCl8goZxzlw9ZS5jAO25d/2YtntYrtKyw2S6XytW5ps2we/wFead2x9cytk5J52XSF6Yz1vey4MskgXiE6PNr1S+RSuxiZ/B6mlLIFaxvfgZAAtNE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1705490025; c=relaxed/simple;
+	bh=UGVODyBn33R7G+FbslOUaq6vzcirR0PVlhocPyssfWo=;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 MIME-Version:Content-Type:Content-Disposition:
+	 Content-Transfer-Encoding; b=cD7g1ROBUqqh+54Lnlns4YuXh1SF+MKfLGf05l26yfYftFrS90zAOvc08fzjyVm5SEUdAKaahQv9R/GR/5o/KbklzfkCpOZyF2p3VnY/nFLO3MgzSTxH7rgrBmD8b6Hq8hJ14/e3pFV4QEGBraTunra0Yfbz1EzYkjw8GsS0bgU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=NpYcqiL4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=Sony.onmicrosoft.com header.i=@Sony.onmicrosoft.com header.b="mIPqLgtV"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bty2fmnZ/IlItp40ApG1JdP92abIXeGaGTviZRRrz7AySCzRDRoGmRfIK3gRZLDZHPKk+FaIJauLyoXVkjtpfZ5p9PmKXQ2a7ViBQ3XcmWRVVjPW26t9Xjv3JI5uzy3lt3T3bv3W6OYRXuEa5ayWTZadj6ZpmkYKp6hsK91chVpaF5AZroeQfvMDVAiIA+1Xf7i2VnUvuSTWLDJUupFJhnzA7dRBW6TYx3kP8ygshcwiBO0NW9m3UWfxYZ/i431beZfNAlhdGwn+iIZkQxSbho95GHqEbIvE+POBcxm46hjis7LT2j6B1xh2BHYvzriVJcQcxyJ2CE9sa4i1JCDpRQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TlcEPjK8Ca5MkZR390lVLeD6cQTAH0CTXgHAYgBtID0=;
- b=R49fZ12K7qJNq1OPmTMsNp3yV7DeevNXYYxhPVm7zoSZJzghQHCrWbbySujLfEuPSMpTOscpObW1t/EnBtrqYkVpncbuljC3j+ve51isfOIDJwBsmnc9AhHC6W5WLqTqdXBn0pWJgQDIV43Zm+it07R9YR1P5sJCtPBXst2ChJYdLF4/df2oBWDWBw4fOQIXP1MmVskm9hCwR0UvvDFEeJaZTJ2WW9wqMYwCZjrwVCiyd2A2fcFoYacir/LckehwczDEQvVDKKLKrgtZjRMa0Wq6ZsbPdukwMGHr5s7wQWustcFZw/yYaXyvVGQ65bJHOl/Zb411GDvpOKf+Kbzgbw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 121.100.38.196) smtp.rcpttodomain=vger.kernel.org
- smtp.mailfrom=mail.sony.com; dmarc=fail (p=none sp=none pct=100) action=none
- header.from=sony.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Sony.onmicrosoft.com;
- s=selector2-Sony-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TlcEPjK8Ca5MkZR390lVLeD6cQTAH0CTXgHAYgBtID0=;
- b=mIPqLgtVXfj/EZ48tkOsUrrqi0frgGV43j2jm4izR34oVIAn7QXKVSemcJAoGYESvfOqC5S6j1rbM32qX7VC4haekAv+OqF4Mikj+Jbyu6racKHC6kydiCphXaI2MeMuRfbR+PpCRS9GE9mnHRzOVWdETiC1OkalA83yXtN7+Cc=
-Received: from DM6PR01CA0003.prod.exchangelabs.com (2603:10b6:5:296::8) by
- PH0PR13MB5568.namprd13.prod.outlook.com (2603:10b6:510:12b::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7202.24; Wed, 17 Jan
- 2024 10:21:44 +0000
-Received: from DS1PEPF00017099.namprd05.prod.outlook.com
- (2603:10b6:5:296:cafe::61) by DM6PR01CA0003.outlook.office365.com
- (2603:10b6:5:296::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7202.23 via Frontend
- Transport; Wed, 17 Jan 2024 10:21:43 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 121.100.38.196)
- smtp.mailfrom=mail.sony.com; dkim=none (message not signed)
- header.d=none;dmarc=fail action=none header.from=sony.com;
-Received-SPF: Fail (protection.outlook.com: domain of mail.sony.com does not
- designate 121.100.38.196 as permitted sender)
- receiver=protection.outlook.com; client-ip=121.100.38.196;
- helo=gepdcl07.sg.gdce.sony.com.sg;
-Received: from gepdcl07.sg.gdce.sony.com.sg (121.100.38.196) by
- DS1PEPF00017099.mail.protection.outlook.com (10.167.18.103) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7202.16 via Frontend Transport; Wed, 17 Jan 2024 10:21:42 +0000
-Received: from gepdcl04.s.gdce.sony.com.sg (SGGDCSE1NS08.sony.com.sg [146.215.123.198])
-	by gepdcl07.sg.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 40HALPWP007416
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-	Wed, 17 Jan 2024 18:21:25 +0800
-Received: from mail.sony.com ([43.88.80.246])
-	by gepdcl04.s.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 40HAF09m007720;
-	Wed, 17 Jan 2024 18:15:00 +0800
-Received: by mail.sony.com (Postfix, from userid 1000)
-	id CE1DF20C0302; Wed, 17 Jan 2024 15:43:19 +0530 (IST)
-From: Sreenath Vijayan <sreenath.vijayan@sony.com>
-To: john.ogness@linutronix.de, corbet@lwn.net, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, rdunlap@infradead.org, pmladek@suse.com
-Cc: rostedt@goodmis.org, senozhatsky@chromium.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        taichi.shimoyashiki@sony.com, daniel.palmer@sony.com,
-        anandakumar.balasubramaniam@sony.com, sreenath.vijayan@sony.com
-Subject: [PATCH v3 1/2] printk: Add function to dump printk buffer directly to consoles
-Date: Wed, 17 Jan 2024 15:42:19 +0530
-Message-ID: <402f0cbc3a573503c7cc794113aa5137ed7f276c.1705331453.git.sreenath.vijayan@sony.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1705331453.git.sreenath.vijayan@sony.com>
-References: <cover.1705331453.git.sreenath.vijayan@sony.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="NpYcqiL4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6D84C43390;
+	Wed, 17 Jan 2024 11:13:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1705490025;
+	bh=UGVODyBn33R7G+FbslOUaq6vzcirR0PVlhocPyssfWo=;
+	h=Date:From:To:Cc:Subject:From;
+	b=NpYcqiL4fjb9ZH5vctoEj+ge7sUIVB6xI55dy+MB/iv3DFIUAK/qFz/xiU08IZj3x
+	 aAJ/6rdoRjrugEMR266o1KM4X1aA6MYBRIvJMVHQU1UpooC8yMZfz3lcf3GUji4BYD
+	 I1suOX4lgDRYv+1y+r2YyJi8qiLUb/ll+jHJy4Wk=
+Date: Wed, 17 Jan 2024 12:13:42 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver changes for 6.8-rc1
+Message-ID: <Zae2ZrJthYx0tVSd@kroah.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF00017099:EE_|PH0PR13MB5568:EE_
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: d998aa4a-c815-44dc-5434-08dc17461a74
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	XicujhM4rs68CqLh6NTLjYjD5LqjspE3Geeou+n56Ejw7GSNBPKt1y0nefnsDEjKlqlqQIzQZot1bHwme2Nl/PNfoQm9lH7APY+9PZhiq1clo1VEH3OAJd0UYZ17ax78i6eu24Le1W5PrSBQyZCvW2RuT7HhiW/md7Xbw/b6ryzH5xiWpeCt86BYFpIMsQVqP/V5S5BDGGXBhLdahsRx6q60JhP3S2ANqF3pI6G5OPAtJSfipfb2ylqideeg3XzGVFEALVWk/0byOJHeS3O/XNJrlpvLwqppfRLNSHIRlBBHpzXvMTlKKJjjSobIYPKqAua2SrCbtRASogEiPabMGvZien75Upkod1UqIoKGmQ6GXAEpr9H70jKP+R6KatfNdMyE8aFhjMv1+tknItr3NOb27H34im9y/Y6wpNiPnfa8KUKwZGyM2/Xgje9KIEx7DkpRr9U67lHG/flekyRdYZbGVVmvxj7bcY0YqLWMaswgJmyzK88UiE3lfVP4WkwDGMEkfCf3aWSmtJC7wi5BLzXwg7+JKQ6G9aQBK5k2CNIs4H/lQhA+AVKC4EkEPLy+OxItdN64zvoMx1eHKqFaLE89BPDbKBU14NPYdN6hOFNlRkAdiO1ZOUwh3oCTvNp974LPoo4pkRXCKAi/UD1mqtYWZD1tsRJbMC9LQql4GSBH5KYuqt03s+at/435+zmtFpwVHPPO4/LVAQUEH90RCYSD2LlqFdFBhQhM/pv3tEfaAulY02bH4Jfd4LHM4Jxw
-X-Forefront-Antispam-Report:
-	CIP:121.100.38.196;CTRY:SG;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:gepdcl07.sg.gdce.sony.com.sg;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(396003)(346002)(136003)(376002)(230922051799003)(1800799012)(451199024)(64100799003)(82310400011)(46966006)(40470700004)(82960400001)(40460700003)(40480700001)(35950700001)(82740400003)(81166007)(83170400001)(356005)(70206006)(70586007)(450100002)(316002)(42186006)(41300700001)(4326008)(8676002)(8936002)(44832011)(6266002)(426003)(336012)(5660300002)(498600001)(2616005)(26005)(107886003)(2906002)(83380400001)(36756003)(47076005);DIR:OUT;SFP:1102;
-X-OriginatorOrg: sony.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jan 2024 10:21:42.7655
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d998aa4a-c815-44dc-5434-08dc17461a74
-X-MS-Exchange-CrossTenant-Id: 66c65d8a-9158-4521-a2d8-664963db48e4
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=66c65d8a-9158-4521-a2d8-664963db48e4;Ip=[121.100.38.196];Helo=[gepdcl07.sg.gdce.sony.com.sg]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS1PEPF00017099.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5568
 
-It is useful to be able to dump the printk buffer directly to
-consoles in some situations so as to not flood the buffer.
-This needs access to private items of printk like PRINTK_MESSAGE_MAX.
-Add function in printk.c to accomplish this.
+The following changes since commit a39b6ac3781d46ba18193c9dbb2110f31e9bffe9:
 
-Suggested-by: John Ogness <john.ogness@linutronix.de>
-Signed-off-by: Sreenath Vijayan <sreenath.vijayan@sony.com>
-Signed-off-by: Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>
----
- include/linux/printk.h |  4 ++++
- kernel/printk/printk.c | 33 +++++++++++++++++++++++++++++++++
- 2 files changed, 37 insertions(+)
+  Linux 6.7-rc5 (2023-12-10 14:33:40 -0800)
 
-diff --git a/include/linux/printk.h b/include/linux/printk.h
-index 8ef499ab3c1e..0896745f31e2 100644
---- a/include/linux/printk.h
-+++ b/include/linux/printk.h
-@@ -192,6 +192,7 @@ void show_regs_print_info(const char *log_lvl);
- extern asmlinkage void dump_stack_lvl(const char *log_lvl) __cold;
- extern asmlinkage void dump_stack(void) __cold;
- void printk_trigger_flush(void);
-+void dump_printk_buffer(void);
- #else
- static inline __printf(1, 0)
- int vprintk(const char *s, va_list args)
-@@ -271,6 +272,9 @@ static inline void dump_stack(void)
- static inline void printk_trigger_flush(void)
- {
- }
-+static inline void dump_printk_buffer(void)
-+{
-+}
- #endif
- 
- #ifdef CONFIG_SMP
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index f2444b581e16..5b11fb377f8f 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -4259,6 +4259,39 @@ void kmsg_dump_rewind(struct kmsg_dump_iter *iter)
- }
- EXPORT_SYMBOL_GPL(kmsg_dump_rewind);
- 
-+/**
-+ * Dump the printk ring buffer directly to consoles
-+ */
-+void dump_printk_buffer(void)
-+{
-+	struct kmsg_dump_iter iter;
-+	struct console *con;
-+	char *buf;
-+	size_t len;
-+	int cookie;
-+
-+	buf = kmalloc(PRINTK_MESSAGE_MAX, GFP_KERNEL);
-+	if (!buf)
-+		return;
-+
-+	kmsg_dump_rewind(&iter);
-+	while (kmsg_dump_get_line(&iter, 1, buf, PRINTK_MESSAGE_MAX, &len)) {
-+		/*
-+		 * Since using printk() or pr_*() will append the message to the
-+		 * printk ring buffer, they cannot be used to display the retrieved
-+		 * message. Hence console_write() of serial drivers is used.
-+		 */
-+		console_lock();
-+		cookie = console_srcu_read_lock();
-+		for_each_console_srcu(con) {
-+			if ((console_srcu_read_flags(con) & CON_ENABLED) && con->write)
-+				con->write(con, buf, len);
-+		}
-+		console_srcu_read_unlock(cookie);
-+		console_unlock();
-+	}
-+	kfree(buf);
-+}
- #endif
- 
- #ifdef CONFIG_SMP
--- 
-2.43.0
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.8-rc1
+
+for you to fetch changes up to 0c84bea0cabc4e2b98a3de88eeb4ff798931f056:
+
+  serial: sc16is7xx: refactor EFR lock (2024-01-04 16:30:05 +0100)
+
+----------------------------------------------------------------
+TTY/Serial changes for 6.8-rc1
+
+Here is the big set of tty and serial driver changes for 6.8-rc1.
+
+As usual, Jiri has a bunch of refactoring and cleanups for the tty core
+and drivers in here, along with the usual set of rs485 updates (someday
+this might work properly...)  Along with those, in here are changes for:
+  - sc16is7xx serial driver updates
+  - platform driver removal api updates
+  - amba-pl011 driver updates
+  - tty driver binding updates
+  - other small tty/serial driver updates and changes
+
+All of these have been in linux-next for a while with no reported
+issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Adrian Reber (1):
+      tty: allow TIOCSLCKTRMIOS with CAP_CHECKPOINT_RESTORE
+
+Antony Pavlov (1):
+      tty/serial: altera_uart: use more informative labels in /proc/interrupts
+
+Ayan Kumar Halder (1):
+      tty: hvc: dcc: Check for TXfull condition while setting up early console
+
+Chester Lin (1):
+      dt-bindings: serial: fsl-linflexuart: change the maintainer email address
+
+Christoph Niedermaier (2):
+      serial: imx: Correct clock error message in function probe()
+      serial: imx: Ensure that imx_uart_rs485_config() is called with enabled clock
+
+Christophe JAILLET (6):
+      serial: atmel: convert not to use dma_request_slave_channel()
+      serial: imx: convert not to use dma_request_slave_channel()
+      serial: amba-pl011: convert not to use dma_request_slave_channel()
+      serial: mxs-auart: convert not to use dma_request_slave_channel()
+      serial: sh-sci: convert not to use dma_request_slave_channel()
+      serdev: Remove usage of the deprecated ida_simple_xx() API
+
+Christophe Leroy (1):
+      serial: ucc_uart: Fix multiple address space type errors
+
+Chunyan Zhang (1):
+      dt-bindings: serial: Add a new compatible string for UMS9620
+
+Colin Ian King (1):
+      serial: ma35d1: Fix spelling mistake "ononsole" -> "console"
+
+Crescent CY Hsieh (4):
+      tty: serial: 8250: Set RS422 interface by default to fix Moxa RS422/RS485 PCIe boards
+      tty: serial: Cleanup the bit shift with macro
+      tty: serial: Add RS422 flag to struct serial_rs485
+      tty: serial: 8250: Set RS232 as default for Moxa PCIe board initialization
+
+Fabio Estevam (1):
+      dt-bindings: serial: imx: Properly describe the i.MX1 interrupts
+
+Greg Kroah-Hartman (1):
+      Merge 6.7-rc5 into tty-next
+
+Heiko Stuebner (1):
+      dt-bindings: serial: snps-dw-apb-uart: include rs485 schema
+
+Hugo Villeneuve (26):
+      serial: sunsab: remove trailing whitespaces
+      serial: sc16is7xx: improve regmap debugfs by using one regmap per port
+      serial: sc16is7xx: change confusing comment about Tx FIFO
+      serial: max310x: change confusing comment about Tx FIFO
+      serial: sc16is7xx: remove wasteful static buffer in sc16is7xx_regmap_name()
+      serial: sc16is7xx: remove global regmap from struct sc16is7xx_port
+      serial: sc16is7xx: remove unused line structure member
+      serial: sc16is7xx: change EFR lock to operate on each channels
+      serial: sc16is7xx: convert from _raw_ to _noinc_ regmap functions for FIFO
+      serial: sc16is7xx: fix unconditional activation of THRI interrupt
+      serial: sc16is7xx: fix invalid sc16is7xx_lines bitfield in case of probe error
+      serial: sc16is7xx: add check for unsupported SPI modes during probe
+      serial: sc16is7xx: set safe default SPI clock frequency
+      serial: sc16is7xx: remove obsolete loop in sc16is7xx_port_irq()
+      serial: sc16is7xx: improve do/while loop in sc16is7xx_irq()
+      serial: sc16is7xx: use DECLARE_BITMAP for sc16is7xx_lines bitfield
+      serial: sc16is7xx: use spi_get_device_match_data()
+      serial: sc16is7xx: use i2c_get_match_data()
+      serial: sc16is7xx: add driver name to struct uart_driver
+      serial: sc16is7xx: add macro for max number of UART ports
+      serial: sc16is7xx: add explicit return for some switch default cases
+      serial: sc16is7xx: replace hardcoded divisor value with BIT() macro
+      serial: sc16is7xx: drop unneeded MODULE_ALIAS
+      serial: sc16is7xx: refactor FIFO access functions to increase commonality
+      serial: sc16is7xx: reorder code to remove prototype declarations
+      serial: sc16is7xx: refactor EFR lock
+
+Jiri Slaby (SUSE) (52):
+      tty: con3215: drop raw3215_info::ubuffer
+      tty: ipwireless: remove unused ipw_dev::attribute_memory
+      tty: jsm: remove unused members from struct board_ops
+      tty: jsm: remove unused struct jsm_board members
+      tty: rp2: remove unused rp2_uart_port::ignore_rx
+      tty: serial_cs: remove unused struct serial_cfg_mem
+      tty: fix tty_operations types in documentation
+      tty: deprecate tty_write_message()
+      tty: remove unneeded mbz from tiocsti()
+      tty: move locking docs out of Returns for functions in tty.h
+      tty: amiserial: return from receive_chars() without goto
+      tty: amiserial: use bool and rename overrun flag in receive_chars()
+      tty: ehv_bytecha: use memcpy_and_pad() in local_ev_byte_channel_send()
+      tty: goldfish: drop unneeded temporary variables
+      tty: hso: don't emit load/unload info to the log
+      tty: hso: don't initialize global serial_table
+      tty: hvc_console: use flexible array for outbuf
+      tty: nozomi: remove unused debugging DUMP()
+      tty: srmcons: use 'buf' directly in srmcons_do_write()
+      tty: make tty const in tty_get_baud_rate()
+      tty: srmcons: make srmcons_do_write() return void
+      tty: srmcons: use 'count' directly in srmcons_do_write()
+      tty: srmcons: switch need_cr to bool
+      tty: srmcons: remove 'str_cr' and use string directly
+      tty: virtio: drop virtio_cons_early_init()
+      tty: goldfish: use bool for is_write parameter
+      tty: mmc: sdio_uart: switch sdio_in() to return u8
+      tty: switch tty_port::xmit_* to u8
+      tty: make tty_operations::send_xchar accept u8 char
+      tty: core: the rest to u8
+      tty: ami: use u8 for characters and flag
+      tty: bcm: convert to u8 and size_t
+      tty: con3215: convert to u8 and size_t
+      tty: con3270: convert to u8 and size_t
+      tty: ehv_bytechan: convert to u8 and size_t
+      tty: goldfish: convert to u8 and size_t
+      tty: hvc: convert to u8 and size_t
+      tty: ipoctal: convert to u8 and size_t
+      tty: m68k: nfcon: convert to u8 and size_t
+      tty: mips_ejtag_fdc: use u8 for character pointers
+      tty: mmc: sdio: use u8 for flag
+      tty: moxa: convert to u8 and size_t
+      tty: mxser: convert to u8 and size_t
+      tty: n_gsm: convert to u8 and size_t
+      tty: n_hdlc: convert to u8 and size_t
+      tty: nozomi: convert to u8 and size_t
+      tty: serdev: convert to u8 and size_t in serdev_controller_ops
+      tty: serdev: convert to u8 and size_t
+      tty: srmcons: convert to u8 and size_t
+      tty: ttyprintk: convert to u8 and size_t
+      tty: um: convert to u8/__u8 and size_t
+      tty: xtensa/iss: use u8
+
+Lad Prabhakar (1):
+      dt-bindings: serial: renesas,sci: Document RZ/Five SoC
+
+Lino Sanfilippo (7):
+      serial: Do not hold the port lock when setting rx-during-tx GPIO
+      serial: core: set missing supported flag for RX during TX GPIO
+      serial: core: fix sanitizing check for RTS settings
+      serial: core: make sure RS485 cannot be enabled when it is not supported
+      serial: core, imx: do not set RS485 enabled if it is not supported
+      serial: omap: do not override settings for RS485 support
+      serial: 8250_exar: Set missing rs485_supported flag
+
+Manikanta Guntupalli (2):
+      Documentation: devices.txt: Update ttyUL major number allocation details
+      serial: uartlite: Use dynamic allocation for major number when uart ports > 4
+
+Michael Trimarchi (1):
+      tty: serial: kgdboc: Fix 8250_* kgdb over serial
+
+Michal Simek (1):
+      dt-bindings: serial: Describe ARM dcc interface
+
+Paul Geurts (1):
+      serial: imx: fix tx statemachine deadlock
+
+Philipp Stanner (1):
+      drivers/tty/vt: use standard array-copy-functions
+
+Raag Jadav (1):
+      serial: 8250_lpss: copy dma_param using devm_kmemdup()
+
+Rengarajan S (3):
+      8250: microchip: pci1xxxx: Rearranging the structure declarations
+      8250: microchip: pci1xxxx: Add Syslock support for reading UART system registers
+      8250: microchip: pci1xxxx: Add Burst mode reception support in uart driver for writing into FIFO
+
+Rob Herring (2):
+      serial: esp32_acm: Add explicit platform_device.h include
+      serial: esp32_uart: Use device_get_match_data()
+
+Sam Ravnborg (1):
+      serial: apbuart: fix console prompt on qemu
+
+Samuel Holland (1):
+      serial: sifive: Declare PM operations as static
+
+Sean Anderson (1):
+      tty: serial: uartlite: Document uartlite_data in kernel-doc style
+
+Stefan Wahren (1):
+      serial: 8250_bcm2835aux: Restore clock error handling
+
+Stephan Gerhold (2):
+      dt-bindings: serial: qcom,msm-uartdm: Vote for shared resources
+      serial: msm: Use OPP table for DVFS support
+
+Théo Lebrun (9):
+      tty: serial: amba: cleanup whitespace
+      tty: serial: amba: Use linux/{bits,bitfield}.h macros
+      tty: serial: amba-pl011: fix whitespace formatting
+      tty: serial: amba-pl011: replace TIOCMBIT macros by static functions
+      tty: serial: amba-pl011: avoid quoted string split across lines
+      tty: serial: amba-pl011: fix formatting of conditions
+      tty: serial: amba-pl011: fix miscellaneous checkpatch warnings
+      tty: serial: amba-pl011: unindent pl011_console_get_options function body
+      tty: serial: amba-pl011: factor QDF2400 SoC erratum 44 out of probe
+
+Tomas Mudrunka (1):
+      /proc/sysrq-trigger: accept multiple keys at once
+
+Tony Lindgren (2):
+      serial: core: Move tty and serdev to be children of serial core port device
+      serial: core: Revert checks for tx runtime PM state
+
+Uwe Kleine-König (56):
+      serial: 8250: omap: Don't skip resource freeing if pm_runtime_resume_and_get() failed
+      serial: sccnxp: Improve error message if regulator_disable() fails
+      serial: 8250: Convert to platform remove callback returning void
+      serial: altera_jtaguart: Convert to platform remove callback returning void
+      serial: altera: Convert to platform remove callback returning void
+      serial: amba-pl011: Convert to platform remove callback returning void
+      serial: ar933x: Convert to platform remove callback returning void
+      serial: atmel: Convert to platform remove callback returning void
+      serial: bcm63xx: Convert to platform remove callback returning void
+      serial: clps711x: Convert to platform remove callback returning void
+      serial: cpm: Convert to platform remove callback returning void
+      serial: digicolor: Convert to platform remove callback returning void
+      serial: esp32_acm: Convert to platform remove callback returning void
+      serial: esp32: Convert to platform remove callback returning void
+      serial: fsl_linflexuart: Convert to platform remove callback returning void
+      serial: fsl_lpuart: Convert to platform remove callback returning void
+      serial: imx: Convert to platform remove callback returning void
+      serial: lantiq: Convert to platform remove callback returning void
+      serial: liteuart: Convert to platform remove callback returning void
+      serial: lpc32xx_hs: Convert to platform remove callback returning void
+      serial: ma35d1: Convert to platform remove callback returning void
+      serial: mcf: Convert to platform remove callback returning void
+      serial: meson: Convert to platform remove callback returning void
+      serial: milbeaut_usio: Convert to platform remove callback returning void
+      serial: mpc52xx: Convert to platform remove callback returning void
+      serial: msm: Convert to platform remove callback returning void
+      serial: mxs-auart: Convert to platform remove callback returning void
+      serial: omap: Convert to platform remove callback returning void
+      serial: owl: Convert to platform remove callback returning void
+      serial: pic32: Convert to platform remove callback returning void
+      serial: qcom_geni: Convert to platform remove callback returning void
+      serial: rda: Convert to platform remove callback returning void
+      serial: sa1100: Convert to platform remove callback returning void
+      serial: samsung: Convert to platform remove callback returning void
+      serial: sccnxp: Convert to platform remove callback returning void
+      serial: tegra: Convert to platform remove callback returning void
+      serial: txx9: Convert to platform remove callback returning void
+      serial: sh-sci: Convert to platform remove callback returning void
+      serial: sifive: Convert to platform remove callback returning void
+      serial: sprd: Convert to platform remove callback returning void
+      serial: st-asc: Convert to platform remove callback returning void
+      serial: stm32: Convert to platform remove callback returning void
+      serial: sunhv: Convert to platform remove callback returning void
+      serial: sunplus: Convert to platform remove callback returning void
+      serial: sunsab: Convert to platform remove callback returning void
+      serial: sunsu: Convert to platform remove callback returning void
+      serial: sunzilog: Convert to platform remove callback returning void
+      serial: tegra-tcu: Convert to platform remove callback returning void
+      serial: timbuart: Convert to platform remove callback returning void
+      serial: uartlite: Convert to platform remove callback returning void
+      serial: ucc: Convert to platform remove callback returning void
+      serial: xilinx_uartps: Convert to platform remove callback returning void
+      tty: hvc: Make hvc_remove() return no value
+      tty: hvc: hvc_opal: Convert to platform remove callback returning void
+      serial: xilinx_uartps: Fix kernel doc about .remove()'s return code
+      serial: 8250-fsl: Only do the break workaround if IIR signals RLSI
+
+Vamshi Gajjela (4):
+      serial: 8250_dw: Decouple DLF register check from UCV
+      serial: core: Update uart_poll_timeout() function to return unsigned long
+      serial: core: Clean up uart_update_timeout() function
+      serial: 8250_dw: Do not bailout on UCV read returning zero
+
+ Documentation/admin-guide/devices.txt              |   3 +
+ Documentation/admin-guide/sysrq.rst                |  11 +-
+ .../devicetree/bindings/serial/arm,dcc.yaml        |  30 ++
+ .../bindings/serial/fsl,s32-linflexuart.yaml       |   2 +-
+ .../devicetree/bindings/serial/fsl-imx-uart.yaml   |  29 +-
+ .../bindings/serial/qcom,msm-uartdm.yaml           |  13 +
+ .../devicetree/bindings/serial/renesas,sci.yaml    |   2 +-
+ .../bindings/serial/snps-dw-apb-uart.yaml          |   1 +
+ .../devicetree/bindings/serial/sprd-uart.yaml      |   1 +
+ MAINTAINERS                                        |   1 -
+ arch/alpha/kernel/srmcons.c                        |  34 +-
+ arch/m68k/emu/nfcon.c                              |   4 +-
+ arch/powerpc/include/asm/hvconsole.h               |   4 +-
+ arch/powerpc/include/asm/hvsi.h                    |  18 +-
+ arch/powerpc/include/asm/opal.h                    |   8 +-
+ arch/powerpc/platforms/powernv/opal.c              |  14 +-
+ arch/powerpc/platforms/pseries/hvconsole.c         |   4 +-
+ arch/um/drivers/chan.h                             |   2 +-
+ arch/um/drivers/chan_kern.c                        |   9 +-
+ arch/um/drivers/chan_user.c                        |   4 +-
+ arch/um/drivers/chan_user.h                        |   9 +-
+ arch/um/drivers/line.c                             |   2 +-
+ arch/um/drivers/line.h                             |   6 +-
+ arch/um/drivers/null.c                             |   2 +-
+ arch/xtensa/platforms/iss/console.c                |   2 +-
+ drivers/bluetooth/btmtkuart.c                      |   4 +-
+ drivers/bluetooth/btnxpuart.c                      |   4 +-
+ drivers/bluetooth/hci_serdev.c                     |   4 +-
+ drivers/char/ttyprintk.c                           |   6 +-
+ drivers/char/virtio_console.c                      |  58 +--
+ drivers/gnss/serial.c                              |   4 +-
+ drivers/gnss/sirf.c                                |   4 +-
+ drivers/greybus/gb-beagleplay.c                    |   5 +-
+ drivers/iio/chemical/pms7003.c                     |   6 +-
+ drivers/iio/chemical/scd30_serial.c                |   6 +-
+ drivers/iio/chemical/sps30_serial.c                |  18 +-
+ drivers/iio/imu/bno055/bno055_ser_core.c           |   6 +-
+ drivers/ipack/devices/ipoctal.c                    |  14 +-
+ drivers/isdn/capi/capi.c                           |   4 +-
+ drivers/mfd/rave-sp.c                              |  10 +-
+ drivers/misc/bcm-vk/bcm_vk_tty.c                   |   4 +-
+ drivers/mmc/core/sdio_uart.c                       |  22 +-
+ drivers/net/ethernet/qualcomm/qca_uart.c           |   5 +-
+ drivers/net/usb/hso.c                              |  11 -
+ drivers/nfc/pn533/uart.c                           |   4 +-
+ drivers/nfc/s3fwrn5/uart.c                         |   5 +-
+ drivers/platform/chrome/cros_ec_uart.c             |   5 +-
+ drivers/platform/surface/aggregator/controller.h   |   4 +-
+ drivers/platform/surface/aggregator/core.c         |   4 +-
+ .../platform/surface/aggregator/ssh_packet_layer.c |   4 +-
+ .../platform/surface/aggregator/ssh_packet_layer.h |   2 +-
+ drivers/s390/char/con3215.c                        |  25 +-
+ drivers/s390/char/con3270.c                        |  12 +-
+ drivers/tty/amiserial.c                            |  16 +-
+ drivers/tty/ehv_bytechan.c                         |  18 +-
+ drivers/tty/goldfish.c                             |  23 +-
+ drivers/tty/hvc/hvc_console.c                      |   7 +-
+ drivers/tty/hvc/hvc_console.h                      |   8 +-
+ drivers/tty/hvc/hvc_dcc.c                          |  32 +-
+ drivers/tty/hvc/hvc_iucv.c                         |  18 +-
+ drivers/tty/hvc/hvc_opal.c                         |  22 +-
+ drivers/tty/hvc/hvc_riscv_sbi.c                    |   9 +-
+ drivers/tty/hvc/hvc_rtas.c                         |  11 +-
+ drivers/tty/hvc/hvc_udbg.c                         |   9 +-
+ drivers/tty/hvc/hvc_vio.c                          |  18 +-
+ drivers/tty/hvc/hvc_xen.c                          |  23 +-
+ drivers/tty/hvc/hvsi_lib.c                         |  20 +-
+ drivers/tty/ipwireless/main.h                      |   3 -
+ drivers/tty/mips_ejtag_fdc.c                       |  10 +-
+ drivers/tty/moxa.c                                 |  15 +-
+ drivers/tty/mxser.c                                |   8 +-
+ drivers/tty/n_gsm.c                                |  17 +-
+ drivers/tty/n_hdlc.c                               |  10 +-
+ drivers/tty/nozomi.c                               |  27 +-
+ drivers/tty/serdev/core.c                          |  31 +-
+ drivers/tty/serdev/serdev-ttyport.c                |   5 +-
+ drivers/tty/serial/8250/8250_aspeed_vuart.c        |   6 +-
+ drivers/tty/serial/8250/8250_bcm2835aux.c          |   8 +-
+ drivers/tty/serial/8250/8250_bcm7271.c             |   5 +-
+ drivers/tty/serial/8250/8250_core.c                |   5 +-
+ drivers/tty/serial/8250/8250_dw.c                  |   6 +-
+ drivers/tty/serial/8250/8250_dwlib.c               |  16 +-
+ drivers/tty/serial/8250/8250_em.c                  |   5 +-
+ drivers/tty/serial/8250/8250_exar.c                |   5 +-
+ drivers/tty/serial/8250/8250_fsl.c                 |   8 +-
+ drivers/tty/serial/8250/8250_ingenic.c             |   5 +-
+ drivers/tty/serial/8250/8250_ioc3.c                |   5 +-
+ drivers/tty/serial/8250/8250_lpc18xx.c             |   6 +-
+ drivers/tty/serial/8250/8250_lpss.c                |   7 +-
+ drivers/tty/serial/8250/8250_mtk.c                 |   6 +-
+ drivers/tty/serial/8250/8250_of.c                  |   5 +-
+ drivers/tty/serial/8250/8250_omap.c                |   7 +-
+ drivers/tty/serial/8250/8250_pci.c                 |  61 ++-
+ drivers/tty/serial/8250/8250_pci1xxxx.c            | 210 +++++++-
+ drivers/tty/serial/8250/8250_pxa.c                 |   6 +-
+ drivers/tty/serial/8250/8250_tegra.c               |   6 +-
+ drivers/tty/serial/8250/8250_uniphier.c            |   6 +-
+ drivers/tty/serial/8250/serial_cs.c                |   6 -
+ drivers/tty/serial/Kconfig                         |   3 +
+ drivers/tty/serial/altera_jtaguart.c               |   6 +-
+ drivers/tty/serial/altera_uart.c                   |   8 +-
+ drivers/tty/serial/amba-pl011.c                    | 276 +++++-----
+ drivers/tty/serial/apbuart.c                       |   2 +-
+ drivers/tty/serial/ar933x_uart.c                   |   6 +-
+ drivers/tty/serial/atmel_serial.c                  |  22 +-
+ drivers/tty/serial/bcm63xx_uart.c                  |   5 +-
+ drivers/tty/serial/clps711x.c                      |   6 +-
+ drivers/tty/serial/cpm_uart.c                      |   6 +-
+ drivers/tty/serial/digicolor-usart.c               |   6 +-
+ drivers/tty/serial/esp32_acm.c                     |   7 +-
+ drivers/tty/serial/esp32_uart.c                    |  16 +-
+ drivers/tty/serial/fsl_linflexuart.c               |   6 +-
+ drivers/tty/serial/fsl_lpuart.c                    |   5 +-
+ drivers/tty/serial/imx.c                           |  63 +--
+ drivers/tty/serial/jsm/jsm.h                       |   5 -
+ drivers/tty/serial/jsm/jsm_cls.c                   |  36 --
+ drivers/tty/serial/jsm/jsm_neo.c                   |  40 --
+ drivers/tty/serial/lantiq.c                        |   6 +-
+ drivers/tty/serial/liteuart.c                      |   6 +-
+ drivers/tty/serial/lpc32xx_hs.c                    |   6 +-
+ drivers/tty/serial/ma35d1_serial.c                 |   7 +-
+ drivers/tty/serial/max310x.c                       |   2 +-
+ drivers/tty/serial/mcf.c                           |   6 +-
+ drivers/tty/serial/meson_uart.c                    |   8 +-
+ drivers/tty/serial/milbeaut_usio.c                 |   6 +-
+ drivers/tty/serial/mpc52xx_uart.c                  |   7 +-
+ drivers/tty/serial/msm_serial.c                    |  25 +-
+ drivers/tty/serial/mxs-auart.c                     |  20 +-
+ drivers/tty/serial/omap-serial.c                   |  33 +-
+ drivers/tty/serial/owl-uart.c                      |   6 +-
+ drivers/tty/serial/pic32_uart.c                    |   7 +-
+ drivers/tty/serial/qcom_geni_serial.c              |   6 +-
+ drivers/tty/serial/rda-uart.c                      |   6 +-
+ drivers/tty/serial/rp2.c                           |   1 -
+ drivers/tty/serial/sa1100.c                        |   6 +-
+ drivers/tty/serial/samsung_tty.c                   |   6 +-
+ drivers/tty/serial/sc16is7xx.c                     | 567 +++++++++++----------
+ drivers/tty/serial/sccnxp.c                        |  13 +-
+ drivers/tty/serial/serial-tegra.c                  |   5 +-
+ drivers/tty/serial/serial_core.c                   |  88 +++-
+ drivers/tty/serial/serial_txx9.c                   |   5 +-
+ drivers/tty/serial/sh-sci.c                        |  13 +-
+ drivers/tty/serial/sifive.c                        |  10 +-
+ drivers/tty/serial/sprd_serial.c                   |   6 +-
+ drivers/tty/serial/st-asc.c                        |   6 +-
+ drivers/tty/serial/stm32-usart.c                   |  14 +-
+ drivers/tty/serial/sunhv.c                         |   6 +-
+ drivers/tty/serial/sunplus-uart.c                  |   6 +-
+ drivers/tty/serial/sunsab.c                        |  22 +-
+ drivers/tty/serial/sunsu.c                         |   6 +-
+ drivers/tty/serial/sunzilog.c                      |   6 +-
+ drivers/tty/serial/tegra-tcu.c                     |   6 +-
+ drivers/tty/serial/timbuart.c                      |   6 +-
+ drivers/tty/serial/uartlite.c                      |  20 +-
+ drivers/tty/serial/ucc_uart.c                      |  34 +-
+ drivers/tty/serial/xilinx_uartps.c                 |   7 +-
+ drivers/tty/sysrq.c                                |  19 +-
+ drivers/tty/tty_io.c                               |  18 +-
+ drivers/tty/tty_ioctl.c                            |   4 +-
+ drivers/tty/tty_port.c                             |  18 +-
+ drivers/tty/vt/consolemap.c                        |   2 +-
+ drivers/tty/vt/keyboard.c                          |  10 +-
+ include/linux/amba/serial.h                        | 239 ++++-----
+ include/linux/serdev.h                             |  29 +-
+ include/linux/serial_core.h                        |   4 +-
+ include/linux/tty.h                                |  19 +-
+ include/linux/tty_driver.h                         |   9 +-
+ include/linux/tty_port.h                           |   8 +-
+ include/linux/virtio_console.h                     |  38 --
+ include/uapi/linux/serial.h                        |  19 +-
+ net/bluetooth/rfcomm/tty.c                         |   2 +-
+ sound/drivers/serial-generic.c                     |   4 +-
+ 172 files changed, 1661 insertions(+), 1556 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/arm,dcc.yaml
+ delete mode 100644 include/linux/virtio_console.h
