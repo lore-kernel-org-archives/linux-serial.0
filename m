@@ -1,191 +1,148 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2121.outbound.protection.outlook.com [40.107.100.121])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EFE11D697;
-	Wed, 17 Jan 2024 11:21:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.100.121
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705490489; cv=fail; b=UDq/7wkJYAdCQabe1rnsf5tGBMTc4zJQyrYXh+zeaCm/YC9bTYXUL+ql79+3lLrWHLB/wun2gQAFyhCMv58h/GpF5dIxryKBR7xHnMOB/d1X4OiIxCpfKrccMMY7p7FnhYRoKEeDvHro15eG2/UaYax2gfnHIdBF0+Vw8F/CVlA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705490489; c=relaxed/simple;
-	bh=BCh2q5Tk2/R59h3MSewVzFJoLeEuMsWynLM8dyMpfA8=;
-	h=ARC-Message-Signature:ARC-Authentication-Results:DKIM-Signature:
-	 Received:Received:X-MS-Exchange-Authentication-Results:
-	 Received-SPF:Received:Received:Received:Received:From:To:Cc:
-	 Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding:X-EOPAttributedMessage:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:Content-Type:
-	 X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:
-	 X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped; b=jxws8FON25ydWeT8+YStNdeUqxXVIAkAw635cxRzsAvZpSuKV3Z+1tnuq2PSVrdQb1qp1yVwF0HQCfGDJaaGQa86247C2+iVfEoMXKhW0QAvyG5nMmFwLuutyJtr/fPobhMAdOhJ9/A08Nsdipflu8zXQdRZrEfUrRmZ51D/xpE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sony.com; spf=pass smtp.mailfrom=Sony.onmicrosoft.com; dkim=pass (1024-bit key) header.d=Sony.onmicrosoft.com header.i=@Sony.onmicrosoft.com header.b=W742/1UG; arc=fail smtp.client-ip=40.107.100.121
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sony.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=Sony.onmicrosoft.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3AF9225A2
+	for <linux-serial@vger.kernel.org>; Wed, 17 Jan 2024 14:49:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1705502953; cv=none; b=i9hiCtDcPKS7Z/gDYkENfj3qk0McMKEY/IrGii1Vgd30o5x4mT516IRr26TCT99YMTllF2Q+w5ohCblOv01IgermI5oJs/iKwUgBSSR0RTigemV9UNSVFhkKFmgUnWIjywk5oNdn7ZY05TXBYAdZ3xTe8rf0oB2QzkNP5dv0bEo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1705502953; c=relaxed/simple;
+	bh=xbOsZ7hNf9ivXDXTjA3fkk2LMk4yyJfbnqb4EOp2G0o=;
+	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:Content-Language:
+	 To:Cc:References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding; b=WWfbsnvGZkk1wY+1CIP2kcJctLr15SGDTk6DI6CBI7EG9lmbIPol6gMR1wglMbA234KUSc5szzdA4TSnTOpw6pm5AECY/fle/uDX9m/kXgdCtrAGoVZijy+6iLo4jKnA+hcPuXQbr62emEgorT/wAoOdBtz+BU4W8KbP1sOlmjg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=KD7tYHP+; arc=none smtp.client-ip=209.85.218.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=Sony.onmicrosoft.com header.i=@Sony.onmicrosoft.com header.b="W742/1UG"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=X53tbEx631u30xHyXgdcMcUg1s80YZwVEwNg/0yHIkitumL6RqGnZSUZ7Yr26h/WcmpUnV0rQsUx/hnolbTrpzOWbG1ECzWdMXvVGjKrDll0AqkBgMzaROS5cUDeZzJPSFhT3KsPnpGCQHgRt5C0p501GSoaZ2iNLVlaCDFCbl/ON69SLjOrCMoqInx5Dl2pLj13GxXpRKuoUkaZDEWwJK9RKv/yU/V7/Gv4eBt65eN8q39ulnSyfj3ibztC8IakywgSEgMCoGfR6SrG9MNKXf8qchmST2+SYplqN43gY8por/VwPXDi5zRo6EpNz7PWFP27mKa8su8aI3DxckA3sQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HLRaZ2XnB9Rpbe5Pr/xd1PmmB0yRDEZ04eKbHFb+Ibo=;
- b=KiDoYUbQTlaGsj0bNxchPVHqfdvgAcjX56aH1Hxk2rLXJdR7TjEwTT9w29WeFuLdVSmH6adG9taMy3DQQEgzw+06q1OgiY6LtV5Z/VHUsI5gwDZNxY4iDYmCS6yXzKIEUoR6t0+914E1/rlbRfQPCOiT0YEghMqPLW6Cqt7m5z1rDbdJqwCrr5VXQiqCIugSujYgfZ3fnc+qdtaKs2q1VideaAWPQl8AYiTWAo597ekHBJE1KgbsLPcq2zG3gwAEBT72I4wTMF+bjPwBIWMlk8dGBB9lUQJy6tcl0DFBptU7G31gvRpbK7+ESkcCvTab90TPsneBdMyEF5Mq2D8yxA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 121.100.38.196) smtp.rcpttodomain=vger.kernel.org
- smtp.mailfrom=mail.sony.com; dmarc=fail (p=none sp=none pct=100) action=none
- header.from=sony.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Sony.onmicrosoft.com;
- s=selector2-Sony-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HLRaZ2XnB9Rpbe5Pr/xd1PmmB0yRDEZ04eKbHFb+Ibo=;
- b=W742/1UGxuSsmI88dqxEgWVa+AAHgjwyMVtXYVLI+xnn8doOBzz8BI3Zx8A3utglx1rsImabz1n7szM2P15dbcgA6m/CTqI++SOv62KZxWiNzj0MbvUWWgRLB7tVER4c1bDR6Ln0U7T4G/acVw6EXt5VsEgV+uGcHh2OM8WF0/Y=
-Received: from CY5PR22CA0061.namprd22.prod.outlook.com (2603:10b6:930:80::6)
- by SA1PR13MB4878.namprd13.prod.outlook.com (2603:10b6:806:1a2::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7202.23; Wed, 17 Jan
- 2024 11:21:23 +0000
-Received: from CY4PEPF0000E9D6.namprd05.prod.outlook.com
- (2603:10b6:930:80:cafe::b9) by CY5PR22CA0061.outlook.office365.com
- (2603:10b6:930:80::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7202.23 via Frontend
- Transport; Wed, 17 Jan 2024 11:21:23 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 121.100.38.196)
- smtp.mailfrom=mail.sony.com; dkim=none (message not signed)
- header.d=none;dmarc=fail action=none header.from=sony.com;
-Received-SPF: Fail (protection.outlook.com: domain of mail.sony.com does not
- designate 121.100.38.196 as permitted sender)
- receiver=protection.outlook.com; client-ip=121.100.38.196;
- helo=gepdcl07.sg.gdce.sony.com.sg;
-Received: from gepdcl07.sg.gdce.sony.com.sg (121.100.38.196) by
- CY4PEPF0000E9D6.mail.protection.outlook.com (10.167.241.80) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7181.14 via Frontend Transport; Wed, 17 Jan 2024 11:21:23 +0000
-Received: from gepdcl02.s.gdce.sony.com.sg (SGGDCSE1NS07.sony.com.sg [146.215.123.196])
-	by gepdcl07.sg.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 40HBL5YJ004733
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-	Wed, 17 Jan 2024 19:21:05 +0800
-Received: from mail.sony.com ([43.88.80.246])
-	by gepdcl02.s.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 40HBFsxD021765;
-	Wed, 17 Jan 2024 19:15:54 +0800
-Received: by mail.sony.com (Postfix, from userid 1000)
-	id C59B920C0300; Wed, 17 Jan 2024 16:44:13 +0530 (IST)
-From: Sreenath Vijayan <sreenath.vijayan@sony.com>
-To: john.ogness@linutronix.de, corbet@lwn.net, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, rdunlap@infradead.org, pmladek@suse.com
-Cc: rostedt@goodmis.org, senozhatsky@chromium.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        taichi.shimoyashiki@sony.com, daniel.palmer@sony.com,
-        anandakumar.balasubramaniam@sony.com, sreenath.vijayan@sony.com
-Subject: [PATCH v3 2/2] tty/sysrq: Dump printk ring buffer messages via sysrq
-Date: Wed, 17 Jan 2024 16:43:52 +0530
-Message-ID: <57daf43c5270f7532b269b9f0e90d126ca012354.1705331453.git.sreenath.vijayan@sony.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1705331453.git.sreenath.vijayan@sony.com>
-References: <cover.1705331453.git.sreenath.vijayan@sony.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="KD7tYHP+"
+Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-a2dd05e02ffso363701866b.3
+        for <linux-serial@vger.kernel.org>; Wed, 17 Jan 2024 06:49:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1705502950; x=1706107750; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=wUp7AtgEUSYNvZ7/fVy0kILGk6FxXL69i5KUD1q97UU=;
+        b=KD7tYHP+aNzQhO/v8Gv6InoamNLudK4Bu9cxQ+vn/k3HfVqP/E1JNP+iskw4JLgUtU
+         Co1rI5XiV6gNnExMeB3S2NqqJ/ZGsCrmbtCxpO4it+pxJbC96bxLyhxN8FB9NmKGbZO2
+         o3yP/aCKX4K4TDq51T7lYwzi3c6QrTr43py2Zz9DwA2h3IwdT1jRKgdH4H4IYs8NpIlO
+         znZ8Dym8DyCwWfUE7qg/KfyLxSODbs+xdiefQnfnRbxLfTM6XuDeY/9V4GkXKoN2xoKV
+         mg/F1IK1wLQjhFeWj8mD/Z/oPl2Wn/OAA32IDY3SIh80GqnWE5R0FgB0Wdyy067xwPkW
+         aFfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705502950; x=1706107750;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=wUp7AtgEUSYNvZ7/fVy0kILGk6FxXL69i5KUD1q97UU=;
+        b=Ry03woIznwZxLgei0O/sX0kNGT/IVM+L9Lrg1j6b+Obi9xPnvOxPueSijllFmCapVS
+         rLJ4prC0q1C4Chf/InWGaQ1HOJb7acXhwtaF/jhXnFfXtL7FB15d4rDFZpSctvV12loJ
+         PzKtf5IRkFVjr8KQdNdW8b3sAEnN0v+Grg/FStljXmQ5d0oN8EYBkMMaPFpWHS90RQix
+         kEsFazxCYDTCXKegfXusCfFvMsnMopp2KRalJ3iiI7kCnufFpQ+lavg+w0fsEYfSECZ5
+         hbXoGiI7roqRSE8CJcb6qXQTin53SQAcNuaGtow+E6vrm2Fd/Y+/rr7wJ/agvsCrRhp/
+         gUfw==
+X-Gm-Message-State: AOJu0YzC108JsYtit0KUtIOTi69YIwkZLbQCWe6oPPAm+BPPtBidiAeX
+	TtZALfThH+8j62uo48ATx5R4E8kG6/HAJA==
+X-Google-Smtp-Source: AGHT+IGfogk1vyrdo+0VUD+8Wa7WTI0X1CJ1wuka8a695dU1RQlPFwd51cLYisobNRPZgcLdGzCY+A==
+X-Received: by 2002:a17:907:7215:b0:a2c:cf7a:b70b with SMTP id dr21-20020a170907721500b00a2ccf7ab70bmr3242363ejc.145.1705502950157;
+        Wed, 17 Jan 2024 06:49:10 -0800 (PST)
+Received: from [192.168.2.107] ([79.115.63.202])
+        by smtp.gmail.com with ESMTPSA id o10-20020a170906288a00b00a2a632e4eebsm7758780ejd.119.2024.01.17.06.49.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Jan 2024 06:49:09 -0800 (PST)
+Message-ID: <f394e372-dbfd-4fd5-b5c8-23c383cb6cf2@linaro.org>
+Date: Wed, 17 Jan 2024 14:49:07 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D6:EE_|SA1PR13MB4878:EE_
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 43f05b76-3282-4d73-3a1d-08dc174e703e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	/Q4fOTTI5kIXPzkJhxQMN/W+/70PFScFTjillhpY5FshjnSONS/w7Xp3BI+vOHAuh0+oXvC3yaucl07M8UywIqUsWWvssOODQ0tONzzBlovcfK7BDM2wjbohMNJ8TBwxgdeJtes/z75qMaJS6HoE3wNkMTUp/x0btUmGb++nv5FKCQwnv6DRUoOyP9vBBkJM0AlyrqrGMbK2l69zLEHexk1ldTPA9B4kDDB2erSXqL75c01hh90rHU214kBT0AJXOTSRbLCiwBaF6VPv43UzlV2TPtSs8qng9mb4beJlHsdtw2GG9dpUmSvXH3VwYWo/aX8DVT9pqeBiVrHNC+LY5y025E7DGVIHGOdogin9i0Gkuyo5Fcl0ZokFsg8ST1WvmQRUgZt8wkf6bGQ66CA6Crysgj1OiT4O5u9XA+9CPQBoxdSaMkd2ADQJElawmPNhEq9oytte7jM5xUa9/eO5swo+Lo4Vr0FZ+LF/ew/tJlBnJr8pDkBrond1r7TVeye1eHrIH0q9K/xFwRIyrwWECtzDy2yUNIjaRE8Wa5CfK3e4sD+OrZN+LjHdY++LaI8n3Bedz+SXWXhdm6mV1aIxVmafI7n44gERZOMhggnkT+KeBLvzzU7P0VVvzL8a+dVsBOuJOGP4FoYkfKLMOsunsek4/kHBPmSROLC7hkVjinp7nNCmHCfcVIUrDOoWb6Dv+BBLCpRwzvuf9oB9qwiR1mtzc4T9tohiu2Iw6mRs6fYTqChOFqAglDrq3UB8ZNqU
-X-Forefront-Antispam-Report:
-	CIP:121.100.38.196;CTRY:SG;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:gepdcl07.sg.gdce.sony.com.sg;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(346002)(136003)(376002)(396003)(39860400002)(230922051799003)(451199024)(1800799012)(64100799003)(82310400011)(40470700004)(46966006)(336012)(426003)(6266002)(26005)(83380400001)(107886003)(6666004)(2616005)(47076005)(35950700001)(5660300002)(44832011)(4326008)(8676002)(15650500001)(41300700001)(2906002)(8936002)(498600001)(316002)(450100002)(42186006)(70206006)(70586007)(36756003)(83170400001)(82740400003)(81166007)(356005)(82960400001)(40480700001)(40460700003);DIR:OUT;SFP:1102;
-X-OriginatorOrg: sony.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jan 2024 11:21:23.0594
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 43f05b76-3282-4d73-3a1d-08dc174e703e
-X-MS-Exchange-CrossTenant-Id: 66c65d8a-9158-4521-a2d8-664963db48e4
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=66c65d8a-9158-4521-a2d8-664963db48e4;Ip=[121.100.38.196];Helo=[gepdcl07.sg.gdce.sony.com.sg]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9D6.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB4878
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 07/12] clk: samsung: gs101: add support for cmu_peric0
+Content-Language: en-US
+To: Sam Protsenko <semen.protsenko@linaro.org>
+Cc: peter.griffin@linaro.org, krzysztof.kozlowski+dt@linaro.org,
+ gregkh@linuxfoundation.org, mturquette@baylibre.com, sboyd@kernel.org,
+ robh+dt@kernel.org, conor+dt@kernel.org, andi.shyti@kernel.org,
+ alim.akhtar@samsung.com, jirislaby@kernel.org, s.nawrocki@samsung.com,
+ tomasz.figa@gmail.com, cw00.choi@samsung.com,
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+ linux-serial@vger.kernel.org, andre.draszik@linaro.org,
+ kernel-team@android.com, willmcvicker@google.com
+References: <20240109125814.3691033-1-tudor.ambarus@linaro.org>
+ <20240109125814.3691033-8-tudor.ambarus@linaro.org>
+ <CAPLW+4=y12fBf47v_HKfBdHTsQJfWo2cwBuFosUKo3xPBqcKJw@mail.gmail.com>
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
+In-Reply-To: <CAPLW+4=y12fBf47v_HKfBdHTsQJfWo2cwBuFosUKo3xPBqcKJw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-When terminal is unresponsive, one cannot use dmesg to view printk
-ring buffer messages. Also, syslog services may be disabled,
-to check the messages after a reboot, especially on embedded systems.
-In this scenario, dump the printk ring buffer messages via sysrq
-by pressing sysrq+D.
+Hi, Sam,
 
-Signed-off-by: Sreenath Vijayan <sreenath.vijayan@sony.com>
-Signed-off-by: Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>
----
- Documentation/admin-guide/sysrq.rst |  2 ++
- drivers/tty/sysrq.c                 | 20 +++++++++++++++++++-
- 2 files changed, 21 insertions(+), 1 deletion(-)
+Thanks for reviewing the series!
 
-diff --git a/Documentation/admin-guide/sysrq.rst b/Documentation/admin-guide/sysrq.rst
-index 51906e47327b..246a7b61a0eb 100644
---- a/Documentation/admin-guide/sysrq.rst
-+++ b/Documentation/admin-guide/sysrq.rst
-@@ -152,6 +152,8 @@ Command	    Function
-             will be printed to your console. (``0``, for example would make
-             it so that only emergency messages like PANICs or OOPSes would
-             make it to your console.)
-+
-+``D``	    Dump the printk ring buffer
- =========== ===================================================================
- 
- Okay, so what can I use them for?
-diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-index 6b4a28bcf2f5..1976412706a4 100644
---- a/drivers/tty/sysrq.c
-+++ b/drivers/tty/sysrq.c
-@@ -450,6 +450,24 @@ static const struct sysrq_key_op sysrq_unrt_op = {
- 	.enable_mask	= SYSRQ_ENABLE_RTNICE,
- };
- 
-+static void dmesg_dump_callback(struct work_struct *work)
-+{
-+	dump_printk_buffer();
-+}
-+
-+static DECLARE_WORK(sysrq_dmesg_work, dmesg_dump_callback);
-+
-+static void sysrq_handle_dmesg_dump(u8 key)
-+{
-+	queue_work(system_unbound_wq, &sysrq_dmesg_work);
-+}
-+static struct sysrq_key_op sysrq_dmesg_dump_op = {
-+	.handler        = sysrq_handle_dmesg_dump,
-+	.help_msg       = "dump-dmesg(D)",
-+	.action_msg     = "Dump dmesg",
-+	.enable_mask    = SYSRQ_ENABLE_DUMP,
-+};
-+
- /* Key Operations table and lock */
- static DEFINE_SPINLOCK(sysrq_key_table_lock);
- 
-@@ -505,7 +523,7 @@ static const struct sysrq_key_op *sysrq_key_table[62] = {
- 	NULL,				/* A */
- 	NULL,				/* B */
- 	NULL,				/* C */
--	NULL,				/* D */
-+	&sysrq_dmesg_dump_op,		/* D */
- 	NULL,				/* E */
- 	NULL,				/* F */
- 	NULL,				/* G */
--- 
-2.43.0
+On 1/16/24 17:42, Sam Protsenko wrote:
 
+cut
+
+>> Few clocks are marked as critical because when either of them is
+>> disabled, the system hangs even if their clock parents are enabled.
+>>
+>> Reviewed-by: Peter Griffin <peter.griffin@linaro.org>
+>> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+>> ---
+cut
+>>
+>> diff --git a/drivers/clk/samsung/clk-gs101.c b/drivers/clk/samsung/clk-gs101.c
+>> index 782993951fff..f3f0f5feb28d 100644
+>> --- a/drivers/clk/samsung/clk-gs101.c
+>> +++ b/drivers/clk/samsung/clk-gs101.c
+
+cut
+
+>> +static const struct samsung_gate_clock peric0_gate_clks[] __initconst = {
+>> +       /* Disabling this clock makes the system hang. Mark the clock as critical. */
+>> +       GATE(CLK_GOUT_PERIC0_PERIC0_CMU_PERIC0_PCLK,
+>> +            "gout_peric0_peric0_cmu_peric0_pclk", "mout_peric0_bus_user",
+>> +            CLK_CON_GAT_CLK_BLK_PERIC0_UID_PERIC0_CMU_PERIC0_IPCLKPORT_PCLK,
+>> +            21, CLK_IS_CRITICAL, 0),
+> Why not just CLK_IGNORE_UNUSED? As I understand this gate clock can be
+
+When either of the clocks that I marked as critical is disabled, the
+system hangs, even if their clock parent is enabled. I tested this by
+enabling the clock debugfs with write permissions. I prepared-enabled
+the parent clock to increase their user count so that when the child
+gets disabled to not disable the parent as well. When disabling the
+child the system hung, even if its parent was enabled. Thus I considered
+that the child is critical. I mentioned this in the commit message as
+well. Please tell if get this wrong.
+
+> used to disable PCLK (bus clock) provided to the whole CMU_PERIC0.
+> Aren't there any valid cases for disabling this clock, like during
+> some PM transitions? For Exynos850 clock driver I marked all clocks of
+
+They aren't, because if one switches off any of these clocks that are
+marked as critical, the system hangs and it will not be able to resume.
+
+> this kind as CLK_IGNORE_UNUSED and it works fine. In other words: I'd
+> say CLK_IS_CRITICAL flag is more "strong" than CLK_IGNORE_UNUSED, and
+> requires better and more specific explanation, to make sure we are not
+> abusing it. And I'm not sure this is the case.
+
+Is the explanation from the commit message enough?
+> 
+> The same goes for the rest of clocks marked as CLK_IS_CRITICAL in this
+> patch. Please check if maybe using CLK_IGNORE_UNUSED makes sense for
+> any of those as well.
+
+I've already checked and all behave as described above.
+
+Thanks,
+ta
