@@ -1,92 +1,142 @@
-Received: from mx4.securetransport.de (mx4.securetransport.de [178.254.6.145])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AD33B1E485;
-	Wed, 17 Jan 2024 15:06:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.254.6.145
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 065262134E
+	for <linux-serial@vger.kernel.org>; Wed, 17 Jan 2024 15:08:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705503973; cv=none; b=dnFpGkhI3LPaR9Ik3sNcIRe0Zw88gSbQN7YsmnBi2McJI7SXjbhWDUpj4sxPPoVjbSm9C0Ck1RDzfg5Q6/+lQVi6b504PQ6Tzry2sKWu0nltOFHE9AK7ZlaiO5vPc2WS4U8wO8673/F+8cMjYBSkdZKDVOBMyONN33o7el/7UdU=
+	t=1705504113; cv=none; b=rGVGOso+pcradTc4PN9Iu/sGJCpnepEytWwo2Px5SUbgoBoj/gaI6TNiWy8WSVvzLXD0FfTEHuLKB2udt0zqscvrRiGYcs2rSVXGQredoqsf0uBnaV5PVQhicvnwZb49LN2mY/FAZRWCLD1ggfyBFaLlX2IudpcgduTDvRArH94=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705503973; c=relaxed/simple;
-	bh=0puuW3TJ0FCRviSMs7e5yTWLZRzhlBbPbMaNHCKi2EQ=;
-	h=DKIM-Signature:From:To:CC:Subject:Date:Message-ID:X-klartext:
-	 In-Reply-To:References:MIME-Version:Content-Type; b=LDtqCfPBDa1xaykrWJUG6TWzBVJ+A2GqcFFjAY/DKS/pCwR/MjZlkf+sa40PWDQLzqK3Hwtj1bic+vdMpUcK+H+HWBW8/qz2zEQt1MwgBkP9TZ4KCtFDq6bIN8BQY3hU6/ZF1D3Fk4pBfP5xK9dK57uqTJwRHsfUZW+crQR+ZUg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com; spf=pass smtp.mailfrom=dh-electronics.com; dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b=MDJEmvVv; arc=none smtp.client-ip=178.254.6.145
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dh-electronics.com
+	s=arc-20240116; t=1705504113; c=relaxed/simple;
+	bh=i3U2j7vOQbkMVl1sDwVpugX13EUmGtzhct0T+w72pZY=;
+	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:Content-Language:
+	 To:Cc:References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding; b=IibwKQlni9oSrBPcRzQbCXTylAn/EIzsR4NV12Ab2OEkfc0pQn783ZS8/Uhyiyf8fGzExvWCadUTqUcGFcJ/NDQqPaPJOpalSQob+Im4TIpXsr1Lzoy22Xz/52LcbMCKN+aCK7GhVRTOjnRiJAqfNwJzaJQib2E12KPRzEMTBKc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=IoFWo24i; arc=none smtp.client-ip=209.85.218.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="MDJEmvVv"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-	s=dhelectronicscom; t=1705503387;
-	bh=8zEDP540sjwJaBrMK5oZNAb5uebPyAwo3ymgl0om22g=;
-	h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-	b=MDJEmvVvjPOMDdAmlvf/L+gbqe/avosXlfx/ll/72v6KZtxWHsyHrUuRGZ2MUempq
-	 ehcjuB8jZS+tdZFgS/R1zeFwA5dgJYrLQKKocgtF2bA4jwrvCLPuoRjD23ABWm+OOW
-	 Q3rfTgicGG915sTiu4xOkORDo54i3EiOT+XB40P8DlFfseAzy3e2rnBAA2CHzaXu6E
-	 mPjVbtdWRs7Hq83gnIdPGILVDVRPtluoQCS+Bw4TWE7t0jokB0GFVp4/WQnytRGjFL
-	 LieTe2jaOOHRNAf57WmOJjGk+H8iDnwAkTAa0IfEqp4u3uJD9I827K9Z+0d2VnKj4V
-	 nhErBTHFZ72tA==
-From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-To: <crescentcy.hsieh@moxa.com>
-CC: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-	<LinoSanfilippo@gmx.de>, <lukas@wunner.de>, <linux-kernel@vger.kernel.org>,
-	<linux-serial@vger.kernel.org>, <cniedermaier@dh-electronics.com>,
-	<linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v6 1/2] tty: serial: Cleanup the bit shift with macro
-Date: Wed, 17 Jan 2024 15:56:23 +0100
-Message-ID: <20240117145623.3556-1-cniedermaier@dh-electronics.com>
-X-klartext: yes
-In-Reply-To: <20231201071554.258607-2-crescentcy.hsieh@moxa.com>
-References: <20231201071554.258607-2-crescentcy.hsieh@moxa.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="IoFWo24i"
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a2cad931c50so583946766b.1
+        for <linux-serial@vger.kernel.org>; Wed, 17 Jan 2024 07:08:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1705504110; x=1706108910; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=kkGmMglMSGi1Tk3tWRTcLr5B6FcpdYBkxOQWqzkF1BE=;
+        b=IoFWo24iaR3hQ1M4rgyN5CUsu5s6R53Or23kOcZeAqzVW7oNlFjA5XnUV8PwNRIvHG
+         fnOQ4jCWvvy1V916ykLmXv3PU0TUahEAWNR8cHwtFjtlWZdWCQWiqJmplSU2RjG8fWyf
+         +/rqkP2yLXHal/9HxxftrMD+exN4LhtmAemTVy5hwtJmKQDCFevaJ3zJWw2/XuczMeOy
+         WfgjzYUrAtKRKhDE7PeiCZRGNetHh11E/maAf3ROqiMIy32B0hZoMl92EOkUkJXZ4iI/
+         1Pfhbpqka0CjaMpqrs0ttbi+wG/PdGC6yjOwUFkZxkArZz+WhKKt13ME1m+f1Z6ruR3i
+         EQBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705504110; x=1706108910;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=kkGmMglMSGi1Tk3tWRTcLr5B6FcpdYBkxOQWqzkF1BE=;
+        b=sNq4Jb/Wh8venIIx+wV6FZMFYxp2T/q/kF21tTZx0abDDVs5rfAK240sGvUyC5G/OV
+         PL9S1GLgVsLB7BPksjFYXtadExz03pXo2eMvs54J/wBF7963jhauiA0pTqcS8ZZ49zdl
+         OdDvGnag0jIVFhIw+nsRSOlIh3IfPxf9Umw5OHs4zQ6SqQR8qtjhP8lNx6Dv+/H5+VjB
+         qB1pCanNSUWoFzxT15TPasAAqcEH+O7NzeeMUnXgkMBR9yMG4V9t4gtR0aEeVIV1mGmQ
+         Ln+VnPynwhuMeT6lErYgsjGxYnJSuwPNiwhKnj+iHSTgZp7JJFlwvt9CNdYxNk2e/iwB
+         ZT9w==
+X-Gm-Message-State: AOJu0Yys69QJFX+lEMKj2lQVqyE27h70Ggr5kzuJgRdGrmhhrCPgPqh6
+	FM3Px5WXIx04NtlWv7C2D247s70Rj0XjwQ==
+X-Google-Smtp-Source: AGHT+IFcr+ez01bxt2+jBCE1HBgBtrHmVB1u3dibyd63ZbwxzQ93NvPhsVzA0lDEagXIip7zsb1ZPA==
+X-Received: by 2002:a17:907:a08f:b0:a2c:b0a6:8ab with SMTP id hu15-20020a170907a08f00b00a2cb0a608abmr5384441ejc.7.1705504110276;
+        Wed, 17 Jan 2024 07:08:30 -0800 (PST)
+Received: from [192.168.2.107] ([79.115.63.202])
+        by smtp.gmail.com with ESMTPSA id o19-20020a17090608d300b00a2adc93e308sm7838583eje.222.2024.01.17.07.08.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Jan 2024 07:08:29 -0800 (PST)
+Message-ID: <c72ca8b2-55a6-4ec7-8013-0a563d6dcdfe@linaro.org>
+Date: Wed, 17 Jan 2024 15:08:27 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 11/12] arm64: dts: exynos: gs101: define USI8 with I2C
+ configuration
+Content-Language: en-US
+To: Sam Protsenko <semen.protsenko@linaro.org>
+Cc: peter.griffin@linaro.org, krzysztof.kozlowski+dt@linaro.org,
+ gregkh@linuxfoundation.org, mturquette@baylibre.com, sboyd@kernel.org,
+ robh+dt@kernel.org, conor+dt@kernel.org, andi.shyti@kernel.org,
+ alim.akhtar@samsung.com, jirislaby@kernel.org, s.nawrocki@samsung.com,
+ tomasz.figa@gmail.com, cw00.choi@samsung.com,
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+ linux-serial@vger.kernel.org, andre.draszik@linaro.org,
+ kernel-team@android.com, willmcvicker@google.com
+References: <20240109125814.3691033-1-tudor.ambarus@linaro.org>
+ <20240109125814.3691033-12-tudor.ambarus@linaro.org>
+ <CAPLW+4=U9DBmwgxyWz3cy=V-Ui7s2Z9um4xbEuyax1o=0zB_NA@mail.gmail.com>
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
+In-Reply-To: <CAPLW+4=U9DBmwgxyWz3cy=V-Ui7s2Z9um4xbEuyax1o=0zB_NA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi everyone,
 
-> This patch replaces the bit shift code with "_BITUL()" macro inside
-> "serial_rs485" struct.
+
+On 1/16/24 18:03, Sam Protsenko wrote:
+>> USI8 CONFIG register comes with a 0x0 reset value, meaning that USI8
+>> doesn't have a default protocol (I2C, SPI, UART) at reset. Thus the
+>> selection of the protocol is intentionally left for the board dts file.
+>>
+>> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+>> ---
+>> v3: reorder usi8 clock order (thanks Andre'!). Did not make any
+>> difference at testing as the usi driver treats the clocks in bulk.
+>> v2:
+>> - identify and use gate clocks instead of dividers
+>> - move cells and pinctrl properties from dts to dtsi
+>> - move IRQ type constant on the previous line
+>>
+>>  arch/arm64/boot/dts/exynos/google/gs101.dtsi | 29 ++++++++++++++++++++
+>>  1 file changed, 29 insertions(+)
+>>
+>> diff --git a/arch/arm64/boot/dts/exynos/google/gs101.dtsi b/arch/arm64/boot/dts/exynos/google/gs101.dtsi
+>> index 6aa25cc4676e..f14a24628d04 100644
+>> --- a/arch/arm64/boot/dts/exynos/google/gs101.dtsi
+>> +++ b/arch/arm64/boot/dts/exynos/google/gs101.dtsi
+>> @@ -352,6 +352,35 @@ pinctrl_peric0: pinctrl@10840000 {
+>>                         interrupts = <GIC_SPI 625 IRQ_TYPE_LEVEL_HIGH 0>;
+>>                 };
+>>
+>> +               usi8: usi@109700c0 {
+>> +                       compatible = "google,gs101-usi",
+>> +                                    "samsung,exynos850-usi";
+>> +                       reg = <0x109700c0 0x20>;
+>> +                       ranges;
+>> +                       #address-cells = <1>;
+>> +                       #size-cells = <1>;
+>> +                       clocks = <&cmu_peric0 CLK_GOUT_PERIC0_CLK_PERIC0_USI8_USI_CLK>,
+>> +                                <&cmu_peric0 CLK_GOUT_PERIC0_PERIC0_TOP0_IPCLK_7>;
+>> +                       clock-names = "pclk", "ipclk";
+>> +                       samsung,sysreg = <&sysreg_peric0 0x101c>;
+> I'd also add samsung,mode for the "default" USI mode here, just to
+> avoid providing it later in the board's dts. But that's a matter of
+> taste I guess.
 > 
-> Signed-off-by: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-> ---
->  include/uapi/linux/serial.h | 17 +++++++++--------
->  1 file changed, 9 insertions(+), 8 deletions(-)
-> 
-> diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
-> index 53bc1af67..6c75ebdd7 100644
-> --- a/include/uapi/linux/serial.h
-> +++ b/include/uapi/linux/serial.h
-> @@ -11,6 +11,7 @@
->  #ifndef _UAPI_LINUX_SERIAL_H
->  #define _UAPI_LINUX_SERIAL_H
->  
-> +#include <linux/const.h>
->  #include <linux/types.h>
->  
->  #include <linux/tty_flags.h>
-> @@ -140,14 +141,14 @@ struct serial_icounter_struct {
->   */
->  struct serial_rs485 {
->  	__u32	flags;
-> -#define SER_RS485_ENABLED		(1 << 0)
-> -#define SER_RS485_RTS_ON_SEND		(1 << 1)
-> -#define SER_RS485_RTS_AFTER_SEND	(1 << 2)
 
-In the old definition (1 << 3) wasn't used.
+USI8 CONFIG register comes with a 0x0 reset value, meaning that USI8
+doesn't have a default protocol (I2C, SPI, UART) at reset. Thus the
+selection of the protocol is intentionally left for the board dts file.
 
-> -#define SER_RS485_RX_DURING_TX		(1 << 4)
-> -#define SER_RS485_TERMINATE_BUS		(1 << 5)
-> -#define SER_RS485_ADDRB			(1 << 6)
-> -#define SER_RS485_ADDR_RECV		(1 << 7)
-> -#define SER_RS485_ADDR_DEST		(1 << 8)
-> +#define SER_RS485_ENABLED		_BITUL(0)
-> +#define SER_RS485_RTS_ON_SEND		_BITUL(1)
-> +#define SER_RS485_RTS_AFTER_SEND	_BITUL(2)
-> +#define SER_RS485_RX_DURING_TX		_BITUL(3)
+I wanted to emphasize that USI8 doesn't have any HW defaults and its
+mode must be chosen by each particular board.
 
-Isn't it a break if number 3 isn't skipped here as well?
+I mentioned the same in the commit message, please tell if you feel it
+needs updating.
 
-Regards
-Christoph
+Cheers,
+ta
