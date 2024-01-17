@@ -1,93 +1,89 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 200982557C;
-	Wed, 17 Jan 2024 22:08:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB8451E87E;
+	Wed, 17 Jan 2024 22:39:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705529328; cv=none; b=kK+usL7UFtV5gT6HJWEkXJnY25jKpjJYdz79+RuMZCamWxSRb1lw4t+aoSj5oiw2ogjAGcZqjJFM4LB0c7xx7+ygcH4ts0N+gwKbrGhBp9YA/ubveeJEdIMrEXKi2zIE/TXImm15swtGZxwv8DTh4JrMHW/3zpYHgJTQx2/ieKY=
+	t=1705531158; cv=none; b=rJdo8l+1S1vfNIPI+dop1QWXUWDP0TdTl4gicDGwAIfcxdCNTPHpJ5ecXI/T8jbo3TPv/SFiEEj4DKPs06JOeF/2jx6acotWIxo66HM46fKJ+8x2pULQr8DNr/rWAw7Dsx8EkoWAjqVxFrvEGY2G3DqCPVURbrDAy8K40s7r0iU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705529328; c=relaxed/simple;
-	bh=qFaa8BOzaemhbbpaBNe+bRaxotM4CvhfHIbd776F9dI=;
-	h=From:DKIM-Signature:DKIM-Signature:To:Cc:Subject:In-Reply-To:
-	 References:Date:Message-ID:MIME-Version:Content-Type; b=Fhk+E3Gx17SYuFyXI+YDnwgbEM+cK93AzQ+nI7LeCtJB7Y2hF0CLsZqVP0BIMUpVtiXfYm0W0g7hAkCyXJxN3UlB6kIvj2TW4VyV5P0155BGeVUGNoETN/FKzlu+gGgUtazHgNps7hAkg+hraCwMqHLNh5LSVBnWqKACRyHcvjE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Lr+87xkv; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=f5vbaTvS; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1705531158; c=relaxed/simple;
+	bh=vy0wdEBit3su56RQHlgDgVvvo7neIJRXuqdIwFymyJ4=;
+	h=DKIM-Signature:Received:From:To:Cc:Date:Message-Id:X-Mailer:
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
+	 X-SA-Exim-Connect-IP:X-SA-Exim-Mail-From:X-Spam-Checker-Version:
+	 X-Spam-Level:X-Spam-Report:X-Spam-Status:Subject:X-SA-Exim-Version:
+	 X-SA-Exim-Scanned; b=TI/2NjlC/C+uNOyihI/Tssh5KUL+wTBFlWqkhRYEnLoMFB74RiWarIcVUuSGA5lFmqRAuiMPr1V6e/HQmw5X3bO0tKfLhAWZKa9ju1v+uT4+jHACy80WZkRLsO5Z4+Q9Yn0QN+XhmyiiFasPH9jPas/8dCoK3eEFYhTlXFM4EZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=0R/koWjz; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Lr+87xkv";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="f5vbaTvS"
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1705529324;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=g8Rre0myowdkjUOQXq/GBz+sm7iyJq6YRt8odewpPa4=;
-	b=Lr+87xkvQscfF5q5za0FUeY5Fp+AFvZOkhxF8ESsLSzdwYh4MSsPyelV7KnMtVecYpnaAE
-	w6+6jPvWfv+dy/EeTXAdqYc9xIV6/sb4VZUAV+p5jHoXnuXDgKOlELj9gDNufOHF66KyBP
-	CdFbUBRPv/FSlM1z2i8f5mg2eAl9ymzM7uu31TxstEA/ryV+fk0aspLaFPfWeNnoX0ap6P
-	dvs85DAv50BmY+nb+onfKUtMeYirjTw6kXGNOFnVNUvlkUz1rWVCLTglUwHdYT2vVyGCpE
-	+3dTrsisWITBRfR4OyoOD2dPvZjizcILoyr0zs/qOXzSj6OT9AhOYm0dXhpnwA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1705529324;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=g8Rre0myowdkjUOQXq/GBz+sm7iyJq6YRt8odewpPa4=;
-	b=f5vbaTvSe3JRd9U0N0qbggcC0Ynjd5eLuBgJhqrv/GsmGdIok/kRSbLRbdWrOur0OtmJmm
-	bIpRJwhWTy4bbeAw==
-To: Leonardo Bras <leobras@redhat.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Ilpo
- =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Florian Fainelli
- <f.fainelli@gmail.com>, John Ogness <john.ogness@linutronix.de>, Tony
- Lindgren <tony@atomide.com>, Marcelo Tosatti <mtosatti@redhat.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sebastian
- Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [RESEND RFC PATCH v1 1/2] irq/spurious: Reset irqs_unhandled if
- an irq_thread handles one IRQ request
-In-Reply-To: <20240116073701.2356171-2-leobras@redhat.com>
-References: <20240116073701.2356171-1-leobras@redhat.com>
- <20240116073701.2356171-2-leobras@redhat.com>
-Date: Wed, 17 Jan 2024 23:08:44 +0100
-Message-ID: <87ttnbfw9f.ffs@tglx>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="0R/koWjz"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
+	:From:subject:date:message-id:reply-to;
+	bh=GFJehYhk/fDFBrjMMskC+wY+GYyn4Kg3SNttyfUxJbM=; b=0R/koWjzs2mNCLnvzoCc12asu7
+	U31h0qkVj2Ai0tPIJ4Ss0WD+H+hozbju9+8EUwdP/ZdTavxMOtN+rumw+XIz6IZUC7pKfsNVsXu5R
+	FcKI0mYDvElrbVTNaQzsTU5/B0vezxwJAKuXwq0sggjyBZQVcsm9M8RQBo+zO9j8Sanc=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:52924 helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1rQEYr-000155-Dt; Wed, 17 Jan 2024 17:39:05 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	cosmin.tanislav@analog.com,
+	andy.shevchenko@gmail.com,
+	shc_work@mail.ru
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	hugo@hugovil.com,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Date: Wed, 17 Jan 2024 17:38:41 -0500
+Message-Id: <20240117223856.2303475-4-hugo@hugovil.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20240117223856.2303475-1-hugo@hugovil.com>
+References: <20240117223856.2303475-1-hugo@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
+Subject: [PATCH 03/18] serial: max310x: use i2c_get_match_data()
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Tue, Jan 16 2024 at 04:36, Leonardo Bras wrote:
-> This IRQ line disable bug can be easily reproduced with a serial8250
-> console on a PREEMPT_RT kernel: it only takes the user to print a lot
-> of text to the console (or to ttyS0): around 300k chars should be
-> enough.
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-That has nothing to do with RT, it's a problem of force threaded
-interrupts in combination with an edge type interrupt line and a
-hardware which keeps firing interrupts forever.
+Use preferred i2c_get_match_data() instead of device_get_match_data()
+to get the driver match data.
 
-> To fix this bug, reset irqs_unhandled whenever irq_thread handles at least
-> one IRQ request.
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+---
+ drivers/tty/serial/max310x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This papers over the symptom and makes runaway detection way weaker for
-all interrupts or breaks it completely.
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 053cf2458264..a051bc773c4b 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -1608,7 +1608,7 @@ static int max310x_i2c_probe(struct i2c_client *client)
+ 	unsigned int i;
+ 	u8 port_addr;
+ 
+-	devtype = device_get_match_data(&client->dev);
++	devtype = i2c_get_match_data(client);
+ 	if (!devtype)
+ 		return dev_err_probe(&client->dev, -ENODEV, "Failed to match device\n");
+ 
+-- 
+2.39.2
 
-The problem with edge type interrupts is that we cannot mask them like
-we do with level type interrupts in the hard interrupt handler and
-unmask them once the threaded handler finishes.
-
-So yes, we need special rules here when:
-
-   1) The interrupt handler is force threaded
-
-   2) The interrupt line is edge type
-
-   3) The accumulated unhandled interrupts are within a sane margin
-
-Thanks,
-
-        tglx
