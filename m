@@ -1,129 +1,156 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+Received: from mail-pg1-f176.google.com (mail-pg1-f176.google.com [209.85.215.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1457921A15
-	for <linux-serial@vger.kernel.org>; Wed, 17 Jan 2024 15:57:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95E3E22328
+	for <linux-serial@vger.kernel.org>; Wed, 17 Jan 2024 16:11:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705507051; cv=none; b=W8PqebzHOG3L0Gm2TbML9wfWwfAVIQ5YeHRgF8/2A6xbHgo6L/gdnORstuiGiJDBERKux/kwVEjbPNr6LgB1LTewj1ugjV6hO/ylilxyLZaidKlL1kVY4zZN6uLNWbFzJEFOLIgGiRnSmWkSHaWi0PY2fBS2/OAbfHbyUH+u+y0=
+	t=1705507910; cv=none; b=Wu/Pa8jqOd8mxgIpqpLX2V3dOwscCZlI8wi+2IzGhrebqDq5ICmq9Rql84Lw1vYhLRaXTcl1J8DVn83CbPKjX4wN39MrCko6tz6wgsKXYmnbBWvb8pUFuaG3LZsOKhiS76oflt2OxSDS6gKvtZAPf9BUjc9wvsf7nJXgWeGSYok=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705507051; c=relaxed/simple;
-	bh=YZSDBC9+KPF7Wl3+CiiBGJ9/g0tRY0jQC6dbTncn4kY=;
+	s=arc-20240116; t=1705507910; c=relaxed/simple;
+	bh=dQUa+ynEVxPBJ1mLZg+emq2IoeEU/beREy4ePffoRTA=;
 	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:Content-Language:
-	 To:Cc:References:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding; b=LJWNc7S3zCTDCkwyRSrQfw6F/xvhm6b092xCwN6OJKtbdRFHkuQuqGQoqLkgOQWFCythoVpN30Ehe8UPfAcYjz9H6oiTrae760BfiOyXZyc9k9QGlkfwbYDXKi4ikPLHUOxKpQ3djqtAxwHOd2ohTuOVDCjT+OHV5cc2gA9XUx4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=C7l9sRiP; arc=none smtp.client-ip=209.85.208.47
+	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:MIME-Version:
+	 References:In-Reply-To:From:Date:Message-ID:Subject:To:Cc:
+	 Content-Type:Content-Transfer-Encoding; b=eHS1OKHgLhSmjaR3FfbHlPneNRbZpJDAVltByMl9mvkmCxKQ0ytqTlHw8Kx1iobroEUCQTwRmOnzHD/HFapjaVY9npVOJWxslOJPd+JLI49eZcQmkWPsatsYwchLp44Mhcd9fkap5jpxmQQJruXbAPCoLF6D6vdwtNDvCbzJF5E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=VJtyq7rU; arc=none smtp.client-ip=209.85.215.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="C7l9sRiP"
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-559d95f1e69so934410a12.2
-        for <linux-serial@vger.kernel.org>; Wed, 17 Jan 2024 07:57:29 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="VJtyq7rU"
+Received: by mail-pg1-f176.google.com with SMTP id 41be03b00d2f7-5ce0efd60ddso6119142a12.0
+        for <linux-serial@vger.kernel.org>; Wed, 17 Jan 2024 08:11:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1705507048; x=1706111848; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ggdLDKfa8bA36v/1BkTqscUyoObsQtwNJJXtjaWJBcg=;
-        b=C7l9sRiPMjsRSRtL2rWMTLvgjXRoSMTozWfrBuzynAl9wpeXlwEm6G7lRqtshjrPa9
-         ecYtC/LdMAGyoBt1qNa1mc2JhJIxKTPUKDyO1ruEos8bxxY0sxaAUeGoCiDcTfQEzmXU
-         +BVj5CCuRT66VAdfWVmIw28px4aGzva/5armIKRKYfg+9VUF/0up16CAyJFECaMmCFdK
-         liLCerEu3teU8qJSTpIRFhv0nTBBxbkVAK9EkkuuKq7n7dzX3WFpTu+JyBsifnbS87Sf
-         kapMWn4ZUZuMSyUcIvfQyGmRZexNIvfGcz4+wb/7IyHEYOjbwyFtn7Hmfd5mfPbsLbt+
-         QMAQ==
+        d=linaro.org; s=google; t=1705507908; x=1706112708; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=drJWjvb+yQYbOubeqxcSCSSS8No8nI+honzyTfQXeuM=;
+        b=VJtyq7rUFgrt0k2pMwGAT+VOygyyxm79vszaYbcwAgera96aijYqrtjXp+EON8HxyI
+         0Q8EotMW5THkk7NSzy1hH0bkPwY7zP1onEnCygKFE9ZMlH1vlR3/9wSiB+gVXOc3nUfA
+         BVgF499nHkHUV73Pxn89sBn/Rrfq39fFfmw4Krq7iO9C97QXC+PmYOEmm+GyJaSvWIhT
+         flJXKq5a77K3Th0q4nx6YNvYF7sazyRhBULlovkqNqXQ6YIRNIY745T1oiVjYhDfslEJ
+         lipBiQQLznPFMvdajPT+/oSKYrfdW+QeLvQviFlIcAG5x1m3eVsDL+pfaEiAbpRRuvKZ
+         10dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705507048; x=1706111848;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ggdLDKfa8bA36v/1BkTqscUyoObsQtwNJJXtjaWJBcg=;
-        b=IFq0RyXJg/zpgo23kBCbsUuJlhyID+4oLJvmn6S92WQQ7ws6qHdC1ShNgMPLAb2ZW3
-         U2JlU0gw8wKnlFYB46kToaCdun86t17SRENNl9JBhzPGHiN9poH4V5ElQ2UhdBc66tFn
-         LypMA1yiMtNSYwByh/a9/OzStJAGnOw5HjGvxxiYpRZRrNNyvH/7Zgt4k4YeLLxoaPnT
-         L7EvXlbZ3Khx0FSKtcVri4U0kHfcNrBsc+1O+dMHi0jMFYQ3SK23+JMiMO05sM2brnUO
-         BNAxndxfXMqvjFo6PHFzCzo+1aWHrNGp8bWeXnJLtsPDn1JaIhLMzIhsNWjIpfzHKPhL
-         JdsQ==
-X-Gm-Message-State: AOJu0Yx85fQczA6ZBweiW1ml8p3uylCToLXISCs+Vkf7Z1qdxkXMq19p
-	MwtSz6m96LJNOHlI4r5Z5CXwxkm3dnu83A==
-X-Google-Smtp-Source: AGHT+IHV1KaQwkEA0TRqJfkbwy6MKJIIXo+FOk8S9X0wUrNS7J7UJ6dt+nK9OglzCCFzMEbMjHWVTw==
-X-Received: by 2002:a05:6402:2025:b0:559:d04b:dad2 with SMTP id ay5-20020a056402202500b00559d04bdad2mr814690edb.34.1705507048298;
-        Wed, 17 Jan 2024 07:57:28 -0800 (PST)
-Received: from [192.168.2.107] ([79.115.63.202])
-        by smtp.gmail.com with ESMTPSA id s7-20020a056402014700b005593b14af3csm4513778edu.84.2024.01.17.07.57.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Jan 2024 07:57:27 -0800 (PST)
-Message-ID: <675ff8e3-2494-46b1-b826-65d4504869fa@linaro.org>
-Date: Wed, 17 Jan 2024 15:57:26 +0000
+        d=1e100.net; s=20230601; t=1705507908; x=1706112708;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=drJWjvb+yQYbOubeqxcSCSSS8No8nI+honzyTfQXeuM=;
+        b=IrJJAxs2d0cyxL0+LQCZwc2pzZ4JrwkXJ/mo+mA46pMJ8rXrprNQk8eWGpiFktClHj
+         iW8qSEIdlIG50CanI04CReZgo47sZw5+5eR84d0CjgIElmEdTHUMd5To3aKaoyvF8aS2
+         yERnXIg0zgObG0zEO3L/1SRNWTV1xNIHGCwdkqhTefJbX9JuU5HKtqdfT1mRjH0Ju4Xa
+         vDQr9musWTMC5ahSTVgbGGIwYkTPj9M8mGyFNlE8nYo8D87Q+J2Lo6MrOOiyjKFEJkI2
+         KmLgN8TjrxZp0MoFNINFhmrKdPfJxyErUsfoOjN1M1JQmGtXQJ9Yz7YkvNP1MwtpYRsA
+         0jUg==
+X-Gm-Message-State: AOJu0YzipmDouqtsziNQQxP3gpV3v8/4KB2rpz2tioHqAHqeyFzX8ihv
+	DzD/p50JUC/8XGGw5rNJwW7GrK8iftKbpIT4Ur66l1/2ql0dyQ==
+X-Google-Smtp-Source: AGHT+IF/BkPqfcI7s6qu0WKHY8iBQUPv+9/611flmwtBk2+/CmUzDdGw9MwVL258kmnYaNPMuijP+jQO6OHgZTgpXiA=
+X-Received: by 2002:a17:90b:1996:b0:28e:2d7e:7cd6 with SMTP id
+ mv22-20020a17090b199600b0028e2d7e7cd6mr3076285pjb.14.1705507907883; Wed, 17
+ Jan 2024 08:11:47 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 14/18] tty: serial: samsung: return bool for
- s3c24xx_serial_console_txrdy()
-Content-Language: en-US
-To: Sam Protsenko <semen.protsenko@linaro.org>
-Cc: krzysztof.kozlowski@linaro.org, alim.akhtar@samsung.com,
- gregkh@linuxfoundation.org, jirislaby@kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- andre.draszik@linaro.org, peter.griffin@linaro.org, kernel-team@android.com,
- willmcvicker@google.com
-References: <20240110102102.61587-1-tudor.ambarus@linaro.org>
- <20240110102102.61587-15-tudor.ambarus@linaro.org>
- <CAPLW+4=O2OaDsC7KNeLPt4UC-OLjD3_VVL1xL6PnrOBPUmcDrw@mail.gmail.com>
-From: Tudor Ambarus <tudor.ambarus@linaro.org>
-In-Reply-To: <CAPLW+4=O2OaDsC7KNeLPt4UC-OLjD3_VVL1xL6PnrOBPUmcDrw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20240109125814.3691033-1-tudor.ambarus@linaro.org>
+ <20240109125814.3691033-8-tudor.ambarus@linaro.org> <CAPLW+4=y12fBf47v_HKfBdHTsQJfWo2cwBuFosUKo3xPBqcKJw@mail.gmail.com>
+ <f394e372-dbfd-4fd5-b5c8-23c383cb6cf2@linaro.org>
+In-Reply-To: <f394e372-dbfd-4fd5-b5c8-23c383cb6cf2@linaro.org>
+From: Sam Protsenko <semen.protsenko@linaro.org>
+Date: Wed, 17 Jan 2024 10:11:36 -0600
+Message-ID: <CAPLW+4nc1GDJHZ=-+R1+aEAMzoU_OpAX37Ke84qqg66xbjC9eA@mail.gmail.com>
+Subject: Re: [PATCH v3 07/12] clk: samsung: gs101: add support for cmu_peric0
+To: Tudor Ambarus <tudor.ambarus@linaro.org>
+Cc: peter.griffin@linaro.org, krzysztof.kozlowski+dt@linaro.org, 
+	gregkh@linuxfoundation.org, mturquette@baylibre.com, sboyd@kernel.org, 
+	robh+dt@kernel.org, conor+dt@kernel.org, andi.shyti@kernel.org, 
+	alim.akhtar@samsung.com, jirislaby@kernel.org, s.nawrocki@samsung.com, 
+	tomasz.figa@gmail.com, cw00.choi@samsung.com, 
+	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+	linux-clk@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, 
+	linux-serial@vger.kernel.org, andre.draszik@linaro.org, 
+	kernel-team@android.com, willmcvicker@google.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Wed, Jan 17, 2024 at 8:49=E2=80=AFAM Tudor Ambarus <tudor.ambarus@linaro=
+.org> wrote:
+>
+> Hi, Sam,
+>
+> Thanks for reviewing the series!
+>
+> On 1/16/24 17:42, Sam Protsenko wrote:
+>
+> cut
+>
+> >> Few clocks are marked as critical because when either of them is
+> >> disabled, the system hangs even if their clock parents are enabled.
+> >>
+> >> Reviewed-by: Peter Griffin <peter.griffin@linaro.org>
+> >> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+> >> ---
+> cut
+> >>
+> >> diff --git a/drivers/clk/samsung/clk-gs101.c b/drivers/clk/samsung/clk=
+-gs101.c
+> >> index 782993951fff..f3f0f5feb28d 100644
+> >> --- a/drivers/clk/samsung/clk-gs101.c
+> >> +++ b/drivers/clk/samsung/clk-gs101.c
+>
+> cut
+>
+> >> +static const struct samsung_gate_clock peric0_gate_clks[] __initconst=
+ =3D {
+> >> +       /* Disabling this clock makes the system hang. Mark the clock =
+as critical. */
+> >> +       GATE(CLK_GOUT_PERIC0_PERIC0_CMU_PERIC0_PCLK,
+> >> +            "gout_peric0_peric0_cmu_peric0_pclk", "mout_peric0_bus_us=
+er",
+> >> +            CLK_CON_GAT_CLK_BLK_PERIC0_UID_PERIC0_CMU_PERIC0_IPCLKPOR=
+T_PCLK,
+> >> +            21, CLK_IS_CRITICAL, 0),
+> > Why not just CLK_IGNORE_UNUSED? As I understand this gate clock can be
+>
+> When either of the clocks that I marked as critical is disabled, the
+> system hangs, even if their clock parent is enabled. I tested this by
+> enabling the clock debugfs with write permissions. I prepared-enabled
+> the parent clock to increase their user count so that when the child
+> gets disabled to not disable the parent as well. When disabling the
+> child the system hung, even if its parent was enabled. Thus I considered
+> that the child is critical. I mentioned this in the commit message as
+> well. Please tell if get this wrong.
+>
 
+Ok, if you already tested this particular clock with CLK_IGNORE_UNUSED
+and it didn't help:
 
-On 1/16/24 18:54, Sam Protsenko wrote:
-> On Wed, Jan 10, 2024 at 4:25 AM Tudor Ambarus <tudor.ambarus@linaro.org> wrote:
->>
->> s3c24xx_serial_console_txrdy() returned just 0 or 1 to indicate whether
->> the TX is empty or not. Change its return type to bool.
->>
->> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
->> ---
->>  drivers/tty/serial/samsung_tty.c | 6 +++---
->>  1 file changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
->> index 63e993bed296..37c0ba2a122c 100644
->> --- a/drivers/tty/serial/samsung_tty.c
->> +++ b/drivers/tty/serial/samsung_tty.c
->> @@ -2183,7 +2183,7 @@ static const struct dev_pm_ops s3c24xx_serial_pm_ops = {
->>
->>  static struct uart_port *cons_uart;
->>
->> -static int
->> +static bool
->>  s3c24xx_serial_console_txrdy(struct uart_port *port, u32 ufcon)
->>  {
->>         const struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
->> @@ -2193,13 +2193,13 @@ s3c24xx_serial_console_txrdy(struct uart_port *port, u32 ufcon)
->>                 /* fifo mode - check amount of data in fifo registers... */
->>
->>                 ufstat = rd_regl(port, S3C2410_UFSTAT);
->> -               return (ufstat & info->tx_fifofull) ? 0 : 1;
->> +               return !(ufstat & info->tx_fifofull);
->>         }
->>
->>         /* in non-fifo mode, we go and use the tx buffer empty */
->>
->>         utrstat = rd_regl(port, S3C2410_UTRSTAT);
->> -       return (utrstat & S3C2410_UTRSTAT_TXE) ? 1 : 0;
->> +       return !!(utrstat & S3C2410_UTRSTAT_TXE);
-> 
-> Again, personally I think !! is just clutters the code here, as the
-> function already returns bool. Other than that:
-> 
+Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
 
-Indeed, I'll update. Thanks!
-ta
+> > used to disable PCLK (bus clock) provided to the whole CMU_PERIC0.
+> > Aren't there any valid cases for disabling this clock, like during
+> > some PM transitions? For Exynos850 clock driver I marked all clocks of
+>
+> They aren't, because if one switches off any of these clocks that are
+> marked as critical, the system hangs and it will not be able to resume.
+>
+> > this kind as CLK_IGNORE_UNUSED and it works fine. In other words: I'd
+> > say CLK_IS_CRITICAL flag is more "strong" than CLK_IGNORE_UNUSED, and
+> > requires better and more specific explanation, to make sure we are not
+> > abusing it. And I'm not sure this is the case.
+>
+> Is the explanation from the commit message enough?
+> >
+> > The same goes for the rest of clocks marked as CLK_IS_CRITICAL in this
+> > patch. Please check if maybe using CLK_IGNORE_UNUSED makes sense for
+> > any of those as well.
+>
+> I've already checked and all behave as described above.
+>
+> Thanks,
+> ta
