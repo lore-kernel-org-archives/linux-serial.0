@@ -1,138 +1,156 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F251C21A02
-	for <linux-serial@vger.kernel.org>; Wed, 17 Jan 2024 15:38:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7C6121A09
+	for <linux-serial@vger.kernel.org>; Wed, 17 Jan 2024 15:41:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705505940; cv=none; b=VR2H407A4K7po94ZAxuubq0QhlsZR1U3DZiNnPRosUsvIgEJCArqi+xhtEWI4XV4K+QhpQdVS+1lSRTAJNEenvtf78W+wOMABxWijp3WiiiwfN0PlZjH8ZVAQ/VWshCg/A6AbpQ7cx6ULYhvpyyjvH4dY0riGU1Azfaavzhaj6k=
+	t=1705506111; cv=none; b=mwPSFJFY4001DIbbdseCvb6UHm8H7uOddMfTI+8tf8XTN9TP3Bg+OHuQzbnxwCr/nq3PcQXVqblBrrQ5U9b9JRNHC5Fxpd5Q5o2+WOQAXvDTlYNiOHvzJ1P5dlJEIrYvXEQBMxTbm/KFI+5lOSmsRhjLnZFXbsJP9io+X5JPwZw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705505940; c=relaxed/simple;
-	bh=iQ7itby43BSx0xynQMS8ijTGKazjAWAAhMKEoJglSwY=;
+	s=arc-20240116; t=1705506111; c=relaxed/simple;
+	bh=vHheadTKQnQTYXZrVwuGynn/8EJeowYAzDnoEsdgR20=;
 	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:Received:
-	 Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:Content-Transfer-Encoding:User-Agent:MIME-Version; b=F7nQQkmhPSp+YjqZa8bwCoDxshwj1+RBT8bdmW09mSr+tcTkNagNPk/873fxJ1CwVPysyG1Ri7Pn8o+WFll/iv4AcenaoUhdlTvrB+LXeqtsRL70bmxynrgQ1QToG3KyWjQTVAbhVtdUI2efyfFnZRpDtOThR7MsYyYnmbAuk+s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=V9BeD8wj; arc=none smtp.client-ip=209.85.128.49
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:Content-Language:
+	 To:Cc:References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding; b=hvcDZUyXKI2lMUrAitKPjZ40wq2CwvnehcbIbNHLnK98qreo9LXJpP1nY7om7CvQ2iHYL6CKYgNeJoSa16AUAPQde2kzZ/qbH2KIQWMqQvqTMfmTkqJpO0ddY3Jopcnc0d/NLdBLdVXqk/doeDor5SjQTJW43s96gvjNVZ7gN+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=lbZPYEKU; arc=none smtp.client-ip=209.85.218.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="V9BeD8wj"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-40e8d3b29f2so4029375e9.1
-        for <linux-serial@vger.kernel.org>; Wed, 17 Jan 2024 07:38:58 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="lbZPYEKU"
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-a2dc7827a97so405217166b.2
+        for <linux-serial@vger.kernel.org>; Wed, 17 Jan 2024 07:41:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1705505937; x=1706110737; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=AHIe76/zPrvtJ/ms59RFYFIDBYoX1+fcYvY/MxrSv1s=;
-        b=V9BeD8wjEZYVJ14NKcZQGZqSDKsC87gqyftpYoJuy5DrROpEOp0ZDGD4SXq4h0Yc/6
-         cEHDBIa2Fkp7zZYsyZ+BsOU8FCqm4+HVSL73ddQOxvC/T2JgA6pw7ZweJdLJ39GMZTZP
-         GRjG4w5zJw6qIHYwix35C/OAgilvr85Wn9mTsybr0VSeSc34ullnJ2Y1z48Hmgc7q+26
-         A8YdKuVmA88ovcEmvuUtzcH/P4V4JCfiOMhh00Tv51ce+e88y6+kKVtYPAdjd9FF0uTc
-         7awLmJKZXdSR8BJBDFSUEBgUsPTxXSTOzsXDuf+7VYHUuXZ+nIuVRSFVimnvid5X/c+h
-         UDlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705505937; x=1706110737;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+        d=linaro.org; s=google; t=1705506108; x=1706110908; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=AHIe76/zPrvtJ/ms59RFYFIDBYoX1+fcYvY/MxrSv1s=;
-        b=RnUXVd79WQphCG3hFxNU804HsfOT268CJ04A9HIbQIZ4wU5oyc8ERKsh/Lkg8owddu
-         gKR0fV7lPg4X/87Uy9lzNAy7pU6UK9zViCuyb5Y9Zr31Qq/ChBwl8oEnJEAsFYyGOKKu
-         tTRqhUOPwXgQKrpanhRhwuJA39Lo75n6ZsRa+aRR2hrQ+RrNWJjHhSMW3QiZF0QPfK+e
-         HNwiF20YHAB9sXo7xtb53bS9yEM3sLeONCHa8U3/tie6CTE6jWRRZiC08Q4VxKpXm8oC
-         Ze9L2UbwiE/ZO4baLitrLfIFZufnlSMxYUdnbNKOfV4y1kn/9Cq8+nniOP1oQwHynEtI
-         xS+g==
-X-Gm-Message-State: AOJu0YyIbelnkbNwIYnfbrn2CefN9YDaM1zsbWmdyTot9OKmVyIlxY+B
-	Os90dw5Zl6exz5/yX7L8Jxf4rLnr3jDD5w==
-X-Google-Smtp-Source: AGHT+IFV/Y/QK8epiDPjRSEGlOZHxAJNe8EwHrV5tZVYNXXzxYIO5ZcLL+4nrYomezsBSeqVAKi/4Q==
-X-Received: by 2002:a05:600c:24d3:b0:40c:3e6b:efe8 with SMTP id 19-20020a05600c24d300b0040c3e6befe8mr3113561wmu.241.1705505937181;
-        Wed, 17 Jan 2024 07:38:57 -0800 (PST)
-Received: from draszik.lan ([80.111.64.44])
-        by smtp.gmail.com with ESMTPSA id n18-20020a05600c501200b0040e77ce8768sm10969236wmr.16.2024.01.17.07.38.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Jan 2024 07:38:56 -0800 (PST)
-Message-ID: <026bdf502c0af8260c67a7a851562633a6976031.camel@linaro.org>
-Subject: Re: [PATCH 10/18] tty: serial: samsung: make max_count unsigned int
-From: =?ISO-8859-1?Q?Andr=E9?= Draszik <andre.draszik@linaro.org>
-To: Tudor Ambarus <tudor.ambarus@linaro.org>, Sam Protsenko
-	 <semen.protsenko@linaro.org>
-Cc: krzysztof.kozlowski@linaro.org, alim.akhtar@samsung.com, 
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	peter.griffin@linaro.org, kernel-team@android.com, willmcvicker@google.com
-Date: Wed, 17 Jan 2024 15:38:55 +0000
-In-Reply-To: <b21a54a7-fe13-4a29-8e7e-6b653d5c24ef@linaro.org>
-References: <20240110102102.61587-1-tudor.ambarus@linaro.org>
-	 <20240110102102.61587-11-tudor.ambarus@linaro.org>
-	 <CAPLW+4=YYdUSaaLcsdEyPswC4s6onxuSh24vSfw4xys=sPZG_Q@mail.gmail.com>
-	 <b21a54a7-fe13-4a29-8e7e-6b653d5c24ef@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.50.1-1 
+        bh=7fQy90wubVF9sUgzIcE4yEfTB5Nsm0VF+3ircigyYGQ=;
+        b=lbZPYEKUjyrplCDkOIMGTAHXfTVuKWQfPUYmPUPNusA/MPMljYyMX9KMhYaFHmc/L5
+         GLufz+L2KDPkP6+Qbymg4ef8g3eQ87DlMnSYXgKG4X53umV2wkk17s/zwuazy7kWYx1c
+         I05bqX6DODANH1K9mBZBesATdbMtdY4pncPJaNo4dr50Ey3PXRC/aAZg3ugcCZL0UHAo
+         5s/zR5EcbQGAg9HHINJTWProwDhKh1xedxhwcSaz5tfekv245+J10CgUiicOIPfW4Bsd
+         rYvfF9JMrjO3jtSVuUwAjZMctxt8QiCXsBcSF7KZG69MdaWCvRHPhEfZotYQDguT2VEw
+         kcPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705506108; x=1706110908;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7fQy90wubVF9sUgzIcE4yEfTB5Nsm0VF+3ircigyYGQ=;
+        b=BM+nPFmkvn4rlWpkxFBLPnvANwlguPTMcP7cvJVWwK5DXYsJrE7Bhpa7t0i+VXCkdf
+         3pRitJuoExAcw3WsgHyeGNwZewt8Ysfa/sz56N35HJFi7+KvWQi6alVDcFLR2lc4/0Os
+         LtHT/Uv4JHAgiItEQ4wyVL7FOPvG72DOYtfBUb/leH/3HFbxX9UcQG9NGKtby1YJVsnc
+         qGuGUVwPpNmlan7CrHokYtGHt1bIJNsYA4jFu6MMWT2v97X3lPbkU5UUezc/dso/zO9z
+         fzvJUDNAUcD9shx1gyfLFVBz0hMO4IiDEB6Isk07qyfNy1EOVguekyq6yFPpMuDr4Ypg
+         9opA==
+X-Gm-Message-State: AOJu0YzJKxsc5x0DKiwQewTbmdOnGF5xBehjX+luFjXm8i8/xYfoc9dk
+	C+3oRPw9saX5h54nCl8H6O2EY7aiJTMDxg==
+X-Google-Smtp-Source: AGHT+IH6sUZYoZLyrdAyeTyHowfW9FJUNk/hfgFlCDe53Ai+kvCACnfWXb82GjAet9JFj6uuOuoFFw==
+X-Received: by 2002:a17:906:a08a:b0:a27:361f:f604 with SMTP id q10-20020a170906a08a00b00a27361ff604mr3995772ejy.47.1705506108050;
+        Wed, 17 Jan 2024 07:41:48 -0800 (PST)
+Received: from [192.168.2.107] ([79.115.63.202])
+        by smtp.gmail.com with ESMTPSA id wr8-20020a170907700800b00a2e08b24ea3sm3240579ejb.174.2024.01.17.07.41.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Jan 2024 07:41:47 -0800 (PST)
+Message-ID: <6b6b1512-18a2-48bd-b284-8f4deff84309@linaro.org>
+Date: Wed, 17 Jan 2024 15:41:46 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 11/18] tty: serial: samsung: don't compare with zero an if
+ (bitwise expression)
+Content-Language: en-US
+To: Sam Protsenko <semen.protsenko@linaro.org>
+Cc: krzysztof.kozlowski@linaro.org, alim.akhtar@samsung.com,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ andre.draszik@linaro.org, peter.griffin@linaro.org, kernel-team@android.com,
+ willmcvicker@google.com
+References: <20240110102102.61587-1-tudor.ambarus@linaro.org>
+ <20240110102102.61587-12-tudor.ambarus@linaro.org>
+ <CAPLW+4mKBwsc9VLrGTd2k6d0n-K9TZAjH6M8trcK3Av8TQ2Ngg@mail.gmail.com>
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
+In-Reply-To: <CAPLW+4mKBwsc9VLrGTd2k6d0n-K9TZAjH6M8trcK3Av8TQ2Ngg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hi,
 
-On Wed, 2024-01-17 at 15:21 +0000, Tudor Ambarus wrote:
->=20
->=20
-> On 1/16/24 18:21, Sam Protsenko wrote:
-> > On Wed, Jan 10, 2024 at 4:23=E2=80=AFAM Tudor Ambarus <tudor.ambarus@li=
-naro.org> wrote:
-> > >=20
-> > > ``max_count`` negative values are not used. Since ``port->fifosize``
-> > > is an unsigned int, make ``max_count`` the same.
-> > >=20
-> > > Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
-> > > ---
-> > > =C2=A0drivers/tty/serial/samsung_tty.c | 2 +-
-> > > =C2=A01 file changed, 1 insertion(+), 1 deletion(-)
-> > >=20
-> > > diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/sa=
-msung_tty.c
-> > > index 90c49197efc7..dbbe6b8e3ceb 100644
-> > > --- a/drivers/tty/serial/samsung_tty.c
-> > > +++ b/drivers/tty/serial/samsung_tty.c
-> > > @@ -760,8 +760,8 @@ static irqreturn_t s3c24xx_serial_rx_chars_dma(vo=
-id *dev_id)
-> > > =C2=A0static void s3c24xx_serial_rx_drain_fifo(struct s3c24xx_uart_po=
-rt *ourport)
-> > > =C2=A0{
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct uart_port *port =3D=
- &ourport->port;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 unsigned int max_count =3D port=
-->fifosize;
-> >=20
-> > What if port->fifosize is 0? Then this code below:
-> >=20
-> > =C2=A0=C2=A0=C2=A0 while (max_count-- > 0) {
-> >=20
-> > would cause int overflow, if max_count is unsigned?
-> >=20
->=20
-> good catch, Sam!
 
-Does it matter, though? As this is a post-decrement, the test is done first=
-, and the
-decrement after. Therefore, it'll still bail out as expected.
+On 1/16/24 18:38, Sam Protsenko wrote:
+> On Wed, Jan 10, 2024 at 4:24 AM Tudor Ambarus <tudor.ambarus@linaro.org> wrote:
+>>
+>> Since an if tests the numeric value of an expression, certain coding
+>> shortcuts can be used. The most obvious one is writing
+>>     if (expression)
+>> instead of
+>>     if (expression != 0)
+>>
+>> Since our case is a bitwise expression, it's more natural and clear to
+>> use the ``if (expression)`` shortcut.
+> 
+> Maybe the author of this code:
+> 
+>     (ufstat & info->tx_fifomask) != 0
+> 
+> just wanted to outline (logically) that the result of this bitwise
+> operation produces FIFO length, which he checks to have non-zero
+> length? Mechanically of course it doesn't matter much, and I guess
 
-> I'm thinking of amending this and add at the beginning of the method:
->=20
-> if (!max_count)
-> 	return tty_flip_buffer_push(&port->state->port);
+that's a bitwise AND with the fifo mask to check if the fifo is empty or
+not, it doesn't care about the length, just if the fifo is empty. IOW if
+any of those bits are set, the fifo is not empty. I think not comparing
+with zero explicitly is better. At the same time I'm fine dropping the
+patch as well. So please tell me if you want me to reword the commit
+message or drop the patch entirely.
 
-This will not help with overflow. It'll still have wrapped around after com=
-pleting the
-while() (always, no matter what start-value max_count had)
+> everyone can understand what's going on there even without '!= 0'
+> part. But it looks quite intentional to me, because in the same 'if'
+> block the author uses this as well:
+> 
+>     (ufstat & info->tx_fifofull)
 
-Cheers,
-Andre'
+tx_fifofull is just a bit in the register, in my case BIT(24). If that
+bit is one, the fifo is full. Not comparing with zero is fine here, as
+we're interested just in that bit/flag.
 
+> 
+> without any comparison operators.
+> 
+>>
+>> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+>> ---
+>>  drivers/tty/serial/samsung_tty.c | 3 +--
+>>  1 file changed, 1 insertion(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+>> index dbbe6b8e3ceb..f2413da14b1d 100644
+>> --- a/drivers/tty/serial/samsung_tty.c
+>> +++ b/drivers/tty/serial/samsung_tty.c
+>> @@ -988,8 +988,7 @@ static unsigned int s3c24xx_serial_tx_empty(struct uart_port *port)
+>>         u32 ufcon = rd_regl(port, S3C2410_UFCON);
+>>
+>>         if (ufcon & S3C2410_UFCON_FIFOMODE) {
+>> -               if ((ufstat & info->tx_fifomask) != 0 ||
+>> -                   (ufstat & info->tx_fifofull))
+>> +               if ((ufstat & info->tx_fifomask) || (ufstat & info->tx_fifofull))
+> 
+> Does this line fit into 80 characters? If no, please rework it so it
+
+it fits
+
+> does. I guess it's also possible to get rid of superfluous braces
+> there, but then the code might look confusing, and I'm not sure if
+> checkpatch would be ok with that.
+> 
+
+I find it better with the braces.
+
+Thanks!
+ta
