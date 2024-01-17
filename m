@@ -1,140 +1,93 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D594F250E8
-	for <linux-serial@vger.kernel.org>; Wed, 17 Jan 2024 20:43:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 200982557C;
+	Wed, 17 Jan 2024 22:08:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705524214; cv=none; b=g0k11lN8mYkrMG7P9vC5oRppCtZLkZjM1s4HfpLJ/ZiQS3TvVRbdVMA0BPF7LXaTjAzHeYbVDWGbYsjJQCBdQRiewTOU0kt7BEWUyQ7xlTgri406C6FBhOxjaQ9zLvH1UPdYiRWGg98T5fe2PwHidFzMRB2Hbs0/35dKzXSj7v0=
+	t=1705529328; cv=none; b=kK+usL7UFtV5gT6HJWEkXJnY25jKpjJYdz79+RuMZCamWxSRb1lw4t+aoSj5oiw2ogjAGcZqjJFM4LB0c7xx7+ygcH4ts0N+gwKbrGhBp9YA/ubveeJEdIMrEXKi2zIE/TXImm15swtGZxwv8DTh4JrMHW/3zpYHgJTQx2/ieKY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705524214; c=relaxed/simple;
-	bh=N4EwdcSxODjI8QN4O+6xcd/k09P+1oLsv51qTa6fgvg=;
-	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:Received:Date:
-	 From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=vFfNpUdsNOODIOPOKGC9pLjLtVcSGN1jQDdUeE7gsvUxPfje/C/7wwyuuugmVwSO5Gxvh97HfsPT/+J4VmoGQuVtXZ65mN1Posups1OWe8pkZPVV0JqS350pDMLhndsduYVHxq1S1Jgs4373ZH+FS62buiAt/9O/0Anr5C9szKQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mLhPKT4E; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1705529328; c=relaxed/simple;
+	bh=qFaa8BOzaemhbbpaBNe+bRaxotM4CvhfHIbd776F9dI=;
+	h=From:DKIM-Signature:DKIM-Signature:To:Cc:Subject:In-Reply-To:
+	 References:Date:Message-ID:MIME-Version:Content-Type; b=Fhk+E3Gx17SYuFyXI+YDnwgbEM+cK93AzQ+nI7LeCtJB7Y2hF0CLsZqVP0BIMUpVtiXfYm0W0g7hAkCyXJxN3UlB6kIvj2TW4VyV5P0155BGeVUGNoETN/FKzlu+gGgUtazHgNps7hAkg+hraCwMqHLNh5LSVBnWqKACRyHcvjE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Lr+87xkv; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=f5vbaTvS; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mLhPKT4E"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-40e72a567eeso39474975e9.0
-        for <linux-serial@vger.kernel.org>; Wed, 17 Jan 2024 12:43:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1705524211; x=1706129011; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=1iab4ftx1ZjXF0rF6AlFMHFeyFjWu5xoaOwUNtGpJG8=;
-        b=mLhPKT4EORHTshh2PoXk9uvt5FxOcoEi9gOTIhfdki42dw6WvM+zBsQRM/lNUoM+BA
-         JepThZHXmLCGSzDvg/PIeQAqZ77O22tufxSSv5qWrDcgckIPFcwu26rERNHRrYn9nCsj
-         ACnhVpwB1La54Q4rqTjeSD3Z5peQNiECG7z2A5XEhRDvW/oHsn31h3n3wMEJABbsEZvI
-         ZEJWpI+5X2kUyRH8NQEFfDu22/OPBr7gx+0H9VNGz+OKjTi566v/qjclnhP2rY/SZuqP
-         /vgGQ/+6AkCiRXqixa56rPGrs9tfOFhyEJhqSD+x7Y3LwdJAXLwppwwFpNi5+nH7myv7
-         WcJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705524211; x=1706129011;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1iab4ftx1ZjXF0rF6AlFMHFeyFjWu5xoaOwUNtGpJG8=;
-        b=gzGa/0y5D/WjmB2NlAMmPcc85nKfR9VW04lmDUso4XJXRZOL/txTg82lQDdIcOK04v
-         cQDQ5pFpw1G3CJ8IkWBPWKFGW88PiUWhjD6HEuXaT5Mpr08D2kZGiYWFsBhcb5h6/YL5
-         KcQZc+sxiNV/F7wWWGSsSK9V7uBr+viAkTUN/KR4NWGJ2YRm1egbkD22E/4hDnK4R5AO
-         NW9EPIchZwd7BTB5fKbPf05PVKfP8r5qeibc8rSNk2OFh00X8mOwi4JBnCAllF8vHk6D
-         eHr76vNbhychp3E/jN0dmulSmmK8xRT5wXhgST73YCijpID/61kG/LtOyYiFzKoF7HQz
-         gOgQ==
-X-Gm-Message-State: AOJu0Yw1kmbcRGlJ13r4zGWPxIQ1WGJx41cyK1uJpg5OCl9DlyLuhX2s
-	GRpnGgK3kgVdPzZwMBWBb30=
-X-Google-Smtp-Source: AGHT+IHwfTN0rB7QvVjSyZ3js/htN3txjzGDfz+0L/bgkhZKV+w9cpxc0XBTrWCBb+LPx9h5Yd2uuQ==
-X-Received: by 2002:a7b:cd8c:0:b0:40e:5afc:19b8 with SMTP id y12-20020a7bcd8c000000b0040e5afc19b8mr2644774wmj.245.1705524210880;
-        Wed, 17 Jan 2024 12:43:30 -0800 (PST)
-Received: from michael-VirtualBox (89-139-16-170.bb.netvision.net.il. [89.139.16.170])
-        by smtp.gmail.com with ESMTPSA id f18-20020a05600c155200b0040d87100733sm23720242wmg.39.2024.01.17.12.43.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Jan 2024 12:43:30 -0800 (PST)
-Date: Wed, 17 Jan 2024 22:43:28 +0200
-From: Michael Zaidman <michael.zaidman@gmail.com>
-To: Daniel Beer <daniel.beer@igorinstitute.com>
-Cc: Christina Quast <contact@christina-quast.de>,
-	linux-serial@vger.kernel.org, ilpo.jarvinen@linux.intel.com,
-	johan@kernel.org, gregkh@linuxfoundation.org,
-	David Lamparter <equinox@diac24.net>,
-	Jiri Kosina <jikos@kernel.org>,
-	Michael Zaidman <michael.zaidman@gmail.com>
-Subject: Re: [PATCH v4 RESEND] hid-ft260: Add serial driver
-Message-ID: <Zag78CurQQGSLDW3@michael-VirtualBox>
-References: <20231218093153.192268-1-contact@christina-quast.de>
- <Zab2aFMlu6ww2jey@michael-VirtualBox>
- <Zab4g5PnwcaferE9@fermat.nev>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Lr+87xkv";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="f5vbaTvS"
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1705529324;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=g8Rre0myowdkjUOQXq/GBz+sm7iyJq6YRt8odewpPa4=;
+	b=Lr+87xkvQscfF5q5za0FUeY5Fp+AFvZOkhxF8ESsLSzdwYh4MSsPyelV7KnMtVecYpnaAE
+	w6+6jPvWfv+dy/EeTXAdqYc9xIV6/sb4VZUAV+p5jHoXnuXDgKOlELj9gDNufOHF66KyBP
+	CdFbUBRPv/FSlM1z2i8f5mg2eAl9ymzM7uu31TxstEA/ryV+fk0aspLaFPfWeNnoX0ap6P
+	dvs85DAv50BmY+nb+onfKUtMeYirjTw6kXGNOFnVNUvlkUz1rWVCLTglUwHdYT2vVyGCpE
+	+3dTrsisWITBRfR4OyoOD2dPvZjizcILoyr0zs/qOXzSj6OT9AhOYm0dXhpnwA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1705529324;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=g8Rre0myowdkjUOQXq/GBz+sm7iyJq6YRt8odewpPa4=;
+	b=f5vbaTvSe3JRd9U0N0qbggcC0Ynjd5eLuBgJhqrv/GsmGdIok/kRSbLRbdWrOur0OtmJmm
+	bIpRJwhWTy4bbeAw==
+To: Leonardo Bras <leobras@redhat.com>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Ilpo
+ =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Florian Fainelli
+ <f.fainelli@gmail.com>, John Ogness <john.ogness@linutronix.de>, Tony
+ Lindgren <tony@atomide.com>, Marcelo Tosatti <mtosatti@redhat.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sebastian
+ Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [RESEND RFC PATCH v1 1/2] irq/spurious: Reset irqs_unhandled if
+ an irq_thread handles one IRQ request
+In-Reply-To: <20240116073701.2356171-2-leobras@redhat.com>
+References: <20240116073701.2356171-1-leobras@redhat.com>
+ <20240116073701.2356171-2-leobras@redhat.com>
+Date: Wed, 17 Jan 2024 23:08:44 +0100
+Message-ID: <87ttnbfw9f.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Zab4g5PnwcaferE9@fermat.nev>
+Content-Type: text/plain
 
-On Wed, Jan 17, 2024 at 10:43:31AM +1300, Daniel Beer wrote:
-> On Tue, Jan 16, 2024 at 11:34:32PM +0200, Michael Zaidman wrote:
-> > > +/* The FT260 has a "power saving mode" that causes the device to switch
-> > > + * to a 30 kHz oscillator if there's no activity for 5 seconds.
-> > > + * Unfortunately this mode can only be disabled by reprogramming
-> > > + * internal fuses, which requires an additional programming voltage.
-> > > + *
-> > > + * One effect of this mode is to cause data loss on a fast UART that
-> > > + * transmits after being idle for longer than 5 seconds. We work around
-> > > + * this by sending a dummy report at least once per 4 seconds if the
-> > > + * UART is in use.
-> > > + */
-> > 
-> > For I2C, we addressed a similar issue in
-> > https://lore.kernel.org/all/20221105211151.7094-8-michael.zaidman@gmail.com/
+On Tue, Jan 16 2024 at 04:36, Leonardo Bras wrote:
+> This IRQ line disable bug can be easily reproduced with a serial8250
+> console on a PREEMPT_RT kernel: it only takes the user to print a lot
+> of text to the console (or to ttyS0): around 300k chars should be
+> enough.
 
-Link to the correct patch
-https://lore.kernel.org/all/20221105211151.7094-11-michael.zaidman@gmail.com/
+That has nothing to do with RT, it's a problem of force threaded
+interrupts in combination with an edge type interrupt line and a
+hardware which keeps firing interrupts forever.
 
-> > commit. But we did it per IO synchronously when the distance between this and
-> > the previous IO exceeded 5 seconds. In this way, the chip can still sleep
-> > between the IOs. On the contrary, the suggested workaround prevents the chip
-> > from entering the power saving mode during active TTY sessions regardless of
-> > the traffic intensity on the UART bus.
-> > 
-> > I cannot reproduce the issue with 1K Tx bursts at 921600 baud rate sent every
-> > 10 seconds with the disabled chip wakeup workaround.
-> > 
-> > Can you guide me on how to reproduce the data loss you observed?
-> 
-> Hi Michael,
-> 
-> This was my comment originally. It's been a long time (at least a year),
-> but from memory I had an FT260 attached to a UART console on an MCU dev
-> kit, which would print messages at 115200.
-> 
-> If the MCU sat idle for more than 5 seconds and then printed a message,
-> the first few characters of the line would be missing in picocom. If the
-> MCU kept busy, printing more frequently than once every 5 seconds, the
-> problem did not occur.
-> 
-> Cheers,
-> Daniel
-> 
+> To fix this bug, reset irqs_unhandled whenever irq_thread handles at least
+> one IRQ request.
 
-Hi Daniel,
+This papers over the symptom and makes runaway detection way weaker for
+all interrupts or breaks it completely.
 
-Thanks for the clarification. It was not clear from the issue description
-in the commit whether it happens on the ft260 Tx or Rx line, and I assumed
-it is Tx. Also, the periodic dummy report workaround is not active in the
-submitted patch. I reproduced the issue on the Rx line. And confirm the
-workaround works as expected when enabled.
+The problem with edge type interrupts is that we cannot mask them like
+we do with level type interrupts in the hard interrupt handler and
+unmask them once the threaded handler finishes.
 
-May I suggest modifying the description to clarify that the data loss
-happens on the Rx line and state that the current dummy report period is
-4.8 seconds?
+So yes, we need special rules here when:
 
-Also, please enable the reschedule_work flag in the ft260_uart_probe
-routine to activate the periodic dummy reports.
+   1) The interrupt handler is force threaded
 
---Michael
+   2) The interrupt line is edge type
 
+   3) The accumulated unhandled interrupts are within a sane margin
+
+Thanks,
+
+        tglx
