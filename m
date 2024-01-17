@@ -1,34 +1,34 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A324328DB4;
-	Wed, 17 Jan 2024 22:39:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAD9922EFE;
+	Wed, 17 Jan 2024 22:39:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705531160; cv=none; b=nA9uu9zuhHLcSmFGmyHxw5URPCZtfKXdGR/ZJqpYdM7q2ZibMwylAR23+3g8Q4/S+77FvgO4Hv0b3bBH54ZC1Qhh8dpe6WT03+GGahFIrGgjPaHEhJ3++u11LXDGFVCAsKqVb3fna47rJBouqwRjHZpB0m7vDvWSByQ7uM9UrS8=
+	t=1705531161; cv=none; b=skcd+4eupfGyyCTi5jyr6jJh7nEnjomcTNyQjXXRhDTtyoQP2ruaeTL7/L6ccAZjhCQ2wt3QxcysUtmSrN6t8USeHqvHULbDXEWAUMyLX4J/0n4e3t6vmbB6j3xsSGyYUPGX3+UnyE1zqQ4qLLRbbRaqkbFLnlP+NgfNLDaccho=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705531160; c=relaxed/simple;
-	bh=Rsyz0+7XNwS5ijQpmCEI4juJDmLRHXka0w2i/GkW2Ug=;
+	s=arc-20240116; t=1705531161; c=relaxed/simple;
+	bh=zOz87ekn11voWe2vvkMiDYBtjoffO8WY8MRZLqRxl1c=;
 	h=DKIM-Signature:Received:From:To:Cc:Date:Message-Id:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
 	 X-SA-Exim-Connect-IP:X-SA-Exim-Mail-From:X-Spam-Checker-Version:
 	 X-Spam-Level:X-Spam-Report:X-Spam-Status:Subject:X-SA-Exim-Version:
-	 X-SA-Exim-Scanned; b=RuhA43xpOjVFaAm+JnPLdWLEc79UO18XZjIAhsvtNKBrr/Qx7c+tiSVGCw2yIp1YSJx/UI4+dZeruw1AYjzBEA9+/+30PAE5PU8mf+qFRtokE/18i+6xRXlvqk1MXwhMCZrYHallpj7QFKJMFnZV/Bv8YfJyvYnaln9uqTiPD6g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=oV/wu5nx; arc=none smtp.client-ip=162.243.120.170
+	 X-SA-Exim-Scanned; b=gaeIbuLE46hg2z5lN7fo8vAlUQ5sIfM9GPvv0Q9qcDgGbRu7DQAgUtEdy3Cel4520vv7PBUP9UW/ljpt91Ojnu1IwvI0KX6Z9YLWv2RKHKjutXafCH896V79CvT6Qm5cjNQPFayYaR4uPLmRvqxZGMnEarM8h9OcIx3hGSvapo0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=Hut+bIpC; arc=none smtp.client-ip=162.243.120.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="oV/wu5nx"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="Hut+bIpC"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=0c7ABCOCZAR2KTCJxXITxEzTaBHcJ1Li6zuPuka9lxQ=; b=oV/wu5nxz+uRRXWf4WslsoI16S
-	+o/rLYJaU80oGH2KiZohlkktt8n/0QO9qP9vYPcX2fB9h4vcwWsho3KVayI/uzPM2bQvW/Sr+5TqB
-	zRPiO3KyvwiK/A+m7LFc8uXYhxCUJc/RzIK5jBP2I0YtsBkRO4bJWjsLv5p7J6yTSPdA=;
+	bh=uG2198nRNchO7L8hgr1xVnRfA3eYsRffeVfo+uRbP6c=; b=Hut+bIpCzJK1OcwI8INWcxwv2s
+	LDOvThwh7qoj/MSY6TBxWOFjIu32NP7myRIlcrPkwajD6FqsbL16iauCbe6Sc5lnIadu/PzIgJoQE
+	+M5gwBjrEnrQMxHCZgZ+bzvnKg/89ZccdfeZUvwq6bQU86tsgk96rjEuXjj9HS/zicbw=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:52924 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rQEZ1-000155-T3; Wed, 17 Jan 2024 17:39:16 -0500
+	id 1rQEYt-000155-QR; Wed, 17 Jan 2024 17:39:08 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -39,8 +39,8 @@ Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	hugo@hugovil.com,
 	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Date: Wed, 17 Jan 2024 17:38:49 -0500
-Message-Id: <20240117223856.2303475-12-hugo@hugovil.com>
+Date: Wed, 17 Jan 2024 17:38:43 -0500
+Message-Id: <20240117223856.2303475-6-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20240117223856.2303475-1-hugo@hugovil.com>
 References: <20240117223856.2303475-1-hugo@hugovil.com>
@@ -57,49 +57,36 @@ X-Spam-Level:
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-Subject: [PATCH 11/18] serial: max310x: use dev_err_probe() instead of dev_err()
+Subject: [PATCH 05/18] serial: max310x: fix syntax error in IRQ error message
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Replace dev_err() with dev_err_probe().
+Replace g with q.
 
-This helps in simplifing code and standardizing the error output.
+Helpful when grepping thru source code or logs for
+"request" keyword.
 
+Fixes: f65444187a66 ("serial: New serial driver MAX310X")
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
- drivers/tty/serial/max310x.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/tty/serial/max310x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index 048ae432ba48..701bf54e4084 100644
+index 2314ec2afd3f..27c8ec956691 100644
 --- a/drivers/tty/serial/max310x.c
 +++ b/drivers/tty/serial/max310x.c
-@@ -1275,10 +1275,9 @@ static int max310x_probe(struct device *dev, const struct max310x_devtype *devty
+@@ -1428,7 +1428,7 @@ static int max310x_probe(struct device *dev, const struct max310x_devtype *devty
+ 	if (!ret)
+ 		return 0;
  
- 	/* Alloc port structure */
- 	s = devm_kzalloc(dev, struct_size(s, p, devtype->nr), GFP_KERNEL);
--	if (!s) {
--		dev_err(dev, "Error allocating port structure\n");
--		return -ENOMEM;
--	}
-+	if (!s)
-+		return dev_err_probe(dev, -ENOMEM,
-+				     "Error allocating port structure\n");
+-	dev_err(dev, "Unable to reguest IRQ %i\n", irq);
++	dev_err(dev, "Unable to request IRQ %i\n", irq);
  
- 	/* Always ask for fixed clock rate from a property. */
- 	device_property_read_u32(dev, "clock-frequency", &uartclk);
-@@ -1299,8 +1298,7 @@ static int max310x_probe(struct device *dev, const struct max310x_devtype *devty
- 	if (freq == 0)
- 		freq = uartclk;
- 	if (freq == 0) {
--		dev_err(dev, "Cannot get clock rate\n");
--		ret = -EINVAL;
-+		ret = dev_err_probe(dev, -EINVAL, "Cannot get clock rate\n");
- 		goto out_clk;
- 	}
- 
+ out_uart:
+ 	for (i = 0; i < devtype->nr; i++) {
 -- 
 2.39.2
 
