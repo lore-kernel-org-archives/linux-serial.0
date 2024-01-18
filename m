@@ -1,137 +1,85 @@
-Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B56D525757;
-	Thu, 18 Jan 2024 13:15:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15D752575D
+	for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 14:18:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.181.97.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705583753; cv=none; b=Ee77hH3tF69pYyaXdlugTteO8UiiVUw0PkeFr48r1Efd4qo/Ose8ly7Xf6HnI7jHQnUQ51bFraWXhXXN0bhicqan7kv5RRd4qOcpJTSbEC2Q7I+g1IqAjVeWZSMQXeX6TYTkWAFH8WPleFYDIbvOaaJk2I+GEUr4124c8ei3YZ4=
+	t=1705587494; cv=none; b=JZ1ZoU4tdZsM84UyEPH4dRwr6x2USoAt4+Ih2hgiaV4gZEgTJ9VHCIi41nVLN+gR75F+/1QM3KRsICpFfilKTJI5qpUy8TL0oDWBD8VvbG1A0QUD2QVUq+RDbClDitENAjmotDEHwxELsGaUCdInYw0TtaL7nGIP5sS1xDEa1Yc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705583753; c=relaxed/simple;
-	bh=gawuwuYzbbmDzTZtAr7RJ6aRIEt4uhR05OLZfhfBC7Q=;
-	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:Received:Date:
-	 From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To; b=ZVJGalSYn+uTYcaOXLkqVq2iFCo+oKvU7BfAlhJzaX0FBwjYMHgK4jxJaXYfFB24b+SwD5vfuwGeDv7FCM4qSrCh6cuJR1nImAsmF5PG71Tjmbf7NjUtlE69SZjaptmUecWDZ1Rg3oWTp+niHoA31S5imXsCLCvh1GI/a6SwYtY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hMlQWnJw; arc=none smtp.client-ip=209.85.215.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hMlQWnJw"
-Received: by mail-pg1-f172.google.com with SMTP id 41be03b00d2f7-5bdbe2de25fso9606455a12.3;
-        Thu, 18 Jan 2024 05:15:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1705583751; x=1706188551; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=QvBNGC4E6LYR3uClPzVRaPdL+XA4Ac8k7SXynano+4o=;
-        b=hMlQWnJwUJx+uZoFvcuFjhQeaL2i+2bRz5ruVq9ndoI/7sb1b/WH28YF93y4m2DuZr
-         Q94ChiVWQMmJyfZPOqoMcvp3fm9tWr93gWDxojO9M17JSvL5NOT9tcLEWgSy5lB2ZEfp
-         D90wNu+uDWqob6UatnfQcjqYxvo/vyg/x7w01CaES3j7CfUivTwy81UWwtzSClpJ6LIb
-         WWBhqhIlBq4yKqFyOR2sTz3OXZZuhWu7ihX8LOdfRobP7TRe3GmLdFabF7qalyHbgrpB
-         sUpJD8iuoBPkwQSb7g4qNE+yI+sBMzSVAV9aqPRy6f4jyEs//CDvuEakZj/3FX5yE93R
-         vtfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705583751; x=1706188551;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QvBNGC4E6LYR3uClPzVRaPdL+XA4Ac8k7SXynano+4o=;
-        b=OBwIWRyZiaG4HYU85w4pW3Qsz6s9F9xdYP5H+3Yk19uE2QE4O0wYHX7xESOs3m5Nss
-         GJj+oR8JEGVIUNXLBLTUx7DFyizX4AH6LC7K3cdFTq84xnn+ZTUbTu5vKWFaHdDieP6s
-         ZjBo38X32Jy4kBDp6Yli40e6dwFskYHKYoOk2xkr2l276WBq5/6KybGb/Z9W2b8xaiDy
-         796EvbkyqFP/wwPNOWU265q0qsXq1XQjtCLYqYI98XzR++4Iu+aoKZ6UgXe/1tjxFmYn
-         ymetOt8ewqKP8RG6artd3oC+pfHBLQbECWpjh6u0056GxqVsw4T71wUyx9Sy29wdGvav
-         T1wg==
-X-Gm-Message-State: AOJu0YwswFij3YAAn2bwhzokWDxfXt1SNScWYcJoH1LDA6YlUn0RVwH1
-	gFtlKhnbbpx46wzMsDJKUxzTBwdNSPePKOWXhwPOwYQRd0iWKG1p
-X-Google-Smtp-Source: AGHT+IHAVONmZ6+MFMXj+43/FB2TEST5KD9+09fDp0qwlttgosGJA3EFA9LZaeTjch4C4eCgsQgSYA==
-X-Received: by 2002:a05:6a21:6d91:b0:196:ae4b:e007 with SMTP id wl17-20020a056a216d9100b00196ae4be007mr887739pzb.116.1705583750952;
-        Thu, 18 Jan 2024 05:15:50 -0800 (PST)
-Received: from rigel (194-223-183-150.tpgi.com.au. [194.223.183.150])
-        by smtp.gmail.com with ESMTPSA id z189-20020a6333c6000000b005c66a7d70fdsm1455523pgz.61.2024.01.18.05.15.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jan 2024 05:15:50 -0800 (PST)
-Date: Thu, 18 Jan 2024 21:15:44 +0800
-From: Kent Gibson <warthog618@gmail.com>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Hugo Villeneuve <hugo@hugovil.com>, Bartosz Golaszewski <brgl@bgdev.pl>,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	cosmin.tanislav@analog.com, shc_work@mail.ru,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Subject: Re: [PATCH 15/18] serial: max310x: replace ENOTSUPP with preferred
- EOPNOTSUPP (checkpatch)
-Message-ID: <20240118131544.GA151488@rigel>
-References: <20240117223856.2303475-1-hugo@hugovil.com>
- <20240117223856.2303475-16-hugo@hugovil.com>
- <CAHp75Ve5PYQTRdxcffdQvYWJ-iwvfEHfMnL-vhs_mv7yg+GJ5Q@mail.gmail.com>
- <20240117185909.78bb633ea090f74de9f4f3b7@hugovil.com>
- <CAHp75Vc5mePmXaAbsex6=tHeLSfSj5gZiE4_DQ0-5R-4h6=U5w@mail.gmail.com>
+	s=arc-20240116; t=1705587494; c=relaxed/simple;
+	bh=T4ORLdKNOVj3bjZZf6OYBnNg7tHoYxxzKwXKSXCqwaA=;
+	h=Received:Received:X-Virus-Status:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:Content-Language:To:References:Cc:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding; b=AUWUImSBsY5XVl6H+YuTu8O0OAI0+b0aLTIUp260Vec6/w0xM8NJvtjRRGD0nC5nL+czabtQYKy6mpgekhLe8VsQSAmSi9FwXpiibsy7U+cpDYrm3dQZ0Ziwvh/nt2DsORPMz404zZ6CRdUj/XKe0Go0dP+Tos5rwderz9oMXhk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=I-love.SAKURA.ne.jp; spf=none smtp.mailfrom=I-love.SAKURA.ne.jp; arc=none smtp.client-ip=202.181.97.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=I-love.SAKURA.ne.jp
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=I-love.SAKURA.ne.jp
+Received: from fsav111.sakura.ne.jp (fsav111.sakura.ne.jp [27.133.134.238])
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 40IEI4Vt090994;
+	Thu, 18 Jan 2024 23:18:04 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav111.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav111.sakura.ne.jp);
+ Thu, 18 Jan 2024 23:18:04 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav111.sakura.ne.jp)
+Received: from [192.168.1.6] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+	(authenticated bits=0)
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 40IEI33U090989
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+	Thu, 18 Jan 2024 23:18:03 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <83414cb6-df16-4b6d-92e3-d54d22ba26cc@I-love.SAKURA.ne.jp>
+Date: Thu, 18 Jan 2024 23:18:03 +0900
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHp75Vc5mePmXaAbsex6=tHeLSfSj5gZiE4_DQ0-5R-4h6=U5w@mail.gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [syzbot] [dri?] BUG: scheduling while atomic in
+ drm_atomic_helper_wait_for_flip_done
+Content-Language: en-US
+To: syzbot <syzbot+06fa1063cca8163ea541@syzkaller.appspotmail.com>,
+        syzkaller-bugs@googlegroups.com,
+        linux-serial <linux-serial@vger.kernel.org>
+References: <00000000000039f237060f354ef7@google.com>
+Cc: linux-kernel@vger.kernel.org
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <00000000000039f237060f354ef7@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jan 18, 2024 at 10:59:34AM +0200, Andy Shevchenko wrote:
-> On Thu, Jan 18, 2024 at 1:59 AM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > On Thu, 18 Jan 2024 01:24:11 +0200
-> > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > On Thu, Jan 18, 2024 at 12:39 AM Hugo Villeneuve <hugo@hugovil.com> wrote:
->
-> ...
->
-> > > > Fixes the following checkpatch warning:
-> > > >
-> > > >     WARNING: ENOTSUPP is not a SUSV4 error code, prefer EOPNOTSUPP
-> > >
-> > > NAK.
-> > > It's a false positive.
-> > >
-> > > > According to include/linux/errno.h, ENOTSUPP is
-> > > > "Defined for the NFSv3 protocol", so replace it with preferred EOPNOTSUPP.
-> > >
-> > > The GPIO subsystem uses this internal error code internally. User
-> > > space won't get it, so users may not see this one.
-> >
-> > Hi Andy,
-> > I will drop the patch then.
-> >
-> > What about adding a comment to prevent future fixes?
-> >
-> > -               return -ENOTSUPP;
-> > +               return -ENOTSUPP; /*
-> > +                                  * ENOTSUPP is used for backward compatibility
-> > +                                  * with GPIO subsystem.
-> > +                                  */
->
-> It's kinda useless to add it to a single (GPIO) driver.
-> Rather it needs to be mentioned somewhere between
-> https://www.kernel.org/doc/html/latest/driver-api/gpio/index.html.
->
-> +Cc: Kent, Bart. It seems we have a handful of drivers violating this
-> (basically following what checkpatch says) and GPIO not documenting
-> this specific error code and its scope. Did I miss anything?
->
+#syz set subsystems: serial
 
-You are correct - the GPIO subsystem is expecting ENOTSUPP if the config
-is not supported.  In some cases it absorbs the failure or emulates the
-feature instead (open drain/source, debounce). Returning EOPNOTSUPP
-would be unfortunate, so checkpatch is not being helpful here.
+include/linux/tty_ldisc.h says "struct tty_ldisc_ops"->write is allowed to sleep.
 
-And don't get me started on the gpio_chip interface contract being too
-vague.
+include/linux/tty_driver.h says "struct tty_operations"->write is not allowed to sleep.
 
-There are a handful of ways this could be addressed (documentation,
-checkpatch, handle either, switch to EOPNOTSUPP, ... or some combination),
-but making that call is definitely in Bart's court.
+drivers/tty/vt/vt.c implements do_con_write() from con_write() sleeping, violating what
+include/linux/tty_driver.h says. But how to fix?
 
-Cheers,
-Kent.
+-	if (in_interrupt())
++	if (in_interrupt() || in_atomic())
+ 		return count;
+
+in do_con_write() and con_flush_chars() ? But include/linux/preempt.h says
+in_atomic() cannot know about held spinlocks in non-preemptible kernels.
+
+Is there a way to detect spin_lock_irqsave(&gsm->tx_lock, flags) from gsmld_write() ?
+Something like whether irq is disabled?
+
+On 2024/01/18 18:51, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    1b1934dbbdcf Merge tag 'docs-6.8-2' of git://git.lwn.net/l..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1029adbde80000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=68ea41b98043e6e8
+> dashboard link: https://syzkaller.appspot.com/bug?extid=06fa1063cca8163ea541
+> compiler:       aarch64-linux-gnu-gcc (Debian 12.2.0-14) 12.2.0, GNU ld (GNU Binutils for Debian) 2.40
+> userspace arch: arm64
+
