@@ -1,34 +1,34 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 123951F95F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F840219ED;
 	Thu, 18 Jan 2024 15:22:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705591346; cv=none; b=JrsKEr5IjUZnRIsdRW8/iM4tAE3KWVL2LvwM5oP3qphPXecCmyIOqKkNNGKPaqn8wX0jsE06RraXXK4bE5NSD8GozNkOGx3QNCKiHaB4Pn+9Mwr7Qo+pwczUZPYDLin+ewLBRRIumFi3ZSn7lGHN3KxeU1t2gOdmK/qnPXqPfxI=
+	t=1705591346; cv=none; b=oi8TYK61TnsbpxGeupDufJ4CtINaS38gC5PiIQxbKI9p10jyreDdzKAJI8p0Bu1OcyyFuqqYUQp2otnSnP9QOIHVlGi5i/s0lRl7FH9obi4G40cWZAu2+arNlYZiHbnWXGr1HhFyHnDKkrRRZ2Avuvp4suCYQVCXY/x7LtWSO7c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1705591346; c=relaxed/simple;
-	bh=OTRmtMl7dbECQJ9c5+miFZBFo14eBzJtWPlhqg3L60w=;
+	bh=Yso4ynPqTMvR2WXt/iV5GKqKElFrxo5tnWRa4Ze8iz4=;
 	h=DKIM-Signature:Received:From:To:Cc:Date:Message-Id:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
 	 X-SA-Exim-Connect-IP:X-SA-Exim-Mail-From:X-Spam-Checker-Version:
 	 X-Spam-Level:X-Spam-Report:X-Spam-Status:Subject:X-SA-Exim-Version:
-	 X-SA-Exim-Scanned; b=hlczLFR+6GSc0yLHw++FbkvXGO4vVn/Rh4s7D34Mgiqn7RkjRomHVbOiEYdaClHH0dvM55wShLhqYYOP6Mg/6sxmbmO1y9n1Gfmcfgjn9h6s5oH4kkwcQL5ufeYz1ZIdWh9V/Ndiw5g8QHaVMV7VHD3+dtmcE4oV4iZM5FAz/J0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=hAT8jOyX; arc=none smtp.client-ip=162.243.120.170
+	 X-SA-Exim-Scanned; b=g55yBd9zHU8xR4FUs6pf1QGa8+VUJdjnwyzTiZqA4eDiisj9MBkGGovtP4Slh0GXuHPoEgvPIL5R+eiFYRwiczfQgLIJfsZvBiKddEBJdYDb1Okhp4p3/w5EF5GB/++ojkY0CK1OHX6kTN4B8J+gMGZh9urxMXi1N56FGcpGRgo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=GEi2LicI; arc=none smtp.client-ip=162.243.120.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="hAT8jOyX"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="GEi2LicI"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=P/yi0yRZzS5Rxr3pJf0/wayJja3c4ZSVATomfFCr88Q=; b=hAT8jOyXxjUaxz/FhKW16NMYrL
-	XXEInn0y1zJiFJqrnot3pkt+0na3Ag8L4k834qACva2lZ7BcZk6SQqUKOmE9NeAKgm2RIMjLNq4Pm
-	RCtUVlMaPqYzULzbVk1cQZ/DsU9TF1Mr91SUMMqI6pIj5dD69jbc35bTvYVlUKuOE16E=;
+	bh=X+FdXXbcMtL437ShdTsCYRRDgMaXGzVvwjJpf3JQ9QA=; b=GEi2LicIDDfdyFcltmjymZviGq
+	OCaagiF4UlgxjRie6+/xr5GDj6kgDOzIOhsgnWxmFNmW8ytsKb2jQfjzUYlZ85Ow89lIwUhbmTxiA
+	3IsGtSQqfeXFEUjzraDNmOoVCqeJhvEXSyx5Rr/goy8zrIErohpPwe6VtyCt4+/5fNz0=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:57058 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rQUDi-0002lf-EF; Thu, 18 Jan 2024 10:22:19 -0500
+	id 1rQUDk-0002lf-S9; Thu, 18 Jan 2024 10:22:21 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -38,10 +38,9 @@ To: gregkh@linuxfoundation.org,
 Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	hugo@hugovil.com,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	stable@vger.kernel.org
-Date: Thu, 18 Jan 2024 10:21:57 -0500
-Message-Id: <20240118152213.2644269-2-hugo@hugovil.com>
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Date: Thu, 18 Jan 2024 10:21:59 -0500
+Message-Id: <20240118152213.2644269-4-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20240118152213.2644269-1-hugo@hugovil.com>
 References: <20240118152213.2644269-1-hugo@hugovil.com>
@@ -58,59 +57,35 @@ X-Spam-Level:
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-Subject: [PATCH v2 01/17] serial: max310x: fix NULL pointer dereference in I2C instantiation
+Subject: [PATCH v2 03/17] serial: max310x: use i2c_get_match_data()
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-When trying to instantiate a max14830 device from userspace:
+Use preferred i2c_get_match_data() instead of device_get_match_data()
+to get the driver match data.
 
-    echo max14830 0x60 > /sys/bus/i2c/devices/i2c-2/new_device
-
-we get the following error:
-
-    Unable to handle kernel NULL pointer dereference at virtual address...
-    ...
-    Call trace:
-        max310x_i2c_probe+0x48/0x170 [max310x]
-        i2c_device_probe+0x150/0x2a0
-    ...
-
-Add check for validity of devtype to prevent the error, and abort probe
-with a meaningful error message.
-
-Fixes: 2e1f2d9a9bdb ("serial: max310x: implement I2C support")
-Cc: <stable@vger.kernel.org>
+Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
- drivers/tty/serial/max310x.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/tty/serial/max310x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index f3a99daebdaa..4a33fd950ed2 100644
+index 053cf2458264..a051bc773c4b 100644
 --- a/drivers/tty/serial/max310x.c
 +++ b/drivers/tty/serial/max310x.c
-@@ -1602,13 +1602,16 @@ static unsigned short max310x_i2c_slave_addr(unsigned short addr,
- 
- static int max310x_i2c_probe(struct i2c_client *client)
- {
--	const struct max310x_devtype *devtype =
--			device_get_match_data(&client->dev);
-+	const struct max310x_devtype *devtype;
- 	struct i2c_client *port_client;
- 	struct regmap *regmaps[4];
+@@ -1608,7 +1608,7 @@ static int max310x_i2c_probe(struct i2c_client *client)
  	unsigned int i;
  	u8 port_addr;
  
-+	devtype = device_get_match_data(&client->dev);
-+	if (!devtype)
-+		return dev_err_probe(&client->dev, -ENODEV, "Failed to match device\n");
-+
- 	if (client->addr < devtype->slave_addr.min ||
- 		client->addr > devtype->slave_addr.max)
- 		return dev_err_probe(&client->dev, -EINVAL,
+-	devtype = device_get_match_data(&client->dev);
++	devtype = i2c_get_match_data(client);
+ 	if (!devtype)
+ 		return dev_err_probe(&client->dev, -ENODEV, "Failed to match device\n");
+ 
 -- 
 2.39.2
 
