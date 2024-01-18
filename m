@@ -1,68 +1,68 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 355DA2D052
-	for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 17:50:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BD6F2D03B
+	for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 17:57:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705600234; cv=none; b=lMKyONp9VTGn3QHRaphx54y/sQNkRIrilIAY5DAVxNX2xEa0F+YZPwWqAC7faZgCpTore2jqdKQlPdtez1yOL6z+C/EIzhN2PuQzoKKbG7Nl2MYPCTsmqxJIpHiR+67bh9Fwyb9qEOEkh6YanUcamHBqojDRuswF2HD8R61ZQCo=
+	t=1705600675; cv=none; b=snZ182hM8DWFN9KpP3VCce6juABcOFGsIZ3eIYH4a95jnCVb0lFUVN9EjXgJvLoWsAvzsrCP6IHjP2ojfs0lDRYmUaslrl5ZXNeVmicUKU8I8od9NBjSkdUjRY4qZovyTNUKX2qfrqWuWg+2hMb666q9EnafNeirRVgPg8p1omY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705600234; c=relaxed/simple;
-	bh=aUaKUwh3YAaWNKWA7dj+PRcrSs20vLRDXme+DX+1ioM=;
+	s=arc-20240116; t=1705600675; c=relaxed/simple;
+	bh=/h4q32yEfht3o3V4KdfWWw34f3PK7YiTSBlwmYSS93U=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type:Content-Disposition; b=gcVD69/V6dpUUk3xsrx3TFKEUyb5RCmZp+SSMR3Q0U2o86C7RQB0yQxZknkRf2FBryDK/Tl7gANKPGIUZJ7RJWHpYU5Mx6joqyqqGb6GAZ/eMb1xWO1TWM1n03hD7mfgNGaV7DN4+vaO4McIG1WUkrhZWHXik4gW+20YUTi5ikU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=XvCP81my; arc=none smtp.client-ip=170.10.133.124
+	 MIME-Version:Content-Type:Content-Disposition; b=dQHLYzb1zES5DahOIcNM6pBsMvYozNfvWUtd0IkYdaA2HsTA9rKUtmP3VuaHCDh7eqh5VNXqTrXIG8XLefYppBw/cHmj2wgAkt/1NHwnMBDV0oHw3pfK12m5IibhURfSw3RdM/2YbbFK5TO9Na2Gq3dbXUXQAMZ41btcjAfubeA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=KSmzQC1n; arc=none smtp.client-ip=170.10.129.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="XvCP81my"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="KSmzQC1n"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1705600232;
+	s=mimecast20190719; t=1705600672;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=6aHsNkGQXlA8j1zbdtTdQqDbzc5qUVpizDvSzqJvBko=;
-	b=XvCP81mykMH2XolhDrZI/jT/ed+5wsbvzUD5ajvonFgWSKcGoQcNIvefV+e8srBceNbmrc
-	kZW8YYtOuiWKV/8QudVudSRcwGbsZUqmfIvQ9MgYqsJC8NR/h45d/Kdm8qzAA5L0ZdOD+B
-	SzNYgWFsrzpvoG6dL/4aRhYCUOn+qik=
-Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com
- [209.85.215.199]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=k698Zj5WVi2wSh0ojlY5XsX33bGvDw0g7gHOdyMGiao=;
+	b=KSmzQC1nUwcMrniQN9D/lcl/vqhT6/+SbFRdPOqx5oV7lAsLVKcPztXu5BFwgLkJrWW1Zb
+	h1+g0FEpHlYmR7x4rJ4bnfqpK6IgPLKx0svqf4om0+yVw4qXzhlB3rhS1VLx8k7R2CVl0J
+	1hel6XARo/06RvPABgC91pedA3uwTsg=
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
+ [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-546-8zuPXPTSMl2prlpUctQgeA-1; Thu, 18 Jan 2024 12:50:29 -0500
-X-MC-Unique: 8zuPXPTSMl2prlpUctQgeA-1
-Received: by mail-pg1-f199.google.com with SMTP id 41be03b00d2f7-5ce97b87716so6432509a12.0
-        for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 09:50:29 -0800 (PST)
+ us-mta-163-0vjNI4SGN-OsrVnbQiuIUQ-1; Thu, 18 Jan 2024 12:57:49 -0500
+X-MC-Unique: 0vjNI4SGN-OsrVnbQiuIUQ-1
+Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-1d5b60c929bso74465565ad.3
+        for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 09:57:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705600229; x=1706205029;
+        d=1e100.net; s=20230601; t=1705600668; x=1706205468;
         h=content-transfer-encoding:content-disposition:mime-version
          :references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6aHsNkGQXlA8j1zbdtTdQqDbzc5qUVpizDvSzqJvBko=;
-        b=Wu0z6VQu+behq3xBIhxTVLsV1b8ZKIqgB1fWnZneSJy3u7DX4ULr3LMjB2nd02aMlO
-         P8PZen67tzOwdbmTUYmgQVjIG1i50gv/HwLDt/5N5Gop5eagmrM9CkOgoaXodfocIZlJ
-         R7NOWLCiAxz94dCKo2i5lCCaQKutHG9iVKYl5qsWQBuetUR66PNPO7u1gwroFXAe98he
-         ACLxeoT6UkFujxDyx+ahbtKHRr48B1MGaiQrZN4UDX4TMrPAg8wssnltK2Filjyf6yq+
-         DuLwnfBvZC2YYULeKfP7m8XV1CPpIJyPays+zN05//VedlICqw/CqCIp+kBSAxRiB8Bo
-         Qypg==
-X-Gm-Message-State: AOJu0YyPrE26vApyjj5zzHYMxFE+ijDSZfhfNejCeVUBzynF90/PxJ+t
-	XtfN6qXcyrwFcDlFPiCTdXCGivS2aYBVRbJKCiu8kxR3k7DB3lTl/QAtaNOL37Y8FwNzBqxk+mi
-	jmOYc09/xPuX4RnJG9jT90Tdx6DPg61+3w4XMbhEVDR1wV3fLyoF5Th5MIVZo7w==
-X-Received: by 2002:a05:6a21:3183:b0:19a:42b3:d68c with SMTP id za3-20020a056a21318300b0019a42b3d68cmr1179173pzb.57.1705600228848;
-        Thu, 18 Jan 2024 09:50:28 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IG+a7eH+d8iL1heB53j0/12YRSVmaGC7RabUtALrUzma6iH+gcMuNZfyaB6zX3v4ROAyDuHuA==
-X-Received: by 2002:a05:6a21:3183:b0:19a:42b3:d68c with SMTP id za3-20020a056a21318300b0019a42b3d68cmr1179164pzb.57.1705600228557;
-        Thu, 18 Jan 2024 09:50:28 -0800 (PST)
+        bh=k698Zj5WVi2wSh0ojlY5XsX33bGvDw0g7gHOdyMGiao=;
+        b=lBhe13Gs/yriOrh7dkvZzby76rM5+u3/l3VN/5nzUpswIMYLlbW+fKcIovmJRTb+6d
+         2Zcf0IGlEqydHy7zAg8rgNa6ovzUctS7Uj5uaLMARBI3d/CVnk7bQNWiZIEhDBLpg2Uv
+         Xs8fMhpG06rciJ5JU3FsOQZ6GwIsKCnXXna2ZrCs+2Wmer3HoaUlKNzjK5mo4sckc/uv
+         UWoSuM32gegh0naZ165Bb0B+BR2m5RHc59/Otu3AI8jUNlU3YxmlYGACjg5HwD3wbrrG
+         Bgh3tCxbgQKDLgdOvlDABhaixqf7yCtK32ERAdFH8A57VUfrju+uyt2h25koGpQLnt2E
+         vXhg==
+X-Gm-Message-State: AOJu0YwFC6cddbchS0omaFrlSLFE9Yl9eJZGCPkXqXd2S9s63DNAeG3T
+	LZylqkKTEJrt6/zxOVgZdU04kg8FhjBjZ5OpP0tQ/ysRE9uvjPftq1i2gWmVASckIyMY9ZmzjhR
+	hK+yStqEHlSc1MVDQus7nEQW7pPpSbkYckAf4rwqZId/B6oyJqMPIs9rpCdVhpQ==
+X-Received: by 2002:a17:902:ce8e:b0:1d5:4de3:ac46 with SMTP id f14-20020a170902ce8e00b001d54de3ac46mr1580964plg.3.1705600668401;
+        Thu, 18 Jan 2024 09:57:48 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IEnebEcTPLHkFBmQ6EfojaCFD+NnXlGQNOks//6hkSo1dcU/+9i+KTj98r0E/eiyp7wduxGEA==
+X-Received: by 2002:a17:902:ce8e:b0:1d5:4de3:ac46 with SMTP id f14-20020a170902ce8e00b001d54de3ac46mr1580948plg.3.1705600668132;
+        Thu, 18 Jan 2024 09:57:48 -0800 (PST)
 Received: from localhost.localdomain ([2804:1b3:a803:96a5:ba81:becc:80f3:6a79])
-        by smtp.gmail.com with ESMTPSA id qa17-20020a17090b4fd100b002902e409b77sm1481848pjb.57.2024.01.18.09.50.25
+        by smtp.gmail.com with ESMTPSA id e3-20020a170902744300b001d704c0d5c8sm1574966plt.113.2024.01.18.09.57.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jan 2024 09:50:28 -0800 (PST)
+        Thu, 18 Jan 2024 09:57:47 -0800 (PST)
 From: Leonardo Bras <leobras@redhat.com>
-To: John Ogness <john.ogness@linutronix.de>
+To: Jiri Slaby <jirislaby@kernel.org>
 Cc: Leonardo Bras <leobras@redhat.com>,
+	John Ogness <john.ogness@linutronix.de>,
 	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
 	Thomas Gleixner <tglx@linutronix.de>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Florian Fainelli <f.fainelli@gmail.com>,
@@ -71,11 +71,11 @@ Cc: Leonardo Bras <leobras@redhat.com>,
 	LKML <linux-kernel@vger.kernel.org>,
 	linux-serial <linux-serial@vger.kernel.org>
 Subject: Re: [RESEND RFC PATCH v1 2/2] serial/8250: Avoid getting lock in RT atomic context
-Date: Thu, 18 Jan 2024 14:50:08 -0300
-Message-ID: <Zalk0Md6F12xNz91@LeoBras>
+Date: Thu, 18 Jan 2024 14:57:34 -0300
+Message-ID: <ZalmjpcqMvzlIGGs@LeoBras>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <87cytzaqdj.fsf@jogness.linutronix.de>
-References: <20240116073701.2356171-1-leobras@redhat.com> <20240116073701.2356171-3-leobras@redhat.com> <75a39f0a-8f79-eacf-4a35-5de512a3cbed@linux.intel.com> <ZabJGefGkrs0SNzW@LeoBras> <87o7djaubq.fsf@jogness.linutronix.de> <ZajxMc05uVmK7e60@LeoBras> <87cytzaqdj.fsf@jogness.linutronix.de>
+In-Reply-To: <3632cc5e-f1d4-4780-a233-19bfcfe8af69@kernel.org>
+References: <20240116073701.2356171-1-leobras@redhat.com> <20240116073701.2356171-3-leobras@redhat.com> <75a39f0a-8f79-eacf-4a35-5de512a3cbed@linux.intel.com> <ZabJGefGkrs0SNzW@LeoBras> <87o7djaubq.fsf@jogness.linutronix.de> <ZajxMc05uVmK7e60@LeoBras> <3632cc5e-f1d4-4780-a233-19bfcfe8af69@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -88,41 +88,42 @@ Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 
-On Thu, Jan 18, 2024 at 11:33:04AM +0106, John Ogness wrote:
-> On 2024-01-18, Leonardo Bras <leobras@redhat.com> wrote:
-> > Sure, please let me know of where can I find the latest PREEMPT_RT
-> > patch series so I can re-test my bug. By what you comment, it's higly
-> > probable that patch 2/2 will not be necessary.
+On Thu, Jan 18, 2024 at 11:33:08AM +0100, Jiri Slaby wrote:
+> On 18. 01. 24, 10:36, Leonardo Bras wrote:
+> > I am using mainline (torvalds/linux) kernel, forcing ARCH_SUPPORTS_RT:
+> > 
+> > diff --git a/arch/Kconfig b/arch/Kconfig
+> > index 5ca66aad0d08..879c34398cb7 100644
+> > --- a/arch/Kconfig
+> > +++ b/arch/Kconfig
+> > @@ -1195,7 +1195,7 @@ config ARCH_NO_PREEMPT
+> >          bool
+> >   config ARCH_SUPPORTS_RT
+> > -       bool
+> > +       def_bool y
+> > 
+> > Since I was not aware of a PREEMPT_RT-patched tree, I did this so I could
+> > compile a PREEMPT_RT kernel.
 > 
-> Some links for you:
-> 
-> 
-> The Real-Time Wiki at the Linux Foundation:
-> 
-> https://wiki.linuxfoundation.org/realtime/
-> 
-> 
-> The latest development RT patch series for 6.7:
-> 
-> https://cdn.kernel.org/pub/linux/kernel/projects/rt/6.7/patches-6.7-rt6.tar.xz
-> 
-> 
-> RT git (branch linux-6.7.y-rt-rebase is probably what you want):
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git
-> 
+> Huh, when exactly did you intend to mention this?
 
-Hello John, thank you for sharing the links!
+Since I was not aware of an PREEMPT_RT-patched tree, I thought that this 
+was the vanilla way to get a PREEMPT_RT kernel running. 
 
-> 
-> > On the other hand, unless some extra work was done in preventing the
-> > scenario in patch 1/2, I think that can still be discussed.
-> 
-> I agree. Thanks for looking into this.
-> 
-> John
-> 
+TBH I did not even though that there were an external repo for PREEMPT_RT. 
+I mean, I knew about non-mainline patches in the past, but I thought 
+everything got already merged upstream, and any other patches would be WIP.
 
-Thank you!
+I understand this was a mistake on my part, and I feel sorry if this 
+brought any pain to reviewers. For the future, I will be basing my RT 
+work in this RT-devel tree shared by John.
+
+Thanks!
 Leo
+
+> 
+> -- 
+> js
+> suse labs
+> 
 
