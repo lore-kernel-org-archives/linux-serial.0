@@ -1,97 +1,202 @@
-Received: from mx4.securetransport.de (mx4.securetransport.de [178.254.6.145])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A76F520305;
-	Thu, 18 Jan 2024 09:29:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.254.6.145
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDB9B1F5FF
+	for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 09:37:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705570198; cv=none; b=jpHLpZ38mkFQQTkqpwJo7wxh8WspYmT+eJPe1QX+7Bts6P02OTgzXqC2c3xsjlOy1DS4m6NKwkgmqmiqmRVEFSaPPfmFUXe9NNdBrbz8uXmFLmzIkxi+yuVu6owHHuOHIFbwUdHl/BMtQgxhWNcbE3Eu2YMh85yjSQhIF9FYPM0=
+	t=1705570628; cv=none; b=CiCr3f4KS0lquxr9Ukvps/2NwlM3xAxzSR+wEeFgvuNRKt8N2rtzpMMQeOGoXjRaEP8enbrRgi8Ze/GiYUeILXFpqpbww8c3+CVH+CxQFMx143VKG410FlA50dGWU0vzINOPhfJxsZqZzcuZaz/DByyDt1kaclxXkw2xC0S6f5Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705570198; c=relaxed/simple;
-	bh=aA3cPGIs/7zKZafcN4vYuW4EjRaFhlfin5ohb5+4zCk=;
-	h=DKIM-Signature:X-secureTransport-forwarded:From:Complaints-To:To:
-	 CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
-	 In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
-	 X-MS-TNEF-Correlator:Content-Type:Content-Transfer-Encoding:
-	 MIME-Version; b=oj2PDk2TtLSIDh33yRn3Icox6NfrXBsYfMQN2MWTFcqrxZheBlRyEQqZ9hbizqWUOcdVpGFxgyKwPe8eNxJAaj+5vAjS/ZT3MavbmvG3lYo9wHSFTbX+8DAwgwldCuxce1xu3T2S3H5EpDUp+pxsUgAPASvVfrgf4VTYomKZ69U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com; spf=pass smtp.mailfrom=dh-electronics.com; dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b=BfH4+tCM; arc=none smtp.client-ip=178.254.6.145
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dh-electronics.com
+	s=arc-20240116; t=1705570628; c=relaxed/simple;
+	bh=ny05BSmMYc0OdKStL6FH+w7BJCfRWjhsHadAWQ3d5w8=;
+	h=DKIM-Signature:Received:X-MC-Unique:Received:
+	 X-Google-DKIM-Signature:X-Gm-Message-State:X-Received:
+	 X-Google-Smtp-Source:X-Received:Received:From:To:Cc:Subject:Date:
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 X-Mimecast-Spam-Score:X-Mimecast-Originator:Content-Type:
+	 Content-Disposition:Content-Transfer-Encoding; b=q+Q76hf/UdUryZnK0K5qrcIDuGWYYoeSTlIExC2ZcCyqF1kSBtTA+FrB8pQULiorVes3ODir1U/7nSjG9UuwxxusYO2ADdwtlG+3rPONpa6D/ITGm/yP4Dx9wR+vIEbZavdiPzQJyIyEbOhbsUl7a7r/SQTSu1WrhJM+Ttu49x8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Xc5L8g19; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="BfH4+tCM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-	s=dhelectronicscom; t=1705570152;
-	bh=aA3cPGIs/7zKZafcN4vYuW4EjRaFhlfin5ohb5+4zCk=;
-	h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-	b=BfH4+tCMw3tbOktJp6Wvqu3pOZ3TSs9Sgb1HrMuut60YAeLkBOJnJ9cGqLFj6llwW
-	 5bkoB+uF/R1CCHn8VXQYpwfp94a+PeE4kdSG7x3RIdQStzY1tjoTlg0ZbU8wnYfsM3
-	 P6yZiX4lSi1N2pcM48xn/N5ekyQHNDjeqvAgNdyDVwhJOjLKeoFZYhPJv4mUKXqiJk
-	 vXFVcWdfCxtzXM+OzrZVrTqaN9fKrSxnORhSEeLZl88r+6Y2iYsTz4wANin95c7tPF
-	 65Ta06ZkL+YHE1lsY6d4Sht4CLnWqXRNXaC5kGfm0vkMdo1GAJg6FGHw/ZGkh4lxC0
-	 p0E0HOGQTgUnA==
-X-secureTransport-forwarded: yes
-From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Complaints-To: abuse@cubewerk.de
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: "crescentcy.hsieh@moxa.com" <crescentcy.hsieh@moxa.com>,
-	"jirislaby@kernel.org" <jirislaby@kernel.org>, "LinoSanfilippo@gmx.de"
-	<LinoSanfilippo@gmx.de>, "lukas@wunner.de" <lukas@wunner.de>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Subject: RE: [PATCH v6 1/2] tty: serial: Cleanup the bit shift with macro
-Thread-Topic: [PATCH v6 1/2] tty: serial: Cleanup the bit shift with macro
-Thread-Index: AQHaSJT/2G6HCu2q+UioazhsZhzEcrDeCL+AgAENyACAADkvsA==
-Date: Thu, 18 Jan 2024 09:29:10 +0000
-Message-ID: <fc17322010b049529054552bd44f63f1@dh-electronics.com>
-References: <20231201071554.258607-2-crescentcy.hsieh@moxa.com>
- <20240117145623.3556-1-cniedermaier@dh-electronics.com>
- <2024011836-glimmer-seventh-f2a7@gregkh>
-In-Reply-To: <2024011836-glimmer-seventh-f2a7@gregkh>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Xc5L8g19"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1705570625;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=BFffKgzvP2tJPBxLDLt8qsSP+5mGq9mLel2t1EfYf/c=;
+	b=Xc5L8g197fkPYnC+WJ5svM08vteFdqzC9dWLYZrga17mhP8EcfHYKcVIM02YvWEKd/FK54
+	SPMsp5uVm7nBzfP74Qii3ZHrHs63ODXHCyNNYujtO9ZJqcSsvbLeF4pljogrt5KCFwnrzg
+	8YU9nEsCzzp/PyudrJuu34zn0bzrH5Y=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-271-2hPtulD9PZWGBG1GCJzI3g-1; Thu, 18 Jan 2024 04:37:04 -0500
+X-MC-Unique: 2hPtulD9PZWGBG1GCJzI3g-1
+Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-6800714a149so257861596d6.0
+        for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 01:37:04 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705570623; x=1706175423;
+        h=content-transfer-encoding:content-disposition:mime-version
+         :references:in-reply-to:message-id:date:subject:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=BFffKgzvP2tJPBxLDLt8qsSP+5mGq9mLel2t1EfYf/c=;
+        b=PzIKScmecl4vwBQQUlqKqg/zVxkGdArWmCyGyF69qvbWpT1bqzvKE2OUhV6D8GGMhw
+         Q7PKASomx/GQZHf6EgWvq1xswvDJ3Lyzzv6rJSf5SMiHpfadSti8xpI0Tsf0B4S1Y7Uf
+         4XBYUXL4lrCeqLp1tbiPjt+QTF9UzIwounUks6LxkuW8b3mxYRGBYXisqEuWNYwumDvA
+         QxsYjR1SC+SxpuYJOGKHy8z160ODiulnjP4Az/MCO6iW3UtPHZ3V5IMkZOauWypoD/w6
+         ZqrboAA8JtzwVH4upzbHxWH56YDr4OCVA8X9j/ncE2f9d7tanSUj5IHYLwvaoEs0+12a
+         6S0A==
+X-Gm-Message-State: AOJu0Yx4yFnxeW6m07nMpHp4EIyxiZVGFxPO88ak4peFTYPYxQtEM+qo
+	aZCJddiMjV5rp9COgy5qeO0JH2WNgb9XHbyjiPIhUV1NUtooyOS84k7M/UC9NJk6ZhhvH5gcgRL
+	c77Y2+HHd4ZKk7Js0o6x3SG0JhKWk0Z8lSFylVSSAzJMjnCLCDj2PkZ1xK8B6BOw+oEl6Cg==
+X-Received: by 2002:a05:6214:62d:b0:681:8aa2:d673 with SMTP id a13-20020a056214062d00b006818aa2d673mr389808qvx.21.1705570623632;
+        Thu, 18 Jan 2024 01:37:03 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IGgiXjzN4wjLy3FD3tSLUCJyIaYCZdTUeu3sMmzuAhq0WOGFlh006KIdOM1ts6Byz7uluKtsA==
+X-Received: by 2002:a05:6214:62d:b0:681:8aa2:d673 with SMTP id a13-20020a056214062d00b006818aa2d673mr389802qvx.21.1705570623397;
+        Thu, 18 Jan 2024 01:37:03 -0800 (PST)
+Received: from LeoBras.redhat.com ([2804:1b3:a803:6ad1:9baf:f024:858c:2fee])
+        by smtp.gmail.com with ESMTPSA id l14-20020a0ce84e000000b0068181b61183sm1000936qvo.31.2024.01.18.01.37.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Jan 2024 01:37:03 -0800 (PST)
+From: Leonardo Bras <leobras@redhat.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Leonardo Bras <leobras@redhat.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Marcelo Tosatti <mtosatti@redhat.com>,
+	LKML <linux-kernel@vger.kernel.org>,
+	linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [RESEND RFC PATCH v1 2/2] serial/8250: Avoid getting lock in RT atomic context
+Date: Thu, 18 Jan 2024 06:36:49 -0300
+Message-ID: <ZajxMc05uVmK7e60@LeoBras>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <87o7djaubq.fsf@jogness.linutronix.de>
+References: <20240116073701.2356171-1-leobras@redhat.com> <20240116073701.2356171-3-leobras@redhat.com> <75a39f0a-8f79-eacf-4a35-5de512a3cbed@linux.intel.com> <ZabJGefGkrs0SNzW@LeoBras> <87o7djaubq.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-RnJvbTogR3JlZyBLSCA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+DQpTZW50OiBUaHVyc2Rh
-eSwgSmFudWFyeSAxOCwgMjAyNCA4OjAyIEFNDQo+IE9uIFdlZCwgSmFuIDE3LCAyMDI0IGF0IDAz
-OjU2OjIzUE0gKzAxMDAsIENocmlzdG9waCBOaWVkZXJtYWllciB3cm90ZToNCj4+IEhpIGV2ZXJ5
-b25lLA0KPj4NCj4+PiBUaGlzIHBhdGNoIHJlcGxhY2VzIHRoZSBiaXQgc2hpZnQgY29kZSB3aXRo
-ICJfQklUVUwoKSIgbWFjcm8gaW5zaWRlDQo+Pj4gInNlcmlhbF9yczQ4NSIgc3RydWN0Lg0KPj4+
-DQo+Pj4gU2lnbmVkLW9mZi1ieTogQ3Jlc2NlbnQgQ1kgSHNpZWggPGNyZXNjZW50Y3kuaHNpZWhA
-bW94YS5jb20+DQo+Pj4gLS0tDQo+Pj4gIGluY2x1ZGUvdWFwaS9saW51eC9zZXJpYWwuaCB8IDE3
-ICsrKysrKysrKy0tLS0tLS0tDQo+Pj4gIDEgZmlsZSBjaGFuZ2VkLCA5IGluc2VydGlvbnMoKyks
-IDggZGVsZXRpb25zKC0pDQo+Pj4NCj4+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS91YXBpL2xpbnV4
-L3NlcmlhbC5oIGIvaW5jbHVkZS91YXBpL2xpbnV4L3NlcmlhbC5oDQo+Pj4gaW5kZXggNTNiYzFh
-ZjY3Li42Yzc1ZWJkZDcgMTAwNjQ0DQo+Pj4gLS0tIGEvaW5jbHVkZS91YXBpL2xpbnV4L3Nlcmlh
-bC5oDQo+Pj4gKysrIGIvaW5jbHVkZS91YXBpL2xpbnV4L3NlcmlhbC5oDQo+Pj4gQEAgLTExLDYg
-KzExLDcgQEANCj4+PiAgI2lmbmRlZiBfVUFQSV9MSU5VWF9TRVJJQUxfSA0KPj4+ICAjZGVmaW5l
-IF9VQVBJX0xJTlVYX1NFUklBTF9IDQo+Pj4NCj4+PiArI2luY2x1ZGUgPGxpbnV4L2NvbnN0Lmg+
-DQo+Pj4gICNpbmNsdWRlIDxsaW51eC90eXBlcy5oPg0KPj4+DQo+Pj4gICNpbmNsdWRlIDxsaW51
-eC90dHlfZmxhZ3MuaD4NCj4+PiBAQCAtMTQwLDE0ICsxNDEsMTQgQEAgc3RydWN0IHNlcmlhbF9p
-Y291bnRlcl9zdHJ1Y3Qgew0KPj4+ICAgKi8NCj4+PiAgc3RydWN0IHNlcmlhbF9yczQ4NSB7DQo+
-Pj4gICAgIF9fdTMyICAgZmxhZ3M7DQo+Pj4gLSNkZWZpbmUgU0VSX1JTNDg1X0VOQUJMRUQgICAg
-ICAgICAgKDEgPDwgMCkNCj4+PiAtI2RlZmluZSBTRVJfUlM0ODVfUlRTX09OX1NFTkQgICAgICAg
-ICAgICAgICgxIDw8IDEpDQo+Pj4gLSNkZWZpbmUgU0VSX1JTNDg1X1JUU19BRlRFUl9TRU5EICAg
-KDEgPDwgMikNCj4+DQo+PiBJbiB0aGUgb2xkIGRlZmluaXRpb24gKDEgPDwgMykgd2Fzbid0IHVz
-ZWQuDQo+Pg0KPj4+IC0jZGVmaW5lIFNFUl9SUzQ4NV9SWF9EVVJJTkdfVFggICAgICAgICAgICAg
-KDEgPDwgNCkNCj4+PiAtI2RlZmluZSBTRVJfUlM0ODVfVEVSTUlOQVRFX0JVUyAgICAgICAgICAg
-ICgxIDw8IDUpDQo+Pj4gLSNkZWZpbmUgU0VSX1JTNDg1X0FERFJCICAgICAgICAgICAgICAgICAg
-ICAoMSA8PCA2KQ0KPj4+IC0jZGVmaW5lIFNFUl9SUzQ4NV9BRERSX1JFQ1YgICAgICAgICAgICAg
-ICAgKDEgPDwgNykNCj4+PiAtI2RlZmluZSBTRVJfUlM0ODVfQUREUl9ERVNUICAgICAgICAgICAg
-ICAgICgxIDw8IDgpDQo+Pj4gKyNkZWZpbmUgU0VSX1JTNDg1X0VOQUJMRUQgICAgICAgICAgX0JJ
-VFVMKDApDQo+Pj4gKyNkZWZpbmUgU0VSX1JTNDg1X1JUU19PTl9TRU5EICAgICAgICAgICAgICBf
-QklUVUwoMSkNCj4+PiArI2RlZmluZSBTRVJfUlM0ODVfUlRTX0FGVEVSX1NFTkQgICBfQklUVUwo
-MikNCj4+PiArI2RlZmluZSBTRVJfUlM0ODVfUlhfRFVSSU5HX1RYICAgICAgICAgICAgIF9CSVRV
-TCgzKQ0KPj4NCj4+IElzbid0IGl0IGEgYnJlYWsgaWYgbnVtYmVyIDMgaXNuJ3Qgc2tpcHBlZCBo
-ZXJlIGFzIHdlbGw/DQo+IA0KPiBVZ2gsIHllcyBpdCBpcywgZ29vZCBjYXRjaCENCj4gDQo+IENh
-cmUgdG8gc2VuZCBhIHBhdGNoIHRvIGZpeCB0aGlzIHVwPw0KDQpPSywgSSdsbCBtYWtlIGEgcGF0
-Y2guDQoNClJlZ2FyZHMNCkNocmlzdG9waA0K
+On Thu, Jan 18, 2024 at 10:07:45AM +0106, John Ogness wrote:
+> On 2024-01-16, Leonardo Bras <leobras@redhat.com> wrote:
+> > Well, at least in an PREEMPT_RT=y kernel I have found this same bug 
+> > reproducing several times, and through the debugging that I went through I 
+> > saw no mechanism for preventing it.
+> >
+> > This is one example of the bug:
+> > While writing to serial with serial8250_tx_chars in a irq_thread handler
+> > there is an interruption, and __report_bad_irq() tries to printk 
+> > stuff to the console, and when printk goes down to 
+> > serial8250_console_write() and tried to get the port->lock, which causes 
+> > the "BUG: scheduling while atomic":
+> >
+> > [   42.485878] irq 4: nobody cared (try booting with the "irqpoll" option)
+> > [   42.485886] BUG: scheduling while atomic: irq/4-ttyS0/751/0x00010002
+> > [   42.485890] Modules linked in:
+> > [   42.485892] Preemption disabled at:
+> > [   42.485893] [<ffffffff8118ac80>] irq_enter_rcu+0x10/0x80
+> > [   42.485919] CPU: 0 PID: 751 Comm: irq/4-ttyS0 Not tainted 6.7.0-rc6+ #6
+> 
+> This is 6.7.0-rc6+. How are you setting PREEMPT_RT?
+
+By setting ARCH_SUPPORTS_RT=y
+
+> 
+> > [   42.485927] Hardware name: Red Hat KVM/RHEL, BIOS 1.16.3-1.el9 04/01/2014
+> > [   42.485929] Call Trace:
+> > [   42.485940]  <IRQ>
+> > [   42.485944]  dump_stack_lvl+0x33/0x50
+> > [   42.485976]  __schedule_bug+0x89/0xa0
+> > [   42.485991]  schedule_debug.constprop.0+0xd1/0x120
+> > [   42.485996]  __schedule+0x50/0x690
+> > [   42.486026]  schedule_rtlock+0x1e/0x40
+> > [   42.486029]  rtlock_slowlock_locked+0xe7/0x2b0
+> > [   42.486047]  rt_spin_lock+0x41/0x60
+> > [   42.486051]  serial8250_console_write+0x1be/0x460
+> 
+> On PREEMPT_RT-patched kernel, serial8250_console_write() is not
+> compiled. So obviously you are not running a PREEMPT_RT-patched kernel.
+
+Yes, as mentioned to Thomas before, I am on Vanilla torvalds/linux.
+I was not aware of any extra patches for PREEMPT_RT, could you please point 
+the repo, or the patchset for that PREEMPT_RT-patched version?
+
+> 
+> > [   42.486094]  console_flush_all+0x18d/0x3c0
+> > [   42.486111]  console_unlock+0x6c/0xd0
+> 
+> Flushing on console_unlock() is the legacy method.
+
+Great! so this part is solved :)
+
+> 
+> I assume you are using a mainline kernel with forced threading of
+> irqs. Mainline has many known problems with console printing, including
+> calling printk when the port->lock is held.
+
+I am using mainline (torvalds/linux) kernel, forcing ARCH_SUPPORTS_RT:
+
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 5ca66aad0d08..879c34398cb7 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -1195,7 +1195,7 @@ config ARCH_NO_PREEMPT
+        bool
+ 
+ config ARCH_SUPPORTS_RT
+-       bool
++       def_bool y
+
+Since I was not aware of a PREEMPT_RT-patched tree, I did this so I could 
+compile a PREEMPT_RT kernel.
+
+
+> 
+> This has been discussed before [0].
+> 
+> > [   42.486117]  vprintk_emit+0x1d6/0x290
+> > [   42.486122]  _printk+0x58/0x80
+> > [   42.486139]  __report_bad_irq+0x26/0xc0
+> > [   42.486147]  note_interrupt+0x2a1/0x2f0
+> > [   42.486155]  handle_irq_event+0x84/0x90
+> > [   42.486161]  handle_edge_irq+0x9f/0x260
+> > [   42.486168]  __common_interrupt+0x68/0x100
+> > [   42.486178]  common_interrupt+0x9f/0xc0
+> > [   42.486184]  </IRQ>
+> 
+> If you want to fix any threaded irq problems relating to printk and
+> console drivers, please use the latest PREEMPT_RT patch series with
+> CONFIG_PREEMPT_RT enabled. This is the current work that is being
+> reviewed on LKML for mainline inclusion. Thanks!
+> 
+
+Sure, please let me know of where can I find the latest PREEMPT_RT patch 
+series so I can re-test my bug. By what you comment, it's higly probable 
+that patch 2/2 will not be necessary.
+
+On the other hand, unless some extra work was done in preventing the 
+scenario in patch 1/2, I think that can still be discussed. 
+
+> John Ogness
+> 
+> [0] https://lore.kernel.org/lkml/87il5o32w9.fsf@jogness.linutronix.de
+> 
+
+Thanks!
+Leo
+
