@@ -1,87 +1,122 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F93011C89;
-	Thu, 18 Jan 2024 08:44:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2543F125A2;
+	Thu, 18 Jan 2024 08:53:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705567462; cv=none; b=UPtGDkJiqtnMFrQd4r1mLlF/pfXYkJa1auDkKwKJpG2hvqp3dFOAPpmNpqHSZglJneWkjJcP9qjlDNE+57BsiT058OUuCm7kwhovPNcEEJIMauRmFIvYY5XT86GBDJREXKWbZeGpg69zVZyVnC9WpJ7Qv2r5qmScBueYTd1gnBE=
+	t=1705567983; cv=none; b=f5OTom4qRfsuwef7kWgzBKqhgqwio3vWlYAgiwf8cDzUkoXrx1gYqcV6Z3sUyvU+BCN7vDr8tt+mmqtMTG4RW7b8CrEtD8rhtY9cPckFZA4x4crljbO+PLSDynq90K6YBbfVfxkpIO9FfAmkfup3JXI+DiaOg8oK3i9Z8OrTwyQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705567462; c=relaxed/simple;
-	bh=QATaYohPU+L5T8X2rlTM5GZ2caeXAoEQ/uZIIr7aU1U=;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:
-	 In-Reply-To; b=F2C3Wr2PiTtcaFKYqyBskoiPW9gE9jiBul+jsxb+7Pxb7MMjofXIeO5lWQ6gQG8QUfU8MtFZ11sECZOYHPnSY0qKH+K/veBziZCc+Or7Hwn/qCvmyoPTKRtTdt4sGOTWRKMe/mOxpjg7JHlpTXjfsRliCzBRlQx71BLKFydqMBo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=qDOVfwNX; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="qDOVfwNX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98676C433F1;
-	Thu, 18 Jan 2024 08:44:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1705567462;
-	bh=QATaYohPU+L5T8X2rlTM5GZ2caeXAoEQ/uZIIr7aU1U=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=qDOVfwNXPTBRCJJg2DsnbrWD+GBWjItEjJYLihQ4vm5Ea9tjsJfj9afAR9e4SFLrj
-	 a0jpkuK9PGdPOh7QduSQDGLZcx5J+D9OWSCq2C7CXWlDsEP1fVMWCpaFk9uOfSLpx6
-	 0ut6xaJFBERvT6tqZ+GdP+8E6aSn1du1yPv/93Cw=
-Date: Thu, 18 Jan 2024 09:44:19 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-Cc: Christoph Niedermaier <cniedermaier@dh-electronics.com>,
-	jirislaby@kernel.org, LinoSanfilippo@gmx.de, lukas@wunner.de,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v6 1/2] tty: serial: Cleanup the bit shift with macro
-Message-ID: <2024011824-squiggle-foil-8db4@gregkh>
-References: <20231201071554.258607-2-crescentcy.hsieh@moxa.com>
- <20240117145623.3556-1-cniedermaier@dh-electronics.com>
- <2024011836-glimmer-seventh-f2a7@gregkh>
- <Zajd8fd/U3foRyLB@moxa-ThinkCentre-M90t>
+	s=arc-20240116; t=1705567983; c=relaxed/simple;
+	bh=EUxlP8TQSaz+aUuKrg3IdzttUBIfYpiIjK9Vzhpp42o=;
+	h=Received:X-Google-DKIM-Signature:X-Gm-Message-State:
+	 X-Google-Smtp-Source:X-Received:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:Content-Language:To:Cc:References:
+	 From:Autocrypt:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	b=gwKrURGLVIDMSwp+IKxjucu4GXukR7NIHoy3BJ5uaYgYKfXvwPtScpRybsHOM9u4yQ+xPcvXX8mQtZFeU0BP4fkPDRF8HqTesSfD6WMUEeK0X9IhNvji84P1hXnX6k5dozJh8vIiICqXviWClyHI+/KcKi85TbsnkSzAVMYcHsc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-337cc8e72f5so350401f8f.1;
+        Thu, 18 Jan 2024 00:53:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705567980; x=1706172780;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=HohZ+568aayDubztr663VwJJUa0UzFWr0ovhCgvpAek=;
+        b=AFrktMN3Fy5zL0nvD46EGSlak7Kdo7sYFlp7iChPk6NxgAZOCBwLmYxYntTARnklnq
+         n6zoO1tGaDTQloLG4siRZ0nIYutlZlI6PWCECEOqEyOuvJFDEeVp88DUGmX5dfIcbYih
+         6hL2CagM6ouoou7Qr6yAbXfecUpmle29BYm8u7yAcsnLnhcJkBUaMXW6PAHDRV7iCHJa
+         CBcPizPcOMAC67MeNzXbCXY8LHGyhgKEoop5R2jWDIaEBuLk62L7ylQmPTRAFKaAjf2O
+         JzNbLRQfP6fYueKqjTe9vbePJd7ijzAyuGPrKc8ssj0Q1/RwjzgMfa0SYMyaJVgfX5h0
+         jKJw==
+X-Gm-Message-State: AOJu0YylXLY47IU404XA7Bn8uCymJGqCUMVUqKAyB5w7Kgxf2QzUB0mL
+	Ul21u3/rWSzEPdlzjy4v9jf1o03m0x/f0Wrd+JBB68LW6NuY9f6z
+X-Google-Smtp-Source: AGHT+IEobU2BzLTBC4QUkEIMS2hdODPazKfKEqI4sJLh5EvmiCS6FVLZ6S+Sa9SNIdMf6VqydiwnfQ==
+X-Received: by 2002:a5d:6843:0:b0:337:c4af:7251 with SMTP id o3-20020a5d6843000000b00337c4af7251mr248353wrw.125.1705567980217;
+        Thu, 18 Jan 2024 00:53:00 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id s15-20020a5d6a8f000000b00336898daceasm1132882wru.96.2024.01.18.00.52.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Jan 2024 00:52:59 -0800 (PST)
+Message-ID: <e75d0f43-50b7-48b3-8980-d66736daa736@kernel.org>
+Date: Thu, 18 Jan 2024 09:52:58 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Zajd8fd/U3foRyLB@moxa-ThinkCentre-M90t>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 31/45] tty: vt: use VESA blanking constants
+Content-Language: en-US
+To: Thomas Zimmermann <tzimmermann@suse.de>, gregkh@linuxfoundation.org
+Cc: linux-fbdev@vger.kernel.org, linux-parisc@vger.kernel.org,
+ Helge Deller <deller@gmx.de>, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ linux-serial@vger.kernel.org
+References: <20240118075756.10541-1-jirislaby@kernel.org>
+ <20240118075756.10541-32-jirislaby@kernel.org>
+ <39622a13-3999-4bf6-b8fc-f7a70c8cd5da@suse.de>
+ <4976e06c-dffd-4b93-a828-34f998f2472a@kernel.org>
+ <4ae60e8c-6a86-4895-b8fe-48de5b64b6c8@suse.de>
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <4ae60e8c-6a86-4895-b8fe-48de5b64b6c8@suse.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jan 18, 2024 at 04:14:41PM +0800, Crescent CY Hsieh wrote:
-> On Thu, Jan 18, 2024 at 08:01:58AM +0100, Greg KH wrote:
-> > On Wed, Jan 17, 2024 at 03:56:23PM +0100, Christoph Niedermaier wrote:
-> > > >  struct serial_rs485 {
-> > > >  	__u32	flags;
-> > > > -#define SER_RS485_ENABLED		(1 << 0)
-> > > > -#define SER_RS485_RTS_ON_SEND		(1 << 1)
-> > > > -#define SER_RS485_RTS_AFTER_SEND	(1 << 2)
-> > > 
-> > > In the old definition (1 << 3) wasn't used.
-> > > 
-> > > > -#define SER_RS485_RX_DURING_TX		(1 << 4)
-> > > > -#define SER_RS485_TERMINATE_BUS		(1 << 5)
-> > > > -#define SER_RS485_ADDRB			(1 << 6)
-> > > > -#define SER_RS485_ADDR_RECV		(1 << 7)
-> > > > -#define SER_RS485_ADDR_DEST		(1 << 8)
-> > > > +#define SER_RS485_ENABLED		_BITUL(0)
-> > > > +#define SER_RS485_RTS_ON_SEND		_BITUL(1)
-> > > > +#define SER_RS485_RTS_AFTER_SEND	_BITUL(2)
-> > > > +#define SER_RS485_RX_DURING_TX		_BITUL(3)
-> > > 
-> > > Isn't it a break if number 3 isn't skipped here as well?
-> 
-> Sorry I might have misunderstood the meaning of "broke userspace".
-> 
-> In this case, does it imply splitting the "cleanup" patch and the "add
-> feature" patch, or leaving the third bit unused? Or perhaps both?
+On 18. 01. 24, 9:41, Thomas Zimmermann wrote:
+> Is it hard to get a new UAPI header accepted (honest question)?
 
-You can not redefine existing defines to different values, like you did
-here, that changes the user/kernel api of the system.
-
-Luckily this isn't in any released kernel, I'll either revert this after
--rc1 is out, or take a patch from anyone else to do so if they want to
-send it now.
+Not at all, IMO. The header just needs to be correct™ as it would be set 
+in stone once released.
 
 thanks,
+-- 
+js
+suse labs
 
-greg k-h
