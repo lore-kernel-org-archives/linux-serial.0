@@ -1,186 +1,97 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mx4.securetransport.de (mx4.securetransport.de [178.254.6.145])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C93E71D523
-	for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 09:24:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A76F520305;
+	Thu, 18 Jan 2024 09:29:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.254.6.145
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705569877; cv=none; b=DAP6GaevKES3rQLGSMUL6b9crLhwUQZfx/SGiOhTsyEKjVaA9qsGciI5JwE/e7v9FImr94abO4B5a+wcezFBkHX5ISI5d7QwTWam4SShoNgsBo4ZvpcuMjvlbhWff56DRAZhg9tpGv3D+rCBxNPUvduKFTq4B+aOeGYdbPzFYiQ=
+	t=1705570198; cv=none; b=jpHLpZ38mkFQQTkqpwJo7wxh8WspYmT+eJPe1QX+7Bts6P02OTgzXqC2c3xsjlOy1DS4m6NKwkgmqmiqmRVEFSaPPfmFUXe9NNdBrbz8uXmFLmzIkxi+yuVu6owHHuOHIFbwUdHl/BMtQgxhWNcbE3Eu2YMh85yjSQhIF9FYPM0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705569877; c=relaxed/simple;
-	bh=hAxBSB8jZGNGXkaDT5Gc0IOAwfXgI9zR287purl7LbA=;
-	h=DKIM-Signature:Received:X-MC-Unique:Received:
-	 X-Google-DKIM-Signature:X-Gm-Message-State:X-Received:
-	 X-Google-Smtp-Source:X-Received:Received:From:To:Cc:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 X-Mimecast-Spam-Score:X-Mimecast-Originator:Content-Type:
-	 Content-Disposition:Content-Transfer-Encoding; b=rpFOdtFnkdVprzXOc/SCR+Nixo9zP4RUfeJwI/6KOM4UHV4AUmDe3qyR1Y7NSyzEFU+Qv9CiFu9OMKebQCsQdSpwtQQVujA1FzMKSop190YxRl6Ugbn+Hv2ELYLutXuKqBWZ6ftC4CPcAJz93KMEMtJsAvisvQyegksx6QnoFyQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Cfi5xP4Z; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1705570198; c=relaxed/simple;
+	bh=aA3cPGIs/7zKZafcN4vYuW4EjRaFhlfin5ohb5+4zCk=;
+	h=DKIM-Signature:X-secureTransport-forwarded:From:Complaints-To:To:
+	 CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
+	 In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
+	 X-MS-TNEF-Correlator:Content-Type:Content-Transfer-Encoding:
+	 MIME-Version; b=oj2PDk2TtLSIDh33yRn3Icox6NfrXBsYfMQN2MWTFcqrxZheBlRyEQqZ9hbizqWUOcdVpGFxgyKwPe8eNxJAaj+5vAjS/ZT3MavbmvG3lYo9wHSFTbX+8DAwgwldCuxce1xu3T2S3H5EpDUp+pxsUgAPASvVfrgf4VTYomKZ69U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com; spf=pass smtp.mailfrom=dh-electronics.com; dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b=BfH4+tCM; arc=none smtp.client-ip=178.254.6.145
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dh-electronics.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Cfi5xP4Z"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1705569874;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=RnEHhjCm6k/CZTLAzXdrHvCgybCqk5qE4sMq7XE6mNc=;
-	b=Cfi5xP4ZF0pv0ExF9gJt5KdlFg/gm9H+0XtV0pGnwMdE9FpsH57uyog0vxdlSXhEScoI75
-	5uEGjn6Eyr9aRZgs0JIQhsAXf7CrKJ0AwVWHk6KkTFKWP7xmKrttH1/Ln+EsKJ45DeITRJ
-	cVoYFuAVIdty4C5USBzXnrZ5rtP4csA=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-550-huT4ET6SMFeB3_N6-sb_Zw-1; Thu, 18 Jan 2024 04:24:30 -0500
-X-MC-Unique: huT4ET6SMFeB3_N6-sb_Zw-1
-Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-429be5ecc87so91945011cf.2
-        for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 01:24:30 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705569870; x=1706174670;
-        h=content-transfer-encoding:content-disposition:mime-version
-         :references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=RnEHhjCm6k/CZTLAzXdrHvCgybCqk5qE4sMq7XE6mNc=;
-        b=J8KnXny7FdBTDPmUYiX8VcsgSuUgsOFDMaB46yClPUjWO5/4Ak9c5+HeHQ8tgFnVJL
-         fYy7JHi9H1LPOnuf7JfhdQ5wQn5VGgnkV7zE/+Mym3lptaVNYq9C+HvbsIetkf46jsd5
-         L+s90oTN8l0pmBbqnrRO4KEDlECnSFjd57jYxYZ0hUKF/Uizs68FNGv4J+UBd4Bmv6CG
-         Cr6eOTCncMdrIf3pF3qTV8FyZrHzVFy36y42zl/QV/Jay594E21cwQ+/N/Q6beE7QVr1
-         WKlA6yMBchrdsuqDngoZbsPm8/LHesjH3bVkna3emV9hMwRR5tr20crgiaA/K+oUohSe
-         W+MQ==
-X-Gm-Message-State: AOJu0YwmzvMBV2Fazk6hw3eaotpT8Sl9r1JbYyx61xR54YQ0koUOjAur
-	xLYSriclV3gRKsl2Yx4TqhxblgnjHyx5gLBSFoF3rKd7LANNyD+147Lf2cl/gYgxB1HfyEmVjib
-	GKyxJdgKiVS4IcnOhSiXK2/CE4Bh7mMfvGFqmrXESYVNck6bBjOOd5c+t8uHg4Q==
-X-Received: by 2002:a05:622a:41:b0:429:e741:6086 with SMTP id y1-20020a05622a004100b00429e7416086mr545588qtw.50.1705569870285;
-        Thu, 18 Jan 2024 01:24:30 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IE/aIlnaKaJDxIo0ryzXxRyNDirj7kD4P44SfvMq8LixI0qLxHxLgWyeoalljRIspXWt/d+Mg==
-X-Received: by 2002:a05:622a:41:b0:429:e741:6086 with SMTP id y1-20020a05622a004100b00429e7416086mr545580qtw.50.1705569869975;
-        Thu, 18 Jan 2024 01:24:29 -0800 (PST)
-Received: from LeoBras.redhat.com ([2804:1b3:a803:6ad1:9baf:f024:858c:2fee])
-        by smtp.gmail.com with ESMTPSA id cn3-20020a05622a248300b00429c8ae9b94sm6362366qtb.85.2024.01.18.01.24.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jan 2024 01:24:29 -0800 (PST)
-From: Leonardo Bras <leobras@redhat.com>
-To: Leonardo Bras <leobras@redhat.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Tony Lindgren <tony@atomide.com>,
-	Marcelo Tosatti <mtosatti@redhat.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [RESEND RFC PATCH v1 1/2] irq/spurious: Reset irqs_unhandled if an irq_thread handles one IRQ request
-Date: Thu, 18 Jan 2024 06:24:25 -0300
-Message-ID: <ZajuST2EHSPCwA1m@LeoBras>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <ZahYxOL2r7YbPvO7@LeoBras>
-References: <20240116073701.2356171-1-leobras@redhat.com> <20240116073701.2356171-2-leobras@redhat.com> <87ttnbfw9f.ffs@tglx> <ZahYxOL2r7YbPvO7@LeoBras>
+	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="BfH4+tCM"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
+	s=dhelectronicscom; t=1705570152;
+	bh=aA3cPGIs/7zKZafcN4vYuW4EjRaFhlfin5ohb5+4zCk=;
+	h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+	b=BfH4+tCMw3tbOktJp6Wvqu3pOZ3TSs9Sgb1HrMuut60YAeLkBOJnJ9cGqLFj6llwW
+	 5bkoB+uF/R1CCHn8VXQYpwfp94a+PeE4kdSG7x3RIdQStzY1tjoTlg0ZbU8wnYfsM3
+	 P6yZiX4lSi1N2pcM48xn/N5ekyQHNDjeqvAgNdyDVwhJOjLKeoFZYhPJv4mUKXqiJk
+	 vXFVcWdfCxtzXM+OzrZVrTqaN9fKrSxnORhSEeLZl88r+6Y2iYsTz4wANin95c7tPF
+	 65Ta06ZkL+YHE1lsY6d4Sht4CLnWqXRNXaC5kGfm0vkMdo1GAJg6FGHw/ZGkh4lxC0
+	 p0E0HOGQTgUnA==
+X-secureTransport-forwarded: yes
+From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Complaints-To: abuse@cubewerk.de
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: "crescentcy.hsieh@moxa.com" <crescentcy.hsieh@moxa.com>,
+	"jirislaby@kernel.org" <jirislaby@kernel.org>, "LinoSanfilippo@gmx.de"
+	<LinoSanfilippo@gmx.de>, "lukas@wunner.de" <lukas@wunner.de>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Subject: RE: [PATCH v6 1/2] tty: serial: Cleanup the bit shift with macro
+Thread-Topic: [PATCH v6 1/2] tty: serial: Cleanup the bit shift with macro
+Thread-Index: AQHaSJT/2G6HCu2q+UioazhsZhzEcrDeCL+AgAENyACAADkvsA==
+Date: Thu, 18 Jan 2024 09:29:10 +0000
+Message-ID: <fc17322010b049529054552bd44f63f1@dh-electronics.com>
+References: <20231201071554.258607-2-crescentcy.hsieh@moxa.com>
+ <20240117145623.3556-1-cniedermaier@dh-electronics.com>
+ <2024011836-glimmer-seventh-f2a7@gregkh>
+In-Reply-To: <2024011836-glimmer-seventh-f2a7@gregkh>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 
-On Wed, Jan 17, 2024 at 07:46:28PM -0300, Leonardo Bras wrote:
-> On Wed, Jan 17, 2024 at 11:08:44PM +0100, Thomas Gleixner wrote:
-> > On Tue, Jan 16 2024 at 04:36, Leonardo Bras wrote:
-> > > This IRQ line disable bug can be easily reproduced with a serial8250
-> > > console on a PREEMPT_RT kernel: it only takes the user to print a lot
-> > > of text to the console (or to ttyS0): around 300k chars should be
-> > > enough.
-> > 
-> > That has nothing to do with RT, it's a problem of force threaded
-> > interrupts in combination with an edge type interrupt line and a
-> > hardware which keeps firing interrupts forever.
-> 
-> Hello Thomas, thanks for your feedback!
-> 
-> I agreed it has nothing to do with RT.
-> I just mentioned PREEMPT_RT as my test case scenario, since it enables 
-> force-threaded IRQs.
-> 
-> > 
-> > > To fix this bug, reset irqs_unhandled whenever irq_thread handles at least
-> > > one IRQ request.
-> > 
-> > This papers over the symptom and makes runaway detection way weaker for
-> > all interrupts or breaks it completely.
-> 
-> This change is supposed to only touch threaded interruptions, since it will
-> reach the included line only if (action_ret == IRQ_WAKE_THREAD) and if 
-> desc->threads_handled changes since the last IRQ request.
-> 
-> This incrementing also happens only on irq_forced_thread_fn() and 
-> irq_thread_fn(), which are called only from irq_thread_fn().
-> 
-> But I get the overall worry about having this making runaway detection way 
-> weaker for all threaded interrupts.
-> 
-> I have previously worked on a solution that can be more precise and be an 
-> opt-in for drivers instead of a general solution:
-> 
-> It required a change in IRQ interface that let the handlers inform how 
-> many IRQs were actually handled (batching). This number would then be 
-> added to desc->threads_handle (in irq_*thread_fn(), just changing the 
-> atomic_inc() to atomic_add()), and then subtracted from irqs_unhandled
-> at note_interrupt().
-> 
-> In the serial8250 case, the driver would be changed to use that interface, 
-> since it's already able to process multiple IRQs, and the bug just 
-> vanishes.
-> 
-> This also solved the serial driver issue, but required a deeper change in 
-> the code, which caused me to consider a simpler solution first.
-> 
-> This solution sure does give better runnaway detection. Do you think it 
-> would be better that the one I sent in this patch?
-
-For reference, this is the alternative:
-https://gitlab.com/LeoBras/linux/-/commits/serial8250
-
-Please let me know it you think this one is better.
-
-Thanks!
-Leo
-
-> 
-> > 
-> > The problem with edge type interrupts is that we cannot mask them like
-> > we do with level type interrupts in the hard interrupt handler and
-> > unmask them once the threaded handler finishes.
-> > 
-> > So yes, we need special rules here when:
-> > 
-> >    1) The interrupt handler is force threaded
-> > 
-> >    2) The interrupt line is edge type
-> > 
-> >    3) The accumulated unhandled interrupts are within a sane margin
-> > 
-> > Thanks,
-> > 
-> >         tglx
-> > 
-> 
-> Completelly agree, that's why I am suggesting dealing with threaded 
-> interruptions in a different way: reseting the unhandled count when it 
-> handles a request. 
-> 
-> I am not sure how force threaded and just threaded are different in this 
-> scenario. Could you help me understand?
-> 
-> Thanks!
-> Leo
-
+RnJvbTogR3JlZyBLSCA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+DQpTZW50OiBUaHVyc2Rh
+eSwgSmFudWFyeSAxOCwgMjAyNCA4OjAyIEFNDQo+IE9uIFdlZCwgSmFuIDE3LCAyMDI0IGF0IDAz
+OjU2OjIzUE0gKzAxMDAsIENocmlzdG9waCBOaWVkZXJtYWllciB3cm90ZToNCj4+IEhpIGV2ZXJ5
+b25lLA0KPj4NCj4+PiBUaGlzIHBhdGNoIHJlcGxhY2VzIHRoZSBiaXQgc2hpZnQgY29kZSB3aXRo
+ICJfQklUVUwoKSIgbWFjcm8gaW5zaWRlDQo+Pj4gInNlcmlhbF9yczQ4NSIgc3RydWN0Lg0KPj4+
+DQo+Pj4gU2lnbmVkLW9mZi1ieTogQ3Jlc2NlbnQgQ1kgSHNpZWggPGNyZXNjZW50Y3kuaHNpZWhA
+bW94YS5jb20+DQo+Pj4gLS0tDQo+Pj4gIGluY2x1ZGUvdWFwaS9saW51eC9zZXJpYWwuaCB8IDE3
+ICsrKysrKysrKy0tLS0tLS0tDQo+Pj4gIDEgZmlsZSBjaGFuZ2VkLCA5IGluc2VydGlvbnMoKyks
+IDggZGVsZXRpb25zKC0pDQo+Pj4NCj4+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS91YXBpL2xpbnV4
+L3NlcmlhbC5oIGIvaW5jbHVkZS91YXBpL2xpbnV4L3NlcmlhbC5oDQo+Pj4gaW5kZXggNTNiYzFh
+ZjY3Li42Yzc1ZWJkZDcgMTAwNjQ0DQo+Pj4gLS0tIGEvaW5jbHVkZS91YXBpL2xpbnV4L3Nlcmlh
+bC5oDQo+Pj4gKysrIGIvaW5jbHVkZS91YXBpL2xpbnV4L3NlcmlhbC5oDQo+Pj4gQEAgLTExLDYg
+KzExLDcgQEANCj4+PiAgI2lmbmRlZiBfVUFQSV9MSU5VWF9TRVJJQUxfSA0KPj4+ICAjZGVmaW5l
+IF9VQVBJX0xJTlVYX1NFUklBTF9IDQo+Pj4NCj4+PiArI2luY2x1ZGUgPGxpbnV4L2NvbnN0Lmg+
+DQo+Pj4gICNpbmNsdWRlIDxsaW51eC90eXBlcy5oPg0KPj4+DQo+Pj4gICNpbmNsdWRlIDxsaW51
+eC90dHlfZmxhZ3MuaD4NCj4+PiBAQCAtMTQwLDE0ICsxNDEsMTQgQEAgc3RydWN0IHNlcmlhbF9p
+Y291bnRlcl9zdHJ1Y3Qgew0KPj4+ICAgKi8NCj4+PiAgc3RydWN0IHNlcmlhbF9yczQ4NSB7DQo+
+Pj4gICAgIF9fdTMyICAgZmxhZ3M7DQo+Pj4gLSNkZWZpbmUgU0VSX1JTNDg1X0VOQUJMRUQgICAg
+ICAgICAgKDEgPDwgMCkNCj4+PiAtI2RlZmluZSBTRVJfUlM0ODVfUlRTX09OX1NFTkQgICAgICAg
+ICAgICAgICgxIDw8IDEpDQo+Pj4gLSNkZWZpbmUgU0VSX1JTNDg1X1JUU19BRlRFUl9TRU5EICAg
+KDEgPDwgMikNCj4+DQo+PiBJbiB0aGUgb2xkIGRlZmluaXRpb24gKDEgPDwgMykgd2Fzbid0IHVz
+ZWQuDQo+Pg0KPj4+IC0jZGVmaW5lIFNFUl9SUzQ4NV9SWF9EVVJJTkdfVFggICAgICAgICAgICAg
+KDEgPDwgNCkNCj4+PiAtI2RlZmluZSBTRVJfUlM0ODVfVEVSTUlOQVRFX0JVUyAgICAgICAgICAg
+ICgxIDw8IDUpDQo+Pj4gLSNkZWZpbmUgU0VSX1JTNDg1X0FERFJCICAgICAgICAgICAgICAgICAg
+ICAoMSA8PCA2KQ0KPj4+IC0jZGVmaW5lIFNFUl9SUzQ4NV9BRERSX1JFQ1YgICAgICAgICAgICAg
+ICAgKDEgPDwgNykNCj4+PiAtI2RlZmluZSBTRVJfUlM0ODVfQUREUl9ERVNUICAgICAgICAgICAg
+ICAgICgxIDw8IDgpDQo+Pj4gKyNkZWZpbmUgU0VSX1JTNDg1X0VOQUJMRUQgICAgICAgICAgX0JJ
+VFVMKDApDQo+Pj4gKyNkZWZpbmUgU0VSX1JTNDg1X1JUU19PTl9TRU5EICAgICAgICAgICAgICBf
+QklUVUwoMSkNCj4+PiArI2RlZmluZSBTRVJfUlM0ODVfUlRTX0FGVEVSX1NFTkQgICBfQklUVUwo
+MikNCj4+PiArI2RlZmluZSBTRVJfUlM0ODVfUlhfRFVSSU5HX1RYICAgICAgICAgICAgIF9CSVRV
+TCgzKQ0KPj4NCj4+IElzbid0IGl0IGEgYnJlYWsgaWYgbnVtYmVyIDMgaXNuJ3Qgc2tpcHBlZCBo
+ZXJlIGFzIHdlbGw/DQo+IA0KPiBVZ2gsIHllcyBpdCBpcywgZ29vZCBjYXRjaCENCj4gDQo+IENh
+cmUgdG8gc2VuZCBhIHBhdGNoIHRvIGZpeCB0aGlzIHVwPw0KDQpPSywgSSdsbCBtYWtlIGEgcGF0
+Y2guDQoNClJlZ2FyZHMNCkNocmlzdG9waA0K
