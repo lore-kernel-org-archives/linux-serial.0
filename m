@@ -1,117 +1,118 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F24531DDD9
-	for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 15:00:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E59228DA0;
+	Thu, 18 Jan 2024 15:22:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705590060; cv=none; b=Y7cu5OlIZYCf2HYUKW59R4mn9uhVDWvWyAFgJ5dMsziEcAwkhB81AsDSGj/q2zVbbM6xcCHjD9QjI8zJ3Pkr0O7caE8pv2gFkTQaX2+gM9ZrKMVqK103ZSjzuZmnt9eNyLKo+EDjXHCxpa6kvJWV1nyDnLqzGkPBKLNJu2GKoQI=
+	t=1705591344; cv=none; b=G99R5mM3c5v7N/yXu8kkgsqUokXUKSXqp+sjzfb8M/Ozf4ox0SbU5646zULD7K7g1wt11IMawe/6EkmjKq9/zKbmW1I1bub3/qtPuChoILXapt3izaQAZME3levYod4C578UbrY8WNeZH6sK7601bx7o60tFPsB6ErUf1kgDxj8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705590060; c=relaxed/simple;
-	bh=6rHuHZVInsJG2lEzJY4lEK+ocHb9GkGwP1h4qWp+XFI=;
-	h=DKIM-Signature:Received:Date:From:To:Cc:Message-Id:In-Reply-To:
-	 References:X-Mailer:Mime-Version:Content-Type:
-	 Content-Transfer-Encoding:X-SA-Exim-Connect-IP:X-SA-Exim-Mail-From:
-	 X-Spam-Checker-Version:X-Spam-Level:X-Spam-Report:X-Spam-Status:
-	 Subject:X-SA-Exim-Version:X-SA-Exim-Scanned; b=ojTTV0Al92Y6rcuZ3+O6sL6yOhszYFDAnKdcvciOsWrqXM2V+OrI/g3mEfbwvN9wMFdtQMid+i5CzPtczsen+HhFLojavaez1o5YxlFv12zfvt4Jpvb6kd6oMNcSiqI5Ts/p6CDLdgQKbBk0IvLFtPyEqgwLLgSMMwTKJRTJv+c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=ymtBj7H7; arc=none smtp.client-ip=162.243.120.170
+	s=arc-20240116; t=1705591344; c=relaxed/simple;
+	bh=XrMh+efgRmXscdLLtXKdvP3SscB/ZReuo5yJtjd17UE=;
+	h=DKIM-Signature:Received:From:To:Cc:Date:Message-Id:X-Mailer:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:
+	 X-SA-Exim-Connect-IP:X-SA-Exim-Mail-From:X-Spam-Checker-Version:
+	 X-Spam-Level:X-Spam-Report:X-Spam-Status:Subject:X-SA-Exim-Version:
+	 X-SA-Exim-Scanned; b=FkpwfIupNju3AklNbLhgLd3W32oVp8EgPz5/xS+UQU8BB4Fr7F97vE+jztyPyNtYIFeqHAcdHDzCRDXpyRz9ZNeK6KiLSUkdlyNgR/z4VXWIo8CdJncH2mmBgaui2nThq60JHuejr2LAlZTWChUVzbh31RnP9s6PQuBon3EzFpk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=ibyFs1er; arc=none smtp.client-ip=162.243.120.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="ymtBj7H7"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="ibyFs1er"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=oIasUBN4lV6VWChw5fNJuOaqs+4Z5ywxZ211LhMgxjc=; b=ymtBj7H7Qk1H51yZvIey9JETXk
-	XGeRho/P3j153eBT8kBJazV/aVM90F9ehtSyHNdWjXABAADOjnrtkrtbaIMwwYwXcy3XfQehTL8RN
-	FVb43naqqierwoSS850uhyqcR8LArY0F4/XUNIq1l/i2FApaq/hmhme8H9PcFphHGSeA=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:57218 helo=pettiford)
+	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
+	:From:subject:date:message-id:reply-to;
+	bh=er1H90D5sP8lfkMr5k8Dh47duGczbyoDoZ6NN0eRzRU=; b=ibyFs1erUbd0OMdmtdHBEhyT+Z
+	jTASvyYqXUZ0KGEs2kNnyNr2TuR9GNFKqs7cK46IJN5Gq9pWodUigfKYwEdNhnh6+G/HMKRmwzzHy
+	+eh2C1tpLnqvtVyoImPbds9lCasalU4cbBLBhshk6QZZq5b5QJK3oWrzMZYe+wgw/luk=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:57058 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rQTsw-0002Ts-BV; Thu, 18 Jan 2024 10:00:51 -0500
-Date: Thu, 18 Jan 2024 10:00:49 -0500
+	id 1rQUDh-0002lf-31; Thu, 18 Jan 2024 10:22:17 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
-To: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Cc: <linux-serial@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Crescent CY Hsieh
- <crescentcy.hsieh@moxa.com>, Jiri Slaby <jirislaby@kernel.org>, Lukas
- Wunner <lukas@wunner.de>, Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Message-Id: <20240118100049.0e17d2d8808df7905ff45d71@hugovil.com>
-In-Reply-To: <20240118124350.3772-1-cniedermaier@dh-electronics.com>
-References: <20240118124350.3772-1-cniedermaier@dh-electronics.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	cosmin.tanislav@analog.com,
+	andy.shevchenko@gmail.com,
+	shc_work@mail.ru
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	hugo@hugovil.com,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Date: Thu, 18 Jan 2024 10:21:56 -0500
+Message-Id: <20240118152213.2644269-1-hugo@hugovil.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 70.80.174.168
 X-SA-Exim-Mail-From: hugo@hugovil.com
 X-Spam-Level: 
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-	* -1.7 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH] tty: serial: Fix bit order in RS485 flag definitions
+Subject: [PATCH v2 00/17] serial: max310x: cleanups and improvements
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Thu, 18 Jan 2024 13:43:50 +0100
-Christoph Niedermaier <cniedermaier@dh-electronics.com> wrote:
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-> Since the commit 93f3350c46fa ("RS485: fix inconsistencies in the
-> meaning of some variables"), the definition for bit 3 has been removed.
-> But with the switch to bit shift marcos in commit 76ac8e29855b ("tty:
+Hello,
+this patch series brings a few clean-ups and improvements to the max310x
+driver.
 
-marcos -> macros
+Some of these changes are based on suggestions for the sc16is7xx driver by
+Andy Shevchenko following this discussion:
 
-Hugo Villeneuve
+Link: https://lore.kernel.org/all/CAHp75VebCZckUrNraYQj9k=Mrn2kbYs1Lx26f5-8rKJ3RXeh-w@mail.gmail.com/
 
-> serial: Cleanup the bit shift with macro"), this gap wasn't preserved.
-> To avoid a break in user/kernel api of the system skip bit 3 again and
-> add a placeholder comment.
-> 
-> Signed-off-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-> ---
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-> Cc: Jiri Slaby <jirislaby@kernel.org>
-> Cc: Lukas Wunner <lukas@wunner.de>
-> Cc: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> To: linux-serial@vger.kernel.org
-> To: linux-arm-kernel@lists.infradead.org
-> ---
->  include/uapi/linux/serial.h | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
-> 
-> diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
-> index 9086367db043..de9b4733607e 100644
-> --- a/include/uapi/linux/serial.h
-> +++ b/include/uapi/linux/serial.h
-> @@ -145,12 +145,13 @@ struct serial_rs485 {
->  #define SER_RS485_ENABLED		_BITUL(0)
->  #define SER_RS485_RTS_ON_SEND		_BITUL(1)
->  #define SER_RS485_RTS_AFTER_SEND	_BITUL(2)
-> -#define SER_RS485_RX_DURING_TX		_BITUL(3)
-> -#define SER_RS485_TERMINATE_BUS		_BITUL(4)
-> -#define SER_RS485_ADDRB			_BITUL(5)
-> -#define SER_RS485_ADDR_RECV		_BITUL(6)
-> -#define SER_RS485_ADDR_DEST		_BITUL(7)
-> -#define SER_RS485_MODE_RS422		_BITUL(8)
-> +/* Placeholder for bit 3: SER_RS485_RTS_BEFORE_SEND, which isn't used anymore */
-> +#define SER_RS485_RX_DURING_TX		_BITUL(4)
-> +#define SER_RS485_TERMINATE_BUS		_BITUL(5)
-> +#define SER_RS485_ADDRB			_BITUL(6)
-> +#define SER_RS485_ADDR_RECV		_BITUL(7)
-> +#define SER_RS485_ADDR_DEST		_BITUL(8)
-> +#define SER_RS485_MODE_RS422		_BITUL(9)
->  
->  	__u32	delay_rts_before_send;
->  	__u32	delay_rts_after_send;
-> -- 
-> 2.11.0
-> 
-> 
+The changes have been tested on a custom board using a max14830 in SPI
+mode, with an external oscillator (not crystal). Tests included a simple
+communication test with a GPS connected to UART0.
+
+They also have been tested by using i2c-stub to simulate the four ports on a
+virtual I2C max14830 device, but with obvious limitations as this cannot
+simulate all the hardware functions.
+
+Thank you.
+
+Link: [v1] https://lore.kernel.org/all/20240117223856.2303475-1-hugo@hugovil.com
+
+Changes for V2:
+- Drop patch "serial: max310x: replace ENOTSUPP with preferred EOPNOTSUPP (checkpatch)"
+- Fix cover letter typo
+- Add Andy Shevchenko Suggested-by and Reviewed-by tags for selected patches
+
+Hugo Villeneuve (17):
+  serial: max310x: fix NULL pointer dereference in I2C instantiation
+  serial: max310x: add I2C device table for instantiation from userspace
+  serial: max310x: use i2c_get_match_data()
+  serial: max310x: use spi_get_device_match_data()
+  serial: max310x: fix syntax error in IRQ error message
+  serial: max310x: remove holes in struct max310x_devtype
+  serial: max310x: add macro for max number of ports
+  serial: max310x: use separate regmap name for each port
+  serial: max310x: simplify probe() and remove() error handling
+  serial: max310x: add explicit return for some switch default cases
+  serial: max310x: use dev_err_probe() instead of dev_err()
+  serial: max310x: replace hardcoded masks with preferred GENMASK()
+  serial: max310x: use common detect function for all variants
+  serial: max310x: use common power function for all variants
+  serial: max310x: replace bare use of 'unsigned' with 'unsigned int'
+    (checkpatch)
+  serial: max310x: reformat and improve comments
+  serial: max310x: fix indentation
+
+ drivers/tty/serial/max310x.c | 327 ++++++++++++++++++-----------------
+ 1 file changed, 164 insertions(+), 163 deletions(-)
+
+
+base-commit: 0c84bea0cabc4e2b98a3de88eeb4ff798931f056
+-- 
+2.39.2
+
