@@ -1,82 +1,117 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ACF81BC2E;
-	Thu, 18 Jan 2024 08:54:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BE02125A7;
+	Thu, 18 Jan 2024 08:56:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705568080; cv=none; b=aXrt2WoOQU1lAVFl84bdBMb987eMSkBF6hn2ff+KEXsrgkDf49+RkOt3WZzEmPULvsA6fI9e0r4Fx5BVVGDVKqVFZVBoAqTw/HsirKa+AP4Nurxl46wg5Mb0irmxwGqZYQG61g0GtwUtCqNzefXHbYYjVhe7Vk4xGTyzPM5/XIs=
+	t=1705568209; cv=none; b=GjwrvmQcDMbX8/kb177U87Gf3b4SSrv1C55T3f/lmdja/gKxVyo3sv8DKjn2qWpulmlId7fLtHVsehnovCcmS298gVDN1vm941qGBa9hE7Edm/i5t7qYG2rJEQuI4S2GioiJvNKOYjhqDS1Wg1WauphqalJKE4s1EkY+E3ddGbM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705568080; c=relaxed/simple;
-	bh=NvDgfWGKH3611urjnU880VyH0+2OEkUrzfs6WktS424=;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:
-	 In-Reply-To; b=p8juIH98LNZr8btXWMYXop4G8epSi9m2G07gm85MCs2TWhD96JBEKwAG61uosFgBuQ4IXc3ai+BEIY1iN9bNpCuvjpJX+4yQAfGunM3jD9Y2w9ikiruiAAYxL3kD5dWM2BXDvfWCSns+S2qFaetwaAFTUs6BaXV8vRtiNOfNuJQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=iLMKorbi; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="iLMKorbi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1043EC433F1;
-	Thu, 18 Jan 2024 08:54:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1705568079;
-	bh=NvDgfWGKH3611urjnU880VyH0+2OEkUrzfs6WktS424=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=iLMKorbiRcg59HMkoHyJCr5ewM0nhzXX9zLT3fE3BdHariJL/proWpxBOyFV3TE0/
-	 su5hR3bbEFVjswif9sOCTLKPU7jTYWFaIy1mN7ALW2mwRcWP0W7xxO+9EZeaJFnzyV
-	 QtbVJffCzPcWTmQBQFqT5lIk08ys8CznvWpZ4xJU=
-Date: Thu, 18 Jan 2024 09:54:36 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-fbdev@vger.kernel.org,
-	linux-parisc@vger.kernel.org, Helge Deller <deller@gmx.de>,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH 31/45] tty: vt: use VESA blanking constants
-Message-ID: <2024011857-anything-fascism-80f6@gregkh>
-References: <20240118075756.10541-1-jirislaby@kernel.org>
- <20240118075756.10541-32-jirislaby@kernel.org>
- <39622a13-3999-4bf6-b8fc-f7a70c8cd5da@suse.de>
- <4976e06c-dffd-4b93-a828-34f998f2472a@kernel.org>
- <4ae60e8c-6a86-4895-b8fe-48de5b64b6c8@suse.de>
+	s=arc-20240116; t=1705568209; c=relaxed/simple;
+	bh=DKc/D2UkkHwXWH4OMtAGeleG7U/HKVCzA9yBkCaGT+0=;
+	h=Received:X-Google-DKIM-Signature:X-Gm-Message-State:
+	 X-Google-Smtp-Source:X-Received:Received:Received:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:
+	 X-Gmail-Original-Message-ID:Message-ID:Subject:To:Cc:Content-Type:
+	 Content-Transfer-Encoding; b=NYXvvawTfbzrnhh0eSuAQ5GCvQTyepo8laaCRSgCMFytHGELNMMlYo5yfdSE67NdCHYruYCJYt4hXp3kWPPReB1SRCPX55tPAXKAVo9avbxAAPSRZJy5TNFJaIWSPUv7U2YZyXwiYoSyW55Geo7s/PgW8qqSPnEGkMEMMDfFfUU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-5f0629e67f4so120156667b3.3;
+        Thu, 18 Jan 2024 00:56:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705568207; x=1706173007;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yUhp044KaG5kosWl9TplBzHfM0oWfk1S3xB5Nr0ifxs=;
+        b=FvWJE/IPvz4lef+pVbRhjQJ+a74ODWgOqPsnOqRMJhlUcMPUsJsYz/m0xDD+uQRZVb
+         M5Zcw4cvslSQwDr78Y/XbcKF6OhGQZDHfVTxydmSCLaI+NDMYqRFQGWfsckRH/xzLO0E
+         3y64QD6L2W7qMisjMQ2tWCn6X/+WcYscilCuf+Xn8LBjfbpxSYHjim6En7AddQ456u9k
+         5F7ccKKYRsKaCV/2cg4zC+09CMK4MRsjAmlYsEPFALMRJyIMTQY/PaKAMja9xS8PLOrC
+         2obhYP61iDQ6g0GPRSxIFWi7YjllZ5bMMWHX7Azrv/hhI77reGT2lUIGxBKOUVMq16Ek
+         Icww==
+X-Gm-Message-State: AOJu0YxtIUBYGvamLpgqEZ4z/rop1sanGLiHwdVxZ7Zu5QusJuNY6xN1
+	6mdNFiGXLM7+PNvO8haJPlhW1EL+IsifeiF/C9TG0AhcpWhbi72uW0sGjOHkWTM=
+X-Google-Smtp-Source: AGHT+IF6lL8EQfZZdv6kebQAfAHjechw+y9fjjKUjzfE0aS4EkBi7nItihgyegNwcHj3R9ZgnE0F/w==
+X-Received: by 2002:a0d:dbd4:0:b0:5ff:63e0:885b with SMTP id d203-20020a0ddbd4000000b005ff63e0885bmr418769ywe.76.1705568207309;
+        Thu, 18 Jan 2024 00:56:47 -0800 (PST)
+Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com. [209.85.219.175])
+        by smtp.gmail.com with ESMTPSA id v67-20020a814846000000b005ff88cbbc93sm286920ywa.111.2024.01.18.00.56.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Jan 2024 00:56:47 -0800 (PST)
+Received: by mail-yb1-f175.google.com with SMTP id 3f1490d57ef6-dc238cb1b17so1839225276.0;
+        Thu, 18 Jan 2024 00:56:47 -0800 (PST)
+X-Received: by 2002:a25:86c5:0:b0:dc2:42fc:135d with SMTP id
+ y5-20020a2586c5000000b00dc242fc135dmr352561ybm.62.1705568206842; Thu, 18 Jan
+ 2024 00:56:46 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4ae60e8c-6a86-4895-b8fe-48de5b64b6c8@suse.de>
+References: <20240118075756.10541-1-jirislaby@kernel.org> <20240118075756.10541-20-jirislaby@kernel.org>
+In-Reply-To: <20240118075756.10541-20-jirislaby@kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 18 Jan 2024 09:56:35 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdU5P9v9ofeeMA9M+kbHv2fSikChZCS3=tbaAZmG8dwF6A@mail.gmail.com>
+Message-ID: <CAMuHMdU5P9v9ofeeMA9M+kbHv2fSikChZCS3=tbaAZmG8dwF6A@mail.gmail.com>
+Subject: Re: [PATCH 19/45] tty: vt: make init parameter of consw::con_init() a bool
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Helge Deller <deller@gmx.de>, 
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	linux-parisc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jan 18, 2024 at 09:41:34AM +0100, Thomas Zimmermann wrote:
-> Hi
-> 
-> Am 18.01.24 um 09:32 schrieb Jiri Slaby:
-> > On 18. 01. 24, 9:30, Thomas Zimmermann wrote:
-> > > Am 18.01.24 um 08:57 schrieb Jiri Slaby (SUSE):
-> > > > There are VESA blanking constants defined in console.h already. So use
-> > > > them in the console code instead of constant values.
-> > > 
-> > > These constants also exist in include/uapi/linux/fb.h. It would be
-> > > nice to find a common header where they can be shared.
-> > 
-> > Hi,
-> > 
-> > see 32/45.
-> > 
-> > I actually don't know how to fix that nicely while keeping uapi happy.
-> 
-> Is it hard to get a new UAPI header accepted (honest question)?
+Hi Jiri,
 
-No.
+On Thu, Jan 18, 2024 at 9:03=E2=80=AFAM Jiri Slaby (SUSE) <jirislaby@kernel=
+.org> wrote:
+> The 'init' parameter of consw::con_init() is true for the first call of
+> the hook on a particular console. So make the parameter a bool.
+>
+> And document the hook.
+>
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 
-> There are a few things I'd like to split off from fbdev. But that
-> would require UAPI headers.
+Thanks for your patch!
 
-That's fine, create them, but you can't just delete an existing .h file
-as that will usually break things.
+> --- a/drivers/video/console/vgacon.c
+> +++ b/drivers/video/console/vgacon.c
+> @@ -367,7 +367,7 @@ static const char *vgacon_startup(void)
+>         return display_desc;
+>  }
+>
+> -static void vgacon_init(struct vc_data *c, int init)
+> +static void vgacon_init(struct vc_data *c, bool init)
+>  {
+>         struct uni_pagedict *p;
+>
 
-thanks,
+Below, there is one more line to update:
 
-greg k-h
+    -        /* set dimensions manually if init !=3D 0 since vc_resize()
+will fail */
+    +        /* set dimensions manually if init is true since
+vc_resize() will fail */
+
+With the above fixed:
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
