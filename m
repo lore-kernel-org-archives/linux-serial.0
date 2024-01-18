@@ -1,44 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DF9E328D8;
-	Thu, 18 Jan 2024 07:59:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 779C933CE9;
+	Thu, 18 Jan 2024 07:59:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705564771; cv=none; b=d4ahxnDCPU57tDa3OVX/6xtwws6PIw23rtg896A3BimupFDe/X4S0dfu5jRmlNS070lm7pORb5Vbt5rOcDBPpn3yWuDM5GEIYbYbKL5Ff9vC/Yah3Vhk4d2j3MVK+2RZK/eyFg7tnXFw5fZU4OKARj2bapbS8WkNTleLFupmJMg=
+	t=1705564773; cv=none; b=FlFfZUWCzsexKdbD4Yrd05pIMDdHD/2XhI+hlRD0u0CIsCd8GFpFBiH7wjv3Q6kgJtz6EU/C73Z3khrueiw9TTncem17mTQnSvUSmd0WjlOcRvh6lP6VrKLKn1iTCaY1pgGrDQjKM/yDtUrO5uWDtvdF5wX3d2xmw/x3kKJnwO4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705564771; c=relaxed/simple;
-	bh=TxyfiQSfnfbUMhKRrQ0H1rTP3kUo5bAgp6fUTnxFTJs=;
+	s=arc-20240116; t=1705564773; c=relaxed/simple;
+	bh=MR+NuATfSYHNVmx82TTROPf/5gbNbFwpQP6yg+dZ/d8=;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:
 	 X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding; b=bHw8UnXbq4V4HrBgb58ax3KT7GaOG1sXsYONA+ALzS3UyXSYyZoytch3fmyHucgCs/VwpIkab+XnnDjfaikOT9+9FfnKO5umf5cATf5t4SY5VIO/JQKPSXweaQwNEctcvs9woqeollObZdzg0r6PrHZZVnk3feKnNYtdp6jmGDs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ls3qFhFQ; arc=none smtp.client-ip=10.30.226.201
+	 Content-Transfer-Encoding; b=n8YrPSKtcp898pyBFGo7LePCfKsjrDQQuEWhoGCBwuIOTZn5LFjoOlPIJ6oc4sTYADvHW9mC9nyuxG3F8vwx39G3PYHuCdLJsysCo4d+aUY7uVl61O0KUQnytUB48KfBW2MEFicaLiDbhGxkSJ3wN5Y+F2h9JQhEBaCqrsVBK48=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mm3nIJXo; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ls3qFhFQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43FF8C433F1;
-	Thu, 18 Jan 2024 07:59:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mm3nIJXo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1C54C43394;
+	Thu, 18 Jan 2024 07:59:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1705564771;
-	bh=TxyfiQSfnfbUMhKRrQ0H1rTP3kUo5bAgp6fUTnxFTJs=;
+	s=k20201202; t=1705564773;
+	bh=MR+NuATfSYHNVmx82TTROPf/5gbNbFwpQP6yg+dZ/d8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ls3qFhFQJLk9RLW/rjJ1Jett3RJ2P/AFQ7Df/lDXsXPvS1FzS26Z7HI/QewF2b+/U
-	 Mz4Eb1WyZd91E07cU+rSVgy4EPOU6Zhb2nsAQh+p6lVxyOYtTjSlFHulF7f3DxuIJ2
-	 harnNn3m0oAUYTpiCu4KOWWtCq7DTPSGupGYPrNlybSuNWeqYSXIYkK0EfCMSfmBxr
-	 aOSsYKFA9BOJGvKUFBZS0d5yOFJb+2FFk3jSrILvO7bXc64tpqgkrwASSNl/HImMdt
-	 tlvamhci8HICutVrmQw9zyHDGzXueJkb5qtFoTstxUeNb7BhOJOAuZe1o+A5pU/HU0
-	 9XwFxrpzYlKPg==
+	b=mm3nIJXoZMPbRn4yehphjA5VP8jv7ep9JhBxEfhuYCDk0idvxkfB8kRTLlcMeXOcY
+	 8D5oo3k0XgbY4mpLCB0P45Xe/qoDHlBish90lFuBmG6ptmwuvCustOCMVaqn3wfaro
+	 LfkFKcB1WU4mT/24kObB4tnvtX06ZY2DyfafcEeGQe+ZElizURKKnOPyfxsgHoY3Ge
+	 faE2ZUcOyUgz7ATMwVKPGRqsJ4IUfCA41v8MknixBgxtDZjopejqneroTpoy9jYfDV
+	 DPU5EfjBkfasr4kvKuPw4e5wB5plYE+iN1l4M5bbmMWjo/b1mv0olTJ9ZqY4TtsHrk
+	 +Rt/xvfnq6OTA==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Helge Deller <deller@gmx.de>,
-	linux-fbdev@vger.kernel.org,
-	dri-devel@lists.freedesktop.org
-Subject: [PATCH 40/45] fbcon: remove fbcon_getxy()
-Date: Thu, 18 Jan 2024 08:57:51 +0100
-Message-ID: <20240118075756.10541-41-jirislaby@kernel.org>
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Subject: [PATCH 41/45] tty: vt: remove consw::con_getxy()
+Date: Thu, 18 Jan 2024 08:57:52 +0100
+Message-ID: <20240118075756.10541-42-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20240118075756.10541-1-jirislaby@kernel.org>
 References: <20240118075756.10541-1-jirislaby@kernel.org>
@@ -50,62 +46,66 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Again, fbcon_getxy() is the same as the default implementation since the
-softscroll removal in commit 50145474f6ef (fbcon: remove soft scrollback
-code). Drop that.
+After the previous patch, nobody sets that hook. So drop it completely.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Helge Deller <deller@gmx.de>
-Cc: linux-fbdev@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
 ---
- drivers/video/fbdev/core/fbcon.c | 25 -------------------------
- 1 file changed, 25 deletions(-)
+ drivers/tty/vt/vt.c     | 20 +++++---------------
+ include/linux/console.h |  2 --
+ 2 files changed, 5 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index 2166ea1a5430..9c2962900d13 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -2593,30 +2593,6 @@ static void fbcon_set_palette(struct vc_data *vc, const unsigned char *table)
- 	fb_set_cmap(&palette_cmap, info);
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index 69d85a030ebc..539b30e198a9 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -593,18 +593,12 @@ static void con_scroll(struct vc_data *vc, unsigned int top,
+ static void do_update_region(struct vc_data *vc, unsigned long start, int count)
+ {
+ 	unsigned int xx, yy, offset;
+-	u16 *p;
++	u16 *p = (u16 *)start;
++
++	offset = (start - vc->vc_origin) / 2;
++	xx = offset % vc->vc_cols;
++	yy = offset / vc->vc_cols;
+ 
+-	p = (u16 *) start;
+-	if (!vc->vc_sw->con_getxy) {
+-		offset = (start - vc->vc_origin) / 2;
+-		xx = offset % vc->vc_cols;
+-		yy = offset / vc->vc_cols;
+-	} else {
+-		int nxx, nyy;
+-		start = vc->vc_sw->con_getxy(vc, start, &nxx, &nyy);
+-		xx = nxx; yy = nyy;
+-	}
+ 	for(;;) {
+ 		u16 attrib = scr_readw(p) & 0xff00;
+ 		int startx = xx;
+@@ -627,10 +621,6 @@ static void do_update_region(struct vc_data *vc, unsigned long start, int count)
+ 			break;
+ 		xx = 0;
+ 		yy++;
+-		if (vc->vc_sw->con_getxy) {
+-			p = (u16 *)start;
+-			start = vc->vc_sw->con_getxy(vc, start, NULL, NULL);
+-		}
+ 	}
  }
  
--static unsigned long fbcon_getxy(struct vc_data *vc, unsigned long pos,
--				 int *px, int *py)
--{
--	unsigned long ret;
--	int x, y;
--
--	if (pos >= vc->vc_origin && pos < vc->vc_scr_end) {
--		unsigned long offset = (pos - vc->vc_origin) / 2;
--
--		x = offset % vc->vc_cols;
--		y = offset / vc->vc_cols;
--		ret = pos + (vc->vc_cols - x) * 2;
--	} else {
--		/* Should not happen */
--		x = y = 0;
--		ret = vc->vc_origin;
--	}
--	if (px)
--		*px = x;
--	if (py)
--		*py = y;
--	return ret;
--}
--
- /* As we might be inside of softback, we may work with non-contiguous buffer,
-    that's why we have to use a separate routine. */
- static void fbcon_invert_region(struct vc_data *vc, u16 * p, int cnt)
-@@ -3157,7 +3133,6 @@ static const struct consw fb_con = {
- 	.con_font_default	= fbcon_set_def_font,
- 	.con_set_palette 	= fbcon_set_palette,
- 	.con_invert_region 	= fbcon_invert_region,
--	.con_getxy 		= fbcon_getxy,
- 	.con_resize             = fbcon_resize,
- 	.con_debug_enter	= fbcon_debug_enter,
- 	.con_debug_leave	= fbcon_debug_leave,
+diff --git a/include/linux/console.h b/include/linux/console.h
+index 2c8a77865437..c0525ccc54d9 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -104,8 +104,6 @@ struct consw {
+ 			enum vc_intensity intensity,
+ 			bool blink, bool underline, bool reverse, bool italic);
+ 	void	(*con_invert_region)(struct vc_data *vc, u16 *p, int count);
+-	unsigned long (*con_getxy)(struct vc_data *vc, unsigned long position,
+-			int *px, int *py);
+ 	/*
+ 	 * Flush the video console driver's scrollback buffer
+ 	 */
 -- 
 2.43.0
 
