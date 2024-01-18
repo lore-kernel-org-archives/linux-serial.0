@@ -1,202 +1,215 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDB9B1F5FF
-	for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 09:37:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 698DF1F60B;
+	Thu, 18 Jan 2024 09:49:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705570628; cv=none; b=CiCr3f4KS0lquxr9Ukvps/2NwlM3xAxzSR+wEeFgvuNRKt8N2rtzpMMQeOGoXjRaEP8enbrRgi8Ze/GiYUeILXFpqpbww8c3+CVH+CxQFMx143VKG410FlA50dGWU0vzINOPhfJxsZqZzcuZaz/DByyDt1kaclxXkw2xC0S6f5Y=
+	t=1705571365; cv=none; b=Cnxjt+gH6FkEBPPwMHeFRw8BQN8Cv7ewMnQwpg53c91fq0nCixXA57pD7wN9wx7vswaUwPTuFNDkI5Y8YEIXIf3V7ikrU5kT2Oyqbr4qOrACR5mobiusL0Pm5NpK/RtdQFPV7tWGKFZU5PK7hC6A484LzrUYmAIypdzvXf6mDgM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705570628; c=relaxed/simple;
-	bh=ny05BSmMYc0OdKStL6FH+w7BJCfRWjhsHadAWQ3d5w8=;
-	h=DKIM-Signature:Received:X-MC-Unique:Received:
-	 X-Google-DKIM-Signature:X-Gm-Message-State:X-Received:
-	 X-Google-Smtp-Source:X-Received:Received:From:To:Cc:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 X-Mimecast-Spam-Score:X-Mimecast-Originator:Content-Type:
-	 Content-Disposition:Content-Transfer-Encoding; b=q+Q76hf/UdUryZnK0K5qrcIDuGWYYoeSTlIExC2ZcCyqF1kSBtTA+FrB8pQULiorVes3ODir1U/7nSjG9UuwxxusYO2ADdwtlG+3rPONpa6D/ITGm/yP4Dx9wR+vIEbZavdiPzQJyIyEbOhbsUl7a7r/SQTSu1WrhJM+Ttu49x8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Xc5L8g19; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1705571365; c=relaxed/simple;
+	bh=6RYJFETgVonwoGrQdeArVdOIAHrlPJkKtpVNefoLqX4=;
+	h=From:DKIM-Signature:DKIM-Signature:To:Cc:Subject:In-Reply-To:
+	 References:Date:Message-ID:MIME-Version:Content-Type; b=im6oORTZ8D5gUYToyWmEZllxU7VWhcE9J3UGd5xB3EoEyPQvONSFv5Ifsk8z7oKYzxTInbZaXolOGd/FK+0gGGnWTLbN1Pyz+C93cG8iTglHWHYPKwPeQ3PDh+wwWdi3/RIBZhp/4RdgjlBDzA54NghCGhRtVZjVEoDQMjj2Zm8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=1Tkc+Aan; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=SBaZ9J2s; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Xc5L8g19"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1705570625;
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="1Tkc+Aan";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="SBaZ9J2s"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1705571361;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=BFffKgzvP2tJPBxLDLt8qsSP+5mGq9mLel2t1EfYf/c=;
-	b=Xc5L8g197fkPYnC+WJ5svM08vteFdqzC9dWLYZrga17mhP8EcfHYKcVIM02YvWEKd/FK54
-	SPMsp5uVm7nBzfP74Qii3ZHrHs63ODXHCyNNYujtO9ZJqcSsvbLeF4pljogrt5KCFwnrzg
-	8YU9nEsCzzp/PyudrJuu34zn0bzrH5Y=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-271-2hPtulD9PZWGBG1GCJzI3g-1; Thu, 18 Jan 2024 04:37:04 -0500
-X-MC-Unique: 2hPtulD9PZWGBG1GCJzI3g-1
-Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-6800714a149so257861596d6.0
-        for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 01:37:04 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705570623; x=1706175423;
-        h=content-transfer-encoding:content-disposition:mime-version
-         :references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=BFffKgzvP2tJPBxLDLt8qsSP+5mGq9mLel2t1EfYf/c=;
-        b=PzIKScmecl4vwBQQUlqKqg/zVxkGdArWmCyGyF69qvbWpT1bqzvKE2OUhV6D8GGMhw
-         Q7PKASomx/GQZHf6EgWvq1xswvDJ3Lyzzv6rJSf5SMiHpfadSti8xpI0Tsf0B4S1Y7Uf
-         4XBYUXL4lrCeqLp1tbiPjt+QTF9UzIwounUks6LxkuW8b3mxYRGBYXisqEuWNYwumDvA
-         QxsYjR1SC+SxpuYJOGKHy8z160ODiulnjP4Az/MCO6iW3UtPHZ3V5IMkZOauWypoD/w6
-         ZqrboAA8JtzwVH4upzbHxWH56YDr4OCVA8X9j/ncE2f9d7tanSUj5IHYLwvaoEs0+12a
-         6S0A==
-X-Gm-Message-State: AOJu0Yx4yFnxeW6m07nMpHp4EIyxiZVGFxPO88ak4peFTYPYxQtEM+qo
-	aZCJddiMjV5rp9COgy5qeO0JH2WNgb9XHbyjiPIhUV1NUtooyOS84k7M/UC9NJk6ZhhvH5gcgRL
-	c77Y2+HHd4ZKk7Js0o6x3SG0JhKWk0Z8lSFylVSSAzJMjnCLCDj2PkZ1xK8B6BOw+oEl6Cg==
-X-Received: by 2002:a05:6214:62d:b0:681:8aa2:d673 with SMTP id a13-20020a056214062d00b006818aa2d673mr389808qvx.21.1705570623632;
-        Thu, 18 Jan 2024 01:37:03 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGgiXjzN4wjLy3FD3tSLUCJyIaYCZdTUeu3sMmzuAhq0WOGFlh006KIdOM1ts6Byz7uluKtsA==
-X-Received: by 2002:a05:6214:62d:b0:681:8aa2:d673 with SMTP id a13-20020a056214062d00b006818aa2d673mr389802qvx.21.1705570623397;
-        Thu, 18 Jan 2024 01:37:03 -0800 (PST)
-Received: from LeoBras.redhat.com ([2804:1b3:a803:6ad1:9baf:f024:858c:2fee])
-        by smtp.gmail.com with ESMTPSA id l14-20020a0ce84e000000b0068181b61183sm1000936qvo.31.2024.01.18.01.37.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jan 2024 01:37:03 -0800 (PST)
-From: Leonardo Bras <leobras@redhat.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Leonardo Bras <leobras@redhat.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Marcelo Tosatti <mtosatti@redhat.com>,
-	LKML <linux-kernel@vger.kernel.org>,
-	linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [RESEND RFC PATCH v1 2/2] serial/8250: Avoid getting lock in RT atomic context
-Date: Thu, 18 Jan 2024 06:36:49 -0300
-Message-ID: <ZajxMc05uVmK7e60@LeoBras>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <87o7djaubq.fsf@jogness.linutronix.de>
-References: <20240116073701.2356171-1-leobras@redhat.com> <20240116073701.2356171-3-leobras@redhat.com> <75a39f0a-8f79-eacf-4a35-5de512a3cbed@linux.intel.com> <ZabJGefGkrs0SNzW@LeoBras> <87o7djaubq.fsf@jogness.linutronix.de>
+	bh=GtJSfvK3A5y9mI+37S4oOkJ0KbwWzw9oQsjQrL2qHqU=;
+	b=1Tkc+AanrMIgQXX3igCznWvNO/Fj6EFNr+LYADjegXxaQmaBj8OFO5Gt6Ll4GlJlBlZZHS
+	5YPpXWhg5auO1XGdHN81X4Mh8YCjSpUq/RFBtctb2RcMFm5IBOi5BSMhzZCgqmWhr/4yx8
+	0jAhfsBqxO1eUKSq8UgRTMEAhuhzDRkojiWb7po36F2CqtMFjZhGc64NPYqBu3KE74R6J/
+	KeQGxqXq5Zb1aG/HCJNZW6h1oGbcsCLz50vZPGPHAen+9EyUATCjH3vpPUOEIjiNoFs+Q2
+	qplyjcP43vvPM1eofiR1j+gmMQeVQ2A1xx/SmSc5AXUSx6xHgjnFGzvBOpuVJg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1705571361;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=GtJSfvK3A5y9mI+37S4oOkJ0KbwWzw9oQsjQrL2qHqU=;
+	b=SBaZ9J2sRh2gSBU7w/itcinMraeWuHjBcVY6j1xo5aRoS0oz3ZdAPtiXXljxBYWj85uXIV
+	V3ZByeISsGui2iCw==
+To: Sreenath Vijayan <sreenath.vijayan@sony.com>, corbet@lwn.net,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, rdunlap@infradead.org,
+ pmladek@suse.com
+Cc: rostedt@goodmis.org, senozhatsky@chromium.org,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, taichi.shimoyashiki@sony.com,
+ daniel.palmer@sony.com, anandakumar.balasubramaniam@sony.com,
+ sreenath.vijayan@sony.com
+Subject: Re: [PATCH v3 1/2] printk: Add function to dump printk buffer
+ directly to consoles
+In-Reply-To: <402f0cbc3a573503c7cc794113aa5137ed7f276c.1705331453.git.sreenath.vijayan@sony.com>
+References: <cover.1705331453.git.sreenath.vijayan@sony.com>
+ <402f0cbc3a573503c7cc794113aa5137ed7f276c.1705331453.git.sreenath.vijayan@sony.com>
+Date: Thu, 18 Jan 2024 10:55:20 +0106
+Message-ID: <87le8nas4f.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-On Thu, Jan 18, 2024 at 10:07:45AM +0106, John Ogness wrote:
-> On 2024-01-16, Leonardo Bras <leobras@redhat.com> wrote:
-> > Well, at least in an PREEMPT_RT=y kernel I have found this same bug 
-> > reproducing several times, and through the debugging that I went through I 
-> > saw no mechanism for preventing it.
-> >
-> > This is one example of the bug:
-> > While writing to serial with serial8250_tx_chars in a irq_thread handler
-> > there is an interruption, and __report_bad_irq() tries to printk 
-> > stuff to the console, and when printk goes down to 
-> > serial8250_console_write() and tried to get the port->lock, which causes 
-> > the "BUG: scheduling while atomic":
-> >
-> > [   42.485878] irq 4: nobody cared (try booting with the "irqpoll" option)
-> > [   42.485886] BUG: scheduling while atomic: irq/4-ttyS0/751/0x00010002
-> > [   42.485890] Modules linked in:
-> > [   42.485892] Preemption disabled at:
-> > [   42.485893] [<ffffffff8118ac80>] irq_enter_rcu+0x10/0x80
-> > [   42.485919] CPU: 0 PID: 751 Comm: irq/4-ttyS0 Not tainted 6.7.0-rc6+ #6
-> 
-> This is 6.7.0-rc6+. How are you setting PREEMPT_RT?
+On 2024-01-17, Sreenath Vijayan <sreenath.vijayan@sony.com> wrote:
+> It is useful to be able to dump the printk buffer directly to
+> consoles in some situations so as to not flood the buffer.
+> This needs access to private items of printk like PRINTK_MESSAGE_MAX.
+> Add function in printk.c to accomplish this.
+>
+> Suggested-by: John Ogness <john.ogness@linutronix.de>
+> Signed-off-by: Sreenath Vijayan <sreenath.vijayan@sony.com>
+> Signed-off-by: Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>
+> ---
+>  include/linux/printk.h |  4 ++++
+>  kernel/printk/printk.c | 33 +++++++++++++++++++++++++++++++++
+>  2 files changed, 37 insertions(+)
+>
+> diff --git a/include/linux/printk.h b/include/linux/printk.h
+> index 8ef499ab3c1e..0896745f31e2 100644
+> --- a/include/linux/printk.h
+> +++ b/include/linux/printk.h
+> @@ -192,6 +192,7 @@ void show_regs_print_info(const char *log_lvl);
+>  extern asmlinkage void dump_stack_lvl(const char *log_lvl) __cold;
+>  extern asmlinkage void dump_stack(void) __cold;
+>  void printk_trigger_flush(void);
+> +void dump_printk_buffer(void);
+>  #else
+>  static inline __printf(1, 0)
+>  int vprintk(const char *s, va_list args)
+> @@ -271,6 +272,9 @@ static inline void dump_stack(void)
+>  static inline void printk_trigger_flush(void)
+>  {
+>  }
+> +static inline void dump_printk_buffer(void)
+> +{
+> +}
+>  #endif
+>  
+>  #ifdef CONFIG_SMP
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index f2444b581e16..5b11fb377f8f 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -4259,6 +4259,39 @@ void kmsg_dump_rewind(struct kmsg_dump_iter *iter)
+>  }
+>  EXPORT_SYMBOL_GPL(kmsg_dump_rewind);
+>  
+> +/**
+> + * Dump the printk ring buffer directly to consoles
+> + */
+> +void dump_printk_buffer(void)
+> +{
+> +	struct kmsg_dump_iter iter;
+> +	struct console *con;
+> +	char *buf;
+> +	size_t len;
+> +	int cookie;
+> +
+> +	buf = kmalloc(PRINTK_MESSAGE_MAX, GFP_KERNEL);
+> +	if (!buf)
+> +		return;
+> +
+> +	kmsg_dump_rewind(&iter);
+> +	while (kmsg_dump_get_line(&iter, 1, buf, PRINTK_MESSAGE_MAX, &len)) {
 
-By setting ARCH_SUPPORTS_RT=y
+Although using the kmsg_dump interface will provide you the messages,
+they will not necessarily be in the correct format. Consoles can be set
+to use extended format.
 
-> 
-> > [   42.485927] Hardware name: Red Hat KVM/RHEL, BIOS 1.16.3-1.el9 04/01/2014
-> > [   42.485929] Call Trace:
-> > [   42.485940]  <IRQ>
-> > [   42.485944]  dump_stack_lvl+0x33/0x50
-> > [   42.485976]  __schedule_bug+0x89/0xa0
-> > [   42.485991]  schedule_debug.constprop.0+0xd1/0x120
-> > [   42.485996]  __schedule+0x50/0x690
-> > [   42.486026]  schedule_rtlock+0x1e/0x40
-> > [   42.486029]  rtlock_slowlock_locked+0xe7/0x2b0
-> > [   42.486047]  rt_spin_lock+0x41/0x60
-> > [   42.486051]  serial8250_console_write+0x1be/0x460
-> 
-> On PREEMPT_RT-patched kernel, serial8250_console_write() is not
-> compiled. So obviously you are not running a PREEMPT_RT-patched kernel.
+We probably should respect that console setting.
 
-Yes, as mentioned to Thomas before, I am on Vanilla torvalds/linux.
-I was not aware of any extra patches for PREEMPT_RT, could you please point 
-the repo, or the patchset for that PREEMPT_RT-patched version?
+> +		/*
+> +		 * Since using printk() or pr_*() will append the message to the
+> +		 * printk ring buffer, they cannot be used to display the retrieved
+> +		 * message. Hence console_write() of serial drivers is used.
+> +		 */
+> +		console_lock();
+> +		cookie = console_srcu_read_lock();
+> +		for_each_console_srcu(con) {
+> +			if ((console_srcu_read_flags(con) & CON_ENABLED) && con->write)
 
-> 
-> > [   42.486094]  console_flush_all+0x18d/0x3c0
-> > [   42.486111]  console_unlock+0x6c/0xd0
-> 
-> Flushing on console_unlock() is the legacy method.
+console_is_usable() should be used instead. It makes the correct checks.
 
-Great! so this part is solved :)
+> +				con->write(con, buf, len);
+> +		}
+> +		console_srcu_read_unlock(cookie);
+> +		console_unlock();
+> +	}
+> +	kfree(buf);
+> +}
 
-> 
-> I assume you are using a mainline kernel with forced threading of
-> irqs. Mainline has many known problems with console printing, including
-> calling printk when the port->lock is held.
+We could do something like this:
 
-I am using mainline (torvalds/linux) kernel, forcing ARCH_SUPPORTS_RT:
+void dump_printk_buffer(void)
+{
+	console_lock();
+	console_flush_on_panic(CONSOLE_REPLAY_ALL);
+	console_unlock();
+}
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 5ca66aad0d08..879c34398cb7 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -1195,7 +1195,7 @@ config ARCH_NO_PREEMPT
-        bool
- 
- config ARCH_SUPPORTS_RT
--       bool
-+       def_bool y
+This version respects all the console features (formatting, handovers),
+but console_flush_on_panic() does not to allow cond_resched(), which we
+would want in this case.
 
-Since I was not aware of a PREEMPT_RT-patched tree, I did this so I could 
-compile a PREEMPT_RT kernel.
+We could take the console sequence-resetting code out into its own
+helper function. Then it would look like this (comments removed to keep
+things short):
 
+static void console_rewind_all(void)
+{
+	struct console *c;
+	short flags;
+	int cookie;
+	u64 seq;
 
-> 
-> This has been discussed before [0].
-> 
-> > [   42.486117]  vprintk_emit+0x1d6/0x290
-> > [   42.486122]  _printk+0x58/0x80
-> > [   42.486139]  __report_bad_irq+0x26/0xc0
-> > [   42.486147]  note_interrupt+0x2a1/0x2f0
-> > [   42.486155]  handle_irq_event+0x84/0x90
-> > [   42.486161]  handle_edge_irq+0x9f/0x260
-> > [   42.486168]  __common_interrupt+0x68/0x100
-> > [   42.486178]  common_interrupt+0x9f/0xc0
-> > [   42.486184]  </IRQ>
-> 
-> If you want to fix any threaded irq problems relating to printk and
-> console drivers, please use the latest PREEMPT_RT patch series with
-> CONFIG_PREEMPT_RT enabled. This is the current work that is being
-> reviewed on LKML for mainline inclusion. Thanks!
-> 
+	seq = prb_first_valid_seq(prb);
 
-Sure, please let me know of where can I find the latest PREEMPT_RT patch 
-series so I can re-test my bug. By what you comment, it's higly probable 
-that patch 2/2 will not be necessary.
+	cookie = console_srcu_read_lock();
+	for_each_console_srcu(c) {
+		flags = console_srcu_read_flags(c);
 
-On the other hand, unless some extra work was done in preventing the 
-scenario in patch 1/2, I think that can still be discussed. 
+		if (flags & CON_NBCON)
+			nbcon_seq_force(c, seq);
+		else
+			c->seq = seq;
+	}
+	console_srcu_read_unlock(cookie);
+}
 
-> John Ogness
-> 
-> [0] https://lore.kernel.org/lkml/87il5o32w9.fsf@jogness.linutronix.de
-> 
+void console_flush_on_panic(enum con_flush_mode mode)
+{
+	bool handover;
+	u64 next_seq;
 
-Thanks!
-Leo
+	console_may_schedule = 0;
 
+	if (mode == CONSOLE_REPLAY_ALL)
+		console_rewind_all();
+
+	console_flush_all(false, &next_seq, &handover);
+}
+
+void dump_printk_buffer(void)
+{
+	bool handover;
+	u64 next_seq;
+
+	console_lock();
+	console_rewind_all();
+	console_flush_all(true, &next_seq, &handover);
+	console_unlock();
+}
+
+Any thoughts?
+
+John
