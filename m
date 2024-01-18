@@ -1,101 +1,81 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx4.securetransport.de (mx4.securetransport.de [178.254.6.145])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EF452942C;
-	Thu, 18 Jan 2024 15:30:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D18E528DA0
+	for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 15:43:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.254.6.145
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705591855; cv=none; b=B7VeDWQ4/qNBEXuH2lAoEcJ+RREXLidUQpaGAudjNLqWt7m91GZFAsr2LgZ0MvTFJ6bhn28p4tRSlchS6e9nWJ2JgR7FnNYOm9VNXIqJmcNRMdhBYAv3eO1iq2ZK2B0+MAAa0N3WVDg96x0/KeQTZItPLQk2I4l664hseKl2BdA=
+	t=1705592610; cv=none; b=AreZaBx8ZLZtwwxYvYiE6r6XY6WfRQsQb2Lh8jRroiciRcOJjb/i2ReZ7sRVON+s1/umCyXHrLMVQBt7HMmYiZjDPlfWCtfelVv3WjFEfPcjNHkmVfr8oe1zCSc/2gxmGclM6kIhaQ4+ORUcM34Fq+eZJudQzx5Qty1zoRMkdS8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705591855; c=relaxed/simple;
-	bh=sR4Gjgkr5f7lPiJTtQ258jvkdgDh+7iqHe3YtVU7osI=;
-	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:MIME-Version:
-	 References:In-Reply-To:From:Date:Message-ID:Subject:To:Cc:
-	 Content-Type:Content-Transfer-Encoding; b=AH9ar7TlL/7+Xs2rskiYxlVRQ5O/pcxV9Ny1x/uDAQm4H1hHNP9Tp4qJW99XWTETX74x5DMZEDRwnKq2GOxoZmsDJSnMZquyD/BfB6ly6iOhE7M/bljitRitN3CC795S4QCvZXwy011wL889guvbUdAaS3O8FVeBYKDyZnTlu1Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XmgBfyTN; arc=none smtp.client-ip=209.85.208.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1705592610; c=relaxed/simple;
+	bh=gvYAY6pmLImg/jmaH+JmkmYfG3Jb3vB98VAGPVricOM=;
+	h=DKIM-Signature:X-secureTransport-forwarded:From:Complaints-To:To:
+	 CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
+	 In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
+	 X-MS-TNEF-Correlator:Content-Type:Content-Transfer-Encoding:
+	 MIME-Version; b=rG4SI0SKJ82ZWI0TNjpS0GjkfYtOq76jUIix4FaXEd635GlfHsIgUx4Jw+NrpTkYhsPzUalT00kydyq0KnsA/+xK/Yv8/SgGIcmyoYwDehiJF2I3EPXbIXWbnZvA4WfFmiZwjYBsD62cUVbRUHM6DnOcb4HpNFFv2/PAol+RWsU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com; spf=pass smtp.mailfrom=dh-electronics.com; dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b=qXR9BMcl; arc=none smtp.client-ip=178.254.6.145
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dh-electronics.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XmgBfyTN"
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-559de6145c3so2036696a12.1;
-        Thu, 18 Jan 2024 07:30:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1705591852; x=1706196652; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sR4Gjgkr5f7lPiJTtQ258jvkdgDh+7iqHe3YtVU7osI=;
-        b=XmgBfyTNhg8BzestlRjRm/5P9kywEB1yQtIftRj8gzFiohuv6Mb3fCCjrArry80Prz
-         6oXcFQWiBA8mVd3UuV0h/0qdLdtr64XlPN083iMfNEG8Y6NDs/PTvSZSgDCRWFcCT2XU
-         KvOaPC+Ep+pCoQWg0+wXu1qNg4g/7/aGDCxvwNmZTmbKudRkrwqstSFU+NGSGNkwI8Nl
-         pwrBWCyrCQbcoSmSTLnNBJYMQXFm9kdhNi03ImoGCn6rXXCrVDcqyolaZPt9CxDeSdrL
-         gcSYn9rgNrw/JKnoPpfPMEX+F1qm6PM+kmgOUoKr/y6tZpiUWKlw9myZIb6w8dGrcKT4
-         qoTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705591852; x=1706196652;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=sR4Gjgkr5f7lPiJTtQ258jvkdgDh+7iqHe3YtVU7osI=;
-        b=Lkx4V2tfIvbRyeSysqVEgXXT9Z1+d4fGkAkF7i0J1/fCxbGbivtfovaUDd1LLSOGaY
-         ab2ttiNEvEWfs77qDUcfGd/uUgeu26YzcjHlRo+szxQZuBO5cBjVbMTzlUQR3yLNVvr6
-         zUn8zSfiQj4mKZ0KQ51ninweOLAgiCIJ4aHrgrcXlueh5V2xYWvtWcERcnVKuBEFwURs
-         qdfmoumeZMWbbBLP9R6Q0On+NGKK8XvhLVVFSh6ux4fIV9Nuae3XJIG3qujWcsMJYWWz
-         /KtmrPILzzFn+YnXgEfg+jBNmHZa6GP5ht4A8bHsBzvsLlTeGA2x2AE7uWkeCcBNK9Ec
-         bViA==
-X-Gm-Message-State: AOJu0YzLqzFIk3KJGPi8tgZumiOIXMDD4ntm1pZpz3WtCT95WUYu0RNx
-	UHk3otR0VdbAQC3/OqwGR9Bm0LCEfRk5OtMEv6eq6p9rrk2l2sWmVgC3RwnS2OKVDB1akyJzUhy
-	N0l0Oe2pUDqDQ2LAyexpYWiJE+us=
-X-Google-Smtp-Source: AGHT+IF3+SHu0T6cDVGDTcp/GtaO4zkfkIK9JDPE9OwVQcUA6ZMTlisQ0pqI7xW+sE9ZnLJvvHg6Yb//GzmIF4eMKuI=
-X-Received: by 2002:a17:906:e958:b0:a2c:f60d:576f with SMTP id
- jw24-20020a170906e95800b00a2cf60d576fmr533862ejb.50.1705591852402; Thu, 18
- Jan 2024 07:30:52 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="qXR9BMcl"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
+	s=dhelectronicscom; t=1705592552;
+	bh=gvYAY6pmLImg/jmaH+JmkmYfG3Jb3vB98VAGPVricOM=;
+	h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+	b=qXR9BMclBxtfEw8EMtDPgGHWDtIiSNyWW4HUBstZuxu+pvsotObvrfRLQ+QbhbI82
+	 GUNHTbg6/ck48g2BG4yowQLhzGCXCs0DFmx/k3lYdI/ETxfb/zH5ZMxjEaxOWTDrhv
+	 ekFE29Fcy3tb+52VWXp8yhh6PjFG0Q/a87HekEE95XtvYp0Y1ntomNvmED1hCmSzXE
+	 vSo3GEMYMJO6bERwPt+X8skKbTFlnhmnwz9YgTtd5tqkbVzyRpXL5avz2A7gXOZ8XI
+	 Gl6T4wsVJXW2VQXzw/FyCKcnIV1xC8HIsCn3MJGvkdRailOOyaFscW/+VgGNNlBoj/
+	 KrLKSUoJc1/DA==
+X-secureTransport-forwarded: yes
+From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Complaints-To: abuse@cubewerk.de
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, Crescent CY Hsieh
+	<crescentcy.hsieh@moxa.com>, Jiri Slaby <jirislaby@kernel.org>, Lukas Wunner
+	<lukas@wunner.de>, Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Subject: RE: [PATCH] tty: serial: Fix bit order in RS485 flag definitions
+Thread-Topic: [PATCH] tty: serial: Fix bit order in RS485 flag definitions
+Thread-Index: AQHaSgwRrhJOv1ZSDE6d0xFG0slKQ7DfjZ+AgAAnyrA=
+Date: Thu, 18 Jan 2024 15:42:30 +0000
+Message-ID: <a07498454df74a1bb265f9a55cc8ae50@dh-electronics.com>
+References: <20240118124350.3772-1-cniedermaier@dh-electronics.com>
+ <2024011827-bagful-connector-9b36@gregkh>
+In-Reply-To: <2024011827-bagful-connector-9b36@gregkh>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240118152213.2644269-1-hugo@hugovil.com> <20240118152213.2644269-9-hugo@hugovil.com>
-In-Reply-To: <20240118152213.2644269-9-hugo@hugovil.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Thu, 18 Jan 2024 17:30:16 +0200
-Message-ID: <CAHp75Vf7j6_xPceGuDWB5Mno2eJreyyD8B4i4GyyiMyKZPiwLA@mail.gmail.com>
-Subject: Re: [PATCH v2 08/17] serial: max310x: use separate regmap name for
- each port
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	cosmin.tanislav@analog.com, shc_work@mail.ru, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
-	=?UTF-8?B?SmFuIEt1bmRyw6F0?= <jan.kundrat@cesnet.cz>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jan 18, 2024 at 5:22=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.com> =
-wrote:
->
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
->
-> Use a separate regmap name for each port so they can each have their own
-> debugfs entry, allowing to access each port registers independently.
->
-> For example, a four channels/ports device like the MAX14830 will have fou=
-r
-> entries in its regmap debugfs:
->
-> $ find /sys/kernel/debug/regmap -type d | grep spi0.0
-
-Just a side note for the future. The above is an example of "Useless
-use of grep".
-`find` has a `-name` parameter for such, using `find ...-name
-'spi0.0*'` makes the grep unnecessary.
-
-> /sys/kernel/debug/regmap/spi0.0-port0
-> /sys/kernel/debug/regmap/spi0.0-port1
-> /sys/kernel/debug/regmap/spi0.0-port2
-> /sys/kernel/debug/regmap/spi0.0-port3
-
---=20
-With Best Regards,
-Andy Shevchenko
+PiBGcm9tOiBHcmVnIEtyb2FoLUhhcnRtYW4gPGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnPg0K
+PiBTZW50OiBUaHVyc2RheSwgSmFudWFyeSAxOCwgMjAyNCAzOjE5IFBNDQo+IE9uIFRodSwgSmFu
+IDE4LCAyMDI0IGF0IDAxOjQzOjUwUE0gKzAxMDAsIENocmlzdG9waCBOaWVkZXJtYWllciB3cm90
+ZToNCj4+IFNpbmNlIHRoZSBjb21taXQgOTNmMzM1MGM0NmZhICgiUlM0ODU6IGZpeCBpbmNvbnNp
+c3RlbmNpZXMgaW4gdGhlDQo+PiBtZWFuaW5nIG9mIHNvbWUgdmFyaWFibGVzIiksIHRoZSBkZWZp
+bml0aW9uIGZvciBiaXQgMyBoYXMgYmVlbiByZW1vdmVkLg0KPj4gQnV0IHdpdGggdGhlIHN3aXRj
+aCB0byBiaXQgc2hpZnQgbWFyY29zIGluIGNvbW1pdCA3NmFjOGUyOTg1NWIgKCJ0dHk6DQo+PiBz
+ZXJpYWw6IENsZWFudXAgdGhlIGJpdCBzaGlmdCB3aXRoIG1hY3JvIiksIHRoaXMgZ2FwIHdhc24n
+dCBwcmVzZXJ2ZWQuDQo+PiBUbyBhdm9pZCBhIGJyZWFrIGluIHVzZXIva2VybmVsIGFwaSBvZiB0
+aGUgc3lzdGVtIHNraXAgYml0IDMgYWdhaW4gYW5kDQo+PiBhZGQgYSBwbGFjZWhvbGRlciBjb21t
+ZW50Lg0KPj4NCj4+IFNpZ25lZC1vZmYtYnk6IENocmlzdG9waCBOaWVkZXJtYWllciA8Y25pZWRl
+cm1haWVyQGRoLWVsZWN0cm9uaWNzLmNvbT4NCj4+IC0tLQ0KPj4gQ2M6IEdyZWcgS3JvYWgtSGFy
+dG1hbiA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+DQo+PiBDYzogQ3Jlc2NlbnQgQ1kgSHNp
+ZWggPGNyZXNjZW50Y3kuaHNpZWhAbW94YS5jb20+DQo+PiBDYzogSmlyaSBTbGFieSA8amlyaXNs
+YWJ5QGtlcm5lbC5vcmc+DQo+PiBDYzogTHVrYXMgV3VubmVyIDxsdWthc0B3dW5uZXIuZGU+DQo+
+PiBDYzogTGlubyBTYW5maWxpcHBvIDxsLnNhbmZpbGlwcG9Aa3VuYnVzLmNvbT4NCj4+IFRvOiBs
+aW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnDQo+PiBUbzogbGludXgtYXJtLWtlcm5lbEBsaXN0
+cy5pbmZyYWRlYWQub3JnDQo+PiAtLS0NCj4gDQo+IFNob3VsZG4ndCB0aGlzIGhhdmUgYSBGaXhl
+czogdGFnIGluIGl0Pw0KDQpJIHdpbGwgZml4IHRoYXQgaW4gVmVyc2lvbiAyLg0KDQoNClJlZ2Fy
+ZHMNCkNocmlzdG9waA0K
