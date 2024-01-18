@@ -1,42 +1,42 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 774791F951;
-	Thu, 18 Jan 2024 10:05:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4D0720B01;
+	Thu, 18 Jan 2024 10:14:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705572340; cv=none; b=MlAYmEIOt/k3wGTJ/MnxsAUK8rSum8WA2+j+zM/Q0q/CtC2qDDpNcgohpO1G/rC0WB41M80O/Zj1vV88NqeFRxFkHNGV+blQAtkWHjlTYBrtyEsAeWfBCko7VYNKi4XJJ6Rx0fwlVwIVIMFKUGPMLQskzZXIkQRYATfvC3fGnl4=
+	t=1705572899; cv=none; b=qthGXFc7mAum8KuWrzxpu3vHss9kLQccuDchEni1H1Alf/F9Pb+teMmFxh+CTMMF8HMgMlhLG0tdCuZjH/M8vLQc8px8uq+0/l/aS8rMthhLrBPiL/a2m8py8fcHnJTM6uPmEsdeM7Cw4xkqEJj1ejKVqoumcQP/65H2k9MmYtY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705572340; c=relaxed/simple;
-	bh=hEDpkWKYdCUozZVhNgkCxtKawEDN121YeJ3ex11tiD8=;
+	s=arc-20240116; t=1705572899; c=relaxed/simple;
+	bh=khhLqmve9Id0BgYdRyMNy+0ycxyLazuWpvl/uJGui2g=;
 	h=From:DKIM-Signature:DKIM-Signature:To:Cc:Subject:In-Reply-To:
-	 References:Date:Message-ID:MIME-Version:Content-Type; b=enia/FD4yAh8r688bwOIoCTzjkoRdPFPTLZyIzDEpGjRCJtunr+26HlMHjbcj8hA5rtAsNvA6fEaD9YHKJ9BXXegf7fuWifgSqafVmYqTRx2IOO9/l+7vL39Y/zmPh2USsYMoegK91LEK+474zW6Nh5YdC0xWMffy9CElDfsChw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=jeKWojFv; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=LmHSGiMc; arc=none smtp.client-ip=193.142.43.55
+	 References:Date:Message-ID:MIME-Version:Content-Type; b=lXHqzDSTDHYCWL7K1MqxBVfdaJFKq5BAEwresor8mArEmJe4mnu0cIpbeRpNTAdXysTVGkQkZCe0DeCDZSZpZsWsOtHdH5VM/du4aQBMi2cwWxoHryYKiCGyHcloKMegXfwx0b5LTw178wCdRt0Z2k4U+CExrlIIAqi8PE1h3oA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=00BPwWzh; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=OhyBShu3; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="jeKWojFv";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="LmHSGiMc"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="00BPwWzh";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="OhyBShu3"
 From: John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1705572328;
+	s=2020; t=1705572895;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=hEDpkWKYdCUozZVhNgkCxtKawEDN121YeJ3ex11tiD8=;
-	b=jeKWojFvbaF/wh7/AlP9tuOuOPdwNzAU349h4xctVPcY4ren0B2NdZl3WKkdBkyA/Q8iYJ
-	VFutwJS0YiOS/I89EiUdp69FgknAutp4jUGsE9nDKaeTQTejfev3bZUezIQOnJArOh3ddU
-	iYNgpELBJm6ww6af3eYPSYyEr08mVIJL/Bk5KSlrGzuXrsBXx1qEN87qsxYofRFCWrsm+s
-	H7OHPujOziF/Xc8B/3bZE2+GiPhIz+6QQPTaFrjY/LqFzsSf2IP1yLZ6BspAp/DCqXkjgh
-	X+xBerk+pXBvBV7PJ2FReGucifDpliRCl1lNLE4N66/mxoUTEn6Y0wN2RrLnCw==
+	bh=JzaKwCLLcrV0lAUYdlCr9JKsNWWBaBuoPxIK1F3gv1E=;
+	b=00BPwWzhkm3L0MmROW6y6HEAbXbRET4sA0iC4Ai+lQv/jzdbl6G34U8dq8Pn3jZs273ZCv
+	jRfhj0P6znPdKYDQrSt5Zif98zDwD9BrD9lXcwdg339ojVdSCOb59sbOlq06APX/HVDr60
+	kZ8easq3iyu0BHyPy+ap7CceMr/hLd5ZhgWTb4s9M99CECwPoYgCVPNoe2CICOeUuMtnOR
+	l5MBvzUU0UNhDcO1sw5VNYvczARNX7wfenFF+zfmJzH1RKD1GhDahNZp+Q2OYSbM9b+l6h
+	enBYTToQzEtWNsNxJegZOXJaUhuaJ1bghnjr9dhUTMfz9F2gfMnnzHwKC5LDlQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1705572328;
+	s=2020e; t=1705572895;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=hEDpkWKYdCUozZVhNgkCxtKawEDN121YeJ3ex11tiD8=;
-	b=LmHSGiMc9vDiLrpTw0No9fYBbraY19ibzOZe72TFgg9DkVrF9PmApnwpa906vdQG+N79Fs
-	Cj+90yytExTxk9CQ==
+	bh=JzaKwCLLcrV0lAUYdlCr9JKsNWWBaBuoPxIK1F3gv1E=;
+	b=OhyBShu3/6Q8I7chxynESX5SoYFTFP7rL4vBWYHnn8kw6OFW3gCs8YvDfD25+ChfzGY85O
+	AQlsAppiMfXfY+Bw==
 To: Sreenath Vijayan <sreenath.vijayan@sony.com>, corbet@lwn.net,
  gregkh@linuxfoundation.org, jirislaby@kernel.org, rdunlap@infradead.org,
  pmladek@suse.com
@@ -45,13 +45,14 @@ Cc: rostedt@goodmis.org, senozhatsky@chromium.org,
  linux-serial@vger.kernel.org, taichi.shimoyashiki@sony.com,
  daniel.palmer@sony.com, anandakumar.balasubramaniam@sony.com,
  sreenath.vijayan@sony.com
-Subject: Re: [PATCH v3 2/2] tty/sysrq: Dump printk ring buffer messages via
- sysrq
-In-Reply-To: <57daf43c5270f7532b269b9f0e90d126ca012354.1705331453.git.sreenath.vijayan@sony.com>
+Subject: Re: [PATCH v3 1/2] printk: Add function to dump printk buffer
+ directly to consoles
+In-Reply-To: <87le8nas4f.fsf@jogness.linutronix.de>
 References: <cover.1705331453.git.sreenath.vijayan@sony.com>
- <57daf43c5270f7532b269b9f0e90d126ca012354.1705331453.git.sreenath.vijayan@sony.com>
-Date: Thu, 18 Jan 2024 11:11:27 +0106
-Message-ID: <87il3rardk.fsf@jogness.linutronix.de>
+ <402f0cbc3a573503c7cc794113aa5137ed7f276c.1705331453.git.sreenath.vijayan@sony.com>
+ <87le8nas4f.fsf@jogness.linutronix.de>
+Date: Thu, 18 Jan 2024 11:20:54 +0106
+Message-ID: <87fryvaqxt.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -60,18 +61,14 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 
-On 2024-01-17, Sreenath Vijayan <sreenath.vijayan@sony.com> wrote:
-> When terminal is unresponsive, one cannot use dmesg to view printk
-> ring buffer messages. Also, syslog services may be disabled,
-> to check the messages after a reboot, especially on embedded systems.
-> In this scenario, dump the printk ring buffer messages via sysrq
-> by pressing sysrq+D.
+Oops, for the current mainline code it is actually even simpler because
+the console_unlock() will perform the flushing:
 
-Note that using sysrq+g with kgdb or kdb it is already possible to dump
-the printk ringbuffer messages. However using this new sysrq+D is much
-more comfortable, less intrusive, and generally safer.
-
-I have no problems with this change. But I guess the tty maintainers
-will need to speak up about extending the sysrq list.
+void dump_printk_buffer(void)
+{
+ 	console_lock();
+ 	console_rewind_all();
+ 	console_unlock();
+}
 
 John
