@@ -1,130 +1,186 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2824125A6;
-	Thu, 18 Jan 2024 09:01:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C93E71D523
+	for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 09:24:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705568511; cv=none; b=mcBYhXd3T5p+rIazxq5pIotuMFfVoNOOyYM+8uB8LvIfAeWiBVAbTbt7KnCdfS7nTlB4M2T/QtgHEfn8qt/K4d55Uu1BTVFAKso2mm5KGMURqiUrbskKx/DMoTSceOV6JFuj1m3AMp2lz8oY5aOldE2esNi04O4KUhf2n+DKL3s=
+	t=1705569877; cv=none; b=DAP6GaevKES3rQLGSMUL6b9crLhwUQZfx/SGiOhTsyEKjVaA9qsGciI5JwE/e7v9FImr94abO4B5a+wcezFBkHX5ISI5d7QwTWam4SShoNgsBo4ZvpcuMjvlbhWff56DRAZhg9tpGv3D+rCBxNPUvduKFTq4B+aOeGYdbPzFYiQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705568511; c=relaxed/simple;
-	bh=VX3UjUxxQDzGP9TuI1emfgiNgL6uYK6UsLnVW9z9Hds=;
-	h=From:DKIM-Signature:DKIM-Signature:To:Cc:Subject:In-Reply-To:
-	 References:Date:Message-ID:MIME-Version:Content-Type; b=gMQ5wh71EwMWHLbPSS8PHye6smDl9ocOdyHQ1nycpt1OY8kHQBZH69hbDsBhO0RudQgXi/PdnqZlrTCIoTj+rdngvC+zQ8zTrv7NiibJFTPSDq7kQD7yGO/eZ8xpw0HlbmG7IlHoC38AhI6F04u/lN9GqAKbuo0/Hn2E4i5RfrY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=uM6V2GzY; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=dH/eVulS; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1705569877; c=relaxed/simple;
+	bh=hAxBSB8jZGNGXkaDT5Gc0IOAwfXgI9zR287purl7LbA=;
+	h=DKIM-Signature:Received:X-MC-Unique:Received:
+	 X-Google-DKIM-Signature:X-Gm-Message-State:X-Received:
+	 X-Google-Smtp-Source:X-Received:Received:From:To:Cc:Subject:Date:
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 X-Mimecast-Spam-Score:X-Mimecast-Originator:Content-Type:
+	 Content-Disposition:Content-Transfer-Encoding; b=rpFOdtFnkdVprzXOc/SCR+Nixo9zP4RUfeJwI/6KOM4UHV4AUmDe3qyR1Y7NSyzEFU+Qv9CiFu9OMKebQCsQdSpwtQQVujA1FzMKSop190YxRl6Ugbn+Hv2ELYLutXuKqBWZ6ftC4CPcAJz93KMEMtJsAvisvQyegksx6QnoFyQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Cfi5xP4Z; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="uM6V2GzY";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="dH/eVulS"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1705568506;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Cfi5xP4Z"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1705569874;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=pvGQqS0lDOtJhhte4gMIiAO7OSJOU62lgkoWaFZVcqY=;
-	b=uM6V2GzYuV5UGXHDASMm2CM/nSU9QpHP0LKkODeGZBM/ZPkc42iu/k+tZhRUgLy9Q/SRSC
-	HAVhktR1IMUoONTS+if75EbD6ZdHVy9mQi3hTbvW99pGZ1kKdc+TAxxAWhcrigLlAUimm7
-	J9eFrHp14980ZNuvYAsjwZK/oa+VfgRrJ50x0DWulzwOaKa0VQ/RoaeS2T5BJ0TSI76wRu
-	SqOzU1PtqdantFWJINi3x9pScW69LE507QyavyoNjLazRRxrxmyv/GnotNkbJ7w8A2AGsY
-	cJa124sjViXAKZ9fl21bjD2MwGfxPTJ2VbaQoHBf4LU5jaK1Cdsq8ROdk3Q2mw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1705568506;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=pvGQqS0lDOtJhhte4gMIiAO7OSJOU62lgkoWaFZVcqY=;
-	b=dH/eVulSbG3Oc87JgUTJHG38DS605GVHbrI7DR6KJtIfn07lu4Dm9gmtHZyqZppRWcwZeg
-	v32IKDvaJOOahWAQ==
-To: Leonardo Bras <leobras@redhat.com>, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>
-Cc: Leonardo Bras <leobras@redhat.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Thomas
- Gleixner <tglx@linutronix.de>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Florian Fainelli
- <f.fainelli@gmail.com>, Tony Lindgren <tony@atomide.com>, Marcelo Tosatti
- <mtosatti@redhat.com>, LKML <linux-kernel@vger.kernel.org>, linux-serial
- <linux-serial@vger.kernel.org>
-Subject: Re: [RESEND RFC PATCH v1 2/2] serial/8250: Avoid getting lock in RT
- atomic context
-In-Reply-To: <ZabJGefGkrs0SNzW@LeoBras>
-References: <20240116073701.2356171-1-leobras@redhat.com>
- <20240116073701.2356171-3-leobras@redhat.com>
- <75a39f0a-8f79-eacf-4a35-5de512a3cbed@linux.intel.com>
- <ZabJGefGkrs0SNzW@LeoBras>
-Date: Thu, 18 Jan 2024 10:07:45 +0106
-Message-ID: <87o7djaubq.fsf@jogness.linutronix.de>
+	bh=RnEHhjCm6k/CZTLAzXdrHvCgybCqk5qE4sMq7XE6mNc=;
+	b=Cfi5xP4ZF0pv0ExF9gJt5KdlFg/gm9H+0XtV0pGnwMdE9FpsH57uyog0vxdlSXhEScoI75
+	5uEGjn6Eyr9aRZgs0JIQhsAXf7CrKJ0AwVWHk6KkTFKWP7xmKrttH1/Ln+EsKJ45DeITRJ
+	cVoYFuAVIdty4C5USBzXnrZ5rtP4csA=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-550-huT4ET6SMFeB3_N6-sb_Zw-1; Thu, 18 Jan 2024 04:24:30 -0500
+X-MC-Unique: huT4ET6SMFeB3_N6-sb_Zw-1
+Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-429be5ecc87so91945011cf.2
+        for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 01:24:30 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705569870; x=1706174670;
+        h=content-transfer-encoding:content-disposition:mime-version
+         :references:in-reply-to:message-id:date:subject:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=RnEHhjCm6k/CZTLAzXdrHvCgybCqk5qE4sMq7XE6mNc=;
+        b=J8KnXny7FdBTDPmUYiX8VcsgSuUgsOFDMaB46yClPUjWO5/4Ak9c5+HeHQ8tgFnVJL
+         fYy7JHi9H1LPOnuf7JfhdQ5wQn5VGgnkV7zE/+Mym3lptaVNYq9C+HvbsIetkf46jsd5
+         L+s90oTN8l0pmBbqnrRO4KEDlECnSFjd57jYxYZ0hUKF/Uizs68FNGv4J+UBd4Bmv6CG
+         Cr6eOTCncMdrIf3pF3qTV8FyZrHzVFy36y42zl/QV/Jay594E21cwQ+/N/Q6beE7QVr1
+         WKlA6yMBchrdsuqDngoZbsPm8/LHesjH3bVkna3emV9hMwRR5tr20crgiaA/K+oUohSe
+         W+MQ==
+X-Gm-Message-State: AOJu0YwmzvMBV2Fazk6hw3eaotpT8Sl9r1JbYyx61xR54YQ0koUOjAur
+	xLYSriclV3gRKsl2Yx4TqhxblgnjHyx5gLBSFoF3rKd7LANNyD+147Lf2cl/gYgxB1HfyEmVjib
+	GKyxJdgKiVS4IcnOhSiXK2/CE4Bh7mMfvGFqmrXESYVNck6bBjOOd5c+t8uHg4Q==
+X-Received: by 2002:a05:622a:41:b0:429:e741:6086 with SMTP id y1-20020a05622a004100b00429e7416086mr545588qtw.50.1705569870285;
+        Thu, 18 Jan 2024 01:24:30 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IE/aIlnaKaJDxIo0ryzXxRyNDirj7kD4P44SfvMq8LixI0qLxHxLgWyeoalljRIspXWt/d+Mg==
+X-Received: by 2002:a05:622a:41:b0:429:e741:6086 with SMTP id y1-20020a05622a004100b00429e7416086mr545580qtw.50.1705569869975;
+        Thu, 18 Jan 2024 01:24:29 -0800 (PST)
+Received: from LeoBras.redhat.com ([2804:1b3:a803:6ad1:9baf:f024:858c:2fee])
+        by smtp.gmail.com with ESMTPSA id cn3-20020a05622a248300b00429c8ae9b94sm6362366qtb.85.2024.01.18.01.24.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Jan 2024 01:24:29 -0800 (PST)
+From: Leonardo Bras <leobras@redhat.com>
+To: Leonardo Bras <leobras@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	Tony Lindgren <tony@atomide.com>,
+	Marcelo Tosatti <mtosatti@redhat.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [RESEND RFC PATCH v1 1/2] irq/spurious: Reset irqs_unhandled if an irq_thread handles one IRQ request
+Date: Thu, 18 Jan 2024 06:24:25 -0300
+Message-ID: <ZajuST2EHSPCwA1m@LeoBras>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <ZahYxOL2r7YbPvO7@LeoBras>
+References: <20240116073701.2356171-1-leobras@redhat.com> <20240116073701.2356171-2-leobras@redhat.com> <87ttnbfw9f.ffs@tglx> <ZahYxOL2r7YbPvO7@LeoBras>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-On 2024-01-16, Leonardo Bras <leobras@redhat.com> wrote:
-> Well, at least in an PREEMPT_RT=y kernel I have found this same bug 
-> reproducing several times, and through the debugging that I went through I 
-> saw no mechanism for preventing it.
->
-> This is one example of the bug:
-> While writing to serial with serial8250_tx_chars in a irq_thread handler
-> there is an interruption, and __report_bad_irq() tries to printk 
-> stuff to the console, and when printk goes down to 
-> serial8250_console_write() and tried to get the port->lock, which causes 
-> the "BUG: scheduling while atomic":
->
-> [   42.485878] irq 4: nobody cared (try booting with the "irqpoll" option)
-> [   42.485886] BUG: scheduling while atomic: irq/4-ttyS0/751/0x00010002
-> [   42.485890] Modules linked in:
-> [   42.485892] Preemption disabled at:
-> [   42.485893] [<ffffffff8118ac80>] irq_enter_rcu+0x10/0x80
-> [   42.485919] CPU: 0 PID: 751 Comm: irq/4-ttyS0 Not tainted 6.7.0-rc6+ #6
+On Wed, Jan 17, 2024 at 07:46:28PM -0300, Leonardo Bras wrote:
+> On Wed, Jan 17, 2024 at 11:08:44PM +0100, Thomas Gleixner wrote:
+> > On Tue, Jan 16 2024 at 04:36, Leonardo Bras wrote:
+> > > This IRQ line disable bug can be easily reproduced with a serial8250
+> > > console on a PREEMPT_RT kernel: it only takes the user to print a lot
+> > > of text to the console (or to ttyS0): around 300k chars should be
+> > > enough.
+> > 
+> > That has nothing to do with RT, it's a problem of force threaded
+> > interrupts in combination with an edge type interrupt line and a
+> > hardware which keeps firing interrupts forever.
+> 
+> Hello Thomas, thanks for your feedback!
+> 
+> I agreed it has nothing to do with RT.
+> I just mentioned PREEMPT_RT as my test case scenario, since it enables 
+> force-threaded IRQs.
+> 
+> > 
+> > > To fix this bug, reset irqs_unhandled whenever irq_thread handles at least
+> > > one IRQ request.
+> > 
+> > This papers over the symptom and makes runaway detection way weaker for
+> > all interrupts or breaks it completely.
+> 
+> This change is supposed to only touch threaded interruptions, since it will
+> reach the included line only if (action_ret == IRQ_WAKE_THREAD) and if 
+> desc->threads_handled changes since the last IRQ request.
+> 
+> This incrementing also happens only on irq_forced_thread_fn() and 
+> irq_thread_fn(), which are called only from irq_thread_fn().
+> 
+> But I get the overall worry about having this making runaway detection way 
+> weaker for all threaded interrupts.
+> 
+> I have previously worked on a solution that can be more precise and be an 
+> opt-in for drivers instead of a general solution:
+> 
+> It required a change in IRQ interface that let the handlers inform how 
+> many IRQs were actually handled (batching). This number would then be 
+> added to desc->threads_handle (in irq_*thread_fn(), just changing the 
+> atomic_inc() to atomic_add()), and then subtracted from irqs_unhandled
+> at note_interrupt().
+> 
+> In the serial8250 case, the driver would be changed to use that interface, 
+> since it's already able to process multiple IRQs, and the bug just 
+> vanishes.
+> 
+> This also solved the serial driver issue, but required a deeper change in 
+> the code, which caused me to consider a simpler solution first.
+> 
+> This solution sure does give better runnaway detection. Do you think it 
+> would be better that the one I sent in this patch?
 
-This is 6.7.0-rc6+. How are you setting PREEMPT_RT?
+For reference, this is the alternative:
+https://gitlab.com/LeoBras/linux/-/commits/serial8250
 
-> [   42.485927] Hardware name: Red Hat KVM/RHEL, BIOS 1.16.3-1.el9 04/01/2014
-> [   42.485929] Call Trace:
-> [   42.485940]  <IRQ>
-> [   42.485944]  dump_stack_lvl+0x33/0x50
-> [   42.485976]  __schedule_bug+0x89/0xa0
-> [   42.485991]  schedule_debug.constprop.0+0xd1/0x120
-> [   42.485996]  __schedule+0x50/0x690
-> [   42.486026]  schedule_rtlock+0x1e/0x40
-> [   42.486029]  rtlock_slowlock_locked+0xe7/0x2b0
-> [   42.486047]  rt_spin_lock+0x41/0x60
-> [   42.486051]  serial8250_console_write+0x1be/0x460
+Please let me know it you think this one is better.
 
-On PREEMPT_RT-patched kernel, serial8250_console_write() is not
-compiled. So obviously you are not running a PREEMPT_RT-patched kernel.
+Thanks!
+Leo
 
-> [   42.486094]  console_flush_all+0x18d/0x3c0
-> [   42.486111]  console_unlock+0x6c/0xd0
+> 
+> > 
+> > The problem with edge type interrupts is that we cannot mask them like
+> > we do with level type interrupts in the hard interrupt handler and
+> > unmask them once the threaded handler finishes.
+> > 
+> > So yes, we need special rules here when:
+> > 
+> >    1) The interrupt handler is force threaded
+> > 
+> >    2) The interrupt line is edge type
+> > 
+> >    3) The accumulated unhandled interrupts are within a sane margin
+> > 
+> > Thanks,
+> > 
+> >         tglx
+> > 
+> 
+> Completelly agree, that's why I am suggesting dealing with threaded 
+> interruptions in a different way: reseting the unhandled count when it 
+> handles a request. 
+> 
+> I am not sure how force threaded and just threaded are different in this 
+> scenario. Could you help me understand?
+> 
+> Thanks!
+> Leo
 
-Flushing on console_unlock() is the legacy method.
-
-I assume you are using a mainline kernel with forced threading of
-irqs. Mainline has many known problems with console printing, including
-calling printk when the port->lock is held.
-
-This has been discussed before [0].
-
-> [   42.486117]  vprintk_emit+0x1d6/0x290
-> [   42.486122]  _printk+0x58/0x80
-> [   42.486139]  __report_bad_irq+0x26/0xc0
-> [   42.486147]  note_interrupt+0x2a1/0x2f0
-> [   42.486155]  handle_irq_event+0x84/0x90
-> [   42.486161]  handle_edge_irq+0x9f/0x260
-> [   42.486168]  __common_interrupt+0x68/0x100
-> [   42.486178]  common_interrupt+0x9f/0xc0
-> [   42.486184]  </IRQ>
-
-If you want to fix any threaded irq problems relating to printk and
-console drivers, please use the latest PREEMPT_RT patch series with
-CONFIG_PREEMPT_RT enabled. This is the current work that is being
-reviewed on LKML for mainline inclusion. Thanks!
-
-John Ogness
-
-[0] https://lore.kernel.org/lkml/87il5o32w9.fsf@jogness.linutronix.de
