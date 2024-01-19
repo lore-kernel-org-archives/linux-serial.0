@@ -1,139 +1,123 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EC1C3C092
-	for <linux-serial@vger.kernel.org>; Fri, 19 Jan 2024 10:02:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A60ED3C467
+	for <linux-serial@vger.kernel.org>; Fri, 19 Jan 2024 10:09:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705658551; cv=none; b=e/+PIzZ1pKdm6WbRWDYMVR82EqtGOTou9t4sCIAlcazMN2h6S7SPIDi5iE9agsNPpf8cMxo2VssgShVbZaspSv1HXXz5pxSOejRUR2OVoWhm7HDcbFa1dQf7lwQXvKhh1Xmf1GMjlrXCSkD0nliECGH/tBtPNvi+zA6Ltz4wfB8=
+	t=1705658975; cv=none; b=ML8r3yEPN+mt9zGP6TqhKdYLdMny3mvcZYwZKfHCSMxBcvvUK2abX+BUre9MeuwqNYj+kW6M4TvwpUkyqRIEG/en3nXX6IMQNA0jt2yOGwTLpBhNnuoBQpfG+/YEpr+gC7NcFZKE+JRT1ukMy+Jo/fO6vhnNPeaUB7G+2AJpb0A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705658551; c=relaxed/simple;
-	bh=Oj2CWRRWRkWFo+LwN0xtbddwuHvv8HJWOBKZdtyRrro=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EnkZirKN/jiulm6BcAFb9AZMwQumvCBUs4CscED2hX+h+zgaTpU8gKIXdMBOhAM6m2tnPKLpqcZCeUrt/L6jVN0UCy40PzUUVarl4XdPS73EUnEDP9inQHb2wuQcrq4DvoRozYPko/9r5kM9kd+9aVITL9Pb+M8et/Kr/4f1vyU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Y346xyu9; arc=none smtp.client-ip=209.85.218.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1705658975; c=relaxed/simple;
+	bh=lUAVtgaJ0bprSpHAgPNiOEqKghOV7Hz56cuKVazrV94=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=bTM5qrni2eNeFHQ5p9C9l8tiCEsUNHgAj0qP7vhl6nbb8rF+HsomGU+DC50EuZeiDCISOeISsJok1e5wZkRDaXMMFrwXyqJ7wvl+qSbYopzo6H8KHWpwxHfHmmpZiuY2k66z9SHGBviRebhaC56hOnj/DEGoHFDIdDgYHY/7FPE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=lWjBuygq; arc=none smtp.client-ip=209.85.167.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Y346xyu9"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-a2f0cb62068so52635666b.2
-        for <linux-serial@vger.kernel.org>; Fri, 19 Jan 2024 02:02:29 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="lWjBuygq"
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-50e766937ddso672792e87.3
+        for <linux-serial@vger.kernel.org>; Fri, 19 Jan 2024 02:09:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1705658548; x=1706263348; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=AgZff7xJLSEE1id9lwt/xdG/y/Qq+0QfwaWVyXYtpWY=;
-        b=Y346xyu9dQ0wetOVxAeuk3h8vgYu8ly+5AU9CjGso6FO0Z+O7WiY1yVxHYJfViGxuK
-         IBjQSOF5XCB/owgYmNvXohhGl/jUJc6yLSSBCW4hfEfWkRGLyIHxwg3QBgtjCfPgCztd
-         4u4trQyocKDxBKYVJsGlWBW9zr1ftbKLJlfmJnH0K2xO3YVbivYFCmicEnc/cR0TwESR
-         X2lm7DPc6U8gY87g/jfiiYJMkuIsFoeNoxCFfERCbUsms8Os6e1HHPcq35/UX+w0KIhj
-         oJyQkNAFlDoDjJPbMBuTo8GQtCmyU1bBbsTfbYg2tLdxETLqkTgA8dEWXhfF0PpixNWl
-         Ta/Q==
+        d=ventanamicro.com; s=google; t=1705658971; x=1706263771; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nujauiSJ02Zrdg5BkB4mk+zSnAXh7vp4Jlf9tWWb5Vs=;
+        b=lWjBuygqNVUOHlk0jA9ECKf2TejBawZF8S6inNweMf/aS6+Xo6nCgovYXILIT3y9E6
+         lIyHFS0Evrm1xLCo+v7lMbDKdPjTtijXIwPEayC5+63PeiT/ZKAdF+gzgjPF/enZHPIJ
+         HjFDrKpFvyRcEdGAKF+abgRS5JR9eJc/Q6Ag+mJgOzqhdpuOIRIqIStn1sMsZLrv+pFC
+         u9/Yb0IaOYAAAlAz32F6y6f5wrvuydJyKEl0H7RyNLwMHn3Nf0S17smCcCAiodg6p9+l
+         nHAvSrdLLvVsWMVrqtaBYfnZY8IAwriIwKG1rYapUZ+Wk63E4wqftwliykp4d/IKtbQH
+         MDjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705658548; x=1706263348;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=AgZff7xJLSEE1id9lwt/xdG/y/Qq+0QfwaWVyXYtpWY=;
-        b=tAVpS90pwQ0XFyAHTgXsJOImdVO/T879vjUhjj0m52MUFHcTAT76O3KzgG/R7ynWdn
-         V6f1M9ibFzGfX7d5lRyFSfhUcbuDWvDN0tZZ2oakzYFNLcqpeINtFzDscTud/LSd67YK
-         5m1j2Rn+8EtUyKKBmYX3cDPB0kCuu1bPcBVWz9sKLU7PF8GxfiU89LQaZwnY16ANPm5p
-         fZlnJ380LRz3NSmGPV/Ifr/9RIop3iOdt+824Y+HFQkZ3Svgcjq3xxqW5zIvAooFKBEX
-         9mkY7HeDH5EPvgXP9IZ5G+ZERZRPS9ISPphrDTdi8jxfnfNfNIwdV5qWL9+OSOcTctLQ
-         2jkg==
-X-Gm-Message-State: AOJu0YwXnqmcDIQK64SX40EYIW56zQ3Ogjt0O9rmzGUZ8mdqUKYuooje
-	408E8BhFynxBUNlFR/zwucG1au2FMy0K3MYqk+Z4CafKzQrd/VN6a8GBPInmBME=
-X-Google-Smtp-Source: AGHT+IH3hrSRgqjsIjrRjJE6rvR05Yg3dSlZbAAOv/Cqb6KZ+EaqMYyJPHfW+KG/alUHVseO61EdLQ==
-X-Received: by 2002:a17:907:9849:b0:a2e:8379:489d with SMTP id jj9-20020a170907984900b00a2e8379489dmr704850ejc.292.1705658547511;
-        Fri, 19 Jan 2024 02:02:27 -0800 (PST)
-Received: from [192.168.2.107] ([79.115.63.202])
-        by smtp.gmail.com with ESMTPSA id c3-20020a17090654c300b00a2a2426728bsm10179252ejp.178.2024.01.19.02.02.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Jan 2024 02:02:27 -0800 (PST)
-Message-ID: <98b87792-4919-4152-8ccc-b8a731cdfd55@linaro.org>
-Date: Fri, 19 Jan 2024 10:02:25 +0000
+        d=1e100.net; s=20230601; t=1705658971; x=1706263771;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=nujauiSJ02Zrdg5BkB4mk+zSnAXh7vp4Jlf9tWWb5Vs=;
+        b=HUJuaYFcHTUVaxinCjca/Ga5lOxiUtYLGm1sdNUhPGmnZYa9ydZSq78scgk44rm7BD
+         cQ5JSVfdwAZL/SmpzCo00n90jPWtlChdW9+CeBoVSkLMYEpLWr44+kgfFmpmAKvIRnUD
+         BTUgOaFEH4PHZ5MFCwCghxIi02cn1uCe0idKTaHUye2nzhucypn7ZuFQqsqA6p93hi3M
+         YGXyFbLYj0p66gWM5oKe09Mhl4pTB7Wj39s4LMvy6JM7blQkQ+2TxQBLRhW/0wbpE5RB
+         QTJPl+ileVYkX3+lBFgk3JpivCqr7dDE1VJFlvQTFytt4KfoVbWG3VTCERZxYxLl6UbZ
+         RJVg==
+X-Gm-Message-State: AOJu0Ywo+vUGpSMbNQjFuAKMb6GK+figPQ3d9PI9rOWZgi1La2i/9jfI
+	MnzxBkuQd2iQYqIOY7WJHgnLp2jwanTR7b0em+kFGxmpMTiEaD7y4h86zzixnPzoMnP7Oj12vVl
+	pboigo/Trdp49f3vAlmML1Tlz3fnV+3zoH7gKzA==
+X-Google-Smtp-Source: AGHT+IHa/MIEYQlMLAmgsbbIMQodojNHus//+YiXCwZclJTJDmp0EnnAZVroAF6CDUc971U4uLo9+++Hzxp9zvHBhpo=
+X-Received: by 2002:a05:6512:1328:b0:50e:e557:f1c4 with SMTP id
+ x40-20020a056512132800b0050ee557f1c4mr675944lfu.0.1705658970552; Fri, 19 Jan
+ 2024 02:09:30 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 17/18] tty: serial: samsung: shrink port feature flags to
- u8
-Content-Language: en-US
-To: Jiri Slaby <jirislaby@kernel.org>,
- Sam Protsenko <semen.protsenko@linaro.org>
-Cc: krzysztof.kozlowski@linaro.org, alim.akhtar@samsung.com,
- gregkh@linuxfoundation.org, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, andre.draszik@linaro.org,
- peter.griffin@linaro.org, kernel-team@android.com, willmcvicker@google.com
-References: <20240110102102.61587-1-tudor.ambarus@linaro.org>
- <20240110102102.61587-18-tudor.ambarus@linaro.org>
- <CAPLW+4k091328krLB_KdHyobG-pR--Rt5WaN6c1ccpgdV8ry7Q@mail.gmail.com>
- <76e1dc42-cabe-4925-8aa1-c8f733fb36a2@linaro.org>
- <8f3f85d0-866e-4e5a-8177-05c26c08b278@kernel.org>
- <842d36c7-9452-431f-95c4-ff114484d201@linaro.org>
- <96e3d7e9-737b-484e-bc94-e95533f06ca7@kernel.org>
-From: Tudor Ambarus <tudor.ambarus@linaro.org>
-In-Reply-To: <96e3d7e9-737b-484e-bc94-e95533f06ca7@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <170498463783.20080.10723421328706946354.git-patchwork-notify@kernel.org>
+ <mhng-2a34d0e2-170f-47a5-a688-ab454a70f06b@palmer-ri-x1c9>
+In-Reply-To: <mhng-2a34d0e2-170f-47a5-a688-ab454a70f06b@palmer-ri-x1c9>
+From: Anup Patel <apatel@ventanamicro.com>
+Date: Fri, 19 Jan 2024 15:39:18 +0530
+Message-ID: <CAK9=C2UV8J52a1pZjsNpFNwpUKn5K3nhS-+bS-3pohDwi3HrfQ@mail.gmail.com>
+Subject: Re: [PATCH v5 0/5] RISC-V SBI debug console extension support
+To: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, nathan@kernel.org, 
+	linux-riscv@lists.infradead.org, Paul Walmsley <paul.walmsley@sifive.com>, 
+	jirislaby@kernel.org, Conor Dooley <conor@kernel.org>, ajones@ventanamicro.com, 
+	linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Sat, Jan 13, 2024 at 12:00=E2=80=AFAM Palmer Dabbelt <palmer@dabbelt.com=
+> wrote:
+>
+> On Thu, 11 Jan 2024 06:50:37 PST (-0800), patchwork-bot+linux-riscv@kerne=
+l.org wrote:
+> > Hello:
+> >
+> > This series was applied to riscv/linux.git (for-next)
+> > by Palmer Dabbelt <palmer@rivosinc.com>:
+> >
+> > On Fri, 24 Nov 2023 12:39:00 +0530 you wrote:
+> >> The SBI v2.0 specification is now frozen. The SBI v2.0 specification d=
+efines
+> >> SBI debug console (DBCN) extension which replaces the legacy SBI v0.1
+> >> functions sbi_console_putchar() and sbi_console_getchar().
+> >> (Refer v2.0-rc5 at https://github.com/riscv-non-isa/riscv-sbi-doc/rele=
+ases)
+> >>
+> >> This series adds support for SBI debug console (DBCN) extension in
+> >> Linux RISC-V.
+> >>
+> >> [...]
+> >
+> > Here is the summary with links:
+> >   - [v5,1/5] RISC-V: Add stubs for sbi_console_putchar/getchar()
+> >     https://git.kernel.org/riscv/c/f503b167b660
+> >   - [v5,2/5] RISC-V: Add SBI debug console helper routines
+> >     https://git.kernel.org/riscv/c/f43fabf444ca
+> >   - [v5,3/5] tty/serial: Add RISC-V SBI debug console based earlycon
+> >     https://git.kernel.org/riscv/c/c77bf3607a0f
+> >   - [v5,4/5] tty: Add SBI debug console support to HVC SBI driver
+> >     https://git.kernel.org/riscv/c/88ead68e764c
+> >   - [v5,5/5] RISC-V: Enable SBI based earlycon support
+> >     https://git.kernel.org/riscv/c/50942ad6ddb5
+> >
+> > You are awesome, thank you!
+>
+> Nathan points out that this has some semantic conflicts with a patch in
+> Greg's TTY tree: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/t=
+ty.git/commit/?id=3Df32fcbedbe9290565e4eac3fd7c4c451d5478787
+>
+> So I think the best bet is to wait on Greg's patch to land in Linus'
+> tree, and then base a v6 of this patch set on that merged patch.  I'm
+> going to drop this one from for-next.
 
+Greg's patch is now available in upstream Linux so I will rebase and
+send out v6.
 
-On 1/19/24 09:54, Jiri Slaby wrote:
-> Hi,
-> 
-> On 19. 01. 24, 10:43, Tudor Ambarus wrote:
->>>> If using unsigned int the bitfied is combined with the previous u8
->>>> fields, whereas if using u8 the bitfield will be independently defined.
->>>> So no benefit in terms of memory footprint, it's just a cosmetic change
->>>> to align the bitfield with the previous u8 fields. Allowing u32 for
->>>> just
->>>> a bit can be misleading as one would ask itself where are the other
->>>> bits. Between a u32 bitfield and a bool a u8 bitfield seems like a good
->>>> compromise.
->>>
->>> Why? What's wrong with bool? bitfields have terrible semantics wrt
->>> atomic writes for example.
->>>
->>
->> Bool occupies a byte and if more port features will ever be added we'll
->> occupy more bytes. Here's how the structure will look like with a bool:
->>
->> struct s3c24xx_uart_info {
->>     const char  *              name;                 /*     0     8 */
->>     enum s3c24xx_port_type     type;                 /*     8     4 */
->>     unsigned int               port_type;            /*    12     4 */
->>     unsigned int               fifosize;             /*    16     4 */
->>     u32                        rx_fifomask;          /*    20     4 */
->>     u32                        rx_fifoshift;         /*    24     4 */
->>     u32                        rx_fifofull;          /*    28     4 */
->>     u32                        tx_fifomask;          /*    32     4 */
->>     u32                        tx_fifoshift;         /*    36     4 */
->>     u32                        tx_fifofull;          /*    40     4 */
->>     u32                        clksel_mask;          /*    44     4 */
->>     u32                        clksel_shift;         /*    48     4 */
->>     u32                        ucon_mask;            /*    52     4 */
->>     u8                         def_clk_sel;          /*    56     1 */
->>     u8                         num_clks;             /*    57     1 */
->>     u8                         iotype;               /*    58     1 */
->>     bool                       has_divslot;          /*    59     1 */
->>
->>     /* size: 64, cachelines: 1, members: 17 */
->>     /* padding: 4 */
->> };
->>
->> What's your preference?
-> 
-> bool :).
-> 
-I'm fine with a bool too as since the introduction of this driver we
-have just this flag, it's unlikey to have 4 more soon to bypass the
-first cacheline. Will change to bool.
-
-Cheers,
-ta
+Thanks,
+Anup
