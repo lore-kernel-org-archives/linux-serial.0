@@ -1,128 +1,132 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F42B56475;
-	Fri, 19 Jan 2024 22:06:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6748F1E48B
+	for <linux-serial@vger.kernel.org>; Fri, 19 Jan 2024 22:45:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705702012; cv=none; b=tzk3U0rANN31aUWhTaaOsX0G1P+gH9goe3Oe80zCB/cAnTdaOMTVeh5fuBYUK400cxdGO0BgvF3ZiE/qAh3B3vTfwyw7AdwOsqeZgw4RuH3We2WhigUBch8ooYmfmVmMdNYdGMf8o31CaEBIjoGtyUESr/A2iyaIH2sitvGpyXA=
+	t=1705704355; cv=none; b=Z9A6wpXrNbw5q7M6PI9xTSWmKq1RfyZL7Hf7ZpWpSIL00pH5kPnjzAebd0DPz5kyWlz7wd6sAVtW4G6Ka2IMxogomFTR2cOHSt/3xitqwx4epVOjpyCR0rwbi/j50xi4Suw2Au5Morbrt9J4awYHLkHNzM2za6iaYVyV3/Pc748=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705702012; c=relaxed/simple;
-	bh=bAiP8neWkuFOr1UcviXY9sGWpEscgq5SMLZxG3s9Dt8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IyzRQGp+4KX2Pj6c32h+wj95+6zaxG1UOJCjiRayKBL9I6TUynaRuY0R1gFkRXr78u5z51p3zW1NXaOOlaNGICQjvTIJJGQr0y19zLuu7E36vWtk3MPLlv0lSSP4pdfGo2wogj6hWe1WAQSUWYF3els0TihSxDjuwQsZsN3YozI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H0eg5u8Q; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1705704355; c=relaxed/simple;
+	bh=uA4FdWifBIyvvaSzLAe1j5JokAg2Yd8ZAqmFqenknLs=;
+	h=Subject:Date:Message-ID:MIME-Version:Cc:From:To; b=TYL+9tAcexsNUKAWe4oUxnNbL/7IkTqoCk7bSBhGpwiS66vMiF2yD0abZT8cpEonVoDP0VD5UJ7b7Ay9Xt6YsvY94MfAyff+z0LdCrOPb3Rr0Jn7hm/xlP49N1ol8ZtYd7Tw+hcjkJsARgaTae4lWbuht62Typg7YVys3cGiebQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=v7hoBNwf; arc=none smtp.client-ip=209.85.214.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H0eg5u8Q"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8E49C433F1;
-	Fri, 19 Jan 2024 22:06:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1705702012;
-	bh=bAiP8neWkuFOr1UcviXY9sGWpEscgq5SMLZxG3s9Dt8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=H0eg5u8QwEQ6ypQgu+Ro/nkwaVoSk6fZjoWXqYEmXDBBypv3SaURpbSvuGPnkUm9o
-	 0iLO54XqFDrY5SKuQZx1PtWWdbaWIgzQTzV0z70555OEw/cl0wpl9rZN9FKfkiyBAu
-	 SnG9Ko2Xb/Ck170Mviz7ss9Pl+yNAe9Xg7Gdjqf86+CfI4wXVZ78Auk6i3XkpHvEn8
-	 o34tv8O0Sbg6s3KM1vurE0tBmVLz8HbPfZTpKnkQxTLGN+n1rFaTju4cEt2Sd0Ic8a
-	 RkPd0onKWlpH1K9oGo+Gggwbv4VFEK2eJRyldbIWTPpp09a5rhij2/rv2jp9evvYPK
-	 wyA/FwbQHedSA==
-Date: Fri, 19 Jan 2024 16:06:48 -0600
-From: Rob Herring <robh@kernel.org>
-To: Gatien Chevallier <gatien.chevallier@foss.st.com>
-Cc: olivier.moysan@foss.st.com, gregkh@linuxfoundation.org,
-	richardcochran@gmail.com, arnd@kernel.org,
-	alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-	linux-usb@vger.kernel.org, mchehab@kernel.org, peng.fan@oss.nxp.com,
-	pabeni@redhat.com, rcsekar@samsung.com,
-	alexandre.torgue@foss.st.com, fabrice.gasnier@foss.st.com,
-	linux-serial@vger.kernel.org, Oleksii_Moisieiev@epam.com,
-	linux-spi@vger.kernel.org, will@kernel.org,
-	krzysztof.kozlowski+dt@linaro.org, lars@metafoo.de,
-	conor+dt@kernel.org, linux-mmc@vger.kernel.org, kuba@kernel.org,
-	linux-media@vger.kernel.org, arnaud.pouliquen@foss.st.com,
-	andi.shyti@kernel.org, ulf.hansson@linaro.org,
-	Frank Rowand <frowand.list@gmail.com>,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-phy@lists.infradead.org, jic23@kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, robh+dt@kernel.org, lee@kernel.org,
-	catalin.marinas@arm.com, mkl@pengutronix.de,
-	herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
-	dmaengine@vger.kernel.org, hugues.fruchet@foss.st.com,
-	edumazet@google.com, netdev@vger.kernel.org, vkoul@kernel.org,
-	wg@grandegger.com, linux-i2c@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH v9 02/13] dt-bindings: treewide: add access-controllers
- description
-Message-ID: <170570200425.1132338.1743644162144723458.robh@kernel.org>
-References: <20240105130404.301172-1-gatien.chevallier@foss.st.com>
- <20240105130404.301172-3-gatien.chevallier@foss.st.com>
+	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="v7hoBNwf"
+Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-1d71cb97937so10425605ad.3
+        for <linux-serial@vger.kernel.org>; Fri, 19 Jan 2024 14:45:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1705704354; x=1706309154; darn=vger.kernel.org;
+        h=to:from:cc:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:to:cc:subject:date:message-id:reply-to;
+        bh=2m1XhtygbnQtWGP2mbVBYdagXNcPKgbqxOJjRe6fvag=;
+        b=v7hoBNwfzatVyTIrzBUh27gG6hOIeg/qxyPjdrIrVIyLzgJ1iOWjNlUAgCWIN2xWrg
+         pfP1fnfOvio8jMiu0apESO3EKDCOpi7dj12x905G/0p+yNFlzhzSYZwOKfWzn7osYx5g
+         nlntyGT22bW1Yj/4vjxClsgHLNb5uM4nt85wI0NeKuZsFxRJfX+V+ERhBJFIvlnQfjLl
+         ohKh3gzbOnkbYZC1cwpgn0jPiMZRLvGBu1pdsBq7mUxn9UdUgqGboYgniTQshwVUq1JP
+         gJjgu0ROlvDpyUCOhjj3fx67JgL/vlejmDgzln8UqTIsSTmh28H1KkG7N9QVtykz6NlE
+         2grw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705704354; x=1706309154;
+        h=to:from:cc:content-transfer-encoding:mime-version:message-id:date
+         :subject:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=2m1XhtygbnQtWGP2mbVBYdagXNcPKgbqxOJjRe6fvag=;
+        b=hrfOQIP+T1E1IDOm5AH7vc8eYlraztCWiQWtozOsYbXP9lgKaQDATIV+rz96okaius
+         K8ORSZ8OGAayoaC96B2t/bPdX37NajaI2vspxpyXaFpCZni4mYWlGOiowhfaIXik+jDb
+         vfcfDB0Yy+PvXqBaGRoPgRvmd0+Iw+vPogAprf2kJ76VegXipQkBRKKdcqIJmnwY6CP5
+         Kmoc/LuhK5XNqLUAlnp2kAflvv+891JF7OWrgLDMuNuERuiR5d/JqAQYqCtgNNUt0tCw
+         Rwofr1mbgAZ8MRJ1nGiBWaUXH1MShy0HVWgmMph0ywBJ7Q+6TwWzJuS2Qe2eRQebZWcK
+         EBew==
+X-Gm-Message-State: AOJu0Ywnfcwdr0DTkseKmFrsiAjG0nNrYOK7KVSjLPYe807M+tjIVjIc
+	RsxTEYJvl02EJSKAcwM7Zje971sLTgyy69xQyF4Oz8bcVjeSk4PG3OvmGt6Jz2U=
+X-Google-Smtp-Source: AGHT+IGDYcz91ZsFkrsdeetEFLWkVDikcqnEMGNi7rrUqJxNwbVFtPK97ae9vNTPyqHIMS90uGoxFA==
+X-Received: by 2002:a17:902:6b02:b0:1d4:e2bc:88f1 with SMTP id o2-20020a1709026b0200b001d4e2bc88f1mr582016plk.110.1705704353758;
+        Fri, 19 Jan 2024 14:45:53 -0800 (PST)
+Received: from localhost ([192.184.165.199])
+        by smtp.gmail.com with ESMTPSA id p20-20020a170902c71400b001d5e2127632sm3525800plp.9.2024.01.19.14.45.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Jan 2024 14:45:53 -0800 (PST)
+Subject: [PATCH v2] tty: hvc: Fix the RISC-V SBI driver for a refactoring
+Date: Fri, 19 Jan 2024 14:44:05 -0800
+Message-ID: <20240119224404.26695-2-palmer@rivosinc.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240105130404.301172-3-gatien.chevallier@foss.st.com>
+Content-Transfer-Encoding: 8bit
+Cc: Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
+  Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
+  ajones@ventanamicro.com, apatel@ventanamicro.com, Atish Patra <atishp@rivosinc.com>,
+  linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+  linux-riscv@lists.infradead.org, Palmer Dabbelt <palmer@rivosinc.com>
+From: Palmer Dabbelt <palmer@rivosinc.com>
+To:         linux-riscv@lists.infradead.org
 
+From: Palmer Dabbelt <palmer@rivosinc.com>
 
-On Fri, 05 Jan 2024 14:03:53 +0100, Gatien Chevallier wrote:
-> access-controllers is an optional property that allows a peripheral to
-> refer to one or more domain access controller(s).
-> 
-> Description of this property is added to all peripheral binding files of
-> the peripheral under the STM32 firewall controller. It allows an accurate
-> representation of the hardware, where various peripherals are connected
-> to a firewall bus. The firewall can then check the peripheral accesses
-> before allowing its device to probe.
-> 
-> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
-> ---
-> 
-> Changes in V6:
-> 	- Minor changes in commit message
-> 	- Renamed access-controller to access-controllers
-> 
-> Changes in V5:
-> 	- Discarded review tags as the content has changed
-> 	- Renamed feature-domains to access-controller
-> 
-> Changes in V4:
-> 	- Added Jonathan's tag for IIO
-> 
-> Changes in V2:
-> 	- Add missing "feature-domains" property declaration
-> 	  in bosch,m_can.yaml and st,stm32-cryp.yaml files
-> 
->  Documentation/devicetree/bindings/crypto/st,stm32-cryp.yaml   | 4 ++++
->  Documentation/devicetree/bindings/crypto/st,stm32-hash.yaml   | 4 ++++
->  Documentation/devicetree/bindings/dma/st,stm32-dma.yaml       | 4 ++++
->  Documentation/devicetree/bindings/dma/st,stm32-dmamux.yaml    | 4 ++++
->  Documentation/devicetree/bindings/i2c/st,stm32-i2c.yaml       | 4 ++++
->  Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml   | 4 ++++
->  .../devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml       | 4 ++++
->  Documentation/devicetree/bindings/iio/dac/st,stm32-dac.yaml   | 4 ++++
->  Documentation/devicetree/bindings/media/cec/st,stm32-cec.yaml | 4 ++++
->  Documentation/devicetree/bindings/media/st,stm32-dcmi.yaml    | 4 ++++
->  .../bindings/memory-controllers/st,stm32-fmc2-ebi.yaml        | 4 ++++
->  Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml   | 4 ++++
->  Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml    | 4 ++++
->  Documentation/devicetree/bindings/mmc/arm,pl18x.yaml          | 4 ++++
->  Documentation/devicetree/bindings/net/can/bosch,m_can.yaml    | 4 ++++
->  Documentation/devicetree/bindings/net/stm32-dwmac.yaml        | 4 ++++
->  Documentation/devicetree/bindings/phy/phy-stm32-usbphyc.yaml  | 4 ++++
->  .../devicetree/bindings/regulator/st,stm32-vrefbuf.yaml       | 4 ++++
->  Documentation/devicetree/bindings/rng/st,stm32-rng.yaml       | 4 ++++
->  Documentation/devicetree/bindings/serial/st,stm32-uart.yaml   | 4 ++++
->  Documentation/devicetree/bindings/sound/st,stm32-i2s.yaml     | 4 ++++
->  Documentation/devicetree/bindings/sound/st,stm32-sai.yaml     | 4 ++++
->  Documentation/devicetree/bindings/sound/st,stm32-spdifrx.yaml | 4 ++++
->  Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml      | 4 ++++
->  Documentation/devicetree/bindings/spi/st,stm32-spi.yaml       | 4 ++++
->  Documentation/devicetree/bindings/usb/dwc2.yaml               | 4 ++++
->  26 files changed, 104 insertions(+)
-> 
+I missed the int->size_t refactoring in f32fcbedbe92 ("tty: hvc: convert
+to u8 and size_t"), which causes the newly used ops in 88ead68e764c
+("tty: Add SBI debug console support to HVC SBI driver") to fail to
+build due to a
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+linux/drivers/tty/hvc/hvc_riscv_sbi.c:59:15: error: incompatible function pointer types initializing 'ssize_t (*)(uint32_t, const u8 *, size_t)' (aka 'long (*)(unsigned int, const unsigned char *, unsigned long)') with an expression of type 'int (uint32_t, const char *, int)' (aka 'int (unsigned int, const char *, int)') [-Wincompatible-function-pointer-types]
+        .put_chars = hvc_sbi_dbcn_tty_put,
+
+Fixes: f32fcbedbe92 ("tty: hvc: convert to u8 and size_t")
+Fixes: 88ead68e764c ("tty: Add SBI debug console support to HVC SBI driver")
+Link: https://lore.kernel.org/r/20240119215612.20529-2-palmer@rivosinc.com
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+---
+Changes since v1 <20240119215612.20529-2-palmer@rivosinc.com>:
+* Fix the return and arguments correctly.
+* Also fix the hvc_sbi_dbcn_tty_{get,put}().
+---
+ drivers/tty/hvc/hvc_riscv_sbi.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/hvc/hvc_riscv_sbi.c b/drivers/tty/hvc/hvc_riscv_sbi.c
+index 2f3571f17ecd..f8cd3310ef35 100644
+--- a/drivers/tty/hvc/hvc_riscv_sbi.c
++++ b/drivers/tty/hvc/hvc_riscv_sbi.c
+@@ -15,7 +15,7 @@
+ 
+ #include "hvc_console.h"
+ 
+-static int hvc_sbi_tty_put(uint32_t vtermno, const char *buf, int count)
++static ssize_t hvc_sbi_tty_put(uint32_t vtermno, const u8 *buf, size_t count)
+ {
+ 	int i;
+ 
+@@ -25,7 +25,7 @@ static int hvc_sbi_tty_put(uint32_t vtermno, const char *buf, int count)
+ 	return i;
+ }
+ 
+-static int hvc_sbi_tty_get(uint32_t vtermno, char *buf, int count)
++static ssize_t hvc_sbi_tty_get(uint32_t vtermno, u8 *buf, size_t count)
+ {
+ 	int i, c;
+ 
+@@ -44,12 +44,12 @@ static const struct hv_ops hvc_sbi_v01_ops = {
+ 	.put_chars = hvc_sbi_tty_put,
+ };
+ 
+-static int hvc_sbi_dbcn_tty_put(uint32_t vtermno, const char *buf, int count)
++static ssize_t hvc_sbi_dbcn_tty_put(uint32_t vtermno, const u8 *buf, size_t count)
+ {
+ 	return sbi_debug_console_write(buf, count);
+ }
+ 
+-static int hvc_sbi_dbcn_tty_get(uint32_t vtermno, char *buf, int count)
++static ssize_t hvc_sbi_dbcn_tty_get(uint32_t vtermno, u8 *buf, size_t count)
+ {
+ 	return sbi_debug_console_read(buf, count);
+ }
+-- 
+2.43.0
 
