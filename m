@@ -1,95 +1,85 @@
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A0331D69F
-	for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 22:57:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.58.85.151
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB24B6FB1;
+	Fri, 19 Jan 2024 05:47:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705618644; cv=none; b=tJEbHA8XF1fSHnSz7An8cNckcgwLLNsgvkKRJHl2me0QOC3CZFy3kuzxrHoG4fiAF56LYDnrf/SNUg6SwyVyWHviKV81FzZaZ+/S7O3CBR3fGKhH2UbR2KU6knGEBS1fbVaACvBjMSW4Lek19f8Dyv3NPxCbPtS44g+lTEbChy4=
+	t=1705643236; cv=none; b=JIjEEaUNlgZXTByMMMjxmHcJdK2cYRrI56+MSbzh3hsFvmaeXXINTHfwuVXLPoDoRC2fyv8Tqkj1OCyZ5oriAPX8E3y8gsgoSUQxJ9I8kFYx9mef4JkRqueTgbbtxuHIryZUtWqxwfmglllscMtUNTCtpBuK5nW1cdGzplhDhNg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705618644; c=relaxed/simple;
-	bh=ePoebnA7cF9X5WjbtdpG44r2FPognLgyvewUM1ypAQ0=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 MIME-Version:Content-Type; b=GZeFD6bD0oXnRPVV7Jv1KRKObUmWWO0JBV+IOMvwCuGvyrAFlqrYYCtsj8wdO9vqlvq/twsRE4tXsiocit+JTjypq57OIz8smSD/wYnrDOCwdouB+t0CnGJ+HHGufwPaX4B6ihyIaahqBTD3naFsCMWA7Yjs1TF3g/TNE2on5kQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ACULAB.COM; spf=pass smtp.mailfrom=aculab.com; arc=none smtp.client-ip=185.58.85.151
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ACULAB.COM
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aculab.com
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mtapsc-8-UQGpYoAbOK6t9xx-prymvA-1; Thu, 18 Jan 2024 22:57:16 +0000
-X-MC-Unique: UQGpYoAbOK6t9xx-prymvA-1
-Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
- (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Thu, 18 Jan
- 2024 22:56:59 +0000
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.048; Thu, 18 Jan 2024 22:56:59 +0000
-From: David Laight <David.Laight@ACULAB.COM>
-To: 'Sreenath Vijayan' <sreenath.vijayan@sony.com>,
-	"john.ogness@linutronix.de" <john.ogness@linutronix.de>, "corbet@lwn.net"
-	<corbet@lwn.net>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-	"jirislaby@kernel.org" <jirislaby@kernel.org>, "rdunlap@infradead.org"
-	<rdunlap@infradead.org>, "pmladek@suse.com" <pmladek@suse.com>
-CC: "rostedt@goodmis.org" <rostedt@goodmis.org>, "senozhatsky@chromium.org"
-	<senozhatsky@chromium.org>, "linux-doc@vger.kernel.org"
-	<linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>, "taichi.shimoyashiki@sony.com"
-	<taichi.shimoyashiki@sony.com>, "daniel.palmer@sony.com"
-	<daniel.palmer@sony.com>, "anandakumar.balasubramaniam@sony.com"
-	<anandakumar.balasubramaniam@sony.com>
-Subject: RE: [PATCH v3 2/2] tty/sysrq: Dump printk ring buffer messages via
+	s=arc-20240116; t=1705643236; c=relaxed/simple;
+	bh=MNDvuNwiiy4+YlotPmen7Gor1toPlR5dd2opwcIDllI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GCw4I+NAoogBYKegmn/mY+s1cvdLsV1VCqD412emHEx4m9iHVEkHwrRMr9yHu9qovDZyxwiAhPRPi+e1g9xf12Se/QDBxWcqHMxsiuOwtvW0KoVGCEjPpXxBDIWtu848ATX2jQimZ69YGeY5kcmtSjRMGcBJa2asvqy9dcbQbWM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=D10owxLI; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="D10owxLI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FFC9C433C7;
+	Fri, 19 Jan 2024 05:47:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1705643236;
+	bh=MNDvuNwiiy4+YlotPmen7Gor1toPlR5dd2opwcIDllI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=D10owxLIHodiEVHT3LPgLIOdoqbvjy5pjLddXK71vyCfPvYa/zohlwClepQHngu/e
+	 ZzJgAurcNjaFM1b2oQwjlXOQg1VioPBsluBsWOhCqCtvFPNmRml7unBY2KURQpYGZr
+	 QWCALOCSEfGjhmz4Z9ixFoAegq3yiOAqlJgKqaEU=
+Date: Fri, 19 Jan 2024 06:47:13 +0100
+From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To: David Laight <David.Laight@aculab.com>
+Cc: 'Sreenath Vijayan' <sreenath.vijayan@sony.com>,
+	"john.ogness@linutronix.de" <john.ogness@linutronix.de>,
+	"corbet@lwn.net" <corbet@lwn.net>,
+	"jirislaby@kernel.org" <jirislaby@kernel.org>,
+	"rdunlap@infradead.org" <rdunlap@infradead.org>,
+	"pmladek@suse.com" <pmladek@suse.com>,
+	"rostedt@goodmis.org" <rostedt@goodmis.org>,
+	"senozhatsky@chromium.org" <senozhatsky@chromium.org>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"taichi.shimoyashiki@sony.com" <taichi.shimoyashiki@sony.com>,
+	"daniel.palmer@sony.com" <daniel.palmer@sony.com>,
+	"anandakumar.balasubramaniam@sony.com" <anandakumar.balasubramaniam@sony.com>
+Subject: Re: [PATCH v3 2/2] tty/sysrq: Dump printk ring buffer messages via
  sysrq
-Thread-Topic: [PATCH v3 2/2] tty/sysrq: Dump printk ring buffer messages via
- sysrq
-Thread-Index: AQHaSTdPmE3VCTcFQ06mN/ozLchFlLDgL+Yw
-Date: Thu, 18 Jan 2024 22:56:59 +0000
-Message-ID: <57f8c1f40ccc4a4f9d29e97f50a36b4f@AcuMS.aculab.com>
+Message-ID: <2024011958-coerce-niece-6301@gregkh>
 References: <cover.1705331453.git.sreenath.vijayan@sony.com>
  <57daf43c5270f7532b269b9f0e90d126ca012354.1705331453.git.sreenath.vijayan@sony.com>
-In-Reply-To: <57daf43c5270f7532b269b9f0e90d126ca012354.1705331453.git.sreenath.vijayan@sony.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
+ <57f8c1f40ccc4a4f9d29e97f50a36b4f@AcuMS.aculab.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <57f8c1f40ccc4a4f9d29e97f50a36b4f@AcuMS.aculab.com>
 
-From: Sreenath Vijayan
-> Sent: 17 January 2024 11:14
-....
->  /* Key Operations table and lock */
->  static DEFINE_SPINLOCK(sysrq_key_table_lock);
->=20
-> @@ -505,7 +523,7 @@ static const struct sysrq_key_op *sysrq_key_table[62]=
- =3D {
->  =09NULL,=09=09=09=09/* A */
->  =09NULL,=09=09=09=09/* B */
->  =09NULL,=09=09=09=09/* C */
-> -=09NULL,=09=09=09=09/* D */
-> +=09&sysrq_dmesg_dump_op,=09=09/* D */
->  =09NULL,=09=09=09=09/* E */
->  =09NULL,=09=09=09=09/* F */
->  =09NULL,=09=09=09=09/* G */
+On Thu, Jan 18, 2024 at 10:56:59PM +0000, David Laight wrote:
+> From: Sreenath Vijayan
+> > Sent: 17 January 2024 11:14
+> ....
+> >  /* Key Operations table and lock */
+> >  static DEFINE_SPINLOCK(sysrq_key_table_lock);
+> > 
+> > @@ -505,7 +523,7 @@ static const struct sysrq_key_op *sysrq_key_table[62] = {
+> >  	NULL,				/* A */
+> >  	NULL,				/* B */
+> >  	NULL,				/* C */
+> > -	NULL,				/* D */
+> > +	&sysrq_dmesg_dump_op,		/* D */
+> >  	NULL,				/* E */
+> >  	NULL,				/* F */
+> >  	NULL,				/* G */
+> 
+> That looks like it ought to use C99 initialisers:
+> 	['D' - 'A'] = &sysrq_dmesg_dump_op,
+> 
+> Possible with a #define to hide the offset.
 
-That looks like it ought to use C99 initialisers:
-=09['D' - 'A'] =3D &sysrq_dmesg_dump_op,
+Maybe in the future, but for now, let's leave it as-is please.
 
-Possible with a #define to hide the offset.
+thanks,
 
-=09David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1=
-PT, UK
-Registration No: 1397386 (Wales)
-
+greg k-h
