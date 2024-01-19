@@ -1,44 +1,44 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 067E51870;
-	Fri, 19 Jan 2024 06:30:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F12493214
+	for <linux-serial@vger.kernel.org>; Fri, 19 Jan 2024 06:36:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705645839; cv=none; b=nDZrhug/L8gXqreBSnAiV4LYxFYeB6KUJMpPgqycyK+vqs/npJB21cD5XPhV3VPl66mP8YqA7X8INkUlebKLW+UjW6KNxNVeKwlkqsN9/UAn720z3DzLJDfIEdMtgmBZ+LvdIXrldr13DcgkNtzG6V0QjLQWxZerYQKF8yLjg7U=
+	t=1705646168; cv=none; b=LxJDkw8q3dY+LV1VJAYtCP2NMq5JKmM1sDt0L+pmQbdZcmv3uKG140CpwNSR4tq5BS5PylDwJwO4EgXtjU1FgM/H3pqnMJOguuDjD+kAG+LV1PxV53eppWvRPG1zxEWbwZGjLoP3GiWEPVGBUJ4xBhOHZ+ZGyUl34XdOlW4G+b4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705645839; c=relaxed/simple;
-	bh=KUgx2pM5cI1yM/hgJHoX/TsILAcbxzC/uA7dOOIXum4=;
+	s=arc-20240116; t=1705646168; c=relaxed/simple;
+	bh=Zd5Xc2uDzrdbQG4AtYst0v1O0RC1oNJOsKmM5zrlw8o=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=K47HbsfVBK30TNbQZqhaVN1ExSsfpnXsphojmosTvaJzGt4iZxYbWzRIFxBnV7sGjLgQaKUOaPxwuxboz509P7VMdOSoqs3rT+pe2EW/daRB5O1B/sDgtTb4N7JbdbkUPuWtosbJvhNN0jgsExEfwt8Hw3SkVn1QuB7OchlpHN0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.49
+	 In-Reply-To:Content-Type; b=jJ7bQry+9KC9lBHC7vay5e+b4fNdoSBp9X2eNvogZtj7YomqOHGNUMUvGQLaLDlyjQJva8TcjV6Ot1diP/cVVGFBkL8Pe3Q1eyHtWjxomMVl7yutgjFteDQwqEpw7XRlL59ZDNadAhuat7HY2Ypv3+bOiGeRGNqJ3z0ershDvS0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-40e9ef9853bso598135e9.1;
-        Thu, 18 Jan 2024 22:30:37 -0800 (PST)
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-40e76626170so4672985e9.2
+        for <linux-serial@vger.kernel.org>; Thu, 18 Jan 2024 22:36:06 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705645836; x=1706250636;
+        d=1e100.net; s=20230601; t=1705646165; x=1706250965;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7rgq+nShpQau+v2jsE7HPUUMJIPYJu7zwY2PL11pPIU=;
-        b=UNaYhc0uSP/eqWfvtirjQ4Sk9pACISwOsXm4ov5DSDmks/X+9p7k1KRsMOs/ySsD/+
-         sXEjS7kZTl8Y6C4qnnqa4wspX3W/SimtPRewTLk8DhCY9QhffoBiIXNVL7JZsmJH8NhA
-         e7zRcfBA3ytOpKcjEHFqOPeu+ydODPEgSwH6wIry4LmI8PzFdET8fsdLISb7tNYwKiw4
-         DOUyAh/0KBB1AcUxKtCYuKC4KlO1gnulVYbynrLdVG3iJrKKeJtftKCNNox64iER8Qp3
-         rDTJJMEizOvHrf9AhYeOQavuP+Rk1kdcJ85HkylxGeQn2HGEQUUJazjkpOCifUnqsu1J
-         //bg==
-X-Gm-Message-State: AOJu0YycEK6VyQfRDxCzZ0wfnEXpxcNticGc4gqWsvTJV0sKyIzpIzfn
-	K4G/dS2ejh76AQ5ukditsoIkonRx2KsUTuuvcJrxSKtO/WmXNOck
-X-Google-Smtp-Source: AGHT+IHvaz2og5VA8+OunIqH//5QBSImvAeI6TMR6MNSbh5yd1MxFb6GN9AiebBuxzKglMYTZF9GVA==
-X-Received: by 2002:a05:600c:181b:b0:40e:7619:a2d3 with SMTP id n27-20020a05600c181b00b0040e7619a2d3mr218199wmp.105.1705645836008;
-        Thu, 18 Jan 2024 22:30:36 -0800 (PST)
+        bh=AuWdfukhg7EltTT6nCLqp1txpQyeYsuPDBgt7kTU+X4=;
+        b=NJVd9nX5eVsRGEoqhWTUE9s7OadOlBxqsgA9uIjpdDUlzI/tEJx6DtupYr/9svQAhY
+         XqRn7EEc7WeTFVhK+DMFdC9nz0GPVIJ8IrGO4SJd3OlUfX7plCAz6kxiO6fZ9sJaxYGn
+         voN5VTo8us+oAnazcMez3aN3ZhthCHfPAGN8BaGlUS2GvXkKVcw2drRtVTJu4RSX7+nU
+         h/apQU/U7eeIM0NbljmK/lT1Z+5ylKPO8iZ9lIzLxp1DZI9Y1bMDeqiFOrDcLjHXvDNC
+         iWWHB5b2QkvVYhyMxwfipeN47vKdaMx3puKumT9OUmA3AEk6cSezwugKPKmzEI+iIOKB
+         962Q==
+X-Gm-Message-State: AOJu0YwXAkD7rPyZ3dJ4rHcBVHy5wsK8V1n7YLMh7ox0Gub5McD2JUST
+	XR9qXVz6hj+4eaaqrqmxOAKu/HjJu5DOg6RB37KEGha5kpsArwis
+X-Google-Smtp-Source: AGHT+IEGBslw+28kwlM4hzrs3xjObh45QqwGzjaO5G93GAb0Kg/k4W3np8wSSzjg4YKrMPfufOyTog==
+X-Received: by 2002:a5d:6481:0:b0:337:bafb:ce56 with SMTP id o1-20020a5d6481000000b00337bafbce56mr1490357wri.138.1705646164950;
+        Thu, 18 Jan 2024 22:36:04 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id g21-20020a05600c311500b0040d30af488asm31794794wmo.40.2024.01.18.22.30.35
+        by smtp.gmail.com with ESMTPSA id x5-20020adfffc5000000b0033672cfca96sm5696313wrs.89.2024.01.18.22.36.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Jan 2024 22:30:35 -0800 (PST)
-Message-ID: <0bfbf5ab-eceb-4dc0-a1c3-42da29ca9c93@kernel.org>
-Date: Fri, 19 Jan 2024 07:30:35 +0100
+        Thu, 18 Jan 2024 22:36:04 -0800 (PST)
+Message-ID: <9cce131b-6f1e-4cb7-9149-5ac8bd3c01da@kernel.org>
+Date: Fri, 19 Jan 2024 07:36:03 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -46,12 +46,15 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 11/45] tty: vt: define an enum for CSI+J codes
+Subject: Re: [PATCH V2] tty: serial: Fix bit order in RS485 flag definitions
 Content-Language: en-US
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20240118075756.10541-1-jirislaby@kernel.org>
- <20240118075756.10541-12-jirislaby@kernel.org>
+To: Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+ linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Crescent CY Hsieh <crescentcy.hsieh@moxa.com>, Lukas Wunner
+ <lukas@wunner.de>, Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+ Hugo Villeneuve <hugo@hugovil.com>
+References: <20240118154624.5340-1-cniedermaier@dh-electronics.com>
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -95,67 +98,70 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20240118075756.10541-12-jirislaby@kernel.org>
+In-Reply-To: <20240118154624.5340-1-cniedermaier@dh-electronics.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 18. 01. 24, 8:57, Jiri Slaby (SUSE) wrote:
-> Decrypt the constant values by proper enum names. This time in csi_J().
-
-And there are more calls of csi_J(). All those should now use the enum 
-constants. v2 will fix this.
-
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> ---
->   drivers/tty/vt/vt.c | 15 +++++++++++----
->   1 file changed, 11 insertions(+), 4 deletions(-)
+On 18. 01. 24, 16:46, Christoph Niedermaier wrote:
+> Since the commit 93f3350c46fa ("RS485: fix inconsistencies in the
+> meaning of some variables"), the definition for bit 3 has been removed.
+> But with the switch to bit shift macros in commit 76ac8e29855b ("tty:
+> serial: Cleanup the bit shift with macro"), this gap wasn't preserved.
+> To avoid a break in user/kernel api of the system skip bit 3 again and
+> add a placeholder comment.
 > 
-> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-> index 66ebc90a9fe9..4f7831f81db6 100644
-> --- a/drivers/tty/vt/vt.c
-> +++ b/drivers/tty/vt/vt.c
-> @@ -1498,13 +1498,20 @@ static inline void del(struct vc_data *vc)
->   	/* ignored */
->   }
+> Signed-off-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+> Fixes: 76ac8e29855b ("tty: serial: Cleanup the bit shift with macro")
+> Fixes: 6056f20f27e9 ("tty: serial: Add RS422 flag to struct serial_rs485")
+> ---
+
+This triple dash is superfluous and will likely break git am.
+
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+> Cc: Jiri Slaby <jirislaby@kernel.org>
+> Cc: Lukas Wunner <lukas@wunner.de>
+> Cc: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> Cc: Hugo Villeneuve <hugo@hugovil.com>
+> To: linux-serial@vger.kernel.org
+> To: linux-arm-kernel@lists.infradead.org
+
+"To" is not supported here, IMO.
+
+When you fix that:
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+
+> ---
+> V2: - Fix typo
+>      - Add Fixes tags
+> ---
+>   include/uapi/linux/serial.h | 13 +++++++------
+>   1 file changed, 7 insertions(+), 6 deletions(-)
+> 
+> diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
+> index 9086367db043..de9b4733607e 100644
+> --- a/include/uapi/linux/serial.h
+> +++ b/include/uapi/linux/serial.h
+> @@ -145,12 +145,13 @@ struct serial_rs485 {
+>   #define SER_RS485_ENABLED		_BITUL(0)
+>   #define SER_RS485_RTS_ON_SEND		_BITUL(1)
+>   #define SER_RS485_RTS_AFTER_SEND	_BITUL(2)
+> -#define SER_RS485_RX_DURING_TX		_BITUL(3)
+> -#define SER_RS485_TERMINATE_BUS		_BITUL(4)
+> -#define SER_RS485_ADDRB			_BITUL(5)
+> -#define SER_RS485_ADDR_RECV		_BITUL(6)
+> -#define SER_RS485_ADDR_DEST		_BITUL(7)
+> -#define SER_RS485_MODE_RS422		_BITUL(8)
+> +/* Placeholder for bit 3: SER_RS485_RTS_BEFORE_SEND, which isn't used anymore */
+> +#define SER_RS485_RX_DURING_TX		_BITUL(4)
+> +#define SER_RS485_TERMINATE_BUS		_BITUL(5)
+> +#define SER_RS485_ADDRB			_BITUL(6)
+> +#define SER_RS485_ADDR_RECV		_BITUL(7)
+> +#define SER_RS485_ADDR_DEST		_BITUL(8)
+> +#define SER_RS485_MODE_RS422		_BITUL(9)
 >   
-> +enum {
-> +	CSI_J_CURSOR_TO_END	= 0,
-> +	CSI_J_START_TO_CURSOR	= 1,
-> +	CSI_J_VISIBLE		= 2,
-> +	CSI_J_FULL		= 3,
-> +};
-> +
->   static void csi_J(struct vc_data *vc, int vpar)
->   {
->   	unsigned int count;
->   	unsigned short * start;
->   
->   	switch (vpar) {
-> -		case 0:	/* erase from cursor to end of display */
-> +		case CSI_J_CURSOR_TO_END:
->   			vc_uniscr_clear_line(vc, vc->state.x,
->   					     vc->vc_cols - vc->state.x);
->   			vc_uniscr_clear_lines(vc, vc->state.y + 1,
-> @@ -1512,16 +1519,16 @@ static void csi_J(struct vc_data *vc, int vpar)
->   			count = (vc->vc_scr_end - vc->vc_pos) >> 1;
->   			start = (unsigned short *)vc->vc_pos;
->   			break;
-> -		case 1:	/* erase from start to cursor */
-> +		case CSI_J_START_TO_CURSOR:
->   			vc_uniscr_clear_line(vc, 0, vc->state.x + 1);
->   			vc_uniscr_clear_lines(vc, 0, vc->state.y);
->   			count = ((vc->vc_pos - vc->vc_origin) >> 1) + 1;
->   			start = (unsigned short *)vc->vc_origin;
->   			break;
-> -		case 3: /* include scrollback */
-> +		case CSI_J_FULL:
->   			flush_scrollback(vc);
->   			fallthrough;
-> -		case 2: /* erase whole display */
-> +		case CSI_J_VISIBLE:
->   			vc_uniscr_clear_lines(vc, 0, vc->vc_rows);
->   			count = vc->vc_cols * vc->vc_rows;
->   			start = (unsigned short *)vc->vc_origin;
+>   	__u32	delay_rts_before_send;
+>   	__u32	delay_rts_after_send;
 
 -- 
 js
