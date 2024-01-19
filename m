@@ -1,98 +1,110 @@
-Received: from mx4.securetransport.de (mx4.securetransport.de [178.254.6.145])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 169933C460
-	for <linux-serial@vger.kernel.org>; Fri, 19 Jan 2024 11:41:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.254.6.145
+Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A404654FA8
+	for <linux-serial@vger.kernel.org>; Fri, 19 Jan 2024 16:10:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705664474; cv=none; b=Q1lSrApLwrXslq0JiLTv1WozXHyJu7Fvkodo72D/BkK0pEHGnq85PeIo01mEQXHNl0htLKJ2b4xZp7pOAfUax2xk4ANf+dmR+yvNdm5bMB69/eZCICQnV4njYqUciNiwLaC2S9wiuORmPr40IE4CZRobSMYdf/YLL7/LD3UdgAw=
+	t=1705680616; cv=none; b=TF+0r0PX2Zyuq5y0qWmb+qHv/RWsAaXS05Lx6RDu6V1zzXvFfBeC04ylUB2F1cClNuJ4gIp8tQYZ1+A6bVUUKNhBD0U3MdWlhmYCFCdLHn78NCIbVHEfPgBF91sJoM+kbaK2G/EpRsxJ0DFvncyvdcQJZnrmHjKN5fUN/3aiaNU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705664474; c=relaxed/simple;
-	bh=Pjg+YILiLLoxV/S0pONXGEBLlg7JZww5FyMFng+r+20=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=cH+bw5e6G8/cRw4m8LbOXTD7US4/qXkfw+kamWWiJ7LFefvPWGnt28OEhGPTXZnv2kzbrqFq4Ly8TAVWxctU6J4po/TA5aDxcjStQotDWLo8OTvtJqntayLHwLB8oqjsD6JvV4FwL3HGbDWKjqveY0eTsD1eoaeF3Iw7rB4CQro=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com; spf=pass smtp.mailfrom=dh-electronics.com; dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b=ALZNMtop; arc=none smtp.client-ip=178.254.6.145
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dh-electronics.com
+	s=arc-20240116; t=1705680616; c=relaxed/simple;
+	bh=UIfSZZLrOU6yAjs83tQxP628/v7NNSkU0fQmLwQ5Rgc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=TMpw1ocJrXdoMlnsKMhcbYzG3otIxPKnfuJbDkj1lRIFSUpESdVZ8WEwivszfBSeYVitr56Eredew1RQ9OLTaO9n/WuhAUBA4aiOC3/l9JFiT4AM/N5VAGCwI6UB1liZj5DAR7Mm1g79pWeRahyD5Kej8UsWqfIIRGVruQoPFfc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=O0oOBPl1; arc=none smtp.client-ip=209.85.215.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="ALZNMtop"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-	s=dhelectronicscom; t=1705664436;
-	bh=7myNZ3RCwcag+XwWnSm1WHpr+kXN5+I3yuwLlfOLSws=;
-	h=From:To:CC:Subject:Date:From;
-	b=ALZNMtopR2X8qc3C7Ffonr54ZyT/Yqr3iZpEbbSQ/VYuUHLt/qx/waPqO6exC0lVr
-	 Ir7DJKmfateOHbSX9DOSNoXXugnJWNEcB6q/MMNCTwcHEch1eu9o/pWVgJiJmfnQJA
-	 u7eAT1KQw5dUzpRBn1bipm7GhIBYCrXHXKQWQMVIfj4iKZBl5daMy2SKzvdvpa3Ml+
-	 nxgMCdpqwHnu0vzE7ktMm0JnwExAaBNBbCpH33B+Fzz+8co0hLeYoOyeX4nZ/z9atA
-	 okgWW+ZB5YrWYzIZe5HIzhw13YZHvNJkZ1/GV26PmrUs8ejIvuoSQX3Id+huAk+mKK
-	 yqwVTCglMrf1Q==
-From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-To: <linux-serial@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
-CC: Christoph Niedermaier <cniedermaier@dh-electronics.com>, "Greg
- Kroah-Hartman" <gregkh@linuxfoundation.org>, Crescent CY Hsieh
-	<crescentcy.hsieh@moxa.com>, Jiri Slaby <jirislaby@kernel.org>, Lukas Wunner
-	<lukas@wunner.de>, Lino Sanfilippo <l.sanfilippo@kunbus.com>, Hugo Villeneuve
-	<hugo@hugovil.com>
-Subject: [PATCH V3] tty: serial: Fix bit order in RS485 flag definitions
-Date: Fri, 19 Jan 2024 12:35:16 +0100
-Message-ID: <20240119113516.2944-1-cniedermaier@dh-electronics.com>
-X-klartext: yes
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="O0oOBPl1"
+Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-5ce0efd60ddso684724a12.0
+        for <linux-serial@vger.kernel.org>; Fri, 19 Jan 2024 08:10:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1705680614; x=1706285414; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pQCgIpzx27vwofqc1JrDE3mPbm28nF45xDQ2x4EHqYg=;
+        b=O0oOBPl1HnzDOBptxY3mHrILPDDqYYsBbHHthZ4fLPO25Hq+aIGGU3QD289YggeXRU
+         Qh76VBPuqeEnuq6GMQel73FQcOwcaedTz7PMpd7CU9da+CBF+TU9rXGfOanodGmCidOX
+         xjx/FoiJLFWVjn/FeCNyiG5H7i8/8up5L+AA3uRExaCEAmIdF8h+URKlFhMfJ2vB6Dhw
+         k00ObGAJaX+D0ph/ljST6hZ9LgP+07+lWGHmi9iveLxlypIzm07uaWbVncvquipFsLMQ
+         yvvSDn+IbHjHGIOa4CluxTUolyf8GWaMRmINFBeYE54K2ic5tmq+gvrsW+CUKD7XBqGw
+         5QQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705680614; x=1706285414;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=pQCgIpzx27vwofqc1JrDE3mPbm28nF45xDQ2x4EHqYg=;
+        b=DS1HC3Qbpj0e5D3669p95ZYU+JQv9/IfMDAapMppZHI+ulGmw56AgnHUTZRZIrPsj5
+         YxvaLQNDvJJq61JFLq97uxlaGi/0Zg91jBG7ruvvlc4WTeO95G5SyIiphi20IfSsycpn
+         q76GtoNF214+zmi2QG+agK0ahgbWgdNUpqsgPsZYI53bdJPsD/RpIsijZr9A2df5g9sy
+         k4vhmSTY2Nt2ONmtZhb24u1t1EJezirfCylFK7/FD/Dk5sQB8wknKGcVWyIqoHOyEHJD
+         zOHXmwbJ5gSNajA9TNSiEc6+Ce/p0+fsk8+1DjldckVgvS0iztKFGyNBoJFPzuPG/8D1
+         US5Q==
+X-Gm-Message-State: AOJu0Yz6QvrdLVonAqE/IWO1k3GPVJAGB0WBdol0cPtF6OC3y5X6mjxp
+	ncuX3uPmKzrGIms9PJdjLbsAdEOMcQ6EDMAZwZ5qKxvcvNv3wjajlbGhCVv/kie768gackp43BX
+	ZHbE0nYjcMu6BSj2cYtQWOBjmTctHcLj4xxFtlhJA6fmBVeZ8
+X-Google-Smtp-Source: AGHT+IEiy4VyavSARFTn3SaPOtL6MlCYRRMqM1J8DTeMjjwa3YfuzfgYhlEBz8SnyqE7ELSpye3aSowtoQGWAJ59kBM=
+X-Received: by 2002:a17:90b:124f:b0:290:467b:b7d6 with SMTP id
+ gx15-20020a17090b124f00b00290467bb7d6mr1054946pjb.84.1705680613997; Fri, 19
+ Jan 2024 08:10:13 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20240119104526.1221243-1-tudor.ambarus@linaro.org> <20240119104526.1221243-3-tudor.ambarus@linaro.org>
+In-Reply-To: <20240119104526.1221243-3-tudor.ambarus@linaro.org>
+From: Sam Protsenko <semen.protsenko@linaro.org>
+Date: Fri, 19 Jan 2024 10:10:02 -0600
+Message-ID: <CAPLW+4=GvEZXXzzRj789JmCzLLnQ6cNDLhbF7i6nwiW9x6EGHg@mail.gmail.com>
+Subject: Re: [PATCH v2 02/19] dt-bindings: serial: samsung: do not allow
+ reg-io-width for gs101
+To: Tudor Ambarus <tudor.ambarus@linaro.org>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh+dt@kernel.org, 
+	krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, 
+	alim.akhtar@samsung.com, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+	andre.draszik@linaro.org, kernel-team@android.com, peter.griffin@linaro.org, 
+	willmcvicker@google.com, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Since the commit 93f3350c46fa ("RS485: fix inconsistencies in the
-meaning of some variables"), the definition for bit 3 has been removed.
-But with the switch to bit shift macros in commit 76ac8e29855b ("tty:
-serial: Cleanup the bit shift with macro"), this gap wasn't preserved.
-To avoid a break in user/kernel api of the system skip bit 3 again and
-add a placeholder comment.
+On Fri, Jan 19, 2024 at 4:45=E2=80=AFAM Tudor Ambarus <tudor.ambarus@linaro=
+.org> wrote:
+>
+> All gs101 serial ports are restricted to 32-bit register accesses.
+> This requirement will be inferred from the compatible. Do not allow
+> the reg-io-width property for the google,gs101-uart compatible.
+>
+> Suggested-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Peter Griffin <peter.griffin@linaro.org>
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+> ---
 
-Signed-off-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Fixes: 76ac8e29855b ("tty: serial: Cleanup the bit shift with macro")
-Fixes: 6056f20f27e9 ("tty: serial: Add RS422 flag to struct serial_rs485")
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Lukas Wunner <lukas@wunner.de>
-Cc: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Cc: Hugo Villeneuve <hugo@hugovil.com>
----
-V2: - Fix typo
-    - Add Fixes tags
-V3: - Add Reviewed-by tag
-    - Remove triple dash after the last Fixes tag
-    - Remove all "To:"s after "Cc:"
----
- include/uapi/linux/serial.h | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
 
-diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
-index 9086367db043..de9b4733607e 100644
---- a/include/uapi/linux/serial.h
-+++ b/include/uapi/linux/serial.h
-@@ -145,12 +145,13 @@ struct serial_rs485 {
- #define SER_RS485_ENABLED		_BITUL(0)
- #define SER_RS485_RTS_ON_SEND		_BITUL(1)
- #define SER_RS485_RTS_AFTER_SEND	_BITUL(2)
--#define SER_RS485_RX_DURING_TX		_BITUL(3)
--#define SER_RS485_TERMINATE_BUS		_BITUL(4)
--#define SER_RS485_ADDRB			_BITUL(5)
--#define SER_RS485_ADDR_RECV		_BITUL(6)
--#define SER_RS485_ADDR_DEST		_BITUL(7)
--#define SER_RS485_MODE_RS422		_BITUL(8)
-+/* Placeholder for bit 3: SER_RS485_RTS_BEFORE_SEND, which isn't used anymore */
-+#define SER_RS485_RX_DURING_TX		_BITUL(4)
-+#define SER_RS485_TERMINATE_BUS		_BITUL(5)
-+#define SER_RS485_ADDRB			_BITUL(6)
-+#define SER_RS485_ADDR_RECV		_BITUL(7)
-+#define SER_RS485_ADDR_DEST		_BITUL(8)
-+#define SER_RS485_MODE_RS422		_BITUL(9)
- 
- 	__u32	delay_rts_before_send;
- 	__u32	delay_rts_after_send;
--- 
-2.11.0
-
+>  Documentation/devicetree/bindings/serial/samsung_uart.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b=
+/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> index 133259ed3a34..0f0131026911 100644
+> --- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> @@ -143,6 +143,8 @@ allOf:
+>      then:
+>        required:
+>          - samsung,uart-fifosize
+> +      properties:
+> +        reg-io-width: false
+>
+>  unevaluatedProperties: false
+>
+> --
+> 2.43.0.429.g432eaa2c6b-goog
+>
