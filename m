@@ -1,44 +1,44 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1ABFD46AD;
-	Fri, 19 Jan 2024 06:29:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 067E51870;
+	Fri, 19 Jan 2024 06:30:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705645748; cv=none; b=hNbptuG5fVqkkE8HLCMGvw4pE8o9vHXTcq9ruzU4pYYPEMjeEewkqbcsc2W0/wmI5rqyyHQO6bmBp28zxrYFFlIA4hggf+zC8C1ADg0f4uzOhU7RqTXVlh7SoJBv0O3LJB1wKgA4Kf6TX4MTKLeSTjdOyg/5Me37joTVuAehoIw=
+	t=1705645839; cv=none; b=nDZrhug/L8gXqreBSnAiV4LYxFYeB6KUJMpPgqycyK+vqs/npJB21cD5XPhV3VPl66mP8YqA7X8INkUlebKLW+UjW6KNxNVeKwlkqsN9/UAn720z3DzLJDfIEdMtgmBZ+LvdIXrldr13DcgkNtzG6V0QjLQWxZerYQKF8yLjg7U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705645748; c=relaxed/simple;
-	bh=SfDSdpogfmcPGlsBBHygel1deY0CFbkkCrABH4kQrAQ=;
+	s=arc-20240116; t=1705645839; c=relaxed/simple;
+	bh=KUgx2pM5cI1yM/hgJHoX/TsILAcbxzC/uA7dOOIXum4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cse1KV0rzve7n5iEE4T4erdhviVm9Q0WdS2QcCSlRZiKckuyczUHI9wMp3v3jQDMdsid5ZC4WhhTqwKXkxWL5BenmQevRJPsoCvnmlutJua/+8ExX77EE5ijJDow/ycYO4qNlDrgp3hIpk38naFHyHbJ7QHPKGAACoXX2UXvTGc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.41
+	 In-Reply-To:Content-Type; b=K47HbsfVBK30TNbQZqhaVN1ExSsfpnXsphojmosTvaJzGt4iZxYbWzRIFxBnV7sGjLgQaKUOaPxwuxboz509P7VMdOSoqs3rT+pe2EW/daRB5O1B/sDgtTb4N7JbdbkUPuWtosbJvhNN0jgsExEfwt8Hw3SkVn1QuB7OchlpHN0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-40e779f0273so4527665e9.2;
-        Thu, 18 Jan 2024 22:29:06 -0800 (PST)
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-40e9ef9853bso598135e9.1;
+        Thu, 18 Jan 2024 22:30:37 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705645745; x=1706250545;
+        d=1e100.net; s=20230601; t=1705645836; x=1706250636;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=elzQ0lAhbRwdaGk8gkS1cI5qkcOGtpkhLu3AY2RnMaI=;
-        b=FkEDmUfADv6RZMaK/IbsPkkH5vabv8aaEFFXjocIhqVp292JXYeqrKvTyL5pCkKrpc
-         +e9DyRm9rqJM4XyqzJDEPn1ZW3Pz/YvwVSz2MuXyXvHh4XFZbIAShieGiqbf5xac4NU2
-         9pNgscyOAAZl3lXcm1zYm2GVK8B+NslcniptAoYrp1GGOJOlesbtiDVxig7vytvV3VOE
-         +CQoY3f/FEn3XG5SbY92OGA/p55wF/Vj60D5DEbVt8Ks5Nzpa9Ec9Kb4nJQNtSTKsu+U
-         GUVk55dJs2TSWzTOSEguPjCd0Dz3pLGEN+PIfPiEHl4TInso/ykHvbVfrS13tQmbKsC8
-         hIFg==
-X-Gm-Message-State: AOJu0YwVjEaMNN4uZ++gPjVx2KgeiPo9mYvDZGi5gfyqD3tkTjqKMjhp
-	hLdXF6Y3+ihrMcwG15JqaTT9OVpcKLdTeQWyaZ+aiDC7w8GA9U8Ocg4THr3CnYE=
-X-Google-Smtp-Source: AGHT+IEw0UKVKOnmMnfGKVchrAUQTigJp/R9A/Dfcng97yVwLs/PhpLmwwA5kazlDsCrmt2W5njITg==
-X-Received: by 2002:a05:600c:4f04:b0:40e:7491:91f5 with SMTP id l4-20020a05600c4f0400b0040e749191f5mr1208002wmq.87.1705645745137;
-        Thu, 18 Jan 2024 22:29:05 -0800 (PST)
+        bh=7rgq+nShpQau+v2jsE7HPUUMJIPYJu7zwY2PL11pPIU=;
+        b=UNaYhc0uSP/eqWfvtirjQ4Sk9pACISwOsXm4ov5DSDmks/X+9p7k1KRsMOs/ySsD/+
+         sXEjS7kZTl8Y6C4qnnqa4wspX3W/SimtPRewTLk8DhCY9QhffoBiIXNVL7JZsmJH8NhA
+         e7zRcfBA3ytOpKcjEHFqOPeu+ydODPEgSwH6wIry4LmI8PzFdET8fsdLISb7tNYwKiw4
+         DOUyAh/0KBB1AcUxKtCYuKC4KlO1gnulVYbynrLdVG3iJrKKeJtftKCNNox64iER8Qp3
+         rDTJJMEizOvHrf9AhYeOQavuP+Rk1kdcJ85HkylxGeQn2HGEQUUJazjkpOCifUnqsu1J
+         //bg==
+X-Gm-Message-State: AOJu0YycEK6VyQfRDxCzZ0wfnEXpxcNticGc4gqWsvTJV0sKyIzpIzfn
+	K4G/dS2ejh76AQ5ukditsoIkonRx2KsUTuuvcJrxSKtO/WmXNOck
+X-Google-Smtp-Source: AGHT+IHvaz2og5VA8+OunIqH//5QBSImvAeI6TMR6MNSbh5yd1MxFb6GN9AiebBuxzKglMYTZF9GVA==
+X-Received: by 2002:a05:600c:181b:b0:40e:7619:a2d3 with SMTP id n27-20020a05600c181b00b0040e7619a2d3mr218199wmp.105.1705645836008;
+        Thu, 18 Jan 2024 22:30:36 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id g21-20020a05600c311500b0040d30af488asm31794794wmo.40.2024.01.18.22.29.04
+        by smtp.gmail.com with ESMTPSA id g21-20020a05600c311500b0040d30af488asm31794794wmo.40.2024.01.18.22.30.35
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Jan 2024 22:29:04 -0800 (PST)
-Message-ID: <8d69bac3-1230-474e-a38c-97159f47de1e@kernel.org>
-Date: Fri, 19 Jan 2024 07:29:03 +0100
+        Thu, 18 Jan 2024 22:30:35 -0800 (PST)
+Message-ID: <0bfbf5ab-eceb-4dc0-a1c3-42da29ca9c93@kernel.org>
+Date: Fri, 19 Jan 2024 07:30:35 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -46,13 +46,12 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 15/45] tty: vt: pass vpar as unsigned to csi_J() and
- csi_K()
+Subject: Re: [PATCH 11/45] tty: vt: define an enum for CSI+J codes
 Content-Language: en-US
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20240118075756.10541-1-jirislaby@kernel.org>
- <20240118075756.10541-16-jirislaby@kernel.org>
+ <20240118075756.10541-12-jirislaby@kernel.org>
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -96,44 +95,67 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20240118075756.10541-16-jirislaby@kernel.org>
+In-Reply-To: <20240118075756.10541-12-jirislaby@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 18. 01. 24, 8:57, Jiri Slaby (SUSE) wrote:
-> vc_data::vc_par is passed to these function and that is unsigned. So
-> accept unsigned in csi_J() and csi_K().
+> Decrypt the constant values by proper enum names. This time in csi_J().
 
-I've just found out the parameters can be removed completely (v2 
-approaching next week).
+And there are more calls of csi_J(). All those should now use the enum 
+constants. v2 will fix this.
 
 > Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 > ---
->   drivers/tty/vt/vt.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+>   drivers/tty/vt/vt.c | 15 +++++++++++----
+>   1 file changed, 11 insertions(+), 4 deletions(-)
 > 
 > diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-> index c00c568c11a5..4b514187ef15 100644
+> index 66ebc90a9fe9..4f7831f81db6 100644
 > --- a/drivers/tty/vt/vt.c
 > +++ b/drivers/tty/vt/vt.c
-> @@ -1505,7 +1505,7 @@ enum {
->   	CSI_J_FULL		= 3,
->   };
+> @@ -1498,13 +1498,20 @@ static inline void del(struct vc_data *vc)
+>   	/* ignored */
+>   }
 >   
-> -static void csi_J(struct vc_data *vc, int vpar)
-> +static void csi_J(struct vc_data *vc, unsigned int vpar)
->   {
->   	unsigned short *start;
->   	unsigned int count;
-> @@ -1548,7 +1548,7 @@ enum {
->   	CSI_K_LINE			= 2,
->   };
->   
-> -static void csi_K(struct vc_data *vc, int vpar)
-> +static void csi_K(struct vc_data *vc, unsigned int vpar)
+> +enum {
+> +	CSI_J_CURSOR_TO_END	= 0,
+> +	CSI_J_START_TO_CURSOR	= 1,
+> +	CSI_J_VISIBLE		= 2,
+> +	CSI_J_FULL		= 3,
+> +};
+> +
+>   static void csi_J(struct vc_data *vc, int vpar)
 >   {
 >   	unsigned int count;
->   	unsigned short *start = (unsigned short *)vc->vc_pos;
+>   	unsigned short * start;
+>   
+>   	switch (vpar) {
+> -		case 0:	/* erase from cursor to end of display */
+> +		case CSI_J_CURSOR_TO_END:
+>   			vc_uniscr_clear_line(vc, vc->state.x,
+>   					     vc->vc_cols - vc->state.x);
+>   			vc_uniscr_clear_lines(vc, vc->state.y + 1,
+> @@ -1512,16 +1519,16 @@ static void csi_J(struct vc_data *vc, int vpar)
+>   			count = (vc->vc_scr_end - vc->vc_pos) >> 1;
+>   			start = (unsigned short *)vc->vc_pos;
+>   			break;
+> -		case 1:	/* erase from start to cursor */
+> +		case CSI_J_START_TO_CURSOR:
+>   			vc_uniscr_clear_line(vc, 0, vc->state.x + 1);
+>   			vc_uniscr_clear_lines(vc, 0, vc->state.y);
+>   			count = ((vc->vc_pos - vc->vc_origin) >> 1) + 1;
+>   			start = (unsigned short *)vc->vc_origin;
+>   			break;
+> -		case 3: /* include scrollback */
+> +		case CSI_J_FULL:
+>   			flush_scrollback(vc);
+>   			fallthrough;
+> -		case 2: /* erase whole display */
+> +		case CSI_J_VISIBLE:
+>   			vc_uniscr_clear_lines(vc, 0, vc->vc_rows);
+>   			count = vc->vc_cols * vc->vc_rows;
+>   			start = (unsigned short *)vc->vc_origin;
 
 -- 
 js
