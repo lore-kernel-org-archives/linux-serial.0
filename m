@@ -1,131 +1,208 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CHE01-GV0-obe.outbound.protection.outlook.com (mail-gv0che01on2064.outbound.protection.outlook.com [40.107.23.64])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AACA3A1BF
-	for <linux-serial@vger.kernel.org>; Mon, 22 Jan 2024 10:00:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705917651; cv=none; b=sqYvYaT3Atcj4L1GqNWTgfHT1DUoJq/YCHvykAnfnYiMVh4tiM2uE6Hc2nUaizHKkM1r2+TYZQdxyS4kDTajegY8S35F1Xn3ptkTk2+dLp/sng6XrMZNBidTrx3NHufjTUE/+ZgWL9HcLAHukv2uUvPboRnvTzwIWYmSDm0lxwA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705917651; c=relaxed/simple;
-	bh=9O9gyiRpViAc9xKsjePWUyWlG0el0j1bpcdxgvoFgg4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=drFOMDAfGLXKIOLRl50ti1NmQ0UZBKjwv8sl2WHTVhJkQ/UflK1metOoj9NGy58G/AWZzhO8084GGrpjTHqUh/c6aKS/FcssnX+Iuvba+VY2nFXLSwF1hTEgZCuGDg1GhtC3G3p/TacP13RhjlLaVOl8knRe+wo6Y3HaglUNL14=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=tHrV3lk1; arc=none smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 980A03A1DD
+	for <linux-serial@vger.kernel.org>; Mon, 22 Jan 2024 10:52:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.23.64
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1705920745; cv=fail; b=JWVRpnvRixIilpWtV3AE8brUgJvwRYbeO4ejPmxgMeLRb8HCk9BgGV9E3DgJVyuneOMv+ldh/PMg/pNRM/5rAXdmdc7nMHBVy3o5EMkhlAZKYHHtyhZgqgN/2twKZ4E0h/OjrZoyFZ65eydn9XXo764ZSoSbfzEjKPSfkbxNfXk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1705920745; c=relaxed/simple;
+	bh=p39NMtlH9M3+3qHcONMP+QBOBmegg57CRWNkV/EOWbI=;
+	h=Date:From:To:Subject:Message-ID:Content-Type:Content-Disposition:
+	 MIME-Version; b=Lvsj6AUS/UPYnITbQyQ87cdbFj0OjmSkaHTJeXTNTvtJgznD01P0F5tFNGc4AWrzx/F5BXYmBOp+dxTJid8G08pKY1auDfHx++y6OANvV1P8mr6j76txnnbLSbdYhYVay2BgW0AFXNMCRpPK5j4h9wYtpxNM/sZ47wBEwQ/H/Vo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cern.ch; spf=pass smtp.mailfrom=cern.ch; dkim=pass (1024-bit key) header.d=cern.ch header.i=@cern.ch header.b=KsAHYDqQ; dkim=pass (1024-bit key) header.d=cern.ch header.i=@cern.ch header.b=KsAHYDqQ; arc=fail smtp.client-ip=40.107.23.64
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cern.ch
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cern.ch
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tHrV3lk1"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-40e8d3b29f2so36036885e9.1
-        for <linux-serial@vger.kernel.org>; Mon, 22 Jan 2024 02:00:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1705917648; x=1706522448; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=FJf87cqAueVesOIyOKZZNkdFrCS4g1DDgQDq31nIoXo=;
-        b=tHrV3lk1pn06g8uWI2VUDQnvsAUBkOkdeitE8+W90SaRC0Iwx3h59ehpsm1tfn/WUu
-         NkjJKJ4Hg+4VenHWsqRwJEZTSon1cuyLCm/RmUAEr092umpCHEjMf9ibJMl22WC5KJg3
-         wAuR7VwQ9Dbg4xEsmi4b/EgamUkQZ+uA5kO64xnsW+zIC7C6jL11LVU7mcB2fjd67lDz
-         tIkcLhrTmKqHh3Eb5kdBhDsyVR46ANMQPtIdI+QOSaFCvmmfYSZ178dye8q+ZP/QKzIE
-         YXSk47gpNkKhk0rNtcH4xDVZH+xsfi2652QmJGdy7W56iDdAEy0HDDpCpYPUXm8vLk1c
-         HNxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705917648; x=1706522448;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FJf87cqAueVesOIyOKZZNkdFrCS4g1DDgQDq31nIoXo=;
-        b=iSX3U43i97ezYtqnLtvOl5vKztfRsoqf0zmuPTiGbOYM/G70NtHejpbSWQD5NJY+Gh
-         BrjIiu1SaAlAAi9tRdQJsrqOXSG9W5KsZtpEr7TkBBKoxy1XT7BlyGFrHVCsx18+Bgr7
-         N1Wp9QbB/TdHOmy3UFFoZCoeWF8g14XzJjNr5lN08V0WrHZYeES/TJ0xrOIpQcdZhM5I
-         CU4FtircgPQ1LIN+4idVKWbxWN52QyaW14VLSWhr6yFy3gyQA/j2GM24NtR/y94Eg+w1
-         KlIbVzoPD4CKgi6ouV8bzNqjkCG2SlFhgJUMF+TIEd5XYy+4MDTHn9Y2Ecrgda2NnebZ
-         PNEA==
-X-Gm-Message-State: AOJu0YwEVdX7m8whTWI3n2GcoMJlFHpGFrvw/9PDJ7FIMArIyTX7RPm0
-	45pmEjFIwaO9GWfkBfmvrmzfpH5yGQJh6tXYIcjXYBWypyDT2rs/ttKI9xuv7vo=
-X-Google-Smtp-Source: AGHT+IGBOYAYLFWXeUoSeP16QXPIRBbwCwVHVRxxyqOkT7xp7QsYUR7VM4OWjRPmTiSJQwUt2s4zaQ==
-X-Received: by 2002:a05:600c:511e:b0:40c:6eda:9260 with SMTP id o30-20020a05600c511e00b0040c6eda9260mr1310439wms.56.1705917647945;
-        Mon, 22 Jan 2024 02:00:47 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.215.66])
-        by smtp.gmail.com with ESMTPSA id k2-20020a5d6282000000b0033838c2c169sm8702027wru.108.2024.01.22.02.00.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Jan 2024 02:00:47 -0800 (PST)
-Message-ID: <53b6437a-1d8b-48a8-b52e-dd51c5e0da48@linaro.org>
-Date: Mon, 22 Jan 2024 11:00:45 +0100
+	dkim=pass (1024-bit key) header.d=cern.ch header.i=@cern.ch header.b="KsAHYDqQ";
+	dkim=pass (1024-bit key) header.d=cern.ch header.i=@cern.ch header.b="KsAHYDqQ"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MrAsHJASy2EvpeK74ALHMH5rXYWOW3KhmHIc/I2Cw/uJkCGZJtlulSd1IYNH4d+WJW++FRK3C7B4a16oTPf0+GVYt8mEswyL3hQH1RRV8wkxeZBWHSujY0mNzMHGBbKEAfgC3gwJO5re53LA0funcF829PRg07o43PD46Re6cIdrmYUgQpnLCrksptjaNXD5IoDnRdHw4mZA/9z8mg26WhuFf5XiZ5b9Mumqbha0nChEj1+YEFtiaK6t5c6PjJDfgfbnAROM03nWIQQ7Xqt1hbyOzJrM3JDr9XoE8QVJV/+K4Pze4uV81HJmWxIbr5cl3FROnKZ/LrOnwK7ml+EdQQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2UNtANk1EkGtFOkZ7NJroBtI0hOkg4A2CLcQqmGEUZM=;
+ b=mlYL6R1pLeWts9jzT4fgcBd7HbHz/GGvgImKA1UgoEB92TeK0qYyAlQ3vZVsusPP846l9Vi3Pdr+cu7fDgWSjhF5FRlB3MC5QwMdxbe/wZFe3Im3nGVbUquLN0dJ/6mxzWQAh0sbzQWN1gFHgAqhKjJpBtrac4iOip0RfwxVUMLwC3XBPwAxCoy9XjLeSt1ppcMXaHHxd1qwy2/wxx/XDkamIRZMP7nttTiTPRhG0RWsYtN3vcrCZSltZbLl7QMn3ebRa4U6BjgiOOr5LiQtY6dOcyFytS4PDMW+nTG7HxTIK7hONas8PivaOU+SsuTc1bNa59IJH8mya8EH+RrMxQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 51.103.219.121) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=cern.ch;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=cern.ch;
+ dkim=pass (signature was verified) header.d=cern.ch; arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cern.ch; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2UNtANk1EkGtFOkZ7NJroBtI0hOkg4A2CLcQqmGEUZM=;
+ b=KsAHYDqQakjFT2gfFwqAmPAn7pbp3hxFp/ftuFBF9B/Huygj06Tb/j+rKkTZmMSQiHU8WeCQWgGnXQt2iG5/mOW6sHtAuadQEqiN0qSdvhvqdsVSAVJbhP/U3Y6qDKD3CPZk+rQQF7U20LmVlLDDf0FI13akKUgadqgyRHKBVNE=
+Received: from AS9PR07CA0047.eurprd07.prod.outlook.com (2603:10a6:20b:46b::23)
+ by GVAP278MB0969.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:46::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7202.32; Mon, 22 Jan
+ 2024 10:52:18 +0000
+Received: from AMS0EPF000001B3.eurprd05.prod.outlook.com
+ (2603:10a6:20b:46b:cafe::9a) by AS9PR07CA0047.outlook.office365.com
+ (2603:10a6:20b:46b::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7228.16 via Frontend
+ Transport; Mon, 22 Jan 2024 10:52:18 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 51.103.219.121)
+ smtp.mailfrom=cern.ch; dkim=pass (signature was verified)
+ header.d=cern.ch;dmarc=pass action=none header.from=cern.ch;
+Received-SPF: Pass (protection.outlook.com: domain of cern.ch designates
+ 51.103.219.121 as permitted sender) receiver=protection.outlook.com;
+ client-ip=51.103.219.121; helo=mx1.crn.activeguard.cloud; pr=C
+Received: from mx1.crn.activeguard.cloud (51.103.219.121) by
+ AMS0EPF000001B3.mail.protection.outlook.com (10.167.16.167) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7202.16 via Frontend Transport; Mon, 22 Jan 2024 10:52:18 +0000
+Received: from xguard (ag_core.activeguard.xor [172.18.0.4])
+	by mx1.crn.activeguard.cloud (Postfix) with ESMTP id D462AFC36C
+	for <linux-serial@vger.kernel.org>; Mon, 22 Jan 2024 11:52:17 +0100 (CET)
+Received: from CHE01-ZR0-obe.outbound.protection.outlook.com (mail-zr0che01lp2105.outbound.protection.outlook.com [104.47.22.105])
+	by mx1.crn.activeguard.cloud (Postfix) with ESMTPS id DA7A4FE7DA
+	for <linux-serial@vger.kernel.org>; Mon, 22 Jan 2024 11:52:16 +0100 (CET)
+Authentication-Results-Original: auth.opendkim.xorlab.com;	dkim=pass (1024-bit
+ key; unprotected) header.d=cern.ch header.i=@cern.ch header.a=rsa-sha256
+ header.s=selector1 header.b=KsAHYDqQ
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cern.ch; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2UNtANk1EkGtFOkZ7NJroBtI0hOkg4A2CLcQqmGEUZM=;
+ b=KsAHYDqQakjFT2gfFwqAmPAn7pbp3hxFp/ftuFBF9B/Huygj06Tb/j+rKkTZmMSQiHU8WeCQWgGnXQt2iG5/mOW6sHtAuadQEqiN0qSdvhvqdsVSAVJbhP/U3Y6qDKD3CPZk+rQQF7U20LmVlLDDf0FI13akKUgadqgyRHKBVNE=
+Authentication-Results-Original: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=cern.ch;
+Received: from GVAP278MB0230.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:3b::10)
+ by ZR1P278MB1022.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:5c::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7202.32; Mon, 22 Jan
+ 2024 10:52:15 +0000
+Received: from GVAP278MB0230.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::2d08:941:5307:52cd]) by GVAP278MB0230.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::2d08:941:5307:52cd%5]) with mapi id 15.20.7202.031; Mon, 22 Jan 2024
+ 10:52:15 +0000
+Date: Mon, 22 Jan 2024 11:52:13 +0100
+From: Federico Vaga <federico.vaga@cern.ch>
+To: linux-serial@vger.kernel.org
+Subject: serial:support: Using 8250 driver With MOXA CP-132EL Device
+Message-ID: <zmry3u7l7dzh2iqqonxyombv4v2nzpr3fccoe677laxc2jn6nm@mo4afecdt45o>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+X-ClientProxiedBy: FR2P281CA0077.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:9a::14) To GVAP278MB0230.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:710:3b::10)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dt-bindings: serial: fsl-lpuart: support i.MX95
-To: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, gregkh@linuxfoundation.org,
- robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org, jirislaby@kernel.org, Peng Fan <peng.fan@nxp.com>
-References: <20240121115301.1420502-1-peng.fan@oss.nxp.com>
-Content-Language: en-US
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20240121115301.1420502-1-peng.fan@oss.nxp.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-TrafficTypeDiagnostic:
+	GVAP278MB0230:EE_|ZR1P278MB1022:EE_|AMS0EPF000001B3:EE_|GVAP278MB0969:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3c0a293f-ae16-4cd0-35a4-08dc1b3833e0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam-Message-Info-Original:
+ gnVFfP8UMohqyjue7EWn0BMyGH5GiWl1/w/ux2veqWp72xwv7TF3ay0XGM1HqppdiL8as9vJGcOQc555tnFJnv+jb1zwKNovL+gE7y3+WNWXDYjtOd/wdKM5fVOy9oJ9SGsttMXMmDpSLdvyfVHIgh+xP3Lg26MRb01kNWG/R1Ubul/OwBxF6iYUCsfcGf1KPYUjz+jQlzW0HKQhrNCpQs03tIDVKdnwAYs1KtOXhlm0Ips2+1O8bplYhIH1Mm538MslODfuRYzdDuRb/hxvoJUxDNW5viaVKewapPa/wR3c9+trnq6r8SH4sn7Rp3+pvUTXpNc7tGL0Fkqil39YSH/JMO3kpHU0JkmhnkiRyqU9Lst6c0pYf5E/4/RH2XScClXp5L5+m9iUtXw7Dxa7cboQIBJOYPeaeSI7LtFA3vwUd6xN1di79/dA4tBVADht2YiCKSRI0lOT9bGFr+jvzZn2txIs2pDmkbDN74UQDFinVnIOCudwb6YQX+SORXy1+nRFizv2suSTIgJSa19WagpMw9ENGI5wQpXRo3Qwv84Om2QArYqDPdkZ0O044ugT
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZR1P278MB1022
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped:
+ AMS0EPF000001B3.eurprd05.prod.outlook.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id-Prvs:
+	9d39a7b1-e317-4fcc-2411-08dc1b38323b
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	tOynzELdIrr4t7JVA/Nej06k2dhSDufrD/UmNIn70prast8/DZ6A/uSXBFW7vrbvbOPKC/eOVYvmh3snC0s9xQpgeCTp2wi5HcSmOw3VX0JfaWqEP2IxZ+Ac3FfdXgR5cX9VnWlkeuWOUokL5uMThSDtxVFyhilXuI53AengB54bt5mTO5+NHlminhiDADqou9SdslZuF4ZVb2S52dCwqHSCEfDa+iokUS9cc3jmfbogaFNdwgvxoWoVRLs6waYERLTlpBMEK64N1vPftGF7E9GbgVews1ZfCEXRuFDZMn7x4D4ICmee5L0v/h1QyoJeDMMWkAPIgc6D5WapNYdlCN8e7Y/qPG515cSK2IsuGCsArqtivBPZFDO7bExuGZk/qW0GRIG2ihhjIoTawivplEf1WdpMH7WoXlj8FM90jshwsOoipTKA7BBHGIVkhbQZCKzD42r8dNllw13KYiQW7A6HM0zXiqJArSvj/eIo8C8j+DX/u7M2FyJl504xqQPuWCgvkuvlnYyjUvkd7bHKhgKE5fo4Xu5OnUlj3oVYNriIaWm3X2bhJu8zXOeRu/P8hJe3/+bz667E3mJ0QnTk2ISkGXTymisLX8AJ+N4XvqUnJK+yxRXPj/g17KFTiG6cVh8R8LWbr5shv033UcPWlbyYJYqIuJ2F4nMVitKLqH6xIWx9vlj/0lIU947taa8p+X++TYcbRcW6K1ajwMO7ND3p3RZukaODl59Yoz1pS62MkEgZ+oFmrCkma5oYQX7MgHiwsH+EpXMsdEHFCNl8YA==
+X-Forefront-Antispam-Report:
+	CIP:51.103.219.121;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mx1.crn.activeguard.cloud;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(7916004)(4636009)(136003)(396003)(39860400002)(376002)(346002)(230922051799003)(64100799003)(186009)(451199024)(82310400011)(1800799012)(46966006)(40470700004)(36840700001)(40460700003)(40480700001)(6506007)(336012)(9686003)(6512007)(26005)(86362001)(82740400003)(81166007)(356005)(33716001)(41300700001)(44832011)(83380400001)(36860700001)(5660300002)(2906002)(47076005)(8936002)(8676002)(478600001)(6486002)(70586007)(70206006)(6916009)(786003)(316002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: cern.ch
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2024 10:52:18.1436
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c0a293f-ae16-4cd0-35a4-08dc1b3833e0
+X-MS-Exchange-CrossTenant-Id: c80d3499-4a40-4a8c-986e-abce017d6b19
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=c80d3499-4a40-4a8c-986e-abce017d6b19;Ip=[51.103.219.121];Helo=[mx1.crn.activeguard.cloud]
+X-MS-Exchange-CrossTenant-AuthSource:
+	AMS0EPF000001B3.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVAP278MB0969
 
-On 21/01/2024 12:53, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
-> 
-> Add i.MX95 compatible string. Same as i.MX93, it is compatible
-> with i.MX8ULP.
-> 
+Dear all,
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+I'm having problems in trying to use the MOXA CP-132EL card with the 8250 driver
+on the stable kernel 5.10.192 (but I also tried the 6.1.70). It seems not to
+work. As a note, to do my tests, I have a loop cable connecting the two on-board
+serial ports.
 
-Best regards,
-Krzysztof
+I see this device should be supported by the 8250 code, in particular this
+appears in 8250_pci.c
 
+```
+$ git grep 132EL drivers/tty/
+drivers/tty/serial/8250/8250_pci.c:#define PCI_DEVICE_ID_MOXA_CP132EL   0x1322
+drivers/tty/serial/8250/8250_pci.c:     { PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP132EL),    pbn_moxa_2 },
+```
+
+At boot time the device is correctly discovered, and it matches the driver.
+Indeed two new tty interfaces appear under `/dev`
+
+```
+$ dmesg | grep 0d:00.0
+[    0.196175] pci 0000:0d:00.0: [1393:1322] type 00 class 0x070002
+[    0.196350] pci 0000:0d:00.0: reg 0x10: [io  0x4000-0x403f]
+[    0.196448] pci 0000:0d:00.0: reg 0x14: [mem 0xb0100000-0xb0100fff]
+[    0.196534] pci 0000:0d:00.0: reg 0x18: [io  0x4040-0x404f]
+[    0.197474] pci 0000:0d:00.0: supports D1 D2
+[    0.197475] pci 0000:0d:00.0: PME# supported from D3hot
+[    0.371301] 0000:0d:00.0: ttyS2 at MMIO 0xb0100000 (irq = 16, base_baud = 921600) is a ST16650
+[    0.371832] 0000:0d:00.0: ttyS3 at MMIO 0xb0100200 (irq = 16, base_baud = 921600) is a ST16650
+
+```
+
+The communication seems not to work. However, the communication works when using
+the driver provided by MOXA (``mxupcie.ko``).
+
+The interesting thing is the following. Binding back the device to the 8250
+serial driver after having loaded first the mxupcie makes it work. Translated
+into a procedure:
+
+1. load 8250 serial driver
+2. make a test (FAIL)
+3. unbind device from 8250
+4. load mxupcie driver
+5. unbind device from mxupcie
+6. bind device to 8250
+7. make a test (SUCCESS)
+
+This made me think of two possible cases:
+
+1. mxupcie applies a default serial configuration that works out-of-the-box
+2. mxupcie perform a hardware configuration that the 8250 is not doing
+
+
+About option (1) I used ``stty -g`` to compare configurations right after
+binding. But it seems exactly the same when using 8250 or mxupcie from MOXA.
+
+
+``` Using 8250
+# stty -F /dev/ttyS3 -g
+500:5:cbd:8a3b:3:1c:7f:15:4:0:1:0:11:13:1a:0:12:f:17:16:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0
+# stty -F /dev/ttyS2 -g
+500:5:cbd:8a3b:3:1c:7f:15:4:0:1:0:11:13:1a:0:12:f:17:16:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0
+```
+
+``` Using mxupcie
+# stty -F /dev/ttyMUE0 -g
+500:5:cbd:8a3b:3:1c:7f:15:4:0:1:0:11:13:1a:0:12:f:17:16:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0
+# stty -F /dev/ttyMUE1 -g
+500:5:cbd:8a3b:3:1c:7f:15:4:0:1:0:11:13:1a:0:12:f:17:16:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0
+```
+
+This makes me think that probably option (2) represents the problem, but due to
+my limited knowledge with these two drivers (8250, mxupcie) and the device
+(CP-132EL) I can not spot the problem in the code.
+
+Therefore, I'm asking you: are you aware of such a problem with this card or
+others from MOXA? Is there someone in the community who is using the 8250 driver
+with MOXA devices?
+
+Thank you.
+
+-- 
+Federico Vaga - CERN
