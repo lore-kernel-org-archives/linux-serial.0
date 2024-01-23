@@ -1,113 +1,82 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E30A7C0BE;
-	Tue, 23 Jan 2024 02:08:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B4616127;
+	Tue, 23 Jan 2024 04:16:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705975728; cv=none; b=PVU+xYuaWUSr3VcE2nt3dgyKl4kPZrlvUDID6rarXcO6Tw/dDOR/HeD7aT7ZZ2Q9HCZ28YAJAfEsBYtGFW4UTZdk37uIQy5RlSotF6fQEx7YvLAgJ6EXW/Qf/18dzUrLloUEeaZ3HWvj6ruaxLfLeTalyOzxr4zV8lJpJS5XDDg=
+	t=1705983414; cv=none; b=ASTEJgxM7d2APEySBiJdO1MakxanVtWLm5XKAJBEr99QGAcvRqF2qkGCs7p5xUDevZKHKWjxh7MInrmKdYl5Tk7r1DMGep53LyWMaWJhYBqsT00oVpxCBsnCjS8P8s/Iyp3jxrBWDeqd8FgRF6zFTgrD6prxacrxh3I8ZMwxQ2c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705975728; c=relaxed/simple;
-	bh=tp+zRZEkzvXxaTtmCpwCkNL2dDXaH90UCnFNprzlDXE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=e2V4BNHCCiq9HzTnw3+2tPrPdfekxvrOsXUPJBWtg7LyuSi0DPqRRJoC1l6wlsFVLxVX24yVzv/46t6NgdHoyN++0IkrAzaDylujyPcdnSBxCBitxv/yKw9mvWN3SNR0G1usMbyafujbodymhKivqzVQVCATNUGRrhWBa97dMCE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=jrg64FuO; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1705983414; c=relaxed/simple;
+	bh=zCto+i188eQzc9FI2y7lo2IV9MuPeqzQKsNrAs9syWY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=NbQIrfEJKAXbLABwMEOE22ebPzjzBHr/R6ptF3VSIspBfOCrwk8aCxbYQC/zp1b1P1Y366cnCCbY3/4lN91Gm564pGlW9xOkzr4+Zhy1mKATxJue03SbSe1Tx/4gz9SQhSzsFZ1z7HhGCTFlvNGTfM81YCsXh0BtXx8RvDlj0N4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=UWvV1Z7V; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="jrg64FuO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F65EC433F1;
-	Tue, 23 Jan 2024 02:08:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1705975728;
-	bh=tp+zRZEkzvXxaTtmCpwCkNL2dDXaH90UCnFNprzlDXE=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=jrg64FuORMFfCBm4v77eKP3qOmOJFPULMWV57DIRuXVu6npbgmgRByRMAmOVDgabp
-	 fEMNewxFUrE2qGsRzoU15DTiOHaP9JdzkB+fWbmFrDa3hH1sEyX7ju3gVAedNf4R/t
-	 9qieBH9ZuqorutJWLXS+ROtQyoF3hjVAPnKPsF3g=
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: stable@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	patches@lists.linux.dev,
-	Sam Ravnborg <sam@ravnborg.org>,
-	Andreas Larsson <andreas@gaisler.com>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org,
-	sparclinux@vger.kernel.org,
-	Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 6.6 512/583] serial: apbuart: fix console prompt on qemu
-Date: Mon, 22 Jan 2024 15:59:23 -0800
-Message-ID: <20240122235827.739885822@linuxfoundation.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240122235812.238724226@linuxfoundation.org>
-References: <20240122235812.238724226@linuxfoundation.org>
-User-Agent: quilt/0.67
-X-stable: review
-X-Patchwork-Hint: ignore
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="UWvV1Z7V"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=dPTs1UqD2uFsdR1Cq7cl+Z7O0iiQG+mRGXZOGMNFVe8=; b=UWvV1Z7V6tX549Jplae583oevZ
+	kljkKaohO/hCCzq7+dkKTtypJAuVyoNkzGPNux4ejDm9gZaxaFptoISAsg5Z8GipdfWwS/8Zwwc1G
+	FaWs6gutDCH60l2+vtCdDVb6DCfNviNIbNQI/RNwuGhMzdd1TSPWAETRaFMbgpgmgv0KnxRwawcEK
+	uQ6o4sNsg3+iQw1KyvAAu1otr4Zk/7OuUnfe75j1lD2ezS0ZrfddQUUa6vtzRufZCvHRaNxLN+tfD
+	EHou+ycW2Sm37FKNLvwiQlEl909T7bbPigCJk9oqw2RAx1hhcGgduUXxbmFOw5KxcJev7FoQKV5sn
+	eMNXbGww==;
+Received: from [50.53.50.0] (helo=[192.168.254.15])
+	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+	id 1rS8DT-00F3MO-2i;
+	Tue, 23 Jan 2024 04:16:51 +0000
+Message-ID: <3ce78854-e941-47e5-933e-38b18d5203d9@infradead.org>
+Date: Mon, 22 Jan 2024 20:16:49 -0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 46/47] tty: vt: fix up kernel-doc
+Content-Language: en-US
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>, gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20240122110401.7289-1-jirislaby@kernel.org>
+ <20240122110401.7289-47-jirislaby@kernel.org>
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20240122110401.7289-47-jirislaby@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-6.6-stable review patch.  If anyone has any objections, please let me know.
 
-------------------
 
-From: Sam Ravnborg <sam@ravnborg.org>
+On 1/22/24 03:04, Jiri Slaby (SUSE) wrote:
+> selection.c and vt.c still uses tabs in the kernel-doc. This misrenders the
+> functions in the output -- sphinx misinterprets the description. So
+> remove these tabs, incl. those around dashes.
+> 
+> 'enum' keyword is needed before enum names. Fix that.
+> 
+> Superfluous \n after the comments are also removed. They are not
+> completely faulty, but this unifies all the kernel-doc in the files.
+> 
+> Finally fix up the cross references.
+> 
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 
-[ Upstream commit c6dcd8050fb7c2efec6946ae9c49bc186b0a7475 ]
 
-When using a leon kernel with qemu there where no console prompt.
-The root cause is the handling of the fifo size in the tx part of the
-apbuart driver.
+Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
 
-The qemu uart driver only have a very rudimentary status handling and do
-not report the number of chars queued in the tx fifo in the status register.
-So the driver ends up with a fifo size of 1.
+Thanks.
 
-In the tx path the fifo size is divided by 2 - resulting in a fifo
-size of zero.
+> ---
+>  drivers/tty/vt/selection.c | 30 ++++++-------
+>  drivers/tty/vt/vt.c        | 86 +++++++++++++++++++-------------------
+>  include/linux/console.h    |  6 +--
+>  3 files changed, 62 insertions(+), 60 deletions(-)
+> 
 
-The original implementation would always try to send one char, but
-after the introduction of uart_port_tx_limited() the fifo size is
-respected even for the first char.
-
-There seems to be no good reason to divide the fifo size with two - so
-remove this. It looks like something copied from the original amba driver.
-
-With qemu we now have a minimum fifo size of one char, so we show
-the prompt.
-
-Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Fixes: d11cc8c3c4b6 ("tty: serial: use uart_port_tx_limited()")
-Cc: Andreas Larsson <andreas@gaisler.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc:  <linux-serial@vger.kernel.org>
-Cc:  <sparclinux@vger.kernel.org>
-Link: https://lore.kernel.org/r/20231226121607.GA2622970@ravnborg.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/apbuart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/apbuart.c b/drivers/tty/serial/apbuart.c
-index d7658f380838..d3cb341f2c55 100644
---- a/drivers/tty/serial/apbuart.c
-+++ b/drivers/tty/serial/apbuart.c
-@@ -122,7 +122,7 @@ static void apbuart_tx_chars(struct uart_port *port)
- {
- 	u8 ch;
- 
--	uart_port_tx_limited(port, ch, port->fifosize >> 1,
-+	uart_port_tx_limited(port, ch, port->fifosize,
- 		true,
- 		UART_PUT_CHAR(port, ch),
- 		({}));
 -- 
-2.43.0
-
-
-
+#Randy
