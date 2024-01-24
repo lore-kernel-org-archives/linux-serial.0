@@ -1,118 +1,101 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6403E1AAB1;
-	Wed, 24 Jan 2024 11:38:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83D9B1B7E4;
+	Wed, 24 Jan 2024 11:50:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706096315; cv=none; b=LlB41ebEBM8yoY/iuD6yuAWclsWdQc+/OJTFAO5MsfUiP4tSznnhy7ldJ0CpzaNR+xTQMHVFqTiZ9iA1TXtQKtWfk3GYc4suplEuyhQqcC380deLQulC6Bspj9GQInt3Y+WY3kO7bezgKiLQ+2nPIkv6PdL33AcBOClJf0Iiy/s=
+	t=1706097021; cv=none; b=DgucZk2ILfW9ki7AhcAnM//5fjTRYC5x8B3ukpe6tKu+3V1vZaBDwnnuFljOdNOGyblNS3y/5qGzr+8D0+wZps0hsKSkmlq/IzDyhB60qNHuyCc9A2xeBlHAhrGEUdoYnQtaWVuO5k8ZM9gPBXxrQUrTX9EZLLHtk0wIcrL7+Z4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706096315; c=relaxed/simple;
-	bh=4KDkITjThVdXmK+bUfn3eDscOtSdUbZiuDnwLDTI5eE=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=OUDrrop254cr00EAkCS69AzzZOD99cRwmVTddmbqRI4XYdTjRE/BPp0jIsUan/43YXLy4kUho1hfK5nEQyTR8di910WU1hQIMlA7/GjNsIrB9nQYl22wzM+QrObGMFG1IP9nxH/TBD3febsP1xzUeyO3XCscAomiXRSmOPLlQd0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Z5fZQnAz; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1706097021; c=relaxed/simple;
+	bh=thdxLQ6Ir5c1JU402aPYO0Si7gTDX5mpLrlD8QzdG1k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XeYbyZNiD/9k4xuorJEArj5vKhWBNl37lbrGbeZBN98KEX5MYOE7ZihHdlLbTWHGk6f2aDqwjZtMYU0O/F9hwwKN0z74eFWEj5qNQ05c8NclRfyYGKwOCdrUOSnRaq5dFU/rfFkQf1bAteiOPAwvV6rTTYAPtv6erlfYx3hRaWg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W8Ddc7tz; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Z5fZQnAz"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706096313; x=1737632313;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=4KDkITjThVdXmK+bUfn3eDscOtSdUbZiuDnwLDTI5eE=;
-  b=Z5fZQnAzWketCuAZfYBBqmBKmDwO2T6cxkOA78eKiE+vUvVzUiewZO5i
-   KHZrd51dqv7bNgnkdGH27VYUKVMQQ3l7jtBphJ356WfWfArc+PNwNxo5b
-   w6sBvoxNGTG2X2XCgjzG7DwY/KBn/z48xTx03l23O6M+mUV0NgY2CRM0f
-   hDdC1wsbDItGs2LH2k95XQs68rVbjgVwur/PzZVk7n6nuUTSj+hkqCHzL
-   nqufUlFiBYbow+gCZGx8YVYmZo4lpD2NX90Tms1mtbQHmcbTYj0Xgwil/
-   ZvRAFCLTjcOIKlJ4cuc1/4ieHUzQdNh1jESpvX11+hUdW3zmuXVh5oKtr
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10962"; a="1691926"
-X-IronPort-AV: E=Sophos;i="6.05,216,1701158400"; 
-   d="scan'208";a="1691926"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2024 03:38:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10962"; a="820437647"
-X-IronPort-AV: E=Sophos;i="6.05,216,1701158400"; 
-   d="scan'208";a="820437647"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.246.48.46])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2024 03:38:23 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Wed, 24 Jan 2024 13:38:18 +0200 (EET)
-To: Francesco Dolcini <francesco@dolcini.it>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, linux-bluetooth@vger.kernel.org, 
-    linux-mediatek@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>, 
-    linux-arm-kernel@lists.infradead.org, greybus-dev@lists.linaro.org, 
-    linux-iio@vger.kernel.org, Netdev <netdev@vger.kernel.org>, 
-    chrome-platform@lists.linux.dev, platform-driver-x86@vger.kernel.org, 
-    linux-serial <linux-serial@vger.kernel.org>, linux-sound@vger.kernel.org, 
-    Francesco Dolcini <francesco.dolcini@toradex.com>, 
-    Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
-    Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>, 
-    Jonathan Cameron <jic23@kernel.org>, Lee Jones <lee@kernel.org>, 
-    Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-    Eric Dumazet <edumazet@google.com>, 
-    "David S. Miller" <davem@davemloft.net>, 
-    Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
-    Hans de Goede <hdegoede@redhat.com>, Benson Leung <bleung@chromium.org>, 
-    Tzung-Bi Shih <tzungbi@kernel.org>, Rob Herring <robh@kernel.org>, 
-    Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2] treewide, serdev: change receive_buf() return type
- to size_t
-In-Reply-To: <20240122180551.34429-1-francesco@dolcini.it>
-Message-ID: <7d4309e5-fdcd-13d7-2d4a-7139779e3fdd@linux.intel.com>
-References: <20240122180551.34429-1-francesco@dolcini.it>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W8Ddc7tz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43BB0C433F1;
+	Wed, 24 Jan 2024 11:50:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1706097021;
+	bh=thdxLQ6Ir5c1JU402aPYO0Si7gTDX5mpLrlD8QzdG1k=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=W8Ddc7tz3SPJqW/uJQhvqxqUzvAQxv1q+mw47dDYs5PO4EhvJTWYvHCUZKwnEaS8J
+	 NyJOpjZcGt36kcGPyCSOJQKJIEKBBBYiQ5qmjlZ9jYSyDTBAGoqTX0ukvDkZ8dFjc5
+	 SOSebBZcxumpWNJ316P90dcBqnsWBHw6K/LBmj+M5MWbFpUSypebNtoAPuI4mxuMAz
+	 tlzoDxv6lJ9Sz/tBz0SMrVTvOIifq79WJ/rGgIZ+46bAOJsB0/8ORyMDhb1VGwDugb
+	 IjtNiDS/NSNOcAFs6Owz3837SIj6K0fS+qK0SedfP1YUElcGtF7JgSPVW9I9S2JABR
+	 /xO6RnuKUfxxw==
+Date: Wed, 24 Jan 2024 12:50:17 +0100
+From: Wolfram Sang <wsa@kernel.org>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+	Nghia Nguyen <nghia.nguyen.jg@renesas.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH] dt-bindings: serial: renesas,hscif: Document r8a779h0
+ bindings
+Message-ID: <ZbD5ect1rFX0Ojxd@ninjato>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+	Nghia Nguyen <nghia.nguyen.jg@renesas.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>
+References: <55b458e0ba9824e1246e556075bf882032c37279.1706095578.git.geert@linux-m68k.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-695447939-1706096298=:1372"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="GWFWZ00VAxbpvMQb"
+Content-Disposition: inline
+In-Reply-To: <55b458e0ba9824e1246e556075bf882032c37279.1706095578.git.geert@linux-m68k.org>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323328-695447939-1706096298=:1372
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+--GWFWZ00VAxbpvMQb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 22 Jan 2024, Francesco Dolcini wrote:
-
-> From: Francesco Dolcini <francesco.dolcini@toradex.com>
+On Wed, Jan 24, 2024 at 12:27:15PM +0100, Geert Uytterhoeven wrote:
+> From: Nghia Nguyen <nghia.nguyen.jg@renesas.com>
 >=20
-> receive_buf() is called from ttyport_receive_buf() that expects values
-> ">=3D 0" from serdev_controller_receive_buf(), change its return type fro=
-m
-> ssize_t to size_t.
+> The R-Car V4M (R8A779H0) SoC has R-Car Gen4 compatible HSCIF ports, so
+> document the SoC-specific bindings.
 >=20
-> The need for this clean-up was noticed while fixing a warning, see
-> commit 94d053942544 ("Bluetooth: btnxpuart: fix recv_buf() return value")=
-=2E
-> Changing the callback prototype to return an unsigned seems the best way
-> to document the API and ensure that is properly used.
->=20
-> GNSS drivers implementation of serdev receive_buf() callback return
-> directly the return value of gnss_insert_raw(). gnss_insert_raw()
-> returns a signed int, however this is not an issue since the value
-> returned is always positive, because of the kfifo_in() implementation.
-> gnss_insert_raw() could be changed to return also an unsigned, however
-> this is not implemented here as request by the GNSS maintainer Johan
-> Hovold.
->=20
-> Suggested-by: Jiri Slaby <jirislaby@kernel.org>
-> Link: https://lore.kernel.org/all/087be419-ec6b-47ad-851a-5e1e3ea5cfcc@ke=
-rnel.org/
-> Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
-> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> #for-iio
+> Signed-off-by: Nghia Nguyen <nghia.nguyen.jg@renesas.com>
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Acked-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
---=20
- i.
 
---8323328-695447939-1706096298=:1372--
+--GWFWZ00VAxbpvMQb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmWw+XUACgkQFA3kzBSg
+KbbpWxAAgAp3ZkQLG9M6gmYeF5s3kLXEdGQjHdu2/M31Y4TZSfGejxqtETfI7d2K
+rLDscXRtvgIQ34FycgY9fhN7R1BwcN3AQeBQvyJ0OmMGt2giNG8rZ6IhKa0/EJzw
+AmyRhPIUtCQ7n0u6rI46dpxur/tSvw9Q99OV+juMQ5jt0D+T9sMlV5U7qNmG66jL
+roG6izntuK05dzeuUE6KQltHGgYeU0UZSqsexAGGgtLRE/F/DxGpM6NB60EDXgHG
+MtGA7zvgbPyotjq2/CtgE7EJCOZGjcqxT6bYfYAw/v0xhD5kZCOEyhmEWmFnLu6q
+DV7KLs1PB5wVqZd9irGHgPvCtzpEw9+ATrRlFJF7XZrqyYokhwTsLBe5LqrbdYpA
+ORBZaKsSJac08pz11uS1rt6oUD5XGBhCya7hinJf2+hK7wFJrlz++vkt/uITX1HE
+S0T+eUP4zv7XyxMCIAwpjRsEE2D+Y2Ha5/G4x89KaSDTvHXno5Eiowp3zxZWcN0Y
+5Z47kfBiCCBCEf1Prcb/eQgLKRHoRF+07bYJaULNrtHWpqQf3cJt7rZfyhs0qlr0
+Xmmrayb7KI3leLZgVkK/Hp3kv8yQ9EOZqyV6CYHy/xoSwp52HcM2sZE23yRJb/XX
+OFhJnu+JnQDjGSyXKFD1QeprhjkAUnT+tUoz+XjQ7IWZUXBtMb0=
+=mv2c
+-----END PGP SIGNATURE-----
+
+--GWFWZ00VAxbpvMQb--
