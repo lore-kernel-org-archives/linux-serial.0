@@ -1,56 +1,59 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F28C71C686;
-	Thu, 25 Jan 2024 10:02:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E33F91C6AB;
+	Thu, 25 Jan 2024 10:08:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706176949; cv=none; b=GcHimR7tXEasaTWUOxaJ5NUVLYQXqGOdpXDZ1J9Xeg466YDM12q8PYsGLzgT7aqLYLknuUJ9nekO/STpUfK78N+MUWyxzucHGq9bv/ILUibfLxtfTQSgo3xHzqLPe4upb55qr1oiT4F4bnSUsg0lB7+dhXsEAYGdf8XytJOSAoc=
+	t=1706177303; cv=none; b=oiZkTw5k1I4E/7/oRJp5fUc6STAkqGb7Qp3lZAmtwNQpTSMNUPZU3Qu32AAiA8stlqoC8TGjxXcKn687CP6mzJetChCM3xrwIkZ4BI5xgOGk1wuPCLcJ3LlWp3TGENPdg56ra24wdkMyA9krJNsmnnYSMGthdh0xoZ1zr5R2GbE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706176949; c=relaxed/simple;
-	bh=Tv1+9k+cs9ODrgYL0DhM6PbCDNkcFvwIQHm8qIIPFOw=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=pHqX3409f/4AvmVqyV8jipOnFkTOw2dP3nRRha7iAfzGXYV9x1RCZOmKQbb0ISUZ+hHlSC+0ivFF2bIVpLnaEBb5awGlGQyi8pLQf1gvsAio7bc6yB+hhkBozuhrTq1vN5OtrFoQtW7CTXS/JGLgUnnpQnuoRlVcx1kwheMX8cE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=VvEyrU92; arc=none smtp.client-ip=68.232.153.233
+	s=arc-20240116; t=1706177303; c=relaxed/simple;
+	bh=X0qq5ZaVDzahs2+lbQaAYhW2wnzFrplz3eF7XvHPfSY=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=J7XKhqgpwpMlZl9OgwwxEEf3MAJ/1BRQ8fCbSsA1PNAZCpl/yvqlgaReMTRUJ1/X2rIdKtX8j39ilPUIstsCmCSnxPVGMdJLA2YknH655NuQqYFYKXMLS12v6oQbMzwuP2ZN2QBhWkP6Dt8FPvkcAMNc0AE7kdI/uiMjMRwlvaY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=gu4ok8ca; arc=none smtp.client-ip=68.232.154.123
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="VvEyrU92"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="gu4ok8ca"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1706176948; x=1737712948;
+  t=1706177300; x=1737713300;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=Tv1+9k+cs9ODrgYL0DhM6PbCDNkcFvwIQHm8qIIPFOw=;
-  b=VvEyrU92g4QY0st1jN98VMuuShbvLKQy/YQAEsT6yP4XLhZ0pWBhQBJd
-   zhge5HH6Vac+PCMmOK1bxgyAJQN5vS7xM+G+kZz3oUIfP0YwtlmhPsSn7
-   lUVdckmnVfBX5VLPv2TQsoercLw6UxxmPAwtN8611ykrB/APVSM8GyFMs
-   3zTUQuvVhLMmyHccxWtxugkv7KsDo5pPxFyrqCj+7KQvLxxmWrX4/JFQl
-   7mTjuGbymJ31VJD9+lb31+xb90+WYmL9TAX3CXB3aKkdZjkHPDjnhtnMf
-   583N22J5dQTWClrELdQCjxx52X+FsFrAGBOzvPZFWdyQQlGrkCFVvlS7h
-   w==;
-X-CSE-ConnectionGUID: EcHPnxniQdWGuWl+Gd9iBA==
-X-CSE-MsgGUID: cPjp1T7gRbWSaY+EDV2BEQ==
+  bh=X0qq5ZaVDzahs2+lbQaAYhW2wnzFrplz3eF7XvHPfSY=;
+  b=gu4ok8cavgX9ltu43twFi+e+CPjnFtDFHQRJhrePzLK3g4uPWThpYR4Z
+   oRYEGmhsLkaK4SF1V3naRyZ3AlmWjRp3VjYr7ITBsQyocQXVrtFUGwjjR
+   A25hD9+nXNQuyLAoM4SuVAqk+0b7alkEtzNeNtbJm1awyuedu0r7aksWz
+   yqJ45T8C1GAsVC0wYKNucfZqH6qw0UcHe6nAk0H2sds7wY4iLyv0ZrLy+
+   5ga/aQpywqoxonP8AEyhbXSs2hksKqvw/9Tbe4DX0XVAZ8PMyKldc1QWs
+   Mta/wEron2KwmOl+wm2brLZU80I9ynJ3fGc2N5AQaMOViSOZmolF3I3ej
+   g==;
+X-CSE-ConnectionGUID: XzFUEa+2R8WssLIbT7r3rw==
+X-CSE-MsgGUID: /WxQOswXQBeea8jiQrnz6g==
 X-IronPort-AV: E=Sophos;i="6.05,216,1701154800"; 
-   d="scan'208";a="245997251"
+   d="scan'208";a="182516535"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 25 Jan 2024 03:02:21 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 25 Jan 2024 03:08:14 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Thu, 25 Jan 2024 03:01:56 -0700
+ 15.1.2507.35; Thu, 25 Jan 2024 03:08:14 -0700
 Received: from che-dk-ungapp03lx.microchip.com (10.10.85.11) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.35 via Frontend Transport; Thu, 25 Jan 2024 03:01:53 -0700
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.35 via Frontend Transport; Thu, 25 Jan 2024 03:08:09 -0700
 From: Rengarajan S <rengarajan.s@microchip.com>
 To: <kumaravel.thiagarajan@microchip.com>,
 	<tharunkumar.pasumarthi@microchip.com>, <gregkh@linuxfoundation.org>,
-	<jirislaby@kernel.org>, <linux-serial@vger.kernel.org>,
+	<jirislaby@kernel.org>, <ilpo.jarvinen@linux.intel.com>,
+	<andriy.shevchenko@linux.intel.com>, <f.fainelli@gmail.com>,
+	<john.ogness@linutronix.de>, <tony@atomide.com>, <tglx@linutronix.de>,
+	<jiaqing.zhao@linux.intel.com>, <linux-serial@vger.kernel.org>,
 	<linux-kernel@vger.kernel.org>
 CC: <UNGLinuxDriver@microchip.com>
-Subject: [PATCH v1 tty] 8250: microchip: pci1xxxx: Add Burst mode transmission support in uart driver for reading from FIFO
-Date: Thu, 25 Jan 2024 15:30:06 +0530
-Message-ID: <20240125100006.153342-1-rengarajan.s@microchip.com>
+Subject: [PATCH v1 tty] 8250: microchip: Add 4 Mbps support in PCI1XXXX UART
+Date: Thu, 25 Jan 2024 15:36:19 +0530
+Message-ID: <20240125100619.154873-1-rengarajan.s@microchip.com>
 X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -61,169 +64,131 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-pci1xxxx_handle_irq reads the burst status and checks if the FIFO
-is empty and is ready to accept the incoming data. The handling is
-done in pci1xxxx_tx_burst where each transaction processes data in
-block of DWORDs, while any remaining bytes are processed individually,
-one byte at a time.
+The current clock input is set to 62.5 MHz for supporting fractional
+divider, which enables generation of an acceptable baud rate from any
+frequency. With the current clock input the baud rate range is limited
+to 3.9 Mbps. Hence, the current range is extended to support 4 Mbps
+with Burst mode operation. Divisor calculation for a given baud rate is
+updated as the sampling rate is reduced from 16 to 8 for 4 Mbps.
 
 Signed-off-by: Rengarajan S <rengarajan.s@microchip.com>
 ---
- drivers/tty/serial/8250/8250_pci1xxxx.c | 106 ++++++++++++++++++++++++
- 1 file changed, 106 insertions(+)
+ drivers/tty/serial/8250/8250_pci1xxxx.c | 34 +++++++++++++++++++++----
+ drivers/tty/serial/8250/8250_port.c     |  7 +++++
+ 2 files changed, 36 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
-index 558c4c7f3104..d53605bf908d 100644
+index d53605bf908d..6cfeba058dba 100644
 --- a/drivers/tty/serial/8250/8250_pci1xxxx.c
 +++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
-@@ -67,6 +67,7 @@
- #define SYSLOCK_RETRY_CNT			1000
+@@ -82,7 +82,8 @@
+ #define ADCL_CFG_PIN_SEL			BIT(1)
+ #define ADCL_CFG_EN				BIT(0)
  
- #define UART_RX_BYTE_FIFO			0x00
-+#define UART_TX_BYTE_FIFO			0x00
- #define UART_FIFO_CTL				0x02
+-#define UART_BIT_SAMPLE_CNT			16
++#define UART_BIT_SAMPLE_CNT_8			8
++#define UART_BIT_SAMPLE_CNT_16			16
+ #define BAUD_CLOCK_DIV_INT_MSK			GENMASK(31, 8)
+ #define ADCL_CFG_RTS_DELAY_MASK			GENMASK(11, 8)
+ #define UART_CLOCK_DEFAULT			(62500 * HZ_PER_KHZ)
+@@ -96,6 +97,7 @@
+ 	(UART_WAKE_N_PIN | UART_WAKE_NCTS | UART_WAKE_INT)
  
- #define UART_ACTV_REG				0x11
-@@ -100,6 +101,7 @@
+ #define UART_BAUD_CLK_DIVISOR_REG		0x54
++#define FRAC_DIV_CFG_REG			0x58
+ 
+ #define UART_RESET_REG				0x94
  #define UART_RESET_D3_RESET_DISABLE		BIT(16)
- 
- #define UART_BURST_STATUS_REG			0x9C
-+#define UART_TX_BURST_FIFO			0xA0
+@@ -104,6 +106,10 @@
+ #define UART_TX_BURST_FIFO			0xA0
  #define UART_RX_BURST_FIFO			0xA4
  
++#define UART_BIT_DIVISOR_8			0x26731000
++#define UART_BIT_DIVISOR_16			0x6ef71000
++#define UART_BAUD_4MBPS				4000000
++
  #define MAX_PORTS				4
-@@ -109,6 +111,7 @@
- #define UART_BURST_SIZE				4
- 
- #define UART_BST_STAT_RX_COUNT_MASK		0x00FF
-+#define UART_BST_STAT_TX_COUNT_MASK		0xFF00
- #define UART_BST_STAT_IIR_INT_PEND		0x100000
- #define UART_LSR_OVERRUN_ERR_CLR		0x43
- #define UART_BST_STAT_LSR_RX_MASK		0x9F000000
-@@ -116,6 +119,7 @@
- #define UART_BST_STAT_LSR_OVERRUN_ERR		0x2000000
- #define UART_BST_STAT_LSR_PARITY_ERR		0x4000000
- #define UART_BST_STAT_LSR_FRAME_ERR		0x8000000
-+#define UART_BST_STAT_LSR_THRE			0x20000000
- 
- struct pci1xxxx_8250 {
- 	unsigned int nr;
-@@ -344,6 +348,105 @@ static void pci1xxxx_rx_burst(struct uart_port *port, u32 uart_status)
- 	}
- }
- 
-+static void pci1xxxx_process_write_data(struct uart_port *port,
-+					struct circ_buf *xmit,
-+					int *data_empty_count,
-+					u32 *valid_byte_count)
-+{
-+	u32 valid_burst_count = *valid_byte_count / UART_BURST_SIZE;
-+
-+	/*
-+	 * Each transaction transfers data in DWORDs. If there are less than
-+	 * four remaining valid_byte_count to transfer or if the circular
-+	 * buffer has insufficient space for a DWORD, the data is transferred
-+	 * one byte at a time.
-+	 */
-+	while (valid_burst_count) {
-+		if (*data_empty_count - UART_BURST_SIZE < 0)
-+			break;
-+		if (xmit->tail > (UART_XMIT_SIZE - UART_BURST_SIZE))
-+			break;
-+		writel(*(unsigned int *)&xmit->buf[xmit->tail],
-+		       port->membase + UART_TX_BURST_FIFO);
-+		*valid_byte_count -= UART_BURST_SIZE;
-+		*data_empty_count -= UART_BURST_SIZE;
-+		valid_burst_count -= UART_BYTE_SIZE;
-+
-+		xmit->tail = (xmit->tail + UART_BURST_SIZE) &
-+			     (UART_XMIT_SIZE - 1);
-+	}
-+
-+	while (*valid_byte_count) {
-+		if (*data_empty_count - UART_BYTE_SIZE < 0)
-+			break;
-+		writeb(xmit->buf[xmit->tail], port->membase +
-+		       UART_TX_BYTE_FIFO);
-+		*data_empty_count -= UART_BYTE_SIZE;
-+		*valid_byte_count -= UART_BYTE_SIZE;
-+
-+		/*
-+		 * When the tail of the circular buffer is reached, the next
-+		 * byte is transferred to the beginning of the buffer.
-+		 */
-+		xmit->tail = (xmit->tail + UART_BYTE_SIZE) &
-+			     (UART_XMIT_SIZE - 1);
-+
-+		/*
-+		 * If there are any pending burst count, data is handled by
-+		 * transmitting DWORDs at a time.
-+		 */
-+		if (valid_burst_count && (xmit->tail <
-+		   (UART_XMIT_SIZE - UART_BURST_SIZE)))
-+			break;
-+	}
-+}
-+
-+static void pci1xxxx_tx_burst(struct uart_port *port, u32 uart_status)
-+{
-+	struct uart_8250_port *up = up_to_u8250p(port);
-+	u32 valid_byte_count;
-+	int data_empty_count;
-+	struct circ_buf *xmit;
-+
-+	xmit = &port->state->xmit;
-+
-+	if (port->x_char) {
-+		writeb(port->x_char, port->membase + UART_TX);
-+		port->icount.tx++;
-+		port->x_char = 0;
-+		return;
-+	}
-+
-+	if ((uart_tx_stopped(port)) || (uart_circ_empty(xmit))) {
-+		port->ops->stop_tx(port);
-+	} else {
-+		data_empty_count = (pci1xxxx_read_burst_status(port) &
-+				    UART_BST_STAT_TX_COUNT_MASK) >> 8;
-+		do {
-+			valid_byte_count = uart_circ_chars_pending(xmit);
-+
-+			pci1xxxx_process_write_data(port, xmit,
-+						    &data_empty_count,
-+						    &valid_byte_count);
-+
-+			port->icount.tx++;
-+			if (uart_circ_empty(xmit))
-+				break;
-+		} while (data_empty_count && valid_byte_count);
-+	}
-+
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-+		uart_write_wakeup(port);
-+
-+	 /*
-+	  * With RPM enabled, we have to wait until the FIFO is empty before
-+	  * the HW can go idle. So we get here once again with empty FIFO and
-+	  * disable the interrupt and RPM in __stop_tx()
-+	  */
-+	if (uart_circ_empty(xmit) && !(up->capabilities & UART_CAP_RPM))
-+		port->ops->stop_tx(port);
-+}
-+
- static int pci1xxxx_handle_irq(struct uart_port *port)
+ #define PORT_OFFSET				0x100
+ #define RX_BUF_SIZE				512
+@@ -210,15 +216,24 @@ static int pci1xxxx_get_num_ports(struct pci_dev *dev)
+ static unsigned int pci1xxxx_get_divisor(struct uart_port *port,
+ 					 unsigned int baud, unsigned int *frac)
  {
- 	unsigned long flags;
-@@ -359,6 +462,9 @@ static int pci1xxxx_handle_irq(struct uart_port *port)
- 	if (status & UART_BST_STAT_LSR_RX_MASK)
- 		pci1xxxx_rx_burst(port, status);
++	unsigned int uart_sample_cnt;
+ 	unsigned int quot;
  
-+	if (status & UART_BST_STAT_LSR_THRE)
-+		pci1xxxx_tx_burst(port, status);
++	if (baud >= UART_BAUD_4MBPS) {
++		uart_sample_cnt = UART_BIT_SAMPLE_CNT_8;
++		writel(UART_BIT_DIVISOR_8, (port->membase + FRAC_DIV_CFG_REG));
++	} else {
++		uart_sample_cnt = UART_BIT_SAMPLE_CNT_16;
++		writel(UART_BIT_DIVISOR_16, (port->membase + FRAC_DIV_CFG_REG));
++	}
 +
- 	spin_unlock_irqrestore(&port->lock, flags);
+ 	/*
+ 	 * Calculate baud rate sampling period in nanoseconds.
+ 	 * Fractional part x denotes x/255 parts of a nanosecond.
+ 	 */
+-	quot = NSEC_PER_SEC / (baud * UART_BIT_SAMPLE_CNT);
+-	*frac = (NSEC_PER_SEC - quot * baud * UART_BIT_SAMPLE_CNT) *
+-		  255 / UART_BIT_SAMPLE_CNT / baud;
++	quot = NSEC_PER_SEC / (baud * uart_sample_cnt);
++	*frac = (NSEC_PER_SEC - quot * baud * uart_sample_cnt) *
++		  255 / uart_sample_cnt / baud;
  
- 	return 1;
+ 	return quot;
+ }
+@@ -237,7 +252,16 @@ static int pci1xxxx_rs485_config(struct uart_port *port,
+ 	u32 delay_in_baud_periods;
+ 	u32 baud_period_in_ns;
+ 	u32 mode_cfg = 0;
++	u32 sample_cnt;
+ 	u32 clock_div;
++	u32 frac_div;
++
++	frac_div = readl(port->membase + FRAC_DIV_CFG_REG);
++
++	if (frac_div == UART_BIT_DIVISOR_16)
++		sample_cnt = UART_BIT_SAMPLE_CNT_16;
++	else
++		sample_cnt = UART_BIT_SAMPLE_CNT_8;
+ 
+ 	/*
+ 	 * pci1xxxx's uart hardware supports only RTS delay after
+@@ -253,7 +277,7 @@ static int pci1xxxx_rs485_config(struct uart_port *port,
+ 			clock_div = readl(port->membase + UART_BAUD_CLK_DIVISOR_REG);
+ 			baud_period_in_ns =
+ 				FIELD_GET(BAUD_CLOCK_DIV_INT_MSK, clock_div) *
+-				UART_BIT_SAMPLE_CNT;
++				sample_cnt;
+ 			delay_in_baud_periods =
+ 				rs485->delay_rts_after_send * NSEC_PER_MSEC /
+ 				baud_period_in_ns;
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 925ee1d61afb..2a85bc9475f9 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2688,6 +2688,7 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
+ 					     struct ktermios *termios,
+ 					     const struct ktermios *old)
+ {
++	struct uart_8250_port *up = up_to_u8250p(port);
+ 	unsigned int tolerance = port->uartclk / 100;
+ 	unsigned int min;
+ 	unsigned int max;
+@@ -2705,6 +2706,12 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
+ 		max = (port->uartclk + tolerance) / 16;
+ 	}
+ 
++	/*
++	 * Microchip PCI1XXXX UART supports maximum baud rate up to 4 Mbps
++	 */
++	if (up->port.type == PORT_MCHP16550A)
++		max = 4000000;
++
+ 	/*
+ 	 * Ask the core to calculate the divisor for us.
+ 	 * Allow 1% tolerance at the upper limit so uart clks marginally
 -- 
 2.25.1
 
