@@ -1,89 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAFDC1DDEA;
-	Fri, 26 Jan 2024 19:41:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 746AB225D8;
+	Fri, 26 Jan 2024 19:59:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706298111; cv=none; b=SgwMF+8sR/MdSSofvX1d1ItycEoEUUoGlAD7VUJYLvfQYSTlNPGvbHLQ0irj3Rj35Xdl1BN82L1nET+SatT6aRdSETv4OfyIgNAPcDls0JbjLXhX1qzSyEi6HMdSunAqNh5FaSh9Xq5T3c8/vaQ3CV7d1e15q4/mQtIY/lfHqMw=
+	t=1706299156; cv=none; b=gZNEIqstirYQAjkKs1P36tQnwLwaQmXEPx+v95yacZz2+ofFsIJAVwMa46hugsTnhUJt4hUpbm/7/H6EMUF4e3zqbYfMmfaK1y2SBfiYwsZx4k1GLb2PuPEPqlsuicuwU+izV6anRA32O9N3DeEbHKBxqxI7yYWqxm/7DGbXdpw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706298111; c=relaxed/simple;
-	bh=CBZ+J6S9RdRbbtTXo+VlAsnSPg7u6GA155LrshMp1yM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KK2F7neKO4emZL3TtqUf07+cUd4AcBWUei/yyrb9SzUfwpm35LuGfsc434IsTv4gEdtyLkMSN5cna35n+m5Yv3jhB2MAiXMxkymU5nLyb7E7yw+/L+Kkw4WBUxb3wGG8keKxn2dzoflJfWYRKSpwsL5AwS3JpoR2gj6eV9LsORg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pM9p+DFc; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1706299156; c=relaxed/simple;
+	bh=cRzLRQLkoT/9QCSn+btL5/4YZw+PC8W1ychaTIgW3/Q=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WmFhM8mmBXTd2zmKzT+Nxqdiql7Ro5dZVbxwgExAZwqSuUHx3rtbcS19nECpJ6CrVpz8viExU8sc95qn4eiCV7BnsIDUSmAuFjCdMMfc5rf1o86myqFZAn04hLDSLwug21AN9HaSs3ESmzdGFScIMm+j6cjD29ENtJ3NAlRhlPU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de; spf=pass smtp.mailfrom=gmx.de; dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b=qSh8rlp+; arc=none smtp.client-ip=212.227.17.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pM9p+DFc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D1C2C43390;
-	Fri, 26 Jan 2024 19:41:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1706298111;
-	bh=CBZ+J6S9RdRbbtTXo+VlAsnSPg7u6GA155LrshMp1yM=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=pM9p+DFcsjEEP20b8WVertpY4ouFDFOiUdqCMy5SmBJucmcEgHDZHGkZ9AQy7krgj
-	 0RcYBBpS1NHCNKLdjDmLHsnyxeGW/u+s05Yd0wOOJpiSLtPsb9YEeSQh03UjHzqDNR
-	 XJuCKsVbbWqDeR2MApQJvj4UsJ6jiA289nT59rT/Re57DfMwLYs0jVcQcje5cWHspH
-	 iDyNMaaCcXSEc6mG4PJCJtLMxZD4eJr463B3Omr3BLd+8VV61Z2/Hz3HlF6yK0O5p6
-	 27K0PSvXT9s0XcQalvCzad0M9SygDD5PUYS6rz1FHGPzfRKXxYnBtY/nPAcBAEe7Ra
-	 6YHucqTHz5Mhg==
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-20451ecbb80so395728fac.2;
-        Fri, 26 Jan 2024 11:41:51 -0800 (PST)
-X-Gm-Message-State: AOJu0YzLKMPev+dcAHOq6exRLHVKqHR3sI+3hXVGUCPTCS+YkVeqfScj
-	kjC9zCtpM4r91x4UBk3K8NgKGs2ggNV/0klxEuQTabsI27T+a/iTMrJdPBc34tcaM8XMqGnqrhE
-	4XdqGr6oUlDzxsAx9Osi0U+iv5fo=
-X-Google-Smtp-Source: AGHT+IHZvRiQEf8wAo3wUkkTo/ouDUD8ffSn+dV1E2i8xeRgoYrzI3JmI7twzN3Qz8ehUcT8UMvga0+c/7ug/YlYNk8=
-X-Received: by 2002:a05:6870:c192:b0:210:c59c:dae8 with SMTP id
- h18-20020a056870c19200b00210c59cdae8mr152610oad.55.1706298110530; Fri, 26 Jan
- 2024 11:41:50 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="qSh8rlp+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
+	t=1706299131; x=1706903931; i=linosanfilippo@gmx.de;
+	bh=cRzLRQLkoT/9QCSn+btL5/4YZw+PC8W1ychaTIgW3/Q=;
+	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
+	 In-Reply-To;
+	b=qSh8rlp++h2UL10nO3ZC6Qhyxh9m8pn53Dt2WTcaUCG6k2bApgwssHd7NIk2TbJu
+	 Zo+WfXtE43EucUy+yKr4BsJwqeUhv3wR5vBPogtcDFRli3mBozrnOjlCiC9AQEbxU
+	 kZOaOHbQk2zzeWftCh+zfCUDsvU1vc0oBF2sz2ajn2p1gVqdOC3JMFGj0YJ491/1X
+	 IewEf1Q86xDFWDbd73UKUmIxzeGVXY0vrerDckSb6CVGzVb5rX5kjIFQpuiuOetRr
+	 xqKhgMmKn9aGI6p9So3ssYKk+pmgsU9oGGjMQJNQ+93AiQEQgqKTaj8VwYhYLk2VO
+	 FqIqODPwHgvKNctyLQ==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.2.42] ([84.180.5.12]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1M1HZi-1rWCAb24XC-002rBK; Fri, 26
+ Jan 2024 20:58:51 +0100
+Message-ID: <098216ce-50b3-43e4-ad1a-42228c58b761@gmx.de>
+Date: Fri, 26 Jan 2024 20:58:47 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240126163032.1613731-1-yoann.congal@smile.fr> <CAK7LNATBvhcyQXt58j74Q++Y74ZgjdC3r3rtnAuU0YMt_K_A7g@mail.gmail.com>
-In-Reply-To: <CAK7LNATBvhcyQXt58j74Q++Y74ZgjdC3r3rtnAuU0YMt_K_A7g@mail.gmail.com>
-From: Masahiro Yamada <masahiroy@kernel.org>
-Date: Sat, 27 Jan 2024 04:41:14 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATAp6mHqepAJsbFXCsMEX6zmAP6owfSPwmYbV_2PHvGvA@mail.gmail.com>
-Message-ID: <CAK7LNATAp6mHqepAJsbFXCsMEX6zmAP6owfSPwmYbV_2PHvGvA@mail.gmail.com>
-Subject: Re: [PATCH] treewide: Change CONFIG_BASE_SMALL to bool type
-To: Yoann Congal <yoann.congal@smile.fr>
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-kbuild@vger.kernel.org, 
-	Geert Uytterhoeven <geert@linux-m68k.org>, Thomas Gleixner <tglx@linutronix.de>, 
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Matthew Wilcox <willy@infradead.org>, 
-	Peter Zijlstra <peterz@infradead.org>, Darren Hart <dvhart@infradead.org>, 
-	Davidlohr Bueso <dave@stgolabs.net>, =?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>, 
-	"Luis R. Rodriguez" <mcgrof@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 2/6] serial: 8250: Support separate rs485 rx-enable
+ GPIO
+Content-Language: en-US
+To: Farouk Bouabid <farouk.bouabid@theobroma-systems.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>
+Cc: Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ quentin.schulz@theobroma-systems.com,
+ Heiko Stuebner <heiko.stuebner@cherry.de>
+References: <20240126-dev-rx-enable-v5-0-5d934eda05ca@theobroma-systems.com>
+ <20240126-dev-rx-enable-v5-2-5d934eda05ca@theobroma-systems.com>
+From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+In-Reply-To: <20240126-dev-rx-enable-v5-2-5d934eda05ca@theobroma-systems.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:ZxMRSpxhrKQNxRQVUQyrIc8UZwPVseB5XxzkFHOXhcCiL9DaKQ+
+ LoOnRpzN6nc+kk0LwXWXCb3q9omGjK4QqK46ZFM0pFBpjurJ/TMUaSzMcmatc0t9IbB9XOh
+ m1ipbp6DGASgrgCICC1hkD/Y8kCDX4irts5qeyO66IAzHcPlYv6DS3ZjdhWxeD2n51USWjY
+ 8oC2bt2tH1AFA4e+qXYQA==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:gDeFAUjQu88=;LyErTh1wbmp4ZgUkN2hipgHtJip
+ Doasra58RavpqzDzDkRpATvXg2UWTEIs8FY3wGifrBGjoG8OZ7XWkAWj7S7d/CqD8+XJozQgg
+ GXbN1lSKKAMwvlFtJwrC+mFYX8f9AMByLl2inW33lRUHV9zt/ozkAczOIukrBYMdJzhUfK8bL
+ EIGpYZwCLKi0NxwE8nq/9OkiEXlqk0+paRlr8cewb4fRcpOIan4Anozb6PqsnRgPM7QcZM1w5
+ phyRqULFK7WdO06b0nSRXe8Z69HjxoqSFMIDRgm7ZqOg/KsAzJwjqvNSNTa8A4WjuHRUWZVKo
+ c9TO5w3UiF/SWoftSN1wEIps/d5YTOJK5ouPrcGnKItZgekoSQO0Z5q2ZX9i7UoEClgtz9sMF
+ M7KlxJ6CU7jSybRv7cdD+jrEFeYH4TnHVhHqOxpmEmyCw1K2h9QtRzGbZPIMxOGkjVI9avub4
+ XPM72OdUCP/zGxht5V6HyqM5VnyXRG/FKVkLjgIMs5E934N0qA6sCIsR68mnHe59QVZSFLSBD
+ y4JQlMFaKZXKTyK5oKXiwFZ3z21/pzKdYxP/bjUhhR8tZl2Iw1tiRXSmUShk3VGHgy/6a3Sqo
+ RrvNboGzXBaKmIGtWy+0pFe/Vf6zw+DqHQ9DeMI/hKuUtUQzdeXJDkD2xoPe96RBFtsaFOKsf
+ Yu1eHFHcKnaYFfZ8Mb1pEmUTA3pxvgARx+kYLJcV44D6tr+oVHzAc1D0QezjC+PLc+7yXAw+k
+ G8JHOYNegYJQvUWoE+gaYbLp8iuUTJdGnbMza8NU1YRui2utEERA+ahnOvfgMNDHBL0vjhVVz
+ B4Qls2sbQGt/NGT3zpmWbYlj7mVj+Bi6Xcil1giY1tGYTc4ZKebGHZYJPk5sApQEJRazuVwRw
+ pwm/TpmUMJawXcDQ7pUOztJSnzRN4QDqO3ZRdvZ7D4al6Lh+479MaZHfTDUiC0zzObA4F5qDd
+ SW2XOQ==
 
-On Sat, Jan 27, 2024 at 4:28=E2=80=AFAM Masahiro Yamada <masahiroy@kernel.o=
-rg> wrote:
+
+Hi,
+
+On 26.01.24 18:27, Farouk Bouabid wrote:
+> From: Heiko Stuebner <heiko.stuebner@cherry.de>
 >
-> (+CC: Luis R. Rodriguez, author of 23b2899f7f194)
+> The RE signal is used to control the duplex mode of transmissions,
+> aka receiving data while sending in full duplex mode, while stopping
+> receiving data in half-duplex mode.
+>
+> On a number of boards the !RE signal is tied to ground so reception
+> is always enabled except if the UART allows disabling the receiver.
+> This can be taken advantage of to implement half-duplex mode - like
+> done on 8250_bcm2835aux.
+>
+> Another solution is to tie !RE to RTS always forcing half-duplex mode.
+>
+> And finally there is the option to control the RE signal separately,
+> like done here by introducing a new rs485-specific gpio that can be
+> set depending on the RX_DURING_TX setting in the common em485 callbacks.
+>
 
+we just added the rx_during_tx_gpio to the serial core.
+Why cant you use this GPIO for your purpose?
 
+Regards,
+Lino
 
-Just a nit.
-
-
-I think "printk:" is more suitable for the subject prefix
-than "treewide:".
-
-Thanks.
-
-
-
-
-
-
-
-
---=20
-Best Regards
-Masahiro Yamada
