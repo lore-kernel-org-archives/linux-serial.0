@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3217D1D522;
-	Fri, 26 Jan 2024 15:42:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F5F81D524;
+	Fri, 26 Jan 2024 15:42:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706283759; cv=none; b=R5xuXxO/5bTh0I0sRaBUgGwf9BRSzJL8gMxC4SXx+L3v8NceJXYhULoA0XgcgS5hCk82SmpC/qMmU+L0Y+8fsA+un4F8Noh0egGswQ0EkllPfQkRo+8C4hcs2DTKli5sZRV2CQd0CKz3L6Fbgb8xtCBv/yqAh8LLwe3l74adRcY=
+	t=1706283759; cv=none; b=pou7HYa9McEgRoNpZZT6oSavh23xfviWzg6lKg6YhuoZcOnbM4j1XSzke9moiHYZnBiJFeMvUffwB0e4Z1C1AyDnLTFpVeCwS34N4CgSjxLnA1k+CSvpVEE/cY77JShditia9ik0TvqjDQodJIrDtnnT+y1oj2Q/3hf+L1AU2RM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1706283759; c=relaxed/simple;
-	bh=Y3Z8LYJk8ojW2lKAiG+yhwYm9jBbV1csLki0ZOFKhMU=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=UM6OYIxjoSNOYEO6HVgIy3m5XAuEN0jDlTIyDkwXlaKCveA4lAgL3uYoIdhfAdtRLQgRkNtvRa9PbKsnrR/TtbkWoAqtt9qxz9/qeBAFLJruSjhRKOk2Fnq7f5U1Fl8DJxz28mX/zW2JyIx8kxiKYX1QU6yPauiCAq6moa/PqHg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dAJq1/H2; arc=none smtp.client-ip=10.30.226.201
+	bh=S5QTvUq6sE9Cp1C8VwuWZA/YXB1LZbFmxjhmWirs68s=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=OliVNyHJCN6cIeNEqn5HerSg+SIqxaJiWVPpEx9Gnsfv5U+8npcm5tU0FNaP9S3eVYHadn5kQA2qZ32/Iz7klaIjf5H2di+Q3HLZMQYdiH3IG/MRw+pXqGG6vbb8zr3JulgnHHsum1KXWb2MjcounceLmirGdAQhqv4vU/s/jFQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J19Mf6r2; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dAJq1/H2"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AA51BC433A6;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J19Mf6r2"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CC24BC43601;
 	Fri, 26 Jan 2024 15:42:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1706283758;
-	bh=Y3Z8LYJk8ojW2lKAiG+yhwYm9jBbV1csLki0ZOFKhMU=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=dAJq1/H2LfglyYCA895mP0pspSKJfqBVqPTM4GDwFZ8lW8euWLEuCc2/hX/jRTuiV
-	 3f/FkRZKJMdvbAhB9rNhN9sH152hxZKGQCFIf9T3/v1iCgCBTclwEXnkDL9CnUV/Cv
-	 vVXKvYuZLmaoyvwI84OPn8tjrTDIcQwaJuha8qPDer5lOafCjlHGb2h3GW++6Nwr2H
-	 XukhS077gS7ztTG4Jd8BbprS1hcOLQDmvu8CPjBVTrx85qxt2ubCJtQOyccAEeKV6K
-	 gA6K7jWJN82Dg1gi+TfMVRYYE0EaHDP+CWYTy+gtz8sTgZp+bvHPery5G9FZVSGPSr
-	 WG/k81l3tdSwA==
+	bh=S5QTvUq6sE9Cp1C8VwuWZA/YXB1LZbFmxjhmWirs68s=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=J19Mf6r2IQC4hX3YmqWbphbz1JZrkQfn57Xpx4cK4semsMcImzz2BBhuMMk4r7lmo
+	 tfgQd3Ma+KBsIRmxtAIYkDsgoYPMSCz/KhBvffzL6rcRgWFZNzK44wpBTQz62EIzRP
+	 iwZ7LYaLiMse/UmMBTeS4QE43DaG5wCnE+QdaT4SrlMXrBLqyLy8TRnV5h56RIR6Dv
+	 ZCtijohpqIllEMpUzUDQhndPqfzUlJSNw9CdTms68RDZLlXArqmxsmnHx/JAwPWaqU
+	 1ZRlfhbbQL3XD5x6KSx1Xt2wNFexFDKNtW11QiBCR+erfIO0sGso1Q+BZgFQqCtc0m
+	 JCMNjsofZQDJA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D52C47DDF;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F1AC48286;
 	Fri, 26 Jan 2024 15:42:38 +0000 (UTC)
 From: Christoph Winklhofer via B4 Relay
  <devnull+cj.winklhofer.gmail.com@kernel.org>
-Subject: [PATCH v5 0/3] w1: add UART w1 bus driver
-Date: Fri, 26 Jan 2024 16:42:02 +0100
-Message-Id: <20240126-w1-uart-v5-0-1d82bfdc2ae9@gmail.com>
+Date: Fri, 26 Jan 2024 16:42:04 +0100
+Subject: [PATCH v5 2/3] dt-bindings: serial: allow onewire as child node
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,10 +41,9 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAMrSs2UC/02OzQ6CMBAGX8X07JLtH1RPvofxUHCRqlBTEDSEd
- 7eQqBz28CU7kxlZS8FRy/abkQXqXet8E4feblhR2eZC4M5xM4FCIUcFA4enDR0QmdRoy7XVyOL
- 3I1DpXovpeIq7DL6Grgpkv7zkIh6iQpMohToFDsU1GVxzu1e+pHC41Nbdk8LXs7BybefDeynr5
- az9RuhfRC8BIXZkuJO5oCxdKeaIXq259M+pyGUlcZkZa3JJa26apg/1cHhQFwEAAA==
+Message-Id: <20240126-w1-uart-v5-2-1d82bfdc2ae9@gmail.com>
+References: <20240126-w1-uart-v5-0-1d82bfdc2ae9@gmail.com>
+In-Reply-To: <20240126-w1-uart-v5-0-1d82bfdc2ae9@gmail.com>
 To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
  Rob Herring <robh+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
  Christoph Winklhofer <cj.winklhofer@gmail.com>, 
@@ -56,11 +55,11 @@ To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
 Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-serial@vger.kernel.org, linux-doc@vger.kernel.org
 X-Mailer: b4 0.12.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1706283756; l=4786;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1706283756; l=868;
  i=cj.winklhofer@gmail.com; s=20240104; h=from:subject:message-id;
- bh=Y3Z8LYJk8ojW2lKAiG+yhwYm9jBbV1csLki0ZOFKhMU=;
- b=R7jPweL5XSb8Z6yp5Suh+YaLtVSrdR/qZScd1ek+b7zMEqmM4CViPNz9//ExzoN4cS/V1iWGN
- p22SMvhB6kFBdh3lKRlb1aK20ei243q+aWJr1N5gDMfxQrWPaE+ys/d
+ bh=f5JrNqSq+DhQN/cCXZvlLdSNxNweO7or4GNetVHb2s4=;
+ b=vNQIF5PJ+rhmx/oT4VlO72W5qDeYED+UtbIfZCYVYHsbJ/OKK1VjekSbu2DDNnwPV0ciYCnSJ
+ TaAbsGElugEDLIUFkOrdYJevyh4Dp8o0FDIMDi+f3030dZExiD8faMd
 X-Developer-Key: i=cj.winklhofer@gmail.com; a=ed25519;
  pk=lgjGjOt7hFKJT9UXhgUyrdthxvZ7DJ5F1U/7d9qdAsk=
 X-Endpoint-Received:
@@ -68,113 +67,31 @@ X-Endpoint-Received:
 X-Original-From: Christoph Winklhofer <cj.winklhofer@gmail.com>
 Reply-To: <cj.winklhofer@gmail.com>
 
-Hello!
+From: Christoph Winklhofer <cj.winklhofer@gmail.com>
 
-This patch contains a driver for a 1-Wire bus over UART. The driver
-utilizes the UART interface via the Serial Device Bus to create the
-1-Wire timing patterns.
+The UART 1-Wire bus utilizes the Serial Device Bus to create the 1-wire
+timing patterns.
 
-Changes in v5:
-- dt-binding: allow child object for onewire and use prefix -bps for
-  baud rate configuration.
-- use type u8 for a byte, instead of unsigned char
-- use constants (NSEC_PER_SEC, BITS_PER_BYTE)
-- make delay computation from packet time more coherent
-- Link to v4: https://lore.kernel.org/r/20240106-w1-uart-v4-0-7fe1378a8b3e@gmail.com
-Thanks Jiri, Krzysztof and Rob for the review.
-
-Changes in v4:
-- rework baud-rate configuration: also check max bit-time, support higher
-  baud-rates by adding a delay to complete 1-Wire cycle.
-- dt-binding w1-uart: specify baud-rates for 1-Wire operations
-- Link to v3: https://lore.kernel.org/r/20240105-w1-uart-v3-0-8687093b2e76@gmail.com
-
-Changes in v3:
-- improve baud-rate configuration: use specific limits for 1-Wire
-  reset, touch-0 and touch-1 operation, compute in nanoseconds.
-- remove unused header atomic.h
-- use function instead of macro to compute bit-time from baud-rate
-- switch to b4 util to publish patch: missing recipients
-- Link to v2: https://lore.kernel.org/lkml/20231223100408.44056-1-cj.winklhofer@gmail.com
-
-Changes in v2:
-- add documentation for dt-binding
-- allow onewire as serial child node
-- support different baud-rates: The driver requests a baud-rate (9600
-  for reset and 115200 for write/read) and tries to adapt the
-  transmitted byte according to the actual baud-rate returned from
-  serdev.
-- fix locking problem for serdev-receive and w1-master reset/touch: The
-  received byte is now protected with a mutex - instead of the atomic,
-  which was used before due to the concurrent store and load.
-- explicit error in serdev-receive: Receiving more than one byte results
-  in an error, since the w1-uart driver is the only writer, it writes a
-  single-byte and should receive a single byte.
-- fix variable names, errno-returns, wrong define CONFIG_OF
-- fix log flooding
-- fix driver remove (error-path for rxtx-function)
-- Link to v1: https://lore.kernel.org/all/20231217122004.42795-1-cj.winklhofer@gmail.com
-Krzysztof, thank your very much for your feedback!
-
-It was tested on a "Raspberry Pi 3 Model B+" with a DS18B20 and on a
-"Variscite DART-6UL" with a DS18S20 temperature sensor.
-
-Content:
-- Patch 1: device tree binding 1-Wire
-- Patch 2: allow onewire as serial child node
-- Patch 3: driver and documentation
-
-The patch was created against the w1 subsytem tree (branch w1-next):
-  Link: https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux-w1.git/
-
-The checkpatch.pl script reported the following error - which I am not
-sure how to fix:
-  WARNING: added, moved or deleted file(s), does MAINTAINERS need
-  updating?
-
-The technical details for 1-Wire over UART are in the document:
-  Link: https://www.analog.com/en/technical-articles/using-a-uart-to-implement-a-1wire-bus-master.html
-
-  In short, the UART peripheral must support full-duplex and operate in
-open-drain mode. The timing patterns are generated by a specific
-combination of baud-rate and transmitted byte, which corresponds to a
-1-Wire read bit, write bit or reset pulse.
-
-For instance the timing pattern for a 1-Wire reset and presence detect
-uses the baud-rate 9600, i.e. 104.2 us per bit. The transmitted byte
-0xf0 over UART (least significant bit first, start-bit low) sets the
-reset low time for 1-Wire to 521 us. A present 1-Wire device changes the
-received byte by pulling the line low, which is used by the driver to
-evaluate the result of the 1-Wire operation.
-
-Similar for a 1-Wire read bit or write bit, which uses the baud-rate
-115200, i.e. 8.7 us per bit. The transmitted byte 0x00 is used for a
-Write-0 operation and the byte 0xff for Read-0, Read-1 and Write-1.
-
-Hope the driver is helpful.
-
-Thanks,
-Christoph
-
+Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Christoph Winklhofer <cj.winklhofer@gmail.com>
 ---
-Christoph Winklhofer (3):
-      dt-bindings: w1: UART 1-Wire bus
-      dt-bindings: serial: allow onewire as child node
-      w1: add UART w1 bus driver
+ Documentation/devicetree/bindings/serial/serial.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- .../devicetree/bindings/serial/serial.yaml         |   2 +-
- Documentation/devicetree/bindings/w1/w1-uart.yaml  |  60 +++
- Documentation/w1/masters/index.rst                 |   1 +
- Documentation/w1/masters/w1-uart.rst               |  54 +++
- drivers/w1/masters/Kconfig                         |  10 +
- drivers/w1/masters/Makefile                        |   1 +
- drivers/w1/masters/w1-uart.c                       | 402 +++++++++++++++++++++
- 7 files changed, 529 insertions(+), 1 deletion(-)
----
-base-commit: 6613476e225e090cc9aad49be7fa504e290dd33d
-change-id: 20240104-w1-uart-ee8685a15a50
+diff --git a/Documentation/devicetree/bindings/serial/serial.yaml b/Documentation/devicetree/bindings/serial/serial.yaml
+index 65804ca274ae..ffc9198ae214 100644
+--- a/Documentation/devicetree/bindings/serial/serial.yaml
++++ b/Documentation/devicetree/bindings/serial/serial.yaml
+@@ -88,7 +88,7 @@ properties:
+       TX FIFO threshold configuration (in bytes).
+ 
+ patternProperties:
+-  "^(bluetooth|bluetooth-gnss|gnss|gps|mcu)$":
++  "^(bluetooth|bluetooth-gnss|gnss|gps|mcu|onewire)$":
+     if:
+       type: object
+     then:
 
-Best regards,
 -- 
-Christoph Winklhofer <cj.winklhofer@gmail.com>
+2.43.0
 
