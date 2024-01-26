@@ -1,256 +1,170 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2054.outbound.protection.outlook.com [40.107.7.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57A921DDFC
-	for <linux-serial@vger.kernel.org>; Fri, 26 Jan 2024 16:30:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706286648; cv=none; b=K3GQVltlvNT7lIvnX6coqS2UAnd/gWLIbHxEkxaueZriaIz4B4ULmfBxhOBJL0UMb40Xi1O5tBu0xNUsafKeKFRAzsCvAyuHZI3ez10PHk2TNzKLw1rseWSKX6WkuQgsV2rqk4G6zt6AnPItPaVbb/HW49rrIcsozYUofGaPx5g=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706286648; c=relaxed/simple;
-	bh=e4P27LVIoLu447WxGDoBfB8TV0IwjkIO9iwplgiRTRA=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=sTLokGLJULepUVgxAAwpe8znfIjCfPYAiRMDDsEy/aQbTTcEYkpTAagrerg96/ZTg23/B8kTOKFw9UTLXrqb1G31oGgGqnNkTUFbdrC2UCTjnry/wMSyuBrcT/tk/tBpYPksTXBYw0dOZc35xt1FLxOFDcm8fupAlI2dtjEoMxA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b=KFoEJSn2; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 374801D553;
+	Fri, 26 Jan 2024 17:28:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.7.54
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1706290121; cv=fail; b=mcoxJdFyRWfEUfQnEGX9Qe4kFCfh9ACjcD4eURnMD7koJ0g5SaFK+jZ+1Ho9NluV5C9VsNSnD8zj6Wz27pylUj2vt2/wWGMPi/Cj9ZnTejzkl9r8aa9LF4mIt7SOMoUzkrzrwBYzaAt+CAItb4TG4q16ugpE1SHoA8L+1w8OCfQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1706290121; c=relaxed/simple;
+	bh=IVMh64niZEfl6QXJoAoM3XsM/a5UZlHwxq+4aWfqMFY=;
+	h=From:Date:Subject:Content-Type:Message-Id:References:In-Reply-To:
+	 To:Cc:MIME-Version; b=FRb0adk2bSAukPg9dlkZUud5ZDB5YC8P7oTyU76Apho+2BdxpZjgHNjj4xy5kaGZA9AYUJA9s5PuMJiaJN35zuPy88vFa6mpB2ShhyYzbZ3qT/uMfkc/BW5dSIfOeTc8mtg9LtnyEzw22xzTzaJ8Vtt7DcdhWB9/wzki/nWGso8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=theobroma-systems.com; spf=pass smtp.mailfrom=theobroma-systems.com; dkim=pass (2048-bit key) header.d=theobroma-systems.com header.i=@theobroma-systems.com header.b=hAl7zSs1; arc=fail smtp.client-ip=40.107.7.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=theobroma-systems.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=theobroma-systems.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b="KFoEJSn2"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-40e7e2e04f0so9321145e9.1
-        for <linux-serial@vger.kernel.org>; Fri, 26 Jan 2024 08:30:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile-fr.20230601.gappssmtp.com; s=20230601; t=1706286643; x=1706891443; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=YUy3Rwm9maFk8GP2x854tHf75dVLpNSbOLWxYX7ax5o=;
-        b=KFoEJSn2+NEXu+7uSAEIRaq3hq+MzWy0GZH54qlj+8NgLP03R9c7dJhtpHRx1VPWie
-         0qLcu+iaYrYc0ShiTf98eWcwiwuENAw8HBSKWaGpSJH3Qi1r1r91dUHl5obJJ/H0wk+I
-         UgMI31BifIvGcX0qS2HzcuaHK+m4J2GvT1TOQ3WYcOACA+UKD2dDNVMJHZvHweHgCuZW
-         yi2HuVF74dg3eJ6AenNcBklLYWa26y0XVI0GJFPaQLBerJA4H7R5WcAuVt7+yf9KW0oT
-         5zO9P3DtDByr2OsknZK426cpNz/OilgWiLHw7MNYzO50f1ritlJ7WWWbBTUL1KxC4eQB
-         orjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706286643; x=1706891443;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=YUy3Rwm9maFk8GP2x854tHf75dVLpNSbOLWxYX7ax5o=;
-        b=Oq3myTLVL+12I1Z+OWgubEcl1XciEqOFOOQ9XQnh/33CCBi5hjc0uM8JEktgjmNd5P
-         IYTVA0hebqXVNP4Ipy1rqjb06yDKwj3fak+75oOKzmL4occ8LYCZ+s6qa3nmK7hM3dZ9
-         xidKQO/f1CHoIcB6Iy0V5OnwUJ2A8aPsvmPoZ0eqroEKVrsLyHDeI1Tx/i91b5cqZjLC
-         eX/cnITTlzvC9rb3/RzqQkXc/iYkYSSrosBl5TS4OmBP56xODeS8JWI+guj87ZSXYJ7p
-         BYIspvMtW5c/COF4bEVMuokdIDjMyglye8Ro7ngnr4Sk9SAj8nDUhxeEv+CTKM1OW+rh
-         EGpg==
-X-Gm-Message-State: AOJu0Yy9OQsO5WX5Cpt6TVDMcFtT6dxvsfDk7mDLIei4AJn9TZhfteuz
-	0gArATbtqy4zKUUABSvlX3crUe5DMT00IaDSbW2LJqX3NPlljS/usp7luuiGNQA=
-X-Google-Smtp-Source: AGHT+IHKrnM6QdGCuLACvBQlPCI1fRERqYVbqvlykdiDAUVmDp7BbX1i59uxODRv8YnFlIpKfqkT3g==
-X-Received: by 2002:a05:600c:a385:b0:40e:e793:8f9 with SMTP id hn5-20020a05600ca38500b0040ee79308f9mr30020wmb.134.1706286643360;
-        Fri, 26 Jan 2024 08:30:43 -0800 (PST)
-Received: from P-ASN-ECS-830T8C3.numericable.fr ([89.159.1.53])
-        by smtp.gmail.com with ESMTPSA id p14-20020a05600c358e00b0040ea875a527sm2337557wmq.26.2024.01.26.08.30.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Jan 2024 08:30:43 -0800 (PST)
-From: Yoann Congal <yoann.congal@smile.fr>
-To: x86@kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org
-Cc: linux-kbuild@vger.kernel.org,
-	Yoann Congal <yoann.congal@smile.fr>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	Matthew Wilcox <willy@infradead.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Darren Hart <dvhart@infradead.org>,
-	Davidlohr Bueso <dave@stgolabs.net>,
-	=?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>,
-	Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH] treewide: Change CONFIG_BASE_SMALL to bool type
-Date: Fri, 26 Jan 2024 17:30:32 +0100
-Message-Id: <20240126163032.1613731-1-yoann.congal@smile.fr>
-X-Mailer: git-send-email 2.39.2
+	dkim=pass (2048-bit key) header.d=theobroma-systems.com header.i=@theobroma-systems.com header.b="hAl7zSs1"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=f+oLocA83A08YVuEDFL/s9BawvuBHLFpUuCe7DtRgbphdNLuC8AHVo6VvD4HuUjdWWomsmUvLzaNoPN9XAjHxeSAks6cspusTjVKgrtpmvmjcK+6JRXaoKsvjixWix4MrO7x1di7idKXvsov9j8G4DIMGMJSbgX6EPwWjp7NFzkPUUyfZgWUWcDv9Wh9XvisOw+wjE2pBS6LBKWWvb5c3vm+3KDOiNGZtiHjUR7ly6Bz/qO4yXvfX8IsnW4BOYkU3YK0JuOnYJy6ICUY6Jk8MjFzfCbdnNTX+sRm7p1N6R8EREe0osinovvqeCDGZYeXAG7A0YoEIs3ETNmNtuY6sA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tqixvfKtPECeF4ubPvftK4PmEI+HUmvDEI7Qd1Vr3LE=;
+ b=ALscU6DxdbzHFcgu3/Rs2OeXj7vdYMAbXQkRaqKMqkyNKlmErWOcniBVV98ae+Xs4dhNfj1Te6qkSPRiNuUz6taNOVVjePPznjEdhNLavUwfEJ2oWBvM9PHipIGscuwF+S7xl0Jup2luY0AkRxba3gwhG0YEUC8QHc8U2d6UPe4RwZbYaEpQ4bBbMRomhXLzjqs7zV+Q6MsIUFmSkNWKjHxSCFylf2lBVMJIfdQXUvU7+CTOwuouzZdsvCSdift6TqrJaaO2FDmAEeUIhwyeSm/9iXw4/D7znZYe/gMAPZjiGOy+jAt/vPTf8GggHs0tOXrXaWiuZOoEvo6S8oEf+A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=theobroma-systems.com; dmarc=pass action=none
+ header.from=theobroma-systems.com; dkim=pass header.d=theobroma-systems.com;
+ arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=theobroma-systems.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tqixvfKtPECeF4ubPvftK4PmEI+HUmvDEI7Qd1Vr3LE=;
+ b=hAl7zSs1X2przdOOPNPPDPWFpRJ3c2Jzb4D3QGAwcUpFPXRfQjw9YdmZID0PQqV7xVEaq1cCDx8FGenomW6+InnmozB+ZFEaeX1dW2bs4WrtzAnHuEaBt7o28DFGoGFPciEESdkzTo5bVlPm/eMKLFc06amzDjAqbkEnchSm5RTKpy0EwZmYiIwSGm+VDuRbb4LCWiQfZv93UKHxIAHlZf/slN0REsb0VUB0+bfX0yUwtN4Mz6TrcyacjpssonlXSgXtJvRZtuxEnzWrvXFI/GkgKNIPtnOazqHdrhYnLesPhEXn85jn88FFaWX0SzPLHiDTrcaS0RZl5htbAqs8/Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=theobroma-systems.com;
+Received: from VE1PR04MB6382.eurprd04.prod.outlook.com (2603:10a6:803:122::31)
+ by DB9PR04MB9820.eurprd04.prod.outlook.com (2603:10a6:10:4c3::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7228.26; Fri, 26 Jan
+ 2024 17:28:36 +0000
+Received: from VE1PR04MB6382.eurprd04.prod.outlook.com
+ ([fe80::d4b1:cea8:7085:ec50]) by VE1PR04MB6382.eurprd04.prod.outlook.com
+ ([fe80::d4b1:cea8:7085:ec50%4]) with mapi id 15.20.7228.027; Fri, 26 Jan 2024
+ 17:28:36 +0000
+From: Farouk Bouabid <farouk.bouabid@theobroma-systems.com>
+Date: Fri, 26 Jan 2024 18:27:42 +0100
+Subject: [PATCH v5 1/6] dt-bindings: serial: Add binding for rs485 receiver
+ enable GPIO
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240126-dev-rx-enable-v5-1-5d934eda05ca@theobroma-systems.com>
+References: <20240126-dev-rx-enable-v5-0-5d934eda05ca@theobroma-systems.com>
+In-Reply-To: <20240126-dev-rx-enable-v5-0-5d934eda05ca@theobroma-systems.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>
+Cc: Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org, 
+ linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, 
+ quentin.schulz@theobroma-systems.com, 
+ Heiko Stuebner <heiko.stuebner@cherry.de>, 
+ Farouk Bouabid <farouk.bouabid@theobroma-systems.com>
+X-Mailer: b4 0.12.3
+X-ClientProxiedBy: VE1PR03CA0003.eurprd03.prod.outlook.com
+ (2603:10a6:802:a0::15) To VE1PR04MB6382.eurprd04.prod.outlook.com
+ (2603:10a6:803:122::31)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VE1PR04MB6382:EE_|DB9PR04MB9820:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2f9c8eb7-398a-4276-fa57-08dc1e94393d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	5o9E5LFBYRp95t9m+MgRzyehMWnaS7cXuWzboklvn/6UT9dHi9OiMvpI1AAZQegWmyNwAzcWZXTBSun4wD1U0Vh6GY72fuyFOIms1nkXFCEaLd6/+GM2ptC7JR4zTE3zWUotXvs3zvqLIC6wxjhDrzlU1SCGnCEv/t3uZxmKlwGWYRgL5j/CqOyElCZ++u7sLOPL5mHVJaA+2YToPeBGQRtmzWkCXk2Wf8bKT9bbvy1OTsxXcZNDbMWTufhvzMjBc3hdKoCqNiIuhwWvVp89hGLpbnp8+3Ty87PYnapWN3wLSQMmS4Xt+9MzRjadDgl0UGh7GfO5e7yMGiMOvD+h02Yd/iik1rjcFfDUi3k57hfhcskzIE8ckNbJjrczgMBt9XIKqdg5fDf6IVWCV6WhV5rpg1J2wxeweevI/SL1cveM1BqpnQYHTZqcxI7tDJv8ttordKOVRlqFAcKlUgbWb6W5+dVKmkZR0jxRdzk68rGDWIA67vIU25iREjwIaZeYSFG+2AmtEhwaSYARZn9whlI6BVt+8uxNj8kkvKkKkGriR/1mabn5SVb9PFfe0AbB9B5NPwN8vp8m54fpT2qMkWXjKOTOqCvjn8reFico9AB2ztoMTjzdT8XSqoQjnHh1
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6382.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(39850400004)(136003)(376002)(366004)(396003)(230922051799003)(64100799003)(186009)(1800799012)(451199024)(36756003)(478600001)(8676002)(4326008)(7416002)(8936002)(66556008)(54906003)(5660300002)(6486002)(44832011)(66476007)(316002)(2906002)(110136005)(66946007)(86362001)(6666004)(38350700005)(52116002)(6512007)(38100700002)(6506007)(2616005)(41300700001)(26005)(107886003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?US9leEJKaDBZOTFSaDN5c1dSUnB4RWUveDdZM1FORnl0dlhaZTJkczd3ZWlh?=
+ =?utf-8?B?K2NOYjlpQVN2TGZPeCtERVRXZTlrbUk3MzFGM205aksyazNwZlRyOWVrbG54?=
+ =?utf-8?B?cUx6ZFZpdTVOV0V0NEFrUHFiRktaeXNWaG9jdlM2NjEwYWpjaDVtNFdLZlZ4?=
+ =?utf-8?B?RlV3RU91d3piNTlTRzdLcm90OEFrUWJkeU9lT0g2N1MvVlpVYmdabXc0MWVO?=
+ =?utf-8?B?dnR5ZENqdVFiZDBhV1BDbStjeXBOa1JzQXEwemtQMGlVQWF4M0xYdXppVUc0?=
+ =?utf-8?B?QnFQWUFlRk56VXdjbXVCKzkzcmY0Rk1LNjVzWTRaRVJQdzdsczR4Z3pPQ0Zq?=
+ =?utf-8?B?NXdhbW05WGxOTEN0UDk5MUxqYVpxbXpHYkxTN01sTmRaMkRIbXdsaXZrTk5I?=
+ =?utf-8?B?RFpnVk9XeGtwUVM0MEtQelhWVlcycjR3NjRKZ2x5UkJsajBYcWJQT0l2WFky?=
+ =?utf-8?B?Z1JEcVBRMUxpanB2c2Q5T09CZ0JCRDlVODBtejVSd2hPeGtBUnAzdlJ4UHBY?=
+ =?utf-8?B?VnU5SVhQSlFIRmxUYlloLzZCOXQzbkdTWlZsOXZJTTBHR1BheFJySmo3cTdM?=
+ =?utf-8?B?VW9NWWF6SWRNamNjT2NRQW9Ea2NXMGkrV3YrMGczaTdyQjBkZ3RrRjJnNlBK?=
+ =?utf-8?B?UUNhR1FGMk5kZlpRMjdkcVBmWVdxV1IrR0ZqZXY3ZGs5Wlh4VEMweGNLa3RO?=
+ =?utf-8?B?UENqZmRJdzE3Q0hZWjd6emcvLzVha2FNVmdzVEpJTmpwZXZ6RGtHa2x6ZHBh?=
+ =?utf-8?B?YlArTlZvVlFsbzVXbW00d3lpU05MWVVlRDJWRnAzTjdSQm9tTE51OC9MdWYv?=
+ =?utf-8?B?ZkhOQW9BSWdtTmZoRGgyYmJHNDBNZlhlL09HZlVaK1pEM04vZkwxeC80UFhY?=
+ =?utf-8?B?RTllMmthMXcxbndpQjloRmtQZW9KL0xDbTlWMjBESEhEYklIT3JEMkE0NENS?=
+ =?utf-8?B?aWVCK05pNWFrcHZiRnlPbXBxOEczZ2hFUTVJMklKQmo0dkJ5VVpjblNLYjBu?=
+ =?utf-8?B?ay9LTGozNnQxNHFoRXhWYU44cllQZEZFVHV3RUxQY2dWZzhFakR5WGZsTkhN?=
+ =?utf-8?B?M1YrZGVCMThraVREQmdseWRwUlFQTjRZbHE2VkRpL2tPQXFpNUZ2bkp2YmRr?=
+ =?utf-8?B?enZhWEhQK2Vtdmc5b1QrTEJya0pLMk1MUGFNZGJveVNXM0pjSzV1Y2dZdHZm?=
+ =?utf-8?B?Lytsa2piejNJWjFwUy9BRVdlKzdIS3pETitZc1FSTWtoZ25NaE02amVuTnUx?=
+ =?utf-8?B?cjJsc3hxMVdaaFd0WnRjOEQwQ3FsUzV4Tm85Vkg5dEVsV1ZnazFmYkV2dmFO?=
+ =?utf-8?B?SDQ1dWU1d3VKNTFuZ09ZN2gxdXFROWVlekVSaWR2dW0rdnJra1VlT3NEcHdQ?=
+ =?utf-8?B?cys2aGk3VFNwSG1IMUQ4Y3hCWG54M1VPWThjUTFMc0lqRGt5NUY0SVVMZDBD?=
+ =?utf-8?B?VDNkUXlRbVZ6RUlmTVpEeEY4alN0NktiMkUyWW0vOHpvVk56RThoZ2RMdEJS?=
+ =?utf-8?B?SVNJYVRVY2IyU0VvWWpnQ05MVGFWeDhINzUvbWd6bzFML1ZuVVNCNUk0UEZm?=
+ =?utf-8?B?M1YxVzZTdjR1N1Q3eHkrc2t1VzBvM3BYVFhTcWVCbExZMEVCU3JSS3E1N1pB?=
+ =?utf-8?B?VFZxWnNZNm9mSndIOWRjYkJXaEhjSjdKbElLYzQzYytoNVFUTnZxTEZOMUw4?=
+ =?utf-8?B?aFVJMWJGQlRjbkdoYUNxZ0NGdWNKZXpCT0ZZUWtHTUQyYUpJbDNvMjB1T251?=
+ =?utf-8?B?RDAwcHRmbE9UbFk1VXZBNHEyYnpRRXBoZUVqUmV3bGhyNnU5R2JzQXloOExu?=
+ =?utf-8?B?cEdOa0Z5N0ZldzRxVTdrZERvbzgzTnVNZnFLTzNJeCtnVE1MYyszZVhpYS8v?=
+ =?utf-8?B?NDk1V2ZUbWtzemhoTFhtblk4LzhxOWgyR1NtLzRoN1lSNkE0WU9PSnZUaEd3?=
+ =?utf-8?B?WE1INTJnUmxpMXVSenUxY0RNdE5oTlBxS1NQOUZRWnBJOUZGY0s5dE5hZkti?=
+ =?utf-8?B?ajkvQmpwaUoxRUxaazNCdDF5aUtKM3FpVjZXcy85RVgyRU92K3M1VTlpdE5N?=
+ =?utf-8?B?ekI2RVVTSE1RSEgxR2FzVnM2dzJrcDFkK2hWakRBdUthM0hxOWQ1eTdzaDY5?=
+ =?utf-8?B?eVBYakpsMkJrNnlPOXhza3hVdW1ab0FZd25aWEk3dlhCWUdaL2NGRks5SXJC?=
+ =?utf-8?Q?PJcnTMSsYqMZtOkCSKUEdN8=3D?=
+X-OriginatorOrg: theobroma-systems.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2f9c8eb7-398a-4276-fa57-08dc1e94393d
+X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6382.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2024 17:28:34.7293
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5e0e1b52-21b5-4e7b-83bb-514ec460677e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: D+CAngt6Nel6nWDlargf/bD+GlMe4HDHXyMY7YDkjknmsWsAZFpC8zUfJgo1VLsMq6d7k680zh/j6CQdiMGFnhPtCllKvjoWAUzRvvnAUIn/6zOcj7zcHHwONetX9EPI
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB9820
 
-CONFIG_BASE_SMALL is currently a type int but is only used as a boolean:
-CONFIG_BASE_SMALL == 0 vs CONFIG_BASE_SMALL != 0.
+From: Heiko Stuebner <heiko.stuebner@cherry.de>
 
-So change it to the more logical bool type.
+RS485 has two signals to control transmissions "driver enable" (DE) and
+"receiver enable" (RE). DE is already handled via the uarts RTS signal
+while the RE signal on most implementations doesn't get handled
+separately at all.
 
-Furthermore, recent kconfig changes (see Fixes: tags) revealed that using
-  config SOMETHING
-     default "some value" if X
-does not work as expected if X is not of type bool.
+As there still will be cases where this is needed though add a gpio
+property for declaring this signal pin.
 
-CONFIG_BASE_SMALL is used that way in init/Kconfig:
-  config LOG_CPU_MAX_BUF_SHIFT
-  	default 12 if !BASE_SMALL
-  	default 0 if BASE_SMALL
-
-Signed-off-by: Yoann Congal <yoann.congal@smile.fr>
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Closes: https://lore.kernel.org/all/CAMuHMdWm6u1wX7efZQf=2XUAHascps76YQac6rdnQGhc8nop_Q@mail.gmail.com/
-Fixes: 6262afa10ef7 ("kconfig: default to zero if int/hex symbol lacks default property")
-Fixes: 4e244c10eab3 ("kconfig: remove unneeded symbol_empty variable")
-
+Signed-off-by: Heiko Stuebner <heiko.stuebner@cherry.de>
+Signed-off-by: Farouk Bouabid <farouk.bouabid@theobroma-systems.com>
 ---
-CC: Thomas Gleixner <tglx@linutronix.de>
-CC: Ingo Molnar <mingo@redhat.com>
-CC: Borislav Petkov <bp@alien8.de>
-CC: Dave Hansen <dave.hansen@linux.intel.com>
-CC: "H. Peter Anvin" <hpa@zytor.com>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: Jiri Slaby <jirislaby@kernel.org>
-CC: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC: Matthew Wilcox <willy@infradead.org>
-CC: Peter Zijlstra <peterz@infradead.org>
-CC: Darren Hart <dvhart@infradead.org>
-CC: Davidlohr Bueso <dave@stgolabs.net>
-CC: "André Almeida" <andrealmeid@igalia.com>
-CC: Masahiro Yamada <masahiroy@kernel.org>
-CC: x86@kernel.org
-CC: linux-kernel@vger.kernel.org
-CC: linux-serial@vger.kernel.org
-CC: linux-fsdevel@vger.kernel.org
-CC: linux-kbuild@vger.kernel.org
----
- arch/x86/include/asm/mpspec.h | 2 +-
- drivers/tty/vt/vc_screen.c    | 2 +-
- include/linux/threads.h       | 4 ++--
- include/linux/udp.h           | 2 +-
- include/linux/xarray.h        | 2 +-
- init/Kconfig                  | 6 +++---
- kernel/futex/core.c           | 2 +-
- kernel/user.c                 | 2 +-
- 8 files changed, 11 insertions(+), 11 deletions(-)
+ Documentation/devicetree/bindings/serial/rs485.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/x86/include/asm/mpspec.h b/arch/x86/include/asm/mpspec.h
-index 4b0f98a8d338d..ebe4b6121b698 100644
---- a/arch/x86/include/asm/mpspec.h
-+++ b/arch/x86/include/asm/mpspec.h
-@@ -15,7 +15,7 @@ extern int pic_mode;
-  * Summit or generic (i.e. installer) kernels need lots of bus entries.
-  * Maximum 256 PCI busses, plus 1 ISA bus in each of 4 cabinets.
-  */
--#if CONFIG_BASE_SMALL == 0
-+#ifndef CONFIG_BASE_SMALL
- # define MAX_MP_BUSSES		260
- #else
- # define MAX_MP_BUSSES		32
-diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
-index 67e2cb7c96eec..da33c6c4691c0 100644
---- a/drivers/tty/vt/vc_screen.c
-+++ b/drivers/tty/vt/vc_screen.c
-@@ -51,7 +51,7 @@
- #include <asm/unaligned.h>
+diff --git a/Documentation/devicetree/bindings/serial/rs485.yaml b/Documentation/devicetree/bindings/serial/rs485.yaml
+index 9418fd66a8e9..b64577036b5c 100644
+--- a/Documentation/devicetree/bindings/serial/rs485.yaml
++++ b/Documentation/devicetree/bindings/serial/rs485.yaml
+@@ -51,6 +51,10 @@ properties:
+     description: enables the receiving of data even while sending data.
+     $ref: /schemas/types.yaml#/definitions/flag
  
- #define HEADER_SIZE	4u
--#define CON_BUF_SIZE (CONFIG_BASE_SMALL ? 256 : PAGE_SIZE)
-+#define CON_BUF_SIZE (IS_ENABLED(CONFIG_BASE_SMALL) ? 256 : PAGE_SIZE)
- 
- /*
-  * Our minor space:
-diff --git a/include/linux/threads.h b/include/linux/threads.h
-index c34173e6c5f18..1674a471b0b4c 100644
---- a/include/linux/threads.h
-+++ b/include/linux/threads.h
-@@ -25,13 +25,13 @@
- /*
-  * This controls the default maximum pid allocated to a process
-  */
--#define PID_MAX_DEFAULT (CONFIG_BASE_SMALL ? 0x1000 : 0x8000)
-+#define PID_MAX_DEFAULT (IS_ENABLED(CONFIG_BASE_SMALL) ? 0x1000 : 0x8000)
- 
- /*
-  * A maximum of 4 million PIDs should be enough for a while.
-  * [NOTE: PID/TIDs are limited to 2^30 ~= 1 billion, see FUTEX_TID_MASK.]
-  */
--#define PID_MAX_LIMIT (CONFIG_BASE_SMALL ? PAGE_SIZE * 8 : \
-+#define PID_MAX_LIMIT (IS_ENABLED(CONFIG_BASE_SMALL) ? PAGE_SIZE * 8 : \
- 	(sizeof(long) > 4 ? 4 * 1024 * 1024 : PID_MAX_DEFAULT))
- 
- /*
-diff --git a/include/linux/udp.h b/include/linux/udp.h
-index d04188714dca1..b456417fb4515 100644
---- a/include/linux/udp.h
-+++ b/include/linux/udp.h
-@@ -24,7 +24,7 @@ static inline struct udphdr *udp_hdr(const struct sk_buff *skb)
- }
- 
- #define UDP_HTABLE_SIZE_MIN_PERNET	128
--#define UDP_HTABLE_SIZE_MIN		(CONFIG_BASE_SMALL ? 128 : 256)
-+#define UDP_HTABLE_SIZE_MIN		(IS_ENABLED(CONFIG_BASE_SMALL) ? 128 : 256)
- #define UDP_HTABLE_SIZE_MAX		65536
- 
- static inline u32 udp_hashfn(const struct net *net, u32 num, u32 mask)
-diff --git a/include/linux/xarray.h b/include/linux/xarray.h
-index cb571dfcf4b16..3f81ee5f9fb9c 100644
---- a/include/linux/xarray.h
-+++ b/include/linux/xarray.h
-@@ -1141,7 +1141,7 @@ static inline void xa_release(struct xarray *xa, unsigned long index)
-  * doubled the number of slots per node, we'd get only 3 nodes per 4kB page.
-  */
- #ifndef XA_CHUNK_SHIFT
--#define XA_CHUNK_SHIFT		(CONFIG_BASE_SMALL ? 4 : 6)
-+#define XA_CHUNK_SHIFT		(IS_ENABLED(CONFIG_BASE_SMALL) ? 4 : 6)
- #endif
- #define XA_CHUNK_SIZE		(1UL << XA_CHUNK_SHIFT)
- #define XA_CHUNK_MASK		(XA_CHUNK_SIZE - 1)
-diff --git a/init/Kconfig b/init/Kconfig
-index 8d4e836e1b6b1..766a7ac8c5ea4 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -1941,9 +1941,9 @@ config RT_MUTEXES
- 	default y if PREEMPT_RT
- 
- config BASE_SMALL
--	int
--	default 0 if BASE_FULL
--	default 1 if !BASE_FULL
-+	bool
-+	default n if BASE_FULL
-+	default y if !BASE_FULL
- 
- config MODULE_SIG_FORMAT
- 	def_bool n
-diff --git a/kernel/futex/core.c b/kernel/futex/core.c
-index e0e853412c158..5f7aa4fc2f9ee 100644
---- a/kernel/futex/core.c
-+++ b/kernel/futex/core.c
-@@ -1141,7 +1141,7 @@ static int __init futex_init(void)
- 	unsigned int futex_shift;
- 	unsigned long i;
- 
--#if CONFIG_BASE_SMALL
-+#ifdef CONFIG_BASE_SMALL
- 	futex_hashsize = 16;
- #else
- 	futex_hashsize = roundup_pow_of_two(256 * num_possible_cpus());
-diff --git a/kernel/user.c b/kernel/user.c
-index 03cedc366dc9e..aa1162deafe49 100644
---- a/kernel/user.c
-+++ b/kernel/user.c
-@@ -88,7 +88,7 @@ EXPORT_SYMBOL_GPL(init_user_ns);
-  * when changing user ID's (ie setuid() and friends).
-  */
- 
--#define UIDHASH_BITS	(CONFIG_BASE_SMALL ? 3 : 7)
-+#define UIDHASH_BITS	(IS_ENABLED(CONFIG_BASE_SMALL) ? 3 : 7)
- #define UIDHASH_SZ	(1 << UIDHASH_BITS)
- #define UIDHASH_MASK		(UIDHASH_SZ - 1)
- #define __uidhashfn(uid)	(((uid >> UIDHASH_BITS) + uid) & UIDHASH_MASK)
++  rs485-rx-enable-gpios:
++    description: GPIO to handle a separate RS485 receive enable signal
++    maxItems: 1
++
+   rs485-term-gpios:
+     description: GPIO pin to enable RS485 bus termination.
+     maxItems: 1
+
 -- 
-2.39.2
+2.34.1
 
