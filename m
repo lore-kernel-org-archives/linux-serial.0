@@ -1,290 +1,80 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 924371B802
-	for <linux-serial@vger.kernel.org>; Sat, 27 Jan 2024 22:01:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 560D2184E;
+	Sun, 28 Jan 2024 03:10:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706392872; cv=none; b=suRf+qGPmTbuXxme3DWcREKoVA79hFIincfdg6JXUnRWeCMphIiIgHO6Mw1xdA/EsVhudS/vDtjk4bywU7omWksVBbWPvFDkVIw/jfXz4jgljqw6h/0IPPHIe1OXAmNsUvf7zN+GOS9OA0WUM586GyBEYL5x5p6d42++NP7Az70=
+	t=1706411412; cv=none; b=PaGqd9Ic29nO0sHAz3PJ7wOJUB7ISNKrTImUDUQURNFzmZPW+Cwp+ZMFKM+kbg4dsiFLVDUB0ltelD4cxFeowFZAvOCYkI7nOnOO0vyqPyo2BN8hYrWfxx7DeTMHfCyA0CwdymfIpiwXmrrhbErRO5UC8u5GEauCsrIG38aj6qY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706392872; c=relaxed/simple;
-	bh=i2YafAS6UswvrfbzFXcODF8OztRsn1M/mcDkytvk/xs=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=kd0gUgOQ4ZXDtwqflO0xxa1iiJOvtY+j4WUEXxfTL5LhllWfy4013urrwMXeBXGcNCH/lVPVn+dZNMWHAEyet+YjCs7CBVPNfYHq5/dG6pvw19fgniVwKkXDatv4R3yPje/Mtm+X8X5DGhak/cyQqR79162FcYGvu7Yh+wASYUU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b=aiK+ui9L; arc=none smtp.client-ip=209.85.221.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
+	s=arc-20240116; t=1706411412; c=relaxed/simple;
+	bh=lZ1liFir3gGA6qym7RTTve5VZosP9tUOA/xKqvBePHs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MDUIf+H4jjWOzrFOh3K1R7Mge8NHATxFBsIjmRwnmcCW086HgulAwrB1PsF2rCZ/qS04sTlIqq8InoZ6Dt78qBd5mBdVYjrJPO4Vl8Bbd/LY3xlBIpx+DwP/kT6rQRMl9V/0OWAQjQAiQCppIl4H5/IZxavJtGAG7VbUfa+H/lI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rhKyo9ey; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b="aiK+ui9L"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-3394bec856fso1547600f8f.0
-        for <linux-serial@vger.kernel.org>; Sat, 27 Jan 2024 14:01:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile-fr.20230601.gappssmtp.com; s=20230601; t=1706392867; x=1706997667; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=VC19HgC2xBJYYLj2MNIq83FdLrZUDryfrK5B88v0kp0=;
-        b=aiK+ui9LKgFOpV0pF01GQmSuAu5bvYjeZy8Ak/3pdeBkxQGL50rSvE23eoCjJLsAR4
-         gf9r/9EPW9e1bTrrTferkPIFrYRQTIDe+uAxbRFEVfIWbfTk9+8QbwhCPSi3cNdzClJK
-         H8RoIAaJ2MRyZHy+Gn7Xse+7RX7xyVYooUODuGIlMs+jk9NIa+NloOoPgLma5fsuXyTs
-         Qkv4j+/cSxS9bRFhwL2+Khencqio74W57UvFu+kdO1ZHLgGcglcFh2nueuOfUkvuA3z1
-         9yVx1mrlkcP0cPlBWhuXtabd/5JAtXFhVBStpziztD9xDjSfcUtoDexPvGNrG7jlq6NL
-         TD+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706392867; x=1706997667;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=VC19HgC2xBJYYLj2MNIq83FdLrZUDryfrK5B88v0kp0=;
-        b=N9/OeHxkSjyj92BzAyty/Fse42sHfkdqmWG4MKuwWIuRv/i70NFq2tmKtaVmTUyMXG
-         moCuP+fwAR/kgAajIBASn8vYFUYkule7bzXQytGUsv6Le0hhfsjbMmVxisrqvAZuvjUE
-         cmpX+Mkk5MqrTj5HSuPm2TjPqzE0xc3sftTRgOLSVPvEw59MDHB1Tv/GczxNoUyHUKlw
-         TbAm6K5pJUXODtOMyMUvkDYkd/oNpPQEvfJwDHpKBZu3Le2bMdCBG6puQ/enS96ZZLou
-         DuCLGwMXsXfY7gyc0rY/wiCAdICrCJsirY73U7NFA12Gg1p77wZyPBfMLL8JXMbRR6CJ
-         xFjw==
-X-Gm-Message-State: AOJu0YzAOTkyxw2r9MiCPqQpnlGMfNMmCO22ejYy94W3wUGPStqGo8W3
-	jDVuZ9tjxzMNK9Lujnqt9FNMmYdnHOXmcqZNMZ+13c5HGPlATrRvJhgr/FYeWCg=
-X-Google-Smtp-Source: AGHT+IEL8BSf5/b5rbuUtydWIGRDvMV929M5hAmGFiamdPtG2TRCQQafl5M+m4ldCG5GSLh3CS2ITA==
-X-Received: by 2002:adf:f24c:0:b0:33a:e3ac:60d4 with SMTP id b12-20020adff24c000000b0033ae3ac60d4mr772227wrp.15.1706392865887;
-        Sat, 27 Jan 2024 14:01:05 -0800 (PST)
-Received: from P-ASN-ECS-830T8C3.local ([89.159.1.53])
-        by smtp.gmail.com with ESMTPSA id f19-20020a05600c155300b0040e541ddcb1sm5755532wmg.33.2024.01.27.14.01.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Jan 2024 14:01:05 -0800 (PST)
-From: Yoann Congal <yoann.congal@smile.fr>
-To: x86@kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org
-Cc: linux-kbuild@vger.kernel.org,
-	Yoann Congal <yoann.congal@smile.fr>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	"Luis R . Rodriguez" <mcgrof@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	Matthew Wilcox <willy@infradead.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Darren Hart <dvhart@infradead.org>,
-	Davidlohr Bueso <dave@stgolabs.net>,
-	=?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>,
-	Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH v2] printk: Remove redundant CONFIG_BASE_SMALL
-Date: Sat, 27 Jan 2024 23:00:26 +0100
-Message-Id: <20240127220026.1722399-1-yoann.congal@smile.fr>
-X-Mailer: git-send-email 2.39.2
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rhKyo9ey"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F25BCC433F1;
+	Sun, 28 Jan 2024 03:10:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1706411411;
+	bh=lZ1liFir3gGA6qym7RTTve5VZosP9tUOA/xKqvBePHs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=rhKyo9eyuKqMAgPrBLE/xhDRZNC2VnI9KOcRvXQXtKN69wNt1wSXKV9VAlhp1s3Np
+	 MBKOeCzyjxYaNr9rSPqbBCwgA8Z6R71VY6QIpRTM6EuZi7RAbBstf76u1tdaL29slt
+	 x0bnRL/v1t1CYcId+UvfmxsZTCR3/xydD3GUAMCjZ+WrWbHehPSTRMiVTo8KF0rf5T
+	 nCc14LNN2cstiiTHk0FHV3CLU3kGVbFdjaf1JHEjth+rxBM+P/FSxZD+un+nem5N7E
+	 qnPBCtK4HivrK4ZgGZ4yuZFNYLs+fvIuLoQy7tmNkEZ2+eTNRrt/4CXqv+Z/7bDEoJ
+	 D8I23lrQKx6oQ==
+Date: Sat, 27 Jan 2024 21:10:08 -0600
+From: Bjorn Andersson <andersson@kernel.org>
+To: Douglas Anderson <dianders@chromium.org>
+Cc: Konrad Dybcio <konrad.dybcio@linaro.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, 
+	Stephen Boyd <swboyd@chromium.org>, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] soc: qcom: geni-se: Add M_TX_FIFO_NOT_EMPTY bit
+ definition
+Message-ID: <jrdc5uhwu2tqud5bqu2r7mfnbh2mdbqtgs56h65xv5t4lvwvhm@f7rhtbpxxcwi>
+References: <20240112150307.1.I7dc0993c1e758a1efedd651e7e1670deb1b430fb@changeid>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240112150307.1.I7dc0993c1e758a1efedd651e7e1670deb1b430fb@changeid>
 
-CONFIG_BASE_SMALL is currently a type int but is only used as a boolean
-equivalent to !CONFIG_BASE_FULL.
+On Fri, Jan 12, 2024 at 03:03:07PM -0800, Douglas Anderson wrote:
+> According to the docs I have, bit 21 of the status register is
+> asserted when the FIFO is _not_ empty. Add the definition.
+> 
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 
-So, remove it entirely and move every usage to !CONFIG_BASE_FULL.
+Acked-by: Bjorn Andersson <andersson@kernel.org>
 
-In addition, recent kconfig changes (see the discussion in Closes: tag)
-revealed that using:
-  config SOMETHING
-     default "some value" if X
-does not work as expected if X is not of type bool.
+Regards,
+Bjorn
 
-CONFIG_BASE_SMALL was used that way in init/Kconfig:
-  config LOG_CPU_MAX_BUF_SHIFT
-  	default 12 if !BASE_SMALL
-  	default 0 if BASE_SMALL
-
-Note: This changes CONFIG_LOG_CPU_MAX_BUF_SHIFT=12 to
-CONFIG_LOG_CPU_MAX_BUF_SHIFT=0 for some defconfigs, but that will not be
-a big impact due to this code in kernel/printk/printk.c:
-  /* by default this will only continue through for large > 64 CPUs */
-  if (cpu_extra <= __LOG_BUF_LEN / 2)
-          return;
-
-Signed-off-by: Yoann Congal <yoann.congal@smile.fr>
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Closes: https://lore.kernel.org/all/CAMuHMdWm6u1wX7efZQf=2XUAHascps76YQac6rdnQGhc8nop_Q@mail.gmail.com/
-Fixes: 4e244c10eab3 ("kconfig: remove unneeded symbol_empty variable")
----
-v1 patch was named "treewide: Change CONFIG_BASE_SMALL to bool type"
-https://lore.kernel.org/all/20240126163032.1613731-1-yoann.congal@smile.fr/
-
-v1 -> v2: Applied Masahiro Yamada's comments (Thanks!):
-* Changed from "Change CONFIG_BASE_SMALL to type bool" to
-  "Remove it and switch usage to !CONFIG_BASE_FULL"
-* Fixed "Fixes:" tag and reference to the mailing list thread.
-* Added a note about CONFIG_LOG_CPU_MAX_BUF_SHIFT changing.
-
-CC: Luis R. Rodriguez <mcgrof@kernel.org>
-CC: Thomas Gleixner <tglx@linutronix.de>
-CC: Ingo Molnar <mingo@redhat.com>
-CC: Borislav Petkov <bp@alien8.de>
-CC: Dave Hansen <dave.hansen@linux.intel.com>
-CC: "H. Peter Anvin" <hpa@zytor.com>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: Jiri Slaby <jirislaby@kernel.org>
-CC: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC: Matthew Wilcox <willy@infradead.org>
-CC: Peter Zijlstra <peterz@infradead.org>
-CC: Darren Hart <dvhart@infradead.org>
-CC: Davidlohr Bueso <dave@stgolabs.net>
-CC: "André Almeida" <andrealmeid@igalia.com>
-CC: Masahiro Yamada <masahiroy@kernel.org>
-CC: x86@kernel.org
-CC: linux-kernel@vger.kernel.org
-CC: linux-serial@vger.kernel.org
-CC: linux-fsdevel@vger.kernel.org
-CC: linux-kbuild@vger.kernel.org
----
- arch/x86/include/asm/mpspec.h | 2 +-
- drivers/tty/vt/vc_screen.c    | 2 +-
- include/linux/threads.h       | 6 +++---
- include/linux/udp.h           | 2 +-
- include/linux/xarray.h        | 2 +-
- init/Kconfig                  | 9 ++-------
- kernel/futex/core.c           | 6 +++---
- kernel/user.c                 | 2 +-
- 8 files changed, 13 insertions(+), 18 deletions(-)
-
-diff --git a/arch/x86/include/asm/mpspec.h b/arch/x86/include/asm/mpspec.h
-index 4b0f98a8d338d..44307fb37fa25 100644
---- a/arch/x86/include/asm/mpspec.h
-+++ b/arch/x86/include/asm/mpspec.h
-@@ -15,7 +15,7 @@ extern int pic_mode;
-  * Summit or generic (i.e. installer) kernels need lots of bus entries.
-  * Maximum 256 PCI busses, plus 1 ISA bus in each of 4 cabinets.
-  */
--#if CONFIG_BASE_SMALL == 0
-+#ifdef CONFIG_BASE_FULL
- # define MAX_MP_BUSSES		260
- #else
- # define MAX_MP_BUSSES		32
-diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
-index 67e2cb7c96eec..d0e4fcd1bd8b5 100644
---- a/drivers/tty/vt/vc_screen.c
-+++ b/drivers/tty/vt/vc_screen.c
-@@ -51,7 +51,7 @@
- #include <asm/unaligned.h>
- 
- #define HEADER_SIZE	4u
--#define CON_BUF_SIZE (CONFIG_BASE_SMALL ? 256 : PAGE_SIZE)
-+#define CON_BUF_SIZE (IS_ENABLED(CONFIG_BASE_FULL) ? PAGE_SIZE : 256)
- 
- /*
-  * Our minor space:
-diff --git a/include/linux/threads.h b/include/linux/threads.h
-index c34173e6c5f18..f0f7a8aaba77d 100644
---- a/include/linux/threads.h
-+++ b/include/linux/threads.h
-@@ -25,14 +25,14 @@
- /*
-  * This controls the default maximum pid allocated to a process
-  */
--#define PID_MAX_DEFAULT (CONFIG_BASE_SMALL ? 0x1000 : 0x8000)
-+#define PID_MAX_DEFAULT (IS_ENABLED(CONFIG_BASE_FULL) ? 0x8000 : 0x1000)
- 
- /*
-  * A maximum of 4 million PIDs should be enough for a while.
-  * [NOTE: PID/TIDs are limited to 2^30 ~= 1 billion, see FUTEX_TID_MASK.]
-  */
--#define PID_MAX_LIMIT (CONFIG_BASE_SMALL ? PAGE_SIZE * 8 : \
--	(sizeof(long) > 4 ? 4 * 1024 * 1024 : PID_MAX_DEFAULT))
-+#define PID_MAX_LIMIT (IS_ENABLED(CONFIG_BASE_FULL) ? \
-+	(sizeof(long) > 4 ? 4 * 1024 * 1024 : PID_MAX_DEFAULT) : PAGE_SIZE * 8)
- 
- /*
-  * Define a minimum number of pids per cpu.  Heuristically based
-diff --git a/include/linux/udp.h b/include/linux/udp.h
-index d04188714dca1..ca8a172169019 100644
---- a/include/linux/udp.h
-+++ b/include/linux/udp.h
-@@ -24,7 +24,7 @@ static inline struct udphdr *udp_hdr(const struct sk_buff *skb)
- }
- 
- #define UDP_HTABLE_SIZE_MIN_PERNET	128
--#define UDP_HTABLE_SIZE_MIN		(CONFIG_BASE_SMALL ? 128 : 256)
-+#define UDP_HTABLE_SIZE_MIN		(IS_ENABLED(CONFIG_BASE_FULL) ? 256 : 128)
- #define UDP_HTABLE_SIZE_MAX		65536
- 
- static inline u32 udp_hashfn(const struct net *net, u32 num, u32 mask)
-diff --git a/include/linux/xarray.h b/include/linux/xarray.h
-index cb571dfcf4b16..7e00e71c2d266 100644
---- a/include/linux/xarray.h
-+++ b/include/linux/xarray.h
-@@ -1141,7 +1141,7 @@ static inline void xa_release(struct xarray *xa, unsigned long index)
-  * doubled the number of slots per node, we'd get only 3 nodes per 4kB page.
-  */
- #ifndef XA_CHUNK_SHIFT
--#define XA_CHUNK_SHIFT		(CONFIG_BASE_SMALL ? 4 : 6)
-+#define XA_CHUNK_SHIFT		(IS_ENABLED(CONFIG_BASE_FULL) ? 6 : 4)
- #endif
- #define XA_CHUNK_SIZE		(1UL << XA_CHUNK_SHIFT)
- #define XA_CHUNK_MASK		(XA_CHUNK_SIZE - 1)
-diff --git a/init/Kconfig b/init/Kconfig
-index 8d4e836e1b6b1..877b3f6f0e605 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -734,8 +734,8 @@ config LOG_CPU_MAX_BUF_SHIFT
- 	int "CPU kernel log buffer size contribution (13 => 8 KB, 17 => 128KB)"
- 	depends on SMP
- 	range 0 21
--	default 12 if !BASE_SMALL
--	default 0 if BASE_SMALL
-+	default 12 if BASE_FULL
-+	default 0
- 	depends on PRINTK
- 	help
- 	  This option allows to increase the default ring buffer size
-@@ -1940,11 +1940,6 @@ config RT_MUTEXES
- 	bool
- 	default y if PREEMPT_RT
- 
--config BASE_SMALL
--	int
--	default 0 if BASE_FULL
--	default 1 if !BASE_FULL
--
- config MODULE_SIG_FORMAT
- 	def_bool n
- 	select SYSTEM_DATA_VERIFICATION
-diff --git a/kernel/futex/core.c b/kernel/futex/core.c
-index e0e853412c158..8f85afef9d061 100644
---- a/kernel/futex/core.c
-+++ b/kernel/futex/core.c
-@@ -1141,10 +1141,10 @@ static int __init futex_init(void)
- 	unsigned int futex_shift;
- 	unsigned long i;
- 
--#if CONFIG_BASE_SMALL
--	futex_hashsize = 16;
--#else
-+#ifdef CONFIG_BASE_FULL
- 	futex_hashsize = roundup_pow_of_two(256 * num_possible_cpus());
-+#else
-+	futex_hashsize = 16;
- #endif
- 
- 	futex_queues = alloc_large_system_hash("futex", sizeof(*futex_queues),
-diff --git a/kernel/user.c b/kernel/user.c
-index 03cedc366dc9e..8f39fd0236fa0 100644
---- a/kernel/user.c
-+++ b/kernel/user.c
-@@ -88,7 +88,7 @@ EXPORT_SYMBOL_GPL(init_user_ns);
-  * when changing user ID's (ie setuid() and friends).
-  */
- 
--#define UIDHASH_BITS	(CONFIG_BASE_SMALL ? 3 : 7)
-+#define UIDHASH_BITS	(IS_ENABLED(CONFIG_BASE_FULL) ? 7 : 3)
- #define UIDHASH_SZ	(1 << UIDHASH_BITS)
- #define UIDHASH_MASK		(UIDHASH_SZ - 1)
- #define __uidhashfn(uid)	(((uid >> UIDHASH_BITS) + uid) & UIDHASH_MASK)
--- 
-2.39.2
-
+> ---
+> 
+>  include/linux/soc/qcom/geni-se.h | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/include/linux/soc/qcom/geni-se.h b/include/linux/soc/qcom/geni-se.h
+> index 29e06905bc1f..0f038a1a0330 100644
+> --- a/include/linux/soc/qcom/geni-se.h
+> +++ b/include/linux/soc/qcom/geni-se.h
+> @@ -178,6 +178,7 @@ struct geni_se {
+>  #define M_GP_IRQ_3_EN			BIT(12)
+>  #define M_GP_IRQ_4_EN			BIT(13)
+>  #define M_GP_IRQ_5_EN			BIT(14)
+> +#define M_TX_FIFO_NOT_EMPTY_EN		BIT(21)
+>  #define M_IO_DATA_DEASSERT_EN		BIT(22)
+>  #define M_IO_DATA_ASSERT_EN		BIT(23)
+>  #define M_RX_FIFO_RD_ERR_EN		BIT(24)
+> -- 
+> 2.43.0.275.g3460e3d667-goog
+> 
