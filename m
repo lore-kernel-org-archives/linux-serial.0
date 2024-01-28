@@ -1,43 +1,63 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C7E08BF2;
-	Sun, 28 Jan 2024 03:10:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67C4523763;
+	Sun, 28 Jan 2024 15:27:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.55.52.88
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706411443; cv=none; b=YaysLGG1AmsH8Fs5VhrirDJld+bBtIbFY3MpwbDu/RdBV2S3fXs61RhZa4g24VCvc83TKS07qRZMdZB5/w2/oeuwi4kxai59ux0npqwqGxERoPXnB3IHaaDWSGSGl1zP/aR4rDb4EWUoA0e49hipCNc4tmnwMK1y80xmRoc1ZMk=
+	t=1706455654; cv=none; b=eFctLMt3O93k5Cp1nWX3hoE6N1H3xPqiAy+zRo3TPmeTTN1Ay7VskId6OnfNJI27vwiPx9n/KmjA5YbfmCizlKltkSecTFw9LZMfckuIVkgfr51Q4680BfjHe+8bzvyfGFRNLgs2G4EOBIrbiMUR+uiKuhFW6Z/PQYBVQu/DgpY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706411443; c=relaxed/simple;
-	bh=HFfRd6LkLwTX+vbnKYAsPwyhG28/axA6Cw7j+acEa8g=;
+	s=arc-20240116; t=1706455654; c=relaxed/simple;
+	bh=CEGuxF1NdpPqW1o9TcGgfkb3fmRafzutY9yxEGbzMnQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=W43jyuu5HTLfKCoGKiL/YvcwizqNa0OFoAFb9Rf4m7WpW/po4erHPwRT9vrEC8E2qMFsjDa/6SbL5tL1e/XF2A47IfiKG2nEwauXj7A8q7n8FaP7iBVoLRveL/gMZHjxOEyrJj2h4RXpbUF9CrVJ201A2Tst+lk2udFjNEtsT3E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AQHCaSd2; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=BFdjHp09YOBl2mG5eCTK3RQLzD+Q1SC/uLNJ7Fp2jW7qO+iRJZvZHz0h5axd0SOI7ZuHnz5yw+k+LotHeDqxt3K6xwuvp3bZtX/70DyrjR5pB26HrHQd+xgkLwApARuBLm0Be1XV6Wr78y3K+lqFrvLlF1T/aksX/ZNqFLwdqzs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Lq3QWhlK; arc=none smtp.client-ip=192.55.52.88
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AQHCaSd2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B73BC433C7;
-	Sun, 28 Jan 2024 03:10:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1706411442;
-	bh=HFfRd6LkLwTX+vbnKYAsPwyhG28/axA6Cw7j+acEa8g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=AQHCaSd2OrA3oeY7JeiunXrGswY2e6O5yf2KQD3lmFpiwc7pL+ZoDP1p/Veb/GVpU
-	 ahhM2lhfydPri04fnrdUy/hwuRGeNKBoZ5uxBVPa0XnN1OpgqGHd8bIV2LVNSx33bk
-	 Bp6wi+BdVULytUnQz2r+mh2aGR/4wrXBzWX+8Gg0qrKn3HplxaYlhJnY4XLPj4+ZPi
-	 P4tnYnmISLNecpaMhhncKnH1DlZpZRkziVgUPmyOC+SHcywsp/nTxffuld3RVHWstK
-	 1JdWzgM2trvU30orhDTZbHkfi5jX5p3pVYZM9tK/i7P8LmbxST9aFgNzBNcXaYpjlA
-	 XbjtP6NXPG6BA==
-Date: Sat, 27 Jan 2024 21:10:40 -0600
-From: Bjorn Andersson <andersson@kernel.org>
-To: Douglas Anderson <dianders@chromium.org>
-Cc: Konrad Dybcio <konrad.dybcio@linaro.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, 
-	Stephen Boyd <swboyd@chromium.org>, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
-	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] serial: qcom-geni: Don't cancel/abort if we can't
- get the port lock
-Message-ID: <fr73heymmg3rar25adkkcwybewjaridbeyhjrgi5a7xtue3c3n@i5h7i2y7hmph>
-References: <20240112150307.1.I7dc0993c1e758a1efedd651e7e1670deb1b430fb@changeid>
- <20240112150307.2.Idb1553d1d22123c377f31eacb4486432f6c9ac8d@changeid>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Lq3QWhlK"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1706455652; x=1737991652;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=CEGuxF1NdpPqW1o9TcGgfkb3fmRafzutY9yxEGbzMnQ=;
+  b=Lq3QWhlKbCtgjOqlvuDPao8FfA0FYn32X7CNSqqqIJnMubV2qJnI8IWk
+   j6393/YnmWwcZjb2gwDA+qMrF5RGdIIoqjkxt+2qOvDL4PzXPjKETFhdu
+   tGRS+8/3BzDIHGGlNMI5BCsWCHMPlIeV2dk0ARCPOHQ6nmvGMKDzSXErr
+   S0vXpyMXLmaXQ98GpIFQIriyu9hE7MrNpCurH8JdGg2UUCxB31qWe87gn
+   u16nmKLGi9706EeW+FvH88J3rt1jwmj5mNtRRwmY4SU+WB1ZGsiSidc9B
+   mytpiO68M7XdU0Zy/av8qpqNzSjO7pGLZ5RnwfV6m46TkIsSE6JwtF2mo
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10967"; a="433945023"
+X-IronPort-AV: E=Sophos;i="6.05,220,1701158400"; 
+   d="scan'208";a="433945023"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2024 07:27:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10967"; a="737145667"
+X-IronPort-AV: E=Sophos;i="6.05,220,1701158400"; 
+   d="scan'208";a="737145667"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2024 07:27:27 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rU748-0000000HUQX-14t5;
+	Sun, 28 Jan 2024 17:27:24 +0200
+Date: Sun, 28 Jan 2024 17:27:23 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Rengarajan S <rengarajan.s@microchip.com>
+Cc: kumaravel.thiagarajan@microchip.com,
+	tharunkumar.pasumarthi@microchip.com, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
+	f.fainelli@gmail.com, john.ogness@linutronix.de, tony@atomide.com,
+	tglx@linutronix.de, jiaqing.zhao@linux.intel.com,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH v1 tty] 8250: microchip: Add 4 Mbps support in PCI1XXXX
+ UART
+Message-ID: <ZbZyW_g4OOkCqIxf@smile.fi.intel.com>
+References: <20240125100619.154873-1-rengarajan.s@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -46,126 +66,50 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240112150307.2.Idb1553d1d22123c377f31eacb4486432f6c9ac8d@changeid>
+In-Reply-To: <20240125100619.154873-1-rengarajan.s@microchip.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Fri, Jan 12, 2024 at 03:03:08PM -0800, Douglas Anderson wrote:
-> As of commit d7402513c935 ("arm64: smp: IPI_CPU_STOP and
-> IPI_CPU_CRASH_STOP should try for NMI"), if we've got pseudo-NMI
-> enabled then we'll use it to stop CPUs at panic time. This is nice,
-> but it does mean that there's a pretty good chance that we'll end up
-> stopping a CPU while it holds the port lock for the console
-> UART. Specifically, I see a CPU get stopped while holding the port
-> lock nearly 100% of the time on my sc7180-trogdor based Chromebook by
-> enabling the "buddy" hardlockup detector and then doing:
-> 
->   sysctl -w kernel.hardlockup_all_cpu_backtrace=1
->   sysctl -w kernel.hardlockup_panic=1
->   echo HARDLOCKUP > /sys/kernel/debug/provoke-crash/DIRECT
-> 
-> UART drivers are _supposed_ to handle this case OK and this is why
-> UART drivers check "oops_in_progress" and only do a "trylock" in that
-> case. However, before we enabled pseudo-NMI to stop CPUs it wasn't a
-> very well-tested situation.
-> 
-> Now that we're testing the situation a lot, it can be seen that the
-> Qualcomm GENI UART driver is pretty broken. Specifically, when I run
-> my test case and look at the console output I just see a bunch of
-> garbled output like:
-> 
->   [  201.069084] NMI backtrace[  201.069084] NM[  201.069087] CPU: 6
->   PID: 10296 Comm: dnsproxyd Not tainted 6.7.0-06265-gb13e8c0ede12
->   #1 01112b9f14923cbd0b[  201.069090] Hardware name: Google Lazor
->   ([  201.069092] pstate: 80400009 (Nzcv daif +PAN -UAO -TCO -DI[
->   201.069095] pc : smp_call_function_man[  201.069099]
-> 
-> That's obviously not so great. This happens because each call to the
-> console driver exits after the data has been written to the FIFO but
-> before it's actually been flushed out of the serial port. When we have
-> multiple calls into the console one after the other then (if we can't
-> get the lock) each call tells the UART to throw away any data in the
-> FIFO that hadn't been transferred yet.
-> 
-> I've posted up a patch to change the arm64 core to avoid this
-> situation most of the time [1] much like x86 seems to do, but even if
-> that patch lands the GENI driver should still be fixed.
-> 
-> From testing, it appears that we can just delete the cancel/abort in
-> the case where we weren't able to get the UART lock and the output
-> looks good. It makes sense that we'd be able to do this since that
-> means we'll just call into __qcom_geni_serial_console_write() and
-> __qcom_geni_serial_console_write() looks much like
-> qcom_geni_serial_poll_put_char() but with a loop. However, it seems
-> safest to poll the FIFO and make sure it's empty before our
-> transfer. This should reliably make sure that we're not
-> interrupting/clobbering any existing transfers.
-> 
-> As part of this change, we'll also avoid re-setting up a TX at the end
-> of the console write function if we weren't able to get the lock,
-> since accessing "port->tx_remaining" without the lock is not
-> safe. This is only needed to re-start userspace initiated transfers.
-> 
-> [1] https://lore.kernel.org/r/20231207170251.1.Id4817adef610302554b8aa42b090d57270dc119c@changeid
-> 
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+On Thu, Jan 25, 2024 at 03:36:19PM +0530, Rengarajan S wrote:
+> The current clock input is set to 62.5 MHz for supporting fractional
+> divider, which enables generation of an acceptable baud rate from any
+> frequency. With the current clock input the baud rate range is limited
+> to 3.9 Mbps. Hence, the current range is extended to support 4 Mbps
+> with Burst mode operation. Divisor calculation for a given baud rate is
+> updated as the sampling rate is reduced from 16 to 8 for 4 Mbps.
 
-Reviewed-by: Bjorn Andersson <andersson@kernel.org>
+...
 
-Regards,
-Bjorn
+> +#define UART_BAUD_4MBPS				4000000
 
-> ---
-> 
->  drivers/tty/serial/qcom_geni_serial.c | 27 +++++++++++++--------------
->  1 file changed, 13 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 7e78f97e8f43..06ebe62f99bc 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -488,18 +488,16 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
->  
->  	geni_status = readl(uport->membase + SE_GENI_STATUS);
->  
-> -	/* Cancel the current write to log the fault */
->  	if (!locked) {
-> -		geni_se_cancel_m_cmd(&port->se);
-> -		if (!qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
-> -						M_CMD_CANCEL_EN, true)) {
-> -			geni_se_abort_m_cmd(&port->se);
-> -			qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
-> -							M_CMD_ABORT_EN, true);
-> -			writel(M_CMD_ABORT_EN, uport->membase +
-> -							SE_GENI_M_IRQ_CLEAR);
-> -		}
-> -		writel(M_CMD_CANCEL_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
-> +		/*
-> +		 * We can only get here if an oops is in progress then we were
-> +		 * unable to get the lock. This means we can't safely access
-> +		 * our state variables like tx_remaining. About the best we
-> +		 * can do is wait for the FIFO to be empty before we start our
-> +		 * transfer, so we'll do that.
-> +		 */
-> +		qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
-> +					  M_TX_FIFO_NOT_EMPTY_EN, false);
->  	} else if ((geni_status & M_GENI_CMD_ACTIVE) && !port->tx_remaining) {
->  		/*
->  		 * It seems we can't interrupt existing transfers if all data
-> @@ -516,11 +514,12 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
->  
->  	__qcom_geni_serial_console_write(uport, s, count);
->  
-> -	if (port->tx_remaining)
-> -		qcom_geni_serial_setup_tx(uport, port->tx_remaining);
->  
-> -	if (locked)
-> +	if (locked) {
-> +		if (port->tx_remaining)
-> +			qcom_geni_serial_setup_tx(uport, port->tx_remaining);
->  		uart_port_unlock_irqrestore(uport, flags);
-> +	}
->  }
->  
->  static void handle_rx_console(struct uart_port *uport, u32 bytes, bool drop)
-> -- 
-> 2.43.0.275.g3460e3d667-goog
-> 
+(4 * MEGA) ? (will need to include units.h, if not yet)
+
+...
+
+> +	frac_div = readl(port->membase + FRAC_DIV_CFG_REG);
+
+> +
+
+Unneeded blank line.
+
+> +	if (frac_div == UART_BIT_DIVISOR_16)
+> +		sample_cnt = UART_BIT_SAMPLE_CNT_16;
+> +	else
+> +		sample_cnt = UART_BIT_SAMPLE_CNT_8;
+
+...
+
+> +	/*
+> +	 * Microchip PCI1XXXX UART supports maximum baud rate up to 4 Mbps
+> +	 */
+> +	if (up->port.type == PORT_MCHP16550A)
+> +		max = 4000000;
+
+No. Please refactor the way the 8250_port won't be modified.
+
+Also you have a define for this constant, use it.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
