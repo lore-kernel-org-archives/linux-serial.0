@@ -1,89 +1,113 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B408524B39;
-	Sun, 28 Jan 2024 15:33:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=134.134.136.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF13D2E859;
+	Sun, 28 Jan 2024 16:11:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706455986; cv=none; b=Rfqe/0ru5mUvJqIEu8l6tdf6A+xqaO+33E5Wu+RvDSJSOqVQAV25MI9NkujwbEf3iHOyWPl7K63nL+fx+v2IBvRGXHvKT2TEB1yP/uGPem/ukihVaVekUcSAn1Mv6bo9J+hjB6JnnyFt2cQsx9AuFtkwotyPI+lLQQ84qqNfCAw=
+	t=1706458307; cv=none; b=srhtViDOQKYdpWUyIQsf07F0TAioOxITSqW7R4xITn7RKc86oY5i2EeFJGp6emC8ysCD6q34YhfTgYJy42IO/scI6TbLylkx8GBxn3cEo3BdF3wzQvd4dTj10v69coFDM5HJvkmbpe1axrXIMjBbOZIeI4CnCHnGocNNSeUsodU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706455986; c=relaxed/simple;
-	bh=v4IlAJTa40g79PNQvpu6vZR5qPIThE5gVQjHysgEezg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=i9vvpOiYBFvHFMGMWVLiRuDz5WeFHy1Ur1Db7CnsRMmLN7QtUH6dORUnfRanS3Lv8U4ULEZjHBxlWmDxQimzxWYrVJShEB0q9std2CCO67OthaFKnkZ8QpcHVaBSLbR4yQLFiqwgzibDSmQ/cFLM1V0R5O/jbRWmGiBWVMivv8E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PJHHwVZD; arc=none smtp.client-ip=134.134.136.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1706458307; c=relaxed/simple;
+	bh=8GsaSRSpBbUFIUJRDwnv2uLOoYAWgl+p8B2HJ2fIT6k=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=IjlG6P4M+x8k/5kChxIWmHB7t9isuVLAkd0JgPaffwoDCHfv6RIn3588/2PShWp8IUO5TI0KVK+7MjDVQDCx909vxBnA1Wa2NI0NN0iH5iDcGEXbRjKOl50sqm2QwD8ITJzNqwWlrAyFo4sJIfVASuSHPbbMLamvOqGdCD6HG3c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cxrW5Sjr; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PJHHwVZD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706455984; x=1737991984;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=v4IlAJTa40g79PNQvpu6vZR5qPIThE5gVQjHysgEezg=;
-  b=PJHHwVZD8PzJ2tpC5Fu8VdoQsZCXL346oNAsmSe0Ri3Aw0j8E6tlpQcw
-   /ptkHetOpD2b/HOpMrLMTcS76iHw6S0FKt1Ifc9GraM+iW/mMIIqj8EMS
-   1smvffTyTjYWgeEl7apc8j3LLDkb2CeB9VChbk+nlYQ72tIiQgqb3/GEH
-   tF3ClXLL1UuhTUq4M22i25jzrSH14LYWRO+x73RY4EUaPJceq4xgGgV79
-   X1h6y1HRD16fpUUzOWNcXHQeP21x9qMsGsk5tBbZTsCVRjcs+n8Zk8k1S
-   DfIYlz5ULGYwzLfPlWbXUFu1CWkZqKWL3FpzFB/HoWgwujqQEx/ScHI21
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10967"; a="406506870"
-X-IronPort-AV: E=Sophos;i="6.05,220,1701158400"; 
-   d="scan'208";a="406506870"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2024 07:33:03 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10967"; a="857865944"
-X-IronPort-AV: E=Sophos;i="6.05,220,1701158400"; 
-   d="scan'208";a="857865944"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga004.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2024 07:33:00 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rU75b-0000000HUSl-0Xhx;
-	Sun, 28 Jan 2024 17:28:55 +0200
-Date: Sun, 28 Jan 2024 17:28:54 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Rengarajan S <rengarajan.s@microchip.com>
-Cc: kumaravel.thiagarajan@microchip.com,
-	tharunkumar.pasumarthi@microchip.com, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
-	f.fainelli@gmail.com, john.ogness@linutronix.de, tony@atomide.com,
-	tglx@linutronix.de, jiaqing.zhao@linux.intel.com,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v1 tty] 8250: microchip: Add 4 Mbps support in PCI1XXXX
- UART
-Message-ID: <ZbZytn3N0R8XNiF5@smile.fi.intel.com>
-References: <20240125100619.154873-1-rengarajan.s@microchip.com>
- <ZbZyW_g4OOkCqIxf@smile.fi.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cxrW5Sjr"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AADCCC433F1;
+	Sun, 28 Jan 2024 16:11:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1706458307;
+	bh=8GsaSRSpBbUFIUJRDwnv2uLOoYAWgl+p8B2HJ2fIT6k=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=cxrW5Sjr2ZC3QsoVdb6cC5yzvSRI+IuI2PGStSTBiXTjZomGn2OoIyLxEZtph9AP1
+	 EUQ3hDkAE7RcJrxOB17eLY509waR/znvZpXSLBCB1DHi3x3MCGLZXYI6ERdboviujb
+	 qcbdZAi2wJwOP81yeuc+JkzAhJ2DzRGeEo05OYcH1RPCKlVlkPgUke0f28Ytdfco8P
+	 +W1gHZhasB6OV0TMti2iVJTqwCqHKG4dSMVO/zZstlZIR3CBwZmJWdgLug7YNM7uIi
+	 u/JL5KNP40Dt0f+CXAHK2+ffj5TIgKjd3vCEhxjxUZnKmfoMcubH/KKZD67HPKQYk9
+	 uMI/TrfjR6DxA==
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Cc: Adrian Reber <areber@redhat.com>,
+	Christian Brauner <brauner@kernel.org>,
+	Andrei Vagin <avagin@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Sasha Levin <sashal@kernel.org>,
+	jirislaby@kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.7 09/39] tty: allow TIOCSLCKTRMIOS with CAP_CHECKPOINT_RESTORE
+Date: Sun, 28 Jan 2024 11:10:29 -0500
+Message-ID: <20240128161130.200783-9-sashal@kernel.org>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20240128161130.200783-1-sashal@kernel.org>
+References: <20240128161130.200783-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZbZyW_g4OOkCqIxf@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-stable: review
+X-Patchwork-Hint: Ignore
+X-stable-base: Linux 6.7.2
+Content-Transfer-Encoding: 8bit
 
-On Sun, Jan 28, 2024 at 05:27:24PM +0200, Andy Shevchenko wrote:
-> On Thu, Jan 25, 2024 at 03:36:19PM +0530, Rengarajan S wrote:
+From: Adrian Reber <areber@redhat.com>
 
-...
+[ Upstream commit e0f25b8992345aa5f113da2815f5add98738c611 ]
 
-> > +#define UART_BAUD_4MBPS				4000000
-> 
-> (4 * MEGA) ? (will need to include units.h, if not yet)
+The capability CAP_CHECKPOINT_RESTORE was introduced to allow non-root
+users to checkpoint and restore processes as non-root with CRIU.
 
-...and use proper namespace for the definition.
-UART_ one is not owned by this driver.
+This change extends CAP_CHECKPOINT_RESTORE to enable the CRIU option
+'--shell-job' as non-root. CRIU's man-page describes the '--shell-job'
+option like this:
 
+  Allow one to dump shell jobs. This implies the restored task will
+  inherit session and process group ID from the criu itself. This option
+  also allows to migrate a single external tty connection, to migrate
+  applications like top.
+
+TIOCSLCKTRMIOS can only be done if the process has CAP_SYS_ADMIN and
+this change extends it to CAP_SYS_ADMIN or CAP_CHECKPOINT_RESTORE.
+
+With this change it is possible to checkpoint and restore processes
+which have a tty connection as non-root if CAP_CHECKPOINT_RESTORE is
+set.
+
+Acked-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Adrian Reber <areber@redhat.com>
+Acked-by: Andrei Vagin <avagin@gmail.com>
+Link: https://lore.kernel.org/r/20231208143656.1019-1-areber@redhat.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/tty_ioctl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+index 4b499301a3db..85de90eebc7b 100644
+--- a/drivers/tty/tty_ioctl.c
++++ b/drivers/tty/tty_ioctl.c
+@@ -844,7 +844,7 @@ int tty_mode_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
+ 			ret = -EFAULT;
+ 		return ret;
+ 	case TIOCSLCKTRMIOS:
+-		if (!capable(CAP_SYS_ADMIN))
++		if (!checkpoint_restore_ns_capable(&init_user_ns))
+ 			return -EPERM;
+ 		copy_termios_locked(real_tty, &kterm);
+ 		if (user_termios_to_kernel_termios(&kterm,
+@@ -861,7 +861,7 @@ int tty_mode_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
+ 			ret = -EFAULT;
+ 		return ret;
+ 	case TIOCSLCKTRMIOS:
+-		if (!capable(CAP_SYS_ADMIN))
++		if (!checkpoint_restore_ns_capable(&init_user_ns))
+ 			return -EPERM;
+ 		copy_termios_locked(real_tty, &kterm);
+ 		if (user_termios_to_kernel_termios_1(&kterm,
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0
 
