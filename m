@@ -1,113 +1,119 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B365013D516;
-	Sun, 28 Jan 2024 16:16:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1702B2D04F;
+	Sun, 28 Jan 2024 17:38:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706458574; cv=none; b=o+Jk+SgADo1BwvvmrRjnT4Xw+1QAcEjpYeQyPY/1DoBg0Rnmrmtm+9wF76PxjFauPety/MrKuEs2KB7YA26ouFXKS5ph33MZZWFnwXBAL9urpArzq03J9KyfE8ADU+7ley8JH6omWqiK8pf/eL4vZX5lKaWCH/W1AsaCG9pdJ3Q=
+	t=1706463538; cv=none; b=PE585S+hFzjpS3i5MdJV62L5Bq2hUUgh4SCfR4OfYRkhou4IM123ZWWpVfcBHvlGOyLByUjpVS9mjTA1KEiJCCIkDcPqEM2KVejl59Q/RcGjbG3nFZEJH0zjA0JqsX37TPp61tct7Xg+47RdbVlY+4rTr0q06TPXJPg5KZztiUM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706458574; c=relaxed/simple;
-	bh=fcdbbPgvAY8bSDapOWRbFEZJ8W2aev2un9RJ7QJHQM8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ECKDKB2TC/W0XNLXTwx9gGPag398UZYm10O8vuh/QLt9h1vq/rkPA0TyQm77/Bxf70iGzIgehXpWxKeCYDkUHLcvSmamYCtI/27pXlMui/e4Rj9c6Uls2dHkODm1YEaIzMs6eaHC8qiYQ2Aqgtk2dY3OCgFlcRQF54JvvC2IU9Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TPN30Vy8; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1706463538; c=relaxed/simple;
+	bh=IjQ/1TqkmYZebuFP5yVrH0wPzR/hJ4PTWRo5b1Q6T2c=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=T4/u15/DD5RbdjXE95ES8QrGcGJb7csQKU7j/sp3gKLirl47jl9z1nbi36avFWR3UWVsOsVi01YElXKpIsxxU5VBy5Ep+UK2O8cXiY1Y/GuZBf6ChS+fyNWZ68lfX3ytLrwt0PLhGxXAJTMlgl5Mld9FacJS6vx+XuTTkYz6gm4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PC3NU5LA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TPN30Vy8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4316CC43399;
-	Sun, 28 Jan 2024 16:16:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PC3NU5LA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0482C433F1;
+	Sun, 28 Jan 2024 17:38:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1706458574;
-	bh=fcdbbPgvAY8bSDapOWRbFEZJ8W2aev2un9RJ7QJHQM8=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=TPN30Vy8WxKhSoBT69rDbPEJf3EMCHpN2NEEe+dKWGOvJITA4afADMqo+hXkgpA6E
-	 VQGfpnPpY72ZNRurKEPF08lHdDaba9QnczHPtIMpR4L1yBOECCob2LIe2bIx4z+blD
-	 itnRCRMXl6XTetBEjg61MTGIUB9iTKmh+5WPgYFg3YVg45tsC3lqFPTFNnOEUHLvAn
-	 /3tQe5Xg9wYDGBNjO0oKsuUk+qLni6+Wr6/420mRDW48bE9H/OxDqdPlPBafa8AbZh
-	 5c2I85/vpIzFQde1kf4xkAuCG7GK49H5OI4R4XD8wI/jmnoZ1NKJuPyFJF7eXZDE2S
-	 Z92DiPzp4pl5Q==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: Adrian Reber <areber@redhat.com>,
-	Christian Brauner <brauner@kernel.org>,
-	Andrei Vagin <avagin@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Sasha Levin <sashal@kernel.org>,
-	jirislaby@kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 04/13] tty: allow TIOCSLCKTRMIOS with CAP_CHECKPOINT_RESTORE
-Date: Sun, 28 Jan 2024 11:15:50 -0500
-Message-ID: <20240128161606.205221-4-sashal@kernel.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240128161606.205221-1-sashal@kernel.org>
-References: <20240128161606.205221-1-sashal@kernel.org>
+	s=k20201202; t=1706463537;
+	bh=IjQ/1TqkmYZebuFP5yVrH0wPzR/hJ4PTWRo5b1Q6T2c=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=PC3NU5LACNJBxfpFA7Iuka8V4DlexS01lk6nHfhY4crAXEFKzph7Ea3BMTKdDD8OU
+	 mN0nDgRh9teIeu//jlOYOwekqTTDbwKc3xEPVqrDR9n0vT1AYEcmtwEOIUqMBC7Z4d
+	 vQwisJJsADIkEZVg94tY4Dec1c+vNcjVl7nZNr+Q5hogO/oqt/bTOOY395ZZSjdXNj
+	 5passx4f1Up7lxWhDBEbH013lW88itoR4B+GYlKvw6yxZoLsuR4VJ+vL2B4wFoAu14
+	 be8baMLhrfXYunbzdQ9OVGbzNRubG7bUhP7r91SSXDkuPG9Z2uk6lFmMSA9WlQ9DpM
+	 2hRy93oGsUtUw==
+Date: Sun, 28 Jan 2024 17:38:52 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Farouk Bouabid <farouk.bouabid@theobroma-systems.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh@kernel.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
+	quentin.schulz@theobroma-systems.com
+Subject: Re: [PATCH v4 3/6] dt-bindings: serial: add binding for rs485
+ rx-enable state when rs485 is disabled
+Message-ID: <20240128-vagabond-mutilator-cf8dc6ac8a41@spud>
+References: <20240126-dev-rx-enable-v4-0-45aaf4d96328@theobroma-systems.com>
+ <20240126-dev-rx-enable-v4-3-45aaf4d96328@theobroma-systems.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 5.10.209
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="DzRBhgrdidHhTC1B"
+Content-Disposition: inline
+In-Reply-To: <20240126-dev-rx-enable-v4-3-45aaf4d96328@theobroma-systems.com>
 
-From: Adrian Reber <areber@redhat.com>
 
-[ Upstream commit e0f25b8992345aa5f113da2815f5add98738c611 ]
+--DzRBhgrdidHhTC1B
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The capability CAP_CHECKPOINT_RESTORE was introduced to allow non-root
-users to checkpoint and restore processes as non-root with CRIU.
+On Fri, Jan 26, 2024 at 03:55:12PM +0100, Farouk Bouabid wrote:
+> RS485 can have a receiver-enable gpio (rx-enable-gpios). When rs485 is
+> enabled, this gpio, if provided, must be driven active while receiving.
+> However when RS485 is disabled this gpio should not have an undefined
+> state. In that case, as DE and RE pins can be connected both to this gpio,
+> if its state is not properly defined, can cause unexpected transceiver
+> behavior.
+> This binding depend on rx-enable-gpios to be implemented.
 
-This change extends CAP_CHECKPOINT_RESTORE to enable the CRIU option
-'--shell-job' as non-root. CRIU's man-page describes the '--shell-job'
-option like this:
+Why do you need a dedicated property for this when there exists a device
+specific compatible for the uart on both of the affected rockchip
+systems?
 
-  Allow one to dump shell jobs. This implies the restored task will
-  inherit session and process group ID from the criu itself. This option
-  also allows to migrate a single external tty connection, to migrate
-  applications like top.
+Thanks,
+Conor.
 
-TIOCSLCKTRMIOS can only be done if the process has CAP_SYS_ADMIN and
-this change extends it to CAP_SYS_ADMIN or CAP_CHECKPOINT_RESTORE.
+>=20
+> Signed-off-by: Farouk Bouabid <farouk.bouabid@theobroma-systems.com>
+> ---
+>  Documentation/devicetree/bindings/serial/rs485.yaml | 5 +++++
+>  1 file changed, 5 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/serial/rs485.yaml b/Docume=
+ntation/devicetree/bindings/serial/rs485.yaml
+> index b64577036b5c..4c79dfaaf460 100644
+> --- a/Documentation/devicetree/bindings/serial/rs485.yaml
+> +++ b/Documentation/devicetree/bindings/serial/rs485.yaml
+> @@ -55,6 +55,11 @@ properties:
+>      description: GPIO to handle a separate RS485 receive enable signal
+>      maxItems: 1
+> =20
+> +  rs485-rx-enable-inactive-when-rs485-disabled:
+> +    description: rx-enable GPIO is not active when RS485 is disabled. If=
+ missing, active-state
+> +      is assumed.
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +
+>    rs485-term-gpios:
+>      description: GPIO pin to enable RS485 bus termination.
+>      maxItems: 1
+>=20
+> --=20
+> 2.34.1
+>=20
 
-With this change it is possible to checkpoint and restore processes
-which have a tty connection as non-root if CAP_CHECKPOINT_RESTORE is
-set.
+--DzRBhgrdidHhTC1B
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Acked-by: Christian Brauner <brauner@kernel.org>
-Signed-off-by: Adrian Reber <areber@redhat.com>
-Acked-by: Andrei Vagin <avagin@gmail.com>
-Link: https://lore.kernel.org/r/20231208143656.1019-1-areber@redhat.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/tty_ioctl.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+-----BEGIN PGP SIGNATURE-----
 
-diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-index 68b07250dcb6..134f07c2431e 100644
---- a/drivers/tty/tty_ioctl.c
-+++ b/drivers/tty/tty_ioctl.c
-@@ -763,7 +763,7 @@ int tty_mode_ioctl(struct tty_struct *tty, struct file *file,
- 			ret = -EFAULT;
- 		return ret;
- 	case TIOCSLCKTRMIOS:
--		if (!capable(CAP_SYS_ADMIN))
-+		if (!checkpoint_restore_ns_capable(&init_user_ns))
- 			return -EPERM;
- 		copy_termios_locked(real_tty, &kterm);
- 		if (user_termios_to_kernel_termios(&kterm,
-@@ -780,7 +780,7 @@ int tty_mode_ioctl(struct tty_struct *tty, struct file *file,
- 			ret = -EFAULT;
- 		return ret;
- 	case TIOCSLCKTRMIOS:
--		if (!capable(CAP_SYS_ADMIN))
-+		if (!checkpoint_restore_ns_capable(&init_user_ns))
- 			return -EPERM;
- 		copy_termios_locked(real_tty, &kterm);
- 		if (user_termios_to_kernel_termios_1(&kterm,
--- 
-2.43.0
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZbaRLAAKCRB4tDGHoIJi
+0lVcAP9p7fg8n4e6rLO8EL2Eb1sSnS3GQtn1fONEOpidqgF31AEAvoJXIDhzhnRF
+r/P/IvBUvRkQTjXM4O4aoPKsdLrOQwM=
+=9qkJ
+-----END PGP SIGNATURE-----
 
+--DzRBhgrdidHhTC1B--
