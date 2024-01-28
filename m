@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6D05604C8;
-	Sun, 28 Jan 2024 16:13:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2F006D1A7;
+	Sun, 28 Jan 2024 16:14:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706458412; cv=none; b=rhgGzStA6bRGamY4/evNeHW9bg+QTwAodKi37JlBdzIQmLOrR8Njn2XcRHhO2hiTihaeW7ysOiV8gTHkUrnQlluWiQ/JOIC1+HyCuR1rNT1T5eG6XM6rHYn0+BfP4pjLUePyqMycfOqmJntcnWkuseGxWsOVjKvnKJ3+GVmL24g=
+	t=1706458480; cv=none; b=hXvsuJwNiNDImGgn0ghqeKrHKJWHEkXaxeN0/D6xO02mEGgNy5C560epF6IlX+a9MbmT4AtH2IdIQXN5ucJZVPDiVYZGKxrkBUwot7oOu8TpYqlKYLogPrFoERrEd3tr6RF4yFC3I80Y5F/aHji+UfgWvYdUFx68idT7uHMExEc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706458412; c=relaxed/simple;
-	bh=aJxCJ2yk008ydqrlmh4d7c6Jytm/930kThFZ10FTI5o=;
+	s=arc-20240116; t=1706458480; c=relaxed/simple;
+	bh=t/oLxMaAwbqU9K66T9Ia3Kt9Jt0nznQv+B09sf5KI/M=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Z0+azVO5DMXx8rqGHY9cm7YGaI/Q/jInrimHXWTlLBncCNrsqaIZr/tR/Hi28WBsVwyrRRV2dVljSqTA63zJV0P2gGmXC+3Sq7FPpQiA7gRCAqdbnqWWO4w5KP4PBQKS2ES8zyU9u7bnXGWVadnlF3Np/ZiMSp+YIecA4m88hDY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D3TGJD2u; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=lO/ekNFwH8oi8b0bSOtVXxkxw9tflAN/ALdg2jV1ZJywzV9ccY8QHJR+AskWqN7BrlGviGjAUTLwQlszojAX1Ex7YR7fpQLHyphs+FAiKwZpvzyvO+ny3hDX8LMaGOIf2sN8k+9P4gcgMw/D8/W/PtaP2WL6fHf5dWIk0Ky/aCk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fayOrCW/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D3TGJD2u"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5240FC433F1;
-	Sun, 28 Jan 2024 16:13:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fayOrCW/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FCD8C433A6;
+	Sun, 28 Jan 2024 16:14:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1706458412;
-	bh=aJxCJ2yk008ydqrlmh4d7c6Jytm/930kThFZ10FTI5o=;
+	s=k20201202; t=1706458480;
+	bh=t/oLxMaAwbqU9K66T9Ia3Kt9Jt0nznQv+B09sf5KI/M=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=D3TGJD2un76B5YXzaUSipNEecYmUcMtqKnpWZwfcgo6tB/5ghxAePUxASjuJiXzGW
-	 fT5qeLYDvdbD9T1CxfYXp0RAUKZiy1TvMVLjcHMDbkq6j+GVsmt6hrU3sqc9vkoMjX
-	 jtRDS1/Z/mYeFq7aGIN5E7l5qpHi4LF0plgaIFsX/4DqWr4iPHT8mcBYKbcqjOGclx
-	 UUEwnKZ4M6uQ1jYJJnTzUpO3oWxg0dZRdv/PKND6IghOYccQ3izeAOftbkclODhNVo
-	 pDNPlWk15jnegPif0qleMIaXn4TxVOaJADA5xfaqy6wyXXZNn02P+lJpcMxlqeGuoT
-	 dBA02YBo0fJgw==
+	b=fayOrCW/zVfWobUC4MWSLxwMyU9LwWWDOkh2mDDjbs7KLwEM470MK3lyBMxHtmF9q
+	 IElLqqmrAUl28EFTiwxTijGL+yOcfqYWirWiAk6vZQArtULaNj9IvurpdazMQLIbMZ
+	 uxssi7JZMl7Zy+uQ0JzGYv9WjSEc/aVUu9XnEhlEdxzT28JWFviNkDqxZawHHmpmpi
+	 q9Wj0oGFw9cqh9sec2UMm9ZRPEzhwCQEcmoVSIWlr4RzZmwSpIWg7i1ST9fFI1W9ao
+	 9o3JzxQrm0IAqE7kmcmRKrjcIEw0irdMpmN3TVjABdEoiY/GQj34DMIAIuwxPnI+pT
+	 9KRdgZ5sbm2eA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -36,12 +36,12 @@ Cc: Adrian Reber <areber@redhat.com>,
 	Sasha Levin <sashal@kernel.org>,
 	jirislaby@kernel.org,
 	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.6 09/31] tty: allow TIOCSLCKTRMIOS with CAP_CHECKPOINT_RESTORE
-Date: Sun, 28 Jan 2024 11:12:39 -0500
-Message-ID: <20240128161315.201999-9-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 08/27] tty: allow TIOCSLCKTRMIOS with CAP_CHECKPOINT_RESTORE
+Date: Sun, 28 Jan 2024 11:13:53 -0500
+Message-ID: <20240128161424.203600-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240128161315.201999-1-sashal@kernel.org>
-References: <20240128161315.201999-1-sashal@kernel.org>
+In-Reply-To: <20240128161424.203600-1-sashal@kernel.org>
+References: <20240128161424.203600-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -50,7 +50,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.6.14
+X-stable-base: Linux 6.1.75
 Content-Transfer-Encoding: 8bit
 
 From: Adrian Reber <areber@redhat.com>
@@ -87,10 +87,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-index 7958bf6d27c4..7c6253685545 100644
+index ad1cf51ecd11..41004720d4ae 100644
 --- a/drivers/tty/tty_ioctl.c
 +++ b/drivers/tty/tty_ioctl.c
-@@ -850,7 +850,7 @@ int tty_mode_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
+@@ -859,7 +859,7 @@ int tty_mode_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
  			ret = -EFAULT;
  		return ret;
  	case TIOCSLCKTRMIOS:
@@ -99,7 +99,7 @@ index 7958bf6d27c4..7c6253685545 100644
  			return -EPERM;
  		copy_termios_locked(real_tty, &kterm);
  		if (user_termios_to_kernel_termios(&kterm,
-@@ -867,7 +867,7 @@ int tty_mode_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
+@@ -876,7 +876,7 @@ int tty_mode_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
  			ret = -EFAULT;
  		return ret;
  	case TIOCSLCKTRMIOS:
