@@ -1,119 +1,139 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1702B2D04F;
-	Sun, 28 Jan 2024 17:38:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5C6A3C461
+	for <linux-serial@vger.kernel.org>; Sun, 28 Jan 2024 22:07:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706463538; cv=none; b=PE585S+hFzjpS3i5MdJV62L5Bq2hUUgh4SCfR4OfYRkhou4IM123ZWWpVfcBHvlGOyLByUjpVS9mjTA1KEiJCCIkDcPqEM2KVejl59Q/RcGjbG3nFZEJH0zjA0JqsX37TPp61tct7Xg+47RdbVlY+4rTr0q06TPXJPg5KZztiUM=
+	t=1706479674; cv=none; b=as3PFNgkU/v+hCC6kCQyGM3ZhaB8BlLOMztoihxuY9/gKm2IbhHVrFPfyvMa/ogs+sEEfcNdQJNE0ZTvOO/AQUzkDr7XXYtuPYNVp2d+zwHrSuL0Zh63o8SRCnHiwgQxZW5o/yDpbfq/0wobZzClEB9W1+TV3dc6x9Lk84RcBsA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706463538; c=relaxed/simple;
-	bh=IjQ/1TqkmYZebuFP5yVrH0wPzR/hJ4PTWRo5b1Q6T2c=;
+	s=arc-20240116; t=1706479674; c=relaxed/simple;
+	bh=rCNDRRXEqZueY57s99vP925GMUoPa5p7zHd3QEVCUHk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=T4/u15/DD5RbdjXE95ES8QrGcGJb7csQKU7j/sp3gKLirl47jl9z1nbi36avFWR3UWVsOsVi01YElXKpIsxxU5VBy5Ep+UK2O8cXiY1Y/GuZBf6ChS+fyNWZ68lfX3ytLrwt0PLhGxXAJTMlgl5Mld9FacJS6vx+XuTTkYz6gm4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PC3NU5LA; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=aL/K5rQRI3rFHFNVoEsWVN6Yyrir/QfmouTF0SoRDWSmU5x/T7i4Fx1Onjd1XPju6u/BgX7Xz9RPP+JXJEhDcBRjxDq2CZ5183hIFTcf2Jd0i5lVLDAstcB1qyTjo76xbUk9EgM1lwhikMj3AHewIIHIGm5oDcJu62homQgV/Kk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VyOE01ZZ; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PC3NU5LA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0482C433F1;
-	Sun, 28 Jan 2024 17:38:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1706463537;
-	bh=IjQ/1TqkmYZebuFP5yVrH0wPzR/hJ4PTWRo5b1Q6T2c=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=PC3NU5LACNJBxfpFA7Iuka8V4DlexS01lk6nHfhY4crAXEFKzph7Ea3BMTKdDD8OU
-	 mN0nDgRh9teIeu//jlOYOwekqTTDbwKc3xEPVqrDR9n0vT1AYEcmtwEOIUqMBC7Z4d
-	 vQwisJJsADIkEZVg94tY4Dec1c+vNcjVl7nZNr+Q5hogO/oqt/bTOOY395ZZSjdXNj
-	 5passx4f1Up7lxWhDBEbH013lW88itoR4B+GYlKvw6yxZoLsuR4VJ+vL2B4wFoAu14
-	 be8baMLhrfXYunbzdQ9OVGbzNRubG7bUhP7r91SSXDkuPG9Z2uk6lFmMSA9WlQ9DpM
-	 2hRy93oGsUtUw==
-Date: Sun, 28 Jan 2024 17:38:52 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Farouk Bouabid <farouk.bouabid@theobroma-systems.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh@kernel.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org,
-	quentin.schulz@theobroma-systems.com
-Subject: Re: [PATCH v4 3/6] dt-bindings: serial: add binding for rs485
- rx-enable state when rs485 is disabled
-Message-ID: <20240128-vagabond-mutilator-cf8dc6ac8a41@spud>
-References: <20240126-dev-rx-enable-v4-0-45aaf4d96328@theobroma-systems.com>
- <20240126-dev-rx-enable-v4-3-45aaf4d96328@theobroma-systems.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VyOE01ZZ"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-40ef207c654so7518535e9.1
+        for <linux-serial@vger.kernel.org>; Sun, 28 Jan 2024 14:07:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1706479671; x=1707084471; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=CuSooUAImSbXKQ2M8/Cc6NUpzpC9/CKJHufhBTTE2/s=;
+        b=VyOE01ZZomTb4TuV7ghC+OyDm5BWxpT6KMqdrY3A2aOCMmEBUz7ldGgQi6ZTue98fJ
+         SCQCb4R9iAFvKFu4d7GgWjVoWY7/i54MgHoCAW1SNle6LIPLxe8FAuzExwSWpT2F15nR
+         zpSNBuzRq+yu58tM+HmJo0EzbaPYg6OS5/9m7xTESviH6svMajFrul7kupGsbnlzKDC9
+         gyJQcF4+N+cNtktD30Zx7Ej1ALJQg2DEdZWoiEvinkEW6ebe9bD8rmSkjFd3puVUySxn
+         0AvcJodbwPbhc1L4eHRHGonFlDHgdJv+No6mSaXYe+AyJVg6MqnjOkpRIpx+gwfZHPCb
+         k75Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706479671; x=1707084471;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CuSooUAImSbXKQ2M8/Cc6NUpzpC9/CKJHufhBTTE2/s=;
+        b=iu5pz4nqPEgroSiFXaUTyMv1VvwjFtG0K+W2WVCLwPyRBmepT1sWwVY5fzzikqzUSD
+         zsJ3wd70whx/lQR699FMhXBwco+o3zvFXsNz1dAI5284B9g/jfOPvYpNXgqllaF0BQ27
+         aFlYnTvelJ/101A6+dDbL+x2sR+ykjYikfL7rbf6r00NSTyjGynjSy9kkd6GYnId/qx1
+         ZUHugkRej2mN1ZNyWPHCCqtkaNHcmqrbhGJgZwwXQPLfRZ+gnMnKtsMimvFCD1JQ3ZIK
+         6VGlayIelryskoO82LaUIYtsH14rKUP6F64EmE0uPsuKDK8SWtm0fjtFWzYjgAXdFjQK
+         DdkQ==
+X-Gm-Message-State: AOJu0YwYvRRhUHf5nT4kh3I8e+iaH6sdnhxMHiWbDhXT6Yeumuz6qITy
+	ejPuYLfYClNMOrRnKUXAM824MkPUeNms/Z5jt6VMXRdhXuAPTaCD
+X-Google-Smtp-Source: AGHT+IHasUMe5IGXGgYFrJGryk573QpwxXhUajyN0Imm0UEZC1mu2rVxRCm4e+NwYB/la9AqJ2gTBg==
+X-Received: by 2002:adf:a2de:0:b0:333:1cfc:27f6 with SMTP id t30-20020adfa2de000000b003331cfc27f6mr3641800wra.30.1706479670887;
+        Sun, 28 Jan 2024 14:07:50 -0800 (PST)
+Received: from m2 (89-139-223-180.bb.netvision.net.il. [89.139.223.180])
+        by smtp.gmail.com with ESMTPSA id bo2-20020a056000068200b003392295997dsm6439867wrb.25.2024.01.28.14.07.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Jan 2024 14:07:50 -0800 (PST)
+Date: Mon, 29 Jan 2024 00:07:48 +0200
+From: Michael Zaidman <michael.zaidman@gmail.com>
+To: Daniel Beer <daniel.beer@igorinstitute.com>
+Cc: Christina Quast <contact@christina-quast.de>,
+	linux-serial@vger.kernel.org, ilpo.jarvinen@linux.intel.com,
+	johan@kernel.org, gregkh@linuxfoundation.org,
+	David Lamparter <equinox@diac24.net>,
+	Jiri Kosina <jikos@kernel.org>,
+	Michael Zaidman <michael.zaidman@gmail.com>
+Subject: Re: [PATCH v4 RESEND] hid-ft260: Add serial driver
+Message-ID: <ZbbQNEC8pWlkshgN@m2>
+References: <20231218093153.192268-1-contact@christina-quast.de>
+ <Zab2aFMlu6ww2jey@michael-VirtualBox>
+ <Zab4g5PnwcaferE9@fermat.nev>
+ <Zag78CurQQGSLDW3@michael-VirtualBox>
+ <ZawT2Onn23CPMeWa@michael-VirtualBox>
+ <ZaxFkPY3W/5SFwh6@fermat.nev>
+ <ZazgFniD3qXGG1cY@michael-VirtualBox>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="DzRBhgrdidHhTC1B"
-Content-Disposition: inline
-In-Reply-To: <20240126-dev-rx-enable-v4-3-45aaf4d96328@theobroma-systems.com>
-
-
---DzRBhgrdidHhTC1B
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <ZazgFniD3qXGG1cY@michael-VirtualBox>
 
-On Fri, Jan 26, 2024 at 03:55:12PM +0100, Farouk Bouabid wrote:
-> RS485 can have a receiver-enable gpio (rx-enable-gpios). When rs485 is
-> enabled, this gpio, if provided, must be driven active while receiving.
-> However when RS485 is disabled this gpio should not have an undefined
-> state. In that case, as DE and RE pins can be connected both to this gpio,
-> if its state is not properly defined, can cause unexpected transceiver
-> behavior.
-> This binding depend on rx-enable-gpios to be implemented.
+On Sun, Jan 21, 2024 at 11:12:54AM +0200, Michael Zaidman wrote:
+> On Sun, Jan 21, 2024 at 11:13:36AM +1300, Daniel Beer wrote:
+> > On Sat, Jan 20, 2024 at 08:41:28PM +0200, Michael Zaidman wrote:
+> > > Hi Daniel and Christina,
+> > > 
+> > > My concern with the implemented workaround is that sending a dummy report
+> > > every 4.8 seconds eliminates the chip's power save mode functionality.
+> > > 
+> > > I did more testing and figured out that the baud rates 4800 and below work
+> > > fine with power saving mode and do not require this workaround.
+> > > 
+> > > So, I modified the code, making it dependent on the baud rate in this commit:
+> > > https://github.com/MichaelZaidman/hid-ft260/commit/b5a2ad68c7cebbaaba0aa1675ae376f2895e19aa
+> > > 
+> > > 
+> > > Another improvement is not to activate the wakeup workaround if power
+> > > saving mode is not enabled in EEPROM.
+> > > https://github.com/MichaelZaidman/hid-ft260/commit/0a41f3f3a4c664edc3bb90718807f2e62fe6d375
+> > > 
+> > > For UART testing, I sent files via picocom opened on ttyUSB0 (ch340 USB
+> > > dongle device) connected to ft260 UART, receiving and displaying the
+> > > trafic in screen manager utility.
+> > > 
+> > > --Michael
+> > 
+> > Hi Michael,
+> > 
+> > That sounds like a good idea to me. Are you planning to submit your
+> > improved version from here?
+> > 
+> > I don't have any FT260 hardware with me any more, so there's
+> > unfortunately not much I can do now to help, aside from answering
+> > questions.
+> > 
+> > Cheers,
+> > Daniel
+> > 
+> 
+> Yeah, I mean to do more testing, and then I will submit a new patch set
+> based on your work.
+> 
+> --Michael
+>
+Hi Daniel,
 
-Why do you need a dedicated property for this when there exists a device
-specific compatible for the uart on both of the affected rockchip
-systems?
+I pushed changes into https://github.com/MichaelZaidman/hid-ft260/tree/uart
+branch and would appreciate your review and feedback before preparing the
+cumulative patch set.
+
+I addressed the first FIXME. Please correct me if I did not get right what
+you meant.
+
+I am still doubting regarding the second FIXME. I see only three tty drivers
+are using the kfifo_avail and kfifo_len to retrieve the write room and number
+of chars in the buffer, and neither use locking. What was your concern?
 
 Thanks,
-Conor.
+Michael
 
->=20
-> Signed-off-by: Farouk Bouabid <farouk.bouabid@theobroma-systems.com>
-> ---
->  Documentation/devicetree/bindings/serial/rs485.yaml | 5 +++++
->  1 file changed, 5 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/rs485.yaml b/Docume=
-ntation/devicetree/bindings/serial/rs485.yaml
-> index b64577036b5c..4c79dfaaf460 100644
-> --- a/Documentation/devicetree/bindings/serial/rs485.yaml
-> +++ b/Documentation/devicetree/bindings/serial/rs485.yaml
-> @@ -55,6 +55,11 @@ properties:
->      description: GPIO to handle a separate RS485 receive enable signal
->      maxItems: 1
-> =20
-> +  rs485-rx-enable-inactive-when-rs485-disabled:
-> +    description: rx-enable GPIO is not active when RS485 is disabled. If=
- missing, active-state
-> +      is assumed.
-> +    $ref: /schemas/types.yaml#/definitions/flag
-> +
->    rs485-term-gpios:
->      description: GPIO pin to enable RS485 bus termination.
->      maxItems: 1
->=20
-> --=20
-> 2.34.1
->=20
-
---DzRBhgrdidHhTC1B
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZbaRLAAKCRB4tDGHoIJi
-0lVcAP9p7fg8n4e6rLO8EL2Eb1sSnS3GQtn1fONEOpidqgF31AEAvoJXIDhzhnRF
-r/P/IvBUvRkQTjXM4O4aoPKsdLrOQwM=
-=9qkJ
------END PGP SIGNATURE-----
-
---DzRBhgrdidHhTC1B--
