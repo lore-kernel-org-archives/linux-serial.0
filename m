@@ -1,63 +1,65 @@
-Received: from mail-40133.protonmail.ch (mail-40133.protonmail.ch [185.70.40.133])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 026D479949
-	for <linux-serial@vger.kernel.org>; Tue, 30 Jan 2024 18:57:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.40.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF12078661;
+	Tue, 30 Jan 2024 22:52:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706641074; cv=none; b=UkFx4OYQg7CYN1EQJJqgJSLFhtY9bZRybjElIAmp4E1B5rtZ9OV8jv1g78brkk24lBR4BN37sc2jhxkaJ1tXbhE2HEOjhYg89p7SKhSA5ARr8fx56gPmVcF/iVG1Ha6ZdW5I+Q0UdWEIrOixdJ+xVLMxtGi1AxkGebQwp03iDy8=
+	t=1706655124; cv=none; b=aFyPru0iBvhPONl5IpIVXsoDVeY44YzVbqC+Nci3lRiUlSF4vE3FguK6Ssg36gRD4bpRaHhO6WE1lRlri+TsCnKNOgKe+5pJf8/wIHPFskY05wEJXN5GXcCNQkrGKGKrXP9JI9hIB62Yh4q5z6wiSVjG7FQvS69QsWzanpAbC3U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706641074; c=relaxed/simple;
-	bh=k6HRdPozVBTmbethj///4v44JcIV6nTJmQs4So93nWE=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SwOXkgSd3mmUvmu0peuV1hbo2TRfgUDQpB13hDwiiw9j+we4HC/itSu1AMCDCFJlsRI9h0j/5keriM/7sScJFLvnI6NkFHmr4IHNs77WUnIzz2eOlO2Kvx8k6k7HqAIah7Iqimx3fMJG7bPnIIdPd78suHoy2C+6dJhBiSy0SrU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=booGVQ8d; arc=none smtp.client-ip=185.70.40.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
+	s=arc-20240116; t=1706655124; c=relaxed/simple;
+	bh=Z9JSOZJwv4veo8nEmqZ3zyrn1RuKLDCF57K2KTf6Gdk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nxWPqAC5I2aL8JKbSZDBjzoJ7C++fdve/ezhSY3MOsIpk2H7idy6OFYWhTknUy124ExWInI2B5MTWSS438f0wquEFi5v1K16QeoMW7k54wVJJizWViSEURZ9+oi0HQBSS0+sbO348nqDdQ0V7K2wrFkbGRVd7kJ+vdFMQrOQSxs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DjaOInZf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="booGVQ8d"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1706641070; x=1706900270;
-	bh=k6HRdPozVBTmbethj///4v44JcIV6nTJmQs4So93nWE=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=booGVQ8dCrkbnpd2VeDyQENHr7gfcpo6TbD8YW3C4laEp1ZYJCUzfBa4FJQSCbj7q
-	 ugrfd/bHNyEIUuuGG/CpvykTHSOkkN/74yV57n/7VbFnij/Egeyh5ylO1Cye0eC5sA
-	 DICX+ZkTUpbcOyWiaCy7AQTrhjs9gEl+rOR70+lq5gIiz7XsLMqgxFxrB5d4NFClQD
-	 hDGGNynJoD4lkUZrO3IHVN/PZzVxHv1xEJ6y4cL0RkPuWnID8siiO2crVyJ2RkyG6u
-	 67HB9FGf0v3CcS6EnreFHKNU8nnqLlicxDJJ+OFFWOINNoP+AfDqZ3XWgz9jGmHEyh
-	 Hgh3hnGttauyg==
-Date: Tue, 30 Jan 2024 18:57:47 +0000
-To: Jiri Slaby <jirislaby@kernel.org>
-From: Emil Kronborg <emil.kronborg@protonmail.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: Re: mxs-auart broken in v6.2 and onwards
-Message-ID: <djtgk274iojly23xjb6kgx7ucgv6a4d23ix4vvr2cfskrkeb2r@uykelfkgrcg7>
-In-Reply-To: <040064c5-c285-4e02-b545-47c5085f0068@kernel.org>
-References: <miwgbnvy3hjpnricubg76ytpn7xoceehwahupy25bubbduu23s@om2lptpa26xw> <040064c5-c285-4e02-b545-47c5085f0068@kernel.org>
-Feedback-ID: 20949900:user:proton
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DjaOInZf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09B38C433C7;
+	Tue, 30 Jan 2024 22:52:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1706655124;
+	bh=Z9JSOZJwv4veo8nEmqZ3zyrn1RuKLDCF57K2KTf6Gdk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=DjaOInZfp82KjVrjgPjw4ZXqGcMp2+fZJdVaHZTK/8E+4+c87wYUZlAjbKt1O0vOf
+	 dfN1npQ76k5AFv4vFmqARwCW5hVB97FsbHD42hwdPCMo4FVQu7y6aqEFeAxueoE2PQ
+	 RcfOLmb0oDpHhIiQRW3dx/0eQf/6NrV5Wtw0raO+CqetuVIpUJusFRYTe3vCXbih89
+	 f9uuir4h5RHOeXkyW3z599Ia5W787tgp1Mobyp1ryLle2rDRN/FFcwx7wpXUcVBpBO
+	 DNECB6qyMEawqKM2cXwsf1Y0+CCWZ/zSKOCFHC+tHMTprs5elV/vHv1g8bSV4G9NGm
+	 Yo7Hz6+n2vTmg==
+Date: Tue, 30 Jan 2024 16:52:02 -0600
+From: Rob Herring <robh@kernel.org>
+To: Christoph Winklhofer <cj.winklhofer@gmail.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	linux-serial@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCH v5 1/3] dt-bindings: w1: UART 1-Wire bus
+Message-ID: <170665512145.2562941.4940727869669470030.robh@kernel.org>
+References: <20240126-w1-uart-v5-0-1d82bfdc2ae9@gmail.com>
+ <20240126-w1-uart-v5-1-1d82bfdc2ae9@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240126-w1-uart-v5-1-1d82bfdc2ae9@gmail.com>
 
-Hi,
 
-On Tue, Jan 30, 2024 at 10:38 +0100, Jiri Slaby wrote:
-> Hm, the tx stop handling is weird throughout mxs. What about the
-> attached patch?
+On Fri, 26 Jan 2024 16:42:03 +0100, Christoph Winklhofer wrote:
+> Add device tree binding for UART 1-Wire bus.
+> 
+> Signed-off-by: Christoph Winklhofer <cj.winklhofer@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/w1/w1-uart.yaml | 60 +++++++++++++++++++++++
+>  1 file changed, 60 insertions(+)
+> 
 
-It seems to fix the issue, but I do not see any way to fix this just for
-mxs-auart.c without also changing serial_core.h, and thus affecting a
-bunch of other drivers. Would reverting the changes from 2d141e683e9a
-("tty: serial: use uart_port_tx() helper") for just mxs-auart.c be okay?
-If so, I can do that, test it again, and send a patch.
-
---
-Emil
+Reviewed-by: Rob Herring <robh@kernel.org>
 
