@@ -1,100 +1,123 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34F145FF18
-	for <linux-serial@vger.kernel.org>; Wed, 31 Jan 2024 08:25:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1B61768F4;
+	Wed, 31 Jan 2024 12:14:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706689507; cv=none; b=dWowYGbtjYe5RrY5ZU3q8KlR7q7VoP5SFUssfcPkt9QA9exKEfwxQuc4qmA1bCZJLJbMccf9LFhAt3kZwWD98lNj+PYDubfN8FblXJha2o6FOyHDvCOZygA/suLdxUBujVBvki914GfVmDBnY6gLQ9YYyUN0n3f1L78iDLmu2rU=
+	t=1706703243; cv=none; b=FJOewHZEPpMDuzYdFMWdgyDA7ZE7c5XsXHyW74SXnweZAjXyjxT5rY9/QG6XkY6RIms5HfwgyeY+LX28KWdOfdUPLw43Jbj9WVS0VJgei70jHaORcZmAjDcrxg8ZM65C3wRfTk4np/xPFx8Cp6Zhs5pBmlLmSo08L0Krnm6cYAg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706689507; c=relaxed/simple;
-	bh=m32rvnoHeDneErJtvFKjJCT1+v1UYtt13ihilo7pDBw=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=sJ/J1slHNNBAK9/OS4jKcHkuswiEZFqmwQgDwOpW6dwp/KIufGvTaFPcbKexhRFjhSQ7xh5IAewuqinyI3GNUct3WD1BXb/htWf5pHWHDAWsiECD1I/90RFvw9CUzC5g4DHwZbbqLuPYLD2JMaRC5SPDqxgOaata2YV1WStIB8o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=vtiVCS5/; arc=none smtp.client-ip=209.85.221.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1706703243; c=relaxed/simple;
+	bh=7PA+jHjuL3dX/U2euxIHOazTkyVPO2EfIlsJ8MWjALE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=nJdlhgSditD7HZlJBx0HL8Vn5t3Gd707vTj94T3PND8pqTwuQdciGR93IpOCjv1NdyPE92TGpVNcMlb+LZFK7z0T+iHkGcLtoXiIoZLks5hcV2L+ttqMZDE68vAD8xcEl8N66C62dRxav9yXOoHNy3DPagzWBgLVY0V+5O+2iS0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f8FcuXl0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="vtiVCS5/"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-33ae3154cf8so2533454f8f.3
-        for <linux-serial@vger.kernel.org>; Wed, 31 Jan 2024 00:25:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1706689503; x=1707294303; darn=vger.kernel.org;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Kjfr1JWWqOzBpF09vA5iofFwPy0q9GLVhIb7MB26bGk=;
-        b=vtiVCS5/9LYvIczCo1dTkKjHd8K6tFOJ7jYfICwpunCl/BidSDeH/4ByXEujRI3E9Z
-         345c3FzfjPkngk6Izs5/dIvCN4RRsZDUffL5aD5UhTGHT83RTMzI6TbfHWc5OvKgFr7z
-         zB7gTmbfOqukmAhzw3VaWCdSV1h7hd+oJa+V4Vf6LhPe8vVRgt8fx4Ai3AmxyBeCwP/E
-         m3XGHhgKq3fD+j+BN1g00cyKhi9yvH1VVJebaJ9dSY3wllWPI3Ult8TESpc1SvIqzkwM
-         QM6OHMlBerwcVGKVLz7gWOL45juG7jJX9t0f1j+xxMFXHpYhKBUmXcUnUe584bg+UaOf
-         4vLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706689503; x=1707294303;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Kjfr1JWWqOzBpF09vA5iofFwPy0q9GLVhIb7MB26bGk=;
-        b=qsqBal7+lr8ouxirEQtKP67aAEv78hOrPFZak3OTTdTdWLN4V8WKsEtY6kpn2vmZBh
-         ebrJi3tcitnNDK6iSXYCy0LCTJu6RSUrWOFppYOEzs3ESVA2zxWlxpPaN3YU5J8KRO0C
-         V0SZnxI+rb6vzyUQ3eziiSfkwFYzo6nX5ZdOTBg6tpJTOmKngKsq3vdvUHsgstV/pUll
-         Fb6tgODf2R2htQFSMV4iroMrrEfdXZ5U+dspdkftsBATdF1f/i6AgLdKGaXVxOKaJYnf
-         vKaJaWMSh7VOVhCeEPKk43C3XmFfAd4a9c6ae+x4XARVi3g/1q4RgaTN8M/1syX6jRnu
-         5lmg==
-X-Gm-Message-State: AOJu0Yy/x76tesLGwcmVCLU8gn2d/HG1zld02F8s4rbZRb83ZYwQ/IsT
-	iHIzS/Her9wTKQvfNIGsetGiWpjprFVVHPH/nIzNmtSwxe0EB+ZGqsAUajfLrj4=
-X-Google-Smtp-Source: AGHT+IHoltuxoKIeHVVpKUMTvfTCftXaiHZYAChZuYJHWMkSt7h0Ajid41fYMtToV3jNL4hkgTJq/g==
-X-Received: by 2002:a05:6000:118f:b0:337:b9ac:97f6 with SMTP id g15-20020a056000118f00b00337b9ac97f6mr554324wrx.55.1706689503559;
-        Wed, 31 Jan 2024 00:25:03 -0800 (PST)
-Received: from localhost ([102.140.226.10])
-        by smtp.gmail.com with ESMTPSA id ch19-20020a5d5d13000000b00337b47ae539sm12799999wrb.42.2024.01.31.00.25.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Jan 2024 00:25:03 -0800 (PST)
-Date: Wed, 31 Jan 2024 11:24:59 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Dan Carpenter <dan.carpenter@linaro.org>
-Cc: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
-	Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH] serial: 8250_pci1xxxx: partially revert off by one patch
-Message-ID: <bd6fb361-bbb9-427d-90e8-a5df4de76221@moroto.mountain>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f8FcuXl0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F101C433C7;
+	Wed, 31 Jan 2024 12:14:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1706703242;
+	bh=7PA+jHjuL3dX/U2euxIHOazTkyVPO2EfIlsJ8MWjALE=;
+	h=From:To:Cc:Subject:Date:From;
+	b=f8FcuXl0L8EkWHgmObVu6ysB+ynvQZF2V/GFvjPb0JvXekn7dzZVNgmswGbQqUeTG
+	 21N6i1yF+3OLJRbNNYwgFbU/Hv+7odV9FxtbRjISNk0sM9kGYgcyrOXtDnZeBOT+Ir
+	 tZ+EfItHUxVrewAPa3hToP8md/PXOkrcjboQZytnCeNZgUqUFqPRDGXG7OD/zeYoly
+	 RIC8oJizvqH/hauI8tn7kj2DGm+jTCvidG8Kk7sycaTSMRCjSTe9FZ8yKLfcu6bawh
+	 zseKpel9RjUl/jEaYGbpwEVRGJMS2u9gHDvjC78ZiiN56w2/fz8/gX8GOG4CiUtA/8
+	 RhihayIhgx8+w==
+From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+	Emil Kronborg <emil.kronborg@protonmail.com>
+Subject: [PATCH 1/2] serial: core: introduce uart_port_tx_flags()
+Date: Wed, 31 Jan 2024 13:13:57 +0100
+Message-ID: <20240131121359.7855-1-jirislaby@kernel.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
+Content-Transfer-Encoding: 8bit
 
-I was reviewing this code again and I realized I made a mistake here.
-It should have been > instead of >=.  The subtract ensures that we
-don't go out of bounds.  My patch meant that we don't read the last
-chunk of the buffer.
+And an enum with a flag: UART_TX_NOSTOP. To NOT call
+__port->ops->stop_tx() when the circular buffer is empty. mxs-uart needs
+this (see the next patch).
 
-Fixes: 86ee55e9bc7f ("serial: 8250_pci1xxxx: fix off by one in pci1xxxx_process_read_data()")
-Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Cc: Emil Kronborg <emil.kronborg@protonmail.com>
 ---
-Sorry about that.  The other part of my fix was correct though...
+ include/linux/serial_core.h | 32 +++++++++++++++++++++++++++-----
+ 1 file changed, 27 insertions(+), 5 deletions(-)
 
- drivers/tty/serial/8250/8250_pci1xxxx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
-index 5cf0580f21cd..356972734b29 100644
---- a/drivers/tty/serial/8250/8250_pci1xxxx.c
-+++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
-@@ -330,7 +330,7 @@ static void pci1xxxx_process_read_data(struct uart_port *port,
- 	 * to read, the data is received one byte at a time.
- 	 */
- 	while (valid_burst_count--) {
--		if (*buff_index >= (RX_BUF_SIZE - UART_BURST_SIZE))
-+		if (*buff_index > (RX_BUF_SIZE - UART_BURST_SIZE))
- 			break;
- 		burst_buf = (u32 *)&rx_buff[*buff_index];
- 		*burst_buf = readl(port->membase + UART_RX_BURST_FIFO);
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 536b2581d3e2..edefb6d73604 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -748,8 +748,17 @@ struct uart_driver {
+ 
+ void uart_write_wakeup(struct uart_port *port);
+ 
+-#define __uart_port_tx(uport, ch, tx_ready, put_char, tx_done, for_test,      \
+-		for_post)						      \
++/**
++ * enum UART_TX_FLAGS -- flags for uart_port_tx_flags()
++ *
++ * @UART_TX_NOSTOP: don't call port->ops->stop_tx() on empty buffer
++ */
++enum UART_TX_FLAGS {
++	UART_TX_NOSTOP = BIT(0),
++};
++
++#define __uart_port_tx(uport, ch, flags, tx_ready, put_char, tx_done,	      \
++		       for_test, for_post)				      \
+ ({									      \
+ 	struct uart_port *__port = (uport);				      \
+ 	struct circ_buf *xmit = &__port->state->xmit;			      \
+@@ -777,7 +786,7 @@ void uart_write_wakeup(struct uart_port *port);
+ 	if (pending < WAKEUP_CHARS) {					      \
+ 		uart_write_wakeup(__port);				      \
+ 									      \
+-		if (pending == 0)					      \
++		if (((flags) & UART_TX_NOSTOP) && pending == 0)		      \
+ 			__port->ops->stop_tx(__port);			      \
+ 	}								      \
+ 									      \
+@@ -812,7 +821,7 @@ void uart_write_wakeup(struct uart_port *port);
+  */
+ #define uart_port_tx_limited(port, ch, count, tx_ready, put_char, tx_done) ({ \
+ 	unsigned int __count = (count);					      \
+-	__uart_port_tx(port, ch, tx_ready, put_char, tx_done, __count,	      \
++	__uart_port_tx(port, ch, 0, tx_ready, put_char, tx_done, __count,     \
+ 			__count--);					      \
+ })
+ 
+@@ -826,8 +835,21 @@ void uart_write_wakeup(struct uart_port *port);
+  * See uart_port_tx_limited() for more details.
+  */
+ #define uart_port_tx(port, ch, tx_ready, put_char)			\
+-	__uart_port_tx(port, ch, tx_ready, put_char, ({}), true, ({}))
++	__uart_port_tx(port, ch, 0, tx_ready, put_char, ({}), true, ({}))
++
+ 
++/**
++ * uart_port_tx_flags -- transmit helper for uart_port with flags
++ * @port: uart port
++ * @ch: variable to store a character to be written to the HW
++ * @flags: %UART_TX_NOSTOP or similar
++ * @tx_ready: can HW accept more data function
++ * @put_char: function to write a character
++ *
++ * See uart_port_tx_limited() for more details.
++ */
++#define uart_port_tx_flags(port, ch, flags, tx_ready, put_char)		\
++	__uart_port_tx(port, ch, flags, tx_ready, put_char, ({}), true, ({}))
+ /*
+  * Baud rate helpers.
+  */
 -- 
 2.43.0
 
