@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9526979DD0;
-	Wed, 31 Jan 2024 13:09:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3431D7AE75;
+	Wed, 31 Jan 2024 13:12:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706706560; cv=none; b=pyWZFftBn4FvPoe9S9UFcAOXVNglZyNVjaCnHK36ui5g+gJ5JIqPCVMDo7pn+DtTZkrt1z9cURKt5JKDysb9PO4MdjF2yuY+r59d/zox3cR35ny8XdfVKEItzIdjYg9mG7wvwdZEqmjNCdcGrzVjNTGLOeX+hnQ+KBCJOCqdFyk=
+	t=1706706763; cv=none; b=G+pXpDKrREiOUA3vEIoyEKGuLqvn1t99MpbplJ+2r3nKnYPSuZG1fIzOU/s9KogjaSF/Rh1z1rgbuhPFmYLMzz//vAvdKLKVE1u7z9NfZZKyYx6GrTqy8bMGwWFbs9VTFXmT7jVV2R/oqn/3DuOQC2gWHfOAHQBhGTHJKy6alTg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706706560; c=relaxed/simple;
-	bh=H+3Yd242vCa/u8dYnVruZH4TAJDhE2VokeBipcu3MUQ=;
+	s=arc-20240116; t=1706706763; c=relaxed/simple;
+	bh=E9Gxoqng6/P8Ph3ofb6E1aBYNVtn0OQSV7S9DVCV/VY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=U2fzndsJ2VFUFdSrXbEB1+TvvLVrOOsRKpI4bIv/7NVf2dKI3dDs8qRqWgijNgCYyUWuwvno4PJVZ/FJ0s6JmRrkN/THORbeAEUrX9gFmoL+O3O75QT8kuqgyLrprdL9i1eI1eVCHqJtAR2gdZo7hcsB9ACQ69tU15vKKE0XW1M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WCCfAVnJ; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=hmkpc4EMt1WpuhvFTXScty2YX6bxxMwVlTuLEdI4whRSM8vxkoEMpGICZoSxlRNYksHCy7hVQOiM4FiH3ABvUV2C4RllOAKJCIoN4/jDA8Cs+f0NYwuIfqphF196z2QzNF0II6SuU1q3jKWMgbyGQ7LLwJcYNf6AILr0j3Wf59Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BBl6C9W8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WCCfAVnJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 824EAC433C7;
-	Wed, 31 Jan 2024 13:09:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BBl6C9W8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D2FDC433F1;
+	Wed, 31 Jan 2024 13:12:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1706706560;
-	bh=H+3Yd242vCa/u8dYnVruZH4TAJDhE2VokeBipcu3MUQ=;
+	s=k20201202; t=1706706762;
+	bh=E9Gxoqng6/P8Ph3ofb6E1aBYNVtn0OQSV7S9DVCV/VY=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=WCCfAVnJCzlywCqcEVLrbW9qjK+9mAOXuMje0vOCvTISFUDz7QLW5Qmh++PwI7eil
-	 8RE/XmP7Sd3LmvZQUbchD3vYCea+EHLmBQ1Z2uhSu4tZjekS4sq05nm929ab4X8JkS
-	 MfnSU3q3alwaEHtHIrCP9iVRmCNP9Dgn8ZtmOjr7NBB7oTnoQC02UauLYMVUXW/c2t
-	 anUp2rnOn8CRXB2oPT83eHBUz/2e8csaO6OwhohfAzz78nR1qMc26I4pzq6aOA+CJ4
-	 5AfsAd1zJOIT3Ag61RUFoX/AOoZZlk12F3DB4AbxQ5fsAXPufXCxW3/xoxMZrOPZbV
-	 IfhnysNlPnsEg==
-Message-ID: <fb203186-1d13-4439-98a1-2523ea335403@kernel.org>
-Date: Wed, 31 Jan 2024 14:09:12 +0100
+	b=BBl6C9W8r67VoHLBm2KjTB0Alnd+BKz41icU+Dd+mHlEjxZgHIPievnKf9u9Rjnpn
+	 LldnkyNR+ac5t0Uv5In4nC1u8FuA127pm4dty/EL3ew4890rv9f4oY0uhgzQV7FLGm
+	 zdNaGwiXJzY/4KKjv8mGO88V3XJ1IqTUKw+V8FE1hUYUwTqZ4A3aOd/EPu9n08HwXN
+	 Nu+YF8QDXGHWRONo6LEoJK+/m/3F7Fas2RsWM/CRTNkbZvAYg0j+AU7aajBm1MVjsx
+	 78BupN+lOFPMipRBumu6fFPH0va+8vPoCquvoSwiDrnPZTnbFBPH+SWoBIzgGV2P/R
+	 XpHsB6l3BeguQ==
+Message-ID: <092a9986-5ebb-483d-9911-37a93d7cb2dd@kernel.org>
+Date: Wed, 31 Jan 2024 14:12:34 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,8 +35,7 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 2/3] dt-bindings: serial: allow onewire as child node
-Content-Language: en-US
+Subject: Re: [PATCH v5 3/3] w1: add UART w1 bus driver
 To: cj.winklhofer@gmail.com,
  Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
  Rob Herring <robh+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
@@ -48,7 +47,8 @@ To: cj.winklhofer@gmail.com,
 Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-serial@vger.kernel.org, linux-doc@vger.kernel.org
 References: <20240126-w1-uart-v5-0-1d82bfdc2ae9@gmail.com>
- <20240126-w1-uart-v5-2-1d82bfdc2ae9@gmail.com>
+ <20240126-w1-uart-v5-3-1d82bfdc2ae9@gmail.com>
+Content-Language: en-US
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Autocrypt: addr=krzk@kernel.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -93,25 +93,223 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
  7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
  5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <20240126-w1-uart-v5-2-1d82bfdc2ae9@gmail.com>
+In-Reply-To: <20240126-w1-uart-v5-3-1d82bfdc2ae9@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 26/01/2024 16:42, Christoph Winklhofer via B4 Relay wrote:
 > From: Christoph Winklhofer <cj.winklhofer@gmail.com>
 > 
-> The UART 1-Wire bus utilizes the Serial Device Bus to create the 1-wire
-> timing patterns.
-> 
-> Acked-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Christoph Winklhofer <cj.winklhofer@gmail.com>
-> ---
->  Documentation/devicetree/bindings/serial/serial.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Add a UART 1-Wire bus driver. The driver utilizes the UART interface via
+> the Serial Device Bus to create the 1-Wire timing patterns. The driver
+> was tested on a "Raspberry Pi 3B" with a DS18B20 and on a "Variscite
+> DART-6UL" with a DS18S20 temperature sensor.
 > 
 
-If there is going to be resend, please reverse the patches because
-that's dependency of #1.
+...
+
+> + * struct w1_uart_config - configuration for 1-Wire operation
+> + *
+> + * @baudrate: baud-rate returned from serdev
+> + * @delay_us: delay to complete a 1-Wire cycle (in us)
+> + * @tx_byte: byte to generate 1-Wire timing pattern
+> + */
+> +struct w1_uart_config {
+> +	unsigned int baudrate;
+> +	unsigned int delay_us;
+> +	u8 tx_byte;
+> +};
+> +
+> +struct w1_uart_device {
+> +	struct serdev_device *serdev;
+> +	struct w1_bus_master bus;
+> +
+> +	struct w1_uart_config cfg_reset;
+> +	struct w1_uart_config cfg_touch_0;
+> +	struct w1_uart_config cfg_touch_1;
+> +
+> +	struct completion rx_byte_received;
+> +	int rx_err;
+> +	u8 rx_byte;
+> +
+
+Missing documentation of mutex scope. What does it protect?
+
+> +	struct mutex mutex;
+> +};
+> +
+
+...
+
+> +/*
+> + * Send one byte (tx_byte) and read one byte (rx_byte) via serdev.
+> + */
+> +static int w1_uart_serdev_tx_rx(struct w1_uart_device *w1dev,
+> +				const struct w1_uart_config *w1cfg, u8 *rx_byte)
+> +{
+> +	struct serdev_device *serdev = w1dev->serdev;
+> +	int ret;
+> +
+> +	serdev_device_write_flush(serdev);
+> +	serdev_device_set_baudrate(serdev, w1cfg->baudrate);
+> +
+> +	/* write and immediately read one byte */
+> +	reinit_completion(&w1dev->rx_byte_received);
+> +	ret = serdev_device_write_buf(serdev, &w1cfg->tx_byte, 1);
+> +	if (ret != 1)
+> +		return -EIO;
+> +	ret = wait_for_completion_interruptible_timeout(
+> +		&w1dev->rx_byte_received, W1_UART_TIMEOUT);
+> +	if (ret <= 0)
+> +		return -EIO;
+> +
+> +	/* locking could fail during driver remove or when serdev is
+
+It's not netdev, so:
+/*
+ *
+
+> +	 * unexpectedly in the receive callback.
+> +	 */
+> +	if (!mutex_trylock(&w1dev->mutex))
+> +		return -EIO;
+> +
+> +	ret = w1dev->rx_err;
+> +	if (ret == 0)
+> +		*rx_byte = w1dev->rx_byte;
+> +
+> +	if (w1cfg->delay_us > 0)
+> +		fsleep(w1cfg->delay_us);
+> +
+> +	mutex_unlock(&w1dev->mutex);
+> +
+> +	return ret;
+> +}
+> +
+> +static ssize_t w1_uart_serdev_receive_buf(struct serdev_device *serdev,
+> +					  const u8 *buf, size_t count)
+> +{
+> +	struct w1_uart_device *w1dev = serdev_device_get_drvdata(serdev);
+> +
+> +	mutex_lock(&w1dev->mutex);
+> +
+> +	/* sent a single byte and receive one single byte */
+> +	if (count == 1) {
+> +		w1dev->rx_byte = buf[0];
+> +		w1dev->rx_err = 0;
+> +	} else {
+> +		w1dev->rx_err = -EIO;
+> +	}
+> +
+> +	mutex_unlock(&w1dev->mutex);
+> +	complete(&w1dev->rx_byte_received);
+> +
+> +	return count;
+> +}
+> +
+> +static const struct serdev_device_ops w1_uart_serdev_ops = {
+> +	.receive_buf = w1_uart_serdev_receive_buf,
+> +	.write_wakeup = serdev_device_write_wakeup,
+> +};
+> +
+> +/*
+> + * 1-wire reset and presence detect: A present slave will manipulate
+> + * the received byte by pulling the 1-Wire low.
+> + */
+> +static u8 w1_uart_reset_bus(void *data)
+> +{
+> +	struct w1_uart_device *w1dev = data;
+> +	const struct w1_uart_config *w1cfg = &w1dev->cfg_reset;
+> +	int ret;
+> +	u8 val;
+> +
+> +	ret = w1_uart_serdev_tx_rx(w1dev, w1cfg, &val);
+> +	if (ret < 0)
+> +		return -1;
+> +
+> +	/* Device present (0) or no device (1) */
+> +	return val != w1cfg->tx_byte ? 0 : 1;
+> +}
+> +
+> +/*
+> + * 1-Wire read and write cycle: Only the read-0 manipulates the
+> + * received byte, all others left the line untouched.
+> + */
+> +static u8 w1_uart_touch_bit(void *data, u8 bit)
+> +{
+> +	struct w1_uart_device *w1dev = data;
+> +	const struct w1_uart_config *w1cfg = bit ? &w1dev->cfg_touch_1 :
+> +						   &w1dev->cfg_touch_0;
+> +	int ret;
+> +	u8 val;
+> +
+> +	ret = w1_uart_serdev_tx_rx(w1dev, w1cfg, &val);
+> +
+> +	/* return inactive bus state on error */
+> +	if (ret < 0)
+> +		return 1;
+> +
+> +	return val == w1cfg->tx_byte ? 1 : 0;
+> +}
+> +
+> +static int w1_uart_probe(struct serdev_device *serdev)
+> +{
+> +	struct device *dev = &serdev->dev;
+> +	struct w1_uart_device *w1dev;
+> +	int ret;
+> +
+> +	w1dev = devm_kzalloc(dev, sizeof(*w1dev), GFP_KERNEL);
+> +	if (!w1dev)
+> +		return -ENOMEM;
+> +	w1dev->bus.data = w1dev;
+> +	w1dev->bus.reset_bus = w1_uart_reset_bus;
+> +	w1dev->bus.touch_bit = w1_uart_touch_bit;
+> +	w1dev->serdev = serdev;
+> +
+> +	init_completion(&w1dev->rx_byte_received);
+> +	mutex_init(&w1dev->mutex);
+> +
+> +	ret = w1_uart_serdev_open(w1dev);
+> +	if (ret < 0)
+> +		return ret;
+> +	serdev_device_set_drvdata(serdev, w1dev);
+> +	serdev_device_set_client_ops(serdev, &w1_uart_serdev_ops);
+> +
+> +	return w1_add_master_device(&w1dev->bus);
+> +}
+> +
+> +static void w1_uart_remove(struct serdev_device *serdev)
+> +{
+> +	struct w1_uart_device *w1dev = serdev_device_get_drvdata(serdev);
+> +
+> +	mutex_lock(&w1dev->mutex);
+> +
+> +	w1_remove_master_device(&w1dev->bus);
+> +
+> +	mutex_unlock(&w1dev->mutex);
+
+This is still suspicious. You do not have serdev_device_close and you
+want to protect from concurrent access but it looks insufficient.
+
+This code assumes that:
+
+w1_uart_remove()
+  <-- here concurrent read/write might start
+  mutex_lock()
+  w1_remove_master_device()
+  mutex_unlock()
+  <-- now w1_uart_serdev_tx_rx() or w1_uart_serdev_receive_buf() can be
+executed, but device is removed. So what's the point of the mutex here?
+
+What exactly is protected by the mutex? So far it looks like only some
+contents of w1dev, but it does not matter, because it that memory is
+still valid at this point.
+
+After describing what is protected we can think whether it is really
+protected...
+
+
+> 
 
 Best regards,
 Krzysztof
