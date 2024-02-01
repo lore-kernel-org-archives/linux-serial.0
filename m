@@ -1,331 +1,218 @@
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DB683FE0;
-	Thu,  1 Feb 2024 07:29:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D80415AABB;
+	Thu,  1 Feb 2024 09:02:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706772550; cv=none; b=XmFMEU9r76f1QsSKcKen1A6AkmLGar4mdjW/OgFUoS68gCPedH2IUQ8ufRNmMm5i+lqGqPv2lQOwfJAPRObPsmPhlZE8AcwwafRc9HIzUlfbwv5yEkOk4fRArpFeWtBxMamEnedIciaN7fn0gilBUwRHxTYdXYCuF2gSWsHRzOI=
+	t=1706778173; cv=none; b=QKmACzeXU3DN/o+h2S8r+rhCbmDnKGHxjfnk1PBBiJ2wDl3pXOS2s2elZqqNouWACkoXwqVfWwxv8Cr81R87U9GxtmCX1hwnIh/kbVPXduHFeHjTzEs2hcxtBLzOwwZB4ShkxtGYSsSFCDwOIs90js33Al5Esn3EMNvcbrL9FJY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706772550; c=relaxed/simple;
-	bh=W9cY8OGwEt3hGv4G3S7kAMP8lNKUny1RsNcjpYlLSPQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=b2eA8l4O1ltOL7dabRaa6NthAiO3gcSejLBIvqDed7WfEqqeQZeeu9UgfYISjCe7S2UT3W7tIKq+HisSHq0JUo7923PPmUPDPF9+aQxHXYXQnFYS09/GTbM1PMsGTapBM+9+vqUXoL5SoGi9w9jJtl58ursXwGiMrW11azYBo/8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PpEGprZN; arc=none smtp.client-ip=209.85.208.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	s=arc-20240116; t=1706778173; c=relaxed/simple;
+	bh=+DMkfcQRY0kabbqcrrB8TeJZsVn9GIf4FTlYS+8wIpU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=GFgqwOurPIrCiplRSF/mb6UkDn2it/WeQf85YTvkyDQVaSNVjvLyiJfWwB/mbOQnoxYFnGms59S/zxEUk68E6Gf/dtwJ6Wnxt3IQ2woYFD7+DmgqoNWGolLewr7s/NJwJmKxS1f0IYkpG1QplU7gU+xFMGngaZMHzTDoNLxre60=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.167.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PpEGprZN"
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-557dcb0f870so816328a12.2;
-        Wed, 31 Jan 2024 23:29:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1706772546; x=1707377346; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tLaWFDZsEpQvtDVfJc1CSfkCtVX7RFRHGCgQXJS8kTo=;
-        b=PpEGprZNa7kLMRoTxiaXKzvSfx1cr+8iGxBqoBciCwF87ppcHYY0AeNQClDMcTVFpp
-         ffIjCdiNRq0G8Gq8qWlIL1tCA8fH4kmLLYdxT/jubm0nAVNq9Gs2JwL6zOlOy6MWsywO
-         uqpXcRAvOV+tUeAYKcB8fqJ0At2eyxMHhdM0XJyBI6ysChCMv6da/qVrjYanLv61xK4N
-         KF3NNmvCIAK4/JqaqTYU2pIGedsGal94qO8GugnPuEO1KQjEbcG70r8G8H5fIFR8YKfV
-         Vn3XoFyNQUIUgU8GIf/smCPlN6JW+Fx0QYz+J9UyY00C1JP/RP4CvD6nccm2zy2SgOQ9
-         i48A==
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5112cb7ae27so1224797e87.0;
+        Thu, 01 Feb 2024 01:02:51 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706772546; x=1707377346;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tLaWFDZsEpQvtDVfJc1CSfkCtVX7RFRHGCgQXJS8kTo=;
-        b=nbGMGbTWSNkhXp0iN8GwniTw7ldeYLA9675vhqJJ6Fx269Ey/VIN1psccMbtvo6q0c
-         P4IJZNhn7NtAuCnwWoqPQ+YzvRuJFH341pzThgitAkk/0N3AhBiNTESf7fWcyPHjbH7A
-         w2aPulC8Gv0WBnFa2kPhY4g2hLvFlnQqpwsFwhTLzsh5gRZYjtOgooKQEbS7lr5l9TX3
-         RG+4BrtzzlDyaM4v/O5BaoYrVqjajivdycsUZ/RDCttJ4faghGahUX7OUYBr4DRW3Gn1
-         /Y1w4sG6m6db43+pLQb9AGl84xKcmpGf/a7wS1K19yUFLr0zb8Jix0ra9X30yTDf13/7
-         dCag==
-X-Gm-Message-State: AOJu0Yy5uc2SOJR+SUBWhIv+gzTudZkbpWwIWa3hUNk4lnstySA+MTLs
-	O9+tTkrN4dXG3BjcQDpB7Rb5lvodh5ek6L2EpALFPXjfvsxg77E1
-X-Google-Smtp-Source: AGHT+IGwQpb4PCK+youy5XxDB/EkwZ45dOdqpu0j2LuSNrhRo2TWRg6TVokCOx3woyIY3O8OPuLFcg==
-X-Received: by 2002:a17:906:84c:b0:a34:dbdc:929b with SMTP id f12-20020a170906084c00b00a34dbdc929bmr2975089ejd.0.1706772545831;
-        Wed, 31 Jan 2024 23:29:05 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCVtjpCLKpRbEbtNtbs2cus9oL/fxd+RE1c5xSNX3Bs38BG4NYTR6vsNO/JR3HfUrwLeqjEL775RLVjRAIe8Xuq+9Bylc09NH8IWYQFRFks2u16CZIbpEabI8NDm2ronXc9xWiBZTDZcTOgaP1b4JjNLnRDRqUbINgIXuzMomOIgzKpPWhnF/M15SyUJ5W3hO/pk9pW25aXTPe/6OkUIkgMql7ULhHsgKrGq4s2ZgrnHidpMooUcB8Ljv4MxU4ISRcXfvwgEg+x5VTyQC7sDNj/oT2m9TheqdHNPoQ+aroHxGpdlMEvSasFkkDVKdqxVy0DYPekABiWgDe5zffbhKjAZqcKJbu+n2TsahK8Hd/yAcN3DAViKefOB375avU0=
-Received: from cjw-notebook (2a02-8388-0502-f480-6c32-186a-368b-d6a9.cable.dynamic.v6.surfer.at. [2a02:8388:502:f480:6c32:186a:368b:d6a9])
-        by smtp.gmail.com with ESMTPSA id g22-20020a170906349600b00a367bdce1fcsm1243432ejb.64.2024.01.31.23.29.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Jan 2024 23:29:05 -0800 (PST)
-Date: Thu, 1 Feb 2024 08:29:02 +0100
-From: Christoph Winklhofer <cj.winklhofer@gmail.com>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Rob Herring <robh@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Jonathan Corbet <corbet@lwn.net>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-doc@vger.kernel.org
-Subject: Re: [PATCH v5 3/3] w1: add UART w1 bus driver
-Message-ID: <ZbtIPo--1hfzNmho@cjw-notebook>
-References: <20240126-w1-uart-v5-0-1d82bfdc2ae9@gmail.com>
- <20240126-w1-uart-v5-3-1d82bfdc2ae9@gmail.com>
- <092a9986-5ebb-483d-9911-37a93d7cb2dd@kernel.org>
+        d=1e100.net; s=20230601; t=1706778169; x=1707382969;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Jd2c+CX881s9B5blOUk+/zj8aF9uYV2A5nr/DOovMGo=;
+        b=q/O2rf49IjkpQRVgz3FrqgE1whvOI12J/K7+3WfyuiaZg2XENCW51C65dqyidgKI99
+         /or+7lVQ/a5Dzb6IFswReYbcOB7zcCVnCviDh7ZbcnwwTrwXRRYnOWVcBXCK7voPBD5r
+         Jki8jXbSNL7bogIof/T/ud1NkWNiRrWvEAX2m9FX1dbO1k3aI7XZvgpD+Dc9nvFWBcas
+         DkcW0vEwToATfxVB3Obh1PgVKR4KxzZe86ICG987Eh/xz2hCAmsdEyZbcMjJpaH8HzXC
+         NCWyJkaupnel5boJZgAqTC5dRw+9SaNUlFLMYYA7FygK11Rnd4iJKWza3Waqktt4qmgr
+         /Lfg==
+X-Gm-Message-State: AOJu0YzxZGMcjdD03jy+d4znSys5BVSogY3pg2zJHCPvdQUefAIasvHy
+	gwOUKQ0r81MGPzpNENXRG8a5WHBWlfuWnrlMzAEXYDl7tQm4hP3NrObyk/6egGI=
+X-Google-Smtp-Source: AGHT+IEM0YMluzM35hvCRecPyeTWXKfOO93vIwxvFqLerGyyGQOrhDFcV7MqBuaTAPsv9Me2XIMQXQ==
+X-Received: by 2002:a05:6512:443:b0:50e:74e1:144a with SMTP id y3-20020a056512044300b0050e74e1144amr1342437lfk.15.1706778169053;
+        Thu, 01 Feb 2024 01:02:49 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id u10-20020a7bc04a000000b0040fb01d61a3sm3706956wmc.18.2024.02.01.01.02.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Feb 2024 01:02:47 -0800 (PST)
+Message-ID: <feabd944-47b6-4ea3-bde2-b6e90c58015f@kernel.org>
+Date: Thu, 1 Feb 2024 10:02:46 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <092a9986-5ebb-483d-9911-37a93d7cb2dd@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: This is classified as spam [was: [PATCH] tty: fix atomicity violation
+ in n_tty_read]
+Content-Language: en-US
+To: Gui-Dong Han <2045gemini@gmail.com>, gregkh@linuxfoundation.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ baijiaju1990@outlook.com, stable@vger.kernel.org
+References: <20240112125801.2650-1-2045gemini@gmail.com>
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20240112125801.2650-1-2045gemini@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Jan 31, 2024 at 02:12:34PM +0100, Krzysztof Kozlowski wrote:
-> On 26/01/2024 16:42, Christoph Winklhofer via B4 Relay wrote:
-> > From: Christoph Winklhofer <cj.winklhofer@gmail.com>
-> > 
-> > Add a UART 1-Wire bus driver. The driver utilizes the UART interface via
-> > the Serial Device Bus to create the 1-Wire timing patterns. The driver
-> > was tested on a "Raspberry Pi 3B" with a DS18B20 and on a "Variscite
-> > DART-6UL" with a DS18S20 temperature sensor.
-> > 
-> 
-> ...
-> 
-> > + * struct w1_uart_config - configuration for 1-Wire operation
-> > + *
-> > + * @baudrate: baud-rate returned from serdev
-> > + * @delay_us: delay to complete a 1-Wire cycle (in us)
-> > + * @tx_byte: byte to generate 1-Wire timing pattern
-> > + */
-> > +struct w1_uart_config {
-> > +	unsigned int baudrate;
-> > +	unsigned int delay_us;
-> > +	u8 tx_byte;
-> > +};
-> > +
-> > +struct w1_uart_device {
-> > +	struct serdev_device *serdev;
-> > +	struct w1_bus_master bus;
-> > +
-> > +	struct w1_uart_config cfg_reset;
-> > +	struct w1_uart_config cfg_touch_0;
-> > +	struct w1_uart_config cfg_touch_1;
-> > +
-> > +	struct completion rx_byte_received;
-> > +	int rx_err;
-> > +	u8 rx_byte;
-> > +
-> 
-> Missing documentation of mutex scope. What does it protect?
-> 
+Hi,
 
-The mutex should protect concurrent access to rx_err and rx_byte. It
-would be not be required in the good case: a write is initiated solely
-by the w1-callbacks in 'w1_uart_serdev_tx_rx' and a completion is used
-to wait for the result of serdev-receive.
+all your mail is classified as Spam in both my private and company MTAs. 
+Not sure what CCs' MTA say as I don't know why (as dkim, spf, dmarc all 
+pass). You likely need to fix your mail setup somehow.
 
-However, in case the UART is not configured as a loop, a serdev-receive
-may occur when w1_uart_serdev_tx_rx evaluates rx_err and rx_byte in
-w1_uart_serdev_tx_rx, so it is protected - however, I will try to find
-a better way to detect such an error.
+Headers:
+> Delivered-To: jirislaby+korg@gmail.com
+> Received: by 2002:ac0:d5cb:0:b0:2fd:5d7f:bc30 with SMTP id u11csp768930imh;
+>         Fri, 12 Jan 2024 04:58:18 -0800 (PST)
+> X-Google-Smtp-Source: AGHT+IF/3LYNmNd1d7yS4c746ryIOjwWPOlNU7fcqvZ7ycEWFsrcPzEYgEqRc5d2BrPcf8yom1He
+> X-Received: by 2002:a17:906:29ce:b0:a28:b085:5a86 with SMTP id y14-20020a17090629ce00b00a28b0855a86mr594229eje.133.1705064298179;
+>         Fri, 12 Jan 2024 04:58:18 -0800 (PST)
+> ARC-Seal: i=1; a=rsa-sha256; t=1705064298; cv=none;
+>         d=google.com; s=arc-20160816;
+>         b=X5hO2nwthigWdqlDEp9mlArxmch62iPLf7BohvIaT+FLSQtkY/wROZtenuCZT2bV9y
+>          NhTy4ua83SjlXUsReLP7dwbOjQilwdqiKFPMKTn+tJmShfcxdaYjvpAr7apSZi4YpEQf
+>          uRoWK7W8JfpVKFQT4D8cHv9+hliBxhmC4GRLdKtp564+bpO3j/4zsENIe9saFzMNqmM8
+>          QVhZXotHRShB2FdZc/VmxiNe4eXnxJ8KIhQMJcuo3LdXRiWrQ/2vXgBcIfsfr4FQeZM3
+>          xacjxp9OrrdUlUZQdY1JmfiU13iN+b4oiu7W2suuj2zSUbdUT3vcufTBDchwEX7S84Oi
+>          Sy7w==
+> ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+>         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+>          :to:from:dkim-signature:dmarc-filter:delivered-to;
+>         bh=SKCP4kSmi8Znay+ncNnEwwM69gACCAM8H97RoLluFSU=;
+>         fh=fP+uh1DN39DuEzOCSiaLKB3WTgSPWFk9ij8kCOsTwec=;
+>         b=acW4d8Z6n1mvqA9PwE3vDYYyHpDkDTNIfnmf9bbIVDFRzIZ1g5eGCnxCmJ9kA68nAW
+>          AZ79DUtrCYuuWsW5mLidpsdDDKWB5iVy7xpTtlTOhrA1A3QHk7d9afk7d31lu73SLJ+s
+>          cim0UxXCsyOIdPeWlaKeKB3u2gozSBP/wN/jMtqxfzbvZxjZV451c3eSSI/093s5Nj3/
+>          U8tjiUDidbRkRIk2GRiwOMU2FIEORIyAylSNBtGJvlQ1CNavVQ3nU/OcMeaQ150+FIKD
+>          gQY4khoMEyVPph27tYwZh6exWeZcuw2jVG72JkTJs3ZEwR/B+bPBobFPjIK4UzkSwn98
+>          yTxA==
+> ARC-Authentication-Results: i=1; mx.google.com;
+>        dkim=pass header.i=@gmail.com header.s=20230601 header.b=EvmWOavP;
+>        spf=pass (google.com: domain of srs0=twir=iw=gmail.com=2045gemini@kernel.org designates 145.40.68.75 as permitted sender) smtp.mailfrom="SRS0=Twir=IW=gmail.com=2045gemini@kernel.org";
+>        dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+> Return-Path: <SRS0=Twir=IW=gmail.com=2045gemini@kernel.org>
+> Received: from ams.source.kernel.org (ams.source.kernel.org. [145.40.68.75])
+>         by mx.google.com with ESMTPS id t10-20020a1709063e4a00b00a2a224d5420si1409203eji.776.2024.01.12.04.58.18
+>         for <jirislaby+korg@gmail.com>
+>         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+>         Fri, 12 Jan 2024 04:58:18 -0800 (PST)
+> Received-SPF: pass (google.com: domain of srs0=twir=iw=gmail.com=2045gemini@kernel.org designates 145.40.68.75 as permitted sender) client-ip=145.40.68.75;
+> Authentication-Results: mx.google.com;
+>        dkim=pass header.i=@gmail.com header.s=20230601 header.b=EvmWOavP;
+>        spf=pass (google.com: domain of srs0=twir=iw=gmail.com=2045gemini@kernel.org designates 145.40.68.75 as permitted sender) smtp.mailfrom="SRS0=Twir=IW=gmail.com=2045gemini@kernel.org";
+>        dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+> Received: from smtp.kernel.org (transwarp.subspace.kernel.org [100.75.92.58])
+> 	by ams.source.kernel.org (Postfix) with ESMTP id C5199B82253
+> 	for <jirislaby+korg@gmail.com>; Fri, 12 Jan 2024 12:58:17 +0000 (UTC)
+> Received: by smtp.kernel.org (Postfix)
+> 	id 3B5B1C43399; Fri, 12 Jan 2024 12:58:17 +0000 (UTC)
+> Delivered-To: jirislaby@kernel.org
+> Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com [209.85.161.48])
+> 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+> 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+> 	(No client certificate requested)
+> 	by smtp.kernel.org (Postfix) with ESMTPS id 0BCAEC433B1
+> 	for <jirislaby@kernel.org>; Fri, 12 Jan 2024 12:58:15 +0000 (UTC)
+> DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.kernel.org 0BCAEC433B1
+> Authentication-Results: smtp.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+> Authentication-Results: smtp.kernel.org; spf=pass smtp.mailfrom=gmail.com
+> Received: by mail-oo1-f48.google.com with SMTP id 006d021491bc7-598c92465c2so263240eaf.3
+>         for <jirislaby@kernel.org>; Fri, 12 Jan 2024 04:58:15 -0800 (PST)
+> DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+>         d=gmail.com; s=20230601; t=1705064295; x=1705669095; darn=kernel.org;
+>         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+>          :to:from:from:to:cc:subject:date:message-id:reply-to;
+>         bh=SKCP4kSmi8Znay+ncNnEwwM69gACCAM8H97RoLluFSU=;
+>         b=EvmWOavPxwjgc+yDYIiyY/w/z1xhXMRSVpdywGaxL7rklmdTONNRCxvtacNNITc+5J
+>          kw7sEpuBdUYGg9ynslYzKdiJqEaMqG/tVw1VA8WglLrc5WDiWVe0Ly6pAF0n7qtVmPVi
+>          pieUNXbpLlfcVuDrqczwe9IdUuAL+d+UNkqf+GkHSVJ/NzKicOB160AvopFIYN6Qoj/d
+>          qCQVQ4iy3p44eZ86MbztWy94mN/JDaXJjFbvuI5v/Cfx8LmJJT0V44VBmD3mPPGNAzy0
+>          Ho/htuIS78Mz8hEf+JnoHkVsHH+l3R9XixAlz4L3w+eM1LxwNzK1AXbGZnAdBsLmbAIr
+>          4YgQ==
+> X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+>         d=1e100.net; s=20230601; t=1705064295; x=1705669095;
+>         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+>          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+>          :reply-to;
+>         bh=SKCP4kSmi8Znay+ncNnEwwM69gACCAM8H97RoLluFSU=;
+>         b=Rkanvc4aSfPbP0ynJz41MBjbAVn0zKy8x8W+ftdoY8DkbJ5x7/ENKVUjLgRkbXWuQH
+>          bTp5BX8j7EF0EwnZ1ut2KYQPO1Nrb29If9XSMcG8D2fhaKSraPV7gwgVLwTmY6J2ObwV
+>          EOv3uJXr4BVngTXEMdCG1uGhoW70YBDFciT2iHbK2aZ6oz3CdVAdQznVlxJXArRmzqcv
+>          GvQvrlWI+qt7QWKiXzqI4DRkzEuyK/qNLfu67NyJ1qssm9mNt0il/GYTZkqdfuI/wxlI
+>          yWtl4b0qyaEmNFVOIF8B8BLSJWs3y5YH+WZQxQSfZGrg26cN0OlBtj3N4oOKAIaOCH0Y
+>          WI9Q==
+> X-Gm-Message-State: AOJu0Yyyn81BwhbCgzcpJ5tAP9T/AjxpT0em8lzR+hmuGwzP3IAEgJw+
+> 	+sAIT5qrT4keqaUNgAJRtBU=
+> X-Received: by 2002:a05:6358:4d83:b0:172:ae2a:2256 with SMTP id cc3-20020a0563584d8300b00172ae2a2256mr1350395rwb.27.1705064294552;
+>         Fri, 12 Jan 2024 04:58:14 -0800 (PST)
+> Received: from g2039B650.. ([106.39.42.152])
+>         by smtp.gmail.com with ESMTPSA id fd14-20020a056a002e8e00b006dad4c91e8fsm3103080pfb.205.2024.01.12.04.58.11
+>         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+>         Fri, 12 Jan 2024 04:58:14 -0800 (PST)
+> From: Gui-Dong Han <2045gemini@gmail.com>
+> To: gregkh@linuxfoundation.org,
+> 	jirislaby@kernel.org
+> Cc: linux-kernel@vger.kernel.org,
+> 	linux-serial@vger.kernel.org,
+> 	baijiaju1990@outlook.com,
+> 	Gui-Dong Han <2045gemini@gmail.com>,
+> 	stable@vger.kernel.org
+> Subject: [PATCH] tty: fix atomicity violation in n_tty_read
+> Date: Fri, 12 Jan 2024 20:58:01 +0800
+> Message-Id: <20240112125801.2650-1-2045gemini@gmail.com>
+> X-Mailer: git-send-email 2.34.1
+> MIME-Version: 1.0
+> Content-Transfer-Encoding: 8bit
 
-In addition, the w1-callbacks should also return during a 'remove' (with
-the mutex_try_lock) - see comment on that below.
 
-> > +	struct mutex mutex;
-> > +};
-> > +
-> 
-> ...
-> 
-> > +/*
-> > + * Send one byte (tx_byte) and read one byte (rx_byte) via serdev.
-> > + */
-> > +static int w1_uart_serdev_tx_rx(struct w1_uart_device *w1dev,
-> > +				const struct w1_uart_config *w1cfg, u8 *rx_byte)
-> > +{
-> > +	struct serdev_device *serdev = w1dev->serdev;
-> > +	int ret;
-> > +
-> > +	serdev_device_write_flush(serdev);
-> > +	serdev_device_set_baudrate(serdev, w1cfg->baudrate);
-> > +
-> > +	/* write and immediately read one byte */
-> > +	reinit_completion(&w1dev->rx_byte_received);
-> > +	ret = serdev_device_write_buf(serdev, &w1cfg->tx_byte, 1);
-> > +	if (ret != 1)
-> > +		return -EIO;
-> > +	ret = wait_for_completion_interruptible_timeout(
-> > +		&w1dev->rx_byte_received, W1_UART_TIMEOUT);
-> > +	if (ret <= 0)
-> > +		return -EIO;
-> > +
-> > +	/* locking could fail during driver remove or when serdev is
-> 
-> It's not netdev, so:
-> /*
->  *
-> 
 
-Ok.
+-- 
+js
+suse labs
 
-> > +	 * unexpectedly in the receive callback.
-> > +	 */
-> > +	if (!mutex_trylock(&w1dev->mutex))
-> > +		return -EIO;
-> > +
-> > +	ret = w1dev->rx_err;
-> > +	if (ret == 0)
-> > +		*rx_byte = w1dev->rx_byte;
-> > +
-> > +	if (w1cfg->delay_us > 0)
-> > +		fsleep(w1cfg->delay_us);
-> > +
-> > +	mutex_unlock(&w1dev->mutex);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static ssize_t w1_uart_serdev_receive_buf(struct serdev_device *serdev,
-> > +					  const u8 *buf, size_t count)
-> > +{
-> > +	struct w1_uart_device *w1dev = serdev_device_get_drvdata(serdev);
-> > +
-> > +	mutex_lock(&w1dev->mutex);
-> > +
-> > +	/* sent a single byte and receive one single byte */
-> > +	if (count == 1) {
-> > +		w1dev->rx_byte = buf[0];
-> > +		w1dev->rx_err = 0;
-> > +	} else {
-> > +		w1dev->rx_err = -EIO;
-> > +	}
-> > +
-> > +	mutex_unlock(&w1dev->mutex);
-> > +	complete(&w1dev->rx_byte_received);
-> > +
-> > +	return count;
-> > +}
-> > +
-> > +static const struct serdev_device_ops w1_uart_serdev_ops = {
-> > +	.receive_buf = w1_uart_serdev_receive_buf,
-> > +	.write_wakeup = serdev_device_write_wakeup,
-> > +};
-> > +
-> > +/*
-> > + * 1-wire reset and presence detect: A present slave will manipulate
-> > + * the received byte by pulling the 1-Wire low.
-> > + */
-> > +static u8 w1_uart_reset_bus(void *data)
-> > +{
-> > +	struct w1_uart_device *w1dev = data;
-> > +	const struct w1_uart_config *w1cfg = &w1dev->cfg_reset;
-> > +	int ret;
-> > +	u8 val;
-> > +
-> > +	ret = w1_uart_serdev_tx_rx(w1dev, w1cfg, &val);
-> > +	if (ret < 0)
-> > +		return -1;
-> > +
-> > +	/* Device present (0) or no device (1) */
-> > +	return val != w1cfg->tx_byte ? 0 : 1;
-> > +}
-> > +
-> > +/*
-> > + * 1-Wire read and write cycle: Only the read-0 manipulates the
-> > + * received byte, all others left the line untouched.
-> > + */
-> > +static u8 w1_uart_touch_bit(void *data, u8 bit)
-> > +{
-> > +	struct w1_uart_device *w1dev = data;
-> > +	const struct w1_uart_config *w1cfg = bit ? &w1dev->cfg_touch_1 :
-> > +						   &w1dev->cfg_touch_0;
-> > +	int ret;
-> > +	u8 val;
-> > +
-> > +	ret = w1_uart_serdev_tx_rx(w1dev, w1cfg, &val);
-> > +
-> > +	/* return inactive bus state on error */
-> > +	if (ret < 0)
-> > +		return 1;
-> > +
-> > +	return val == w1cfg->tx_byte ? 1 : 0;
-> > +}
-> > +
-> > +static int w1_uart_probe(struct serdev_device *serdev)
-> > +{
-> > +	struct device *dev = &serdev->dev;
-> > +	struct w1_uart_device *w1dev;
-> > +	int ret;
-> > +
-> > +	w1dev = devm_kzalloc(dev, sizeof(*w1dev), GFP_KERNEL);
-> > +	if (!w1dev)
-> > +		return -ENOMEM;
-> > +	w1dev->bus.data = w1dev;
-> > +	w1dev->bus.reset_bus = w1_uart_reset_bus;
-> > +	w1dev->bus.touch_bit = w1_uart_touch_bit;
-> > +	w1dev->serdev = serdev;
-> > +
-> > +	init_completion(&w1dev->rx_byte_received);
-> > +	mutex_init(&w1dev->mutex);
-> > +
-> > +	ret = w1_uart_serdev_open(w1dev);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +	serdev_device_set_drvdata(serdev, w1dev);
-> > +	serdev_device_set_client_ops(serdev, &w1_uart_serdev_ops);
-> > +
-> > +	return w1_add_master_device(&w1dev->bus);
-> > +}
-> > +
-> > +static void w1_uart_remove(struct serdev_device *serdev)
-> > +{
-> > +	struct w1_uart_device *w1dev = serdev_device_get_drvdata(serdev);
-> > +
-> > +	mutex_lock(&w1dev->mutex);
-> > +
-> > +	w1_remove_master_device(&w1dev->bus);
-> > +
-> > +	mutex_unlock(&w1dev->mutex);
-> 
-> This is still suspicious. You do not have serdev_device_close and you
-> want to protect from concurrent access but it looks insufficient.
-> 
-> This code assumes that:
-> 
-> w1_uart_remove()
->   <-- here concurrent read/write might start
->   mutex_lock()
->   w1_remove_master_device()
->   mutex_unlock()
->   <-- now w1_uart_serdev_tx_rx() or w1_uart_serdev_receive_buf() can be
-> executed, but device is removed. So what's the point of the mutex here?
-> 
-> What exactly is protected by the mutex? So far it looks like only some
-> contents of w1dev, but it does not matter, because it that memory is
-> still valid at this point.
-> 
-> After describing what is protected we can think whether it is really
-> protected...
-> 
-> 
-> > 
-> 
-> Best regards,
-> Krzysztof
-> 
-
-Yes, it is still suspicious, sorry..
-
-After w1_uart_remove, serdev is closed and w1dev is released. Therefore
-the w1-callback (w1_uart_serdev_tx_rx) must be finished before returning
-from w1_uart_remove. That was the intention with the lock and trylock.
-
-I thought that after w1_remove_master_device, the w1-callback
-(w1_uart_serdev_tx_rx) is finished which is not the case. I will check
-the working of w1_remove_master_device, probably it requires a lock to
-a mutex from w1-bus.
-
-Many thanks for your review and pointing the things out!
-
-Kind regards,
-Christoph
