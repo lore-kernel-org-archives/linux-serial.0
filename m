@@ -1,104 +1,119 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f52.google.com (mail-oo1-f52.google.com [209.85.161.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D493782C9C;
-	Thu,  1 Feb 2024 17:59:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9410784FA4;
+	Thu,  1 Feb 2024 18:01:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706810394; cv=none; b=RV+ba4BHQ7acpkSAbCdJZOxXXmdudIHvMgRqEl1s2F8wQwBtmobn5It6TV+2iACuJOPW7bjvNJgiz/kGJuDTsptZ/I8rvZ1GXwaohXrauKgqOE8ETQ+9vegMlQy6btqFm3gVnWRWO6czEEBgNjk41Trd0HdOI42S0O6eXnIrhGM=
+	t=1706810465; cv=none; b=rV4R+dkMxEKdD71kFuXUZEJjmrLm2vjmqklkqfDv6vh8HmpwiTjg+xFELAsGNJeQ7ygprVIgkMTPndea4C6GXDdWrtwLhWN15hwnqfCsDtEnMvC8d+vlWHZ38bI8xSFPfJ+GIsTXiyMgqKrEfmW+5CiwIPFYnFnW0/J8VwIvqt8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706810394; c=relaxed/simple;
-	bh=rIrh059PrpeyXbaJr/t3/vTFAkpJFqhcp54WmRwO6II=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=smrwhwVESSMibG+E4mEQjNS2pM0KojKmGH4/Z/BV4ttyjlqwgTAZACp2BkUnjTPMsQvV8W3zPDM/IvpKDnuyWW2Fir8AYi8Wsxsonj6W8op4QssMXoUATUVc3wrgwYReQuy8xzbgjoevipdXI34MHX4gU9/H+yj3+r0PU03UIzY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=q+Fs1l+E; arc=none smtp.client-ip=212.227.15.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="q+Fs1l+E"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-	s=s31663417; t=1706810378; x=1707415178; i=wahrenst@gmx.net;
-	bh=rIrh059PrpeyXbaJr/t3/vTFAkpJFqhcp54WmRwO6II=;
-	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
-	 In-Reply-To;
-	b=q+Fs1l+Eh6RRfby/tGba/XuicnWTiMYKuAnqLqYVoVWLCTaFlGRCQymVSHD2GudZ
-	 mrcLBA9SuVwFDw97oXl7dvDU7oKCkEj8zU0rISnOvcA9xOgJ131ns9nc3klkk9ZrS
-	 sPaif2Q8U3RjDQ9yO2c/ynGFIp8/tGOWo+g2uR9vghLWUG7EkgeigeeLrK+5F75Tb
-	 djXXf1PmxfG4RzvMuFThjxqDgOQUwAJpHnNorVVGUZWt/qMXkZwJpt+KHV193Dagw
-	 RJvZc0jcUKz33McF9x9WiqvjsxdWiqTfuEl3bWr2c4LZpxWJYBXn+JBMulv0ZshJw
-	 PSBuqRWFdQ9WzyF4TQ==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.1.167] ([37.4.248.43]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MWRVh-1rWv5e49AB-00XpU5; Thu, 01
- Feb 2024 18:59:38 +0100
-Message-ID: <aba9744f-977c-4306-9cdf-104800344b5d@gmx.net>
-Date: Thu, 1 Feb 2024 18:59:37 +0100
+	s=arc-20240116; t=1706810465; c=relaxed/simple;
+	bh=EpJiLhFS+151+GyOf+8iaj+gSxq90dRPc5y/xhTFA9U=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Ze9uoKvYmRV7JQYWLOeyRZ4xSOzp0oZPQIbikVn8xHzEm6s7/IORXEngWJMyL7jwo+ILChxXXYnVEG6izYdHxnSG3CJ4gqg5GKE9F7F/gTI53/OHMOXHvTwS2qnFykKSViXeBWije/Y9oSK0buMd2AhCfrb/6VzdP1pqicNJcHE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.161.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-oo1-f52.google.com with SMTP id 006d021491bc7-59584f41f1eso347627eaf.1;
+        Thu, 01 Feb 2024 10:01:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706810462; x=1707415262;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=z+5pS4TaGyELI1G1YPB5J1wpziVptg2Mkm99YXYdlhw=;
+        b=AbZl5sOqJZpHNVusAMCLhi8kvWcSmCULkgqa7WOL/7EmF84U1T9L3Nl3z6PUWs3x6t
+         4Du+ML1Ufc6/A8qayQu+N5cw9KHUmBcbjEbRrGcfpaM3CtpjoYhkuN0V2SyRGQ6cddVh
+         IduNAtPPWeJr4UY0PzxZhNYjz5AbbPWWSkc5gL/FG19twdWnRT7QymA3eEfUTw3OkTYc
+         nkFI9oFP/0CISNOuWjG95wkiY1d2uduL9MpB+rmshPzhrxRV0NfnlsoxWcS7HXduqnNw
+         3UemtQn84misPTUb17NO+3HTcK0OW5wFyBN5alFGCPrukDtrk7deWELdGDTC4BaKoS8v
+         Em3w==
+X-Forwarded-Encrypted: i=0; AJvYcCXuYSJVWXdmMrM4m3NG5IrL6Htjb4R5NfmF/4cX3rLz7p1OA0bbGrV7GtD7J3N96FT/LA7LN9R08rUnTnuO5Phw+kS5h2XSTz2lKGSGHhlBApDXibMtQmB2nd+NLOztOQUErzuZga0vj/NabcU0w3+C5XiLw+GicpcaZOWFkvnxuPVroD7dSGV7m7hAQE5Ge6NahZBfpKuJFELh8qb8mKTKMA==
+X-Gm-Message-State: AOJu0Yz3D0ttjET0CN5PXBs5GzY6HZ1RQC/Up74wwoViyq0zbbf3boj/
+	Xj5IyXF4da/Pd4GGcYyyxNNaCsn7FIve/km3OTDyWnuO8IhImZZRxuRL3BHUiN+435ZsC7dHXC/
+	r0SZ529tYzk2DBPX0PzyhLkbYSBA=
+X-Google-Smtp-Source: AGHT+IFiN/evHJKKXCQlo4OwGibcFnmCUxqxoDhfEwf75cnMo0APq25APzPgqNRHLAa8lK0nOq0aeEdwkZhWN6YDwSI=
+X-Received: by 2002:a05:6820:1c96:b0:59a:bf5:a0da with SMTP id
+ ct22-20020a0568201c9600b0059a0bf5a0damr3994479oob.0.1706810462504; Thu, 01
+ Feb 2024 10:01:02 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] serial: mxs-auart: fix tx
-Content-Language: en-US
-To: Jiri Slaby <jirislaby@kernel.org>, gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- Emil Kronborg <emil.kronborg@protonmail.com>, Shawn Guo
- <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <kernel@pengutronix.de>,
- Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-References: <20240201105557.28043-1-jirislaby@kernel.org>
- <20240201105557.28043-2-jirislaby@kernel.org>
- <3935b841-77b7-4265-a727-98a358cd56be@kernel.org>
-From: Stefan Wahren <wahrenst@gmx.net>
-In-Reply-To: <3935b841-77b7-4265-a727-98a358cd56be@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <20231025202344.581132-1-sunilvl@ventanamicro.com> <20231025202344.581132-6-sunilvl@ventanamicro.com>
+In-Reply-To: <20231025202344.581132-6-sunilvl@ventanamicro.com>
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Date: Thu, 1 Feb 2024 19:00:51 +0100
+Message-ID: <CAJZ5v0hHYa4c2U-tegdBtoTak=MirXwyBXbN9yrWPx_x-+yMzg@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 05/21] pnp.h: Return -EPROBE_DEFER for disabled IRQ
+ resource in pnp_irq()
+To: Sunil V L <sunilvl@ventanamicro.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org, 
+	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, 
+	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
+	Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
+	Albert Ou <aou@eecs.berkeley.edu>, "Rafael J . Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Anup Patel <anup@brainfault.org>, 
+	Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Conor Dooley <conor.dooley@microchip.com>, 
+	Andrew Jones <ajones@ventanamicro.com>, Atish Kumar Patra <atishp@rivosinc.com>, 
+	Haibo Xu <haibo1.xu@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:sXH13v5sOclhojjCcbDB3ZiwD232n6qyAlzp6uIb51/p5gQDxPC
- /LWgrH1BsvCbGKHIdMZaebaawSvaK1uVuCyVoE7dPDCdZzoPzRcz2GX7FoBBSEnFoYAHCVr
- 7bkcBbchWMzIp0FP49HIxL/UcxiFi2oqknqpKg54uP5QOBeWPEoqQXvRK2LLGbKmueE4yO8
- Esp96CrFy6HKm2I/SgNlA==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:0cadcR9eHiw=;Hi1bLUCBqnOjcfDicUxDZLbsY1C
- hEXa/uBP8PB/Siux9/71IqwlWbG6kvNmigcI2Inq+ONUGkdstpHWVVOEobmT9qVTlcjR6zWNB
- DgmJeVtIQa6ywrslbKb0zGN2ZU/ffNXzOqqjQaoeNImEKYjpzFhY5fYTg5dx1xuve0gKdNQMI
- JrzEMcG0ONkP32xkh2noS7ZPjG9NGk7RHN5ZGYfSXEO8pMm17/m8Aq707ptZGQmNONUCOoA3k
- mZ4Xt2YxeGG+j8uEg4eTscFVKuQyOT8dWB/KWpqUjkSgLpSVZsX1rdtiSbZbE6c5vzi4E/j6k
- iU7lo1naqFgslX/f59L/gi4B5ov3YRi9F96BCltOkSY/IiVBd8zgT/gizf98ev1//7vRxT+mh
- qK9GhbL5CRrrMRoXKnDHbvuhxmUTME8uzm6g5XFWq0w8O42HIrWG+qm4PG4M5RrYxSKwkqaOe
- F5PWvRlVbqHBGqAsWtmfx9kS6IQSMhzaGmF107Bi3WT4XArFjP6biNX5+f1i+HZOkvXB43AkS
- pEfQnXEBcIdd8As84L4SQF+VFNGIOpAoV2Tt3NwbeBCL3fkKnByj6R0Xk9gHs3b4xEMweAZrK
- waVTliagtJBhs3c+cBpVosA5usS9pXP/cx0OXmDa5nGUqx4PIeYA0t8V09ihUGRLd0Ek+aKiX
- pWra6O1A05UEiD/dQC6asRx7KLZ6p1RPwJMspdw89Sx/lDU9Bqxz4y6C+4/8pXuo3JXYg/NyB
- Vt+o9iZksm0C2lNcwR9jFS3byiiFntyycUFDEg3CAJd7T+stjlzhJ/2Y7WLxZx/ArEM9RPbzQ
- OfZRMDwxTZW7KpFAo2aZVJBDJxnbRWimK4UTbqK2uNWr4=
 
-Am 01.02.24 um 13:05 schrieb Jiri Slaby:
-> On 01. 02. 24, 11:55, Jiri Slaby (SUSE) wrote:
->> Emil reports:
->> =C2=A0=C2=A0 After updating Linux on an i.MX28 board, serial communicat=
-ion over
->> =C2=A0=C2=A0 AUART broke. When I TX from the board and measure on the T=
-X pin, it
->> =C2=A0=C2=A0 seems like the HW fifo is not emptied before the transmiss=
-ion is
->> =C2=A0=C2=A0 stopped.
->>
->> MXS performs weird things with stop_tx(). The driver makes it
->> conditional on uart_tx_stopped().
->>
->> So the driver needs special handling. Pass the brand new UART_TX_NOSTOP
->> to uart_port_tx_flags() and handle the stop on its own.
->>
->> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
->> Reported-by: Emil Kronborg <emil.kronborg@protonmail.com>
->> Fixes: 2d141e683e9a ("tty: serial: use uart_port_tx() helper")
->> Closes:
->> https://lore.kernel.org/all/miwgbnvy3hjpnricubg76ytpn7xoceehwahupy25bub=
-bduu23s@om2lptpa26xw/
+On Wed, Oct 25, 2023 at 10:24=E2=80=AFPM Sunil V L <sunilvl@ventanamicro.co=
+m> wrote:
 >
-Tested-by: Stefan Wahren <wahrenst@gmx.net>
+> To support deferred PNP driver probe, pnp_irq() must return -EPROBE_DEFER
+> so that the device driver can do deferred probe if the interrupt controll=
+er
+> is not probed early.
+>
+> Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
+> ---
+>  include/linux/pnp.h | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/linux/pnp.h b/include/linux/pnp.h
+> index c2a7cfbca713..21cf833789fb 100644
+> --- a/include/linux/pnp.h
+> +++ b/include/linux/pnp.h
+> @@ -147,12 +147,18 @@ static inline resource_size_t pnp_mem_len(struct pn=
+p_dev *dev,
+>  }
+>
+>
+> -static inline resource_size_t pnp_irq(struct pnp_dev *dev, unsigned int =
+bar)
+> +static inline int pnp_irq(struct pnp_dev *dev, unsigned int bar)
+>  {
+>         struct resource *res =3D pnp_get_resource(dev, IORESOURCE_IRQ, ba=
+r);
+>
+> -       if (pnp_resource_valid(res))
+> +       if (pnp_resource_valid(res)) {
+> +#if IS_ENABLED(CONFIG_ARCH_ACPI_DEFERRED_GSI)
+> +               if (!pnp_resource_enabled(res))
+> +                       return -EPROBE_DEFER;
+> +#endif
 
-Thanks
+What would be wrong with
+
+if (IS_ENABLED(CONFIG_ARCH_ACPI_DEFERRED_GSI) && !pnp_resource_enabled(res)=
+)
+        return -EPROBE_DEFER;
+
+?
+
+> +
+>                 return res->start;
+> +       }
+>         return -1;
+>  }
+>
+> --
+> 2.39.2
+>
