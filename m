@@ -1,72 +1,110 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF09C15B970;
-	Thu,  1 Feb 2024 11:29:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4B7A15D5B4;
+	Thu,  1 Feb 2024 11:59:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706786980; cv=none; b=W1JyD+0nF0lOK/x3/4TtK4dNv54jQTnWxyru8Kbl8xS+GTiwzgPX23QPkznqf6XIRZXKXRucXlbW5K7kHAbv/hHyare9cWomjaby1nNU0XywLeaivu6TX2tbpk/TQfnePsyNg27QFmD5xImhxfYSfvVOYNOfQLOtYVhNqBTMmKI=
+	t=1706788778; cv=none; b=p05150c0HQNbd1d0OlSCF19UPmky9T/6QjpdvcohIPKMmGwthJa6qDzzj+Na+TwgUzq481gzZMcuWpF2HvCOTDPOqrG0FhBE7avwIBvCCdRmqqyIhTunzUgJK0Fj1ZoV9lNv8tXIUjjJmiquPG0YD/xZGjPMcPRe6b9I60baftU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706786980; c=relaxed/simple;
-	bh=N59cteCuM1gkkOQNHLFLkmRsPXR1qrb8VkKrOroB6Ts=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=hfRiRPhPhwceVvEH22PJT4OqEugbnoD6KPoc+WUnR+21Wp4q73En8LBvLSFTAdWdMOSn3SJc00YeW3casrbGP/am3NI5Bubk7SJBlPjpcg1SbAyay9SEvFGQ+fgsw77+VMtH1G9/QMeVoIo41nxpv61W5+UbIon1hbKsIPScFmk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=grd+BLvC; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=t4zdW6qw; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1706788778; c=relaxed/simple;
+	bh=TVUCRYYR7L1IT+ME8oTcX1x2Rr9n3YCLMjyOODsG+BU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eT9daKrl2NiiqPGm1z8mQYHOi+LBfsU0b57lg2qN5Y6Val3R25Uv07KngdfZM0p4VgsxNnRuYRQA+I24QKGSBxyBX3R1c5wsaKGNXHV7yUsfkbXemSf2zumGYr8xkPsZrooyPg0+i9Fne/rfa/wLWrk56HK0h3ilQSf6up9Q6pA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RiBNNyMw; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="grd+BLvC";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="t4zdW6qw"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1706786977;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=N59cteCuM1gkkOQNHLFLkmRsPXR1qrb8VkKrOroB6Ts=;
-	b=grd+BLvCowvUE3ckE2wROp99t208zMWjwFjvBix+xxYku8ZyCJXO1knDbBZ+Yyp564SX6z
-	sr3DXocSnsJeeT8Dwyw/gdgB0JOvLVgPSE9IaIA06HVd2D4T7v7j1sQCvBYRep/HmnqF0w
-	n5tzZda5xOZxrrgcCUlG8nhV0M4uVFQAlpzk3CVZ5PeVwLWkzMu7+H3iHZ1UTC+AemcbIv
-	58VlK/SEhN5HwvKz/6lMD7eDSecO1lb5kVKestqlGJmN7u4MRbH30AKMmWvb8kax77mZ/f
-	D8UEMvH2aIZM9oFIodaIthYb6u+KPeHEm0s3TwRu+KKhpI01zkIKFmyt3IBx7A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1706786977;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=N59cteCuM1gkkOQNHLFLkmRsPXR1qrb8VkKrOroB6Ts=;
-	b=t4zdW6qwJiYwX+e/kJfaEnHLE1cgxAqy2onSxSJxCqPJIyAa5scnvJqqYGK+2SqXcJOx1n
-	ix3UiuxD8Pagt6CQ==
-To: Sreenath Vijayan <sreenath.vijayan@sony.com>, corbet@lwn.net,
- gregkh@linuxfoundation.org, jirislaby@kernel.org, pmladek@suse.com
-Cc: rdunlap@infradead.org, rostedt@goodmis.org, senozhatsky@chromium.org,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, taichi.shimoyashiki@sony.com,
- daniel.palmer@sony.com, anandakumar.balasubramaniam@sony.com,
- sreenath.vijayan@sony.com
-Subject: Re: [PATCH v4 2/2] tty/sysrq: Dump printk ring buffer messages via
- sysrq
-In-Reply-To: <ca8dd18e434f309612c907d90e9f77c09e045b37.1706772349.git.sreenath.vijayan@sony.com>
-References: <cover.1706772349.git.sreenath.vijayan@sony.com>
- <ca8dd18e434f309612c907d90e9f77c09e045b37.1706772349.git.sreenath.vijayan@sony.com>
-Date: Thu, 01 Feb 2024 12:35:32 +0106
-Message-ID: <87plxgo21v.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RiBNNyMw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1706788777; x=1738324777;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=TVUCRYYR7L1IT+ME8oTcX1x2Rr9n3YCLMjyOODsG+BU=;
+  b=RiBNNyMwVlE5SKeiqTu0Hv5jJNLUxwVcITT+TBBZGTfI/EagY5DlslQI
+   5zW5AS8IPCbirZvKJZP64WisKH6cbt1AaIbQ0N6zds/rVVgM7ldCuQahW
+   sN68e6RE/Xx6h7FtNKRf/pD+2qTNUFZX7ErmnlfyxxENoqWr/eUiQf+Q/
+   SXe7l0smXxUAygc6B7K4pWa4s6fKkpORtOmxr0QzlQTFSaks9LUm5g1xX
+   KKybGVJZZ3pjl5WvchjhPuvCPcXl4zVloBsJ1xSQn7d87XOMd96Xz+4hl
+   SIe4VjT8qU7gcJ92LpU7638a2YaAjBc0ndtfZB1LXLzYvDAGsTQLR30iI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10969"; a="10531082"
+X-IronPort-AV: E=Sophos;i="6.05,234,1701158400"; 
+   d="scan'208";a="10531082"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2024 03:59:36 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10969"; a="738409877"
+X-IronPort-AV: E=Sophos;i="6.05,234,1701158400"; 
+   d="scan'208";a="738409877"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2024 03:59:32 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rVVbz-00000000p6M-3icn;
+	Thu, 01 Feb 2024 13:52:07 +0200
+Date: Thu, 1 Feb 2024 13:52:07 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Rengarajan.S@microchip.com
+Cc: Kumaravel.Thiagarajan@microchip.com, jiaqing.zhao@linux.intel.com,
+	gregkh@linuxfoundation.org, ilpo.jarvinen@linux.intel.com,
+	john.ogness@linutronix.de, tony@atomide.com,
+	linux-kernel@vger.kernel.org, Tharunkumar.Pasumarthi@microchip.com,
+	jirislaby@kernel.org, f.fainelli@gmail.com, tglx@linutronix.de,
+	UNGLinuxDriver@microchip.com, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v1 tty] 8250: microchip: Add 4 Mbps support in PCI1XXXX
+ UART
+Message-ID: <ZbuF53TlbnD09rZA@smile.fi.intel.com>
+References: <20240125100619.154873-1-rengarajan.s@microchip.com>
+ <ZbZyW_g4OOkCqIxf@smile.fi.intel.com>
+ <8406d8866968950b9bb2f2c01aaa92e3107a7a00.camel@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8406d8866968950b9bb2f2c01aaa92e3107a7a00.camel@microchip.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On 2024-02-01, Sreenath Vijayan <sreenath.vijayan@sony.com> wrote:
-> When terminal is unresponsive, one cannot use dmesg to view printk
-> ring buffer messages. Also, syslog services may be disabled,
-> to check the messages after a reboot, especially on embedded systems.
-> In this scenario, dump the printk ring buffer messages via sysrq
-> by pressing sysrq+D.
->
-> Signed-off-by: Sreenath Vijayan <sreenath.vijayan@sony.com>
-> Signed-off-by: Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>
+On Tue, Jan 30, 2024 at 10:52:41AM +0000, Rengarajan.S@microchip.com wrote:
+> On Sun, 2024-01-28 at 17:27 +0200, Andy Shevchenko wrote:
+> > On Thu, Jan 25, 2024 at 03:36:19PM +0530, Rengarajan S wrote:
 
-Reviewed-by: John Ogness <john.ogness@linutronix.de>
+...
+
+> > > +     /*
+> > > +      * Microchip PCI1XXXX UART supports maximum baud rate up to 4
+> > > Mbps
+> > > +      */
+> > > +     if (up->port.type == PORT_MCHP16550A)
+> > > +             max = 4000000;
+> > 
+> > No. Please refactor the way the 8250_port won't be modified.
+> > 
+> > Also you have a define for this constant, use it.
+> 
+> The current UART clk in MCHP Ports in pci1xxxx.c is set to 62.5 MHz in
+> order to support fractional baud rates which enables generation of
+> acceptable baud rate and lower error percentage from any available
+> frequency. With 62.5 MHz the maximum supported baud rate supported as
+> per serial_8250_get_baud_rate is 3.9 Mbps. In order to extend the
+> support to 4 Mbps we had hardcoded the max value to 4 Mbps. Since, baud
+> rate is calculated here we needed to make these changes in 8250_port
+> and could not find a way to handle as part 8250_pci1xxxx. Can you let
+> us know any alternatives to address this upper(max) limit? 
+
+Update port->uartclk accordingly in your driver, see how other 8250_* drivers
+do that (e.g., 8250_mid).
+
+So, it will no go with hack in the 8250_port.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
