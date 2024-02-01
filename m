@@ -1,41 +1,41 @@
-Received: from mail-40131.protonmail.ch (mail-40131.protonmail.ch [185.70.40.131])
+Received: from mail-4322.protonmail.ch (mail-4322.protonmail.ch [185.70.43.22])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C879626B6
-	for <linux-serial@vger.kernel.org>; Thu,  1 Feb 2024 15:48:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.40.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 841965F49A
+	for <linux-serial@vger.kernel.org>; Thu,  1 Feb 2024 15:49:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.22
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706802504; cv=none; b=lucBWHrFSGPJ2d7gdnQbD6gD6RJL7pvYOQ6uBZaz7dhLoZDnbBXHRq5J1FKmglODyj+WrHwJWdHZqjXrok5CZ1eZ8FqN6GNC+VUaxRVB4jOuoxgcDT0qkGPt7UMcrKNltKXL2Jzco+m+S1ca8p//VfvGd+oyFU2zMKySt4RNgaE=
+	t=1706802574; cv=none; b=gSBNc1Fm0I7EyrXGwmcWnjwy4Ad40o4L7LWbUMBdAHpv3/NGgJucbYV4SO8eUkFlYwYWsg51DfCQ2Tb+XLvFcLC7IwjhszldLlB/Hh1ZrIBEnpFTHfbDUKdbw83sS8RB+eNElDZyXaNRVy4ZUpEEOGECfkspGfYHBtrScIhXzM8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706802504; c=relaxed/simple;
-	bh=YPgAPS9hepoxlOxUq4K/sY7J/ijRZYX2Afv0qMU768s=;
+	s=arc-20240116; t=1706802574; c=relaxed/simple;
+	bh=NPk98WBulq+hq2fUD9jM8B+ymuNCFgSHiTHFoEGJk1w=;
 	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AIuHynGJ1mg6trk6m6yCH63EbkZ2uuDRYOAHOeXpDaABGSRqctmMWV/xWh9FZZGbJtvkXvjfLj4MZbCRkxOrPqrsu0isWY7wbURKUTgIm0i7E9xvBL8/3WLWxl4dmjE28CmBvmvvQkR263pAstPwh4UNrYky+cltWuzFxqjyyBI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=njcdIKUi; arc=none smtp.client-ip=185.70.40.131
+	 MIME-Version:Content-Type; b=T4b2CWMvvhR6AV5yfkaXbESBi60WRqKIuJzDDjj05NukeMwD6BpZeoAC8uWUBzGjy/ck/tqMWuvqpV5rhhGU5+mD8d+98KiR0kZ/gM/UmOqIe1PkMtBCcR6sOavAjgW1DkcNA5TrV1Tuwhe2yBdj2faOREaDdoTVikLIZha2N2A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=flaZPBOZ; arc=none smtp.client-ip=185.70.43.22
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="njcdIKUi"
+	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="flaZPBOZ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1706802494; x=1707061694;
-	bh=v+NeIwtJum3xWfJlGdeGLluWTi1c+KfBwIIBcQ5KxuA=;
+	s=protonmail3; t=1706802565; x=1707061765;
+	bh=SH1nmP8MQBJdqYjWZuEUz2VSp4EhHpkxSTitA2ghz6A=;
 	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
 	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
 	 Message-ID:BIMI-Selector;
-	b=njcdIKUiNvWZ60ugZwlkSl8NrPghoARhtxuYJob48WIVjpUZCcpLZ0c4WwTFeoru7
-	 +w2cFfJMXXzLNEBNxL86uX+270tWit/zPJ2+dmgOUiUfHiavjaCG76Nu77CUZ3gHQB
-	 LF0B7NFpehhPVf5TpONIIwJgwAHfw2r+kxXrjufNiL+1cOzC2dDhBWtHQ3ePM1tTBl
-	 CckpPte89iN5R0s0uW2UX3Ih8uWNHlyztSvC+GfPFMEKvO1KJnSn7Ve2hCLpBIwAQp
-	 7Lr7GUyi+zGLykAosSPUJIAp38BjToKKkWEL5KFK8xVFfhZJOvsEuX3ujlnKMxO2NQ
-	 us5fsbvFtA4og==
-Date: Thu, 01 Feb 2024 15:48:00 +0000
+	b=flaZPBOZyM4p+5g78AAXY83pP3qjb0y+9v53CXSOOXcZzJwHPJGVxH5VY0qIUaysS
+	 ahG35yqmcT6a7ylUxeWw1LevGvH+lLzsDvInF2JFGuGq3hoLq633Wj8rCkSTHw4K+e
+	 HKkzf1rY5m6xasNBu3jo8hGVT2YmbrRZrkWGxvRj2xMbo+Iir4Qy8iIiDFPPFfcLbo
+	 zInsnHxILzNxjUnubpSIjzflKGd8aQAq6LPDB26/5eB7QBLntTAOv9vbRfAtNUS91q
+	 8YcqdtgqT8iENKzdg4/nVsUrbz9kmgY45H3vr06ff3RwmBzzL3O0R6X8RE7qVJ5XYM
+	 Rte/3AF5FXihQ==
+Date: Thu, 01 Feb 2024 15:49:06 +0000
 To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 From: Emil Kronborg <emil.kronborg@protonmail.com>
 Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] serial: core: introduce uart_port_tx_flags()
-Message-ID: <eduudp2uvoer2haaixxhh7vntvir2qtm62nceykxn6jcfaepno@ws2iiisuxq7o>
-In-Reply-To: <20240201105557.28043-1-jirislaby@kernel.org>
-References: <20240201105557.28043-1-jirislaby@kernel.org>
+Subject: Re: [PATCH v2 2/2] serial: mxs-auart: fix tx
+Message-ID: <qrark2grtpr7lpiffstvijod4ipp5ciz7ehigakdiu22semhkl@dawjy6nazccp>
+In-Reply-To: <20240201105557.28043-2-jirislaby@kernel.org>
+References: <20240201105557.28043-1-jirislaby@kernel.org> <20240201105557.28043-2-jirislaby@kernel.org>
 Feedback-ID: 20949900:user:proton
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -47,95 +47,56 @@ Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
 On Thu, Feb 01, 2024 at 11:55 +0100, Jiri Slaby (SUSE) wrote:
-> And an enum with a flag: UART_TX_NOSTOP. To NOT call
-> __port->ops->stop_tx() when the circular buffer is empty. mxs-uart needs
-> this (see the next patch).
+> Emil reports:
+>   After updating Linux on an i.MX28 board, serial communication over
+>   AUART broke. When I TX from the board and measure on the TX pin, it
+>   seems like the HW fifo is not emptied before the transmission is
+>   stopped.
+>=20
+> MXS performs weird things with stop_tx(). The driver makes it
+> conditional on uart_tx_stopped().
+>=20
+> So the driver needs special handling. Pass the brand new UART_TX_NOSTOP
+> to uart_port_tx_flags() and handle the stop on its own.
 >=20
 > Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Cc: Emil Kronborg <emil.kronborg@protonmail.com>
+> Reported-by: Emil Kronborg <emil.kronborg@protonmail.com>
+> Fixes: 2d141e683e9a ("tty: serial: use uart_port_tx() helper")
+> Closes: https://lore.kernel.org/all/miwgbnvy3hjpnricubg76ytpn7xoceehwahup=
+y25bubbduu23s@om2lptpa26xw/
 > ---
+>  drivers/tty/serial/mxs-auart.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 >=20
-> Notes:
->     [v2] fix/invert the condition
+> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auar=
+t.c
+> index 3ec725555bcc..4749331fe618 100644
+> --- a/drivers/tty/serial/mxs-auart.c
+> +++ b/drivers/tty/serial/mxs-auart.c
+> @@ -605,13 +605,16 @@ static void mxs_auart_tx_chars(struct mxs_auart_por=
+t *s)
+>  =09=09return;
+>  =09}
 >=20
->  include/linux/serial_core.h | 32 +++++++++++++++++++++++++++-----
->  1 file changed, 27 insertions(+), 5 deletions(-)
->=20
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index 536b2581d3e2..55b1f3ba48ac 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -748,8 +748,17 @@ struct uart_driver {
->=20
->  void uart_write_wakeup(struct uart_port *port);
->=20
-> -#define __uart_port_tx(uport, ch, tx_ready, put_char, tx_done, for_test,=
-      \
-> -=09=09for_post)=09=09=09=09=09=09      \
-> +/**
-> + * enum UART_TX_FLAGS -- flags for uart_port_tx_flags()
-> + *
-> + * @UART_TX_NOSTOP: don't call port->ops->stop_tx() on empty buffer
-> + */
-> +enum UART_TX_FLAGS {
-> +=09UART_TX_NOSTOP =3D BIT(0),
-> +};
+> -=09pending =3D uart_port_tx(&s->port, ch,
+> +=09pending =3D uart_port_tx_flags(&s->port, ch, UART_TX_NOSTOP,
+>  =09=09!(mxs_read(s, REG_STAT) & AUART_STAT_TXFF),
+>  =09=09mxs_write(ch, s, REG_DATA));
+>  =09if (pending)
+>  =09=09mxs_set(AUART_INTR_TXIEN, s, REG_INTR);
+>  =09else
+>  =09=09mxs_clr(AUART_INTR_TXIEN, s, REG_INTR);
 > +
-> +#define __uart_port_tx(uport, ch, flags, tx_ready, put_char, tx_done,=09=
-      \
-> +=09=09       for_test, for_post)=09=09=09=09      \
->  ({=09=09=09=09=09=09=09=09=09      \
->  =09struct uart_port *__port =3D (uport);=09=09=09=09      \
->  =09struct circ_buf *xmit =3D &__port->state->xmit;=09=09=09      \
-> @@ -777,7 +786,7 @@ void uart_write_wakeup(struct uart_port *port);
->  =09if (pending < WAKEUP_CHARS) {=09=09=09=09=09      \
->  =09=09uart_write_wakeup(__port);=09=09=09=09      \
->  =09=09=09=09=09=09=09=09=09      \
-> -=09=09if (pending =3D=3D 0)=09=09=09=09=09      \
-> +=09=09if (!((flags) & UART_TX_NOSTOP) && pending =3D=3D 0)=09      \
->  =09=09=09__port->ops->stop_tx(__port);=09=09=09      \
->  =09}=09=09=09=09=09=09=09=09      \
->  =09=09=09=09=09=09=09=09=09      \
-> @@ -812,7 +821,7 @@ void uart_write_wakeup(struct uart_port *port);
->   */
->  #define uart_port_tx_limited(port, ch, count, tx_ready, put_char, tx_don=
-e) ({ \
->  =09unsigned int __count =3D (count);=09=09=09=09=09      \
-> -=09__uart_port_tx(port, ch, tx_ready, put_char, tx_done, __count,=09    =
-  \
-> +=09__uart_port_tx(port, ch, 0, tx_ready, put_char, tx_done, __count,    =
- \
->  =09=09=09__count--);=09=09=09=09=09      \
->  })
+> +=09if (uart_tx_stopped(&s->port))
+> +               mxs_auart_stop_tx(&s->port);
+>  }
 >=20
-> @@ -826,8 +835,21 @@ void uart_write_wakeup(struct uart_port *port);
->   * See uart_port_tx_limited() for more details.
->   */
->  #define uart_port_tx(port, ch, tx_ready, put_char)=09=09=09\
-> -=09__uart_port_tx(port, ch, tx_ready, put_char, ({}), true, ({}))
-> +=09__uart_port_tx(port, ch, 0, tx_ready, put_char, ({}), true, ({}))
-> +
->=20
-> +/**
-> + * uart_port_tx_flags -- transmit helper for uart_port with flags
-> + * @port: uart port
-> + * @ch: variable to store a character to be written to the HW
-> + * @flags: %UART_TX_NOSTOP or similar
-> + * @tx_ready: can HW accept more data function
-> + * @put_char: function to write a character
-> + *
-> + * See uart_port_tx_limited() for more details.
-> + */
-> +#define uart_port_tx_flags(port, ch, flags, tx_ready, put_char)=09=09\
-> +=09__uart_port_tx(port, ch, flags, tx_ready, put_char, ({}), true, ({}))
->  /*
->   * Baud rate helpers.
->   */
+>  static void mxs_auart_rx_char(struct mxs_auart_port *s)
 > --
 > 2.43.0
 >=20
 
-Tested on i.MX28 board.
+Tested on i.MX28.
 
 Tested-by: Emil Kronborg <emil.kronborg@protonmail.com>
 
