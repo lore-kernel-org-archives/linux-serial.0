@@ -1,186 +1,112 @@
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from gepdcl09.sg.gdce.sony.com.sg (unknown [121.100.38.198])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF31D4D9FA
-	for <linux-serial@vger.kernel.org>; Thu,  1 Feb 2024 09:35:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 603AD4DA1D;
+	Thu,  1 Feb 2024 10:20:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=121.100.38.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706780138; cv=none; b=KuNAvmwygZAvXFXSfhGWCbZ9WVPIE2Z8YXQbK6idr9CkKyzNBtyiYeXTfsJGUY1pEfZflHwJ1uhogGv6tTc+CQe+5Z/Nxn4co4iWekjGXKXysRG0PZpmd5Qj57NQVdX9Fs1lshHFJuu0NO5P/3MJwuzwPbu+Axxx9gF2Ez3E5SU=
+	t=1706782841; cv=none; b=uQPep8RJlPq0VKjUXYK1GvPZjT657cXvv7mkQ+GHY2KhABgfRvO31Dw3crvWXuHEQ0dLjpKx1lyFRgml6lKjdkMwnaNaSUY+dXDCdoFwdPMSmbp/brbiAUsGFG4FxIP6xzpyFzzVMczGLgf7Mnz4QQP8uDXjA/17ua9Ra+sp2lg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706780138; c=relaxed/simple;
-	bh=ZDllaHl05SCr+3uHdTXuT0oEzPdQZpv371GP17gaYA4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=dVLAjeUoRqQLaIW5WP0E3ihV9NyN8bILVD4E6hANWETBTNqP8wAIJ437B00E3M4x+beBQU8xWT+BKDtzpSJ8OcS4WEC8LuMx2oOn3AZMBeD5bSBDOQPobTiVFfoI3NvzwEht2LWN9vSgdFxjlpfZ/OmcAVQ38SSpgnsYKtpIB6s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=fKR08lYb; arc=none smtp.client-ip=209.85.218.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fKR08lYb"
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-a354fc17f24so85207966b.0
-        for <linux-serial@vger.kernel.org>; Thu, 01 Feb 2024 01:35:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1706780135; x=1707384935; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=HyqXM2RqPns7OmdRV2J0tJ30SgtDybOdsbla0qjmeAA=;
-        b=fKR08lYbkrM4J9QQBbXECd/bj+lZ7HskbgR+e56PT32P6ImB1dmRWBzf+tnhCvFGL/
-         4UdTWMAX1Gv28HIZhhRdIMXTYjAFvy+Q0WOSWOF0onbmanHjitJbsbTHRiMOfWP9Re2w
-         Nu03byPtsTflU0tNlNN7l5exUazhMeD81uI/Hg70x0PhLOVlOzxXa2J2PJYTHcEWeQkT
-         X0jfGJTRJqYBoHpJxbYTRXKv9u1NrO1LSRo/+OnJkKj4CFx3/roxTqwGKBjWpPR6Bw7E
-         TcBqaBa0Ztb2KWifxWwgarcVdjGzrhRhQLQlh1llXhrnptTErb832ZUhRm6zSJR+ggZB
-         RVDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706780135; x=1707384935;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HyqXM2RqPns7OmdRV2J0tJ30SgtDybOdsbla0qjmeAA=;
-        b=vBsBTpJ1Q4HA+DdgyzyZx8BpxbLTEesEf6XMOV8e4r0emcjbURTMLzYMb/40vYHZFH
-         FaAGDIhRw+Vv22EV5IDy/IlzdBtO6c0vVatp3VrO/Yd/ZKyRTi3sur8iiEyl3Z5TPFcK
-         2ppfvsRzjS0G6u8P8pyebelJE5Cal0Y4SJzporVbU/5Aty56XpUpQS/Xr3KT51bS67+U
-         xlRb65E6fekFQdCB2qBdmqOC+5F2avbENe/P+XyHbt71+j5GEo5rMbDfF0loG1nEFyhr
-         J6bJNmAFXMvm8rwVRs7TYby9JhbtDWqoGA76rNop6MYqtFLqkhIHPCOZ0kEDH2+hMAd5
-         gM6Q==
-X-Gm-Message-State: AOJu0Yyt+Ccr8GNfyT+1L0PcVKwdQkQFt5qpsKuzQgkQLsxPjI39C/aC
-	GTJLhoIrtBfd3tPcsFt1DLgt/za9Sj1F/5aCnnJJr/kowuv0GQz9NA/XUZ2m+NM=
-X-Google-Smtp-Source: AGHT+IFC7C6ZTgZVnlcChUgICQ7l00lXxa3JRgiSmvfPutlq8w7VkeX2Me0z0MaoewEduVjVtCvkrA==
-X-Received: by 2002:a17:906:f34f:b0:a35:c518:8808 with SMTP id hg15-20020a170906f34f00b00a35c5188808mr1263470ejb.30.1706780134959;
-        Thu, 01 Feb 2024 01:35:34 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCXi789qMnuijxBvOmllY3dSeOAsDCkm5lAvjqnc1Swbfmd67t8t/hJp8UXoHUHbkJhXZc3h2M/aed75XjZCbac1cyRQqZCDJJgAUBL44kYI8fYLTFhSnhfWS+c8DlkiGIDL0Gix+rHpsRyQcRhC0hqMKsyD5i6uzRV7gIQAmQghwW+aOkGxvoAqvlCy5BM4BJX5pE1vx9dqiXPEUK6JbCRp/I6QIunSYQ6Vw+gUACWB7MgtG7vxcPtaZw3Ot3ZJqNXzWS1MO/ZKA0hWdpHKjAPo4jAp2V61kKhtibAdSH75WgryFmfJdo83YWBHSvmPufppszpOL+C6fFTTbbK6oqD+n7jq4ryEztLXi4HIlDbVRoRWkMJdf5U+ZJjZRuxkGoLljj6NFadk0HHzQzk=
-Received: from [192.168.1.20] ([178.197.222.62])
-        by smtp.gmail.com with ESMTPSA id ty8-20020a170907c70800b00a353d1a19a9sm5929063ejc.191.2024.02.01.01.35.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Feb 2024 01:35:34 -0800 (PST)
-Message-ID: <94075be0-b91c-4147-86b1-582b124e71a0@linaro.org>
-Date: Thu, 1 Feb 2024 10:35:32 +0100
+	s=arc-20240116; t=1706782841; c=relaxed/simple;
+	bh=pYr5nSckZllMvDyVy8SYcl+YX0JIp0Bb40dbMDbdlLA=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=AkBE7XAYpA8ZCR1LvD133gR4+sd/BFBWpBNyB4lvJoZIv7hPWICt7pMY806zXKfVVaHAeQsCN3xWYUIxz0xt/6/NH413YM3zIzUAF8MEzqTnmUocY7e+gpzAI19+xqRvUjhrycfzVbM4Cac5yQcqaJ3sSoU0qZ5b1nNPuv5isTc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sony.com; spf=fail smtp.mailfrom=sony.com; arc=none smtp.client-ip=121.100.38.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sony.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=sony.com
+Received: from gepdcl04.s.gdce.sony.com.sg (SGGDCSE1NS08.sony.com.sg [146.215.123.198])
+	by gepdcl09.sg.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 411AJ2we009066;
+	Thu, 1 Feb 2024 18:20:07 +0800
+Received: from mail.sony.com ([43.88.80.246])
+	by gepdcl04.s.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 411AIUEB008473;
+	Thu, 1 Feb 2024 18:18:30 +0800
+Received: by mail.sony.com (Postfix, from userid 1000)
+	id 9BD1820C1C49; Thu,  1 Feb 2024 15:46:57 +0530 (IST)
+Date: Thu, 1 Feb 2024 15:46:57 +0530
+From: Sreenath Vijayan <sreenath.vijayan@sony.com>
+To: john.ogness@linutronix.de, corbet@lwn.net, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, pmladek@suse.com
+Cc: rdunlap@infradead.org, rostedt@goodmis.org, senozhatsky@chromium.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, taichi.shimoyashiki@sony.com,
+        daniel.palmer@sony.com, anandakumar.balasubramaniam@sony.com,
+        sreenath.vijayan@sony.com
+Subject: [PATCH v4 0/2] Add support to dump printk buffer to console via sysrq
+Message-ID: <cover.1706772349.git.sreenath.vijayan@sony.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 3/3] w1: add UART w1 bus driver
-Content-Language: en-US
-To: Christoph Winklhofer <cj.winklhofer@gmail.com>,
- Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Rob Herring <robh+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- Rob Herring <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Jonathan Corbet <corbet@lwn.net>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-doc@vger.kernel.org
-References: <20240126-w1-uart-v5-0-1d82bfdc2ae9@gmail.com>
- <20240126-w1-uart-v5-3-1d82bfdc2ae9@gmail.com>
- <092a9986-5ebb-483d-9911-37a93d7cb2dd@kernel.org>
- <ZbtIPo--1hfzNmho@cjw-notebook>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <ZbtIPo--1hfzNmho@cjw-notebook>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 01/02/2024 08:29, Christoph Winklhofer wrote:
->>> +
->>> +static void w1_uart_remove(struct serdev_device *serdev)
->>> +{
->>> +	struct w1_uart_device *w1dev = serdev_device_get_drvdata(serdev);
->>> +
->>> +	mutex_lock(&w1dev->mutex);
->>> +
->>> +	w1_remove_master_device(&w1dev->bus);
->>> +
->>> +	mutex_unlock(&w1dev->mutex);
->>
->> This is still suspicious. You do not have serdev_device_close and you
->> want to protect from concurrent access but it looks insufficient.
->>
->> This code assumes that:
->>
->> w1_uart_remove()
->>   <-- here concurrent read/write might start
->>   mutex_lock()
->>   w1_remove_master_device()
->>   mutex_unlock()
->>   <-- now w1_uart_serdev_tx_rx() or w1_uart_serdev_receive_buf() can be
->> executed, but device is removed. So what's the point of the mutex here?
->>
->> What exactly is protected by the mutex? So far it looks like only some
->> contents of w1dev, but it does not matter, because it that memory is
->> still valid at this point.
->>
->> After describing what is protected we can think whether it is really
->> protected...
->>
->>
->>>
->>
->> Best regards,
->> Krzysztof
->>
-> 
-> Yes, it is still suspicious, sorry..
-> 
-> After w1_uart_remove, serdev is closed and w1dev is released. Therefore
-> the w1-callback (w1_uart_serdev_tx_rx) must be finished before returning
+Hi,
 
-I did not even go to end of w1_uart_remove(). In my code above, that
-thread is still in w1_uart_remove(), just after unlocking mutex.
+This patch series enables one to dump the messages in printk ring
+buffer unless all CPUs are locked up. This is useful to view the
+kernel messages when terminal is unresponsive to enter commands
+like dmesg and syslog services are also disabled, especially on
+embedded targets. Although debug features like kdb/kgdb already
+allow this, these debug configs should be enabled which is often
+not the case.
 
-> from w1_uart_remove. That was the intention with the lock and trylock.
+Till the last version, kmsg_dump* interface was being used to
+retrieve the messages in printk buffer before dumping them to
+consoles. However, John Ogness pointed out the issue with
+kmsg_dump* interface that it doesn't work well with extended
+consoles. He suggested a new method to reuse the code in
+console_flush_on_panic() but without disabling scheduling.
 
-Then it does not look really protected. To be honest, w1-gpio and other
-drivers also might have a race here. You can test it by adding long
-sleeps in read/write paths and then trying to unbind device. Maybe this
-should be fixed everywhere, but this mutex here brings more questions.
+In the first commit, code under CONSOLE_REPLAY_ALL mode in
+console_flush_on_panic() is taken out to a helper function
+console_rewind_all() to set the console sequence numbder to
+oldest record in the printk buffer. And the new function to
+dump the buffer called dump_printk_buffer() calls this function
+after taking the console lock and then releases the lock which
+flushes out the contents of printk buffer to console.
 
+In the second commit, code is added to call dump_printk_buffer()
+function when sysrq+D is pressed. As the function may sleep,
+it cannot be called from interrupt context. A work is queued
+in the system unbound workqueue to call the function when
+the key is pressed.
 
-Best regards,
-Krzysztof
+Links to previous discussion:
+- https://lore.kernel.org/all/cover.1705331453.git.sreenath.vijayan@sony.com/T/#t
+- https://lore.kernel.org/linux-serial/20231221133953.1507021-1-sreenath.vijayan@sony.com/
+
+Changelog:
+V3 -> V4:
+- refactored code in console_flush_on_panic() under CONSOLE_REPLAY_ALL mode
+- added helper function console_rewind_all()
+- used console_rewind_all() instead of ksmg_dump*() in dump_printk_buffer()
+
+V2 -> V3:
+- split the implementation into two commits
+- added function in printk.c to dump printk buffer to consoles
+- added Suggested-by tag
+- removed code to dump printk buffer from sysrq.c and called
+new function
+
+V1 -> V2:
+- modified kernel ring buffer to printk ring buffer
+- allocated buf dynamically to prevent stack frame size warnings
+- used buf of size 2048 to match PRINTK_MESSAGE_MAX and added comment
+
+-- Sreenath
+
+Sreenath Vijayan (2):
+  printk: Add function to dump printk buffer directly to consoles
+  tty/sysrq: Dump printk ring buffer messages via sysrq
+
+ Documentation/admin-guide/sysrq.rst |  2 +
+ drivers/tty/sysrq.c                 | 20 +++++++++-
+ include/linux/printk.h              |  4 ++
+ kernel/printk/printk.c              | 61 +++++++++++++++++------------
+ 4 files changed, 62 insertions(+), 25 deletions(-)
+
+-- 
+2.43.0
 
