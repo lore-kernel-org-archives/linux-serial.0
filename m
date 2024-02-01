@@ -1,110 +1,168 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4B7A15D5B4;
-	Thu,  1 Feb 2024 11:59:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AE8C15F335;
+	Thu,  1 Feb 2024 12:05:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706788778; cv=none; b=p05150c0HQNbd1d0OlSCF19UPmky9T/6QjpdvcohIPKMmGwthJa6qDzzj+Na+TwgUzq481gzZMcuWpF2HvCOTDPOqrG0FhBE7avwIBvCCdRmqqyIhTunzUgJK0Fj1ZoV9lNv8tXIUjjJmiquPG0YD/xZGjPMcPRe6b9I60baftU=
+	t=1706789153; cv=none; b=W98PaDXneSKAFnFjxjDaJ1+lAqtHvK5DOKKfJb9JLMoI+UtZ1GXt0wPBiCRkfhuKsh1g6iKRmLNHCqW0IMMh9caQXw+mMGwEofwTA4K0qT7iBtfktg0Hz+ZLRI45Jn14kfplLeFItJMnqCVTb+oLX+GO1U4MiA4xlC5gWUXqHPU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706788778; c=relaxed/simple;
-	bh=TVUCRYYR7L1IT+ME8oTcX1x2Rr9n3YCLMjyOODsG+BU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eT9daKrl2NiiqPGm1z8mQYHOi+LBfsU0b57lg2qN5Y6Val3R25Uv07KngdfZM0p4VgsxNnRuYRQA+I24QKGSBxyBX3R1c5wsaKGNXHV7yUsfkbXemSf2zumGYr8xkPsZrooyPg0+i9Fne/rfa/wLWrk56HK0h3ilQSf6up9Q6pA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RiBNNyMw; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RiBNNyMw"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706788777; x=1738324777;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=TVUCRYYR7L1IT+ME8oTcX1x2Rr9n3YCLMjyOODsG+BU=;
-  b=RiBNNyMwVlE5SKeiqTu0Hv5jJNLUxwVcITT+TBBZGTfI/EagY5DlslQI
-   5zW5AS8IPCbirZvKJZP64WisKH6cbt1AaIbQ0N6zds/rVVgM7ldCuQahW
-   sN68e6RE/Xx6h7FtNKRf/pD+2qTNUFZX7ErmnlfyxxENoqWr/eUiQf+Q/
-   SXe7l0smXxUAygc6B7K4pWa4s6fKkpORtOmxr0QzlQTFSaks9LUm5g1xX
-   KKybGVJZZ3pjl5WvchjhPuvCPcXl4zVloBsJ1xSQn7d87XOMd96Xz+4hl
-   SIe4VjT8qU7gcJ92LpU7638a2YaAjBc0ndtfZB1LXLzYvDAGsTQLR30iI
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10969"; a="10531082"
-X-IronPort-AV: E=Sophos;i="6.05,234,1701158400"; 
-   d="scan'208";a="10531082"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2024 03:59:36 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10969"; a="738409877"
-X-IronPort-AV: E=Sophos;i="6.05,234,1701158400"; 
-   d="scan'208";a="738409877"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2024 03:59:32 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rVVbz-00000000p6M-3icn;
-	Thu, 01 Feb 2024 13:52:07 +0200
-Date: Thu, 1 Feb 2024 13:52:07 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Rengarajan.S@microchip.com
-Cc: Kumaravel.Thiagarajan@microchip.com, jiaqing.zhao@linux.intel.com,
-	gregkh@linuxfoundation.org, ilpo.jarvinen@linux.intel.com,
-	john.ogness@linutronix.de, tony@atomide.com,
-	linux-kernel@vger.kernel.org, Tharunkumar.Pasumarthi@microchip.com,
-	jirislaby@kernel.org, f.fainelli@gmail.com, tglx@linutronix.de,
-	UNGLinuxDriver@microchip.com, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v1 tty] 8250: microchip: Add 4 Mbps support in PCI1XXXX
- UART
-Message-ID: <ZbuF53TlbnD09rZA@smile.fi.intel.com>
-References: <20240125100619.154873-1-rengarajan.s@microchip.com>
- <ZbZyW_g4OOkCqIxf@smile.fi.intel.com>
- <8406d8866968950b9bb2f2c01aaa92e3107a7a00.camel@microchip.com>
+	s=arc-20240116; t=1706789153; c=relaxed/simple;
+	bh=gQV96LeE0QMAhw3Sunz9Wk9iH67y7JHPY/mEJ6hp/ME=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jdr3UOAIUJoAXJHmCnbn8peTgHr08LWkgmCsgkT7bsy8ZUghFhgLQ+vxld4xUeD8LRKEKF4AVON2X4QYc+A2Cu71KhgG/Vgi1sTWswRQ04sb0BV4ICx08DChecG0YOFrFFSguZBG/sML/mge8FO6zlGr5vZO8qOEhuuEIeXGYKc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-2d07d74be60so2498891fa.3;
+        Thu, 01 Feb 2024 04:05:46 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706789144; x=1707393944;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=0fjOoUvz+p1Glr5jyHqYPv+9kiOEbm6VD6iqXP6pNtw=;
+        b=swq/St1zIHO/IUHPuKXwUkoa30h+CX4P+RWGl/l/yTW+ZbrBOOf/Jlcunvt+ELHcED
+         UZN2BB3Dzbsbfx2gf0jPko955imi3Vw5LIoB0/XHLu6d7bUVBscnqjO2Lzi0Qeamv8o2
+         7Eti7ND8IWjjzfR7rZmT6upmxyRy78Vk7itchXWA1sw3PAMvnmEr90XMHJyU1y5yTwnL
+         2Y9a+d9L9Fl0xQyxTpD6sb1q0yQM+w7t1s9b8rAh3GxZggxug0v58KlLIA3VTZ7E/mSc
+         e2ZY/t3Id1lpOWukEXKbfkPNpL6ukbim2J0Dn4YKYmqST+l2F4oZkt/BiRBfF+678yrc
+         /Q9Q==
+X-Gm-Message-State: AOJu0YzD6kNAIZCIvz20Ho1wSEWg8RWMQWMbvF4z7Dv8XfKqbSGpuOoL
+	93dPAew+EBcUb5+GfxhIvETo0XhkauTTfb0NgavLY4g+AN6T9n0T
+X-Google-Smtp-Source: AGHT+IGZC0QfBQ4l8HdsMGlFNcjSGY6S1HLX0pqMo8PkW/5+l5A0xllFqIUg4e4XeIe6JcNvsjybCQ==
+X-Received: by 2002:a05:651c:19a8:b0:2d0:4ef8:347a with SMTP id bx40-20020a05651c19a800b002d04ef8347amr4272991ljb.18.1706789143806;
+        Thu, 01 Feb 2024 04:05:43 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCUNFGV5Tm04Ju2FjYay2XauTsKUmTHPXWQIDhv7vqEwLOMATXnb7ObOYQHB7PsC4/UeOONTVGaCP+Ze4YgMOdTclneQGnKpknmuTwWbFldt0BxYXrWKLZPgwClp7guql9xeTTJvrFmy+O5fnYufzo3GB3W4qHzCRCf1O4jyy5nvP/gGzFzCtQzkfHICGn53dhzER9DXONbEavoaOqH6yDq6saLxVB1rDjahiKY/Nh58LSJRNM9cOM6O1cloYXvbyEYkQS3DnEH9ZpzeLVh4c2GX5o0VKObiPGW9BeVXDIWphOt7egbftPbIaOeZFGK+kHALvndxihsrlKVqJg==
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id i26-20020aa7c9da000000b005581573e251sm6752683edt.2.2024.02.01.04.05.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Feb 2024 04:05:43 -0800 (PST)
+Message-ID: <3935b841-77b7-4265-a727-98a358cd56be@kernel.org>
+Date: Thu, 1 Feb 2024 13:05:42 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8406d8866968950b9bb2f2c01aaa92e3107a7a00.camel@microchip.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/2] serial: mxs-auart: fix tx
+Content-Language: en-US
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Emil Kronborg <emil.kronborg@protonmail.com>, Shawn Guo
+ <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <kernel@pengutronix.de>,
+ Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+References: <20240201105557.28043-1-jirislaby@kernel.org>
+ <20240201105557.28043-2-jirislaby@kernel.org>
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20240201105557.28043-2-jirislaby@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jan 30, 2024 at 10:52:41AM +0000, Rengarajan.S@microchip.com wrote:
-> On Sun, 2024-01-28 at 17:27 +0200, Andy Shevchenko wrote:
-> > On Thu, Jan 25, 2024 at 03:36:19PM +0530, Rengarajan S wrote:
-
-...
-
-> > > +     /*
-> > > +      * Microchip PCI1XXXX UART supports maximum baud rate up to 4
-> > > Mbps
-> > > +      */
-> > > +     if (up->port.type == PORT_MCHP16550A)
-> > > +             max = 4000000;
-> > 
-> > No. Please refactor the way the 8250_port won't be modified.
-> > 
-> > Also you have a define for this constant, use it.
+On 01. 02. 24, 11:55, Jiri Slaby (SUSE) wrote:
+> Emil reports:
+>    After updating Linux on an i.MX28 board, serial communication over
+>    AUART broke. When I TX from the board and measure on the TX pin, it
+>    seems like the HW fifo is not emptied before the transmission is
+>    stopped.
 > 
-> The current UART clk in MCHP Ports in pci1xxxx.c is set to 62.5 MHz in
-> order to support fractional baud rates which enables generation of
-> acceptable baud rate and lower error percentage from any available
-> frequency. With 62.5 MHz the maximum supported baud rate supported as
-> per serial_8250_get_baud_rate is 3.9 Mbps. In order to extend the
-> support to 4 Mbps we had hardcoded the max value to 4 Mbps. Since, baud
-> rate is calculated here we needed to make these changes in 8250_port
-> and could not find a way to handle as part 8250_pci1xxxx. Can you let
-> us know any alternatives to address this upper(max) limit? 
+> MXS performs weird things with stop_tx(). The driver makes it
+> conditional on uart_tx_stopped().
+> 
+> So the driver needs special handling. Pass the brand new UART_TX_NOSTOP
+> to uart_port_tx_flags() and handle the stop on its own.
+> 
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Reported-by: Emil Kronborg <emil.kronborg@protonmail.com>
+> Fixes: 2d141e683e9a ("tty: serial: use uart_port_tx() helper")
+> Closes: https://lore.kernel.org/all/miwgbnvy3hjpnricubg76ytpn7xoceehwahupy25bubbduu23s@om2lptpa26xw/
 
-Update port->uartclk accordingly in your driver, see how other 8250_* drivers
-do that (e.g., 8250_mid).
+Am I unable to send a proper patch anymore?
 
-So, it will no go with hack in the 8250_port.
+I forgot to add mxs+arm maintainers:
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Cc: linux-arm-kernel@lists.infradead.org
+
+I can resend with those fixed, if you prefer...
+
+> ---
+>   drivers/tty/serial/mxs-auart.c | 5 ++++-
+>   1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+> index 3ec725555bcc..4749331fe618 100644
+> --- a/drivers/tty/serial/mxs-auart.c
+> +++ b/drivers/tty/serial/mxs-auart.c
+> @@ -605,13 +605,16 @@ static void mxs_auart_tx_chars(struct mxs_auart_port *s)
+>   		return;
+>   	}
+>   
+> -	pending = uart_port_tx(&s->port, ch,
+> +	pending = uart_port_tx_flags(&s->port, ch, UART_TX_NOSTOP,
+>   		!(mxs_read(s, REG_STAT) & AUART_STAT_TXFF),
+>   		mxs_write(ch, s, REG_DATA));
+>   	if (pending)
+>   		mxs_set(AUART_INTR_TXIEN, s, REG_INTR);
+>   	else
+>   		mxs_clr(AUART_INTR_TXIEN, s, REG_INTR);
+> +
+> +	if (uart_tx_stopped(&s->port))
+> +               mxs_auart_stop_tx(&s->port);
+>   }
+>   
+>   static void mxs_auart_rx_char(struct mxs_auart_port *s)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+js
+suse labs
 
