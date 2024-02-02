@@ -1,146 +1,193 @@
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 024C3145B3D
-	for <linux-serial@vger.kernel.org>; Fri,  2 Feb 2024 15:34:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6761E14A4DB;
+	Fri,  2 Feb 2024 17:30:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.55.52.88
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706888057; cv=none; b=L6PCqdcGuwTdqMHfPWVC2djhnbpYMCuzLwL+Vvhd8P5gYekwyLhW7MU/ePmKR6sPUAMayFWVWKipXF/yIU8S5XC9JnJeV3EAH2vHV6/nBHkQGOceMBpBPw8IaK6N6xasufm/mFB1Do2WYgAhYeKUHrUv3SQS9+QjVKvq7jCF1kw=
+	t=1706895033; cv=none; b=ag+0b4kfWZp4cdfRCRKGdnvWm8jrcLTNA8hzADPP7qIXXwVzM2ISIL4vH6I8ROE6r+z5nuoUYtYS6pwmvSPMa0EIb/ipSvbic8hS1qAec9t8eFC0diareQoZLAbLP/cYGkxoswOjZYJzw6CUvey9ZzuHZDhvWnJGvQ79Ok7SuLw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706888057; c=relaxed/simple;
-	bh=KqT9cw82PFNW8xRp6Aw6Po5STwZZRiozAqTL3kcaFNU=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=QjWSEAq134ym29tGF5ZqkD3f01U+CwN2zWn4NzCyGKg9htQ7oDMH9e7B5oblyNZVmSNXcTn3xvJfTQyIAVb5wX+oxzunstOozrHeng3bIff6ijq6cERH7+1szMdLoSeE9ryIA8sO/M61lvzLmiLp2ZF3m74gG0e9xb06kjENsNw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=gPW9S0ZP; arc=none smtp.client-ip=209.85.218.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1706895033; c=relaxed/simple;
+	bh=xVKQWBX8NhZBQTbsM4raS0q5/TbgyghNBv1ox3T5rSo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=slGRI7KEbQEwlT/liWp/BAFngLRZrvT7ZGiYF2NLmAT4/pOTAMEYD6c3crA0TDFBZQmjz3qNmXbE0/+M1JdI1Q4ivbAUnaHSjVt9AJFfM0eq3yTCU2jzYPNfOOqAuqq8gYd5uwTYWNGnFl2alD7EFd4si4NP821kdQdWEA+zwi4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VffX/ZRJ; arc=none smtp.client-ip=192.55.52.88
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="gPW9S0ZP"
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-a293f2280c7so309093366b.1
-        for <linux-serial@vger.kernel.org>; Fri, 02 Feb 2024 07:34:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1706888053; x=1707492853; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
-         :from:content-language:subject:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=szWLfoxlPAUSn0504mfDdaB+kOZ0s+e4Alhan+vtln0=;
-        b=gPW9S0ZP89ai4zJSDgfjWtzlAq2ocxRTL7iYtBAqDd+fetKYmA8MhAOYry6Z9tK47b
-         QAVTv9Acq4eiwkfNJoxMkv6svPbl80vsLqTwy4batvxRcVr6X0XC2mgfF9QFelT3Vpkk
-         Q7rwhAWf7pzudEX3IZkgETDT6qTTagdmiE/YUwXwIAZAjI8FHCbaX+JjwJqU/5/6ZPq+
-         Q/w06tNaIAhTkvzEb6H+YjcbKD2QCI0BNw4HDy4U6mlesO0fqG8nvAltoXnFxGqIZjLo
-         aX/AVgTxHp7a4oUsKAKdTMGB4hhQd/Jm+Oid7ZCKODCJoT6CyViQfEsbOr+R3zyI+hBX
-         JPKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706888053; x=1707492853;
-        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
-         :from:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=szWLfoxlPAUSn0504mfDdaB+kOZ0s+e4Alhan+vtln0=;
-        b=adqg23JnSycsFQegTuPi+pot47IdIVgXJq22DQZ9nouBsPYd7XWteNP7HW/67CaltH
-         qAVO6fcjRynghM3hhqPW4Q8ToLkuHbamUz3rJ/V8+klKIK8GB6AnyW2YUGWb7kV2UhS0
-         eFuIMkGNnLJF5GUwyogB5Kt2OjEZWudSVIbbTiGDbzQIg94eJ7+k0cJwZGhVH+iPtJsq
-         dAozNKLIzWvTU1+jXCgGG8gqLiHu7J1R8+bLLGpor5pCU+hSbci/Lp0O2GA4YQqHSnyp
-         x2E14AyDOuIgoAqYa9IGzWO1jOh49vIwFqfpOu7H2m/C13sfk0INwq1npsTrzdao41DZ
-         SGyw==
-X-Gm-Message-State: AOJu0Yzpblc7zJFbmeYyuT9j54pJ+q7VF7GgnxcxpmQ4XdZROzX/Kvaf
-	dKJxAWLrcpoi1ARZjX0to1Z7EWCxo2r4l8pjAJlYMbNBmdTTxtBVxGqI6CllAZo=
-X-Google-Smtp-Source: AGHT+IHkaZVnfbLloahmByS5j1oN6tVvdTIddymwuurl2t41ba3UJ0RFs7j0kX1mOLnRi2wEjBV5dw==
-X-Received: by 2002:a17:907:77d2:b0:a36:fc15:d724 with SMTP id kz18-20020a17090777d200b00a36fc15d724mr1996871ejc.18.1706888053199;
-        Fri, 02 Feb 2024 07:34:13 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCV7jUS3LS4ZtJ3NabIYDFTgSTfBHT8/QzUr+abKfeJiCtcD0w9+WS1KyemjhsVWVki8OG0zRuDAgg8APrAMuEIkhYBH5i8Dk665Vl1f4+fK5xP71ZW90zg67BM/4mBSzTK1xfM17wc8+bdGmG+lnqMW9nPIbR8ywX2AbvN6wmFwHKkHn1weR7EU9LwLTQgbPwABuuP9pf86RAPX36QsTO7OUmIs1/qoSNV+5UQeQQabRLCGv+IPYp2zeCapNAlyhR7zVeXwiUPT6Kq1cnfdrU2221xtoGsWgmfy3LbLWFJ21CEcjNdV
-Received: from [192.168.1.20] ([178.197.222.62])
-        by smtp.gmail.com with ESMTPSA id m18-20020a170906235200b00a36802ac18fsm983580eja.30.2024.02.02.07.34.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Feb 2024 07:34:12 -0800 (PST)
-Message-ID: <94111a8b-8fef-41b5-b65f-9d5c7f618794@linaro.org>
-Date: Fri, 2 Feb 2024 16:34:11 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VffX/ZRJ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1706895030; x=1738431030;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xVKQWBX8NhZBQTbsM4raS0q5/TbgyghNBv1ox3T5rSo=;
+  b=VffX/ZRJ5FlWbzsp/REWCMkceWNwhzyy4wpUUDjJnRsjykHrQaYG2/fh
+   TU+cR2NrV4Xzb1whQzv7QlNXfe30ADeQn/TPLNBkSqhxzStcaoBIuwNDd
+   k2+lTJkoZGm+MJ63NIOyRT18b+2n1HTmrjDwwul2GcaAFgdN7xlyCMKAT
+   BgnrczRNPXDYkCeF17Bv21YfF0vBldTn00X2+2Zego3lbTC7HDA9oivow
+   yAx/Rn5uwaO4uF1AhlhMQMBL87V3NDGX2id3Tn4Y11mod8/20vxX4G4kA
+   mWBK+5Gx4P8l7NYVNjpAky59vzeWQNbMeKWkWgITcpyC++1Iz27P89S7p
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10971"; a="435341921"
+X-IronPort-AV: E=Sophos;i="6.05,238,1701158400"; 
+   d="scan'208";a="435341921"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2024 09:30:29 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.05,238,1701158400"; 
+   d="scan'208";a="127617"
+Received: from lkp-server02.sh.intel.com (HELO 59f4f4cd5935) ([10.239.97.151])
+  by orviesa009.jf.intel.com with ESMTP; 02 Feb 2024 09:30:24 -0800
+Received: from kbuild by 59f4f4cd5935 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rVxMq-00046g-2c;
+	Fri, 02 Feb 2024 17:30:21 +0000
+Date: Sat, 3 Feb 2024 01:29:51 +0800
+From: kernel test robot <lkp@intel.com>
+To: Frank Li <Frank.Li@nxp.com>, ilpo.jarvinen@linux.intel.com
+Cc: oe-kbuild-all@lists.linux.dev, Frank.Li@nxp.com,
+	alexandre.belloni@bootlin.com, conor.culhane@silvaco.com,
+	devicetree@vger.kernel.org, gregkh@linuxfoundation.org,
+	imx@lists.linux.dev, jirislaby@kernel.org, joe@perches.com,
+	krzysztof.kozlowski+dt@linaro.org, krzysztof.kozlowski@linaro.org,
+	linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, miquel.raynal@bootlin.com,
+	robh@kernel.org, zbigniew.lukwinski@linux.intel.com
+Subject: Re: [PATCH v5 1/8] i3c: add target mode support
+Message-ID: <202402030100.hmViPmOK-lkp@intel.com>
+References: <20240129195321.229867-2-Frank.Li@nxp.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: serial: samsung: Remove superfluous braces in macro
-Content-Language: en-US
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To: Sam Protsenko <semen.protsenko@linaro.org>
-Cc: Alim Akhtar <alim.akhtar@samsung.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-References: <20240202010507.22638-1-semen.protsenko@linaro.org>
- <bed3d775-2d80-445f-bf28-b28a17a6370c@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <bed3d775-2d80-445f-bf28-b28a17a6370c@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240129195321.229867-2-Frank.Li@nxp.com>
 
-On 02/02/2024 08:49, Krzysztof Kozlowski wrote:
-> On 02/02/2024 02:05, Sam Protsenko wrote:
->> Commit 59f37b7370ef ("tty: serial: samsung: Remove USI initialization")
->> removes parameters from EXYNOS_COMMON_SERIAL_DRV_DATA() macro, but
->> leaves unnecessary empty braces. Remove those to fix the style. No
->> functional change.
->>
->> Fixes: 59f37b7370ef ("tty: serial: samsung: Remove USI initialization")
->> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
->> ---
->>  drivers/tty/serial/samsung_tty.c | 8 ++++----
-> 
-> I am pretty sure you did the patch on some old tree, not mainline rc1.
-> Please work on maintainers tree (or linux-next).
+Hi Frank,
 
-My bad, Tudor's patchset changed it few days ago and I missed that it
-was applied.
+kernel test robot noticed the following build errors:
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on tty/tty-next tty/tty-linus robh/for-next linus/master v6.8-rc2 next-20240202]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Best regards,
-Krzysztof
+url:    https://github.com/intel-lab-lkp/linux/commits/Frank-Li/i3c-add-target-mode-support/20240130-035826
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20240129195321.229867-2-Frank.Li%40nxp.com
+patch subject: [PATCH v5 1/8] i3c: add target mode support
+config: x86_64-randconfig-104-20240202 (https://download.01.org/0day-ci/archive/20240203/202402030100.hmViPmOK-lkp@intel.com/config)
+compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240203/202402030100.hmViPmOK-lkp@intel.com/reproduce)
 
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202402030100.hmViPmOK-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+   ld: drivers/i3c/target.o: in function `i3c_target_ctrl_destroy':
+>> drivers/i3c/target.c:182: undefined reference to `i3c_target_cfs_remove_ctrl_group'
+   ld: drivers/i3c/target.o: in function `__i3c_target_func_register_driver':
+>> drivers/i3c/target.c:406: undefined reference to `i3c_target_cfs_add_func_group'
+   ld: drivers/i3c/target.o: in function `__i3c_target_ctrl_create':
+>> drivers/i3c/target.c:141: undefined reference to `i3c_target_cfs_add_ctrl_group'
+   ld: drivers/i3c/target.o: in function `i3c_target_ctrl_destroy':
+>> drivers/i3c/target.c:182: undefined reference to `i3c_target_cfs_remove_ctrl_group'
+
+
+vim +182 drivers/i3c/target.c
+
+   104	
+   105	/**
+   106	 * __i3c_target_ctrl_create() - create a new target controller device
+   107	 * @dev: device that is creating the new target controller
+   108	 * @ops: function pointers for performing target controller  operations
+   109	 * @owner: the owner of the module that creates the target controller device
+   110	 *
+   111	 * Return: Pointer to struct i3c_target_ctrl
+   112	 */
+   113	struct i3c_target_ctrl *
+   114	__i3c_target_ctrl_create(struct device *dev, const struct i3c_target_ctrl_ops *ops,
+   115				struct module *owner)
+   116	{
+   117		struct i3c_target_ctrl *ctrl;
+   118		int ret;
+   119	
+   120		if (WARN_ON(!dev))
+   121			return ERR_PTR(-EINVAL);
+   122	
+   123		ctrl = kzalloc(sizeof(*ctrl), GFP_KERNEL);
+   124		if (!ctrl)
+   125			return ERR_PTR(-ENOMEM);
+   126	
+   127		device_initialize(&ctrl->dev);
+   128		ctrl->dev.class = i3c_target_ctrl_class;
+   129		ctrl->dev.parent = dev;
+   130		ctrl->dev.release = i3c_target_ctrl_release;
+   131		ctrl->ops = ops;
+   132	
+   133		ret = dev_set_name(&ctrl->dev, "%s", dev_name(dev));
+   134		if (ret)
+   135			goto put_dev;
+   136	
+   137		ret = device_add(&ctrl->dev);
+   138		if (ret)
+   139			goto put_dev;
+   140	
+ > 141		ctrl->group = i3c_target_cfs_add_ctrl_group(ctrl);
+   142		if (!ctrl->group)
+   143			goto put_dev;
+   144	
+   145		return ctrl;
+   146	
+   147	put_dev:
+   148		put_device(&ctrl->dev);
+   149		kfree(ctrl);
+   150	
+   151		return ERR_PTR(ret);
+   152	}
+   153	EXPORT_SYMBOL_GPL(__i3c_target_ctrl_create);
+   154	
+   155	/**
+   156	 * devm_i3c_target_ctrl_destroy() - destroy the target controller device
+   157	 * @dev: device that hat has to be destroy
+   158	 * @ctrl: the target controller device that has to be destroy
+   159	 *
+   160	 * Invoke to create a new target controller device and add it to i3c_target class. While at that, it
+   161	 * also associates the device with the i3c_target using devres. On driver detach, release function
+   162	 * is invoked on the devres data, then devres data is freed.
+   163	 */
+   164	void devm_i3c_target_ctrl_destroy(struct device *dev, struct i3c_target_ctrl *ctrl)
+   165	{
+   166		int r;
+   167	
+   168		r = devres_destroy(dev, devm_i3c_target_ctrl_release, devm_i3c_target_ctrl_match,
+   169				   ctrl);
+   170		dev_WARN_ONCE(dev, r, "couldn't find I3C controller resource\n");
+   171	}
+   172	EXPORT_SYMBOL_GPL(devm_i3c_target_ctrl_destroy);
+   173	
+   174	/**
+   175	 * i3c_target_ctrl_destroy() - destroy the target controller device
+   176	 * @ctrl: the target controller device that has to be destroyed
+   177	 *
+   178	 * Invoke to destroy the I3C target device
+   179	 */
+   180	void i3c_target_ctrl_destroy(struct i3c_target_ctrl *ctrl)
+   181	{
+ > 182		i3c_target_cfs_remove_ctrl_group(ctrl->group);
+   183		device_unregister(&ctrl->dev);
+   184	}
+   185	EXPORT_SYMBOL_GPL(i3c_target_ctrl_destroy);
+   186	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
