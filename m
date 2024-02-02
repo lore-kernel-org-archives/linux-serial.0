@@ -1,68 +1,39 @@
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 054CDEAD1
-	for <linux-serial@vger.kernel.org>; Fri,  2 Feb 2024 01:05:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8155617567;
+	Fri,  2 Feb 2024 06:56:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706835911; cv=none; b=VHwGu7q/KXJkB8OksN80cnZkRM1sqp7roC02Eass/J4ifmyGXMy/YS501cQfv2of6MxerluYi7v8LzPV/bfxESXKoobmNXEAERHw8SWYpfRcjIpi+8ZwyNMx5AG76sKkDCtOiBilomZ758qnrxUFkYZpum4oQuELHW8nOxXFD9U=
+	t=1706856972; cv=none; b=XHBwgRe/Lrrm87zIpiZ58WNfHc1d5/FT39MQsZxvQgYmDqmXwboyfWPJ7hsWuiv+Gqb7SoZJ7thlEgbRnh0qSvWRuuDNAwYPIfOnMPFQ8sNhnBJKdcWmfhaJdM0kl8EZefZZYHGyuSabA2HqOx3Q6pWTDk35/Hm0k7QR5RVpU2w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706835911; c=relaxed/simple;
-	bh=7PGtiOLQjanCi8F2lUfCU2lTtZMSLUVGqrAhBRM1FOQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=janiQmRb3ewJRKkCBt/P10CfJmXaPVJcLQNQjfWI7kX8WmsFDB/AGN9Dint+oKAgFXmV/VVgMVFGousRbt3YS5qwaH+teniMHpyS88xAyfCDup7VySTDkmDBVssZfoOJ7iB2ToEfpSypd0O5RQ7DU12yg5hjc4eVk0RkSKi9YTY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=uzsU+wtY; arc=none smtp.client-ip=209.85.210.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1706856972; c=relaxed/simple;
+	bh=Tb+Xie0eU0KycmdJdnMo1LjLbaYJ6rW5HUuzFiLn2OI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=myUxtT+pcsBd8rqwixudlUVO/bShWJ9hYJT9z3waqzzu85BUdzmMBoDRajFbx7vXvC7uM5Ev7EEdyuomLAAXKDdSiJ0gjphk4ExHamrstXKQh6uqgQx2Qs6gsgy8KIpjdhCvR6Gjm1g3crkMp3JhTxgiEYAejeGTbfT85T1Q/Jk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g08hhqq6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="uzsU+wtY"
-Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-6e11faeb125so770379a34.2
-        for <linux-serial@vger.kernel.org>; Thu, 01 Feb 2024 17:05:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1706835908; x=1707440708; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=1SwapE9xLdXkr+1FZM2yZImYM8kfTZEX3iqcU3VUeD0=;
-        b=uzsU+wtYDGGXhPKLI28SmCscN92VLwtCyhPKDVcPbgtFAROQ7WqnLTi6fxqwg6PXTq
-         rCJEAvF2g9H8Oq7gPJv5LMBw/xMvW6yPijLZU3XyQtswkpSslrPefqd5o6nXMCVxA6iv
-         m+u/gfVw2R7mpp2CQCnvgoLBMA+SWDo2WkuP1mFBhrsT9qN4phiHfy/UvjNU7v5aei22
-         EdqT0jXYE73cRQYka9uCbyBo9Ucb0PbB9aPOI0RqxwiTjW5kH5ag5xdb1VqcFRQ/d4DS
-         zRXOp6ZYUxRkqBcLalmilnbmuGPu1zVkNPq5E4dmX9LqBgvpGp1fAauxU6pQ0S5R8iIh
-         wN/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706835908; x=1707440708;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1SwapE9xLdXkr+1FZM2yZImYM8kfTZEX3iqcU3VUeD0=;
-        b=GSejpUD+s6U1T6ZgjPObN8bzKBKges7bPsMP6KxS9uhL3tazmlr+13QQk9mpnsuYUY
-         ETVgjyMdMyAJX/C9WyJIcNzS31FlqwaKHl7Rg9An1ssSCsrit5Faiw79KDJjCRvBl60N
-         VwsukWfne4norP1sz5C3QPm1gpwh54AQ7ALjPTPO61E2mUFw0HNLq/xxsM/koChH0hbP
-         /tVapzQqHPPNvXD5qTJL2iKj2vjl1uWFuGajqvCJ9sEShCxTwf8zv4dX1ar+m3qEgzMm
-         PibfSOVanAGQbbLyYT7NfhlRtXmEdv18HxoJkcbLzoKsgo6lSKVes6rr6PeRWhdn4BDk
-         s5NA==
-X-Gm-Message-State: AOJu0YxmPKmQCXgtYytfyenG2Pp9uJk3rFopqQn0AvjUd5m+y0zB9LGC
-	m/05GughtEu2SWSa+EdkMMM2TwbqQdmZyG/da7T0zHTS/vXyRhUQKXEh2jwYNsU=
-X-Google-Smtp-Source: AGHT+IHHssTzP7MXolDOLkfQGC5ALneKZAZicvelx4/ifGxiL8zBzKn0w2ESMFFxOFjxQIO76cQMOQ==
-X-Received: by 2002:a05:6871:4502:b0:206:c520:2811 with SMTP id nj2-20020a056871450200b00206c5202811mr4865347oab.2.1706835908098;
-        Thu, 01 Feb 2024 17:05:08 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCUQDuJuCrbniDvpUfQ6lL+8xFL7Q3VSs/I+mnU+pKKO5ifo8TpBvmZ3Tk05LFi+zq4+CoiHahvPWhMb/h72W/xpxRAwgN7eEArtvHJeEwuveMGeV+dQ5oOgNNN0dn3DxT8qSvFXMduAHdj/hzWkjmPsVFw758tdJzK/PHu+hTArsZhhsvN20QmcVJo2KKHHpjA85Ky/sVVobTLcIhxlUh4v+5m16G3zfAKGl7GjUNcegid5qHpct07cIiS8i8uvVMg/b24ZzqMJz0JMqbjoxsI0liL/zUHJwYDfwZK/96pvkyZOPDiS
-Received: from localhost ([136.62.192.75])
-        by smtp.gmail.com with ESMTPSA id ds43-20020a0568705b2b00b00218e9960187sm229534oab.13.2024.02.01.17.05.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Feb 2024 17:05:07 -0800 (PST)
-From: Sam Protsenko <semen.protsenko@linaro.org>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Alim Akhtar <alim.akhtar@samsung.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g08hhqq6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4954C433F1;
+	Fri,  2 Feb 2024 06:56:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1706856972;
+	bh=Tb+Xie0eU0KycmdJdnMo1LjLbaYJ6rW5HUuzFiLn2OI=;
+	h=From:To:Cc:Subject:Date:From;
+	b=g08hhqq6f2FrBtz4ISWyaneEHHAoNRuc4zvRWe6oKq1sK+E5Uv7ejYEPhDdNu0KxW
+	 06EdzH4guN1+IyjkjCelYQGA44a9N+9w4r0Tvwz5W5U2azbPx37NCClA4lRUOOOM2E
+	 Uj7nMsl0673VFr2+K0IOxvQPejNYDnUoar2PlOcAM18J2wXNlCYUR4sMUbyVhQ8QKn
+	 MfA6mEscHlQ05r2ig3Zu9lJNxWFYk2v3S5G5cPDPWQ5ZAJpvlZeU4R67nCkmL30Bnw
+	 1E4Ph8Ciw7Nn0/e6OtBBLhKK5T/LO03Y9G7SHxE58c6znYD2dvAyYLC//VvjnZ+qdD
+	 K34HjSx0NajhQ==
+From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH] tty: serial: samsung: Remove superfluous braces in macro
-Date: Thu,  1 Feb 2024 19:05:07 -0600
-Message-Id: <20240202010507.22638-1-semen.protsenko@linaro.org>
-X-Mailer: git-send-email 2.39.2
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Subject: [PATCH 00/22] tty: vt: cleanup ESC sequences handling
+Date: Fri,  2 Feb 2024 07:55:46 +0100
+Message-ID: <20240202065608.14019-1-jirislaby@kernel.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -71,51 +42,44 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Commit 59f37b7370ef ("tty: serial: samsung: Remove USI initialization")
-removes parameters from EXYNOS_COMMON_SERIAL_DRV_DATA() macro, but
-leaves unnecessary empty braces. Remove those to fix the style. No
-functional change.
+This is a promised followup of "tty: vt: cleanup and documentation" [1].
 
-Fixes: 59f37b7370ef ("tty: serial: samsung: Remove USI initialization")
-Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
----
- drivers/tty/serial/samsung_tty.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+The escape sequences parser is cleaned up, so that it is easier to
+follow.
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index fcc675603b14..23cabdab44ff 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -2452,7 +2452,7 @@ static const struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- #endif
- 
- #if defined(CONFIG_ARCH_EXYNOS)
--#define EXYNOS_COMMON_SERIAL_DRV_DATA()				\
-+#define EXYNOS_COMMON_SERIAL_DRV_DATA				\
- 	.info = {						\
- 		.name		= "Samsung Exynos UART",	\
- 		.type		= TYPE_S3C6400,			\
-@@ -2477,17 +2477,17 @@ static const struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- 	}							\
- 
- static const struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
--	EXYNOS_COMMON_SERIAL_DRV_DATA(),
-+	EXYNOS_COMMON_SERIAL_DRV_DATA,
- 	.fifosize = { 256, 64, 16, 16 },
- };
- 
- static const struct s3c24xx_serial_drv_data exynos5433_serial_drv_data = {
--	EXYNOS_COMMON_SERIAL_DRV_DATA(),
-+	EXYNOS_COMMON_SERIAL_DRV_DATA,
- 	.fifosize = { 64, 256, 16, 256 },
- };
- 
- static const struct s3c24xx_serial_drv_data exynos850_serial_drv_data = {
--	EXYNOS_COMMON_SERIAL_DRV_DATA(),
-+	EXYNOS_COMMON_SERIAL_DRV_DATA,
- 	.fifosize = { 256, 64, 64, 64 },
- };
- 
+Most of the patches are easier to review with '-w -b' passed to git diff
+(as the code is moved to separate functions with a different level of
+indentation only).
+
+[1] https://lore.kernel.org/all/20240122110401.7289-28-jirislaby@kernel.org/T/
+
+Jiri Slaby (SUSE) (22):
+  tty: vt: make rgb_from_256() slighly more comprehensible
+  tty: vt: define enums for CSI+h/l codes
+  tty: vt: rename set_mode() to csi_hl()
+  tty: vt: split DEC CSI+h/l handling into csi_DEC_hl()
+  tty: vt: remove unneeded assignment of EPecma to vc_priv
+  tty: vt: move CSI+n handling along to other ECMA CSIs
+  tty: vt: define an enum for CSI+] codes
+  tty: vt: rename setterm_command() to csi_RSB()
+  tty: vt: put cases on separate lines
+  tty: vt: accept u8 in do_con_trol() and vc_setGx()
+  tty: vt: extract ascii handling to handle_ascii()
+  tty: vt: separate ESesc state handling into handle_esc()
+  tty: vt: move CSI DEC handling to a separate function
+  tty: vt: move CSI ECMA handling to a separate function
+  tty: vt: name, reflow and document enum vc_ctl_state
+  tty: vt: simplify ansi_control_string()
+  tty: vt: handle CSI+[ inside preexisting switch-case
+  tty: vt: add new helper for reseting vc parameters
+  tty: vt: use switch+case in the ESnonstd case
+  tty: vt: use switch+case in the ESgetpars case
+  tty: vt: use ASCII enum constants in vt_console_print()
+  tty: vt: decrypt magic constants in vc_is_control()
+
+ drivers/tty/vt/vt.c | 876 ++++++++++++++++++++++++++------------------
+ 1 file changed, 514 insertions(+), 362 deletions(-)
+
 -- 
-2.39.2
+2.43.0
 
