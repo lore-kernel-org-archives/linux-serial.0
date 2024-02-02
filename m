@@ -1,62 +1,74 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6761E14A4DB;
-	Fri,  2 Feb 2024 17:30:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.55.52.88
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40C1E5A4C2;
+	Fri,  2 Feb 2024 19:23:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706895033; cv=none; b=ag+0b4kfWZp4cdfRCRKGdnvWm8jrcLTNA8hzADPP7qIXXwVzM2ISIL4vH6I8ROE6r+z5nuoUYtYS6pwmvSPMa0EIb/ipSvbic8hS1qAec9t8eFC0diareQoZLAbLP/cYGkxoswOjZYJzw6CUvey9ZzuHZDhvWnJGvQ79Ok7SuLw=
+	t=1706901817; cv=none; b=dGtR64I+dhYGKeJKb6cfmzlpWpcQARPYnfoTpmi8NIoeEF14Fg0cnvcBGaCYRxuZJOhMlm9pmRMB6V3pcvEC4FSGKXPhVgg2lkf0N567VnCEAm2K5K5omTVC9uF+z1qx8M1XrBIkDcL3jELWnrQ/oXkohc40gb3QX+QksOQ+03o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706895033; c=relaxed/simple;
-	bh=xVKQWBX8NhZBQTbsM4raS0q5/TbgyghNBv1ox3T5rSo=;
+	s=arc-20240116; t=1706901817; c=relaxed/simple;
+	bh=S3MaPMOXDa4+e1cpiJeiJbySrhFJC1lc7gKR4d8V+8Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=slGRI7KEbQEwlT/liWp/BAFngLRZrvT7ZGiYF2NLmAT4/pOTAMEYD6c3crA0TDFBZQmjz3qNmXbE0/+M1JdI1Q4ivbAUnaHSjVt9AJFfM0eq3yTCU2jzYPNfOOqAuqq8gYd5uwTYWNGnFl2alD7EFd4si4NP821kdQdWEA+zwi4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VffX/ZRJ; arc=none smtp.client-ip=192.55.52.88
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=uIGuYYhI8sKE3/3hkQaso6XVAaQMRVSy+chiSOA71lmt8beS9Tame1ZXhT4qtYJQlX8eswv+A54bvVfek/EYI01Oa+OLqMI7IJAPqEoJ5cXOyCbCkQZT4NH4AwT6AkUT4yjNBrHpR2tAd6q52XmnQmCdvJJ/YI6xG/J4BolhsZQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GVRXBMyR; arc=none smtp.client-ip=209.85.218.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VffX/ZRJ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706895030; x=1738431030;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xVKQWBX8NhZBQTbsM4raS0q5/TbgyghNBv1ox3T5rSo=;
-  b=VffX/ZRJ5FlWbzsp/REWCMkceWNwhzyy4wpUUDjJnRsjykHrQaYG2/fh
-   TU+cR2NrV4Xzb1whQzv7QlNXfe30ADeQn/TPLNBkSqhxzStcaoBIuwNDd
-   k2+lTJkoZGm+MJ63NIOyRT18b+2n1HTmrjDwwul2GcaAFgdN7xlyCMKAT
-   BgnrczRNPXDYkCeF17Bv21YfF0vBldTn00X2+2Zego3lbTC7HDA9oivow
-   yAx/Rn5uwaO4uF1AhlhMQMBL87V3NDGX2id3Tn4Y11mod8/20vxX4G4kA
-   mWBK+5Gx4P8l7NYVNjpAky59vzeWQNbMeKWkWgITcpyC++1Iz27P89S7p
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10971"; a="435341921"
-X-IronPort-AV: E=Sophos;i="6.05,238,1701158400"; 
-   d="scan'208";a="435341921"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2024 09:30:29 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.05,238,1701158400"; 
-   d="scan'208";a="127617"
-Received: from lkp-server02.sh.intel.com (HELO 59f4f4cd5935) ([10.239.97.151])
-  by orviesa009.jf.intel.com with ESMTP; 02 Feb 2024 09:30:24 -0800
-Received: from kbuild by 59f4f4cd5935 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rVxMq-00046g-2c;
-	Fri, 02 Feb 2024 17:30:21 +0000
-Date: Sat, 3 Feb 2024 01:29:51 +0800
-From: kernel test robot <lkp@intel.com>
-To: Frank Li <Frank.Li@nxp.com>, ilpo.jarvinen@linux.intel.com
-Cc: oe-kbuild-all@lists.linux.dev, Frank.Li@nxp.com,
-	alexandre.belloni@bootlin.com, conor.culhane@silvaco.com,
-	devicetree@vger.kernel.org, gregkh@linuxfoundation.org,
-	imx@lists.linux.dev, jirislaby@kernel.org, joe@perches.com,
-	krzysztof.kozlowski+dt@linaro.org, krzysztof.kozlowski@linaro.org,
-	linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, miquel.raynal@bootlin.com,
-	robh@kernel.org, zbigniew.lukwinski@linux.intel.com
-Subject: Re: [PATCH v5 1/8] i3c: add target mode support
-Message-ID: <202402030100.hmViPmOK-lkp@intel.com>
-References: <20240129195321.229867-2-Frank.Li@nxp.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GVRXBMyR"
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-a2d7e2e7fe0so222337266b.1;
+        Fri, 02 Feb 2024 11:23:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1706901814; x=1707506614; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=izs8l7kyWJ3Hvvu35DwQqBwFXYQSHquPAv2Y4TTIhWI=;
+        b=GVRXBMyRfB5pxf7n5w4mCRwG8QHq8SYfxR08SjtPJYAoRUQjVzou/7OAaIWezMtxCU
+         qDv4URl/+Bx3JhKMA2AqmvBnPO4cFXHBao7nMogDKufJwdRyJkqUT+mVSxPpNMB7O/wP
+         /qew8ln79/dwICB6DkmKdd7C3VXiuG9suirpyaDm4lDx/bQIVhUDAGIiBAHDc1UaPnjc
+         OlKaRiwku3H8Tuy1yKOdPPLO3zVEYwc4ObVjQd+ja5oI6Q9V3ogEoAqQY5+xFtjNy5YY
+         NiO24O8IOBI/xma7qbtsnhW+M2kT6na3ewVy85zgkOtppLmLiXm5C3kbQavEDOuRK0Ok
+         fsRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706901814; x=1707506614;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=izs8l7kyWJ3Hvvu35DwQqBwFXYQSHquPAv2Y4TTIhWI=;
+        b=gc3dHnI42vho9lfXjKcjAQW/qkEEpFv53J0J+taMEF/U4gXFt9HLAl9HNh/I+zq7XD
+         KZMG0POeqBs7GKVUrQLWWW8/JdMiPj1cMHlW1aLVm9HU/jmcWApIwEHBQvVu4yG1hBte
+         zYCfHFPft4DXHOjNit+fBn2bxo0ENjYRXR6Ap4s4qMSdLLuoIFP+ZpzUzUtDuYqWoLV7
+         pHEHnavt5OlbEY9RGUoF09SBzyTDnzefXuDBm5naU+8OiElgjpk+2BLXzDOho/n61pXc
+         dFcofMTVLtbdJbP70aCbKUKABPh3F9mVhSb6ec9alqWrG+dzGjww7QcmNEFdYkwOx8Gb
+         aviA==
+X-Gm-Message-State: AOJu0Yx9HJmzIJpGTZOl/A+EMJ7WV86ggaD+XpITRoMFaw4PgadtfU8i
+	EmI95d2JSP+ycgJ9CyRl/WTr0P6ErTo+G2e/LsfW0claKcMChrNd
+X-Google-Smtp-Source: AGHT+IFVsEsYcXxM9nZP0Ig9KYpNTyk/btVKfMLQ/vV4CvXETCy9qQTpJMzeol4ysl+TBRO5oX3gYw==
+X-Received: by 2002:a17:906:3093:b0:a36:dfa5:69c with SMTP id 19-20020a170906309300b00a36dfa5069cmr2332310ejv.14.1706901814108;
+        Fri, 02 Feb 2024 11:23:34 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCWcQIleUmzagk3MM3dXQ7foXv5CU6GWw4QLfrAlMH2YEguKWU800J0SVjQqR48CINe0XrU1DFLagD7Es9y5ZstIsZsGsOOf22v1qKOhdpa/Xout6nV2Rc65yMYNFy8NiX1G090LAmnehoVjUfn/gvkUjsSwnuVdgOe4bqT4qRAWP3FYzcGuiGIdMapZd+yh/9Mx4o9uTBlijfM58bfspSrwLh7rQwLhhHquTSxJNiMjmASOW2cppGNxji3uEW8DlWAbHzl/GZuD2zr1C4f+sxzIMNB1wCsNx/UPz19T6hZFLKYWEQUwxBVQwWKICBGTABauLtoAWuBfQ9xbUYiXIY4uM+TNNZw/PadX5EcTMl/a584NkNFiIRzpCuZ6yv0=
+Received: from cjw-notebook (2a02-8388-0502-f480-6c32-186a-368b-d6a9.cable.dynamic.v6.surfer.at. [2a02:8388:502:f480:6c32:186a:368b:d6a9])
+        by smtp.gmail.com with ESMTPSA id rf14-20020a1709076a0e00b00a371c568978sm649584ejc.150.2024.02.02.11.23.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Feb 2024 11:23:33 -0800 (PST)
+Date: Fri, 2 Feb 2024 20:23:30 +0100
+From: Christoph Winklhofer <cj.winklhofer@gmail.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Rob Herring <robh@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Jonathan Corbet <corbet@lwn.net>, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCH v5 3/3] w1: add UART w1 bus driver
+Message-ID: <Zb1BMswaaZTXzaFJ@cjw-notebook>
+References: <20240126-w1-uart-v5-0-1d82bfdc2ae9@gmail.com>
+ <20240126-w1-uart-v5-3-1d82bfdc2ae9@gmail.com>
+ <092a9986-5ebb-483d-9911-37a93d7cb2dd@kernel.org>
+ <ZbtIPo--1hfzNmho@cjw-notebook>
+ <94075be0-b91c-4147-86b1-582b124e71a0@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -65,129 +77,99 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240129195321.229867-2-Frank.Li@nxp.com>
+In-Reply-To: <94075be0-b91c-4147-86b1-582b124e71a0@linaro.org>
 
-Hi Frank,
+On Thu, Feb 01, 2024 at 10:35:32AM +0100, Krzysztof Kozlowski wrote:
+> On 01/02/2024 08:29, Christoph Winklhofer wrote:
+> >>> +
+> >>> +static void w1_uart_remove(struct serdev_device *serdev)
+> >>> +{
+> >>> +	struct w1_uart_device *w1dev = serdev_device_get_drvdata(serdev);
+> >>> +
+> >>> +	mutex_lock(&w1dev->mutex);
+> >>> +
+> >>> +	w1_remove_master_device(&w1dev->bus);
+> >>> +
+> >>> +	mutex_unlock(&w1dev->mutex);
+> >>
+> >> This is still suspicious. You do not have serdev_device_close and you
+> >> want to protect from concurrent access but it looks insufficient.
+> >>
+> >> This code assumes that:
+> >>
+> >> w1_uart_remove()
+> >>   <-- here concurrent read/write might start
+> >>   mutex_lock()
+> >>   w1_remove_master_device()
+> >>   mutex_unlock()
+> >>   <-- now w1_uart_serdev_tx_rx() or w1_uart_serdev_receive_buf() can be
+> >> executed, but device is removed. So what's the point of the mutex here?
+> >>
+> >> What exactly is protected by the mutex? So far it looks like only some
+> >> contents of w1dev, but it does not matter, because it that memory is
+> >> still valid at this point.
+> >>
+> >> After describing what is protected we can think whether it is really
+> >> protected...
+> >>
+> >>
+> >>>
+> >>
+> >> Best regards,
+> >> Krzysztof
+> >>
+> > 
+> > Yes, it is still suspicious, sorry..
+> > 
+> > After w1_uart_remove, serdev is closed and w1dev is released. Therefore
+> > the w1-callback (w1_uart_serdev_tx_rx) must be finished before returning
+> 
+> I did not even go to end of w1_uart_remove(). In my code above, that
+> thread is still in w1_uart_remove(), just after unlocking mutex.
+> 
 
-kernel test robot noticed the following build errors:
+Ok, I looked more closely at the underlying w1-code and think it is
+sufficient to only call w1_remove_master_device() in w1_uart_remove.
+This function waits until all slaves have finished their work, so
+w1_uart_serdev_tx_rx finished too. The lock is not required.
 
-[auto build test ERROR on tty/tty-testing]
-[also build test ERROR on tty/tty-next tty/tty-linus robh/for-next linus/master v6.8-rc2 next-20240202]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Hence, I will use the mutex only to protected concurrent access of
+serdev and w1-callbacks (for rx_byte and rx_err).
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Frank-Li/i3c-add-target-mode-support/20240130-035826
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20240129195321.229867-2-Frank.Li%40nxp.com
-patch subject: [PATCH v5 1/8] i3c: add target mode support
-config: x86_64-randconfig-104-20240202 (https://download.01.org/0day-ci/archive/20240203/202402030100.hmViPmOK-lkp@intel.com/config)
-compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240203/202402030100.hmViPmOK-lkp@intel.com/reproduce)
+> > from w1_uart_remove. That was the intention with the lock and trylock.
+> 
+> Then it does not look really protected. To be honest, w1-gpio and other
+> drivers also might have a race here. You can test it by adding long
+> sleeps in read/write paths and then trying to unbind device. Maybe this
+> should be fixed everywhere, but this mutex here brings more questions.
+> 
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202402030100.hmViPmOK-lkp@intel.com/
+I added a delay, unbind takes longer but works without problems when its
+done during a temperature read.
 
-All errors (new ones prefixed by >>):
+IMO also the other drivers should be fine. From w1_int.c: The w1_master
+is ref-counted and released when it is unused (2). In w1_slave_detach
+(1), the slaves decrement this count, perform specific clean up (in
+remove_slave) and remove sysfs entries.
 
-   ld: drivers/i3c/target.o: in function `i3c_target_ctrl_destroy':
->> drivers/i3c/target.c:182: undefined reference to `i3c_target_cfs_remove_ctrl_group'
-   ld: drivers/i3c/target.o: in function `__i3c_target_func_register_driver':
->> drivers/i3c/target.c:406: undefined reference to `i3c_target_cfs_add_func_group'
-   ld: drivers/i3c/target.o: in function `__i3c_target_ctrl_create':
->> drivers/i3c/target.c:141: undefined reference to `i3c_target_cfs_add_ctrl_group'
-   ld: drivers/i3c/target.o: in function `i3c_target_ctrl_destroy':
->> drivers/i3c/target.c:182: undefined reference to `i3c_target_cfs_remove_ctrl_group'
+w1_int.c:
 
+void __w1_remove_master_device(struct w1_master *dev)
+...
+	list_for_each_entry_safe(sl, sln, &dev->slist, w1_slave_entry) {
+		mutex_unlock(&dev->list_mutex);
+		w1_slave_detach(sl); 		(1)
+...
+	while (atomic_read(&dev->refcnt)) { 	(2)
+...	
+	}
+...
+	w1_free_dev(dev);
 
-vim +182 drivers/i3c/target.c
+For example w1_therm waits in remove_slave until its w1-operations are
+done. The other slave-drivers (e.g. w1_ds2405.c) use w1-operations in
+their sysfs-callback and I suppose that sysfs-removal waits until the
+sysfs-read is finished.
 
-   104	
-   105	/**
-   106	 * __i3c_target_ctrl_create() - create a new target controller device
-   107	 * @dev: device that is creating the new target controller
-   108	 * @ops: function pointers for performing target controller  operations
-   109	 * @owner: the owner of the module that creates the target controller device
-   110	 *
-   111	 * Return: Pointer to struct i3c_target_ctrl
-   112	 */
-   113	struct i3c_target_ctrl *
-   114	__i3c_target_ctrl_create(struct device *dev, const struct i3c_target_ctrl_ops *ops,
-   115				struct module *owner)
-   116	{
-   117		struct i3c_target_ctrl *ctrl;
-   118		int ret;
-   119	
-   120		if (WARN_ON(!dev))
-   121			return ERR_PTR(-EINVAL);
-   122	
-   123		ctrl = kzalloc(sizeof(*ctrl), GFP_KERNEL);
-   124		if (!ctrl)
-   125			return ERR_PTR(-ENOMEM);
-   126	
-   127		device_initialize(&ctrl->dev);
-   128		ctrl->dev.class = i3c_target_ctrl_class;
-   129		ctrl->dev.parent = dev;
-   130		ctrl->dev.release = i3c_target_ctrl_release;
-   131		ctrl->ops = ops;
-   132	
-   133		ret = dev_set_name(&ctrl->dev, "%s", dev_name(dev));
-   134		if (ret)
-   135			goto put_dev;
-   136	
-   137		ret = device_add(&ctrl->dev);
-   138		if (ret)
-   139			goto put_dev;
-   140	
- > 141		ctrl->group = i3c_target_cfs_add_ctrl_group(ctrl);
-   142		if (!ctrl->group)
-   143			goto put_dev;
-   144	
-   145		return ctrl;
-   146	
-   147	put_dev:
-   148		put_device(&ctrl->dev);
-   149		kfree(ctrl);
-   150	
-   151		return ERR_PTR(ret);
-   152	}
-   153	EXPORT_SYMBOL_GPL(__i3c_target_ctrl_create);
-   154	
-   155	/**
-   156	 * devm_i3c_target_ctrl_destroy() - destroy the target controller device
-   157	 * @dev: device that hat has to be destroy
-   158	 * @ctrl: the target controller device that has to be destroy
-   159	 *
-   160	 * Invoke to create a new target controller device and add it to i3c_target class. While at that, it
-   161	 * also associates the device with the i3c_target using devres. On driver detach, release function
-   162	 * is invoked on the devres data, then devres data is freed.
-   163	 */
-   164	void devm_i3c_target_ctrl_destroy(struct device *dev, struct i3c_target_ctrl *ctrl)
-   165	{
-   166		int r;
-   167	
-   168		r = devres_destroy(dev, devm_i3c_target_ctrl_release, devm_i3c_target_ctrl_match,
-   169				   ctrl);
-   170		dev_WARN_ONCE(dev, r, "couldn't find I3C controller resource\n");
-   171	}
-   172	EXPORT_SYMBOL_GPL(devm_i3c_target_ctrl_destroy);
-   173	
-   174	/**
-   175	 * i3c_target_ctrl_destroy() - destroy the target controller device
-   176	 * @ctrl: the target controller device that has to be destroyed
-   177	 *
-   178	 * Invoke to destroy the I3C target device
-   179	 */
-   180	void i3c_target_ctrl_destroy(struct i3c_target_ctrl *ctrl)
-   181	{
- > 182		i3c_target_cfs_remove_ctrl_group(ctrl->group);
-   183		device_unregister(&ctrl->dev);
-   184	}
-   185	EXPORT_SYMBOL_GPL(i3c_target_ctrl_destroy);
-   186	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Kind regards,
+Christoph
