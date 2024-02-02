@@ -1,94 +1,111 @@
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 679ED83A1A
-	for <linux-serial@vger.kernel.org>; Fri,  2 Feb 2024 21:05:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D63248063C;
+	Fri,  2 Feb 2024 21:19:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706907926; cv=none; b=Zbivcvjy7C7TDuF+PSjQYRA0+sy7cobG3jtzQPtW1Y011D4iW+SSylSEuVIHy6CEem4XS+Z8BZdNjFEvvzcCFPYcRdwHyFLlZd0mEUuBcUqu0kToFkaJU0e6J/tfoNSL0JU0+hLQ6gSzELoKfVIRpenEEvsOyTBcoEByf+ZiELE=
+	t=1706908752; cv=none; b=nFAhbTaUrcP3iY3Ek6P/5npNC6d75PcrnsW57BZPZkDY1n8ktlUQa010dr8HsEhi+AEb0N1gVWLLxY9qa3WCjq3Em/dWgd6puhzTbNaUyhIqQ3ti6b7yYi2/z6bjpcdyJgpo1sEcc2PxcBkuCZS5TH+xMbQer9fXq6gF9cmjFOA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706907926; c=relaxed/simple;
-	bh=tPNHe42qhpvxWugl+y8i8cSrXsEAh6eoqotuLxhvPAM=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=qwN5TJBPcbajGdVqDpNkf1fU4fuXFqXAdXXVZs3SNrpG3p+HQhXzI/VhxNNyrQkCbEvwwyG4wIsBBeyqneiNWyD96vcW+pk5L3dgcpkCNCs9y/ilBguUyu4YmqqlqKrTNpwkVLnI+MkJK2n+QfnpiLztazbaUzacW0kTbEhiS/g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f69.google.com with SMTP id ca18e2360f4ac-7c018d53e7fso203890939f.2
-        for <linux-serial@vger.kernel.org>; Fri, 02 Feb 2024 13:05:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706907923; x=1707512723;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=vFM4+u+D/xmqSyRabC7ssS3eRs0J/GqQmfrIhUog/SY=;
-        b=b7D9xRqXCv9/lww48UmcGAerlPitNpHMlHUF3qN4ipHdUSYRbcRl3yGPWzdNwAhKxm
-         m/09spWLNeOW2+y4hByOA90kg5EfZ4CzL41ocDdhFR6LauRM6LjISs/qHqy+9cbUFY05
-         lk5fW3yy3Rt+ZPNvdnRvgzY6QS5PeG1aMsqgSjZ14+w0Mh/qbb5EdNMoPldbGVaCcrQ+
-         sR+EQuWSeMRxI3K4vn3VH1fcgFfBUqLMbHjZHUUIy7zX+JBBwhi807UdHCpvWZ0vVMZZ
-         adr2ypg7TmItPb4UZ7gYqkgGdPZEcgzj9NEA5NE8t2DKOu9W5cYLsT1y5pR+Ie+Q2Ajt
-         ONrQ==
-X-Gm-Message-State: AOJu0Yzj2wsGhxipyMVKLj4bdClW7t4rgunpj5RFgMqR68wiXZeI8jaJ
-	PlDbJYE5CmRHbuIgc3kZZ7wq66HZf0W7w2mjtHcUO4TINuVO7c5PQxi8JRmK3E9kwIYCw1gsfy7
-	StCP5UhjdCD7QANwoq9eiTXSlfUNr/DZRLk1tnzi1U5uw9OvFfMVTTwc=
-X-Google-Smtp-Source: AGHT+IFZ5k2HQeFwYdOHV1q9HUo1V7+1oMT1vQYZjiKlMix4m2CzNWzvCXvj8f7jLh9vYEXkIMVXTcH/0hat8fvQIerkXfGDtDdP
+	s=arc-20240116; t=1706908752; c=relaxed/simple;
+	bh=5ksOdQd8ghM9qXKkEiudkWeCW/Mz361KuBeBg2gzM/4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=b9P8XMFVK/LhUBMbqRThuc93AHm1GSLlEGt24sQz4T+7icI+KBJG3f2NpMmXj+EdL2PKZOMQwlYAy4kiIV/xWwZXTSyR527amOZIa4Y9EQeYc0/J+ZjVELw0ln6Sa6riGpnWH9IykjX2rPOTZ+OBsrPds7AbsObGsT7eg3Oo6c8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nNqU9s23; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nNqU9s23"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1706908751; x=1738444751;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5ksOdQd8ghM9qXKkEiudkWeCW/Mz361KuBeBg2gzM/4=;
+  b=nNqU9s23ItmdisKaKf6tshjaRnar2k4cqBurHtmJM/PRlsi9PVTpPCy8
+   R4SbTCGeVIvDKX+cC98Kkq5eBE/8Q3dHM1vlWIUGoLAT4ToES0HLvkzLt
+   nQkn3Ymt+qsA62Ar9ieVsFUp8hu7P/G8/nvdBeV94MUcxlGdLQ0GdkwTU
+   cbZgcVxhE9cielIJcmpVB6m2L5SSOC8TCMb8KcBQAAUzu5RnUdsNUPFxs
+   D2LCCsYMb+VfchzPpZMCiHA/dUueB5vvOjOSFc8vbM4rkXNeemTu1J6UM
+   YsCUVhJbrdxGUfMiBKwUJfjJaJ4xnjjnURwZspvH4rLvvIML09pSbpRr5
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10971"; a="148414"
+X-IronPort-AV: E=Sophos;i="6.05,238,1701158400"; 
+   d="scan'208";a="148414"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2024 13:19:10 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10971"; a="932581866"
+X-IronPort-AV: E=Sophos;i="6.05,238,1701158400"; 
+   d="scan'208";a="932581866"
+Received: from lkp-server02.sh.intel.com (HELO 59f4f4cd5935) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 02 Feb 2024 13:19:05 -0800
+Received: from kbuild by 59f4f4cd5935 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rW0wB-0004H0-1Q;
+	Fri, 02 Feb 2024 21:19:03 +0000
+Date: Sat, 3 Feb 2024 05:18:51 +0800
+From: kernel test robot <lkp@intel.com>
+To: Frank Li <Frank.Li@nxp.com>, ilpo.jarvinen@linux.intel.com
+Cc: oe-kbuild-all@lists.linux.dev, Frank.Li@nxp.com,
+	alexandre.belloni@bootlin.com, conor.culhane@silvaco.com,
+	devicetree@vger.kernel.org, gregkh@linuxfoundation.org,
+	imx@lists.linux.dev, jirislaby@kernel.org, joe@perches.com,
+	krzysztof.kozlowski+dt@linaro.org, krzysztof.kozlowski@linaro.org,
+	linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, miquel.raynal@bootlin.com,
+	robh@kernel.org, zbigniew.lukwinski@linux.intel.com
+Subject: Re: [PATCH v5 1/8] i3c: add target mode support
+Message-ID: <202402030437.GdGCrKeK-lkp@intel.com>
+References: <20240129195321.229867-2-Frank.Li@nxp.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:45:b0:7c0:4a76:2422 with SMTP id
- z5-20020a056602004500b007c04a762422mr31621ioz.2.1706907923656; Fri, 02 Feb
- 2024 13:05:23 -0800 (PST)
-Date: Fri, 02 Feb 2024 13:05:23 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000074375c06106c787f@google.com>
-Subject: [syzbot] Monthly serial report (Feb 2024)
-From: syzbot <syzbot+listbb8340e4e1f8191bee93@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240129195321.229867-2-Frank.Li@nxp.com>
 
-Hello serial maintainers/developers,
+Hi Frank,
 
-This is a 31-day syzbot report for the serial subsystem.
-All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/serial
+kernel test robot noticed the following build errors:
 
-During the period, 3 new issues were detected and 0 were fixed.
-In total, 16 issues are still open and 40 have been fixed so far.
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on tty/tty-next tty/tty-linus robh/for-next linus/master v6.8-rc2 next-20240202]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Some of the still happening issues:
+url:    https://github.com/intel-lab-lkp/linux/commits/Frank-Li/i3c-add-target-mode-support/20240130-035826
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20240129195321.229867-2-Frank.Li%40nxp.com
+patch subject: [PATCH v5 1/8] i3c: add target mode support
+config: sh-randconfig-r122-20240202 (https://download.01.org/0day-ci/archive/20240203/202402030437.GdGCrKeK-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 13.2.0
+reproduce: (https://download.01.org/0day-ci/archive/20240203/202402030437.GdGCrKeK-lkp@intel.com/reproduce)
 
-Ref Crashes Repro Title
-<1> 51656   Yes   possible deadlock in console_flush_all (2)
-                  https://syzkaller.appspot.com/bug?extid=f78380e4eae53c64125c
-<2> 4747    Yes   BUG: sleeping function called from invalid context in console_lock (2)
-                  https://syzkaller.appspot.com/bug?extid=dbac96d8e73b61aa559c
-<3> 207     Yes   KMSAN: uninit-value in n_tty_receive_buf_standard
-                  https://syzkaller.appspot.com/bug?extid=559c7fe4b8bac56d38c2
-<4> 121     Yes   KASAN: stack-out-of-bounds Read in sched_show_task
-                  https://syzkaller.appspot.com/bug?extid=8d2757d62d403b2d9275
-<5> 73      Yes   general protection fault in serial8250_tx_chars
-                  https://syzkaller.appspot.com/bug?extid=837b8c9032c053262db8
-<6> 60      Yes   BUG: soft lockup in tx
-                  https://syzkaller.appspot.com/bug?extid=5e87db90e68fbc4707c6
-<7> 36      Yes   INFO: task can't die in show_free_areas
-                  https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
-<8> 6       Yes   INFO: task hung in paste_selection (2)
-                  https://syzkaller.appspot.com/bug?extid=275e275bd3f536725dd8
-<9> 2       No    KASAN: slab-use-after-free Read in tty_write_room (2)
-                  https://syzkaller.appspot.com/bug?extid=2a81fdd5c6ddffee3894
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202402030437.GdGCrKeK-lkp@intel.com/
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+All errors (new ones prefixed by >>):
 
-To disable reminders for individual bugs, reply with the following command:
-#syz set <Ref> no-reminders
+   sh4-linux-ld: drivers/i3c/target.o: in function `i3c_target_ctrl_destroy':
+>> target.c:(.text+0x264): undefined reference to `i3c_target_cfs_remove_ctrl_group'
+   sh4-linux-ld: drivers/i3c/target.o: in function `__i3c_target_func_register_driver':
+>> target.c:(.text+0x4bc): undefined reference to `i3c_target_cfs_add_func_group'
+   sh4-linux-ld: drivers/i3c/target.o: in function `__i3c_target_ctrl_create':
+>> target.c:(.text+0x778): undefined reference to `i3c_target_cfs_add_ctrl_group'
+   sh4-linux-ld: drivers/i3c/target.o: in function `devm_i3c_target_ctrl_release':
+   target.c:(.text+0x7b8): undefined reference to `i3c_target_cfs_remove_ctrl_group'
+   sh4-linux-ld: drivers/media/i2c/tc358746.o: in function `tc358746_probe':
+   tc358746.c:(.text+0x17c4): undefined reference to `devm_clk_hw_register'
+   sh4-linux-ld: tc358746.c:(.text+0x17c8): undefined reference to `devm_of_clk_add_hw_provider'
+   sh4-linux-ld: tc358746.c:(.text+0x17cc): undefined reference to `of_clk_hw_simple_get'
 
-To change bug's subsystems, reply with:
-#syz set <Ref> subsystems: new-subsystem
-
-You may send multiple commands in a single email message.
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
