@@ -1,111 +1,226 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2069.outbound.protection.outlook.com [40.107.105.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D63248063C;
-	Fri,  2 Feb 2024 21:19:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706908752; cv=none; b=nFAhbTaUrcP3iY3Ek6P/5npNC6d75PcrnsW57BZPZkDY1n8ktlUQa010dr8HsEhi+AEb0N1gVWLLxY9qa3WCjq3Em/dWgd6puhzTbNaUyhIqQ3ti6b7yYi2/z6bjpcdyJgpo1sEcc2PxcBkuCZS5TH+xMbQer9fXq6gF9cmjFOA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706908752; c=relaxed/simple;
-	bh=5ksOdQd8ghM9qXKkEiudkWeCW/Mz361KuBeBg2gzM/4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=b9P8XMFVK/LhUBMbqRThuc93AHm1GSLlEGt24sQz4T+7icI+KBJG3f2NpMmXj+EdL2PKZOMQwlYAy4kiIV/xWwZXTSyR527amOZIa4Y9EQeYc0/J+ZjVELw0ln6Sa6riGpnWH9IykjX2rPOTZ+OBsrPds7AbsObGsT7eg3Oo6c8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nNqU9s23; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9692212C7E6;
+	Fri,  2 Feb 2024 23:09:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.105.69
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1706915388; cv=fail; b=UsSK4qN13hs4kF+9x0HVLCOeqgg+xh6ypLLI7WehFOnTYezHCOc03SqTCx34AT298f1Mw1bzMLpugw24aunIg8yu4uxeYfmaJrTRp1KNQdp890SI/lfoZrxDTGKXA84mP0rSmYDIMZpp7bOmLuAYiUcn9DLrPvIf/HNcL2JrTh8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1706915388; c=relaxed/simple;
+	bh=lpo5yoDxEjAMAATeuR+ObkAv5g4Z/DAVD2hkbmgALyw=;
+	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=l11OwP4//ITVr01rbYGa3jtSOXtiSF2TUYoJh6xQ/Jkb/+A2a+LrTL1odC+Hmf7r1+Tszfdk/E3WAFIRSUnLOdgOibRRIaLA1qF/kpjWL7tOKXVxsUjUrUeNXtyAf3MOzHQS7MO5jJ+vIwcK0XYsH+Aun54NnxIr4vvhuCjgZfM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b=XhTErwsY; arc=fail smtp.client-ip=40.107.105.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nNqU9s23"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706908751; x=1738444751;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5ksOdQd8ghM9qXKkEiudkWeCW/Mz361KuBeBg2gzM/4=;
-  b=nNqU9s23ItmdisKaKf6tshjaRnar2k4cqBurHtmJM/PRlsi9PVTpPCy8
-   R4SbTCGeVIvDKX+cC98Kkq5eBE/8Q3dHM1vlWIUGoLAT4ToES0HLvkzLt
-   nQkn3Ymt+qsA62Ar9ieVsFUp8hu7P/G8/nvdBeV94MUcxlGdLQ0GdkwTU
-   cbZgcVxhE9cielIJcmpVB6m2L5SSOC8TCMb8KcBQAAUzu5RnUdsNUPFxs
-   D2LCCsYMb+VfchzPpZMCiHA/dUueB5vvOjOSFc8vbM4rkXNeemTu1J6UM
-   YsCUVhJbrdxGUfMiBKwUJfjJaJ4xnjjnURwZspvH4rLvvIML09pSbpRr5
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10971"; a="148414"
-X-IronPort-AV: E=Sophos;i="6.05,238,1701158400"; 
-   d="scan'208";a="148414"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2024 13:19:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10971"; a="932581866"
-X-IronPort-AV: E=Sophos;i="6.05,238,1701158400"; 
-   d="scan'208";a="932581866"
-Received: from lkp-server02.sh.intel.com (HELO 59f4f4cd5935) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 02 Feb 2024 13:19:05 -0800
-Received: from kbuild by 59f4f4cd5935 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rW0wB-0004H0-1Q;
-	Fri, 02 Feb 2024 21:19:03 +0000
-Date: Sat, 3 Feb 2024 05:18:51 +0800
-From: kernel test robot <lkp@intel.com>
-To: Frank Li <Frank.Li@nxp.com>, ilpo.jarvinen@linux.intel.com
-Cc: oe-kbuild-all@lists.linux.dev, Frank.Li@nxp.com,
-	alexandre.belloni@bootlin.com, conor.culhane@silvaco.com,
-	devicetree@vger.kernel.org, gregkh@linuxfoundation.org,
-	imx@lists.linux.dev, jirislaby@kernel.org, joe@perches.com,
-	krzysztof.kozlowski+dt@linaro.org, krzysztof.kozlowski@linaro.org,
-	linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, miquel.raynal@bootlin.com,
-	robh@kernel.org, zbigniew.lukwinski@linux.intel.com
-Subject: Re: [PATCH v5 1/8] i3c: add target mode support
-Message-ID: <202402030437.GdGCrKeK-lkp@intel.com>
-References: <20240129195321.229867-2-Frank.Li@nxp.com>
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="XhTErwsY"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ci1CkSiZdn6/ONSYeiJg1Qu30MC6vLgMLE1CLgsrtdyBY+6AIx+o8E99GJH5HO4mAbhvZ6HFSn8O19ZdxYqdoHcjfEsaFOIpCCrxpGlMwZ8X5IvUtIWm/N17tFO2holabYGGIg59L/WlgpraBuUIr75yA4EChQEUjKTWYSRwdd+RPzVUul1KiXXPfP0UIGyhxfYlVlFPJZYJ//CGzGUl2mAnW1IeOiN5+6IKd/h7lYlghxNbIjt9JCyKq4VECGjeSbZdxocLOy+VHA3fsREJr3SmJSisZ12fclHHg8dBgiCeVUbGsdL3KyohYP2dcqPg49FRFucuFSJg22/gozFLBQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=byDnXsXx+ABdHA0brvZRkAWtWoHaTwoTe+9Xa1hY668=;
+ b=dbzhQz46SAMvtlv8EiIRJeCM3g2goo7g8rhTe1nHIQxO1UMJFa9qtuMm98RnEG01lzfnjEmWW4S094gbEi/FxFObsSGiAnpjY3m3YlcByQMioJj0yr2WvPePfOFlmebicfYDugavvUR1aTTdxa0Bh4xNl+Jhac6ZH+QoU+JYBbGJNet/OUkPvORiJmEQlbusbYS4Zut9Za3Vk1lGVCKWYjwtVpYH0FGnWkfzElWKK6c8ru8rTmcH5dUuYO+G6U0sWtxIDdJU56hnEVVetqyy3NvZk06dx9z16xDOMVjgBnExAVssZhtNevt79vKtMu8np3CQRxkuRDZs99l3hxrM/g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=byDnXsXx+ABdHA0brvZRkAWtWoHaTwoTe+9Xa1hY668=;
+ b=XhTErwsYryB7L7uHHUjlmlxEd4GermKrjUONuRts0CaDCzq2A9mukE8XGGEiDRsNl0SJO7GF+Z3w0S5a18VcOxReWOfAO7RGbhnGlpD4lA57gmAc7DEEN6cbg02TQXWstBvWeI14OE7mb9IBsUUpitxD6DIFk/UVY0KgtgtV9pM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from PAXPR04MB9642.eurprd04.prod.outlook.com (2603:10a6:102:240::14)
+ by AS5PR04MB9997.eurprd04.prod.outlook.com (2603:10a6:20b:67c::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7249.26; Fri, 2 Feb
+ 2024 23:09:43 +0000
+Received: from PAXPR04MB9642.eurprd04.prod.outlook.com
+ ([fe80::c8b4:5648:8948:e85c]) by PAXPR04MB9642.eurprd04.prod.outlook.com
+ ([fe80::c8b4:5648:8948:e85c%3]) with mapi id 15.20.7249.027; Fri, 2 Feb 2024
+ 23:09:43 +0000
+From: Frank Li <Frank.Li@nxp.com>
+To: frank.li@nxp.com
+Cc: alexandre.belloni@bootlin.com,
+	conor.culhane@silvaco.com,
+	devicetree@vger.kernel.org,
+	gregkh@linuxfoundation.org,
+	ilpo.jarvinen@linux.intel.com,
+	imx@lists.linux.dev,
+	jirislaby@kernel.org,
+	joe@perches.com,
+	krzysztof.kozlowski+dt@linaro.org,
+	krzysztof.kozlowski@linaro.org,
+	linux-i3c@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	miquel.raynal@bootlin.com,
+	robh@kernel.org,
+	zbigniew.lukwinski@linux.intel.com
+Subject: [PATCH v6 0/8] I3C target mode support
+Date: Fri,  2 Feb 2024 18:09:17 -0500
+Message-Id: <20240202230925.1000659-1-Frank.Li@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BYAPR08CA0030.namprd08.prod.outlook.com
+ (2603:10b6:a03:100::43) To PAXPR04MB9642.eurprd04.prod.outlook.com
+ (2603:10a6:102:240::14)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240129195321.229867-2-Frank.Li@nxp.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PAXPR04MB9642:EE_|AS5PR04MB9997:EE_
+X-MS-Office365-Filtering-Correlation-Id: fb06fc0f-3d3c-4527-35b3-08dc24440a85
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	waJv7ypB2BvpRoQXCOLL1t6lc1z03UQK6pHJ+IV8HlOYyhj75BOsHGs8jmwXcN5QIvypTXg7C1eij/fCA9hlAnM+Q4KoLNUx786J4u+KL1Du7dle5MpBTa6/CTCCGtoYrV5I27eEjWDQsKu/D27WiujDXVi56jqew3pbJnEPjQ9iQNmy9iSigANnIbjuKgScE2xuAwJUJoHLdxy87xYNcNcDHFm7dqyzk6UycVnRHYCoJXm4ieYbbZp74UinGCUPjwQir3fEzFnQqwGkydpz/1h8fXBibMjqbmI33jdDyc1DxXCF6klZ0g/FaXf11ych5vkXSquCJIvz1Bu1WUR+aUXiqiKp+FLJcNigS92y1wj+rQ9O52VZT3oWH9DVg95diWstX60svmVfVucgLV98v9V2/iF3PqRFN3CeG0cpr8GrwZ2jPGc7XDSWU2dFecGRqEjuUxzKJD6dmGHhls7G9KKpl2m3AjU+YXgs01wS0bmgluZ6JKtEZ6W5xYiTepoQC8Pce+aqkhYkofzyc/Ht1p0HkdHSU8eY/rvCRuWigJGryr1EYqHaFpFJeB/8C/C1a7Bk4Bwl8xplOA78i758m+OS2rIu4rJ7PLiLLMPf2u6mNmOiszwU1d2TZFCAC6tz
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9642.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(366004)(39860400002)(136003)(346002)(376002)(230922051799003)(230273577357003)(1800799012)(451199024)(64100799003)(186009)(2616005)(1076003)(41300700001)(26005)(38350700005)(52116002)(7416002)(6512007)(316002)(36756003)(37006003)(6506007)(83380400001)(6666004)(478600001)(66556008)(38100700002)(66476007)(4326008)(6486002)(2906002)(86362001)(66946007)(8936002)(8676002)(34206002)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?9hQumafEq0tIQ50AZ1zOsgLvyfHrpCm3imAV3WyiyMjxIBNaBpso3w1T5xkI?=
+ =?us-ascii?Q?RaOjQxZcdDwOClaqOx3J4sj/9nQBGgx0hfiCp2CQg9BwuaFsvCfh8fzyFxrc?=
+ =?us-ascii?Q?TCWNb2Ae4zNyZJpkdbVVnHVV5Ri3M6q6Dxx5X40GhWD1MankdBpXdnXWi9/y?=
+ =?us-ascii?Q?TgBg/XbryBlPJYJdRd0I6EZwHRNEMxsrCc6bDGX89zZUQ3lqEzpIChVnn+9k?=
+ =?us-ascii?Q?3z7RxdMbLAAu+xWexD0S16zFWwsc1O7vU3wAjzhAwt3YfFlVfOYTMJ1QHQJ9?=
+ =?us-ascii?Q?oaL7TrqSzuriDEswDkQsHuhKeM0KlPdsY6kwi4GwRxDA3YWw6080wmFSsSai?=
+ =?us-ascii?Q?dditZOqWop8wKaWXFaU3olvgcuQKu/bc0ZTw48rOm0Ajfd73MRlOvmfMXiK3?=
+ =?us-ascii?Q?PaYxQVjUyBUjD6ktIKMSsDB82tSMBS50Ar+JytwkwewgA1ABGslaQ/cHqTMk?=
+ =?us-ascii?Q?PQpZA4FVjX9tpt28ms5lH1Qa6CHJaWDoirtmKzajH29GIA5mTDtdm50AY0Xa?=
+ =?us-ascii?Q?Z4XK2KdICBsQEJEC2ILyU3UNUT3rMR4TOaDyaUuYdWCQkrQWPgmhPGL7YhoY?=
+ =?us-ascii?Q?ox8c5aDyh7OVi+UlgCjLIgbIA0YbELwA7+cCL96eHyAIqBmD9Cr23IEN95Bb?=
+ =?us-ascii?Q?6kxPElXL5ex210V2jsAnPAtdzUhsdgkojZcERtLWPPgSRjEhIEyfcB+zUql/?=
+ =?us-ascii?Q?9cC1Q0cAGXq2WQSbPP/8bKhh7J6nGUYVhDVDLX9bx0YENo222DaqdKYAEEru?=
+ =?us-ascii?Q?uF9ZXXsc8HsvWY5oGmwbeAvxsXLSSPuqNVYphXK4bid+pBrrL02ArUJvzI30?=
+ =?us-ascii?Q?Qyw2BVuKN6X+Rg9U6YIG+L66unVovh645zI8vIOYAnnHy9dDu26I/fYGtrbr?=
+ =?us-ascii?Q?C4kgXKHpy0XnFOosoaNcK7/K4ImWxWMvu+uibY6RRnHDCqPDaDrDWFe53/pK?=
+ =?us-ascii?Q?X5CnBWduovXzexY80D+Li8xRtq70zlj5D865JZ8ptdWMhXziARe7OHt8Emyk?=
+ =?us-ascii?Q?F5+StrVXryV4aJA22omaEpxMsyd1whM4fucbAgyB1ePdGg44QaC5c5gf+Kav?=
+ =?us-ascii?Q?X0cJpD3lWpdNGRBUi2h36ojbc1VZLe0vvN4o+2C7a3luy1My/LOdWidzIDRI?=
+ =?us-ascii?Q?DjPS4w4dAfstTFcQqEvNtgcK+VQsawLW1lgg53ZKvMVOJjAqKY0/LLcGiNSF?=
+ =?us-ascii?Q?Kz6ZJ8iowRfb15RVCsOFjDQfy/4lbQ2tniBrfpcKChXjO6zQr3L81gjQoZXk?=
+ =?us-ascii?Q?D8B3zZpBLuqBIspqFgV3VXct6rwSyPLpg6kS4weKZojpR5Y614xcliPc+Z9z?=
+ =?us-ascii?Q?g8meh+M6fxjWJQnizgsIJPXoH1lLrkMUFDXNtlCiUkHarLHlIXOKJU7jQrUw?=
+ =?us-ascii?Q?NvlhssgmUTAvrPo8kqiIIu8vT4d/CcFKQJSZxKi7rIn0Q9hILQoHs7rd9Uyl?=
+ =?us-ascii?Q?VIYlh8jFe91sYA4rJysYFn+5GGtwP41gLAoce/cAh0l2fPutIaLoXqUfS5MY?=
+ =?us-ascii?Q?qfeNzJ+Z75PECrGatBjzedBZD1kDM1wzthogCz0M07HG/PSpJFzH5zOj+8SM?=
+ =?us-ascii?Q?d9oru1Uh/wnAfK7P8t7LFgu7wOMv7tzjNT2XRzQT?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fb06fc0f-3d3c-4527-35b3-08dc24440a85
+X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9642.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2024 23:09:43.3860
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nyMip/sdnqp4kG12Cp4GuxWAPtPHAiGkcCJDGcAvPQqSg2kwdZW7G1lAG+lJPchsOVKkI1STSNM7NIHtIOzfJw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS5PR04MB9997
 
-Hi Frank,
+This  patch introduces support for I3C target mode, which is referenced
+with a PCIe Endpoint system. It also establishes a configuration framework
+(configfs) for the I3C target controller driver and the I3C target function
+driver
 
-kernel test robot noticed the following build errors:
+Typic usage as
 
-[auto build test ERROR on tty/tty-testing]
-[also build test ERROR on tty/tty-next tty/tty-linus robh/for-next linus/master v6.8-rc2 next-20240202]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+The user can configure the i3c-target-tty device using configfs entry. In
+order to change the vendorid, the following commands can be used
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Frank-Li/i3c-add-target-mode-support/20240130-035826
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20240129195321.229867-2-Frank.Li%40nxp.com
-patch subject: [PATCH v5 1/8] i3c: add target mode support
-config: sh-randconfig-r122-20240202 (https://download.01.org/0day-ci/archive/20240203/202402030437.GdGCrKeK-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 13.2.0
-reproduce: (https://download.01.org/0day-ci/archive/20240203/202402030437.GdGCrKeK-lkp@intel.com/reproduce)
+        # echo 0x011b > functions/tty/func1/vendor_id
+        # echo 0x1000 > functions/tty/func1/part_id
+        # echo 0x6 > functions/tty/t/bcr
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202402030437.GdGCrKeK-lkp@intel.com/
+Binding i3c-target-tty Device to target Controller
+------------------------------------------------
 
-All errors (new ones prefixed by >>):
+In order for the target function device to be useful, it has to be bound to
+a I3C target controller driver. Use the configfs to bind the function
+device to one of the controller driver present in the system::
 
-   sh4-linux-ld: drivers/i3c/target.o: in function `i3c_target_ctrl_destroy':
->> target.c:(.text+0x264): undefined reference to `i3c_target_cfs_remove_ctrl_group'
-   sh4-linux-ld: drivers/i3c/target.o: in function `__i3c_target_func_register_driver':
->> target.c:(.text+0x4bc): undefined reference to `i3c_target_cfs_add_func_group'
-   sh4-linux-ld: drivers/i3c/target.o: in function `__i3c_target_ctrl_create':
->> target.c:(.text+0x778): undefined reference to `i3c_target_cfs_add_ctrl_group'
-   sh4-linux-ld: drivers/i3c/target.o: in function `devm_i3c_target_ctrl_release':
-   target.c:(.text+0x7b8): undefined reference to `i3c_target_cfs_remove_ctrl_group'
-   sh4-linux-ld: drivers/media/i2c/tc358746.o: in function `tc358746_probe':
-   tc358746.c:(.text+0x17c4): undefined reference to `devm_clk_hw_register'
-   sh4-linux-ld: tc358746.c:(.text+0x17c8): undefined reference to `devm_of_clk_add_hw_provider'
-   sh4-linux-ld: tc358746.c:(.text+0x17cc): undefined reference to `of_clk_hw_simple_get'
+        # ln -s functions/pci_epf_test/func1 controllers/44330000.i3c-target/
+
+Host side:
+        cat /dev/ttyI3C0
+Taret side:
+        echo abc >/dev/ttyI3C0
+
+Chagne from v2 to v3
+- using 'mode' distingiush master and target.
+- move svc-i3c-target.c to under master,
+- built together with svc-i3c-master.c
+
+Change from v1 to v2
+- change "slave" to "target"
+- include master side tty patch
+- fixed dtbcheck problem
+- fixed kerne-doc check warning
+
+Some review comment may be lost since it is quite long time since v1. Now
+master side dependent patches already in linux-next. So sent target side
+patches with tty support again.
+
+No sure why an additional "\r\n" appended.
+
+Frank Li (8):
+  i3c: add target mode support
+  dt-bindings: i3c: svc: add proptery mode
+  Documentation: i3c: Add I3C target mode controller and function
+  i3c: svc: Add svc-i3c-main.c and svc-i3c.h
+  i3c: target: add svc target controller support
+  i3c: target: func: add tty driver
+  i3c: add API i3c_dev_gettstatus_format1() to get target device status
+  tty: i3c: add TTY over I3C master support
+
+ .../bindings/i3c/silvaco,i3c-master.yaml      |  11 +-
+ Documentation/driver-api/i3c/index.rst        |   1 +
+ .../driver-api/i3c/target/i3c-target-cfs.rst  | 109 +++
+ .../driver-api/i3c/target/i3c-target.rst      | 189 +++++
+ .../driver-api/i3c/target/i3c-tty-howto.rst   | 109 +++
+ Documentation/driver-api/i3c/target/index.rst |  13 +
+ drivers/i3c/Kconfig                           |  31 +-
+ drivers/i3c/Makefile                          |   3 +
+ drivers/i3c/device.c                          |  24 +
+ drivers/i3c/func/Kconfig                      |   9 +
+ drivers/i3c/func/Makefile                     |   3 +
+ drivers/i3c/func/tty.c                        | 474 +++++++++++
+ drivers/i3c/i3c-cfs.c                         | 389 +++++++++
+ drivers/i3c/internals.h                       |   1 +
+ drivers/i3c/master.c                          |  26 +
+ drivers/i3c/master/Makefile                   |   3 +-
+ drivers/i3c/master/svc-i3c-main.c             |  80 ++
+ drivers/i3c/master/svc-i3c-master.c           |  34 +-
+ drivers/i3c/master/svc-i3c-target.c           | 776 ++++++++++++++++++
+ drivers/i3c/master/svc-i3c.h                  |  15 +
+ drivers/i3c/target.c                          | 453 ++++++++++
+ drivers/tty/Kconfig                           |  13 +
+ drivers/tty/Makefile                          |   1 +
+ drivers/tty/i3c_tty.c                         | 427 ++++++++++
+ include/linux/i3c/device.h                    |   1 +
+ include/linux/i3c/target.h                    | 548 +++++++++++++
+ 26 files changed, 3712 insertions(+), 31 deletions(-)
+ create mode 100644 Documentation/driver-api/i3c/target/i3c-target-cfs.rst
+ create mode 100644 Documentation/driver-api/i3c/target/i3c-target.rst
+ create mode 100644 Documentation/driver-api/i3c/target/i3c-tty-howto.rst
+ create mode 100644 Documentation/driver-api/i3c/target/index.rst
+ create mode 100644 drivers/i3c/func/Kconfig
+ create mode 100644 drivers/i3c/func/Makefile
+ create mode 100644 drivers/i3c/func/tty.c
+ create mode 100644 drivers/i3c/i3c-cfs.c
+ create mode 100644 drivers/i3c/master/svc-i3c-main.c
+ create mode 100644 drivers/i3c/master/svc-i3c-target.c
+ create mode 100644 drivers/i3c/master/svc-i3c.h
+ create mode 100644 drivers/i3c/target.c
+ create mode 100644 drivers/tty/i3c_tty.c
+ create mode 100644 include/linux/i3c/target.h
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.34.1
+
