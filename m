@@ -1,113 +1,118 @@
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f182.google.com (mail-il1-f182.google.com [209.85.166.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3FD15DF07
-	for <linux-serial@vger.kernel.org>; Sat,  3 Feb 2024 13:46:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.181.97.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3FD15F867;
+	Sat,  3 Feb 2024 19:14:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706968009; cv=none; b=gfAGZE0P66J6aP6TMwmd/CYX98rkRTWuIli8t4i66GOgBLIfmynGGwehpdjRlJi0QWb70E+oxSG3Q73HQRdqvbMhLw3/+fn5eTHPML39D/sqLOjmvYNdYNqhQOIzgsu8aj9Rl7AN31BBZQOdfe3+7I/9NZXkRnqwkHJQOaXVjX0=
+	t=1706987675; cv=none; b=qr4bLKnEvIc+pdejPkdPt2TmCTGmTEm4amt3ZFmHs/CD3AFYWhqxNwB3BVLCG0RrxSpYPAvoqwL1oEg1RTAe7SF2dln0f6fN1e+bX0cgKogAXg5dsS+wuymBUR2AMNd2qJRKlxikUoQGJZPqqSjGT3BhZuHmhX4YCdNRoPpFrp4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706968009; c=relaxed/simple;
-	bh=W0wBnDoFWYFf/fgEW5y0mUsGhftarMHvphikt96cvcc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KszMaqOAmu8aBNq5rX834S413Xlo+gU+nWYiA5NCWFAqv+s2fabkxzln9o4WKlAatP0FWR0Dj85qbddurkMaLXVomYp9RJfIWMLsEnSouZL1qH1yFNOQgs5WnLDKq0X0b7NiVyfb4zmoMhyZZPgFikoJwEMgwJytlt4XKzsc1tA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=I-love.SAKURA.ne.jp; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp; arc=none smtp.client-ip=202.181.97.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=I-love.SAKURA.ne.jp
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp
-Received: from fsav115.sakura.ne.jp (fsav115.sakura.ne.jp [27.133.134.242])
-	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 413Djv0F005712;
-	Sat, 3 Feb 2024 22:45:57 +0900 (JST)
-	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav115.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav115.sakura.ne.jp);
- Sat, 03 Feb 2024 22:45:57 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav115.sakura.ne.jp)
-Received: from [192.168.1.6] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-	(authenticated bits=0)
-	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 413DjuwW005702
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-	Sat, 3 Feb 2024 22:45:57 +0900 (JST)
-	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <1eab9734-8e4a-431b-8996-fb30f0c6b173@I-love.SAKURA.ne.jp>
-Date: Sat, 3 Feb 2024 22:45:53 +0900
+	s=arc-20240116; t=1706987675; c=relaxed/simple;
+	bh=26n2wDOI+AnTt4d95yFKZbwl5d5B9VOn9T7RBM7iLFA=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ksEzkRzX2jLGCkKEgPEo5YRuif0ychIe7MaffJLKSIaNUnEK7UmuQlNBMxZdNgeHOUxY2S+fsrhECM/WywhOsGQs2gAFczGWkwWP1azWLrv0rFK4YM+v4DuapM2Av34IH5ME1xDLDL10qnRrpDWwzQE1hxsiGzpG8BWSWeVG8zw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=marliere.net; spf=pass smtp.mailfrom=gmail.com; dkim=fail (0-bit key) header.d=marliere.net header.i=@marliere.net header.b=gXfiWVzv reason="key not found in DNS"; arc=none smtp.client-ip=209.85.166.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=marliere.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=marliere.net header.i=@marliere.net header.b="gXfiWVzv"
+Received: by mail-il1-f182.google.com with SMTP id e9e14a558f8ab-363890b20dfso12633865ab.2;
+        Sat, 03 Feb 2024 11:14:33 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706987673; x=1707592473;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:dkim-signature:from:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=trpSR/SMHy6euCOyEqDbId3cuSXXzCOrIO/s9NSPmMU=;
+        b=JzaW1vwaIzVpFv/QUBEDAfULujleSKfLr3tTNwUpEP75SojQPNzgJZSqHMA4qzdmZl
+         +CHyZRuw+pNuVZpE8AjgxwLN30g7ZfyaVkKcVXmv59JJGQEA1uUywL+V6pfupAXz0gNY
+         XpTtEkimYmt6C6Nrv9jzeVrxdY6QoS6QayS9pPsHm50dSyt+AYaZ0VIwKZRmFefYMtjG
+         FDaBqcIji96SXvW3soAe4IX2ovNSJxpbYlur0uXjxRaFLn1G33n3NbuRMrNmR7uayUyS
+         4lRaj2GPuzMoKl426CVXVTY27caCoVcQp/uWH9Gy5QPHY69Rj/inVwcYjHeiTXeH77f1
+         /AhA==
+X-Gm-Message-State: AOJu0YxJpI8wU/lWhkcwtjfxzBErg/OYKjEa6GwgW65eBBaqnrUBN/NE
+	/+Vx1wJZOrX1GUcfHu84y7vcd+8X59gWTLZcLdg6KqQUARVAtsxA
+X-Google-Smtp-Source: AGHT+IEaz/no1SkqUx7Hl/PpO1AZUWZHzkoyp+/H3BN4Zini+Zn6oh6SMpp/W+PKrNGRxpQQwYQZPg==
+X-Received: by 2002:a92:c14c:0:b0:363:ad00:106d with SMTP id b12-20020a92c14c000000b00363ad00106dmr6384127ilh.4.1706987672810;
+        Sat, 03 Feb 2024 11:14:32 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCV28A2SFe/KlYb57G09Zf+0/ybKX1QVVvEkGp+Lr1Th7/Nr2swaOmig3mOQKTb3C/sDN8IXO1JO/YaTvphK3RIRpne9sfERQU7rdbORwzZMh5zjtqDR24+ncsQfQytsY/SerQkNckPDbpjy1+5QY5QPE9XOwMUwa7YBo8E/X1E=
+Received: from mail.marliere.net ([24.199.118.162])
+        by smtp.gmail.com with ESMTPSA id a19-20020a63cd53000000b005d6c208fbd2sm3568432pgj.35.2024.02.03.11.14.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 03 Feb 2024 11:14:32 -0800 (PST)
+From: "Ricardo B. Marliere" <ricardo@marliere.net>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marliere.net;
+	s=2023; t=1706987670;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=trpSR/SMHy6euCOyEqDbId3cuSXXzCOrIO/s9NSPmMU=;
+	b=gXfiWVzvcq+jMG+PY2rcjb2igyT2CStMSBWWdODnGsyHJ46WOF0T2JLgIL0qJmG9rcG5I7
+	9dM+MLUSe2v0YVOcVZZDlbSkaMehd7J0bgnFtIyda9ziBwo/YPP139Vy88PX7Ppm7AoF/v
+	uNf5Nt8Ci0OnDhx+WIWm68NnZEv6tkRu9wLY9iB4b6CJvuquxMislJCHO2hb+7xx3a4tih
+	kzDx62G7Zm/GlRAVWgl5gg73CwXtmU0sXRUXmbjf0FOmK0fCvCpCpgD75nTaajR0ErDYSS
+	rrSZdhhkB8iNQy8Ip2wLjYdaCsoqdJNT2WbImGuHMGA9t8Q5pKa6E23XV6oapQ==
+Authentication-Results: ORIGINATING;
+	auth=pass smtp.auth=ricardo@marliere.net smtp.mailfrom=ricardo@marliere.net
+Subject: [PATCH 0/2] drivers: tty: struct bus_type cleanup
+Date: Sat, 03 Feb 2024 16:14:49 -0300
+Message-Id: <20240203-bus_cleanup-tty-v1-0-86b698c82efe@marliere.net>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: n_gsm: restrict tty devices to attach
-Content-Language: en-US
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-        syzbot <syzbot+06fa1063cca8163ea541@syzkaller.appspotmail.com>,
-        syzkaller-bugs@googlegroups.com,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Starke, Daniel" <daniel.starke@siemens.com>,
-        Lee Jones <lee@kernel.org>, Fedor Pchelkin <pchelkin@ispras.ru>,
-        linux-kernel@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-References: <00000000000039f237060f354ef7@google.com>
- <83414cb6-df16-4b6d-92e3-d54d22ba26cc@I-love.SAKURA.ne.jp>
- <9cd9d3eb-418f-44cc-afcf-7283d51252d6@I-love.SAKURA.ne.jp>
- <82aa07d4-13ac-4b1d-80cd-0970c71752a5@kernel.org>
- <7dc23b9d-5120-4966-b47b-fcabe270d498@I-love.SAKURA.ne.jp>
- <42d17017-1d30-4c54-9c28-9d9ba2494e07@I-love.SAKURA.ne.jp>
- <2024012418-passover-habitual-5a92@gregkh>
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <2024012418-passover-habitual-5a92@gregkh>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAKmQvmUC/x3MQQqAIBBA0avErBN0khZdJSJMxxoIC60opLsnL
+ d/i/wyJIlOCrsoQ6eLEWyhQdQV2MWEmwa4YUKKWKBsxnWm0K5lw7uI4HqG0bJVTHj0aKNUeyfP
+ 9H/vhfT+PenV5YQAAAA==
+To: Rob Herring <robh@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ "Ricardo B. Marliere" <ricardo@marliere.net>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1008; i=ricardo@marliere.net;
+ h=from:subject:message-id; bh=26n2wDOI+AnTt4d95yFKZbwl5d5B9VOn9T7RBM7iLFA=;
+ b=owEBbQKS/ZANAwAKAckLinxjhlimAcsmYgBlvpCzakPvRaeVx0/7hNimiKunBZOiW7aA+oKBv
+ MmDx+drc2mJAjMEAAEKAB0WIQQDCo6eQk7jwGVXh+HJC4p8Y4ZYpgUCZb6QswAKCRDJC4p8Y4ZY
+ pg2hD/9t18eCd5axwCJiGv4u6CeO6M1WhPE3/JDcPXrRy9JQjIpTblkO39qX6l3VjVSuYDNRCTJ
+ Cfd0Zmdo1z0mbtuOXYLbSEJtoyMi9cf7ldLTTuWs3hToHYuUnlhBYBPfAPwVn4iGg/uoFX5Pg51
+ S1HyqXLOvgJeqgbO1BT+fQIDfD2pJNvh3xwhgZY452RmW9loOIQlSx0TJy1nRqje/kRB+AxYd3C
+ 4aZVvuyNlFrQCRFQ7RDKrhiMhsSF0uDdPBB4XuQU3axfM0vSO5bzbp63GB3ALtb5+jx1CjzzWkn
+ vvdvIB0QEpfwE5jkJeqoHGDryiZAIN4R0o8kgFqdcTlxvHCN1afkaNgL967OfaCvtEkDEZvlVQ3
+ pswEXkPefSzU64SCAtQ0G1e1a0g6d+2vUeuzo217tHfh932rVMSD4CX+G0CjryfQrBxLoSlTiUW
+ OGT6o5aHryPw+x/2a6NNzRA9IDsOBzaW/V+j2kazQd5+ZqyM6LpGQ7aWVTSBQKSQ7AWFTBDwXbi
+ pOZ2I6fPpZq55ztClmq8kIclXjQzmAjvimWFurn0YPeBeLtwLeWXhnuMW1LWeRsiywYAr5/mluT
+ kiRYj3BdcBWd6UWPS+P9ufArpWpVbX0KQFM3weIab+vED7UyXZVorW+wZGstZ+VFAB3NCBrEHl9
+ ANORTyrl2qiNHlg==
+X-Developer-Key: i=ricardo@marliere.net; a=openpgp;
+ fpr=030A8E9E424EE3C0655787E1C90B8A7C638658A6
 
-On 2024/01/24 22:14, Greg Kroah-Hartman wrote:
->> @@ -3630,6 +3631,17 @@ static int gsmld_open(struct tty_struct *tty)
->>  	if (tty->ops->write == NULL)
->>  		return -EINVAL;
->>  
->> +	major = tty->driver->major;
->> +	/* Reject Virtual consoles */
->> +	if (major == 4 && tty->driver->minor_start == 1)
->> +		return -EINVAL;
->> +	/* Reject Unix98 PTY masters/slaves */
->> +	if (major >= 128 && major <= 143)
->> +		return -EINVAL;
->> +	/* Reject BSD PTY masters/slaves */
->> +	if (major >= 2 && major <= 3)
->> +		return -EINVAL;
-> 
-> That is a lot of hard-coded magic numbers, why aren't these defined
-> anywhere?
+This series is part of an effort to cleanup the users of the driver
+core, as can be seen in many recent patches authored by Greg across the
+tree (e.g. [1]). Specifically, this series is part of the task of
+splitting one of his TODOs [2].
 
-Well, include/uapi/linux/major.h defines
+---
+[1]: https://lore.kernel.org/lkml/?q=f%3Agregkh%40linuxfoundation.org+s%3A%22make%22+and+s%3A%22const%22
+[2]: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git/commit/?h=bus_cleanup&id=26105f537f0c60eacfeb430abd2e05d7ddcdd8aa
 
-  #define TTY_MAJOR 4
-  #define UNIX98_PTY_MASTER_MAJOR 128
-  #define UNIX98_PTY_MAJOR_COUNT 8
-  #define UNIX98_PTY_SLAVE_MAJOR (UNIX98_PTY_MASTER_MAJOR+UNIX98_PTY_MAJOR_COUNT)
-  #define PTY_MASTER_MAJOR 2
-  #define PTY_SLAVE_MAJOR 3
+Signed-off-by: Ricardo B. Marliere <ricardo@marliere.net>
 
-but does not define end of UNIX98_PTY_SLAVE_MAJOR range, and
-no file defines start of minor number for virtual consoles.
+---
+Ricardo B. Marliere (2):
+      serdev: make serdev_bus_type const
+      serial: core: make serial_base_bus_type const
 
-Does fixing this bug worth updating include/uapi/linux/major.h and adding
-include/uapi/linux/minor.h ? Since these numbers won't change, I feel that
-a line of comment is sufficient.
+ drivers/tty/serdev/core.c            | 2 +-
+ drivers/tty/serial/serial_base_bus.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+---
+base-commit: fccc9d9233f918ee50cf2955ae7134a7f3418351
+change-id: 20240203-bus_cleanup-tty-14061d1f2f2a
 
-> 
-> But really, this is only for fuzz testers, why can't they just not ever
-> bind this to a console?  Why do we have to have these checks in the
-> kernel to prevent userspace from doing dumb things that no real
-> userspace will ever do?
-
-Fuzz testing is for testing unexpected arguments. This bug is nothing but
-missing validation that should be fixed on the kernel side rather than
-trying to tune fuzzers.
-
-> 
-> thanks,
-> 
-> greg k-h
+Best regards,
+-- 
+Ricardo B. Marliere <ricardo@marliere.net>
 
