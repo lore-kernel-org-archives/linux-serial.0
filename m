@@ -1,119 +1,135 @@
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4231A5FF1C;
-	Sat,  3 Feb 2024 19:14:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23B6811C8B;
+	Sat,  3 Feb 2024 20:47:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706987681; cv=none; b=kLJFGGD1ZSrMeIGDrC+iCEou+D4ufPS/3wL41+ntcntRw5ZE+j3smxiyjQm6Xo3y47v/wMWxnGjj9TD3lW2yfuYNlwZ7Axrk1a1vO+1hVohD2mGfD2gELs4GH3tH0fNQKdqozKc+SUq0yCHR5oYZyvRw9zGTkXpL7Xx5L0HcWgo=
+	t=1706993264; cv=none; b=jlHohH7yfiqm1aODvTEoRzozoJHyHq1DQ7ES2BOcq9dVz2b+4SNndJB+s/+bk8J3g6DofQPr4y1npog3G2IG4G4mHLUVM2cxA/h4uk/6BMUqOIDNV7ie7I63ID0ZT2BZisuax44gcmHw1qfETMPElhTTUaUPmIWMGa7B90w/jjg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706987681; c=relaxed/simple;
-	bh=M2yMvEd7apf6euaEi/MHIC/Ic/qD4VKhS5jPAVrikwA=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=k2ZL6njkAA6NDScvZZzLiXNvaFrtYv56UzphJcxuyg+TvVG3ySdsbgVxXNDN2iPpiwg7wleN7gAaVbes30lHWMA5thh6q7fg7liGd+v493aPfv9beSrnE6CvqRyop6oF8ruNf77nkuNqIaESGZ3Buv0k924zvjq2eOXymCjfldA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=marliere.net; spf=pass smtp.mailfrom=gmail.com; dkim=fail (0-bit key) header.d=marliere.net header.i=@marliere.net header.b=KRbdvwMG reason="key not found in DNS"; arc=none smtp.client-ip=209.85.167.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=marliere.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1706993264; c=relaxed/simple;
+	bh=f2I8gWEzkwSZbGGlhrQHuwLADXjkshYxOtnScKHw11s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=M2ieEU5QHTImoDhGtfYNa29Wywi7gIvfmRQDOwqtEX7rQU3S70ZYCAa0Q37NDayfaw5QzJSdzRrwKGUDkcG+c0mOxfiuM6qN9KQ/GLWe4Kk9MBpW7RMnsPttj1gIs8KJjDm2MNRl4GAsJXdiHVc2GPNXG4wN40yX/1kkA+4unpU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GN/4T/Rq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=marliere.net header.i=@marliere.net header.b="KRbdvwMG"
-Received: by mail-oi1-f181.google.com with SMTP id 5614622812f47-3bd72353d9fso2374901b6e.3;
-        Sat, 03 Feb 2024 11:14:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706987679; x=1707592479;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:dkim-signature:from:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=L0me723O1wv9PKFRXBwhR3oYK5VM7+JumecBNWaeJjo=;
-        b=KsBD71UJ0gbuMCJruuVoadzDiRmFt/onGRiwMGYd1/4Va/d+Etvrqd7HYZHuyqdXZ7
-         NSX8i2ta46yOO2K7eqQwwBAGRX3RxzTvuaAKgauNHiFXVWB7AKiElWnAADdJzVu0nUBA
-         8PcVW+wOE558zyBUOHFtPR4Ufp8hQGStrUY0i8twUtBhSHQ8EU6LF3ihDXbBa4xROaqI
-         B5MWmMKNT7h56NE+VVtCvFkiOq00UWL6r693z5+6M5+I3ygxkZgLQfFpFugvCCTtKigh
-         QaGlN9rEuaFiBMRQpNhuaaYWuZV2x+df03Er4PJ61xC3eNR3mOB2nYac33hVcA0tzEj6
-         QZ6g==
-X-Gm-Message-State: AOJu0YxgJ+vi6sOWaV8pmuLg0LMU5Zr+ixFpK+ronSh8AwClEqMW1VMW
-	1axBahVnHs+dobkcH34Q2u7sxfaIFb5Xp4ZMNRC6b16Fk+uKIPqR
-X-Google-Smtp-Source: AGHT+IEJFYCQti3eyMzzs5AGetGOTDq0SqvyNM4rKsZVo2SRoSrwJzHykUyCBHnFe41ctOjC93NNSQ==
-X-Received: by 2002:a05:6358:d389:b0:176:b16a:f392 with SMTP id mp9-20020a056358d38900b00176b16af392mr13876718rwb.10.1706987679138;
-        Sat, 03 Feb 2024 11:14:39 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCXGfKh5KmVF2ecxFgkGgZOOqDmQ0Xb8eDXW61jQi6uCGlMTi+IGgM0e8nXjeigDrGIx1pET62pvg02rmm3KAQR1s6RqdFsroLgwN6eNmB96OXAox9LnLBzBBcp28DAFKR1AkMyALZ4eSgpEhxUnCU87r5ubrz5vJ5CSw0JiDS8=
-Received: from mail.marliere.net ([24.199.118.162])
-        by smtp.gmail.com with ESMTPSA id h26-20020aa79f5a000000b006e0350189f0sm481692pfr.91.2024.02.03.11.14.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 03 Feb 2024 11:14:38 -0800 (PST)
-From: "Ricardo B. Marliere" <ricardo@marliere.net>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marliere.net;
-	s=2023; t=1706987677;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=L0me723O1wv9PKFRXBwhR3oYK5VM7+JumecBNWaeJjo=;
-	b=KRbdvwMGjFmLzkKWvOBSiZx4/a5iSc8qLp7e4xzLuiy/ltEaPZMi6TPWRREL4O1nBQSlWP
-	8RX5J0hZt9s3ieEeoluGQZ2FjEsg3kqQIp5LP7JGzrTDSYqKjnT447jJIEPrbR06WMwzvx
-	DmDwbAgAL8PRHOl6KiO7nciQ0ZkACt/V/sqz6xJbFStuiLWUbL6XVBKe9jmV+4G2VlN2kl
-	9gEtJ4iUk9qq7weLyqqRvA4B3QxgAGu3KtezI733s67jrRZVZD2OoQuyAmOr9Hb5F4EDKA
-	BCtvwrcsNpOachD9g+u9bb9Y2kLTI26BsfqPUnUQk5qmwjdaFUxQx/8/MNXXDQ==
-Authentication-Results: ORIGINATING;
-	auth=pass smtp.auth=ricardo@marliere.net smtp.mailfrom=ricardo@marliere.net
-Date: Sat, 03 Feb 2024 16:14:51 -0300
-Subject: [PATCH 2/2] serial: core: make serial_base_bus_type const
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GN/4T/Rq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA2F8C433F1;
+	Sat,  3 Feb 2024 20:47:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1706993263;
+	bh=f2I8gWEzkwSZbGGlhrQHuwLADXjkshYxOtnScKHw11s=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GN/4T/RqtAM5pPUfQihjK3Wa8sAV3pUsmPhYvA/cg2Mt2nro2ZyjanWbrJsFNV3X0
+	 z5BUbR+pQSMZAeHOP3sXKHIURcwPfLXvK10KTL7JVV6BMqAtJcWeBZZaUNH8BgEZwr
+	 WzCvc/4pSyEOOKjimaGiYIRPvzhm5cFZkClqVzDoxmb/PXTafnKB5XS5SvdpzINgmK
+	 q/IJVnPabe73UT5UmIzBjjFDfb7yi95qtdPjsD2ng69sNJ9Ox97m8liHEvjdKMoKE0
+	 QcQjfDe1BO9oUeMuwNyLPZn3s3kiyHosGSbJT7/8lpjlfsPnQ91fjVkcMwRyGM/tUl
+	 QPqwMl+qAzuzA==
+Date: Sat, 3 Feb 2024 21:47:39 +0100
+From: Wolfram Sang <wsa@kernel.org>
+To: Gatien Chevallier <gatien.chevallier@foss.st.com>
+Cc: Oleksii_Moisieiev@epam.com, gregkh@linuxfoundation.org,
+	herbert@gondor.apana.org.au, davem@davemloft.net,
+	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+	conor+dt@kernel.org, alexandre.torgue@foss.st.com, vkoul@kernel.org,
+	jic23@kernel.org, olivier.moysan@foss.st.com,
+	arnaud.pouliquen@foss.st.com, mchehab@kernel.org,
+	fabrice.gasnier@foss.st.com, andi.shyti@kernel.org,
+	ulf.hansson@linaro.org, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, hugues.fruchet@foss.st.com, lee@kernel.org,
+	will@kernel.org, catalin.marinas@arm.com, arnd@kernel.org,
+	richardcochran@gmail.com, Frank Rowand <frowand.list@gmail.com>,
+	peng.fan@oss.nxp.com, lars@metafoo.de, rcsekar@samsung.com,
+	wg@grandegger.com, mkl@pengutronix.de, linux-crypto@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
+	linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
+	linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+	netdev@vger.kernel.org, linux-phy@lists.infradead.org,
+	linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+	linux-usb@vger.kernel.org
+Subject: Re: [PATCH v8 02/13] dt-bindings: treewide: add access-controllers
+ description
+Message-ID: <Zb6ma9lHMu3SAe0U@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+	Gatien Chevallier <gatien.chevallier@foss.st.com>,
+	Oleksii_Moisieiev@epam.com, gregkh@linuxfoundation.org,
+	herbert@gondor.apana.org.au, davem@davemloft.net,
+	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+	conor+dt@kernel.org, alexandre.torgue@foss.st.com, vkoul@kernel.org,
+	jic23@kernel.org, olivier.moysan@foss.st.com,
+	arnaud.pouliquen@foss.st.com, mchehab@kernel.org,
+	fabrice.gasnier@foss.st.com, andi.shyti@kernel.org,
+	ulf.hansson@linaro.org, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, hugues.fruchet@foss.st.com, lee@kernel.org,
+	will@kernel.org, catalin.marinas@arm.com, arnd@kernel.org,
+	richardcochran@gmail.com, Frank Rowand <frowand.list@gmail.com>,
+	peng.fan@oss.nxp.com, lars@metafoo.de, rcsekar@samsung.com,
+	wg@grandegger.com, mkl@pengutronix.de, linux-crypto@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
+	linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
+	linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+	netdev@vger.kernel.org, linux-phy@lists.infradead.org,
+	linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+	linux-usb@vger.kernel.org
+References: <20231212152356.345703-1-gatien.chevallier@foss.st.com>
+ <20231212152356.345703-3-gatien.chevallier@foss.st.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20240203-bus_cleanup-tty-v1-2-86b698c82efe@marliere.net>
-References: <20240203-bus_cleanup-tty-v1-0-86b698c82efe@marliere.net>
-In-Reply-To: <20240203-bus_cleanup-tty-v1-0-86b698c82efe@marliere.net>
-To: Rob Herring <robh@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
- "Ricardo B. Marliere" <ricardo@marliere.net>
-X-Developer-Signature: v=1; a=openpgp-sha256; l=962; i=ricardo@marliere.net;
- h=from:subject:message-id; bh=M2yMvEd7apf6euaEi/MHIC/Ic/qD4VKhS5jPAVrikwA=;
- b=owEBbQKS/ZANAwAKAckLinxjhlimAcsmYgBlvpCztwVltvFpD3TUgSJStNwrCcetxPEJ5vyt+
- ad3PmhHO0WJAjMEAAEKAB0WIQQDCo6eQk7jwGVXh+HJC4p8Y4ZYpgUCZb6QswAKCRDJC4p8Y4ZY
- pknYEACESQ6oYokCzwH0ujTwvXPm5TBYLTI0n0aFskJmL4ZV261rrh9o9E/9k6fW/oeCmi9kevW
- /VHTFX44Qq9xKmOGI7DXxm5cOhZ/DVt/ZosJH697v81rZZXrr+ii7kBrs5jxL3NlOD7vtfvP+OG
- /5qndp1NqOmqf5WdRxHAy/libJfez95bXoCaCGSkRG+xZH7xuGaFuUFbO/bEKz9kB0Msdwg8lCG
- cgcjFLIc2MQnADTDBWgMDyU0T7nZtkCFb6JhKYnrKVqpZnHkJgh/8k6lgwMKV63WSjnQsLuW4Wl
- VI5CiIGt5Me2rtjOrByQ/r5cP4Sqno12EV6gAJkbYs3LDg/uIZHoXKc4xWaVhBLjsy1EYtchday
- a371/fjan8CSuD8gMGBew7X+zPI/JXQy4mYTKuNa8tG0StTXRSUgQ17d/WBfkKCQN+qeRHWDv67
- Wz31uXFe7LU/QoMeBV9GKheOqlRUpwzflbElWQ8FrOQm6FG5A0/yvuaUVkq2V4KyOdhadUx3nYs
- l6TWf32+tJ4y54GpN4iH522Q+Z5sMFp7jDdl/yb5woBldnbp3cZNUcxFekb0nOnu+bCEoX26IPf
- 7uXzoa7Gh0F/OhLxTyXFJ1c/NLlRc4gvdXi1s/+cdjXhZSVZGSxToXbGkW6TyhmQE0+Hd9Xsp6l
- HUqmrFTr9XYn4MQ==
-X-Developer-Key: i=ricardo@marliere.net; a=openpgp;
- fpr=030A8E9E424EE3C0655787E1C90B8A7C638658A6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="VPm+VxExOC+V7OZ+"
+Content-Disposition: inline
+In-Reply-To: <20231212152356.345703-3-gatien.chevallier@foss.st.com>
 
-Now that the driver core can properly handle constant struct bus_type,
-move the serial_base_bus_type variable to be a constant structure as well,
-placing it into read-only memory which can not be modified at runtime.
 
-Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Ricardo B. Marliere <ricardo@marliere.net>
----
- drivers/tty/serial/serial_base_bus.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--VPm+VxExOC+V7OZ+
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
-index 3dfcf20c4eb6..4df2a4b10445 100644
---- a/drivers/tty/serial/serial_base_bus.c
-+++ b/drivers/tty/serial/serial_base_bus.c
-@@ -41,7 +41,7 @@ static int serial_base_match(struct device *dev, struct device_driver *drv)
- 	return 0;
- }
- 
--static struct bus_type serial_base_bus_type = {
-+static const struct bus_type serial_base_bus_type = {
- 	.name = "serial-base",
- 	.match = serial_base_match,
- };
+On Tue, Dec 12, 2023 at 04:23:45PM +0100, Gatien Chevallier wrote:
+> access-controllers is an optional property that allows a peripheral to
+> refer to one or more domain access controller(s).
+>=20
+> Description of this property is added to all peripheral binding files of
+> the peripheral under the STM32 firewall controller. It allows an accurate
+> representation of the hardware, where various peripherals are connected
+> to a firewall bus. The firewall can then check the peripheral accesses
+> before allowing its device to probe.
+>=20
+> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
 
--- 
-2.43.0
+Acked-by: Wolfram Sang <wsa+renesas@sang-engineering.com> # for I2C
 
+
+--VPm+VxExOC+V7OZ+
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmW+pmsACgkQFA3kzBSg
+KbY64RAAof4Gx7h4jhXu9UFvGgxDMB7nucJwU2vnrWAQqslpX78IIuHnDzQGSdx4
+YeqQnv3x5PquSqBz8x/rnE1ptR0LqnAgeJdEOQB0AAicQ+VFy75kPngr9dtiCJuf
+SrCwaIYQ13qIhhC6pa7HTEUSQN/KX6DVSffmeJmOJoHIqGa1L1ldEH5tujF71Plb
+q5ugpGi2Jkmb+UU5/EaXadNKZ5b3BSp/xWur8Eemy9Z4DqqoipzJRzSJHufFNZDR
+pRdNn14JQlzQ948vT+YdpGqPE6jrVpd48rygAjaXsPx3cVQx7ouU6tKPnFLjtgyp
+tb0R2ZIQNXVaQV36XLwhvv0qFqHEiY36q+GjYSEbMHbO1b0+zneKgmZXNSwCclEp
+WQ8DrD3UEKTXcDHmoRV5GVgzZyk7wmK8zq3jofTemYyfKhSvsmAiufzZCQLV/9GI
+ScuNib34aJrsiIXiD40DsFNcutPh2v+aBXQmtfpkA++3ZvY9aBQa5KeEqzrKPaa0
+AVXFtXPN4hnNkUzTogCTHEvL7dYtbi0h7W5fun3D5kOLdZuewR8vFAotIaDRG7tB
+S7AWJDu+x2RT2xAs2yJEfSHMwoBZRdq3nJVugmRDb+VELZmIDBdN4vwBRXfi+cHr
+ouzPgt76DcQhfF6JGRUhloWtVuWW3QRQ1uYMpWUrKztG+3WiqBU=
+=nMRV
+-----END PGP SIGNATURE-----
+
+--VPm+VxExOC+V7OZ+--
