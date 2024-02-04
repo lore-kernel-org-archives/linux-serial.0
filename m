@@ -1,128 +1,63 @@
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 686B87493;
-	Sun,  4 Feb 2024 03:24:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.190
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84C198C1B;
+	Sun,  4 Feb 2024 07:18:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707017076; cv=none; b=GJzvJUGq46i+Bp6fTG9NyppS4LBe7kXYksNTsj4HF/Sx8+K+GcQnw+0mpaAlWmBU0fqHQ4SEWgYKE6sp9FlnTPvL8ja5ecOTbpkVh97oPD1AUdRZWn0K2pqPrsXrh1RYj20xP/0aCPEE81JjJX3osURRRV9Ok22u3sEGpaphsrU=
+	t=1707031117; cv=none; b=ABLIjVaYt9fDELkWbJkJsJuqrbNhHf/+v2Xtma92NzHR83+q3QmdM1Xv/VUiUqgr/5pwxkQ8biR0U0rNEViGsi4QkFGTg3k9jU4jks2E82gFbGJwH5VQ4gW17jxbEhZ4SZ/N60GmslxaQFXj7vmjIc04n3+jmil0uLPrhiUw2E4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707017076; c=relaxed/simple;
-	bh=yDtEU9udkSi9sX7/bNnaQ8KwNv6DdunABj3WnokyXc0=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=DeAWfcW7xV4Nj3+sLUw5f/ES4/ngN+pJqVimgky1bLvshnwKfJ1Bf8THXTJ5pxOtrqyid0Y4p447mhHFBLzgdUv9SfILDaLCwKtCr0z+iQxGYBgYm8lp5zOMNjKbrcr0dujV1KV3DXzzYgBVzPkTYtcbS4c/SJ6hnvrHY+FKC0Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.190
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.214])
-	by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4TSFFs0mWZz1xnB5;
-	Sun,  4 Feb 2024 11:23:13 +0800 (CST)
-Received: from canpemm500009.china.huawei.com (unknown [7.192.105.203])
-	by mail.maildlp.com (Postfix) with ESMTPS id 121CA1A016C;
-	Sun,  4 Feb 2024 11:24:17 +0800 (CST)
-Received: from localhost.localdomain (10.50.165.33) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Sun, 4 Feb 2024 11:24:16 +0800
-From: Yicong Yang <yangyicong@huawei.com>
-To: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>, <tony@atomide.com>,
-	<linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>
-CC: <john.ogness@linutronix.de>, <andriy.shevchenko@linux.intel.com>,
-	<tglx@linutronix.de>, <yangyicong@hisilicon.com>, <linuxarm@huawei.com>,
-	<prime.zeng@hisilicon.com>, <jonathan.cameron@huawei.com>,
-	<fanghao11@huawei.com>
-Subject: [PATCH] serial: port: Don't suspend if the port is still busy
-Date: Sun, 4 Feb 2024 11:19:57 +0800
-Message-ID: <20240204031957.58176-1-yangyicong@huawei.com>
-X-Mailer: git-send-email 2.31.0
+	s=arc-20240116; t=1707031117; c=relaxed/simple;
+	bh=B4fhnVthxiZQ0dVJdl2GGx0a+RKL+QH/PMaRY12nKtE=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=N0nxpMab07Kda06x1mcdKTJo0HZ7ieIipCkXaBxNmSG3IemLt2ohZCo6rlz5Vf1+s5oELsc1ynel32rkDslKoL0/uhzoa39ZtozKIwchXWrm+9Xe/EQfSMKvIyzl/fiSYk4RymcOxXlWL105VgEccHC3Pl/Af3nf6Br9aiyGG3U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RMzN0m+B; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RMzN0m+B"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F07B1C43399;
+	Sun,  4 Feb 2024 07:18:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1707031117;
+	bh=B4fhnVthxiZQ0dVJdl2GGx0a+RKL+QH/PMaRY12nKtE=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=RMzN0m+BKsOmUeuakxrw8d6EVNGMnBVWd5K7jO4K+HgRKJZHGvdvo3O+/h5QgrU4w
+	 bsd1uz8IEN5e9oysTDpBM7YuOMsFJQg/Eaiys8JkSSrZlWbYQ/A2xldBX46jF+5duf
+	 YITmxaKeVUt97c73B1Axl0wp5LA1VFPHRXTqfeUl5oPhNxteSxGYqs2KQgqEbsuojz
+	 x2PBxf/xAF36dqiqZicN/xjGwaF5cRxUh6K/vi+VSvyzHKS52XY668XhJ5naIoeHdr
+	 QPdmKCNyJhEvZJc4HrCzxM5TuziHiyxUKvuYT2aDy4hcituC+8FVot4+1mfuiNuW5Y
+	 EuK1+U/eVtLIg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D6D4DDC99EA;
+	Sun,  4 Feb 2024 07:18:36 +0000 (UTC)
+Subject: Re: [GIT PULL] TTY/Serial driver fixes for 6.8-rc3
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <Zb609YTmtyjUEwhc@kroah.com>
+References: <Zb609YTmtyjUEwhc@kroah.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Zb609YTmtyjUEwhc@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.8-rc3
+X-PR-Tracked-Commit-Id: b35f8dbbce818b02c730dc85133dc7754266e084
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 0214960971939697f1499239398874cfc3a52d69
+Message-Id: <170703111687.23816.17679510281277946350.pr-tracker-bot@kernel.org>
+Date: Sun, 04 Feb 2024 07:18:36 +0000
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500009.china.huawei.com (7.192.105.203)
 
-From: Yicong Yang <yangyicong@hisilicon.com>
+The pull request you sent on Sat, 3 Feb 2024 13:49:41 -0800:
 
-We accidently met the issue that the bash prompt is not shown after the
-previous command done and until the next input if there's only one CPU
-(In our issue other CPUs are isolated by isolcpus=). Further analysis
-shows it's because the port entering runtime suspend even if there's
-still pending chars in the buffer and the pending chars will only be
-processed in next device resuming. We are using amba-pl011 and the
-problematic flow is like below:
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.8-rc3
 
-Bash                                         kworker
-tty_write()
-  file_tty_write()
-    n_tty_write()
-      uart_write()
-        __uart_start()
-          pm_runtime_get() // wakeup waker
-            queue_work()
-                                             pm_runtime_work()
-                                               rpm_resume()
-                                                status = RPM_RESUMING
-                                                serial_port_runtime_resume()
-                                                  port->ops->start_tx()
-                                                    pl011_tx_chars()
-                                                      uart_write_wakeup()
-        […]
-        __uart_start()
-          pm_runtime_get() < 0 // because runtime status = RPM_RESUMING
-                               // later data are not commit to the port driver
-                                                status = RPM_ACTIVE
-                                                rpm_idle() -> rpm_suspend()
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/0214960971939697f1499239398874cfc3a52d69
 
-This patch tries to fix this by checking the port busy before entering
-runtime suspending. A runtime_suspend callback is added for the port
-driver. When entering runtime suspend the callback is invoked, if there's
-still pending chars in the buffer then request an runtime resume for
-handling this.
+Thank you!
 
-Cc: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
----
- drivers/tty/serial/serial_port.c | 22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial_port.c
-index 88975a4df306..60d1eec6b6b7 100644
---- a/drivers/tty/serial/serial_port.c
-+++ b/drivers/tty/serial/serial_port.c
-@@ -46,8 +46,28 @@ static int serial_port_runtime_resume(struct device *dev)
- 	return 0;
- }
- 
-+static int serial_port_runtime_suspend(struct device *dev)
-+{
-+	struct serial_port_device *port_dev = to_serial_base_port_device(dev);
-+	struct uart_port *port;
-+	unsigned long flags;
-+
-+	port = port_dev->port;
-+
-+	if (port->flags & UPF_DEAD)
-+		return 0;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	if (__serial_port_busy(port))
-+		pm_request_resume(dev);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
-+	return 0;
-+}
-+
- static DEFINE_RUNTIME_DEV_PM_OPS(serial_port_pm,
--				 NULL, serial_port_runtime_resume, NULL);
-+				 serial_port_runtime_suspend,
-+				 serial_port_runtime_resume, NULL);
- 
- static int serial_port_probe(struct device *dev)
- {
 -- 
-2.24.0
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
