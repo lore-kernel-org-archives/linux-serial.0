@@ -1,57 +1,57 @@
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70B7228E1B
-	for <linux-serial@vger.kernel.org>; Mon,  5 Feb 2024 13:34:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DEA32260A
+	for <linux-serial@vger.kernel.org>; Mon,  5 Feb 2024 13:37:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707140076; cv=none; b=paDP6HogFRvsT2P4syx+GXZ+KixgHKnHoIg5ehuoKjUyqT3jxJN23wgpnwawCVrsPcxxwdVRrpay23yAx8OZmuTywwY0h6KMysUZa9sqyTRXRv8UFl22bbDvgqy0rbxpUtbcfpGQkwLRGbx7e/siR+vLd/a7S9YcGCO1X9Yp/fs=
+	t=1707140229; cv=none; b=VoZ1kJYasaTfBLsdcLjdoIZnoIN87knt5qY5pNeOLlJGRvKgreiyv9xUMm/8uth+b5u0uE2IlnRu1+Vw7rv9+Zf4UW9RFou2eO/t1dYOYU+WBozZ8ArSaaGKZGjaRCnJc0LmcyJWSBHEW8jNZ81wGc+Zpn2vFTP99A9255HGz+k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707140076; c=relaxed/simple;
-	bh=UW3im1Ox52r7lMN+hqUD1btlAY9FG9HoD4t9HdhYE9w=;
+	s=arc-20240116; t=1707140229; c=relaxed/simple;
+	bh=fOSFDRKimv2ug0bZCZy4PNZkl8RruJjLYbcI79qt6K0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P0sRhAULc8ogtFnqwNLfCA0HXYtd3HxbkY/budInJmEtfyh64s9iMUWVTY2+uUUaqoCs6Rdqoa37acvjPAWTMipzvsql1o7l+nmvkaTAkXof+PUz7oMG3pYQa+mV3nvdnbQTnmXOmbl0g2WHyTt4G9vNvPvxhHABWq+PZ+fyRF0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=QvflKCCq; arc=none smtp.client-ip=209.85.208.52
+	 Content-Type:Content-Disposition:In-Reply-To; b=ayQOE6/RelTu7JOFdKeSr5krCiFxhER3Fc3hLRklwTp0aBIiGAaatC4KykqVNDCY6zPmrIAcSbK772MovYVcNXsrjwZlu2K94a7ATiDX0NeyH8GtgLsHaDD4PNnSUbioV/xocdUnaoXEn6cEj7+n5d1r+agMErbSMf523IhnUCI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=FwI6+fkk; arc=none smtp.client-ip=209.85.208.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="QvflKCCq"
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-55fcceb5f34so4249793a12.3
-        for <linux-serial@vger.kernel.org>; Mon, 05 Feb 2024 05:34:34 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="FwI6+fkk"
+Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-55fc7f63639so5043383a12.1
+        for <linux-serial@vger.kernel.org>; Mon, 05 Feb 2024 05:37:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1707140073; x=1707744873; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1707140224; x=1707745024; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MoY22caN72Vu9KETh7xj+mgQ1cwoewKUNf39bRI8TM4=;
-        b=QvflKCCqPT8NaOkNUQLqtciDfXwlIRUFHRJxHry180Am8utFKkstCAa5P2g5wL2mTy
-         D0sx4+i69x94FFoLXRJy1kCNqOeTaP8hZT9pjzMCIXmPn2wTAuVlhQX3vp7s99NpTFn3
-         k+8quJ9db25UqbTP1YOTlzJyCHZH+HuV1O2a/H8bN6WCnN8N0C8OSaDlvA0lrkSmYos+
-         rnzavng8fi+1zc8YclT898Dg5PPbQCr/eN7j0qmZsTvavTkFMKGusMjaITS25Bl2mwoQ
-         PJ8KdLiyULQGEdsBt3YBR1z7Oal9l8fLGmK/ufHCnL5k8Jp9vWCSAdFeaJ4b7d5sOEDh
-         L8dQ==
+        bh=dhvBPdCRvn2fx27a6ngoUG20w6mdfBMhz1CdhmSbPVM=;
+        b=FwI6+fkkYZEvjklRknU6DXSRMsmYvun/rAGakkPyokQ3L3/ELUaILvjvHRHiao8pe1
+         v2TWheu7U7NbJbRBQJOmI9tl7byi2xgVgGN0b7rD+bBZbPOAZqxxTY0EPHeZyqfTOTsV
+         AvBQokLzb8sxPdW5qXZeN7Ywyo259gCL4zgUTBzqiMT3xPAPUx7oHocNPVWDNoWukibg
+         Jkiswh7v6n64/V14VLK9VIscbfBcZmI7mHwjSaDdF4C/ieGz2cRy4zB0I0K0CvMhjIfC
+         jYXyeKhaRdpi03QaBhY9PqFG0RddCjXcCbKOEgdUTC9Uree/S+RXo2Tl8qaS+IGxhfpt
+         WBxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707140073; x=1707744873;
+        d=1e100.net; s=20230601; t=1707140224; x=1707745024;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=MoY22caN72Vu9KETh7xj+mgQ1cwoewKUNf39bRI8TM4=;
-        b=w5kheudF8Se06+cDY6KwHFmZshaxm/oiXSxBVYzHg4ocYr1jt3q0PktyA2gFjL6DKh
-         poo/oaFNVg2bIh8whiPNCq8ZR75hxJdjwAPkzVjd1uwp5Bdf8h6uOm60dp0+ENfnzuAT
-         WbXS0+s2B59VX0zU9VwuBnKEacwo8mVhdcALqF9hHVs0GVRglmfp3z8LqozkGagRDutf
-         Z4qn+wTHxzpV69jNV1R8/vtCz7Y5mh6/lkAfq4jEB4Te/Q48t1rT0G42a2JoIK7oK5LB
-         nw2XCRiYiA022F0R9zCG8hu6kCeja2rQDtwIWtc9Q+L+kM87r4zr1R/uIzyxDCfevPoy
-         aNgA==
-X-Gm-Message-State: AOJu0Yy2yh8UfiSE7polr0Czx2iyk8Nlr8nxAb7LgNYG3r2mGcKZGDCd
-	V02tKIPEs/i9L2vxBr5yUc8rgNRtUyuXbVx4rP3qFQbyK2da/Voi5iVqQFLFxkQ=
-X-Google-Smtp-Source: AGHT+IEC3kTLCzb3x/ZJNrQ3m7qH7T73JdE8hFqGPq0po96TlHhVpjsMylVBEMEi0JY0ZcznB5vRdA==
-X-Received: by 2002:aa7:d053:0:b0:560:1c4:cb31 with SMTP id n19-20020aa7d053000000b0056001c4cb31mr5211174edo.17.1707140072720;
-        Mon, 05 Feb 2024 05:34:32 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCWHvq8X17Q4c52RNFavgb5jCUgIyRYRaA7nmdEqwDRd8gtd1CIP7FTGjqjnlcFy9HC8NgTPlJjX1a6MB1SL/XYNjUvOFM2/ZVKmpLUANk9reiPUl/r7cFZq6Q68RMZ2KMNNoY/OmBdTr+j6PY6OZIc5zehJcaXY0BkPHtJ10damWnmTsIx0rX9pELJEYlI9Xe2owYhNT403E92YKvFvEUMp1pa2HVpN7mZZyuJn9NDNJRU6CZqfvhNkn6T9lJUEYBIphM5I3ZOmlaEuSVPHpBs8vplk6Syf7V6K7JlPQ0J0wbhxTt2ei2bDeN9eZ7LeJxMUpvAx0PkkCr3yrS8CJtqu/8QLHetSIYcfOuWMOz/WvYKE8EXKJC9CQNXGJZcEIpASA8jdLhSxFRh2odfpdKd9/ek2MaaIraTkonN+f0hUE9QPTXArPcNnmkck7rIy3MM0ETv3Idb3C4RrF57UhHsdw1B+58QEW1NPQoR1KPCX4akh1v/2UWpgqR+bqq4pxdmblx13T0S6PxCqEggOia5cdZ+YVjqedsSGxGsi/fd5oGc01RTu8TYrZS9zvryqI3aKkVulI8oGLq7vxy9akEMaeGOP+BJxorOjjAngW/8vB0APgHAE18Hxtv/o8AZUn8x9r8GMLGt7q5qEidT9eOls2oUEuFQduq29WmCn6vkyYdPbsSySuYWuFOvLLH2TlQgo/DUbST2vDu2VgkbdgZVMpLa8VkepdEdNYtEAovYT8vqYkOKU0OT2DVj+wMwaM2NvPpdd3KoE9pLcmO0jLUvgUUe9XPTOA+2f8XlaVXA=
+        bh=dhvBPdCRvn2fx27a6ngoUG20w6mdfBMhz1CdhmSbPVM=;
+        b=ci1uUn0CJ92FtnCUBOoMo9UVPnBRA/iNE2JCIy+005SARkIB2usAzW9+fD6qcbAabB
+         6CgAKCO1BCnV80s2Nyovp+gGhzWjis1jYX9diZ/+IDNYVhQoeOcdGunCr9fcVwpsteHY
+         eBKiUMFDOU8rZ2N7rQ+k4nwbvjWXE75ZXYlJgUzZU6zB3yZU6enuagHP1/k05E8W9TXV
+         yBQb0FnLCDSH8agcXyfot2zCKCSEGbCkQVnQqhXY6AP8QqKdOGDUKf8dQE2uSpMkJV/y
+         asrBahP2r86rXs881L/IrELLyvwRXqQmIxVTy7ErNBA4mgvKVitmcgjOfCBFkoFv4p2c
+         4jEQ==
+X-Gm-Message-State: AOJu0YyNK7aNxYXEtMJZnafr4/zzb+o6MKNDjTH0cVQwh1FwipoT4FNZ
+	/+HamnwFG9Ghp8DbFM0ysn9PAXSAXIbqGHbzcyCH20l2AoeAJTX6P3uE18H2BYY=
+X-Google-Smtp-Source: AGHT+IFQjIpuSLDaVihr1fAeiTdUd1YkcJC0Qwa57kAqFLwOw5qPxXGFof2zMQ2wswOhBIEVO4Curw==
+X-Received: by 2002:a05:6402:c90:b0:560:9277:80e5 with SMTP id cm16-20020a0564020c9000b00560927780e5mr191763edb.21.1707140224244;
+        Mon, 05 Feb 2024 05:37:04 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCWpleoW46IqW890YUCLtdnFwv+xQJHmszP0iVOwBL69TtpmHv4t1KzBGTuvqFXMV8IdHmuuWHcqgMmvc4q+Z0mAmvTVgQqAyng7GsB6Zsl7FKTNm6PxQdf0+ogp5NZltPThrv+Rqma0Igs8VmefyHznN3fKFLLLsAMzGJpRSTc4VEtY6IFjHXbMis2zJZtDMIFTRtqh/dS57xrWDOhHJN95wkj+inD9k6ISVaVg+xDTa3EGNrdxbRCqFfW0+myqMDvf/kaBNBzQq80Po8mGF0uuTQ74M9FRfz+Fm6f7NP0DQ/fb/mYBDzqqezrO8lD4JQajeiQLA4OFT+aMrgcZwDTUtxultQWw3Cym1WTenEt2fU+LvBBhPghurpIqMc/n5CRy2b51Pe5jzY4DBvFIq4a3UibU6YdXmzfS7l3B7eUj+sqKOKbAo8fgOSbzmWDhzvW/OvItjDPiC3i/gx3Q0Mnj5DaUKZ6lemZoB8HWTiW9yQN0ZXZlSBgD4u60rNHe6yLOclgiFgZJ4EVigC0DWo2OUYYUE2UJj0JKi4ilWfc3wd8fVqKBZElKfPiPtlvxHklwS5TaT84ywvUPjPqF6cH7u5ciZRpIPmO25gjc4m2tFRTQzFUW3YAgFyEaxR81t52+Jp2nZtHIGLU8iX0Erk38ZlgXGpkAtFZFwvFHaNvFiVKbRLfXmK2N00rQpn9eV8pdFfX6DaaGLzDVl1YRgvop7+sNe7ZeiqoJsLhbRNSifYH3Z9pLB6/iGsS99qiVGTA0+f6U
 Received: from alley ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id ew11-20020a056402538b00b0055fed0e2017sm3601596edb.16.2024.02.05.05.34.31
+        by smtp.gmail.com with ESMTPSA id e21-20020a056402149500b0055f4fbc32ccsm3782761edv.89.2024.02.05.05.37.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Feb 2024 05:34:32 -0800 (PST)
-Date: Mon, 5 Feb 2024 14:34:30 +0100
+        Mon, 05 Feb 2024 05:37:04 -0800 (PST)
+Date: Mon, 5 Feb 2024 14:37:02 +0100
 From: Petr Mladek <pmladek@suse.com>
 To: Yoann Congal <yoann.congal@smile.fr>
 Cc: linux-fsdevel@vger.kernel.org, linux-kbuild@vger.kernel.org,
@@ -73,13 +73,11 @@ Cc: linux-fsdevel@vger.kernel.org, linux-kbuild@vger.kernel.org,
 	Sergey Senozhatsky <senozhatsky@chromium.org>,
 	Steven Rostedt <rostedt@goodmis.org>,
 	Thomas Gleixner <tglx@linutronix.de>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	Vegard Nossum <vegard.nossum@oracle.com>
-Subject: Re: [PATCH v3 1/2] printk: Fix LOG_CPU_MAX_BUF_SHIFT when BASE_SMALL
- is enabled
-Message-ID: <ZcDj5hZeu_LqEsuH@alley>
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: Re: [PATCH v3 2/2] printk: Remove redundant CONFIG_BASE_SMALL
+Message-ID: <ZcDkfmDt2XRq5YLA@alley>
 References: <20240204232945.1576403-1-yoann.congal@smile.fr>
- <20240204232945.1576403-2-yoann.congal@smile.fr>
+ <20240204232945.1576403-3-yoann.congal@smile.fr>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -88,49 +86,18 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240204232945.1576403-2-yoann.congal@smile.fr>
+In-Reply-To: <20240204232945.1576403-3-yoann.congal@smile.fr>
 
-On Mon 2024-02-05 00:29:44, Yoann Congal wrote:
-> LOG_CPU_MAX_BUF_SHIFT default value depends on BASE_SMALL:
->   config LOG_CPU_MAX_BUF_SHIFT
->   	default 12 if !BASE_SMALL
->   	default 0 if BASE_SMALL
-> But, BASE_SMALL is a config of type int and "!BASE_SMALL" is always
-> evaluated to true whatever is the value of BASE_SMALL.
+On Mon 2024-02-05 00:29:45, Yoann Congal wrote:
+> CONFIG_BASE_SMALL is currently a type int but is only used as a boolean
+> equivalent to !CONFIG_BASE_FULL.
 > 
-> This patch fixes this by using BASE_FULL (type bool) which is equivalent
-> to BASE_SMALL==0.
+> So, remove it entirely and move every usage to !CONFIG_BASE_FULL:
+> Since CONFIG_BASE_FULL is a type bool config,
+> CONFIG_BASE_SMALL == 0 becomes  IS_ENABLED(CONFIG_BASE_FULL) and
+> CONFIG_BASE_SMALL != 0 becomes !IS_ENABLED(CONFIG_BASE_FULL).
 > 
-> Note: This changes CONFIG_LOG_CPU_MAX_BUF_SHIFT=12 to
-> CONFIG_LOG_CPU_MAX_BUF_SHIFT=0 for BASE_SMALL defconfigs, but that will
-> not be a big impact due to this code in kernel/printk/printk.c:
->   /* by default this will only continue through for large > 64 CPUs */
->   if (cpu_extra <= __LOG_BUF_LEN / 2)
->           return;
-> Systems using CONFIG_BASE_SMALL and having 64+ CPUs should be quite
-> rare.
-> 
-> John Ogness <john.ogness@linutronix.de> (printk reviewer) wrote:
-> > For printk this will mean that BASE_SMALL systems were probably
-> > previously allocating/using the dynamic ringbuffer and now they will
-> > just continue to use the static ringbuffer. Which is fine and saves
-> > memory (as it should).
-
-More precisely, it allocated the buffer dynamically when the sum
-of per-CPU-extra space exceeded half of the default static ring
-buffer. This happened for systems with more than 64 CPUs with
-the default config values.
-
-I believe that this patch won't have any effect in practice.
-It is hard to imagine a system with >64 CPUs which would require
-BASE_SMALL kernel. Well, never say never ;-)
-
 > Signed-off-by: Yoann Congal <yoann.congal@smile.fr>
-> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Closes: https://lore.kernel.org/all/CAMuHMdWm6u1wX7efZQf=2XUAHascps76YQac6rdnQGhc8nop_Q@mail.gmail.com/
-> Reported-by: Vegard Nossum <vegard.nossum@oracle.com>
-> Closes: https://lore.kernel.org/all/f6856be8-54b7-0fa0-1d17-39632bf29ada@oracle.com/
-> Fixes: 4e244c10eab3 ("kconfig: remove unneeded symbol_empty variable")
 
 Reviewed-by: Petr Mladek <pmladek@suse.com>
 
