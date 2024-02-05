@@ -1,116 +1,106 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16D01B641;
-	Mon,  5 Feb 2024 03:02:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16BFC11700;
+	Mon,  5 Feb 2024 06:52:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.50.62.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707102161; cv=none; b=NACliYw/N0PLwG5FwMqO9x7KqBncfxYEIgQiiqh62Zs35SxHb156LRiioPCgCWJmrJfagFWIvE+kCZ2gSs5nZ61ACkn8yIvttf39+Npjz8CPZ0/cdg5l1drgvGpS93HMxEYFhmoUL7f92ZsruzH/TcGyEkcJ8p/Dx7TU8V5V3qg=
+	t=1707115925; cv=none; b=Crd720OEtWTl9FpNaGtgYBkLj/xPbh3n+AUCKbvMdmEe2ihqVk473EyD1TJfXsEK+ZBawS++YfbyhlqZ9s/VWFpNowctRIrN7mFunbMBxTzQKCsDsu3O8c/DvZ/rJYEsE0gBV0g5NbK5DIwtZOT21P66VQ65PGfarg7ZRC+f40g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707102161; c=relaxed/simple;
-	bh=qT1MX0tGgCIx01o3HUieKOe4gx2/zz2JUXpblxvvwKI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KsKL85z+ywsMGFyYI+9Y0KeIDo/HLlyPDpchOx3C34BiEoX4KUdV+dAapVKHGl8T9wEtmRdtGj1UGJIAOfhrazazKNlZsSIilz5fYtY8SZtxKrQgNB6XxCjpHUuxECXdTafQKaVlFGUlJfYrAbEkH745Ge+gheZmpAt6bb/agLg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MtGBMVqV; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1707115925; c=relaxed/simple;
+	bh=Qzb8+O36ssVkEdkjB+UK/B3t2NyHsFMLcFyr3s7tPbk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fof9wBFrePBA+il2agp5gO5CxofI19cYfH56zqvnB7PA3AVcoabQotc85ncn4u+ggdtY0beOLWeQUEhoxQ+VvHmdlfs7/cZXpcmNHXk9kQCDW0HRriTjxwtOfmd5W3DhxdnLyMXWizJcssQ5RwDuExPgB3ESPMDDOR2CgMcygdo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=myYLmNGX; arc=none smtp.client-ip=74.50.62.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=atomide.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MtGBMVqV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89C87C43399;
-	Mon,  5 Feb 2024 03:02:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1707102160;
-	bh=qT1MX0tGgCIx01o3HUieKOe4gx2/zz2JUXpblxvvwKI=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=MtGBMVqV1HxT1psSgWLfa+yj7pd4hPZTmqsSJwZQf0pijI2cHLKNzDWlPoSaG9fQN
-	 J+H06NHSF2GNeET60cObpiGeC6Uub7eHViRIXL8i02hhzaJAtgwYdT/PLgKzPwJl53
-	 NItPVNnvB25TrUe6W7t7OEuGxDx4uYx3eoofPl09TeGLojGFj1ZkIF9qoBzby2FjzR
-	 UoHHbn+nbYJuHAIY2kslg+/Mcy3OfY68vJmOmO01Ec5kLdZREUlgoKBqU3WaWcA1G2
-	 +cyKdSm65xvIWCYN8PkmkKY9JMbL0VlmLDJ0rB9vUCw8Mdk0eqzkNFlnmCy0dMEXDJ
-	 CoGu6w78wHgTw==
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-51147d0abd1so1057144e87.1;
-        Sun, 04 Feb 2024 19:02:40 -0800 (PST)
-X-Gm-Message-State: AOJu0Yx4GlxN1deUoqdEdDq3QC1C1lEpYpGxUOX9kDjvKfsKK6/g7A4t
-	+HuHyHXyCzRSItLOcmzarDCJ4f8mEVa7VT81Onb7f8em9us6ZLyvS1JsaudmGGSLKKlbpQoHdWf
-	EK0Amfs4O9EZgb6ln7txJ8VzCNu0=
-X-Google-Smtp-Source: AGHT+IHl/iymdtYFHK5JZ/elmXzWFAyQO/YXGJl1pBkrHnzTDx/qV2jzdGznk2tAe71KL2dLd8K1Hu3B2prE18d8Gvg=
-X-Received: by 2002:a05:6512:3e05:b0:511:3232:954f with SMTP id
- i5-20020a0565123e0500b005113232954fmr8402346lfv.2.1707102159152; Sun, 04 Feb
- 2024 19:02:39 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="myYLmNGX"
+Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
+	by mail5.25mail.st (Postfix) with ESMTPSA id 879B260461;
+	Mon,  5 Feb 2024 06:51:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
+	s=25mailst; t=1707115916;
+	bh=Qzb8+O36ssVkEdkjB+UK/B3t2NyHsFMLcFyr3s7tPbk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=myYLmNGXQRXofHJznOANhXBG61lt+U1ZGM3aF49uvUoDcgKuDvhocgvBzEPfaNyS6
+	 5VzFCWwkrVyKxX39fVy03ENjtt9Sde/LfDSA4/SZb5HF01Vf7x7ICtUQBhuogmYhE0
+	 zrF54HKf3vs9yPfLfIEXgtiVdzCyu7FB71WiVYghLDfmVMA3RlOFZ6EzQICHz2teay
+	 qhPYLVoIR4w07y0N74O/pP1Hif0Wyms1h/nXqDFVbk+rckV5qw3WbKTckmACglfiEv
+	 twWZ59xNzNnRxTnGZ56GpyYhyozl8VWc/sD7rsERoH53nNOzv6md0fb5GS/1VoA56S
+	 kLoy/T7x04ypA==
+Date: Mon, 5 Feb 2024 08:51:26 +0200
+From: Tony Lindgren <tony@atomide.com>
+To: Yicong Yang <yangyicong@huawei.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	john.ogness@linutronix.de, andriy.shevchenko@linux.intel.com,
+	tglx@linutronix.de, yangyicong@hisilicon.com, linuxarm@huawei.com,
+	prime.zeng@hisilicon.com, jonathan.cameron@huawei.com,
+	fanghao11@huawei.com
+Subject: Re: [PATCH] serial: port: Don't suspend if the port is still busy
+Message-ID: <20240205065126.GB5185@atomide.com>
+References: <20240204031957.58176-1-yangyicong@huawei.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240204232945.1576403-1-yoann.congal@smile.fr> <20240204232945.1576403-2-yoann.congal@smile.fr>
-In-Reply-To: <20240204232945.1576403-2-yoann.congal@smile.fr>
-From: Masahiro Yamada <masahiroy@kernel.org>
-Date: Mon, 5 Feb 2024 12:02:03 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQU-mpu5GxFSeakOG+xkHGsVD8i4t-y9PnPw_fGT8XgdA@mail.gmail.com>
-Message-ID: <CAK7LNAQU-mpu5GxFSeakOG+xkHGsVD8i4t-y9PnPw_fGT8XgdA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] printk: Fix LOG_CPU_MAX_BUF_SHIFT when BASE_SMALL
- is enabled
-To: Yoann Congal <yoann.congal@smile.fr>
-Cc: linux-fsdevel@vger.kernel.org, linux-kbuild@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, x86@kernel.org, 
-	=?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>, 
-	Borislav Petkov <bp@alien8.de>, Darren Hart <dvhart@infradead.org>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, Davidlohr Bueso <dave@stgolabs.net>, 
-	Geert Uytterhoeven <geert@linux-m68k.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	"H . Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>, Jiri Slaby <jirislaby@kernel.org>, 
-	John Ogness <john.ogness@linutronix.de>, Josh Triplett <josh@joshtriplett.org>, 
-	Matthew Wilcox <willy@infradead.org>, Peter Zijlstra <peterz@infradead.org>, 
-	Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
-	Steven Rostedt <rostedt@goodmis.org>, Thomas Gleixner <tglx@linutronix.de>, 
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Vegard Nossum <vegard.nossum@oracle.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240204031957.58176-1-yangyicong@huawei.com>
 
-On Mon, Feb 5, 2024 at 8:30=E2=80=AFAM Yoann Congal <yoann.congal@smile.fr>=
- wrote:
->
-> LOG_CPU_MAX_BUF_SHIFT default value depends on BASE_SMALL:
->   config LOG_CPU_MAX_BUF_SHIFT
->         default 12 if !BASE_SMALL
->         default 0 if BASE_SMALL
-> But, BASE_SMALL is a config of type int and "!BASE_SMALL" is always
-> evaluated to true whatever is the value of BASE_SMALL.
->
-> This patch fixes this by using BASE_FULL (type bool) which is equivalent
-> to BASE_SMALL=3D=3D0.
->
-> Note: This changes CONFIG_LOG_CPU_MAX_BUF_SHIFT=3D12 to
-> CONFIG_LOG_CPU_MAX_BUF_SHIFT=3D0 for BASE_SMALL defconfigs, but that will
-> not be a big impact due to this code in kernel/printk/printk.c:
->   /* by default this will only continue through for large > 64 CPUs */
->   if (cpu_extra <=3D __LOG_BUF_LEN / 2)
->           return;
-> Systems using CONFIG_BASE_SMALL and having 64+ CPUs should be quite
-> rare.
->
-> John Ogness <john.ogness@linutronix.de> (printk reviewer) wrote:
-> > For printk this will mean that BASE_SMALL systems were probably
-> > previously allocating/using the dynamic ringbuffer and now they will
-> > just continue to use the static ringbuffer. Which is fine and saves
-> > memory (as it should).
->
-> Signed-off-by: Yoann Congal <yoann.congal@smile.fr>
-> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Closes: https://lore.kernel.org/all/CAMuHMdWm6u1wX7efZQf=3D2XUAHascps76YQ=
-ac6rdnQGhc8nop_Q@mail.gmail.com/
-> Reported-by: Vegard Nossum <vegard.nossum@oracle.com>
-> Closes: https://lore.kernel.org/all/f6856be8-54b7-0fa0-1d17-39632bf29ada@=
-oracle.com/
-> Fixes: 4e244c10eab3 ("kconfig: remove unneeded symbol_empty variable")
-> ---
->  init/Kconfig | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+* Yicong Yang <yangyicong@huawei.com> [240204 03:24]:
+> From: Yicong Yang <yangyicong@hisilicon.com>
+> 
+> We accidently met the issue that the bash prompt is not shown after the
+> previous command done and until the next input if there's only one CPU
+> (In our issue other CPUs are isolated by isolcpus=). Further analysis
+> shows it's because the port entering runtime suspend even if there's
+> still pending chars in the buffer and the pending chars will only be
+> processed in next device resuming. We are using amba-pl011 and the
+> problematic flow is like below:
+> 
+> Bash                                         kworker
+> tty_write()
+>   file_tty_write()
+>     n_tty_write()
+>       uart_write()
+>         __uart_start()
+>           pm_runtime_get() // wakeup waker
+>             queue_work()
+>                                              pm_runtime_work()
+>                                                rpm_resume()
+>                                                 status = RPM_RESUMING
+>                                                 serial_port_runtime_resume()
+>                                                   port->ops->start_tx()
+>                                                     pl011_tx_chars()
+>                                                       uart_write_wakeup()
+>         […]
+>         __uart_start()
+>           pm_runtime_get() < 0 // because runtime status = RPM_RESUMING
+>                                // later data are not commit to the port driver
+>                                                 status = RPM_ACTIVE
+>                                                 rpm_idle() -> rpm_suspend()
 
+Can you please confirm if this still happens also with commit 6f699743aebf
+("serial: core: Fix runtime PM handling for pending tx")? It adds a check
+for -EINPROGRESS.
 
+> This patch tries to fix this by checking the port busy before entering
+> runtime suspending. A runtime_suspend callback is added for the port
+> driver. When entering runtime suspend the callback is invoked, if there's
+> still pending chars in the buffer then request an runtime resume for
+> handling this.
 
-Reviewed-by: Masahiro Yamada <masahiroy@kernel.org>
+OK. Let's look at this further after you have checked what happens with
+commit 6f699743aebf.
 
+If needed, to me it seems that flushing tx and returning -EBUSY from
+serial_port_runtime_suspend() if busy might do the trick though.
 
+Regards,
 
---=20
-Best Regards
-Masahiro Yamada
+Tony
