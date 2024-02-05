@@ -1,169 +1,151 @@
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A0C3134D1
-	for <linux-serial@vger.kernel.org>; Mon,  5 Feb 2024 10:32:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.254.224.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 747031CA9E;
+	Mon,  5 Feb 2024 13:15:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707129128; cv=none; b=nG3B6+1Mmphaac60wWnlaAj+hH/EQolxlAkdaGY6rIuIBNAGEBOLN/4cfcoiQQCaZUm5aygBvJotU6M/PtXzWkuCyuM/yLRH0VHPIk9SYDrK/+KFgcRJNmKLMJ4jCJkjt01iWryS3gNHqy7Tle4as0t02iqQ4ecTpthJ4SS9dhA=
+	t=1707138937; cv=none; b=tAK5EiGt1B6AbagL83AM+9iThbbeiwB0EkU6wEGaK77f00XoQ0SUNI+Jc38wOHE5pVqFreuEtVkZyqJjSkYW9XURtW0ZjoiS9EPBc5wk6eBo3h3coNP2Tv1/6rvmXjV3JNNsMHOnjScJhfLhR7+c/R3QaPgaCqP6NgXfnHwF95o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707129128; c=relaxed/simple;
-	bh=TBHN3r/wtdOP5VcnZGhpuTZSEtDHTE7TqLYbYFjkc28=;
-	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:References; b=QSQ5cAxzBAjRrL1buDJ5utAXGdr8BburviX1ouslS7s7zn0oz+nc6xz+8meeOMMDvLYqertyzX9My/mc9d5x8w8RJ5cC8zlSk+NHZBdK2sksUaVOMV5CwdGhQmLl7v8NVyciDQ/tkujjZNnPcJjVMuOcfU51uB4nrC2KDUmNC68=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=rleGl7mr; arc=none smtp.client-ip=203.254.224.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1707138937; c=relaxed/simple;
+	bh=jxi9hBIW/u/xN1/3l39jSDwYER6jWurCP3CAR9bpTUM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=W0lyUoboDdHgnmN7zQuQGGsk/Qf3bZWL5aqSlCshFvS4vP2QPehL/olO1TKlgrLnLph6M/BLKgPr8rBZNOfoMeQJXBgJtyQzuPKLjVlh+gp8Z9cHUYy7mIsTBE2S9NUxVUAHn6DmfHVHCHSL1TJDtHBXTGghbP0tjd/wAoLy9aY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PhFy3H6U; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="rleGl7mr"
-Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
-	by mailout3.samsung.com (KnoxPortal) with ESMTP id 20240205103205epoutp0366cf0ce38955c368d7336d187e0de74b~w8OUGT-cF0132601326epoutp03E
-	for <linux-serial@vger.kernel.org>; Mon,  5 Feb 2024 10:32:05 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20240205103205epoutp0366cf0ce38955c368d7336d187e0de74b~w8OUGT-cF0132601326epoutp03E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1707129125;
-	bh=sLlkI332Qx58OG8GFc9USxDt6y2FThNcf0pE5uWb+So=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=rleGl7mrr9I9IBjWgiP/YW0S28F/3NnxRQIYH6seyEUS+xaBgP/1Kl953+TUfvjor
-	 C3I1w3bwaZ6jQpR8c2M/bJ2LwaZQDEDUORUvHeyNjzyVq9BVHKyiCZbhiQDI6OE6Oo
-	 6YXBlkuMGHrcbXurAdH4FIG3rm4x+rN/mCm2VtI8=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-	epcas5p1.samsung.com (KnoxPortal) with ESMTP id
-	20240205103204epcas5p10c6354e456cd352a2ab6d571ccb593fe~w8OT1Fm6f1866018660epcas5p1G;
-	Mon,  5 Feb 2024 10:32:04 +0000 (GMT)
-Received: from epsmges5p1new.samsung.com (unknown [182.195.38.181]) by
-	epsnrtp4.localdomain (Postfix) with ESMTP id 4TT2kC0z23z4x9Pw; Mon,  5 Feb
-	2024 10:32:03 +0000 (GMT)
-Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
-	epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-	43.25.09634.329B0C56; Mon,  5 Feb 2024 19:32:03 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-	epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
-	20240205082441epcas5p1e904f4f95852de3fd8663742ed5131df~w6fE_EOc40412004120epcas5p1N;
-	Mon,  5 Feb 2024 08:24:41 +0000 (GMT)
-Received: from epsmgmc1p1new.samsung.com (unknown [182.195.42.40]) by
-	epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20240205082441epsmtrp202e1c707dbe140032d4ea37f9ac41384~w6fE9SN7D2404124041epsmtrp2j;
-	Mon,  5 Feb 2024 08:24:41 +0000 (GMT)
-X-AuditID: b6c32a49-eebff700000025a2-95-65c0b9235be7
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-	epsmgmc1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-	2E.39.07368.84B90C56; Mon,  5 Feb 2024 17:24:40 +0900 (KST)
-Received: from cheetah.sa.corp.samsungelectronics.net (unknown
-	[107.109.115.53]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20240205082439epsmtip29a576ff663d6e7016e9b119016cbee0b~w6fDnk5yw2562825628epsmtip2Z;
-	Mon,  5 Feb 2024 08:24:39 +0000 (GMT)
-From: Tamseel Shams <m.shams@samsung.com>
-To: alim.akhtar@samsung.com, krzysztof.kozlowski+dt@linaro.org,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Tamseel Shams
-	<m.shams@samsung.com>
-Subject: [PATCH v2] serial: samsung: honor fifosize from dts at first
-Date: Mon,  5 Feb 2024 13:54:34 +0530
-Message-Id: <20240205082434.36531-1-m.shams@samsung.com>
-X-Mailer: git-send-email 2.17.1
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrHKsWRmVeSWpSXmKPExsWy7bCmpq7yzgOpBn+Ps1g8mLeNzaJ58Xo2
-	i3dzZSz6Xjxkttj0+BqrxeVdc9gsZpzfx2RxZnEvu8Xd1sXsDpwem1Z1snncubaHzWP/3DXs
-	HpuX1Hv0bVnF6PF5k1wAW1S2TUZqYkpqkUJqXnJ+SmZeuq2Sd3C8c7ypmYGhrqGlhbmSQl5i
-	bqqtkotPgK5bZg7QTUoKZYk5pUChgMTiYiV9O5ui/NKSVIWM/OISW6XUgpScApMCveLE3OLS
-	vHS9vNQSK0MDAyNToMKE7Iyfve3MBav5K943vGdvYHzL08XIySEhYCLx5+MS9i5GLg4hgd2M
-	En8eTGeDcD4xSsyZ3MQCUiUk8I1R4lmHNEzH9p3TWCCK9jJKPPzygRHCaWWSOLHtLZDDwcEm
-	oClx/Dw3iCkiUCTR+JkXpIRZYAOjxIOeDUwgg4QFXCX+v3/NDmKzCKhK7Hy/mQ3E5hWwkPh3
-	cB0bxDJ5idUbDjBD2IfYJU5uZ4GwXSTuLrjHCmELS7w6voUdwpaS+PxuL1RvusTch71MEHaB
-	xLJd36Fq7CUOXJnDAnIbM9CZ63fpQ4RlJaaeWgdWzizAJ9H7+wlUK6/EjnkwtqLE/939UGPE
-	Jd6tmAJ1gofEn6ePWCFhFSsxd88rxgmMsrMQNixgZFzFKJlaUJybnlpsWmCYl1oOj6bk/NxN
-	jOCEpuW5g/Hugw96hxiZOBgPMUpwMCuJ8JrtOJAqxJuSWFmVWpQfX1Sak1p8iNEUGGQTmaVE
-	k/OBKTWvJN7QxNLAxMzMzMTS2MxQSZz3devcFCGB9MSS1OzU1ILUIpg+Jg5OqQamEH6vvSo6
-	V1UVn16JU/1xl3t/VN2nf5f0dqtPnsPJqXDikeCBlK+/qt+/DP4wzz720scj2w84/K9+kCTN
-	9k7zcU1f14IyqbRML9WkmQJCq2JF12m5bFf8b/DrCWvdg1cXI18paf9gv7JS54rqbqWdqRP8
-	b3S+PF0VUPbpNM+TBZZnn2VeXt39ujHvZcXdiRH7Flt+XSpbvPYqd9qTaVUHLp6ODhR7dDBO
-	3+Woxd+LrKcqAnWeK058J3bzqtx6jn0XE7xTQsVeJE5v/fFhm3NXxLmLzqqRFebGoUw/8675
-	Wgv/evcjfE9/yZNoFS3X3BOW60UdZX1mzd6m5nl2Bpv7l9pdf8XU/5q+ZfZ5dNR1hRJLcUai
-	oRZzUXEiABd+3+bxAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFuphluLIzCtJLcpLzFFi42LZdlhJXtdj9oFUg20fbCwezNvGZtG8eD2b
-	xbu5MhZ9Lx4yW2x6fI3V4vKuOWwWM87vY7I4s7iX3eJu62J2B06PTas62TzuXNvD5rF/7hp2
-	j81L6j36tqxi9Pi8SS6ALYrLJiU1J7MstUjfLoEr42dvO3PBav6K9w3v2RsY3/J0MXJySAiY
-	SGzfOY2li5GLQ0hgN6PEopaj7BAJcYlpv/YzQtjCEiv/PWeHKGpmklg3bzNQBwcHm4CmxPHz
-	3CA1IgJlEru677OC1DALbGGUOPf/L9ggYQFXif/vX4PZLAKqEjvfb2YDsXkFLCT+HVzHBrFA
-	XmL1hgPMExh5FjAyrGKUTC0ozk3PTTYsMMxLLdcrTswtLs1L10vOz93ECA4wLY0djPfm/9M7
-	xMjEwXiIUYKDWUmEd4Lw3lQh3pTEyqrUovz4otKc1OJDjNIcLErivIYzZqcICaQnlqRmp6YW
-	pBbBZJk4OKUamIRn503eoPTmwcKHQS0M9xZ9lr/kVitf1S0Usjs0bMsZ5hW2kjdNZ1hN2jWP
-	4ZYEA2dguOTKRQZakub7vCzjQzvfxmjmKfVkz/KZExmS5y+xVls0YKe6042IBp/AZztqJXSt
-	AloXfDWJ/33suoz0JfeK/wGthw+UvbzPbtPwpdJ068WZi3feKhO5tYh/ftSlj80R3xXkdsTu
-	mnMjS/tsnGVjV+CuRxai777MT9H+cDRcS271f/njW362Tc45IeraslsyiM+yzOKVQpCaxlf3
-	bUfu82dxZBz0YIjdoSY23dggZUdJ0adTnr1hz/qyT2dt7Yjv/iv7M23nmY2T0iccXSHjc6Js
-	V4eGxIzXFY13lFiKMxINtZiLihMB7pj+Pp8CAAA=
-X-CMS-MailID: 20240205082441epcas5p1e904f4f95852de3fd8663742ed5131df
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20240205082441epcas5p1e904f4f95852de3fd8663742ed5131df
-References: <CGME20240205082441epcas5p1e904f4f95852de3fd8663742ed5131df@epcas5p1.samsung.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PhFy3H6U"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1707138935; x=1738674935;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=jxi9hBIW/u/xN1/3l39jSDwYER6jWurCP3CAR9bpTUM=;
+  b=PhFy3H6U0Zt5UmfhWaAy21wVepJAJrAs0D/uK9pTvyz9cBW12VGn/hdL
+   L2Q6R7w3coxHPmrtxL+g3713OOMPFY+PR/IhAyQEnIW9Ozl1MZ5d4x0Q3
+   VOasJehQZOeLRArGn5L3XGyUGsADuEJSq1XxnKhC2YRYQRDuy874jHETv
+   0YEnl4KqBhhstN1ST4FqSlWrJWeqyIZGFjImvhpiSrcu9U5RjDBTRPlmD
+   /gAICEyIgsQ89cNc9vYZv81uwMJgrvJ5NCCJPk5BKJmBrN6mnQvri3VOY
+   3dSfn1i+KP8fjFLcSLZjgpZ7YYjtY5+VJGn3I0pGU34e5olF5DQfbvRG5
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10974"; a="11105846"
+X-IronPort-AV: E=Sophos;i="6.05,245,1701158400"; 
+   d="scan'208";a="11105846"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2024 05:15:34 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.05,245,1701158400"; 
+   d="scan'208";a="1014816"
+Received: from lkp-server01.sh.intel.com (HELO 01f0647817ea) ([10.239.97.150])
+  by orviesa006.jf.intel.com with ESMTP; 05 Feb 2024 05:15:29 -0800
+Received: from kbuild by 01f0647817ea with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rWyoo-0000Xk-32;
+	Mon, 05 Feb 2024 13:15:26 +0000
+Date: Mon, 5 Feb 2024 21:14:50 +0800
+From: kernel test robot <lkp@intel.com>
+To: Frank Li <Frank.Li@nxp.com>
+Cc: oe-kbuild-all@lists.linux.dev, alexandre.belloni@bootlin.com,
+	conor.culhane@silvaco.com, devicetree@vger.kernel.org,
+	gregkh@linuxfoundation.org, ilpo.jarvinen@linux.intel.com,
+	imx@lists.linux.dev, jirislaby@kernel.org, joe@perches.com,
+	krzysztof.kozlowski+dt@linaro.org, krzysztof.kozlowski@linaro.org,
+	linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, miquel.raynal@bootlin.com,
+	robh@kernel.org, zbigniew.lukwinski@linux.intel.com
+Subject: Re: [PATCH v6 8/8] tty: i3c: add TTY over I3C master support
+Message-ID: <202402052026.UNrmrB2M-lkp@intel.com>
+References: <20240202230925.1000659-9-Frank.Li@nxp.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240202230925.1000659-9-Frank.Li@nxp.com>
 
-Currently for platforms which passes UART fifosize from DT gets
-override by local driver structure "s3c24xx_serial_drv_data",
-which is not intended. Change the code to honor fifosize from
-device tree at first.
+Hi Frank,
 
-Signed-off-by: Tamseel Shams <m.shams@samsung.com>
----
-Change Log:
-v1 -> v2:
-Acknowledged Krzysztof's comments
-Initialized "ret" variable
+kernel test robot noticed the following build warnings:
 
- drivers/tty/serial/samsung_tty.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on tty/tty-next tty/tty-linus robh/for-next linus/master v6.8-rc3 next-20240205]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 71d17d804fda..e5dc2c32b1bd 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -1952,7 +1952,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
- 	struct device_node *np = pdev->dev.of_node;
- 	struct s3c24xx_uart_port *ourport;
- 	int index = probe_index;
--	int ret, prop = 0;
-+	int ret = 1, prop = 0;
- 
- 	if (np) {
- 		ret = of_alias_get_id(np, "serial");
-@@ -1990,8 +1990,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
- 	}
- 
- 	if (np) {
--		of_property_read_u32(np,
--			"samsung,uart-fifosize", &ourport->port.fifosize);
-+		ret = of_property_read_u32(np, "samsung,uart-fifosize", &ourport->port.fifosize);
- 
- 		if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
- 			switch (prop) {
-@@ -2009,10 +2008,13 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
- 		}
- 	}
- 
--	if (ourport->drv_data->fifosize[index])
--		ourport->port.fifosize = ourport->drv_data->fifosize[index];
--	else if (ourport->info->fifosize)
--		ourport->port.fifosize = ourport->info->fifosize;
-+	if (ret) {
-+		if (ourport->drv_data->fifosize[index])
-+			ourport->port.fifosize = ourport->drv_data->fifosize[index];
-+		else if (ourport->info->fifosize)
-+			ourport->port.fifosize = ourport->info->fifosize;
-+	}
-+
- 	ourport->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_SAMSUNG_CONSOLE);
- 
- 	/*
+url:    https://github.com/intel-lab-lkp/linux/commits/Frank-Li/i3c-add-target-mode-support/20240203-071519
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20240202230925.1000659-9-Frank.Li%40nxp.com
+patch subject: [PATCH v6 8/8] tty: i3c: add TTY over I3C master support
+config: powerpc-randconfig-r071-20240205 (https://download.01.org/0day-ci/archive/20240205/202402052026.UNrmrB2M-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 13.2.0
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202402052026.UNrmrB2M-lkp@intel.com/
+
+smatch warnings:
+drivers/tty/i3c_tty.c:237 tty_i3c_rxwork() error: uninitialized symbol 'status'.
+
+vim +/status +237 drivers/tty/i3c_tty.c
+
+   191	
+   192	static void tty_i3c_rxwork(struct work_struct *work)
+   193	{
+   194		struct ttyi3c_port *sport = container_of(work, struct ttyi3c_port, rxwork);
+   195		struct i3c_priv_xfer xfers;
+   196		u32 retry = I3C_TTY_RETRY;
+   197		u16 status;
+   198		int ret;
+   199	
+   200		memset(&xfers, 0, sizeof(xfers));
+   201		xfers.data.in = sport->rx_buff;
+   202		xfers.len = I3C_TTY_TRANS_SIZE;
+   203		xfers.rnw = 1;
+   204	
+   205		do {
+   206			if (test_bit(I3C_TTY_RX_STOP, &sport->status))
+   207				break;
+   208	
+   209			i3c_device_do_priv_xfers(sport->i3cdev, &xfers, 1);
+   210	
+   211			if (xfers.actual_len) {
+   212				ret = tty_insert_flip_string(&sport->port, sport->rx_buff,
+   213							     xfers.actual_len);
+   214				if (ret < xfers.actual_len)
+   215					sport->buf_overrun++;
+   216	
+   217				retry = I3C_TTY_RETRY;
+   218				continue;
+   219			}
+   220	
+   221			status = I3C_TTY_TARGET_RX_READY;
+   222			i3c_device_getstatus_format1(sport->i3cdev, &status);
+   223			/*
+   224			 * Target side needs some time to fill data into fifo. Target side may not
+   225			 * have hardware update status in real time. Software update status always
+   226			 * needs some delays.
+   227			 *
+   228			 * Generally, target side have circular buffer in memory, it will be moved
+   229			 * into FIFO by CPU or DMA. 'status' just show if circular buffer empty. But
+   230			 * there are gap, especially CPU have not response irq to fill FIFO in time.
+   231			 * So xfers.actual will be zero, wait for little time to avoid flood
+   232			 * transfer in i3c bus.
+   233			 */
+   234			usleep_range(I3C_TTY_YIELD_US, 10 * I3C_TTY_YIELD_US);
+   235			retry--;
+   236	
+ > 237		} while (retry && (status & I3C_TTY_TARGET_RX_READY));
+   238	
+   239		tty_flip_buffer_push(&sport->port);
+   240	}
+   241	
+
 -- 
-2.17.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
